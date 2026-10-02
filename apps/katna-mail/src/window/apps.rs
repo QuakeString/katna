@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The app rail at the far left: Mail, Calendar, Contacts, Tasks, Notes,
-//! Feeds and Files, with settings at the bottom; their names can be hidden in
+//! The app rail at the far left: Mail, Calendar, Contacts, Tasks, Notes
+//! and Files, with settings at the bottom; their names can be hidden in
 //! quick settings. Each app is a page of the one window: the rail, Ctrl+1
 //! to Ctrl+5 (Outlook's keys), the Go menu, the desktop file's actions and
 //! `katna-mail --page NAME` (D-Bus `ActivateAction("open-page", [NAME])`)
@@ -40,18 +40,16 @@ pub(super) enum App {
     Contacts,
     Tasks,
     Notes,
-    Feeds,
     Files,
 }
 
 impl App {
-    pub(super) const ALL: [Self; 7] = [
+    pub(super) const ALL: [Self; 6] = [
         Self::Mail,
         Self::Calendar,
         Self::Contacts,
         Self::Tasks,
         Self::Notes,
-        Self::Feeds,
         Self::Files,
     ];
 
@@ -62,7 +60,6 @@ impl App {
             Self::Contacts => "rail-contacts",
             Self::Tasks => "rail-tasks",
             Self::Notes => "rail-notes",
-            Self::Feeds => "rail-feeds",
             Self::Files => "rail-files",
         })
     }
@@ -88,8 +85,19 @@ impl App {
             Self::Contacts => "contacts",
             Self::Tasks => "tasks",
             Self::Notes => "notes",
-            Self::Feeds => "feeds",
             Self::Files => "attachment",
+        }
+    }
+
+    /// The big button at the top of the left bar: the page's own action,
+    /// its icon and its word. Files has nothing to create, so it writes.
+    pub(super) fn primary(self) -> (&'static str, String) {
+        match self {
+            Self::Calendar => ("event", tr!("calendar-menu-new-event")),
+            Self::Contacts => ("person-add", tr!("contacts-create")),
+            Self::Tasks => ("add", tr!("tasks-create")),
+            Self::Notes => ("pen", tr!("notes-new-note")),
+            Self::Mail | Self::Files => ("compose", tr!("compose")),
         }
     }
 
@@ -99,7 +107,6 @@ impl App {
             Self::Mail | Self::Contacts | Self::Tasks | Self::Files => String::new(),
             Self::Calendar => tr!("app-calendar-promise"),
             Self::Notes => tr!("app-notes-promise"),
-            Self::Feeds => tr!("app-feeds-promise"),
         }
     }
 }
@@ -143,7 +150,17 @@ impl MailWindow {
                     .w(px(width * t))
                     .overflow_hidden()
                     .opacity(t)
-                    .child(div().h_full().w(px(width)).child(side))
+                    .child(
+                        div()
+                            .h_full()
+                            .w(px(width))
+                            .flex()
+                            .flex_col()
+                            // The big button heads the column, as Compose
+                            // heads Mail's folders.
+                            .child(div().flex_none().h(px(self.side_button_room())))
+                            .child(div().flex_1().min_h_0().child(side)),
+                    )
                     .into_any_element()
             });
             return PageSide {
@@ -188,9 +205,38 @@ impl MailWindow {
         }
     }
 
-    /// Whether page `app` shows its side column beside it on a desktop.
-    pub(super) fn page_side_open(&self, app: App) -> bool {
-        !self.page_sides_folded.contains(&app)
+    /// Whether the pages show their side column beside them on a desktop:
+    /// one fold for Mail's folders and every page's column.
+    pub(super) fn page_side_open(&self) -> bool {
+        self.nav_open
+    }
+
+    /// The big button's action on the page on show.
+    /// The icon and words of the big button at the top of the side
+    /// column: the page's own action, or Upload while a drive is open.
+    pub(super) fn primary_button(&self) -> (&'static str, String) {
+        if self.drive_upload_here() {
+            ("upload", tr!("files-drive-upload"))
+        } else {
+            self.app.primary()
+        }
+    }
+
+    pub(super) fn primary_action(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.drive_upload_here() {
+            self.upload_into_drive(false, cx);
+            return;
+        }
+        match self.app {
+            App::Calendar => self.create_event_button(window, cx),
+            App::Contacts => {
+                self.contacts.open = None;
+                self.start_contact_edit(None, window, cx);
+            }
+            App::Tasks => self.tasks_create(window, cx),
+            App::Notes => self.new_note(window, cx),
+            App::Mail | App::Files => self.compose(&super::Compose, window, cx),
+        }
     }
 
     /// The room a side column `width` wide takes beside the page now: none
@@ -224,7 +270,7 @@ impl MailWindow {
                     window.focus(focus, cx);
                 }
             }
-            App::Notes | App::Files | App::Feeds => {}
+            App::Notes | App::Files => {}
         }
     }
 
@@ -238,7 +284,7 @@ impl MailWindow {
             App::Files => self.swap_files_search(entering, cx),
             App::Contacts => self.swap_contacts_search(entering, cx),
             App::Notes => self.sync_notes_search(cx),
-            App::Mail | App::Feeds => {}
+            App::Mail => {}
         }
     }
 
@@ -251,7 +297,7 @@ impl MailWindow {
         // An event or task picked up on the Calendar stays where it was.
         self.cancel_calendar_drags();
         // Each page shows its side column as it left it, without motion.
-        let open = if self.page_side_open(app) { 1.0 } else { 0.0 };
+        let open = if self.page_side_open() { 1.0 } else { 0.0 };
         self.page_side_spring.snap(open);
         self.page_side_t = open;
         super::desktop::menu_page_changed(app != App::Mail, cx);
@@ -319,6 +365,18 @@ impl MailWindow {
             })
             .ok();
         }));
+    }
+
+    /// Whether a page shows a whole editor in place of itself and its
+    /// side column (Calendar's event editor), with no room for the big
+    /// button.
+    pub(super) fn page_editor_open(&self) -> bool {
+        self.app == App::Calendar && self.event_editor_open()
+    }
+
+    /// Room at the top of a page's side column for its big button.
+    pub(super) fn side_button_room(&self) -> f32 {
+        super::COMPOSE_NAV_ROOM * self.compose_shown.value().clamp(0.0, 1.0)
     }
 
     /// Room at the top of the rail for Compose while it is there.
@@ -492,7 +550,7 @@ impl MailWindow {
             App::Notes => self.render_notes(th, window, cx),
             App::Tasks => self.render_tasks(th, cx),
             App::Files => self.render_files(th, window, cx),
-            App::Mail | App::Feeds => self.render_coming_soon(th),
+            App::Mail => self.render_coming_soon(th),
         };
         // Edge to edge on a phone, as Mail's cards are.
         let shape = self.layout.shape;

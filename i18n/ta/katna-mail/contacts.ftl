@@ -25,10 +25,7 @@ contacts-label-removed = { $name } இலிருந்து நீக்க�
 contacts-label-renamed = லேபிள் பெயர் { $name } என மாற்றப்பட்டது
 contacts-label-deleted = லேபிள் { $name } நீக்கப்பட்டது
 contacts-label-no-email = இந்த லேபிளில் உள்ள யாருக்கும் மின்னஞ்சல் முகவரி இல்லை
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = கணக்குகள்
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = தொடர்புகளைக் காட்ட மீண்டும் உள்நுழை
 contacts-account-signed-in = { $address } இல் மீண்டும் உள்நுழைந்தது. உங்கள் தொடர்புகளைப் பெறுகிறது…
 contacts-account-sign-in-refused = { $provider } Katna-வை உள்ளே அனுமதிக்கவில்லை. மீண்டும் முயன்று, உங்கள் தொடர்புகளுக்கான அணுகலை அனுமதிக்கவும்.
@@ -36,13 +33,9 @@ contacts-account-password = சர்வர் கடவுச்சொல்ல
 contacts-account-change-password = கடவுச்சொல்லை மாற்று
 contacts-account-change-password-tooltip = அமைப்புகள் > கணக்குகள் என்பதைத் திற
 contacts-account-failed = தொடர்புகளைப் படிக்க முடியவில்லை.
-# $reason is the server's own words, in English.
 contacts-account-error = தொடர்புகளைப் படிக்க முடியவில்லை: { $reason }
 contacts-account-none = முகவரிப் புத்தகம் எதுவும் இல்லை
-# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
 contacts-account-none-why = முகவரிப் புத்தகம் எதுவும் இல்லை: { $reason }
-# A Gmail or Outlook account added with a password: its contacts need the
-# provider's sign-in.
 contacts-account-use-sign-in = { $provider } மூலம் உள்நுழைந்த Katna-வுக்கு மட்டுமே { $provider } தொடர்புகளைக் காட்டும்.
 contacts-account-sign-in-with = { $provider } மூலம் உள்நுழை
 contacts-account-looking = தொடர்புகளைத் தேடுகிறது…
@@ -94,7 +87,7 @@ contacts-print-none = அச்சிட தொடர்புகள் இல�
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = பிறந்தநாள்: { $day }
 contacts-print-nickname = செல்லப்பெயர்: { $name }
-contacts-create = தொடர்பை உருவாக்கு
+contacts-create = புதிய தொடர்பு
 
 ## Search and the list
 

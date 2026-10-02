@@ -46,6 +46,7 @@ compose-sent-archived = Надіслано й заархівовано
 compose-sent = Лист надіслано
 compose-discarded = Чернетку відкинуто
 compose-draft-saved = Чернетку збережено
+compose-draft-saving = Збереження…
 compose-draft-failed = Не вдалося зберегти чернетку: { $error }
 compose-draft-not-opened = Не вдалося відкрити чернетку.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = Не вдалося відкрити чернетку
 compose-picker-insert = Вставити
 compose-picker-attach = Вкласти
 compose-file-too-large = { $name } завеликий: лист може містити до { $limit }.
+compose-forward-files-missing = Файли пересланого листа не завантажено, тому їх не вкладено.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Вилучити вкладення
 compose-attachments-total = { $count ->
@@ -82,6 +84,7 @@ compose-drive-share-link = Поділитися за посиланням
 compose-drive-send-without = Надіслати без доступу
 compose-drive-share-cancel = Скасувати
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } перевищує { $limit }, тому файл потрапить до вашого OneDrive, а в листі буде посилання.
 compose-onedrive-tip = У вашому OneDrive; у листі буде посилання
 compose-onedrive-allow = Дозволити OneDrive
@@ -95,6 +98,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive не може надати доступ до файлів адресатам { $addresses }. Натомість файли зможе відкрити будь-хто, у кого є посилання.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Перетягніть файли сюди
 compose-drop-here = Перетягніть сюди
 compose-paste-keep-formatting = Зберегти форматування

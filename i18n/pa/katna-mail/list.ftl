@@ -20,6 +20,7 @@ tab-provider-other = Katna ਵੱਲੋਂ ਛਾਂਟਿਆ ਗਿਆ
 
 list-select = ਚੁਣੋ
 list-refresh = ਤਾਜ਼ਾ ਕਰੋ
+list-back-to-top = ਸਿਖਰ ’ਤੇ ਵਾਪਸ
 list-checking = ਨਵੀਂ ਮੇਲ ਜਾਂਚੀ ਜਾ ਰਹੀ ਹੈ…
 list-more = ਹੋਰ
 list-mark-read = ਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ

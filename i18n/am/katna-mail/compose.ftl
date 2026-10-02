@@ -46,6 +46,7 @@ compose-sent-archived = ተልኳል እና ወደ ማህደር ተቀምጧል
 compose-sent = መልዕክቱ ተልኳል
 compose-discarded = ረቂቁ ተጥሏል
 compose-draft-saved = ረቂቁ ተቀምጧል
+compose-draft-saving = በማስቀመጥ ላይ…
 compose-draft-failed = ረቂቁን ማስቀመጥ አልተቻለም፦ { $error }
 compose-draft-not-opened = ረቂቁን መክፈት አልተቻለም።
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = ረቂቁን መክፈት አልተቻለም።
 compose-picker-insert = አስገባ
 compose-picker-attach = አያይዝ
 compose-file-too-large = { $name } በጣም ትልቅ ነው፦ አንድ መልዕክት እስከ { $limit } መያዝ ይችላል።
+compose-forward-files-missing = የተላለፈው መልዕክት ፋይሎች ስላልወረዱ አልተያያዙም።
 compose-attachment-size = ({ $size })
 compose-remove-attachment = አባሪውን አስወግድ
 compose-attachments-total = { $count ->
@@ -78,6 +80,7 @@ compose-drive-share-link = በአገናኝ አጋራ
 compose-drive-send-without = ሳያጋሩ ላክ
 compose-drive-share-cancel = ይቅር
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } ከ{ $limit } ስለሚበልጥ ወደ OneDrive ይሄዳል፣ መልዕክቱም አገናኝ ይይዛል።
 compose-onedrive-tip = በእርስዎ OneDrive ውስጥ፤ መልዕክቱ አገናኝ ይይዛል
 compose-onedrive-allow = OneDriveን ፍቀድ
@@ -89,6 +92,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive ፋይሎቹን ከ{ $addresses } ጋር ማጋራት አይችልም። በምትኩ አገናኙ ያለው ማንኛውም ሰው ሊከፍታቸው ይችላል።
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ፋይሎችን እዚህ ይጣሉ
 compose-drop-here = እዚህ ይጣሉ
 compose-paste-keep-formatting = ቅርጸቱን አቆይ

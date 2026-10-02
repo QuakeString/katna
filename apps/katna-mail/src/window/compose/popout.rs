@@ -18,7 +18,7 @@ use katna_ui::px;
 use katna_ui::scale::desktop_px;
 use katna_ui::unpx;
 
-use super::super::{MailWindow, SendMail};
+use super::super::{MailWindow, RephraseSelection, SendMail};
 use super::Mode;
 use super::recipients::Field;
 use crate::theme::Theme;
@@ -204,6 +204,9 @@ impl MailWindow {
             .on_action(
                 cx.listener(|this, _: &SendMail, window, cx| this.send_compose_default(window, cx)),
             )
+            .on_action(cx.listener(|this, _: &RephraseSelection, window, cx| {
+                this.toggle_rephrase(window, cx)
+            }))
             .relative()
             .size_full()
             .flex()

@@ -137,6 +137,7 @@ attachment-count = { $count ->
    *[other] { $count } вложения
 }
 attachment-save = Сохранить
+attachment-forward = Переслать
 attachment-save-all = Сохранить все
 attachment-save-all-tooltip = Сохранить все вложения в папку
 attachment-save-here = Сохранить здесь
@@ -195,6 +196,8 @@ print-not-downloaded = (Ещё не загружено.)
 print-encrypted = (Зашифровано. Откройте письмо в Katna Mail, чтобы распечатать его текст.)
 print-to = Кому: { $addresses }
 print-cc = Копия: { $addresses }
+text-pin = Закрепить сверху
+text-copy-address = Копировать адрес
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

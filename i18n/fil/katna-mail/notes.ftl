@@ -15,6 +15,7 @@ notes-loading = Binubuksan ang iyong mga tala…
 
 notes-take-a-note = Magtala…
 notes-new-list = Bagong listahan
+notes-new-note = Bagong tala
 notes-pinned = Naka-pin
 notes-others = Iba pa
 notes-empty = Lalabas dito ang mga tala na idaragdag mo

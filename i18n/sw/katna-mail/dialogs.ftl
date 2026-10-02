@@ -66,6 +66,7 @@ about-credit-resvg = Picha za SVG
 about-credit-jiff = Tarehe na saa za maeneo
 about-credit-spellbook = Ukaguzi wa tahajia, kutoka kihariri cha Helix
 about-credit-smol = Kufanya mambo mengi kwa wakati mmoja
+about-credit-color-schemes = Rangi za mipango ya rangi iliyojengewa ndani
 about-all-libraries = Kila maktaba inayotumiwa na Katna ({ $count })
 about-library-authors = na { $authors }
 about-license = Katna ni programu huria chini ya GNU GPL, toleo la 3 au jipya zaidi.
@@ -123,6 +124,21 @@ onboarding-density-default = Chaguomsingi
 onboarding-density-compact = Iliyobanwa
 onboarding-continue = Endelea
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Pata zaidi kwa akaunti ya Katna
+onboarding-katna-lead = Si lazima. Huwasha vipengele vya mtandaoni vya Katna, na unaweza kuifungua baadaye katika Mipangilio > Usajili.
+onboarding-katna-receipts-title = Stakabadhi za kusoma
+onboarding-katna-receipts-text = Ona watu wanapofungua barua unazotuma.
+onboarding-katna-links-title = Ufuatiliaji wa viungo
+onboarding-katna-links-text = Ona ni viungo vipi katika barua zako vinabofywa.
+onboarding-katna-activity-title = Shughuli
+onboarding-katna-activity-text = Ufunguaji na mibofyo ya kila kitu ulichotuma, mahali pamoja.
+onboarding-katna-translate-title = Tafsiri ya kiotomatiki
+onboarding-katna-translate-text = Soma kwa lugha yako barua zilizoandikwa kwa lugha nyingine.
+onboarding-katna-private = Ina nenosiri lake lenyewe. Taarifa za kuingia za barua zako haziondoki kwenye kompyuta hii kamwe.
+
 ## First run: done
 
 onboarding-ready-title = Kila kitu kiko tayari
@@ -166,7 +182,7 @@ tour-search-text = Utafutaji hufanya kazi hata bila mtandao. Kitufe kilicho mwis
 tour-menu-title = Onyesha au ficha folda
 tour-menu-text = Kitufe hiki hukunja orodha ya folda. Ikiwa imefichwa, weka kielekezi juu ya Barua upande wa kushoto kuona folda.
 tour-apps-title = Programu zako
-tour-apps-text = Barua zinaishi hapa sasa. Kalenda, Anwani, Majukumu, Madokezo na Mipasho zitajiunga nazo kwenye upau huu.
+tour-apps-text = Barua huishi hapa, kando ya Kalenda, Anwani, Majukumu, Madokezo na Faili.
 tour-tabs-title = Vichupo vya kikasha
 tour-tabs-text = Barua mpya hupangwa katika Msingi, Matangazo, Mitandao ya kijamii, Taarifa na Mijadala. Unaweza kuzima vichupo kwenye mipangilio ya haraka.
 tour-list-title = Jumbe zako
@@ -197,6 +213,9 @@ sign-in-again-button = Ingia
 sign-in-again-tooltip = Fungua ukurasa wa kuingia wa { $provider } kwenye kivinjari chako
 sign-in-again-waiting = Inasubiri kivinjari chako…
 sign-in-again-close = Funga
+google-api-off = { $api } imezimwa katika mradi wa Google Cloud wa Katna.
+google-api-turn-on = Washa
+google-api-turn-on-tooltip = Fungua Google Cloud ili kuwasha { $api }, kisha ubonyeze Jaribu tena
 sign-in-again-done = Umeingia tena kwenye { $address }. Inapokea barua zako…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

@@ -1,7 +1,6 @@
 # Katna Mail, Khmer (ខ្មែរ): the Calendar page.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 calendar-today = ថ្ងៃនេះ
 calendar-today-tip = ទៅថ្ងៃនេះ
 calendar-view-day = ថ្ងៃ
@@ -57,10 +56,7 @@ calendar-account-not-enabled = ការចូលប្រើប្រតិទ�
 calendar-account-failed = មិនអាចអានប្រតិទិនបានទេ។
 calendar-account-error = មិនអាចអានប្រតិទិនបានទេ៖ { $reason }
 calendar-account-none = រកមិនឃើញប្រតិទិនទេ
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 calendar-account-none-why = រកមិនឃើញប្រតិទិនទេ៖ { $reason }
-# A Gmail or Outlook account added with a password: its calendars need the
-# provider's sign-in.
 calendar-account-use-sign-in = { $provider } បង្ហាញប្រតិទិនតែចំពោះ Katna ដែលបានចូលដោយប្រើ { $provider } ប៉ុណ្ណោះ។
 calendar-account-sign-in-with = ចូលដោយប្រើ { $provider }
 calendar-account-looking = កំពុងស្វែងរកប្រតិទិន…
@@ -82,8 +78,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = ច្រើនទៀត { $count }
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = កើតឡើងម្តងទៀត
 calendar-join = ចូលរួម
+calendar-join-with = ចូលរួមតាម { $service }
 calendar-email-guests = ផ្ញើសំបុត្រទៅភ្ញៀវ
 calendar-running-late = នឹងមកយឺត
 calendar-late-subject = នឹងមកយឺត៖ { $title }
@@ -96,6 +94,7 @@ calendar-guest-answers = បាទ/ចាស { $yes }, ប្រហែល { $may
 calendar-organizer = អ្នករៀបចំ
 calendar-optional = ស្រេចចិត្ត
 calendar-open-web = បើកក្នុងកម្មវិធីរុករក
+calendar-open-mail = បើកសំបុត្រ
 calendar-open-contact = បើកទំនាក់ទំនង
 calendar-close = បិទ
 
@@ -119,18 +118,12 @@ calendar-discard = បោះបង់ការផ្លាស់ប្តូរ
 calendar-edit = កែសម្រួលព្រឹត្តិការណ៍
 calendar-delete = លុបព្រឹត្តិការណ៍
 calendar-event-details = ព័ត៌មានលម្អិតនៃព្រឹត្តិការណ៍
-# Right-click menus on the calendar: on a free time or day, an event and
-# a task.
 calendar-menu-new-event = ព្រឹត្តិការណ៍ថ្មី
-# Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = បើកថ្ងៃ
 calendar-menu-duplicate = ចម្លង
 calendar-menu-color = ពណ៌
-# The event takes its calendar's color.
 calendar-menu-color-calendar = ពណ៌ប្រតិទិន
-# A task's new due day, a week from today.
 calendar-menu-in-a-week = ក្នុងមួយសប្ដាហ៍
-# Event colors, by the names Google Calendar gives them.
 calendar-color-tomato = ប៉េងប៉ោះ
 calendar-color-flamingo = ហ្វ្លាមីងហ្គោ
 calendar-color-tangerine = ក្រូចខ្វិច
@@ -142,6 +135,40 @@ calendar-color-blueberry = ប៊្លូបឺរី
 calendar-color-lavender = ឡាវេនឌ័រ
 calendar-color-grape = ទំពាំងបាយជូរ
 calendar-color-graphite = ក្រាហ្វីត
+calendar-menu-only-this = បង្ហាញតែមួយនេះ
+calendar-menu-rename = ប្ដូរឈ្មោះ
+calendar-menu-remove = ដកចេញពីបញ្ជី
+calendar-menu-delete = លុប
+calendar-menu-new-calendar = ប្រតិទិនថ្មី
+calendar-menu-show-all = បង្ហាញទាំងអស់
+calendar-menu-hide-all = លាក់ទាំងអស់
+calendar-menu-account-settings = ការកំណត់គណនី
+calendar-why-main = ប្រតិទិនចម្បង
+calendar-why-last = មានតែមួយនៅទីនេះ
+calendar-why-owner = តែម្ចាស់ប៉ុណ្ណោះ
+calendar-why-contacts = ពីទំនាក់ទំនង
+calendar-why-unreached = មិនអាចភ្ជាប់បាន
+calendar-name-placeholder = ឈ្មោះប្រតិទិន
+calendar-toast-added = បានបន្ថែម “{ $name }”
+calendar-toast-renamed = បានប្ដូរឈ្មោះប្រតិទិន
+calendar-toast-recolored = បានប្ដូរពណ៌ប្រតិទិន
+calendar-toast-deleted = បានលុប “{ $name }”
+calendar-toast-removed = បានដក “{ $name }” ចេញពីបញ្ជីរបស់អ្នក
+calendar-edit-failed = ប្រតិទិនមិនត្រូវបានប្ដូរទេ៖ { $reason }
+calendar-delete-title = លុប “{ $name }” ឬ?
+calendar-delete-confirm = លុប
+calendar-deleting = កំពុងលុប…
+calendar-delete-heading = បានលុប៖
+calendar-delete-events = ប្រតិទិន និងព្រឹត្តិការណ៍ទាំងអស់របស់វា
+calendar-delete-shared = សម្រាប់អ្នកទាំងអស់ដែលបានចែករំលែកជាមួយ
+calendar-delete-server = វាត្រូវបានលុបចេញពី { $account } នៅលើសេវាសំបុត្រ មិនមែនតែនៅក្នុង Katna ទេ។
+calendar-delete-local = វាត្រូវបានលុបចេញពីកុំព្យូទ័រនេះ។
+calendar-remove-title = ដក “{ $name }” ចេញពីបញ្ជីរបស់អ្នកឬ?
+calendar-remove-confirm = ដកចេញ
+calendar-removing = កំពុងដកចេញ…
+calendar-remove-heading = អ្វីដែលផ្លាស់ប្ដូរ៖
+calendar-remove-events = អ្នកលែងឃើញព្រឹត្តិការណ៍របស់វា នៅទីនេះ និងក្នុងកម្មវិធីផ្សេងទៀតរបស់អ្នក
+calendar-remove-server = ប្រតិទិននៅជាមួយម្ចាស់របស់វា ដែលអាចចែករំលែកវាជាមួយអ្នកម្ដងទៀតបាន។
 calendar-kind-event = ព្រឹត្តិការណ៍
 calendar-kind-task = កិច្ចការ
 calendar-kind-focus = ពេលផ្តោតអារម្មណ៍

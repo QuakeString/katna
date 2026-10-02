@@ -127,6 +127,7 @@ attachment-count = { $count ->
    *[other] { $count }ଟି ଆଟାଚମେଣ୍ଟ
 }
 attachment-save = ସେଭ କରନ୍ତୁ
+attachment-forward = ଫରୱାର୍ଡ କରନ୍ତୁ
 attachment-save-all = ସବୁ ସେଭ କରନ୍ତୁ
 attachment-save-all-tooltip = ସମସ୍ତ ଆଟାଚମେଣ୍ଟ ଏକ ଫୋଲ୍ଡରରେ ସେଭ କରନ୍ତୁ
 attachment-save-here = ଏଠାରେ ସେଭ କରନ୍ତୁ
@@ -177,6 +178,11 @@ print-not-downloaded = (ଏପର୍ଯ୍ୟନ୍ତ ଡାଉନଲୋଡ ହ
 print-encrypted = (ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି। ଏହାର ଟେକ୍ସଟ ପ୍ରିଣ୍ଟ କରିବା ପାଇଁ ଏହାକୁ Katna Mailରେ ଖୋଲନ୍ତୁ।)
 print-to = ପ୍ରାପକ: { $addresses }
 print-cc = Cc: { $addresses }
+
+## Message text (right-click menu in the reading pane)
+
+text-pin = ଉପରେ ପିନ କରନ୍ତୁ
+text-copy-address = ଠିକଣା କପି କରନ୍ତୁ
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

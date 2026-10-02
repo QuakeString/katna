@@ -37,7 +37,7 @@ use crate::widgets::{icon, tip};
 const CARD_WIDTH: f32 = 180.0;
 const THUMB_HEIGHT: f32 = 84.0;
 /// Thumbnails are drawn at twice the card's size, sharp on HiDPI screens.
-const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
+pub(super) const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
 /// The card's corner radius; its contents are rounded one pixel less, to
 /// sit inside its border.
 pub(super) const CARD_RADIUS: f32 = 8.0;
@@ -124,6 +124,11 @@ pub(super) struct Files {
 }
 
 impl Files {
+    /// The thumbnail of attachment `index` of message `id`, once made.
+    pub(super) fn thumb(&self, id: MessageId, index: usize) -> Option<Thumb> {
+        self.thumbs.get(&(id, index)).cloned()
+    }
+
     /// Forgets the thumbnails of messages other than `keep`.
     fn keep_only(&mut self, keep: &HashSet<MessageId>) {
         self.asked.retain(|id, _| keep.contains(id));
@@ -147,6 +152,15 @@ pub(super) fn bitmap(mut image: RgbaImage) -> Arc<RenderImage> {
         pixel.0.swap(0, 2);
     }
     Arc::new(RenderImage::new([Frame::new(image)]))
+}
+
+/// A picture as a card's top: sharp, and blurred for the hover panel.
+pub(super) fn picture_thumb(sharp: RgbaImage) -> Thumb {
+    let frosted = bitmap(frosted(&sharp));
+    Thumb::Picture {
+        sharp: bitmap(sharp),
+        frosted,
+    }
 }
 
 /// `thumb` made small and blurred. Drawn stretched over the whole card,
@@ -234,13 +248,7 @@ const GLANCE_MAX_BYTES: usize = 20 * 1024 * 1024;
 pub(super) fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
     let file = katna_render::attachment_file(raw, index)?;
     let (w, h) = THUMB_PIXELS;
-    let picture = |sharp: RgbaImage| {
-        let frosted = bitmap(frosted(&sharp));
-        Thumb::Picture {
-            sharp: bitmap(sharp),
-            frosted,
-        }
-    };
+    let picture = picture_thumb;
     match kind {
         Kind::Pdf => katna_preview::pdf::thumbnail(file.bytes, w, h).map(picture),
         Kind::Picture(format) => katna_preview::picture::thumbnail(&file.bytes, format, w, h)
@@ -259,10 +267,18 @@ pub(super) fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
 }
 
 /// The top of a card: its thumbnail, else the file type's badge `badge`
-/// wide on a tinted ground.
-pub(super) fn card_top(thumb: Option<Thumb>, kind: Kind, badge: f32, th: &Theme) -> gpui::Div {
+/// wide on a tinted ground. Under a hover panel (`panel`, the card's
+/// group) it goes while the panel shows: two curves drawn over each other
+/// let a hair of a white page through at the rounded corners.
+pub(super) fn card_top(
+    thumb: Option<Thumb>,
+    kind: Kind,
+    badge: f32,
+    panel: Option<SharedString>,
+    th: &Theme,
+) -> gpui::Div {
     let inner = px(CARD_RADIUS - 1.0);
-    match thumb {
+    let top = match thumb {
         Some(Thumb::Picture { sharp, .. }) => div().size_full().child(
             img(ImageSource::Render(sharp))
                 .size_full()
@@ -277,6 +293,10 @@ pub(super) fn card_top(thumb: Option<Thumb>, kind: Kind, badge: f32, th: &Theme)
             .justify_center()
             .bg(rgba(th.read_row))
             .child(kind_badge(kind, badge)),
+    };
+    match panel {
+        Some(group) => top.group_hover(group, |s| s.opacity(0.0)),
+        None => top,
     }
 }
 
@@ -437,9 +457,12 @@ pub(super) fn glance_page(glance: &Glance, radius: gpui::Pixels) -> AnyElement {
                     .flex_row()
                     .border_b_1()
                     .border_color(rgba(GRID_LINE))
-                    .when(header, |r| r.bg(rgba(GRID_HEADER)))
+                    // The header's corners follow the page's, else they
+                    // poke out past the card's rounded ones.
+                    .when(header, |r| r.rounded_t(radius).bg(rgba(GRID_HEADER)))
                     .child(
                         div()
+                            .when(header, |c| c.rounded_tl(radius))
                             .w(px(numbers))
                             .flex_none()
                             .h_full()
@@ -608,7 +631,7 @@ impl MailWindow {
                 .cloned();
             let name = item.name.clone();
             let frost = thumb.as_ref().and_then(Thumb::frosted);
-            let top = card_top(thumb, item.kind, 36.0, th);
+            let top = card_top(thumb, item.kind, 36.0, Some(group.clone()), th);
             let save_name = name.clone();
             let save = panel_button(
                 ("attachment-save", ix),
@@ -650,7 +673,7 @@ impl MailWindow {
                 .overflow_hidden()
                 .rounded(px(CARD_RADIUS))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .cursor_pointer()
                 .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
@@ -739,7 +762,7 @@ impl MailWindow {
     }
 
     /// Opens attachment `index` of message `id` in the viewer.
-    fn open_attachment(
+    pub(super) fn open_attachment(
         &mut self,
         id: MessageId,
         index: usize,
@@ -830,7 +853,7 @@ impl MailWindow {
     /// file Katna has no preview for goes straight to the desktop's default
     /// app, unless it could run a program (the viewer then offers only
     /// Save).
-    fn open_in(&self, item: &Item) -> OpenIn {
+    pub(super) fn open_in(&self, item: &Item) -> OpenIn {
         match group(item.kind) {
             Some(group) => self.config.mail.open.get(group),
             None if item.risky => OpenIn::Katna,
@@ -839,7 +862,7 @@ impl MailWindow {
     }
 
     #[allow(clippy::too_many_arguments)]
-    fn show_viewer(
+    pub(super) fn show_viewer(
         &mut self,
         raw: Arc<Vec<u8>>,
         encrypted: bool,
@@ -859,6 +882,26 @@ impl MailWindow {
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
         self.files.viewer = Some(viewer);
         cx.notify();
+    }
+
+    /// Opens the viewer on `item` before its file is here (a drive file
+    /// still downloading): it turns until the file is handed to it.
+    pub(super) fn show_fetching_viewer(
+        &mut self,
+        item: Item,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Entity<Viewer> {
+        self.close_viewer(window, cx);
+        self.files.restore = window.focused(cx);
+        self.files.viewer_encrypted = false;
+        self.files.viewer_message = None;
+        let th = self.theme(window);
+        let viewer = cx.new(|cx| Viewer::fetching(item, th, window, cx));
+        self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
+        self.files.viewer = Some(viewer.clone());
+        cx.notify();
+        viewer
     }
 
     fn on_viewer(
@@ -887,6 +930,7 @@ impl MailWindow {
             }
             ViewerEvent::Step(by) => self.step_library(*by, window, cx),
             ViewerEvent::Paged(index) => self.paged_library(*index, cx),
+            ViewerEvent::Pick => self.pick_previewed(cx),
             ViewerEvent::ShowMail => {
                 let mail = self.files.viewer_mail;
                 self.close_viewer(window, cx);
@@ -917,6 +961,9 @@ impl MailWindow {
         self.files.released.extend(released);
         self.files._viewer_events = None;
         self.files.viewer_mail = None;
+        if let Some(picker) = &mut self.picker {
+            picker.previewing = false;
+        }
         match self.files.restore.take() {
             Some(focus) => focus.focus(window, cx),
             None => self.list_focus.focus(window, cx),

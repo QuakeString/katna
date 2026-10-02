@@ -25,10 +25,7 @@ contacts-label-removed = 已從「{ $name }」移除
 contacts-label-renamed = 標籤已重新命名為「{ $name }」
 contacts-label-deleted = 已刪除標籤「{ $name }」
 contacts-label-no-email = 此標籤下沒有人有電子郵件地址
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = 帳戶
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = 重新登入以顯示聯絡人
 contacts-account-signed-in = 已重新登入 { $address }。正在取得你的聯絡人…
 contacts-account-sign-in-refused = { $provider } 未允許 Katna 存取。請再試一次，並允許存取你的聯絡人。
@@ -36,13 +33,9 @@ contacts-account-password = 伺服器未接受這組密碼。Yahoo、iCloud、Zo
 contacts-account-change-password = 變更密碼
 contacts-account-change-password-tooltip = 開啟「設定 > 帳戶」
 contacts-account-failed = 無法讀取聯絡人。
-# $reason is the server's own words, in English.
 contacts-account-error = 無法讀取聯絡人：{ $reason }
 contacts-account-none = 找不到通訊錄
-# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
 contacts-account-none-why = 找不到通訊錄：{ $reason }
-# A Gmail or Outlook account added with a password: its contacts need the
-# provider's sign-in.
 contacts-account-use-sign-in = { $provider } 只向使用 { $provider } 登入的 Katna 顯示聯絡人。
 contacts-account-sign-in-with = 使用 { $provider } 登入
 contacts-account-looking = 正在尋找聯絡人…
@@ -88,7 +81,7 @@ contacts-print-none = 沒有可列印的聯絡人
 contacts-print-typed = { $value }（{ $kind }）
 contacts-print-birthday = 生日：{ $day }
 contacts-print-nickname = 暱稱：{ $name }
-contacts-create = 建立聯絡人
+contacts-create = 新增聯絡人
 
 ## Search and the list
 

@@ -8,11 +8,20 @@
 //! or the freedesktop one), found by their freedesktop names and played by
 //! the desktop's own player; Katna plays them itself because notification
 //! servers such as Plasma's leave a notification's `sound-name` unplayed.
+//! Katna's own chime ([`CHIME`], made in [`chime`]) is new mail's usual
+//! sound there: the themes' new-mail sounds can be too faint to hear.
 //! On Windows they are the Windows notification sounds: a toast plays its
 //! own (so Do not disturb silences it), and [`play`] plays the same file
 //! for everything else.
 
 use katna_core::config::SoundEvent;
+
+#[cfg(not(windows))]
+mod chime;
+
+/// Katna's own new-mail chime, which no sound theme has.
+#[cfg(not(windows))]
+pub const CHIME: &str = "katna-chime";
 
 /// One sound to pick: its name, stored in the settings, and on Linux the
 /// theme sounds tried for it in turn.
@@ -27,6 +36,10 @@ pub struct Choice {
 
 #[cfg(not(windows))]
 const CHOICES: &[Choice] = &[
+    Choice {
+        id: CHIME,
+        names: &[],
+    },
     Choice {
         id: "message-new-email",
         names: &["message-new-email", "message-new-instant", "message"],
@@ -99,7 +112,7 @@ const CHOICES: &[Choice] = &[
 pub fn usual(event: SoundEvent) -> &'static str {
     #[cfg(not(windows))]
     let id = match event {
-        SoundEvent::NewMail => "message-new-email",
+        SoundEvent::NewMail => CHIME,
         SoundEvent::Reminders => "alarm-clock-elapsed",
         SoundEvent::MailBack => "bell",
         SoundEvent::Sent => "message-sent-email",
@@ -135,7 +148,7 @@ pub fn choices() -> &'static [Choice] {
         let found = FOUND.get_or_init(|| {
             CHOICES
                 .iter()
-                .filter(|c| linux::find(c.names).is_some())
+                .filter(|c| c.id == CHIME || linux::find(c.names).is_some())
                 .copied()
                 .collect()
         });
@@ -154,11 +167,47 @@ pub fn play(id: &str) {
         return;
     };
     #[cfg(target_os = "linux")]
-    linux::play(choice.names);
+    if choice.id == CHIME {
+        linux::play_file(chime_file());
+    } else {
+        linux::play(choice.names);
+    }
     #[cfg(windows)]
     win::play(choice.file);
     #[cfg(not(any(target_os = "linux", windows)))]
     let _ = choice;
+}
+
+/// The chime's file in Katna's cache folder, written there the first time.
+#[cfg(target_os = "linux")]
+fn chime_file() -> Option<std::path::PathBuf> {
+    use std::sync::OnceLock;
+    static FILE: OnceLock<Option<std::path::PathBuf>> = OnceLock::new();
+    FILE.get_or_init(|| {
+        let dir = katna_core::Paths::from_env()
+            .map(|p| p.cache_dir().join("sounds"))
+            .unwrap_or_else(|_| std::env::temp_dir().join("katna-sounds"));
+        // The name changes with the sound, so an old file is never played.
+        let file = dir.join("katna-chime-1.wav");
+        if file.is_file() {
+            return Some(file);
+        }
+        let wav = chime::wav();
+        let written = std::fs::create_dir_all(&dir).and_then(|()| {
+            // Written aside first: the daemon and the app may both write it.
+            let part = dir.join(format!("katna-chime-1.{}.part", std::process::id()));
+            std::fs::write(&part, &wav)?;
+            std::fs::rename(&part, &file)
+        });
+        match written {
+            Ok(()) => Some(file),
+            Err(err) => {
+                tracing::debug!(%err, "cannot write the chime");
+                None
+            }
+        }
+    })
+    .clone()
 }
 
 /// Whether the desktop's Do not disturb is on, as the notification server
@@ -211,17 +260,30 @@ mod linux {
 
     /// Plays the first of `names` found.
     pub(super) fn play(names: &[&str]) {
-        if let Some(file) = find(names) {
-            for player in ["pw-play", "paplay"] {
-                if spawn(Command::new(player).arg(&file)) {
-                    return;
-                }
-            }
+        if play_file(find(names)) {
+            return;
         }
         // libcanberra finds the sound in the desktop's theme itself.
         if let Some(name) = names.first() {
             spawn(Command::new("canberra-gtk-play").args(["-i", name]));
         }
+    }
+
+    /// Plays `file`, if any, with the desktop's player. Tells whether one
+    /// started.
+    pub(super) fn play_file(file: Option<PathBuf>) -> bool {
+        let Some(file) = file else {
+            return false;
+        };
+        ["pw-play", "paplay", "canberra-gtk-play"]
+            .iter()
+            .any(|player| {
+                let mut command = Command::new(player);
+                if *player == "canberra-gtk-play" {
+                    command.arg("-f");
+                }
+                spawn(command.arg(&file))
+            })
     }
 
     /// Starts `command` quietly and reaps it once it ends. Tells whether

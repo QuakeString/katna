@@ -86,6 +86,10 @@ security-missing-key = 使用你沒有的金鑰簽署，因此無法檢查
 security-missing-key-id = 使用你沒有的金鑰（{ $key }）簽署，因此無法檢查
 security-signature-unavailable = 已簽署；請安裝 { $tool } 以檢查簽章
 security-signature-error = 無法檢查簽章。
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } 開啟了 { $count } 次，最近一次在 { $when }
 tracking-opens-clicks = { $who } 開啟了 { $opens } 次，點開連結 { $clicks } 次，最近一次在 { $when }
 tracking-clicked = { $who } 點開連結 { $clicks } 次，最近一次在 { $when }
@@ -112,10 +116,12 @@ remote-picture-remove-failed = 無法移除圖片：{ $error }
 
 attachment-count = { $count } 個附件
 attachment-save = 儲存
+attachment-forward = 轉寄
 attachment-save-all = 全部儲存
 attachment-save-all-tooltip = 將所有附件儲存至資料夾
 attachment-save-here = 儲存在這裡
 attachment-not-downloaded = 這封郵件未下載。
+attachment-open-message = 開啟這封郵件即可查看其中的附件。
 attachment-not-found = 在郵件中找不到這個附件。
 attachment-read-failed = 無法讀取 { $name }
 attachment-numbered = 附件 { $number }
@@ -151,8 +157,9 @@ print-encrypted = （已加密。請在 Katna Mail 中開啟以列印其內文�
 print-to = 收件者：{ $addresses }
 print-cc = 副本：{ $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = 開啟這封郵件即可查看其中的附件。
+text-pin = 釘選到頂端
+text-copy-address = 複製地址
 text-copy = 複製
 text-select-all = 全選

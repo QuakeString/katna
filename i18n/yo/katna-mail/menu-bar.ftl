@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _Kàlẹ́ńdà
 desktop-menu-page-contacts = Olù_básọ̀rọ̀
 desktop-menu-page-tasks = _Iṣẹ́
 desktop-menu-page-notes = Àkọ_sílẹ̀
+desktop-menu-page-files = _Fáìlì
 desktop-menu-next = Ìjíròrò _tókàn
 desktop-menu-previous = Ìjíròrò _tẹ́lẹ̀
 desktop-menu-message = Ì_firánṣẹ́

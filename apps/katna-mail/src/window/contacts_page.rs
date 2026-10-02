@@ -538,7 +538,6 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(2.0))
-            .child(self.create_contact_button(th, cx))
             .child(item(
                 ("contacts-nav", 0),
                 "contacts",
@@ -746,25 +745,6 @@ impl MailWindow {
                     .child(tr!("contacts-accounts")),
             )
             .children(rows)
-            .into_any_element()
-    }
-
-    /// "Create contact", at the top of the column like Compose in Mail.
-    fn create_contact_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        div()
-            .flex()
-            .child(
-                super::nav::side_create_button(
-                    "contact-create",
-                    "person-add",
-                    tr!("contacts-create"),
-                    th,
-                )
-                .on_click(cx.listener(|this, _, window, cx| {
-                    this.contacts.open = None;
-                    this.start_contact_edit(None, window, cx)
-                })),
-            )
             .into_any_element()
     }
 
@@ -1555,7 +1535,7 @@ fn label_button(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
         .gap(px(4.0))
         .rounded_full()
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
         .text_size(px(12.0))
@@ -1621,7 +1601,7 @@ fn section(title: String, rows: Vec<AnyElement>, tint: usize, th: &Theme) -> Any
         .gap(px(14.0))
         .rounded(px(14.0))
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .bg(gpui::linear_gradient(
             180.0,
             gpui::linear_color_stop(rgba(top), 0.0),

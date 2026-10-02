@@ -24,7 +24,7 @@ use katna_ui::{TextInput, px, unpx};
 use super::MailWindow;
 use super::recipients::{Field, last_entry, mailbox};
 use crate::outgoing;
-use crate::theme::{Theme, fade};
+use crate::theme::Theme;
 use crate::widgets::{elevation, filled_button, icon, raised, tip};
 
 const HEIGHT: f32 = 30.0;
@@ -264,7 +264,7 @@ const LINE: f32 = HEIGHT + 4.0;
 
 /// The thumb beside a field's lines that scroll, showing where the lines
 /// in view are; from where the list was last drawn.
-fn scrollbar(scroll: &gpui::ScrollHandle, th: &Theme) -> Option<gpui::Div> {
+pub(super) fn scrollbar(scroll: &gpui::ScrollHandle, th: &Theme) -> Option<gpui::Div> {
     let max = unpx(scroll.max_offset().y);
     let view = unpx(scroll.bounds().size.height);
     if max < 1.0 || view < 1.0 {
@@ -329,7 +329,7 @@ impl Render for ChipDrag {
             .items_center()
             .rounded_full()
             .border_1()
-            .border_color(rgba(if self.valid { th.divider } else { th.error }))
+            .border_color(rgba(if self.valid { th.outline } else { th.error }))
             .bg(rgba(th.raised))
             .shadow(elevation(th, 3.0))
             .text_size(px(14.0))
@@ -356,6 +356,22 @@ impl Chips {
         self.selected = None;
         self.open = None;
         self.editing = None;
+    }
+
+    /// Who the chips of `field` are, by name (an address's part before
+    /// the @ when it has none).
+    pub fn names(&self, field: Field) -> Vec<String> {
+        self.get(field)
+            .iter()
+            .filter(|chip| chip.valid)
+            .map(|chip| match &chip.name {
+                Some(name) => name.clone(),
+                None => chip
+                    .email
+                    .split_once('@')
+                    .map_or(chip.email.clone(), |(local, _)| local.to_owned()),
+            })
+            .collect()
     }
 
     /// The field as text, the chips first, then what is still being typed.
@@ -820,7 +836,7 @@ impl MailWindow {
                             .px(px(6.0))
                             .rounded(px(4.0))
                             .border_1()
-                            .border_color(rgba(th.divider))
+                            .border_color(rgba(th.outline))
                             .text_size(px(13.0))
                             .text_color(rgba(th.text_dim))
                             .child(tr!("compose-more-recipients", count = list.len() - shown)),
@@ -1024,8 +1040,7 @@ impl MailWindow {
             || self.suggesting(field))
     }
 
-    /// Cc and Bcc in one faint pill, a line between them, beside To; each
-    /// leaves the pill once its row shows.
+    /// Cc and Bcc as quiet words beside To; each goes once its row shows.
     pub(super) fn render_cc_bcc(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
         let compose = self.compose.as_ref()?;
         let fields: Vec<Field> = [(Field::Cc, compose.show_cc), (Field::Bcc, compose.show_bcc)]
@@ -1033,36 +1048,31 @@ impl MailWindow {
             .filter(|(_, shown)| !shown)
             .map(|(field, _)| field)
             .collect();
-        let last = fields.len().checked_sub(1)?;
-        let line = fade(th.divider, super::FAINT_LINE);
-        let mut pill = div()
+        if fields.is_empty() {
+            return None;
+        }
+        // Quiet words, lit under the pointer.
+        let mut words = div()
             .flex_none()
-            .h(px(26.0))
             .flex()
             .flex_row()
             .items_center()
-            .rounded_full()
-            .border_1()
-            .border_color(rgba(line))
-            .text_size(px(13.0))
-            .text_color(rgba(th.text_dim));
-        for (ix, field) in fields.into_iter().enumerate() {
+            .gap(px(2.0));
+        for field in fields {
             let label = match field {
                 Field::Cc => tr!("compose-cc"),
                 _ => tr!("compose-bcc"),
             };
-            if ix > 0 {
-                pill = pill.child(div().flex_none().w(px(1.0)).h(px(14.0)).bg(rgba(line)));
-            }
-            pill = pill.child(
+            words = words.child(
                 div()
                     .id(("show-copy-field", field.ix()))
-                    .h_full()
-                    .px(px(10.0))
+                    .h(px(26.0))
+                    .px(px(8.0))
                     .flex()
                     .items_center()
-                    .when(ix == 0, |d| d.rounded_l_full())
-                    .when(ix == last, |d| d.rounded_r_full())
+                    .rounded_full()
+                    .text_size(px(13.0))
+                    .text_color(rgba(th.text_dim))
                     .cursor_pointer()
                     .hover(|s| s.text_color(rgba(th.text)).bg(rgba(th.hover)))
                     .on_click(cx.listener(move |this, _, window, cx| {
@@ -1081,7 +1091,7 @@ impl MailWindow {
                     .child(div().relative().top(px(-self.pill_lift(13.0))).child(label)),
             );
         }
-        Some(pill.into_any_element())
+        Some(words.into_any_element())
     }
 
     fn render_chip(
@@ -1123,13 +1133,18 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .rounded_full()
-            .border_1()
-            .border_color(rgba(if chip.valid { th.divider } else { th.error }))
+            // Filled, without an outline; one not valid keeps a red one.
+            .when(!chip.valid, |d| d.border_1().border_color(rgba(th.error)))
             .text_size(px(14.0))
             .text_color(rgba(color))
             .cursor_pointer()
             .when(selected, |d| d.bg(rgba(th.nav_selected)))
-            .when(!selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
+            .when(!selected && chip.valid, |d| {
+                d.bg(rgba(th.chip)).hover(|s| s.bg(rgba(th.chip_hover())))
+            })
+            .when(!selected && !chip.valid, |d| {
+                d.hover(|s| s.bg(rgba(th.hover)))
+            })
             .when(!chip.valid, |d| {
                 d.tooltip(tip(tr!("recipient-not-valid"), th))
             })

@@ -70,6 +70,7 @@ about-credit-resvg = Izithombe ze-SVG
 about-credit-jiff = Izinsuku nezindawo zesikhathi
 about-credit-spellbook = Ukuhlola upelo, kusuka kumhleli we-Helix
 about-credit-smol = Ukwenza izinto eziningi ngesikhathi esisodwa
+about-credit-color-schemes = Amaphalethi ezinhlelo zemibala ezakhelwe ngaphakathi
 about-all-libraries = Wonke amalabhulali asetshenziswa yi-Katna ({ $count })
 about-library-authors = ngu-{ $authors }
 about-license = I-Katna iyisofthiwe yamahhala ngaphansi kwe-GNU GPL, inguqulo 3 noma kamuva.
@@ -127,6 +128,21 @@ onboarding-density-default = Okuzenzakalelayo
 onboarding-density-compact = Okuminyene
 onboarding-continue = Qhubeka
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Thola okwengeziwe nge-akhawunti ye-Katna
+onboarding-katna-lead = Akuphoqelekile. Ivula izici ze-inthanethi ze-Katna, futhi ungayenza kamuva ku-Izilungiselelo > Ukubhalisa.
+onboarding-katna-receipts-title = Izaziso zokufundwa
+onboarding-katna-receipts-text = Bona ukuthi abantu bayivula nini imeyili oyithumelayo.
+onboarding-katna-links-title = Ukulandelela izixhumanisi
+onboarding-katna-links-text = Bona ukuthi yiziphi izixhumanisi emeyilini yakho ezichofozwayo.
+onboarding-katna-activity-title = Umsebenzi
+onboarding-katna-activity-text = Ukuvulwa nokuchofozwa kwakho konke okuthumele, endaweni eyodwa.
+onboarding-katna-translate-title = Ukuhumusha okuzenzakalelayo
+onboarding-katna-translate-text = Funda imeyili ebhalwe ngezinye izilimi ngolimi lwakho.
+onboarding-katna-private = Inephasiwedi yayo. Imininingwane yakho yokungena yemeyili ayilokothi ishiye le khompyutha.
+
 ## First run: done
 
 onboarding-ready-title = Konke sekulungile
@@ -170,7 +186,7 @@ tour-search-text = Usesho luyasebenza nangenkathi ungaxhunyiwe. Inkinobho esekug
 tour-menu-title = Bonisa noma fihla amafolda
 tour-menu-text = Le nkinobho igoqa uhlu lwamafolda. Uma lufihliwe, beka isikhombi phezu kuka-Imeyili ngakwesokunxele ukuze ubone amafolda.
 tour-apps-title = Izinhlelo zakho zokusebenza
-tour-apps-text = Imeyili ihlala lapha manje. Ikhalenda, Oxhumana nabo, Imisebenzi, Amanothi kanye Nokuphakelayo kuzohlanganyela nayo kule bha.
+tour-apps-text = Imeyili ihlala lapha, eduze kweKhalenda, Oxhumana nabo, Imisebenzi, Amanothi namaFayela.
 tour-tabs-title = Amathebhu ebhokisi lokungenayo
 tour-tabs-text = Imeyili entsha ihlelwa ibe Okuyinhloko, Ukukhangisa, Ezenhlalo, Izibuyekezo kanye Nezinkundla. Ungavala amathebhu ezilungiselelweni ezisheshayo.
 tour-list-title = Imilayezo yakho
@@ -201,6 +217,9 @@ sign-in-again-button = Ngena
 sign-in-again-tooltip = Vula ikhasi lokungena le-{ $provider } esipheqululini sakho
 sign-in-again-waiting = Kulindwe isiphequluli sakho…
 sign-in-again-close = Vala
+google-api-off = I-{ $api } ivaliwe kuphrojekthi ye-Google Cloud ye-Katna.
+google-api-turn-on = Vula
+google-api-turn-on-tooltip = Vula i-Google Cloud ukuze uvule i-{ $api }, bese ucindezela u-Zama futhi
 sign-in-again-done = Uphinde wangena ku-{ $address }. Kulandwa imeyili yakho…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

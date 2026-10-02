@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Upload to Google Drive from Files"
+text = """
+With a Google Drive open in Files, the Compose button becomes Upload. Click
+it to send files into the open folder, or use its arrow to upload a whole
+folder. The first time, press Allow so Katna may add files to your drive.
+"""

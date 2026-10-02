@@ -211,6 +211,88 @@ jobs:
         with:
           name: arch-package
           path: out
+      # Patches from earlier builds to this one, so an update downloads
+      # only what changed (docs/ARCHITECTURE.md §21.2). Each turns the
+      # earlier package, uncompressed, into this one, uncompressed; Katna
+      # checks the result against `tar` below and installs it. Patches
+      # come from the builds 1, 2, 3, 6, 12, 24 and 48 back, and the
+      # earlier builds' own patches stay listed under `chain`, so a build
+      # up to about two days old reaches this one in two or three patches
+      # (Manifest::route). Without a route, Katna downloads the full
+      # package.
+      - name: Make update patches
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          mkdir -p work/earlier
+          cd out
+          pkg=$(ls katna-git-*.pkg.tar.zst | grep -vxF katna-git-x86_64.pkg.tar.zst)
+          version=$(jq -r .version katna-update.json)
+          tar=../work/${pkg%.zst}
+          zstd -d -q -o "$tar" -- "$pkg"
+          # Every file, past the first page of a hundred.
+          release=$(gh api "repos/$GH_REPO/releases/tags/arch-latest" --jq .id 2>/dev/null || true)
+          assets=$([[ -z $release ]] ||
+            gh api --paginate "repos/$GH_REPO/releases/$release/assets?per_page=100" --jq '.[].name')
+          # The release keeps the last 48 builds' packages for this
+          # (newest first; none on the very first build).
+          earlier=$(grep -E '^katna-git-.+-[0-9.]+-x86_64\.pkg\.tar\.zst$' <<<"$assets" |
+            grep -vxF -e katna-git-x86_64.pkg.tar.zst -e "$pkg" |
+            sort -V -r | head -n 48 || true)
+          version_of() { local v=${1#katna-git-}; v=${v%-x86_64.pkg.tar.zst}; echo "${v%-*}"; }
+          make_patch() {
+            local old=$1 from
+            from=$(version_of "$old")
+            [[ $from != "$version" ]] || return 0
+            gh release download arch-latest -p "$old" -D ../work/earlier &&
+              zstd -d -q --rm -o "../work/earlier/$from.tar" -- "../work/earlier/$old" &&
+              # --long=28: room for an earlier package of up to 256 MB, as
+              # the daemon allows (PATCH_WINDOW_LOG). The rest makes the
+              # patch about half as big (3.2 MB for one merge) for about
+              # four minutes and 1.2 GB per patch.
+              zstd -q -T1 --ultra -22 --long=28 --zstd=chainLog=26,targetLength=4096 \
+                --patch-from="../work/earlier/$from.tar" -o "../work/$from.patch" -- "$tar" &&
+              mv "../work/$from.patch" "katna-git-$from-to-$version.patch.zst"
+            rm -f "../work/earlier/$from.tar"
+          }
+          # Four at a time, one per core.
+          n=0
+          for at in 1 2 3 6 12 24 48; do
+            old=$(sed -n "${at}p" <<<"$earlier")
+            [[ -n $old ]] || continue
+            (( n++ < 4 )) || wait -n || true
+            make_patch "$old" &
+          done
+          wait
+          patches=$(for patch in katna-git-*-to-"$version".patch.zst; do
+            [[ -f $patch ]] || continue
+            from=${patch#katna-git-}
+            jq -n --arg from "${from%-to-*}" --arg file "$patch" \
+              --arg sha256 "$(sha256sum "$patch" | cut -d' ' -f1)" \
+              --argjson size "$(stat -c %s "$patch")" '{$from, $file, $sha256, $size}'
+          done | jq -s .)
+          # The previous build's patches join its own chain, keeping the
+          # hops to builds whose packages the release still keeps and
+          # whose files are still there.
+          gh release download arch-latest -p katna-update.json -O ../work/previous.json 2>/dev/null ||
+            echo '{}' > ../work/previous.json
+          kept=$(for old in $earlier; do version_of "$old"; done | jq -R . | jq -s .)
+          chain=$(jq -c --argjson kept "$kept" --arg version "$version" \
+            --argjson assets "$(jq -R . <<<"$assets" | jq -s .)" '
+            .version as $to | (.built // 0) as $built
+            | [(.chain // [])[],
+               ((.patches // [])[] | {from, to: $to, file, sha256, size, built: $built})]
+            | map(select(.to != $version and (.to | IN($kept[]))
+                         and (.file | IN($assets[]))))
+            | unique_by(.file) | sort_by(-.built) | .[:400]' ../work/previous.json)
+          jq -c --argjson patches "$patches" --argjson chain "$chain" \
+            --arg sha256 "$(sha256sum "$tar" | cut -d' ' -f1)" \
+            --argjson size "$(stat -c %s "$tar")" \
+            '. + {tar: {$sha256, $size}, $patches, $chain}' katna-update.json > ../work/manifest.json
+          mv ../work/manifest.json katna-update.json
+          jq '{tar, patches, chain: (.chain | length)}' katna-update.json
+          ls -l
       # The public half of the update signing key, when there is one.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -245,9 +327,15 @@ jobs:
           chmod 600 "$key"
           printf '%s\n' "$KATNA_UPDATE_SIGNING_KEY" > "$key"
           minisign -S -s "$key" -m "$pkg" -t "katna-git $version" < /dev/null
+          # The same package uncompressed, which an update made from a
+          # patch installs; its signature stays out of the release.
+          tar=../work/${pkg%.zst}
+          minisign -S -s "$key" -m "$tar" -t "katna-git $version" < /dev/null
           rm -f "$key"
           minisign -V -m "$pkg" -p "../$public"
-          jq -c --rawfile minisig "$pkg.minisig" '. + {minisig: $minisig}' katna-update.json > manifest.json
+          minisign -V -m "$tar" -p "../$public"
+          jq -c --rawfile minisig "$pkg.minisig" --rawfile tarsig "$tar.minisig" \
+            '. + {minisig: $minisig} + {tar: (.tar + {minisig: $tarsig})}' katna-update.json > manifest.json
           mv manifest.json katna-update.json
           cat katna-update.json
       - name: Update the arch-latest pre-release
@@ -315,10 +403,18 @@ jobs:
           gh release upload "$tag" --clobber "$pkg"
           gh release upload "$tag" --clobber $others
           gh release upload "$tag" --clobber katna.db.tar.gz katna.db
-          # Earlier builds' packages.
+          # Earlier builds' files, except the last 48 packages, which the
+          # next builds make their patches from, and the patches the
+          # manifest lists.
+          keep=$(gh api "$api/releases/$id/assets" --paginate --jq '.[].name' |
+            grep -E '^katna-git-.+-[0-9.]+-x86_64\.pkg\.tar\.zst$' |
+            grep -vxF -e katna-git-x86_64.pkg.tar.zst -e "$pkg" |
+            sort -V -r | head -n 48 || true)
+          keep+=$'\n'$(jq -r '.chain[]?.file' katna-update.json)
           gh api "$api/releases/$id/assets" --paginate --jq '.[] | "\(.id) \(.name)"' |
             while read -r asset name; do
-              [[ -e "$name" ]] || gh api -X DELETE "$api/releases/assets/$asset"
+              [[ -e "$name" ]] || grep -qxF -- "$name" <<<"$keep" ||
+                gh api -X DELETE "$api/releases/assets/$asset"
             done
       # Fails the run unless the release is public and every file downloads,
       # retrying for a while in case GitHub is slow to show the change.

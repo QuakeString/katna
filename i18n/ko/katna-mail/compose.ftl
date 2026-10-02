@@ -46,6 +46,7 @@ compose-sent-archived = 보내고 보관처리함
 compose-sent = 메일을 보냈습니다
 compose-discarded = 임시보관 메일을 삭제했습니다
 compose-draft-saved = 임시보관함에 저장했습니다
+compose-draft-saving = 저장하는 중…
 compose-draft-failed = 임시보관 메일을 저장하지 못했습니다: { $error }
 compose-draft-not-opened = 임시보관 메일을 열지 못했습니다.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = 임시보관 메일을 열지 못했습니다.
 compose-picker-insert = 삽입
 compose-picker-attach = 첨부
 compose-file-too-large = { $name } 파일이 너무 큽니다. 메일 한 통에는 최대 { $limit }까지 담을 수 있습니다.
+compose-forward-files-missing = 전달할 메일의 파일이 다운로드되지 않아 첨부되지 않았습니다.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = 첨부파일 삭제
 compose-attachments-total = 파일 { $count }개, { $size }
@@ -74,6 +76,7 @@ compose-drive-share-link = 링크로 공유
 compose-drive-send-without = 공유하지 않고 보내기
 compose-drive-share-cancel = 취소
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } 파일이 { $limit } 제한을 넘어 OneDrive에 저장되며, 메일에는 링크가 포함됩니다.
 compose-onedrive-tip = OneDrive에 있습니다. 메일에는 링크가 포함됩니다
 compose-onedrive-allow = OneDrive 허용
@@ -84,8 +87,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive에서는 받는사람({ $addresses })과 파일을 공유할 수 없습니다. 대신 링크가 있는 모든 사용자가 파일을 열 수 있습니다.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = 여기에 파일을 놓으세요
 compose-drop-here = 여기에 놓으세요
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = 서식 유지
 compose-paste-table = 표
 compose-paste-picture = 그림
@@ -99,6 +106,9 @@ compose-encrypt = 암호화
 compose-encrypted = 암호화됨: 받는사람만 읽을 수 있습니다
 compose-sign = 서명
 compose-signed = 서명됨: 받는사람이 보낸 사람이 나인지 확인할 수 있습니다
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = 열람 및 클릭 추적
 compose-tracked = 추적 중: 받는사람이 각각 언제 메일을 열거나 링크를 클릭했는지 볼 수 있습니다
 compose-track-clicks = 링크 클릭 추적(일반 텍스트는 열람을 표시할 수 없음)
@@ -131,6 +141,9 @@ send-check-subject-title = 제목 없이 보낼까요?
 send-check-subject-text = 이 메일에는 제목이 없습니다.
 send-check-add-subject = 제목 추가
 send-check-send-anyway = 그래도 보내기
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = 올바른 이메일 주소가 아닙니다
 recipient-show-address = 주소 보기
 recipient-remove = 삭제

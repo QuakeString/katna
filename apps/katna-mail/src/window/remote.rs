@@ -300,6 +300,13 @@ fn desktop_picture() -> Option<(PathBuf, Arc<gpui::Image>)> {
 }
 
 /// The domain of `email`, when it looks like one.
+impl MailWindow {
+    /// The logo of the organization at `email`, once fetched.
+    pub(super) fn domain_logo(&self, email: &str) -> Option<Arc<RenderImage>> {
+        self.remote.pictures.get(&domain_of(email)?)?.clone()
+    }
+}
+
 fn domain_of(email: &str) -> Option<String> {
     let (_, domain) = email.trim().rsplit_once('@')?;
     let domain = domain.trim().trim_end_matches('.').to_ascii_lowercase();

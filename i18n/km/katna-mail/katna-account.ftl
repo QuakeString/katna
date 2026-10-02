@@ -1,6 +1,9 @@
 # Katna Mail, Khmer (ខ្មែរ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = គណនី Katna បើកមុខងារអនឡាញរបស់ Katna៖ បង្កាន់ដៃអាន ការតាមដានតំណ សកម្មភាព និងការបកប្រែស្វ័យប្រវត្តិ។ វាមានពាក្យសម្ងាត់ផ្ទាល់ខ្លួន មិនមែនពាក្យសម្ងាត់សំបុត្រទេ ហើយព័ត៌មានចូលសំបុត្ររបស់អ្នក មិនដែលចេញពីកុំព្យូទ័រនេះទេ។
 katna-checking = កំពុងពិនិត្យ…
 katna-email = អ៊ីមែល
@@ -10,6 +13,8 @@ katna-sign-in = ចូល
 katna-sign-in-detail = ចូលនៅលើកុំព្យូទ័រនីមួយៗ ដែលអ្នកចង់ប្រើមុខងារអនឡាញ។
 katna-create = បង្កើតគណនី
 katna-create-detail = ប្រើអាសយដ្ឋានដែលអ្នកអាចអានបាន៖ យើងផ្ញើកូដមួយតាមសំបុត្រ ដើម្បីបញ្ជាក់វា។
+katna-onboarding-create-title = បង្កើតគណនី Katna របស់អ្នក
+katna-onboarding-sign-in-title = ចូលទៅ Katna
 katna-have-account = ខ្ញុំមានគណនីហើយ
 katna-forgot = ភ្លេចពាក្យសម្ងាត់?
 katna-forgot-detail = យើងផ្ញើកូដមួយតាមសំបុត្រ ដើម្បីជ្រើសពាក្យសម្ងាត់ថ្មី។
@@ -42,6 +47,9 @@ katna-delete = លុបគណនី
 katna-delete-detail = លុបគណនី និងអ្វីៗទាំងអស់ដែលម៉ាស៊ីនមេរក្សាទុកសម្រាប់វា ដូចជាបង្កាន់ដៃអាន។ សំបុត្រនៅលើកុំព្យូទ័រនេះនៅដដែល។
 katna-delete-confirm = លុបជាអចិន្ត្រៃយ៍
 katna-sign-in-needed = ចូលគណនី Katna ដើម្បីប្រើមុខងារនេះ។
+
+## Errors
+
 katna-error-wrong-password = អ៊ីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ។
 katna-error-exists = អាសយដ្ឋាននេះមានគណនី Katna រួចហើយ។ សូមចូលជំនួសវិញ។
 katna-error-bad-email = នោះមើលទៅមិនដូចអាសយដ្ឋានអ៊ីមែលទេ។

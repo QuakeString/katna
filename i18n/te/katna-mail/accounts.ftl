@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “అన్ని ఖాతాలు” ఫో
 accounts-row = ఖాతాలు
 accounts-row-detail = ఫోల్డర్ పేన్, ఖాతా మెనూ ఖాతాలను ఈ క్రమంలో చూపుతాయి; మొదటిది డిఫాల్ట్ ఖాతా. ఖాతాను తీసివేస్తే, ఈ కంప్యూటర్‌లోని దాని మెయిల్ యొక్క Katna కాపీ తొలగించబడుతుంది. మెయిల్ సర్వర్‌లో అలాగే ఉంటుంది.
 accounts-none = ఇంకా ఖాతాలు లేవు.
+accounts-pop3-row = సర్వర్‌లో మెయిల్
+accounts-pop3-row-detail = POP3 ఖాతాలు మెయిల్‌ను ఈ కంప్యూటర్‌కు డౌన్‌లోడ్ చేస్తాయి. ఆ తర్వాత సర్వర్‌లోని కాపీకి ఏమి జరగాలో ఎంచుకోండి.
+accounts-pop3-with-katna = నేను Katnaలో తొలగించే వరకు ఉంచండి
+accounts-pop3-at-once = డౌన్‌లోడ్ అయిన వెంటనే తొలగించండి
+accounts-pop3-after-days = { $count ->
+    [one] { $count } రోజు తర్వాత తొలగించండి
+   *[other] { $count } రోజుల తర్వాత తొలగించండి
+}
+accounts-pop3-never = ఎప్పుడూ తొలగించవద్దు
+accounts-pop3-days-less = తక్కువ రోజులు
+accounts-pop3-days-more = ఎక్కువ రోజులు
 accounts-kind-imported = ఇంపోర్ట్ చేయబడింది
 accounts-picture-reset = డెస్క్‌టాప్ చిత్రాన్ని ఉపయోగించండి
 accounts-picture-change = చిత్రాన్ని మార్చండి
@@ -72,6 +83,9 @@ accounts-confirm-word = తొలగించు
 accounts-confirm-placeholder = “{ accounts-confirm-word }” అని టైప్ చేయండి
 accounts-confirm-prompt = నిర్ధారించడానికి, “{ accounts-confirm-word }” అని టైప్ చేయండి:
 accounts-cancel = రద్దు చేయండి
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Katna డౌన్‌లోడ్ చేసిన మెయిల్, అటాచ్‌మెంట్‌లు, పంపినవారి చిత్రాలు, సెర్చ్ ఇండెక్స్‌ను తొలగించి, ఆపై ఇటీవలి మెయిల్‌ను మళ్లీ డౌన్‌లోడ్ చేస్తుంది. ఖాతాలు, సెట్టింగ్‌లు, ఈ కంప్యూటర్‌లో మాత్రమే ఉన్న మెయిల్ అలాగే ఉంటాయి.
 reset-cache-button = కాష్‌ను రీసెట్ చేయండి
 reset-cache-title = కాష్‌ను రీసెట్ చేయాలా?

@@ -256,6 +256,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::toggle_check))
             .on_action(cx.listener(Self::open_context_menu_key))
+            .on_action(cx.listener(Self::summarize_key))
             .child(inner)
             .children(card_outline(th, radius, edge));
         card.into_any_element()
@@ -510,7 +511,7 @@ impl MailWindow {
                         cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
                     )
             } else {
-                icon_button("mark-unread", "mail", 20.0, th)
+                icon_button("mark-unread", "mark-unread", 20.0, th)
                     .tooltip(tip(tr!("list-mark-unread"), th))
                     .on_click(
                         cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(false), cx)),
@@ -978,6 +979,35 @@ impl MailWindow {
                         ),
                     Some(()) => menu(th)
                         // What a narrow reading pane leaves off its toolbar.
+                        .when(
+                            squeeze.is_some_and(|s| s.summary)
+                                && self.summaries_on()
+                                && !self.chat_shown(),
+                            |d| {
+                                d.child(
+                                    menu_item_icon(
+                                        "more-summary",
+                                        "sparkle",
+                                        &tr!("summary-summarize"),
+                                        th,
+                                    )
+                                    .on_click(cx.listener(
+                                        |this, _, _, cx| {
+                                            this.menu = None;
+                                            this.toggle_summary(cx);
+                                        },
+                                    )),
+                                )
+                            },
+                        )
+                        .when(squeeze.is_some_and(|s| s.archive), |d| {
+                            d.child(
+                                menu_item_icon("more-archive", "archive", &tr!("list-archive"), th)
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.act_on_targets(Act::Archive, cx)
+                                    })),
+                            )
+                        })
                         .when(squeeze.is_some_and(|s| s.spam), |d| {
                             d.child(
                                 menu_item_icon("more-spam", "junk", &self.spam_label(true), th)
@@ -1010,10 +1040,17 @@ impl MailWindow {
                                 })),
                         )
                         .child(
-                            menu_item_icon("more-unread", "mail", &tr!("menu-mark-unread"), th)
-                                .on_click(cx.listener(|this, _, window, cx| {
+                            menu_item_icon(
+                                "more-unread",
+                                "mark-unread",
+                                &tr!("menu-mark-unread"),
+                                th,
+                            )
+                            .on_click(cx.listener(
+                                |this, _, window, cx| {
                                     this.mark_unread(&super::MarkUnread, window, cx)
-                                })),
+                                },
+                            )),
                         )
                         .child(
                             menu_item_icon("more-star", "star", &tr!("menu-star"), th).on_click(
@@ -1129,6 +1166,23 @@ impl MailWindow {
                                         },
                                     )),
                                 )
+                                // A phone's chat has no Chat | Mail switch.
+                                .when(squeeze.is_some_and(|s| s.archive), |d| {
+                                    d.child(
+                                        menu_item_icon(
+                                            "more-show-mail",
+                                            "mail",
+                                            &tr!("chat-show-as-mail"),
+                                            th,
+                                        )
+                                        .on_click(
+                                            cx.listener(|this, _, window, cx| {
+                                                this.menu = None;
+                                                this.pick_chat(false, window, cx);
+                                            }),
+                                        ),
+                                    )
+                                })
                                 .when(!self.detached, |d| {
                                     d.child(
                                         menu_item_icon(
@@ -1146,9 +1200,7 @@ impl MailWindow {
                                     )
                                 })
                                 .when(
-                                    squeeze.is_some_and(|s| s.contact)
-                                        && self
-                                            .contact_fits(self.cards_width + self.contact_room()),
+                                    squeeze.is_some_and(|s| s.contact) && self.contact_offered(),
                                     |d| {
                                         let on = self.config.mail.contact_panel;
                                         d.child(
@@ -1846,7 +1898,7 @@ impl MailWindow {
             .items_center()
             .gap(px(TAB_SPACING))
             .rounded_full()
-            .bg(rgba(th.search))
+            .bg(rgba(tabs_track(th)))
             // The open tab's highlight, under the tabs.
             .child(
                 div()
@@ -1872,10 +1924,12 @@ impl MailWindow {
                 Some(Listing::Folder(_)) if self.first_sync => {
                     return first_sync_placeholder(th);
                 }
-                Some(Listing::Folder(_)) if self.shows_tabs() => match self.tabs.get(self.tab) {
-                    Some(tab) => tr!("list-empty-tab", tab = tab.label()),
-                    None => tr!("list-empty-tab-unknown"),
-                },
+                Some(Listing::Folder(_) | Listing::Unified { .. }) if self.shows_tabs() => {
+                    match self.tabs.get(self.tab) {
+                        Some(tab) => tr!("list-empty-tab", tab = tab.label()),
+                        None => tr!("list-empty-tab-unknown"),
+                    }
+                }
                 Some(Listing::Folder(_) | Listing::Unified { .. }) => match self.folder_name() {
                     Some(folder) => tr!("list-empty-folder", folder = folder),
                     None => tr!("list-empty-folder-unknown"),
@@ -1924,6 +1978,22 @@ impl MailWindow {
         .into_any_element()
     }
 
+    /// The account of a line of the whole unified inbox, which mixes
+    /// accounts: its color and its name as the folder pane shows it.
+    fn line_account(&self, row: &Row) -> Option<(u32, String)> {
+        let Some(Listing::Unified { account: None, .. }) = &self.listing else {
+            return None;
+        };
+        let account = self.accounts.iter().find(|a| a.id == row.account)?;
+        let name = self
+            .tree
+            .accounts
+            .iter()
+            .find(|a| a.id == row.account)
+            .map_or_else(|| account.address.clone(), |a| a.name.clone());
+        Some((crate::theme::avatar_color(account.address.trim()), name))
+    }
+
     fn render_row(
         &self,
         ix: usize,
@@ -1967,7 +2037,7 @@ impl MailWindow {
             .flex_row()
             .bg(rgba(background))
             .border_b_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(row_line(th)))
             .text_size(px(14.0))
             .cursor_pointer()
             .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
@@ -2207,9 +2277,11 @@ impl MailWindow {
                     off("row-important-rest", "important", 18.0)
                 })
         });
+        let account = self.line_account(&row);
         let correspondent = div()
             .flex()
             .flex_row()
+            .items_center()
             .min_w_0()
             .gap(px(4.0))
             .text_color(rgba(th.text))
@@ -2264,14 +2336,37 @@ impl MailWindow {
                 )
             })
             .when(row.count > 1, |d| {
+                // The conversation's mail count: a faint chat icon and the
+                // number, centred on the names' line.
                 d.child(
                     div()
                         .flex_none()
-                        .text_size(px(12.0))
+                        .pl(px(4.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(3.0))
+                        .text_size(px(13.0))
                         .text_color(rgba(th.text_faint))
+                        .child(icon("forum", th.text_faint, 14.0))
                         .child(row.count.to_string()),
                 )
-            });
+            })
+            // The account of a line of the whole unified inbox: its dot
+            // after the names, with its name where the line has room.
+            .children(account.map(|(color, name)| {
+                div()
+                    .flex_none()
+                    .pl(px(4.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(5.0))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(div().size(px(7.0)).rounded_full().bg(rgba(color)))
+                    .when(stacked, |d| d.child(name))
+            }));
         // The quick actions fade in over the date.
         let actions = hovered.then(|| {
             div()
@@ -2353,7 +2448,7 @@ impl MailWindow {
                 .flex_1()
                 .min_w_0()
                 .truncate()
-                .text_color(rgba(th.text_faint))
+                .text_color(rgba(preview_color(th)))
                 .child(row.snippet.clone())
                 .into_any_element();
             // A phone shows the sender's picture, which ticks the line, and
@@ -2458,7 +2553,7 @@ impl MailWindow {
             (
                 subject_end..text_len,
                 HighlightStyle {
-                    color: Some(rgba(th.text_faint).into()),
+                    color: Some(rgba(preview_color(th)).into()),
                     ..Default::default()
                 },
             ),
@@ -2552,7 +2647,7 @@ impl MailWindow {
                 .pr(px(14.0))
                 .rounded_full()
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .bg(rgba(th.surface))
                 .when(!downloading, |d| {
                     d.cursor_pointer()
@@ -2595,7 +2690,7 @@ impl MailWindow {
                 .justify_center()
                 .rounded_full()
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .bg(rgba(if open { th.hover } else { th.surface }))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
@@ -2758,7 +2853,7 @@ impl MailWindow {
             .child(
                 button(
                     2,
-                    if unread { "mark-read" } else { "mail" },
+                    if unread { "mark-read" } else { "mark-unread" },
                     if unread {
                         tr!("list-mark-read")
                     } else {
@@ -2824,6 +2919,27 @@ fn fade_in(body: AnyElement, seq: usize) -> AnyElement {
             |el, t| el.opacity(0.5 + 0.5 * t),
         )
         .into_any_element()
+}
+
+/// The preview text of a mail row: the faint text a third of the way
+/// toward the list's background, quieter than the sender and subject.
+pub(super) fn preview_color(th: &Theme) -> u32 {
+    mix(th.text_faint, th.surface, 0.35)
+}
+
+/// The faint line between mail rows.
+pub(super) fn row_line(th: &Theme) -> u32 {
+    th.divider
+}
+
+/// The background behind the inbox tabs: the search box's colour in dark
+/// mode, half way to the list's surface in light mode.
+fn tabs_track(th: &Theme) -> u32 {
+    if th.dark {
+        th.search
+    } else {
+        mix(th.search, th.surface, 0.5)
+    }
 }
 
 /// A thin vertical line between toolbar groups.

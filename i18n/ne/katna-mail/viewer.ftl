@@ -4,6 +4,10 @@
 
 ## Attachment viewer
 
+viewer-opening = खोल्दै…
+
+## Attachment viewer
+
 viewer-unreadable = यो संलग्नक पढ्न सकिएन।
 viewer-pdf-locked = यो PDF पासवर्डले सुरक्षित छ।
 viewer-pdf-unreadable = यो PDF पढ्न सकिएन।
@@ -14,8 +18,17 @@ viewer-slides-unreadable = यी स्लाइडहरू पढ्न स�
 viewer-no-preview = पूर्वावलोकन उपलब्ध छैन
 viewer-slide = स्लाइड { $number }
 viewer-page = पृष्ठ
+viewer-slide-box = स्लाइड
 viewer-page-count = { $count } मध्ये
 viewer-go-to-page-tip = पृष्ठ नम्बर टाइप गरेर Enter थिच्नुहोस् (Ctrl+G)
+viewer-rotate-clockwise-tip = घडीको दिशामा घुमाउनुहोस् (Ctrl+R)
+viewer-rotate-anticlockwise-tip = घडीको उल्टो दिशामा घुमाउनुहोस् (Ctrl+Shift+R)
+viewer-fit-page-tip = पृष्ठ मिलाउनुहोस्
+viewer-fit-picture-tip = विन्डोमा मिलाउनुहोस्
+viewer-fit-width-tip = चौडाइ मिलाउनुहोस्
+viewer-real-size-tip = वास्तविक आकार (1:1)
+viewer-page-back-tip = अघिल्लो पृष्ठ
+viewer-page-on-tip = अर्को पृष्ठ
 
 ## Marking up a PDF
 
@@ -41,6 +54,10 @@ viewer-marks-undo-tip = पूर्ववत गर्नुहोस् (Ctrl+
 viewer-marks-redo-tip = फेरि गर्नुहोस् (Ctrl+Shift+Z)
 viewer-save-marked-tip = तपाईंका चिन्हसहित प्रतिलिपि सेभ गर्नुहोस् (Ctrl+S)
 viewer-reply-marked-tip = चिन्ह लगाइएको प्रतिलिपिसहित जवाफ दिनुहोस्
+viewer-forward-tip = फाइल फर्वार्ड गर्नुहोस्
+viewer-forward = फर्वार्ड गर्नुहोस्
+viewer-open-with = यसबाट खोल्नुहोस्…
+viewer-save = सेभ गर्नुहोस्
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = टिपोट लेख्नुहोस्
 viewer-text-placeholder = यहाँ टाइप गर्नुहोस्
@@ -58,3 +75,5 @@ viewer-marks-save = प्रतिलिपि सेभ गर्नुहो�
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (चिन्हित)
+viewer-pick = चयन गर्नुहोस्
+viewer-picked = चयन गरियो

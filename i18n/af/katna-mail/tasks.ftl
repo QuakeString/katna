@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Skep
+tasks-create = Nuwe taak
 tasks-all = Alle take
 tasks-today = Vandag
 tasks-starred = Gester

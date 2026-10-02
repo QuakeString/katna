@@ -32,6 +32,7 @@ compose-tool-bold = 粗體 (Ctrl+B)
 compose-tool-italic = 斜體 (Ctrl+I)
 compose-tool-underline = 底線 (Ctrl+U)
 compose-tool-text-color = 文字顏色
+compose-tool-colors = 文字顏色和醒目提示
 compose-tool-background-color = 背景顏色
 compose-tool-default-color = 預設顏色
 compose-tool-no-background = 無背景
@@ -126,6 +127,10 @@ compose-tool-signature = 插入簽名
 compose-tool-signature-none = 不使用簽名
 compose-tool-signature-untitled = 未命名
 compose-tool-signature-manage = 管理簽名
+compose-signature-tag-tip = 選擇其他簽名
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = 範本
 compose-tool-templates-none = 尚未建立任何範本
 compose-tool-template-save = 儲存為範本…

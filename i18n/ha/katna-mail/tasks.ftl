@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Ƙirƙira
+tasks-create = Sabon aiki
 tasks-all = Duk ayyuka
 tasks-today = Yau
 tasks-starred = Masu tauraro

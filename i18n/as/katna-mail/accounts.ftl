@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “সকলো একাউণ্ট” ফ'�
 accounts-row = একাউণ্টসমূহ
 accounts-row-detail = ফ'ল্ডাৰ পেন আৰু একাউণ্ট মেনুত একাউণ্টসমূহ এই ক্ৰমত থাকে; প্ৰথমটো ডিফল্ট। একাউণ্ট আঁতৰালে এই কম্পিউটাৰত থকা ইয়াৰ মেইলৰ Katnaৰ কপি মচা হয়। মেইল ছাৰ্ভাৰত থাকে।
 accounts-none = এতিয়ালৈকে কোনো একাউণ্ট নাই।
+accounts-pop3-row = ছাৰ্ভাৰত থকা মেইল
+accounts-pop3-row-detail = POP3 একাউণ্টে মেইল এই কম্পিউটাৰলৈ ডাউনল'ড কৰে। তাৰ পিছত ছাৰ্ভাৰত থকা কপিটোৰ কি হ'ব বাছনি কৰক।
+accounts-pop3-with-katna = Katnaত মই নমচালৈকে ৰাখক
+accounts-pop3-at-once = ডাউনল'ড হোৱাৰ লগে লগে মচক
+accounts-pop3-after-days = { $count ->
+    [one] { $count } দিনৰ পিছত মচক
+   *[other] { $count } দিনৰ পিছত মচক
+}
+accounts-pop3-never = কেতিয়াও নমচিব
+accounts-pop3-days-less = কম দিন
+accounts-pop3-days-more = অধিক দিন
 accounts-kind-imported = আমদানি কৰা
 accounts-picture-reset = ডেস্কটপৰ ছবি ব্যৱহাৰ কৰক
 accounts-picture-change = ছবি সলনি কৰক

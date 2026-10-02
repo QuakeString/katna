@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = إنشاء
+tasks-create = مهمة جديدة
 tasks-all = كل المهام
 tasks-today = اليوم
 tasks-starred = المميّزة بنجمة

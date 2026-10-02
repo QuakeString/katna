@@ -7,10 +7,11 @@ use std::sync::Arc;
 use async_channel::Receiver;
 use katna_core::{AccountId, Pop3Keep, ids};
 use katna_dbus::{
-    AccountStatus, DriveUpload, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account,
-    NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus, flag, mute,
+    AccountStatus, CloudAccess, CloudEntry, CloudListing, DriveUpload, KatnaAccount, KatnaDevice,
+    NewImapAccount, NewPop3Account, NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus,
+    flag, mute,
 };
-use katna_store::{Bell, FolderId, MailCategory, MessageFlags, MessageId};
+use katna_store::{Bell, FolderId, MailCategory, MessageFlags, MessageId, Pinned};
 use zbus::{fdo, object_server::SignalEmitter};
 
 use crate::daemon::{CommandError, Daemon, MuteOf, Notice};
@@ -195,6 +196,47 @@ macro_rules! pim_interface {
 
             async fn unmute(&self, kind: &str, id: i64, address: &str) -> fdo::Result<()> {
                 Ok(self.daemon.unmute(mute_of(kind, id, address)?)?)
+            }
+
+            async fn pin_in_chat(
+                &self,
+                message: i64,
+                kind: &str,
+                file: i64,
+                text: &str,
+                label: &str,
+                replace: i64,
+            ) -> fdo::Result<i64> {
+                let what =
+                    match kind {
+                        "mail" => Pinned::Mail,
+                        "file" => Pinned::File(usize::try_from(file).map_err(|_| {
+                            CommandError::InvalidArgs(format!("no attachment {file}"))
+                        })?),
+                        "text" => Pinned::Text(text.to_owned()),
+                        other => {
+                            return Err(
+                                CommandError::InvalidArgs(format!("no pin kind {other}")).into()
+                            );
+                        }
+                    };
+                Ok(self
+                    .daemon
+                    .pin_in_chat(
+                        MessageId(message),
+                        what,
+                        label,
+                        (replace != 0).then_some(replace),
+                    )?
+                    .unwrap_or(0))
+            }
+
+            async fn unpin_in_chat(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.unpin_in_chat(id)?)
+            }
+
+            async fn order_chat_pins(&self, ids: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.order_chat_pins(&ids)?)
             }
 
             async fn set_bell(
@@ -426,6 +468,130 @@ macro_rules! pim_interface {
                 Ok(self.daemon.drive_share_with_link(&uploads).await?)
             }
 
+            async fn cloud_readable(&self, account: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.cloud_readable(AccountId(account)).await?)
+            }
+
+            async fn cloud_list(
+                &self,
+                account: i64,
+                place: String,
+                what: String,
+                page: String,
+            ) -> fdo::Result<CloudListing> {
+                Ok(self
+                    .daemon
+                    .cloud_list(AccountId(account), &place, &what, &page)
+                    .await?)
+            }
+
+            async fn cloud_fetch(&self, account: i64, entry: CloudEntry) -> fdo::Result<String> {
+                Ok(self.daemon.cloud_fetch(AccountId(account), entry).await?)
+            }
+
+            async fn cloud_thumbnail(
+                &self,
+                account: i64,
+                link: String,
+                width: u32,
+            ) -> fdo::Result<Vec<u8>> {
+                Ok(self
+                    .daemon
+                    .cloud_thumbnail(AccountId(account), &link, width)
+                    .await?)
+            }
+
+            async fn cloud_writable(&self, account: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.cloud_writable(AccountId(account)).await?)
+            }
+
+            async fn cloud_upload(
+                &self,
+                account: i64,
+                folder: String,
+                path: String,
+            ) -> fdo::Result<i64> {
+                Ok(self
+                    .daemon
+                    .cloud_upload(AccountId(account), &folder, &path)
+                    .await?)
+            }
+
+            async fn cloud_link(&self, account: i64, entry: CloudEntry) -> fdo::Result<i64> {
+                Ok(self.daemon.cloud_link(AccountId(account), &entry)?)
+            }
+
+            async fn cloud_trash(
+                &self,
+                account: i64,
+                ids: Vec<String>,
+                trashed: bool,
+            ) -> fdo::Result<u32> {
+                Ok(self
+                    .daemon
+                    .cloud_trash(AccountId(account), &ids, trashed)
+                    .await?)
+            }
+
+            async fn cloud_access(
+                &self,
+                account: i64,
+                id: String,
+            ) -> fdo::Result<Vec<CloudAccess>> {
+                Ok(self.daemon.cloud_access(AccountId(account), &id).await?)
+            }
+
+            async fn cloud_grant(
+                &self,
+                account: i64,
+                id: String,
+                addresses: Vec<String>,
+                role: String,
+                notify: bool,
+            ) -> fdo::Result<Vec<String>> {
+                Ok(self
+                    .daemon
+                    .cloud_grant(AccountId(account), &id, &addresses, &role, notify)
+                    .await?)
+            }
+
+            async fn cloud_set_access(
+                &self,
+                account: i64,
+                id: String,
+                permission: String,
+                role: String,
+            ) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .cloud_set_access(AccountId(account), &id, &permission, &role)
+                    .await?)
+            }
+
+            async fn cloud_set_link(
+                &self,
+                account: i64,
+                id: String,
+                role: String,
+            ) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .cloud_set_link(AccountId(account), &id, &role)
+                    .await?)
+            }
+
+            async fn cloud_rename(
+                &self,
+                account: i64,
+                id: String,
+                name: String,
+            ) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .cloud_rename(AccountId(account), &id, &name)
+                    .await?)
+            }
+
             async fn meeting_link(&self, account: i64) -> fdo::Result<String> {
                 Ok(self.daemon.meeting_link(AccountId(account)).await?)
             }
@@ -479,6 +645,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.sender_picture(&address).await?)
             }
 
+            async fn company_of(&self, address: String, website: String) -> fdo::Result<String> {
+                Ok(self.daemon.company_of(&address, &website).await?)
+            }
+
             async fn translate(
                 &self,
                 message: i64,
@@ -499,6 +669,89 @@ macro_rules! pim_interface {
                 match self.daemon.translation_sources(&target).await {
                     Ok(sources) => (sources, String::new()),
                     Err(err) => (Vec::new(), problem(&err).to_owned()),
+                }
+            }
+
+            async fn ai_rephrase(
+                &self,
+                text: String,
+                tone: String,
+                instruction: String,
+            ) -> (String, String, u32, String) {
+                match self.daemon.ai_rephrase(&text, &tone, &instruction).await {
+                    Ok(done) => (
+                        done.text,
+                        done.plan.kind,
+                        done.plan.days_left.unwrap_or(0),
+                        String::new(),
+                    ),
+                    Err(err) => (String::new(), String::new(), 0, err.problem().to_owned()),
+                }
+            }
+
+            async fn ai_complete(&self, before: String, answered: String) -> (String, String) {
+                match self.daemon.ai_complete(&before, &answered).await {
+                    Ok(done) => (done.text, String::new()),
+                    Err(err) => (String::new(), err.problem().to_owned()),
+                }
+            }
+
+            async fn ai_summarize(
+                &self,
+                newest: i64,
+                request: String,
+            ) -> (String, String, u32, String) {
+                let Ok(request) = serde_json::from_str(&request) else {
+                    return (
+                        String::new(),
+                        String::new(),
+                        0,
+                        katna_ai::wire::problem::FAILED.to_owned(),
+                    );
+                };
+                match self.daemon.ai_summarize(MessageId(newest), &request).await {
+                    Ok((summary, plan)) => (
+                        summary,
+                        plan.kind,
+                        plan.days_left.unwrap_or(0),
+                        String::new(),
+                    ),
+                    Err(err) => (String::new(), String::new(), 0, err.problem().to_owned()),
+                }
+            }
+
+            async fn ai_draft(&self, request: String) -> (String, String, u32, String) {
+                let Ok(request) = serde_json::from_str(&request) else {
+                    return (
+                        String::new(),
+                        String::new(),
+                        0,
+                        katna_ai::wire::problem::FAILED.to_owned(),
+                    );
+                };
+                match self.daemon.ai_draft(&request).await {
+                    Ok(done) => (
+                        done.text,
+                        done.plan.kind,
+                        done.plan.days_left.unwrap_or(0),
+                        String::new(),
+                    ),
+                    Err(err) => (String::new(), String::new(), 0, err.problem().to_owned()),
+                }
+            }
+
+            async fn set_ai_key(&self, key: String) -> fdo::Result<()> {
+                Ok(self.daemon.set_ai_key(&key).await?)
+            }
+
+            async fn ai_key_saved(&self) -> fdo::Result<bool> {
+                Ok(self.daemon.ai_key_saved().await?)
+            }
+
+            async fn ai_models(&self, provider: String, address: String) -> (Vec<String>, String) {
+                match self.daemon.ai_models(&provider, &address).await {
+                    Ok(models) => (models, String::new()),
+                    Err(err) => (Vec::new(), err.problem().to_owned()),
                 }
             }
 

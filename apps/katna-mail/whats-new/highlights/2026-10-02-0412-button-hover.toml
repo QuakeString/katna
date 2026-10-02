@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Buttons hover smoothly"
+text = """
+When you point at a button, its round background now grows from the middle
+and fades in, as in Gmail, and fades away quickly when you move on. Reply,
+Forward and other pill buttons fade in softly.
+"""

@@ -15,6 +15,7 @@ notes-loading = Ń ṣí àwọn àkọsílẹ̀ rẹ…
 
 notes-take-a-note = Kọ àkọsílẹ̀…
 notes-new-list = Àtòjọ tuntun
+notes-new-note = Àkọsílẹ̀ tuntun
 notes-pinned = Tí a dè mọ́
 notes-others = Àwọn mìíràn
 notes-empty = Àwọn àkọsílẹ̀ tí o bá fi kún yóò hàn níbí

@@ -33,6 +33,7 @@ katna-chrome = { path = "crates/katna-chrome" }
 katna-ui = { path = "crates/katna-ui" }
 katna-i18n = { path = "crates/katna-i18n" }
 katna-translate = { path = "crates/katna-translate" }
+katna-ai = { path = "crates/katna-ai" }
 
 # Third-party crates. Pin minor versions; upgrade deliberately.
 async-channel = "2.5"
@@ -82,7 +83,6 @@ winreg = "0.56"
 tray-icon = { version = "0.25", default-features = false }
 winit = { version = "0.30", default-features = false }
 # Windows toasts (katna-platform).
-tauri-winrt-notification = "0.8"
 # Playing the Windows notification sounds outside toasts (katna-platform).
 windows = "0.62"
 # Katna Setup: the Start menu shortcut, and the icon of Windows programs.
@@ -116,7 +116,7 @@ url = "2.5"
 whatlang = "0.18"
 # async-io, so zbus runs on the same executor family as katna-sync.
 zbus = { version = "5.19", default-features = false, features = ["async-io"] }
-ashpd = { version = "0.13", default-features = false, features = ["async-io", "open_uri", "print"] }
+ashpd = { version = "0.13", default-features = false, features = ["async-io", "open_uri", "print", "screenshot"] }
 zstd = "0.14"
 # Languages (docs/ARCHITECTURE.md §13.10): Fluent for the interface's text,
 # ICU4X for dates and numbers in the user's formats.
@@ -148,6 +148,10 @@ http-body-util = "0.1.5"
 # Katna Server passing translation requests to LibreTranslate.
 hyper = { version = "1.11", features = ["client", "http1"] }
 hyper-util = { version = "0.1.21", features = ["tokio"] }
+# Katna Server asking the AI service for Katna AI over HTTPS (lettre
+# already brings these in).
+tokio-rustls = { version = "0.26.5", default-features = false, features = ["ring", "tls12", "logging"] }
+webpki-roots = "1.0.9"
 tower = { version = "0.5.3", features = ["util"] }
 
 # Pimalaya protocol crates: exact versions, because they break often

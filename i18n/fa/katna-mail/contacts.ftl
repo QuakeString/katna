@@ -89,7 +89,7 @@ contacts-print-none = مخاطبی برای چاپ وجود ندارد
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = تولد: { $day }
 contacts-print-nickname = نام مستعار: { $name }
-contacts-create = ایجاد مخاطب
+contacts-create = مخاطب جدید
 
 ## Search and the list
 

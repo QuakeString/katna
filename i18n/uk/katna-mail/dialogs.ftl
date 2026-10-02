@@ -66,6 +66,7 @@ about-credit-resvg = Зображення SVG
 about-credit-jiff = Дати й часові пояси
 about-credit-spellbook = Перевірка правопису, з редактора Helix
 about-credit-smol = Багато справ одночасно
+about-credit-color-schemes = Палітри вбудованих колірних схем
 about-all-libraries = Усі бібліотеки, які використовує Katna ({ $count })
 about-library-authors = автори: { $authors }
 about-license = Katna — вільне програмне забезпечення за ліцензією GNU GPL версії 3 або новішої.
@@ -124,6 +125,17 @@ onboarding-density = Щільність
 onboarding-density-default = Типова
 onboarding-density-compact = Компактна
 onboarding-continue = Продовжити
+onboarding-katna-title = Більше можливостей з обліковим записом Katna
+onboarding-katna-lead = Це необов’язково. Він вмикає онлайн-функції Katna, а створити його можна й пізніше в «Налаштування» > «Підписка».
+onboarding-katna-receipts-title = Сповіщення про прочитання
+onboarding-katna-receipts-text = Дізнавайтеся, коли люди відкривають надіслані вами листи.
+onboarding-katna-links-title = Відстеження посилань
+onboarding-katna-links-text = Дізнавайтеся, за якими посиланнями у ваших листах переходять.
+onboarding-katna-activity-title = Активність
+onboarding-katna-activity-text = Відкриття й переходи для всього, що ви надіслали, в одному місці.
+onboarding-katna-translate-title = Автоматичний переклад
+onboarding-katna-translate-text = Читайте листи, написані іншими мовами, своєю мовою.
+onboarding-katna-private = У нього власний пароль. Дані для входу у вашу пошту ніколи не залишають цей комп’ютер.
 
 ## First run: done
 
@@ -168,7 +180,7 @@ tour-search-text = Пошук працює й без мережі. Кнопка 
 tour-menu-title = Показати чи сховати теки
 tour-menu-text = Ця кнопка згортає список тек. Поки його сховано, наведіть вказівник на «Пошта» ліворуч, щоб побачити теки.
 tour-apps-title = Ваші програми
-tour-apps-text = Тепер тут живе Пошта. Згодом до неї на цій панелі приєднаються Календар, Контакти, Завдання, Нотатки та Стрічки.
+tour-apps-text = Пошта живе тут, поруч із Календарем, Контактами, Завданнями, Нотатками й Файлами.
 tour-tabs-title = Вкладки «Вхідних»
 tour-tabs-text = Нова пошта розподіляється між вкладками «Основні», «Реклама», «Соцмережі», «Оновлення» та «Форуми». Вимкнути вкладки можна у швидких налаштуваннях.
 tour-list-title = Ваші листи
@@ -203,6 +215,9 @@ sign-in-again-button = Увійти
 sign-in-again-tooltip = Відкрити сторінку входу { $provider } у браузері
 sign-in-again-waiting = Очікування браузера…
 sign-in-again-close = Закрити
+google-api-off = { $api } вимкнено в проєкті Google Cloud від Katna.
+google-api-turn-on = Увімкнути
+google-api-turn-on-tooltip = Відкрийте Google Cloud, щоб увімкнути { $api }, а потім натисніть «Спробувати ще раз»
 sign-in-again-done = Ви знову ввійшли в { $address }. Отримання пошти…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

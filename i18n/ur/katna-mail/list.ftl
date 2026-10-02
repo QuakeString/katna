@@ -20,6 +20,7 @@ tab-provider-other = Katna کی ترتیب
 
 list-select = منتخب کریں
 list-refresh = ریفریش کریں
+list-back-to-top = اوپر واپس جائیں
 list-checking = نئی میل چیک کی جا رہی ہے…
 list-more = مزید
 list-mark-read = بطور پڑھا ہوا نشان زد کریں

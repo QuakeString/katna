@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “ಎಲ್ಲಾ ಖಾತೆಗಳು” ಫ
 accounts-row = ಖಾತೆಗಳು
 accounts-row-detail = ಫೋಲ್ಡರ್ ಫಲಕ ಮತ್ತು ಖಾತೆ ಮೆನು ಖಾತೆಗಳನ್ನು ಈ ಕ್ರಮದಲ್ಲಿ ತೋರಿಸುತ್ತವೆ; ಮೊದಲನೆಯದು ಡೀಫಾಲ್ಟ್. ಖಾತೆಯನ್ನು ತೆಗೆದುಹಾಕಿದರೆ, ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿರುವ ಅದರ ಮೇಲ್‌ನ Katna ನಕಲನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ಮೇಲ್ ಸರ್ವರ್‌ನಲ್ಲಿ ಉಳಿಯುತ್ತದೆ.
 accounts-none = ಇನ್ನೂ ಯಾವುದೇ ಖಾತೆಗಳಿಲ್ಲ.
+accounts-pop3-row = ಸರ್ವರ್‌ನಲ್ಲಿರುವ ಮೇಲ್
+accounts-pop3-row-detail = POP3 ಖಾತೆಗಳು ಮೇಲ್ ಅನ್ನು ಈ ಕಂಪ್ಯೂಟರ್‌ಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡುತ್ತವೆ. ನಂತರ ಸರ್ವರ್‌ನಲ್ಲಿರುವ ಪ್ರತಿಗೆ ಏನಾಗಬೇಕು ಎಂದು ಆರಿಸಿ.
+accounts-pop3-with-katna = ನಾನು Katna ದಲ್ಲಿ ಅಳಿಸುವವರೆಗೆ ಇರಿಸಿ
+accounts-pop3-at-once = ಡೌನ್‌ಲೋಡ್ ಆದ ತಕ್ಷಣ ಅಳಿಸಿ
+accounts-pop3-after-days = { $count ->
+    [one] { $count } ದಿನದ ನಂತರ ಅಳಿಸಿ
+   *[other] { $count } ದಿನಗಳ ನಂತರ ಅಳಿಸಿ
+}
+accounts-pop3-never = ಎಂದಿಗೂ ಅಳಿಸಬೇಡಿ
+accounts-pop3-days-less = ಕಡಿಮೆ ದಿನಗಳು
+accounts-pop3-days-more = ಹೆಚ್ಚು ದಿನಗಳು
 accounts-kind-imported = ಆಮದು ಮಾಡಲಾಗಿದೆ
 accounts-picture-reset = ಡೆಸ್ಕ್‌ಟಾಪ್ ಚಿತ್ರವನ್ನು ಬಳಸಿ
 accounts-picture-change = ಚಿತ್ರವನ್ನು ಬದಲಾಯಿಸಿ
@@ -72,6 +83,9 @@ accounts-confirm-word = ಅಳಿಸಿ
 accounts-confirm-placeholder = “{ accounts-confirm-word }” ಎಂದು ಟೈಪ್ ಮಾಡಿ
 accounts-confirm-prompt = ಖಚಿತಪಡಿಸಲು, “{ accounts-confirm-word }” ಎಂದು ಟೈಪ್ ಮಾಡಿ:
 accounts-cancel = ರದ್ದುಮಾಡಿ
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Katna ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಮೇಲ್ ಮತ್ತು ಲಗತ್ತುಗಳು, ಕಳುಹಿಸುವವರ ಚಿತ್ರಗಳು ಮತ್ತು ಹುಡುಕಾಟ ಸೂಚ್ಯಂಕವನ್ನು ಅಳಿಸಿ, ನಂತರ ಇತ್ತೀಚಿನ ಮೇಲ್ ಅನ್ನು ಮತ್ತೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡುತ್ತದೆ. ಖಾತೆಗಳು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಮಾತ್ರ ಇರುವ ಮೇಲ್ ಹಾಗೆಯೇ ಉಳಿಯುತ್ತವೆ.
 reset-cache-button = ಕ್ಯಾಶ್ ಮರುಹೊಂದಿಸಿ
 reset-cache-title = ಕ್ಯಾಶ್ ಮರುಹೊಂದಿಸಬೇಕೇ?

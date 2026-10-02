@@ -62,7 +62,11 @@ pub struct Theme {
     pub text: u32,
     pub text_dim: u32,
     pub text_faint: u32,
+    /// Lines between things: rows, toolbars, headers, sections. A quarter
+    /// of [`Theme::outline`], so they stay quiet.
     pub divider: u32,
+    /// The edge of a box: fields, chips, buttons, cards and quote bars.
+    pub outline: u32,
     /// Laid over an element under the pointer.
     pub hover: u32,
     /// The ink of click ripples.
@@ -103,6 +107,8 @@ pub struct Theme {
     /// translucent, over a blur of this many device pixels of what is
     /// behind. 0 keeps them opaque ([`Theme::frosted`]).
     pub frost: u32,
+    /// How opaque the frost's tint is, in percent.
+    pub frost_tint: u8,
     pub switch_off: u32,
     /// Category tab colors: primary, promotions, social, updates, forums.
     pub tabs: [u32; 5],
@@ -133,6 +139,55 @@ pub struct FolderIcons {
 }
 
 impl Theme {
+    /// The chat view's bubble for the user's own mail: a light tint of the
+    /// accent.
+    pub fn bubble_own(&self) -> u32 {
+        mix(
+            self.surface,
+            self.accent,
+            if self.dark { 0.14 } else { 0.10 },
+        )
+    }
+
+    /// The chat view's bubble for other people's mail: a quiet grey a step
+    /// off the card.
+    pub fn bubble_other(&self) -> u32 {
+        if self.dark {
+            mix(self.surface, 0xffff_ffff, 0.06)
+        } else {
+            mix(self.surface, 0x0000_00ff, 0.05)
+        }
+    }
+
+    /// A soft tray behind a group of tools (Compose's security toggles and
+    /// its row of writing tools): half a chip.
+    pub fn tray(&self) -> u32 {
+        fade(self.chip, 0.5)
+    }
+
+    /// A recipient chip under the pointer: the chip a step deeper.
+    pub fn chip_hover(&self) -> u32 {
+        mix(self.chip, self.text, 0.08)
+    }
+
+    /// A meter nearly at its limit, before it turns to [`Theme::error`]:
+    /// amber.
+    pub fn caution(&self) -> u32 {
+        if self.dark { 0xfdd663ff } else { 0xe37400ff }
+    }
+
+    /// What goes to Google Drive or OneDrive rather than in the mail: the
+    /// clouds' own blue, whatever the accent.
+    pub fn cloud(&self) -> u32 {
+        if self.dark { 0x8ab4f8ff } else { 0x1a73e8ff }
+    }
+
+    /// A line `t` of the outline's strength, never stronger than
+    /// [`Theme::divider`].
+    pub fn faint_line(&self, t: f32) -> u32 {
+        fade(self.outline, t.min(LINE))
+    }
+
     /// Katna's own palette.
     pub fn new(dark: bool) -> Self {
         if dark { DARK } else { LIGHT }
@@ -150,10 +205,12 @@ impl Theme {
     }
 
     /// Frosted floating panels, blurring `radius` device pixels of what is
-    /// behind them (Settings > Experimental > Blurred background).
-    pub fn frosted(self, radius: f32) -> Self {
+    /// behind them under a tint `tint` percent opaque (Settings >
+    /// Experimental > Blur).
+    pub fn frosted(self, radius: f32, tint: u8) -> Self {
         Self {
             frost: radius.round().max(1.0) as u32,
+            frost_tint: tint.min(100),
             ..self
         }
     }
@@ -302,7 +359,8 @@ impl Theme {
             text,
             text_dim: mix(text, surface, 0.18),
             text_faint: readable(s.inactive_fg, surface, 3.0),
-            divider: fade(text, 0.14),
+            divider: fade(text, 0.14 * LINE),
+            outline: fade(text, 0.14),
             hover: fade(text, if dark { 0.08 } else { 0.07 }),
             ripple: fade(text, if dark { 0.16 } else { 0.14 }),
             nav_selected: mix(page, accent, if dark { 0.34 } else { 0.22 }),
@@ -331,6 +389,7 @@ impl Theme {
             raised: if dark { ink(RAISED_LIFT) } else { surface },
             rim: if dark { fade(text, RIM) } else { 0x00000000 },
             frost: 0,
+            frost_tint: 100,
             switch_off: ink(0.18),
             tabs,
             folder_icons: base.folder_icons,
@@ -424,6 +483,9 @@ fn tone(color: u32, l: f32) -> u32 {
     byte(hue(h + 1.0 / 3.0)) << 24 | byte(hue(h)) << 16 | byte(hue(h - 1.0 / 3.0)) << 8 | 0xff
 }
 
+/// How much of the outline's strength lines between things keep.
+const LINE: f32 = 0.25;
+
 const LIGHT: Theme = Theme {
     dark: false,
     page: 0xf6f8fcff,
@@ -433,7 +495,8 @@ const LIGHT: Theme = Theme {
     text: 0x1f1f1fff,
     text_dim: 0x444746ff,
     text_faint: 0x5e6368ff,
-    divider: 0x64798f24,
+    divider: 0x64798f09,
+    outline: 0x64798f24,
     hover: 0x1f1f1f12,
     ripple: 0x1f1f1f24,
     nav_selected: 0xd3e3fdff,
@@ -454,6 +517,7 @@ const LIGHT: Theme = Theme {
     raised: 0xffffffff,
     rim: 0x00000000,
     frost: 0,
+    frost_tint: 100,
     switch_off: 0xe1e3e1ff,
     tabs: [0x0b57d0ff, 0x188038ff, 0x1a73e8ff, 0xe37400ff, 0x9334e6ff],
     folder_icons: FolderIcons {
@@ -482,7 +546,8 @@ const DARK: Theme = Theme {
     text: 0xe3e3e3ff,
     text_dim: 0xc4c7c5ff,
     text_faint: 0x9aa0a6ff,
-    divider: 0xffffff17,
+    divider: 0xffffff06,
+    outline: 0xffffff17,
     hover: 0xffffff14,
     ripple: 0xffffff29,
     nav_selected: 0x004a77ff,
@@ -506,6 +571,7 @@ const DARK: Theme = Theme {
     raised: 0x333537ff,
     rim: 0xe3e3e321,
     frost: 0,
+    frost_tint: 100,
     switch_off: 0x44474eff,
     tabs: [0xa8c7faff, 0x81c995ff, 0x8ab4f8ff, 0xfcad70ff, 0xd7aefbff],
     folder_icons: FolderIcons {
@@ -711,7 +777,7 @@ mod tests {
         let desktop = SystemColors::default().with_schemes(vec![DesktopScheme {
             id: "kde:BreezeClassic".to_owned(),
             name: "Breeze Classic".to_owned(),
-            light: Some(breeze),
+            light: Some(breeze.clone()),
             dark: None,
         }]);
         assert_eq!(
@@ -719,6 +785,21 @@ mod tests {
             Some(false)
         );
         assert_eq!(Theme::forced_dark("nord", &desktop), None);
+        // System colours from a dark KDE scheme without a light partner:
+        // Light mode is Katna's light palette in the scheme's accent.
+        let mut alone = SystemColors::kde(Scheme {
+            name: "Breath Dark".to_owned(),
+            window_bg: 0x2a2e32ff,
+            view_bg: 0x1b1e20ff,
+            ..breeze.clone()
+        });
+        alone.accent = Some(0x1abc9cff);
+        assert_eq!(Theme::forced_dark("system", &alone), None);
+        let th = Theme::pick(false, "system", Accent::System, &alone);
+        assert!(!th.dark);
+        assert_eq!(th.surface, Theme::new(false).surface);
+        assert!(!Theme::picks_scheme(false, "system", &alone));
+        assert!(Theme::pick(true, "system", Accent::System, &alone).dark);
         let th = Theme::pick(true, "kde:BreezeClassic", Accent::Scheme, &desktop);
         assert_eq!((th.dark, th.surface), (false, 0xfcfcfcff));
         assert!(Theme::picks_scheme(false, "kde:BreezeClassic", &desktop));

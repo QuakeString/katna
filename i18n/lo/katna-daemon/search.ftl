@@ -1,6 +1,9 @@
 # Katna Mail, Lao (ລາວ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Results
+
 search-category-mail = ອີເມວ
 search-category-people = ຜູ້ຄົນ
 search-category-tasks = ໜ້າວຽກ
@@ -17,6 +20,9 @@ search-event-in-days =
     { $count ->
        *[other] ໃນອີກ { $count } ມື້
     }
+
+## Buttons on a result in KRunner
+
 search-reply-all = ຕອບກັບທັງໝົດ
 search-copy-address = ສຳເນົາທີ່ຢູ່
 search-find-mail = ຊອກຫາອີເມວ

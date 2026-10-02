@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = Tạo
+tasks-create = Việc cần làm mới
 tasks-all = Tất cả việc cần làm
 tasks-today = Hôm nay
 tasks-starred = Có gắn dấu sao
 tasks-new-list = Tạo danh sách mới
 tasks-on-this-computer = Trên máy tính này
 tasks-my-tasks = Việc cần làm của tôi
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = Đăng nhập lại để hiện việc cần làm
 tasks-account-signed-in = Đã đăng nhập lại vào { $address }. Đang tải việc cần làm của bạn…
 tasks-account-sign-in-refused = { $provider } không cho Katna vào. Hãy thử lại và cho phép truy cập việc cần làm của bạn.
@@ -21,13 +19,9 @@ tasks-account-change-password = Đổi mật khẩu
 tasks-account-change-password-tooltip = Mở Cài đặt > Tài khoản
 tasks-account-not-enabled = Quyền truy cập việc cần làm cho Katna chưa được bật.
 tasks-account-failed = Không đọc được danh sách việc cần làm.
-# $reason is the server's own words, in English.
 tasks-account-error = Không đọc được danh sách việc cần làm: { $reason }
 tasks-account-none = Không tìm thấy danh sách việc cần làm nào
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 tasks-account-none-why = Không tìm thấy danh sách việc cần làm nào: { $reason }
-# A Gmail or Outlook account added with a password: its tasks need the
-# provider's sign-in.
 tasks-account-use-sign-in = { $provider } chỉ hiện việc cần làm cho Katna khi đăng nhập bằng { $provider }.
 tasks-account-sign-in-with = Đăng nhập bằng { $provider }
 tasks-account-looking = Đang tìm danh sách việc cần làm…
@@ -112,6 +106,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Thư đó không còn ở đây nữa.
 tasks-toast-list-deleted = Đã xóa danh sách
 tasks-toast-moved = Đã chuyển đến { $list }
-# A task dragged to another place in its own list.
 tasks-toast-placed = Đã di chuyển việc cần làm
 tasks-toast-rescheduled = Đã dời lịch tác vụ

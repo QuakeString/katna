@@ -66,6 +66,7 @@ about-credit-resvg = SVG ଛବି
 about-credit-jiff = ତାରିଖ ଓ ସମୟ ଅଞ୍ଚଳ
 about-credit-spellbook = ବନାନ ଯାଞ୍ଚ, Helix ଏଡିଟରରୁ
 about-credit-smol = ଏକାସାଙ୍ଗରେ ଅନେକ କାମ କରିବା
+about-credit-color-schemes = ବିଲ୍ଟ-ଇନ ରଙ୍ଗ ସ୍କିମର ପ୍ୟାଲେଟ
 about-all-libraries = Katna ବ୍ୟବହାର କରୁଥିବା ସମସ୍ତ ଲାଇବ୍ରେରୀ ({ $count })
 about-library-authors = { $authors }ଙ୍କ ଦ୍ୱାରା
 about-license = Katna GNU GPL, ସଂସ୍କରଣ 3 କିମ୍ବା ପରବର୍ତ୍ତୀ ଅଧୀନରେ ମୁକ୍ତ ସଫ୍ଟୱେର।
@@ -123,6 +124,21 @@ onboarding-density-default = ଡିଫଲ୍ଟ
 onboarding-density-compact = କମ୍ପାକ୍ଟ
 onboarding-continue = ଜାରି ରଖନ୍ତୁ
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna ଆକାଉଣ୍ଟ ସହ ଅଧିକ ପାଆନ୍ତୁ
+onboarding-katna-lead = ଏହା ଇଚ୍ଛାଧୀନ। ଏହା Katnaର ଅନଲାଇନ ବୈଶିଷ୍ଟ୍ୟ ଚାଲୁ କରେ, ଏବଂ ଆପଣ ପରେ ସେଟିଂସ > ସବସ୍କ୍ରିପସନରେ ଗୋଟିଏ ତିଆରି କରିପାରିବେ।
+onboarding-katna-receipts-title = ପଢ଼ା ରସିଦ
+onboarding-katna-receipts-text = ଆପଣ ପଠାଉଥିବା ମେଲ ଲୋକମାନେ କେବେ ଖୋଲନ୍ତି ଦେଖନ୍ତୁ।
+onboarding-katna-links-title = ଲିଙ୍କ ଟ୍ରାକିଂ
+onboarding-katna-links-text = ଆପଣଙ୍କ ମେଲର କେଉଁ ଲିଙ୍କରେ କ୍ଲିକ ହୁଏ ଦେଖନ୍ତୁ।
+onboarding-katna-activity-title = କାର୍ଯ୍ୟକଳାପ
+onboarding-katna-activity-text = ଆପଣ ପଠାଇଥିବା ସବୁକିଛିର ଖୋଲା ଓ କ୍ଲିକ, ଗୋଟିଏ ସ୍ଥାନରେ।
+onboarding-katna-translate-title = ସ୍ୱୟଂଚାଳିତ ଅନୁବାଦ
+onboarding-katna-translate-text = ଅନ୍ୟ ଭାଷାରେ ଲେଖାଯାଇଥିବା ମେଲ ଆପଣଙ୍କ ନିଜ ଭାଷାରେ ପଢ଼ନ୍ତୁ।
+onboarding-katna-private = ଏହାର ନିଜର ପାସୱାର୍ଡ ଅଛି। ଆପଣଙ୍କ ମେଲ ଲଗଇନ କେବେ ବି ଏହି କମ୍ପ୍ୟୁଟର ଛାଡ଼େ ନାହିଁ।
+
 ## First run: done
 
 onboarding-ready-title = ସବୁ ପ୍ରସ୍ତୁତ
@@ -166,7 +182,7 @@ tour-search-text = ସନ୍ଧାନ ଅଫଲାଇନରେ ମଧ୍ୟ କ�
 tour-menu-title = ଫୋଲ୍ଡରଗୁଡ଼ିକ ଦେଖାନ୍ତୁ କିମ୍ବା ଲୁଚାନ୍ତୁ
 tour-menu-text = ଏହି ବଟନ ଫୋଲ୍ଡର ତାଲିକାକୁ ଭାଙ୍ଗି ଲୁଚାଇଦିଏ। ଏହା ଲୁଚିଥିବା ବେଳେ, ଫୋଲ୍ଡରଗୁଡ଼ିକ ଦେଖିବାକୁ ବାମରେ ଥିବା ମେଲ ଉପରେ ପଏଣ୍ଟର ରଖନ୍ତୁ।
 tour-apps-title = ଆପଣଙ୍କ ଆପଗୁଡ଼ିକ
-tour-apps-text = ମେଲ ବର୍ତ୍ତମାନ ଏଠାରେ ରହେ। କ୍ୟାଲେଣ୍ଡର, ଯୋଗାଯୋଗ, କାର୍ଯ୍ୟ, ନୋଟ ଓ ଫିଡ ଏହି ବାରରେ ଏହା ସହ ଯୋଗ ଦେବେ।
+tour-apps-text = ମେଲ ଏଠାରେ ରହେ, କ୍ୟାଲେଣ୍ଡର, ଯୋଗାଯୋଗ, କାର୍ଯ୍ୟ, ନୋଟ ଓ ଫାଇଲ ପାଖରେ।
 tour-tabs-title = ଇନବକ୍ସ ଟାବ
 tour-tabs-text = ନୂଆ ମେଲ ପ୍ରାଥମିକ, ପ୍ରଚାର, ସାମାଜିକ, ଅପଡେଟ ଓ ଫୋରମରେ ସଜାଯାଏ। ଆପଣ ଦ୍ରୁତ ସେଟିଂସରେ ଟାବଗୁଡ଼ିକ ବନ୍ଦ କରିପାରିବେ।
 tour-list-title = ଆପଣଙ୍କ ମେସେଜ
@@ -197,6 +213,9 @@ sign-in-again-button = ସାଇନ ଇନ କରନ୍ତୁ
 sign-in-again-tooltip = ଆପଣଙ୍କ ବ୍ରାଉଜରରେ { $provider } ସାଇନ-ଇନ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ
 sign-in-again-waiting = ଆପଣଙ୍କ ବ୍ରାଉଜର ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି…
 sign-in-again-close = ବନ୍ଦ କରନ୍ତୁ
+google-api-off = Katnaର Google Cloud ପ୍ରୋଜେକ୍ଟରେ { $api } ବନ୍ଦ ଅଛି।
+google-api-turn-on = ଚାଲୁ କରନ୍ତୁ
+google-api-turn-on-tooltip = { $api } ଚାଲୁ କରିବାକୁ Google Cloud ଖୋଲନ୍ତୁ, ତା'ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ ଦବାନ୍ତୁ
 sign-in-again-done = { $address }ରେ ପୁଣି ସାଇନ ଇନ ହୋଇଛି। ଆପଣଙ୍କ ମେଲ ଅଣାଯାଉଛି…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

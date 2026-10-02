@@ -2,6 +2,8 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+viewer-opening = በመክፈት ላይ…
+
 ## Attachment viewer
 
 viewer-unreadable = ይህ አባሪ ሊነበብ አልቻለም።
@@ -14,8 +16,17 @@ viewer-slides-unreadable = እነዚህ ስላይዶች ሊነበቡ አልቻ�
 viewer-no-preview = ቅድመ እይታ የለም
 viewer-slide = ስላይድ { $number }
 viewer-page = ገጽ
+viewer-slide-box = ስላይድ
 viewer-page-count = ከ { $count }
 viewer-go-to-page-tip = የገጽ ቁጥር ይተይቡና Enter ይጫኑ (Ctrl+G)
+viewer-rotate-clockwise-tip = በሰዓት አቅጣጫ አዙር (Ctrl+R)
+viewer-rotate-anticlockwise-tip = ከሰዓት አቅጣጫ በተቃራኒ አዙር (Ctrl+Shift+R)
+viewer-fit-page-tip = ገጹን አስማማ
+viewer-fit-picture-tip = ከመስኮቱ ጋር አስማማ
+viewer-fit-width-tip = ስፋቱን አስማማ
+viewer-real-size-tip = እውነተኛ መጠን (1:1)
+viewer-page-back-tip = ያለፈው ገጽ
+viewer-page-on-tip = ቀጣዩ ገጽ
 
 ## Marking up a PDF
 
@@ -41,6 +52,10 @@ viewer-marks-undo-tip = ቀልብስ (Ctrl+Z)
 viewer-marks-redo-tip = ድገም (Ctrl+Shift+Z)
 viewer-save-marked-tip = ምልክቶችዎን የያዘ ቅጂ አስቀምጥ (Ctrl+S)
 viewer-reply-marked-tip = ምልክት በተደረገበት ቅጂ መልስ
+viewer-forward-tip = ፋይሉን አስተላልፍ
+viewer-forward = አስተላልፍ
+viewer-open-with = በዚህ ክፈት…
+viewer-save = አስቀምጥ
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = ማስታወሻ ይጻፉ
 viewer-text-placeholder = እዚህ ይተይቡ
@@ -58,3 +73,5 @@ viewer-marks-save = ቅጂ አስቀምጥ
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (ምልክት የተደረገበት)
+viewer-pick = ምረጥ
+viewer-picked = ተመርጧል

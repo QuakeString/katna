@@ -1766,3 +1766,811 @@ tiki ya kisanduku cha kuteua ilikaa juu kidogo na kushoto. Kingo za
 visanduku vya kuteua na vitufe vya mviringo sasa hukua pamoja na kiwango,
 hivyo tiki hukaa katikati kwa kila ukubwa.
 """
+
+# Katna Mail, Swahili (Kiswahili).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+["2026-09-30-0230-edges-follow-scaling"]
+title = "Mistari ya ukingo hukua pamoja na Kiwango cha ukubwa"
+text = """
+Kiwango cha ukubwa katika Mipangilio > Mwonekano kikiwa juu au chini ya 100%, ukingo wa rangi ya msisitizo wa kisanduku cha kutafuta na sehemu zinazotumika, pamoja na kingo za kadi za chaguo na pete za majukumu, sasa hukua na kupungua pamoja na kila kitu kingine badala ya kubaki mwembamba.
+"""
+
+["2026-09-30-0326-google-sign-in-network"]
+title = "Ingia kwa Google kwenye kila mtandao"
+text = """
+Ingia kwa Google haikwami tena kwa "peer closed connection" kwenye mitandao inayokata muunganisho wa Google mapema. Ukiondoa tiki ya Gmail kwenye ukurasa wa Google, Katna sasa inasema hivyo badala ya kushindwa baadaye.
+"""
+
+["2026-09-30-0504-google-api-turned-off"]
+title = "Inasema ni API ipi ya Google imezimwa"
+text = """
+Google ikiwa imezima API fulani kwa Katna, Anwani, Kalenda, Majukumu na faili za Drive sasa husema ni ipi kwa mstari mfupi, pamoja na kitufe cha Washa kinachofungua ukurasa wake wa Google, badala ya hitilafu ghafi ya Google.
+"""
+
+["2026-09-30-0507-newest-mail-first"]
+title = "Barua mpya zaidi huja kwanza"
+text = """
+Unapoongeza akaunti, Katna Mail sasa hupakua barua zako za karibuni kwanza kisha hurudi nyuma kwenye barua za zamani, ili jumbe za leo zionekane juu ya kikasha mara moja. Upakuaji ukikatizwa, huendelea na barua za zamani wakati ujao.
+"""
+
+["2026-09-30-0601-keyring-at-login"]
+title = "Husubiri pochi yako wakati wa kuingia"
+text = """
+KWallet au GNOME Keyring ikiwa bado imefungwa Katna inapoanza, na dirisha lake la kufungua limefungwa, akaunti zako hazionyeshi tena nenosiri lisilo sahihi. Husubiri, na huanza kusawazisha zenyewe mara tu unapofungua pochi, bila kuhitaji kufunga Katna. Sawazisha sasa huomba kuifungua tena.
+"""
+
+["2026-09-30-0606-pdf-rotate-and-top-bar"]
+title = "Zungusha kurasa za PDF"
+text = """
+Kitazamaji cha PDF sasa kinaweza kuzungusha kurasa kisaa au kinyume cha saa (Ctrl+R na Ctrl+Shift+R), na nakala yenye alama huhifadhiwa jinsi ulivyoizungusha. Nambari ya ukurasa na kukuza vimehamia upau wa juu, ili kisifunike ukurasa.
+"""
+
+["2026-09-30-0610-calendar-events-stay-put"]
+title = "Matukio hubaki yalipo"
+text = """
+Kubofya tukio au jukumu kwenye Kalenda kisha kubadilisha mwonekano hakulifanyi tena kufuata kiashiria. Tukio sasa husogea tu ukiwa umeshikilia kitufe na kulikokota, na kubadilisha mwonekano au ukurasa, kubonyeza Esc au kufungua kadi yake hulirudisha bila kubadilika.
+"""
+
+["2026-09-30-0620-checkbox-partial-centred"]
+title = "Visanduku vilivyotiwa tiki kwa sehemu vinaonekana sawa"
+text = """
+Baadhi tu ya jumbe zikiwa zimechaguliwa, mraba ulio ndani ya kisanduku cha kuchagua zote sasa una nafasi sawa kila upande, kwa kiwango chochote cha kiolesura.
+"""
+
+["2026-09-30-0632-year-view-day-peek"]
+title = "Ona mipango ya siku kutoka mwonekano wa Mwaka"
+text = """
+Katika mwonekano wa Mwaka wa Kalenda, weka kiashiria juu ya siku yenye nukta ili kuona matukio na majukumu yake kwenye kidirisha kidogo kando yake, kila kimoja na aikoni inayoonyesha ni nini na saa yake. Bofya kimoja kukifungua, au jina la siku kufungua siku hiyo. Kwenye simu, gusa siku.
+"""
+
+["2026-09-30-0650-notification-opens-own-window"]
+title = "Arifa hufungua barua mbele"
+text = """
+Kubofya arifa ya barua mpya hufungua barua hiyo kwenye dirisha lake, mbele, chochote Katna inachoonyesha wakati huo. Jibu wote huifungua jibu likiwa tayari kuandikwa. Weka kwenye kumbukumbu huiweka barua kando bila kufungua chochote na kusema hivyo kwa ujumbe mfupi wenye Tendua.
+"""
+
+["2026-09-30-0700-event-card-join-any-call"]
+title = "Jiunge na simu za Teams na Zoom kutoka Kalenda"
+text = """
+Kadi ya tukio sasa hupata simu kwenye maelezo au mahali pake, kwa hivyo mwaliko wa Microsoft Teams, Zoom, Webex, Jitsi au Google Meet unapata kitufe cha "Jiunge kwa" juu. Anwani za wavuti kwenye maelezo ni viungo, mistari ya mistari-chini imeondoka, na Utaenda? hubaki chini huku maelezo yakisogezwa.
+"""
+
+["2026-09-30-0715-click-away-closes-viewer"]
+title = "Bofya nje ili kufunga"
+text = """
+Bofya nafasi iliyofifia kuzunguka kiambatisho ili kufunga kitazamaji, badala ya kutafuta kitufe cha kurudi. Kubofya kwenye ukurasa wenyewe bado huchagua maandishi na kuweka alama kama awali.
+"""
+
+["2026-09-30-0729-add-account-and-pop3"]
+title = "Ongeza akaunti mpya, na POP3"
+text = """
+Kuongeza akaunti huanza na mtoa huduma wako: Google, Yahoo, iCloud, Zoho, Fastmail, GMX, Yandex au mwingine yeyote. Katna husema mtoa huduma anahitaji nini kwanza, huonyesha kila hatua inapounganisha, na humaliza kwa kile ilichoweka. Akaunti za POP3 hufanya kazi pia, na Mipangilio > Akaunti huchagua barua zao hukaa kwenye seva kwa muda gani.
+"""
+
+["2026-09-30-0802-ctrl-wheel-zoom"]
+title = "Kuza kwa Ctrl na gurudumu"
+text = """
+Katika kitazamaji cha viambatisho, shikilia Ctrl na uzungushe gurudumu la kipanya ili kukuza na kufifiza kuzunguka kiashiria, au bana kwenye padi ya kugusa. Hufanya kazi kwa PDF, picha, faili za maandishi, lahajedwali na hati.
+"""
+
+["2026-09-30-0817-event-open-the-mail"]
+title = "Fungua barua iliyo nyuma ya tukio"
+text = """
+Matukio ambayo Gmail iliunda kutoka barua, kama treni, safari za ndege na hoteli, hupata kitufe cha Fungua barua kwenye kadi yao. Hufungua barua hiyo kwenye Katna, au kwenye Gmail Katna isipokuwa nayo. Jukumu lililoundwa kutoka barua hufungua barua yake kutoka kadi yake kwenye Kalenda pia, na Andika madokezo ya mkutano hufunguka bila kupepesa.
+"""
+
+["2026-09-30-0843-calendar-side-panel-menus"]
+title = "Dhibiti kalenda kutoka paneli ya kando"
+text = """
+Bofya kulia kalenda kwenye paneli ya kando ya Kalenda ili kuonyesha hiyo pekee, kubadilisha rangi yake, kuipa jina jipya au kuifuta. Bofya kulia jina la akaunti ili kuunda kalenda mpya kwenye akaunti hiyo au kuonyesha na kuficha kalenda zake zote. Mabadiliko huenda kwenye huduma yako ya barua, kwa hivyo yanaonekana kila mahali unapoitumia.
+"""
+
+["2026-09-30-1010-unread-list-keeps-open-mail"]
+title = "Barua ambazo hazijasomwa hubaki wazi"
+text = """
+Kufungua mazungumzo katika Akaunti Zote > Ambazo hazijasomwa hakuyafungi tena mara moja. Kuyasoma huyatia alama kuwa yamesomwa, na hubaki kwenye orodha hadi uyafunge au ufungue mengine.
+"""
+
+["2026-09-30-1045-tracked-mail-arrives"]
+title = "Barua zinazofuatiliwa hufika tena"
+text = """
+Barua zilizotumwa ufuatiliaji ukiwa umewashwa zingeweza kuonekana katika Zilizotumwa bila kumfikia mtu yeyote. Sasa huenda kwa kila mpokeaji. Barua zilizopotea kwa njia hii zinahitaji kutumwa tena.
+"""
+
+["2026-09-30-1114-no-checking-pill"]
+title = "Hakuna tena kidonge cha kukagua"
+text = """
+"Inakagua barua mpya…" haitokei tena juu ya orodha. Mishale inayozunguka kwenye kitufe cha kuonyesha upya na kwenye kikasha cha kila akaunti tayari huonyesha kwamba barua zinakaguliwa, na ukaguzi ulioshindwa bado husema kilichoharibika.
+"""
+
+["2026-09-30-1300-windows-sign-in-and-domains"]
+title = "Ingia kwa Google kwenye Windows"
+text = """
+Katna kwa Windows sasa inatoa Ingia kwa Google na Zoho, kama inavyofanya kwenye Linux, na inajua nani anahifadhi barua za kikoa chako mwenyewe, kama anwani ya Google Workspace, unapoongeza akaunti.
+"""
+
+["2026-09-30-1511-mail-tables"]
+title = "Majedwali kwenye barua husomeka vizuri"
+text = """
+Majedwali kwenye barua, kama orodha ya kazi katika arifa ya GitHub Actions, huweka safu zao kando kwa kando na kuzipanga kutoka mstari hadi mstari, badala ya kuvunja kichwa herufi moja kwa kila mstari. Mistari ya kutenganisha sehemu za ujumbe sasa huonekana pia.
+"""
+
+["2026-09-30-1550-taller-important-marker"]
+title = "Alama ya Muhimu ndefu zaidi"
+text = """
+Alama ya Muhimu iliyo kando ya nyota ni ndefu kwa px 2, kwa hivyo haionekani tena imebanwa kando ya nyota na kisanduku cha kuteua. Hubaki katikati ya safu.
+"""
+
+["2026-09-30-1617-folder-click-goes-to-top"]
+title = "Rudi juu ya orodha"
+text = """
+Orodha ya barua ikishasogezwa skrini moja chini, kitufe cha mviringo kilicho chini kulia hukirudisha juu. Kubofya folda uliyomo tayari, kama Kikasha, hufanya hivyo hivyo, kama katika Gmail, na Home pia.
+"""
+
+["2026-09-30-1622-send-from-file-manager"]
+title = "Tuma faili kutoka kidhibiti chako cha faili"
+text = """
+Bofya kulia faili au folda katika Dolphin, GNOME Files au Windows Explorer na uchague Tuma kwa Katna Mail: ujumbe mpya hufunguka ukiwa nazo kama viambatisho, na folda hutumwa kama zip. Ukiwa na zaidi ya akaunti moja ya barua, chagua ya kutumia kwenye menyu yake ndogo.
+"""
+
+["2026-09-30-1624-files-page"]
+title = "Kila faili mahali pamoja"
+text = """
+Ukurasa mpya wa Faili, chini ya upau wa programu, huonyesha kila kiambatisho kutoka kila akaunti, kipya zaidi kwanza. Upunguze hadi picha, PDF au hati, akaunti moja, mtu mmoja au kipindi, au tafuta kwa jina, mtumaji au mada. Bofya kulia faili kwa zaidi, na Onyesha barua hukupeleka kwenye barua ilikotoka.
+"""
+
+["2026-09-30-1643-dimmer-row-markers"]
+title = "Orodha ya barua tulivu zaidi"
+text = """
+Kisanduku tupu cha tiki, nyota au alama ya Muhimu kwenye orodha ya barua hufifia hadi kiashiria kiwe juu ya safu yake. Nyota na alama zilizowekwa hubaki na rangi yao.
+"""
+
+["2026-09-30-1704-folder-arrows-on-hover"]
+title = "Kidirisha cha folda nadhifu zaidi"
+text = """
+Mishale midogo kando ya Kikasha, Zenye nyota na folda nyingine huonekana tu kiashiria kikiwa juu ya folda hiyo. Folda uliyoifungua hubaki na mshale wake.
+"""
+
+["2026-09-30-1712-arrow-keys-in-times"]
+title = "Vitufe vya mishale katika visanduku vya saa"
+text = """
+Katika Chagua tarehe na saa, na katika saa ya jukumu, Juu na Chini hubadilisha sehemu ambayo kishale kipo: saa, dakika au AM/PM.
+"""
+
+["2026-09-30-1742-check-one-folder"]
+title = "Kagua folda moja kwa barua mpya"
+text = """
+"Kagua barua mpya" kwenye menyu ya kubofya kulia ya folda sasa hukagua folda hiyo pekee, kwa hivyo ni haraka. Kwenye kikasha cha akaunti chini ya Akaunti Zote hukagua kikasha cha akaunti hiyo, na kwenye orodha kama Kikasha au Zilizotumwa chini ya Akaunti Zote hukagua folda hiyo katika kila akaunti.
+"""
+
+["2026-09-30-1742-frosted-viewer"]
+title = "Kitazamaji chepesi chenye ukungu"
+text = """
+Upau wa juu wa kitazamaji cha viambatisho ni mwembamba na mwepesi zaidi, na ukurasa, kukuza na kuzungusha hukaa kwenye kidonge. Kuzunguka faili, Katna Mail huonekana ikiwa na ukungu chini ya pazia jeusi laini, na pau za zana zina ukungu pia. Ukungu hufuata Mipangilio > Majaribio; bila hiyo kitazamaji hutumia pazia jeusi la kawaida.
+"""
+
+["2026-09-30-1752-touchpad-glide"]
+title = "Kusogeza kwa haraka kwenye padi ya kugusa huteleza"
+text = """
+Kupeperusha haraka kwa vidole viwili kwenye padi ya kugusa huendelea kusogeza na kupunguza kasi, kama katika programu nyingine. Gusa padi tena ili kusimamisha. Kwenye Wayland.
+"""
+
+["2026-09-30-1800-inbox-tabs-in-top-row"]
+title = "Vichupo vya kikasha kwenye safu ya juu"
+text = """
+Msingi, Matangazo, Mitandao ya kijamii na vichupo vingine vya kikasha sasa hukaa kwenye upau wa kidonge katika safu ya juu ya orodha, kila kimoja na hesabu ya rangi ya barua zake ambazo hazijasomwa. Uangaziaji huteleza hadi kichupo unachochagua, na kubofya kichupo kilicho wazi hurudisha orodha yake juu. Orodha ikiwa nyembamba upau huchukua safu yake na kuonyesha aikoni, ukibakiza jina la kichupo kilicho wazi; kwenye simu hukaa kwenye upau wa orodha, na Onyesha upya kwenye menyu ya Zaidi.
+"""
+
+["2026-09-30-1805-account-menu"]
+title = "Taarifa za akaunti kwenye menyu ya kubofya kulia"
+text = """
+Bofya kulia jina la akaunti kwenye orodha ya folda, au kikasha chake chini ya Akaunti Zote, ili kuona anwani yake, kama imesawazishwa na ilikaguliwa lini mara ya mwisho, na inatumia hifadhi kiasi gani. Kutoka hapo unaweza kukagua kikasha hicho, kuandika barua mpya kutoka akaunti hiyo, kufungua mipangilio yake, au kuingia tena muda wa kuingia ukiisha.
+"""
+
+["2026-09-30-1819-glass-search-box"]
+title = "Kisanduku cha kutafuta cha kioo"
+text = """
+Mandharinyuma yenye ukungu ikiwa imewashwa, kisanduku cha kutafuta ni kioo chenye ukungu na ukingo hafifu usipokitumia, na huwa thabiti unapokibofya ili kuandika.
+"""
+
+["2026-09-30-1820-search-cancel-restores"]
+title = "Ghairi utafutaji, upate barua zako tena"
+text = """
+Escape au kufuta kisanduku cha kutafuta sasa hukurudisha ulipokuwa: folda ileile, mahali palepale kwenye orodha na barua uliyokuwa umefungua. Ukifungua tokeo badala yake, utafutaji huchukua nafasi kama awali.
+"""
+
+["2026-09-30-1840-first-run-window"]
+title = "Mwanzo wa kwanza wa kirafiki zaidi"
+text = """
+Unapoweka Katna Mail, dirisha huonekana nyuma ya kurasa za usanidi chini ya pazia jepesi: programu, Tunga na kisanduku cha kutafuta, pamoja na vishika-nafasi laini mahali folda na barua zako zitakapotokea. Hatua mpya inatoa akaunti ya Katna na kuorodhesha inachowasha (risiti za kusomwa, ufuatiliaji wa viungo, Shughuli na tafsiri), au unaweza kuiruka.
+"""
+
+["2026-09-30-1850-windows-frame-and-blur"]
+title = "Fremu na ukungu wa Katna kwenye Windows"
+text = """
+Kwenye Windows, Katna Mail sasa hufunguka ndani ya skrini, ikiwa imepanuliwa skrini ikiwa ndogo. Mipangilio > Majaribio inaweza kutia ukungu kilicho nyuma ya dirisha, na fremu ya Katna yenyewe hugeuza upau wa juu kuwa upau wa kichwa wakati ujao unapofungua Katna Mail.
+"""
+
+["2026-09-30-1851-dark-depth"]
+title = "Rahisi kuona katika rangi za giza"
+text = """
+Katika rangi za giza, vitu vinavyoelea juu ya orodha ya barua sasa ni vyepesi kidogo na vina ukingo hafifu mwepesi, kwa kuwa vivuli havionekani sana kwenye mandharinyuma meusi. Kitufe cha Rudi juu, menyu, dirisha la Tunga na vidirisha hujitokeza wazi. Rangi nyepesi zinaonekana kama awali.
+"""
+
+["2026-09-30-1911-files-scrollbar"]
+title = "Upau wa kusogeza kwenye ukurasa wa Faili"
+text = """
+Faili zikiwa nyingi kuliko zinavyotosha, upau mwembamba wa kusogeza huonekana upande wa kulia unaposogeza au kiashiria kikiwa juu ya faili, kisha hufifia. Ukokote ili kupitia faili haraka, au bofya juu au chini yake kuruka hapo.
+"""
+
+["2026-09-30-1919-tabs-keep-open-mail"]
+title = "Kubadilisha vichupo huacha barua wazi"
+text = """
+Kidirisha cha kusoma kikiwa kando ya orodha, kuchagua kichupo kingine cha kikasha hakufungi tena barua unayosoma; orodha hubadilika na barua hubaki wazi.
+"""
+
+["2026-09-30-1925-inbox-tabs-centred"]
+title = "Vichupo vya kikasha katikati"
+text = """
+Vichupo vya kikasha sasa hukaa katikati ya safu ya juu ya orodha, vikisogea kando kadiri tu vitufe vyake vinavyohitaji.
+"""
+
+["2026-09-30-1945-page-box-arrow-keys"]
+title = "Vitufe vya mishale kwenye kisanduku cha ukurasa"
+text = """
+Katika PDF, bofya nambari ya ukurasa na ubonyeze Juu au Chini ili kurudi ukurasa mmoja au kwenda mbele. Shikilia kitufe ili kupitia kurasa haraka.
+"""
+
+["2026-09-30-1952-phone-bar-labels"]
+title = "Majina ya programu kwenye simu hufuata mpangilio wako"
+text = """
+Majina ya programu yakiwa yamezimwa katika Mipangilio, upau ulio chini ya dirisha la ukubwa wa simu sasa huonyesha aikoni pekee, katikati, kama reli ya kando inavyofanya.
+"""
+
+["2026-09-30-1955-account-menu-icons"]
+title = "Mipangilio na lugha kwenye menyu ya akaunti"
+text = """
+Menyu iliyo chini ya picha ya akaunti yako sasa hufunguka na safu ya aikoni: fungua Mipangilio au badilisha lugha. Bendera ya lugha imeondoka kwenye upau wa juu ili kutoa nafasi.
+"""
+
+["2026-09-30-2001-phone-tabs-fold"]
+title = "Kila kichupo cha kikasha hubaki karibu"
+text = """
+Dirisha likiwa jembamba, vichupo vya kikasha hujikunja kwa ulaini badala ya kujificha: lebo hugeuka kuwa aikoni kubwa zaidi, kisha hesabu hujiweka kando. Kwenye simu vichupo hutanda kwenye upau mzima, rahisi kugusa, na Zaidi mwishoni mwa kidonge kilekile.
+"""
+
+["2026-09-30-2012-fit-and-page-arrows"]
+title = "Toshea, mishale ya kurasa na zaidi kwenye kitazamaji"
+text = """
+Kitazamaji cha viambatisho kina kitufe cha Toshea: ukurasa wa PDF hutosha urefu wa dirisha, picha hutosha dirisha, na hati, slaidi na lahajedwali hutosha upana wake. Picha pia hupata Ukubwa halisi na zinaweza kuzungushwa. Elekeza kwenye kisanduku cha ukurasa kupata mishale midogo ya kurudi ukurasa mmoja au kwenda mbele, na slaidi hupata kisanduku chake.
+"""
+
+["2026-09-30-2019-folder-icon-colours"]
+title = "Aikoni za folda zenye rangi"
+text = """
+Aikoni za kidirisha cha folda sasa zina rangi zinazoonyesha kila folda ina nini: Ambazo hazijasomwa buluu, Zenye nyota njano, Muhimu kahawia-njano, Zilizotumwa kijani, Taka nyekundu, Rasimu zambarau, na Kikasha kwa rangi ya msisitizo ya eneo-kazi lako. Hesabu za barua hukaa kwenye vidonge vidogo hafifu.
+"""
+
+["2026-09-30-2040-tabs-no-slide"]
+title = "Vichupo vya kikasha vya haraka zaidi"
+text = """
+Kubofya kichupo cha kikasha sasa hukiangazia mara moja, kwa mawimbi ya kubofya tu, badala ya kuteleza uangaziaji juu ya vichupo vingine.
+"""
+
+["2026-10-01-0145-files-tidy"]
+title = "Ukurasa wa Faili nadhifu zaidi"
+text = """
+Hesabu zilizo kando ya kila aina ya faili na kila akaunti sasa hukaa kwenye vidonge vidogo vilevile kama hesabu za folda katika Barua. Mstari ulio chini ya kichwa cha ukurasa na safu za faili pia huanza na kuishia kwenye kingo zilezile.
+"""
+
+["2026-10-01-0147-today-marker-fits"]
+title = "Tarehe ya leo hutosha alama yake"
+text = """
+Katika mwonekano wa Mwezi wa Kalenda, alama ya leo sasa hubeba tarehe nzima. Tarehe 1 huwa kidonge kuzunguka "01 Okt" badala ya duara dogo ambalo lebo ilimwagika nje yake.
+"""
+
+["2026-10-01-0208-tab-counts-stay"]
+title = "Hesabu za vichupo hubaki palepale"
+text = """
+Kufungua kichupo cha kikasha hakufanyi tena upau wa vichupo kuruka. Kichupo kilicho wazi hubaki na hesabu yake ya barua mpya, ambayo hufifia polepole hadi kijivu tulivu, na hesabu hujikunja kwa ulaini mara unapomaliza kusoma kila kitu kwenye kichupo hicho.
+"""
+
+["2026-10-01-0225-files-keyboard"]
+title = "Pitia faili zako kwa kibodi"
+text = """
+Kwenye ukurasa wa Faili, vitufe vya mishale sasa husogea kati ya faili, Home na End huenda kwenye ya kwanza na ya mwisho, na Enter huifungua. Katika kitazamaji kilichofunguliwa kutoka hapo, mishale huendelea kwenye faili inayofuata ukurasani, kutoka barua yoyote ile; Shift pamoja na mshale hubaki na viambatisho vya barua ileile.
+"""
+
+["2026-10-01-0254-files-dates"]
+title = "Chagua siku kwenye ukurasa wa Faili"
+text = """
+Chipu ya muda kwenye ukurasa wa Faili sasa hufungua kalenda ya miezi miwili yenye chaguo za haraka kama Wiki iliyopita na Mwezi huu. Bofya siku, au kokota kutoka siku moja hadi nyingine, na faili hufuata unapokokota. Kisha zungusha gurudumu la kipanya juu ya chipu ili kusogeza muda uleule mapema au baadaye.
+"""
+
+["2026-10-01-0256-color-schemes"]
+title = "Mipango ya rangi na rangi za msisitizo"
+text = """
+Mipangilio > Mwonekano sasa ina Hali, Rangi na Rangi ya msisitizo kama chaguo tofauti. Chagua Angavu au Meusi, kisha mpango wowote kati ya 14 wa rangi, kama Clear, Nord, Solarized au Catppuccin, au baki na wa eneo-kazi lako. Kila mmoja hufanya kazi kwa mwanga na giza, na rangi yoyote ya msisitizo inaweza kuwekwa juu.
+"""
+
+["2026-10-01-0310-badge-counts-what-notifies"]
+title = "Hesabu kwenye upau wa kazi inalingana na arifa zako"
+text = """
+Hesabu ya barua ambazo hazijasomwa kwenye upau wa kazi na trei sasa huhesabu barua zilezile zinazokuarifu: kichupo cha Msingi cha Kikasha chako. Matangazo, Mitandao ya kijamii, Taarifa na Mijadala haziiongezei tena.
+"""
+
+["2026-10-01-0312-quiet-selected-row"]
+title = "Folda iliyo wazi tulivu zaidi"
+text = """
+Folda iliyo wazi katika Barua, na mwonekano ulio wazi katika Anwani, Majukumu, Madokezo na Faili, sasa huwekewa alama kwa kijivu laini badala ya rangi ya msisitizo, ili Tunga na reli ya programu vijitokeze na aikoni za folda zibaki na rangi zao.
+"""
+
+["2026-10-01-0315-desktop-schemes"]
+title = "Mipango ya rangi ya eneo-kazi lako"
+text = """
+Mipangilio > Mwonekano > Rangi pia huorodhesha mipango ya eneo-kazi lako: kila mpango wa rangi uliosakinishwa kwenye KDE Plasma, na kwenye Windows rangi zake na mandhari za Contrast. Mfumo sasa hufanya kazi kwa mwanga na giza kwenye KDE pia, ukitumia mwenzi wa mwanga au giza wa mpango wako, na Katna hufuata rangi ya msisitizo ya Windows.
+"""
+
+["2026-10-01-0329-mute-folders"]
+title = "Nyamazisha folda, kichupo au akaunti"
+text = """
+Kengele iliyo juu ya orodha hunyamazisha folda iliyo wazi au kichupo cha Kikasha kwa saa moja, hadi kesho asubuhi, au hadi uiwashe tena. Bofya kulia folda au akaunti kwa hilo hilo. Mipangilio › Arifa huonyesha folda zipi huarifu na zipi huhesabiwa kwenye upau wa kazi, na kila kilichonyamazishwa.
+"""
+
+["2026-10-01-0335-tray-style"]
+title = "Aikoni ya trei yenye rangi au ya rangi moja"
+text = """
+Mipangilio > Jumla > Kompyuta ya mezani > Aikoni ya trei yenye rangi huchagua rangi za Katna au rangi moja kama aikoni nyingine za paneli. Rangi moja hubaki rangi moja hata kukiwa na barua ambazo hazijasomwa, na hesabu ya ambazo hazijasomwa huwa nyekundu kila wakati. Kwenye Linux aikoni ya trei ni ya rangi moja kwa chaguomsingi; kwenye Windows ni ya rangi.
+"""
+
+["2026-10-01-0354-mute-conversations"]
+title = "Nyamazisha mazungumzo au mtumaji"
+text = """
+Kengele iliyo juu ya mazungumzo yaliyo wazi huyanyamazisha: majibu mapya hayakuarifu tena wala kuongeza hesabu ya upau wa kazi, na kengele iliyokatwa huyawekea alama kwenye orodha. Bofya kulia mazungumzo upate Nyamazisha mazungumzo au Nyamazisha mtumaji, au bonyeza M.
+"""
+
+["2026-10-01-0410-your-color-schemes"]
+title = "Tengeneza mpango wako wa rangi"
+text = """
+Mipangilio > Mwonekano > Rangi > Badilisha upendavyo hunakili mpango unaotumia kwenye kihariri: badilisha rangi yoyote kati ya nane upande wa mwanga na wa giza, ona dirisha la barua kwa rangi hizo, na Katna hukuambia nini kitakuwa kigumu kusoma. Leta huchukua faili ya mpango wa rangi ya Katna au KDE, na kubofya kulia mpango wako huuhariri, kuunakili, kuuhamisha au kuufuta.
+"""
+
+["2026-10-01-0527-calendar-opens-on-week"]
+title = "Kalenda hufunguka kwenye Wiki"
+text = """
+Katna Calendar hufunguka kwenye mwonekano wa Wiki tena, na siku zijazo kwa saa. Mwezi, Siku, Mwaka na mingine iko umbali wa kubofya mara moja kwenye upau wa juu.
+"""
+
+["2026-10-01-0552-lighter-count-on-open-row"]
+title = "Hesabu hujitokeza kwenye folda iliyo wazi"
+text = """
+Hesabu iliyo kando ya folda iliyo wazi katika Barua, na kando ya aina iliyo wazi katika Faili, sasa hukaa kwenye kidonge chepesi kuliko kijivu cha mstari, kwa hivyo haizami tena ndani yake, kwa mwanga na giza.
+"""
+
+["2026-10-01-0652-files-leave-out-small-pictures"]
+title = "Faili huacha nembo za sahihi"
+text = """
+Ukurasa wa Faili haujai tena nembo ndogo na aikoni zinazokuja kwenye sahihi za barua pepe: picha chini ya KB 12, au chini ya pikseli 100 kwa upana au urefu, hubaki chini ya barua yao. Badilisha vikomo vyote viwili, au onyesha kila picha, katika Mipangilio > Programu chaguomsingi > Ukurasa wa Faili.
+"""
+
+["2026-10-01-0700-mute-from-contact"]
+title = "Nyamazisha mtumaji kutoka kadi yake ya mwasiliani"
+text = """
+Kadi ya mwasiliani iliyo kando ya barua ina kengele kwanza kati ya vitufe vyake: hunyamazisha kila kitu kutoka kwa mtumaji huyo, na kengele iliyokatwa baada ya jina lake huonyesha hivyo. Ibofye tena ili kusikia kutoka kwake.
+"""
+
+["2026-10-01-0803-select-hover-fits"]
+title = "Kitufe cha kuchagua nadhifu zaidi"
+text = """
+Uangaziaji wa kuelea nyuma ya kisanduku cha kuchagua juu ya orodha ya barua sasa ni mrefu sawa na vitufe vilivyo kando yake, uko mbali na ukingo wa kadi sawa na ulivyo kutoka juu yake, na pembe zake hufuata pembe ya kadi yenyewe.
+"""
+
+["2026-10-01-0807-files-leave-out-signature-pictures"]
+title = "Faili huacha pia picha kubwa za sahihi"
+text = """
+Picha ambayo mtu hutuma katika mazungumzo matatu au zaidi, kama bango au picha kwenye sahihi yake, haionekani tena kwenye ukurasa wa Faili, wala aikoni za mitandao ya kijamii, hata ziwe kubwa kiasi gani. Bado huonekana chini ya barua yao, na kuzima "Acha picha ndogo" huzirudisha zote.
+"""
+
+["2026-10-01-0830-muted-contact-mark"]
+title = "Ona nani amenyamazishwa"
+text = """
+Kengele iliyokatwa sasa hufuata jina la mtumaji aliyenyamazishwa kila anapoonekana: orodha ya barua, barua iliyo wazi, Anwani, visanduku vya Kwa na Nakala na mapendekezo yake, ukurasa wa Faili, wageni wa matukio na ripoti ya Shughuli. Hakuna tena kujiuliza kwa nini barua zake ziko kimya.
+"""
+
+["2026-10-01-0839-sounds"]
+title = "Sauti za barua mpya, vikumbusho na kutuma"
+text = """
+Mipangilio > Arifa ina sehemu ya Sauti: barua mpya, vikumbusho, barua iliyorudi kwenye kikasha, barua iliyotumwa na barua ambayo haikutumwa kila moja huchagua sauti kutoka eneo-kazi lako, huicheza kwa kitufe kilicho kando yake, au huizima. Sauti sasa hucheza kwenye KDE Plasma pia, na hukaa kimya kwa barua zilizonyamazishwa na wakati wa Usinisumbue.
+"""
+
+["2026-10-01-0925-chat-view"]
+title = "Soma mazungumzo kama gumzo (majaribio)"
+text = """
+Washa Mipangilio > Majaribio > Mazungumzo kama gumzo na barua kati ya watu husomeka kama gumzo la kikundi: kiputo kwa kila barua chenye kile kilichoandikwa tu, zako upande wa kulia, picha na faili kama midia ya gumzo. Barua iliyonukuliwa na sahihi husubiri nyuma ya ··· katika kila kiputo, na kubofya jina huonyesha kadi ya mtu huyo pamoja na sahihi yake. Jibu kutoka kisanduku kilicho chini, kwa Ctrl+Enter, upau wa uumbizaji nyuma ya Aa na kibanio cha karatasi kwa faili, violezo na sahihi. Majarida hubaki na mwonekano wa kawaida, na swichi ya Gumzo | Barua hugeuza mazungumzo yoyote upande wowote.
+"""
+
+["2026-10-01-0946-forward-keeps-files"]
+title = "Kusambaza huhifadhi faili"
+text = """
+Kusambaza ujumbe sasa huleta viambatisho vyake pia, vikionyeshwa chini ya ujumbe ili uweze kuondoa chochote kati yake kabla ya kutuma. Kubadilisha usambazaji kuwa jibu huviacha tena.
+"""
+
+["2026-10-01-1009-forward-a-file"]
+title = "Sambaza faili pekee"
+text = """
+Kitazamaji cha viambatisho kina kitufe cha Sambaza kwenye upau wake wa juu: huanzisha barua mpya ikiwa na faili hiyo pekee kama kiambatisho, bila barua iliyokuja nayo. Faili zisizo na onyesho la kukagua hutoa Sambaza pia, na vilevile kadi za viambatisho chini ya barua iliyo wazi, kando ya Hifadhi.
+"""
+
+["2026-10-01-1039-rephrase-with-ai"]
+title = "Andika upya kwa AI"
+text = """
+Chagua maandishi kwenye ujumbe na ubonyeze kimetameta kilicho kando yake, au Ctrl+J, ili yaandikwe upya kwa uwazi zaidi, kwa ufupi zaidi, kwa urafiki zaidi au kwa urasmi zaidi, kisha Badilisha. Katna AI ni bure kwa siku 30, au tumia ufunguo wako mwenyewe kutoka Google Gemini, OpenAI, Claude, Mistral, DeepSeek, OpenRouter au modeli iliyo kwenye kompyuta hii. AI inaweza pia kumalizia sentensi zako kwa kijivu; iwashe katika Mipangilio > Tunga.
+"""
+
+["2026-10-01-1043-header-details-selectable"]
+title = "Nakili kutoka maelezo ya barua"
+text = """
+Maelezo yaliyo chini ya "kwa mimi" sasa yanaweza kuchaguliwa na kunakiliwa kama barua yenyewe. Bofya anwani kuona kadi ya mtu huyo kando ya barua, au ibofye kulia upate Nakili anwani. Watu walionyamazishwa huonyesha kengele yao iliyokatwa hapo pia.
+"""
+
+["2026-10-01-1112-left-bar-button"]
+title = "Kitufe kimoja kikubwa, ukunjaji mmoja, kwenye kila ukurasa"
+text = """
+Kitufe kikubwa kilicho juu ya upau wa kushoto sasa kinaonekana na kukaa vilevile kwenye kila ukurasa na hufanya kazi ya ukurasa huo: Tunga katika Barua na Faili, Tukio jipya, Anwani mpya, Jukumu jipya na Dokezo jipya. Kukunja upau wa kushoto huukunja kila mahali, na ukiwa umekunjwa kitufe cha kila ukurasa husubiri juu ya reli. Kwenye simu ni kitufe kinachoelea.
+"""
+
+["2026-10-01-1115-color-picker"]
+title = "Kichagua rangi kwenye kihariri cha mpango"
+text = """
+Bofya rangi kwenye kihariri cha mpango na kichagua hufunguka papo hapo kando yake: kokota kwenye mraba na upau wa hue, andika thamani ya hex, tumia tena rangi za mpango wenyewe au chaguo za karibuni, au chukua rangi kutoka mahali popote kwenye skrini kwa kidondoshi kwenye KDE na GNOME.
+"""
+
+["2026-10-01-1130-contact-card-folds-folders"]
+title = "Kadi ya mwasiliani hujitengenezea nafasi"
+text = """
+Katika dirisha jembamba mno kwa kidirisha cha folda na kadi ya mwasiliani kando kwa kando, kadi sasa hukunja folda inapofunguka, nazo hurudi kadi inapofungwa. Folda unazokunja mwenyewe hubaki zimekunjwa.
+"""
+
+["2026-10-01-1132-open-mail-scroll-bar"]
+title = "Upau wa kusogeza katika barua ndefu"
+text = """
+Mazungumzo marefu sasa huonyesha upau uleule tulivu wa kusogeza kama ukurasa wa Faili unapoyasogeza au kuyaelekezea. Pau zote mbili sasa ni nyembamba zaidi na hukua kiashiria kinapozikaribia. Kokota moja, au bofya kando yake, kuruka popote.
+"""
+
+["2026-10-01-1240-contact-card-close"]
+title = "Weka kadi ya mwasiliani kando, ona walio kwenye gumzo"
+text = """
+Kadi ya mwasiliani iliyo kando ya mazungumzo ina ✕ kwenye kona yake, na kubofya tena picha au anwani ya mtu yuleyule huiweka kadi kando. Katika mwonekano wa gumzo, kubofya kichwa huorodhesha kila mtu kwenye gumzo pamoja na anwani yake na idadi ya barua alizotuma kila mmoja.
+"""
+
+["2026-10-01-1241-two-blur-switches"]
+title = "Ukungu, kwa njia yako"
+text = """
+Ukungu sasa una swichi mbili katika Mipangilio, Majaribio: moja ya mandharinyuma ya dirisha na moja ya menyu na vidirisha. Menyu zenye ukungu zimewashwa kwa chaguomsingi, hata mandharinyuma ya dirisha yakiachwa thabiti.
+"""
+
+["2026-10-01-1502-fainter-row-lines"]
+title = "Mistari tulivu zaidi kati ya barua"
+text = """
+Mistari kati ya barua kwenye orodha sasa ni hafifu zaidi, kwa hivyo orodha husomeka kama safu moja tulivu kwa mwanga na giza.
+"""
+
+["2026-10-01-1505-contact-close-round"]
+title = "Kitufe kimoja cha kufunga kwa kila kidirisha"
+text = """
+✕ kwenye kadi ya mwasiliani sasa ni kitufe cha mviringo kilekile kama ✕ kwenye barua iliyo wazi, chenye duara lilelile la kijivu unapokielekezea.
+"""
+
+["2026-10-01-1525-thread-count"]
+title = "Hesabu ya barua nadhifu zaidi"
+text = """
+Idadi ya barua katika mazungumzo sasa hukaa kando ya majina pamoja na aikoni ndogo ya gumzo, katikati ya mstari wa majina badala ya kuinuka juu yake.
+"""
+
+["2026-10-01-1541-chat-attach-from-files"]
+title = "Ambatisha kutoka Faili kwenye gumzo"
+text = """
+Katika gumzo (Mipangilio > Majaribio), kibanio cha karatasi kina Kutoka Faili: chagua faili yoyote iliyokuja au kwenda pamoja na barua zako, za mazungumzo haya kwanza. Weka tiki kwenye kadhaa, tazama moja kwa jicho, na uone uzito wake ukilinganishwa na MB 25 ambazo barua inaweza kubeba. Kibanio cha karatasi sasa hukaa ndani ya kisanduku cha jibu, na Aa hufungua upau mwembamba wenye mitindo tu ambayo gumzo linahitaji.
+"""
+
+["2026-10-01-1553-rephrase-card-text"]
+title = "Andika upya hufanya kazi na funguo mpya za Gemini"
+text = """
+Menyu zenye ukungu zikiwa zimewashwa, kadi ya Andika upya (Ctrl+J) ilifunguka tupu; mapendekezo yake sasa huonekana juu ya kioo chenye ukungu. Google Gemini sasa hutumia gemini-3.5-flash-lite isipokuwa uandike modeli nyingine, kwa kuwa funguo mpya za Gemini haziwezi tena kutumia 2.5 Flash-Lite, na ufunguo usio sahihi husema hivyo.
+"""
+
+["2026-10-01-1624-rephrase-button"]
+title = "Andika upya bila kuchagua, na mapendekezo ya haraka zaidi"
+text = """
+Kimetameta kando ya Uumbizaji chini ya ujumbe mpya, na kwenye kisanduku cha jibu cha mwonekano wa gumzo, huandika upya kila ulichoandika wakati hakuna kilichochaguliwa, au uteuzi tu ukiwepo; Ctrl+J hufanya vivyo hivyo. Mapendekezo marefu kwa AI huja mapema zaidi, na sehemu ya Modeli katika Mipangilio > Tunga huorodhesha modeli ambazo huduma yako inatoa unapoandika.
+"""
+
+["2026-10-01-1626-dimmer-preview"]
+title = "Mstari wa onyesho tulivu zaidi"
+text = """
+Maandishi ya onyesho chini ya mada ya kila barua kwenye orodha sasa yamefifia zaidi, ili mtumaji na mada vijitokeze, kwa mwanga na giza.
+"""
+
+["2026-10-01-1645-frosted-dialogs"]
+title = "Vidirisha vyenye ukungu"
+text = """
+Menyu na vidirisha vyenye ukungu vikiwa vimewashwa, vidirisha ni kioo chenye ukungu pia: Ongeza akaunti ya barua, Kuhusu, Kilicho kipya, masasisho, kushiriki, onyesho la kuchapisha, lebo, maswali ya kufuta na kuondoa, kadi ya mwanzo wa kwanza na kidirisha cha kiungo cha Tunga.
+"""
+
+["2026-10-01-1650-chat-pins"]
+title = "Bandika hadi vitu 5 kwenye gumzo"
+text = """
+Katika gumzo (Mipangilio > Majaribio), elea juu ya kiputo na ubonyeze pini, au bofya kulia faili, ili kukiweka juu. Upau mwembamba chini ya kichwa huonyesha vilivyobandikwa: ubofye ili kuruka kwa kila kimoja kwa zamu, au fungua orodha ili kuvikokota kwa mpangilio au kuondoa pini. Vilivyobandikwa hubaki kwenye kompyuta hii.
+"""
+
+["2026-10-01-1655-chat-signatures"]
+title = "Gumzo huacha sahihi na sehemu za chini"
+text = """
+Viputo vya gumzo sasa huonyesha tu kile watu walichoandika. Maneno ya kuaga kama "Wako mwaminifu", sahihi za kampuni chini ya mstari au zenye anwani na nambari za simu, na sehemu za chini zenye viungo vya kujiondoa au matangazo husubiri nyuma ya kidonge cha ···, pamoja na sahihi ambayo mtu hurudia katika kila barua.
+"""
+
+["2026-10-01-1805-blur-amount"]
+title = "Chagua jinsi menyu zenye ukungu zinavyoonekana"
+text = """
+Menyu na vidirisha vyenye ukungu sasa ni wazi zaidi na hufuata nguvu ya ukungu ya KDE. Washa Kiasi maalum cha ukungu katika Mipangilio, Majaribio, Ukungu ili kuweka nguvu ya ukungu na uangavu mwenyewe.
+"""
+
+["2026-10-01-1825-chat-company"]
+title = "Anakofanya kazi, kwenye kadi yake"
+text = """
+Katika gumzo (Mipangilio > Majaribio), kadi ya mtu sasa ina sehemu ya Kampuni: kampuni hufanya nini, iko wapi, tangu lini, na viungo vya tovuti na kurasa zake, vilivyosomwa kutoka ukurasa wake wa nyumbani na Wikipedia. Hufuata swichi ya Picha za watumaji.
+"""
+
+["2026-10-02-0052-smooth-start-after-updates"]
+title = "Kuanza kwa ulaini baada ya masasisho"
+text = """
+Baada ya sasisho, Katna Mail haisemi tena kwamba hifadhi ya barua haikuweza kufunguliwa wakati inaandaa barua zako kwa toleo jipya. Huonyesha picha ya kawaida ya kupakia kwa sekunde hizo chache, kisha barua zako.
+"""
+
+["2026-10-02-0106-calmer-dialogs"]
+title = "Vidirisha tulivu zaidi"
+text = """
+Vidirisha vyenye ukungu ni thabiti zaidi kuliko menyu, kwa hivyo orodha ya barua yenye shughuli nyingi haionekani tena kupitia kwavyo. Kuhusu, Kilicho kipya na Kagua masasisho hufunguka bila kutia giza dirisha lililo nyuma yake.
+"""
+
+["2026-10-02-0111-chat-pin-text"]
+title = "Bandika maneno machache kutoka gumzo"
+text = """
+Katika gumzo (Mipangilio > Majaribio), maandishi ndani ya kiputo sasa yanaweza kuchaguliwa na kunakiliwa kama barua yoyote. Bofya kulia maneno uliyochagua ndani ya kiputo kimoja na uchague Bandika juu ili kuyaweka kwenye upau wa pini wa gumzo.
+"""
+
+["2026-10-02-0124-event-editor-clear"]
+title = "Kihariri cha tukio hakifunikwi na Tukio jipya"
+text = """
+Kitufe cha Tukio jipya cha upau wa kushoto hakikai tena juu ya kichwa cha tukio unaloandika au kubadilisha kwenye kihariri kizima. Hurudi kihariri kinapofungwa.
+"""
+
+["2026-10-02-0150-chat-format-bar"]
+title = "Upau kamili zaidi wa Aa kwenye gumzo"
+text = """
+Upau wa Aa wa kisanduku cha jibu la gumzo sasa una zana za Tunga: tendua, fonti, ukubwa, upangaji na ujongezaji, kando ya mitindo iliyokuwa nayo. Katika dirisha jembamba hujifunga hadi mstari wa pili. Kitufe cha rangi huonyesha rangi ya maandishi yako na uangaziaji kando kwa kando, katika Tunga pia.
+"""
+
+["2026-10-02-0210-conversation-summaries"]
+title = "Fupisha mazungumzo"
+text = """
+Bofya kulia mazungumzo na uchague Fupisha, au bonyeza Shift+S, kupata kadi kando yake inayosema yanahusu nini, nini kiliamuliwa na nini kinakusubiri, bila kuyafungua wala kuyatia alama kuwa yamesomwa. Katika mazungumzo yaliyo wazi kimetameta kilicho juu yake huweka muhtasari chini ya mada; katika mwonekano wa gumzo hukaa kwenye ukanda chini ya kichwa. Kila hoja hutaja barua ilikotoka, na barua mpya zikiwa zimefika tangu ulipoyasoma mara ya mwisho, muhtasari hushughulikia hizo tu. Unahitaji Usaidizi wa kuandika kwa AI uwe umewashwa katika Mipangilio > Tunga.
+"""
+
+["2026-10-02-0215-system-colors-follow-mode"]
+title = "Angavu na Meusi hufanya kazi na rangi za Mfumo"
+text = """
+Rangi zikiwa zimewekwa kuwa Mfumo na mpango wa eneo-kazi ulio wa giza pekee (au mwanga pekee), Mipangilio > Mwonekano > Hali sasa hubadilisha Katna kati ya angavu na meusi tena: upande mwingine hutumia rangi za Katna zenyewe kwa rangi ya msisitizo ya eneo-kazi lako.
+"""
+
+["2026-10-02-0218-signature-details-on-card"]
+title = "Maelezo ya sahihi mahali yanapostahili"
+text = """
+Kadi ya mtu haionyeshi tena sahihi yake kama kipande kizima. Maelezo yake huenda mahali yanapostahili: kila nambari ya simu, ikiwa na alama ya simu ya mkononi, ya moja kwa moja au faksi, katika maelezo ya mwasiliani, na kikundi cha kampuni, ofisi, tovuti na kurasa katika sehemu ya Kampuni. Kurasa za mitandao ya kijamii huonekana kama aikoni ndogo za rangi moja, na picha, mabango na sehemu za chini huachwa.
+"""
+
+["2026-10-02-0225-chat-subject-line"]
+title = "Ona mada ya gumzo inapobadilika"
+text = """
+Katika gumzo (Mipangilio > Majaribio), mstari mdogo katikati sasa husema mtu alipobadilisha mada, kama unavyosema nani alimwongeza nani.
+"""
+
+["2026-10-02-0225-no-blur-ghost"]
+title = "Hakuna kivuli cha ukungu kidirisha kinapofungwa"
+text = """
+Kufunga Kuhusu, Kilicho kipya, Kagua masasisho au kidirisha au menyu yoyote yenye ukungu hakuachi tena kiraka cha ukungu nyuma kwa muda mfupi: ukungu hufifia pamoja na kidirisha.
+"""
+
+["2026-10-02-0236-chat-on-phones"]
+title = "Gumzo hutosha kwenye simu"
+text = """
+Katika dirisha la ukubwa wa simu, gumzo (Mipangilio > Majaribio) hubaki na safu moja ya kichwa yenye Rudi na ⋮, na viputo vyake hutumia upana zaidi. Shikilia kiputo kuleta menyu yake kutoka chini, na gusa jina au picha kuona kadi ya mtu huyo kwa njia hiyo hiyo. Telezesha yoyote kati yake chini au gusa nje ili kuiweka kando.
+"""
+
+["2026-10-02-0258-frost-stays-on-scroll"]
+title = "Ukungu hubaki palepale orodha inaposogezwa"
+text = """
+Katika orodha yenye ukungu inayosogezwa, kama watu walio kwenye gumzo au menyu ndefu, mandharinyuma yenye ukungu sasa hubaki mahali pake huku safu zikisogea juu yake.
+"""
+
+["2026-10-02-0301-rephrase-card-above-tools"]
+title = "Andika upya hukaa juu ya upau wa uumbizaji"
+text = """
+Kadi ya Andika upya sasa hufunguka juu kidogo ya upau wa uumbizaji, kwenye kisanduku cha jibu na katika Tunga, badala ya juu ya orodha ya barua. Ikokote kwa kishikio kidogo kilicho juu yake ili kuiondoa njiani; hufunguka mahali pake pa kawaida tena wakati ujao.
+"""
+
+["2026-10-02-0306-fainter-lines-light"]
+title = "Mistari hafifu zaidi katika hali angavu"
+text = """
+Katika hali angavu, mistari kati ya barua kwenye orodha na kati ya jumbe za barua iliyo wazi ni hafifu zaidi, ili ukurasa uonekane tulivu zaidi.
+"""
+
+["2026-10-02-0315-card-button-bar"]
+title = "Kadi ya mtu huweka vitufe vyake karibu"
+text = """
+Sogeza kadi ya mtu na vitufe vyake huteleza juu kuingia kwenye upau mwembamba wenye ukungu kando ya kitufe cha kufunga, pamoja na picha ndogo ya mtu huyo. Kitufe cha kufunga hakikai tena juu ya unachosoma.
+"""
+
+["2026-10-02-0412-button-hover"]
+title = "Vitufe huitikia kiashiria kwa ulaini"
+text = """
+Unapoelekeza kwenye kitufe, mandharinyuma yake ya mviringo sasa hukua kutoka katikati na kujitokeza polepole, kama katika Gmail, na hufifia haraka unapoondoka. Jibu, Sambaza na vitufe vingine vya kidonge hujitokeza kwa upole.
+"""
+
+["2026-10-02-0425-chat-draft-to-mail"]
+title = "Jibu lako la gumzo hukufuata hadi Barua"
+text = """
+Kubadilisha gumzo kuwa Barua ukiwa unaandika jibu sasa husogeza chini hadi kwenye jibu huku kishale chako kikiwa bado ndani yake, na kurudi pia hulihifadhi.
+"""
+
+["2026-10-02-0425-write-reply"]
+title = "Andika jibu kwa AI"
+text = """
+Jibu au usambazaji ukiwa bado mtupu, kimetameta kilicho kando ya Uumbizaji (au Ctrl+J) hukuandikia. Chagua mojawapo ya mawazo matatu yaliyotokana na mazungumzo, au sema kwa maneno yako linapaswa kusema nini, kisha Weka rasimu na ubadilishe unachopenda. Ukishaanza kuandika, kimetameta huandika upya tena. Unahitaji Usaidizi wa kuandika kwa AI uwe umewashwa katika Mipangilio > Tunga.
+"""
+
+["2026-10-02-0430-compose-beside-reply"]
+title = "Tunga huku jibu likiwa nusu"
+text = """
+Tunga sasa hufungua ujumbe mpya hata unapoandika jibu, kwenye gumzo au chini ya mazungumzo. Jibu husubiri kama ulivyoliacha na hurudi ujumbe mpya unapotumwa au kufungwa, au unapobofya kujibu mazungumzo hayo tena.
+"""
+
+["2026-10-02-0436-mark-unread-icon"]
+title = "Aikoni wazi zaidi ya Tia alama kuwa haijasomwa"
+text = """
+Tia alama kuwa haijasomwa sasa huonyesha bahasha yenye nukta, kwenye menyu, kwenye pau za zana na kwenye vitufe vya kuelea vya barua, kwa hivyo haionekani tena kama aikoni ya kawaida ya barua.
+"""
+
+["2026-10-02-0452-fainter-pane-lines"]
+title = "Pau za zana na vichupo tulivu zaidi"
+text = """
+Katika hali angavu, mistari iliyo chini ya pau za zana na kichwa cha barua iliyo wazi, na juu ya Jibu na Sambaza, ni hafifu kama mistari kati ya barua. Mandharinyuma nyuma ya vichupo vya kikasha ni mepesi zaidi pia.
+"""
+
+["2026-10-02-0453-google-drive-in-files"]
+title = "Google Drive yako katika Faili"
+text = """
+Faili sasa huonyesha hifadhi ya kila akaunti ya Google chini ya Hifadhi za wingu katika safu ya kando. Fungua folda zake, itafute, na ufungue, uambatishe au upakue faili papo hapo. Mara ya kwanza, bonyeza Ruhusu ili Katna iweze kusoma hifadhi.
+"""
+
+["2026-10-02-0515-rephrase-subject"]
+title = "Andika upya mada"
+text = """
+Ukishaandika mada, kimetameta mwishoni mwa mstari wake hutoa njia nyingine tatu za kuisema, zilizoandikwa kutoka mada na kile ujumbe wako unasema hadi sasa. Chagua moja kuitumia; Tendua hurudisha ulichoandika. Unahitaji Usaidizi wa kuandika kwa AI uwe umewashwa katika Mipangilio > Tunga.
+"""
+
+["2026-10-02-0525-quieter-compose"]
+title = "Dirisha la Tunga tulivu zaidi"
+text = """
+Dirisha la Ujumbe Mpya huelea likiwa na nafasi sawa kutoka kingo za dirisha. Kwa, Nakala, Nakala fiche na Kutoka hukaa pamoja bila mistari kati yake, wapokeaji ni chipu laini zilizojazwa, na Kutoka ni mstari mmoja tulivu. Usimbaji fiche, kutia sahihi, ufuatiliaji na risiti hushiriki kikundi kimoja kidogo, na zana za kuandika hukaa kwenye upau laini kando ya Tuma.
+"""
+
+["2026-10-02-0553-upload-to-drive"]
+title = "Pakia kwenye Google Drive kutoka Faili"
+text = """
+Google Drive ikiwa wazi katika Faili, kitufe cha Tunga huwa Pakia. Kibofye kutuma faili kwenye folda iliyo wazi, au tumia mshale wake kupakia folda nzima. Mara ya kwanza, bonyeza Ruhusu ili Katna iweze kuongeza faili kwenye hifadhi yako.
+"""
+
+["2026-10-02-0555-reply-from-summary"]
+title = "Jibu kutoka muhtasari"
+text = """
+Kadi ya muhtasari unayoifungua kwa kubofya kulia sasa ina Jibu. Huigeuza kadi ileile kuwa jibu: chagua wazo au sema linapaswa kusema nini, badilisha rasimu ukipenda, kisha Tuma, au Lifungue kwenye mazungumzo ili kuendelea kuandika. Jibu unalofunga bila kutuma husubiri kwenye kisanduku cha jibu. Kadi pia sasa hufunguka mahali ulipobofya.
+"""
+
+["2026-10-02-0559-draft-saved-signature-tag"]
+title = "Rasimu hujihifadhi unapoandika"
+text = """
+Ujumbe unaoandika sasa hujihifadhi kwenye Rasimu kila baada ya sekunde chache, na "Rasimu imehifadhiwa" huonekana kimya kando ya kichwa chake. Lebo hafifu kando ya sahihi yako huitaja; ibofye kuchagua nyingine. Kona ya dirisha la Tunga pia hulingana na kadi iliyo kando yake.
+"""
+
+["2026-10-02-0654-attach-from-drive"]
+title = "Ambatisha kutoka Google Drive"
+text = """
+Kibanio cha karatasi cha Tunga sasa hufungua kichagua cha Faili, kilekile kama Kutoka Faili cha gumzo, pamoja na Google Drive yako kando ya faili zako za barua na Kompyuta hii… kwa kitu kingine chochote. Faili zinazotosha huingia kwenye barua; faili kubwa na Google Docs huenda kama kiungo, kilichoshirikiwa na wapokeaji unapotuma.
+"""
+
+["2026-10-02-0734-peek-and-reply-in-notifications"]
+title = "Chungulia na ujibu kutoka arifa"
+text = """
+Arifa ya barua mpya sasa ina Chungulia, inayoonyesha barua yenyewe ndani ya arifa ileile, na Jibu, ambapo unaandika jibu lako hapohapo na kubonyeza Tuma. Hutumwa kutoka akaunti ambayo barua ilifikia, baada ya muda wako wa Tendua kutuma; Tendua huifungua kwenye Katna Mail ili kuendelea kuandika. Kwenye Linux, barua mpya pia ina mlio wake wenye sauti kubwa zaidi; chagua mwingine katika Mipangilio > Arifa.
+"""
+
+["2026-10-02-0735-drive-viewer-opens-at-once"]
+title = "Faili za hifadhi hufunguka mara moja"
+text = """
+Kufungua faili kutoka hifadhi yako huleta kitazamaji mara moja, na tao linalozunguka hadi faili ifike. Ujumbe ulio chini ya dirisha sasa hupokea mibofyo yake wenyewe, kwa hivyo Funga haibofyi tena kilicho chini yake.
+"""
+
+["2026-10-02-0740-smaller-updates"]
+title = "Masasisho madogo zaidi"
+text = """
+Masasisho sasa hupakua tu kilichobadilika, kwa kawaida megabaiti chache badala ya kifurushi kizima. Katna hujenga toleo jipya kutoka lile ulilonalo na kulikagua kabla ya kusakinisha, na hupakua kifurushi kizima kila inaposhindwa.
+"""
+
+["2026-10-02-0755-faint-lines-everywhere"]
+title = "Mistari hafifu kila mahali"
+text = """
+Katika hali angavu, kila mstari kati ya vitu, chini ya vichwa na kuzunguka kadi sasa ni hafifu kama mistari kati ya barua, ikiwemo kadi ya muhtasari. Sehemu, chipu na vitufe hubaki na ukingo wao wazi.
+"""
+
+["2026-10-02-0756-ai-replies-signed"]
+title = "Majibu ya AI huishia na sahihi yako"
+text = """
+Majibu na maandishi yaliyoandikwa na AI hayaishii tena na "Wako mwaminifu" na jina lako. Sahihi yako huyatia sahihi badala yake: katika jibu la kadi ya muhtasari, lebo ya sahihi chini ya maandishi huchagua ipi, kama katika Tunga.
+"""
+
+["2026-10-02-0801-unified-inbox-tabs"]
+title = "Vichupo katika kikasha cha pamoja"
+text = """
+Kikasha cha akaunti zako zote sasa kina vichupo pia: Msingi, Matangazo, Mitandao ya kijamii, Taarifa na Mijadala, na barua za kila akaunti kwenye kichupo cha aina yake. Nukta kando ya kila mtumaji huonyesha barua ilitoka akaunti ipi. Chagua akaunti moja chini yake kuona vichupo vya akaunti hiyo, au chagua seti nyingine katika Mipangilio > Kikasha.
+"""
+
+["2026-10-02-0805-feeds-removed"]
+title = "Milisho imeondoka kwenye upau wa kushoto"
+text = """
+Hatimaye Katna haitasoma milisho ya RSS na Atom, kwa hivyo kitufe cha Milisho na ukurasa wake wa "inakuja hivi karibuni" vimeondoka kwenye upau wa kushoto. Faili hubaki na Ctrl+7.
+"""
+
+["2026-10-02-0820-drive-bin-and-rename"]
+title = "Badilisha jina na utupe faili za hifadhi"
+text = """
+Katika Faili, faili au folda kwenye Google Drive au OneDrive yako sasa ina Badilisha jina na Hamisha kwenye tupio kwenye menyu yake. Badilisha jina huandika juu ya jina palepale (F2), na Hamisha kwenye tupio (Del) huja na Tendua.
+"""
+
+["2026-10-02-0827-files-chips-on-phones"]
+title = "Chipu za Faili hutosha kwenye simu"
+text = """
+Kwenye simu chipu za ukurasa wa Faili hazikatwi tena ukingoni. Aina za faili hujikunja kuwa aikoni zao, ile uliyochagua ikibaki na lebo yake, na chipu za mtu, siku na mpangilio hupata safu yao wenyewe.
+"""
+
+["2026-10-02-0828-uploads-tray"]
+title = "Ona vipakizi vyako vikiendelea"
+text = """
+Faili unazopakia kwenye Google Drive au OneDrive sasa huonekana kwenye trei chini kulia, kila moja na pete inayojaa inapopanda na muda uliobaki. Ghairi moja au zote, kunja trei kando, na ubofye faili iliyokamilika kufungua folda yake.
+"""
+
+["2026-10-02-0838-drive-share"]
+title = "Shiriki faili za hifadhi kutoka Katna"
+text = """
+Shiriki… kwenye menyu ya faili ya Google Drive au OneDrive katika Faili hufungua kidirisha cha Kushiriki: ongeza watu kama Mtazamaji, Mtoa maoni au Mhariri, badilisha au ondoa walio na ufikiaji tayari, na uifungulie yeyote mwenye kiungo. Hifadhi huwatumia barua pepe tu ukiweka tiki.
+"""
+
+["2026-10-02-0909-soft-search-box"]
+title = "Kisanduku cha kutafuta laini zaidi"
+text = """
+Kisanduku cha kutafuta kilicho juu ni chepesi zaidi: ukingo na ujazo hafifu sana usipokitumia, na sehemu nyeupe yenye ukingo laini wa rangi ya msisitizo unapoandika, badala ya kidonge cha kijivu chenye pete nene ya rangi.
+"""
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Masasisho hufika mapema"
+text = """
+Sasa Katna hutafuta toleo jipya kila saa na mara tu kompyuta yako inapoamka kutoka usingizini, kwa hivyo arifa ya sasisho huja muda mfupi baada ya toleo kutolewa.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Mistari hafifu katika hali ya Meusi pia"
+text = """
+Katika hali ya Meusi, mistari kati ya barua, chini ya vichwa na kuzunguka kadi sasa ni hafifu kama ilivyo katika hali Angavu. Sehemu za kuandika, vipande na vitufe huhifadhi mpaka wao ulio wazi.
+"""

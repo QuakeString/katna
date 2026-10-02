@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = إضافة حساب بريد
+add-account-providers-intro = اختر مزوّد بريدك، ويتولى Katna الباقي.
+add-account-provider-other = بريد آخر
+add-account-provider-other-detail = أي حساب IMAP أو POP3
+add-account-provider-google-detail = Gmail وGoogle Workspace
+add-account-provider-microsoft-detail = Outlook وMicrosoft 365
+add-account-provider-mail = بريد { $provider }
+add-account-form-title = تسجيل الدخول إلى { $provider }
+add-account-form-title-other = حساب بريدك
+add-account-form-intro = يحفظ Katna كلمة مرورك في سلسلة مفاتيح النظام.
 add-account-looking = جارٍ البحث عن خوادم البريد لـ { $address }…
 add-account-address-intro = أدخل عنوان بريدك الإلكتروني. سيجد Katna الخوادم نيابةً عنك.
 add-account-servers-title = إعدادات الخادم
@@ -13,10 +22,18 @@ add-account-signing-in = جارٍ تسجيل الدخول…
 add-account-browser-title = تابِع في متصفحك
 add-account-browser-intro = فتح Katna صفحة تسجيل الدخول إلى { $provider } في متصفحك. سجّل الدخول هناك واسمح لـ Katna بقراءة بريدك وإرساله، ثم عُد إلى هنا.
 add-account-browser-hint = لم تُفتح أي صفحة؟ تحقّق من نوافذ متصفحك، أو ارجع وحاول مجددًا.
+add-account-stage-browser = في انتظار تسجيل دخولك في المتصفح…
+add-account-stage-signing-in-at = جارٍ تسجيل الدخول في { $server }…
+add-account-help-app-password-link = كيفية إنشاء كلمة مرور للتطبيق
+add-account-help-turn-on-imap = لا يسمح { $provider } لتطبيقات البريد بالدخول إلا بعد تفعيل الوصول عبر IMAP وPOP3 في إعدادات بريد الويب لديه.
+add-account-help-turn-on-imap-link = كيفية تفعيله
 
 ## Add a mail account: fields
 
 add-account-field-address = عنوان البريد الإلكتروني
+add-account-receive-with = استلام البريد عبر
+add-account-imap-about = يُبقي IMAP بريدك ومجلداتك على الخادم، كما هي على كل جهاز. اختره متى أمكنك ذلك.
+add-account-pop3-about = ينزّل POP3 بريدك إلى هذا الكمبيوتر. البريد الذي تقرؤه أو تنقله هنا يبقى كما هو على الخادم وعلى أجهزتك الأخرى.
 add-account-incoming = البريد الوارد ({ $protocol })
 add-account-outgoing = البريد الصادر ({ $protocol })
 add-account-field-server = الخادم
@@ -46,6 +63,8 @@ add-account-sign-in-instead = تسجيل الدخول باستخدام { $provid
 add-account-servers-button = إعدادات الخادم
 add-account-back = رجوع
 add-account-add = إضافة الحساب
+add-account-done = تم
+add-account-another = إضافة حساب آخر
 add-account-cancel = إلغاء
 
 ## Add a mail account: problems
@@ -75,6 +94,19 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] لا يمكن لهذه النسخة من Katna تسجيل الدخول إلى حسابات Google بعد.
    *[other] لا يسمح هذا المزوّد بتسجيل الدخول إلا على صفحته الخاصة، وهذا ما لا يستطيع Katna فعله معه بعد.
 }
+add-account-smtp-not-found = وجد Katna مكان قراءة بريدك، لكنه لم يجد مكان إرساله. أدخل خادم البريد الصادر.
+add-account-done-title = حسابك جاهز
+add-account-done-intro = يجلب Katna بريدك الآن. يظهر البريد الجديد فور وصوله.
+add-account-done-sign-in = تسجيل الدخول
+add-account-done-signed-in-with = عبر { $provider }، في متصفحك
+add-account-done-receiving = استلام البريد
+add-account-done-sending = إرسال البريد
+add-account-done-on-server = البريد على الخادم
+add-account-done-kept = يُحتفظ به حتى تحذفه في Katna
+add-account-done-pop3-hint = غيّر ما يحدث للبريد على الخادم من الإعدادات > الحسابات.
+add-account-done-zoho-title = المهام والتقاويم
+add-account-done-zoho-about = يفصل Zoho هذه عن البريد. سجّل الدخول باستخدام Zoho مرة واحدة لإحضارها إلى Katna.
+add-account-done-linked = تم ربط المهام والتقاويم
 
 ## The account menu (from the account button on the top bar)
 

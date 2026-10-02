@@ -25,10 +25,7 @@ contacts-label-removed = { $name } වෙතින් ඉවත් කරන ල
 contacts-label-renamed = ලේබලයේ නම { $name } ලෙස වෙනස් කරන ලදී
 contacts-label-deleted = { $name } ලේබලය මකා දමන ලදී
 contacts-label-no-email = මෙම ලේබලයේ කිසිවෙකුට ඊමේල් ලිපිනයක් නැත
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = ගිණුම්
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = සම්බන්ධතා පෙන්වීමට නැවත පුරනය වන්න
 contacts-account-signed-in = { $address } වෙත නැවත පුරනය විය. ඔබේ සම්බන්ධතා ලබා ගනිමින්…
 contacts-account-sign-in-refused = { $provider } Katna ට ඇතුළු වීමට ඉඩ දුන්නේ නැත. නැවත උත්සාහ කර, ඔබේ සම්බන්ධතාවලට ප්‍රවේශය ඉඩ දෙන්න.
@@ -36,13 +33,9 @@ contacts-account-password = සේවාදායකය මුරපදය ප�
 contacts-account-change-password = මුරපදය වෙනස් කරන්න
 contacts-account-change-password-tooltip = සැකසීම් > ගිණුම් විවෘත කරන්න
 contacts-account-failed = සම්බන්ධතා කියවිය නොහැකි විය.
-# $reason is the server's own words, in English.
 contacts-account-error = සම්බන්ධතා කියවිය නොහැකි විය: { $reason }
 contacts-account-none = ලිපින පොතක් හමු නොවීය
-# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
 contacts-account-none-why = ලිපින පොතක් හමු නොවීය: { $reason }
-# A Gmail or Outlook account added with a password: its contacts need the
-# provider's sign-in.
 contacts-account-use-sign-in = { $provider } සම්බන්ධතා පෙන්වන්නේ { $provider } සමඟ පුරනය වූ Katna ට පමණි.
 contacts-account-sign-in-with = { $provider } සමඟ පුරනය වන්න
 contacts-account-looking = සම්බන්ධතා සොයමින්…
@@ -94,7 +87,7 @@ contacts-print-none = මුද්‍රණය කිරීමට සම්බ�
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = උපන්දිනය: { $day }
 contacts-print-nickname = ආදරනාමය: { $name }
-contacts-create = සම්බන්ධතාව සාදන්න
+contacts-create = නව සම්බන්ධතාවය
 
 ## Search and the list
 

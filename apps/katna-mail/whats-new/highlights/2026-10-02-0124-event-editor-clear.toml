@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The event editor is clear of New event"
+text = """
+The left bar's New event button no longer sits on the title of an event
+you are writing or changing in the whole editor. It comes back when the
+editor closes.
+"""

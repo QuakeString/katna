@@ -20,6 +20,7 @@ tab-provider-other = Katna ne ya tsara
 
 list-select = Zaɓi
 list-refresh = Sabunta
+list-back-to-top = Koma sama
 list-checking = Ana duba sabbin wasiƙu…
 list-more = Ƙari
 list-mark-read = Yi alama an karanta

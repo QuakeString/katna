@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Compose while a reply is half written"
+text = """
+Compose now opens a new message even while you are writing a reply, in
+the chat or under the conversation. The reply waits as you left it and
+comes back when the new message is sent or closed, or when you click to
+reply to that conversation again.
+"""

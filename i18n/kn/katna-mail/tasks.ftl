@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = ರಚಿಸಿ
+tasks-create = ಹೊಸ ಕಾರ್ಯ
 tasks-all = ಎಲ್ಲಾ ಕಾರ್ಯಗಳು
 tasks-today = ಇಂದು
 tasks-starred = ನಕ್ಷತ್ರ ಹಾಕಿರುವುದು
 tasks-new-list = ಹೊಸ ಪಟ್ಟಿಯನ್ನು ರಚಿಸಿ
 tasks-on-this-computer = ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ
 tasks-my-tasks = ನನ್ನ ಕಾರ್ಯಗಳು
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = ಕಾರ್ಯಗಳನ್ನು ತೋರಿಸಲು ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಿ
 tasks-account-signed-in = { $address } ಗೆ ಮತ್ತೆ ಸೈನ್ ಇನ್ ಆಗಿದೆ. ನಿಮ್ಮ ಕಾರ್ಯಗಳನ್ನು ಪಡೆಯಲಾಗುತ್ತಿದೆ…
 tasks-account-sign-in-refused = { $provider } Katna ಅನ್ನು ಒಳಗೆ ಬಿಡಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ, ಮತ್ತು ನಿಮ್ಮ ಕಾರ್ಯಗಳಿಗೆ ಪ್ರವೇಶ ಅನುಮತಿಸಿ.
@@ -21,13 +19,9 @@ tasks-account-change-password = ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾಯ�
 tasks-account-change-password-tooltip = ಸೆಟ್ಟಿಂಗ್‌ಗಳು > ಖಾತೆಗಳು ತೆರೆಯಿರಿ
 tasks-account-not-enabled = Katna ಗಾಗಿ ಕಾರ್ಯಗಳ ಪ್ರವೇಶವನ್ನು ಇನ್ನೂ ಆನ್ ಮಾಡಿಲ್ಲ.
 tasks-account-failed = ಕಾರ್ಯ ಪಟ್ಟಿಗಳನ್ನು ಓದಲಾಗಲಿಲ್ಲ.
-# $reason is the server's own words, in English.
 tasks-account-error = ಕಾರ್ಯ ಪಟ್ಟಿಗಳನ್ನು ಓದಲಾಗಲಿಲ್ಲ: { $reason }
 tasks-account-none = ಯಾವುದೇ ಕಾರ್ಯ ಪಟ್ಟಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 tasks-account-none-why = ಯಾವುದೇ ಕಾರ್ಯ ಪಟ್ಟಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ: { $reason }
-# A Gmail or Outlook account added with a password: its tasks need the
-# provider's sign-in.
 tasks-account-use-sign-in = { $provider } ತನ್ನ ಕಾರ್ಯಗಳನ್ನು { $provider } ಮೂಲಕ ಸೈನ್ ಇನ್ ಆದ Katna ಗೆ ಮಾತ್ರ ತೋರಿಸುತ್ತದೆ.
 tasks-account-sign-in-with = { $provider } ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ
 tasks-account-looking = ಕಾರ್ಯ ಪಟ್ಟಿಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ…
@@ -114,6 +108,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = ಆ ಮೇಲ್ ಈಗ ಇಲ್ಲಿಲ್ಲ.
 tasks-toast-list-deleted = ಪಟ್ಟಿಯನ್ನು ಅಳಿಸಲಾಗಿದೆ
 tasks-toast-moved = { $list } ಗೆ ಸರಿಸಲಾಗಿದೆ
-# A task dragged to another place in its own list.
 tasks-toast-placed = ಕಾರ್ಯವನ್ನು ಸರಿಸಲಾಗಿದೆ
 tasks-toast-rescheduled = ಕಾರ್ಯದ ಸಮಯ ಬದಲಾಯಿಸಲಾಗಿದೆ

@@ -2,6 +2,10 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Top bar
+
+top-brand = Katna
+
 ## App rail (and the bottom bar on a phone)
 
 rail-mail = E-mail
@@ -9,7 +13,7 @@ rail-calendar = Agenda
 rail-contacts = Contacten
 rail-tasks = Taken
 rail-notes = Notities
-rail-feeds = Feeds
+rail-files = Bestanden
 
 ## Pages of apps still to come
 
@@ -18,7 +22,6 @@ app-coming-soon = Binnenkort beschikbaar
 app-calendar-promise = Je CalDAV-agenda’s, vergaderuitnodigingen uit je e-mail en herinneringen, naast je inbox.
 app-tasks-promise = Takenlijsten die synchroniseren met CalDAV, en taken gemaakt van e-mail.
 app-notes-promise = Snelle notities, en notities bij een e-mail of gesprek voor later.
-app-feeds-promise = Lees RSS- en Atom-feeds naast je e-mail.
 
 ## Contacts page
 
@@ -37,4 +40,3 @@ app-contacts-messages = { $count ->
    *[other] { $count } berichten
 }
 app-contacts-last = laatst { $date }
-top-brand = Katna

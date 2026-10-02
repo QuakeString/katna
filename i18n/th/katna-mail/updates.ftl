@@ -1,7 +1,6 @@
 # Katna Mail, Thai (ไทย).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 update-dialog-title = การอัปเดต
 update-dialog-downloading-detail = การดาวน์โหลดจะดำเนินต่อไปแม้คุณปิดหน้าต่างนี้
 update-dialog-progress = { $done } จาก { $total }

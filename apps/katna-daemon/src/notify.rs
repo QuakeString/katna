@@ -3,9 +3,12 @@
 //! New-mail notifications (`docs/ARCHITECTURE.md` §15.1): after each sync,
 //! unread mail that rings (by default: reached an account's inbox, Primary
 //! tab, and nothing about it is muted; §15.1.1) since the last look becomes
-//! one notification per account and sync, with Open, Reply all (for one
-//! message), Mark as read and Archive. Notifications close when their mail
-//! is read or leaves the inbox anywhere, or is muted.
+//! one notification per account and sync, with Open, Mark as read and
+//! Archive, and for one message Peek (more of it, in the same notification)
+//! and Reply: typed into the notification where the desktop can (§15.1.2),
+//! sent from here after the undo time, else Katna Mail's reply window.
+//! Notifications close when their mail is read or leaves the inbox
+//! anywhere, or is muted.
 
 use std::{
     collections::{HashMap, HashSet},
@@ -20,9 +23,10 @@ use futures_lite::{FutureExt, StreamExt};
 use katna_core::AccountId;
 use katna_core::config::{Notifications, SoundEvent, Sounds};
 use katna_i18n::tr;
-use katna_notify::{NewMail, Notifier, action};
+use katna_notify::{NewMail, Notifier, View, action};
 use katna_platform::sound;
-use katna_store::{FolderRole, MessageFlags, MessageId, ParticipantRole, Store};
+use katna_store::{FolderRole, MessageFlags, MessageId, ParticipantRole, Store, StoredMessage};
+use katna_sync::quick_reply::{self, Mailbox};
 use zbus::zvariant::Value;
 
 use crate::daemon::Daemon;
@@ -83,6 +87,16 @@ struct Found {
     messages: Vec<MessageId>,
 }
 
+/// A reply typed into a notification, waiting out the undo time.
+#[derive(Clone, Debug)]
+struct Replied {
+    /// Its outbox entry.
+    outbox: i64,
+    /// The message it answers.
+    message: MessageId,
+    text: String,
+}
+
 /// A notification on screen.
 #[derive(Clone, Debug)]
 struct Shown {
@@ -109,6 +123,11 @@ pub(crate) struct NewMailNotices {
     snoozed: Mutex<Vec<Alarm>>,
     /// Notes that mail was archived from a notification, for their Undo.
     archived: Mutex<HashMap<u32, Shown>>,
+    /// Notes that a reply typed into a notification is on its way, for
+    /// their Undo.
+    replied: Mutex<HashMap<u32, Replied>>,
+    /// The outbox entries of those replies, until they go out.
+    outgoing: Mutex<HashSet<i64>>,
 }
 
 impl NewMailNotices {
@@ -128,6 +147,8 @@ impl NewMailNotices {
             events: Mutex::default(),
             snoozed: Mutex::default(),
             archived: Mutex::default(),
+            replied: Mutex::default(),
+            outgoing: Mutex::default(),
         })
     }
 
@@ -162,6 +183,24 @@ impl NewMailNotices {
             && !sound::quiet(&self.connection).await
         {
             sound::play(id);
+        }
+    }
+
+    /// Plays `sound` now, unless Do not disturb is on: for what shows no
+    /// notification of its own.
+    async fn play(&self, sound: Option<&'static str>) {
+        if let Some(id) = sound
+            && !sound::quiet(&self.connection).await
+        {
+            sound::play(id);
+        }
+    }
+
+    /// Outbox entry `outbox` went out: a reply typed into a notification
+    /// plays the Sent sound, as Katna Mail's own do.
+    pub(crate) async fn went_out(&self, outbox: i64) {
+        if self.outgoing.lock().unwrap().remove(&outbox) {
+            self.play(self.sound(SoundEvent::Sent)).await;
         }
     }
 
@@ -276,6 +315,7 @@ impl NewMailNotices {
             self.find_new(&store, account)
         };
         let sound = self.sound(SoundEvent::NewMail);
+        let replies = self.notifier.takes_replies().await;
         match found {
             Ok(Some(Found {
                 origin,
@@ -283,7 +323,14 @@ impl NewMailNotices {
                 messages,
             })) => match self
                 .notifier
-                .new_mail(&origin, &mails, 0, Self::server_sound(sound))
+                .new_mail(
+                    &origin,
+                    &mails,
+                    View::Short,
+                    replies,
+                    0,
+                    Self::server_sound(sound),
+                )
                 .await
             {
                 Ok(id) => {
@@ -371,19 +418,7 @@ impl NewMailNotices {
         let mails = store
             .messages_by_id(&ids)?
             .into_iter()
-            .map(|message| {
-                let from = message.first(ParticipantRole::From);
-                let sender = from
-                    .and_then(|p| p.display_name.clone())
-                    .filter(|name| !name.trim().is_empty())
-                    .or_else(|| from.map(|p| p.email_norm.clone()))
-                    .unwrap_or_else(|| tr!("notify-unknown-sender"));
-                NewMail {
-                    sender,
-                    subject: message.subject,
-                    preview: message.snippet,
-                }
-            })
+            .map(new_mail)
             .collect();
         Ok(Some(Found {
             origin,
@@ -442,10 +477,11 @@ impl NewMailNotices {
             return;
         };
         let proxy = notices.notifier.proxy().clone();
-        let (Ok(mut actions), Ok(mut tokens), Ok(mut closed)) = (
+        let (Ok(mut actions), Ok(mut tokens), Ok(mut closed), Ok(mut replies)) = (
             proxy.receive_action_invoked().await,
             proxy.receive_activation_token().await,
             proxy.receive_notification_closed().await,
+            proxy.receive_notification_replied().await,
         ) else {
             tracing::warn!("cannot watch notification actions");
             return;
@@ -455,6 +491,7 @@ impl NewMailNotices {
             Action(u32, String),
             Token(u32, String),
             Closed(u32),
+            Replied(u32, String),
         }
         loop {
             // The server sends a click's token just before its action.
@@ -477,6 +514,11 @@ impl NewMailNotices {
                 let args = signal.args().ok()?;
                 Some(Got::Closed(args.id))
             })
+            .or(async {
+                let signal = replies.next().await?;
+                let args = signal.args().ok()?;
+                Some(Got::Replied(args.id, args.text.to_owned()))
+            })
             .await;
             let Some(got) = next else {
                 return;
@@ -491,6 +533,7 @@ impl NewMailNotices {
                 Got::Token(id, token) => {
                     if notices.shown.lock().unwrap().contains_key(&id)
                         || notices.events.lock().unwrap().contains_key(&id)
+                        || notices.replied.lock().unwrap().contains_key(&id)
                         || daemon.updates().is_notice(id)
                     {
                         notices.tokens.lock().unwrap().insert(id, token);
@@ -498,6 +541,7 @@ impl NewMailNotices {
                 }
                 Got::Closed(id) => {
                     notices.archived.lock().unwrap().remove(&id);
+                    notices.replied.lock().unwrap().remove(&id);
                     notices.events.lock().unwrap().remove(&id);
                     daemon.updates().take_notice(id);
                     notices.shown.lock().unwrap().remove(&id);
@@ -594,6 +638,46 @@ impl NewMailNotices {
                     }
                     notices.close(vec![id]).await;
                 }
+                Got::Replied(id, text) => {
+                    let Some(shown) = notices.shown.lock().unwrap().remove(&id) else {
+                        continue;
+                    };
+                    let token = notices.tokens.lock().unwrap().remove(&id);
+                    notices.send_reply(&daemon, id, shown, text, token).await;
+                }
+                Got::Action(id, key) if notices.replied.lock().unwrap().contains_key(&id) => {
+                    let Some(replied) = notices.replied.lock().unwrap().remove(&id) else {
+                        continue;
+                    };
+                    let token = notices.tokens.lock().unwrap().remove(&id);
+                    notices.close(vec![id]).await;
+                    match key.as_str() {
+                        action::UNDO => {
+                            let undone = daemon.undo_send(replied.outbox).unwrap_or_else(|err| {
+                                tracing::warn!(%err, "could not undo a reply");
+                                false
+                            });
+                            tracing::info!(id, undone, "undo a reply from a notification");
+                            if undone {
+                                notices.outgoing.lock().unwrap().remove(&replied.outbox);
+                            }
+                            // Kept, to write on in Katna Mail; once gone,
+                            // the conversation shows it.
+                            let text = undone.then_some(replied.text);
+                            notices.reply_in_app(replied.message, text, token).await;
+                        }
+                        _ => notices.open(replied.message, false, token).await,
+                    }
+                }
+                // Typing a reply does not close the notification; Plasma
+                // only says the field opened, if anything.
+                Got::Action(_, key) if key == action::INLINE_REPLY => {}
+                Got::Action(id, key) if key == action::PEEK => {
+                    let shown = notices.shown.lock().unwrap().get(&id).cloned();
+                    if let Some(shown) = shown {
+                        notices.peek(&daemon, id, shown).await;
+                    }
+                }
                 Got::Action(id, key) => {
                     let Some(shown) = notices.shown.lock().unwrap().remove(&id) else {
                         continue;
@@ -617,6 +701,10 @@ impl NewMailNotices {
                         }
                         action::REPLY_ALL => {
                             notices.open(shown.messages[0], true, token).await;
+                            Ok(())
+                        }
+                        action::REPLY => {
+                            notices.reply_in_app(shown.messages[0], None, token).await;
                             Ok(())
                         }
                         _ => Ok(()),
@@ -654,6 +742,196 @@ impl NewMailNotices {
         }
     }
 
+    /// Shows more of `shown`'s one message in notification `id`, in place,
+    /// with Reply, Reply all and Archive.
+    async fn peek(&self, daemon: &Daemon, id: u32, shown: Shown) {
+        let [message] = shown.messages[..] else {
+            return;
+        };
+        let found = {
+            let store = daemon.store();
+            let origin = store
+                .accounts()
+                .ok()
+                .and_then(|accounts| accounts.into_iter().find(|a| a.id == shown.account))
+                .map(|a| a.address)
+                .unwrap_or_default();
+            store
+                .messages_by_id(&[message])
+                .ok()
+                .and_then(|m| m.into_iter().next())
+                .map(|stored| {
+                    let text = original(&store, &stored)
+                        .map(|o| o.text)
+                        .filter(|t| !t.is_empty())
+                        .or_else(|| stored.snippet.clone())
+                        .unwrap_or_default();
+                    (origin, new_mail(stored), text)
+                })
+        };
+        let Some((origin, mail, text)) = found else {
+            return;
+        };
+        let replies = self.notifier.takes_replies().await;
+        let view = View::Peek { text: &text };
+        match self
+            .notifier
+            .new_mail(&origin, &[mail], view, replies, id, None)
+            .await
+        {
+            Ok(new_id) if new_id != id => {
+                // A server that shows it anew: it is the one to follow.
+                self.shown.lock().unwrap().remove(&id);
+                self.shown.lock().unwrap().insert(new_id, shown);
+            }
+            Ok(_) => {}
+            Err(err) => tracing::warn!(%err, "could not peek at a message"),
+        }
+    }
+
+    /// Sends `text`, typed into notification `id` about `shown`'s message,
+    /// as a reply to its sender after the undo time, and says so in a
+    /// note. Mail that cannot be answered from here (its body is not
+    /// downloaded) opens in Katna Mail with the reply started.
+    async fn send_reply(
+        &self,
+        daemon: &Daemon,
+        id: u32,
+        shown: Shown,
+        text: String,
+        token: Option<String>,
+    ) {
+        let message = shown.messages[0];
+        if text.trim().is_empty() {
+            return;
+        }
+        let built = self.build_reply(daemon, message, &text);
+        let (account, raw, name, undo) = match built {
+            Ok(built) => built,
+            Err(err) => {
+                tracing::warn!(%err, "could not send a reply from a notification");
+                self.close(vec![id]).await;
+                self.reply_in_app(message, Some(text), token).await;
+                return;
+            }
+        };
+        let outbox = match daemon.queue_send(account, &raw, undo) {
+            Ok(outbox) => outbox,
+            Err(err) => {
+                tracing::warn!(%err, "could not queue a reply from a notification");
+                self.close(vec![id]).await;
+                self.reply_in_app(message, Some(text), token).await;
+                return;
+            }
+        };
+        tracing::info!(id, outbox, "reply from a notification");
+        self.outgoing.lock().unwrap().insert(outbox);
+        // Answered: read.
+        if let Err(err) = daemon.set_flags(&[message], MessageFlags::SEEN, MessageFlags::empty()) {
+            tracing::debug!(%err, "could not mark an answered message read");
+        }
+        // A new note rather than the same one changed: some servers close
+        // the notification once a reply is typed into it, and that closing
+        // must not take the note with it.
+        self.close(vec![id]).await;
+        match self.notifier.reply_sent(&name, &text, undo, 0).await {
+            Ok(note) => {
+                self.replied.lock().unwrap().insert(
+                    note,
+                    Replied {
+                        outbox,
+                        message,
+                        text,
+                    },
+                );
+            }
+            Err(err) => tracing::warn!(%err, "could not say that a reply is on its way"),
+        }
+    }
+
+    /// The reply saying `text` to `message`: its account, the message,
+    /// whom it goes to, and the undo time in seconds.
+    fn build_reply(
+        &self,
+        daemon: &Daemon,
+        message: MessageId,
+        text: &str,
+    ) -> Result<(AccountId, Vec<u8>, String, u32), String> {
+        let settings = crate::daemon::settings(daemon.paths());
+        let store = daemon.store();
+        let stored = store
+            .messages_by_id(&[message])
+            .map_err(|e| e.to_string())?
+            .into_iter()
+            .next()
+            .ok_or("the message is gone")?;
+        let original = original(&store, &stored).ok_or("its body is not downloaded")?;
+        let account = store
+            .accounts()
+            .map_err(|e| e.to_string())?
+            .into_iter()
+            .find(|a| a.id == stored.account)
+            .ok_or("its account is gone")?;
+        drop(store);
+        let from = Mailbox {
+            name: Some(account.display_name.trim().to_owned()).filter(|n| !n.is_empty()),
+            email: account.address.clone(),
+        };
+        let sending = &settings.sending;
+        let signature = sending
+            .reply_signature
+            .and_then(|id| sending.signatures.iter().find(|s| s.id == id))
+            .map(|s| s.text.as_str())
+            .unwrap_or_default();
+        // The quote's first line, in English as Katna Mail's own replies
+        // have it: it is part of the mail, for whoever reads it. The date
+        // is the mail's, as headers write it; the daemon formats no dates
+        // for people (it leaves ICU out).
+        let sender = original
+            .from
+            .as_ref()
+            .map(Mailbox::text)
+            .unwrap_or_default();
+        let intro = match original
+            .date
+            .and_then(|d| jiff::Timestamp::from_second(d).ok())
+        {
+            Some(date) => {
+                let date = date.to_zoned(jiff::tz::TimeZone::system());
+                format!(
+                    "On {}, {sender} wrote:",
+                    date.strftime("%a, %-d %b %Y, %H:%M")
+                )
+            }
+            None => format!("{sender} wrote:"),
+        };
+        let raw = quick_reply::build(&original, &from, text, signature, &intro)
+            .ok_or("it has no sender")?;
+        let to = original.reply_to.as_ref().map_or_else(String::new, |to| {
+            to.name
+                .clone()
+                .filter(|n| !n.trim().is_empty())
+                .unwrap_or_else(|| to.email.clone())
+        });
+        Ok((account.id, raw, to, sending.undo_send_seconds))
+    }
+
+    /// Opens Katna Mail on `message` with a reply to its sender started,
+    /// saying `text` if given.
+    async fn reply_in_app(&self, message: MessageId, text: Option<String>, token: Option<String>) {
+        let mut params = vec![Value::from(message.0)];
+        if let Some(text) = text {
+            params.push(Value::from(text));
+        }
+        crate::mail_app::run(
+            &self.connection,
+            Some(katna_dbus::app_action::REPLY),
+            params,
+            token,
+        )
+        .await;
+    }
+
     /// Opens Katna Mail on `message`, with a reply to all started if
     /// `reply_all`: through its `org.freedesktop.Application` interface when
     /// it is running and has one, else by starting it.
@@ -665,6 +943,27 @@ impl NewMailNotices {
             katna_dbus::app_action::OPEN_MESSAGE
         });
         crate::mail_app::run(&self.connection, action, params, token).await;
+    }
+}
+
+/// `message` as a reply reads it, when its body is downloaded.
+fn original(store: &Store, message: &StoredMessage) -> Option<quick_reply::Original> {
+    let raw = store.blobs().get(message.blob_hash.as_ref()?).ok()??;
+    quick_reply::original(&raw)
+}
+
+/// `message` as a new-mail notification shows it.
+fn new_mail(message: StoredMessage) -> NewMail {
+    let from = message.first(ParticipantRole::From);
+    let sender = from
+        .and_then(|p| p.display_name.clone())
+        .filter(|name| !name.trim().is_empty())
+        .or_else(|| from.map(|p| p.email_norm.clone()))
+        .unwrap_or_else(|| tr!("notify-unknown-sender"));
+    NewMail {
+        sender,
+        subject: message.subject,
+        preview: message.snippet,
     }
 }
 

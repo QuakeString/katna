@@ -1,7 +1,6 @@
 # Katna Mail, Telugu (తెలుగు): video calls around mail.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 meeting-starting = వీడియో కాల్ ప్రారంభమవుతోంది…
 meeting-mail-subject = వీడియో కాల్: { $subject }
 meeting-mail-subject-plain = వీడియో కాల్

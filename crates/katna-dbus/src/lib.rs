@@ -169,6 +169,80 @@ pub mod drive_state {
     pub const NEEDS_PERMISSION: &str = "needs-permission";
 }
 
+/// A file or folder in an account's cloud drive, from `CloudList`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct CloudEntry {
+    pub id: String,
+    pub name: String,
+    /// The file's type; empty for a folder.
+    pub mime: String,
+    /// Bytes; 0 for folders and the drive's own documents.
+    pub size: u64,
+    /// When it last changed, as Unix seconds; 0 when the drive doesn't say.
+    pub modified: i64,
+    pub folder: bool,
+    /// One of the drive's own documents (a Google Doc), which opens as a
+    /// PDF and is attached as a link.
+    pub native: bool,
+    /// Where people open it in the browser.
+    pub link: String,
+    /// For `CloudThumbnail`; empty when the drive has no picture of it.
+    pub thumbnail: String,
+}
+
+/// One grant of access to a drive item, from `CloudAccess`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct CloudAccess {
+    /// The drive's id for it, for `CloudSetAccess`.
+    pub id: String,
+    /// `person`, `group`, `domain` or `anyone` (with the link).
+    pub who: String,
+    /// `owner`, `editor`, `commenter` or `viewer`.
+    pub role: String,
+    /// The address, or the domain.
+    pub address: String,
+    pub name: String,
+    /// Given on a folder above, and changed there.
+    pub inherited: bool,
+    /// The link anyone opens it with, when the drive says.
+    pub link: String,
+}
+
+/// One page of a drive listing, from `CloudList`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct CloudListing {
+    /// See [`cloud_state`].
+    pub state: String,
+    /// Why it failed, or empty.
+    pub error: String,
+    pub items: Vec<CloudEntry>,
+    /// Asks `CloudList` for the next page; empty on the last.
+    pub next: String,
+}
+
+/// What `CloudList` looks through: its `place` argument.
+pub mod cloud_place {
+    /// The folder whose id is the `what` argument; `root` is the top.
+    pub const FOLDER: &str = "folder";
+    /// What other people shared with the account.
+    pub const SHARED: &str = "shared";
+    /// The whole drive, for the words in `what`.
+    pub const SEARCH: &str = "search";
+}
+
+/// Values of [`CloudListing::state`].
+pub mod cloud_state {
+    pub const OK: &str = "ok";
+    /// The account's sign-in doesn't let Katna read the drive (it was
+    /// signed in before Katna asked, or the box was unticked): `SignIn`
+    /// again.
+    pub const NEEDS_PERMISSION: &str = "needs-permission";
+    /// Katna can't browse this account's drive (yet).
+    pub const UNSUPPORTED: &str = "unsupported";
+    /// The drive couldn't be reached; `error` says why.
+    pub const FAILED: &str = "failed";
+}
+
 /// States of an account's calendar sync, from `CalendarStatus`.
 pub mod calendar_state {
     /// Synced, or about to be.
@@ -360,8 +434,11 @@ pub mod app_action {
     /// Open one message; the parameter is its ID (`x`).
     pub const OPEN_MESSAGE: &str = "open-message";
     /// Open one message and start a reply to all; the parameter is its ID
-    /// (`x`).
+    /// (`x`), then, if any, the text the reply starts with (`s`).
     pub const REPLY_ALL: &str = "reply-all";
+    /// Open one message and start a reply to its sender; the parameters
+    /// as for [`REPLY_ALL`].
+    pub const REPLY: &str = "reply";
     /// Put a query in the search box and search; the parameter is the
     /// query (`s`).
     pub const SEARCH: &str = "search";
@@ -383,7 +460,8 @@ pub mod app_action {
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
     /// has one. The flags of [`takes_message`] actions are followed by the
-    /// message ID, those of [`takes_text`] actions by the text.
+    /// message ID (for a reply, then [`TEXT_FLAG`] and the text it starts
+    /// with), those of [`takes_text`] actions by the text.
     pub fn flag(action: &str) -> Option<&'static str> {
         match action {
             OPEN_INBOX => Some("--inbox"),
@@ -392,6 +470,7 @@ pub mod app_action {
             OPEN_MESSAGE => Some("--message"),
             INSTALL_UPDATE => Some("--update"),
             REPLY_ALL => Some("--reply-all"),
+            REPLY => Some("--reply"),
             SEARCH => Some("--search"),
             OPEN_PAGE => Some("--page"),
             ATTACH => Some("--attach"),
@@ -432,9 +511,13 @@ pub mod app_action {
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), true));
     }
 
+    /// After a reply's message ID on the command line: the text the reply
+    /// starts with follows.
+    pub const TEXT_FLAG: &str = "--text";
+
     /// Whether `action`'s parameter is a message ID.
     pub fn takes_message(action: &str) -> bool {
-        matches!(action, OPEN_MESSAGE | REPLY_ALL)
+        matches!(action, OPEN_MESSAGE | REPLY_ALL | REPLY)
     }
 
     /// Whether `action`'s parameter is text.
@@ -609,6 +692,29 @@ macro_rules! pim_proxy {
             /// Undoes [`Self::mute`]; nothing happens when it was not muted.
             fn unmute(&self, kind: &str, id: i64, address: &str) -> zbus::Result<()>;
 
+            /// Pins something of `message` to the top of its conversation's
+            /// chat: `kind` "mail" (the whole mail), "file" (its attachment
+            /// number `file`) or "text" (`text`, picked from it). `label` is
+            /// what the pin bar shows; `replace` a pin taken off first, or
+            /// 0. Pins stay on this computer. Returns the pin's ID, or 0
+            /// when the conversation holds five pins or the same thing is
+            /// pinned already. `MailChanged` follows.
+            fn pin_in_chat(
+                &self,
+                message: i64,
+                kind: &str,
+                file: i64,
+                text: &str,
+                label: &str,
+                replace: i64,
+            ) -> zbus::Result<i64>;
+
+            /// Takes off a pin [`Self::pin_in_chat`] made.
+            fn unpin_in_chat(&self, id: i64) -> zbus::Result<()>;
+
+            /// Puts a conversation's pins in this order.
+            fn order_chat_pins(&self, ids: &[i64]) -> zbus::Result<()>;
+
             /// Sets whether new mail in `folder` notifies and whether its
             /// unread mail counts on the taskbar and tray. `category` is an
             /// inbox tab (`MailCategory` storage number), or 0 for the whole
@@ -754,6 +860,83 @@ macro_rules! pim_proxy {
             /// gives such a link its own address).
             fn drive_share_with_link(&self, uploads: &[i64]) -> zbus::Result<Vec<String>>;
 
+            /// Whether the sign-in of `account` lets Katna browse its whole
+            /// drive in Files (Google Drive or OneDrive). Asks no server.
+            fn cloud_readable(&self, account: i64) -> zbus::Result<bool>;
+
+            /// One page of the drive of `account`: a folder, what was
+            /// shared with it, or a search (`place` is one of
+            /// `cloud_place`, `what` the folder id or the words). `page`
+            /// is the last listing's `next`, or empty for the first.
+            fn cloud_list(&self, account: i64, place: &str, what: &str, page: &str)
+            -> zbus::Result<CloudListing>;
+
+            /// Downloads `entry` from the drive of `account` into Katna's
+            /// cache and returns the file's path. A drive's own document
+            /// comes as a PDF, its path ending in `.pdf`.
+            fn cloud_fetch(&self, account: i64, entry: &CloudEntry) -> zbus::Result<String>;
+
+            /// The picture behind a `CloudEntry::thumbnail` of `account`,
+            /// about `width` pixels wide, as the drive sends it (PNG or
+            /// JPEG).
+            fn cloud_thumbnail(&self, account: i64, link: &str, width: u32)
+            -> zbus::Result<Vec<u8>>;
+
+            /// Whether the sign-in of `account` lets Katna upload into any
+            /// folder of its drive. Asks no server.
+            fn cloud_writable(&self, account: i64) -> zbus::Result<bool>;
+
+            /// Starts uploading file or folder `path` (with everything in
+            /// it) into folder `folder` of the drive of `account`, empty
+            /// for the top. Returns an upload id followed as
+            /// `DriveUploadStatus` and `DriveChanged`; `DriveCancel` stops it.
+            fn cloud_upload(&self, account: i64, folder: &str, path: &str) -> zbus::Result<i64>;
+
+            /// Links file `entry` of the drive of `account` to a message as
+            /// a finished upload: its id works with `DriveShare` and
+            /// `DriveShareWithLink`, and `DriveCancel` forgets it without
+            /// touching the file.
+            fn cloud_link(&self, account: i64, entry: &CloudEntry) -> zbus::Result<i64>;
+
+            /// Moves items `ids` of the drive of `account` to its bin, or
+            /// (`trashed` false) back to where they were; returns how many
+            /// moved. A work OneDrive cannot take items back out.
+            fn cloud_trash(&self, account: i64, ids: &[String], trashed: bool)
+                -> zbus::Result<u32>;
+
+            /// Renames item `id` of the drive of `account` to `name`.
+            fn cloud_rename(&self, account: i64, id: &str, name: &str) -> zbus::Result<()>;
+
+            /// Who may open item `id` of the drive of `account`, the owner
+            /// first.
+            fn cloud_access(&self, account: i64, id: &str) -> zbus::Result<Vec<CloudAccess>>;
+
+            /// Shares item `id` with `addresses` as `role` (`editor`,
+            /// `commenter` or `viewer`), with the drive's own email when
+            /// `notify`; returns the addresses the drive refused.
+            fn cloud_grant(
+                &self,
+                account: i64,
+                id: &str,
+                addresses: &[String],
+                role: &str,
+                notify: bool,
+            ) -> zbus::Result<Vec<String>>;
+
+            /// Changes grant `permission` of item `id` to `role`; an empty
+            /// role takes it away.
+            fn cloud_set_access(
+                &self,
+                account: i64,
+                id: &str,
+                permission: &str,
+                role: &str,
+            ) -> zbus::Result<()>;
+
+            /// Lets anyone with the link open item `id` as `role`; an empty
+            /// role keeps it to the people it is shared with.
+            fn cloud_set_link(&self, account: i64, id: &str, role: &str) -> zbus::Result<()>;
+
             /// A new video call link from the mail service of `account`
             /// (Google Meet for Gmail), or an empty string when it has no
             /// meetings Katna may make; Katna Mail then makes a Jitsi link.
@@ -873,6 +1056,16 @@ macro_rules! pim_proxy {
             /// user's provider (DMARC or aligned DKIM).
             fn sender_picture(&self, address: &str) -> zbus::Result<Vec<u8>>;
 
+            /// The company of the person at `address`, as JSON
+            /// (`katna_sync::pictures::Company`): the one at `website` (the
+            /// site their signature names; may be empty), else the one
+            /// their address belongs to. Read from its home page, and from
+            /// Wikipedia when Wikidata lists the same website; cached for a
+            /// week. Empty for none, for free-mail addresses without a
+            /// website, and under the same authentication rule as
+            /// [`Self::sender_picture`].
+            fn company_of(&self, address: &str, website: &str) -> zbus::Result<String>;
+
             /// Translates `text`, the plain text of `message` (HTML made
             /// plain, quotes and signature kept, never attachments), from
             /// `source` into `target`, LibreTranslate codes such as `es`,
@@ -894,6 +1087,62 @@ macro_rules! pim_proxy {
             /// a [`translate_problem`] when it could not be asked (`sign-in`
             /// while this computer is not signed in to a Katna account).
             fn translation_sources(&self, target: &str) -> zbus::Result<(Vec<String>, String)>;
+
+            /// Rephrases `text`, the text the user selected in a message
+            /// being written, in `tone` (a `katna_ai::Tone` id such as
+            /// `clearer`; `instruction` is the user's own for `custom`),
+            /// with the AI service the settings name. Returns the new text,
+            /// the account's plan with Katna AI (`trial`, `paid`, or `own`
+            /// for the user's own service) and the free days left, and a
+            /// `katna_ai::wire::problem` when there is no text.
+            fn ai_rephrase(
+                &self,
+                text: &str,
+                tone: &str,
+                instruction: &str,
+            ) -> zbus::Result<(String, String, u32, String)>;
+
+            /// The rest of the sentence at the end of `before`, the
+            /// paragraph being written, with the space it needs first, or
+            /// empty when the service is unsure; and a
+            /// `katna_ai::wire::problem` when it could not be asked (`off`
+            /// unless AI autocomplete is on). `answered`, the mail being
+            /// answered, is sent only when the settings allow it.
+            fn ai_complete(&self, before: &str, answered: &str) -> zbus::Result<(String, String)>;
+
+            /// Sums up a conversation: `request` is a
+            /// `katna_ai::summary::SummarizeRequest` as JSON and `newest`
+            /// the newest of its mails sent, which the summary is kept
+            /// with in `mail.db`. Returns the summary as JSON
+            /// (`katna_ai::summary::Summary`), the plan and free days left
+            /// as for `AiRephrase`, and a `katna_ai::wire::problem` when
+            /// there is none.
+            fn ai_summarize(
+                &self,
+                newest: i64,
+                request: &str,
+            ) -> zbus::Result<(String, String, u32, String)>;
+
+            /// Writes a first draft of a reply or a forward's note, or
+            /// ideas for one: `request` is a `katna_ai::draft::DraftRequest`
+            /// as JSON. Returns the draft (ideas as a JSON array of
+            /// strings), the plan and free days left as for `AiRephrase`,
+            /// and a `katna_ai::wire::problem` when there is none.
+            fn ai_draft(&self, request: &str) -> zbus::Result<(String, String, u32, String)>;
+
+            /// Saves the key of the user's own AI service in the Secret
+            /// Service; an empty key deletes it.
+            fn set_ai_key(&self, key: &str) -> zbus::Result<()>;
+
+            /// Whether a key of the user's own AI service is saved.
+            fn ai_key_saved(&self) -> zbus::Result<bool>;
+
+            /// The models the user's own AI service `provider` (a
+            /// `katna_ai::provider` id; `address` for `other`) offers to
+            /// the saved key, and a `katna_ai::wire::problem` when it
+            /// could not be asked.
+            fn ai_models(&self, provider: &str, address: &str)
+            -> zbus::Result<(Vec<String>, String)>;
 
             /// Reads the settings file again; call after saving settings
             /// the daemon uses (`sync.metered`).

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rephrase works with new Gemini keys"
+text = """
+With frosted menus on, the Rephrase card (Ctrl+J) opened empty; its
+suggestions now show over the frosted glass. Google Gemini now uses
+gemini-3.5-flash-lite unless you type another model, since new Gemini
+keys can no longer use 2.5 Flash-Lite, and a wrong key says so.
+"""

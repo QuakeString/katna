@@ -1,6 +1,9 @@
 # Katna Mail, Tamil (தமிழ்).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Katna கணக்கு Katna-வின் ஆன்லைன் அம்சங்களை இயக்கும்: படித்த ரசீதுகள், லிங்க் கண்காணிப்பு, செயல்பாடு, தானியங்கு மொழிபெயர்ப்பு. அதன் கடவுச்சொல் தனியானது, மெயில் கடவுச்சொல் அல்ல; உங்கள் மெயில் உள்நுழைவு விவரங்கள் இந்தக் கணினியை விட்டு ஒருபோதும் வெளியேறாது.
 katna-checking = சரிபார்க்கிறது…
 katna-email = மின்னஞ்சல்
@@ -10,6 +13,8 @@ katna-sign-in = உள்நுழை
 katna-sign-in-detail = ஆன்லைன் அம்சங்கள் வேண்டிய ஒவ்வொரு கணினியிலும் உள்நுழையுங்கள்.
 katna-create = கணக்கை உருவாக்கு
 katna-create-detail = நீங்கள் படிக்கக்கூடிய முகவரியைப் பயன்படுத்துங்கள்: அதை உறுதிப்படுத்த ஒரு குறியீட்டை மெயிலில் அனுப்புவோம்.
+katna-onboarding-create-title = உங்கள் Katna கணக்கை உருவாக்குங்கள்
+katna-onboarding-sign-in-title = Katna-வில் உள்நுழையுங்கள்
 katna-have-account = எனக்குக் கணக்கு உள்ளது
 katna-forgot = கடவுச்சொல் மறந்துவிட்டதா?
 katna-forgot-detail = புதிய கடவுச்சொல்லைத் தேர்வுசெய்ய ஒரு குறியீட்டை மெயிலில் அனுப்புவோம்.
@@ -42,6 +47,9 @@ katna-delete = கணக்கை நீக்கு
 katna-delete-detail = கணக்கையும், படித்த ரசீதுகள் போன்று சர்வர் அதற்காக வைத்திருக்கும் அனைத்தையும் நீக்கும். இந்தக் கணினியில் உள்ள மெயில் அப்படியே இருக்கும்.
 katna-delete-confirm = நிரந்தரமாக நீக்கு
 katna-sign-in-needed = இதைப் பயன்படுத்த Katna கணக்கில் உள்நுழையுங்கள்.
+
+## Errors
+
 katna-error-wrong-password = மின்னஞ்சல் அல்லது கடவுச்சொல் தவறு.
 katna-error-exists = இந்த முகவரிக்கு ஏற்கெனவே Katna கணக்கு உள்ளது. அதற்குப் பதிலாக உள்நுழையுங்கள்.
 katna-error-bad-email = அது மின்னஞ்சல் முகவரி போலத் தெரியவில்லை.

@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Katna Mail سے بھیجیں
 setup-tagline = تیز اور نجی ای میل جو آپ کے کمپیوٹر پر رہتی ہے۔
 setup-update-where = { $path } میں Katna Mail کو اپ ڈیٹ کرتا ہے۔ آپ کی میل، ترتیبات اور شارٹ کٹس جیسے ہیں ویسے ہی رہیں گے۔
 setup-for = اس کے لیے انسٹال کریں

@@ -4,6 +4,7 @@
 
 ## Attachment viewer
 
+viewer-opening = Ouverture…
 viewer-unreadable = Impossible de lire cette pièce jointe.
 viewer-pdf-locked = Ce PDF est protégé par un mot de passe.
 viewer-pdf-unreadable = Impossible de lire ce PDF.
@@ -14,8 +15,17 @@ viewer-slides-unreadable = Impossible de lire ces diapositives.
 viewer-no-preview = Aucun aperçu disponible
 viewer-slide = Diapositive { $number }
 viewer-page = Page
+viewer-slide-box = Diapositive
 viewer-page-count = sur { $count }
 viewer-go-to-page-tip = Saisissez un numéro de page et appuyez sur Entrée (Ctrl+G)
+viewer-rotate-clockwise-tip = Faire pivoter dans le sens horaire (Ctrl+R)
+viewer-rotate-anticlockwise-tip = Faire pivoter dans le sens antihoraire (Ctrl+Shift+R)
+viewer-fit-page-tip = Ajuster à la page
+viewer-fit-picture-tip = Ajuster à la fenêtre
+viewer-fit-width-tip = Ajuster à la largeur
+viewer-real-size-tip = Taille réelle (1:1)
+viewer-page-back-tip = Page précédente
+viewer-page-on-tip = Page suivante
 
 ## Marking up a PDF
 
@@ -41,6 +51,10 @@ viewer-marks-undo-tip = Annuler (Ctrl+Z)
 viewer-marks-redo-tip = Rétablir (Ctrl+Shift+Z)
 viewer-save-marked-tip = Enregistrer une copie avec vos annotations (Ctrl+S)
 viewer-reply-marked-tip = Répondre avec la copie annotée
+viewer-forward-tip = Transférer le fichier
+viewer-forward = Transférer
+viewer-open-with = Ouvrir avec…
+viewer-save = Enregistrer
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = Écrire une note
 viewer-text-placeholder = Saisissez ici
@@ -58,3 +72,5 @@ viewer-marks-save = Enregistrer une copie
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (annoté)
+viewer-pick = Sélectionner
+viewer-picked = Sélectionné

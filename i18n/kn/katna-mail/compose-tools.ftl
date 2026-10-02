@@ -32,6 +32,7 @@ compose-tool-bold = ದಪ್ಪ (Ctrl+B)
 compose-tool-italic = ಇಟಾಲಿಕ್ (Ctrl+I)
 compose-tool-underline = ಅಡಿಗೆರೆ (Ctrl+U)
 compose-tool-text-color = ಪಠ್ಯದ ಬಣ್ಣ
+compose-tool-colors = ಪಠ್ಯ ಮತ್ತು ಹೈಲೈಟ್ ಬಣ್ಣ
 compose-tool-background-color = ಹಿನ್ನೆಲೆ ಬಣ್ಣ
 compose-tool-default-color = ಡೀಫಾಲ್ಟ್ ಬಣ್ಣ
 compose-tool-no-background = ಹಿನ್ನೆಲೆ ಇಲ್ಲ
@@ -126,6 +127,10 @@ compose-tool-signature = ಸಹಿ ಸೇರಿಸಿ
 compose-tool-signature-none = ಸಹಿ ಇಲ್ಲ
 compose-tool-signature-untitled = ಶೀರ್ಷಿಕೆರಹಿತ
 compose-tool-signature-manage = ಸಹಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ
+compose-signature-tag-tip = ಇನ್ನೊಂದು ಸಹಿ ಆರಿಸಿ
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = ಟೆಂಪ್ಲೇಟ್‌ಗಳು
 compose-tool-templates-none = ಇನ್ನೂ ಯಾವುದೇ ಟೆಂಪ್ಲೇಟ್‌ಗಳಿಲ್ಲ
 compose-tool-template-save = ಟೆಂಪ್ಲೇಟ್ ಆಗಿ ಉಳಿಸಿ…

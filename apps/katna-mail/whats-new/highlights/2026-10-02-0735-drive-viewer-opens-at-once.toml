@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Drive files open at once"
+text = """
+Opening a file from your drive brings up the viewer straight away, with a
+turning arc until the file is here. Notes at the bottom of the window now
+take their own clicks, so Close no longer clicks what is under them.
+"""

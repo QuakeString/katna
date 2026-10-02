@@ -4,6 +4,7 @@
 
 ## Attachment viewer
 
+viewer-opening = 開いています…
 viewer-unreadable = この添付ファイルを読み込めませんでした。
 viewer-pdf-locked = この PDF はパスワードで保護されています。
 viewer-pdf-unreadable = この PDF を読み込めませんでした。
@@ -14,8 +15,17 @@ viewer-slides-unreadable = このスライドを読み込めませんでした�
 viewer-no-preview = プレビューはありません
 viewer-slide = スライド { $number }
 viewer-page = ページ
+viewer-slide-box = スライド
 viewer-page-count = / { $count }
 viewer-go-to-page-tip = ページ番号を入力して Enter キーを押します（Ctrl+G）
+viewer-rotate-clockwise-tip = 右に回転 (Ctrl+R)
+viewer-rotate-anticlockwise-tip = 左に回転 (Ctrl+Shift+R)
+viewer-fit-page-tip = ページに合わせる
+viewer-fit-picture-tip = ウィンドウに合わせる
+viewer-fit-width-tip = 幅に合わせる
+viewer-real-size-tip = 実際のサイズ (1:1)
+viewer-page-back-tip = 前のページ
+viewer-page-on-tip = 次のページ
 
 ## Marking up a PDF
 
@@ -41,20 +51,21 @@ viewer-marks-undo-tip = 元に戻す（Ctrl+Z）
 viewer-marks-redo-tip = やり直す（Ctrl+Shift+Z）
 viewer-save-marked-tip = マークを付けたコピーを保存（Ctrl+S）
 viewer-reply-marked-tip = マークを付けたコピーで返信
-# Typing a sticky note or a text box on the page.
+viewer-forward-tip = ファイルを転送
+viewer-forward = 転送
+viewer-open-with = アプリで開く…
+viewer-save = 保存
 viewer-note-placeholder = メモを書く
 viewer-text-placeholder = ここに入力
 viewer-note-done = 完了
 viewer-note-delete = 削除
 viewer-markup-protected = この PDF は変更から保護されているため、マークアップできません。
 viewer-marks-save-failed = マークを付けたコピーを保存できませんでした。
-# Asked when closing a PDF, or moving to another attachment, with marks
-# that are not saved yet.
 viewer-marks-unsaved-title = マークを保存しますか？
 viewer-marks-unsaved-text = この PDF のマークはまだ保存されていません。マークはコピーに保存され、添付ファイル自体は元のままです。
 viewer-marks-discard = 破棄
 viewer-marks-keep = マークを続ける
 viewer-marks-save = コピーを保存
-# The name of the copy of a PDF with marks, before ".pdf". $name: the
-# attachment's name without ".pdf".
 viewer-marked-name = { $name }（マークあり）
+viewer-pick = 選択
+viewer-picked = 選択済み

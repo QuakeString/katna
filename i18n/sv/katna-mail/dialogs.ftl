@@ -8,6 +8,9 @@ about-tooltip = Om Katna
 about-tagline = E-post och kalender för Linux-skrivbordet
 about-whats-new = Nyheter
 
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
 about-update-not-checked = Uppdateringar har inte kontrollerats än
 about-update-checking = Söker efter uppdateringar…
 about-update-up-to-date = Katna Mail är uppdaterat
@@ -67,6 +70,7 @@ about-credit-resvg = SVG-bilder
 about-credit-jiff = Datum och tidszoner
 about-credit-spellbook = Stavningskontroll, från Helix-redigeraren
 about-credit-smol = Göra många saker samtidigt
+about-credit-color-schemes = Paletterna i de inbyggda färgschemana
 about-all-libraries = Alla bibliotek som Katna använder ({ $count })
 about-library-authors = av { $authors }
 about-license = Katna är fri programvara under GNU GPL, version 3 eller senare.
@@ -124,6 +128,21 @@ onboarding-density-default = Standard
 onboarding-density-compact = Kompakt
 onboarding-continue = Fortsätt
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Få mer med ett Katna-konto
+onboarding-katna-lead = Det är frivilligt. Det slår på Katnas onlinefunktioner, och du kan skapa ett senare i Inställningar > Abonnemang.
+onboarding-katna-receipts-title = Läskvitton
+onboarding-katna-receipts-text = Se när folk öppnar e-posten du skickar.
+onboarding-katna-links-title = Länkspårning
+onboarding-katna-links-text = Se vilka länkar i din e-post som klickas på.
+onboarding-katna-activity-title = Aktivitet
+onboarding-katna-activity-text = Öppningar och klick för allt du har skickat, på ett ställe.
+onboarding-katna-translate-title = Automatisk översättning
+onboarding-katna-translate-text = Läs e-post som är skriven på andra språk på ditt eget.
+onboarding-katna-private = Det har ett eget lösenord. Dina e-postinloggningar lämnar aldrig den här datorn.
+
 ## First run: done
 
 onboarding-ready-title = Allt är klart
@@ -167,7 +186,7 @@ tour-search-text = Sökning fungerar även offline. Knappen längst till höger 
 tour-menu-title = Visa eller dölj mapparna
 tour-menu-text = Den här knappen fäller undan mapplistan. Medan den är dold kan du vila pekaren på E-post till vänster för att se mapparna.
 tour-apps-title = Dina appar
-tour-apps-text = E-post bor här nu. Kalender, Kontakter, Uppgifter, Anteckningar och Flöden kommer att ansluta i det här fältet.
+tour-apps-text = E-posten finns här, bredvid Kalender, Kontakter, Uppgifter, Anteckningar och Filer.
 tour-tabs-title = Inkorgsflikar
 tour-tabs-text = Ny e-post sorteras i Primär, Kampanjer, Socialt, Uppdateringar och Forum. Du kan stänga av flikarna i snabbinställningarna.
 tour-list-title = Dina meddelanden
@@ -193,12 +212,22 @@ crash-view = Visa rapport
 crash-view-tooltip = Öppna rapporten, sparad på den här datorn
 crash-copy = Kopiera rapport
 crash-close = Stäng
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } ber dig logga in på { $address } igen.
 sign-in-again-button = Logga in
 sign-in-again-tooltip = Öppna inloggningssidan för { $provider } i webbläsaren
 sign-in-again-waiting = Väntar på webbläsaren…
 sign-in-again-close = Stäng
+google-api-off = { $api } är avstängt i Katnas Google Cloud-projekt.
+google-api-turn-on = Slå på
+google-api-turn-on-tooltip = Öppna Google Cloud för att slå på { $api } och tryck sedan på Försök igen
 sign-in-again-done = Inloggad på { $address } igen. Hämtar din e-post…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] Flytta konversationen till papperskorgen?

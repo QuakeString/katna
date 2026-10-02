@@ -46,6 +46,7 @@ compose-sent-archived = ਭੇਜਿਆ ਅਤੇ ਪੁਰਾਲੇਖਬੱਧ
 compose-sent = ਸੁਨੇਹਾ ਭੇਜਿਆ ਗਿਆ
 compose-discarded = ਡਰਾਫਟ ਰੱਦ ਕੀਤਾ ਗਿਆ
 compose-draft-saved = ਡਰਾਫਟ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ
+compose-draft-saving = ਰੱਖਿਅਤ ਹੋ ਰਿਹਾ ਹੈ…
 compose-draft-failed = ਡਰਾਫਟ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ: { $error }
 compose-draft-not-opened = ਡਰਾਫਟ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ।
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = ਡਰਾਫਟ ਖੋਲ੍ਹਿਆ ਨਹੀਂ �
 compose-picker-insert = ਪਾਓ
 compose-picker-attach = ਨੱਥੀ ਕਰੋ
 compose-file-too-large = { $name } ਬਹੁਤ ਵੱਡੀ ਹੈ: ਇੱਕ ਸੁਨੇਹੇ ਵਿੱਚ { $limit } ਤੱਕ ਹੀ ਜਾ ਸਕਦਾ ਹੈ।
+compose-forward-files-missing = ਅੱਗੇ ਭੇਜੇ ਸੁਨੇਹੇ ਦੀਆਂ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਨਹੀਂ ਹੋਈਆਂ, ਇਸ ਲਈ ਉਹ ਨੱਥੀ ਨਹੀਂ ਕੀਤੀਆਂ ਗਈਆਂ।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ਅਟੈਚਮੈਂਟ ਹਟਾਓ
 compose-attachments-total = { $count ->
@@ -78,6 +80,7 @@ compose-drive-share-link = ਲਿੰਕ ਨਾਲ ਸਾਂਝਾ ਕਰੋ
 compose-drive-send-without = ਸਾਂਝਾ ਕੀਤੇ ਬਿਨਾਂ ਭੇਜੋ
 compose-drive-share-cancel = ਰੱਦ ਕਰੋ
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } { $limit } ਤੋਂ ਵੱਡੀ ਹੈ, ਇਸ ਲਈ ਉਹ ਤੁਹਾਡੇ OneDrive ਵਿੱਚ ਜਾਂਦੀ ਹੈ ਅਤੇ ਸੁਨੇਹੇ ਵਿੱਚ ਉਸਦਾ ਲਿੰਕ ਹੁੰਦਾ ਹੈ।
 compose-onedrive-tip = ਤੁਹਾਡੇ OneDrive ਵਿੱਚ; ਸੁਨੇਹੇ ਵਿੱਚ ਲਿੰਕ ਹੁੰਦਾ ਹੈ
 compose-onedrive-allow = OneDrive ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ
@@ -89,6 +92,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive ਫ਼ਾਈਲਾਂ { $addresses } ਨਾਲ ਸਾਂਝੀਆਂ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਇਸਦੀ ਬਜਾਏ ਲਿੰਕ ਵਾਲਾ ਕੋਈ ਵੀ ਉਨ੍ਹਾਂ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦਾ ਹੈ।
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ਫ਼ਾਈਲਾਂ ਇੱਥੇ ਛੱਡੋ
 compose-drop-here = ਇੱਥੇ ਛੱਡੋ
 compose-paste-keep-formatting = ਫ਼ਾਰਮੈਟਿੰਗ ਰੱਖੋ

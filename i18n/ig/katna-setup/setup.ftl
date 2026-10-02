@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Zipu site na Katna Mail
 setup-tagline = Email dị ọsọ, nke nzuzo, nke bi na kọmputa gị.
 setup-update-where = Na-emelite Katna Mail dị na { $path }. Ozi gị, ntọala gị na ụzọ mkpirisi gị ga-anọgide otú ha dị.
 setup-for = Wụnye maka

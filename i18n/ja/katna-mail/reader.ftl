@@ -86,6 +86,10 @@ security-missing-key = お持ちでない鍵で署名されているため、確
 security-missing-key-id = お持ちでない鍵（{ $key }）で署名されているため、確認できません
 security-signature-unavailable = 署名付き。署名を確認するには { $tool } をインストールしてください
 security-signature-error = 署名を確認できませんでした。
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } が { $count } 回開きました（最終: { $when }）
 tracking-opens-clicks = { $who } が { $opens } 回開き、リンクを { $clicks } 回クリックしました（最終: { $when }）
 tracking-clicked = { $who } がリンクを { $clicks } 回クリックしました（最終: { $when }）
@@ -112,10 +116,12 @@ remote-picture-remove-failed = 画像を削除できません: { $error }
 
 attachment-count = 添付ファイル { $count } 件
 attachment-save = 保存
+attachment-forward = 転送
 attachment-save-all = すべて保存
 attachment-save-all-tooltip = すべての添付ファイルをフォルダに保存
 attachment-save-here = ここに保存
 attachment-not-downloaded = このメールはダウンロードされていません。
+attachment-open-message = 添付ファイルを見るには、このメールを開いてください。
 attachment-not-found = この添付ファイルがメール内に見つかりませんでした。
 attachment-read-failed = { $name } を読み込めませんでした
 attachment-numbered = 添付ファイル { $number }
@@ -151,8 +157,9 @@ print-encrypted = （暗号化されています。本文を印刷するには K
 print-to = To: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = 添付ファイルを見るには、このメールを開いてください。
+text-pin = 上部に固定
+text-copy-address = アドレスをコピー
 text-copy = コピー
 text-select-all = すべて選択

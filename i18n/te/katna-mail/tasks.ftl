@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = సృష్టించండి
+tasks-create = కొత్త టాస్క్
 tasks-all = అన్ని టాస్క్‌లు
 tasks-today = ఈరోజు
 tasks-starred = నక్షత్రం ఉంచినవి
 tasks-new-list = కొత్త జాబితాను సృష్టించండి
 tasks-on-this-computer = ఈ కంప్యూటర్‌లో
 tasks-my-tasks = నా టాస్క్‌లు
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = టాస్క్‌లను చూపడానికి మళ్లీ సైన్ ఇన్ చేయండి
 tasks-account-signed-in = { $address }కు మళ్లీ సైన్ ఇన్ అయింది. మీ టాస్క్‌లను తెస్తోంది…
 tasks-account-sign-in-refused = { $provider } Katnaను లోపలికి అనుమతించలేదు. మళ్లీ ట్రై చేసి, మీ టాస్క్‌లకు యాక్సెస్ అనుమతించండి.
@@ -21,13 +19,9 @@ tasks-account-change-password = పాస్‌వర్డ్ మార్చ�
 tasks-account-change-password-tooltip = సెట్టింగ్‌లు > ఖాతాలు తెరవండి
 tasks-account-not-enabled = Katna కోసం టాస్క్ యాక్సెస్ ఇంకా ఆన్ చేయబడలేదు.
 tasks-account-failed = టాస్క్ జాబితాలను చదవలేకపోయాము.
-# $reason is the server's own words, in English.
 tasks-account-error = టాస్క్ జాబితాలను చదవలేకపోయాము: { $reason }
 tasks-account-none = టాస్క్ జాబితాలు ఏవీ కనుగొనబడలేదు
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 tasks-account-none-why = టాస్క్ జాబితాలు ఏవీ కనుగొనబడలేదు: { $reason }
-# A Gmail or Outlook account added with a password: its tasks need the
-# provider's sign-in.
 tasks-account-use-sign-in = { $provider }తో సైన్ ఇన్ అయిన Katnaకు మాత్రమే { $provider } టాస్క్‌లను చూపుతుంది.
 tasks-account-sign-in-with = { $provider }తో సైన్ ఇన్ చేయండి
 tasks-account-looking = టాస్క్ జాబితాల కోసం వెతుకుతోంది…
@@ -114,6 +108,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = ఆ మెయిల్ ఇకపై ఇక్కడ లేదు.
 tasks-toast-list-deleted = జాబితా తొలగించబడింది
 tasks-toast-moved = { $list }కు తరలించబడింది
-# A task dragged to another place in its own list.
 tasks-toast-placed = టాస్క్ తరలించబడింది
 tasks-toast-rescheduled = టాస్క్ సమయం మార్చబడింది

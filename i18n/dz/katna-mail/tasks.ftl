@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = བཟོ།
+tasks-create = ལཱ་གསརཔ
 tasks-all = ལཱ་ཆ་མཉམ།
 tasks-today = ད་རིས
 tasks-starred = སྐར་མ་བཀལ་ཡོདཔ

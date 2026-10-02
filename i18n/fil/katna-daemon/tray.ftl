@@ -9,7 +9,7 @@ tray-new-message = _Bagong Mensahe
 tray-preferences = Mga _Setting
 tray-quit = _Umalis
 
-## The tray icon's tooltip
+## The tray icon's tooltip, under "Katna Mail"
 
 tray-unread = { $count ->
     [0] Walang hindi pa nababasang mail

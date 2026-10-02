@@ -21,6 +21,12 @@ files-slides = Slides
 files-other = Other
 # Heading over the accounts, each of which narrows the page to its files.
 files-accounts = Accounts
+# Heading over the accounts' cloud drives.
+files-drives = Drives
+files-drive-google = Google Drive
+files-drive-onedrive = OneDrive
+# What other people shared with the account, in its drive.
+files-drive-shared = Shared with me
 # Heading over "Received" and "Sent by me".
 files-shown = Shown
 files-received = Received
@@ -98,3 +104,151 @@ files-name-copied = File name copied
 # The file's mail is being downloaded before the file is saved or sent.
 files-downloading = Downloading the mail…
 files-download-failed = Could not download this mail.
+
+## A cloud drive in place of the mail files
+
+# The top of the drive, first in the folder path.
+files-drive-mine = My Drive
+# The top of a OneDrive, as Microsoft names it.
+files-drive-mine-onedrive = My files
+# The last part of the folder path while the drive is searched.
+files-drive-results = “{ $words }”
+files-drive-count = { $folders ->
+    [0] { $files ->
+        [one] 1 file
+       *[other] { $files } files
+    }
+    [one] 1 folder · { $files ->
+        [one] 1 file
+       *[other] { $files } files
+    }
+   *[other] { $folders } folders · { $files ->
+        [one] 1 file
+       *[other] { $files } files
+    }
+}
+files-drive-folders = Folders
+files-drive-files = Files
+files-drive-folder = Folder
+# A drive file's size or kind and when it last changed, such as
+# "2.4 MB · Edited Sep 30".
+files-drive-meta = { $what } · Edited { $date }
+# In the attach picker, for a file that goes as a link: its size or kind.
+files-drive-as-link = { $what } · as a link
+files-drive-google-doc = Google Doc
+files-drive-google-sheet = Google Sheet
+files-drive-google-slides = Google Slides
+files-drive-google-drawing = Google Drawing
+files-drive-fetching = Getting it…
+files-drive-loading = Opening the drive…
+files-drive-empty = This folder is empty.
+# $drive: Google Drive or OneDrive.
+files-drive-unreachable = Can’t reach { $drive }.
+files-drive-try-again = Try again
+files-drive-needs-permission = Katna needs your permission once to show this drive. Sign in again and allow Katna to see your files.
+files-drive-allow = Allow
+files-drive-allow-failed = The sign-in didn’t finish, so the drive stays closed.
+files-drive-attach = Attach
+files-drive-more = More
+files-drive-download = Download…
+files-drive-open-web = Open in { $drive }
+files-drive-copy-link = Copy link
+files-drive-link-copied = Link copied
+files-drive-share = Share…
+files-drive-rename = Rename
+files-drive-trash = Move to bin
+# $drive: Google Drive or OneDrive.
+files-drive-trashed = “{ $name }” is in the { $drive } bin
+files-drive-renamed = Renamed to “{ $name }”
+# $name from $drive, such as "Getting report.pdf from Google Drive…".
+files-drive-getting = Getting { $name } from { $drive }…
+files-drive-get-failed = Couldn’t get { $name }: { $error }
+# Google's own documents and files over the mail limit are attached as a
+# link, which comes in the next update.
+# The big button at the top of the side column while a drive is open, and
+# its arrow's menu.
+files-drive-upload = Upload
+files-drive-upload-files = Upload files
+files-drive-upload-folder = Upload folder
+files-drive-upload-failed = Couldn’t upload { $name }: { $error }
+files-drive-upload-needs = To upload, Katna needs your permission once: press Allow in Settings › Default apps › Files page.
+
+
+## The Share dialog of a drive file or folder
+
+# $name: the file or folder.
+files-share-title = Share “{ $name }”
+files-share-add = Add people by name or address
+files-share-not-address = “{ $text }” isn’t an email address
+# A tick under the field once people are added; off unless ticked.
+# $drive: Google Drive or OneDrive.
+files-share-notify = Let { $drive } email them too
+files-share-people = People with access
+files-share-general = General access
+files-share-loading = Reading who has access…
+files-share-restricted = Restricted
+files-share-restricted-about = Only people with access can open it with the link
+files-share-anyone = Anyone with the link
+# $role: owner, editor, commenter or viewer.
+files-share-anyone-can = { $role ->
+    [editor] Anyone with the link can edit
+    [commenter] Anyone with the link can comment
+   *[viewer] Anyone with the link can view
+}
+# Under "Anyone with the link".
+files-share-anyone-about = { $role ->
+    [editor] Anyone on the internet with the link can edit
+    [commenter] Anyone on the internet with the link can comment
+   *[viewer] Anyone on the internet with the link can view
+}
+files-share-role-owner = Owner
+files-share-role-editor = Editor
+files-share-role-commenter = Commenter
+files-share-role-viewer = Viewer
+# Your own line in the list.
+files-share-you = { $name } (you)
+# Everyone at a company or school, $domain such as invenia.in.
+files-share-domain = Everyone at { $domain }
+files-share-inherited = Access from a folder it is in
+files-share-remove = Remove access
+files-share-copy-link = Copy link
+files-share-share = Share
+files-share-done = Done
+files-share-close = Close
+files-share-sharing = Sharing…
+files-share-shared = { $count ->
+    [one] Shared with 1 person
+   *[other] Shared with { $count } people
+}
+# $addresses: the addresses $drive turned down.
+files-share-refused = { $drive } couldn’t share with { $addresses }
+files-share-failed = Couldn’t change sharing: { $error }
+
+## The uploads tray, at the bottom right while files go up to a drive
+
+files-tray-uploading = { $count ->
+    [one] Uploading 1 item
+   *[other] Uploading { $count } items
+}
+files-tray-done = { $count ->
+    [one] 1 upload done
+   *[other] { $count } uploads done
+}
+files-tray-some-failed = { $done } uploaded, { $failed } failed
+files-tray-minutes-left = { $minutes ->
+    [one] About a minute left
+   *[other] About { $minutes } minutes left
+}
+files-tray-seconds-left = Less than a minute left
+files-tray-starting = Starting…
+files-tray-cancel-all = Cancel all
+files-tray-cancel = Cancel
+files-tray-fold = Hide the list
+files-tray-unfold = Show the list
+files-tray-close = Close
+# Under a file going up: the folder it goes to, and how much is there,
+# such as "Trip · 61 MB of 104 MB".
+files-tray-progress = { $place } · { $sent } of { $size }
+# Under a file that went up: the folder it is in. A click opens it.
+files-tray-in = In { $place }
+files-tray-cancelled = Cancelled

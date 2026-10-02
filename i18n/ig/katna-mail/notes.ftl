@@ -15,6 +15,7 @@ notes-loading = Na-emepe ndetu gị…
 
 notes-take-a-note = Dee ndetu…
 notes-new-list = Ndepụta ọhụrụ
+notes-new-note = Ndetu ọhụrụ
 notes-pinned = Ndị kwụnyere n'elu
 notes-others = Ndị ọzọ
 notes-empty = Ndetu ị tinyere ga-apụta ebe a

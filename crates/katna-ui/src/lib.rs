@@ -4,6 +4,7 @@
 //! `katna-chrome` and the GUI apps. See `docs/ARCHITECTURE.md` §13.
 
 pub mod frost;
+pub mod glow;
 pub mod motion;
 pub mod native;
 pub mod rich;
@@ -15,6 +16,7 @@ pub mod text_area;
 pub mod text_input;
 pub mod tooltip;
 
+pub use glow::Glow;
 pub use motion::Spring;
 pub use rich::RichEditor;
 pub use ripple::Ripple;

@@ -1,20 +1,57 @@
 # Katna Mail, Lao (ລາວ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## The list under the Activity button
+
+activity-details = ລາຍລະອຽດ
+activity-clear-all = ລຶບທັງໝົດ
+activity-remove = ເອົາອອກຈາກລາຍການ
+activity-feed-opened = { $who } ເປີດ “{ $subject }” ແລ້ວ
+activity-feed-clicked = { $who } ຄລິກລິ້ງໃນ “{ $subject }” ແລ້ວ
+activity-feed-maybe = { $who } ອາດຈະເປີດ “{ $subject }” ແລ້ວ
+activity-feed-empty = ຍັງບໍ່ມີການເປີດ ຫຼື ການຄລິກ. ເປີດຮູບຕາ ເມື່ອທ່ານຂຽນຂໍ້ຄວາມ ເພື່ອເບິ່ງວ່າມັນຖືກອ່ານເມື່ອໃດ.
+activity-message-gone = ຂໍ້ຄວາມນັ້ນບໍ່ຢູ່ໃນ ສົ່ງແລ້ວ ອີກຕໍ່ໄປ.
+
+## The Details report
+
+activity-report = ລາຍງານກິດຈະກຳ
+activity-range-week = 7 ມື້ຜ່ານມາ
+activity-range-month = 30 ມື້ຜ່ານມາ
+activity-range-all = ທຸກເວລາ
+activity-range-custom = ກຳນົດເອງ
+activity-range-from = ຈາກ
+activity-range-to = ເຖິງ
+activity-range-apply = ນຳໃຊ້
+activity-range-of = { $days } · { $account }
+activity-accounts-all = ທຸກບັນຊີ
+activity-accounts-tip = ສະແດງໜຶ່ງບັນຊີ ຫຼື ທຸກບັນຊີ
+
+## Totals at the top
+
 activity-messages = ຂໍ້ຄວາມທີ່ຕິດຕາມ
 activity-open-rate = ອັດຕາການເປີດ
 activity-click-rate = ອັດຕາການຄລິກ
 activity-percent = { $percent }%
+
+## Opens and clicks over time
+
 activity-by-day = ການເປີດ ແລະ ການຄລິກ
 activity-opens = ການເປີດ: { $count }
 activity-clicks = ການຄລິກ: { $count }
 activity-by-week = ໜຶ່ງແທ່ງຕໍ່ອາທິດ
+
+## The messages
+
 activity-by-open-rate = ຫົວຂໍ້ຕາມອັດຕາການເປີດ
 activity-opened = ເປີດໂດຍ { $opened } ຈາກ { $recipients } ຄົນ
 activity-clicked = ຄລິກລິ້ງໂດຍ { $clicked } ຈາກ { $recipients } ຄົນ
 activity-no-subject = (ບໍ່ມີຫົວຂໍ້)
 activity-nothing-period = ບໍ່ມີອີເມວທີ່ຕິດຕາມຖືກສົ່ງໃນຊ່ວງເວລານີ້.
 activity-close = ປິດ
+
+## Your mailbox: counted on this computer from all mail in the period
+
 insights-heading = ກ່ອງອີເມວຂອງທ່ານ
 insights-counting = ກຳລັງນັບອີເມວຂອງທ່ານ…
 insights-failed = ບໍ່ສາມາດນັບອີເມວຂອງທ່ານໄດ້.
@@ -30,22 +67,3 @@ insights-days = { $count } ມື້
 insights-people = ຄົນທີ່ທ່ານຕິດຕໍ່ທາງອີເມວຫຼາຍທີ່ສຸດ
 insights-person-counts = ສົ່ງ { $sent } · ໄດ້ຮັບ { $received }
 insights-hours-heading = ອີເມວມາຮອດເມື່ອໃດ
-activity-details = ລາຍລະອຽດ
-activity-clear-all = ລຶບທັງໝົດ
-activity-remove = ເອົາອອກຈາກລາຍການ
-activity-feed-opened = { $who } ເປີດ “{ $subject }” ແລ້ວ
-activity-feed-clicked = { $who } ຄລິກລິ້ງໃນ “{ $subject }” ແລ້ວ
-activity-feed-maybe = { $who } ອາດຈະເປີດ “{ $subject }” ແລ້ວ
-activity-feed-empty = ຍັງບໍ່ມີການເປີດ ຫຼື ການຄລິກ. ເປີດຮູບຕາ ເມື່ອທ່ານຂຽນຂໍ້ຄວາມ ເພື່ອເບິ່ງວ່າມັນຖືກອ່ານເມື່ອໃດ.
-activity-message-gone = ຂໍ້ຄວາມນັ້ນບໍ່ຢູ່ໃນ ສົ່ງແລ້ວ ອີກຕໍ່ໄປ.
-activity-report = ລາຍງານກິດຈະກຳ
-activity-range-week = 7 ມື້ຜ່ານມາ
-activity-range-month = 30 ມື້ຜ່ານມາ
-activity-range-all = ທຸກເວລາ
-activity-range-custom = ກຳນົດເອງ
-activity-range-from = ຈາກ
-activity-range-to = ເຖິງ
-activity-range-apply = ນຳໃຊ້
-activity-range-of = { $days } · { $account }
-activity-accounts-all = ທຸກບັນຊີ
-activity-accounts-tip = ສະແດງໜຶ່ງບັນຊີ ຫຼື ທຸກບັນຊີ

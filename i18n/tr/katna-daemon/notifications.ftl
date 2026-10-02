@@ -35,7 +35,19 @@ notify-event-join = Katıl
 notify-event-snooze = 5 dk ertele
 notify-task-done = Tamamlandı olarak işaretle
 notify-open = Aç
+notify-peek = Göz at
+notify-reply = Yanıtla
+notify-reply-placeholder = { $name } kişisine yanıt yazın…
+notify-send = Gönder
 notify-reply-all = Tümünü yanıtla
 notify-mark-read = Okundu olarak işaretle
 notify-mark-all-read = Tümünü okundu olarak işaretle
 notify-archive = Arşivle
+notify-archived = Arşivlendi
+notify-archived-count = { $count ->
+    [one] { $count } ileti gelen kutusundan çıkarıldı
+   *[other] { $count } ileti gelen kutusundan çıkarıldı
+}
+notify-undo = Geri al
+notify-reply-sent = Yanıt { $name } kişisine gönderildi
+notify-open-in-katna = Katna'da aç

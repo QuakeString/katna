@@ -106,7 +106,7 @@ contacts-print-none = Нет контактов для печати
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = День рождения: { $day }
 contacts-print-nickname = Псевдоним: { $name }
-contacts-create = Создать контакт
+contacts-create = Новый контакт
 
 ## Search and the list
 

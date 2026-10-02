@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Oluştur
+tasks-create = Yeni görev
 tasks-all = Tüm görevler
 tasks-today = Bugün
 tasks-starred = Yıldızlı

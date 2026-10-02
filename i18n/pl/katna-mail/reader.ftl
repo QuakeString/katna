@@ -86,6 +86,10 @@ security-missing-key = Podpisano kluczem, którego nie masz, więc nie można te
 security-missing-key-id = Podpisano kluczem, którego nie masz ({ $key }), więc nie można tego sprawdzić
 security-signature-unavailable = Podpisano; zainstaluj { $tool }, aby sprawdzić podpis
 security-signature-error = Nie udało się sprawdzić podpisu.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = Otwarte przez { $who } { $count ->
     [one] raz
     [few] { $count } razy
@@ -137,10 +141,12 @@ attachment-count = { $count ->
    *[other] { $count } załącznika
 }
 attachment-save = Zapisz
+attachment-forward = Przekaż dalej
 attachment-save-all = Zapisz wszystkie
 attachment-save-all-tooltip = Zapisz wszystkie załączniki w folderze
 attachment-save-here = Zapisz tutaj
 attachment-not-downloaded = Ta wiadomość nie jest pobrana.
+attachment-open-message = Otwórz tę wiadomość, aby odczytać jej załączniki.
 attachment-not-found = Nie znaleziono tego załącznika w wiadomości.
 attachment-read-failed = Nie udało się odczytać pliku { $name }
 attachment-numbered = załącznik { $number }
@@ -167,6 +173,7 @@ attachment-encrypted-open = Ten plik dotarł zaszyfrowany. Zapisz go, aby otworz
 print-failed = Nie udało się wydrukować: { $error }
 print-no-font = nie znaleziono czcionki
 print-opened-as-pdf = Otwarto jako PDF, aby wydrukować z tego miejsca.
+
 print-preview-title = Podgląd wydruku
 print-preview-laying-out = Układanie stron…
 print-preview-pages = { $count ->
@@ -196,8 +203,9 @@ print-encrypted = (Zaszyfrowana. Otwórz ją w Katna Mail, aby wydrukować jej t
 print-to = Do: { $addresses }
 print-cc = DW: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = Otwórz tę wiadomość, aby odczytać jej załączniki.
+text-pin = Przypnij na górze
+text-copy-address = Kopiuj adres
 text-copy = Kopiuj
 text-select-all = Zaznacz wszystko

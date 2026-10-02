@@ -46,6 +46,7 @@ compose-sent-archived = Terkirim dan diarsipkan
 compose-sent = Pesan terkirim
 compose-discarded = Draf dibuang
 compose-draft-saved = Draf disimpan
+compose-draft-saving = Menyimpan…
 compose-draft-failed = Draf tidak dapat disimpan: { $error }
 compose-draft-not-opened = Draf tidak dapat dibuka.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = Draf tidak dapat dibuka.
 compose-picker-insert = Sisipkan
 compose-picker-attach = Lampirkan
 compose-file-too-large = { $name } terlalu besar: satu pesan hanya dapat memuat hingga { $limit }.
+compose-forward-files-missing = File pesan yang diteruskan belum didownload, jadi tidak dilampirkan.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Hapus lampiran
 compose-attachments-total = { $count } file, { $size }
@@ -74,6 +76,7 @@ compose-drive-share-link = Bagikan dengan link
 compose-drive-send-without = Kirim tanpa membagikan
 compose-drive-share-cancel = Batal
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } melebihi { $limit }, jadi file dikirim ke OneDrive Anda dan pesan membawa link.
 compose-onedrive-tip = Di OneDrive Anda; pesan membawa link
 compose-onedrive-allow = Izinkan OneDrive
@@ -84,8 +87,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive tidak dapat membagikan file kepada { $addresses }. Sebagai gantinya, siapa saja yang memiliki link dapat membukanya.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Letakkan file di sini
 compose-drop-here = Letakkan di sini
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = Pertahankan format
 compose-paste-table = Tabel
 compose-paste-picture = Gambar
@@ -99,6 +106,9 @@ compose-encrypt = Enkripsi
 compose-encrypted = Terenkripsi: hanya penerima yang dapat membacanya
 compose-sign = Tanda tangani
 compose-signed = Ditandatangani: penerima dapat memeriksa bahwa pesan ini dari Anda
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = Lacak saat dibuka dan diklik
 compose-tracked = Dilacak: Anda melihat kapan setiap penerima membukanya atau mengikuti link
 compose-track-clicks = Lacak klik link (teks biasa tidak dapat menampilkan pembukaan)
@@ -131,6 +141,9 @@ send-check-subject-title = Kirim tanpa subjek?
 send-check-subject-text = Pesan ini tidak memiliki subjek.
 send-check-add-subject = Tambahkan subjek
 send-check-send-anyway = Tetap kirim
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = Bukan alamat email yang valid
 recipient-show-address = Tampilkan alamat
 recipient-remove = Hapus

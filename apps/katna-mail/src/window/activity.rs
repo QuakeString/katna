@@ -1025,7 +1025,7 @@ impl MailWindow {
                         .items_center()
                         .rounded(px(8.0))
                         .border_1()
-                        .border_color(rgba(if report.error { th.error } else { th.divider }))
+                        .border_color(rgba(if report.error { th.error } else { th.outline }))
                         .text_size(px(14.0))
                         .child(report.dates[ix].clone()),
                 )
@@ -1246,7 +1246,7 @@ impl MailWindow {
                         .flex_col()
                         .rounded(px(16.0))
                         .overflow_hidden()
-                        .bg(rgba(th.surface))
+                        .map(|d| crate::widgets::frosted(d, th, th.surface, 16.0))
                         .shadow(elevation(th, 3.0))
                         .child(
                             div()
@@ -1340,7 +1340,7 @@ impl MailWindow {
                 a.display_name.trim().to_owned()
             }
         };
-        let label = chosen.map_or_else(|| tr!("activity-accounts-all"), &name);
+        let label = chosen.map_or_else(|| tr!("activity-accounts-all"), name);
         let button = div()
             .id("activity-accounts")
             .h(px(28.0))
@@ -1353,7 +1353,7 @@ impl MailWindow {
             .gap(px(6.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .bg(rgba(th.surface))
             .text_color(rgba(th.text))
             .text_size(px(13.0))

@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “គណនីទាំងអស់” នៅ�
 accounts-row = គណនី
 accounts-row-detail = ផ្ទាំងថត និងម៉ឺនុយគណនី រាយគណនីតាមលំដាប់នេះ។ គណនីទីមួយជាលំនាំដើម។ ការដកគណនីចេញ លុបច្បាប់ចម្លងសំបុត្ររបស់វាដែល Katna រក្សាទុកនៅលើកុំព្យូទ័រនេះ។ សំបុត្រនៅតែនៅលើម៉ាស៊ីនមេ។
 accounts-none = មិនទាន់មានគណនីនៅឡើយទេ។
+accounts-pop3-row = សំបុត្រនៅលើម៉ាស៊ីនមេ
+accounts-pop3-row-detail = គណនី POP3 ទាញយកសំបុត្រមកកុំព្យូទ័រនេះ។ ជ្រើសរើសថាត្រូវធ្វើអ្វីបន្ទាប់ជាមួយច្បាប់ចម្លងនៅលើម៉ាស៊ីនមេ។
+accounts-pop3-with-katna = ទុកវារហូតដល់ខ្ញុំលុបវានៅក្នុង Katna
+accounts-pop3-at-once = លុបវាភ្លាមៗពេលទាញយករួច
+accounts-pop3-after-days = { $count ->
+   *[other] លុបវាបន្ទាប់ពី { $count } ថ្ងៃ
+}
+accounts-pop3-never = កុំលុបវាឡើយ
+accounts-pop3-days-less = តិចថ្ងៃជាង
+accounts-pop3-days-more = ច្រើនថ្ងៃជាង
 accounts-kind-imported = បាននាំចូល
 accounts-picture-reset = ប្រើរូបភាពផ្ទៃតុ
 accounts-picture-change = ប្ដូររូបភាព
@@ -70,6 +80,9 @@ accounts-confirm-word = លុប
 accounts-confirm-placeholder = វាយ “{ accounts-confirm-word }”
 accounts-confirm-prompt = ដើម្បីបញ្ជាក់ សូមវាយ “{ accounts-confirm-word }”៖
 accounts-cancel = បោះបង់
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = លុបសំបុត្រ និងឯកសារភ្ជាប់ដែល Katna បានទាញយក រូបភាពអ្នកផ្ញើ និងលិបិក្រមស្វែងរក រួចទាញយកសំបុត្រថ្មីៗម្ដងទៀត។ គណនី ការកំណត់ និងសំបុត្រដែលមានតែនៅលើកុំព្យូទ័រនេះ នៅដដែល។
 reset-cache-button = កំណត់ឃ្លាំងសម្ងាត់ឡើងវិញ
 reset-cache-title = កំណត់ឃ្លាំងសម្ងាត់ឡើងវិញឬ?

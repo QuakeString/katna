@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See your uploads as they go"
+text = """
+Files you upload to Google Drive or OneDrive now show in a tray at the
+bottom right, each with a ring that fills as it goes up and the time
+left. Cancel one or all, fold the tray away, and click a finished file
+to open its folder.
+"""

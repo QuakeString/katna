@@ -32,6 +32,7 @@ compose-tool-bold = စာလုံးထူ (Ctrl+B)
 compose-tool-italic = စာလုံးစောင်း (Ctrl+I)
 compose-tool-underline = မျဉ်းသား (Ctrl+U)
 compose-tool-text-color = စာသားအရောင်
+compose-tool-colors = စာသားနှင့် အရောင်တောက် အရောင်
 compose-tool-background-color = နောက်ခံအရောင်
 compose-tool-default-color = မူလအရောင်
 compose-tool-no-background = နောက်ခံမရှိ
@@ -126,6 +127,10 @@ compose-tool-signature = လက်မှတ်ထည့်ရန်
 compose-tool-signature-none = လက်မှတ်မရှိ
 compose-tool-signature-untitled = ခေါင်းစဉ်မဲ့
 compose-tool-signature-manage = လက်မှတ်များကို စီမံရန်
+compose-signature-tag-tip = အခြား လက်မှတ် ရွေးရန်
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = ပုံစံခွက်များ
 compose-tool-templates-none = ပုံစံခွက် မရှိသေးပါ
 compose-tool-template-save = ပုံစံခွက်အဖြစ် သိမ်းရန်…

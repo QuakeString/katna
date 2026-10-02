@@ -14,7 +14,7 @@ use gpui::{
 };
 use katna_ui::motion::lerp;
 use katna_ui::px;
-use katna_ui::{Ripple, Tooltip};
+use katna_ui::{Glow, Ripple, Tooltip};
 
 use crate::theme::{Theme, avatar_color, fade, initial};
 use crate::window::MenuKey;
@@ -27,6 +27,61 @@ pub fn icon(name: &str, color: u32, size: f32) -> AnyElement {
         .size(px(size))
         .flex_none()
         .text_color(rgba(color))
+        .into_any_element()
+}
+
+/// A ring `size` px across in `track`, with the stretch from turn `from`
+/// to turn `to` (0 at the top, clockwise) in `color`; it fills its parent.
+pub fn ring(from: f32, to: f32, color: u32, track: u32, size: f32) -> AnyElement {
+    let line = size / 12.0;
+    canvas(
+        |_, _, _| {},
+        move |bounds, _, window, _| {
+            let radius = (size - line) / 2.0;
+            let center = bounds.center();
+            let at = |turn: f32| {
+                let angle = std::f32::consts::TAU * turn - std::f32::consts::FRAC_PI_2;
+                point(
+                    center.x + px(radius * angle.cos()),
+                    center.y + px(radius * angle.sin()),
+                )
+            };
+            let arc = |from: f32, to: f32| {
+                let mut path = gpui::PathBuilder::stroke(px(line));
+                let steps = ((to - from) * 96.0).ceil().max(1.0) as usize;
+                path.move_to(at(from));
+                for step in 1..=steps {
+                    path.line_to(at(from + (to - from) * step as f32 / steps as f32));
+                }
+                path.build().ok()
+            };
+            if let Some(path) = arc(0.0, 1.0) {
+                window.paint_path(path, rgba(track));
+            }
+            if to > from
+                && let Some(path) = arc(from, to)
+            {
+                window.paint_path(path, rgba(color));
+            }
+        },
+    )
+    .absolute()
+    .size_full()
+    .into_any_element()
+}
+
+/// A turning arc for something that is on its way, `size` px square.
+pub fn spinner(id: impl Into<ElementId>, color: u32, size: f32) -> AnyElement {
+    svg()
+        .path("icons/spinner.svg")
+        .size(px(size))
+        .flex_none()
+        .text_color(rgba(color))
+        .with_animation(
+            id,
+            gpui::Animation::new(std::time::Duration::from_millis(900)).repeat(),
+            |arc, t| arc.with_transformation(gpui::Transformation::rotate(gpui::percentage(t))),
+        )
         .into_any_element()
 }
 
@@ -93,9 +148,9 @@ pub fn icon_button_colored(
         .justify_center()
         .rounded_full()
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
         // Keep the header bar from starting a window move.
         .on_mouse_move(|_, _, cx| cx.stop_propagation())
+        .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)))
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)).centered())
         .child(icon(name, color, size))
 }
@@ -139,7 +194,7 @@ pub fn pill_button(
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.text_dim))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
         .child(icon(name, th.text_dim, 20.0))
         .child(
@@ -237,7 +292,7 @@ pub fn outlined_button(
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.accent))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
         .child(label.into())
 }
@@ -499,9 +554,6 @@ pub fn menu(th: &Theme) -> Div {
     )
 }
 
-/// How opaque a frosted panel's color is over the blur.
-const FROST_ALPHA: f32 = 0.78;
-
 /// The surface of a floating panel (menu, popover, dropdown): `th.menu`
 /// with corners of `radius` and a shadow of `level`. When
 /// [`Theme::frost`] is on it is frosted glass: the color translucent over
@@ -512,10 +564,65 @@ pub fn raised<E: Styled + ParentElement>(panel: E, th: &Theme, radius: f32, leve
     if th.frost == 0 {
         return panel.bg(rgba(th.menu));
     }
-    panel.child(katna_ui::frost::glass(
-        rgba(fade(th.menu, FROST_ALPHA)).into(),
-        px(radius),
+    glass(
+        panel,
+        th.menu,
+        radius,
+        f32::from(th.frost_tint) / 100.0,
         th.frost as f32,
+    )
+}
+
+/// How much more of the way to solid a dialog's tint goes than a menu's.
+/// A dialog covers much more of the window, and a busy list showing
+/// through all of it reads as clutter, not glass.
+const DIALOG_TINT: f32 = 0.5;
+/// How much further than a menu a dialog blurs, for the same reason.
+const DIALOG_BLUR: f32 = 1.5;
+
+/// Fills a dialog or floating card with `fill`, as frosted glass when
+/// [`Theme::frost`] is on, like [`raised`] does for menus but more
+/// opaque and more blurred, since it is larger. `radius` is the card's
+/// corner radius. Call it before adding the card's children, which must
+/// draw over the glass.
+pub fn frosted<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, radius: f32) -> E {
+    if th.frost == 0 {
+        return panel.bg(rgba(fill));
+    }
+    let (tint, blur) = dialog_frost(f32::from(th.frost_tint) / 100.0, th.frost as f32);
+    glass(panel, fill, radius, tint, blur)
+}
+
+/// A dialog's tint opacity and blur for a menu's.
+fn dialog_frost(tint: f32, blur: f32) -> (f32, f32) {
+    (tint + (1.0 - tint) * DIALOG_TINT, blur * DIALOG_BLUR)
+}
+
+/// A strip along the top of a card, frosted as [`frosted`] is when
+/// [`Theme::frost`] is on, else `fill`: rounded at the top only, by the
+/// card's inner `radius`, for a bar that content scrolls under.
+pub fn frosted_top<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, radius: f32) -> E {
+    let corners = gpui::Corners {
+        top_left: px(radius),
+        top_right: px(radius),
+        ..Default::default()
+    };
+    if th.frost == 0 {
+        return panel.bg(rgba(fill)).rounded_t(px(radius));
+    }
+    let (tint, blur) = dialog_frost(f32::from(th.frost_tint) / 100.0, th.frost as f32);
+    panel.child(katna_ui::frost::glass(
+        rgba(fade(fill, tint)).into(),
+        corners,
+        blur,
+    ))
+}
+
+fn glass<E: Styled + ParentElement>(panel: E, fill: u32, radius: f32, tint: f32, blur: f32) -> E {
+    panel.child(katna_ui::frost::glass(
+        rgba(fade(fill, tint)).into(),
+        px(radius),
+        blur,
     ))
 }
 
@@ -781,4 +888,134 @@ pub fn radio(t: f32, th: &Theme) -> AnyElement {
         .border_color(rgba(ring))
         .child(div().size(px(10.0 * t)).rounded_full().bg(rgba(th.accent)))
         .into_any_element()
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+
+    use super::dialog_frost;
+
+    #[test]
+    fn dialogs_frost_more_than_menus() {
+        let (tint, blur) = dialog_frost(0.45, 24.0);
+        assert!((tint - 0.725).abs() < 1e-6);
+        assert_eq!(blur, 36.0);
+        // Solid stays solid.
+        assert_eq!(dialog_frost(1.0, 24.0).0, 1.0);
+    }
+
+    /// Every `raised(...)` and `frosted(...)` panel gets its glass before
+    /// any child: the frost is
+    /// added as a child, and a child added earlier draws under the glass,
+    /// so the panel looks empty with frosted menus on.
+
+    #[test]
+    fn frosted_panels_take_children_after_the_glass() {
+        let mut wrong = Vec::new();
+        walk(
+            &Path::new(env!("CARGO_MANIFEST_DIR")).join("src"),
+            &mut wrong,
+        );
+        assert!(wrong.is_empty(), "children before the glass: {wrong:?}");
+    }
+
+    fn walk(dir: &Path, wrong: &mut Vec<String>) {
+        for entry in std::fs::read_dir(dir).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                walk(&path, wrong);
+            } else if path.extension().is_some_and(|e| e == "rs") {
+                let text = std::fs::read_to_string(&path).unwrap();
+                // Tests, like the ones here, may spell out wrong calls.
+                let code = text.split("#[cfg(test)]").next().unwrap_or_default();
+                for line in children_before_glass(code) {
+                    wrong.push(format!("{}:{line}", path.display()));
+                }
+            }
+        }
+    }
+
+    /// The lines of `raised(` and `frosted(` calls whose panel already has
+    /// children: in their first argument, or, for `.map(|d| raised(d, ...))`,
+    /// earlier in the chain the call is part of.
+    fn children_before_glass(text: &str) -> Vec<usize> {
+        let mut lines = Vec::new();
+        for name in ["raised(", "frosted("] {
+            for (at, _) in text.match_indices(name) {
+                let before = &text[..at];
+                if before.ends_with("fn ")
+                    || before.ends_with(|c: char| c.is_alphanumeric() || c == '_' || c == '.')
+                {
+                    continue;
+                }
+                let panel = first_argument(&text[at + name.len()..]);
+                let panel = if panel.chars().all(|c| c.is_alphanumeric() || c == '_') {
+                    chain_before(before)
+                } else {
+                    panel
+                };
+                if panel.contains(".child(") || panel.contains(".children(") {
+                    lines.push(before.matches('\n').count() + 1);
+                }
+            }
+        }
+        lines.sort_unstable();
+        lines
+    }
+
+    /// The first argument of a call, from just after its `(`.
+    fn first_argument(rest: &str) -> &str {
+        let mut depth = 0;
+        for (i, c) in rest.char_indices() {
+            match c {
+                '(' | '[' | '{' => depth += 1,
+                ')' | ']' | '}' | ',' if depth == 0 => return &rest[..i],
+                ')' | ']' | '}' => depth -= 1,
+                _ => {}
+            }
+        }
+        rest
+    }
+
+    /// The method chain that ends at the `.map(` a call sits in: back to
+    /// the `div()` that starts it, skipping `div()`s nested in arguments.
+    fn chain_before(before: &str) -> &str {
+        let Some(map) = before.rfind(".map(") else {
+            return "";
+        };
+        let head = &before[..map];
+        let mut from = head.len();
+        while let Some(at) = head[..from].rfind("div()") {
+            let chain = &head[at..];
+            let mut depth = 0i32;
+            let nested = chain.chars().any(|c| {
+                match c {
+                    '(' | '[' | '{' => depth += 1,
+                    ')' | ']' | '}' => depth -= 1,
+                    _ => {}
+                }
+                depth < 0
+            });
+            if !nested {
+                return chain;
+            }
+            from = at;
+        }
+        ""
+    }
+
+    #[test]
+    fn finds_children_before_the_glass() {
+        let good = "raised(div().p(px(4.0)), th, 8.0, 3.0).child(body)";
+        let bad = "\nraised(div().child(body), th, 8.0, 3.0)";
+        assert!(children_before_glass(good).is_empty());
+        assert_eq!(children_before_glass(bad), [2]);
+        let good = "div()\n.p(px(4.0))\n.map(|d| frosted(d, th, f, 8.0))";
+        assert!(children_before_glass(good).is_empty());
+        let good = ".child(div().p(px(1.0)))\n.child(\ndiv()\n.map(|d| raised(d, th, 8.0, 3.0))";
+        assert!(children_before_glass(good).is_empty());
+        let bad = "div()\n.child(body)\n.map(|d| frosted(d, th, f, 8.0))";
+        assert_eq!(children_before_glass(bad), [3]);
+    }
 }

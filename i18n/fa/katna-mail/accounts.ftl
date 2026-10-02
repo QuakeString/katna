@@ -14,6 +14,17 @@ accounts-unified-switch-detail = «همهٔ حساب‌ها» در بالای ق
 accounts-row = حساب‌ها
 accounts-row-detail = قاب پوشه‌ها و منوی حساب، حساب‌ها را به همین ترتیب نشان می‌دهند؛ اولی پیش‌فرض است. حذف یک حساب، نسخهٔ Katna از ایمیل‌های آن را از این رایانه پاک می‌کند. ایمیل‌ها روی سرور می‌مانند.
 accounts-none = هنوز حسابی نیست.
+accounts-pop3-row = ایمیل روی سرور
+accounts-pop3-row-detail = حساب‌های POP3 ایمیل را روی این رایانه بارگیری می‌کنند. انتخاب کنید پس از آن با نسخهٔ روی سرور چه شود.
+accounts-pop3-with-katna = تا وقتی در Katna حذفش نکرده‌ام نگه داشته شود
+accounts-pop3-at-once = پس از بارگیری حذف شود
+accounts-pop3-after-days = { $count ->
+    [one] پس از { $count } روز حذف شود
+   *[other] پس از { $count } روز حذف شود
+}
+accounts-pop3-never = هرگز حذف نشود
+accounts-pop3-days-less = روزهای کمتر
+accounts-pop3-days-more = روزهای بیشتر
 accounts-kind-imported = واردشده
 accounts-picture-reset = استفاده از تصویر میزکار
 accounts-picture-change = تغییر تصویر

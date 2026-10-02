@@ -99,6 +99,7 @@ katna/
 │   ├── katna-render/          # HTML sanitizing and message rendering
 │   ├── katna-preview/         # attachment previews: PDF, pictures, text, sheets, documents
 │   ├── katna-dav/             # CalDAV/CardDAV sync, iCalendar/vCard, recurrence
+│   ├── katna-ai/              # writing help with AI: prompts, services, wire (§16.5)
 │   ├── katna-dbus/            # D-Bus API definitions (in.invenia.katna.Pim1), client + server sides
 │   ├── katna-notify/          # notification builder, actions, inline reply, grouping
 │   ├── katna-platform/        # portals, desktop detection, settings, tray, badges
@@ -529,10 +530,11 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   redirects under `localhost`, so `::1` is listened on too), opens the
   provider's page in the default browser (the OpenURI portal, else
   `xdg-open`), and trades the code for tokens with our own HTTPS client
-  (rustls). Scopes: Google `https://mail.google.com/ drive.file openid
-  email profile` (with `access_type=offline` and `prompt=consent`, so every
-  sign-in brings a refresh token; `drive.file` is for large attachments,
-  §6.6, and Google refreshes are sent without scopes so grants from before
+  (rustls). Scopes: Google `https://mail.google.com/ drive.file
+  drive openid email profile` (with `access_type=offline` and
+  `prompt=consent`, so every sign-in brings a refresh token; `drive.file`
+  is for large attachments, §6.6, `drive` for the drive in Files,
+  §13.8, and Google refreshes are sent without scopes so grants from before
   it keep working); Microsoft `IMAP.AccessAsUser.All SMTP.Send
   offline_access openid email profile` on `outlook.office.com`, and Graph
   `Files.ReadWrite` allowed on the same screen for OneDrive (§6.6). The ID token
@@ -1477,8 +1479,8 @@ GPUI global):
   Windows keeps drawing the corners, shadow and resize edges.
 - *Blurred background*: the window's page color becomes translucent
   (`katna_chrome::tokens::blur_alpha`: 75 % light, 80 % dark; the idle
-  search box is 40 % glass over it with a faint edge and turns solid while
-  focused) and the
+  search box's barely tinted fill lets the blur through and turns solid
+  while focused) and the
   compositor blurs what is behind it: `ext_background_effect_v1` (KWin 6.7),
   else `org_kde_kwin_blur`, and `_KDE_NET_WM_BLUR_BEHIND_REGION` on X11.
   The blur region is the frame less its rounded corners; the CSD shadow is
@@ -1489,11 +1491,32 @@ GPUI global):
   acrylic blur behind the window); elsewhere the
   switch is shown off with the reason. The compose pop-out stays opaque
   (it is all message).
-- The same switch frosts floating panels in every window: menus (the
+- A second switch, *Frosted menus and dialogs*
+  (`experimental.frosted_popups`, on by default and independent of the
+  window blur, which needs no compositor since Katna draws it), frosts
+  floating panels in every window: menus (the
   right-click menu and its folder list, dropdowns), Search options and its
-  date popover, and the account menu. Their color is 78 % opaque over a
-  20 px blur of what is behind them in the window
-  (`katna_mail::widgets::raised`, `katna_ui::frost`). GPUI has no backdrop
+  date popover, and the account menu. Their color is 45 % opaque over a
+  24 px blur of what is behind them in the window
+  (`katna_mail::widgets::raised`, `katna_ui::frost`). Under it, *Custom
+  blur amount* (`experimental.custom_frost`, off by default) shows two
+  sliders, Blur strength (4 to 48 px, `frost_blur`) and Opacity (10 to
+  95 %, `frost_opacity`), that change the frost live while dragged. Off,
+  the blur follows KDE's Blur effect strength (`[Effect-blur]
+  BlurStrength` in `kwinrc`, 1 to 15, polled like `kdeglobals`; 1 is
+  4 px, KWin's default 15 is the 24 px default), and Katna's 24 px when
+  there is none (Blur effect off, other desktops); the opacity stays
+  45 %. The compositor's window blur takes no strength from the window,
+  so on KDE a line opens Desktop Effects for it
+  (`katna_platform::blur`, `window/frost_sliders.rs`). Dialogs and
+  floating cards (Add account, About, What's new, confirmations, label and
+  share dialogs, the first-run card) frost the same way with their own
+  color, more solid and more blurred than menus since they cover more of
+  the window: halfway from the menu tint to solid, at 1.5 times its blur
+  (`katna_mail::widgets::frosted`). About, What's new and Check for
+  updates open without a dark veil over the window; a test keeps every frosted
+  panel's glass ahead of its content. The compose window, notes and the
+  task details (a scrolling card) stay opaque. GPUI has no backdrop
   filter, so Katna's copy of its renderer (`vendor/gpui-pre-wgpu`) adds
   one: a quad marked through its border color is drawn over a dual Kawase
   blur of the frame under it, clamped to the quad (as CSS
@@ -1501,6 +1524,86 @@ GPUI global):
   outside its element, as CSS does, so a translucent panel or frame keeps
   one plain box shadow that follows its rounded corners. Where the
   window's surface cannot be copied from, panels stay opaque.
+
+**Settings > Experimental > Reading** (config `[experimental] chat_view`,
+off by default): conversations between people show as a group chat
+(`window/reader/chat.rs`). Each mail is a bubble with only what its sender
+wrote, the user's own on the right, grouped when one person writes again
+within ten minutes; days, and people a mail brings in, show between them.
+`katna_render::trim` splits a body into what was said, the quoted mail, the
+signature and a forwarded mail (`trim::plain`, and `html::trimmed` for HTML
+bodies, cutting at Gmail, Outlook, Apple Mail and Thunderbird quote markers
+and the usual attribution, forward and `-- ` lines). Signatures without a
+`-- ` line are read from what people write: a sign-off ("Best regards,")
+over a short name block, a rule (`_____`, `-----`) over contact details, a
+block of contact details of two kinds (phone, address, email, web), and
+footers that offer to unsubscribe, say why the mail came or carry a
+confidentiality notice; lines a person ends two of their mails in the
+conversation with are their signature too (`trim::shared_tail`). HTML
+mail reaches the chat as its text and is read the same way. The quote and
+signature wait behind a ··· pill, a forward is a small card. The person
+card has no Signature section: what a signature says is read out
+(`katna_render::signature`) into the card's details (their title, every
+phone number with its kind, other addresses, their own pages such as a
+LinkedIn profile, and any other line, such as a Skype name or office
+hours) and the Company section (the company's name, group, website,
+offices and pages, beside or instead of what its home page says).
+Pictures, banners, "Follow us" lines, taglines, "print only when
+necessary" lines and footers are left out. Pages on LinkedIn, X,
+Facebook, Instagram, YouTube, GitHub, WhatsApp and Telegram show as
+Katna's one-colour marks. In a chat the signature is the one the person
+signed the conversation with; elsewhere, their newest stored one. Attachments are
+chat media: pictures in a grid of their thumbnails, other files as cards,
+both opening the viewer; inline pictures under 12 KB (logos) are left out.
+A conversation opens as a chat unless a message from someone else is bulk
+mail (`MessageView::bulk`: `Precedence: bulk|junk`, or `List-Unsubscribe`
+outside a mailing list); the header's Chat | Mail switch (also above the
+mail view) overrides that for the open conversation. The reply box at the
+foot is the inline reply as Reply all (`compose/chat_box.rs`): Ctrl+Enter
+sends, Aa opens the full formatting bar above it, the paperclip offers
+pictures, files, a template or another signature, and the signature is held
+out of the text and added on Send. Sending never archives the chat, and the
+undo-send countdown shows as a ring with Undo beside the new bubble instead
+of the snackbar. Hover shows Reply all and ⋯; right-click offers Reply to
+all, Reply to the sender only, Forward, Copy text and Show as mail, and
+answering an older bubble aims the reply at it (quote and threading) with a
+"Replying to" strip, keeping what was written. A name or picture opens the
+contact panel on that person, with the signature they last used in the
+conversation. The paperclip's From Files opens a picker over the feed with
+the Files page's filters, this conversation's files first, and the drives
+(§13.8, the same picker as Compose's paperclip); ticked files weigh
+against the 25 MB a mail carries, and those past it go by Google Drive or
+OneDrive when the account has one. Up to five things can be pinned
+to the top of a chat: a mail (hover Pin, or the right-click menu) or one of
+its files (right-click on its card). Pins live in the mail store's
+`chat_pin` table (`katna_store::chat_pins`, mail.db v12), written by the
+daemon (`Pim1.PinInChat`, `UnpinInChat`, `OrderChatPins`) and read through
+the conversation's messages, so they survive the thread being rebuilt;
+nothing goes to the mail service, which has no such thing. A bar under the
+header shows one pin; a click jumps to its bubble and moves to the next,
+and its list button lists all of them, to drag into a new order or unpin.
+A sixth pin asks which one it replaces, the oldest picked. Text selected
+in one bubble pins from its right-click menu. As the person's card
+scrolls, its picture and name go up out of sight while its round buttons
+stay at the top in a frosted bar beside the close button, with a small
+picture of the person, so nothing scrolls under the close button. The person's card, in the
+chat view and beside an open mail alike, adds a Company section: the company at the website their signature
+names, else at their address's domain (never a free-mail one). The daemon
+reads it from the company's home page `<head>` (title, `og:` and description
+tags, schema.org `Organization` JSON-LD for place, founding year and social
+pages), adds Wikipedia's first lines when Wikidata lists the same website,
+and keeps the answer a week beside the sender pictures
+(`katna_sync::pictures::Company`, `Pim1.CompanyOf`). It follows the Sender
+pictures switch and the same authentication rule; nothing goes through
+Katna Server. On a phone the chat's header takes the toolbar's place, with
+Back before it and the reading pane's More menu after it (archive, delete
+and the rest, and Show as mail for the switch); bubbles take up to 82% of
+the width; there is no hover bar, and a long press (450 ms, the finger kept
+within 10 px) or a right-click opens the bubble's menu as a sheet rising
+from the bottom, with rows tall enough for a finger. A name or picture
+raises the person's card the same way (`window/sheet.rs`: a faint veil, a
+grab handle, a tap outside or a swipe down puts it away). The people list
+spans the chat, and the Files picker fills it edge to edge.
 
 **Window state.** The mail window opens as it closed: its size, maximized
 state and place (`katna_chrome::placement`), and what it showed: the app of
@@ -1649,7 +1752,16 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   and spam. Each opens to one line per account. The lists are read like
   search results (no one listed folder), merged by date in
   `Store::spread_threads` and `spread_message_ids`, which show server
-  copies of one message once.
+  copies of one message once. The unified Inbox has inbox tabs shared by
+  every account (Settings > Inbox > Unified inbox, `mail.unified_tabs`:
+  Gmail's five by default, or Focused and Other, Inbox, Newsletters and
+  Notifications, or none): each mail shows in the tab of its stored
+  category, except that a category an account lists in its first tab (a
+  tab it turned off, or no tabs) counts as Primary there too
+  (`Store::spread_inbox_threads` with `SpreadTabs`). One account's line
+  under it shows that account's own tabs. Lines of the whole unified
+  inbox carry a dot in the account's picture colour after the names, and
+  the account's name where the line stacks.
 - **One card.** The list and the open message share a white card with
   rounded corners on a tinted page. The list is one line per message:
   star, sender, subject in bold if unread with the snippet after it, and
@@ -1785,8 +1897,12 @@ Gemini or confidential mode):
   plug in. Mail is the only app so far; Contacts lists the people the mail
   was exchanged with, most written with first, and a click searches their
   mail; the others show a "coming soon" page saying what they will do.
-- **Top bar.** Settings gear on the right; the search box has a search
-  options button at its right end that opens a panel (from, to, subject,
+- **Top bar.** Settings gear on the right. The search box is a pill
+  with a very faint 1 px edge and a barely tinted fill (2–3 % of the text
+  color) while idle; under the pointer the edge darkens a little, and
+  focused it becomes a solid field with a half-strength accent edge, a
+  slight lift and an accent magnifier (`window/nav.rs`, `search_fill`,
+  `search_edge`). It has a search options button at its right end that opens a panel (from, to, subject,
   has the words, doesn't have, date within, has attachment) which builds
   the query.
 - **Panes.** Quick settings choose the reading pane: *right of the list*
@@ -1882,7 +1998,11 @@ Gemini or confidential mode):
   has a line per event: new mail, event and task reminders, mail back in
   the inbox (snooze, no reply), mail sent and mail not sent, each with a
   sound to pick (a menu that plays each as it is picked), a play button
-  and a switch. The sounds are the desktop's own (`katna_platform::sound`):
+  and a switch. New mail's usual sound on Linux is Katna's own chime
+  (`sound/chime.rs`: three bell notes rising, G5, C6, E6, 1.5 s, peak at
+  -1 dB), made in code and written once to `cache/sounds/`, because the
+  sound themes' new-mail sounds can be too faint to hear. The other sounds
+  are the desktop's own (`katna_platform::sound`):
   on Linux freedesktop names found in the KDE sound theme, Ocean or
   freedesktop (with fallbacks, e.g. New email falls back to
   `message-new-instant`), played with `pw-play`, `paplay` or
@@ -2298,8 +2418,12 @@ Gemini or confidential mode):
   System works in either mode (Breeze Dark on the desktop and Mode Light
   draws Breeze Light). Windows' accent is `DWM\AccentColor`; while a
   Contrast theme is on, System draws its colors. A scheme with one side
-  (a Contrast theme, a KDE scheme without a partner) decides light or
-  dark itself, whatever Mode says (`Theme::forced_dark`), as KDE does.
+  picked by name (a Contrast theme, a KDE scheme without a partner)
+  decides light or dark itself, whatever Mode says (`Theme::forced_dark`),
+  as KDE does. System is different: Mode wins (the owner's call), and
+  when the desktop's scheme has no side for that mode, System draws
+  Katna's palette in the desktop's accent; only a Contrast theme in use
+  still decides, since Windows makes every app follow it.
   Windows' colors are read at startup.
 
   *Yours* lists the schemes people make (`user_schemes.rs`): one TOML file
@@ -2308,12 +2432,20 @@ Gemini or confidential mode):
   text and text on the accent). *Customize…* copies the selected scheme,
   as drawn in the picked accent, into the editor; *Import…* reads a Katna
   file or a KDE `.colors` file (one side). The editor shows both sides
-  next to each other, each color with a hex field and a palette, the mail
+  next to each other, each color with a hex field and a swatch, the mail
   window drawn in them and what reads badly (text under 4.5:1, faint text
   and text on the accent under 3:1); *Make dark from light* works a dark
   side out from the light one's hues. A card's right-click menu has
   Customize, or for one's own Edit, Duplicate, Export and Delete (with
   Undo: the file comes back, in use again if it was).
+  A swatch opens a color picker beside it (a popover, its notch pointing
+  at the swatch, so the dialog keeps its size): a saturation and
+  brightness square, a hue bar, a hex field, the side's colors and the
+  ones picked lately. Linux has no portal for a color dialog, so the
+  picker is Katna's own; its dropper is the Screenshot portal's
+  PickColor (KDE, GNOME), and *System picker…* runs `kdialog --getcolor`
+  or `zenity --color-selection` where installed. Windows has neither yet
+  (ChooseColor needs unsafe FFI, and there is no system dropper).
 - **Contact panel.** On a desktop, a card beside the open conversation
   (300 px, the usual 16 px card gap, sliding in with the reading pane's
   spring) shows one of its people: the newest sender other than the user,
@@ -2335,7 +2467,11 @@ Gemini or confidential mode):
   company facts) is left for the Katna Server plan. It shows only while
   the list and reader keep 900 px (600 px with the reader alone), never on
   tablets and phones or in a conversation window; a button on the reader
-  toolbar turns it off (`mail.contact_panel`).
+  toolbar turns it off (`mail.contact_panel`). When it fits only with the
+  folder pane folded, it folds the pane as it slides in and unfolds it once
+  it goes (hidden, the mail closed, or the window grown wide enough for
+  both); a pane folded by hand stays folded, and one opened by hand beside
+  it wins until the panel is next shown (`fold_nav_for_contact`).
 - **Day's agenda.** A Calendar button on the top bar, beside Settings
   (the Mail page of a desktop window only), opens a card at the
   right of the mail with one day's events, as Gmail's side panel has it
@@ -2555,6 +2691,70 @@ desktop's own app stays one click away.
   opens the mail in a new window, forwards the file in a new mail, and
   shows the sender's files. Thumbnails are made in the background only
   for cards on show whose mail is downloaded, and at most 96 are kept.
+- **Drives in Files** (study "Drives in Files", 2026-10-02): a **Drives**
+  group under Accounts in the side column lists each Google account's
+  Google Drive and each Microsoft account's OneDrive (with its mark;
+  Dropbox and others later). A drive shows a folder
+  path, folder tiles (one sideways-scrolling row on a phone) and the same
+  cards and list as mail files, with Shared with me as its own row; the
+  type, date and sort chips stay and the search box searches the drive.
+  Cards offer Open (the built-in viewer), Attach (a new mail) and ⋯
+  (Download, Open in Google Drive or OneDrive, Copy link). **All files
+  stays mail-only.** Browsing needs Google's `drive` (an older
+  `drive.readonly` grant still browses) or Microsoft's `Files.ReadWrite`
+  (asked at sign-in, §6.6); an account without it shows a notice with
+  **Allow** (signs in again with its provider). OneDrive shows only once
+  Microsoft sign-in is offered (it waits for Katna's Microsoft app ID). While a drive of the account's
+  own is on show, the side column's Compose button becomes **Upload**,
+  with an arrow for Upload files or Upload folder (on a phone the button
+  opens that menu); files and folders go into the open folder through
+  `CloudUpload`, which makes the folders and uploads each file
+  resumably, reporting as `DriveChanged` like a large attachment. The
+  folder is read again when done.
+  `katna_sync::drive::browse` lists (`files.list`, folders first, 100 a
+  page), downloads (Google Docs export as PDF, at most 10 MB) and fetches
+  thumbnails from Google's hosts only; `katna_sync::onedrive::browse` does
+  the same through Microsoft Graph (`children`, `sharedWithMe` and
+  `search`, items shared from another drive as `drive/item` ids; files
+  through their `downloadUrl` without the token; thumbnails `medium`).
+  The daemon's `Cloud` (`daemon/cloud.rs`) picks the provider by the
+  account's sign-in and answers `CloudReadable`, `CloudList`,
+  `CloudFetch`, `CloudThumbnail`, `CloudWritable` and `CloudUpload`
+  over D-Bus, and keeps fetched files in `cache/drives/` for 24 hours (gone
+  on Reset cache). `CloudTrash` and `CloudRename` change an item of the
+  account's own drive (not Shared with me): the item menu's **Rename**
+  types over the name in place (the part before the extension selected;
+  F2), **Move to bin** (Del) sends it to the drive's bin with Undo
+  (Google untrashes; OneDrive restores only on personal drives).
+  Uploads from Files show in the **uploads tray** at the bottom right
+  over every page (`files_page/drive/tray.rs`): a ring per file from
+  `DriveChanged`, the time left, Cancel per file and Cancel all
+  (`DriveCancel`); it folds to its head, stays once everything is done
+  (a click on a finished file opens its folder) and goes when closed. The app
+  **Share…** in the same menu opens the Share dialog
+  (`files_page/drive/share.rs`; `CloudAccess`, `CloudGrant`,
+  `CloudSetAccess`, `CloudSetLink`): people added by address or from the
+  address book get Viewer, Commenter (Google only) or Editor; the drive's
+  own sharing email is off unless "Let … email them too" is ticked;
+  each grant's role can change or go (the owner and access from a parent
+  folder are fixed); General access is Restricted or Anyone with the link
+  (a Google `anyone` permission; a OneDrive anonymous view or edit link).
+  keeps listings for 3 minutes. Settings >
+  Default apps > Files page > **Drives in Files** turns a drive off per
+  account (`mail.files.drives_off`).
+  **Pickers (Smart attach).** Compose's paperclip and the chat's From
+  Files open the same picker (`files_page/picker.rs`): over Compose it
+  is a panel in the middle of the window, over a chat it covers the
+  feed. Its side column (pills on a narrow panel) offers Mail files,
+  This conversation (chat only), each drive and **This computer…** (the
+  system file chooser). In a drive a click ticks a file and opens a
+  folder. Attach copies drive files into the mail while everything fits
+  under 25 MB; a file over the limit, a Google Doc, or what still does
+  not fit goes as a link from its own drive (`CloudLink` registers it as
+  a finished upload, so Send shares it with the recipients as for big
+  files, and taking the chip off leaves the file in the drive: only
+  files Katna uploaded are binned). Files' own Attach does the same for
+  a big file or a Google Doc, in a new mail.
 
 ### 13.9 Window sizes
 
@@ -3070,7 +3270,8 @@ Implemented by the daemon on `org.freedesktop.Notifications` (`zbus`).
 | Interaction | Behavior |
 |---|---|
 | **Click** (`default` action) | Opens Katna Mail on that message (`org.freedesktop.Application.ActivateAction("open-message", id)`), starting the app if needed. The **activation token** from the notification (`ActivationToken` signal) is passed to the app so Wayland focuses the window instead of only flashing it. |
-| **Reply all** | On Plasma: action id `inline-reply` with hints `x-kde-reply-placeholder-text` ("Reply to all…") and `x-kde-reply-submit-button-text` ("Send"). The `NotificationReplied(id, text)` signal gives the text; the daemon builds the reply-all (recipients = From + To + Cc minus own addresses, `Re:` subject, `In-Reply-To`/`References`, quoted original), queues it with the undo delay, and shows "Reply sent · Undo". Elsewhere: a normal "Reply all" button that opens the quick-reply window (§13.4). Support is detected at runtime with `GetCapabilities` (`inline-reply`). |
+| **Peek** | One message only, not on Windows: the same notification (`replaces_id`, `resident` so the server keeps it after the button) shows the subject and the mail's text, up to 1200 characters with its paragraphs, with Reply, Reply all and Archive, and stays until closed (timeout 0). |
+| **Reply** | One message only. Where `GetCapabilities` lists `inline-reply` (Plasma; Katna's own toasts on Windows): action id `inline-reply` with hints `x-kde-reply-placeholder-text` ("Reply to Bob…"), `x-kde-reply-submit-button-text` ("Send") and `x-kde-reply-submit-button-icon-name`. The `NotificationReplied(id, text)` signal gives the text; the daemon builds a plain-text reply to the sender (§15.1.2), queues it with the undo delay, marks the mail read and shows "Reply sent to Bob" with Undo and Open in Katna. Elsewhere: a Reply button that opens Katna Mail's reply (`ActivateAction("reply", [id])`). Reply all (in Peek) opens Katna Mail's reply to all. |
 | **Archive / Mark read** | Buttons handled by the daemon without opening the app. |
 
 Content and behavior:
@@ -3100,21 +3301,21 @@ Built so far (`katna-notify`, `apps/katna-daemon/src/notify.rs`):
   with up to four "Sender: Subject" lines.
 - Mail already stored when the daemon starts, and a new account's first
   sync, are not news.
-- Buttons: Open (click), Reply all (one message only), Mark as read / Mark
-  all as read, Archive. Open calls `ActivateAction("open-message", [id])`
-  on the app's `org.freedesktop.Application` object
-  (`/in/invenia/katna/Mail`) with the activation token; Reply all calls
-  `reply-all`, which opens the message with an inline reply to all. When
-  the app does not answer, the daemon starts `katna-mail --message ID` (or
-  `--reply-all ID`) with `XDG_ACTIVATION_TOKEN`. The app looks for the
-  message in every inbox tab. The Plasma inline-reply field in the table
-  above is not built yet.
+- Buttons: Open (click), Peek and Reply (one message only), Mark as read /
+  Mark all as read, Archive; Peek shows Reply, Reply all and Archive.
+  Open calls `ActivateAction("open-message", [id])` on the app's
+  `org.freedesktop.Application` object (`/in/invenia/katna/Mail`) with the
+  activation token; Reply all calls `reply-all` and a Reply that opens the
+  app `reply`, which open the message in a window of its own with the
+  reply started. When the app does not answer, the daemon starts
+  `katna-mail --message ID` (or `--reply ID`, `--reply-all ID`) with
+  `XDG_ACTIVATION_TOKEN`. The app looks for the message in every inbox
+  tab.
 - A notification closes when all its mail is read or out of the inbox, from
   a sync or from a change made in the app, and a new-mail notification
   also when its mail is muted or its folder stops notifying.
 - Setting `notifications.new_mail` (default on); `ReloadConfig` applies it.
-- Not yet: inline reply, sender pictures (`image-data`), per-organization
-  policy.
+- Not yet: sender pictures (`image-data`), per-organization policy.
 - **Event reminders** (`apps/katna-daemon/src/daemon/alarms.rs`): each
   reminder of an event in a shown calendar (not cancelled, not declined)
   becomes a "Katna Calendar" notification at its time: the title, how soon
@@ -3171,6 +3372,35 @@ notified).
   which drops timed mutes when they end. A muted conversation follows
   thread merges.
 
+#### 15.1.2 Replies typed into a notification
+
+`katna_sync::quick_reply` reads the answered message from its stored body
+(sender, `Reply-To`, `Message-ID`, `References`, subject, text) and builds a
+plain-text, quoted-printable reply from the account's name and address:
+`Re:` subject, `In-Reply-To` and `References`, the typed text, the reply
+signature (`sending.reply_signature`) after `-- `, then the original quoted
+under "On <date>, <sender> wrote:" (English, as Katna Mail's own quotes;
+the date as headers write it, since the daemon has no ICU). The outbox adds
+`Date` and `Message-ID`. A message whose body is not downloaded opens in
+Katna Mail with the reply started and the text in it instead.
+
+The "Reply sent" note is a new notification (some servers close the one a
+reply was typed into), transient, shown for the undo time (at least 5 s),
+with Undo only when the undo time is not 0. Undo cancels the outbox entry
+and opens Katna Mail's reply with the text (`reply` with `[id, text]`;
+`--reply ID --text TEXT` when starting it), where it waits as a kept reply
+(the summary card's mechanism) for the reply box to take in. Open in Katna
+shows the conversation. When the reply goes out, the daemon plays the Sent
+sound, as Katna Mail does for its own.
+
+On Windows the toast server (`katna_platform::toasts`) builds each toast
+from Windows' toast XML: an `inline-reply` action becomes a text box
+(`<input>`) with a Send button (`hint-inputId`), whose text it sends as
+`NotificationReplied`; toasts carry their notification ID as tag (group
+`katna`), so a replacing notification replaces its toast and
+`CloseNotification` removes it from the notification center. A toast
+cannot grow, so Windows gets no Peek.
+
 ### 15.2 Taskbar, tray and global menu
 
 The count and the tray live in `katna-daemon`, so they stay while the app
@@ -3202,7 +3432,10 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   coloured pixels), and only the badge is red. Panels can't be asked their
   colour, so it is inferred (`colors::panel_text`): Plasma's from the
   scheme's window text, white on GNOME and other panels, and on Windows
-  from `SystemUsesLightTheme`; it is read again with each count. Left click raises the
+  from `SystemUsesLightTheme`; it is read again on the Settings portal's
+  `SettingChanged`, every second (Windows, or `kdeglobals` written after
+  the signal) and with each count, so the icon follows a light/dark switch
+  at once. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
   Quit. Quit closes the app and stops the daemon until the next login or
@@ -3626,6 +3859,135 @@ owner's server, over on-device models or DeepL).
   click from the bar) and languages never offered. The Settings text says
   the mail's text goes to Katna's server.
 
+### 16.5 Writing help with AI
+
+Katna Mail rephrases the text the user selects in a message and can finish
+the sentence being written (decided 1 October 2026: Katna AI on Katna
+Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google closed 2.5 Flash-Lite to new keys).
+
+- **Shared crate:** `katna-ai` (no network, no GPUI) holds the prompts
+  (`prompt`: the tones Clearer, Shorter, Friendlier, Formal, Fix grammar,
+  Longer and the user's own instruction; size limits; cleaning the
+  answer), the services a key can be brought for and the one HTTPS
+  request each takes (`provider`: Gemini, OpenAI, Claude, Mistral,
+  DeepSeek, OpenRouter, and Other for anything speaking OpenAI's API, such
+  as Ollama or LM Studio on `localhost`), and what the daemon and Katna
+  Server say to each other (`wire`). Katna Server uses the same crate.
+- **Settings** (`[ai]` in `config.toml`): `source` = `katna` (default),
+  `own` or `off`; `provider`, `model` (empty for the service's usual one)
+  and `address` (Other only); `autocomplete` (off) and
+  `autocomplete_answered` (off); `encrypted` (on: Rephrase is offered in
+  encrypted mail, asking each time). The key of the user's own service is
+  in the Secret Service (`ai-key`), saved and removed through the daemon
+  (`SetAiKey`, `AiKeySaved`), never in the settings file.
+- **Daemon:** `AiRephrase(text, tone, instruction)`,
+  `AiComplete(before, answered)`, `AiSummarize(newest, request)` and
+  `AiDraft(request)` on D-Bus, read the settings per call and
+  send over rustls either to Katna Server (`POST /api/v1/ai/rephrase`,
+  `/api/v1/ai/complete`, with the Katna account's token; 401/403 = sign
+  in, 402 = the free month is over, 429 = over a limit) or to the user's
+  service with the key. They answer the text, the plan (`trial` with days
+  left, `paid`, `own`) and a problem name (`katna_ai::wire::problem`).
+  Nothing is logged but that it happened.
+- **App:** selecting text in the message's own paragraphs (not the quote,
+  signature, tables or pictures) shows a sparkle by its end; it, the
+  sparkle beside Formatting in the compose bar (and in the chat view's
+  reply box) or Ctrl+J opens the Rephrase card, for the selection or,
+  with nothing selected, for all those paragraphs: tones, a preview, Replace (one undo step, a
+  snackbar with Undo), Try again, Add below, Copy, and who answered.
+  Encrypted mail asks before sending the selection, once per message.
+  Longer suggestions use the grey writing suggestion and its Tab
+  (`katna_ui::rich::Complete`), after a 600 ms pause at the end of a paragraph, ending in
+  a small "✦ Tab" key; never for encrypted mail. They ask for as little
+  thinking as the model allows (`Prompt::quick`: Gemini 3 Flash models
+  `thinkingLevel: minimal`). Settings lists the models the service
+  offers to the key (`AiModels` over D-Bus) under the editable Model
+  field, filtered as the user types.
+- **Summaries** (decided 2 October 2026): Summarize in the list's
+  right-click menu (and Shift+S) opens a card beside the line that marks
+  nothing read; the reading pane's sparkle puts the summary under the
+  subject; in the chat view a strip under the header (beside pins)
+  drops the card down over the chat. A summary is a short gist, up to
+  four points (settled, money, dates, next, open), each naming the mail
+  it came from, and "For you" when someone asked the user something.
+  With unread mail after mail already read it sums up only the new mail
+  (a catch-up). Katna Mail sends the newest 30 mails, drafts left out,
+  each trimmed to what its sender wrote (`katna_render::trim`, at most
+  1500 characters; 24,000 in all) as `katna_ai::summary::SummarizeRequest`
+  over `AiSummarize`; the service answers JSON that
+  `katna_ai::summary::parse` checks. The daemon keeps the summary in
+  `mail.db` (`conversation_summary`, v13: one whole and one catch-up per
+  conversation, found through the newest mail it covers), so it shows
+  again without asking; mail that comes later is added only when the
+  user clicks "Add N new". It is never made unasked. Encrypted mail asks
+  first, as Rephrase does, and is left out when Settings keeps writing
+  help out of encrypted mail. On Katna AI a summary is one request
+  (`POST /api/v1/ai/summarize`). With writing help off, no sparkle,
+  menu item or summary shows.
+- **Write reply** (decided 2 October 2026): while a reply, reply all
+  or forward is empty (signature and quote aside), the sparkle and
+  Ctrl+J write rather than rephrase (pen-and-spark icon, "Write reply"
+  or "Write note"); once there is text they rephrase again, and in a new
+  mail the sparkle stays faded until there is text. The Rephrase card
+  opens with three ideas from the conversation (one request) and a box
+  for the user's own words, Short or Longer, Friendly or Formal; picking
+  one writes the draft (one more request), which Insert puts at the start
+  of the message as one undo step. The chat view's drafts are a short
+  message without greeting or sign-off; a forward gets a note for the new
+  person. Katna Mail sends the conversation as for a summary, with the
+  user's and the recipients' names, as `katna_ai::draft::DraftRequest`
+  over `AiDraft` (Katna AI: `POST /api/v1/ai/draft`). Encrypted
+  conversations ask first.
+- **Rephrase subject** (asked 2 October 2026): once the subject has
+  text, a sparkle at the end of its row opens a small card under it with
+  three other wordings, written from the subject and what the message
+  says so far (`DraftKind::Subject` over the same `AiDraft` call, one
+  request). Picking one replaces the subject; the snackbar's Undo puts
+  back what was typed. Typing or Escape puts the card away.
+- **Reply from the summary card** (decided 2 October 2026): the card
+  beside a line of the list (it opens where the user right-clicked) has
+  Open and Reply, two compact pills. Reply turns that card into a Write
+  reply card in place, never another popup: the summary folds to one
+  line, then ideas, own words, Short or Longer, Friendly or Formal
+  (Formal when the mail reads formal), then the draft in an editable box.
+  Send puts it into the conversation's reply (the chat's reply box in the
+  chat view) and sends it with the usual Undo; Open puts it there to go
+  on writing. A draft not sent is kept per conversation and comes back in
+  the card and in the reply box.
+- **Katna AI** (Katna Server, `server/katna-server/src/ai.rs`): for
+  confirmed Katna accounts, 30 days free from the first use, then $5 a
+  month through Razorpay Subscriptions (to come; until then the server
+  answers 402 after the free month). The server builds the prompt with
+  `katna_ai::prompt` from the request, so a client cannot send the
+  service anything else, and asks the service set in
+  `KATNA_SERVER_AI_PROVIDER`/`_MODEL`/`_KEY` (Gemini 3.5 Flash-Lite by
+  default), then `KATNA_SERVER_AI_FALLBACK_*` when that fails. It counts
+  each answer's cost from the tokens the service reports at the prices
+  set (`_PRICE_IN_USD`, `_PRICE_OUT_USD`) per account and calendar month
+  (UTC): an account stops at `_ACCOUNT_CAP_USD` (1.00) and everyone at
+  `_BUDGET_USD` (50; 0 is off), with 300 requests an hour per account.
+  Text and answers are neither logged nor kept. Keys and the Razorpay
+  secrets come from environment variables only.
+- **Admin page** (`/admin`, `server/katna-server/src/admin.rs`): for
+  whoever runs the server, never a Katna account. The addresses in
+  `KATNA_SERVER_ADMIN_EMAILS` (none: 404) sign in with their own password
+  (an Argon2 hash in `admins`), then a code mailed to that address. The
+  first password is chosen on the page after a code mailed to the address
+  (so whoever finds the page first cannot claim it); a forgotten one is set
+  on the server with `katna-server admin-password`. The session is a
+  12-hour `__Host-` cookie (`Secure`, `HttpOnly`, `SameSite=Strict`) kept
+  in memory, and every call also carries `X-Katna-Admin: 1`. It shows this
+  month's cost against the budget, requests, accounts in the free month,
+  paid and at their cap, and the last six months; it chooses the service
+  asked first and the fallback, with a model each (typed, or picked from
+  the models the service lists for its key), among those with a key in
+  the environment (`KATNA_SERVER_AI_<SERVICE>_KEY`) or saved on the page
+  (`ai_keys`, used over the environment's; only the last four characters
+  ever show again), the limits and prices, and an off switch; "Test" asks each
+  chosen service a short question. Its settings are saved in the database
+  (`ai_settings`) over the environment's. The page is static HTML, CSS
+  and script served by the server under a strict Content Security Policy.
+
 ## 17. Performance budget
 
 ### 17.1 Measured (September 2026)
@@ -3653,7 +4015,7 @@ about 2 MB of the first 30 MiB (31.5 MB) budget.
 
 | Metric | Target |
 |---|---|
-| Katna Mail binary | ≤ 100 MB (100,000,000 bytes) |
+| Katna Mail binary | ≤ 150 MB (150,000,000 bytes) |
 | `katna-daemon` binary | ≤ 50 MB |
 | Idle CPU (app and daemon) | ≈ 0 %; no periodic wake-ups beyond IDLE renewals |
 | Cold start to usable inbox | < 500 ms |
@@ -3666,7 +4028,8 @@ With sync, bodies, the op queue, sending and the search indexer,
 Server's tracking and translation came in (September 2026), so features
 are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
 after the first real install, when the app reached it; then 50 MB, and
-100 MB since the attachment viewers (September 2026), so features are
+100 MB since the attachment viewers (September 2026), then 150 MB when the
+chat view's company details took it past 100 MB (October 2026), so features are
 not trimmed to fit; light crates are still preferred. Crates that are not hot are built with
 `opt-level = "s"` (root `Cargo.toml`): D-Bus (zbus, zvariant, oo7,
 ashpd), IMAP parsing and regex.
@@ -4593,8 +4956,39 @@ Arch is the first, Windows and the others follow the same flow.
   reading the manifest again before each new try, because a new build
   can publish while a download runs. A download that still fails shows
   as such in the Update dialog, with Try again.
+- **Patches: download only what changed** (owner's choice, 2 October
+  2026, zstd as the safest of the methods studied). Most updates change
+  little, but whole-program optimisation shifts bytes throughout the
+  programs, so block matching (zsync, as AppImage uses) reuses only
+  about a quarter of the package; a zstd patch is 3.2 MB for one merge
+  and 6.4 MB for a day's seven, against about 40 MB in full. CI's publish
+  job keeps the last 48 builds' packages in the release (about two days)
+  and makes a patch to the new one from the builds 1, 2, 3, 6, 12, 24
+  and 48 back (`zstd --patch-from --long=28`, between the uncompressed
+  packages, four at a time), listed in the manifest (`patches`) with the
+  new package's uncompressed SHA-256, size and signature (`tar`). The
+  earlier builds' patches stay in the release and in the manifest
+  (`chain`, each with its `to` build, while that build's package is
+  kept), so an installed build without a direct patch (the first
+  version had only three, and a user 15 builds behind got the full
+  package) reaches the new one through earlier builds:
+  `Manifest::route` picks the fewest bytes over at most four patches,
+  and only when they come to at most 70% of the full package.
+  After installing, the root helper keeps a copy of the installed
+  package in `/var/lib/katna/installed`, which only root can change (a
+  user's cache clean-up cannot remove it; removing `katna-git` does);
+  after `pacman -Syu` the daemon finds it in pacman's cache instead. When
+  the manifest has a route from the installed version and the copy is
+  there, the daemon downloads the patches one by one, applies each to the
+  last result (builds in between go to `updates/steps/` and are not
+  checked), and checks the final package's size and SHA-256; the helper checks its
+  signature and installs it like the full package (pacman takes either).
+  Anything else, or any failure, downloads the full package. The Update
+  dialog shows the size actually downloaded.
 - **The daemon checks and downloads** (the only network user): two
-  minutes after it starts, then every six hours, never on a metered
+  minutes after it starts, then every hour and 30 seconds after the
+  computer wakes from sleep (the daemon notices the wall clock jump past
+  its timers, which stop while asleep), never on a metered
   connection unless the user presses Check for updates. With
   `updates.auto_download` (Settings > General > Updates, on by default)
   it downloads a newer build at once into

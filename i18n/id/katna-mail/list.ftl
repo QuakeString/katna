@@ -20,6 +20,7 @@ tab-provider-other = diurutkan oleh Katna
 
 list-select = Pilih
 list-refresh = Muat ulang
+list-back-to-top = Kembali ke atas
 list-checking = Memeriksa email baru…
 list-more = Lainnya
 list-mark-read = Tandai sudah dibaca
@@ -236,11 +237,7 @@ menu-add-note = Tambahkan catatan
 menu-print-all = Cetak semua
 menu-new-window = Buka di jendela baru
 menu-move-to = Pindahkan ke
-# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
-# video call.
 menu-follow-up = Tindak lanjut
-# Opens a submenu of the rarer actions: Report spam, Mark as important and
-# Pin to top.
 menu-more = Lainnya
 menu-move-to-heading = Pindahkan ke:
 menu-find-from = Cari email dari { $name }

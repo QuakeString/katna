@@ -1708,9 +1708,12 @@ enum Asked {
 }
 
 /// The desktop's notification server, as far as the daemon uses it.
+/// With `replies`, it takes replies typed into a notification, as
+/// Plasma's does.
 struct FakeNotifications {
     asked: async_channel::Sender<Asked>,
     next: u32,
+    replies: bool,
 }
 
 #[zbus::interface(name = "org.freedesktop.Notifications")]
@@ -1746,7 +1749,11 @@ impl FakeNotifications {
     }
 
     fn get_capabilities(&self) -> Vec<String> {
-        vec!["actions".into(), "body".into()]
+        let mut caps = vec!["actions".into(), "body".into()];
+        if self.replies {
+            caps.push("inline-reply".into());
+        }
+        caps
     }
 
     #[zbus(signal)]
@@ -1754,6 +1761,13 @@ impl FakeNotifications {
         emitter: &zbus::object_server::SignalEmitter<'_>,
         id: u32,
         action_key: &str,
+    ) -> zbus::Result<()>;
+
+    #[zbus(signal)]
+    async fn notification_replied(
+        emitter: &zbus::object_server::SignalEmitter<'_>,
+        id: u32,
+        text: &str,
     ) -> zbus::Result<()>;
 }
 
@@ -1811,6 +1825,7 @@ fn reminds_of_events() {
                 FakeNotifications {
                     asked: asked_tx,
                     next: 0,
+                    replies: false,
                 },
             )
             .await
@@ -1872,6 +1887,7 @@ fn notifies_about_new_mail_on_dev_servers() {
                 FakeNotifications {
                     asked: asked_tx,
                     next: 0,
+                    replies: false,
                 },
             )
             .await
@@ -1923,8 +1939,10 @@ fn notifies_about_new_mail_on_dev_servers() {
                 actions: [
                     "default",
                     "Open",
-                    "reply-all",
-                    "Reply all",
+                    "peek",
+                    "Peek",
+                    "reply",
+                    "Reply",
                     "mark-read",
                     "Mark as read",
                     "archive",
@@ -1985,6 +2003,235 @@ fn notifies_about_new_mail_on_dev_servers() {
         Timer::after(Duration::from_millis(500)).await;
         assert!(asked.is_empty(), "{:?}", asked.try_recv());
 
+        other.logout().await.unwrap();
+        assert!(pim.remove_account(id).await.unwrap());
+        instance.shutdown().await;
+    });
+}
+
+/// One message's notification: Peek shows its text in its place, a reply
+/// typed into it waits out the undo time with Undo, and without an undo
+/// time goes out at once to the sender, in the same conversation.
+#[test]
+#[ignore = "needs the dev servers: docker compose -f dev/compose.yaml up -d"]
+fn replies_from_notifications_on_dev_servers() {
+    let _mailbox = dev_mailbox();
+    use katna_core::Config;
+    use zbus::object_server::SignalEmitter;
+
+    let imap_port = port("KATNA_STALWART_IMAPS_PORT", 10993);
+    let smtp_port = port("KATNA_STALWART_SUBMISSIONS_PORT", 10465);
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    smol::block_on(async {
+        let (asked_tx, asked) = async_channel::unbounded();
+        let desktop = bus.connect().await;
+        desktop
+            .object_server()
+            .at(
+                "/org/freedesktop/Notifications",
+                FakeNotifications {
+                    asked: asked_tx,
+                    next: 0,
+                    replies: true,
+                },
+            )
+            .await
+            .unwrap();
+        desktop
+            .request_name("org.freedesktop.Notifications")
+            .await
+            .unwrap();
+        let emitter = SignalEmitter::new(&desktop, "/org/freedesktop/Notifications").unwrap();
+
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        let mut account = imap("127.0.0.1", imap_port, "tls");
+        account.display_name = "Alice Example".into();
+        account.smtp = ServerSpec {
+            host: "127.0.0.1".into(),
+            port: smtp_port,
+            security: "tls".into(),
+            username: String::new(),
+            accept_invalid_certs: true,
+        };
+        let id = pim.add_imap_account(&account, "katna-dev").await.unwrap();
+        wait_until_online(&pim, id).await;
+        let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
+
+        let endpoint = Endpoint::new("127.0.0.1", imap_port, Security::Tls);
+        let mut other = ImapBackend::connect(
+            &endpoint,
+            &Credentials::new("alice@katna.test", "katna-dev"),
+            Tls::insecure_for_local_tests(),
+        )
+        .await
+        .unwrap();
+        let mut append = async |subject: &str| {
+            let message = format!(
+                "From: Bob Example <bob@katna.test>\r\nTo: <alice@katna.test>\r\n\
+                 Subject: {subject}\r\nMessage-ID: <{subject}@katna.test>\r\n\r\n\
+                 Can we meet at 3?\r\n\r\nBob\r\n"
+            );
+            other.append("INBOX", message.into_bytes()).await.unwrap();
+        };
+        let notified = async || match within("Notify", 15, asked.recv()).await.unwrap() {
+            Asked::Notify {
+                summary,
+                body,
+                actions,
+                ..
+            } => (summary, body, actions),
+            other => panic!("{other:?}"),
+        };
+        let keys =
+            |actions: &[String]| -> Vec<String> { actions.iter().step_by(2).cloned().collect() };
+        // The message, with its body downloaded.
+        let downloaded = async |subject: &str| {
+            let message = within("stored", 15, async {
+                loop {
+                    let inbox = reader
+                        .folders(katna_core::AccountId(id))
+                        .unwrap()
+                        .into_iter()
+                        .find(|f| f.path == "INBOX")
+                        .unwrap();
+                    let found = reader
+                        .messages_in_folder(inbox.id)
+                        .unwrap()
+                        .into_iter()
+                        .find(|m| m.subject == subject);
+                    if let Some(found) = found {
+                        return found.id;
+                    }
+                    Timer::after(Duration::from_millis(50)).await;
+                }
+            })
+            .await;
+            pim.fetch_body(message.0).await.unwrap();
+            message
+        };
+
+        // Peek, then a reply typed in, then Undo.
+        let first = unique("peek");
+        append(&first).await;
+        let (summary, _, actions) = notified().await;
+        assert_eq!(summary, "Bob Example");
+        assert_eq!(
+            keys(&actions),
+            ["default", "peek", "inline-reply", "mark-read", "archive"]
+        );
+        downloaded(&first).await;
+        Timer::after(Duration::from_millis(300)).await;
+        FakeNotifications::action_invoked(&emitter, 1, "peek")
+            .await
+            .unwrap();
+        let (_, body, actions) = notified().await;
+        assert_eq!(body, format!("{first}\n\nCan we meet at 3?\n\nBob"));
+        assert_eq!(
+            keys(&actions),
+            ["default", "inline-reply", "reply-all", "archive"]
+        );
+        // The server gave the peek ID 2; the reply comes on it.
+        Timer::after(Duration::from_millis(300)).await;
+        FakeNotifications::notification_replied(&emitter, 2, "Works for me.")
+            .await
+            .unwrap();
+        assert_eq!(
+            within("CloseNotification", 5, asked.recv()).await.unwrap(),
+            Asked::Close(2)
+        );
+        let (summary, body, actions) = notified().await;
+        assert_eq!(summary, "Reply sent to Bob Example");
+        assert_eq!(body, "Works for me.");
+        assert_eq!(keys(&actions), ["undo", "show"]);
+        let queued = pim.outbox().await.unwrap();
+        assert_eq!(queued.len(), 1);
+        assert_eq!(queued[0].state, send_state::QUEUED);
+        Timer::after(Duration::from_millis(300)).await;
+        FakeNotifications::action_invoked(&emitter, 3, "undo")
+            .await
+            .unwrap();
+        assert_eq!(
+            within("CloseNotification", 5, asked.recv()).await.unwrap(),
+            Asked::Close(3)
+        );
+        within("undone", 5, async {
+            while pim.outbox().await.unwrap()[0].state != send_state::CANCELLED {
+                Timer::after(Duration::from_millis(20)).await;
+            }
+        })
+        .await;
+        pim.discard_send(queued[0].id).await.unwrap();
+
+        // Without an undo time it goes at once, and the mail is read.
+        let mut config = Config::default();
+        config.sending.undo_send_seconds = 0;
+        config.save(&paths.config_file()).unwrap();
+        pim.reload_config().await.unwrap();
+        let second = unique("reply");
+        append(&second).await;
+        let _ = notified().await;
+        let message = downloaded(&second).await;
+        Timer::after(Duration::from_millis(300)).await;
+        FakeNotifications::notification_replied(&emitter, 4, "See you then.")
+            .await
+            .unwrap();
+        assert_eq!(
+            within("CloseNotification", 5, asked.recv()).await.unwrap(),
+            Asked::Close(4)
+        );
+        let (_, _, actions) = notified().await;
+        assert_eq!(keys(&actions), ["show"]);
+        within("sent", 30, async {
+            while !pim.outbox().await.unwrap().is_empty() {
+                Timer::after(Duration::from_millis(50)).await;
+            }
+        })
+        .await;
+        let stored = &reader.messages_by_id(&[message]).unwrap()[0];
+        assert!(stored.flags.contains(MessageFlags::SEEN));
+
+        // Bob has it, as a reply to his message.
+        let mut bob = ImapBackend::connect(
+            &endpoint,
+            &Credentials::new("bob@katna.test", "katna-dev"),
+            Tls::insecure_for_local_tests(),
+        )
+        .await
+        .unwrap();
+        let reply = within("delivered", 30, async {
+            loop {
+                bob.select("INBOX").await.unwrap();
+                let found = bob
+                    .fetch_envelopes(1, None)
+                    .await
+                    .unwrap()
+                    .into_iter()
+                    .find(|e| e.subject.as_deref() == Some(&format!("Re: {second}")));
+                if let Some(found) = found {
+                    return found;
+                }
+                Timer::after(Duration::from_millis(200)).await;
+            }
+        })
+        .await;
+        assert_eq!(
+            reply.in_reply_to.as_deref(),
+            Some(format!("<{second}@katna.test>").as_str())
+        );
+        let raw = bob.fetch_bodies(&[reply.uid]).await.unwrap().remove(0).1;
+        let raw = String::from_utf8_lossy(&raw);
+        assert!(
+            raw.contains("From: Alice Example <alice@katna.test>"),
+            "{raw}"
+        );
+        assert!(raw.contains("See you then."), "{raw}");
+        assert!(raw.contains("> Can we meet at 3?"), "{raw}");
+
+        bob.logout().await.unwrap();
         other.logout().await.unwrap();
         assert!(pim.remove_account(id).await.unwrap());
         instance.shutdown().await;

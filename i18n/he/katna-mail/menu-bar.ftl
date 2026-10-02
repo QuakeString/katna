@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _יומן
 desktop-menu-page-contacts = אנשי _קשר
 desktop-menu-page-tasks = מ_שימות
 desktop-menu-page-notes = _הערות
+desktop-menu-page-files = _קבצים
 desktop-menu-next = _השיחה הבאה
 desktop-menu-previous = _השיחה הקודמת
 desktop-menu-message = _הודעה

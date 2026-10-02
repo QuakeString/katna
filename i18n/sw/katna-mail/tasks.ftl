@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Unda
+tasks-create = Jukumu jipya
 tasks-all = Majukumu yote
 tasks-today = Leo
 tasks-starred = Yenye nyota

@@ -27,6 +27,7 @@ desktop-menu-page-calendar = ប្រតិ_ទិន
 desktop-menu-page-contacts = ទំ_នាក់ទំនង
 desktop-menu-page-tasks = _កិច្ចការ
 desktop-menu-page-notes = កំ_ណត់ចំណាំ
+desktop-menu-page-files = _ឯកសារ
 desktop-menu-next = _ការសន្ទនាបន្ទាប់
 desktop-menu-previous = _ការសន្ទនាមុន
 desktop-menu-message = _សារ

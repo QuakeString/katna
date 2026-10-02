@@ -327,3 +327,22 @@ fn next_offsets() {
     assert_eq!(next_offset(Some("bytes=0-262143")), 262_144);
     assert_eq!(next_offset(Some("junk")), 0);
 }
+
+#[test]
+fn uploads_into_a_folder() {
+    let (api, state) = fake_drive(State::default());
+    let (file, data) = file_of(1000);
+    smol::block_on(drive(&api).upload_into(
+        file.path(),
+        "notes.txt",
+        "text/plain",
+        "folder-9",
+        &|_, _| {},
+    ))
+    .unwrap();
+    let state = state.lock().unwrap();
+    assert_eq!(state.stored, data);
+    let start: serde_json::Value = serde_json::from_slice(&state.seen[0].body).unwrap();
+    assert_eq!(start["parents"], serde_json::json!(["folder-9"]));
+    assert_eq!(start["name"], "notes.txt");
+}

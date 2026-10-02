@@ -14,6 +14,18 @@ accounts-unified-switch-detail = «Tutti gli account» apre il riquadro delle ca
 accounts-row = Account
 accounts-row-detail = Il riquadro delle cartelle e il menu dell’account elencano gli account in quest’ordine; il primo è quello predefinito. Rimuovere un account elimina la copia della sua posta che Katna conserva su questo computer. La posta resta sul server.
 accounts-none = Ancora nessun account.
+accounts-pop3-row = Posta sul server
+accounts-pop3-row-detail = Gli account POP3 scaricano la posta su questo computer. Scegli cosa succede poi alla copia sul server.
+accounts-pop3-with-katna = Conservala finché non la elimino in Katna
+accounts-pop3-at-once = Eliminala appena scaricata
+accounts-pop3-after-days = { $count ->
+    [one] Eliminala dopo { $count } giorno
+    [many] Eliminala dopo { $count } di giorni
+   *[other] Eliminala dopo { $count } giorni
+}
+accounts-pop3-never = Non eliminarla mai
+accounts-pop3-days-less = Meno giorni
+accounts-pop3-days-more = Più giorni
 accounts-kind-imported = Importato
 accounts-picture-reset = Usa l’immagine del desktop
 accounts-picture-change = Cambia immagine
@@ -74,6 +86,9 @@ accounts-confirm-word = elimina
 accounts-confirm-placeholder = Digita «{ accounts-confirm-word }»
 accounts-confirm-prompt = Per confermare, digita «{ accounts-confirm-word }»:
 accounts-cancel = Annulla
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Elimina la posta e gli allegati scaricati da Katna, le immagini dei mittenti e l’indice di ricerca, poi scarica di nuovo la posta recente. Gli account, le impostazioni e la posta che si trova solo su questo computer restano.
 reset-cache-button = Reimposta la cache
 reset-cache-title = Reimpostare la cache?

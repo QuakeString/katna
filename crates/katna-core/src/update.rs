@@ -9,6 +9,8 @@
 //! the file it offers, and (in Katna Mail) how that file is installed.
 //! Only the Arch package updates itself so far.
 
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 /// The version this build reports ([`crate::crash::VERSION`]).
@@ -25,6 +27,16 @@ pub const MANIFEST_FILE: &str = "katna-update.json";
 /// through `pkexec` (`packaging/arch/katna-update-helper`). Its path is
 /// the one the polkit action ([`crate::ids::UPDATE_ACTION`]) allows.
 pub const ARCH_HELPER: &str = "/usr/lib/katna/katna-update-helper";
+
+/// Where the Arch helper keeps a copy of the package it last installed,
+/// which only root can change: the next update is a patch from it.
+pub const ARCH_INSTALLED: &str = "/var/lib/katna/installed";
+
+/// pacman's cache, which holds the builds `pacman -Syu` installed.
+const ARCH_CACHE: &str = "/var/cache/pacman/pkg";
+
+/// The Arch package's name, which starts its files' names.
+const ARCH_PACKAGE: &str = "katna-git";
 
 /// The kind of package this build came in, from `$KATNA_PACKAGE` at build
 /// time (`packaging/arch/PKGBUILD` sets `arch`).
@@ -64,6 +76,16 @@ impl Package {
     pub fn manifest_url(self) -> Option<String> {
         self.release()
             .map(|release| format!("{RELEASES}/{release}/{MANIFEST_FILE}"))
+    }
+
+    /// The folders, writable only by root, that may hold the installed
+    /// build's package, to patch the next one from: the copy the update
+    /// helper keeps, and pacman's cache after `pacman -Syu`.
+    pub fn installed_dirs(self) -> &'static [&'static str] {
+        match self {
+            Self::Arch => &[ARCH_INSTALLED, ARCH_CACHE],
+            Self::Other => &[],
+        }
     }
 
     /// The URL of `file`, a file of this package's newest build.
@@ -107,7 +129,69 @@ pub struct Manifest {
     /// carries the key. `None` from builds before signing.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub minisig: Option<String>,
+    /// The package without its zstd compression: what a patch makes.
+    /// `None` from builds before patches.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tar: Option<Tar>,
+    /// Patches from a few earlier builds to [`Manifest::tar`], so an
+    /// update downloads only what changed.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub patches: Vec<Patch>,
+    /// Patches between earlier builds, carried over from their own
+    /// manifests: an installed build without a patch in
+    /// [`Manifest::patches`] reaches this one through two or three of
+    /// them ([`Manifest::route`]).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub chain: Vec<Hop>,
 }
+
+/// A build's package without its zstd compression (`….pkg.tar`), which
+/// pacman installs too.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Tar {
+    pub sha256: String,
+    pub size: u64,
+    /// Its own signature, as [`Manifest::minisig`] for the package.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minisig: Option<String>,
+}
+
+/// A patch that turns an earlier build's [`Tar`] into this one's: `zstd
+/// --patch-from` with the earlier one as the reference.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Patch {
+    /// The earlier build's version.
+    pub from: String,
+    /// The patch's file name in the same release.
+    pub file: String,
+    pub sha256: String,
+    pub size: u64,
+}
+
+/// Most patches a manifest lists.
+const MAX_PATCHES: usize = 10;
+
+/// A patch from one earlier build's [`Tar`] to another's, as that
+/// build's manifest listed it in [`Manifest::patches`].
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Hop {
+    pub from: String,
+    pub to: String,
+    /// The patch's file name in the same release.
+    pub file: String,
+    pub sha256: String,
+    pub size: u64,
+    /// When `to`'s commit was made (Unix seconds), which CI uses to
+    /// drop old hops; 0 when unknown.
+    #[serde(default)]
+    pub built: i64,
+}
+
+/// Most hops a manifest lists: patches from the last 48 builds, seven
+/// each.
+const MAX_CHAIN: usize = 400;
+/// Most patches an update is made from, one after another.
+const MAX_HOPS: usize = 4;
 
 /// A What's new highlight of a build, as `katna-mail --highlights`
 /// prints it.
@@ -144,27 +228,101 @@ impl Manifest {
         let mut manifest: Self = serde_json::from_slice(json).ok()?;
         manifest.changes.truncate(MAX_CHANGES);
         manifest.highlights.truncate(MAX_HIGHLIGHTS);
-        let plain_name = !manifest.file.is_empty()
-            && manifest
-                .file
-                .chars()
-                .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_' | '+'))
-            && !manifest.file.starts_with('.');
-        let sha = manifest.sha256.len() == 64
-            && manifest
-                .sha256
-                .chars()
-                .all(|c| c.is_ascii_digit() || ('a'..='f').contains(&c));
-        let size = (1..=MAX_SIZE).contains(&manifest.size);
-        // A few short lines of printable text.
-        let minisig = manifest.minisig.as_ref().is_none_or(|sig| {
-            sig.len() <= 1024
-                && sig
-                    .chars()
-                    .all(|c| c == '\n' || c.is_ascii_graphic() || c == ' ')
+        manifest.patches.truncate(MAX_PATCHES);
+        let tar = manifest.tar.as_ref().is_none_or(|tar| {
+            is_sha256(&tar.sha256) && is_size(tar.size) && is_minisig(tar.minisig.as_deref())
         });
-        (plain_name && sha && size && minisig && parse_version(&manifest.version).is_some())
-            .then_some(manifest)
+        // A patch that does not look right is left out; the full
+        // package stays.
+        manifest.patches.retain(|patch| {
+            is_plain_name(&patch.file)
+                && is_sha256(&patch.sha256)
+                && is_size(patch.size)
+                && parse_version(&patch.from).is_some()
+        });
+        manifest.chain.truncate(MAX_CHAIN);
+        manifest.chain.retain(|hop| {
+            is_plain_name(&hop.file)
+                && is_sha256(&hop.sha256)
+                && is_size(hop.size)
+                && parse_version(&hop.from).is_some()
+                && parse_version(&hop.to).is_some()
+        });
+        if manifest.tar.is_none() {
+            manifest.patches.clear();
+            manifest.chain.clear();
+        }
+        (is_plain_name(&manifest.file)
+            && is_sha256(&manifest.sha256)
+            && is_size(manifest.size)
+            && is_minisig(manifest.minisig.as_deref())
+            && tar
+            && parse_version(&manifest.version).is_some())
+        .then_some(manifest)
+    }
+
+    /// The patch from `installed` to this build, if one is published.
+    pub fn patch_from(&self, installed: &str) -> Option<&Patch> {
+        self.tar.as_ref()?;
+        self.patches.iter().find(|patch| patch.from == installed)
+    }
+
+    /// The patches that make this build from `installed`, in the order
+    /// they apply, downloading the fewest bytes: a direct patch when
+    /// there is one, else up to [`MAX_HOPS`] through earlier builds,
+    /// ending with one of [`Manifest::patches`]. `None` when there are
+    /// none, or when together they are not clearly smaller than the full
+    /// package.
+    pub fn route(&self, installed: &str) -> Option<Vec<Hop>> {
+        self.tar.as_ref()?;
+        let direct = self.patches.iter().map(|patch| Hop {
+            from: patch.from.clone(),
+            to: self.version.clone(),
+            file: patch.file.clone(),
+            sha256: patch.sha256.clone(),
+            size: patch.size,
+            built: self.built,
+        });
+        let hops: Vec<Hop> = self
+            .chain
+            .iter()
+            .filter(|hop| hop.to != self.version && hop.from != hop.to)
+            .cloned()
+            .chain(direct)
+            .collect();
+        // Fewest bytes to each build in at most `round` hops
+        // (Bellman-Ford, a few hundred hops at most).
+        let mut best: HashMap<&str, (u64, Vec<usize>)> = HashMap::new();
+        best.insert(installed, (0, Vec::new()));
+        for _round in 0..MAX_HOPS {
+            let mut next = best.clone();
+            for (i, hop) in hops.iter().enumerate() {
+                let Some((bytes, path)) = best.get(hop.from.as_str()) else {
+                    continue;
+                };
+                let bytes = bytes.saturating_add(hop.size);
+                if next.get(hop.to.as_str()).is_none_or(|(b, _)| bytes < *b) {
+                    let mut path = path.clone();
+                    path.push(i);
+                    next.insert(&hop.to, (bytes, path));
+                }
+            }
+            best = next;
+        }
+        let (bytes, path) = best.remove(self.version.as_str())?;
+        // Each patch costs a moment to apply and can fail; past this
+        // share of the full package, the full one is the better buy.
+        (!path.is_empty() && bytes.saturating_mul(10) <= self.size.saturating_mul(7))
+            .then(|| path.into_iter().map(|i| hops[i].clone()).collect())
+    }
+
+    /// The name the uncompressed package is saved under: the package's
+    /// without `.zst`.
+    pub fn tar_file(&self) -> String {
+        self.file
+            .strip_suffix(".zst")
+            .unwrap_or(&self.file)
+            .to_owned()
     }
 
     /// Whether this build is newer than `installed`.
@@ -186,6 +344,50 @@ impl Manifest {
             None => (&self.changes, false),
         }
     }
+}
+
+fn is_plain_name(name: &str) -> bool {
+    !name.is_empty()
+        && name
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_' | '+'))
+        && !name.starts_with('.')
+}
+
+fn is_sha256(sha: &str) -> bool {
+    sha.len() == 64
+        && sha
+            .chars()
+            .all(|c| c.is_ascii_digit() || ('a'..='f').contains(&c))
+}
+
+fn is_size(size: u64) -> bool {
+    (1..=MAX_SIZE).contains(&size)
+}
+
+/// A few short lines of printable text.
+fn is_minisig(sig: Option<&str>) -> bool {
+    sig.is_none_or(|sig| {
+        sig.len() <= 1024
+            && sig
+                .chars()
+                .all(|c| c == '\n' || c.is_ascii_graphic() || c == ' ')
+    })
+}
+
+/// The version in the name of one of this package's files, as pacman
+/// names them: `katna-git-<version>-<release>-<arch>.pkg.tar[.zst]`.
+pub fn package_version(file_name: &str) -> Option<&str> {
+    let rest = file_name.strip_prefix(ARCH_PACKAGE)?.strip_prefix('-')?;
+    let rest = rest
+        .strip_suffix(".pkg.tar.zst")
+        .or_else(|| rest.strip_suffix(".pkg.tar"))?;
+    let (rest, _arch) = rest.rsplit_once('-')?;
+    let (version, release) = rest.rsplit_once('-')?;
+    (!release.is_empty()
+        && release.bytes().all(|b| b.is_ascii_digit() || b == b'.')
+        && parse_version(version).is_some())
+    .then_some(version)
 }
 
 /// The commit a package's version names (`…gHASH`).
@@ -292,6 +494,122 @@ mod tests {
             "size":10}"#;
         let old = Manifest::parse(old).unwrap();
         assert!(old.changes.is_empty() && old.built == 0);
+    }
+
+    #[test]
+    fn reads_patches() {
+        let json = br#"{"version":"0.0.0.r543.gccccccc","file":"katna-git-0.0.0.r543.gccccccc-1-x86_64.pkg.tar.zst",
+            "sha256":"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08","size":10,
+            "tar":{"sha256":"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08","size":30},
+            "patches":[{"from":"0.0.0.r542.gbbbbbbb","file":"katna-git-0.0.0.r542.gbbbbbbb-to-0.0.0.r543.gccccccc.patch.zst",
+                "sha256":"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08","size":3},
+                {"from":"0.0.0.r541.gaaaaaaa","file":"../evil","sha256":"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08","size":3}]}"#;
+        let manifest = Manifest::parse(json).unwrap();
+        assert_eq!(manifest.patches.len(), 1, "the bad patch is left out");
+        assert_eq!(manifest.patch_from("0.0.0.r542.gbbbbbbb").unwrap().size, 3);
+        assert!(manifest.patch_from("0.0.0.r541.gaaaaaaa").is_none());
+        assert_eq!(
+            manifest.tar_file(),
+            "katna-git-0.0.0.r543.gccccccc-1-x86_64.pkg.tar"
+        );
+        // Without the uncompressed package's checksum, no patch is used.
+        let text = std::str::from_utf8(json).unwrap();
+        let start = text.find("\"tar\"").unwrap();
+        let end = text.find("\"patches\"").unwrap();
+        let no_tar = format!("{}{}", &text[..start], &text[end..]);
+        assert!(
+            Manifest::parse(no_tar.as_bytes())
+                .unwrap()
+                .patches
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn routes_through_earlier_builds() {
+        let sha = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
+        let v = |r: u32| format!("0.0.0.r{r}.g{r:07}");
+        let hop = |from: u32, to: u32, size: u64| Hop {
+            from: v(from),
+            to: v(to),
+            file: format!("katna-git-{}-to-{}.patch.zst", v(from), v(to)),
+            sha256: sha.into(),
+            size,
+            built: 0,
+        };
+        let patch = |from: u32, size: u64| Patch {
+            from: v(from),
+            file: format!("katna-git-{}-to-{}.patch.zst", v(from), v(20)),
+            sha256: sha.into(),
+            size,
+        };
+        let manifest = Manifest {
+            version: v(20),
+            file: format!("katna-git-{}-1-x86_64.pkg.tar.zst", v(20)),
+            sha256: sha.into(),
+            size: 100,
+            built: 0,
+            commit: String::new(),
+            highlights: vec![],
+            changes: vec![],
+            minisig: None,
+            tar: Some(Tar {
+                sha256: sha.into(),
+                size: 300,
+                minisig: None,
+            }),
+            patches: vec![patch(19, 5), patch(18, 6), patch(14, 9), patch(2, 80)],
+            chain: vec![
+                hop(10, 14, 8),
+                hop(10, 12, 4),
+                hop(12, 14, 3),
+                hop(8, 10, 1),
+                hop(5, 8, 1),
+                hop(4, 5, 1),
+            ],
+        };
+        let json = serde_json::to_vec(&manifest).unwrap();
+        let manifest = Manifest::parse(&json).unwrap();
+        let route = |from: u32| {
+            manifest.route(&v(from)).map(|hops| {
+                hops.iter()
+                    .map(|hop| (hop.from.clone(), hop.to.clone()))
+                    .collect::<Vec<_>>()
+            })
+        };
+        // A direct patch.
+        assert_eq!(route(19), Some(vec![(v(19), v(20))]));
+        // The fewest bytes: 4 + 3 + 9, not 8 + 9.
+        assert_eq!(
+            route(10),
+            Some(vec![(v(10), v(12)), (v(12), v(14)), (v(14), v(20))])
+        );
+        assert_eq!(route(8).unwrap().len(), 4);
+        assert_eq!(route(5).unwrap().len(), 4);
+        // Five hops are too many.
+        assert_eq!(route(4), None);
+        // More than 70% of the full package.
+        assert_eq!(route(2), None);
+        assert_eq!(route(3), None);
+        assert_eq!(route(20), None);
+    }
+
+    #[test]
+    fn versions_in_package_names() {
+        assert_eq!(
+            package_version("katna-git-0.0.0.r542.g39ff4f0-1-x86_64.pkg.tar.zst"),
+            Some("0.0.0.r542.g39ff4f0")
+        );
+        assert_eq!(
+            package_version("katna-git-0.1.0-2-aarch64.pkg.tar"),
+            Some("0.1.0")
+        );
+        assert_eq!(package_version("katna-git-x86_64.pkg.tar.zst"), None);
+        assert_eq!(
+            package_version("katna-git-0.1.0-1-x86_64.pkg.tar.zst.minisig"),
+            None
+        );
+        assert_eq!(package_version("other-0.1.0-1-x86_64.pkg.tar.zst"), None);
     }
 
     #[test]

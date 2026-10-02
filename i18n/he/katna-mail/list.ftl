@@ -20,6 +20,7 @@ tab-provider-other = ממוין על ידי Katna
 
 list-select = בחירה
 list-refresh = רענון
+list-back-to-top = חזרה למעלה
 list-checking = בודקים דואר חדש…
 list-more = עוד
 list-mark-read = סימון כנקראו

@@ -17,6 +17,11 @@
 # than the one installed (never a downgrade to an older build with known
 # bugs), and only then hands it to pacman.
 #
+# The file is the package as published (.pkg.tar.zst) or, when Katna made
+# it from a patch, the same package uncompressed (.pkg.tar), signed on its
+# own. Once installed, a copy goes to /var/lib/katna/installed, where only
+# root can change it: Katna makes the next update from it and a patch.
+#
 # Exit codes: 0 installed; 2 wrong arguments; 3 not the checked file, not
 # signed, not Katna's package, or not newer; 4 pacman failed (another update running, a
 # dependency missing).
@@ -29,6 +34,8 @@ readonly PACKAGE=katna-git
 # The public half of the update signing key (packaging/keys/), installed
 # by the package once there is one.
 readonly KEY=/usr/lib/katna/update-key.pub
+# The copy of the installed package (katna_core::update::ARCH_INSTALLED).
+readonly INSTALLED=/var/lib/katna/installed
 
 fail() {
     echo "katna-update-helper: $2" >&2
@@ -41,9 +48,15 @@ want=$2
 [[ $want =~ ^[0-9a-f]{64}$ ]] || fail 2 "not a SHA-256: $want"
 [[ -f $source && ! -L $source ]] || fail 2 "not a file: $source"
 
+case $source in
+    *.pkg.tar.zst) suffix=.pkg.tar.zst ;;
+    *.pkg.tar) suffix=.pkg.tar ;;
+    *) fail 2 "not a package file: $source" ;;
+esac
+
 work=$(mktemp -d)
 trap 'rm -rf -- "$work"' EXIT
-package=$work/$PACKAGE-update.pkg.tar.zst
+package=$work/$PACKAGE-update$suffix
 cp -- "$source" "$package"
 
 got=$(sha256sum -- "$package")
@@ -70,3 +83,22 @@ installed=${installed#* }
     fail 3 "$source is $PACKAGE $version, not newer than $installed"
 
 pacman -U --noconfirm -- "$package" || fail 4 "pacman could not install the update"
+
+# Keeps the installed package for the next update's patch, replacing the
+# one before. Only an aid: a failure here leaves the update installed.
+# One made from a patch is compressed again to save room (the bytes
+# inside, which the next patch starts from, are the same).
+keep=$INSTALLED.new
+kept=$keep/$PACKAGE-$version-$(uname -m).pkg.tar.zst
+rm -rf -- "$keep"
+if install -d -m 755 -- "$keep" &&
+    if [[ $suffix == .pkg.tar ]]; then
+        zstd -q -3 -T0 -o "$kept" -- "$package" && chmod 644 -- "$kept"
+    else
+        install -m 644 -- "$package" "$kept"
+    fi; then
+    rm -rf -- "$INSTALLED"
+    mv -- "$keep" "$INSTALLED" || true
+else
+    rm -rf -- "$keep"
+fi

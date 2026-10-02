@@ -11,6 +11,7 @@ mod backfill;
 pub mod blob;
 mod cache;
 pub mod calendar;
+mod chat_pins;
 mod contact;
 pub mod contacts;
 mod db;
@@ -33,6 +34,7 @@ mod quota;
 mod receipts;
 pub mod remote;
 mod sender_auth;
+mod summaries;
 pub mod tasks;
 pub mod templates;
 mod thread;
@@ -46,6 +48,7 @@ pub use alerts::{Bell, FolderBell, Mute, MuteTarget};
 pub use backfill::Backfill;
 pub use blob::{BlobHash, BlobStore};
 pub use cache::Forgotten;
+pub use chat_pins::{ChatPin, MAX_CHAT_PINS, Pinned};
 pub use contact::{ContactConversation, ContactFile, ContactSummary};
 pub use contacts::{
     AddressBook, BookSource, BookState, BookSync, ContactLabel, ContactRef, SavedContact,
@@ -64,8 +67,8 @@ pub use mail::{
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::{
-    FlagFilter, FolderMarks, FolderSummary, InboxThreads, Marks, ThreadEntry, ThreadSender,
-    ThreadSummary,
+    FlagFilter, FolderMarks, FolderSummary, InboxThreads, Marks, SpreadTabs, ThreadEntry,
+    ThreadSender, ThreadSummary,
 };
 pub use meta::MetaRow;
 pub use notes::{NOTE_TRASH_KEEP, Note, RemoteNote};
@@ -77,6 +80,7 @@ pub use pop3::Pop3Uidl;
 pub use quota::StorageQuota;
 pub use receipts::{Receipt, ReceiptKind};
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
+pub use summaries::{StoredSummary, SummaryKind};
 pub use templates::{Template, TemplateFile, TemplateSummary};
 pub use tracking::{
     ActivityItem, MessageActivity, NewRecipient, RecipientActivity, TrackedMessage,
@@ -359,6 +363,25 @@ impl Store {
         filter: FlagFilter,
     ) -> Result<Vec<MessageId>> {
         mail_view::spread_message_ids(&self.mail, folders, filter)
+    }
+
+    /// The unified inbox over `folders` (each account's inbox), in one tab
+    /// ([`SpreadTabs`]), with its unread conversations per tab.
+    pub fn spread_inbox_threads(
+        &self,
+        folders: &[FolderId],
+        tabs: &SpreadTabs,
+    ) -> Result<InboxThreads> {
+        mail_view::spread_inbox_threads(&self.mail, folders, tabs)
+    }
+
+    /// The messages of the unified inbox over `folders` in one tab.
+    pub fn spread_inbox_message_ids(
+        &self,
+        folders: &[FolderId],
+        tabs: &SpreadTabs,
+    ) -> Result<Vec<MessageId>> {
+        mail_view::spread_inbox_message_ids(&self.mail, folders, tabs)
     }
 
     /// `messages` and every other stored copy of them (the same

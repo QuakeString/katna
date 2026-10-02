@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “Akaunti Zote” iko juu ya kidirisha cha fol
 accounts-row = Akaunti
 accounts-row-detail = Kidirisha cha folda na menyu ya akaunti huorodhesha akaunti kwa mpangilio huu; ya kwanza ndiyo chaguomsingi. Kuondoa akaunti hufuta nakala ya Katna ya barua zake kwenye kompyuta hii. Barua hubaki kwenye seva.
 accounts-none = Bado hakuna akaunti.
+accounts-pop3-row = Barua kwenye seva
+accounts-pop3-row-detail = Akaunti za POP3 hupakua barua kwenye kompyuta hii. Chagua kitakachofanyika baadaye kwa nakala iliyo kwenye seva.
+accounts-pop3-with-katna = Ihifadhi hadi niifute katika Katna
+accounts-pop3-at-once = Ifute mara inapopakuliwa
+accounts-pop3-after-days = { $count ->
+    [one] Ifute baada ya siku { $count }
+   *[other] Ifute baada ya siku { $count }
+}
+accounts-pop3-never = Usiifute kamwe
+accounts-pop3-days-less = Siku chache zaidi
+accounts-pop3-days-more = Siku zaidi
 accounts-kind-imported = Iliyoingizwa
 accounts-picture-reset = Tumia picha ya kompyuta ya mezani
 accounts-picture-change = Badilisha picha

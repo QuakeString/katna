@@ -2,6 +2,10 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Top bar
+
+top-brand = Katna
+
 ## App rail (and the bottom bar on a phone)
 
 rail-mail = మెయిల్
@@ -9,7 +13,7 @@ rail-calendar = క్యాలెండర్
 rail-contacts = కాంటాక్ట్‌లు
 rail-tasks = టాస్క్‌లు
 rail-notes = నోట్స్
-rail-feeds = ఫీడ్‌లు
+rail-files = ఫైల్‌లు
 
 ## Pages of apps still to come
 
@@ -18,7 +22,6 @@ app-coming-soon = త్వరలో వస్తోంది
 app-calendar-promise = మీ CalDAV క్యాలెండర్‌లు, మెయిల్‌లో వచ్చిన మీటింగ్ ఆహ్వానాలు, రిమైండర్‌లు, మీ ఇన్‌బాక్స్ పక్కనే.
 app-tasks-promise = CalDAVతో సింక్ అయ్యే చేయవలసిన పనుల లిస్ట్‌లు, మెయిల్ నుండి రూపొందించిన టాస్క్‌లు.
 app-notes-promise = త్వరిత నోట్స్, తర్వాత చూసుకోవడానికి ఒక మెయిల్ లేదా సంభాషణపై నోట్స్.
-app-feeds-promise = మీ మెయిల్ పక్కనే RSS, Atom ఫీడ్‌లను చదవండి.
 
 ## Contacts page
 
@@ -37,4 +40,3 @@ app-contacts-messages = { $count ->
    *[other] { $count } మెసేజ్‌లు
 }
 app-contacts-last = చివరిగా { $date }
-top-brand = Katna

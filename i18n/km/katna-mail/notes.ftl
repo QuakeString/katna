@@ -15,6 +15,7 @@ notes-loading = កំពុងបើកកំណត់ចំណាំរបស�
 
 notes-take-a-note = កត់កំណត់ចំណាំ…
 notes-new-list = បញ្ជីថ្មី
+notes-new-note = កំណត់ចំណាំថ្មី
 notes-pinned = បានខ្ទាស់
 notes-others = ផ្សេងទៀត
 notes-empty = កំណត់ចំណាំដែលអ្នកបន្ថែមនឹងបង្ហាញនៅទីនេះ

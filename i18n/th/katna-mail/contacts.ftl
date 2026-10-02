@@ -25,10 +25,7 @@ contacts-label-removed = นำออกจาก { $name } แล้ว
 contacts-label-renamed = เปลี่ยนชื่อป้ายกำกับเป็น { $name } แล้ว
 contacts-label-deleted = ลบป้ายกำกับ { $name } แล้ว
 contacts-label-no-email = ไม่มีใครในป้ายกำกับนี้ที่มีที่อยู่อีเมล
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = บัญชี
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = ลงชื่อเข้าใช้อีกครั้งเพื่อแสดงรายชื่อติดต่อ
 contacts-account-signed-in = ลงชื่อเข้าใช้ { $address } อีกครั้งแล้ว กำลังดึงรายชื่อติดต่อของคุณ…
 contacts-account-sign-in-refused = { $provider } ไม่อนุญาตให้ Katna เข้าใช้ ลองอีกครั้ง และอนุญาตให้เข้าถึงรายชื่อติดต่อของคุณ
@@ -36,13 +33,9 @@ contacts-account-password = เซิร์ฟเวอร์ไม่ยอม�
 contacts-account-change-password = เปลี่ยนรหัสผ่าน
 contacts-account-change-password-tooltip = เปิด การตั้งค่า > บัญชี
 contacts-account-failed = อ่านรายชื่อติดต่อไม่ได้
-# $reason is the server's own words, in English.
 contacts-account-error = อ่านรายชื่อติดต่อไม่ได้: { $reason }
 contacts-account-none = ไม่พบสมุดที่อยู่
-# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
 contacts-account-none-why = ไม่พบสมุดที่อยู่: { $reason }
-# A Gmail or Outlook account added with a password: its contacts need the
-# provider's sign-in.
 contacts-account-use-sign-in = { $provider } จะแสดงรายชื่อติดต่อให้เฉพาะ Katna ที่ลงชื่อเข้าใช้ด้วย { $provider } เท่านั้น
 contacts-account-sign-in-with = ลงชื่อเข้าใช้ด้วย { $provider }
 contacts-account-looking = กำลังค้นหารายชื่อติดต่อ…
@@ -88,7 +81,7 @@ contacts-print-none = ไม่มีรายชื่อติดต่อท�
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = วันเกิด: { $day }
 contacts-print-nickname = ชื่อเล่น: { $name }
-contacts-create = สร้างรายชื่อติดต่อ
+contacts-create = รายชื่อติดต่อใหม่
 
 ## Search and the list
 

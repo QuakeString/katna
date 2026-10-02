@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = ایجاد
+tasks-create = کار جدید
 tasks-all = همه کارها
 tasks-today = امروز
 tasks-starred = ستاره‌دار

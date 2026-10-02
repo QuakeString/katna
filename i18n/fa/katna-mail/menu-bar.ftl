@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _تقویم
 desktop-menu-page-contacts = _مخاطبین
 desktop-menu-page-tasks = _کارها
 desktop-menu-page-notes = یا_دداشت‌ها
+desktop-menu-page-files = _فایل‌ها
 desktop-menu-next = _مکالمهٔ بعدی
 desktop-menu-previous = _مکالمهٔ قبلی
 desktop-menu-message = _پیام

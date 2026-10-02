@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Створити
+tasks-create = Нове завдання
 tasks-all = Усі завдання
 tasks-today = Сьогодні
 tasks-starred = Із зірочкою

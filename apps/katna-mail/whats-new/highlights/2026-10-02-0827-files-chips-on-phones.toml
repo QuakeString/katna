@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Files chips fit on phones"
+text = """
+On a phone the Files page's chips are no longer cut off at the edge. The
+kinds of file fold to their icons, with the one you picked keeping its
+label, and the person, days and order chips get a row of their own.
+"""

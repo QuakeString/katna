@@ -66,6 +66,7 @@ about-credit-resvg = SVG تصاویر
 about-credit-jiff = تاریخیں اور ٹائم زونز
 about-credit-spellbook = املا کی جانچ، Helix ایڈیٹر کی جانب سے
 about-credit-smol = ایک وقت میں کئی کام کرنا
+about-credit-color-schemes = بلٹ ان رنگ سکیموں کے پیلیٹس
 about-all-libraries = Katna کی استعمال کردہ تمام لائبریریاں ({ $count })
 about-library-authors = از { $authors }
 about-license = Katna، GNU GPL ورژن 3 یا اس کے بعد کے تحت آزاد سافٹ ویئر ہے۔
@@ -122,6 +123,17 @@ onboarding-density = کثافت
 onboarding-density-default = ڈیفالٹ
 onboarding-density-compact = کمپیکٹ
 onboarding-continue = جاری رکھیں
+onboarding-katna-title = Katna اکاؤنٹ کے ساتھ مزید حاصل کریں
+onboarding-katna-lead = یہ اختیاری ہے۔ یہ Katna کی آن لائن خصوصیات آن کرتا ہے، اور آپ اسے بعد میں ترتیبات > سبسکرپشن میں بنا سکتے ہیں۔
+onboarding-katna-receipts-title = پڑھنے کی رسیدیں
+onboarding-katna-receipts-text = دیکھیں کہ لوگ آپ کی بھیجی ہوئی میل کب کھولتے ہیں۔
+onboarding-katna-links-title = لنک ٹریکنگ
+onboarding-katna-links-text = دیکھیں کہ آپ کی میل میں کون سے لنکس پر کلک ہوتا ہے۔
+onboarding-katna-activity-title = سرگرمی
+onboarding-katna-activity-text = آپ کی بھیجی ہوئی ہر چیز کے کھلنے اور کلکس، ایک ہی جگہ۔
+onboarding-katna-translate-title = خودکار ترجمہ
+onboarding-katna-translate-text = دوسری زبانوں میں لکھی میل اپنی زبان میں پڑھیں۔
+onboarding-katna-private = اس کا اپنا پاس ورڈ ہے۔ آپ کی میل کے لاگ ان کبھی اس کمپیوٹر سے باہر نہیں جاتے۔
 
 ## First run: done
 
@@ -166,7 +178,7 @@ tour-search-text = تلاش آف لائن بھی کام کرتی ہے۔ دائی
 tour-menu-title = فولڈرز دکھائیں یا چھپائیں
 tour-menu-text = یہ بٹن فولڈرز کی فہرست کو سمیٹ دیتا ہے۔ جب یہ چھپی ہو تو فولڈرز دیکھنے کے لیے بائیں جانب میل پر پوائنٹر رکھیں۔
 tour-apps-title = آپ کی ایپس
-tour-apps-text = میل اب یہاں ہے۔ کیلنڈر، رابطے، کام، نوٹس اور فیڈز اس بار میں اس کے ساتھ شامل ہوں گے۔
+tour-apps-text = میل یہاں رہتی ہے، کیلنڈر، رابطوں، کاموں، نوٹس اور فائلوں کے ساتھ۔
 tour-tabs-title = ان باکس ٹیبز
 tour-tabs-text = نئی میل بنیادی، پروموشنز، سوشل، اپ ڈیٹس اور فورمز میں ترتیب دی جاتی ہے۔ آپ ٹیبز کو فوری ترتیبات میں بند کر سکتے ہیں۔
 tour-list-title = آپ کے پیغامات
@@ -197,6 +209,9 @@ sign-in-again-button = سائن ان کریں
 sign-in-again-tooltip = اپنے براؤزر میں { $provider } کا سائن ان صفحہ کھولیں
 sign-in-again-waiting = آپ کے براؤزر کا انتظار ہے…
 sign-in-again-close = بند کریں
+google-api-off = Katna کے Google Cloud پروجیکٹ میں { $api } بند ہے۔
+google-api-turn-on = آن کریں
+google-api-turn-on-tooltip = { $api } آن کرنے کے لیے Google Cloud کھولیں، پھر دوبارہ کوشش کریں دبائیں
 sign-in-again-done = { $address } میں دوبارہ سائن ان ہو گیا۔ آپ کی میل لائی جا رہی ہے…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

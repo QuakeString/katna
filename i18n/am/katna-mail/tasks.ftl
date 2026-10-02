@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = ፍጠር
+tasks-create = አዲስ ተግባር
 tasks-all = ሁሉም ተግባራት
 tasks-today = ዛሬ
 tasks-starred = ኮከብ የተደረገባቸው

@@ -15,6 +15,7 @@ notes-loading = 正在開啟你的記事…
 
 notes-take-a-note = 新增記事…
 notes-new-list = 新增清單
+notes-new-note = 新增記事
 notes-pinned = 已置頂
 notes-others = 其他
 notes-empty = 你新增的記事會顯示在這裡

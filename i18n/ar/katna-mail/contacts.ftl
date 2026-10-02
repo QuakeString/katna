@@ -118,7 +118,7 @@ contacts-print-none = لا توجد جهات اتصال للطباعة
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = عيد الميلاد: { $day }
 contacts-print-nickname = الاسم المستعار: { $name }
-contacts-create = إنشاء جهة اتصال
+contacts-create = جهة اتصال جديدة
 
 ## Search and the list
 

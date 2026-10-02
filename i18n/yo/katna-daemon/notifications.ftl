@@ -36,7 +36,25 @@ notify-task-done = Ṣàmì sí pé ó ti parí
 ## Its buttons
 
 notify-open = Ṣí
+notify-peek = Yọjú wò ó
+notify-reply = Fèsì
+notify-reply-placeholder = Fèsì sí { $name }…
+notify-send = Fi ránṣẹ́
 notify-reply-all = Fèsì sí gbogbo
 notify-mark-read = Sàmì sí bí kíkà
 notify-mark-all-read = Sàmì sí gbogbo rẹ̀ bí kíkà
 notify-archive = Fi pamọ́
+
+## After Archive on a notification: a short note in the same place
+
+notify-archived = A ti fi pamọ́
+notify-archived-count = { $count ->
+   *[other] A ti gbé ìfiránṣẹ́ { $count } kúrò nínú àpótí-ìwọlé
+}
+notify-undo = Dá padà
+
+## After a reply typed into a notification: a note in the same place while
+## it waits for the undo time
+
+notify-reply-sent = A ti fi èsì ránṣẹ́ sí { $name }
+notify-open-in-katna = Ṣí i nínú Katna

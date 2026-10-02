@@ -1,6 +1,9 @@
 # Katna Mail, Burmese (မြန်မာ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Results
+
 search-category-mail = မေးလ်
 search-category-people = လူများ
 search-category-tasks = လုပ်ဆောင်စရာများ
@@ -17,6 +20,9 @@ search-event-in-days =
     { $count ->
        *[other] { $count } ရက်အတွင်း
     }
+
+## Buttons on a result in KRunner
+
 search-reply-all = အားလုံးကို ပြန်စာရေးရန်
 search-copy-address = လိပ်စာကို ကူးရန်
 search-find-mail = မေးလ် ရှာရန်

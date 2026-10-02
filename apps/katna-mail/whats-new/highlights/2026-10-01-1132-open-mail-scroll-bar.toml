@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A scroll bar in long mails"
+text = """
+A long conversation now shows the same quiet scroll bar as the Files page
+while you scroll it or point at it. Both bars are thinner now and grow as
+the pointer nears them. Drag one, or click along it, to jump anywhere.
+"""

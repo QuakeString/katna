@@ -11,14 +11,14 @@ use gpui::{
     MouseButton, MouseDownEvent, PathBuilder, SharedString, SpringAnimation, Transformation,
     canvas, div, list, point, prelude::*, radians, rgba, svg,
 };
-use katna_ui::Ripple;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
+use katna_ui::{Glow, Ripple};
 
 use super::apps::APP_RAIL_WIDTH;
 use super::tour::Spot;
 use super::{
-    Compose, FocusSearch, Hover, Listing, MailWindow, NAV_ROW_INSET, NAV_WIDTH, PANEL_RADIUS,
+    FocusSearch, Hover, Listing, MailWindow, NAV_ROW_INSET, NAV_WIDTH, PANEL_RADIUS,
     SEARCH_CONTEXT, ToggleNavigation, ToggleSettings, compose,
 };
 use katna_core::AccountKind;
@@ -28,7 +28,7 @@ use crate::format;
 use crate::sidebar::{self, Role, Unified};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    ScaledEdge, elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
+    elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
 };
 
 /// How far the floating folder pane stands off the rail and the top bar.
@@ -45,54 +45,34 @@ const CHEVRON_GAP: f32 = (NAV_ROW_HEIGHT - 20.0) / 2.0;
 /// inset, the arrow and a gap.
 const NAV_TEXT_LEFT: f32 = NAV_ROW_INSET + CHEVRON_GAP + 20.0 + 4.0;
 const SEARCH_HEIGHT: f32 = 40.0;
-/// How opaque the idle search box is in a blurred window: frosted glass
-/// that shows the blur behind it. Focused, it is solid.
-const SEARCH_GLASS_ALPHA: f32 = 0.4;
-/// How strong the idle glass search box's faint edge is.
-const SEARCH_GLASS_EDGE: f32 = 0.22;
+/// How much of the text color tints the idle search box: barely there,
+/// so it sits almost flush with the bar (and lets a window's blur show).
+const SEARCH_FILL: (f32, f32) = (0.022, 0.03);
+/// How strong its faint 1 px edge is while idle, and under the pointer.
+const SEARCH_EDGE: (f32, f32) = (0.085, 0.08);
+const SEARCH_EDGE_HOVER: f32 = 0.14;
+/// How much of the accent the edge takes while the box has the keys.
+const SEARCH_EDGE_FOCUSED: f32 = 0.45;
 
-/// The button at the top of a page's side panel (Create contact, Create
-/// task), in the size, shape and colours of Mail's Compose over the
-/// folders: only its icon and word change. Wrap it in a flex `div` so a
-/// column does not stretch it.
-pub(super) fn side_create_button(
-    id: &'static str,
-    icon_name: &str,
-    label: String,
-    th: &Theme,
-) -> gpui::Stateful<gpui::Div> {
-    div()
-        .id(id)
-        .relative()
-        .flex_none()
-        .ml(px(NAV_ROW_INSET))
-        .mt(px(super::COMPOSE_TOP))
-        .mb(px(super::COMPOSE_NAV_ROOM
-            - super::COMPOSE_TOP
-            - super::COMPOSE_HEIGHT))
-        .h(px(super::COMPOSE_HEIGHT))
-        .pl(px(16.0))
-        .pr(px(24.0))
-        .flex()
-        .flex_row()
-        .items_center()
-        .overflow_hidden()
-        .rounded(px(super::COMPOSE_RADIUS))
-        .bg(rgba(th.compose))
-        .text_color(rgba(th.compose_text))
-        .hover(|s| s.shadow(elevation(th, 1.5)))
-        .cursor_pointer()
-        .child(Ripple::new(id, rgba(th.ripple)).rounded(super::COMPOSE_RADIUS))
-        .child(icon(icon_name, th.compose_text, 24.0))
-        .child(
-            div()
-                .flex_none()
-                .pl(px(12.0))
-                .text_size(px(super::COMPOSE_TEXT_SIZE))
-                .font_weight(FontWeight::MEDIUM)
-                .whitespace_nowrap()
-                .child(label),
-        )
+/// The search box's fill, `t` from idle (0) to focused (1): a faint tint
+/// of the text color, then the theme's focused field color.
+pub(super) fn search_fill(th: &Theme, t: f32) -> u32 {
+    let tint = if th.dark {
+        SEARCH_FILL.1
+    } else {
+        SEARCH_FILL.0
+    };
+    mix(fade(th.text, tint), th.search_focused, t)
+}
+
+/// The search box's 1 px edge, `t` from idle (0) to focused (1).
+pub(super) fn search_edge(th: &Theme, t: f32) -> u32 {
+    let edge = if th.dark {
+        SEARCH_EDGE.1
+    } else {
+        SEARCH_EDGE.0
+    };
+    mix(fade(th.text, edge), fade(th.accent, SEARCH_EDGE_FOCUSED), t)
 }
 
 /// A line of a page's side list (Calendar, Contacts, Tasks, Notes) in the
@@ -102,6 +82,24 @@ pub(super) fn side_create_button(
 pub(super) fn side_row(
     id: impl Into<ElementId>,
     icon_name: &str,
+    label: impl IntoElement,
+    on: bool,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    let text = if on { th.row_selected_text } else { th.text };
+    side_row_with(
+        id,
+        icon(icon_name, if on { text } else { th.text_dim }, 20.0),
+        label,
+        on,
+        th,
+    )
+}
+
+/// A [`side_row`] with its own mark in place of an icon: a drive's.
+pub(super) fn side_row_with(
+    id: impl Into<ElementId>,
+    mark: AnyElement,
     label: impl IntoElement,
     on: bool,
     th: &Theme,
@@ -129,7 +127,7 @@ pub(super) fn side_row(
         })
         .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
         .child(Ripple::new(id, rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
-        .child(icon(icon_name, if on { text } else { th.text_dim }, 20.0))
+        .child(mark)
         .child(
             div()
                 .flex_1()
@@ -139,6 +137,7 @@ pub(super) fn side_row(
                 .child(label),
         )
 }
+
 /// A side line's count, in a tight, faint pill of the line's text color:
 /// Mail's folders and the Files page's kinds and accounts. On the open
 /// line the pill is lighter than the line's grey.
@@ -163,6 +162,9 @@ pub(super) fn count_pill(count: u64, on: bool, th: &Theme) -> gpui::Div {
 
 /// The line the app's name rolls through on the top bar.
 const TITLE_LINE: f32 = 28.0;
+
+/// The width of the Upload button's arrow, beside its words.
+const UPLOAD_ARROW: f32 = 44.0;
 
 impl MailWindow {
     pub(super) fn render_top_start(
@@ -323,9 +325,11 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// Compose: a pill at the top of the folders while they are open
-    /// beside the list, a square at the top of the app rail while they are
-    /// folded, in a tablet's drawer, or on another app's page. It slides
+    /// The big button at the top of the left bar (Compose in Mail, New
+    /// event, New contact, New task, New note on their pages): a pill at
+    /// the top of the folders or the page's side column while it is open,
+    /// a square at the top of the app rail while it is folded or in a
+    /// tablet's drawer. It slides
     /// between the two as the folders open or fold, and the rail's apps
     /// move down to make room.
     pub(super) fn render_compose_button(
@@ -341,6 +345,18 @@ impl MailWindow {
         }
         // 0 = in the rail, 1 = over the folders.
         let dock = self.compose_dock.value().clamp(0.0, 1.0);
+        // The whole event editor takes the page and its side column, so
+        // the button has no column to head and would sit on the title.
+        if dock > 0.0 && self.page_editor_open() {
+            return None;
+        }
+        // Each page's own action, in the same button and place.
+        let mail = self.app == super::RailApp::Mail;
+        let (icon_name, label) = self.primary_button();
+        // While a drive is open the button uploads, with an arrow beside
+        // it for files or a folder.
+        let upload = self.drive_upload_here();
+        let arrow = if upload { UPLOAD_ARROW * dock } else { 0.0 };
         let left = lerp(
             super::COMPOSE_RAIL_LEFT,
             APP_RAIL_WIDTH + NAV_ROW_INSET,
@@ -354,7 +370,7 @@ impl MailWindow {
                 .left(px(left))
                 .top(px(top))
                 .h(px(super::COMPOSE_HEIGHT))
-                .w(px(super::compose_width(dock, text)))
+                .w(px(super::compose_width(dock, text) + arrow))
                 .opacity(shown)
                 .flex()
                 .flex_row()
@@ -367,10 +383,30 @@ impl MailWindow {
                 .cursor_pointer()
                 // In the rail, resting on it opens the folded folders over
                 // the list, as resting on Mail does.
-                .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
-                    this.hover_navigation(Hover::Compose, *hovered, cx)
-                }))
-                .on_click(cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)))
+                .when(mail, |d| {
+                    d.on_hover(cx.listener(|this, hovered: &bool, _, cx| {
+                        this.hover_navigation(Hover::Compose, *hovered, cx)
+                    }))
+                })
+                .when(dock < 0.5, |d| d.tooltip(tip(label.clone(), th)))
+                .on_click(cx.listener(|this, _, window, cx| this.primary_action(window, cx)))
+                // Split, each half has its own hover.
+                .when(arrow > 0.5, |d| {
+                    d.child(
+                        div()
+                            .absolute()
+                            .top_0()
+                            .bottom_0()
+                            .left_0()
+                            .right(px(UPLOAD_ARROW))
+                            .child(Glow::new("upload-glow", rgba(th.hover)).corners([
+                                super::COMPOSE_RADIUS,
+                                0.0,
+                                0.0,
+                                super::COMPOSE_RADIUS,
+                            ])),
+                    )
+                })
                 .child(
                     Ripple::new("compose-ripple", rgba(th.ripple)).rounded(super::COMPOSE_RADIUS),
                 )
@@ -379,7 +415,7 @@ impl MailWindow {
                     div()
                         .flex_none()
                         .pl(px(16.0))
-                        .child(icon("compose", th.compose_text, 24.0)),
+                        .child(icon(icon_name, th.compose_text, 24.0)),
                 )
                 .child(
                     div()
@@ -389,8 +425,38 @@ impl MailWindow {
                         .text_size(px(super::COMPOSE_TEXT_SIZE))
                         .font_weight(FontWeight::MEDIUM)
                         .whitespace_nowrap()
-                        .child(tr!("compose")),
+                        .child(label),
                 )
+                .when(arrow > 0.5, |d| {
+                    d.child(
+                        div()
+                            .id("upload-arrow")
+                            .absolute()
+                            .top_0()
+                            .right_0()
+                            .h_full()
+                            .w(px(UPLOAD_ARROW))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .opacity(dock * dock)
+                            .border_l_1()
+                            .border_color(rgba(fade(th.compose_text, 0.25)))
+                            // Its hover fades in within the pill: square at
+                            // the line, round at the button's end.
+                            .child(Glow::new("upload-arrow-glow", rgba(th.hover)).corners([
+                                0.0,
+                                super::COMPOSE_RADIUS,
+                                super::COMPOSE_RADIUS,
+                                0.0,
+                            ]))
+                            .on_click(cx.listener(|this, e: &gpui::ClickEvent, _, cx| {
+                                cx.stop_propagation();
+                                this.open_upload_menu(e.position(), cx);
+                            }))
+                            .child(icon("drop-down", th.compose_text, 24.0)),
+                    )
+                })
                 .into_any_element(),
         )
     }
@@ -437,7 +503,7 @@ impl MailWindow {
                         .items_center()
                         .rounded(px(6.0))
                         .border_1()
-                        .border_color(rgba(th.divider))
+                        .border_color(rgba(th.outline))
                         .text_size(px(12.0))
                         .line_height(px(16.0))
                         .font_weight(FontWeight::MEDIUM)
@@ -484,22 +550,17 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .rounded_full()
-            // In a blurred window it is frosted glass while idle, letting
-            // more of the blur through than the bar around it, and turns
-            // solid as it takes focus.
-            .bg(rgba(if th.backdrop == 0 {
-                fade(th.search, lerp(SEARCH_GLASS_ALPHA, 1.0, t.clamp(0.0, 1.0)))
-            } else {
-                th.search
-            }))
-            // Focused, it gains the accent edge every other field has. As
-            // glass it keeps a faint edge while idle, so it stays visible.
-            .border_px(2.0)
-            .border_color(rgba(if th.backdrop == 0 {
-                mix(fade(th.text, SEARCH_GLASS_EDGE), th.accent, t)
-            } else {
-                fade(th.accent, t.clamp(0.0, 1.0))
-            }))
+            // Idle it is a barely tinted pill with a faint edge (in a
+            // blurred window the blur shows through it). Focused, it turns
+            // into a solid field, its edge takes a soft accent and it lifts
+            // a little.
+            .bg(rgba(search_fill(th, t)))
+            .border_1()
+            .border_color(rgba(search_edge(th, t)))
+            .when(t < 0.5, |d| {
+                d.hover(|s| s.border_color(rgba(fade(th.text, SEARCH_EDGE_HOVER))))
+            })
+            .shadow(elevation(th, 0.5 * t.clamp(0.0, 1.0)))
             .text_size(px(16.0))
             .line_height(px(24.0))
             .text_color(rgba(th.text))
@@ -515,9 +576,16 @@ impl MailWindow {
                         .overflow_hidden()
                         .opacity(1.0 - phone)
                         .child(
-                            icon_button("search-button", "search", 22.0, th)
-                                .tooltip(tip(tr!("search"), th))
-                                .on_click(cx.listener(|this, _, window, cx| {
+                            icon_button_colored(
+                                "search-button",
+                                "search",
+                                22.0,
+                                mix(th.text_dim, th.accent, t),
+                                th,
+                            )
+                            .tooltip(tip(tr!("search"), th))
+                            .on_click(cx.listener(
+                                |this, _, window, cx| {
                                     let text = this.search.read(cx).text().trim().to_owned();
                                     if text.is_empty()
                                         || this.settings_page.is_some()
@@ -528,7 +596,8 @@ impl MailWindow {
                                     } else {
                                         this.start_search(text, cx);
                                     }
-                                })),
+                                },
+                            )),
                         ),
                 )
             })

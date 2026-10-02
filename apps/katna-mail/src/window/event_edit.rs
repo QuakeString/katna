@@ -557,6 +557,15 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// The left bar's New event: the small card for an event at the next
+    /// hour on the day on show, in the middle of the window.
+    pub(super) fn create_event_button(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let size = window.viewport_size();
+        let at = gpui::point(size.width / 2.0 - px(QUICK_WIDTH / 2.0), size.height / 3.0);
+        let day = self.calendar.view_day();
+        self.start_new_event(day, None, false, at, window, cx);
+    }
+
     /// C: a new event at the next hour, in the whole editor.
     pub(super) fn create_event_key(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let size = window.viewport_size();
@@ -2440,30 +2449,29 @@ impl MailWindow {
                 .flex()
                 .flex_col()
                 .gap(px(8.0))
-                .text_color(rgba(th.text))
-                .child(div().mb(px(8.0)).text_size(px(20.0)).child(title))
-                .children(options)
-                .child(
-                    div()
-                        .mt(px(16.0))
-                        .flex()
-                        .flex_row()
-                        .justify_end()
-                        .gap(px(8.0))
-                        .child(
-                            text_button("scope-cancel", tr!("calendar-cancel"), th).on_click(
-                                cx.listener(|this, _, window, cx| {
-                                    this.answer_scope(false, window, cx)
-                                }),
-                            ),
-                        )
-                        .child(filled_button("scope-ok", tr!("calendar-ok"), th).on_click(
-                            cx.listener(|this, _, window, cx| this.answer_scope(true, window, cx)),
-                        )),
-                ),
+                .text_color(rgba(th.text)),
             th,
             15.0,
             4.0,
+        )
+        // The frosted glass is the dialog's first child, under the text.
+        .child(div().mb(px(8.0)).text_size(px(20.0)).child(title))
+        .children(options)
+        .child(
+            div()
+                .mt(px(16.0))
+                .flex()
+                .flex_row()
+                .justify_end()
+                .gap(px(8.0))
+                .child(
+                    text_button("scope-cancel", tr!("calendar-cancel"), th).on_click(
+                        cx.listener(|this, _, window, cx| this.answer_scope(false, window, cx)),
+                    ),
+                )
+                .child(filled_button("scope-ok", tr!("calendar-ok"), th).on_click(
+                    cx.listener(|this, _, window, cx| this.answer_scope(true, window, cx)),
+                )),
         );
         deferred(
             div()

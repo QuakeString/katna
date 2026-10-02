@@ -185,6 +185,25 @@ pub fn tabs(setting: &AccountTabs, provider: Provider) -> Vec<Tab> {
     shown
 }
 
+/// The unified inbox's tabs, shared by every account: Gmail's five unless
+/// Settings picks another set.
+pub fn shared(style: TabStyle) -> Vec<Tab> {
+    match style {
+        TabStyle::Auto => all_tabs(TabStyle::Gmail),
+        style => all_tabs(style),
+    }
+}
+
+/// The categories an account lists in its first tab, given its `tabs`:
+/// those of tabs it turned off, or all of them without tabs. In the
+/// unified inbox their mail shows in the first tab too.
+pub fn folded(tabs: &[Tab]) -> Vec<MailCategory> {
+    match tabs.first() {
+        Some(first) => first.categories.clone(),
+        None => MailCategory::ALL.to_vec(),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -292,5 +311,27 @@ mod tests {
             hidden: vec!["other".into()],
         };
         assert!(super::tabs(&setting, Provider::Gmail).is_empty());
+    }
+
+    #[test]
+    fn the_unified_inbox_shares_one_set() {
+        assert_eq!(
+            keys(&shared(TabStyle::Auto)),
+            ["primary", "promotions", "social", "updates", "forums"]
+        );
+        assert_eq!(keys(&shared(TabStyle::Focused)), ["focused", "other"]);
+        assert!(shared(TabStyle::Off).is_empty());
+        let mut zoho = AccountTabs {
+            style: TabStyle::Zoho,
+            ..AccountTabs::default()
+        };
+        assert_eq!(folded(&tabs(&zoho, Provider::Zoho)), [Primary]);
+        zoho.hidden.push("newsletters".to_owned());
+        assert_eq!(
+            folded(&tabs(&zoho, Provider::Zoho)),
+            [Primary, Promotions, Forums]
+        );
+        zoho.style = TabStyle::Off;
+        assert_eq!(folded(&tabs(&zoho, Provider::Zoho)), MailCategory::ALL);
     }
 }

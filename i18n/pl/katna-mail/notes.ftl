@@ -15,6 +15,7 @@ notes-loading = Otwieranie notatek…
 
 notes-take-a-note = Utwórz notatkę…
 notes-new-list = Nowa lista
+notes-new-note = Nowa notatka
 notes-pinned = Przypięte
 notes-others = Inne
 notes-empty = Dodane notatki pojawią się tutaj

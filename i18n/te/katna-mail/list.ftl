@@ -20,6 +20,7 @@ tab-provider-other = Katna క్రమబద్ధీకరించింద�
 
 list-select = ఎంచుకోండి
 list-refresh = రిఫ్రెష్ చేయండి
+list-back-to-top = పైకి వెళ్లండి
 list-checking = కొత్త మెయిల్ కోసం చెక్ చేస్తోంది…
 list-more = మరిన్ని
 list-mark-read = చదివినట్లు గుర్తు పెట్టండి
@@ -386,11 +387,7 @@ menu-add-note = గమనికను జోడించండి
 menu-print-all = అన్నీ ప్రింట్ చేయండి
 menu-new-window = కొత్త విండోలో తెరవండి
 menu-move-to = దీనికి తరలించండి
-# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
-# video call.
 menu-follow-up = ఫాలో అప్
-# Opens a submenu of the rarer actions: Report spam, Mark as important and
-# Pin to top.
 menu-more = మరిన్ని
 menu-move-to-heading = దీనికి తరలించండి:
 menu-find-from = { $name } నుండి వచ్చిన ఈమెయిల్స్‌ను కనుగొనండి

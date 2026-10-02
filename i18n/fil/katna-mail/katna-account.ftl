@@ -1,6 +1,9 @@
 # Katna Mail, Filipino (Filipino).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Binubuksan ng Katna account ang mga online na feature ng Katna: mga read receipt, pag-track ng link, Activity at awtomatikong pagsasalin. Sarili nito ang password nito, hindi password ng mail, at hindi kailanman lumalabas sa computer na ito ang mga login ng mail mo.
 katna-checking = Tinitingnan…
 katna-email = Email
@@ -10,6 +13,8 @@ katna-sign-in = Mag-sign in
 katna-sign-in-detail = Mag-sign in sa bawat computer kung saan mo gusto ang mga online na feature.
 katna-create = Gumawa ng account
 katna-create-detail = Gumamit ng address na nababasa mo: padadalhan ka namin ng code para kumpirmahin ito.
+katna-onboarding-create-title = Gumawa ng iyong Katna account
+katna-onboarding-sign-in-title = Mag-sign in sa Katna
 katna-have-account = May account na ako
 katna-forgot = Nakalimutan ang password?
 katna-forgot-detail = Padadalhan ka namin ng code para makapili ng bagong password.
@@ -42,6 +47,9 @@ katna-delete = Burahin ang account
 katna-delete-detail = Binubura ang account at lahat ng itinatago ng server para rito, gaya ng mga read receipt. Mananatili ang mail sa computer na ito.
 katna-delete-confirm = Burahin nang tuluyan
 katna-sign-in-needed = Mag-sign in sa isang Katna account para magamit ito.
+
+## Errors
+
 katna-error-wrong-password = Mali ang email o password.
 katna-error-exists = May Katna account na ang address na ito. Mag-sign in na lang.
 katna-error-bad-email = Mukhang hindi iyan email address.

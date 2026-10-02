@@ -94,7 +94,7 @@ contacts-print-none = Babu lambobin sadarwa da za a buga
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Ranar haihuwa: { $day }
 contacts-print-nickname = Sunan barkwanci: { $name }
-contacts-create = Ƙirƙiri lambar sadarwa
+contacts-create = Sabuwar lambar sadarwa
 
 ## Search and the list
 

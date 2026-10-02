@@ -66,6 +66,7 @@ about-credit-resvg = Àwòrán SVG
 about-credit-jiff = Ọjọ́ àti àgbègbè àkókò
 about-credit-spellbook = Àyẹ̀wò akọtọ́, láti olóòtú Helix
 about-credit-smol = Ṣíṣe ọ̀pọ̀ nǹkan lẹ́ẹ̀kan náà
+about-credit-color-schemes = Àwọn àwọ̀ ti àwọn àgbékalẹ̀ àwọ̀ tí ó wà nínú rẹ̀
 about-all-libraries = Gbogbo ibi ìkówèésí tí Katna ń lò ({ $count })
 about-library-authors = láti ọwọ́ { $authors }
 about-license = Katna jẹ́ sọ́fítíwèé ọ̀fẹ́ lábẹ́ GNU GPL, ẹ̀yà 3 tàbí èyí tó tẹ̀lé e.
@@ -122,6 +123,21 @@ onboarding-density-default = Àtilẹ̀wá
 onboarding-density-compact = Kíkún pọ̀
 onboarding-continue = Tẹ̀síwájú
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Rí púpọ̀ sí i gbà pẹ̀lú àkáǹtì Katna
+onboarding-katna-lead = Kì í ṣe dandan. Ó ń tan àwọn ẹ̀yà orí ayélujára Katna, o sì lè ṣe ọ̀kan nígbà míì nínú Ètò > Ìforúkọsílẹ̀.
+onboarding-katna-receipts-title = Ìwé-ẹ̀rí kíkà
+onboarding-katna-receipts-text = Wo ìgbà tí àwọn ènìyàn ṣí lẹ́tà tí o fi ránṣẹ́.
+onboarding-katna-links-title = Títọpa ìjápọ̀
+onboarding-katna-links-text = Wo àwọn ìjápọ̀ inú lẹ́tà rẹ tí a tẹ̀.
+onboarding-katna-activity-title = Ìgbòkègbodò
+onboarding-katna-activity-text = Ṣíṣí àti títẹ̀ fún gbogbo ohun tí o fi ránṣẹ́, ní ibì kan.
+onboarding-katna-translate-title = Ìtúmọ̀ aládàáṣe
+onboarding-katna-translate-text = Ka lẹ́tà tí a kọ ní èdè mìíràn ní èdè tìrẹ.
+onboarding-katna-private = Ó ní ọ̀rọ̀ aṣínà tirẹ̀. Àwọn ìwọlé lẹ́tà rẹ kì í kúrò lórí kọ̀ǹpútà yìí.
+
 ## First run: done
 
 onboarding-ready-title = Gbogbo nǹkan ti ṣetán
@@ -165,7 +181,7 @@ tour-search-text = Àwárí ń ṣiṣẹ́ láìsí ìntánẹ́ẹ̀tì pẹ̀
 tour-menu-title = Fi àwọn fódà hàn tàbí pa wọ́n mọ́
 tour-menu-text = Bọ́tìnnì yìí ń ká àkójọ fódà kúrò. Nígbà tí ó bá pamọ́, gbé atọ́ka lé Lẹ́tà ní apá òsì láti rí àwọn fódà.
 tour-apps-title = Àwọn áàpù rẹ
-tour-apps-text = Lẹ́tà ń gbé ibí báyìí. Kàlẹ́ńdà, Olùbásọ̀rọ̀, Iṣẹ́, Àkọsílẹ̀ àti Ìfúnni yóò darapọ̀ mọ́ ọn nínú ọ̀pá yìí.
+tour-apps-text = Lẹ́tà wà níbí, lẹ́gbẹ̀ẹ́ Kàlẹ́ńdà, Olùbásọ̀rọ̀, Iṣẹ́, Àkọsílẹ̀ àti Fáìlì.
 tour-tabs-title = Àwọn táàbù àpótí-ìwọlé
 tour-tabs-text = A ń to lẹ́tà tuntun sí Àkọ́kọ́, Ìpolówó, Àwùjọ, Ìmúdójúìwọ̀n àti Àpérò. O lè pa àwọn táàbù náà nínú ètò kíákíá.
 tour-list-title = Àwọn ìfiránṣẹ́ rẹ
@@ -194,6 +210,9 @@ sign-in-again-button = Wọlé
 sign-in-again-tooltip = Ṣí ojú-ìwé ìwọlé { $provider } nínú aṣàwákiri rẹ
 sign-in-again-waiting = À ń dúró de aṣàwákiri rẹ…
 sign-in-again-close = Pa á dé
+google-api-off = { $api } wà ní pípa nínú iṣẹ́ àkànṣe Google Cloud ti Katna.
+google-api-turn-on = Tàn án
+google-api-turn-on-tooltip = Ṣí Google Cloud láti tan { $api }, lẹ́yìn náà tẹ Gbìyànjú lẹ́ẹ̀kan sí i
 sign-in-again-done = O ti tún wọlé sí { $address }. À ń gba lẹ́tà rẹ…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

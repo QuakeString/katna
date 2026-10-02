@@ -15,8 +15,8 @@ use katna_search::{Query, SearchIndex, SearchOptions, SearchResults};
 pub use katna_store::Marks;
 use katna_store::{
     Bell, FlagFilter, FolderId, FolderMarks, FolderSummary, InboxThreads, MessageFlags, MessageId,
-    Mode, Mute, MuteTarget, ParticipantRole, Store, StoredMessage, ThreadId, ThreadSender,
-    ThreadSummary,
+    Mode, Mute, MuteTarget, ParticipantRole, SpreadTabs, Store, StoredMessage, ThreadId,
+    ThreadSender, ThreadSummary,
 };
 
 mod preload;
@@ -65,6 +65,9 @@ pub struct Row {
     pub key: EntryKey,
     /// The message the line shows: the newest of a conversation.
     pub id: MessageId,
+    /// The account the message is in, marked on lines of the unified
+    /// inbox.
+    pub account: AccountId,
     /// Sender, or the recipients in sent and draft folders; for a
     /// conversation, its senders.
     pub correspondent: String,
@@ -218,6 +221,7 @@ impl Row {
         Self {
             key: EntryKey::Message(message.id),
             id: message.id,
+            account: message.account,
             count: 1,
             correspondent,
             people,
@@ -342,6 +346,9 @@ pub enum OpenError {
     NoStore {
         data_dir: String,
     },
+    /// The daemon has not yet moved a database up to this version's
+    /// schema, as just after an update: it does so as it starts.
+    Migrating(String),
     Other(String),
 }
 
@@ -532,6 +539,9 @@ impl Mail {
             katna_store::Error::NotFound { .. } => OpenError::NoStore {
                 data_dir: paths.data_dir().display().to_string(),
             },
+            err @ katna_store::Error::SchemaOutdated { .. } => {
+                OpenError::Migrating(err.to_string())
+            }
             err => OpenError::Other(err.to_string()),
         })?;
         let index_dir = paths.index_dir();
@@ -741,6 +751,48 @@ impl Mail {
         pinned_first(entries, &self.pins)
     }
 
+    /// The unified inbox's lines in one tab ([`SpreadTabs`]), with its
+    /// unread conversations per tab, as [`Mail::inbox_entries`] gives an
+    /// inbox's.
+    pub fn spread_inbox_entries(
+        &self,
+        folders: &[FolderId],
+        tabs: &SpreadTabs,
+        conversations: bool,
+    ) -> (Vec<Entry>, HashMap<MailCategory, u64>) {
+        let (entries, unread) = if conversations {
+            let read = self.list_read(ListRead::SpreadInbox {
+                folders: folders.to_vec(),
+                tabs: tabs.clone(),
+            });
+            match read {
+                Ok((threads, unread)) => (Ok(thread_entries(threads)), unread),
+                Err(err) => (Err(err), Vec::new()),
+            }
+        } else {
+            self.other_list.set(true);
+            let unread = self
+                .store
+                .spread_inbox_threads(folders, tabs)
+                .map(|(_, unread)| unread)
+                .unwrap_or_default();
+            let ids = self.store.spread_inbox_message_ids(folders, tabs);
+            (
+                ids.map(|ids| ids.into_iter().map(Entry::message).collect()),
+                unread,
+            )
+        };
+        let entries = entries.unwrap_or_else(|err| {
+            tracing::warn!("reading {} inboxes: {err}", folders.len());
+            Vec::new()
+        });
+        let entries = surfaced_in_place(entries, &self.reminders, |e| self.date_of(e.latest));
+        (
+            pinned_first(entries, &self.pins),
+            unread.into_iter().collect(),
+        )
+    }
+
     /// Search hits as lines: grouped into conversations when asked, each
     /// where its best hit is.
     /// Lines for search hits, of account `only` when given.
@@ -839,6 +891,26 @@ impl Mail {
     /// The newest stored message with `Message-ID` `header`.
     pub fn message_with_header(&self, header: &str) -> Option<MessageId> {
         self.store.message_with_header(header).ok().flatten()
+    }
+
+    /// The chat pins of the conversation of `messages` (all of them), in
+    /// their order.
+    pub fn chat_pins(&self, messages: &[MessageId]) -> Vec<katna_store::ChatPin> {
+        self.store.chat_pins(messages).unwrap_or_else(|err| {
+            tracing::warn!("reading chat pins: {err}");
+            Vec::new()
+        })
+    }
+
+    /// The kept summaries of the conversation of `messages` (all of
+    /// them), the newest first.
+    pub fn summaries(&self, messages: &[MessageId]) -> Vec<katna_store::StoredSummary> {
+        self.store
+            .conversation_summaries(messages)
+            .unwrap_or_else(|err| {
+                tracing::warn!("reading summaries: {err}");
+                Vec::new()
+            })
     }
 
     /// The conversation of message `id`, if it has one.
@@ -1850,6 +1922,23 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
     }
 
     #[test]
+    fn store_waiting_for_the_daemon() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        drop(Store::open(&paths, Mode::ReadWrite).unwrap());
+        // As an update leaves it: a schema one version behind. SQLite keeps
+        // `user_version` at byte 60 of the header.
+        let db = paths.pim_db();
+        let mut bytes = std::fs::read(&db).unwrap();
+        let version = u32::from_be_bytes(bytes[60..64].try_into().unwrap());
+        bytes[60..64].copy_from_slice(&(version - 1).to_be_bytes());
+        std::fs::write(&db, bytes).unwrap();
+        assert!(matches!(Mail::open(&paths), Err(OpenError::Migrating(_))));
+        drop(Store::open(&paths, Mode::ReadWrite).unwrap());
+        assert!(Mail::open(&paths).is_ok());
+    }
+
+    #[test]
     fn folders_rows_and_bodies() {
         let tmp = tempfile::tempdir().unwrap();
         let paths = Paths::with_root(tmp.path());
@@ -1873,6 +1962,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
             Row {
                 key: EntryKey::Message(id),
                 id,
+                account: mail.accounts()[0].id,
                 count: 1,
                 correspondent: "Ada".into(),
                 people: vec![("Ada".into(), Some("ada@example.org".into()))],

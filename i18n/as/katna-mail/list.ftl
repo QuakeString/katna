@@ -20,6 +20,7 @@ tab-provider-other = Katnaই সজোৱা
 
 list-select = বাছনি কৰক
 list-refresh = ৰিফ্ৰেছ কৰক
+list-back-to-top = ওপৰলৈ উভতি যাওক
 list-checking = নতুন মেইল পৰীক্ষা কৰি আছে…
 list-more = অধিক
 list-mark-read = পঢ়া বুলি চিহ্নিত কৰক

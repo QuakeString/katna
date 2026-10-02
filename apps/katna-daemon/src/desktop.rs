@@ -24,11 +24,17 @@ use crate::mail_app;
 /// Mail changes closer together than this are counted once.
 const SETTLE: Duration = Duration::from_millis(500);
 
+/// How often the panel's color is read again, for a change no signal told
+/// of (Windows' taskbar, or `kdeglobals` written after the portal spoke).
+const PANEL_POLL: Duration = Duration::from_secs(1);
+
 /// What the desktop presence reacts to.
 #[derive(Debug)]
 pub(crate) enum Event {
     MailChanged,
     Settings(General),
+    /// The panel's icons and text are now this color (light or dark).
+    PanelText(u32),
     /// A click on the tray icon or its menu, with an activation token.
     Tray(String, Option<String>),
 }
@@ -102,6 +108,7 @@ pub(crate) async fn run(
                 None
             }
         };
+    smol::spawn(watch_panel(connection.clone(), handle.clone())).detach();
     let mut tray: Option<Tray> = None;
     let mut count = None;
     let mut dirty = true;
@@ -155,6 +162,14 @@ pub(crate) async fn run(
                 dirty = new.unread_badge != general.unread_badge
                     || new.tray_style != general.tray_style;
                 general = new;
+            }
+            Event::PanelText(color) => {
+                if let Some(tray) = &tray
+                    && general.tray_style == TrayStyle::Monochrome
+                    && let Err(err) = tray.set_style(Style::Mono(color)).await
+                {
+                    tracing::warn!(%err, "could not redraw the tray icon");
+                }
             }
             event => {
                 if !handle_now(&connection, &mut general, event, &quit).await {
@@ -220,7 +235,8 @@ async fn handle_now(
     quit: &Sender<()>,
 ) -> bool {
     match event {
-        Event::MailChanged => {}
+        // Redrawn after the count settles, in the panel's color then.
+        Event::MailChanged | Event::PanelText(_) => {}
         Event::Settings(new) => *general = new,
         Event::Tray(action, token) => {
             if action == app_action::QUIT {
@@ -245,6 +261,49 @@ fn tray_style(general: &General) -> Style {
     match general.tray_style {
         TrayStyle::Color => Style::Color,
         TrayStyle::Monochrome => Style::Mono(colors::panel_text()),
+    }
+}
+
+/// Sends [`Event::PanelText`] whenever the panel's color changes, as when
+/// the desktop goes from light to dark, so a one-color tray icon follows at
+/// once: on the Settings portal's word, and by reading it every
+/// [`PANEL_POLL`].
+async fn watch_panel(connection: zbus::Connection, handle: Handle) {
+    let (wake, woken) = async_channel::bounded::<()>(1);
+    #[cfg(not(windows))]
+    smol::spawn(async move {
+        use futures_lite::StreamExt;
+        let changes = match colors::setting_changes(&connection).await {
+            Ok(changes) => changes,
+            Err(err) => {
+                tracing::debug!(%err, "not following desktop settings");
+                return;
+            }
+        };
+        let mut changes = std::pin::pin!(changes);
+        while changes.next().await.is_some() {
+            let _ = wake.try_send(());
+        }
+    })
+    .detach();
+    #[cfg(windows)]
+    let _ = (connection, wake);
+    let mut shown = None;
+    while !handle.0.is_closed() {
+        let color = smol::unblock(colors::panel_text).await;
+        if shown != Some(color) {
+            shown = Some(color);
+            let _ = handle.0.try_send(Event::PanelText(color));
+        }
+        smol::future::or(
+            async {
+                let _ = woken.recv().await;
+            },
+            async {
+                smol::Timer::after(PANEL_POLL).await;
+            },
+        )
+        .await;
     }
 }
 

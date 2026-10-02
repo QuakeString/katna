@@ -94,7 +94,7 @@ contacts-print-none = Yazdırılacak kişi yok
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Doğum günü: { $day }
 contacts-print-nickname = Takma ad: { $name }
-contacts-create = Kişi oluştur
+contacts-create = Yeni kişi
 
 ## Search and the list
 

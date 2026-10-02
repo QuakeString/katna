@@ -4,6 +4,10 @@
 
 ## Attachment viewer
 
+viewer-opening = খুলি আছে…
+
+## Attachment viewer
+
 viewer-unreadable = এই সংলগ্নকটো পঢ়িব পৰা নগ'ল।
 viewer-pdf-locked = এই PDF-টো পাছৱৰ্ডেৰে সুৰক্ষিত।
 viewer-pdf-unreadable = এই PDF-টো পঢ়িব পৰা নগ'ল।
@@ -14,8 +18,17 @@ viewer-slides-unreadable = এই স্লাইডবোৰ পঢ়িব �
 viewer-no-preview = কোনো পূৰ্বদৰ্শন উপলব্ধ নহয়
 viewer-slide = স্লাইড { $number }
 viewer-page = পৃষ্ঠা
+viewer-slide-box = স্লাইড
 viewer-page-count = { $count }ৰ ভিতৰত
 viewer-go-to-page-tip = পৃষ্ঠাৰ নম্বৰ লিখি Enter টিপক (Ctrl+G)
+viewer-rotate-clockwise-tip = ঘড়ীৰ কাঁটাৰ দিশত ঘূৰাওক (Ctrl+R)
+viewer-rotate-anticlockwise-tip = ঘড়ীৰ কাঁটাৰ বিপৰীত দিশত ঘূৰাওক (Ctrl+Shift+R)
+viewer-fit-page-tip = পৃষ্ঠা খাপ খুৱাওক
+viewer-fit-picture-tip = ৱিণ্ড'ত খাপ খুৱাওক
+viewer-fit-width-tip = প্ৰস্থ খাপ খুৱাওক
+viewer-real-size-tip = প্ৰকৃত আকাৰ (1:1)
+viewer-page-back-tip = পূৰ্বৱৰ্তী পৃষ্ঠা
+viewer-page-on-tip = পৰৱৰ্তী পৃষ্ঠা
 
 ## Marking up a PDF
 
@@ -41,6 +54,10 @@ viewer-marks-undo-tip = আনডু কৰক (Ctrl+Z)
 viewer-marks-redo-tip = পুনৰ কৰক (Ctrl+Shift+Z)
 viewer-save-marked-tip = আপোনাৰ চিহ্নসহ এটা কপি ছেভ কৰক (Ctrl+S)
 viewer-reply-marked-tip = চিহ্নিত কপিটোৰে উত্তৰ দিয়ক
+viewer-forward-tip = ফাইলটো ফৰৱাৰ্ড কৰক
+viewer-forward = ফৰৱাৰ্ড কৰক
+viewer-open-with = ইয়াৰে খোলক…
+viewer-save = ছেভ কৰক
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = এটা নোট লিখক
 viewer-text-placeholder = ইয়াত টাইপ কৰক
@@ -58,3 +75,5 @@ viewer-marks-save = কপি ছেভ কৰক
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (চিহ্নিত)
+viewer-pick = বাছনি কৰক
+viewer-picked = বাছনি কৰা হৈছে

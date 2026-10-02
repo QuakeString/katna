@@ -15,6 +15,7 @@ notes-loading = Inafungua madokezo yako…
 
 notes-take-a-note = Andika dokezo…
 notes-new-list = Orodha mpya
+notes-new-note = Dokezo jipya
 notes-pinned = Zilizobandikwa
 notes-others = Zingine
 notes-empty = Madokezo unayoongeza yataonekana hapa

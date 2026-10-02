@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 858 more of their own. Each keeps its own license.
+bring in 856 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -78,12 +78,14 @@ bring in 858 more of their own. Each keeps its own license.
 | [thiserror](https://github.com/dtolnay/thiserror) 2.0.21 | David Tolnay | MIT OR Apache-2.0 | derive(Error) |
 | [tokio](https://github.com/tokio-rs/tokio) 1.53.1 | Tokio Contributors | MIT | An event-driven, non-blocking I/O platform for writing asynchronous I/O backed applications. |
 | [tokio-postgres](https://github.com/rust-postgres/rust-postgres) 0.7.18 | Steven Fackler | MIT OR Apache-2.0 | A native, asynchronous PostgreSQL client |
+| [tokio-rustls](https://github.com/rustls/tokio-rustls) 0.26.5 | rustls | MIT OR Apache-2.0 | Asynchronous TLS/SSL streams for Tokio using Rustls. |
 | [toml](https://github.com/toml-rs/toml) 1.1.6+spec-1.1.0 | toml-rs | MIT OR Apache-2.0 | A native Rust encoder and decoder of TOML-formatted files and streams. Provides implementations of the standard Serialize/Deserialize traits for TOML data to facilitate deserializing and serializing Rust structures. |
 | [tracing](https://github.com/tokio-rs/tracing) 0.1.44 | Eliza Weisman, Tokio Contributors | MIT | Application-level tracing for Rust. |
 | [tracing-subscriber](https://github.com/tokio-rs/tracing) 0.3.23 | David Barsky, Eliza Weisman, Tokio Contributors | MIT | Utilities for implementing and composing `tracing` subscribers. |
 | [unic-langid](https://github.com/zbraniecki/unic-locale) 0.9.6 | Zibi Braniecki | MIT OR Apache-2.0 | API for managing Unicode Language Identifiers |
 | [unicode-segmentation](https://github.com/unicode-rs/unicode-segmentation) 1.13.3 | Manish Goregaokar, kwantam | MIT OR Apache-2.0 | This crate provides Grapheme Cluster, Word and Sentence boundaries according to Unicode Standard Annex #29 rules. |
 | [url](https://github.com/servo/rust-url) 2.5.8 | The rust-url developers | MIT OR Apache-2.0 | URL library for Rust, based on the WHATWG URL Standard |
+| [webpki-roots](https://github.com/rustls/webpki-roots) 1.0.9 | rustls | CDLA-Permissive-2.0 | Mozilla's CA root certificates for use with webpki |
 | [whatlang](https://github.com/greyblake/whatlang-rs) 0.18.0 | Serhii Potapov | MIT | Fast and lightweight language identification library for Rust. |
 | [winresource](https://github.com/BenjaminRi/winresource) 0.1.31 | Max Resch | MIT | Create and set windows icons and metadata for executables |
 | [writeable](https://github.com/unicode-org/icu4x) 0.6.4 | The ICU4X Project Developers | Unicode-3.0 | A more efficient alternative to fmt::Display |

@@ -53,6 +53,8 @@ impl DbKind {
                 include_str!("schema/mail_v9.sql"),
                 include_str!("schema/mail_v10.sql"),
                 include_str!("schema/mail_v11.sql"),
+                include_str!("schema/mail_v12.sql"),
+                include_str!("schema/mail_v13.sql"),
             ],
             Self::Pim => &[
                 include_str!("schema/pim_v1.sql"),
@@ -237,6 +239,8 @@ mod tests {
             [
                 "attachment",
                 "change_log",
+                "chat_pin",
+                "conversation_summary",
                 "folder",
                 "folder_alert",
                 "message",

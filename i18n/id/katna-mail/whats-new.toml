@@ -1847,3 +1847,1201 @@ sedikit bergeser ke atas dan ke kiri. Tepi kotak centang dan tombol bulat
 kini ikut membesar sesuai skala, sehingga centangnya berada di tengah pada
 setiap ukuran.
 """
+
+["2026-09-30-0230-edges-follow-scaling"]
+title = "Garis tepi ikut Skala"
+text = """
+Saat Skala di Setelan > Tampilan di atas atau di bawah 100%, garis aksen
+kotak pencarian dan kolom yang sedang aktif, serta tepi kartu pilihan dan
+cincin tugas, kini ikut membesar dan mengecil bersama yang lain, bukan
+tetap tipis.
+"""
+
+["2026-09-30-0326-google-sign-in-network"]
+title = "Masuk dengan Google di jaringan apa pun"
+text = """
+Masuk dengan Google tidak lagi berhenti dengan “peer closed connection” di
+jaringan yang memutus koneksi Google terlalu cepat. Jika Anda menghapus
+centang Gmail di halaman Google, Katna kini memberitahukannya, bukan gagal
+belakangan.
+"""
+
+["2026-09-30-0504-google-api-turned-off"]
+title = "Memberi tahu API Google mana yang nonaktif"
+text = """
+Saat Google menonaktifkan sebuah API untuk Katna, Kontak, Kalender, Tugas,
+dan file Drive kini menyebutkan API mana dalam satu baris singkat, dengan
+tombol Aktifkan yang membuka halaman Google untuknya, bukan galat mentah
+dari Google.
+"""
+
+["2026-09-30-0507-newest-mail-first"]
+title = "Email terbaru lebih dulu"
+text = """
+Saat Anda menambahkan akun, Katna Mail kini mengunduh email terbaru Anda
+lebih dulu, lalu mundur ke email yang lebih lama, sehingga pesan hari ini
+langsung muncul di bagian atas kotak masuk. Jika unduhan terputus, email
+yang lebih lama dilanjutkan lain kali.
+"""
+
+["2026-09-30-0601-keyring-at-login"]
+title = "Menunggu dompet Anda saat login"
+text = """
+Jika KWallet atau GNOME Keyring masih terkunci saat Katna dimulai, dan
+jendela pembukanya ditutup, akun Anda tidak lagi menampilkan sandi salah.
+Akun menunggu, lalu mulai sinkron sendiri begitu Anda membuka dompet,
+tanpa perlu keluar dari Katna. Sinkronkan sekarang meminta Anda membukanya
+lagi.
+"""
+
+["2026-09-30-0606-pdf-rotate-and-top-bar"]
+title = "Putar halaman PDF"
+text = """
+Penampil PDF kini bisa memutar halaman searah atau berlawanan arah jarum
+jam (Ctrl+R dan Ctrl+Shift+R), dan salinan bertanda disimpan sesuai putaran
+Anda. Nomor halaman dan zoom pindah ke bilah atas, jadi tidak ada yang
+menutupi halaman.
+"""
+
+["2026-09-30-0610-calendar-events-stay-put"]
+title = "Acara tetap di tempatnya"
+text = """
+Mengklik acara atau tugas di Kalender lalu mengganti tampilan tidak lagi
+membuatnya mengikuti penunjuk. Acara kini hanya berpindah selama Anda
+menahan tombol dan menyeretnya, dan mengganti tampilan atau halaman,
+menekan Esc, atau membuka kartunya mengembalikannya tanpa perubahan.
+"""
+
+["2026-09-30-0620-checkbox-partial-centred"]
+title = "Kotak centang sebagian tampak rata"
+text = """
+Saat hanya sebagian pesan yang dipilih, kotak kecil di dalam kotak pilih
+semua kini punya jarak yang sama di setiap sisi, berapa pun skala
+antarmuka Anda.
+"""
+
+["2026-09-30-0632-year-view-day-peek"]
+title = "Lihat rencana sehari dari tampilan Tahun"
+text = """
+Di tampilan Tahun pada Kalender, arahkan penunjuk ke hari yang bertitik
+untuk melihat acara dan tugasnya dalam popover kecil di sampingnya,
+masing-masing dengan ikon yang menunjukkan jenis dan waktunya. Klik salah
+satunya untuk membukanya, atau nama harinya untuk membuka hari itu. Di
+ponsel, ketuk harinya.
+"""
+
+["2026-09-30-0650-notification-opens-own-window"]
+title = "Notifikasi membuka email di depan"
+text = """
+Mengklik notifikasi email baru membuka email itu di jendelanya sendiri, di
+depan, apa pun yang sedang ditampilkan Katna. Balas semua membukanya dengan
+balasan siap diketik. Arsipkan menyimpan email tanpa membuka apa pun dan
+memberitahukannya dalam catatan singkat dengan Urungkan.
+"""
+
+["2026-09-30-0700-event-card-join-any-call"]
+title = "Gabung ke panggilan Teams dan Zoom dari Kalender"
+text = """
+Kartu acara kini menemukan panggilan di deskripsi atau lokasinya, sehingga
+undangan Microsoft Teams, Zoom, Webex, Jitsi, atau Google Meet mendapat
+tombol “Gabung dengan” di bagian atas. Alamat web di deskripsi menjadi
+link, baris garis bawah hilang, dan Hadir? tetap di bawah saat detailnya
+digulir.
+"""
+
+["2026-09-30-0715-click-away-closes-viewer"]
+title = "Klik di luar untuk menutup"
+text = """
+Klik ruang redup di sekitar lampiran untuk menutup penampil, tanpa perlu
+mencari tombol kembali. Klik di halaman itu sendiri tetap memilih teks dan
+menandai seperti sebelumnya.
+"""
+
+["2026-09-30-0729-add-account-and-pop3"]
+title = "Tambahkan akun yang baru, dan POP3"
+text = """
+Menambahkan akun dimulai dari penyedia Anda: Google, Yahoo, iCloud, Zoho,
+Fastmail, GMX, Yandex, atau lainnya. Katna lebih dulu menjelaskan apa yang
+dibutuhkan penyedia, menampilkan setiap langkah saat menghubungkan, dan
+diakhiri dengan apa yang telah disiapkan. Akun POP3 juga bisa, dan Setelan >
+Akun menentukan berapa lama emailnya tetap di server.
+"""
+
+["2026-09-30-0802-ctrl-wheel-zoom"]
+title = "Zoom dengan Ctrl dan roda mouse"
+text = """
+Di penampil lampiran, tahan Ctrl dan putar roda mouse untuk memperbesar dan
+memperkecil di sekitar penunjuk, atau cubit di touchpad. Ini berlaku untuk
+PDF, gambar, file teks, spreadsheet, dan dokumen.
+"""
+
+["2026-09-30-0817-event-open-the-mail"]
+title = "Buka email di balik sebuah acara"
+text = """
+Acara yang dibuat Gmail dari email, seperti kereta, penerbangan, dan hotel,
+mendapat tombol Buka email di kartunya. Tombol ini membuka email itu di
+Katna, atau di Gmail jika Katna tidak memilikinya. Tugas yang dibuat dari
+email juga membuka emailnya dari kartunya di Kalender, dan Buat catatan
+rapat terbuka tanpa berkedip.
+"""
+
+["2026-09-30-0843-calendar-side-panel-menus"]
+title = "Kelola kalender dari panel samping"
+text = """
+Klik kanan kalender di panel samping Kalender untuk menampilkan hanya
+kalender itu, mengganti warnanya, mengganti namanya, atau menghapusnya.
+Klik kanan nama akun untuk membuat kalender baru di akun itu atau
+menampilkan dan menyembunyikan semua kalendernya. Perubahan dikirim ke
+layanan email Anda, jadi muncul di mana pun Anda memakainya.
+"""
+
+["2026-09-30-1010-unread-list-keeps-open-mail"]
+title = "Email belum dibaca tetap terbuka"
+text = """
+Membuka percakapan di Semua Akun > Belum dibaca tidak lagi langsung
+menutupnya. Membacanya menandainya sudah dibaca, dan percakapan tetap di
+daftar sampai Anda menutupnya atau membuka yang lain.
+"""
+
+["2026-09-30-1045-tracked-mail-arrives"]
+title = "Email terlacak kembali sampai"
+text = """
+Email yang dikirim dengan pelacakan aktif bisa muncul di Terkirim tanpa
+sampai ke siapa pun. Kini email itu terkirim ke setiap penerima. Email yang
+hilang dengan cara ini perlu dikirim ulang.
+"""
+
+["2026-09-30-1114-no-checking-pill"]
+title = "Tidak ada lagi label pemeriksaan"
+text = """
+“Memeriksa email baru…” tidak lagi muncul di atas daftar. Panah berputar
+di tombol muat ulang dan di kotak masuk setiap akun sudah menunjukkan bahwa
+email sedang diperiksa, dan pemeriksaan yang gagal tetap memberi tahu apa
+yang salah.
+"""
+
+["2026-09-30-1300-windows-sign-in-and-domains"]
+title = "Masuk dengan Google di Windows"
+text = """
+Katna untuk Windows kini menawarkan Masuk dengan Google dan Zoho, seperti
+di Linux, dan tahu siapa yang menghosting email di domain Anda sendiri,
+seperti alamat Google Workspace, saat Anda menambahkan akun.
+"""
+
+["2026-09-30-1511-mail-tables"]
+title = "Tabel dalam email terbaca dengan baik"
+text = """
+Tabel dalam email, seperti daftar job di notifikasi GitHub Actions, menjaga
+kolomnya berdampingan dan sejajar dari baris ke baris, bukan memecah judul
+menjadi satu huruf per baris. Garis pemisah antarbagian pesan kini juga
+ditampilkan.
+"""
+
+["2026-09-30-1550-taller-important-marker"]
+title = "Penanda Penting lebih tinggi"
+text = """
+Penanda Penting di samping bintang kini 2 px lebih tinggi, jadi tidak lagi
+tampak gepeng di samping bintang dan kotak centang. Penanda tetap di tengah
+baris.
+"""
+
+["2026-09-30-1617-folder-click-goes-to-top"]
+title = "Kembali ke atas daftar"
+text = """
+Begitu daftar email bergulir satu layar ke bawah, tombol bulat di kanan
+bawahnya membawa Anda kembali ke atas. Mengklik folder yang sedang terbuka,
+seperti Kotak Masuk, melakukan hal yang sama, seperti di Gmail, begitu pula
+tombol Home.
+"""
+
+["2026-09-30-1622-send-from-file-manager"]
+title = "Kirim file dari pengelola file"
+text = """
+Klik kanan file atau folder di Dolphin, GNOME Files, atau Windows Explorer
+lalu pilih Kirim dengan Katna Mail: pesan baru terbuka dengan file itu
+terlampir, dan folder dikirim sebagai zip. Jika ada lebih dari satu akun
+email, pilih akun pengirim di submenunya.
+"""
+
+["2026-09-30-1624-files-page"]
+title = "Semua file di satu tempat"
+text = """
+Halaman File yang baru, di bagian bawah bilah aplikasi, menampilkan setiap
+lampiran dari setiap akun, yang terbaru lebih dulu. Persempit ke gambar,
+PDF, atau dokumen, ke satu akun, ke seseorang atau rentang waktu, atau cari
+berdasarkan nama, pengirim, atau subjek. Klik kanan file untuk opsi lain,
+dan Tampilkan email membawa Anda ke email asalnya.
+"""
+
+["2026-09-30-1643-dimmer-row-markers"]
+title = "Daftar email lebih tenang"
+text = """
+Kotak centang kosong, bintang, atau penanda Penting di daftar email tampak
+lebih redup sampai penunjuk berada di atas barisnya. Bintang dan penanda
+yang sudah diatur tetap berwarna.
+"""
+
+["2026-09-30-1704-folder-arrows-on-hover"]
+title = "Panel folder lebih rapi"
+text = """
+Panah kecil di samping Kotak Masuk, Berbintang, dan folder lain hanya
+muncul saat penunjuk berada di atas folder itu. Folder yang sudah Anda buka
+tetap menampilkan panahnya.
+"""
+
+["2026-09-30-1712-arrow-keys-in-times"]
+title = "Tombol panah di kotak waktu"
+text = """
+Di Pilih tanggal & waktu, dan di waktu tugas, tombol Atas dan Bawah
+mengubah bagian tempat kursor berada: jam, menit, atau AM/PM.
+"""
+
+["2026-09-30-1742-check-one-folder"]
+title = "Periksa email baru di satu folder"
+text = """
+“Periksa email baru” di menu klik kanan folder kini hanya memeriksa folder
+itu, jadi cepat. Pada kotak masuk akun di bawah Semua Akun, perintah ini
+memeriksa kotak masuk akun itu, dan pada daftar seperti Kotak Masuk atau
+Terkirim di bawah Semua Akun, perintah ini memeriksa folder itu di setiap
+akun.
+"""
+
+["2026-09-30-1742-frosted-viewer"]
+title = "Penampil yang lebih ringan dan buram"
+text = """
+Bilah atas penampil lampiran kini lebih ramping dan terang, dan halaman,
+zoom, serta putar ada dalam satu kapsul. Di sekitar file, Katna Mail tampak
+buram di bawah selubung gelap yang lembut, dan bilah alatnya juga buram.
+Efek buram mengikuti Setelan > Eksperimental; tanpanya penampil memakai
+selubung gelap polos.
+"""
+
+["2026-09-30-1752-touchpad-glide"]
+title = "Usapan touchpad meluncur"
+text = """
+Usapan cepat dua jari di touchpad terus menggulir lalu melambat, seperti di
+aplikasi lain. Sentuh touchpad lagi untuk menghentikannya. Di Wayland.
+"""
+
+["2026-09-30-1800-inbox-tabs-in-top-row"]
+title = "Tab kotak masuk di baris atas"
+text = """
+Utama, Promosi, Sosial, dan tab kotak masuk lainnya kini berada di bilah
+kapsul pada baris atas daftar, masing-masing dengan jumlah email belum
+dibaca yang berwarna. Sorotan bergeser ke tab yang Anda pilih, dan mengklik
+tab yang terbuka membawa daftarnya kembali ke atas. Saat daftar sempit,
+bilah ini mendapat barisnya sendiri dan menampilkan ikon, dengan nama tab
+yang terbuka tetap terlihat; di ponsel, bilah ini ada di bilah daftar,
+dengan Muat ulang di menu Lainnya.
+"""
+
+["2026-09-30-1805-account-menu"]
+title = "Info akun di menu klik kanan"
+text = """
+Klik kanan nama akun di daftar folder, atau kotak masuknya di bawah Semua
+Akun, untuk melihat alamatnya, apakah sudah tersinkron dan kapan terakhir
+diperiksa, serta berapa banyak penyimpanan yang dipakai. Dari situ Anda
+bisa memeriksa kotak masuk itu, menulis email baru dari akun itu, membuka
+setelannya, atau masuk lagi saat sesi masuk sudah kedaluwarsa.
+"""
+
+["2026-09-30-1819-glass-search-box"]
+title = "Kotak pencarian kaca"
+text = """
+Dengan latar belakang buram aktif, kotak pencarian berupa kaca buram dengan
+tepi samar saat tidak dipakai, dan menjadi solid saat Anda mengkliknya
+untuk mengetik.
+"""
+
+["2026-09-30-1820-search-cancel-restores"]
+title = "Batalkan pencarian, email Anda kembali"
+text = """
+Esc atau mengosongkan kotak pencarian kini membawa Anda kembali ke tempat
+semula: folder yang sama, posisi yang sama di daftar, dan email yang tadi
+terbuka. Jika Anda membuka sebuah hasil, pencarian mengambil alih seperti
+sebelumnya.
+"""
+
+["2026-09-30-1840-first-run-window"]
+title = "Awal yang lebih ramah"
+text = """
+Saat Anda menyiapkan Katna Mail, jendelanya tampak di belakang halaman
+penyiapan di bawah selubung tipis: aplikasi, Tulis, dan kotak pencarian,
+dengan placeholder lembut tempat folder dan email Anda nanti muncul.
+Langkah baru menawarkan akun Katna dan mencantumkan apa yang diaktifkannya
+(tanda terima baca, pelacakan link, Aktivitas, dan terjemahan), atau Anda
+bisa melewatinya.
+"""
+
+["2026-09-30-1850-windows-frame-and-blur"]
+title = "Bingkai dan efek buram Katna di Windows"
+text = """
+Di Windows, Katna Mail kini terbuka di dalam layar, dimaksimalkan jika
+layarnya kecil. Setelan > Eksperimental bisa memburamkan yang ada di
+belakang jendela, dan bingkai milik Katna mengubah bilah atas menjadi bilah
+judul saat Katna Mail dibuka berikutnya.
+"""
+
+["2026-09-30-1851-dark-depth"]
+title = "Lebih jelas dalam warna gelap"
+text = """
+Dalam warna gelap, elemen yang mengambang di atas daftar email kini sedikit
+lebih terang dengan tepi terang yang samar, karena bayangan hampir tidak
+terlihat di latar gelap. Tombol Kembali ke atas, menu, jendela Tulis, dan
+dialog tampil dengan jelas. Warna terang tetap seperti sebelumnya.
+"""
+
+["2026-09-30-1911-files-scrollbar"]
+title = "Bilah gulir di halaman File"
+text = """
+Jika file terlalu banyak untuk muat, bilah gulir tipis muncul di kanan saat
+Anda menggulir atau saat penunjuk berada di atas file, lalu memudar. Seret
+untuk menelusuri file dengan cepat, atau klik di atas atau bawahnya untuk
+melompat ke sana.
+"""
+
+["2026-09-30-1919-tabs-keep-open-mail"]
+title = "Berpindah tab tetap membiarkan email terbuka"
+text = """
+Dengan panel baca di samping daftar, memilih tab kotak masuk lain tidak
+lagi menutup email yang sedang Anda baca; daftarnya berubah dan email tetap
+terbuka.
+"""
+
+["2026-09-30-1925-inbox-tabs-centred"]
+title = "Tab kotak masuk di tengah"
+text = """
+Tab kotak masuk kini berada di tengah baris atas daftar, dan hanya bergeser
+sejauh yang dibutuhkan tombol-tombolnya.
+"""
+
+["2026-09-30-1945-page-box-arrow-keys"]
+title = "Tombol panah di kotak halaman"
+text = """
+Di PDF, klik nomor halaman lalu tekan Atas atau Bawah untuk mundur atau maju
+satu halaman. Tahan tombolnya untuk membalik halaman dengan cepat.
+"""
+
+["2026-09-30-1952-phone-bar-labels"]
+title = "Nama aplikasi di ponsel mengikuti setelan Anda"
+text = """
+Dengan nama aplikasi dinonaktifkan di Setelan, bilah di bagian bawah jendela
+seukuran ponsel kini hanya menampilkan ikon, di tengah, seperti rel samping.
+"""
+
+["2026-09-30-1955-account-menu-icons"]
+title = "Setelan dan bahasa di menu akun"
+text = """
+Menu di bawah gambar akun Anda kini dibuka dengan sebaris ikon: buka Setelan
+atau ganti bahasa. Bendera bahasa sudah keluar dari bilah atas untuk memberi
+ruang.
+"""
+
+["2026-09-30-2001-phone-tabs-fold"]
+title = "Setiap tab kotak masuk tetap terjangkau"
+text = """
+Saat jendela sempit, tab kotak masuk melipat dengan mulus, bukan
+bersembunyi: label berubah menjadi ikon yang lebih besar, lalu jumlahnya
+menyingkir. Di ponsel, tab membentang di seluruh bilah, mudah diketuk,
+dengan Lainnya di ujung kapsul yang sama.
+"""
+
+["2026-09-30-2012-fit-and-page-arrows"]
+title = "Sesuaikan, panah halaman, dan lainnya di penampil"
+text = """
+Penampil lampiran punya tombol Sesuaikan: halaman PDF disesuaikan ke tinggi
+jendela, gambar ke jendela, dan dokumen, slide, serta spreadsheet ke
+lebarnya. Gambar juga mendapat Ukuran asli dan bisa diputar. Arahkan ke
+kotak halaman untuk memunculkan panah kecil untuk mundur atau maju satu
+halaman, dan slide mendapat kotaknya sendiri.
+"""
+
+["2026-09-30-2019-folder-icon-colours"]
+title = "Ikon folder berwarna"
+text = """
+Ikon di panel folder kini punya warna yang menunjukkan isi setiap folder:
+Belum dibaca biru, Berbintang kuning, Penting jingga, Terkirim hijau, Spam
+merah, Draf ungu, dan Kotak Masuk dalam warna aksen desktop Anda. Jumlah
+email ada dalam kapsul kecil yang samar.
+"""
+
+["2026-09-30-2040-tabs-no-slide"]
+title = "Tab kotak masuk lebih cepat"
+text = """
+Mengklik tab kotak masuk kini langsung menyorotnya, hanya dengan riak
+klik, bukan menggeser sorotan melewati tab lain.
+"""
+
+["2026-10-01-0145-files-tidy"]
+title = "Halaman File lebih rapi"
+text = """
+Jumlah di samping setiap jenis file dan setiap akun kini ada dalam kapsul
+kecil yang sama dengan jumlah folder di Email. Garis di bawah judul halaman
+dan baris-baris file juga kini dimulai dan berakhir di tepi yang sama.
+"""
+
+["2026-10-01-0147-today-marker-fits"]
+title = "Tanggal hari ini muat dalam penandanya"
+text = """
+Di tampilan Bulan pada Kalender, penanda hari ini kini memuat seluruh
+tanggal. Pada tanggal 1, penanda menjadi kapsul di sekitar “01 Okt”, bukan
+lingkaran kecil yang labelnya meluap keluar.
+"""
+
+["2026-10-01-0208-tab-counts-stay"]
+title = "Jumlah di tab tetap di tempat"
+text = """
+Membuka tab kotak masuk tidak lagi membuat bilah tab melompat. Tab yang
+terbuka tetap menampilkan jumlah email barunya, yang perlahan memudar
+menjadi abu-abu tenang, dan jumlah itu terlipat dengan mulus begitu Anda
+sudah membaca semua email di tab itu.
+"""
+
+["2026-10-01-0225-files-keyboard"]
+title = "Jelajahi file Anda dengan keyboard"
+text = """
+Di halaman File, tombol panah kini berpindah antarfile, Home dan End menuju
+file pertama dan terakhir, dan Enter membuka file. Di penampil yang dibuka
+dari sana, panah berlanjut ke file berikutnya di halaman, dari email mana
+pun asalnya; Shift dan panah tetap di lampiran email yang sama.
+"""
+
+["2026-10-01-0254-files-dates"]
+title = "Pilih hari di halaman File"
+text = """
+Chip waktu di halaman File kini membuka kalender dua bulan dengan pilihan
+cepat seperti Minggu lalu dan Bulan ini. Klik satu hari, atau seret dari
+satu hari ke hari lain, dan file ikut berubah selagi Anda menyeret. Lalu
+putar roda mouse di atas chip untuk menggeser rentang yang sama ke lebih
+awal atau lebih akhir.
+"""
+
+["2026-10-01-0256-color-schemes"]
+title = "Skema warna dan warna aksen"
+text = """
+Setelan > Tampilan kini punya Mode, Warna, dan Aksen sebagai pilihan
+terpisah. Pilih terang atau gelap, lalu salah satu dari 14 skema warna,
+seperti Clear, Nord, Solarized, atau Catppuccin, atau tetap pakai skema
+desktop Anda. Setiap skema berlaku dalam terang dan gelap, dan warna aksen
+apa pun bisa dipasang di atasnya.
+"""
+
+["2026-10-01-0310-badge-counts-what-notifies"]
+title = "Jumlah di taskbar sesuai notifikasi Anda"
+text = """
+Jumlah belum dibaca di taskbar dan baki sistem kini menghitung email yang
+sama dengan yang memberi notifikasi: tab Utama di Kotak Masuk Anda.
+Promosi, Sosial, Pembaruan, dan Forum tidak lagi menambah jumlahnya.
+"""
+
+["2026-10-01-0312-quiet-selected-row"]
+title = "Folder terbuka yang lebih tenang"
+text = """
+Folder yang terbuka di Email, dan tampilan yang terbuka di Kontak, Tugas,
+Catatan, dan File, kini ditandai dengan abu-abu lembut, bukan warna aksen,
+sehingga Tulis dan rel aplikasi lebih menonjol dan ikon folder tetap
+berwarna sendiri.
+"""
+
+["2026-10-01-0315-desktop-schemes"]
+title = "Skema warna desktop Anda"
+text = """
+Setelan > Tampilan > Warna juga mencantumkan skema desktop Anda sendiri:
+setiap skema warna yang terpasang di KDE Plasma, dan di Windows, warnanya
+sendiri dan tema Kontras. Sistem kini juga berlaku dalam terang dan gelap
+di KDE, memakai pasangan terang atau gelap dari skema Anda, dan Katna
+mengikuti warna aksen Windows.
+"""
+
+["2026-10-01-0329-mute-folders"]
+title = "Bisukan folder, tab, atau akun"
+text = """
+Lonceng di atas daftar membisukan folder atau tab Kotak Masuk yang terbuka
+selama satu jam, sampai besok pagi, atau sampai Anda mengaktifkannya lagi.
+Klik kanan folder atau akun untuk hal yang sama. Setelan > Notifikasi
+menunjukkan folder mana yang memberi notifikasi dan mana yang dihitung di
+taskbar, serta semua yang dibisukan.
+"""
+
+["2026-10-01-0335-tray-style"]
+title = "Ikon baki berwarna atau satu warna"
+text = """
+Setelan > Umum > Desktop > Ikon baki berwarna memilih warna Katna atau satu
+warna seperti ikon lain di panel. Satu warna tetap satu warna saat ada email
+belum dibaca, dan jumlah belum dibaca selalu merah. Di Linux, ikon baki
+secara default satu warna; di Windows, berwarna.
+"""
+
+["2026-10-01-0354-mute-conversations"]
+title = "Bisukan percakapan atau pengirim"
+text = """
+Lonceng di atas percakapan yang terbuka membisukannya: balasan baru tidak
+lagi memberi notifikasi atau menambah jumlah di taskbar, dan lonceng
+bercoret menandainya di daftar. Klik kanan percakapan untuk Bisukan
+percakapan atau Bisukan pengirim, atau tekan M.
+"""
+
+["2026-10-01-0410-your-color-schemes"]
+title = "Buat skema warna Anda sendiri"
+text = """
+Setelan > Tampilan > Warna > Sesuaikan menyalin skema yang Anda pakai ke
+editor: ubah salah satu dari delapan warnanya di sisi terang dan gelap,
+lihat jendela email dalam warna itu, dan Katna memberi tahu apa yang akan
+sulit dibaca. Impor menerima file skema warna Katna atau KDE, dan klik
+kanan pada skema Anda untuk mengedit, menduplikat, mengekspor, atau
+menghapusnya.
+"""
+
+["2026-10-01-0527-calendar-opens-on-week"]
+title = "Kalender terbuka di Minggu"
+text = """
+Katna Calendar kembali terbuka di tampilan Minggu, dengan hari-hari ke depan
+dalam jam. Bulan, Hari, Tahun, dan lainnya tinggal sekali klik di bilah
+atas.
+"""
+
+["2026-10-01-0552-lighter-count-on-open-row"]
+title = "Jumlah menonjol di folder yang terbuka"
+text = """
+Jumlah di samping folder yang terbuka di Email, dan di samping jenis yang
+terbuka di File, kini ada dalam kapsul yang lebih terang dari abu-abu
+barisnya, jadi tidak lagi tenggelam, dalam terang maupun gelap.
+"""
+
+["2026-10-01-0652-files-leave-out-small-pictures"]
+title = "File mengabaikan logo tanda tangan"
+text = """
+Halaman File tidak lagi penuh dengan logo dan ikon kecil dari tanda tangan
+email: gambar di bawah 12 KB, atau yang lebar atau tingginya di bawah 100
+piksel, tetap di bawah emailnya. Ubah kedua batas itu, atau tampilkan semua
+gambar, di Setelan > Aplikasi default > Halaman File.
+"""
+
+["2026-10-01-0700-mute-from-contact"]
+title = "Bisukan pengirim dari kartu kontaknya"
+text = """
+Kartu kontak di samping email punya lonceng sebagai tombol pertamanya:
+lonceng ini membisukan semua email dari pengirim itu, dan lonceng bercoret
+setelah namanya menunjukkannya. Klik lagi untuk kembali menerima kabar dari
+mereka.
+"""
+
+["2026-10-01-0803-select-hover-fits"]
+title = "Tombol pilih yang lebih rapi"
+text = """
+Sorotan di balik kotak centang pilih di atas daftar email kini setinggi
+tombol di sampingnya, berjarak sama dari tepi kartu seperti dari atasnya,
+dan sudutnya mengikuti sudut kartu.
+"""
+
+["2026-10-01-0807-files-leave-out-signature-pictures"]
+title = "File juga mengabaikan gambar tanda tangan besar"
+text = """
+Gambar yang dikirim seseorang di tiga percakapan atau lebih, seperti
+banner atau foto di tanda tangannya, tidak lagi muncul di halaman File,
+begitu pula ikon jejaring sosial, sebesar apa pun. Gambar itu tetap muncul
+di bawah emailnya, dan menonaktifkan “Abaikan gambar kecil” menampilkan
+semuanya lagi.
+"""
+
+["2026-10-01-0830-muted-contact-mark"]
+title = "Lihat siapa yang dibisukan"
+text = """
+Lonceng bercoret kini mengikuti nama pengirim yang dibisukan di mana pun
+namanya muncul: daftar email, email yang terbuka, Kontak, kotak Kepada dan
+Cc beserta sarannya, halaman File, tamu acara, dan laporan Aktivitas. Tak
+perlu lagi bertanya-tanya mengapa email mereka sepi.
+"""
+
+["2026-10-01-0839-sounds"]
+title = "Suara untuk email baru, pengingat, dan pengiriman"
+text = """
+Setelan > Notifikasi punya bagian Suara: email baru, pengingat, email yang
+kembali ke kotak masuk, email terkirim, dan email gagal terkirim
+masing-masing memilih suara dari desktop Anda, memutarnya dengan tombol di
+sampingnya, atau menonaktifkannya. Suara kini juga berbunyi di KDE Plasma,
+dan tetap senyap untuk email yang dibisukan dan selama Jangan ganggu.
+"""
+
+["2026-10-01-0925-chat-view"]
+title = "Baca percakapan sebagai chat (eksperimental)"
+text = """
+Aktifkan Setelan > Eksperimental > Percakapan sebagai chat, dan email
+antarorang terbaca seperti chat grup: satu gelembung untuk setiap email
+yang hanya berisi apa yang ditulis, milik Anda di kanan, gambar dan file
+sebagai media chat. Email kutipan dan tanda tangan menunggu di balik ···
+di setiap gelembung, dan klik pada nama menampilkan kartu orang itu beserta
+tanda tangannya. Balas dari kotak di bawah, dengan Ctrl+Enter, bilah format
+di balik Aa, dan klip kertas untuk file, templat, dan tanda tangan.
+Newsletter tetap memakai tampilan biasa, dan sakelar Chat | Email
+mengubah percakapan mana pun ke salah satunya.
+"""
+
+["2026-10-01-0946-forward-keeps-files"]
+title = "Teruskan membawa file"
+text = """
+Meneruskan pesan kini ikut membawa lampirannya, ditampilkan di bawah pesan
+sehingga Anda bisa melepas yang mana saja sebelum mengirim. Mengubah
+penerusan menjadi balasan akan meninggalkan lampiran itu lagi.
+"""
+
+["2026-10-01-1009-forward-a-file"]
+title = "Teruskan filenya saja"
+text = """
+Penampil lampiran punya tombol Teruskan di bilah atasnya: tombol ini
+memulai email baru dengan hanya file itu terlampir, tanpa email asalnya.
+File tanpa pratinjau juga menawarkan Teruskan, begitu pula kartu lampiran
+di bawah email yang terbuka, di samping Simpan.
+"""
+
+["2026-10-01-1039-rephrase-with-ai"]
+title = "Tulis ulang dengan AI"
+text = """
+Pilih teks dalam pesan lalu tekan ikon kilau di sampingnya, atau Ctrl+J,
+agar teks ditulis ulang dengan lebih jelas, lebih singkat, lebih ramah, atau
+lebih formal, lalu Ganti. Katna AI gratis selama 30 hari, atau pakai kunci
+Anda sendiri dari Google Gemini, OpenAI, Claude, Mistral, DeepSeek,
+OpenRouter, atau model di komputer ini. AI juga bisa melengkapi kalimat
+Anda dalam warna abu-abu; aktifkan di Setelan > Tulis.
+"""
+
+["2026-10-01-1043-header-details-selectable"]
+title = "Salin dari detail email"
+text = """
+Detail di bawah “kepada saya” kini bisa dipilih dan disalin seperti isi
+email. Klik alamat untuk melihat kartu orang itu di samping email, atau klik
+kanan untuk Salin alamat. Orang yang dibisukan juga menampilkan lonceng
+bercoretnya di sana.
+"""
+
+["2026-10-01-1112-left-bar-button"]
+title = "Satu tombol besar, satu lipatan, di setiap halaman"
+text = """
+Tombol besar di atas bilah kiri kini tampak dan terletak sama di setiap
+halaman dan menjalankan tugas halaman itu: Tulis di Email dan File, Acara
+baru, Kontak baru, Tugas baru, dan Catatan baru. Melipat bilah kiri
+melipatnya di mana-mana, dan selama terlipat, tombol setiap halaman menunggu
+di atas rel. Di ponsel, tombol ini menjadi tombol mengambang.
+"""
+
+["2026-10-01-1115-color-picker"]
+title = "Pemilih warna di editor skema"
+text = """
+Klik sebuah warna di editor skema dan pemilih warna terbuka tepat di
+sampingnya: seret di kotak dan bilah rona, ketik nilai heks, pakai lagi
+warna skema itu atau pilihan terbaru, atau ambil warna dari mana saja di
+layar dengan pipet di KDE dan GNOME.
+"""
+
+["2026-10-01-1130-contact-card-folds-folders"]
+title = "Kartu kontak memberi ruang sendiri"
+text = """
+Di jendela yang terlalu sempit untuk panel folder dan kartu kontak secara
+berdampingan, kartu kini melipat folder saat terbuka, dan folder kembali
+saat kartu ditutup. Folder yang Anda lipat sendiri tetap terlipat.
+"""
+
+["2026-10-01-1132-open-mail-scroll-bar"]
+title = "Bilah gulir di email panjang"
+text = """
+Percakapan panjang kini menampilkan bilah gulir tenang yang sama dengan
+halaman File saat Anda menggulir atau mengarahkan penunjuk ke sana. Kedua
+bilah kini lebih tipis dan membesar saat penunjuk mendekat. Seret, atau klik
+di sepanjang bilah, untuk melompat ke mana saja.
+"""
+
+["2026-10-01-1240-contact-card-close"]
+title = "Tutup kartu kontak, lihat siapa saja di chat"
+text = """
+Kartu kontak di samping percakapan punya ✕ di sudutnya, dan mengklik lagi
+gambar atau alamat orang yang sama akan menutup kartunya. Di tampilan
+chat, klik pada header mencantumkan semua orang di chat beserta
+alamatnya dan berapa banyak email yang dikirim masing-masing.
+"""
+
+["2026-10-01-1241-two-blur-switches"]
+title = "Efek buram, sesuai keinginan Anda"
+text = """
+Efek buram kini punya dua sakelar di Setelan > Eksperimental: satu untuk
+latar belakang jendela dan satu untuk menu dan dialog. Menu buram aktif
+secara default, bahkan jika latar belakang jendela dibiarkan solid.
+"""
+
+["2026-10-01-1502-fainter-row-lines"]
+title = "Garis antaremail lebih tenang"
+text = """
+Garis antaremail di daftar kini lebih samar, sehingga daftar terbaca
+sebagai satu kolom yang tenang, dalam terang maupun gelap.
+"""
+
+["2026-10-01-1505-contact-close-round"]
+title = "Satu tombol tutup untuk setiap panel"
+text = """
+✕ pada kartu kontak kini berupa tombol bulat yang sama dengan ✕ pada email
+yang terbuka, dengan lingkaran abu-abu yang sama saat Anda mengarahkan
+penunjuk ke sana.
+"""
+
+["2026-10-01-1525-thread-count"]
+title = "Jumlah email yang lebih rapi"
+text = """
+Jumlah email dalam percakapan kini berada di samping nama dengan ikon
+chat kecil, sejajar di tengah baris nama, bukan terangkat di atasnya.
+"""
+
+["2026-10-01-1541-chat-attach-from-files"]
+title = "Lampirkan dari File di chat"
+text = """
+Di chat (Setelan > Eksperimental), klip kertas punya Dari File: pilih
+file apa pun yang datang atau pergi bersama email Anda, dengan file
+percakapan ini lebih dulu. Centang beberapa, lihat salah satunya dengan
+ikon mata, dan lihat seberapa besar dibandingkan batas 25 MB satu email.
+Klip kertas kini ada di dalam kotak balasan, dan Aa membuka bilah ramping
+dengan gaya yang dibutuhkan chat saja.
+"""
+
+["2026-10-01-1553-rephrase-card-text"]
+title = "Tulis ulang berfungsi dengan kunci Gemini baru"
+text = """
+Dengan menu buram aktif, kartu Tulis ulang (Ctrl+J) terbuka kosong; kini
+sarannya tampil di atas kaca buram. Google Gemini kini memakai
+gemini-3.5-flash-lite kecuali Anda mengetik model lain, karena kunci Gemini
+baru tidak bisa lagi memakai 2.5 Flash-Lite, dan kunci yang salah akan
+diberitahukan.
+"""
+
+["2026-10-01-1624-rephrase-button"]
+title = "Tulis ulang tanpa memilih, dan saran lebih cepat"
+text = """
+Ikon kilau di samping Pemformatan di bagian bawah pesan baru, dan di kotak
+balasan tampilan chat, menulis ulang semua yang Anda tulis jika tidak
+ada yang dipilih, atau hanya pilihannya jika ada; Ctrl+J melakukan hal yang
+sama. Saran lebih panjang dengan AI muncul jauh lebih cepat, dan kolom
+Model di Setelan > Tulis mencantumkan model yang ditawarkan layanan Anda
+saat Anda mengetik.
+"""
+
+["2026-10-01-1626-dimmer-preview"]
+title = "Baris pratinjau yang lebih tenang"
+text = """
+Teks pratinjau di bawah subjek setiap email di daftar kini lebih redup,
+sehingga pengirim dan subjek lebih menonjol, dalam terang maupun gelap.
+"""
+
+["2026-10-01-1645-frosted-dialogs"]
+title = "Dialog buram"
+text = """
+Dengan Menu dan dialog kaca buram aktif, dialog juga berupa kaca buram: Tambahkan
+akun email, Tentang, Yang baru, pembaruan, berbagi, pratinjau cetak, label,
+pertanyaan hapus, kartu awal penyiapan, dan dialog link di Tulis.
+"""
+
+["2026-10-01-1650-chat-pins"]
+title = "Sematkan hingga 5 hal di chat"
+text = """
+Di chat (Setelan > Eksperimental), arahkan ke gelembung lalu tekan
+pin, atau klik kanan file, untuk menyimpannya di atas. Bilah tipis di bawah
+header menampilkan sematan Anda: klik untuk melompat ke masing-masing
+bergantian, atau buka daftarnya untuk menyeret urutannya atau melepas
+sematan. Sematan tetap di komputer ini.
+"""
+
+["2026-10-01-1655-chat-signatures"]
+title = "Chat mengabaikan tanda tangan dan footer"
+text = """
+Gelembung chat kini hanya menampilkan apa yang ditulis orang. Salam
+penutup seperti “Salam hangat”, tanda tangan perusahaan di bawah garis atau
+dengan alamat dan nomor telepon, serta footer dengan link berhenti
+berlangganan atau pemberitahuan menunggu di balik kapsul ···, bersama tanda
+tangan yang diulang seseorang di setiap email.
+"""
+
+["2026-10-01-1805-blur-amount"]
+title = "Pilih tampilan menu buram"
+text = """
+Menu dan dialog buram kini lebih jernih dan mengikuti kekuatan buram KDE.
+Aktifkan Tingkat buram khusus di Setelan > Eksperimental > Buram untuk
+mengatur sendiri kekuatan buram dan opasitasnya.
+"""
+
+["2026-10-01-1825-chat-company"]
+title = "Tempat mereka bekerja, di kartunya"
+text = """
+Di chat (Setelan > Eksperimental), kartu seseorang kini punya bagian
+Perusahaan: apa yang dikerjakan perusahaan itu, di mana lokasinya, sejak
+kapan, dan link ke situs web serta halamannya, dibaca dari beranda
+perusahaan itu sendiri dan Wikipedia. Bagian ini mengikuti sakelar Gambar
+pengirim.
+"""
+
+["2026-10-02-0052-smooth-start-after-updates"]
+title = "Mulai dengan mulus setelah pembaruan"
+text = """
+Setelah pembaruan, Katna Mail tidak lagi mengatakan penyimpanan email tidak
+bisa dibuka saat sedang menyiapkan email Anda untuk versi baru. Katna Mail
+menampilkan gambar pemuatan biasa selama beberapa detik itu, lalu email
+Anda.
+"""
+
+["2026-10-02-0106-calmer-dialogs"]
+title = "Dialog yang lebih tenang"
+text = """
+Dialog buram kini lebih solid daripada menu, jadi daftar email yang ramai
+tidak lagi terlihat menembusnya. Tentang, Yang baru, dan Periksa pembaruan
+terbuka tanpa menggelapkan jendela di belakangnya.
+"""
+
+["2026-10-02-0111-chat-pin-text"]
+title = "Sematkan beberapa kata dari chat"
+text = """
+Di chat (Setelan > Eksperimental), teks dalam gelembung kini bisa
+dipilih dan disalin seperti email lainnya. Klik kanan kata yang Anda pilih
+dalam satu gelembung lalu pilih Sematkan di atas untuk menyimpannya di
+bilah sematan chat.
+"""
+
+["2026-10-02-0124-event-editor-clear"]
+title = "Editor acara bebas dari Acara baru"
+text = """
+Tombol Acara baru di bilah kiri tidak lagi menutupi judul acara yang sedang
+Anda tulis atau ubah di editor lengkap. Tombol itu muncul lagi saat editor
+ditutup.
+"""
+
+["2026-10-02-0150-chat-format-bar"]
+title = "Bilah Aa yang lebih lengkap di chat"
+text = """
+Bilah Aa di kotak balasan chat kini punya alat-alat Tulis: urungkan,
+font, ukuran, perataan, dan indentasi, di samping gaya yang sudah ada. Di
+jendela sempit, bilah ini berlanjut ke baris kedua. Tombol warna
+menampilkan warna teks dan sorotan Anda berdampingan, di Tulis juga.
+"""
+
+["2026-10-02-0210-conversation-summaries"]
+title = "Ringkas percakapan"
+text = """
+Klik kanan percakapan lalu pilih Ringkas, atau tekan Shift+S, untuk
+memunculkan kartu di sampingnya yang menjelaskan isinya, apa yang sudah
+disepakati, dan apa yang menunggu Anda, tanpa membukanya atau menandainya
+sudah dibaca. Di percakapan yang terbuka, ikon kilau di atasnya menaruh
+ringkasan di bawah subjek; di tampilan chat, ringkasan ada di strip di
+bawah header. Setiap poin menyebutkan email asalnya, dan jika ada email
+baru sejak terakhir Anda membaca, ringkasan hanya mencakup email itu. Fitur
+ini memerlukan Bantuan menulis dengan AI aktif di Setelan > Tulis.
+"""
+
+["2026-10-02-0215-system-colors-follow-mode"]
+title = "Terang dan Gelap berfungsi dengan warna Sistem"
+text = """
+Dengan Warna diatur ke Sistem dan skema desktop yang hanya gelap (atau
+hanya terang), Setelan > Tampilan > Mode kini kembali mengganti Katna antara
+terang dan gelap: sisi lainnya memakai warna Katna sendiri dengan aksen
+desktop Anda.
+"""
+
+["2026-10-02-0218-signature-details-on-card"]
+title = "Detail tanda tangan di tempat semestinya"
+text = """
+Kartu seseorang tidak lagi menampilkan tanda tangannya sebagai satu blok.
+Detailnya ditaruh di tempat semestinya: setiap nomor telepon, ditandai
+seluler, langsung, atau faks, di detail kontak, dan grup, kantor, situs
+web, serta halaman perusahaan di bagian Perusahaan. Halaman sosial tampil
+sebagai ikon kecil satu warna, dan gambar, banner, serta footer diabaikan.
+"""
+
+["2026-10-02-0225-chat-subject-line"]
+title = "Lihat saat subjek chat berubah"
+text = """
+Di chat (Setelan > Eksperimental), baris kecil di tengah kini memberi
+tahu saat seseorang mengganti subjek, seperti saat memberi tahu siapa
+menambahkan siapa.
+"""
+
+["2026-10-02-0225-no-blur-ghost"]
+title = "Tidak ada bayangan buram saat dialog ditutup"
+text = """
+Menutup Tentang, Yang baru, Periksa pembaruan, atau dialog maupun menu buram
+apa pun tidak lagi meninggalkan bercak buram sesaat: efek buram memudar
+bersama dialognya.
+"""
+
+["2026-10-02-0236-chat-on-phones"]
+title = "Chat pas di ponsel"
+text = """
+Di jendela seukuran ponsel, chat (Setelan > Eksperimental) cukup memakai
+satu baris header dengan Kembali dan ⋮, dan gelembungnya memakai lebih
+banyak lebar. Tahan gelembung untuk memunculkan menunya dari bawah, dan
+ketuk nama atau gambar untuk melihat kartu orang itu dengan cara yang sama.
+Usap ke bawah atau ketuk di luar untuk menutupnya.
+"""
+
+["2026-10-02-0258-frost-stays-on-scroll"]
+title = "Efek buram tetap diam saat daftar digulir"
+text = """
+Di daftar buram yang bisa digulir, seperti orang-orang di chat atau menu
+yang panjang, latar belakang buram kini tetap di tempat sementara barisnya
+bergulir di atasnya.
+"""
+
+["2026-10-02-0301-rephrase-card-above-tools"]
+title = "Tulis ulang ada di atas bilah format"
+text = """
+Kartu Tulis ulang kini terbuka tepat di atas bilah format, di kotak balasan
+dan di Tulis, bukan di atas daftar email. Seret dari pegangan kecil di
+atasnya untuk memindahkannya; lain kali kartu terbuka lagi di tempat
+biasanya.
+"""
+
+["2026-10-02-0306-fainter-lines-light"]
+title = "Garis lebih samar dalam mode terang"
+text = """
+Dalam mode terang, garis antaremail di daftar dan antarpesan di email yang
+terbuka kini lebih samar, sehingga halaman tampak lebih tenang.
+"""
+
+["2026-10-02-0315-card-button-bar"]
+title = "Kartu orang menjaga tombolnya tetap terjangkau"
+text = """
+Gulir kartu orang dan tombolnya bergeser naik ke bilah buram ramping di
+samping tombol tutup, dengan gambar kecil orang itu. Tombol tutup tidak
+lagi menutupi apa yang sedang Anda baca.
+"""
+
+["2026-10-02-0412-button-hover"]
+title = "Tombol menyorot dengan mulus"
+text = """
+Saat Anda mengarahkan penunjuk ke tombol, latar bulatnya kini membesar dari
+tengah dan muncul perlahan, seperti di Gmail, lalu cepat memudar saat Anda
+beralih. Balas, Teruskan, dan tombol kapsul lainnya muncul dengan lembut.
+"""
+
+["2026-10-02-0425-chat-draft-to-mail"]
+title = "Balasan chat Anda ikut ke Email"
+text = """
+Mengganti chat ke Email saat menulis balasan kini menggulir ke balasan
+itu dengan kursor masih di dalamnya, dan beralih kembali juga
+mempertahankannya.
+"""
+
+["2026-10-02-0425-write-reply"]
+title = "Tulis balasan dengan AI"
+text = """
+Selama balasan atau penerusan masih kosong, ikon kilau di samping
+Pemformatan (atau Ctrl+J) menuliskannya untuk Anda. Pilih salah satu dari
+tiga ide yang diambil dari percakapan, atau katakan dengan kata-kata Anda
+sendiri apa isinya, lalu Sisipkan drafnya dan ubah sesuka Anda. Begitu Anda
+mengetik, ikon kilau kembali menulis ulang. Fitur ini memerlukan Bantuan
+menulis dengan AI aktif di Setelan > Tulis.
+"""
+
+["2026-10-02-0430-compose-beside-reply"]
+title = "Tulis pesan saat balasan belum selesai"
+text = """
+Tulis kini membuka pesan baru bahkan saat Anda sedang menulis balasan, di
+chat atau di bawah percakapan. Balasan menunggu seperti yang Anda
+tinggalkan dan kembali saat pesan baru terkirim atau ditutup, atau saat Anda
+mengklik untuk membalas percakapan itu lagi.
+"""
+
+["2026-10-02-0436-mark-unread-icon"]
+title = "Ikon Tandai belum dibaca yang lebih jelas"
+text = """
+Tandai belum dibaca kini menampilkan amplop bertitik, di menu, di bilah
+alat, dan di tombol yang muncul saat menyorot email, jadi tidak lagi
+tampak seperti ikon email biasa.
+"""
+
+["2026-10-02-0452-fainter-pane-lines"]
+title = "Bilah alat dan tab yang lebih tenang"
+text = """
+Dalam mode terang, garis di bawah bilah alat dan header email yang terbuka,
+serta di atas Balas dan Teruskan, kini sesamar garis antaremail. Latar di
+belakang tab kotak masuk juga lebih terang.
+"""
+
+["2026-10-02-0453-google-drive-in-files"]
+title = "Google Drive Anda di File"
+text = """
+File kini menampilkan drive setiap akun Google di bawah Drive di kolom
+samping. Buka foldernya, cari di dalamnya, dan buka, lampirkan, atau unduh
+file langsung di sana. Pertama kali, tekan Izinkan agar Katna boleh membaca
+drive itu.
+"""
+
+["2026-10-02-0515-rephrase-subject"]
+title = "Tulis ulang subjek"
+text = """
+Begitu Anda mengetik subjek, ikon kilau di ujung barisnya menawarkan tiga
+cara lain untuk mengatakannya, ditulis berdasarkan subjek dan isi pesan
+Anda sejauh ini. Pilih salah satu untuk memakainya; Urungkan mengembalikan
+yang Anda ketik. Fitur ini memerlukan Bantuan menulis dengan AI aktif di
+Setelan > Tulis.
+"""
+
+["2026-10-02-0525-quieter-compose"]
+title = "Jendela Tulis yang lebih tenang"
+text = """
+Jendela Pesan Baru mengambang dengan jarak yang rata dari tepi jendela.
+Kepada, Cc, Bcc, dan Dari berkumpul tanpa garis di antaranya, penerima
+berupa chip berisi warna lembut, dan Dari menjadi satu baris yang tenang.
+Enkripsi, tanda tangan digital, pelacakan, dan tanda terima berbagi satu
+grup kecil, dan alat menulis ada di bilah lembut di samping Kirim.
+"""
+
+["2026-10-02-0553-upload-to-drive"]
+title = "Unggah ke Google Drive dari File"
+text = """
+Saat Google Drive terbuka di File, tombol Tulis menjadi Upload. Klik untuk
+mengirim file ke folder yang terbuka, atau pakai panahnya untuk mengunggah
+seluruh folder. Pertama kali, tekan Izinkan agar Katna boleh menambahkan
+file ke drive Anda.
+"""
+
+["2026-10-02-0555-reply-from-summary"]
+title = "Balas dari ringkasan"
+text = """
+Kartu ringkasan yang Anda buka dari klik kanan kini punya Balas. Tombol ini
+mengubah kartu yang sama menjadi balasan: pilih ide atau katakan apa
+isinya, ubah drafnya jika mau, lalu Kirim, atau Buka di percakapan untuk
+melanjutkan menulis. Balasan yang Anda tutup tanpa dikirim menunggu di
+kotak balasan. Kartu ini kini juga terbuka di tempat Anda mengklik.
+"""
+
+["2026-10-02-0559-draft-saved-signature-tag"]
+title = "Draf tersimpan selagi Anda menulis"
+text = """
+Pesan yang sedang Anda tulis kini tersimpan sendiri ke Draf setiap
+beberapa detik, dan “Draf disimpan” muncul dengan tenang di samping
+judulnya. Tag samar di samping tanda tangan Anda menyebutkan namanya; klik
+untuk memilih yang lain. Sudut jendela Tulis juga kini sejajar dengan kartu
+di sampingnya.
+"""
+
+["2026-10-02-0654-attach-from-drive"]
+title = "Lampirkan dari Google Drive"
+text = """
+Klip kertas di Tulis kini membuka pemilih File, sama dengan Dari File di
+chat, dengan Google Drive Anda di samping file email Anda dan Komputer
+ini… untuk yang lainnya. File yang muat masuk ke email; file besar dan
+Google Docs dikirim sebagai link, dibagikan kepada penerima saat Anda
+mengirim.
+"""
+
+["2026-10-02-0734-peek-and-reply-in-notifications"]
+title = "Intip dan balas dari notifikasi"
+text = """
+Notifikasi email baru kini punya Intip, yang menampilkan email itu sendiri
+di notifikasi yang sama, dan Balas, tempat Anda mengetik jawaban langsung
+di sana lalu menekan Kirim. Balasan dikirim dari akun penerima email itu,
+setelah waktu Urungkan kirim Anda; Urungkan membukanya di Katna Mail untuk
+dilanjutkan. Di Linux, email baru juga punya bunyi lonceng sendiri yang
+lebih keras; pilih yang lain di Setelan > Notifikasi.
+"""
+
+["2026-10-02-0735-drive-viewer-opens-at-once"]
+title = "File Drive langsung terbuka"
+text = """
+Membuka file dari drive Anda langsung memunculkan penampil, dengan busur
+berputar sampai filenya tiba. Catatan di bagian bawah jendela kini menerima
+kliknya sendiri, jadi Tutup tidak lagi mengklik apa yang ada di bawahnya.
+"""
+
+["2026-10-02-0740-smaller-updates"]
+title = "Pembaruan lebih kecil"
+text = """
+Pembaruan kini hanya mengunduh bagian yang berubah, biasanya beberapa
+megabyte, bukan seluruh paket. Katna menyusun versi baru dari versi yang
+Anda miliki dan memeriksanya sebelum memasang, dan mengunduh paket lengkap
+jika tidak bisa.
+"""
+
+["2026-10-02-0755-faint-lines-everywhere"]
+title = "Garis samar di mana-mana"
+text = """
+Dalam mode terang, setiap garis di antara elemen, di bawah header, dan di
+sekitar kartu kini sesamar garis antaremail, termasuk kartu ringkasan.
+Kolom, chip, dan tombol tetap punya garis tepi yang jelas.
+"""
+
+["2026-10-02-0756-ai-replies-signed"]
+title = "Balasan AI diakhiri tanda tangan Anda"
+text = """
+Balasan dan catatan yang ditulis AI tidak lagi diakhiri dengan “Salam
+hangat” dan nama Anda. Tanda tangan Anda yang menutupnya: di balasan
+kartu ringkasan, tag tanda tangan di bawah teks memilih tanda tangan mana,
+seperti di Tulis.
+"""
+
+["2026-10-02-0801-unified-inbox-tabs"]
+title = "Tab di kotak masuk gabungan"
+text = """
+Kotak masuk dari semua akun Anda kini juga punya tab: Utama, Promosi,
+Sosial, Pembaruan, dan Forum, dengan email setiap akun di tab sesuai
+jenisnya. Titik di samping setiap pengirim menunjukkan akun asal email.
+Pilih satu akun di bawahnya untuk melihat tab akun itu sendiri, atau pilih
+set lain di Setelan > Kotak Masuk.
+"""
+
+["2026-10-02-0805-feeds-removed"]
+title = "Feed sudah dihapus dari bilah kiri"
+text = """
+Katna ternyata tidak akan membaca feed RSS dan Atom, jadi tombol Feed dan
+halaman “segera hadir”-nya sudah keluar dari bilah di kiri. File tetap
+memakai Ctrl+7.
+"""
+
+["2026-10-02-0820-drive-bin-and-rename"]
+title = "Ganti nama dan buang file drive"
+text = """
+Di File, file atau folder di Google Drive atau OneDrive Anda kini punya
+Ganti nama dan Pindahkan ke sampah di menunya. Ganti nama memungkinkan Anda
+mengetik nama baru langsung di tempat (F2), dan Pindahkan ke sampah (Del)
+dilengkapi Urungkan.
+"""
+
+["2026-10-02-0827-files-chips-on-phones"]
+title = "Chip File muat di ponsel"
+text = """
+Di ponsel, chip di halaman File tidak lagi terpotong di tepi. Jenis file
+melipat menjadi ikonnya, dengan yang Anda pilih tetap berlabel, dan chip
+orang, hari, dan urutan mendapat barisnya sendiri.
+"""
+
+["2026-10-02-0828-uploads-tray"]
+title = "Lihat unggahan Anda saat berjalan"
+text = """
+File yang Anda unggah ke Google Drive atau OneDrive kini muncul di baki di
+kanan bawah, masing-masing dengan cincin yang terisi seiring unggahan dan
+sisa waktunya. Batalkan satu atau semuanya, lipat bakinya, dan klik file
+yang sudah selesai untuk membuka foldernya.
+"""
+
+["2026-10-02-0838-drive-share"]
+title = "Bagikan file drive dari Katna"
+text = """
+Bagikan… di menu file Google Drive atau OneDrive di File membuka dialog
+Bagikan: tambahkan orang sebagai Pelihat, Pemberi komentar, atau Editor,
+ubah atau hapus siapa yang sudah punya akses, dan buka untuk siapa saja
+yang punya link. Drive hanya mengirim email kepada mereka jika Anda
+mencentangnya.
+"""
+
+["2026-10-02-0909-soft-search-box"]
+title = "Kotak pencarian yang lebih lembut"
+text = """
+Kotak pencarian di atas kini lebih ringan: tepi dan isian yang sangat samar
+saat tidak dipakai, dan kolom putih dengan tepi aksen lembut saat Anda
+mengetik, bukan kapsul abu-abu dengan cincin berwarna yang tebal.
+"""
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Pembaruan datang lebih cepat"
+text = """
+Katna kini memeriksa versi baru setiap jam dan tepat setelah komputer Anda bangun dari mode tidur, sehingga notifikasi pembaruan muncul tak lama setelah rilis.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Garis tipis di mode gelap juga"
+text = """
+Di mode gelap, garis di antara email, di bawah header, dan di sekitar kartu kini sama tipisnya dengan di mode terang. Kolom isian, chip, dan tombol tetap memiliki garis tepi yang jelas.
+"""

@@ -35,6 +35,16 @@ const PANE_DEMO: Duration = Duration::from_millis(2600);
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Change {
     UndoSend(u32),
+    /// Where writing help with AI goes (`ai.source`).
+    AiSource(katna_core::config::AiSource),
+    /// The user's own AI service, by `katna_ai::provider::Preset::id`.
+    AiProvider(&'static str),
+    /// AI finishes sentences (`ai.autocomplete`).
+    AiAutocomplete(bool),
+    /// Those suggestions also send the mail being answered.
+    AiAnswered(bool),
+    /// Rephrase is offered for encrypted mail.
+    AiEncrypted(bool),
     /// An event's sound on or off.
     Sound(SoundEvent, bool),
     /// The sound an event plays, by its `katna_platform::sound` name.
@@ -68,6 +78,16 @@ pub(super) enum Change {
     WindowFrame(WindowFrame),
     /// The blurred, translucent window background.
     Blur(bool),
+    /// Frosted menus, popovers, dialogs and viewer bars.
+    FrostedPopups(bool),
+    /// The frost's blur and opacity set by hand, or following the desktop.
+    CustomFrost(bool),
+    /// The frost's blur, in pixels.
+    FrostBlur(u8),
+    /// The frost's tint opacity, in percent.
+    FrostOpacity(u8),
+    /// Conversations between people open as a group chat.
+    ChatView(bool),
     /// Days of mail the daemon downloads ahead of time; 0 for all mail.
     OfflineDays(u32),
     /// Crash reports written on this computer (Settings > User feedback).
@@ -98,6 +118,9 @@ pub(super) enum Change {
     SmallPictureKb(u32),
     /// Pictures under this many pixels wide or tall are small.
     SmallPicturePx(u32),
+    /// Files and the attach pickers show the drive of an account (its
+    /// store id).
+    DriveInFiles(i64, bool),
     /// New-mail notifications, shown by the daemon.
     NewMailNotices(bool),
     /// New versions of Katna downloaded as soon as the daemon finds them.
@@ -407,7 +430,7 @@ impl MailWindow {
                 .items_center()
                 .rounded(px(8.0))
                 .border_1()
-                .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+                .border_color(rgba(if on { th.nav_selected } else { th.outline }))
                 .bg(rgba(if on { th.nav_selected } else { th.surface }))
                 .text_color(rgba(if on {
                     th.nav_selected_text
@@ -448,6 +471,14 @@ impl MailWindow {
         let view = &mut self.config.mail;
         let mut relist = false;
         match change {
+            Change::AiSource(_)
+            | Change::AiProvider(_)
+            | Change::AiAutocomplete(_)
+            | Change::AiAnswered(_)
+            | Change::AiEncrypted(_) => {
+                self.apply_ai(change, cx);
+                return;
+            }
             Change::Pane(pane) => {
                 if view.reading_pane == pane {
                     return;
@@ -510,6 +541,14 @@ impl MailWindow {
                 self.config.experimental.blur = on;
                 cx.set_global(super::look(&self.config));
             }
+            Change::FrostedPopups(on) => self.config.experimental.frosted_popups = on,
+            Change::CustomFrost(on) => self.config.experimental.custom_frost = on,
+            Change::FrostBlur(blur) => self.config.experimental.frost_blur = blur,
+            Change::FrostOpacity(opacity) => self.config.experimental.frost_opacity = opacity,
+            Change::ChatView(on) => {
+                self.config.experimental.chat_view = on;
+                self.open_chat_as_set();
+            }
             Change::SaveCrashReports(on) => self.config.feedback.save_crash_reports = on,
             Change::MarkRead(when) => view.mark_read = when,
             Change::AutoAdvance(then) => view.auto_advance = then,
@@ -531,6 +570,17 @@ impl MailWindow {
                 self.request_thumbnails(cx);
             }
             Change::OpenSavedFolder(on) => view.open_saved_folder = on,
+            Change::DriveInFiles(account, on) => {
+                let off = &mut view.files.drives_off;
+                off.retain(|a| *a != account);
+                if !on {
+                    off.push(account);
+                }
+                self.save_config();
+                self.load_drives();
+                cx.notify();
+                return;
+            }
             Change::LeaveOutSmallPictures(_)
             | Change::SmallPictureKb(_)
             | Change::SmallPicturePx(_) => {

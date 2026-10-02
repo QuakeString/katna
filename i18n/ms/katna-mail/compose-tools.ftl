@@ -32,6 +32,7 @@ compose-tool-bold = Tebal (Ctrl+B)
 compose-tool-italic = Condong (Ctrl+I)
 compose-tool-underline = Garis bawah (Ctrl+U)
 compose-tool-text-color = Warna teks
+compose-tool-colors = Warna teks dan serlahan
 compose-tool-background-color = Warna latar belakang
 compose-tool-default-color = Warna lalai
 compose-tool-no-background = Tiada latar belakang
@@ -126,6 +127,10 @@ compose-tool-signature = Sisipkan tandatangan
 compose-tool-signature-none = Tiada tandatangan
 compose-tool-signature-untitled = Tanpa tajuk
 compose-tool-signature-manage = Urus tandatangan
+compose-signature-tag-tip = Pilih tandatangan lain
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = Templat
 compose-tool-templates-none = Belum ada templat
 compose-tool-template-save = Simpan sebagai templat…

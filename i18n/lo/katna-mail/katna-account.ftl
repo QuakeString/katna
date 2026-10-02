@@ -1,6 +1,9 @@
 # Katna Mail, Lao (ລາວ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = ບັນຊີ Katna ເປີດຄຸນສົມບັດອອນລາຍຂອງ Katna: ໃບຢືນຢັນການອ່ານ, ການຕິດຕາມລິ້ງ, ກິດຈະກຳ ແລະ ການແປພາສາອັດຕະໂນມັດ. ມັນມີລະຫັດຜ່ານຂອງມັນເອງ ບໍ່ແມ່ນລະຫັດຜ່ານອີເມວ, ແລະ ຂໍ້ມູນເຂົ້າສູ່ລະບົບອີເມວຂອງທ່ານຈະບໍ່ອອກຈາກຄອມພິວເຕີນີ້ເລີຍ.
 katna-checking = ກຳລັງກວດສອບ…
 katna-email = ອີເມວ
@@ -10,6 +13,8 @@ katna-sign-in = ເຂົ້າສູ່ລະບົບ
 katna-sign-in-detail = ເຂົ້າສູ່ລະບົບໃນແຕ່ລະຄອມພິວເຕີທີ່ທ່ານຕ້ອງການໃຊ້ຄຸນສົມບັດອອນລາຍ.
 katna-create = ສ້າງບັນຊີ
 katna-create-detail = ໃຊ້ທີ່ຢູ່ທີ່ທ່ານອ່ານໄດ້: ພວກເຮົາຈະສົ່ງລະຫັດທາງອີເມວເພື່ອຢືນຢັນມັນ.
+katna-onboarding-create-title = ສ້າງບັນຊີ Katna ຂອງທ່ານ
+katna-onboarding-sign-in-title = ເຂົ້າສູ່ລະບົບ Katna
 katna-have-account = ຂ້ອຍມີບັນຊີແລ້ວ
 katna-forgot = ລືມລະຫັດຜ່ານບໍ?
 katna-forgot-detail = ພວກເຮົາຈະສົ່ງລະຫັດທາງອີເມວເພື່ອເລືອກລະຫັດຜ່ານໃໝ່.
@@ -42,6 +47,9 @@ katna-delete = ລຶບບັນຊີ
 katna-delete-detail = ລຶບບັນຊີ ແລະ ທຸກຢ່າງທີ່ເຊີບເວີເກັບໄວ້ໃຫ້ມັນ ເຊັ່ນ ໃບຢືນຢັນການອ່ານ. ອີເມວໃນຄອມພິວເຕີນີ້ຍັງຢູ່.
 katna-delete-confirm = ລຶບຖາວອນ
 katna-sign-in-needed = ເຂົ້າສູ່ລະບົບບັນຊີ Katna ເພື່ອໃຊ້ສິ່ງນີ້.
+
+## Errors
+
 katna-error-wrong-password = ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ.
 katna-error-exists = ທີ່ຢູ່ນີ້ມີບັນຊີ Katna ແລ້ວ. ກະລຸນາເຂົ້າສູ່ລະບົບແທນ.
 katna-error-bad-email = ນັ້ນເບິ່ງບໍ່ຄືທີ່ຢູ່ອີເມວ.

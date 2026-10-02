@@ -15,6 +15,7 @@ notes-loading = तपाईंका टिपोटहरू खोल्द�
 
 notes-take-a-note = टिपोट लेख्नुहोस्…
 notes-new-list = नयाँ सूची
+notes-new-note = नयाँ टिपोट
 notes-pinned = पिन गरिएका
 notes-others = अन्य
 notes-empty = तपाईंले थपेका टिपोटहरू यहाँ देखिन्छन्

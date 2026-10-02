@@ -25,8 +25,11 @@ katna-i18n.workspace = true
 katna-notify.workspace = true
 # SHA-256 of downloaded updates (already in the tree through rustls).
 ring.workspace = true
+# Makes an update from a patch (already in the tree through katna-store).
+zstd.workspace = true
 katna-platform.workspace = true
 katna-translate.workspace = true
+katna-ai.workspace = true
 async-channel.workspace = true
 async-io.workspace = true
 async-signal.workspace = true

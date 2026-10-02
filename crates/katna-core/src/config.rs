@@ -41,6 +41,7 @@ pub struct Config {
     pub updates: Updates,
     pub contacts: ContactsConfig,
     pub meetings: Meetings,
+    pub ai: Ai,
 }
 
 /// The Contacts page's own choices.
@@ -132,14 +133,97 @@ impl Default for Feedback {
     }
 }
 
+/// Writing help from an AI service (`docs/ARCHITECTURE.md` §16.5):
+/// rephrasing selected text, and finishing sentences. Keys live in the
+/// Secret Service, never here.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Ai {
+    /// Where requests go.
+    pub source: AiSource,
+    /// The user's own service, a `katna_ai::provider::PRESETS` id.
+    pub provider: String,
+    /// The model of the user's own service; empty for its usual one.
+    pub model: String,
+    /// The address of an `other` service (OpenAI's API, such as Ollama).
+    pub address: String,
+    /// AI finishes the sentence being written, after a pause, as a
+    /// longer writing suggestion ([`Sending::writing_suggestions`]).
+    pub autocomplete: bool,
+    /// Autocomplete also sends the mail being answered.
+    pub autocomplete_answered: bool,
+    /// Rephrase is offered for encrypted mail, asking each time.
+    pub encrypted: bool,
+}
+
+impl Default for Ai {
+    fn default() -> Self {
+        Self {
+            source: AiSource::default(),
+            provider: "gemini".to_owned(),
+            model: String::new(),
+            address: String::new(),
+            autocomplete: false,
+            autocomplete_answered: false,
+            encrypted: true,
+        }
+    }
+}
+
+/// [`Ai::source`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AiSource {
+    /// Katna AI, on Katna Server with the Katna account.
+    #[default]
+    Katna,
+    /// The user's own service and key.
+    Own,
+    /// No writing help.
+    Off,
+}
+
+/// The frost's blur, in pixels, when nothing else sets it.
+pub const FROST_BLUR: u8 = 24;
+/// The frost's tint opacity, in percent, when nothing else sets it.
+pub const FROST_OPACITY: u8 = 45;
+
 /// Settings > Experimental: features still being tried out.
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Experimental {
     /// Who draws the window frame.
     pub window_frame: WindowFrame,
     /// A translucent window background that the compositor blurs.
     pub blur: bool,
+    /// Menus, popovers, dialogs and viewer bars are frosted glass: they
+    /// blur what is under them, drawn by Katna itself.
+    pub frosted_popups: bool,
+    /// The frost's blur and opacity come from [`Self::frost_blur`] and
+    /// [`Self::frost_opacity`]; off, they follow the desktop's blur
+    /// strength (KDE's Blur effect) or Katna's defaults.
+    pub custom_frost: bool,
+    /// How far the frost blurs, in pixels ([`FROST_BLUR`]).
+    pub frost_blur: u8,
+    /// How opaque the frost's tint is, in percent ([`FROST_OPACITY`]).
+    pub frost_opacity: u8,
+    /// Conversations between people open as a group chat: a bubble per
+    /// mail with only what its sender wrote.
+    pub chat_view: bool,
+}
+
+impl Default for Experimental {
+    fn default() -> Self {
+        Self {
+            window_frame: WindowFrame::default(),
+            blur: false,
+            frosted_popups: true,
+            custom_frost: false,
+            frost_blur: FROST_BLUR,
+            frost_opacity: FROST_OPACITY,
+            chat_view: false,
+        }
+    }
 }
 
 /// [`Experimental::window_frame`].
@@ -584,6 +668,10 @@ pub struct MailView {
     /// Which tabs each account's inbox has, by lower-case address.
     /// Accounts not listed use [`TabStyle::Auto`].
     pub account_tabs: BTreeMap<String, AccountTabs>,
+    /// Which tabs the unified inbox has, shared by every account: each
+    /// mail shows in the tab of its category. [`TabStyle::Auto`] is
+    /// Gmail's five.
+    pub unified_tabs: TabStyle,
     pub density: Density,
     /// The size of everything in the windows, in percent, on top of the
     /// desktop's own scale (75 to 200).
@@ -685,8 +773,9 @@ pub struct MailView {
     pub activity_account: String,
 }
 
-/// The Files page's small pictures (Settings > Default apps): logos and
-/// icons in signatures, which come with many mails.
+/// The Files page (Settings > Default apps): its small pictures (logos
+/// and icons in signatures, which come with many mails) and the accounts'
+/// drives it shows.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct FilesPage {
@@ -696,6 +785,10 @@ pub struct FilesPage {
     pub small_kb: u32,
     /// ... and so is one under this many pixels wide or tall.
     pub small_px: u32,
+    /// Accounts (store ids) whose cloud drive Files and the attach
+    /// pickers leave out. Every drive an account allows shows otherwise.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub drives_off: Vec<i64>,
 }
 
 impl FilesPage {
@@ -747,6 +840,7 @@ impl Default for FilesPage {
             leave_out_small: true,
             small_kb: 12,
             small_px: 100,
+            drives_off: Vec::new(),
         }
     }
 }
@@ -794,6 +888,7 @@ impl Default for MailView {
             conversations: true,
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
+            unified_tabs: TabStyle::Auto,
             density: Density::Default,
             scale: 100,
             theme: Theme::System,
@@ -1440,10 +1535,19 @@ mod tests {
         let config = Config::default();
         assert_eq!(config.experimental.window_frame, WindowFrame::Native);
         assert!(!config.experimental.blur);
+        assert!(config.experimental.frosted_popups);
+        assert!(!config.experimental.chat_view);
         let config =
             Config::parse("[experimental]\nwindow_frame = \"katna\"\nblur = true\n").unwrap();
         assert_eq!(config.experimental.window_frame, WindowFrame::Katna);
         assert!(config.experimental.blur);
+        assert!(config.experimental.frosted_popups);
+        let config = Config::parse("[experimental]\nfrosted_popups = false\n").unwrap();
+        assert!(!config.experimental.frosted_popups);
+        // The frost follows the desktop unless set by hand.
+        assert!(!config.experimental.custom_frost);
+        assert_eq!(config.experimental.frost_blur, FROST_BLUR);
+        assert_eq!(config.experimental.frost_opacity, FROST_OPACITY);
     }
 
     #[test]

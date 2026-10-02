@@ -5,6 +5,8 @@
 
 ## Attachment viewer
 
+# Shown, under a turning arc, while a file is on its way or opening.
+viewer-opening = Opening…
 # Shown in place of a file the viewer cannot show.
 viewer-unreadable = This attachment could not be read.
 viewer-pdf-locked = This PDF is protected with a password.
@@ -80,3 +82,6 @@ viewer-marks-save = Save a copy
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (marked)
+# The viewer's bar, opened from the attach picker: ticks the file shown.
+viewer-pick = Select
+viewer-picked = Selected

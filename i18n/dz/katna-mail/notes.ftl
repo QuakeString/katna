@@ -15,6 +15,7 @@ notes-loading = ཁྱོད་ཀྱི་དྲན་ཐོ་ཚུ་ཁ་�
 
 notes-take-a-note = དྲན་ཐོ་ཅིག་བྲིས་…
 notes-new-list = ཐོ་ཡིག་གསརཔ།
+notes-new-note = དྲན་ཐོ་གསརཔ
 notes-pinned = བཙུགས་ཡོད་མི།
 notes-others = གཞན།
 notes-empty = ཁྱོད་ཀྱིས་ཁ་སྣོན་འབད་མི་ དྲན་ཐོ་ཚུ་འདི་ལུ་སྟོནམ་ཨིན།

@@ -15,6 +15,7 @@ notes-loading = Membuka nota anda…
 
 notes-take-a-note = Ambil nota…
 notes-new-list = Senarai baharu
+notes-new-note = Nota baharu
 notes-pinned = Disemat
 notes-others = Lain-lain
 notes-empty = Nota yang anda tambahkan muncul di sini

@@ -118,6 +118,7 @@ sounds-not-sent-detail = When sending fails
 # Tooltip of the button that plays a sound.
 sounds-play = Play
 # The sounds to pick from (the desktop's own).
+sound-katna-chime = Katna chime
 sound-new-email = New email
 sound-new-message = New message
 sound-sent = Sent
@@ -188,6 +189,8 @@ settings-inbox-tabs-detail = Sort the inbox into tabs, as your mail provider's w
 settings-inbox-tabs-show = Show inbox tabs
 settings-inbox-tabs-show-detail = Off shows one list for every account
 settings-inbox-no-accounts = Add an account to choose its tabs.
+settings-inbox-unified = Unified inbox
+settings-inbox-unified-detail = Tabs shared by every account. Each mail shows in the tab of its kind; mail of a tab an account turns off stays in its first tab.
 # $tabs: the tabs of that style, such as "Focused and Other". $provider: the mail provider, such as "Gmail".
 settings-inbox-tabs-automatic = Automatic: { $tabs } ({ $provider })
 settings-inbox-tabs-off = No tabs
@@ -290,6 +293,11 @@ scheme-editor-remove-side = Remove this side
 scheme-editor-readable = Easy to read
 # $colors lists the colors, like "Text, Text on accent".
 scheme-editor-hard-to-read = Hard to read: { $colors }
+# The color picker beside a color of the editor.
+scheme-picker-dropper = Pick from screen
+scheme-picker-in-scheme = In this scheme
+scheme-picker-recent = Recent
+scheme-picker-system = System picker…
 # The eight colors of a side.
 scheme-seed-page = Page
 scheme-seed-cards = Cards
@@ -352,6 +360,10 @@ settings-files-px = px
 settings-files-more-tip = More
 settings-files-less-tip = Less
 settings-files-sizes-note = Pixel sizes are read once a mail is downloaded; until then its pictures go by file size alone.
+settings-files-drives = Drives in Files
+settings-files-drives-detail = Each account’s own drive, shown on the Files page
+# Under a drive whose account was signed in before Katna asked to read it.
+settings-files-drive-needs = { $address } · Katna needs permission once
 
 ## Settings > Compose
 
@@ -399,9 +411,40 @@ settings-compose-grammar-detail = Checked on this computer with Harper. English 
 settings-compose-grammar-check = Check grammar
 settings-compose-grammar-check-detail = Underline grammar mistakes while writing, in English
 settings-compose-suggestions = Writing suggestions
-settings-compose-suggestions-detail = Learned on this computer from the mail you sent and the mail you are answering; nothing leaves it. Press Tab to take a suggestion, or keep typing.
+settings-compose-suggestions-detail = Phrases are learned on this computer from the mail you sent and the mail you are answering. Press Tab to take a suggestion, or keep typing.
 settings-compose-suggestions-on = Suggest while writing
 settings-compose-suggestions-on-detail = Show the likely rest of a phrase in grey as you type
+settings-ai-autocomplete = Longer suggestions with AI
+settings-ai-autocomplete-detail = Finish the sentence after you pause, with the AI chosen below. Never for encrypted mail.
+settings-ai-answered = Use the mail you are answering
+settings-ai-answered-detail = Better guesses about names and dates; sends more text
+# Settings > Compose: where Rephrase and the longer suggestions go.
+settings-ai = Writing help with AI
+settings-ai-detail = Select text in a message and press the sparkle (or Ctrl+J) to rephrase it. Only the text you choose is sent, and nothing is kept.
+settings-ai-katna = Katna AI
+settings-ai-own = Your own key
+settings-ai-off = Off
+settings-ai-katna-detail = Free for 30 days from the first use, then $5 a month. Uses your Katna account.
+settings-ai-own-detail = Your key goes to your service only. It is kept in the system's keyring, not in Katna's settings.
+settings-ai-service = Your AI service
+settings-ai-service-detail = Any service that speaks OpenAI's API works under Other, such as Ollama or LM Studio on this computer.
+settings-ai-other = Other
+settings-ai-address = Address
+# Left empty, the service's usual model is used (shown greyed in the field).
+settings-ai-model = Model
+# The button at the end of the model field that shows the service's models.
+settings-ai-models = Models this service offers
+settings-ai-key = API key
+settings-ai-key-paste = Paste your key
+settings-ai-key-save = Save key
+settings-ai-key-saved = A key is saved.
+settings-ai-key-remove = Remove
+settings-ai-key-none = No key saved yet.
+settings-ai-key-saved-toast = Key saved
+settings-ai-key-removed = Key removed
+settings-ai-encrypted-title = Encrypted mail
+settings-ai-encrypted = Offer Rephrase in encrypted mail
+settings-ai-encrypted-detail = Asks each time before sending text of an encrypted message
 settings-compose-templates = Templates
 settings-compose-templates-detail = Save mail you write often, and start new mail or a reply from it.
 settings-compose-no-templates = No templates yet. In a message, choose Templates, then Save as template.
@@ -479,7 +522,7 @@ settings-default-apps-text-summary = Where plain text, logs and code open
 settings-default-apps-sheets-summary = Where Excel, OpenDocument and CSV files open
 settings-default-apps-documents-summary = Where Word and OpenDocument text and slides open
 settings-default-apps-after-saving-summary = Show saved attachments in their folder
-settings-files-page-summary = Leave small pictures, like signature logos, off the Files page
+settings-files-page-summary = Leave small pictures, like signature logos, off the Files page, and pick which drives it shows
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line
@@ -491,11 +534,12 @@ settings-general-search-triggers-summary = Words that search your mail from KRun
 settings-general-mail-app-summary = Open email links from other apps and websites in Katna Mail
 settings-compose-grammar-summary = Underline grammar mistakes while writing, in English
 settings-compose-suggestions-summary = Show the likely rest of a phrase in grey as you type
+settings-ai-summary = Rephrase selected text and finish sentences with Katna AI or your own key
 settings-compose-templates-summary = Save mail you write often, and start new mail or a reply from it
 settings-feedback-crash-reports-summary = Save crash reports on this computer when Katna Mail or its background service crashes
 settings-feedback-saved-summary = View, copy or delete the crash reports saved on this computer
 settings-feedback-help-improve-summary = Send crash reports to help fix what went wrong; off unless you turn it on
-settings-experimental-blur-summary = The desktop shows through the top bar, blurred, and menus are frosted
+settings-experimental-blur-summary = Blur the window background, frost menus and dialogs, or both
 # The line under a keyboard shortcut found by the settings search.
 settings-search-shortcut = Keyboard shortcut
 # The line under a tab of the Settings page found by the search.

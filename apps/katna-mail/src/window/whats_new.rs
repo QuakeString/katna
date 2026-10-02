@@ -23,7 +23,7 @@ use katna_ui::unpx;
 
 use super::add_account::text_button;
 use super::{MailWindow, PANEL_RADIUS};
-use crate::theme::{Theme, fade};
+use crate::theme::Theme;
 use crate::whats_new::{self, Highlight, Seen, Start};
 use crate::widgets::{FocusRing, elevation, filled_button, icon};
 
@@ -294,7 +294,7 @@ impl MailWindow {
                     .overflow_hidden()
                     .rounded(px(12.0))
                     .border_1()
-                    .border_color(rgba(th.divider))
+                    .border_color(rgba(th.outline))
                     .child(animation(
                         highlight.name,
                         dialog.animations.get(highlight.name),
@@ -407,7 +407,10 @@ impl MailWindow {
             .when(!phone, |d| {
                 d.rounded(px(PANEL_RADIUS)).shadow(elevation(th, 3.0))
             })
-            .bg(rgba(th.surface))
+            .map(|d| {
+                let radius = if phone { 0.0 } else { PANEL_RADIUS };
+                crate::widgets::frosted(d, th, th.surface, radius)
+            })
             .text_color(rgba(th.text))
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .children(hero)
@@ -423,7 +426,7 @@ impl MailWindow {
                 .items_center()
                 .justify_center()
                 .when(!phone, |d| d.p(px(24.0)))
-                .bg(rgba(fade(0x0000_0066, t)))
+                // No veil: the window stays as it is around the dialog.
                 .child(
                     div()
                         .id("whats-new-scrim")

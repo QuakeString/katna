@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “ທຸກບັນຊີ” ຢູ່ເທ�
 accounts-row = ບັນຊີ
 accounts-row-detail = ແຖບໂຟນເດີ ແລະ ເມນູບັນຊີ ສະແດງບັນຊີຕາມລຳດັບນີ້; ບັນຊີທຳອິດແມ່ນຄ່າເລີ່ມຕົ້ນ. ການລຶບບັນຊີອອກຈະລຶບສຳເນົາອີເມວຂອງບັນຊີນັ້ນທີ່ Katna ເກັບໄວ້ໃນຄອມພິວເຕີນີ້. ອີເມວຍັງຢູ່ໃນເຊີບເວີ.
 accounts-none = ຍັງບໍ່ມີບັນຊີ.
+accounts-pop3-row = ອີເມວຢູ່ໃນເຊີບເວີ
+accounts-pop3-row-detail = ບັນຊີ POP3 ຈະດາວໂຫຼດອີເມວມາໄວ້ໃນຄອມພິວເຕີນີ້. ເລືອກວ່າຈະເຮັດແນວໃດກັບສຳເນົາທີ່ຢູ່ໃນເຊີບເວີ.
+accounts-pop3-with-katna = ເກັບໄວ້ຈົນກວ່າຂ້ອຍຈະລຶບໃນ Katna
+accounts-pop3-at-once = ລຶບທັນທີທີ່ດາວໂຫຼດແລ້ວ
+accounts-pop3-after-days = { $count ->
+   *[other] ລຶບຫຼັງຈາກ { $count } ມື້
+}
+accounts-pop3-never = ບໍ່ລຶບເລີຍ
+accounts-pop3-days-less = ໜ້ອຍມື້ລົງ
+accounts-pop3-days-more = ຫຼາຍມື້ຂຶ້ນ
 accounts-kind-imported = ນຳເຂົ້າ
 accounts-picture-reset = ໃຊ້ຮູບຂອງເດັສທັອບ
 accounts-picture-change = ປ່ຽນຮູບ
@@ -70,6 +80,9 @@ accounts-confirm-word = ລຶບ
 accounts-confirm-placeholder = ພິມ “{ accounts-confirm-word }”
 accounts-confirm-prompt = ເພື່ອຢືນຢັນ, ໃຫ້ພິມ “{ accounts-confirm-word }”:
 accounts-cancel = ຍົກເລີກ
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = ລຶບອີເມວ ແລະ ໄຟລ໌ແນບທີ່ Katna ດາວໂຫຼດມາ, ຮູບຂອງຜູ້ສົ່ງ ແລະ ດັດຊະນີການຊອກຫາ, ແລ້ວດາວໂຫຼດອີເມວຫຼ້າສຸດຄືນໃໝ່. ບັນຊີ, ການຕັ້ງຄ່າ ແລະ ອີເມວທີ່ມີຢູ່ໃນຄອມພິວເຕີນີ້ເທົ່ານັ້ນ ຍັງຄົງຢູ່.
 reset-cache-button = ຕັ້ງຄ່າແຄດຄືນໃໝ່
 reset-cache-title = ຕັ້ງຄ່າແຄດຄືນໃໝ່ບໍ?

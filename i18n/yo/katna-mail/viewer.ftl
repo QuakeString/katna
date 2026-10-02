@@ -2,6 +2,8 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+viewer-opening = Ń ṣí i…
+
 ## Attachment viewer
 
 viewer-unreadable = A kò lè ka àfikún yìí.
@@ -14,8 +16,17 @@ viewer-slides-unreadable = A kò lè ka àwọn sìláìdì wọ̀nyí.
 viewer-no-preview = Kò sí àwòtẹ́lẹ̀
 viewer-slide = Sìláìdì { $number }
 viewer-page = Ojú ìwé
+viewer-slide-box = Síláìdì
 viewer-page-count = nínú { $count }
 viewer-go-to-page-tip = Tẹ nọ́mbà ojú ìwé, lẹ́yìn náà tẹ Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = Yí i lọ́nà aago (Ctrl+R)
+viewer-rotate-anticlockwise-tip = Yí i lòdì sí ọ̀nà aago (Ctrl+Shift+R)
+viewer-fit-page-tip = Bá ojú-ìwé mu
+viewer-fit-picture-tip = Bá fèrèsé mu
+viewer-fit-width-tip = Bá fífẹ̀ mu
+viewer-real-size-tip = Ìwọ̀n gidi (1:1)
+viewer-page-back-tip = Ojú-ìwé tó ṣáájú
+viewer-page-on-tip = Ojú-ìwé tó kàn
 
 ## Marking up a PDF
 
@@ -41,6 +52,10 @@ viewer-marks-undo-tip = Dá padà (Ctrl+Z)
 viewer-marks-redo-tip = Tún ṣe (Ctrl+Shift+Z)
 viewer-save-marked-tip = Fi ẹ̀dà kan pamọ́ pẹ̀lú àwọn àmì rẹ (Ctrl+S)
 viewer-reply-marked-tip = Fèsì pẹ̀lú ẹ̀dà tí a sàmì sí
+viewer-forward-tip = Fi fáìlì náà ránṣẹ́ síwájú
+viewer-forward = Fi ránṣẹ́ síwájú
+viewer-open-with = Ṣí i pẹ̀lú…
+viewer-save = Fi pamọ́
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = Kọ àkọsílẹ̀ kan
 viewer-text-placeholder = Tẹ̀ ẹ́ síbí
@@ -58,3 +73,5 @@ viewer-marks-save = Fi ẹ̀dà pamọ́
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (tí a sàmì sí)
+viewer-pick = Yàn án
+viewer-picked = A ti yàn án

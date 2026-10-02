@@ -22,10 +22,16 @@ async-channel.workspace = true
 tray-icon.workspace = true
 keyring-core.workspace = true
 windows-native-keyring-store.workspace = true
-tauri-winrt-notification.workspace = true
 winreg.workspace = true
 winit.workspace = true
-windows = { workspace = true, features = ["Foundation", "Media_Core", "Media_Playback"] }
+windows = { workspace = true, features = [
+    "Data_Xml_Dom",
+    "Foundation",
+    "Foundation_Collections",
+    "Media_Core",
+    "Media_Playback",
+    "UI_Notifications",
+] }
 
 [lints]
 workspace = true

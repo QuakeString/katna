@@ -1,6 +1,7 @@
 # Katna Mail, Indonesian (Bahasa Indonesia).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
 translate-offer = Pesan ini dalam bahasa { $language }.
 translate-to = Terjemahkan ke { $language }
 translate-never = Jangan pernah untuk { $language }

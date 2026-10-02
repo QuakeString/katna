@@ -21,15 +21,16 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use gpui::{
-    AnyElement, App, Context, Div, Entity, FocusHandle, Focusable, FontWeight, Keystroke,
-    ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
+    AnimationExt, AnyElement, App, Context, Div, Entity, FocusHandle, Focusable, FontWeight,
+    Keystroke, ScrollHandle, SharedString, SpringAnimation, Stateful, Subscription, Task, Window,
+    div, prelude::*, rgba,
 };
 use katna_core::config::{
     AccountTabs, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn, ReadingPane,
     SEND_FROM_CURRENT, ShortcutSet, TabStyle, Theme as ThemeChoice, TrayStyle,
 };
 use katna_i18n::tr;
-use katna_ui::motion::lerp;
+use katna_ui::motion::{self, lerp};
 use katna_ui::px;
 use katna_ui::rich::RichEvent;
 use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
@@ -40,9 +41,10 @@ use super::tab_strip::TabStrip;
 use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts};
 use crate::autostart::Start;
 use crate::tabs::{self, Provider};
-use crate::theme::{Theme, fade};
+use crate::theme::Theme;
 use crate::widgets::{FocusRing, ScaledEdge, TabStops, icon, icon_button, outlined_button, tip};
 
+mod ai;
 mod notifications;
 mod templates;
 
@@ -148,6 +150,8 @@ pub(super) struct SettingsPage {
     pub(super) info: Rc<RefCell<Option<SharedString>>>,
     /// A drag on the Scaling slider.
     pub(super) scale: super::scale_slider::ScaleDrag,
+    /// A drag on the frost's blur and opacity sliders.
+    pub(super) frost: super::frost_sliders::FrostDrag,
     /// The account whose name is being changed in Settings > Accounts.
     pub(super) renaming: Option<super::accounts::Renaming>,
     /// An account being dragged to a new place, and rows gliding to theirs.
@@ -170,6 +174,11 @@ pub(super) struct SettingsPage {
     small_kb: Entity<TextInput>,
     small_px: Entity<TextInput>,
     _small: [Subscription; 2],
+    /// The Google accounts, each with whether its sign-in lets Katna
+    /// read its drive (`None` until the daemon says), for Drives in Files.
+    drives: Vec<(katna_core::AccountId, String, Option<bool>)>,
+    /// Writing help with AI: the user's own service.
+    ai: ai::AiFields,
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -234,6 +243,7 @@ impl MailWindow {
         let words = self.config.general.search_triggers.join(", ");
         let server = self.config.meetings.jitsi_server.clone();
         let this_files = self.config.mail.files.clone();
+        let ai_config = self.config.ai.clone();
         let page = self.settings_page.get_or_insert_with(|| {
             let triggers = cx.new(|cx| {
                 let mut input = TextInput::new(tr!("settings-general-search-triggers-none"), cx);
@@ -276,6 +286,7 @@ impl MailWindow {
                     }
                 }),
             ];
+            let ai = ai::AiFields::new(&ai_config, accent, cx);
             SettingsPage {
                 section,
                 editing: None,
@@ -290,6 +301,7 @@ impl MailWindow {
                 flash: None,
                 info: Rc::default(),
                 scale: Default::default(),
+                frost: Default::default(),
                 renaming: None,
                 reorder: Default::default(),
                 start_at_login: crate::autostart::get(),
@@ -302,6 +314,8 @@ impl MailWindow {
                 small_kb,
                 small_px,
                 _small: small_subscriptions,
+                drives: Vec::new(),
+                ai,
             }
         });
         page.mail_app = opens_mail_links();
@@ -326,6 +340,8 @@ impl MailWindow {
                 .or(first);
             self.edit_signature(editing, window, cx);
             self.load_templates(cx);
+            self.load_ai_key_saved(cx);
+            self.load_ai_models(cx);
         }
         // The page opens over the app on show, which stays picked in the
         // rail and comes back as it was when the page closes. The search
@@ -333,6 +349,7 @@ impl MailWindow {
         if fresh {
             self.swap_app_search(false, cx);
         }
+        self.read_drives(cx);
         self.card_seq += 1;
         cx.notify();
     }
@@ -1246,7 +1263,7 @@ impl MailWindow {
             .gap(px(12.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(|this, event: &gpui::ClickEvent, window, cx| {
@@ -1497,6 +1514,7 @@ impl MailWindow {
                     .text_color(rgba(th.text_faint))
                     .child(tr!("settings-files-sizes-note")),
             );
+        let drives = self.drives_rows(th, cx);
         self.row(
             tr!("settings-files-page"),
             Some(tr!("settings-files-page-detail").as_str()),
@@ -1512,10 +1530,187 @@ impl MailWindow {
                     th,
                     cx,
                 ))
-                .child(limits),
+                .child(limits)
+                .children(drives),
             th,
         )
         .into_any_element()
+    }
+
+    /// Asks the daemon which Google and Microsoft accounts let Katna use
+    /// their drive, for Drives in Files.
+    fn read_drives(&mut self, cx: &mut Context<Self>) {
+        let google: Vec<(katna_core::AccountId, String)> = match self.mail.as_ref() {
+            Ok(mail) => self
+                .accounts
+                .iter()
+                .filter(|a| {
+                    matches!(
+                        mail.sign_in_provider(a.id),
+                        Some(
+                            katna_core::OAuthProvider::Google
+                                | katna_core::OAuthProvider::Microsoft
+                        )
+                    )
+                })
+                .map(|a| (a.id, a.address.clone()))
+                .collect(),
+            Err(_) => Vec::new(),
+        };
+        let Some(page) = &mut self.settings_page else {
+            return;
+        };
+        page.drives = google
+            .iter()
+            .map(|(id, address)| {
+                let known = page.drives.iter().find(|d| d.0 == *id).and_then(|d| d.2);
+                (*id, address.clone(), known)
+            })
+            .collect();
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        cx.spawn(async move |this, cx| {
+            let mut readable = Vec::new();
+            for (id, _) in google {
+                if let Ok(can) = crate::daemon::cloud_writable(&connection, id.0).await {
+                    readable.push((id, can));
+                }
+            }
+            this.update(cx, |this, cx| {
+                if let Some(page) = &mut this.settings_page {
+                    for (id, can) in readable {
+                        if let Some(drive) = page.drives.iter_mut().find(|d| d.0 == id) {
+                            drive.2 = Some(can);
+                        }
+                    }
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Signs a Google or Microsoft account in again, now allowing Katna to
+    /// use its drive.
+    fn allow_drive_in_files(&mut self, id: katna_core::AccountId, cx: &mut Context<Self>) {
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        let provider = if self.drive_is_onedrive(id) {
+            katna_core::OAuthProvider::Microsoft
+        } else {
+            katna_core::OAuthProvider::Google
+        };
+        let address = self
+            .accounts
+            .iter()
+            .find(|a| a.id == id)
+            .map(|a| a.address.clone())
+            .unwrap_or_default();
+        cx.spawn(async move |this, cx| {
+            let signed_in =
+                crate::daemon::sign_in(&connection, provider, Some(id.0), &address).await;
+            this.update(cx, |this, cx| {
+                if signed_in.is_err() {
+                    this.show_snackbar(tr!("files-drive-allow-failed"), None, cx);
+                }
+                this.read_drives(cx);
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Drives in Files: a switch per account's drive, with Allow while
+    /// the account's sign-in doesn't let Katna read it.
+    fn drives_rows(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let page = self.settings_page.as_ref()?;
+        if page.drives.is_empty() {
+            return None;
+        }
+        let off = &self.config.mail.files.drives_off;
+        let mut rows = div().mt(px(8.0)).flex().flex_col().child(
+            div()
+                .px(px(8.0))
+                .pt(px(8.0))
+                .flex()
+                .flex_col()
+                .child(
+                    div()
+                        .text_size(px(14.0))
+                        .child(tr!("settings-files-drives")),
+                )
+                .child(
+                    div()
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_faint))
+                        .child(tr!("settings-files-drives-detail")),
+                ),
+        );
+        for (n, (id, address, readable)) in page.drives.iter().enumerate() {
+            let id = *id;
+            let on = !off.contains(&id.0);
+            let needs = *readable == Some(false);
+            let detail = if needs {
+                tr!("settings-files-drive-needs", address = address.as_str())
+            } else {
+                address.clone()
+            };
+            let allow = needs.then(|| {
+                outlined_button(("page-files-drive-allow", n), tr!("files-drive-allow"), th)
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.allow_drive_in_files(id, cx);
+                    }))
+                    .into_any_element()
+            });
+            let row = self
+                .page_control(div().id(("page-files-drive", n)), th, cx)
+                .relative()
+                .overflow_hidden()
+                .py(px(8.0))
+                .px(px(8.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(12.0))
+                .rounded(px(8.0))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.apply(Change::DriveInFiles(id.0, !on), cx)
+                }))
+                .child(Ripple::new(("page-files-drive-ripple", n), rgba(th.ripple)).rounded(8.0))
+                .child(self.drive_mark_of(id, 22.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(div().text_size(px(14.0)).child(self.drive_name(id)))
+                        .child(
+                            div()
+                                .truncate()
+                                .text_size(px(12.0))
+                                .text_color(rgba(th.text_faint))
+                                .child(detail),
+                        ),
+                )
+                .children(allow)
+                .child(div().with_spring(
+                    ("page-files-drive-switch", n),
+                    SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                    {
+                        let th = *th;
+                        move |el, s: f32| el.child(crate::widgets::switch(s.clamp(0.0, 1.0), &th))
+                    },
+                ));
+            rows = rows.child(row);
+        }
+        Some(rows.into_any_element())
     }
 
     /// A small-picture limit typed or stepped: applied once typing pauses,
@@ -1563,6 +1758,14 @@ impl MailWindow {
                 ),
                 th,
             ))
+            .when(on && self.shows_unified(), |d| {
+                d.child(self.row(
+                    tr!("settings-inbox-unified"),
+                    Some(&tr!("settings-inbox-unified-detail")),
+                    self.unified_tabs_choice(th, cx),
+                    th,
+                ))
+            })
             .when(on, |d| {
                 d.children(accounts.iter().enumerate().map(|(ix, account)| {
                     let provider = self.provider(account);
@@ -1687,6 +1890,39 @@ impl MailWindow {
                 )
                 .children(checks)
             })
+            .into_any_element()
+    }
+
+    /// The unified inbox's tabs, shared by every account.
+    fn unified_tabs_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let current = match self.config.mail.unified_tabs {
+            TabStyle::Gmail => TabStyle::Auto,
+            style => style,
+        };
+        let styles = [
+            TabStyle::Auto,
+            TabStyle::Focused,
+            TabStyle::Zoho,
+            TabStyle::Off,
+        ];
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .children(styles.into_iter().enumerate().map(|(n, style)| {
+                self.choice_row(
+                    ("page-unified-tab-style", n),
+                    style_name(style),
+                    current == style,
+                    th,
+                    cx,
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.config.mail.unified_tabs = style;
+                    this.save_config();
+                    this.relist(cx);
+                }))
+            }))
             .into_any_element()
     }
 
@@ -1935,15 +2171,22 @@ impl MailWindow {
             self.row(
                 tr!("settings-compose-suggestions"),
                 Some(&tr!("settings-compose-suggestions-detail")),
-                self.switch_row(
-                    "page-suggestions",
-                    tr!("settings-compose-suggestions-on"),
-                    tr!("settings-compose-suggestions-on-detail"),
-                    sending.writing_suggestions,
-                    Change::WritingSuggestions(!sending.writing_suggestions),
-                    th,
-                    cx,
-                ),
+                div()
+                    .flex()
+                    .flex_col()
+                    .child(self.switch_row(
+                        "page-suggestions",
+                        tr!("settings-compose-suggestions-on"),
+                        tr!("settings-compose-suggestions-on-detail"),
+                        sending.writing_suggestions,
+                        Change::WritingSuggestions(!sending.writing_suggestions),
+                        th,
+                        cx,
+                    ))
+                    .when(
+                        self.config.ai.source != katna_core::config::AiSource::Off,
+                        |d| d.child(self.ai_suggestion_switches(th, cx)),
+                    ),
                 th,
             ),
         ]
@@ -1951,6 +2194,7 @@ impl MailWindow {
 
     fn signatures_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let sending_rows = self.sending_rows(th, cx);
+        let ai_rows = self.ai_rows(th, cx);
         let tools = self.render_signature_tools(th, cx);
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
@@ -2062,6 +2306,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .children(sending_rows)
+            .children(ai_rows)
             .child(
                 self.row(
                     tr!("settings-compose-signatures"),
@@ -2229,7 +2474,7 @@ impl MailWindow {
         let changed = !config.keys.is_empty();
         let phone = self.layout.shape.phone > 0.5;
         // Faint lines between the shortcuts, so the keys stand out.
-        let row_line = fade(th.divider, 0.35);
+        let row_line = th.faint_line(0.35);
         let groups = Group::ALL.map(|group| {
             let rows =
                 SHORTCUTS
@@ -2882,7 +3127,7 @@ fn field_box(id: &'static str, th: &Theme) -> Stateful<Div> {
         .px(px(12.0))
         .rounded(px(8.0))
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .text_size(px(14.0))
 }
 
@@ -2895,7 +3140,7 @@ fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> 
         .items_center()
         .rounded(px(8.0))
         .border_1()
-        .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+        .border_color(rgba(if on { th.nav_selected } else { th.outline }))
         .bg(rgba(if on { th.nav_selected } else { th.surface }))
         .text_color(rgba(if on {
             th.nav_selected_text
@@ -2929,7 +3174,7 @@ fn key_chip(id: impl Into<gpui::ElementId>, label: String, off: bool, th: &Theme
         .items_center()
         .rounded(px(6.0))
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .bg(rgba(th.page))
         .text_size(px(13.0))
         .font_weight(FontWeight::MEDIUM)

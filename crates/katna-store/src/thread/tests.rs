@@ -7,8 +7,8 @@ use rusqlite::OptionalExtension;
 
 use crate::{
     Added, Backfill, ChangeOp, DbKind, FolderId, FolderRole, MessageFlags, MessageId, Mode,
-    NewMessage, NewParticipant, ObjectKind, ParticipantRole, RemoteMessage, Store, ThreadEntry,
-    ThreadId,
+    NewMessage, NewParticipant, ObjectKind, ParticipantRole, RemoteMessage, SpreadTabs, Store,
+    ThreadEntry, ThreadId,
 };
 
 const DAY: i64 = 24 * 60 * 60;
@@ -661,4 +661,59 @@ fn gmail_categories_are_set_per_uid() {
         .map(|c| c.kind)
         .collect();
     assert_eq!(kinds, [ObjectKind::Thread, ObjectKind::Thread]);
+}
+
+#[test]
+fn unified_inbox_tabs_follow_each_account() {
+    use MailCategory::{Primary, Promotions};
+    let mut f = fixture();
+    let unread = |m: Mail<'static>| Mail {
+        flags: MessageFlags::empty(),
+        ..m
+    };
+    let inbox_a = f.folder("INBOX", Some(FolderRole::Inbox));
+    let hi_a = f.remote(inbox_a, 1, &unread(mail("h@a", "Hi", T0)), None);
+    let sale_a = f.remote(inbox_a, 2, &mail("s@a", "Sale", T0 + DAY), None);
+    let home = f
+        .store
+        .add_account(AccountKind::Imap, "Home", "me@home.example")
+        .unwrap()
+        .id;
+    f.account = home;
+    let inbox_b = f.folder("INBOX", Some(FolderRole::Inbox));
+    let offer_b = f.remote(
+        inbox_b,
+        1,
+        &unread(mail("o@b", "Offer", T0 + 2 * DAY)),
+        None,
+    );
+    let mut batch = f.store.mail_batch().unwrap();
+    batch
+        .set_categories(inbox_a, &[(1, Primary), (2, Promotions)])
+        .unwrap();
+    batch.set_categories(inbox_b, &[(1, Promotions)]).unwrap();
+    batch.commit().unwrap();
+
+    // Home turned its Promotions tab off: its offers are Primary here too.
+    let folders = [inbox_a, inbox_b];
+    let tabs = |categories: Option<&[MailCategory]>| SpreadTabs {
+        categories: categories.map(<[_]>::to_vec),
+        folded: vec![(home, vec![Primary, Promotions])],
+    };
+    let latest = |tabs: SpreadTabs| -> Vec<MessageId> {
+        let (entries, _) = f.store.spread_inbox_threads(&folders, &tabs).unwrap();
+        entries.into_iter().map(|e| e.latest).collect()
+    };
+    assert_eq!(latest(tabs(Some(&[Promotions]))), [sale_a]);
+    assert_eq!(latest(tabs(Some(&[Primary]))), [offer_b, hi_a]);
+    assert_eq!(latest(tabs(None)), [offer_b, sale_a, hi_a]);
+    let (_, counts) = f.store.spread_inbox_threads(&folders, &tabs(None)).unwrap();
+    assert_eq!(counts[0], (Primary, 2));
+    assert_eq!(counts[1], (Promotions, 0), "the sale was read");
+    assert_eq!(
+        f.store
+            .spread_inbox_message_ids(&folders, &tabs(Some(&[Promotions])))
+            .unwrap(),
+        [sale_a]
+    );
 }

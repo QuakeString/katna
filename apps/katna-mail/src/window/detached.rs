@@ -33,13 +33,14 @@ const HEIGHT: f32 = 780.0;
 
 /// Where the conversation was opened from, so moving it out (archive,
 /// delete) works as it does from the list.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 struct Origin {
     folder: Option<FolderId>,
     show_recipients: bool,
-    /// A reply to all to this message starts at once (a notification's
-    /// Reply all).
-    reply_all: Option<MessageId>,
+    /// A reply of this kind to this message starts at once (a
+    /// notification's Reply or Reply all), saying the text if any (typed
+    /// into the notification).
+    reply: Option<(MessageId, Kind, Option<String>)>,
 }
 
 impl MailWindow {
@@ -61,19 +62,20 @@ impl MailWindow {
         let origin = Origin {
             folder: self.listed_folder(),
             show_recipients: self.show_recipients,
-            reply_all: None,
+            reply: None,
         };
         self.open_window(entry, origin, cx);
     }
 
     /// Opens the conversation of `message` in a window of its own, for a
-    /// click on a notification, with a reply to all started if
-    /// `reply_all` (its Reply all): the mail window stays where it is,
-    /// whatever page it shows.
+    /// click on a notification, with a `reply` started if given (its Reply
+    /// or Reply all), saying `text` (typed into the notification): the
+    /// mail window stays where it is, whatever page it shows.
     pub(super) fn message_in_window(
         &mut self,
         message: MessageId,
-        reply_all: bool,
+        reply: Option<Kind>,
+        text: Option<String>,
         cx: &mut Context<Self>,
     ) {
         let mail = self.mail.as_ref().ok();
@@ -91,7 +93,7 @@ impl MailWindow {
         let origin = Origin {
             folder: inbox.or_else(|| self.listed_folder()),
             show_recipients: false,
-            reply_all: reply_all.then_some(message),
+            reply: reply.map(|kind| (message, kind, text)),
         };
         self.open_window(entry, origin, cx);
     }
@@ -164,8 +166,11 @@ impl MailWindow {
         this.listen(cx);
         this.watch_colors(cx);
         window.focus(&this.list_focus, cx);
-        if let Some(message) = origin.reply_all {
-            this.open_compose(Kind::ReplyAll, Some(message), window, cx);
+        if let Some((message, kind, text)) = origin.reply {
+            if let Some(text) = text.filter(|t| !t.trim().is_empty()) {
+                this.keep_reply(entry.key, text);
+            }
+            this.open_compose(kind, Some(message), window, cx);
         }
         this
     }

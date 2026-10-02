@@ -25,10 +25,7 @@ contacts-label-removed = { $name }-ൽ നിന്ന് നീക്കി
 contacts-label-renamed = ലേബലിന്റെ പേര് { $name } എന്നാക്കി മാറ്റി
 contacts-label-deleted = ലേബൽ { $name } ഇല്ലാതാക്കി
 contacts-label-no-email = ഈ ലേബലിലുള്ള ആർക്കും ഇമെയിൽ വിലാസമില്ല
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = അക്കൗണ്ടുകൾ
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = കോൺടാക്റ്റുകൾ കാണിക്കാൻ വീണ്ടും സൈൻ ഇൻ ചെയ്യുക
 contacts-account-signed-in = { $address }-ൽ വീണ്ടും സൈൻ ഇൻ ചെയ്തു. നിങ്ങളുടെ കോൺടാക്റ്റുകൾ ലഭ്യമാക്കുന്നു…
 contacts-account-sign-in-refused = { $provider } Katna-യെ അകത്ത് കയറ്റിയില്ല. വീണ്ടും ശ്രമിക്കുക, നിങ്ങളുടെ കോൺടാക്റ്റുകളിലേക്ക് ആക്‌സസ് അനുവദിക്കുക.
@@ -36,13 +33,9 @@ contacts-account-password = സെർവർ പാസ്‌വേഡ് സ്�
 contacts-account-change-password = പാസ്‌വേഡ് മാറ്റുക
 contacts-account-change-password-tooltip = ക്രമീകരണം > അക്കൗണ്ടുകൾ തുറക്കുക
 contacts-account-failed = കോൺടാക്റ്റുകൾ വായിക്കാൻ കഴിഞ്ഞില്ല.
-# $reason is the server's own words, in English.
 contacts-account-error = കോൺടാക്റ്റുകൾ വായിക്കാൻ കഴിഞ്ഞില്ല: { $reason }
 contacts-account-none = വിലാസ പുസ്തകമൊന്നും കണ്ടെത്തിയില്ല
-# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
 contacts-account-none-why = വിലാസ പുസ്തകമൊന്നും കണ്ടെത്തിയില്ല: { $reason }
-# A Gmail or Outlook account added with a password: its contacts need the
-# provider's sign-in.
 contacts-account-use-sign-in = { $provider } ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്ത Katna-യ്ക്ക് മാത്രമേ { $provider } കോൺടാക്റ്റുകൾ കാണിക്കൂ.
 contacts-account-sign-in-with = { $provider } ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക
 contacts-account-looking = കോൺടാക്റ്റുകൾ തിരയുന്നു…
@@ -94,7 +87,7 @@ contacts-print-none = പ്രിന്റ് ചെയ്യാൻ കോൺ�
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = ജന്മദിനം: { $day }
 contacts-print-nickname = വിളിപ്പേര്: { $name }
-contacts-create = കോൺടാക്റ്റ് സൃഷ്ടിക്കുക
+contacts-create = പുതിയ കോൺടാക്റ്റ്
 
 ## Search and the list
 

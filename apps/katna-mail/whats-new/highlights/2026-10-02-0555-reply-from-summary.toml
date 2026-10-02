@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Reply from the summary"
+text = """
+The summary card you open from a right-click now has Reply. It turns the
+same card into a reply: pick an idea or say what it should say, change
+the draft if you like, then Send, or Open it in the conversation to go
+on writing. A reply you close without sending waits in the reply box.
+The card also opens where you clicked now.
+"""

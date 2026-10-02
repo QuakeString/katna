@@ -25,10 +25,7 @@ contacts-label-removed = { $name } မှ ဖယ်ရှားပြီးပ�
 contacts-label-renamed = အညွှန်းအမည်ကို { $name } သို့ ပြောင်းပြီးပါပြီ
 contacts-label-deleted = အညွှန်း { $name } ကို ဖျက်ပြီးပါပြီ
 contacts-label-no-email = ဤအညွှန်းရှိ မည်သူမျှ မေးလ်လိပ်စာ မရှိပါ
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = အကောင့်များ
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = အဆက်အသွယ်များ ပြရန် ထပ်မံ ဝင်ရောက်ပါ
 contacts-account-signed-in = { $address } သို့ ထပ်မံ ဝင်ရောက်ပြီးပါပြီ။ သင့်အဆက်အသွယ်များကို ရယူနေသည်…
 contacts-account-sign-in-refused = { $provider } က Katna ကို ဝင်ခွင့်မပေးပါ။ ထပ်စမ်းကြည့်ပြီး သင့်အဆက်အသွယ်များကို အသုံးပြုခွင့် ပေးပါ။
@@ -36,13 +33,9 @@ contacts-account-password = ဆာဗာက စကားဝှက်ကို �
 contacts-account-change-password = စကားဝှက် ပြောင်းရန်
 contacts-account-change-password-tooltip = ဆက်တင်များ > အကောင့်များ ကို ဖွင့်ရန်
 contacts-account-failed = အဆက်အသွယ်များကို ဖတ်၍မရပါ။
-# $reason is the server's own words, in English.
 contacts-account-error = အဆက်အသွယ်များကို ဖတ်၍မရပါ- { $reason }
 contacts-account-none = လိပ်စာစာအုပ် မတွေ့ပါ
-# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
 contacts-account-none-why = လိပ်စာစာအုပ် မတွေ့ပါ- { $reason }
-# A Gmail or Outlook account added with a password: its contacts need the
-# provider's sign-in.
 contacts-account-use-sign-in = { $provider } သည် { $provider } ဖြင့် ဝင်ရောက်ထားသော Katna ကိုသာ အဆက်အသွယ်များကို ပြပါသည်။
 contacts-account-sign-in-with = { $provider } ဖြင့် ဝင်ရောက်ရန်
 contacts-account-looking = အဆက်အသွယ်များကို ရှာနေသည်…
@@ -88,7 +81,7 @@ contacts-print-none = ပရင့်ထုတ်ရန် အဆက်အသွ
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = မွေးနေ့- { $day }
 contacts-print-nickname = ချစ်စနိုးအမည်- { $name }
-contacts-create = အဆက်အသွယ် ဖန်တီးရန်
+contacts-create = အဆက်အသွယ် အသစ်
 
 ## Search and the list
 

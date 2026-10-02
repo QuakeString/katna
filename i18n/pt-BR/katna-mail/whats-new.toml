@@ -1842,3 +1842,1239 @@ caixa de seleção ficava um pouco para cima e para a esquerda. As bordas
 das caixas de seleção e dos botões redondos agora crescem com a escala,
 então a marca fica centralizada em qualquer tamanho.
 """
+
+["2026-09-30-0230-edges-follow-scaling"]
+title = "Contornos acompanham a Escala"
+text = """
+Com a Escala em Configurações > Aparência acima ou abaixo de 100%, o
+contorno de destaque da caixa de pesquisa e dos campos em foco, e as
+bordas dos cartões de escolha e dos anéis de tarefa, agora crescem e
+diminuem com todo o resto, em vez de ficarem finos.
+"""
+
+["2026-09-30-0326-google-sign-in-network"]
+title = "Login com o Google em qualquer rede"
+text = """
+Fazer login com o Google não para mais com “peer closed connection” em
+redes que derrubam a conexão do Google cedo. Se você desmarcar o Gmail
+na página do Google, o Katna agora avisa, em vez de falhar depois.
+"""
+
+["2026-09-30-0504-google-api-turned-off"]
+title = "Diz qual API do Google está desativada"
+text = """
+Quando o Google tem uma API desativada para o Katna, Contatos, Agenda,
+Tarefas e os arquivos do Drive agora dizem qual é numa linha curta, com
+um botão Ativar que abre a página do Google para ela, em vez do erro
+bruto do Google.
+"""
+
+["2026-09-30-0507-newest-mail-first"]
+title = "Os e-mails mais novos chegam primeiro"
+text = """
+Quando você adiciona uma conta, o Katna Mail agora baixa primeiro seus
+e-mails mais recentes e depois volta para os mais antigos, então as
+mensagens de hoje aparecem no topo da caixa de entrada na hora. Se o
+download for interrompido, ele retoma os e-mails mais antigos da próxima
+vez.
+"""
+
+["2026-09-30-0601-keyring-at-login"]
+title = "Espera pela sua carteira no login"
+text = """
+Se o KWallet ou o GNOME Keyring ainda estiver bloqueado quando o Katna
+iniciar, e a janela de desbloqueio for fechada, suas contas não mostram
+mais uma senha errada. Elas esperam e começam a sincronizar sozinhas
+assim que você desbloqueia a carteira, sem precisar sair do Katna.
+Sincronizar agora pede para desbloqueá-la de novo.
+"""
+
+["2026-09-30-0606-pdf-rotate-and-top-bar"]
+title = "Gire páginas de PDF"
+text = """
+O visualizador de PDF agora gira as páginas no sentido horário ou
+anti-horário (Ctrl+R e Ctrl+Shift+R), e uma cópia marcada é salva do
+jeito que você a girou. O número da página e o zoom foram para a barra
+superior, então nada cobre a página.
+"""
+
+["2026-09-30-0610-calendar-events-stay-put"]
+title = "Os eventos ficam onde estão"
+text = """
+Clicar em um evento ou tarefa na Agenda e depois mudar a visualização
+não o deixa mais seguindo o cursor. Um evento agora só se move enquanto
+você segura o botão e o arrasta, e mudar a visualização ou a página,
+pressionar Esc ou abrir o cartão dele o coloca de volta sem alteração.
+"""
+
+["2026-09-30-0620-checkbox-partial-centred"]
+title = "Caixas parcialmente marcadas ficam equilibradas"
+text = """
+Quando só algumas mensagens estão selecionadas, o quadrado dentro da
+caixa de selecionar tudo agora tem o mesmo espaço em todos os lados,
+qualquer que seja a escala da interface.
+"""
+
+["2026-09-30-0632-year-view-day-peek"]
+title = "Veja os planos de um dia pela visualização Ano"
+text = """
+Na visualização Ano da Agenda, pare o cursor sobre um dia com um ponto
+para ver os eventos e tarefas dele num pequeno popover ao lado, cada um
+com um ícone que diz o que é e o horário. Clique em um para abri-lo, ou
+no nome do dia para abrir o dia. No celular, toque no dia.
+"""
+
+["2026-09-30-0650-notification-opens-own-window"]
+title = "Notificações abrem o e-mail na frente"
+text = """
+Clicar numa notificação de novo e-mail abre esse e-mail numa janela
+própria, na frente, seja o que for que o Katna esteja mostrando.
+Responder a todos o abre com a resposta pronta para digitar. Arquivar
+guarda o e-mail sem abrir nada e avisa numa nota curta com Desfazer.
+"""
+
+["2026-09-30-0700-event-card-join-any-call"]
+title = "Participe de chamadas do Teams e do Zoom pela Agenda"
+text = """
+O cartão de um evento agora encontra a chamada na descrição ou no local,
+então um convite do Microsoft Teams, Zoom, Webex, Jitsi ou Google Meet
+ganha um botão “Participar com” no topo. Endereços da web na descrição
+viram links, as linhas de sublinhados sumiram, e “Você vai?” fica
+embaixo enquanto os detalhes rolam.
+"""
+
+["2026-09-30-0715-click-away-closes-viewer"]
+title = "Clique fora para fechar"
+text = """
+Clique no espaço escurecido em volta de um anexo para fechar o
+visualizador, em vez de procurar o botão de voltar. Cliques na própria
+página continuam selecionando texto e marcando como antes.
+"""
+
+["2026-09-30-0729-add-account-and-pop3"]
+title = "Um novo Adicionar conta, e POP3"
+text = """
+Adicionar uma conta começa pelo seu provedor: Google, Yahoo, iCloud,
+Zoho, Fastmail, GMX, Yandex ou qualquer outro. O Katna diz primeiro o
+que o provedor precisa, mostra cada etapa enquanto conecta e termina com
+o que configurou. Contas POP3 também funcionam, e Configurações > Contas
+escolhe por quanto tempo os e-mails delas ficam no servidor.
+"""
+
+["2026-09-30-0802-ctrl-wheel-zoom"]
+title = "Zoom com Ctrl e a roda do mouse"
+text = """
+No visualizador de anexos, segure Ctrl e gire a roda do mouse para
+aproximar e afastar em volta do cursor, ou faça o gesto de pinça no
+touchpad. Funciona com PDFs, imagens, arquivos de texto, planilhas e
+documentos.
+"""
+
+["2026-09-30-0817-event-open-the-mail"]
+title = "Abra o e-mail por trás de um evento"
+text = """
+Eventos que o Gmail criou a partir de um e-mail, como trens, voos e
+hotéis, ganham um botão Abrir o e-mail no cartão. Ele abre esse e-mail
+no Katna, ou no Gmail quando o Katna não o tem. Uma tarefa criada a
+partir de um e-mail também abre o e-mail pelo cartão na Agenda, e Fazer
+anotações da reunião abre sem piscar.
+"""
+
+["2026-09-30-0843-calendar-side-panel-menus"]
+title = "Gerencie agendas pelo painel lateral"
+text = """
+Clique com o botão direito numa agenda no painel lateral da Agenda para
+mostrar só ela, mudar a cor, renomeá-la ou excluí-la. Clique com o botão
+direito no nome de uma conta para criar uma nova agenda nessa conta ou
+mostrar e ocultar todas as agendas dela. As alterações vão para o seu
+serviço de e-mail, então aparecem em todo lugar em que você o usa.
+"""
+
+["2026-09-30-1010-unread-list-keeps-open-mail"]
+title = "E-mails não lidos ficam abertos"
+text = """
+Abrir uma conversa em Todas as contas > Não lidas não a fecha mais na
+hora. Lê-la a marca como lida, e ela fica na lista até você fechá-la ou
+abrir outra.
+"""
+
+["2026-09-30-1045-tracked-mail-arrives"]
+title = "E-mails rastreados voltam a chegar"
+text = """
+E-mails enviados com rastreamento podiam aparecer em Enviados sem chegar
+a ninguém. Agora eles vão para todos os destinatários. Os e-mails
+perdidos assim precisam ser enviados de novo.
+"""
+
+["2026-09-30-1114-no-checking-pill"]
+title = "Chega de aviso de verificação"
+text = """
+“Verificando novos e-mails…” não aparece mais sobre a lista. As setas
+girando no botão de atualizar e na caixa de entrada de cada conta já
+mostram que os e-mails estão sendo verificados, e uma verificação que
+falha continua dizendo o que deu errado.
+"""
+
+["2026-09-30-1300-windows-sign-in-and-domains"]
+title = "Login com o Google no Windows"
+text = """
+O Katna para Windows agora oferece login com o Google e o Zoho, como no
+Linux, e sabe quem hospeda os e-mails do seu próprio domínio, como um
+endereço do Google Workspace, quando você adiciona a conta.
+"""
+
+["2026-09-30-1511-mail-tables"]
+title = "Tabelas nos e-mails aparecem direito"
+text = """
+Tabelas nos e-mails, como a lista de jobs numa notificação do GitHub
+Actions, mantêm as colunas lado a lado e alinhadas de uma linha para
+outra, em vez de quebrar um título com uma letra por linha. As linhas
+divisórias entre partes de uma mensagem agora também aparecem.
+"""
+
+["2026-09-30-1550-taller-important-marker"]
+title = "Marcador Importante mais alto"
+text = """
+O marcador Importante ao lado da estrela está 2 px mais alto, então não
+parece mais achatado ao lado da estrela e da caixa de seleção. Ele
+continua centralizado na linha.
+"""
+
+["2026-09-30-1617-folder-click-goes-to-top"]
+title = "De volta ao topo da lista"
+text = """
+Depois que a lista de e-mails desce uma tela, um botão redondo no canto
+inferior direito a leva de volta ao topo. Clicar na pasta em que você já
+está, como a Caixa de entrada, faz o mesmo, como no Gmail, e a tecla
+Home também.
+"""
+
+["2026-09-30-1622-send-from-file-manager"]
+title = "Envie arquivos pelo seu gerenciador de arquivos"
+text = """
+Clique com o botão direito em arquivos ou pastas no Dolphin, no GNOME
+Arquivos ou no Explorador de Arquivos do Windows e escolha Enviar com o
+Katna Mail: uma nova mensagem abre com eles anexados, e uma pasta vai
+como zip. Com mais de uma conta de e-mail, escolha no submenu a conta de
+onde enviar.
+"""
+
+["2026-09-30-1624-files-page"]
+title = "Todos os arquivos num só lugar"
+text = """
+A nova página Arquivos, na parte de baixo da barra de apps, mostra todos
+os anexos de todas as contas, os mais novos primeiro. Restrinja a
+imagens, PDFs ou documentos, a uma conta, a uma pessoa ou a um período,
+ou pesquise por nome, remetente ou assunto. Clique com o botão direito
+num arquivo para ver mais, e Mostrar o e-mail leva você ao e-mail com
+que ele veio.
+"""
+
+["2026-09-30-1643-dimmer-row-markers"]
+title = "Lista de e-mails mais calma"
+text = """
+Uma caixa de seleção vazia, uma estrela ou um marcador Importante na
+lista de e-mails fica mais apagado até o cursor passar sobre a linha.
+Estrelas e marcadores ativados mantêm a cor.
+"""
+
+["2026-09-30-1704-folder-arrows-on-hover"]
+title = "Painel de pastas mais arrumado"
+text = """
+As pequenas setas ao lado de Caixa de entrada, Com estrela e das outras
+pastas só aparecem enquanto o cursor está sobre essa pasta. Uma pasta
+que você abriu mantém a seta.
+"""
+
+["2026-09-30-1712-arrow-keys-in-times"]
+title = "Teclas de seta nas caixas de horário"
+text = """
+Em Escolher data e hora, e no horário de uma tarefa, Para cima e Para
+baixo mudam a parte em que o cursor está: a hora, os minutos ou AM/PM.
+"""
+
+["2026-09-30-1742-check-one-folder"]
+title = "Verifique novos e-mails em uma pasta"
+text = """
+“Verificar novos e-mails” no menu do botão direito de uma pasta agora
+verifica só essa pasta, então é rápido. Na caixa de entrada de uma conta
+em Todas as contas, verifica a caixa de entrada dessa conta, e numa
+lista como Caixa de entrada ou Enviados em Todas as contas, verifica
+essa pasta em cada conta.
+"""
+
+["2026-09-30-1742-frosted-viewer"]
+title = "Um visualizador mais leve e fosco"
+text = """
+A barra superior do visualizador de anexos está mais fina e mais clara,
+e página, zoom e giro ficam numa pílula. Em volta do arquivo, o Katna
+Mail aparece desfocado sob um véu escuro suave, e as barras de
+ferramentas também são foscas. O desfoque segue Configurações >
+Experimental; sem ele, o visualizador usa um véu escuro simples.
+"""
+
+["2026-09-30-1752-touchpad-glide"]
+title = "Gestos rápidos no touchpad deslizam"
+text = """
+Um gesto rápido com dois dedos no touchpad continua rolando e vai
+desacelerando, como em outros apps. Toque no touchpad de novo para
+parar. No Wayland.
+"""
+
+["2026-09-30-1800-inbox-tabs-in-top-row"]
+title = "Guias da caixa de entrada na linha de cima"
+text = """
+Principal, Promoções, Social e as outras guias da caixa de entrada agora
+ficam numa barra em pílula na linha de cima da lista, cada uma com uma
+contagem colorida dos e-mails não lidos. O destaque desliza até a guia
+que você escolhe, e clicar na guia aberta leva a lista dela de volta ao
+topo. Quando a lista é estreita, a barra ganha uma linha própria e
+mostra ícones, mantendo o nome da guia aberta; no celular ela fica na
+barra da lista, com Atualizar no menu Mais.
+"""
+
+["2026-09-30-1805-account-menu"]
+title = "Informações da conta no menu do botão direito"
+text = """
+Clique com o botão direito no nome de uma conta na lista de pastas, ou
+na caixa de entrada dela em Todas as contas, para ver o endereço, se
+está sincronizada, quando foi verificada pela última vez e quanto
+armazenamento usa. Dali você pode verificar essa caixa de entrada,
+escrever um novo e-mail por essa conta, abrir as configurações dela ou
+fazer login de novo quando o login tiver expirado.
+"""
+
+["2026-09-30-1819-glass-search-box"]
+title = "Uma caixa de pesquisa de vidro"
+text = """
+Com o fundo desfocado ativado, a caixa de pesquisa é de vidro fosco com
+uma borda sutil enquanto você não a usa, e fica sólida quando você clica
+nela para digitar.
+"""
+
+["2026-09-30-1820-search-cancel-restores"]
+title = "Cancele uma pesquisa e recupere seus e-mails"
+text = """
+Esc ou limpar a caixa de pesquisa agora volta para onde você estava: a
+mesma pasta, o mesmo ponto da lista e o e-mail que estava aberto. Se
+você abrir um resultado, a pesquisa assume como antes.
+"""
+
+["2026-09-30-1840-first-run-window"]
+title = "Um primeiro início mais amigável"
+text = """
+Enquanto você configura o Katna Mail, a janela aparece por trás das
+páginas de configuração sob um véu claro: os apps, Escrever e a caixa de
+pesquisa, com espaços reservados suaves onde suas pastas e seus e-mails
+vão aparecer. Uma nova etapa oferece uma conta Katna e lista o que ela
+ativa (confirmações de leitura, rastreamento de links, Atividade e
+tradução), ou você pode pulá-la.
+"""
+
+["2026-09-30-1850-windows-frame-and-blur"]
+title = "A moldura e o desfoque do Katna no Windows"
+text = """
+No Windows, o Katna Mail agora abre dentro da tela, maximizado quando a
+tela é pequena. Configurações > Experimental pode desfocar o que está
+atrás da janela, e a moldura própria do Katna transforma a barra
+superior na barra de título na próxima vez que você abrir o Katna Mail.
+"""
+
+["2026-09-30-1851-dark-depth"]
+title = "Mais fácil de ver com cores escuras"
+text = """
+Com cores escuras, o que flutua sobre a lista de e-mails agora é um tom
+mais claro, com uma borda clara sutil, já que sombras quase não aparecem
+num fundo escuro. O botão Voltar ao topo, os menus, a janela Escrever e
+as caixas de diálogo se destacam com clareza. As cores claras continuam
+como antes.
+"""
+
+["2026-09-30-1911-files-scrollbar"]
+title = "Uma barra de rolagem na página Arquivos"
+text = """
+Quando há mais arquivos do que cabem, uma barra de rolagem fina aparece
+à direita enquanto você rola ou enquanto o cursor está sobre os
+arquivos, e depois some. Arraste-a para percorrer os arquivos
+rapidamente, ou clique acima ou abaixo dela para pular até lá.
+"""
+
+["2026-09-30-1919-tabs-keep-open-mail"]
+title = "Trocar de guia mantém o e-mail aberto"
+text = """
+Com o painel de leitura ao lado da lista, escolher outra guia da caixa
+de entrada não fecha mais o e-mail que você está lendo; a lista muda e o
+e-mail continua aberto.
+"""
+
+["2026-09-30-1925-inbox-tabs-centred"]
+title = "Guias da caixa de entrada no meio"
+text = """
+As guias da caixa de entrada agora ficam no meio da linha de cima da
+lista, afastando-se só o quanto os botões dela precisam.
+"""
+
+["2026-09-30-1945-page-box-arrow-keys"]
+title = "Teclas de seta na caixa de página"
+text = """
+Num PDF, clique no número da página e pressione Para cima ou Para baixo
+para voltar ou avançar uma página. Segure a tecla para folhear as
+páginas rapidamente.
+"""
+
+["2026-09-30-1952-phone-bar-labels"]
+title = "Os nomes dos apps no celular seguem sua configuração"
+text = """
+Com os nomes dos apps desativados nas Configurações, a barra na parte de
+baixo de uma janela do tamanho de um celular agora mostra só os ícones,
+centralizados, como faz a barra lateral.
+"""
+
+["2026-09-30-1955-account-menu-icons"]
+title = "Configurações e idioma no menu da conta"
+text = """
+O menu sob a foto da sua conta agora abre com uma fileira de ícones:
+abrir as Configurações ou mudar o idioma. A bandeira do idioma saiu da
+barra superior para abrir espaço.
+"""
+
+["2026-09-30-2001-phone-tabs-fold"]
+title = "Todas as guias da caixa de entrada ao alcance"
+text = """
+Quando a janela é estreita, as guias da caixa de entrada se recolhem
+suavemente em vez de sumir: os rótulos viram ícones maiores, depois as
+contagens saem do caminho. No celular, as guias se espalham pela barra
+inteira, fáceis de tocar, com Mais no fim da mesma pílula.
+"""
+
+["2026-09-30-2012-fit-and-page-arrows"]
+title = "Ajustar, setas de página e mais no visualizador"
+text = """
+O visualizador de anexos tem um botão Ajustar: uma página de PDF se
+ajusta à altura da janela, uma imagem à janela, e documentos, slides e
+planilhas à largura dela. As imagens também ganham Tamanho real e podem
+ser giradas. Aponte para a caixa de página para ver pequenas setas que
+voltam ou avançam uma página, e os slides ganham uma caixa própria.
+"""
+
+["2026-09-30-2019-folder-icon-colours"]
+title = "Ícones de pasta coloridos"
+text = """
+Os ícones do painel de pastas agora têm cores que dizem o que cada pasta
+guarda: Não lidas em azul, Com estrela em amarelo, Importantes em âmbar,
+Enviados em verde, Spam em vermelho, Rascunhos em roxo e a Caixa de
+entrada na cor de destaque da sua área de trabalho. As contagens de
+e-mails ficam em pequenas pílulas discretas.
+"""
+
+["2026-09-30-2040-tabs-no-slide"]
+title = "Guias da caixa de entrada mais rápidas"
+text = """
+Clicar numa guia da caixa de entrada agora a destaca na hora, só com a
+ondulação do clique, em vez de deslizar o destaque por cima das outras
+guias.
+"""
+
+["2026-10-01-0145-files-tidy"]
+title = "Uma página Arquivos mais arrumada"
+text = """
+As contagens ao lado de cada tipo de arquivo e de cada conta agora ficam
+nas mesmas pequenas pílulas das contagens das pastas no E-mail. A linha
+sob o título da página e as linhas de arquivos também começam e terminam
+nas mesmas bordas.
+"""
+
+["2026-10-01-0147-today-marker-fits"]
+title = "A data de hoje cabe no marcador"
+text = """
+Na visualização Mês da Agenda, o marcador de hoje agora comporta a data
+inteira. No dia 1º ele vira uma pílula em volta de “01 out” em vez de um
+pequeno círculo do qual o rótulo transbordava.
+"""
+
+["2026-10-01-0208-tab-counts-stay"]
+title = "As contagens das guias ficam no lugar"
+text = """
+Abrir uma guia da caixa de entrada não faz mais a barra de guias pular.
+A guia aberta mantém a contagem de novos e-mails, que vai se apagando
+devagar até um cinza discreto, e a contagem se recolhe suavemente quando
+você lê tudo nessa guia.
+"""
+
+["2026-10-01-0225-files-keyboard"]
+title = "Percorra seus arquivos com o teclado"
+text = """
+Na página Arquivos, as teclas de seta agora movem entre os arquivos,
+Home e End vão para o primeiro e o último, e Enter abre um deles. No
+visualizador aberto dali, as setas seguem para o próximo arquivo da
+página, seja qual for o e-mail com que veio; Shift com uma seta fica nos
+anexos do mesmo e-mail.
+"""
+
+["2026-10-01-0254-files-dates"]
+title = "Escolha os dias na página Arquivos"
+text = """
+O chip de período na página Arquivos agora abre um calendário de dois
+meses com escolhas rápidas como Semana passada e Este mês. Clique num
+dia, ou arraste de um dia a outro, e os arquivos acompanham enquanto
+você arrasta. Depois, gire a roda do mouse sobre o chip para mover o
+mesmo intervalo de tempo para antes ou para depois.
+"""
+
+["2026-10-01-0256-color-schemes"]
+title = "Esquemas de cores e cores de destaque"
+text = """
+Configurações > Aparência agora tem Modo, Cores e Destaque como escolhas
+separadas. Escolha claro ou escuro, depois qualquer um de 14 esquemas de
+cores, como Clear, Nord, Solarized ou Catppuccin, ou mantenha o da sua
+área de trabalho. Cada um funciona no claro e no escuro, e qualquer cor
+de destaque pode ir por cima.
+"""
+
+["2026-10-01-0310-badge-counts-what-notifies"]
+title = "A contagem da barra de tarefas bate com suas notificações"
+text = """
+A contagem de não lidos na barra de tarefas e na bandeja agora conta os
+mesmos e-mails que notificam você: a guia Principal da sua Caixa de
+entrada. Promoções, Social, Atualizações e Fóruns não somam mais a ela.
+"""
+
+["2026-10-01-0312-quiet-selected-row"]
+title = "Uma pasta aberta mais discreta"
+text = """
+A pasta aberta no E-mail, e a visualização aberta em Contatos, Tarefas,
+Notas e Arquivos, agora é marcada com um cinza suave em vez da cor de
+destaque, para que Escrever e a barra de apps se destaquem e os ícones
+das pastas mantenham as próprias cores.
+"""
+
+["2026-10-01-0315-desktop-schemes"]
+title = "Os esquemas de cores da sua área de trabalho"
+text = """
+Configurações > Aparência > Cores também lista os esquemas da sua área
+de trabalho: todos os esquemas de cores instalados no KDE Plasma e, no
+Windows, as cores dele e os temas de Contraste. Sistema agora funciona
+no claro e no escuro no KDE também, usando o par claro ou escuro do seu
+esquema, e o Katna segue a cor de destaque do Windows.
+"""
+
+["2026-10-01-0329-mute-folders"]
+title = "Silencie uma pasta, uma guia ou uma conta"
+text = """
+O sino sobre a lista silencia a pasta ou a guia da Caixa de entrada
+aberta por uma hora, até amanhã de manhã ou até você reativá-la. Clique
+com o botão direito numa pasta ou numa conta para fazer o mesmo.
+Configurações > Notificações mostra quais pastas notificam e quais
+contam na barra de tarefas, e tudo o que está silenciado.
+"""
+
+["2026-10-01-0335-tray-style"]
+title = "Ícone da bandeja colorido ou em uma cor"
+text = """
+Configurações > Geral > Área de trabalho > Ícone da bandeja colorido
+escolhe as cores do Katna ou uma só cor, como os outros ícones do
+painel. Em uma cor continua em uma cor com e-mails não lidos, e a
+contagem de não lidos é sempre vermelha. No Linux o ícone da bandeja é
+de uma cor por padrão; no Windows, é colorido.
+"""
+
+["2026-10-01-0354-mute-conversations"]
+title = "Silencie uma conversa ou um remetente"
+text = """
+O sino sobre uma conversa aberta a silencia: novas respostas não
+notificam mais você nem somam à contagem da barra de tarefas, e um sino
+riscado a marca na lista. Clique com o botão direito numa conversa para
+Silenciar conversa ou Silenciar remetente, ou pressione M.
+"""
+
+["2026-10-01-0410-your-color-schemes"]
+title = "Crie seu próprio esquema de cores"
+text = """
+Configurações > Aparência > Cores > Personalizar copia o esquema que
+você usa para um editor: mude qualquer uma das oito cores dele no lado
+claro e no escuro, veja a janela de e-mail com elas, e o Katna diz o que
+ficaria difícil de ler. Importar aceita um arquivo de esquema de cores
+do Katna ou do KDE, e um clique com o botão direito no seu esquema o
+edita, duplica, exporta ou exclui.
+"""
+
+["2026-10-01-0527-calendar-opens-on-week"]
+title = "A Agenda abre na Semana"
+text = """
+O Katna Calendar volta a abrir na visualização Semana, com os próximos
+dias divididos em horas. Mês, Dia, Ano e as outras estão a um clique na
+barra superior.
+"""
+
+["2026-10-01-0552-lighter-count-on-open-row"]
+title = "As contagens se destacam na pasta aberta"
+text = """
+A contagem ao lado da pasta aberta no E-mail, e ao lado do tipo aberto
+em Arquivos, agora fica numa pílula mais clara que o cinza da linha,
+então não se perde mais nela, no claro e no escuro.
+"""
+
+["2026-10-01-0652-files-leave-out-small-pictures"]
+title = "Arquivos deixa de fora logos de assinatura"
+text = """
+A página Arquivos não se enche mais dos pequenos logos e ícones que vêm
+nas assinaturas de e-mail: imagens com menos de 12 KB, ou com menos de
+100 pixels de largura ou altura, ficam sob o e-mail delas. Mude os dois
+limites, ou mostre todas as imagens, em Configurações > Apps padrão >
+Página Arquivos.
+"""
+
+["2026-10-01-0700-mute-from-contact"]
+title = "Silencie um remetente pelo cartão de contato"
+text = """
+O cartão de contato ao lado de um e-mail tem um sino como primeiro
+botão: ele silencia tudo o que vem desse remetente, e um sino riscado
+depois do nome mostra isso. Clique de novo para voltar a receber
+notícias dele.
+"""
+
+["2026-10-01-0803-select-hover-fits"]
+title = "Um botão de seleção mais arrumado"
+text = """
+O destaque ao passar o cursor atrás da caixa de selecionar no topo da
+lista de e-mails agora tem a mesma altura dos botões ao lado, fica tão
+longe da borda do cartão quanto do topo, e os cantos dele acompanham o
+canto do próprio cartão.
+"""
+
+["2026-10-01-0807-files-leave-out-signature-pictures"]
+title = "Arquivos também deixa de fora imagens grandes de assinatura"
+text = """
+Uma imagem que alguém envia em três ou mais conversas, como o banner ou
+a foto da assinatura, não aparece mais na página Arquivos, nem ícones de
+redes sociais, por maiores que sejam. Elas continuam aparecendo sob o
+e-mail, e desativar “Deixar de fora imagens pequenas” traz todas de
+volta.
+"""
+
+["2026-10-01-0830-muted-contact-mark"]
+title = "Veja quem está silenciado"
+text = """
+Um sino riscado agora acompanha o nome de um remetente silenciado onde
+quer que ele apareça: a lista de e-mails, um e-mail aberto, Contatos, as
+caixas Para e Cc e as sugestões delas, a página Arquivos, os convidados
+de eventos e o relatório de Atividade. Chega de se perguntar por que os
+e-mails dele estão quietos.
+"""
+
+["2026-10-01-0839-sounds"]
+title = "Sons para novos e-mails, lembretes e envios"
+text = """
+Configurações > Notificações tem uma seção Sons: novo e-mail, lembretes,
+e-mail de volta à caixa de entrada, e-mail enviado e e-mail não enviado
+escolhem cada um um som da sua área de trabalho, tocam-no com o botão ao
+lado ou o desativam. Os sons agora tocam no KDE Plasma também, e ficam
+em silêncio para e-mails silenciados e durante o Não perturbe.
+"""
+
+["2026-10-01-0925-chat-view"]
+title = "Leia conversas como chats (experimental)"
+text = """
+Ative Configurações > Experimental > Conversas como chats e os e-mails
+entre pessoas se leem como um chat em grupo: um balão para cada e-mail,
+só com o que foi escrito, os seus à direita, imagens e arquivos como
+mídia do chat. O e-mail citado e as assinaturas esperam atrás de ··· em
+cada balão, e um clique num nome mostra o cartão da pessoa com a
+assinatura dela. Responda pela caixa na parte de baixo, com Ctrl+Enter,
+a barra de formatação atrás de Aa e o clipe para arquivos, modelos e
+assinaturas. Newsletters mantêm a visualização de sempre, e a chave Chat
+| E-mail alterna qualquer conversa entre os dois modos.
+"""
+
+["2026-10-01-0946-forward-keeps-files"]
+title = "Encaminhar mantém os arquivos"
+text = """
+Encaminhar uma mensagem agora leva os anexos junto, mostrados sob a
+mensagem para que você possa tirar qualquer um deles antes de enviar.
+Trocar o encaminhamento por uma resposta os deixa de fora de novo.
+"""
+
+["2026-10-01-1009-forward-a-file"]
+title = "Encaminhe só o arquivo"
+text = """
+O visualizador de anexos tem um botão Encaminhar na barra superior: ele
+começa um novo e-mail só com esse arquivo anexado, sem o e-mail com que
+ele veio. Arquivos sem prévia também oferecem Encaminhar, assim como os
+cartões de anexo sob um e-mail aberto, ao lado de Salvar.
+"""
+
+["2026-10-01-1039-rephrase-with-ai"]
+title = "Reformular com IA"
+text = """
+Selecione um texto numa mensagem e pressione o brilho ao lado dele, ou
+Ctrl+J, para que seja reescrito de forma mais clara, mais curta, mais
+simpática ou mais formal, e depois Substituir. O Katna AI é gratuito por
+30 dias, ou use sua própria chave do Google Gemini, OpenAI, Claude,
+Mistral, DeepSeek, OpenRouter ou de um modelo neste computador. A IA
+também pode completar suas frases em cinza; ative isso em Configurações
+> Escrever.
+"""
+
+["2026-10-01-1043-header-details-selectable"]
+title = "Copie dos detalhes de um e-mail"
+text = """
+Os detalhes sob “para mim” agora podem ser selecionados e copiados como
+o próprio e-mail. Clique num endereço para ver o cartão dessa pessoa ao
+lado do e-mail, ou clique com o botão direito nele para Copiar endereço.
+Pessoas silenciadas mostram ali o sino riscado também.
+"""
+
+["2026-10-01-1112-left-bar-button"]
+title = "Um botão grande e um recolhimento em todas as páginas"
+text = """
+O botão grande no topo da barra esquerda agora tem a mesma aparência e
+posição em todas as páginas e faz a tarefa própria de cada página:
+Escrever no E-mail e em Arquivos, Novo evento, Novo contato, Nova tarefa
+e Nova nota. Recolher a barra esquerda a recolhe em todo lugar, e
+enquanto ela está recolhida o botão de cada página espera no topo da
+barra lateral. No celular, ele é o botão flutuante.
+"""
+
+["2026-10-01-1115-color-picker"]
+title = "Um seletor de cores no editor de esquemas"
+text = """
+Clique numa cor no editor de esquemas e um seletor abre logo ao lado:
+arraste pelo quadrado e pela barra de matiz, digite um valor
+hexadecimal, reutilize as cores do próprio esquema ou escolhas recentes,
+ou pegue uma cor de qualquer lugar da tela com o conta-gotas no KDE e no
+GNOME.
+"""
+
+["2026-10-01-1130-contact-card-folds-folders"]
+title = "O cartão de contato abre o próprio espaço"
+text = """
+Numa janela estreita demais para o painel de pastas e o cartão de
+contato lado a lado, o cartão agora recolhe as pastas ao abrir, e elas
+voltam quando o cartão fecha. As pastas que você mesmo recolhe continuam
+recolhidas.
+"""
+
+["2026-10-01-1132-open-mail-scroll-bar"]
+title = "Uma barra de rolagem em e-mails longos"
+text = """
+Uma conversa longa agora mostra a mesma barra de rolagem discreta da
+página Arquivos enquanto você a rola ou aponta para ela. As duas barras
+estão mais finas e crescem à medida que o cursor se aproxima. Arraste
+uma, ou clique ao longo dela, para pular para qualquer ponto.
+"""
+
+["2026-10-01-1240-contact-card-close"]
+title = "Feche o cartão de contato e veja quem está num chat"
+text = """
+O cartão de contato ao lado de uma conversa tem um ✕ no canto, e clicar
+de novo na foto ou no endereço da mesma pessoa fecha o cartão. Na
+visualização de chat, um clique no cabeçalho lista todos no chat com o
+endereço e quantos e-mails cada um enviou.
+"""
+
+["2026-10-01-1241-two-blur-switches"]
+title = "Desfoque do seu jeito"
+text = """
+O desfoque agora tem duas chaves em Configurações, Experimental: uma
+para o fundo da janela e outra para menus e caixas de diálogo. Menus
+foscos ficam ativados por padrão, mesmo com o fundo da janela sólido.
+"""
+
+["2026-10-01-1502-fainter-row-lines"]
+title = "Linhas mais discretas entre os e-mails"
+text = """
+As linhas entre os e-mails da lista estão mais suaves agora, então a
+lista se lê como uma única coluna calma, no claro e no escuro.
+"""
+
+["2026-10-01-1505-contact-close-round"]
+title = "Um só botão de fechar para todos os painéis"
+text = """
+O ✕ do cartão de contato agora é o mesmo botão redondo do ✕ do e-mail
+aberto, com o mesmo círculo cinza quando você aponta para ele.
+"""
+
+["2026-10-01-1525-thread-count"]
+title = "Uma contagem de e-mails mais arrumada"
+text = """
+O número de e-mails de uma conversa agora fica ao lado dos nomes com um
+pequeno ícone de chat, centralizado na linha dos nomes em vez de
+levantado acima dela.
+"""
+
+["2026-10-01-1541-chat-attach-from-files"]
+title = "Anexe de Arquivos num chat"
+text = """
+Num chat (Configurações > Experimental), o clipe tem De Arquivos:
+escolha qualquer arquivo que veio ou foi com seus e-mails, com os desta
+conversa primeiro. Marque vários, olhe um deles com o olho e veja quanto
+pesam em relação aos 25 MB que um e-mail pode levar. O clipe agora fica
+dentro da caixa de resposta, e Aa abre uma barra fina só com os estilos
+de que um chat precisa.
+"""
+
+["2026-10-01-1553-rephrase-card-text"]
+title = "Reformular funciona com novas chaves do Gemini"
+text = """
+Com os menus foscos ativados, o cartão Reformular (Ctrl+J) abria vazio;
+as sugestões agora aparecem sobre o vidro fosco. O Google Gemini agora
+usa o gemini-3.5-flash-lite, a menos que você digite outro modelo, já
+que novas chaves do Gemini não podem mais usar o 2.5 Flash-Lite, e uma
+chave errada avisa isso.
+"""
+
+["2026-10-01-1624-rephrase-button"]
+title = "Reformular sem selecionar e sugestões mais rápidas"
+text = """
+Um brilho ao lado de Formatação na parte de baixo de uma nova mensagem,
+e na caixa de resposta da visualização de chat, reformula tudo o que
+você escreveu quando nada está selecionado, ou só a seleção quando há
+uma; Ctrl+J faz o mesmo. Sugestões mais longas com IA chegam bem mais
+cedo, e o campo Modelo em Configurações > Escrever lista os modelos que
+seu serviço oferece enquanto você digita.
+"""
+
+["2026-10-01-1626-dimmer-preview"]
+title = "Uma linha de prévia mais discreta"
+text = """
+O texto de prévia sob o assunto de cada e-mail na lista está mais
+apagado agora, para que o remetente e o assunto se destaquem, no claro e
+no escuro.
+"""
+
+["2026-10-01-1645-frosted-dialogs"]
+title = "Caixas de diálogo foscas"
+text = """
+Com menus e caixas de diálogo foscos ativados, as caixas de diálogo
+também são de vidro fosco: Adicionar uma conta de e-mail, Sobre,
+Novidades, atualizações, compartilhamento, visualização de impressão,
+marcadores, perguntas de excluir e remover, o cartão do primeiro início
+e a caixa de link de Escrever.
+"""
+
+["2026-10-01-1650-chat-pins"]
+title = "Fixe até 5 coisas num chat"
+text = """
+Num chat (Configurações > Experimental), passe o cursor sobre um balão e
+pressione o alfinete, ou clique com o botão direito num arquivo, para
+mantê-lo no topo. Uma barra fina sob o cabeçalho mostra o que está
+fixado: clique nela para pular para cada item por vez, ou abra a lista
+para arrastá-los em ordem ou desafixá-los. Os itens fixados ficam neste
+computador.
+"""
+
+["2026-10-01-1655-chat-signatures"]
+title = "Chats deixam de fora assinaturas e rodapés"
+text = """
+Os balões do chat agora mostram só o que as pessoas escreveram.
+Despedidas como “Atenciosamente”, assinaturas de empresa sob uma linha
+ou com endereços e telefones, e rodapés com links de cancelar inscrição
+ou avisos esperam atrás da pílula ···, junto com uma assinatura que
+alguém repete em todo e-mail.
+"""
+
+["2026-10-01-1805-blur-amount"]
+title = "Escolha a aparência dos menus foscos"
+text = """
+Menus e caixas de diálogo foscos estão mais nítidos agora e seguem a
+intensidade de desfoque do KDE. Ative Intensidade de desfoque
+personalizada em Configurações, Experimental, Desfoque para definir você
+mesmo a intensidade do desfoque e a opacidade.
+"""
+
+["2026-10-01-1825-chat-company"]
+title = "Onde a pessoa trabalha, no cartão dela"
+text = """
+Num chat (Configurações > Experimental), o cartão de uma pessoa agora
+tem uma seção Empresa: o que a empresa faz, onde fica, desde quando, e
+links para o site e as páginas dela, lidos da própria página inicial e
+da Wikipédia. Ela segue a chave Imagens dos remetentes.
+"""
+
+["2026-10-02-0052-smooth-start-after-updates"]
+title = "Início tranquilo depois de atualizações"
+text = """
+Depois de uma atualização, o Katna Mail não diz mais que o armazenamento
+de e-mails não pôde ser aberto enquanto prepara seus e-mails para a nova
+versão. Ele mostra a imagem de carregamento de sempre durante esses
+poucos segundos e depois seus e-mails.
+"""
+
+["2026-10-02-0106-calmer-dialogs"]
+title = "Caixas de diálogo mais calmas"
+text = """
+As caixas de diálogo foscas são mais sólidas que os menus, então uma
+lista de e-mails cheia não aparece mais através delas. Sobre, Novidades
+e Verificar atualizações abrem sem escurecer a janela por trás.
+"""
+
+["2026-10-02-0111-chat-pin-text"]
+title = "Fixe algumas palavras de um chat"
+text = """
+Num chat (Configurações > Experimental), o texto de um balão agora pode
+ser selecionado e copiado como qualquer e-mail. Clique com o botão
+direito nas palavras que você escolheu num balão e escolha Fixar no topo
+para mantê-las na barra de itens fixados do chat.
+"""
+
+["2026-10-02-0124-event-editor-clear"]
+title = "O editor de eventos fica livre do Novo evento"
+text = """
+O botão Novo evento da barra esquerda não fica mais em cima do título de
+um evento que você está criando ou alterando no editor completo. Ele
+volta quando o editor fecha.
+"""
+
+["2026-10-02-0150-chat-format-bar"]
+title = "Uma barra Aa mais completa nos chats"
+text = """
+A barra Aa da caixa de resposta do chat agora tem as ferramentas de
+Escrever: desfazer, fonte, tamanho, alinhamento e recuos, ao lado dos
+estilos que já tinha. Numa janela estreita, ela continua numa segunda
+linha. O botão de cor mostra a cor do texto e o realce lado a lado, em
+Escrever também.
+"""
+
+["2026-10-02-0210-conversation-summaries"]
+title = "Resuma uma conversa"
+text = """
+Clique com o botão direito numa conversa e escolha Resumir, ou pressione
+Shift+S, para ver ao lado um cartão que diz do que ela trata, o que foi
+decidido e o que espera por você, sem abri-la nem marcá-la como lida.
+Numa conversa aberta, o brilho acima dela coloca o resumo sob o assunto;
+na visualização de chat, ele fica numa faixa sob o cabeçalho. Cada ponto
+indica o e-mail de onde veio, e quando chegaram novos e-mails desde a
+sua última leitura, o resumo cobre só eles. É preciso ativar a ajuda
+de escrita com IA em Configurações > Escrever.
+"""
+
+["2026-10-02-0215-system-colors-follow-mode"]
+title = "Claro e Escuro funcionam com as cores do Sistema"
+text = """
+Com Cores definido como Sistema e um esquema da área de trabalho que é
+só escuro (ou só claro), Configurações > Aparência > Modo agora volta a
+alternar o Katna entre claro e escuro: o outro lado usa as cores
+próprias do Katna com o destaque da sua área de trabalho.
+"""
+
+["2026-10-02-0218-signature-details-on-card"]
+title = "Os detalhes da assinatura no lugar certo"
+text = """
+O cartão de uma pessoa não mostra mais a assinatura dela como um bloco.
+Os detalhes vão para o lugar certo: cada número de telefone, marcado
+como celular, direto ou fax, nos dados de contato, e o grupo, os
+escritórios, o site e as páginas da empresa na seção Empresa. Páginas
+sociais aparecem como pequenos ícones de uma cor, e imagens, banners e
+rodapés ficam de fora.
+"""
+
+["2026-10-02-0225-chat-subject-line"]
+title = "Veja quando o assunto de um chat muda"
+text = """
+Num chat (Configurações > Experimental), uma pequena linha no meio agora
+diz quando alguém mudou o assunto, do mesmo jeito que diz quem adicionou
+quem.
+"""
+
+["2026-10-02-0225-no-blur-ghost"]
+title = "Sem fantasma desfocado ao fechar uma caixa de diálogo"
+text = """
+Fechar Sobre, Novidades, Verificar atualizações ou qualquer caixa de
+diálogo ou menu fosco não deixa mais uma mancha desfocada para trás por
+um instante: o desfoque some junto com a caixa de diálogo.
+"""
+
+["2026-10-02-0236-chat-on-phones"]
+title = "Chats cabem no celular"
+text = """
+Numa janela do tamanho de um celular, um chat (Configurações >
+Experimental) fica com uma única linha de cabeçalho com Voltar e ⋮, e os
+balões usam mais da largura. Segure um balão para abrir o menu dele por
+baixo, e toque num nome ou numa foto para ver o cartão dessa pessoa do
+mesmo jeito. Deslize qualquer um deles para baixo ou toque fora para
+fechá-lo.
+"""
+
+["2026-10-02-0258-frost-stays-on-scroll"]
+title = "O fosco fica parado quando uma lista rola"
+text = """
+Numa lista fosca que rola, como as pessoas de um chat ou um menu longo,
+o fundo fosco agora fica no lugar enquanto as linhas rolam sobre ele.
+"""
+
+["2026-10-02-0301-rephrase-card-above-tools"]
+title = "Reformular fica acima da barra de formatação"
+text = """
+O cartão Reformular agora abre logo acima da barra de formatação, na
+caixa de resposta e em Escrever, em vez de sobre a lista de e-mails.
+Arraste-o pela pequena alça no topo para tirá-lo do caminho; da próxima
+vez ele abre no lugar de sempre.
+"""
+
+["2026-10-02-0306-fainter-lines-light"]
+title = "Linhas mais suaves no modo claro"
+text = """
+No modo claro, as linhas entre os e-mails da lista e entre as mensagens
+de um e-mail aberto estão mais suaves, então a página fica mais calma.
+"""
+
+["2026-10-02-0315-card-button-bar"]
+title = "O cartão da pessoa mantém os botões ao alcance"
+text = """
+Role o cartão da pessoa e os botões dele sobem para uma barra fosca fina
+ao lado do botão de fechar, com uma pequena foto da pessoa. O botão de
+fechar não fica mais em cima do que você está lendo.
+"""
+
+["2026-10-02-0412-button-hover"]
+title = "Botões reagem suavemente ao cursor"
+text = """
+Quando você aponta para um botão, o fundo redondo dele agora cresce a
+partir do meio e aparece aos poucos, como no Gmail, e some rapidamente
+quando você segue em frente. Responder, Encaminhar e outros botões em
+pílula aparecem suavemente.
+"""
+
+["2026-10-02-0425-chat-draft-to-mail"]
+title = "Sua resposta no chat acompanha você até o E-mail"
+text = """
+Trocar um chat para E-mail enquanto escreve uma resposta agora rola até
+a resposta com o cursor ainda nela, e voltar também a mantém.
+"""
+
+["2026-10-02-0425-write-reply"]
+title = "Escreva uma resposta com IA"
+text = """
+Enquanto uma resposta ou um encaminhamento ainda está vazio, o brilho ao
+lado de Formatação (ou Ctrl+J) o escreve para você. Escolha uma de três
+ideias tiradas da conversa, ou diga com suas palavras o que ele deve
+dizer, depois Inserir o rascunho e mude o que quiser. Assim que você
+digita, o brilho volta a reformular. É preciso ativar a ajuda de
+escrita com IA em Configurações > Escrever.
+"""
+
+["2026-10-02-0430-compose-beside-reply"]
+title = "Escreva enquanto uma resposta está pela metade"
+text = """
+Escrever agora abre uma nova mensagem mesmo enquanto você está
+escrevendo uma resposta, no chat ou sob a conversa. A resposta espera do
+jeito que você a deixou e volta quando a nova mensagem é enviada ou
+fechada, ou quando você clica para responder de novo àquela conversa.
+"""
+
+["2026-10-02-0436-mark-unread-icon"]
+title = "Um ícone mais claro para Marcar como não lida"
+text = """
+Marcar como não lida agora mostra um envelope com um ponto, nos menus,
+nas barras de ferramentas e nos botões que aparecem ao passar o cursor
+sobre um e-mail, então não parece mais um simples ícone de e-mail.
+"""
+
+["2026-10-02-0452-fainter-pane-lines"]
+title = "Barras de ferramentas e guias mais discretas"
+text = """
+No modo claro, as linhas sob as barras de ferramentas e o cabeçalho do
+e-mail aberto, e acima de Responder e Encaminhar, são tão suaves quanto
+as linhas entre os e-mails. O fundo atrás das guias da caixa de entrada
+também está mais claro.
+"""
+
+["2026-10-02-0453-google-drive-in-files"]
+title = "Seu Google Drive em Arquivos"
+text = """
+Arquivos agora mostra o drive de cada conta do Google em Drives, na
+coluna lateral. Abra as pastas, pesquise nele e abra, anexe ou baixe um
+arquivo ali mesmo. Na primeira vez, pressione Permitir para que o Katna
+possa ler o drive.
+"""
+
+["2026-10-02-0515-rephrase-subject"]
+title = "Reformule o assunto"
+text = """
+Assim que você digita um assunto, um brilho no fim da linha oferece três
+outras formas de dizê-lo, escritas a partir do assunto e do que sua
+mensagem diz até agora. Escolha uma para usá-la; Desfazer devolve o que
+você digitou. É preciso ativar a ajuda de escrita com IA em
+Configurações > Escrever.
+"""
+
+["2026-10-02-0525-quieter-compose"]
+title = "Uma janela Escrever mais calma"
+text = """
+A janela Nova mensagem flutua com um espaço igual das bordas da janela.
+Para, Cc, Cco e De ficam juntos sem linhas entre eles, os destinatários
+são chips suaves preenchidos, e De é uma linha discreta. Criptografia,
+assinatura digital, rastreamento e confirmações dividem um pequeno
+grupo, e as ferramentas de escrita ficam numa barra suave ao lado de
+Enviar.
+"""
+
+["2026-10-02-0553-upload-to-drive"]
+title = "Envie para o Google Drive pela página Arquivos"
+text = """
+Com um Google Drive aberto em Arquivos, o botão Escrever vira Enviar.
+Clique nele para enviar arquivos para a pasta aberta, ou use a
+seta dele para enviar uma pasta inteira. Na primeira vez, pressione
+Permitir para que o Katna possa adicionar arquivos ao seu drive.
+"""
+
+["2026-10-02-0555-reply-from-summary"]
+title = "Responda pelo resumo"
+text = """
+O cartão de resumo que você abre com o botão direito agora tem
+Responder. Ele transforma o mesmo cartão numa resposta: escolha uma
+ideia ou diga o que ela deve dizer, mude o rascunho se quiser e então
+Enviar, ou abra-a na conversa para continuar escrevendo. Uma resposta
+que você fecha sem enviar espera na caixa de resposta. O cartão agora
+também abre onde você clicou.
+"""
+
+["2026-10-02-0559-draft-saved-signature-tag"]
+title = "Rascunhos são salvos enquanto você escreve"
+text = """
+Uma mensagem que você está escrevendo agora se salva em Rascunhos a cada
+poucos segundos, e “Rascunho salvo” aparece discretamente ao lado do
+título. Uma etiqueta sutil ao lado da sua assinatura diz qual é; clique
+nela para escolher outra. O canto da janela Escrever também se alinha
+com o cartão ao lado.
+"""
+
+["2026-10-02-0654-attach-from-drive"]
+title = "Anexe do Google Drive"
+text = """
+O clipe de Escrever agora abre o seletor de Arquivos, o mesmo de De
+Arquivos do chat, com seu Google Drive ao lado dos arquivos dos seus
+e-mails e Este computador… para todo o resto. Arquivos que cabem vão no
+e-mail; arquivos grandes e Documentos Google vão como link,
+compartilhado com os destinatários quando você envia.
+"""
+
+["2026-10-02-0734-peek-and-reply-in-notifications"]
+title = "Espie e responda pela notificação"
+text = """
+Uma notificação de novo e-mail agora tem Espiar, que mostra o próprio
+e-mail na mesma notificação, e Responder, em que você digita sua
+resposta ali mesmo e pressiona Enviar. Ela sai da conta para a qual o
+e-mail veio, depois do seu tempo de Cancelar envio; Desfazer a abre no
+Katna Mail para continuar escrevendo. No Linux, novos e-mails também têm
+um toque próprio mais alto; escolha outro em Configurações >
+Notificações.
+"""
+
+["2026-10-02-0735-drive-viewer-opens-at-once"]
+title = "Arquivos do drive abrem na hora"
+text = """
+Abrir um arquivo do seu drive mostra o visualizador imediatamente, com
+um arco girando até o arquivo chegar. Os avisos na parte de baixo da
+janela agora recebem os próprios cliques, então Fechar não clica mais no
+que está embaixo deles.
+"""
+
+["2026-10-02-0740-smaller-updates"]
+title = "Atualizações menores"
+text = """
+As atualizações agora baixam só o que mudou, normalmente alguns
+megabytes em vez do pacote inteiro. O Katna monta a nova versão a partir
+da que você tem e a verifica antes de instalar, e baixa o pacote
+completo sempre que não consegue.
+"""
+
+["2026-10-02-0755-faint-lines-everywhere"]
+title = "Linhas suaves em todo lugar"
+text = """
+No modo claro, todas as linhas entre elementos, sob cabeçalhos e em
+volta de cartões agora são tão suaves quanto as linhas entre os e-mails,
+inclusive no cartão de resumo. Campos, chips e botões mantêm o contorno
+nítido.
+"""
+
+["2026-10-02-0756-ai-replies-signed"]
+title = "Respostas da IA terminam com sua assinatura"
+text = """
+Respostas e notas escritas pela IA não terminam mais com
+“Atenciosamente” e o seu nome. Sua assinatura as assina no lugar: na
+resposta do cartão de resumo, a etiqueta de assinatura sob o texto
+escolhe qual, como em Escrever.
+"""
+
+["2026-10-02-0801-unified-inbox-tabs"]
+title = "Guias na caixa de entrada unificada"
+text = """
+A caixa de entrada de todas as suas contas agora também tem guias:
+Principal, Promoções, Social, Atualizações e Fóruns, com os e-mails de
+cada conta na guia do tipo deles. Um ponto ao lado de cada remetente
+mostra de qual conta veio um e-mail. Escolha uma conta abaixo dela para
+ver as guias próprias dessa conta, ou escolha outro conjunto em
+Configurações > Caixa de entrada.
+"""
+
+["2026-10-02-0805-feeds-removed"]
+title = "Feeds saiu da barra esquerda"
+text = """
+No fim, o Katna não vai ler feeds RSS e Atom, então o botão Feeds e a
+página “em breve” dele saíram da barra à esquerda. Arquivos continua com
+Ctrl+7.
+"""
+
+["2026-10-02-0820-drive-bin-and-rename"]
+title = "Renomeie e mova arquivos do drive para a lixeira"
+text = """
+Em Arquivos, um arquivo ou uma pasta do seu Google Drive ou OneDrive
+agora tem Renomear e Mover para a lixeira no menu. Renomear permite
+digitar sobre o nome ali mesmo (F2), e Mover para a lixeira (Del) vem
+com Desfazer.
+"""
+
+["2026-10-02-0827-files-chips-on-phones"]
+title = "Os chips de Arquivos cabem no celular"
+text = """
+No celular, os chips da página Arquivos não ficam mais cortados na
+borda. Os tipos de arquivo se recolhem aos ícones, e o que você escolheu
+mantém o rótulo, enquanto os chips de pessoa, dias e ordem ganham uma
+linha própria.
+"""
+
+["2026-10-02-0828-uploads-tray"]
+title = "Acompanhe seus envios"
+text = """
+Os arquivos que você envia para o Google Drive ou o OneDrive agora
+aparecem numa bandeja no canto inferior direito, cada um com um anel que
+se preenche enquanto sobe e o tempo restante. Cancele um ou todos,
+recolha a bandeja e clique num arquivo concluído para abrir a pasta
+dele.
+"""
+
+["2026-10-02-0838-drive-share"]
+title = "Compartilhe arquivos do drive pelo Katna"
+text = """
+Compartilhar… no menu de um arquivo do Google Drive ou do OneDrive em
+Arquivos abre uma caixa de diálogo Compartilhar: adicione pessoas como
+Leitor, Comentarista ou Editor, mude ou remova quem já tem acesso, e
+abra o arquivo para qualquer pessoa com o link. O drive só envia e-mail
+a elas se você marcar essa opção.
+"""
+
+["2026-10-02-0909-soft-search-box"]
+title = "Uma caixa de pesquisa mais suave"
+text = """
+A caixa de pesquisa no topo está mais leve: uma borda e um preenchimento
+bem sutis enquanto você não a usa, e um campo branco com uma borda de
+destaque suave enquanto você digita, em vez da pílula cinza com um anel
+colorido grosso.
+"""
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Atualizações chegam mais cedo"
+text = """
+O Katna agora procura uma nova versão a cada hora e logo depois que o
+computador sai da suspensão, então a notificação de atualização chega pouco
+depois de cada lançamento.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Linhas suaves também no modo escuro"
+text = """
+No modo escuro, as linhas entre os e-mails, sob os cabeçalhos e ao redor
+dos cartões são tão suaves quanto no modo claro. Campos, chips e botões
+mantêm o contorno nítido.
+"""

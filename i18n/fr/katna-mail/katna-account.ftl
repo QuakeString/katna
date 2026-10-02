@@ -54,3 +54,64 @@ katna-error-mail-failed = Le message contenant le code n’a pas pu être envoy�
 katna-error-signed-out = Cet ordinateur a été déconnecté. Reconnectez-vous.
 katna-error-offline = Impossible de joindre le serveur de Katna. Vérifiez votre connexion et réessayez.
 katna-error-server = Le serveur de Katna a rencontré un problème. Réessayez plus tard.
+
+## Settings > Subscription: the Katna account
+
+katna-intro = Un compte Katna active les fonctions en ligne de Katna : accusés de lecture, suivi des liens, Activité et traduction automatique. Il a son propre mot de passe, qui n’est pas celui d’une messagerie, et vos identifiants de messagerie ne quittent jamais cet ordinateur.
+katna-checking = Vérification…
+katna-email = E-mail
+katna-password = Mot de passe
+katna-password-detail = Le modifier déconnecte vos autres ordinateurs.
+katna-sign-in = Se connecter
+katna-sign-in-detail = Connectez-vous sur chaque ordinateur où vous voulez les fonctions en ligne.
+katna-create = Créer un compte
+katna-create-detail = Utilisez une adresse dont vous lisez les messages : nous vous envoyons un code pour la confirmer.
+katna-onboarding-create-title = Créez votre compte Katna
+katna-onboarding-sign-in-title = Se connecter à Katna
+katna-have-account = J’ai un compte
+katna-forgot = Mot de passe oublié ?
+katna-forgot-detail = Nous vous envoyons un code pour choisir un nouveau mot de passe.
+katna-forgot-code-detail = Saisissez le code que nous vous avons envoyé et un nouveau mot de passe. Vos autres ordinateurs sont déconnectés.
+katna-send-code = Envoyer le code
+katna-back-to-sign-in = Retour à la connexion
+katna-code = Code
+katna-new-password = Nouveau mot de passe
+katna-current-password = Mot de passe actuel
+katna-set-password = Définir le mot de passe
+katna-save-password = Enregistrer le mot de passe
+katna-change-password = Changer le mot de passe
+katna-cancel = Annuler
+katna-confirm-title = Confirmez votre adresse
+katna-confirm-detail = Nous avons envoyé un code à 6 chiffres à { $email }. Il est valable 30 minutes.
+katna-confirm = Confirmer
+katna-resend = Envoyer un nouveau code
+katna-code-resent = Un nouveau code est en route.
+katna-reset-code-sent = Si cette adresse a un compte Katna, un code est en route.
+katna-password-changed = Mot de passe modifié. Vos autres ordinateurs sont déconnectés.
+katna-signed-in = Connecté
+katna-signed-in-detail = Les fonctions en ligne marchent sur cet ordinateur.
+katna-sign-out = Se déconnecter
+katna-devices = Ordinateurs
+katna-devices-detail = Les ordinateurs connectés à ce compte. Déconnectez ceux que vous n’utilisez pas.
+katna-device-unnamed = Ordinateur sans nom
+katna-device-this = Cet ordinateur · connecté depuis { $date }
+katna-device-since = Connecté depuis { $date }
+katna-delete = Supprimer le compte
+katna-delete-detail = Supprime le compte et tout ce que le serveur conserve pour lui, comme les accusés de lecture. Les messages sur cet ordinateur restent.
+katna-delete-confirm = Supprimer définitivement
+katna-sign-in-needed = Connectez-vous à un compte Katna pour utiliser ceci.
+
+## Errors
+
+katna-error-wrong-password = E-mail ou mot de passe incorrect.
+katna-error-exists = Cette adresse a déjà un compte Katna. Connectez-vous plutôt.
+katna-error-bad-email = Cela ne ressemble pas à une adresse e-mail.
+katna-error-short-password = Le mot de passe doit compter au moins 8 caractères.
+katna-error-long-password = Le mot de passe est trop long.
+katna-error-wrong-code = Ce code n’est pas le bon.
+katna-error-code-expired = Ce code a expiré. Demandez-en un nouveau.
+katna-error-too-many = Trop de tentatives. Attendez quelques minutes et réessayez.
+katna-error-mail-failed = Le message contenant le code n’a pas pu être envoyé. Réessayez plus tard.
+katna-error-signed-out = Cet ordinateur a été déconnecté. Reconnectez-vous.
+katna-error-offline = Impossible de joindre le serveur de Katna. Vérifiez votre connexion et réessayez.
+katna-error-server = Le serveur de Katna a rencontré un problème. Réessayez plus tard.

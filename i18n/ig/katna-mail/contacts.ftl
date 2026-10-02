@@ -88,7 +88,7 @@ contacts-print-none = Enweghị kọntaktị ị ga-ebipụta
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Ụbọchị ọmụmụ: { $day }
 contacts-print-nickname = Aha ọkpụkpọ: { $name }
-contacts-create = Mepụta kọntaktị
+contacts-create = Kọntaktị ọhụrụ
 
 ## Search and the list
 

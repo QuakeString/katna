@@ -7,6 +7,10 @@
 about-tooltip = Tungkol sa Katna
 about-tagline = Mail at kalendaryo para sa Linux desktop
 about-whats-new = Ano’ng bago
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
 about-update-not-checked = Hindi pa nasusuri ang mga update
 about-update-checking = Sinusuri ang mga update…
 about-update-up-to-date = Updated na ang Katna Mail
@@ -66,6 +70,7 @@ about-credit-resvg = Mga larawang SVG
 about-credit-jiff = Mga petsa at time zone
 about-credit-spellbook = Spell check, mula sa Helix editor
 about-credit-smol = Paggawa ng maraming bagay nang sabay-sabay
+about-credit-color-schemes = Ang mga palette ng mga built-in na color scheme
 about-all-libraries = Bawat library na ginagamit ng Katna ({ $count })
 about-library-authors = ni { $authors }
 about-license = Free software ang Katna sa ilalim ng GNU GPL, bersyon 3 o mas bago.
@@ -123,6 +128,21 @@ onboarding-density-default = Default
 onboarding-density-compact = Compact
 onboarding-continue = Magpatuloy
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Mas marami pa gamit ang Katna account
+onboarding-katna-lead = Opsyonal ito. Binubuksan nito ang mga online feature ng Katna, at puwede kang gumawa nito mamaya sa Mga setting > Subscription.
+onboarding-katna-receipts-title = Mga read receipt
+onboarding-katna-receipts-text = Makita kung kailan binubuksan ng mga tao ang mail na ipinapadala mo.
+onboarding-katna-links-title = Pag-track ng link
+onboarding-katna-links-text = Makita kung aling mga link sa mail mo ang kini-click.
+onboarding-katna-activity-title = Aktibidad
+onboarding-katna-activity-text = Mga pagbukas at pag-click sa lahat ng ipinadala mo, sa iisang lugar.
+onboarding-katna-translate-title = Awtomatikong pagsasalin
+onboarding-katna-translate-text = Basahin sa sarili mong wika ang mail na nakasulat sa ibang wika.
+onboarding-katna-private = May sarili itong password. Hindi kailanman umaalis sa computer na ito ang mga login ng mail mo.
+
 ## First run: done
 
 onboarding-ready-title = Handa ka na
@@ -166,7 +186,7 @@ tour-search-text = Gumagana rin ang paghahanap kahit offline. Nagdadagdag ng mga
 tour-menu-title = Ipakita o itago ang mga folder
 tour-menu-text = Itinutupi ng button na ito ang listahan ng folder. Habang nakatago ito, ipatong ang pointer sa Mail sa kaliwa para makita ang mga folder.
 tour-apps-title = Ang iyong mga app
-tour-apps-text = Dito na nakatira ang Mail. Sasama rito sa bar na ito ang Kalendaryo, Mga Contact, Mga Gawain, Mga Tala at Mga Feed.
+tour-apps-text = Narito ang Mail, katabi ng Kalendaryo, Mga Contact, Mga Gawain, Mga Tala at Mga File.
 tour-tabs-title = Mga tab ng inbox
 tour-tabs-text = Inaayos ang bagong mail sa Pangunahin, Mga Promosyon, Social, Mga Update at Mga Forum. Puwede mong i-off ang mga tab sa mabilisang setting.
 tour-list-title = Ang iyong mga mensahe
@@ -192,12 +212,22 @@ crash-view = Tingnan ang ulat
 crash-view-tooltip = Buksan ang ulat, na naka-save sa computer na ito
 crash-copy = Kopyahin ang ulat
 crash-close = Isara
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = Hinihiling ng { $provider } na mag-sign in ka ulit sa { $address }.
 sign-in-again-button = Mag-sign in
 sign-in-again-tooltip = Buksan ang sign-in page ng { $provider } sa iyong browser
 sign-in-again-waiting = Hinihintay ang iyong browser…
 sign-in-again-close = Isara
+google-api-off = Naka-off ang { $api } sa Google Cloud project ng Katna.
+google-api-turn-on = I-on
+google-api-turn-on-tooltip = Buksan ang Google Cloud para i-on ang { $api }, pagkatapos ay pindutin ang Subukang muli
 sign-in-again-done = Naka-sign in ulit sa { $address }. Kinukuha ang mail mo…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] Ilipat sa Basurahan ang pag-uusap na ito?

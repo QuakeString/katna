@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Chats fit a phone"
+text = """
+In a phone-sized window a chat (Settings > Experimental) keeps to one
+header row with Back and ⋮, and its bubbles use more of the width. Hold a
+bubble to bring up its menu from the bottom, and tap a name or picture to
+see that person's card the same way. Swipe either down or tap outside to
+put it away.
+"""

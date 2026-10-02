@@ -2,6 +2,8 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+viewer-opening = Maak tans oop…
+
 ## Attachment viewer
 
 viewer-unreadable = Hierdie aanhegsel kon nie gelees word nie.
@@ -14,8 +16,17 @@ viewer-slides-unreadable = Hierdie skyfies kon nie gelees word nie.
 viewer-no-preview = Geen voorskou beskikbaar nie
 viewer-slide = Skyfie { $number }
 viewer-page = Bladsy
+viewer-slide-box = Skyfie
 viewer-page-count = van { $count }
 viewer-go-to-page-tip = Tik ’n bladsynommer en druk Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = Draai kloksgewys (Ctrl+R)
+viewer-rotate-anticlockwise-tip = Draai antikloksgewys (Ctrl+Shift+R)
+viewer-fit-page-tip = Pas bladsy
+viewer-fit-picture-tip = Pas in venster
+viewer-fit-width-tip = Pas wydte
+viewer-real-size-tip = Werklike grootte (1:1)
+viewer-page-back-tip = Vorige bladsy
+viewer-page-on-tip = Volgende bladsy
 
 ## Marking up a PDF
 
@@ -41,6 +52,10 @@ viewer-marks-undo-tip = Ontdoen (Ctrl+Z)
 viewer-marks-redo-tip = Herdoen (Ctrl+Shift+Z)
 viewer-save-marked-tip = Stoor 'n kopie met jou merke (Ctrl+S)
 viewer-reply-marked-tip = Antwoord met die gemerkte kopie
+viewer-forward-tip = Stuur die lêer aan
+viewer-forward = Stuur aan
+viewer-open-with = Maak oop met…
+viewer-save = Stoor
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = Skryf 'n nota
 viewer-text-placeholder = Tik hier
@@ -58,3 +73,5 @@ viewer-marks-save = Stoor 'n kopie
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (gemerk)
+viewer-pick = Kies
+viewer-picked = Gekies

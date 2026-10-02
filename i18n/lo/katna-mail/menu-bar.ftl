@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _ປະຕິທິນ
 desktop-menu-page-contacts = _ລາຍຊື່ຜູ້ຕິດຕໍ່
 desktop-menu-page-tasks = _ໜ້າວຽກ
 desktop-menu-page-notes = _ບັນທຶກ
+desktop-menu-page-files = _ໄຟລ໌
 desktop-menu-next = _ການສົນທະນາຖັດໄປ
 desktop-menu-previous = _ການສົນທະນາກ່ອນໜ້າ
 desktop-menu-message = _ຂໍ້ຄວາມ

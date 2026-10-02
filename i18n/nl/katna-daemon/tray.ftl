@@ -9,7 +9,7 @@ tray-new-message = _Nieuw bericht
 tray-preferences = In_stellingen
 tray-quit = A_fsluiten
 
-## The tray icon's tooltip
+## The tray icon's tooltip, under "Katna Mail"
 
 tray-unread = { $count ->
     [0] Geen ongelezen e-mail

@@ -86,6 +86,9 @@ security-missing-key = உங்களிடம் இல்லாத கீய�
 security-missing-key-id = உங்களிடம் இல்லாத கீயைக் ({ $key }) கொண்டு கையொப்பமிடப்பட்டுள்ளது, எனவே சரிபார்க்க முடியாது
 security-signature-unavailable = கையொப்பமிடப்பட்டது; கையொப்பத்தைச் சரிபார்க்க { $tool } ஐ நிறுவவும்
 security-signature-error = கையொப்பத்தைச் சரிபார்க்க முடியவில்லை.
+
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } இதை { $count ->
     [one] ஒரு முறை
    *[other] { $count } முறை
@@ -127,10 +130,12 @@ attachment-count = { $count ->
    *[other] { $count } இணைப்புகள்
 }
 attachment-save = சேமி
+attachment-forward = முன்னனுப்பு
 attachment-save-all = அனைத்தையும் சேமி
 attachment-save-all-tooltip = எல்லா இணைப்புகளையும் ஒரு ஃபோல்டரில் சேமி
 attachment-save-here = இங்கே சேமி
 attachment-not-downloaded = இந்த மெசேஜ் பதிவிறக்கப்படவில்லை.
+attachment-open-message = இணைப்புகளைப் படிக்க இந்த மெசேஜைத் திறக்கவும்.
 attachment-not-found = இந்த இணைப்பு மெசேஜில் கிடைக்கவில்லை.
 attachment-read-failed = { $name } ஐப் படிக்க முடியவில்லை
 attachment-numbered = இணைப்பு { $number }
@@ -178,8 +183,9 @@ print-encrypted = (என்க்ரிப்ட் செய்யப்பட
 print-to = பெறுநர்: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = இணைப்புகளைப் படிக்க இந்த மெசேஜைத் திறக்கவும்.
+text-pin = மேலே பின் செய்
+text-copy-address = முகவரியை நகலெடு
 text-copy = நகலெடு
 text-select-all = அனைத்தையும் தேர்ந்தெடு

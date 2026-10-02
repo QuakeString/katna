@@ -86,6 +86,10 @@ security-missing-key = Mit einem Schlüssel signiert, den Sie nicht haben, daher
 security-missing-key-id = Mit einem Schlüssel signiert, den Sie nicht haben ({ $key }), daher nicht prüfbar
 security-signature-unavailable = Signiert; installieren Sie { $tool }, um die Signatur zu prüfen
 security-signature-error = Die Signatur konnte nicht geprüft werden.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } hat sie { $count ->
     [one] einmal
    *[other] { $count }-mal
@@ -127,10 +131,12 @@ attachment-count = { $count ->
    *[other] { $count } Anhänge
 }
 attachment-save = Speichern
+attachment-forward = Weiterleiten
 attachment-save-all = Alle speichern
 attachment-save-all-tooltip = Alle Anhänge in einem Ordner speichern
 attachment-save-here = Hier speichern
 attachment-not-downloaded = Diese Nachricht ist nicht heruntergeladen.
+attachment-open-message = Öffnen Sie diese Nachricht, um ihre Anhänge zu lesen.
 attachment-not-found = Dieser Anhang wurde in der Nachricht nicht gefunden.
 attachment-read-failed = { $name } konnte nicht gelesen werden
 attachment-numbered = Anhang { $number }
@@ -153,6 +159,7 @@ attachment-encrypted-open = Diese Datei wurde verschlüsselt empfangen. Speicher
 print-failed = Drucken nicht möglich: { $error }
 print-no-font = keine Schriftart gefunden
 print-opened-as-pdf = Als PDF geöffnet, um von dort aus zu drucken.
+
 print-preview-title = Druckvorschau
 print-preview-laying-out = Seiten werden aufgebaut…
 print-preview-pages = { $count ->
@@ -178,8 +185,9 @@ print-encrypted = (Verschlüsselt. Öffnen Sie die Nachricht in Katna Mail, um i
 print-to = An: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = Öffnen Sie diese Nachricht, um ihre Anhänge zu lesen.
+text-pin = Oben anheften
+text-copy-address = Adresse kopieren
 text-copy = Kopieren
 text-select-all = Alles auswählen
