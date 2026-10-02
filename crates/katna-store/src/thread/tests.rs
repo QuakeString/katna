@@ -525,6 +525,9 @@ fn folder_lists_summaries_and_tab_counts() {
         senders,
         [("ada@example.org", true), ("me@example.org", false)]
     );
+    // Ada wrote after the user's reply: the conversation waits on them.
+    assert_eq!(s.last_from, ["ada@example.org"]);
+    assert!(!s.last_answered);
     let sent_view = &app.thread_summaries(&[thread], sent).unwrap()[0];
     assert!(!sent_view.unread, "the unread message is not in Sent");
 
