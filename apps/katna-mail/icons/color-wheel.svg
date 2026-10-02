@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- A color wheel, Katna's own: the swatch that opens the color picker for any other color. Drawn in its colors with img(), not tinted. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs><radialGradient id="white"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><clipPath id="disc"><circle cx="32" cy="32" r="32"/></clipPath></defs>
+  <g clip-path="url(#disc)">
+    <path d="M32 32L27.82 0.27A32 32 0 0 1 36.51 0.32Z" fill="#ff2626"/>
+    <path d="M32 32L36.18 0.27A32 32 0 0 1 44.55 2.57Z" fill="#ff5c26"/>
+    <path d="M32 32L44.25 2.44A32 32 0 0 1 51.75 6.82Z" fill="#ff9326"/>
+    <path d="M32 32L51.48 6.61A32 32 0 0 1 57.59 12.79Z" fill="#ffc926"/>
+    <path d="M32 32L57.39 12.52A32 32 0 0 1 61.69 20.06Z" fill="#ffff26"/>
+    <path d="M32 32L61.56 19.75A32 32 0 0 1 63.77 28.16Z" fill="#c9ff26"/>
+    <path d="M32 32L63.73 27.82A32 32 0 0 1 63.68 36.51Z" fill="#93ff26"/>
+    <path d="M32 32L63.73 36.18A32 32 0 0 1 61.43 44.55Z" fill="#5cff26"/>
+    <path d="M32 32L61.56 44.25A32 32 0 0 1 57.18 51.75Z" fill="#26ff26"/>
+    <path d="M32 32L57.39 51.48A32 32 0 0 1 51.21 57.59Z" fill="#26ff5c"/>
+    <path d="M32 32L51.48 57.39A32 32 0 0 1 43.94 61.69Z" fill="#26ff93"/>
+    <path d="M32 32L44.25 61.56A32 32 0 0 1 35.84 63.77Z" fill="#26ffc9"/>
+    <path d="M32 32L36.18 63.73A32 32 0 0 1 27.49 63.68Z" fill="#26ffff"/>
+    <path d="M32 32L27.82 63.73A32 32 0 0 1 19.45 61.43Z" fill="#26c9ff"/>
+    <path d="M32 32L19.75 61.56A32 32 0 0 1 12.25 57.18Z" fill="#2693ff"/>
+    <path d="M32 32L12.52 57.39A32 32 0 0 1 6.41 51.21Z" fill="#265cff"/>
+    <path d="M32 32L6.61 51.48A32 32 0 0 1 2.31 43.94Z" fill="#2626ff"/>
+    <path d="M32 32L2.44 44.25A32 32 0 0 1 0.23 35.84Z" fill="#5c26ff"/>
+    <path d="M32 32L0.27 36.18A32 32 0 0 1 0.32 27.49Z" fill="#9326ff"/>
+    <path d="M32 32L0.27 27.82A32 32 0 0 1 2.57 19.45Z" fill="#c926ff"/>
+    <path d="M32 32L2.44 19.75A32 32 0 0 1 6.82 12.25Z" fill="#ff26ff"/>
+    <path d="M32 32L6.61 12.52A32 32 0 0 1 12.79 6.41Z" fill="#ff26c9"/>
+    <path d="M32 32L12.52 6.61A32 32 0 0 1 20.06 2.31Z" fill="#ff2693"/>
+    <path d="M32 32L19.75 2.44A32 32 0 0 1 28.16 0.23Z" fill="#ff265c"/>
+    <circle cx="32" cy="32" r="32" fill="url(#white)"/>
+  </g>
+</svg>

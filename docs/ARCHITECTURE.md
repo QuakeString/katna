@@ -2408,6 +2408,16 @@ Gemini or confidential mode):
   versions. The quick setting *Desktop colors* switches between `system`
   and `katna`.
 
+  After the seven accent swatches a rainbow wheel opens the color picker
+  (`window/scheme_color.rs`, the scheme editor's) for any other accent,
+  and is ringed while such a custom accent is in use; the swatch and the
+  wheel are shared widgets (`widgets::color_swatch`, `color_wheel`) for
+  any row of colors to pick from. The logo inside the window (top bar,
+  About, welcome, What's new) draws its disc in the accent and the k in
+  `on_accent`, which the theme keeps readable on it; `assets.rs` serves it
+  tinted (`logo/small-32-<disc>-<mark>.svg`). The app icon and the tray
+  keep Katna's teal.
+
   *From your system* lists the desktop's other schemes
   (`DesktopScheme` in `katna_platform::colors`): on KDE every installed
   `*.colors` file (`$XDG_DATA_HOME` and `$XDG_DATA_DIRS`, `color-schemes/`),

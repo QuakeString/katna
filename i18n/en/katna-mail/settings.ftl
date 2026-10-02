@@ -247,6 +247,8 @@ settings-appearance-accent-detail = The color of Compose, the app on show in the
 settings-appearance-accent-scheme = From colors
 # An accent choice: the desktop's accent color.
 settings-appearance-accent-system = System
+# Tooltip of the color wheel after the accent colors: it opens a color picker.
+settings-appearance-accent-more = More colors
 
 ## Color scheme names: names of themes, usually left as they are.
 

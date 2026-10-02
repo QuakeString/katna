@@ -757,6 +757,12 @@ pub struct MailWindow {
     dialog_focus: FocusHandle,
     /// Settings > Appearance > Colors' editor, while open.
     scheme_editor: Option<scheme_editor::SchemeEditor>,
+    /// The open color picker, for the scheme editor or the accent.
+    color_picker: Option<scheme_color::ColorPicker>,
+    /// Where the swatches that open the picker were drawn, for its place.
+    color_swatches: scheme_color::Swatches,
+    /// Colors picked lately, newest first.
+    recent_colors: Vec<u32>,
     /// The folder pane while it has the keys, the line they are on, and
     /// whether it had them when this frame was drawn.
     nav_focus: FocusHandle,
@@ -1015,6 +1021,9 @@ impl MailWindow {
             reader_keys: false,
             dialog_focus: cx.focus_handle(),
             scheme_editor: None,
+            color_picker: None,
+            color_swatches: Default::default(),
+            recent_colors: Vec::new(),
             nav_focus: cx.focus_handle(),
             nav_cursor: None,
             nav_keys_shown: false,
