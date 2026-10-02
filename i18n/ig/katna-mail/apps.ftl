@@ -9,7 +9,6 @@ rail-calendar = Kalịnda
 rail-contacts = Kọntaktị
 rail-tasks = Ọrụ
 rail-notes = Ndetu
-rail-feeds = Nri ozi
 
 ## Pages of apps still to come
 
@@ -18,7 +17,6 @@ app-coming-soon = Ọ na-abịa n'oge na-adịghị anya
 app-calendar-promise = Kalịnda CalDAV gị, akwụkwọ ịkpọ òkù nzukọ si n'ozi gị na ncheta, n'akụkụ igbe ozi mbata gị.
 app-tasks-promise = Ndepụta ihe a ga-eme na-emekọ ihe na CalDAV, na ọrụ e mere site n'ozi.
 app-notes-promise = Ndetu ngwa ngwa, na ndetu banyere ozi ma ọ bụ mkparịta ụka maka emesịa.
-app-feeds-promise = Gụọ nri ozi RSS na Atom n'akụkụ ozi gị.
 
 ## Contacts page
 

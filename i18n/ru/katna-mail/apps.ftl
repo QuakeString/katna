@@ -9,7 +9,6 @@ rail-calendar = Календарь
 rail-contacts = Контакты
 rail-tasks = Задачи
 rail-notes = Заметки
-rail-feeds = Ленты
 
 ## Pages of apps still to come
 
@@ -18,7 +17,6 @@ app-coming-soon = Скоро
 app-calendar-promise = Ваши календари CalDAV, приглашения на встречи из почты и напоминания — рядом с входящими.
 app-tasks-promise = Списки задач с синхронизацией по CalDAV и задачи, созданные из писем.
 app-notes-promise = Быстрые заметки и заметки к письму или цепочке на потом.
-app-feeds-promise = Читайте ленты RSS и Atom рядом с почтой.
 
 ## Contacts page
 

@@ -9,7 +9,6 @@ rail-calendar = Lịch
 rail-contacts = Danh bạ
 rail-tasks = Việc cần làm
 rail-notes = Ghi chú
-rail-feeds = Nguồn cấp
 
 ## Pages of apps still to come
 
@@ -18,7 +17,6 @@ app-coming-soon = Sắp ra mắt
 app-calendar-promise = Lịch CalDAV, lời mời họp trong thư và lời nhắc của bạn, ngay bên cạnh hộp thư đến.
 app-tasks-promise = Danh sách việc cần làm đồng bộ với CalDAV, và việc cần làm tạo từ thư.
 app-notes-promise = Ghi chú nhanh, và ghi chú trên thư hoặc cuộc hội thoại để xem lại sau.
-app-feeds-promise = Đọc nguồn cấp RSS và Atom ngay bên cạnh thư của bạn.
 
 ## Contacts page
 

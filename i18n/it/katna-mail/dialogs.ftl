@@ -168,7 +168,6 @@ tour-search-text = La ricerca funziona anche offline. Il pulsante all’estremit
 tour-menu-title = Mostra o nascondi le cartelle
 tour-menu-text = Questo pulsante ripiega l’elenco delle cartelle. Mentre è nascosto, appoggia il puntatore su Posta a sinistra per vedere le cartelle.
 tour-apps-title = Le tue app
-tour-apps-text = Per ora qui c’è Posta. Calendario, Contatti, Attività, Note e Feed la raggiungeranno in questa barra.
 tour-tabs-title = Schede della Posta in arrivo
 tour-tabs-text = La nuova posta viene suddivisa in Principale, Promozioni, Social, Aggiornamenti e Forum. Puoi disattivare le schede nelle impostazioni rapide.
 tour-list-title = I tuoi messaggi

@@ -170,7 +170,6 @@ tour-search-text = Usesho luyasebenza nangenkathi ungaxhunyiwe. Inkinobho esekug
 tour-menu-title = Bonisa noma fihla amafolda
 tour-menu-text = Le nkinobho igoqa uhlu lwamafolda. Uma lufihliwe, beka isikhombi phezu kuka-Imeyili ngakwesokunxele ukuze ubone amafolda.
 tour-apps-title = Izinhlelo zakho zokusebenza
-tour-apps-text = Imeyili ihlala lapha manje. Ikhalenda, Oxhumana nabo, Imisebenzi, Amanothi kanye Nokuphakelayo kuzohlanganyela nayo kule bha.
 tour-tabs-title = Amathebhu ebhokisi lokungenayo
 tour-tabs-text = Imeyili entsha ihlelwa ibe Okuyinhloko, Ukukhangisa, Ezenhlalo, Izibuyekezo kanye Nezinkundla. Ungavala amathebhu ezilungiselelweni ezisheshayo.
 tour-list-title = Imilayezo yakho

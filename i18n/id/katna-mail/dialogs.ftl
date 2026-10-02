@@ -163,7 +163,6 @@ tour-search-text = Penelusuran juga berfungsi secara offline. Tombol di ujung ka
 tour-menu-title = Tampilkan atau sembunyikan folder
 tour-menu-text = Tombol ini melipat daftar folder. Saat daftar tersembunyi, arahkan penunjuk ke Email di sebelah kiri untuk melihat folder.
 tour-apps-title = Aplikasi Anda
-tour-apps-text = Saat ini baru ada Email di sini. Kalender, Kontak, Tugas, Catatan, dan Feed akan menyusul di bilah ini.
 tour-tabs-title = Tab Kotak Masuk
 tour-tabs-text = Email baru dipilah ke Utama, Promosi, Sosial, Pembaruan, dan Forum. Anda dapat menonaktifkan tab di setelan cepat.
 tour-list-title = Pesan Anda

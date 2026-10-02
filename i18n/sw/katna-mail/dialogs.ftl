@@ -166,7 +166,6 @@ tour-search-text = Utafutaji hufanya kazi hata bila mtandao. Kitufe kilicho mwis
 tour-menu-title = Onyesha au ficha folda
 tour-menu-text = Kitufe hiki hukunja orodha ya folda. Ikiwa imefichwa, weka kielekezi juu ya Barua upande wa kushoto kuona folda.
 tour-apps-title = Programu zako
-tour-apps-text = Barua zinaishi hapa sasa. Kalenda, Anwani, Majukumu, Madokezo na Mipasho zitajiunga nazo kwenye upau huu.
 tour-tabs-title = Vichupo vya kikasha
 tour-tabs-text = Barua mpya hupangwa katika Msingi, Matangazo, Mitandao ya kijamii, Taarifa na Mijadala. Unaweza kuzima vichupo kwenye mipangilio ya haraka.
 tour-list-title = Jumbe zako

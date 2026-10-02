@@ -169,7 +169,6 @@ tour-search-text = Wyszukiwanie działa też offline. Przycisk po prawej stronie
 tour-menu-title = Pokaż lub ukryj foldery
 tour-menu-text = Ten przycisk zwija listę folderów. Gdy jest ukryta, zatrzymaj wskaźnik na Poczcie po lewej, aby zobaczyć foldery.
 tour-apps-title = Twoje aplikacje
-tour-apps-text = Poczta mieszka teraz tutaj. Kalendarz, Kontakty, Zadania, Notatki i Kanały dołączą do niej na tym pasku.
 tour-tabs-title = Karty skrzynki odbiorczej
 tour-tabs-text = Nowa poczta jest sortowana do kart Główne, Oferty, Społeczności, Powiadomienia i Fora. Karty możesz wyłączyć w szybkich ustawieniach.
 tour-list-title = Twoje wiadomości

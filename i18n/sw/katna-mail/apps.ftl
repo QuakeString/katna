@@ -9,7 +9,6 @@ rail-calendar = Kalenda
 rail-contacts = Anwani
 rail-tasks = Majukumu
 rail-notes = Madokezo
-rail-feeds = Mipasho
 
 ## Pages of apps still to come
 
@@ -18,7 +17,6 @@ app-coming-soon = Inakuja hivi karibuni
 app-calendar-promise = Kalenda zako za CalDAV, mialiko ya mikutano kutoka kwenye barua zako na vikumbusho, kando ya kikasha chako.
 app-tasks-promise = Orodha za mambo ya kufanya zinazosawazishwa na CalDAV, na majukumu yanayotokana na barua.
 app-notes-promise = Madokezo ya haraka, na madokezo kuhusu barua au mazungumzo kwa ajili ya baadaye.
-app-feeds-promise = Soma mipasho ya RSS na Atom kando ya barua zako.
 
 ## Contacts page
 

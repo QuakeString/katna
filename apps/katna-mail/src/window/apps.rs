@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The app rail at the far left: Mail, Calendar, Contacts, Tasks, Notes,
-//! Feeds and Files, with settings at the bottom; their names can be hidden in
+//! The app rail at the far left: Mail, Calendar, Contacts, Tasks, Notes
+//! and Files, with settings at the bottom; their names can be hidden in
 //! quick settings. Each app is a page of the one window: the rail, Ctrl+1
 //! to Ctrl+5 (Outlook's keys), the Go menu, the desktop file's actions and
 //! `katna-mail --page NAME` (D-Bus `ActivateAction("open-page", [NAME])`)
@@ -40,18 +40,16 @@ pub(super) enum App {
     Contacts,
     Tasks,
     Notes,
-    Feeds,
     Files,
 }
 
 impl App {
-    pub(super) const ALL: [Self; 7] = [
+    pub(super) const ALL: [Self; 6] = [
         Self::Mail,
         Self::Calendar,
         Self::Contacts,
         Self::Tasks,
         Self::Notes,
-        Self::Feeds,
         Self::Files,
     ];
 
@@ -62,7 +60,6 @@ impl App {
             Self::Contacts => "rail-contacts",
             Self::Tasks => "rail-tasks",
             Self::Notes => "rail-notes",
-            Self::Feeds => "rail-feeds",
             Self::Files => "rail-files",
         })
     }
@@ -88,15 +85,8 @@ impl App {
             Self::Contacts => "contacts",
             Self::Tasks => "tasks",
             Self::Notes => "notes",
-            Self::Feeds => "feeds",
             Self::Files => "attachment",
         }
-    }
-
-    /// Whether the page has a side column (folders, calendars, lists), so
-    /// its big button heads the column rather than waiting in the rail.
-    pub(super) fn has_side(self) -> bool {
-        !matches!(self, Self::Feeds)
     }
 
     /// The big button at the top of the left bar: the page's own action,
@@ -107,7 +97,7 @@ impl App {
             Self::Contacts => ("person-add", tr!("contacts-create")),
             Self::Tasks => ("add", tr!("tasks-create")),
             Self::Notes => ("pen", tr!("notes-new-note")),
-            Self::Mail | Self::Files | Self::Feeds => ("compose", tr!("compose")),
+            Self::Mail | Self::Files => ("compose", tr!("compose")),
         }
     }
 
@@ -117,7 +107,6 @@ impl App {
             Self::Mail | Self::Contacts | Self::Tasks | Self::Files => String::new(),
             Self::Calendar => tr!("app-calendar-promise"),
             Self::Notes => tr!("app-notes-promise"),
-            Self::Feeds => tr!("app-feeds-promise"),
         }
     }
 }
@@ -246,7 +235,7 @@ impl MailWindow {
             }
             App::Tasks => self.tasks_create(window, cx),
             App::Notes => self.new_note(window, cx),
-            App::Mail | App::Files | App::Feeds => self.compose(&super::Compose, window, cx),
+            App::Mail | App::Files => self.compose(&super::Compose, window, cx),
         }
     }
 
@@ -281,7 +270,7 @@ impl MailWindow {
                     window.focus(focus, cx);
                 }
             }
-            App::Notes | App::Files | App::Feeds => {}
+            App::Notes | App::Files => {}
         }
     }
 
@@ -295,7 +284,7 @@ impl MailWindow {
             App::Files => self.swap_files_search(entering, cx),
             App::Contacts => self.swap_contacts_search(entering, cx),
             App::Notes => self.sync_notes_search(cx),
-            App::Mail | App::Feeds => {}
+            App::Mail => {}
         }
     }
 
@@ -561,7 +550,7 @@ impl MailWindow {
             App::Notes => self.render_notes(th, window, cx),
             App::Tasks => self.render_tasks(th, cx),
             App::Files => self.render_files(th, window, cx),
-            App::Mail | App::Feeds => self.render_coming_soon(th),
+            App::Mail => self.render_coming_soon(th),
         };
         // Edge to edge on a phone, as Mail's cards are.
         let shape = self.layout.shape;

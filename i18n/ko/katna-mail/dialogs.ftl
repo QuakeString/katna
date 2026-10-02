@@ -167,7 +167,6 @@ tour-search-text = 검색은 오프라인에서도 됩니다. 오른쪽 끝의 �
 tour-menu-title = 폴더 표시 또는 숨기기
 tour-menu-text = 이 버튼은 폴더 목록을 접습니다. 목록이 숨겨져 있을 때 왼쪽의 메일에 포인터를 올리면 폴더가 보입니다.
 tour-apps-title = 앱
-tour-apps-text = 지금은 메일이 여기에 있습니다. 캘린더, 연락처, 할 일, 메모, 피드도 이 막대에 추가될 예정입니다.
 tour-tabs-title = 받은편지함 탭
 tour-tabs-text = 새 메일은 기본, 프로모션, 소셜, 업데이트, 포럼으로 분류됩니다. 빠른 설정에서 탭을 끌 수 있습니다.
 tour-list-title = 메시지

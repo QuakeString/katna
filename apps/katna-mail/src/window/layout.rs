@@ -615,7 +615,6 @@ impl MailWindow {
             || self.page_editor_open()
             || self.settings_open
             || self.settings_page.is_some()
-            || !self.app.has_side()
             || self.mail.is_err()
             || self.accounts.is_empty()
         {

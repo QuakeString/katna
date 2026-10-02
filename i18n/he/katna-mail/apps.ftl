@@ -9,7 +9,6 @@ rail-calendar = יומן
 rail-contacts = אנשי קשר
 rail-tasks = משימות
 rail-notes = הערות
-rail-feeds = פידים
 
 ## Pages of apps still to come
 
@@ -18,7 +17,6 @@ app-coming-soon = בקרוב
 app-calendar-promise = יומני CalDAV, הזמנות לפגישות מהאימייל ותזכורות, לצד תיבת הדואר הנכנס.
 app-tasks-promise = רשימות משימות שמסונכרנות עם CalDAV, ומשימות שנוצרות מאימייל.
 app-notes-promise = הערות מהירות, והערות על אימייל או שיחה לשימוש מאוחר יותר.
-app-feeds-promise = קריאת פידים של RSS ו־Atom לצד האימייל.
 
 ## Contacts page
 
