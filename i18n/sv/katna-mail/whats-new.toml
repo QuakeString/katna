@@ -3005,3 +3005,19 @@ Sökrutan högst upp är lättare: en mycket svag kant och fyllning medan du
 inte använder den, och ett vitt fält med en mjuk accentkant medan du
 skriver, i stället för den grå bubblan med en tjock färgad ring.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Uppdateringar kommer tidigare"
+text = """
+Katna letar nu efter en ny version varje timme och direkt när datorn
+vaknar ur viloläge, så uppdateringsaviseringen kommer strax efter en ny
+version släppts.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Diskreta linjer även i mörkt läge"
+text = """
+I mörkt läge är linjerna mellan mejl, under rubriker och runt kort lika
+diskreta som i ljust läge. Fält, chipp och knappar behåller sin tydliga
+kant.
+"""

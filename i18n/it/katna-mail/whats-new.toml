@@ -3076,3 +3076,19 @@ molto tenui mentre non la usi, e un campo bianco con un leggero bordo
 d’accento mentre scrivi, invece della pillola grigia con un anello colorato
 spesso.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Gli aggiornamenti arrivano prima"
+text = """
+Katna ora cerca una nuova versione ogni ora e subito dopo che il computer
+esce dalla sospensione, così la notifica di aggiornamento arriva poco dopo
+ogni rilascio.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Linee tenui anche in modalità scura"
+text = """
+In modalità scura, le linee tra le email, sotto le intestazioni e attorno
+alle schede sono tenui come in modalità chiara. Campi, chip e pulsanti
+mantengono un contorno ben visibile.
+"""
