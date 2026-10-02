@@ -687,7 +687,6 @@ impl MailWindow {
                     )
                     .children(self.render_chat_summary_drop(th, cx))
                     .children(self.render_chat_people(th, cx))
-                    .children(self.render_files_picker(key, th, cx))
                     .children(self.render_pin_list(th, cx))
                     .children(self.render_pin_replace(th, cx)),
             )

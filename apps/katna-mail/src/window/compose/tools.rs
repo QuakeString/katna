@@ -778,8 +778,9 @@ impl MailWindow {
             .children(sparkle)
             .child(gap())
             .child(
-                tool("compose-attach", "attachment", tr!("compose-tool-attach"))
-                    .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
+                tool("compose-attach", "attachment", tr!("compose-tool-attach")).on_click(
+                    cx.listener(|this, _, window, cx| this.open_compose_picker(window, cx)),
+                ),
             )
             .when(link, |d| {
                 d.child(

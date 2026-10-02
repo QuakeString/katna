@@ -16,7 +16,7 @@ use std::{
 };
 
 use katna_core::{AccountId, OAuthProvider};
-use katna_dbus::{DriveUpload, drive_state};
+use katna_dbus::{CloudEntry, DriveUpload, drive_state};
 use katna_sync::{
     Error, Result as SyncResult,
     drive::{Drive, DriveFile},
@@ -37,6 +37,9 @@ struct Upload {
     status: DriveUpload,
     /// The file in Drive, once uploaded.
     file: Option<String>,
+    /// Whether Katna put `file` there, so cancelling bins it; a file
+    /// someone picked from their drive is only linked and stays.
+    owned: bool,
     /// The upload under way; dropping it stops it.
     task: Option<smol::Task<()>>,
 }
@@ -150,6 +153,7 @@ impl Daemon {
             Upload {
                 status,
                 file: None,
+                owned: true,
                 task: Some(task),
             },
         );
@@ -207,10 +211,43 @@ impl Daemon {
             Upload {
                 status,
                 file: None,
+                owned: true,
                 task: Some(task),
             },
         );
         tracing::info!(upload = id, %account, "uploading into the drive");
+        Ok(id)
+    }
+
+    /// Links file `entry`, already in the drive of `account`, to a
+    /// message as a finished upload, so it is shared at Send as an
+    /// uploaded file is. Cancelling it leaves the file where it is.
+    pub fn cloud_link(&self, account: AccountId, entry: &CloudEntry) -> Result<i64, CommandError> {
+        if entry.id.is_empty() || entry.folder {
+            return Err(CommandError::InvalidArgs(
+                "only a file can be linked".into(),
+            ));
+        }
+        let id = self.uploads.next.fetch_add(1, Ordering::Relaxed) + 1;
+        let status = DriveUpload {
+            id,
+            account: account.0,
+            name: entry.name.clone(),
+            sent: entry.size,
+            size: entry.size,
+            state: drive_state::DONE.into(),
+            link: entry.link.clone(),
+            error: String::new(),
+        };
+        self.uploads.all.lock().unwrap().insert(
+            id,
+            Upload {
+                status,
+                file: Some(entry.id.clone()),
+                owned: false,
+                task: None,
+            },
+        );
         Ok(id)
     }
 
@@ -224,13 +261,14 @@ impl Daemon {
             .ok_or_else(|| CommandError::InvalidArgs(format!("no upload {id}")))
     }
 
-    /// Stops upload `id` and moves its file to the bin.
+    /// Stops upload `id` and moves the file it put in the drive to the
+    /// bin; a linked file stays.
     pub async fn drive_cancel(&self, id: i64) -> Result<bool, CommandError> {
         let Some(upload) = self.uploads.all.lock().unwrap().remove(&id) else {
             return Ok(false);
         };
         drop(upload.task);
-        if let Some(file) = upload.file {
+        if let Some(file) = upload.file.filter(|_| upload.owned) {
             let drive = self.drive(AccountId(upload.status.account)).await?;
             if let Err(err) = drive.remove(&file).await {
                 tracing::warn!(upload = id, %err, "could not remove the uploaded file");

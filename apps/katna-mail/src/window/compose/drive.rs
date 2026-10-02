@@ -103,10 +103,12 @@ pub(super) fn links_html(files: &[DriveFile]) -> String {
             continue;
         };
         let size = format::size(file.size);
-        let under = if file.onedrive {
-            tr!("compose-onedrive-card-detail", size = size)
-        } else {
-            tr!("compose-drive-card-detail", size = size)
+        // A drive's own document has no size.
+        let under = match (file.onedrive, file.size) {
+            (true, 0) => tr!("compose-onedrive-card-name"),
+            (false, 0) => tr!("compose-drive-card-name"),
+            (true, _) => tr!("compose-onedrive-card-detail", size = size),
+            (false, _) => tr!("compose-drive-card-detail", size = size),
         };
         html.push_str(&format!(
             "<div style=\"margin:12px 0 0\"><div style=\"display:inline-block;\
@@ -150,6 +152,102 @@ impl MailWindow {
         });
         compose.attach_scroll.scroll_to_bottom();
         self.start_drive_upload(path, cx);
+    }
+
+    /// A new message with file `entry` of the drive of `account` on it
+    /// as a link: Files' Attach for a file too big for mail or one of the
+    /// drive's own documents.
+    pub(in crate::window) fn new_mail_with_link(
+        &mut self,
+        account: AccountId,
+        entry: katna_dbus::CloudEntry,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.open_compose(super::Kind::New, None, window, cx);
+        if self
+            .compose
+            .as_ref()
+            .is_some_and(|c| c.kind == super::Kind::New)
+        {
+            self.link_drive_file(account, entry, cx);
+        }
+    }
+
+    /// Compose is open, not on its way out.
+    pub(in crate::window) fn compose_writing(&self) -> bool {
+        self.compose.as_ref().is_some_and(|c| !c.closing)
+    }
+
+    /// Takes down Compose's open popup, as the attach picker opens; and
+    /// whether Compose is open to attach to.
+    pub(in crate::window) fn compose_takes_files(&mut self) -> bool {
+        match &mut self.compose {
+            Some(compose) if !compose.closing => {
+                compose.popup = None;
+                true
+            }
+            _ => false,
+        }
+    }
+
+    /// Puts file `entry`, already in the drive of `account`, on the
+    /// message as a link chip, shared with the recipients at Send like an
+    /// uploaded file. Taking the chip off leaves the file in the drive.
+    pub(in crate::window) fn link_drive_file(
+        &mut self,
+        account: AccountId,
+        entry: katna_dbus::CloudEntry,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(connection) = self.daemon.clone() else {
+            self.show_snackbar(daemon::NOT_RUNNING.to_owned(), None, cx);
+            return;
+        };
+        let onedrive = drive_provider(self, account) == Some(OAuthProvider::Microsoft);
+        // No file on this computer: the drive's id keeps the chip apart.
+        let path = PathBuf::from(format!("drive:{}:{}", account.0, entry.id));
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if compose.drive.iter().any(|f| f.path == path) {
+            return;
+        }
+        compose.drive.push(DriveFile {
+            path: path.clone(),
+            name: entry.name.clone(),
+            size: entry.size,
+            account,
+            onedrive,
+            upload: None,
+            sent: entry.size,
+            state: DriveState::Done {
+                link: entry.link.clone(),
+            },
+        });
+        compose.attach_scroll.scroll_to_bottom();
+        cx.spawn(async move |this, cx| {
+            let linked = daemon::cloud_link(&connection, account.0, &entry).await;
+            this.update(cx, |this, cx| {
+                let Some(file) = this
+                    .compose
+                    .as_mut()
+                    .and_then(|c| c.drive.iter_mut().find(|f| f.path == path))
+                else {
+                    if let Ok(id) = linked {
+                        this.cancel_drive_upload(id, cx);
+                    }
+                    return;
+                };
+                match linked {
+                    Ok(id) => file.upload = Some(id),
+                    Err(err) => file.state = DriveState::Failed(err),
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
     }
 
     /// Asks the daemon to upload the chip of `path`, again after a
@@ -590,6 +688,7 @@ impl MailWindow {
                     .child(tr!("compose-drive-uploading", percent = percent))
                     .into_any_element()
             }
+            DriveState::Done { .. } if file.size == 0 => div().into_any_element(),
             DriveState::Done { .. } => div()
                 .flex_none()
                 .text_color(rgba(th.text_dim))
