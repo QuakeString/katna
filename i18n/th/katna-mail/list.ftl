@@ -39,6 +39,7 @@ list-results = ผลการค้นหาสำหรับ “{ $query }”
 list-results-corrected = กำลังแสดงผลการค้นหาสำหรับ “{ $query }”
 list-search-instead = ค้นหา “{ $query }” แทน
 list-files-more = +{ $count }
+list-replied = คุณตอบกลับแล้ว
 
 ## Mail list: Select menu (which lines to tick)
 

@@ -166,6 +166,7 @@ files-share-remove = యాక్సెస్ తీసివేయండి
 files-share-copy-link = లింక్‌ను కాపీ చేయండి
 files-share-share = షేర్ చేయండి
 files-share-done = పూర్తయింది
+files-share-close = మూసివేయండి
 files-share-sharing = షేర్ చేస్తోంది…
 files-share-shared = { $count ->
     [one] 1 వ్యక్తితో షేర్ చేయబడింది

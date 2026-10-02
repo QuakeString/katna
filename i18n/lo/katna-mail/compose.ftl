@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ໃຫຍ່ເກີນໄປ: ຂໍ້ຄ�
 compose-forward-files-missing = ໄຟລ໌ຂອງຂໍ້ຄວາມທີ່ສົ່ງຕໍ່ຍັງບໍ່ໄດ້ດາວໂຫຼດ, ສະນັ້ນຈຶ່ງບໍ່ໄດ້ແນບມາ.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ລຶບໄຟລ໌ແນບ
+compose-attachment-open-tip = ເປີດເພື່ອກວດເບິ່ງ
 compose-attachments-total = { $count } ໄຟລ໌, { $size }
 compose-drive-note = { $name } ໃຫຍ່ກວ່າ { $limit } ຈຶ່ງຈະຖືກອັບໂຫຼດໄປທີ່ Google Drive ຂອງທ່ານ ແລະ ຂໍ້ຄວາມຈະມີລິ້ງ
 compose-drive-tip = ຢູ່ໃນ Google Drive ຂອງທ່ານ; ຂໍ້ຄວາມຈະມີລິ້ງ

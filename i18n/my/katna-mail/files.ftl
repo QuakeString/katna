@@ -164,6 +164,7 @@ files-share-remove = အသုံးပြုခွင့် ဖယ်ရန်
 files-share-copy-link = လင့်ခ် ကူးရန်
 files-share-share = မျှဝေရန်
 files-share-done = ပြီးပါပြီ
+files-share-close = ပိတ်ရန်
 files-share-sharing = မျှဝေနေသည်…
 files-share-shared = { $count ->
    *[other] လူ { $count } ယောက်နှင့် မျှဝေပြီး
