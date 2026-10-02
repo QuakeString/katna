@@ -629,10 +629,60 @@ impl MailWindow {
     ) -> (AnyElement, Option<AnyElement>) {
         let own = self.is_own(email);
         let muted = !own && self.sender_muted(email);
-        let name = profile
-            .as_ref()
-            .and_then(|p| p.summary.name.clone())
+        let known_name = profile.as_ref().and_then(|p| p.summary.name.clone());
+        // The signature of the open mail, else of their newest one.
+        let open_signature = self
+            .reading
+            .then(|| self.reader.as_ref()?.signature_of(email))
+            .flatten();
+        // A colleague signed the open mail from a shared address
+        // ("accounts@"): the card is theirs, not that of a name the
+        // address used on other mail.
+        let signer = open_signature.as_deref().and_then(|s| {
+            let signer = signature::signer(s)?;
+            (known_name.is_none() || signature::someone_else(s, known_name.as_deref()))
+                .then_some(signer)
+        });
+        let name = signer
+            .clone()
+            .or(known_name)
             .or_else(|| name.map(str::to_owned));
+        // What older mail said of the person is not the signer's.
+        let card = profile.as_ref().map(|p| match signer {
+            Some(_) => profile::Card {
+                website: p.card.website.clone(),
+                ..profile::Card::default()
+            },
+            None => p.card.clone(),
+        });
+        let looked_up = self
+            .contact
+            .companies
+            .get(&email.to_lowercase())
+            .cloned()
+            .flatten();
+        let signature = open_signature.or_else(|| profile.as_ref()?.signature.clone());
+        let details = signature.and_then(|signature| {
+            let shown: Vec<&str> = card
+                .iter()
+                .flat_map(|c| [&c.title, &c.phone])
+                .flatten()
+                .map(String::as_str)
+                .collect();
+            let known_company = card
+                .as_ref()
+                .and_then(|c| c.company.as_deref())
+                .or(looked_up.as_deref().map(|c| c.name.as_str()));
+            signature::details(
+                &signature,
+                &signature::Known {
+                    name: name.as_deref(),
+                    email,
+                    shown: &shown,
+                    company: known_company,
+                },
+            )
+        });
         let shown_name = name.clone().unwrap_or_else(|| email.to_owned());
         // All of the card's text can be selected and copied, as the
         // conversation's can.
@@ -680,7 +730,12 @@ impl MailWindow {
                     }),
             );
 
-        let phone = profile.as_ref().and_then(|p| p.card.phone.clone());
+        let phone = card.as_ref().and_then(|c| c.phone.clone()).or_else(|| {
+            details
+                .as_ref()
+                .and_then(|d| d.phones.first())
+                .map(|p| p.number.clone())
+        });
         // On a phone the card is a sheet with no close button, and the
         // buttons scroll with the rest.
         let sheet = self.layout.shape.is_phone();
@@ -692,7 +747,7 @@ impl MailWindow {
             actions = actions.child(self.contact_save_button(
                 email,
                 name.clone(),
-                profile.as_ref().map(|p| p.card.clone()),
+                card.clone(),
                 size,
                 th,
                 cx,
@@ -715,43 +770,10 @@ impl MailWindow {
                     .into_any_element(),
             );
         }
-        let looked_up = self
-            .contact
-            .companies
-            .get(&email.to_lowercase())
-            .cloned()
-            .flatten();
-        // What their latest signature says: in a chat, the one they signed
-        // this conversation with.
-        let signature = self
-            .chat_shown()
-            .then(|| self.reader.as_ref()?.signature_of(email))
-            .flatten()
-            .or_else(|| profile.as_ref()?.signature.clone());
-        let card = profile.as_ref().map(|p| &p.card);
-        let details = signature.and_then(|signature| {
-            let shown: Vec<&str> = card
-                .into_iter()
-                .flat_map(|c| [&c.title, &c.phone])
-                .flatten()
-                .map(String::as_str)
-                .collect();
-            let known_company = card
-                .and_then(|c| c.company.as_deref())
-                .or(looked_up.as_deref().map(|c| c.name.as_str()));
-            signature::details(
-                &signature,
-                &signature::Known {
-                    name: name.as_deref(),
-                    email,
-                    shown: &shown,
-                    company: known_company,
-                },
-            )
-        });
         if let Some(profile) = &profile
+            && let Some(card) = &card
             && let Some(details) =
-                self.contact_details(profile, details.as_ref(), &mut pieces, th, cx)
+                self.contact_details(profile, card, details.as_ref(), &mut pieces, th, cx)
         {
             sections.push(details);
         }
@@ -761,7 +783,9 @@ impl MailWindow {
             let from = details.as_ref().map(|d| &d.company);
             let name = from
                 .and_then(|c| c.name.clone().or_else(|| c.logo.clone()))
-                .or_else(|| card.and_then(|c| c.company.clone()))?;
+                .or_else(|| card.as_ref().and_then(|c| c.company.clone()))
+                // Else it goes by its website.
+                .or_else(|| from?.website.as_deref().map(signature::host))?;
             let says_more = from.is_some_and(|c| {
                 c.website.is_some()
                     || !c.pages.is_empty()
@@ -1072,12 +1096,12 @@ impl MailWindow {
     fn contact_details(
         &self,
         profile: &Profile,
+        card: &profile::Card,
         details: Option<&signature::Details>,
         pieces: &mut Pieces,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
-        let card = &profile.card;
         // The title, with the company under it in a quieter color.
         let title = card
             .title
