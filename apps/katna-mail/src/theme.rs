@@ -750,7 +750,7 @@ mod tests {
         let desktop = SystemColors::default().with_schemes(vec![DesktopScheme {
             id: "kde:BreezeClassic".to_owned(),
             name: "Breeze Classic".to_owned(),
-            light: Some(breeze),
+            light: Some(breeze.clone()),
             dark: None,
         }]);
         assert_eq!(
@@ -758,6 +758,21 @@ mod tests {
             Some(false)
         );
         assert_eq!(Theme::forced_dark("nord", &desktop), None);
+        // System colours from a dark KDE scheme without a light partner:
+        // Light mode is Katna's light palette in the scheme's accent.
+        let mut alone = SystemColors::kde(Scheme {
+            name: "Breath Dark".to_owned(),
+            window_bg: 0x2a2e32ff,
+            view_bg: 0x1b1e20ff,
+            ..breeze.clone()
+        });
+        alone.accent = Some(0x1abc9cff);
+        assert_eq!(Theme::forced_dark("system", &alone), None);
+        let th = Theme::pick(false, "system", Accent::System, &alone);
+        assert!(!th.dark);
+        assert_eq!(th.surface, Theme::new(false).surface);
+        assert!(!Theme::picks_scheme(false, "system", &alone));
+        assert!(Theme::pick(true, "system", Accent::System, &alone).dark);
         let th = Theme::pick(true, "kde:BreezeClassic", Accent::Scheme, &desktop);
         assert_eq!((th.dark, th.surface), (false, 0xfcfcfcff));
         assert!(Theme::picks_scheme(false, "kde:BreezeClassic", &desktop));
