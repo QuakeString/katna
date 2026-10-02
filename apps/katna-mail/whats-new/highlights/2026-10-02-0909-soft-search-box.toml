@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A softer search box"
+text = """
+The search box at the top is lighter: a very faint edge and fill while you
+are not using it, and a white field with a soft accent edge while you type,
+instead of the grey pill with a thick coloured ring.
+"""

@@ -1479,8 +1479,8 @@ GPUI global):
   Windows keeps drawing the corners, shadow and resize edges.
 - *Blurred background*: the window's page color becomes translucent
   (`katna_chrome::tokens::blur_alpha`: 75 % light, 80 % dark; the idle
-  search box is 40 % glass over it with a faint edge and turns solid while
-  focused) and the
+  search box's barely tinted fill lets the blur through and turns solid
+  while focused) and the
   compositor blurs what is behind it: `ext_background_effect_v1` (KWin 6.7),
   else `org_kde_kwin_blur`, and `_KDE_NET_WM_BLUR_BEHIND_REGION` on X11.
   The blur region is the frame less its rounded corners; the CSD shadow is
@@ -1897,8 +1897,12 @@ Gemini or confidential mode):
   plug in. Mail is the only app so far; Contacts lists the people the mail
   was exchanged with, most written with first, and a click searches their
   mail; the others show a "coming soon" page saying what they will do.
-- **Top bar.** Settings gear on the right; the search box has a search
-  options button at its right end that opens a panel (from, to, subject,
+- **Top bar.** Settings gear on the right. The search box is a pill
+  with a very faint 1 px edge and a barely tinted fill (2–3 % of the text
+  color) while idle; under the pointer the edge darkens a little, and
+  focused it becomes a solid field with a half-strength accent edge, a
+  slight lift and an accent magnifier (`window/nav.rs`, `search_fill`,
+  `search_edge`). It has a search options button at its right end that opens a panel (from, to, subject,
   has the words, doesn't have, date within, has attachment) which builds
   the query.
 - **Panes.** Quick settings choose the reading pane: *right of the list*
