@@ -2307,7 +2307,7 @@ impl MailWindow {
                     )
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.library.menu = None;
-                        this.message_in_window(message, false, cx);
+                        this.message_in_window(message, None, None, cx);
                     }))
                     .into_any_element(),
                 );

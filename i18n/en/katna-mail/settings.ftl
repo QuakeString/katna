@@ -118,6 +118,7 @@ sounds-not-sent-detail = When sending fails
 # Tooltip of the button that plays a sound.
 sounds-play = Play
 # The sounds to pick from (the desktop's own).
+sound-katna-chime = Katna chime
 sound-new-email = New email
 sound-new-message = New message
 sound-sent = Sent

@@ -6154,7 +6154,6 @@ dependencies = [
  "katna-core",
  "keyring-core",
  "serde",
- "tauri-winrt-notification 0.8.1",
  "tracing",
  "tray-icon",
  "windows 0.62.2",
@@ -7232,7 +7231,7 @@ dependencies = [
  "log",
  "mac-notification-sys",
  "serde",
- "tauri-winrt-notification 0.7.3",
+ "tauri-winrt-notification",
  "zbus",
 ]
 
@@ -10399,17 +10398,6 @@ checksum = "9ed071c670382e85fc2f48ae706492d8c338f4f89bf72520d32f8abfe880aade"
 dependencies = [
  "thiserror 2.0.21",
  "windows 0.61.3",
- "windows-version",
-]
-
-[[package]]
-name = "tauri-winrt-notification"
-version = "0.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f37a6c354fd28fc9e322ed9bd47e3959576dad28c9d58ea1cf888cce1c7ccb36"
-dependencies = [
- "thiserror 2.0.21",
- "windows 0.62.2",
  "windows-version",
 ]
 
