@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _ปฏิทิน
 desktop-menu-page-contacts = _รายชื่อติดต่อ
 desktop-menu-page-tasks = _งาน
 desktop-menu-page-notes = _โน้ต
+desktop-menu-page-files = _ไฟล์
 desktop-menu-next = _การสนทนาถัดไป
 desktop-menu-previous = _การสนทนาก่อนหน้า
 desktop-menu-message = _ข้อความ

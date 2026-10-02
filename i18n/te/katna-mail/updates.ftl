@@ -1,7 +1,6 @@
 # Katna Mail, Telugu (తెలుగు).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 update-dialog-title = అప్‌డేట్‌లు
 update-dialog-downloading-detail = ఈ విండోను మూసివేసినా డౌన్‌లోడ్ కొనసాగుతుంది.
 update-dialog-progress = { $total }లో { $done }

@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “සියලු ගිණුම්” ෆෝ
 accounts-row = ගිණුම්
 accounts-row-detail = ෆෝල්ඩර පැනලය සහ ගිණුම් මෙනුව ගිණුම් මෙම අනුපිළිවෙළින් පෙන්වයි; පළමුවැන්න පෙරනිමියයි. ගිණුමක් ඉවත් කිරීමෙන් මෙම පරිගණකයේ ඇති Katna සතු එහි තැපැල් පිටපත මැකේ. තැපැල් සේවාදායකයේ රැඳේ.
 accounts-none = තවම ගිණුම් නැත.
+accounts-pop3-row = සේවාදායකයේ ඇති තැපැල්
+accounts-pop3-row-detail = POP3 ගිණුම් තැපැල් මෙම පරිගණකයට බාගත කරයි. ඉන්පසු සේවාදායකයේ ඇති පිටපතට කුමක් වේද යන්න තෝරන්න.
+accounts-pop3-with-katna = මා Katna හි මකන තුරු තබා ගන්න
+accounts-pop3-at-once = බාගත වූ වහාම මකන්න
+accounts-pop3-after-days = { $count ->
+    [one] දින { $count }කට පසු මකන්න
+   *[other] දින { $count }කට පසු මකන්න
+}
+accounts-pop3-never = කිසිදා නොමකන්න
+accounts-pop3-days-less = දින අඩුවෙන්
+accounts-pop3-days-more = දින වැඩියෙන්
 accounts-kind-imported = ආයාත කළ
 accounts-picture-reset = ඩෙස්ක්ටොප් පින්තූරය භාවිත කරන්න
 accounts-picture-change = පින්තූරය වෙනස් කරන්න
@@ -72,6 +83,9 @@ accounts-confirm-word = මකන්න
 accounts-confirm-placeholder = “{ accounts-confirm-word }” ටයිප් කරන්න
 accounts-confirm-prompt = තහවුරු කිරීමට, “{ accounts-confirm-word }” ටයිප් කරන්න:
 accounts-cancel = අවලංගු කරන්න
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Katna බාගත කළ තැපැල් සහ ඇමුණුම්, යවන්නාගේ පින්තූර සහ සෙවුම් සුචිය මකා, පසුව මෑත තැපැල් නැවත බාගත කරයි. ගිණුම්, සැකසීම් සහ මෙම පරිගණකයේ පමණක් ඇති තැපැල් එලෙසම පවතී.
 reset-cache-button = හැඹිලිය යළි සකසන්න
 reset-cache-title = හැඹිලිය යළි සකසන්නද?

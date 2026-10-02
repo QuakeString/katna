@@ -2,6 +2,10 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Top bar
+
+top-brand = Katna
+
 ## App rail (and the bottom bar on a phone)
 
 rail-mail = សំបុត្រ
@@ -9,6 +13,7 @@ rail-calendar = ប្រតិទិន
 rail-contacts = ទំនាក់ទំនង
 rail-tasks = កិច្ចការ
 rail-notes = កំណត់ចំណាំ
+rail-files = ឯកសារ
 
 ## Pages of apps still to come
 
@@ -26,4 +31,3 @@ app-contacts-count = មនុស្ស { $count } នាក់ពីសំប�
 app-contacts-top = មនុស្ស { $count } នាក់ដំបូងពីសំបុត្ររបស់អ្នក អ្នកដែលឆ្លើយឆ្លងច្រើនបំផុតនៅមុនគេ
 app-contacts-messages = សារ { $count }
 app-contacts-last = ចុងក្រោយ { $date }
-top-brand = Katna

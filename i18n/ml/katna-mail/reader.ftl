@@ -86,6 +86,9 @@ security-missing-key = നിങ്ങളുടെ പക്കൽ ഇല്ല�
 security-missing-key-id = നിങ്ങളുടെ പക്കൽ ഇല്ലാത്ത ഒരു കീ ({ $key }) ഉപയോഗിച്ച് ഒപ്പിട്ടതിനാൽ പരിശോധിക്കാനാകില്ല
 security-signature-unavailable = ഒപ്പിട്ടത്; ഒപ്പ് പരിശോധിക്കാൻ { $tool } ഇൻസ്റ്റാൾ ചെയ്യുക
 security-signature-error = ഒപ്പ് പരിശോധിക്കാനായില്ല.
+
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } ഇത് { $count ->
     [one] ഒരിക്കൽ
    *[other] { $count } തവണ
@@ -127,10 +130,12 @@ attachment-count = { $count ->
    *[other] { $count } അറ്റാച്ച്‌മെന്റുകൾ
 }
 attachment-save = സംരക്ഷിക്കുക
+attachment-forward = ഫോർവേഡ് ചെയ്യുക
 attachment-save-all = എല്ലാം സംരക്ഷിക്കുക
 attachment-save-all-tooltip = എല്ലാ അറ്റാച്ച്‌മെന്റുകളും ഒരു ഫോൾഡറിലേക്ക് സംരക്ഷിക്കുക
 attachment-save-here = ഇവിടെ സംരക്ഷിക്കുക
 attachment-not-downloaded = ഈ സന്ദേശം ഡൗൺലോഡ് ചെയ്‌തിട്ടില്ല.
+attachment-open-message = അറ്റാച്ച്‌മെന്റുകൾ വായിക്കാൻ ഈ സന്ദേശം തുറക്കുക.
 attachment-not-found = ഈ അറ്റാച്ച്‌മെന്റ് സന്ദേശത്തിൽ കണ്ടെത്താനായില്ല.
 attachment-read-failed = { $name } വായിക്കാനായില്ല
 attachment-numbered = അറ്റാച്ച്‌മെന്റ് { $number }
@@ -178,8 +183,9 @@ print-encrypted = (എൻക്രിപ്റ്റ് ചെയ്‌തത്
 print-to = സ്വീകർത്താവ്: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = അറ്റാച്ച്‌മെന്റുകൾ വായിക്കാൻ ഈ സന്ദേശം തുറക്കുക.
+text-pin = മുകളിൽ പിൻ ചെയ്യുക
+text-copy-address = വിലാസം പകർത്തുക
 text-copy = പകർത്തുക
 text-select-all = എല്ലാം തിരഞ്ഞെടുക്കുക

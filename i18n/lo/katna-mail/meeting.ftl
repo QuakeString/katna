@@ -1,7 +1,6 @@
 # Katna Mail, Lao (ລາວ): video calls around mail.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 meeting-starting = ກຳລັງເລີ່ມການປະຊຸມທາງວິດີໂອ…
 meeting-mail-subject = ການປະຊຸມທາງວິດີໂອ: { $subject }
 meeting-mail-subject-plain = ການປະຊຸມທາງວິດີໂອ

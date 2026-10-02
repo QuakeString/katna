@@ -86,6 +86,9 @@ security-missing-key = మీ వద్ద లేని కీతో సంత�
 security-missing-key-id = మీ వద్ద లేని కీతో ({ $key }) సంతకం చేయబడింది, కాబట్టి చెక్ చేయడం సాధ్యం కాదు
 security-signature-unavailable = సంతకం చేయబడింది; సంతకాన్ని చెక్ చేయడానికి { $tool }ను ఇన్‌స్టాల్ చేయండి
 security-signature-error = సంతకాన్ని చెక్ చేయడం సాధ్యం కాలేదు.
+
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } దీన్ని { $count ->
     [one] ఒకసారి
    *[other] { $count } సార్లు
@@ -127,10 +130,12 @@ attachment-count = { $count ->
    *[other] { $count } అటాచ్‌మెంట్‌లు
 }
 attachment-save = సేవ్ చేయండి
+attachment-forward = ఫార్వర్డ్ చేయండి
 attachment-save-all = అన్నీ సేవ్ చేయండి
 attachment-save-all-tooltip = అన్ని అటాచ్‌మెంట్‌లను ఒక ఫోల్డర్‌లో సేవ్ చేయండి
 attachment-save-here = ఇక్కడ సేవ్ చేయండి
 attachment-not-downloaded = ఈ మెసేజ్ డౌన్‌లోడ్ చేయబడలేదు.
+attachment-open-message = అటాచ్‌మెంట్‌లను చదవడానికి ఈ మెసేజ్‌ను తెరవండి.
 attachment-not-found = ఈ అటాచ్‌మెంట్ మెసేజ్‌లో కనుగొనబడలేదు.
 attachment-read-failed = { $name }ను చదవడం సాధ్యం కాలేదు
 attachment-numbered = అటాచ్‌మెంట్ { $number }
@@ -178,8 +183,9 @@ print-encrypted = (ఎన్‌క్రిప్ట్ చేయబడింద
 print-to = స్వీకర్తలు: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = అటాచ్‌మెంట్‌లను చదవడానికి ఈ మెసేజ్‌ను తెరవండి.
+text-pin = పైన పిన్ చేయండి
+text-copy-address = అడ్రస్‌ను కాపీ చేయండి
 text-copy = కాపీ చేయండి
 text-select-all = అన్నీ ఎంచుకోండి

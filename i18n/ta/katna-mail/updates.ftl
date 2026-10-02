@@ -1,7 +1,6 @@
 # Katna Mail, Tamil (தமிழ்).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 update-dialog-title = புதுப்பிப்புகள்
 update-dialog-downloading-detail = இந்தச் சாளரத்தை மூடினாலும் பதிவிறக்கம் தொடரும்.
 update-dialog-progress = { $total }-இல் { $done }

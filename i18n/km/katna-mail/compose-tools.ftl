@@ -32,6 +32,7 @@ compose-tool-bold = ដិត (Ctrl+B)
 compose-tool-italic = ទ្រេត (Ctrl+I)
 compose-tool-underline = គូសបន្ទាត់ក្រោម (Ctrl+U)
 compose-tool-text-color = ពណ៌អត្ថបទ
+compose-tool-colors = ពណ៌អត្ថបទ និងពណ៌បន្លិច
 compose-tool-background-color = ពណ៌ផ្ទៃខាងក្រោយ
 compose-tool-default-color = ពណ៌លំនាំដើម
 compose-tool-no-background = គ្មានផ្ទៃខាងក្រោយ
@@ -126,6 +127,10 @@ compose-tool-signature = បញ្ចូលហត្ថលេខា
 compose-tool-signature-none = គ្មានហត្ថលេខា
 compose-tool-signature-untitled = គ្មានចំណងជើង
 compose-tool-signature-manage = គ្រប់គ្រងហត្ថលេខា
+compose-signature-tag-tip = ជ្រើសរើសហត្ថលេខាផ្សេង
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = គំរូ
 compose-tool-templates-none = មិនទាន់មានគំរូនៅឡើយទេ
 compose-tool-template-save = រក្សាទុកជាគំរូ…

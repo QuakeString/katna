@@ -1,7 +1,6 @@
 # Katna Mail, Sinhala (සිංහල): video calls around mail.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 meeting-starting = වීඩියෝ ඇමතුම ආරම්භ වෙමින්…
 meeting-mail-subject = වීඩියෝ ඇමතුම: { $subject }
 meeting-mail-subject-plain = වීඩියෝ ඇමතුම

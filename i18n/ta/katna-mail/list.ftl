@@ -20,6 +20,7 @@ tab-provider-other = Katna வரிசைப்படுத்தியது
 
 list-select = தேர்ந்தெடு
 list-refresh = புதுப்பி
+list-back-to-top = மேலே செல்
 list-checking = புதிய அஞ்சலைச் சரிபார்க்கிறது…
 list-more = மேலும்
 list-mark-read = படித்ததாகக் குறி
@@ -386,11 +387,7 @@ menu-add-note = குறிப்பைச் சேர்
 menu-print-all = அனைத்தையும் அச்சிடு
 menu-new-window = புதிய சாளரத்தில் திற
 menu-move-to = இதற்கு நகர்த்து
-# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
-# video call.
 menu-follow-up = பின்தொடர்
-# Opens a submenu of the rarer actions: Report spam, Mark as important and
-# Pin to top.
 menu-more = மேலும்
 menu-move-to-heading = இதற்கு நகர்த்து:
 menu-find-from = { $name } அனுப்பிய மின்னஞ்சல்களைக் கண்டறி

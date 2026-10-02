@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “എല്ലാ അക്കൗണ്ടു�
 accounts-row = അക്കൗണ്ടുകൾ
 accounts-row-detail = ഫോൾഡർ പാളിയും അക്കൗണ്ട് മെനുവും അക്കൗണ്ടുകൾ ഈ ക്രമത്തിൽ കാണിക്കുന്നു; ആദ്യത്തേതാണ് സ്ഥിരസ്ഥിതി. ഒരു അക്കൗണ്ട് നീക്കം ചെയ്‌താൽ ഈ കമ്പ്യൂട്ടറിലുള്ള അതിന്റെ മെയിലിന്റെ Katna പകർപ്പ് ഇല്ലാതാക്കും. മെയിൽ സെർവറിൽ തുടരും.
 accounts-none = ഇതുവരെ അക്കൗണ്ടുകളൊന്നുമില്ല.
+accounts-pop3-row = സെർവറിലെ മെയിൽ
+accounts-pop3-row-detail = POP3 അക്കൗണ്ടുകൾ മെയിൽ ഈ കമ്പ്യൂട്ടറിലേക്ക് ഡൗൺലോഡ് ചെയ്യുന്നു. അതിനുശേഷം സെർവറിലെ പകർപ്പിന് എന്ത് സംഭവിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക.
+accounts-pop3-with-katna = Katna-യിൽ ഞാൻ ഇല്ലാതാക്കുന്നതുവരെ സൂക്ഷിക്കുക
+accounts-pop3-at-once = ഡൗൺലോഡ് ചെയ്‌തയുടൻ ഇല്ലാതാക്കുക
+accounts-pop3-after-days = { $count ->
+    [one] { $count } ദിവസത്തിന് ശേഷം ഇല്ലാതാക്കുക
+   *[other] { $count } ദിവസത്തിന് ശേഷം ഇല്ലാതാക്കുക
+}
+accounts-pop3-never = ഒരിക്കലും ഇല്ലാതാക്കരുത്
+accounts-pop3-days-less = കുറച്ച് ദിവസം
+accounts-pop3-days-more = കൂടുതൽ ദിവസം
 accounts-kind-imported = ഇമ്പോർട്ട് ചെയ്‌തത്
 accounts-picture-reset = ഡെസ്‌ക്‌ടോപ്പ് ചിത്രം ഉപയോഗിക്കുക
 accounts-picture-change = ചിത്രം മാറ്റുക
@@ -72,6 +83,9 @@ accounts-confirm-word = ഇല്ലാതാക്കുക
 accounts-confirm-placeholder = “{ accounts-confirm-word }” എന്ന് ടൈപ്പ് ചെയ്യുക
 accounts-confirm-prompt = സ്ഥിരീകരിക്കാൻ, “{ accounts-confirm-word }” എന്ന് ടൈപ്പ് ചെയ്യുക:
 accounts-cancel = റദ്ദാക്കുക
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Katna ഡൗൺലോഡ് ചെയ്‌ത മെയിലും അറ്റാച്ച്‌മെന്റുകളും, അയച്ചയാളുടെ ചിത്രങ്ങളും, തിരയൽ സൂചികയും ഇല്ലാതാക്കി, സമീപകാല മെയിൽ വീണ്ടും ഡൗൺലോഡ് ചെയ്യുന്നു. അക്കൗണ്ടുകളും ക്രമീകരണവും ഈ കമ്പ്യൂട്ടറിൽ മാത്രമുള്ള മെയിലും അതുപോലെ നിലനിൽക്കും.
 reset-cache-button = കാഷെ റീസെറ്റ് ചെയ്യുക
 reset-cache-title = കാഷെ റീസെറ്റ് ചെയ്യണോ?

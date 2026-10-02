@@ -8,8 +8,7 @@ about-tooltip = Katna గురించి
 about-tagline = Linux డెస్క్‌టాప్ కోసం మెయిల్, క్యాలెండర్
 about-whats-new = కొత్తగా ఏమి ఉన్నాయి
 
-## Updates, in a box under the version in About (only in packages that
-## update themselves).
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
 
 about-update-not-checked = అప్‌డేట్‌ల కోసం ఇంకా చెక్ చేయలేదు
 about-update-checking = అప్‌డేట్‌ల కోసం చెక్ చేస్తోంది…
@@ -70,6 +69,7 @@ about-credit-resvg = SVG చిత్రాలు
 about-credit-jiff = తేదీలు, టైమ్ జోన్‌లు
 about-credit-spellbook = స్పెల్ చెక్, Helix ఎడిటర్ నుండి
 about-credit-smol = ఒకేసారి అనేక పనులు చేయడం
+about-credit-color-schemes = అంతర్నిర్మిత కలర్ స్కీమ్‌ల పాలెట్‌లు
 about-all-libraries = Katna ఉపయోగించే ప్రతి లైబ్రరీ ({ $count })
 about-library-authors = రచయితలు: { $authors }
 about-license = Katna అనేది GNU GPL, వెర్షన్ 3 లేదా తర్వాతి వెర్షన్ కింద ఉన్న ఫ్రీ సాఫ్ట్‌వేర్.
@@ -127,6 +127,20 @@ onboarding-density-default = డిఫాల్ట్
 onboarding-density-compact = కాంపాక్ట్
 onboarding-continue = కొనసాగించండి
 
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna ఖాతాతో మరిన్ని పొందండి
+onboarding-katna-lead = ఇది ఐచ్ఛికం. ఇది Katna ఆన్‌లైన్ ఫీచర్‌లను ఆన్ చేస్తుంది, మీరు దీన్ని తర్వాత సెట్టింగ్‌లు > సబ్‌స్క్రిప్షన్‌లో తయారు చేసుకోవచ్చు.
+onboarding-katna-receipts-title = రీడ్ రసీదులు
+onboarding-katna-receipts-text = మీరు పంపిన మెయిల్‌ను ఎవరు ఎప్పుడు తెరిచారో చూడండి.
+onboarding-katna-links-title = లింక్ ట్రాకింగ్
+onboarding-katna-links-text = మీ మెయిల్‌లోని ఏ లింక్‌లు క్లిక్ అయ్యాయో చూడండి.
+onboarding-katna-activity-title = యాక్టివిటీ
+onboarding-katna-activity-text = మీరు పంపిన ప్రతిదాని ఓపెన్‌లు, క్లిక్‌లు ఒకే చోట.
+onboarding-katna-translate-title = ఆటోమేటిక్ అనువాదం
+onboarding-katna-translate-text = ఇతర భాషల్లో రాసిన మెయిల్‌ను మీ భాషలో చదవండి.
+onboarding-katna-private = దీనికి సొంత పాస్‌వర్డ్ ఉంటుంది. మీ మెయిల్ లాగిన్‌లు ఈ కంప్యూటర్‌ను ఎప్పటికీ విడిచి వెళ్లవు.
+
 ## First run: done
 
 onboarding-ready-title = అంతా సిద్ధం
@@ -170,6 +184,7 @@ tour-search-text = సెర్చ్ ఆఫ్‌లైన్‌లో కూ�
 tour-menu-title = ఫోల్డర్‌లను చూపండి లేదా దాచండి
 tour-menu-text = ఈ బటన్ ఫోల్డర్ లిస్ట్‌ను మడిచి దాచుతుంది. అది దాగి ఉన్నప్పుడు, ఫోల్డర్‌లను చూడటానికి ఎడమ వైపున ఉన్న మెయిల్‌పై పాయింటర్ ఉంచండి.
 tour-apps-title = మీ యాప్‌లు
+tour-apps-text = మెయిల్ ఇక్కడ ఉంటుంది, క్యాలెండర్, కాంటాక్ట్‌లు, టాస్క్‌లు, నోట్స్, ఫైల్‌ల పక్కన.
 tour-tabs-title = ఇన్‌బాక్స్ ట్యాబ్‌లు
 tour-tabs-text = కొత్త మెయిల్ ప్రాథమికం, ప్రమోషన్‌లు, సామాజికం, అప్‌డేట్‌లు, ఫోరమ్‌లుగా విభజించబడుతుంది. ట్యాబ్‌లను త్వరిత సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.
 tour-list-title = మీ మెసేజ్‌లు
@@ -195,12 +210,21 @@ crash-view = రిపోర్ట్ చూడండి
 crash-view-tooltip = ఈ కంప్యూటర్‌లో సేవ్ చేసిన రిపోర్ట్‌ను తెరవండి
 crash-copy = రిపోర్ట్‌ను కాపీ చేయండి
 crash-close = మూసివేయండి
+
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $address }కు మళ్లీ సైన్ ఇన్ చేయమని { $provider } అడుగుతోంది.
 sign-in-again-button = సైన్ ఇన్ చేయండి
 sign-in-again-tooltip = మీ బ్రౌజర్‌లో { $provider } సైన్ ఇన్ పేజీని తెరవండి
 sign-in-again-waiting = మీ బ్రౌజర్ కోసం వేచి ఉంది…
 sign-in-again-close = మూసివేయండి
+google-api-off = Katna Google Cloud ప్రాజెక్ట్‌లో { $api } ఆఫ్ చేయబడింది.
+google-api-turn-on = ఆన్ చేయండి
+google-api-turn-on-tooltip = { $api }ను ఆన్ చేయడానికి Google Cloudను తెరిచి, ఆపై మళ్లీ ప్రయత్నించండి నొక్కండి
 sign-in-again-done = { $address }కు మళ్లీ సైన్ ఇన్ అయ్యారు. మీ మెయిల్‌ను తెస్తోంది…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] ఈ సంభాషణను ట్రాష్‌కు తరలించాలా?

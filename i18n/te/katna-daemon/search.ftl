@@ -1,6 +1,9 @@
 # Katna Mail, Telugu (తెలుగు).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Results
+
 search-category-mail = మెయిల్
 search-category-people = వ్యక్తులు
 search-category-tasks = టాస్క్‌లు
@@ -18,6 +21,9 @@ search-event-in-days =
         [one] { $count } రోజులో
        *[other] { $count } రోజుల్లో
     }
+
+## Buttons on a result in KRunner
+
 search-reply-all = అందరికీ రిప్లయి ఇవ్వండి
 search-copy-address = అడ్రస్‌ను కాపీ చేయండి
 search-find-mail = మెయిల్‌ను కనుగొనండి

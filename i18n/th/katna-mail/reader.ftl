@@ -86,6 +86,9 @@ security-missing-key = ลงนามด้วยคีย์ที่คุณ
 security-missing-key-id = ลงนามด้วยคีย์ที่คุณไม่มี ({ $key }) จึงตรวจสอบไม่ได้
 security-signature-unavailable = มีลายเซ็น ติดตั้ง { $tool } เพื่อตรวจสอบลายเซ็น
 security-signature-error = ตรวจสอบลายเซ็นไม่ได้
+
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } เปิดแล้ว { $count } ครั้ง ล่าสุด { $when }
 tracking-opens-clicks = { $who } เปิดแล้ว { $opens } ครั้ง และคลิกลิงก์ { $clicks } ครั้ง ล่าสุด { $when }
 tracking-clicked = { $who } คลิกลิงก์ { $clicks } ครั้ง ล่าสุด { $when }
@@ -112,10 +115,12 @@ remote-picture-remove-failed = นำรูปภาพออกไม่ได�
 
 attachment-count = ไฟล์แนบ { $count } รายการ
 attachment-save = บันทึก
+attachment-forward = ส่งต่อ
 attachment-save-all = บันทึกทั้งหมด
 attachment-save-all-tooltip = บันทึกไฟล์แนบทั้งหมดลงในโฟลเดอร์
 attachment-save-here = บันทึกที่นี่
 attachment-not-downloaded = ข้อความนี้ไม่ได้ดาวน์โหลดไว้
+attachment-open-message = เปิดข้อความนี้เพื่อดูไฟล์แนบ
 attachment-not-found = ไม่พบไฟล์แนบนี้ในข้อความ
 attachment-read-failed = อ่าน { $name } ไม่ได้
 attachment-numbered = ไฟล์แนบ { $number }
@@ -151,8 +156,9 @@ print-encrypted = (เข้ารหัสอยู่ เปิดใน Katna
 print-to = ถึง: { $addresses }
 print-cc = สำเนา: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = เปิดข้อความนี้เพื่อดูไฟล์แนบ
+text-pin = ปักหมุดไว้ด้านบน
+text-copy-address = คัดลอกที่อยู่
 text-copy = คัดลอก
 text-select-all = เลือกทั้งหมด

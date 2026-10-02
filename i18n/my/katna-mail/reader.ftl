@@ -86,6 +86,9 @@ security-missing-key = သင့်တွင် မရှိသော ကီး�
 security-missing-key-id = သင့်တွင် မရှိသော ကီး ({ $key }) ဖြင့် လက်မှတ်ထိုးထားသဖြင့် စစ်ဆေး၍ မရပါ
 security-signature-unavailable = လက်မှတ်ထိုးထားသည်။ လက်မှတ်ကို စစ်ဆေးရန် { $tool } ကို ထည့်သွင်းပါ
 security-signature-error = လက်မှတ်ကို စစ်ဆေး၍ မရပါ။
+
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } က ၎င်းကို { $count } ကြိမ် ဖွင့်ခဲ့သည်၊ နောက်ဆုံး { $when }
 tracking-opens-clicks = { $who } က ၎င်းကို { $opens } ကြိမ် ဖွင့်ခဲ့ပြီး လင့်ခ်ကို { $clicks } ကြိမ် ဖွင့်ခဲ့သည်၊ နောက်ဆုံး { $when }
 tracking-clicked = { $who } က လင့်ခ်ကို { $clicks } ကြိမ် ဖွင့်ခဲ့သည်၊ နောက်ဆုံး { $when }
@@ -112,10 +115,12 @@ remote-picture-remove-failed = ပုံကို ဖယ်ရှား၍ မ�
 
 attachment-count = ပူးတွဲဖိုင် { $count } ခု
 attachment-save = သိမ်းရန်
+attachment-forward = ထပ်ဆင့်ပို့ရန်
 attachment-save-all = အားလုံး သိမ်းရန်
 attachment-save-all-tooltip = ပူးတွဲဖိုင်အားလုံးကို ဖိုင်တွဲတစ်ခုသို့ သိမ်းရန်
 attachment-save-here = ဤနေရာတွင် သိမ်းရန်
 attachment-not-downloaded = ဤမက်ဆေ့ဂျ်ကို ဒေါင်းလုဒ်လုပ်ထားခြင်း မရှိပါ။
+attachment-open-message = ပူးတွဲဖိုင်များကို ဖတ်ရန် ဤမက်ဆေ့ဂျ်ကို ဖွင့်ပါ။
 attachment-not-found = ဤပူးတွဲဖိုင်ကို မက်ဆေ့ဂျ်တွင် ရှာမတွေ့ပါ။
 attachment-read-failed = { $name } ကို ဖတ်၍ မရပါ
 attachment-numbered = ပူးတွဲဖိုင် { $number }
@@ -151,8 +156,9 @@ print-encrypted = (ကုဒ်ဝှက်ထားသည်။ ၎င်း၏
 print-to = သို့- { $addresses }
 print-cc = မိတ္တူ- { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = ပူးတွဲဖိုင်များကို ဖတ်ရန် ဤမက်ဆေ့ဂျ်ကို ဖွင့်ပါ။
+text-pin = ထိပ်တွင် ပင်ထိုးရန်
+text-copy-address = လိပ်စာ ကူးရန်
 text-copy = မိတ္တူကူးရန်
 text-select-all = အားလုံး ရွေးရန်

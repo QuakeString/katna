@@ -2,15 +2,21 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
-## A new-mail notification
+## A new-mail notification (the desktop shows it, even with Katna Mail closed)
 
 notify-new-emails = អ៊ីមែលថ្មី { $count }
 notify-and-more = និង { $count } ទៀត
 notify-no-subject = (គ្មានប្រធានបទ)
 notify-unknown-sender = មិនស្គាល់អ្នកផ្ញើ
+
+## Reminders the user asked for (same buttons)
+
 notify-snooze-back = ត្រឡប់មកពីការពន្យារពេល
 notify-no-reply = មិនទាន់មានការឆ្លើយតប
 notify-no-reply-to = គ្មាននរណាបានឆ្លើយតប “{ $subject }” ទេ។
+
+## Open and click tracking (only for mail sent with "Track opens and clicks")
+
 notify-tracking-opened = { $who } បានបើក { $subject }
 notify-tracking-clicked = { $who } បានចុចតំណក្នុង { $subject }
 
@@ -19,6 +25,9 @@ notify-tracking-clicked = { $who } បានចុចតំណក្នុង { 
 notify-update-ready = អាចធ្វើបច្ចុប្បន្នភាព Katna Mail បាន
 notify-update-ready-body = កំណែ { $version } ត្រូវបានទាញយករួចហើយ។ ចុចធ្វើបច្ចុប្បន្នភាពដើម្បីដំឡើង ហើយចាប់ផ្ដើម Katna Mail ឡើងវិញ។
 notify-update = ធ្វើបច្ចុប្បន្នភាព
+
+## Reminders of calendar events
+
 notify-event-now = ឥឡូវនេះ
 notify-event-in-minutes = { $count ->
    *[other] ក្នុងរយៈពេល { $count } នាទី
@@ -38,7 +47,24 @@ notify-task-done = សម្គាល់ថាបានធ្វើរួច
 ## The buttons of new-mail notifications and reminders
 
 notify-open = បើក
+notify-peek = មើលបន្តិច
+notify-reply = ឆ្លើយតប
+notify-reply-placeholder = ឆ្លើយតបទៅ { $name }…
+notify-send = ផ្ញើ
 notify-reply-all = ឆ្លើយតបទាំងអស់
 notify-mark-read = សម្គាល់ថាបានអាន
 notify-mark-all-read = សម្គាល់ទាំងអស់ថាបានអាន
 notify-archive = ទុកក្នុងបណ្ណសារ
+
+## After Archive on a notification: a short note in the same place
+
+notify-archived = បានទុកក្នុងបណ្ណសារ
+notify-archived-count = { $count ->
+   *[other] សារ { $count } ត្រូវបានផ្លាស់ចេញពីប្រអប់ទទួល
+}
+notify-undo = មិនធ្វើវិញ
+
+## it waits for the undo time
+
+notify-reply-sent = បានផ្ញើការឆ្លើយតបទៅ { $name }
+notify-open-in-katna = បើកក្នុង Katna

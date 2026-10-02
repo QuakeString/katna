@@ -32,6 +32,7 @@ compose-tool-bold = బోల్డ్ (Ctrl+B)
 compose-tool-italic = ఇటాలిక్ (Ctrl+I)
 compose-tool-underline = అండర్‌లైన్ (Ctrl+U)
 compose-tool-text-color = టెక్స్ట్ రంగు
+compose-tool-colors = టెక్స్ట్, హైలైట్ రంగు
 compose-tool-background-color = బ్యాక్‌గ్రౌండ్ రంగు
 compose-tool-default-color = డిఫాల్ట్ రంగు
 compose-tool-no-background = బ్యాక్‌గ్రౌండ్ లేదు
@@ -126,6 +127,10 @@ compose-tool-signature = సంతకాన్ని చొప్పించం
 compose-tool-signature-none = సంతకం లేదు
 compose-tool-signature-untitled = పేరు లేనిది
 compose-tool-signature-manage = సంతకాలను నిర్వహించండి
+compose-signature-tag-tip = వేరే సంతకాన్ని ఎంచుకోండి
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = టెంప్లేట్‌లు
 compose-tool-templates-none = ఇంకా టెంప్లేట్‌లు లేవు
 compose-tool-template-save = టెంప్లేట్‌గా సేవ్ చేయండి…

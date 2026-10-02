@@ -1,7 +1,6 @@
 # Katna Mail, Thai (ไทย): the Calendar page.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 calendar-today = วันนี้
 calendar-today-tip = ไปที่วันนี้
 calendar-view-day = วัน
@@ -57,10 +56,7 @@ calendar-account-not-enabled = ยังไม่ได้เปิดการ�
 calendar-account-failed = อ่านปฏิทินไม่ได้
 calendar-account-error = อ่านปฏิทินไม่ได้: { $reason }
 calendar-account-none = ไม่พบปฏิทิน
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 calendar-account-none-why = ไม่พบปฏิทิน: { $reason }
-# A Gmail or Outlook account added with a password: its calendars need the
-# provider's sign-in.
 calendar-account-use-sign-in = { $provider } จะแสดงปฏิทินให้เฉพาะ Katna ที่ลงชื่อเข้าใช้ด้วย { $provider } เท่านั้น
 calendar-account-sign-in-with = ลงชื่อเข้าใช้ด้วย { $provider }
 calendar-account-looking = กำลังค้นหาปฏิทิน…
@@ -82,8 +78,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = อีก { $count } รายการ
+calendar-peek-day = { $weekday } { $day }
 calendar-repeats = เกิดซ้ำ
 calendar-join = เข้าร่วม
+calendar-join-with = เข้าร่วมด้วย { $service }
 calendar-email-guests = ส่งอีเมลถึงแขก
 calendar-running-late = จะไปสาย
 calendar-late-subject = จะไปสาย: { $title }
@@ -96,6 +94,7 @@ calendar-guest-answers = ตอบรับ { $yes }, อาจจะ { $maybe }
 calendar-organizer = ผู้จัด
 calendar-optional = ไม่บังคับ
 calendar-open-web = เปิดในเบราว์เซอร์
+calendar-open-mail = เปิดอีเมล
 calendar-open-contact = เปิดรายชื่อติดต่อ
 calendar-close = ปิด
 
@@ -119,18 +118,12 @@ calendar-discard = ทิ้งการเปลี่ยนแปลง
 calendar-edit = แก้ไขกิจกรรม
 calendar-delete = ลบกิจกรรม
 calendar-event-details = รายละเอียดกิจกรรม
-# Right-click menus on the calendar: on a free time or day, an event and
-# a task.
 calendar-menu-new-event = กิจกรรมใหม่
-# Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = เปิดวัน
 calendar-menu-duplicate = ทำสำเนา
 calendar-menu-color = สี
-# The event takes its calendar's color.
 calendar-menu-color-calendar = สีของปฏิทิน
-# A task's new due day, a week from today.
 calendar-menu-in-a-week = ในอีก 1 สัปดาห์
-# Event colors, by the names Google Calendar gives them.
 calendar-color-tomato = มะเขือเทศ
 calendar-color-flamingo = นกฟลามิงโก
 calendar-color-tangerine = ส้มแทนเจอรีน
@@ -142,6 +135,40 @@ calendar-color-blueberry = บลูเบอร์รี่
 calendar-color-lavender = ลาเวนเดอร์
 calendar-color-grape = องุ่น
 calendar-color-graphite = แกรไฟต์
+calendar-menu-only-this = แสดงเฉพาะรายการนี้
+calendar-menu-rename = เปลี่ยนชื่อ
+calendar-menu-remove = นำออกจากรายการ
+calendar-menu-delete = ลบ
+calendar-menu-new-calendar = ปฏิทินใหม่
+calendar-menu-show-all = แสดงทั้งหมด
+calendar-menu-hide-all = ซ่อนทั้งหมด
+calendar-menu-account-settings = การตั้งค่าบัญชี
+calendar-why-main = ปฏิทินหลัก
+calendar-why-last = มีอยู่รายการเดียว
+calendar-why-owner = เฉพาะเจ้าของ
+calendar-why-contacts = จากรายชื่อติดต่อ
+calendar-why-unreached = เชื่อมต่อไม่ได้
+calendar-name-placeholder = ชื่อปฏิทิน
+calendar-toast-added = เพิ่ม “{ $name }” แล้ว
+calendar-toast-renamed = เปลี่ยนชื่อปฏิทินแล้ว
+calendar-toast-recolored = เปลี่ยนสีปฏิทินแล้ว
+calendar-toast-deleted = ลบ “{ $name }” แล้ว
+calendar-toast-removed = นำ “{ $name }” ออกจากรายการของคุณแล้ว
+calendar-edit-failed = ไม่ได้เปลี่ยนปฏิทิน: { $reason }
+calendar-delete-title = ลบ “{ $name }” ไหม
+calendar-delete-confirm = ลบ
+calendar-deleting = กำลังลบ…
+calendar-delete-heading = สิ่งที่จะถูกลบ:
+calendar-delete-events = ปฏิทินและกิจกรรมทั้งหมดในปฏิทิน
+calendar-delete-shared = สำหรับทุกคนที่แชร์ด้วย
+calendar-delete-server = ปฏิทินจะถูกลบจาก { $account } บนบริการอีเมล ไม่ใช่แค่ใน Katna
+calendar-delete-local = ปฏิทินจะถูกลบจากคอมพิวเตอร์เครื่องนี้
+calendar-remove-title = นำ “{ $name }” ออกจากรายการของคุณไหม
+calendar-remove-confirm = นำออก
+calendar-removing = กำลังนำออก…
+calendar-remove-heading = สิ่งที่จะเปลี่ยนไป:
+calendar-remove-events = คุณจะไม่เห็นกิจกรรมของปฏิทินนี้อีก ทั้งที่นี่และในแอปอื่นๆ ของคุณ
+calendar-remove-server = ปฏิทินยังอยู่กับเจ้าของ ซึ่งแชร์ให้คุณอีกครั้งได้
 calendar-kind-event = กิจกรรม
 calendar-kind-task = งาน
 calendar-kind-focus = เวลาโฟกัส

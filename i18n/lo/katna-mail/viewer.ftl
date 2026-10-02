@@ -4,6 +4,7 @@
 
 ## Attachment viewer
 
+viewer-opening = ກຳລັງເປີດ…
 viewer-unreadable = ບໍ່ສາມາດອ່ານໄຟລ໌ແນບນີ້ໄດ້.
 viewer-pdf-locked = PDF ນີ້ຖືກປ້ອງກັນດ້ວຍລະຫັດຜ່ານ.
 viewer-pdf-unreadable = ບໍ່ສາມາດອ່ານ PDF ນີ້ໄດ້.
@@ -14,8 +15,17 @@ viewer-slides-unreadable = ບໍ່ສາມາດອ່ານສະໄລ້�
 viewer-no-preview = ບໍ່ມີຕົວຢ່າງ
 viewer-slide = ສະໄລ້ { $number }
 viewer-page = ໜ້າ
+viewer-slide-box = ສະໄລ້
 viewer-page-count = ຈາກ { $count }
 viewer-go-to-page-tip = ພິມເລກໜ້າແລ້ວກົດ Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = ໝຸນຕາມເຂັມໂມງ (Ctrl+R)
+viewer-rotate-anticlockwise-tip = ໝຸນທວນເຂັມໂມງ (Ctrl+Shift+R)
+viewer-fit-page-tip = ພໍດີໜ້າ
+viewer-fit-picture-tip = ພໍດີໜ້າຕ່າງ
+viewer-fit-width-tip = ພໍດີຄວາມກວ້າງ
+viewer-real-size-tip = ຂະໜາດຈິງ (1:1)
+viewer-page-back-tip = ໜ້າກ່ອນ
+viewer-page-on-tip = ໜ້າຖັດໄປ
 
 ## Marking up a PDF
 
@@ -41,20 +51,21 @@ viewer-marks-undo-tip = ຍ້ອນກັບ (Ctrl+Z)
 viewer-marks-redo-tip = ເຮັດຊ້ຳ (Ctrl+Shift+Z)
 viewer-save-marked-tip = ບັນທຶກສຳເນົາພ້ອມເຄື່ອງໝາຍຂອງທ່ານ (Ctrl+S)
 viewer-reply-marked-tip = ຕອບກັບດ້ວຍສຳເນົາທີ່ໝາຍໄວ້
-# Typing a sticky note or a text box on the page.
+viewer-forward-tip = ສົ່ງຕໍ່ໄຟລ໌
+viewer-forward = ສົ່ງຕໍ່
+viewer-open-with = ເປີດດ້ວຍ…
+viewer-save = ບັນທຶກ
 viewer-note-placeholder = ຂຽນບັນທຶກ
 viewer-text-placeholder = ພິມບ່ອນນີ້
 viewer-note-done = ສຳເລັດ
 viewer-note-delete = ລຶບ
 viewer-markup-protected = PDF ນີ້ຖືກປ້ອງກັນການປ່ຽນແປງ ຈຶ່ງບໍ່ສາມາດໝາຍໄດ້.
 viewer-marks-save-failed = ບໍ່ສາມາດບັນທຶກສຳເນົາທີ່ໝາຍໄວ້ໄດ້.
-# Asked when closing a PDF, or moving to another attachment, with marks
-# that are not saved yet.
 viewer-marks-unsaved-title = ບັນທຶກເຄື່ອງໝາຍຂອງທ່ານບໍ?
 viewer-marks-unsaved-text = ເຄື່ອງໝາຍຂອງທ່ານໃນ PDF ນີ້ຍັງບໍ່ໄດ້ບັນທຶກ. ມັນຈະໄປຢູ່ໃນສຳເນົາ; ໄຟລ໌ແນບເອງຈະຍັງຄືເກົ່າ.
 viewer-marks-discard = ຖິ້ມ
 viewer-marks-keep = ໝາຍຕໍ່
 viewer-marks-save = ບັນທຶກສຳເນົາ
-# The name of the copy of a PDF with marks, before ".pdf". $name: the
-# attachment's name without ".pdf".
 viewer-marked-name = { $name } (ໝາຍແລ້ວ)
+viewer-pick = ເລືອກ
+viewer-picked = ເລືອກແລ້ວ

@@ -86,6 +86,9 @@ security-missing-key = ចុះហត្ថលេខាដោយសោដែល
 security-missing-key-id = ចុះហត្ថលេខាដោយសោដែលអ្នកមិនមាន ({ $key }) ដូច្នេះមិនអាចពិនិត្យបានទេ
 security-signature-unavailable = មានហត្ថលេខា។ ដំឡើង { $tool } ដើម្បីពិនិត្យហត្ថលេខា
 security-signature-error = មិនអាចពិនិត្យហត្ថលេខាបានទេ។
+
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } បានបើកវា { $count } ដង លើកចុងក្រោយ { $when }
 tracking-opens-clicks = { $who } បានបើកវា { $opens } ដង ហើយចុចតំណ { $clicks } ដង លើកចុងក្រោយ { $when }
 tracking-clicked = { $who } បានចុចតំណ { $clicks } ដង លើកចុងក្រោយ { $when }
@@ -112,10 +115,12 @@ remote-picture-remove-failed = មិនអាចដករូបភាពចេ�
 
 attachment-count = ឯកសារភ្ជាប់ { $count }
 attachment-save = រក្សាទុក
+attachment-forward = បញ្ជូនបន្ត
 attachment-save-all = រក្សាទុកទាំងអស់
 attachment-save-all-tooltip = រក្សាទុកឯកសារភ្ជាប់ទាំងអស់ទៅក្នុងថតមួយ
 attachment-save-here = រក្សាទុកនៅទីនេះ
 attachment-not-downloaded = សារនេះមិនត្រូវបានទាញយកទេ។
+attachment-open-message = បើកសារនេះ ដើម្បីមើលឯកសារភ្ជាប់របស់វា។
 attachment-not-found = រកមិនឃើញឯកសារភ្ជាប់នេះក្នុងសារទេ។
 attachment-read-failed = មិនអាចអាន { $name } បានទេ
 attachment-numbered = ឯកសារភ្ជាប់ { $number }
@@ -151,8 +156,9 @@ print-encrypted = (បានអ៊ិនគ្រីប។ បើកវាក្
 print-to = ទៅ៖ { $addresses }
 print-cc = ចម្លងជូន៖ { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = បើកសារនេះ ដើម្បីមើលឯកសារភ្ជាប់របស់វា។
+text-pin = ខ្ទាស់នៅខាងលើ
+text-copy-address = ចម្លងអាសយដ្ឋាន
 text-copy = ចម្លង
 text-select-all = ជ្រើសរើសទាំងអស់

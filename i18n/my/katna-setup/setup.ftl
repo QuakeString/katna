@@ -1,9 +1,9 @@
 # Katna Setup, Burmese (မြန်မာ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Katna Mail ဖြင့် ပို့ရန်
 setup-tagline = သင့်ကွန်ပျူတာပေါ်တွင် ရှိနေသော မြန်ဆန်ပြီး သီးသန့်ဖြစ်သည့် အီးမေးလ်။
 setup-update-where = { $path } ရှိ Katna Mail ကို အပ်ဒိတ်လုပ်သည်။ သင့်မေးလ်၊ ဆက်တင်များနှင့် ဖြတ်လမ်းများ မူလအတိုင်း ရှိနေမည်။
 setup-for = ထည့်သွင်းမည့်သူ

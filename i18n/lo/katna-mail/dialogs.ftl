@@ -8,7 +8,6 @@ about-tooltip = ກ່ຽວກັບ Katna
 about-tagline = ອີເມວ ແລະ ປະຕິທິນສຳລັບເດັສທັອບ Linux
 about-whats-new = ມີຫຍັງໃໝ່
 
-## Updates, in a box under the version in About (only in packages that
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
 
 about-update-not-checked = ຍັງບໍ່ໄດ້ກວດຫາການອັບເດດ
@@ -70,6 +69,7 @@ about-credit-resvg = ຮູບ SVG
 about-credit-jiff = ວັນທີ ແລະ ເຂດເວລາ
 about-credit-spellbook = ການກວດຄຳສະກົດ, ຈາກຕົວແກ້ໄຂ Helix
 about-credit-smol = ການເຮັດຫຼາຍຢ່າງພ້ອມກັນ
+about-credit-color-schemes = ຊຸດສີຂອງຮູບແບບສີທີ່ມາພ້ອມແອັບ
 about-all-libraries = ທຸກໄລບຣາຣີທີ່ Katna ໃຊ້ ({ $count })
 about-library-authors = ໂດຍ { $authors }
 about-license = Katna ເປັນຊອບແວເສລີພາຍໃຕ້ GNU GPL ລຸ້ນ 3 ຫຼື ໃໝ່ກວ່າ.
@@ -124,6 +124,20 @@ onboarding-density-default = ຄ່າເລີ່ມຕົ້ນ
 onboarding-density-compact = ກະທັດຮັດ
 onboarding-continue = ສືບຕໍ່
 
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = ໄດ້ຫຼາຍຂຶ້ນດ້ວຍບັນຊີ Katna
+onboarding-katna-lead = ບໍ່ບັງຄັບ. ມັນເປີດຄຸນສົມບັດອອນລາຍຂອງ Katna, ແລະ ທ່ານສາມາດສ້າງພາຍຫຼັງໄດ້ທີ່ ການຕັ້ງຄ່າ > ການສະໝັກໃຊ້.
+onboarding-katna-receipts-title = ໃບຢືນຢັນການອ່ານ
+onboarding-katna-receipts-text = ເບິ່ງວ່າຄົນເປີດອີເມວທີ່ທ່ານສົ່ງເມື່ອໃດ.
+onboarding-katna-links-title = ການຕິດຕາມລິ້ງ
+onboarding-katna-links-text = ເບິ່ງວ່າລິ້ງໃດໃນອີເມວຂອງທ່ານຖືກຄລິກ.
+onboarding-katna-activity-title = ກິດຈະກຳ
+onboarding-katna-activity-text = ການເປີດ ແລະ ການຄລິກຂອງທຸກສິ່ງທີ່ທ່ານສົ່ງ, ຢູ່ໃນບ່ອນດຽວ.
+onboarding-katna-translate-title = ການແປອັດຕະໂນມັດ
+onboarding-katna-translate-text = ອ່ານອີເມວທີ່ຂຽນເປັນພາສາອື່ນ ເປັນພາສາຂອງທ່ານເອງ.
+onboarding-katna-private = ມັນມີລະຫັດຜ່ານຂອງມັນເອງ. ຂໍ້ມູນເຂົ້າສູ່ລະບົບອີເມວຂອງທ່ານບໍ່ເຄີຍອອກຈາກຄອມພິວເຕີນີ້.
+
 ## First run: done
 
 onboarding-ready-title = ພ້ອມແລ້ວ
@@ -167,6 +181,7 @@ tour-search-text = ການຊອກຫາໃຊ້ໄດ້ແບບອອບ�
 tour-menu-title = ສະແດງ ຫຼື ເຊື່ອງໂຟນເດີ
 tour-menu-text = ປຸ່ມນີ້ພັບລາຍການໂຟນເດີເກັບໄວ້. ໃນຂະນະທີ່ມັນຖືກເຊື່ອງ, ວາງຕົວຊີ້ໄວ້ເທິງ ອີເມວ ທາງຊ້າຍເພື່ອເບິ່ງໂຟນເດີ.
 tour-apps-title = ແອັບຂອງທ່ານ
+tour-apps-text = ອີເມວຢູ່ບ່ອນນີ້, ຄຽງຂ້າງປະຕິທິນ, ລາຍຊື່ຜູ້ຕິດຕໍ່, ໜ້າວຽກ, ບັນທຶກ ແລະ ໄຟລ໌.
 tour-tabs-title = ແຖບກ່ອງຈົດໝາຍເຂົ້າ
 tour-tabs-text = ອີເມວໃໝ່ຈະຖືກຈັດເຂົ້າ ຫຼັກ, ໂປຣໂມຊັນ, ສັງຄົມ, ອັບເດດ ແລະ ຟໍຣັມ. ທ່ານປິດແຖບເຫຼົ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າດ່ວນ.
 tour-list-title = ຂໍ້ຄວາມຂອງທ່ານ
@@ -190,12 +205,21 @@ crash-view = ເບິ່ງລາຍງານ
 crash-view-tooltip = ເປີດລາຍງານທີ່ບັນທຶກໄວ້ໃນຄອມພິວເຕີນີ້
 crash-copy = ສຳເນົາລາຍງານ
 crash-close = ປິດ
+
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } ຂໍໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ { $address } ອີກຄັ້ງ.
 sign-in-again-button = ເຂົ້າສູ່ລະບົບ
 sign-in-again-tooltip = ເປີດໜ້າເຂົ້າສູ່ລະບົບຂອງ { $provider } ໃນບຣາວເຊີຂອງທ່ານ
 sign-in-again-waiting = ກຳລັງລໍຖ້າບຣາວເຊີຂອງທ່ານ…
 sign-in-again-close = ປິດ
+google-api-off = { $api } ຖືກປິດໄວ້ໃນໂຄງການ Google Cloud ຂອງ Katna.
+google-api-turn-on = ເປີດ
+google-api-turn-on-tooltip = ເປີດ Google Cloud ເພື່ອເປີດ { $api }, ແລ້ວກົດ ລອງໃໝ່
 sign-in-again-done = ເຂົ້າສູ່ລະບົບ { $address } ອີກຄັ້ງແລ້ວ. ກຳລັງດຶງອີເມວຂອງທ່ານ…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] ຍ້າຍການສົນທະນາ { $count } ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອບໍ?
    *[message] ຍ້າຍຂໍ້ຄວາມ { $count } ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອບໍ?

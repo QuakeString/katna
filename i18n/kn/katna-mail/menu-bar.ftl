@@ -27,6 +27,7 @@ desktop-menu-page-calendar = ಕ್ಯಾ_ಲೆಂಡರ್
 desktop-menu-page-contacts = _ಸಂಪರ್ಕಗಳು
 desktop-menu-page-tasks = ಕಾ_ರ್ಯಗಳು
 desktop-menu-page-notes = _ಟಿಪ್ಪಣಿಗಳು
+desktop-menu-page-files = _ಫೈಲ್‌ಗಳು
 desktop-menu-next = _ಮುಂದಿನ ಸಂವಾದ
 desktop-menu-previous = _ಹಿಂದಿನ ಸಂವಾದ
 desktop-menu-message = _ಸಂದೇಶ

@@ -1,7 +1,6 @@
 # Katna Mail, Lao (ລາວ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 update-dialog-title = ການອັບເດດ
 update-dialog-downloading-detail = ການດາວໂຫຼດຈະສືບຕໍ່ ເຖິງແມ່ນທ່ານປິດປ່ອງຢ້ຽມນີ້.
 update-dialog-progress = { $done } ຈາກ { $total }

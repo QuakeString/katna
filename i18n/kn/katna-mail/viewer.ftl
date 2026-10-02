@@ -4,6 +4,7 @@
 
 ## Attachment viewer
 
+viewer-opening = ತೆರೆಯಲಾಗುತ್ತಿದೆ…
 viewer-unreadable = ಈ ಲಗತ್ತನ್ನು ಓದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
 viewer-pdf-locked = ಈ PDF ಪಾಸ್‌ವರ್ಡ್‌ನಿಂದ ರಕ್ಷಿತವಾಗಿದೆ.
 viewer-pdf-unreadable = ಈ PDF ಅನ್ನು ಓದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
@@ -14,8 +15,17 @@ viewer-slides-unreadable = ಈ ಸ್ಲೈಡ್‌ಗಳನ್ನು ಓದಲ
 viewer-no-preview = ಯಾವುದೇ ಪೂರ್ವವೀಕ್ಷಣೆ ಲಭ್ಯವಿಲ್ಲ
 viewer-slide = ಸ್ಲೈಡ್ { $number }
 viewer-page = ಪುಟ
+viewer-slide-box = ಸ್ಲೈಡ್
 viewer-page-count = { $count }ರಲ್ಲಿ
 viewer-go-to-page-tip = ಪುಟ ಸಂಖ್ಯೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ Enter ಒತ್ತಿ (Ctrl+G)
+viewer-rotate-clockwise-tip = ಪ್ರದಕ್ಷಿಣವಾಗಿ ತಿರುಗಿಸಿ (Ctrl+R)
+viewer-rotate-anticlockwise-tip = ಅಪ್ರದಕ್ಷಿಣವಾಗಿ ತಿರುಗಿಸಿ (Ctrl+Shift+R)
+viewer-fit-page-tip = ಪುಟಕ್ಕೆ ಹೊಂದಿಸಿ
+viewer-fit-picture-tip = ವಿಂಡೋಗೆ ಹೊಂದಿಸಿ
+viewer-fit-width-tip = ಅಗಲಕ್ಕೆ ಹೊಂದಿಸಿ
+viewer-real-size-tip = ನಿಜವಾದ ಗಾತ್ರ (1:1)
+viewer-page-back-tip = ಹಿಂದಿನ ಪುಟ
+viewer-page-on-tip = ಮುಂದಿನ ಪುಟ
 
 ## Marking up a PDF
 
@@ -41,20 +51,21 @@ viewer-marks-undo-tip = ರದ್ದುಗೊಳಿಸಿ (Ctrl+Z)
 viewer-marks-redo-tip = ಮತ್ತೆ ಮಾಡಿ (Ctrl+Shift+Z)
 viewer-save-marked-tip = ನಿಮ್ಮ ಗುರುತುಗಳೊಂದಿಗೆ ಪ್ರತಿಯನ್ನು ಉಳಿಸಿ (Ctrl+S)
 viewer-reply-marked-tip = ಗುರುತು ಮಾಡಿದ ಪ್ರತಿಯೊಂದಿಗೆ ಪ್ರತ್ಯುತ್ತರಿಸಿ
-# Typing a sticky note or a text box on the page.
+viewer-forward-tip = ಫೈಲ್ ಫಾರ್ವರ್ಡ್ ಮಾಡಿ
+viewer-forward = ಫಾರ್ವರ್ಡ್ ಮಾಡಿ
+viewer-open-with = ಇದರೊಂದಿಗೆ ತೆರೆಯಿರಿ…
+viewer-save = ಉಳಿಸಿ
 viewer-note-placeholder = ಟಿಪ್ಪಣಿ ಬರೆಯಿರಿ
 viewer-text-placeholder = ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ
 viewer-note-done = ಮುಗಿದಿದೆ
 viewer-note-delete = ಅಳಿಸಿ
 viewer-markup-protected = ಈ PDF ಬದಲಾವಣೆಗಳಿಂದ ರಕ್ಷಿತವಾಗಿದೆ, ಆದ್ದರಿಂದ ಇದರಲ್ಲಿ ಗುರುತು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.
 viewer-marks-save-failed = ಗುರುತು ಮಾಡಿದ ಪ್ರತಿಯನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
-# Asked when closing a PDF, or moving to another attachment, with marks
-# that are not saved yet.
 viewer-marks-unsaved-title = ನಿಮ್ಮ ಗುರುತುಗಳನ್ನು ಉಳಿಸಬೇಕೇ?
 viewer-marks-unsaved-text = ಈ PDF ನಲ್ಲಿನ ನಿಮ್ಮ ಗುರುತುಗಳನ್ನು ಇನ್ನೂ ಉಳಿಸಿಲ್ಲ. ಅವು ಒಂದು ಪ್ರತಿಗೆ ಹೋಗುತ್ತವೆ; ಲಗತ್ತು ಹಾಗೆಯೇ ಇರುತ್ತದೆ.
 viewer-marks-discard = ತ್ಯಜಿಸಿ
 viewer-marks-keep = ಗುರುತು ಮುಂದುವರಿಸಿ
 viewer-marks-save = ಪ್ರತಿಯನ್ನು ಉಳಿಸಿ
-# The name of the copy of a PDF with marks, before ".pdf". $name: the
-# attachment's name without ".pdf".
 viewer-marked-name = { $name } (ಗುರುತಿಸಲಾಗಿದೆ)
+viewer-pick = ಆಯ್ಕೆಮಾಡಿ
+viewer-picked = ಆಯ್ಕೆಯಾಗಿದೆ

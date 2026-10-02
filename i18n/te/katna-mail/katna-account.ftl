@@ -1,6 +1,9 @@
 # Katna Mail, Telugu (తెలుగు).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Katna ఖాతా Katna ఆన్‌లైన్ ఫీచర్‌లను ఆన్ చేస్తుంది: రీడ్ రసీదులు, లింక్ ట్రాకింగ్, యాక్టివిటీ, ఆటోమేటిక్ అనువాదం. దీని పాస్‌వర్డ్ దీనికే సొంతం, మెయిల్ పాస్‌వర్డ్ కాదు, మీ మెయిల్ లాగిన్‌లు ఈ కంప్యూటర్‌ను ఎప్పటికీ దాటి వెళ్లవు.
 katna-checking = తనిఖీ చేస్తోంది…
 katna-email = ఈమెయిల్
@@ -10,6 +13,8 @@ katna-sign-in = సైన్ ఇన్ చేయండి
 katna-sign-in-detail = ఆన్‌లైన్ ఫీచర్‌లు కావాలనుకునే ప్రతి కంప్యూటర్‌లో సైన్ ఇన్ చేయండి.
 katna-create = ఖాతాను సృష్టించండి
 katna-create-detail = మీరు చదవగలిగే అడ్రస్‌ను ఉపయోగించండి: దాన్ని నిర్ధారించడానికి మేము మీకు ఒక కోడ్‌ను మెయిల్ చేస్తాము.
+katna-onboarding-create-title = మీ Katna ఖాతాను క్రియేట్ చేయండి
+katna-onboarding-sign-in-title = Katnaకు సైన్ ఇన్ చేయండి
 katna-have-account = నాకు ఖాతా ఉంది
 katna-forgot = పాస్‌వర్డ్ మర్చిపోయారా?
 katna-forgot-detail = కొత్త పాస్‌వర్డ్‌ను ఎంచుకోవడానికి మేము మీకు ఒక కోడ్‌ను మెయిల్ చేస్తాము.
@@ -42,6 +47,9 @@ katna-delete = ఖాతాను తొలగించండి
 katna-delete-detail = ఖాతాను, రీడ్ రసీదుల వంటి సర్వర్ దాని కోసం ఉంచే ప్రతిదాన్నీ తొలగిస్తుంది. ఈ కంప్యూటర్‌లోని మెయిల్ అలాగే ఉంటుంది.
 katna-delete-confirm = శాశ్వతంగా తొలగించండి
 katna-sign-in-needed = దీన్ని ఉపయోగించడానికి Katna ఖాతాకు సైన్ ఇన్ చేయండి.
+
+## Errors
+
 katna-error-wrong-password = ఈమెయిల్ లేదా పాస్‌వర్డ్ తప్పు.
 katna-error-exists = ఈ అడ్రస్‌కు ఇప్పటికే Katna ఖాతా ఉంది. బదులుగా సైన్ ఇన్ చేయండి.
 katna-error-bad-email = అది ఈమెయిల్ అడ్రస్‌లా కనిపించడం లేదు.

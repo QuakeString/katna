@@ -1,9 +1,9 @@
 # Katna Setup, Malayalam (മലയാളം).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Katna Mail ഉപയോഗിച്ച് അയയ്ക്കുക
 setup-tagline = നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽത്തന്നെ നിലനിൽക്കുന്ന വേഗതയേറിയ, സ്വകാര്യ ഇമെയിൽ.
 setup-update-where = { $path }-ലുള്ള Katna Mail അപ്‌ഡേറ്റ് ചെയ്യുന്നു. നിങ്ങളുടെ മെയിലും ക്രമീകരണങ്ങളും കുറുക്കുവഴികളും അതേപടി തുടരും.
 setup-for = ഇവർക്കായി ഇൻസ്റ്റാൾ ചെയ്യുക

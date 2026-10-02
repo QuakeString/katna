@@ -4,6 +4,7 @@
 
 ## Attachment viewer
 
+viewer-opening = തുറക്കുന്നു…
 viewer-unreadable = ഈ അറ്റാച്ച്‌മെന്റ് വായിക്കാനായില്ല.
 viewer-pdf-locked = ഈ PDF പാസ്‌വേഡ് ഉപയോഗിച്ച് പരിരക്ഷിച്ചിരിക്കുന്നു.
 viewer-pdf-unreadable = ഈ PDF വായിക്കാനായില്ല.
@@ -14,8 +15,17 @@ viewer-slides-unreadable = ഈ സ്ലൈഡുകൾ വായിക്കാ
 viewer-no-preview = പ്രിവ്യൂ ലഭ്യമല്ല
 viewer-slide = സ്ലൈഡ് { $number }
 viewer-page = പേജ്
+viewer-slide-box = സ്ലൈഡ്
 viewer-page-count = { $count }-ൽ
 viewer-go-to-page-tip = പേജ് നമ്പർ ടൈപ്പ് ചെയ്ത് Enter അമർത്തുക (Ctrl+G)
+viewer-rotate-clockwise-tip = ഘടികാരദിശയിൽ തിരിക്കുക (Ctrl+R)
+viewer-rotate-anticlockwise-tip = എതിർ ഘടികാരദിശയിൽ തിരിക്കുക (Ctrl+Shift+R)
+viewer-fit-page-tip = പേജിന് ഒതുക്കുക
+viewer-fit-picture-tip = വിൻഡോയ്ക്ക് ഒതുക്കുക
+viewer-fit-width-tip = വീതിക്ക് ഒതുക്കുക
+viewer-real-size-tip = യഥാർത്ഥ വലുപ്പം (1:1)
+viewer-page-back-tip = മുമ്പത്തെ പേജ്
+viewer-page-on-tip = അടുത്ത പേജ്
 
 ## Marking up a PDF
 
@@ -41,20 +51,21 @@ viewer-marks-undo-tip = പഴയപടിയാക്കുക (Ctrl+Z)
 viewer-marks-redo-tip = വീണ്ടും ചെയ്യുക (Ctrl+Shift+Z)
 viewer-save-marked-tip = നിങ്ങളുടെ അടയാളങ്ങളോടെ ഒരു പകർപ്പ് സംരക്ഷിക്കുക (Ctrl+S)
 viewer-reply-marked-tip = അടയാളപ്പെടുത്തിയ പകർപ്പോടെ മറുപടി നൽകുക
-# Typing a sticky note or a text box on the page.
+viewer-forward-tip = ഫയൽ ഫോർവേഡ് ചെയ്യുക
+viewer-forward = ഫോർവേഡ് ചെയ്യുക
+viewer-open-with = ഇതുപയോഗിച്ച് തുറക്കുക…
+viewer-save = സംരക്ഷിക്കുക
 viewer-note-placeholder = ഒരു കുറിപ്പ് എഴുതുക
 viewer-text-placeholder = ഇവിടെ ടൈപ്പ് ചെയ്യുക
 viewer-note-done = കഴിഞ്ഞു
 viewer-note-delete = ഇല്ലാതാക്കുക
 viewer-markup-protected = ഈ PDF മാറ്റങ്ങളിൽ നിന്ന് പരിരക്ഷിച്ചിരിക്കുന്നു, അതിനാൽ അടയാളപ്പെടുത്താൻ കഴിയില്ല.
 viewer-marks-save-failed = അടയാളപ്പെടുത്തിയ പകർപ്പ് സംരക്ഷിക്കാനായില്ല.
-# Asked when closing a PDF, or moving to another attachment, with marks
-# that are not saved yet.
 viewer-marks-unsaved-title = നിങ്ങളുടെ അടയാളങ്ങൾ സംരക്ഷിക്കണോ?
 viewer-marks-unsaved-text = ഈ PDF-ലെ നിങ്ങളുടെ അടയാളങ്ങൾ ഇതുവരെ സംരക്ഷിച്ചിട്ടില്ല. അവ ഒരു പകർപ്പിലേക്ക് പോകുന്നു; അറ്റാച്ച്‌മെന്റ് അതുപോലെ തന്നെ നിലനിൽക്കും.
 viewer-marks-discard = ഉപേക്ഷിക്കുക
 viewer-marks-keep = അടയാളപ്പെടുത്തൽ തുടരുക
 viewer-marks-save = പകർപ്പ് സംരക്ഷിക്കുക
-# The name of the copy of a PDF with marks, before ".pdf". $name: the
-# attachment's name without ".pdf".
 viewer-marked-name = { $name } (അടയാളപ്പെടുത്തിയത്)
+viewer-pick = തിരഞ്ഞെടുക്കുക
+viewer-picked = തിരഞ്ഞെടുത്തു

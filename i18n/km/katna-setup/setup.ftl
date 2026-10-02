@@ -1,9 +1,9 @@
 # Katna Setup, Khmer (ខ្មែរ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = ផ្ញើដោយ Katna Mail
 setup-tagline = សំបុត្រអេឡិចត្រូនិករហ័ស និងឯកជន ដែលរក្សាទុកនៅលើកុំព្យូទ័ររបស់អ្នក។
 setup-update-where = ធ្វើបច្ចុប្បន្នភាព Katna Mail នៅក្នុង { $path }។ សំបុត្រ ការកំណត់ និងផ្លូវកាត់របស់អ្នកនៅដដែល។
 setup-for = ដំឡើងសម្រាប់

@@ -46,6 +46,7 @@ compose-sent-archived = បានផ្ញើ និងទុកក្នុង�
 compose-sent = បានផ្ញើសារ
 compose-discarded = បានបោះបង់សេចក្ដីព្រាង
 compose-draft-saved = បានរក្សាទុកសេចក្ដីព្រាង
+compose-draft-saving = កំពុងរក្សាទុក…
 compose-draft-failed = មិនអាចរក្សាទុកសេចក្ដីព្រាងបានទេ៖ { $error }
 compose-draft-not-opened = មិនអាចបើកសេចក្ដីព្រាងបានទេ។
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = មិនអាចបើកសេចក្ដីព�
 compose-picker-insert = បញ្ចូល
 compose-picker-attach = ភ្ជាប់
 compose-file-too-large = { $name } ធំពេក៖ សារមួយអាចផ្ទុកបានត្រឹម { $limit }។
+compose-forward-files-missing = ឯកសាររបស់សារដែលបញ្ជូនបន្ត មិនទាន់បានទាញយក ដូច្នេះវាមិនត្រូវបានភ្ជាប់ទេ។
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ដកឯកសារភ្ជាប់ចេញ
 compose-attachments-total = ឯកសារ { $count }, { $size }
@@ -74,6 +76,7 @@ compose-drive-share-link = ចែករំលែកដោយតំណ
 compose-drive-send-without = ផ្ញើដោយមិនចែករំលែក
 compose-drive-share-cancel = បោះបង់
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } លើស { $limit } ដូច្នេះវាត្រូវបានផ្ទុកឡើងទៅ OneDrive របស់អ្នក ហើយសារនឹងមានតំណ
 compose-onedrive-tip = នៅក្នុង OneDrive របស់អ្នក; សារនឹងមានតំណ
 compose-onedrive-allow = អនុញ្ញាត OneDrive
@@ -84,8 +87,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive មិនអាចចែករំលែកឯកសារជាមួយ { $addresses } បានទេ។ ផ្ទុយទៅវិញ អ្នកណាមានតំណក៏អាចបើកឯកសារបានដែរ។
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ទម្លាក់ឯកសារនៅទីនេះ
 compose-drop-here = ទម្លាក់នៅទីនេះ
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = រក្សាទម្រង់
 compose-paste-table = តារាង
 compose-paste-picture = រូបភាព
@@ -99,6 +106,9 @@ compose-encrypt = អ៊ិនគ្រីប
 compose-encrypted = បានអ៊ិនគ្រីប៖ មានតែអ្នកទទួលប៉ុណ្ណោះដែលអាចអានបាន
 compose-sign = ចុះហត្ថលេខា
 compose-signed = បានចុះហត្ថលេខា៖ អ្នកទទួលអាចពិនិត្យថាវាមកពីអ្នក
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = តាមដានការបើក និងការចុច
 compose-tracked = កំពុងតាមដាន៖ អ្នកឃើញពេលដែលអ្នកទទួលម្នាក់ៗបើកវា ឬចុចតំណ
 compose-track-clicks = តាមដានការចុចតំណ (អត្ថបទធម្មតាមិនអាចបង្ហាញការបើកបានទេ)
@@ -131,6 +141,9 @@ send-check-subject-title = ផ្ញើដោយគ្មានប្រធា�
 send-check-subject-text = សារនេះគ្មានប្រធានបទទេ។
 send-check-add-subject = បន្ថែមប្រធានបទ
 send-check-send-anyway = នៅតែផ្ញើ
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = មិនមែនជាអាសយដ្ឋានអ៊ីមែលត្រឹមត្រូវទេ
 recipient-show-address = បង្ហាញអាសយដ្ឋាន
 recipient-remove = ដកចេញ
