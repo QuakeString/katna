@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Your reply stays at the end"
+text = """
+A reply now always sits at the end of the conversation, even with the newest
+mail shown first. Switching from Chat to Mail scrolls down to it, with the
+cursor where you left it.
+"""
