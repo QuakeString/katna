@@ -142,6 +142,7 @@ icons!(
     "onedrive",
     "open-external",
     "open-full",
+    "palette",
     "pen-sparkle",
     "pen",
     "people",

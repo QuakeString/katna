@@ -1979,8 +1979,9 @@ impl MailWindow {
     }
 
     /// The account of a line of the whole unified inbox, which mixes
-    /// accounts: its color and its name as the folder pane shows it.
-    fn line_account(&self, row: &Row) -> Option<(u32, String)> {
+    /// accounts: its color, its name as the folder pane shows it and its
+    /// address.
+    fn line_account(&self, row: &Row, th: &Theme) -> Option<(u32, String, String)> {
         let Some(Listing::Unified { account: None, .. }) = &self.listing else {
             return None;
         };
@@ -1991,7 +1992,8 @@ impl MailWindow {
             .iter()
             .find(|a| a.id == row.account)
             .map_or_else(|| account.address.clone(), |a| a.name.clone());
-        Some((crate::theme::avatar_color(account.address.trim()), name))
+        let address = account.address.trim().to_owned();
+        Some((self.account_color(&address, th), name, address))
     }
 
     fn render_row(
@@ -2277,7 +2279,7 @@ impl MailWindow {
                     off("row-important-rest", "important", 18.0)
                 })
         });
-        let account = self.line_account(&row);
+        let account = self.line_account(&row, th);
         let correspondent = div()
             .flex()
             .flex_row()
@@ -2368,17 +2370,34 @@ impl MailWindow {
             })
             // The account of a line of the whole unified inbox: its dot
             // after the names, with its name where the line has room.
-            .children(account.map(|(color, name)| {
+            .children(account.map(|(color, name, address)| {
+                // Hovering the dot names the account.
+                let dot = div()
+                    .id(("row-account", ix))
+                    .flex_none()
+                    .size(px(15.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .tooltip(tip(
+                        if name.eq_ignore_ascii_case(&address) {
+                            name.clone()
+                        } else {
+                            format!("{name}\n{address}")
+                        },
+                        th,
+                    ))
+                    .child(div().size(px(7.0)).rounded_full().bg(rgba(color)));
                 div()
                     .flex_none()
-                    .pl(px(4.0))
+                    .pl(px(1.0))
                     .flex()
                     .flex_row()
                     .items_center()
-                    .gap(px(5.0))
+                    .gap(px(1.0))
                     .text_size(px(12.0))
                     .text_color(rgba(th.text_faint))
-                    .child(div().size(px(7.0)).rounded_full().bg(rgba(color)))
+                    .child(dot)
                     .when(stacked, |d| d.child(name))
             }));
         // The quick actions fade in over the date.
