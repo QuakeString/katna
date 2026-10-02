@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Check what you attached"
+text = """
+Click a file attached to a message you are writing to open it in Katna's
+viewer, the same one received files open in, and make sure it is the right
+file. A file sent as a Google Drive or OneDrive link opens on the drive.
+"""

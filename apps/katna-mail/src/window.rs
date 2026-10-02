@@ -476,6 +476,9 @@ pub struct MailWindow {
     /// The conversation to open once an undo brings it back to the list.
     reopen_after_undo: Option<EntryKey>,
     before_search: Option<BeforeSearch>,
+    /// The search box's X was clicked: the conversation opened from the
+    /// results stays open as the folder comes back.
+    clear_keeps_open: bool,
     /// The app whose name rolls away at the top left, and how far the
     /// new name has rolled in (0 to 1).
     title_from: RailApp,
@@ -867,6 +870,7 @@ impl MailWindow {
             undo_reopens: Vec::new(),
             reopen_after_undo: None,
             before_search: None,
+            clear_keeps_open: false,
             title_from: RailApp::Mail,
             title_roll: Spring::new(motion::SLIDE, 1.0),
             avatar_roll: account_roll::AvatarRoll::new(),
@@ -2313,11 +2317,20 @@ impl MailWindow {
 
     fn start_search(&mut self, text: String, cx: &mut Context<Self>) {
         self.search_error = None;
+        let keep_open = std::mem::take(&mut self.clear_keeps_open);
         if text.is_empty() {
             self.search_task = None;
             if matches!(self.listing, Some(Listing::Search { .. })) {
+                // Only the X keeps a result open; text deleted away goes back.
+                let opened = (keep_open && self.reading)
+                    .then(|| self.reader.take())
+                    .flatten();
+                let card_seq = self.card_seq;
                 self.open_listed(cx);
-                self.restore_before_search(cx);
+                match opened {
+                    Some(reader) => self.keep_open(reader, card_seq),
+                    None => self.restore_before_search(cx),
+                }
             }
             self.before_search = None;
             return;
@@ -2390,6 +2403,19 @@ impl MailWindow {
             self.load_reader(ix, cx);
         }
         cx.notify();
+    }
+
+    /// Cleared with the X: the conversation opened from the results stays
+    /// where it is, picked in the folder when it lies there.
+    fn keep_open(&mut self, reader: Conversation, card_seq: usize) {
+        self.card_seq = card_seq;
+        let ix = self.entries.iter().position(|e| e.key == reader.key);
+        self.reader = Some(reader);
+        self.reading = true;
+        self.selected = ix;
+        if let Some(ix) = ix {
+            self.list_state.scroll_to_reveal_item(ix);
+        }
     }
 
     fn show_results(
@@ -3674,7 +3700,10 @@ impl Render for MailWindow {
         // The attach picker is over Compose, and the viewer over it to
         // look at its files.
         let files_picker = self.render_files_picker(&th, window, cx);
-        let viewer_over = files_picker.is_some();
+        let viewer_over = files_picker.is_some()
+            || self.files.viewer_place == attachments::ViewerPlace::OverCompose;
+        // A viewer opened from the popped-out message shows there instead.
+        let in_window = self.files.viewer_place != attachments::ViewerPlace::Popout;
         let scheduled = self.render_scheduled(&th, window, cx);
         let activity = self.render_activity_report(&th, window, cx);
         let activity_menu = self.render_activity_menu(&th, window, cx);
@@ -3727,12 +3756,22 @@ impl Render for MailWindow {
             .child(content)
             .children(floating_settings)
             .children(fab)
-            .children(self.files.viewer.clone().filter(|_| !viewer_over))
+            .children(
+                self.files
+                    .viewer
+                    .clone()
+                    .filter(|_| in_window && !viewer_over),
+            )
             .children(search_panel)
             .children(compose)
             .children(compose_dialog)
             .children(files_picker)
-            .children(self.files.viewer.clone().filter(|_| viewer_over))
+            .children(
+                self.files
+                    .viewer
+                    .clone()
+                    .filter(|_| in_window && viewer_over),
+            )
             .children(scheduled)
             .children(activity)
             .children(activity_menu)

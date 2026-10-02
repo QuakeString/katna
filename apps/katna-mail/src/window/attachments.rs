@@ -120,7 +120,22 @@ pub(super) struct Files {
     /// The mail of the file the viewer was opened on from the Files page,
     /// for its Show the mail button.
     pub(super) viewer_mail: Option<MessageId>,
+    /// Where the viewer shows: over the message being written when one of
+    /// its files was opened, in the popped-out window when opened there.
+    pub(super) viewer_place: ViewerPlace,
     _viewer_events: Option<Subscription>,
+}
+
+/// Where the viewer is drawn.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub(super) enum ViewerPlace {
+    /// In the mail window, under the message being written.
+    #[default]
+    Window,
+    /// In the mail window, over the message being written.
+    OverCompose,
+    /// In the popped-out compose window.
+    Popout,
 }
 
 impl Files {
@@ -961,6 +976,7 @@ impl MailWindow {
         self.files.released.extend(released);
         self.files._viewer_events = None;
         self.files.viewer_mail = None;
+        self.files.viewer_place = ViewerPlace::Window;
         if let Some(picker) = &mut self.picker {
             picker.previewing = false;
         }
