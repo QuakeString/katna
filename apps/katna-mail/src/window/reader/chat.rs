@@ -711,10 +711,25 @@ impl MailWindow {
         reader
             .parts
             .iter()
-            .filter_map(|p| p.body.as_ref()?.view.as_ref())
-            .flat_map(|v| v.from.iter().chain(&v.to).chain(&v.cc))
-            .filter(|a| !self.is_me(&a.email) && seen.insert(a.email.to_lowercase()))
-            .map(|a| (a.label().to_owned(), a.email.clone()))
+            .flat_map(|p| match p.body.as_ref().and_then(|b| b.view.as_ref()) {
+                Some(v) => v
+                    .from
+                    .iter()
+                    .chain(&v.to)
+                    .chain(&v.cc)
+                    .map(|a| (a.label().to_owned(), a.email.clone()))
+                    .collect(),
+                // Until its mail is read, its sender from the list, so the
+                // header never says only "and you".
+                None => p
+                    .row
+                    .as_ref()
+                    .map(|r| vec![(r.correspondent.clone(), r.sender.clone())])
+                    .unwrap_or_default(),
+            })
+            .filter(|(_, email)| {
+                !email.is_empty() && !self.is_me(email) && seen.insert(email.to_lowercase())
+            })
             .collect()
     }
 
