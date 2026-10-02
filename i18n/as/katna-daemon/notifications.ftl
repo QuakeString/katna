@@ -38,7 +38,26 @@ notify-task-done = সম্পূৰ্ণ বুলি চিহ্নিত �
 ## Its buttons
 
 notify-open = খোলক
+notify-peek = এবাৰ চাওক
+notify-reply = উত্তৰ দিয়ক
+notify-reply-placeholder = { $name }ক উত্তৰ দিয়ক…
+notify-send = পঠিয়াওক
 notify-reply-all = সকলোকে উত্তৰ দিয়ক
 notify-mark-read = পঢ়া বুলি চিহ্নিত কৰক
 notify-mark-all-read = সকলোবোৰ পঢ়া বুলি চিহ্নিত কৰক
 notify-archive = আৰ্কাইভ কৰক
+
+## After Archive on a notification: a short note in the same place
+
+notify-archived = আৰ্কাইভ কৰা হ'ল
+notify-archived-count = { $count ->
+    [one] { $count }টা বাৰ্তা ইনবক্সৰ পৰা আঁতৰোৱা হ'ল
+   *[other] { $count }টা বাৰ্তা ইনবক্সৰ পৰা আঁতৰোৱা হ'ল
+}
+notify-undo = আনডু কৰক
+
+## After a reply typed into a notification: a note in the same place while
+## it waits for the undo time
+
+notify-reply-sent = { $name }লৈ উত্তৰ পঠিওৱা হ'ল
+notify-open-in-katna = Katnaত খোলক

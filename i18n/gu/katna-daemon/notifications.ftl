@@ -41,7 +41,26 @@ notify-task-done = પૂર્ણ તરીકે ચિહ્નિત કર�
 ## Its buttons
 
 notify-open = ખોલો
+notify-peek = ઝલક જુઓ
+notify-reply = જવાબ આપો
+notify-reply-placeholder = { $name } ને જવાબ આપો…
+notify-send = મોકલો
 notify-reply-all = બધાને જવાબ આપો
 notify-mark-read = વાંચેલા તરીકે ચિહ્નિત કરો
 notify-mark-all-read = બધાને વાંચેલા તરીકે ચિહ્નિત કરો
 notify-archive = આર્કાઇવ કરો
+
+## After Archive on a notification: a short note in the same place
+
+notify-archived = આર્કાઇવ કર્યો
+notify-archived-count = { $count ->
+    [one] { $count } મેસેજ ઇનબૉક્સમાંથી ખસેડ્યો
+   *[other] { $count } મેસેજ ઇનબૉક્સમાંથી ખસેડ્યા
+}
+notify-undo = પૂર્વવત્ કરો
+
+## After a reply typed into a notification: a note in the same place while
+## it waits for the undo time
+
+notify-reply-sent = { $name } ને જવાબ મોકલ્યો
+notify-open-in-katna = Katna માં ખોલો

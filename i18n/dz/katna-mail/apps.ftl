@@ -9,6 +9,7 @@ rail-calendar = ཟླ་ཐོ
 rail-contacts = འབྲེལ་བ་ཚུ
 rail-tasks = ལཱ་ཚུ
 rail-notes = དྲན་ཐོ་ཚུ
+rail-files = ཡིག་སྣོད་ཚུ
 
 ## Pages of apps still to come
 

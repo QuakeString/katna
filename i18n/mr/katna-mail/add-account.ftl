@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = मेल खाते जोडा
+add-account-providers-intro = तुमचा मेल प्रदाता निवडा. बाकी Katna शोधते.
+add-account-provider-other = इतर मेल
+add-account-provider-other-detail = कोणतेही IMAP किंवा POP3 खाते
+add-account-provider-google-detail = Gmail आणि Google Workspace
+add-account-provider-microsoft-detail = Outlook आणि Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = { $provider } मध्ये साइन इन करा
+add-account-form-title-other = तुमचे मेल खाते
+add-account-form-intro = Katna तुमचा पासवर्ड तुमच्या सिस्टमच्या कीरिंगमध्ये ठेवते.
 add-account-looking = { $address } चे मेल सर्व्हर शोधत आहे…
 add-account-address-intro = तुमचा ईमेल पत्ता टाका. Katna तुमच्यासाठी सर्व्हर शोधते.
 add-account-servers-title = सर्व्हर सेटिंग्ज
@@ -13,10 +22,18 @@ add-account-signing-in = साइन इन करत आहे…
 add-account-browser-title = तुमच्या ब्राउझरमध्ये पुढे चला
 add-account-browser-intro = Katna ने तुमच्या ब्राउझरमध्ये { $provider } चे साइन-इन पेज उघडले आहे. तिथे साइन इन करा आणि Katna ला तुमचे मेल वाचू आणि पाठवू द्या, मग इथे परत या.
 add-account-browser-hint = कोणतेही पेज उघडले नाही? तुमच्या ब्राउझरच्या विंडो तपासा, किंवा मागे जाऊन पुन्हा प्रयत्न करा.
+add-account-stage-browser = तुम्ही ब्राउझरमध्ये साइन इन करण्याची वाट पाहत आहे…
+add-account-stage-signing-in-at = { $server } वर साइन इन करत आहे…
+add-account-help-app-password-link = ॲप पासवर्ड कसा बनवायचा
+add-account-help-turn-on-imap = { $provider } च्या वेब मेलच्या सेटिंग्जमध्ये IMAP आणि POP3 ॲक्सेस चालू केल्यानंतरच तो मेल ॲप्सना आत येऊ देतो.
+add-account-help-turn-on-imap-link = ते कसे चालू करायचे
 
 ## Add a mail account: fields
 
 add-account-field-address = ईमेल पत्ता
+add-account-receive-with = मेल याद्वारे मिळवा
+add-account-imap-about = IMAP तुमचा मेल आणि फोल्डर सर्व्हरवर ठेवते, प्रत्येक डिव्हाइसवर सारखे. शक्य असल्यास हेच निवडा.
+add-account-pop3-about = POP3 तुमचा मेल या कॉम्प्युटरवर डाउनलोड करते. येथे तुम्ही वाचलेला किंवा हलवलेला मेल सर्व्हरवर आणि तुमच्या इतर डिव्हाइसवर आहे तसाच राहतो.
 add-account-incoming = येणारा मेल ({ $protocol })
 add-account-outgoing = जाणारा मेल ({ $protocol })
 add-account-field-server = सर्व्हर
@@ -46,6 +63,8 @@ add-account-sign-in-instead = त्याऐवजी { $provider } ने स�
 add-account-servers-button = सर्व्हर सेटिंग्ज
 add-account-back = मागे
 add-account-add = खाते जोडा
+add-account-done = झाले
+add-account-another = आणखी एक खाते जोडा
 add-account-cancel = रद्द करा
 
 ## Add a mail account: problems
@@ -75,6 +94,22 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna ची ही प्रत अजून Google खात्यांमध्ये साइन इन करू शकत नाही.
    *[other] हा प्रदाता फक्त त्याच्या स्वतःच्या पेजवर साइन इन करू देतो, जे Katna अजून त्याच्यासाठी करू शकत नाही.
 }
+add-account-smtp-not-found = तुमचा मेल कुठून वाचायचा ते Katna ला सापडले, पण कुठून पाठवायचा ते नाही. आउटगोइंग सर्व्हर टाका.
+
+## Add a mail account: the last step
+
+add-account-done-title = तुमचे खाते तयार आहे
+add-account-done-intro = Katna आता तुमचा मेल आणत आहे. नवीन मेल येईल तसा दिसतो.
+add-account-done-sign-in = साइन-इन
+add-account-done-signed-in-with = { $provider } सह, तुमच्या ब्राउझरमध्ये
+add-account-done-receiving = मेल मिळवणे
+add-account-done-sending = मेल पाठवणे
+add-account-done-on-server = सर्व्हरवरील मेल
+add-account-done-kept = तुम्ही Katna मध्ये हटवेपर्यंत ठेवला जातो
+add-account-done-pop3-hint = सर्व्हरवरील मेलचे काय होते ते सेटिंग्ज > खाती मध्ये बदला.
+add-account-done-zoho-title = कार्ये आणि कॅलेंडर
+add-account-done-zoho-about = Zoho हे मेलपासून वेगळे ठेवते. ते Katna मध्ये आणण्यासाठी एकदा Zoho ने साइन इन करा.
+add-account-done-linked = कार्ये आणि कॅलेंडर जोडले
 
 ## The account menu (from the account button on the top bar)
 

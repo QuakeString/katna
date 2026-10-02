@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Katna Mailৰে পঠিয়াওক
 setup-tagline = দ্ৰুত, ব্যক্তিগত ইমেইল, যি আপোনাৰ কম্পিউটাৰতে থাকে।
 setup-update-where = { $path }ত Katna Mail আপডেট কৰে। আপোনাৰ মেইল, ছেটিংছ আৰু শ্বৰ্টকাট যেনেকৈ আছে তেনেকৈয়ে থাকিব।
 setup-for = কাৰ বাবে ইনষ্টল কৰিব

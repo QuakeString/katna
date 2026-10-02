@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “सबै खाताहरू” फोल
 accounts-row = खाताहरू
 accounts-row-detail = फोल्डर प्यान र खाता मेनुले खाताहरू यही क्रममा देखाउँछन्; पहिलो खाता पूर्वनिर्धारित हो। खाता हटाउँदा यो कम्प्युटरमा भएको यसको मेलको Katna को प्रतिलिपि मेटिन्छ। मेल सर्भरमै रहन्छ।
 accounts-none = अहिलेसम्म कुनै खाता छैन।
+accounts-pop3-row = सर्भरमा रहेको मेल
+accounts-pop3-row-detail = POP3 खाताहरूले मेल यो कम्प्युटरमा डाउनलोड गर्छन्। त्यसपछि सर्भरमा रहेको प्रतिलिपिलाई के गर्ने, छान्नुहोस्।
+accounts-pop3-with-katna = Katna मा मैले नमेटाएसम्म राख्नुहोस्
+accounts-pop3-at-once = डाउनलोड भएपछि मेटाउनुहोस्
+accounts-pop3-after-days = { $count ->
+    [one] { $count } दिनपछि मेटाउनुहोस्
+   *[other] { $count } दिनपछि मेटाउनुहोस्
+}
+accounts-pop3-never = कहिल्यै नमेटाउनुहोस्
+accounts-pop3-days-less = कम दिन
+accounts-pop3-days-more = थप दिन
 accounts-kind-imported = आयात गरिएको
 accounts-picture-reset = डेस्कटपको तस्बिर प्रयोग गर्नुहोस्
 accounts-picture-change = तस्बिर बदल्नुहोस्

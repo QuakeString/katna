@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “རྩིས་ཐོ་ཆ་མཉམ” �
 accounts-row = རྩིས་ཐོ་ཚུ
 accounts-row-detail = སྣོད་འཛིན་པེན་དང་ རྩིས་ཐོའི་ཐོ་བཀོད་ནང་ རྩིས་ཐོ་ཚུ་ གོ་རིམ་འདི་བཟུམ་སྦེ་སྟོནམ་ཨིན། དང་པ་འདི་ སྔོན་སྒྲིག་ཨིན། རྩིས་ཐོ་ཅིག་བཏོན་པ་ཅིན་ གློག་རིག་འདི་གུ་ཡོད་པའི་ དེ་གི་གློག་འཕྲིན་གྱི་ Katna འདྲ་བཤུས་བཏོན་གཏངམ་ཨིན། གློག་འཕྲིན་འདི་ སར་བར་གུ་སྡོདཔ་ཨིན།
 accounts-none = ད་ཚུན་ རྩིས་ཐོ་མིན་འདུག
+accounts-pop3-row = སར་བར་གུ་ཡོད་པའི་གློག་འཕྲིན
+accounts-pop3-row-detail = POP3 རྩིས་ཐོ་ཚུ་གིས་ གློག་འཕྲིན་ཚུ་ གློག་རིག་འདི་ནང་ཕབ་ལེན་འབདཝ་ཨིན། དེ་ལས་ སར་བར་གུ་ཡོད་པའི་འདྲ་བཤུས་ལུ་ ག་ཅི་འབད་ནི་ཨིན་ན་གདམ།
+accounts-pop3-with-katna = ང་གིས་ Katna ནང་བཏོན་མ་གཏང་ཚུན་བཞག།
+accounts-pop3-at-once = ཕབ་ལེན་འབད་ཚར་ཝ་ཅིག་ བཏོན་གཏང་།
+accounts-pop3-after-days = { $count ->
+   *[other] ཉིནམ་ { $count } གི་ཤུལ་ལས་ བཏོན་གཏང་།
+}
+accounts-pop3-never = ནམ་ཡང་བཏོན་མ་གཏང་།
+accounts-pop3-days-less = ཉིནམ་ཉུང་བ།
+accounts-pop3-days-more = ཉིནམ་མང་བ།
 accounts-kind-imported = ནང་འདྲེན་འབད་ཡོདཔ
 accounts-picture-reset = ཌེཀསི་ཊོཔ་པར་ལག་ལེན་འཐབ།
 accounts-picture-change = པར་བསྒྱུར།

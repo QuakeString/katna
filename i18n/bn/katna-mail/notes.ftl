@@ -15,6 +15,7 @@ notes-loading = আপনার নোট খোলা হচ্ছে…
 
 notes-take-a-note = নোট নিন…
 notes-new-list = নতুন তালিকা
+notes-new-note = নতুন নোট
 notes-pinned = পিন করা
 notes-others = অন্যান্য
 notes-empty = আপনার যোগ করা নোট এখানে দেখা যাবে

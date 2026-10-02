@@ -70,6 +70,7 @@ about-credit-resvg = SVG པར་ཚུ
 about-credit-jiff = ཚེས་གྲངས་དང་ ཆུ་ཚོད་ཀྱི་ས་ཁོངས
 about-credit-spellbook = ཡིག་སྦྱོར་ཞིབ་དཔྱད། Helix ཞུན་དག་པ་ལས
 about-credit-smol = ལཱ་ལེ་ཤ་ཅིག་ ཆ་དུས་སྦེ་འབད་ནི
+about-credit-color-schemes = ནང་སྒྲིག་ཚོས་གཞིའི་འཆར་གཞི་ཚུ་གི་ ཚོས་གཞིའི་སྡེ་ཚན་ཚུ
 about-all-libraries = Katna གིས་ལག་ལེན་འཐབ་མི་ མཛོད་ཁང་ཆ་མཉམ ({ $count })
 about-library-authors = { $authors } གིས
 about-license = Katna འདི་ GNU GPL ཐོན་རིམ་ ༣ ཡང་ན་ དེ་ལས་གསརཔ་འོག་ལུ་ རང་དབང་མཉེན་ཆས་ཨིན།
@@ -124,6 +125,21 @@ onboarding-density-default = སྔོན་སྒྲིག
 onboarding-density-compact = བསྡམ་ཏོག་ཏོ
 onboarding-continue = འཕྲོ་མཐུད།
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna རྩིས་ཐོ་དང་གཅིག་ཁར་ མང་བ་ཐོབ།
+onboarding-katna-lead = འདི་ གདམ་ཁ་ཅན་ཨིན། འདི་གིས་ Katna གི་ཡོངས་འབྲེལ་ཁྱད་རྣམ་ཚུ་ ཤུགས་ལྡན་བཏངམ་ཨིན་ ཁྱོད་ཀྱིས་ ཤུལ་མ་ སྒྲིག་སྟངས་ > མངགས་ཉོ་ ནང་བཟོ་ཚུགས།
+onboarding-katna-receipts-title = ལྷག་ཡོདཔ་ཀྱི་བདེན་ཁུངས
+onboarding-katna-receipts-text = ཁྱོད་ཀྱིས་བཏང་མི་གློག་འཕྲིན་ མི་ཚུ་གིས་ ནམ་ཁ་ཕྱེཝ་ཨིན་ན་ བལྟ།
+onboarding-katna-links-title = འབྲེལ་མཐུད་རྗེས་འཚོལ
+onboarding-katna-links-text = ཁྱོད་ཀྱི་གློག་འཕྲིན་ནང་གི་ འབྲེལ་མཐུད་ག་ཅི་ཨེབ་གཏང་འབད་ཡི་ག་ བལྟ།
+onboarding-katna-activity-title = ལཱ་འགན
+onboarding-katna-activity-text = ཁྱོད་ཀྱིས་བཏང་མི་ག་ར་གི་ ཁ་ཕྱེ་མི་དང་ ཨེབ་གཏང་ཚུ་ ས་གནས་གཅིག་ནང་།
+onboarding-katna-translate-title = རང་བཞིན་སྐད་བསྒྱུར
+onboarding-katna-translate-text = སྐད་ཡིག་གཞན་ནང་བྲིས་ཡོད་པའི་གློག་འཕྲིན་ཚུ་ ཁྱོད་རའི་སྐད་ཡིག་ནང་ལྷག།
+onboarding-katna-private = འདི་ལུ་ རང་སོའི་ཆོག་ཡིག་ཡོདཔ་ཨིན། ཁྱོད་ཀྱི་གློག་འཕྲིན་ནང་བསྐྱོད་ཚུ་ གློག་རིག་འདི་ལས་ ནམ་ཡང་མི་འགྱོ།
+
 ## First run: done
 
 onboarding-ready-title = ཆ་མཉམ་གྲ་སྒྲིག་འབད་ཡི
@@ -167,6 +183,7 @@ tour-search-text = འཚོལ་ཞིབ་ མཐུད་མེད་སྦ
 tour-menu-title = སྣོད་འཛིན་ཚུ་ སྟོན་ ཡང་ན་ སྦ།
 tour-menu-text = ཨེབ་རྟ་འདི་གིས་ སྣོད་འཛིན་ཐོ་ཡིག་ བསྡམ་བཞགཔ་ཨིན། སྦ་བཞག་པའི་སྐབས་ སྣོད་འཛིན་ཚུ་བལྟ་ནིའི་དོན་ལུ་ གཡོན་ཁའི་ གློག་འཕྲིན་ གུ་ དཔག་བྱེད་བཞག།
 tour-apps-title = ཁྱོད་ཀྱི་གློག་རིམ་ཚུ
+tour-apps-text = གློག་འཕྲིན་འདི་ ནཱ་ལུ་ ཟླ་ཐོ་དང་ འབྲེལ་བ་ཚུ་ ལཱ་ཚུ་ དྲན་ཐོ་ཚུ་ ཡིག་སྣོད་ཚུ་གི་བར་ན་ཡོདཔ་ཨིན།
 tour-tabs-title = ནང་འབྱོར་སྒྲོམ་གྱི་ཤོག་མཚན་ཚུ
 tour-tabs-text = གློག་འཕྲིན་གསརཔ་ཚུ་ གཙོ་བོ་ ཁྱབ་བསྒྲགས་ མི་སྡེ་ གསར་བསྒྱུར་ དེ་ལས་ གྲོས་བསྡུར་ས་སྒོ་ ནང་ དབྱེ་སེལ་འབདཝ་ཨིན། ཤོག་མཚན་ཚུ་ མགྱོགས་སྒྲིག་ནང་ ཤུགས་མེད་བཏང་ཚུགས།
 tour-list-title = ཁྱོད་ཀྱི་འཕྲིན་དོན་ཚུ
@@ -195,6 +212,9 @@ sign-in-again-button = ནང་བསྐྱོད་འབད།
 sign-in-again-tooltip = ཁྱོད་ཀྱི་ བརྡ་འཚོལ་ཆས་ནང་ { $provider } གི་ ནང་བསྐྱོད་ཤོག་ངོས་ ཁ་ཕྱེ།
 sign-in-again-waiting = ཁྱོད་ཀྱི་ བརྡ་འཚོལ་ཆས་ལུ་ བསྒུག་དོ…
 sign-in-again-close = ཁ་བསྡམས།
+google-api-off = Katna གི་ Google Cloud ལས་འགུལ་ནང་ { $api } ཤུགས་མེད་བཏང་ཡོདཔ་ཨིན།
+google-api-turn-on = ཤུགས་ལྡན་བཏང་།
+google-api-turn-on-tooltip = { $api } ཤུགས་ལྡན་བཏང་ནི་ལུ་ Google Cloud ཁ་ཕྱེ་ཞིནམ་ལས་ ལོག་འབད་རྩོལ་བསྐྱེད་ ཨེབ།
 sign-in-again-done = { $address } ནང་ ལོག་ནང་བསྐྱོད་འབད་ཡི། ཁྱོད་ཀྱི་གློག་འཕྲིན་ལེན་དོ…
 delete-ask-title = { $kind ->
     [conversation] གླེང་མོལ་ { $count } གད་སྙིགས་ནང་སྤོ་ནི་ཨིན་ན?

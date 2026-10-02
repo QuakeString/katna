@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = तयार करा
+tasks-create = नवीन कार्य
 tasks-all = सर्व कार्ये
 tasks-today = आज
 tasks-starred = तारांकित

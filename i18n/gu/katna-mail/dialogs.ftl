@@ -66,6 +66,7 @@ about-credit-resvg = SVG ચિત્રો
 about-credit-jiff = તારીખો અને સમય ઝોન
 about-credit-spellbook = જોડણી તપાસ, Helix એડિટર તરફથી
 about-credit-smol = એકસાથે ઘણાં કામ કરવાં
+about-credit-color-schemes = બિલ્ટ-ઇન રંગ યોજનાઓના પૅલેટ
 about-all-libraries = Katna વાપરે છે તે બધી લાઇબ્રેરીઓ ({ $count })
 about-library-authors = { $authors } દ્વારા
 about-license = Katna એ GNU GPL, આવૃત્તિ ૩ અથવા પછીની આવૃત્તિ હેઠળનું મુક્ત સૉફ્ટવેર છે.
@@ -123,6 +124,21 @@ onboarding-density-default = ડિફૉલ્ટ
 onboarding-density-compact = સઘન
 onboarding-continue = ચાલુ રાખો
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna એકાઉન્ટ સાથે વધુ મેળવો
+onboarding-katna-lead = તે વૈકલ્પિક છે. તે Katna ની ઑનલાઇન સુવિધાઓ ચાલુ કરે છે, અને તમે પછીથી સેટિંગ > સબ્સ્ક્રિપ્શનમાં બનાવી શકો છો.
+onboarding-katna-receipts-title = વાંચ્યાની રસીદ
+onboarding-katna-receipts-text = લોકો તમે મોકલેલા મેઇલ ક્યારે ખોલે છે તે જુઓ.
+onboarding-katna-links-title = લિંક ટ્રૅકિંગ
+onboarding-katna-links-text = તમારા મેઇલની કઈ લિંક પર ક્લિક થાય છે તે જુઓ.
+onboarding-katna-activity-title = પ્રવૃત્તિ
+onboarding-katna-activity-text = તમે મોકલેલી દરેક વસ્તુ માટે ખોલ્યા અને ક્લિક, એક જ જગ્યાએ.
+onboarding-katna-translate-title = આપમેળે અનુવાદ
+onboarding-katna-translate-text = અન્ય ભાષાઓમાં લખાયેલા મેઇલ તમારી પોતાની ભાષામાં વાંચો.
+onboarding-katna-private = તેનો પોતાનો પાસવર્ડ હોય છે. તમારા મેઇલ લૉગિન ક્યારેય આ કમ્પ્યુટર છોડતા નથી.
+
 ## First run: done
 
 onboarding-ready-title = બધું તૈયાર છે
@@ -166,6 +182,7 @@ tour-search-text = શોધ ઑફલાઇન પણ કામ કરે છ�
 tour-menu-title = ફોલ્ડર બતાવો અથવા છુપાવો
 tour-menu-text = આ બટન ફોલ્ડરની સૂચિ સંકેલી લે છે. તે છુપાયેલી હોય ત્યારે, ફોલ્ડર જોવા માટે ડાબી બાજુના મેઇલ પર પૉઇન્ટર રાખો.
 tour-apps-title = તમારી ઍપ
+tour-apps-text = મેઇલ અહીં રહે છે, કૅલેન્ડર, સંપર્કો, કાર્યો, નોંધો અને ફાઇલોની બાજુમાં.
 tour-tabs-title = ઇનબૉક્સ ટૅબ
 tour-tabs-text = નવી મેઇલ પ્રાથમિક, પ્રમોશન, સામાજિક, અપડેટ અને ફોરમમાં ગોઠવાય છે. તમે ઝડપી સેટિંગમાં ટૅબ બંધ કરી શકો છો.
 tour-list-title = તમારા સંદેશા
@@ -196,6 +213,9 @@ sign-in-again-button = સાઇન ઇન કરો
 sign-in-again-tooltip = તમારા બ્રાઉઝરમાં { $provider } નું સાઇન-ઇન પેજ ખોલો
 sign-in-again-waiting = તમારા બ્રાઉઝરની રાહ જોઈ રહ્યાં છીએ…
 sign-in-again-close = બંધ કરો
+google-api-off = Katna ના Google Cloud પ્રોજેક્ટમાં { $api } બંધ છે.
+google-api-turn-on = ચાલુ કરો
+google-api-turn-on-tooltip = { $api } ચાલુ કરવા Google Cloud ખોલો, પછી ફરી પ્રયાસ કરો દબાવો
 sign-in-again-done = { $address } માં ફરી સાઇન ઇન કર્યું. તમારી મેઇલ લાવી રહ્યાં છીએ…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

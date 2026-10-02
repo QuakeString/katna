@@ -88,7 +88,7 @@ contacts-print-none = པར་འདེབས་འབད་ནིའི་འ�
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = སྐྱེས་ཚེས: { $day }
 contacts-print-nickname = མིང་ཆུང་: { $name }
-contacts-create = འབྲེལ་བ་གསར་བསྐྲུན་འབད།
+contacts-create = འབྲེལ་བ་གསརཔ
 
 ## Search and the list
 

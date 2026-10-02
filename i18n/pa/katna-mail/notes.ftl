@@ -15,6 +15,7 @@ notes-loading = ਤੁਹਾਡੇ ਨੋਟ ਖੋਲ੍ਹੇ ਜਾ ਰਹੇ
 
 notes-take-a-note = ਨੋਟ ਲਿਖੋ…
 notes-new-list = ਨਵੀਂ ਸੂਚੀ
+notes-new-note = ਨਵਾਂ ਨੋਟ
 notes-pinned = ਪਿੰਨ ਕੀਤੇ
 notes-others = ਹੋਰ
 notes-empty = ਤੁਹਾਡੇ ਵੱਲੋਂ ਜੋੜੇ ਨੋਟ ਇੱਥੇ ਦਿਸਣਗੇ

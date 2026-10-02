@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “সব অ্যাকাউন্ট” ফ
 accounts-row = অ্যাকাউন্ট
 accounts-row-detail = ফোল্ডার প্যান আর অ্যাকাউন্ট মেনু অ্যাকাউন্টগুলি এই ক্রমে দেখায়; প্রথমটি ডিফল্ট। কোনো অ্যাকাউন্ট সরালে এই কম্পিউটারে তার মেলের Katna-র কপি মুছে যায়। মেল সার্ভারে থেকে যায়।
 accounts-none = এখনও কোনো অ্যাকাউন্ট নেই।
+accounts-pop3-row = সার্ভারে থাকা মেল
+accounts-pop3-row-detail = POP3 অ্যাকাউন্ট এই কম্পিউটারে মেল ডাউনলোড করে। তারপর সার্ভারের কপির কী হবে তা বেছে নিন।
+accounts-pop3-with-katna = Katna-তে না মোছা পর্যন্ত রাখুন
+accounts-pop3-at-once = ডাউনলোড হলেই মুছে ফেলুন
+accounts-pop3-after-days = { $count ->
+    [one] { $count } দিন পরে মুছে ফেলুন
+   *[other] { $count } দিন পরে মুছে ফেলুন
+}
+accounts-pop3-never = কখনও মুছবেন না
+accounts-pop3-days-less = কম দিন
+accounts-pop3-days-more = বেশি দিন
 accounts-kind-imported = ইমপোর্ট করা
 accounts-picture-reset = ডেস্কটপের ছবি ব্যবহার করুন
 accounts-picture-change = ছবি বদলান

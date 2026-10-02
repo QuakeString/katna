@@ -120,6 +120,7 @@ remote-picture-remove-failed = པར་བཏོན་མ་ཚུགས: { $er
 
 attachment-count = མཉམ་སྦྲགས་ { $count }
 attachment-save = སྲུང་།
+attachment-forward = མདུན་སྐྱེལ་འབད།
 attachment-save-all = ཆ་མཉམ་སྲུང་།
 attachment-save-all-tooltip = མཉམ་སྦྲགས་ཆ་མཉམ་ སྣོད་འཛིན་ཅིག་ནང་སྲུང་།
 attachment-save-here = ནཱ་ལུ་སྲུང་།
@@ -162,6 +163,11 @@ print-not-downloaded = (ད་ཚུན་ཕབ་ལེན་འབད་ད�
 print-encrypted = (གསང་བཟོ་འབད་ཡོད། དེ་གི་ཚིག་ཡིག་དཔར་བསྐྲུན་འབད་ནིའི་དོན་ལུ་ Katna Mail ནང་ཁ་ཕྱེ།)
 print-to = ལུ: { $addresses }
 print-cc = Cc: { $addresses }
+
+## Message text (right-click menu in the reading pane)
+
+text-pin = ཡར་མགོ་ལུ་བཙུགས།
+text-copy-address = ཁ་བྱང་འདྲ་བཤུས་རྐྱབ།
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

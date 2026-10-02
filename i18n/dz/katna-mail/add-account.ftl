@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = གློག་འཕྲིན་རྩིས་ཐོ་ཁ་སྐོང་འབད།
+add-account-providers-intro = ཁྱོད་ཀྱི་གློག་འཕྲིན་བྱིན་མི་གདམ། ལྷག་ལུས་ཚུ་ Katna གིས་འཚོལཝ་ཨིན།
+add-account-provider-other = གློག་འཕྲིན་གཞན
+add-account-provider-other-detail = IMAP ཡང་ན་ POP3 རྩིས་ཐོ་ག་ཅི་བཟུམ་ཅིག
+add-account-provider-google-detail = Gmail དང་ Google Workspace
+add-account-provider-microsoft-detail = Outlook དང་ Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = { $provider } ནང་ ནང་བསྐྱོད་འབད།
+add-account-form-title-other = ཁྱོད་ཀྱི་གློག་འཕྲིན་རྩིས་ཐོ
+add-account-form-intro = Katna གིས་ ཁྱོད་ཀྱི་ཆོག་ཡིག་འདི་ ཁྱོད་ཀྱི་རིམ་ལུགས་ཀྱི་ལྡེ་མིག་སྒམ་ནང་བཞགཔ་ཨིན།
 add-account-looking = { $address } གི་ གློག་འཕྲིན་སར་བར་ཚུ་འཚོལ་དོ…
 add-account-address-intro = ཁྱོད་ཀྱི་གློག་འཕྲིན་ཁ་བྱང་བཙུགས། Katna གིས་ ཁྱོད་ཀྱི་དོན་ལུ་ སར་བར་ཚུ་འཚོལཝ་ཨིན།
 add-account-servers-title = སར་བར་སྒྲིག་སྟངས
@@ -13,10 +22,18 @@ add-account-signing-in = ནང་བསྐྱོད་འབད་དོ…
 add-account-browser-title = ཁྱོད་ཀྱི་ བརྡ་འཚོལ་ཆས་ནང་ འཕྲོ་མཐུད་དེ་འབད།
 add-account-browser-intro = Katna གིས་ ཁྱོད་ཀྱི་ བརྡ་འཚོལ་ཆས་ནང་ { $provider } གི་ ནང་བསྐྱོད་ཤོག་ངོས་ ཁ་ཕྱེ་ཡི། དེ་ཁར་ ནང་བསྐྱོད་འབད་ཞིནམ་ལས་ Katna གིས་ ཁྱོད་ཀྱི་གློག་འཕྲིན་ ལྷག་ནི་དང་ གཏང་ནིའི་ གནང་བ་བྱིན། དེ་ལས་ ནཱ་ལུ་ ལོག་ཤོག།
 add-account-browser-hint = ཤོག་ངོས་ ཁ་མ་ཕྱེ་བས་ག? ཁྱོད་ཀྱི་ བརྡ་འཚོལ་ཆས་ཀྱི་ སྒོ་སྒྲིག་ཚུ་ ཞིབ་དཔྱད་འབད། ཡང་ན་ ལོག་འགྱོ་སྟེ་ ལོག་འབད་རྩོལ་བསྐྱེད།
+add-account-stage-browser = ཁྱོད་ཀྱིས་ བརྡ་འཚོལ་ཆས་ནང་ ནང་བསྐྱོད་འབད་ནི་ལུ་ སྒུག་དོ…
+add-account-stage-signing-in-at = { $server } ནང་ ནང་བསྐྱོད་འབད་དོ…
+add-account-help-app-password-link = གློག་རིམ་ཆོག་ཡིག་ག་དེ་སྦེ་བཟོ་ནི་ཨིན་ན
+add-account-help-turn-on-imap = { $provider } གིས་ དེ་གི་ཝེབ་གློག་འཕྲིན་གྱི་སྒྲིག་སྟངས་ནང་ IMAP དང་ POP3 གི་འཛུལ་སྤྱོད་ཤུགས་ལྡན་བཏང་བའི་ཤུལ་ལས་རྐྱངམ་ཅིག་ གློག་འཕྲིན་གློག་རིམ་ཚུ་ ནང་འཛུལ་བཅུགཔ་ཨིན།
+add-account-help-turn-on-imap-link = ག་དེ་སྦེ་ཤུགས་ལྡན་བཏང་ནི་ཨིན་ན
 
 ## Add a mail account: fields
 
 add-account-field-address = གློག་འཕྲིན་ཁ་བྱང
+add-account-receive-with = གློག་འཕྲིན་ལེན་ཐངས
+add-account-imap-about = IMAP གིས་ ཁྱོད་ཀྱི་གློག་འཕྲིན་དང་ སྣོད་འཛིན་ཚུ་ སར་བར་གུ་བཞགཔ་ཨིན་ ཐབས་འཕྲུལ་ག་ར་ནང་ གཅིག་མཚུངས་སྦེ་ཨིན། ཚུགས་པ་ཅིན་ དེ་གདམ།
+add-account-pop3-about = POP3 གིས་ ཁྱོད་ཀྱི་གློག་འཕྲིན་ཚུ་ གློག་རིག་འདི་ནང་ཕབ་ལེན་འབདཝ་ཨིན། ནཱ་ལུ་ ལྷག་ ཡང་ན་ སྤོ་མི་གློག་འཕྲིན་ཚུ་ སར་བར་དང་ ཁྱོད་ཀྱི་ཐབས་འཕྲུལ་གཞན་ཚུ་གུ་ ཧེ་མ་བཟུམ་སྦེ་ སྡོདཔ་ཨིན།
 add-account-incoming = ནང་འོང་གློག་འཕྲིན ({ $protocol })
 add-account-outgoing = ཕྱིར་འགྱོ་གློག་འཕྲིན ({ $protocol })
 add-account-field-server = སར་བར
@@ -46,6 +63,8 @@ add-account-sign-in-instead = དེའི་ཚབ་ལུ་ { $provider } �
 add-account-servers-button = སར་བར་སྒྲིག་སྟངས
 add-account-back = ལོག
 add-account-add = རྩིས་ཐོ་ཁ་སྐོང་འབད།
+add-account-done = འབད་ཚར་ཡི།
+add-account-another = རྩིས་ཐོ་གཞན་ཅིག་ཁ་སྐོང་འབད།
 add-account-cancel = ཆ་མེད་གཏང་།
 
 ## Add a mail account: problems
@@ -75,6 +94,22 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna གི་འདྲ་བཤུས་འདི་གིས་ ད་ལྟོ་ཚུན་ Google རྩིས་ཐོ་ཚུ་ནང་ ནང་བསྐྱོད་འབད་མི་ཚུགས།
    *[other] བྱིན་མི་འདི་གིས་ རང་སོའི་ཤོག་ངོས་གུ་རྐྱངམ་ཅིག་ ནང་བསྐྱོད་འབད་བཅུགཔ་ཨིན། དེ་ Katna གིས་ ད་ལྟོ་ཚུན་ འབད་མི་ཚུགས།
 }
+add-account-smtp-not-found = Katna གིས་ ཁྱོད་ཀྱི་གློག་འཕྲིན་ ག་ཏེ་ལས་ལྷག་ནི་ཨིན་ན་ཐོབ་ཅི་ དེ་འབདཝ་ད་ ག་ཏེ་ལས་གཏང་ནི་ཨིན་ན་མ་ཐོབ། ཕྱིར་གཏང་སར་བར་བཙུགས།
+
+## Add a mail account: the last step
+
+add-account-done-title = ཁྱོད་ཀྱི་རྩིས་ཐོ་གྲ་སྒྲིག་ཡོདཔ་ཨིན
+add-account-done-intro = Katna གིས་ ད་ལྟོ་ ཁྱོད་ཀྱི་གློག་འཕྲིན་ལེན་དོ། གློག་འཕྲིན་གསརཔ་ཚུ་ འབྱོར་ཝ་ཅིག་ སྟོནམ་ཨིན།
+add-account-done-sign-in = ནང་བསྐྱོད
+add-account-done-signed-in-with = ཁྱོད་ཀྱི་བརྡ་འཚོལ་ཆས་ནང་ { $provider } དང་གཅིག་ཁར
+add-account-done-receiving = གློག་འཕྲིན་ལེན་ནི
+add-account-done-sending = གློག་འཕྲིན་གཏང་ནི
+add-account-done-on-server = སར་བར་གུ་ཡོད་པའི་གློག་འཕྲིན
+add-account-done-kept = ཁྱོད་ཀྱིས་ Katna ནང་བཏོན་མ་གཏང་ཚུན་ བཞགཔ་ཨིན
+add-account-done-pop3-hint = སར་བར་གུ་ཡོད་པའི་གློག་འཕྲིན་ལུ་ ག་ཅི་འབད་ནི་ཨིན་ན་ སྒྲིག་སྟངས་ > རྩིས་ཐོ་ཚུ་ ནང་བསྒྱུར།
+add-account-done-zoho-title = ལཱ་ཚུ་དང་ཟླ་ཐོ་ཚུ
+add-account-done-zoho-about = Zoho གིས་ དེ་ཚུ་ གློག་འཕྲིན་ལས་སོ་སོ་བཞགཔ་ཨིན། དེ་ཚུ་ Katna ནང་འབག་འོང་ནིའི་དོན་ལུ་ Zoho དང་གཅིག་ཁར་ ཚར་གཅིག་ནང་བསྐྱོད་འབད།
+add-account-done-linked = ལཱ་ཚུ་དང་ཟླ་ཐོ་ཚུ་ མཐུད་ཡི།
 
 ## The account menu (from the account button on the top bar)
 

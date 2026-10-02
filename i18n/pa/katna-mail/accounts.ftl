@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “ਸਾਰੇ ਖਾਤੇ” ਫੋਲਡਰ
 accounts-row = ਖਾਤੇ
 accounts-row-detail = ਫੋਲਡਰ ਪੈਨ ਅਤੇ ਖਾਤਾ ਮੀਨੂ ਖਾਤਿਆਂ ਨੂੰ ਇਸੇ ਕ੍ਰਮ ਵਿੱਚ ਦਿਖਾਉਂਦੇ ਹਨ; ਪਹਿਲਾ ਖਾਤਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਹੁੰਦਾ ਹੈ। ਖਾਤਾ ਹਟਾਉਣ ਨਾਲ ਇਸ ਕੰਪਿਊਟਰ ’ਤੇ ਉਸਦੀ ਮੇਲ ਦੀ Katna ਵਾਲੀ ਕਾਪੀ ਮਿਟ ਜਾਂਦੀ ਹੈ। ਮੇਲ ਸਰਵਰ ’ਤੇ ਰਹਿੰਦੀ ਹੈ।
 accounts-none = ਹਾਲੇ ਕੋਈ ਖਾਤਾ ਨਹੀਂ।
+accounts-pop3-row = ਸਰਵਰ ’ਤੇ ਮੇਲ
+accounts-pop3-row-detail = POP3 ਖਾਤੇ ਮੇਲ ਇਸ ਕੰਪਿਊਟਰ ’ਤੇ ਡਾਊਨਲੋਡ ਕਰਦੇ ਹਨ। ਚੁਣੋ ਕਿ ਉਸ ਤੋਂ ਬਾਅਦ ਸਰਵਰ ਵਾਲੀ ਕਾਪੀ ਦਾ ਕੀ ਹੋਵੇ।
+accounts-pop3-with-katna = ਜਦੋਂ ਤੱਕ ਮੈਂ Katna ਵਿੱਚ ਨਾ ਮਿਟਾਵਾਂ, ਰੱਖੋ
+accounts-pop3-at-once = ਡਾਊਨਲੋਡ ਹੁੰਦੇ ਹੀ ਮਿਟਾਓ
+accounts-pop3-after-days = { $count ->
+    [one] { $count } ਦਿਨ ਬਾਅਦ ਮਿਟਾਓ
+   *[other] { $count } ਦਿਨਾਂ ਬਾਅਦ ਮਿਟਾਓ
+}
+accounts-pop3-never = ਕਦੇ ਨਾ ਮਿਟਾਓ
+accounts-pop3-days-less = ਘੱਟ ਦਿਨ
+accounts-pop3-days-more = ਵੱਧ ਦਿਨ
 accounts-kind-imported = ਆਯਾਤ ਕੀਤਾ
 accounts-picture-reset = ਡੈਸਕਟਾਪ ਤਸਵੀਰ ਵਰਤੋ
 accounts-picture-change = ਤਸਵੀਰ ਬਦਲੋ

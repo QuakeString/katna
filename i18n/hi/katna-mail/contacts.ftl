@@ -94,7 +94,7 @@ contacts-print-none = प्रिंट करने के लिए कोई
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = जन्मदिन: { $day }
 contacts-print-nickname = उपनाम: { $name }
-contacts-create = संपर्क बनाएं
+contacts-create = नया संपर्क
 
 ## Search and the list
 

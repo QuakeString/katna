@@ -46,6 +46,7 @@ compose-sent-archived = পাঠানো ও আর্কাইভ করা �
 compose-sent = মেসেজ পাঠানো হয়েছে
 compose-discarded = খসড়া বাতিল করা হয়েছে
 compose-draft-saved = খসড়া সেভ করা হয়েছে
+compose-draft-saving = সেভ করা হচ্ছে…
 compose-draft-failed = খসড়া সেভ করা যায়নি: { $error }
 compose-draft-not-opened = খসড়া খোলা যায়নি।
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = খসড়া খোলা যায়নি।
 compose-picker-insert = ঢোকান
 compose-picker-attach = সংযুক্ত করুন
 compose-file-too-large = { $name } খুব বড়: একটি মেসেজে সর্বোচ্চ { $limit } রাখা যায়।
+compose-forward-files-missing = ফরোয়ার্ড করা মেসেজের ফাইলগুলি ডাউনলোড করা নেই, তাই সেগুলি সংযুক্ত করা হয়নি।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = সংযুক্তি সরান
 compose-attachments-total = { $count ->
@@ -78,6 +80,7 @@ compose-drive-share-link = লিঙ্ক দিয়ে শেয়ার �
 compose-drive-send-without = শেয়ার না করে পাঠান
 compose-drive-share-cancel = বাতিল করুন
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } { $limit }-এর চেয়ে বড়, তাই এটি আপনার OneDrive-এ যায় এবং মেসেজে এর লিঙ্ক থাকে।
 compose-onedrive-tip = আপনার OneDrive-এ; মেসেজে লিঙ্ক থাকে
 compose-onedrive-allow = OneDrive-এর অনুমতি দিন
@@ -89,6 +92,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive { $addresses }-এর সঙ্গে ফাইলগুলি শেয়ার করতে পারে না। এর বদলে লিঙ্ক থাকলে যে কেউ সেগুলি খুলতে পারবে।
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ফাইলগুলি এখানে ছাড়ুন
 compose-drop-here = এখানে ছাড়ুন
 compose-paste-keep-formatting = ফরম্যাটিং রাখুন

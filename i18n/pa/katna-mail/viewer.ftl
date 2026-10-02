@@ -4,6 +4,10 @@
 
 ## Attachment viewer
 
+viewer-opening = ਖੁੱਲ੍ਹ ਰਿਹਾ ਹੈ…
+
+## Attachment viewer
+
 viewer-unreadable = ਇਹ ਅਟੈਚਮੈਂਟ ਪੜ੍ਹੀ ਨਹੀਂ ਜਾ ਸਕੀ।
 viewer-pdf-locked = ਇਹ PDF ਪਾਸਵਰਡ ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ।
 viewer-pdf-unreadable = ਇਹ PDF ਪੜ੍ਹੀ ਨਹੀਂ ਜਾ ਸਕੀ।
@@ -14,8 +18,17 @@ viewer-slides-unreadable = ਇਹ ਸਲਾਈਡਾਂ ਪੜ੍ਹੀਆਂ �
 viewer-no-preview = ਕੋਈ ਪੂਰਵ-ਝਲਕ ਉਪਲਬਧ ਨਹੀਂ
 viewer-slide = ਸਲਾਈਡ { $number }
 viewer-page = ਸਫ਼ਾ
+viewer-slide-box = ਸਲਾਈਡ
 viewer-page-count = { $count } ਵਿੱਚੋਂ
 viewer-go-to-page-tip = ਸਫ਼ਾ ਨੰਬਰ ਲਿਖੋ ਅਤੇ Enter ਦਬਾਓ (Ctrl+G)
+viewer-rotate-clockwise-tip = ਘੜੀ ਦੀ ਦਿਸ਼ਾ ਵਿੱਚ ਘੁਮਾਓ (Ctrl+R)
+viewer-rotate-anticlockwise-tip = ਘੜੀ ਦੀ ਉਲਟ ਦਿਸ਼ਾ ਵਿੱਚ ਘੁਮਾਓ (Ctrl+Shift+R)
+viewer-fit-page-tip = ਪੰਨਾ ਫਿੱਟ ਕਰੋ
+viewer-fit-picture-tip = ਵਿੰਡੋ ਵਿੱਚ ਫਿੱਟ ਕਰੋ
+viewer-fit-width-tip = ਚੌੜਾਈ ਫਿੱਟ ਕਰੋ
+viewer-real-size-tip = ਅਸਲ ਆਕਾਰ (1:1)
+viewer-page-back-tip = ਪਿਛਲਾ ਪੰਨਾ
+viewer-page-on-tip = ਅਗਲਾ ਪੰਨਾ
 
 ## Marking up a PDF
 
@@ -41,6 +54,10 @@ viewer-marks-undo-tip = ਅਣਕੀਤਾ ਕਰੋ (Ctrl+Z)
 viewer-marks-redo-tip = ਮੁੜ ਕਰੋ (Ctrl+Shift+Z)
 viewer-save-marked-tip = ਆਪਣੇ ਨਿਸ਼ਾਨਾਂ ਨਾਲ ਇੱਕ ਕਾਪੀ ਰੱਖਿਅਤ ਕਰੋ (Ctrl+S)
 viewer-reply-marked-tip = ਨਿਸ਼ਾਨਾਂ ਵਾਲੀ ਕਾਪੀ ਨਾਲ ਜਵਾਬ ਦਿਓ
+viewer-forward-tip = ਫ਼ਾਈਲ ਅੱਗੇ ਭੇਜੋ
+viewer-forward = ਅੱਗੇ ਭੇਜੋ
+viewer-open-with = ਇਸ ਨਾਲ ਖੋਲ੍ਹੋ…
+viewer-save = ਰੱਖਿਅਤ ਕਰੋ
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = ਨੋਟ ਲਿਖੋ
 viewer-text-placeholder = ਇੱਥੇ ਟਾਈਪ ਕਰੋ
@@ -58,3 +75,5 @@ viewer-marks-save = ਕਾਪੀ ਰੱਖਿਅਤ ਕਰੋ
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (ਨਿਸ਼ਾਨਾਂ ਵਾਲੀ)
+viewer-pick = ਚੁਣੋ
+viewer-picked = ਚੁਣਿਆ
