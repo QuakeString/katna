@@ -281,11 +281,11 @@ impl Compose {
         self.files_changed() || !self.drive.is_empty() || self.fields(cx) != self.start
     }
 
-    /// A reply in the conversation holding nothing worth keeping: no
-    /// attachment, the people and subject as they came, and no text
-    /// beyond spaces and invisible marks outside the signature and quote.
+    /// A message holding nothing worth keeping as a draft: no attachment,
+    /// the people and subject as they came, and no text beyond spaces and
+    /// invisible marks outside the signature and quote.
     fn wrote_nothing(&self, cx: &gpui::App) -> bool {
-        if self.mode != Mode::Inline || !self.attachments.is_empty() || !self.drive.is_empty() {
+        if !self.attachments.is_empty() || !self.drive.is_empty() {
             return false;
         }
         let now = self.fields(cx);

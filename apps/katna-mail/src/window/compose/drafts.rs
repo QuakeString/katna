@@ -106,6 +106,10 @@ impl MailWindow {
     /// The close button: closes the message, saved as a draft when
     /// anything was written.
     pub(in crate::window) fn close_compose_saving(&mut self, cx: &mut Context<Self>) {
+        // Emptied again: no draft is kept.
+        if self.drop_empty(cx) {
+            return;
+        }
         let touched = self
             .compose
             .as_ref()
@@ -331,6 +335,17 @@ impl MailWindow {
     /// keeping, deleting any copy already saved; false when it holds
     /// something or none is open.
     pub(in crate::window) fn drop_empty_reply(&mut self, cx: &mut Context<Self>) -> bool {
+        let inline = self
+            .compose
+            .as_ref()
+            .is_some_and(|c| c.mode == Mode::Inline);
+        inline && self.drop_empty(cx)
+    }
+
+    /// Closes the message being written when it holds nothing worth
+    /// keeping, deleting any copy already saved; false when it holds
+    /// something or none is open.
+    fn drop_empty(&mut self, cx: &mut Context<Self>) -> bool {
         let empty = self
             .compose
             .as_ref()
