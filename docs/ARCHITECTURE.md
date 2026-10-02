@@ -1567,11 +1567,16 @@ Facebook, Instagram, YouTube, GitHub, WhatsApp and Telegram show as
 Katna's one-colour marks. Each line is read as written
 (`signature::unmark`): the `*bold*` asterisks and the "text <target>"
 link marks of a text version of HTML mail go, and the pieces Gmail splits
-a link into are joined. A signature whose first line names someone other
-than the card's person (a colleague on a shared address such as
-accounts@, `signature::someone_else`) gives only its company's details.
-In a chat the signature is the one the person
-signed the conversation with; elsewhere, their newest stored one. Attachments are
+a link into are joined. The signature read is the one the address signed
+the open conversation with, in a chat or as mail; with no conversation
+open, their newest stored one. When the open mail is signed by someone
+other than the name the address goes by on other mail (a colleague on a
+shared address such as accounts@, `signature::signer` and
+`signature::someone_else`), the card is the signer's: their name heads
+it and the title and numbers read from older mail are left out. An older
+signature by someone else gives only its company's details. A picture
+named only "logo", "image001.png" or the like names no company; a company
+with no other name goes by its website. Attachments are
 chat media: pictures in a grid of their thumbnails, other files as cards,
 both opening the viewer; inline pictures under 12 KB (logos) are left out.
 A conversation opens as a chat unless a message from someone else is bulk

@@ -72,6 +72,11 @@ pub(super) struct Conversation {
     /// In a dark theme, its HTML mail keeps the sender's own colors
     /// rather than dark ones.
     pub original_colors: bool,
+    /// Whether it showed as a chat when its toolbar was last drawn, and
+    /// how many times that changed since: the original colors button
+    /// slides out for the chat and back for the mail.
+    colors_chat: Option<bool>,
+    colors_flips: usize,
     /// The popover of who opened a sent message or followed its links.
     seen: Option<tracking::Seen>,
     /// Its stored messages that are drafts, read with the messages rather
@@ -383,6 +388,8 @@ impl Conversation {
             parts,
             show_all: false,
             original_colors: false,
+            colors_chat: None,
+            colors_flips: 0,
             seen: None,
             drafts: HashSet::new(),
             headers,
@@ -797,17 +804,66 @@ enum Shown {
 impl MailWindow {
     /// Whether the open conversation can switch between its own colors
     /// and dark ones.
+    /// Not in a chat, whose bubbles show text, not the mail's own look.
     pub(super) fn original_colors_offered(&self, th: &Theme) -> bool {
+        self.own_colors(th) && !self.chat_shown()
+    }
+
+    /// Whether the open conversation's mail sets colors of its own that a
+    /// dark theme turns dark.
+    fn own_colors(&self, th: &Theme) -> bool {
         th.dark
             && self.config.mail.dark_mail
             && self.reader.as_ref().is_some_and(|r| r.has_own_colors())
+    }
+
+    /// The original colors button in the toolbar, sliding out as the
+    /// conversation turns into a chat and back as it turns into mail, so
+    /// the buttons beside it move rather than jump.
+    fn original_colors_slot(&mut self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        if !self.own_colors(th) {
+            return None;
+        }
+        let chat = self.chat_shown();
+        let reader = self.reader.as_mut()?;
+        if reader.colors_chat.is_some_and(|was| was != chat) {
+            reader.colors_flips += 1;
+        }
+        reader.colors_chat = Some(chat);
+        let flips = reader.colors_flips;
+        if flips == 0 {
+            return (!chat)
+                .then(|| self.original_colors_toggle(th, cx))
+                .flatten();
+        }
+        let toggle = self.original_colors_toggle(th, cx)?;
+        // An icon button's width.
+        let width = 40.0;
+        Some(
+            div()
+                .flex_none()
+                .overflow_hidden()
+                .child(toggle)
+                .with_animation(
+                    ("reader-colors-slot", flips),
+                    Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                    move |d, t| {
+                        let shown = if chat { 1.0 - t } else { t };
+                        // Out of sight it takes no room, its gap neither.
+                        d.w(px(width * shown))
+                            .ml(px(-2.0 * (1.0 - shown)))
+                            .opacity(shown)
+                    },
+                )
+                .into_any_element(),
+        )
     }
 
     /// In a dark theme, the button that shows the open conversation's HTML
     /// mail in its sender's own colors, or back in dark ones. Only where
     /// a message sets its own colors, so there is something to switch.
     fn original_colors_toggle(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
-        if !self.original_colors_offered(th) {
+        if !self.own_colors(th) {
             return None;
         }
         let on = self.reader.as_ref()?.original_colors;
@@ -1040,7 +1096,7 @@ impl MailWindow {
                 d.children(self.contact_toggle(th, cx))
             })
             .when(!squeeze.colors, |d| {
-                d.children(self.original_colors_toggle(th, cx))
+                d.children(self.original_colors_slot(th, cx))
             })
             .when(!squeeze.print, |d| {
                 d.child(
@@ -1249,19 +1305,14 @@ impl MailWindow {
         // Reply, Reply all and Forward stay at the foot of the pane while
         // the conversation scrolls. A reply is written at the end of the
         // conversation itself, as in Gmail: it grows with its text and
-        // scrolls with the messages.
+        // scrolls with the messages. It stays at the end even with the
+        // newest message first, where the view scrolls down to it.
         let key = reader.key;
         let reply = self.render_inline_reply(key, th, cx);
         // Drafts are edited, not answered.
         let drafts_only =
             self.mail.is_ok() && reader.parts.iter().all(|p| reader.drafts.contains(&p.id));
         let footer = (reply.is_none() && !drafts_only).then(|| self.render_reply_row(th, cx));
-        // A reply goes next to the message it answers, the newest.
-        let (reply_above, reply_below) = if newest_first {
-            (reply, None)
-        } else {
-            (None, reply)
-        };
         // Where the link under the pointer really goes.
         let link_status = self
             .hovered_link
@@ -1294,9 +1345,8 @@ impl MailWindow {
                                         .children(summary)
                                         .children(muted)
                                         .children(notes)
-                                        .children(reply_above)
                                         .children(parts)
-                                        .children(reply_below)
+                                        .children(reply)
                                         .map(|d| self.text_area(d, cx))
                                         .with_animation(
                                             ("open-conversation", key_number(key)),

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Empty replies leave no draft"
+text = """
+A reply you clicked into but never wrote in, in the chat box or under a
+mail, now simply closes when you leave it. It keeps no draft and does not
+come back when you switch between Chat and Mail.
+"""

@@ -281,6 +281,36 @@ impl Compose {
         self.files_changed() || !self.drive.is_empty() || self.fields(cx) != self.start
     }
 
+    /// A reply in the conversation holding nothing worth keeping: no
+    /// attachment, the people and subject as they came, and no text
+    /// beyond spaces and invisible marks outside the signature and quote.
+    fn wrote_nothing(&self, cx: &gpui::App) -> bool {
+        if self.mode != Mode::Inline || !self.attachments.is_empty() || !self.drive.is_empty() {
+            return false;
+        }
+        let now = self.fields(cx);
+        let start = &self.start;
+        if (&now.to, &now.cc, &now.bcc, &now.subject)
+            != (&start.to, &start.cc, &start.bcc, &start.subject)
+        {
+            return false;
+        }
+        let others = |doc: &Doc| {
+            doc.blocks
+                .iter()
+                .filter(|b| !matches!(b, Block::Para(_)))
+                .count()
+        };
+        let doc = self.body.read(cx).doc();
+        others(doc) <= others(&start.body)
+            && doc.blocks.iter().all(|block| match block {
+                Block::Para(para) => {
+                    para.style.signature || para.style.quote > 0 || !visible(&para.text)
+                }
+                _ => true,
+            })
+    }
+
     fn title(&self, cx: &gpui::App) -> SharedString {
         let subject = self.subject.read(cx).text().trim();
         if subject.is_empty() {
@@ -434,6 +464,18 @@ pub(super) struct Original<'a> {
     pub view: &'a MessageView,
     /// Its date as the reader shows it.
     pub date: String,
+}
+
+/// Whether `text` shows anything: spaces, zero-width marks and soft
+/// hyphens do not.
+fn visible(text: &str) -> bool {
+    text.chars().any(|c| {
+        !c.is_whitespace()
+            && !matches!(
+                c,
+                '\u{200B}'..='\u{200D}' | '\u{2060}' | '\u{FEFF}' | '\u{00AD}'
+            )
+    })
 }
 
 /// What the fields of a compose window hold.
@@ -2045,7 +2087,9 @@ impl MailWindow {
                 cx.notify();
             }
             None if c.mode != Mode::Inline && !c.closing => self.close_compose_saving(cx),
-            None => {}
+            None => {
+                self.drop_empty_reply(cx);
+            }
         }
     }
 
@@ -2112,6 +2156,11 @@ impl MailWindow {
                     .as_ref()
                     .is_some_and(|r| Some(r.key) == conversation);
             let touched = self.compose.as_ref().is_some_and(|c| c.touched(cx));
+            // Left with nothing written: no draft, and no window.
+            if !here && !closing && self.drop_empty_reply(cx) {
+                self.compose_gone(cx);
+                return None;
+            }
             if closing || (!here && !touched) {
                 self.compose_gone(cx);
                 return None;

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The card shows who signed the open mail"
+text = """
+The person card now reads the signature of the mail you have open, not
+just the newest one. When a colleague signs mail from a shared address
+such as accounts@, the card shows their name, role, phone and the
+company's address from that mail.
+"""

@@ -541,6 +541,17 @@ pub fn unmark(line: &str) -> String {
     out
 }
 
+/// Who signed `signature`: its first line, when that is a person's name
+/// ("Rakib Alam" under "Best Regards,").
+pub fn signer(signature: &str) -> Option<String> {
+    signature
+        .lines()
+        .map(unmark)
+        .map(|l| l.trim().trim_end_matches(',').to_owned())
+        .find(|l| !(blank(l) || delimiter(l) || sign_off(l)))
+        .filter(|first| person_name(first))
+}
+
 /// Whether `signature` is signed by someone other than `name`: a
 /// colleague signing mail from a shared address ("accounts@").
 pub fn someone_else(signature: &str, name: Option<&str>) -> bool {
@@ -551,15 +562,7 @@ pub fn someone_else(signature: &str, name: Option<&str>) -> bool {
     if name.is_empty() {
         return false;
     }
-    let Some(first) = signature
-        .lines()
-        .map(unmark)
-        .map(|l| l.trim().trim_end_matches(',').to_owned())
-        .find(|l| !(blank(l) || delimiter(l) || sign_off(l)))
-    else {
-        return false;
-    };
-    person_name(&first) && !words(&first).any(|w| name.iter().any(|n| akin(&w, n)))
+    signer(signature).is_some_and(|first| !words(&first).any(|w| name.iter().any(|n| akin(&w, n))))
 }
 
 /// "Rakib Alam", "R. K. Demo": two to four capitalised words, at least
@@ -693,7 +696,27 @@ fn picture(alt: &str, company: &mut CompanyDetails) {
         && !["banner", "award", "icon", "badge", "certified", "follow"]
             .iter()
             .any(|w| lower.contains(w));
-    if wordy && !SITE_WORDS.contains(&lower.as_str()) {
+    // "logo", "image001.png", "Signature": a name that says nothing.
+    let blank = words(alt).all(|w| {
+        w.chars().all(|c| c.is_ascii_digit())
+            || ["png", "jpg", "jpeg", "gif", "webp"].contains(&w.as_str())
+            || [
+                "logo",
+                "image",
+                "img",
+                "signature",
+                "sig",
+                "pic",
+                "photo",
+                "untitled",
+                "unnamed",
+                "inline",
+                "attachment",
+            ]
+            .iter()
+            .any(|g| w.starts_with(g))
+    });
+    if wordy && !blank && !SITE_WORDS.contains(&lower.as_str()) {
         company.logo.get_or_insert_with(|| alt.to_owned());
     }
 }
@@ -1129,6 +1152,21 @@ mod tests {
             company: None,
         };
         assert!(someone_else(gmail_marks(), known.name));
+        assert_eq!(signer(gmail_marks()).as_deref(), Some("Demo Alam"));
+        assert_eq!(signer("Regards,\nSales Team"), None);
+        // A picture called "logo" names no company.
+        let d = details(
+            "Regards,\nDemo Alam\n[image: logo]\nwww.demosys.example",
+            &known,
+        )
+        .unwrap();
+        assert_eq!(d.company.logo, None);
+        let d = details("Regards,\nDemo Alam\n[image: Demo Systems]", &known).unwrap();
+        assert_eq!(d.company.logo.as_deref(), Some("Demo Systems"));
+        assert_eq!(
+            signer("Best Regards,\n\nRakib Alam\nAccounts").as_deref(),
+            Some("Rakib Alam")
+        );
         let d = details(gmail_marks(), &known).unwrap();
         assert!(d.phones.is_empty() && d.title.is_none() && d.other.is_empty());
         assert_eq!(d.company.offices.len(), 1);
