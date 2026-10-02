@@ -63,7 +63,7 @@ pub struct Theme {
     pub text_dim: u32,
     pub text_faint: u32,
     /// Lines between things: rows, toolbars, headers, sections. A quarter
-    /// of [`Theme::outline`] in light mode, where lines show more.
+    /// of [`Theme::outline`], so they stay quiet.
     pub divider: u32,
     /// The edge of a box: fields, chips, buttons, cards and quote bars.
     pub outline: u32,
@@ -182,10 +182,10 @@ impl Theme {
         if self.dark { 0x8ab4f8ff } else { 0x1a73e8ff }
     }
 
-    /// A line `t` of the outline's strength in dark mode; in light mode
-    /// never stronger than [`Theme::divider`].
+    /// A line `t` of the outline's strength, never stronger than
+    /// [`Theme::divider`].
     pub fn faint_line(&self, t: f32) -> u32 {
-        fade(self.outline, if self.dark { t } else { t.min(LIGHT_LINE) })
+        fade(self.outline, t.min(LINE))
     }
 
     /// Katna's own palette.
@@ -359,7 +359,7 @@ impl Theme {
             text,
             text_dim: mix(text, surface, 0.18),
             text_faint: readable(s.inactive_fg, surface, 3.0),
-            divider: fade(text, if dark { 0.14 } else { 0.14 * LIGHT_LINE }),
+            divider: fade(text, 0.14 * LINE),
             outline: fade(text, 0.14),
             hover: fade(text, if dark { 0.08 } else { 0.07 }),
             ripple: fade(text, if dark { 0.16 } else { 0.14 }),
@@ -483,8 +483,8 @@ fn tone(color: u32, l: f32) -> u32 {
     byte(hue(h + 1.0 / 3.0)) << 24 | byte(hue(h)) << 16 | byte(hue(h - 1.0 / 3.0)) << 8 | 0xff
 }
 
-/// How much of the outline's strength lines keep in light mode.
-const LIGHT_LINE: f32 = 0.25;
+/// How much of the outline's strength lines between things keep.
+const LINE: f32 = 0.25;
 
 const LIGHT: Theme = Theme {
     dark: false,
@@ -546,7 +546,7 @@ const DARK: Theme = Theme {
     text: 0xe3e3e3ff,
     text_dim: 0xc4c7c5ff,
     text_faint: 0x9aa0a6ff,
-    divider: 0xffffff17,
+    divider: 0xffffff06,
     outline: 0xffffff17,
     hover: 0xffffff14,
     ripple: 0xffffff29,
