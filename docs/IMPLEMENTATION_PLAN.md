@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 2 October 2026, through PR #603). Companion to
+> Status: **v0.2** (updated 2 October 2026, through PR #604). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -25,14 +25,14 @@ not name.
   of the UI translated; reading and sending encrypted mail; Phase 6
   except the upstream proposals: Calendar, Tasks, Notes and Contacts pages that sync with each
   account's own service; the Windows build and installer.
-- **Merged since the last refresh (#523–#603):** almost all outside the
+- **Merged since the last refresh (#523–#604):** almost all outside the
   plan, added to the "Added along the way" track: Google Drive and OneDrive
   in Files and the pickers (A.16), compose that saves drafts as you write
   (A.17), inbox tabs and a colour for each account in the unified inbox
   (A.18), AI summaries and Write reply (A.2), peek and reply inside
   notifications (A.5), faint lines, Gmail's hover, accent logo and frosted
   panes (A.6), Ctrl and Shift selection, folder keys and window dragging
-  (A.10), and update patches with an hourly check (U.10). The Feeds page
+  (A.10), the Activity report kept inside the window (#604), and update patches with an hourly check (U.10). The Feeds page
   was dropped (#551).
 - **Before that (#342–#522):** most of it was not in
   the plan and is now the "Added along the way" track (A.1–A.15): a chat
@@ -357,7 +357,7 @@ Not yet checked on a real desktop: Open with (#55), Gmail Important sync
 print hand-off to KDE's print dialog (#122) and reopening the window in
 place on Plasma 6.7 Wayland (#105).
 
-### Added along the way — work outside the plan (29 September – 2 October 2026, through #603)
+### Added along the way — work outside the plan (29 September – 2 October 2026, through #604)
 
 From #342 the owner asked for much that no phase named. Each row is
 merged; the pull requests say what changed.
@@ -373,7 +373,7 @@ merged; the pull requests say what changed.
 | A.7 Accounts ✅ #361, #392, #415, #442, #447 | Add account with provider tiles and POP3; an account menu with sync state, storage and sign in again; a new account's inbox first; a first start that shows the window and offers a Katna account; switching account keeps the page |
 | A.8 Zoho ✅ #393, #397, #399 | Sign in with Zoho for Zoho's calendars and tasks |
 | A.9 Calendar, Tasks, Notes and Contacts polish ✅ #342, #345, #346, #347, #348, #350, #351, #352, #358, #360, #363, #364, #367, #372, #374, #381, #382, #383, #384, #388, #410, #412, #417, #418, #463, #465, #478, #518 | Phone layouts and folding side panels; every account listed with why its calendars, tasks or contacts are missing; right-click menus; dragging tasks and notes into order; the top search box on each page; typed quick add for tasks; open tasks and meetings in the contact panel |
-| A.10 Mail window polish ✅ #357, #359, #368, #375, #376, #378, #391, #395, #401, #402, #411, #421, #424, #428, #429, #430, #434, #435, #437, #439, #440, #441, #444, #450, #452, #454, #456, #457, #458, #459, #461, #470, #479, #481, #485, #491, #495, #496, #503, #507, #515, #532, #551, #554, #574, #575, #578, #581, #590, #594, #598, #600, #602, #603 | Inbox tabs as a pill bar; coloured folder icons with faint count pills; one checkbox at every scale; a right-click menu that fits the window; tables that keep their columns; Back to top; selectable header details; touchpad glide on Wayland; one left-bar button and fold on every page; a soft search box; reply arrows in the list; Ctrl+click and Shift+click selection; Space and arrows on folders; the window moved from any empty space; the Feeds page removed |
+| A.10 Mail window polish ✅ #357, #359, #368, #375, #376, #378, #391, #395, #401, #402, #411, #421, #424, #428, #429, #430, #434, #435, #437, #439, #440, #441, #444, #450, #452, #454, #456, #457, #458, #459, #461, #470, #479, #481, #485, #491, #495, #496, #503, #507, #515, #532, #551, #554, #574, #575, #578, #581, #590, #594, #598, #600, #602, #603, #604 | Inbox tabs as a pill bar; coloured folder icons with faint count pills; one checkbox at every scale; a right-click menu that fits the window; tables that keep their columns; Back to top; selectable header details; touchpad glide on Wayland; one left-bar button and fold on every page; a soft search box; reply arrows in the list; Ctrl+click and Shift+click selection; Space and arrows on folders; the window moved from any empty space; the Feeds page removed |
 | A.11 Sending files ✅ #432, #489, #490 | Send with Katna Mail from Dolphin, GNOME Files and Explorer; Forward keeps the original's attachments |
 | A.12 More Linux packages ✅ #462 | Fedora, Nix, AppImage, Snap, Flatpak and tarball builds tested and published on `linux-latest` |
 | A.13 Windows fixes ✅ #369, #425, #426, #443, #446, #460 | Windows draws the shadow and corners; windows fit the screen; Katna's frame and blur; sign-in keys and DNS; cleaner uninstall |
