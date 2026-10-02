@@ -155,6 +155,17 @@ impl Theme {
         }
     }
 
+    /// A soft tray behind a group of tools (Compose's security toggles and
+    /// its row of writing tools): half a chip.
+    pub fn tray(&self) -> u32 {
+        fade(self.chip, 0.5)
+    }
+
+    /// A recipient chip under the pointer: the chip a step deeper.
+    pub fn chip_hover(&self) -> u32 {
+        mix(self.chip, self.text, 0.08)
+    }
+
     /// A meter nearly at its limit, before it turns to [`Theme::error`]:
     /// amber.
     pub fn caution(&self) -> u32 {

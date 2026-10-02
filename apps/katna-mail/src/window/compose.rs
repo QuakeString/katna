@@ -106,6 +106,8 @@ const NARROW_REPLY: f32 = 560.0;
 /// How strong the lines between the recipient rows are: fainter than
 /// other dividers.
 const FAINT_LINE: f32 = 0.55;
+/// The width of the To, Cc, Bcc and From labels, so the fields line up.
+const LABEL_WIDTH: f32 = 36.0;
 
 /// What the window starts from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -2159,11 +2161,12 @@ impl MailWindow {
             w if w > 0.0 => w,
             _ => shape.width,
         };
+        let gap = lerp(24.0, 8.0, shape.phone);
         let (width, height) = match mode {
             _ if sheet => (sheet_width, vh),
-            Mode::Minimized if shape.is_phone() => (shape.width - 16.0, TITLE_HEIGHT),
+            Mode::Minimized if shape.is_phone() => (shape.width - 2.0 * gap, TITLE_HEIGHT),
             Mode::Open | Mode::Inline | Mode::Window => {
-                (WIDTH.min(vw - 32.0), MAX_HEIGHT.min(vh - 96.0))
+                (WIDTH.min(vw - 32.0), MAX_HEIGHT.min(vh - 96.0 - gap))
             }
             Mode::Minimized => (MINIMIZED_WIDTH, TITLE_HEIGHT),
             Mode::Full => ((vw - 128.0).clamp(WIDTH, 1000.0), vh - 96.0),
@@ -2194,8 +2197,7 @@ impl MailWindow {
             .shadow(elevation(th, 3.0))
             .map(|d| match mode {
                 _ if sheet => d,
-                Mode::Full => d.rounded(px(12.0)),
-                _ => d.rounded_t(px(12.0)),
+                _ => d.rounded(px(12.0)),
             })
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
                 this.drop_on_compose(paths, cx);
@@ -2268,10 +2270,12 @@ impl MailWindow {
                 )
                 .child(div().opacity(t).mt(px(lerp(24.0, 0.0, t))).child(panel))
                 .into_any_element(),
+            // It floats clear of the window's edges: the same gap below
+            // as to the right.
             _ => div()
                 .absolute()
-                .right(px(lerp(24.0, 8.0, shape.phone)))
-                .bottom(px(shape.bottom_bar() + lerp(-48.0, 0.0, t)))
+                .right(px(gap))
+                .bottom(px(shape.bottom_bar() + gap + lerp(-48.0, 0.0, t)))
                 .opacity(t)
                 .child(panel)
                 .into_any_element(),
@@ -2311,8 +2315,9 @@ impl MailWindow {
         let card_width = unpx(self.reader_scroll.bounds().size.width) - 100.0;
         // As in Gmail, one line names the recipients until it is clicked.
         let open = self.reply_header_open();
-        // The lock, signature and tracking buttons go beside From when
-        // there is room, else on a row of their own under the recipients.
+        // The security group goes beside From when there is room, else on
+        // a row of its own under the recipients. No lines between these
+        // rows; one under the last, above the text.
         let roomy = card_width >= NARROW_REPLY;
         let head_row = || {
             div()
@@ -2342,10 +2347,7 @@ impl MailWindow {
                         .flex()
                         .children(self.render_from_row(th, cx)),
                 )
-                .when(roomy, |d| {
-                    d.children(self.render_sealing(th, cx))
-                        .children(self.render_tracking(th, cx))
-                })
+                .when(roomy, |d| d.child(self.render_security_group(th, cx)))
                 .child(pop_out)
         } else {
             head_row()
@@ -2363,8 +2365,6 @@ impl MailWindow {
                 // With chips on several lines, the label stays by the first.
                 .items_start()
                 .gap(px(8.0))
-                .border_t_1()
-                .border_color(rgba(fade(th.divider, FAINT_LINE)))
                 .text_size(px(14.0))
                 .child(
                     div()
@@ -2418,11 +2418,7 @@ impl MailWindow {
                         .flex_row()
                         .items_center()
                         .justify_end()
-                        .gap(px(8.0))
-                        .border_t_1()
-                        .border_color(rgba(fade(th.divider, FAINT_LINE)))
-                        .children(self.render_sealing(th, cx))
-                        .children(self.render_tracking(th, cx))
+                        .child(self.render_security_group(th, cx))
                 });
                 let rows = div()
                     .flex_none()
@@ -2577,6 +2573,8 @@ impl MailWindow {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
+        // To, Cc, Bcc and From sit together without lines between them;
+        // the only lines are above and below the subject.
         let row = |label: String, field: AnyElement| {
             div()
                 .flex_none()
@@ -2587,20 +2585,17 @@ impl MailWindow {
                 // With chips on several lines, the label stays by the first.
                 .items_start()
                 .gap(px(8.0))
-                .border_b_1()
-                .border_color(rgba(fade(th.divider, FAINT_LINE)))
                 .text_size(px(14.0))
-                .when(!label.is_empty(), |d| {
-                    d.child(
-                        div()
-                            .flex_none()
-                            .h(px(40.0))
-                            .flex()
-                            .items_center()
-                            .text_color(rgba(th.text_dim))
-                            .child(label),
-                    )
-                })
+                .child(
+                    div()
+                        .flex_none()
+                        .min_w(px(LABEL_WIDTH))
+                        .h(px(40.0))
+                        .flex()
+                        .items_center()
+                        .text_color(rgba(th.text_dim))
+                        .child(label),
+                )
                 .child(
                     div()
                         .flex_1()
@@ -2611,26 +2606,32 @@ impl MailWindow {
                         .child(field),
                 )
         };
-        let tools = div()
+        let from = self.render_from_row(th, cx);
+        // The security group goes at the end of From; without a From row,
+        // at the end of To.
+        let to_tools = div()
             .flex_none()
             .flex()
             .flex_row()
             .items_center()
             .gap(px(4.0))
             .children(self.render_cc_bcc(th, cx))
-            .children(self.render_sealing(th, cx))
-            .children(self.render_tracking(th, cx))
+            .when(from.is_none(), |d| {
+                d.child(self.render_security_group(th, cx))
+            })
             .into_any_element();
-        let to_field = self.render_recipient_field(Field::To, Some(tools), th, cx);
+        let to_field = self.render_recipient_field(Field::To, Some(to_tools), th, cx);
         let [cc_field, bcc_field] =
             [Field::Cc, Field::Bcc].map(|field| self.render_recipient_field(field, None, th, cx));
         // A chip being dragged can land in Cc or Bcc even while hidden.
         let dragging = self.chip_dragging(cx).is_some();
         let to = self.recipient_row(row(tr!("compose-to"), to_field), Field::To, th, cx);
+        let line = rgba(fade(th.divider, FAINT_LINE));
         div()
             .flex_none()
             .flex()
             .flex_col()
+            .pt(px(4.0))
             .child(to)
             .when(compose.show_cc || dragging, |d| {
                 d.child(self.recipient_row(row(tr!("compose-cc"), cc_field), Field::Cc, th, cx))
@@ -2638,14 +2639,36 @@ impl MailWindow {
             .when(compose.show_bcc || dragging, |d| {
                 d.child(self.recipient_row(row(tr!("compose-bcc"), bcc_field), Field::Bcc, th, cx))
             })
-            .children(
-                self.render_from_row(th, cx)
-                    .map(|from| row(tr!("compose-from"), from)),
+            .children(from.map(|from| {
+                row(
+                    tr!("compose-from"),
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(8.0))
+                        .child(div().flex_1().min_w_0().flex().child(from))
+                        .child(self.render_security_group(th, cx))
+                        .into_any_element(),
+                )
+            }))
+            .child(
+                div()
+                    .flex_none()
+                    .mx(px(16.0))
+                    .mt(px(4.0))
+                    .min_h(px(44.0))
+                    .flex()
+                    .items_center()
+                    .border_t_1()
+                    .border_b_1()
+                    .border_color(line)
+                    .text_size(px(15.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .child(div().flex_1().min_w_0().child(compose.subject.clone())),
             )
-            .child(row(
-                String::new(),
-                compose.subject.clone().into_any_element(),
-            ))
             .into_any_element()
     }
 
@@ -2678,34 +2701,52 @@ impl MailWindow {
                     cx.notify();
                 }))
         });
+        // One quiet line: the name, then the address dimmed.
+        let name = from.display_name.trim();
+        let named = !name.is_empty() && !name.eq_ignore_ascii_case(&from.address);
         let button = div()
             .id("compose-from")
             .relative()
             .max_w_full()
             .h(px(30.0))
-            .pl(px(10.0))
-            .pr(px(if several { 6.0 } else { 10.0 }))
+            .px(px(6.0))
+            .ml(px(-6.0))
             .flex()
             .flex_row()
             .items_center()
             .gap(px(6.0))
-            .rounded(px(6.0))
-            .border_1()
-            .border_color(rgba(if open { th.accent } else { th.divider }))
-            .text_color(rgba(th.text))
+            .rounded(px(8.0))
+            .when(open, |d| d.bg(rgba(th.hover)))
             .child(
                 div()
                     .min_w_0()
+                    .flex()
+                    .flex_row()
+                    .gap(px(6.0))
                     .overflow_hidden()
-                    .text_ellipsis()
                     .whitespace_nowrap()
-                    .child(sender_label(from)),
+                    .when(named, |d| {
+                        d.child(
+                            div()
+                                .flex_none()
+                                .text_color(rgba(th.text))
+                                .child(SharedString::from(name.to_owned())),
+                        )
+                    })
+                    .child(
+                        div()
+                            .min_w_0()
+                            .text_ellipsis()
+                            .overflow_hidden()
+                            .text_color(rgba(if named { th.text_dim } else { th.text }))
+                            .child(SharedString::from(from.address.clone())),
+                    ),
             )
             .when(several, |d| {
                 d.cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .when(!open, |d| d.tooltip(tip(tr!("compose-from-choose"), th)))
-                    .child(icon("chevron-down", th.text_dim, 18.0))
+                    .child(icon("chevron-down", th.text_dim, 16.0))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::From, cx)))
             })
             .when(open, |d| {
@@ -2714,6 +2755,7 @@ impl MailWindow {
         Some(
             div()
                 .py(px(5.0))
+                .flex_1()
                 .flex()
                 .min_w_0()
                 .child(button)

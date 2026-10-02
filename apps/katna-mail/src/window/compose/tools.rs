@@ -444,8 +444,13 @@ pub(super) fn separator(th: &Theme) -> gpui::Div {
 /// kept inside the window.
 /// The width of the Send row taken by its padding, Send and the bin.
 const ACTIONS_FIXED: f32 = 200.0;
-/// The width of each of its other buttons.
-const TOOL_WIDTH: f32 = 42.0;
+/// The width of each of its other buttons, on their tray.
+const TOOL_WIDTH: f32 = TRAY_TOOL;
+/// A writing tool on the tray beside Send: a little smaller than a
+/// free-standing icon button, so the tray stays slim.
+pub(super) const TRAY_TOOL: f32 = 34.0;
+/// Its icons.
+pub(super) const TRAY_ICON: f32 = 18.0;
 
 /// Room between the floating formatting bar and the Send row.
 const FORMAT_BAR_GAP: f32 = 4.0;
@@ -645,12 +650,14 @@ impl MailWindow {
                 d.child(above(self.render_schedule_menu(th, cx)))
             });
         let tool = |id: &'static str, name: &'static str, label: String| {
-            icon_button(id, name, 20.0, th).tooltip(tip(label, th))
+            icon_button(id, name, TRAY_ICON, th)
+                .size(px(TRAY_TOOL))
+                .tooltip(tip(label, th))
         };
         let format = icon_button_colored(
             "compose-format",
             "format-text",
-            20.0,
+            TRAY_ICON,
             if compose.format_bar {
                 th.nav_selected_text
             } else {
@@ -658,6 +665,7 @@ impl MailWindow {
             },
             th,
         )
+        .size(px(TRAY_TOOL))
         .when(compose.format_bar, |d| d.bg(rgba(format_active(th))))
         .tooltip(tip(tr!("compose-tool-formatting"), th))
         .on_click(cx.listener(|this, _, window, cx| {
@@ -692,7 +700,7 @@ impl MailWindow {
             icon_button_colored(
                 "compose-rephrase-all",
                 "sparkle",
-                20.0,
+                TRAY_ICON,
                 if compose.rephrase.is_some() {
                     th.accent
                 } else {
@@ -700,6 +708,7 @@ impl MailWindow {
                 },
                 th,
             )
+            .size(px(TRAY_TOOL))
             .tooltip(tip(tr!("compose-ai-rephrase-tip"), th))
             // The text keeps its selection.
             .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
@@ -722,18 +731,28 @@ impl MailWindow {
         let always = if sparkle.is_some() { 6 } else { 5 };
         let fit = ((width - ACTIONS_FIXED - pill) / TOOL_WIDTH).floor() as i32 - always;
         let (link, emoji_fits, image, event) = (fit >= 1, fit >= 2, fit >= 3, fit >= 4);
-        div()
+        // The tools sit on one soft tray, grouped: writing (formatting,
+        // writing help), adding (files, link, emoji, photo, event), then
+        // signature, templates and More, with faint lines between groups.
+        let gap = || {
+            div()
+                .flex_none()
+                .mx(px(3.0))
+                .w(px(1.0))
+                .h(px(16.0))
+                .bg(rgba(fade(th.divider, super::FAINT_LINE)))
+        };
+        let tray = div()
             .flex_none()
-            .h(px(60.0))
-            .px(px(16.0))
+            .p(px(2.0))
             .flex()
             .flex_row()
             .items_center()
-            .gap(px(2.0))
-            .child(send)
-            .child(div().w(px(8.0)))
+            .rounded_full()
+            .bg(rgba(th.tray()))
             .child(format)
             .children(sparkle)
+            .child(gap())
             .child(
                 tool("compose-attach", "attachment", tr!("compose-tool-attach"))
                     .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
@@ -761,9 +780,22 @@ impl MailWindow {
                     ),
                 )
             })
+            .child(gap())
             .child(self.render_signature_button(th, cx))
             .child(self.render_templates_button(th, cx))
-            .child(more)
+            .child(more);
+        div()
+            .flex_none()
+            .h(px(60.0))
+            .pl(px(14.0))
+            .pr(px(12.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(2.0))
+            .child(send)
+            .child(div().w(px(8.0)))
+            .child(tray)
             .child(div().flex_1())
             .when(
                 compose.mode == Mode::Window && self.writing.popout_server_frame,
@@ -3204,7 +3236,8 @@ impl MailWindow {
         div()
             .relative()
             .child(
-                icon_button("compose-signature", "signature", 20.0, th)
+                icon_button("compose-signature", "signature", TRAY_ICON, th)
+                    .size(px(TRAY_TOOL))
                     .tooltip(tip(tr!("compose-tool-signature"), th))
                     .on_click(
                         cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Signature, cx)),
