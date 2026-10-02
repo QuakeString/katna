@@ -82,6 +82,16 @@ pub(in crate::window) struct Cloud {
     _thumbs: Option<Task<()>>,
     /// Files being fetched, by id: their cards say so.
     fetching: HashSet<String>,
+    /// Uploads under way, by the daemon's id.
+    uploads: HashMap<i64, Upload>,
+    _uploads: Option<Task<()>>,
+}
+
+/// A file or folder going up into a drive.
+struct Upload {
+    name: String,
+    /// The listing it lands in, read again once it is there.
+    key: (AccountId, String),
 }
 
 struct Cached {
@@ -338,6 +348,8 @@ pub(super) enum DriveMenu {
     Item { place: usize, at: Point<Pixels> },
     /// The type chip's menu.
     Kind(Point<Pixels>),
+    /// The Upload button's arrow: files or a folder.
+    Upload(Point<Pixels>),
 }
 
 impl MailWindow {
@@ -607,6 +619,182 @@ impl MailWindow {
             .ok();
         })
         .detach();
+    }
+
+    /// Whether the big button of the side column uploads into the open
+    /// drive rather than composing: a drive of the account's own is on
+    /// show, not what was shared with it.
+    pub(in crate::window) fn drive_upload_here(&self) -> bool {
+        self.app == super::super::RailApp::Files
+            && self.settings_page.is_none()
+            && self.library.cloud.view.as_ref().is_some_and(|v| !v.shared)
+    }
+
+    /// The Upload button's arrow, or a phone's button: the menu of what to
+    /// upload, at `at`.
+    pub(in crate::window) fn open_upload_menu(
+        &mut self,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.library.menu = Some(Menu::Drive(DriveMenu::Upload(at)));
+        cx.notify();
+    }
+
+    /// Asks for files, or with `folders` for folders, and uploads them into
+    /// the folder on show.
+    pub(in crate::window) fn upload_into_drive(&mut self, folders: bool, cx: &mut Context<Self>) {
+        self.library.menu = None;
+        cx.notify();
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        let Some(view) = self.library.cloud.view.as_ref().filter(|v| !v.shared) else {
+            return;
+        };
+        let account = view.account;
+        let folder = view
+            .crumbs
+            .last()
+            .map(|(id, _)| id.clone())
+            .unwrap_or_default();
+        let key = (account, format!("{}:{folder}", cloud_place::FOLDER));
+        let chosen = cx.prompt_for_paths(gpui::PathPromptOptions {
+            files: !folders,
+            directories: folders,
+            multiple: true,
+            prompt: Some(tr!("files-drive-upload").into()),
+        });
+        self.watch_drive_uploads(cx);
+        cx.spawn(async move |this, cx| {
+            let Ok(Ok(Some(paths))) = chosen.await else {
+                return;
+            };
+            let mut started = Vec::new();
+            let mut failed = Vec::new();
+            for path in &paths {
+                let name = path.file_name().map_or_else(
+                    || path.display().to_string(),
+                    |n| n.to_string_lossy().into_owned(),
+                );
+                let text = path.to_string_lossy();
+                match crate::daemon::cloud_upload(&connection, account.0, &folder, &text).await {
+                    Ok(id) => started.push((id, name)),
+                    Err(err) => failed.push((name, err)),
+                }
+            }
+            this.update(cx, |this, cx| {
+                let drive = tr!("files-drive-google");
+                let text = match started.as_slice() {
+                    [] => None,
+                    [(_, name)] => Some(tr!(
+                        "files-drive-uploading",
+                        name = name.as_str(),
+                        drive = drive.as_str()
+                    )),
+                    many => Some(tr!(
+                        "files-drive-uploading-many",
+                        count = many.len(),
+                        drive = drive.as_str()
+                    )),
+                };
+                for (id, name) in started {
+                    this.library.cloud.uploads.insert(
+                        id,
+                        Upload {
+                            name,
+                            key: key.clone(),
+                        },
+                    );
+                }
+                if let Some((name, error)) = failed.into_iter().next() {
+                    let text = tr!(
+                        "files-drive-upload-failed",
+                        name = name.as_str(),
+                        error = error
+                    );
+                    this.show_snackbar(text, None, cx);
+                } else if let Some(text) = text {
+                    this.show_snackbar(text, None, cx);
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Follows the daemon's uploads into drives, once one is asked for.
+    fn watch_drive_uploads(&mut self, cx: &mut Context<Self>) {
+        if self.library.cloud._uploads.is_some() {
+            return;
+        }
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        self.library.cloud._uploads = Some(cx.spawn(async move |this, cx| {
+            use futures_lite::StreamExt;
+            let Ok(mut changes) = crate::daemon::drive_changes(&connection).await else {
+                return;
+            };
+            while let Some(id) = changes.next().await {
+                let ours = this
+                    .read_with(cx, |this, _| this.library.cloud.uploads.contains_key(&id))
+                    .unwrap_or(false);
+                if !ours {
+                    continue;
+                }
+                let Ok(status) = crate::daemon::drive_upload_status(&connection, id).await else {
+                    continue;
+                };
+                if this
+                    .update(cx, |this, cx| this.drive_upload_changed(status, cx))
+                    .is_err()
+                {
+                    return;
+                }
+            }
+        }));
+    }
+
+    fn drive_upload_changed(&mut self, status: katna_dbus::DriveUpload, cx: &mut Context<Self>) {
+        use katna_dbus::drive_state;
+        if status.state == drive_state::UPLOADING {
+            return;
+        }
+        let Some(upload) = self.library.cloud.uploads.remove(&status.id) else {
+            return;
+        };
+        let drive = tr!("files-drive-google");
+        let text = match status.state.as_str() {
+            drive_state::DONE => {
+                tr!(
+                    "files-drive-uploaded",
+                    name = upload.name.as_str(),
+                    drive = drive.as_str()
+                )
+            }
+            drive_state::NEEDS_PERMISSION => tr!("files-drive-upload-needs"),
+            _ => tr!(
+                "files-drive-upload-failed",
+                name = upload.name.as_str(),
+                error = status.error
+            ),
+        };
+        self.show_snackbar(text, None, cx);
+        // The folder it went into is read again when next on show.
+        self.library.cloud.cache.remove(&upload.key);
+        if status.state == drive_state::DONE
+            && self
+                .library
+                .cloud
+                .view
+                .as_ref()
+                .is_some_and(|v| v.key() == upload.key)
+        {
+            self.load_drive(true, cx);
+        }
+        cx.notify();
     }
 
     /// Fetches drive file `entry` and does `act` with it.
@@ -1731,6 +1919,27 @@ impl MailWindow {
     ) -> Option<(Point<Pixels>, Vec<AnyElement>)> {
         let view = self.library.cloud.view.as_ref()?;
         match *menu {
+            DriveMenu::Upload(at) => {
+                let items = [
+                    (false, "upload", tr!("files-drive-upload-files")),
+                    (true, "folder", tr!("files-drive-upload-folder")),
+                ]
+                .into_iter()
+                .map(|(folders, glyph, label)| {
+                    item(
+                        format!("files-drive-upload-{folders}").into(),
+                        glyph,
+                        label,
+                        false,
+                    )
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.upload_into_drive(folders, cx);
+                    }))
+                    .into_any_element()
+                })
+                .collect();
+                Some((at, items))
+            }
             DriveMenu::Kind(at) => {
                 let items = Types::ALL
                     .into_iter()

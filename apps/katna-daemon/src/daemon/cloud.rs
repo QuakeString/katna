@@ -30,7 +30,7 @@ const MAX_WIDTH: u32 = 1600;
 impl Daemon {
     /// The Google Drive of `account` to browse, or `None` when it has no
     /// drive Katna can browse.
-    async fn cloud(&self, account: AccountId) -> Result<Option<Drive>, CommandError> {
+    pub(super) async fn cloud(&self, account: AccountId) -> Result<Option<Drive>, CommandError> {
         let settings = self.store().account_settings(account)?.unwrap_or_default();
         if settings.oauth != Some(OAuthProvider::Google) {
             return Ok(None);
@@ -48,6 +48,13 @@ impl Daemon {
             return Ok(false);
         };
         Ok(drive.readable().await.unwrap_or(false))
+    }
+
+    pub async fn cloud_writable(&self, account: AccountId) -> Result<bool, CommandError> {
+        let Some(drive) = self.cloud(account).await? else {
+            return Ok(false);
+        };
+        Ok(drive.writable().await.unwrap_or(false))
     }
 
     pub async fn cloud_list(

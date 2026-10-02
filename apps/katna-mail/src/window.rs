@@ -3506,7 +3506,7 @@ impl Render for MailWindow {
         self.reader_bar.tick(&self.reader_scroll, window, cx);
         self.title_roll.tick(window, reduce);
         self.avatar_turn.tick(window, reduce);
-        let compose_text = compose_text_width(&self.app.primary().1, self.font.as_ref(), window);
+        let compose_text = compose_text_width(&self.primary_button().1, self.font.as_ref(), window);
         let content = match &self.mail {
             _ if onboarding => self.render_onboarding(&th, window, cx),
             Err(err) => self.render_error(err, &th, cx),

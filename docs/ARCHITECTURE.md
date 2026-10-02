@@ -531,9 +531,9 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   provider's page in the default browser (the OpenURI portal, else
   `xdg-open`), and trades the code for tokens with our own HTTPS client
   (rustls). Scopes: Google `https://mail.google.com/ drive.file
-  drive.readonly openid email profile` (with `access_type=offline` and
+  drive openid email profile` (with `access_type=offline` and
   `prompt=consent`, so every sign-in brings a refresh token; `drive.file`
-  is for large attachments, §6.6, `drive.readonly` for the drive in Files,
+  is for large attachments, §6.6, `drive` for the drive in Files,
   §13.8, and Google refreshes are sent without scopes so grants from before
   it keep working); Microsoft `IMAP.AccessAsUser.All SMTP.Send
   offline_access openid email profile` on `outlook.office.com`, and Graph
@@ -2682,8 +2682,15 @@ desktop's own app stays one click away.
   type, date and sort chips stay and the search box searches the drive.
   Cards offer Open (the built-in viewer), Attach (a new mail) and ⋯
   (Download, Open in Google Drive, Copy link). **All files stays
-  mail-only.** Reading needs Google's `drive.readonly`; an account
-  without it shows a notice with **Allow** (signs in again).
+  mail-only.** Browsing needs Google's `drive` (an older
+  `drive.readonly` grant still browses); an account without it shows a
+  notice with **Allow** (signs in again). While a drive of the account's
+  own is on show, the side column's Compose button becomes **Upload**,
+  with an arrow for Upload files or Upload folder (on a phone the button
+  opens that menu); files and folders go into the open folder through
+  `CloudUpload`, which makes the folders and uploads each file
+  resumably, reporting as `DriveChanged` like a large attachment. The
+  folder is read again when done.
   `katna_sync::drive::browse` lists (`files.list`, folders first, 100 a
   page), downloads (Google Docs export as PDF, at most 10 MB) and fetches
   thumbnails from Google's hosts only; the daemon answers `CloudReadable`,

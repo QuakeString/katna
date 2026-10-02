@@ -501,6 +501,22 @@ macro_rules! pim_interface {
                     .await?)
             }
 
+            async fn cloud_writable(&self, account: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.cloud_writable(AccountId(account)).await?)
+            }
+
+            async fn cloud_upload(
+                &self,
+                account: i64,
+                folder: String,
+                path: String,
+            ) -> fdo::Result<i64> {
+                Ok(self
+                    .daemon
+                    .cloud_upload(AccountId(account), &folder, &path)
+                    .await?)
+            }
+
             async fn meeting_link(&self, account: i64) -> fdo::Result<String> {
                 Ok(self.daemon.meeting_link(AccountId(account)).await?)
             }

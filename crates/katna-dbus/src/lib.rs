@@ -855,6 +855,16 @@ macro_rules! pim_proxy {
             fn cloud_thumbnail(&self, account: i64, link: &str, width: u32)
             -> zbus::Result<Vec<u8>>;
 
+            /// Whether the sign-in of `account` lets Katna upload into any
+            /// folder of its drive. Asks no server.
+            fn cloud_writable(&self, account: i64) -> zbus::Result<bool>;
+
+            /// Starts uploading file or folder `path` (with everything in
+            /// it) into folder `folder` of the drive of `account`, empty
+            /// for the top. Returns an upload id followed as
+            /// `DriveUploadStatus` and `DriveChanged`; `DriveCancel` stops it.
+            fn cloud_upload(&self, account: i64, folder: &str, path: &str) -> zbus::Result<i64>;
+
             /// A new video call link from the mail service of `account`
             /// (Google Meet for Gmail), or an empty string when it has no
             /// meetings Katna may make; Katna Mail then makes a Jitsi link.

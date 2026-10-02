@@ -130,8 +130,26 @@ impl Drive {
         mime: &str,
         progress: &(dyn Fn(u64, u64) + Sync),
     ) -> Result<DriveFile> {
+        self.upload_into(path, name, mime, "", progress).await
+    }
+
+    /// [`Self::upload`] into folder `parent` (empty for the top of My
+    /// Drive), which needs [`crate::oauth::GOOGLE_DRIVE`] unless Katna made
+    /// the folder.
+    pub async fn upload_into(
+        &self,
+        path: &Path,
+        name: &str,
+        mime: &str,
+        parent: &str,
+        progress: &(dyn Fn(u64, u64) + Sync),
+    ) -> Result<DriveFile> {
         let size = std::fs::metadata(path)?.len();
-        let metadata = serde_json::json!({ "name": name, "mimeType": mime }).to_string();
+        let mut metadata = serde_json::json!({ "name": name, "mimeType": mime });
+        if !parent.is_empty() {
+            metadata["parents"] = serde_json::json!([parent]);
+        }
+        let metadata = metadata.to_string();
         let length = size.to_string();
         let url = format!(
             "{}/upload/drive/v3/files?uploadType=resumable&fields=id,webViewLink",
