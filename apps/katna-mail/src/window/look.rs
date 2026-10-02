@@ -212,15 +212,21 @@ impl MailWindow {
 
     fn window_blur_switch(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         if Look::blur_available() {
-            return self.switch_row(
-                "page-blur",
-                tr!("look-blur"),
-                tr!("look-blur-detail"),
-                self.config.experimental.blur,
-                Change::Blur(!self.config.experimental.blur),
-                th,
-                cx,
-            );
+            let blur = self.config.experimental.blur;
+            return div()
+                .flex()
+                .flex_col()
+                .child(self.switch_row(
+                    "page-blur",
+                    tr!("look-blur"),
+                    tr!("look-blur-detail"),
+                    blur,
+                    Change::Blur(!blur),
+                    th,
+                    cx,
+                ))
+                .when(blur, |d| d.child(self.pane_switches(th, cx)))
+                .into_any_element();
         }
         let env = self.chrome.environment();
         let why = match (&env.desktop, env.session) {
@@ -230,6 +236,50 @@ impl MailWindow {
             (_, Session::Wayland) => tr!("look-blur-none-wayland"),
         };
         unavailable(tr!("look-blur"), why, th)
+    }
+
+    /// What else lets the window's blur through: the cards, with how
+    /// opaque they are, the room behind a chat's bubbles and the open
+    /// search box, each on its own switch.
+    fn pane_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let experimental = &self.config.experimental;
+        let (panes, chat, search) = (
+            experimental.frosted_panes,
+            experimental.frosted_chat,
+            experimental.frosted_search,
+        );
+        div()
+            .flex()
+            .flex_col()
+            .child(self.switch_row(
+                "page-frosted-panes",
+                tr!("look-frosted-panes"),
+                tr!("look-frosted-panes-detail"),
+                panes,
+                Change::FrostedPanes(!panes),
+                th,
+                cx,
+            ))
+            .when(panes, |d| d.child(self.pane_slider(th, cx)))
+            .child(self.switch_row(
+                "page-frosted-chat",
+                tr!("look-frosted-chat"),
+                tr!("look-frosted-chat-detail"),
+                chat,
+                Change::FrostedChat(!chat),
+                th,
+                cx,
+            ))
+            .child(self.switch_row(
+                "page-frosted-search",
+                tr!("look-frosted-search"),
+                tr!("look-frosted-search-detail"),
+                search,
+                Change::FrostedSearch(!search),
+                th,
+                cx,
+            ))
+            .into_any_element()
     }
 
     /// Katna blurs under its own menus, so this needs no compositor.

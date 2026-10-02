@@ -526,7 +526,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .rounded(px(shape.card_radius()))
-            .bg(rgba(th.surface))
+            .bg(rgba(th.pane()))
             .overflow_hidden()
             .child(
                 div()

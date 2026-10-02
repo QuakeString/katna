@@ -109,6 +109,14 @@ pub struct Theme {
     pub frost: u32,
     /// How opaque the frost's tint is, in percent.
     pub frost_tint: u8,
+    /// How opaque the cards are, in percent: 100, or less when a blurred
+    /// window's blur shows through them ([`Theme::frosted_panes`]).
+    pub pane_tint: u8,
+    /// How opaque the open mail's card is while it shows a chat, in
+    /// percent.
+    pub chat_tint: u8,
+    /// How opaque the search box is while it is open, in percent.
+    pub search_tint: u8,
     pub switch_off: u32,
     /// Category tab colors: primary, promotions, social, updates, forums.
     pub tabs: [u32; 5],
@@ -195,8 +203,8 @@ impl Theme {
 
     /// For a blurred window: the frame paints the page's color, translucent
     /// (`katna_chrome::WindowChrome::blurred`); the window paints no
-    /// backdrop over it. Cards stay opaque, so text stays readable; menus
-    /// are frosted ([`Theme::frosted`]).
+    /// backdrop over it. Cards stay opaque unless they are frosted too
+    /// ([`Theme::frosted_panes`]); menus are frosted ([`Theme::frosted`]).
     pub fn translucent(self) -> Self {
         Self {
             backdrop: 0x00000000,
@@ -215,6 +223,46 @@ impl Theme {
         }
     }
 
+    /// For a blurred window: the cards (`pane`), the open mail's card
+    /// while it shows a chat (`chat`) and the open search box (`search`)
+    /// let the blur through, each this many percent opaque, or stay solid
+    /// (`None`). Text stays on the card's colour, so it keeps its
+    /// contrast, and bubbles, menus and fields keep their own fills.
+    pub fn frosted_panes(self, pane: Option<u8>, chat: Option<u8>, search: Option<u8>) -> Self {
+        let pane_tint = pane.map_or(100, |p| p.min(100));
+        Self {
+            pane_tint,
+            chat_tint: chat.map_or(pane_tint, |c| c.min(100)),
+            search_tint: search.map_or(100, |s| s.min(100)),
+            ..self
+        }
+    }
+
+    /// The cards' fill: the mail list, the open mail, the person card and
+    /// the pages.
+    pub fn pane(&self) -> u32 {
+        fade(self.surface, f32::from(self.pane_tint) / 100.0)
+    }
+
+    /// The open mail's card while it shows a chat.
+    pub fn chat_pane(&self) -> u32 {
+        fade(self.surface, f32::from(self.chat_tint) / 100.0)
+    }
+
+    /// `fill` laid on a card ([`Theme::pane`]), such as a row's: as it is
+    /// on a solid card. On one the blur shows through, the card's own
+    /// colour adds nothing and any other goes as see-through as the card,
+    /// so the rows keep the card's frost.
+    pub fn on_pane(&self, fill: u32) -> u32 {
+        if self.pane_tint >= 100 {
+            fill
+        } else if fill == self.surface {
+            0
+        } else {
+            fade(fill, f32::from(self.pane_tint) / 100.0)
+        }
+    }
+
     /// For what is drawn on a raised surface (a dialog, the Compose
     /// window): its cards are [`Theme::raised`], and the fills measured
     /// from the card (fields, chips, switches) are lifted with it. The
@@ -227,6 +275,8 @@ impl Theme {
         Self {
             surface: self.raised,
             read_row: self.raised,
+            pane_tint: 100,
+            chat_tint: 100,
             search_focused: ink(0.1),
             chip: ink(0.1),
             switch_off: ink(0.18),
@@ -390,6 +440,9 @@ impl Theme {
             rim: if dark { fade(text, RIM) } else { 0x00000000 },
             frost: 0,
             frost_tint: 100,
+            pane_tint: 100,
+            chat_tint: 100,
+            search_tint: 100,
             switch_off: ink(0.18),
             tabs,
             folder_icons: base.folder_icons,
@@ -518,6 +571,9 @@ const LIGHT: Theme = Theme {
     rim: 0x00000000,
     frost: 0,
     frost_tint: 100,
+    pane_tint: 100,
+    chat_tint: 100,
+    search_tint: 100,
     switch_off: 0xe1e3e1ff,
     tabs: [0x0b57d0ff, 0x188038ff, 0x1a73e8ff, 0xe37400ff, 0x9334e6ff],
     folder_icons: FolderIcons {
@@ -572,6 +628,9 @@ const DARK: Theme = Theme {
     rim: 0xe3e3e321,
     frost: 0,
     frost_tint: 100,
+    pane_tint: 100,
+    chat_tint: 100,
+    search_tint: 100,
     switch_off: 0x44474eff,
     tabs: [0xa8c7faff, 0x81c995ff, 0x8ab4f8ff, 0xfcad70ff, 0xd7aefbff],
     folder_icons: FolderIcons {

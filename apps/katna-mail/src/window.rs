@@ -1123,7 +1123,8 @@ impl MailWindow {
             th
         };
         if chrome.blurred() {
-            th.translucent()
+            let (pane, chat, search) = self.pane_frost();
+            th.translucent().frosted_panes(pane, chat, search)
         } else {
             th
         }
@@ -4016,7 +4017,7 @@ fn page_card(th: &Theme) -> gpui::Div {
         .justify_center()
         .gap(px(12.0))
         .rounded(px(PANEL_RADIUS))
-        .bg(rgba(th.surface))
+        .bg(rgba(th.pane()))
 }
 
 /// The undo-send countdown: a ring `size` wide in `color` on `track`,

@@ -187,6 +187,8 @@ pub enum AiSource {
 pub const FROST_BLUR: u8 = 24;
 /// The frost's tint opacity, in percent, when nothing else sets it.
 pub const FROST_OPACITY: u8 = 45;
+/// How opaque frosted panes are, in percent, when nothing else sets it.
+pub const PANE_OPACITY: u8 = 60;
 
 /// Settings > Experimental: features still being tried out.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -218,6 +220,17 @@ pub struct Experimental {
     /// How opaque that line is, in percent; `None` keeps the frame's own.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub window_border_opacity: Option<u8>,
+    /// In a blurred window, the cards (the mail list, the open mail, the
+    /// person card and the pages) let the blur show through.
+    pub frosted_panes: bool,
+    /// How opaque those cards are, in percent ([`PANE_OPACITY`]).
+    pub pane_opacity: u8,
+    /// In a blurred window, the room behind a chat's bubbles lets the
+    /// blur show through, a little more than the cards.
+    pub frosted_chat: bool,
+    /// In a blurred window, the search box lets the blur show through
+    /// while it is open.
+    pub frosted_search: bool,
     /// Conversations between people open as a group chat: a bubble per
     /// mail with only what its sender wrote.
     pub chat_view: bool,
@@ -235,6 +248,10 @@ impl Default for Experimental {
             window_radius: None,
             window_border: true,
             window_border_opacity: None,
+            frosted_panes: true,
+            pane_opacity: PANE_OPACITY,
+            frosted_chat: true,
+            frosted_search: true,
             chat_view: false,
         }
     }
@@ -1560,6 +1577,9 @@ mod tests {
         assert_eq!(config.experimental.window_frame, WindowFrame::Native);
         assert!(!config.experimental.blur);
         assert!(config.experimental.frosted_popups);
+        assert!(config.experimental.frosted_panes);
+        assert_eq!(config.experimental.pane_opacity, PANE_OPACITY);
+        assert!(config.experimental.frosted_chat && config.experimental.frosted_search);
         assert!(!config.experimental.chat_view);
         let config =
             Config::parse("[experimental]\nwindow_frame = \"katna\"\nblur = true\n").unwrap();

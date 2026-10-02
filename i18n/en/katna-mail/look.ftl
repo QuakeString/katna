@@ -51,7 +51,14 @@ look-blurred-background = Blur
 # Under "Blurred background".
 look-blurred-background-detail = Choose where Katna Mail uses blur. Turn on either one, or both.
 look-blur = Blur the window background
-look-blur-detail = The desktop shows through the top bar and the folders. Mail stays on solid cards, so text keeps its contrast
+look-blur-detail = The desktop shows through the top bar and the folders
+look-frosted-panes = Frosted panes
+look-frosted-panes-detail = The mail list, the open mail and the person card let the blur through too
+look-pane-opacity = Pane opacity
+look-frosted-chat = Frosted chat background
+look-frosted-chat-detail = Behind a chat's bubbles the blur shows a little more; the bubbles stay solid
+look-frosted-search = Frosted search box
+look-frosted-search-detail = The search box lets the blur through while you type in it
 look-frosted-popups = Frosted menus and dialogs
 look-frosted-popups-detail = Menus, popovers, dialogs and viewer bars blur what is under them
 look-custom-frost = Custom blur amount

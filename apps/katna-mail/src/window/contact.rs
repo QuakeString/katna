@@ -558,7 +558,7 @@ impl MailWindow {
             .relative()
             .rounded(px(radius))
             .overflow_hidden()
-            .bg(rgba(th.surface))
+            .bg(rgba(th.pane()))
             .shadow(card_shadow(th, shadow))
             .p(px(outline))
             .child(

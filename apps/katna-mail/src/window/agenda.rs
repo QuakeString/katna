@@ -348,7 +348,7 @@ impl MailWindow {
             .relative()
             .size_full()
             .rounded(px(radius))
-            .bg(rgba(th.surface))
+            .bg(rgba(th.pane()))
             .shadow(card_shadow(th, shadow))
             .flex()
             .flex_col()

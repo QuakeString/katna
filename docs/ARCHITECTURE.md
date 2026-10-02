@@ -1521,7 +1521,18 @@ GPUI global):
   live as they are dragged; unset, the frame keeps its preset's radius and
   outline (`Look::radius`, `Look::border`, `Look::border_opacity`). The
   title bar and content round their corners less the border's width so
-  they nest. Dialogs and
+  they nest.
+  With the window blur on, three more switches (on by default) let it
+  through what sits on the window: *Frosted panes*
+  (`experimental.frosted_panes`) makes the cards (mail list, open mail,
+  person card, agenda, Settings) `pane_opacity` percent opaque (30 to
+  95, default 60) over the window's tint, with a slider; *Frosted chat
+  background* (`frosted_chat`) makes the open mail's card 10 points
+  clearer while it shows a chat (50 % with solid panes), bubbles staying
+  solid; *Frosted search box* (`frosted_search`) keeps the focused search
+  field 62 % opaque. The theme carries them (`Theme::frosted_panes`,
+  `pane`, `chat_pane`, `on_pane`): rows and chips that match the card
+  draw nothing, others go as see-through as the card. Dialogs and
   floating cards (Add account, About, What's new, confirmations, label and
   share dialogs, the first-run card) frost the same way with their own
   color, more solid and more blurred than menus since they cover more of

@@ -914,7 +914,11 @@ impl MailWindow {
             .relative()
             .rounded(px(radius))
             .overflow_hidden()
-            .bg(rgba(th.surface))
+            .bg(rgba(if self.chat_shown() {
+                th.chat_pane()
+            } else {
+                th.pane()
+            }))
             .shadow(card_shadow(th, shadow))
             .p(px(outline))
             .on_action(cx.listener(Self::reader_back))
@@ -1868,7 +1872,7 @@ impl MailWindow {
                             .px(px(12.0))
                             .py(px(8.0))
                             .rounded(px(8.0))
-                            .bg(rgba(th.read_row))
+                            .bg(rgba(th.on_pane(th.read_row)))
                             .text_size(px(12.0))
                             .text_color(rgba(th.text_dim))
                             .child(note)
