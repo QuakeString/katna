@@ -4,6 +4,7 @@
 //! ticked lines), the inbox tabs and the lines, one row each, or three
 //! stacked lines when the list is narrow.
 
+use katna_ui::WindowDrag;
 use std::rc::Rc;
 use std::time::Duration;
 
@@ -360,6 +361,7 @@ impl MailWindow {
                         .rounded_full()
                         .bg(rgba(th.raised))
                         .cursor_pointer()
+                        .keeps_press()
                         .shadow(elevation(th, 2.0))
                         .hover(|s| s.shadow(elevation(th, 3.0)))
                         .tooltip(tip(tr!("list-back-to-top"), th))
@@ -468,6 +470,7 @@ impl MailWindow {
                     .items_center()
                     .justify_center()
                     .cursor_pointer()
+                    .keeps_press()
                     .on_click(cx.listener(|this, _, _, cx| {
                         let pick = if this.checked.is_empty() {
                             Pick::All
@@ -487,6 +490,7 @@ impl MailWindow {
                 div()
                     .id("select-menu")
                     .cursor_pointer()
+                    .keeps_press()
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::Select, cx)))
                     .child(icon("drop-down", th.text_dim, 20.0)),
             );
@@ -635,6 +639,7 @@ impl MailWindow {
                         .min_w_0()
                         .truncate()
                         .cursor_pointer()
+                        .keeps_press()
                         .text_color(rgba(th.accent))
                         .child(tr!("list-search-instead", query = query.as_str()))
                         .on_click(cx.listener(move |this, _, _, cx| {
@@ -1290,6 +1295,7 @@ impl MailWindow {
                                             .items_center()
                                             .gap(px(12.0))
                                             .cursor_pointer()
+                                            .keeps_press()
                                             .hover(|s| s.bg(rgba(th.hover)))
                                             .on_click(cx.listener(move |this, _, _, cx| {
                                                 this.act_on_targets(Act::MoveTo(id), cx)
@@ -1591,6 +1597,7 @@ impl MailWindow {
                         .font_weight(FontWeight::MEDIUM)
                         .text_color(rgba(th.accent))
                         .cursor_pointer()
+                        .keeps_press()
                         .on_click(cx.listener(|this, _, _, cx| {
                             let ticked = this.checked.len();
                             let picked = this
@@ -1870,6 +1877,7 @@ impl MailWindow {
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(color))
                 .cursor_pointer()
+                .keeps_press()
                 .when(ix != self.tab, |d| d.hover(|s| s.bg(rgba(th.hover))))
                 .when(label < 0.5, |d| d.tooltip(tip(tab.label(), th)))
                 .on_click(cx.listener(move |this, _, _, cx| {
@@ -2089,6 +2097,7 @@ impl MailWindow {
             .border_color(rgba(row_line(th)))
             .text_size(px(14.0))
             .cursor_pointer()
+            .keeps_press()
             .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
                 if *hovered {
                     this.hovered = Some(ix);
@@ -2775,6 +2784,7 @@ impl MailWindow {
                 .border_color(rgba(th.outline))
                 .bg(rgba(if open { th.hover } else { th.surface }))
                 .cursor_pointer()
+                .keeps_press()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_dim))

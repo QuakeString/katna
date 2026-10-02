@@ -14,7 +14,7 @@ use gpui::{
 };
 use katna_ui::motion::lerp;
 use katna_ui::px;
-use katna_ui::{Glow, Ripple, Tooltip};
+use katna_ui::{Glow, Ripple, Tooltip, WindowDrag};
 
 use crate::theme::{Theme, avatar_color, fade, initial};
 use crate::window::MenuKey;
@@ -202,6 +202,7 @@ fn swatch_ring(
         .justify_center()
         .rounded_full()
         .cursor_pointer()
+        .keeps_press()
         .border_2()
         .border_color(rgba(ring.unwrap_or(0x00000000)))
         .hover(|s| s.bg(rgba(th.hover)))
@@ -251,6 +252,7 @@ pub fn icon_button_colored(
         .justify_center()
         .rounded_full()
         .cursor_pointer()
+        .keeps_press()
         // Keep the header bar from starting a window move.
         .on_mouse_move(|_, _, cx| cx.stop_propagation())
         .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)))
@@ -297,6 +299,7 @@ pub fn pill_button(
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.text_dim))
         .cursor_pointer()
+        .keeps_press()
         .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
         .child(icon(name, th.text_dim, 20.0))
@@ -368,6 +371,7 @@ pub fn filled_button(
         .text_size(px(14.0))
         .font_weight(FontWeight::MEDIUM)
         .cursor_pointer()
+        .keeps_press()
         .hover(|s| s.shadow(elevation(th, 1.0)))
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(0xffffff3d)))
         .child(label.into())
@@ -395,13 +399,16 @@ pub fn outlined_button(
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.accent))
         .cursor_pointer()
+        .keeps_press()
         .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
         .child(label.into())
 }
 
+/// A row of buttons over a card; its empty space moves the window.
 pub fn toolbar(th: &Theme) -> Div {
     div()
+        .window_drag()
         .flex_none()
         .h(px(TOOLBAR_HEIGHT))
         .px(px(8.0))
@@ -742,6 +749,7 @@ pub fn menu_item(id: impl Into<gpui::ElementId>, label: &str, th: &Theme) -> Sta
         .flex()
         .items_center()
         .cursor_pointer()
+        .keeps_press()
         .hover(|s| s.bg(rgba(th.hover)))
         .menu_key(th)
         .child(label.to_owned())
@@ -763,6 +771,7 @@ pub fn menu_item_icon(
         .items_center()
         .gap(px(16.0))
         .cursor_pointer()
+        .keeps_press()
         .hover(|s| s.bg(rgba(th.hover)))
         .menu_key(th)
         .child(icon(name, th.text_dim, 20.0))

@@ -4,6 +4,7 @@
 //! navigation with the folders, which folds away, and Compose, which sits
 //! over the folders and moves into the app rail when they fold.
 
+use katna_ui::WindowDrag;
 use std::f32::consts::FRAC_PI_2;
 
 use gpui::{
@@ -164,6 +165,7 @@ pub(super) fn side_row_with(
         .items_center()
         .rounded_full()
         .cursor_pointer()
+        .keeps_press()
         .text_size(px(14.0))
         .text_color(rgba(text))
         .when(on, |d| {
@@ -241,6 +243,7 @@ impl MailWindow {
             .justify_center()
             .rounded_full()
             .cursor_pointer()
+            .keeps_press()
             .hover(|s| s.bg(rgba(th.hover)))
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .tooltip(tip(
@@ -425,6 +428,7 @@ impl MailWindow {
                 .text_color(rgba(th.compose_text))
                 .hover(|s| s.shadow(elevation(th, 1.5)))
                 .cursor_pointer()
+                .keeps_press()
                 // In the rail, resting on it opens the folded folders over
                 // the list, as resting on Mail does.
                 .when(mail, |d| {
@@ -737,6 +741,7 @@ impl MailWindow {
                     .p(px(1.0))
                     .rounded_full()
                     .cursor_pointer()
+                    .keeps_press()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .when(self.account_menu, |d| d.bg(rgba(th.hover)))
                     .on_mouse_move(|_, _, cx| cx.stop_propagation())
@@ -850,6 +855,7 @@ impl MailWindow {
         let gap = if drawer { 0.0 } else { FLOAT_GAP * float };
         let panel = div()
             .id("navigation-panel")
+            .window_drag()
             .map(|d| self.nav_keys(d, cx))
             .occlude()
             .absolute()
@@ -1152,6 +1158,7 @@ impl MailWindow {
             .font_weight(FontWeight::MEDIUM)
             .text_color(rgba(th.text_faint))
             .cursor_pointer()
+            .keeps_press()
             .rounded_full()
             .when(self.nav_cursor_on(ix), |d| d.shadow(keys_ring(th)))
             // Not over its own right-click menu.
@@ -1276,6 +1283,7 @@ impl MailWindow {
             .when(!selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
             .when(self.nav_cursor_on(ix), |d| d.shadow(keys_ring(th)))
             .cursor_pointer()
+            .keeps_press()
             .on_click(cx.listener(move |this, _, window, cx| this.click_nav_row(ix, window, cx)))
             .on_mouse_down(
                 MouseButton::Right,

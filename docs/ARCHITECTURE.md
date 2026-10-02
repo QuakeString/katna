@@ -1479,6 +1479,14 @@ GPUI global):
   bar's empty space and window buttons become Windows' caption and buttons
   (`WindowControlArea`), so Windows moves, snaps and maximizes the window;
   Windows keeps drawing the corners, shadow and resize edges.
+- *Moving the window from empty space*: on Linux, besides the title bar,
+  pressing empty space in the app rail, the folders and the toolbars over
+  the cards and moving the pointer 4 px moves the window, as KDE's Breeze
+  does for its own apps (`katna_ui::window_drag`: `window_drag()` on the
+  area, `keeps_press()` on everything clickable in it, which GPUI hands
+  the press first, so a button pressed and dragged off never moves the
+  window; 4 px is past GPUI's own 2 px drags, so dragging a mail to a
+  folder still works). Windows only moves from the title bar.
 - *Blurred background*: the window's page color becomes translucent
   (`katna_chrome::tokens::blur_alpha`: 75 % light, 80 % dark; the idle
   search box's barely tinted fill lets the blur through and turns solid
