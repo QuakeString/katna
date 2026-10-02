@@ -120,7 +120,15 @@ summary-not-read = { $service } · not marked read
 summary-copy = Copy
 summary-copied = Summary copied
 summary-again = Summarize again
-summary-open = Open conversation
+summary-open = Open
+summary-open-tip = Open conversation
+# Replying from the summary card beside a line of the list.
+summary-reply = Reply
+summary-reply-tip = Write a reply with AI
+summary-reply-to = Reply to { $name }
+summary-reply-summary = Summary
+summary-reply-send = Send
+summary-reply-open = Open
 summary-asking = Asking { $service }…
 summary-stop = Stop
 summary-cancel = Cancel

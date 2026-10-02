@@ -938,6 +938,7 @@ impl MailWindow {
         if kind == Kind::Forward {
             self.attach_forwarded(cx);
         }
+        self.adopt_kept_reply(cx);
         if mode == Mode::Inline {
             self.reveal_inline_reply(cx);
         }
@@ -1599,6 +1600,27 @@ impl MailWindow {
 
     /// Sends the open message the way Settings chooses: a reply or forward
     /// also archives its conversation when Send and archive is the default.
+    /// A reply just opened, empty: the draft written in the summary card
+    /// and not sent goes in, as one step Undo takes back.
+    fn adopt_kept_reply(&mut self, cx: &mut Context<Self>) {
+        let Some(c) = &self.compose else {
+            return;
+        };
+        if !matches!(c.kind, Kind::Reply | Kind::ReplyAll) {
+            return;
+        }
+        let Some(key) = c.answering else {
+            return;
+        };
+        let body = c.body.clone();
+        if body.read(cx).own_text_end().is_some() {
+            return;
+        }
+        if let Some(text) = self.take_kept_reply(key) {
+            body.update(cx, |editor, cx| editor.insert_at_start(&text, cx));
+        }
+    }
+
     pub(super) fn send_compose_default(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         // A chat goes on: its conversation is never archived.
         let chat = self.compose.as_ref().is_some_and(|c| c.chat.is_some());

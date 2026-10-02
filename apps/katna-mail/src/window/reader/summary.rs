@@ -35,6 +35,8 @@ use crate::data::EntryKey;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{filled_button, icon, icon_button_colored, outlined_button, raised, tip};
 
+mod peek_reply;
+
 /// The card beside a line of the list.
 const PEEK_WIDTH: f32 = 420.0;
 /// The room kept between a card and the window's edge.
@@ -55,6 +57,9 @@ pub(in crate::window) struct Summaries {
     looked: HashSet<EntryKey>,
     /// The card beside a line of the list.
     peek: Option<Peek>,
+    /// Replies written in that card and not sent, by conversation: the
+    /// card and the conversation's reply box take them up again.
+    kept_replies: HashMap<EntryKey, String>,
 }
 
 /// The card beside a line of the list.
@@ -71,6 +76,8 @@ struct Peek {
     subject: String,
     people: usize,
     files: Vec<String>,
+    /// Writing a reply in the card.
+    reply: Option<peek_reply::PeekReply>,
 }
 
 /// A conversation's summary, or the asking for it.
@@ -518,6 +525,7 @@ impl MailWindow {
             at,
             line,
             height: Rc::new(Cell::new(PEEK_GUESS)),
+            reply: None,
             subject,
             people,
             files,
@@ -536,6 +544,10 @@ impl MailWindow {
     /// Closes the card beside a line of the list. Returns whether it was
     /// open.
     pub(in crate::window) fn close_summary_peek(&mut self, cx: &mut Context<Self>) -> bool {
+        // A reply written in it and not sent is kept.
+        if let Some((key, text)) = self.peek_reply_text(cx) {
+            self.summaries.kept_replies.insert(key, text);
+        }
         let open = self.summaries.peek.take().is_some();
         if open {
             cx.notify();
@@ -1035,6 +1047,14 @@ impl MailWindow {
             Place::Drop => {}
         }
 
+        // Writing a reply: the card itself turns into it.
+        let writing = peek.and_then(|p| p.reply.as_ref()).map(|reply| {
+            let gist = match &sum.state {
+                State::Done(done) => Some(done.summary.gist.clone()),
+                _ => None,
+            };
+            self.render_peek_reply(reply, gist, th, cx)
+        });
         let body: AnyElement = match &sum.state {
             State::Ask => div()
                 .flex()
@@ -1162,8 +1182,10 @@ impl MailWindow {
                     Place::Drop | Place::Peek => raised(d, th, 16.0, 3.0),
                 })
                 .text_color(rgba(th.text))
-                .child(title)
-                .child(body)
+                .map(|d| match writing {
+                    Some(reply) => d.child(reply),
+                    None => d.child(title).child(body),
+                })
                 .into_any_element(),
         )
     }
@@ -1374,31 +1396,51 @@ impl MailWindow {
                 )
             })
             .when(peek, |d| {
-                d.child(
+                // Open and Reply: two compact pills of one size.
+                let pill = |name: &str, icon_name: &'static str, label: String, tonal: bool| {
                     div()
-                        .id(id("open".into()))
-                        .ml(px(4.0))
-                        .h(px(32.0))
-                        .px(px(14.0))
+                        .id(id(name.into()))
+                        .flex_none()
+                        .h(px(30.0))
+                        .px(px(12.0))
                         .flex()
                         .flex_row()
                         .items_center()
-                        .gap(px(6.0))
+                        .gap(px(5.0))
                         .rounded_full()
-                        .bg(rgba(fade(th.accent, 0.16)))
+                        .when(tonal, |d| {
+                            d.bg(rgba(fade(th.accent, 0.16)))
+                                .hover(|s| s.bg(rgba(fade(th.accent, 0.24))))
+                        })
+                        .when(!tonal, |d| {
+                            d.border_1()
+                                .border_color(rgba(th.divider))
+                                .hover(|s| s.bg(rgba(th.hover)))
+                        })
                         .text_color(rgba(th.text))
                         .text_size(px(13.0))
                         .font_weight(FontWeight::MEDIUM)
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(fade(th.accent, 0.24))))
-                        .child(icon("open-external", th.text, 16.0))
-                        .child(tr!("summary-open"))
+                        .child(icon(icon_name, th.text, 15.0))
+                        .child(label)
+                };
+                d.child(
+                    pill("open", "open-external", tr!("summary-open"), false)
+                        .ml(px(4.0))
+                        .tooltip(tip(tr!("summary-open-tip"), th))
                         .on_click(cx.listener(move |this, _, window, cx| {
                             this.close_summary_peek(cx);
                             if let Some(ix) = this.entries.iter().position(|e| e.key == open_key) {
                                 this.open(ix, window, cx);
                             }
                         })),
+                )
+                .child(
+                    pill("reply", "pen-sparkle", tr!("summary-reply"), true)
+                        .tooltip(tip(tr!("summary-reply-tip"), th))
+                        .on_click(
+                            cx.listener(|this, _, window, cx| this.start_peek_reply(window, cx)),
+                        ),
                 )
             });
         div()
