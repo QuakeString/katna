@@ -2586,3 +2586,15 @@ title = "'n Sagter soekblokkie"
 text = """
 Die soekblokkie bo is ligter: 'n baie dowwe rand en vulling terwyl jy dit nie gebruik nie, en 'n wit veld met 'n sagte aksentrand terwyl jy tik, in plaas van die grys pil met 'n dik gekleurde ring.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Bywerkings kom gouer"
+text = """
+Katna soek nou elke uur na 'n nuwe weergawe, en ook net nadat jou rekenaar uit slaap wakker word, sodat die bywerkingskennisgewing kort ná 'n vrystelling kom.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Ligte lyne ook in donker modus"
+text = """
+In donker modus is die lyne tussen e-posse, onder opskrifte en om kaarte nou net so lig soos in ligte modus. Velde, skyfies en knoppies behou hul duidelike buitelyn.
+"""
