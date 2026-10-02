@@ -30,6 +30,7 @@ use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
 };
+use katna_platform::colors::over;
 
 /// How far the floating folder pane stands off the rail and the top bar.
 const FLOAT_GAP: f32 = 8.0;
@@ -52,17 +53,54 @@ const SEARCH_FILL: (f32, f32) = (0.022, 0.03);
 const SEARCH_EDGE: (f32, f32) = (0.085, 0.08);
 const SEARCH_EDGE_HOVER: f32 = 0.14;
 /// How much of the accent the edge takes while the box has the keys.
-const SEARCH_EDGE_FOCUSED: f32 = 0.45;
+const SEARCH_EDGE_FOCUSED: f32 = 0.6;
+/// In dark colors, how much of the text color lifts the focused box over
+/// the bar.
+const SEARCH_FOCUSED_LIFT: f32 = 0.12;
 
 /// The search box's fill, `t` from idle (0) to focused (1): a faint tint
-/// of the text color, then the theme's focused field color.
+/// of the text color, then a solid field that stands out from the bar.
 pub(super) fn search_fill(th: &Theme, t: f32) -> u32 {
     let tint = if th.dark {
         SEARCH_FILL.1
     } else {
         SEARCH_FILL.0
     };
-    mix(fade(th.text, tint), th.search_focused, t)
+    blend(fade(th.text, tint), search_focused_fill(th), t)
+}
+
+/// Mixes two `0xRRGGBBAA` colors as light mixes, weighting each color by
+/// its alpha. A plain [`mix`] from a nearly clear dark tint to an opaque
+/// white passes through half-clear grey, which darkens the box for a few
+/// frames on the way: a blink.
+fn blend(a: u32, b: u32, t: f32) -> u32 {
+    let t = t.clamp(0.0, 1.0);
+    let alpha = |c: u32| (c & 0xff) as f32 / 255.0;
+    let channel = |c: u32, shift: u32| ((c >> shift) & 0xff) as f32;
+    let (aa, ab) = (alpha(a), alpha(b));
+    let out = aa + (ab - aa) * t;
+    if out <= 0.0 {
+        return 0;
+    }
+    [24, 16, 8]
+        .iter()
+        .fold((out * 255.0).round() as u32, |acc, &shift| {
+            let value = (channel(a, shift) * aa * (1.0 - t) + channel(b, shift) * ab * t) / out;
+            acc | ((value.round() as u32).min(255) << shift)
+        })
+}
+
+/// The focused search box's fill. In light colors the theme's focused
+/// field (the card's white). In dark colors it is lifted from the bar the
+/// box sits on, not from the cards: a desktop scheme's cards can be darker
+/// than its window (Breeze Dark), and a field lifted from them looked no
+/// different from the idle box.
+fn search_focused_fill(th: &Theme) -> u32 {
+    if th.dark {
+        over(fade(th.text, SEARCH_FOCUSED_LIFT), th.page | 0xff)
+    } else {
+        th.search_focused
+    }
 }
 
 /// The search box's 1 px edge, `t` from idle (0) to focused (1).
@@ -72,7 +110,13 @@ pub(super) fn search_edge(th: &Theme, t: f32) -> u32 {
     } else {
         SEARCH_EDGE.0
     };
-    mix(fade(th.text, edge), fade(th.accent, SEARCH_EDGE_FOCUSED), t)
+    search_edge_from(th, edge, t)
+}
+
+/// The edge from an idle strength `edge`: under the pointer it starts a
+/// little stronger, and either way it fades into the focused accent.
+fn search_edge_from(th: &Theme, edge: f32, t: f32) -> u32 {
+    blend(fade(th.text, edge), fade(th.accent, SEARCH_EDGE_FOCUSED), t)
 }
 
 /// A line of a page's side list (Calendar, Contacts, Tasks, Notes) in the
@@ -557,9 +601,10 @@ impl MailWindow {
             .bg(rgba(search_fill(th, t)))
             .border_1()
             .border_color(rgba(search_edge(th, t)))
-            .when(t < 0.5, |d| {
-                d.hover(|s| s.border_color(rgba(fade(th.text, SEARCH_EDGE_HOVER))))
-            })
+            // Under the pointer the idle edge is a touch stronger; it fades
+            // into the focused one rather than jumping when the box is
+            // clicked.
+            .hover(|s| s.border_color(rgba(search_edge_from(th, SEARCH_EDGE_HOVER, t))))
             .shadow(elevation(th, 0.5 * t.clamp(0.0, 1.0)))
             .text_size(px(16.0))
             .line_height(px(24.0))
@@ -1831,6 +1876,65 @@ impl MailWindow {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn search_box_fades_without_a_blink() {
+        use crate::theme::Accent;
+        use katna_platform::colors::{SystemColors, luminance};
+        let none = SystemColors::default();
+        let mut themes = vec![Theme::new(false), Theme::new(true)];
+        for scheme in crate::schemes::BUILT_IN {
+            for dark in [false, true] {
+                themes.push(Theme::pick(dark, scheme.id, Accent::Scheme, &none));
+            }
+        }
+        for th in themes {
+            // Drawn over the bar, the fill's brightness moves one way only
+            // from idle to focused.
+            let shown = |t: f32| luminance(over(search_fill(&th, t), th.page | 0xff));
+            let (start, end) = (shown(0.0), shown(1.0));
+            let (low, high) = (start.min(end) - 0.002, start.max(end) + 0.002);
+            for step in 1..20 {
+                let middle = shown(step as f32 / 20.0);
+                assert!(
+                    middle >= low && middle <= high,
+                    "dark={} step={step}",
+                    th.dark
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn focused_search_box_stands_out_from_the_idle_one() {
+        use crate::theme::Accent;
+        use katna_platform::colors::{SystemColors, contrast};
+        let none = SystemColors::default();
+        let check = |th: Theme, name: &str| {
+            let idle = over(search_fill(&th, 0.0), th.page | 0xff);
+            let focused = search_fill(&th, 1.0);
+            // Light boxes also lift on a shadow; dark ones need the fill.
+            let least = if th.dark { 1.15 } else { 1.05 };
+            assert!(contrast(focused, idle) >= least, "{name} dark={}", th.dark);
+        };
+        for dark in [false, true] {
+            check(Theme::new(dark), "katna");
+            for scheme in crate::schemes::BUILT_IN {
+                check(
+                    Theme::pick(dark, scheme.id, Accent::Scheme, &none),
+                    scheme.id,
+                );
+            }
+        }
+        // Breeze Dark: the cards (view) are darker than the window.
+        let breeze = Theme {
+            page: 0x202326ff,
+            surface: 0x141618ff,
+            text: 0xfcfcfcff,
+            ..Theme::new(true)
+        };
+        check(breeze, "breeze-dark");
+    }
 
     fn folder(key: &str, expanded: bool) -> sidebar::Row {
         sidebar::Row::Folder {
