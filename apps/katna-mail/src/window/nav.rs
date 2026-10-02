@@ -28,7 +28,7 @@ use crate::format;
 use crate::sidebar::{self, Role, Unified};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    ScaledEdge, elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
+    elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
 };
 
 /// How far the floating folder pane stands off the rail and the top bar.
@@ -45,11 +45,35 @@ const CHEVRON_GAP: f32 = (NAV_ROW_HEIGHT - 20.0) / 2.0;
 /// inset, the arrow and a gap.
 const NAV_TEXT_LEFT: f32 = NAV_ROW_INSET + CHEVRON_GAP + 20.0 + 4.0;
 const SEARCH_HEIGHT: f32 = 40.0;
-/// How opaque the idle search box is in a blurred window: frosted glass
-/// that shows the blur behind it. Focused, it is solid.
-const SEARCH_GLASS_ALPHA: f32 = 0.4;
-/// How strong the idle glass search box's faint edge is.
-const SEARCH_GLASS_EDGE: f32 = 0.22;
+/// How much of the text color tints the idle search box: barely there,
+/// so it sits almost flush with the bar (and lets a window's blur show).
+const SEARCH_FILL: (f32, f32) = (0.022, 0.03);
+/// How strong its faint 1 px edge is while idle, and under the pointer.
+const SEARCH_EDGE: (f32, f32) = (0.085, 0.08);
+const SEARCH_EDGE_HOVER: f32 = 0.14;
+/// How much of the accent the edge takes while the box has the keys.
+const SEARCH_EDGE_FOCUSED: f32 = 0.45;
+
+/// The search box's fill, `t` from idle (0) to focused (1): a faint tint
+/// of the text color, then the theme's focused field color.
+pub(super) fn search_fill(th: &Theme, t: f32) -> u32 {
+    let tint = if th.dark {
+        SEARCH_FILL.1
+    } else {
+        SEARCH_FILL.0
+    };
+    mix(fade(th.text, tint), th.search_focused, t)
+}
+
+/// The search box's 1 px edge, `t` from idle (0) to focused (1).
+pub(super) fn search_edge(th: &Theme, t: f32) -> u32 {
+    let edge = if th.dark {
+        SEARCH_EDGE.1
+    } else {
+        SEARCH_EDGE.0
+    };
+    mix(fade(th.text, edge), fade(th.accent, SEARCH_EDGE_FOCUSED), t)
+}
 
 /// A line of a page's side list (Calendar, Contacts, Tasks, Notes) in the
 /// shape of Mail's folders: a full pill inset from both edges of the pane,
@@ -526,22 +550,17 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .rounded_full()
-            // In a blurred window it is frosted glass while idle, letting
-            // more of the blur through than the bar around it, and turns
-            // solid as it takes focus.
-            .bg(rgba(if th.backdrop == 0 {
-                fade(th.search, lerp(SEARCH_GLASS_ALPHA, 1.0, t.clamp(0.0, 1.0)))
-            } else {
-                th.search
-            }))
-            // Focused, it gains the accent edge every other field has. As
-            // glass it keeps a faint edge while idle, so it stays visible.
-            .border_px(2.0)
-            .border_color(rgba(if th.backdrop == 0 {
-                mix(fade(th.text, SEARCH_GLASS_EDGE), th.accent, t)
-            } else {
-                fade(th.accent, t.clamp(0.0, 1.0))
-            }))
+            // Idle it is a barely tinted pill with a faint edge (in a
+            // blurred window the blur shows through it). Focused, it turns
+            // into a solid field, its edge takes a soft accent and it lifts
+            // a little.
+            .bg(rgba(search_fill(th, t)))
+            .border_1()
+            .border_color(rgba(search_edge(th, t)))
+            .when(t < 0.5, |d| {
+                d.hover(|s| s.border_color(rgba(fade(th.text, SEARCH_EDGE_HOVER))))
+            })
+            .shadow(elevation(th, 0.5 * t.clamp(0.0, 1.0)))
             .text_size(px(16.0))
             .line_height(px(24.0))
             .text_color(rgba(th.text))
@@ -557,9 +576,16 @@ impl MailWindow {
                         .overflow_hidden()
                         .opacity(1.0 - phone)
                         .child(
-                            icon_button("search-button", "search", 22.0, th)
-                                .tooltip(tip(tr!("search"), th))
-                                .on_click(cx.listener(|this, _, window, cx| {
+                            icon_button_colored(
+                                "search-button",
+                                "search",
+                                22.0,
+                                mix(th.text_dim, th.accent, t),
+                                th,
+                            )
+                            .tooltip(tip(tr!("search"), th))
+                            .on_click(cx.listener(
+                                |this, _, window, cx| {
                                     let text = this.search.read(cx).text().trim().to_owned();
                                     if text.is_empty()
                                         || this.settings_page.is_some()
@@ -570,7 +596,8 @@ impl MailWindow {
                                     } else {
                                         this.start_search(text, cx);
                                     }
-                                })),
+                                },
+                            )),
                         ),
                 )
             })
