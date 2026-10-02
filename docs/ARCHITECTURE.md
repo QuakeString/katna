@@ -4974,7 +4974,9 @@ Arch is the first, Windows and the others follow the same flow.
   Anything else, or any failure, downloads the full package. The Update
   dialog shows the size actually downloaded.
 - **The daemon checks and downloads** (the only network user): two
-  minutes after it starts, then every six hours, never on a metered
+  minutes after it starts, then every hour and 30 seconds after the
+  computer wakes from sleep (the daemon notices the wall clock jump past
+  its timers, which stop while asleep), never on a metered
   connection unless the user presses Check for updates. With
   `updates.auto_download` (Settings > General > Updates, on by default)
   it downloads a newer build at once into

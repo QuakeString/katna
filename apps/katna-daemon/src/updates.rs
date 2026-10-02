@@ -32,10 +32,16 @@ use crate::daemon::{Daemon, Notice, settings};
 
 /// The first check waits a little, so starting stays quick.
 const FIRST_CHECK: Duration = Duration::from_secs(120);
-/// How often to look for a newer build.
-const EVERY: Duration = Duration::from_secs(6 * 3600);
-/// Sooner again after a check skipped on a metered connection.
-const METERED_RETRY: Duration = Duration::from_secs(3600);
+/// How often to look for a newer build: nightly builds come several times
+/// a day.
+const EVERY: Duration = Duration::from_secs(3600);
+/// After the computer wakes, the check waits this long for the network.
+const AFTER_WAKE: Duration = Duration::from_secs(30);
+/// How often the schedule looks at the clock.
+const TICK: Duration = Duration::from_secs(60);
+/// Time the wall clock gained on the timers beyond this means the
+/// computer slept.
+const SLEPT: Duration = Duration::from_secs(120);
 const MANIFEST_TIMEOUT: Duration = Duration::from_secs(30);
 /// How many times a download is tried before it counts as failed, and
 /// the pause before the second try (longer before each later one).
@@ -154,14 +160,17 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
     let Some(wake) = daemon.upgrade().map(|d| d.updates().wake.1.clone()) else {
         return;
     };
-    let mut pause = FIRST_CHECK;
+    let mut schedule = Schedule::new(SystemTime::now(), Instant::now());
     loop {
         let why = async { wake.recv().await.unwrap_or(Wake::Timer) }
             .or(async {
-                async_io::Timer::after(pause).await;
+                async_io::Timer::after(TICK).await;
                 Wake::Timer
             })
             .await;
+        if why == Wake::Timer && !schedule.tick(SystemTime::now(), Instant::now()) {
+            continue;
+        }
         let Some(daemon) = daemon.upgrade() else {
             return;
         };
@@ -171,11 +180,11 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
         match why {
             Wake::Timer if daemon.metered() => {
                 tracing::debug!("metered connection; the update check waits");
-                pause = METERED_RETRY;
+                schedule.checked(SystemTime::now());
                 continue;
             }
             Wake::Timer | Wake::Check => {
-                pause = EVERY;
+                schedule.checked(SystemTime::now());
                 check(&daemon, package, why == Wake::Check).await;
             }
             Wake::Download => download(&daemon, package).await,
@@ -185,6 +194,46 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
                 }
             }
         }
+    }
+}
+
+/// When the next check is due, by the wall clock, which keeps counting
+/// while the computer sleeps; the timers do not. Woken from sleep, the
+/// check comes soon after.
+#[derive(Debug)]
+struct Schedule {
+    due: SystemTime,
+    wall: SystemTime,
+    mono: Instant,
+}
+
+impl Schedule {
+    fn new(wall: SystemTime, mono: Instant) -> Self {
+        Self {
+            due: wall + FIRST_CHECK,
+            wall,
+            mono,
+        }
+    }
+
+    /// Looks at the clocks; whether a check is due.
+    fn tick(&mut self, wall: SystemTime, mono: Instant) -> bool {
+        let wall_passed = wall.duration_since(self.wall).unwrap_or_default();
+        let mono_passed = mono.saturating_duration_since(self.mono);
+        if wall_passed > mono_passed + SLEPT {
+            tracing::debug!(slept = ?(wall_passed - mono_passed), "woke from sleep; checking for updates soon");
+            self.due = self.due.min(wall + AFTER_WAKE);
+        }
+        // The clock was set back: never wait longer than a full round.
+        self.due = self.due.min(wall + EVERY);
+        self.wall = wall;
+        self.mono = mono;
+        wall >= self.due
+    }
+
+    /// A check ran, or was skipped on purpose, at `wall`.
+    fn checked(&mut self, wall: SystemTime) {
+        self.due = wall + EVERY;
     }
 }
 
@@ -741,6 +790,28 @@ fn unix_now() -> i64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn checks_hourly_and_soon_after_waking() {
+        let wall = SystemTime::UNIX_EPOCH + Duration::from_secs(1_800_000_000);
+        let mono = Instant::now();
+        let mut schedule = Schedule::new(wall, mono);
+        assert!(!schedule.tick(wall + TICK, mono + TICK));
+        assert!(schedule.tick(wall + FIRST_CHECK, mono + FIRST_CHECK));
+        schedule.checked(wall + FIRST_CHECK);
+        let at = |minutes: u64| Duration::from_secs(minutes * 60) + FIRST_CHECK;
+        assert!(!schedule.tick(wall + at(59), mono + at(59)));
+        assert!(schedule.tick(wall + at(60), mono + at(60)));
+        schedule.checked(wall + at(60));
+        // Asleep for ten minutes: the timers did not count them.
+        assert!(!schedule.tick(wall + at(61), mono + at(61)));
+        assert!(!schedule.tick(wall + at(72), mono + at(62)));
+        assert!(schedule.tick(wall + at(73), mono + at(63)));
+        schedule.checked(wall + at(73));
+        // The clock set back a day: the next check is still within the hour.
+        assert!(!schedule.tick(wall, mono + at(64)));
+        assert!(schedule.tick(wall + EVERY, mono + at(64) + EVERY));
+    }
 
     #[test]
     fn hashes_a_file() {
