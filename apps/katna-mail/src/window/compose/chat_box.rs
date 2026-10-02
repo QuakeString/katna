@@ -308,10 +308,15 @@ impl MailWindow {
             // The text keeps its selection.
             .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(move |this, _, window, cx| {
-                if !started {
-                    start(this, window, cx);
+                if started {
+                    this.toggle_rephrase(window, cx);
+                    return;
                 }
-                this.toggle_rephrase(window, cx)
+                start(this, window, cx);
+                // Starting the reply changes its text, and the change,
+                // handled after this click, closes a card it finds open:
+                // the card opens after it.
+                cx.defer_in(window, |this, window, cx| this.toggle_rephrase(window, cx));
             }))
         });
         let text = match compose {
