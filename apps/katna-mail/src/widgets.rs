@@ -14,7 +14,7 @@ use gpui::{
 };
 use katna_ui::motion::lerp;
 use katna_ui::px;
-use katna_ui::{Ripple, Tooltip};
+use katna_ui::{Glow, Ripple, Tooltip};
 
 use crate::theme::{Theme, avatar_color, fade, initial};
 use crate::window::MenuKey;
@@ -93,9 +93,9 @@ pub fn icon_button_colored(
         .justify_center()
         .rounded_full()
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
         // Keep the header bar from starting a window move.
         .on_mouse_move(|_, _, cx| cx.stop_propagation())
+        .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)))
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)).centered())
         .child(icon(name, color, size))
 }
@@ -139,7 +139,7 @@ pub fn pill_button(
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.text_dim))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
         .child(icon(name, th.text_dim, 20.0))
         .child(
@@ -237,7 +237,7 @@ pub fn outlined_button(
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.accent))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
         .child(label.into())
 }

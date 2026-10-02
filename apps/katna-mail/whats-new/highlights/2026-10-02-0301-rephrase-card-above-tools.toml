@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rephrase sits above the formatting bar"
+text = """
+The Rephrase card now opens just above the formatting bar, in the reply
+box and in Compose, instead of over the mail list. Drag it by the small
+handle at its top to move it out of the way; it opens in its usual place
+again next time.
+"""

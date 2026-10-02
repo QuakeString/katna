@@ -31,7 +31,7 @@ mod paste;
 mod popout;
 mod quote;
 mod recipients;
-mod rephrase;
+pub(in crate::window) mod rephrase;
 mod reply_kind;
 pub(super) mod schedule;
 mod scheduled;

@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Summarize a conversation"
+text = """
+Right-click a conversation and pick Summarize, or press Shift+S, for a
+card beside it that says what it is about, what was settled and what
+waits on you, without opening it or marking it read. In an open
+conversation the sparkle above it puts the summary under the subject;
+in the chat view it sits in a strip under the header. Each point names
+the mail it came from, and when new mail came since you last read, the
+summary covers just that. It needs writing help with AI on in
+Settings > Compose.
+"""

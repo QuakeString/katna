@@ -7,11 +7,13 @@
 //! Encrypted mail asks first. [`AiComplete`] finishes the sentence being
 //! written, in grey like the phrase suggestions, when that is switched on.
 
+use std::cell::Cell;
 use std::rc::Rc;
 
 use gpui::{
-    AnyElement, App, Bounds, ClipboardItem, Context, Entity, Focusable, Pixels, Subscription, Task,
-    WeakEntity, Window, anchored, deferred, div, point, prelude::*, rgba,
+    Anchor, AnyElement, App, Bounds, ClipboardItem, Context, DragMoveEvent, Entity, Focusable,
+    MouseButton, MouseDownEvent, Pixels, Point, Subscription, Task, WeakEntity, Window, anchored,
+    canvas, deferred, div, point, prelude::*, rgba,
 };
 use katna_ai::Tone;
 use katna_ai::provider::{self, OTHER};
@@ -44,8 +46,14 @@ const FIRST_TONES: [Tone; 5] = [
 
 /// The Rephrase card over the message.
 pub(in crate::window) struct Rephrase {
-    /// Where the selection ends, in window coordinates.
-    at: Bounds<Pixels>,
+    /// The box the card opens over (the chat's reply box with its
+    /// formatting bar, or the compose window's bottom row), measured as
+    /// it draws; the card waits for it.
+    room: Rc<Cell<Option<Bounds<Pixels>>>>,
+    /// How far the user dragged the card from where it opened, and where
+    /// a drag started: the pointer and that offset then.
+    moved: Point<Pixels>,
+    grab: Option<(Point<Pixels>, Point<Pixels>)>,
     /// The selected text, as sent.
     text: String,
     tone: Tone,
@@ -67,9 +75,19 @@ enum State {
     Failed(String),
 }
 
+/// Dragging the Rephrase card by its grip.
+#[derive(Clone, Copy)]
+struct RephraseDrag;
+
+impl gpui::Render for RephraseDrag {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        div()
+    }
+}
+
 /// What the button under a problem does.
 #[derive(Clone, Copy)]
-enum Fix {
+pub(in crate::window) enum Fix {
     Retry,
     Settings(Section),
 }
@@ -162,7 +180,7 @@ impl MailWindow {
     }
 
     fn open_rephrase(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let Some((text, at)) = self.rephrase_selection(cx) else {
+        let Some((text, _)) = self.rephrase_selection(cx) else {
             return;
         };
         let accent = rgba(self.theme(window).accent).into();
@@ -190,7 +208,9 @@ impl MailWindow {
         c.popup = None;
         let ask = c.sealing.encrypt && !c.ai_encrypted_ok;
         c.rephrase = Some(Rephrase {
-            at,
+            room: Rc::default(),
+            moved: Point::default(),
+            grab: None,
             text,
             tone: Tone::Clearer,
             state: if ask { State::Ask } else { State::Loading },
@@ -342,7 +362,7 @@ impl MailWindow {
     }
 
     /// Who answers: Katna AI, or the user's own service by name.
-    fn ai_service_name(&self) -> String {
+    pub(in crate::window) fn ai_service_name(&self) -> String {
         let ai = &self.config.ai;
         match ai.source {
             AiSource::Own => {
@@ -368,6 +388,33 @@ impl MailWindow {
             State::Ask => self.render_rephrase_ask(&service, th, cx),
             _ => self.render_rephrase_body(r, &service, th, cx),
         };
+        // The card is moved by the grip along its top.
+        let grip = div()
+            .id("compose-rephrase-grip")
+            .h(px(12.0))
+            .mt(px(-6.0))
+            .mb(px(-4.0))
+            .flex()
+            .items_center()
+            .justify_center()
+            .cursor_grab()
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, event: &MouseDownEvent, _, cx| {
+                    if let Some(r) = this.compose.as_mut().and_then(|c| c.rephrase.as_mut()) {
+                        r.grab = Some((event.position, r.moved));
+                    }
+                    cx.stop_propagation();
+                }),
+            )
+            .on_drag(RephraseDrag, |drag, _, _, cx| cx.new(|_| *drag))
+            .child(
+                div()
+                    .w(px(36.0))
+                    .h(px(4.0))
+                    .rounded_full()
+                    .bg(rgba(fade(th.text_faint, 0.45))),
+            );
         // The frosted glass is the card's first child, under the text.
         let card = raised(
             div()
@@ -380,6 +427,22 @@ impl MailWindow {
                 .gap(px(10.0))
                 .text_size(px(14.0))
                 .text_color(rgba(th.text))
+                .on_drag_move(
+                    cx.listener(|this, event: &DragMoveEvent<RephraseDrag>, _, cx| {
+                        if let Some(r) = this.compose.as_mut().and_then(|c| c.rephrase.as_mut())
+                            && let Some((from, start)) = r.grab
+                        {
+                            r.moved = start + (event.event.position - from);
+                            cx.notify();
+                        }
+                    }),
+                )
+                .on_drop(cx.listener(|this, _: &RephraseDrag, _, cx| {
+                    if let Some(r) = this.compose.as_mut().and_then(|c| c.rephrase.as_mut()) {
+                        r.grab = None;
+                    }
+                    cx.notify();
+                }))
                 .on_mouse_down_out(
                     cx.listener(|this, _, window, cx| this.close_rephrase(window, cx)),
                 ),
@@ -387,20 +450,60 @@ impl MailWindow {
             12.0,
             3.0,
         )
+        .child(grip)
         .child(body);
-        let at = r.at;
+        // Measures the box the card opens over: it is this element's
+        // parent.
+        let room = r.room.clone();
+        let measure = canvas(
+            move |bounds, window, _| {
+                if room.get() != Some(bounds) {
+                    room.set(Some(bounds));
+                    window.request_animation_frame();
+                }
+            },
+            |_, _, _, _| {},
+        )
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full();
+        // Over the box, centred on it, just above the formatting bar (a
+        // compose window's floats over its bottom row); where it was
+        // dragged to after that.
+        let place = r.room.get().map(|room| {
+            let lift = match self.compose.as_ref() {
+                // The chat's reply box holds its formatting bar.
+                Some(c)
+                    if c.format_bar && !(c.mode == super::Mode::Inline && self.chat_shown()) =>
+                {
+                    super::tools::FORMAT_BAR_COVER
+                }
+                _ => 8.0,
+            };
+            point(
+                room.center().x - px(CARD_WIDTH / 2.0),
+                room.top() - px(lift),
+            ) + r.moved
+        });
         Some(
-            deferred(
-                anchored()
-                    .position(point(
-                        at.right() - px(CARD_WIDTH / 2.0),
-                        at.bottom() + px(8.0),
-                    ))
-                    .snap_to_window_with_margin(px(8.0))
-                    .child(card),
-            )
-            .with_priority(2)
-            .into_any_element(),
+            div()
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full()
+                .child(measure)
+                .children(place.map(|at| {
+                    deferred(
+                        anchored()
+                            .anchor(Anchor::BottomLeft)
+                            .position(at)
+                            .snap_to_window_with_margin(px(8.0))
+                            .child(card),
+                    )
+                    .with_priority(2)
+                }))
+                .into_any_element(),
         )
     }
 
@@ -712,7 +815,7 @@ fn tone_label(tone: Tone) -> String {
 }
 
 /// What to tell the user about `problem`, and what the button does.
-fn problem_text(problem: &str, service: &str) -> (String, Fix) {
+pub(in crate::window) fn problem_text(problem: &str, service: &str) -> (String, Fix) {
     match problem {
         problem::SIGN_IN => (
             tr!("compose-ai-sign-in"),
@@ -734,7 +837,7 @@ fn problem_text(problem: &str, service: &str) -> (String, Fix) {
 }
 
 /// Grey lines breathing while the text is rewritten.
-fn placeholder(th: &Theme, reduce: bool) -> AnyElement {
+pub(in crate::window) fn placeholder(th: &Theme, reduce: bool) -> AnyElement {
     use gpui::{Animation, AnimationExt};
     let line = |width: f32| {
         div()

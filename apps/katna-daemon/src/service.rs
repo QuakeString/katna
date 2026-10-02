@@ -571,6 +571,30 @@ macro_rules! pim_interface {
                 }
             }
 
+            async fn ai_summarize(
+                &self,
+                newest: i64,
+                request: String,
+            ) -> (String, String, u32, String) {
+                let Ok(request) = serde_json::from_str(&request) else {
+                    return (
+                        String::new(),
+                        String::new(),
+                        0,
+                        katna_ai::wire::problem::FAILED.to_owned(),
+                    );
+                };
+                match self.daemon.ai_summarize(MessageId(newest), &request).await {
+                    Ok((summary, plan)) => (
+                        summary,
+                        plan.kind,
+                        plan.days_left.unwrap_or(0),
+                        String::new(),
+                    ),
+                    Err(err) => (String::new(), String::new(), 0, err.problem().to_owned()),
+                }
+            }
+
             async fn set_ai_key(&self, key: String) -> fdo::Result<()> {
                 Ok(self.daemon.set_ai_key(&key).await?)
             }

@@ -66,6 +66,7 @@ pub use mutes::MuteOf;
 pub use reminders::{SNOOZED, is_snoozed_path};
 pub(crate) use sign_in::open_in_browser;
 mod sign_in;
+mod summaries;
 mod tasks;
 
 /// The longest account name taken.
