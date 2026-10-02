@@ -2583,7 +2583,12 @@ desktop's own app stays one click away.
   steps (from Fit or 1:1) goes on from the nearest step. A PDF also turns a quarter turn either way (Ctrl+R, Ctrl+Shift+R):
   every page turns, the page on show stays, marks turn with it, and a
   marked copy is saved turned (`/Rotate`). Too narrow for the bar (a
-  phone), these float in a pill at the foot instead. A click on the dim
+  phone), these float in a pill at the foot instead, 16 px from each
+  side; what does not fit there goes into a ⋮ More menu (icons and
+  labels, opened where pressed): turning first, then Fit and Real size,
+  then Dark pages, then the zoom buttons, while the page box and the
+  zoom percentage always stay. The folding is `widgets::fold`, shared
+  with the reading pane's toolbar (`reader::Squeeze`). A click on the dim
   space around the file closes the viewer, as in Gmail; a click on the
   page, a control or the bar, or a drag, does not (nor while a menu, the
   unsaved-marks question or a note being typed is open). Escape closes the viewer. It is dark in light and dark themes alike.
