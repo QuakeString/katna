@@ -378,8 +378,15 @@ impl Viewer {
             more_at: None,
             th,
         };
-        this.show(current, cx);
+        this.current = current;
         this
+    }
+
+    /// Starts showing the file the viewer was made on. Called once its
+    /// owner has set it up (`dark_pages`), so the first page is drawn as
+    /// it will stay, never white for a frame.
+    pub(super) fn start(&mut self, cx: &mut Context<Self>) {
+        self.show(self.current, cx);
     }
 
     /// A viewer open on `item` while its file is still on the way: it
