@@ -1386,6 +1386,21 @@ pub async fn cloud_upload(
         .map_err(|err| describe(&err))
 }
 
+/// Links a file already in the drive of `account` to a message; returns
+/// an upload id that is shared at Send like an uploaded file's.
+pub async fn cloud_link(
+    connection: &Connection,
+    account: i64,
+    entry: &katna_dbus::CloudEntry,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_link(account, entry)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// One page of the drive of `account`: `place` is one of
 /// `katna_dbus::cloud_place`, `what` the folder id or the words.
 pub async fn cloud_list(

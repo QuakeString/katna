@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Attach from Google Drive"
+text = """
+Compose's paperclip now opens the Files picker, the same one as the chat's
+From Files, with your Google Drive beside your mail files and This
+computer… for anything else. Files that fit go in the mail; big files and
+Google Docs go as a link, shared with the recipients when you send.
+"""

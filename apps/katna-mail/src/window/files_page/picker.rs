@@ -1,13 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The attach picker: the chat reply box's paperclip > From Files. It is
-//! the Files page in a panel over the chat, with the page's files, search
-//! and chips, the files of this conversation first. A click ticks a file;
-//! the eye (or the viewer's Select) looks before picking. Attach adds the
-//! ticked files, downloading their mail first if need be. The foot weighs
-//! them against the 25 MB a mail carries: on an account with Google Drive
-//! or OneDrive the rest goes there, biggest first, as in Compose; on
-//! others Attach waits until they fit.
+//! The attach picker: Compose's paperclip, and the chat reply box's
+//! paperclip > From Files. It is the Files page in a panel, over the chat
+//! or over the window for Compose, with the page's files, search and
+//! chips, the files of this conversation first. Its side column (pills
+//! on a narrow panel) adds the drives of the accounts, and This
+//! computer… for the system's file chooser. A click ticks a file; the eye
+//! (or the viewer's Select) looks before picking. Attach adds the ticked
+//! files, downloading their mail first if need be. The foot weighs them
+//! against the 25 MB a mail carries: on an account with Google Drive or
+//! OneDrive the rest goes there, biggest first, as in Compose; on others
+//! Attach waits until they fit. Drive files go as a copy while they fit,
+//! and as a link from their own drive when they do not or are the
+//! drive's own documents (Smart attach), shared with the recipients at
+//! Send.
 //!
 //! The picker borrows the page's filters while it is open and gives them
 //! back when it closes, so the page's chips, menus and calendar serve it.
@@ -18,9 +24,11 @@ use std::rc::Rc;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, ListAlignment,
-    ListState, SharedString, Subscription, Window, div, ease_out_quint, list, prelude::*, rgba,
+    ListState, SharedString, Subscription, Window, anchored, div, ease_out_quint, list, point,
+    prelude::*, rgba,
 };
 use katna_core::{AccountId, OAuthProvider};
+use katna_dbus::CloudEntry;
 use katna_i18n::tr;
 use katna_store::MessageId;
 use katna_ui::px;
@@ -55,6 +63,24 @@ const KINDS: [Types; 5] = [
 ];
 /// The meter turns amber this full.
 const NEARLY: f32 = 0.8;
+/// The side column of sources, on a panel at least `SIDE_FROM` wide.
+const SIDE: f32 = 210.0;
+const SIDE_FROM: f32 = 640.0;
+/// The picker over Compose: at most this big, this far inside the window.
+const MAX_WIDTH: f32 = 960.0;
+const MAX_HEIGHT: f32 = 680.0;
+const MARGIN: f32 = 24.0;
+
+/// Where the picker's files come from.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Source {
+    /// The files of all mail, this conversation's first.
+    Mail,
+    /// Only this conversation's.
+    Chat,
+    /// The drive of an account.
+    Drive(AccountId),
+}
 
 /// The Files page's filters, kept while the picker borrows them.
 struct Saved {
@@ -81,8 +107,10 @@ enum Line {
 
 /// The open attach picker.
 pub(in crate::window) struct Picker {
-    /// The conversation whose reply box it attaches to.
-    key: EntryKey,
+    /// The conversation whose reply box it attaches to; `None` over the
+    /// window, for Compose.
+    key: Option<EntryKey>,
+    source: Source,
     input: Entity<TextInput>,
     _input: Subscription,
     saved: Saved,
@@ -90,14 +118,25 @@ pub(in crate::window) struct Picker {
     in_chat: HashSet<MessageId>,
     /// The ticked files, in the order they were ticked.
     ticked: Vec<(MessageId, usize)>,
+    /// The ticked drive files, with their accounts.
+    drive_ticked: Vec<(AccountId, CloudEntry)>,
     /// The files shown, in order: places in the page's files.
     shown: Rc<Vec<usize>>,
     lines: Rc<Vec<Line>>,
     columns: usize,
     stale: bool,
     state: ListState,
+    /// Wide enough for the side column; a drive's bar then takes one row.
+    pub(super) wide: bool,
     /// The viewer shows one of its files: the arrows step through them.
     pub(in crate::window) previewing: bool,
+}
+
+impl Picker {
+    /// The search box, which searches a drive too.
+    pub(super) fn search_box(&self) -> Entity<TextInput> {
+        self.input.clone()
+    }
 }
 
 /// How the ticked files weigh against what a mail carries.
@@ -105,16 +144,64 @@ struct Weight {
     count: usize,
     /// Everything the mail would carry, ticked files included.
     total: u64,
-    /// The part of it going through the cloud.
+    /// The part of it going through the cloud: uploaded or linked.
     cloud: u64,
-    provider: Option<OAuthProvider>,
+    /// How many files go as links.
+    links: usize,
+    /// The links are OneDrive's.
+    onedrive: bool,
+    /// More than a mail carries, with no cloud to take the rest.
+    over: bool,
+    /// For each ticked drive file, whether it goes as a link.
+    drive_links: Vec<bool>,
 }
 
-impl Weight {
-    /// More than a mail carries, with no cloud to take the rest.
-    fn over(&self) -> bool {
-        self.provider.is_none() && self.total > MAX_TOTAL as u64
+/// Which ticked files go through the cloud, with `used` bytes in the
+/// mail already: of `mail` files (sizes) and drive files (sizes, and
+/// whether each must be a link), with or without a `cloud` for mail
+/// files. Returns which mail files are uploaded, which drive files are
+/// linked, and whether the rest is still too much.
+fn smart_attach(
+    mail: &[u64],
+    drive: &[(u64, bool)],
+    used: u64,
+    cloud: bool,
+) -> (Vec<bool>, Vec<bool>, bool) {
+    let limit = MAX_TOTAL as u64;
+    let mut sizes = mail.to_vec();
+    sizes.extend(
+        drive
+            .iter()
+            .map(|&(size, link)| if link { 0 } else { size }),
+    );
+    let bound = cloud_bound(&sizes, used, limit);
+    let (mail_bound, drive_bound) = bound.split_at(mail.len());
+    let mut linked: Vec<bool> = drive
+        .iter()
+        .zip(drive_bound)
+        .map(|(&(_, link), &bound)| link || bound)
+        .collect();
+    let mut uploaded = mail_bound.to_vec();
+    if !cloud && uploaded.iter().any(|&b| b) {
+        // Mail files cannot go up: drive files go as links instead, and
+        // the mail files must fit by themselves.
+        uploaded = vec![false; mail.len()];
+        linked = vec![true; drive.len()];
     }
+    let carried: u64 = used
+        + mail
+            .iter()
+            .zip(&uploaded)
+            .filter(|(_, up)| !**up)
+            .map(|(size, _)| size)
+            .sum::<u64>()
+        + drive
+            .iter()
+            .zip(&linked)
+            .filter(|(_, link)| !**link)
+            .map(|((size, _), _)| size)
+            .sum::<u64>();
+    (uploaded, linked, carried > limit)
 }
 
 impl MailWindow {
@@ -127,8 +214,29 @@ impl MailWindow {
         let Some(reader) = &self.reader else {
             return;
         };
-        let key = reader.key;
-        let in_chat = reader.message_ids();
+        let (key, in_chat) = (reader.key, reader.message_ids());
+        self.open_picker(Some(key), in_chat, window, cx);
+    }
+
+    /// Opens the picker over the window, for Compose's paperclip.
+    pub(in crate::window) fn open_compose_picker(
+        &mut self,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if !self.compose_takes_files() {
+            return;
+        }
+        self.open_picker(None, HashSet::new(), window, cx);
+    }
+
+    fn open_picker(
+        &mut self,
+        key: Option<EntryKey>,
+        in_chat: HashSet<MessageId>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         if self.picker.is_some() {
             self.close_files_picker(cx);
         }
@@ -152,32 +260,40 @@ impl MailWindow {
             input.set_accent(accent);
             input
         });
-        let subscription = cx.subscribe_in(
-            &input,
-            window,
-            |this, input, event: &InputEvent, _, cx| match event {
-                InputEvent::Changed => {
-                    this.library.query = input.read(cx).text().to_owned();
-                    this.library.changed();
-                    cx.notify();
+        let subscription =
+            cx.subscribe_in(&input, window, |this, input, event: &InputEvent, _, cx| {
+                let text = input.read(cx).text().to_owned();
+                let drive = this.library.cloud.view.is_some();
+                match event {
+                    // A drive is searched on its side once typing rests.
+                    InputEvent::Changed | InputEvent::Submit if drive => {
+                        this.drive_search(text, *event == InputEvent::Submit, cx);
+                    }
+                    InputEvent::Changed => {
+                        this.library.query = text;
+                        this.library.changed();
+                    }
+                    InputEvent::Cancel => this.close_files_picker(cx),
+                    InputEvent::Submit => {}
                 }
-                InputEvent::Cancel => this.close_files_picker(cx),
-                InputEvent::Submit => {}
-            },
-        );
+                cx.notify();
+            });
         window.focus(&input.focus_handle(cx), cx);
         self.picker = Some(Picker {
             key,
+            source: Source::Mail,
             input,
             _input: subscription,
             saved,
             in_chat,
             ticked: Vec::new(),
+            drive_ticked: Vec::new(),
             shown: Rc::default(),
             lines: Rc::default(),
             columns: 0,
             stale: true,
             state: ListState::new(0, ListAlignment::Top, px(600.0)),
+            wide: true,
             previewing: false,
         });
         cx.notify();
@@ -239,9 +355,12 @@ impl MailWindow {
         let Some(picker) = &mut self.picker else {
             return;
         };
-        let (mut first, rest): (Vec<usize>, Vec<usize>) = shown
+        let (mut first, mut rest): (Vec<usize>, Vec<usize>) = shown
             .iter()
             .partition(|&&ix| picker.in_chat.contains(&files[ix].file.message));
+        if picker.source == Source::Chat {
+            rest.clear();
+        }
         let mut lines = Vec::new();
         let rows = |lines: &mut Vec<Line>, from: usize, to: usize| {
             let mut at = from;
@@ -267,6 +386,73 @@ impl MailWindow {
         picker
             .state
             .reset_with_uniform_height(picker.lines.len(), px(THUMB + FOOT + GAP));
+    }
+
+    /// Shows the files of `source`, with the search box emptied for it.
+    fn pick_source(&mut self, source: Source, cx: &mut Context<Self>) {
+        let Some(picker) = &mut self.picker else {
+            return;
+        };
+        if picker.source == source {
+            return;
+        }
+        picker.source = source;
+        picker.stale = true;
+        let input = picker.input.clone();
+        self.library.menu = None;
+        self.library.cloud.view = None;
+        self.library.query.clear();
+        self.library.changed();
+        let placeholder = match source {
+            Source::Drive(_) => tr!("picker-search-drive"),
+            Source::Mail | Source::Chat => tr!("picker-search"),
+        };
+        input.update(cx, |input, cx| {
+            input.set_placeholder(placeholder);
+            input.set_text("", cx);
+        });
+        if let Source::Drive(account) = source {
+            self.open_picker_drive(account, cx);
+        }
+        cx.notify();
+    }
+
+    /// This computer…: the system's file chooser, in place of the picker.
+    fn pick_from_computer(&mut self, cx: &mut Context<Self>) {
+        self.close_files_picker(cx);
+        self.pick_files(false, cx);
+    }
+
+    /// Ticks or unticks drive file `entry` of `account`.
+    pub(super) fn toggle_drive_pick(
+        &mut self,
+        account: AccountId,
+        entry: &CloudEntry,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(picker) = &mut self.picker else {
+            return;
+        };
+        match picker
+            .drive_ticked
+            .iter()
+            .position(|(a, e)| *a == account && e.id == entry.id)
+        {
+            Some(at) => {
+                picker.drive_ticked.remove(at);
+            }
+            None => picker.drive_ticked.push((account, entry.clone())),
+        }
+        cx.notify();
+    }
+
+    /// Whether drive file `id` of `account` is ticked.
+    pub(super) fn drive_picked(&self, account: AccountId, id: &str) -> bool {
+        self.picker.as_ref().is_some_and(|p| {
+            p.drive_ticked
+                .iter()
+                .any(|(a, e)| *a == account && e.id == id)
+        })
     }
 
     fn toggle_pick(&mut self, key: (MessageId, usize), cx: &mut Context<Self>) {
@@ -402,7 +588,16 @@ impl MailWindow {
             .filter_map(|key| files.iter().find(|f| f.key() == *key))
             .map(Found::row_file)
             .collect();
+        let drive = picker.drive_ticked.clone();
+        let links = self.picker_weight(cx).drive_links;
         self.close_files_picker(cx);
+        let (links, copies): (Vec<_>, Vec<_>) =
+            drive.into_iter().zip(links).partition(|(_, link)| *link);
+        for ((account, entry), _) in links {
+            self.link_drive_file(account, entry, cx);
+        }
+        let copies: Vec<_> = copies.into_iter().map(|(file, _)| file).collect();
+        self.attach_drive_copies(copies, cx);
         let mut missing: Vec<MessageId> = picks
             .iter()
             .map(|f| f.message)
@@ -451,10 +646,49 @@ impl MailWindow {
         .detach();
     }
 
+    /// Fetches drive files `files` and attaches them as copies.
+    fn attach_drive_copies(&mut self, files: Vec<(AccountId, CloudEntry)>, cx: &mut Context<Self>) {
+        if files.is_empty() {
+            return;
+        }
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        let getting = SharedString::from(tr!("picker-getting", count = files.len()));
+        self.show_snackbar(getting.clone(), None, cx);
+        cx.spawn(async move |this, cx| {
+            let mut paths = Vec::new();
+            let mut failed = 0;
+            for (account, entry) in files {
+                match crate::daemon::cloud_fetch(&connection, account.0, &entry).await {
+                    Ok(path) => paths.push(std::path::PathBuf::from(path)),
+                    Err(err) => {
+                        tracing::warn!(%err, "cannot fetch a picked drive file");
+                        failed += 1;
+                    }
+                }
+            }
+            this.update(cx, |this, cx| {
+                // The note that they were coming goes once they are here.
+                if let Some(snackbar) = &mut this.snackbar
+                    && snackbar.text == getting
+                {
+                    snackbar.shown.set(0.0);
+                }
+                this.attach_paths(paths, cx);
+                if failed > 0 {
+                    this.show_snackbar(tr!("picker-some-failed", count = failed), None, cx);
+                }
+            })
+            .ok();
+        })
+        .detach();
+    }
+
     /// How the ticked files weigh, with what the mail carries already.
     fn picker_weight(&self, cx: &gpui::App) -> Weight {
         let (used, provider) = self.compose_room(cx);
-        let sizes: Vec<u64> = match (&self.picker, self.library.found()) {
+        let mail: Vec<u64> = match (&self.picker, self.library.found()) {
             (Some(picker), Some(files)) => picker
                 .ticked
                 .iter()
@@ -463,45 +697,168 @@ impl MailWindow {
                 .collect(),
             _ => Vec::new(),
         };
-        let total = used + sizes.iter().sum::<u64>();
-        let cloud = if provider.is_some() {
-            cloud_bound(&sizes, used, MAX_TOTAL as u64)
-                .into_iter()
-                .zip(&sizes)
-                .filter(|(bound, _)| *bound)
-                .map(|(_, size)| size)
-                .sum()
-        } else {
-            0
-        };
+        let drive: Vec<(u64, bool)> = self
+            .picker
+            .iter()
+            .flat_map(|p| &p.drive_ticked)
+            .map(|(_, e)| (e.size, e.native || e.size > MAX_TOTAL as u64))
+            .collect();
+        let (uploaded, linked, over) = smart_attach(&mail, &drive, used, provider.is_some());
+        let up: u64 = mail
+            .iter()
+            .zip(&uploaded)
+            .filter(|(_, up)| **up)
+            .map(|(size, _)| size)
+            .sum();
+        let link: u64 = drive
+            .iter()
+            .zip(&linked)
+            .filter(|(_, link)| **link)
+            .map(|((size, _), _)| size)
+            .sum();
+        let links = uploaded.iter().chain(&linked).filter(|b| **b).count();
+        // Picked drive files are Google's; uploads go to the account's.
+        let onedrive = provider == Some(OAuthProvider::Microsoft)
+            && linked.iter().all(|link| !link)
+            && uploaded.iter().any(|up| *up);
         Weight {
-            count: sizes.len(),
-            total,
-            cloud,
-            provider,
+            count: mail.len() + drive.len(),
+            total: used + mail.iter().sum::<u64>() + drive.iter().map(|(s, _)| s).sum::<u64>(),
+            cloud: up + link,
+            links,
+            onedrive,
+            over,
+            drive_links: linked,
         }
     }
 
     // --- Drawing -------------------------------------------------------------
 
-    /// The picker, over the chat of conversation `key`'s feed.
+    /// The picker: over the open conversation's chat, or for Compose over
+    /// the window, closing on a click beside it.
     pub(in crate::window) fn render_files_picker(
         &mut self,
-        key: EntryKey,
         th: &Theme,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
-        // Another conversation opened: the picker was this one's.
-        if self.picker.as_ref()?.key != key {
-            self.close_files_picker(cx);
-            return None;
+        let host = self.picker.as_ref()?.key;
+        let phone = self.layout.shape.is_phone();
+        let viewport = window.viewport_size();
+        let (view_width, view_height) = (unpx(viewport.width), unpx(viewport.height));
+        let (left, top, width, height) = match host {
+            Some(key) => {
+                // Another conversation opened: the picker was this one's.
+                if self.reader.as_ref().map(|r| r.key) != Some(key) || !self.chat_shown() {
+                    self.close_files_picker(cx);
+                    return None;
+                }
+                let bounds = self.reader_scroll.bounds();
+                let inset = if phone { 0.0 } else { INSET };
+                (
+                    unpx(bounds.origin.x) + inset,
+                    unpx(bounds.origin.y) + inset,
+                    (unpx(bounds.size.width) - 2.0 * inset).max(320.0),
+                    (unpx(bounds.size.height) - 2.0 * inset).max(320.0),
+                )
+            }
+            None => {
+                if !self.compose_writing() {
+                    self.close_files_picker(cx);
+                    return None;
+                }
+                if phone {
+                    (0.0, 0.0, view_width, view_height)
+                } else {
+                    let width = (view_width - 2.0 * MARGIN).min(MAX_WIDTH);
+                    let height = (view_height - 2.0 * MARGIN).min(MAX_HEIGHT);
+                    (
+                        (view_width - width) / 2.0,
+                        (view_height - height) / 2.0,
+                        width,
+                        height,
+                    )
+                }
+            }
+        };
+        let panel = self.render_picker_panel(width, phone, th, window, cx)?;
+        let radius = if phone { 0.0 } else { 16.0 };
+        let panel = raised(
+            div()
+                .id("files-picker")
+                .w(px(width))
+                .h(px(height))
+                .occlude()
+                .overflow_hidden()
+                .bg(rgba(th.menu)),
+            th,
+            radius,
+            3.0,
+        )
+        .child(panel)
+        .with_animation(
+            "files-picker-in",
+            Animation::new(std::time::Duration::from_millis(if cx.reduce_motion() {
+                1
+            } else {
+                220
+            }))
+            .with_easing(ease_out_quint()),
+            |el, t| el.opacity(t).mt(px(8.0 * (1.0 - t))),
+        );
+        if host.is_some() {
+            return Some(
+                anchored()
+                    .position(point(px(left), px(top)))
+                    .child(panel)
+                    .into_any_element(),
+            );
         }
+        // Over Compose a click beside the picker closes it.
+        Some(
+            anchored()
+                .position(point(px(0.0), px(0.0)))
+                .child(
+                    div()
+                        .relative()
+                        .w(px(view_width))
+                        .h(px(view_height))
+                        .child(
+                            div()
+                                .id("files-picker-beside")
+                                .absolute()
+                                .inset_0()
+                                .occlude()
+                                .on_click(
+                                    cx.listener(|this, _, _, cx| this.close_files_picker(cx)),
+                                ),
+                        )
+                        .child(div().absolute().left(px(left)).top(px(top)).child(panel)),
+                )
+                .into_any_element(),
+        )
+    }
+
+    /// The picker's insides, `width` wide.
+    fn render_picker_panel(
+        &mut self,
+        width: f32,
+        phone: bool,
+        th: &Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Option<gpui::Div> {
         self.library.frame += 1;
-        let width = unpx(self.reader_scroll.bounds().size.width).max(320.0);
-        let room = width - 2.0 * INSET - 2.0 * PAD;
+        let side = width >= SIDE_FROM;
+        let room = width - 2.0 * PAD - if side { SIDE } else { 0.0 };
         let columns = (((room + GAP) / (CARD_MIN + GAP)).floor() as usize).max(1);
         let card_width = (room - GAP * (columns - 1) as f32) / columns as f32;
-        self.rebuild_picker(columns);
+        let picker = self.picker.as_mut()?;
+        picker.wide = side;
+        let source = picker.source;
+        if !matches!(source, Source::Drive(_)) {
+            self.rebuild_picker(columns);
+        }
         let picker = self.picker.as_ref()?;
         let input = picker.input.clone();
         let focus = input.focus_handle(cx);
@@ -523,7 +880,6 @@ impl MailWindow {
             .child(div().flex_1().min_w_0().text_size(px(14.0)).child(input));
         // A phone's picker fills the chat edge to edge, its search on a row
         // of its own.
-        let phone = self.layout.shape.is_phone();
         let (search, search_row) = if phone {
             (
                 None,
@@ -562,76 +918,245 @@ impl MailWindow {
                     .tooltip(tip(tr!("picker-cancel"), th))
                     .on_click(cx.listener(|this, _, _, cx| this.close_files_picker(cx))),
             );
-        let chips = div()
-            .id("picker-chips")
+        let main = if matches!(source, Source::Drive(_)) {
+            self.render_drive_body(card_width, columns, PAD, th, window, cx)
+        } else {
+            let chips = div()
+                .id("picker-chips")
+                .flex_none()
+                .px(px(PAD))
+                .pb(px(10.0))
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .gap(px(8.0))
+                .children(
+                    KINDS
+                        .into_iter()
+                        .enumerate()
+                        .map(|(n, types)| self.files_kind_chip(n, types, th, cx)),
+                )
+                .child(self.files_person_chip(th, cx))
+                .child(self.files_time_chip(th, cx));
+            let picker = self.picker.as_ref()?;
+            let content = match &self.library.files {
+                None => placeholder(&tr!("files-loading"), th),
+                Some(Err(err)) => placeholder(err, th),
+                Some(Ok(_)) if picker.shown.is_empty() => placeholder(&tr!("files-none-match"), th),
+                Some(Ok(_)) => list(
+                    picker.state.clone(),
+                    cx.processor(move |this, ix: usize, window, cx| {
+                        let th = this.theme(window);
+                        let line = this.render_picker_line(ix, card_width, &th, cx);
+                        this.request_library_thumbs(cx);
+                        line
+                    }),
+                )
+                .size_full()
+                .into_any_element(),
+            };
+            div()
+                .size_full()
+                .flex()
+                .flex_col()
+                .child(chips)
+                .child(div().flex_1().min_h_0().child(content))
+                .into_any_element()
+        };
+        let (side_column, pills) = if side {
+            (Some(self.render_picker_sources(th, cx)), None)
+        } else {
+            (None, Some(self.render_picker_pills(th, cx)))
+        };
+        let foot = self.render_picker_foot(th, cx);
+        let menu = self.render_files_menu(th, cx);
+        Some(
+            div()
+                .size_full()
+                .flex()
+                .flex_col()
+                .child(head)
+                .children(search_row)
+                .children(pills)
+                .child(
+                    div()
+                        .flex_1()
+                        .min_h_0()
+                        .flex()
+                        .flex_row()
+                        .children(side_column)
+                        .child(div().flex_1().min_w_0().h_full().child(main)),
+                )
+                .child(foot)
+                .children(menu),
+        )
+    }
+
+    /// The sources the picker offers: the mail's files, this
+    /// conversation's, each drive, and This computer….
+    fn picker_sources(&self) -> Vec<(Source, String, Option<String>)> {
+        let Some(picker) = &self.picker else {
+            return Vec::new();
+        };
+        let mut sources = vec![(Source::Mail, tr!("picker-mail-files"), None)];
+        if picker.key.is_some() {
+            sources.push((Source::Chat, tr!("picker-this-chat"), None));
+        }
+        sources.extend(self.library.cloud.drives.iter().map(|(account, address)| {
+            (
+                Source::Drive(*account),
+                tr!("files-drive-google"),
+                Some(address.clone()),
+            )
+        }));
+        sources
+    }
+
+    /// How many files a source has, for its count; none for a drive.
+    fn source_count(&self, source: Source) -> Option<usize> {
+        let picker = self.picker.as_ref()?;
+        let files = self.library.files.as_ref()?.as_ref().ok()?;
+        match source {
+            Source::Mail => Some(files.len()),
+            Source::Chat => Some(
+                files
+                    .iter()
+                    .filter(|f| picker.in_chat.contains(&f.file.message))
+                    .count(),
+            ),
+            Source::Drive(_) => None,
+        }
+    }
+
+    /// The side column of sources, on a wide panel.
+    fn render_picker_sources(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(picker) = &self.picker else {
+            return div().into_any_element();
+        };
+        let current = picker.source;
+        let mut column = div()
+            .id("picker-sources")
             .flex_none()
+            .w(px(SIDE))
+            .h_full()
+            .overflow_y_scroll()
+            .pt(px(4.0))
+            .pb(px(12.0))
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .border_r_1()
+            .border_color(rgba(th.divider));
+        let mut drives = false;
+        for (n, (source, label, address)) in self.picker_sources().into_iter().enumerate() {
+            let on = source == current;
+            let color = if on {
+                th.row_selected_text
+            } else {
+                th.text_dim
+            };
+            let mark = match source {
+                Source::Mail => icon("attachment", color, 20.0),
+                Source::Chat => icon("chat", color, 20.0),
+                Source::Drive(_) => super::drive::drive_mark(20.0),
+            };
+            if matches!(source, Source::Drive(_)) && !std::mem::replace(&mut drives, true) {
+                column = column.child(
+                    div()
+                        .flex_none()
+                        .mt(px(10.0))
+                        .mb(px(4.0))
+                        .px(px(24.0))
+                        .text_size(px(12.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .text_color(rgba(th.text_faint))
+                        .child(tr!("files-drives")),
+                );
+            }
+            let label = match address {
+                Some(address) => div()
+                    .flex()
+                    .flex_col()
+                    .child(div().truncate().child(label))
+                    .child(
+                        div()
+                            .truncate()
+                            .text_size(px(11.0))
+                            .font_weight(FontWeight::NORMAL)
+                            .text_color(rgba(th.text_faint))
+                            .child(address),
+                    ),
+                None => div().truncate().child(label),
+            };
+            let count = self.source_count(source).filter(|&c| c > 0);
+            column = column.child(
+                super::super::nav::side_row_with(("picker-source", n), mark, label, on, th)
+                    .when(matches!(source, Source::Drive(_)), |d| d.h(px(44.0)))
+                    .when_some(count, |d, c| {
+                        d.child(super::super::nav::count_pill(c as u64, on, th))
+                    })
+                    .on_click(cx.listener(move |this, _, _, cx| this.pick_source(source, cx))),
+            );
+        }
+        column
+            .child(
+                div()
+                    .flex_none()
+                    .mt(px(10.0))
+                    .mb(px(8.0))
+                    .mx(px(24.0))
+                    .h(px(1.0))
+                    .bg(rgba(th.divider)),
+            )
+            .child(
+                super::super::nav::side_row_with(
+                    "picker-computer",
+                    icon("home", th.text_dim, 20.0),
+                    tr!("picker-this-computer"),
+                    false,
+                    th,
+                )
+                .on_click(cx.listener(|this, _, _, cx| this.pick_from_computer(cx))),
+            )
+            .into_any_element()
+    }
+
+    /// The sources as a row of chips that scrolls sideways, on a narrow
+    /// panel.
+    fn render_picker_pills(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let current = self.picker.as_ref().map(|p| p.source);
+        let mut row = div()
+            .id("picker-pills")
+            .flex_none()
+            .overflow_x_scroll()
             .px(px(PAD))
             .pb(px(10.0))
             .flex()
             .flex_row()
-            .flex_wrap()
-            .gap(px(8.0))
-            .children(
-                KINDS
-                    .into_iter()
-                    .enumerate()
-                    .map(|(n, types)| self.files_kind_chip(n, types, th, cx)),
+            .gap(px(8.0));
+        for (n, (source, label, address)) in self.picker_sources().into_iter().enumerate() {
+            // Two drives would read the same: the address tells them apart.
+            let label = match address {
+                Some(address) if self.library.cloud.drives.len() > 1 => address,
+                _ => label,
+            };
+            row = row.child(
+                super::filter_chip(("picker-pill", n), label, Some(source) == current, th)
+                    .pr(px(12.0))
+                    .on_click(cx.listener(move |this, _, _, cx| this.pick_source(source, cx))),
+            );
+        }
+        row.child(
+            super::filter_chip(
+                "picker-pill-computer",
+                tr!("picker-this-computer"),
+                false,
+                th,
             )
-            .child(self.files_person_chip(th, cx))
-            .child(self.files_time_chip(th, cx));
-        let content = match &self.library.files {
-            None => placeholder(&tr!("files-loading"), th),
-            Some(Err(err)) => placeholder(err, th),
-            Some(Ok(_)) if picker.shown.is_empty() => placeholder(&tr!("files-none-match"), th),
-            Some(Ok(_)) => list(
-                picker.state.clone(),
-                cx.processor(move |this, ix: usize, window, cx| {
-                    let th = this.theme(window);
-                    let line = this.render_picker_line(ix, card_width, &th, cx);
-                    this.request_library_thumbs(cx);
-                    line
-                }),
-            )
-            .size_full()
-            .into_any_element(),
-        };
-        let foot = self.render_picker_foot(th, cx);
-        let menu = self.render_files_menu(th, cx);
-        let inset = if phone { 0.0 } else { INSET };
-        let panel = raised(
-            div()
-                .id("files-picker")
-                .absolute()
-                .top(px(inset))
-                .left(px(inset))
-                .right(px(inset))
-                .bottom(px(inset))
-                .occlude()
-                .overflow_hidden()
-                .flex()
-                .flex_col()
-                .bg(rgba(th.menu)),
-            th,
-            if phone { 0.0 } else { 16.0 },
-            3.0,
+            .pr(px(12.0))
+            .on_click(cx.listener(|this, _, _, cx| this.pick_from_computer(cx))),
         )
-        .child(head)
-        .children(search_row)
-        .child(chips)
-        .child(div().flex_1().min_h_0().child(content))
-        .child(foot)
-        .children(menu)
-        .with_animation(
-            "files-picker-in",
-            Animation::new(std::time::Duration::from_millis(if cx.reduce_motion() {
-                1
-            } else {
-                220
-            }))
-            .with_easing(ease_out_quint()),
-            |el, t| el.opacity(t).mt(px(8.0 * (1.0 - t))),
-        );
-        Some(panel.into_any_element())
+        .into_any_element()
     }
 
     fn render_picker_line(
@@ -700,46 +1225,13 @@ impl MailWindow {
             .map(|(d, now)| format::list_date(d, now))
             .unwrap_or_default();
         let group = SharedString::from(format!("picker-card-{place}"));
-        let tick = div()
-            .absolute()
-            .top(px(8.0))
-            .left(px(8.0))
-            .size(px(22.0))
-            .flex()
-            .items_center()
-            .justify_center()
-            .rounded_full()
-            .map(|d| {
-                if ticked {
-                    d.bg(rgba(th.accent))
-                        .child(icon("check", th.on_accent, 16.0))
-                } else {
-                    // Light on any preview, dark or light theme alike.
-                    d.bg(rgba(0xffff_ffd9))
-                        .border_2()
-                        .border_color(rgba(0x0000_0059))
-                }
-            });
-        let eye = div()
-            .id(("picker-eye", place))
-            .absolute()
-            .top(px(6.0))
-            .right(px(6.0))
-            .size(px(28.0))
-            .flex()
-            .items_center()
-            .justify_center()
-            .rounded_full()
-            .bg(rgba(fade(th.surface, 0.9)))
-            .opacity(0.0)
-            .group_hover(group.clone(), |s| s.opacity(1.0))
-            .hover(|s| s.bg(rgba(th.surface)))
-            .tooltip(tip(tr!("picker-preview"), th))
-            .on_click(cx.listener(move |this, _, window, cx| {
+        let tick = pick_tick(ticked, th);
+        let eye = pick_eye(("picker-eye", place), group.clone(), th).on_click(cx.listener(
+            move |this, _, window, cx| {
                 cx.stop_propagation();
                 this.preview_pick(place, window, cx);
-            }))
-            .child(icon("eye", th.text_dim, 18.0));
+            },
+        ));
         div()
             .id(("picker-card", place))
             .group(group)
@@ -762,6 +1254,7 @@ impl MailWindow {
                     .flex_none()
                     .h(px(THUMB))
                     .w_full()
+                    .overflow_hidden()
                     .child(card_top(thumb, found.kind, 36.0, th)),
             )
             .child(
@@ -790,17 +1283,7 @@ impl MailWindow {
             )
             .child(tick)
             .child(eye)
-            // A ticked card is ringed in the accent, over its edge.
-            .when(ticked, |d| {
-                d.child(
-                    div()
-                        .absolute()
-                        .inset_0()
-                        .rounded(px(CARD_RADIUS))
-                        .border_2()
-                        .border_color(rgba(th.accent)),
-                )
-            })
+            .when(ticked, |d| d.child(pick_ring(th)))
             .into_any_element()
     }
 
@@ -809,7 +1292,7 @@ impl MailWindow {
         let weight = self.picker_weight(cx);
         let limit = MAX_TOTAL as u64;
         let mail = weight.total - weight.cloud;
-        let over = weight.over();
+        let over = weight.over;
         let fill = |part: u64, of: u64| (part as f32 / of.max(1) as f32).clamp(0.0, 1.0);
         let (mail_color, scale) = if weight.cloud > 0 {
             (th.accent, weight.total)
@@ -862,23 +1345,27 @@ impl MailWindow {
                         size = size,
                         limit = limit_text()
                     ))
-                } else if weight.cloud > 0 {
-                    let via = format::size(weight.cloud);
+                } else if weight.links > 0 {
+                    let links = weight.links as u64;
                     d.child(
                         div()
                             .font_weight(FontWeight::SEMIBOLD)
                             .text_color(rgba(th.text))
-                            .child(size),
+                            .child(tr!("picker-in-mail", size = format::size(mail))),
                     )
                     .child("·")
                     .child(icon("cloud", th.cloud(), 16.0))
-                    .child(div().text_color(rgba(th.cloud())).child(
-                        if weight.provider == Some(OAuthProvider::Microsoft) {
-                            tr!("picker-via-onedrive", size = via)
-                        } else {
-                            tr!("picker-via-drive", size = via)
-                        },
-                    ))
+                    .child(
+                        div()
+                            .min_w_0()
+                            .truncate()
+                            .text_color(rgba(th.cloud()))
+                            .child(if weight.onedrive {
+                                tr!("picker-onedrive-links", count = links)
+                            } else {
+                                tr!("picker-drive-links", count = links)
+                            }),
+                    )
                 } else {
                     d.child(
                         div()
@@ -965,5 +1452,94 @@ impl MailWindow {
             .child(cancel)
             .child(attach)
             .into_any_element()
+    }
+}
+
+/// The circle at the top left of a card in the picker, filled with a
+/// check once ticked: mail files and drive files alike.
+pub(super) fn pick_tick(ticked: bool, th: &Theme) -> gpui::Div {
+    div()
+        .absolute()
+        .top(px(8.0))
+        .left(px(8.0))
+        .size(px(22.0))
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded_full()
+        .map(|d| {
+            if ticked {
+                d.bg(rgba(th.accent))
+                    .child(icon("check", th.on_accent, 16.0))
+            } else {
+                // Light on any preview, dark or light theme alike.
+                d.bg(rgba(0xffff_ffd9))
+                    .border_2()
+                    .border_color(rgba(0x0000_0059))
+            }
+        })
+}
+
+/// A ticked card is ringed in the accent, over its edge.
+pub(super) fn pick_ring(th: &Theme) -> gpui::Div {
+    div()
+        .absolute()
+        .inset_0()
+        .rounded(px(CARD_RADIUS))
+        .border_2()
+        .border_color(rgba(th.accent))
+}
+
+/// The eye at the top right of a card in the picker, shown while the
+/// pointer is over card `group`: looks before picking.
+pub(super) fn pick_eye(
+    id: impl Into<gpui::ElementId>,
+    group: SharedString,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .absolute()
+        .top(px(6.0))
+        .right(px(6.0))
+        .size(px(28.0))
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded_full()
+        .bg(rgba(fade(th.surface, 0.9)))
+        .opacity(0.0)
+        .group_hover(group, |s| s.opacity(1.0))
+        .hover(|s| s.bg(rgba(th.surface)))
+        .tooltip(tip(tr!("picker-preview"), th))
+        .child(icon("eye", th.text_dim, 18.0))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const MB: u64 = 1_000_000;
+
+    #[test]
+    fn drive_files_go_as_a_copy_while_they_fit() {
+        let (up, linked, over) = smart_attach(&[2 * MB], &[(3 * MB, false)], 0, true);
+        assert_eq!((up, linked, over), (vec![false], vec![false], false));
+    }
+
+    #[test]
+    fn big_files_and_documents_go_as_links() {
+        let drive = [(61 * MB, true), (0, true), (3 * MB, false)];
+        let (_, linked, over) = smart_attach(&[], &drive, 0, false);
+        assert_eq!(linked, vec![true, true, false]);
+        assert!(!over);
+    }
+
+    #[test]
+    fn without_a_cloud_drive_files_make_room_for_mail_files() {
+        let (up, linked, over) = smart_attach(&[20 * MB], &[(20 * MB, false)], 0, false);
+        assert_eq!((up, linked, over), (vec![false], vec![true], false));
+        let (_, _, over) = smart_attach(&[30 * MB], &[], 0, false);
+        assert!(over);
     }
 }

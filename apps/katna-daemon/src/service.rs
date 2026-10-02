@@ -517,6 +517,10 @@ macro_rules! pim_interface {
                     .await?)
             }
 
+            async fn cloud_link(&self, account: i64, entry: CloudEntry) -> fdo::Result<i64> {
+                Ok(self.daemon.cloud_link(AccountId(account), &entry)?)
+            }
+
             async fn meeting_link(&self, account: i64) -> fdo::Result<String> {
                 Ok(self.daemon.meeting_link(AccountId(account)).await?)
             }

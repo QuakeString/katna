@@ -126,6 +126,8 @@ compose-drive-send-without = Send without sharing
 compose-drive-share-cancel = Cancel
 # Under a Drive file's link in the sent message. $size: such as "84 MB".
 compose-drive-card-detail = { $size } · Google Drive
+# Under a Google Doc's link, which has no size.
+compose-drive-card-name = Google Drive
 # The same for OneDrive, for accounts that sign in with Microsoft
 # (Outlook.com, Hotmail, Microsoft 365).
 compose-onedrive-note = { $name } is over { $limit }, so it goes to your OneDrive and the message carries a link.
@@ -139,6 +141,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive can't share the files with { $addresses }. Anyone with the link can open them instead.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 # Shown over the message while files are dragged over it.
 compose-drop-files = Drop files here
 # Shown over the message while text, cells or a picture from another app
