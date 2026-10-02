@@ -34,7 +34,8 @@ impl MailWindow {
         div()
             .relative()
             .child(
-                icon_button("compose-templates", "template", 20.0, th)
+                icon_button("compose-templates", "template", super::tools::TRAY_ICON, th)
+                    .size(px(super::tools::TRAY_TOOL))
                     .tooltip(tip(tr!("compose-tool-templates"), th))
                     .on_click(cx.listener(|this, _, _, cx| {
                         this.toggle_popup(Popup::Templates, cx);
