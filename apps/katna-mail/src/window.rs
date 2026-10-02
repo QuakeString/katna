@@ -336,6 +336,11 @@ const PEEK_LINGER: Duration = Duration::from_millis(250);
 const SNACKBAR_TIME: Duration = Duration::from_secs(5);
 /// Changes signalled by the daemon within this time are read together.
 const CHANGE_DELAY: Duration = Duration::from_millis(120);
+/// How often the store is tried again while the daemon updates it.
+const MIGRATION_RETRY: Duration = Duration::from_millis(250);
+/// How long the window looks as if loading while the daemon updates the
+/// store, before it says the store could not be opened.
+const MIGRATION_PATIENCE: Duration = Duration::from_secs(60);
 /// At least this long between reloads for the daemon's changes. While it
 /// downloads mail it signals every few hundred milliseconds, and each
 /// reload of a big folder holds the window up for a moment; one reload
@@ -689,6 +694,9 @@ pub struct MailWindow {
     /// POP3 choices sent to the daemon, shown until the store has them.
     pop3_keep: HashMap<AccountId, katna_core::Pop3Keep>,
     _first_sync_check: Option<Task<()>>,
+    /// Since when the store has waited for the daemon to move it to this
+    /// version's schema, and the next try.
+    migrating: Option<(Instant, Task<()>)>,
     /// The account card above the rail's account picture.
     account_menu: bool,
     /// The application menu, open from the account card's ☰ button.
@@ -803,6 +811,7 @@ impl MailWindow {
         this.open_default_folder(cx);
         this.count_unread(cx);
         this.count_activity();
+        this.wait_for_migration(cx);
         // Whether this computer is signed in to Katna, read once the first
         // frame is up (the daemon call runs in the background) so server
         // features know it by the time they are opened.
@@ -972,6 +981,7 @@ impl MailWindow {
             first_sync: false,
             pop3_keep: HashMap::new(),
             _first_sync_check: None,
+            migrating: None,
             account_menu: false,
             app_menu: None,
             language_picker: None,
@@ -1100,7 +1110,7 @@ impl MailWindow {
     fn needs_account(&self) -> bool {
         match &self.mail {
             Err(OpenError::NoStore { .. }) => true,
-            Err(OpenError::Other(_)) => false,
+            Err(OpenError::Migrating(_) | OpenError::Other(_)) => false,
             Ok(_) => self.accounts.is_empty(),
         }
     }
@@ -2080,7 +2090,30 @@ impl MailWindow {
         self.load_tree();
         self.open_default_folder(cx);
         self.count_unread(cx);
+        if self.mail.is_ok() && self.migrating.take().is_some() {
+            // The calendar and agenda read the same store.
+            self.refresh(false, cx);
+        }
+        self.wait_for_migration(cx);
         cx.notify();
+    }
+
+    /// While the daemon moves the store up to this version, as it does
+    /// as it starts after an update, tries it again shortly.
+    fn wait_for_migration(&mut self, cx: &mut Context<Self>) {
+        if !matches!(self.mail, Err(OpenError::Migrating(_))) {
+            self.migrating = None;
+            return;
+        }
+        let since = self
+            .migrating
+            .as_ref()
+            .map_or_else(Instant::now, |(since, _)| *since);
+        let task = cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(MIGRATION_RETRY).await;
+            this.update(cx, |this, cx| this.reopen(cx)).ok();
+        });
+        self.migrating = Some((since, task));
     }
 
     /// Opens the first inbox when nothing is listed, as when the first
@@ -3130,12 +3163,24 @@ impl MailWindow {
         )
     }
 
-    fn render_error(&self, error: &OpenError, th: &Theme) -> AnyElement {
+    /// Whether the daemon has had long enough to update the store.
+    fn migration_overdue(&self) -> bool {
+        self.migrating
+            .as_ref()
+            .is_some_and(|(since, _)| since.elapsed() >= MIGRATION_PATIENCE)
+    }
+
+    fn render_error(&self, error: &OpenError, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let err = match error {
             // The daemon makes the store when the first account is added;
             // until then the first-start pages show.
             OpenError::NoStore { .. } => return div().into_any_element(),
-            OpenError::Other(err) => err.clone(),
+            // Waiting on the daemon looks like the window still loading,
+            // unless it has taken far longer than an update takes.
+            OpenError::Migrating(_) if !self.migration_overdue() => {
+                return self.render_skeleton(th, cx);
+            }
+            OpenError::Migrating(err) | OpenError::Other(err) => err.clone(),
         };
         let card = page_card(th)
             .child(icon("mail", th.text_faint, 64.0))
@@ -3455,7 +3500,7 @@ impl Render for MailWindow {
         let compose_text = compose_text_width(&self.app.primary().1, self.font.as_ref(), window);
         let content = match &self.mail {
             _ if onboarding => self.render_onboarding(&th, window, cx),
-            Err(err) => self.render_error(err, &th),
+            Err(err) => self.render_error(err, &th, cx),
             // Reversed so the navigation paints last, over the cards, when
             // it opens from the rail.
             Ok(_) if self.app == RailApp::Mail => div()
