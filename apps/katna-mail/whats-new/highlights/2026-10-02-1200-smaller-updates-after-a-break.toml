@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Small updates after a break"
+text = """
+Updates stay small even when you skip a day or two of new versions. Katna
+now steps from the version you have through earlier ones, a few megabytes
+each, instead of downloading the whole package again.
+"""
