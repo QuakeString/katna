@@ -7,10 +7,11 @@
 //! with an Update button. Katna Mail installs the file and restarts; the
 //! daemon restarts itself once its binary is replaced ([`crate::update`]).
 //!
-//! When the manifest has a patch from the installed build and the root
-//! helper kept a copy of that build ([`Package::installed_dirs`]), the
-//! daemon downloads only the patch and makes the new package from the
-//! two, checked against the manifest just as a full download is. If
+//! When the manifest has patches leading from the installed build
+//! ([`Manifest::route`]: one, or a few through earlier builds) and the
+//! root helper kept a copy of that build ([`Package::installed_dirs`]),
+//! the daemon downloads only the patches and makes the new package from
+//! them, checked against the manifest just as a full download is. If
 //! anything about that fails, it downloads the full package.
 //!
 //! Packages that do not update themselves ([`Package::Other`]) are never
@@ -316,9 +317,10 @@ async fn check(daemon: &Daemon, package: Package, asked: bool) {
         ready(daemon, &manifest, &fetched, checked).await;
         return;
     }
-    // What the download will be: only the patch when it can be used.
-    let total = match patch_and_base(package, &manifest) {
-        Some((patch, _)) => patch.size,
+    // What the download will be: only the patches when they can be
+    // used.
+    let total = match route_and_base(package, &manifest) {
+        Some((hops, _)) => route_size(&hops),
         None => manifest.size,
     };
     updates.set(daemon, |s| {
@@ -440,15 +442,19 @@ impl Fetched {
     }
 }
 
-/// The patch from the installed build to the one `manifest` names, and
+/// The patches from the installed build to the one `manifest` names, and
 /// the copy of the installed build the root helper kept, when both exist.
-fn patch_and_base(package: Package, manifest: &Manifest) -> Option<(update::Patch, PathBuf)> {
-    let patch = manifest.patch_from(update::VERSION)?.clone();
+fn route_and_base(package: Package, manifest: &Manifest) -> Option<(Vec<update::Hop>, PathBuf)> {
+    let hops = manifest.route(update::VERSION)?;
     let base = package
         .installed_dirs()
         .iter()
         .find_map(|dir| installed_copy(Path::new(dir), update::VERSION))?;
-    Some((patch, base))
+    Some((hops, base))
+}
+
+fn route_size(hops: &[update::Hop]) -> u64 {
+    hops.iter().map(|hop| hop.size).sum()
 }
 
 /// The package of `version` in `dir`.
@@ -468,19 +474,19 @@ fn installed_copy(dir: &Path, version: &str) -> Option<PathBuf> {
 }
 
 /// Downloads the build `manifest` names into `dir` and checks it: only
-/// the patch from the installed build when there is one, else the full
-/// package. Returns what was fetched.
+/// the patches from the installed build when there are some, else the
+/// full package. Returns what was fetched.
 async fn download_once(
     daemon: &Daemon,
     package: Package,
     dir: &Path,
     manifest: &Manifest,
 ) -> Result<Fetched, String> {
-    if let Some((patch, base)) = patch_and_base(package, manifest) {
-        match download_patch(daemon, package, dir, manifest, &patch, &base).await {
+    if let Some((hops, base)) = route_and_base(package, manifest) {
+        match download_patches(daemon, package, dir, manifest, &hops, &base).await {
             Ok(fetched) => return Ok(fetched),
             Err(err) => {
-                tracing::warn!(%err, from = patch.from, "the update patch did not work; downloading the full package");
+                tracing::warn!(%err, from = update::VERSION, "the update patches did not work; downloading the full package");
             }
         }
     }
@@ -494,58 +500,101 @@ async fn download_once(
         fetched.size,
         &fetched.sha256,
         &fetched.file,
+        (0, fetched.size),
     )
     .await?;
     Ok(fetched)
 }
 
-/// Downloads `patch` and makes the new package from it and `base`, the
-/// installed build's package, checking the result as a full download.
-async fn download_patch(
+/// Downloads `hops` and makes the new package from them, one after
+/// another, starting from `base`, the installed build's package. Only
+/// the result is checked, as a full download: a wrong step makes a wrong
+/// result.
+async fn download_patches(
     daemon: &Daemon,
     package: Package,
     dir: &Path,
     manifest: &Manifest,
-    patch: &update::Patch,
+    hops: &[update::Hop],
     base: &Path,
 ) -> Result<Fetched, String> {
-    let patch_file = dir.join(&patch.file);
-    download_checked(
-        daemon,
-        package,
-        dir,
-        manifest,
-        &patch.file,
-        patch.size,
-        &patch.sha256,
-        &patch_file,
-    )
-    .await?;
     let fetched =
         Fetched::from_patch(dir, manifest).ok_or("the manifest has no package to patch")?;
-    let made = smol::unblock({
-        let base = base.to_owned();
-        let patch_file = patch_file.clone();
-        let fetched = fetched.clone();
-        move || {
-            let made = apply_patch(&base, &patch_file, &fetched);
-            let _ = std::fs::remove_file(&patch_file);
-            made
+    // Builds in between, kept apart from the downloads, which each
+    // download clears.
+    let steps = dir.join("steps");
+    let total = route_size(hops);
+    let mut done = 0;
+    let mut from = base.to_owned();
+    let mut made = Ok(());
+    for (i, hop) in hops.iter().enumerate() {
+        let patch_file = dir.join(&hop.file);
+        made = download_checked(
+            daemon,
+            package,
+            dir,
+            manifest,
+            &hop.file,
+            hop.size,
+            &hop.sha256,
+            &patch_file,
+            (done, total),
+        )
+        .await;
+        if made.is_err() {
+            break;
         }
-    })
-    .await;
+        done += hop.size;
+        let last = i + 1 == hops.len();
+        let to = if last {
+            fetched.file.clone()
+        } else {
+            steps.join(format!("{}.pkg.tar", hop.to))
+        };
+        made = smol::unblock({
+            let (from, to, patch_file, steps) =
+                (from.clone(), to.clone(), patch_file, steps.clone());
+            let expect = last.then(|| (fetched.size, fetched.sha256.clone()));
+            move || {
+                std::fs::create_dir_all(&steps).map_err(|err| err.to_string())?;
+                let made = apply_patch(
+                    &from,
+                    &patch_file,
+                    &to,
+                    expect.as_ref().map(|(size, sha)| (*size, sha.as_str())),
+                );
+                let _ = std::fs::remove_file(&patch_file);
+                if from.starts_with(&steps) {
+                    let _ = std::fs::remove_file(&from);
+                }
+                made
+            }
+        })
+        .await;
+        if made.is_err() {
+            break;
+        }
+        from = to;
+    }
+    let _ = std::fs::remove_dir_all(&steps);
     tracing::info!(
-        from = patch.from,
-        size = patch.size,
+        from = update::VERSION,
+        hops = hops.len(),
+        size = total,
         ok = made.is_ok(),
-        "made the update from a patch"
+        "made the update from patches"
     );
     made.map(|()| fetched)
 }
 
-/// Makes the package `fetched` names from `base` and the patch in
-/// `patch_file`, and checks its size and SHA-256.
-fn apply_patch(base: &Path, patch_file: &Path, fetched: &Fetched) -> Result<(), String> {
+/// Makes `out` from `base` and the patch in `patch_file`, and checks its
+/// size and SHA-256 against `expect` when given.
+fn apply_patch(
+    base: &Path,
+    patch_file: &Path,
+    out: &Path,
+    expect: Option<(u64, &str)>,
+) -> Result<(), String> {
     use std::io::Read;
     // The patch refers to the uncompressed earlier package.
     let mut reference = Vec::new();
@@ -567,13 +616,13 @@ fn apply_patch(base: &Path, patch_file: &Path, fetched: &Fetched) -> Result<(), 
     decoder
         .window_log_max(PATCH_WINDOW_LOG)
         .map_err(|err| err.to_string())?;
-    let part = part_path(&fetched.file);
+    let part = part_path(out);
     let made = (|| {
         let mut out = std::io::BufWriter::new(std::fs::File::create(&part)?);
         let mut digest = ring::digest::Context::new(&ring::digest::SHA256);
         let mut buf = vec![0; 256 * 1024];
         let mut size = 0u64;
-        let mut limited = decoder.take(fetched.size + 1);
+        let mut limited = decoder.take(expect.map_or(MAX_SIZE, |(size, _)| size) + 1);
         loop {
             let n = limited.read(&mut buf)?;
             if n == 0 {
@@ -588,10 +637,10 @@ fn apply_patch(base: &Path, patch_file: &Path, fetched: &Fetched) -> Result<(), 
         Ok::<_, std::io::Error>((size, hex(digest.finish().as_ref())))
     })();
     let checked = made.map_err(|err| err.to_string()).and_then(|(size, sha)| {
-        if size != fetched.size || sha != fetched.sha256 {
+        if expect.is_some_and(|expect| expect != (size, sha.as_str())) || size > MAX_SIZE {
             Err(format!("the patched package does not match the published build ({size} bytes, SHA-256 {sha})"))
         } else {
-            std::fs::rename(&part, &fetched.file).map_err(|err| err.to_string())
+            std::fs::rename(&part, out).map_err(|err| err.to_string())
         }
     });
     if checked.is_err() {
@@ -607,7 +656,8 @@ fn part_path(file: &Path) -> PathBuf {
 }
 
 /// Downloads `name` from the release into `file`, checking its size and
-/// SHA-256, and shows its progress.
+/// SHA-256, and shows its progress: `progress` is what was downloaded
+/// before it and the whole download's size.
 #[allow(clippy::too_many_arguments)]
 async fn download_checked(
     daemon: &Daemon,
@@ -618,6 +668,7 @@ async fn download_checked(
     size: u64,
     sha256: &str,
     file: &Path,
+    (before, total): (u64, u64),
 ) -> Result<(), String> {
     let updates = daemon.updates();
     let url = package
@@ -627,12 +678,12 @@ async fn download_checked(
     updates.set(daemon, |s| {
         s.state = state::DOWNLOADING.to_owned();
         s.version = manifest.version.clone();
-        s.done = 0;
-        s.total = size;
+        s.done = before;
+        s.total = total;
         s.detail.clear();
     });
     tracing::info!(url, "downloading an update");
-    let fetched = fetch_file(daemon, &url, dir, &part, size).await;
+    let fetched = fetch_file(daemon, &url, dir, &part, size, before).await;
     let checked = fetched.and_then(|(got, sha)| {
         if got != size || sha != sha256 {
             Err(format!(
@@ -657,6 +708,7 @@ async fn fetch_file(
     dir: &Path,
     part: &Path,
     size: u64,
+    before: u64,
 ) -> Result<(u64, String), String> {
     let prepared = {
         let dir = dir.to_owned();
@@ -671,7 +723,7 @@ async fn fetch_file(
     let mut out = std::io::BufWriter::new(prepared.map_err(|err| err.to_string())?);
     let tls = Tls::system().map_err(|err| err.to_string())?;
     let mut digest = ring::digest::Context::new(&ring::digest::SHA256);
-    let mut done = 0u64;
+    let mut done = before;
     let mut told = Instant::now();
     let updates = daemon.updates();
     let mut sink = |bytes: &[u8], _total: u64| -> std::io::Result<()> {
@@ -712,8 +764,8 @@ async fn ready(daemon: &Daemon, manifest: &Manifest, fetched: &Fetched, checked:
         manifest.size
     } else {
         manifest
-            .patch_from(update::VERSION)
-            .map_or(fetched.size, |patch| patch.size)
+            .route(update::VERSION)
+            .map_or(fetched.size, |hops| route_size(&hops))
     };
     let updates = daemon.updates();
     updates.set(daemon, |s| {
@@ -868,15 +920,43 @@ mod tests {
             .path()
             .join("katna-git-0.0.0.r1.gaaaaaaa-1-x86_64.pkg.tar.zst");
         std::fs::write(&zst, zstd::encode_all(&old[..], 3).unwrap()).unwrap();
-        apply_patch(&zst, &patch_file, &fetched).unwrap();
+        apply_patch(
+            &zst,
+            &patch_file,
+            &fetched.file,
+            Some((fetched.size, &fetched.sha256)),
+        )
+        .unwrap();
         assert_eq!(std::fs::read(&fetched.file).unwrap(), new);
         let plain = tmp
             .path()
             .join("katna-git-0.0.0.r1.gaaaaaaa-1-x86_64.pkg.tar");
         std::fs::write(&plain, &old).unwrap();
         std::fs::remove_file(&fetched.file).unwrap();
-        apply_patch(&plain, &patch_file, &fetched).unwrap();
+        apply_patch(
+            &plain,
+            &patch_file,
+            &fetched.file,
+            Some((fetched.size, &fetched.sha256)),
+        )
+        .unwrap();
         assert_eq!(std::fs::read(&fetched.file).unwrap(), new);
+        // Through a build in between, which nothing checks.
+        let mut newer = new.clone();
+        newer.extend_from_slice(b"and another");
+        let second = tmp.path().join("q.patch.zst");
+        std::fs::write(&second, make_patch(&new, &newer)).unwrap();
+        let between = tmp.path().join("between.pkg.tar");
+        apply_patch(&zst, &patch_file, &between, None).unwrap();
+        let out = tmp.path().join("newer.pkg.tar");
+        apply_patch(
+            &between,
+            &second,
+            &out,
+            Some((newer.len() as u64, &sha(&newer))),
+        )
+        .unwrap();
+        assert_eq!(std::fs::read(&out).unwrap(), newer);
     }
 
     #[test]
@@ -899,7 +979,15 @@ mod tests {
             size: new.len() as u64,
             minisig: None,
         };
-        assert!(apply_patch(&base, &patch_file, &fetched).is_err());
+        assert!(
+            apply_patch(
+                &base,
+                &patch_file,
+                &fetched.file,
+                Some((fetched.size, &fetched.sha256))
+            )
+            .is_err()
+        );
         assert!(!fetched.file.exists());
         assert!(!part_path(&fetched.file).exists());
     }
