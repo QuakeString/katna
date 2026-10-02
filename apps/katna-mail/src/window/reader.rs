@@ -1343,7 +1343,7 @@ impl MailWindow {
                 .pr(px(24.0))
                 .py(px(12.0))
                 .border_t_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(super::list::message_line(th)))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .on_click(toggle)
@@ -1850,7 +1850,10 @@ impl MailWindow {
             .pr(px(16.0))
             .pt(px(12.0))
             .pb(px(if last { 0.0 } else { 16.0 }))
-            .when(ix > 0, |d| d.border_t_1().border_color(rgba(th.divider)))
+            .when(ix > 0, |d| {
+                d.border_t_1()
+                    .border_color(rgba(super::list::message_line(th)))
+            })
             .child(
                 div()
                     .w(px(PICTURE_COLUMN))

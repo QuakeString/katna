@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Fainter lines in light mode"
+text = """
+In light mode, the lines between mails in the list and between the messages
+of an open mail are fainter, so the page looks calmer.
+"""
