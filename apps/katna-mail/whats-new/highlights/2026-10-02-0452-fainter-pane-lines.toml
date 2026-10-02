@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Quieter toolbars and tabs"
+text = """
+In light mode, the lines under the toolbars and the open mail's header, and
+above Reply and Forward, are as faint as the lines between mails. The
+background behind the inbox tabs is lighter too.
+"""

@@ -47,7 +47,7 @@ use crate::sidebar::Role;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     TOOLBAR_HEIGHT, card_outline, card_shadow, elevation, icon, icon_button, icon_button_colored,
-    menu, menu_item, menu_item_icon, placeholder, tip, toolbar,
+    menu, menu_item, menu_item_icon, pane_line, placeholder, tip, toolbar,
 };
 
 /// The inbox tabs' pill bar: its height and inset, and each tab's height,
@@ -285,7 +285,7 @@ impl MailWindow {
                     .items_center()
                     .justify_center()
                     .border_b_1()
-                    .border_color(rgba(th.divider))
+                    .border_color(rgba(pane_line(th)))
                     .child(self.render_tabs(None, th, cx))
             });
         let banner = self.render_select_banner(th, cx);
@@ -1528,7 +1528,7 @@ impl MailWindow {
                 .gap(px(8.0))
                 .bg(rgba(th.read_row))
                 .border_b_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(pane_line(th)))
                 .text_size(px(13.0))
                 .child(text)
                 .child(
@@ -1891,7 +1891,7 @@ impl MailWindow {
             .items_center()
             .gap(px(TAB_SPACING))
             .rounded_full()
-            .bg(rgba(th.search))
+            .bg(rgba(tabs_track(th)))
             // The open tab's highlight, under the tabs.
             .child(
                 div()
@@ -2887,24 +2887,25 @@ pub(super) fn preview_color(th: &Theme) -> u32 {
 }
 
 /// The faint line between mail rows: well under the app's other dividers,
-/// so the rows read as one calm list. Light mode shows lines more, so it
-/// goes fainter there.
+/// so the rows read as one calm list. In light mode it matches the pane
+/// lines.
 pub(super) fn row_line(th: &Theme) -> u32 {
-    fade(th.divider, if th.dark { 0.6 } else { LIGHT_LINE })
-}
-
-/// The line under an open mail's header and between its messages: the
-/// plain divider in dark mode, as faint as the mail rows' in light mode.
-pub(super) fn message_line(th: &Theme) -> u32 {
     if th.dark {
-        th.divider
+        fade(th.divider, 0.6)
     } else {
-        fade(th.divider, LIGHT_LINE)
+        pane_line(th)
     }
 }
 
-/// How much of the divider the mail lines keep in light mode.
-const LIGHT_LINE: f32 = 0.25;
+/// The background behind the inbox tabs: the search box's colour in dark
+/// mode, half way to the list's surface in light mode.
+fn tabs_track(th: &Theme) -> u32 {
+    if th.dark {
+        th.search
+    } else {
+        mix(th.search, th.surface, 0.5)
+    }
+}
 
 /// A thin vertical line between toolbar groups.
 pub(super) fn separator(th: &Theme) -> Div {
