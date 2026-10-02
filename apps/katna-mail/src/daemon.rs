@@ -1153,6 +1153,51 @@ pub async fn create_folder(
         .map_err(|err| describe(&err))
 }
 
+/// Renames folder `folder` (a label, on Gmail) on its account's server;
+/// it stays inside the same parent.
+#[expect(dead_code, reason = "the folder menu uses it next")]
+pub async fn rename_folder(
+    connection: &Connection,
+    folder: i64,
+    new_name: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.rename_folder(folder, new_name)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Deletes folder `folder` (a label, on Gmail) and the folders inside it
+/// on its account's server. Returns how many messages went to the Trash.
+#[expect(dead_code, reason = "the folder menu uses it next")]
+pub async fn delete_folder(connection: &Connection, folder: i64) -> Result<u32, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.delete_folder(folder)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Gmail: puts the labels `add` on `messages` and takes `remove` off
+/// (folder IDs), without moving them otherwise.
+#[expect(dead_code, reason = "the label menu uses it next")]
+pub async fn set_labels(
+    connection: &Connection,
+    messages: &[i64],
+    add: &[i64],
+    remove: &[i64],
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_labels(messages, add, remove)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Has the daemon delete everything Katna keeps on this computer. It exits
 /// once done; the next call starts a new one.
 pub async fn delete_all_data(connection: &Connection) -> Result<(), String> {

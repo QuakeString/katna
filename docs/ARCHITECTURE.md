@@ -493,6 +493,21 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
     (`Store::trash_folder`, which the app also reads: a delete for good
     says "deleted forever" and offers no Undo). Archive moves to
     `\Archive` (or Gmail's `\All`).
+  - `SetLabels` (Gmail only) adds a label as a `UID COPY` into its
+    folder and takes one off with `UID STORE -X-GM-LABELS` in that
+    folder, so the message stays in All Mail and its other labels
+    whatever the account's IMAP expunge settings. Special folders are not
+    labels here; a refused removal puts the label back.
+- **Folder changes (`katna_sync::folders`):** `CreateFolder`,
+  `RenameFolder` and `DeleteFolder` are not queued: they need the server
+  and fail while offline. Rename changes only the last part of the path
+  (`RENAME`; folders inside move along, here too). Delete removes the
+  folders inside first, deepest first; elsewhere than on Gmail their mail
+  is moved to the Trash before (`DeleteFolder` returns how many), on
+  Gmail the mail stays in All Mail and its other labels. Special folders
+  (a role, INBOX, `[Gmail]/…`, unmarked top-level ones named like special
+  ones, Notes, Snoozed) are refused, as is a change while a queued
+  operation still needs one of the folders.
   - A move out of a folder the message was only just moved into (Undo
     right after Archive) queues with no UID; when the earlier move runs,
     its `COPYUID` answer is handed to the waiting one, so the pair

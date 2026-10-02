@@ -485,3 +485,130 @@ fn drafts_need_a_drafts_folder_on_the_server() {
     let err = ops::save_draft(&mut store, account, &draft("one"), NOW).unwrap_err();
     assert!(matches!(err, ChangeError::NotPossible(_)), "{err}");
 }
+
+/// A Gmail server with one message in the inbox, All Mail and the
+/// Receipts label, and an empty Travel label, synced.
+fn setup_gmail() -> (tempfile::TempDir, Store, AccountId, FakeServer, MessageId) {
+    let (tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.set_gmail(true);
+    for name in ["INBOX", "[Gmail]/All Mail", "Receipts", "Travel"] {
+        server.create(name, 1);
+    }
+    let a = server.deliver("[Gmail]/All Mail", "a");
+    server.label("[Gmail]/All Mail", a, 101, "INBOX");
+    server.label("[Gmail]/All Mail", a, 101, "Receipts");
+    sync(&server, &mut store, account);
+    let id = message_at(&store, folder(&store, account, "Receipts"), 0);
+    (tmp, store, account, server, id)
+}
+
+fn label_paths(store: &Store, account: AccountId, id: MessageId) -> Vec<String> {
+    let folders = store.folders(account).unwrap();
+    let mut paths: Vec<String> = store
+        .locations(id)
+        .unwrap()
+        .iter()
+        .map(|l| {
+            let folder = folders.iter().find(|f| f.id == l.folder).unwrap();
+            folder.path.clone()
+        })
+        .collect();
+    paths.sort();
+    paths
+}
+
+#[test]
+fn gmail_labels_come_and_go_without_moving_the_message() {
+    let (_tmp, mut store, account, server, id) = setup_gmail();
+    let (receipts, travel) = (
+        folder(&store, account, "Receipts"),
+        folder(&store, account, "Travel"),
+    );
+
+    assert_eq!(
+        ops::set_labels(&mut store, &[id], &[travel], &[receipts]).unwrap(),
+        [account]
+    );
+    assert_eq!(
+        label_paths(&store, account, id),
+        ["INBOX", "Travel", "[Gmail]/All Mail"],
+        "at once, here"
+    );
+
+    server.clear_log();
+    let report = replay(&server, &mut store, account, NOW);
+    assert_eq!((report.done, report.failed), (2, 0));
+    let log = server.log();
+    assert!(
+        log.iter()
+            .any(|c| c.starts_with("COPY") && c.ends_with("Travel")),
+        "{log:?}"
+    );
+    assert!(log.contains(&"LABEL [1] -Receipts".to_owned()), "{log:?}");
+    assert!(server.uids("Receipts").is_empty());
+    assert_eq!(server.uids("Travel"), [1]);
+    assert_eq!(server.uids("INBOX"), [1], "still in the inbox");
+    for report in sync(&server, &mut store, account) {
+        assert_eq!((report.added, report.removed), (0, 0), "{report:?}");
+    }
+    assert_eq!(
+        label_paths(&store, account, id),
+        ["INBOX", "Travel", "[Gmail]/All Mail"]
+    );
+
+    // Setting what is set already queues nothing.
+    ops::set_labels(&mut store, &[id], &[travel], &[receipts]).unwrap();
+    assert!(store.due_ops(account, NOW, 10).unwrap().is_empty());
+}
+
+#[test]
+fn a_refused_unlabel_puts_the_label_back() {
+    let (_tmp, mut store, account, server, id) = setup_gmail();
+    let receipts = folder(&store, account, "Receipts");
+    ops::set_labels(&mut store, &[id], &[], &[receipts]).unwrap();
+    server.state().refuse_changes = true;
+    for round in 0..3 {
+        replay(&server, &mut store, account, NOW + round * RETRY_AFTER);
+    }
+    assert_eq!(store.next_op_due(account).unwrap(), None);
+    assert_eq!(
+        label_paths(&store, account, id),
+        ["INBOX", "Receipts", "[Gmail]/All Mail"]
+    );
+    assert_eq!(store.folder_uids(receipts).unwrap(), [1]);
+}
+
+#[test]
+fn labels_only_on_gmail_and_only_user_labels() {
+    let (_tmp, mut store, account, _server, id) = setup_gmail();
+    let (inbox, all, receipts) = (
+        folder(&store, account, "INBOX"),
+        folder(&store, account, "[Gmail]/All Mail"),
+        folder(&store, account, "Receipts"),
+    );
+    for special in [inbox, all] {
+        assert!(matches!(
+            ops::set_labels(&mut store, &[id], &[special], &[]),
+            Err(ChangeError::Invalid(_))
+        ));
+    }
+    assert!(matches!(
+        ops::set_labels(&mut store, &[id], &[receipts], &[receipts]),
+        Err(ChangeError::Invalid(_))
+    ));
+    assert!(matches!(
+        ops::set_labels(&mut store, &[id], &[FolderId(999)], &[]),
+        Err(ChangeError::UnknownFolder(999))
+    ));
+    assert!(store.due_ops(account, NOW, 10).unwrap().is_empty());
+
+    let (_tmp, mut store, account, _server) = setup_synced();
+    let inbox = folder(&store, account, "INBOX");
+    let archive = folder(&store, account, "Archive");
+    let id = message_at(&store, inbox, 0);
+    assert!(matches!(
+        ops::set_labels(&mut store, &[id], &[archive], &[]),
+        Err(ChangeError::Invalid(_))
+    ));
+}
