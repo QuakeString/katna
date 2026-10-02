@@ -117,6 +117,11 @@ pub struct ThreadSummary {
     pub has_attachments: bool,
     /// Distinct `From` addresses, in the order they first wrote.
     pub senders: Vec<ThreadSender>,
+    /// The `From` addresses of the newest message that is not a draft,
+    /// to tell whether the user wrote last.
+    pub last_from: Vec<String>,
+    /// The newest message that is not a draft is marked answered.
+    pub last_answered: bool,
 }
 
 /// One row of a folder scan: message, thread (or none) and category.
@@ -616,14 +621,26 @@ pub(crate) fn thread_summaries(
             important: copies().any(|m| m.flags.contains(MessageFlags::IMPORTANT)),
             has_attachments: copies().any(|m| m.has_attachments),
             senders: Vec::new(),
+            last_from: Vec::new(),
+            last_answered: false,
         };
         for copies in &messages {
             let message = &copies[0];
             let message_unread = copies.iter().any(|m| !m.flags.contains(MessageFlags::SEEN));
+            let draft = copies.iter().any(|m| m.flags.contains(MessageFlags::DRAFT));
+            if !draft {
+                summary.last_from.clear();
+                summary.last_answered = copies
+                    .iter()
+                    .any(|m| m.flags.contains(MessageFlags::ANSWERED));
+            }
             let mut rows = senders_of.query([message.id])?;
             while let Some(row) = rows.next()? {
                 let email: String = row.get(0)?;
                 let name: Option<String> = row.get(1)?;
+                if !draft {
+                    summary.last_from.push(email.clone());
+                }
                 match summary.senders.iter_mut().find(|s| s.email == email) {
                     Some(sender) => {
                         sender.unread |= message_unread;

@@ -123,6 +123,7 @@ pub(super) fn row(
         files: Vec::new(),
         snippet,
         tracking: None,
+        replied: false,
     }
 }
 
