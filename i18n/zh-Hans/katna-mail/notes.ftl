@@ -15,6 +15,7 @@ notes-loading = 正在打开你的笔记…
 
 notes-take-a-note = 添加笔记…
 notes-new-list = 新建清单
+notes-new-note = 新建笔记
 notes-pinned = 已置顶
 notes-others = 其他
 notes-empty = 你添加的笔记会显示在此处

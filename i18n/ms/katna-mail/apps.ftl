@@ -2,6 +2,10 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Top bar
+
+top-brand = Katna
+
 ## App rail (and the bottom bar on a phone)
 
 rail-mail = Mel
@@ -9,6 +13,7 @@ rail-calendar = Kalendar
 rail-contacts = Kenalan
 rail-tasks = Tugas
 rail-notes = Nota
+rail-files = Fail
 
 ## Pages of apps still to come
 
@@ -26,4 +31,3 @@ app-contacts-count = { $count } orang daripada mel anda, yang paling kerap berut
 app-contacts-top = { $count } orang teratas daripada mel anda, yang paling kerap berutus mel dahulu
 app-contacts-messages = { $count } mesej
 app-contacts-last = terakhir { $date }
-top-brand = Katna

@@ -86,6 +86,10 @@ security-missing-key = Nilagdaan gamit ang key na wala sa iyo, kaya hindi ito ma
 security-missing-key-id = Nilagdaan gamit ang key na wala sa iyo ({ $key }), kaya hindi ito masuri
 security-signature-unavailable = May lagda; i-install ang { $tool } para masuri ang lagda
 security-signature-error = Hindi masuri ang lagda.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = Binuksan ito ni { $who } nang { $count ->
     [one] isang beses
    *[other] { $count } beses
@@ -127,10 +131,12 @@ attachment-count = { $count ->
    *[other] { $count } attachment
 }
 attachment-save = I-save
+attachment-forward = Ipasa
 attachment-save-all = I-save lahat
 attachment-save-all-tooltip = I-save ang bawat attachment sa isang folder
 attachment-save-here = I-save dito
 attachment-not-downloaded = Hindi na-download ang mensaheng ito.
+attachment-open-message = Buksan ang mensaheng ito para mabasa ang mga attachment nito.
 attachment-not-found = Hindi makita ang attachment na ito sa mensahe.
 attachment-read-failed = Hindi mabasa ang { $name }
 attachment-numbered = attachment { $number }
@@ -178,8 +184,9 @@ print-encrypted = (Naka-encrypt. Buksan ito sa Katna Mail para i-print ang text 
 print-to = Para kay: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = Buksan ang mensaheng ito para mabasa ang mga attachment nito.
+text-pin = I-pin sa itaas
+text-copy-address = Kopyahin ang address
 text-copy = Kopyahin
 text-select-all = Piliin lahat

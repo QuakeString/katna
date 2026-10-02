@@ -57,10 +57,7 @@ calendar-account-not-enabled = Katna 的日历访问权限尚未开启。
 calendar-account-failed = 无法读取日历。
 calendar-account-error = 无法读取日历：{ $reason }
 calendar-account-none = 未找到日历
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 calendar-account-none-why = 未找到日历：{ $reason }
-# A Gmail or Outlook account added with a password: its calendars need the
-# provider's sign-in.
 calendar-account-use-sign-in = { $provider } 只向使用 { $provider } 登录的 Katna 显示日历。
 calendar-account-sign-in-with = 使用 { $provider } 登录
 calendar-account-looking = 正在查找日历…
@@ -82,8 +79,10 @@ calendar-short-event = { $title }，{ $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = 还有 { $count } 项
+calendar-peek-day = { $weekday }，{ $day }
 calendar-repeats = 重复
 calendar-join = 加入
+calendar-join-with = 通过 { $service } 加入
 calendar-email-guests = 向嘉宾发送电子邮件
 calendar-running-late = 我会迟到
 calendar-late-subject = 我会迟到：{ $title }
@@ -96,6 +95,7 @@ calendar-guest-answers = { $yes } 人参加，{ $maybe } 人可能参加，{ $no
 calendar-organizer = 组织者
 calendar-optional = 可选
 calendar-open-web = 在浏览器中打开
+calendar-open-mail = 打开邮件
 calendar-open-contact = 打开联系人
 calendar-close = 关闭
 
@@ -119,18 +119,12 @@ calendar-discard = 放弃更改
 calendar-edit = 修改活动
 calendar-delete = 删除活动
 calendar-event-details = 活动详情
-# Right-click menus on the calendar: on a free time or day, an event and
-# a task.
 calendar-menu-new-event = 新建活动
-# Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = 打开这一天
 calendar-menu-duplicate = 复制
 calendar-menu-color = 颜色
-# The event takes its calendar's color.
 calendar-menu-color-calendar = 日历颜色
-# A task's new due day, a week from today.
 calendar-menu-in-a-week = 一周后
-# Event colors, by the names Google Calendar gives them.
 calendar-color-tomato = 番茄红
 calendar-color-flamingo = 火烈鸟粉
 calendar-color-tangerine = 橘黄
@@ -142,6 +136,40 @@ calendar-color-blueberry = 蓝莓蓝
 calendar-color-lavender = 薰衣草紫
 calendar-color-grape = 葡萄紫
 calendar-color-graphite = 石墨灰
+calendar-menu-only-this = 只显示此日历
+calendar-menu-rename = 重命名
+calendar-menu-remove = 从列表中移除
+calendar-menu-delete = 删除
+calendar-menu-new-calendar = 新建日历
+calendar-menu-show-all = 全部显示
+calendar-menu-hide-all = 全部隐藏
+calendar-menu-account-settings = 账号设置
+calendar-why-main = 主日历
+calendar-why-last = 仅剩这一个
+calendar-why-owner = 仅限所有者
+calendar-why-contacts = 来自联系人
+calendar-why-unreached = 无法连接
+calendar-name-placeholder = 日历名称
+calendar-toast-added = 已添加“{ $name }”
+calendar-toast-renamed = 已重命名日历
+calendar-toast-recolored = 已更改日历颜色
+calendar-toast-deleted = 已删除“{ $name }”
+calendar-toast-removed = 已从你的列表中移除“{ $name }”
+calendar-edit-failed = 日历未更改：{ $reason }
+calendar-delete-title = 删除“{ $name }”？
+calendar-delete-confirm = 删除
+calendar-deleting = 正在删除…
+calendar-delete-heading = 将删除：
+calendar-delete-events = 此日历及其所有活动
+calendar-delete-shared = 对所有与之共享的人
+calendar-delete-server = 它会从邮件服务的 { $account } 中删除，而不仅是在 Katna 中。
+calendar-delete-local = 它会从这台电脑中删除。
+calendar-remove-title = 从你的列表中移除“{ $name }”？
+calendar-remove-confirm = 移除
+calendar-removing = 正在移除…
+calendar-remove-heading = 会有以下变化：
+calendar-remove-events = 你将不再看到它的活动，在这里和你的其他应用中都是如此
+calendar-remove-server = 日历仍归其所有者所有，对方可以再次与你共享。
 calendar-kind-event = 活动
 calendar-kind-task = 任务
 calendar-kind-focus = 专注时间

@@ -1,6 +1,9 @@
 # Katna Mail, Malay (Bahasa Melayu).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Akaun Katna menghidupkan ciri dalam talian Katna: resit baca, penjejakan pautan, Aktiviti dan terjemahan automatik. Kata laluannya tersendiri, bukan kata laluan mel, dan butiran log masuk mel anda tidak pernah meninggalkan komputer ini.
 katna-checking = Menyemak…
 katna-email = E-mel
@@ -10,6 +13,8 @@ katna-sign-in = Log masuk
 katna-sign-in-detail = Log masuk pada setiap komputer yang anda mahu gunakan ciri dalam talian.
 katna-create = Cipta akaun
 katna-create-detail = Gunakan alamat yang boleh anda baca: kami menghantar kod melalui e-mel untuk mengesahkannya.
+katna-onboarding-create-title = Cipta akaun Katna anda
+katna-onboarding-sign-in-title = Log masuk ke Katna
 katna-have-account = Saya sudah ada akaun
 katna-forgot = Lupa kata laluan?
 katna-forgot-detail = Kami menghantar kod melalui e-mel untuk anda memilih kata laluan baharu.
@@ -42,6 +47,9 @@ katna-delete = Padam akaun
 katna-delete-detail = Memadamkan akaun dan semua yang disimpan oleh pelayan untuknya, seperti resit baca. Mel pada komputer ini kekal.
 katna-delete-confirm = Padam terus
 katna-sign-in-needed = Log masuk ke akaun Katna untuk menggunakan ini.
+
+## Errors
+
 katna-error-wrong-password = E-mel atau kata laluan salah.
 katna-error-exists = Alamat ini sudah mempunyai akaun Katna. Log masuk sahaja.
 katna-error-bad-email = Itu tidak kelihatan seperti alamat e-mel.

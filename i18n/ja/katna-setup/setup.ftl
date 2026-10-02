@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Katna Mail で送信
 setup-tagline = パソコンに保存される、高速でプライベートなメール。
 setup-update-where = { $path } の Katna Mail を更新します。メール、設定、ショートカットはそのまま残ります。
 setup-for = インストール対象

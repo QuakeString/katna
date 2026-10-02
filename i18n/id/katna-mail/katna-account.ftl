@@ -1,6 +1,9 @@
 # Katna Mail, Indonesian (Bahasa Indonesia).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Akun Katna menyalakan fitur online Katna: tanda terima baca, pelacakan tautan, Aktivitas, dan terjemahan otomatis. Sandinya tersendiri, bukan sandi email, dan info login email Anda tidak pernah meninggalkan komputer ini.
 katna-checking = Memeriksa…
 katna-email = Email
@@ -10,6 +13,8 @@ katna-sign-in = Masuk
 katna-sign-in-detail = Masuk di setiap komputer yang ingin memakai fitur online.
 katna-create = Buat akun
 katna-create-detail = Gunakan alamat yang bisa Anda baca: kami mengirim kode lewat email untuk mengonfirmasinya.
+katna-onboarding-create-title = Buat akun Katna Anda
+katna-onboarding-sign-in-title = Masuk ke Katna
 katna-have-account = Saya sudah punya akun
 katna-forgot = Lupa sandi?
 katna-forgot-detail = Kami mengirim kode lewat email untuk memilih sandi baru.
@@ -42,6 +47,9 @@ katna-delete = Hapus akun
 katna-delete-detail = Menghapus akun dan semua yang disimpan server untuknya, seperti tanda terima baca. Email di komputer ini tetap ada.
 katna-delete-confirm = Hapus selamanya
 katna-sign-in-needed = Masuk ke akun Katna untuk memakai ini.
+
+## Errors
+
 katna-error-wrong-password = Email atau sandi salah.
 katna-error-exists = Alamat ini sudah punya akun Katna. Masuk saja.
 katna-error-bad-email = Itu tidak tampak seperti alamat email.

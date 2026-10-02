@@ -86,6 +86,10 @@ security-missing-key = 내게 없는 키로 서명되어 확인할 수 없음
 security-missing-key-id = 내게 없는 키({ $key })로 서명되어 확인할 수 없음
 security-signature-unavailable = 서명됨. 서명을 확인하려면 { $tool }을(를) 설치하세요
 security-signature-error = 서명을 확인할 수 없습니다.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who }님이 { $count }번 열었습니다. 마지막: { $when }
 tracking-opens-clicks = { $who }님이 { $opens }번 열고 링크를 { $clicks }번 클릭했습니다. 마지막: { $when }
 tracking-clicked = { $who }님이 링크를 { $clicks }번 클릭했습니다. 마지막: { $when }
@@ -112,10 +116,12 @@ remote-picture-remove-failed = 사진을 삭제할 수 없습니다: { $error }
 
 attachment-count = 첨부파일 { $count }개
 attachment-save = 저장
+attachment-forward = 전달
 attachment-save-all = 모두 저장
 attachment-save-all-tooltip = 모든 첨부파일을 폴더에 저장
 attachment-save-here = 여기에 저장
 attachment-not-downloaded = 이 메일은 다운로드되지 않았습니다.
+attachment-open-message = 첨부파일을 보려면 이 메일을 여세요.
 attachment-not-found = 메일에서 이 첨부파일을 찾을 수 없습니다.
 attachment-read-failed = { $name }을(를) 읽을 수 없습니다
 attachment-numbered = 첨부파일 { $number }
@@ -151,8 +157,9 @@ print-encrypted = (암호화되어 있습니다. 본문을 인쇄하려면 Katna
 print-to = 받는사람: { $addresses }
 print-cc = 참조: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = 첨부파일을 보려면 이 메일을 여세요.
+text-pin = 상단에 고정
+text-copy-address = 주소 복사
 text-copy = 복사
 text-select-all = 모두 선택

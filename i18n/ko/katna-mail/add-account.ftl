@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = 메일 계정 추가
+add-account-providers-intro = 메일 제공업체를 선택하세요. 나머지는 Katna가 찾아 줍니다.
+add-account-provider-other = 기타 메일
+add-account-provider-other-detail = 모든 IMAP 또는 POP3 계정
+add-account-provider-google-detail = Gmail 및 Google Workspace
+add-account-provider-microsoft-detail = Outlook 및 Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = { $provider }에 로그인
+add-account-form-title-other = 메일 계정
+add-account-form-intro = Katna는 비밀번호를 시스템 키링에 보관합니다.
 add-account-looking = { $address }의 메일 서버를 찾는 중…
 add-account-address-intro = 이메일 주소를 입력하세요. Katna가 서버를 찾아 줍니다.
 add-account-servers-title = 서버 설정
@@ -13,10 +22,18 @@ add-account-signing-in = 로그인 중…
 add-account-browser-title = 브라우저에서 계속하기
 add-account-browser-intro = Katna가 브라우저에서 { $provider } 로그인 페이지를 열었습니다. 그곳에서 로그인하고 Katna가 메일을 읽고 보낼 수 있도록 허용한 다음 여기로 돌아오세요.
 add-account-browser-hint = 페이지가 열리지 않았나요? 브라우저 창을 확인하거나, 뒤로 가서 다시 시도하세요.
+add-account-stage-browser = 브라우저에서 로그인하기를 기다리는 중…
+add-account-stage-signing-in-at = { $server }에 로그인하는 중…
+add-account-help-app-password-link = 앱 비밀번호 만드는 방법
+add-account-help-turn-on-imap = { $provider }에서는 웹메일 설정에서 IMAP 및 POP3 액세스를 켜야 메일 앱을 사용할 수 있습니다.
+add-account-help-turn-on-imap-link = 켜는 방법
 
 ## Add a mail account: fields
 
 add-account-field-address = 이메일 주소
+add-account-receive-with = 메일 받는 방식
+add-account-imap-about = IMAP은 메일과 폴더를 서버에 보관하므로 모든 기기에서 똑같이 보입니다. 가능하면 IMAP을 선택하세요.
+add-account-pop3-about = POP3는 메일을 이 컴퓨터로 다운로드합니다. 여기서 읽거나 이동한 메일은 서버와 다른 기기에서 그대로 유지됩니다.
 add-account-incoming = 받는 메일({ $protocol })
 add-account-outgoing = 보내는 메일({ $protocol })
 add-account-field-server = 서버
@@ -38,14 +55,16 @@ add-account-servers-found = { $source ->
    *[other] 서버: { $servers }, 추측한 값입니다. 로그인에 실패하면 확인하세요.
 }
 add-account-servers-entered = 서버: { $servers }, 입력한 대로.
-add-account-sign-in-with = { $provider }로 로그인
-add-account-sign-in-instead = 대신 { $provider }로 로그인
 
 ## Add a mail account: buttons
 
+add-account-sign-in-with = { $provider }로 로그인
+add-account-sign-in-instead = 대신 { $provider }로 로그인
 add-account-servers-button = 서버 설정
 add-account-back = 뒤로
 add-account-add = 계정 추가
+add-account-done = 완료
+add-account-another = 다른 계정 추가
 add-account-cancel = 취소
 
 ## Add a mail account: problems
@@ -75,6 +94,22 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] 이 Katna 사본은 아직 Google 계정에 로그인할 수 없습니다.
    *[other] 이 메일 서비스는 자체 페이지에서만 로그인할 수 있으며, Katna는 아직 이를 지원하지 않습니다.
 }
+add-account-smtp-not-found = Katna가 메일을 읽을 서버는 찾았지만 보낼 서버는 찾지 못했습니다. 보내는 메일 서버를 입력하세요.
+
+## Add a mail account: the last step
+
+add-account-done-title = 계정이 준비되었습니다
+add-account-done-intro = Katna가 지금 메일을 가져오고 있습니다. 새 메일은 도착하는 대로 표시됩니다.
+add-account-done-sign-in = 로그인
+add-account-done-signed-in-with = 브라우저에서 { $provider }(으)로
+add-account-done-receiving = 메일 받기
+add-account-done-sending = 메일 보내기
+add-account-done-on-server = 서버의 메일
+add-account-done-kept = Katna에서 삭제할 때까지 보관
+add-account-done-pop3-hint = 서버의 메일을 어떻게 처리할지는 설정 > 계정에서 변경하세요.
+add-account-done-zoho-title = 할 일 및 캘린더
+add-account-done-zoho-about = Zoho는 이 항목을 메일과 따로 보관합니다. Zoho로 한 번 로그인하면 Katna로 가져올 수 있습니다.
+add-account-done-linked = 할 일 및 캘린더가 연결되었습니다
 
 ## The account menu (from the account button on the top bar)
 

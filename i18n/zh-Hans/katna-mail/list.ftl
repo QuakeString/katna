@@ -20,6 +20,7 @@ tab-provider-other = 由 Katna 分类
 
 list-select = 选择
 list-refresh = 刷新
+list-back-to-top = 回到顶部
 list-checking = 正在检查新邮件…
 list-more = 更多
 list-mark-read = 标记为已读
@@ -236,11 +237,7 @@ menu-add-note = 添加笔记
 menu-print-all = 全部打印
 menu-new-window = 在新窗口中打开
 menu-move-to = 移至
-# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
-# video call.
 menu-follow-up = 跟进
-# Opens a submenu of the rarer actions: Report spam, Mark as important and
-# Pin to top.
 menu-more = 更多
 menu-move-to-heading = 移至：
 menu-find-from = 查找来自 { $name } 的邮件

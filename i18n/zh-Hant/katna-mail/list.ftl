@@ -20,6 +20,7 @@ tab-provider-other = 由 Katna 分類
 
 list-select = 選取
 list-refresh = 重新整理
+list-back-to-top = 回到頂端
 list-checking = 正在檢查新郵件…
 list-more = 更多
 list-mark-read = 標示為已讀取
@@ -236,11 +237,7 @@ menu-add-note = 新增記事
 menu-print-all = 全部列印
 menu-new-window = 在新視窗中開啟
 menu-move-to = 移至
-# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
-# video call.
 menu-follow-up = 後續處理
-# Opens a submenu of the rarer actions: Report spam, Mark as important and
-# Pin to top.
 menu-more = 更多
 menu-move-to-heading = 移至：
 menu-find-from = 搜尋來自 { $name } 的郵件

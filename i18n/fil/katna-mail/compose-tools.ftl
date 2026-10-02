@@ -32,6 +32,7 @@ compose-tool-bold = Bold (Ctrl+B)
 compose-tool-italic = Italic (Ctrl+I)
 compose-tool-underline = Underline (Ctrl+U)
 compose-tool-text-color = Kulay ng text
+compose-tool-colors = Kulay ng text at highlight
 compose-tool-background-color = Kulay ng background
 compose-tool-default-color = Default na kulay
 compose-tool-no-background = Walang background
@@ -126,6 +127,10 @@ compose-tool-signature = Maglagay ng lagda
 compose-tool-signature-none = Walang lagda
 compose-tool-signature-untitled = Walang pamagat
 compose-tool-signature-manage = Pamahalaan ang mga lagda
+compose-signature-tag-tip = Pumili ng ibang lagda
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = Mga template
 compose-tool-templates-none = Wala pang template
 compose-tool-template-save = I-save bilang template…

@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “所有账号”位于文件夹窗格顶部�
 accounts-row = 账号
 accounts-row-detail = 文件夹窗格和账号菜单按此顺序列出账号；第一个为默认账号。移除账号会删除 Katna 在此电脑上保存的该账号邮件副本。邮件仍保留在服务器上。
 accounts-none = 还没有账号。
+accounts-pop3-row = 服务器上的邮件
+accounts-pop3-row-detail = POP3 账号会将邮件下载到这台电脑。请选择之后如何处理服务器上的副本。
+accounts-pop3-with-katna = 保留，直到我在 Katna 中删除
+accounts-pop3-at-once = 下载后立即删除
+accounts-pop3-after-days = { $count ->
+   *[other] { $count } 天后删除
+}
+accounts-pop3-never = 从不删除
+accounts-pop3-days-less = 减少天数
+accounts-pop3-days-more = 增加天数
 accounts-kind-imported = 已导入
 accounts-picture-reset = 使用桌面头像
 accounts-picture-change = 更改图片
@@ -70,6 +80,9 @@ accounts-confirm-word = 删除
 accounts-confirm-placeholder = 输入“{ accounts-confirm-word }”
 accounts-confirm-prompt = 请输入“{ accounts-confirm-word }”以确认：
 accounts-cancel = 取消
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = 删除 Katna 下载的邮件和附件、发件人图片和搜索索引，然后重新下载最近的邮件。账号、设置以及只存在于此电脑上的邮件会保留。
 reset-cache-button = 重置缓存
 reset-cache-title = 要重置缓存吗？

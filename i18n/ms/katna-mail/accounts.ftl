@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “Semua Akaun” mengetuai anak tetingkap fold
 accounts-row = Akaun
 accounts-row-detail = Anak tetingkap folder dan menu akaun menyenaraikan akaun mengikut susunan ini; yang pertama ialah lalai. Mengalih keluar akaun akan memadamkan salinan mel akaun itu yang disimpan oleh Katna pada komputer ini. Mel kekal pada pelayan.
 accounts-none = Belum ada akaun.
+accounts-pop3-row = Mel pada pelayan
+accounts-pop3-row-detail = Akaun POP3 memuat turun mel ke komputer ini. Pilih apa yang berlaku kepada salinan pada pelayan selepas itu.
+accounts-pop3-with-katna = Simpan sehingga saya memadamnya dalam Katna
+accounts-pop3-at-once = Padamkan sebaik sahaja dimuat turun
+accounts-pop3-after-days = { $count ->
+   *[other] Padamkan selepas { $count } hari
+}
+accounts-pop3-never = Jangan padamkan
+accounts-pop3-days-less = Kurang hari
+accounts-pop3-days-more = Lebih hari
 accounts-kind-imported = Diimport
 accounts-picture-reset = Gunakan gambar desktop
 accounts-picture-change = Tukar gambar
@@ -70,6 +80,9 @@ accounts-confirm-word = padam
 accounts-confirm-placeholder = Taip “{ accounts-confirm-word }”
 accounts-confirm-prompt = Untuk mengesahkan, taip “{ accounts-confirm-word }”:
 accounts-cancel = Batal
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Memadamkan mel dan lampiran yang dimuat turun oleh Katna, gambar pengirim dan indeks carian, kemudian memuat turun mel terkini semula. Akaun, tetapan dan mel yang hanya ada pada komputer ini kekal.
 reset-cache-button = Tetapkan semula cache
 reset-cache-title = Tetapkan semula cache?

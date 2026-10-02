@@ -20,6 +20,7 @@ tab-provider-other = do Katna sắp xếp
 
 list-select = Chọn
 list-refresh = Làm mới
+list-back-to-top = Lên đầu trang
 list-checking = Đang kiểm tra thư mới…
 list-more = Thêm
 list-mark-read = Đánh dấu là đã đọc
@@ -236,11 +237,7 @@ menu-add-note = Thêm ghi chú
 menu-print-all = In tất cả
 menu-new-window = Mở trong cửa sổ mới
 menu-move-to = Di chuyển tới
-# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
-# video call.
 menu-follow-up = Theo dõi
-# Opens a submenu of the rarer actions: Report spam, Mark as important and
-# Pin to top.
 menu-more = Thêm
 menu-move-to-heading = Di chuyển tới:
 menu-find-from = Tìm email từ { $name }

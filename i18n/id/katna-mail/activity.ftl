@@ -1,20 +1,57 @@
 # Katna Mail, Indonesian (Bahasa Indonesia).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## The list under the Activity button
+
+activity-details = Detail
+activity-clear-all = Hapus semua
+activity-remove = Hapus dari daftar
+activity-feed-opened = { $who } membuka “{ $subject }”
+activity-feed-clicked = { $who } mengklik link di “{ $subject }”
+activity-feed-maybe = { $who } mungkin sudah membuka “{ $subject }”
+activity-feed-empty = Belum ada yang dibuka atau diklik. Aktifkan ikon mata saat menulis pesan untuk melihat kapan pesan dibaca.
+activity-message-gone = Pesan itu sudah tidak ada di Terkirim.
+
+## The Details report
+
+activity-report = Laporan aktivitas
+activity-range-week = 7 hari terakhir
+activity-range-month = 30 hari terakhir
+activity-range-all = Sepanjang waktu
+activity-range-custom = Kustom
+activity-range-from = Dari
+activity-range-to = Sampai
+activity-range-apply = Terapkan
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Semua akun
+activity-accounts-tip = Tampilkan satu akun atau semua
+
+## Totals at the top
+
 activity-messages = Pesan yang dilacak
 activity-open-rate = Tingkat dibuka
 activity-click-rate = Tingkat klik
 activity-percent = { $percent }%
+
+## Opens and clicks over time
+
 activity-by-day = Dibuka dan diklik
 activity-opens = Dibuka: { $count }
 activity-clicks = Diklik: { $count }
 activity-by-week = Satu batang per minggu
+
+## The messages
+
 activity-by-open-rate = Subjek menurut tingkat dibuka
 activity-opened = Dibuka oleh { $opened } dari { $recipients }
 activity-clicked = Link diikuti oleh { $clicked } dari { $recipients }
 activity-no-subject = (tanpa subjek)
 activity-nothing-period = Tidak ada email terlacak yang dikirim dalam periode ini.
 activity-close = Tutup
+
+## Your mailbox: counted on this computer from all mail in the period
+
 insights-heading = Kotak surat Anda
 insights-counting = Menghitung email Anda…
 insights-failed = Email Anda tidak dapat dihitung.
@@ -30,22 +67,3 @@ insights-days = { $count } hari
 insights-people = Orang yang paling sering berkirim email dengan Anda
 insights-person-counts = { $sent } dikirim · { $received } diterima
 insights-hours-heading = Kapan email masuk
-activity-details = Detail
-activity-clear-all = Hapus semua
-activity-remove = Hapus dari daftar
-activity-feed-opened = { $who } membuka “{ $subject }”
-activity-feed-clicked = { $who } mengklik link di “{ $subject }”
-activity-feed-maybe = { $who } mungkin sudah membuka “{ $subject }”
-activity-feed-empty = Belum ada yang dibuka atau diklik. Aktifkan ikon mata saat menulis pesan untuk melihat kapan pesan dibaca.
-activity-message-gone = Pesan itu sudah tidak ada di Terkirim.
-activity-report = Laporan aktivitas
-activity-range-week = 7 hari terakhir
-activity-range-month = 30 hari terakhir
-activity-range-all = Sepanjang waktu
-activity-range-custom = Kustom
-activity-range-from = Dari
-activity-range-to = Sampai
-activity-range-apply = Terapkan
-activity-range-of = { $days } · { $account }
-activity-accounts-all = Semua akun
-activity-accounts-tip = Tampilkan satu akun atau semua

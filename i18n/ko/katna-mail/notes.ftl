@@ -15,6 +15,7 @@ notes-loading = 메모를 여는 중…
 
 notes-take-a-note = 메모 작성…
 notes-new-list = 새 목록
+notes-new-note = 새 메모
 notes-pinned = 고정됨
 notes-others = 기타
 notes-empty = 추가한 메모가 여기에 표시됩니다

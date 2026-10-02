@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “Tất cả tài khoản” nằm ở đầu 
 accounts-row = Tài khoản
 accounts-row-detail = Ngăn thư mục và menu tài khoản liệt kê các tài khoản theo thứ tự này; tài khoản đầu tiên là mặc định. Xóa một tài khoản sẽ xóa bản sao thư của tài khoản đó mà Katna lưu trên máy tính này. Thư vẫn còn trên máy chủ.
 accounts-none = Chưa có tài khoản nào.
+accounts-pop3-row = Thư trên máy chủ
+accounts-pop3-row-detail = Tài khoản POP3 tải thư xuống máy tính này. Hãy chọn điều gì xảy ra với bản sao trên máy chủ sau đó.
+accounts-pop3-with-katna = Giữ cho đến khi tôi xóa trong Katna
+accounts-pop3-at-once = Xóa ngay khi đã tải xuống
+accounts-pop3-after-days = { $count ->
+   *[other] Xóa sau { $count } ngày
+}
+accounts-pop3-never = Không bao giờ xóa
+accounts-pop3-days-less = Ít ngày hơn
+accounts-pop3-days-more = Nhiều ngày hơn
 accounts-kind-imported = Đã nhập
 accounts-picture-reset = Dùng ảnh của máy tính
 accounts-picture-change = Đổi ảnh
@@ -70,6 +80,9 @@ accounts-confirm-word = xóa
 accounts-confirm-placeholder = Nhập “{ accounts-confirm-word }”
 accounts-confirm-prompt = Để xác nhận, hãy nhập “{ accounts-confirm-word }”:
 accounts-cancel = Hủy
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Xóa thư và tệp đính kèm Katna đã tải xuống, ảnh người gửi và chỉ mục tìm kiếm, rồi tải xuống lại thư gần đây. Tài khoản, cài đặt và thư chỉ có trên máy tính này vẫn được giữ.
 reset-cache-button = Đặt lại bộ nhớ đệm
 reset-cache-title = Đặt lại bộ nhớ đệm?

@@ -1,6 +1,9 @@
 # Katna Mail, Chinese (Traditional, Taiwan) (繁體中文).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Katna 帳戶可開啟 Katna 的線上功能：已讀回條、連結追蹤、動態和自動翻譯。它的密碼是獨立的，不是郵件密碼，你的郵件登入資訊永遠不會離開這台電腦。
 katna-checking = 正在檢查…
 katna-email = 電子郵件
@@ -10,6 +13,8 @@ katna-sign-in = 登入
 katna-sign-in-detail = 在每台需要使用線上功能的電腦上登入。
 katna-create = 建立帳戶
 katna-create-detail = 請使用你收得到郵件的地址：我們會寄送驗證碼來確認它。
+katna-onboarding-create-title = 建立你的 Katna 帳戶
+katna-onboarding-sign-in-title = 登入 Katna
 katna-have-account = 我已有帳戶
 katna-forgot = 忘記密碼？
 katna-forgot-detail = 我們會寄送驗證碼，讓你設定新密碼。
@@ -42,6 +47,9 @@ katna-delete = 刪除帳戶
 katna-delete-detail = 刪除帳戶以及伺服器為它保存的所有內容，例如已讀回條。這台電腦上的郵件會保留。
 katna-delete-confirm = 永久刪除
 katna-sign-in-needed = 登入 Katna 帳戶即可使用此功能。
+
+## Errors
+
 katna-error-wrong-password = 電子郵件或密碼錯誤。
 katna-error-exists = 這個地址已有 Katna 帳戶。請直接登入。
 katna-error-bad-email = 這看起來不像電子郵件地址。
