@@ -658,6 +658,68 @@ pub fn default_account_color(address: &str) -> &'static str {
         )
 }
 
+/// Colors of one's own that accounts get, in turn, once every one of
+/// [`ACCOUNT_COLORS`] is taken: light-mode colors, none a tab's.
+pub const MORE_ACCOUNT_COLORS: [u32; 6] = [
+    0x8e2430ff, 0xa87b00ff, 0xa0189bff, 0x5b7f1bff, 0x6d4c41ff, 0x455a64ff,
+];
+
+/// The dark-mode color of an account color of one's own `light`.
+pub fn account_dark(light: u32) -> u32 {
+    mix(light, 0xffffffff, 0.4)
+}
+
+/// Whether `color` is close to an inbox tab's color, in light or dark,
+/// so its dot could read as a tab.
+#[cfg(test)]
+fn near_tab_color(color: u32) -> bool {
+    let distance = |a: u32, b: u32| {
+        [24, 16, 8]
+            .iter()
+            .map(|shift| {
+                let d = ((a >> shift) & 0xff) as i32 - ((b >> shift) & 0xff) as i32;
+                d * d
+            })
+            .sum::<i32>()
+    };
+    let dark = account_dark(color);
+    LIGHT.tabs.iter().any(|&tab| distance(color, tab) < 40 * 40)
+        || DARK.tabs.iter().any(|&tab| distance(dark, tab) < 40 * 40)
+}
+
+/// Gives each of `addresses` (lower case, in the folder pane's order)
+/// without a color in `picked` one no other account wears: its old
+/// letter color when free, else the next free one of [`ACCOUNT_COLORS`],
+/// then of [`MORE_ACCOUNT_COLORS`] (as `#rrggbb`). Whether any was given.
+pub fn settle_account_colors(
+    addresses: &[String],
+    picked: &mut std::collections::BTreeMap<String, String>,
+) -> bool {
+    let mut worn: Vec<String> = addresses
+        .iter()
+        .filter_map(|a| picked.get(a).cloned())
+        .collect();
+    let mut changed = false;
+    for address in addresses {
+        if picked.contains_key(address) {
+            continue;
+        }
+        let first = default_account_color(address).to_owned();
+        let more = MORE_ACCOUNT_COLORS
+            .iter()
+            .map(|c| format!("#{:06x}", c >> 8));
+        let color = std::iter::once(first.clone())
+            .chain(ACCOUNT_COLORS.iter().map(|(n, ..)| (*n).to_owned()))
+            .chain(more)
+            .find(|c| !worn.contains(c))
+            .unwrap_or(first);
+        worn.push(color.clone());
+        picked.insert(address.clone(), color);
+        changed = true;
+    }
+    changed
+}
+
 /// The account color called `name` (the default one for unknown
 /// names): its light and dark colors.
 pub fn account_color(name: &str) -> (u32, u32) {
@@ -906,6 +968,24 @@ mod tests {
             let name = default_account_color(address);
             assert!(ACCOUNT_COLORS.iter().any(|(n, ..)| *n == name));
         }
+        for color in MORE_ACCOUNT_COLORS {
+            assert!(!near_tab_color(color), "{color:08x}");
+        }
+        for (name, light, _) in ACCOUNT_COLORS {
+            assert!(!near_tab_color(light), "{name}");
+        }
+        assert!(near_tab_color(0x0b57d0ff) && near_tab_color(0x1a70e0ff));
+        // Eight accounts wear eight colors; a picked one is kept.
+        let addresses: Vec<String> = (0..8).map(|n| format!("a{n}@example.org")).collect();
+        let mut picked =
+            std::collections::BTreeMap::from([(addresses[3].clone(), "#123456".to_owned())]);
+        assert!(settle_account_colors(&addresses, &mut picked));
+        assert_eq!(picked[&addresses[3]], "#123456");
+        let mut worn: Vec<&String> = picked.values().collect();
+        worn.sort();
+        worn.dedup();
+        assert_eq!(worn.len(), 8);
+        assert!(!settle_account_colors(&addresses, &mut picked));
         assert_eq!(initial("  kay mann"), "K");
         assert_eq!(initial("\"Ölaf\""), "Ö");
         assert_eq!(initial("--"), "?");

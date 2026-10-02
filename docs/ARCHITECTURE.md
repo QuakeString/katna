@@ -1770,10 +1770,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   under it shows that account's own tabs. Lines of the whole unified
   inbox carry a dot in the account's colour after the names (hovering it
   names the account), and the account's name where the line stacks.
-  Each account has one colour (`mail.account_colors`, picked from seven
-  in Settings > Accounts or the account's right-click menu), none of them
-  a tab's colour in light or dark; unpicked, an account keeps its old
-  letter-picture colour when that is one of the seven. The same colour
+  Each account has one colour (`mail.account_colors`: a name of one of
+  seven standard colours, none of them a tab's in light or dark, or
+  `#rrggbb` from the colour picker that the rainbow wheel after them
+  opens, as on Settings > Appearance > Accent), picked in Settings >
+  Accounts or the account's right-click menu. An account without one gets
+  one no other account wears when the folder pane loads: its old
+  letter-picture colour when that is a free standard one, else the next
+  free standard one, then six more of the app's own. The same colour
   rings the account's picture in the account menu and fills its letter
   picture (`window/account_color.rs`).
 - **One card.** The list and the open message share a white card with

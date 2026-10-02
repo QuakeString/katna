@@ -51,6 +51,8 @@ account-color-olive = Olive
 account-color-teal = Teal
 account-color-indigo = Indigo
 account-color-slate = Slate
+# Tooltip of the rainbow wheel after the colors: it opens a color picker.
+account-color-own = A colour of your own
 # Button: changes the name the account is shown with.
 accounts-rename = Rename
 # Buttons beside the field for the account's name.

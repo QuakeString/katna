@@ -3,8 +3,9 @@
 title = "A colour for each account"
 text = """
 Pick a colour for each account in Settings > Accounts, or right-click the
-account in the folder pane. The dot beside each sender in the unified
-inbox and the ring around the account's picture take that colour, and
-hovering the dot names the account. The colours never match the inbox
-tabs.
+account in the folder pane: one of seven, or any colour from the rainbow
+wheel after them. The dot beside each sender in the unified inbox and the
+ring around the account's picture take that colour, and hovering the dot
+names the account. Every account starts with a colour of its own, never
+one of the inbox tabs'.
 """

@@ -17,6 +17,7 @@ use gpui::{
     MouseMoveEvent, MouseUpEvent, Pixels, Point, SharedString, Subscription, Window, canvas,
     deferred, div, linear_color_stop, linear_gradient, point, prelude::*, rgba,
 };
+use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_platform::colors::parse_css_color;
 use katna_ui::{InputEvent, TextInput, px, unpx};
@@ -47,6 +48,8 @@ pub(super) enum Target {
     Seed(bool, Seed),
     /// The accent, from Settings > Appearance > Accent's wheel.
     Accent,
+    /// An account's own color, from the wheel after its colors.
+    Account(AccountId),
 }
 
 /// Where each swatch that opens the picker was drawn.
@@ -105,6 +108,10 @@ impl MailWindow {
             Target::Accent => match Accent::parse(&self.config.mail.accent) {
                 Accent::Color(color) => color,
                 _ => th.accent | 0xff,
+            },
+            Target::Account(id) => match self.account_address(id) {
+                Some(address) => self.account_light(&address),
+                None => return,
             },
         };
         let accent = rgba(th.accent).into();
@@ -187,6 +194,11 @@ impl MailWindow {
         match picker.target {
             Target::Seed(dark, seed) => self.set_scheme_seed(dark, seed, color, cx),
             Target::Accent => self.apply(Change::Accent(Accent::Color(color)), cx),
+            Target::Account(id) => {
+                if let Some(address) = self.account_address(id) {
+                    self.set_account_custom(&address, color, cx);
+                }
+            }
         }
     }
 

@@ -1284,6 +1284,8 @@ impl MailWindow {
         if tabs || color {
             self.save_config();
         }
+        let id = account.id;
+        self.drop_color_picker(|t| t == super::scheme_color::Target::Account(id));
         let listed = self
             .folder
             .is_some_and(|f| self.tree.account_of(f) == Some(account.id));
