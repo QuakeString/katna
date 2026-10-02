@@ -839,7 +839,7 @@ impl MailWindow {
                 .items_center()
                 .justify_center()
                 .when(!phone, |d| d.p(px(24.0)))
-                .bg(rgba(fade(0x0000_0066, t)))
+                // No veil: the window stays as it is around the dialog.
                 .child(
                     div()
                         .id("about-scrim")

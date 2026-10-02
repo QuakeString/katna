@@ -1510,7 +1510,10 @@ GPUI global):
   (`katna_platform::blur`, `window/frost_sliders.rs`). Dialogs and
   floating cards (Add account, About, What's new, confirmations, label and
   share dialogs, the first-run card) frost the same way with their own
-  color (`katna_mail::widgets::frosted`); a test keeps every frosted
+  color, more solid and more blurred than menus since they cover more of
+  the window: halfway from the menu tint to solid, at 1.5 times its blur
+  (`katna_mail::widgets::frosted`). About, What's new and Check for
+  updates open without a dark veil over the window; a test keeps every frosted
   panel's glass ahead of its content. The compose window, notes and the
   task details (a scrolling card) stay opaque. GPUI has no backdrop
   filter, so Katna's copy of its renderer (`vendor/gpui-pre-wgpu`) adds
