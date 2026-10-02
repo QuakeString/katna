@@ -234,6 +234,11 @@ pub(super) struct Compose {
     /// How deep the text's undo went with the rephrased text put in, for
     /// the snackbar's Undo.
     rephrased: Option<usize>,
+    /// Other wordings of the subject, while their card is open.
+    subject_ideas: Option<rephrase::subject::SubjectIdeas>,
+    /// When a press outside last put them away, so that pressing the
+    /// sparkle closes them rather than asking again.
+    subject_ideas_closed: Option<std::time::Instant>,
     /// The user agreed to send text of this encrypted message for
     /// rephrasing.
     ai_encrypted_ok: bool,
@@ -935,6 +940,7 @@ impl MailWindow {
         if kind == Kind::Forward {
             self.attach_forwarded(cx);
         }
+        self.adopt_kept_reply(cx);
         if mode == Mode::Inline {
             self.reveal_inline_reply(cx);
         }
@@ -1239,6 +1245,12 @@ impl MailWindow {
                 }));
             }
         }
+        // Typing in the subject or Escape puts its ideas away.
+        subscriptions.push(cx.subscribe(&subject, |this, _, event: &InputEvent, cx| {
+            if matches!(event, InputEvent::Changed | InputEvent::Cancel) {
+                this.close_subject_ideas(cx);
+            }
+        }));
         subscriptions.push(
             cx.subscribe(&subject, |this, _, event: &InputGrammarMenu, cx| {
                 let popup = Popup::SubjectGrammar {
@@ -1369,6 +1381,8 @@ impl MailWindow {
             rows_glide: reply_kind::RowsGlide::default(),
             rephrase: None,
             rephrased: None,
+            subject_ideas: None,
+            subject_ideas_closed: None,
             ai_encrypted_ok: false,
             chat: None,
             _subscriptions: subscriptions,
@@ -1588,6 +1602,27 @@ impl MailWindow {
 
     /// Sends the open message the way Settings chooses: a reply or forward
     /// also archives its conversation when Send and archive is the default.
+    /// A reply just opened, empty: the draft written in the summary card
+    /// and not sent goes in, as one step Undo takes back.
+    fn adopt_kept_reply(&mut self, cx: &mut Context<Self>) {
+        let Some(c) = &self.compose else {
+            return;
+        };
+        if !matches!(c.kind, Kind::Reply | Kind::ReplyAll) {
+            return;
+        }
+        let Some(key) = c.answering else {
+            return;
+        };
+        let body = c.body.clone();
+        if body.read(cx).own_text_end().is_some() {
+            return;
+        }
+        if let Some(text) = self.take_kept_reply(key) {
+            body.update(cx, |editor, cx| editor.insert_at_start(&text, cx));
+        }
+    }
+
     pub(super) fn send_compose_default(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         // A chat goes on: its conversation is never archived.
         let chat = self.compose.as_ref().is_some_and(|c| c.chat.is_some());
@@ -2667,7 +2702,7 @@ impl MailWindow {
                     .border_color(line)
                     .text_size(px(15.0))
                     .font_weight(FontWeight::MEDIUM)
-                    .child(div().flex_1().min_w_0().child(compose.subject.clone())),
+                    .child(self.render_subject_field(th, cx)),
             )
             .into_any_element()
     }

@@ -11,11 +11,13 @@
 //! after it is added only when asked. None of it shows while writing
 //! help is off.
 
+use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
+use std::rc::Rc;
 
 use gpui::{
     AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, MouseButton, Pixels, Point,
-    SharedString, Task, Window, anchored, deferred, div, point, prelude::*, rgba,
+    SharedString, Task, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
 };
 use katna_ai::summary::{self, PointKind, SummarizeRequest, Summary};
 use katna_ai::wire::{plan, problem};
@@ -33,10 +35,14 @@ use crate::data::EntryKey;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{filled_button, icon, icon_button_colored, outlined_button, raised, tip};
 
+mod peek_reply;
+
 /// The card beside a line of the list.
 const PEEK_WIDTH: f32 = 420.0;
 /// The room kept between a card and the window's edge.
 const MARGIN: f32 = 8.0;
+/// How tall the card is taken to be before it is first drawn.
+const PEEK_GUESS: f32 = 360.0;
 /// A point's label column.
 const LABEL_WIDTH: f32 = 72.0;
 /// The problem of encrypted mail while Settings keeps writing help out
@@ -51,18 +57,27 @@ pub(in crate::window) struct Summaries {
     looked: HashSet<EntryKey>,
     /// The card beside a line of the list.
     peek: Option<Peek>,
+    /// Replies written in that card and not sent, by conversation: the
+    /// card and the conversation's reply box take them up again.
+    kept_replies: HashMap<EntryKey, String>,
 }
 
 /// The card beside a line of the list.
 struct Peek {
     key: EntryKey,
-    /// Where it opens, in window coordinates: beside the line.
+    /// Where it opens, in window coordinates: its top left corner at the
+    /// right-click, or under the line.
     at: Point<Pixels>,
-    /// How tall the line is, to open above it when there is no room below.
+    /// How tall the line above `at` is, to open above it when there is no
+    /// room below; 0 at a right-click.
     line: f32,
+    /// How tall the card was last drawn, to know whether it fits below.
+    height: Rc<Cell<f32>>,
     subject: String,
     people: usize,
     files: Vec<String>,
+    /// Writing a reply in the card.
+    reply: Option<peek_reply::PeekReply>,
 }
 
 /// A conversation's summary, or the asking for it.
@@ -453,19 +468,22 @@ impl MailWindow {
             return;
         };
         let key = self.entries[ix].key;
-        self.open_summary_peek(key, bounds.top_right(), unpx(bounds.size.height), cx);
+        self.open_summary_peek(key, under_line(bounds), unpx(bounds.size.height), cx);
     }
 
-    /// The list menu's Summarize: the card beside line `ix`.
+    /// The list menu's Summarize: the card where the right-click was
+    /// (`at`), else under line `ix`.
     pub(in crate::window) fn summarize_line(
         &mut self,
         ix: usize,
         key: EntryKey,
+        at: Option<Point<Pixels>>,
         cx: &mut Context<Self>,
     ) {
-        let (at, line) = match self.list_state.bounds_for_item(ix) {
-            Some(bounds) => (bounds.top_right(), unpx(bounds.size.height)),
-            None => (point(px(0.0), px(0.0)), 0.0),
+        let (at, line) = match (at, self.list_state.bounds_for_item(ix)) {
+            (Some(at), _) => (at, 0.0),
+            (None, Some(bounds)) => (under_line(bounds), unpx(bounds.size.height)),
+            (None, None) => (point(px(0.0), px(0.0)), 0.0),
         };
         self.open_summary_peek(key, at, line, cx);
     }
@@ -506,6 +524,8 @@ impl MailWindow {
             key,
             at,
             line,
+            height: Rc::new(Cell::new(PEEK_GUESS)),
+            reply: None,
             subject,
             people,
             files,
@@ -524,6 +544,10 @@ impl MailWindow {
     /// Closes the card beside a line of the list. Returns whether it was
     /// open.
     pub(in crate::window) fn close_summary_peek(&mut self, cx: &mut Context<Self>) -> bool {
+        // A reply written in it and not sent is kept.
+        if let Some((key, text)) = self.peek_reply_text(cx) {
+            self.summaries.kept_replies.insert(key, text);
+        }
         let open = self.summaries.peek.take().is_some();
         if open {
             cx.notify();
@@ -1023,6 +1047,14 @@ impl MailWindow {
             Place::Drop => {}
         }
 
+        // Writing a reply: the card itself turns into it.
+        let writing = peek.and_then(|p| p.reply.as_ref()).map(|reply| {
+            let gist = match &sum.state {
+                State::Done(done) => Some(done.summary.gist.clone()),
+                _ => None,
+            };
+            self.render_peek_reply(reply, gist, th, cx)
+        });
         let body: AnyElement = match &sum.state {
             State::Ask => div()
                 .flex()
@@ -1150,8 +1182,10 @@ impl MailWindow {
                     Place::Drop | Place::Peek => raised(d, th, 16.0, 3.0),
                 })
                 .text_color(rgba(th.text))
-                .child(title)
-                .child(body)
+                .map(|d| match writing {
+                    Some(reply) => d.child(reply),
+                    None => d.child(title).child(body),
+                })
                 .into_any_element(),
         )
     }
@@ -1362,31 +1396,51 @@ impl MailWindow {
                 )
             })
             .when(peek, |d| {
-                d.child(
+                // Open and Reply: two compact pills of one size.
+                let pill = |name: &str, icon_name: &'static str, label: String, tonal: bool| {
                     div()
-                        .id(id("open".into()))
-                        .ml(px(4.0))
-                        .h(px(32.0))
-                        .px(px(14.0))
+                        .id(id(name.into()))
+                        .flex_none()
+                        .h(px(30.0))
+                        .px(px(12.0))
                         .flex()
                         .flex_row()
                         .items_center()
-                        .gap(px(6.0))
+                        .gap(px(5.0))
                         .rounded_full()
-                        .bg(rgba(fade(th.accent, 0.16)))
+                        .when(tonal, |d| {
+                            d.bg(rgba(fade(th.accent, 0.16)))
+                                .hover(|s| s.bg(rgba(fade(th.accent, 0.24))))
+                        })
+                        .when(!tonal, |d| {
+                            d.border_1()
+                                .border_color(rgba(th.divider))
+                                .hover(|s| s.bg(rgba(th.hover)))
+                        })
                         .text_color(rgba(th.text))
                         .text_size(px(13.0))
                         .font_weight(FontWeight::MEDIUM)
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(fade(th.accent, 0.24))))
-                        .child(icon("open-external", th.text, 16.0))
-                        .child(tr!("summary-open"))
+                        .child(icon(icon_name, th.text, 15.0))
+                        .child(label)
+                };
+                d.child(
+                    pill("open", "open-external", tr!("summary-open"), false)
+                        .ml(px(4.0))
+                        .tooltip(tip(tr!("summary-open-tip"), th))
                         .on_click(cx.listener(move |this, _, window, cx| {
                             this.close_summary_peek(cx);
                             if let Some(ix) = this.entries.iter().position(|e| e.key == open_key) {
                                 this.open(ix, window, cx);
                             }
                         })),
+                )
+                .child(
+                    pill("reply", "pen-sparkle", tr!("summary-reply"), true)
+                        .tooltip(tip(tr!("summary-reply-tip"), th))
+                        .on_click(
+                            cx.listener(|this, _, window, cx| this.start_peek_reply(window, cx)),
+                        ),
                 )
             });
         div()
@@ -1429,15 +1483,39 @@ impl MailWindow {
         let viewport = window.viewport_size();
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let (x, y) = (unpx(peek.at.x), unpx(peek.at.y));
-        // Beside the line, else over its right end; it slides up as far
-        // as it must to fit.
+        let height = peek.height.get().min(vh - 2.0 * MARGIN);
+        // Opens where the right-click was (or under the line), flipping
+        // left or up where there is no room, like the menu it came from.
         let x = if x + PEEK_WIDTH + MARGIN <= vw {
             x
+        } else if x - PEEK_WIDTH >= MARGIN {
+            x - PEEK_WIDTH
         } else {
             (vw - PEEK_WIDTH - MARGIN).max(MARGIN)
         };
-        let y = y.clamp(MARGIN, (vh - MARGIN - 120.0).max(MARGIN));
-        let _ = peek.line;
+        let above = y - peek.line - height;
+        let y = if y + height + MARGIN <= vh {
+            y
+        } else if above >= MARGIN {
+            above
+        } else {
+            (vh - MARGIN - height).max(MARGIN)
+        };
+        let measured = peek.height.clone();
+        let measure = canvas(
+            move |bounds, window, _| {
+                let h = unpx(bounds.size.height);
+                if (measured.get() - h).abs() > 0.5 {
+                    measured.set(h);
+                    window.refresh();
+                }
+            },
+            |_, _, _, _| {},
+        )
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full();
         let close = || {
             cx.listener(|this: &mut Self, _: &gpui::MouseDownEvent, _, cx| {
                 this.close_summary_peek(cx);
@@ -1471,9 +1549,11 @@ impl MailWindow {
                             .snap_to_window_with_margin(px(MARGIN))
                             .child(
                                 div()
+                                    .relative()
                                     .occlude()
                                     .w(px(PEEK_WIDTH))
                                     .child(content)
+                                    .child(measure)
                                     .with_animation(
                                         "summary-peek",
                                         gpui::Animation::new(std::time::Duration::from_millis(160))
@@ -1487,6 +1567,12 @@ impl MailWindow {
                 .into_any_element(),
         )
     }
+}
+
+/// Where the card opens under a line found by keyboard: past the
+/// checkbox and star, just below the line.
+fn under_line(bounds: gpui::Bounds<Pixels>) -> Point<Pixels> {
+    point(bounds.origin.x + px(96.0), bounds.bottom())
 }
 
 /// Where a summary's card is.

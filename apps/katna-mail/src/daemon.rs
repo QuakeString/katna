@@ -41,6 +41,9 @@ pub enum Command {
     /// Takes back the text just rephrased in the message. The app does
     /// this itself; the daemon never sees it.
     UndoRephrase,
+    /// Puts back the subject the user typed before picking another
+    /// wording. The app does this itself; the daemon never sees it.
+    RestoreSubject(String),
     /// Brings back the saved contacts just deleted (by their first card).
     /// The Contacts page does this itself; the daemon never sees it.
     RestoreContacts(Vec<i64>),
@@ -205,6 +208,7 @@ impl Command {
             | Self::ReopenDraft
             | Self::RestoreQuote
             | Self::UndoRephrase
+            | Self::RestoreSubject(_)
             | Self::RestoreContacts(_)
             | Self::RestoreScheme(..)
             | Self::ContactLabels(_)
@@ -400,6 +404,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::ReopenDraft
         | Command::RestoreQuote
         | Command::UndoRephrase
+        | Command::RestoreSubject(_)
         | Command::RestoreContacts(_)
         | Command::RestoreScheme(..) => {
             return Ok(());

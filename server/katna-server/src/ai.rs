@@ -13,7 +13,8 @@
 //! - `POST /api/v1/ai/draft` `{"kind", "subject", "mails", "me", "to",
 //!   "ideas", "idea", "length", "manner"}`
 //!   ([`katna_ai::draft::DraftRequest`]): ideas for a reply or a
-//!   forward's note, or its first draft; one request each.
+//!   forward's note, or its first draft, or better wordings of a
+//!   subject; one request each.
 //!
 //! All answer `{"text", "plan": {"kind", "days_left"}}`
 //! ([`katna_ai::wire`]): the service's text as it came (the daemon

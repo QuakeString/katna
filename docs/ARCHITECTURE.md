@@ -3850,6 +3850,22 @@ Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google cl
   user's and the recipients' names, as `katna_ai::draft::DraftRequest`
   over `AiDraft` (Katna AI: `POST /api/v1/ai/draft`). Encrypted
   conversations ask first.
+- **Rephrase subject** (asked 2 October 2026): once the subject has
+  text, a sparkle at the end of its row opens a small card under it with
+  three other wordings, written from the subject and what the message
+  says so far (`DraftKind::Subject` over the same `AiDraft` call, one
+  request). Picking one replaces the subject; the snackbar's Undo puts
+  back what was typed. Typing or Escape puts the card away.
+- **Reply from the summary card** (decided 2 October 2026): the card
+  beside a line of the list (it opens where the user right-clicked) has
+  Open and Reply, two compact pills. Reply turns that card into a Write
+  reply card in place, never another popup: the summary folds to one
+  line, then ideas, own words, Short or Longer, Friendly or Formal
+  (Formal when the mail reads formal), then the draft in an editable box.
+  Send puts it into the conversation's reply (the chat's reply box in the
+  chat view) and sends it with the usual Undo; Open puts it there to go
+  on writing. A draft not sent is kept per conversation and comes back in
+  the card and in the reply box.
 - **Katna AI** (Katna Server, `server/katna-server/src/ai.rs`): for
   confirmed Katna accounts, 30 days free from the first use, then $5 a
   month through Razorpay Subscriptions (to come; until then the server

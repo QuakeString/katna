@@ -2933,6 +2933,10 @@ impl MailWindow {
             self.undo_rephrase(window, cx);
             return;
         }
+        if let Command::RestoreSubject(subject) = undo {
+            self.restore_subject(subject, window, cx);
+            return;
+        }
         if let Command::Event(change) = undo {
             self.undo_event_change(*change, cx);
             return;
