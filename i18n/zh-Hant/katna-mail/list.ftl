@@ -39,6 +39,7 @@ list-results = 「{ $query }」的搜尋結果
 list-results-corrected = 目前顯示的是「{ $query }」的搜尋結果
 list-search-instead = 改為搜尋「{ $query }」
 list-files-more = +{ $count }
+list-replied = 你已回覆
 
 ## Mail list: Select menu (which lines to tick)
 

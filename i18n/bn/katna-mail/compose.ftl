@@ -58,6 +58,7 @@ compose-file-too-large = { $name } খুব বড়: একটি মেস�
 compose-forward-files-missing = ফরোয়ার্ড করা মেসেজের ফাইলগুলি ডাউনলোড করা নেই, তাই সেগুলি সংযুক্ত করা হয়নি।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = সংযুক্তি সরান
+compose-attachment-open-tip = যাচাই করতে খুলুন
 compose-attachments-total = { $count ->
     [one] { $count }টি ফাইল, { $size }
    *[other] { $count }টি ফাইল, { $size }

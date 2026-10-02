@@ -348,7 +348,7 @@ impl MailWindow {
             .flex_col()
             .items_center()
             .gap(px(6.0))
-            .child(logo())
+            .child(logo(th))
             .child(
                 div()
                     .mt(px(8.0))
@@ -879,8 +879,8 @@ fn link_button(
 }
 
 /// Katna Mail's wordmark.
-fn logo() -> AnyElement {
-    crate::widgets::katna_wordmark(112.0)
+fn logo(th: &Theme) -> AnyElement {
+    crate::widgets::katna_wordmark(112.0, th)
 }
 
 #[cfg(test)]

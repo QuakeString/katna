@@ -210,6 +210,7 @@ files-share-remove = إزالة حق الوصول
 files-share-copy-link = نسخ الرابط
 files-share-share = مشاركة
 files-share-done = تم
+files-share-close = إغلاق
 files-share-sharing = جارٍ المشاركة…
 files-share-shared = { $count ->
     [zero] تمت المشاركة مع { $count } شخص

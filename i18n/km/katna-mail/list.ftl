@@ -39,6 +39,7 @@ list-results = លទ្ធផលសម្រាប់ “{ $query }”
 list-results-corrected = កំពុងបង្ហាញលទ្ធផលសម្រាប់ “{ $query }”
 list-search-instead = ស្វែងរក “{ $query }” ជំនួសវិញ
 list-files-more = +{ $count }
+list-replied = អ្នកបានឆ្លើយតប
 
 ## Mail list: Select menu (which lines to tick)
 

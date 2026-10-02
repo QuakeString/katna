@@ -166,6 +166,7 @@ files-share-remove = அணுகலை அகற்று
 files-share-copy-link = இணைப்பை நகலெடு
 files-share-share = பகிர்
 files-share-done = முடிந்தது
+files-share-close = மூடு
 files-share-sharing = பகிர்கிறது…
 files-share-shared = { $count ->
     [one] { $count } நபருடன் பகிரப்பட்டது

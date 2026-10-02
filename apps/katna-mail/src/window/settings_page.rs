@@ -507,7 +507,7 @@ impl MailWindow {
             Section::Inbox => self.inbox_section(th, cx),
             Section::Accounts => self.accounts_section(th, cx),
             Section::Subscriptions => self.katna_section(th, window, cx),
-            Section::Appearance => self.appearance_section(th, cx),
+            Section::Appearance => self.appearance_section(th, window, cx),
             Section::Signatures => self.signatures_section(th, cx),
             Section::DefaultApps => self.default_apps_section(th, cx),
             Section::Shortcuts => self.shortcuts_section(th, cx),
@@ -1013,7 +1013,12 @@ impl MailWindow {
 
     // Appearance
 
-    fn appearance_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn appearance_section(
+        &self,
+        th: &Theme,
+        window: &Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let view = &self.config.mail;
         let panes = div()
             .max_w(px(420.0))
@@ -1117,7 +1122,7 @@ impl MailWindow {
             .child(self.row(
                 tr!("settings-appearance-accent"),
                 Some(&tr!("settings-appearance-accent-detail")),
-                self.accent_picker(th, cx),
+                self.accent_picker(th, window, cx),
                 th,
             ))
             .child(self.row(

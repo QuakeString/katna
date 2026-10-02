@@ -3060,3 +3060,89 @@ In donkere modus zijn de lijnen tussen e-mails, onder kopteksten en rond
 kaarten net zo subtiel als in lichte modus. Velden, chips en knoppen houden
 hun duidelijke rand.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Kleine updates na een pauze"
+text = """
+Updates blijven klein, ook als je een dag of twee aan nieuwe versies
+overslaat. Katna stapt nu vanaf de versie die je hebt via de eerdere
+versies, elk een paar megabyte, in plaats van het hele pakket opnieuw te
+downloaden.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Zie op welke e-mail je hebt geantwoord"
+text = """
+Een klein antwoordpijltje op een regel van de e-maillijst laat zien dat je
+hebt geantwoord: jij schreef de nieuwste e-mail van het gesprek, hier of
+op het web. Het verdwijnt zodra de ander terugschrijft.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Systeemvakpictogram volgt licht en donker"
+text = """
+Het eenkleurige systeemvakpictogram past zich nu meteen aan je paneel aan
+zodra je wisselt tussen licht en donker, in plaats van te wachten op
+nieuwe e-mail.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Antwoordideeën laten zien dat ze onderweg zijn"
+text = """
+Terwijl antwoordideeën worden opgevraagd, in Beantwoorden van een
+samenvatting of in Antwoord schrijven, ademen hun vormen nu net als die
+van de samenvatting terwijl die wordt geschreven. De samenvattingskaart
+toont tijdens het opvragen ook hoeveel e-mails het gesprek heeft, niet 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Strakkere hoeken in Bestanden"
+text = """
+Als de aanwijzer boven een bestand met een wit voorbeeld staat, schemert
+er geen wit meer door in de bovenhoeken van de kaart, het ingeklapte
+uploadvak is ook bovenaan afgerond, en het venster Delen heeft een
+sluitknop in de hoek.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Zoekopdracht wissen houdt je e-mail open"
+text = """
+Open een e-mail uit de zoekresultaten en wis de zoekopdracht met de X: de
+e-mail blijft open terwijl je map terugkomt, in plaats van terug te
+klappen naar de lijst.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Ronde hoeken bij spreadsheets"
+text = """
+Een spreadsheet in de bijlageviewer is nu aan alle vier de hoeken
+afgerond. De grijze kolomletters bovenaan en de bladtabs onderaan maakten
+ze eerder hoekig.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Nette contactgegevens op kaarten"
+text = """
+Telefoonnummers, adressen en andere gegevens uit een handtekening tonen
+geen losse sterretjes of linktekens tussen punthaken meer. Als een
+collega e-mail ondertekent vanaf een gedeeld adres zoals accounts@, houdt
+de kaart alleen de gegevens van het bedrijf, niet het nummer of de functie
+van die collega.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Controleer wat je hebt bijgevoegd"
+text = """
+Klik op een bestand bij een bericht dat je schrijft om het te
+openen in de viewer van Katna, dezelfde waarin ontvangen bestanden openen,
+en controleer of het het juiste bestand is. Een bestand dat als Google
+Drive- of OneDrive-link is verstuurd, opent op de drive.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Een schuifbalk in Instellingen"
+text = """
+Elk tabblad van Instellingen heeft dezelfde dunne schuifbalk als een
+geopende e-mail en Bestanden: hij verschijnt terwijl je scrolt of de
+aanwijzer boven de pagina houdt, en je kunt hem verslepen.
+"""

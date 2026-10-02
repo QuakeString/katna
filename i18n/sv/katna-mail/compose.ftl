@@ -58,6 +58,7 @@ compose-file-too-large = { $name } är för stor: ett meddelande kan innehålla 
 compose-forward-files-missing = Det vidarebefordrade meddelandets filer är inte hämtade, så de bifogas inte.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Ta bort bilaga
+compose-attachment-open-tip = Öppna för att kontrollera den
 compose-attachments-total = { $count ->
     [one] { $count } fil, { $size }
    *[other] { $count } filer, { $size }

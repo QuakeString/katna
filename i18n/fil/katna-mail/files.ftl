@@ -166,6 +166,7 @@ files-share-remove = Alisin ang access
 files-share-copy-link = Kopyahin ang link
 files-share-share = Ibahagi
 files-share-done = Tapos na
+files-share-close = Isara
 files-share-sharing = Ibinabahagi…
 files-share-shared = { $count ->
     [one] Ibinahagi sa { $count } tao

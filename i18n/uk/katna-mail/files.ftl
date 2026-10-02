@@ -188,6 +188,7 @@ files-share-remove = Скасувати доступ
 files-share-copy-link = Копіювати посилання
 files-share-share = Поділитися
 files-share-done = Готово
+files-share-close = Закрити
 files-share-sharing = Надання доступу…
 files-share-shared = { $count ->
     [one] Доступ надано { $count } людині

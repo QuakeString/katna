@@ -154,6 +154,7 @@ files-share-remove = Xóa quyền truy cập
 files-share-copy-link = Sao chép liên kết
 files-share-share = Chia sẻ
 files-share-done = Xong
+files-share-close = Đóng
 files-share-sharing = Đang chia sẻ…
 files-share-shared = { $count ->
    *[other] Đã chia sẻ với { $count } người

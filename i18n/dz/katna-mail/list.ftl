@@ -39,6 +39,7 @@ list-results = “{ $query }” གི་གྲུབ་འབྲས་ཚུ
 list-results-corrected = “{ $query }” གི་གྲུབ་འབྲས་ཚུ་སྟོན་དོ
 list-search-instead = དེ་གི་ཚབ་ལུ་ “{ $query }” འཚོལ།
 list-files-more = +{ $count }
+list-replied = ཁྱོད་ཀྱིས་ལན་བཏང་ཡི
 
 ## Mail list: Select menu (which lines to tick)
 

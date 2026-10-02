@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ធំពេក៖ សារមួយអា�
 compose-forward-files-missing = ឯកសាររបស់សារដែលបញ្ជូនបន្ត មិនទាន់បានទាញយក ដូច្នេះវាមិនត្រូវបានភ្ជាប់ទេ។
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ដកឯកសារភ្ជាប់ចេញ
+compose-attachment-open-tip = បើកដើម្បីពិនិត្យ
 compose-attachments-total = ឯកសារ { $count }, { $size }
 compose-drive-note = { $name } លើស { $limit } ដូច្នេះវាត្រូវបានផ្ទុកឡើងទៅ Google Drive របស់អ្នក ហើយសារនឹងមានតំណ
 compose-drive-tip = នៅក្នុង Google Drive របស់អ្នក; សារនឹងមានតំណ

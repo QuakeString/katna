@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ବହୁତ ବଡ଼: ଏକ ମେସେ�
 compose-forward-files-missing = ଫରୱାର୍ଡ କରାଯାଉଥିବା ମେସେଜର ଫାଇଲ ଡାଉନଲୋଡ ହୋଇନାହିଁ, ତେଣୁ ସେଗୁଡ଼ିକ ଆଟାଚ ହୋଇନାହିଁ।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ଆଟାଚମେଣ୍ଟ ହଟାନ୍ତୁ
+compose-attachment-open-tip = ଯାଞ୍ଚ କରିବାକୁ ଖୋଲନ୍ତୁ
 compose-attachments-total = { $count ->
     [one] { $count }ଟି ଫାଇଲ, { $size }
    *[other] { $count }ଟି ଫାଇଲ, { $size }

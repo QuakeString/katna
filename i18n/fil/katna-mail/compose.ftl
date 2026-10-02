@@ -58,6 +58,7 @@ compose-file-too-large = Masyadong malaki ang { $name }: hanggang { $limit } lan
 compose-forward-files-missing = Hindi pa na-download ang mga file ng ipinapasang mensahe, kaya hindi sila naka-attach.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Alisin ang attachment
+compose-attachment-open-tip = Buksan para tingnan
 compose-attachments-total = { $count ->
     [one] { $count } file, { $size }
    *[other] { $count } file, { $size }

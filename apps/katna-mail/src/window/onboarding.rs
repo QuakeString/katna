@@ -342,7 +342,7 @@ impl MailWindow {
             .child(
                 div()
                     .pb(px(4.0))
-                    .child(crate::widgets::katna_wordmark(96.0)),
+                    .child(crate::widgets::katna_wordmark(96.0, th)),
             )
             .child(title(tr!("onboarding-welcome-title"), th))
             .child(lead(&tr!("onboarding-welcome-lead"), th))
@@ -598,7 +598,7 @@ impl MailWindow {
             .flex_col()
             .items_center()
             .gap(px(12.0))
-            .child(crate::widgets::katna_mark(48.0))
+            .child(crate::widgets::katna_mark(48.0, th))
             .child(title(tr!("onboarding-katna-title"), th))
             .child(lead(&tr!("onboarding-katna-lead"), th))
             .child(

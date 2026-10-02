@@ -39,6 +39,7 @@ list-results = Nsonaazụ maka “{ $query }”
 list-results-corrected = Na-egosi nsonaazụ maka “{ $query }”
 list-search-instead = Kama nke ahụ, chọọ “{ $query }”
 list-files-more = +{ $count }
+list-replied = Ị zara ya
 
 ## Mail list: Select menu (which lines to tick)
 

@@ -58,6 +58,7 @@ compose-file-too-large = Plik { $name } jest za duży: wiadomość może zawiera
 compose-forward-files-missing = Pliki przekazywanej wiadomości nie są pobrane, więc nie zostały załączone.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Usuń załącznik
+compose-attachment-open-tip = Otwórz, aby sprawdzić
 compose-attachments-total = { $count ->
     [one] { $count } plik, { $size }
     [few] { $count } pliki, { $size }

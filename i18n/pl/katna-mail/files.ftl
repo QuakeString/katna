@@ -188,6 +188,7 @@ files-share-remove = Usuń dostęp
 files-share-copy-link = Kopiuj link
 files-share-share = Udostępnij
 files-share-done = Gotowe
+files-share-close = Zamknij
 files-share-sharing = Udostępnianie…
 files-share-shared = { $count ->
     [one] Udostępniono 1 osobie

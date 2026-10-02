@@ -39,6 +39,7 @@ list-results = 「{ $query }」の検索結果
 list-results-corrected = 「{ $query }」の検索結果を表示しています
 list-search-instead = 「{ $query }」で検索する
 list-files-more = +{ $count }
+list-replied = 返信済み
 
 ## Mail list: Select menu (which lines to tick)
 

@@ -39,6 +39,7 @@ list-results = “{ $query }” ପାଇଁ ଫଳାଫଳ
 list-results-corrected = “{ $query }” ପାଇଁ ଫଳାଫଳ ଦେଖାଯାଉଛି
 list-search-instead = ଏହା ବଦଳରେ “{ $query }” ସନ୍ଧାନ କରନ୍ତୁ
 list-files-more = +{ $count }
+list-replied = ଆପଣ ଉତ୍ତର ଦେଇଛନ୍ତି
 
 ## Mail list: Select menu (which lines to tick)
 

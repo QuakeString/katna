@@ -58,6 +58,7 @@ compose-file-too-large = { $name } est trop volumineux : un message peut conteni
 compose-forward-files-missing = Les fichiers du message transféré ne sont pas téléchargés, ils ne sont donc pas joints.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Retirer la pièce jointe
+compose-attachment-open-tip = Ouvrir pour le vérifier
 compose-attachments-total = { $count ->
     [one] { $count } fichier, { $size }
     [many] { $count } de fichiers, { $size }

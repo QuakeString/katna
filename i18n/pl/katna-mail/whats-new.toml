@@ -3026,3 +3026,86 @@ W trybie ciemnym linie między wiadomościami, pod nagłówkami i wokół kart
 są tak delikatne jak w trybie jasnym. Pola, etykiety i przyciski zachowują
 wyraźny obrys.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Małe aktualizacje także po przerwie"
+text = """
+Aktualizacje pozostają małe, nawet gdy pominiesz dzień lub dwa nowych
+wersji. Katna przechodzi teraz od posiadanej wersji przez wcześniejsze,
+po kilka megabajtów każda, zamiast znowu pobierać cały pakiet.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Zobacz, na które wiadomości odpowiedziałeś"
+text = """
+Mała strzałka odpowiedzi w wierszu listy poczty pokazuje, że na tę
+wiadomość odpowiedziałeś: najnowsza wiadomość w wątku jest od ciebie,
+wysłana tutaj lub w przeglądarce. Znika, gdy druga strona odpisze.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Ikona w zasobniku podąża za trybem jasnym i ciemnym"
+text = """
+Jednokolorowa ikona w zasobniku zmienia się teraz razem z panelem, gdy
+tylko przełączysz tryb jasny lub ciemny, zamiast czekać na nową pocztę.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Pomysły na odpowiedź pokazują, że są w drodze"
+text = """
+Gdy trwa pobieranie pomysłów na odpowiedź, w Odpowiedz w podsumowaniu lub
+w Napisz odpowiedź, ich kształty pulsują teraz tak jak samo podsumowanie
+podczas pisania. Karta podsumowania pokazuje też w tym czasie, ile
+wiadomości ma wątek, a nie 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Czystsze rogi w Plikach"
+text = """
+Najechanie na plik z białym podglądem nie odsłania już bieli w górnych
+rogach karty, zwinięty panel przesyłania jest zaokrąglony także u góry,
+a okno Udostępnij ma przycisk zamykania w rogu.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Wyczyszczenie wyszukiwania nie zamyka wiadomości"
+text = """
+Otwórz wiadomość z wyników wyszukiwania i wyczyść wyszukiwanie przyciskiem
+X: wiadomość pozostaje otwarta, gdy wraca twój folder, zamiast zwijać się
+z powrotem do listy.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Zaokrąglone rogi arkuszy"
+text = """
+Arkusz kalkulacyjny w przeglądarce załączników jest teraz zaokrąglony we
+wszystkich czterech rogach. Wcześniej szare litery kolumn u góry i karty
+arkuszy na dole robiły z nich ostre rogi.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Czyste dane kontaktowe na kartach"
+text = """
+Numery telefonów, adresy i inne dane wzięte z podpisu nie pokazują już
+zbędnych gwiazdek ani znaczników linków w nawiasach ostrych. Gdy
+współpracownik podpisuje wiadomość ze wspólnego adresu, takiego jak
+accounts@, karta zachowuje tylko dane firmy, bez jego numeru czy
+stanowiska.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Sprawdź, co załączasz"
+text = """
+Kliknij plik załączony do pisanej wiadomości, aby otworzyć go w
+przeglądarce Katna, tej samej, w której otwierają się odebrane pliki, i
+upewnić się, że to właściwy plik. Plik wysłany jako link do Google Drive
+lub OneDrive otwiera się na dysku.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Pasek przewijania w Ustawieniach"
+text = """
+Każda karta Ustawień ma ten sam cienki pasek przewijania co otwarta
+wiadomość i Pliki: pojawia się, gdy przewijasz lub trzymasz kursor nad
+stroną, i można go przeciągać.
+"""

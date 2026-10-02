@@ -3045,3 +3045,87 @@ title = "Garis tipis di mode gelap juga"
 text = """
 Di mode gelap, garis di antara email, di bawah header, dan di sekitar kartu kini sama tipisnya dengan di mode terang. Kolom isian, chip, dan tombol tetap memiliki garis tepi yang jelas.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Pembaruan kecil setelah jeda"
+text = """
+Pembaruan tetap kecil meskipun Anda melewatkan satu atau dua hari versi baru.
+Katna kini melangkah dari versi yang Anda miliki melalui versi-versi
+sebelumnya, masing-masing beberapa megabyte, alih-alih mengunduh seluruh
+paket lagi.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Lihat email mana yang sudah Anda balas"
+text = """
+Panah balas kecil pada baris di daftar email menunjukkan bahwa Anda sudah
+membalasnya: Anda menulis email terbaru dalam percakapan itu, di sini atau
+di web. Panah itu hilang saat mereka membalas lagi.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Ikon baki mengikuti mode terang dan gelap"
+text = """
+Ikon baki satu warna kini berubah bersama panel Anda begitu Anda beralih
+antara mode terang dan gelap, alih-alih menunggu email baru.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Ide balasan menunjukkan sedang disiapkan"
+text = """
+Selama ide balasan diminta, di Balas pada ringkasan atau di Tulis balasan,
+bentuk-bentuknya kini berdenyut seperti milik ringkasan itu sendiri saat
+sedang ditulis. Kartu ringkasan juga menunjukkan berapa banyak email dalam
+percakapan selama ringkasan diminta, bukan 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Sudut yang lebih rapi di File"
+text = """
+Mengarahkan kursor ke file dengan pratinjau putih tidak lagi memperlihatkan
+warna putih di sudut atas kartu, baki unggahan yang dilipat kini juga
+membulat di bagian atas, dan dialog Bagikan punya tombol tutup di sudutnya.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Menghapus pencarian membiarkan email tetap terbuka"
+text = """
+Buka email dari hasil pencarian lalu hapus pencarian dengan tombol X: email
+tetap terbuka saat folder Anda kembali, alih-alih terlipat kembali ke
+daftar.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Sudut membulat pada spreadsheet"
+text = """
+Spreadsheet di penampil lampiran kini membulat di keempat sudutnya. Huruf
+kolom abu-abu di atas dan tab lembar di bawah dulu membuatnya bersudut
+siku.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Detail kontak yang bersih di kartu"
+text = """
+Nomor telepon, alamat, dan detail lain yang diambil dari tanda tangan tidak
+lagi menampilkan tanda bintang yang tersesat atau tanda link dalam kurung
+sudut. Saat seorang rekan menandatangani email dari alamat bersama seperti
+accounts@, kartu hanya menyimpan detail perusahaan, bukan nomor atau
+jabatan rekan tersebut.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Periksa apa yang Anda lampirkan"
+text = """
+Klik file yang dilampirkan pada pesan yang sedang Anda tulis untuk
+membukanya di penampil Katna, penampil yang sama untuk membuka file yang
+diterima, dan pastikan filenya benar. File yang dikirim sebagai link Google
+Drive atau OneDrive terbuka di drive-nya.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Bilah gulir di Setelan"
+text = """
+Setiap tab di Setelan punya bilah gulir tipis yang sama seperti email yang
+terbuka dan File: bilah ini muncul saat Anda menggulir atau mengarahkan
+kursor ke halaman, dan Anda bisa menyeretnya.
+"""

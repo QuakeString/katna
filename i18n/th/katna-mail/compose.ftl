@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ใหญ่เกินไป: ข้อค�
 compose-forward-files-missing = ไฟล์ของข้อความที่ส่งต่อยังไม่ได้ดาวน์โหลด จึงไม่ได้แนบไป
 compose-attachment-size = ({ $size })
 compose-remove-attachment = นำไฟล์แนบออก
+compose-attachment-open-tip = เปิดเพื่อตรวจดู
 compose-attachments-total = { $count } ไฟล์ รวม { $size }
 compose-drive-note = { $name } มีขนาดเกิน { $limit } จึงจะถูกอัปโหลดไปที่ Google Drive ของคุณ และข้อความจะมีลิงก์ของไฟล์
 compose-drive-tip = อยู่ใน Google Drive ของคุณ ข้อความจะมีลิงก์

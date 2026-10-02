@@ -2574,3 +2574,86 @@ title = "Mistari hafifu katika hali ya Meusi pia"
 text = """
 Katika hali ya Meusi, mistari kati ya barua, chini ya vichwa na kuzunguka kadi sasa ni hafifu kama ilivyo katika hali Angavu. Sehemu za kuandika, vipande na vitufe huhifadhi mpaka wao ulio wazi.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Masasisho madogo baada ya mapumziko"
+text = """
+Masasisho hubaki madogo hata ukiruka siku moja au mbili za matoleo mapya.
+Sasa Katna hupiga hatua kutoka toleo ulilo nalo kupitia yaliyotangulia,
+megabaiti chache kila moja, badala ya kupakua kifurushi kizima tena.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Ona barua ulizojibu"
+text = """
+Mshale mdogo wa kujibu kwenye mstari wa orodha ya barua unaonyesha kwamba
+ulijibu: uliandika barua mpya zaidi ya mazungumzo, hapa au kwenye wavuti.
+Hutoweka wanapojibu tena.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Aikoni ya trei hufuata mwanga na giza"
+text = """
+Aikoni ya trei ya rangi moja sasa hubadilika pamoja na paneli yako mara
+tu unapobadilisha kati ya mwanga na giza, badala ya kusubiri barua mpya.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Mawazo ya jibu yanaonyesha yanakuja"
+text = """
+Mawazo ya jibu yanapoombwa, katika Jibu ya muhtasari au katika Andika
+jibu, maumbo yake sasa hupumua kama ya muhtasari wenyewe unapoandikwa.
+Kadi ya muhtasari pia huonyesha idadi ya barua katika mazungumzo
+unapoombwa, si 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Pembe safi zaidi katika Faili"
+text = """
+Kuelekeza kwenye faili lenye onyesho la kukagua jeupe hakuachi tena
+weupe uonekane kwenye pembe za juu za kadi, trei ya upakiaji iliyokunjwa
+ina pembe za mviringo juu pia, na kidirisha cha Shiriki kina kitufe cha
+Funga kwenye pembe yake.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Kufuta utafutaji huacha barua yako wazi"
+text = """
+Fungua barua kutoka kwenye matokeo ya utafutaji na ufute utafutaji kwa X:
+barua hubaki wazi folda yako inaporudi, badala ya kurudi kwenye orodha.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Pembe za mviringo kwenye lahajedwali"
+text = """
+Lahajedwali katika kitazamaji cha viambatisho sasa lina pembe za mviringo
+zote nne. Herufi za kijivu za safu juu na vichupo vya laha chini zilikuwa
+zikizifanya kuwa za mraba.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Maelezo safi ya mawasiliano kwenye kadi"
+text = """
+Nambari za simu, anwani na maelezo mengine yaliyochukuliwa kutoka kwenye
+sahihi hayaonyeshi tena nyota zilizopotea au alama za viungo ndani ya
+mabano ya pembe. Mwenzako anaposaini barua kutoka kwa anwani ya pamoja
+kama accounts@, kadi huhifadhi maelezo ya kampuni pekee, si nambari au
+cheo cha mwenzako huyo.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Kagua ulichoambatisha"
+text = """
+Bofya faili lililoambatishwa kwenye ujumbe unaoandika ili ulifungue katika
+kitazamaji cha Katna, kile kile ambacho faili zilizopokewa hufunguka
+ndani yake, na uhakikishe ni faili sahihi. Faili lililotumwa kama kiungo
+cha Google Drive au OneDrive hufunguka kwenye hifadhi.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Upau wa kusogeza katika Mipangilio"
+text = """
+Kila kichupo cha Mipangilio kina upau ule ule mwembamba wa kusogeza kama
+barua iliyo wazi na Faili: huonekana unaposogeza au kuelekeza kwenye
+ukurasa, na unaweza kuuburuta.
+"""

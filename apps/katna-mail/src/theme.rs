@@ -414,7 +414,7 @@ fn opaque(color: u32) -> u32 {
 }
 
 /// Black or white, whichever reads better on `color`.
-fn on(color: u32) -> u32 {
+pub fn on(color: u32) -> u32 {
     if contrast(color, 0x000000ff) > contrast(color, 0xffffffff) {
         0x000000ff
     } else {

@@ -58,6 +58,7 @@ compose-file-too-large = { $name } завеликий: лист може міс�
 compose-forward-files-missing = Файли пересланого листа не завантажено, тому їх не вкладено.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Вилучити вкладення
+compose-attachment-open-tip = Відкрийте, щоб перевірити
 compose-attachments-total = { $count ->
     [one] { $count } файл, { $size }
     [few] { $count } файли, { $size }

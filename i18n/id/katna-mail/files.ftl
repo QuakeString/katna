@@ -158,6 +158,7 @@ files-share-remove = Hapus akses
 files-share-copy-link = Salin link
 files-share-share = Bagikan
 files-share-done = Selesai
+files-share-close = Tutup
 files-share-sharing = Membagikan…
 files-share-shared = { $count ->
    *[other] Dibagikan kepada { $count } orang

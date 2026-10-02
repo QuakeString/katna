@@ -58,6 +58,7 @@ compose-file-too-large = { $name } は大きすぎます。1 通のメッセー�
 compose-forward-files-missing = 転送するメールのファイルがダウンロードされていないため、添付されていません。
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 添付ファイルを削除
+compose-attachment-open-tip = 開いて確認
 compose-attachments-total = ファイル { $count } 個、{ $size }
 compose-drive-note = { $name } は { $limit } を超えているため、Google Drive に保存され、メッセージにはそのリンクが付きます。
 compose-drive-tip = Google Drive 内にあります。メッセージにはリンクが付きます

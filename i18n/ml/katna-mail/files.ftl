@@ -166,6 +166,7 @@ files-share-remove = ആക്‌സസ് നീക്കം ചെയ്യു
 files-share-copy-link = ലിങ്ക് പകർത്തുക
 files-share-share = പങ്കിടുക
 files-share-done = പൂർത്തിയായി
+files-share-close = അടയ്ക്കുക
 files-share-sharing = പങ്കിടുന്നു…
 files-share-shared = { $count ->
     [one] 1 ആളുമായി പങ്കിട്ടു

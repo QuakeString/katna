@@ -164,6 +164,7 @@ files-share-remove = ເອົາສິດເຂົ້າເຖິງອອກ
 files-share-copy-link = ສຳເນົາລິ້ງ
 files-share-share = ແບ່ງປັນ
 files-share-done = ແລ້ວໆ
+files-share-close = ປິດ
 files-share-sharing = ກຳລັງແບ່ງປັນ…
 files-share-shared = { $count ->
    *[other] ແບ່ງປັນກັບ { $count } ຄົນແລ້ວ

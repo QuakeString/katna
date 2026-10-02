@@ -166,6 +166,7 @@ files-share-remove = መዳረሻን አስወግድ
 files-share-copy-link = አገናኝ ቅዳ
 files-share-share = አጋራ
 files-share-done = ተጠናቀቀ
+files-share-close = ዝጋ
 files-share-sharing = በማጋራት ላይ…
 files-share-shared = { $count ->
     [one] ከ{ $count } ሰው ጋር ተጋርቷል
