@@ -1226,7 +1226,10 @@ impl MailWindow {
                 .flex()
                 .items_center()
                 .justify_center()
-                .bg(rgba(fade(0x0000_0066, 1.0)))
+                // Inside the room below the top bar with even margins; the
+                // report scrolls when the window is too short for it. No
+                // veil: the window stays as it is around the dialog.
+                .p(px(24.0))
                 .child(
                     div()
                         .id("activity-scrim")
@@ -1241,7 +1244,9 @@ impl MailWindow {
                         .id("activity-dialog")
                         .occlude()
                         .w(px(680.0_f32.min(unpx(viewport.width) - 32.0)))
+                        .max_w_full()
                         .h(px(height))
+                        .max_h_full()
                         .flex()
                         .flex_col()
                         .rounded(px(16.0))

@@ -1967,7 +1967,7 @@ icons and name and without Google-only features (no Chat, Meet, Drive,
 Gemini or confidential mode):
 
 - **App rail.** A 72 px column at the far left holds Mail, Calendar,
-  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings at the
+  Contacts, Tasks, Notes and Files (Feeds was dropped, #551), with Settings at the
   bottom. Their names show under the icons unless "App names" is off in
   quick settings (`mail.app_labels`); then the icons have tooltips. Each
   app is a page (`window/apps.rs`), so new ones
@@ -2393,7 +2393,7 @@ Gemini or confidential mode):
   opens the folders over the list, as resting on Mail does (Escape or
   leaving closes them). The top bar shows the Katna mark and "Katna
   Mail" in its place, or Katna Calendar, Contacts, Tasks, Notes or
-  Feeds; switching apps rolls the second word, the old one down and out
+  Files; switching apps rolls the second word, the old one down and out
   and the new one down into its place. The menu button (a panel icon, not a
   hamburger: its left part is filled while the folders show and fades to
   an outline as they fold, following the drawer on a tablet or phone;
@@ -2774,7 +2774,7 @@ desktop's own app stays one click away.
 - Not yet: text search in PDFs, printing, pictures inside documents,
   old Word files and slides.
 - **Files page** (the attachment library, from the HEY study's Files):
-  the last app of the rail (after Feeds, Ctrl+7, `--page files`) shows
+  the last app of the rail (after Notes, Ctrl+7, `--page files`) shows
   every named attachment of every account as the cards above, newest
   first under month headings, or as a list. It reads the attachment lists
   sync keeps (`Store::library_files`, `katna-store/src/library.rs`): no
