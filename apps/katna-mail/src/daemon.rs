@@ -1015,6 +1015,21 @@ pub async fn sender_picture(connection: &Connection, address: &str) -> Result<Ve
         .map_err(|err| describe(&err))
 }
 
+/// Asks the daemon for the company of the person at `address`, the one at
+/// `website` first: JSON, empty for none.
+pub async fn company_of(
+    connection: &Connection,
+    address: &str,
+    website: &str,
+) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.company_of(address, website)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Renames `account`; an empty name goes back to the name its own mail
 /// is sent under.
 pub async fn rename_account(

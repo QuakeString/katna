@@ -896,6 +896,16 @@ macro_rules! pim_proxy {
             /// user's provider (DMARC or aligned DKIM).
             fn sender_picture(&self, address: &str) -> zbus::Result<Vec<u8>>;
 
+            /// The company of the person at `address`, as JSON
+            /// (`katna_sync::pictures::Company`): the one at `website` (the
+            /// site their signature names; may be empty), else the one
+            /// their address belongs to. Read from its home page, and from
+            /// Wikipedia when Wikidata lists the same website; cached for a
+            /// week. Empty for none, for free-mail addresses without a
+            /// website, and under the same authentication rule as
+            /// [`Self::sender_picture`].
+            fn company_of(&self, address: &str, website: &str) -> zbus::Result<String>;
+
             /// Translates `text`, the plain text of `message` (HTML made
             /// plain, quotes and signature kept, never attachments), from
             /// `source` into `target`, LibreTranslate codes such as `es`,

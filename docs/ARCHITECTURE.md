@@ -1567,7 +1567,16 @@ nothing goes to the mail service, which has no such thing. A bar under the
 header shows one pin; a click jumps to its bubble and moves to the next,
 and its list button lists all of them, to drag into a new order or unpin.
 A sixth pin asks which one it replaces, the oldest picked. Pinning text
-waits for bubbles' text to be selectable; company details are a later step.
+waits for bubbles' text to be selectable. In the chat view the person's
+card adds a Company section: the company at the website their signature
+names, else at their address's domain (never a free-mail one). The daemon
+reads it from the company's home page `<head>` (title, `og:` and description
+tags, schema.org `Organization` JSON-LD for place, founding year and social
+pages), adds Wikipedia's first lines when Wikidata lists the same website,
+and keeps the answer a week beside the sender pictures
+(`katna_sync::pictures::Company`, `Pim1.CompanyOf`). It follows the Sender
+pictures switch and the same authentication rule; nothing goes through
+Katna Server.
 
 **Window state.** The mail window opens as it closed: its size, maximized
 state and place (`katna_chrome::placement`), and what it showed: the app of
@@ -3809,7 +3818,7 @@ about 2 MB of the first 30 MiB (31.5 MB) budget.
 
 | Metric | Target |
 |---|---|
-| Katna Mail binary | ≤ 100 MB (100,000,000 bytes) |
+| Katna Mail binary | ≤ 150 MB (150,000,000 bytes) |
 | `katna-daemon` binary | ≤ 50 MB |
 | Idle CPU (app and daemon) | ≈ 0 %; no periodic wake-ups beyond IDLE renewals |
 | Cold start to usable inbox | < 500 ms |
@@ -3822,7 +3831,8 @@ With sync, bodies, the op queue, sending and the search indexer,
 Server's tracking and translation came in (September 2026), so features
 are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
 after the first real install, when the app reached it; then 50 MB, and
-100 MB since the attachment viewers (September 2026), so features are
+100 MB since the attachment viewers (September 2026), then 150 MB when the
+chat view's company details took it past 100 MB (October 2026), so features are
 not trimmed to fit; light crates are still preferred. Crates that are not hot are built with
 `opt-level = "s"` (root `Cargo.toml`): D-Bus (zbus, zvariant, oo7,
 ashpd), IMAP parsing and regex.

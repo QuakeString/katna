@@ -520,6 +520,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.sender_picture(&address).await?)
             }
 
+            async fn company_of(&self, address: String, website: String) -> fdo::Result<String> {
+                Ok(self.daemon.company_of(&address, &website).await?)
+            }
+
             async fn translate(
                 &self,
                 message: i64,

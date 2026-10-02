@@ -35,6 +35,9 @@ use crate::autoconfig::{dns, http};
 use crate::net::Tls;
 use crate::{Error, Result};
 
+mod company;
+pub use company::Company;
+
 /// Largest remote image fetched for a message.
 pub const MAX_IMAGE: usize = 8 * 1024 * 1024;
 /// Largest sender picture: BIMI allows 32 KB; icons are small.

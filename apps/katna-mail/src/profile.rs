@@ -49,11 +49,16 @@ pub struct Card {
     pub phone: Option<String>,
     pub title: Option<String>,
     pub company: Option<String>,
+    /// The website it names, as written (`www.example.com`).
+    pub website: Option<String>,
 }
 
 impl Card {
     fn is_full(&self) -> bool {
-        self.phone.is_some() && self.title.is_some() && self.company.is_some()
+        self.phone.is_some()
+            && self.title.is_some()
+            && self.company.is_some()
+            && self.website.is_some()
     }
 
     /// Fills what is missing from `other`.
@@ -61,6 +66,7 @@ impl Card {
         self.phone = self.phone.take().or(other.phone);
         self.title = self.title.take().or(other.title);
         self.company = self.company.take().or(other.company);
+        self.website = self.website.take().or(other.website);
     }
 }
 
@@ -502,6 +508,7 @@ pub fn signature_card(body: &str, name: Option<&str>) -> Card {
         phone: signature
             .iter()
             .find_map(|l| l.split(['|', '\u{2022}', '\u{b7}']).find_map(phone)),
+        website: signature.iter().find_map(|l| website(l)),
         ..Card::default()
     };
     // The lines under their name; without a name line, the first lines.
@@ -526,6 +533,27 @@ pub fn signature_card(body: &str, name: Option<&str>) -> Card {
         }
     }
     card
+}
+
+/// A website named on a signature line: `www.example.com`, or an
+/// `http(s)://` address.
+fn website(line: &str) -> Option<String> {
+    line.split(|c: char| c.is_whitespace() || matches!(c, '|' | '<' | '>' | '(' | ')' | ','))
+        .map(|w| w.trim_end_matches(['.', ';']))
+        .find(|w| {
+            let lower = w.to_ascii_lowercase();
+            let host = lower
+                .strip_prefix("https://")
+                .or_else(|| lower.strip_prefix("http://"))
+                .unwrap_or(&lower);
+            (lower.starts_with("http") || host.starts_with("www."))
+                && host.split('/').next().is_some_and(|h| {
+                    h.contains('.')
+                        && h.bytes()
+                            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-')
+                })
+        })
+        .map(str::to_owned)
 }
 
 /// A UTC offset as people write it: "UTC+5:30", "UTC−8", "UTC".
@@ -596,6 +624,7 @@ mod tests {
                 phone: Some("+44 20 7946 0958".to_owned()),
                 title: Some("Senior Software Engineer".to_owned()),
                 company: Some("Analytical Engines Ltd".to_owned()),
+                website: None,
             }
         );
     }
@@ -609,6 +638,7 @@ mod tests {
                 phone: Some("(080) 4567-8901".to_owned()),
                 title: Some("Product Manager".to_owned()),
                 company: Some("Invenia Systems".to_owned()),
+                website: None,
             }
         );
     }
@@ -641,5 +671,18 @@ mod tests {
         assert_eq!(date_offset(raw), Some(330));
         let raw = b"Date: Sat, 27 Sep 2026 09:00:00 -0700\r\n\r\nhi";
         assert_eq!(date_offset(raw), Some(-420));
+    }
+
+    #[test]
+    fn website_in_a_signature() {
+        assert_eq!(
+            website("| W      : www.kgservices.in <http://www.kgservices.in/>").as_deref(),
+            Some("www.kgservices.in")
+        );
+        assert_eq!(
+            website("Visit https://acme.example/about.").as_deref(),
+            Some("https://acme.example/about")
+        );
+        assert_eq!(website("Email ID: lhatu@bccl.bt"), None);
     }
 }
