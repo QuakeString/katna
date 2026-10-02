@@ -326,8 +326,9 @@ impl MailWindow {
         reader.chat.shown = 0;
         let key = reader.key;
         // A reply being written goes along, with its cursor where it was:
-        // the mail view scrolls down to it, as when it opened.
-        if self.chat_compose(key).is_some() {
+        // the mail view scrolls down to it, as when it opened. One with
+        // nothing in it closes, keeping no draft.
+        if self.chat_compose(key).is_some() && !self.drop_empty_reply(cx) {
             if !chat {
                 self.reveal_inline_reply(cx);
             }
