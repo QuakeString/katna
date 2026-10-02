@@ -33,6 +33,7 @@ pub mod pop3;
 mod quota;
 mod receipts;
 pub mod remote;
+pub mod rules;
 mod sender_auth;
 mod summaries;
 pub mod tasks;

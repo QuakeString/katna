@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 856 more of their own. Each keeps its own license.
+bring in 855 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -60,6 +60,7 @@ bring in 856 more of their own. Each keeps its own license.
 | [oo7](https://github.com/linux-credentials/oo7) 0.6.0 | Bilal Elmoussaoui, Maximiliano Sandoval, Sophie Herold | MIT | James Bond went on a new mission and this time as a Secret Service provider |
 | [qrcodegen](https://github.com/nayuki/QR-Code-generator) 1.8.0 | Project Nayuki | MIT | High-quality QR Code generator library |
 | [quick-xml](https://github.com/tafia/quick-xml) 0.41.0 | tafia | MIT | High performance xml reader and writer |
+| [regex](https://github.com/rust-lang/regex) 1.13.1 | Andrew Gallant, The Rust Project Developers | MIT OR Apache-2.0 | An implementation of regular expressions for Rust. This implementation uses finite automata and guarantees linear time matching on all inputs. |
 | [resvg](https://github.com/linebender/resvg) 0.46.0 | linebender | Apache-2.0 OR MIT | An SVG rendering library. |
 | [ring](https://github.com/briansmith/ring) 0.17.14 | briansmith | Apache-2.0 AND ISC | An experiment. |
 | [roxmltree](https://github.com/RazrFalcon/roxmltree) 0.21.1 | Yevhenii Reizner | MIT OR Apache-2.0 | Represent an XML as a read-only tree. |

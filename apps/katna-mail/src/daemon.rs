@@ -546,6 +546,76 @@ pub async fn delete_template(connection: &Connection, id: i64) -> Result<(), Str
         .map_err(|err| describe(&err))
 }
 
+/// Mail rules (`docs/ARCHITECTURE.md` §9.4). The app reads them from the
+/// store (`katna_store::rules`) and previews them there
+/// (`Store::rule_preview`); these change them.
+// Settings > Folders & rules is still to come.
+#[allow(dead_code)]
+pub mod rules {
+    use futures_lite::{Stream, StreamExt};
+    use katna_dbus::PimProxy;
+    use katna_dbus::zbus::Connection;
+    use katna_store::rules::Rule;
+
+    use super::describe;
+
+    /// Saves `rule` (a new one when its ID is 0). Returns its ID.
+    pub async fn save(connection: &Connection, rule: &Rule) -> Result<i64, String> {
+        let json = serde_json::to_string(rule).map_err(|err| err.to_string())?;
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        pim.save_rule(&json).await.map_err(|err| describe(&err))
+    }
+
+    /// Deletes rule `id`.
+    pub async fn delete(connection: &Connection, id: i64) -> Result<(), String> {
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        pim.delete_rule(id).await.map_err(|err| describe(&err))
+    }
+
+    /// Puts rules `ids` first, in this order.
+    pub async fn reorder(connection: &Connection, ids: &[i64]) -> Result<(), String> {
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        pim.reorder_rules(ids).await.map_err(|err| describe(&err))
+    }
+
+    /// Switches rule `id` on or off.
+    pub async fn set_enabled(connection: &Connection, id: i64, on: bool) -> Result<(), String> {
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        pim.set_rule_enabled(id, on)
+            .await
+            .map_err(|err| describe(&err))
+    }
+
+    /// Runs rule `id` over the inbox mail of the last `days` days.
+    /// Returns how many messages it changed.
+    pub async fn apply(connection: &Connection, id: i64, days: u32) -> Result<u32, String> {
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        pim.apply_rule(id, days).await.map_err(|err| describe(&err))
+    }
+
+    /// Fires when the rules changed.
+    pub async fn changes(connection: &Connection) -> Result<impl Stream<Item = ()>, String> {
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        let changes = pim
+            .receive_rules_changed()
+            .await
+            .map_err(|err| describe(&err))?;
+        Ok(changes.map(|_| ()))
+    }
+}
+
 /// Shows or hides calendar `id`'s events (`SetCalendarHidden`).
 pub async fn set_calendar_hidden(
     connection: &Connection,

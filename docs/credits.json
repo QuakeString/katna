@@ -523,6 +523,17 @@
       "repository": "https://github.com/tafia/quick-xml"
     },
     {
+      "name": "regex",
+      "version": "1.13.1",
+      "description": "An implementation of regular expressions for Rust. This implementation uses finite automata and guarantees linear time matching on all inputs.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Andrew Gallant",
+        "The Rust Project Developers"
+      ],
+      "repository": "https://github.com/rust-lang/regex"
+    },
+    {
       "name": "resvg",
       "version": "0.46.0",
       "description": "An SVG rendering library.",

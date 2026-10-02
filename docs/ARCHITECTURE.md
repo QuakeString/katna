@@ -1147,6 +1147,54 @@ KRunner and GNOME search suggest saved people too, with their saved names
 - No GPU use (no GPUI dependency).
 - Memory budget and wake-up counts are measured in CI (§17).
 
+### 9.4 Mail rules
+
+Decided October 2026: rules ("when new mail matches these, do that") run
+**in the daemon**, on this computer, for every account kind. Later a rule
+whose account supports it is pushed to the server instead (Gmail filters,
+or Sieve over ManageSieve), so it runs with the computer off; the
+`runs_on` column (`katna`, `gmail`, `sieve`) is there for that.
+
+- **Model** (`katna_store::rules`, `mail_rule` in `pim.db`, schema v13):
+  name, on/off, position (rules run in list order), match all or any,
+  conditions, actions, "stop" (later rules don't run on mail this one
+  matched), one or more accounts, `runs_on`, and the last error. Conditions
+  and actions are JSON columns. A condition is a field (from, to, cc, any
+  recipient, reply-to, subject, body, attachment name, has attachment), a
+  comparator (contains, doesn't contain, begins with, ends with, equals,
+  matches regex) and a value; text compares without case, and addresses
+  match on both the name and the address. Actions: move to a folder, skip
+  the inbox (archive), move to the trash, mark read, star, mark important,
+  add a Gmail label (a copy into the label's folder), forward (as an
+  attachment), don't notify, mark read after N days (a `read-after` value
+  of §10 on the message).
+- **Matching** is a pure function of a compiled rule (`Matcher`, regular
+  expressions compiled once) and a message's facts, so Katna Mail previews
+  a rule on the read-only store exactly as the daemon runs it
+  (`Store::rule_preview`: "Matches 34 mails from the last 30 days").
+- **When**: only on new incoming mail, after it is stored and before its
+  notification is looked for, so "don't notify" really keeps it quiet and
+  mail moved out of the inbox never rings. New means it reached the inbox
+  after the daemon started watching the account, is at most two days old,
+  is not a draft and is not from the account's own address; never the
+  mail of a first sync, and never twice (mail moved back into the inbox is
+  not new again). A rule that needs the body waits for it (bodies follow
+  the headers within seconds) for at most two minutes, and the mail's
+  notification waits with it; on a metered connection the snippet stands
+  in at once (`katna_sync::rules::Watch`).
+- **How**: every change goes through `katna_sync::ops`, the outbox and
+  `katna-meta`, as the user's own changes do, so it reaches the server.
+  A move takes the mail out of the inbox, not out of a label a rule just
+  added. Rule changes are not in a window's Undo history, which holds the
+  user's own changes. An action that fails (its folder is gone, no archive
+  or Trash folder, an account that can't send) switches the rule off with
+  the reason in `last_error`, and `RulesChanged` tells the apps.
+- **D-Bus**: `SaveRule(json) → id` (0 adds one; validates), `DeleteRule`,
+  `ReorderRules(ids)`, `SetRuleEnabled(id, on)`, `ApplyRule(id, days) →
+  changed` ("also apply to these": once over the inbox mail of the last
+  `days` days, forwarding nothing) and the `RulesChanged` signal. The app
+  reads rules from the store.
+
 ## 10. Metadata with expiration (`katna-meta`)
 
 Inspired by Mailspring's plugin metadata. Any object (message, thread,
@@ -1205,6 +1253,9 @@ this is local; Katna Server only adds opened/clicked events (§16).
 - **Surfaced** (`message`/`surfaced`: `{at}`, expires after 14 days): mail
   back from snooze or a reminder is listed as if it arrived at `at`, so it
   sits on top of the Inbox like new mail.
+- **Read after** (`message`/`read-after`: `{}`): a mail rule's "mark read
+  after N days" (§9.4); when due, the message is marked read like a
+  user's `SetFlags`.
 
 ## 11. Sending (outbox)
 
@@ -2043,7 +2094,8 @@ Gemini or confidential mode):
   templates), MCP server, User feedback (turning crash reports and feedback off at any
   time) and Experimental, always last. Subscription, Folders & rules and
   MCP server are still to come: their tabs are fainter and each shows a
-  "Coming soon" page saying what it will do. The tabs always stay on one line (`window/tab_strip.rs`): when
+  "Coming soon" page saying what it will do (the rules themselves already
+  run in the daemon, §9.4). The tabs always stay on one line (`window/tab_strip.rs`): when
   they don't fit, the row scrolls sideways by wheel or touchpad, arrows
   show at an edge with more tabs past it (not on a phone, where the row is
   swiped), and the arrows and picking a half-hidden tab glide the row. A
@@ -3327,7 +3379,10 @@ message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,
 detail; states in `katna_dbus::send_state`), `SaveTemplate((xssssa(ssay)))
 → x`, `RenameTemplate(id, name) → b`, `DeleteTemplate(id) → b` (mail
-templates in `pim.db`; apps read them from the store), `FetchImage(url) → ay` and
+templates in `pim.db`; apps read them from the store), `SaveRule(s json)
+→ x`, `DeleteRule(x)`, `ReorderRules(ax)`, `SetRuleEnabled(x, b)` and
+`ApplyRule(x id, u days) → u` (mail rules, §9.4; signal `RulesChanged`),
+`FetchImage(url) → ay` and
 `SenderPicture(address) → ay` (images for the reading pane, §12),
 `SetCalendarHidden(x id, b hidden)`, `CalendarStatus() → a(xss)`
 (account, state, detail; §18) and `EditEvent(s json) → x` (a
