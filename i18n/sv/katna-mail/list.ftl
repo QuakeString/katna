@@ -39,6 +39,7 @@ list-results = Resultat för ”{ $query }”
 list-results-corrected = Visar resultat för ”{ $query }”
 list-search-instead = Sök i stället efter ”{ $query }”
 list-files-more = +{ $count }
+list-replied = Du har svarat
 
 ## Mail list: Select menu (which lines to tick)
 

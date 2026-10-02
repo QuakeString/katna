@@ -176,6 +176,7 @@ files-share-remove = Retirer l’accès
 files-share-copy-link = Copier le lien
 files-share-share = Partager
 files-share-done = Terminé
+files-share-close = Fermer
 files-share-sharing = Partage…
 files-share-shared = { $count ->
     [one] Partagé avec 1 personne

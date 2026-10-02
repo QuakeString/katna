@@ -3021,3 +3021,86 @@ I mörkt läge är linjerna mellan mejl, under rubriker och runt kort lika
 diskreta som i ljust läge. Fält, chipp och knappar behåller sin tydliga
 kant.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Små uppdateringar efter ett uppehåll"
+text = """
+Uppdateringarna förblir små även när du hoppar över en dag eller två med
+nya versioner. Katna går nu från versionen du har via de tidigare, några
+megabyte var, i stället för att ladda ner hela paketet igen.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Se vilka mejl du har svarat på"
+text = """
+En liten svarspil på en rad i mejllistan visar att du har svarat: du
+skrev det senaste mejlet i konversationen, här eller på webben. Den
+försvinner när de svarar igen.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Ikonen i systemfältet följer ljust och mörkt"
+text = """
+Den enfärgade ikonen i systemfältet byter nu med din panel så fort du
+växlar mellan ljust och mörkt läge, i stället för att vänta på ny e-post.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Svarsidéer visar att de är på väg"
+text = """
+Medan idéer till svar hämtas, i en sammanfattnings Svara eller i Skriv
+svar, andas deras former nu som sammanfattningens egna medan den skrivs.
+Sammanfattningskortet visar också hur många mejl konversationen har
+medan den hämtas, inte 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Renare hörn i Filer"
+text = """
+När du håller pekaren över en fil med vit förhandsvisning syns inte
+längre vitt i kortets övre hörn, den hopfällda lådan med uppladdningar
+är också rundad upptill, och dialogrutan Dela har en stängknapp i
+hörnet.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Mejlet förblir öppet när du rensar en sökning"
+text = """
+Öppna ett mejl bland sökresultaten och rensa sökningen med X: mejlet
+förblir öppet medan din mapp kommer tillbaka, i stället för att fällas
+ihop till listan.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Runda hörn på kalkylblad"
+text = """
+Ett kalkylblad i bilagevisaren är nu rundat i alla fyra hörnen. De grå
+kolumnbokstäverna överst och bladflikarna längst ner gjorde dem tidigare
+kantiga.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Rena kontaktuppgifter på korten"
+text = """
+Telefonnummer, adresser och andra uppgifter hämtade från en signatur
+visar inte längre lösa asterisker eller länkmärken inom vinkelparenteser.
+När en kollega signerar mejl från en delad adress som accounts@ behåller
+kortet bara företagets uppgifter, inte kollegans nummer eller titel.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Kontrollera vad du har bifogat"
+text = """
+Klicka på en fil som är bifogad i ett meddelande du skriver för att öppna
+den i Katnas visare, samma som mottagna filer öppnas i, och försäkra dig
+om att det är rätt fil. En fil som skickas som en Google Drive- eller
+OneDrive-länk öppnas i molnlagringen.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "En rullningslist i Inställningar"
+text = """
+Varje flik i Inställningar har samma tunna rullningslist som ett öppet
+mejl och Filer: den visas medan du scrollar eller pekar på sidan, och du
+kan dra i den.
+"""
