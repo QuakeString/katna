@@ -256,6 +256,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::toggle_check))
             .on_action(cx.listener(Self::open_context_menu_key))
+            .on_action(cx.listener(Self::summarize_key))
             .child(inner)
             .children(card_outline(th, radius, edge));
         card.into_any_element()
@@ -978,6 +979,27 @@ impl MailWindow {
                         ),
                     Some(()) => menu(th)
                         // What a narrow reading pane leaves off its toolbar.
+                        .when(
+                            squeeze.is_some_and(|s| s.summary)
+                                && self.summaries_on()
+                                && !self.chat_shown(),
+                            |d| {
+                                d.child(
+                                    menu_item_icon(
+                                        "more-summary",
+                                        "sparkle",
+                                        &tr!("summary-summarize"),
+                                        th,
+                                    )
+                                    .on_click(cx.listener(
+                                        |this, _, _, cx| {
+                                            this.menu = None;
+                                            this.toggle_summary(cx);
+                                        },
+                                    )),
+                                )
+                            },
+                        )
                         .when(squeeze.is_some_and(|s| s.spam), |d| {
                             d.child(
                                 menu_item_icon("more-spam", "junk", &self.spam_label(true), th)

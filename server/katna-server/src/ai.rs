@@ -7,8 +7,11 @@
 //!
 //! - `POST /api/v1/ai/rephrase` `{"text", "tone", "instruction"}`
 //! - `POST /api/v1/ai/complete` `{"before", "answered"}`
+//! - `POST /api/v1/ai/summarize` `{"subject", "mails", "catch_up"}`
+//!   ([`katna_ai::summary::SummarizeRequest`]): one request, however long
+//!   the conversation; the prompt keeps its newest mails.
 //!
-//! Both answer `{"text", "plan": {"kind", "days_left"}}`
+//! All answer `{"text", "plan": {"kind", "days_left"}}`
 //! ([`katna_ai::wire`]): the service's text as it came (the daemon
 //! cleans it up), and where the account stands. An account gets
 //! [`AiConfig::trial_days`] free from its first use, then needs paid time
@@ -32,6 +35,7 @@ use http_body_util::{BodyExt, Full};
 use hyper::Uri;
 use hyper::header;
 use hyper_util::rt::TokioIo;
+use katna_ai::summary::{self, SummarizeRequest};
 use katna_ai::wire::{AiAnswer, CompleteRequest, Plan, RephraseRequest, plan};
 use katna_ai::{Prompt, ProviderError, Tone, prompt, provider};
 use serde::{Deserialize, Serialize};
@@ -46,6 +50,9 @@ use crate::routes::{ApiError, AppState};
 
 /// Longest request body taken. The prompts cut the text much shorter.
 pub const MAX_REQUEST: usize = 64 * 1024;
+/// Longest conversation taken to sum up: its newest mails, already cut
+/// short by Katna Mail ([`summary::MAX_MAIL`] each).
+pub const MAX_SUMMARIZE_REQUEST: usize = 256 * 1024;
 
 /// Longest answer read from a service.
 const MAX_ANSWER: usize = 1024 * 1024;
@@ -54,6 +61,8 @@ const MAX_ANSWER: usize = 1024 * 1024;
 /// (the suggestion is useless once the user has typed on).
 const REPHRASE_TIMEOUT: Duration = Duration::from_secs(60);
 const COMPLETE_TIMEOUT: Duration = Duration::from_secs(10);
+/// How long a service may take to sum up a conversation.
+const SUMMARIZE_TIMEOUT: Duration = Duration::from_secs(60);
 
 /// Requests passed on at once, for everyone together.
 pub const CONCURRENCY: usize = 64;
@@ -64,6 +73,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/api/v1/ai/rephrase", post(rephrase))
         .route("/api/v1/ai/complete", post(complete))
+        .route("/api/v1/ai/summarize", post(summarize))
 }
 
 async fn rephrase(
@@ -101,6 +111,24 @@ async fn complete(
         Some(prompt) => ask(&state, &account, &prompt, COMPLETE_TIMEOUT).await?,
         None => String::new(),
     };
+    Ok(Json(AiAnswer { text, plan }))
+}
+
+async fn summarize(
+    State(state): State<AppState>,
+    SignedIn { account, .. }: SignedIn,
+    body: Bytes,
+) -> Result<Json<AiAnswer>, ApiError> {
+    if body.len() > MAX_SUMMARIZE_REQUEST {
+        return Err(ApiError::BadRequest("conversation too long"));
+    }
+    let request: SummarizeRequest = serde_json::from_slice(&body)
+        .map_err(|_| ApiError::BadRequest("expected subject and mails"))?;
+    let Some(prompt) = summary::summarize(&request) else {
+        return Err(ApiError::BadRequest("nothing to sum up"));
+    };
+    let plan = admit(&state, &account).await?;
+    let text = ask(&state, &account, &prompt, SUMMARIZE_TIMEOUT).await?;
     Ok(Json(AiAnswer { text, plan }))
 }
 

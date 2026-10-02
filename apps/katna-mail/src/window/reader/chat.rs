@@ -567,6 +567,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(header)
+            .children(self.render_chat_summary_strip(th, cx))
             .children(self.render_pin_bar(th, cx))
             .child(
                 div()
@@ -579,7 +580,7 @@ impl MailWindow {
                             .size_full()
                             .overflow_y_scroll()
                             .on_scroll_wheel(cx.listener(
-                                |this, e: &gpui::ScrollWheelEvent, window, _| {
+                                |this, e: &gpui::ScrollWheelEvent, window, cx| {
                                     let up = e.delta.pixel_delta(window.line_height()).y;
                                     if unpx(up) > 0.0
                                         && let Some(reader) = &mut this.reader
@@ -588,6 +589,8 @@ impl MailWindow {
                                         reader.chat.held.set(false);
                                         reader.chat.settle = 0;
                                     }
+                                    // Scrolling the chat folds its summary.
+                                    this.fold_chat_summary(cx);
                                 },
                             ))
                             .track_scroll(&self.reader_scroll)
@@ -622,6 +625,7 @@ impl MailWindow {
                                     ),
                             ),
                     )
+                    .children(self.render_chat_summary_drop(th, cx))
                     .children(self.render_chat_people(th, cx))
                     .children(self.render_files_picker(key, th, cx))
                     .children(self.render_pin_list(th, cx))
@@ -1013,6 +1017,7 @@ impl MailWindow {
                             ),
                     ),
             )
+            .children(self.summary_button("chat-summary", th, cx))
             .child(self.chat_switch(true, th, cx))
             .into_any_element()
     }

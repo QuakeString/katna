@@ -1,5 +1,6 @@
 # Katna Mail, English: writing help with AI in a message (the sparkle by
-# selected text, the Rephrase card, and its problems).
+# selected text, the Rephrase card, and its problems) and conversation
+# summaries.
 # Guide: i18n/README.md. Keep ids stable; change the text freely.
 # { $service } is who answers: "Katna AI", or a service such as Google
 # Gemini or Mistral (a brand, not translated).
@@ -41,3 +42,66 @@ compose-ai-off = Writing help with AI is off in Settings.
 compose-ai-failed = { $service } could not be reached. Try again.
 compose-ai-try-again = Try again
 compose-ai-open-settings = Open Settings
+
+## Summing up a conversation: the list's right-click menu, the reading
+## pane's sparkle, the chat's strip and the card each opens.
+
+summary-summarize = Summarize
+summary-hide = Hide summary
+summary-close = Close
+summary-fold = Fold
+summary-title = Summary
+summary-mails = { $count ->
+    [one] 1 mail
+   *[other] { $count } mails
+}
+# The summary covers the first { $count } of the conversation's { $total } mails.
+summary-of-mails = { $count } of { $total } mails
+# Beside a line of the list: the conversation's mails and people.
+summary-peek-count = { $mails ->
+    [one] 1 mail
+   *[other] { $mails } mails
+} · { $people ->
+    [one] 1 person
+   *[other] { $people } people
+}
+# A catch-up sums up only the mail that came since the user last read.
+summary-catch-up = { $count ->
+    [one] 1 new since you last read
+   *[other] { $count } new since you last read
+}
+# The chat's strip when mail came after the summary.
+summary-strip-newer = { $count ->
+    [one] 1 new since · { $gist }
+   *[other] { $count } new since · { $gist }
+}
+summary-add-new = { $count ->
+    [one] Add 1 new
+   *[other] Add { $count } new
+}
+summary-point-settled = Settled
+summary-point-money = Money
+summary-point-dates = Dates
+summary-point-next = Next
+summary-point-open = Open
+summary-files = Files
+summary-for-you = For you
+# Who a point came from, in its tooltip.
+summary-from-mail = { $name }, { $date }
+# The user's own mail, beside a point.
+summary-you = You
+summary-made = { $service } · { $time }
+summary-not-read = { $service } · not marked read
+summary-copy = Copy
+summary-copied = Summary copied
+summary-again = Summarize again
+summary-open = Open conversation
+summary-asking = Asking { $service }…
+summary-stop = Stop
+summary-cancel = Cancel
+summary-send = Send and summarize
+summary-ask-short = Waiting for your OK
+summary-encrypted = This conversation is encrypted. Summarizing sends its text to { $service } unencrypted.
+summary-encrypted-off = This conversation is encrypted, and Settings keeps writing help out of encrypted mail.
+summary-try-again = Try again
+summary-open-settings = Open Settings

@@ -243,6 +243,16 @@ impl MailWindow {
             return;
         };
         pins.at = (pins.at + 1) % pins.list.len();
+        self.jump_to_bubble(message, cx);
+    }
+
+    /// Scrolls the chat to the bubble of `message`, which glows for a
+    /// moment.
+    pub(in crate::window) fn jump_to_bubble(&mut self, message: MessageId, cx: &mut Context<Self>) {
+        let Some(reader) = &mut self.reader else {
+            return;
+        };
+        let pins = &mut reader.chat.pins;
         let top = pins.tops.borrow().get(&message).copied();
         let feed_top = pins.feed_top.get();
         pins.flash = Some((message, Instant::now()));

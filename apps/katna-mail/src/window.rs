@@ -146,6 +146,7 @@ actions!(
         PreviousPane,
         SendMail,
         RephraseSelection,
+        Summarize,
         OpenContextMenu,
         SelectFirst,
         SelectLast,
@@ -592,6 +593,8 @@ pub struct MailWindow {
     menu: Option<Menu>,
     /// The right-click menu of the list.
     context_menu: Option<context_menu::ContextMenu>,
+    /// Conversations summed up by AI, and the card beside a line.
+    summaries: reader::Summaries,
     /// The right-click menu of the folder pane.
     nav_menu: Option<nav_menu::NavMenu>,
     /// The mute choices opened from a folder's or account's menu.
@@ -928,6 +931,7 @@ impl MailWindow {
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
             menu: None,
             context_menu: None,
+            summaries: reader::Summaries::default(),
             nav_menu: None,
             quiet_menu: None,
             checking: Vec::new(),
@@ -1709,7 +1713,11 @@ impl MailWindow {
     /// go back to the list, and the conversation stays shown.
     fn reader_back(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
         // Esc first folds the chat's list of people or its attach picker.
-        if self.fold_chat_people(cx) || self.fold_chat_pins(cx) || self.fold_files_picker(cx) {
+        if self.fold_chat_summary(cx)
+            || self.fold_chat_people(cx)
+            || self.fold_chat_pins(cx)
+            || self.fold_files_picker(cx)
+        {
             return;
         }
         window.focus(&self.list_focus, cx);
@@ -3673,6 +3681,7 @@ impl Render for MailWindow {
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
+        let summary_peek = self.render_summary_peek(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
         let snooze_menu = self.render_snooze_menu(&th, cx);
         let quiet_menu = self.render_quiet_menu(&th, cx);
@@ -3709,6 +3718,7 @@ impl Render for MailWindow {
             .children(account_menu)
             .children(language_picker)
             .children(add_account)
+            .children(summary_peek)
             .children(context_menu)
             .children(nav_menu)
             .children(snooze_menu)

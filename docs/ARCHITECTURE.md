@@ -3738,8 +3738,8 @@ Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google cl
   encrypted mail, asking each time). The key of the user's own service is
   in the Secret Service (`ai-key`), saved and removed through the daemon
   (`SetAiKey`, `AiKeySaved`), never in the settings file.
-- **Daemon:** `AiRephrase(text, tone, instruction)` and
-  `AiComplete(before, answered)` on D-Bus, read the settings per call and
+- **Daemon:** `AiRephrase(text, tone, instruction)`,
+  `AiComplete(before, answered)` and `AiSummarize(newest, request)` on D-Bus, read the settings per call and
   send over rustls either to Katna Server (`POST /api/v1/ai/rephrase`,
   `/api/v1/ai/complete`, with the Katna account's token; 401/403 = sign
   in, 402 = the free month is over, 429 = over a limit) or to the user's
@@ -3760,6 +3760,27 @@ Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google cl
   `thinkingLevel: minimal`). Settings lists the models the service
   offers to the key (`AiModels` over D-Bus) under the editable Model
   field, filtered as the user types.
+- **Summaries** (decided 2 October 2026): Summarize in the list's
+  right-click menu (and Shift+S) opens a card beside the line that marks
+  nothing read; the reading pane's sparkle puts the summary under the
+  subject; in the chat view a strip under the header (beside pins)
+  drops the card down over the chat. A summary is a short gist, up to
+  four points (settled, money, dates, next, open), each naming the mail
+  it came from, and "For you" when someone asked the user something.
+  With unread mail after mail already read it sums up only the new mail
+  (a catch-up). Katna Mail sends the newest 30 mails, drafts left out,
+  each trimmed to what its sender wrote (`katna_render::trim`, at most
+  1500 characters; 24,000 in all) as `katna_ai::summary::SummarizeRequest`
+  over `AiSummarize`; the service answers JSON that
+  `katna_ai::summary::parse` checks. The daemon keeps the summary in
+  `mail.db` (`conversation_summary`, v13: one whole and one catch-up per
+  conversation, found through the newest mail it covers), so it shows
+  again without asking; mail that comes later is added only when the
+  user clicks "Add N new". It is never made unasked. Encrypted mail asks
+  first, as Rephrase does, and is left out when Settings keeps writing
+  help out of encrypted mail. On Katna AI a summary is one request
+  (`POST /api/v1/ai/summarize`). With writing help off, no sparkle,
+  menu item or summary shows.
 - **Katna AI** (Katna Server, `server/katna-server/src/ai.rs`): for
   confirmed Katna accounts, 30 days free from the first use, then $5 a
   month through Razorpay Subscriptions (to come; until then the server
