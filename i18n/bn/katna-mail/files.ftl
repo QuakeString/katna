@@ -166,6 +166,7 @@ files-share-remove = অ্যাক্সেস সরান
 files-share-copy-link = লিঙ্ক কপি করুন
 files-share-share = শেয়ার করুন
 files-share-done = হয়ে গেছে
+files-share-close = বন্ধ করুন
 files-share-sharing = শেয়ার করা হচ্ছে…
 files-share-shared = { $count ->
     [one] 1 জনের সাথে শেয়ার করা হয়েছে

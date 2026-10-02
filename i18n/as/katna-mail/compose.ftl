@@ -58,6 +58,7 @@ compose-file-too-large = { $name } বহুত ডাঙৰ: এটা বা�
 compose-forward-files-missing = ফৰৱাৰ্ড কৰা বাৰ্তাটোৰ ফাইলবোৰ ডাউনল'ড কৰা হোৱা নাই, সেয়ে সেইবোৰ সংলগ্ন কৰা হোৱা নাই।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = সংলগ্নক আঁতৰাওক
+compose-attachment-open-tip = পৰীক্ষা কৰিবলৈ খোলক
 compose-attachments-total = { $count ->
     [one] { $count }টা ফাইল, { $size }
    *[other] { $count }টা ফাইল, { $size }

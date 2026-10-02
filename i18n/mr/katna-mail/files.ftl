@@ -166,6 +166,7 @@ files-share-remove = ॲक्सेस काढा
 files-share-copy-link = लिंक कॉपी करा
 files-share-share = शेअर करा
 files-share-done = झाले
+files-share-close = बंद करा
 files-share-sharing = शेअर करत आहे…
 files-share-shared = { $count ->
     [one] 1 व्यक्तीसोबत शेअर केले
