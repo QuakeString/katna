@@ -208,6 +208,8 @@ actions!(
 const WINDOW_CONTEXT: &str = "MailWindow";
 const LIST_CONTEXT: &str = "MessageList";
 const READER_CONTEXT: &str = "MessageReader";
+/// The folder pane while it has the keys.
+const NAV_CONTEXT: &str = "Navigation";
 const SEARCH_CONTEXT: &str = "SearchBox";
 
 pub(super) const TOP_BAR_HEIGHT: f32 = 64.0;

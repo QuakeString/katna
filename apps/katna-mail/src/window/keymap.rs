@@ -12,7 +12,7 @@ use katna_i18n::tr;
 use super::{
     AddToTasks, Archive, CloseMessage, Compose, Delete, FocusList, FocusNext, FocusPrevious,
     FocusSearch, Forward, GoToAllMail, GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT,
-    ListTop, MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NextPane,
+    ListTop, MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NAV_CONTEXT, NextPane,
     OpenContextMenu, OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit,
     READER_CONTEXT, Reload, RephraseSelection, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT,
     ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast,
@@ -41,7 +41,9 @@ impl Scope {
             Self::List => &[LIST_CONTEXT],
             Self::Reader => &[READER_CONTEXT],
             Self::Mail => &[LIST_CONTEXT, READER_CONTEXT],
-            Self::Anywhere if is_single_key(keys) => &[LIST_CONTEXT, READER_CONTEXT],
+            // The folder pane too, so Compose, search and the like still
+            // work after a click on a folder.
+            Self::Anywhere if is_single_key(keys) => &[LIST_CONTEXT, READER_CONTEXT, NAV_CONTEXT],
             Self::Anywhere => &[WINDOW_CONTEXT],
         }
     }

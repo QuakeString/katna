@@ -2113,7 +2113,10 @@ Gemini or confidential mode):
   sends from any field, and Esc closes it and keeps a draft, as in Gmail,
   Outlook and Thunderbird (a reply in the conversation stays). In the
   folder pane Up and Down open each folder, Right and Left unfold and
-  fold, and Enter goes to its mail, as in Thunderbird and Outlook. Whenever
+  fold (Space does either, on a folder with folders inside), and Enter
+  goes to its mail, as in Thunderbird and Outlook. A click on a folder
+  leaves the keys in the pane too; Compose, search and Gmail's other
+  letters still work there. Whenever
   the keys lose their place (a message sent, a menu or dialog gone) they
   come back to the list, or to the Settings page while it is open.
 - **Removing an account, deleting all data.** Settings → Accounts
