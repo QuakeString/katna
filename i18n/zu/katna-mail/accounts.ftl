@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “Wonke Ama-akhawunti” lihola iphaneli yamaf
 accounts-row = Ama-akhawunti
 accounts-row-detail = Iphaneli yamafolda nemenyu ye-akhawunti kubala ama-akhawunti ngale ndlela alandelana ngayo; eyokuqala yiyona ezenzakalelayo. Ukususa i-akhawunti kususa ikhophi ye-Katna yemeyili yayo kule khompyutha. Imeyili ihlala kuseva.
 accounts-none = Awekho ama-akhawunti okwamanje.
+accounts-pop3-row = Imeyili kuseva
+accounts-pop3-row-detail = Ama-akhawunti e-POP3 alanda imeyili kule khompyutha. Khetha ukuthi kwenzekani ngemva kwalokho ekhophini esekuseva.
+accounts-pop3-with-katna = Yigcine ngize ngiyisuse ku-Katna
+accounts-pop3-at-once = Yisuse uma isilandiwe
+accounts-pop3-after-days = { $count ->
+    [one] Yisuse ngemva kosuku olu-{ $count }
+   *[other] Yisuse ngemva kwezinsuku ezingu-{ $count }
+}
+accounts-pop3-never = Ungayisusi neze
+accounts-pop3-days-less = Izinsuku ezimbalwa
+accounts-pop3-days-more = Izinsuku eziningi
 accounts-kind-imported = Ingenisiwe
 accounts-picture-reset = Sebenzisa isithombe sedeskithophu
 accounts-picture-change = Shintsha isithombe

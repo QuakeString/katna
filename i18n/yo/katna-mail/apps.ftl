@@ -9,6 +9,7 @@ rail-calendar = Kàlẹ́ńdà
 rail-contacts = Olùbásọ̀rọ̀
 rail-tasks = Iṣẹ́
 rail-notes = Àkọsílẹ̀
+rail-files = Fáìlì
 
 ## Pages of apps still to come
 

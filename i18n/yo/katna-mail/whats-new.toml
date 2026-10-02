@@ -1734,3 +1734,795 @@ Nígbà tí Ìwọ̀n nínú Ètò > Ìrísí bá ju 100% lọ, àmì àpótí �
 lókè díẹ̀ àti sí òsì. Etí àwọn àpótí àmì àti àwọn bọ́tìnnì yíká ń tóbi sí
 i pẹ̀lú ìwọ̀n báyìí, nítorí náà àmì máa ń wà láàrin ní gbogbo ìwọ̀n.
 """
+
+["2026-09-30-0230-edges-follow-scaling"]
+title = "Àwọn ìlà ẹ̀gbẹ́ ń tóbi pẹ̀lú Ìwọ̀n"
+text = """
+Nígbà tí Ìwọ̀n nínú Ètò > Ìrísí bá ju 100% lọ tàbí kéré sí i, ìlà àwọ̀ àfihàn àpótí ìwádìí àti àwọn pápá tí o wà nínú wọn, àti ẹ̀gbẹ́ àwọn káàdì àṣàyàn àti òrùka iṣẹ́, ń tóbi tí wọ́n sì ń kéré pẹ̀lú gbogbo nǹkan yòókù báyìí dípò kí wọ́n wà ní tín-ínrín.
+"""
+
+["2026-09-30-0326-google-sign-in-network"]
+title = "Wọlé pẹ̀lú Google lórí gbogbo nẹ́tíwọ́ọ̀kì"
+text = """
+Wíwọlé pẹ̀lú Google kò dúró mọ́ pẹ̀lú "peer closed connection" lórí àwọn nẹ́tíwọ́ọ̀kì tó ń gé ìsopọ̀ Google kúrò ní kùtùkùtù. Bí o bá yọ àmì kúrò lára Gmail lójú-ìwé Google, Katna á sọ bẹ́ẹ̀ báyìí dípò kí ó kùnà lẹ́yìn náà.
+"""
+
+["2026-09-30-0504-google-api-turned-off"]
+title = "Ó ń sọ API Google tí a pa"
+text = """
+Nígbà tí Google bá pa API kan fún Katna, Olùbásọ̀rọ̀, Kàlẹ́ńdà, Iṣẹ́ àti àwọn fáìlì Drive máa ń sọ èyí tó jẹ́ ní ìlà kúkúrú báyìí, pẹ̀lú bọ́tìnnì Tàn án tó ń ṣí ojú-ìwé Google fún un, dípò àṣìṣe Google bí ó ṣe rí gan-an.
+"""
+
+["2026-09-30-0507-newest-mail-first"]
+title = "Lẹ́tà tuntun jùlọ ló ń kọ́kọ́ dé"
+text = """
+Nígbà tí o bá ṣàfikún àkáǹtì kan, Katna Mail máa ń kọ́kọ́ gba lẹ́tà rẹ tuntun jùlọ sílẹ̀ báyìí, lẹ́yìn náà á padà sí lẹ́tà àtijọ́, kí ìfiránṣẹ́ òní lè hàn lókè àpótí-ìwọlé lẹ́sẹ̀kẹsẹ̀. Bí gbígbà sílẹ̀ bá dáwọ́ dúró, á tẹ̀síwájú pẹ̀lú lẹ́tà àtijọ́ nígbà tó kàn.
+"""
+
+["2026-09-30-0601-keyring-at-login"]
+title = "Ó ń dúró de àpò ọ̀rọ̀ aṣínà rẹ nígbà wíwọlé"
+text = """
+Bí KWallet tàbí GNOME Keyring bá ṣì wà ní títì nígbà tí Katna bá bẹ̀rẹ̀, tí fèrèsé ṣíṣí rẹ̀ sì ti pa, àwọn àkáǹtì rẹ kò ní fi ọ̀rọ̀ aṣínà tí kò tọ́ hàn mọ́. Wọ́n á dúró, wọ́n á sì bẹ̀rẹ̀ ìmúṣiṣẹ́pọ̀ fúnra wọn ní kété tí o bá ṣí àpò náà, láìsí pé o ní láti pa Katna. Ìmúṣiṣẹ́pọ̀ tún ń béèrè pé kí o ṣí i lẹ́ẹ̀kan sí i báyìí.
+"""
+
+["2026-09-30-0606-pdf-rotate-and-top-bar"]
+title = "Yí àwọn ojú-ìwé PDF"
+text = """
+Olùwò PDF lè yí àwọn ojú-ìwé sí ọ̀tún tàbí sí òsì báyìí (Ctrl+R àti Ctrl+Shift+R), ẹ̀dà tí o sàmì sí sì máa ń fi pamọ́ bí o ṣe yí i. Nọ́mbà ojú-ìwé àti ìsúnmọ́ ti lọ sí ọ̀pá òkè, kí ohunkóhun má bàa bo ojú-ìwé náà.
+"""
+
+["2026-09-30-0610-calendar-events-stay-put"]
+title = "Àwọn ìṣẹ̀lẹ̀ ń dúró sí ibi tí wọ́n wà"
+text = """
+Títẹ ìṣẹ̀lẹ̀ tàbí iṣẹ́ kan nínú Kàlẹ́ńdà, lẹ́yìn náà yíyí ìwòye padà, kò jẹ́ kí ó máa tẹ̀lé ìtọ́ka mọ́. Ìṣẹ̀lẹ̀ kan máa ń gbé nìkan nígbà tí o bá di bọ́tìnnì mú tí o sì fà á báyìí, yíyí ìwòye tàbí ojú-ìwé padà, títẹ Esc tàbí ṣíṣí káàdì rẹ̀ sì máa ń dá a padà láìyípadà.
+"""
+
+["2026-09-30-0620-checkbox-partial-centred"]
+title = "Àwọn àpótí tí a sàmì sí díẹ̀ dọ́gba"
+text = """
+Nígbà tí o bá yan díẹ̀ lára àwọn ìfiránṣẹ́ nìkan, igun mẹ́rin tó wà nínú àpótí yan-gbogbo ní àyè kan náà ní gbogbo ẹ̀gbẹ́ báyìí, ohunkóhun tí ìwọ̀n ojú-ìbojú rẹ jẹ́.
+"""
+
+["2026-09-30-0632-year-view-day-peek"]
+title = "Wo ètò ọjọ́ kan láti ìwòye Ọdún"
+text = """
+Nínú ìwòye Ọdún ti Kàlẹ́ńdà, gbé ìtọ́ka sórí ọjọ́ tí ó ní àmì kékeré láti rí àwọn ìṣẹ̀lẹ̀ àti iṣẹ́ rẹ̀ nínú fèrèsé kékeré lẹ́gbẹ̀ẹ́ rẹ̀, ọ̀kọ̀ọ̀kan pẹ̀lú àmì tó ń sọ ohun tí ó jẹ́ àti àkókò rẹ̀. Tẹ ọ̀kan láti ṣí i, tàbí orúkọ ọjọ́ náà láti ṣí ọjọ́ náà. Lórí fóònù, tẹ ọjọ́ náà.
+"""
+
+["2026-09-30-0650-notification-opens-own-window"]
+title = "Ìfitónilétí ń ṣí lẹ́tà níwájú"
+text = """
+Títẹ ìfitónilétí lẹ́tà tuntun máa ń ṣí lẹ́tà náà ní fèrèsé tirẹ̀, níwájú, ohunkóhun tí Katna ń fi hàn nígbà náà. Fèsì sí gbogbo máa ń ṣí i pẹ̀lú èsì tí ó ṣetán fún títẹ̀. Fi pamọ́ máa ń kó lẹ́tà náà kúrò láìṣí ohunkóhun, ó sì máa ń sọ bẹ́ẹ̀ nínú àkíyèsí kúkúrú pẹ̀lú Dá padà.
+"""
+
+["2026-09-30-0700-event-card-join-any-call"]
+title = "Darapọ̀ mọ́ ìpè Teams àti Zoom láti Kàlẹ́ńdà"
+text = """
+Káàdì ìṣẹ̀lẹ̀ kan máa ń rí ìpè náà nínú àpèjúwe tàbí ibi rẹ̀ báyìí, nítorí náà ìpè Microsoft Teams, Zoom, Webex, Jitsi tàbí Google Meet máa ń ní bọ́tìnnì "Darapọ̀ pẹ̀lú" lókè. Àwọn àdírẹ́sì wẹ́ẹ̀bù nínú àpèjúwe jẹ́ ìjápọ̀, àwọn ìlà ìlà-ìsàlẹ̀ ti lọ, Ṣé o ń lọ? sì máa ń wà nísàlẹ̀ nígbà tí àwọn àlàyé ń yí lọ.
+"""
+
+["2026-09-30-0715-click-away-closes-viewer"]
+title = "Tẹ ìta láti pa á dé"
+text = """
+Tẹ àyè ṣókùnkùn tó yí àfikún kan ká láti pa olùwò dé, dípò kí o wá bọ́tìnnì padà. Títẹ ojú-ìwé fúnra rẹ̀ ṣì máa ń yan ọ̀rọ̀ àti sàmì sí i bí ti tẹ́lẹ̀.
+"""
+
+["2026-09-30-0729-add-account-and-pop3"]
+title = "Ṣàfikún àkáǹtì tuntun, àti POP3"
+text = """
+Ṣíṣàfikún àkáǹtì máa ń bẹ̀rẹ̀ pẹ̀lú olùpèsè rẹ: Google, Yahoo, iCloud, Zoho, Fastmail, GMX, Yandex tàbí òmíràn. Katna máa ń kọ́kọ́ sọ ohun tí olùpèsè náà nílò, á fi ìgbésẹ̀ kọ̀ọ̀kan hàn bí ó ṣe ń sopọ̀, á sì parí pẹ̀lú ohun tí ó ṣètò. Àwọn àkáǹtì POP3 náà ń ṣiṣẹ́, Ètò > Àwọn àkáǹtì sì ń yan bí lẹ́tà wọn yóò ṣe pẹ́ tó lórí sáfà.
+"""
+
+["2026-09-30-0802-ctrl-wheel-zoom"]
+title = "Súnmọ́ pẹ̀lú Ctrl àti kẹ̀kẹ́"
+text = """
+Nínú olùwò àfikún, di Ctrl mú kí o sì yí kẹ̀kẹ́ màúsì láti súnmọ́ tàbí jìnnà ní àyíká ìtọ́ka, tàbí fún ìka papọ̀ lórí pádì ìfọwọ́kàn. Ó ń ṣiṣẹ́ fún PDF, àwòrán, fáìlì ọ̀rọ̀, spreadsheet àti ìwé.
+"""
+
+["2026-09-30-0817-event-open-the-mail"]
+title = "Ṣí lẹ́tà tó wà lẹ́yìn ìṣẹ̀lẹ̀ kan"
+text = """
+Àwọn ìṣẹ̀lẹ̀ tí Gmail ṣe láti inú lẹ́tà, bí ọkọ̀ ojú-irin, ọkọ̀ òfuurufú àti ilé ìtura, ní bọ́tìnnì Ṣí lẹ́tà lórí káàdì wọn. Ó máa ń ṣí lẹ́tà náà nínú Katna, tàbí nínú Gmail nígbà tí Katna kò ní i. Iṣẹ́ tí a ṣe láti inú lẹ́tà náà ń ṣí lẹ́tà rẹ̀ láti inú káàdì rẹ̀ lórí Kàlẹ́ńdà, Ṣe àkọsílẹ̀ ìpàdé sì ń ṣí láìsí ìdádúró.
+"""
+
+["2026-09-30-0843-calendar-side-panel-menus"]
+title = "Ṣàkóso àwọn kàlẹ́ńdà láti pánẹ́ẹ̀lì ẹ̀gbẹ́"
+text = """
+Tẹ kàlẹ́ńdà kan ní apá ọ̀tún nínú pánẹ́ẹ̀lì ẹ̀gbẹ́ Kàlẹ́ńdà láti fi òun nìkan hàn, yí àwọ̀ rẹ̀ padà, yí orúkọ rẹ̀ padà tàbí pa á rẹ́. Tẹ orúkọ àkáǹtì kan ní apá ọ̀tún láti ṣẹ̀dá kàlẹ́ńdà tuntun nínú àkáǹtì náà tàbí láti fi gbogbo kàlẹ́ńdà rẹ̀ hàn tàbí pa wọ́n mọ́. Àwọn àyípadà ń lọ sí iṣẹ́ lẹ́tà rẹ, nítorí náà wọ́n ń hàn níbi gbogbo tí o ti ń lò ó.
+"""
+
+["2026-09-30-1010-unread-list-keeps-open-mail"]
+title = "Lẹ́tà àìkà ń wà ní ṣíṣí"
+text = """
+Ṣíṣí ìjíròrò kan nínú Gbogbo àkáǹtì > Àìkà kò pa á dé lẹ́sẹ̀kẹsẹ̀ mọ́. Kíkà á máa ń sàmì sí i bí èyí tí a ti kà, ó sì máa ń wà nínú àkójọ títí tí o fi pa á dé tàbí ṣí òmíràn.
+"""
+
+["2026-09-30-1045-tracked-mail-arrives"]
+title = "Lẹ́tà tí a ń tọpa ń dé lẹ́ẹ̀kan sí i"
+text = """
+Lẹ́tà tí a fi ránṣẹ́ pẹ̀lú títọpa lè hàn nínú Tí a fi ránṣẹ́ láìdé ọ̀dọ̀ ẹnikẹ́ni. Ó ń lọ sí ọ̀dọ̀ gbogbo olùgbà báyìí. Lẹ́tà tí ó sọnù lọ́nà yìí nílò láti fi ránṣẹ́ lẹ́ẹ̀kan sí i.
+"""
+
+["2026-09-30-1114-no-checking-pill"]
+title = "Kò sí àmì àyẹ̀wò mọ́"
+text = """
+"À ń ṣàyẹ̀wò lẹ́tà tuntun…" kò yọ jáde lórí àkójọ mọ́. Àwọn ọfà tó ń yí lórí bọ́tìnnì Sọdọ̀tun àti lórí àpótí-ìwọlé àkáǹtì kọ̀ọ̀kan ti ń fi hàn pé à ń ṣàyẹ̀wò lẹ́tà, àyẹ̀wò tí ó kùnà sì ṣì ń sọ ohun tí kò lọ dáadáa.
+"""
+
+["2026-09-30-1300-windows-sign-in-and-domains"]
+title = "Wọlé pẹ̀lú Google lórí Windows"
+text = """
+Katna fún Windows ń pèsè Wọlé pẹ̀lú Google àti Zoho báyìí, bí ó ṣe ń ṣe lórí Linux, ó sì mọ ẹni tó ń gbàlejò lẹ́tà lórí àgbègbè tìrẹ, bí àdírẹ́sì Google Workspace, nígbà tí o bá ṣàfikún àkáǹtì náà.
+"""
+
+["2026-09-30-1511-mail-tables"]
+title = "Àwọn tábìlì nínú lẹ́tà ń hàn dáadáa"
+text = """
+Àwọn tábìlì nínú lẹ́tà, bí àkójọ iṣẹ́ nínú ìfitónilétí GitHub Actions, máa ń pa àwọn ọ̀wọ̀n wọn mọ́ ní ẹ̀gbẹ́ ara wọn, wọ́n sì ń tò wọ́n dọ́gba láti ìlà dé ìlà, dípò kí wọ́n fọ́ àkọlé sí lẹ́tà kan ní ìlà kọ̀ọ̀kan. Àwọn ìlà ìpínyà láàrin àwọn apá ìfiránṣẹ́ ń hàn báyìí pẹ̀lú.
+"""
+
+["2026-09-30-1550-taller-important-marker"]
+title = "Àmì Pàtàkì tó ga jù"
+text = """
+Àmì Pàtàkì lẹ́gbẹ̀ẹ́ ìràwọ̀ ga sí i ní 2 px, nítorí náà kò dà bí èyí tí a tẹ̀ mọ́lẹ̀ lẹ́gbẹ̀ẹ́ ìràwọ̀ àti àpótí àmì mọ́. Ó ṣì wà ní àárín ìlà náà.
+"""
+
+["2026-09-30-1617-folder-click-goes-to-top"]
+title = "Padà sí òkè àkójọ"
+text = """
+Nígbà tí àkójọ lẹ́tà bá ti lọ sísàlẹ̀ ní ojú-ìbojú kan, bọ́tìnnì yíká kan ní ìsàlẹ̀ ọ̀tún rẹ̀ máa ń gbé e padà sí òkè. Títẹ fódà tí o ti wà nínú rẹ̀, bí Àpótí-ìwọlé, máa ń ṣe bákan náà, bí ti Gmail, Home náà sì ń ṣe bẹ́ẹ̀.
+"""
+
+["2026-09-30-1622-send-from-file-manager"]
+title = "Fi fáìlì ránṣẹ́ láti olùṣàkóso fáìlì rẹ"
+text = """
+Tẹ àwọn fáìlì tàbí fódà ní apá ọ̀tún nínú Dolphin, GNOME Files tàbí Windows Explorer kí o sì yan Fi ránṣẹ́ pẹ̀lú Katna Mail: ìfiránṣẹ́ tuntun á ṣí pẹ̀lú wọn ní àfikún, fódà sì máa ń lọ gẹ́gẹ́ bí zip. Bí o bá ní ju àkáǹtì lẹ́tà kan lọ, yan èyí tí o fẹ́ fi ránṣẹ́ láti inú mẹ́nù kékeré rẹ̀.
+"""
+
+["2026-09-30-1624-files-page"]
+title = "Gbogbo fáìlì ní ibì kan"
+text = """
+Ojú-ìwé Fáìlì tuntun, nísàlẹ̀ ọ̀pá áàpù, ń fi gbogbo àfikún láti gbogbo àkáǹtì hàn, èyí tuntun jùlọ ní àkọ́kọ́. Dín in kù sí àwòrán, PDF tàbí ìwé, sí àkáǹtì kan, sí ènìyàn kan tàbí àkókò kan, tàbí wá nípa orúkọ, olùfiránṣẹ́ tàbí àkọlé. Tẹ fáìlì kan ní apá ọ̀tún fún púpọ̀ sí i, Fi lẹ́tà náà hàn sì máa ń mú ọ lọ sí lẹ́tà tí ó bá wá.
+"""
+
+["2026-09-30-1643-dimmer-row-markers"]
+title = "Àkójọ lẹ́tà tó farabalẹ̀ jù"
+text = """
+Àpótí àmì òfo, ìràwọ̀ tàbí àmì Pàtàkì nínú àkójọ lẹ́tà máa ń ṣókùnkùn díẹ̀ títí ìtọ́ka yóò fi wà lórí ìlà rẹ̀. Àwọn ìràwọ̀ àti àmì tí o ti fi sí máa ń pa àwọ̀ wọn mọ́.
+"""
+
+["2026-09-30-1704-folder-arrows-on-hover"]
+title = "Pánẹ́ẹ̀lì fódà tó wà ní mímọ́ jù"
+text = """
+Àwọn ọfà kékeré lẹ́gbẹ̀ẹ́ Àpótí-ìwọlé, Oní ìràwọ̀ àti àwọn fódà mìíràn máa ń hàn nìkan nígbà tí ìtọ́ka bá wà lórí fódà náà. Fódà tí o ti ṣí máa ń pa ọfà rẹ̀ mọ́.
+"""
+
+["2026-09-30-1712-arrow-keys-in-times"]
+title = "Àwọn bọ́tìnnì ọfà nínú àpótí àkókò"
+text = """
+Nínú Yan ọjọ́ àti àkókò, àti nínú àkókò iṣẹ́ kan, Òkè àti Ìsàlẹ̀ máa ń yí apá tí kọ́sọ̀ wà padà: wákàtí, ìṣẹ́jú tàbí AM/PM.
+"""
+
+["2026-09-30-1742-check-one-folder"]
+title = "Ṣàyẹ̀wò fódà kan fún lẹ́tà tuntun"
+text = """
+"Ṣàyẹ̀wò lẹ́tà tuntun" nínú mẹ́nù apá ọ̀tún fódà kan ń ṣàyẹ̀wò fódà náà nìkan báyìí, nítorí náà ó yára. Lórí àpótí-ìwọlé àkáǹtì kan lábẹ́ Gbogbo àkáǹtì, ó ń ṣàyẹ̀wò àpótí-ìwọlé àkáǹtì náà, lórí àkójọ bí Àpótí-ìwọlé tàbí Tí a fi ránṣẹ́ lábẹ́ Gbogbo àkáǹtì, ó sì ń ṣàyẹ̀wò fódà náà nínú àkáǹtì kọ̀ọ̀kan.
+"""
+
+["2026-09-30-1742-frosted-viewer"]
+title = "Olùwò tó fúyẹ́, tó dà bí dígí oníkùrukùru"
+text = """
+Ọ̀pá òkè olùwò àfikún tín-ínrín ó sì fúyẹ́ sí i, ojú-ìwé, ìsúnmọ́ àti yíyí sì wà lórí àmì yíká kan. Ní àyíká fáìlì náà, Katna Mail ń hàn ní ṣíṣú lábẹ́ ìbòjú dúdú rírọ̀, àwọn ọ̀pá irinṣẹ́ sì dà bí dígí oníkùrukùru pẹ̀lú. Ìṣúmọ́ náà ń tẹ̀lé Ètò > Àdánwò; láìsí i, olùwò ń lo ìbòjú dúdú lásán.
+"""
+
+["2026-09-30-1752-touchpad-glide"]
+title = "Fífi ìka gbá pádì ìfọwọ́kàn ń yọ̀"
+text = """
+Fífi ìka méjì gbá pádì ìfọwọ́kàn kíákíá máa ń tẹ̀síwájú láti yí lọ, á sì dín ìyára kù, bí nínú àwọn áàpù mìíràn. Fọwọ́ kan pádì ìfọwọ́kàn lẹ́ẹ̀kan sí i láti dá a dúró. Lórí Wayland.
+"""
+
+["2026-09-30-1800-inbox-tabs-in-top-row"]
+title = "Àwọn táàbù àpótí-ìwọlé ní ìlà òkè"
+text = """
+Àkọ́kọ́, Ìpolówó, Àwùjọ àti àwọn táàbù àpótí-ìwọlé mìíràn wà nínú ọ̀pá yíká ní ìlà òkè àkójọ báyìí, ọ̀kọ̀ọ̀kan pẹ̀lú iye lẹ́tà àìkà rẹ̀ ní àwọ̀. Ìtànmọ́lẹ̀ máa ń yọ̀ lọ sí táàbù tí o yàn, títẹ táàbù tó ṣí sì máa ń gbé àkójọ rẹ̀ padà sí òkè. Nígbà tí àkójọ bá tóóró, ọ̀pá náà máa ń gba ìlà tirẹ̀, á sì fi àwọn àmì hàn, pẹ̀lú orúkọ táàbù tó ṣí; lórí fóònù ó wà nínú ọ̀pá àkójọ, pẹ̀lú Sọdọ̀tun nínú mẹ́nù Síwájú sí i.
+"""
+
+["2026-09-30-1805-account-menu"]
+title = "Ìsọfúnni àkáǹtì nínú mẹ́nù apá ọ̀tún"
+text = """
+Tẹ orúkọ àkáǹtì kan ní apá ọ̀tún nínú àkójọ fódà, tàbí àpótí-ìwọlé rẹ̀ lábẹ́ Gbogbo àkáǹtì, láti rí àdírẹ́sì rẹ̀, bóyá ó wà ní ìmúṣiṣẹ́pọ̀ àti ìgbà tí a ṣàyẹ̀wò rẹ̀ kẹ́yìn, àti iye ààyè ìpamọ́ tí ó ń lò. Láti ibẹ̀ o lè ṣàyẹ̀wò àpótí-ìwọlé náà, kọ lẹ́tà tuntun láti àkáǹtì náà, ṣí ètò rẹ̀, tàbí wọlé lẹ́ẹ̀kan sí i nígbà tí wíwọlé bá ti parí.
+"""
+
+["2026-09-30-1819-glass-search-box"]
+title = "Àpótí ìwádìí bí dígí"
+text = """
+Nígbà tí ẹ̀yìn tí ó ṣú bá wà ní títàn, àpótí ìwádìí dà bí dígí oníkùrukùru pẹ̀lú ẹ̀gbẹ́ fẹ́ẹ́rẹ́ nígbà tí o kò bá ń lò ó, ó sì máa ń di líle nígbà tí o bá tẹ inú rẹ̀ láti tẹ̀wé.
+"""
+
+["2026-09-30-1820-search-cancel-restores"]
+title = "Fagilé ìwádìí, rí lẹ́tà rẹ padà"
+text = """
+Escape tàbí pípa àpótí ìwádìí rẹ́ máa ń mú ọ padà sí ibi tí o wà báyìí: fódà kan náà, ibi kan náà nínú àkójọ àti lẹ́tà tí o ti ṣí. Ṣí èsì ìwádìí kan dípò bẹ́ẹ̀, ìwádìí náà á sì gba ipò bí ti tẹ́lẹ̀.
+"""
+
+["2026-09-30-1840-first-run-window"]
+title = "Ìbẹ̀rẹ̀ àkọ́kọ́ tó rọrùn jù"
+text = """
+Nígbà tí o bá ń ṣètò Katna Mail, fèrèsé náà ń hàn lẹ́yìn àwọn ojú-ìwé ìṣètò lábẹ́ ìbòjú fẹ́ẹ́rẹ́: àwọn áàpù, Kọ̀wé àti àpótí ìwádìí, pẹ̀lú àwọn àyè rírọ̀ níbi tí àwọn fódà àti lẹ́tà rẹ yóò hàn. Ìgbésẹ̀ tuntun kan ń pèsè àkáǹtì Katna, ó sì ń ṣe àkójọ ohun tí ó ń tàn (ìjẹ́rìí kíkà, títọpa ìjápọ̀, Ìgbòkègbodò àti ìtumọ̀), tàbí o lè fò ó.
+"""
+
+["2026-09-30-1850-windows-frame-and-blur"]
+title = "Férémù àti ìṣúmọ́ Katna lórí Windows"
+text = """
+Lórí Windows, Katna Mail ń ṣí nínú ojú-ìbojú báyìí, ní títóbi jùlọ nígbà tí ojú-ìbojú bá kéré. Ètò > Àdánwò lè mú ohun tó wà lẹ́yìn fèrèsé ṣú, férémù Katna fúnra rẹ̀ sì ń sọ ọ̀pá òkè di ọ̀pá àkọlé nígbà tó kàn tí o bá ṣí Katna Mail.
+"""
+
+["2026-09-30-1851-dark-depth"]
+title = "Ó rọrùn láti rí nínú àwọ̀ òkùnkùn"
+text = """
+Nínú àwọ̀ òkùnkùn, àwọn nǹkan tó ń fò lórí àkójọ lẹ́tà ti mọ́lẹ̀ díẹ̀ sí i báyìí pẹ̀lú ẹ̀gbẹ́ ìmọ́lẹ̀ fẹ́ẹ́rẹ́, nítorí òjìji kì í fi bẹ́ẹ̀ hàn lórí ẹ̀yìn dúdú. Bọ́tìnnì Padà sí òkè, àwọn mẹ́nù, fèrèsé Kọ̀wé àti àwọn àpótí ìbánisọ̀rọ̀ ń hàn kedere. Àwọ̀ ìmọ́lẹ̀ rí bí ti tẹ́lẹ̀.
+"""
+
+["2026-09-30-1911-files-scrollbar"]
+title = "Ọ̀pá yíyí lórí ojú-ìwé Fáìlì"
+text = """
+Nígbà tí fáìlì bá pọ̀ ju ohun tí ó gbà lọ, ọ̀pá yíyí tín-ínrín máa ń hàn ní apá ọ̀tún nígbà tí o bá ń yí lọ tàbí nígbà tí ìtọ́ka bá wà lórí àwọn fáìlì, lẹ́yìn náà á pòórá. Fà á láti la àwọn fáìlì kọjá kíákíá, tàbí tẹ òkè tàbí ìsàlẹ̀ rẹ̀ láti fò síbẹ̀.
+"""
+
+["2026-09-30-1919-tabs-keep-open-mail"]
+title = "Yíyí táàbù padà ń pa lẹ́tà tó ṣí mọ́"
+text = """
+Nígbà tí Pánẹ́ẹ̀lì kíkà bá wà lẹ́gbẹ̀ẹ́ àkójọ, yíyan táàbù àpótí-ìwọlé mìíràn kò pa lẹ́tà tí o ń kà dé mọ́; àkójọ ń yí padà, lẹ́tà náà sì ń wà ní ṣíṣí.
+"""
+
+["2026-09-30-1925-inbox-tabs-centred"]
+title = "Àwọn táàbù àpótí-ìwọlé ní àárín"
+text = """
+Àwọn táàbù àpótí-ìwọlé wà ní àárín ìlà òkè àkójọ báyìí, wọ́n sì ń yẹ̀ sí ẹ̀gbẹ́ kìkì bí àwọn bọ́tìnnì rẹ̀ ṣe nílò tó.
+"""
+
+["2026-09-30-1945-page-box-arrow-keys"]
+title = "Àwọn bọ́tìnnì ọfà nínú àpótí ojú-ìwé"
+text = """
+Nínú PDF kan, tẹ nọ́mbà ojú-ìwé kí o sì tẹ Òkè tàbí Ìsàlẹ̀ láti padà sí ojú-ìwé tó ṣáájú tàbí lọ sí èyí tó kàn. Di bọ́tìnnì náà mú láti yí àwọn ojú-ìwé kọjá kíákíá.
+"""
+
+["2026-09-30-1952-phone-bar-labels"]
+title = "Orúkọ áàpù lórí fóònù ń tẹ̀lé ètò rẹ"
+text = """
+Nígbà tí orúkọ áàpù bá wà ní pípa nínú Ètò, ọ̀pá tó wà nísàlẹ̀ fèrèsé tó tóbi bí fóònù ń fi àwọn àmì nìkan hàn báyìí, ní àárín, bí ọ̀pá ẹ̀gbẹ́ ṣe ń ṣe.
+"""
+
+["2026-09-30-1955-account-menu-icons"]
+title = "Ètò àti èdè nínú mẹ́nù àkáǹtì"
+text = """
+Mẹ́nù tó wà lábẹ́ àwòrán àkáǹtì rẹ ń ṣí pẹ̀lú ìlà àwọn àmì báyìí: ṣí Ètò tàbí yí èdè padà. Àsíá èdè ti kúrò lórí ọ̀pá òkè láti fi ààyè sílẹ̀.
+"""
+
+["2026-09-30-2001-phone-tabs-fold"]
+title = "Gbogbo táàbù àpótí-ìwọlé ń wà ní àrọ́wọ́tó"
+text = """
+Nígbà tí fèrèsé bá tóóró, àwọn táàbù àpótí-ìwọlé máa ń ká jọ díẹ̀díẹ̀ dípò kí wọ́n fara pamọ́: orúkọ máa ń di àmì tó tóbi jù, lẹ́yìn náà iye náà á yẹ̀ sí ẹ̀gbẹ́. Lórí fóònù, àwọn táàbù ń tàn kálẹ̀ lórí gbogbo ọ̀pá, ó rọrùn láti tẹ̀, pẹ̀lú Síwájú sí i ní òpin ọ̀pá kan náà.
+"""
+
+["2026-09-30-2012-fit-and-page-arrows"]
+title = "Bá a mu, ọfà ojú-ìwé àti púpọ̀ sí i nínú olùwò"
+text = """
+Olùwò àfikún ní bọ́tìnnì Bá a mu: ojú-ìwé PDF máa ń bá gíga fèrèsé mu, àwòrán máa ń bá fèrèsé mu, ìwé, sílááìdì àti spreadsheet sì máa ń bá ìbú rẹ̀ mu. Àwọn àwòrán tún ní Ìwọ̀n gidi, a sì lè yí wọn. Tọ́ka sí àpótí ojú-ìwé fún àwọn ọfà kékeré láti padà tàbí lọ síwájú ní ojú-ìwé kan, àwọn sílááìdì sì ní àpótí tiwọn.
+"""
+
+["2026-09-30-2019-folder-icon-colours"]
+title = "Àwọn àmì fódà aláwọ̀"
+text = """
+Àwọn àmì inú pánẹ́ẹ̀lì fódà ní àwọ̀ tó ń sọ ohun tí fódà kọ̀ọ̀kan ní báyìí: Àìkà jẹ́ búlúù, Oní ìràwọ̀ jẹ́ yẹ́lò, Pàtàkì jẹ́ ọsàn, Tí a fi ránṣẹ́ jẹ́ ewé, Àwúrúju jẹ́ pupa, Àwọn àkọ̀pamọ́ jẹ́ àlùkò, Àpótí-ìwọlé sì jẹ́ àwọ̀ àfihàn déskítọ́ọ̀pù rẹ. Iye lẹ́tà wà nínú àmì yíká kékeré, fẹ́ẹ́rẹ́.
+"""
+
+["2026-09-30-2040-tabs-no-slide"]
+title = "Àwọn táàbù àpótí-ìwọlé tó yára jù"
+text = """
+Títẹ táàbù àpótí-ìwọlé kan ń tàn ìmọ́lẹ̀ sí i lẹ́sẹ̀kẹsẹ̀ báyìí, pẹ̀lú ìgbì títẹ̀ nìkan, dípò kí ìtànmọ́lẹ̀ yọ̀ kọjá àwọn táàbù mìíràn.
+"""
+
+["2026-10-01-0145-files-tidy"]
+title = "Ojú-ìwé Fáìlì tó wà ní mímọ́ jù"
+text = """
+Iye tó wà lẹ́gbẹ̀ẹ́ irú fáìlì kọ̀ọ̀kan àti àkáǹtì kọ̀ọ̀kan wà nínú àmì yíká kékeré kan náà bí iye fódà nínú Lẹ́tà báyìí. Ìlà tó wà lábẹ́ àkọlé ojú-ìwé náà àti àwọn ìlà fáìlì tún ń bẹ̀rẹ̀ tí wọ́n sì ń parí ní ẹ̀gbẹ́ kan náà.
+"""
+
+["2026-10-01-0147-today-marker-fits"]
+title = "Ọjọ́ òní bá àmì rẹ̀ mu"
+text = """
+Nínú ìwòye Oṣù ti Kàlẹ́ńdà, àmì òní ń gba gbogbo ọjọ́ náà báyìí. Ní ọjọ́ 1, ó máa ń di àmì yíká ní àyíká "01 Oct" dípò òbìrí kékeré tí orúkọ náà ń ṣàn jáde kúrò nínú rẹ̀.
+"""
+
+["2026-10-01-0208-tab-counts-stay"]
+title = "Iye táàbù ń dúró sí ipò"
+text = """
+Ṣíṣí táàbù àpótí-ìwọlé kan kò mú ọ̀pá táàbù fò mọ́. Táàbù tó ṣí ń pa iye lẹ́tà tuntun rẹ̀ mọ́, tí ó ń rẹ̀ díẹ̀díẹ̀ di eérú, iye náà sì ń ká lọ díẹ̀díẹ̀ ní kété tí o bá ti ka gbogbo ohun tó wà nínú táàbù náà.
+"""
+
+["2026-10-01-0225-files-keyboard"]
+title = "Lọ láàrin àwọn fáìlì rẹ pẹ̀lú kíbọ́ọ̀dù"
+text = """
+Lórí ojú-ìwé Fáìlì, àwọn bọ́tìnnì ọfà ń gbé ọ láàrin àwọn fáìlì báyìí, Home àti End ń lọ sí àkọ́kọ́ àti ìkẹyìn, Enter sì ń ṣí ọ̀kan. Nínú olùwò tí a ṣí láti ibẹ̀, àwọn ọfà ń lọ sí fáìlì tó kàn lójú-ìwé náà, lẹ́tà yòówù tí ó bá wá; Shift pẹ̀lú ọfà ń dúró pẹ̀lú àwọn àfikún lẹ́tà kan náà.
+"""
+
+["2026-10-01-0254-files-dates"]
+title = "Yan àwọn ọjọ́ lórí ojú-ìwé Fáìlì"
+text = """
+Àmì àkókò lórí ojú-ìwé Fáìlì ń ṣí kàlẹ́ńdà oṣù méjì báyìí pẹ̀lú àṣàyàn kíákíá bí Ọ̀sẹ̀ tó kọjá àti Oṣù yìí. Tẹ ọjọ́ kan, tàbí fà á láti ọjọ́ kan sí òmíràn, àwọn fáìlì á sì tẹ̀lé bí o ṣe ń fà á. Lẹ́yìn náà yí kẹ̀kẹ́ màúsì lórí àmì náà láti gbé gígùn àkókò kan náà sẹ́yìn tàbí síwájú.
+"""
+
+["2026-10-01-0256-color-schemes"]
+title = "Ètò àwọ̀ àti àwọ̀ àfihàn"
+text = """
+Ètò > Ìrísí ní Ipò, Àwọ̀ àti Àwọ̀ àfihàn gẹ́gẹ́ bí àṣàyàn ọ̀tọ̀ọ̀tọ̀ báyìí. Yan ìmọ́lẹ̀ tàbí òkùnkùn, lẹ́yìn náà èyíkéyìí nínú ètò àwọ̀ 14, bí Clear, Nord, Solarized tàbí Catppuccin, tàbí pa ti déskítọ́ọ̀pù rẹ mọ́. Ọ̀kọ̀ọ̀kan ń ṣiṣẹ́ ní ìmọ́lẹ̀ àti òkùnkùn, àwọ̀ àfihàn èyíkéyìí sì lè wà lórí rẹ̀.
+"""
+
+["2026-10-01-0310-badge-counts-what-notifies"]
+title = "Iye lórí ọ̀pá iṣẹ́ bá ìfitónilétí rẹ mu"
+text = """
+Iye àìkà lórí ọ̀pá iṣẹ́ àti àtẹ ń ka lẹ́tà kan náà tí ó ń fi tó ọ létí báyìí: táàbù Àkọ́kọ́ ti Àpótí-ìwọlé rẹ. Ìpolówó, Àwùjọ, Ìmúdójúìwọ̀n àti Àpérò kò fi kún un mọ́.
+"""
+
+["2026-10-01-0312-quiet-selected-row"]
+title = "Fódà tó ṣí tó farabalẹ̀ jù"
+text = """
+Fódà tó ṣí nínú Lẹ́tà, àti ìwòye tó ṣí nínú Olùbásọ̀rọ̀, Iṣẹ́, Àkọsílẹ̀ àti Fáìlì, ni a ń sàmì sí ní eérú rírọ̀ báyìí dípò àwọ̀ àfihàn, kí Kọ̀wé àti ọ̀pá áàpù lè yọ jáde, kí àwọn àmì fódà sì pa àwọ̀ tiwọn mọ́.
+"""
+
+["2026-10-01-0315-desktop-schemes"]
+title = "Ètò àwọ̀ déskítọ́ọ̀pù rẹ"
+text = """
+Ètò > Ìrísí > Àwọ̀ tún ń ṣe àkójọ ètò àwọ̀ déskítọ́ọ̀pù rẹ: gbogbo ètò àwọ̀ tí a fi sórí KDE Plasma, àti lórí Windows àwọn àwọ̀ rẹ̀ àti àwọn àkòrí Contrast. Ètò ń ṣiṣẹ́ ní ìmọ́lẹ̀ àti òkùnkùn lórí KDE náà báyìí, ní lílo alábàáṣepọ̀ ìmọ́lẹ̀ tàbí òkùnkùn ti ètò rẹ, Katna sì ń tẹ̀lé àwọ̀ àfihàn Windows.
+"""
+
+["2026-10-01-0329-mute-folders"]
+title = "Pa ohùn fódà, táàbù tàbí àkáǹtì kan"
+text = """
+Agogo tó wà lórí àkójọ ń pa ohùn fódà tó ṣí tàbí táàbù Àpótí-ìwọlé fún wákàtí kan, títí di òwúrọ̀ ọ̀la, tàbí títí tí o fi tún un tàn. Tẹ fódà tàbí àkáǹtì kan ní apá ọ̀tún fún bákan náà. Ètò > Ìfitónilétí ń fi àwọn fódà tó ń fi tó ọ létí hàn, àwọn tó ń kà lórí ọ̀pá iṣẹ́, àti gbogbo ohun tí a pa ohùn rẹ̀.
+"""
+
+["2026-10-01-0335-tray-style"]
+title = "Àmì-àwòrán àtẹ ní àwọ̀ tàbí àwọ̀ kan"
+text = """
+Ètò > Gbogbogbò > Déskítọ́ọ̀pù > Àmì-àwòrán àtẹ ní àwọ̀ ń yan àwọn àwọ̀ Katna tàbí àwọ̀ kan bí àwọn àmì mìíràn lórí pánẹ́ẹ̀lì. Àwọ̀ kan ń wà ní àwọ̀ kan pẹ̀lú lẹ́tà àìkà, iye àìkà sì máa ń jẹ́ pupa nígbà gbogbo. Lórí Linux, àmì-àwòrán àtẹ jẹ́ àwọ̀ kan ní àtilẹ̀wá; lórí Windows ó jẹ́ aláwọ̀.
+"""
+
+["2026-10-01-0354-mute-conversations"]
+title = "Pa ohùn ìjíròrò tàbí olùfiránṣẹ́ kan"
+text = """
+Agogo tó wà lórí ìjíròrò tó ṣí ń pa ohùn rẹ̀: èsì tuntun kò ní fi tó ọ létí mọ́, wọn kò sì ní fi kún iye ọ̀pá iṣẹ́, agogo tí a fà ìlà kọjá sì ń sàmì sí i nínú àkójọ. Tẹ ìjíròrò kan ní apá ọ̀tún fún Pa ohùn ìjíròrò tàbí Pa ohùn olùfiránṣẹ́, tàbí tẹ M.
+"""
+
+["2026-10-01-0410-your-color-schemes"]
+title = "Ṣẹ̀dá ètò àwọ̀ tìrẹ"
+text = """
+Ètò > Ìrísí > Àwọ̀ > Ṣe é bí o ṣe fẹ́ ń da ètò tí o ń lò kọ sínú olóòtú kan: yí èyíkéyìí nínú àwọ̀ mẹ́jọ rẹ̀ padà ní apá ìmọ́lẹ̀ àti apá òkùnkùn, wo fèrèsé lẹ́tà nínú wọn, Katna á sì sọ ohun tí yóò ṣòro láti kà fún ọ. Gbé wọlé ń gba fáìlì ètò àwọ̀ Katna tàbí KDE, títẹ ètò rẹ ní apá ọ̀tún sì ń ṣàtúnṣe rẹ̀, ń ṣe ẹ̀dà rẹ̀, ń gbé e jáde tàbí ń pa á rẹ́.
+"""
+
+["2026-10-01-0527-calendar-opens-on-week"]
+title = "Kàlẹ́ńdà ń ṣí ní Ọ̀sẹ̀"
+text = """
+Katna Calendar ń ṣí ní ìwòye Ọ̀sẹ̀ lẹ́ẹ̀kan sí i, pẹ̀lú àwọn ọjọ́ tó ń bọ̀ ní wákàtí. Oṣù, Ọjọ́, Ọdún àti àwọn yòókù wà ní títẹ̀ kan ṣoṣo lórí ọ̀pá òkè.
+"""
+
+["2026-10-01-0552-lighter-count-on-open-row"]
+title = "Iye ń yọ jáde lórí fódà tó ṣí"
+text = """
+Iye lẹ́gbẹ̀ẹ́ fódà tó ṣí nínú Lẹ́tà, àti lẹ́gbẹ̀ẹ́ irú tó ṣí nínú Fáìlì, wà nínú àmì yíká tó mọ́lẹ̀ ju eérú ìlà náà lọ báyìí, nítorí náà kò rì sínú rẹ̀ mọ́, ní ìmọ́lẹ̀ àti òkùnkùn.
+"""
+
+["2026-10-01-0652-files-leave-out-small-pictures"]
+title = "Fáìlì ń yọ àwọn àmì ìbuwọ́lù sílẹ̀"
+text = """
+Ojú-ìwé Fáìlì kò kún fún àwọn àmì ìdánimọ̀ kékeré àti àwọn àmì tó ń wá nínú ìbuwọ́lù ímeèlì mọ́: àwọn àwòrán tí kò tó 12 KB, tàbí tí kò tó 100 píksẹ́ẹ̀lì ní ìbú tàbí gíga, ń wà lábẹ́ lẹ́tà wọn. Yí àwọn ààlà méjèèjì padà, tàbí fi gbogbo àwòrán hàn, nínú Ètò > Àwọn áàpù àtilẹ̀wá > Ojú-ìwé Fáìlì.
+"""
+
+["2026-10-01-0700-mute-from-contact"]
+title = "Pa ohùn olùfiránṣẹ́ láti káàdì olùbásọ̀rọ̀ rẹ̀"
+text = """
+Káàdì olùbásọ̀rọ̀ lẹ́gbẹ̀ẹ́ lẹ́tà kan ní agogo ní àkọ́kọ́ láàrin àwọn bọ́tìnnì rẹ̀: ó ń pa ohùn gbogbo ohun tó ń wá láti ọ̀dọ̀ olùfiránṣẹ́ náà, agogo tí a fà ìlà kọjá lẹ́yìn orúkọ wọn sì ń fi hàn. Tẹ ẹ́ lẹ́ẹ̀kan sí i láti gbọ́ láti ọ̀dọ̀ wọn.
+"""
+
+["2026-10-01-0803-select-hover-fits"]
+title = "Bọ́tìnnì yíyan tó wà ní mímọ́ jù"
+text = """
+Ìtànmọ́lẹ̀ lẹ́yìn àpótí àmì yíyan lókè àkójọ lẹ́tà ga tó àwọn bọ́tìnnì lẹ́gbẹ̀ẹ́ rẹ̀ báyìí, ó jìnnà sí ẹ̀gbẹ́ káàdì bí ó ṣe jìnnà sí òkè rẹ̀, àwọn igun rẹ̀ sì ń tẹ̀lé igun káàdì náà.
+"""
+
+["2026-10-01-0807-files-leave-out-signature-pictures"]
+title = "Fáìlì ń yọ àwọn àwòrán ìbuwọ́lù ńlá sílẹ̀ pẹ̀lú"
+text = """
+Àwòrán tí ẹnìkan ń fi ránṣẹ́ nínú ìjíròrò mẹ́ta tàbí jù bẹ́ẹ̀ lọ, bí àsíá tàbí fọ́tò nínú ìbuwọ́lù wọn, kò hàn lórí ojú-ìwé Fáìlì mọ́, bẹ́ẹ̀ ni àwọn àmì nẹ́tíwọ́ọ̀kì àwùjọ, bí wọ́n ti wù kí wọ́n tóbi tó. Wọ́n ṣì ń hàn lábẹ́ lẹ́tà wọn, pípa "Fi àwọn àwòrán kékeré sílẹ̀" sì ń mú gbogbo wọn padà.
+"""
+
+["2026-10-01-0830-muted-contact-mark"]
+title = "Wo ẹni tí a pa ohùn rẹ̀"
+text = """
+Agogo tí a fà ìlà kọjá ń tẹ̀lé orúkọ olùfiránṣẹ́ tí a pa ohùn rẹ̀ báyìí níbikíbi tí wọ́n bá ti hàn: àkójọ lẹ́tà, lẹ́tà tó ṣí, Olùbásọ̀rọ̀, àwọn àpótí Sí àti Ẹ̀dà àti àwọn àbá wọn, ojú-ìwé Fáìlì, àwọn àlejò ìṣẹ̀lẹ̀ àti ìròyìn Ìgbòkègbodò. Kò sí ìyàlẹ́nu mọ́ nípa ìdí tí lẹ́tà wọn fi dákẹ́.
+"""
+
+["2026-10-01-0839-sounds"]
+title = "Ohùn fún lẹ́tà tuntun, ìránnilétí àti fífiránṣẹ́"
+text = """
+Ètò > Ìfitónilétí ní apá Ohùn: lẹ́tà tuntun, ìránnilétí, lẹ́tà tó padà sí àpótí-ìwọlé, lẹ́tà tí a fi ránṣẹ́ àti lẹ́tà tí a kò fi ránṣẹ́ ọ̀kọ̀ọ̀kan ń yan ohùn láti déskítọ́ọ̀pù rẹ, ń dún un pẹ̀lú bọ́tìnnì lẹ́gbẹ̀ẹ́ rẹ̀, tàbí ń pa á. Àwọn ohùn ń dún lórí KDE Plasma náà báyìí, wọ́n sì ń dákẹ́ fún lẹ́tà tí a pa ohùn rẹ̀ àti nígbà Má ṣe dí mi lọ́wọ́.
+"""
+
+["2026-10-01-0925-chat-view"]
+title = "Ka àwọn ìjíròrò bí ìtàkùrọ̀sọ (àdánwò)"
+text = """
+Tan Ètò > Àdánwò > Ìjíròrò bí ìtàkùrọ̀sọ, lẹ́tà láàrin àwọn ènìyàn á sì kà bí ìtàkùrọ̀sọ ẹgbẹ́: àpò ọ̀rọ̀ kan fún lẹ́tà kọ̀ọ̀kan pẹ̀lú ohun tí a kọ nìkan, tìrẹ ní apá ọ̀tún, àwòrán àti fáìlì gẹ́gẹ́ bí mídíà ìtàkùrọ̀sọ. Lẹ́tà tí a fà yọ àti ìbuwọ́lù ń dúró lẹ́yìn ··· nínú àpò ọ̀rọ̀ kọ̀ọ̀kan, títẹ orúkọ kan sì ń fi káàdì wọn hàn pẹ̀lú ìbuwọ́lù wọn. Fèsì láti inú àpótí nísàlẹ̀, pẹ̀lú Ctrl+Enter, ọ̀pá ìgúnrege lẹ́yìn Aa àti pínnì ìwé fún fáìlì, àwòṣe àti ìbuwọ́lù. Àwọn ìwé ìròyìn ń pa ìwòye àtẹ̀yìnwá mọ́, ìyípadà Ìtàkùrọ̀sọ | Lẹ́tà sì ń yí ìjíròrò èyíkéyìí sí ọ̀nà méjèèjì.
+"""
+
+["2026-10-01-0946-forward-keeps-files"]
+title = "Fífi ránṣẹ́ síwájú ń pa àwọn fáìlì mọ́"
+text = """
+Fífi ìfiránṣẹ́ kan ránṣẹ́ síwájú ń mú àwọn àfikún rẹ̀ wá pẹ̀lú báyìí, wọ́n ń hàn lábẹ́ ìfiránṣẹ́ náà kí o lè yọ èyíkéyìí kúrò ṣáájú fífiránṣẹ́. Yíyí ìfiránṣẹ́-síwájú padà sí èsì ń yọ wọ́n kúrò lẹ́ẹ̀kan sí i.
+"""
+
+["2026-10-01-1009-forward-a-file"]
+title = "Fi fáìlì nìkan ránṣẹ́ síwájú"
+text = """
+Olùwò àfikún ní bọ́tìnnì Fi ránṣẹ́ síwájú lórí ọ̀pá òkè rẹ̀: ó ń bẹ̀rẹ̀ lẹ́tà tuntun pẹ̀lú fáìlì náà nìkan ní àfikún, láìsí lẹ́tà tí ó bá wá. Àwọn fáìlì tí kò ní àyẹ̀wò ṣáájú ń pèsè Fi ránṣẹ́ síwájú pẹ̀lú, bẹ́ẹ̀ sì ni àwọn káàdì àfikún lábẹ́ lẹ́tà tó ṣí, lẹ́gbẹ̀ẹ́ Fi pamọ́.
+"""
+
+["2026-10-01-1039-rephrase-with-ai"]
+title = "Sọ ọ́ lọ́nà míì pẹ̀lú AI"
+text = """
+Yan ọ̀rọ̀ nínú ìfiránṣẹ́ kan kí o sì tẹ àmì ìtànná lẹ́gbẹ̀ẹ́ rẹ̀, tàbí Ctrl+J, kí a tún un kọ ní kedere jù, ní kúkúrú jù, ní ọ̀rẹ́ jù tàbí ní ìlànà jù, lẹ́yìn náà Rọ́pò. Katna AI jẹ́ ọ̀fẹ́ fún ọjọ́ 30, tàbí lo kọ́kọ́rọ́ tìrẹ láti Google Gemini, OpenAI, Claude, Mistral, DeepSeek, OpenRouter tàbí àwòṣe kan lórí kọ̀ǹpútà yìí. AI tún lè parí àwọn gbólóhùn rẹ ní eérú; tàn án nínú Ètò > Kíkọ̀wé.
+"""
+
+["2026-10-01-1043-header-details-selectable"]
+title = "Da ọ̀rọ̀ kọ láti inú àlàyé lẹ́tà kan"
+text = """
+A lè yan àwọn àlàyé lábẹ́ "sí mi" kí a sì dà wọ́n kọ báyìí bí lẹ́tà náà fúnra rẹ̀. Tẹ àdírẹ́sì kan láti rí káàdì ẹni náà lẹ́gbẹ̀ẹ́ lẹ́tà, tàbí tẹ ẹ́ ní apá ọ̀tún fún Ṣẹ̀dà àdírẹ́sì. Àwọn tí a pa ohùn wọn ń fi agogo tí a fà ìlà kọjá hàn níbẹ̀ pẹ̀lú.
+"""
+
+["2026-10-01-1112-left-bar-button"]
+title = "Bọ́tìnnì ńlá kan, ìkájọ kan, lórí gbogbo ojú-ìwé"
+text = """
+Bọ́tìnnì ńlá lókè ọ̀pá òsì rí bákan náà ó sì wà ní ibi kan náà lórí gbogbo ojú-ìwé báyìí, ó sì ń ṣe iṣẹ́ ojú-ìwé náà: Kọ̀wé nínú Lẹ́tà àti Fáìlì, Ìṣẹ̀lẹ̀ tuntun, Olùbásọ̀rọ̀ tuntun, Iṣẹ́ tuntun àti Àkọsílẹ̀ tuntun. Kíká ọ̀pá òsì jọ ń ká a jọ níbi gbogbo, nígbà tí ó bá sì wà ní kíká, bọ́tìnnì ojú-ìwé kọ̀ọ̀kan ń dúró lókè ọ̀pá ẹ̀gbẹ́. Lórí fóònù, òun ni bọ́tìnnì tó ń fò.
+"""
+
+["2026-10-01-1115-color-picker"]
+title = "Olùyan àwọ̀ nínú olóòtú ètò àwọ̀"
+text = """
+Tẹ àwọ̀ kan nínú olóòtú ètò àwọ̀, olùyan kan á sì ṣí lẹ́gbẹ̀ẹ́ rẹ̀ gan-an: fà á kọjá igun mẹ́rin àti ọ̀pá àwọ̀, tẹ iye hex, tún àwọn àwọ̀ ètò náà tàbí àwọn tí o yàn láìpẹ́ lò, tàbí mú àwọ̀ láti ibikíbi lórí ojú-ìbojú pẹ̀lú ohun ìfàmù lórí KDE àti GNOME.
+"""
+
+["2026-10-01-1130-contact-card-folds-folders"]
+title = "Káàdì olùbásọ̀rọ̀ ń ṣe ààyè fúnra rẹ̀"
+text = """
+Nínú fèrèsé tó tóóró jù fún pánẹ́ẹ̀lì fódà àti káàdì olùbásọ̀rọ̀ ní ẹ̀gbẹ́ ara wọn, káàdì náà ń ká àwọn fódà jọ báyìí bí ó ṣe ń ṣí, wọ́n sì ń padà wá nígbà tí káàdì bá pa dé. Àwọn fódà tí o ká jọ fúnra rẹ ń wà ní kíká.
+"""
+
+["2026-10-01-1132-open-mail-scroll-bar"]
+title = "Ọ̀pá yíyí nínú lẹ́tà gígùn"
+text = """
+Ìjíròrò gígùn ń fi ọ̀pá yíyí jẹ́jẹ́ kan náà bí ti ojú-ìwé Fáìlì hàn báyìí nígbà tí o bá ń yí i tàbí tọ́ka sí i. Àwọn ọ̀pá méjèèjì ti tín-ínrín sí i, wọ́n sì ń tóbi bí ìtọ́ka ṣe ń súnmọ́ wọn. Fa ọ̀kan, tàbí tẹ ibikíbi lórí rẹ̀, láti fò síbikíbi.
+"""
+
+["2026-10-01-1240-contact-card-close"]
+title = "Kó káàdì olùbásọ̀rọ̀ kúrò, wo ẹni tó wà nínú ìtàkùrọ̀sọ"
+text = """
+Káàdì olùbásọ̀rọ̀ lẹ́gbẹ̀ẹ́ ìjíròrò ní ✕ ní igun rẹ̀, títẹ àwòrán tàbí àdírẹ́sì ẹni kan náà lẹ́ẹ̀kan sí i sì ń kó káàdì náà kúrò. Nínú ìwòye ìtàkùrọ̀sọ, títẹ àkọlé ń ṣe àkójọ gbogbo ẹni tó wà nínú ìtàkùrọ̀sọ pẹ̀lú àdírẹ́sì wọn àti iye lẹ́tà tí ẹnìkọ̀ọ̀kan fi ránṣẹ́.
+"""
+
+["2026-10-01-1241-two-blur-switches"]
+title = "Ìṣúmọ́, bí o ṣe fẹ́"
+text = """
+Ìṣúmọ́ ní ìyípadà méjì báyìí nínú Ètò, Àdánwò: ọ̀kan fún ẹ̀yìn fèrèsé, ọ̀kan fún àwọn mẹ́nù àti àpótí ìbánisọ̀rọ̀. Àwọn mẹ́nù oníkùrukùru wà ní títàn ní àtilẹ̀wá, kódà nígbà tí ẹ̀yìn fèrèsé bá wà ní líle.
+"""
+
+["2026-10-01-1502-fainter-row-lines"]
+title = "Àwọn ìlà tó farabalẹ̀ jù láàrin lẹ́tà"
+text = """
+Àwọn ìlà láàrin lẹ́tà nínú àkójọ ti fẹ́ẹ́rẹ́ sí i báyìí, nítorí náà àkójọ ń kà bí ọ̀wọ̀n kan tó farabalẹ̀, ní ìmọ́lẹ̀ àti òkùnkùn.
+"""
+
+["2026-10-01-1505-contact-close-round"]
+title = "Bọ́tìnnì ìpadé kan fún gbogbo pánẹ́ẹ̀lì"
+text = """
+✕ lórí káàdì olùbásọ̀rọ̀ jẹ́ bọ́tìnnì yíká kan náà bí ✕ lórí lẹ́tà tó ṣí báyìí, pẹ̀lú òbìrí eérú kan náà nígbà tí o bá tọ́ka sí i.
+"""
+
+["2026-10-01-1525-thread-count"]
+title = "Iye lẹ́tà tó wà ní mímọ́ jù"
+text = """
+Iye lẹ́tà nínú ìjíròrò kan wà lẹ́gbẹ̀ẹ́ àwọn orúkọ báyìí pẹ̀lú àmì ìtàkùrọ̀sọ kékeré, ní àárín ìlà àwọn orúkọ dípò kí ó ga ju u lọ.
+"""
+
+["2026-10-01-1541-chat-attach-from-files"]
+title = "So fáìlì mọ́ láti Fáìlì nínú ìtàkùrọ̀sọ"
+text = """
+Nínú ìtàkùrọ̀sọ (Ètò > Àdánwò), pínnì ìwé ní Láti Fáìlì: yan fáìlì èyíkéyìí tó wá tàbí tó lọ pẹ̀lú lẹ́tà rẹ, pẹ̀lú ti ìjíròrò yìí ní àkọ́kọ́. Sàmì sí ọ̀pọ̀lọpọ̀, wo ọ̀kan pẹ̀lú ojú, kí o sì rí bí wọ́n ṣe wọ̀n sí 25 MB tí lẹ́tà kan lè gbé. Pínnì ìwé wà nínú àpótí èsì báyìí, Aa sì ń ṣí ọ̀pá tín-ínrín pẹ̀lú àwọn àṣà tí ìtàkùrọ̀sọ nílò nìkan.
+"""
+
+["2026-10-01-1553-rephrase-card-text"]
+title = "Sọ ọ́ lọ́nà míì ń ṣiṣẹ́ pẹ̀lú kọ́kọ́rọ́ Gemini tuntun"
+text = """
+Nígbà tí àwọn mẹ́nù oníkùrukùru bá wà ní títàn, káàdì Sọ ọ́ lọ́nà míì (Ctrl+J) ń ṣí ní òfo; àwọn àbá rẹ̀ ń hàn lórí dígí oníkùrukùru báyìí. Google Gemini ń lo gemini-3.5-flash-lite báyìí àyàfi bí o bá tẹ àwòṣe mìíràn, nítorí kọ́kọ́rọ́ Gemini tuntun kò lè lo 2.5 Flash-Lite mọ́, kọ́kọ́rọ́ tí kò tọ́ sì ń sọ bẹ́ẹ̀.
+"""
+
+["2026-10-01-1624-rephrase-button"]
+title = "Sọ ọ́ lọ́nà míì láìyan, àti àbá tó yára jù"
+text = """
+Àmì ìtànná lẹ́gbẹ̀ẹ́ Ìgúnrege nísàlẹ̀ ìfiránṣẹ́ tuntun, àti nínú àpótí èsì ìwòye ìtàkùrọ̀sọ, ń tún gbogbo ohun tí o kọ sọ nígbà tí o kò bá yan nǹkankan, tàbí ohun tí o yàn nìkan nígbà tí o bá yan; Ctrl+J ń ṣe bákan náà. Àwọn àbá gígùn pẹ̀lú AI ń dé kíákíá jù, pápá Àwòṣe AI nínú Ètò > Kíkọ̀wé sì ń ṣe àkójọ àwọn àwòṣe tí iṣẹ́ rẹ ń pèsè bí o ṣe ń tẹ̀.
+"""
+
+["2026-10-01-1626-dimmer-preview"]
+title = "Ìlà àyẹ̀wò ṣáájú tó farabalẹ̀ jù"
+text = """
+Ọ̀rọ̀ àyẹ̀wò ṣáájú lábẹ́ àkọlé lẹ́tà kọ̀ọ̀kan nínú àkójọ ti ṣókùnkùn sí i báyìí, kí olùfiránṣẹ́ àti àkọlé lè yọ jáde, ní ìmọ́lẹ̀ àti òkùnkùn.
+"""
+
+["2026-10-01-1645-frosted-dialogs"]
+title = "Àwọn àpótí ìbánisọ̀rọ̀ oníkùrukùru"
+text = """
+Nígbà tí àwọn mẹ́nù àti àpótí ìbánisọ̀rọ̀ oníkùrukùru bá wà ní títàn, àwọn àpótí ìbánisọ̀rọ̀ dà bí dígí oníkùrukùru pẹ̀lú: Ṣàfikún àkáǹtì lẹ́tà, Nípa Katna, Kí ló jẹ́ tuntun, ìmúdójúìwọ̀n, pínpín, àyẹ̀wò ṣáájú ìtẹ̀wé, àwọn àmì, ìbéèrè pípa rẹ́ àti yíyọ kúrò, káàdì ìbẹ̀rẹ̀ àkọ́kọ́ àti fèrèsé ìjápọ̀ ti Kọ̀wé.
+"""
+
+["2026-10-01-1650-chat-pins"]
+title = "Lẹ̀ nǹkan tó tó 5 mọ́ òkè nínú ìtàkùrọ̀sọ"
+text = """
+Nínú ìtàkùrọ̀sọ (Ètò > Àdánwò), gbé ìtọ́ka sórí àpò ọ̀rọ̀ kan kí o sì tẹ pínnì, tàbí tẹ fáìlì kan ní apá ọ̀tún, láti pa á mọ́ lókè. Ọ̀pá tín-ínrín lábẹ́ àkọlé ń fi àwọn ohun tí o lẹ̀ mọ́ hàn: tẹ ẹ́ láti fò sí ọ̀kọ̀ọ̀kan ní ìtẹ̀léra, tàbí ṣí àkójọ láti fà wọ́n sí ìtòlẹ́sẹẹsẹ tàbí yọ wọ́n kúrò. Àwọn ohun tí a lẹ̀ mọ́ ń wà lórí kọ̀ǹpútà yìí.
+"""
+
+["2026-10-01-1655-chat-signatures"]
+title = "Ìtàkùrọ̀sọ ń yọ ìbuwọ́lù àti ọ̀rọ̀ ìsàlẹ̀ sílẹ̀"
+text = """
+Àwọn àpò ọ̀rọ̀ ìtàkùrọ̀sọ ń fi ohun tí àwọn ènìyàn kọ nìkan hàn báyìí. Ọ̀rọ̀ ìdágbére bí "Best regards", ìbuwọ́lù ilé-iṣẹ́ lábẹ́ ìlà tàbí pẹ̀lú àdírẹ́sì àti nọ́mbà fóònù, àti ọ̀rọ̀ ìsàlẹ̀ pẹ̀lú ìjápọ̀ yíyọ orúkọ kúrò tàbí àkíyèsí ń dúró lẹ́yìn àmì ···, pẹ̀lú ìbuwọ́lù tí ẹnìkan ń tún kọ nínú gbogbo lẹ́tà.
+"""
+
+["2026-10-01-1805-blur-amount"]
+title = "Yan bí àwọn mẹ́nù oníkùrukùru ṣe rí"
+text = """
+Àwọn mẹ́nù àti àpótí ìbánisọ̀rọ̀ oníkùrukùru ti mọ́ kedere sí i báyìí, wọ́n sì ń tẹ̀lé agbára ìṣúmọ́ KDE. Tan Ìwọ̀n ìṣúmọ́ àdáni nínú Ètò, Àdánwò, Ìṣúmọ́ láti ṣètò agbára ìṣúmọ́ àti àìríkọjá fúnra rẹ.
+"""
+
+["2026-10-01-1825-chat-company"]
+title = "Ibi tí wọ́n ti ń ṣiṣẹ́, lórí káàdì wọn"
+text = """
+Nínú ìtàkùrọ̀sọ (Ètò > Àdánwò), káàdì ènìyàn kan ní apá Ilé-iṣẹ́ báyìí: ohun tí ilé-iṣẹ́ náà ń ṣe, ibi tí ó wà, láti ìgbà wo, àti ìjápọ̀ sí ojúlé wẹ́ẹ̀bù àti àwọn ojú-ìwé rẹ̀, tí a kà láti ojú-ìwé ilé rẹ̀ àti Wikipedia. Ó ń tẹ̀lé ìyípadà Àwòrán olùfiránṣẹ́.
+"""
+
+["2026-10-02-0052-smooth-start-after-updates"]
+title = "Ìbẹ̀rẹ̀ tó rọrùn lẹ́yìn ìmúdójúìwọ̀n"
+text = """
+Lẹ́yìn ìmúdójúìwọ̀n, Katna Mail kò sọ mọ́ pé a kò lè ṣí ibi ìpamọ́ lẹ́tà nígbà tí ó ń pèsè lẹ́tà rẹ sílẹ̀ fún ẹ̀yà tuntun. Ó ń fi àwòrán ìkójọpọ̀ àtẹ̀yìnwá hàn fún ìṣẹ́jú-àáyá díẹ̀ yẹn, lẹ́yìn náà lẹ́tà rẹ.
+"""
+
+["2026-10-02-0106-calmer-dialogs"]
+title = "Àwọn àpótí ìbánisọ̀rọ̀ tó farabalẹ̀ jù"
+text = """
+Àwọn àpótí ìbánisọ̀rọ̀ oníkùrukùru le ju àwọn mẹ́nù lọ, nítorí náà àkójọ lẹ́tà tó kún kò hàn láti inú wọn mọ́. Nípa Katna, Kí ló jẹ́ tuntun àti Ṣàyẹ̀wò àwọn ìmúdójúìwọ̀n ń ṣí láìmú fèrèsé lẹ́yìn wọn ṣókùnkùn.
+"""
+
+["2026-10-02-0111-chat-pin-text"]
+title = "Lẹ̀ ọ̀rọ̀ díẹ̀ láti inú ìtàkùrọ̀sọ mọ́ òkè"
+text = """
+Nínú ìtàkùrọ̀sọ (Ètò > Àdánwò), a lè yan ọ̀rọ̀ inú àpò ọ̀rọ̀ kan kí a sì dà á kọ báyìí bí lẹ́tà èyíkéyìí. Tẹ àwọn ọ̀rọ̀ tí o yàn nínú àpò ọ̀rọ̀ kan ní apá ọ̀tún kí o sì yan Lẹ̀ mọ́ òkè láti pa wọ́n mọ́ nínú ọ̀pá ohun tí a lẹ̀ mọ́ ti ìtàkùrọ̀sọ náà.
+"""
+
+["2026-10-02-0124-event-editor-clear"]
+title = "Olóòtú ìṣẹ̀lẹ̀ kò ní Ìṣẹ̀lẹ̀ tuntun lórí mọ́"
+text = """
+Bọ́tìnnì Ìṣẹ̀lẹ̀ tuntun ti ọ̀pá òsì kò jókòó lórí àkọlé ìṣẹ̀lẹ̀ tí o ń kọ tàbí tí o ń yí padà nínú olóòtú kíkún mọ́. Ó ń padà wá nígbà tí olóòtú bá pa dé.
+"""
+
+["2026-10-02-0150-chat-format-bar"]
+title = "Ọ̀pá Aa tó kún jù nínú ìtàkùrọ̀sọ"
+text = """
+Ọ̀pá Aa ti àpótí èsì ìtàkùrọ̀sọ ní àwọn irinṣẹ́ Kọ̀wé báyìí: dá padà, fọ́ǹtì, ìwọ̀n, ìtòlẹ́sẹẹsẹ àti ìfàsẹ́yìn, lẹ́gbẹ̀ẹ́ àwọn àṣà tí ó ti ní. Nínú fèrèsé tóóró, ó ń wọ ìlà kejì. Bọ́tìnnì àwọ̀ ń fi àwọ̀ ọ̀rọ̀ rẹ àti ìtànmọ́lẹ̀ hàn ní ẹ̀gbẹ́ ara wọn, nínú Kọ̀wé pẹ̀lú.
+"""
+
+["2026-10-02-0210-conversation-summaries"]
+title = "Ṣàkópọ̀ ìjíròrò kan"
+text = """
+Tẹ ìjíròrò kan ní apá ọ̀tún kí o sì yan Ṣe àkópọ̀, tàbí tẹ Shift+S, fún káàdì lẹ́gbẹ̀ẹ́ rẹ̀ tó ń sọ ohun tí ó jẹ mọ́, ohun tí a ti yanjú àti ohun tó ń dúró dè ọ́, láìṣí i tàbí sàmì sí i bí èyí tí a ti kà. Nínú ìjíròrò tó ṣí, àmì ìtànná lókè rẹ̀ ń fi àkópọ̀ sí abẹ́ àkọlé; nínú ìwòye ìtàkùrọ̀sọ ó wà nínú ìlà kan lábẹ́ àkọlé. Kókó kọ̀ọ̀kan ń dárúkọ lẹ́tà tí ó ti wá, nígbà tí lẹ́tà tuntun bá sì ti dé láti ìgbà tí o kà á kẹ́yìn, àkópọ̀ náà ń sọ nípa ìyẹn nìkan. Ó nílò ìrànlọ́wọ́ kíkọ̀wé pẹ̀lú AI ní títàn nínú Ètò > Kíkọ̀wé.
+"""
+
+["2026-10-02-0215-system-colors-follow-mode"]
+title = "Ìmọ́lẹ̀ àti Òkùnkùn ń ṣiṣẹ́ pẹ̀lú àwọ̀ Ètò"
+text = """
+Nígbà tí Àwọ̀ bá jẹ́ Ètò, tí ètò àwọ̀ déskítọ́ọ̀pù sì jẹ́ òkùnkùn nìkan (tàbí ìmọ́lẹ̀ nìkan), Ètò > Ìrísí > Ipò ń yí Katna padà láàrin ìmọ́lẹ̀ àti òkùnkùn lẹ́ẹ̀kan sí i: apá kejì ń lo àwọn àwọ̀ Katna fúnra rẹ̀ nínú àwọ̀ àfihàn déskítọ́ọ̀pù rẹ.
+"""
+
+["2026-10-02-0218-signature-details-on-card"]
+title = "Àlàyé ìbuwọ́lù ní ibi tí wọ́n yẹ"
+text = """
+Káàdì ènìyàn kan kò fi ìbuwọ́lù wọn hàn bí ìdìpọ̀ kan mọ́. Àwọn àlàyé rẹ̀ ń lọ sí ibi tí wọ́n yẹ: gbogbo nọ́mbà fóònù, tí a sàmì sí bí alágbèéká, tààrà tàbí fáàsì, nínú àlàyé olùbásọ̀rọ̀, àti ẹgbẹ́ ilé-iṣẹ́ náà, àwọn ọ́fíìsì, ojúlé wẹ́ẹ̀bù àti àwọn ojú-ìwé rẹ̀ nínú apá Ilé-iṣẹ́. Àwọn ojú-ìwé àwùjọ ń hàn bí àwọn àmì kékeré aláwọ̀ kan, a sì ń yọ àwọn àwòrán, àsíá àti ọ̀rọ̀ ìsàlẹ̀ sílẹ̀.
+"""
+
+["2026-10-02-0225-chat-subject-line"]
+title = "Wo ìgbà tí àkọlé ìtàkùrọ̀sọ bá yí padà"
+text = """
+Nínú ìtàkùrọ̀sọ (Ètò > Àdánwò), ìlà kékeré kan ní àárín ń sọ báyìí nígbà tí ẹnìkan bá yí àkọlé padà, bí ó ṣe ń sọ ẹni tí ó fi ẹni kún un.
+"""
+
+["2026-10-02-0225-no-blur-ghost"]
+title = "Kò sí òjìji ṣíṣú nígbà tí àpótí ìbánisọ̀rọ̀ bá pa dé"
+text = """
+Pípa Nípa Katna, Kí ló jẹ́ tuntun, Ṣàyẹ̀wò àwọn ìmúdójúìwọ̀n tàbí àpótí ìbánisọ̀rọ̀ tàbí mẹ́nù oníkùrukùru èyíkéyìí dé kò fi àbàwọ́n ṣíṣú sílẹ̀ fún ìṣẹ́jú kan mọ́: ìṣúmọ́ náà ń pòórá pẹ̀lú fèrèsé náà.
+"""
+
+["2026-10-02-0236-chat-on-phones"]
+title = "Ìtàkùrọ̀sọ bá fóònù mu"
+text = """
+Nínú fèrèsé tó tóbi bí fóònù, ìtàkùrọ̀sọ (Ètò > Àdánwò) ń wà ní ìlà àkọlé kan pẹ̀lú Padà àti ⋮, àwọn àpò ọ̀rọ̀ rẹ̀ sì ń lo púpọ̀ sí i nínú ìbú. Di àpò ọ̀rọ̀ kan mú láti mú mẹ́nù rẹ̀ wá láti ìsàlẹ̀, tẹ orúkọ tàbí àwòrán kan láti rí káàdì ẹni náà lọ́nà kan náà. Gbá èyíkéyìí sísàlẹ̀ tàbí tẹ ìta láti kó o kúrò.
+"""
+
+["2026-10-02-0258-frost-stays-on-scroll"]
+title = "Dígí oníkùrukùru ń dúró nígbà tí àkójọ bá ń yí"
+text = """
+Nínú àkójọ oníkùrukùru tó ń yí, bí àwọn ènìyàn nínú ìtàkùrọ̀sọ tàbí mẹ́nù gígùn, ẹ̀yìn oníkùrukùru ń dúró sí ipò báyìí nígbà tí àwọn ìlà ń yí lórí rẹ̀.
+"""
+
+["2026-10-02-0301-rephrase-card-above-tools"]
+title = "Sọ ọ́ lọ́nà míì wà lókè ọ̀pá ìgúnrege"
+text = """
+Káàdì Sọ ọ́ lọ́nà míì ń ṣí lókè ọ̀pá ìgúnrege gan-an báyìí, nínú àpótí èsì àti nínú Kọ̀wé, dípò lórí àkójọ lẹ́tà. Fà á nípa ìdìmú kékeré lókè rẹ̀ láti gbé e kúrò lọ́nà; ó ń ṣí ní ibi rẹ̀ àtẹ̀yìnwá lẹ́ẹ̀kan sí i nígbà tó kàn.
+"""
+
+["2026-10-02-0306-fainter-lines-light"]
+title = "Àwọn ìlà tó fẹ́ẹ́rẹ́ jù ní ipò ìmọ́lẹ̀"
+text = """
+Ní ipò ìmọ́lẹ̀, àwọn ìlà láàrin lẹ́tà nínú àkójọ àti láàrin àwọn ìfiránṣẹ́ lẹ́tà tó ṣí ti fẹ́ẹ́rẹ́ sí i, nítorí náà ojú-ìwé náà rí bí èyí tó farabalẹ̀ jù.
+"""
+
+["2026-10-02-0315-card-button-bar"]
+title = "Káàdì ènìyàn ń pa àwọn bọ́tìnnì rẹ̀ mọ́ ní àrọ́wọ́tó"
+text = """
+Yí káàdì ènìyàn kan, àwọn bọ́tìnnì rẹ̀ á sì yọ̀ sókè sínú ọ̀pá oníkùrukùru tín-ínrín lẹ́gbẹ̀ẹ́ bọ́tìnnì ìpadé, pẹ̀lú àwòrán kékeré ẹni náà. Bọ́tìnnì ìpadé kò jókòó lórí ohun tí o ń kà mọ́.
+"""
+
+["2026-10-02-0412-button-hover"]
+title = "Àwọn bọ́tìnnì ń dáhùn ìtọ́ka jẹ́jẹ́"
+text = """
+Nígbà tí o bá tọ́ka sí bọ́tìnnì kan, ẹ̀yìn yíká rẹ̀ ń dàgbà láti àárín tí ó sì ń farahàn díẹ̀díẹ̀ báyìí, bí ti Gmail, ó sì ń pòórá kíákíá nígbà tí o bá kúrò. Fèsì, Fi ránṣẹ́ síwájú àti àwọn bọ́tìnnì yíká mìíràn ń farahàn jẹ́jẹ́.
+"""
+
+["2026-10-02-0425-chat-draft-to-mail"]
+title = "Èsì ìtàkùrọ̀sọ rẹ ń tẹ̀lé ọ lọ sí Lẹ́tà"
+text = """
+Yíyí ìtàkùrọ̀sọ padà sí Lẹ́tà nígbà tí o ń kọ èsì ń yí lọ sísàlẹ̀ sí èsì náà báyìí pẹ̀lú kọ́sọ̀ rẹ ṣì wà nínú rẹ̀, yíyí padà sẹ́yìn sì ń pa á mọ́ pẹ̀lú.
+"""
+
+["2026-10-02-0425-write-reply"]
+title = "Kọ èsì pẹ̀lú AI"
+text = """
+Nígbà tí èsì tàbí ìfiránṣẹ́-síwájú bá ṣì wà ní òfo, àmì ìtànná lẹ́gbẹ̀ẹ́ Ìgúnrege (tàbí Ctrl+J) ń kọ ọ́ fún ọ. Yan ọ̀kan nínú èrò mẹ́ta tí a mú láti inú ìjíròrò náà, tàbí sọ ohun tí ó yẹ kí ó sọ ní ọ̀rọ̀ tìrẹ, lẹ́yìn náà tẹ Fi sínú láti fi àkọ̀pamọ́ náà sínú, kí o sì yí ohun tí o bá fẹ́ padà. Ní kété tí o bá tẹ̀wé, àmì ìtànná á tún máa sọ ọ́ lọ́nà míì. Ó nílò ìrànlọ́wọ́ kíkọ̀wé pẹ̀lú AI ní títàn nínú Ètò > Kíkọ̀wé.
+"""
+
+["2026-10-02-0430-compose-beside-reply"]
+title = "Kọ̀wé nígbà tí èsì kan ṣì wà ní ààbọ̀"
+text = """
+Kọ̀wé ń ṣí ìfiránṣẹ́ tuntun báyìí kódà nígbà tí o ń kọ èsì, nínú ìtàkùrọ̀sọ tàbí lábẹ́ ìjíròrò. Èsì náà ń dúró bí o ṣe fi í sílẹ̀, ó sì ń padà wá nígbà tí a bá fi ìfiránṣẹ́ tuntun ránṣẹ́ tàbí tí a pa á dé, tàbí nígbà tí o bá tẹ̀ láti fèsì sí ìjíròrò náà lẹ́ẹ̀kan sí i.
+"""
+
+["2026-10-02-0436-mark-unread-icon"]
+title = "Àmì Sàmì sí bí àìkà tó ṣe kedere jù"
+text = """
+Sàmì sí bí àìkà ń fi àpòòwé pẹ̀lú àmì kékeré hàn báyìí, nínú àwọn mẹ́nù, nínú àwọn ọ̀pá irinṣẹ́ àti lórí àwọn bọ́tìnnì ìtọ́ka lẹ́tà, nítorí náà kò dà bí àmì lẹ́tà lásán mọ́.
+"""
+
+["2026-10-02-0452-fainter-pane-lines"]
+title = "Àwọn ọ̀pá irinṣẹ́ àti táàbù tó farabalẹ̀ jù"
+text = """
+Ní ipò ìmọ́lẹ̀, àwọn ìlà lábẹ́ àwọn ọ̀pá irinṣẹ́ àti àkọlé lẹ́tà tó ṣí, àti lókè Fèsì àti Fi ránṣẹ́ síwájú, fẹ́ẹ́rẹ́ bí àwọn ìlà láàrin lẹ́tà. Ẹ̀yìn lẹ́yìn àwọn táàbù àpótí-ìwọlé ti mọ́lẹ̀ sí i pẹ̀lú.
+"""
+
+["2026-10-02-0453-google-drive-in-files"]
+title = "Google Drive rẹ nínú Fáìlì"
+text = """
+Fáìlì ń fi drive àkáǹtì Google kọ̀ọ̀kan hàn báyìí lábẹ́ Àwọn drive nínú ọ̀wọ̀n ẹ̀gbẹ́. Ṣí àwọn fódà rẹ̀, wá nínú rẹ̀, kí o sì ṣí fáìlì kan, so ó mọ́ lẹ́tà tàbí gbà á sílẹ̀ níbẹ̀ gan-an. Ní ìgbà àkọ́kọ́, tẹ Gbà láàyè kí Katna lè ka drive náà.
+"""
+
+["2026-10-02-0515-rephrase-subject"]
+title = "Sọ àkọlé lọ́nà míì"
+text = """
+Ní kété tí o bá tẹ àkọlé kan, àmì ìtànná ní òpin ìlà rẹ̀ ń pèsè ọ̀nà mẹ́ta mìíràn láti sọ ọ́, tí a kọ láti inú àkọlé àti ohun tí ìfiránṣẹ́ rẹ ti sọ títí di báyìí. Yan ọ̀kan láti lò ó; Dá padà ń dá ohun tí o tẹ̀ padà. Ó nílò ìrànlọ́wọ́ kíkọ̀wé pẹ̀lú AI ní títàn nínú Ètò > Kíkọ̀wé.
+"""
+
+["2026-10-02-0525-quieter-compose"]
+title = "Fèrèsé Kọ̀wé tó farabalẹ̀ jù"
+text = """
+Fèrèsé Ìfiránṣẹ́ tuntun ń fò pẹ̀lú àyè tó dọ́gba láti ẹ̀gbẹ́ fèrèsé. Sí, Ẹ̀dà, Ẹ̀dà àṣírí àti Láti wà papọ̀ láìsí ìlà láàrin wọn, àwọn olùgbà jẹ́ àmì rírọ̀ tí a kún, Láti sì jẹ́ ìlà jẹ́jẹ́ kan. Ìfi-àṣírí-pamọ́, ìbuwọ́lù oní-nọ́ńbà, títọpa àti ìjẹ́rìí ń pín ẹgbẹ́ kékeré kan, àwọn irinṣẹ́ kíkọ̀wé sì wà lórí ọ̀pá rírọ̀ lẹ́gbẹ̀ẹ́ Fi ránṣẹ́.
+"""
+
+["2026-10-02-0553-upload-to-drive"]
+title = "Gbé sókè sí Google Drive láti Fáìlì"
+text = """
+Nígbà tí Google Drive bá ṣí nínú Fáìlì, bọ́tìnnì Kọ̀wé ń di Gbé sókè. Tẹ ẹ́ láti fi fáìlì ránṣẹ́ sínú fódà tó ṣí, tàbí lo ọfà rẹ̀ láti gbé gbogbo fódà kan sókè. Ní ìgbà àkọ́kọ́, tẹ Gbà láàyè kí Katna lè fi fáìlì kún drive rẹ.
+"""
+
+["2026-10-02-0555-reply-from-summary"]
+title = "Fèsì láti inú àkópọ̀"
+text = """
+Káàdì àkópọ̀ tí o ṣí láti mẹ́nù apá ọ̀tún ní Fèsì báyìí. Ó ń sọ káàdì kan náà di èsì: yan èrò kan tàbí sọ ohun tí ó yẹ kí ó sọ, yí àkọ̀pamọ́ padà bí o bá fẹ́, lẹ́yìn náà Fi ránṣẹ́, tàbí Ṣí i nínú ìjíròrò láti máa kọ̀wé lọ. Èsì tí o pa dé láìfi ránṣẹ́ ń dúró nínú àpótí èsì. Káàdì náà tún ń ṣí níbi tí o tẹ̀ báyìí.
+"""
+
+["2026-10-02-0559-draft-saved-signature-tag"]
+title = "Àwọn àkọ̀pamọ́ ń fi ara wọn pamọ́ bí o ṣe ń kọ̀wé"
+text = """
+Ìfiránṣẹ́ tí o ń kọ ń fi ara rẹ̀ pamọ́ sí Àwọn àkọ̀pamọ́ ní ìṣẹ́jú-àáyá díẹ̀ díẹ̀ báyìí, "A ti fi àkọ̀pamọ́ pamọ́" sì ń hàn jẹ́jẹ́ lẹ́gbẹ̀ẹ́ àkọlé rẹ̀. Àmì fẹ́ẹ́rẹ́ kan lẹ́gbẹ̀ẹ́ ìbuwọ́lù rẹ ń dárúkọ rẹ̀; tẹ ẹ́ láti yan òmíràn. Igun fèrèsé Kọ̀wé tún bá káàdì lẹ́gbẹ̀ẹ́ rẹ̀ mu.
+"""
+
+["2026-10-02-0654-attach-from-drive"]
+title = "So fáìlì mọ́ láti Google Drive"
+text = """
+Pínnì ìwé Kọ̀wé ń ṣí olùyan Fáìlì báyìí, èyí kan náà bí Láti Fáìlì ti ìtàkùrọ̀sọ, pẹ̀lú Google Drive rẹ lẹ́gbẹ̀ẹ́ àwọn fáìlì lẹ́tà rẹ àti Kọ̀ǹpútà yìí… fún ohunkóhun mìíràn. Àwọn fáìlì tó bá ààyè mu ń lọ nínú lẹ́tà; àwọn fáìlì ńlá àti Google Docs ń lọ bí ìjápọ̀, tí a pín pẹ̀lú àwọn olùgbà nígbà tí o bá fi ránṣẹ́.
+"""
+
+["2026-10-02-0734-peek-and-reply-in-notifications"]
+title = "Yọjú wò kí o sì fèsì láti inú ìfitónilétí"
+text = """
+Ìfitónilétí lẹ́tà tuntun ní Yọjú wò ó báyìí, tó ń fi lẹ́tà náà fúnra rẹ̀ hàn nínú ìfitónilétí kan náà, àti Fèsì, níbi tí o ti ń tẹ ìdáhùn rẹ níbẹ̀ gan-an tí o sì tẹ Fi ránṣẹ́. Ó ń lọ láti àkáǹtì tí lẹ́tà náà dé sí, lẹ́yìn àkókò Dá fífiránṣẹ́ padà rẹ; Dá padà ń ṣí i nínú Katna Mail láti máa kọ ọ́ lọ. Lórí Linux, lẹ́tà tuntun tún ní ohùn agogo tirẹ̀ tó ròkè jù; yan òmíràn nínú Ètò > Ìfitónilétí.
+"""
+
+["2026-10-02-0735-drive-viewer-opens-at-once"]
+title = "Àwọn fáìlì drive ń ṣí lẹ́sẹ̀kẹsẹ̀"
+text = """
+Ṣíṣí fáìlì láti inú drive rẹ ń mú olùwò wá lẹ́sẹ̀kẹsẹ̀, pẹ̀lú ìlà yíká tó ń yí títí fáìlì yóò fi dé. Àwọn àkíyèsí nísàlẹ̀ fèrèsé ń gba títẹ̀ tiwọn báyìí, nítorí náà Pa á dé kò tẹ ohun tó wà lábẹ́ wọn mọ́.
+"""
+
+["2026-10-02-0740-smaller-updates"]
+title = "Ìmúdójúìwọ̀n tó kéré jù"
+text = """
+Ìmúdójúìwọ̀n ń gba ohun tó yí padà nìkan sílẹ̀ báyìí, ní ọ̀pọ̀ ìgbà megabyte díẹ̀ dípò gbogbo àpò náà. Katna ń kọ́ ẹ̀yà tuntun láti inú èyí tí o ní, ó sì ń ṣàyẹ̀wò rẹ̀ ṣáájú fífi sórí ẹ̀rọ, ó sì ń gba gbogbo àpò sílẹ̀ nígbàkígbà tí kò bá lè ṣe bẹ́ẹ̀.
+"""
+
+["2026-10-02-0755-faint-lines-everywhere"]
+title = "Àwọn ìlà fẹ́ẹ́rẹ́ níbi gbogbo"
+text = """
+Ní ipò ìmọ́lẹ̀, gbogbo ìlà láàrin àwọn nǹkan, lábẹ́ àwọn àkọlé àti ní àyíká àwọn káàdì fẹ́ẹ́rẹ́ báyìí bí àwọn ìlà láàrin lẹ́tà, títí kan káàdì àkópọ̀. Àwọn pápá, àmì àti bọ́tìnnì ń pa ìlà ẹ̀gbẹ́ wọn tó ṣe kedere mọ́.
+"""
+
+["2026-10-02-0756-ai-replies-signed"]
+title = "Èsì AI ń parí pẹ̀lú ìbuwọ́lù rẹ"
+text = """
+Èsì àti àkọsílẹ̀ tí AI kọ kò parí pẹ̀lú "Best regards" àti orúkọ rẹ mọ́. Ìbuwọ́lù rẹ ló ń fọwọ́ sí wọn dípò bẹ́ẹ̀: nínú èsì káàdì àkópọ̀, àmì ìbuwọ́lù lábẹ́ ọ̀rọ̀ náà ń yan èyí tí yóò lò, bí nínú Kọ̀wé.
+"""
+
+["2026-10-02-0801-unified-inbox-tabs"]
+title = "Àwọn táàbù nínú àpótí-ìwọlé àpapọ̀"
+text = """
+Àpótí-ìwọlé gbogbo àkáǹtì rẹ ní táàbù báyìí pẹ̀lú: Àkọ́kọ́, Ìpolówó, Àwùjọ, Ìmúdójúìwọ̀n àti Àpérò, pẹ̀lú lẹ́tà àkáǹtì kọ̀ọ̀kan nínú táàbù irú rẹ̀. Àmì kékeré lẹ́gbẹ̀ẹ́ olùfiránṣẹ́ kọ̀ọ̀kan ń fi àkáǹtì tí lẹ́tà kan dé sí hàn. Yan àkáǹtì kan lábẹ́ rẹ̀ láti rí àwọn táàbù àkáǹtì náà fúnra rẹ̀, tàbí yan àkójọ mìíràn nínú Ètò > Àpótí-ìwọlé.
+"""
+
+["2026-10-02-0805-feeds-removed"]
+title = "Àwọn ìwé ìròyìn RSS ti kúrò lórí ọ̀pá òsì"
+text = """
+Katna kò ní ka àwọn ìwé ìròyìn RSS àti Atom mọ́ lẹ́yìn gbogbo rẹ̀, nítorí náà bọ́tìnnì Feeds àti ojú-ìwé "ó ń bọ̀ láìpẹ́" rẹ̀ ti kúrò lórí ọ̀pá ní apá òsì. Fáìlì ń pa Ctrl+7 mọ́.
+"""
+
+["2026-10-02-0820-drive-bin-and-rename"]
+title = "Yí orúkọ padà kí o sì gbé fáìlì drive lọ sí àpótí ìdọ̀tí"
+text = """
+Nínú Fáìlì, fáìlì tàbí fódà kan nínú Google Drive tàbí OneDrive rẹ ní Yí orúkọ padà àti Gbé lọ sí àpótí ìdọ̀tí nínú mẹ́nù rẹ̀ báyìí. Yí orúkọ padà ń tẹ̀wé lórí orúkọ náà níbẹ̀ gan-an (F2), Gbé lọ sí àpótí ìdọ̀tí (Del) sì wá pẹ̀lú Dá padà.
+"""
+
+["2026-10-02-0827-files-chips-on-phones"]
+title = "Àwọn àmì Fáìlì bá fóònù mu"
+text = """
+Lórí fóònù, a kò gé àwọn àmì àṣàyàn ojú-ìwé Fáìlì kúrò ní ẹ̀gbẹ́ mọ́. Àwọn irú fáìlì ń ká jọ sí àwọn àmì wọn, pẹ̀lú èyí tí o yàn tí ó ń pa orúkọ rẹ̀ mọ́, àwọn àmì ènìyàn, ọjọ́ àti ìtòlẹ́sẹẹsẹ sì ń gba ìlà tiwọn.
+"""
+
+["2026-10-02-0828-uploads-tray"]
+title = "Wo àwọn ohun tí o ń gbé sókè bí wọ́n ṣe ń lọ"
+text = """
+Àwọn fáìlì tí o gbé sókè sí Google Drive tàbí OneDrive ń hàn nínú àtẹ kan ní ìsàlẹ̀ ọ̀tún báyìí, ọ̀kọ̀ọ̀kan pẹ̀lú òrùka tó ń kún bí ó ṣe ń gòkè àti àkókò tó kù. Fagilé ọ̀kan tàbí gbogbo wọn, ká àtẹ náà kúrò, kí o sì tẹ fáìlì tó ti parí láti ṣí fódà rẹ̀.
+"""
+
+["2026-10-02-0838-drive-share"]
+title = "Pín àwọn fáìlì drive láti Katna"
+text = """
+Pín… nínú mẹ́nù fáìlì Google Drive tàbí OneDrive kan nínú Fáìlì ń ṣí fèrèsé Pín: ṣàfikún àwọn ènìyàn bí Olùwò, Asọ̀rọ̀sí tàbí Olóòtú, yí ẹni tó ti ní ààyè padà tàbí yọ wọ́n kúrò, kí o sì ṣí i fún ẹnikẹ́ni tó ní ìjápọ̀. Dráìfù náà ń fi ímeèlì ránṣẹ́ sí wọn kìkì bí o bá sàmì sí i.
+"""
+
+["2026-10-02-0909-soft-search-box"]
+title = "Àpótí ìwádìí tó rọ̀ jù"
+text = """
+Àpótí ìwádìí lókè ti fúyẹ́ sí i: ẹ̀gbẹ́ àti àwọ̀ inú tó fẹ́ẹ́rẹ́ gan-an nígbà tí o kò bá ń lò ó, àti pápá funfun pẹ̀lú ẹ̀gbẹ́ àwọ̀ àfihàn rírọ̀ nígbà tí o bá ń tẹ̀wé, dípò àmì yíká eérú pẹ̀lú òrùka aláwọ̀ tó nípọn.
+"""

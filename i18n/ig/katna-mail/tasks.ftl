@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Mepụta
+tasks-create = Ọrụ ọhụrụ
 tasks-all = Ọrụ niile
 tasks-today = Taa
 tasks-starred = Nwere kpakpando

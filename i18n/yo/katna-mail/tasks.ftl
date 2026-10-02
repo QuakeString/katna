@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Ṣẹ̀dá
+tasks-create = Iṣẹ́ tuntun
 tasks-all = Gbogbo iṣẹ́
 tasks-today = Òní
 tasks-starred = Àwọn tí a fi ìràwọ̀ sàmì sí

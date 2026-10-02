@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Fi ránṣẹ́ pẹ̀lú Katna Mail
 setup-tagline = Í-meèlì tó yára, tó sì jẹ́ àdáni, tó ń gbé lórí kọ̀ǹpútà rẹ.
 setup-update-where = Ó ń ṣe àtúnṣe Katna Mail nínú { $path }. Lẹ́tà rẹ, ètò rẹ àti àwọn ọ̀nà àbùjá rẹ yóò wà bí wọ́n ṣe wà.
 setup-for = Fi sórí ẹ̀rọ fún

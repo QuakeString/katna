@@ -9,6 +9,7 @@ rail-calendar = ቀን መቁጠሪያ
 rail-contacts = እውቂያዎች
 rail-tasks = ተግባራት
 rail-notes = ማስታወሻዎች
+rail-files = ፋይሎች
 
 ## Pages of apps still to come
 

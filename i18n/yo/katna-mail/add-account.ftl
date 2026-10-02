@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = Ṣàfikún àkáǹtì lẹ́tà
+add-account-providers-intro = Yan olùpèsè lẹ́tà rẹ. Katna yóò wá ìyókù.
+add-account-provider-other = Lẹ́tà mìíràn
+add-account-provider-other-detail = Àkáǹtì IMAP tàbí POP3 èyíkéyìí
+add-account-provider-google-detail = Gmail àti Google Workspace
+add-account-provider-microsoft-detail = Outlook àti Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = Wọlé sí { $provider }
+add-account-form-title-other = Àkáǹtì lẹ́tà rẹ
+add-account-form-intro = Katna ń pa ọ̀rọ̀ aṣínà rẹ mọ́ sínú keyring ètò rẹ.
 add-account-looking = À ń wá àwọn sáfà lẹ́tà { $address }…
 add-account-address-intro = Tẹ àdírẹ́sì ímeèlì rẹ. Katna yóò wá àwọn sáfà fún ọ.
 add-account-servers-title = Ètò sáfà
@@ -13,10 +22,18 @@ add-account-signing-in = À ń wọlé…
 add-account-browser-title = Tẹ̀síwájú nínú aṣàwákiri rẹ
 add-account-browser-intro = Katna ti ṣí ojú-ìwé ìwọlé { $provider } nínú aṣàwákiri rẹ. Wọlé níbẹ̀ kí o sì gba Katna láàyè láti ka lẹ́tà rẹ àti láti fi ránṣẹ́, lẹ́yìn náà padà wá síbí.
 add-account-browser-hint = Kò sí ojú-ìwé tó ṣí? Ṣàyẹ̀wò àwọn fèrèsé aṣàwákiri rẹ, tàbí padà sẹ́yìn kí o sì gbìyànjú lẹ́ẹ̀kan sí i.
+add-account-stage-browser = Ń dúró dè ọ́ láti wọlé nínú ẹ̀rọ aṣàwákiri rẹ…
+add-account-stage-signing-in-at = Ń wọlé ní { $server }…
+add-account-help-app-password-link = Bí a ṣe ń ṣe ọ̀rọ̀ aṣínà áàpù
+add-account-help-turn-on-imap = { $provider } máa ń gba àwọn áàpù lẹ́tà wọlé kìkì nígbà tí a bá tan ààyè IMAP àti POP3 nínú ètò lẹ́tà wẹ́ẹ̀bù rẹ̀.
+add-account-help-turn-on-imap-link = Bí a ṣe ń tàn án
 
 ## Add a mail account: fields
 
 add-account-field-address = Àdírẹ́sì ímeèlì
+add-account-receive-with = Gba lẹ́tà pẹ̀lú
+add-account-imap-about = IMAP ń pa lẹ́tà àti fódà rẹ mọ́ sórí sáfà, bákan náà lórí gbogbo ẹ̀rọ. Yàn án tí o bá lè ṣe é.
+add-account-pop3-about = POP3 ń gba lẹ́tà rẹ sílẹ̀ sórí kọ̀ǹpútà yìí. Lẹ́tà tí o kà tàbí tí o gbé kiri níbí yóò wà bí ó ṣe wà lórí sáfà àti àwọn ẹ̀rọ rẹ mìíràn.
 add-account-incoming = Lẹ́tà tó ń wọlé ({ $protocol })
 add-account-outgoing = Lẹ́tà tó ń jáde ({ $protocol })
 add-account-field-server = Sáfà
@@ -46,6 +63,8 @@ add-account-sign-in-instead = Wọlé pẹ̀lú { $provider } dípò èyí
 add-account-servers-button = Ètò sáfà
 add-account-back = Padà
 add-account-add = Ṣàfikún àkáǹtì
+add-account-done = Ti parí
+add-account-another = Fi àkáǹtì mìíràn kún un
 add-account-cancel = Fagilé
 
 ## Add a mail account: problems
@@ -75,6 +94,22 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Ẹ̀dà Katna yìí kò tíì lè wọlé sí àwọn àkáǹtì Google.
    *[other] Olùpèsè yìí gba wíwọlé láàyè lórí ojú-ìwé tirẹ̀ nìkan, èyí tí Katna kò tíì lè ṣe fún un.
 }
+add-account-smtp-not-found = Katna rí ibi tí yóò ti ka lẹ́tà rẹ ṣùgbọ́n kò rí ibi tí yóò ti fi ránṣẹ́. Tẹ sáfà ìjádelọ.
+
+## Add a mail account: the last step
+
+add-account-done-title = Àkáǹtì rẹ ti ṣetán
+add-account-done-intro = Katna ń gba lẹ́tà rẹ báyìí. Lẹ́tà tuntun yóò hàn bí ó ṣe ń dé.
+add-account-done-sign-in = Wíwọlé
+add-account-done-signed-in-with = Pẹ̀lú { $provider }, nínú ẹ̀rọ aṣàwákiri rẹ
+add-account-done-receiving = Gbígba lẹ́tà
+add-account-done-sending = Fífi lẹ́tà ránṣẹ́
+add-account-done-on-server = Lẹ́tà lórí sáfà
+add-account-done-kept = A ó pa á mọ́ títí wàá fi pa á rẹ́ nínú Katna
+add-account-done-pop3-hint = Yí ohun tó ń ṣẹlẹ̀ sí lẹ́tà lórí sáfà padà nínú Ètò > Àwọn àkáǹtì.
+add-account-done-zoho-title = Iṣẹ́ àti kàlẹ́ńdà
+add-account-done-zoho-about = Zoho ń pa àwọn wọ̀nyí mọ́ lọ́tọ̀ sí lẹ́tà. Wọlé pẹ̀lú Zoho lẹ́ẹ̀kan láti mú wọn wá sínú Katna.
+add-account-done-linked = A ti so iṣẹ́ àti kàlẹ́ńdà pọ̀
 
 ## The account menu (from the account button on the top bar)
 

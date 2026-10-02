@@ -39,7 +39,26 @@ notify-task-done = Weka alama kuwa imekamilika
 ## Its buttons
 
 notify-open = Fungua
+notify-peek = Chungulia
+notify-reply = Jibu
+notify-reply-placeholder = Mjibu { $name }…
+notify-send = Tuma
 notify-reply-all = Jibu wote
 notify-mark-read = Tia alama kuwa imesomwa
 notify-mark-all-read = Tia alama zote kuwa zimesomwa
 notify-archive = Weka kwenye kumbukumbu
+
+## After Archive on a notification: a short note in the same place
+
+notify-archived = Imewekwa kwenye kumbukumbu
+notify-archived-count = { $count ->
+    [one] Ujumbe { $count } umeondolewa kwenye kikasha
+   *[other] Jumbe { $count } zimeondolewa kwenye kikasha
+}
+notify-undo = Tendua
+
+## After a reply typed into a notification: a note in the same place while
+## it waits for the undo time
+
+notify-reply-sent = Jibu limetumwa kwa { $name }
+notify-open-in-katna = Fungua katika Katna

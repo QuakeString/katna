@@ -70,6 +70,7 @@ about-credit-resvg = Foto SVG
 about-credit-jiff = Ụbọchị na mpaghara oge
 about-credit-spellbook = Nlele mkpụrụ okwu, site na nchịkọta Helix
 about-credit-smol = Ime ọtụtụ ihe n'otu oge
+about-credit-color-schemes = Agba nke atụmatụ agba e wuru n'ime ya
 about-all-libraries = Ọba akwụkwọ niile Katna na-eji ({ $count })
 about-library-authors = site n'aka { $authors }
 about-license = Katna bụ software nweere onwe ya n'okpuru GNU GPL, ụdị 3 ma ọ bụ nke ọ bụla ọzọ ka nke ahụ.
@@ -124,6 +125,21 @@ onboarding-density-default = Ndabara
 onboarding-density-compact = Kpakọrọ akpakọ
 onboarding-continue = Gaa n'ihu
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Nweta ihe ndị ọzọ site n'akaụntụ Katna
+onboarding-katna-lead = Ọ bụ nhọrọ. Ọ na-agbanye njirimara ịntanetị Katna, ị nwekwara ike imepụta ya ma emechaa na Ntọala > Ndenye aha.
+onboarding-katna-receipts-title = Akwụkwọ nnata ọgụgụ
+onboarding-katna-receipts-text = Hụ mgbe ndị mmadụ meghere ozi ị zitere.
+onboarding-katna-links-title = Nsochi njikọ
+onboarding-katna-links-text = Hụ njikọ dị n'ozi gị a pịrị.
+onboarding-katna-activity-title = Ihe omume
+onboarding-katna-activity-text = Mmeghe na ịpị maka ihe niile i zitere, n'otu ebe.
+onboarding-katna-translate-title = Ntụgharị asụsụ akpaaka
+onboarding-katna-translate-text = Gụọ ozi e dere n'asụsụ ndị ọzọ n'asụsụ gị.
+onboarding-katna-private = O nwere okwuntughe nke ya. Ihe nbanye ozi gị anaghị apụ na kọmputa a.
+
 ## First run: done
 
 onboarding-ready-title = Ihe niile adịla njikere
@@ -167,6 +183,7 @@ tour-search-text = Ọchụchọ na-arụ ọrụ ọbụna na-enweghị ịntan
 tour-menu-title = Gosi ma ọ bụ zoo folda
 tour-menu-text = Bọtịnụ a na-apịaji ndepụta folda. Mgbe ọ zoro ezo, debe ntụaka n'elu Ozi n'aka ekpe ka ị hụ folda.
 tour-apps-title = Ngwa gị
+tour-apps-text = Ozi bi ebe a, n'akụkụ Kalịnda, Kọntaktị, Ọrụ, Ndetu na Faịlụ.
 tour-tabs-title = Taabụ igbe ozi mbata
 tour-tabs-text = A na-ekesa ozi ọhụrụ n'ime Isi, Nkwalite, Mmekọrịta ọha, Mmelite na Ọgbakọ. Ị nwere ike ịgbanyụ taabụ ndị ahụ na ntọala ngwa ngwa.
 tour-list-title = Ozi gị
@@ -195,6 +212,9 @@ sign-in-again-button = Banye
 sign-in-again-tooltip = Mepee peeji mbanye { $provider } na ihe nchọgharị gị
 sign-in-again-waiting = Na-echere ihe nchọgharị gị…
 sign-in-again-close = Mechie
+google-api-off = Agbanyụrụ { $api } na ọrụ Google Cloud nke Katna.
+google-api-turn-on = Gbanye
+google-api-turn-on-tooltip = Mepee Google Cloud ka i gbanye { $api }, wee pịa Nwaa ọzọ
 sign-in-again-done = Abanyela ọzọ na { $address }. Na-enweta ozi gị…
 delete-ask-title = { $kind ->
     [conversation] Buga mkparịta ụka { $count } na Ihe mkpofu?

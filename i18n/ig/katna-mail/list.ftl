@@ -20,6 +20,7 @@ tab-provider-other = Katna haziri ya
 
 list-select = Họrọ
 list-refresh = Mee ọhụrụ
+list-back-to-top = Laghachi n'elu
 list-checking = Na-elele ozi ọhụrụ…
 list-more = Ọzọ
 list-mark-read = Kaa akara dị ka agụrụ

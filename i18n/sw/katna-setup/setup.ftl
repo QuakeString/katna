@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Tuma kwa Katna Mail
 setup-tagline = Barua pepe ya haraka na ya faragha inayoishi kwenye kompyuta yako.
 setup-update-where = Husasisha Katna Mail katika { $path }. Barua, mipangilio na njia zako za mkato zinabaki kama zilivyo.
 setup-for = Sakinisha kwa ajili ya

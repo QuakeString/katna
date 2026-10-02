@@ -15,6 +15,7 @@ notes-loading = Jou notas word oopgemaak…
 
 notes-take-a-note = Neem ’n nota…
 notes-new-list = Nuwe lys
+notes-new-note = Nuwe nota
 notes-pinned = Vasgespeld
 notes-others = Ander
 notes-empty = Notas wat jy byvoeg, verskyn hier

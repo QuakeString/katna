@@ -112,6 +112,7 @@ remote-picture-remove-failed = Kò lè yọ àwòrán náà kúrò: { $error }
 
 attachment-count = Àfikún { $count }
 attachment-save = Fi pamọ́
+attachment-forward = Fi ránṣẹ́ síwájú
 attachment-save-all = Fi gbogbo rẹ̀ pamọ́
 attachment-save-all-tooltip = Fi gbogbo àfikún pamọ́ sínú fódà kan
 attachment-save-here = Fi pamọ́ síbí
@@ -150,6 +151,11 @@ print-not-downloaded = (A kò tíì gbà á sílẹ̀.)
 print-encrypted = (A pa á lároko. Ṣí i nínú Katna Mail láti tẹ ọ̀rọ̀ rẹ̀ jáde.)
 print-to = Sí: { $addresses }
 print-cc = Ẹ̀dà: { $addresses }
+
+## Message text (right-click menu in the reading pane)
+
+text-pin = Lẹ̀ mọ́ òkè
+text-copy-address = Ṣẹ̀dà àdírẹ́sì
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

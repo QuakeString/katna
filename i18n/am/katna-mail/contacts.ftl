@@ -92,7 +92,7 @@ contacts-print-none = ለማተም ምንም እውቂያ የለም
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = ልደት፦ { $day }
 contacts-print-nickname = ቅጽል ስም፦ { $name }
-contacts-create = እውቂያ ፍጠር
+contacts-create = አዲስ እውቂያ
 
 ## Search and the list
 

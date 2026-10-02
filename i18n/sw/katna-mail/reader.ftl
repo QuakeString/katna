@@ -127,6 +127,7 @@ attachment-count = { $count ->
    *[other] Viambatisho { $count }
 }
 attachment-save = Hifadhi
+attachment-forward = Sambaza
 attachment-save-all = Hifadhi vyote
 attachment-save-all-tooltip = Hifadhi kila kiambatisho kwenye folda
 attachment-save-here = Hifadhi hapa
@@ -177,6 +178,11 @@ print-not-downloaded = (Bado haujapakuliwa.)
 print-encrypted = (Umesimbwa. Ufungue katika Katna Mail ili uchapishe maandishi yake.)
 print-to = Kwa: { $addresses }
 print-cc = Nakala: { $addresses }
+
+## Message text (right-click menu in the reading pane)
+
+text-pin = Bandika juu
+text-copy-address = Nakili anwani
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 
