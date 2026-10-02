@@ -330,6 +330,14 @@ impl MailWindow {
                 )
                 .rounded((SWATCH + 6.0) / 2.0),
             )
+            // The picked one carries a check, as a picked swatch does.
+            .when(on, |d| {
+                d.gap(px(6.0)).pl(px(8.0)).child(crate::widgets::icon(
+                    "check",
+                    th.nav_selected_text,
+                    16.0,
+                ))
+            })
             .child(label)
             .into_any_element()
     }
