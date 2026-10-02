@@ -7,6 +7,10 @@
 about-tooltip = Perihal Katna
 about-tagline = Mel dan kalendar untuk desktop Linux
 about-whats-new = Apa yang baharu
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
 about-update-not-checked = Kemas kini belum disemak lagi
 about-update-checking = Menyemak kemas kini…
 about-update-up-to-date = Katna Mail terkini
@@ -66,6 +70,7 @@ about-credit-resvg = Gambar SVG
 about-credit-jiff = Tarikh dan zon waktu
 about-credit-spellbook = Semakan ejaan, daripada editor Helix
 about-credit-smol = Melakukan banyak perkara serentak
+about-credit-color-schemes = Palet skema warna terbina dalam
 about-all-libraries = Semua pustaka yang digunakan oleh Katna ({ $count })
 about-library-authors = oleh { $authors }
 about-license = Katna ialah perisian bebas di bawah GNU GPL, versi 3 atau lebih baharu.
@@ -120,6 +125,21 @@ onboarding-density-default = Lalai
 onboarding-density-compact = Padat
 onboarding-continue = Teruskan
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Dapatkan lebih banyak dengan akaun Katna
+onboarding-katna-lead = Ia pilihan. Akaun ini menghidupkan ciri dalam talian Katna, dan anda boleh menciptanya kemudian dalam Tetapan > Langganan.
+onboarding-katna-receipts-title = Resit baca
+onboarding-katna-receipts-text = Lihat bila orang membuka mel yang anda hantar.
+onboarding-katna-links-title = Penjejakan pautan
+onboarding-katna-links-text = Lihat pautan mana dalam mel anda yang diklik.
+onboarding-katna-activity-title = Aktiviti
+onboarding-katna-activity-text = Bukaan dan klik untuk semua yang anda hantar, di satu tempat.
+onboarding-katna-translate-title = Terjemahan automatik
+onboarding-katna-translate-text = Baca mel yang ditulis dalam bahasa lain dalam bahasa anda sendiri.
+onboarding-katna-private = Ia mempunyai kata laluannya sendiri. Butiran log masuk mel anda tidak pernah meninggalkan komputer ini.
+
 ## First run: done
 
 onboarding-ready-title = Semuanya sedia
@@ -163,6 +183,7 @@ tour-search-text = Carian juga berfungsi di luar talian. Butang di hujung kanan 
 tour-menu-title = Tunjukkan atau sembunyikan folder
 tour-menu-text = Butang ini melipat senarai folder. Semasa ia tersembunyi, letakkan penuding pada Mel di sebelah kiri untuk melihat folder.
 tour-apps-title = Aplikasi anda
+tour-apps-text = Mel berada di sini, bersebelahan Kalendar, Kenalan, Tugas, Nota dan Fail.
 tour-tabs-title = Tab peti masuk
 tour-tabs-text = Mel baharu diisih ke dalam Utama, Promosi, Sosial, Kemas kini dan Forum. Anda boleh mematikan tab dalam tetapan pantas.
 tour-list-title = Mesej anda
@@ -186,12 +207,22 @@ crash-view = Lihat laporan
 crash-view-tooltip = Buka laporan, yang disimpan pada komputer ini
 crash-copy = Salin laporan
 crash-close = Tutup
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } meminta anda log masuk ke { $address } semula.
 sign-in-again-button = Log masuk
 sign-in-again-tooltip = Buka halaman log masuk { $provider } dalam pelayar anda
 sign-in-again-waiting = Menunggu pelayar anda…
 sign-in-again-close = Tutup
+google-api-off = { $api } dimatikan dalam projek Google Cloud Katna.
+google-api-turn-on = Hidupkan
+google-api-turn-on-tooltip = Buka Google Cloud untuk menghidupkan { $api }, kemudian tekan Cuba lagi
 sign-in-again-done = Telah log masuk ke { $address } semula. Mendapatkan mel anda…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
        *[other] Alihkan { $count } perbualan ke Sampah?

@@ -7,6 +7,10 @@
 about-tooltip = Tentang Katna
 about-tagline = Email dan kalender untuk desktop Linux
 about-whats-new = Yang baru
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
 about-update-not-checked = Pembaruan belum diperiksa
 about-update-checking = Memeriksa pembaruan…
 about-update-up-to-date = Katna Mail sudah versi terbaru
@@ -66,6 +70,7 @@ about-credit-resvg = Gambar SVG
 about-credit-jiff = Tanggal dan zona waktu
 about-credit-spellbook = Pemeriksa ejaan, dari editor Helix
 about-credit-smol = Mengerjakan banyak hal sekaligus
+about-credit-color-schemes = Palet skema warna bawaan
 about-all-libraries = Semua pustaka yang digunakan Katna ({ $count })
 about-library-authors = oleh { $authors }
 about-license = Katna adalah perangkat lunak bebas di bawah GNU GPL, versi 3 atau yang lebih baru.
@@ -120,6 +125,21 @@ onboarding-density-default = Default
 onboarding-density-compact = Ringkas
 onboarding-continue = Lanjutkan
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Dapatkan lebih banyak dengan akun Katna
+onboarding-katna-lead = Ini opsional. Akun ini mengaktifkan fitur online Katna, dan Anda dapat membuatnya nanti di Setelan > Langganan.
+onboarding-katna-receipts-title = Tanda terima baca
+onboarding-katna-receipts-text = Lihat kapan orang membuka email yang Anda kirim.
+onboarding-katna-links-title = Pelacakan link
+onboarding-katna-links-text = Lihat link mana di email Anda yang diklik.
+onboarding-katna-activity-title = Aktivitas
+onboarding-katna-activity-text = Pembukaan dan klik untuk semua yang Anda kirim, di satu tempat.
+onboarding-katna-translate-title = Terjemahan otomatis
+onboarding-katna-translate-text = Baca email yang ditulis dalam bahasa lain dalam bahasa Anda sendiri.
+onboarding-katna-private = Akun ini memiliki sandinya sendiri. Info masuk email Anda tidak pernah keluar dari komputer ini.
+
 ## First run: done
 
 onboarding-ready-title = Semua sudah siap
@@ -163,6 +183,7 @@ tour-search-text = Penelusuran juga berfungsi secara offline. Tombol di ujung ka
 tour-menu-title = Tampilkan atau sembunyikan folder
 tour-menu-text = Tombol ini melipat daftar folder. Saat daftar tersembunyi, arahkan penunjuk ke Email di sebelah kiri untuk melihat folder.
 tour-apps-title = Aplikasi Anda
+tour-apps-text = Email ada di sini, di samping Kalender, Kontak, Tugas, Catatan, dan File.
 tour-tabs-title = Tab Kotak Masuk
 tour-tabs-text = Email baru dipilah ke Utama, Promosi, Sosial, Pembaruan, dan Forum. Anda dapat menonaktifkan tab di setelan cepat.
 tour-list-title = Pesan Anda
@@ -186,12 +207,22 @@ crash-view = Lihat laporan
 crash-view-tooltip = Buka laporan, yang tersimpan di komputer ini
 crash-copy = Salin laporan
 crash-close = Tutup
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } meminta Anda masuk lagi ke { $address }.
 sign-in-again-button = Masuk
 sign-in-again-tooltip = Buka halaman masuk { $provider } di browser Anda
 sign-in-again-waiting = Menunggu browser Anda…
 sign-in-again-close = Tutup
+google-api-off = { $api } dinonaktifkan di project Google Cloud milik Katna.
+google-api-turn-on = Aktifkan
+google-api-turn-on-tooltip = Buka Google Cloud untuk mengaktifkan { $api }, lalu tekan Coba lagi
 sign-in-again-done = Sudah masuk lagi ke { $address }. Mengambil email Anda…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] Pindahkan { $count } percakapan ke Sampah?
    *[message] Pindahkan { $count } pesan ke Sampah?

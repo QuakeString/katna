@@ -2,6 +2,10 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Top bar
+
+top-brand = Katna
+
 ## App rail (and the bottom bar on a phone)
 
 rail-mail = Mail
@@ -9,6 +13,7 @@ rail-calendar = Kalendaryo
 rail-contacts = Mga Contact
 rail-tasks = Mga Gawain
 rail-notes = Mga Tala
+rail-files = Mga File
 
 ## Pages of apps still to come
 
@@ -35,4 +40,3 @@ app-contacts-messages = { $count ->
    *[other] { $count } mensahe
 }
 app-contacts-last = huli noong { $date }
-top-brand = Katna

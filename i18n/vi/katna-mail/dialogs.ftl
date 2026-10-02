@@ -7,6 +7,10 @@
 about-tooltip = Giới thiệu về Katna
 about-tagline = Thư và lịch cho máy tính Linux
 about-whats-new = Có gì mới
+
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
 about-update-not-checked = Chưa kiểm tra cập nhật
 about-update-checking = Đang kiểm tra cập nhật…
 about-update-up-to-date = Katna Mail đã là phiên bản mới nhất
@@ -66,6 +70,7 @@ about-credit-resvg = Hình ảnh SVG
 about-credit-jiff = Ngày tháng và múi giờ
 about-credit-spellbook = Kiểm tra chính tả, từ trình soạn thảo Helix
 about-credit-smol = Làm nhiều việc cùng lúc
+about-credit-color-schemes = Bảng màu của các lược đồ màu có sẵn
 about-all-libraries = Mọi thư viện Katna sử dụng ({ $count })
 about-library-authors = bởi { $authors }
 about-license = Katna là phần mềm tự do theo giấy phép GNU GPL, phiên bản 3 trở lên.
@@ -122,6 +127,21 @@ onboarding-density-default = Mặc định
 onboarding-density-compact = Thu gọn
 onboarding-continue = Tiếp tục
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Thêm nhiều tính năng với tài khoản Katna
+onboarding-katna-lead = Không bắt buộc. Tài khoản này bật các tính năng trực tuyến của Katna, và bạn có thể tạo sau trong Cài đặt > Gói đăng ký.
+onboarding-katna-receipts-title = Xác nhận đã đọc
+onboarding-katna-receipts-text = Xem khi nào mọi người mở thư bạn gửi.
+onboarding-katna-links-title = Theo dõi liên kết
+onboarding-katna-links-text = Xem liên kết nào trong thư của bạn được nhấp vào.
+onboarding-katna-activity-title = Hoạt động
+onboarding-katna-activity-text = Lượt mở và lượt nhấp của mọi thư bạn đã gửi, ở cùng một nơi.
+onboarding-katna-translate-title = Dịch tự động
+onboarding-katna-translate-text = Đọc thư viết bằng ngôn ngữ khác bằng ngôn ngữ của bạn.
+onboarding-katna-private = Tài khoản có mật khẩu riêng. Thông tin đăng nhập thư của bạn không bao giờ rời khỏi máy tính này.
+
 ## First run: done
 
 onboarding-ready-title = Mọi thứ đã sẵn sàng
@@ -165,6 +185,7 @@ tour-search-text = Tìm kiếm hoạt động cả khi ngoại tuyến. Nút ở
 tour-menu-title = Hiện hoặc ẩn thư mục
 tour-menu-text = Nút này thu gọn danh sách thư mục. Khi danh sách bị ẩn, hãy đặt con trỏ lên Thư ở bên trái để xem thư mục.
 tour-apps-title = Ứng dụng của bạn
+tour-apps-text = Thư nằm ở đây, bên cạnh Lịch, Danh bạ, Việc cần làm, Ghi chú và Tệp.
 tour-tabs-title = Các thẻ Hộp thư đến
 tour-tabs-text = Thư mới được xếp vào Chính, Quảng cáo, Mạng xã hội, Cập nhật và Diễn đàn. Bạn có thể tắt các thẻ trong cài đặt nhanh.
 tour-list-title = Thư của bạn
@@ -188,12 +209,22 @@ crash-view = Xem báo cáo
 crash-view-tooltip = Mở báo cáo đã lưu trên máy tính này
 crash-copy = Sao chép báo cáo
 crash-close = Đóng
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } yêu cầu bạn đăng nhập lại vào { $address }.
 sign-in-again-button = Đăng nhập
 sign-in-again-tooltip = Mở trang đăng nhập { $provider } trong trình duyệt
 sign-in-again-waiting = Đang chờ trình duyệt…
 sign-in-again-close = Đóng
+google-api-off = { $api } đang bị tắt trong dự án Google Cloud của Katna.
+google-api-turn-on = Bật
+google-api-turn-on-tooltip = Mở Google Cloud để bật { $api }, rồi nhấn Thử lại
 sign-in-again-done = Đã đăng nhập lại vào { $address }. Đang nhận thư của bạn…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
        *[other] Chuyển { $count } cuộc hội thoại vào Thùng rác?

@@ -1,6 +1,9 @@
 # Katna Mail, Korean (한국어).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Results
+
 search-category-mail = 메일
 search-category-people = 사람
 search-category-tasks = 할 일
@@ -17,6 +20,9 @@ search-event-in-days =
     { $count ->
        *[other] { $count }일 후
     }
+
+## Buttons on a result in KRunner
+
 search-reply-all = 전체답장
 search-copy-address = 주소 복사
 search-find-mail = 메일 찾기

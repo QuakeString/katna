@@ -4,6 +4,7 @@
 
 ## Attachment viewer
 
+viewer-opening = 여는 중…
 viewer-unreadable = 이 첨부파일을 읽을 수 없습니다.
 viewer-pdf-locked = 이 PDF는 비밀번호로 보호되어 있습니다.
 viewer-pdf-unreadable = 이 PDF를 읽을 수 없습니다.
@@ -14,8 +15,17 @@ viewer-slides-unreadable = 이 슬라이드를 읽을 수 없습니다.
 viewer-no-preview = 미리보기를 사용할 수 없음
 viewer-slide = 슬라이드 { $number }
 viewer-page = 페이지
+viewer-slide-box = 슬라이드
 viewer-page-count = / { $count }
 viewer-go-to-page-tip = 페이지 번호를 입력하고 Enter 키를 누르세요 (Ctrl+G)
+viewer-rotate-clockwise-tip = 시계 방향으로 회전(Ctrl+R)
+viewer-rotate-anticlockwise-tip = 시계 반대 방향으로 회전(Ctrl+Shift+R)
+viewer-fit-page-tip = 페이지에 맞추기
+viewer-fit-picture-tip = 창에 맞추기
+viewer-fit-width-tip = 너비에 맞추기
+viewer-real-size-tip = 실제 크기(1:1)
+viewer-page-back-tip = 이전 페이지
+viewer-page-on-tip = 다음 페이지
 
 ## Marking up a PDF
 
@@ -41,20 +51,21 @@ viewer-marks-undo-tip = 실행취소(Ctrl+Z)
 viewer-marks-redo-tip = 다시 실행(Ctrl+Shift+Z)
 viewer-save-marked-tip = 표시한 사본 저장(Ctrl+S)
 viewer-reply-marked-tip = 표시한 사본으로 답장
-# Typing a sticky note or a text box on the page.
+viewer-forward-tip = 파일 전달
+viewer-forward = 전달
+viewer-open-with = 다른 앱으로 열기…
+viewer-save = 저장
 viewer-note-placeholder = 메모 작성
 viewer-text-placeholder = 여기에 입력
 viewer-note-done = 완료
 viewer-note-delete = 삭제
 viewer-markup-protected = 이 PDF는 변경이 금지되어 있어 표시할 수 없습니다.
 viewer-marks-save-failed = 표시한 사본을 저장할 수 없습니다.
-# Asked when closing a PDF, or moving to another attachment, with marks
-# that are not saved yet.
 viewer-marks-unsaved-title = 표시를 저장할까요?
 viewer-marks-unsaved-text = 이 PDF의 표시는 아직 저장되지 않았습니다. 표시는 사본에 저장되며, 첨부파일 자체는 그대로 유지됩니다.
 viewer-marks-discard = 버리기
 viewer-marks-keep = 계속 표시
 viewer-marks-save = 사본 저장
-# The name of the copy of a PDF with marks, before ".pdf". $name: the
-# attachment's name without ".pdf".
 viewer-marked-name = { $name } (표시됨)
+viewer-pick = 선택
+viewer-picked = 선택됨

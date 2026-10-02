@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = 作成
+tasks-create = 新しいタスク
 tasks-all = すべてのタスク
 tasks-today = 今日
 tasks-starred = スター付き
 tasks-new-list = 新しいリストを作成
 tasks-on-this-computer = このパソコン
 tasks-my-tasks = マイタスク
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = もう一度サインインしてタスクを表示
 tasks-account-signed-in = { $address } に再度サインインしました。タスクを取得しています…
 tasks-account-sign-in-refused = { $provider } が Katna のアクセスを許可しませんでした。もう一度試して、タスクへのアクセスを許可してください。
@@ -21,13 +19,9 @@ tasks-account-change-password = パスワードを変更
 tasks-account-change-password-tooltip = 設定 > アカウント を開く
 tasks-account-not-enabled = Katna のタスクへのアクセスはまだ有効になっていません。
 tasks-account-failed = タスクリストを読み込めませんでした。
-# $reason is the server's own words, in English.
 tasks-account-error = タスクリストを読み込めませんでした: { $reason }
 tasks-account-none = タスクリストが見つかりません
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 tasks-account-none-why = タスクリストが見つかりません: { $reason }
-# A Gmail or Outlook account added with a password: its tasks need the
-# provider's sign-in.
 tasks-account-use-sign-in = { $provider } のタスクは、{ $provider } でサインインした Katna にのみ表示されます。
 tasks-account-sign-in-with = { $provider } でサインイン
 tasks-account-looking = タスクリストを探しています…
@@ -112,6 +106,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = そのメールは見つかりません。
 tasks-toast-list-deleted = リストを削除しました
 tasks-toast-moved = { $list } に移動しました
-# A task dragged to another place in its own list.
 tasks-toast-placed = タスクを移動しました
 tasks-toast-rescheduled = タスクの日時を変更しました

@@ -1,6 +1,9 @@
 # Katna Mail, Japanese (日本語).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Results
+
 search-category-mail = メール
 search-category-people = 連絡先
 search-category-tasks = タスク
@@ -17,6 +20,9 @@ search-event-in-days =
     { $count ->
        *[other] { $count } 日後
     }
+
+## Buttons on a result in KRunner
+
 search-reply-all = 全員に返信
 search-copy-address = アドレスをコピー
 search-find-mail = メールを検索

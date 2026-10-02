@@ -2,6 +2,10 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Top bar
+
+top-brand = Katna
+
 ## App rail (and the bottom bar on a phone)
 
 rail-mail = 郵件
@@ -9,6 +13,7 @@ rail-calendar = 日曆
 rail-contacts = 聯絡人
 rail-tasks = 工作
 rail-notes = 記事
+rail-files = 檔案
 
 ## Pages of apps still to come
 
@@ -26,4 +31,3 @@ app-contacts-count = 來自你郵件的 { $count } 位聯絡人，往來最多�
 app-contacts-top = 來自你郵件的前 { $count } 位聯絡人，往來最多的排在最前面
 app-contacts-messages = { $count } 封郵件
 app-contacts-last = 最近：{ $date }
-top-brand = Katna

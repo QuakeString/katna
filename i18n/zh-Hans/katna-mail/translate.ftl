@@ -1,6 +1,7 @@
 # Katna Mail, Chinese (Simplified) (简体中文).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
 translate-offer = 这封邮件是{ $language }。
 translate-to = 翻译为{ $language }
 translate-never = 从不翻译{ $language }

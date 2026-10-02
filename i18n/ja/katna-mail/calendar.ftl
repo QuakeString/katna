@@ -57,10 +57,7 @@ calendar-account-not-enabled = Katna のカレンダーへのアクセスはま�
 calendar-account-failed = カレンダーを読み込めませんでした。
 calendar-account-error = カレンダーを読み込めませんでした: { $reason }
 calendar-account-none = カレンダーが見つかりません
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 calendar-account-none-why = カレンダーが見つかりません: { $reason }
-# A Gmail or Outlook account added with a password: its calendars need the
-# provider's sign-in.
 calendar-account-use-sign-in = { $provider } のカレンダーは、{ $provider } でサインインした Katna にのみ表示されます。
 calendar-account-sign-in-with = { $provider } でサインイン
 calendar-account-looking = カレンダーを探しています…
@@ -82,8 +79,10 @@ calendar-short-event = { $title }、{ $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = 他 { $count } 件
+calendar-peek-day = { $day }（{ $weekday }）
 calendar-repeats = 繰り返し
 calendar-join = 参加
+calendar-join-with = { $service } で参加
 calendar-email-guests = ゲストにメールを送信
 calendar-running-late = 遅れます
 calendar-late-subject = 遅れます: { $title }
@@ -96,6 +95,7 @@ calendar-guest-answers = はい { $yes }、未定 { $maybe }、いいえ { $no }
 calendar-organizer = 主催者
 calendar-optional = 任意
 calendar-open-web = ブラウザで開く
+calendar-open-mail = メールを開く
 calendar-open-contact = 連絡先を開く
 calendar-close = 閉じる
 
@@ -119,18 +119,12 @@ calendar-discard = 変更を破棄
 calendar-edit = 予定を編集
 calendar-delete = 予定を削除
 calendar-event-details = 予定の詳細
-# Right-click menus on the calendar: on a free time or day, an event and
-# a task.
 calendar-menu-new-event = 新しい予定
-# Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = 日を開く
 calendar-menu-duplicate = 複製
 calendar-menu-color = 色
-# The event takes its calendar's color.
 calendar-menu-color-calendar = カレンダーの色
-# A task's new due day, a week from today.
 calendar-menu-in-a-week = 1 週間後
-# Event colors, by the names Google Calendar gives them.
 calendar-color-tomato = トマト
 calendar-color-flamingo = フラミンゴ
 calendar-color-tangerine = ミカン
@@ -142,6 +136,40 @@ calendar-color-blueberry = ブルーベリー
 calendar-color-lavender = ラベンダー
 calendar-color-grape = ブドウ
 calendar-color-graphite = グラファイト
+calendar-menu-only-this = これだけを表示
+calendar-menu-rename = 名前を変更
+calendar-menu-remove = リストから削除
+calendar-menu-delete = 削除
+calendar-menu-new-calendar = 新しいカレンダー
+calendar-menu-show-all = すべて表示
+calendar-menu-hide-all = すべて非表示
+calendar-menu-account-settings = アカウント設定
+calendar-why-main = メインのカレンダー
+calendar-why-last = これ 1 つのみ
+calendar-why-owner = オーナーのみ
+calendar-why-contacts = 連絡先から
+calendar-why-unreached = 接続できません
+calendar-name-placeholder = カレンダー名
+calendar-toast-added = 「{ $name }」を追加しました
+calendar-toast-renamed = カレンダーの名前を変更しました
+calendar-toast-recolored = カレンダーの色を変更しました
+calendar-toast-deleted = 「{ $name }」を削除しました
+calendar-toast-removed = 「{ $name }」をリストから削除しました
+calendar-edit-failed = カレンダーを変更できませんでした: { $reason }
+calendar-delete-title = 「{ $name }」を削除しますか？
+calendar-delete-confirm = 削除
+calendar-deleting = 削除しています…
+calendar-delete-heading = 削除されるもの:
+calendar-delete-events = カレンダーとそのすべての予定
+calendar-delete-shared = 共有しているすべての人から
+calendar-delete-server = Katna 上だけでなく、メールサービス上の { $account } からも削除されます。
+calendar-delete-local = このパソコンから削除されます。
+calendar-remove-title = 「{ $name }」をリストから削除しますか？
+calendar-remove-confirm = 削除
+calendar-removing = 削除しています…
+calendar-remove-heading = 変わること:
+calendar-remove-events = ここやほかのアプリで、このカレンダーの予定が表示されなくなります
+calendar-remove-server = カレンダーはオーナーの手元に残り、オーナーが再び共有することもできます。
 calendar-kind-event = 予定
 calendar-kind-task = タスク
 calendar-kind-focus = 集中時間

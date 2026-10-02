@@ -54,10 +54,7 @@ calendar-account-not-enabled = Akses kalender untuk Katna belum diaktifkan.
 calendar-account-failed = Kalender tidak dapat dibaca.
 calendar-account-error = Kalender tidak dapat dibaca: { $reason }
 calendar-account-none = Tidak ada kalender yang ditemukan
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 calendar-account-none-why = Tidak ada kalender yang ditemukan: { $reason }
-# A Gmail or Outlook account added with a password: its calendars need the
-# provider's sign-in.
 calendar-account-use-sign-in = { $provider } hanya menampilkan kalender ke Katna yang masuk dengan { $provider }.
 calendar-account-sign-in-with = Masuk dengan { $provider }
 calendar-account-looking = Mencari kalender…
@@ -79,8 +76,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = { $count } lainnya
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Berulang
 calendar-join = Gabung
+calendar-join-with = Gabung dengan { $service }
 calendar-email-guests = Kirim email ke tamu
 calendar-running-late = Saya terlambat
 calendar-late-subject = Terlambat: { $title }
@@ -93,6 +92,7 @@ calendar-guest-answers = { $yes } ya, { $maybe } mungkin, { $no } tidak, { $wait
 calendar-organizer = Penyelenggara
 calendar-optional = Opsional
 calendar-open-web = Buka di browser
+calendar-open-mail = Buka email
 calendar-open-contact = Buka kontak
 calendar-close = Tutup
 
@@ -116,18 +116,12 @@ calendar-discard = Buang perubahan
 calendar-edit = Edit acara
 calendar-delete = Hapus acara
 calendar-event-details = Detail acara
-# Right-click menus on the calendar: on a free time or day, an event and
-# a task.
 calendar-menu-new-event = Acara baru
-# Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Buka hari
 calendar-menu-duplicate = Duplikat
 calendar-menu-color = Warna
-# The event takes its calendar's color.
 calendar-menu-color-calendar = Warna kalender
-# A task's new due day, a week from today.
 calendar-menu-in-a-week = Dalam seminggu
-# Event colors, by the names Google Calendar gives them.
 calendar-color-tomato = Tomat
 calendar-color-flamingo = Flamingo
 calendar-color-tangerine = Jeruk keprok
@@ -139,6 +133,40 @@ calendar-color-blueberry = Blueberry
 calendar-color-lavender = Lavender
 calendar-color-grape = Anggur
 calendar-color-graphite = Grafit
+calendar-menu-only-this = Tampilkan hanya ini
+calendar-menu-rename = Ganti nama
+calendar-menu-remove = Hapus dari daftar
+calendar-menu-delete = Hapus
+calendar-menu-new-calendar = Kalender baru
+calendar-menu-show-all = Tampilkan semua
+calendar-menu-hide-all = Sembunyikan semua
+calendar-menu-account-settings = Setelan akun
+calendar-why-main = Kalender utama
+calendar-why-last = Hanya satu di sini
+calendar-why-owner = Hanya pemilik
+calendar-why-contacts = Dari Kontak
+calendar-why-unreached = Tidak terjangkau
+calendar-name-placeholder = Nama kalender
+calendar-toast-added = “{ $name }” ditambahkan
+calendar-toast-renamed = Nama kalender diubah
+calendar-toast-recolored = Warna kalender diubah
+calendar-toast-deleted = “{ $name }” dihapus
+calendar-toast-removed = “{ $name }” dihapus dari daftar Anda
+calendar-edit-failed = Kalender tidak diubah: { $reason }
+calendar-delete-title = Hapus “{ $name }”?
+calendar-delete-confirm = Hapus
+calendar-deleting = Menghapus…
+calendar-delete-heading = Yang dihapus:
+calendar-delete-events = Kalender dan semua acaranya
+calendar-delete-shared = Untuk semua orang yang dibagikan kalender ini
+calendar-delete-server = Kalender dihapus dari { $account } di layanan email, bukan hanya di Katna.
+calendar-delete-local = Kalender dihapus dari komputer ini.
+calendar-remove-title = Hapus “{ $name }” dari daftar Anda?
+calendar-remove-confirm = Hapus
+calendar-removing = Menghapus…
+calendar-remove-heading = Yang berubah:
+calendar-remove-events = Anda tidak lagi melihat acaranya, di sini maupun di aplikasi Anda yang lain
+calendar-remove-server = Kalender tetap ada pada pemiliknya, yang dapat membagikannya lagi kepada Anda.
 calendar-kind-event = Acara
 calendar-kind-task = Tugas
 calendar-kind-focus = Waktu fokus

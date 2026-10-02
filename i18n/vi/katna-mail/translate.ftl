@@ -1,6 +1,7 @@
 # Katna Mail, Vietnamese (Tiếng Việt).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
 translate-offer = Thư này viết bằng { $language }.
 translate-to = Dịch sang { $language }
 translate-never = Không bao giờ dịch { $language }

@@ -32,6 +32,7 @@ compose-tool-bold = 太字（Ctrl+B）
 compose-tool-italic = 斜体（Ctrl+I）
 compose-tool-underline = 下線（Ctrl+U）
 compose-tool-text-color = テキストの色
+compose-tool-colors = 文字色とハイライト
 compose-tool-background-color = 背景色
 compose-tool-default-color = デフォルトの色
 compose-tool-no-background = 背景なし
@@ -126,6 +127,10 @@ compose-tool-signature = 署名を挿入
 compose-tool-signature-none = 署名なし
 compose-tool-signature-untitled = 無題
 compose-tool-signature-manage = 署名を管理
+compose-signature-tag-tip = 別の署名を選択
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = テンプレート
 compose-tool-templates-none = テンプレートはまだありません
 compose-tool-template-save = テンプレートとして保存…

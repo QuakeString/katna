@@ -1,20 +1,57 @@
 # Katna Mail, Filipino (Filipino).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## The list under the Activity button
+
+activity-details = Mga detalye
+activity-clear-all = I-clear lahat
+activity-remove = Alisin sa listahan
+activity-feed-opened = Binuksan ni { $who } ang “{ $subject }”
+activity-feed-clicked = Sinundan ni { $who } ang isang link sa “{ $subject }”
+activity-feed-maybe = Maaaring binuksan ni { $who } ang “{ $subject }”
+activity-feed-empty = Wala pang pagbukas o pag-click. I-on ang mata kapag sumusulat ng mensahe para makita kung kailan ito nabasa.
+activity-message-gone = Wala na sa Naipadala ang mensaheng iyon.
+
+## The Details report
+
+activity-report = Ulat ng aktibidad
+activity-range-week = Huling 7 araw
+activity-range-month = Huling 30 araw
+activity-range-all = Lahat ng panahon
+activity-range-custom = Custom
+activity-range-from = Mula
+activity-range-to = Hanggang
+activity-range-apply = Ilapat
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Lahat ng account
+activity-accounts-tip = Magpakita ng isang account o lahat
+
+## Totals at the top
+
 activity-messages = Mga naka-track na mensahe
 activity-open-rate = Open rate
 activity-click-rate = Click rate
 activity-percent = { $percent }%
+
+## Opens and clicks over time
+
 activity-by-day = Mga pagbukas at pag-click
 activity-opens = Mga pagbukas: { $count }
 activity-clicks = Mga pag-click: { $count }
 activity-by-week = Isang bar bawat linggo
+
+## The messages
+
 activity-by-open-rate = Mga subject line ayon sa open rate
 activity-opened = Binuksan ng { $opened } sa { $recipients }
 activity-clicked = Sinundan ng { $clicked } sa { $recipients } ang link
 activity-no-subject = (walang paksa)
 activity-nothing-period = Walang naka-track na mail na naipadala sa panahong ito.
 activity-close = Isara
+
+## Your mailbox: counted on this computer from all mail in the period
+
 insights-heading = Ang mailbox mo
 insights-counting = Binibilang ang mail mo…
 insights-failed = Hindi mabilang ang mail mo.
@@ -39,22 +76,3 @@ insights-days = { $count ->
 insights-people = Mga taong pinakamadalas mong sinusulatan
 insights-person-counts = { $sent } naipadala · { $received } natanggap
 insights-hours-heading = Kailan dumarating ang mail
-activity-details = Mga detalye
-activity-clear-all = I-clear lahat
-activity-remove = Alisin sa listahan
-activity-feed-opened = Binuksan ni { $who } ang “{ $subject }”
-activity-feed-clicked = Sinundan ni { $who } ang isang link sa “{ $subject }”
-activity-feed-maybe = Maaaring binuksan ni { $who } ang “{ $subject }”
-activity-feed-empty = Wala pang pagbukas o pag-click. I-on ang mata kapag sumusulat ng mensahe para makita kung kailan ito nabasa.
-activity-message-gone = Wala na sa Naipadala ang mensaheng iyon.
-activity-report = Ulat ng aktibidad
-activity-range-week = Huling 7 araw
-activity-range-month = Huling 30 araw
-activity-range-all = Lahat ng panahon
-activity-range-custom = Custom
-activity-range-from = Mula
-activity-range-to = Hanggang
-activity-range-apply = Ilapat
-activity-range-of = { $days } · { $account }
-activity-accounts-all = Lahat ng account
-activity-accounts-tip = Magpakita ng isang account o lahat

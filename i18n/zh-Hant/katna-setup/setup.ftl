@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = 使用 Katna Mail 傳送
 setup-tagline = 快速、私密，郵件就保存在你的電腦上。
 setup-update-where = 更新位於 { $path } 的 Katna Mail。你的郵件、設定和捷徑都會保持不變。
 setup-for = 安裝對象

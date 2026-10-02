@@ -57,10 +57,7 @@ calendar-account-not-enabled = Akses kalendar untuk Katna belum dihidupkan lagi.
 calendar-account-failed = Kalendar tidak dapat dibaca.
 calendar-account-error = Kalendar tidak dapat dibaca: { $reason }
 calendar-account-none = Tiada kalendar ditemui
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 calendar-account-none-why = Tiada kalendar ditemui: { $reason }
-# A Gmail or Outlook account added with a password: its calendars need the
-# provider's sign-in.
 calendar-account-use-sign-in = { $provider } hanya menunjukkan kalendar kepada Katna yang log masuk dengan { $provider }.
 calendar-account-sign-in-with = Log masuk dengan { $provider }
 calendar-account-looking = Mencari kalendar…
@@ -82,8 +79,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = { $count } lagi
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Berulang
 calendar-join = Sertai
+calendar-join-with = Sertai dengan { $service }
 calendar-email-guests = E-mel tetamu
 calendar-running-late = Saya lewat
 calendar-late-subject = Lewat: { $title }
@@ -96,6 +95,7 @@ calendar-guest-answers = { $yes } ya, { $maybe } mungkin, { $no } tidak, { $wait
 calendar-organizer = Penganjur
 calendar-optional = Tidak wajib
 calendar-open-web = Buka dalam pelayar
+calendar-open-mail = Buka mel
 calendar-open-contact = Buka kenalan
 calendar-close = Tutup
 
@@ -119,18 +119,12 @@ calendar-discard = Buang perubahan
 calendar-edit = Edit acara
 calendar-delete = Padam acara
 calendar-event-details = Butiran acara
-# Right-click menus on the calendar: on a free time or day, an event and
-# a task.
 calendar-menu-new-event = Acara baharu
-# Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Buka hari
 calendar-menu-duplicate = Pendua
 calendar-menu-color = Warna
-# The event takes its calendar's color.
 calendar-menu-color-calendar = Warna kalendar
-# A task's new due day, a week from today.
 calendar-menu-in-a-week = Dalam seminggu
-# Event colors, by the names Google Calendar gives them.
 calendar-color-tomato = Tomato
 calendar-color-flamingo = Flamingo
 calendar-color-tangerine = Tangerin
@@ -142,6 +136,40 @@ calendar-color-blueberry = Beri biru
 calendar-color-lavender = Lavender
 calendar-color-grape = Anggur
 calendar-color-graphite = Grafit
+calendar-menu-only-this = Tunjukkan ini sahaja
+calendar-menu-rename = Namakan semula
+calendar-menu-remove = Alih keluar daripada senarai
+calendar-menu-delete = Padam
+calendar-menu-new-calendar = Kalendar baharu
+calendar-menu-show-all = Tunjukkan semua
+calendar-menu-hide-all = Sembunyikan semua
+calendar-menu-account-settings = Tetapan akaun
+calendar-why-main = Kalendar utama
+calendar-why-last = Hanya satu di sini
+calendar-why-owner = Pemilik sahaja
+calendar-why-contacts = Daripada Kenalan
+calendar-why-unreached = Tidak dapat dicapai
+calendar-name-placeholder = Nama kalendar
+calendar-toast-added = “{ $name }” ditambah
+calendar-toast-renamed = Kalendar dinamakan semula
+calendar-toast-recolored = Warna kalendar ditukar
+calendar-toast-deleted = “{ $name }” dipadamkan
+calendar-toast-removed = “{ $name }” dialih keluar daripada senarai anda
+calendar-edit-failed = Kalendar tidak ditukar: { $reason }
+calendar-delete-title = Padamkan “{ $name }”?
+calendar-delete-confirm = Padam
+calendar-deleting = Memadam…
+calendar-delete-heading = Dipadamkan:
+calendar-delete-events = Kalendar dan semua acaranya
+calendar-delete-shared = Untuk semua orang yang dikongsi dengannya
+calendar-delete-server = Ia dipadamkan daripada { $account } pada perkhidmatan mel, bukan hanya dalam Katna.
+calendar-delete-local = Ia dipadamkan daripada komputer ini.
+calendar-remove-title = Alih keluar “{ $name }” daripada senarai anda?
+calendar-remove-confirm = Alih keluar
+calendar-removing = Mengalih keluar…
+calendar-remove-heading = Apa yang berubah:
+calendar-remove-events = Anda tidak lagi melihat acaranya, di sini dan dalam apl anda yang lain
+calendar-remove-server = Kalendar kekal dengan pemiliknya, yang boleh berkongsinya dengan anda semula.
 calendar-kind-event = Acara
 calendar-kind-task = Tugasan
 calendar-kind-focus = Masa fokus

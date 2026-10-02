@@ -1,8 +1,14 @@
 # Katna Mail, Filipino (Filipino).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Reading pane toolbar
+
 contact-panel-show = Ipakita ang detalye ng contact
 contact-panel-hide = Itago ang detalye ng contact
+
+## The panel
+
 contact-email = Magpadala ng email
 contact-search = Hanapin ang mail kasama nila
 contact-add-to-contacts = Idagdag sa mga contact
@@ -15,6 +21,11 @@ contact-from-to = { $from } mula sa kanila, { $to } mula sa iyo
 contact-first = Una
 contact-latest = Pinakabago
 contact-call = Tumawag
+contact-phone-mobile = Mobile
+contact-phone-direct = Direkta
+contact-phone-office = Opisina
+contact-phone-fax = Fax
+contact-phone-whatsapp = WhatsApp
 contact-copy-number = Kopyahin ang numero
 contact-number-copied = Nakopya ang numero
 contact-local-time = { $time } sa oras nila ({ $offset })
@@ -26,5 +37,8 @@ contact-less = Mas kaunti
 contact-files = Mga file
 contact-tasks = Mga Gawain
 contact-meetings = Mga paparating na meeting
+contact-company = Kumpanya
+contact-company-since = mula pa noong { $year }
+contact-company-from = Mula sa { $site } · tiningnan { $when }
 contact-people = Sa pag-uusap na ito
 contact-local-only = Mula lang sa mail mo sa computer na ito

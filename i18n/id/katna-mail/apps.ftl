@@ -2,6 +2,10 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Top bar
+
+top-brand = Katna
+
 ## App rail (and the bottom bar on a phone)
 
 rail-mail = Email
@@ -9,6 +13,7 @@ rail-calendar = Kalender
 rail-contacts = Kontak
 rail-tasks = Tugas
 rail-notes = Catatan
+rail-files = File
 
 ## Pages of apps still to come
 
@@ -26,4 +31,3 @@ app-contacts-count = { $count } orang dari email Anda, yang paling sering berkir
 app-contacts-top = { $count } orang teratas dari email Anda, yang paling sering berkirim email ditampilkan lebih dulu
 app-contacts-messages = { $count } pesan
 app-contacts-last = terakhir { $date }
-top-brand = Katna

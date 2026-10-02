@@ -20,6 +20,7 @@ tab-provider-other = inayos ng Katna
 
 list-select = Piliin
 list-refresh = I-refresh
+list-back-to-top = Bumalik sa itaas
 list-checking = Tinitingnan kung may bagong mail…
 list-more = Higit pa
 list-mark-read = Markahan bilang nabasa na
@@ -386,11 +387,7 @@ menu-add-note = Magdagdag ng tala
 menu-print-all = I-print lahat
 menu-new-window = Buksan sa bagong window
 menu-move-to = Ilipat sa
-# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
-# video call.
 menu-follow-up = I-follow up
-# Opens a submenu of the rarer actions: Report spam, Mark as important and
-# Pin to top.
 menu-more = Iba pa
 menu-move-to-heading = Ilipat sa:
 menu-find-from = Hanapin ang mga email mula kay { $name }

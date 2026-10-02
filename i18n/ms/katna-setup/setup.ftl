@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Hantar dengan Katna Mail
 setup-tagline = Mel yang pantas dan peribadi, tersimpan pada komputer anda.
 setup-update-where = Mengemas kini Katna Mail dalam { $path }. Mel, tetapan dan pintasan anda kekal seperti sedia ada.
 setup-for = Pasang untuk

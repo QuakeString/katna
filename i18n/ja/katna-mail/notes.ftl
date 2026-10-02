@@ -15,6 +15,7 @@ notes-loading = メモを開いています…
 
 notes-take-a-note = メモを入力…
 notes-new-list = 新しいリスト
+notes-new-note = 新しいメモ
 notes-pinned = 固定済み
 notes-others = その他
 notes-empty = 追加したメモがここに表示されます

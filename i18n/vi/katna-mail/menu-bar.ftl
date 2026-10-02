@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _Lịch
 desktop-menu-page-contacts = Danh _bạ
 desktop-menu-page-tasks = _Việc cần làm
 desktop-menu-page-notes = Ghi _chú
+desktop-menu-page-files = Tệ_p
 desktop-menu-next = Cuộc hội thoại _tiếp theo
 desktop-menu-previous = Cuộc hội thoại t_rước
 desktop-menu-message = _Thư

@@ -70,6 +70,7 @@ about-credit-resvg = SVG 그림
 about-credit-jiff = 날짜와 시간대
 about-credit-spellbook = 맞춤법 검사, Helix 편집기 제공
 about-credit-smol = 여러 작업 동시 처리
+about-credit-color-schemes = 기본 제공 색 구성표의 팔레트
 about-all-libraries = Katna가 사용하는 모든 라이브러리({ $count }개)
 about-library-authors = 만든 사람: { $authors }
 about-license = Katna는 GNU GPL 버전 3 이상에 따른 자유 소프트웨어입니다.
@@ -124,6 +125,21 @@ onboarding-density-default = 기본값
 onboarding-density-compact = 간단히
 onboarding-continue = 계속
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna 계정으로 더 많은 기능을 이용하세요
+onboarding-katna-lead = 선택 사항입니다. Katna의 온라인 기능을 사용할 수 있으며, 나중에 설정 > 구독에서 만들 수도 있습니다.
+onboarding-katna-receipts-title = 읽음 확인
+onboarding-katna-receipts-text = 보낸 메일을 상대방이 언제 열었는지 확인하세요.
+onboarding-katna-links-title = 링크 추적
+onboarding-katna-links-text = 메일의 어떤 링크가 클릭되었는지 확인하세요.
+onboarding-katna-activity-title = 활동
+onboarding-katna-activity-text = 보낸 모든 메일의 열람과 클릭을 한곳에서 확인하세요.
+onboarding-katna-translate-title = 자동 번역
+onboarding-katna-translate-text = 다른 언어로 된 메일을 내 언어로 읽으세요.
+onboarding-katna-private = 별도의 비밀번호를 사용합니다. 메일 로그인 정보는 이 컴퓨터 밖으로 나가지 않습니다.
+
 ## First run: done
 
 onboarding-ready-title = 모든 준비가 끝났습니다
@@ -167,6 +183,7 @@ tour-search-text = 검색은 오프라인에서도 됩니다. 오른쪽 끝의 �
 tour-menu-title = 폴더 표시 또는 숨기기
 tour-menu-text = 이 버튼은 폴더 목록을 접습니다. 목록이 숨겨져 있을 때 왼쪽의 메일에 포인터를 올리면 폴더가 보입니다.
 tour-apps-title = 앱
+tour-apps-text = 메일은 캘린더, 연락처, 할 일, 메모, 파일과 함께 여기에 있습니다.
 tour-tabs-title = 받은편지함 탭
 tour-tabs-text = 새 메일은 기본, 프로모션, 소셜, 업데이트, 포럼으로 분류됩니다. 빠른 설정에서 탭을 끌 수 있습니다.
 tour-list-title = 메시지
@@ -190,12 +207,22 @@ crash-view = 보고서 보기
 crash-view-tooltip = 이 컴퓨터에 저장된 보고서 열기
 crash-copy = 보고서 복사
 crash-close = 닫기
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider }에서 { $address }에 다시 로그인하라고 요청합니다.
 sign-in-again-button = 로그인
 sign-in-again-tooltip = 브라우저에서 { $provider } 로그인 페이지 열기
 sign-in-again-waiting = 브라우저를 기다리는 중…
 sign-in-again-close = 닫기
+google-api-off = Katna의 Google Cloud 프로젝트에서 { $api }이(가) 꺼져 있습니다.
+google-api-turn-on = 켜기
+google-api-turn-on-tooltip = Google Cloud를 열어 { $api }을(를) 켠 다음 다시 시도를 누르세요
 sign-in-again-done = { $address }에 다시 로그인했습니다. 메일을 가져오는 중…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] 대화 { $count }개를 휴지통으로 이동하시겠습니까?
    *[message] 메일 { $count }개를 휴지통으로 이동하시겠습니까?

@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = 建立
+tasks-create = 新增工作
 tasks-all = 所有工作
 tasks-today = 今天
 tasks-starred = 已加星號
 tasks-new-list = 建立新清單
 tasks-on-this-computer = 這部電腦
 tasks-my-tasks = 我的工作
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = 重新登入以顯示工作
 tasks-account-signed-in = 已重新登入 { $address }。正在取得你的工作…
 tasks-account-sign-in-refused = { $provider } 未允許 Katna 存取。請再試一次，並允許存取你的工作。
@@ -21,13 +19,9 @@ tasks-account-change-password = 變更密碼
 tasks-account-change-password-tooltip = 開啟「設定 > 帳戶」
 tasks-account-not-enabled = Katna 的工作存取權限尚未開啟。
 tasks-account-failed = 無法讀取工作清單。
-# $reason is the server's own words, in English.
 tasks-account-error = 無法讀取工作清單：{ $reason }
 tasks-account-none = 找不到工作清單
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 tasks-account-none-why = 找不到工作清單：{ $reason }
-# A Gmail or Outlook account added with a password: its tasks need the
-# provider's sign-in.
 tasks-account-use-sign-in = { $provider } 只向使用 { $provider } 登入的 Katna 顯示工作。
 tasks-account-sign-in-with = 使用 { $provider } 登入
 tasks-account-looking = 正在尋找工作清單…
@@ -112,6 +106,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = 這封郵件已不存在。
 tasks-toast-list-deleted = 清單已刪除
 tasks-toast-moved = 已移至 { $list }
-# A task dragged to another place in its own list.
 tasks-toast-placed = 工作已移動
 tasks-toast-rescheduled = 工作已重新安排
