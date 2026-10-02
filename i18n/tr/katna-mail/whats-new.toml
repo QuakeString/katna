@@ -3009,3 +3009,15 @@ text = """
 kullanmadığınız sürece çok soluk bir kenar ve dolgu, yazarken de yumuşak
 bir vurgu kenarlı beyaz bir alan.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Güncellemeler daha erken geliyor"
+text = """
+Katna artık her saat ve bilgisayarınız uykudan uyandıktan hemen sonra yeni sürüm arıyor; böylece güncelleme bildirimi bir sürüm çıktıktan kısa süre sonra gelir.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Koyu modda da soluk çizgiler"
+text = """
+Koyu modda postalar arasındaki, başlıkların altındaki ve kartların çevresindeki çizgiler açık moddaki kadar soluktur. Alanlar, etiketler ve düğmeler net kenarlıklarını korur.
+"""
