@@ -2562,3 +2562,15 @@ title = "Kisanduku cha kutafuta laini zaidi"
 text = """
 Kisanduku cha kutafuta kilicho juu ni chepesi zaidi: ukingo na ujazo hafifu sana usipokitumia, na sehemu nyeupe yenye ukingo laini wa rangi ya msisitizo unapoandika, badala ya kidonge cha kijivu chenye pete nene ya rangi.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Masasisho hufika mapema"
+text = """
+Sasa Katna hutafuta toleo jipya kila saa na mara tu kompyuta yako inapoamka kutoka usingizini, kwa hivyo arifa ya sasisho huja muda mfupi baada ya toleo kutolewa.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Mistari hafifu katika hali ya Meusi pia"
+text = """
+Katika hali ya Meusi, mistari kati ya barua, chini ya vichwa na kuzunguka kadi sasa ni hafifu kama ilivyo katika hali Angavu. Sehemu za kuandika, vipande na vitufe huhifadhi mpaka wao ulio wazi.
+"""
