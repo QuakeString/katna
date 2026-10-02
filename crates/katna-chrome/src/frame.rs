@@ -45,6 +45,9 @@ pub struct Look {
     pub border: bool,
     /// How opaque that line is, in percent; `None` keeps the preset's.
     pub border_opacity: Option<u8>,
+    /// How opaque a blurred window's background is, in percent; `None`
+    /// keeps [`crate::tokens::blur_alpha`].
+    pub blur_opacity: Option<u8>,
 }
 
 impl Default for Look {
@@ -55,6 +58,7 @@ impl Default for Look {
             radius: None,
             border: true,
             border_opacity: None,
+            blur_opacity: None,
         }
     }
 }
@@ -349,7 +353,10 @@ impl WindowChrome {
             .set((tokens.window_radius, percent(tokens.outline & 0xff)));
         let tokens = with_look(tokens, &look);
         if self.blurred.get() {
-            tokens.translucent()
+            match look.blur_opacity {
+                Some(opacity) => tokens.translucent_at(alpha(opacity)),
+                None => tokens.translucent(),
+            }
         } else {
             tokens
         }
@@ -759,10 +766,14 @@ fn with_look(mut tokens: ChromeTokens, look: &Look) -> ChromeTokens {
     if !look.border {
         tokens.outline = with_alpha(tokens.outline, 0);
     } else if let Some(opacity) = look.border_opacity {
-        let alpha = (f32::from(opacity.min(100)) * 255.0 / 100.0).round() as u8;
-        tokens.outline = with_alpha(tokens.outline, alpha);
+        tokens.outline = with_alpha(tokens.outline, alpha(opacity));
     }
     tokens
+}
+
+/// A percentage as an alpha byte.
+fn alpha(percent: u8) -> u8 {
+    (f32::from(percent.min(100)) * 255.0 / 100.0).round() as u8
 }
 
 /// An alpha byte as a percentage.
@@ -1017,7 +1028,13 @@ mod tests {
         let r = with_look(t.clone(), &look);
         assert_eq!(r.window_radius, 0.0);
         assert_eq!(r.outline, with_alpha(t.outline, 0xff));
-        let off = with_look(t.clone(), &Look { border: false, ..look });
+        let off = with_look(
+            t.clone(),
+            &Look {
+                border: false,
+                ..look
+            },
+        );
         assert_eq!(off.outline & 0xff, 0);
         assert_eq!(off.outline >> 8, t.outline >> 8);
     }

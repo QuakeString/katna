@@ -86,6 +86,12 @@ pub(super) enum Change {
     FrostBlur(u8),
     /// The frost's tint opacity, in percent.
     FrostOpacity(u8),
+    /// The corner radius of Katna's frame, in pixels.
+    WindowRadius(u8),
+    /// The line around Katna's frame.
+    WindowBorder(bool),
+    /// That line's opacity, in percent.
+    WindowBorderOpacity(u8),
     /// Conversations between people open as a group chat.
     ChatView(bool),
     /// Days of mail the daemon downloads ahead of time; 0 for all mail.
@@ -542,9 +548,27 @@ impl MailWindow {
                 cx.set_global(super::look(&self.config));
             }
             Change::FrostedPopups(on) => self.config.experimental.frosted_popups = on,
-            Change::CustomFrost(on) => self.config.experimental.custom_frost = on,
+            Change::CustomFrost(on) => {
+                self.config.experimental.custom_frost = on;
+                cx.set_global(super::look(&self.config));
+            }
             Change::FrostBlur(blur) => self.config.experimental.frost_blur = blur,
-            Change::FrostOpacity(opacity) => self.config.experimental.frost_opacity = opacity,
+            Change::FrostOpacity(opacity) => {
+                self.config.experimental.frost_opacity = opacity;
+                cx.set_global(super::look(&self.config));
+            }
+            Change::WindowRadius(radius) => {
+                self.config.experimental.window_radius = Some(radius);
+                cx.set_global(super::look(&self.config));
+            }
+            Change::WindowBorder(on) => {
+                self.config.experimental.window_border = on;
+                cx.set_global(super::look(&self.config));
+            }
+            Change::WindowBorderOpacity(opacity) => {
+                self.config.experimental.window_border_opacity = Some(opacity);
+                cx.set_global(super::look(&self.config));
+            }
             Change::ChatView(on) => {
                 self.config.experimental.chat_view = on;
                 self.open_chat_as_set();

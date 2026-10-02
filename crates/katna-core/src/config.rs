@@ -206,7 +206,18 @@ pub struct Experimental {
     /// How far the frost blurs, in pixels ([`FROST_BLUR`]).
     pub frost_blur: u8,
     /// How opaque the frost's tint is, in percent ([`FROST_OPACITY`]).
+    /// With [`Self::custom_frost`] on, it also sets how much a blurred
+    /// window background lets through.
     pub frost_opacity: u8,
+    /// The corner radius of Katna's window frame, in pixels; `None` keeps
+    /// the frame's own.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub window_radius: Option<u8>,
+    /// A thin line around Katna's window frame.
+    pub window_border: bool,
+    /// How opaque that line is, in percent; `None` keeps the frame's own.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub window_border_opacity: Option<u8>,
     /// Conversations between people open as a group chat: a bubble per
     /// mail with only what its sender wrote.
     pub chat_view: bool,
@@ -221,6 +232,9 @@ impl Default for Experimental {
             custom_frost: false,
             frost_blur: FROST_BLUR,
             frost_opacity: FROST_OPACITY,
+            window_radius: None,
+            window_border: true,
+            window_border_opacity: None,
             chat_view: false,
         }
     }
@@ -1545,6 +1559,8 @@ mod tests {
         let config =
             Config::parse("[experimental]\nwindow_frame = \"katna\"\nblur = true\n").unwrap();
         assert_eq!(config.experimental.window_frame, WindowFrame::Katna);
+        assert!(config.experimental.window_border);
+        assert_eq!(config.experimental.window_radius, None);
         assert!(config.experimental.blur);
         assert!(config.experimental.frosted_popups);
         let config = Config::parse("[experimental]\nfrosted_popups = false\n").unwrap();

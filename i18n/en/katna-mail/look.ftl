@@ -32,6 +32,17 @@ look-frame-katna-note-named = Katna draws rounded corners and its own shadow. Th
 look-frame-katna-note = Katna draws rounded corners and its own shadow. The frame no longer follows the desktop theme; window rules still apply.
 # As look-frame-katna-note, on Windows.
 look-frame-katna-note-windows = Katna's top bar becomes the title bar. Windows still rounds the corners and draws the shadow.
+# A slider under the Katna frame choice: how round the window's corners are.
+look-window-radius = Corner roundness
+look-window-radius-square = Square
+look-window-radius-round = Round
+# A switch under the Katna frame choice.
+look-window-border = Border
+look-window-border-detail = A thin line around the window
+# A slider under the Border switch.
+look-window-border-opacity = Border opacity
+look-window-border-faint = Faint
+look-window-border-strong = Strong
 # On Windows, after the frame choice changed: the open window keeps its frame.
 look-frame-on-reopen = The frame changes the next time you open Katna Mail.
 # Shown in place of the frame choices on a desktop where every app draws its own frame.
@@ -44,13 +55,13 @@ look-blur-detail = The desktop shows through the top bar and the folders. Mail s
 look-frosted-popups = Frosted menus and dialogs
 look-frosted-popups-detail = Menus, popovers, dialogs and viewer bars blur what is under them
 look-custom-frost = Custom blur amount
-look-custom-frost-on = Menus and dialogs use the blur and opacity below
+look-custom-frost-on = Blur strength sets menus and dialogs. Opacity sets them and the blurred window background.
 look-custom-frost-off-kde = Off: KDE's blur strength and Katna's opacity
 look-custom-frost-off = Off: Katna's blur and opacity
-look-frost-blur = Blur strength
+look-frost-blur = Blur strength: menus and dialogs
 look-frost-blur-light = Light
 look-frost-blur-strong = Strong
-look-frost-opacity = Opacity
+look-frost-opacity = Opacity: menus, dialogs and the window background
 look-frost-opacity-clear = See-through
 look-frost-opacity-solid = Solid
 look-kde-blur-note = The window background's blur strength always comes from KDE.
