@@ -3062,3 +3062,19 @@ bem sutis enquanto você não a usa, e um campo branco com uma borda de
 destaque suave enquanto você digita, em vez da pílula cinza com um anel
 colorido grosso.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Atualizações chegam mais cedo"
+text = """
+O Katna agora procura uma nova versão a cada hora e logo depois que o
+computador sai da suspensão, então a notificação de atualização chega pouco
+depois de cada lançamento.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Linhas suaves também no modo escuro"
+text = """
+No modo escuro, as linhas entre os e-mails, sob os cabeçalhos e ao redor
+dos cartões são tão suaves quanto no modo claro. Campos, chips e botões
+mantêm o contorno nítido.
+"""

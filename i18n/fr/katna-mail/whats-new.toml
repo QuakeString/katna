@@ -3193,3 +3193,19 @@ discrets tant que vous ne l’utilisez pas, et un champ blanc avec un
 léger bord coloré pendant que vous tapez, au lieu de la pastille grise
 avec un épais anneau coloré.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Les mises à jour arrivent plus tôt"
+text = """
+Katna cherche désormais une nouvelle version toutes les heures et dès que
+votre ordinateur sort de veille : la notification de mise à jour arrive
+peu après la publication.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Des lignes discrètes en mode sombre aussi"
+text = """
+En mode sombre, les lignes entre les messages, sous les en-têtes et autour
+des cartes sont aussi discrètes qu’en mode clair. Les champs, les puces et
+les boutons gardent un contour net.
+"""

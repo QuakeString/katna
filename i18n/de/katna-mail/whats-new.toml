@@ -3149,3 +3149,19 @@ Das Suchfeld oben ist heller: ein sehr zarter Rand und eine Füllung,
 solange Sie es nicht benutzen, und ein weißes Feld mit sanftem
 Akzentrand beim Tippen, statt der grauen Pille mit dickem farbigem Ring.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Updates kommen schneller"
+text = """
+Katna sucht jetzt jede Stunde und direkt nach dem Aufwachen Ihres
+Computers aus dem Ruhezustand nach einer neuen Version, sodass die
+Update-Benachrichtigung kurz nach einer Veröffentlichung erscheint.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Feine Linien auch im dunklen Modus"
+text = """
+Im dunklen Modus sind die Linien zwischen E-Mails, unter Überschriften
+und um Karten so dezent wie im hellen Modus. Felder, Chips und Knöpfe
+behalten ihren deutlichen Rand.
+"""

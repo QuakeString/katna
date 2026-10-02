@@ -3045,3 +3045,18 @@ Het zoekvak bovenaan is lichter: een heel vage rand en vulling zolang je
 het niet gebruikt, en een wit veld met een zachte accentrand terwijl je
 typt, in plaats van de grijze pil met een dikke gekleurde ring.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Updates komen sneller binnen"
+text = """
+Katna zoekt nu elk uur naar een nieuwe versie, en meteen nadat je computer
+uit de slaapstand komt, zodat de updatemelding kort na een release verschijnt.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Ook in donkere modus subtiele lijnen"
+text = """
+In donkere modus zijn de lijnen tussen e-mails, onder kopteksten en rond
+kaarten net zo subtiel als in lichte modus. Velden, chips en knoppen houden
+hun duidelijke rand.
+"""

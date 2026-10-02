@@ -3010,3 +3010,19 @@ wypełnienie, gdy z niego nie korzystasz, oraz białe pole z delikatną
 krawędzią w kolorze akcentu, gdy piszesz, zamiast szarego dymku z grubą
 kolorową obwódką.
 """
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Aktualizacje docierają szybciej"
+text = """
+Katna sprawdza teraz dostępność nowej wersji co godzinę i zaraz po
+wybudzeniu komputera z uśpienia, więc powiadomienie o aktualizacji pojawia
+się wkrótce po wydaniu.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Delikatne linie także w trybie ciemnym"
+text = """
+W trybie ciemnym linie między wiadomościami, pod nagłówkami i wokół kart
+są tak delikatne jak w trybie jasnym. Pola, etykiety i przyciski zachowują
+wyraźny obrys.
+"""
