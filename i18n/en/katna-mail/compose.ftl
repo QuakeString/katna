@@ -97,6 +97,8 @@ compose-forward-files-missing = The forwarded message's files are not downloaded
 # An attached file's size, after its name. $size: such as "1.2 MB".
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Remove attachment
+# Tooltip on an attached file's chip in Compose: a click shows the file.
+compose-attachment-open-tip = Open to check it
 # Above the attachments when there are two or more. $size: such as "18.4 MB".
 compose-attachments-total = { $count ->
     [one] { $count } file, { $size }

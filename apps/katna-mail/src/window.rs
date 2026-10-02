@@ -3700,7 +3700,10 @@ impl Render for MailWindow {
         // The attach picker is over Compose, and the viewer over it to
         // look at its files.
         let files_picker = self.render_files_picker(&th, window, cx);
-        let viewer_over = files_picker.is_some();
+        let viewer_over = files_picker.is_some()
+            || self.files.viewer_place == attachments::ViewerPlace::OverCompose;
+        // A viewer opened from the popped-out message shows there instead.
+        let in_window = self.files.viewer_place != attachments::ViewerPlace::Popout;
         let scheduled = self.render_scheduled(&th, window, cx);
         let activity = self.render_activity_report(&th, window, cx);
         let activity_menu = self.render_activity_menu(&th, window, cx);
@@ -3753,12 +3756,22 @@ impl Render for MailWindow {
             .child(content)
             .children(floating_settings)
             .children(fab)
-            .children(self.files.viewer.clone().filter(|_| !viewer_over))
+            .children(
+                self.files
+                    .viewer
+                    .clone()
+                    .filter(|_| in_window && !viewer_over),
+            )
             .children(search_panel)
             .children(compose)
             .children(compose_dialog)
             .children(files_picker)
-            .children(self.files.viewer.clone().filter(|_| viewer_over))
+            .children(
+                self.files
+                    .viewer
+                    .clone()
+                    .filter(|_| in_window && viewer_over),
+            )
             .children(scheduled)
             .children(activity)
             .children(activity_menu)
