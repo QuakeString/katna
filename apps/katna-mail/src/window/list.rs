@@ -2865,10 +2865,24 @@ pub(super) fn preview_color(th: &Theme) -> u32 {
 }
 
 /// The faint line between mail rows: well under the app's other dividers,
-/// so the rows read as one calm list.
+/// so the rows read as one calm list. Light mode shows lines more, so it
+/// goes fainter there.
 pub(super) fn row_line(th: &Theme) -> u32 {
-    fade(th.divider, 0.6)
+    fade(th.divider, if th.dark { 0.6 } else { LIGHT_LINE })
 }
+
+/// The line under an open mail's header and between its messages: the
+/// plain divider in dark mode, as faint as the mail rows' in light mode.
+pub(super) fn message_line(th: &Theme) -> u32 {
+    if th.dark {
+        th.divider
+    } else {
+        fade(th.divider, LIGHT_LINE)
+    }
+}
+
+/// How much of the divider the mail lines keep in light mode.
+const LIGHT_LINE: f32 = 0.25;
 
 /// A thin vertical line between toolbar groups.
 pub(super) fn separator(th: &Theme) -> Div {
