@@ -14,6 +14,18 @@ accounts-unified-switch-detail = „כל החשבונות” נמצא בראש �
 accounts-row = חשבונות
 accounts-row-detail = חלונית התיקיות ותפריט החשבון מציגים את החשבונות בסדר הזה; הראשון הוא ברירת המחדל. הסרת חשבון מוחקת את העותק של Katna מהדואר שלו במחשב הזה. הדואר נשאר בשרת.
 accounts-none = אין עדיין חשבונות.
+accounts-pop3-row = דואר בשרת
+accounts-pop3-row-detail = חשבונות POP3 מורידים את הדואר למחשב הזה. אפשר לבחור מה יקרה אחר כך לעותק שבשרת.
+accounts-pop3-with-katna = להשאיר עד שאמחק אותו ב־Katna
+accounts-pop3-at-once = למחוק מיד אחרי ההורדה
+accounts-pop3-after-days = { $count ->
+    [one] למחוק אחרי יום אחד
+    [two] למחוק אחרי יומיים
+   *[other] למחוק אחרי { $count } ימים
+}
+accounts-pop3-never = לעולם לא למחוק
+accounts-pop3-days-less = פחות ימים
+accounts-pop3-days-more = יותר ימים
 accounts-kind-imported = מיובא
 accounts-picture-reset = שימוש בתמונה של שולחן העבודה
 accounts-picture-change = החלפת התמונה

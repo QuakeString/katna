@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “Tüm Hesaplar” klasör bölmesinin en üst
 accounts-row = Hesaplar
 accounts-row-detail = Klasör bölmesi ve hesap menüsü hesapları bu sırayla listeler; ilki varsayılandır. Bir hesabı kaldırmak, Katna'nın bu bilgisayardaki posta kopyasını siler. Postalar sunucuda kalır.
 accounts-none = Henüz hesap yok.
+accounts-pop3-row = Sunucudaki postalar
+accounts-pop3-row-detail = POP3 hesapları postaları bu bilgisayara indirir. Sonrasında sunucudaki kopyaya ne olacağını seçin.
+accounts-pop3-with-katna = Katna'da silene kadar sakla
+accounts-pop3-at-once = İndirilince sil
+accounts-pop3-after-days = { $count ->
+    [one] { $count } gün sonra sil
+   *[other] { $count } gün sonra sil
+}
+accounts-pop3-never = Asla silme
+accounts-pop3-days-less = Daha az gün
+accounts-pop3-days-more = Daha fazla gün
 accounts-kind-imported = İçe aktarılmış
 accounts-picture-reset = Masaüstü resmini kullan
 accounts-picture-change = Resmi değiştir

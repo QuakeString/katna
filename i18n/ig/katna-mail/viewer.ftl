@@ -2,6 +2,8 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+viewer-opening = Na-emepe…
+
 ## Attachment viewer
 
 viewer-unreadable = Enweghị ike ịgụ mgbakwunye a.
@@ -14,8 +16,17 @@ viewer-slides-unreadable = Enweghị ike ịgụ slaịdị ndị a.
 viewer-no-preview = Enweghị nlele
 viewer-slide = Slaịdị { $number }
 viewer-page = Peeji
+viewer-slide-box = Slaịdị
 viewer-page-count = n'ime { $count }
 viewer-go-to-page-tip = Pịnye nọmba peeji wee pịa Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = Tụgharịa n'akụkụ elekere (Ctrl+R)
+viewer-rotate-anticlockwise-tip = Tụgharịa megide elekere (Ctrl+Shift+R)
+viewer-fit-page-tip = Dabara peeji
+viewer-fit-picture-tip = Dabara windo
+viewer-fit-width-tip = Dabara obosara
+viewer-real-size-tip = Nha n'ezie (1:1)
+viewer-page-back-tip = Peeji gara aga
+viewer-page-on-tip = Peeji na-esote
 
 ## Marking up a PDF
 
@@ -41,6 +52,10 @@ viewer-marks-undo-tip = Megharịa (Ctrl+Z)
 viewer-marks-redo-tip = Mee ọzọ (Ctrl+Shift+Z)
 viewer-save-marked-tip = Chekwaa otu mbipụta nwere akara gị (Ctrl+S)
 viewer-reply-marked-tip = Zaa na mbipụta nwere akara ahụ
+viewer-forward-tip = Zigaa faịlụ ahụ
+viewer-forward = Zigaa
+viewer-open-with = Mepee site na…
+viewer-save = Chekwaa
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = Dee ndetu
 viewer-text-placeholder = Pịnye ebe a
@@ -58,3 +73,5 @@ viewer-marks-save = Chekwaa mbipụta
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (nwere akara)
+viewer-pick = Họrọ
+viewer-picked = Ahọrọla

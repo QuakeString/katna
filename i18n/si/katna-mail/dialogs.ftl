@@ -8,8 +8,7 @@ about-tooltip = Katna ගැන
 about-tagline = Linux ඩෙස්ක්ටොප් සඳහා තැපැල් සහ දින දර්ශනය
 about-whats-new = අලුත් මොනවාද
 
-## Updates, in a box under the version in About (only in packages that
-## update themselves).
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
 
 about-update-not-checked = යාවත්කාලීන කිරීම් තවම පරීක්ෂා කර නැත
 about-update-checking = යාවත්කාලීන කිරීම් සඳහා පරීක්ෂා කරමින්…
@@ -70,6 +69,7 @@ about-credit-resvg = SVG පින්තූර
 about-credit-jiff = දින සහ වේලා කලාප
 about-credit-spellbook = අක්ෂර වින්‍යාස පරීක්ෂාව, Helix සංස්කාරකයෙන්
 about-credit-smol = එකවර බොහෝ දේ කිරීම
+about-credit-color-schemes = ගොඩනංවන ලද වර්ණ රටාවල වර්ණ තල
 about-all-libraries = Katna භාවිත කරන සියලු පුස්තකාල ({ $count })
 about-library-authors = { $authors } විසින්
 about-license = Katna යනු GNU GPL, 3 අනුවාදය හෝ ඊට පසු අනුවාදයක් යටතේ ඇති නිදහස් මෘදුකාංගයකි.
@@ -127,6 +127,20 @@ onboarding-density-default = පෙරනිමි
 onboarding-density-compact = සංයුක්ත
 onboarding-continue = ඉදිරියට
 
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna ගිණුමක් සමඟ තවත් ලබා ගන්න
+onboarding-katna-lead = එය අත්‍යවශ්‍ය නොවේ. එය Katna හි මාර්ගගත විශේෂාංග සක්‍රිය කරන අතර, ඔබට පසුව සැකසීම් > දායකත්වය තුළ එකක් සෑදිය හැක.
+onboarding-katna-receipts-title = කියවූ බවට රිසිට්පත්
+onboarding-katna-receipts-text = ඔබ යවන තැපැල් අය විවෘත කරන විට දැන ගන්න.
+onboarding-katna-links-title = සබැඳි ලුහුබැඳීම
+onboarding-katna-links-text = ඔබේ තැපැල්වල කුමන සබැඳි ක්ලික් කෙරෙනවාදැයි බලන්න.
+onboarding-katna-activity-title = ක්‍රියාකාරකම්
+onboarding-katna-activity-text = ඔබ යැවූ සියල්ලේ විවෘත කිරීම් සහ ක්ලික්, එක තැනක.
+onboarding-katna-translate-title = ස්වයංක්‍රීය පරිවර්තනය
+onboarding-katna-translate-text = වෙනත් භාෂාවලින් ලියූ තැපැල් ඔබේම භාෂාවෙන් කියවන්න.
+onboarding-katna-private = එයට වෙනම මුරපදයක් ඇත. ඔබේ තැපැල් පිවිසුම් කිසිදා මෙම පරිගණකයෙන් පිට නොයයි.
+
 ## First run: done
 
 onboarding-ready-title = සියල්ල සූදානම්
@@ -170,7 +184,7 @@ tour-search-text = සෙවීම නොබැඳිවත් ක්‍රි�
 tour-menu-title = ෆෝල්ඩර පෙන්වන්න හෝ සඟවන්න
 tour-menu-text = මෙම බොත්තම ෆෝල්ඩර ලැයිස්තුව නවා ඉවත් කරයි. එය සැඟවී ඇති විට, ෆෝල්ඩර බැලීමට වම්පස ඇති තැපැල් මත දර්ශකය තබන්න.
 tour-apps-title = ඔබේ යෙදුම්
-tour-apps-text = තැපැල් දැන් මෙහි ජීවත් වේ. දින දර්ශනය, සම්බන්ධතා, කාර්යයන්, සටහන් සහ සංග්‍රහ මෙම තීරුවේ එයට එක් වනු ඇත.
+tour-apps-text = තැපැල් මෙහි, දින දර්ශනය, සම්බන්ධතා, කාර්යයන්, සටහන් සහ ගොනු අසල.
 tour-tabs-title = එන ලිපි ටැබ
 tour-tabs-text = නව තැපැල් ප්‍රාථමික, ප්‍රවර්ධන, සමාජ, යාවත්කාලීන සහ සංසද ලෙස වර්ග කෙරේ. ඔබට ඉක්මන් සැකසීම්වල ටැබ අක්‍රිය කළ හැක.
 tour-list-title = ඔබේ පණිවිඩ
@@ -196,12 +210,21 @@ crash-view = වාර්තාව බලන්න
 crash-view-tooltip = මෙම පරිගණකයේ සුරැකි වාර්තාව විවෘත කරන්න
 crash-copy = වාර්තාව පිටපත් කරන්න
 crash-close = වසන්න
+
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } ඔබෙන් { $address } වෙත නැවත පුරනය වන ලෙස ඉල්ලයි.
 sign-in-again-button = පුරනය වන්න
 sign-in-again-tooltip = ඔබේ බ්‍රවුසරයේ { $provider } පුරනය වීමේ පිටුව විවෘත කරන්න
 sign-in-again-waiting = ඔබේ බ්‍රවුසරය එනතුරු රැඳී සිටිමින්…
 sign-in-again-close = වසන්න
+google-api-off = Katna හි Google Cloud ව්‍යාපෘතියේ { $api } අක්‍රියයි.
+google-api-turn-on = සක්‍රිය කරන්න
+google-api-turn-on-tooltip = { $api } සක්‍රිය කිරීමට Google Cloud විවෘත කර, ඉන්පසු නැවත උත්සාහ කරන්න ඔබන්න
 sign-in-again-done = { $address } වෙත නැවත පුරනය විය. ඔබේ තැපැල් ලබා ගනිමින්…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] මෙම සංවාදය කුණු කූඩයට ගෙන යන්නද?

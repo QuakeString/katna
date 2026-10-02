@@ -15,6 +15,7 @@ notes-loading = သင့်မှတ်စုများကို ဖွင့
 
 notes-take-a-note = မှတ်စုရေးရန်…
 notes-new-list = စာရင်းအသစ်
+notes-new-note = မှတ်စု အသစ်
 notes-pinned = ပင်ထိုးထားသည်
 notes-others = အခြား
 notes-empty = သင်ထည့်သော မှတ်စုများ ဤနေရာတွင် ပေါ်လာမည်

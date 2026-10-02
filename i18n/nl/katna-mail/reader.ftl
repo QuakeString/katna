@@ -86,6 +86,10 @@ security-missing-key = Ondertekend met een sleutel die je niet hebt, dus kan nie
 security-missing-key-id = Ondertekend met een sleutel die je niet hebt ({ $key }), dus kan niet worden gecontroleerd
 security-signature-unavailable = Ondertekend; installeer { $tool } om de handtekening te controleren
 security-signature-error = De handtekening kan niet worden gecontroleerd.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } heeft het { $count ->
     [one] één keer
    *[other] { $count } keer
@@ -127,10 +131,12 @@ attachment-count = { $count ->
    *[other] { $count } bijlagen
 }
 attachment-save = Opslaan
+attachment-forward = Doorsturen
 attachment-save-all = Alles opslaan
 attachment-save-all-tooltip = Alle bijlagen opslaan in een map
 attachment-save-here = Hier opslaan
 attachment-not-downloaded = Dit bericht is niet gedownload.
+attachment-open-message = Open dit bericht om de bijlagen te lezen.
 attachment-not-found = Deze bijlage is niet gevonden in het bericht.
 attachment-read-failed = Kan { $name } niet lezen
 attachment-numbered = bijlage { $number }
@@ -153,6 +159,7 @@ attachment-encrypted-open = Dit bestand is versleuteld ontvangen. Sla het op om 
 print-failed = Kan niet afdrukken: { $error }
 print-no-font = er is geen lettertype gevonden
 print-opened-as-pdf = Geopend als pdf om vanaf daar af te drukken.
+
 print-preview-title = Afdrukvoorbeeld
 print-preview-laying-out = Pagina's opmaken…
 print-preview-pages = { $count ->
@@ -178,8 +185,9 @@ print-encrypted = (Versleuteld. Open het in Katna Mail om de tekst af te drukken
 print-to = Aan: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = Open dit bericht om de bijlagen te lezen.
+text-pin = Bovenaan vastzetten
+text-copy-address = Adres kopiëren
 text-copy = Kopiëren
 text-select-all = Alles selecteren

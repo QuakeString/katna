@@ -36,11 +36,28 @@ look-frame-katna-note-windows = Katna's top bar becomes the title bar. Windows s
 look-frame-on-reopen = The frame changes the next time you open Katna Mail.
 # Shown in place of the frame choices on a desktop where every app draws its own frame.
 look-frame-client-side = Your desktop leaves the frame to each app, so Katna already draws its own.
-look-blurred-background = Blurred background
+look-blurred-background = Blur
 # Under "Blurred background".
-look-blurred-background-detail = The desktop shows through the top bar and the folders, blurred, and menus and popovers are frosted glass.
-look-blur = Blur what is behind the window
-look-blur-detail = Mail stays on solid cards, so text keeps its contrast
+look-blurred-background-detail = Choose where Katna Mail uses blur. Turn on either one, or both.
+look-blur = Blur the window background
+look-blur-detail = The desktop shows through the top bar and the folders. Mail stays on solid cards, so text keeps its contrast
+look-frosted-popups = Frosted menus and dialogs
+look-frosted-popups-detail = Menus, popovers, dialogs and viewer bars blur what is under them
+look-custom-frost = Custom blur amount
+look-custom-frost-on = Menus and dialogs use the blur and opacity below
+look-custom-frost-off-kde = Off: KDE's blur strength and Katna's opacity
+look-custom-frost-off = Off: Katna's blur and opacity
+look-frost-blur = Blur strength
+look-frost-blur-light = Light
+look-frost-blur-strong = Strong
+look-frost-opacity = Opacity
+look-frost-opacity-clear = See-through
+look-frost-opacity-solid = Solid
+look-kde-blur-note = The window background's blur strength always comes from KDE.
+look-kde-blur-open = Open KDE's Blur settings
+# Why frosted menus are not available.
+look-frosted-popups-none-windows = Katna Mail cannot frost menus on Windows yet.
+look-frosted-popups-none = Your graphics driver does not let Katna Mail blur under menus.
 # Why blur is not available. "Blur", "System Settings", "Window Management" and
 # "Desktop Effects" are KDE's own names for its settings; use KDE's translation of them.
 look-blur-off-kde = KDE's blur effect is off. Turn on Blur in System Settings, Window Management, Desktop Effects, then open Katna Mail again.

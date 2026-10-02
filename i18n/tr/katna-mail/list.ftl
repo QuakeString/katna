@@ -20,6 +20,7 @@ tab-provider-other = Katna tarafından sıralanır
 
 list-select = Seç
 list-refresh = Yenile
+list-back-to-top = En üste dön
 list-checking = Yeni postalar denetleniyor…
 list-more = Diğer
 list-mark-read = Okundu olarak işaretle

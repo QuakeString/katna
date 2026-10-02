@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “모든 계정”이 폴더 창 맨 위에 �
 accounts-row = 계정
 accounts-row-detail = 폴더 창과 계정 메뉴에는 계정이 이 순서대로 표시되며, 첫 번째 계정이 기본 계정입니다. 계정을 삭제하면 이 컴퓨터에 있는 Katna의 메일 사본이 삭제됩니다. 메일은 서버에 남습니다.
 accounts-none = 아직 계정이 없습니다.
+accounts-pop3-row = 서버의 메일
+accounts-pop3-row-detail = POP3 계정은 메일을 이 컴퓨터로 다운로드합니다. 그 후 서버에 있는 사본을 어떻게 할지 선택하세요.
+accounts-pop3-with-katna = Katna에서 삭제할 때까지 보관
+accounts-pop3-at-once = 다운로드하면 바로 삭제
+accounts-pop3-after-days = { $count ->
+   *[other] { $count }일 후 삭제
+}
+accounts-pop3-never = 삭제 안 함
+accounts-pop3-days-less = 일수 줄이기
+accounts-pop3-days-more = 일수 늘리기
 accounts-kind-imported = 가져옴
 accounts-picture-reset = 데스크톱 사진 사용
 accounts-picture-change = 사진 변경
@@ -70,6 +80,9 @@ accounts-confirm-word = 삭제
 accounts-confirm-placeholder = “{ accounts-confirm-word }” 입력
 accounts-confirm-prompt = 확인하려면 “{ accounts-confirm-word }”를 입력하세요:
 accounts-cancel = 취소
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Katna가 다운로드한 메일과 첨부파일, 보낸사람 사진, 검색 색인을 삭제한 다음 최근 메일을 다시 다운로드합니다. 계정, 설정, 이 컴퓨터에만 있는 메일은 그대로 유지됩니다.
 reset-cache-button = 캐시 재설정
 reset-cache-title = 캐시를 재설정할까요?

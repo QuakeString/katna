@@ -15,6 +15,7 @@ notes-loading = உங்கள் குறிப்புகளைத் த�
 
 notes-take-a-note = குறிப்பு எடு…
 notes-new-list = புதிய பட்டியல்
+notes-new-note = புதிய குறிப்பு
 notes-pinned = பின் செய்தவை
 notes-others = மற்றவை
 notes-empty = நீங்கள் சேர்க்கும் குறிப்புகள் இங்கே தோன்றும்

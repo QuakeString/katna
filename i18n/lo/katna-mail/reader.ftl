@@ -86,6 +86,9 @@ security-missing-key = ເຊັນດ້ວຍກະແຈທີ່ທ່ານ
 security-missing-key-id = ເຊັນດ້ວຍກະແຈທີ່ທ່ານບໍ່ມີ ({ $key }), ຈຶ່ງກວດສອບບໍ່ໄດ້
 security-signature-unavailable = ເຊັນແລ້ວ; ຕິດຕັ້ງ { $tool } ເພື່ອກວດສອບລາຍເຊັນ
 security-signature-error = ບໍ່ສາມາດກວດສອບລາຍເຊັນໄດ້.
+
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } ເປີດມັນ { $count } ເທື່ອ, ຫຼ້າສຸດ { $when }
 tracking-opens-clicks = { $who } ເປີດມັນ { $opens } ເທື່ອ ແລະ ຄລິກລິ້ງ { $clicks } ເທື່ອ, ຫຼ້າສຸດ { $when }
 tracking-clicked = { $who } ຄລິກລິ້ງ { $clicks } ເທື່ອ, ຫຼ້າສຸດ { $when }
@@ -112,10 +115,12 @@ remote-picture-remove-failed = ບໍ່ສາມາດລຶບຮູບໄດ�
 
 attachment-count = ໄຟລ໌ແນບ { $count } ໄຟລ໌
 attachment-save = ບັນທຶກ
+attachment-forward = ສົ່ງຕໍ່
 attachment-save-all = ບັນທຶກທັງໝົດ
 attachment-save-all-tooltip = ບັນທຶກໄຟລ໌ແນບທັງໝົດໄວ້ໃນໂຟນເດີ
 attachment-save-here = ບັນທຶກໄວ້ບ່ອນນີ້
 attachment-not-downloaded = ຂໍ້ຄວາມນີ້ບໍ່ໄດ້ຖືກດາວໂຫຼດ.
+attachment-open-message = ເປີດຂໍ້ຄວາມນີ້ເພື່ອເບິ່ງໄຟລ໌ແນບ.
 attachment-not-found = ບໍ່ພົບໄຟລ໌ແນບນີ້ໃນຂໍ້ຄວາມ.
 attachment-read-failed = ບໍ່ສາມາດອ່ານ { $name } ໄດ້
 attachment-numbered = ໄຟລ໌ແນບ { $number }
@@ -151,8 +156,9 @@ print-encrypted = (ເຂົ້າລະຫັດໄວ້. ເປີດໃນ K
 print-to = ເຖິງ: { $addresses }
 print-cc = ສຳເນົາ: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = ເປີດຂໍ້ຄວາມນີ້ເພື່ອເບິ່ງໄຟລ໌ແນບ.
+text-pin = ປັກໝຸດໄວ້ເທິງສຸດ
+text-copy-address = ສຳເນົາທີ່ຢູ່
 text-copy = ສຳເນົາ
 text-select-all = ເລືອກທັງໝົດ

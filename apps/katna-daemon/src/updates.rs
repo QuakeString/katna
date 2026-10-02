@@ -7,6 +7,12 @@
 //! with an Update button. Katna Mail installs the file and restarts; the
 //! daemon restarts itself once its binary is replaced ([`crate::update`]).
 //!
+//! When the manifest has a patch from the installed build and the root
+//! helper kept a copy of that build ([`Package::installed_dirs`]), the
+//! daemon downloads only the patch and makes the new package from the
+//! two, checked against the manifest just as a full download is. If
+//! anything about that fails, it downloads the full package.
+//!
 //! Packages that do not update themselves ([`Package::Other`]) are never
 //! checked.
 
@@ -26,15 +32,24 @@ use crate::daemon::{Daemon, Notice, settings};
 
 /// The first check waits a little, so starting stays quick.
 const FIRST_CHECK: Duration = Duration::from_secs(120);
-/// How often to look for a newer build.
-const EVERY: Duration = Duration::from_secs(6 * 3600);
-/// Sooner again after a check skipped on a metered connection.
-const METERED_RETRY: Duration = Duration::from_secs(3600);
+/// How often to look for a newer build: nightly builds come several times
+/// a day.
+const EVERY: Duration = Duration::from_secs(3600);
+/// After the computer wakes, the check waits this long for the network.
+const AFTER_WAKE: Duration = Duration::from_secs(30);
+/// How often the schedule looks at the clock.
+const TICK: Duration = Duration::from_secs(60);
+/// Time the wall clock gained on the timers beyond this means the
+/// computer slept.
+const SLEPT: Duration = Duration::from_secs(120);
 const MANIFEST_TIMEOUT: Duration = Duration::from_secs(30);
 /// How many times a download is tried before it counts as failed, and
 /// the pause before the second try (longer before each later one).
 const DOWNLOAD_TRIES: u32 = 3;
 const RETRY_PAUSE: Duration = Duration::from_secs(10);
+/// The longest match distance a patch may use (`zstd --long=28`): room
+/// for an earlier package of up to 256 MB.
+const PATCH_WINDOW_LOG: u32 = 28;
 /// Progress is told to Katna Mail at most this often.
 const PROGRESS_EVERY: Duration = Duration::from_millis(250);
 
@@ -145,14 +160,17 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
     let Some(wake) = daemon.upgrade().map(|d| d.updates().wake.1.clone()) else {
         return;
     };
-    let mut pause = FIRST_CHECK;
+    let mut schedule = Schedule::new(SystemTime::now(), Instant::now());
     loop {
         let why = async { wake.recv().await.unwrap_or(Wake::Timer) }
             .or(async {
-                async_io::Timer::after(pause).await;
+                async_io::Timer::after(TICK).await;
                 Wake::Timer
             })
             .await;
+        if why == Wake::Timer && !schedule.tick(SystemTime::now(), Instant::now()) {
+            continue;
+        }
         let Some(daemon) = daemon.upgrade() else {
             return;
         };
@@ -162,11 +180,11 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
         match why {
             Wake::Timer if daemon.metered() => {
                 tracing::debug!("metered connection; the update check waits");
-                pause = METERED_RETRY;
+                schedule.checked(SystemTime::now());
                 continue;
             }
             Wake::Timer | Wake::Check => {
-                pause = EVERY;
+                schedule.checked(SystemTime::now());
                 check(&daemon, package, why == Wake::Check).await;
             }
             Wake::Download => download(&daemon, package).await,
@@ -176,6 +194,46 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
                 }
             }
         }
+    }
+}
+
+/// When the next check is due, by the wall clock, which keeps counting
+/// while the computer sleeps; the timers do not. Woken from sleep, the
+/// check comes soon after.
+#[derive(Debug)]
+struct Schedule {
+    due: SystemTime,
+    wall: SystemTime,
+    mono: Instant,
+}
+
+impl Schedule {
+    fn new(wall: SystemTime, mono: Instant) -> Self {
+        Self {
+            due: wall + FIRST_CHECK,
+            wall,
+            mono,
+        }
+    }
+
+    /// Looks at the clocks; whether a check is due.
+    fn tick(&mut self, wall: SystemTime, mono: Instant) -> bool {
+        let wall_passed = wall.duration_since(self.wall).unwrap_or_default();
+        let mono_passed = mono.saturating_duration_since(self.mono);
+        if wall_passed > mono_passed + SLEPT {
+            tracing::debug!(slept = ?(wall_passed - mono_passed), "woke from sleep; checking for updates soon");
+            self.due = self.due.min(wall + AFTER_WAKE);
+        }
+        // The clock was set back: never wait longer than a full round.
+        self.due = self.due.min(wall + EVERY);
+        self.wall = wall;
+        self.mono = mono;
+        wall >= self.due
+    }
+
+    /// A check ran, or was skipped on purpose, at `wall`.
+    fn checked(&mut self, wall: SystemTime) {
+        self.due = wall + EVERY;
     }
 }
 
@@ -241,23 +299,33 @@ async fn check(daemon: &Daemon, package: Package, asked: bool) {
         });
         return;
     }
-    // Downloaded before the daemon restarted.
-    let file = download_dir(daemon).join(&manifest.file);
-    let want = manifest.sha256.clone();
+    // Downloaded before the daemon restarted, in full or made from a
+    // patch.
     let found = smol::unblock({
-        let file = file.clone();
-        move || sha256_file(&file).is_ok_and(|sha| sha == want)
+        let dir = download_dir(daemon);
+        let manifest = manifest.clone();
+        move || {
+            [Fetched::full(&dir, &manifest)]
+                .into_iter()
+                .chain(Fetched::from_patch(&dir, &manifest))
+                .find(|fetched| sha256_file(&fetched.file).is_ok_and(|sha| sha == fetched.sha256))
+        }
     })
     .await;
-    if found {
-        ready(daemon, &manifest, &file, checked).await;
+    if let Some(fetched) = found {
+        ready(daemon, &manifest, &fetched, checked).await;
         return;
     }
+    // What the download will be: only the patch when it can be used.
+    let total = match patch_and_base(package, &manifest) {
+        Some((patch, _)) => patch.size,
+        None => manifest.size,
+    };
     updates.set(daemon, |s| {
         *s = UpdateStatus {
             state: state::AVAILABLE.to_owned(),
             version: manifest.version.clone(),
-            total: manifest.size,
+            total,
             checked,
             ..UpdateStatus::default()
         };
@@ -321,7 +389,7 @@ async fn download(daemon: &Daemon, package: Package) {
         }
     };
     match fetched {
-        Ok(file) => ready(daemon, &manifest, &file, unix_now()).await,
+        Ok(fetched) => ready(daemon, &manifest, &fetched, unix_now()).await,
         Err(err) => {
             tracing::warn!(%err, "update download failed");
             updates.set(daemon, |s| {
@@ -340,43 +408,245 @@ fn retry_pause(try_number: u32) -> Option<Duration> {
     (try_number < DOWNLOAD_TRIES).then(|| RETRY_PAUSE * try_number)
 }
 
-/// Downloads the file `manifest` names into `dir` and checks it. Returns
-/// where it is.
+/// A downloaded package, checked, and what to check it against again.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Fetched {
+    file: PathBuf,
+    sha256: String,
+    size: u64,
+    minisig: Option<String>,
+}
+
+impl Fetched {
+    /// The full package `manifest` names, in `dir`.
+    fn full(dir: &Path, manifest: &Manifest) -> Self {
+        Self {
+            file: dir.join(&manifest.file),
+            sha256: manifest.sha256.clone(),
+            size: manifest.size,
+            minisig: manifest.minisig.clone(),
+        }
+    }
+
+    /// The uncompressed package a patch makes, in `dir`.
+    fn from_patch(dir: &Path, manifest: &Manifest) -> Option<Self> {
+        let tar = manifest.tar.as_ref()?;
+        Some(Self {
+            file: dir.join(manifest.tar_file()),
+            sha256: tar.sha256.clone(),
+            size: tar.size,
+            minisig: tar.minisig.clone(),
+        })
+    }
+}
+
+/// The patch from the installed build to the one `manifest` names, and
+/// the copy of the installed build the root helper kept, when both exist.
+fn patch_and_base(package: Package, manifest: &Manifest) -> Option<(update::Patch, PathBuf)> {
+    let patch = manifest.patch_from(update::VERSION)?.clone();
+    let base = package
+        .installed_dirs()
+        .iter()
+        .find_map(|dir| installed_copy(Path::new(dir), update::VERSION))?;
+    Some((patch, base))
+}
+
+/// The package of `version` in `dir`.
+fn installed_copy(dir: &Path, version: &str) -> Option<PathBuf> {
+    std::fs::read_dir(dir)
+        .ok()?
+        .flatten()
+        .map(|entry| entry.path())
+        .find(|path| {
+            path.is_file()
+                && path
+                    .file_name()
+                    .and_then(|name| name.to_str())
+                    .and_then(update::package_version)
+                    == Some(version)
+        })
+}
+
+/// Downloads the build `manifest` names into `dir` and checks it: only
+/// the patch from the installed build when there is one, else the full
+/// package. Returns what was fetched.
 async fn download_once(
     daemon: &Daemon,
     package: Package,
     dir: &Path,
     manifest: &Manifest,
-) -> Result<PathBuf, String> {
-    let updates = daemon.updates();
-    let url = package
-        .file_url(&manifest.file)
-        .ok_or_else(|| "this build does not update itself".to_owned())?;
-    let file = dir.join(&manifest.file);
-    let part = dir.join(format!("{}.part", manifest.file));
-    updates.set(daemon, |s| {
-        s.state = state::DOWNLOADING.to_owned();
-        s.version = manifest.version.clone();
-        s.done = 0;
-        s.total = manifest.size;
-        s.detail.clear();
-    });
-    tracing::info!(url, "downloading an update");
-    let fetched = fetch_file(daemon, &url, dir, &part, manifest.size).await;
-    let checked = fetched.and_then(|(size, sha)| {
-        if size != manifest.size || sha != manifest.sha256 {
-            Err(format!(
-                "the download does not match the published build \
-                 ({size} bytes, SHA-256 {sha})"
-            ))
+) -> Result<Fetched, String> {
+    if let Some((patch, base)) = patch_and_base(package, manifest) {
+        match download_patch(daemon, package, dir, manifest, &patch, &base).await {
+            Ok(fetched) => return Ok(fetched),
+            Err(err) => {
+                tracing::warn!(%err, from = patch.from, "the update patch did not work; downloading the full package");
+            }
+        }
+    }
+    let fetched = Fetched::full(dir, manifest);
+    download_checked(
+        daemon,
+        package,
+        dir,
+        manifest,
+        &manifest.file,
+        fetched.size,
+        &fetched.sha256,
+        &fetched.file,
+    )
+    .await?;
+    Ok(fetched)
+}
+
+/// Downloads `patch` and makes the new package from it and `base`, the
+/// installed build's package, checking the result as a full download.
+async fn download_patch(
+    daemon: &Daemon,
+    package: Package,
+    dir: &Path,
+    manifest: &Manifest,
+    patch: &update::Patch,
+    base: &Path,
+) -> Result<Fetched, String> {
+    let patch_file = dir.join(&patch.file);
+    download_checked(
+        daemon,
+        package,
+        dir,
+        manifest,
+        &patch.file,
+        patch.size,
+        &patch.sha256,
+        &patch_file,
+    )
+    .await?;
+    let fetched =
+        Fetched::from_patch(dir, manifest).ok_or("the manifest has no package to patch")?;
+    let made = smol::unblock({
+        let base = base.to_owned();
+        let patch_file = patch_file.clone();
+        let fetched = fetched.clone();
+        move || {
+            let made = apply_patch(&base, &patch_file, &fetched);
+            let _ = std::fs::remove_file(&patch_file);
+            made
+        }
+    })
+    .await;
+    tracing::info!(
+        from = patch.from,
+        size = patch.size,
+        ok = made.is_ok(),
+        "made the update from a patch"
+    );
+    made.map(|()| fetched)
+}
+
+/// Makes the package `fetched` names from `base` and the patch in
+/// `patch_file`, and checks its size and SHA-256.
+fn apply_patch(base: &Path, patch_file: &Path, fetched: &Fetched) -> Result<(), String> {
+    use std::io::Read;
+    // The patch refers to the uncompressed earlier package.
+    let mut reference = Vec::new();
+    let base_file =
+        std::fs::File::open(base).map_err(|err| format!("{}: {err}", base.display()))?;
+    let read = if base.extension().is_some_and(|ext| ext == "zst") {
+        zstd::stream::read::Decoder::new(base_file).and_then(|mut decoder| {
+            decoder.window_log_max(31)?;
+            decoder.take(MAX_SIZE + 1).read_to_end(&mut reference)
+        })
+    } else {
+        base_file.take(MAX_SIZE + 1).read_to_end(&mut reference)
+    };
+    read.map_err(|err| format!("reading {}: {err}", base.display()))?;
+    let input = std::fs::File::open(patch_file).map_err(|err| err.to_string())?;
+    let mut decoder =
+        zstd::stream::read::Decoder::with_ref_prefix(std::io::BufReader::new(input), &reference)
+            .map_err(|err| err.to_string())?;
+    decoder
+        .window_log_max(PATCH_WINDOW_LOG)
+        .map_err(|err| err.to_string())?;
+    let part = part_path(&fetched.file);
+    let made = (|| {
+        let mut out = std::io::BufWriter::new(std::fs::File::create(&part)?);
+        let mut digest = ring::digest::Context::new(&ring::digest::SHA256);
+        let mut buf = vec![0; 256 * 1024];
+        let mut size = 0u64;
+        let mut limited = decoder.take(fetched.size + 1);
+        loop {
+            let n = limited.read(&mut buf)?;
+            if n == 0 {
+                break;
+            }
+            out.write_all(&buf[..n])?;
+            digest.update(&buf[..n]);
+            size += n as u64;
+        }
+        out.flush()?;
+        out.get_ref().sync_all()?;
+        Ok::<_, std::io::Error>((size, hex(digest.finish().as_ref())))
+    })();
+    let checked = made.map_err(|err| err.to_string()).and_then(|(size, sha)| {
+        if size != fetched.size || sha != fetched.sha256 {
+            Err(format!("the patched package does not match the published build ({size} bytes, SHA-256 {sha})"))
         } else {
-            std::fs::rename(&part, &file).map_err(|err| err.to_string())
+            std::fs::rename(&part, &fetched.file).map_err(|err| err.to_string())
         }
     });
     if checked.is_err() {
         let _ = std::fs::remove_file(&part);
     }
-    checked.map(|()| file)
+    checked
+}
+
+fn part_path(file: &Path) -> PathBuf {
+    let mut path = file.as_os_str().to_owned();
+    path.push(".part");
+    PathBuf::from(path)
+}
+
+/// Downloads `name` from the release into `file`, checking its size and
+/// SHA-256, and shows its progress.
+#[allow(clippy::too_many_arguments)]
+async fn download_checked(
+    daemon: &Daemon,
+    package: Package,
+    dir: &Path,
+    manifest: &Manifest,
+    name: &str,
+    size: u64,
+    sha256: &str,
+    file: &Path,
+) -> Result<(), String> {
+    let updates = daemon.updates();
+    let url = package
+        .file_url(name)
+        .ok_or_else(|| "this build does not update itself".to_owned())?;
+    let part = part_path(file);
+    updates.set(daemon, |s| {
+        s.state = state::DOWNLOADING.to_owned();
+        s.version = manifest.version.clone();
+        s.done = 0;
+        s.total = size;
+        s.detail.clear();
+    });
+    tracing::info!(url, "downloading an update");
+    let fetched = fetch_file(daemon, &url, dir, &part, size).await;
+    let checked = fetched.and_then(|(got, sha)| {
+        if got != size || sha != sha256 {
+            Err(format!(
+                "the download does not match the published build \
+                 ({got} bytes, SHA-256 {sha})"
+            ))
+        } else {
+            std::fs::rename(&part, file).map_err(|err| err.to_string())
+        }
+    });
+    if checked.is_err() {
+        let _ = std::fs::remove_file(&part);
+    }
+    checked
 }
 
 /// Downloads `url` into `part`, in `dir` with only this download in it.
@@ -424,10 +694,10 @@ async fn fetch_file(
 
 /// The update in `file` is downloaded and checked: Katna Mail can install
 /// it. Says so once per version.
-async fn ready(daemon: &Daemon, manifest: &Manifest, file: &Path, checked: i64) {
+async fn ready(daemon: &Daemon, manifest: &Manifest, fetched: &Fetched, checked: i64) {
     // The helper looks for the signature beside the package.
-    let signature = signature_path(file);
-    let written = match &manifest.minisig {
+    let signature = signature_path(&fetched.file);
+    let written = match &fetched.minisig {
         Some(sig) => std::fs::write(&signature, sig),
         None => match std::fs::remove_file(&signature) {
             Err(err) if err.kind() == std::io::ErrorKind::NotFound => Ok(()),
@@ -437,15 +707,23 @@ async fn ready(daemon: &Daemon, manifest: &Manifest, file: &Path, checked: i64) 
     if let Err(error) = written {
         tracing::warn!(%error, "could not save the update's signature");
     }
+    // What was downloaded: the patch, when the package was made from one.
+    let downloaded = if fetched.file.extension().is_some_and(|ext| ext == "zst") {
+        manifest.size
+    } else {
+        manifest
+            .patch_from(update::VERSION)
+            .map_or(fetched.size, |patch| patch.size)
+    };
     let updates = daemon.updates();
     updates.set(daemon, |s| {
         *s = UpdateStatus {
             state: state::READY.to_owned(),
             version: manifest.version.clone(),
-            done: manifest.size,
-            total: manifest.size,
-            file: file.display().to_string(),
-            sha256: manifest.sha256.clone(),
+            done: downloaded,
+            total: downloaded,
+            file: fetched.file.display().to_string(),
+            sha256: fetched.sha256.clone(),
             checked,
             detail: String::new(),
         };
@@ -514,6 +792,28 @@ mod tests {
     use super::*;
 
     #[test]
+    fn checks_hourly_and_soon_after_waking() {
+        let wall = SystemTime::UNIX_EPOCH + Duration::from_secs(1_800_000_000);
+        let mono = Instant::now();
+        let mut schedule = Schedule::new(wall, mono);
+        assert!(!schedule.tick(wall + TICK, mono + TICK));
+        assert!(schedule.tick(wall + FIRST_CHECK, mono + FIRST_CHECK));
+        schedule.checked(wall + FIRST_CHECK);
+        let at = |minutes: u64| Duration::from_secs(minutes * 60) + FIRST_CHECK;
+        assert!(!schedule.tick(wall + at(59), mono + at(59)));
+        assert!(schedule.tick(wall + at(60), mono + at(60)));
+        schedule.checked(wall + at(60));
+        // Asleep for ten minutes: the timers did not count them.
+        assert!(!schedule.tick(wall + at(61), mono + at(61)));
+        assert!(!schedule.tick(wall + at(72), mono + at(62)));
+        assert!(schedule.tick(wall + at(73), mono + at(63)));
+        schedule.checked(wall + at(73));
+        // The clock set back a day: the next check is still within the hour.
+        assert!(!schedule.tick(wall, mono + at(64)));
+        assert!(schedule.tick(wall + EVERY, mono + at(64) + EVERY));
+    }
+
+    #[test]
     fn hashes_a_file() {
         let tmp = tempfile::tempdir().unwrap();
         let path = tmp.path().join("pkg");
@@ -529,6 +829,99 @@ mod tests {
         assert_eq!(retry_pause(1), Some(RETRY_PAUSE));
         assert_eq!(retry_pause(2), Some(RETRY_PAUSE * 2));
         assert_eq!(retry_pause(DOWNLOAD_TRIES), None);
+    }
+
+    /// A patch as CI makes it (`zstd --patch-from`), from `old` to `new`.
+    fn make_patch(old: &[u8], new: &[u8]) -> Vec<u8> {
+        let mut encoder =
+            zstd::stream::write::Encoder::with_ref_prefix(Vec::new(), 19, old).unwrap();
+        encoder.window_log(PATCH_WINDOW_LOG).unwrap();
+        encoder.long_distance_matching(true).unwrap();
+        encoder.write_all(new).unwrap();
+        encoder.finish().unwrap()
+    }
+
+    fn sha(bytes: &[u8]) -> String {
+        hex(ring::digest::digest(&ring::digest::SHA256, bytes).as_ref())
+    }
+
+    #[test]
+    fn makes_the_update_from_a_patch() {
+        let tmp = tempfile::tempdir().unwrap();
+        let old: Vec<u8> = (0..200_000u32).flat_map(|n| n.to_le_bytes()).collect();
+        let mut new = old.clone();
+        new.splice(1000..1000, b"a new feature".iter().copied());
+        let patch = make_patch(&old, &new);
+        assert!(patch.len() < 1000, "{} bytes", patch.len());
+        let patch_file = tmp.path().join("p.patch.zst");
+        std::fs::write(&patch_file, &patch).unwrap();
+        let fetched = Fetched {
+            file: tmp
+                .path()
+                .join("katna-git-0.0.0.r2.gbbbbbbb-1-x86_64.pkg.tar"),
+            sha256: sha(&new),
+            size: new.len() as u64,
+            minisig: None,
+        };
+        // From the kept package, compressed as the helper keeps it, or not.
+        let zst = tmp
+            .path()
+            .join("katna-git-0.0.0.r1.gaaaaaaa-1-x86_64.pkg.tar.zst");
+        std::fs::write(&zst, zstd::encode_all(&old[..], 3).unwrap()).unwrap();
+        apply_patch(&zst, &patch_file, &fetched).unwrap();
+        assert_eq!(std::fs::read(&fetched.file).unwrap(), new);
+        let plain = tmp
+            .path()
+            .join("katna-git-0.0.0.r1.gaaaaaaa-1-x86_64.pkg.tar");
+        std::fs::write(&plain, &old).unwrap();
+        std::fs::remove_file(&fetched.file).unwrap();
+        apply_patch(&plain, &patch_file, &fetched).unwrap();
+        assert_eq!(std::fs::read(&fetched.file).unwrap(), new);
+    }
+
+    #[test]
+    fn a_wrong_base_makes_nothing() {
+        let tmp = tempfile::tempdir().unwrap();
+        // Data that does not compress, so the patch must refer to it.
+        let old: Vec<u8> = (0..100_000u64)
+            .map(|n| (n.wrapping_mul(6_364_136_223_846_793_005) >> 56) as u8)
+            .collect();
+        let new = [&old[..], b"more"].concat();
+        let patch_file = tmp.path().join("p.patch.zst");
+        std::fs::write(&patch_file, make_patch(&old, &new)).unwrap();
+        let base = tmp
+            .path()
+            .join("katna-git-0.0.0.r1.gaaaaaaa-1-x86_64.pkg.tar");
+        std::fs::write(&base, vec![9u8; 100_000]).unwrap();
+        let fetched = Fetched {
+            file: tmp.path().join("new.pkg.tar"),
+            sha256: sha(&new),
+            size: new.len() as u64,
+            minisig: None,
+        };
+        assert!(apply_patch(&base, &patch_file, &fetched).is_err());
+        assert!(!fetched.file.exists());
+        assert!(!part_path(&fetched.file).exists());
+    }
+
+    #[test]
+    fn finds_the_installed_package() {
+        let tmp = tempfile::tempdir().unwrap();
+        for name in [
+            "katna-git-0.0.0.r1.gaaaaaaa-1-x86_64.pkg.tar.zst",
+            "katna-git-0.0.0.r2.gbbbbbbb-1-x86_64.pkg.tar.zst.sig",
+            "katna-git-0.0.0.r2.gbbbbbbb-1-x86_64.pkg.tar.zst",
+        ] {
+            std::fs::write(tmp.path().join(name), b"x").unwrap();
+        }
+        assert_eq!(
+            installed_copy(tmp.path(), "0.0.0.r2.gbbbbbbb"),
+            Some(
+                tmp.path()
+                    .join("katna-git-0.0.0.r2.gbbbbbbb-1-x86_64.pkg.tar.zst")
+            )
+        );
+        assert_eq!(installed_copy(tmp.path(), "0.0.0.r3.gccccccc"), None);
     }
 
     #[test]

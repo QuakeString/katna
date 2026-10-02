@@ -70,14 +70,22 @@ impl Spring {
     /// Advances the spring to now and returns its value. While it moves,
     /// asks `window` for another frame. Honors the reduce-motion setting.
     pub fn tick(&mut self, window: &Window, reduce_motion: bool) -> f32 {
+        let value = self.step(reduce_motion);
+        if !self.settled() {
+            window.request_animation_frame();
+        }
+        value
+    }
+
+    /// Advances the spring to now and returns its value, for a caller
+    /// with no `Window` at hand: while it is not [`settled`](Self::settled),
+    /// the caller asks for the next frame itself.
+    pub fn step(&mut self, reduce_motion: bool) -> f32 {
         if reduce_motion {
             self.snap(self.target);
             return self.target;
         }
         self.advance(Instant::now());
-        if !self.settled() {
-            window.request_animation_frame();
-        }
         self.state.position
     }
 

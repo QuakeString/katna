@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _දින දර්ශනය
 desktop-menu-page-contacts = සම්_බන්ධතා
 desktop-menu-page-tasks = කා_ර්යයන්
 desktop-menu-page-notes = ස_ටහන්
+desktop-menu-page-files = _ගොනු
 desktop-menu-next = _ඊළඟ සංවාදය
 desktop-menu-previous = _පෙර සංවාදය
 desktop-menu-message = _පණිවිඩය

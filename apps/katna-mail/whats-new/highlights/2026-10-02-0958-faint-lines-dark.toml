@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Faint lines in dark mode too"
+text = """
+In dark mode, the lines between mails, under headers and around cards are as
+faint as in light mode. Fields, chips and buttons keep their clear outline.
+"""

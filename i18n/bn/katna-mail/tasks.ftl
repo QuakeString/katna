@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = তৈরি করুন
+tasks-create = নতুন টাস্ক
 tasks-all = সব টাস্ক
 tasks-today = আজ
 tasks-starred = তারকাচিহ্নিত

@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _Календар
 desktop-menu-page-contacts = К_онтакти
 desktop-menu-page-tasks = Зав_дання
 desktop-menu-page-notes = Но_татки
+desktop-menu-page-files = _Файли
 desktop-menu-next = Н_аступний ланцюжок
 desktop-menu-previous = _Попередній ланцюжок
 desktop-menu-message = _Лист

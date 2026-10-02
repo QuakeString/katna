@@ -1,6 +1,6 @@
 name: Windows package
 
-# Builds Katna Setup (ci/windows-package.ps1). On main it replaces the
+# Builds Katna Setup (ci/windows-package.ps1). On main it updates the
 # `windows-latest` pre-release with the new KatnaSetup.exe, so Windows users
 # install and update Katna without building it (packaging/windows/README.md).
 
@@ -95,7 +95,7 @@ jobs:
         with:
           name: windows-package
           path: out
-      - name: Replace the windows-latest pre-release
+      - name: Update the windows-latest pre-release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -111,8 +111,34 @@ jobs:
           Setup is not signed yet, so Windows SmartScreen may warn: choose
           **More info**, then **Run anyway**.
           EOF
-          gh release delete windows-latest --cleanup-tag --yes || true
-          gh release create windows-latest out/* --prerelease \
-            --target "$GITHUB_SHA" \
-            --title "Katna for Windows (latest main)" \
-            --notes-file notes.md
+          # Updated in place, never deleted and created again, as arch-latest:
+          # a delete and create left arch-latest a draft (every download 404),
+          # and in between KatnaSetup.exe was gone for anyone downloading it.
+          tag=windows-latest
+          api="repos/$GH_REPO"
+          if gh api "$api/git/ref/tags/$tag" > /dev/null 2>&1; then
+            gh api -X PATCH "$api/git/refs/tags/$tag" -f sha="$GITHUB_SHA" -F force=true > /dev/null
+          else
+            gh api -X POST "$api/git/refs" -f ref="refs/tags/$tag" -f sha="$GITHUB_SHA" > /dev/null
+          fi
+          # Drafts included: the list is the only place they show.
+          ids=$(gh api --paginate "$api/releases" --jq ".[] | select(.tag_name == \"$tag\") | .id")
+          id=$(head -n1 <<<"$ids")
+          for extra in $(tail -n +2 <<<"$ids"); do
+            gh api -X DELETE "$api/releases/$extra"
+          done
+          fields=(-f tag_name="$tag" -f target_commitish="$GITHUB_SHA"
+                  -f name="Katna for Windows (latest main)"
+                  -F body=@notes.md -F draft=false -F prerelease=true)
+          if [[ -n "$id" ]]; then
+            gh api -X PATCH "$api/releases/$id" "${fields[@]}" > /dev/null
+          else
+            id=$(gh api -X POST "$api/releases" "${fields[@]}" --jq .id)
+          fi
+          cd out
+          gh release upload "$tag" --clobber -- *
+          # Earlier builds' files.
+          gh api "$api/releases/$id/assets" --paginate --jq '.[] | "\(.id) \(.name)"' |
+            while read -r asset name; do
+              [[ -e "$name" ]] || gh api -X DELETE "$api/releases/assets/$asset"
+            done

@@ -532,7 +532,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .rounded(px(15.0))
-            .bg(rgba(th.menu))
+            .map(|d| crate::widgets::frosted(d, th, th.menu, 15.0))
             .shadow(elevation(th, 3.0))
             .text_color(rgba(th.text))
             .on_click(|_, _, cx| cx.stop_propagation())

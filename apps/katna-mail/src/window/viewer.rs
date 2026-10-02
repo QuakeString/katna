@@ -113,6 +113,9 @@ pub(super) enum ViewerEvent {
     Unreadable(Arc<AttachmentFile>),
     /// Reply to the message with this file (a marked copy) attached.
     Reply(Arc<AttachmentFile>),
+    /// Start a new mail with only this file (a marked copy, with marks)
+    /// attached.
+    Forward(Arc<AttachmentFile>),
     /// Show the mail the file came with (opened from the Files page).
     ShowMail,
     /// Show the file this many places on in the Files page's list
@@ -121,6 +124,8 @@ pub(super) enum ViewerEvent {
     /// Shift and an arrow showed another of this mail's attachments
     /// (this one, by its index): opened from the Files page.
     Paged(usize),
+    /// Tick or untick the file shown (opened from the attach picker).
+    Pick,
 }
 
 pub(super) struct Viewer {
@@ -191,6 +196,12 @@ pub(super) struct Viewer {
     /// shows, and how many there are. The arrows then page through
     /// those; with Shift, through this mail's attachments.
     pub(super) library: Option<(usize, usize)>,
+    /// Opened from the attach picker: whether the file shown is ticked,
+    /// for the bar's Select button.
+    pub(super) pick: Option<bool>,
+    /// Opened before its file is here (a drive file still downloading):
+    /// it waits, turning, for `arrived`.
+    fetching: bool,
     pub(super) th: Theme,
 }
 
@@ -351,10 +362,36 @@ impl Viewer {
             can_reply,
             can_show_mail: false,
             library: None,
+            pick: None,
+            fetching: false,
             th,
         };
         this.show(current, cx);
         this
+    }
+
+    /// A viewer open on `item` while its file is still on the way: it
+    /// waits, turning, until `arrived` hands it over.
+    pub(super) fn fetching(
+        item: Item,
+        th: Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Self {
+        let mut this = Self::new(Arc::new(Vec::new()), Vec::new(), 0, false, th, window, cx);
+        this.items = vec![item];
+        this.enter(0);
+        this.fetching = true;
+        this
+    }
+
+    /// The file a `fetching` viewer waits for is here.
+    pub(super) fn arrived(&mut self, raw: Arc<Vec<u8>>, items: Vec<Item>, cx: &mut Context<Self>) {
+        self.raw = raw;
+        self.items = items;
+        self.seq = 0;
+        self.fetching = false;
+        self.show(0, cx);
     }
 
     /// Shows attachment `ix` of `raw`, another mail's or this one's,
@@ -605,6 +642,14 @@ impl Viewer {
             self.save_marked(None, cx);
         } else if let Some(file) = &self.file {
             cx.emit(ViewerEvent::Save(file.clone()));
+        }
+    }
+
+    fn forward(&mut self, cx: &mut Context<Self>) {
+        if self.saves_marks() {
+            self.forward_marked(cx);
+        } else if let Some(file) = &self.file {
+            cx.emit(ViewerEvent::Forward(file.clone()));
         }
     }
 
@@ -1401,9 +1446,14 @@ impl Render for Viewer {
                 Content::Sheet(view) => self.sheet_body(view, zoom, vw, cx),
                 Content::Loading => centered(
                     div()
+                        .flex()
+                        .flex_col()
+                        .items_center()
+                        .gap(px(14.0))
                         .text_color(rgba(INK_DIM))
                         .text_size(px(14.0))
-                        .child("Opening…"),
+                        .child(crate::widgets::spinner("viewer-opening", INK_DIM, 32.0))
+                        .child(katna_i18n::tr!("viewer-opening")),
                 ),
                 Content::Nothing(why) => {
                     let why = why.clone();
@@ -1411,7 +1461,7 @@ impl Render for Viewer {
                     centered(
                         div()
                             .capture_any_mouse_down(cx.listener(on_paper))
-                            .w(px(360.0))
+                            .w(px(460.0_f32.min(vw - 32.0)))
                             .p(px(28.0))
                             .flex()
                             .flex_col()
@@ -1426,22 +1476,36 @@ impl Render for Viewer {
                                     div()
                                         .flex()
                                         .flex_row()
+                                        .flex_wrap()
+                                        .justify_center()
                                         .gap(px(8.0))
                                         .child(
-                                            text_button("viewer-save-big", "download", "Save")
-                                                .on_click(
-                                                    cx.listener(|this, _, _, cx| this.save(cx)),
-                                                ),
+                                            text_button(
+                                                "viewer-forward-big",
+                                                "forward",
+                                                tr!("viewer-forward"),
+                                            )
+                                            .on_click(
+                                                cx.listener(|this, _, _, cx| this.forward(cx)),
+                                            ),
                                         )
                                         .child(
                                             text_button(
                                                 "viewer-open-big",
                                                 "open-external",
-                                                "Open with…",
+                                                tr!("viewer-open-with"),
                                             )
                                             .on_click(
                                                 cx.listener(|this, _, _, cx| this.open_with(cx)),
                                             ),
+                                        )
+                                        .child(
+                                            text_button(
+                                                "viewer-save-big",
+                                                "download",
+                                                tr!("viewer-save"),
+                                            )
+                                            .on_click(cx.listener(|this, _, _, cx| this.save(cx))),
                                         ),
                                 )
                             }),
@@ -1723,6 +1787,40 @@ impl Render for Viewer {
                         self.file.is_some() && matches!(self.content, Content::Pdf(_)),
                         |d| d.child(self.markup_button(&th, cx)),
                     )
+                    .when_some(self.pick, |d, on| {
+                        d.child(
+                            div()
+                                .id("viewer-pick")
+                                .flex_none()
+                                .h(px(32.0))
+                                .pl(px(10.0))
+                                .pr(px(14.0))
+                                .flex()
+                                .flex_row()
+                                .items_center()
+                                .gap(px(6.0))
+                                .rounded_full()
+                                .cursor_pointer()
+                                .text_size(px(13.0))
+                                .font_weight(FontWeight::MEDIUM)
+                                .map(|d| {
+                                    if on {
+                                        d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
+                                    } else {
+                                        d.bg(rgba(HOVER))
+                                            .text_color(rgba(INK))
+                                            .hover(|s| s.bg(rgba(PILL)))
+                                    }
+                                })
+                                .on_click(cx.listener(|_, _, _, cx| cx.emit(ViewerEvent::Pick)))
+                                .child(icon("check", if on { th.on_accent } else { INK_DIM }, 18.0))
+                                .child(if on {
+                                    tr!("viewer-picked")
+                                } else {
+                                    tr!("viewer-pick")
+                                }),
+                        )
+                    })
                     .when(self.can_show_mail, |d| {
                         d.child(
                             bar_button_tip(
@@ -1756,6 +1854,15 @@ impl Render for Viewer {
                                 .on_click(cx.listener(|this, _, _, cx| this.reply_marked(cx))),
                             )
                         })
+                        .child(
+                            bar_button_tip(
+                                "viewer-forward",
+                                "forward",
+                                tr!("viewer-forward-tip").into(),
+                                &th,
+                            )
+                            .on_click(cx.listener(|this, _, _, cx| this.forward(cx))),
+                        )
                         .child(
                             bar_button("viewer-open", "open-external", &th)
                                 .on_click(cx.listener(|this, _, _, cx| this.open_with(cx))),
@@ -2133,7 +2240,7 @@ fn centered(child: impl IntoElement) -> AnyElement {
 }
 
 /// A labelled button on the dark "no preview" card.
-fn text_button(id: &'static str, name: &str, label: &'static str) -> gpui::Stateful<gpui::Div> {
+fn text_button(id: &'static str, name: &str, label: String) -> gpui::Stateful<gpui::Div> {
     div()
         .id(id)
         .relative()

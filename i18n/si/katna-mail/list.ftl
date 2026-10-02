@@ -20,6 +20,7 @@ tab-provider-other = Katna විසින් වර්ග කළ
 
 list-select = තෝරන්න
 list-refresh = නැවුම් කරන්න
+list-back-to-top = ඉහළට ආපසු
 list-checking = නව තැපැල් පරීක්ෂා කරමින්…
 list-more = තවත්
 list-mark-read = කියවූ ලෙස සලකුණු කරන්න
@@ -386,11 +387,7 @@ menu-add-note = සටහනක් එක් කරන්න
 menu-print-all = සියල්ල මුද්‍රණය කරන්න
 menu-new-window = නව කවුළුවක විවෘත කරන්න
 menu-move-to = වෙත ගෙන යන්න
-# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
-# video call.
 menu-follow-up = පසු විපරම්
-# Opens a submenu of the rarer actions: Report spam, Mark as important and
-# Pin to top.
 menu-more = තවත්
 menu-move-to-heading = වෙත ගෙන යන්න:
 menu-find-from = { $name } ගෙන් ලැබුණු ඊමේල් සොයන්න

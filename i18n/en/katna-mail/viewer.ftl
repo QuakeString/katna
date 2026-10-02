@@ -5,6 +5,8 @@
 
 ## Attachment viewer
 
+# Shown, under a turning arc, while a file is on its way or opening.
+viewer-opening = Opening…
 # Shown in place of a file the viewer cannot show.
 viewer-unreadable = This attachment could not be read.
 viewer-pdf-locked = This PDF is protected with a password.
@@ -57,6 +59,12 @@ viewer-marks-undo-tip = Undo (Ctrl+Z)
 viewer-marks-redo-tip = Redo (Ctrl+Shift+Z)
 viewer-save-marked-tip = Save a copy with your marks (Ctrl+S)
 viewer-reply-marked-tip = Reply with the marked copy
+# Starts a new mail with only this file attached (the marked copy when
+# the PDF has marks).
+viewer-forward-tip = Forward the file
+viewer-forward = Forward
+viewer-open-with = Open with…
+viewer-save = Save
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = Write a note
 viewer-text-placeholder = Type here
@@ -74,3 +82,6 @@ viewer-marks-save = Save a copy
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (marked)
+# The viewer's bar, opened from the attach picker: ticks the file shown.
+viewer-pick = Select
+viewer-picked = Selected

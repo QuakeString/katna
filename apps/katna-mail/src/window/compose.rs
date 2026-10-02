@@ -21,7 +21,8 @@
 //! pictures, `schedule` the times of schedule send, `popout` the message
 //! in a window of its own.
 
-mod attach;
+pub(super) mod attach;
+mod chat_box;
 mod checks;
 mod chips;
 mod drafts;
@@ -30,6 +31,7 @@ mod paste;
 mod popout;
 mod quote;
 mod recipients;
+pub(in crate::window) mod rephrase;
 mod reply_kind;
 pub(super) mod schedule;
 mod scheduled;
@@ -64,7 +66,7 @@ use katna_ui::rich::{
 use katna_ui::unpx;
 use katna_ui::{InputEvent, InputGrammarMenu, TextInput};
 
-use super::{MailWindow, SNACKBAR_TIME, SendMail};
+use super::{MailWindow, RephraseSelection, SNACKBAR_TIME, SendMail};
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::format;
@@ -79,6 +81,7 @@ use crate::widgets::{elevation, icon, menu, menu_item, tip};
 pub(super) use attach::Attachment;
 use checks::Passed;
 use chips::Chips;
+pub(super) use quote::{signature_name, signature_tag};
 pub(in crate::window) use recipients::address_suggestions;
 use recipients::{Field, Suggestions};
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
@@ -86,6 +89,7 @@ use security::Sealing;
 pub(super) use sent::{Sending, SentCard};
 pub(super) use signature_editor::signature_content;
 use tools::Popup;
+pub(super) use tools::below_end_over;
 
 const WIDTH: f32 = 560.0;
 const MAX_HEIGHT: f32 = 620.0;
@@ -104,6 +108,8 @@ const NARROW_REPLY: f32 = 560.0;
 /// How strong the lines between the recipient rows are: fainter than
 /// other dividers.
 const FAINT_LINE: f32 = 0.55;
+/// The width of the To, Cc, Bcc and From labels, so the fields line up.
+const LABEL_WIDTH: f32 = 36.0;
 
 /// What the window starts from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -155,6 +161,11 @@ pub(super) struct Compose {
     message_id: String,
     /// The account whose Drafts folder has it saved, if any.
     saved: Option<AccountId>,
+    /// What the last save while writing held, so an unchanged message is
+    /// not saved again.
+    autosaved: Option<(Draft, usize)>,
+    /// Saving while writing, for the title bar.
+    draft_status: DraftStatus,
     show_cc: bool,
     show_bcc: bool,
     /// The recipients of To, Cc and Bcc; their fields hold only what is
@@ -169,6 +180,11 @@ pub(super) struct Compose {
     signature: Option<u32>,
     /// The formatting bar (Aa) shows.
     format_bar: bool,
+    /// The chat reply box's formatting bar sliding in (1) or out (0).
+    format_slide: Spring,
+    /// The chat formatting bar's height as last drawn: a narrow pane wraps
+    /// its tools onto more lines.
+    format_height: std::rc::Rc<std::cell::Cell<f32>>,
     /// The open menu or dialog, if any.
     popup: Option<Popup>,
     /// Seconds after sending to remind if nobody replies; 0 for never.
@@ -206,6 +222,8 @@ pub(super) struct Compose {
     /// The message a reply or forward answers, to write it again as
     /// another kind.
     source: Option<MessageId>,
+    /// The files a forward brought along from its message.
+    forwarded: Vec<Arc<Vec<u8>>>,
     /// An inline reply shows its From, To, Cc and Bcc rows rather than
     /// one line naming the recipients.
     header_open: bool,
@@ -218,6 +236,21 @@ pub(super) struct Compose {
     chip_scroll: [ScrollHandle; 3],
     /// Those rows growing in or shrinking away.
     rows_glide: reply_kind::RowsGlide,
+    /// The Rephrase card, while it is open.
+    rephrase: Option<rephrase::Rephrase>,
+    /// How deep the text's undo went with the rephrased text put in, for
+    /// the snackbar's Undo.
+    rephrased: Option<usize>,
+    /// Other wordings of the subject, while their card is open.
+    subject_ideas: Option<rephrase::subject::SubjectIdeas>,
+    /// When a press outside last put them away, so that pressing the
+    /// sparkle closes them rather than asking again.
+    subject_ideas_closed: Option<std::time::Instant>,
+    /// The user agreed to send text of this encrypted message for
+    /// rephrasing.
+    ai_encrypted_ok: bool,
+    /// Written in the chat view's reply box.
+    chat: Option<chat_box::ChatReply>,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -233,6 +266,10 @@ impl Compose {
             subject: text(&self.subject),
             body: {
                 let mut body = self.body.read(cx).doc().clone();
+                // The chat's reply box keeps the signature out of sight.
+                if let Some(chat) = &self.chat {
+                    body.blocks.extend(chat.held.iter().cloned());
+                }
                 body.blocks.extend(self.quote.hidden().iter().cloned());
                 body
             },
@@ -241,7 +278,7 @@ impl Compose {
 
     /// Something was written that closing would lose.
     fn touched(&self, cx: &gpui::App) -> bool {
-        !self.attachments.is_empty() || !self.drive.is_empty() || self.fields(cx) != self.start
+        self.files_changed() || !self.drive.is_empty() || self.fields(cx) != self.start
     }
 
     fn title(&self, cx: &gpui::App) -> SharedString {
@@ -351,6 +388,29 @@ pub(super) struct Writing {
     /// When a file manager last opened a new message with files, which
     /// the files that follow straight after join.
     files_opened: Option<std::time::Instant>,
+    /// A reply put aside while a new message is written; it comes back
+    /// when that message is sent or closed.
+    pub(super) parked: Option<Compose>,
+    /// The timer that saves the open message as a draft while it is
+    /// written is running.
+    autosaving: bool,
+    /// The `Message-ID`s of drafts being saved while written.
+    saving: Vec<String>,
+    /// Drafts sent or discarded while a save was on its way: deleted once
+    /// that save lands.
+    drop_when_saved: Vec<String>,
+}
+
+/// Where saving the open message while it is written stands.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(super) enum DraftStatus {
+    #[default]
+    Unsaved,
+    Saving,
+    Saved,
+    /// Its account could not save it (no Drafts folder, say): it is not
+    /// tried again while written; closing it still tries, and says why.
+    Failed,
 }
 
 impl Writing {
@@ -630,6 +690,8 @@ struct Existing {
     here: bool,
     /// Its window of its own is still there.
     window_open: bool,
+    /// It is a reply or forward, and the message started is a new one.
+    answer_then_new: bool,
 }
 
 /// What starting another message does with the one being written.
@@ -646,12 +708,17 @@ enum OnNew {
     SaveAndReplace,
     /// Nothing was written in it: the new message takes its place.
     Replace,
+    /// A reply being written when Compose is pressed: it is put aside,
+    /// as written, until the new message is sent or closed.
+    Park,
 }
 
 impl Existing {
     fn on_new_message(self) -> OnNew {
         if self.closing || !self.touched {
             OnNew::Replace
+        } else if self.answer_then_new && self.mode != Mode::Window {
+            OnNew::Park
         } else if self.mode == Mode::Inline && self.here {
             OnNew::Focus
         } else if self.mode == Mode::Window {
@@ -691,7 +758,7 @@ impl MailWindow {
             let problem = tr!(
                 "compose-file-too-large",
                 name = file.name.clone(),
-                limit = format::size(attach::MAX_TOTAL as u64)
+                limit = attach::limit_text()
             );
             self.show_snackbar(problem, None, cx);
             return;
@@ -724,7 +791,7 @@ impl MailWindow {
             let problem = tr!(
                 "compose-file-too-large",
                 name = file.name.clone(),
-                limit = format::size(attach::MAX_TOTAL as u64)
+                limit = attach::limit_text()
             );
             self.show_snackbar(problem, None, cx);
             return;
@@ -758,8 +825,35 @@ impl MailWindow {
             touched: c.touched(cx),
             here: c.conversation == open,
             window_open,
+            answer_then_new: c.kind != Kind::New && kind == Kind::New,
         });
-        match existing.map(Existing::on_new_message) {
+        let outcome = existing.map(Existing::on_new_message);
+        // Answering the conversation whose reply was put aside: that reply
+        // comes back as it was written.
+        if kind != Kind::New
+            && matches!(outcome, Some(OnNew::Replace) | None)
+            && open.is_some()
+            && self
+                .writing
+                .parked
+                .as_ref()
+                .is_some_and(|p| p.conversation == open)
+        {
+            self.compose = self.writing.parked.take();
+            if let Some(c) = &self.compose {
+                window.focus(&c.body.focus_handle(cx), cx);
+            }
+            if self
+                .compose
+                .as_ref()
+                .is_some_and(|c| c.mode == Mode::Inline)
+            {
+                self.reveal_inline_reply(cx);
+            }
+            cx.notify();
+            return;
+        }
+        match outcome {
             Some(OnNew::Focus) => {
                 if let Some(c) = &self.compose {
                     window.focus(&c.body.focus_handle(cx), cx);
@@ -783,6 +877,12 @@ impl MailWindow {
                 return;
             }
             Some(OnNew::SaveAndReplace) => self.close_compose_saving(cx),
+            Some(OnNew::Park) => {
+                if let Some(mut reply) = self.compose.take() {
+                    reply.popup = None;
+                    self.writing.parked = Some(reply);
+                }
+            }
             Some(OnNew::Replace) | None => {}
         }
         let date = |d: Option<i64>| {
@@ -864,6 +964,10 @@ impl MailWindow {
                 }
             }
         }
+        if kind == Kind::Forward {
+            self.attach_forwarded(cx);
+        }
+        self.adopt_kept_reply(cx);
         if mode == Mode::Inline {
             self.reveal_inline_reply(cx);
         }
@@ -937,6 +1041,10 @@ impl MailWindow {
     }
 
     fn scroll_to_inline_reply(&mut self, back: bool, cx: &mut Context<Self>) {
+        // The chat's reply box is always in sight, under the feed.
+        if self.chat_shown() {
+            return;
+        }
         let Some(body) = self.compose.as_ref().map(|c| c.body.clone()) else {
             return;
         };
@@ -983,7 +1091,7 @@ impl MailWindow {
     /// The signature a new message starts with: for new mail the default;
     /// in a conversation the one the user signed their newest message in it
     /// with, else the default for replies.
-    fn signature_for(&self, kind: Kind) -> Option<u32> {
+    pub(in crate::window) fn signature_for(&self, kind: Kind) -> Option<u32> {
         let sending = &self.config.sending;
         let id = match kind {
             Kind::New => sending.new_mail_signature,
@@ -1017,13 +1125,19 @@ impl MailWindow {
 
     /// Puts signature `id` (or none) in the open message in place of the
     /// one there.
-    fn choose_signature(&mut self, id: Option<u32>, cx: &mut Context<Self>) {
+    pub(in crate::window) fn choose_signature(&mut self, id: Option<u32>, cx: &mut Context<Self>) {
         let new = self.config.sending.signature(id).map(signatures::doc);
         let Some(compose) = &mut self.compose else {
             return;
         };
         compose.popup = None;
         if compose.signature == id {
+            cx.notify();
+            return;
+        }
+        if let Some(chat) = &mut compose.chat {
+            chat.held = chat_box::held_signature(new);
+            compose.signature = id;
             cx.notify();
             return;
         }
@@ -1087,6 +1201,7 @@ impl MailWindow {
         let grammar = self.grammar();
         let answered = thread_text(&draft.body);
         let suggest = self.suggestions(&answered, cx);
+        let complete = self.ai_complete(cx);
         subject.update(cx, |input, cx| {
             input.set_grammar_check(grammar.clone(), grammar_color(&th), cx)
         });
@@ -1097,6 +1212,7 @@ impl MailWindow {
             editor.set_spell_check(speller, cx);
             editor.set_grammar_check(grammar, cx);
             editor.set_suggest(suggest, cx);
+            editor.set_complete(complete, cx);
             paste::setup(&mut editor);
             editor
         });
@@ -1156,6 +1272,12 @@ impl MailWindow {
                 }));
             }
         }
+        // Typing in the subject or Escape puts its ideas away.
+        subscriptions.push(cx.subscribe(&subject, |this, _, event: &InputEvent, cx| {
+            if matches!(event, InputEvent::Changed | InputEvent::Cancel) {
+                this.close_subject_ideas(cx);
+            }
+        }));
         subscriptions.push(
             cx.subscribe(&subject, |this, _, event: &InputGrammarMenu, cx| {
                 let popup = Popup::SubjectGrammar {
@@ -1178,12 +1300,22 @@ impl MailWindow {
             |this, _, event: &RichEvent, window, cx| match event {
                 RichEvent::Submit => this.send_compose_default(window, cx),
                 RichEvent::Changed => {
+                    // The selection the card was for is gone.
+                    if let Some(c) = &mut this.compose {
+                        c.rephrase = None;
+                    }
                     this.quote_changed(cx);
                     this.close_hint(cx);
                     this.keep_cursor_in_view(cx);
                     cx.notify();
                 }
-                RichEvent::Selection => cx.notify(),
+                RichEvent::Selection => {
+                    // The chat's short box follows the arrow keys too.
+                    if this.chat_shown() {
+                        this.keep_cursor_in_view(cx);
+                    }
+                    cx.notify();
+                }
                 RichEvent::Cancel => this.escape_compose(cx),
                 RichEvent::EditLink => this.open_link_dialog(window, cx),
                 RichEvent::ContextMenu {
@@ -1245,10 +1377,14 @@ impl MailWindow {
             from: None,
             message_id: drafts::new_message_id(),
             saved: None,
+            autosaved: None,
+            draft_status: DraftStatus::Unsaved,
             mode: Mode::Open,
             sealing: Sealing::new_message(),
             signature,
             format_bar: false,
+            format_slide: Spring::new(motion::SMOOTH, 0.0),
+            format_height: Default::default(),
             popup: None,
             follow_up: 0,
             dialog,
@@ -1266,11 +1402,18 @@ impl MailWindow {
             from_template: false,
             attach_scroll: ScrollHandle::new(),
             source: None,
+            forwarded: Vec::new(),
             header_open: false,
             active_field: None,
             chip_layout: Rc::default(),
             chip_scroll: Default::default(),
             rows_glide: reply_kind::RowsGlide::default(),
+            rephrase: None,
+            rephrased: None,
+            subject_ideas: None,
+            subject_ideas_closed: None,
+            ai_encrypted_ok: false,
+            chat: None,
             _subscriptions: subscriptions,
         });
         self.ask_delivery_receipts(cx);
@@ -1400,10 +1543,12 @@ impl MailWindow {
             .map(|c| c.answered.clone())
             .unwrap_or_default();
         let suggest = self.suggestions(&thread, cx);
+        let complete = self.ai_complete(cx);
         if let Some(compose) = &self.compose {
-            compose
-                .body
-                .update(cx, |editor, cx| editor.set_suggest(suggest, cx));
+            compose.body.update(cx, |editor, cx| {
+                editor.set_suggest(suggest, cx);
+                editor.set_complete(complete, cx);
+            });
         }
     }
 
@@ -1415,8 +1560,10 @@ impl MailWindow {
             return;
         };
         // An inline reply has no scroll of its own: the conversation scrolls,
-        // under its Send row.
-        let (scroll, mut covered) = if compose.mode == Mode::Inline {
+        // under its Send row. The chat's reply box scrolls its own text
+        // once it is as tall as it grows.
+        let chat = self.chat_shown() && compose.mode == Mode::Inline;
+        let (scroll, mut covered) = if compose.mode == Mode::Inline && !chat {
             (
                 self.reader_scroll.clone(),
                 compose.stick.get().footer_height,
@@ -1424,7 +1571,7 @@ impl MailWindow {
         } else {
             (compose.body_scroll.clone(), 0.0)
         };
-        if compose.format_bar {
+        if compose.format_bar && !chat {
             covered += tools::FORMAT_BAR_COVER;
         }
         let body = compose.body.clone();
@@ -1436,7 +1583,7 @@ impl MailWindow {
                 };
                 let mut view = scroll.bounds();
                 view.size.height -= px(covered);
-                let pad = px(12.0);
+                let pad = px(if chat { 9.0 } else { 12.0 });
                 let mut offset = scroll.offset();
                 if cursor.bottom() + pad > view.bottom() {
                     offset.y -= cursor.bottom() + pad - view.bottom();
@@ -1484,8 +1631,31 @@ impl MailWindow {
 
     /// Sends the open message the way Settings chooses: a reply or forward
     /// also archives its conversation when Send and archive is the default.
+    /// A reply just opened, empty: the draft written in the summary card
+    /// and not sent goes in, as one step Undo takes back.
+    fn adopt_kept_reply(&mut self, cx: &mut Context<Self>) {
+        let Some(c) = &self.compose else {
+            return;
+        };
+        if !matches!(c.kind, Kind::Reply | Kind::ReplyAll) {
+            return;
+        }
+        let Some(key) = c.answering else {
+            return;
+        };
+        let body = c.body.clone();
+        if body.read(cx).own_text_end().is_some() {
+            return;
+        }
+        if let Some(text) = self.take_kept_reply(key) {
+            body.update(cx, |editor, cx| editor.insert_at_start(&text, cx));
+        }
+    }
+
     pub(super) fn send_compose_default(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let archive = self.config.sending.send_and_archive;
+        // A chat goes on: its conversation is never archived.
+        let chat = self.compose.as_ref().is_some_and(|c| c.chat.is_some());
+        let archive = self.config.sending.send_and_archive && !chat;
         self.send_compose(None, archive, Passed::default(), window, cx);
     }
 
@@ -1510,10 +1680,13 @@ impl MailWindow {
         let sealing = compose.sealing;
         let kind = compose.kind;
         let chosen = compose.from;
+        let chat = compose.chat.is_some();
         let answered = compose.answering;
         let answering = answered.filter(|_| archive && at.is_none());
-        // Sent, the draft it was saved as goes.
+        // Sent, the draft it was saved as goes, and one being saved goes
+        // once it lands.
         let saved = compose.saved.map(|a| (a.0, compose.message_id.clone()));
+        let sending_id = compose.message_id.clone();
         let signature = compose.signature;
         let attachments = compose.attachments.clone();
         let drive_files = compose.drive.clone();
@@ -1555,7 +1728,7 @@ impl MailWindow {
                 tr!(
                     "compose-attachments-too-large",
                     size = format::size(total as u64),
-                    limit = format::size(attach::MAX_TOTAL as u64)
+                    limit = attach::limit_text()
                 ),
                 None,
                 cx,
@@ -1668,30 +1841,37 @@ impl MailWindow {
             saved: None,
         });
         self.close_compose(cx);
+        self.drop_when_saved(&sending_id);
         // A reply takes the place of its card in the conversation at once,
         // as in Gmail.
         let card = match answered {
             Some(key) if at.is_none() => {
                 let subject = draft_subject.clone();
-                let card = self
-                    .sending
-                    .add_card(key, message_id, Arc::new(raw.clone()), |id| {
-                        sent::row(key, id, me, subject, snippet)
-                    });
+                let card =
+                    self.sending
+                        .add_card(key, message_id, Arc::new(raw.clone()), chat, |id| {
+                            sent::row(key, id, from, me, subject, snippet)
+                        });
+                if chat {
+                    self.chat_countdown(card, delay, cx);
+                }
                 self.show_sent_cards(cx);
                 Some(card)
             }
             _ => None,
         };
-        self.show_snackbar(
-            if at.is_some() {
-                tr!("compose-scheduling")
-            } else {
-                tr!("compose-sending")
-            },
-            None,
-            cx,
-        );
+        // The chat shows the reply waiting beside its countdown.
+        if !(chat && card.is_some()) {
+            self.show_snackbar(
+                if at.is_some() {
+                    tr!("compose-scheduling")
+                } else {
+                    tr!("compose-sending")
+                },
+                None,
+                cx,
+            );
+        }
         let connection = self.daemon.clone();
         let when = at.map(|at| schedule::describe(at, &self.tz));
         let undo = self.config.sending.undo_send_seconds;
@@ -1853,6 +2033,11 @@ impl MailWindow {
         let Some(c) = &mut self.compose else {
             return;
         };
+        if c.rephrase.is_some() {
+            c.rephrase = None;
+            cx.notify();
+            return;
+        }
         match &c.popup {
             Some(popup) if popup.is_hint() => self.close_hint(cx),
             Some(_) => {
@@ -1869,11 +2054,19 @@ impl MailWindow {
             compose.closing = true;
             compose.popup = None;
             if compose.mode == Mode::Window {
-                self.compose = None;
+                self.compose_gone(cx);
             }
         }
         self.close_compose_window(cx);
         cx.notify();
+    }
+
+    /// The message is gone: a reply put aside for it comes back.
+    fn compose_gone(&mut self, cx: &mut Context<Self>) {
+        self.compose = self.writing.parked.take();
+        if self.compose.is_some() {
+            chips::notify_soon(cx);
+        }
     }
 
     fn compose_mode(&mut self, mode: Mode, cx: &mut Context<Self>) {
@@ -1901,13 +2094,14 @@ impl MailWindow {
         if self.compose.is_none() && self.writing.grammar.is_some() {
             self.writing.grammar = None;
         }
+        self.keep_saving(cx);
         let (mode, conversation, closing) = self
             .compose
             .as_ref()
             .map(|c| (c.mode, c.conversation, c.closing))?;
         if mode == Mode::Window {
             if closing {
-                self.compose = None;
+                self.compose_gone(cx);
             }
             return None;
         }
@@ -1919,7 +2113,7 @@ impl MailWindow {
                     .is_some_and(|r| Some(r.key) == conversation);
             let touched = self.compose.as_ref().is_some_and(|c| c.touched(cx));
             if closing || (!here && !touched) {
-                self.compose = None;
+                self.compose_gone(cx);
                 return None;
             }
             if here {
@@ -1936,7 +2130,7 @@ impl MailWindow {
         compose.shown.set(if compose.closing { 0.0 } else { 1.0 });
         let t = compose.shown.tick(window, reduce);
         if compose.closing && compose.shown.settled() {
-            self.compose = None;
+            self.compose_gone(cx);
             return None;
         }
         let t = t.clamp(0.0, 1.0);
@@ -1945,6 +2139,13 @@ impl MailWindow {
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let mode = compose.mode;
         let title = compose.title(cx);
+        let draft_status = match compose.draft_status {
+            DraftStatus::Unsaved | DraftStatus::Failed => None,
+            // Saved before, it keeps saying so rather than flickering.
+            DraftStatus::Saving if compose.saved.is_some() => Some(tr!("compose-draft-saved")),
+            DraftStatus::Saving => Some(tr!("compose-draft-saving")),
+            DraftStatus::Saved => Some(tr!("compose-draft-saved")),
+        };
 
         let title_bar = div()
             .id("compose-title")
@@ -1965,10 +2166,26 @@ impl MailWindow {
                 div()
                     .flex_1()
                     .min_w_0()
-                    .truncate()
-                    .text_size(px(14.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .child(title),
+                    .flex()
+                    .flex_row()
+                    .items_baseline()
+                    .gap(px(8.0))
+                    .child(
+                        div()
+                            .min_w_0()
+                            .truncate()
+                            .text_size(px(14.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .child(title),
+                    )
+                    // Saving while writing, in dim text beside the title.
+                    .children(draft_status.map(|status| {
+                        div()
+                            .flex_none()
+                            .text_size(px(12.5))
+                            .text_color(rgba(th.text_faint))
+                            .child(status)
+                    })),
             )
             .child(
                 // Minimized, the same button opens it again.
@@ -2035,11 +2252,14 @@ impl MailWindow {
             w if w > 0.0 => w,
             _ => shape.width,
         };
+        // The same gap as the cards keep from the window's edges, so the
+        // window's corner lines up with the card's beside it.
+        let gap = shape.card_margin().max(8.0 * shape.phone);
         let (width, height) = match mode {
             _ if sheet => (sheet_width, vh),
-            Mode::Minimized if shape.is_phone() => (shape.width - 16.0, TITLE_HEIGHT),
+            Mode::Minimized if shape.is_phone() => (shape.width - 2.0 * gap, TITLE_HEIGHT),
             Mode::Open | Mode::Inline | Mode::Window => {
-                (WIDTH.min(vw - 32.0), MAX_HEIGHT.min(vh - 96.0))
+                (WIDTH.min(vw - 32.0), MAX_HEIGHT.min(vh - 96.0 - gap))
             }
             Mode::Minimized => (MINIMIZED_WIDTH, TITLE_HEIGHT),
             Mode::Full => ((vw - 128.0).clamp(WIDTH, 1000.0), vh - 96.0),
@@ -2050,6 +2270,9 @@ impl MailWindow {
             .on_action(
                 cx.listener(|this, _: &SendMail, window, cx| this.send_compose_default(window, cx)),
             )
+            .on_action(cx.listener(|this, _: &RephraseSelection, window, cx| {
+                this.toggle_rephrase(window, cx)
+            }))
             .occlude()
             .relative()
             .map(|d| {
@@ -2067,8 +2290,7 @@ impl MailWindow {
             .shadow(elevation(th, 3.0))
             .map(|d| match mode {
                 _ if sheet => d,
-                Mode::Full => d.rounded(px(12.0)),
-                _ => d.rounded_t(px(12.0)),
+                _ => d.rounded(px(12.0)),
             })
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
                 this.drop_on_compose(paths, cx);
@@ -2141,10 +2363,12 @@ impl MailWindow {
                 )
                 .child(div().opacity(t).mt(px(lerp(24.0, 0.0, t))).child(panel))
                 .into_any_element(),
+            // It floats clear of the window's edges: the same gap below
+            // as to the right.
             _ => div()
                 .absolute()
-                .right(px(lerp(24.0, 8.0, shape.phone)))
-                .bottom(px(shape.bottom_bar() + lerp(-48.0, 0.0, t)))
+                .right(px(gap))
+                .bottom(px(shape.bottom_bar() + gap + lerp(-48.0, 0.0, t)))
                 .opacity(t)
                 .child(panel)
                 .into_any_element(),
@@ -2184,8 +2408,9 @@ impl MailWindow {
         let card_width = unpx(self.reader_scroll.bounds().size.width) - 100.0;
         // As in Gmail, one line names the recipients until it is clicked.
         let open = self.reply_header_open();
-        // The lock, signature and tracking buttons go beside From when
-        // there is room, else on a row of their own under the recipients.
+        // The security group goes beside From when there is room, else on
+        // a row of its own under the recipients. No lines between these
+        // rows; one under the last, above the text.
         let roomy = card_width >= NARROW_REPLY;
         let head_row = || {
             div()
@@ -2215,10 +2440,7 @@ impl MailWindow {
                         .flex()
                         .children(self.render_from_row(th, cx)),
                 )
-                .when(roomy, |d| {
-                    d.children(self.render_sealing(th, cx))
-                        .children(self.render_tracking(th, cx))
-                })
+                .when(roomy, |d| d.child(self.render_security_group(th, cx)))
                 .child(pop_out)
         } else {
             head_row()
@@ -2236,8 +2458,6 @@ impl MailWindow {
                 // With chips on several lines, the label stays by the first.
                 .items_start()
                 .gap(px(8.0))
-                .border_t_1()
-                .border_color(rgba(fade(th.divider, FAINT_LINE)))
                 .text_size(px(14.0))
                 .child(
                     div()
@@ -2291,11 +2511,7 @@ impl MailWindow {
                         .flex_row()
                         .items_center()
                         .justify_end()
-                        .gap(px(8.0))
-                        .border_t_1()
-                        .border_color(rgba(fade(th.divider, FAINT_LINE)))
-                        .children(self.render_sealing(th, cx))
-                        .children(self.render_tracking(th, cx))
+                        .child(self.render_security_group(th, cx))
                 });
                 let rows = div()
                     .flex_none()
@@ -2311,7 +2527,7 @@ impl MailWindow {
                             .flex_none()
                             .mx(px(12.0))
                             .h(px(1.0))
-                            .bg(rgba(fade(th.divider, FAINT_LINE))),
+                            .bg(rgba(th.faint_line(FAINT_LINE))),
                     );
                 self.glide_rows(rows, rows_shown, cx)
             });
@@ -2352,6 +2568,9 @@ impl MailWindow {
             .on_action(
                 cx.listener(|this, _: &SendMail, window, cx| this.send_compose_default(window, cx)),
             )
+            .on_action(cx.listener(|this, _: &RephraseSelection, window, cx| {
+                this.toggle_rephrase(window, cx)
+            }))
             .relative()
             .flex_1()
             .min_w_0()
@@ -2360,7 +2579,7 @@ impl MailWindow {
             .rounded(px(12.0))
             .bg(rgba(th.surface))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .shadow(elevation(th, 1.5))
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
                 this.drop_on_compose(paths, cx);
@@ -2447,6 +2666,8 @@ impl MailWindow {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
+        // To, Cc, Bcc and From sit together without lines between them;
+        // the only lines are above and below the subject.
         let row = |label: String, field: AnyElement| {
             div()
                 .flex_none()
@@ -2457,20 +2678,17 @@ impl MailWindow {
                 // With chips on several lines, the label stays by the first.
                 .items_start()
                 .gap(px(8.0))
-                .border_b_1()
-                .border_color(rgba(fade(th.divider, FAINT_LINE)))
                 .text_size(px(14.0))
-                .when(!label.is_empty(), |d| {
-                    d.child(
-                        div()
-                            .flex_none()
-                            .h(px(40.0))
-                            .flex()
-                            .items_center()
-                            .text_color(rgba(th.text_dim))
-                            .child(label),
-                    )
-                })
+                .child(
+                    div()
+                        .flex_none()
+                        .min_w(px(LABEL_WIDTH))
+                        .h(px(40.0))
+                        .flex()
+                        .items_center()
+                        .text_color(rgba(th.text_dim))
+                        .child(label),
+                )
                 .child(
                     div()
                         .flex_1()
@@ -2481,26 +2699,32 @@ impl MailWindow {
                         .child(field),
                 )
         };
-        let tools = div()
+        let from = self.render_from_row(th, cx);
+        // The security group goes at the end of From; without a From row,
+        // at the end of To.
+        let to_tools = div()
             .flex_none()
             .flex()
             .flex_row()
             .items_center()
             .gap(px(4.0))
             .children(self.render_cc_bcc(th, cx))
-            .children(self.render_sealing(th, cx))
-            .children(self.render_tracking(th, cx))
+            .when(from.is_none(), |d| {
+                d.child(self.render_security_group(th, cx))
+            })
             .into_any_element();
-        let to_field = self.render_recipient_field(Field::To, Some(tools), th, cx);
+        let to_field = self.render_recipient_field(Field::To, Some(to_tools), th, cx);
         let [cc_field, bcc_field] =
             [Field::Cc, Field::Bcc].map(|field| self.render_recipient_field(field, None, th, cx));
         // A chip being dragged can land in Cc or Bcc even while hidden.
         let dragging = self.chip_dragging(cx).is_some();
         let to = self.recipient_row(row(tr!("compose-to"), to_field), Field::To, th, cx);
+        let line = rgba(th.faint_line(FAINT_LINE));
         div()
             .flex_none()
             .flex()
             .flex_col()
+            .pt(px(4.0))
             .child(to)
             .when(compose.show_cc || dragging, |d| {
                 d.child(self.recipient_row(row(tr!("compose-cc"), cc_field), Field::Cc, th, cx))
@@ -2508,14 +2732,36 @@ impl MailWindow {
             .when(compose.show_bcc || dragging, |d| {
                 d.child(self.recipient_row(row(tr!("compose-bcc"), bcc_field), Field::Bcc, th, cx))
             })
-            .children(
-                self.render_from_row(th, cx)
-                    .map(|from| row(tr!("compose-from"), from)),
+            .children(from.map(|from| {
+                row(
+                    tr!("compose-from"),
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(8.0))
+                        .child(div().flex_1().min_w_0().flex().child(from))
+                        .child(self.render_security_group(th, cx))
+                        .into_any_element(),
+                )
+            }))
+            .child(
+                div()
+                    .flex_none()
+                    .mx(px(16.0))
+                    .mt(px(4.0))
+                    .min_h(px(44.0))
+                    .flex()
+                    .items_center()
+                    .border_t_1()
+                    .border_b_1()
+                    .border_color(line)
+                    .text_size(px(15.0))
+                    .font_weight(FontWeight::MEDIUM)
+                    .child(self.render_subject_field(th, cx)),
             )
-            .child(row(
-                String::new(),
-                compose.subject.clone().into_any_element(),
-            ))
             .into_any_element()
     }
 
@@ -2548,34 +2794,52 @@ impl MailWindow {
                     cx.notify();
                 }))
         });
+        // One quiet line: the name, then the address dimmed.
+        let name = from.display_name.trim();
+        let named = !name.is_empty() && !name.eq_ignore_ascii_case(&from.address);
         let button = div()
             .id("compose-from")
             .relative()
             .max_w_full()
             .h(px(30.0))
-            .pl(px(10.0))
-            .pr(px(if several { 6.0 } else { 10.0 }))
+            .px(px(6.0))
+            .ml(px(-6.0))
             .flex()
             .flex_row()
             .items_center()
             .gap(px(6.0))
-            .rounded(px(6.0))
-            .border_1()
-            .border_color(rgba(if open { th.accent } else { th.divider }))
-            .text_color(rgba(th.text))
+            .rounded(px(8.0))
+            .when(open, |d| d.bg(rgba(th.hover)))
             .child(
                 div()
                     .min_w_0()
+                    .flex()
+                    .flex_row()
+                    .gap(px(6.0))
                     .overflow_hidden()
-                    .text_ellipsis()
                     .whitespace_nowrap()
-                    .child(sender_label(from)),
+                    .when(named, |d| {
+                        d.child(
+                            div()
+                                .flex_none()
+                                .text_color(rgba(th.text))
+                                .child(SharedString::from(name.to_owned())),
+                        )
+                    })
+                    .child(
+                        div()
+                            .min_w_0()
+                            .text_ellipsis()
+                            .overflow_hidden()
+                            .text_color(rgba(if named { th.text_dim } else { th.text }))
+                            .child(SharedString::from(from.address.clone())),
+                    ),
             )
             .when(several, |d| {
                 d.cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .when(!open, |d| d.tooltip(tip(tr!("compose-from-choose"), th)))
-                    .child(icon("chevron-down", th.text_dim, 18.0))
+                    .child(icon("chevron-down", th.text_dim, 16.0))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::From, cx)))
             })
             .when(open, |d| {
@@ -2584,6 +2848,7 @@ impl MailWindow {
         Some(
             div()
                 .py(px(5.0))
+                .flex_1()
                 .flex()
                 .min_w_0()
                 .child(button)
@@ -2697,6 +2962,7 @@ pub(in crate::window) fn palette(th: &Theme) -> Palette {
         surface: color(th.menu),
         text: color(th.text),
         hover: color(th.hover),
+        inserted: color(if th.dark { 0x81c99533 } else { 0x1e8e3e24 }),
     }
 }
 
@@ -2735,7 +3001,23 @@ mod tests {
             touched: true,
             here,
             window_open,
+            answer_then_new: false,
         }
+    }
+
+    #[test]
+    fn compose_puts_a_reply_aside() {
+        // Compose while a reply is half written, inline here or docked:
+        // the reply waits and the new message opens.
+        for mode in [Mode::Inline, Mode::Open, Mode::Minimized] {
+            let mut e = existing(mode, false, true);
+            e.answer_then_new = true;
+            assert_eq!(e.on_new_message(), OnNew::Park);
+        }
+        // In its own window it comes forward, as before.
+        let mut e = existing(Mode::Window, true, false);
+        e.answer_then_new = true;
+        assert_eq!(e.on_new_message(), OnNew::RaiseWindow);
     }
 
     #[test]

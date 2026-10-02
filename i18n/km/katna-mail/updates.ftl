@@ -1,7 +1,6 @@
 # Katna Mail, Khmer (ខ្មែរ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 update-dialog-title = បច្ចុប្បន្នភាព
 update-dialog-downloading-detail = ការទាញយកនឹងបន្តទោះបីអ្នកបិទបង្អួចនេះក៏ដោយ។
 update-dialog-progress = { $done } ក្នុងចំណោម { $total }

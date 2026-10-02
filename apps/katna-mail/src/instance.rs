@@ -23,8 +23,14 @@ use zbus::zvariant::{OwnedValue, Value};
 pub enum Request {
     /// Raise the window.
     Activate,
-    /// One of [`app_action`]'s actions; `message` for `open-message`.
-    Action { name: String, message: Option<i64> },
+    /// One of [`app_action`]'s actions; `message` for `open-message` and
+    /// the replies, `text` for what a reply starts with (typed into a
+    /// notification).
+    Action {
+        name: String,
+        message: Option<i64>,
+        text: Option<String>,
+    },
     /// A click in the menu bar on the GPUI action with this name.
     Menu(String),
     /// A `mailto:` link to write a message for.
@@ -61,13 +67,34 @@ impl Request {
 
     /// The request that `flag` followed by message ID `id` stands for.
     pub fn for_message(flag: &str, id: i64) -> Option<Self> {
-        [app_action::OPEN_MESSAGE, app_action::REPLY_ALL]
-            .into_iter()
-            .find(|action| app_action::flag(action) == Some(flag))
-            .map(|name| Self::Action {
-                name: name.to_owned(),
-                message: Some(id),
-            })
+        [
+            app_action::OPEN_MESSAGE,
+            app_action::REPLY_ALL,
+            app_action::REPLY,
+        ]
+        .into_iter()
+        .find(|action| app_action::flag(action) == Some(flag))
+        .map(|name| Self::Action {
+            name: name.to_owned(),
+            message: Some(id),
+            text: None,
+        })
+    }
+
+    /// This reply, starting with `text` (`app_action::TEXT_FLAG`).
+    pub fn with_text(self, text: String) -> Self {
+        match self {
+            Self::Action { name, message, .. }
+                if name == app_action::REPLY || name == app_action::REPLY_ALL =>
+            {
+                Self::Action {
+                    name,
+                    message,
+                    text: Some(text),
+                }
+            }
+            other => other,
+        }
     }
 
     /// What this request does when it starts the app rather than
@@ -77,6 +104,7 @@ impl Request {
             Self::Action {
                 name,
                 message: Some(id),
+                ..
             } if name == app_action::OPEN_MESSAGE => Self::ShowMessage(id),
             other => other,
         }
@@ -106,6 +134,7 @@ impl Request {
         Self::Action {
             name: name.to_owned(),
             message: None,
+            text: None,
         }
     }
 }
@@ -181,13 +210,15 @@ impl Application {
             }
             return;
         }
-        let message = parameter
-            .into_iter()
+        let mut parameter = parameter.into_iter();
+        let message = parameter.next().and_then(|value| i64::try_from(value).ok());
+        let text = parameter
             .next()
-            .and_then(|value| i64::try_from(value).ok());
+            .and_then(|value| String::try_from(value).ok());
         let _ = self.requests.try_send(Request::Action {
             name: action_name,
             message,
+            text,
         });
     }
 }
@@ -343,8 +374,15 @@ async fn hand_off(connection: &Connection, request: Option<&Request>) -> bool {
                 )
                 .await
         }
-        Some(Request::Action { name, message }) => {
-            let params: Vec<Value<'_>> = message.iter().map(|&id| Value::from(id)).collect();
+        Some(Request::Action {
+            name,
+            message,
+            text,
+        }) => {
+            let mut params: Vec<Value<'_>> = message.iter().map(|&id| Value::from(id)).collect();
+            if let Some(text) = text {
+                params.push(Value::from(text.as_str()));
+            }
             connection
                 .call_method(
                     app,
@@ -392,6 +430,7 @@ mod tests {
         let request = |name: &str| Request::Action {
             name: name.to_owned(),
             message: Some(42),
+            text: None,
         };
         assert_eq!(
             Request::for_message("--message", 42),
@@ -400,6 +439,14 @@ mod tests {
         assert_eq!(
             Request::for_message("--reply-all", 42),
             Some(request("reply-all"))
+        );
+        assert_eq!(
+            Request::for_message("--reply", 42).map(|r| r.with_text("Yes".into())),
+            Some(Request::Action {
+                name: "reply".into(),
+                message: Some(42),
+                text: Some("Yes".into()),
+            })
         );
         assert_eq!(Request::for_message("--inbox", 42), None);
     }

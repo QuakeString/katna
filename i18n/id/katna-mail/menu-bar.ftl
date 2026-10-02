@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _Kalender
 desktop-menu-page-contacts = Ko_ntak
 desktop-menu-page-tasks = Tu_gas
 desktop-menu-page-notes = _Catatan
+desktop-menu-page-files = Fi_le
 desktop-menu-next = Percakapan _Berikutnya
 desktop-menu-previous = Percakapan _Sebelumnya
 desktop-menu-message = _Pesan

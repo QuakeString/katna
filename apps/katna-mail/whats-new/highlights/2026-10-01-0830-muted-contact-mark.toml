@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See who is muted"
+text = """
+A crossed bell now follows a muted sender's name wherever they show: the
+mail list, an open mail, Contacts, the To and Cc boxes and their
+suggestions, the Files page, event guests and the Activity report. No more
+wondering why their mail stays quiet.
+"""

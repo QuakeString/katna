@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = সৃষ্টি কৰক
+tasks-create = নতুন কাৰ্য
 tasks-all = সকলো কাৰ্য
 tasks-today = আজি
 tasks-starred = তৰাচিহ্নিত

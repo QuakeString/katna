@@ -4,6 +4,7 @@
 
 ## Attachment viewer
 
+viewer-opening = Відкриття…
 viewer-unreadable = Не вдалося прочитати це вкладення.
 viewer-pdf-locked = Цей PDF захищено паролем.
 viewer-pdf-unreadable = Не вдалося прочитати цей PDF.
@@ -14,8 +15,17 @@ viewer-slides-unreadable = Не вдалося прочитати ці слай�
 viewer-no-preview = Попередній перегляд недоступний
 viewer-slide = Слайд { $number }
 viewer-page = Сторінка
+viewer-slide-box = Слайд
 viewer-page-count = із { $count }
 viewer-go-to-page-tip = Введіть номер сторінки й натисніть Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = Повернути за годинниковою стрілкою (Ctrl+R)
+viewer-rotate-anticlockwise-tip = Повернути проти годинникової стрілки (Ctrl+Shift+R)
+viewer-fit-page-tip = За розміром сторінки
+viewer-fit-picture-tip = За розміром вікна
+viewer-fit-width-tip = За шириною
+viewer-real-size-tip = Справжній розмір (1:1)
+viewer-page-back-tip = Попередня сторінка
+viewer-page-on-tip = Наступна сторінка
 
 ## Marking up a PDF
 
@@ -41,6 +51,10 @@ viewer-marks-undo-tip = Скасувати (Ctrl+Z)
 viewer-marks-redo-tip = Повторити (Ctrl+Shift+Z)
 viewer-save-marked-tip = Зберегти копію з позначками (Ctrl+S)
 viewer-reply-marked-tip = Відповісти з копією з позначками
+viewer-forward-tip = Переслати файл
+viewer-forward = Переслати
+viewer-open-with = Відкрити за допомогою…
+viewer-save = Зберегти
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = Напишіть нотатку
 viewer-text-placeholder = Введіть текст
@@ -58,3 +72,5 @@ viewer-marks-save = Зберегти копію
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (з позначками)
+viewer-pick = Вибрати
+viewer-picked = Вибрано

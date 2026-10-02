@@ -9,7 +9,7 @@ tray-new-message = _မက်ဆေ့ဂျ်အသစ်
 tray-preferences = _ဆက်တင်များ
 tray-quit = _ထွက်ရန်
 
-## The tray icon's tooltip
+## The tray icon's tooltip, under "Katna Mail"
 
 tray-unread = { $count ->
     [0] မဖတ်ရသေးသော စာ မရှိပါ

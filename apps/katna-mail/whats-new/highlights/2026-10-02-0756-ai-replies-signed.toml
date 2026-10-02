@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "AI replies end with your signature"
+text = """
+Replies and notes written by AI no longer end with "Best regards" and your
+name. Your signature signs them instead: in the summary card's reply, the
+signature tag under the text picks which one, as in Compose.
+"""

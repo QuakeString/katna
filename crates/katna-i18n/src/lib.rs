@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Languages (`docs/ARCHITECTURE.md` §13.10).
+//! Languages (`docs/ARCHITECTURE.md`, the chat view).
 //!
 //! The interface's text lives in Fluent files, one folder per binary and
 //! one file per area (`i18n/<translation>/<binary>/<area>.ftl`; a small

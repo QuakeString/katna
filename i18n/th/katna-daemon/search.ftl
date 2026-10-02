@@ -1,6 +1,9 @@
 # Katna Mail, Thai (ไทย).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Results
+
 search-category-mail = อีเมล
 search-category-people = ผู้คน
 search-category-tasks = งาน
@@ -17,6 +20,9 @@ search-event-in-days =
     { $count ->
        *[other] อีก { $count } วัน
     }
+
+## Buttons on a result in KRunner
+
 search-reply-all = ตอบกลับทั้งหมด
 search-copy-address = คัดลอกที่อยู่
 search-find-mail = ค้นหาอีเมล

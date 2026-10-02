@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = ສ້າງ
+tasks-create = ໜ້າວຽກໃໝ່
 tasks-all = ໜ້າວຽກທັງໝົດ
 tasks-today = ມື້ນີ້
 tasks-starred = ມີດາວ
 tasks-new-list = ສ້າງລາຍການໃໝ່
 tasks-on-this-computer = ໃນຄອມພິວເຕີເຄື່ອງນີ້
 tasks-my-tasks = ໜ້າວຽກຂອງຂ້ອຍ
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = ເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອສະແດງໜ້າວຽກ
 tasks-account-signed-in = ເຂົ້າສູ່ລະບົບ { $address } ອີກຄັ້ງແລ້ວ. ກຳລັງດຶງໜ້າວຽກຂອງທ່ານ…
 tasks-account-sign-in-refused = { $provider } ບໍ່ໃຫ້ Katna ເຂົ້າ. ລອງໃໝ່ ແລະ ອະນຸຍາດໃຫ້ເຂົ້າເຖິງໜ້າວຽກຂອງທ່ານ.
@@ -21,13 +19,9 @@ tasks-account-change-password = ປ່ຽນລະຫັດຜ່ານ
 tasks-account-change-password-tooltip = ເປີດ ການຕັ້ງຄ່າ > ບັນຊີ
 tasks-account-not-enabled = ການເຂົ້າເຖິງໜ້າວຽກສຳລັບ Katna ຍັງບໍ່ໄດ້ເປີດເທື່ອ.
 tasks-account-failed = ບໍ່ສາມາດອ່ານລາຍການໜ້າວຽກໄດ້.
-# $reason is the server's own words, in English.
 tasks-account-error = ບໍ່ສາມາດອ່ານລາຍການໜ້າວຽກໄດ້: { $reason }
 tasks-account-none = ບໍ່ພົບລາຍການໜ້າວຽກ
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 tasks-account-none-why = ບໍ່ພົບລາຍການໜ້າວຽກ: { $reason }
-# A Gmail or Outlook account added with a password: its tasks need the
-# provider's sign-in.
 tasks-account-use-sign-in = { $provider } ສະແດງໜ້າວຽກສະເພາະໃຫ້ Katna ທີ່ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider } ເທົ່ານັ້ນ.
 tasks-account-sign-in-with = ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider }
 tasks-account-looking = ກຳລັງຊອກຫາລາຍການໜ້າວຽກ…
@@ -112,6 +106,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = ບໍ່ມີອີເມວນັ້ນອີກແລ້ວ.
 tasks-toast-list-deleted = ລຶບລາຍການແລ້ວ
 tasks-toast-moved = ຍ້າຍໄປ { $list } ແລ້ວ
-# A task dragged to another place in its own list.
 tasks-toast-placed = ຍ້າຍໜ້າວຽກແລ້ວ
 tasks-toast-rescheduled = ປ່ຽນເວລາໜ້າວຽກແລ້ວ

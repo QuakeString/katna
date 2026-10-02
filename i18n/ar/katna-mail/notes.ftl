@@ -15,6 +15,7 @@ notes-loading = جارٍ فتح ملاحظاتك…
 
 notes-take-a-note = تدوين ملاحظة…
 notes-new-list = قائمة جديدة
+notes-new-note = ملاحظة جديدة
 notes-pinned = المثبَّتة
 notes-others = أخرى
 notes-empty = تظهر الملاحظات التي تضيفها هنا

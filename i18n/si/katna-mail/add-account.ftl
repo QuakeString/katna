@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = තැපැල් ගිණුමක් එක් කරන්න
+add-account-providers-intro = ඔබේ තැපැල් සපයන්නා තෝරන්න. ඉතිරිය Katna සොයා ගනී.
+add-account-provider-other = වෙනත් තැපැල්
+add-account-provider-other-detail = ඕනෑම IMAP හෝ POP3 ගිණුමක්
+add-account-provider-google-detail = Gmail සහ Google Workspace
+add-account-provider-microsoft-detail = Outlook සහ Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = { $provider } වෙත පුරනය වන්න
+add-account-form-title-other = ඔබේ තැපැල් ගිණුම
+add-account-form-intro = Katna ඔබේ මුරපදය ඔබේ පද්ධතියේ යතුරු මුද්දේ තබා ගනී.
 add-account-looking = { $address } සඳහා තැපැල් සේවාදායක සොයමින්…
 add-account-address-intro = ඔබේ ඊමේල් ලිපිනය ඇතුළත් කරන්න. Katna ඔබ වෙනුවෙන් සේවාදායක සොයා ගනී.
 add-account-servers-title = සේවාදායක සැකසීම්
@@ -13,10 +22,18 @@ add-account-signing-in = පුරනය වෙමින්…
 add-account-browser-title = ඔබේ බ්‍රවුසරයේ ඉදිරියට යන්න
 add-account-browser-intro = Katna ඔබේ බ්‍රවුසරයේ { $provider } පුරනය වීමේ පිටුව විවෘත කළා. එහි පුරනය වී ඔබේ තැපැල් කියවීමට සහ යැවීමට Katna ට ඉඩ දෙන්න, පසුව මෙතැනට ආපසු එන්න.
 add-account-browser-hint = පිටුවක් විවෘත වූයේ නැද්ද? ඔබේ බ්‍රවුසරයේ කවුළු පරීක්ෂා කරන්න, නැතහොත් ආපසු ගොස් නැවත උත්සාහ කරන්න.
+add-account-stage-browser = ඔබ බ්‍රවුසරයේ පුරනය වන තුරු රැඳී සිටිමින්…
+add-account-stage-signing-in-at = { $server } හි පුරනය වෙමින්…
+add-account-help-app-password-link = යෙදුම් මුරපදයක් සාදන ආකාරය
+add-account-help-turn-on-imap = { $provider } තැපැල් යෙදුම්වලට ඇතුළු වීමට ඉඩ දෙන්නේ එහි වෙබ් තැපැල් සැකසීම්වල IMAP සහ POP3 ප්‍රවේශය සක්‍රිය කළ පසු පමණි.
+add-account-help-turn-on-imap-link = එය සක්‍රිය කරන ආකාරය
 
 ## Add a mail account: fields
 
 add-account-field-address = ඊමේල් ලිපිනය
+add-account-receive-with = තැපැල් ලැබෙන්නේ
+add-account-imap-about = IMAP ඔබේ තැපැල් සහ ෆෝල්ඩර සේවාදායකයේ තබා ගනී, සෑම උපාංගයකම එක සමානව. හැකි නම් මෙය තෝරන්න.
+add-account-pop3-about = POP3 ඔබේ තැපැල් මෙම පරිගණකයට බාගත කරයි. ඔබ මෙහි කියවන හෝ ගෙන යන තැපැල් සේවාදායකයේ සහ ඔබේ අනෙක් උපාංගවල එලෙසම පවතී.
 add-account-incoming = එන තැපැල් ({ $protocol })
 add-account-outgoing = යන තැපැල් ({ $protocol })
 add-account-field-server = සේවාදායකය
@@ -38,14 +55,16 @@ add-account-servers-found = { $source ->
    *[other] සේවාදායක: { $servers }, අනුමානයෙන්; පුරනය අසාර්ථක වුවහොත් ඒවා පරීක්ෂා කරන්න.
 }
 add-account-servers-entered = සේවාදායක: { $servers }, ඇතුළත් කළ පරිදි.
-add-account-sign-in-with = { $provider } සමඟ පුරනය වන්න
-add-account-sign-in-instead = ඒ වෙනුවට { $provider } සමඟ පුරනය වන්න
 
 ## Add a mail account: buttons
 
+add-account-sign-in-with = { $provider } සමඟ පුරනය වන්න
+add-account-sign-in-instead = ඒ වෙනුවට { $provider } සමඟ පුරනය වන්න
 add-account-servers-button = සේවාදායක සැකසීම්
 add-account-back = ආපසු
 add-account-add = ගිණුම එක් කරන්න
+add-account-done = හරි
+add-account-another = තවත් ගිණුමක් එක් කරන්න
 add-account-cancel = අවලංගු කරන්න
 
 ## Add a mail account: problems
@@ -75,6 +94,22 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna හි මෙම පිටපතට තවම Google ගිණුම් වෙත පුරනය විය නොහැක.
    *[other] මෙම සපයන්නා පුරනය වීමට ඉඩ දෙන්නේ එහිම පිටුවේ පමණි, එය Katna ට තවම ඒ සඳහා කළ නොහැක.
 }
+add-account-smtp-not-found = ඔබේ තැපැල් කියවිය යුතු තැන Katna සොයා ගත් නමුත් යැවිය යුතු තැන සොයා ගත්තේ නැත. පිටතට යන සේවාදායකය ඇතුළත් කරන්න.
+
+## Add a mail account: the last step
+
+add-account-done-title = ඔබේ ගිණුම සූදානම්
+add-account-done-intro = Katna දැන් ඔබේ තැපැල් ලබා ගනිමින් සිටී. නව තැපැල් ලැබෙන විටම පෙන්වයි.
+add-account-done-sign-in = පුරනය
+add-account-done-signed-in-with = { $provider } සමඟ, ඔබේ බ්‍රවුසරයේ
+add-account-done-receiving = තැපැල් ලැබීම
+add-account-done-sending = තැපැල් යැවීම
+add-account-done-on-server = සේවාදායකයේ ඇති තැපැල්
+add-account-done-kept = ඔබ Katna හි මකන තුරු තබා ගනී
+add-account-done-pop3-hint = සේවාදායකයේ ඇති තැපැල්වලට වන දේ සැකසීම් > ගිණුම් තුළ වෙනස් කරන්න.
+add-account-done-zoho-title = කාර්යයන් සහ දින දර්ශන
+add-account-done-zoho-about = Zoho මේවා තැපැල්වලින් වෙනම තබා ගනී. ඒවා Katna වෙත ගෙන ඒමට එක් වරක් Zoho සමඟ පුරනය වන්න.
+add-account-done-linked = කාර්යයන් සහ දින දර්ශන සම්බන්ධ කළා
 
 ## The account menu (from the account button on the top bar)
 

@@ -127,6 +127,7 @@ attachment-count = { $count ->
    *[other] Okunamathiselwe okungu-{ $count }
 }
 attachment-save = Londoloza
+attachment-forward = Dlulisela
 attachment-save-all = Londoloza konke
 attachment-save-all-tooltip = Londoloza konke okunamathiselwe kufolda
 attachment-save-here = Londoloza lapha
@@ -177,6 +178,11 @@ print-not-downloaded = (Akukalandwa.)
 print-encrypted = (Kubethelwe. Kuvule ku-Katna Mail ukuze uphrinte umbhalo wakho.)
 print-to = Ku: { $addresses }
 print-cc = Cc: { $addresses }
+
+## Message text (right-click menu in the reading pane)
+
+text-pin = Phina phezulu
+text-copy-address = Kopisha ikheli
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

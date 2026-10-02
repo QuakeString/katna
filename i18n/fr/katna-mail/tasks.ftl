@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Créer
+tasks-create = Nouvelle tâche
 tasks-all = Toutes les tâches
 tasks-today = Aujourd’hui
 tasks-starred = Suivies

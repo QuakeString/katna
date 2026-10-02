@@ -1,6 +1,9 @@
 # Katna Mail, Chinese (Traditional, Taiwan) (繁體中文).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Results
+
 search-category-mail = 郵件
 search-category-people = 聯絡人
 search-category-tasks = 工作
@@ -17,6 +20,9 @@ search-event-in-days =
     { $count ->
        *[other] { $count } 天後
     }
+
+## Buttons on a result in KRunner
+
 search-reply-all = 全部回覆
 search-copy-address = 複製地址
 search-find-mail = 尋找郵件

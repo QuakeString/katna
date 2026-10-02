@@ -10,28 +10,33 @@
 //! Desktop windows only, where the reader keeps room enough beside it; the
 //! reader's toolbar shows and hides it.
 
+use std::cell::Cell;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, SharedString, Window,
-    div, ease_out_quint, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, ScrollHandle,
+    SharedString, Window, canvas, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_dav::Occurrence;
 use katna_i18n::tr;
+use katna_render::signature;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
-use katna_ui::{Ripple, px};
+use katna_ui::{Ripple, px, unpx};
 
 use super::MailWindow;
 use super::attachments::kind_badge;
+use super::remote::logo;
 use super::select::{Pieces, selectable};
+use super::sheet::{Fill, Sheet};
+use crate::daemon;
 use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
 use crate::profile::{self, Profile};
 use crate::theme::{Theme, mix};
-use crate::widgets::{card_outline, card_shadow, icon, icon_button_colored, tip};
+use crate::widgets::{card_outline, card_shadow, icon, icon_button, icon_button_colored, tip};
 
 /// The card's width.
 pub(super) const CONTACT_WIDTH: f32 = 300.0;
@@ -48,6 +53,22 @@ const STALE: Duration = Duration::from_secs(60);
 const KEEP_PROFILES: usize = 64;
 /// The picture beside the name.
 const PICTURE: f32 = 56.0;
+/// The bar the round buttons stay in once scrolled to the top of the
+/// card, beside the close button, with the person's picture this size.
+const BAR: f32 = 52.0;
+const BAR_PICTURE: f32 = 28.0;
+/// The round buttons' size and gap under the name, and in the bar.
+const ACTION: (f32, f32) = (40.0, 12.0);
+const ACTION_STUCK: (f32, f32) = (36.0, 6.0);
+/// How far the buttons are from the bar's top while in it, as the close
+/// button is from the card's.
+const BAR_INSET: f32 = (BAR - ACTION.0) / 2.0;
+/// The scroll over which the bar's glass and picture come in, before the
+/// buttons reach it.
+const BAR_FADE: f32 = 48.0;
+/// Where the buttons sit in the card's content until it is measured: its
+/// top padding, the picture and the gap under it.
+const ACTIONS_AT: f32 = 20.0 + PICTURE + 12.0;
 /// The part the card's text is in the window's text selection: after the
 /// conversation's messages, so a selection from one into the other keeps
 /// their order.
@@ -71,10 +92,26 @@ pub(super) struct ContactPanel {
     people: Option<(EntryKey, People)>,
     /// Profiles by address: `None` while one is read.
     profiles: HashMap<String, (Instant, Option<Rc<Profile>>)>,
+    /// Companies by address, once asked for: `None` while asked, or when
+    /// there is none.
+    companies: HashMap<String, Option<Rc<Company>>>,
     /// The person whose recent conversations show in full (More).
     more: Option<String>,
     /// 0 = the first few conversations, 1 = all of them.
     more_spring: Spring,
+    /// The panel folded the folders to make room: they unfold again when
+    /// it goes.
+    folded_nav: bool,
+    /// The card's scroll.
+    scroll: ScrollHandle,
+    /// Where the round buttons' place is in the card's content, as last
+    /// laid out, and the device pixels per design pixel there.
+    actions_at: Rc<Cell<(f32, f32)>>,
+    /// The folders were opened beside the panel by hand: the panel leaves
+    /// them be until it next opens.
+    nav_hold: bool,
+    /// On a phone the card rises from the bottom instead.
+    sheet: Sheet,
 }
 
 impl ContactPanel {
@@ -84,8 +121,14 @@ impl ContactPanel {
             picked: None,
             people: None,
             profiles: HashMap::new(),
+            companies: HashMap::new(),
             more: None,
             more_spring: Spring::new(motion::SMOOTH, 0.0),
+            folded_nav: false,
+            scroll: ScrollHandle::new(),
+            actions_at: Rc::new(Cell::new((ACTIONS_AT, 1.0))),
+            nav_hold: false,
+            sheet: Sheet::new(),
         }
     }
 
@@ -111,6 +154,64 @@ impl MailWindow {
             && rest >= if self.split() { KEEP_SPLIT } else { KEEP_ALONE }
     }
 
+    /// Whether the panel would show, room aside.
+    fn contact_wanted(&self) -> bool {
+        self.config.mail.contact_panel
+            && !self.agenda_open()
+            && self.reading
+            && self.reader.is_some()
+            && self.settings_page.is_none()
+            && !self.detached
+            && self.layout.shape.is_desktop()
+    }
+
+    /// Whether the panel can show beside the cards as they are now, with
+    /// the folders folded if they are open: where its button is offered.
+    pub(super) fn contact_offered(&self) -> bool {
+        let folders = super::NAV_WIDTH * self.reserve_spring.value().clamp(0.0, 1.0);
+        self.contact_fits(self.cards_width + self.contact_room() + folders)
+    }
+
+    /// Before a frame's springs: folds the folders when the panel is wanted
+    /// and fits only without them, and unfolds them once the panel goes or
+    /// the window has room for both. `room` is what the folders, the cards
+    /// and the panel share.
+    pub(super) fn fold_nav_for_contact(&mut self, room: f32) {
+        let wanted = self.contact_wanted();
+        if !wanted {
+            self.contact.nav_hold = false;
+        }
+        let beside = self.contact_fits(room - super::NAV_WIDTH);
+        if self.contact.folded_nav {
+            if !wanted || beside || !self.layout.shape.is_desktop() {
+                self.contact.folded_nav = false;
+                self.nav_open = true;
+            }
+        } else if wanted
+            && self.app == super::apps::App::Mail
+            && self.nav_docked()
+            && !self.contact.nav_hold
+            && !beside
+            && self.contact_fits(room)
+        {
+            self.contact.folded_nav = true;
+            self.nav_open = false;
+        }
+    }
+
+    /// The folders were folded or unfolded by hand.
+    pub(super) fn nav_toggled_by_hand(&mut self) {
+        // Opened beside the panel: they stay until the panel next opens.
+        self.contact.nav_hold = self.nav_open && self.contact_wanted();
+        self.contact.folded_nav = false;
+    }
+
+    /// Whether the folders are folded only for the panel, so a restart
+    /// shows them open.
+    pub(super) fn nav_folded_for_contact(&self) -> bool {
+        self.contact.folded_nav
+    }
+
     /// Moves the panel toward shown or hidden for this frame, and returns
     /// the width it takes from cards `available` wide.
     pub(super) fn tick_contact(
@@ -119,12 +220,16 @@ impl MailWindow {
         window: &Window,
         reduce: bool,
     ) -> (f32, f32) {
+        // As the folders fold for it, it opens with them, against the room
+        // it will have.
+        let folding = super::NAV_WIDTH
+            * (self.reserve_spring.value() - self.reserve_spring.target()).max(0.0);
         let open = self.config.mail.contact_panel
             && !self.agenda_open()
             && self.reading
             && self.reader.is_some()
             && self.settings_page.is_none()
-            && self.contact_fits(available);
+            && self.contact_fits(available + folding);
         self.contact.spring.set(if open { 1.0 } else { 0.0 });
         let t = self.contact.spring.tick(window, reduce).clamp(0.0, 1.0);
         let more = self.contact.more.is_some();
@@ -134,16 +239,64 @@ impl MailWindow {
         (room(t), room(self.contact.spring.target()))
     }
 
+    /// Shows `email` (lower case) in the panel, opening it if it was put
+    /// away: an address clicked in the open mail's details.
+    /// A second click on the person whose card shows puts the panel away.
+    pub(super) fn show_person(&mut self, email: &str, cx: &mut Context<Self>) {
+        if let Some(key) = self.reader.as_ref().map(|r| r.key) {
+            self.show_contact_of(key, email, cx);
+        }
+    }
+
+    /// Shows `email`'s card for conversation `key`, opening the panel if
+    /// it is hidden: a click on a name or picture in the chat view. A
+    /// second click on the person whose card shows puts the panel away.
+    pub(super) fn show_contact_of(&mut self, key: EntryKey, email: &str, cx: &mut Context<Self>) {
+        let email = email.to_lowercase();
+        // A phone has no room beside the chat: the card rises as a sheet.
+        if self.layout.shape.is_phone() {
+            self.contact.picked = Some((key, email));
+            self.contact.sheet.show(true);
+            cx.notify();
+            return;
+        }
+        let shown = self.config.mail.contact_panel && self.contact_offered();
+        if shown && self.contact_person_shown().as_deref() == Some(email.as_str()) {
+            self.toggle_contact_panel(cx);
+            return;
+        }
+        self.contact.picked = Some((key, email));
+        if !self.config.mail.contact_panel && self.contact_offered() {
+            self.toggle_contact_panel(cx);
+        }
+        cx.notify();
+    }
+
+    /// The address whose card the panel shows for the open conversation:
+    /// the one picked, else the newest sender.
+    fn contact_person_shown(&mut self) -> Option<String> {
+        let key = self.reader.as_ref().map(|r| r.key);
+        let people = self.contact_people();
+        self.contact
+            .picked
+            .as_ref()
+            .filter(|(k, email)| Some(*k) == key && people.iter().any(|(e, _)| e == email))
+            .map(|(_, email)| email.clone())
+            .or_else(|| people.first().map(|(email, _)| email.clone()))
+    }
+
     /// Shows or hides the panel, from the reader's toolbar.
     pub(super) fn toggle_contact_panel(&mut self, cx: &mut Context<Self>) {
         self.config.mail.contact_panel = !self.config.mail.contact_panel;
+        // Asked for, it may fold folders opened beside it by hand.
+        self.contact.nav_hold = false;
         self.save_config();
         cx.notify();
     }
 
     /// The reader toolbar's button for the panel, where it fits.
     pub(super) fn contact_toggle(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
-        if !self.contact_fits(self.cards_width + self.contact_room()) {
+        if !self.contact_offered() {
             return None;
         }
         let on = self.config.mail.contact_panel;
@@ -241,6 +394,53 @@ impl MailWindow {
         known.and_then(|(_, p)| p)
     }
 
+    /// Asks the daemon once for the company of the person at `email`:
+    /// in the chat view, under the Sender pictures switch (§12).
+    fn contact_company(&mut self, email: &str, website: Option<&str>, cx: &mut Context<Self>) {
+        if !self.chat_shown() || !(self.config.mail.sender_pictures || self.remote.trusts(email)) {
+            return;
+        }
+        let key = email.to_lowercase();
+        if self.contact.companies.contains_key(&key) {
+            return;
+        }
+        if self.contact.companies.len() >= KEEP_PROFILES {
+            self.contact.companies.clear();
+        }
+        self.contact.companies.insert(key.clone(), None);
+        let connection = self.daemon.clone();
+        let website = website.unwrap_or_default().to_owned();
+        cx.spawn(async move |this, cx| {
+            let json = cx
+                .background_executor()
+                .spawn({
+                    let key = key.clone();
+                    async move {
+                        let connection = match connection {
+                            Some(connection) => connection,
+                            None => daemon::connect().await?,
+                        };
+                        daemon::company_of(&connection, &key, &website).await
+                    }
+                })
+                .await;
+            let company = json
+                .ok()
+                .filter(|j| !j.is_empty())
+                .and_then(|j| serde_json::from_str::<Company>(&j).ok())
+                .filter(|c| !c.name.is_empty());
+            let Some(company) = company else {
+                return;
+            };
+            this.update(cx, |this, cx| {
+                this.contact.companies.insert(key, Some(Rc::new(company)));
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
+    }
+
     /// The panel, `t` of the way in, beside the cards.
     pub(super) fn render_contact_panel(
         &mut self,
@@ -278,41 +478,80 @@ impl MailWindow {
         )
     }
 
+    /// On a phone, the card of the person picked in the chat, risen from
+    /// the bottom.
+    pub(super) fn render_contact_sheet(
+        &mut self,
+        th: &Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        if !(self.layout.shape.is_phone() && self.reading && self.reader.is_some()) {
+            if self.contact.sheet.is_shown() {
+                self.contact.sheet = Sheet::new();
+            }
+            return None;
+        }
+        let body = div()
+            .pb(px(8.0))
+            .child(self.contact_card_body(th, cx).0)
+            .into_any_element();
+        self.bottom_sheet(
+            "contact-sheet",
+            &self.contact.sheet,
+            Fill::Card,
+            body,
+            |this| Some(&mut this.contact.sheet),
+            |this, cx| {
+                this.contact.sheet.show(false);
+                cx.notify();
+            },
+            th,
+            window,
+            cx,
+        )
+    }
+
     fn render_contact_card(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let (radius, outline) = (
             self.layout.shape.card_radius(),
             self.layout.shape.card_outline(),
         );
         let (shadow, edge) = self.card_edges(0.0, outline);
-        let key = self.reader.as_ref().map(|r| r.key);
-        let people = self.contact_people();
-        let picked = self
-            .contact
-            .picked
-            .as_ref()
-            .filter(|(k, email)| Some(*k) == key && people.iter().any(|(e, _)| e == email))
-            .map(|(_, email)| email.clone());
-        let person = picked
-            .and_then(|email| people.iter().find(|(e, _)| *e == email).cloned())
-            .or_else(|| people.first().cloned());
-        // More folds back for another person.
-        if self.contact.more.as_ref() != person.as_ref().map(|(email, _)| email) {
-            self.contact.more = None;
-            self.contact.more_spring.snap(0.0);
-        }
-        let body = match person {
-            Some((email, name)) => {
-                // Mail only between the user's own addresses shows that
-                // address, without the numbers of mail "with them".
-                let profile = if self.is_own(&email) {
-                    None
-                } else {
-                    self.contact_profile(&email, cx)
-                };
-                self.render_contact_body(&email, name.as_deref(), profile, &people, th, cx)
-            }
-            None => contact_empty(th),
-        };
+        let (place, stuck) = self.contact_bar();
+        let (body, actions) = self.contact_card_body(th, cx);
+        let glass = (actions.is_some() && stuck > 0.0).then(|| {
+            crate::widgets::frosted_top(
+                div()
+                    .absolute()
+                    .top(px(outline))
+                    .left(px(outline))
+                    .right(px(outline))
+                    .h(px(BAR))
+                    .opacity(stuck),
+                th,
+                th.surface,
+                (radius - outline).max(0.0),
+            )
+            .child(
+                div()
+                    .absolute()
+                    .left_0()
+                    .right_0()
+                    .bottom_0()
+                    .h(px(1.0))
+                    .bg(rgba(th.divider)),
+            )
+        });
+        let bar = actions.map(|actions| {
+            div()
+                .absolute()
+                .left(px(outline))
+                .right(px(outline))
+                .top(px(outline + (place - BAR_INSET).max(0.0)))
+                .h(px(BAR))
+                .child(actions)
+        });
         div()
             .id("contact-card")
             .size_full()
@@ -327,10 +566,56 @@ impl MailWindow {
                     .id("contact-scroll")
                     .size_full()
                     .overflow_y_scroll()
+                    .track_scroll(&self.contact.scroll)
                     .child(body),
             )
+            .children(glass)
+            .children(bar)
             .children(card_outline(th, radius, edge))
+            // Puts the panel away, as its toolbar button does: the same
+            // round close button as the open mail's.
+            .child(
+                div().absolute().top(px(6.0)).right(px(6.0)).child(
+                    icon_button("contact-close", "close", 20.0, th)
+                        .tooltip(tip(tr!("contact-panel-hide"), th))
+                        .on_click(cx.listener(|this, _, _, cx| this.toggle_contact_panel(cx))),
+                ),
+            )
             .into_any_element()
+    }
+
+    /// What the card shows of the person picked, else the newest sender,
+    /// and the bar of round buttons drawn over it beside an open mail.
+    fn contact_card_body(
+        &mut self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> (AnyElement, Option<AnyElement>) {
+        let shown = self.contact_person_shown();
+        let people = self.contact_people();
+        let person = shown.and_then(|email| people.iter().find(|(e, _)| *e == email).cloned());
+        // More folds back for another person.
+        if self.contact.more.as_ref() != person.as_ref().map(|(email, _)| email) {
+            self.contact.more = None;
+            self.contact.more_spring.snap(0.0);
+        }
+        match person {
+            Some((email, name)) => {
+                // Mail only between the user's own addresses shows that
+                // address, without the numbers of mail "with them".
+                let profile = if self.is_own(&email) {
+                    None
+                } else {
+                    self.contact_profile(&email, cx)
+                };
+                // Asked for here; the body finds it once it comes.
+                if let Some(profile) = &profile {
+                    self.contact_company(&email, profile.card.website.as_deref(), cx);
+                }
+                self.render_contact_body(&email, name.as_deref(), profile, &people, th, cx)
+            }
+            None => (contact_empty(th), None),
+        }
     }
 
     fn render_contact_body(
@@ -341,8 +626,9 @@ impl MailWindow {
         people: &[(String, Option<String>)],
         th: &Theme,
         cx: &mut Context<Self>,
-    ) -> AnyElement {
+    ) -> (AnyElement, Option<AnyElement>) {
         let own = self.is_own(email);
+        let muted = !own && self.sender_muted(email);
         let name = profile
             .as_ref()
             .and_then(|p| p.summary.name.clone())
@@ -356,6 +642,8 @@ impl MailWindow {
             .flex_row()
             .items_center()
             .gap(px(12.0))
+            // Clear of the close button in the corner.
+            .pr(px(30.0))
             .child(self.person_avatar(&shown_name, email, PICTURE))
             .child(
                 div()
@@ -365,11 +653,21 @@ impl MailWindow {
                     .flex_col()
                     .gap(px(2.0))
                     .child(
-                        words(&mut pieces, shown_name.clone())
-                            .text_size(px(16.0))
-                            .line_height(px(22.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .text_color(rgba(th.text)),
+                        div()
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(6.0))
+                            .child(
+                                words(&mut pieces, shown_name.clone())
+                                    .min_w_0()
+                                    .text_size(px(16.0))
+                                    .line_height(px(22.0))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.text)),
+                            )
+                            // Their mail is muted (§15.1.1).
+                            .children(muted.then(|| self.muted_mark(email, 16.0, th)).flatten()),
                     )
                     .when(name.is_some(), |d| {
                         d.child(
@@ -383,18 +681,29 @@ impl MailWindow {
             );
 
         let phone = profile.as_ref().and_then(|p| p.card.phone.clone());
-        let mut actions = self.contact_actions(email, phone, th, cx);
+        // On a phone the card is a sheet with no close button, and the
+        // buttons scroll with the rest.
+        let sheet = self.layout.shape.is_phone();
+        let stuck = if sheet { 0.0 } else { self.contact_bar().1 };
+        let size = ACTION.0 + (ACTION_STUCK.0 - ACTION.0) * stuck;
+        let mut actions = self.contact_actions(email, phone, size, th, cx);
         // Their address book entry: open it, or save them in one click.
         if !own && self.contacts.book.as_ref().is_some_and(|b| b.is_ok()) {
             actions = actions.child(self.contact_save_button(
                 email,
                 name.clone(),
                 profile.as_ref().map(|p| p.card.clone()),
+                size,
                 th,
                 cx,
             ));
         }
-
+        let actions = actions.gap(px(ACTION.1 + (ACTION_STUCK.1 - ACTION.1) * stuck));
+        let (place, bar) = if sheet {
+            (actions.mx(px(4.0)).mb(px(4.0)).into_any_element(), None)
+        } else {
+            self.contact_bar_parts(actions, stuck, &shown_name, email)
+        };
         // Each section is a faintly tinted card, as in Google Contacts.
         let mut sections: Vec<AnyElement> = Vec::new();
         if own {
@@ -406,10 +715,77 @@ impl MailWindow {
                     .into_any_element(),
             );
         }
+        let looked_up = self
+            .contact
+            .companies
+            .get(&email.to_lowercase())
+            .cloned()
+            .flatten();
+        // What their latest signature says: in a chat, the one they signed
+        // this conversation with.
+        let signature = self
+            .chat_shown()
+            .then(|| self.reader.as_ref()?.signature_of(email))
+            .flatten()
+            .or_else(|| profile.as_ref()?.signature.clone());
+        let card = profile.as_ref().map(|p| &p.card);
+        let details = signature.and_then(|signature| {
+            let shown: Vec<&str> = card
+                .into_iter()
+                .flat_map(|c| [&c.title, &c.phone])
+                .flatten()
+                .map(String::as_str)
+                .collect();
+            let known_company = card
+                .and_then(|c| c.company.as_deref())
+                .or(looked_up.as_deref().map(|c| c.name.as_str()));
+            signature::details(
+                &signature,
+                &signature::Known {
+                    name: name.as_deref(),
+                    email,
+                    shown: &shown,
+                    company: known_company,
+                },
+            )
+        });
+        if let Some(profile) = &profile
+            && let Some(details) =
+                self.contact_details(profile, details.as_ref(), &mut pieces, th, cx)
+        {
+            sections.push(details);
+        }
+        // The company as its home page describes it, else as the
+        // signature does.
+        let company = looked_up.or_else(|| {
+            let from = details.as_ref().map(|d| &d.company);
+            let name = from
+                .and_then(|c| c.name.clone().or_else(|| c.logo.clone()))
+                .or_else(|| card.and_then(|c| c.company.clone()))?;
+            let says_more = from.is_some_and(|c| {
+                c.website.is_some()
+                    || !c.pages.is_empty()
+                    || !c.offices.is_empty()
+                    || c.group.is_some()
+            });
+            says_more.then(|| {
+                Rc::new(Company {
+                    name,
+                    website: from.and_then(|c| c.website.clone()).unwrap_or_default(),
+                    ..Company::default()
+                })
+            })
+        });
+        if let Some(company) = &company {
+            sections.push(self.contact_company_section(
+                email,
+                company,
+                details.as_ref().map(|d| &d.company),
+                &mut pieces,
+                th,
+            ));
+        }
         if let Some(profile) = &profile {
-            if let Some(details) = self.contact_details(profile, &mut pieces, th, cx) {
-                sections.push(details);
-            }
             sections.push(self.contact_mail(profile, &mut pieces, th));
             if let Some(tasks) = self.contact_tasks(&profile.task_mails, &mut pieces, th, cx) {
                 sections.push(tasks);
@@ -449,7 +825,18 @@ impl MailWindow {
             .pt(px(20.0))
             .pb(px(16.0))
             .child(header.mx(px(4.0)))
-            .child(actions.mx(px(4.0)).mb(px(4.0)))
+            .child(place)
+            .when(muted, |d| {
+                d.child(
+                    div()
+                        .mx(px(4.0))
+                        .mt(px(-4.0))
+                        .text_size(px(13.0))
+                        .line_height(px(18.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("quiet-sender-strip")),
+                )
+            })
             .children(sections.into_iter().map(|section| {
                 div()
                     .rounded(px(16.0))
@@ -460,13 +847,80 @@ impl MailWindow {
             }))
             .children(foot);
         // A new person fades in, as a conversation opens.
-        selectable(body, Some(CONTACT_PART), cx)
+        let body = selectable(body, Some(CONTACT_PART), cx)
             .with_animation(
                 ("contact-person", person_number(email)),
                 Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
-            .into_any_element()
+            .into_any_element();
+        (body, bar)
+    }
+
+    /// Where the round buttons are in the card, scrolled, and how far
+    /// (0 to 1) into the bar at its top: they scroll up with the name
+    /// until they reach the top, then stay there in a frosted bar beside
+    /// the close button, with the person's picture, as the rest goes on
+    /// under them.
+    fn contact_bar(&self) -> (f32, f32) {
+        let (at, device) = self.contact.actions_at.get();
+        let scroll = &self.contact.scroll;
+        let max = unpx(scroll.max_offset().y).max(0.0);
+        let scrolled = -snap(unpx(scroll.offset().y).clamp(-max, 0.0), device);
+        let place = at - scrolled;
+        (place, smoothstep((BAR_INSET + BAR_FADE - place) / BAR_FADE))
+    }
+
+    /// The round buttons' place in the card, and the bar they are drawn
+    /// in over it: in the bar, the buttons make room for the close button
+    /// and the person's picture comes in at the left.
+    fn contact_bar_parts(
+        &self,
+        actions: gpui::Div,
+        stuck: f32,
+        shown_name: &str,
+        email: &str,
+    ) -> (AnyElement, Option<AnyElement>) {
+        let picture = ((stuck - 0.4) / 0.6).clamp(0.0, 1.0);
+        let bar = div()
+            .size_full()
+            .flex()
+            .flex_row()
+            .items_center()
+            .pl(px(12.0))
+            .pr(px(16.0 + 36.0 * stuck))
+            .child(
+                div()
+                    .flex_none()
+                    .opacity(picture)
+                    .ml(px(-6.0 * (1.0 - picture)))
+                    .child(self.person_avatar(shown_name, email, BAR_PICTURE)),
+            )
+            .child(div().flex_1())
+            .child(actions)
+            .with_animation(
+                ("contact-bar", person_number(email)),
+                Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                |el, t| el.opacity(t),
+            )
+            .into_any_element();
+        // The buttons' place, which the bar is drawn over.
+        let (at, scroll) = (self.contact.actions_at.clone(), self.contact.scroll.clone());
+        let place = div().mx(px(4.0)).mb(px(4.0)).h(px(ACTION.0)).child(
+            canvas(
+                move |bounds, window, _| {
+                    let y = unpx(bounds.top() - scroll.bounds().top() - scroll.offset().y);
+                    let device = window.scale_factor();
+                    if (y - at.get().0).abs() > 0.25 || device != at.get().1 {
+                        at.set((y, device));
+                        window.refresh();
+                    }
+                },
+                |_, _, _, _| {},
+            )
+            .size_full(),
+        );
+        (place.into_any_element(), Some(bar))
     }
 
     /// Whether `email` is one of the user's own addresses.
@@ -481,6 +935,7 @@ impl MailWindow {
         &self,
         email: &str,
         phone: Option<String>,
+        size: f32,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> gpui::Div {
@@ -490,7 +945,7 @@ impl MailWindow {
                 .id(id)
                 .relative()
                 .overflow_hidden()
-                .size(px(40.0))
+                .size(px(size))
                 .flex_none()
                 .flex()
                 .items_center()
@@ -505,11 +960,41 @@ impl MailWindow {
         };
         let to = email.to_owned();
         let query = format!("from:{email} OR to:{email}");
+        // Mute their mail, or unmute it: filled while muted.
+        let mute =
+            (!self.is_own(email)).then(|| {
+                let muted = self.sender_muted(email);
+                let address = email.to_owned();
+                let (fill, glyph, label) = if muted {
+                    (th.accent | 0xff, th.on_accent, tr!("quiet-unmute-sender"))
+                } else {
+                    (bg, th.accent, tr!("quiet-mute-sender"))
+                };
+                div()
+                    .id("contact-mute")
+                    .relative()
+                    .overflow_hidden()
+                    .size(px(size))
+                    .flex_none()
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .cursor_pointer()
+                    .bg(rgba(fill))
+                    .when(!muted, |d| d.hover(move |s| s.bg(rgba(bg_hover))))
+                    .tooltip(tip(label, th))
+                    .child(Ripple::new(("contact-mute", 0usize), rgba(th.ripple)).centered())
+                    .child(icon("bell-off", glyph, 20.0))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.mute_sender(address.clone(), !muted, cx)
+                    }))
+            });
         div()
             .flex()
             .flex_row()
             .justify_end()
-            .gap(px(12.0))
+            .children(mute)
             .child(
                 button("contact-email", "mail", tr!("contact-email")).on_click(cx.listener(
                     move |this, _, window, cx| {
@@ -540,6 +1025,7 @@ impl MailWindow {
         email: &str,
         name: Option<String>,
         signature: Option<profile::Card>,
+        size: f32,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -556,7 +1042,7 @@ impl MailWindow {
             .id("contact-save")
             .relative()
             .overflow_hidden()
-            .size(px(40.0))
+            .size(px(size))
             .flex_none()
             .flex()
             .items_center()
@@ -586,14 +1072,19 @@ impl MailWindow {
     fn contact_details(
         &self,
         profile: &Profile,
+        details: Option<&signature::Details>,
         pieces: &mut Pieces,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let card = &profile.card;
         // The title, with the company under it in a quieter color.
-        let work = card.title.as_ref().or(card.company.as_ref()).map(|first| {
-            let under = card.title.as_ref().and(card.company.clone());
+        let title = card
+            .title
+            .as_ref()
+            .or_else(|| details.and_then(|d| d.title.as_ref()));
+        let work = title.or(card.company.as_ref()).map(|first| {
+            let under = title.and(card.company.clone());
             div()
                 .flex()
                 .flex_col()
@@ -601,10 +1092,43 @@ impl MailWindow {
                 .children(under.map(|company| words(pieces, company).text_color(rgba(th.text_dim))))
                 .into_any_element()
         });
-        let phone = card
-            .phone
-            .clone()
-            .map(|number| self.contact_phone(number, th, cx));
+        // Every number their signature gives, with its kind; the one read
+        // from older mail too, when it is another.
+        let mut numbers: Vec<(String, Option<signature::PhoneKind>)> = details
+            .into_iter()
+            .flat_map(|d| &d.phones)
+            .map(|p| (p.number.clone(), Some(p.kind)))
+            .collect();
+        if let Some(number) = &card.phone
+            && !numbers.iter().any(|(n, _)| same_number(n, number))
+        {
+            numbers.insert(0, (number.clone(), None));
+        }
+        let phones: Vec<AnyElement> = numbers
+            .into_iter()
+            .enumerate()
+            .map(|(ix, (number, kind))| self.contact_phone(ix, number, kind, th, cx))
+            .collect();
+        let phone = (!phones.is_empty()).then(|| {
+            div()
+                .flex()
+                .flex_col()
+                .gap(px(4.0))
+                .children(phones)
+                .into_any_element()
+        });
+        let emails = details
+            .filter(|d| !d.emails.is_empty())
+            .map(|d| words(pieces, d.emails.join("\n")).into_any_element());
+        // Any other line their signature has, quietly.
+        let other = details.filter(|d| !d.other.is_empty()).map(|d| {
+            words(pieces, d.other.join("\n"))
+                .text_color(rgba(th.text_dim))
+                .into_any_element()
+        });
+        let pages = details
+            .filter(|d| !d.pages.is_empty())
+            .map(|d| page_chips("contact-own-page", &d.pages, th));
         let time = profile.offset.and_then(|minutes| {
             let offset = jiff::tz::Offset::from_seconds(minutes * 60).ok()?;
             let now = jiff::Timestamp::now().as_second();
@@ -616,10 +1140,17 @@ impl MailWindow {
             ))
         });
         let time = time.map(|t| words(pieces, t).into_any_element());
-        let rows: Vec<(&str, AnyElement)> = [("work", work), ("phone", phone), ("schedule", time)]
-            .into_iter()
-            .filter_map(|(icon, text)| Some((icon, text?)))
-            .collect();
+        let rows: Vec<(&str, AnyElement)> = [
+            ("work", work),
+            ("phone", phone),
+            ("mail", emails),
+            ("link", pages),
+            ("info", other),
+            ("schedule", time),
+        ]
+        .into_iter()
+        .filter_map(|(icon, text)| Some((icon, text?)))
+        .collect();
         if rows.is_empty() {
             return None;
         }
@@ -649,21 +1180,228 @@ impl MailWindow {
         )
     }
 
+    /// The Company section: its logo, name, where it is and since when,
+    /// what it does, Wikipedia's lines, and its pages.
+    fn contact_company_section(
+        &self,
+        email: &str,
+        company: &Company,
+        from_signature: Option<&signature::CompanyDetails>,
+        pieces: &mut Pieces,
+        th: &Theme,
+    ) -> AnyElement {
+        let initial = company
+            .name
+            .chars()
+            .find(|c| c.is_alphanumeric())
+            .map(|c| c.to_uppercase().to_string())
+            .unwrap_or_default();
+        let picture = match self.domain_logo(email) {
+            Some(picture) => logo(picture, 36.0),
+            None => div()
+                .size(px(36.0))
+                .flex_none()
+                .flex()
+                .items_center()
+                .justify_center()
+                .rounded(px(9.0))
+                .bg(rgba(th.chip))
+                .text_size(px(15.0))
+                .font_weight(FontWeight::BOLD)
+                .text_color(rgba(th.text_dim))
+                .child(initial)
+                .into_any_element(),
+        };
+        let about = [
+            (!company.place.is_empty()).then(|| company.place.clone()),
+            company
+                .founded
+                .map(|year| tr!("contact-company-since", year = year.to_string())),
+        ]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>()
+        .join(" · ");
+        let text = |pieces: &mut Pieces, text: &str| {
+            words(pieces, text.to_owned())
+                .text_size(px(13.0))
+                .line_height(px(19.0))
+                .text_color(rgba(th.text))
+        };
+        // Its pages: the home page's, then the signature's it lacks.
+        let mut pages: Vec<signature::Link> = std::iter::once(&company.website)
+            .chain(from_signature.and_then(|c| c.website.as_ref()))
+            .chain(&company.links)
+            .filter(|url| !url.is_empty())
+            .map(|url| signature::Link {
+                site: signature::Site::of(url),
+                url: url.clone(),
+            })
+            .collect();
+        for link in from_signature.into_iter().flat_map(|c| &c.pages) {
+            let host = signature::host(&link.url);
+            let known = pages.iter().any(|p| {
+                signature::host(&p.url) == host
+                    && (p.site == signature::Site::Web
+                        || p.url.trim_end_matches('/') == link.url.trim_end_matches('/'))
+            });
+            if !known {
+                pages.push(link.clone());
+            }
+        }
+        let mut seen = Vec::new();
+        pages.retain(|p| {
+            let key = (
+                p.site,
+                signature::host(&p.url),
+                p.site != signature::Site::Web,
+            );
+            let key = if key.2 {
+                p.url.trim_end_matches('/').to_owned()
+            } else {
+                key.1
+            };
+            if seen.contains(&key) {
+                false
+            } else {
+                seen.push(key);
+                true
+            }
+        });
+        let group = from_signature.and_then(|c| c.group.clone());
+        let offices = from_signature
+            .map(|c| c.offices.as_slice())
+            .unwrap_or_default()
+            .iter()
+            .map(|office| {
+                div()
+                    .flex()
+                    .flex_row()
+                    .items_start()
+                    .gap(px(8.0))
+                    .child(
+                        div()
+                            .pt(px(1.0))
+                            .child(icon("location", th.text_faint, 16.0)),
+                    )
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .flex()
+                            .flex_col()
+                            .children(office.label.clone().map(|label| {
+                                words(pieces, label)
+                                    .text_size(px(12.0))
+                                    .line_height(px(17.0))
+                                    .text_color(rgba(th.text_dim))
+                            }))
+                            .child(text(pieces, &office.lines.join("\n"))),
+                    )
+            })
+            .collect::<Vec<_>>();
+        let now = jiff::Timestamp::now().as_second();
+        let checked = (company.checked > 0)
+            .then(|| format::ago(company.checked, now))
+            .flatten()
+            .map(|when| {
+                words(
+                    pieces,
+                    tr!(
+                        "contact-company-from",
+                        site = host_label(&company.website),
+                        when = when
+                    ),
+                )
+                .text_size(px(11.5))
+                .line_height(px(16.0))
+                .text_color(rgba(th.text_faint))
+            });
+        section(words(pieces, tr!("contact-company")), th)
+            .gap(px(8.0))
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(10.0))
+                    .child(picture)
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .flex()
+                            .flex_col()
+                            .child(
+                                words(pieces, company.name.clone())
+                                    .text_size(px(14.0))
+                                    .line_height(px(20.0))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.text)),
+                            )
+                            .when(!about.is_empty(), |d| {
+                                d.child(
+                                    words(pieces, about)
+                                        .text_size(px(12.0))
+                                        .line_height(px(16.0))
+                                        .text_color(rgba(th.text_dim)),
+                                )
+                            })
+                            // "Part of the Demo Group", from the signature.
+                            .children(group.map(|group| {
+                                words(pieces, group)
+                                    .text_size(px(12.0))
+                                    .line_height(px(16.0))
+                                    .text_color(rgba(th.text_dim))
+                            })),
+                    ),
+            )
+            .when(!company.description.is_empty(), |d| {
+                d.child(text(pieces, &company.description).text_color(rgba(th.text_dim)))
+            })
+            .when(!company.summary.is_empty(), |d| {
+                d.child(text(pieces, &company.summary).text_color(rgba(th.text_dim)))
+            })
+            .children(offices)
+            .when(!pages.is_empty(), |d| {
+                d.child(page_chips("contact-company-page", &pages, th))
+            })
+            .children(checked)
+            .into_any_element()
+    }
+
     /// Their phone number: a click calls it (the desktop hands `tel:` to
     /// the phone app or KDE Connect), and a copy button shows on hover.
-    fn contact_phone(&self, number: String, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn contact_phone(
+        &self,
+        ix: usize,
+        number: String,
+        kind: Option<signature::PhoneKind>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        use signature::PhoneKind;
         let dial = format!("tel:{}", dialable(&number));
         let copied = number.clone();
+        let group = SharedString::from(format!("contact-phone-{ix}"));
+        let kind = kind.and_then(|kind| match kind {
+            PhoneKind::Phone => None,
+            PhoneKind::Mobile => Some(tr!("contact-phone-mobile")),
+            PhoneKind::Direct => Some(tr!("contact-phone-direct")),
+            PhoneKind::Office => Some(tr!("contact-phone-office")),
+            PhoneKind::Fax => Some(tr!("contact-phone-fax")),
+            PhoneKind::WhatsApp => Some(tr!("contact-phone-whatsapp")),
+        });
         div()
-            .id("contact-phone")
-            .group("contact-phone")
+            .id(("contact-phone", ix))
+            .group(group.clone())
             .flex()
             .flex_row()
             .items_center()
             .gap(px(4.0))
             .child(
                 div()
-                    .id("contact-call")
+                    .id(("contact-call", ix))
                     .min_w_0()
                     .cursor_pointer()
                     .text_color(rgba(th.accent))
@@ -672,9 +1410,17 @@ impl MailWindow {
                     .on_click(move |_, _, cx| cx.open_url(&dial))
                     .child(number),
             )
+            // "Mobile", "Direct", quietly after the number.
+            .children(kind.map(|kind| {
+                div()
+                    .flex_none()
+                    .text_size(px(13.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(kind)
+            }))
             .child(
                 div()
-                    .id("contact-copy-number")
+                    .id(("contact-copy-number", ix))
                     .flex_none()
                     .size(px(24.0))
                     .my(px(-2.0))
@@ -684,7 +1430,7 @@ impl MailWindow {
                     .rounded_full()
                     .cursor_pointer()
                     .opacity(0.0)
-                    .group_hover("contact-phone", |s| s.opacity(1.0))
+                    .group_hover(group, |s| s.opacity(1.0))
                     .hover(|s| s.bg(rgba(th.hover)))
                     .tooltip(tip(tr!("contact-copy-number"), th))
                     .on_click(cx.listener(move |this, _, _, cx| {
@@ -1072,12 +1818,12 @@ impl MailWindow {
                             .child(self.person_avatar(&label, email, 24.0))
                             .child(
                                 words(pieces, label)
-                                    .flex_1()
                                     .min_w_0()
                                     .truncate()
                                     .cursor_pointer()
                                     .text_color(rgba(th.text)),
                             )
+                            .children(self.muted_mark(email, 16.0, th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 if let Some(key) = key {
                                     this.contact.picked = Some((key, pick.clone()));
@@ -1156,6 +1902,101 @@ fn words(pieces: &mut Pieces, text: impl Into<SharedString>) -> gpui::Div {
     holder.child(styled)
 }
 
+/// A company as the daemon describes it
+/// (`katna_sync::pictures::Company`).
+#[derive(Debug, Default, serde::Deserialize)]
+#[serde(default)]
+struct Company {
+    name: String,
+    description: String,
+    place: String,
+    founded: Option<i32>,
+    website: String,
+    links: Vec<String>,
+    summary: String,
+    checked: i64,
+}
+
+/// A row of pages: a site the card has a mark for as a round chip with
+/// Katna's one-colour mark, any other as a chip with its host.
+fn page_chips(id: &'static str, pages: &[signature::Link], th: &Theme) -> AnyElement {
+    div()
+        .flex()
+        .flex_row()
+        .flex_wrap()
+        .gap(px(6.0))
+        .children(pages.iter().enumerate().map(|(ix, link)| {
+            let url = link.url.clone();
+            let chip = div()
+                .id((id, ix))
+                .h(px(24.0))
+                .flex()
+                .items_center()
+                .justify_center()
+                .rounded_full()
+                .bg(rgba(th.chip))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .tooltip(tip(link.url.clone(), th))
+                .on_click(move |_, _, cx| cx.open_url(&url));
+            match brand_icon(link.site) {
+                Some(name) => chip.w(px(24.0)).child(icon(name, th.text_dim, 14.0)),
+                None => chip
+                    .px(px(10.0))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_dim))
+                    .child(page_label(&link.url)),
+            }
+        }))
+        .into_any_element()
+}
+
+/// What a page with no mark of its own is called: Wikipedia, else its
+/// host.
+fn page_label(url: &str) -> String {
+    let host = host_label(url);
+    if host == "wikipedia.org" || host.ends_with(".wikipedia.org") {
+        "Wikipedia".to_owned()
+    } else {
+        host
+    }
+}
+
+/// Whether two phone numbers are one: the same last ten digits.
+fn same_number(a: &str, b: &str) -> bool {
+    let tail = |n: &str| {
+        let digits: Vec<char> = n.chars().filter(char::is_ascii_digit).collect();
+        digits[digits.len().saturating_sub(10)..]
+            .iter()
+            .collect::<String>()
+    };
+    let (a, b) = (tail(a), tail(b));
+    a.len() >= 7 && a == b
+}
+
+/// Katna's one-colour mark for a site a signature links to.
+fn brand_icon(site: signature::Site) -> Option<&'static str> {
+    use signature::Site;
+    Some(match site {
+        Site::Web => return None,
+        Site::LinkedIn => "brand-linkedin",
+        Site::X => "brand-x",
+        Site::Facebook => "brand-facebook",
+        Site::Instagram => "brand-instagram",
+        Site::YouTube => "brand-youtube",
+        Site::GitHub => "brand-github",
+        Site::WhatsApp => "brand-whatsapp",
+        Site::Telegram => "brand-telegram",
+    })
+}
+
+/// `example.com` from `https://www.example.com/`.
+fn host_label(url: &str) -> String {
+    let rest = url.split_once("://").map_or(url, |(_, r)| r);
+    let host = rest.split(['/', '?', '#']).next().unwrap_or(rest);
+    host.strip_prefix("www.").unwrap_or(host).to_owned()
+}
+
 /// `number` as a `tel:` URI wants it: its digits, after a `+` if it has one.
 fn dialable(number: &str) -> String {
     let digits: String = number.chars().filter(char::is_ascii_digit).collect();
@@ -1213,4 +2054,21 @@ fn person_number(email: &str) -> usize {
     let mut hasher = std::collections::hash_map::DefaultHasher::new();
     email.hash(&mut hasher);
     hasher.finish() as usize
+}
+
+/// 0 below 0, 1 above 1, and an S-curve between, so the bar comes in
+/// gently and settles gently.
+fn smoothstep(t: f32) -> f32 {
+    let t = t.clamp(0.0, 1.0);
+    t * t * (3.0 - 2.0 * t)
+}
+
+/// A scroll offset where GPUI draws it: on a whole device pixel, so the
+/// bar moves with the content it sits over rather than a pixel off.
+fn snap(offset: f32, device: f32) -> f32 {
+    if device <= 0.0 {
+        return offset;
+    }
+    let dev = offset * device;
+    (dev.abs() - 0.5).ceil().copysign(dev) / device
 }

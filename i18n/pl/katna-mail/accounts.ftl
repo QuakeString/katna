@@ -14,6 +14,19 @@ accounts-unified-switch-detail = „Wszystkie konta” otwierają panel folderó
 accounts-row = Konta
 accounts-row-detail = Panel folderów i menu kont pokazują konta w tej kolejności; pierwsze jest domyślne. Usunięcie konta usuwa kopię jego poczty przechowywaną przez Katna na tym komputerze. Poczta zostaje na serwerze.
 accounts-none = Nie ma jeszcze kont.
+accounts-pop3-row = Poczta na serwerze
+accounts-pop3-row-detail = Konta POP3 pobierają pocztę na ten komputer. Wybierz, co potem dzieje się z kopią na serwerze.
+accounts-pop3-with-katna = Zachowaj, dopóki nie usunę jej w Katna
+accounts-pop3-at-once = Usuń od razu po pobraniu
+accounts-pop3-after-days = { $count ->
+    [one] Usuń po { $count } dniu
+    [few] Usuń po { $count } dniach
+    [many] Usuń po { $count } dniach
+   *[other] Usuń po { $count } dnia
+}
+accounts-pop3-never = Nigdy nie usuwaj
+accounts-pop3-days-less = Mniej dni
+accounts-pop3-days-more = Więcej dni
 accounts-kind-imported = Zaimportowane
 accounts-picture-reset = Użyj zdjęcia z pulpitu
 accounts-picture-change = Zmień zdjęcie
@@ -76,6 +89,9 @@ accounts-confirm-word = usuń
 accounts-confirm-placeholder = Wpisz „{ accounts-confirm-word }”
 accounts-confirm-prompt = Aby potwierdzić, wpisz „{ accounts-confirm-word }”:
 accounts-cancel = Anuluj
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Usuwa pocztę i załączniki pobrane przez Katna, zdjęcia nadawców i indeks wyszukiwania, a potem ponownie pobiera najnowszą pocztę. Konta, ustawienia i poczta, która jest tylko na tym komputerze, zostają.
 reset-cache-button = Wyczyść pamięć podręczną
 reset-cache-title = Wyczyścić pamięć podręczną?

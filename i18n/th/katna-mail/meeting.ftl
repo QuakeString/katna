@@ -1,7 +1,6 @@
 # Katna Mail, Thai (ไทย): video calls around mail.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 meeting-starting = กำลังเริ่มการประชุมทางวิดีโอ…
 meeting-mail-subject = การประชุมทางวิดีโอ: { $subject }
 meeting-mail-subject-plain = การประชุมทางวิดีโอ

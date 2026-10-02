@@ -1,6 +1,9 @@
 # Katna Mail, Filipino (Filipino).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Results
+
 search-category-mail = Mail
 search-category-people = Mga tao
 search-category-tasks = Mga Gawain
@@ -18,6 +21,9 @@ search-event-in-days =
         [one] Sa loob ng { $count } araw
        *[other] Sa loob ng { $count } araw
     }
+
+## Buttons on a result in KRunner
+
 search-reply-all = Sumagot sa lahat
 search-copy-address = Kopyahin ang address
 search-find-mail = Hanapin ang mail

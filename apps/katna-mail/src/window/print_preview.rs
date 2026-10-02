@@ -376,7 +376,7 @@ impl MailWindow {
                 .items_center()
                 .rounded_full()
                 .border_1()
-                .border_color(rgba(if on { th.accent } else { th.divider }))
+                .border_color(rgba(if on { th.accent } else { th.outline }))
                 .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
                 .text_size(px(13.0))
                 .font_weight(if on {
@@ -510,7 +510,10 @@ impl MailWindow {
             .when(!phone, |d| {
                 d.rounded(px(PANEL_RADIUS)).shadow(elevation(th, 3.0))
             })
-            .bg(rgba(th.surface))
+            .map(|d| {
+                let radius = if phone { 0.0 } else { PANEL_RADIUS };
+                crate::widgets::frosted(d, th, th.surface, radius)
+            })
             .text_color(rgba(th.text))
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .child(header)

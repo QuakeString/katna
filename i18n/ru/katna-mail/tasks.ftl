@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Создать
+tasks-create = Новая задача
 tasks-all = Все задачи
 tasks-today = Сегодня
 tasks-starred = Помеченные

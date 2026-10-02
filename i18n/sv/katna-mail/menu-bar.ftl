@@ -27,6 +27,7 @@ desktop-menu-page-calendar = Ka_lender
 desktop-menu-page-contacts = K_ontakter
 desktop-menu-page-tasks = U_ppgifter
 desktop-menu-page-notes = A_nteckningar
+desktop-menu-page-files = _Filer
 desktop-menu-next = _Nästa konversation
 desktop-menu-previous = _Föregående konversation
 desktop-menu-message = _Meddelande

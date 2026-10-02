@@ -13,6 +13,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 
 use gpui::Context;
+use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_store::MessageId;
 
@@ -26,6 +27,8 @@ const SENDING_TIME: Duration = Duration::from_secs(60);
 /// How long a sent reply stays shown when the mail server's copy never
 /// joins its conversation (a forward, say).
 const CARD_TIME: i64 = 10 * 60;
+/// How often the undo ring beside a reply in the chat view is drawn.
+const RING_FRAME: Duration = Duration::from_millis(33);
 /// Outbox entries remembered as gone out, for a queue call that returns
 /// after the message went.
 const WENT_OUT: usize = 16;
@@ -60,6 +63,20 @@ pub(in crate::window) struct SentCard {
     pub(in crate::window) row: Rc<Row>,
     /// When it went out (Unix seconds); `None` while it waits.
     pub(in crate::window) sent: Option<i64>,
+    /// Sent from the chat view: its undo countdown shows beside it rather
+    /// than in a snackbar.
+    chat: bool,
+    /// Until when it can be taken back, and how long that was in all.
+    countdown: Option<(Instant, Duration)>,
+}
+
+impl SentCard {
+    /// Until when it can be taken back out of how long in all, while it
+    /// waits in the chat view, and its outbox entry once queued.
+    pub(in crate::window) fn countdown(&self) -> Option<(Option<i64>, Instant, Duration)> {
+        let (until, total) = self.countdown?;
+        Some((self.outbox, until, total))
+    }
 }
 
 /// A `Message-ID` for a message about to be sent from `domain`, without
@@ -77,6 +94,7 @@ pub(super) fn new_message_id(domain: &str) -> String {
 pub(super) fn row(
     key: EntryKey,
     id: MessageId,
+    account: Option<AccountId>,
     me: (String, String),
     subject: String,
     snippet: String,
@@ -85,11 +103,13 @@ pub(super) fn row(
     Row {
         key,
         id,
+        account: account.unwrap_or(AccountId(0)),
         correspondent: if name.is_empty() {
             address.clone()
         } else {
             name
         },
+        people: Vec::new(),
         sender: address,
         count: 1,
         subject,
@@ -112,12 +132,14 @@ impl Sending {
         self.cards.iter().filter(move |c| c.key == key)
     }
 
-    /// Adds a reply to show in conversation `key`; returns its stand-in ID.
+    /// Adds a reply to show in conversation `key` (in the chat view with
+    /// `chat`); returns its stand-in ID.
     pub(super) fn add_card(
         &mut self,
         key: EntryKey,
         message_id: String,
         raw: Arc<Vec<u8>>,
+        chat: bool,
         row: impl FnOnce(MessageId) -> Row,
     ) -> MessageId {
         self.next += 1;
@@ -130,6 +152,8 @@ impl Sending {
             raw,
             row: Rc::new(row(id)),
             sent: None,
+            chat,
+            countdown: None,
         });
         id
     }
@@ -158,6 +182,30 @@ impl Sending {
 }
 
 impl MailWindow {
+    /// Starts the undo countdown of chat reply `id`, `delay` seconds,
+    /// beside its bubble.
+    pub(super) fn chat_countdown(&mut self, id: MessageId, delay: u32, cx: &mut Context<Self>) {
+        if delay == 0 {
+            return;
+        }
+        let Some(card) = self.sending.cards.iter_mut().find(|c| c.id == id) else {
+            return;
+        };
+        let total = Duration::from_secs(u64::from(delay));
+        let until = Instant::now() + total;
+        card.countdown = Some((until, total));
+        // The ring runs back smoothly until then.
+        cx.spawn(async move |this, cx| {
+            while Instant::now() < until {
+                cx.background_executor().timer(RING_FRAME).await;
+                if this.update(cx, |_, cx| cx.notify()).is_err() {
+                    break;
+                }
+            }
+        })
+        .detach();
+    }
+
     /// Outbox entry `id` was queued to go out after `delay` seconds; with
     /// `archived`, its conversation was archived with it.
     pub(in crate::window) fn queued(
@@ -167,7 +215,14 @@ impl MailWindow {
         archived: bool,
         cx: &mut Context<Self>,
     ) {
-        if delay > 0 {
+        let chat = self
+            .sending
+            .cards
+            .iter()
+            .any(|c| c.outbox == Some(id) && c.chat);
+        if chat {
+            // The countdown shows beside the reply in the chat, from Send.
+        } else if delay > 0 {
             let until = Instant::now() + Duration::from_secs(u64::from(delay));
             self.show_countdown(
                 tr!("compose-sending"),
@@ -208,15 +263,22 @@ impl MailWindow {
             return;
         };
         let (_, archived) = self.sending.waiting.remove(at);
+        self.play_event_sound(katna_core::config::SoundEvent::Sent);
+        // The chat shows it went with its ticks.
+        if self
+            .sending
+            .cards
+            .iter()
+            .any(|c| c.outbox == Some(id) && c.chat)
+        {
+            return;
+        }
         let text = if archived {
             tr!("compose-sent-archived")
         } else {
             tr!("compose-sent")
         };
         self.show_snackbar_for(text, None, SNACKBAR_TIME, cx);
-        if self.config.sending.sent_sound {
-            crate::sound::sent();
-        }
     }
 
     /// Shows the replies just sent in the open conversation, and forgets

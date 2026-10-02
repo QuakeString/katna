@@ -152,7 +152,13 @@ const ENTRIES: &[Entry] = &[
         Section::Notifications,
         "settings-general-notifications",
         "settings-general-notifications-summary",
-        "notify alert sound chime popup new mail bell folder tab",
+        "notify alert popup new mail bell folder tab",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-notifications-sounds",
+        "settings-notifications-sounds-summary",
+        "sound chime ding audio alarm reminder sent failed error play volume quiet",
     ),
     entry(
         Section::Notifications,
@@ -183,6 +189,12 @@ const ENTRIES: &[Entry] = &[
         "settings-inbox-tabs",
         "settings-inbox-tabs-detail",
         "primary promotions social updates forums focused other categories",
+    ),
+    entry(
+        Section::Inbox,
+        "settings-inbox-unified",
+        "settings-inbox-unified-detail",
+        "unified all accounts tabs shared combined categories",
     ),
     entry(
         Section::Accounts,
@@ -335,6 +347,13 @@ const ENTRIES: &[Entry] = &[
         "save download folder file manager reveal show dolphin",
     ),
     entry(
+        Section::DefaultApps,
+        "settings-files-page",
+        "settings-files-page-summary",
+        "files page attachments small pictures images signature logo icon size kb pixels hide \
+         drives google drive onedrive cloud allow",
+    ),
+    entry(
         Section::Signatures,
         "settings-compose-send-from",
         "settings-compose-send-from-summary",
@@ -357,6 +376,12 @@ const ENTRIES: &[Entry] = &[
         "settings-compose-suggestions",
         "settings-compose-suggestions-summary",
         "writing suggestions autocomplete complete predict phrase ghost text tab smart compose",
+    ),
+    entry(
+        Section::Signatures,
+        "settings-ai",
+        "settings-ai-summary",
+        "ai artificial intelligence rephrase rewrite tone katna ai own key api gemini openai chatgpt claude mistral deepseek openrouter ollama lm studio model autocomplete",
     ),
     entry(
         Section::Signatures,
@@ -422,7 +447,13 @@ const ENTRIES: &[Entry] = &[
         Section::Experimental,
         "look-blurred-background",
         "settings-experimental-blur-summary",
-        "blur transparency frosted glass look feel",
+        "blur transparency frosted glass look feel menus popups popovers dialogs",
+    ),
+    entry(
+        Section::Experimental,
+        "chat-view",
+        "chat-view-detail",
+        "chat bubbles whatsapp group conversation messenger reading",
     ),
 ];
 

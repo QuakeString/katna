@@ -20,6 +20,7 @@ tab-provider-other = classificado pelo Katna
 
 list-select = Selecionar
 list-refresh = Atualizar
+list-back-to-top = Voltar ao topo
 list-checking = Verificando novos e-mails…
 list-more = Mais
 list-mark-read = Marcar como lida

@@ -26,6 +26,7 @@
 //!   filing in Sent.
 //! - [`pictures`]: remote images and sender pictures for the reading pane,
 //!   which never uses the network itself.
+//! - [`quick_reply`]: short plain-text replies typed into a notification.
 //! - [`pop3`]: our own POP3 client, and downloading a maildrop into the
 //!   store (task 1.10).
 //! - [`worker`]: keeps an account in sync: IDLE, periodic full syncs,
@@ -40,6 +41,7 @@ mod backend;
 pub mod bodies;
 pub mod calendar;
 pub mod carddav;
+pub mod cloud;
 pub mod connection;
 pub mod contacts;
 pub mod drive;
@@ -59,6 +61,7 @@ pub mod ops;
 pub mod outbox;
 pub mod pictures;
 pub mod pop3;
+pub mod quick_reply;
 pub mod smtp;
 pub mod tasks;
 pub mod tracking;

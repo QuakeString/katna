@@ -14,6 +14,16 @@ accounts-unified-switch-detail = 「すべてのアカウント」がフォル�
 accounts-row = アカウント
 accounts-row-detail = フォルダ ペインとアカウント メニューには、この順序でアカウントが表示されます。最初のアカウントが既定になります。アカウントを削除すると、このパソコン上にある Katna のメールのコピーが削除されます。メールはサーバーに残ります。
 accounts-none = アカウントはまだありません。
+accounts-pop3-row = サーバー上のメール
+accounts-pop3-row-detail = POP3 アカウントはメールをこのパソコンにダウンロードします。その後サーバー上のコピーをどうするか選んでください。
+accounts-pop3-with-katna = Katna で削除するまで残す
+accounts-pop3-at-once = ダウンロードしたらすぐ削除
+accounts-pop3-after-days = { $count ->
+   *[other] { $count } 日後に削除
+}
+accounts-pop3-never = 削除しない
+accounts-pop3-days-less = 日数を減らす
+accounts-pop3-days-more = 日数を増やす
 accounts-kind-imported = インポート
 accounts-picture-reset = デスクトップの画像を使用
 accounts-picture-change = 画像を変更
@@ -70,6 +80,9 @@ accounts-confirm-word = 削除
 accounts-confirm-placeholder = 「{ accounts-confirm-word }」と入力
 accounts-confirm-prompt = 確認のため「{ accounts-confirm-word }」と入力してください:
 accounts-cancel = キャンセル
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Katna がダウンロードしたメールと添付ファイル、送信者の画像、検索インデックスを削除し、最近のメールをダウンロードし直します。アカウント、設定、このパソコンにしかないメールは残ります。
 reset-cache-button = キャッシュをリセット
 reset-cache-title = キャッシュをリセットしますか？

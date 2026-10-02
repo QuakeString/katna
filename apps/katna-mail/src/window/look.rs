@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Settings > Experimental > Look & Feel: Katna's own window frame instead
-//! of the desktop's, and a blurred, translucent window background. Both
-//! apply at once to every open window (`katna_chrome::Look`); on Windows
+//! of the desktop's, a blurred, translucent window background, and frosted
+//! menus and dialogs. They apply at once to every open window (`katna_chrome::Look`); on Windows
 //! the frame changes when a window next opens.
 
 use gpui::{AnyElement, Context, FontWeight, SharedString, div, prelude::*, rgba};
@@ -47,7 +47,22 @@ impl MailWindow {
             .child(self.row(
                 tr!("look-blurred-background"),
                 Some(&tr!("look-blurred-background-detail")),
-                self.blur_switch(th, cx),
+                self.blur_switches(th, cx),
+                th,
+            ))
+            .child(div().pt(px(12.0)).child(heading(tr!("chat-heading"), th)))
+            .child(self.row(
+                tr!("chat-view"),
+                Some(&tr!("chat-view-detail")),
+                self.switch_row(
+                    "page-chat-view",
+                    tr!("chat-view-switch"),
+                    tr!("chat-view-switch-detail"),
+                    self.config.experimental.chat_view,
+                    Change::ChatView(!self.config.experimental.chat_view),
+                    th,
+                    cx,
+                ),
                 th,
             ))
             .into_any_element()
@@ -99,7 +114,47 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn blur_switch(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn blur_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        div()
+            .flex()
+            .flex_col()
+            .child(self.window_blur_switch(th, cx))
+            .child(self.frosted_popups_switch(th, cx))
+            .when(
+                self.config.experimental.frosted_popups && katna_ui::frost::supported(),
+                |d| d.child(self.custom_frost_switch(th, cx)),
+            )
+            .when(self.chrome.environment().desktop == Desktop::Kde, |d| {
+                d.child(kde_blur_line(th, cx))
+            })
+            .into_any_element()
+    }
+
+    /// The frost's blur and opacity by hand, or the desktop's.
+    fn custom_frost_switch(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let custom = self.config.experimental.custom_frost;
+        let detail = match (custom, self.chrome.environment().desktop) {
+            (true, _) => tr!("look-custom-frost-on"),
+            (false, Desktop::Kde) => tr!("look-custom-frost-off-kde"),
+            (false, _) => tr!("look-custom-frost-off"),
+        };
+        div()
+            .flex()
+            .flex_col()
+            .child(self.switch_row(
+                "page-custom-frost",
+                tr!("look-custom-frost"),
+                detail,
+                custom,
+                Change::CustomFrost(!custom),
+                th,
+                cx,
+            ))
+            .when(custom, |d| d.child(self.frost_sliders(th, cx)))
+            .into_any_element()
+    }
+
+    fn window_blur_switch(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         if Look::blur_available() {
             return self.switch_row(
                 "page-blur",
@@ -118,31 +173,93 @@ impl MailWindow {
             (_, Session::X11) => tr!("look-blur-none-x11"),
             (_, Session::Wayland) => tr!("look-blur-none-wayland"),
         };
-        div()
-            .flex()
-            .flex_col()
-            .child(
-                // The switch, off and out of reach.
-                div()
-                    .py(px(8.0))
-                    .px(px(8.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(12.0))
-                    .opacity(0.45)
-                    .child(
-                        div()
-                            .flex_1()
-                            .min_w_0()
-                            .text_size(px(14.0))
-                            .child(tr!("look-blur")),
-                    )
-                    .child(switch(0.0, th)),
-            )
-            .child(explain(why, th))
-            .into_any_element()
+        unavailable(tr!("look-blur"), why, th)
     }
+
+    /// Katna blurs under its own menus, so this needs no compositor.
+    fn frosted_popups_switch(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        if katna_ui::frost::supported() {
+            return self.switch_row(
+                "page-frosted-popups",
+                tr!("look-frosted-popups"),
+                tr!("look-frosted-popups-detail"),
+                self.config.experimental.frosted_popups,
+                Change::FrostedPopups(!self.config.experimental.frosted_popups),
+                th,
+                cx,
+            );
+        }
+        let why = if cfg!(windows) {
+            tr!("look-frosted-popups-none-windows")
+        } else {
+            tr!("look-frosted-popups-none")
+        };
+        unavailable(tr!("look-frosted-popups"), why, th)
+    }
+}
+
+/// KDE sets how strongly the window background blurs; this opens its
+/// Blur settings.
+fn kde_blur_line(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
+    div()
+        .px(px(8.0))
+        .pt(px(12.0))
+        .flex()
+        .flex_col()
+        .gap(px(2.0))
+        .text_size(px(12.0))
+        .line_height(px(17.0))
+        .child(
+            div()
+                .text_color(rgba(th.text_faint))
+                .child(tr!("look-kde-blur-note")),
+        )
+        .child(
+            div()
+                .id("page-kde-blur")
+                .text_color(rgba(th.accent))
+                .cursor_pointer()
+                .hover(|s| s.underline())
+                .on_click(cx.listener(|_, _, _, _| open_kde_blur_settings()))
+                .child(tr!("look-kde-blur-open")),
+        )
+        .into_any_element()
+}
+
+/// Opens Desktop Effects in KDE's System Settings, where Blur is.
+fn open_kde_blur_settings() {
+    let opened = std::process::Command::new("kcmshell6")
+        .arg("kcm_kwin_effects")
+        .spawn()
+        .or_else(|_| {
+            std::process::Command::new("systemsettings")
+                .arg("kcm_kwin_effects")
+                .spawn()
+        });
+    if let Err(err) = opened {
+        tracing::warn!("could not open KDE's Blur settings: {err}");
+    }
+}
+
+/// A switch that cannot be used here: off and out of reach, with why.
+fn unavailable(label: String, why: String, th: &Theme) -> AnyElement {
+    div()
+        .flex()
+        .flex_col()
+        .child(
+            div()
+                .py(px(8.0))
+                .px(px(8.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(12.0))
+                .opacity(0.45)
+                .child(div().flex_1().min_w_0().text_size(px(14.0)).child(label))
+                .child(switch(0.0, th)),
+        )
+        .child(explain(why, th))
+        .into_any_element()
 }
 
 fn explain(text: impl Into<SharedString>, th: &Theme) -> AnyElement {

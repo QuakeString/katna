@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A color picker in the scheme editor"
+text = """
+Click a color in the scheme editor and a picker opens right beside it: drag
+across the square and the hue bar, type a hex value, reuse the scheme's own
+colors or recent picks, or take a color from anywhere on the screen with the
+dropper on KDE and GNOME.
+"""

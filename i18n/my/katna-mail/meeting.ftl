@@ -1,7 +1,6 @@
 # Katna Mail, Burmese (မြန်မာ): video calls around mail.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 meeting-starting = ဗီဒီယိုကောလ် စတင်နေသည်…
 meeting-mail-subject = ဗီဒီယိုကောလ်: { $subject }
 meeting-mail-subject-plain = ဗီဒီယိုကောလ်

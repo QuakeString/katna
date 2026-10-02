@@ -30,6 +30,8 @@ const ACCENTS: [u32; 7] = [
 /// A scheme card's width; its picture is as high as [`PICTURE_HEIGHT`].
 const CARD_WIDTH: f32 = 136.0;
 const PICTURE_HEIGHT: f32 = 64.0;
+/// The corner radius of a scheme card's picture.
+const PICTURE_RADIUS: f32 = 8.0;
 const SWATCH: f32 = 26.0;
 
 impl MailWindow {
@@ -146,7 +148,7 @@ impl MailWindow {
                     .flex()
                     .items_center()
                     .justify_center()
-                    .rounded(px(8.0))
+                    .rounded(px(PICTURE_RADIUS))
                     .border_2()
                     .border_dashed()
                     .border_color(rgba(th.divider))
@@ -183,10 +185,16 @@ impl MailWindow {
         let system = &self.desktop_colors.colors;
         let accent = Accent::parse(&self.config.mail.accent);
         let side = |dark: bool| scheme_picture(&Theme::pick(dark, id, accent, system));
+        // GPUI clips children to a rectangle, so each side rounds its own
+        // outer corners, nested inside the 2 px ring.
+        let inner = PICTURE_RADIUS - 2.0;
         // A scheme with one side shows it alone.
         let sides = match Theme::forced_dark(id, system) {
-            Some(dark) if id != schemes::SYSTEM => vec![side(dark)],
-            _ => vec![side(false), side(true)],
+            Some(dark) if id != schemes::SYSTEM => vec![side(dark).rounded(px(inner))],
+            _ => vec![
+                side(false).rounded_l(px(inner)),
+                side(true).rounded_r(px(inner)),
+            ],
         };
         let element_id = ElementId::Name(format!("scheme-{id}").into());
         self.page_control(div().id(element_id), th, cx)
@@ -221,7 +229,7 @@ impl MailWindow {
                     .h(px(PICTURE_HEIGHT))
                     .flex()
                     .flex_row()
-                    .rounded(px(8.0))
+                    .rounded(px(PICTURE_RADIUS))
                     .overflow_hidden()
                     .border_2()
                     .children(sides)

@@ -1,7 +1,6 @@
 # Katna Mail, Sinhala (සිංහල): the Calendar page.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 calendar-today = අද
 calendar-today-tip = අදට යන්න
 calendar-view-day = දිනය
@@ -58,10 +57,7 @@ calendar-account-not-enabled = Katna සඳහා දින දර්ශන ප�
 calendar-account-failed = දින දර්ශන කියවිය නොහැකි විය.
 calendar-account-error = දින දර්ශන කියවිය නොහැකි විය: { $reason }
 calendar-account-none = දින දර්ශන හමු නොවීය
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 calendar-account-none-why = දින දර්ශන හමු නොවීය: { $reason }
-# A Gmail or Outlook account added with a password: its calendars need the
-# provider's sign-in.
 calendar-account-use-sign-in = { $provider } දින දර්ශන පෙන්වන්නේ { $provider } සමඟ පුරනය වූ Katna ට පමණි.
 calendar-account-sign-in-with = { $provider } සමඟ පුරනය වන්න
 calendar-account-looking = දින දර්ශන සොයමින්…
@@ -83,8 +79,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = තවත් { $count }
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = පුනරාවර්තනය වේ
 calendar-join = සම්බන්ධ වන්න
+calendar-join-with = { $service } සමඟ එක්වන්න
 calendar-email-guests = අමුත්තන්ට ඊමේල් කරන්න
 calendar-running-late = ප්‍රමාද වෙමින්
 calendar-late-subject = ප්‍රමාද වෙමින්: { $title }
@@ -98,6 +96,7 @@ calendar-guest-answers = { $yes } ඔව්, { $maybe } සමහරවිට, {
 calendar-organizer = සංවිධායක
 calendar-optional = විකල්ප
 calendar-open-web = බ්‍රව්සරයේ විවෘත කරන්න
+calendar-open-mail = තැපැල විවෘත කරන්න
 calendar-open-contact = සම්බන්ධතාව විවෘත කරන්න
 calendar-close = වසන්න
 
@@ -121,18 +120,12 @@ calendar-discard = වෙනස්කම් ඉවත ලන්න
 calendar-edit = සිදුවීම සංස්කරණය කරන්න
 calendar-delete = සිදුවීම මකන්න
 calendar-event-details = සිදුවීමේ විස්තර
-# Right-click menus on the calendar: on a free time or day, an event and
-# a task.
 calendar-menu-new-event = නව සිදුවීම
-# Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = දිනය විවෘත කරන්න
 calendar-menu-duplicate = අනුපිටපත් කරන්න
 calendar-menu-color = වර්ණය
-# The event takes its calendar's color.
 calendar-menu-color-calendar = දින දර්ශන වර්ණය
-# A task's new due day, a week from today.
 calendar-menu-in-a-week = සතියකින්
-# Event colors, by the names Google Calendar gives them.
 calendar-color-tomato = තක්කාලි
 calendar-color-flamingo = ෆ්ලෙමිංගෝ
 calendar-color-tangerine = නාරං
@@ -144,6 +137,40 @@ calendar-color-blueberry = බ්ලූබෙරි
 calendar-color-lavender = ලැවෙන්ඩර්
 calendar-color-grape = මිදි
 calendar-color-graphite = මිනිරන්
+calendar-menu-only-this = මෙය පමණක් පෙන්වන්න
+calendar-menu-rename = නැවත නම් කරන්න
+calendar-menu-remove = ලැයිස්තුවෙන් ඉවත් කරන්න
+calendar-menu-delete = මකන්න
+calendar-menu-new-calendar = නව දින දර්ශනය
+calendar-menu-show-all = සියල්ල පෙන්වන්න
+calendar-menu-hide-all = සියල්ල සඟවන්න
+calendar-menu-account-settings = ගිණුම් සැකසීම්
+calendar-why-main = ප්‍රධාන දින දර්ශනය
+calendar-why-last = මෙහි ඇත්තේ එකක් පමණි
+calendar-why-owner = හිමිකරුට පමණි
+calendar-why-contacts = සම්බන්ධතාවලින්
+calendar-why-unreached = ළඟා විය නොහැක
+calendar-name-placeholder = දින දර්ශනයේ නම
+calendar-toast-added = “{ $name }” එක් කළා
+calendar-toast-renamed = දින දර්ශනය නැවත නම් කළා
+calendar-toast-recolored = දින දර්ශනයේ වර්ණය වෙනස් කළා
+calendar-toast-deleted = “{ $name }” මැකුවා
+calendar-toast-removed = “{ $name }” ඔබේ ලැයිස්තුවෙන් ඉවත් කළා
+calendar-edit-failed = දින දර්ශනය වෙනස් නොවීය: { $reason }
+calendar-delete-title = “{ $name }” මකන්නද?
+calendar-delete-confirm = මකන්න
+calendar-deleting = මකමින්…
+calendar-delete-heading = මැකෙන දේ:
+calendar-delete-events = දින දර්ශනය සහ එහි සියලු සිදුවීම්
+calendar-delete-shared = එය බෙදා ගත් සියලු දෙනාටම
+calendar-delete-server = එය Katna හි පමණක් නොව, තැපැල් සේවාවේ { $account } වෙතින්ද මැකේ.
+calendar-delete-local = එය මෙම පරිගණකයෙන් මැකේ.
+calendar-remove-title = “{ $name }” ඔබේ ලැයිස්තුවෙන් ඉවත් කරන්නද?
+calendar-remove-confirm = ඉවත් කරන්න
+calendar-removing = ඉවත් කරමින්…
+calendar-remove-heading = වෙනස් වන දේ:
+calendar-remove-events = ඔබට එහි සිදුවීම් මෙහි සහ ඔබේ අනෙක් යෙදුම්වල තවදුරටත් නොපෙනේ
+calendar-remove-server = දින දර්ශනය එහි හිමිකරු සතුව පවතී, ඔවුන්ට එය නැවත ඔබ සමඟ බෙදා ගත හැක.
 calendar-kind-event = සිදුවීම
 calendar-kind-task = කාර්යය
 calendar-kind-focus = අවධාන කාලය

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calmer dialogs"
+text = """
+Frosted dialogs are more solid than menus, so a busy mail list no longer
+shows through them. About, What's new and Check for updates open without
+darkening the window behind them.
+"""

@@ -8,8 +8,7 @@ about-tooltip = Katna-യെക്കുറിച്ച്
 about-tagline = Linux ഡെസ്‌ക്‌ടോപ്പിനുള്ള മെയിലും കലണ്ടറും
 about-whats-new = പുതിയതെന്ത്
 
-## Updates, in a box under the version in About (only in packages that
-## update themselves).
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
 
 about-update-not-checked = അപ്‌ഡേറ്റുകൾ ഇതുവരെ പരിശോധിച്ചിട്ടില്ല
 about-update-checking = അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കുന്നു…
@@ -70,6 +69,7 @@ about-credit-resvg = SVG ചിത്രങ്ങൾ
 about-credit-jiff = തീയതികളും സമയമേഖലകളും
 about-credit-spellbook = അക്ഷരത്തെറ്റ് പരിശോധന, Helix എഡിറ്ററിൽ നിന്ന്
 about-credit-smol = പല കാര്യങ്ങൾ ഒരേസമയം ചെയ്യൽ
+about-credit-color-schemes = ബിൽറ്റ്-ഇൻ വർണ്ണ സ്കീമുകളുടെ പാലറ്റുകൾ
 about-all-libraries = Katna ഉപയോഗിക്കുന്ന എല്ലാ ലൈബ്രറികളും ({ $count })
 about-library-authors = { $authors } എഴുതിയത്
 about-license = GNU GPL പതിപ്പ് 3 അല്ലെങ്കിൽ അതിനുശേഷമുള്ള പതിപ്പിന് കീഴിലുള്ള സ്വതന്ത്ര സോഫ്റ്റ്‌വെയറാണ് Katna.
@@ -127,6 +127,20 @@ onboarding-density-default = ഡിഫോൾട്ട്
 onboarding-density-compact = ഒതുക്കമുള്ളത്
 onboarding-continue = തുടരുക
 
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna അക്കൗണ്ട് ഉപയോഗിച്ച് കൂടുതൽ നേടൂ
+onboarding-katna-lead = ഇത് നിർബന്ധമില്ല. ഇത് Katna-യുടെ ഓൺലൈൻ സവിശേഷതകൾ ഓണാക്കുന്നു, ക്രമീകരണം > സബ്‌സ്‌ക്രിപ്ഷൻ എന്നതിൽ പിന്നീടും ഉണ്ടാക്കാം.
+onboarding-katna-receipts-title = വായന രസീതുകൾ
+onboarding-katna-receipts-text = നിങ്ങൾ അയയ്ക്കുന്ന മെയിൽ ആളുകൾ തുറക്കുന്നത് എപ്പോഴെന്ന് കാണുക.
+onboarding-katna-links-title = ലിങ്ക് ട്രാക്കിംഗ്
+onboarding-katna-links-text = നിങ്ങളുടെ മെയിലിലെ ഏതൊക്കെ ലിങ്കുകൾ ക്ലിക്ക് ചെയ്യപ്പെടുന്നുവെന്ന് കാണുക.
+onboarding-katna-activity-title = പ്രവർത്തനം
+onboarding-katna-activity-text = നിങ്ങൾ അയച്ച എല്ലാറ്റിന്റെയും തുറക്കലുകളും ക്ലിക്കുകളും ഒരിടത്ത്.
+onboarding-katna-translate-title = സ്വയമേവയുള്ള വിവർത്തനം
+onboarding-katna-translate-text = മറ്റ് ഭാഷകളിൽ എഴുതിയ മെയിൽ നിങ്ങളുടെ ഭാഷയിൽ വായിക്കുക.
+onboarding-katna-private = ഇതിന് സ്വന്തം പാസ്‌വേഡുണ്ട്. നിങ്ങളുടെ മെയിൽ ലോഗിനുകൾ ഒരിക്കലും ഈ കമ്പ്യൂട്ടർ വിട്ടുപോകില്ല.
+
 ## First run: done
 
 onboarding-ready-title = എല്ലാം തയ്യാർ
@@ -170,7 +184,7 @@ tour-search-text = തിരയൽ ഓഫ്‌ലൈനിലും പ്ര�
 tour-menu-title = ഫോൾഡറുകൾ കാണിക്കുക അല്ലെങ്കിൽ മറയ്ക്കുക
 tour-menu-text = ഈ ബട്ടൺ ഫോൾഡർ ലിസ്റ്റ് മടക്കിവയ്ക്കുന്നു. അത് മറഞ്ഞിരിക്കുമ്പോൾ, ഫോൾഡറുകൾ കാണാൻ ഇടതുവശത്തുള്ള മെയിലിൽ പോയിന്റർ വയ്ക്കുക.
 tour-apps-title = നിങ്ങളുടെ ആപ്പുകൾ
-tour-apps-text = ഇപ്പോൾ മെയിൽ ഇവിടെയുണ്ട്. കലണ്ടർ, കോൺടാക്റ്റുകൾ, ടാസ്‌ക്കുകൾ, കുറിപ്പുകൾ, ഫീഡുകൾ എന്നിവ ഈ ബാറിൽ ചേരും.
+tour-apps-text = മെയിൽ ഇവിടെയാണ്, കലണ്ടർ, കോൺടാക്റ്റുകൾ, ടാസ്‌ക്കുകൾ, കുറിപ്പുകൾ, ഫയലുകൾ എന്നിവയ്ക്കൊപ്പം.
 tour-tabs-title = ഇൻബോക്‌സ് ടാബുകൾ
 tour-tabs-text = പുതിയ മെയിൽ പ്രാഥമികം, പ്രമോഷനുകൾ, സോഷ്യൽ, അപ്‌ഡേറ്റുകൾ, ഫോറങ്ങൾ എന്നിങ്ങനെ തരംതിരിക്കുന്നു. ദ്രുത ക്രമീകരണത്തിൽ ടാബുകൾ ഓഫാക്കാം.
 tour-list-title = നിങ്ങളുടെ സന്ദേശങ്ങൾ
@@ -196,12 +210,21 @@ crash-view = റിപ്പോർട്ട് കാണുക
 crash-view-tooltip = ഈ കമ്പ്യൂട്ടറിൽ സംരക്ഷിച്ച റിപ്പോർട്ട് തുറക്കുക
 crash-copy = റിപ്പോർട്ട് പകർത്തുക
 crash-close = അടയ്ക്കുക
+
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $address }-ൽ വീണ്ടും സൈൻ ഇൻ ചെയ്യാൻ { $provider } ആവശ്യപ്പെടുന്നു.
 sign-in-again-button = സൈൻ ഇൻ ചെയ്യുക
 sign-in-again-tooltip = നിങ്ങളുടെ ബ്രൗസറിൽ { $provider } സൈൻ ഇൻ പേജ് തുറക്കുക
 sign-in-again-waiting = നിങ്ങളുടെ ബ്രൗസറിനായി കാത്തിരിക്കുന്നു…
 sign-in-again-close = അടയ്ക്കുക
+google-api-off = Katna-യുടെ Google Cloud പ്രോജക്റ്റിൽ { $api } ഓഫാണ്.
+google-api-turn-on = ഓണാക്കുക
+google-api-turn-on-tooltip = { $api } ഓണാക്കാൻ Google Cloud തുറക്കുക, തുടർന്ന് വീണ്ടും ശ്രമിക്കുക അമർത്തുക
 sign-in-again-done = { $address }-ൽ വീണ്ടും സൈൻ ഇൻ ചെയ്തു. നിങ്ങളുടെ മെയിൽ ലഭ്യമാക്കുന്നു…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] ഈ സംഭാഷണം ട്രാഷിലേക്ക് നീക്കണോ?

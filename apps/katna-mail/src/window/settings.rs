@@ -12,8 +12,8 @@ use gpui::{
     SpringAnimation, Stateful, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountsShown, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
-    Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES, WindowFrame,
+    AccountsShown, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn,
+    ReadingPane, SoundEvent, Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES, WindowFrame,
 };
 use katna_i18n::tr;
 use katna_ui::Ripple;
@@ -35,7 +35,20 @@ const PANE_DEMO: Duration = Duration::from_millis(2600);
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Change {
     UndoSend(u32),
-    SentSound(bool),
+    /// Where writing help with AI goes (`ai.source`).
+    AiSource(katna_core::config::AiSource),
+    /// The user's own AI service, by `katna_ai::provider::Preset::id`.
+    AiProvider(&'static str),
+    /// AI finishes sentences (`ai.autocomplete`).
+    AiAutocomplete(bool),
+    /// Those suggestions also send the mail being answered.
+    AiAnswered(bool),
+    /// Rephrase is offered for encrypted mail.
+    AiEncrypted(bool),
+    /// An event's sound on or off.
+    Sound(SoundEvent, bool),
+    /// The sound an event plays, by its `katna_platform::sound` name.
+    SoundChoice(SoundEvent, &'static str),
     Pane(ReadingPane),
     Density(Density),
     Theme(ThemeChoice),
@@ -65,6 +78,16 @@ pub(super) enum Change {
     WindowFrame(WindowFrame),
     /// The blurred, translucent window background.
     Blur(bool),
+    /// Frosted menus, popovers, dialogs and viewer bars.
+    FrostedPopups(bool),
+    /// The frost's blur and opacity set by hand, or following the desktop.
+    CustomFrost(bool),
+    /// The frost's blur, in pixels.
+    FrostBlur(u8),
+    /// The frost's tint opacity, in percent.
+    FrostOpacity(u8),
+    /// Conversations between people open as a group chat.
+    ChatView(bool),
     /// Days of mail the daemon downloads ahead of time; 0 for all mail.
     OfflineDays(u32),
     /// Crash reports written on this computer (Settings > User feedback).
@@ -89,10 +112,17 @@ pub(super) enum Change {
     DarkMail(bool),
     AttachmentPreviews(bool),
     OpenSavedFolder(bool),
+    /// The Files page leaves out small pictures (signature logos).
+    LeaveOutSmallPictures(bool),
+    /// Pictures under this many KB are small.
+    SmallPictureKb(u32),
+    /// Pictures under this many pixels wide or tall are small.
+    SmallPicturePx(u32),
+    /// Files and the attach pickers show the drive of an account (its
+    /// store id).
+    DriveInFiles(i64, bool),
     /// New-mail notifications, shown by the daemon.
     NewMailNotices(bool),
-    /// Their sound.
-    NotificationSound(bool),
     /// New versions of Katna downloaded as soon as the daemon finds them.
     AutoDownloadUpdates(bool),
     PlainText(bool),
@@ -400,7 +430,7 @@ impl MailWindow {
                 .items_center()
                 .rounded(px(8.0))
                 .border_1()
-                .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+                .border_color(rgba(if on { th.nav_selected } else { th.outline }))
                 .bg(rgba(if on { th.nav_selected } else { th.surface }))
                 .text_color(rgba(if on {
                     th.nav_selected_text
@@ -441,6 +471,14 @@ impl MailWindow {
         let view = &mut self.config.mail;
         let mut relist = false;
         match change {
+            Change::AiSource(_)
+            | Change::AiProvider(_)
+            | Change::AiAutocomplete(_)
+            | Change::AiAnswered(_)
+            | Change::AiEncrypted(_) => {
+                self.apply_ai(change, cx);
+                return;
+            }
             Change::Pane(pane) => {
                 if view.reading_pane == pane {
                     return;
@@ -456,7 +494,6 @@ impl MailWindow {
                 }
             }
             Change::UndoSend(seconds) => sending.undo_send_seconds = seconds,
-            Change::SentSound(on) => sending.sent_sound = on,
             Change::Density(density) => view.density = density,
             Change::Scale(percent) => {
                 if view.scale == percent {
@@ -504,6 +541,14 @@ impl MailWindow {
                 self.config.experimental.blur = on;
                 cx.set_global(super::look(&self.config));
             }
+            Change::FrostedPopups(on) => self.config.experimental.frosted_popups = on,
+            Change::CustomFrost(on) => self.config.experimental.custom_frost = on,
+            Change::FrostBlur(blur) => self.config.experimental.frost_blur = blur,
+            Change::FrostOpacity(opacity) => self.config.experimental.frost_opacity = opacity,
+            Change::ChatView(on) => {
+                self.config.experimental.chat_view = on;
+                self.open_chat_as_set();
+            }
             Change::SaveCrashReports(on) => self.config.feedback.save_crash_reports = on,
             Change::MarkRead(when) => view.mark_read = when,
             Change::AutoAdvance(then) => view.auto_advance = then,
@@ -525,6 +570,41 @@ impl MailWindow {
                 self.request_thumbnails(cx);
             }
             Change::OpenSavedFolder(on) => view.open_saved_folder = on,
+            Change::DriveInFiles(account, on) => {
+                let off = &mut view.files.drives_off;
+                off.retain(|a| *a != account);
+                if !on {
+                    off.push(account);
+                }
+                self.save_config();
+                self.load_drives();
+                cx.notify();
+                return;
+            }
+            Change::LeaveOutSmallPictures(_)
+            | Change::SmallPictureKb(_)
+            | Change::SmallPicturePx(_) => {
+                let files = &mut view.files;
+                match change {
+                    Change::LeaveOutSmallPictures(on) => files.leave_out_small = on,
+                    Change::SmallPictureKb(kb) => {
+                        files.small_kb =
+                            kb.clamp(*FilesPage::KB_RANGE.start(), *FilesPage::KB_RANGE.end());
+                    }
+                    Change::SmallPicturePx(side) => {
+                        files.small_px =
+                            side.clamp(*FilesPage::PX_RANGE.start(), *FilesPage::PX_RANGE.end());
+                    }
+                    _ => {}
+                }
+                self.save_config();
+                // The page read once is read again with the new rule.
+                if self.library_loaded() {
+                    self.load_library(cx);
+                }
+                cx.notify();
+                return;
+            }
             Change::PlainText(on) => sending.plain_text = on,
             Change::SpellCheck(on) => sending.spell_check = on,
             Change::StartAtLogin(start) => {
@@ -542,12 +622,21 @@ impl MailWindow {
                 cx.notify();
                 return;
             }
-            Change::NewMailNotices(on) | Change::NotificationSound(on) => {
-                let notifications = &mut self.config.notifications;
-                if matches!(change, Change::NewMailNotices(_)) {
-                    notifications.new_mail = on;
-                } else {
-                    notifications.sound = on;
+            Change::NewMailNotices(_) | Change::Sound(..) | Change::SoundChoice(..) => {
+                match change {
+                    Change::NewMailNotices(on) => self.config.notifications.new_mail = on,
+                    Change::Sound(event, on) => self.config.sounds.get_mut(event).on = on,
+                    Change::SoundChoice(event, id) => {
+                        // The usual sound stays unnamed, so it follows a
+                        // change of the usual one.
+                        self.config.sounds.get_mut(event).sound =
+                            if id == katna_platform::sound::usual(event) {
+                                String::new()
+                            } else {
+                                id.to_owned()
+                            };
+                    }
+                    _ => {}
                 }
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
@@ -890,6 +979,22 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
+        self.switch_row_with(id, label, detail, on, change, None, th, cx)
+    }
+
+    /// A [`Self::switch_row`] with `extra` controls just before the switch.
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn switch_row_with(
+        &self,
+        id: &'static str,
+        label: impl Into<SharedString>,
+        detail: impl Into<SharedString>,
+        on: bool,
+        change: Change,
+        extra: Option<AnyElement>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         self.page_control(div().id(id), th, cx)
             .relative()
             .overflow_hidden()
@@ -918,6 +1023,7 @@ impl MailWindow {
                             .child(detail.into()),
                     ),
             )
+            .children(extra)
             .child(div().with_spring(
                 (id, 3_usize),
                 SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),

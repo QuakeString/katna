@@ -1683,3 +1683,1201 @@ tana ɗan hawa sama da hagu. Gefunan akwatunan zaɓi da maɓallan zagaye
 yanzu suna girma tare da girman nuni, don haka alamar tana tsakiya a
 kowane girma.
 """
+
+# Katna Mail, Hausa (Hausa).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+
+["2026-09-30-0230-edges-follow-scaling"]
+title = "Layukan iyaka suna girma da Girman nuni"
+text = """
+Idan Girman nuni a Saituna > Bayyanar ya fi ko ya gaza 100%, layin launin
+akwatin bincike da filaye da aka zaɓa, da gefunan katunan zaɓi da zoben
+ayyuka, yanzu suna girma da raguwa tare da komai maimakon su zauna sirara.
+"""
+
+["2026-09-30-0326-google-sign-in-network"]
+title = "Shiga da Google a kowace hanyar sadarwa"
+text = """
+Shiga da Google ba ya tsayawa kuma da "peer closed connection" a hanyoyin
+sadarwa da ke yanke haɗin Google da wuri. Idan ka cire alamar Gmail a
+shafin Google, Katna yanzu yana faɗa maimakon ya kasa daga baya.
+"""
+
+["2026-09-30-0504-google-api-turned-off"]
+title = "Yana faɗin wane API na Google ke kashe"
+text = """
+Idan Google ya kashe wani API ga Katna, Lambobin sadarwa, Kalanda, Ayyuka
+da fayilolin Drive yanzu suna faɗin wanne ne a gajeren layi, tare da
+maɓallin Kunna da ke buɗe shafin Google na shi, maimakon ɗanyen kuskuren
+Google.
+"""
+
+["2026-09-30-0507-newest-mail-first"]
+title = "Sabbin wasiƙu suna zuwa da farko"
+text = """
+Idan ka ƙara asusu, Katna Mail yanzu yana sauke wasiƙunka na baya-bayan
+nan da farko sannan ya koma ga tsofaffi, don haka saƙonnin yau suna
+bayyana a saman akwatin saƙo nan take. Idan saukewar ta katse, yana ci
+gaba da tsofaffin wasiƙu a gaba.
+"""
+
+["2026-09-30-0601-keyring-at-login"]
+title = "Yana jiran jakarka lokacin shiga"
+text = """
+Idan KWallet ko GNOME Keyring na kulle har yanzu lokacin da Katna ya fara,
+kuma an rufe tagar buɗe shi, asusunka ba sa nuna kalmar sirri mara daidai
+kuma. Suna jira, kuma suna fara daidaitawa da kansu da zarar ka buɗe
+jakar, ba tare da buƙatar fita daga Katna ba. Daidaita yanzu yana sake
+neman a buɗe ta.
+"""
+
+["2026-09-30-0606-pdf-rotate-and-top-bar"]
+title = "Juya shafukan PDF"
+text = """
+Mai kallon PDF yanzu yana iya juya shafuka zuwa dama ko hagu (Ctrl+R da
+Ctrl+Shift+R), kuma kwafin da aka yi wa alama yana adanuwa yadda ka juya
+shi. Lambar shafi da zuƙowa sun koma sandar sama, don haka babu abin da ke
+rufe shafin.
+"""
+
+["2026-09-30-0610-calendar-events-stay-put"]
+title = "Taruka suna zama a wurinsu"
+text = """
+Danna taro ko aiki a Kalanda sannan canza gani ba ya barin sa yana bin
+kibiyar linzami kuma. Taro yanzu yana motsawa ne kawai yayin da kake riƙe
+maɓallin kana ja shi, kuma canza gani ko shafi, danna Esc ko buɗe katinsa
+yana mayar da shi ba tare da canji ba.
+"""
+
+["2026-09-30-0620-checkbox-partial-centred"]
+title = "Akwatunan da aka yi wa alama rabi suna daidai"
+text = """
+Idan wasu saƙonni kawai aka zaɓa, murabba'in da ke cikin akwatin zaɓi duka
+yanzu yana da tazara ɗaya a kowane gefe, ko yaya girman nunin yake.
+"""
+
+["2026-09-30-0632-year-view-day-peek"]
+title = "Ga shirye-shiryen rana daga ganin Shekara"
+text = """
+A ganin Shekara na Kalanda, ajiye kibiyar linzami a kan rana mai digo don
+ganin tarukanta da ayyukanta a ƙaramar taga a gefensa, kowanne da gunki da
+ke faɗin menene shi da lokacinsa. Danna ɗaya don buɗe shi, ko sunan ranar
+don buɗe ranar. A waya, taɓa ranar.
+"""
+
+["2026-09-30-0650-notification-opens-own-window"]
+title = "Sanarwa tana buɗe wasiƙa a gaba"
+text = """
+Danna sanarwar sabuwar wasiƙa yana buɗe wasiƙar a tagarta, a gaba, ko
+menene Katna ke nunawa a lokacin. Amsa wa kowa yana buɗe ta da amsar a
+shirye don rubutu. Adana a ma'ajiya yana ajiye wasiƙar ba tare da
+buɗe komai ba kuma yana faɗa a gajeren bayani tare da Janye.
+"""
+
+["2026-09-30-0700-event-card-join-any-call"]
+title = "Shiga kiran Teams da Zoom daga Kalanda"
+text = """
+Katin taro yanzu yana samo kiran a bayaninsa ko wurinsa, don haka gayyatar
+Microsoft Teams, Zoom, Webex, Jitsi ko Google Meet tana samun maɓallin
+"Shiga da" a sama. Adiresoshin yanar gizo a bayanin hanyoyi ne, layukan
+ƙasan-layi sun tafi, kuma Za ka je? yana zama a ƙasa yayin da bayanan ke
+gungurawa.
+"""
+
+["2026-09-30-0715-click-away-closes-viewer"]
+title = "Danna a waje don rufewa"
+text = """
+Danna wuri mai duhu da ke kewaye da haɗe-haɗe don rufe mai kallo, maimakon
+neman maɓallin baya. Danna a kan shafin kansa har yanzu yana zaɓar rubutu
+da yin alama kamar dā.
+"""
+
+["2026-09-30-0729-add-account-and-pop3"]
+title = "Sabon Ƙara asusu, da POP3"
+text = """
+Ƙara asusu yana farawa da mai ba ka sabis: Google, Yahoo, iCloud, Zoho,
+Fastmail, GMX, Yandex ko wani. Katna yana faɗin abin da mai sabis ɗin ke
+buƙata da farko, yana nuna kowane mataki yayin haɗawa, kuma yana ƙarewa da
+abin da ya saita. Asusun POP3 ma suna aiki, kuma Saituna > Asusu na zaɓar
+tsawon lokacin da wasiƙunsu za su zauna a sabar.
+"""
+
+["2026-09-30-0802-ctrl-wheel-zoom"]
+title = "Zuƙowa da Ctrl da ƙafafu"
+text = """
+A mai kallon haɗe-haɗe, riƙe Ctrl ka juya ƙafafun linzami don zuƙowa ciki
+da waje a kewayen kibiyar linzami, ko matse da yatsu a allon taɓawa. Yana
+aiki ga PDF, hotuna, fayilolin rubutu, maƙunsar bayanai da takardu.
+"""
+
+["2026-09-30-0817-event-open-the-mail"]
+title = "Buɗe wasiƙar da ke bayan taro"
+text = """
+Tarukan da Gmail ya yi daga wasiƙa, kamar jirgin ƙasa, jirgin sama da
+otal, suna samun maɓallin Buɗe wasiƙar a katinsu. Yana buɗe wasiƙar a
+Katna, ko a Gmail idan Katna ba shi da ita. Aikin da aka yi daga wasiƙa ma
+yana buɗe wasiƙarsa daga katinsa a Kalanda, kuma Ɗauki bayanan taro yana
+buɗewa ba tare da ƙiftawa ba.
+"""
+
+["2026-09-30-0843-calendar-side-panel-menus"]
+title = "Sarrafa kalanda daga gefen taga"
+text = """
+Danna kalanda da dama a gefen Kalanda don nuna ita kaɗai, canza launinta,
+sake mata suna ko share ta. Danna sunan asusu da dama don ƙirƙirar sabuwar
+kalanda a wannan asusu ko nunawa da ɓoye dukan kalandarsa. Canje-canje
+suna zuwa sabis ɗin wasiƙarka, don haka suna bayyana a duk inda kake
+amfani da shi.
+"""
+
+["2026-09-30-1010-unread-list-keeps-open-mail"]
+title = "Wasiƙar da ba a karanta ba tana zama a buɗe"
+text = """
+Buɗe tattaunawa a Dukkan asusu > Ba a karanta ba ba ya rufe ta nan take
+kuma. Karanta ta yana yi mata alama an karanta, kuma tana zama a jerin har
+sai ka rufe ta ko ka buɗe wata.
+"""
+
+["2026-09-30-1045-tracked-mail-arrives"]
+title = "Wasiƙar da ake bibiya tana isa kuma"
+text = """
+Wasiƙar da aka aika da bibiya a kunne na iya bayyana a Waɗanda aka aika ba tare da
+ta isa ga kowa ba. Yanzu tana zuwa ga kowane mai karɓa. Wasiƙar da ta ɓace
+ta wannan hanya tana buƙatar a sake aika ta.
+"""
+
+["2026-09-30-1114-no-checking-pill"]
+title = "Babu sanarwar dubawa kuma"
+text = """
+"Ana duba sabbin wasiƙu…" ba ya tasowa a kan jerin kuma. Kibiyoyin da ke
+juyawa a maɓallin sabuntawa da a akwatin saƙon kowane asusu sun riga sun
+nuna ana duba wasiƙu, kuma dubawar da ta kasa har yanzu tana faɗin abin da
+ya faru.
+"""
+
+["2026-09-30-1300-windows-sign-in-and-domains"]
+title = "Shiga da Google a Windows"
+text = """
+Katna na Windows yanzu yana ba da Shiga da Google da Zoho, kamar yadda
+yake a Linux, kuma yana sanin wanda ke ɗaukar wasiƙun yankinka, kamar
+adireshin Google Workspace, lokacin da ka ƙara asusun.
+"""
+
+["2026-09-30-1511-mail-tables"]
+title = "Tebura a wasiƙa suna karantuwa daidai"
+text = """
+Tebura a wasiƙa, kamar jerin ayyuka a sanarwar GitHub Actions, suna ajiye
+ginshiƙansu gefe da gefe kuma suna daidaita su daga layi zuwa layi,
+maimakon su raba kanu harafi ɗaya a kowane layi. Layukan rabe tsakanin
+sassan saƙo ma yanzu suna bayyana.
+"""
+
+["2026-09-30-1550-taller-important-marker"]
+title = "Alamar Muhimmi mai tsayi"
+text = """
+Alamar Muhimmi da ke gefen tauraro ta ƙaru da 2 px a tsayi, don haka ba ta
+yi kamar an matse ta kuma kusa da tauraro da akwatin zaɓi. Tana zama a
+tsakiyar layin.
+"""
+
+["2026-09-30-1617-folder-click-goes-to-top"]
+title = "Koma saman jerin"
+text = """
+Da zarar jerin wasiƙu ya sauka allo ɗaya, maɓalli mai zagaye a ƙasansa na
+dama yana mayar da shi sama. Danna foldar da kake ciki, kamar Akwatin
+saƙo, yana yin haka, kamar a Gmail, haka ma Home.
+"""
+
+["2026-09-30-1622-send-from-file-manager"]
+title = "Aika fayiloli daga manajan fayil ɗinka"
+text = """
+Danna fayiloli ko folda da dama a Dolphin, GNOME Files ko Windows Explorer
+ka zaɓi Send with Katna Mail: sabon saƙo yana buɗewa da su a haɗe, kuma
+folda tana tafiya a matsayin zip. Idan kana da asusun wasiƙa fiye da ɗaya,
+zaɓi wanda za a aika daga gare shi a ƙaramin menu.
+"""
+
+["2026-09-30-1624-files-page"]
+title = "Kowane fayil a wuri ɗaya"
+text = """
+Sabon shafin Fayiloli, a ƙasan sandar manhajoji, yana nuna kowane
+haɗe-haɗe daga kowane asusu, sabo da farko. Taƙaita shi zuwa hotuna, PDF
+ko takardu, zuwa asusu ɗaya, zuwa mutum ko lokaci, ko bincika da suna, mai
+aikawa ko jigo. Danna fayil da dama don ƙari, kuma Nuna wasiƙar yana kai
+ka wasiƙar da ya zo da ita.
+"""
+
+["2026-09-30-1643-dimmer-row-markers"]
+title = "Jerin wasiƙu mai natsuwa"
+text = """
+Akwatin zaɓi mara alama, tauraro ko alamar Muhimmi a jerin wasiƙu ya fi
+dushewa har sai kibiyar linzami ta kasance a kan layinsa. Taurari da
+alamun da aka saita suna riƙe launinsu.
+"""
+
+["2026-09-30-1704-folder-arrows-on-hover"]
+title = "Wurin folda mai tsafta"
+text = """
+Ƙananan kibiyoyi da ke gefen Akwatin saƙo, Masu tauraro da sauran folda
+suna bayyana ne kawai yayin da kibiyar linzami ke kan foldar. Foldar da ka
+buɗe tana riƙe kibiyarta.
+"""
+
+["2026-09-30-1712-arrow-keys-in-times"]
+title = "Maɓallan kibiya a akwatunan lokaci"
+text = """
+A Zaɓi kwanan wata da lokaci, da a lokacin aiki, Sama da Ƙasa suna canza
+sashin da siginar rubutu ke ciki: awa, mintoci ko AM/PM.
+"""
+
+["2026-09-30-1742-check-one-folder"]
+title = "Duba folda ɗaya don sabbin wasiƙu"
+text = """
+"Duba sabbin wasiƙu" a menun danna-dama na folda yanzu yana duba foldar
+kawai, don haka yana da sauri. A akwatin saƙon asusu ƙarƙashin Dukkan
+asusu yana duba akwatin saƙon wannan asusu, kuma a jeri kamar Akwatin
+saƙo ko Waɗanda aka aika ƙarƙashin Dukkan asusu yana duba wannan foldar a kowane asusu.
+"""
+
+["2026-09-30-1742-frosted-viewer"]
+title = "Mai kallo mai sauƙi, kamar gilashi mai hazo"
+text = """
+Sandar saman mai kallon haɗe-haɗe ta fi siriri da haske, kuma shafi,
+zuƙowa da juyawa suna kan ƙaramin sanda mai zagaye. A kewayen fayil ɗin,
+Katna Mail yana bayyana a dushe ƙarƙashin labule mai duhu kaɗan, kuma
+sandunan kayan aiki ma kamar gilashi mai hazo suke. Dushewar tana bin
+Saituna > Na gwaji; ba tare da ita ba mai kallo yana amfani da labule mai
+duhu kawai.
+"""
+
+["2026-09-30-1752-touchpad-glide"]
+title = "Gogewar allon taɓawa tana zamewa"
+text = """
+Gogewa da sauri da yatsu biyu a allon taɓawa tana ci gaba da gungurawa
+sannan ta rage gudu, kamar a wasu manhajoji. Sake taɓa allon taɓawa don
+dakatar da ita. A Wayland.
+"""
+
+["2026-09-30-1800-inbox-tabs-in-top-row"]
+title = "Shafukan akwatin saƙo a layin sama"
+text = """
+Na farko, Tallace-tallace, Zamantakewa da sauran shafukan akwatin saƙo
+yanzu suna kan sanda mai zagaye a layin saman jerin, kowanne da ƙidayar
+wasiƙunsa da ba a karanta ba mai launi. Haske yana zamewa zuwa shafin da
+ka zaɓa, kuma danna shafin da ke buɗe yana mayar da jerinsa sama. Idan
+jerin ya yi ƙunci sandar tana ɗaukar layinta kuma tana nuna gumaka, tana
+riƙe sunan shafin da ke buɗe; a waya tana zama a sandar jerin, tare da
+Sabunta a menun Ƙari.
+"""
+
+["2026-09-30-1805-account-menu"]
+title = "Bayanan asusu a menun danna-dama"
+text = """
+Danna sunan asusu da dama a jerin folda, ko akwatin saƙonsa ƙarƙashin
+Dukkan asusu, don ganin adireshinsa, ko yana daidaitacce da lokacin da aka
+duba shi na ƙarshe, da yawan ma'ajiyar da yake amfani da ita. Daga nan za
+ka iya duba akwatin saƙon, rubuta sabuwar wasiƙa daga wannan asusu, buɗe
+saitunansa, ko sake shiga idan shigar ta ƙare.
+"""
+
+["2026-09-30-1819-glass-search-box"]
+title = "Akwatin bincike na gilashi"
+text = """
+Idan bango mai dushewa a kunne yake, akwatin bincike gilashi ne mai hazo
+mai gefe maras ƙarfi yayin da ba ka amfani da shi, kuma yana zama mai
+ƙarfi idan ka danna ciki don rubutu.
+"""
+
+["2026-09-30-1820-search-cancel-restores"]
+title = "Soke bincike, dawo da wasiƙunka"
+text = """
+Esc ko share akwatin bincike yanzu yana komawa inda kake: foldar ɗaya,
+wuri ɗaya a jerin da wasiƙar da ka buɗe. Buɗe sakamako maimakon haka kuma
+binciken yana ɗaukar wurin kamar dā.
+"""
+
+["2026-09-30-1840-first-run-window"]
+title = "Farawa ta farko mai daɗi"
+text = """
+Yayin da kake saita Katna Mail, taga tana bayyana a bayan shafukan saitawa
+ƙarƙashin labule mai haske: manhajoji, Rubuta da akwatin bincike, tare da
+siffofi masu laushi inda folda da wasiƙunka za su bayyana. Sabon mataki
+yana ba da asusun Katna kuma yana jera abin da yake kunnawa (rasidin
+karantawa, bibiyar hanyoyi, Ayyuka da fassara), ko za ka iya tsallake shi.
+"""
+
+["2026-09-30-1850-windows-frame-and-blur"]
+title = "Firam da dushewar Katna a Windows"
+text = """
+A Windows, Katna Mail yanzu yana buɗewa a cikin allo, a faɗaɗe idan allon
+ƙarami ne. Saituna > Na gwaji na iya dushe abin da ke bayan taga, kuma
+firam ɗin Katna yana mayar da sandar sama sandar take a lokaci na gaba da
+ka buɗe Katna Mail.
+"""
+
+["2026-09-30-1851-dark-depth"]
+title = "Sauƙin gani a launuka masu duhu"
+text = """
+A launuka masu duhu, abubuwan da ke shawagi a kan jerin wasiƙu yanzu sun
+ɗan fi haske tare da gefe mai haske kaɗan, tunda inuwa ba ta bayyana sosai
+a bango mai duhu. Maɓallin Koma sama, menu, tagar Rubuta da ƙananan
+tagogi suna fitowa a fili. Launuka masu haske suna nan kamar dā.
+"""
+
+["2026-09-30-1911-files-scrollbar"]
+title = "Sandar gungurawa a shafin Fayiloli"
+text = """
+Idan fayiloli sun fi abin da zai iya ɗauka, siririyar sandar gungurawa
+tana bayyana a dama yayin da kake gungurawa ko yayin da kibiyar linzami ke
+kan fayilolin, sannan ta ɓace a hankali. Ja ta don wucewa cikin fayiloli
+da sauri, ko danna sama ko ƙasa da ita don tsallaka can.
+"""
+
+["2026-09-30-1919-tabs-keep-open-mail"]
+title = "Sauya shafi yana ajiye wasiƙar da ke buɗe"
+text = """
+Idan Wurin karatu yana gefen jerin, zaɓar wani shafin akwatin saƙo ba ya
+rufe wasiƙar da kake karantawa kuma; jerin yana canzawa kuma wasiƙar tana
+zama a buɗe.
+"""
+
+["2026-09-30-1925-inbox-tabs-centred"]
+title = "Shafukan akwatin saƙo a tsakiya"
+text = """
+Shafukan akwatin saƙo yanzu suna tsakiyar layin saman jerin, suna kauce wa
+gefe ne kawai gwargwadon yadda maɓallansa ke buƙata.
+"""
+
+["2026-09-30-1945-page-box-arrow-keys"]
+title = "Maɓallan kibiya a akwatin shafi"
+text = """
+A PDF, danna lambar shafi ka danna Sama ko Ƙasa don komawa shafi ɗaya baya
+ko gaba. Riƙe maɓallin don jujjuya shafuka da sauri.
+"""
+
+["2026-09-30-1952-phone-bar-labels"]
+title = "Sunayen manhajoji a waya suna bin saitinka"
+text = """
+Idan an kashe sunayen manhajoji a Saituna, sandar da ke ƙasan taga mai
+girman waya yanzu tana nuna gumaka kawai, a tsakiya, kamar yadda layin
+gefe ke yi.
+"""
+
+["2026-09-30-1955-account-menu-icons"]
+title = "Saituna da harshe a menun asusu"
+text = """
+Menun da ke ƙarƙashin hoton asusunka yanzu yana buɗewa da layin gumaka:
+buɗe Saituna ko canza harshe. Tutar harshe ta bar sandar sama don samar da
+wuri.
+"""
+
+["2026-09-30-2001-phone-tabs-fold"]
+title = "Kowane shafin akwatin saƙo yana kusa"
+text = """
+Idan taga ta yi ƙunci, shafukan akwatin saƙo suna naɗewa a hankali
+maimakon su ɓoye: lakabai suna zama manyan gumaka, sannan ƙidaya ta kauce.
+A waya shafukan suna bazuwa a dukan sandar, masu sauƙin taɓawa, tare da
+Ƙari a ƙarshen sanda ɗaya.
+"""
+
+["2026-09-30-2012-fit-and-page-arrows"]
+title = "Daidaita, kibiyoyin shafi da ƙari a mai kallo"
+text = """
+Mai kallon haɗe-haɗe yana da maɓallin Daidaita: shafin PDF yana daidaita
+da tsayin taga, hoto da taga, kuma takardu, silaidi da maƙunsar bayanai da
+faɗinta. Hotuna kuma suna samun Ainihin girma kuma ana iya juya su. Nuna
+akwatin shafi don ƙananan kibiyoyi na komawa shafi baya ko gaba, kuma silaidi suna samun akwatinsu.
+"""
+
+["2026-09-30-2019-folder-icon-colours"]
+title = "Gumakan folda masu launuka"
+text = """
+Gumakan wurin folda yanzu suna da launuka da ke faɗin abin da kowace folda
+ke ɗauke da shi: Ba a karanta ba shuɗi, Masu tauraro rawaya, Muhimmi ruwan lemu, Waɗanda aka aika kore, Saƙonnin banza ja, Zayyanai shunayya, da Akwatin saƙo
+a launin ƙawar tebur ɗinka. Ƙidayar wasiƙu tana cikin ƙananan akwatuna
+masu zagaye marasa ƙarfi.
+"""
+
+["2026-09-30-2040-tabs-no-slide"]
+title = "Shafukan akwatin saƙo masu sauri"
+text = """
+Danna shafin akwatin saƙo yanzu yana haskaka shi nan take, da ɗan motsin
+danna kawai, maimakon zamar da haske a kan sauran shafuka.
+"""
+
+["2026-10-01-0145-files-tidy"]
+title = "Shafin Fayiloli mai tsafta"
+text = """
+Ƙidayar da ke gefen kowane irin fayil da kowane asusu yanzu tana cikin
+ƙananan akwatuna masu zagaye irin na ƙidayar folda a Wasiƙu. Layin da ke
+ƙarƙashin taken shafin da layukan fayiloli suna farawa da ƙarewa a gefe
+ɗaya.
+"""
+
+["2026-10-01-0147-today-marker-fits"]
+title = "Kwanan watan yau ya dace da alamarsa"
+text = """
+A ganin Wata na Kalanda, alamar yau yanzu tana ɗaukar dukan kwanan wata. A
+ranar 1 tana zama akwati mai zagaye a kewayen "01 Oct" maimakon ƙaramin
+da'ira da lakabin ke zubewa daga ciki.
+"""
+
+["2026-10-01-0208-tab-counts-stay"]
+title = "Ƙidayar shafuka tana zama a wurinta"
+text = """
+Buɗe shafin akwatin saƙo ba ya sa sandar shafuka ta yi tsalle kuma. Shafin
+da ke buɗe yana riƙe ƙidayar sabbin wasiƙunsa, wadda a hankali take komawa
+toka mai natsuwa, kuma ƙidayar tana naɗewa a hankali da zarar ka karanta
+komai a wannan shafi.
+"""
+
+["2026-10-01-0225-files-keyboard"]
+title = "Wuce cikin fayilolinka da madannai"
+text = """
+A shafin Fayiloli maɓallan kibiya yanzu suna motsawa tsakanin fayiloli,
+Home da End suna zuwa na farko da na ƙarshe, kuma Enter yana buɗe ɗaya. A
+mai kallon da aka buɗe daga can, kibiyoyi suna zuwa fayil na gaba a
+shafin, ko da wace wasiƙa ya zo; Shift da kibiya yana zama da haɗe-haɗen
+wasiƙa ɗaya.
+"""
+
+["2026-10-01-0254-files-dates"]
+title = "Zaɓi kwanaki a shafin Fayiloli"
+text = """
+Maɓallin lokaci a shafin Fayiloli yanzu yana buɗe kalandar watanni biyu
+tare da zaɓuɓɓuka masu sauri kamar Makon da ya wuce da Wannan wata. Danna
+rana, ko ja daga wata rana zuwa wata, kuma fayiloli suna bi yayin da kake
+ja. Sannan juya ƙafafun linzami a kan maɓallin don matsar da tsawon lokaci
+ɗaya baya ko gaba.
+"""
+
+["2026-10-01-0256-color-schemes"]
+title = "Tsare-tsaren launi da launukan ƙawa"
+text = """
+Saituna > Bayyanar yanzu yana da Jigon launi, Launuka da Launin ƙawa a
+matsayin zaɓuɓɓuka daban. Zaɓi haske ko duhu, sannan kowane daga cikin
+tsare-tsaren launi 14, kamar Clear, Nord, Solarized ko Catppuccin, ko ka
+ajiye na tebur ɗinka. Kowanne yana aiki a haske da duhu, kuma kowane
+launin ƙawa zai iya hawa a kai.
+"""
+
+["2026-10-01-0310-badge-counts-what-notifies"]
+title = "Ƙidayar sandar ayyuka tana daidai da sanarwarka"
+text = """
+Ƙidayar wasiƙun da ba a karanta ba a sandar ayyuka da tire yanzu tana
+ƙidaya wasiƙu ɗaya da ke sanar da kai: shafin Na farko na Akwatin saƙo.
+Tallace-tallace, Zamantakewa, Sabuntawa da Dandali ba sa ƙara mata kuma.
+"""
+
+["2026-10-01-0312-quiet-selected-row"]
+title = "Foldar da ke buɗe mai natsuwa"
+text = """
+Foldar da ke buɗe a Wasiƙu, da ganin da ke buɗe a Lambobin sadarwa,
+Ayyuka, Bayanai da Fayiloli, yanzu ana yi mata alama da toka mai laushi
+maimakon launin ƙawa, don haka Rubuta da layin manhajoji suna fitowa kuma
+gumakan folda suna riƙe launukansu.
+"""
+
+["2026-10-01-0315-desktop-schemes"]
+title = "Tsare-tsaren launin tebur ɗinka"
+text = """
+Saituna > Bayyanar > Launuka kuma yana jera tsare-tsaren tebur ɗinka:
+kowane tsarin launi da aka shigar a KDE Plasma, kuma a Windows launukansa
+da jigogin Contrast. Tsarin yanzu yana aiki a haske da duhu a KDE ma, ta
+amfani da abokin haske ko duhu na tsarinka, kuma Katna yana bin launin
+ƙawa na Windows.
+"""
+
+["2026-10-01-0329-mute-folders"]
+title = "Yi shiru da folda, shafi ko asusu"
+text = """
+Ƙararrawa da ke saman jerin tana yin shiru da foldar da ke buɗe ko shafin
+Akwatin saƙo na awa ɗaya, har zuwa safiyar gobe, ko har sai ka sake kunna
+shi. Danna folda ko asusu da dama don haka. Saituna › Sanarwa yana nuna
+waɗanne folda ke sanarwa da waɗanda ke ƙidaya a sandar ayyuka, da duk abin
+da aka yi shiru da shi.
+"""
+
+["2026-10-01-0335-tray-style"]
+title = "Gunkin tire mai launuka ko launi ɗaya"
+text = """
+Saituna > Gabaɗaya > Tebur > Gunkin tire mai launi yana zaɓar launukan
+Katna ko launi ɗaya kamar sauran gumakan panel. Launi ɗaya yana zama launi
+ɗaya ko da akwai wasiƙun da ba a karanta ba, kuma ƙidayar da ba a karanta
+ba kullum ja ce. A Linux gunkin tire launi ɗaya ne a asali; a Windows mai
+launuka ne.
+"""
+
+["2026-10-01-0354-mute-conversations"]
+title = "Yi shiru da tattaunawa ko mai aikawa"
+text = """
+Ƙararrawa da ke saman tattaunawar da ke buɗe tana yin shiru da ita: sabbin
+amsoshi ba sa sanar da kai ko ƙara wa ƙidayar sandar ayyuka, kuma
+ƙararrawa mai ketare tana yi mata alama a jerin. Danna tattaunawa da dama
+don Yi shiru da tattaunawa ko Yi shiru da mai aikawa, ko danna M.
+"""
+
+["2026-10-01-0410-your-color-schemes"]
+title = "Yi tsarin launinka"
+text = """
+Saituna > Bayyanar > Launuka > Keɓance yana kwafa tsarin da kake amfani da
+shi zuwa edita: canza kowane daga cikin launukansa takwas a ɓangaren haske
+da na duhu, ga tagar wasiƙa a cikinsu, kuma Katna yana faɗa maka abin da
+zai yi wuyar karantawa. Shigo da yana ɗaukar fayil ɗin tsarin launi na
+Katna ko KDE, kuma danna tsarinka da dama yana gyara, kwafa, fitarwa ko
+share shi.
+"""
+
+["2026-10-01-0527-calendar-opens-on-week"]
+title = "Kalanda tana buɗewa a Mako"
+text = """
+Katna Calendar yana buɗewa a ganin Mako kuma, da kwanakin da ke gaba a
+awoyi. Wata, Rana, Shekara da sauransu suna da nisan danna ɗaya a sandar
+sama.
+"""
+
+["2026-10-01-0552-lighter-count-on-open-row"]
+title = "Ƙidaya tana fitowa a foldar da ke buɗe"
+text = """
+Ƙidayar da ke gefen foldar da ke buɗe a Wasiƙu, da gefen irin da ke buɗe a
+Fayiloli, yanzu tana cikin akwati mai zagaye da ya fi tokan layin haske,
+don haka ba ta nutsewa a ciki kuma, a haske da duhu.
+"""
+
+["2026-10-01-0652-files-leave-out-small-pictures"]
+title = "Fayiloli yana barin tambarin sa hannu"
+text = """
+Shafin Fayiloli ba ya cika da ƙananan tambura da gumakan da ke zuwa a sa
+hannun imel kuma: hotunan da ba su kai 12 KB ba, ko ƙasa da pixel 100 a
+faɗi ko tsayi, suna zama ƙarƙashin wasiƙarsu. Canza iyakokin biyu, ko nuna
+kowane hoto, a Saituna > Manhajojin asali > Shafin Fayiloli.
+"""
+
+["2026-10-01-0700-mute-from-contact"]
+title = "Yi shiru da mai aikawa daga katinsa"
+text = """
+Katin lambar sadarwa da ke gefen wasiƙa yana da ƙararrawa a farkon
+maɓallansa: tana yin shiru da duk abin da ya fito daga wannan mai aikawa,
+kuma ƙararrawa mai ketare bayan sunansa tana nuna haka. Sake danna ta don
+jin daga gare shi.
+"""
+
+["2026-10-01-0803-select-hover-fits"]
+title = "Maɓallin zaɓi mai tsafta"
+text = """
+Haske da ke bayan akwatin zaɓi a saman jerin wasiƙu yanzu tsayinsa ɗaya da
+na maɓallan da ke gefensa, nisansa daga gefen katin ɗaya da nisansa daga
+samansa, kuma kusurwoyinsa suna bin kusurwar katin.
+"""
+
+["2026-10-01-0807-files-leave-out-signature-pictures"]
+title = "Fayiloli yana barin manyan hotunan sa hannu ma"
+text = """
+Hoton da wani ke aikawa a tattaunawa uku ko fiye, kamar tuta ko hoto a sa
+hannunsa, ba ya bayyana a shafin Fayiloli kuma, haka ma gumakan kafofin
+sada zumunta, ko yaya girmansu. Har yanzu suna bayyana ƙarƙashin
+wasiƙarsu, kuma kashe "Bar ƙananan hotuna" yana dawo da su duka.
+"""
+
+["2026-10-01-0830-muted-contact-mark"]
+title = "Ga wanda aka yi shiru da shi"
+text = """
+Ƙararrawa mai ketare yanzu tana bin sunan mai aikawa da aka yi shiru da
+shi duk inda ya bayyana: jerin wasiƙu, wasiƙar da ke buɗe, Lambobin
+sadarwa, akwatunan Zuwa da Kwafi da shawarwarinsu, shafin Fayiloli, baƙin
+taro da rahoton Ayyuka. Ba sauran mamakin dalilin da yasa wasiƙunsa ke
+shiru.
+"""
+
+["2026-10-01-0839-sounds"]
+title = "Sautuka don sabuwar wasiƙa, tunatarwa da aikawa"
+text = """
+Saituna > Sanarwa yana da sashin Sautuka: sabuwar wasiƙa, tunatarwa,
+wasiƙar da ta dawo akwatin saƙo, wasiƙar da aka aika da wasiƙar da ba a
+aika ba kowanne yana zaɓar sauti daga tebur ɗinka, kunna shi da maɓallin
+da ke gefensa, ko kashe shi. Sautuka yanzu suna kunnuwa a KDE Plasma ma,
+kuma suna shiru ga wasiƙun da aka yi shiru da su da lokacin Kar a
+dame ni.
+"""
+
+["2026-10-01-0925-chat-view"]
+title = "Karanta tattaunawa a matsayin hira (na gwaji)"
+text = """
+Kunna Saituna > Na gwaji > Tattaunawa a matsayin hira kuma wasiƙu tsakanin
+mutane suna karantuwa kamar hirar rukuni: kumfa ga kowace wasiƙa da abin
+da aka rubuta kawai, naka a dama, hotuna da fayiloli a matsayin kafofin
+hira. Wasiƙar da aka ambato da sa hannu suna jira a bayan ··· a kowace
+kumfa, kuma danna suna yana nuna katinsa tare da sa hannunsa. Amsa daga
+akwatin da ke ƙasa, da Ctrl+Enter, sandar tsarawa a bayan Aa da maƙalin
+takarda don fayiloli, samfura da sa hannu. Wasiƙun labarai suna riƙe ganin
+da aka saba, kuma maɓallin Hira | Wasiƙa yana juya kowace tattaunawa ta
+kowace hanya.
+"""
+
+["2026-10-01-0946-forward-keeps-files"]
+title = "Tura yana ajiye fayiloli"
+text = """
+Tura saƙo yanzu yana kawo haɗe-haɗensa tare, ana nuna su ƙarƙashin saƙon
+don ka cire kowanne kafin aikawa. Juya turawar zuwa amsa yana sake barin
+su.
+"""
+
+["2026-10-01-1009-forward-a-file"]
+title = "Tura fayil ɗin kawai"
+text = """
+Mai kallon haɗe-haɗe yana da maɓallin Tura a sandar samansa: yana fara
+sabuwar wasiƙa da wannan fayil kawai a haɗe, ba tare da wasiƙar da ya zo
+da ita ba. Fayilolin da ba su da samfoti suna ba da Tura ma, haka ma
+katunan haɗe-haɗe ƙarƙashin wasiƙar da ke buɗe, a gefen Ajiye.
+"""
+
+["2026-10-01-1039-rephrase-with-ai"]
+title = "Sake faɗa da AI"
+text = """
+Zaɓi rubutu a saƙo ka danna walƙiya da ke gefensa, ko Ctrl+J, don a sake
+rubuta shi a fili, a taƙaice, cikin abokantaka ko a hukumance, sannan Maye
+gurbi. Katna AI kyauta ne na kwanaki 30, ko yi amfani da maɓallinka daga
+Google Gemini, OpenAI, Claude, Mistral, DeepSeek, OpenRouter ko samfuri a
+wannan kwamfuta. AI kuma na iya kammala jimlolinka da toka; kunna shi a
+Saituna > Rubutu.
+"""
+
+["2026-10-01-1043-header-details-selectable"]
+title = "Kwafa daga bayanan wasiƙa"
+text = """
+Bayanan da ke ƙarƙashin "zuwa ga ni" yanzu ana iya zaɓar su da kwafa
+kamar wasiƙar kanta. Danna adireshi don ganin katin wannan mutum a gefen
+wasiƙar, ko danna shi da dama don Kwafa adireshi. Mutanen da aka yi shiru
+da su suna nuna ƙararrawarsu mai ketare a can ma.
+"""
+
+["2026-10-01-1112-left-bar-button"]
+title = "Babban maɓalli ɗaya, naɗewa ɗaya, a kowane shafi"
+text = """
+Babban maɓallin da ke saman sandar hagu yanzu yana da kama ɗaya da wuri
+ɗaya a kowane shafi kuma yana yin aikin shafin: Rubuta a Wasiƙu da
+Fayiloli, Sabon taro, Sabuwar lambar sadarwa, Sabon aiki da Sabon bayani.
+Naɗe sandar hagu yana naɗe ta ko'ina, kuma yayin da take naɗe maɓallin
+kowane shafi yana jira a saman layin gefe. A waya shi ne maɓalli mai
+shawagi.
+"""
+
+["2026-10-01-1115-color-picker"]
+title = "Mai zaɓar launi a editan tsari"
+text = """
+Danna launi a editan tsarin launi kuma mai zaɓa yana buɗewa kusa da shi:
+ja a kan murabba'in da sandar launi, rubuta ƙimar hex, sake amfani da
+launukan tsarin ko waɗanda ka zaɓa kwanan nan, ko ɗauki launi daga ko'ina
+a allo da mai ɗiban launi a KDE da GNOME.
+"""
+
+["2026-10-01-1130-contact-card-folds-folders"]
+title = "Katin lambar sadarwa yana samar wa kansa wuri"
+text = """
+A taga da ta yi ƙunci ga wurin folda da katin lambar sadarwa gefe da gefe,
+katin yanzu yana naɗe folda yayin da yake buɗewa, kuma suna dawowa idan
+katin ya rufe. Foldar da ka naɗe da kanka tana zama a naɗe.
+"""
+
+["2026-10-01-1132-open-mail-scroll-bar"]
+title = "Sandar gungurawa a dogayen wasiƙu"
+text = """
+Doguwar tattaunawa yanzu tana nuna sandar gungurawa mai natsuwa irin ta
+shafin Fayiloli yayin da kake gungura ta ko kake nuna ta. Sandunan biyu
+yanzu sun fi siriri kuma suna girma yayin da kibiyar linzami ta kusanto.
+Ja ɗaya, ko danna a kansa, don tsallaka ko'ina.
+"""
+
+["2026-10-01-1240-contact-card-close"]
+title = "Ajiye katin lambar sadarwa, ga wanda ke cikin hira"
+text = """
+Katin lambar sadarwa da ke gefen tattaunawa yana da ✕ a kusurwarsa, kuma
+sake danna hoton ko adireshin mutumin yana ajiye katin. A ganin hira,
+danna kanun yana jera kowa da ke cikin hirar da adireshinsa da yawan
+wasiƙun da kowanne ya aika.
+"""
+
+["2026-10-01-1241-two-blur-switches"]
+title = "Dushewa, yadda kake so"
+text = """
+Dushewa yanzu tana da maɓallai biyu a Saituna, Na gwaji: ɗaya don bangon
+taga ɗaya kuma don menu da ƙananan tagogi. Menu masu kamar gilashi mai
+hazo suna kunne a asali, ko da bangon taga yana nan da ƙarfi.
+"""
+
+["2026-10-01-1502-fainter-row-lines"]
+title = "Layuka masu natsuwa tsakanin wasiƙu"
+text = """
+Layukan da ke tsakanin wasiƙu a jerin sun fi dushewa yanzu, don haka jerin
+yana karantuwa a matsayin ginshiƙi ɗaya mai natsuwa a haske da duhu.
+"""
+
+["2026-10-01-1505-contact-close-round"]
+title = "Maɓallin rufewa ɗaya ga kowane wuri"
+text = """
+✕ a katin lambar sadarwa yanzu maɓalli ne mai zagaye irin ✕ a wasiƙar da
+ke buɗe, tare da da'ira mai toka ɗaya idan ka nuna shi.
+"""
+
+["2026-10-01-1525-thread-count"]
+title = "Ƙidayar wasiƙu mai tsafta"
+text = """
+Adadin wasiƙu a tattaunawa yanzu yana gefen sunaye tare da ƙaramin gunkin
+hira, a tsakiyar layin sunaye maimakon a ɗaga shi sama da shi.
+"""
+
+["2026-10-01-1541-chat-attach-from-files"]
+title = "Haɗa daga Fayiloli a hira"
+text = """
+A hira (Saituna > Na gwaji), maƙalin takarda yana da Daga Fayiloli: zaɓi
+kowane fayil da ya zo ko ya tafi da wasiƙunka, na wannan tattaunawa da
+farko. Yi wa da yawa alama, duba ɗaya da ido, ka ga yadda nauyinsu yake
+idan aka kwatanta da 25 MB da wasiƙa za ta iya ɗauka. Maƙalin takarda
+yanzu yana cikin akwatin amsa, kuma Aa yana buɗe siririyar sanda da salon
+da hira ke buƙata kawai.
+"""
+
+["2026-10-01-1553-rephrase-card-text"]
+title = "Sake faɗa yana aiki da sabbin maɓallan Gemini"
+text = """
+Idan menu masu kamar gilashi mai hazo a kunne suke, katin Sake faɗa
+(Ctrl+J) yana buɗewa babu komai; shawarwarinsa yanzu suna bayyana a kan
+gilashin. Google Gemini yanzu yana amfani da gemini-3.5-flash-lite sai dai
+idan ka rubuta wani samfuri, tunda sabbin maɓallan Gemini ba za su iya
+amfani da 2.5 Flash-Lite kuma ba, kuma maɓalli mara daidai yana faɗa.
+"""
+
+["2026-10-01-1624-rephrase-button"]
+title = "Sake faɗa ba tare da zaɓa ba, da shawarwari masu sauri"
+text = """
+Walƙiya a gefen Tsarawa a ƙasan sabon saƙo, da a akwatin amsa na ganin
+hira, tana sake faɗa duk abin da ka rubuta idan ba a zaɓi komai ba, ko
+abin da aka zaɓa kawai idan akwai; Ctrl+J yana yin haka. Dogayen
+shawarwari da AI suna zuwa da wuri sosai, kuma filin Samfurin AI a Saituna
+> Rubutu yana jera samfuran da sabis ɗinka ke bayarwa yayin da kake
+rubutu.
+"""
+
+["2026-10-01-1626-dimmer-preview"]
+title = "Layin samfoti mai natsuwa"
+text = """
+Rubutun samfoti da ke ƙarƙashin jigon kowace wasiƙa a jerin ya fi dushewa
+yanzu, don haka mai aikawa da jigo suna fitowa, a haske da duhu.
+"""
+
+["2026-10-01-1645-frosted-dialogs"]
+title = "Ƙananan tagogi kamar gilashi mai hazo"
+text = """
+Idan menu da ƙananan tagogi masu hazo a kunne suke, ƙananan tagogi ma
+gilashi ne mai hazo: Ƙara asusun wasiƙu, Game da, Me ke sabo, sabuntawa,
+rabawa, samfotin bugawa, lakabai, tambayoyin sharewa da cirewa, katin farawa
+ta farko da ƙaramar tagar hanyar haɗi ta Rubuta.
+"""
+
+["2026-10-01-1650-chat-pins"]
+title = "Maƙala har abubuwa 5 a hira"
+text = """
+A hira (Saituna > Na gwaji), nuna kumfa ka danna fil, ko danna fayil da
+dama, don ajiye shi a sama. Siririyar sanda ƙarƙashin kanun tana nuna abin
+da ka maƙala: danna ta don tsallaka zuwa kowanne a jere, ko buɗe jerin don
+ja su cikin tsari ko cire maƙalawa. Abubuwan da aka maƙala suna zama a
+wannan kwamfuta.
+"""
+
+["2026-10-01-1655-chat-signatures"]
+title = "Hira tana barin sa hannu da ƙafafun saƙo"
+text = """
+Kumfar hira yanzu tana nuna abin da mutane suka rubuta kawai. Kalmomin
+bankwana kamar "Best regards", sa hannun kamfani ƙarƙashin layi ko da
+adireshi da lambobin waya, da ƙafafun saƙo masu hanyoyin cire rajista ko
+sanarwa suna jira a bayan ···, tare da sa hannun da wani ke maimaitawa a
+kowace wasiƙa.
+"""
+
+["2026-10-01-1805-blur-amount"]
+title = "Zaɓi kamannin menu masu hazo"
+text = """
+Menu da ƙananan tagogi masu hazo sun fi bayyana yanzu kuma suna bin ƙarfin
+dushewar KDE. Kunna Adadin dushewa na musamman a Saituna, Na gwaji,
+Dushewa don saita ƙarfin dushewa da haske da kanka.
+"""
+
+["2026-10-01-1825-chat-company"]
+title = "Inda suke aiki, a katinsu"
+text = """
+A hira (Saituna > Na gwaji), katin mutum yanzu yana da sashin Kamfani:
+abin da kamfanin ke yi, inda yake, tun yaushe, da hanyoyin zuwa gidan
+yanar gizonsa da shafukansa, an karanta daga shafin farkonsa da Wikipedia.
+Yana bin maɓallin Hotunan masu aikawa.
+"""
+
+["2026-10-02-0052-smooth-start-after-updates"]
+title = "Farawa mai santsi bayan sabuntawa"
+text = """
+Bayan sabuntawa, Katna Mail ba ya cewa ba za a iya buɗe ma'ajiyar wasiƙa
+ba yayin da yake shirya wasiƙunka don sabuwar siga. Yana nuna hoton lodawa
+da aka saba na waɗannan 'yan daƙiƙoƙi, sannan wasiƙunka.
+"""
+
+["2026-10-02-0106-calmer-dialogs"]
+title = "Ƙananan tagogi masu natsuwa"
+text = """
+Ƙananan tagogi masu hazo sun fi menu ƙarfi, don haka jerin wasiƙu mai
+cunkoso ba ya bayyana ta cikinsu kuma. Game da, Me ke sabo da Duba
+sabuntawa suna buɗewa ba tare da duhunta tagar da ke bayansu ba.
+"""
+
+["2026-10-02-0111-chat-pin-text"]
+title = "Maƙala 'yan kalmomi daga hira"
+text = """
+A hira (Saituna > Na gwaji), rubutun da ke cikin kumfa yanzu ana iya
+zaɓarsa da kwafa kamar kowace wasiƙa. Danna kalmomin da ka zaɓa a kumfa
+ɗaya da dama ka zaɓi Maƙala a sama don ajiye su a sandar maƙala ta hirar.
+"""
+
+["2026-10-02-0124-event-editor-clear"]
+title = "Editan taro ba shi da Sabon taro a kansa"
+text = """
+Maɓallin Sabon taro na sandar hagu ba ya zama a kan taken taron da kake
+rubutawa ko canzawa a cikakken edita kuma. Yana dawowa idan editan ya
+rufe.
+"""
+
+["2026-10-02-0150-chat-format-bar"]
+title = "Cikakkiyar sandar Aa a hira"
+text = """
+Sandar Aa ta akwatin amsar hira yanzu tana da kayan aikin Rubuta: janye,
+rubutun haruffa, girma, daidaitawa da shigar layi, a gefen salon da take
+da su. A taga mai ƙunci tana naɗewa zuwa layi na biyu. Maɓallin launi yana
+nuna launin rubutunka da haskakawa gefe da gefe, a Rubuta ma.
+"""
+
+["2026-10-02-0210-conversation-summaries"]
+title = "Taƙaita tattaunawa"
+text = """
+Danna tattaunawa da dama ka zaɓi Taƙaita, ko danna Shift+S, don kati a
+gefenta da ke faɗin abin da take magana a kai, abin da aka yanke da abin
+da ke jiran ka, ba tare da buɗe ta ko yi mata alama an karanta ba. A
+tattaunawar da ke buɗe walƙiyar da ke samanta tana sa taƙaitawar ƙarƙashin
+jigo; a ganin hira tana zama a sanda ƙarƙashin kanun. Kowane batu yana
+ambaton wasiƙar da ya fito, kuma idan sabuwar wasiƙa ta zo tun da ka
+karanta na ƙarshe, taƙaitawar tana rufe wannan kawai. Tana buƙatar
+taimakon rubutu da AI a kunne a Saituna > Rubutu.
+"""
+
+["2026-10-02-0215-system-colors-follow-mode"]
+title = "Haske da Duhu suna aiki da launukan Tsarin"
+text = """
+Idan Launuka yana kan Tsarin kuma tsarin launin tebur duhu ne kawai (ko
+haske kawai), Saituna > Bayyanar > Jigon launi yanzu yana sake sauya Katna
+tsakanin haske da duhu: ɗayan ɓangaren yana amfani da launukan Katna a
+launin ƙawar tebur ɗinka.
+"""
+
+["2026-10-02-0218-signature-details-on-card"]
+title = "Bayanan sa hannu a wurinsu"
+text = """
+Katin mutum ba ya nuna sa hannunsa a matsayin dunƙule kuma. Bayanansa suna
+zuwa inda suka dace: kowace lambar waya, da alamar wayar hannu, kai tsaye
+ko fax, a bayanan lambar sadarwa, kuma rukunin kamfanin, ofisoshi, gidan
+yanar gizo da shafuka a sashin Kamfani. Shafukan sada zumunta suna bayyana
+a matsayin ƙananan gumaka masu launi ɗaya, kuma ana barin hotuna, tutoci
+da ƙafafun saƙo.
+"""
+
+["2026-10-02-0225-chat-subject-line"]
+title = "Ga lokacin da jigon hira ya canza"
+text = """
+A hira (Saituna > Na gwaji), ƙaramin layi a tsakiya yanzu yana faɗin
+lokacin da wani ya canza jigo, kamar yadda yake faɗin wanda ya ƙara wane.
+"""
+
+["2026-10-02-0225-no-blur-ghost"]
+title = "Babu fatalwar dushewa idan ƙaramar taga ta rufe"
+text = """
+Rufe Game da, Me ke sabo, Duba sabuntawa ko kowace ƙaramar taga ko menu
+mai hazo ba ya barin wani wuri a dushe na ɗan lokaci kuma: dushewar tana
+ɓacewa tare da ƙaramar tagar.
+"""
+
+["2026-10-02-0236-chat-on-phones"]
+title = "Hira ta dace da waya"
+text = """
+A taga mai girman waya hira (Saituna > Na gwaji) tana riƙe layin kanu ɗaya
+da Baya da ⋮, kuma kumfofinta suna amfani da ƙarin faɗi. Riƙe kumfa don
+kawo menunta daga ƙasa, kuma taɓa suna ko hoto don ganin katin mutumin
+haka. Goge ko wanne ƙasa ko taɓa a waje don ajiye shi.
+"""
+
+["2026-10-02-0258-frost-stays-on-scroll"]
+title = "Hazo yana zama a wurinsa idan jeri ya gungura"
+text = """
+A jeri mai hazo da ke gungurawa, kamar mutanen da ke cikin hira ko dogon
+menu, bango mai hazo yanzu yana zama a wurinsa yayin da layuka ke
+gungurawa a kansa.
+"""
+
+["2026-10-02-0301-rephrase-card-above-tools"]
+title = "Sake faɗa yana saman sandar tsarawa"
+text = """
+Katin Sake faɗa yanzu yana buɗewa a saman sandar tsarawa, a akwatin amsa
+da a Rubuta, maimakon a kan jerin wasiƙu. Ja shi ta ƙaramin hannun da ke
+samansa don kauce masa; yana buɗewa a wurin da ya saba a gaba.
+"""
+
+["2026-10-02-0306-fainter-lines-light"]
+title = "Layuka masu dushewa a yanayin haske"
+text = """
+A yanayin haske, layukan da ke tsakanin wasiƙu a jerin da tsakanin
+saƙonnin wasiƙar da ke buɗe sun fi dushewa, don haka shafin yana da
+natsuwa.
+"""
+
+["2026-10-02-0315-card-button-bar"]
+title = "Katin mutum yana ajiye maɓallansa kusa"
+text = """
+Gungura katin mutum kuma maɓallansa suna zamewa sama zuwa siririyar sanda
+mai hazo a gefen maɓallin rufewa, tare da ƙaramin hoton mutumin. Maɓallin
+rufewa ba ya zama a kan abin da kake karantawa kuma.
+"""
+
+["2026-10-02-0412-button-hover"]
+title = "Maɓallai suna haskakawa a hankali"
+text = """
+Idan ka nuna maɓalli, bangonsa mai zagaye yanzu yana girma daga tsakiya
+yana bayyana a hankali, kamar a Gmail, kuma yana ɓacewa da sauri idan ka
+wuce. Amsa, Tura da sauran maɓallai masu zagaye suna bayyana a hankali.
+"""
+
+["2026-10-02-0425-chat-draft-to-mail"]
+title = "Amsar hirarka tana bin ka zuwa Wasiƙa"
+text = """
+Sauya hira zuwa Wasiƙa yayin rubuta amsa yanzu yana gungurawa ƙasa zuwa
+amsar tare da siginar rubutunka har yanzu a ciki, kuma komawa ma yana
+ajiye ta.
+"""
+
+["2026-10-02-0425-write-reply"]
+title = "Rubuta amsa da AI"
+text = """
+Yayin da amsa ko turawa babu komai a ciki tukuna, walƙiya a gefen Tsarawa
+(ko Ctrl+J) tana rubuta maka ita. Zaɓi ɗaya daga cikin ra'ayoyi uku da aka
+ɗauko daga tattaunawar, ko faɗi da kalmominka abin da ya kamata ta ce,
+sannan Saka zayyanar ka canza abin da kake so. Da zarar ka rubuta,
+walƙiyar tana sake faɗa kuma. Tana buƙatar taimakon rubutu da AI a kunne a
+Saituna > Rubutu.
+"""
+
+["2026-10-02-0430-compose-beside-reply"]
+title = "Rubuta yayin da amsa ke rabi"
+text = """
+Rubuta yanzu yana buɗe sabon saƙo ko da kana rubuta amsa, a hira ko
+ƙarƙashin tattaunawa. Amsar tana jira yadda ka bar ta kuma tana dawowa
+idan an aika ko an rufe sabon saƙon, ko idan ka sake danna don amsa wannan
+tattaunawa.
+"""
+
+["2026-10-02-0436-mark-unread-icon"]
+title = "Gunkin Yi alama ba a karanta ba mai bayyana"
+text = """
+Yi alama ba a karanta ba yanzu yana nuna ambulan da digo, a menu, a
+sandunan kayan aiki da a maɓallan da ke bayyana a kan wasiƙa, don haka ba
+ya kama da gunkin wasiƙa kawai kuma.
+"""
+
+["2026-10-02-0452-fainter-pane-lines"]
+title = "Sandunan kayan aiki da shafuka masu natsuwa"
+text = """
+A yanayin haske, layukan da ke ƙarƙashin sandunan kayan aiki da kanun
+wasiƙar da ke buɗe, da saman Amsa da Tura, sun yi dushewa kamar layukan da
+ke tsakanin wasiƙu. Bangon da ke bayan shafukan akwatin saƙo ma ya fi
+haske.
+"""
+
+["2026-10-02-0453-google-drive-in-files"]
+title = "Google Drive ɗinka a Fayiloli"
+text = """
+Fayiloli yanzu yana nuna Drive na kowane asusun Google ƙarƙashin Drive a
+ginshiƙin gefe. Buɗe foldojinsa, bincika shi, kuma buɗe, haɗa ko sauke
+fayil a nan. A karon farko, danna Ba da izini don Katna ya iya karanta Drive
+ɗin.
+"""
+
+["2026-10-02-0515-rephrase-subject"]
+title = "Sake faɗa jigo"
+text = """
+Da zarar ka rubuta jigo, walƙiya a ƙarshen layinsa tana ba da wasu hanyoyi
+uku na faɗinsa, an rubuta daga jigon da abin da saƙonka ya faɗa ya zuwa
+yanzu. Zaɓi ɗaya don amfani da shi; Janye yana mayar da abin da ka rubuta.
+Yana buƙatar taimakon rubutu da AI a kunne a Saituna > Rubutu.
+"""
+
+["2026-10-02-0525-quieter-compose"]
+title = "Tagar Rubuta mai natsuwa"
+text = """
+Tagar Sabon saƙo tana shawagi da tazara daidai daga gefunan taga. Zuwa,
+Kwafi, Kwafi a ɓoye da Daga suna tare ba tare da layuka a tsakaninsu ba,
+masu karɓa ƙananan alamomi ne masu laushi, kuma Daga layi ɗaya ne mai
+natsuwa. Ɓoyewa, sa hannun dijital, bibiya da rasidi suna raba ƙaramin
+rukuni ɗaya, kuma kayan aikin rubutu suna kan sanda mai laushi a gefen
+Aika.
+"""
+
+["2026-10-02-0553-upload-to-drive"]
+title = "Ɗora zuwa Google Drive daga Fayiloli"
+text = """
+Idan Google Drive yana buɗe a Fayiloli, maɓallin Rubuta yana zama Ɗora.
+Danna shi don aika fayiloli cikin foldar da ke buɗe, ko yi amfani da
+kibiyarsa don ɗora dukan folda. A karon farko, danna Ba da izini
+don Katna ya iya ƙara fayiloli a Drive ɗinka.
+"""
+
+["2026-10-02-0555-reply-from-summary"]
+title = "Amsa daga taƙaitawa"
+text = """
+Katin taƙaitawa da kake buɗewa daga danna-dama yanzu yana da Amsa. Yana
+mayar da katin ɗaya amsa: zaɓi ra'ayi ko faɗi abin da ya kamata ta ce,
+canza zayyanar idan kana so, sannan Aika, ko Buɗe ta a tattaunawar don ci
+gaba da rubutu. Amsar da ka rufe ba tare da aikawa ba tana jira a akwatin
+amsa. Katin kuma yanzu yana buɗewa inda ka danna.
+"""
+
+["2026-10-02-0559-draft-saved-signature-tag"]
+title = "Zayyanai suna adanuwa yayin da kake rubutu"
+text = """
+Saƙon da kake rubutawa yanzu yana adana kansa a Zayyanai bayan 'yan
+daƙiƙoƙi, kuma "An adana zayyana" yana bayyana a hankali a gefen takensa.
+Ƙaramin lakabi maras ƙarfi a gefen sa hannunka yana ambaton sunansa; danna
+shi don zaɓar wani. Kusurwar tagar Rubuta ma tana daidaita da katin da ke
+gefenta.
+"""
+
+["2026-10-02-0654-attach-from-drive"]
+title = "Haɗa daga Google Drive"
+text = """
+Maƙalin takarda na Rubuta yanzu yana buɗe mai zaɓar Fayiloli, irin wanda
+ke Daga Fayiloli na hira, tare da Google Drive ɗinka a gefen fayilolin
+wasiƙunka da Wannan kwamfuta… don duk wani abu. Fayilolin da suka dace
+suna shiga wasiƙar; manyan fayiloli da Google Docs suna tafiya a matsayin
+hanyar haɗi, ana raba su da masu karɓa idan ka aika.
+"""
+
+["2026-10-02-0734-peek-and-reply-in-notifications"]
+title = "Leƙa ka amsa daga sanarwa"
+text = """
+Sanarwar sabuwar wasiƙa yanzu tana da Leƙa, wanda ke nuna wasiƙar kanta a
+cikin sanarwar, da Amsa, inda kake rubuta amsarka a nan ka danna Aika.
+Tana tafiya daga asusun da wasiƙar ta zo, bayan lokacin Janye aikawa
+ɗinka; Janye yana buɗe ta a Katna Mail don ci gaba da rubutu. A Linux,
+sabuwar wasiƙa kuma tana da ƙara mai ƙarfi ta kanta; zaɓi wata a Saituna >
+Sanarwa.
+"""
+
+["2026-10-02-0735-drive-viewer-opens-at-once"]
+title = "Fayilolin Drive suna buɗewa nan take"
+text = """
+Buɗe fayil daga Drive ɗinka yana kawo mai kallo nan da nan, tare da baka
+mai juyawa har sai fayil ɗin ya iso. Bayanai a ƙasan taga yanzu suna
+karɓar danna nasu, don haka Rufe ba ya danna abin da ke ƙarƙashinsu kuma.
+"""
+
+["2026-10-02-0740-smaller-updates"]
+title = "Ƙananan sabuntawa"
+text = """
+Sabuntawa yanzu suna sauke abin da ya canza kawai, yawanci 'yan megabytes
+maimakon dukan kunshin. Katna yana gina sabuwar siga daga wadda kake da
+ita kuma yana duba ta kafin shigarwa, kuma yana sauke cikakken kunshin duk
+lokacin da ba zai iya ba.
+"""
+
+["2026-10-02-0755-faint-lines-everywhere"]
+title = "Layuka masu dushewa ko'ina"
+text = """
+A yanayin haske, kowane layi tsakanin abubuwa, ƙarƙashin kanu da kewayen
+katuna yanzu ya yi dushewa kamar layukan da ke tsakanin wasiƙu, har da
+katin taƙaitawa. Filaye, alamomi da maɓallai suna riƙe layin iyakarsu
+bayyananne.
+"""
+
+["2026-10-02-0756-ai-replies-signed"]
+title = "Amsoshin AI suna ƙarewa da sa hannunka"
+text = """
+Amsoshi da bayanan da AI ya rubuta ba sa ƙarewa da "Best regards" da
+sunanka kuma. Sa hannunka ne ke sa musu hannu: a amsar katin taƙaitawa,
+lakabin sa hannu ƙarƙashin rubutun yana zaɓar wanne, kamar a Rubuta.
+"""
+
+["2026-10-02-0801-unified-inbox-tabs"]
+title = "Shafuka a haɗaɗɗen akwatin saƙo"
+text = """
+Akwatin saƙon dukan asusunka yanzu yana da shafuka ma: Na farko,
+Tallace-tallace, Zamantakewa, Sabuntawa da Dandali, tare da wasiƙun kowane
+asusu a shafin irinsu. Digo a gefen kowane mai aikawa yana nuna daga wane
+asusu wasiƙa ta zo. Zaɓi asusu ɗaya ƙarƙashinsa don ganin shafukan wannan
+asusu, ko zaɓi wani tsari a Saituna > Akwatin saƙo.
+"""
+
+["2026-10-02-0805-feeds-removed"]
+title = "Feeds ya bar sandar hagu"
+text = """
+Katna ba zai karanta ciyarwar RSS da Atom ba bayan duka, don haka maɓallin
+Feeds da shafinsa na "yana zuwa nan ba da daɗewa ba" sun bar sandar da ke
+hagu. Fayiloli yana riƙe Ctrl+7.
+"""
+
+["2026-10-02-0820-drive-bin-and-rename"]
+title = "Sake suna da jefa fayilolin Drive a shara"
+text = """
+A Fayiloli, fayil ko folda a Google Drive ko OneDrive ɗinka yanzu yana da
+Sake suna da Matsar zuwa kwandon shara a menunsa. Sake suna yana rubutu a
+kan sunan a wurinsa (F2), kuma Matsar zuwa kwandon shara (Del) yana zuwa
+da Janye.
+"""
+
+["2026-10-02-0827-files-chips-on-phones"]
+title = "Maɓallan Fayiloli sun dace a waya"
+text = """
+A waya maɓallan zaɓi na shafin Fayiloli ba sa yankewa a gefe kuma. Irin
+fayiloli suna naɗewa zuwa gumakansu, tare da wanda ka zaɓa yana riƙe
+lakabinsa, kuma maɓallan mutum, kwanaki da tsari suna samun layinsu.
+"""
+
+["2026-10-02-0828-uploads-tray"]
+title = "Ga abin da kake ɗorawa yayin da yake tafiya"
+text = """
+Fayilolin da kake ɗorawa zuwa Google Drive ko OneDrive yanzu suna bayyana
+a tire a ƙasa dama, kowanne da zobe da ke cika yayin da yake hawa da
+sauran lokaci. Soke ɗaya ko duka, naɗe tiren, kuma danna fayil da ya gama
+don buɗe foldarsa.
+"""
+
+["2026-10-02-0838-drive-share"]
+title = "Raba fayilolin Drive daga Katna"
+text = """
+Raba… a menun fayil na Google Drive ko OneDrive a Fayiloli yana buɗe
+ƙaramar tagar Raba: ƙara mutane a matsayin Mai dubawa, Mai sharhi ko Mai
+gyarawa, canza ko cire waɗanda ke da damar shiga, kuma buɗe shi ga duk
+wanda ke da hanyar haɗin. Drive yana aika musu da imel ne kawai idan ka yi
+alama.
+"""
+
+["2026-10-02-0909-soft-search-box"]
+title = "Akwatin bincike mai laushi"
+text = """
+Akwatin bincike da ke sama ya fi sauƙi: gefe da cikawa masu dushewa sosai
+yayin da ba ka amfani da shi, da fili fari mai gefen launin ƙawa mai
+laushi yayin da kake rubutu, maimakon akwati mai toka da zobe mai launi
+mai kauri.
+"""
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Sabuntawa suna isowa da wuri"
+text = """
+Yanzu Katna tana neman sabon siga duk sa'a guda, da kuma nan take bayan kwamfutarku ta farka daga barci, don haka sanarwar sabuntawa tana zuwa jim kaɗan bayan an fitar da siga.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Layuka marasa ƙarfi a yanayin Duhu ma"
+text = """
+A yanayin Duhu, layukan da ke tsakanin wasiƙu, ƙarƙashin kanun labarai da kewayen katuna yanzu ba su da ƙarfi kamar a yanayin Haske. Filaye, guntu da maɓallai suna riƙe da iyakarsu a fili.
+"""

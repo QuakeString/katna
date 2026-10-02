@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A tidier mail count"
+text = """
+The number of mails in a conversation now sits beside the names with a
+small chat icon, centred on the names' line instead of raised above it.
+"""

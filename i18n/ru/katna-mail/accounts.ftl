@@ -14,6 +14,19 @@ accounts-unified-switch-detail = «Все аккаунты» стоят в на�
 accounts-row = Аккаунты
 accounts-row-detail = Панель папок и меню аккаунтов показывают аккаунты в этом порядке; первый используется по умолчанию. При удалении аккаунта удаляется копия его почты, которую Katna хранит на этом компьютере. На сервере почта остаётся.
 accounts-none = Аккаунтов пока нет.
+accounts-pop3-row = Почта на сервере
+accounts-pop3-row-detail = Аккаунты POP3 загружают почту на этот компьютер. Выберите, что затем происходит с копией на сервере.
+accounts-pop3-with-katna = Хранить, пока я не удалю письмо в Katna
+accounts-pop3-at-once = Удалять сразу после загрузки
+accounts-pop3-after-days = { $count ->
+    [one] Удалять через { $count } день
+    [few] Удалять через { $count } дня
+    [many] Удалять через { $count } дней
+   *[other] Удалять через { $count } дня
+}
+accounts-pop3-never = Никогда не удалять
+accounts-pop3-days-less = Меньше дней
+accounts-pop3-days-more = Больше дней
 accounts-kind-imported = Импортирован
 accounts-picture-reset = Взять изображение из системы
 accounts-picture-change = Сменить изображение

@@ -8,6 +8,9 @@ about-tooltip = O Katna
 about-tagline = Poczta i kalendarz dla pulpitu Linux
 about-whats-new = Co nowego
 
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
 about-update-not-checked = Aktualizacje nie zostały jeszcze sprawdzone
 about-update-checking = Sprawdzanie aktualizacji…
 about-update-up-to-date = Katna Mail jest aktualna
@@ -67,6 +70,7 @@ about-credit-resvg = Obrazy SVG
 about-credit-jiff = Daty i strefy czasowe
 about-credit-spellbook = Sprawdzanie pisowni, z edytora Helix
 about-credit-smol = Robienie wielu rzeczy naraz
+about-credit-color-schemes = Palety wbudowanych schematów kolorów
 about-all-libraries = Wszystkie biblioteki używane przez Katna ({ $count })
 about-library-authors = autorzy: { $authors }
 about-license = Katna to wolne oprogramowanie na licencji GNU GPL w wersji 3 lub nowszej.
@@ -126,6 +130,21 @@ onboarding-density-default = Domyślna
 onboarding-density-compact = Kompaktowa
 onboarding-continue = Dalej
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Więcej z kontem Katna
+onboarding-katna-lead = Jest opcjonalne. Włącza funkcje online Katna, a założyć je możesz też później w Ustawienia > Subskrypcja.
+onboarding-katna-receipts-title = Potwierdzenia odczytu
+onboarding-katna-receipts-text = Zobacz, kiedy ludzie otwierają wysłaną przez Ciebie pocztę.
+onboarding-katna-links-title = Śledzenie linków
+onboarding-katna-links-text = Zobacz, które linki w Twojej poczcie są klikane.
+onboarding-katna-activity-title = Aktywność
+onboarding-katna-activity-text = Otwarcia i kliknięcia wszystkiego, co wysłałeś, w jednym miejscu.
+onboarding-katna-translate-title = Automatyczne tłumaczenie
+onboarding-katna-translate-text = Czytaj pocztę napisaną w innych językach w swoim własnym.
+onboarding-katna-private = Ma własne hasło. Dane logowania do poczty nigdy nie opuszczają tego komputera.
+
 ## First run: done
 
 onboarding-ready-title = Wszystko gotowe
@@ -169,7 +188,7 @@ tour-search-text = Wyszukiwanie działa też offline. Przycisk po prawej stronie
 tour-menu-title = Pokaż lub ukryj foldery
 tour-menu-text = Ten przycisk zwija listę folderów. Gdy jest ukryta, zatrzymaj wskaźnik na Poczcie po lewej, aby zobaczyć foldery.
 tour-apps-title = Twoje aplikacje
-tour-apps-text = Poczta mieszka teraz tutaj. Kalendarz, Kontakty, Zadania, Notatki i Kanały dołączą do niej na tym pasku.
+tour-apps-text = Poczta jest tutaj, obok Kalendarza, Kontaktów, Zadań, Notatek i Plików.
 tour-tabs-title = Karty skrzynki odbiorczej
 tour-tabs-text = Nowa poczta jest sortowana do kart Główne, Oferty, Społeczności, Powiadomienia i Fora. Karty możesz wyłączyć w szybkich ustawieniach.
 tour-list-title = Twoje wiadomości
@@ -199,12 +218,22 @@ crash-view = Wyświetl raport
 crash-view-tooltip = Otwórz raport zapisany na tym komputerze
 crash-copy = Kopiuj raport
 crash-close = Zamknij
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } prosi o ponowne zalogowanie się do { $address }.
 sign-in-again-button = Zaloguj się
 sign-in-again-tooltip = Otwórz stronę logowania { $provider } w przeglądarce
 sign-in-again-waiting = Czekanie na przeglądarkę…
 sign-in-again-close = Zamknij
+google-api-off = { $api } jest wyłączone w projekcie Google Cloud Katna.
+google-api-turn-on = Włącz
+google-api-turn-on-tooltip = Otwórz Google Cloud, aby włączyć { $api }, a potem naciśnij Spróbuj ponownie
 sign-in-again-done = Ponownie zalogowano do { $address }. Pobieranie poczty…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] Przenieść ten wątek do kosza?

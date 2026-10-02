@@ -4,6 +4,7 @@
 
 ## Attachment viewer
 
+viewer-opening = Đang mở…
 viewer-unreadable = Không thể đọc tệp đính kèm này.
 viewer-pdf-locked = PDF này được bảo vệ bằng mật khẩu.
 viewer-pdf-unreadable = Không thể đọc PDF này.
@@ -14,8 +15,17 @@ viewer-slides-unreadable = Không thể đọc các trang chiếu này.
 viewer-no-preview = Không có bản xem trước
 viewer-slide = Trang chiếu { $number }
 viewer-page = Trang
+viewer-slide-box = Trang chiếu
 viewer-page-count = trên { $count }
 viewer-go-to-page-tip = Nhập số trang rồi nhấn Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = Xoay theo chiều kim đồng hồ (Ctrl+R)
+viewer-rotate-anticlockwise-tip = Xoay ngược chiều kim đồng hồ (Ctrl+Shift+R)
+viewer-fit-page-tip = Vừa trang
+viewer-fit-picture-tip = Vừa cửa sổ
+viewer-fit-width-tip = Vừa chiều rộng
+viewer-real-size-tip = Kích thước thật (1:1)
+viewer-page-back-tip = Trang trước
+viewer-page-on-tip = Trang sau
 
 ## Marking up a PDF
 
@@ -41,20 +51,21 @@ viewer-marks-undo-tip = Hoàn tác (Ctrl+Z)
 viewer-marks-redo-tip = Làm lại (Ctrl+Shift+Z)
 viewer-save-marked-tip = Lưu một bản sao có đánh dấu của bạn (Ctrl+S)
 viewer-reply-marked-tip = Trả lời kèm bản sao đã đánh dấu
-# Typing a sticky note or a text box on the page.
+viewer-forward-tip = Chuyển tiếp tệp
+viewer-forward = Chuyển tiếp
+viewer-open-with = Mở bằng…
+viewer-save = Lưu
 viewer-note-placeholder = Viết ghi chú
 viewer-text-placeholder = Nhập tại đây
 viewer-note-done = Xong
 viewer-note-delete = Xóa
 viewer-markup-protected = PDF này được bảo vệ khỏi thay đổi, nên không thể đánh dấu.
 viewer-marks-save-failed = Không lưu được bản sao đã đánh dấu.
-# Asked when closing a PDF, or moving to another attachment, with marks
-# that are not saved yet.
 viewer-marks-unsaved-title = Lưu các đánh dấu của bạn?
 viewer-marks-unsaved-text = Các đánh dấu của bạn trên PDF này chưa được lưu. Chúng sẽ được lưu vào một bản sao; bản thân tệp đính kèm vẫn giữ nguyên.
 viewer-marks-discard = Bỏ
 viewer-marks-keep = Tiếp tục đánh dấu
 viewer-marks-save = Lưu bản sao
-# The name of the copy of a PDF with marks, before ".pdf". $name: the
-# attachment's name without ".pdf".
 viewer-marked-name = { $name } (đã đánh dấu)
+viewer-pick = Chọn
+viewer-picked = Đã chọn

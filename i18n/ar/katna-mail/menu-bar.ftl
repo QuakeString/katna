@@ -27,6 +27,7 @@ desktop-menu-page-calendar = ال_تقويم
 desktop-menu-page-contacts = _جهات الاتصال
 desktop-menu-page-tasks = ال_مهام
 desktop-menu-page-notes = الملا_حظات
+desktop-menu-page-files = الم_لفات
 desktop-menu-next = _المحادثة التالية
 desktop-menu-previous = _المحادثة السابقة
 desktop-menu-message = _رسالة

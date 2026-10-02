@@ -14,6 +14,7 @@ use katna_i18n::tr;
 use katna_platform::dbusmenu::{Menu, MenuItem};
 use katna_store::MessageId;
 
+use super::compose::Kind;
 use super::{MailWindow, RailApp};
 use crate::data::EntryKey;
 use crate::instance::Request;
@@ -341,7 +342,11 @@ impl MailWindow {
                     _ => {}
                 }
             }
-            Request::Action { name, message } => match name.as_str() {
+            Request::Action {
+                name,
+                message,
+                text,
+            } => match name.as_str() {
                 app_action::OPEN_INBOX => {
                     if !self.run_action("katna_mail::GoToInbox", window, cx) {
                         self.show_inbox(cx);
@@ -360,10 +365,14 @@ impl MailWindow {
                 // From a notification: in a window of its own, in front
                 // (the click's activation token raises it); this one stays
                 // behind, on whatever page it shows.
-                app_action::OPEN_MESSAGE | app_action::REPLY_ALL => {
+                app_action::OPEN_MESSAGE | app_action::REPLY_ALL | app_action::REPLY => {
                     if let Some(id) = message {
-                        let reply_all = name == app_action::REPLY_ALL;
-                        self.message_in_window(MessageId(id), reply_all, cx);
+                        let reply = match name.as_str() {
+                            app_action::REPLY_ALL => Some(Kind::ReplyAll),
+                            app_action::REPLY => Some(Kind::Reply),
+                            _ => None,
+                        };
+                        self.message_in_window(MessageId(id), reply, text, cx);
                         return;
                     }
                 }

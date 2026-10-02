@@ -15,6 +15,7 @@ notes-loading = Kuvulwa amanothi akho…
 
 notes-take-a-note = Thatha inothi…
 notes-new-list = Uhlu olusha
+notes-new-note = Inothi elisha
 notes-pinned = Okuphiniwe
 notes-others = Okunye
 notes-empty = Amanothi owengezayo avela lapha

@@ -15,6 +15,7 @@ notes-loading = আপোনাৰ টোকাসমূহ খোলা হৈ�
 
 notes-take-a-note = এটা টোকা লওক…
 notes-new-list = নতুন তালিকা
+notes-new-note = নতুন টোকা
 notes-pinned = পিন কৰা
 notes-others = অন্যান্য
 notes-empty = আপুনি যোগ কৰা টোকাসমূহ ইয়াত দেখা যাব

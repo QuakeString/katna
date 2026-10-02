@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = Gumawa
+tasks-create = Bagong gawain
 tasks-all = Lahat ng gawain
 tasks-today = Ngayon
 tasks-starred = Naka-star
 tasks-new-list = Gumawa ng bagong listahan
 tasks-on-this-computer = Sa computer na ito
 tasks-my-tasks = Aking Mga Gawain
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = Mag-sign in muli para ipakita ang mga gawain
 tasks-account-signed-in = Naka-sign in muli sa { $address }. Kinukuha ang iyong mga gawain…
 tasks-account-sign-in-refused = Hindi pinapasok ng { $provider } ang Katna. Subukang muli, at payagan ang access sa iyong mga gawain.
@@ -21,13 +19,9 @@ tasks-account-change-password = Palitan ang password
 tasks-account-change-password-tooltip = Buksan ang Mga setting > Mga Account
 tasks-account-not-enabled = Hindi pa naka-on ang access sa mga gawain para sa Katna.
 tasks-account-failed = Hindi mabasa ang mga listahan ng gawain.
-# $reason is the server's own words, in English.
 tasks-account-error = Hindi mabasa ang mga listahan ng gawain: { $reason }
 tasks-account-none = Walang nakitang listahan ng gawain
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 tasks-account-none-why = Walang nakitang listahan ng gawain: { $reason }
-# A Gmail or Outlook account added with a password: its tasks need the
-# provider's sign-in.
 tasks-account-use-sign-in = Ipinapakita lang ng { $provider } ang mga gawain sa Katna kapag naka-sign in gamit ang { $provider }.
 tasks-account-sign-in-with = Mag-sign in gamit ang { $provider }
 tasks-account-looking = Naghahanap ng mga listahan ng gawain…
@@ -114,6 +108,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Wala na rito ang mail na iyon.
 tasks-toast-list-deleted = Na-delete ang listahan
 tasks-toast-moved = Inilipat sa { $list }
-# A task dragged to another place in its own list.
 tasks-toast-placed = Inilipat ang gawain
 tasks-toast-rescheduled = Na-reschedule ang gawain

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See when a chat's subject changes"
+text = """
+In a chat (Settings > Experimental), a small line in the middle now says
+when someone changed the subject, the way it says who added whom.
+"""

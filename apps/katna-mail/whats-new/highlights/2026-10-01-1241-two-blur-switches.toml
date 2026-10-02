@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Blur, your way"
+text = """
+Blur now has two switches in Settings, Experimental: one for the window
+background and one for menus and dialogs. Frosted menus are on by default,
+even with the window background left solid.
+"""

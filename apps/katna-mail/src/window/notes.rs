@@ -935,7 +935,7 @@ impl MailWindow {
             .gap(px(8.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.divider }))
+            .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.outline }))
             .bg(rgba(bg.unwrap_or(th.surface)))
             .cursor_pointer()
             .hover(|s| s.shadow(elevation(th, 1.0)))
@@ -1071,7 +1071,6 @@ impl MailWindow {
             .flex_none()
             .w(px(SIDE_WIDTH))
             .h_full()
-            .pt(px(8.0))
             .flex()
             .flex_col()
             .children(NotesView::ALL.into_iter().flat_map(|v| {
@@ -1498,6 +1497,11 @@ impl MailWindow {
         self.send(Command::OrderNotes(drag.order), None, None, false, cx);
     }
 
+    /// The left bar's New note: a new note over the page.
+    pub(super) fn new_note(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        self.open_note(None, false, None, window, cx);
+    }
+
     /// Keep's "Take a note…" bar, with a new list at its right.
     /// Whether the open note is a new one from the "Take a note" bar, which
     /// opens in the bar's place rather than over the page.
@@ -1538,7 +1542,7 @@ impl MailWindow {
                 .rounded(px(8.0))
                 .bg(rgba(th.surface))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .shadow(elevation(th, 1.0))
                 .cursor_text()
                 .on_click(
@@ -1749,7 +1753,7 @@ impl MailWindow {
             .flex_col()
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.divider }))
+            .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.outline }))
             .bg(rgba(bg.unwrap_or(th.surface)))
             .text_color(rgba(th.text))
             .cursor_default()
@@ -1920,7 +1924,7 @@ impl MailWindow {
                                 .items_center()
                                 .rounded_full()
                                 .border_1()
-                                .border_color(rgba(if on { th.accent } else { th.divider }))
+                                .border_color(rgba(if on { th.accent } else { th.outline }))
                                 .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
                                 .text_size(px(12.0))
                                 .text_color(rgba(if on { th.accent } else { th.text_dim }))

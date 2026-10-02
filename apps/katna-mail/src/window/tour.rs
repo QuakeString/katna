@@ -323,7 +323,7 @@ impl MailWindow {
             .flex_col()
             .gap(px(8.0))
             .rounded(px(PANEL_RADIUS))
-            .bg(rgba(th.surface))
+            .map(|d| crate::widgets::frosted(d, th, th.surface, PANEL_RADIUS))
             .text_color(rgba(th.text))
             .shadow(elevation(th, 4.0))
             .when(stop.is_some(), |d| {

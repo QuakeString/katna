@@ -8,6 +8,9 @@ about-tooltip = Über Katna
 about-tagline = E-Mail und Kalender für den Linux-Desktop
 about-whats-new = Neuigkeiten
 
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
 about-update-not-checked = Es wurde noch nicht nach Updates gesucht
 about-update-checking = Suche nach Updates…
 about-update-up-to-date = Katna Mail ist auf dem neuesten Stand
@@ -67,6 +70,7 @@ about-credit-resvg = SVG-Bilder
 about-credit-jiff = Datum und Zeitzonen
 about-credit-spellbook = Rechtschreibprüfung, aus dem Helix-Editor
 about-credit-smol = Vieles gleichzeitig erledigen
+about-credit-color-schemes = Die Paletten der eingebauten Farbschemata
 about-all-libraries = Alle Bibliotheken, die Katna nutzt ({ $count })
 about-library-authors = von { $authors }
 about-license = Katna ist freie Software unter der GNU GPL, Version 3 oder neuer.
@@ -124,6 +128,21 @@ onboarding-density-default = Standard
 onboarding-density-compact = Kompakt
 onboarding-continue = Weiter
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Mehr mit einem Katna-Konto
+onboarding-katna-lead = Es ist freiwillig. Es schaltet die Online-Funktionen von Katna ein, und Sie können es später unter Einstellungen > Abonnement anlegen.
+onboarding-katna-receipts-title = Lesebestätigungen
+onboarding-katna-receipts-text = Sehen Sie, wann Ihre gesendeten E-Mails geöffnet werden.
+onboarding-katna-links-title = Link-Verfolgung
+onboarding-katna-links-text = Sehen Sie, welche Links in Ihren E-Mails angeklickt werden.
+onboarding-katna-activity-title = Aktivität
+onboarding-katna-activity-text = Öffnungen und Klicks für alles, was Sie gesendet haben, an einem Ort.
+onboarding-katna-translate-title = Automatische Übersetzung
+onboarding-katna-translate-text = Lesen Sie E-Mails in anderen Sprachen in Ihrer eigenen.
+onboarding-katna-private = Es hat ein eigenes Passwort. Ihre E-Mail-Zugangsdaten verlassen diesen Computer nie.
+
 ## First run: done
 
 onboarding-ready-title = Alles bereit
@@ -167,7 +186,7 @@ tour-search-text = Die Suche funktioniert auch offline. Die Schaltfläche ganz r
 tour-menu-title = Ordner ein- oder ausblenden
 tour-menu-text = Diese Schaltfläche klappt die Ordnerliste weg. Solange sie ausgeblendet ist, halten Sie den Zeiger links auf „E-Mail“, um die Ordner zu sehen.
 tour-apps-title = Ihre Apps
-tour-apps-text = E-Mail ist jetzt hier zu Hause. Kalender, Kontakte, Aufgaben, Notizen und Feeds kommen in dieser Leiste hinzu.
+tour-apps-text = Hier wohnen die E-Mails, neben Kalender, Kontakte, Aufgaben, Notizen und Dateien.
 tour-tabs-title = Posteingangs-Tabs
 tour-tabs-text = Neue E-Mails werden in Allgemein, Werbung, Soziale Netzwerke, Benachrichtigungen und Foren sortiert. Sie können die Tabs in den Schnelleinstellungen ausschalten.
 tour-list-title = Ihre Nachrichten
@@ -193,12 +212,22 @@ crash-view = Bericht ansehen
 crash-view-tooltip = Den auf diesem Computer gespeicherten Bericht öffnen
 crash-copy = Bericht kopieren
 crash-close = Schließen
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } bittet Sie, sich erneut bei { $address } anzumelden.
 sign-in-again-button = Anmelden
 sign-in-again-tooltip = Anmeldeseite von { $provider } im Browser öffnen
 sign-in-again-waiting = Warten auf Ihren Browser…
 sign-in-again-close = Schließen
+google-api-off = { $api } ist im Google-Cloud-Projekt von Katna ausgeschaltet.
+google-api-turn-on = Einschalten
+google-api-turn-on-tooltip = Google Cloud öffnen, um { $api } einzuschalten, dann „Erneut versuchen“ drücken
 sign-in-again-done = Erneut bei { $address } angemeldet. E-Mails werden abgerufen…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] Diese Konversation in den Papierkorb verschieben?

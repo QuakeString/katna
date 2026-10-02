@@ -9,6 +9,7 @@
 //! single instance.
 
 mod agenda;
+pub mod ai;
 mod crash_upload;
 pub mod daemon;
 mod desktop;

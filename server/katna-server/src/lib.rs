@@ -17,6 +17,8 @@
 //! addresses or user agents; they are only read to pick the label.
 
 pub mod accounts;
+pub mod admin;
+pub mod ai;
 pub mod auth;
 pub mod classify;
 pub mod config;

@@ -1,6 +1,9 @@
 # Katna Mail, Vietnamese (Tiếng Việt).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Tài khoản Katna bật các tính năng trực tuyến của Katna: xác nhận đã đọc, theo dõi liên kết, Hoạt động và dịch tự động. Tài khoản này có mật khẩu riêng, không phải mật khẩu thư, và thông tin đăng nhập thư của bạn không bao giờ rời khỏi máy tính này.
 katna-checking = Đang kiểm tra…
 katna-email = Email
@@ -10,6 +13,8 @@ katna-sign-in = Đăng nhập
 katna-sign-in-detail = Đăng nhập trên từng máy tính mà bạn muốn dùng các tính năng trực tuyến.
 katna-create = Tạo tài khoản
 katna-create-detail = Hãy dùng địa chỉ mà bạn đọc được thư: chúng tôi sẽ gửi mã qua thư để xác nhận địa chỉ đó.
+katna-onboarding-create-title = Tạo tài khoản Katna của bạn
+katna-onboarding-sign-in-title = Đăng nhập vào Katna
 katna-have-account = Tôi đã có tài khoản
 katna-forgot = Quên mật khẩu?
 katna-forgot-detail = Chúng tôi sẽ gửi mã qua thư để bạn chọn mật khẩu mới.
@@ -42,6 +47,9 @@ katna-delete = Xóa tài khoản
 katna-delete-detail = Xóa tài khoản và mọi thứ máy chủ lưu cho tài khoản đó, chẳng hạn xác nhận đã đọc. Thư trên máy tính này vẫn còn nguyên.
 katna-delete-confirm = Xóa vĩnh viễn
 katna-sign-in-needed = Đăng nhập tài khoản Katna để dùng tính năng này.
+
+## Errors
+
 katna-error-wrong-password = Sai email hoặc mật khẩu.
 katna-error-exists = Địa chỉ này đã có tài khoản Katna. Hãy đăng nhập thay vào đó.
 katna-error-bad-email = Đó có vẻ không phải là địa chỉ email.

@@ -296,7 +296,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .map(|d| raised(d, th, RADIUS, 4.0))
             .occlude()
             .on_hover(

@@ -9,7 +9,7 @@ rail-calendar = Ikhalenda
 rail-contacts = Oxhumana nabo
 rail-tasks = Imisebenzi
 rail-notes = Amanothi
-rail-feeds = Okuphakelayo
+rail-files = Amafayela
 
 ## Pages of apps still to come
 
@@ -18,7 +18,6 @@ app-coming-soon = Kuyeza maduze
 app-calendar-promise = Amakhalenda akho e-CalDAV, izimemo zemihlangano ezivela kumeyili yakho nezikhumbuzi, eduze kwebhokisi lakho lokungenayo.
 app-tasks-promise = Uhlu lwezinto okufanele zenziwe oluvumelana ne-CalDAV, nemisebenzi eyenziwe kusuka kumeyili.
 app-notes-promise = Amanothi asheshayo, namanothi ngemeyili noma ngengxoxo ukuze uwasebenzise kamuva.
-app-feeds-promise = Funda okuphakelayo kwe-RSS ne-Atom eduze kwemeyili yakho.
 
 ## Contacts page
 

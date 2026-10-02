@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tabs in the unified inbox"
+text = """
+The inbox of all your accounts now has tabs too: Primary, Promotions,
+Social, Updates and Forums, with each account's mail in the tab of its
+kind. A dot beside each sender shows which account a mail came from. Pick
+one account under it to see that account's own tabs, or choose another set
+in Settings > Inbox.
+"""

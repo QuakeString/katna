@@ -86,6 +86,9 @@ security-missing-key = ඔබ සතු නැති යතුරකින් �
 security-missing-key-id = ඔබ සතු නැති යතුරකින් ({ $key }) අත්සන් කර ඇති නිසා පරීක්ෂා කළ නොහැක
 security-signature-unavailable = අත්සන් කර ඇත; අත්සන පරීක්ෂා කිරීමට { $tool } ස්ථාපනය කරන්න
 security-signature-error = අත්සන පරීක්ෂා කළ නොහැකි විය.
+
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } එය { $count ->
     [one] එක් වරක්
    *[other] වාර { $count }ක්
@@ -127,10 +130,12 @@ attachment-count = { $count ->
    *[other] ඇමුණුම් { $count }
 }
 attachment-save = සුරකින්න
+attachment-forward = ඉදිරියට යවන්න
 attachment-save-all = සියල්ල සුරකින්න
 attachment-save-all-tooltip = සියලු ඇමුණුම් ෆෝල්ඩරයකට සුරකින්න
 attachment-save-here = මෙහි සුරකින්න
 attachment-not-downloaded = මෙම පණිවිඩය බාගත කර නැත.
+attachment-open-message = මෙම පණිවිඩයේ ඇමුණුම් කියවීමට එය විවෘත කරන්න.
 attachment-not-found = මෙම ඇමුණුම පණිවිඩයේ සොයාගත නොහැකි විය.
 attachment-read-failed = { $name } කියවිය නොහැකි විය
 attachment-numbered = ඇමුණුම { $number }
@@ -178,8 +183,9 @@ print-encrypted = (සංකේතනය කර ඇත. එහි පෙළ ම�
 print-to = ලබන්නා: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = මෙම පණිවිඩයේ ඇමුණුම් කියවීමට එය විවෘත කරන්න.
+text-pin = ඉහළට අමුණන්න
+text-copy-address = ලිපිනය පිටපත් කරන්න
 text-copy = පිටපත් කරන්න
 text-select-all = සියල්ල තෝරන්න

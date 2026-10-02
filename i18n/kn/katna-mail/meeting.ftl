@@ -1,7 +1,6 @@
 # Katna Mail, Kannada (ಕನ್ನಡ): video calls around mail.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 meeting-starting = ವೀಡಿಯೊ ಕರೆ ಪ್ರಾರಂಭವಾಗುತ್ತಿದೆ…
 meeting-mail-subject = ವೀಡಿಯೊ ಕರೆ: { $subject }
 meeting-mail-subject-plain = ವೀಡಿಯೊ ಕರೆ

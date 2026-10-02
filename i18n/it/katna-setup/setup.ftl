@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Invia con Katna Mail
 setup-tagline = Posta veloce e riservata, che vive sul tuo computer.
 setup-update-where = Aggiorna Katna Mail in { $path }. La tua posta, le impostazioni e i collegamenti restano come sono.
 setup-for = Installa per

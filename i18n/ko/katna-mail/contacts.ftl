@@ -25,10 +25,7 @@ contacts-label-removed = { $name }에서 삭제됨
 contacts-label-renamed = 라벨 이름이 { $name }(으)로 변경됨
 contacts-label-deleted = 라벨 { $name } 삭제됨
 contacts-label-no-email = 이 라벨에는 이메일 주소가 있는 사람이 없습니다
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = 계정
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = 연락처를 표시하려면 다시 로그인하세요
 contacts-account-signed-in = { $address }에 다시 로그인했습니다. 연락처를 가져오는 중…
 contacts-account-sign-in-refused = { $provider }에서 Katna의 접근을 허용하지 않았습니다. 다시 시도하고 연락처에 대한 접근을 허용하세요.
@@ -36,13 +33,9 @@ contacts-account-password = 서버에서 비밀번호를 받아들이지 않았�
 contacts-account-change-password = 비밀번호 변경
 contacts-account-change-password-tooltip = 설정 > 계정 열기
 contacts-account-failed = 연락처를 읽을 수 없습니다.
-# $reason is the server's own words, in English.
 contacts-account-error = 연락처를 읽을 수 없습니다: { $reason }
 contacts-account-none = 주소록을 찾을 수 없음
-# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
 contacts-account-none-why = 주소록을 찾을 수 없음: { $reason }
-# A Gmail or Outlook account added with a password: its contacts need the
-# provider's sign-in.
 contacts-account-use-sign-in = { $provider }에서는 { $provider }로 로그인한 Katna에만 연락처를 보여 줍니다.
 contacts-account-sign-in-with = { $provider }로 로그인
 contacts-account-looking = 연락처를 찾는 중…
@@ -88,7 +81,7 @@ contacts-print-none = 인쇄할 연락처가 없습니다
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = 생일: { $day }
 contacts-print-nickname = 닉네임: { $name }
-contacts-create = 연락처 만들기
+contacts-create = 새 연락처
 
 ## Search and the list
 

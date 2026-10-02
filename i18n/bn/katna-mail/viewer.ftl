@@ -4,6 +4,10 @@
 
 ## Attachment viewer
 
+viewer-opening = খোলা হচ্ছে…
+
+## Attachment viewer
+
 viewer-unreadable = এই অ্যাটাচমেন্টটি পড়া যায়নি।
 viewer-pdf-locked = এই PDF পাসওয়ার্ড দিয়ে সুরক্ষিত।
 viewer-pdf-unreadable = এই PDF পড়া যায়নি।
@@ -14,8 +18,17 @@ viewer-slides-unreadable = এই স্লাইডগুলো পড়া �
 viewer-no-preview = কোনো প্রিভিউ নেই
 viewer-slide = স্লাইড { $number }
 viewer-page = পৃষ্ঠা
+viewer-slide-box = স্লাইড
 viewer-page-count = { $count }-এর মধ্যে
 viewer-go-to-page-tip = পৃষ্ঠার নম্বর লিখে Enter চাপুন (Ctrl+G)
+viewer-rotate-clockwise-tip = ঘড়ির কাঁটার দিকে ঘোরান (Ctrl+R)
+viewer-rotate-anticlockwise-tip = ঘড়ির কাঁটার উল্টো দিকে ঘোরান (Ctrl+Shift+R)
+viewer-fit-page-tip = পৃষ্ঠা মানানসই করুন
+viewer-fit-picture-tip = উইন্ডোর মাপে
+viewer-fit-width-tip = প্রস্থ মানানসই করুন
+viewer-real-size-tip = আসল আকার (1:1)
+viewer-page-back-tip = আগের পৃষ্ঠা
+viewer-page-on-tip = পরের পৃষ্ঠা
 
 ## Marking up a PDF
 
@@ -41,6 +54,10 @@ viewer-marks-undo-tip = পূর্বাবস্থায় ফেরান 
 viewer-marks-redo-tip = আবার করুন (Ctrl+Shift+Z)
 viewer-save-marked-tip = আপনার চিহ্নসহ একটি কপি সেভ করুন (Ctrl+S)
 viewer-reply-marked-tip = চিহ্নিত কপি দিয়ে উত্তর দিন
+viewer-forward-tip = ফাইলটি ফরোয়ার্ড করুন
+viewer-forward = ফরোয়ার্ড করুন
+viewer-open-with = এতে খুলুন…
+viewer-save = সেভ করুন
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = একটি নোট লিখুন
 viewer-text-placeholder = এখানে টাইপ করুন
@@ -58,3 +75,5 @@ viewer-marks-save = কপি সেভ করুন
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (চিহ্নিত)
+viewer-pick = বাছুন
+viewer-picked = বাছাই করা হয়েছে

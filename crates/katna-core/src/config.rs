@@ -34,12 +34,14 @@ pub struct Config {
     pub shortcuts: Shortcuts,
     pub sync: SyncConfig,
     pub notifications: Notifications,
+    pub sounds: Sounds,
     pub onboarding: Onboarding,
     pub experimental: Experimental,
     pub feedback: Feedback,
     pub updates: Updates,
     pub contacts: ContactsConfig,
     pub meetings: Meetings,
+    pub ai: Ai,
 }
 
 /// The Contacts page's own choices.
@@ -131,14 +133,97 @@ impl Default for Feedback {
     }
 }
 
+/// Writing help from an AI service (`docs/ARCHITECTURE.md` §16.5):
+/// rephrasing selected text, and finishing sentences. Keys live in the
+/// Secret Service, never here.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Ai {
+    /// Where requests go.
+    pub source: AiSource,
+    /// The user's own service, a `katna_ai::provider::PRESETS` id.
+    pub provider: String,
+    /// The model of the user's own service; empty for its usual one.
+    pub model: String,
+    /// The address of an `other` service (OpenAI's API, such as Ollama).
+    pub address: String,
+    /// AI finishes the sentence being written, after a pause, as a
+    /// longer writing suggestion ([`Sending::writing_suggestions`]).
+    pub autocomplete: bool,
+    /// Autocomplete also sends the mail being answered.
+    pub autocomplete_answered: bool,
+    /// Rephrase is offered for encrypted mail, asking each time.
+    pub encrypted: bool,
+}
+
+impl Default for Ai {
+    fn default() -> Self {
+        Self {
+            source: AiSource::default(),
+            provider: "gemini".to_owned(),
+            model: String::new(),
+            address: String::new(),
+            autocomplete: false,
+            autocomplete_answered: false,
+            encrypted: true,
+        }
+    }
+}
+
+/// [`Ai::source`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AiSource {
+    /// Katna AI, on Katna Server with the Katna account.
+    #[default]
+    Katna,
+    /// The user's own service and key.
+    Own,
+    /// No writing help.
+    Off,
+}
+
+/// The frost's blur, in pixels, when nothing else sets it.
+pub const FROST_BLUR: u8 = 24;
+/// The frost's tint opacity, in percent, when nothing else sets it.
+pub const FROST_OPACITY: u8 = 45;
+
 /// Settings > Experimental: features still being tried out.
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Experimental {
     /// Who draws the window frame.
     pub window_frame: WindowFrame,
     /// A translucent window background that the compositor blurs.
     pub blur: bool,
+    /// Menus, popovers, dialogs and viewer bars are frosted glass: they
+    /// blur what is under them, drawn by Katna itself.
+    pub frosted_popups: bool,
+    /// The frost's blur and opacity come from [`Self::frost_blur`] and
+    /// [`Self::frost_opacity`]; off, they follow the desktop's blur
+    /// strength (KDE's Blur effect) or Katna's defaults.
+    pub custom_frost: bool,
+    /// How far the frost blurs, in pixels ([`FROST_BLUR`]).
+    pub frost_blur: u8,
+    /// How opaque the frost's tint is, in percent ([`FROST_OPACITY`]).
+    pub frost_opacity: u8,
+    /// Conversations between people open as a group chat: a bubble per
+    /// mail with only what its sender wrote.
+    pub chat_view: bool,
+}
+
+impl Default for Experimental {
+    fn default() -> Self {
+        Self {
+            window_frame: WindowFrame::default(),
+            blur: false,
+            frosted_popups: true,
+            custom_frost: false,
+            frost_blur: FROST_BLUR,
+            frost_opacity: FROST_OPACITY,
+            chat_view: false,
+        }
+    }
 }
 
 /// [`Experimental::window_frame`].
@@ -177,16 +262,104 @@ pub struct Onboarding {
 pub struct Notifications {
     /// Notify about new mail in the inbox (Primary tab).
     pub new_mail: bool,
-    /// New-mail notifications play the desktop's new-mail sound.
-    pub sound: bool,
+    /// Older versions' one switch for the sounds of notifications, now
+    /// [`Sounds`]; read once, never written.
+    #[serde(skip_serializing)]
+    pub sound: Option<bool>,
 }
 
 impl Default for Notifications {
     fn default() -> Self {
         Self {
             new_mail: true,
-            sound: true,
+            sound: None,
         }
+    }
+}
+
+/// The sounds Katna plays, one per [`SoundEvent`] (Settings >
+/// Notifications > Sounds). Muted folders, conversations and senders
+/// never notify, so they make no sound either.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Sounds {
+    pub new_mail: EventSound,
+    pub reminders: EventSound,
+    pub mail_back: EventSound,
+    pub sent: EventSound,
+    pub not_sent: EventSound,
+}
+
+/// Whether one event plays a sound, and which.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EventSound {
+    pub on: bool,
+    /// The sound's name in `katna_platform::sound`; empty for the event's
+    /// usual one.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub sound: String,
+}
+
+impl Default for EventSound {
+    fn default() -> Self {
+        Self {
+            on: true,
+            sound: String::new(),
+        }
+    }
+}
+
+/// What a sound is for.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum SoundEvent {
+    /// New mail in a folder that notifies.
+    NewMail,
+    /// Calendar event and task reminders.
+    Reminders,
+    /// Mail back in the inbox: from snooze, or nobody replied.
+    MailBack,
+    /// A message has gone out.
+    Sent,
+    /// A message could not be sent.
+    NotSent,
+}
+
+impl SoundEvent {
+    pub const ALL: [SoundEvent; 5] = [
+        SoundEvent::NewMail,
+        SoundEvent::Reminders,
+        SoundEvent::MailBack,
+        SoundEvent::Sent,
+        SoundEvent::NotSent,
+    ];
+}
+
+impl Sounds {
+    pub fn get(&self, event: SoundEvent) -> &EventSound {
+        match event {
+            SoundEvent::NewMail => &self.new_mail,
+            SoundEvent::Reminders => &self.reminders,
+            SoundEvent::MailBack => &self.mail_back,
+            SoundEvent::Sent => &self.sent,
+            SoundEvent::NotSent => &self.not_sent,
+        }
+    }
+
+    pub fn get_mut(&mut self, event: SoundEvent) -> &mut EventSound {
+        match event {
+            SoundEvent::NewMail => &mut self.new_mail,
+            SoundEvent::Reminders => &mut self.reminders,
+            SoundEvent::MailBack => &mut self.mail_back,
+            SoundEvent::Sent => &mut self.sent,
+            SoundEvent::NotSent => &mut self.not_sent,
+        }
+    }
+
+    /// The sound `event` plays, if on: its name, empty for the usual one.
+    pub fn playing(&self, event: SoundEvent) -> Option<&str> {
+        let sound = self.get(event);
+        sound.on.then_some(sound.sound.as_str())
     }
 }
 
@@ -395,8 +568,10 @@ pub struct Sending {
     /// Send on replies and forwards also archives the conversation; the
     /// Send menu offers the other way.
     pub send_and_archive: bool,
-    /// A short sound plays when a message has gone out.
-    pub sent_sound: bool,
+    /// Older versions' switch for the sound when a message has gone out,
+    /// now [`Sounds::sent`]; read once, never written.
+    #[serde(skip_serializing)]
+    pub sent_sound: Option<bool>,
 }
 
 impl Default for Sending {
@@ -415,7 +590,7 @@ impl Default for Sending {
             writing_suggestions: true,
             send_from: String::new(),
             send_and_archive: false,
-            sent_sound: true,
+            sent_sound: None,
         }
     }
 }
@@ -493,6 +668,10 @@ pub struct MailView {
     /// Which tabs each account's inbox has, by lower-case address.
     /// Accounts not listed use [`TabStyle::Auto`].
     pub account_tabs: BTreeMap<String, AccountTabs>,
+    /// Which tabs the unified inbox has, shared by every account: each
+    /// mail shows in the tab of its category. [`TabStyle::Auto`] is
+    /// Gmail's five.
+    pub unified_tabs: TabStyle,
     pub density: Density,
     /// The size of everything in the windows, in percent, on top of the
     /// desktop's own scale (75 to 200).
@@ -557,6 +736,8 @@ pub struct MailView {
     pub attachment_previews: bool,
     /// Open the folder in the file manager after saving attachments.
     pub open_saved_folder: bool,
+    /// What the Files page leaves out.
+    pub files: FilesPage,
     /// With several accounts: the folder pane shows one account, picked in
     /// the account card, or all of them one after another.
     pub accounts_shown: AccountsShown,
@@ -590,6 +771,78 @@ pub struct MailView {
     /// empty for all accounts.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub activity_account: String,
+}
+
+/// The Files page (Settings > Default apps): its small pictures (logos
+/// and icons in signatures, which come with many mails) and the accounts'
+/// drives it shows.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct FilesPage {
+    /// Leave pictures smaller than these out of the Files page.
+    pub leave_out_small: bool,
+    /// A picture under this many KB is small...
+    pub small_kb: u32,
+    /// ... and so is one under this many pixels wide or tall.
+    pub small_px: u32,
+    /// Accounts (store ids) whose cloud drive Files and the attach
+    /// pickers leave out. Every drive an account allows shows otherwise.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub drives_off: Vec<i64>,
+}
+
+impl FilesPage {
+    pub const KB_RANGE: std::ops::RangeInclusive<u32> = 1..=1024;
+    pub const PX_RANGE: std::ops::RangeInclusive<u32> = 1..=2000;
+
+    /// Whether a picture of `bytes`, `size` pixels (once known), is left
+    /// out.
+    pub fn leaves_out(&self, bytes: u64, size: Option<(u32, u32)>) -> bool {
+        self.leave_out_small
+            && (bytes < u64::from(self.small_kb) * 1024
+                || size.is_some_and(|(w, h)| w.min(h) < self.small_px))
+    }
+
+    /// Whether a picture named `name` is part of an email signature,
+    /// whatever its size: its sender sent the same picture in
+    /// `conversations` conversations (three or more), or it is a social
+    /// network's icon. Left out with the small pictures.
+    pub fn is_signature(&self, name: &str, conversations: usize) -> bool {
+        const SIGNATURE_CONVERSATIONS: usize = 3;
+        const WORDS: [&str; 11] = [
+            "facebook",
+            "twitter",
+            "linkedin",
+            "instagram",
+            "youtube",
+            "whatsapp",
+            "tiktok",
+            "pinterest",
+            "telegram",
+            "signature",
+            "emailsignature",
+        ];
+        if !self.leave_out_small {
+            return false;
+        }
+        let stem = name.rsplit_once('.').map_or(name, |(stem, _)| stem);
+        conversations >= SIGNATURE_CONVERSATIONS
+            || stem
+                .to_lowercase()
+                .split(|c: char| !c.is_alphanumeric())
+                .any(|word| WORDS.contains(&word))
+    }
+}
+
+impl Default for FilesPage {
+    fn default() -> Self {
+        Self {
+            leave_out_small: true,
+            small_kb: 12,
+            small_px: 100,
+            drives_off: Vec::new(),
+        }
+    }
 }
 
 fn is_zero(n: &i64) -> bool {
@@ -635,6 +888,7 @@ impl Default for MailView {
             conversations: true,
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
+            unified_tabs: TabStyle::Auto,
             density: Density::Default,
             scale: 100,
             theme: Theme::System,
@@ -659,6 +913,7 @@ impl Default for MailView {
             dark_mail: true,
             attachment_previews: true,
             open_saved_folder: false,
+            files: FilesPage::default(),
             accounts_shown: AccountsShown::One,
             unified_inbox: false,
             current_account: String::new(),
@@ -1040,8 +1295,25 @@ impl Config {
     fn parse(text: &str) -> Result<Self, ParseError> {
         let mut config: Self = toml::from_str(text).map_err(ParseError::Toml)?;
         config.sending.upgrade();
+        config.upgrade_sounds();
         config.validate().map_err(ParseError::Invalid)?;
         Ok(config)
+    }
+
+    /// Carries older versions' sound switches into [`Sounds`].
+    fn upgrade_sounds(&mut self) {
+        if self.notifications.sound.take() == Some(false) {
+            for event in [
+                SoundEvent::NewMail,
+                SoundEvent::Reminders,
+                SoundEvent::MailBack,
+            ] {
+                self.sounds.get_mut(event).on = false;
+            }
+        }
+        if self.sending.sent_sound.take() == Some(false) {
+            self.sounds.sent.on = false;
+        }
     }
 
     /// Checks that every value is in range.
@@ -1131,6 +1403,22 @@ fn tempfile_in(dir: &Path) -> Result<(std::path::PathBuf, fs::File)> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn older_sound_switches_carry_over() {
+        use super::{Config, SoundEvent};
+        let config =
+            Config::parse("[notifications]\nsound = false\n[sending]\nsent_sound = false\n")
+                .unwrap();
+        for event in SoundEvent::ALL {
+            let on = config.sounds.get(event).on;
+            assert_eq!(on, event == SoundEvent::NotSent, "{event:?}");
+        }
+        let text = toml::to_string(&config).unwrap();
+        assert!(!text.contains("sent_sound"), "never written back");
+        let fresh = Config::parse("").unwrap();
+        assert_eq!(fresh.sounds.playing(SoundEvent::Sent), Some(""));
+    }
+
     #[test]
     fn accounts_follow_the_chosen_order() {
         use crate::{Account, AccountId, AccountKind};
@@ -1247,10 +1535,45 @@ mod tests {
         let config = Config::default();
         assert_eq!(config.experimental.window_frame, WindowFrame::Native);
         assert!(!config.experimental.blur);
+        assert!(config.experimental.frosted_popups);
+        assert!(!config.experimental.chat_view);
         let config =
             Config::parse("[experimental]\nwindow_frame = \"katna\"\nblur = true\n").unwrap();
         assert_eq!(config.experimental.window_frame, WindowFrame::Katna);
         assert!(config.experimental.blur);
+        assert!(config.experimental.frosted_popups);
+        let config = Config::parse("[experimental]\nfrosted_popups = false\n").unwrap();
+        assert!(!config.experimental.frosted_popups);
+        // The frost follows the desktop unless set by hand.
+        assert!(!config.experimental.custom_frost);
+        assert_eq!(config.experimental.frost_blur, FROST_BLUR);
+        assert_eq!(config.experimental.frost_opacity, FROST_OPACITY);
+    }
+
+    #[test]
+    fn files_page_leaves_out_small_pictures() {
+        let files = Config::default().mail.files;
+        assert!(files.leaves_out(11 * 1024, None));
+        assert!(!files.leaves_out(40 * 1024, None));
+        // A wide, short logo.
+        assert!(files.leaves_out(40 * 1024, Some((300, 80))));
+        assert!(!files.leaves_out(40 * 1024, Some((640, 480))));
+        let config = Config::parse("[mail.files]\nleave_out_small = false\n").unwrap();
+        assert!(!config.mail.files.leaves_out(1, Some((1, 1))));
+        assert_eq!(config.mail.files.small_kb, 12);
+        assert!(!config.mail.files.is_signature("linkedin.png", 5));
+    }
+
+    #[test]
+    fn files_page_leaves_out_signature_pictures() {
+        let files = Config::default().mail.files;
+        assert!(files.is_signature("image001.png", 3));
+        assert!(!files.is_signature("image001.png", 2));
+        assert!(files.is_signature("LinkedIn_icon.png", 1));
+        assert!(files.is_signature("email-signature.jpg", 1));
+        assert!(!files.is_signature("site-visit.jpg", 1));
+        // Only whole words: "signatures-page-scan" is a file.
+        assert!(!files.is_signature("signatures-scan.jpg", 1));
     }
 
     #[test]

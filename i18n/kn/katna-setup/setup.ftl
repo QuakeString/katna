@@ -1,9 +1,9 @@
 # Katna Setup, Kannada (ಕನ್ನಡ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Katna Mail ಮೂಲಕ ಕಳುಹಿಸಿ
 setup-tagline = ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲೇ ಇರುವ ವೇಗವಾದ, ಖಾಸಗಿ ಇಮೇಲ್.
 setup-update-where = { $path } ನಲ್ಲಿರುವ Katna Mail ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುತ್ತದೆ. ನಿಮ್ಮ ಮೇಲ್, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು ಹಾಗೆಯೇ ಉಳಿಯುತ್ತವೆ.
 setup-for = ಇವರಿಗಾಗಿ ಸ್ಥಾಪಿಸಿ

@@ -15,6 +15,7 @@ notes-loading = നിങ്ങളുടെ കുറിപ്പുകൾ ത�
 
 notes-take-a-note = കുറിപ്പ് എടുക്കൂ…
 notes-new-list = പുതിയ ലിസ്റ്റ്
+notes-new-note = പുതിയ കുറിപ്പ്
 notes-pinned = പിൻ ചെയ്‌തത്
 notes-others = മറ്റുള്ളവ
 notes-empty = നിങ്ങൾ ചേർക്കുന്ന കുറിപ്പുകൾ ഇവിടെ ദൃശ്യമാകും

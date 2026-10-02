@@ -46,6 +46,7 @@ compose-sent-archived = Skickat och arkiverat
 compose-sent = Meddelandet har skickats
 compose-discarded = Utkastet har slängts
 compose-draft-saved = Utkastet har sparats
+compose-draft-saving = Sparar…
 compose-draft-failed = Utkastet kunde inte sparas: { $error }
 compose-draft-not-opened = Utkastet kunde inte öppnas.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = Utkastet kunde inte öppnas.
 compose-picker-insert = Infoga
 compose-picker-attach = Bifoga
 compose-file-too-large = { $name } är för stor: ett meddelande kan innehålla upp till { $limit }.
+compose-forward-files-missing = Det vidarebefordrade meddelandets filer är inte hämtade, så de bifogas inte.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Ta bort bilaga
 compose-attachments-total = { $count ->
@@ -78,6 +80,7 @@ compose-drive-share-link = Dela med länk
 compose-drive-send-without = Skicka utan att dela
 compose-drive-share-cancel = Avbryt
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } är större än { $limit }, så den läggs i din OneDrive och meddelandet innehåller en länk.
 compose-onedrive-tip = I din OneDrive; meddelandet innehåller en länk
 compose-onedrive-allow = Tillåt OneDrive
@@ -89,8 +92,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive kan inte dela filerna med { $addresses }. Alla som har länken kan i stället öppna dem.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Släpp filer här
 compose-drop-here = Släpp här
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = Behåll formatering
 compose-paste-table = Tabell
 compose-paste-picture = Bild
@@ -104,6 +111,9 @@ compose-encrypt = Kryptera
 compose-encrypted = Krypterat: bara mottagarna kan läsa det
 compose-sign = Signera
 compose-signed = Signerat: mottagarna kan kontrollera att det kommer från dig
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = Spåra öppningar och klick
 compose-tracked = Spårat: du ser när varje mottagare öppnar det eller följer en länk
 compose-track-clicks = Spåra länkklick (oformaterad text kan inte visa öppningar)
@@ -136,6 +146,9 @@ send-check-subject-title = Skicka utan ämne?
 send-check-subject-text = Det här meddelandet har inget ämne.
 send-check-add-subject = Lägg till ämne
 send-check-send-anyway = Skicka ändå
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = Ingen giltig e-postadress
 recipient-show-address = Visa adress
 recipient-remove = Ta bort

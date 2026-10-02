@@ -46,6 +46,7 @@ compose-sent-archived = بھیج کر آرکائیو کر دیا گیا
 compose-sent = پیغام بھیج دیا گیا
 compose-discarded = ڈرافٹ رد کر دیا گیا
 compose-draft-saved = ڈرافٹ محفوظ ہو گیا
+compose-draft-saving = محفوظ ہو رہا ہے…
 compose-draft-failed = ڈرافٹ محفوظ نہیں ہو سکا: { $error }
 compose-draft-not-opened = ڈرافٹ کھولا نہیں جا سکا۔
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = ڈرافٹ کھولا نہیں جا سکا۔
 compose-picker-insert = داخل کریں
 compose-picker-attach = منسلک کریں
 compose-file-too-large = { $name } بہت بڑی ہے: ایک پیغام زیادہ سے زیادہ { $limit } لے جا سکتا ہے۔
+compose-forward-files-missing = آگے بھیجے گئے پیغام کی فائلیں ڈاؤن لوڈ نہیں ہوئیں، اس لیے وہ منسلک نہیں ہیں۔
 compose-attachment-size = ({ $size })
 compose-remove-attachment = اٹیچمنٹ ہٹائیں
 compose-attachments-total = { $count ->
@@ -78,6 +80,7 @@ compose-drive-share-link = لنک کے ساتھ شیئر کریں
 compose-drive-send-without = شیئر کیے بغیر بھیجیں
 compose-drive-share-cancel = منسوخ کریں
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } کا سائز { $limit } سے زیادہ ہے، اس لیے اسے آپ کے OneDrive میں رکھا جاتا ہے اور پیغام میں اس کا لنک شامل ہوتا ہے۔
 compose-onedrive-tip = آپ کے OneDrive میں؛ پیغام میں لنک شامل ہے
 compose-onedrive-allow = OneDrive کی اجازت دیں
@@ -89,6 +92,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive فائلیں { $addresses } کے ساتھ شیئر نہیں کر سکتا۔ اس کے بجائے لنک رکھنے والا کوئی بھی انہیں کھول سکتا ہے۔
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = فائلیں یہاں چھوڑیں
 compose-drop-here = یہاں چھوڑیں
 compose-paste-keep-formatting = فارمیٹنگ برقرار رکھیں

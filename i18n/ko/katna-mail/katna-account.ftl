@@ -1,6 +1,9 @@
 # Katna Mail, Korean (한국어).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Katna 계정이 있으면 Katna의 온라인 기능인 읽음 확인, 링크 추적, 활동, 자동 번역을 사용할 수 있습니다. 비밀번호는 메일 비밀번호가 아닌 별도의 비밀번호이며, 메일 로그인 정보는 이 컴퓨터 밖으로 나가지 않습니다.
 katna-checking = 확인 중…
 katna-email = 이메일
@@ -10,6 +13,8 @@ katna-sign-in = 로그인
 katna-sign-in-detail = 온라인 기능을 사용하려는 컴퓨터마다 로그인하세요.
 katna-create = 계정 만들기
 katna-create-detail = 받아 볼 수 있는 주소를 사용하세요. 주소를 확인할 코드를 메일로 보내 드립니다.
+katna-onboarding-create-title = Katna 계정 만들기
+katna-onboarding-sign-in-title = Katna에 로그인
 katna-have-account = 계정이 있습니다
 katna-forgot = 비밀번호를 잊으셨나요?
 katna-forgot-detail = 새 비밀번호를 설정할 수 있는 코드를 메일로 보내 드립니다.
@@ -42,6 +47,9 @@ katna-delete = 계정 삭제
 katna-delete-detail = 계정과 읽음 확인 등 서버가 이 계정을 위해 보관하는 모든 것을 삭제합니다. 이 컴퓨터의 메일은 그대로 남습니다.
 katna-delete-confirm = 영구 삭제
 katna-sign-in-needed = 이 기능을 사용하려면 Katna 계정에 로그인하세요.
+
+## Errors
+
 katna-error-wrong-password = 이메일 또는 비밀번호가 잘못되었습니다.
 katna-error-exists = 이 주소에는 이미 Katna 계정이 있습니다. 로그인하세요.
 katna-error-bad-email = 이메일 주소 형식이 아닌 것 같습니다.

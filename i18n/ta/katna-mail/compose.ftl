@@ -46,6 +46,7 @@ compose-sent-archived = அனுப்பிக் காப்பகப்ப�
 compose-sent = மெசேஜ் அனுப்பப்பட்டது
 compose-discarded = வரைவு நிராகரிக்கப்பட்டது
 compose-draft-saved = வரைவு சேமிக்கப்பட்டது
+compose-draft-saving = சேமிக்கிறது…
 compose-draft-failed = வரைவைச் சேமிக்க முடியவில்லை: { $error }
 compose-draft-not-opened = வரைவைத் திறக்க முடியவில்லை.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = வரைவைத் திறக்க முடி
 compose-picker-insert = செருகு
 compose-picker-attach = இணை
 compose-file-too-large = { $name } மிகப் பெரியது: ஒரு மெசேஜ் { $limit } வரை மட்டுமே கொண்டு செல்லும்.
+compose-forward-files-missing = முன்னனுப்பிய மெசேஜின் ஃபைல்கள் பதிவிறக்கப்படவில்லை, எனவே அவை இணைக்கப்படவில்லை.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = இணைப்பை அகற்று
 compose-attachments-total = { $count ->
@@ -78,6 +80,7 @@ compose-drive-share-link = லிங்குடன் பகிர்
 compose-drive-send-without = பகிராமல் அனுப்பு
 compose-drive-share-cancel = ரத்துசெய்
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } { $limit } அளவைத் தாண்டுவதால், அது உங்கள் OneDrive-க்குச் செல்கிறது; மெசேஜில் அதன் லிங்க் இருக்கும்.
 compose-onedrive-tip = உங்கள் OneDrive-இல்; மெசேஜில் லிங்க் இருக்கும்
 compose-onedrive-allow = OneDrive-ஐ அனுமதி
@@ -89,8 +92,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive-ஆல் { $addresses } உடன் கோப்புகளைப் பகிர முடியாது. அதற்குப் பதிலாக, லிங்க் உள்ள எவரும் அவற்றைத் திறக்கலாம்.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = கோப்புகளை இங்கே விடவும்
 compose-drop-here = இங்கே விடவும்
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = வடிவமைப்பை வைத்திரு
 compose-paste-table = அட்டவணை
 compose-paste-picture = படம்
@@ -104,6 +111,9 @@ compose-encrypt = என்க்ரிப்ட் செய்
 compose-encrypted = என்க்ரிப்ட் செய்யப்பட்டது: பெறுநர்கள் மட்டுமே படிக்க முடியும்
 compose-sign = கையொப்பமிடு
 compose-signed = கையொப்பமிடப்பட்டது: இது உங்களிடமிருந்து வந்தது என்று பெறுநர்கள் சரிபார்க்கலாம்
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = திறப்புகளையும் கிளிக்குகளையும் கண்காணி
 compose-tracked = கண்காணிக்கப்படுகிறது: ஒவ்வொரு பெறுநரும் இதைத் திறக்கும்போதோ லிங்க்கைத் திறக்கும்போதோ நீங்கள் பார்க்கலாம்
 compose-track-clicks = லிங்க் கிளிக்குகளைக் கண்காணி (வெற்று உரையில் திறப்புகளைக் காட்ட முடியாது)
@@ -136,6 +146,9 @@ send-check-subject-title = பொருள் இல்லாமல் அனு
 send-check-subject-text = இந்த மெசேஜுக்குப் பொருள் இல்லை.
 send-check-add-subject = பொருளைச் சேர்
 send-check-send-anyway = பரவாயில்லை, அனுப்பு
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = சரியான மின்னஞ்சல் முகவரி அல்ல
 recipient-show-address = முகவரியைக் காட்டு
 recipient-remove = அகற்று

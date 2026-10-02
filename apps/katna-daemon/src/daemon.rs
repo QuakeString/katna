@@ -49,6 +49,8 @@ use crate::{desktop, notify::NewMailNotices, on_demand::OnDemand, secrets::Secre
 
 pub(crate) mod alarms;
 mod calendar;
+mod chat_pins;
+mod cloud;
 mod contact_labels;
 mod contacts;
 mod contacts_import;
@@ -65,6 +67,7 @@ pub use mutes::MuteOf;
 pub use reminders::{SNOOZED, is_snoozed_path};
 pub(crate) use sign_in::open_in_browser;
 mod sign_in;
+mod summaries;
 mod tasks;
 
 /// The longest account name taken.
@@ -362,8 +365,8 @@ impl Daemon {
     /// server on `connection` (the session bus), as `notifications.new_mail`
     /// says. Call before [`Daemon::start`].
     pub async fn notify_new_mail(self: &Arc<Self>, connection: &zbus::Connection) {
-        let notifications = settings(&self.paths).notifications;
-        match NewMailNotices::new(connection, &notifications).await {
+        let config = settings(&self.paths);
+        match NewMailNotices::new(connection, &config.notifications, &config.sounds).await {
             Ok(notices) => {
                 if self.new_mail.set(Arc::new(notices)).is_ok() {
                     smol::spawn(NewMailNotices::serve_actions(Arc::downgrade(self))).detach();
@@ -741,24 +744,44 @@ impl Daemon {
     /// (DMARC or aligned DKIM in its `Authentication-Results`), so a forged
     /// `From` makes the daemon fetch nothing.
     pub async fn sender_picture(&self, address: &str) -> Result<Vec<u8>, CommandError> {
+        if !self.sender_authenticated(address) {
+            return Ok(Vec::new());
+        }
+        let pictures = Pictures::system(self.paths.cache_dir())
+            .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
+        Ok(pictures.sender(address).await)
+    }
+
+    /// The company of the person at `address`, as JSON, or empty; under
+    /// the same rule as [`Self::sender_picture`].
+    pub async fn company_of(&self, address: &str, website: &str) -> Result<String, CommandError> {
+        if !self.sender_authenticated(address) {
+            return Ok(String::new());
+        }
+        let pictures = Pictures::system(self.paths.cache_dir())
+            .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
+        Ok(pictures
+            .company(address, website)
+            .await
+            .and_then(|c| serde_json::to_string(&c).ok())
+            .unwrap_or_default())
+    }
+
+    /// Whether the user's provider authenticated mail from the domain of
+    /// `address`.
+    fn sender_authenticated(&self, address: &str) -> bool {
         let domain = address
             .rsplit_once('@')
             .map(|(_, domain)| domain.trim().trim_end_matches('.').to_ascii_lowercase())
             .unwrap_or_default();
-        let authenticated = !domain.is_empty()
+        !domain.is_empty()
             && self
                 .store()
                 .sender_domain_authenticated(&domain)
                 .unwrap_or_else(|err| {
                     tracing::warn!(%err, "reading sender authentication");
                     false
-                });
-        if !authenticated {
-            return Ok(Vec::new());
-        }
-        let pictures = Pictures::system(self.paths.cache_dir())
-            .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
-        Ok(pictures.sender(address).await)
+                })
     }
 
     /// Translates `text`, the plain text of `message` in language `source`
@@ -815,6 +838,71 @@ impl Daemon {
         }
         tracing::info!(from = done.source, to = target, "message translated");
         Ok(done)
+    }
+
+    /// Rephrases `text` in `tone` (a `katna_ai::Tone` id) with the AI
+    /// service the settings name ([`crate::ai::rephrase`]).
+    pub async fn ai_rephrase(
+        &self,
+        text: &str,
+        tone: &str,
+        instruction: &str,
+    ) -> Result<katna_ai::wire::AiAnswer, crate::ai::AiError> {
+        let settings = settings(&self.paths).ai;
+        crate::ai::rephrase(&settings, &self.secrets, text, tone, instruction)
+            .await
+            .inspect_err(|err| tracing::info!(%err, "rephrasing"))
+    }
+
+    /// A first draft of a reply or a forward's note, or ideas for one
+    /// ([`crate::ai::draft`]).
+    pub async fn ai_draft(
+        &self,
+        request: &katna_ai::draft::DraftRequest,
+    ) -> Result<katna_ai::wire::AiAnswer, crate::ai::AiError> {
+        let settings = settings(&self.paths).ai;
+        crate::ai::draft(&settings, &self.secrets, request)
+            .await
+            .inspect_err(|err| tracing::info!(%err, "writing a draft"))
+    }
+
+    /// The rest of the sentence at the end of `before`
+    /// ([`crate::ai::complete`]).
+    pub async fn ai_complete(
+        &self,
+        before: &str,
+        answered: &str,
+    ) -> Result<katna_ai::wire::AiAnswer, crate::ai::AiError> {
+        let settings = settings(&self.paths).ai;
+        crate::ai::complete(&settings, &self.secrets, before, answered)
+            .await
+            .inspect_err(|err| tracing::info!(%err, "finishing a sentence"))
+    }
+
+    /// The models the user's own service `provider` offers to the saved
+    /// key ([`crate::ai::models`]).
+    pub async fn ai_models(
+        &self,
+        provider: &str,
+        address: &str,
+    ) -> Result<Vec<String>, crate::ai::AiError> {
+        crate::ai::models(&self.secrets, provider, address)
+            .await
+            .inspect_err(|err| tracing::info!(%err, "listing AI models"))
+    }
+
+    /// Saves the key of the user's own AI service; empty deletes it.
+    pub async fn set_ai_key(&self, key: &str) -> Result<(), CommandError> {
+        Ok(self.secrets.set_ai_key(key.trim()).await?)
+    }
+
+    /// Whether a key of the user's own AI service is saved.
+    pub async fn ai_key_saved(&self) -> Result<bool, CommandError> {
+        Ok(self
+            .secrets
+            .ai_key()
+            .await?
+            .is_some_and(|key| !key.is_empty()))
     }
 
     /// The languages Katna Server can translate into `target`.
@@ -1134,7 +1222,7 @@ impl Daemon {
     }
 
     /// Reads the settings file again and applies what the daemon uses from
-    /// it (`sync.metered`, `sync.offline_days`, `notifications`,
+    /// it (`sync.metered`, `sync.offline_days`, `notifications`, `sounds`,
     /// the `general` language, tray and badge switches, search trigger words,
     /// `feedback.send_crash_reports`). Katna Mail calls this after saving
     /// settings.
@@ -1145,7 +1233,7 @@ impl Daemon {
             metered = ?config.sync.metered,
             offline_days = config.sync.offline_days,
             new_mail = config.notifications.new_mail,
-            sound = config.notifications.sound,
+            sounds = ?config.sounds,
             "settings reloaded"
         );
         *self.metered_setting.lock().unwrap() = config.sync.metered;
@@ -1156,7 +1244,7 @@ impl Daemon {
             }
         }
         if let Some(notices) = self.new_mail_notices() {
-            notices.set(&config.notifications);
+            notices.set(&config.notifications, &config.sounds);
         }
         // Before the tray hears of it, so it rebuilds in the new language.
         let language = &config.general.language;
@@ -1638,6 +1726,9 @@ impl Daemon {
                 }
                 // A tracked message may have gone out: follow its events.
                 self.wake_tracking();
+                if let Some(notices) = self.new_mail_notices() {
+                    notices.went_out(event.id).await;
+                }
             }
             let _ = self.notices.try_send(Notice::OutboxChanged(event.id));
         }
@@ -1869,7 +1960,7 @@ enum Link {
 
 /// Drops the handle and waits for the worker to log out.
 /// Forgets the downloaded mail of every IMAP account and the translations,
-/// and deletes the sender pictures, for [`Daemon::reset_cache`]. POP3 servers may no longer
+/// and deletes the sender pictures and fetched drive files, for [`Daemon::reset_cache`]. POP3 servers may no longer
 /// have their mail, and imported mail has no server.
 fn forget_downloaded(paths: &Paths) -> Result<Forgotten, CommandError> {
     let mut store = Store::open(paths, Mode::ReadWrite)?;
@@ -1881,6 +1972,13 @@ fn forget_downloaded(paths: &Paths) -> Result<Forgotten, CommandError> {
         .collect();
     let forgotten = store.forget_downloaded_mail(&accounts)?;
     store.forget_translations()?;
+    let drives = paths.cache_dir().join("drives");
+    match std::fs::remove_dir_all(&drives) {
+        Err(err) if err.kind() != std::io::ErrorKind::NotFound => {
+            tracing::warn!(path = %drives.display(), %err, "deleting fetched drive files");
+        }
+        _ => {}
+    }
     let pictures = Pictures::cache_dir(paths.cache_dir());
     match std::fs::remove_dir_all(&pictures) {
         Err(err) if err.kind() != std::io::ErrorKind::NotFound => {

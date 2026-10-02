@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = ဖန်တီးရန်
+tasks-create = လုပ်ဆောင်စရာ အသစ်
 tasks-all = လုပ်ဆောင်စရာအားလုံး
 tasks-today = ယနေ့
 tasks-starred = ကြယ်ပွင့်ပေးထားသည်
 tasks-new-list = စာရင်းအသစ် ဖန်တီးရန်
 tasks-on-this-computer = ဤကွန်ပျူတာတွင်
 tasks-my-tasks = ကျွန်ုပ်၏ လုပ်ဆောင်စရာများ
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = လုပ်ဆောင်စရာများ ပြရန် ထပ်မံ ဝင်ရောက်ပါ
 tasks-account-signed-in = { $address } သို့ ထပ်မံ ဝင်ရောက်ပြီးပါပြီ။ သင့်လုပ်ဆောင်စရာများကို ရယူနေသည်…
 tasks-account-sign-in-refused = { $provider } က Katna ကို ဝင်ခွင့်မပေးပါ။ ထပ်စမ်းကြည့်ပြီး သင့်လုပ်ဆောင်စရာများကို အသုံးပြုခွင့် ပေးပါ။
@@ -21,13 +19,9 @@ tasks-account-change-password = စကားဝှက် ပြောင်း�
 tasks-account-change-password-tooltip = ဆက်တင်များ > အကောင့်များ ကို ဖွင့်ရန်
 tasks-account-not-enabled = Katna အတွက် လုပ်ဆောင်စရာ အသုံးပြုခွင့်ကို မဖွင့်ရသေးပါ။
 tasks-account-failed = လုပ်ဆောင်စရာ စာရင်းများကို ဖတ်၍မရပါ။
-# $reason is the server's own words, in English.
 tasks-account-error = လုပ်ဆောင်စရာ စာရင်းများကို ဖတ်၍မရပါ- { $reason }
 tasks-account-none = လုပ်ဆောင်စရာ စာရင်း မတွေ့ပါ
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 tasks-account-none-why = လုပ်ဆောင်စရာ စာရင်း မတွေ့ပါ- { $reason }
-# A Gmail or Outlook account added with a password: its tasks need the
-# provider's sign-in.
 tasks-account-use-sign-in = { $provider } သည် { $provider } ဖြင့် ဝင်ရောက်ထားသော Katna ကိုသာ လုပ်ဆောင်စရာများကို ပြပါသည်။
 tasks-account-sign-in-with = { $provider } ဖြင့် ဝင်ရောက်ရန်
 tasks-account-looking = လုပ်ဆောင်စရာ စာရင်းများကို ရှာနေသည်…
@@ -112,6 +106,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = ထိုမေးလ် ဤနေရာတွင် မရှိတော့ပါ။
 tasks-toast-list-deleted = စာရင်း ဖျက်ပြီးပါပြီ
 tasks-toast-moved = { $list } သို့ ရွှေ့ပြီးပါပြီ
-# A task dragged to another place in its own list.
 tasks-toast-placed = လုပ်ဆောင်စရာကို ရွှေ့ပြီးပါပြီ
 tasks-toast-rescheduled = လုပ်ဆောင်စရာကို အချိန်ပြောင်းပြီးပါပြီ

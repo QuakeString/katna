@@ -9,7 +9,7 @@ tray-new-message = _ข้อความใหม่
 tray-preferences = _การตั้งค่า
 tray-quit = _ออก
 
-## The tray icon's tooltip
+## The tray icon's tooltip, under "Katna Mail"
 
 tray-unread = { $count ->
     [0] ไม่มีอีเมลที่ยังไม่อ่าน

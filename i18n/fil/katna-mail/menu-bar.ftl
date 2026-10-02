@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _Kalendaryo
 desktop-menu-page-contacts = Mga _Contact
 desktop-menu-page-tasks = Mga _Gawain
 desktop-menu-page-notes = Mga _Tala
+desktop-menu-page-files = Mga _File
 desktop-menu-next = Susunod na _Pag-uusap
 desktop-menu-previous = Na_karaang Pag-uusap
 desktop-menu-message = _Mensahe

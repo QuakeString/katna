@@ -66,6 +66,7 @@ about-credit-resvg = Hotunan SVG
 about-credit-jiff = Kwanan wata da yankunan lokaci
 about-credit-spellbook = Duba haruffa, daga editan Helix
 about-credit-smol = Yin abubuwa da yawa a lokaci ɗaya
+about-credit-color-schemes = Launukan tsare-tsaren launi da aka gina a ciki
 about-all-libraries = Kowane ɗakin karatu da Katna ke amfani da shi ({ $count })
 about-library-authors = daga { $authors }
 about-license = Katna manhaja ce kyauta ƙarƙashin GNU GPL, sigar 3 ko sabuwa.
@@ -123,6 +124,21 @@ onboarding-density-default = Na asali
 onboarding-density-compact = Matsattse
 onboarding-continue = Ci gaba
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Samu ƙari da asusun Katna
+onboarding-katna-lead = Ba dole ba ne. Yana kunna fasalolin Katna na intanet, kuma kuna iya ƙirƙirar ɗaya daga baya a Saituna > Rajista.
+onboarding-katna-receipts-title = Rasidin karantawa
+onboarding-katna-receipts-text = Ga lokacin da mutane suka buɗe wasiƙun da kuka aika.
+onboarding-katna-links-title = Bin diddigin hanyoyin haɗi
+onboarding-katna-links-text = Ga waɗanne hanyoyin haɗi a wasiƙunku aka danna.
+onboarding-katna-activity-title = Ayyuka
+onboarding-katna-activity-text = Buɗewa da dannawa na duk abin da kuka aika, wuri ɗaya.
+onboarding-katna-translate-title = Fassara ta atomatik
+onboarding-katna-translate-text = Karanta wasiƙun da aka rubuta da wasu harsuna a harshenku.
+onboarding-katna-private = Yana da kalmar sirrinsa ta kansa. Bayanan shigarku na wasiƙa ba sa barin wannan kwamfuta.
+
 ## First run: done
 
 onboarding-ready-title = Komai ya shirya
@@ -166,7 +182,7 @@ tour-search-text = Bincike yana aiki har ma ba tare da intanet ba. Maɓallin da 
 tour-menu-title = Nuna ko ɓoye folda
 tour-menu-text = Wannan maɓalli yana naɗe jerin folda. Yayin da yake ɓoye, ku ajiye alamar linzamin kwamfuta a kan Wasiƙu a hagu don ganin folda.
 tour-apps-title = Manhajojinku
-tour-apps-text = Wasiƙu suna nan a yanzu. Kalanda, Lambobin sadarwa, Ayyuka, Bayanai da Ciyarwa za su haɗu da su a wannan sanda.
+tour-apps-text = Wasiƙu suna nan, kusa da Kalanda, Lambobin sadarwa, Ayyuka, Bayanai da Fayiloli.
 tour-tabs-title = Shafukan akwatin saƙo
 tour-tabs-text = Ana raba sababbin wasiƙu zuwa Na farko, Tallace-tallace, Zamantakewa, Sabuntawa da Dandali. Kuna iya kashe shafukan a saituna masu sauri.
 tour-list-title = Saƙonninku
@@ -197,6 +213,9 @@ sign-in-again-button = Shiga
 sign-in-again-tooltip = Buɗe shafin shiga na { $provider } a burauzarku
 sign-in-again-waiting = Ana jiran burauzarku…
 sign-in-again-close = Rufe
+google-api-off = { $api } a kashe yake a aikin Google Cloud na Katna.
+google-api-turn-on = Kunna
+google-api-turn-on-tooltip = Buɗe Google Cloud don kunna { $api }, sannan danna Sake gwadawa
 sign-in-again-done = An sake shiga { $address }. Ana samo wasiƙunku…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

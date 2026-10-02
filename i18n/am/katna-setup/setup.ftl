@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = በKatna Mail ላክ
 setup-tagline = በኮምፒውተርዎ ላይ የሚኖር ፈጣን እና የግል ኢሜይል።
 setup-update-where = Katna Mailን በ{ $path } ውስጥ ያዘምናል። ደብዳቤዎ፣ ቅንብሮችዎ እና አቋራጮችዎ እንዳሉ ይቆያሉ።
 setup-for = ለማን ይጫን

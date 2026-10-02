@@ -17,9 +17,10 @@ use katna_ui::rich::Block;
 use katna_ui::unpx;
 
 use super::super::MailWindow;
+use super::tools::{Popup, below_end};
 use crate::daemon::Command;
 use crate::theme::Theme;
-use crate::widgets::tip;
+use crate::widgets::{icon, tip};
 
 /// How long the quote takes to open or close.
 const GLIDE: Duration = Duration::from_millis(220);
@@ -39,6 +40,8 @@ pub(in crate::window) struct QuoteView {
     /// button sits on.
     quote_top: Option<f32>,
     line_y: Option<f32>,
+    /// The top of the signature's first line, for its tag.
+    signature_top: Option<f32>,
 }
 
 /// The text growing as the quote opens, or shrinking as it closes.
@@ -232,10 +235,18 @@ impl MailWindow {
                     };
                     (quote_top, line_y)
                 });
+                let signature_top = editor
+                    .doc()
+                    .blocks
+                    .iter()
+                    .position(|b| matches!(b, Block::Para(p) if p.style.signature))
+                    .and_then(|at| editor.block_bounds(at))
+                    .map(|b| unpx(b.top() - top));
                 let now = QuoteView {
                     height: unpx(bounds.size.height),
                     quote_top: quote.map(|q| q.0),
                     line_y: quote.map(|q| q.1),
+                    signature_top,
                 };
                 if now != cell.get() {
                     cell.set(now);
@@ -282,6 +293,9 @@ impl MailWindow {
                             .child(squiggle(th.text_dim)),
                     )
             });
+        let tag = view
+            .signature_top
+            .and_then(|top| self.render_signature_tag(top, th, cx));
         div()
             .relative()
             .flex_none()
@@ -294,7 +308,44 @@ impl MailWindow {
                     .child(measure),
             )
             .children(line)
+            .children(tag)
             .into_any_element()
+    }
+
+    /// A faint tag naming the signature, at the right of its first line;
+    /// a click opens the other signatures under it.
+    fn render_signature_tag(
+        &self,
+        top: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let compose = self.compose.as_ref()?;
+        // The chat's reply box keeps the signature out of sight.
+        if compose.chat.is_some() {
+            return None;
+        }
+        let signature = self.config.sending.signature(compose.signature)?;
+        let open = compose.popup == Some(Popup::SignatureTag);
+        Some(
+            signature_tag(
+                "compose-signature-tag",
+                signature_name(Some(signature)),
+                open,
+                th,
+            )
+            .absolute()
+            .right_0()
+            .top(px(top))
+            .on_click(cx.listener(|this, _, _, cx| {
+                cx.stop_propagation();
+                this.toggle_popup(Popup::SignatureTag, cx);
+            }))
+            .when(open, |d| {
+                d.child(below_end(self.compose_signature_menu(th, cx)))
+            })
+            .into_any_element(),
+        )
     }
 
     /// The "..." button under a reply's text while its quote is hidden.
@@ -333,7 +384,7 @@ impl MailWindow {
             .rounded_full()
             .bg(rgba(th.surface))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .tooltip(tip(tr!("compose-remove-trimmed"), th))
@@ -566,6 +617,50 @@ impl MailWindow {
             cx.notify();
         }
     }
+}
+
+/// What the signature tag and its list call `signature`; `None` is no
+/// signature.
+pub(in crate::window) fn signature_name(
+    signature: Option<&katna_core::config::Signature>,
+) -> String {
+    match signature {
+        None => tr!("compose-tool-signature-none"),
+        Some(s) if s.name.trim().is_empty() => tr!("compose-tool-signature-untitled"),
+        Some(s) => s.name.clone(),
+    }
+}
+
+/// The faint tag naming the signature a reply is signed with, `open` while
+/// its list shows: in Compose and in the summary card's reply.
+pub(in crate::window) fn signature_tag(
+    id: &'static str,
+    name: String,
+    open: bool,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .h(px(20.0))
+        .pl(px(6.0))
+        .pr(px(4.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(4.0))
+        .rounded_full()
+        .bg(rgba(if open { th.chip } else { th.tray() }))
+        .hover(|s| s.bg(rgba(th.chip)))
+        .text_size(px(11.5))
+        .text_color(rgba(th.text_dim))
+        .cursor_pointer()
+        .when(!open, |d| {
+            d.tooltip(tip(tr!("compose-signature-tag-tip"), th))
+        })
+        .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
+        .child(icon("signature", th.text_dim, 12.0))
+        .child(name)
+        .child(icon("chevron-down", th.text_dim, 12.0))
 }
 
 #[cfg(test)]

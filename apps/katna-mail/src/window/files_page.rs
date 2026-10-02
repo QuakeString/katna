@@ -22,8 +22,8 @@ use std::sync::Arc;
 use gpui::{
     Animation, AnimationExt, AnyElement, Bounds, ClipboardItem, Context, FocusHandle, FontWeight,
     KeyDownEvent, ListAlignment, ListState, MouseButton, MouseDownEvent, MouseUpEvent, Pixels,
-    Point, ScrollWheelEvent, SharedString, Task, Window, anchored, canvas, deferred, div,
-    ease_out_quint, list, point, prelude::*, rgba,
+    Point, ScrollHandle, ScrollWheelEvent, SharedString, Task, Window, anchored, canvas, deferred,
+    div, ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
 use katna_core::AccountId;
@@ -42,9 +42,12 @@ use super::attachments::{
 use super::compose::schedule;
 use crate::data::RowFile;
 use crate::format;
-use crate::theme::Theme;
+use crate::theme::{Theme, fade};
 use crate::widgets::{icon, icon_button, placeholder, raised, tip};
 use katna_ui::text_input::{InputEvent, TextInput};
+
+mod drive;
+pub(super) mod picker;
 
 const NAV_WIDTH: f32 = 256.0;
 /// The most files the page reads.
@@ -69,8 +72,9 @@ const ROW: f32 = 34.0;
 const PAD: f32 = 16.0;
 const BETWEEN: f32 = 28.0;
 const CALENDAR_WIDTH: f32 = 14.0 * DAY + BETWEEN + 2.0 * PAD;
-/// Pictures smaller than this are signature logos and the like, not files.
-const SMALL_PICTURE: u64 = 12 * 1024;
+/// Pictures whose pixel size is read in one background run; the rest wait
+/// for the next time the page opens.
+const MEASURE_BATCH: usize = 200;
 /// Thumbnails kept in memory; those drawn longest ago go first.
 const THUMBS_KEPT: usize = 96;
 /// Thumbnails made in one background run.
@@ -393,6 +397,7 @@ enum Menu {
         anchor: Option<Date>,
     },
     Sort(Point<Pixels>),
+    Drive(drive::DriveMenu),
 }
 
 /// What to do with a file once its mail is downloaded.
@@ -423,6 +428,9 @@ pub(super) struct Library {
     wheel: Notches,
     /// Where the time chip was drawn, for its calendar to hang from.
     time_chip: Rc<Cell<Option<Bounds<Pixels>>>>,
+    /// The phone's rows of chips, when they scroll sideways.
+    kinds_scroll: ScrollHandle,
+    filters_scroll: ScrollHandle,
     sort: Sort,
     grid: bool,
     menu: Option<Menu>,
@@ -448,6 +456,13 @@ pub(super) struct Library {
     wanted: Vec<(RowFile, Kind)>,
     _thumbs: Option<Task<()>>,
     frame: u64,
+    /// Pixel sizes of the pictures read so far, kept between runs.
+    sizes: crate::data::PictureSizes,
+    /// Downloaded pictures whose size is not read yet.
+    unmeasured: Vec<RowFile>,
+    _measure: Option<Task<()>>,
+    /// The accounts' drives.
+    pub(super) cloud: drive::Cloud,
 }
 
 impl Default for Library {
@@ -466,6 +481,8 @@ impl Default for Library {
             time: Time::Any,
             wheel: Notches::default(),
             time_chip: Rc::default(),
+            kinds_scroll: ScrollHandle::new(),
+            filters_scroll: ScrollHandle::new(),
             sort: Sort::Newest,
             grid: true,
             menu: None,
@@ -484,6 +501,10 @@ impl Default for Library {
             wanted: Vec::new(),
             _thumbs: None,
             frame: 0,
+            sizes: HashMap::new(),
+            unmeasured: Vec::new(),
+            _measure: None,
+            cloud: drive::Cloud::default(),
         }
     }
 }
@@ -575,6 +596,9 @@ impl Library {
     fn changed(&mut self) {
         self.stale = true;
         self.menu = None;
+        if let Some(view) = self.cloud.view.as_mut() {
+            view.stale_now();
+        }
     }
 }
 
@@ -613,18 +637,185 @@ fn group_label(group: Group, this_year: i16) -> String {
     }
 }
 
+/// A chip over the files: a filter, `on` when it narrows them.
+fn filter_chip(
+    id: impl Into<gpui::ElementId>,
+    label: String,
+    on: bool,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .flex_none()
+        .h(px(32.0))
+        .pl(px(12.0))
+        .pr(px(6.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(4.0))
+        .rounded(px(8.0))
+        .border_1()
+        .border_color(rgba(if on { th.nav_selected } else { th.outline }))
+        .when(on, |d| d.bg(rgba(th.nav_selected)))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .text_size(px(13.0))
+        .text_color(rgba(if on {
+            th.nav_selected_text
+        } else {
+            th.text_dim
+        }))
+        .child(div().whitespace_nowrap().child(label))
+}
+
+/// The arrow at the end of a chip that opens a menu.
+/// Space between the chips.
+const CHIP_GAP: f32 = 8.0;
+/// A kind chip's width beside its label: border, padding, icon and gap.
+const KIND_CHIP_ROOM: f32 = 2.0 + 12.0 + 16.0 + 6.0 + 12.0;
+/// A kind chip folded to its icon: as wide as it is tall.
+const FOLDED_CHIP: f32 = 32.0;
+/// A filter chip's width beside its label, its arrow's, and the time
+/// chip's clear button's.
+const FILTER_CHIP_ROOM: f32 = 2.0 + 12.0 + 6.0;
+const CHIP_ARROW: f32 = 4.0 + 18.0;
+const CHIP_CLEAR: f32 = 4.0 + 20.0;
+/// How wide a row of chips fades out where more of it is scrolled away.
+const CHIP_FADE: f32 = 28.0;
+
+/// A row of chips on a phone or a tablet. When `wide` (wider than the
+/// room it has) it scrolls sideways and fades out at an edge with more
+/// chips past it.
+fn chip_row(
+    id: &'static str,
+    scroll: &ScrollHandle,
+    chips: gpui::Div,
+    wide: bool,
+    pad: f32,
+    th: &Theme,
+) -> gpui::Div {
+    let x = scroll.offset().x;
+    let max = scroll.max_offset().x;
+    // Until it is first laid out it starts at the left with more past
+    // its right edge.
+    let (left, right) = if wide {
+        (x < px(-0.5), max <= px(0.5) || x > -max + px(0.5))
+    } else {
+        (false, false)
+    };
+    let edge = |left: bool| {
+        div()
+            .absolute()
+            .top_0()
+            .bottom(px(10.0))
+            .w(px(CHIP_FADE))
+            .map(|d| if left { d.left_0() } else { d.right_0() })
+            .bg(linear_gradient(
+                if left { 90.0 } else { 270.0 },
+                linear_color_stop(rgba(th.surface), 0.2),
+                linear_color_stop(rgba(fade(th.surface, 0.0)), 1.0),
+            ))
+    };
+    div()
+        .relative()
+        .flex_none()
+        .child(
+            div()
+                .id(id)
+                .track_scroll(scroll)
+                .when(wide, |d| d.overflow_x_scroll())
+                .px(px(pad))
+                .pb(px(10.0))
+                .flex()
+                .flex_row()
+                .child(chips),
+        )
+        .when(left, |d| d.child(edge(true)))
+        .when(right, |d| d.child(edge(false)))
+}
+
+fn chip_arrow(on: bool, th: &Theme) -> AnyElement {
+    icon(
+        "drop-down",
+        if on {
+            th.nav_selected_text
+        } else {
+            th.text_dim
+        },
+        18.0,
+    )
+}
+
 impl MailWindow {
     /// Reads the files, each time the page opens.
     pub(super) fn load_library(&mut self, cx: &mut Context<Self>) {
+        self.load_drives();
         let paths = self.paths.clone();
         self.library._load = Some(cx.spawn(async move |this, cx| {
-            let files = cx
+            let (files, sizes) = cx
                 .background_executor()
-                .spawn(async move { crate::data::library(&paths, LIMIT) })
+                .spawn(async move {
+                    (
+                        crate::data::library(&paths, LIMIT),
+                        crate::data::picture_sizes(&paths),
+                    )
+                })
                 .await;
             this.update(cx, |this, cx| {
+                this.library.sizes = sizes;
                 this.set_library(files);
+                this.measure_pictures(cx);
                 cx.notify();
+            })
+            .ok();
+        }));
+    }
+
+    /// The page has read its files, since it last opened.
+    pub(super) fn library_loaded(&self) -> bool {
+        self.library.files.is_some()
+    }
+
+    /// Reads the pixel sizes of downloaded pictures not read before, in the
+    /// background, and keeps them for the next time the page opens: the
+    /// cards showing now stay where they are.
+    fn measure_pictures(&mut self, cx: &mut Context<Self>) {
+        let mut batch = std::mem::take(&mut self.library.unmeasured);
+        if batch.is_empty() {
+            return;
+        }
+        batch.truncate(MEASURE_BATCH);
+        let paths = self.paths.clone();
+        let mut sizes = self.library.sizes.clone();
+        self.library._measure = Some(cx.spawn(async move |this, cx| {
+            let sizes = cx
+                .background_executor()
+                .spawn(async move {
+                    // A few mails at a time, so memory stays small.
+                    for chunk in batch.chunks(16) {
+                        let mut ids: Vec<MessageId> = chunk.iter().map(|f| f.message).collect();
+                        ids.sort_unstable();
+                        ids.dedup();
+                        let raws = crate::data::raw_messages(&paths, &ids);
+                        for file in chunk {
+                            let Some(raw) = raws.get(&file.message) else {
+                                continue;
+                            };
+                            let view = katna_render::message_view(raw);
+                            let size = row_file_index(&view.attachments, file)
+                                .and_then(|index| katna_render::attachment_file(raw, index))
+                                .and_then(|got| katna_preview::picture::dimensions(&got.bytes));
+                            sizes.insert((file.message, file.order), size.unwrap_or((0, 0)));
+                        }
+                    }
+                    crate::data::save_picture_sizes(&paths, &sizes);
+                    sizes
+                })
+                .await;
+            this.update(cx, |this, _| {
+                this.library.sizes = sizes;
+                this.library._measure = None;
             })
             .ok();
         }));
@@ -641,13 +832,37 @@ impl MailWindow {
         let now = jiff::Timestamp::now().as_second();
         let mut senders: HashMap<String, Sender> = HashMap::new();
         let mut per_account = HashMap::new();
+        let rule = self.config.mail.files.clone();
+        let library = &mut self.library;
+        // Sizes of files no longer on the page are forgotten.
+        let present: HashSet<(MessageId, usize)> =
+            files.iter().map(|f| (f.message, f.order)).collect();
+        library.sizes.retain(|key, _| present.contains(key));
+        library.unmeasured.clear();
         let found: Vec<Found> = files
             .into_iter()
             .filter_map(|file| {
                 let kind = katna_preview::kind(&file.mime, &file.name);
                 // Signature logos and the like.
-                if matches!(kind, Kind::Picture(_)) && file.size < SMALL_PICTURE {
-                    return None;
+                if matches!(kind, Kind::Picture(_)) {
+                    let key = (file.message, file.order);
+                    let size = library.sizes.get(&key).copied();
+                    if size.is_none() && file.downloaded {
+                        library.unmeasured.push(RowFile {
+                            message: file.message,
+                            name: file.name.clone(),
+                            mime: file.mime.clone(),
+                            size: file.size,
+                            nth: file.nth,
+                            order: file.order,
+                        });
+                    }
+                    let size = size.filter(|&(w, h)| w > 0 && h > 0);
+                    if rule.leaves_out(file.size, size)
+                        || rule.is_signature(&file.name, file.conversations)
+                    {
+                        return None;
+                    }
                 }
                 let hay = format!(
                     "{}\n{}\n{}\n{}",
@@ -717,6 +932,28 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if self.library.cloud.view.is_some() {
+            match event {
+                InputEvent::Changed => {
+                    let text = search.read(cx).text().to_owned();
+                    self.drive_search(text, false, cx);
+                }
+                InputEvent::Submit => {
+                    let text = search.read(cx).text().to_owned();
+                    self.drive_search(text, true, cx);
+                }
+                InputEvent::Cancel => {
+                    if search.read(cx).text().is_empty() {
+                        window.blur(cx);
+                    } else {
+                        search.update(cx, |search, cx| search.set_text("", cx));
+                        self.drive_search(String::new(), true, cx);
+                    }
+                }
+            }
+            cx.notify();
+            return;
+        }
         match event {
             InputEvent::Changed => {
                 self.library.query = search.read(cx).text().to_owned();
@@ -792,6 +1029,12 @@ impl MailWindow {
             self.library.menu = None;
             cx.notify();
             cx.stop_propagation();
+            return;
+        }
+        if self.library.cloud.view.is_some() {
+            if !m.shift && self.on_drive_key(keys.key.as_str(), window, cx) {
+                cx.stop_propagation();
+            }
             return;
         }
         let count = self.library.shown.len();
@@ -871,6 +1114,10 @@ impl MailWindow {
     /// arrow): its place in the list follows, so the arrows go on from
     /// there.
     pub(super) fn paged_library(&mut self, index: usize, cx: &mut Context<Self>) {
+        // In the attach picker the place stays on the file it opened.
+        if self.picker.as_ref().is_some_and(|p| p.previewing) {
+            return;
+        }
         let (Some(viewer), Some(message)) = (self.files.viewer.clone(), self.files.viewer_mail)
         else {
             return;
@@ -925,6 +1172,10 @@ impl MailWindow {
     /// shows, among the files the page shows (wrapping around). A file
     /// whose mail is not downloaded yet opens once it is.
     pub(super) fn step_library(&mut self, by: isize, window: &mut Window, cx: &mut Context<Self>) {
+        if self.picker.as_ref().is_some_and(|p| p.previewing) {
+            self.step_picker(by, window, cx);
+            return;
+        }
         let Some(viewer) = self.files.viewer.clone() else {
             return;
         };
@@ -1111,17 +1362,28 @@ impl MailWindow {
         };
         let columns = (((room + GAP) / (min + GAP)).floor() as usize).max(1);
         let card_width = ((room - GAP * (columns - 1) as f32) / columns as f32).max(min);
-        if self.library.stale || columns != self.library.columns {
+        // The attach picker over Compose borrows the files and the drive
+        // while it is open: the page under it waits.
+        let picking = self.picker.is_some();
+        if !picking && (self.library.stale || columns != self.library.columns) {
             let line = card_height(card_width) + GAP;
             self.library.rebuild(columns, line);
         }
         let body = match &self.library.files {
+            _ if picking => div().into_any_element(),
+            _ if self.library.cloud.view.is_some() => {
+                self.render_drive_body(card_width, self.library.columns, pad, th, window, cx)
+            }
             None => placeholder(&tr!("files-loading"), th),
             Some(Err(err)) => placeholder(err, th),
             Some(Ok(files)) if files.is_empty() => placeholder(&tr!("files-empty"), th),
-            Some(Ok(_)) => self.render_files_body(card_width, pad, th, window, cx),
+            Some(Ok(_)) => self.render_files_body(card_width, room, pad, th, window, cx),
         };
-        let menu = self.render_files_menu(th, cx);
+        let menu = if picking {
+            None
+        } else {
+            self.render_files_menu(th, cx)
+        };
         let side = self.render_files_nav(th, cx);
         let side = self.page_side(side, NAV_WIDTH, true, th, cx);
         div()
@@ -1144,11 +1406,7 @@ impl MailWindow {
 
     fn render_files_nav(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.library;
-        // The line's text color: see `side_row`.
-        let count = |n: usize, on: bool| {
-            let n = n as u64;
-            super::nav::count_pill(n, if on { th.row_selected_text } else { th.text })
-        };
+        let count = |n: usize, on: bool| super::nav::count_pill(n as u64, on, th);
         let rule = || {
             div()
                 .flex_none()
@@ -1170,13 +1428,17 @@ impl MailWindow {
                 .truncate()
                 .child(text)
         };
-        let mut nav = div().flex_none().pt(px(8.0)).pb(px(16.0)).flex().flex_col();
+        let mut nav = div().flex_none().pb(px(16.0)).flex().flex_col();
+        // While a drive shows, no mail line is the open one, and a click
+        // on one goes back to the mail files.
+        let mail = page.cloud.view.is_none();
         for (n, types) in Types::ALL.into_iter().enumerate() {
-            let on = page.types == types;
+            let on = mail && page.types == types;
             nav = nav.child(
                 super::nav::side_row(("files-type", n), types.icon(), types.label(), on, th)
                     .when(page.counts[n] > 0, |d| d.child(count(page.counts[n], on)))
                     .on_click(cx.listener(move |this, _, _, cx| {
+                        this.close_drive(cx);
                         this.library.types = types;
                         this.library.changed();
                         cx.notify();
@@ -1192,7 +1454,7 @@ impl MailWindow {
             nav = nav.child(rule()).child(heading(tr!("files-accounts")));
             for account in accounts {
                 let id = account.id;
-                let on = page.account == Some(id);
+                let on = mail && page.account == Some(id);
                 nav = nav.child(
                     super::nav::side_row(
                         ("files-account", id.0 as usize),
@@ -1204,22 +1466,32 @@ impl MailWindow {
                     .child(count(page.per_account.get(&id).copied().unwrap_or(0), on))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         // A second click shows every account again.
-                        this.library.account = (this.library.account != Some(id)).then_some(id);
+                        if this.library.cloud.view.is_some() {
+                            this.close_drive(cx);
+                            this.library.account = Some(id);
+                        } else {
+                            this.library.account = (this.library.account != Some(id)).then_some(id);
+                        }
                         this.library.changed();
                         cx.notify();
                     })),
                 );
             }
         }
+        let mut nav = self.render_drives_nav(nav, heading, rule, th, cx);
         nav = nav.child(rule()).child(heading(tr!("files-shown")));
         for (n, direction, icon_name, label) in [
             (0_usize, Direction::Received, "inbox", tr!("files-received")),
             (1, Direction::Sent, "sent", tr!("files-sent")),
         ] {
-            let on = page.direction == direction;
+            let on = mail && page.direction == direction;
             nav = nav.child(
                 super::nav::side_row(("files-direction", n), icon_name, label, on, th).on_click(
                     cx.listener(move |this, _, _, cx| {
+                        if this.library.cloud.view.is_some() {
+                            this.close_drive(cx);
+                            this.library.direction = Direction::Any;
+                        }
                         this.library.direction = if this.library.direction == direction {
                             Direction::Any
                         } else {
@@ -1241,10 +1513,36 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// How much lower the baseline of a line of `big` text sits than one
+    /// of `small` text when both start at the same top, in the font the
+    /// app draws with: what puts the two on one baseline. Measured, as
+    /// it differs from font to font by a pixel or two.
+    fn baseline_drop(&self, window: &Window, big: Pixels, small: Pixels) -> Pixels {
+        let style = window.text_style();
+        let family = self.font.clone().unwrap_or(style.font_family.clone());
+        let text = window.text_system();
+        let id = text.resolve_font(&gpui::font(family));
+        let rem = window.rem_size();
+        // As GPUI lays a line out: the ascent and descent centred in the
+        // line's height. Fonts give the descent either way up; the line
+        // layout takes it as a positive length.
+        let baseline = |size: Pixels| {
+            let line = style.line_height.to_pixels(size.into(), rem);
+            let (ascent, descent) = (text.ascent(id, size), text.descent(id, size).abs());
+            (line - ascent - descent) / 2.0 + ascent
+        };
+        // In whole device pixels, as the glyphs land on them: lowering by
+        // the exact difference can still round the two a pixel apart.
+        let scale = window.scale_factor();
+        let device = |size: Pixels| (baseline(size) * scale).round();
+        (device(big) - device(small)) / scale
+    }
+
     /// The bar over the files, then the files.
     fn render_files_body(
         &mut self,
         card_width: f32,
+        room: f32,
         pad: f32,
         th: &Theme,
         window: &mut Window,
@@ -1252,141 +1550,10 @@ impl MailWindow {
     ) -> AnyElement {
         let page = &self.library;
         let desktop = self.layout.shape.is_desktop();
-        let chip = |id: &'static str, label: String, on: bool| {
-            div()
-                .id(id)
-                .flex_none()
-                .h(px(32.0))
-                .pl(px(12.0))
-                .pr(px(6.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(4.0))
-                .rounded(px(8.0))
-                .border_1()
-                .border_color(rgba(if on { th.nav_selected } else { th.divider }))
-                .when(on, |d| d.bg(rgba(th.nav_selected)))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .text_size(px(13.0))
-                .text_color(rgba(if on {
-                    th.nav_selected_text
-                } else {
-                    th.text_dim
-                }))
-                .child(div().whitespace_nowrap().child(label))
-        };
-        let arrow = |on: bool| {
-            icon(
-                "drop-down",
-                if on {
-                    th.nav_selected_text
-                } else {
-                    th.text_dim
-                },
-                18.0,
-            )
-        };
-        let person = page.person.as_ref().map(|email| {
-            page.senders
-                .iter()
-                .find(|s| s.email == *email)
-                .map(|s| s.name.clone())
-                .unwrap_or_else(|| email.clone())
-        });
-        let person_chip = chip(
-            "files-people",
-            match &person {
-                Some(name) => tr!("files-from-person", name = name.as_str()),
-                None => tr!("files-anyone"),
-            },
-            person.is_some(),
-        )
-        .child(arrow(person.is_some()))
-        .on_mouse_down(
-            MouseButton::Left,
-            cx.listener(|this, e: &MouseDownEvent, _, cx| {
-                cx.stop_propagation();
-                this.library.menu = Some(Menu::People(e.position));
-                cx.notify();
-            }),
-        );
-        let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
-        let days = page.time != Time::Any;
-        let time_chip = chip("files-time", page.time.label(today), days)
-            .on_mouse_down(
-                MouseButton::Left,
-                cx.listener(move |this, e: &MouseDownEvent, _, cx| {
-                    cx.stop_propagation();
-                    // The right month holds the last day picked, else today.
-                    let last = match this.library.time {
-                        Time::Days(_, last) => last,
-                        Time::Any => today,
-                    };
-                    let month = last
-                        .first_of_month()
-                        .checked_sub(jiff::Span::new().months(1))
-                        .unwrap_or(last.first_of_month());
-                    // Under the chip, its right edge lined up with the
-                    // chip's (the window's edge moves it if need be).
-                    let at = this.library.time_chip.get().map_or(e.position, |b| {
-                        point(b.right() - px(CALENDAR_WIDTH), b.bottom() + px(6.0))
-                    });
-                    this.library.menu = Some(Menu::Time {
-                        at,
-                        month,
-                        anchor: None,
-                    });
-                    cx.notify();
-                }),
-            )
-            .child({
-                let chip = page.time_chip.clone();
-                canvas(move |bounds, _, _| chip.set(Some(bounds)), |_, _, _, _| {})
-                    .absolute()
-                    .size_full()
-            })
-            // Over picked days the wheel moves them, keeping their length:
-            // down to later days, up to earlier ones.
-            .on_scroll_wheel(cx.listener(|this, e: &ScrollWheelEvent, _, cx| {
-                if this.library.time == Time::Any {
-                    return;
-                }
-                cx.stop_propagation();
-                let step = this.library.wheel.turn(e.delta, std::time::Instant::now());
-                if step != 0 {
-                    this.library.time = this.library.time.shifted(step);
-                    this.library.changed();
-                    cx.notify();
-                }
-            }))
-            .map(|d| {
-                if days {
-                    d.tooltip(tip(tr!("files-time-wheel"), th)).child(
-                        div()
-                            .id("files-time-clear")
-                            .size(px(20.0))
-                            .flex()
-                            .items_center()
-                            .justify_center()
-                            .rounded_full()
-                            .hover(|s| s.bg(rgba(th.hover)))
-                            .child(icon("close", th.nav_selected_text, 16.0))
-                            .on_mouse_down(
-                                MouseButton::Left,
-                                cx.listener(|this, _: &MouseDownEvent, _, cx| {
-                                    cx.stop_propagation();
-                                    this.library.time = Time::Any;
-                                    this.library.changed();
-                                    cx.notify();
-                                }),
-                            ),
-                    )
-                } else {
-                    d.child(arrow(false))
-                }
-            });
+        let chip = |id: &'static str, label: String, on: bool| filter_chip(id, label, on, th);
+        let arrow = |on: bool| chip_arrow(on, th);
+        let person_chip = self.files_person_chip(th, cx);
+        let time_chip = self.files_time_chip(th, cx);
         let sort_chip = chip("files-sort", page.sort.label(), false)
             .child(arrow(false))
             .on_mouse_down(
@@ -1397,40 +1564,19 @@ impl MailWindow {
                     cx.notify();
                 }),
             );
-        let view_button = |id: &'static str, name: &'static str, grid: bool, label: String| {
-            let on = page.grid == grid;
-            icon_button(id, name, 20.0, th)
-                .when(on, |d| d.bg(rgba(th.search)))
-                .tooltip(tip(label, th))
-                .on_click(cx.listener(move |this, _, _, cx| {
-                    this.library.grid = grid;
-                    this.library.changed();
-                    cx.notify();
-                }))
-        };
-        let views = div()
-            .flex_none()
-            .flex()
-            .flex_row()
-            .gap(px(4.0))
-            .child(view_button("files-grid", "table", true, tr!("files-grid")))
-            .child(view_button(
-                "files-list",
-                "list-bulleted",
-                false,
-                tr!("files-list"),
-            ));
+        let views = self.files_view_buttons(th, cx);
         let count = tr!(
             "files-count",
             count = page.shown.len(),
             size = format::size(page.shown_bytes)
         );
+        let drop = self.baseline_drop(window, px(20.0), px(13.0));
         let title = div()
             .flex_1()
             .min_w_0()
             .flex()
             .flex_row()
-            .items_baseline()
+            .items_start()
             .gap(px(10.0))
             .child(
                 div()
@@ -1442,21 +1588,20 @@ impl MailWindow {
             .child(
                 div()
                     .min_w_0()
-                    // GPUI lines the two up by their boxes' first lines
-                    // rather than by the letters, which leaves the smaller
-                    // text 3 px low; this puts it on the title's baseline.
+                    // Lowered from the title's top onto its baseline.
                     .relative()
-                    .top(px(-3.0))
+                    .top(drop)
                     .truncate()
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_faint))
                     .child(count),
             );
         let chips = div()
+            .flex_none()
             .flex()
             .flex_row()
             .items_center()
-            .gap(px(8.0))
+            .gap(px(CHIP_GAP))
             .child(person_chip)
             .child(time_chip)
             .child(sort_chip);
@@ -1486,46 +1631,73 @@ impl MailWindow {
                 )
                 .child(rule)
         } else {
-            // Kinds of file as chips, as the side column is a drawer.
-            let kinds = Types::ALL.into_iter().enumerate().map(|(n, types)| {
-                let on = page.types == types;
-                div()
-                    .id(("files-kind-chip", n))
-                    .flex_none()
-                    .h(px(32.0))
-                    .px(px(12.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(6.0))
-                    .rounded(px(8.0))
-                    .border_1()
-                    .border_color(rgba(if on { th.nav_selected } else { th.divider }))
-                    .when(on, |d| d.bg(rgba(th.nav_selected)))
-                    .cursor_pointer()
-                    .text_size(px(13.0))
-                    .text_color(rgba(if on {
-                        th.nav_selected_text
+            // Kinds of file as chips, as the side column is a drawer, then
+            // the filters. A chip is never cut off: a row too narrow for
+            // them all puts the filters on a row of their own, then folds
+            // the kinds to their icons (the picked one keeps its label),
+            // and only then scrolls sideways, fading at its edges.
+            let on_kind = page.types;
+            let label_width = |text: &str, weight| {
+                super::text_width(text, 13.0, weight, self.font.as_ref(), window)
+            };
+            let kind_width = |types: Types| {
+                let weight = if types == on_kind {
+                    FontWeight::BOLD
+                } else {
+                    FontWeight::NORMAL
+                };
+                KIND_CHIP_ROOM + label_width(&types.label(), weight)
+            };
+            let row_width = |widths: &[f32]| {
+                widths.iter().sum::<f32>() + CHIP_GAP * widths.len().saturating_sub(1) as f32
+            };
+            let labelled: Vec<f32> = Types::ALL.into_iter().map(kind_width).collect();
+            let folded: Vec<f32> = Types::ALL
+                .into_iter()
+                .map(|types| {
+                    if types == on_kind {
+                        kind_width(types)
                     } else {
-                        th.text_dim
-                    }))
-                    .when(on, |d| d.font_weight(FontWeight::BOLD))
-                    .child(icon(
-                        if on { "check" } else { types.icon() },
-                        if on {
-                            th.nav_selected_text
-                        } else {
-                            th.text_dim
-                        },
-                        16.0,
-                    ))
-                    .child(div().whitespace_nowrap().child(types.label()))
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        this.library.types = types;
-                        this.library.changed();
-                        cx.notify();
-                    }))
-            });
+                        FOLDED_CHIP
+                    }
+                })
+                .collect();
+            let (person, _) = self.files_person_label();
+            let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
+            let filters = row_width(&[
+                FILTER_CHIP_ROOM + CHIP_ARROW + label_width(&person, FontWeight::NORMAL),
+                FILTER_CHIP_ROOM
+                    + if page.time == Time::Any {
+                        CHIP_ARROW
+                    } else {
+                        CHIP_CLEAR
+                    }
+                    + label_width(&page.time.label(today), FontWeight::NORMAL),
+                FILTER_CHIP_ROOM + CHIP_ARROW + label_width(&page.sort.label(), FontWeight::NORMAL),
+            ]);
+            let one_row = row_width(&labelled) + CHIP_GAP + filters <= room;
+            let fold = !one_row && row_width(&labelled) > room;
+            let kinds_width = row_width(if fold { &folded } else { &labelled });
+            let kinds = Types::ALL
+                .into_iter()
+                .enumerate()
+                .map(|(n, types)| self.files_kind_chip(n, types, fold, th, cx));
+            let (beside, below) = if one_row {
+                (Some(chips), None)
+            } else {
+                (None, Some(chips))
+            };
+            let kinds_row = div()
+                .flex()
+                .flex_row()
+                .gap(px(CHIP_GAP))
+                .children(kinds)
+                .children(beside);
+            let row = |id: &'static str, scroll: &ScrollHandle, child: gpui::Div, wide: bool| {
+                chip_row(id, scroll, child, wide, pad, th)
+            };
+            let filters_row = below
+                .map(|chips| row("files-filters", &page.filters_scroll, chips, filters > room));
             div()
                 .flex_none()
                 .flex()
@@ -1541,18 +1713,13 @@ impl MailWindow {
                         .child(title)
                         .child(views),
                 )
-                .child(
-                    div()
-                        .id("files-chips")
-                        .overflow_x_scroll()
-                        .px(px(pad))
-                        .pb(px(10.0))
-                        .flex()
-                        .flex_row()
-                        .gap(px(8.0))
-                        .children(kinds)
-                        .child(chips),
-                )
+                .child(row(
+                    "files-chips",
+                    &page.kinds_scroll,
+                    kinds_row,
+                    kinds_width > room,
+                ))
+                .children(filters_row)
                 .child(rule)
         };
         let content = if page.shown.is_empty() {
@@ -1594,6 +1761,205 @@ impl MailWindow {
             .child(bar)
             .child(div().flex_1().min_h_0().child(content))
             .into_any_element()
+    }
+
+    /// The grid and list buttons, for the mail files and the drives.
+    fn files_view_buttons(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
+        let grid_now = self.library.grid;
+        let view_button = |id: &'static str, name: &'static str, grid: bool, label: String| {
+            let on = grid_now == grid;
+            icon_button(id, name, 20.0, th)
+                .when(on, |d| d.bg(rgba(th.search)))
+                .tooltip(tip(label, th))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.library.grid = grid;
+                    this.library.changed();
+                    cx.notify();
+                }))
+        };
+        div()
+            .flex_none()
+            .flex()
+            .flex_row()
+            .gap(px(4.0))
+            .child(view_button("files-grid", "table", true, tr!("files-grid")))
+            .child(view_button(
+                "files-list",
+                "list-bulleted",
+                false,
+                tr!("files-list"),
+            ))
+    }
+
+    /// The person chip's label, and whether it narrows the files.
+    fn files_person_label(&self) -> (String, bool) {
+        let person = self.library.person.as_ref().map(|email| {
+            self.library
+                .senders
+                .iter()
+                .find(|s| s.email == *email)
+                .map(|s| s.name.clone())
+                .unwrap_or_else(|| email.clone())
+        });
+        match &person {
+            Some(name) => (tr!("files-from-person", name = name.as_str()), true),
+            None => (tr!("files-anyone"), false),
+        }
+    }
+
+    /// The chip that narrows the files to one sender's: the page's and the
+    /// attach picker's.
+    fn files_person_chip(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Stateful<gpui::Div> {
+        let (label, on) = self.files_person_label();
+        filter_chip("files-people", label, on, th)
+            .child(chip_arrow(on, th))
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, e: &MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.library.menu = Some(Menu::People(e.position));
+                    cx.notify();
+                }),
+            )
+    }
+
+    /// The chip that narrows the files to some days, with its calendar:
+    /// the page's and the attach picker's.
+    fn files_time_chip(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Stateful<gpui::Div> {
+        let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
+        let days = self.library.time != Time::Any;
+        filter_chip("files-time", self.library.time.label(today), days, th)
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(move |this, e: &MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    // The right month holds the last day picked, else today.
+                    let last = match this.library.time {
+                        Time::Days(_, last) => last,
+                        Time::Any => today,
+                    };
+                    let month = last
+                        .first_of_month()
+                        .checked_sub(jiff::Span::new().months(1))
+                        .unwrap_or(last.first_of_month());
+                    // Under the chip, its right edge lined up with the
+                    // chip's (the window's edge moves it if need be).
+                    let at = this.library.time_chip.get().map_or(e.position, |b| {
+                        point(b.right() - px(CALENDAR_WIDTH), b.bottom() + px(6.0))
+                    });
+                    this.library.menu = Some(Menu::Time {
+                        at,
+                        month,
+                        anchor: None,
+                    });
+                    cx.notify();
+                }),
+            )
+            .child({
+                let chip = self.library.time_chip.clone();
+                canvas(move |bounds, _, _| chip.set(Some(bounds)), |_, _, _, _| {})
+                    .absolute()
+                    .size_full()
+            })
+            // Over picked days the wheel moves them, keeping their length:
+            // down to later days, up to earlier ones.
+            .on_scroll_wheel(cx.listener(|this, e: &ScrollWheelEvent, _, cx| {
+                if this.library.time == Time::Any {
+                    return;
+                }
+                cx.stop_propagation();
+                let step = this.library.wheel.turn(e.delta, std::time::Instant::now());
+                if step != 0 {
+                    this.library.time = this.library.time.shifted(step);
+                    this.library.changed();
+                    cx.notify();
+                }
+            }))
+            .map(|d| {
+                if days {
+                    d.tooltip(tip(tr!("files-time-wheel"), th)).child(
+                        div()
+                            .id("files-time-clear")
+                            .size(px(20.0))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .rounded_full()
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .child(icon("close", th.nav_selected_text, 16.0))
+                            .on_mouse_down(
+                                MouseButton::Left,
+                                cx.listener(|this, _: &MouseDownEvent, _, cx| {
+                                    cx.stop_propagation();
+                                    this.library.time = Time::Any;
+                                    this.library.changed();
+                                    cx.notify();
+                                }),
+                            ),
+                    )
+                } else {
+                    d.child(chip_arrow(false, th))
+                }
+            })
+    }
+
+    /// The chip for a kind of file, where the side column is not shown:
+    /// a narrow page and the attach picker.
+    fn files_kind_chip(
+        &self,
+        n: usize,
+        types: Types,
+        fold: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Stateful<gpui::Div> {
+        let on = self.library.types == types;
+        // Folded to its icon, with its label as a tip; the picked kind
+        // keeps its label.
+        let folded = fold && !on;
+        div()
+            .id(("files-kind-chip", n))
+            .flex_none()
+            .h(px(32.0))
+            .when(folded, |d| d.w(px(FOLDED_CHIP)).justify_center())
+            .when(!folded, |d| d.px(px(12.0)))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(6.0))
+            .rounded(px(8.0))
+            .border_1()
+            .border_color(rgba(if on { th.nav_selected } else { th.outline }))
+            .when(on, |d| d.bg(rgba(th.nav_selected)))
+            .cursor_pointer()
+            .text_size(px(13.0))
+            .text_color(rgba(if on {
+                th.nav_selected_text
+            } else {
+                th.text_dim
+            }))
+            .when(on, |d| d.font_weight(FontWeight::BOLD))
+            .child(icon(
+                if on { "check" } else { types.icon() },
+                if on {
+                    th.nav_selected_text
+                } else {
+                    th.text_dim
+                },
+                16.0,
+            ))
+            .map(|d| {
+                if folded {
+                    d.tooltip(tip(types.label(), th))
+                } else {
+                    d.child(div().whitespace_nowrap().child(types.label()))
+                }
+            })
+            .on_click(cx.listener(move |this, _, _, cx| {
+                this.library.types = types;
+                this.library.changed();
+                cx.notify();
+            }))
     }
 
     fn render_files_line(
@@ -1809,7 +2175,7 @@ impl MailWindow {
             .overflow_hidden()
             .rounded(px(CARD_RADIUS))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .bg(rgba(th.surface))
             .hover(|s| s.shadow(crate::widgets::elevation(th, 1.0)))
             .child(head)
@@ -1825,6 +2191,7 @@ impl MailWindow {
                     .text_color(rgba(th.text_dim))
                     .child(avatar)
                     .child(div().min_w_0().truncate().child(sender))
+                    .children(self.muted_mark(&found.file.from_email, 14.0, th))
                     .child(div().flex_none().text_color(rgba(th.text_faint)).child("·"))
                     .child(
                         div()
@@ -1949,7 +2316,8 @@ impl MailWindow {
                         .text_size(px(13.0))
                         .text_color(rgba(th.text_dim))
                         .child(self.person_avatar(&sender, &found.file.from_email, 20.0))
-                        .child(div().min_w_0().truncate().child(sender.clone())),
+                        .child(div().min_w_0().truncate().child(sender.clone()))
+                        .children(self.muted_mark(&found.file.from_email, 14.0, th)),
                 )
                 .child(
                     div()
@@ -2080,7 +2448,7 @@ impl MailWindow {
                     )
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.library.menu = None;
-                        this.message_in_window(message, false, cx);
+                        this.message_in_window(message, None, None, cx);
                     }))
                     .into_any_element(),
                 );
@@ -2167,8 +2535,12 @@ impl MailWindow {
                                 div()
                                     .flex_1()
                                     .min_w_0()
-                                    .truncate()
-                                    .child(sender.name.clone()),
+                                    .flex()
+                                    .flex_row()
+                                    .items_center()
+                                    .gap(px(6.0))
+                                    .child(div().min_w_0().truncate().child(sender.name.clone()))
+                                    .children(self.muted_mark(&sender.email, 16.0, th)),
                             )
                             .child(
                                 div()
@@ -2191,6 +2563,7 @@ impl MailWindow {
                 let panel = self.render_time_calendar(month, th, cx);
                 return Some(self.files_overlay(at, panel, cx));
             }
+            Menu::Drive(ref menu) => self.drive_menu_items(menu, item, separator, cx)?,
             Menu::Sort(at) => {
                 let items = Sort::ALL
                     .into_iter()
@@ -2284,6 +2657,9 @@ impl MailWindow {
             self.library.time = time;
             // Not `changed`, which would close the calendar.
             self.library.stale = true;
+            if let Some(view) = self.library.cloud.view.as_mut() {
+                view.stale_now();
+            }
             cx.notify();
         }
     }
@@ -2322,7 +2698,7 @@ impl MailWindow {
                     .items_center()
                     .rounded(px(8.0))
                     .border_1()
-                    .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+                    .border_color(rgba(if on { th.nav_selected } else { th.outline }))
                     .when(on, |d| {
                         d.bg(rgba(th.nav_selected))
                             .text_color(rgba(th.nav_selected_text))

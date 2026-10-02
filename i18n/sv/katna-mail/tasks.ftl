@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Skapa
+tasks-create = Ny uppgift
 tasks-all = Alla uppgifter
 tasks-today = I dag
 tasks-starred = Stjärnmärkta

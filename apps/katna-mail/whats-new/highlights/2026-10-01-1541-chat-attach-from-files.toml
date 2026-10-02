@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Attach from Files in a chat"
+text = """
+In a chat (Settings > Experimental), the paperclip has From Files: pick
+any file that came or went with your mail, with this conversation's
+first. Tick several, look at one with the eye, and see how they weigh
+against the 25 MB a mail can carry. The paperclip now sits inside the
+reply box, and Aa opens a slim bar with just the styles a chat needs.
+"""

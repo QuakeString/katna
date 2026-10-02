@@ -32,6 +32,11 @@ pub(crate) async fn run(
         Some(Value::Str(text)) => Some(text.to_string()),
         _ => None,
     };
+    // A reply's text, after its message ID.
+    let text = match params.get(1) {
+        Some(Value::Str(text)) => Some(text.to_string()),
+        _ => None,
+    };
     let mut platform: HashMap<&str, Value<'_>> = HashMap::new();
     if let Some(token) = &token {
         platform.insert("activation-token", Value::from(token.as_str()));
@@ -92,6 +97,9 @@ pub(crate) async fn run(
             // Without the message there is nothing to open: just start.
             if let Some(argument) = argument {
                 command.arg(flag).arg(argument);
+                if let Some(text) = text {
+                    command.arg(app_action::TEXT_FLAG).arg(text);
+                }
             }
         } else {
             command.arg(flag);

@@ -46,6 +46,7 @@ compose-sent-archived = 已发送并归档
 compose-sent = 邮件已发送
 compose-discarded = 已舍弃草稿
 compose-draft-saved = 草稿已保存
+compose-draft-saving = 正在保存…
 compose-draft-failed = 无法保存草稿：{ $error }
 compose-draft-not-opened = 无法打开草稿。
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = 无法打开草稿。
 compose-picker-insert = 插入
 compose-picker-attach = 添加
 compose-file-too-large = { $name } 太大：一封邮件最多可携带 { $limit }。
+compose-forward-files-missing = 被转发邮件的文件尚未下载，因此未附加。
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 移除附件
 compose-attachments-total = { $count } 个文件，共 { $size }
@@ -74,6 +76,7 @@ compose-drive-share-link = 通过链接共享
 compose-drive-send-without = 不共享直接发送
 compose-drive-share-cancel = 取消
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } 超过 { $limit }，因此会存入你的 OneDrive，邮件中会附上链接。
 compose-onedrive-tip = 在你的 OneDrive 中；邮件中会附上链接
 compose-onedrive-allow = 允许 OneDrive
@@ -84,8 +87,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive 无法与 { $addresses } 共享这些文件。改为让任何拥有链接的人都可以打开。
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = 将文件拖放到此处
 compose-drop-here = 拖放到此处
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = 保留格式
 compose-paste-table = 表格
 compose-paste-picture = 图片
@@ -99,6 +106,9 @@ compose-encrypt = 加密
 compose-encrypted = 已加密：只有收件人可以阅读
 compose-sign = 签署
 compose-signed = 已签署：收件人可以验证邮件确实来自你
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = 跟踪打开和点击
 compose-tracked = 已跟踪：每位收件人打开邮件或点开链接时，你都能看到
 compose-track-clicks = 跟踪链接点击（纯文本邮件无法显示是否被打开）
@@ -131,6 +141,9 @@ send-check-subject-title = 不填主题就发送？
 send-check-subject-text = 这封邮件没有主题。
 send-check-add-subject = 添加主题
 send-check-send-anyway = 仍然发送
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = 不是有效的电子邮件地址
 recipient-show-address = 显示地址
 recipient-remove = 移除

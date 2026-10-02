@@ -20,6 +20,7 @@ tab-provider-other = តម្រៀបដោយ Katna
 
 list-select = ជ្រើសរើស
 list-refresh = ផ្ទុកឡើងវិញ
+list-back-to-top = ត្រឡប់ទៅខាងលើ
 list-checking = កំពុងពិនិត្យរកសំបុត្រថ្មី…
 list-more = ច្រើនទៀត
 list-mark-read = សម្គាល់ថាបានអាន
@@ -236,11 +237,7 @@ menu-add-note = បន្ថែមកំណត់ចំណាំ
 menu-print-all = បោះពុម្ពទាំងអស់
 menu-new-window = បើកក្នុងបង្អួចថ្មី
 menu-move-to = ផ្លាស់ទីទៅ
-# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
-# video call.
 menu-follow-up = តាមដាន
-# Opens a submenu of the rarer actions: Report spam, Mark as important and
-# Pin to top.
 menu-more = ច្រើនទៀត
 menu-move-to-heading = ផ្លាស់ទីទៅ៖
 menu-find-from = ស្វែងរកសំបុត្រពី { $name }

@@ -9,7 +9,7 @@ tray-new-message = Thư _mới
 tray-preferences = _Cài đặt
 tray-quit = _Thoát
 
-## The tray icon's tooltip
+## The tray icon's tooltip, under "Katna Mail"
 
 tray-unread = { $count ->
     [0] Không có thư chưa đọc

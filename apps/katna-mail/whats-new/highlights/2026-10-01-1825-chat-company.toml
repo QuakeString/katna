@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Where they work, on their card"
+text = """
+In a chat (Settings > Experimental), a person's card now has a Company
+section: what the company does, where it is, since when, and links to its
+website and pages, read from its own home page and Wikipedia. It follows
+the Sender pictures switch.
+"""

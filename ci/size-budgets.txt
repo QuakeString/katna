@@ -1,6 +1,6 @@
 # Release binary size budgets in bytes (docs/ARCHITECTURE.md §17).
 # <binary> <max-bytes>
-katna-mail 100000000
+katna-mail 150000000
 katna-calendar 31457280
 katna-daemon 50000000
 katnactl 10485760

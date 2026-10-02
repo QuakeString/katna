@@ -46,6 +46,7 @@ compose-sent-archived = Отправлено и перемещено в архи
 compose-sent = Письмо отправлено
 compose-discarded = Черновик удалён
 compose-draft-saved = Черновик сохранён
+compose-draft-saving = Сохранение…
 compose-draft-failed = Не удалось сохранить черновик: { $error }
 compose-draft-not-opened = Не удалось открыть черновик.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = Не удалось открыть черновик.
 compose-picker-insert = Вставить
 compose-picker-attach = Прикрепить
 compose-file-too-large = Файл { $name } слишком большой: письмо может содержать не больше { $limit }.
+compose-forward-files-missing = Файлы пересылаемого письма не загружены, поэтому они не прикреплены.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Удалить вложение
 compose-attachments-total = { $count ->
@@ -82,6 +84,7 @@ compose-drive-share-link = Поделиться по ссылке
 compose-drive-send-without = Отправить без доступа
 compose-drive-share-cancel = Отмена
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } больше { $limit }, поэтому файл попадёт в ваш OneDrive, а в письме будет ссылка.
 compose-onedrive-tip = В вашем OneDrive; в письме будет ссылка
 compose-onedrive-allow = Разрешить OneDrive
@@ -95,6 +98,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive не может предоставить доступ к файлам адресатам { $addresses }. Вместо этого файлы сможет открыть любой, у кого есть ссылка.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Перетащите файлы сюда
 compose-drop-here = Перетащите сюда
 compose-paste-keep-formatting = Сохранить форматирование

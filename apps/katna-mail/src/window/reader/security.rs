@@ -240,7 +240,7 @@ impl MailWindow {
                 .gap(px(6.0))
                 .rounded(px(8.0))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .text_size(px(13.0))
                 .line_height(px(18.0))
                 .children(lines.into_iter().map(|line| {

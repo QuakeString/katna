@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “အကောင့်အားလုံး�
 accounts-row = အကောင့်များ
 accounts-row-detail = ဖိုင်တွဲ အကန့်နှင့် အကောင့် မီနူးသည် အကောင့်များကို ဤအစီအစဉ်အတိုင်း ပြသည်၊ ပထမတစ်ခုသည် မူရင်းအကောင့် ဖြစ်သည်။ အကောင့်ကို ဖယ်ရှားခြင်းက ဤကွန်ပျူတာပေါ်ရှိ ၎င်း၏ မေးလ်၏ Katna မိတ္တူကို ဖျက်သည်။ မေးလ်သည် ဆာဗာပေါ်တွင် ရှိနေမည်။
 accounts-none = အကောင့် မရှိသေးပါ။
+accounts-pop3-row = ဆာဗာပေါ်ရှိ မေးလ်
+accounts-pop3-row-detail = POP3 အကောင့်များသည် မေးလ်ကို ဤကွန်ပျူတာသို့ ဒေါင်းလုဒ်လုပ်သည်။ ထို့နောက် ဆာဗာပေါ်ရှိ မိတ္တူကို ဘာလုပ်မည်ကို ရွေးပါ။
+accounts-pop3-with-katna = Katna တွင် ကျွန်ုပ် ဖျက်သည်အထိ သိမ်းထားရန်
+accounts-pop3-at-once = ဒေါင်းလုဒ်ပြီးသည်နှင့် ဖျက်ရန်
+accounts-pop3-after-days = { $count ->
+   *[other] { $count } ရက်ကြာပြီးနောက် ဖျက်ရန်
+}
+accounts-pop3-never = ဘယ်တော့မှ မဖျက်ရန်
+accounts-pop3-days-less = ရက် လျှော့ရန်
+accounts-pop3-days-more = ရက် တိုးရန်
 accounts-kind-imported = တင်သွင်းထားသည်
 accounts-picture-reset = ဒက်စ်တော့ ပုံကို သုံးရန်
 accounts-picture-change = ပုံပြောင်းရန်
@@ -70,6 +80,9 @@ accounts-confirm-word = ဖျက်
 accounts-confirm-placeholder = “{ accounts-confirm-word }” ဟု ရိုက်ပါ
 accounts-confirm-prompt = အတည်ပြုရန် “{ accounts-confirm-word }” ဟု ရိုက်ပါ-
 accounts-cancel = မလုပ်တော့ပါ
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Katna ဒေါင်းလုဒ်လုပ်ထားသော မေးလ်နှင့် ပူးတွဲဖိုင်များ၊ ပို့သူ ပုံများနှင့် ရှာဖွေမှု အညွှန်းကို ဖျက်ပြီး မကြာသေးမီ မေးလ်ကို ထပ်မံ ဒေါင်းလုဒ်လုပ်သည်။ အကောင့်များ၊ ဆက်တင်များနှင့် ဤကွန်ပျူတာပေါ်တွင်သာ ရှိသော မေးလ်များ ကျန်ရှိနေမည်။
 reset-cache-button = ကက်ရှ်ကို ပြန်လည်သတ်မှတ်ရန်
 reset-cache-title = ကက်ရှ်ကို ပြန်လည်သတ်မှတ်မလား။

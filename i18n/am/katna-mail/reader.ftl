@@ -127,6 +127,7 @@ attachment-count = { $count ->
    *[other] { $count } አባሪዎች
 }
 attachment-save = አስቀምጥ
+attachment-forward = አስተላልፍ
 attachment-save-all = ሁሉንም አስቀምጥ
 attachment-save-all-tooltip = እያንዳንዱን አባሪ ወደ አቃፊ አስቀምጥ
 attachment-save-here = እዚህ አስቀምጥ
@@ -177,6 +178,11 @@ print-not-downloaded = (ገና አልወረደም።)
 print-encrypted = (የተመሰጠረ። ጽሑፉን ለማተም በKatna Mail ውስጥ ይክፈቱት።)
 print-to = ለ፦ { $addresses }
 print-cc = ግልባጭ፦ { $addresses }
+
+## Message text (right-click menu in the reading pane)
+
+text-pin = ከላይ ሰካ
+text-copy-address = አድራሻ ቅዳ
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

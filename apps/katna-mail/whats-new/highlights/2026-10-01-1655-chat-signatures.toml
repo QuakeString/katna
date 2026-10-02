@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Chats leave out signatures and footers"
+text = """
+Chat bubbles now show only what people wrote. Sign-offs like "Best
+regards", company signatures under a line or with addresses and phone
+numbers, and footers with unsubscribe links or notices wait behind the
+··· pill, along with a signature someone repeats in every mail.
+"""

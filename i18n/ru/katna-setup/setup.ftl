@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Отправить через Katna Mail
 setup-tagline = Быстрая и конфиденциальная почта, которая хранится на вашем компьютере.
 setup-update-where = Обновление Katna Mail в { $path }. Ваша почта, настройки и ярлыки останутся без изменений.
 setup-for = Установить для

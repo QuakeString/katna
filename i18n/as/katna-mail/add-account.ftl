@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = মেইল একাউণ্ট যোগ কৰক
+add-account-providers-intro = আপোনাৰ মেইল প্ৰদানকাৰী বাছনি কৰক। বাকীখিনি Katnaই বিচাৰি উলিয়াব।
+add-account-provider-other = অন্য মেইল
+add-account-provider-other-detail = যিকোনো IMAP বা POP3 একাউণ্ট
+add-account-provider-google-detail = Gmail আৰু Google Workspace
+add-account-provider-microsoft-detail = Outlook আৰু Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = { $provider }ত ছাইন ইন কৰক
+add-account-form-title-other = আপোনাৰ মেইল একাউণ্ট
+add-account-form-intro = Katnaই আপোনাৰ পাছৱৰ্ড আপোনাৰ ছিষ্টেমৰ কীৰিঙত ৰাখে।
 add-account-looking = { $address }ৰ মেইল ছাৰ্ভাৰ বিচাৰি থকা হৈছে…
 add-account-address-intro = আপোনাৰ ইমেইল ঠিকনা লিখক। Katnaই আপোনাৰ বাবে ছাৰ্ভাৰবোৰ বিচাৰি উলিয়াব।
 add-account-servers-title = ছাৰ্ভাৰৰ ছেটিংছ
@@ -13,10 +22,18 @@ add-account-signing-in = ছাইন ইন কৰি থকা হৈছে…
 add-account-browser-title = আপোনাৰ ব্ৰাউজাৰত আগবাঢ়ক
 add-account-browser-intro = Katnaই আপোনাৰ ব্ৰাউজাৰত { $provider }ৰ ছাইন-ইন পৃষ্ঠাখন খুলিছে। তাত ছাইন ইন কৰক আৰু Katnaক আপোনাৰ মেইল পঢ়িবলৈ আৰু পঠিয়াবলৈ অনুমতি দিয়ক, তাৰ পিছত ইয়ালৈ উভতি আহক।
 add-account-browser-hint = কোনো পৃষ্ঠা খোলা নাই নেকি? আপোনাৰ ব্ৰাউজাৰৰ উইণ্ড'বোৰ চাওক, নতুবা উভতি গৈ পুনৰ চেষ্টা কৰক।
+add-account-stage-browser = আপুনি ব্ৰাউজাৰত ছাইন ইন কৰালৈ অপেক্ষা কৰি আছে…
+add-account-stage-signing-in-at = { $server }ত ছাইন ইন কৰি আছে…
+add-account-help-app-password-link = এপ পাছৱৰ্ড কেনেকৈ বনাব
+add-account-help-turn-on-imap = { $provider }ৰ ৱেব মেইলৰ ছেটিংছত IMAP আৰু POP3 এক্সেছ অন কৰিলেহে ই মেইল এপক সোমাবলৈ দিয়ে।
+add-account-help-turn-on-imap-link = কেনেকৈ অন কৰিব
 
 ## Add a mail account: fields
 
 add-account-field-address = ইমেইল ঠিকনা
+add-account-receive-with = মেইল লাভ কৰক ইয়াৰ দ্বাৰা
+add-account-imap-about = IMAPএ আপোনাৰ মেইল আৰু ফ'ল্ডাৰ ছাৰ্ভাৰত ৰাখে, প্ৰতিটো ডিভাইচত একে। সম্ভৱ হ'লে ইয়াকে বাছনি কৰক।
+add-account-pop3-about = POP3এ আপোনাৰ মেইল এই কম্পিউটাৰলৈ ডাউনল'ড কৰে। ইয়াত পঢ়া বা স্থানান্তৰ কৰা মেইল ছাৰ্ভাৰত আৰু আপোনাৰ আন ডিভাইচত যেনেকৈ আছে তেনেকৈয়ে থাকে।
 add-account-incoming = অহা মেইল ({ $protocol })
 add-account-outgoing = যোৱা মেইল ({ $protocol })
 add-account-field-server = ছাৰ্ভাৰ
@@ -46,6 +63,8 @@ add-account-sign-in-instead = তাৰ সলনি { $provider }ৰে ছা�
 add-account-servers-button = ছাৰ্ভাৰৰ ছেটিংছ
 add-account-back = উভতি যাওক
 add-account-add = একাউণ্ট যোগ কৰক
+add-account-done = হ'ল
+add-account-another = আন এটা একাউণ্ট যোগ কৰক
 add-account-cancel = বাতিল কৰক
 
 ## Add a mail account: problems
@@ -75,6 +94,22 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katnaৰ এই কপিটোৱে এতিয়াও Google একাউণ্টত ছাইন ইন কৰিব নোৱাৰে।
    *[other] এই প্ৰদানকাৰীয়ে কেৱল নিজৰ পৃষ্ঠাতহে ছাইন ইন কৰিবলৈ দিয়ে, যিটো Katnaই ইয়াৰ বাবে এতিয়াও কৰিব নোৱাৰে।
 }
+add-account-smtp-not-found = Katnaই আপোনাৰ মেইল ক'ৰ পৰা পঢ়িব বিচাৰি পালে, কিন্তু ক'লৈ পঠিয়াব বিচাৰি নাপালে। বহিৰ্গামী ছাৰ্ভাৰটো লিখক।
+
+## Add a mail account: the last step
+
+add-account-done-title = আপোনাৰ একাউণ্ট সাজু
+add-account-done-intro = Katnaই এতিয়া আপোনাৰ মেইল আনি আছে। নতুন মেইল আহি পোৱাৰ লগে লগে দেখা যাব।
+add-account-done-sign-in = ছাইন ইন
+add-account-done-signed-in-with = { $provider }ৰ সৈতে, আপোনাৰ ব্ৰাউজাৰত
+add-account-done-receiving = মেইল লাভ কৰা
+add-account-done-sending = মেইল পঠোৱা
+add-account-done-on-server = ছাৰ্ভাৰত থকা মেইল
+add-account-done-kept = Katnaত আপুনি নমচালৈকে ৰখা হয়
+add-account-done-pop3-hint = ছাৰ্ভাৰত থকা মেইলৰ কি হ'ব, ছেটিংছ > একাউণ্টসমূহত সলনি কৰক।
+add-account-done-zoho-title = কাৰ্য আৰু কেলেণ্ডাৰ
+add-account-done-zoho-about = Zohoএ এইবোৰ মেইলৰ পৰা পৃথককৈ ৰাখে। এইবোৰ Katnaলৈ আনিবলৈ এবাৰ Zohoৰে ছাইন ইন কৰক।
+add-account-done-linked = কাৰ্য আৰু কেলেণ্ডাৰ সংযোগ কৰা হ'ল
 
 ## The account menu (from the account button on the top bar)
 

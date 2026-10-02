@@ -292,7 +292,7 @@ impl MailWindow {
                 .relative()
                 .min_w(px(200.0))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .occlude()
                 .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
                 .on_mouse_down_out(cx.listener(|this, _, _, cx| {
@@ -462,8 +462,14 @@ impl MailWindow {
             compose.body.focus_handle(cx)
         };
         window.focus(&focus, cx);
+        if old == Kind::Forward {
+            compose.drop_forwarded();
+        }
         self.chips_changed(Field::To, cx);
         self.chips_changed(Field::Cc, cx);
+        if kind == Kind::Forward {
+            self.attach_forwarded(cx);
+        }
         cx.notify();
     }
 }

@@ -77,6 +77,16 @@ notify-task-done = Mark as done
 ## The buttons of new-mail notifications and reminders
 
 notify-open = Open
+# Only on a notification about one message: shows more of it in the same
+# notification.
+notify-peek = Peek
+# Only on a notification about one message: a field to type a reply into,
+# where the desktop has one, else Katna Mail's reply window.
+notify-reply = Reply
+# The reply field's grey text before anything is typed. $name: the sender.
+notify-reply-placeholder = Reply to { $name }…
+# The reply field's button.
+notify-send = Send
 # Only on a notification about one message.
 notify-reply-all = Reply all
 notify-mark-read = Mark as read
@@ -93,5 +103,14 @@ notify-archived-count = { $count ->
     [one] { $count } message moved out of the inbox
    *[other] { $count } messages moved out of the inbox
 }
-# Its button: puts the mail back in the inbox.
+# Its button: puts the mail back in the inbox. Also on the note below: keeps
+# the reply from going and opens it in Katna Mail to write on.
 notify-undo = Undo
+
+## After a reply typed into a notification: a note in the same place while
+## it waits for the undo time
+
+# Its title. Under it, the start of the reply. $name: who it goes to.
+notify-reply-sent = Reply sent to { $name }
+# Its button: shows the conversation in Katna Mail.
+notify-open-in-katna = Open in Katna

@@ -474,6 +474,13 @@ impl TextInput {
         self.select_all_text(cx)
     }
 
+    /// Selects bytes `range` of the text (clamped to it).
+    pub fn select_range(&mut self, range: Range<usize>, cx: &mut Context<Self>) {
+        let end = range.end.min(self.content.len());
+        self.move_to(range.start.min(end), cx);
+        self.select_to(end, cx)
+    }
+
     /// Selects all the text, so typing replaces it.
     pub fn select_all_text(&mut self, cx: &mut Context<Self>) {
         self.move_to(0, cx);

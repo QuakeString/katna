@@ -1,8 +1,14 @@
 # Katna Mail, Japanese (日本語).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Reading pane toolbar
+
 contact-panel-show = 連絡先の詳細を表示
 contact-panel-hide = 連絡先の詳細を非表示
+
+## The panel
+
 contact-email = メールを送信
 contact-search = 相手とのメールを検索
 contact-add-to-contacts = 連絡先に追加
@@ -12,6 +18,11 @@ contact-from-to = 相手から { $from }、あなたから { $to }
 contact-first = 最初
 contact-latest = 最新
 contact-call = 電話をかける
+contact-phone-mobile = 携帯
+contact-phone-direct = 直通
+contact-phone-office = 会社
+contact-phone-fax = FAX
+contact-phone-whatsapp = WhatsApp
 contact-copy-number = 番号をコピー
 contact-number-copied = 番号をコピーしました
 contact-local-time = 相手の時刻 { $time } ({ $offset })
@@ -23,5 +34,8 @@ contact-less = 閉じる
 contact-files = ファイル
 contact-tasks = タスク
 contact-meetings = 今後の予定
+contact-company = 会社
+contact-company-since = { $year } 年創業
+contact-company-from = { $site } より · { $when }に確認
 contact-people = このスレッドの参加者
 contact-local-only = このコンピューター上のメールのみから取得

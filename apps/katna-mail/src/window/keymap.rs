@@ -14,11 +14,11 @@ use super::{
     FocusSearch, Forward, GoToAllMail, GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT,
     ListTop, MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NextPane,
     OpenContextMenu, OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit,
-    READER_CONTEXT, Reload, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT, ScrollDown,
-    ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast, SelectNext,
-    SelectNone, SelectPrevious, SendMail, ShowCalendar, ShowContacts, ShowFiles, ShowMail,
-    ShowNotes, ShowShortcuts, ShowTasks, ToggleCheck, ToggleMute, ToggleNavigation, ToggleSettings,
-    ToggleStar, Undo, WINDOW_CONTEXT,
+    READER_CONTEXT, Reload, RephraseSelection, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT,
+    ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast,
+    SelectNext, SelectNone, SelectPrevious, SendMail, ShowCalendar, ShowContacts, ShowFiles,
+    ShowMail, ShowNotes, ShowShortcuts, ShowTasks, Summarize, ToggleCheck, ToggleMute,
+    ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -166,6 +166,7 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("important", Actions, Mail, ["+", "="], MarkImportant),
     shortcut!("not_important", Actions, Mail, ["-"], MarkNotImportant),
     shortcut!("mute", Actions, Mail, ["m"], ToggleMute),
+    shortcut!("summarize", Actions, Mail, ["shift-s"], Summarize),
     shortcut!("check", Actions, List, ["x"], ToggleCheck),
     shortcut!("select_all", Actions, List, ["* a"], SelectAll),
     shortcut!("select_none", Actions, List, ["* n"], SelectNone),
@@ -437,6 +438,12 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
         "ctrl-enter",
         SendMail,
         Some("Compose > TextInput"),
+    ));
+    // Ctrl+J rephrases the text selected in a message with AI.
+    bindings.push(KeyBinding::new(
+        "ctrl-j",
+        RephraseSelection,
+        Some("Compose > RichText"),
     ));
     // Typing in a field inside the reader (the inline reply) types: keys
     // that type text do nothing else there, and do not wait for a second

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "One close button for every pane"
+text = """
+The ✕ on the contact card is now the same round button as the ✕ on the
+open mail, with the same grey circle when you point at it.
+"""

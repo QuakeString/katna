@@ -46,6 +46,7 @@ compose-sent-archived = મોકલ્યો અને આર્કાઇવ �
 compose-sent = મેસેજ મોકલ્યો
 compose-discarded = ડ્રાફ્ટ કાઢી નાખ્યો
 compose-draft-saved = ડ્રાફ્ટ સેવ કર્યો
+compose-draft-saving = સેવ થઈ રહ્યું છે…
 compose-draft-failed = ડ્રાફ્ટ સેવ કરી શકાયો નહીં: { $error }
 compose-draft-not-opened = ડ્રાફ્ટ ખોલી શકાયો નહીં.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = ડ્રાફ્ટ ખોલી શકાયો �
 compose-picker-insert = દાખલ કરો
 compose-picker-attach = જોડો
 compose-file-too-large = { $name } ખૂબ મોટી છે: એક મેસેજમાં વધુમાં વધુ { $limit } સમાઈ શકે.
+compose-forward-files-missing = ફૉરવર્ડ કરેલા મેસેજની ફાઇલો ડાઉનલોડ થઈ નથી, તેથી તે જોડાઈ નથી.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = જોડાણ દૂર કરો
 compose-attachments-total = { $count ->
@@ -78,6 +80,7 @@ compose-drive-share-link = લિંક વડે શેર કરો
 compose-drive-send-without = શેર કર્યા વિના મોકલો
 compose-drive-share-cancel = રદ કરો
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } { $limit } કરતાં મોટી છે, તેથી તે તમારા OneDrive માં જાય છે અને મેસેજમાં તેની લિંક હોય છે.
 compose-onedrive-tip = તમારા OneDrive માં; મેસેજમાં લિંક હોય છે
 compose-onedrive-allow = OneDrive ને મંજૂરી આપો
@@ -89,6 +92,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive ફાઇલો { $addresses } સાથે શેર કરી શકતું નથી. તેના બદલે લિંક ધરાવનાર કોઈપણ તેમને ખોલી શકે છે.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ફાઇલો અહીં મૂકો
 compose-drop-here = અહીં મૂકો
 compose-paste-keep-formatting = ફૉર્મેટિંગ રાખો

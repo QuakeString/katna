@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Kirim dengan Katna Mail
 setup-tagline = Email yang cepat dan privat, tersimpan di komputer Anda.
 setup-update-where = Memperbarui Katna Mail di { $path }. Email, setelan, dan pintasan Anda tetap seperti semula.
 setup-for = Instal untuk

@@ -38,7 +38,25 @@ notify-task-done = ཚར་ཡི་ཟེར་རྟགས་བཀོད་
 ## Its buttons
 
 notify-open = ཁ་ཕྱེ།
+notify-peek = བལྟ།
+notify-reply = ལན་སློག
+notify-reply-placeholder = { $name } ལུ་ལན་སློག…
+notify-send = གཏང་།
 notify-reply-all = ཆ་མཉམ་ལུ་ལན་སློག
 notify-mark-read = ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
 notify-mark-all-read = ཆ་མཉམ་ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
 notify-archive = ཡིག་མཛོད་ནང་བཙུགས།
+
+## After Archive on a notification: a short note in the same place
+
+notify-archived = ཡིག་མཛོད་ནང་བཙུགས་ཡི།
+notify-archived-count = { $count ->
+   *[other] འཕྲིན་དོན་ { $count } ནང་འབྱོར་སྒྲོམ་ལས་ཕྱི་ཁར་སྤོ་ཡི།
+}
+notify-undo = ལོག་འབད།
+
+## After a reply typed into a notification: a note in the same place while
+## it waits for the undo time
+
+notify-reply-sent = { $name } ལུ་ལན་བཏང་ཡི།
+notify-open-in-katna = Katna ནང་ཁ་ཕྱེ།

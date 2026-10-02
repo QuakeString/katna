@@ -38,6 +38,12 @@ pub enum Command {
     /// Puts back the quoted message just removed from a reply. The app does
     /// this itself; the daemon never sees it.
     RestoreQuote,
+    /// Takes back the text just rephrased in the message. The app does
+    /// this itself; the daemon never sees it.
+    UndoRephrase,
+    /// Puts back the subject the user typed before picking another
+    /// wording. The app does this itself; the daemon never sees it.
+    RestoreSubject(String),
     /// Brings back the saved contacts just deleted (by their first card).
     /// The Contacts page does this itself; the daemon never sees it.
     RestoreContacts(Vec<i64>),
@@ -79,6 +85,17 @@ pub enum Command {
     /// Mutes something until then (Unix seconds), or until unmuted (0).
     Mute(Muted, i64),
     Unmute(Muted),
+    /// Pins something of a mail to the top of its chat, with the pin bar's
+    /// label, in place of another pin (`Pim1.PinInChat`).
+    PinInChat(MessageId, katna_store::Pinned, String, Option<i64>),
+    /// Takes off a chat pin, by its ID.
+    UnpinInChat(i64),
+    /// Puts a chat's pins in this order.
+    OrderChatPins(Vec<i64>),
+    /// Moves items of an account's drive to its bin, or back out of it.
+    CloudTrash(katna_core::AccountId, Vec<String>, bool),
+    /// Renames an item of an account's drive: its id and new name.
+    CloudRename(katna_core::AccountId, String, String),
     /// Sets whether a folder (or an inbox tab) notifies and counts.
     SetBell(
         FolderId,
@@ -140,6 +157,14 @@ impl Command {
         }
     }
 
+    /// The account whose drive this changes, read again once it is done.
+    pub fn drive(&self) -> Option<katna_core::AccountId> {
+        match self {
+            Self::CloudTrash(account, ..) | Self::CloudRename(account, ..) => Some(*account),
+            _ => None,
+        }
+    }
+
     /// `self` split into commands of at most `size` messages each, in order.
     pub fn batches(&self, size: usize) -> Vec<Command> {
         let split = |ids: &[MessageId], make: &dyn Fn(Vec<MessageId>) -> Command| {
@@ -194,6 +219,8 @@ impl Command {
             | Self::UndoSend(_)
             | Self::ReopenDraft
             | Self::RestoreQuote
+            | Self::UndoRephrase
+            | Self::RestoreSubject(_)
             | Self::RestoreContacts(_)
             | Self::RestoreScheme(..)
             | Self::ContactLabels(_)
@@ -212,6 +239,11 @@ impl Command {
             | Self::Calendar(_)
             | Self::Mute(..)
             | Self::Unmute(_)
+            | Self::PinInChat(..)
+            | Self::UnpinInChat(_)
+            | Self::OrderChatPins(_)
+            | Self::CloudTrash(..)
+            | Self::CloudRename(..)
             | Self::SetBell(..) => {
                 return None;
             }
@@ -343,6 +375,22 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::TrashNotes(ids, trashed) => pim.trash_notes(ids, *trashed).await.map(|_| ()),
         Command::DeleteNotes(ids) => pim.delete_notes(ids).await.map(|_| ()),
         Command::OrderNotes(ids) => pim.order_notes(ids).await.map(|_| ()),
+        Command::PinInChat(message, what, label, replace) => {
+            let (kind, file, text) = match what {
+                katna_store::Pinned::Mail => ("mail", 0, ""),
+                katna_store::Pinned::File(n) => ("file", *n as i64, ""),
+                katna_store::Pinned::Text(text) => ("text", 0, text.as_str()),
+            };
+            match pim
+                .pin_in_chat(message.0, kind, file, text, label, replace.unwrap_or(0))
+                .await
+            {
+                Ok(0) => return Err(katna_i18n::tr!("chat-pins-full")),
+                other => other.map(|_| ()),
+            }
+        }
+        Command::UnpinInChat(id) => pim.unpin_in_chat(*id).await,
+        Command::OrderChatPins(ids) => pim.order_chat_pins(ids).await,
         Command::ContactLabels(cards) => {
             for (card, labels) in cards {
                 pim.set_contact_labels(*card, labels)
@@ -369,6 +417,8 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::RelabelNotes(ids, old, new) => pim.relabel_notes(ids, old, new).await.map(|_| ()),
         Command::ReopenDraft
         | Command::RestoreQuote
+        | Command::UndoRephrase
+        | Command::RestoreSubject(_)
         | Command::RestoreContacts(_)
         | Command::RestoreScheme(..) => {
             return Ok(());
@@ -389,6 +439,10 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
             pim.set_bell(folder.0, category, bell.notify, bell.count)
                 .await
         }
+        Command::CloudTrash(account, ids, trashed) => {
+            pim.cloud_trash(account.0, ids, *trashed).await.map(|_| ())
+        }
+        Command::CloudRename(account, id, name) => pim.cloud_rename(account.0, id, name).await,
         Command::Several(commands) => {
             for command in commands {
                 Box::pin(send(connection, command)).await?;
@@ -705,6 +759,147 @@ pub async fn translation_sources(
     }
 }
 
+/// What came back from rephrasing: the text, and the plan it was done
+/// under (`trial` with its days left, `paid`, or `own`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Rephrased {
+    pub text: String,
+    pub plan: String,
+    pub days_left: u32,
+}
+
+/// Rephrases `text` in `tone` with the AI service the settings name, or
+/// gives a `katna_ai::wire::problem`.
+pub async fn ai_rephrase(
+    connection: &Connection,
+    text: &str,
+    tone: &str,
+    instruction: &str,
+) -> Result<Rephrased, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    let (text, plan, days_left, problem) = pim
+        .ai_rephrase(text, tone, instruction)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    if problem.is_empty() {
+        Ok(Rephrased {
+            text,
+            plan,
+            days_left,
+        })
+    } else {
+        Err(problem)
+    }
+}
+
+/// Sums up a conversation: `request` is a
+/// `katna_ai::summary::SummarizeRequest` and `newest` the newest of its
+/// mails sent. Gives the summary (as JSON) with its plan, or a
+/// `katna_ai::wire::problem`.
+pub async fn ai_summarize(
+    connection: &Connection,
+    newest: MessageId,
+    request: &katna_ai::summary::SummarizeRequest,
+) -> Result<Rephrased, String> {
+    let failed = || katna_ai::wire::problem::FAILED.to_owned();
+    let request = serde_json::to_string(request).map_err(|_| failed())?;
+    let pim = PimProxy::new(connection).await.map_err(|_| failed())?;
+    let (text, plan, days_left, problem) = pim
+        .ai_summarize(newest.0, &request)
+        .await
+        .map_err(|_| failed())?;
+    if problem.is_empty() {
+        Ok(Rephrased {
+            text,
+            plan,
+            days_left,
+        })
+    } else {
+        Err(problem)
+    }
+}
+
+/// A first draft of a reply or a forward's note, or ideas for one (a
+/// JSON array of strings), with its plan, or a `katna_ai::wire::problem`.
+pub async fn ai_draft(
+    connection: &Connection,
+    request: &katna_ai::draft::DraftRequest,
+) -> Result<Rephrased, String> {
+    let failed = || katna_ai::wire::problem::FAILED.to_owned();
+    let request = serde_json::to_string(request).map_err(|_| failed())?;
+    let pim = PimProxy::new(connection).await.map_err(|_| failed())?;
+    let (text, plan, days_left, problem) = pim.ai_draft(&request).await.map_err(|_| failed())?;
+    if problem.is_empty() {
+        Ok(Rephrased {
+            text,
+            plan,
+            days_left,
+        })
+    } else {
+        Err(problem)
+    }
+}
+
+/// The rest of the sentence at the end of `before` (empty when unsure),
+/// or a `katna_ai::wire::problem`.
+pub async fn ai_complete(
+    connection: &Connection,
+    before: &str,
+    answered: &str,
+) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    let (text, problem) = pim
+        .ai_complete(before, answered)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    if problem.is_empty() {
+        Ok(text)
+    } else {
+        Err(problem)
+    }
+}
+
+/// Saves the key of the user's own AI service; empty deletes it.
+pub async fn set_ai_key(connection: &Connection, key: &str) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_ai_key(key).await.map_err(|err| describe(&err))
+}
+
+/// Whether a key of the user's own AI service is saved.
+pub async fn ai_key_saved(connection: &Connection) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.ai_key_saved().await.map_err(|err| describe(&err))
+}
+
+/// The models the user's own AI service `provider` offers to the saved
+/// key, or a `katna_ai::wire::problem`.
+pub async fn ai_models(
+    connection: &Connection,
+    provider: &str,
+    address: &str,
+) -> Result<Vec<String>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    let (models, problem) = pim
+        .ai_models(provider, address)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    if problem.is_empty() {
+        Ok(models)
+    } else {
+        Err(problem)
+    }
+}
+
 /// Deletes every saved copy of the draft `message_id` of `account`.
 pub async fn discard_draft(
     connection: &Connection,
@@ -887,6 +1082,21 @@ pub async fn sender_picture(connection: &Connection, address: &str) -> Result<Ve
         .await
         .map_err(|err| describe(&err))?;
     pim.sender_picture(address)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Asks the daemon for the company of the person at `address`, the one at
+/// `website` first: JSON, empty for none.
+pub async fn company_of(
+    connection: &Connection,
+    address: &str,
+    website: &str,
+) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.company_of(address, website)
         .await
         .map_err(|err| describe(&err))
 }
@@ -1164,6 +1374,156 @@ pub async fn drive_share_with_link(
         .await
         .map_err(|err| describe(&err))?;
     pim.drive_share_with_link(uploads)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Whether the sign-in of `account` lets Katna upload into its drive.
+pub async fn cloud_writable(connection: &Connection, account: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_writable(account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Starts uploading file or folder `path` into folder `folder` of the
+/// drive of `account`; returns the upload's id.
+pub async fn cloud_upload(
+    connection: &Connection,
+    account: i64,
+    folder: &str,
+    path: &str,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_upload(account, folder, path)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Who may open item `id` of the drive of `account`.
+pub async fn cloud_access(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+) -> Result<Vec<katna_dbus::CloudAccess>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_access(account, id)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Shares item `id` with `addresses` as `role`; returns those the drive
+/// refused.
+pub async fn cloud_grant(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    addresses: &[String],
+    role: &str,
+    notify: bool,
+) -> Result<Vec<String>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_grant(account, id, addresses, role, notify)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Changes grant `permission` of item `id` to `role`; empty takes it away.
+pub async fn cloud_set_access(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    permission: &str,
+    role: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_set_access(account, id, permission, role)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Opens item `id` to anyone with the link as `role`; empty closes it.
+pub async fn cloud_set_link(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    role: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_set_link(account, id, role)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Links a file already in the drive of `account` to a message; returns
+/// an upload id that is shared at Send like an uploaded file's.
+pub async fn cloud_link(
+    connection: &Connection,
+    account: i64,
+    entry: &katna_dbus::CloudEntry,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_link(account, entry)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// One page of the drive of `account`: `place` is one of
+/// `katna_dbus::cloud_place`, `what` the folder id or the words.
+pub async fn cloud_list(
+    connection: &Connection,
+    account: i64,
+    place: &str,
+    what: &str,
+    page: &str,
+) -> Result<katna_dbus::CloudListing, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_list(account, place, what, page)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Downloads a drive file into Katna's cache; returns its path.
+pub async fn cloud_fetch(
+    connection: &Connection,
+    account: i64,
+    entry: &katna_dbus::CloudEntry,
+) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_fetch(account, entry)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// The picture of a drive file, about `width` pixels wide.
+pub async fn cloud_thumbnail(
+    connection: &Connection,
+    account: i64,
+    link: &str,
+    width: u32,
+) -> Result<Vec<u8>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_thumbnail(account, link, width)
         .await
         .map_err(|err| describe(&err))
 }

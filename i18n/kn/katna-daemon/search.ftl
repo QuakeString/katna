@@ -1,6 +1,9 @@
 # Katna Mail, Kannada (ಕನ್ನಡ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Results
+
 search-category-mail = ಮೇಲ್
 search-category-people = ಜನರು
 search-category-tasks = ಕಾರ್ಯಗಳು
@@ -18,6 +21,9 @@ search-event-in-days =
         [one] { $count } ದಿನದಲ್ಲಿ
        *[other] { $count } ದಿನಗಳಲ್ಲಿ
     }
+
+## Buttons on a result in KRunner
+
 search-reply-all = ಎಲ್ಲರಿಗೂ ಪ್ರತ್ಯುತ್ತರಿಸಿ
 search-copy-address = ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ
 search-find-mail = ಮೇಲ್ ಹುಡುಕಿ

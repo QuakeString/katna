@@ -1,20 +1,57 @@
 # Katna Mail, Chinese (Simplified) (简体中文).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## The list under the Activity button
+
+activity-details = 详情
+activity-clear-all = 全部清除
+activity-remove = 从列表中移除
+activity-feed-opened = { $who } 打开了“{ $subject }”
+activity-feed-clicked = { $who } 点开了“{ $subject }”中的链接
+activity-feed-maybe = { $who } 可能打开了“{ $subject }”
+activity-feed-empty = 还没有打开或点击。写邮件时打开眼睛，就能看到邮件何时被阅读。
+activity-message-gone = 这封邮件已不在已发送中。
+
+## The Details report
+
+activity-report = 动态报告
+activity-range-week = 最近 7 天
+activity-range-month = 最近 30 天
+activity-range-all = 全部时间
+activity-range-custom = 自定义
+activity-range-from = 从
+activity-range-to = 至
+activity-range-apply = 应用
+activity-range-of = { $days } · { $account }
+activity-accounts-all = 所有账号
+activity-accounts-tip = 显示一个账号或全部
+
+## Totals at the top
+
 activity-messages = 已跟踪的邮件
 activity-open-rate = 打开率
 activity-click-rate = 点击率
 activity-percent = { $percent }%
+
+## Opens and clicks over time
+
 activity-by-day = 打开和点击
 activity-opens = 打开：{ $count }
 activity-clicks = 点击：{ $count }
 activity-by-week = 每周一根柱
+
+## The messages
+
 activity-by-open-rate = 按打开率排列的主题
 activity-opened = { $recipients } 人中有 { $opened } 人打开
 activity-clicked = { $recipients } 人中有 { $clicked } 人点开了链接
 activity-no-subject = （无主题）
 activity-nothing-period = 这段时间内没有发送已跟踪的邮件。
 activity-close = 关闭
+
+## Your mailbox: counted on this computer from all mail in the period
+
 insights-heading = 你的邮箱
 insights-counting = 正在统计你的邮件…
 insights-failed = 无法统计你的邮件。
@@ -30,22 +67,3 @@ insights-days = { $count } 天
 insights-people = 你最常联系的人
 insights-person-counts = 发出 { $sent } · 收到 { $received }
 insights-hours-heading = 邮件何时到达
-activity-details = 详情
-activity-clear-all = 全部清除
-activity-remove = 从列表中移除
-activity-feed-opened = { $who } 打开了“{ $subject }”
-activity-feed-clicked = { $who } 点开了“{ $subject }”中的链接
-activity-feed-maybe = { $who } 可能打开了“{ $subject }”
-activity-feed-empty = 还没有打开或点击。写邮件时打开眼睛，就能看到邮件何时被阅读。
-activity-message-gone = 这封邮件已不在已发送中。
-activity-report = 动态报告
-activity-range-week = 最近 7 天
-activity-range-month = 最近 30 天
-activity-range-all = 全部时间
-activity-range-custom = 自定义
-activity-range-from = 从
-activity-range-to = 至
-activity-range-apply = 应用
-activity-range-of = { $days } · { $account }
-activity-accounts-all = 所有账号
-activity-accounts-tip = 显示一个账号或全部

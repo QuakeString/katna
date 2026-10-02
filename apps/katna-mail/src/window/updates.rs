@@ -502,7 +502,14 @@ impl MailWindow {
                     built: details.map(|d| d.built).filter(|built| *built > 0),
                     commit,
                     source: None,
-                    size: Some(details.map_or(status.total, |d| d.size)).filter(|size| *size > 0),
+                    // What the daemon downloads: only a patch when one
+                    // fits the installed version.
+                    size: Some(if status.total > 0 {
+                        status.total
+                    } else {
+                        details.map_or(0, |d| d.size)
+                    })
+                    .filter(|size| *size > 0),
                     new: true,
                 },
                 th,
@@ -757,7 +764,10 @@ impl MailWindow {
             .when(!phone, |d| {
                 d.rounded(px(PANEL_RADIUS)).shadow(elevation(th, 3.0))
             })
-            .bg(rgba(th.surface))
+            .map(|d| {
+                let radius = if phone { 0.0 } else { PANEL_RADIUS };
+                crate::widgets::frosted(d, th, th.surface, radius)
+            })
             .text_color(rgba(th.text))
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .child(body)
@@ -772,7 +782,7 @@ impl MailWindow {
                 .items_center()
                 .justify_center()
                 .when(!phone, |d| d.p(px(24.0)))
-                .bg(rgba(fade(0x0000_0066, t)))
+                // No veil: the window stays as it is around the dialog.
                 .child(
                     div()
                         .id("update-scrim")

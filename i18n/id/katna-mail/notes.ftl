@@ -15,6 +15,7 @@ notes-loading = Membuka catatan Anda…
 
 notes-take-a-note = Buat catatan…
 notes-new-list = Daftar baru
+notes-new-note = Catatan baru
 notes-pinned = Disematkan
 notes-others = Lainnya
 notes-empty = Catatan yang Anda tambahkan akan muncul di sini

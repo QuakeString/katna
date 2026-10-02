@@ -12,6 +12,7 @@
 use std::collections::{HashMap, VecDeque};
 use std::hash::Hash;
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::{Duration, Instant};
 
 /// Keys one limit holds by default.
@@ -19,7 +20,7 @@ pub const DEFAULT_CAPACITY: usize = 100_000;
 
 /// At most `max` uses per key in each `window`.
 pub struct WindowLimit<K> {
-    max: u32,
+    max: AtomicU32,
     window: Duration,
     capacity: usize,
     inner: Mutex<Inner<K>>,
@@ -44,7 +45,7 @@ impl<K: Eq + Hash + Clone> WindowLimit<K> {
     /// A limit of `max` uses per `window`, holding up to `capacity` keys.
     pub fn with_capacity(max: u32, window: Duration, capacity: usize) -> Self {
         Self {
-            max,
+            max: AtomicU32::new(max),
             window,
             capacity,
             inner: Mutex::new(Inner {
@@ -58,6 +59,7 @@ impl<K: Eq + Hash + Clone> WindowLimit<K> {
     /// limit, or is new while the limit is full (and the use is not
     /// counted).
     pub fn allow(&self, key: K) -> bool {
+        let max = self.max.load(Ordering::Relaxed);
         let now = Instant::now();
         let mut inner = self.inner.lock().unwrap_or_else(|e| e.into_inner());
         let Inner { uses, order } = &mut *inner;
@@ -71,18 +73,24 @@ impl<K: Eq + Hash + Clone> WindowLimit<K> {
             }
         }
         if let Some((count, _)) = uses.get_mut(&key) {
-            if *count >= self.max {
+            if *count >= max {
                 return false;
             }
             *count += 1;
             return true;
         }
-        if self.max == 0 || uses.len() >= self.capacity {
+        if max == 0 || uses.len() >= self.capacity {
             return false;
         }
         uses.insert(key.clone(), (1, now));
         order.push_back((now, key));
         true
+    }
+
+    /// Allows `max` uses per window from now on; uses already counted
+    /// stay counted.
+    pub fn set_max(&self, max: u32) {
+        self.max.store(max, Ordering::Relaxed);
     }
 
     /// How many keys the limit holds now.

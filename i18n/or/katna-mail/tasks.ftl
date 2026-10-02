@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = ତିଆରି କରନ୍ତୁ
+tasks-create = ନୂଆ କାର୍ଯ୍ୟ
 tasks-all = ସମସ୍ତ କାର୍ଯ୍ୟ
 tasks-today = ଆଜି
 tasks-starred = ତାରାଙ୍କିତ

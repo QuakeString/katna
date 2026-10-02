@@ -100,6 +100,55 @@ const MIGRATIONS: &[&str] = &[
          at BIGINT NOT NULL
      );
      CREATE INDEX code_failures_account_at ON code_failures (account_id, at);",
+    // 5: Katna AI: each account's free month and paid time, and what it
+    // cost per calendar month (UTC, as yyyymm), per account and for all.
+    "CREATE TABLE ai_plans (
+         account_id TEXT PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE,
+         first_use BIGINT NOT NULL,
+         paid_until BIGINT
+     );
+     CREATE TABLE ai_usage (
+         account_id TEXT NOT NULL REFERENCES accounts (id) ON DELETE CASCADE,
+         month INTEGER NOT NULL,
+         requests BIGINT NOT NULL DEFAULT 0,
+         cost_micros BIGINT NOT NULL DEFAULT 0,
+         PRIMARY KEY (account_id, month)
+     );
+     CREATE TABLE ai_spend (
+         month INTEGER PRIMARY KEY,
+         requests BIGINT NOT NULL DEFAULT 0,
+         cost_micros BIGINT NOT NULL DEFAULT 0
+     );",
+    // 6: Katna AI's settings from the admin page (JSON), over those of the
+    // environment.
+    "CREATE TABLE ai_settings (
+         id INTEGER PRIMARY KEY CHECK (id = 1),
+         value TEXT NOT NULL,
+         updated_at BIGINT NOT NULL,
+         updated_by TEXT NOT NULL
+     );",
+    // 7: the admin page's own sign-in, apart from Katna accounts: a
+    // password (none until it is first set, on the page or with
+    // `katna-server admin-password`), and the code mailed for the second
+    // step or the first password, with its wrong guesses.
+    "CREATE TABLE admins (
+         email TEXT PRIMARY KEY,
+         password_hash TEXT,
+         code_hash BYTEA,
+         code_expires_at BIGINT,
+         code_attempts INTEGER NOT NULL DEFAULT 0,
+         failures BIGINT[] NOT NULL DEFAULT '{}',
+         updated_at BIGINT NOT NULL
+     );",
+    // 8: keys of Katna AI's services saved on the admin page, used over
+    // the environment's; `base` is the address of the "other" service.
+    "CREATE TABLE ai_keys (
+         provider TEXT PRIMARY KEY,
+         key TEXT NOT NULL,
+         base TEXT,
+         updated_at BIGINT NOT NULL,
+         updated_by TEXT NOT NULL
+     );",
 ];
 
 /// Wrong guesses allowed for one emailed code.
@@ -113,6 +162,25 @@ pub const CODE_FAILURES_PER_DAY: i64 = 10;
 const POOL_WAIT: Duration = Duration::from_secs(5);
 
 /// An install as a request's token finds it.
+/// A key of a Katna AI service saved on the admin page.
+#[derive(Clone, PartialEq, Eq)]
+pub struct SavedAiKey {
+    /// A `katna_ai::provider::PRESETS` id.
+    pub provider: String,
+    pub key: String,
+    /// The address of the "other" service.
+    pub base: Option<String>,
+}
+
+impl std::fmt::Debug for SavedAiKey {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SavedAiKey")
+            .field("provider", &self.provider)
+            .field("base", &self.base)
+            .finish_non_exhaustive()
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct InstallAuth {
     /// The install.
@@ -213,6 +281,41 @@ pub enum OverLimit {
     Ids,
     /// Too many bytes of link targets.
     LinkBytes,
+}
+
+/// An account's time with Katna AI.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct AiPlan {
+    /// Its first use, which started the free month.
+    pub first_use: i64,
+    /// The end of the time paid for, if any.
+    pub paid_until: Option<i64>,
+}
+
+/// What Katna AI cost this month, in millionths of a US dollar.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct AiSpent {
+    /// For one account.
+    pub account: i64,
+    /// For all accounts together.
+    pub everyone: i64,
+}
+
+/// Katna AI's use, for the admin page.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+pub struct AiStats {
+    /// Requests this month.
+    pub requests: i64,
+    /// What they cost, in millionths of a US dollar.
+    pub cost_micros: i64,
+    /// Accounts in their free month.
+    pub trial_accounts: i64,
+    /// Accounts with paid time left.
+    pub paid_accounts: i64,
+    /// Accounts at their monthly cap.
+    pub capped_accounts: i64,
+    /// Cost per month, oldest first: `(yyyymm, millionths)`.
+    pub months: Vec<(i32, i64)>,
 }
 
 /// The database.
@@ -820,6 +923,401 @@ impl Db {
             .collect())
     }
 
+    /// The account's time with Katna AI; a first use at `now` starts the
+    /// free month.
+    pub async fn ai_plan(&self, account: &str, now: i64) -> Result<AiPlan, DbError> {
+        let row = self
+            .pool
+            .get()
+            .await?
+            .query_one(
+                "INSERT INTO ai_plans (account_id, first_use) VALUES ($1, $2)
+                 ON CONFLICT (account_id) DO UPDATE SET account_id = EXCLUDED.account_id
+                 RETURNING first_use, paid_until",
+                &[&account, &now],
+            )
+            .await?;
+        Ok(AiPlan {
+            first_use: row.get(0),
+            paid_until: row.get(1),
+        })
+    }
+
+    /// Marks the account's Katna AI paid for until `until`.
+    pub async fn set_ai_paid_until(
+        &self,
+        account: &str,
+        until: i64,
+        now: i64,
+    ) -> Result<(), DbError> {
+        self.pool
+            .get()
+            .await?
+            .execute(
+                "INSERT INTO ai_plans (account_id, first_use, paid_until) VALUES ($1, $3, $2)
+                 ON CONFLICT (account_id) DO UPDATE SET paid_until = $2",
+                &[&account, &until, &now],
+            )
+            .await?;
+        Ok(())
+    }
+
+    /// What Katna AI cost in `month` (yyyymm), for `account` and for all.
+    pub async fn ai_spent(&self, account: &str, month: i32) -> Result<AiSpent, DbError> {
+        let row = self
+            .pool
+            .get()
+            .await?
+            .query_one(
+                "SELECT
+                     COALESCE((SELECT cost_micros FROM ai_usage
+                               WHERE account_id = $1 AND month = $2), 0),
+                     COALESCE((SELECT cost_micros FROM ai_spend WHERE month = $2), 0)",
+                &[&account, &month],
+            )
+            .await?;
+        Ok(AiSpent {
+            account: row.get(0),
+            everyone: row.get(1),
+        })
+    }
+
+    /// Counts one Katna AI request by `account` in `month` that cost
+    /// `cost_micros`.
+    pub async fn ai_record(
+        &self,
+        account: &str,
+        month: i32,
+        cost_micros: i64,
+    ) -> Result<(), DbError> {
+        let mut client = self.pool.get().await?;
+        let tx = client.transaction().await?;
+        tx.execute(
+            "INSERT INTO ai_usage (account_id, month, requests, cost_micros) VALUES ($1, $2, 1, $3)
+             ON CONFLICT (account_id, month) DO UPDATE SET
+                 requests = ai_usage.requests + 1,
+                 cost_micros = ai_usage.cost_micros + $3",
+            &[&account, &month, &cost_micros],
+        )
+        .await?;
+        tx.execute(
+            "INSERT INTO ai_spend (month, requests, cost_micros) VALUES ($1, 1, $2)
+             ON CONFLICT (month) DO UPDATE SET
+                 requests = ai_spend.requests + 1,
+                 cost_micros = ai_spend.cost_micros + $2",
+            &[&month, &cost_micros],
+        )
+        .await?;
+        tx.commit().await?;
+        Ok(())
+    }
+
+    /// Sets the admin page password of `email` (a hash), dropping any
+    /// code mailed before.
+    pub async fn set_admin_password(
+        &self,
+        email: &str,
+        password_hash: &str,
+        now: i64,
+    ) -> Result<(), DbError> {
+        self.pool
+            .get()
+            .await?
+            .execute(
+                "INSERT INTO admins (email, password_hash, updated_at) VALUES ($1, $2, $3)
+                 ON CONFLICT (email) DO UPDATE SET password_hash = $2, updated_at = $3,
+                     code_hash = NULL, code_expires_at = NULL, code_attempts = 0",
+                &[&email, &password_hash, &now],
+            )
+            .await?;
+        Ok(())
+    }
+
+    /// The admin page password hash of `email`, if one is set.
+    pub async fn admin_password(&self, email: &str) -> Result<Option<String>, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .query_opt(
+                "SELECT password_hash FROM admins
+                 WHERE email = $1 AND password_hash IS NOT NULL",
+                &[&email],
+            )
+            .await?
+            .map(|row| row.get(0)))
+    }
+
+    /// Whether any of `emails` has no admin page password yet.
+    pub async fn admins_to_set_up(&self, emails: &[String]) -> Result<bool, DbError> {
+        let set: i64 = self
+            .pool
+            .get()
+            .await?
+            .query_one(
+                "SELECT count(*) FROM admins
+                 WHERE email = ANY($1) AND password_hash IS NOT NULL",
+                &[&emails],
+            )
+            .await?
+            .get(0);
+        Ok(usize::try_from(set).unwrap_or(usize::MAX) < emails.len())
+    }
+
+    /// Keeps the hash of a code mailed to set the first password of the
+    /// admin `email`; false (and nothing kept) once it has one.
+    pub async fn put_admin_setup_code(
+        &self,
+        email: &str,
+        code_hash: &[u8],
+        expires_at: i64,
+        now: i64,
+    ) -> Result<bool, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .execute(
+                "INSERT INTO admins (email, code_hash, code_expires_at, updated_at)
+                 VALUES ($1, $2, $3, $4)
+                 ON CONFLICT (email) DO UPDATE
+                     SET code_hash = $2, code_expires_at = $3, code_attempts = 0
+                     WHERE admins.password_hash IS NULL",
+                &[&email, &code_hash, &expires_at, &now],
+            )
+            .await?
+            == 1)
+    }
+
+    /// Sets the first admin page password of `email`; false if it already
+    /// has one.
+    pub async fn set_first_admin_password(
+        &self,
+        email: &str,
+        password_hash: &str,
+        now: i64,
+    ) -> Result<bool, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .execute(
+                "UPDATE admins SET password_hash = $2, updated_at = $3
+                 WHERE email = $1 AND password_hash IS NULL",
+                &[&email, &password_hash, &now],
+            )
+            .await?
+            == 1)
+    }
+
+    /// Keeps the hash of a code mailed to the admin `email`.
+    pub async fn put_admin_code(
+        &self,
+        email: &str,
+        code_hash: &[u8],
+        expires_at: i64,
+    ) -> Result<(), DbError> {
+        self.pool
+            .get()
+            .await?
+            .execute(
+                "UPDATE admins SET code_hash = $2, code_expires_at = $3, code_attempts = 0
+                 WHERE email = $1",
+                &[&email, &code_hash, &expires_at],
+            )
+            .await?;
+        Ok(())
+    }
+
+    /// Checks a code typed by the admin `email`, within the same limits as
+    /// [`Db::check_code`]: [`CODE_ATTEMPTS`] per code and
+    /// [`CODE_FAILURES_PER_DAY`] for the address.
+    pub async fn check_admin_code(
+        &self,
+        email: &str,
+        code_hash: &[u8],
+        now: i64,
+    ) -> Result<CodeCheck, DbError> {
+        let mut client = self.pool.get().await?;
+        let tx = client.transaction().await?;
+        let row = tx
+            .query_opt(
+                "SELECT code_hash, code_expires_at, code_attempts,
+                     (SELECT count(*) FROM unnest(failures) AS at WHERE at > $2)
+                 FROM admins WHERE email = $1 FOR UPDATE",
+                &[&email, &(now - 86_400_000)],
+            )
+            .await?;
+        let Some(row) = row else {
+            return Ok(CodeCheck::Gone);
+        };
+        let stored: Option<Vec<u8>> = row.get(0);
+        let expires_at: Option<i64> = row.get(1);
+        let attempts: i32 = row.get(2);
+        let failures: i64 = row.get(3);
+        if failures >= CODE_FAILURES_PER_DAY {
+            return Ok(CodeCheck::Locked);
+        }
+        let check = match (stored, expires_at) {
+            (Some(stored), Some(expires_at)) if expires_at >= now && attempts < CODE_ATTEMPTS => {
+                if constant_time_eq(&stored, code_hash) {
+                    CodeCheck::Right
+                } else {
+                    CodeCheck::Wrong
+                }
+            }
+            _ => CodeCheck::Gone,
+        };
+        if check == CodeCheck::Wrong {
+            tx.execute(
+                "UPDATE admins SET code_attempts = code_attempts + 1,
+                     failures = array_append(
+                         ARRAY(SELECT at FROM unnest(failures) AS at WHERE at > $3), $2)
+                 WHERE email = $1",
+                &[&email, &now, &(now - 86_400_000)],
+            )
+            .await?;
+        } else {
+            tx.execute(
+                "UPDATE admins SET code_hash = NULL, code_expires_at = NULL, code_attempts = 0
+                 WHERE email = $1",
+                &[&email],
+            )
+            .await?;
+        }
+        tx.commit().await?;
+        Ok(check)
+    }
+
+    /// Katna AI's settings saved from the admin page, as JSON.
+    pub async fn ai_settings(&self) -> Result<Option<String>, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .query_opt("SELECT value FROM ai_settings WHERE id = 1", &[])
+            .await?
+            .map(|row| row.get(0)))
+    }
+
+    /// Saves Katna AI's settings (JSON), changed by `by`.
+    pub async fn set_ai_settings(&self, value: &str, by: &str, now: i64) -> Result<(), DbError> {
+        self.pool
+            .get()
+            .await?
+            .execute(
+                "INSERT INTO ai_settings (id, value, updated_at, updated_by) VALUES (1, $1, $2, $3)
+                 ON CONFLICT (id) DO UPDATE SET value = $1, updated_at = $2, updated_by = $3",
+                &[&value, &now, &by],
+            )
+            .await?;
+        Ok(())
+    }
+
+    /// The keys of Katna AI's services saved on the admin page.
+    pub async fn ai_keys(&self) -> Result<Vec<SavedAiKey>, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .query(
+                "SELECT provider, key, base FROM ai_keys ORDER BY provider",
+                &[],
+            )
+            .await?
+            .into_iter()
+            .map(|row| SavedAiKey {
+                provider: row.get(0),
+                key: row.get(1),
+                base: row.get(2),
+            })
+            .collect())
+    }
+
+    /// Saves the key of `provider` (and the address of the "other"
+    /// service), put there by `by`.
+    pub async fn set_ai_key(
+        &self,
+        provider: &str,
+        key: &str,
+        base: Option<&str>,
+        by: &str,
+        now: i64,
+    ) -> Result<(), DbError> {
+        self.pool
+            .get()
+            .await?
+            .execute(
+                "INSERT INTO ai_keys (provider, key, base, updated_at, updated_by)
+                 VALUES ($1, $2, $3, $4, $5)
+                 ON CONFLICT (provider) DO UPDATE
+                 SET key = $2, base = $3, updated_at = $4, updated_by = $5",
+                &[&provider, &key, &base, &now, &by],
+            )
+            .await?;
+        Ok(())
+    }
+
+    /// Forgets the saved key of `provider`; false when there was none.
+    pub async fn remove_ai_key(&self, provider: &str) -> Result<bool, DbError> {
+        Ok(self
+            .pool
+            .get()
+            .await?
+            .execute("DELETE FROM ai_keys WHERE provider = $1", &[&provider])
+            .await?
+            > 0)
+    }
+
+    /// Katna AI's use in `months` (yyyymm, the last one this month) at
+    /// `now`, with a free time of `trial_ms` and a cap per account of
+    /// `cap_micros`.
+    pub async fn ai_stats(
+        &self,
+        months: &[i32],
+        now: i64,
+        trial_ms: i64,
+        cap_micros: i64,
+    ) -> Result<AiStats, DbError> {
+        let month = *months.last().unwrap_or(&month_of(now));
+        let client = self.pool.get().await?;
+        let row = client
+            .query_one(
+                "SELECT
+                     COALESCE((SELECT requests FROM ai_spend WHERE month = $1), 0),
+                     COALESCE((SELECT cost_micros FROM ai_spend WHERE month = $1), 0),
+                     (SELECT count(*) FROM ai_plans
+                      WHERE (paid_until IS NULL OR paid_until <= $2) AND first_use > $2 - $3),
+                     (SELECT count(*) FROM ai_plans WHERE paid_until > $2),
+                     (SELECT count(*) FROM ai_usage WHERE month = $1 AND cost_micros >= $4)",
+                &[&month, &now, &trial_ms, &cap_micros],
+            )
+            .await?;
+        let spent: Vec<(i32, i64)> = client
+            .query(
+                "SELECT month, cost_micros FROM ai_spend WHERE month = ANY($1)",
+                &[&months],
+            )
+            .await?
+            .iter()
+            .map(|row| (row.get(0), row.get(1)))
+            .collect();
+        Ok(AiStats {
+            requests: row.get(0),
+            cost_micros: row.get(1),
+            trial_accounts: row.get(2),
+            paid_accounts: row.get(3),
+            capped_accounts: row.get(4),
+            months: months
+                .iter()
+                .map(|m| {
+                    let cost = spent.iter().find(|(s, _)| s == m).map_or(0, |(_, c)| *c);
+                    (*m, cost)
+                })
+                .collect(),
+        })
+    }
+
     /// Deletes tracking IDs created before `before` (with their events) and
     /// installs not seen since then. Returns how many of each went.
     pub async fn purge(&self, before: i64) -> Result<(u64, u64), DbError> {
@@ -847,10 +1345,67 @@ fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
     a.len() == b.len() && a.iter().zip(b).fold(0u8, |acc, (x, y)| acc | (x ^ y)) == 0
 }
 
+/// The calendar month (UTC) of `ms` since the Unix epoch, as yyyymm.
+pub fn month_of(ms: i64) -> i32 {
+    // Howard Hinnant's days-to-civil.
+    let days = ms.div_euclid(86_400_000) + 719_468;
+    let era = days.div_euclid(146_097);
+    let day_of_era = days - era * 146_097;
+    let year_of_era =
+        (day_of_era - day_of_era / 1460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
+    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+    let shifted = (5 * day_of_year + 2) / 153;
+    let month = if shifted < 10 {
+        shifted + 3
+    } else {
+        shifted - 9
+    };
+    let year = year_of_era + era * 400 + i64::from(month <= 2);
+    (year * 100 + month) as i32
+}
+
+/// The `count` calendar months up to and including that of `ms`, oldest
+/// first, as yyyymm.
+pub fn months_to(ms: i64, count: usize) -> Vec<i32> {
+    let last = month_of(ms);
+    let (mut year, mut month) = (last / 100, last % 100);
+    let mut months = vec![last];
+    while months.len() < count {
+        month -= 1;
+        if month == 0 {
+            month = 12;
+            year -= 1;
+        }
+        months.push(year * 100 + month);
+    }
+    months.reverse();
+    months
+}
+
 /// Milliseconds since the Unix epoch.
 pub fn now_ms() -> i64 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map(|elapsed| elapsed.as_millis() as i64)
         .unwrap_or(0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn months() {
+        assert_eq!(month_of(0), 197_001);
+        // 2026-10-01 00:00:00 UTC, and the millisecond before.
+        assert_eq!(month_of(1_790_812_800_000), 202_610);
+        assert_eq!(month_of(1_790_812_799_999), 202_609);
+        // 2024-02-29.
+        assert_eq!(month_of(1_709_164_800_000), 202_402);
+        assert_eq!(month_of(1_709_251_200_000), 202_403);
+        assert_eq!(
+            months_to(1_709_251_200_000, 6),
+            [202_310, 202_311, 202_312, 202_401, 202_402, 202_403]
+        );
+    }
 }

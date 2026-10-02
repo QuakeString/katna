@@ -46,6 +46,7 @@ compose-sent-archived = पाठवले आणि संग्रहित �
 compose-sent = मेसेज पाठवला
 compose-discarded = मसुदा टाकून दिला
 compose-draft-saved = मसुदा सेव्ह केला
+compose-draft-saving = सेव्ह करत आहे…
 compose-draft-failed = मसुदा सेव्ह करता आला नाही: { $error }
 compose-draft-not-opened = मसुदा उघडता आला नाही.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = मसुदा उघडता आला नाह�
 compose-picker-insert = घाला
 compose-picker-attach = अटॅच करा
 compose-file-too-large = { $name } खूप मोठी आहे: एका मेसेजमध्ये जास्तीत जास्त { $limit } पाठवता येते.
+compose-forward-files-missing = फॉरवर्ड केलेल्या मेसेजच्या फाइल डाउनलोड झालेल्या नाहीत, त्यामुळे त्या अटॅच केल्या नाहीत.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = अटॅचमेंट काढा
 compose-attachments-total = { $count ->
@@ -78,6 +80,7 @@ compose-drive-share-link = लिंकने शेअर करा
 compose-drive-send-without = शेअर न करता पाठवा
 compose-drive-share-cancel = रद्द करा
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } { $limit } पेक्षा मोठी आहे, म्हणून ती तुमच्या OneDrive मध्ये जाते आणि मेसेजमध्ये तिची लिंक असते.
 compose-onedrive-tip = तुमच्या OneDrive मध्ये; मेसेजमध्ये लिंक असते
 compose-onedrive-allow = OneDrive ला परवानगी द्या
@@ -89,6 +92,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive फाइल्स { $addresses } यांच्यासोबत शेअर करू शकत नाही. त्याऐवजी लिंक असलेला कोणीही त्या उघडू शकतो.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = फाइल्स येथे सोडा
 compose-drop-here = येथे सोडा
 compose-paste-keep-formatting = फॉरमॅटिंग ठेवा

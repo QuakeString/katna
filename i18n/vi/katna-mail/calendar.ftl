@@ -57,10 +57,7 @@ calendar-account-not-enabled = Quyền truy cập lịch cho Katna chưa đượ
 calendar-account-failed = Không đọc được lịch.
 calendar-account-error = Không đọc được lịch: { $reason }
 calendar-account-none = Không tìm thấy lịch nào
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 calendar-account-none-why = Không tìm thấy lịch nào: { $reason }
-# A Gmail or Outlook account added with a password: its calendars need the
-# provider's sign-in.
 calendar-account-use-sign-in = { $provider } chỉ hiện lịch cho Katna khi đăng nhập bằng { $provider }.
 calendar-account-sign-in-with = Đăng nhập bằng { $provider }
 calendar-account-looking = Đang tìm lịch…
@@ -82,8 +79,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = { $count } mục khác
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Lặp lại
 calendar-join = Tham gia
+calendar-join-with = Tham gia bằng { $service }
 calendar-email-guests = Gửi thư cho khách
 calendar-running-late = Tôi đến muộn
 calendar-late-subject = Đến muộn: { $title }
@@ -96,6 +95,7 @@ calendar-guest-answers = { $yes } có, { $maybe } có thể, { $no } không, { $
 calendar-organizer = Người tổ chức
 calendar-optional = Không bắt buộc
 calendar-open-web = Mở trong trình duyệt
+calendar-open-mail = Mở thư
 calendar-open-contact = Mở người liên hệ
 calendar-close = Đóng
 
@@ -119,18 +119,12 @@ calendar-discard = Bỏ thay đổi
 calendar-edit = Chỉnh sửa sự kiện
 calendar-delete = Xóa sự kiện
 calendar-event-details = Chi tiết sự kiện
-# Right-click menus on the calendar: on a free time or day, an event and
-# a task.
 calendar-menu-new-event = Sự kiện mới
-# Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Mở ngày
 calendar-menu-duplicate = Tạo bản sao
 calendar-menu-color = Màu
-# The event takes its calendar's color.
 calendar-menu-color-calendar = Màu của lịch
-# A task's new due day, a week from today.
 calendar-menu-in-a-week = Sau một tuần
-# Event colors, by the names Google Calendar gives them.
 calendar-color-tomato = Cà chua
 calendar-color-flamingo = Hồng hạc
 calendar-color-tangerine = Quýt
@@ -142,6 +136,40 @@ calendar-color-blueberry = Việt quất
 calendar-color-lavender = Oải hương
 calendar-color-grape = Nho
 calendar-color-graphite = Than chì
+calendar-menu-only-this = Chỉ hiện lịch này
+calendar-menu-rename = Đổi tên
+calendar-menu-remove = Xóa khỏi danh sách
+calendar-menu-delete = Xóa
+calendar-menu-new-calendar = Lịch mới
+calendar-menu-show-all = Hiện tất cả
+calendar-menu-hide-all = Ẩn tất cả
+calendar-menu-account-settings = Cài đặt tài khoản
+calendar-why-main = Lịch chính
+calendar-why-last = Chỉ có một lịch
+calendar-why-owner = Chỉ chủ sở hữu
+calendar-why-contacts = Từ Danh bạ
+calendar-why-unreached = Không kết nối được
+calendar-name-placeholder = Tên lịch
+calendar-toast-added = Đã thêm “{ $name }”
+calendar-toast-renamed = Đã đổi tên lịch
+calendar-toast-recolored = Đã đổi màu lịch
+calendar-toast-deleted = Đã xóa “{ $name }”
+calendar-toast-removed = Đã xóa “{ $name }” khỏi danh sách của bạn
+calendar-edit-failed = Lịch chưa được thay đổi: { $reason }
+calendar-delete-title = Xóa “{ $name }”?
+calendar-delete-confirm = Xóa
+calendar-deleting = Đang xóa…
+calendar-delete-heading = Sẽ bị xóa:
+calendar-delete-events = Lịch và mọi sự kiện của lịch
+calendar-delete-shared = Đối với mọi người được chia sẻ lịch
+calendar-delete-server = Lịch bị xóa khỏi { $account } trên dịch vụ thư, không chỉ trong Katna.
+calendar-delete-local = Lịch bị xóa khỏi máy tính này.
+calendar-remove-title = Xóa “{ $name }” khỏi danh sách của bạn?
+calendar-remove-confirm = Xóa
+calendar-removing = Đang xóa…
+calendar-remove-heading = Điều gì thay đổi:
+calendar-remove-events = Bạn sẽ không còn thấy sự kiện của lịch này, ở đây và trong các ứng dụng khác
+calendar-remove-server = Lịch vẫn thuộc về chủ sở hữu, người có thể chia sẻ lại với bạn.
 calendar-kind-event = Sự kiện
 calendar-kind-task = Việc cần làm
 calendar-kind-focus = Thời gian tập trung

@@ -27,6 +27,7 @@ use katna_i18n::tr;
 
 use super::MenuKey;
 use super::compose::Kind;
+use super::sheet::{Fill, Sheet};
 use super::{Act, MailWindow};
 use crate::data::{EntryKey, Row};
 use crate::sidebar::Role;
@@ -36,6 +37,8 @@ use crate::widgets::{icon, raised};
 const MENU_WIDTH: f32 = 264.0;
 const SUB_WIDTH: f32 = 240.0;
 const ITEM_HEIGHT: f32 = 36.0;
+/// A row of a menu that rises as a sheet on a phone.
+const SHEET_ITEM_HEIGHT: f32 = 48.0;
 /// Items come no closer than this in a short window; below it the menu
 /// scrolls.
 const MIN_ITEM_HEIGHT: f32 = 28.0;
@@ -46,6 +49,7 @@ const RULE_HEIGHT: f32 = 2.0 * RULE_MARGIN + 1.0;
 const MARGIN: f32 = 8.0;
 
 use super::calendar::menu::CalTarget;
+use katna_core::config::SoundEvent;
 
 /// The open right-click menu.
 pub(super) struct ContextMenu {
@@ -56,6 +60,8 @@ pub(super) struct ContextMenu {
     open: Option<Sub>,
     /// How tall the menu stands without a submenu, as last drawn.
     height: Cell<f32>,
+    /// On a phone, a chat bubble's menu rises as a sheet.
+    sheet: Sheet,
 }
 
 /// What a right-click menu is for.
@@ -69,6 +75,10 @@ enum MenuFor {
     Calendar(CalTarget),
     /// A color scheme's card in Settings > Appearance > Colors.
     Scheme(&'static str),
+    /// The sounds to pick for an event in Settings > Notifications.
+    Sound(SoundEvent),
+    /// A mail's bubble in the chat view, or one of its files.
+    Bubble(katna_store::MessageId, Option<usize>),
 }
 
 impl ContextMenu {
@@ -78,6 +88,7 @@ impl ContextMenu {
             at,
             open: None,
             height: Cell::new(0.0),
+            sheet: Sheet::rising(),
         }
     }
 
@@ -85,7 +96,9 @@ impl ContextMenu {
     fn line(&self) -> Option<(usize, EntryKey)> {
         match &self.what {
             MenuFor::Mail { ix, key, .. } => Some((*ix, *key)),
-            MenuFor::Calendar(_) | MenuFor::Scheme(_) => None,
+            MenuFor::Calendar(_) | MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(..) => {
+                None
+            }
         }
     }
 }
@@ -142,13 +155,40 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Opens the menu of sounds for `event`.
+    pub(super) fn open_sound_context_menu(
+        &mut self,
+        event: SoundEvent,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(MenuFor::Sound(event), at));
+        cx.notify();
+    }
+
+    /// Opens the menu of mail `id`'s bubble in the chat view.
+    pub(super) fn open_chat_context_menu(
+        &mut self,
+        id: katna_store::MessageId,
+        file: Option<usize>,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(MenuFor::Bubble(id, file), at));
+        cx.notify();
+    }
+
     /// Closes the menu; returns the Calendar thing it was for and where
     /// it opened.
     pub(super) fn take_calendar_target(&mut self) -> Option<(CalTarget, Point<Pixels>)> {
         let menu = self.context_menu.take()?;
         match menu.what {
             MenuFor::Calendar(target) => Some((target, menu.at)),
-            MenuFor::Mail { .. } | MenuFor::Scheme(_) => None,
+            MenuFor::Mail { .. } | MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(..) => {
+                None
+            }
         }
     }
 
@@ -231,10 +271,36 @@ impl MailWindow {
     pub(super) fn render_context_menu(
         &self,
         th: &Theme,
-        window: &Window,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let menu = self.context_menu.as_ref()?;
+        // A phone's long press on a chat bubble: the menu rises from the
+        // bottom, its rows tall enough for a finger.
+        if let MenuFor::Bubble(id, file) = menu.what
+            && self.layout.shape.is_phone()
+        {
+            let rows = self.bubble_menu_rows(id, file, SHEET_ITEM_HEIGHT, th, cx);
+            let body = div()
+                .pb(px(PADDING))
+                .flex()
+                .flex_col()
+                .text_size(px(15.0))
+                .text_color(rgba(th.text))
+                .children(rows.els)
+                .into_any_element();
+            return self.bottom_sheet(
+                "bubble-sheet",
+                &menu.sheet,
+                Fill::Menu,
+                body,
+                |this| this.context_menu.as_mut().map(|m| &mut m.sheet),
+                |this, cx| this.close_context_menu(cx),
+                th,
+                window,
+                cx,
+            );
+        }
         let viewport = window.viewport_size();
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         // The menu, and a submenu, get shorter with the window, their
@@ -372,6 +438,12 @@ impl MailWindow {
             MenuFor::Mail { ix, .. } => format!("context-menu-{ix}"),
             MenuFor::Calendar(target) => format!("context-menu-{}", target.key()),
             MenuFor::Scheme(id) => format!("context-menu-scheme-{id}"),
+            MenuFor::Sound(event) => format!("context-menu-sound-{event:?}"),
+            MenuFor::Bubble(id, file) => format!(
+                "context-menu-bubble-{}-{}",
+                id.0,
+                file.map_or(-1, |f| f as i64)
+            ),
         };
         let key = match (menu.open, drills) {
             (Some(sub), true) => format!("{base}-{sub:?}"),
@@ -425,6 +497,10 @@ impl MailWindow {
             Some(MenuFor::Mail { row, .. }) => self.mail_menu_rows(row, rh, th, cx),
             Some(MenuFor::Calendar(target)) => self.calendar_menu_rows(target, rh, th, cx),
             Some(MenuFor::Scheme(id)) => (self.scheme_menu_rows(id, rh, th, cx), Vec::new()),
+            Some(MenuFor::Sound(event)) => (self.sound_menu_rows(*event, rh, th, cx), Vec::new()),
+            Some(MenuFor::Bubble(id, file)) => {
+                (self.bubble_menu_rows(*id, *file, rh, th, cx), Vec::new())
+            }
             None => (Rows::new(rh), Vec::new()),
         }
     }
@@ -441,6 +517,25 @@ impl MailWindow {
         cx: &Context<Self>,
     ) -> Stateful<Div> {
         menu_row(id, name, label.into(), th, rh).on_hover(cx.listener(
+            |this, hovered: &bool, _, cx| {
+                if *hovered {
+                    this.open_context_sub(None, cx);
+                }
+            },
+        ))
+    }
+
+    /// An item whose icon is in the accent: AI's sparkle, as Rephrase's.
+    fn context_item_tinted(
+        &self,
+        id: impl Into<ElementId>,
+        name: &str,
+        label: impl Into<SharedString>,
+        rh: f32,
+        th: &Theme,
+        cx: &Context<Self>,
+    ) -> Stateful<Div> {
+        menu_row_with(id, icon(name, th.accent, 20.0), label.into(), th, rh).on_hover(cx.listener(
             |this, hovered: &bool, _, cx| {
                 if *hovered {
                     this.open_context_sub(None, cx);
@@ -509,6 +604,25 @@ impl MailWindow {
                 plain("context-forward", "forward", &tr!("menu-forward"))
                     .on_click(reply(Kind::Forward)),
             );
+            if self.summaries_on() {
+                main.item(
+                    self.context_item_tinted(
+                        "context-summarize",
+                        "sparkle",
+                        tr!("summary-summarize"),
+                        rh,
+                        th,
+                        cx,
+                    )
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        // Where the right-click was: the card opens there.
+                        let at = this.context_menu.as_ref().map(|m| m.at);
+                        if let Some((ix, key)) = this.take_context_line() {
+                            this.summarize_line(ix, key, at, cx);
+                        }
+                    })),
+                );
+            }
             main.rule(th);
         }
         if archives {
@@ -532,7 +646,8 @@ impl MailWindow {
             plain("context-read", "mark-read", &tr!("menu-mark-read"))
                 .on_click(act(Act::Read(true)))
         } else {
-            plain("context-read", "mail", &tr!("menu-mark-unread")).on_click(act(Act::Read(false)))
+            plain("context-read", "mark-unread", &tr!("menu-mark-unread"))
+                .on_click(act(Act::Read(false)))
         });
         if snoozes {
             main.item(
@@ -653,7 +768,7 @@ impl MailWindow {
             Some(MenuFor::Calendar(target)) => {
                 return self.calendar_sub_rows(target, sub, rh, th, cx);
             }
-            Some(MenuFor::Scheme(_)) | None => None,
+            Some(MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(..)) | None => None,
         };
         let act = |act: Act| {
             cx.listener(

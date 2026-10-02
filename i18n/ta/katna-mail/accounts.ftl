@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “எல்லாக் கணக்குக�
 accounts-row = கணக்குகள்
 accounts-row-detail = ஃபோல்டர் பலகமும் கணக்கு மெனுவும் கணக்குகளை இந்த வரிசையில் காட்டும்; முதலாவது இயல்புநிலைக் கணக்கு. ஒரு கணக்கை அகற்றினால், இந்தக் கணினியில் உள்ள அதன் அஞ்சலின் Katna நகல் நீக்கப்படும். அஞ்சல் சர்வரில் அப்படியே இருக்கும்.
 accounts-none = இன்னும் கணக்குகள் இல்லை.
+accounts-pop3-row = சர்வரில் உள்ள அஞ்சல்
+accounts-pop3-row-detail = POP3 கணக்குகள் அஞ்சலை இந்தக் கணினிக்குப் பதிவிறக்கும். அதன் பிறகு சர்வரில் உள்ள நகலுக்கு என்ன ஆக வேண்டும் என்பதைத் தேர்வுசெய்யுங்கள்.
+accounts-pop3-with-katna = Katna-வில் நான் நீக்கும் வரை வைத்திரு
+accounts-pop3-at-once = பதிவிறக்கியதும் நீக்கு
+accounts-pop3-after-days = { $count ->
+    [one] { $count } நாளுக்குப் பிறகு நீக்கு
+   *[other] { $count } நாட்களுக்குப் பிறகு நீக்கு
+}
+accounts-pop3-never = ஒருபோதும் நீக்க வேண்டாம்
+accounts-pop3-days-less = குறைவான நாட்கள்
+accounts-pop3-days-more = அதிக நாட்கள்
 accounts-kind-imported = இம்போர்ட் செய்யப்பட்டது
 accounts-picture-reset = டெஸ்க்டாப் படத்தைப் பயன்படுத்து
 accounts-picture-change = படத்தை மாற்று
@@ -72,6 +83,9 @@ accounts-confirm-word = நீக்கு
 accounts-confirm-placeholder = “{ accounts-confirm-word }” என டைப் செய்யவும்
 accounts-confirm-prompt = உறுதிப்படுத்த, “{ accounts-confirm-word }” என டைப் செய்யவும்:
 accounts-cancel = ரத்துசெய்
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Katna பதிவிறக்கிய அஞ்சல்கள், இணைப்புகள், அனுப்புநர் படங்கள், தேடல் அட்டவணை ஆகியவற்றை நீக்கி, பின் சமீபத்திய அஞ்சலை மீண்டும் பதிவிறக்கும். கணக்குகள், அமைப்புகள், இந்தக் கணினியில் மட்டுமே உள்ள அஞ்சல் ஆகியவை அப்படியே இருக்கும்.
 reset-cache-button = தற்காலிகச் சேமிப்பை மீட்டமை
 reset-cache-title = தற்காலிகச் சேமிப்பை மீட்டமைக்கவா?

@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Write a reply with AI"
+text = """
+While a reply or forward is still empty, the sparkle beside Formatting
+(or Ctrl+J) writes it for you. Pick one of three ideas taken from the
+conversation, or say in your own words what it should say, then Insert
+the draft and change what you like. Once you type, the sparkle rephrases
+again. It needs writing help with AI on in Settings > Compose.
+"""

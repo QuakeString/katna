@@ -27,6 +27,7 @@ desktop-menu-page-calendar = Ta_kvim
 desktop-menu-page-contacts = Kişi_ler
 desktop-menu-page-tasks = Gö_revler
 desktop-menu-page-notes = _Notlar
+desktop-menu-page-files = _Dosyalar
 desktop-menu-next = _Sonraki İleti Dizisi
 desktop-menu-previous = _Önceki İleti Dizisi
 desktop-menu-message = _İleti

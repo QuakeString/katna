@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _ቀን መቁጠሪያ
 desktop-menu-page-contacts = _እውቂያዎች
 desktop-menu-page-tasks = _ተግባራት
 desktop-menu-page-notes = _ማስታወሻዎች
+desktop-menu-page-files = _ፋይሎች
 desktop-menu-next = _ቀጣይ ውይይት
 desktop-menu-previous = _ቀዳሚ ውይይት
 desktop-menu-message = _መልዕክት

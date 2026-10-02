@@ -70,6 +70,7 @@ about-credit-resvg = SVG 画像
 about-credit-jiff = 日付とタイムゾーン
 about-credit-spellbook = スペルチェック（Helix エディタ）
 about-credit-smol = 多くの処理の同時実行
+about-credit-color-schemes = 内蔵の配色のパレット
 about-all-libraries = Katna が使うすべてのライブラリ（{ $count }）
 about-library-authors = 作者: { $authors }
 about-license = Katna は GNU GPL バージョン 3 以降のもとで配布されるフリーソフトウェアです。
@@ -124,6 +125,21 @@ onboarding-density-default = デフォルト
 onboarding-density-compact = コンパクト
 onboarding-continue = 続ける
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna アカウントでもっと便利に
+onboarding-katna-lead = 作成は任意です。Katna のオンライン機能が使えるようになります。あとで「設定 > サブスクリプション」から作成することもできます。
+onboarding-katna-receipts-title = 開封確認
+onboarding-katna-receipts-text = 送ったメールが相手に開かれたタイミングがわかります。
+onboarding-katna-links-title = リンクの追跡
+onboarding-katna-links-text = メール内のどのリンクがクリックされたかがわかります。
+onboarding-katna-activity-title = アクティビティ
+onboarding-katna-activity-text = 送信したすべてのメールの開封とクリックを 1 か所で確認できます。
+onboarding-katna-translate-title = 自動翻訳
+onboarding-katna-translate-text = 他の言語で書かれたメールを自分の言語で読めます。
+onboarding-katna-private = 専用のパスワードを使います。メールのログイン情報がこのパソコンの外に出ることはありません。
+
 ## First run: done
 
 onboarding-ready-title = 準備ができました
@@ -167,7 +183,7 @@ tour-search-text = 検索はオフラインでも使えます。右端のボタ�
 tour-menu-title = フォルダの表示と非表示
 tour-menu-text = このボタンでフォルダ一覧を折りたたみます。非表示のときは、左側のメールにポインタを合わせるとフォルダが表示されます。
 tour-apps-title = アプリ
-tour-apps-text = 今はここにメールがあります。カレンダー、連絡先、タスク、メモ、フィードもこのバーに加わる予定です。
+tour-apps-text = メールはここにあります。カレンダー、連絡先、タスク、メモ、ファイルも並んでいます。
 tour-tabs-title = 受信トレイのタブ
 tour-tabs-text = 新しいメールは、メイン、プロモーション、ソーシャル、新着、フォーラムに振り分けられます。タブはクイック設定でオフにできます。
 tour-list-title = メッセージ
@@ -191,12 +207,22 @@ crash-view = レポートを表示
 crash-view-tooltip = このパソコンに保存されたレポートを開く
 crash-copy = レポートをコピー
 crash-close = 閉じる
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } から { $address } への再サインインを求められています。
 sign-in-again-button = サインイン
 sign-in-again-tooltip = ブラウザーで { $provider } のサインイン ページを開く
 sign-in-again-waiting = ブラウザーを待っています…
 sign-in-again-close = 閉じる
+google-api-off = Katna の Google Cloud プロジェクトで { $api } がオフになっています。
+google-api-turn-on = オンにする
+google-api-turn-on-tooltip = Google Cloud を開いて { $api } をオンにしてから、「再試行」を押してください
 sign-in-again-done = { $address } に再度サインインしました。メールを取得しています…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count } 件のスレッドをゴミ箱に移動しますか？
    *[message] { $count } 件のメールをゴミ箱に移動しますか？

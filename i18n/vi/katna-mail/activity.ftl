@@ -1,20 +1,57 @@
 # Katna Mail, Vietnamese (Tiếng Việt).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## The list under the Activity button
+
+activity-details = Chi tiết
+activity-clear-all = Xóa tất cả
+activity-remove = Gỡ khỏi danh sách
+activity-feed-opened = { $who } đã mở “{ $subject }”
+activity-feed-clicked = { $who } đã nhấp một liên kết trong “{ $subject }”
+activity-feed-maybe = { $who } có thể đã mở “{ $subject }”
+activity-feed-empty = Chưa có lượt mở hay lượt nhấp nào. Bật biểu tượng con mắt khi viết thư để biết khi nào thư được đọc.
+activity-message-gone = Thư đó không còn trong Đã gửi.
+
+## The Details report
+
+activity-report = Báo cáo hoạt động
+activity-range-week = 7 ngày qua
+activity-range-month = 30 ngày qua
+activity-range-all = Mọi lúc
+activity-range-custom = Tùy chỉnh
+activity-range-from = Từ
+activity-range-to = Đến
+activity-range-apply = Áp dụng
+activity-range-of = { $days } · { $account }
+activity-accounts-all = Tất cả tài khoản
+activity-accounts-tip = Hiển thị một tài khoản hoặc tất cả
+
+## Totals at the top
+
 activity-messages = Thư được theo dõi
 activity-open-rate = Tỷ lệ mở
 activity-click-rate = Tỷ lệ nhấp
 activity-percent = { $percent }%
+
+## Opens and clicks over time
+
 activity-by-day = Lượt mở và lượt nhấp
 activity-opens = Lượt mở: { $count }
 activity-clicks = Lượt nhấp: { $count }
 activity-by-week = Mỗi tuần một cột
+
+## The messages
+
 activity-by-open-rate = Tiêu đề theo tỷ lệ mở
 activity-opened = { $opened } trên { $recipients } người đã mở
 activity-clicked = { $clicked } trên { $recipients } người đã mở liên kết
 activity-no-subject = (không có tiêu đề)
 activity-nothing-period = Không có thư được theo dõi nào được gửi trong khoảng thời gian này.
 activity-close = Đóng
+
+## Your mailbox: counted on this computer from all mail in the period
+
 insights-heading = Hộp thư của bạn
 insights-counting = Đang đếm thư của bạn…
 insights-failed = Không thể đếm thư của bạn.
@@ -30,22 +67,3 @@ insights-days = { $count } ngày
 insights-people = Những người bạn viết thư nhiều nhất
 insights-person-counts = Đã gửi { $sent } · đã nhận { $received }
 insights-hours-heading = Thư đến vào lúc nào
-activity-details = Chi tiết
-activity-clear-all = Xóa tất cả
-activity-remove = Gỡ khỏi danh sách
-activity-feed-opened = { $who } đã mở “{ $subject }”
-activity-feed-clicked = { $who } đã nhấp một liên kết trong “{ $subject }”
-activity-feed-maybe = { $who } có thể đã mở “{ $subject }”
-activity-feed-empty = Chưa có lượt mở hay lượt nhấp nào. Bật biểu tượng con mắt khi viết thư để biết khi nào thư được đọc.
-activity-message-gone = Thư đó không còn trong Đã gửi.
-activity-report = Báo cáo hoạt động
-activity-range-week = 7 ngày qua
-activity-range-month = 30 ngày qua
-activity-range-all = Mọi lúc
-activity-range-custom = Tùy chỉnh
-activity-range-from = Từ
-activity-range-to = Đến
-activity-range-apply = Áp dụng
-activity-range-of = { $days } · { $account }
-activity-accounts-all = Tất cả tài khoản
-activity-accounts-tip = Hiển thị một tài khoản hoặc tất cả

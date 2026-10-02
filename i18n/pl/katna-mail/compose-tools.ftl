@@ -32,6 +32,7 @@ compose-tool-bold = Pogrubienie (Ctrl+B)
 compose-tool-italic = Kursywa (Ctrl+I)
 compose-tool-underline = Podkreślenie (Ctrl+U)
 compose-tool-text-color = Kolor tekstu
+compose-tool-colors = Kolor tekstu i wyróżnienia
 compose-tool-background-color = Kolor tła
 compose-tool-default-color = Kolor domyślny
 compose-tool-no-background = Bez tła
@@ -126,6 +127,10 @@ compose-tool-signature = Wstaw podpis
 compose-tool-signature-none = Bez podpisu
 compose-tool-signature-untitled = Bez nazwy
 compose-tool-signature-manage = Zarządzaj podpisami
+compose-signature-tag-tip = Wybierz inny podpis
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = Szablony
 compose-tool-templates-none = Brak szablonów
 compose-tool-template-save = Zapisz jako szablon…

@@ -538,7 +538,6 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(2.0))
-            .child(self.create_contact_button(th, cx))
             .child(item(
                 ("contacts-nav", 0),
                 "contacts",
@@ -746,25 +745,6 @@ impl MailWindow {
                     .child(tr!("contacts-accounts")),
             )
             .children(rows)
-            .into_any_element()
-    }
-
-    /// "Create contact", at the top of the column like Compose in Mail.
-    fn create_contact_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        div()
-            .flex()
-            .child(
-                super::nav::side_create_button(
-                    "contact-create",
-                    "person-add",
-                    tr!("contacts-create"),
-                    th,
-                )
-                .on_click(cx.listener(|this, _, window, cx| {
-                    this.contacts.open = None;
-                    this.start_contact_edit(None, window, cx)
-                })),
-            )
             .into_any_element()
     }
 
@@ -1039,6 +1019,7 @@ impl MailWindow {
     ) -> AnyElement {
         let open = person.clone();
         let dim = |d: gpui::Div| d.text_color(rgba(th.text_dim));
+        let mark = || self.muted_mark_any(&person.emails, 16.0, th);
         let row = div()
             .id(("contact", ix))
             .w_full()
@@ -1074,10 +1055,19 @@ impl MailWindow {
                         .flex_col()
                         .child(
                             div()
-                                .truncate()
-                                .text_color(rgba(th.text))
-                                .font_weight(FontWeight::MEDIUM)
-                                .child(person.name.clone()),
+                                .flex()
+                                .flex_row()
+                                .items_center()
+                                .gap(px(6.0))
+                                .child(
+                                    div()
+                                        .min_w_0()
+                                        .truncate()
+                                        .text_color(rgba(th.text))
+                                        .font_weight(FontWeight::MEDIUM)
+                                        .child(person.name.clone()),
+                                )
+                                .children(mark()),
                         )
                         .when(!under.is_empty(), |d| {
                             d.child(
@@ -1093,9 +1083,14 @@ impl MailWindow {
             .when(self.contacts_columns(), |row| {
                 row.child(
                     column(2.0)
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(6.0))
                         .text_color(rgba(th.text))
                         .font_weight(FontWeight::MEDIUM)
-                        .child(person.name.clone()),
+                        .child(div().min_w_0().truncate().child(person.name.clone()))
+                        .children(mark()),
                 )
                 .child(dim(column(2.4)).child(person.emails.first().cloned().unwrap_or_default()))
                 .child(dim(column(1.6)).child(person.phone.clone()))
@@ -1163,9 +1158,18 @@ impl MailWindow {
                     .gap(px(6.0))
                     .child(
                         div()
-                            .text_size(px(28.0))
-                            .text_color(rgba(th.text))
-                            .child(person.name.clone()),
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(10.0))
+                            .child(
+                                div()
+                                    .min_w_0()
+                                    .text_size(px(28.0))
+                                    .text_color(rgba(th.text))
+                                    .child(person.name.clone()),
+                            )
+                            .children(self.muted_mark_any(&person.emails, 22.0, th)),
                     )
                     .when(!job.is_empty(), |d| {
                         d.child(
@@ -1531,7 +1535,7 @@ fn label_button(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
         .gap(px(4.0))
         .rounded_full()
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
         .text_size(px(12.0))
@@ -1597,7 +1601,7 @@ fn section(title: String, rows: Vec<AnyElement>, tint: usize, th: &Theme) -> Any
         .gap(px(14.0))
         .rounded(px(14.0))
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .bg(gpui::linear_gradient(
             180.0,
             gpui::linear_color_stop(rgba(top), 0.0),

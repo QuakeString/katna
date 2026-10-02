@@ -37,7 +37,7 @@ use crate::widgets::{icon, tip};
 const CARD_WIDTH: f32 = 180.0;
 const THUMB_HEIGHT: f32 = 84.0;
 /// Thumbnails are drawn at twice the card's size, sharp on HiDPI screens.
-const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
+pub(super) const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
 /// The card's corner radius; its contents are rounded one pixel less, to
 /// sit inside its border.
 pub(super) const CARD_RADIUS: f32 = 8.0;
@@ -124,6 +124,11 @@ pub(super) struct Files {
 }
 
 impl Files {
+    /// The thumbnail of attachment `index` of message `id`, once made.
+    pub(super) fn thumb(&self, id: MessageId, index: usize) -> Option<Thumb> {
+        self.thumbs.get(&(id, index)).cloned()
+    }
+
     /// Forgets the thumbnails of messages other than `keep`.
     fn keep_only(&mut self, keep: &HashSet<MessageId>) {
         self.asked.retain(|id, _| keep.contains(id));
@@ -147,6 +152,15 @@ pub(super) fn bitmap(mut image: RgbaImage) -> Arc<RenderImage> {
         pixel.0.swap(0, 2);
     }
     Arc::new(RenderImage::new([Frame::new(image)]))
+}
+
+/// A picture as a card's top: sharp, and blurred for the hover panel.
+pub(super) fn picture_thumb(sharp: RgbaImage) -> Thumb {
+    let frosted = bitmap(frosted(&sharp));
+    Thumb::Picture {
+        sharp: bitmap(sharp),
+        frosted,
+    }
 }
 
 /// `thumb` made small and blurred. Drawn stretched over the whole card,
@@ -234,13 +248,7 @@ const GLANCE_MAX_BYTES: usize = 20 * 1024 * 1024;
 pub(super) fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
     let file = katna_render::attachment_file(raw, index)?;
     let (w, h) = THUMB_PIXELS;
-    let picture = |sharp: RgbaImage| {
-        let frosted = bitmap(frosted(&sharp));
-        Thumb::Picture {
-            sharp: bitmap(sharp),
-            frosted,
-        }
-    };
+    let picture = picture_thumb;
     match kind {
         Kind::Pdf => katna_preview::pdf::thumbnail(file.bytes, w, h).map(picture),
         Kind::Picture(format) => katna_preview::picture::thumbnail(&file.bytes, format, w, h)
@@ -620,12 +628,23 @@ impl MailWindow {
                 cx.stop_propagation();
                 this.save_from_message(id, ix, &save_name, cx);
             }));
+            let forward_name = name.clone();
+            let forward = panel_button(
+                ("attachment-forward", ix),
+                "forward",
+                tr!("attachment-forward"),
+                th,
+            )
+            .on_click(cx.listener(move |this, _, window, cx| {
+                cx.stop_propagation();
+                this.forward_from_message(id, ix, &forward_name, window, cx);
+            }));
             let overlay = hover_panel(
                 group.clone(),
                 name.clone(),
                 item.size,
                 frost,
-                vec![save.into_any_element()],
+                vec![forward.into_any_element(), save.into_any_element()],
                 th,
             );
             div()
@@ -639,7 +658,7 @@ impl MailWindow {
                 .overflow_hidden()
                 .rounded(px(CARD_RADIUS))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .cursor_pointer()
                 .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
@@ -728,7 +747,7 @@ impl MailWindow {
     }
 
     /// Opens attachment `index` of message `id` in the viewer.
-    fn open_attachment(
+    pub(super) fn open_attachment(
         &mut self,
         id: MessageId,
         index: usize,
@@ -819,7 +838,7 @@ impl MailWindow {
     /// file Katna has no preview for goes straight to the desktop's default
     /// app, unless it could run a program (the viewer then offers only
     /// Save).
-    fn open_in(&self, item: &Item) -> OpenIn {
+    pub(super) fn open_in(&self, item: &Item) -> OpenIn {
         match group(item.kind) {
             Some(group) => self.config.mail.open.get(group),
             None if item.risky => OpenIn::Katna,
@@ -828,7 +847,7 @@ impl MailWindow {
     }
 
     #[allow(clippy::too_many_arguments)]
-    fn show_viewer(
+    pub(super) fn show_viewer(
         &mut self,
         raw: Arc<Vec<u8>>,
         encrypted: bool,
@@ -848,6 +867,26 @@ impl MailWindow {
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
         self.files.viewer = Some(viewer);
         cx.notify();
+    }
+
+    /// Opens the viewer on `item` before its file is here (a drive file
+    /// still downloading): it turns until the file is handed to it.
+    pub(super) fn show_fetching_viewer(
+        &mut self,
+        item: Item,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Entity<Viewer> {
+        self.close_viewer(window, cx);
+        self.files.restore = window.focused(cx);
+        self.files.viewer_encrypted = false;
+        self.files.viewer_message = None;
+        let th = self.theme(window);
+        let viewer = cx.new(|cx| Viewer::fetching(item, th, window, cx));
+        self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
+        self.files.viewer = Some(viewer.clone());
+        cx.notify();
+        viewer
     }
 
     fn on_viewer(
@@ -876,12 +915,18 @@ impl MailWindow {
             }
             ViewerEvent::Step(by) => self.step_library(*by, window, cx),
             ViewerEvent::Paged(index) => self.paged_library(*index, cx),
+            ViewerEvent::Pick => self.pick_previewed(cx),
             ViewerEvent::ShowMail => {
                 let mail = self.files.viewer_mail;
                 self.close_viewer(window, cx);
                 if let Some(id) = mail {
                     self.show_file_mail(id, window, cx);
                 }
+            }
+            ViewerEvent::Forward(file) => {
+                let file = file.clone();
+                self.close_viewer(window, cx);
+                self.new_mail_with_file(&file, window, cx);
             }
             ViewerEvent::Reply(file) => {
                 let message = self.files.viewer_message;
@@ -901,6 +946,9 @@ impl MailWindow {
         self.files.released.extend(released);
         self.files._viewer_events = None;
         self.files.viewer_mail = None;
+        if let Some(picker) = &mut self.picker {
+            picker.previewing = false;
+        }
         match self.files.restore.take() {
             Some(focus) => focus.focus(window, cx),
             None => self.list_focus.focus(window, cx),
@@ -928,6 +976,38 @@ impl MailWindow {
                 .await;
             this.update(cx, |this, cx| match file {
                 Some(file) => this.save_attachment(Arc::new(file), cx),
+                None => this.show_snackbar(
+                    tr!("attachment-read-failed", name = name.as_str()),
+                    None,
+                    cx,
+                ),
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Starts a new mail with only attachment `index` of message `id`.
+    fn forward_from_message(
+        &mut self,
+        id: MessageId,
+        index: usize,
+        name: &str,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some((raw, _)) = self.attachment_raw(id) else {
+            self.show_snackbar(tr!("attachment-not-downloaded"), None, cx);
+            return;
+        };
+        let name = name.to_owned();
+        cx.spawn_in(window, async move |this, cx| {
+            let file = cx
+                .background_executor()
+                .spawn(async move { katna_render::attachment_file(&raw, index) })
+                .await;
+            this.update_in(cx, |this, window, cx| match file {
+                Some(file) => this.new_mail_with_file(&file, window, cx),
                 None => this.show_snackbar(
                     tr!("attachment-read-failed", name = name.as_str()),
                     None,

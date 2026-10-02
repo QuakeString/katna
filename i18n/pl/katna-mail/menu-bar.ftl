@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _Kalendarz
 desktop-menu-page-contacts = Ko_ntakty
 desktop-menu-page-tasks = _Zadania
 desktop-menu-page-notes = No_tatki
+desktop-menu-page-files = _Pliki
 desktop-menu-next = _Następny wątek
 desktop-menu-previous = _Poprzedni wątek
 desktop-menu-message = _Wiadomość

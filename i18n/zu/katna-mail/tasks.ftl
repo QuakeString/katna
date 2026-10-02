@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Dala
+tasks-create = Umsebenzi omusha
 tasks-all = Yonke imisebenzi
 tasks-today = Namuhla
 tasks-starred = Okunenkanyezi

@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _Kalanda
 desktop-menu-page-contacts = _Lambobin sadarwa
 desktop-menu-page-tasks = Ay_yuka
 desktop-menu-page-notes = _Bayanai
+desktop-menu-page-files = _Fayiloli
 desktop-menu-next = Tattaunawa ta _gaba
 desktop-menu-previous = Tattaunawa ta _baya
 desktop-menu-message = _Saƙo

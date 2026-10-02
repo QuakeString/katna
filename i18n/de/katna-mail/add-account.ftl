@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = E-Mail-Konto hinzufügen
+add-account-providers-intro = Wählen Sie Ihren E-Mail-Anbieter. Den Rest findet Katna.
+add-account-provider-other = Andere E-Mail
+add-account-provider-other-detail = Jedes IMAP- oder POP3-Konto
+add-account-provider-google-detail = Gmail und Google Workspace
+add-account-provider-microsoft-detail = Outlook und Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = Bei { $provider } anmelden
+add-account-form-title-other = Ihr E-Mail-Konto
+add-account-form-intro = Katna speichert Ihr Passwort im Schlüsselbund Ihres Systems.
 add-account-looking = Mailserver für { $address } werden gesucht…
 add-account-address-intro = Geben Sie Ihre E-Mail-Adresse ein. Katna findet die Server für Sie.
 add-account-servers-title = Servereinstellungen
@@ -13,10 +22,18 @@ add-account-signing-in = Anmeldung läuft…
 add-account-browser-title = Im Browser fortfahren
 add-account-browser-intro = Katna hat die Anmeldeseite von { $provider } in Ihrem Browser geöffnet. Melden Sie sich dort an, erlauben Sie Katna, Ihre E-Mails zu lesen und zu senden, und kehren Sie dann hierher zurück.
 add-account-browser-hint = Keine Seite geöffnet? Sehen Sie in den Fenstern Ihres Browsers nach, oder gehen Sie zurück und versuchen Sie es erneut.
+add-account-stage-browser = Warten auf Ihre Anmeldung im Browser…
+add-account-stage-signing-in-at = Anmeldung bei { $server }…
+add-account-help-app-password-link = So erstellen Sie ein App-Passwort
+add-account-help-turn-on-imap = { $provider } lässt E-Mail-Apps erst zu, wenn der IMAP- und POP3-Zugriff in den Einstellungen des Webmails eingeschaltet ist.
+add-account-help-turn-on-imap-link = So schalten Sie ihn ein
 
 ## Add a mail account: fields
 
 add-account-field-address = E-Mail-Adresse
+add-account-receive-with = E-Mails empfangen mit
+add-account-imap-about = IMAP behält Ihre E-Mails und Ordner auf dem Server, auf jedem Gerät gleich. Wählen Sie es, wenn möglich.
+add-account-pop3-about = POP3 lädt Ihre E-Mails auf diesen Computer herunter. E-Mails, die Sie hier lesen oder verschieben, bleiben auf dem Server und Ihren anderen Geräten unverändert.
 add-account-incoming = Eingehende E-Mails ({ $protocol })
 add-account-outgoing = Ausgehende E-Mails ({ $protocol })
 add-account-field-server = Server
@@ -38,14 +55,17 @@ add-account-servers-found = { $source ->
    *[other] Server: { $servers }, geschätzt; prüfen Sie sie, falls die Anmeldung fehlschlägt.
 }
 add-account-servers-entered = Server: { $servers }, wie eingegeben.
-add-account-sign-in-with = Mit { $provider } anmelden
-add-account-sign-in-instead = Stattdessen mit { $provider } anmelden
 
 ## Add a mail account: buttons
+
+add-account-sign-in-with = Mit { $provider } anmelden
+add-account-sign-in-instead = Stattdessen mit { $provider } anmelden
 
 add-account-servers-button = Servereinstellungen
 add-account-back = Zurück
 add-account-add = Konto hinzufügen
+add-account-done = Fertig
+add-account-another = Weiteres Konto hinzufügen
 add-account-cancel = Abbrechen
 
 ## Add a mail account: problems
@@ -75,6 +95,22 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Diese Version von Katna kann sich noch nicht bei Google-Konten anmelden.
    *[other] Dieser Anbieter erlaubt die Anmeldung nur auf seiner eigenen Seite, und das kann Katna für ihn noch nicht.
 }
+add-account-smtp-not-found = Katna hat gefunden, wo Ihre E-Mails gelesen werden, aber nicht, wohin sie gesendet werden. Geben Sie den Postausgangsserver ein.
+
+## Add a mail account: the last step
+
+add-account-done-title = Ihr Konto ist bereit
+add-account-done-intro = Katna ruft jetzt Ihre E-Mails ab. Neue E-Mails erscheinen, sobald sie eintreffen.
+add-account-done-sign-in = Anmeldung
+add-account-done-signed-in-with = Mit { $provider }, in Ihrem Browser
+add-account-done-receiving = E-Mails empfangen
+add-account-done-sending = E-Mails senden
+add-account-done-on-server = E-Mails auf dem Server
+add-account-done-kept = Bleiben, bis Sie sie in Katna löschen
+add-account-done-pop3-hint = Was mit E-Mails auf dem Server geschieht, ändern Sie unter Einstellungen > Konten.
+add-account-done-zoho-title = Aufgaben und Kalender
+add-account-done-zoho-about = Zoho hält diese getrennt von den E-Mails. Melden Sie sich einmal mit Zoho an, um sie in Katna zu holen.
+add-account-done-linked = Aufgaben und Kalender verbunden
 
 ## The account menu (from the account button on the top bar)
 

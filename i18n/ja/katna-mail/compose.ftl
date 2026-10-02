@@ -46,6 +46,7 @@ compose-sent-archived = 送信してアーカイブしました
 compose-sent = メッセージを送信しました
 compose-discarded = 下書きを破棄しました
 compose-draft-saved = 下書きを保存しました
+compose-draft-saving = 保存中…
 compose-draft-failed = 下書きを保存できませんでした: { $error }
 compose-draft-not-opened = 下書きを開けませんでした。
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = 下書きを開けませんでした。
 compose-picker-insert = 挿入
 compose-picker-attach = 添付
 compose-file-too-large = { $name } は大きすぎます。1 通のメッセージに添付できるのは { $limit } までです。
+compose-forward-files-missing = 転送するメールのファイルがダウンロードされていないため、添付されていません。
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 添付ファイルを削除
 compose-attachments-total = ファイル { $count } 個、{ $size }
@@ -74,6 +76,7 @@ compose-drive-share-link = リンクで共有
 compose-drive-send-without = 共有せずに送信
 compose-drive-share-cancel = キャンセル
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } は { $limit } を超えているため、OneDrive に保存され、メッセージにはそのリンクが付きます。
 compose-onedrive-tip = OneDrive 内にあります。メッセージにはリンクが付きます
 compose-onedrive-allow = OneDrive を許可
@@ -84,8 +87,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive では { $addresses } とファイルを共有できません。代わりに、リンクを知っている人なら誰でも開けるようになります。
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ここにファイルをドロップ
 compose-drop-here = ここにドロップ
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = 書式を保持
 compose-paste-table = 表
 compose-paste-picture = 画像
@@ -99,6 +106,9 @@ compose-encrypt = 暗号化
 compose-encrypted = 暗号化済み: 受信者だけが読めます
 compose-sign = 署名
 compose-signed = 署名済み: あなたからのメールであることを受信者が確認できます
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = 開封とクリックを追跡
 compose-tracked = 追跡中: 各宛先がいつメールを開いたか、リンクをクリックしたかがわかります
 compose-track-clicks = リンクのクリックを追跡（プレーンテキストでは開封を確認できません）
@@ -131,6 +141,9 @@ send-check-subject-title = 件名なしで送信しますか？
 send-check-subject-text = このメッセージには件名がありません。
 send-check-add-subject = 件名を追加
 send-check-send-anyway = このまま送信
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = 有効なメールアドレスではありません
 recipient-show-address = アドレスを表示
 recipient-remove = 削除

@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rephrase without selecting, and quicker suggestions"
+text = """
+A sparkle beside Formatting at the bottom of a new message, and in the
+chat view's reply box, rephrases everything you wrote when nothing is
+selected, or just the selection when there is one; Ctrl+J does the same.
+Longer suggestions with AI come much sooner, and the Model field in
+Settings > Compose lists the models your service offers as you type.
+"""

@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “Gbogbo àkáǹtì” wà lókè pánẹ́ẹ
 accounts-row = Àwọn àkáǹtì
 accounts-row-detail = Pánẹ́ẹ̀lì fódà àti mẹ́nù àkáǹtì ń to àwọn àkáǹtì ní ìtòlẹ́sẹẹsẹ yìí; èyí àkọ́kọ́ ni àtilẹ̀wá. Yíyọ àkáǹtì kan kúrò ń pa ẹ̀dà lẹ́tà rẹ̀ tí Katna ní lórí kọ̀ǹpútà yìí rẹ́. Lẹ́tà náà ṣì wà lórí sáfà.
 accounts-none = Kò sí àkáǹtì kankan síbẹ̀.
+accounts-pop3-row = Lẹ́tà lórí sáfà
+accounts-pop3-row-detail = Àwọn àkáǹtì POP3 ń gba lẹ́tà sílẹ̀ sórí kọ̀ǹpútà yìí. Yan ohun tí yóò ṣẹlẹ̀ sí ẹ̀dà tó wà lórí sáfà lẹ́yìn náà.
+accounts-pop3-with-katna = Pa á mọ́ títí màá fi pa á rẹ́ nínú Katna
+accounts-pop3-at-once = Pa á rẹ́ ní kété tí a bá gbà á sílẹ̀
+accounts-pop3-after-days = { $count ->
+   *[other] Pa á rẹ́ lẹ́yìn ọjọ́ { $count }
+}
+accounts-pop3-never = Má ṣe pa á rẹ́ láé
+accounts-pop3-days-less = Ọjọ́ díẹ̀ sí i
+accounts-pop3-days-more = Ọjọ́ púpọ̀ sí i
 accounts-kind-imported = Tí a kó wọlé
 accounts-picture-reset = Lo àwòrán déskítọ́ọ̀pù
 accounts-picture-change = Yí àwòrán padà

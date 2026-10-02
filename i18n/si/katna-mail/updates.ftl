@@ -1,7 +1,6 @@
 # Katna Mail, Sinhala (සිංහල).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 update-dialog-title = යාවත්කාලීන කිරීම්
 update-dialog-downloading-detail = මෙම කවුළුව වසා දැමුවත් බාගත කිරීම දිගටම සිදු වේ.
 update-dialog-progress = { $total } න් { $done }

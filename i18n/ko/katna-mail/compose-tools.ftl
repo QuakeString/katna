@@ -32,6 +32,7 @@ compose-tool-bold = 굵게(Ctrl+B)
 compose-tool-italic = 기울임꼴(Ctrl+I)
 compose-tool-underline = 밑줄(Ctrl+U)
 compose-tool-text-color = 텍스트 색상
+compose-tool-colors = 텍스트 및 강조 색상
 compose-tool-background-color = 배경 색상
 compose-tool-default-color = 기본 색상
 compose-tool-no-background = 배경 없음
@@ -126,6 +127,10 @@ compose-tool-signature = 서명 삽입
 compose-tool-signature-none = 서명 없음
 compose-tool-signature-untitled = 제목 없음
 compose-tool-signature-manage = 서명 관리
+compose-signature-tag-tip = 다른 서명 선택
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = 템플릿
 compose-tool-templates-none = 아직 템플릿이 없습니다
 compose-tool-template-save = 템플릿으로 저장…

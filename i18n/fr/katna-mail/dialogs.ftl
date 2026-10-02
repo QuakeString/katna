@@ -8,6 +8,9 @@ about-tooltip = À propos de Katna
 about-tagline = Courrier et calendrier pour le bureau Linux
 about-whats-new = Nouveautés
 
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
 about-update-not-checked = Les mises à jour n’ont pas encore été vérifiées
 about-update-checking = Vérification des mises à jour…
 about-update-up-to-date = Katna Mail est à jour
@@ -67,6 +70,7 @@ about-credit-resvg = Images SVG
 about-credit-jiff = Dates et fuseaux horaires
 about-credit-spellbook = Correcteur orthographique, issu de l’éditeur Helix
 about-credit-smol = Faire beaucoup de choses à la fois
+about-credit-color-schemes = Les palettes des jeux de couleurs intégrés
 about-all-libraries = Toutes les bibliothèques utilisées par Katna ({ $count })
 about-library-authors = par { $authors }
 about-license = Katna est un logiciel libre sous licence GNU GPL, version 3 ou ultérieure.
@@ -125,6 +129,21 @@ onboarding-density-default = Par défaut
 onboarding-density-compact = Compacte
 onboarding-continue = Continuer
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Profitez de plus avec un compte Katna
+onboarding-katna-lead = C’est facultatif. Il active les fonctionnalités en ligne de Katna, et vous pouvez en créer un plus tard dans Paramètres > Abonnement.
+onboarding-katna-receipts-title = Accusés de lecture
+onboarding-katna-receipts-text = Voyez quand vos destinataires ouvrent les messages que vous envoyez.
+onboarding-katna-links-title = Suivi des liens
+onboarding-katna-links-text = Voyez quels liens de vos messages sont cliqués.
+onboarding-katna-activity-title = Activité
+onboarding-katna-activity-text = Les ouvertures et les clics de tout ce que vous avez envoyé, au même endroit.
+onboarding-katna-translate-title = Traduction automatique
+onboarding-katna-translate-text = Lisez dans votre langue les messages écrits dans d’autres langues.
+onboarding-katna-private = Il a son propre mot de passe. Vos identifiants de messagerie ne quittent jamais cet ordinateur.
+
 ## First run: done
 
 onboarding-ready-title = Tout est prêt
@@ -168,7 +187,7 @@ tour-search-text = La recherche fonctionne aussi hors ligne. Le bouton à l’ex
 tour-menu-title = Afficher ou masquer les dossiers
 tour-menu-text = Ce bouton replie la liste des dossiers. Quand elle est masquée, placez le pointeur sur Courrier à gauche pour voir les dossiers.
 tour-apps-title = Vos applications
-tour-apps-text = Le courrier est ici désormais. Calendrier, Contacts, Tâches, Notes et Flux le rejoindront dans cette barre.
+tour-apps-text = Le courrier se trouve ici, à côté de Calendrier, Contacts, Tâches, Notes et Fichiers.
 tour-tabs-title = Onglets de la boîte de réception
 tour-tabs-text = Le nouveau courrier est trié dans Principale, Promotions, Réseaux sociaux, Notifications et Forums. Vous pouvez désactiver les onglets dans les paramètres rapides.
 tour-list-title = Vos messages
@@ -196,12 +215,22 @@ crash-view = Voir le rapport
 crash-view-tooltip = Ouvrir le rapport, enregistré sur cet ordinateur
 crash-copy = Copier le rapport
 crash-close = Fermer
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } vous demande de vous reconnecter à { $address }.
 sign-in-again-button = Se connecter
 sign-in-again-tooltip = Ouvrir la page de connexion de { $provider } dans votre navigateur
 sign-in-again-waiting = En attente de votre navigateur…
 sign-in-again-close = Fermer
+google-api-off = { $api } est désactivée dans le projet Google Cloud de Katna.
+google-api-turn-on = Activer
+google-api-turn-on-tooltip = Ouvrir Google Cloud pour activer { $api }, puis appuyer sur Réessayer
 sign-in-again-done = Reconnecté à { $address }. Récupération de votre courrier…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] Placer cette conversation dans la corbeille ?

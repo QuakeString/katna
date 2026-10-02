@@ -23,6 +23,9 @@
 //!   `?after=`).
 //! - `GET /api/v1/languages`, `POST /api/v1/translate`, `POST
 //!   /api/v1/detect`: LibreTranslate, passed through ([`crate::translate`]).
+//! - `POST /api/v1/ai/rephrase`, `POST /api/v1/ai/complete`, `POST
+//!   /api/v1/ai/summarize`, `POST /api/v1/ai/draft`: Katna AI
+//!   ([`crate::ai`]).
 
 use std::collections::HashMap;
 use std::convert::Infallible;
@@ -42,9 +45,11 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::{Semaphore, broadcast};
 
 use crate::accounts::{self, AccountLimits};
+use crate::admin;
+use crate::ai;
 use crate::auth::SignedIn;
 use crate::classify::{self, Kind, Source};
-use crate::config::Config;
+use crate::config::{AiConfig, Config};
 use crate::db::{Db, DbError, Event, OverLimit, TrackLimits, now_ms};
 use crate::ids;
 use crate::limits::WindowLimit;
@@ -120,6 +125,15 @@ pub struct AppState {
     signed_out: broadcast::Sender<Arc<str>>,
     mailer: Mailer,
     account_limits: Arc<AccountLimits>,
+    /// Katna AI requests per account and hour.
+    ai_requests: Arc<WindowLimit<String>>,
+    /// Katna AI requests passed on at once.
+    ai_calls: Arc<Semaphore>,
+    /// Katna AI's settings in use: the environment's, under those saved
+    /// from the admin page.
+    ai: Arc<std::sync::RwLock<Arc<AiConfig>>>,
+    /// Who is signed in to the admin page.
+    admin_sessions: Arc<admin::Sessions>,
 }
 
 impl AppState {
@@ -138,6 +152,8 @@ impl AppState {
         let translations =
             WindowLimit::new(config.translations_per_day, Duration::from_secs(86_400));
         let translating = Semaphore::new(config.translate_concurrency.max(1));
+        let ai_requests = WindowLimit::new(config.ai.per_hour, Duration::from_secs(3600));
+        let ai = Arc::new(std::sync::RwLock::new(Arc::new(config.ai.clone())));
         Self {
             db,
             config: Arc::new(config),
@@ -152,6 +168,10 @@ impl AppState {
             signed_out,
             mailer,
             account_limits: Arc::default(),
+            ai_requests: Arc::new(ai_requests),
+            ai_calls: Arc::new(Semaphore::new(ai::CONCURRENCY)),
+            ai,
+            admin_sessions: Arc::default(),
         }
     }
 
@@ -189,6 +209,82 @@ impl AppState {
     pub(crate) fn translations(&self) -> &WindowLimit<String> {
         &self.translations
     }
+
+    /// Katna AI requests per account and hour.
+    pub(crate) fn ai_requests(&self) -> &WindowLimit<String> {
+        &self.ai_requests
+    }
+
+    /// Katna AI requests passed on at once.
+    pub(crate) fn ai_calls(&self) -> &Arc<Semaphore> {
+        &self.ai_calls
+    }
+
+    /// Katna AI's settings in use.
+    pub fn ai(&self) -> Arc<AiConfig> {
+        Arc::clone(&self.ai.read().unwrap_or_else(|e| e.into_inner()))
+    }
+
+    /// Uses `ai` from now on.
+    pub(crate) fn set_ai(&self, ai: AiConfig) {
+        self.ai_requests.set_max(ai.per_hour);
+        *self.ai.write().unwrap_or_else(|e| e.into_inner()) = Arc::new(ai);
+    }
+
+    /// The environment's AI settings with the keys saved on the admin page.
+    pub(crate) async fn ai_base(&self) -> Result<AiConfig, DbError> {
+        Ok(self.config.ai.with_saved_keys(&self.db.ai_keys().await?))
+    }
+
+    /// Puts the keys and settings saved from the admin page over the
+    /// environment's. Saved choices whose key has gone are dropped.
+    pub async fn load_ai_settings(&self) -> Result<(), DbError> {
+        let env = &self.config.ai;
+        let base = self.ai_base().await?;
+        let mut settings = match self.db.ai_settings().await? {
+            None => ai::AiSettings::of(env),
+            Some(saved) => match serde_json::from_str::<ai::AiSettings>(&saved) {
+                Ok(settings) => settings,
+                Err(_) => {
+                    tracing::error!(
+                        "the saved Katna AI settings could not be read; using the environment's"
+                    );
+                    ai::AiSettings::of(env)
+                }
+            },
+        };
+        for choice in [&mut settings.main, &mut settings.fallback] {
+            if choice
+                .as_ref()
+                .is_some_and(|c| base.service(&c.provider, &c.model).is_none())
+            {
+                tracing::warn!("a saved Katna AI service has no key any more");
+                *choice = None;
+            }
+        }
+        if settings.main.is_none() {
+            settings.main = settings.fallback.take();
+        }
+        if settings.main.is_none() {
+            let from_env = ai::AiSettings::of(env);
+            settings.main = from_env.main;
+            settings.fallback = from_env.fallback;
+        }
+        match settings.apply(&base) {
+            Ok(ai) => self.set_ai(ai),
+            Err(problem) => {
+                if settings.main.is_some() {
+                    tracing::error!(problem, "the saved Katna AI settings were not used");
+                }
+                self.set_ai(base);
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn admin_sessions(&self) -> &admin::Sessions {
+        &self.admin_sessions
+    }
 }
 
 /// The server's routes.
@@ -207,6 +303,8 @@ pub fn router(state: AppState) -> Router {
         .route("/api/v1/translate", post(translate::translate))
         .route("/api/v1/detect", post(translate::detect))
         .merge(accounts::routes())
+        .merge(ai::routes())
+        .merge(admin::routes())
         .with_state(state)
 }
 
@@ -237,6 +335,12 @@ pub enum ApiError {
     TooMany(&'static str),
     /// Too busy just now; try again shortly.
     Busy(&'static str),
+    /// Katna AI's free month is over and no time is paid for.
+    PaymentNeeded,
+    /// A service the server passes requests to failed.
+    Upstream(&'static str),
+    /// Not signed in to the admin page, or the session is over.
+    AdminSignIn,
     /// The database failed.
     Internal(DbError),
 }
@@ -277,6 +381,17 @@ impl IntoResponse for ApiError {
             ApiError::NotFound => (StatusCode::NOT_FOUND, "not_found", "not found"),
             ApiError::TooMany(message) => (StatusCode::TOO_MANY_REQUESTS, "too_many", message),
             ApiError::Busy(message) => (StatusCode::SERVICE_UNAVAILABLE, "busy", message),
+            ApiError::PaymentNeeded => (
+                StatusCode::PAYMENT_REQUIRED,
+                "pay",
+                "the free month of Katna AI is over",
+            ),
+            ApiError::Upstream(message) => (StatusCode::BAD_GATEWAY, "upstream", message),
+            ApiError::AdminSignIn => (
+                StatusCode::UNAUTHORIZED,
+                "admin_sign_in",
+                "sign in to the admin page",
+            ),
             ApiError::MailFailed => (
                 StatusCode::BAD_GATEWAY,
                 "mail_failed",

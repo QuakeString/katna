@@ -100,7 +100,7 @@ contacts-print-none = Nenhum contato para imprimir
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Aniversário: { $day }
 contacts-print-nickname = Apelido: { $name }
-contacts-create = Criar contato
+contacts-create = Novo contato
 
 ## Search and the list
 

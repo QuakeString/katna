@@ -25,10 +25,7 @@ contacts-label-removed = Đã xóa khỏi { $name }
 contacts-label-renamed = Đã đổi tên nhãn thành { $name }
 contacts-label-deleted = Đã xóa nhãn { $name }
 contacts-label-no-email = Không ai trong nhãn này có địa chỉ email
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = Tài khoản
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = Đăng nhập lại để hiện danh bạ
 contacts-account-signed-in = Đã đăng nhập lại vào { $address }. Đang tải danh bạ của bạn…
 contacts-account-sign-in-refused = { $provider } không cho Katna vào. Hãy thử lại và cho phép truy cập danh bạ của bạn.
@@ -36,13 +33,9 @@ contacts-account-password = Máy chủ không chấp nhận mật khẩu. Yahoo,
 contacts-account-change-password = Đổi mật khẩu
 contacts-account-change-password-tooltip = Mở Cài đặt > Tài khoản
 contacts-account-failed = Không đọc được danh bạ.
-# $reason is the server's own words, in English.
 contacts-account-error = Không đọc được danh bạ: { $reason }
 contacts-account-none = Không tìm thấy sổ địa chỉ nào
-# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
 contacts-account-none-why = Không tìm thấy sổ địa chỉ nào: { $reason }
-# A Gmail or Outlook account added with a password: its contacts need the
-# provider's sign-in.
 contacts-account-use-sign-in = { $provider } chỉ hiện danh bạ cho Katna khi đăng nhập bằng { $provider }.
 contacts-account-sign-in-with = Đăng nhập bằng { $provider }
 contacts-account-looking = Đang tìm danh bạ…
@@ -88,7 +81,7 @@ contacts-print-none = Không có liên hệ nào để in
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Sinh nhật: { $day }
 contacts-print-nickname = Biệt danh: { $name }
-contacts-create = Tạo người liên hệ
+contacts-create = Người liên hệ mới
 
 ## Search and the list
 
