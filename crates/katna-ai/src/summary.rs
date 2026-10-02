@@ -176,7 +176,7 @@ pub fn summarize(request: &SummarizeRequest) -> Option<Prompt> {
 
 /// The mails sent, with their numbers (from 1): the newest
 /// [`MAX_MAILS`], fewer when they hold more than [`MAX_TOTAL`] characters.
-fn chosen(mails: &[Mail]) -> Vec<(usize, &Mail)> {
+pub(crate) fn chosen(mails: &[Mail]) -> Vec<(usize, &Mail)> {
     let mut total = 0;
     let mut chosen: Vec<(usize, &Mail)> = Vec::new();
     for (ix, mail) in mails.iter().enumerate().rev().take(MAX_MAILS) {

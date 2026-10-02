@@ -798,6 +798,27 @@ pub async fn ai_summarize(
     }
 }
 
+/// A first draft of a reply or a forward's note, or ideas for one (a
+/// JSON array of strings), with its plan, or a `katna_ai::wire::problem`.
+pub async fn ai_draft(
+    connection: &Connection,
+    request: &katna_ai::draft::DraftRequest,
+) -> Result<Rephrased, String> {
+    let failed = || katna_ai::wire::problem::FAILED.to_owned();
+    let request = serde_json::to_string(request).map_err(|_| failed())?;
+    let pim = PimProxy::new(connection).await.map_err(|_| failed())?;
+    let (text, plan, days_left, problem) = pim.ai_draft(&request).await.map_err(|_| failed())?;
+    if problem.is_empty() {
+        Ok(Rephrased {
+            text,
+            plan,
+            days_left,
+        })
+    } else {
+        Err(problem)
+    }
+}
+
 /// The rest of the sentence at the end of `before` (empty when unsure),
 /// or a `katna_ai::wire::problem`.
 pub async fn ai_complete(

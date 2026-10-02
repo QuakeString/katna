@@ -3762,7 +3762,8 @@ Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google cl
   in the Secret Service (`ai-key`), saved and removed through the daemon
   (`SetAiKey`, `AiKeySaved`), never in the settings file.
 - **Daemon:** `AiRephrase(text, tone, instruction)`,
-  `AiComplete(before, answered)` and `AiSummarize(newest, request)` on D-Bus, read the settings per call and
+  `AiComplete(before, answered)`, `AiSummarize(newest, request)` and
+  `AiDraft(request)` on D-Bus, read the settings per call and
   send over rustls either to Katna Server (`POST /api/v1/ai/rephrase`,
   `/api/v1/ai/complete`, with the Katna account's token; 401/403 = sign
   in, 402 = the free month is over, 429 = over a limit) or to the user's
@@ -3804,6 +3805,20 @@ Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google cl
   help out of encrypted mail. On Katna AI a summary is one request
   (`POST /api/v1/ai/summarize`). With writing help off, no sparkle,
   menu item or summary shows.
+- **Write reply** (decided 2 October 2026): while a reply, reply all
+  or forward is empty (signature and quote aside), the sparkle and
+  Ctrl+J write rather than rephrase (pen-and-spark icon, "Write reply"
+  or "Write note"); once there is text they rephrase again, and in a new
+  mail the sparkle stays faded until there is text. The Rephrase card
+  opens with three ideas from the conversation (one request) and a box
+  for the user's own words, Short or Longer, Friendly or Formal; picking
+  one writes the draft (one more request), which Insert puts at the start
+  of the message as one undo step. The chat view's drafts are a short
+  message without greeting or sign-off; a forward gets a note for the new
+  person. Katna Mail sends the conversation as for a summary, with the
+  user's and the recipients' names, as `katna_ai::draft::DraftRequest`
+  over `AiDraft` (Katna AI: `POST /api/v1/ai/draft`). Encrypted
+  conversations ask first.
 - **Katna AI** (Katna Server, `server/katna-server/src/ai.rs`): for
   confirmed Katna accounts, 30 days free from the first use, then $5 a
   month through Razorpay Subscriptions (to come; until then the server

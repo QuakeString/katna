@@ -687,11 +687,13 @@ impl MailWindow {
             .when(open(Popup::Emoji), |d| {
                 d.child(above(self.render_emoji_picker(th, cx)))
             });
-        // Writing help: the selection, or all the user wrote.
+        // Writing help: a reply written while it is empty, then the
+        // selection or all the user wrote rephrased.
         let sparkle = self.ai_allowed().then(|| {
+            let (name, label, works) = self.sparkle_look(cx);
             icon_button_colored(
                 "compose-rephrase-all",
-                "sparkle",
+                name,
                 20.0,
                 if compose.rephrase.is_some() {
                     th.accent
@@ -700,7 +702,10 @@ impl MailWindow {
                 },
                 th,
             )
-            .tooltip(tip(tr!("compose-ai-rephrase-tip"), th))
+            .tooltip(tip(label, th))
+            .when(!works && compose.rephrase.is_none(), |d| {
+                d.opacity(0.4).cursor_default()
+            })
             // The text keeps its selection.
             .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(|this, _, window, cx| this.toggle_rephrase(window, cx)))
