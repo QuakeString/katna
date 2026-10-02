@@ -1602,6 +1602,22 @@ impl RichEditor {
         last
     }
 
+    /// What the user wrote ([`Self::own_text_end`]) as plain text, empty
+    /// when there is none.
+    pub fn own_text(&self) -> String {
+        let Some(end) = self.own_text_end() else {
+            return String::new();
+        };
+        let last = end.path.block;
+        let mut lines = Vec::new();
+        for block in &self.doc.blocks[..=last] {
+            if let Block::Para(para) = block {
+                lines.push(para.text.as_str());
+            }
+        }
+        lines.join("\n").trim().to_owned()
+    }
+
     /// Selects what the user wrote ([`Self::own_text_end`]). False when
     /// there is none.
     pub fn select_own_text(&mut self, cx: &mut Context<Self>) -> bool {

@@ -3822,6 +3822,12 @@ Server and the user's own key, both; Gemini 3.5 Flash-Lite by default; Google cl
   user's and the recipients' names, as `katna_ai::draft::DraftRequest`
   over `AiDraft` (Katna AI: `POST /api/v1/ai/draft`). Encrypted
   conversations ask first.
+- **Rephrase subject** (asked 2 October 2026): once the subject has
+  text, a sparkle at the end of its row opens a small card under it with
+  three other wordings, written from the subject and what the message
+  says so far (`DraftKind::Subject` over the same `AiDraft` call, one
+  request). Picking one replaces the subject; the snackbar's Undo puts
+  back what was typed. Typing or Escape puts the card away.
 - **Katna AI** (Katna Server, `server/katna-server/src/ai.rs`): for
   confirmed Katna accounts, 30 days free from the first use, then $5 a
   month through Razorpay Subscriptions (to come; until then the server

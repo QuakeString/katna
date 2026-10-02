@@ -64,6 +64,9 @@ compose-ai-written = Draft added
 compose-ai-write-encrypted = This conversation is encrypted. Writing a reply sends its mails to { $service } unencrypted. Write anyway?
 compose-ai-write-anyway = Write
 compose-ai-write-encrypted-off = This conversation is encrypted, and Settings keeps writing help out of encrypted mail.
+compose-ai-subject-tip = Rephrase subject
+compose-ai-subject-title = Other ways to say it
+compose-ai-subject-done = Subject changed
 
 ## Summing up a conversation: the list's right-click menu, the reading
 ## pane's sparkle, the chat's strip and the card each opens.

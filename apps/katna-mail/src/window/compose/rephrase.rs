@@ -24,6 +24,7 @@ use katna_ui::px;
 use katna_ui::rich::Complete;
 use katna_ui::{InputEvent, TextInput};
 
+pub(in crate::window) mod subject;
 mod write;
 
 use super::super::MailWindow;

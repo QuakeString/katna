@@ -232,6 +232,8 @@ pub(super) struct Compose {
     /// How deep the text's undo went with the rephrased text put in, for
     /// the snackbar's Undo.
     rephrased: Option<usize>,
+    /// Other wordings of the subject, while their card is open.
+    subject_ideas: Option<rephrase::subject::SubjectIdeas>,
     /// The user agreed to send text of this encrypted message for
     /// rephrasing.
     ai_encrypted_ok: bool,
@@ -1237,6 +1239,12 @@ impl MailWindow {
                 }));
             }
         }
+        // Typing in the subject or Escape puts its ideas away.
+        subscriptions.push(cx.subscribe(&subject, |this, _, event: &InputEvent, cx| {
+            if matches!(event, InputEvent::Changed | InputEvent::Cancel) {
+                this.close_subject_ideas(cx);
+            }
+        }));
         subscriptions.push(
             cx.subscribe(&subject, |this, _, event: &InputGrammarMenu, cx| {
                 let popup = Popup::SubjectGrammar {
@@ -1367,6 +1375,7 @@ impl MailWindow {
             rows_glide: reply_kind::RowsGlide::default(),
             rephrase: None,
             rephrased: None,
+            subject_ideas: None,
             ai_encrypted_ok: false,
             chat: None,
             _subscriptions: subscriptions,
@@ -2642,10 +2651,7 @@ impl MailWindow {
                 self.render_from_row(th, cx)
                     .map(|from| row(tr!("compose-from"), from)),
             )
-            .child(row(
-                String::new(),
-                compose.subject.clone().into_any_element(),
-            ))
+            .child(row(String::new(), self.render_subject_field(th, cx)))
             .into_any_element()
     }
 

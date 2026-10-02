@@ -4,6 +4,8 @@
 //! conversation: a few ideas of what to say, then the text for the one
 //! the user picks or describes. Katna Mail sends the conversation's
 //! mails the way it does to sum them up ([`crate::summary::Mail`]).
+//! The same call offers better wordings of a subject the user typed
+//! ([`DraftKind::Subject`]).
 
 use serde::{Deserialize, Serialize};
 
@@ -13,7 +15,7 @@ use crate::summary::{MAX_MAIL, Mail, chosen};
 /// The most ideas offered.
 pub const MAX_IDEAS: usize = 3;
 /// The longest idea kept, in characters.
-const MAX_IDEA: usize = 60;
+const MAX_IDEA: usize = 80;
 
 /// What is being written.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -26,6 +28,9 @@ pub enum DraftKind {
     Forward,
     /// A reply in the chat view: a short message.
     Chat,
+    /// Other wordings of the subject the user typed, as ideas; the mails
+    /// are what they wrote so far, if anything.
+    Subject,
 }
 
 /// How long the draft is.
@@ -87,6 +92,11 @@ Suggest what their short note above it could say. \
 Answer with one JSON array of three different short ideas only, no other text, \
 each at most eight words: [\"FYI, see below\", \"Can you join Saturday?\", \"Short summary of the plan\"].";
 
+const SUBJECT_SYSTEM: &str = "You suggest better wordings of the subject line the user typed for an email, \
+clearer and more specific, fitting the mail's text when there is one. \
+Answer with one JSON array of three different subject lines only, no other text, \
+each at most ten words, keeping a leading \"Re:\" or \"Fwd:\": [\"Saturday run moves to the river route\", \"River route on Saturday at 7\", \"Change of plan for Saturday\"].";
+
 const DRAFT_SYSTEM: &str = "You write the user's reply to the newest mail of an email conversation. \
 Answer with the reply's text only: no subject, no quotation marks, no explanation, nothing quoted from the mails. \
 Start with a greeting and end with a sign-off with the user's name, matching the ones the user used before in the conversation when there are any.";
@@ -103,7 +113,11 @@ Keep it as short as a chat message.";
 /// conversation has nothing to answer.
 pub fn draft(request: &DraftRequest) -> Option<Prompt> {
     let mails = chosen(&request.mails);
-    if mails.iter().all(|(_, mail)| mail.text.trim().is_empty()) {
+    let subject = request.kind == DraftKind::Subject;
+    if subject && !request.subject.chars().any(char::is_alphabetic) {
+        return None;
+    }
+    if !subject && mails.iter().all(|(_, mail)| mail.text.trim().is_empty()) {
         return None;
     }
     let mut user = format!("Subject: {}\n", one_line(&request.subject));
@@ -129,9 +143,10 @@ pub fn draft(request: &DraftRequest) -> Option<Prompt> {
             cut(mail.text.trim(), MAX_MAIL),
         ));
     }
-    if request.ideas {
+    if request.ideas || subject {
         let system = match request.kind {
             DraftKind::Forward => FORWARD_IDEAS_SYSTEM,
+            DraftKind::Subject => SUBJECT_SYSTEM,
             _ => IDEAS_SYSTEM,
         };
         return Some(Prompt {
@@ -160,7 +175,8 @@ pub fn draft(request: &DraftRequest) -> Option<Prompt> {
         Manner::Formal => "Tone: formal and polite.",
     });
     let system = match request.kind {
-        DraftKind::Reply => DRAFT_SYSTEM,
+        // A subject is always answered with ideas, above.
+        DraftKind::Reply | DraftKind::Subject => DRAFT_SYSTEM,
         DraftKind::Forward => FORWARD_SYSTEM,
         DraftKind::Chat => CHAT_SYSTEM,
     };
@@ -303,6 +319,17 @@ mod tests {
         assert!(chat.user.contains("Write what fits best."));
         let forward = draft(&request(DraftKind::Forward, true)).unwrap();
         assert!(forward.system.contains("forwards"));
+    }
+
+    #[test]
+    fn subjects_need_only_the_subject() {
+        let mut typed = request(DraftKind::Subject, false);
+        typed.mails.clear();
+        let prompt = draft(&typed).unwrap();
+        assert!(prompt.system.contains("subject line"));
+        assert!(prompt.user.starts_with("Subject: Running Saturday?"));
+        typed.subject = " ? ".into();
+        assert!(draft(&typed).is_none());
     }
 
     #[test]
