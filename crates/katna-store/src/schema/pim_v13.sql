@@ -5,7 +5,7 @@
 -- today, `gmail` (filters) and `sieve` later. A rule whose action failed
 -- is switched off with the reason in `last_error`.
 
-CREATE TABLE mail_rule (
+CREATE TABLE IF NOT EXISTS mail_rule (
     id              INTEGER PRIMARY KEY,
     name            TEXT    NOT NULL,
     enabled         INTEGER NOT NULL DEFAULT 1 CHECK (enabled IN (0, 1)),
@@ -21,4 +21,4 @@ CREATE TABLE mail_rule (
     created_at      INTEGER NOT NULL,
     updated_at      INTEGER NOT NULL
 );
-CREATE INDEX mail_rule_by_position ON mail_rule (position, id);
+CREATE INDEX IF NOT EXISTS mail_rule_by_position ON mail_rule (position, id);

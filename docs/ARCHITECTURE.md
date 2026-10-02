@@ -2089,13 +2089,24 @@ Gemini or confidential mode):
   density, scaling, theme, desktop colors, app names, sender pictures,
   Important markers, message width, dark colors for HTML mail, attachment
   previews), Shortcuts, Default apps (where each kind of attachment
-  opens, and showing saved files in their folder), Folders & rules,
+  opens, and showing saved files in their folder), Folders & rules (the
+  mail rules of §9.4 in the order they run, for every account or one:
+  each with a handle to drag it to another place, a switch, a line saying
+  what it does, a dot per account, where it runs, and a pencil that opens
+  the rule editor; a rule the daemon switched off says why in red; and an
+  unread count on every folder or on the inbox only),
   Compose (signatures, plain text, spelling and its language,
   templates), MCP server, User feedback (turning crash reports and feedback off at any
-  time) and Experimental, always last. Subscription, Folders & rules and
+  time) and Experimental, always last. Subscription and
   MCP server are still to come: their tabs are fainter and each shows a
-  "Coming soon" page saying what it will do (the rules themselves already
-  run in the daemon, §9.4). The tabs always stay on one line (`window/tab_strip.rs`): when
+  "Coming soon" page saying what it will do. The rule editor
+  (`window/rule_editor.rs`), a dialog, also opens from a mail's
+  right-click menu (Make a rule…, filled in with its sender). It counts
+  the inbox mail of the last 30 days the rule matches as it changes
+  (`Store::rule_preview` on the read-only store, with each message's
+  stored text), offers a search for them when the search language can say
+  it, and "Also apply to these" (`ApplyRule`) on Save; the daemon's
+  reasons for refusing a rule show in it. The tabs always stay on one line (`window/tab_strip.rs`): when
   they don't fit, the row scrolls sideways by wheel or touchpad, arrows
   show at an edge with more tabs past it (not on a phone, where the row is
   swiped), and the arrows and picking a half-hidden tab glide the row. A

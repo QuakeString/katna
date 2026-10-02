@@ -87,6 +87,7 @@ icons!(
     "eye",
     "eyedropper",
     "file",
+    "filter",
     "fit-page",
     "fit-width",
     "flight",

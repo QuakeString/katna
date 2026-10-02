@@ -549,8 +549,6 @@ pub async fn delete_template(connection: &Connection, id: i64) -> Result<(), Str
 /// Mail rules (`docs/ARCHITECTURE.md` §9.4). The app reads them from the
 /// store (`katna_store::rules`) and previews them there
 /// (`Store::rule_preview`); these change them.
-// Settings > Folders & rules is still to come.
-#[allow(dead_code)]
 pub mod rules {
     use futures_lite::{Stream, StreamExt};
     use katna_dbus::PimProxy;

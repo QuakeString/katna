@@ -123,6 +123,8 @@ pub(super) enum Change {
     RemoteImages(bool),
     ReplyAll(bool),
     ImportantMarkers(bool),
+    /// Settings > Folders & rules: an unread count beside every folder.
+    FolderUnreadCounts(bool),
     LimitWidth(bool),
     DarkMail(bool),
     AttachmentPreviews(bool),
@@ -603,6 +605,7 @@ impl MailWindow {
                 self.fetch_remote(cx);
             }
             Change::ReplyAll(on) => view.reply_all = on,
+            Change::FolderUnreadCounts(on) => view.folder_unread_counts = on,
             Change::ImportantMarkers(on) => {
                 view.important_markers = on;
                 self.list_state.remeasure();

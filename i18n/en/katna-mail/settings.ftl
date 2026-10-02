@@ -30,7 +30,6 @@ settings-tab-experimental = Experimental
 
 ## Settings page: tabs still to come
 
-settings-tab-folders-rules-coming = Create, rename, move and hide folders and labels, and choose which ones sync. Rules sort, label, forward or delete new mail by itself, by sender, subject or words.
 settings-tab-mcp-server-coming = Let AI assistants on this computer search, read and draft your mail, with your say.
 
 ## Settings > General

@@ -218,7 +218,9 @@ impl MailWindow {
         } else if self.nav_menu.is_some() {
             self.close_nav_menu(cx);
             true
-        } else if self.close_summary_peek(cx)
+        } else if self.dismiss_rule_editor(cx)
+            || self.close_rules_menu(cx)
+            || self.close_summary_peek(cx)
             || self.close_delete_ask(cx)
             || self.close_snooze_menu(cx)
             || self.close_quiet_menu(cx)
@@ -282,6 +284,7 @@ impl MailWindow {
             || self.danger.is_some()
             || self.delete_ask.is_some()
             || self.new_label.is_some()
+            || self.rule_editor.is_some()
             || self.contacts.label_dialog.is_some()
             || self.contacts.qr.is_some()
             || self.whats_new.is_some()

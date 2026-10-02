@@ -354,6 +354,18 @@ const ENTRIES: &[Entry] = &[
          drives google drive onedrive cloud allow",
     ),
     entry(
+        Section::MailRules,
+        "settings-rules",
+        "settings-rules-summary",
+        "rules filters filter sort sorting automatic move label forward notify sender subject",
+    ),
+    entry(
+        Section::MailRules,
+        "settings-folders",
+        "settings-folders-unread-counts",
+        "folders labels unread count counts numbers badge folder pane",
+    ),
+    entry(
         Section::Signatures,
         "settings-compose-send-from",
         "settings-compose-send-from-summary",
@@ -460,7 +472,6 @@ const ENTRIES: &[Entry] = &[
 /// What a tab that is still to come will do.
 fn coming(section: Section) -> Option<String> {
     Some(match section {
-        Section::MailRules => tr!("settings-tab-folders-rules-coming"),
         Section::McpServer => tr!("settings-tab-mcp-server-coming"),
         _ => return None,
     })
@@ -864,6 +875,8 @@ mod tests {
         assert!(titles("undo").contains(&"Sending".to_owned()));
         assert!(titles("rules").contains(&"Folders & rules".to_owned()));
         assert!(titles("folders").contains(&"Folders & rules".to_owned()));
+        assert_eq!(titles("filters")[0], "Rules");
+        assert!(titles("unread count").contains(&"Folders".to_owned()));
         assert!(titles("template").contains(&"Templates".to_owned()));
         assert!(titles("archive").iter().any(|t| t.contains("Archive")));
         assert!(titles("sentry").contains(&"User feedback".to_owned()));

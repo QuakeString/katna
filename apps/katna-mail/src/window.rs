@@ -73,6 +73,7 @@ mod reader;
 mod remote;
 mod reply_row;
 mod rich;
+mod rule_editor;
 mod scale_slider;
 mod scheme_color;
 mod scheme_editor;
@@ -744,6 +745,8 @@ pub struct MailWindow {
     /// again.
     delete_confirmed: bool,
     new_label: Option<labels::NewLabel>,
+    /// The rule editor (Settings > Folders & rules, Make a rule…).
+    rule_editor: Option<rule_editor::RuleEditor>,
     /// Bodies being downloaded because their message or an attachment
     /// chip of it was opened.
     downloads: HashMap<MessageId, download::Download>,
@@ -1022,6 +1025,7 @@ impl MailWindow {
             delete_ask: None,
             delete_confirmed: false,
             new_label: None,
+            rule_editor: None,
             downloads: HashMap::new(),
             chip_download: None,
             nav_t: 1.0,
@@ -3443,6 +3447,7 @@ impl Render for MailWindow {
         let dialog_gone = self.dialog_focus.is_focused(window)
             && self.delete_ask.is_none()
             && self.new_label.is_none()
+            && self.rule_editor.is_none()
             && self.add_account.is_none()
             && self.danger.is_none();
         if dialog_gone || window.focused(cx).is_none() {
@@ -3731,6 +3736,7 @@ impl Render for MailWindow {
         let danger = self.render_danger(&th, window, reduce, cx);
         let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
+        let rule_editor = self.render_rule_editor(&th, window, reduce, cx);
         let contact_label = self.render_label_dialog(&th, window, reduce, cx);
         let scheme_editor = self.render_scheme_editor(&th, window, reduce, cx);
         let contact_qr = self.render_contact_qr(&th, window, reduce, cx);
@@ -3813,6 +3819,7 @@ impl Render for MailWindow {
             .children(danger)
             .children(delete_ask)
             .children(new_label)
+            .children(rule_editor)
             .children(contact_label)
             .children(scheme_editor)
             .children(account_picker)

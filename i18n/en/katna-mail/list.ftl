@@ -453,6 +453,8 @@ menu-more = More
 menu-move-to-heading = Move to:
 # Searches for mail from the sender. $name: the sender's name or address.
 menu-find-from = Find emails from { $name }
+# Opens the rule editor filled in with the mail's sender.
+menu-make-rule = Make a rule…
 
 ## Snackbar after an action on mail in the list
 # $kind: "conversation" or "message", as the list groups mail.

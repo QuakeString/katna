@@ -1,0 +1,2109 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! The rule editor: one mail rule in a dialog over the window, opened from
+//! Settings > Folders & rules (New rule, or a rule's pencil) and from a
+//! mail's right-click menu (Make a rule…, filled in with its sender). A
+//! name; "When a new mail matches all/any of these" with condition rows;
+//! "Then" with action rows; Stop here; the accounts; and a light panel
+//! counting the inbox mail of the last 30 days it matches, with "Also
+//! apply to these". The daemon saves and runs rules
+//! (`docs/ARCHITECTURE.md` §9.4); its reasons for refusing one show in
+//! the dialog.
+
+use std::time::Duration;
+
+use gpui::{
+    AnyElement, App, ClickEvent, Context, ElementId, Entity, Focusable, FontWeight, HighlightStyle,
+    MouseButton, Pixels, Point, SharedString, Stateful, StyledText, Subscription, Task, Window,
+    anchored, deferred, div, prelude::*, rgba,
+};
+use katna_core::AccountId;
+use katna_i18n::tr;
+use katna_store::FolderId;
+use katna_store::rules::{
+    Action, Comparator, Condition, Field, MAX_READ_AFTER_DAYS, MatchMode, Rule, RunsOn,
+};
+use katna_ui::motion::{self, Spring, lerp};
+use katna_ui::px;
+use katna_ui::unpx;
+use katna_ui::{InputEvent, TextInput};
+
+use super::MailWindow;
+use super::add_account::text_button;
+use crate::sidebar::Role;
+use crate::theme::{Theme, fade};
+use crate::widgets::{
+    Check, FocusRing, checkbox, elevation, filled_button, icon, icon_button, menu, tip,
+};
+use crate::{daemon, data, format};
+
+const WIDTH: f32 = 680.0;
+/// How far back the panel counts matching mail, and "Also apply to
+/// these" applies the rule.
+pub(super) const PREVIEW_DAYS: u32 = 30;
+/// The count waits this long after the last change.
+const PREVIEW_DELAY: Duration = Duration::from_millis(400);
+/// Where the dialog goes narrow: the condition and action rows wrap.
+const NARROW: f32 = 520.0;
+
+/// What a condition can look at, in the order the menu lists them.
+const FIELDS: [Field; 9] = [
+    Field::From,
+    Field::To,
+    Field::Cc,
+    Field::AnyRecipient,
+    Field::ReplyTo,
+    Field::Subject,
+    Field::Body,
+    Field::AttachmentName,
+    Field::HasAttachment,
+];
+
+const COMPARATORS: [Comparator; 6] = [
+    Comparator::Contains,
+    Comparator::NotContains,
+    Comparator::BeginsWith,
+    Comparator::EndsWith,
+    Comparator::Equals,
+    Comparator::Matches,
+];
+
+/// What an action row does, before its folder, address or days.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ActionKind {
+    Move,
+    Archive,
+    Trash,
+    MarkRead,
+    Star,
+    MarkImportant,
+    AddLabel,
+    Forward,
+    DontNotify,
+    MarkReadAfter,
+}
+
+impl ActionKind {
+    const ALL: [Self; 10] = [
+        Self::Move,
+        Self::Archive,
+        Self::Trash,
+        Self::AddLabel,
+        Self::MarkRead,
+        Self::Star,
+        Self::MarkImportant,
+        Self::Forward,
+        Self::DontNotify,
+        Self::MarkReadAfter,
+    ];
+
+    fn of(action: &Action) -> Self {
+        match action {
+            Action::Move { .. } => Self::Move,
+            Action::Archive => Self::Archive,
+            Action::Trash => Self::Trash,
+            Action::MarkRead => Self::MarkRead,
+            Action::Star => Self::Star,
+            Action::MarkImportant => Self::MarkImportant,
+            Action::AddLabel { .. } => Self::AddLabel,
+            Action::Forward { .. } => Self::Forward,
+            Action::DontNotify => Self::DontNotify,
+            Action::MarkReadAfter { .. } => Self::MarkReadAfter,
+        }
+    }
+
+    fn label(self) -> String {
+        match self {
+            Self::Move => tr!("rules-action-move"),
+            Self::Archive => tr!("rules-action-archive"),
+            Self::Trash => tr!("rules-action-trash"),
+            Self::MarkRead => tr!("rules-action-mark-read"),
+            Self::Star => tr!("rules-action-star"),
+            Self::MarkImportant => tr!("rules-action-important"),
+            Self::AddLabel => tr!("rules-action-label"),
+            Self::Forward => tr!("rules-action-forward"),
+            Self::DontNotify => tr!("rules-action-dont-notify"),
+            Self::MarkReadAfter => tr!("rules-action-read-after"),
+        }
+    }
+
+    fn takes_text(self) -> bool {
+        matches!(self, Self::Forward | Self::MarkReadAfter)
+    }
+}
+
+/// The name of what a condition looks at, as its menu shows it.
+pub(super) fn field_label(field: Field) -> String {
+    match field {
+        Field::From => tr!("rules-field-from"),
+        Field::To => tr!("rules-field-to"),
+        Field::Cc => tr!("rules-field-cc"),
+        Field::AnyRecipient => tr!("rules-field-any-recipient"),
+        Field::ReplyTo => tr!("rules-field-reply-to"),
+        Field::Subject => tr!("rules-field-subject"),
+        Field::Body => tr!("rules-field-body"),
+        Field::AttachmentName => tr!("rules-field-attachment-name"),
+        Field::HasAttachment => tr!("rules-field-has-attachment"),
+    }
+}
+
+pub(super) fn comparator_label(comparator: Comparator) -> String {
+    match comparator {
+        Comparator::Contains => tr!("rules-comparator-contains"),
+        Comparator::NotContains => tr!("rules-comparator-not-contains"),
+        Comparator::BeginsWith => tr!("rules-comparator-begins-with"),
+        Comparator::EndsWith => tr!("rules-comparator-ends-with"),
+        Comparator::Equals => tr!("rules-comparator-equals"),
+        Comparator::Matches => tr!("rules-comparator-matches"),
+    }
+}
+
+/// Whether a "Has attachment" condition's value means "has none".
+fn means_no(value: &str) -> bool {
+    matches!(
+        value.trim().to_ascii_lowercase().as_str(),
+        "false" | "no" | "0"
+    )
+}
+
+/// A rule in one line, for its row in Settings: "From contains
+/// substack.com → skip the inbox, label Reading". `folder` names a folder
+/// by its ID, or `None` for one that is gone.
+pub(super) fn summary(rule: &Rule, folder: impl Fn(i64) -> Option<String>) -> String {
+    // "A, B or C" (or "and", as the rule matches).
+    let join = |items: Vec<String>| -> Option<String> {
+        let mut items = items.into_iter();
+        let mut text = items.next()?;
+        let rest: Vec<String> = items.collect();
+        let last = rest.len().saturating_sub(1);
+        for (ix, next) in rest.into_iter().enumerate() {
+            text = match rule.match_mode {
+                _ if ix < last => tr!("rules-summary-list", first = text, next = next),
+                MatchMode::All => tr!("rules-summary-and", first = text, next = next),
+                MatchMode::Any => tr!("rules-summary-or", first = text, next = next),
+            };
+        }
+        Some(text)
+    };
+    // Conditions on the same field that compare the same way say it
+    // once: "From contains substack.com or medium.com".
+    let mut groups: Vec<(Field, Comparator, Vec<String>)> = Vec::new();
+    for c in &rule.conditions {
+        let value = c.value.trim().to_owned();
+        match groups.last_mut() {
+            Some((field, comparator, values))
+                if *field == c.field
+                    && *comparator == c.comparator
+                    && c.field != Field::HasAttachment =>
+            {
+                values.push(value)
+            }
+            _ => groups.push((c.field, c.comparator, vec![value])),
+        }
+    }
+    let conditions = groups
+        .into_iter()
+        .map(|(field, comparator, values)| match field {
+            Field::HasAttachment if values.iter().all(|v| means_no(v)) => {
+                tr!("rules-summary-no-attachment")
+            }
+            Field::HasAttachment => tr!("rules-summary-has-attachment"),
+            field => tr!(
+                "rules-summary-condition",
+                field = field_label(field),
+                comparator = comparator_label(comparator),
+                value = join(values).unwrap_or_default()
+            ),
+        })
+        .collect();
+    let when = join(conditions);
+    let named = |id: i64| folder(id).unwrap_or_else(|| tr!("rules-summary-folder-gone"));
+    let then = rule
+        .actions
+        .iter()
+        .map(|a| match a {
+            Action::Move { folder } => tr!("rules-summary-move", folder = named(*folder)),
+            Action::Archive => tr!("rules-summary-archive"),
+            Action::Trash => tr!("rules-summary-trash"),
+            Action::MarkRead => tr!("rules-summary-mark-read"),
+            Action::Star => tr!("rules-summary-star"),
+            Action::MarkImportant => tr!("rules-summary-important"),
+            Action::AddLabel { folder } => tr!("rules-summary-label", label = named(*folder)),
+            Action::Forward { to } => tr!("rules-summary-forward", address = to.trim()),
+            Action::DontNotify => tr!("rules-summary-dont-notify"),
+            Action::MarkReadAfter { days } => tr!("rules-summary-read-after", count = *days),
+        })
+        .reduce(|first, next| tr!("rules-summary-list", first = first, next = next));
+    match (when, then) {
+        (Some(when), Some(then)) => tr!("rules-summary", when = when, then = then),
+        (when, then) => when.or(then).unwrap_or_default(),
+    }
+}
+
+/// Why the daemon switched a rule off, in words for its row. The daemon
+/// gives its reasons in English (`katna_sync::rules`).
+pub(super) fn error_text(error: &str) -> String {
+    if error.starts_with("folder ") && error.ends_with("no longer exists") {
+        tr!("rules-error-folder-gone")
+    } else if error.contains("no archive folder") {
+        tr!("rules-error-no-archive")
+    } else if error.contains("no Trash folder") {
+        tr!("rules-error-no-trash")
+    } else if error.contains("cannot send") {
+        tr!("rules-error-cannot-send")
+    } else {
+        let sentence = format::sentence(error);
+        tr!("rules-error-other", error = sentence.trim_end_matches('.'))
+    }
+}
+
+/// Where a rule runs, for the tag on its row.
+pub(super) fn runs_on_label(runs_on: RunsOn) -> String {
+    match runs_on {
+        RunsOn::Katna => tr!("rules-runs-katna"),
+        RunsOn::Gmail => tr!("rules-runs-gmail"),
+        RunsOn::Sieve => tr!("rules-runs-sieve"),
+    }
+}
+
+/// A search for about the mail `rule` matches over the last `days` days,
+/// for "Show them": `None` when a search can't say what the rule does
+/// (other comparators, the text, Reply-to).
+pub(super) fn search_query(rule: &Rule, days: u32) -> Option<String> {
+    let parts = rule
+        .conditions
+        .iter()
+        .map(|c| {
+            if c.field == Field::HasAttachment {
+                let has = "has:attachment";
+                return Some(if means_no(&c.value) {
+                    format!("-{has}")
+                } else {
+                    has.to_owned()
+                });
+            }
+            let operator = match c.field {
+                Field::From => "from",
+                // The search's `to:` is To, Cc or Bcc, like Gmail's.
+                Field::To | Field::AnyRecipient => "to",
+                Field::Cc => "cc",
+                Field::Subject => "subject",
+                Field::AttachmentName => "filename",
+                _ => return None,
+            };
+            let not = match c.comparator {
+                Comparator::Contains => "",
+                Comparator::NotContains => "-",
+                _ => return None,
+            };
+            let value: String = c.value.trim().chars().filter(|c| *c != '"').collect();
+            if value.is_empty() {
+                return None;
+            }
+            Some(format!("{not}{operator}:\"{value}\""))
+        })
+        .collect::<Option<Vec<_>>>()?;
+    if parts.is_empty() {
+        return None;
+    }
+    let matched = match rule.match_mode {
+        MatchMode::All => parts.join(" "),
+        MatchMode::Any if parts.len() > 1 => format!("({})", parts.join(" OR ")),
+        MatchMode::Any => parts.join(" "),
+    };
+    Some(format!("{matched} in:inbox newer_than:{days}d"))
+}
+
+/// A menu of the editor, open at a point.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Pick {
+    Mode,
+    Field(usize),
+    Comparator(usize),
+    Has(usize),
+    Action(usize),
+    Folder(usize),
+    Accounts,
+}
+
+/// The count in the light panel.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Preview {
+    /// Nothing to count yet: no condition or no account.
+    Nothing,
+    Counting,
+    Count(u32),
+}
+
+struct ConditionRow {
+    field: Field,
+    comparator: Comparator,
+    value: Entity<TextInput>,
+    /// A "Has attachment" condition's choice.
+    has: bool,
+    _subscription: Subscription,
+}
+
+struct ActionRow {
+    kind: ActionKind,
+    /// The folder or label of Move to and Add label, once chosen.
+    folder: Option<i64>,
+    /// Forward's address, or Mark read after's days.
+    text: Entity<TextInput>,
+    _subscription: Subscription,
+}
+
+pub(super) struct RuleEditor {
+    /// The rule as it was opened: its ID (0 for a new one), place, on or
+    /// off and where it runs, which the editor keeps.
+    rule: Rule,
+    name: Entity<TextInput>,
+    _name: Subscription,
+    mode: MatchMode,
+    conditions: Vec<ConditionRow>,
+    actions: Vec<ActionRow>,
+    stop: bool,
+    accounts: Vec<i64>,
+    also_apply: bool,
+    preview: Preview,
+    preview_task: Option<Task<()>>,
+    pick: Option<(Pick, Point<Pixels>)>,
+    error: Option<String>,
+    busy: bool,
+    asking_delete: bool,
+    closing: bool,
+    shown: Spring,
+}
+
+impl RuleEditor {
+    /// The rule as the editor has it. `strict` refuses one that can't be
+    /// saved yet (a folder not chosen, days that aren't a number); without
+    /// it, for counting, conditions without a value are left out.
+    fn build(&self, strict: bool, cx: &App) -> Result<Rule, String> {
+        let conditions = self
+            .conditions
+            .iter()
+            .filter_map(|row| {
+                let value = if row.field == Field::HasAttachment {
+                    if row.has { "true" } else { "false" }.to_owned()
+                } else {
+                    row.value.read(cx).text().trim().to_owned()
+                };
+                (strict || row.field == Field::HasAttachment || !value.is_empty()).then_some(
+                    Condition {
+                        field: row.field,
+                        comparator: row.comparator,
+                        value,
+                    },
+                )
+            })
+            .collect();
+        let mut actions = Vec::new();
+        for row in &self.actions {
+            let text = row.text.read(cx).text().trim().to_owned();
+            let folder = row.folder.filter(|f| *f > 0);
+            actions.push(match row.kind {
+                ActionKind::Move | ActionKind::AddLabel if strict && folder.is_none() => {
+                    return Err(tr!("rules-editor-needs-folder"));
+                }
+                ActionKind::Move => Action::Move {
+                    folder: folder.unwrap_or(0),
+                },
+                ActionKind::AddLabel => Action::AddLabel {
+                    folder: folder.unwrap_or(0),
+                },
+                ActionKind::Archive => Action::Archive,
+                ActionKind::Trash => Action::Trash,
+                ActionKind::MarkRead => Action::MarkRead,
+                ActionKind::Star => Action::Star,
+                ActionKind::MarkImportant => Action::MarkImportant,
+                ActionKind::Forward => Action::Forward { to: text },
+                ActionKind::DontNotify => Action::DontNotify,
+                ActionKind::MarkReadAfter => match text.parse::<u32>() {
+                    Ok(days) if (1..=MAX_READ_AFTER_DAYS).contains(&days) => {
+                        Action::MarkReadAfter { days }
+                    }
+                    _ if strict => return Err(tr!("rules-editor-needs-days")),
+                    _ => Action::MarkReadAfter { days: 1 },
+                },
+            });
+        }
+        Ok(Rule {
+            name: self.name.read(cx).text().trim().to_owned(),
+            match_mode: self.mode,
+            conditions,
+            actions,
+            stop: self.stop,
+            accounts: self.accounts.clone(),
+            last_error: None,
+            ..self.rule.clone()
+        })
+    }
+}
+
+impl MailWindow {
+    /// Opens the editor on `rule`: a saved one, or a new one (ID 0) to
+    /// fill in. A Move to or Add label with folder 0 has none chosen yet.
+    pub(super) fn open_rule_editor(
+        &mut self,
+        rule: Rule,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.close_context_menu(cx);
+        let name = self.rule_input(tr!("rules-editor-name-hint"), rule.name.clone(), window, cx);
+        let conditions = rule
+            .conditions
+            .iter()
+            .map(|c| self.condition_row(c, window, cx))
+            .collect();
+        let actions = rule
+            .actions
+            .iter()
+            .map(|a| self.action_row(a, window, cx))
+            .collect();
+        window.focus(&name.0.focus_handle(cx), cx);
+        let mut shown = Spring::new(motion::SMOOTH, 0.0);
+        shown.set(1.0);
+        self.rule_editor = Some(RuleEditor {
+            mode: rule.match_mode,
+            stop: rule.stop,
+            accounts: rule.accounts.clone(),
+            rule,
+            name: name.0,
+            _name: name.1,
+            conditions,
+            actions,
+            also_apply: true,
+            preview: Preview::Nothing,
+            preview_task: None,
+            pick: None,
+            error: None,
+            busy: false,
+            asking_delete: false,
+            closing: false,
+            shown,
+        });
+        self.count_rule_mail(cx);
+        cx.notify();
+    }
+
+    /// The editor on a new rule for the mail accounts `accounts`.
+    pub(super) fn new_rule(
+        &mut self,
+        accounts: Vec<i64>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let rule = Rule {
+            conditions: vec![Condition {
+                field: Field::From,
+                comparator: Comparator::Contains,
+                value: String::new(),
+            }],
+            actions: vec![Action::Move { folder: 0 }],
+            accounts,
+            ..Rule::default()
+        };
+        self.open_rule_editor(rule, window, cx);
+    }
+
+    /// Make a rule… on a mail: the editor filled in with its sender.
+    // TODO: "Always move mail from <sender> here" in the Move to submenu
+    // (mockup 10-always-move.png): moves the mail and saves a Move to rule
+    // in one click. Waits for the Move to submenu being rewritten.
+    pub(super) fn make_rule_from(
+        &mut self,
+        name: String,
+        address: String,
+        account: AccountId,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let rule = Rule {
+            name,
+            conditions: vec![Condition {
+                field: Field::From,
+                comparator: Comparator::Contains,
+                value: address,
+            }],
+            actions: vec![Action::Move { folder: 0 }],
+            accounts: vec![account.0],
+            ..Rule::default()
+        };
+        self.open_rule_editor(rule, window, cx);
+    }
+
+    /// Escape: an open menu of the editor, else the editor.
+    pub(super) fn dismiss_rule_editor(&mut self, cx: &mut Context<Self>) -> bool {
+        let Some(e) = &mut self.rule_editor else {
+            return false;
+        };
+        if e.pick.take().is_none() {
+            self.close_rule_editor(cx);
+        }
+        true
+    }
+
+    fn close_rule_editor(&mut self, cx: &mut Context<Self>) {
+        if let Some(e) = &mut self.rule_editor {
+            e.closing = true;
+            e.pick = None;
+            e.preview_task = None;
+            e.shown.set(0.0);
+        }
+        cx.notify();
+    }
+
+    /// A field of the editor; any change counts the matching mail again.
+    fn rule_input(
+        &mut self,
+        placeholder: String,
+        text: String,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> (Entity<TextInput>, Subscription) {
+        let accent = rgba(self.theme(window).accent).into();
+        let input = cx.new(|cx| {
+            let mut input = TextInput::new(placeholder, cx);
+            input.set_text(text, cx);
+            input.set_accent(accent);
+            input
+        });
+        let subscription =
+            cx.subscribe_in(
+                &input,
+                window,
+                |this, _, event: &InputEvent, _, cx| match event {
+                    InputEvent::Changed => this.rule_changed(cx),
+                    InputEvent::Submit => this.save_rule_edit(cx),
+                    InputEvent::Cancel => this.close_rule_editor(cx),
+                },
+            );
+        (input, subscription)
+    }
+
+    fn condition_row(
+        &mut self,
+        condition: &Condition,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> ConditionRow {
+        let has = condition.field == Field::HasAttachment;
+        let (value, subscription) = self.rule_input(
+            tr!("rules-editor-value-hint"),
+            if has {
+                String::new()
+            } else {
+                condition.value.clone()
+            },
+            window,
+            cx,
+        );
+        ConditionRow {
+            field: condition.field,
+            comparator: condition.comparator,
+            value,
+            has: !has || !means_no(&condition.value),
+            _subscription: subscription,
+        }
+    }
+
+    fn action_row(
+        &mut self,
+        action: &Action,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> ActionRow {
+        let text = match action {
+            Action::Forward { to } => to.clone(),
+            Action::MarkReadAfter { days } => days.to_string(),
+            _ => String::new(),
+        };
+        let kind = ActionKind::of(action);
+        let (text, subscription) = self.rule_input(action_hint(kind), text, window, cx);
+        ActionRow {
+            kind,
+            folder: action.folder().filter(|f| *f > 0),
+            text,
+            _subscription: subscription,
+        }
+    }
+
+    /// Something in the editor changed.
+    fn rule_changed(&mut self, cx: &mut Context<Self>) {
+        if let Some(e) = &mut self.rule_editor {
+            e.error = None;
+        }
+        self.count_rule_mail(cx);
+        cx.notify();
+    }
+
+    /// Counts the mail the rule as it stands matches, a moment after the
+    /// last change.
+    fn count_rule_mail(&mut self, cx: &mut Context<Self>) {
+        let paths = self.paths.clone();
+        let Some(e) = &mut self.rule_editor else {
+            return;
+        };
+        let rule = match e.build(false, cx) {
+            Ok(rule) if !rule.conditions.is_empty() && !rule.accounts.is_empty() => rule,
+            _ => {
+                e.preview = Preview::Nothing;
+                e.preview_task = None;
+                return;
+            }
+        };
+        if e.preview == Preview::Nothing {
+            e.preview = Preview::Counting;
+        }
+        e.preview_task = Some(cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(PREVIEW_DELAY).await;
+            let now = jiff::Timestamp::now().as_second();
+            let count = cx
+                .background_executor()
+                .spawn(async move { data::rule_preview(&paths, &rule, PREVIEW_DAYS, now) })
+                .await;
+            this.update(cx, |this, cx| {
+                if let Some(e) = &mut this.rule_editor {
+                    e.preview = match count {
+                        Ok(count) => Preview::Count(count),
+                        Err(err) => {
+                            tracing::warn!("{err}");
+                            Preview::Nothing
+                        }
+                    };
+                }
+                cx.notify();
+            })
+            .ok();
+        }));
+    }
+
+    fn edit_rule(&mut self, edit: impl FnOnce(&mut RuleEditor), cx: &mut Context<Self>) {
+        if let Some(e) = &mut self.rule_editor {
+            edit(e);
+            e.pick = None;
+        }
+        self.rule_changed(cx);
+    }
+
+    fn add_rule_condition(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let row = self.condition_row(
+            &Condition {
+                field: Field::Subject,
+                comparator: Comparator::Contains,
+                value: String::new(),
+            },
+            window,
+            cx,
+        );
+        let focus = row.value.focus_handle(cx);
+        self.edit_rule(|e| e.conditions.push(row), cx);
+        window.focus(&focus, cx);
+    }
+
+    fn add_rule_action(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        // The first action not there yet.
+        let taken: Vec<ActionKind> = self
+            .rule_editor
+            .as_ref()
+            .map(|e| e.actions.iter().map(|a| a.kind).collect())
+            .unwrap_or_default();
+        let kind = [
+            ActionKind::MarkRead,
+            ActionKind::Star,
+            ActionKind::MarkImportant,
+            ActionKind::DontNotify,
+            ActionKind::AddLabel,
+        ]
+        .into_iter()
+        .find(|k| !taken.contains(k))
+        .unwrap_or(ActionKind::MarkRead);
+        let row = self.action_row(&action_of(kind, None, ""), window, cx);
+        self.edit_rule(|e| e.actions.push(row), cx);
+    }
+
+    /// Action row `ix` does `kind` now.
+    fn set_rule_action(
+        &mut self,
+        ix: usize,
+        kind: ActionKind,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(row) = self
+            .rule_editor
+            .as_mut()
+            .and_then(|e| e.actions.get_mut(ix))
+        else {
+            return;
+        };
+        if row.kind == kind {
+            self.edit_rule(|_| {}, cx);
+            return;
+        }
+        row.kind = kind;
+        row.folder = None;
+        let text = row.text.clone();
+        text.update(cx, |input, cx| {
+            input.set_placeholder(action_hint(kind));
+            input.set_text(
+                if kind == ActionKind::MarkReadAfter {
+                    "1"
+                } else {
+                    ""
+                },
+                cx,
+            );
+        });
+        // Only one action may move the mail: the others that do give way.
+        let moves = |k: ActionKind| {
+            matches!(
+                k,
+                ActionKind::Move | ActionKind::Archive | ActionKind::Trash
+            )
+        };
+        if moves(kind)
+            && let Some(e) = &mut self.rule_editor
+        {
+            let mut at = 0;
+            e.actions.retain(|a| {
+                let keep = at == ix || !moves(a.kind);
+                at += 1;
+                keep
+            });
+        }
+        if kind.takes_text() {
+            window.focus(&text.focus_handle(cx), cx);
+        }
+        self.edit_rule(|_| {}, cx);
+    }
+
+    fn open_rule_pick(&mut self, pick: Pick, at: Point<Pixels>, cx: &mut Context<Self>) {
+        if let Some(e) = &mut self.rule_editor {
+            e.pick = if e.pick.map(|p| p.0) == Some(pick) {
+                None
+            } else {
+                Some((pick, at))
+            };
+        }
+        cx.notify();
+    }
+
+    /// Saves the rule; then, when asked, runs it over the mail it matches.
+    fn save_rule_edit(&mut self, cx: &mut Context<Self>) {
+        let Some(e) = &mut self.rule_editor else {
+            return;
+        };
+        if e.busy || e.closing {
+            return;
+        }
+        let rule = match e.build(true, cx) {
+            Ok(rule) => rule,
+            Err(err) => {
+                e.error = Some(err);
+                cx.notify();
+                return;
+            }
+        };
+        let apply = e.also_apply && matches!(e.preview, Preview::Count(n) if n > 0);
+        e.busy = true;
+        e.error = None;
+        e.pick = None;
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    let id = daemon::rules::save(&connection, &rule).await?;
+                    let applied = if apply {
+                        Some(daemon::rules::apply(&connection, id, PREVIEW_DAYS).await)
+                    } else {
+                        None
+                    };
+                    Ok::<_, String>(applied)
+                })
+                .await;
+            this.update(cx, |this, cx| match result {
+                Ok(applied) => {
+                    if let Some(e) = &mut this.rule_editor {
+                        e.busy = false;
+                    }
+                    this.close_rule_editor(cx);
+                    let text = match applied {
+                        None => tr!("rules-saved"),
+                        Some(Ok(count)) => tr!("rules-saved-applied", count = count),
+                        Some(Err(err)) => tr!("rules-apply-failed", error = err),
+                    };
+                    this.show_snackbar(text, None, cx);
+                    this.load_rules(cx);
+                }
+                Err(err) => {
+                    if let Some(e) = &mut this.rule_editor {
+                        e.busy = false;
+                        e.error = Some(format::sentence(&err));
+                    }
+                    cx.notify();
+                }
+            })
+            .ok();
+        })
+        .detach();
+        cx.notify();
+    }
+
+    fn delete_rule_edit(&mut self, cx: &mut Context<Self>) {
+        let Some(e) = &self.rule_editor else {
+            return;
+        };
+        let id = e.rule.id;
+        self.close_rule_editor(cx);
+        if id == 0 {
+            return;
+        }
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    daemon::rules::delete(&connection, id).await
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                let text = match result {
+                    Ok(()) => tr!("rules-deleted"),
+                    Err(err) => tr!("rules-delete-failed", error = err),
+                };
+                this.show_snackbar(text, None, cx);
+                this.load_rules(cx);
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// "Show them": searches the mail for what the rule matches.
+    fn show_rule_mail(&mut self, query: String, window: &mut Window, cx: &mut Context<Self>) {
+        self.close_rule_editor(cx);
+        if self.settings_page.is_some() {
+            self.close_settings_page(window, cx);
+        }
+        self.search_for(query, window, cx);
+    }
+
+    /// The name a folder shows as in the editor and in a rule's line.
+    pub(super) fn rule_folder_name(&self, id: i64) -> Option<String> {
+        let node = self.tree.node(FolderId(id))?;
+        Some(if node.role == Role::Other {
+            node.path.clone()
+        } else {
+            node.label()
+        })
+    }
+
+    /// The folders action row `ix` can choose from, with their names:
+    /// any folder of the rule's accounts for Move to, their own folders
+    /// and labels for Add label.
+    fn rule_folders(&self, e: &RuleEditor, kind: ActionKind) -> Vec<(i64, String)> {
+        let several = e.accounts.len() > 1;
+        let mut out = Vec::new();
+        for &account in &e.accounts {
+            let id = AccountId(account);
+            let address = self.account_address(id).unwrap_or_default();
+            let folders: Vec<i64> = if kind == ActionKind::AddLabel {
+                self.tree
+                    .nest_targets(id)
+                    .into_iter()
+                    .map(|(f, _)| f.0)
+                    .collect()
+            } else {
+                self.tree
+                    .folders_of(id)
+                    .into_iter()
+                    .filter(|(_, _, role)| {
+                        !matches!(
+                            role,
+                            Role::Inbox | Role::Drafts | Role::Sent | Role::Snoozed | Role::Flagged
+                        )
+                    })
+                    .map(|(f, _, _)| f.0)
+                    .collect()
+            };
+            for folder in folders {
+                let Some(name) = self.rule_folder_name(folder) else {
+                    continue;
+                };
+                out.push((
+                    folder,
+                    if several {
+                        tr!(
+                            "rules-editor-folder-of",
+                            folder = name,
+                            account = address.as_str()
+                        )
+                    } else {
+                        name
+                    },
+                ));
+            }
+        }
+        out
+    }
+
+    pub(super) fn render_rule_editor(
+        &mut self,
+        th: &Theme,
+        window: &mut Window,
+        reduce: bool,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
+        let e = self.rule_editor.as_mut()?;
+        let t = e.shown.tick(window, reduce);
+        if e.closing && e.shown.settled() {
+            self.rule_editor = None;
+            return None;
+        }
+        let t = t.clamp(0.0, 1.0);
+        let viewport = window.viewport_size();
+        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let width = WIDTH.min(vw - 32.0);
+        let narrow = width < NARROW;
+        let e = self.rule_editor.as_ref()?;
+        let body = self.rule_editor_body(e, narrow, th, window, cx);
+        let pick = self.render_rule_pick(e, th, cx);
+        let card = div()
+            .id("rule-editor")
+            .track_focus(&self.dialog_focus)
+            .map(|d| super::popovers::keep_tab_inside(d, &self.dialog_focus))
+            .occlude()
+            .w(px(width))
+            .max_h(px((vh - 48.0).max(240.0)))
+            .flex()
+            .flex_col()
+            .overflow_hidden()
+            .rounded(px(super::PANEL_RADIUS))
+            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .text_color(rgba(th.text))
+            .shadow(elevation(th, 3.0))
+            .child(body);
+        Some(
+            div()
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full()
+                .flex()
+                .items_center()
+                .justify_center()
+                .bg(rgba(fade(0x0000_0066, t)))
+                .child(
+                    div()
+                        .id("rule-editor-scrim")
+                        .absolute()
+                        .top_0()
+                        .left_0()
+                        .size_full()
+                        .on_click(cx.listener(|this, _, _, cx| this.close_rule_editor(cx))),
+                )
+                .child(div().opacity(t).mt(px(lerp(24.0, 0.0, t))).child(card))
+                .children(pick)
+                .into_any_element(),
+        )
+    }
+
+    fn rule_editor_body(
+        &self,
+        e: &RuleEditor,
+        narrow: bool,
+        th: &Theme,
+        window: &Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let picked = e.pick.map(|p| p.0);
+        let title = if e.rule.id == 0 {
+            tr!("rules-editor-new-title")
+        } else {
+            tr!("rules-editor-edit-title")
+        };
+        let name = text_field("rule-name", &e.name, 44.0, th, window, cx);
+        let when = div()
+            .mt(px(16.0))
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .items_center()
+            .gap(px(8.0))
+            .text_size(px(14.0))
+            .child(tr!("rules-editor-when"))
+            .child(
+                select_box(
+                    "rule-mode",
+                    match e.mode {
+                        MatchMode::All => tr!("rules-mode-all"),
+                        MatchMode::Any => tr!("rules-mode-any"),
+                    },
+                    picked == Some(Pick::Mode),
+                    th,
+                )
+                .on_click(pick_at(Pick::Mode, cx)),
+            )
+            .child(tr!("rules-editor-of-these"));
+        let conditions = e
+            .conditions
+            .iter()
+            .enumerate()
+            .map(|(ix, row)| {
+                let field = select_box(
+                    ("rule-field", ix),
+                    field_label(row.field),
+                    picked == Some(Pick::Field(ix)),
+                    th,
+                )
+                .map(|d| if narrow { d.flex_1() } else { d.w(px(120.0)) })
+                .on_click(pick_at(Pick::Field(ix), cx));
+                let what: AnyElement = if row.field == Field::HasAttachment {
+                    select_box(
+                        ("rule-has", ix),
+                        if row.has {
+                            tr!("rules-has-yes")
+                        } else {
+                            tr!("rules-has-no")
+                        },
+                        picked == Some(Pick::Has(ix)),
+                        th,
+                    )
+                    .w(px(150.0))
+                    .on_click(pick_at(Pick::Has(ix), cx))
+                    .into_any_element()
+                } else {
+                    div()
+                        .flex()
+                        .flex_row()
+                        .flex_wrap()
+                        .flex_1()
+                        .min_w(px(if narrow { 200.0 } else { 0.0 }))
+                        .gap(px(8.0))
+                        .child(
+                            select_box(
+                                ("rule-comparator", ix),
+                                comparator_label(row.comparator),
+                                picked == Some(Pick::Comparator(ix)),
+                                th,
+                            )
+                            .w(px(150.0))
+                            .on_click(pick_at(Pick::Comparator(ix), cx)),
+                        )
+                        .child(
+                            text_field(("rule-value", ix), &row.value, 36.0, th, window, cx)
+                                .flex_1()
+                                .min_w(px(160.0)),
+                        )
+                        .into_any_element()
+                };
+                part_row(
+                    field,
+                    what,
+                    remove_button(("rule-condition-remove", ix), th).on_click(cx.listener(
+                        move |this, _, _, cx| {
+                            this.edit_rule(
+                                |e| {
+                                    if ix < e.conditions.len() {
+                                        e.conditions.remove(ix);
+                                    }
+                                },
+                                cx,
+                            )
+                        },
+                    )),
+                    narrow,
+                )
+            })
+            .collect::<Vec<_>>();
+        let actions = e
+            .actions
+            .iter()
+            .enumerate()
+            .map(|(ix, row)| {
+                let kind = select_box(
+                    ("rule-action", ix),
+                    row.kind.label(),
+                    picked == Some(Pick::Action(ix)),
+                    th,
+                )
+                .map(|d| if narrow { d.flex_1() } else { d.w(px(270.0)) })
+                .on_click(pick_at(Pick::Action(ix), cx));
+                let what: AnyElement = match row.kind {
+                    ActionKind::Move | ActionKind::AddLabel => {
+                        let chosen = row.folder.and_then(|f| self.rule_folder_name(f));
+                        let empty = chosen.is_none();
+                        select_box(
+                            ("rule-folder", ix),
+                            chosen.unwrap_or_else(|| {
+                                if row.kind == ActionKind::AddLabel {
+                                    tr!("rules-editor-choose-label")
+                                } else {
+                                    tr!("rules-editor-choose-folder")
+                                }
+                            }),
+                            picked == Some(Pick::Folder(ix)),
+                            th,
+                        )
+                        .flex_1()
+                        .when(empty, |d| d.text_color(rgba(th.text_faint)))
+                        .on_click(pick_at(Pick::Folder(ix), cx))
+                        .into_any_element()
+                    }
+                    ActionKind::Forward => {
+                        text_field(("rule-text", ix), &row.text, 36.0, th, window, cx)
+                            .flex_1()
+                            .into_any_element()
+                    }
+                    ActionKind::MarkReadAfter => div()
+                        .flex_1()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(8.0))
+                        .child(
+                            text_field(("rule-text", ix), &row.text, 36.0, th, window, cx)
+                                .w(px(80.0)),
+                        )
+                        .child(
+                            div()
+                                .text_size(px(14.0))
+                                .text_color(rgba(th.text_dim))
+                                .child(tr!("rules-editor-days")),
+                        )
+                        .into_any_element(),
+                    _ => div().flex_1().into_any_element(),
+                };
+                part_row(
+                    kind,
+                    what,
+                    remove_button(("rule-action-remove", ix), th).on_click(cx.listener(
+                        move |this, _, _, cx| {
+                            this.edit_rule(
+                                |e| {
+                                    if ix < e.actions.len() {
+                                        e.actions.remove(ix);
+                                    }
+                                },
+                                cx,
+                            )
+                        },
+                    )),
+                    narrow,
+                )
+            })
+            .collect::<Vec<_>>();
+        let stop = div()
+            .id("rule-stop")
+            .focus_ring(th)
+            .mt(px(14.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(8.0))
+            .rounded(px(6.0))
+            .text_size(px(14.0))
+            .cursor_pointer()
+            .on_click(cx.listener(|this, _, _, cx| this.edit_rule(|e| e.stop = !e.stop, cx)))
+            .child(checkbox("rule-stop-box", Check::from(e.stop), th))
+            .child(tr!("rules-editor-stop"));
+        let accounts = div()
+            .mt(px(12.0))
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .items_center()
+            .gap(px(8.0))
+            .text_size(px(14.0))
+            .child(tr!("rules-editor-accounts"))
+            .child(
+                select_box_with(
+                    "rule-accounts",
+                    self.rule_accounts_label(&e.accounts, th),
+                    picked == Some(Pick::Accounts),
+                    th,
+                )
+                .max_w_full()
+                .on_click(pick_at(Pick::Accounts, cx)),
+            );
+        let panel = self.rule_preview_panel(e, th, cx);
+        let error = e.error.clone().map(|err| {
+            div()
+                .mt(px(12.0))
+                .flex()
+                .flex_row()
+                .items_start()
+                .gap(px(8.0))
+                .text_size(px(13.0))
+                .line_height(px(18.0))
+                .text_color(rgba(th.error))
+                .child(icon("warning", th.error, 18.0))
+                .child(div().flex_1().min_w_0().child(err))
+        });
+        let buttons = self.rule_editor_buttons(e, th, cx);
+        div()
+            .id("rule-editor-body")
+            .flex()
+            .flex_col()
+            .overflow_y_scroll()
+            .child(
+                // A scrolling column shrinks its children otherwise.
+                div()
+                    .flex_none()
+                    .flex()
+                    .flex_col()
+                    .px(px(if narrow { 16.0 } else { 26.0 }))
+                    .pt(px(22.0))
+                    .pb(px(20.0))
+                    .child(
+                        div()
+                            .text_size(px(22.0))
+                            .line_height(px(30.0))
+                            .mb(px(14.0))
+                            .child(title),
+                    )
+                    .child(name)
+                    .child(when)
+                    .child(
+                        div()
+                            .mt(px(12.0))
+                            .flex()
+                            .flex_col()
+                            .gap(px(10.0))
+                            .children(conditions),
+                    )
+                    .child(
+                        add_link("rule-add-condition", tr!("rules-editor-add-condition"), th)
+                            .on_click(cx.listener(|this, _, window, cx| {
+                                this.add_rule_condition(window, cx)
+                            })),
+                    )
+                    .child(
+                        div()
+                            .mt(px(8.0))
+                            .text_size(px(14.0))
+                            .child(tr!("rules-editor-then")),
+                    )
+                    .child(
+                        div()
+                            .mt(px(10.0))
+                            .flex()
+                            .flex_col()
+                            .gap(px(10.0))
+                            .children(actions),
+                    )
+                    .child(
+                        add_link("rule-add-action", tr!("rules-editor-add-action"), th).on_click(
+                            cx.listener(|this, _, window, cx| this.add_rule_action(window, cx)),
+                        ),
+                    )
+                    .child(stop)
+                    .child(accounts)
+                    .child(panel)
+                    .children(error)
+                    .child(buttons),
+            )
+            .into_any_element()
+    }
+
+    /// The accounts chosen, with their colors: the address of one, or
+    /// how many.
+    fn rule_accounts_label(&self, accounts: &[i64], th: &Theme) -> AnyElement {
+        let addresses: Vec<String> = accounts
+            .iter()
+            .filter_map(|a| self.account_address(AccountId(*a)))
+            .collect();
+        let dots = addresses.iter().map(|a| dot(self.account_color(a, th)));
+        let text = match addresses.as_slice() {
+            [] => tr!("rules-editor-accounts-none"),
+            [one] => one.clone(),
+            many => tr!("rules-editor-accounts-many", count = many.len()),
+        };
+        div()
+            .flex_1()
+            .min_w_0()
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(4.0))
+            .children(dots)
+            .child(div().ml(px(4.0)).truncate().child(text))
+            .into_any_element()
+    }
+
+    /// The light panel: how much recent mail the rule matches, "Also
+    /// apply to these", and where it runs.
+    fn rule_preview_panel(&self, e: &RuleEditor, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let rule = e.build(false, cx).ok();
+        let query = rule.as_ref().and_then(|r| search_query(r, PREVIEW_DAYS));
+        let count: AnyElement = match e.preview {
+            Preview::Count(count) => {
+                let mails = tr!("rules-editor-mails", count = count);
+                let text = tr!(
+                    "rules-editor-matches",
+                    mails = mails.as_str(),
+                    days = PREVIEW_DAYS
+                );
+                let bold: Vec<_> = text
+                    .find(&mails)
+                    .map(|at| {
+                        (
+                            at..at + mails.len(),
+                            HighlightStyle {
+                                font_weight: Some(FontWeight::BOLD),
+                                ..Default::default()
+                            },
+                        )
+                    })
+                    .into_iter()
+                    .collect();
+                StyledText::new(SharedString::from(text))
+                    .with_highlights(bold)
+                    .into_any_element()
+            }
+            Preview::Counting => tr!("rules-editor-counting").into_any_element(),
+            Preview::Nothing => tr!(
+                "rules-editor-matches",
+                mails = tr!("rules-editor-mails", count = 0),
+                days = PREVIEW_DAYS
+            )
+            .into_any_element(),
+        };
+        let matched = match e.preview {
+            Preview::Count(n) => n,
+            _ => 0,
+        };
+        let show = query.filter(|_| matched > 0).map(|query| {
+            div()
+                .id("rule-show")
+                .focus_ring(th)
+                .rounded(px(4.0))
+                .text_color(rgba(th.accent))
+                .cursor_pointer()
+                .hover(|s| s.underline())
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    this.show_rule_mail(query.clone(), window, cx)
+                }))
+                .child(tr!("rules-editor-show"))
+        });
+        let apply = (matched > 0).then(|| {
+            div()
+                .id("rule-also-apply")
+                .focus_ring(th)
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(8.0))
+                .rounded(px(6.0))
+                .cursor_pointer()
+                .on_click(cx.listener(|this, _, _, cx| {
+                    if let Some(e) = &mut this.rule_editor {
+                        e.also_apply = !e.also_apply;
+                    }
+                    cx.notify();
+                }))
+                .child(checkbox(
+                    "rule-also-apply-box",
+                    Check::from(e.also_apply),
+                    th,
+                ))
+                .child(tr!("rules-editor-also-apply", count = matched))
+        });
+        div()
+            .mt(px(16.0))
+            .px(px(14.0))
+            .py(px(12.0))
+            .flex()
+            .flex_col()
+            .gap(px(6.0))
+            .rounded(px(10.0))
+            .bg(rgba(fade(th.accent, 0.06)))
+            .text_size(px(14.0))
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .items_center()
+                    .gap_x(px(8.0))
+                    .child(icon("search", th.text_dim, 16.0))
+                    .child(count)
+                    .children(show),
+            )
+            .children(apply)
+            .child(
+                div()
+                    .text_size(px(12.0))
+                    .line_height(px(17.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(tr!("rules-editor-runs-katna")),
+            )
+            .into_any_element()
+    }
+
+    /// Delete rule on the left (asking first), Cancel and Save on the
+    /// right.
+    fn rule_editor_buttons(
+        &self,
+        e: &RuleEditor,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let row = div()
+            .mt(px(20.0))
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .items_center()
+            .gap(px(8.0));
+        if e.asking_delete {
+            return row
+                .child(
+                    div()
+                        .flex_1()
+                        .text_size(px(14.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .child(tr!("rules-editor-delete-ask")),
+                )
+                .child(
+                    text_button("rule-delete-keep", tr!("rules-editor-delete-keep"), th)
+                        .focus_ring(th)
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            if let Some(e) = &mut this.rule_editor {
+                                e.asking_delete = false;
+                            }
+                            cx.notify();
+                        })),
+                )
+                .child(
+                    filled_button(
+                        "rule-delete-confirm",
+                        tr!("rules-editor-delete-confirm"),
+                        th,
+                    )
+                    .focus_ring_filled(th)
+                    .bg(rgba(th.error))
+                    .on_click(cx.listener(|this, _, _, cx| this.delete_rule_edit(cx))),
+                )
+                .into_any_element();
+        }
+        let busy = e.busy;
+        row.when(e.rule.id != 0, |d| {
+            d.child(
+                text_button("rule-delete", tr!("rules-editor-delete"), th)
+                    .focus_ring(th)
+                    .text_color(rgba(th.error))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        if let Some(e) = &mut this.rule_editor {
+                            e.asking_delete = true;
+                            e.pick = None;
+                        }
+                        cx.notify();
+                    })),
+            )
+        })
+        .child(div().flex_1())
+        .child(
+            text_button("rule-cancel", tr!("rules-editor-cancel"), th)
+                .focus_ring(th)
+                .on_click(cx.listener(|this, _, _, cx| this.close_rule_editor(cx))),
+        )
+        .child(
+            filled_button(
+                "rule-save",
+                if busy {
+                    tr!("rules-editor-saving")
+                } else {
+                    tr!("rules-editor-save")
+                },
+                th,
+            )
+            .focus_ring_filled(th)
+            .when(busy, |d| d.opacity(0.6).cursor_default())
+            .on_click(cx.listener(|this, _, _, cx| this.save_rule_edit(cx))),
+        )
+        .into_any_element()
+    }
+
+    /// The open menu of the editor, over everything, with a scrim that
+    /// closes it.
+    fn render_rule_pick(
+        &self,
+        e: &RuleEditor,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let (pick, at) = e.pick?;
+        let item = |id: ElementId, label: String, on: bool| {
+            crate::widgets::menu_item(id, &label, th)
+                .gap(px(10.0))
+                .when(on, |d| {
+                    d.font_weight(FontWeight::SEMIBOLD)
+                        .text_color(rgba(th.accent))
+                })
+        };
+        let items: Vec<AnyElement> = match pick {
+            Pick::Mode => [MatchMode::All, MatchMode::Any]
+                .into_iter()
+                .enumerate()
+                .map(|(n, mode)| {
+                    item(
+                        ("rule-pick-mode", n).into(),
+                        match mode {
+                            MatchMode::All => tr!("rules-mode-all"),
+                            MatchMode::Any => tr!("rules-mode-any"),
+                        },
+                        e.mode == mode,
+                    )
+                    .on_click(
+                        cx.listener(move |this, _, _, cx| this.edit_rule(|e| e.mode = mode, cx)),
+                    )
+                    .into_any_element()
+                })
+                .collect(),
+            Pick::Field(ix) => FIELDS
+                .into_iter()
+                .enumerate()
+                .map(|(n, field)| {
+                    let on = e.conditions.get(ix).is_some_and(|r| r.field == field);
+                    item(("rule-pick-field", n).into(), field_label(field), on)
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.edit_rule(
+                                |e| {
+                                    if let Some(row) = e.conditions.get_mut(ix) {
+                                        row.field = field;
+                                    }
+                                },
+                                cx,
+                            )
+                        }))
+                        .into_any_element()
+                })
+                .collect(),
+            Pick::Comparator(ix) => COMPARATORS
+                .into_iter()
+                .enumerate()
+                .map(|(n, comparator)| {
+                    let on = e
+                        .conditions
+                        .get(ix)
+                        .is_some_and(|r| r.comparator == comparator);
+                    item(
+                        ("rule-pick-comparator", n).into(),
+                        comparator_label(comparator),
+                        on,
+                    )
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.edit_rule(
+                            |e| {
+                                if let Some(row) = e.conditions.get_mut(ix) {
+                                    row.comparator = comparator;
+                                }
+                            },
+                            cx,
+                        )
+                    }))
+                    .into_any_element()
+                })
+                .collect(),
+            Pick::Has(ix) => [true, false]
+                .into_iter()
+                .map(|has| {
+                    let on = e.conditions.get(ix).is_some_and(|r| r.has == has);
+                    item(
+                        ("rule-pick-has", has as usize).into(),
+                        if has {
+                            tr!("rules-has-yes")
+                        } else {
+                            tr!("rules-has-no")
+                        },
+                        on,
+                    )
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.edit_rule(
+                            |e| {
+                                if let Some(row) = e.conditions.get_mut(ix) {
+                                    row.has = has;
+                                }
+                            },
+                            cx,
+                        )
+                    }))
+                    .into_any_element()
+                })
+                .collect(),
+            Pick::Action(ix) => ActionKind::ALL
+                .into_iter()
+                .enumerate()
+                .map(|(n, kind)| {
+                    let on = e.actions.get(ix).is_some_and(|r| r.kind == kind);
+                    item(("rule-pick-action", n).into(), kind.label(), on)
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.set_rule_action(ix, kind, window, cx)
+                        }))
+                        .into_any_element()
+                })
+                .collect(),
+            Pick::Folder(ix) => {
+                let row = e.actions.get(ix)?;
+                self.rule_folders(e, row.kind)
+                    .into_iter()
+                    .enumerate()
+                    .map(|(n, (folder, name))| {
+                        item(
+                            ("rule-pick-folder", n).into(),
+                            name,
+                            row.folder == Some(folder),
+                        )
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.edit_rule(
+                                |e| {
+                                    if let Some(row) = e.actions.get_mut(ix) {
+                                        row.folder = Some(folder);
+                                    }
+                                },
+                                cx,
+                            )
+                        }))
+                        .into_any_element()
+                    })
+                    .collect()
+            }
+            Pick::Accounts => self
+                .accounts
+                .iter()
+                .filter(|a| a.kind.is_mail())
+                .enumerate()
+                .map(|(n, account)| {
+                    let id = account.id.0;
+                    let on = e.accounts.contains(&id);
+                    crate::widgets::menu_item(("rule-pick-account", n), "", th)
+                        .gap(px(10.0))
+                        .child(checkbox(("rule-pick-account-box", n), Check::from(on), th))
+                        .child(dot(self.account_color(&account.address, th)))
+                        .child(account.address.clone())
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            if let Some(e) = &mut this.rule_editor {
+                                if let Some(at) = e.accounts.iter().position(|a| *a == id) {
+                                    e.accounts.remove(at);
+                                } else {
+                                    e.accounts.push(id);
+                                }
+                                // Folders of an account no longer chosen
+                                // are chosen again.
+                                let keep: Vec<i64> = e.accounts.clone();
+                                let tree = &this.tree;
+                                for row in &mut e.actions {
+                                    if row.folder.is_some_and(|f| {
+                                        tree.account_of(FolderId(f))
+                                            .is_none_or(|a| !keep.contains(&a.0))
+                                    }) {
+                                        row.folder = None;
+                                    }
+                                }
+                            }
+                            // The menu stays open for more.
+                            this.rule_changed(cx);
+                        }))
+                        .into_any_element()
+                })
+                .collect(),
+        };
+        let close = cx.listener(|this, _, _, cx| {
+            cx.stop_propagation();
+            if let Some(e) = &mut this.rule_editor {
+                e.pick = None;
+            }
+            cx.notify();
+        });
+        Some(
+            div()
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full()
+                .child(
+                    deferred(
+                        div()
+                            .id("rule-pick-scrim")
+                            .absolute()
+                            .top(px(-2000.0))
+                            .left(px(-4000.0))
+                            .w(px(8000.0))
+                            .h(px(6000.0))
+                            .occlude()
+                            .on_mouse_down(MouseButton::Left, close),
+                    )
+                    .with_priority(5),
+                )
+                .child(
+                    deferred(
+                        anchored()
+                            .position(at)
+                            .snap_to_window_with_margin(px(8.0))
+                            .child(
+                                menu(th)
+                                    .id("rule-pick")
+                                    .occlude()
+                                    .max_h(px(360.0))
+                                    .overflow_y_scroll()
+                                    .on_mouse_down(MouseButton::Left, |_, _, cx| {
+                                        cx.stop_propagation()
+                                    })
+                                    .children(items),
+                            ),
+                    )
+                    .with_priority(6),
+                )
+                .into_any_element(),
+        )
+    }
+}
+
+/// The placeholder of an action row's field.
+fn action_hint(kind: ActionKind) -> String {
+    match kind {
+        ActionKind::Forward => tr!("rules-editor-forward-hint"),
+        _ => String::new(),
+    }
+}
+
+fn action_of(kind: ActionKind, folder: Option<i64>, text: &str) -> Action {
+    let folder = folder.unwrap_or(0);
+    match kind {
+        ActionKind::Move => Action::Move { folder },
+        ActionKind::Archive => Action::Archive,
+        ActionKind::Trash => Action::Trash,
+        ActionKind::MarkRead => Action::MarkRead,
+        ActionKind::Star => Action::Star,
+        ActionKind::MarkImportant => Action::MarkImportant,
+        ActionKind::AddLabel => Action::AddLabel { folder },
+        ActionKind::Forward => Action::Forward {
+            to: text.to_owned(),
+        },
+        ActionKind::DontNotify => Action::DontNotify,
+        ActionKind::MarkReadAfter => Action::MarkReadAfter {
+            days: text.parse().unwrap_or(1),
+        },
+    }
+}
+
+/// A click that opens menu `pick` where it happened.
+fn pick_at(
+    pick: Pick,
+    cx: &mut Context<MailWindow>,
+) -> impl Fn(&ClickEvent, &mut Window, &mut App) + 'static {
+    cx.listener(move |this, event: &ClickEvent, _, cx| {
+        this.open_rule_pick(pick, event.position(), cx)
+    })
+}
+
+/// An account's color, as a dot.
+pub(super) fn dot(color: u32) -> AnyElement {
+    div()
+        .flex_none()
+        .size(px(8.0))
+        .rounded_full()
+        .bg(rgba(color))
+        .into_any_element()
+}
+
+/// A box that opens a menu: what is chosen, and a down arrow.
+fn select_box(
+    id: impl Into<ElementId>,
+    label: String,
+    open: bool,
+    th: &Theme,
+) -> Stateful<gpui::Div> {
+    select_box_with(
+        id,
+        div()
+            .flex_1()
+            .min_w_0()
+            .truncate()
+            .child(label)
+            .into_any_element(),
+        open,
+        th,
+    )
+}
+
+/// A [`select_box`] showing `content`.
+fn select_box_with(
+    id: impl Into<ElementId>,
+    content: AnyElement,
+    open: bool,
+    th: &Theme,
+) -> Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .focus_ring(th)
+        .flex_none()
+        .h(px(36.0))
+        .pl(px(12.0))
+        .pr(px(8.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(6.0))
+        .rounded(px(8.0))
+        .border_1()
+        .border_color(rgba(if open { th.accent } else { th.outline }))
+        .text_size(px(14.0))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(content)
+        .child(icon("chevron-down", th.text_dim, 16.0))
+}
+
+/// A text field of the editor, edged in the accent while it has the
+/// keys.
+fn text_field(
+    id: impl Into<ElementId>,
+    input: &Entity<TextInput>,
+    height: f32,
+    th: &Theme,
+    window: &Window,
+    cx: &App,
+) -> Stateful<gpui::Div> {
+    use crate::widgets::ScaledEdge;
+    let focus = input.focus_handle(cx);
+    let focused = focus.is_focused(window);
+    div()
+        .id(id)
+        .h(px(height))
+        .px(px(if focused { 11.0 } else { 12.0 }))
+        .flex()
+        .items_center()
+        .rounded(px(8.0))
+        .map(|d| {
+            if focused {
+                d.border_px(2.0)
+            } else {
+                d.border_1()
+            }
+        })
+        .border_color(rgba(if focused { th.accent } else { th.outline }))
+        .text_size(px(15.0))
+        .cursor_text()
+        .on_click(move |_, window, cx| window.focus(&focus, cx))
+        .child(div().flex_1().min_w_0().child(input.clone()))
+}
+
+/// A condition or action row: its menu, what goes with it, and ✕. On a
+/// narrow dialog the second part wraps under the first.
+fn part_row(
+    first: Stateful<gpui::Div>,
+    rest: AnyElement,
+    remove: Stateful<gpui::Div>,
+    narrow: bool,
+) -> AnyElement {
+    if narrow {
+        return div()
+            .flex()
+            .flex_col()
+            .gap(px(6.0))
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(8.0))
+                    .child(first)
+                    .child(remove),
+            )
+            .child(rest)
+            .into_any_element();
+    }
+    div()
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(8.0))
+        .child(first)
+        .child(rest)
+        .child(remove)
+        .into_any_element()
+}
+
+fn remove_button(id: impl Into<ElementId>, th: &Theme) -> Stateful<gpui::Div> {
+    icon_button(id, "close", 18.0, th)
+        .flex_none()
+        .size(px(32.0))
+        .focus_ring(th)
+        .tooltip(tip(tr!("rules-editor-remove"), th))
+}
+
+/// "+ Add a condition" and "+ Add an action".
+fn add_link(id: &'static str, label: String, th: &Theme) -> Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .focus_ring(th)
+        .mt(px(6.0))
+        .h(px(32.0))
+        .px(px(6.0))
+        .self_start()
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(4.0))
+        .rounded(px(6.0))
+        .text_size(px(14.0))
+        .text_color(rgba(th.accent))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(fade(th.accent, 0.08))))
+        .child(icon("add", th.accent, 16.0))
+        .child(label)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn rule(conditions: Vec<(Field, Comparator, &str)>, actions: Vec<Action>) -> Rule {
+        Rule {
+            name: "Test".into(),
+            conditions: conditions
+                .into_iter()
+                .map(|(field, comparator, value)| Condition {
+                    field,
+                    comparator,
+                    value: value.into(),
+                })
+                .collect(),
+            actions,
+            accounts: vec![1],
+            ..Rule::default()
+        }
+    }
+
+    #[test]
+    fn summarizes_a_rule_in_one_line() {
+        let r = rule(
+            vec![
+                (Field::From, Comparator::Contains, "substack.com"),
+                (Field::Subject, Comparator::NotContains, "invoice"),
+            ],
+            vec![Action::Archive, Action::AddLabel { folder: 7 }],
+        );
+        let name = |id: i64| (id == 7).then(|| "Reading".to_owned());
+        let line = summary(&r, name);
+        assert!(line.contains("From contains substack.com"), "{line}");
+        assert!(line.contains(" and "), "{line}");
+        assert!(line.contains("Subject doesn't contain invoice"), "{line}");
+        assert!(line.contains("→"), "{line}");
+        assert!(line.contains("skip the inbox"), "{line}");
+        assert!(line.contains("label Reading"), "{line}");
+
+        let any = Rule {
+            match_mode: MatchMode::Any,
+            ..rule(
+                vec![
+                    (Field::HasAttachment, Comparator::Contains, "false"),
+                    (Field::To, Comparator::Contains, "info@example.com"),
+                ],
+                vec![
+                    Action::Move { folder: 9 },
+                    Action::MarkReadAfter { days: 1 },
+                ],
+            )
+        };
+        let line = summary(&any, |_| None);
+        assert!(line.contains("Has no attachment"), "{line}");
+        assert!(line.contains(" or "), "{line}");
+        assert!(line.contains("move to a folder that's gone"), "{line}");
+        assert!(line.contains("mark read after 1 day"), "{line}");
+
+        let grouped = Rule {
+            match_mode: MatchMode::Any,
+            ..rule(
+                vec![
+                    (Field::Subject, Comparator::Contains, "invoice"),
+                    (Field::Subject, Comparator::Contains, "receipt"),
+                    (Field::Subject, Comparator::Contains, "order"),
+                    (Field::From, Comparator::Contains, "shop.com"),
+                ],
+                vec![Action::MarkRead, Action::Star, Action::DontNotify],
+            )
+        };
+        assert_eq!(
+            summary(&grouped, |_| None),
+            "Subject contains invoice, receipt or order or From contains shop.com \
+             → mark read, star, don't notify"
+        );
+    }
+
+    #[test]
+    fn known_errors_get_their_own_words() {
+        assert!(error_text("folder 9999 no longer exists").contains("no longer exists"));
+        assert!(error_text("the account cannot send mail").contains("can't send"));
+        assert!(error_text("something odd").starts_with("Something odd"));
+    }
+
+    #[test]
+    fn shows_them_with_a_search_when_one_can_say_it() {
+        let r = rule(
+            vec![
+                (Field::From, Comparator::Contains, "substack.com"),
+                (Field::Subject, Comparator::NotContains, "in\"voice"),
+                (Field::HasAttachment, Comparator::Contains, "true"),
+            ],
+            vec![Action::Archive],
+        );
+        assert_eq!(
+            search_query(&r, 30).as_deref(),
+            Some(
+                "from:\"substack.com\" -subject:\"invoice\" has:attachment in:inbox newer_than:30d"
+            )
+        );
+        let any = Rule {
+            match_mode: MatchMode::Any,
+            ..rule(
+                vec![
+                    (Field::From, Comparator::Contains, "a.com"),
+                    (Field::AnyRecipient, Comparator::Contains, "me@b.com"),
+                ],
+                vec![Action::Archive],
+            )
+        };
+        assert_eq!(
+            search_query(&any, 30).as_deref(),
+            Some("(from:\"a.com\" OR to:\"me@b.com\") in:inbox newer_than:30d")
+        );
+        for (field, comparator) in [
+            (Field::Body, Comparator::Contains),
+            (Field::ReplyTo, Comparator::Contains),
+            (Field::From, Comparator::BeginsWith),
+            (Field::Subject, Comparator::Matches),
+        ] {
+            let r = rule(vec![(field, comparator, "x")], vec![Action::Archive]);
+            assert_eq!(search_query(&r, 30), None, "{field:?} {comparator:?}");
+        }
+    }
+
+    #[test]
+    fn the_first_of_two_moves_gives_way() {
+        let moves = [ActionKind::Move, ActionKind::Archive, ActionKind::Trash];
+        for kind in ActionKind::ALL {
+            assert_eq!(
+                moves.contains(&kind),
+                action_of(kind, Some(1), "1").moves(),
+                "{kind:?}"
+            );
+        }
+    }
+}
