@@ -154,11 +154,14 @@ impl SystemColors {
         self.schemes.iter().find(|s| s.id == id)
     }
 
-    /// Whether the desktop's scheme decides light or dark itself: it has
-    /// one side only. `Some(dark)` then.
+    /// Whether the desktop's colors decide light or dark themselves:
+    /// only Windows' Contrast themes, which all apps follow. `Some(dark)`
+    /// then. A KDE scheme without a partner doesn't: the app's own light
+    /// or dark mode wins, and [`Self::scheme_for`] has nothing for the
+    /// other side.
     pub fn forced_dark(&self) -> Option<bool> {
         match &self.source {
-            Source::Kde(scheme, None) | Source::Only(scheme) => Some(scheme.dark()),
+            Source::Only(scheme) => Some(scheme.dark()),
             _ => None,
         }
     }
@@ -1248,9 +1251,10 @@ mod scheme_list_tests {
         assert_eq!(colors.scheme_for(true).unwrap().view_bg, 0x141618ff);
         assert_eq!(colors.scheme_for(false).unwrap().view_bg, 0xffffffff);
         assert_eq!(colors.forced_dark(), None);
-        // Without a partner, the scheme decides.
+        // Without a partner, the mode still decides; the light side has
+        // no scheme.
         let alone = SystemColors::kde(dark);
-        assert_eq!(alone.forced_dark(), Some(true));
+        assert_eq!(alone.forced_dark(), None);
         assert!(alone.scheme_for(false).is_none());
     }
 

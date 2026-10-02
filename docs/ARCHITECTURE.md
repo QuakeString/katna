@@ -2377,8 +2377,12 @@ Gemini or confidential mode):
   System works in either mode (Breeze Dark on the desktop and Mode Light
   draws Breeze Light). Windows' accent is `DWM\AccentColor`; while a
   Contrast theme is on, System draws its colors. A scheme with one side
-  (a Contrast theme, a KDE scheme without a partner) decides light or
-  dark itself, whatever Mode says (`Theme::forced_dark`), as KDE does.
+  picked by name (a Contrast theme, a KDE scheme without a partner)
+  decides light or dark itself, whatever Mode says (`Theme::forced_dark`),
+  as KDE does. System is different: Mode wins (the owner's call), and
+  when the desktop's scheme has no side for that mode, System draws
+  Katna's palette in the desktop's accent; only a Contrast theme in use
+  still decides, since Windows makes every app follow it.
   Windows' colors are read at startup.
 
   *Yours* lists the schemes people make (`user_schemes.rs`): one TOML file
