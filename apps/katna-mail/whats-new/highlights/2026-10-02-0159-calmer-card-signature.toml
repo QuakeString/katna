@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A calmer signature on a person's card"
+text = """
+In a chat, the Signature section of a person's card now shows only what
+their signature adds: no pictures, banners, bare links or "print only
+when necessary" lines, and nothing the card already shows. Their website
+and social pages are a row of small icons, and a long signature waits
+behind Full signature.
+"""
