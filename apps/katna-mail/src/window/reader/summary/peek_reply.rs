@@ -18,7 +18,7 @@ use katna_i18n::tr;
 use katna_ui::{InputEvent, TextArea, TextInput, px};
 
 use super::super::super::MailWindow;
-use super::super::super::compose::{Kind, below_end, signature_name, signature_tag};
+use super::super::super::compose::{Kind, below_end_over, signature_name, signature_tag};
 use super::super::super::search_panel::chip;
 use super::{Fix, placeholder, problem_text};
 use crate::daemon;
@@ -660,23 +660,27 @@ impl MailWindow {
                 }
             }))
             .when(r.signatures_open, |d| {
-                d.child(below_end(self.signature_menu(
-                    signature,
-                    |this, id, cx| {
-                        if let Some(r) = this.peek_reply_mut() {
-                            r.signature = id;
-                            r.signatures_open = false;
-                            cx.notify();
-                        }
-                    },
-                    |this| {
-                        if let Some(r) = this.peek_reply_mut() {
-                            r.signatures_open = false;
-                        }
-                    },
-                    th,
-                    cx,
-                )))
+                // Over the card, which is drawn on top itself.
+                d.child(below_end_over(
+                    self.signature_menu(
+                        signature,
+                        |this, id, cx| {
+                            if let Some(r) = this.peek_reply_mut() {
+                                r.signature = id;
+                                r.signatures_open = false;
+                                cx.notify();
+                            }
+                        },
+                        |this| {
+                            if let Some(r) = this.peek_reply_mut() {
+                                r.signatures_open = false;
+                            }
+                        },
+                        th,
+                        cx,
+                    ),
+                    5,
+                ))
             }),
         );
         let idea = r.request.idea.clone();
