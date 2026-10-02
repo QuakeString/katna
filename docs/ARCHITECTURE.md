@@ -1510,7 +1510,18 @@ GPUI global):
   there is none (Blur effect off, other desktops); the opacity stays
   45 %. The compositor's window blur takes no strength from the window,
   so on KDE a line opens Desktop Effects for it
-  (`katna_platform::blur`, `window/frost_sliders.rs`). Dialogs and
+  (`katna_platform::blur`, `window/frost_sliders.rs`). With the switch on,
+  Opacity also sets the blurred window background: 60 % of the way from
+  the tint to solid (45 % gives 78 %, about the 75 to 80 % it has
+  otherwise), through `katna_chrome::Look::blur_opacity`.
+  Under the Katna frame choice (not on Windows, which rounds the corners
+  itself, nor on tiling compositors), Corner roundness (0 to 16 px,
+  `experimental.window_radius`), a Border switch (`window_border`) and
+  Border opacity (5 to 100 %, `window_border_opacity`) change the frame
+  live as they are dragged; unset, the frame keeps its preset's radius and
+  outline (`Look::radius`, `Look::border`, `Look::border_opacity`). The
+  title bar and content round their corners less the border's width so
+  they nest. Dialogs and
   floating cards (Add account, About, What's new, confirmations, label and
   share dialogs, the first-run card) frost the same way with their own
   color, more solid and more blurred than menus since they cover more of
