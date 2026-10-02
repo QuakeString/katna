@@ -99,6 +99,8 @@ const INK: u32 = 0xffffffff;
 const INK_DIM: u32 = 0xffffffb3;
 const HOVER: u32 = 0xffffff1f;
 const PILL: u32 = 0x2d2f31f2;
+/// A side arrow under the pointer: the pill a shade lighter.
+const PILL_HOVER: u32 = 0x47494cf2;
 
 /// The viewer's key context.
 pub(super) const KEY_CONTEXT: &str = "AttachmentViewer";
@@ -1361,11 +1363,28 @@ fn bar_button(id: &'static str, name: &str, th: &Theme) -> gpui::Stateful<gpui::
     bar_button_tip(id, name, tooltip_for(id).into(), th)
 }
 
+/// A side arrow: its hover is solid, as the bar's see-through one
+/// would leave a white arrow on white over a page.
+fn side_button(id: &'static str, name: &str, th: &Theme) -> gpui::Stateful<gpui::Div> {
+    round_button(id, name, tooltip_for(id).into(), PILL_HOVER, th)
+}
+
 /// A round button on the dark bar, with its own tooltip.
 fn bar_button_tip(
     id: &'static str,
     name: &str,
     tooltip: SharedString,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    round_button(id, name, tooltip, HOVER, th)
+}
+
+/// A round button with `hover` under the pointer.
+fn round_button(
+    id: &'static str,
+    name: &str,
+    tooltip: SharedString,
+    hover: u32,
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
     div()
@@ -1379,7 +1398,7 @@ fn bar_button_tip(
         .justify_center()
         .rounded_full()
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(HOVER)))
+        .hover(move |s| s.bg(rgba(hover)))
         .child(Ripple::new(id, rgba(0xffffff33)).centered())
         .child(icon(name, INK, 22.0))
         .tooltip(tip(tooltip, th))
@@ -1896,12 +1915,12 @@ impl Render for Viewer {
         let arrows = many.then(|| {
             [
                 side(
-                    bar_button("viewer-prev", "chevron-left", &th)
+                    side_button("viewer-prev", "chevron-left", &th)
                         .on_click(cx.listener(|this, _, _, cx| this.step(-1, cx))),
                     true,
                 ),
                 side(
-                    bar_button("viewer-next", "chevron-right", &th)
+                    side_button("viewer-next", "chevron-right", &th)
                         .on_click(cx.listener(|this, _, _, cx| this.step(1, cx))),
                     false,
                 ),
