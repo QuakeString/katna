@@ -185,7 +185,7 @@ fn card(th: &Theme, radius: f32, outline: f32) -> Div {
         .flex_col()
         .overflow_hidden()
         .rounded(px(radius))
-        .bg(rgba(th.pane()))
+        .map(|d| crate::widgets::pane(d, th.pane(), th.surface, radius))
         .shadow(card_shadow(th, super::SHADOW_REST))
         .children(card_outline(th, radius, outline))
 }

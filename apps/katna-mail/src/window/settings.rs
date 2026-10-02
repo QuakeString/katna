@@ -178,7 +178,14 @@ impl MailWindow {
                     t.min(1.0) * self.layout.shape.card_outline(),
                 ))
             })
-            .bg(rgba(th.pane()))
+            .map(|d| {
+                crate::widgets::pane(
+                    d,
+                    th.pane(),
+                    th.surface,
+                    if phone { 0.0 } else { super::PANEL_RADIUS },
+                )
+            })
             .child(
                 div()
                     .flex_none()

@@ -22,6 +22,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 /// The hue that marks a quad; real hues are 0 to 1.
 const MARKER_HUE: f32 = -1024.0;
+/// The hue that marks a quad that clears what is under it.
+const ERASE_HUE: f32 = -2048.0;
 
 static SUPPORTED: AtomicBool = AtomicBool::new(false);
 
@@ -34,6 +36,25 @@ pub fn backdrop_blur_marker(radius: f32) -> Hsla {
         l: 0.0,
         a: 1.0,
     }
+}
+
+/// The border colour that marks a quad that clears what is already drawn
+/// under it, as far as it covers each pixel, so what is drawn next over a
+/// translucent window shows the desktop rather than what was under. Give
+/// the quad no border and an opaque fill: a renderer without this change
+/// draws that fill.
+pub fn erase_marker() -> Hsla {
+    Hsla {
+        h: ERASE_HUE,
+        s: 0.0,
+        l: 0.0,
+        a: 1.0,
+    }
+}
+
+/// Whether `quad` clears what is under it ([`erase_marker`]).
+pub(crate) fn is_erase(quad: &Quad) -> bool {
+    quad.border_color.h == ERASE_HUE
 }
 
 /// Whether the renderer blurs behind marked quads. False until a window

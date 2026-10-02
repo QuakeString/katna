@@ -602,7 +602,19 @@ impl MailWindow {
             // blurred window the blur shows through it). Focused, it turns
             // into a solid field, its edge takes a soft accent and it lifts
             // a little.
-            .bg(rgba(search_fill(th, t)))
+            .map(|d| {
+                let fill = search_fill(th, t);
+                if th.search_tint >= 100 {
+                    return d.bg(rgba(fill));
+                }
+                // A frosted box clears the bar's tint under it as it opens,
+                // so it is as see-through as its own fill says.
+                d.child(katna_ui::frost::clear_fill(
+                    rgba(fill).into(),
+                    rgba(fade(th.page | 0xff, t.clamp(0.0, 1.0))).into(),
+                    px(lerp(SEARCH_HEIGHT, 48.0, phone) / 2.0),
+                ))
+            })
             .border_1()
             .border_color(rgba(search_edge(th, t)))
             // Under the pointer the idle edge is a touch stronger; it fades

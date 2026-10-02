@@ -914,11 +914,14 @@ impl MailWindow {
             .relative()
             .rounded(px(radius))
             .overflow_hidden()
-            .bg(rgba(if self.chat_shown() {
-                th.chat_pane()
-            } else {
-                th.pane()
-            }))
+            .map(|d| {
+                let fill = if self.chat_shown() {
+                    th.chat_pane()
+                } else {
+                    th.pane()
+                };
+                crate::widgets::pane(d, fill, th.surface, radius)
+            })
             .shadow(card_shadow(th, shadow))
             .p(px(outline))
             .on_action(cx.listener(Self::reader_back))

@@ -24,6 +24,14 @@ menus and popovers (`src/backdrop_blur.rs`, `src/backdrop_blur.wgsl`):
 - `backdrop_blur_supported()` says whether the blur is drawn. Without
   `COPY_SRC` marked quads are drawn as plain quads.
 
+A quad whose border color is `erase_marker()` clears what is already
+drawn under it, as far as it covers each pixel (pipeline `quads_erase`:
+the destination is kept times one minus the quad's coverage, and nothing
+of the quad's own color is drawn). Katna draws a see-through card over a
+blurred window's tint this way, so the card is as see-through as its own
+fill rather than its fill over the tint (`katna_ui::frost::clear_fill`).
+A renderer without this change draws the quad's opaque fill, a solid card.
+
 It also changes drop shadows (`shaders.wgsl`, `fs_shadow`): a shadow is
 drawn only outside its element, as in CSS, so it does not darken a
 translucent element. Upstream draws it under the whole element, which an

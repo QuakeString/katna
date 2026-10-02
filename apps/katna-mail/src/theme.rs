@@ -225,9 +225,9 @@ impl Theme {
 
     /// For a blurred window: the cards (`pane`), the open mail's card
     /// while it shows a chat (`chat`) and the open search box (`search`)
-    /// let the blur through, each this many percent opaque, or stay solid
-    /// (`None`). Text stays on the card's colour, so it keeps its
-    /// contrast, and bubbles, menus and fields keep their own fills.
+    /// let the blur through, each this many percent opaque over the blurred
+    /// desktop, or stay solid (`None`). Bubbles, menus and fields keep
+    /// their own fills.
     pub fn frosted_panes(self, pane: Option<u8>, chat: Option<u8>, search: Option<u8>) -> Self {
         let pane_tint = pane.map_or(100, |p| p.min(100));
         Self {

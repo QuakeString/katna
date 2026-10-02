@@ -1525,12 +1525,15 @@ GPUI global):
   With the window blur on, three more switches (on by default) let it
   through what sits on the window: *Frosted panes*
   (`experimental.frosted_panes`) makes the cards (mail list, open mail,
-  person card, agenda, Settings) `pane_opacity` percent opaque (30 to
-  95, default 60) over the window's tint, with a slider; *Frosted chat
+  person card, agenda, Settings) `pane_opacity` percent opaque over the
+  blurred desktop (30 to 95, default 60), with a slider: each card first
+  clears the window's tint under it (`widgets::pane`, the renderer's
+  erase marker in `vendor/gpui-pre-wgpu/KATNA.md`), so the opacity is the
+  card's own and the cards are clearer than the folders' 78 %; *Frosted chat
   background* (`frosted_chat`) makes the open mail's card 10 points
   clearer while it shows a chat (50 % with solid panes), bubbles staying
   solid; *Frosted search box* (`frosted_search`) keeps the focused search
-  field 62 % opaque. The theme carries them (`Theme::frosted_panes`,
+  field 62 % opaque, clearing the bar's tint under it as it opens. The theme carries them (`Theme::frosted_panes`,
   `pane`, `chat_pane`, `on_pane`): rows and chips that match the card
   draw nothing, others go as see-through as the card. Dialogs and
   floating cards (Add account, About, What's new, confirmations, label and
