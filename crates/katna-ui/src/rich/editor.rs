@@ -348,6 +348,9 @@ pub struct RichEditor {
     next_image_id: u64,
     /// The editor's width at the last paint, for sizing images.
     width: Pixels,
+    /// The part of the editor in sight, in window coordinates: inside
+    /// whatever scrolls or clips it.
+    shown: Bounds<Pixels>,
     /// The editor had the focus when last drawn.
     pub(crate) drawn_focused: std::cell::Cell<bool>,
     /// The marked words under the pointer, and the wait before their fixes
@@ -408,6 +411,7 @@ impl RichEditor {
             drawn_focused: std::cell::Cell::new(false),
             next_image_id: 0,
             width: px(0.0),
+            shown: Bounds::default(),
             hover: None,
             hover_task: None,
             clicked: None,
@@ -645,6 +649,11 @@ impl RichEditor {
     /// Whether the suggestion showing is a longer one ([`Complete`]).
     pub(crate) fn ghost_is_long(&self) -> bool {
         self.ghost_long && self.showing_suggestion()
+    }
+
+    /// The part of the editor in sight, in window coordinates.
+    pub fn shown_bounds(&self) -> Bounds<Pixels> {
+        self.shown
     }
 
     /// The selected text when it can be rephrased, with where its end was
@@ -3102,7 +3111,9 @@ impl Element for Anchor {
             }
         });
         let width = bounds.size.width;
+        let shown = bounds.intersect(&window.content_mask().bounds);
         self.editor.update(cx, |editor, cx| {
+            editor.shown = shown;
             if editor.width != width {
                 editor.width = width;
                 // Images size to the width; draw again with it.
