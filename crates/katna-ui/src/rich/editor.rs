@@ -677,13 +677,20 @@ impl RichEditor {
         if !text.chars().any(char::is_alphabetic) {
             return None;
         }
-        let layout = self.layouts.get(&end.path)?;
-        let (range, whole_end) = self.selection_in(end.path)?;
-        let last = layout.selection_rects(range, whole_end).pop()?;
-        Some((
-            text,
-            Bounds::new(last.origin + layout.bounds.origin, last.size),
-        ))
+        // Where the selection's last drawn piece ends: a selection ending
+        // at the start of a line shows nothing on that line, so it ends
+        // on the line before.
+        let last = self
+            .doc
+            .covered(start, end)
+            .into_iter()
+            .rev()
+            .find_map(|(path, range)| {
+                let layout = self.layouts.get(&path)?;
+                let rect = layout.selection_rects(range, path != end.path).pop()?;
+                Some(Bounds::new(rect.origin + layout.bounds.origin, rect.size))
+            })?;
+        Some((text, last))
     }
 
     /// Puts plain `text` in place of the selection, as one step Undo takes
