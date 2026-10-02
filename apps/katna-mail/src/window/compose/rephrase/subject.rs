@@ -5,6 +5,8 @@
 //! subject and what the message says so far. Picking one puts it in, and
 //! the snackbar's Undo puts back what was typed.
 
+use std::time::{Duration, Instant};
+
 use gpui::{AnyElement, Context, Focusable, Task, Window, div, prelude::*, rgba};
 use katna_ai::draft::{DraftKind, DraftRequest, Length, Manner};
 use katna_ai::summary::Mail;
@@ -18,6 +20,10 @@ use super::{Fix, problem_text};
 use crate::daemon::{self, Command};
 use crate::theme::{Theme, fade};
 use crate::widgets::{icon, icon_button_colored, menu, menu_item, outlined_button, tip};
+
+/// How soon after a press outside closed the card a click on the
+/// sparkle counts as that same press.
+const JUST_CLOSED: Duration = Duration::from_millis(400);
 
 /// The subject's other wordings, while their card is open.
 pub(in crate::window) struct SubjectIdeas {
@@ -156,13 +162,28 @@ impl MailWindow {
             .id("compose-subject-ideas")
             .w(px(360.0))
             .text_size(px(14.0))
-            .on_mouse_down_out(cx.listener(|this, _, _, cx| this.close_subject_ideas(cx)))
+            .on_mouse_down_out(cx.listener(|this, _, _, cx| {
+                if let Some(c) = &mut this.compose
+                    && c.subject_ideas.is_some()
+                {
+                    c.subject_ideas_closed = Some(Instant::now());
+                }
+                this.close_subject_ideas(cx);
+            }))
             .child(title)
             .child(body)
             .into_any_element()
     }
 
     fn toggle_subject_ideas(&mut self, cx: &mut Context<Self>) {
+        // This press already put them away.
+        if let Some(c) = &mut self.compose
+            && c.subject_ideas_closed
+                .take()
+                .is_some_and(|at| at.elapsed() < JUST_CLOSED)
+        {
+            return;
+        }
         if self
             .compose
             .as_ref()

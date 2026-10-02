@@ -615,8 +615,10 @@ impl MailWindow {
                         cx,
                     )
                     .on_click(cx.listener(|this, _, _, cx| {
+                        // Where the right-click was: the card opens there.
+                        let at = this.context_menu.as_ref().map(|m| m.at);
                         if let Some((ix, key)) = this.take_context_line() {
-                            this.summarize_line(ix, key, cx);
+                            this.summarize_line(ix, key, at, cx);
                         }
                     })),
                 );

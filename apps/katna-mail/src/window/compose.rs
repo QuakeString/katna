@@ -234,6 +234,9 @@ pub(super) struct Compose {
     rephrased: Option<usize>,
     /// Other wordings of the subject, while their card is open.
     subject_ideas: Option<rephrase::subject::SubjectIdeas>,
+    /// When a press outside last put them away, so that pressing the
+    /// sparkle closes them rather than asking again.
+    subject_ideas_closed: Option<std::time::Instant>,
     /// The user agreed to send text of this encrypted message for
     /// rephrasing.
     ai_encrypted_ok: bool,
@@ -1376,6 +1379,7 @@ impl MailWindow {
             rephrase: None,
             rephrased: None,
             subject_ideas: None,
+            subject_ideas_closed: None,
             ai_encrypted_ok: false,
             chat: None,
             _subscriptions: subscriptions,
