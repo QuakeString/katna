@@ -20,7 +20,7 @@ use katna_ui::{InputEvent, TextArea, TextInput, px};
 use super::super::super::MailWindow;
 use super::super::super::compose::{Kind, below_end_over, signature_name, signature_tag};
 use super::super::super::search_panel::chip;
-use super::{Fix, placeholder, problem_text};
+use super::{Fix, placeholder, problem_text, pulsing};
 use crate::daemon;
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
@@ -437,18 +437,22 @@ impl MailWindow {
                 .child(text.to_uppercase())
         };
         let ideas = match &r.ideas {
-            Ideas::Loading => div()
-                .flex()
-                .flex_row()
-                .gap(px(6.0))
-                .children([150.0, 110.0, 120.0].map(|width| {
-                    div()
-                        .w(px(width))
-                        .h(px(28.0))
-                        .rounded_full()
-                        .bg(rgba(fade(th.text_faint, 0.18)))
-                }))
-                .into_any_element(),
+            // The same breathing as the summary's lines while it is asked.
+            Ideas::Loading => pulsing(
+                "summary-reply-ideas-wait",
+                div()
+                    .flex()
+                    .flex_row()
+                    .gap(px(6.0))
+                    .children([150.0, 110.0, 120.0].map(|width| {
+                        div()
+                            .w(px(width))
+                            .h(px(28.0))
+                            .rounded_full()
+                            .bg(rgba(fade(th.text_faint, 0.18)))
+                    })),
+                cx.reduce_motion(),
+            ),
             Ideas::Ready(ideas) => div()
                 .flex()
                 .flex_row()
