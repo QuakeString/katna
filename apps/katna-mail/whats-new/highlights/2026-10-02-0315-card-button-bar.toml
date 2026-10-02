@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The person card keeps its buttons in reach"
+text = """
+Scroll the person card and its buttons slide up into a slim frosted bar
+beside the close button, with a small picture of the person. The close
+button no longer sits over what you are reading.
+"""

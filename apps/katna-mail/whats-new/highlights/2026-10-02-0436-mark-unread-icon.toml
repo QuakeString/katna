@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A clearer Mark as unread icon"
+text = """
+Mark as unread now shows an envelope with a dot, in menus, in the toolbars and
+on a mail's hover buttons, so it no longer looks like a plain mail icon.
+"""

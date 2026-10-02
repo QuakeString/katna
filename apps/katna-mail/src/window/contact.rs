@@ -10,20 +10,21 @@
 //! Desktop windows only, where the reader keeps room enough beside it; the
 //! reader's toolbar shows and hides it.
 
+use std::cell::Cell;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, SharedString, Window,
-    div, ease_out_quint, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, ScrollHandle,
+    SharedString, Window, canvas, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_dav::Occurrence;
 use katna_i18n::tr;
 use katna_render::signature;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
-use katna_ui::{Ripple, px};
+use katna_ui::{Ripple, px, unpx};
 
 use super::MailWindow;
 use super::attachments::kind_badge;
@@ -52,6 +53,22 @@ const STALE: Duration = Duration::from_secs(60);
 const KEEP_PROFILES: usize = 64;
 /// The picture beside the name.
 const PICTURE: f32 = 56.0;
+/// The bar the round buttons stay in once scrolled to the top of the
+/// card, beside the close button, with the person's picture this size.
+const BAR: f32 = 52.0;
+const BAR_PICTURE: f32 = 28.0;
+/// The round buttons' size and gap under the name, and in the bar.
+const ACTION: (f32, f32) = (40.0, 12.0);
+const ACTION_STUCK: (f32, f32) = (36.0, 6.0);
+/// How far the buttons are from the bar's top while in it, as the close
+/// button is from the card's.
+const BAR_INSET: f32 = (BAR - ACTION.0) / 2.0;
+/// The scroll over which the bar's glass and picture come in, before the
+/// buttons reach it.
+const BAR_FADE: f32 = 48.0;
+/// Where the buttons sit in the card's content until it is measured: its
+/// top padding, the picture and the gap under it.
+const ACTIONS_AT: f32 = 20.0 + PICTURE + 12.0;
 /// The part the card's text is in the window's text selection: after the
 /// conversation's messages, so a selection from one into the other keeps
 /// their order.
@@ -85,6 +102,11 @@ pub(super) struct ContactPanel {
     /// The panel folded the folders to make room: they unfold again when
     /// it goes.
     folded_nav: bool,
+    /// The card's scroll.
+    scroll: ScrollHandle,
+    /// Where the round buttons' place is in the card's content, as last
+    /// laid out, and the device pixels per design pixel there.
+    actions_at: Rc<Cell<(f32, f32)>>,
     /// The folders were opened beside the panel by hand: the panel leaves
     /// them be until it next opens.
     nav_hold: bool,
@@ -103,6 +125,8 @@ impl ContactPanel {
             more: None,
             more_spring: Spring::new(motion::SMOOTH, 0.0),
             folded_nav: false,
+            scroll: ScrollHandle::new(),
+            actions_at: Rc::new(Cell::new((ACTIONS_AT, 1.0))),
             nav_hold: false,
             sheet: Sheet::new(),
         }
@@ -470,7 +494,7 @@ impl MailWindow {
         }
         let body = div()
             .pb(px(8.0))
-            .child(self.contact_card_body(th, cx))
+            .child(self.contact_card_body(th, cx).0)
             .into_any_element();
         self.bottom_sheet(
             "contact-sheet",
@@ -494,7 +518,40 @@ impl MailWindow {
             self.layout.shape.card_outline(),
         );
         let (shadow, edge) = self.card_edges(0.0, outline);
-        let body = self.contact_card_body(th, cx);
+        let (place, stuck) = self.contact_bar();
+        let (body, actions) = self.contact_card_body(th, cx);
+        let glass = (actions.is_some() && stuck > 0.0).then(|| {
+            crate::widgets::frosted_top(
+                div()
+                    .absolute()
+                    .top(px(outline))
+                    .left(px(outline))
+                    .right(px(outline))
+                    .h(px(BAR))
+                    .opacity(stuck),
+                th,
+                th.surface,
+                (radius - outline).max(0.0),
+            )
+            .child(
+                div()
+                    .absolute()
+                    .left_0()
+                    .right_0()
+                    .bottom_0()
+                    .h(px(1.0))
+                    .bg(rgba(th.divider)),
+            )
+        });
+        let bar = actions.map(|actions| {
+            div()
+                .absolute()
+                .left(px(outline))
+                .right(px(outline))
+                .top(px(outline + (place - BAR_INSET).max(0.0)))
+                .h(px(BAR))
+                .child(actions)
+        });
         div()
             .id("contact-card")
             .size_full()
@@ -509,8 +566,11 @@ impl MailWindow {
                     .id("contact-scroll")
                     .size_full()
                     .overflow_y_scroll()
+                    .track_scroll(&self.contact.scroll)
                     .child(body),
             )
+            .children(glass)
+            .children(bar)
             .children(card_outline(th, radius, edge))
             // Puts the panel away, as its toolbar button does: the same
             // round close button as the open mail's.
@@ -524,8 +584,13 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// What the card shows of the person picked, else the newest sender.
-    fn contact_card_body(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    /// What the card shows of the person picked, else the newest sender,
+    /// and the bar of round buttons drawn over it beside an open mail.
+    fn contact_card_body(
+        &mut self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> (AnyElement, Option<AnyElement>) {
         let shown = self.contact_person_shown();
         let people = self.contact_people();
         let person = shown.and_then(|email| people.iter().find(|(e, _)| *e == email).cloned());
@@ -549,7 +614,7 @@ impl MailWindow {
                 }
                 self.render_contact_body(&email, name.as_deref(), profile, &people, th, cx)
             }
-            None => contact_empty(th),
+            None => (contact_empty(th), None),
         }
     }
 
@@ -561,7 +626,7 @@ impl MailWindow {
         people: &[(String, Option<String>)],
         th: &Theme,
         cx: &mut Context<Self>,
-    ) -> AnyElement {
+    ) -> (AnyElement, Option<AnyElement>) {
         let own = self.is_own(email);
         let muted = !own && self.sender_muted(email);
         let name = profile
@@ -616,18 +681,29 @@ impl MailWindow {
             );
 
         let phone = profile.as_ref().and_then(|p| p.card.phone.clone());
-        let mut actions = self.contact_actions(email, phone, th, cx);
+        // On a phone the card is a sheet with no close button, and the
+        // buttons scroll with the rest.
+        let sheet = self.layout.shape.is_phone();
+        let stuck = if sheet { 0.0 } else { self.contact_bar().1 };
+        let size = ACTION.0 + (ACTION_STUCK.0 - ACTION.0) * stuck;
+        let mut actions = self.contact_actions(email, phone, size, th, cx);
         // Their address book entry: open it, or save them in one click.
         if !own && self.contacts.book.as_ref().is_some_and(|b| b.is_ok()) {
             actions = actions.child(self.contact_save_button(
                 email,
                 name.clone(),
                 profile.as_ref().map(|p| p.card.clone()),
+                size,
                 th,
                 cx,
             ));
         }
-
+        let actions = actions.gap(px(ACTION.1 + (ACTION_STUCK.1 - ACTION.1) * stuck));
+        let (place, bar) = if sheet {
+            (actions.mx(px(4.0)).mb(px(4.0)).into_any_element(), None)
+        } else {
+            self.contact_bar_parts(actions, stuck, &shown_name, email)
+        };
         // Each section is a faintly tinted card, as in Google Contacts.
         let mut sections: Vec<AnyElement> = Vec::new();
         if own {
@@ -749,7 +825,7 @@ impl MailWindow {
             .pt(px(20.0))
             .pb(px(16.0))
             .child(header.mx(px(4.0)))
-            .child(actions.mx(px(4.0)).mb(px(4.0)))
+            .child(place)
             .when(muted, |d| {
                 d.child(
                     div()
@@ -771,13 +847,80 @@ impl MailWindow {
             }))
             .children(foot);
         // A new person fades in, as a conversation opens.
-        selectable(body, Some(CONTACT_PART), cx)
+        let body = selectable(body, Some(CONTACT_PART), cx)
             .with_animation(
                 ("contact-person", person_number(email)),
                 Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
-            .into_any_element()
+            .into_any_element();
+        (body, bar)
+    }
+
+    /// Where the round buttons are in the card, scrolled, and how far
+    /// (0 to 1) into the bar at its top: they scroll up with the name
+    /// until they reach the top, then stay there in a frosted bar beside
+    /// the close button, with the person's picture, as the rest goes on
+    /// under them.
+    fn contact_bar(&self) -> (f32, f32) {
+        let (at, device) = self.contact.actions_at.get();
+        let scroll = &self.contact.scroll;
+        let max = unpx(scroll.max_offset().y).max(0.0);
+        let scrolled = -snap(unpx(scroll.offset().y).clamp(-max, 0.0), device);
+        let place = at - scrolled;
+        (place, smoothstep((BAR_INSET + BAR_FADE - place) / BAR_FADE))
+    }
+
+    /// The round buttons' place in the card, and the bar they are drawn
+    /// in over it: in the bar, the buttons make room for the close button
+    /// and the person's picture comes in at the left.
+    fn contact_bar_parts(
+        &self,
+        actions: gpui::Div,
+        stuck: f32,
+        shown_name: &str,
+        email: &str,
+    ) -> (AnyElement, Option<AnyElement>) {
+        let picture = ((stuck - 0.4) / 0.6).clamp(0.0, 1.0);
+        let bar = div()
+            .size_full()
+            .flex()
+            .flex_row()
+            .items_center()
+            .pl(px(12.0))
+            .pr(px(16.0 + 36.0 * stuck))
+            .child(
+                div()
+                    .flex_none()
+                    .opacity(picture)
+                    .ml(px(-6.0 * (1.0 - picture)))
+                    .child(self.person_avatar(shown_name, email, BAR_PICTURE)),
+            )
+            .child(div().flex_1())
+            .child(actions)
+            .with_animation(
+                ("contact-bar", person_number(email)),
+                Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                |el, t| el.opacity(t),
+            )
+            .into_any_element();
+        // The buttons' place, which the bar is drawn over.
+        let (at, scroll) = (self.contact.actions_at.clone(), self.contact.scroll.clone());
+        let place = div().mx(px(4.0)).mb(px(4.0)).h(px(ACTION.0)).child(
+            canvas(
+                move |bounds, window, _| {
+                    let y = unpx(bounds.top() - scroll.bounds().top() - scroll.offset().y);
+                    let device = window.scale_factor();
+                    if (y - at.get().0).abs() > 0.25 || device != at.get().1 {
+                        at.set((y, device));
+                        window.refresh();
+                    }
+                },
+                |_, _, _, _| {},
+            )
+            .size_full(),
+        );
+        (place.into_any_element(), Some(bar))
     }
 
     /// Whether `email` is one of the user's own addresses.
@@ -792,6 +935,7 @@ impl MailWindow {
         &self,
         email: &str,
         phone: Option<String>,
+        size: f32,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> gpui::Div {
@@ -801,7 +945,7 @@ impl MailWindow {
                 .id(id)
                 .relative()
                 .overflow_hidden()
-                .size(px(40.0))
+                .size(px(size))
                 .flex_none()
                 .flex()
                 .items_center()
@@ -830,7 +974,7 @@ impl MailWindow {
                     .id("contact-mute")
                     .relative()
                     .overflow_hidden()
-                    .size(px(40.0))
+                    .size(px(size))
                     .flex_none()
                     .flex()
                     .items_center()
@@ -850,7 +994,6 @@ impl MailWindow {
             .flex()
             .flex_row()
             .justify_end()
-            .gap(px(12.0))
             .children(mute)
             .child(
                 button("contact-email", "mail", tr!("contact-email")).on_click(cx.listener(
@@ -882,6 +1025,7 @@ impl MailWindow {
         email: &str,
         name: Option<String>,
         signature: Option<profile::Card>,
+        size: f32,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -898,7 +1042,7 @@ impl MailWindow {
             .id("contact-save")
             .relative()
             .overflow_hidden()
-            .size(px(40.0))
+            .size(px(size))
             .flex_none()
             .flex()
             .items_center()
@@ -1910,4 +2054,21 @@ fn person_number(email: &str) -> usize {
     let mut hasher = std::collections::hash_map::DefaultHasher::new();
     email.hash(&mut hasher);
     hasher.finish() as usize
+}
+
+/// 0 below 0, 1 above 1, and an S-curve between, so the bar comes in
+/// gently and settles gently.
+fn smoothstep(t: f32) -> f32 {
+    let t = t.clamp(0.0, 1.0);
+    t * t * (3.0 - 2.0 * t)
+}
+
+/// A scroll offset where GPUI draws it: on a whole device pixel, so the
+/// bar moves with the content it sits over rather than a pixel off.
+fn snap(offset: f32, device: f32) -> f32 {
+    if device <= 0.0 {
+        return offset;
+    }
+    let dev = offset * device;
+    (dev.abs() - 0.5).ceil().copysign(dev) / device
 }
