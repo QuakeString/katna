@@ -169,6 +169,62 @@ pub mod drive_state {
     pub const NEEDS_PERMISSION: &str = "needs-permission";
 }
 
+/// A file or folder in an account's cloud drive, from `CloudList`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct CloudEntry {
+    pub id: String,
+    pub name: String,
+    /// The file's type; empty for a folder.
+    pub mime: String,
+    /// Bytes; 0 for folders and the drive's own documents.
+    pub size: u64,
+    /// When it last changed, as Unix seconds; 0 when the drive doesn't say.
+    pub modified: i64,
+    pub folder: bool,
+    /// One of the drive's own documents (a Google Doc), which opens as a
+    /// PDF and is attached as a link.
+    pub native: bool,
+    /// Where people open it in the browser.
+    pub link: String,
+    /// For `CloudThumbnail`; empty when the drive has no picture of it.
+    pub thumbnail: String,
+}
+
+/// One page of a drive listing, from `CloudList`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct CloudListing {
+    /// See [`cloud_state`].
+    pub state: String,
+    /// Why it failed, or empty.
+    pub error: String,
+    pub items: Vec<CloudEntry>,
+    /// Asks `CloudList` for the next page; empty on the last.
+    pub next: String,
+}
+
+/// What `CloudList` looks through: its `place` argument.
+pub mod cloud_place {
+    /// The folder whose id is the `what` argument; `root` is the top.
+    pub const FOLDER: &str = "folder";
+    /// What other people shared with the account.
+    pub const SHARED: &str = "shared";
+    /// The whole drive, for the words in `what`.
+    pub const SEARCH: &str = "search";
+}
+
+/// Values of [`CloudListing::state`].
+pub mod cloud_state {
+    pub const OK: &str = "ok";
+    /// The account's sign-in doesn't let Katna read the drive (it was
+    /// signed in before Katna asked, or the box was unticked): `SignIn`
+    /// again.
+    pub const NEEDS_PERMISSION: &str = "needs-permission";
+    /// Katna can't browse this account's drive (yet).
+    pub const UNSUPPORTED: &str = "unsupported";
+    /// The drive couldn't be reached; `error` says why.
+    pub const FAILED: &str = "failed";
+}
+
 /// States of an account's calendar sync, from `CalendarStatus`.
 pub mod calendar_state {
     /// Synced, or about to be.
@@ -776,6 +832,28 @@ macro_rules! pim_proxy {
             /// Returns the links to put in the message, in order (OneDrive
             /// gives such a link its own address).
             fn drive_share_with_link(&self, uploads: &[i64]) -> zbus::Result<Vec<String>>;
+
+            /// Whether the sign-in of `account` lets Katna browse its whole
+            /// drive in Files (Google Drive for now). Asks no server.
+            fn cloud_readable(&self, account: i64) -> zbus::Result<bool>;
+
+            /// One page of the drive of `account`: a folder, what was
+            /// shared with it, or a search (`place` is one of
+            /// `cloud_place`, `what` the folder id or the words). `page`
+            /// is the last listing's `next`, or empty for the first.
+            fn cloud_list(&self, account: i64, place: &str, what: &str, page: &str)
+            -> zbus::Result<CloudListing>;
+
+            /// Downloads `entry` from the drive of `account` into Katna's
+            /// cache and returns the file's path. A drive's own document
+            /// comes as a PDF, its path ending in `.pdf`.
+            fn cloud_fetch(&self, account: i64, entry: &CloudEntry) -> zbus::Result<String>;
+
+            /// The picture behind a `CloudEntry::thumbnail` of `account`,
+            /// about `width` pixels wide, as the drive sends it (PNG or
+            /// JPEG).
+            fn cloud_thumbnail(&self, account: i64, link: &str, width: u32)
+            -> zbus::Result<Vec<u8>>;
 
             /// A new video call link from the mail service of `account`
             /// (Google Meet for Gmail), or an empty string when it has no

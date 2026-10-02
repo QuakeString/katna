@@ -769,8 +769,9 @@ pub struct MailView {
     pub activity_account: String,
 }
 
-/// The Files page's small pictures (Settings > Default apps): logos and
-/// icons in signatures, which come with many mails.
+/// The Files page (Settings > Default apps): its small pictures (logos
+/// and icons in signatures, which come with many mails) and the accounts'
+/// drives it shows.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct FilesPage {
@@ -780,6 +781,10 @@ pub struct FilesPage {
     pub small_kb: u32,
     /// ... and so is one under this many pixels wide or tall.
     pub small_px: u32,
+    /// Accounts (store ids) whose cloud drive Files and the attach
+    /// pickers leave out. Every drive an account allows shows otherwise.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub drives_off: Vec<i64>,
 }
 
 impl FilesPage {
@@ -831,6 +836,7 @@ impl Default for FilesPage {
             leave_out_small: true,
             small_kb: 12,
             small_px: 100,
+            drives_off: Vec::new(),
         }
     }
 }

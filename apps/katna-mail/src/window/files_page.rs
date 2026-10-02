@@ -46,6 +46,8 @@ use crate::theme::Theme;
 use crate::widgets::{icon, icon_button, placeholder, raised, tip};
 use katna_ui::text_input::{InputEvent, TextInput};
 
+mod drive;
+pub(super) use drive::drive_mark;
 pub(super) mod picker;
 
 const NAV_WIDTH: f32 = 256.0;
@@ -396,6 +398,7 @@ enum Menu {
         anchor: Option<Date>,
     },
     Sort(Point<Pixels>),
+    Drive(drive::DriveMenu),
 }
 
 /// What to do with a file once its mail is downloaded.
@@ -456,6 +459,8 @@ pub(super) struct Library {
     /// Downloaded pictures whose size is not read yet.
     unmeasured: Vec<RowFile>,
     _measure: Option<Task<()>>,
+    /// The accounts' drives.
+    pub(super) cloud: drive::Cloud,
 }
 
 impl Default for Library {
@@ -495,6 +500,7 @@ impl Default for Library {
             sizes: HashMap::new(),
             unmeasured: Vec::new(),
             _measure: None,
+            cloud: drive::Cloud::default(),
         }
     }
 }
@@ -586,6 +592,9 @@ impl Library {
     fn changed(&mut self) {
         self.stale = true;
         self.menu = None;
+        if let Some(view) = self.cloud.view.as_mut() {
+            view.stale_now();
+        }
     }
 }
 
@@ -672,6 +681,7 @@ fn chip_arrow(on: bool, th: &Theme) -> AnyElement {
 impl MailWindow {
     /// Reads the files, each time the page opens.
     pub(super) fn load_library(&mut self, cx: &mut Context<Self>) {
+        self.load_drives();
         let paths = self.paths.clone();
         self.library._load = Some(cx.spawn(async move |this, cx| {
             let (files, sizes) = cx
@@ -853,6 +863,28 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if self.library.cloud.view.is_some() {
+            match event {
+                InputEvent::Changed => {
+                    let text = search.read(cx).text().to_owned();
+                    self.drive_search(text, false, cx);
+                }
+                InputEvent::Submit => {
+                    let text = search.read(cx).text().to_owned();
+                    self.drive_search(text, true, cx);
+                }
+                InputEvent::Cancel => {
+                    if search.read(cx).text().is_empty() {
+                        window.blur(cx);
+                    } else {
+                        search.update(cx, |search, cx| search.set_text("", cx));
+                        self.drive_search(String::new(), true, cx);
+                    }
+                }
+            }
+            cx.notify();
+            return;
+        }
         match event {
             InputEvent::Changed => {
                 self.library.query = search.read(cx).text().to_owned();
@@ -928,6 +960,12 @@ impl MailWindow {
             self.library.menu = None;
             cx.notify();
             cx.stop_propagation();
+            return;
+        }
+        if self.library.cloud.view.is_some() {
+            if !m.shift && self.on_drive_key(keys.key.as_str(), window, cx) {
+                cx.stop_propagation();
+            }
             return;
         }
         let count = self.library.shown.len();
@@ -1260,6 +1298,9 @@ impl MailWindow {
             self.library.rebuild(columns, line);
         }
         let body = match &self.library.files {
+            _ if self.library.cloud.view.is_some() => {
+                self.render_drive_body(card_width, pad, th, window, cx)
+            }
             None => placeholder(&tr!("files-loading"), th),
             Some(Err(err)) => placeholder(err, th),
             Some(Ok(files)) if files.is_empty() => placeholder(&tr!("files-empty"), th),
@@ -1311,12 +1352,16 @@ impl MailWindow {
                 .child(text)
         };
         let mut nav = div().flex_none().pb(px(16.0)).flex().flex_col();
+        // While a drive shows, no mail line is the open one, and a click
+        // on one goes back to the mail files.
+        let mail = page.cloud.view.is_none();
         for (n, types) in Types::ALL.into_iter().enumerate() {
-            let on = page.types == types;
+            let on = mail && page.types == types;
             nav = nav.child(
                 super::nav::side_row(("files-type", n), types.icon(), types.label(), on, th)
                     .when(page.counts[n] > 0, |d| d.child(count(page.counts[n], on)))
                     .on_click(cx.listener(move |this, _, _, cx| {
+                        this.close_drive(cx);
                         this.library.types = types;
                         this.library.changed();
                         cx.notify();
@@ -1332,7 +1377,7 @@ impl MailWindow {
             nav = nav.child(rule()).child(heading(tr!("files-accounts")));
             for account in accounts {
                 let id = account.id;
-                let on = page.account == Some(id);
+                let on = mail && page.account == Some(id);
                 nav = nav.child(
                     super::nav::side_row(
                         ("files-account", id.0 as usize),
@@ -1344,22 +1389,32 @@ impl MailWindow {
                     .child(count(page.per_account.get(&id).copied().unwrap_or(0), on))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         // A second click shows every account again.
-                        this.library.account = (this.library.account != Some(id)).then_some(id);
+                        if this.library.cloud.view.is_some() {
+                            this.close_drive(cx);
+                            this.library.account = Some(id);
+                        } else {
+                            this.library.account = (this.library.account != Some(id)).then_some(id);
+                        }
                         this.library.changed();
                         cx.notify();
                     })),
                 );
             }
         }
+        let mut nav = self.render_drives_nav(nav, heading, rule, th, cx);
         nav = nav.child(rule()).child(heading(tr!("files-shown")));
         for (n, direction, icon_name, label) in [
             (0_usize, Direction::Received, "inbox", tr!("files-received")),
             (1, Direction::Sent, "sent", tr!("files-sent")),
         ] {
-            let on = page.direction == direction;
+            let on = mail && page.direction == direction;
             nav = nav.child(
                 super::nav::side_row(("files-direction", n), icon_name, label, on, th).on_click(
                     cx.listener(move |this, _, _, cx| {
+                        if this.library.cloud.view.is_some() {
+                            this.close_drive(cx);
+                            this.library.direction = Direction::Any;
+                        }
                         this.library.direction = if this.library.direction == direction {
                             Direction::Any
                         } else {
@@ -1431,29 +1486,7 @@ impl MailWindow {
                     cx.notify();
                 }),
             );
-        let view_button = |id: &'static str, name: &'static str, grid: bool, label: String| {
-            let on = page.grid == grid;
-            icon_button(id, name, 20.0, th)
-                .when(on, |d| d.bg(rgba(th.search)))
-                .tooltip(tip(label, th))
-                .on_click(cx.listener(move |this, _, _, cx| {
-                    this.library.grid = grid;
-                    this.library.changed();
-                    cx.notify();
-                }))
-        };
-        let views = div()
-            .flex_none()
-            .flex()
-            .flex_row()
-            .gap(px(4.0))
-            .child(view_button("files-grid", "table", true, tr!("files-grid")))
-            .child(view_button(
-                "files-list",
-                "list-bulleted",
-                false,
-                tr!("files-list"),
-            ));
+        let views = self.files_view_buttons(th, cx);
         let count = tr!(
             "files-count",
             count = page.shown.len(),
@@ -1592,6 +1625,34 @@ impl MailWindow {
             .child(bar)
             .child(div().flex_1().min_h_0().child(content))
             .into_any_element()
+    }
+
+    /// The grid and list buttons, for the mail files and the drives.
+    fn files_view_buttons(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
+        let grid_now = self.library.grid;
+        let view_button = |id: &'static str, name: &'static str, grid: bool, label: String| {
+            let on = grid_now == grid;
+            icon_button(id, name, 20.0, th)
+                .when(on, |d| d.bg(rgba(th.search)))
+                .tooltip(tip(label, th))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.library.grid = grid;
+                    this.library.changed();
+                    cx.notify();
+                }))
+        };
+        div()
+            .flex_none()
+            .flex()
+            .flex_row()
+            .gap(px(4.0))
+            .child(view_button("files-grid", "table", true, tr!("files-grid")))
+            .child(view_button(
+                "files-list",
+                "list-bulleted",
+                false,
+                tr!("files-list"),
+            ))
     }
 
     /// The chip that narrows the files to one sender's: the page's and the
@@ -2354,6 +2415,7 @@ impl MailWindow {
                 let panel = self.render_time_calendar(month, th, cx);
                 return Some(self.files_overlay(at, panel, cx));
             }
+            Menu::Drive(ref menu) => self.drive_menu_items(menu, item, separator, cx)?,
             Menu::Sort(at) => {
                 let items = Sort::ALL
                     .into_iter()
@@ -2447,6 +2509,9 @@ impl MailWindow {
             self.library.time = time;
             // Not `changed`, which would close the calendar.
             self.library.stale = true;
+            if let Some(view) = self.library.cloud.view.as_mut() {
+                view.stale_now();
+            }
             cx.notify();
         }
     }

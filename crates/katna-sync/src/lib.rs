@@ -40,6 +40,7 @@ mod backend;
 pub mod bodies;
 pub mod calendar;
 pub mod carddav;
+pub mod cloud;
 pub mod connection;
 pub mod contacts;
 pub mod drive;

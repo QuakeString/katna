@@ -66,6 +66,8 @@ struct Saved {
     time: Time,
     sort: Sort,
     grid: bool,
+    /// The drive the page showed.
+    drive: Option<super::drive::DriveView>,
 }
 
 /// A line of the picker.
@@ -141,6 +143,7 @@ impl MailWindow {
             time: std::mem::replace(&mut library.time, Time::Any),
             sort: std::mem::replace(&mut library.sort, Sort::Newest),
             grid: std::mem::replace(&mut library.grid, true),
+            drive: library.cloud.view.take(),
         };
         library.changed();
         let accent = rgba(self.theme(window).accent).into();
@@ -195,6 +198,7 @@ impl MailWindow {
         library.time = saved.time;
         library.sort = saved.sort;
         library.grid = saved.grid;
+        library.cloud.view = saved.drive;
         library.changed();
         // The reply box takes the keys back.
         if let Some(body) = self.chat_reply_focus(cx) {

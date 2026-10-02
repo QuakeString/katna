@@ -118,6 +118,9 @@ pub(super) enum Change {
     SmallPictureKb(u32),
     /// Pictures under this many pixels wide or tall are small.
     SmallPicturePx(u32),
+    /// Files and the attach pickers show the drive of an account (its
+    /// store id).
+    DriveInFiles(i64, bool),
     /// New-mail notifications, shown by the daemon.
     NewMailNotices(bool),
     /// New versions of Katna downloaded as soon as the daemon finds them.
@@ -567,6 +570,17 @@ impl MailWindow {
                 self.request_thumbnails(cx);
             }
             Change::OpenSavedFolder(on) => view.open_saved_folder = on,
+            Change::DriveInFiles(account, on) => {
+                let off = &mut view.files.drives_off;
+                off.retain(|a| *a != account);
+                if !on {
+                    off.push(account);
+                }
+                self.save_config();
+                self.load_drives();
+                cx.notify();
+                return;
+            }
             Change::LeaveOutSmallPictures(_)
             | Change::SmallPictureKb(_)
             | Change::SmallPicturePx(_) => {
