@@ -173,6 +173,9 @@ pub(super) struct Compose {
     format_bar: bool,
     /// The chat reply box's formatting bar sliding in (1) or out (0).
     format_slide: Spring,
+    /// The chat formatting bar's height as last drawn: a narrow pane wraps
+    /// its tools onto more lines.
+    format_height: std::rc::Rc<std::cell::Cell<f32>>,
     /// The open menu or dialog, if any.
     popup: Option<Popup>,
     /// Seconds after sending to remind if nobody replies; 0 for never.
@@ -1295,6 +1298,7 @@ impl MailWindow {
             signature,
             format_bar: false,
             format_slide: Spring::new(motion::SMOOTH, 0.0),
+            format_height: Default::default(),
             popup: None,
             follow_up: 0,
             dialog,

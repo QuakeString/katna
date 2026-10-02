@@ -1569,9 +1569,9 @@ the conversation's messages, so they survive the thread being rebuilt;
 nothing goes to the mail service, which has no such thing. A bar under the
 header shows one pin; a click jumps to its bubble and moves to the next,
 and its list button lists all of them, to drag into a new order or unpin.
-A sixth pin asks which one it replaces, the oldest picked. Pinning text
-waits for bubbles' text to be selectable. In the chat view the person's
-card adds a Company section: the company at the website their signature
+A sixth pin asks which one it replaces, the oldest picked. Text selected
+in one bubble pins from its right-click menu. The person's card, in the
+chat view and beside an open mail alike, adds a Company section: the company at the website their signature
 names, else at their address's domain (never a free-mail one). The daemon
 reads it from the company's home page `<head>` (title, `og:` and description
 tags, schema.org `Organization` JSON-LD for place, founding year and social

@@ -204,6 +204,26 @@ impl MailWindow {
     }
 
     /// Takes off pin `pin`.
+    /// The mail and text selected in one bubble of the chat, to pin.
+    pub(in crate::window) fn chat_text_to_pin(&self) -> Option<(MessageId, String)> {
+        if !self.chat_shown() {
+            return None;
+        }
+        let part = self.text.single_part()?;
+        let id = self.reader.as_ref()?.parts.get(part)?.id;
+        let text = self.text.text();
+        let text = text.trim();
+        (!text.is_empty()).then(|| (id, text.to_owned()))
+    }
+
+    /// Pins the text selected in a bubble.
+    pub(in crate::window) fn pin_chat_text(&mut self, cx: &mut Context<Self>) {
+        if let Some((id, text)) = self.chat_text_to_pin() {
+            self.text.clear();
+            self.pin_in_chat(id, Pinned::Text(text), cx);
+        }
+    }
+
     pub(super) fn unpin_in_chat(&mut self, pin: i64, cx: &mut Context<Self>) {
         let Some(reader) = &mut self.reader else {
             return;

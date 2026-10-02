@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Pin a few words from a chat"
+text = """
+In a chat (Settings > Experimental), the text in a bubble can now be
+selected and copied like any mail. Right-click words you picked in one
+bubble and choose Pin to top to keep them in the chat's pin bar.
+"""
