@@ -1263,7 +1263,7 @@ impl MailWindow {
                     .h(px(THUMB))
                     .w_full()
                     .overflow_hidden()
-                    .child(card_top(thumb, found.kind, 36.0, th)),
+                    .child(card_top(thumb, found.kind, 36.0, None, th)),
             )
             .child(
                 div()

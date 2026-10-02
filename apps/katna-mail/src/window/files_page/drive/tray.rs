@@ -19,6 +19,9 @@ use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{elevation, icon, icon_button, ring, tip};
 
+/// The tray's corner radius.
+const RADIUS: f32 = 14.0;
+
 const WIDTH: f32 = 360.0;
 const ROW_HEIGHT: f32 = 52.0;
 /// Rows shown before the list scrolls.
@@ -144,6 +147,10 @@ impl MailWindow {
             .flex_row()
             .items_center()
             .gap(px(2.0))
+            // Its own corners follow the tray's: a child's fill is not
+            // clipped to the rounded ones.
+            .rounded_t(px(RADIUS))
+            .when(folded, |d| d.rounded_b(px(RADIUS)))
             .bg(rgba(th.backdrop))
             .child(
                 div()
@@ -244,7 +251,7 @@ impl MailWindow {
                 .flex()
                 .flex_col()
                 .overflow_hidden()
-                .rounded(px(14.0))
+                .rounded(px(RADIUS))
                 .bg(rgba(th.surface))
                 .text_color(rgba(th.text))
                 .shadow(elevation(th, 3.0))
