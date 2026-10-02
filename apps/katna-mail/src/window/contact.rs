@@ -29,6 +29,7 @@ use super::MailWindow;
 use super::attachments::kind_badge;
 use super::remote::logo;
 use super::select::{Pieces, selectable};
+use super::sheet::{Fill, Sheet};
 use crate::daemon;
 use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
@@ -87,6 +88,8 @@ pub(super) struct ContactPanel {
     /// The folders were opened beside the panel by hand: the panel leaves
     /// them be until it next opens.
     nav_hold: bool,
+    /// On a phone the card rises from the bottom instead.
+    sheet: Sheet,
 }
 
 impl ContactPanel {
@@ -101,6 +104,7 @@ impl ContactPanel {
             more_spring: Spring::new(motion::SMOOTH, 0.0),
             folded_nav: false,
             nav_hold: false,
+            sheet: Sheet::new(),
         }
     }
 
@@ -225,6 +229,13 @@ impl MailWindow {
     /// second click on the person whose card shows puts the panel away.
     pub(super) fn show_contact_of(&mut self, key: EntryKey, email: &str, cx: &mut Context<Self>) {
         let email = email.to_lowercase();
+        // A phone has no room beside the chat: the card rises as a sheet.
+        if self.layout.shape.is_phone() {
+            self.contact.picked = Some((key, email));
+            self.contact.sheet.show(true);
+            cx.notify();
+            return;
+        }
         let shown = self.config.mail.contact_panel && self.contact_offered();
         if shown && self.contact_person_shown().as_deref() == Some(email.as_str()) {
             self.toggle_contact_panel(cx);
@@ -443,37 +454,47 @@ impl MailWindow {
         )
     }
 
+    /// On a phone, the card of the person picked in the chat, risen from
+    /// the bottom.
+    pub(super) fn render_contact_sheet(
+        &mut self,
+        th: &Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        if !(self.layout.shape.is_phone() && self.reading && self.reader.is_some()) {
+            if self.contact.sheet.is_shown() {
+                self.contact.sheet = Sheet::new();
+            }
+            return None;
+        }
+        let body = div()
+            .pb(px(8.0))
+            .child(self.contact_card_body(th, cx))
+            .into_any_element();
+        self.bottom_sheet(
+            "contact-sheet",
+            &self.contact.sheet,
+            Fill::Card,
+            body,
+            |this| Some(&mut this.contact.sheet),
+            |this, cx| {
+                this.contact.sheet.show(false);
+                cx.notify();
+            },
+            th,
+            window,
+            cx,
+        )
+    }
+
     fn render_contact_card(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let (radius, outline) = (
             self.layout.shape.card_radius(),
             self.layout.shape.card_outline(),
         );
         let (shadow, edge) = self.card_edges(0.0, outline);
-        let shown = self.contact_person_shown();
-        let people = self.contact_people();
-        let person = shown.and_then(|email| people.iter().find(|(e, _)| *e == email).cloned());
-        // More folds back for another person.
-        if self.contact.more.as_ref() != person.as_ref().map(|(email, _)| email) {
-            self.contact.more = None;
-            self.contact.more_spring.snap(0.0);
-        }
-        let body = match person {
-            Some((email, name)) => {
-                // Mail only between the user's own addresses shows that
-                // address, without the numbers of mail "with them".
-                let profile = if self.is_own(&email) {
-                    None
-                } else {
-                    self.contact_profile(&email, cx)
-                };
-                // Asked for here; the body finds it once it comes.
-                if let Some(profile) = &profile {
-                    self.contact_company(&email, profile.card.website.as_deref(), cx);
-                }
-                self.render_contact_body(&email, name.as_deref(), profile, &people, th, cx)
-            }
-            None => contact_empty(th),
-        };
+        let body = self.contact_card_body(th, cx);
         div()
             .id("contact-card")
             .size_full()
@@ -501,6 +522,35 @@ impl MailWindow {
                 ),
             )
             .into_any_element()
+    }
+
+    /// What the card shows of the person picked, else the newest sender.
+    fn contact_card_body(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let shown = self.contact_person_shown();
+        let people = self.contact_people();
+        let person = shown.and_then(|email| people.iter().find(|(e, _)| *e == email).cloned());
+        // More folds back for another person.
+        if self.contact.more.as_ref() != person.as_ref().map(|(email, _)| email) {
+            self.contact.more = None;
+            self.contact.more_spring.snap(0.0);
+        }
+        match person {
+            Some((email, name)) => {
+                // Mail only between the user's own addresses shows that
+                // address, without the numbers of mail "with them".
+                let profile = if self.is_own(&email) {
+                    None
+                } else {
+                    self.contact_profile(&email, cx)
+                };
+                // Asked for here; the body finds it once it comes.
+                if let Some(profile) = &profile {
+                    self.contact_company(&email, profile.card.website.as_deref(), cx);
+                }
+                self.render_contact_body(&email, name.as_deref(), profile, &people, th, cx)
+            }
+            None => contact_empty(th),
+        }
     }
 
     fn render_contact_body(

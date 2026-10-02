@@ -978,6 +978,14 @@ impl MailWindow {
                         ),
                     Some(()) => menu(th)
                         // What a narrow reading pane leaves off its toolbar.
+                        .when(squeeze.is_some_and(|s| s.archive), |d| {
+                            d.child(
+                                menu_item_icon("more-archive", "archive", &tr!("list-archive"), th)
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.act_on_targets(Act::Archive, cx)
+                                    })),
+                            )
+                        })
                         .when(squeeze.is_some_and(|s| s.spam), |d| {
                             d.child(
                                 menu_item_icon("more-spam", "junk", &self.spam_label(true), th)
@@ -1129,6 +1137,23 @@ impl MailWindow {
                                         },
                                     )),
                                 )
+                                // A phone's chat has no Chat | Mail switch.
+                                .when(squeeze.is_some_and(|s| s.archive), |d| {
+                                    d.child(
+                                        menu_item_icon(
+                                            "more-show-mail",
+                                            "mail",
+                                            &tr!("chat-show-as-mail"),
+                                            th,
+                                        )
+                                        .on_click(
+                                            cx.listener(|this, _, _, cx| {
+                                                this.menu = None;
+                                                this.pick_chat(false, cx);
+                                            }),
+                                        ),
+                                    )
+                                })
                                 .when(!self.detached, |d| {
                                     d.child(
                                         menu_item_icon(
