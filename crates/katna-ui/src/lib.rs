@@ -15,6 +15,7 @@ pub mod scrollbar;
 pub mod text_area;
 pub mod text_input;
 pub mod tooltip;
+pub mod window_drag;
 
 /// How strongly hint text in an empty field shows, against the field's
 /// own text colour: faint, so it never reads as something typed.
@@ -29,3 +30,4 @@ pub use scrollbar::ScrollBar;
 pub use text_area::{TEXT_AREA_CONTEXT, TextArea};
 pub use text_input::{InputEvent, InputGrammarMenu, TextInput};
 pub use tooltip::{Tooltip, UiFont};
+pub use window_drag::WindowDrag;

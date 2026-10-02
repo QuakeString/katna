@@ -12,6 +12,7 @@
 //! in [`MailWindow::render_app_page`], and load what it needs in
 //! [`MailWindow::open_app`]'s arm. Pages without one show "coming soon".
 
+use katna_ui::WindowDrag;
 use std::ops::Range;
 use std::rc::Rc;
 
@@ -409,6 +410,7 @@ impl MailWindow {
                 .items_center()
                 .gap(px(4.0))
                 .cursor_pointer()
+                .keeps_press()
                 .group("app")
                 .when(app == App::Mail, |d| {
                     d.on_hover(cx.listener(|this, hovered: &bool, _, cx| {
@@ -482,6 +484,7 @@ impl MailWindow {
         });
         div()
             .id("app-rail")
+            .window_drag()
             .relative()
             .flex_none()
             .w(px(APP_RAIL_WIDTH))
@@ -715,6 +718,7 @@ fn render_person(
         .border_b_1()
         .border_color(rgba(th.divider))
         .cursor_pointer()
+        .keeps_press()
         .hover(|s| s.bg(rgba(th.hover)))
         .on_click(cx.listener(move |this, _, window, cx| {
             this.open_app(App::Mail, cx);

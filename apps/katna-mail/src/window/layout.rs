@@ -17,6 +17,7 @@ use gpui::{
     prelude::*, rgba,
 };
 use katna_ui::Ripple;
+use katna_ui::WindowDrag;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::unpx;
@@ -497,6 +498,7 @@ impl MailWindow {
                 .flex_col()
                 .items_center()
                 .cursor_pointer()
+                .keeps_press()
                 .when(!labels, |d| d.tooltip(tip(app.label(), th)))
                 .group("bottom-app")
                 .on_click(cx.listener(move |this, _, window, cx| {
@@ -804,6 +806,7 @@ impl MailWindow {
             .flex_none()
             .rounded_full()
             .cursor_pointer()
+            .keeps_press()
             .on_click(cx.listener(move |this, _, _, cx| {
                 cx.stop_propagation();
                 let Some(key) = key else {
@@ -850,6 +853,7 @@ fn fab_button(id: &'static str, th: &Theme) -> gpui::Stateful<gpui::Div> {
         .bg(rgba(th.compose))
         .text_color(rgba(th.compose_text))
         .cursor_pointer()
+        .keeps_press()
         .shadow(elevation(th, 1.0))
         .hover(|s| s.shadow(elevation(th, 2.0)))
         .on_mouse_move(|_, _, cx| cx.stop_propagation())
@@ -878,6 +882,7 @@ fn drawer_row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> gpui::Sta
         })
         .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
         .cursor_pointer()
+        .keeps_press()
 }
 
 #[cfg(test)]
