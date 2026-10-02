@@ -27,6 +27,7 @@ use katna_i18n::tr;
 
 use super::MenuKey;
 use super::compose::Kind;
+use super::sheet::{Fill, Sheet};
 use super::{Act, MailWindow};
 use crate::data::{EntryKey, Row};
 use crate::sidebar::Role;
@@ -36,6 +37,8 @@ use crate::widgets::{icon, raised};
 const MENU_WIDTH: f32 = 264.0;
 const SUB_WIDTH: f32 = 240.0;
 const ITEM_HEIGHT: f32 = 36.0;
+/// A row of a menu that rises as a sheet on a phone.
+const SHEET_ITEM_HEIGHT: f32 = 48.0;
 /// Items come no closer than this in a short window; below it the menu
 /// scrolls.
 const MIN_ITEM_HEIGHT: f32 = 28.0;
@@ -57,6 +60,8 @@ pub(super) struct ContextMenu {
     open: Option<Sub>,
     /// How tall the menu stands without a submenu, as last drawn.
     height: Cell<f32>,
+    /// On a phone, a chat bubble's menu rises as a sheet.
+    sheet: Sheet,
 }
 
 /// What a right-click menu is for.
@@ -83,6 +88,7 @@ impl ContextMenu {
             at,
             open: None,
             height: Cell::new(0.0),
+            sheet: Sheet::rising(),
         }
     }
 
@@ -265,10 +271,36 @@ impl MailWindow {
     pub(super) fn render_context_menu(
         &self,
         th: &Theme,
-        window: &Window,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let menu = self.context_menu.as_ref()?;
+        // A phone's long press on a chat bubble: the menu rises from the
+        // bottom, its rows tall enough for a finger.
+        if let MenuFor::Bubble(id, file) = menu.what
+            && self.layout.shape.is_phone()
+        {
+            let rows = self.bubble_menu_rows(id, file, SHEET_ITEM_HEIGHT, th, cx);
+            let body = div()
+                .pb(px(PADDING))
+                .flex()
+                .flex_col()
+                .text_size(px(15.0))
+                .text_color(rgba(th.text))
+                .children(rows.els)
+                .into_any_element();
+            return self.bottom_sheet(
+                "bubble-sheet",
+                &menu.sheet,
+                Fill::Menu,
+                body,
+                |this| this.context_menu.as_mut().map(|m| &mut m.sheet),
+                |this, cx| this.close_context_menu(cx),
+                th,
+                window,
+                cx,
+            );
+        }
         let viewport = window.viewport_size();
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         // The menu, and a submenu, get shorter with the window, their

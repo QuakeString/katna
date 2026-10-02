@@ -82,6 +82,7 @@ mod settings;
 mod settings_page;
 mod settings_search;
 mod share_ask;
+mod sheet;
 mod sign_in_again;
 mod skeleton;
 mod snooze;
@@ -3673,6 +3674,7 @@ impl Render for MailWindow {
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
+        let contact_sheet = self.render_contact_sheet(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
         let snooze_menu = self.render_snooze_menu(&th, cx);
         let quiet_menu = self.render_quiet_menu(&th, cx);
@@ -3710,6 +3712,7 @@ impl Render for MailWindow {
             .children(language_picker)
             .children(add_account)
             .children(context_menu)
+            .children(contact_sheet)
             .children(nav_menu)
             .children(snooze_menu)
             .children(quiet_menu)

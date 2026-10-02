@@ -7,7 +7,7 @@
 //! outside their element, so a frosted panel keeps its usual box shadow.
 
 use crate::scale::px;
-use gpui::{BorderStyle, Corners, Hsla, IntoElement, Pixels, Styled, canvas, quad};
+use gpui::{BorderStyle, Bounds, Corners, Hsla, IntoElement, Pixels, Styled, canvas, quad};
 
 /// Whether the renderer can blur behind a panel. False before the first
 /// frame is drawn and where the window's surface cannot be copied from.
@@ -22,12 +22,14 @@ pub fn supported() -> bool {
 /// The glass of a frosted panel, as the panel's first child: `fill` with
 /// corners of `radius` (one for all four, or each its own) over a blur of
 /// `blur` device pixels of what is behind. The panel itself paints no
-/// background.
+/// background. In a panel that scrolls its own content the glass stays put
+/// while the content scrolls.
 pub fn glass(fill: Hsla, radius: impl Into<Corners<Pixels>>, blur: f32) -> impl IntoElement {
     let radius = radius.into();
     canvas(
         |_, _, _| (),
         move |bounds, (), window, _| {
+            let bounds = unscrolled(bounds, window.content_mask().bounds);
             // A quad whose border colour is the marker: the renderer blurs
             // what is under it, then fills it.
             window.paint_quad(quad(
@@ -46,6 +48,19 @@ pub fn glass(fill: Hsla, radius: impl Into<Corners<Pixels>>, blur: f32) -> impl 
     .size_full()
 }
 
+/// Where the glass goes for `bounds` inside a panel clipped to `clip`. A
+/// panel that scrolls its content moves its children, the glass too, but
+/// clips them to itself: a clip the glass's size at another place is the
+/// panel, where the glass belongs.
+fn unscrolled(bounds: Bounds<Pixels>, clip: Bounds<Pixels>) -> Bounds<Pixels> {
+    let close = |a: Pixels, b: Pixels| (a - b).abs() < px(1.0);
+    if close(bounds.size.width, clip.size.width) && close(bounds.size.height, clip.size.height) {
+        clip
+    } else {
+        bounds
+    }
+}
+
 #[cfg(not(windows))]
 fn marker(blur: f32) -> Hsla {
     gpui_wgpu::backdrop_blur_marker(blur)
@@ -55,4 +70,33 @@ fn marker(blur: f32) -> Hsla {
 #[cfg(windows)]
 fn marker(_blur: f32) -> Hsla {
     gpui::transparent_black()
+}
+
+#[cfg(test)]
+mod tests {
+    use gpui::{point, size};
+
+    use super::*;
+
+    fn rect(y: f32, h: f32) -> Bounds<Pixels> {
+        Bounds::new(point(px(10.0), px(y)), size(px(300.0), px(h)))
+    }
+
+    #[test]
+    fn glass_stays_on_a_scrolled_panel() {
+        // Scrolled 40 px: the glass moved up, the panel's clip did not.
+        assert_eq!(
+            unscrolled(rect(60.0, 200.0), rect(100.0, 200.0)),
+            rect(100.0, 200.0)
+        );
+        // Not scrolled, and a clip that is not the panel's: as laid out.
+        assert_eq!(
+            unscrolled(rect(100.0, 200.0), rect(100.0, 200.0)),
+            rect(100.0, 200.0)
+        );
+        assert_eq!(
+            unscrolled(rect(100.0, 200.0), rect(0.0, 900.0)),
+            rect(100.0, 200.0)
+        );
+    }
 }

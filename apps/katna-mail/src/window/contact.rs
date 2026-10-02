@@ -30,6 +30,7 @@ use super::MailWindow;
 use super::attachments::kind_badge;
 use super::remote::logo;
 use super::select::{Pieces, selectable};
+use super::sheet::{Fill, Sheet};
 use crate::daemon;
 use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
@@ -109,6 +110,8 @@ pub(super) struct ContactPanel {
     /// The folders were opened beside the panel by hand: the panel leaves
     /// them be until it next opens.
     nav_hold: bool,
+    /// On a phone the card rises from the bottom instead.
+    sheet: Sheet,
 }
 
 impl ContactPanel {
@@ -125,6 +128,7 @@ impl ContactPanel {
             scroll: ScrollHandle::new(),
             actions_at: Rc::new(Cell::new((ACTIONS_AT, 1.0))),
             nav_hold: false,
+            sheet: Sheet::new(),
         }
     }
 
@@ -249,6 +253,13 @@ impl MailWindow {
     /// second click on the person whose card shows puts the panel away.
     pub(super) fn show_contact_of(&mut self, key: EntryKey, email: &str, cx: &mut Context<Self>) {
         let email = email.to_lowercase();
+        // A phone has no room beside the chat: the card rises as a sheet.
+        if self.layout.shape.is_phone() {
+            self.contact.picked = Some((key, email));
+            self.contact.sheet.show(true);
+            cx.notify();
+            return;
+        }
         let shown = self.config.mail.contact_panel && self.contact_offered();
         if shown && self.contact_person_shown().as_deref() == Some(email.as_str()) {
             self.toggle_contact_panel(cx);
@@ -467,40 +478,48 @@ impl MailWindow {
         )
     }
 
+    /// On a phone, the card of the person picked in the chat, risen from
+    /// the bottom.
+    pub(super) fn render_contact_sheet(
+        &mut self,
+        th: &Theme,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        if !(self.layout.shape.is_phone() && self.reading && self.reader.is_some()) {
+            if self.contact.sheet.is_shown() {
+                self.contact.sheet = Sheet::new();
+            }
+            return None;
+        }
+        let body = div()
+            .pb(px(8.0))
+            .child(self.contact_card_body(th, cx).0)
+            .into_any_element();
+        self.bottom_sheet(
+            "contact-sheet",
+            &self.contact.sheet,
+            Fill::Card,
+            body,
+            |this| Some(&mut this.contact.sheet),
+            |this, cx| {
+                this.contact.sheet.show(false);
+                cx.notify();
+            },
+            th,
+            window,
+            cx,
+        )
+    }
+
     fn render_contact_card(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let (radius, outline) = (
             self.layout.shape.card_radius(),
             self.layout.shape.card_outline(),
         );
         let (shadow, edge) = self.card_edges(0.0, outline);
-        let shown = self.contact_person_shown();
-        let people = self.contact_people();
-        let person = shown.and_then(|email| people.iter().find(|(e, _)| *e == email).cloned());
-        // More folds back for another person.
-        if self.contact.more.as_ref() != person.as_ref().map(|(email, _)| email) {
-            self.contact.more = None;
-            self.contact.more_spring.snap(0.0);
-        }
         let (place, stuck) = self.contact_bar();
-        let (body, actions) = match person {
-            Some((email, name)) => {
-                // Mail only between the user's own addresses shows that
-                // address, without the numbers of mail "with them".
-                let profile = if self.is_own(&email) {
-                    None
-                } else {
-                    self.contact_profile(&email, cx)
-                };
-                // Asked for here; the body finds it once it comes.
-                if let Some(profile) = &profile {
-                    self.contact_company(&email, profile.card.website.as_deref(), cx);
-                }
-                let (body, actions) =
-                    self.render_contact_body(&email, name.as_deref(), profile, &people, th, cx);
-                (body, Some(actions))
-            }
-            None => (contact_empty(th), None),
-        };
+        let (body, actions) = self.contact_card_body(th, cx);
         let glass = (actions.is_some() && stuck > 0.0).then(|| {
             crate::widgets::frosted_top(
                 div()
@@ -565,6 +584,40 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// What the card shows of the person picked, else the newest sender,
+    /// and the bar of round buttons drawn over it beside an open mail.
+    fn contact_card_body(
+        &mut self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> (AnyElement, Option<AnyElement>) {
+        let shown = self.contact_person_shown();
+        let people = self.contact_people();
+        let person = shown.and_then(|email| people.iter().find(|(e, _)| *e == email).cloned());
+        // More folds back for another person.
+        if self.contact.more.as_ref() != person.as_ref().map(|(email, _)| email) {
+            self.contact.more = None;
+            self.contact.more_spring.snap(0.0);
+        }
+        match person {
+            Some((email, name)) => {
+                // Mail only between the user's own addresses shows that
+                // address, without the numbers of mail "with them".
+                let profile = if self.is_own(&email) {
+                    None
+                } else {
+                    self.contact_profile(&email, cx)
+                };
+                // Asked for here; the body finds it once it comes.
+                if let Some(profile) = &profile {
+                    self.contact_company(&email, profile.card.website.as_deref(), cx);
+                }
+                self.render_contact_body(&email, name.as_deref(), profile, &people, th, cx)
+            }
+            None => (contact_empty(th), None),
+        }
+    }
+
     fn render_contact_body(
         &self,
         email: &str,
@@ -573,7 +626,7 @@ impl MailWindow {
         people: &[(String, Option<String>)],
         th: &Theme,
         cx: &mut Context<Self>,
-    ) -> (AnyElement, AnyElement) {
+    ) -> (AnyElement, Option<AnyElement>) {
         let own = self.is_own(email);
         let muted = !own && self.sender_muted(email);
         let name = profile
@@ -628,7 +681,10 @@ impl MailWindow {
             );
 
         let phone = profile.as_ref().and_then(|p| p.card.phone.clone());
-        let stuck = self.contact_bar().1;
+        // On a phone the card is a sheet with no close button, and the
+        // buttons scroll with the rest.
+        let sheet = self.layout.shape.is_phone();
+        let stuck = if sheet { 0.0 } else { self.contact_bar().1 };
         let size = ACTION.0 + (ACTION_STUCK.0 - ACTION.0) * stuck;
         let mut actions = self.contact_actions(email, phone, size, th, cx);
         // Their address book entry: open it, or save them in one click.
@@ -643,48 +699,11 @@ impl MailWindow {
             ));
         }
         let actions = actions.gap(px(ACTION.1 + (ACTION_STUCK.1 - ACTION.1) * stuck));
-        // In the bar, the buttons make room for the close button and the
-        // person's picture comes in at the left.
-        let picture = ((stuck - 0.4) / 0.6).clamp(0.0, 1.0);
-        let bar = div()
-            .size_full()
-            .flex()
-            .flex_row()
-            .items_center()
-            .pl(px(12.0))
-            .pr(px(16.0 + 36.0 * stuck))
-            .child(
-                div()
-                    .flex_none()
-                    .opacity(picture)
-                    .ml(px(-6.0 * (1.0 - picture)))
-                    .child(self.person_avatar(&shown_name, email, BAR_PICTURE)),
-            )
-            .child(div().flex_1())
-            .child(actions)
-            .with_animation(
-                ("contact-bar", person_number(email)),
-                Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
-                |el, t| el.opacity(t),
-            )
-            .into_any_element();
-        // The buttons' place, which the bar is drawn over.
-        let (at, scroll) = (self.contact.actions_at.clone(), self.contact.scroll.clone());
-        let place = div().mx(px(4.0)).mb(px(4.0)).h(px(ACTION.0)).child(
-            canvas(
-                move |bounds, window, _| {
-                    let y = unpx(bounds.top() - scroll.bounds().top() - scroll.offset().y);
-                    let device = window.scale_factor();
-                    if (y - at.get().0).abs() > 0.25 || device != at.get().1 {
-                        at.set((y, device));
-                        window.refresh();
-                    }
-                },
-                |_, _, _, _| {},
-            )
-            .size_full(),
-        );
-
+        let (place, bar) = if sheet {
+            (actions.mx(px(4.0)).mb(px(4.0)).into_any_element(), None)
+        } else {
+            self.contact_bar_parts(actions, stuck, &shown_name, email)
+        };
         // Each section is a faintly tinted card, as in Google Contacts.
         let mut sections: Vec<AnyElement> = Vec::new();
         if own {
@@ -850,6 +869,58 @@ impl MailWindow {
         let scrolled = -snap(unpx(scroll.offset().y).clamp(-max, 0.0), device);
         let place = at - scrolled;
         (place, smoothstep((BAR_INSET + BAR_FADE - place) / BAR_FADE))
+    }
+
+    /// The round buttons' place in the card, and the bar they are drawn
+    /// in over it: in the bar, the buttons make room for the close button
+    /// and the person's picture comes in at the left.
+    fn contact_bar_parts(
+        &self,
+        actions: gpui::Div,
+        stuck: f32,
+        shown_name: &str,
+        email: &str,
+    ) -> (AnyElement, Option<AnyElement>) {
+        let picture = ((stuck - 0.4) / 0.6).clamp(0.0, 1.0);
+        let bar = div()
+            .size_full()
+            .flex()
+            .flex_row()
+            .items_center()
+            .pl(px(12.0))
+            .pr(px(16.0 + 36.0 * stuck))
+            .child(
+                div()
+                    .flex_none()
+                    .opacity(picture)
+                    .ml(px(-6.0 * (1.0 - picture)))
+                    .child(self.person_avatar(shown_name, email, BAR_PICTURE)),
+            )
+            .child(div().flex_1())
+            .child(actions)
+            .with_animation(
+                ("contact-bar", person_number(email)),
+                Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                |el, t| el.opacity(t),
+            )
+            .into_any_element();
+        // The buttons' place, which the bar is drawn over.
+        let (at, scroll) = (self.contact.actions_at.clone(), self.contact.scroll.clone());
+        let place = div().mx(px(4.0)).mb(px(4.0)).h(px(ACTION.0)).child(
+            canvas(
+                move |bounds, window, _| {
+                    let y = unpx(bounds.top() - scroll.bounds().top() - scroll.offset().y);
+                    let device = window.scale_factor();
+                    if (y - at.get().0).abs() > 0.25 || device != at.get().1 {
+                        at.set((y, device));
+                        window.refresh();
+                    }
+                },
+                |_, _, _, _| {},
+            )
+            .size_full(),
+        );
+        (place.into_any_element(), Some(bar))
     }
 
     /// Whether `email` is one of the user's own addresses.

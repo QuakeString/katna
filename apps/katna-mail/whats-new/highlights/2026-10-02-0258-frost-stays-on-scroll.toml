@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Frost stays put when a list scrolls"
+text = """
+In a frosted list that scrolls, like the people in a chat or a long menu,
+the frosted background now stays in place while the rows scroll over it.
+"""
