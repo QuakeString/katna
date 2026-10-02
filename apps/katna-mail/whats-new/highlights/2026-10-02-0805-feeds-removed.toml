@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Feeds is gone from the left bar"
+text = """
+Katna will not read RSS and Atom feeds after all, so the Feeds button and
+its "coming soon" page have left the bar at the left. Files keeps Ctrl+7.
+"""

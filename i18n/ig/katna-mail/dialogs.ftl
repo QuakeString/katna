@@ -167,7 +167,6 @@ tour-search-text = Ọchụchọ na-arụ ọrụ ọbụna na-enweghị ịntan
 tour-menu-title = Gosi ma ọ bụ zoo folda
 tour-menu-text = Bọtịnụ a na-apịaji ndepụta folda. Mgbe ọ zoro ezo, debe ntụaka n'elu Ozi n'aka ekpe ka ị hụ folda.
 tour-apps-title = Ngwa gị
-tour-apps-text = Ozi nọ ebe a ugbu a. Kalịnda, Kọntaktị, Ọrụ, Ndetu na Nri ozi ga-esonye ya n'ogwe a.
 tour-tabs-title = Taabụ igbe ozi mbata
 tour-tabs-text = A na-ekesa ozi ọhụrụ n'ime Isi, Nkwalite, Mmekọrịta ọha, Mmelite na Ọgbakọ. Ị nwere ike ịgbanyụ taabụ ndị ahụ na ntọala ngwa ngwa.
 tour-list-title = Ozi gị

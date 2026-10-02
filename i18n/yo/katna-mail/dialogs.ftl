@@ -165,7 +165,6 @@ tour-search-text = Àwárí ń ṣiṣẹ́ láìsí ìntánẹ́ẹ̀tì pẹ̀
 tour-menu-title = Fi àwọn fódà hàn tàbí pa wọ́n mọ́
 tour-menu-text = Bọ́tìnnì yìí ń ká àkójọ fódà kúrò. Nígbà tí ó bá pamọ́, gbé atọ́ka lé Lẹ́tà ní apá òsì láti rí àwọn fódà.
 tour-apps-title = Àwọn áàpù rẹ
-tour-apps-text = Lẹ́tà ń gbé ibí báyìí. Kàlẹ́ńdà, Olùbásọ̀rọ̀, Iṣẹ́, Àkọsílẹ̀ àti Ìfúnni yóò darapọ̀ mọ́ ọn nínú ọ̀pá yìí.
 tour-tabs-title = Àwọn táàbù àpótí-ìwọlé
 tour-tabs-text = A ń to lẹ́tà tuntun sí Àkọ́kọ́, Ìpolówó, Àwùjọ, Ìmúdójúìwọ̀n àti Àpérò. O lè pa àwọn táàbù náà nínú ètò kíákíá.
 tour-list-title = Àwọn ìfiránṣẹ́ rẹ

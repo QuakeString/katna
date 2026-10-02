@@ -168,7 +168,6 @@ tour-search-text = La búsqueda también funciona sin conexión. El botón del e
 tour-menu-title = Muestra u oculta las carpetas
 tour-menu-text = Este botón pliega la lista de carpetas. Mientras está oculta, deja el puntero sobre Correo a la izquierda para ver las carpetas.
 tour-apps-title = Tus aplicaciones
-tour-apps-text = El correo vive aquí ahora. Calendario, Contactos, Tareas, Notas y Feeds se le unirán en esta barra.
 tour-tabs-title = Pestañas de Recibidos
 tour-tabs-text = El correo nuevo se ordena en Principal, Promociones, Social, Notificaciones y Foros. Puedes desactivar las pestañas en los ajustes rápidos.
 tour-list-title = Tus mensajes
