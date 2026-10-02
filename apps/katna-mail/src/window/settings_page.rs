@@ -134,6 +134,8 @@ pub(super) struct SettingsPage {
     save: Option<Task<()>>,
     recording: Option<Recording>,
     pub(super) scroll: ScrollHandle,
+    /// The page's overlay scroll bar, as the open mail and Files have.
+    bar: katna_ui::ScrollBar,
     /// The open section's tab. It takes the focus when the page opens, so
     /// Tab goes on from there.
     pub(super) focus: FocusHandle,
@@ -294,6 +296,7 @@ impl MailWindow {
                 save: None,
                 recording: None,
                 scroll: scroll.clone(),
+                bar: katna_ui::ScrollBar::default(),
                 focus: cx.focus_handle().tab_stop(true),
                 stops: TabStops::new(scroll),
                 tabs: TabStrip::default(),
@@ -453,6 +456,8 @@ impl MailWindow {
         };
         let section = page.section;
         let scroll = page.scroll.clone();
+        let bar = page.bar.clone();
+        bar.tick(&scroll, window, cx);
         let focus = page.focus.clone();
         let strip = page.tabs.clone();
         let tabs = Section::ALL.map(|s| {
@@ -554,23 +559,30 @@ impl MailWindow {
                 th,
             ))
             .child(
-                div()
-                    .id("settings-page-body")
-                    .flex_1()
-                    .min_h_0()
-                    .overflow_y_scroll()
-                    .track_scroll(&scroll)
-                    .child(
+                div().flex_1().min_h_0().child(
+                    bar.draw(
+                        "settings-page-bar",
+                        &scroll,
                         div()
-                            .flex_none()
-                            .px(px(side))
-                            .pt(px(8.0))
-                            .pb(px(side))
-                            .max_w(px(1040.0))
-                            .flex()
-                            .flex_col()
-                            .child(body),
+                            .id("settings-page-body")
+                            .size_full()
+                            .overflow_y_scroll()
+                            .track_scroll(&scroll)
+                            .child(
+                                div()
+                                    .flex_none()
+                                    .px(px(side))
+                                    .pt(px(8.0))
+                                    .pb(px(side))
+                                    .max_w(px(1040.0))
+                                    .flex()
+                                    .flex_col()
+                                    .child(body),
+                            ),
+                        // The open mail's and Files page's bar.
+                        th.text_dim & 0xffff_ff00 | 0x99,
                     ),
+                ),
             );
         div()
             .flex_1()
