@@ -128,6 +128,7 @@ icons!(
     "lock",
     "mail",
     "mark-read",
+    "mark-unread",
     "menu",
     "minimize",
     "more",
