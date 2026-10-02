@@ -81,6 +81,7 @@ use crate::widgets::{elevation, icon, menu, menu_item, tip};
 pub(super) use attach::Attachment;
 use checks::Passed;
 use chips::Chips;
+pub(super) use quote::{signature_name, signature_tag};
 pub(in crate::window) use recipients::address_suggestions;
 use recipients::{Field, Suggestions};
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
@@ -88,6 +89,7 @@ use security::Sealing;
 pub(super) use sent::{Sending, SentCard};
 pub(super) use signature_editor::signature_content;
 use tools::Popup;
+pub(super) use tools::below_end;
 
 const WIDTH: f32 = 560.0;
 const MAX_HEIGHT: f32 = 620.0;
@@ -1089,7 +1091,7 @@ impl MailWindow {
     /// The signature a new message starts with: for new mail the default;
     /// in a conversation the one the user signed their newest message in it
     /// with, else the default for replies.
-    fn signature_for(&self, kind: Kind) -> Option<u32> {
+    pub(in crate::window) fn signature_for(&self, kind: Kind) -> Option<u32> {
         let sending = &self.config.sending;
         let id = match kind {
             Kind::New => sending.new_mail_signature,
@@ -1123,7 +1125,7 @@ impl MailWindow {
 
     /// Puts signature `id` (or none) in the open message in place of the
     /// one there.
-    fn choose_signature(&mut self, id: Option<u32>, cx: &mut Context<Self>) {
+    pub(in crate::window) fn choose_signature(&mut self, id: Option<u32>, cx: &mut Context<Self>) {
         let new = self.config.sending.signature(id).map(signatures::doc);
         let Some(compose) = &mut self.compose else {
             return;

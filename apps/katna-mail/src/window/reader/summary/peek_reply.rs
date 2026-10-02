@@ -6,6 +6,8 @@
 //! editable draft. Send sends it as the conversation's reply; Open moves
 //! it into the conversation's reply box. A draft not sent stays with the
 //! conversation: the card shows it again, and so does the reply box.
+//! The draft has no sign-off: the signature tag under it picks the
+//! signature the reply goes out with, as in Compose.
 
 use gpui::{
     AnyElement, Context, Entity, Focusable, Subscription, Task, Window, div, prelude::*, rgba,
@@ -16,7 +18,7 @@ use katna_i18n::tr;
 use katna_ui::{InputEvent, TextArea, TextInput, px};
 
 use super::super::super::MailWindow;
-use super::super::super::compose::Kind;
+use super::super::super::compose::{Kind, below_end, signature_name, signature_tag};
 use super::super::super::search_panel::chip;
 use super::{Fix, placeholder, problem_text};
 use crate::daemon;
@@ -35,6 +37,11 @@ pub(super) struct PeekReply {
     own: Entity<TextInput>,
     /// The summary's gist shown whole above, not one line.
     unfold: bool,
+    /// The signature the reply goes out with, a
+    /// [`katna_core::config::Signature::id`].
+    signature: Option<u32>,
+    /// The signature tag's list shows.
+    signatures_open: bool,
     _ideas: Option<Task<()>>,
     _draft: Option<Task<()>>,
     _subscriptions: Vec<Subscription>,
@@ -147,6 +154,13 @@ impl MailWindow {
                 },
             ),
         ];
+        // As Compose would sign it.
+        let signature = if self.reader.as_ref().is_some_and(|r| r.key == key) {
+            self.signature_for(Kind::Reply)
+        } else {
+            let sending = &self.config.sending;
+            sending.signature(sending.reply_signature).map(|s| s.id)
+        };
         // A draft kept from before comes back as it was left.
         let kept = self.summaries.kept_replies.get(&key).cloned();
         let draft = match &kept {
@@ -166,6 +180,8 @@ impl MailWindow {
             area: area.clone(),
             own: own.clone(),
             unfold: false,
+            signature,
+            signatures_open: false,
             _ideas: None,
             _draft: None,
             _subscriptions: subscriptions,
@@ -261,6 +277,7 @@ impl MailWindow {
         let Some((key, text)) = self.peek_reply_text(cx) else {
             return;
         };
+        let signature = self.peek_reply_mut().map(|r| r.signature);
         // Closing keeps the draft; the reply below takes it in.
         self.close_summary_peek(cx);
         self.summaries.kept_replies.insert(key, text);
@@ -278,6 +295,10 @@ impl MailWindow {
             self.chat_reply(None, kind, window, cx);
         } else {
             self.open_compose(kind, None, window, cx);
+        }
+        // Signed as picked in the card.
+        if let Some(signature) = signature {
+            self.choose_signature(signature, cx);
         }
         // Taken in: send it as it is.
         if send && !self.summaries.kept_replies.contains_key(&key) {
@@ -624,6 +645,40 @@ impl MailWindow {
             .cursor_text()
             .child(r.area.clone())
             .on_click(move |_, window, cx| window.focus(&focus, cx));
+        let signature = r.signature;
+        let tag = div().flex().flex_row().justify_end().child(
+            signature_tag(
+                "summary-reply-signature",
+                signature_name(self.config.sending.signature(signature)),
+                r.signatures_open,
+                th,
+            )
+            .on_click(cx.listener(|this, _, _, cx| {
+                if let Some(r) = this.peek_reply_mut() {
+                    r.signatures_open = !r.signatures_open;
+                    cx.notify();
+                }
+            }))
+            .when(r.signatures_open, |d| {
+                d.child(below_end(self.signature_menu(
+                    signature,
+                    |this, id, cx| {
+                        if let Some(r) = this.peek_reply_mut() {
+                            r.signature = id;
+                            r.signatures_open = false;
+                            cx.notify();
+                        }
+                    },
+                    |this| {
+                        if let Some(r) = this.peek_reply_mut() {
+                            r.signatures_open = false;
+                        }
+                    },
+                    th,
+                    cx,
+                )))
+            }),
+        );
         let idea = r.request.idea.clone();
         let footer = div()
             .flex()
@@ -683,7 +738,7 @@ impl MailWindow {
             .flex_col()
             .gap(px(10.0))
             .children(to)
-            .child(area)
+            .child(div().flex().flex_col().gap(px(6.0)).child(area).child(tag))
             .child(footer)
             .into_any_element()
     }

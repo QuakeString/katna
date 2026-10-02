@@ -99,11 +99,12 @@ each at most ten words, keeping a leading \"Re:\" or \"Fwd:\": [\"Saturday run m
 
 const DRAFT_SYSTEM: &str = "You write the user's reply to the newest mail of an email conversation. \
 Answer with the reply's text only: no subject, no quotation marks, no explanation, nothing quoted from the mails. \
-Start with a greeting and end with a sign-off with the user's name, matching the ones the user used before in the conversation when there are any.";
+Start with a greeting matching the ones the user used before in the conversation when there are any. \
+End with the last sentence: no sign-off like \"Best regards\" and no name, since the user's signature follows.";
 
 const FORWARD_SYSTEM: &str = "The user forwards the newest mail of an email conversation to someone new. \
-Write the short note that goes above it: a greeting, what the mail is about and why it comes to them, \
-and a sign-off with the user's name. Answer with the note's text only: no subject, no quotation marks, no explanation.";
+Write the short note that goes above it: a greeting, what the mail is about and why it comes to them. \
+No sign-off like \"Best regards\" and no name, since the user's signature follows. Answer with the note's text only: no subject, no quotation marks, no explanation.";
 
 const CHAT_SYSTEM: &str = "You write the user's next message in a conversation shown as a chat. \
 Answer with the message's text only: no greeting, no sign-off, no quotation marks, no explanation. \
@@ -251,7 +252,67 @@ pub fn clean_draft(answer: &str) -> Option<String> {
                 .map(|(_, body)| body.trim().to_owned())
         })
         .unwrap_or(text);
+    let text = without_sign_off(&text);
     (!text.is_empty()).then_some(text)
+}
+
+/// `text` without a closing like "Best regards,\nAlex" at its end, which
+/// the signature takes the place of; as it is when that would leave
+/// nothing.
+fn without_sign_off(text: &str) -> String {
+    let lines: Vec<&str> = text.trim_end().lines().collect();
+    let last = lines.len();
+    let at = (last.saturating_sub(2)..last)
+        .find(|&n| is_sign_off(lines[n]) && (n + 1 == last || is_name(lines[n + 1])));
+    match at {
+        Some(at) if lines[..at].iter().any(|l| !l.trim().is_empty()) => {
+            lines[..at].join("\n").trim_end().to_owned()
+        }
+        _ => text.to_owned(),
+    }
+}
+
+/// Whether `line` could be a name under a sign-off: a few words, no
+/// sentence.
+fn is_name(line: &str) -> bool {
+    let line = line.trim();
+    !line.is_empty()
+        && line.split_whitespace().count() <= 4
+        && !line.ends_with(['.', '!', '?', ':'])
+}
+
+/// Whether `line` closes a message, like "Best regards,".
+pub fn is_sign_off(line: &str) -> bool {
+    const SIGN_OFFS: &[&str] = &[
+        "regards",
+        "best regards",
+        "kind regards",
+        "warm regards",
+        "warmest regards",
+        "with regards",
+        "many thanks",
+        "thanks",
+        "thank you",
+        "thanks and regards",
+        "thanks & regards",
+        "thanks & best regards",
+        "cheers",
+        "best",
+        "all the best",
+        "best wishes",
+        "sincerely",
+        "yours sincerely",
+        "yours truly",
+        "yours",
+        "br",
+        "cordially",
+        "respectfully",
+    ];
+    let line = line
+        .trim()
+        .trim_end_matches([',', '.', '!', ' '])
+        .to_lowercase();
+    SIGN_OFFS.contains(&line.as_str())
 }
 
 fn one_line(text: &str) -> String {
@@ -313,12 +374,28 @@ mod tests {
         asked.idea = "yes,\n but 7:30".into();
         let reply = draft(&asked).unwrap();
         assert!(reply.user.contains("What it should say: yes, but 7:30"));
-        assert!(reply.system.contains("sign-off"));
+        assert!(reply.system.contains("no sign-off"));
         let chat = draft(&request(DraftKind::Chat, false)).unwrap();
         assert!(chat.system.contains("no greeting"));
         assert!(chat.user.contains("Write what fits best."));
         let forward = draft(&request(DraftKind::Forward, true)).unwrap();
         assert!(forward.system.contains("forwards"));
+    }
+
+    #[test]
+    fn drafts_lose_their_sign_off() {
+        assert_eq!(
+            clean_draft("Hi Tom,\n\nSee you at 7.\n\nBest regards,\nAlex Rivera").unwrap(),
+            "Hi Tom,\n\nSee you at 7."
+        );
+        assert_eq!(
+            clean_draft("Hi Tom,\n\nSee you at 7.\n\nCheers!").unwrap(),
+            "Hi Tom,\n\nSee you at 7."
+        );
+        // Words after "Thanks" that are a sentence stay.
+        let kept = "Hi Tom,\n\nThanks\nfor the route, it works for me.";
+        assert_eq!(clean_draft(kept).unwrap(), kept);
+        assert_eq!(clean_draft("Thanks!").unwrap(), "Thanks!");
     }
 
     #[test]
