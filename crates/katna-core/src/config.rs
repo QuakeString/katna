@@ -188,7 +188,7 @@ pub const FROST_BLUR: u8 = 24;
 /// The frost's tint opacity, in percent, when nothing else sets it.
 pub const FROST_OPACITY: u8 = 45;
 /// How opaque frosted panes are, in percent, when nothing else sets it.
-pub const PANE_OPACITY: u8 = 60;
+pub const PANE_OPACITY: u8 = 75;
 
 /// Settings > Experimental: features still being tried out.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

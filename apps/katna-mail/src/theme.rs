@@ -45,6 +45,13 @@ impl Accent {
     }
 }
 
+/// How far from the text colour toward the card dim text goes over
+/// see-through cards: near enough that previews keep 4.5:1 at 70 % over a
+/// bright wallpaper.
+const FROSTED_DIM: f32 = 0.2;
+/// The same for faint text: hints keep about 3:1.
+const FROSTED_FAINT: f32 = 0.38;
+
 /// Colors as `0xRRGGBBAA`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Theme {
@@ -227,10 +234,33 @@ impl Theme {
     /// while it shows a chat (`chat`) and the open search box (`search`)
     /// let the blur through, each this many percent opaque over the blurred
     /// desktop, or stay solid (`None`). Bubbles, menus and fields keep
-    /// their own fills.
+    /// their own fills. Over see-through cards dim and faint text move
+    /// closer to the text colour, so previews stay readable over a bright
+    /// wallpaper.
     pub fn frosted_panes(self, pane: Option<u8>, chat: Option<u8>, search: Option<u8>) -> Self {
         let pane_tint = pane.map_or(100, |p| p.min(100));
+        let see_through = pane_tint < 100 || chat.is_some_and(|c| c < 100);
+        // The stronger of a colour and one `t` of the way from the text
+        // to the card.
+        let lift = |color: u32, t: f32| {
+            let lifted = mix(self.text, self.surface, t);
+            if contrast(lifted, self.surface) > contrast(color, self.surface) {
+                lifted
+            } else {
+                color
+            }
+        };
         Self {
+            text_dim: if see_through {
+                lift(self.text_dim, FROSTED_DIM)
+            } else {
+                self.text_dim
+            },
+            text_faint: if see_through {
+                lift(self.text_faint, FROSTED_FAINT)
+            } else {
+                self.text_faint
+            },
             pane_tint,
             chat_tint: chat.map_or(pane_tint, |c| c.min(100)),
             search_tint: search.map_or(100, |s| s.min(100)),

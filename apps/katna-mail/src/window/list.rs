@@ -3019,9 +3019,15 @@ fn fade_in(body: AnyElement, seq: usize) -> AnyElement {
 }
 
 /// The preview text of a mail row: the faint text a third of the way
-/// toward the list's background, quieter than the sender and subject.
+/// toward the list's background, quieter than the sender and subject. On a
+/// see-through card it is the dim text, which stays readable over a bright
+/// wallpaper ([`Theme::frosted_panes`]).
 pub(super) fn preview_color(th: &Theme) -> u32 {
-    mix(th.text_faint, th.surface, 0.35)
+    if th.pane_tint < 100 {
+        th.text_dim
+    } else {
+        mix(th.text_faint, th.surface, 0.35)
+    }
 }
 
 /// The faint line between mail rows.

@@ -37,9 +37,9 @@ const KNOB: f32 = 18.0;
 const KDE_LIGHT: f32 = 4.0;
 /// How much clearer than the cards the room behind a chat's bubbles is,
 /// in percent: the bubbles carry their own fill.
-const CHAT_CLEARER: u8 = 10;
+const CHAT_CLEARER: u8 = 5;
 /// How opaque that room is, in percent, when the cards are solid.
-const CHAT_OPACITY: u8 = 50;
+const CHAT_OPACITY: u8 = 70;
 /// How opaque the open search box is, in percent, like a menu's glass a
 /// little more solid, so what is typed stays clear.
 const SEARCH_OPACITY: u8 = 62;
