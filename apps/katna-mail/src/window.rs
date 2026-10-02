@@ -16,6 +16,7 @@
 //! layouts, by the window's width).
 
 mod about;
+mod account_color;
 mod account_roll;
 mod account_status;
 mod account_view;

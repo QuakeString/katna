@@ -675,6 +675,16 @@ impl MailWindow {
                     ),
                 )
             })
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(4.0))
+                    .px(px(4.0))
+                    .child(icon("palette", th.text_dim, 18.0))
+                    .child(self.account_color_strip("account-color", &account.address, th, cx)),
+            )
             .child({
                 let account = account.clone();
                 danger_button(("account-remove", ix), tr!("accounts-remove"), false, th)
@@ -736,7 +746,12 @@ impl MailWindow {
                 cx.new(|_| drag.clone())
             })
             .child(icon("drag-handle", th.text_faint, 20.0));
-        let avatar = self.person_avatar(&name, &account.address, 36.0);
+        let avatar = self.account_ring(
+            &account.address,
+            self.person_avatar(&name, &account.address, 36.0),
+            36.0,
+            th,
+        );
         let bounds = reorder.map(|r| r.bounds.clone());
         // The shadow of a lifted row, fading as it lands.
         let lift = if lifted {
@@ -1263,13 +1278,10 @@ impl MailWindow {
     }
 
     fn account_removed(&mut self, account: &Account, cx: &mut Context<Self>) {
-        if self
-            .config
-            .mail
-            .account_tabs
-            .remove(&account.address.to_lowercase())
-            .is_some()
-        {
+        let key = account.address.to_lowercase();
+        let tabs = self.config.mail.account_tabs.remove(&key).is_some();
+        let color = self.config.mail.account_colors.remove(key.trim()).is_some();
+        if tabs || color {
             self.save_config();
         }
         let listed = self

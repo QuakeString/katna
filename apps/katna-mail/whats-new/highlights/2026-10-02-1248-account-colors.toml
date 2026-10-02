@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A colour for each account"
+text = """
+Pick a colour for each account in Settings > Accounts, or right-click the
+account in the folder pane. The dot beside each sender in the unified
+inbox and the ring around the account's picture take that colour, and
+hovering the dot names the account. The colours never match the inbox
+tabs.
+"""

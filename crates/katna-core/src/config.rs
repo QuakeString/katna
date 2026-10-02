@@ -672,6 +672,10 @@ pub struct MailView {
     /// mail shows in the tab of its category. [`TabStyle::Auto`] is
     /// Gmail's five.
     pub unified_tabs: TabStyle,
+    /// Each account's color, by lower-case address: a name from Katna
+    /// Mail's account colors (`teal`, `pink`, ...). Accounts not listed
+    /// wear one picked from their address.
+    pub account_colors: BTreeMap<String, String>,
     pub density: Density,
     /// The size of everything in the windows, in percent, on top of the
     /// desktop's own scale (75 to 200).
@@ -889,6 +893,7 @@ impl Default for MailView {
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
             unified_tabs: TabStyle::Auto,
+            account_colors: BTreeMap::new(),
             density: Density::Default,
             scale: 100,
             theme: Theme::System,

@@ -615,14 +615,57 @@ const AVATARS: [u32; 8] = [
 
 /// The avatar color for an address: stable for the same address.
 pub fn avatar_color(address: &str) -> u32 {
-    // FNV-1a, so the color does not change between runs or versions.
-    let hash = address
+    AVATARS[(address_hash(address) % AVATARS.len() as u64) as usize]
+}
+
+/// FNV-1a of the lower-case address, so colors do not change between
+/// runs or versions.
+fn address_hash(address: &str) -> u64 {
+    address
         .to_lowercase()
         .bytes()
         .fold(0xcbf2_9ce4_8422_2325_u64, |h, b| {
             (h ^ u64::from(b)).wrapping_mul(0x0100_0000_01b3)
-        });
-    AVATARS[(hash % AVATARS.len() as u64) as usize]
+        })
+}
+
+/// The colors an account can wear: its dot on lines of the unified inbox,
+/// the ring round its picture and its letter avatar. None is an inbox
+/// tab's color, so a dot never reads as a tab. By name (as kept in
+/// `mail.account_colors`): its light-mode color, readable with white
+/// text, and its dark-mode one.
+pub const ACCOUNT_COLORS: [(&str, u32, u32); 7] = [
+    ("red", 0xd93025ff, 0xf28b82ff),
+    ("pink", 0xc2185bff, 0xf48fb1ff),
+    ("brown", 0x8d6e63ff, 0xbcaaa4ff),
+    ("olive", 0x827717ff, 0xc0ca33ff),
+    ("teal", 0x007b83ff, 0x4fb8c0ff),
+    ("indigo", 0x3949abff, 0x9fa8daff),
+    ("slate", 0x5f6368ff, 0x9aa0a6ff),
+];
+
+/// The color an account wears until one is picked: its letter avatar's
+/// old color where that is in [`ACCOUNT_COLORS`], so accounts look as
+/// before; else one picked from the address.
+pub fn default_account_color(address: &str) -> &'static str {
+    let old = avatar_color(address);
+    ACCOUNT_COLORS
+        .iter()
+        .find(|(_, light, _)| *light == old || (old == 0xc5221fff && *light == 0xd93025ff))
+        .map_or_else(
+            || ACCOUNT_COLORS[(address_hash(address) % ACCOUNT_COLORS.len() as u64) as usize].0,
+            |(name, ..)| name,
+        )
+}
+
+/// The account color called `name` (the default one for unknown
+/// names): its light and dark colors.
+pub fn account_color(name: &str) -> (u32, u32) {
+    let (_, light, dark) = ACCOUNT_COLORS
+        .iter()
+        .find(|(n, ..)| *n == name)
+        .unwrap_or(&ACCOUNT_COLORS[0]);
+    (*light, *dark)
 }
 
 /// The letter on an avatar: the first letter or digit of the name.
@@ -852,6 +895,17 @@ mod tests {
     #[test]
     fn avatars() {
         assert_eq!(avatar_color("Kay@Enron.com"), avatar_color("kay@enron.com"));
+        // No account color is a tab's, in either mode.
+        for th in [&LIGHT, &DARK] {
+            for (name, light, dark) in ACCOUNT_COLORS {
+                let color = if th.dark { dark } else { light };
+                assert!(!th.tabs.contains(&color), "{name}");
+            }
+        }
+        for address in ["kay@enron.com", "ada@example.org", "me@gmail.com"] {
+            let name = default_account_color(address);
+            assert!(ACCOUNT_COLORS.iter().any(|(n, ..)| *n == name));
+        }
         assert_eq!(initial("  kay mann"), "K");
         assert_eq!(initial("\"Ölaf\""), "Ö");
         assert_eq!(initial("--"), "?");

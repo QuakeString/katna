@@ -2113,7 +2113,12 @@ impl MailWindow {
                     this.account_menu = false;
                     this.pick_account(id, cx);
                 }))
-                .child(self.person_avatar(&name, &account.address, 32.0))
+                .child(self.account_ring(
+                    &account.address,
+                    self.person_avatar(&name, &account.address, 32.0),
+                    32.0,
+                    th,
+                ))
                 .child(
                     div()
                         .flex_1()

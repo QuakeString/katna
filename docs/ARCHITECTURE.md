@@ -1760,8 +1760,14 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   tab it turned off, or no tabs) counts as Primary there too
   (`Store::spread_inbox_threads` with `SpreadTabs`). One account's line
   under it shows that account's own tabs. Lines of the whole unified
-  inbox carry a dot in the account's picture colour after the names, and
-  the account's name where the line stacks.
+  inbox carry a dot in the account's colour after the names (hovering it
+  names the account), and the account's name where the line stacks.
+  Each account has one colour (`mail.account_colors`, picked from seven
+  in Settings > Accounts or the account's right-click menu), none of them
+  a tab's colour in light or dark; unpicked, an account keeps its old
+  letter-picture colour when that is one of the seven. The same colour
+  rings the account's picture in the account menu and fills its letter
+  picture (`window/account_color.rs`).
 - **One card.** The list and the open message share a white card with
   rounded corners on a tinted page. The list is one line per message:
   star, sender, subject in bold if unread with the snippet after it, and
