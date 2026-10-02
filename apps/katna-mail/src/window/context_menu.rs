@@ -608,7 +608,8 @@ impl MailWindow {
             plain("context-read", "mark-read", &tr!("menu-mark-read"))
                 .on_click(act(Act::Read(true)))
         } else {
-            plain("context-read", "mail", &tr!("menu-mark-unread")).on_click(act(Act::Read(false)))
+            plain("context-read", "mark-unread", &tr!("menu-mark-unread"))
+                .on_click(act(Act::Read(false)))
         });
         if snoozes {
             main.item(

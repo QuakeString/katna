@@ -510,7 +510,7 @@ impl MailWindow {
                         cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
                     )
             } else {
-                icon_button("mark-unread", "mail", 20.0, th)
+                icon_button("mark-unread", "mark-unread", 20.0, th)
                     .tooltip(tip(tr!("list-mark-unread"), th))
                     .on_click(
                         cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(false), cx)),
@@ -1018,10 +1018,17 @@ impl MailWindow {
                                 })),
                         )
                         .child(
-                            menu_item_icon("more-unread", "mail", &tr!("menu-mark-unread"), th)
-                                .on_click(cx.listener(|this, _, window, cx| {
+                            menu_item_icon(
+                                "more-unread",
+                                "mark-unread",
+                                &tr!("menu-mark-unread"),
+                                th,
+                            )
+                            .on_click(cx.listener(
+                                |this, _, window, cx| {
                                     this.mark_unread(&super::MarkUnread, window, cx)
-                                })),
+                                },
+                            )),
                         )
                         .child(
                             menu_item_icon("more-star", "star", &tr!("menu-star"), th).on_click(
@@ -2790,7 +2797,7 @@ impl MailWindow {
             .child(
                 button(
                     2,
-                    if unread { "mark-read" } else { "mail" },
+                    if unread { "mark-read" } else { "mark-unread" },
                     if unread {
                         tr!("list-mark-read")
                     } else {

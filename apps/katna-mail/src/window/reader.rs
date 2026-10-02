@@ -986,7 +986,7 @@ impl MailWindow {
             .when(separators, |d| d.child(separator(th)))
             .when(!squeeze.unread, |d| {
                 d.child(
-                    icon_button("reader-unread", "mail", 20.0, th)
+                    icon_button("reader-unread", "mark-unread", 20.0, th)
                         .tooltip(tip(tr!("reader-mark-unread"), th))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.mark_unread(&super::MarkUnread, window, cx)
