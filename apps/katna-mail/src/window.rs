@@ -1511,6 +1511,8 @@ impl MailWindow {
         let keep_open = self.pane_open();
         if let Some(folder) = self.folder {
             self.open_folder(folder, cx);
+        } else if let Some((view, account)) = self.unified {
+            self.open_unified(view, account, cx);
         }
         if keep_open {
             self.reading = true;
@@ -2193,9 +2195,7 @@ impl MailWindow {
             Some(listing @ (Listing::Folder(_) | Listing::Unified { .. })) => {
                 let (entries, unread) = match listing {
                     Listing::Folder(folder) => self.list_entries(folder),
-                    Listing::Unified { view, account } => {
-                        (self.unified_entries(view, account), None)
-                    }
+                    Listing::Unified { view, account } => self.unified_entries(view, account),
                     Listing::Search { .. } => (Vec::new(), None),
                 };
                 let open = self.kept_open_line(&listing, &entries);
@@ -3506,11 +3506,7 @@ impl Render for MailWindow {
         // The big button heads the folders or the page's side column while
         // it is open beside the page, and waits in the rail otherwise.
         self.compose_dock
-            .set(if self.app.has_side() && self.nav_docked() {
-                1.0
-            } else {
-                0.0
-            });
+            .set(if self.nav_docked() { 1.0 } else { 0.0 });
         self.compose_dock.tick(window, reduce);
         self.reader_bar.tick(&self.reader_scroll, window, cx);
         self.title_roll.tick(window, reduce);

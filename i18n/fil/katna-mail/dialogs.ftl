@@ -166,7 +166,6 @@ tour-search-text = Gumagana rin ang paghahanap kahit offline. Nagdadagdag ng mga
 tour-menu-title = Ipakita o itago ang mga folder
 tour-menu-text = Itinutupi ng button na ito ang listahan ng folder. Habang nakatago ito, ipatong ang pointer sa Mail sa kaliwa para makita ang mga folder.
 tour-apps-title = Ang iyong mga app
-tour-apps-text = Dito na nakatira ang Mail. Sasama rito sa bar na ito ang Kalendaryo, Mga Contact, Mga Gawain, Mga Tala at Mga Feed.
 tour-tabs-title = Mga tab ng inbox
 tour-tabs-text = Inaayos ang bagong mail sa Pangunahin, Mga Promosyon, Social, Mga Update at Mga Forum. Puwede mong i-off ang mga tab sa mabilisang setting.
 tour-list-title = Ang iyong mga mensahe

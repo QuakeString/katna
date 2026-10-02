@@ -166,7 +166,6 @@ tour-search-text = Soek werk ook vanlyn. Die knoppie heel regs voeg filters by: 
 tour-menu-title = Wys of versteek die vouers
 tour-menu-text = Hierdie knoppie vou die vouerlys weg. Terwyl dit versteek is, laat die wyser op E-pos links rus om die vouers te sien.
 tour-apps-title = Jou programme
-tour-apps-text = E-pos woon nou hier. Kalender, Kontakte, Take, Notas en Voere sal in hierdie balk daarby aansluit.
 tour-tabs-title = Inkassie-oortjies
 tour-tabs-text = Nuwe e-pos word in Primêr, Promosies, Sosiaal, Opdaterings en Forums gesorteer. Jy kan die oortjies in vinnige instellings afskakel.
 tour-list-title = Jou boodskappe

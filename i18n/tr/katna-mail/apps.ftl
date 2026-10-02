@@ -9,7 +9,6 @@ rail-calendar = Takvim
 rail-contacts = Kişiler
 rail-tasks = Görevler
 rail-notes = Notlar
-rail-feeds = Akışlar
 
 ## Pages of apps still to come
 
@@ -18,7 +17,6 @@ app-coming-soon = Çok yakında
 app-calendar-promise = CalDAV takvimleriniz, postalarınızdaki toplantı davetleri ve hatırlatıcılar, gelen kutunuzun hemen yanında.
 app-tasks-promise = CalDAV ile senkronize olan yapılacaklar listeleri ve postalardan oluşturulan görevler.
 app-notes-promise = Hızlı notlar ve daha sonrası için bir posta ya da ileti dizisi hakkında notlar.
-app-feeds-promise = RSS ve Atom akışlarını postalarınızın yanında okuyun.
 
 ## Contacts page
 

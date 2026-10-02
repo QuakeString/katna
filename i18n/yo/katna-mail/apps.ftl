@@ -9,7 +9,6 @@ rail-calendar = Kàlẹ́ńdà
 rail-contacts = Olùbásọ̀rọ̀
 rail-tasks = Iṣẹ́
 rail-notes = Àkọsílẹ̀
-rail-feeds = Ìfúnni
 
 ## Pages of apps still to come
 
@@ -18,7 +17,6 @@ app-coming-soon = Ó ń bọ̀ láìpẹ́
 app-calendar-promise = Àwọn kàlẹ́ńdà CalDAV rẹ, àwọn ìpè sí ìpàdé láti inú lẹ́tà rẹ àti àwọn ìránnilétí, lẹ́gbẹ̀ẹ́ àpótí-ìwọlé rẹ.
 app-tasks-promise = Àwọn àkójọ ohun-tí-a-ó-ṣe tó ń bá CalDAV mu, àti àwọn iṣẹ́ tí a ṣe láti inú lẹ́tà.
 app-notes-promise = Àwọn àkọsílẹ̀ kíákíá, àti àkọsílẹ̀ lórí lẹ́tà tàbí ìjíròrò fún ìgbà míì.
-app-feeds-promise = Ka àwọn ìfúnni RSS àti Atom lẹ́gbẹ̀ẹ́ lẹ́tà rẹ.
 
 ## Contacts page
 

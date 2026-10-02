@@ -476,7 +476,7 @@ pub(super) fn below(popup: impl IntoElement) -> AnyElement {
 
 /// `popup` just under its parent's bottom right corner, its right edge
 /// lined up with the parent's.
-pub(super) fn below_end(popup: impl IntoElement) -> AnyElement {
+pub(in crate::window) fn below_end(popup: impl IntoElement) -> AnyElement {
     deferred(
         div().absolute().bottom_0().right_0().child(
             anchored()
@@ -764,7 +764,7 @@ impl MailWindow {
                 .mx(px(3.0))
                 .w(px(1.0))
                 .h(px(16.0))
-                .bg(rgba(fade(th.divider, super::FAINT_LINE)))
+                .bg(rgba(th.faint_line(super::FAINT_LINE)))
         };
         let tray = div()
             .flex_none()
@@ -1126,7 +1126,7 @@ impl MailWindow {
                         // scroll sideways.
                         .rounded_full()
                         .border_1()
-                        .border_color(rgba(th.divider))
+                        .border_color(rgba(th.outline))
                         .bg(rgba(format_bar_bg(th)))
                         .shadow(crate::widgets::elevation(th, 1.0))
                         .overflow_x_scroll()
@@ -1719,7 +1719,7 @@ impl MailWindow {
                 .justify_center()
                 .rounded(px(3.0))
                 .bg(rgba((c << 8) | 0xff))
-                .when(light, |d| d.border_1().border_color(rgba(th.divider)))
+                .when(light, |d| d.border_1().border_color(rgba(th.outline)))
                 .when(selected, |d| d.border_1().border_color(rgba(th.text)))
                 .cursor_pointer()
                 .hover(|s| s.border_1().border_color(rgba(th.text)))
@@ -1796,7 +1796,7 @@ impl MailWindow {
                 .size(px(18.0))
                 .rounded(px(2.0))
                 .border_1()
-                .border_color(rgba(if on { th.accent } else { th.divider }))
+                .border_color(rgba(if on { th.accent } else { th.outline }))
                 .when(on, |d| d.bg(rgba(fade(th.accent, 0.25))))
                 .cursor_pointer()
                 .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
@@ -2979,7 +2979,7 @@ impl MailWindow {
                         .items_center()
                         .rounded(px(6.0))
                         .border_1()
-                        .border_color(rgba(th.divider))
+                        .border_color(rgba(th.outline))
                         .text_size(px(14.0))
                         .child(input.clone()),
                 )
@@ -3224,7 +3224,7 @@ impl MailWindow {
                             .items_center()
                             .rounded(px(6.0))
                             .border_1()
-                            .border_color(rgba(th.divider))
+                            .border_color(rgba(th.outline))
                             .text_size(px(14.0))
                             .child(format::day_month_year(
                                 day.to_datetime(jiff::civil::Time::midnight()),
@@ -3269,20 +3269,43 @@ impl MailWindow {
                     ),
             )
             .when(compose.popup == Some(Popup::Signature), |d| {
-                d.child(above(self.signature_menu(th, cx)))
+                d.child(above(self.compose_signature_menu(th, cx)))
             })
             .into_any_element()
     }
 
-    /// The signatures to sign with, None, and Manage.
-    pub(super) fn signature_menu(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
-        let current = self.compose.as_ref().and_then(|c| c.signature);
+    /// The signature list for the open message.
+    pub(super) fn compose_signature_menu(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
+        self.signature_menu(
+            self.compose.as_ref().and_then(|c| c.signature),
+            |this, id, cx| this.choose_signature(id, cx),
+            |this| {
+                if let Some(c) = &mut this.compose {
+                    c.popup = None;
+                }
+            },
+            th,
+            cx,
+        )
+    }
+
+    /// The signatures to sign with, None, and Manage: `current` checked,
+    /// `pick` takes the one clicked, `close` puts the list away before
+    /// Manage opens Settings.
+    pub(in crate::window) fn signature_menu(
+        &self,
+        current: Option<u32>,
+        pick: fn(&mut Self, Option<u32>, &mut Context<Self>),
+        close: fn(&mut Self),
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Div {
         let item = |ix: usize, id: Option<u32>, label: &str| {
             menu_item(("compose-signature-item", ix), label, th)
                 .gap(px(12.0))
                 .child(div().flex_1())
                 .when(current == id, |d| d.child(icon("check", th.text_dim, 18.0)))
-                .on_click(cx.listener(move |this, _, _, cx| this.choose_signature(id, cx)))
+                .on_click(cx.listener(move |this, _, _, cx| pick(this, id, cx)))
         };
         let items = self
             .config
@@ -3310,10 +3333,8 @@ impl MailWindow {
                     &tr!("compose-tool-signature-manage"),
                     th,
                 )
-                .on_click(cx.listener(|this, _, window, cx| {
-                    if let Some(c) = &mut this.compose {
-                        c.popup = None;
-                    }
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    close(this);
                     this.open_settings_page(
                         super::super::settings_page::Section::Signatures,
                         window,

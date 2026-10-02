@@ -153,7 +153,6 @@ screenshot uses made-up demo data.
 
 ### Coming next
 
-Feeds is planned and already has a place in the app, marked "coming soon".
 See the [implementation plan](docs/IMPLEMENTATION_PLAN.md).
 
 ## Install

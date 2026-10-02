@@ -9,7 +9,6 @@ rail-calendar = Kalender
 rail-contacts = Kontak
 rail-tasks = Tugas
 rail-notes = Catatan
-rail-feeds = Feed
 
 ## Pages of apps still to come
 
@@ -18,7 +17,6 @@ app-coming-soon = Segera hadir
 app-calendar-promise = Kalender CalDAV, undangan rapat dari email, dan pengingat Anda, di samping kotak masuk.
 app-tasks-promise = Daftar tugas yang disinkronkan dengan CalDAV, dan tugas yang dibuat dari email.
 app-notes-promise = Catatan singkat, dan catatan pada email atau percakapan untuk nanti.
-app-feeds-promise = Baca feed RSS dan Atom di samping email Anda.
 
 ## Contacts page
 

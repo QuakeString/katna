@@ -167,7 +167,6 @@ tour-search-text = Sökning fungerar även offline. Knappen längst till höger 
 tour-menu-title = Visa eller dölj mapparna
 tour-menu-text = Den här knappen fäller undan mapplistan. Medan den är dold kan du vila pekaren på E-post till vänster för att se mapparna.
 tour-apps-title = Dina appar
-tour-apps-text = E-post bor här nu. Kalender, Kontakter, Uppgifter, Anteckningar och Flöden kommer att ansluta i det här fältet.
 tour-tabs-title = Inkorgsflikar
 tour-tabs-text = Ny e-post sorteras i Primär, Kampanjer, Socialt, Uppdateringar och Forum. Du kan stänga av flikarna i snabbinställningarna.
 tour-list-title = Dina meddelanden

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# pacman runs these around installing and removing katna-git.
+
+# The copy of the installed package that katna-update-helper keeps, so
+# the next update can be a patch from it, goes with the package.
+post_remove() {
+    rm -rf /var/lib/katna/installed /var/lib/katna/installed.new
+    rmdir /var/lib/katna 2>/dev/null || true
+}

@@ -85,7 +85,6 @@ icons!(
     "expand",
     "eye",
     "eyedropper",
-    "feeds",
     "file",
     "fit-page",
     "fit-width",

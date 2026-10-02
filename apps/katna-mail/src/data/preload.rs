@@ -13,9 +13,10 @@ use std::path::PathBuf;
 use std::sync::mpsc;
 use std::time::Duration;
 
-use katna_core::{MailCategory, Paths};
+use katna_core::{AccountId, MailCategory, Paths};
 use katna_store::{
-    DbKind, FlagFilter, FolderId, FolderSummary, InboxThreads, MessageFlags, Mode, Store,
+    DbKind, FlagFilter, FolderId, FolderSummary, InboxThreads, MessageFlags, Mode, SpreadTabs,
+    Store,
 };
 
 /// How long the window waits for [`Preloading`] before it reads on its own.
@@ -39,6 +40,12 @@ pub enum ListRead {
         folders: Vec<FolderId>,
         filter: FlagFilter,
     },
+    /// The unified inbox's conversations in one tab, with its unread ones
+    /// per tab.
+    SpreadInbox {
+        folders: Vec<FolderId>,
+        tabs: SpreadTabs,
+    },
 }
 
 impl ListRead {
@@ -55,6 +62,7 @@ impl ListRead {
             Self::Spread { folders, filter } => {
                 Ok((store.spread_threads(folders, *filter)?, Vec::new()))
             }
+            Self::SpreadInbox { folders, tabs } => store.spread_inbox_threads(folders, tabs),
         }
     }
 
@@ -86,6 +94,28 @@ impl ListRead {
                 filter.set.bits(),
                 filter.unset.bits()
             ),
+            // Each account's folded categories as `account=c1,2`, joined
+            // by `/`.
+            Self::SpreadInbox { folders, tabs } => {
+                let folded = tabs
+                    .folded
+                    .iter()
+                    .map(|(account, folded)| {
+                        let folded = Some(folded.clone());
+                        format!("{}={}", account.0, categories(&folded))
+                    })
+                    .collect::<Vec<_>>();
+                format!(
+                    "spreadinbox {} {} {}",
+                    ids(&mut folders.iter().map(|f| f.0)),
+                    categories(&tabs.categories),
+                    if folded.is_empty() {
+                        "-".to_owned()
+                    } else {
+                        folded.join("/")
+                    }
+                )
+            }
         }
     }
 
@@ -119,6 +149,25 @@ impl ListRead {
                     unset: MessageFlags::from_bits(words.next()?.parse().ok()?),
                 },
             },
+            ("spreadinbox", folders, c) => {
+                let folded = match words.next()? {
+                    "-" => Vec::new(),
+                    text => text
+                        .split('/')
+                        .map(|part| {
+                            let (account, folded) = part.split_once('=')?;
+                            Some((AccountId(account.parse().ok()?), categories(folded)??))
+                        })
+                        .collect::<Option<_>>()?,
+                };
+                Self::SpreadInbox {
+                    folders: ids(folders)?.into_iter().map(FolderId).collect(),
+                    tabs: SpreadTabs {
+                        categories: categories(c)?,
+                        folded,
+                    },
+                }
+            }
             _ => return None,
         };
         words.next().is_none().then_some(read)
@@ -221,6 +270,23 @@ mod tests {
                 folders: vec![FolderId(1), FolderId(40)],
                 filter: FlagFilter::UNREAD,
             },
+            ListRead::SpreadInbox {
+                folders: vec![FolderId(1), FolderId(40)],
+                tabs: SpreadTabs {
+                    categories: Some(vec![MailCategory::Primary]),
+                    folded: vec![
+                        (
+                            AccountId(2),
+                            vec![MailCategory::Primary, MailCategory::Forums],
+                        ),
+                        (AccountId(5), Vec::new()),
+                    ],
+                },
+            },
+            ListRead::SpreadInbox {
+                folders: vec![FolderId(3)],
+                tabs: SpreadTabs::default(),
+            },
         ];
         for read in reads {
             assert_eq!(ListRead::parse(&read.to_line()), Some(read));
@@ -233,6 +299,9 @@ mod tests {
             "inbox 7 c9",
             "spread 1 0",
             "folder 1 - x",
+            "spreadinbox 1 -",
+            "spreadinbox 1 - 2",
+            "spreadinbox 1 - x=c1",
         ] {
             assert_eq!(ListRead::parse(bad), None, "{bad}");
         }

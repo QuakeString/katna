@@ -430,7 +430,7 @@ impl MailWindow {
                 .items_center()
                 .rounded(px(8.0))
                 .border_1()
-                .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+                .border_color(rgba(if on { th.nav_selected } else { th.outline }))
                 .bg(rgba(if on { th.nav_selected } else { th.surface }))
                 .text_color(rgba(if on {
                     th.nav_selected_text

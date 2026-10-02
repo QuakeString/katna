@@ -12,7 +12,7 @@ use katna_core::ids::{
     CLOCK_APPLET_ID, CLOCK_EXTENSION_UUID, DAEMON_BUS_NAME, MAIL_APP_ID, PREFIX,
     RUNNER_OBJECT_PATH, SEARCH_PROVIDER_OBJECT_PATH, UPDATE_ACTION,
 };
-use katna_core::update::ARCH_HELPER;
+use katna_core::update::{ARCH_HELPER, ARCH_INSTALLED};
 
 /// Name of the systemd user unit (also `katna_daemon::install::UNIT`).
 const UNIT: &str = "katna-daemon.service";
@@ -310,6 +310,22 @@ fn update_action_runs_the_update_helper() {
             "packaging/arch/katna-update-helper \"$pkgdir{ARCH_HELPER}\""
         )),
         "the PKGBUILD installs the helper at {ARCH_HELPER}"
+    );
+}
+
+/// The update helper keeps the installed package where the daemon looks
+/// for it to patch from, and removing the package removes that copy.
+#[test]
+fn installed_copy_is_where_the_daemon_looks() {
+    let helper = fs::read_to_string(packaging().join("arch/katna-update-helper")).unwrap();
+    assert!(
+        helper.contains(&format!("readonly INSTALLED={ARCH_INSTALLED}\n")),
+        "the helper keeps the installed package in {ARCH_INSTALLED}"
+    );
+    let install = fs::read_to_string(packaging().join("arch/katna-git.install")).unwrap();
+    assert!(
+        install.contains(&format!("rm -rf {ARCH_INSTALLED} ")),
+        "{install}"
     );
 }
 

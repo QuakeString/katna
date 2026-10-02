@@ -67,8 +67,8 @@ pub use mail::{
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::{
-    FlagFilter, FolderMarks, FolderSummary, InboxThreads, Marks, ThreadEntry, ThreadSender,
-    ThreadSummary,
+    FlagFilter, FolderMarks, FolderSummary, InboxThreads, Marks, SpreadTabs, ThreadEntry,
+    ThreadSender, ThreadSummary,
 };
 pub use meta::MetaRow;
 pub use notes::{NOTE_TRASH_KEEP, Note, RemoteNote};
@@ -363,6 +363,25 @@ impl Store {
         filter: FlagFilter,
     ) -> Result<Vec<MessageId>> {
         mail_view::spread_message_ids(&self.mail, folders, filter)
+    }
+
+    /// The unified inbox over `folders` (each account's inbox), in one tab
+    /// ([`SpreadTabs`]), with its unread conversations per tab.
+    pub fn spread_inbox_threads(
+        &self,
+        folders: &[FolderId],
+        tabs: &SpreadTabs,
+    ) -> Result<InboxThreads> {
+        mail_view::spread_inbox_threads(&self.mail, folders, tabs)
+    }
+
+    /// The messages of the unified inbox over `folders` in one tab.
+    pub fn spread_inbox_message_ids(
+        &self,
+        folders: &[FolderId],
+        tabs: &SpreadTabs,
+    ) -> Result<Vec<MessageId>> {
+        mail_view::spread_inbox_message_ids(&self.mail, folders, tabs)
     }
 
     /// `messages` and every other stored copy of them (the same

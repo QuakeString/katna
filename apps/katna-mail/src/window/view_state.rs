@@ -79,6 +79,9 @@ impl MailWindow {
                 .map(AccountId)
                 .filter(|&id| self.tree.accounts.iter().any(|a| a.id == id));
             self.open_unified(unified, account, cx);
+            if view.tab < self.tabs.len() {
+                self.open_tab(view.tab, cx);
+            }
         }
         if let Some(app) = RailApp::from_key(&view.app) {
             self.open_app(app, cx);

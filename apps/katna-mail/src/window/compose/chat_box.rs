@@ -232,7 +232,7 @@ impl MailWindow {
                 d.child(above(self.templates_menu(th, cx)))
             })
             .when(popup == Some(Popup::Signature), |d| {
-                d.child(above(self.signature_menu(th, cx)))
+                d.child(above(self.compose_signature_menu(th, cx)))
             });
         let aa = div()
             .id("chat-format")

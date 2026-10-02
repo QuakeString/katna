@@ -167,7 +167,6 @@ tour-search-text = Die Suche funktioniert auch offline. Die Schaltfläche ganz r
 tour-menu-title = Ordner ein- oder ausblenden
 tour-menu-text = Diese Schaltfläche klappt die Ordnerliste weg. Solange sie ausgeblendet ist, halten Sie den Zeiger links auf „E-Mail“, um die Ordner zu sehen.
 tour-apps-title = Ihre Apps
-tour-apps-text = E-Mail ist jetzt hier zu Hause. Kalender, Kontakte, Aufgaben, Notizen und Feeds kommen in dieser Leiste hinzu.
 tour-tabs-title = Posteingangs-Tabs
 tour-tabs-text = Neue E-Mails werden in Allgemein, Werbung, Soziale Netzwerke, Benachrichtigungen und Foren sortiert. Sie können die Tabs in den Schnelleinstellungen ausschalten.
 tour-list-title = Ihre Nachrichten
