@@ -1305,19 +1305,14 @@ impl MailWindow {
         // Reply, Reply all and Forward stay at the foot of the pane while
         // the conversation scrolls. A reply is written at the end of the
         // conversation itself, as in Gmail: it grows with its text and
-        // scrolls with the messages.
+        // scrolls with the messages. It stays at the end even with the
+        // newest message first, where the view scrolls down to it.
         let key = reader.key;
         let reply = self.render_inline_reply(key, th, cx);
         // Drafts are edited, not answered.
         let drafts_only =
             self.mail.is_ok() && reader.parts.iter().all(|p| reader.drafts.contains(&p.id));
         let footer = (reply.is_none() && !drafts_only).then(|| self.render_reply_row(th, cx));
-        // A reply goes next to the message it answers, the newest.
-        let (reply_above, reply_below) = if newest_first {
-            (reply, None)
-        } else {
-            (None, reply)
-        };
         // Where the link under the pointer really goes.
         let link_status = self
             .hovered_link
@@ -1350,9 +1345,8 @@ impl MailWindow {
                                         .children(summary)
                                         .children(muted)
                                         .children(notes)
-                                        .children(reply_above)
                                         .children(parts)
-                                        .children(reply_below)
+                                        .children(reply)
                                         .map(|d| self.text_area(d, cx))
                                         .with_animation(
                                             ("open-conversation", key_number(key)),
