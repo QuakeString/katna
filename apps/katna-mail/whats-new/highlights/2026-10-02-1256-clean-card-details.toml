@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Clean contact details on cards"
+text = """
+Phone numbers, addresses and other details taken from a signature no
+longer show stray asterisks or link marks in angle brackets. When a
+colleague signs mail from a shared address such as accounts@, the card
+keeps only the company's details, not that colleague's number or title.
+"""

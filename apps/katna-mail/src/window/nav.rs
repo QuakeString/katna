@@ -676,6 +676,7 @@ impl MailWindow {
                     icon_button("search-clear", "close", 22.0, th)
                         .tooltip(tip(tr!("search-clear"), th))
                         .on_click(cx.listener(|this, _, window, cx| {
+                            this.clear_keeps_open = true;
                             this.clear_search(cx);
                             this.focus_search(&FocusSearch, window, cx);
                         })),

@@ -101,9 +101,22 @@ pub fn read(paths: &Paths, email: &str, task_mails: &[String]) -> Result<Profile
             offset = date_offset(&raw);
         }
         let view = katna_render::message_view(&raw);
-        card.fill(signature_card(&view.body, summary.name.as_deref()));
+        let signed_with = katna_render::trim::plain(&view.body).signature;
+        let mut found = signature_card(&view.body, summary.name.as_deref());
+        // A colleague signed mail from a shared address: their number and
+        // title are not this person's.
+        if signed_with
+            .as_deref()
+            .is_some_and(|s| katna_render::signature::someone_else(s, summary.name.as_deref()))
+        {
+            found = Card {
+                website: found.website,
+                ..Card::default()
+            };
+        }
+        card.fill(found);
         if signature.is_none() {
-            signature = katna_render::trim::plain(&view.body).signature;
+            signature = signed_with;
         }
         if card.is_full() && offset.is_some() && signature.is_some() {
             break;
@@ -236,11 +249,12 @@ fn signature(lines: &[&str]) -> Vec<String> {
     };
     let mut out = Vec::new();
     for line in &lines[start + 1..] {
+        let line = katna_render::signature::unmark(line);
         if line.chars().count() > 100 {
             break;
         }
         if !line.is_empty() {
-            out.push((*line).to_owned());
+            out.push(line);
         }
         if out.len() == SIGNATURE_LINES {
             break;
@@ -629,6 +643,16 @@ mod tests {
             Some("+1 (555) 010-9999".to_owned())
         );
         assert_eq!(phone("Order 12345"), None);
+    }
+
+    #[test]
+    fn gmail_marks_are_not_read() {
+        let body = "Paid.\n\nRegards,\n*Demo Alam*\n\
+                    *M: *+9 <+919000012345>1 90000 12345 <+919000012345>\n";
+        assert_eq!(
+            signature_card(body, Some("Demo Alam")).phone.as_deref(),
+            Some("+91 90000 12345")
+        );
     }
 
     #[test]
