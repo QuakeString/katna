@@ -81,6 +81,7 @@ use crate::widgets::{elevation, icon, menu, menu_item, tip};
 pub(super) use attach::Attachment;
 use checks::Passed;
 use chips::Chips;
+pub(super) use quote::{signature_name, signature_tag};
 pub(in crate::window) use recipients::address_suggestions;
 use recipients::{Field, Suggestions};
 pub(super) use scheduled::NAV_KEY as SCHEDULED_NAV_KEY;
@@ -88,6 +89,7 @@ use security::Sealing;
 pub(super) use sent::{Sending, SentCard};
 pub(super) use signature_editor::signature_content;
 use tools::Popup;
+pub(super) use tools::below_end;
 
 const WIDTH: f32 = 560.0;
 const MAX_HEIGHT: f32 = 620.0;
@@ -1089,7 +1091,7 @@ impl MailWindow {
     /// The signature a new message starts with: for new mail the default;
     /// in a conversation the one the user signed their newest message in it
     /// with, else the default for replies.
-    fn signature_for(&self, kind: Kind) -> Option<u32> {
+    pub(in crate::window) fn signature_for(&self, kind: Kind) -> Option<u32> {
         let sending = &self.config.sending;
         let id = match kind {
             Kind::New => sending.new_mail_signature,
@@ -1123,7 +1125,7 @@ impl MailWindow {
 
     /// Puts signature `id` (or none) in the open message in place of the
     /// one there.
-    fn choose_signature(&mut self, id: Option<u32>, cx: &mut Context<Self>) {
+    pub(in crate::window) fn choose_signature(&mut self, id: Option<u32>, cx: &mut Context<Self>) {
         let new = self.config.sending.signature(id).map(signatures::doc);
         let Some(compose) = &mut self.compose else {
             return;
@@ -1848,7 +1850,7 @@ impl MailWindow {
                 let card =
                     self.sending
                         .add_card(key, message_id, Arc::new(raw.clone()), chat, |id| {
-                            sent::row(key, id, me, subject, snippet)
+                            sent::row(key, id, from, me, subject, snippet)
                         });
                 if chat {
                     self.chat_countdown(card, delay, cx);
@@ -2525,7 +2527,7 @@ impl MailWindow {
                             .flex_none()
                             .mx(px(12.0))
                             .h(px(1.0))
-                            .bg(rgba(fade(th.divider, FAINT_LINE))),
+                            .bg(rgba(th.faint_line(FAINT_LINE))),
                     );
                 self.glide_rows(rows, rows_shown, cx)
             });
@@ -2577,7 +2579,7 @@ impl MailWindow {
             .rounded(px(12.0))
             .bg(rgba(th.surface))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .shadow(elevation(th, 1.5))
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
                 this.drop_on_compose(paths, cx);
@@ -2717,7 +2719,7 @@ impl MailWindow {
         // A chip being dragged can land in Cc or Bcc even while hidden.
         let dragging = self.chip_dragging(cx).is_some();
         let to = self.recipient_row(row(tr!("compose-to"), to_field), Field::To, th, cx);
-        let line = rgba(fade(th.divider, FAINT_LINE));
+        let line = rgba(th.faint_line(FAINT_LINE));
         div()
             .flex_none()
             .flex()

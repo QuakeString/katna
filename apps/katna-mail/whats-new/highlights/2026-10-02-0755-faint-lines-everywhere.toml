@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Faint lines everywhere"
+text = """
+In light mode, every line between things, under headers and around cards is
+now as faint as the lines between mails, including the summary card. Fields,
+chips and buttons keep their clear outline.
+"""

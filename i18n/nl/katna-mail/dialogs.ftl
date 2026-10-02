@@ -167,7 +167,6 @@ tour-search-text = Zoeken werkt ook offline. De knop aan de rechterkant voegt fi
 tour-menu-title = De mappen tonen of verbergen
 tour-menu-text = Deze knop klapt de mappenlijst weg. Terwijl die verborgen is, laat je de aanwijzer op E-mail links rusten om de mappen te zien.
 tour-apps-title = Je apps
-tour-apps-text = E-mail woont nu hier. Agenda, Contacten, Taken, Notities en Feeds komen er in deze balk bij.
 tour-tabs-title = Inbox-tabbladen
 tour-tabs-text = Nieuwe e-mail wordt gesorteerd in Primair, Reclame, Sociaal, Updates en Forums. Je kunt de tabbladen uitzetten in de snelle instellingen.
 tour-list-title = Je berichten

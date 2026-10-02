@@ -166,7 +166,6 @@ tour-search-text = Arama çevrimdışı da çalışır. Sağ uçtaki düğme fil
 tour-menu-title = Klasörleri göster veya gizle
 tour-menu-text = Bu düğme klasör listesini katlar. Gizliyken klasörleri görmek için işaretçiyi soldaki Posta'nın üzerinde tutun.
 tour-apps-title = Uygulamalarınız
-tour-apps-text = Posta artık burada. Takvim, Kişiler, Görevler, Notlar ve Akışlar da bu çubukta ona katılacak.
 tour-tabs-title = Gelen Kutusu sekmeleri
 tour-tabs-text = Yeni postalar Birincil, Tanıtımlar, Sosyal, Güncellemeler ve Forumlar olarak sıralanır. Sekmeleri hızlı ayarlardan kapatabilirsiniz.
 tour-list-title = İletileriniz

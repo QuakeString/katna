@@ -47,7 +47,7 @@ use crate::sidebar::Role;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     TOOLBAR_HEIGHT, card_outline, card_shadow, elevation, icon, icon_button, icon_button_colored,
-    menu, menu_item, menu_item_icon, pane_line, placeholder, tip, toolbar,
+    menu, menu_item, menu_item_icon, placeholder, tip, toolbar,
 };
 
 /// The inbox tabs' pill bar: its height and inset, and each tab's height,
@@ -285,7 +285,7 @@ impl MailWindow {
                     .items_center()
                     .justify_center()
                     .border_b_1()
-                    .border_color(rgba(pane_line(th)))
+                    .border_color(rgba(th.divider))
                     .child(self.render_tabs(None, th, cx))
             });
         let banner = self.render_select_banner(th, cx);
@@ -1535,7 +1535,7 @@ impl MailWindow {
                 .gap(px(8.0))
                 .bg(rgba(th.read_row))
                 .border_b_1()
-                .border_color(rgba(pane_line(th)))
+                .border_color(rgba(th.divider))
                 .text_size(px(13.0))
                 .child(text)
                 .child(
@@ -1924,10 +1924,12 @@ impl MailWindow {
                 Some(Listing::Folder(_)) if self.first_sync => {
                     return first_sync_placeholder(th);
                 }
-                Some(Listing::Folder(_)) if self.shows_tabs() => match self.tabs.get(self.tab) {
-                    Some(tab) => tr!("list-empty-tab", tab = tab.label()),
-                    None => tr!("list-empty-tab-unknown"),
-                },
+                Some(Listing::Folder(_) | Listing::Unified { .. }) if self.shows_tabs() => {
+                    match self.tabs.get(self.tab) {
+                        Some(tab) => tr!("list-empty-tab", tab = tab.label()),
+                        None => tr!("list-empty-tab-unknown"),
+                    }
+                }
                 Some(Listing::Folder(_) | Listing::Unified { .. }) => match self.folder_name() {
                     Some(folder) => tr!("list-empty-folder", folder = folder),
                     None => tr!("list-empty-folder-unknown"),
@@ -1974,6 +1976,22 @@ impl MailWindow {
         )
         .size_full()
         .into_any_element()
+    }
+
+    /// The account of a line of the whole unified inbox, which mixes
+    /// accounts: its color and its name as the folder pane shows it.
+    fn line_account(&self, row: &Row) -> Option<(u32, String)> {
+        let Some(Listing::Unified { account: None, .. }) = &self.listing else {
+            return None;
+        };
+        let account = self.accounts.iter().find(|a| a.id == row.account)?;
+        let name = self
+            .tree
+            .accounts
+            .iter()
+            .find(|a| a.id == row.account)
+            .map_or_else(|| account.address.clone(), |a| a.name.clone());
+        Some((crate::theme::avatar_color(account.address.trim()), name))
     }
 
     fn render_row(
@@ -2259,6 +2277,7 @@ impl MailWindow {
                     off("row-important-rest", "important", 18.0)
                 })
         });
+        let account = self.line_account(&row);
         let correspondent = div()
             .flex()
             .flex_row()
@@ -2332,7 +2351,22 @@ impl MailWindow {
                         .child(icon("forum", th.text_faint, 14.0))
                         .child(row.count.to_string()),
                 )
-            });
+            })
+            // The account of a line of the whole unified inbox: its dot
+            // after the names, with its name where the line has room.
+            .children(account.map(|(color, name)| {
+                div()
+                    .flex_none()
+                    .pl(px(4.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(5.0))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(div().size(px(7.0)).rounded_full().bg(rgba(color)))
+                    .when(stacked, |d| d.child(name))
+            }));
         // The quick actions fade in over the date.
         let actions = hovered.then(|| {
             div()
@@ -2613,7 +2647,7 @@ impl MailWindow {
                 .pr(px(14.0))
                 .rounded_full()
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .bg(rgba(th.surface))
                 .when(!downloading, |d| {
                     d.cursor_pointer()
@@ -2656,7 +2690,7 @@ impl MailWindow {
                 .justify_center()
                 .rounded_full()
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .bg(rgba(if open { th.hover } else { th.surface }))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
@@ -2893,15 +2927,10 @@ pub(super) fn preview_color(th: &Theme) -> u32 {
     mix(th.text_faint, th.surface, 0.35)
 }
 
-/// The faint line between mail rows: well under the app's other dividers,
-/// so the rows read as one calm list. In light mode it matches the pane
-/// lines.
+/// The faint line between mail rows: well under the app's other dividers
+/// in dark mode, so the rows read as one calm list.
 pub(super) fn row_line(th: &Theme) -> u32 {
-    if th.dark {
-        fade(th.divider, 0.6)
-    } else {
-        pane_line(th)
-    }
+    th.faint_line(0.6)
 }
 
 /// The background behind the inbox tabs: the search box's colour in dark

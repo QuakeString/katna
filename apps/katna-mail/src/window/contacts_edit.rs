@@ -719,7 +719,7 @@ impl MailWindow {
                     .gap(px(6.0))
                     .rounded(px(8.0))
                     .border_1()
-                    .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+                    .border_color(rgba(if on { th.nav_selected } else { th.outline }))
                     .when(on, |d| d.bg(rgba(th.nav_selected)))
                     .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
                     .cursor_pointer()

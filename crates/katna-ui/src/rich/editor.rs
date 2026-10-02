@@ -348,6 +348,9 @@ pub struct RichEditor {
     next_image_id: u64,
     /// The editor's width at the last paint, for sizing images.
     width: Pixels,
+    /// The part of the editor in sight, in window coordinates: inside
+    /// whatever scrolls or clips it.
+    shown: Bounds<Pixels>,
     /// The editor had the focus when last drawn.
     pub(crate) drawn_focused: std::cell::Cell<bool>,
     /// The marked words under the pointer, and the wait before their fixes
@@ -408,6 +411,7 @@ impl RichEditor {
             drawn_focused: std::cell::Cell::new(false),
             next_image_id: 0,
             width: px(0.0),
+            shown: Bounds::default(),
             hover: None,
             hover_task: None,
             clicked: None,
@@ -647,6 +651,11 @@ impl RichEditor {
         self.ghost_long && self.showing_suggestion()
     }
 
+    /// The part of the editor in sight, in window coordinates.
+    pub fn shown_bounds(&self) -> Bounds<Pixels> {
+        self.shown
+    }
+
     /// The selected text when it can be rephrased, with where its end was
     /// drawn (window coordinates): text in top paragraphs the user writes,
     /// not reaching into a quote, the signature, a table or a picture.
@@ -668,13 +677,20 @@ impl RichEditor {
         if !text.chars().any(char::is_alphabetic) {
             return None;
         }
-        let layout = self.layouts.get(&end.path)?;
-        let (range, whole_end) = self.selection_in(end.path)?;
-        let last = layout.selection_rects(range, whole_end).pop()?;
-        Some((
-            text,
-            Bounds::new(last.origin + layout.bounds.origin, last.size),
-        ))
+        // Where the selection's last drawn piece ends: a selection ending
+        // at the start of a line shows nothing on that line, so it ends
+        // on the line before.
+        let last = self
+            .doc
+            .covered(start, end)
+            .into_iter()
+            .rev()
+            .find_map(|(path, range)| {
+                let layout = self.layouts.get(&path)?;
+                let rect = layout.selection_rects(range, path != end.path).pop()?;
+                Some(Bounds::new(rect.origin + layout.bounds.origin, rect.size))
+            })?;
+        Some((text, last))
     }
 
     /// Puts plain `text` in place of the selection, as one step Undo takes
@@ -3102,7 +3118,9 @@ impl Element for Anchor {
             }
         });
         let width = bounds.size.width;
+        let shown = bounds.intersect(&window.content_mask().bounds);
         self.editor.update(cx, |editor, cx| {
+            editor.shown = shown;
             if editor.width != width {
                 editor.width = width;
                 // Images size to the width; draw again with it.

@@ -1535,7 +1535,7 @@ fn label_button(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
         .gap(px(4.0))
         .rounded_full()
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
         .text_size(px(12.0))
@@ -1601,7 +1601,7 @@ fn section(title: String, rows: Vec<AnyElement>, tint: usize, th: &Theme) -> Any
         .gap(px(14.0))
         .rounded(px(14.0))
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .bg(gpui::linear_gradient(
             180.0,
             gpui::linear_color_stop(rgba(top), 0.0),

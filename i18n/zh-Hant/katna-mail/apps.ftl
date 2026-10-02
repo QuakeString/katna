@@ -9,7 +9,6 @@ rail-calendar = 日曆
 rail-contacts = 聯絡人
 rail-tasks = 工作
 rail-notes = 記事
-rail-feeds = 資訊來源
 
 ## Pages of apps still to come
 
@@ -18,7 +17,6 @@ app-coming-soon = 即將推出
 app-calendar-promise = 你的 CalDAV 日曆、郵件中的會議邀請和提醒，全都在收件匣旁邊。
 app-tasks-promise = 與 CalDAV 同步的待辦清單，以及從郵件建立的工作。
 app-notes-promise = 快速記事，以及為郵件或會話群組留下的記事，方便日後查看。
-app-feeds-promise = 在郵件旁閱讀 RSS 和 Atom 資訊來源。
 
 ## Contacts page
 

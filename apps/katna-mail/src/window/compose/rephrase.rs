@@ -97,6 +97,33 @@ pub(in crate::window) enum Fix {
     Settings(Section),
 }
 
+/// The sparkle by selected text: its size.
+const REPHRASE_BUTTON: f32 = 30.0;
+
+/// Where the sparkle goes for a selection ending at `end`: under the
+/// end, else beside it, always inside `shown`, the part of the text box in
+/// sight.
+fn rephrase_button_at(end: Bounds<Pixels>, shown: Bounds<Pixels>) -> Point<Pixels> {
+    let size = px(REPHRASE_BUTTON);
+    let gap = px(4.0);
+    let below = end.bottom_right() + point(gap, gap);
+    let at = if below.y + size + gap <= shown.bottom() {
+        below
+    } else {
+        point(
+            end.right() + gap,
+            end.origin.y + (end.size.height - size) / 2.0,
+        )
+    };
+    if shown.size.width <= size || shown.size.height <= size {
+        return at;
+    }
+    point(
+        at.x.clamp(shown.left() + gap, shown.right() - size - gap),
+        at.y.clamp(shown.top() + gap, shown.bottom() - size - gap),
+    )
+}
+
 impl MailWindow {
     /// Whether writing help may be used for the open message: it is on,
     /// and the message is not encrypted unless Settings allows that.
@@ -128,27 +155,26 @@ impl MailWindow {
             return None;
         }
         let (_, at) = self.rephrase_selection(cx)?;
+        let shown = c.body.read(cx).shown_bounds();
+        // A solid round base under the usual icon button and its hover.
         let button = div()
-            .id("compose-rephrase")
             .occlude()
-            .size(px(30.0))
-            .flex()
-            .items_center()
-            .justify_center()
+            .size(px(REPHRASE_BUTTON))
             .rounded_full()
             .bg(rgba(th.menu))
             .shadow(elevation(th, 2.0))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
-            .tooltip(tip(tr!("compose-ai-rephrase-tip"), th))
-            // The text keeps its selection.
-            .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
-            .on_click(cx.listener(|this, _, window, cx| this.open_rephrase(window, cx)))
-            .child(icon("sparkle", th.accent, 18.0));
+            .child(
+                icon_button_colored("compose-rephrase", "sparkle", 18.0, th.accent, th)
+                    .size(px(REPHRASE_BUTTON))
+                    .tooltip(tip(tr!("compose-ai-rephrase-tip"), th))
+                    // The text keeps its selection.
+                    .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
+                    .on_click(cx.listener(|this, _, window, cx| this.open_rephrase(window, cx))),
+            );
         Some(
             deferred(
                 anchored()
-                    .position(at.bottom_right() + point(px(4.0), px(4.0)))
+                    .position(rephrase_button_at(at, shown))
                     .snap_to_window_with_margin(px(8.0))
                     .child(button),
             )
@@ -670,7 +696,7 @@ impl MailWindow {
             .p(px(10.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .bg(rgba(th.surface))
             .line_height(px(20.0))
             .child(match &r.state {

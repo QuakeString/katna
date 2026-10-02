@@ -1752,7 +1752,16 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   and spam. Each opens to one line per account. The lists are read like
   search results (no one listed folder), merged by date in
   `Store::spread_threads` and `spread_message_ids`, which show server
-  copies of one message once.
+  copies of one message once. The unified Inbox has inbox tabs shared by
+  every account (Settings > Inbox > Unified inbox, `mail.unified_tabs`:
+  Gmail's five by default, or Focused and Other, Inbox, Newsletters and
+  Notifications, or none): each mail shows in the tab of its stored
+  category, except that a category an account lists in its first tab (a
+  tab it turned off, or no tabs) counts as Primary there too
+  (`Store::spread_inbox_threads` with `SpreadTabs`). One account's line
+  under it shows that account's own tabs. Lines of the whole unified
+  inbox carry a dot in the account's picture colour after the names, and
+  the account's name where the line stacks.
 - **One card.** The list and the open message share a white card with
   rounded corners on a tinted page. The list is one line per message:
   star, sender, subject in bold if unread with the snippet after it, and
@@ -4940,6 +4949,26 @@ Arch is the first, Windows and the others follow the same flow.
   reading the manifest again before each new try, because a new build
   can publish while a download runs. A download that still fails shows
   as such in the Update dialog, with Try again.
+- **Patches: download only what changed** (owner's choice, 2 October
+  2026, zstd as the safest of the methods studied). Most updates change
+  little, but whole-program optimisation shifts bytes throughout the
+  programs, so block matching (zsync, as AppImage uses) reuses only
+  about a quarter of the package; a zstd patch is 3.2 MB for one merge
+  and 6.4 MB for a day's seven, against about 40 MB in full. CI's publish
+  job keeps the last three builds' packages in the release and makes a
+  patch from each to the new one (`zstd --patch-from --long=28`, between
+  the uncompressed packages), listed in the manifest (`patches`) with
+  the new package's uncompressed SHA-256, size and signature (`tar`).
+  After installing, the root helper keeps a copy of the installed
+  package in `/var/lib/katna/installed`, which only root can change (a
+  user's cache clean-up cannot remove it; removing `katna-git` does);
+  after `pacman -Syu` the daemon finds it in pacman's cache instead. When
+  the manifest has a patch from the installed version and the copy is
+  there, the daemon downloads the patch, makes the uncompressed package
+  from the two, and checks its size and SHA-256; the helper checks its
+  signature and installs it like the full package (pacman takes either).
+  Anything else, or any failure, downloads the full package. The Update
+  dialog shows the size actually downloaded.
 - **The daemon checks and downloads** (the only network user): two
   minutes after it starts, then every six hours, never on a metered
   connection unless the user presses Check for updates. With

@@ -1797,7 +1797,7 @@ impl MailWindow {
             .h(px(FOLDER_HEIGHT))
             .rounded(px(CARD_RADIUS))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .bg(rgba(th.surface))
             .hover(|s| s.bg(rgba(th.hover)))
             .child(
@@ -2011,7 +2011,7 @@ impl MailWindow {
             .overflow_hidden()
             .rounded(px(CARD_RADIUS))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .bg(rgba(th.surface))
             .hover(|s| s.shadow(crate::widgets::elevation(th, 1.0)))
             .child(head)

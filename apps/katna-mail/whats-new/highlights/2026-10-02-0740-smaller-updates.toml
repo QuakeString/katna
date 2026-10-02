@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Smaller updates"
+text = """
+Updates now download only what changed, usually a few megabytes instead of
+the whole package. Katna builds the new version from the one you have
+and checks it before installing, and downloads the full package whenever
+it cannot.
+"""

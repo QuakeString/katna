@@ -294,7 +294,7 @@ impl MailWindow {
                     .overflow_hidden()
                     .rounded(px(12.0))
                     .border_1()
-                    .border_color(rgba(th.divider))
+                    .border_color(rgba(th.outline))
                     .child(animation(
                         highlight.name,
                         dialog.animations.get(highlight.name),

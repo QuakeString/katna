@@ -326,44 +326,25 @@ impl MailWindow {
             return None;
         }
         let signature = self.config.sending.signature(compose.signature)?;
-        let name = if signature.name.trim().is_empty() {
-            tr!("compose-tool-signature-untitled")
-        } else {
-            signature.name.clone()
-        };
         let open = compose.popup == Some(Popup::SignatureTag);
         Some(
-            div()
-                .id("compose-signature-tag")
-                .absolute()
-                .right_0()
-                .top(px(top))
-                .h(px(20.0))
-                .pl(px(6.0))
-                .pr(px(4.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(4.0))
-                .rounded_full()
-                .bg(rgba(if open { th.chip } else { th.tray() }))
-                .hover(|s| s.bg(rgba(th.chip)))
-                .text_size(px(11.5))
-                .text_color(rgba(th.text_dim))
-                .cursor_pointer()
-                .when(!open, |d| {
-                    d.tooltip(tip(tr!("compose-signature-tag-tip"), th))
-                })
-                .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
-                .on_click(cx.listener(|this, _, _, cx| {
-                    cx.stop_propagation();
-                    this.toggle_popup(Popup::SignatureTag, cx);
-                }))
-                .child(icon("signature", th.text_dim, 12.0))
-                .child(name)
-                .child(icon("chevron-down", th.text_dim, 12.0))
-                .when(open, |d| d.child(below_end(self.signature_menu(th, cx))))
-                .into_any_element(),
+            signature_tag(
+                "compose-signature-tag",
+                signature_name(Some(signature)),
+                open,
+                th,
+            )
+            .absolute()
+            .right_0()
+            .top(px(top))
+            .on_click(cx.listener(|this, _, _, cx| {
+                cx.stop_propagation();
+                this.toggle_popup(Popup::SignatureTag, cx);
+            }))
+            .when(open, |d| {
+                d.child(below_end(self.compose_signature_menu(th, cx)))
+            })
+            .into_any_element(),
         )
     }
 
@@ -403,7 +384,7 @@ impl MailWindow {
             .rounded_full()
             .bg(rgba(th.surface))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .tooltip(tip(tr!("compose-remove-trimmed"), th))
@@ -636,6 +617,50 @@ impl MailWindow {
             cx.notify();
         }
     }
+}
+
+/// What the signature tag and its list call `signature`; `None` is no
+/// signature.
+pub(in crate::window) fn signature_name(
+    signature: Option<&katna_core::config::Signature>,
+) -> String {
+    match signature {
+        None => tr!("compose-tool-signature-none"),
+        Some(s) if s.name.trim().is_empty() => tr!("compose-tool-signature-untitled"),
+        Some(s) => s.name.clone(),
+    }
+}
+
+/// The faint tag naming the signature a reply is signed with, `open` while
+/// its list shows: in Compose and in the summary card's reply.
+pub(in crate::window) fn signature_tag(
+    id: &'static str,
+    name: String,
+    open: bool,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .h(px(20.0))
+        .pl(px(6.0))
+        .pr(px(4.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(4.0))
+        .rounded_full()
+        .bg(rgba(if open { th.chip } else { th.tray() }))
+        .hover(|s| s.bg(rgba(th.chip)))
+        .text_size(px(11.5))
+        .text_color(rgba(th.text_dim))
+        .cursor_pointer()
+        .when(!open, |d| {
+            d.tooltip(tip(tr!("compose-signature-tag-tip"), th))
+        })
+        .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
+        .child(icon("signature", th.text_dim, 12.0))
+        .child(name)
+        .child(icon("chevron-down", th.text_dim, 12.0))
 }
 
 #[cfg(test)]

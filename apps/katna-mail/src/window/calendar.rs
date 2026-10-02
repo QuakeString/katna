@@ -3170,7 +3170,7 @@ impl MailWindow {
                     .items_center()
                     .rounded_full()
                     .border_1()
-                    .border_color(rgba(if on { th.accent } else { th.divider }))
+                    .border_color(rgba(if on { th.accent } else { th.outline }))
                     .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
                     .text_size(px(14.0))
                     .font_weight(FontWeight::MEDIUM)

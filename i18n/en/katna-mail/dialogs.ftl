@@ -261,7 +261,7 @@ tour-menu-title = Show or hide the folders
 # "Mail" is the name of the Mail app's button in the bar at the left.
 tour-menu-text = This button folds the folder list away. While it is hidden, rest the pointer on Mail at the left to see the folders.
 tour-apps-title = Your apps
-tour-apps-text = Mail lives here now. Calendar, Contacts, Tasks, Notes and Feeds will join it in this bar.
+tour-apps-text = Mail lives here, beside Calendar, Contacts, Tasks, Notes and Files.
 tour-tabs-title = Inbox tabs
 # Primary, Promotions, Social, Updates and Forums are the names of the
 # Inbox tabs; use the same words as those tabs.

@@ -163,7 +163,6 @@ tour-search-text = Carian juga berfungsi di luar talian. Butang di hujung kanan 
 tour-menu-title = Tunjukkan atau sembunyikan folder
 tour-menu-text = Butang ini melipat senarai folder. Semasa ia tersembunyi, letakkan penuding pada Mel di sebelah kiri untuk melihat folder.
 tour-apps-title = Aplikasi anda
-tour-apps-text = Mel kini berada di sini. Kalendar, Kenalan, Tugas, Nota dan Suapan akan menyertainya dalam bar ini.
 tour-tabs-title = Tab peti masuk
 tour-tabs-text = Mel baharu diisih ke dalam Utama, Promosi, Sosial, Kemas kini dan Forum. Anda boleh mematikan tab dalam tetapan pantas.
 tour-list-title = Mesej anda

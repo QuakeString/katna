@@ -1846,7 +1846,7 @@ impl MailWindow {
             .rounded(px(16.0))
             .bg(rgba(if th.dark { th.read_row } else { th.surface }))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .child(rows.flex_none().pb(px(8.0)).flex().flex_col())
     }
 

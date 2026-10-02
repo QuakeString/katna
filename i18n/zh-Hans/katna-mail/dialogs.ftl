@@ -169,7 +169,6 @@ tour-search-text = 搜索在离线时也能使用。最右侧的按钮可以添�
 tour-menu-title = 显示或隐藏文件夹
 tour-menu-text = 此按钮可以收起文件夹列表。隐藏时，将指针停在左侧的“邮件”上即可查看文件夹。
 tour-apps-title = 你的应用
-tour-apps-text = 邮件现在就在这里。日历、联系人、任务、笔记和订阅源将陆续加入这一栏。
 tour-tabs-title = 收件箱标签页
 tour-tabs-text = 新邮件会被分类到“主要”“推广”“社交”“动态”和“论坛”中。你可以在快速设置中关闭这些标签页。
 tour-list-title = 你的邮件

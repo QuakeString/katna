@@ -9,6 +9,7 @@
 use std::collections::HashSet;
 
 use jiff::tz::TimeZone;
+use katna_ai::draft::is_sign_off;
 use katna_core::Paths;
 use katna_dav::Occurrence;
 use katna_store::calendar::{EventData, EventStatus, StoredEvent};
@@ -221,40 +222,6 @@ fn own_lines(body: &str) -> Vec<&str> {
         lines.push(t);
     }
     lines
-}
-
-/// Whether `line` closes a message, like "Best regards,".
-fn is_sign_off(line: &str) -> bool {
-    const SIGN_OFFS: &[&str] = &[
-        "regards",
-        "best regards",
-        "kind regards",
-        "warm regards",
-        "warmest regards",
-        "with regards",
-        "many thanks",
-        "thanks",
-        "thank you",
-        "thanks and regards",
-        "thanks & regards",
-        "thanks & best regards",
-        "cheers",
-        "best",
-        "all the best",
-        "best wishes",
-        "sincerely",
-        "yours sincerely",
-        "yours truly",
-        "yours",
-        "br",
-        "cordially",
-        "respectfully",
-    ];
-    let line = line
-        .trim()
-        .trim_end_matches([',', '.', '!', ' '])
-        .to_lowercase();
-    SIGN_OFFS.contains(&line.as_str())
 }
 
 /// The lines of the signature in `lines`: after a "-- " line, else after

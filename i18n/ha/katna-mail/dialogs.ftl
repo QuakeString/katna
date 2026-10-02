@@ -166,7 +166,6 @@ tour-search-text = Bincike yana aiki har ma ba tare da intanet ba. Maɓallin da 
 tour-menu-title = Nuna ko ɓoye folda
 tour-menu-text = Wannan maɓalli yana naɗe jerin folda. Yayin da yake ɓoye, ku ajiye alamar linzamin kwamfuta a kan Wasiƙu a hagu don ganin folda.
 tour-apps-title = Manhajojinku
-tour-apps-text = Wasiƙu suna nan a yanzu. Kalanda, Lambobin sadarwa, Ayyuka, Bayanai da Ciyarwa za su haɗu da su a wannan sanda.
 tour-tabs-title = Shafukan akwatin saƙo
 tour-tabs-text = Ana raba sababbin wasiƙu zuwa Na farko, Tallace-tallace, Zamantakewa, Sabuntawa da Dandali. Kuna iya kashe shafukan a saituna masu sauri.
 tour-list-title = Saƙonninku

@@ -392,7 +392,7 @@ impl MailWindow {
                                 .items_center()
                                 .rounded(px(6.0))
                                 .border_1()
-                                .border_color(rgba(th.divider))
+                                .border_color(rgba(th.outline))
                                 .child(div().flex_1().child(tools.link.clone())),
                         )
                         .child(

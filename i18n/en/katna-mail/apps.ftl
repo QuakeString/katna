@@ -17,8 +17,6 @@ rail-calendar = Calendar
 rail-contacts = Contacts
 rail-tasks = Tasks
 rail-notes = Notes
-# RSS and Atom news feeds.
-rail-feeds = Feeds
 # Every attachment of every account in one place.
 rail-files = Files
 
@@ -30,7 +28,6 @@ app-coming-soon = Coming soon
 app-calendar-promise = Your CalDAV calendars, meeting invitations from your mail and reminders, next to your inbox.
 app-tasks-promise = To-do lists that sync with CalDAV, and tasks made from mail.
 app-notes-promise = Quick notes, and notes on a mail or conversation for later.
-app-feeds-promise = Read RSS and Atom feeds beside your mail.
 
 ## Contacts page
 

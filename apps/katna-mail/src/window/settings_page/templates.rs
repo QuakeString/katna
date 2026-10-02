@@ -370,7 +370,7 @@ impl MailWindow {
                 .gap(px(6.0))
                 .rounded(px(8.0))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .text_size(px(13.0))
                 .child(icon("attachment", th.text_dim, 16.0))
                 .child(div().max_w(px(200.0)).truncate().child(f.name.clone()))

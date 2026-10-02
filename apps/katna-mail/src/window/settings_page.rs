@@ -41,7 +41,7 @@ use super::tab_strip::TabStrip;
 use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts};
 use crate::autostart::Start;
 use crate::tabs::{self, Provider};
-use crate::theme::{Theme, fade};
+use crate::theme::Theme;
 use crate::widgets::{FocusRing, ScaledEdge, TabStops, icon, icon_button, outlined_button, tip};
 
 mod ai;
@@ -1263,7 +1263,7 @@ impl MailWindow {
             .gap(px(12.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(|this, event: &gpui::ClickEvent, window, cx| {
@@ -1758,6 +1758,14 @@ impl MailWindow {
                 ),
                 th,
             ))
+            .when(on && self.shows_unified(), |d| {
+                d.child(self.row(
+                    tr!("settings-inbox-unified"),
+                    Some(&tr!("settings-inbox-unified-detail")),
+                    self.unified_tabs_choice(th, cx),
+                    th,
+                ))
+            })
             .when(on, |d| {
                 d.children(accounts.iter().enumerate().map(|(ix, account)| {
                     let provider = self.provider(account);
@@ -1882,6 +1890,39 @@ impl MailWindow {
                 )
                 .children(checks)
             })
+            .into_any_element()
+    }
+
+    /// The unified inbox's tabs, shared by every account.
+    fn unified_tabs_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let current = match self.config.mail.unified_tabs {
+            TabStyle::Gmail => TabStyle::Auto,
+            style => style,
+        };
+        let styles = [
+            TabStyle::Auto,
+            TabStyle::Focused,
+            TabStyle::Zoho,
+            TabStyle::Off,
+        ];
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .children(styles.into_iter().enumerate().map(|(n, style)| {
+                self.choice_row(
+                    ("page-unified-tab-style", n),
+                    style_name(style),
+                    current == style,
+                    th,
+                    cx,
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.config.mail.unified_tabs = style;
+                    this.save_config();
+                    this.relist(cx);
+                }))
+            }))
             .into_any_element()
     }
 
@@ -2433,7 +2474,7 @@ impl MailWindow {
         let changed = !config.keys.is_empty();
         let phone = self.layout.shape.phone > 0.5;
         // Faint lines between the shortcuts, so the keys stand out.
-        let row_line = fade(th.divider, 0.35);
+        let row_line = th.faint_line(0.35);
         let groups = Group::ALL.map(|group| {
             let rows =
                 SHORTCUTS
@@ -3086,7 +3127,7 @@ fn field_box(id: &'static str, th: &Theme) -> Stateful<Div> {
         .px(px(12.0))
         .rounded(px(8.0))
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .text_size(px(14.0))
 }
 
@@ -3099,7 +3140,7 @@ fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> 
         .items_center()
         .rounded(px(8.0))
         .border_1()
-        .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+        .border_color(rgba(if on { th.nav_selected } else { th.outline }))
         .bg(rgba(if on { th.nav_selected } else { th.surface }))
         .text_color(rgba(if on {
             th.nav_selected_text
@@ -3133,7 +3174,7 @@ fn key_chip(id: impl Into<gpui::ElementId>, label: String, off: bool, th: &Theme
         .items_center()
         .rounded(px(6.0))
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .bg(rgba(th.page))
         .text_size(px(13.0))
         .font_weight(FontWeight::MEDIUM)

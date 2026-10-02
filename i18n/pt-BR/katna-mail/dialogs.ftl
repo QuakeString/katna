@@ -168,7 +168,6 @@ tour-search-text = A pesquisa também funciona off-line. O botão na ponta direi
 tour-menu-title = Mostre ou oculte as pastas
 tour-menu-text = Este botão recolhe a lista de pastas. Enquanto ela estiver oculta, pare o ponteiro sobre E-mail, à esquerda, para ver as pastas.
 tour-apps-title = Seus apps
-tour-apps-text = O E-mail mora aqui agora. Agenda, Contatos, Tarefas, Notas e Feeds vão se juntar a ele nesta barra.
 tour-tabs-title = Guias da Caixa de entrada
 tour-tabs-text = Os novos e-mails são separados em Principal, Promoções, Social, Atualizações e Fóruns. Você pode desativar as guias nas configurações rápidas.
 tour-list-title = Suas mensagens

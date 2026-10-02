@@ -169,7 +169,6 @@ tour-search-text = 離線時也能搜尋。最右側的按鈕可以加入篩選�
 tour-menu-title = 顯示或隱藏資料夾
 tour-menu-text = 這個按鈕會收合資料夾清單。隱藏時，將指標停在左側的「郵件」上即可查看資料夾。
 tour-apps-title = 你的應用程式
-tour-apps-text = 郵件現在就在這裡。日曆、聯絡人、工作、記事和資訊來源也將陸續加入這一列。
 tour-tabs-title = 收件匣分頁
 tour-tabs-text = 新郵件會分類到「主要」、「促銷內容」、「社交網路」、「最新快訊」和「論壇」。你可以在快速設定中關閉這些分頁。
 tour-list-title = 你的郵件

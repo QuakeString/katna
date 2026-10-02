@@ -13,6 +13,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 
 use gpui::Context;
+use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_store::MessageId;
 
@@ -93,6 +94,7 @@ pub(super) fn new_message_id(domain: &str) -> String {
 pub(super) fn row(
     key: EntryKey,
     id: MessageId,
+    account: Option<AccountId>,
     me: (String, String),
     subject: String,
     snippet: String,
@@ -101,6 +103,7 @@ pub(super) fn row(
     Row {
         key,
         id,
+        account: account.unwrap_or(AccountId(0)),
         correspondent: if name.is_empty() {
             address.clone()
         } else {

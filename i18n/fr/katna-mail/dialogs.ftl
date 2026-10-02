@@ -168,7 +168,6 @@ tour-search-text = La recherche fonctionne aussi hors ligne. Le bouton à l’ex
 tour-menu-title = Afficher ou masquer les dossiers
 tour-menu-text = Ce bouton replie la liste des dossiers. Quand elle est masquée, placez le pointeur sur Courrier à gauche pour voir les dossiers.
 tour-apps-title = Vos applications
-tour-apps-text = Le courrier est ici désormais. Calendrier, Contacts, Tâches, Notes et Flux le rejoindront dans cette barre.
 tour-tabs-title = Onglets de la boîte de réception
 tour-tabs-text = Le nouveau courrier est trié dans Principale, Promotions, Réseaux sociaux, Notifications et Forums. Vous pouvez désactiver les onglets dans les paramètres rapides.
 tour-list-title = Vos messages

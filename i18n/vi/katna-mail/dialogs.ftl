@@ -165,7 +165,6 @@ tour-search-text = Tìm kiếm hoạt động cả khi ngoại tuyến. Nút ở
 tour-menu-title = Hiện hoặc ẩn thư mục
 tour-menu-text = Nút này thu gọn danh sách thư mục. Khi danh sách bị ẩn, hãy đặt con trỏ lên Thư ở bên trái để xem thư mục.
 tour-apps-title = Ứng dụng của bạn
-tour-apps-text = Thư đang ở đây. Lịch, Danh bạ, Việc cần làm, Ghi chú và Nguồn cấp sẽ cùng có mặt trên thanh này.
 tour-tabs-title = Các thẻ Hộp thư đến
 tour-tabs-text = Thư mới được xếp vào Chính, Quảng cáo, Mạng xã hội, Cập nhật và Diễn đàn. Bạn có thể tắt các thẻ trong cài đặt nhanh.
 tour-list-title = Thư của bạn
