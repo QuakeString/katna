@@ -41,6 +41,9 @@ pub struct Profile {
     /// The next meetings they are in (organizer or guest), soonest first:
     /// the next occurrence of each.
     pub meetings: Vec<Occurrence>,
+    /// The signature of their newest stored mail that has one, from its
+    /// sign-off down.
+    pub signature: Option<String>,
 }
 
 /// What their signature says.
@@ -88,6 +91,7 @@ pub fn read(paths: &Paths, email: &str, task_mails: &[String]) -> Result<Profile
         .map_err(|e| e.to_string())?;
     let mut card = Card::default();
     let mut offset = None;
+    let mut signature = None;
     let signed = store
         .messages_from(&email, SIGNED)
         .map_err(|e| e.to_string())?;
@@ -97,7 +101,10 @@ pub fn read(paths: &Paths, email: &str, task_mails: &[String]) -> Result<Profile
         }
         let view = katna_render::message_view(&raw);
         card.fill(signature_card(&view.body, summary.name.as_deref()));
-        if card.is_full() && offset.is_some() {
+        if signature.is_none() {
+            signature = katna_render::trim::plain(&view.body).signature;
+        }
+        if card.is_full() && offset.is_some() && signature.is_some() {
             break;
         }
     }
@@ -110,6 +117,7 @@ pub fn read(paths: &Paths, email: &str, task_mails: &[String]) -> Result<Profile
         offset,
         task_mails,
         meetings,
+        signature,
     })
 }
 

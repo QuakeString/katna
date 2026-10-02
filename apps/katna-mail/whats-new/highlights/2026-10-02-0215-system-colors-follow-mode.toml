@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Light and Dark work with System colors"
+text = """
+With Colors set to System and a desktop scheme that is only dark (or only
+light), Settings > Appearance > Mode now switches Katna between light and
+dark again: the other side uses Katna's own colors in your desktop's accent.
+"""

@@ -205,6 +205,8 @@ impl MailWindow {
         let compose = self.chat_compose(key);
         let popup = compose.and_then(|c| c.popup.clone());
         let format_on = compose.is_some_and(|c| c.format_bar);
+        let drawn = compose.map(|c| c.format_height.clone()).unwrap_or_default();
+        let bar_height = drawn.get().max(BAR);
         // Opens the reply first when nothing is written yet.
         let start = move |this: &mut Self, window: &mut Window, cx: &mut Context<Self>| {
             if this.chat_compose(key).is_none() {
@@ -437,8 +439,9 @@ impl MailWindow {
                 d.child(div().mx(px(16.0)).child(self.render_attachments(th, cx)))
             })
             // The formatting bar sits above the box, pushing the feed up
-            // rather than covering it; a narrow pane scrolls it sideways.
-            // It grows and fades in from the box, and back into it.
+            // rather than covering it; a narrow pane wraps its tools onto
+            // another line. It grows and fades in from the box, and back
+            // into it.
             .when(slide > 0.0, |d| {
                 d.child(
                     div()
@@ -446,7 +449,7 @@ impl MailWindow {
                         // Over the field, not the Send button.
                         .mr(px(12.0 + 6.0 + 40.0))
                         .mb(px(GAP * slide))
-                        .h(px(BAR * slide))
+                        .h(px(bar_height * slide))
                         .overflow_hidden()
                         .flex()
                         .flex_col()
@@ -459,8 +462,22 @@ impl MailWindow {
                             div()
                                 .id("chat-format-bar")
                                 .flex_none()
-                                .overflow_x_scroll()
-                                .child(self.render_chat_format_bar(th, cx)),
+                                .relative()
+                                .child(self.render_chat_format_bar(th, cx))
+                                .child(
+                                    canvas(
+                                        move |bounds, window, _| {
+                                            let height = katna_ui::unpx(bounds.size.height);
+                                            if (drawn.get() - height).abs() > 0.5 {
+                                                drawn.set(height);
+                                                window.request_animation_frame();
+                                            }
+                                        },
+                                        |_, _, _, _| {},
+                                    )
+                                    .absolute()
+                                    .size_full(),
+                                ),
                         ),
                 )
             })

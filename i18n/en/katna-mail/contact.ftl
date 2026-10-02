@@ -33,6 +33,12 @@ contact-latest = Latest
 # A click on their phone number (from their signature) calls it, through
 # the phone app or KDE Connect; the icon beside it copies it.
 contact-call = Call
+# After a phone number read from a signature: what kind of number it is.
+contact-phone-mobile = Mobile
+contact-phone-direct = Direct
+contact-phone-office = Office
+contact-phone-fax = Fax
+contact-phone-whatsapp = WhatsApp
 contact-copy-number = Copy number
 contact-number-copied = Number copied
 # Their time now, from the time zone their mail is dated in: "9:41 PM
@@ -53,8 +59,6 @@ contact-files = Files
 contact-tasks = Tasks
 # Their next meetings (organizer or guest), soonest first.
 contact-meetings = Upcoming meetings
-# In the chat view: the signature they signed with last in the open conversation.
-contact-signature = Signature
 # The card's section on where they work, read from the company's home page.
 contact-company = Company
 # $year: when the company started.

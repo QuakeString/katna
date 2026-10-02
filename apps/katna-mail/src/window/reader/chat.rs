@@ -235,7 +235,7 @@ impl Conversation {
             if !from.email.eq_ignore_ascii_case(email) {
                 return None;
             }
-            trim::contact_lines(self.said(part)?.signature.as_deref()?)
+            self.said(part)?.signature.clone()
         })
     }
 }
@@ -263,6 +263,8 @@ enum Line {
     Day(String),
     /// "Arjun added Sara".
     Joined(String, Vec<String>),
+    /// "Sara changed the subject to “Goa, final plan”".
+    Renamed(String, String),
     Bubble(Bubble),
 }
 
@@ -376,6 +378,7 @@ impl MailWindow {
         let mut lines = Vec::new();
         let mut day = None;
         let mut people: HashSet<String> = HashSet::new();
+        let mut subject: Option<String> = None;
         for (ix, part) in reader.parts.iter().enumerate() {
             let view = part.body.as_ref().and_then(|b| b.view.as_ref());
             let row = part.row.as_ref();
@@ -410,6 +413,23 @@ impl MailWindow {
                     lines.push(Line::Joined(who, new));
                 }
                 people.insert(email.to_lowercase());
+            }
+            // A new subject, not just "Re:" added, shows as a line.
+            let said = view
+                .map(|v| v.subject.as_str())
+                .or(row.map(|r| r.subject.as_str()))
+                .unwrap_or_default();
+            let key = katna_core::subject::normalize_subject(said).text;
+            if !key.is_empty() {
+                if subject.as_ref().is_some_and(|before| *before != key) {
+                    let who = if mine {
+                        tr!("chat-you")
+                    } else {
+                        first_name(&name).to_owned()
+                    };
+                    lines.push(Line::Renamed(who, bare_subject(said, &key)));
+                }
+                subject = Some(key);
             }
             let files = view
                 .map(|v| {
@@ -532,6 +552,18 @@ impl MailWindow {
                         names = names.join(", ")
                     ))
                     .into_any_element(),
+                Line::Renamed(who, subject) => div()
+                    .self_center()
+                    .max_w(relative(0.8))
+                    .my(px(4.0))
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(tr!(
+                        "chat-renamed",
+                        who = who.clone(),
+                        subject = subject.clone()
+                    ))
+                    .into_any_element(),
                 Line::Bubble(bubble) => self.render_bubble_row(bubble, th, cx),
             })
             .collect();
@@ -605,6 +637,7 @@ impl MailWindow {
                                     .pt(px(12.0))
                                     .pb(px(8.0))
                                     .children(feed)
+                                    .map(|d| self.text_area(d, cx))
                                     .child(
                                         gpui::canvas(
                                             move |bounds, window, _| {
@@ -1148,10 +1181,15 @@ impl MailWindow {
                 .child(bubble.name.clone())
         });
         let said = bubble.said.as_ref();
+        // Its text, signature and quotes are selectable, to copy or pin.
+        let mut pieces = self.text.pieces(bubble.ix, th);
         let text = said
             .map(|s| s.text.clone())
             .filter(|t| !t.is_empty())
-            .map(|t| div().child(t));
+            .map(|t| {
+                let (styled, holder) = pieces.piece(t.into(), Vec::new());
+                self.selectable_body(bubble.ix, holder.child(styled), cx)
+            });
         let not_read = said.is_none().then(|| {
             div()
                 .text_color(rgba(th.text_faint))
@@ -1199,25 +1237,28 @@ impl MailWindow {
                 })
         });
         let hidden = said.filter(|_| open).map(|s| {
-            div()
+            let signature = s.signature.clone().map(|sig| {
+                let (styled, holder) = pieces.piece(sig.into(), Vec::new());
+                holder.text_color(rgba(th.text_dim)).child(styled)
+            });
+            let quoted = s.quoted.clone().map(|quoted| {
+                let (styled, holder) = pieces.piece(quoted.into(), Vec::new());
+                holder
+                    .pl(px(10.0))
+                    .border_l_2()
+                    .border_color(rgba(th.divider))
+                    .text_color(rgba(th.text_faint))
+                    .child(styled)
+            });
+            let hidden = div()
                 .mt(px(6.0))
                 .flex()
                 .flex_col()
                 .gap(px(6.0))
                 .text_size(px(13.0))
-                .children(
-                    s.signature
-                        .clone()
-                        .map(|sig| div().text_color(rgba(th.text_dim)).child(sig)),
-                )
-                .children(s.quoted.clone().map(|quoted| {
-                    div()
-                        .pl(px(10.0))
-                        .border_l_2()
-                        .border_color(rgba(th.divider))
-                        .text_color(rgba(th.text_faint))
-                        .child(quoted)
-                }))
+                .children(signature)
+                .children(quoted);
+            self.selectable_body(bubble.ix, hidden, cx)
         });
         let media = self.bubble_media(bubble, th, cx);
         let meta = self.bubble_meta(bubble, th);
@@ -1715,6 +1756,18 @@ impl MailWindow {
 }
 
 /// A signature without its `-- ` line; `None` when nothing is left.
+/// `subject` without its "Re:" and "Fwd:" prefixes and list tags: the
+/// shortest end of it that normalizes to `key`.
+fn bare_subject(subject: &str, key: &str) -> String {
+    subject
+        .char_indices()
+        .map(|(at, _)| subject[at..].trim())
+        .rev()
+        .find(|rest| katna_core::subject::normalize_subject(rest).text == key)
+        .unwrap_or(subject.trim())
+        .to_owned()
+}
+
 fn signature_lines(signature: &str) -> Option<String> {
     let lines: Vec<&str> = signature
         .trim()
@@ -1834,6 +1887,14 @@ mod tests {
             Some("Arjun Mehta\nDemo Travel Co")
         );
         assert_eq!(signature_lines("--"), None);
+    }
+
+    #[test]
+    fn a_new_subject_drops_its_prefixes() {
+        let key = |s: &str| katna_core::subject::normalize_subject(s).text;
+        let said = "Re: Fwd: [trip] Goa, final plan";
+        assert_eq!(bare_subject(said, &key(said)), "Goa, final plan");
+        assert_eq!(bare_subject("Goa", &key("Goa")), "Goa");
     }
 
     #[test]
