@@ -9,8 +9,11 @@ Katna's change adds a backdrop blur, which GPUI does not have, for frosted
 menus and popovers (`src/backdrop_blur.rs`, `src/backdrop_blur.wgsl`):
 
 - A quad whose border color is `backdrop_blur_marker(radius)` (an
-  out-of-range hue with zero alpha, so no real color matches it) is drawn
-  over a blur of what is already in the frame under it.
+  out-of-range hue, so no real color matches it, on a quad with no
+  border) is drawn over a blur of what is already in the frame under it.
+  The marker's alpha is the element's opacity, as GPUI fades every color,
+  and scales the blur: a fading panel blurs less and less rather than
+  leaving a blurred ghost of itself.
 - `wgpu_renderer.rs`: the surface is configured with `COPY_SRC` when it
   allows it. At a marked quad, `record_frame` ends the render pass, copies
   the frame region under the quad, blurs it (dual Kawase: halved a few
