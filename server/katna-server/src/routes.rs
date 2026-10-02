@@ -23,8 +23,8 @@
 //!   `?after=`).
 //! - `GET /api/v1/languages`, `POST /api/v1/translate`, `POST
 //!   /api/v1/detect`: LibreTranslate, passed through ([`crate::translate`]).
-//! - `POST /api/v1/ai/rephrase`, `POST /api/v1/ai/complete`: Katna AI
-//!   ([`crate::ai`]).
+//! - `POST /api/v1/ai/rephrase`, `POST /api/v1/ai/complete`, `POST
+//!   /api/v1/ai/summarize`: Katna AI ([`crate::ai`]).
 
 use std::collections::HashMap;
 use std::convert::Infallible;

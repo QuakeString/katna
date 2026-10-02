@@ -138,6 +138,7 @@ log could reset any account.
 | `POST /api/v1/ai/rephrase` `{"text", "tone", "instruction"}` | Katna AI rewrites the text: `{"text", "plan": {"kind": "trial"\|"paid", "days_left"}}`. 30 days free from the first use, then `402` (`pay`) until paid; `429` past the account's monthly cap (`KATNA_SERVER_AI_ACCOUNT_CAP_USD`), everyone's (`_BUDGET_USD`) or 300 an hour; `503` when no AI service is set; `502` (`upstream`) when it and the fallback fail. |
 | `GET /admin` | The admin page (only with `KATNA_SERVER_ADMIN_EMAILS`; 404 otherwise): Katna AI's service, model, limits and use. Its calls under `/admin/api/` take a session cookie from signing in with the admin password (set with `katna-server admin-password`, not a Katna account) and a mailed code, and an `X-Katna-Admin: 1` header. |
 | `POST /api/v1/ai/complete` `{"before", "answered"}` | The rest of the sentence, the same way; `""` when there is too little to go on. |
+| `POST /api/v1/ai/summarize` `{"subject", "mails": [{"from", "when", "text", "new"}], "catch_up"}` | A conversation summed up, the same way: `text` is the service's JSON summary, which the daemon reads. One request however long; the newest 30 mails are sent. |
 | `GET /healthz` | `ok` when the database answers. |
 
 All but the first need `Authorization: Bearer <token>`. The tracking

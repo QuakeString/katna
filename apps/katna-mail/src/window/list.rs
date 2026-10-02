@@ -256,6 +256,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::toggle_check))
             .on_action(cx.listener(Self::open_context_menu_key))
+            .on_action(cx.listener(Self::summarize_key))
             .child(inner)
             .children(card_outline(th, radius, edge));
         card.into_any_element()
@@ -510,7 +511,7 @@ impl MailWindow {
                         cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
                     )
             } else {
-                icon_button("mark-unread", "mail", 20.0, th)
+                icon_button("mark-unread", "mark-unread", 20.0, th)
                     .tooltip(tip(tr!("list-mark-unread"), th))
                     .on_click(
                         cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(false), cx)),
@@ -978,6 +979,27 @@ impl MailWindow {
                         ),
                     Some(()) => menu(th)
                         // What a narrow reading pane leaves off its toolbar.
+                        .when(
+                            squeeze.is_some_and(|s| s.summary)
+                                && self.summaries_on()
+                                && !self.chat_shown(),
+                            |d| {
+                                d.child(
+                                    menu_item_icon(
+                                        "more-summary",
+                                        "sparkle",
+                                        &tr!("summary-summarize"),
+                                        th,
+                                    )
+                                    .on_click(cx.listener(
+                                        |this, _, _, cx| {
+                                            this.menu = None;
+                                            this.toggle_summary(cx);
+                                        },
+                                    )),
+                                )
+                            },
+                        )
                         .when(squeeze.is_some_and(|s| s.archive), |d| {
                             d.child(
                                 menu_item_icon("more-archive", "archive", &tr!("list-archive"), th)
@@ -1018,10 +1040,17 @@ impl MailWindow {
                                 })),
                         )
                         .child(
-                            menu_item_icon("more-unread", "mail", &tr!("menu-mark-unread"), th)
-                                .on_click(cx.listener(|this, _, window, cx| {
+                            menu_item_icon(
+                                "more-unread",
+                                "mark-unread",
+                                &tr!("menu-mark-unread"),
+                                th,
+                            )
+                            .on_click(cx.listener(
+                                |this, _, window, cx| {
                                     this.mark_unread(&super::MarkUnread, window, cx)
-                                })),
+                                },
+                            )),
                         )
                         .child(
                             menu_item_icon("more-star", "star", &tr!("menu-star"), th).on_click(
@@ -1147,9 +1176,9 @@ impl MailWindow {
                                             th,
                                         )
                                         .on_click(
-                                            cx.listener(|this, _, _, cx| {
+                                            cx.listener(|this, _, window, cx| {
                                                 this.menu = None;
-                                                this.pick_chat(false, cx);
+                                                this.pick_chat(false, window, cx);
                                             }),
                                         ),
                                     )
@@ -2790,7 +2819,7 @@ impl MailWindow {
             .child(
                 button(
                     2,
-                    if unread { "mark-read" } else { "mail" },
+                    if unread { "mark-read" } else { "mark-unread" },
                     if unread {
                         tr!("list-mark-read")
                     } else {

@@ -856,6 +856,17 @@ impl Mail {
         })
     }
 
+    /// The kept summaries of the conversation of `messages` (all of
+    /// them), the newest first.
+    pub fn summaries(&self, messages: &[MessageId]) -> Vec<katna_store::StoredSummary> {
+        self.store
+            .conversation_summaries(messages)
+            .unwrap_or_else(|err| {
+                tracing::warn!("reading summaries: {err}");
+                Vec::new()
+            })
+    }
+
     /// The conversation of message `id`, if it has one.
     pub fn message_thread(&self, id: MessageId) -> Option<ThreadId> {
         self.store

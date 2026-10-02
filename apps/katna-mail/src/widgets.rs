@@ -14,7 +14,7 @@ use gpui::{
 };
 use katna_ui::motion::lerp;
 use katna_ui::px;
-use katna_ui::{Ripple, Tooltip};
+use katna_ui::{Glow, Ripple, Tooltip};
 
 use crate::theme::{Theme, avatar_color, fade, initial};
 use crate::window::MenuKey;
@@ -93,9 +93,9 @@ pub fn icon_button_colored(
         .justify_center()
         .rounded_full()
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
         // Keep the header bar from starting a window move.
         .on_mouse_move(|_, _, cx| cx.stop_propagation())
+        .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)))
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)).centered())
         .child(icon(name, color, size))
 }
@@ -139,7 +139,7 @@ pub fn pill_button(
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.text_dim))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
         .child(icon(name, th.text_dim, 20.0))
         .child(
@@ -237,7 +237,7 @@ pub fn outlined_button(
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.accent))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
         .child(label.into())
 }
@@ -541,6 +541,26 @@ pub fn frosted<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, radiu
 /// A dialog's tint opacity and blur for a menu's.
 fn dialog_frost(tint: f32, blur: f32) -> (f32, f32) {
     (tint + (1.0 - tint) * DIALOG_TINT, blur * DIALOG_BLUR)
+}
+
+/// A strip along the top of a card, frosted as [`frosted`] is when
+/// [`Theme::frost`] is on, else `fill`: rounded at the top only, by the
+/// card's inner `radius`, for a bar that content scrolls under.
+pub fn frosted_top<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, radius: f32) -> E {
+    let corners = gpui::Corners {
+        top_left: px(radius),
+        top_right: px(radius),
+        ..Default::default()
+    };
+    if th.frost == 0 {
+        return panel.bg(rgba(fill)).rounded_t(px(radius));
+    }
+    let (tint, blur) = dialog_frost(f32::from(th.frost_tint) / 100.0, th.frost as f32);
+    panel.child(katna_ui::frost::glass(
+        rgba(fade(fill, tint)).into(),
+        corners,
+        blur,
+    ))
 }
 
 fn glass<E: Styled + ParentElement>(panel: E, fill: u32, radius: f32, tint: f32, blur: f32) -> E {

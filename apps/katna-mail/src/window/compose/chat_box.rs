@@ -67,7 +67,7 @@ impl MailWindow {
     }
 
     /// The reply being written in the chat of conversation `key`.
-    fn chat_compose(&self, key: EntryKey) -> Option<&super::Compose> {
+    pub(in crate::window) fn chat_compose(&self, key: EntryKey) -> Option<&super::Compose> {
         self.compose
             .as_ref()
             .filter(|c| c.mode == Mode::Inline && !c.closing && c.conversation == Some(key))

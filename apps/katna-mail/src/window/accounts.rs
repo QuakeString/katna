@@ -1298,6 +1298,7 @@ impl MailWindow {
         self.config = Config::default();
         keymap::bind(&self.config.shortcuts, cx);
         self.compose = None;
+        self.writing.parked = None;
         self.unsent = None;
         self.add_account = None;
         self.settings_page = None;

@@ -39,9 +39,11 @@ use crate::widgets::{
 mod chat;
 mod invite;
 mod security;
+mod summary;
 mod ticks;
 mod tracking;
 use security::Secured;
+pub(super) use summary::Summaries;
 
 /// The reading view shows at most this many lines of a body.
 const MAX_BODY_LINES: usize = 4000;
@@ -79,6 +81,14 @@ pub(super) struct Conversation {
     headers: Vec<String>,
     /// How it shows as a chat (Settings > Experimental).
     pub(super) chat: chat::ChatState,
+    /// Its messages that were unread when it opened, for a summary's
+    /// catch-up: opening it marks them read.
+    came_unread: HashSet<MessageId>,
+    /// Where each message was last drawn, from the top of the scrolled
+    /// conversation, and the message a summary's point goes to once it
+    /// is drawn (with the frames waited).
+    tops: Rc<std::cell::RefCell<std::collections::HashMap<MessageId, f32>>>,
+    jump: Option<(MessageId, u8)>,
 }
 
 /// One message of the conversation.
@@ -362,6 +372,11 @@ impl Conversation {
             .iter()
             .filter_map(|id| mail.message_id_header(*id))
             .collect();
+        let came_unread = parts
+            .iter()
+            .filter(|p| p.row.as_ref().is_some_and(|r| r.unread))
+            .map(|p| p.id)
+            .collect();
         let mut conversation = Self {
             key,
             subject,
@@ -372,6 +387,9 @@ impl Conversation {
             drafts: HashSet::new(),
             headers,
             chat: chat::ChatState::default(),
+            came_unread,
+            tops: Rc::default(),
+            jump: None,
         };
         conversation.read_tracking(mail);
         conversation.read_drafts(mail);
@@ -629,6 +647,8 @@ pub(super) struct Squeeze {
     pub new_window: bool,
     pub print: bool,
     pub colors: bool,
+    /// The sparkle that sums up the conversation.
+    pub summary: bool,
     pub contact: bool,
     pub move_to: bool,
     /// The bell that mutes the conversation.
@@ -658,6 +678,7 @@ impl Squeeze {
         new_window: false,
         print: false,
         colors: false,
+        summary: false,
         contact: false,
         move_to: false,
         mute: false,
@@ -674,6 +695,7 @@ impl Squeeze {
         new_window: true,
         print: true,
         colors: true,
+        summary: true,
         contact: true,
         move_to: true,
         mute: true,
@@ -700,13 +722,14 @@ impl Squeeze {
         squeeze
     }
 
-    const DROP_ORDER: [fn(&mut Self); 11] = [
+    const DROP_ORDER: [fn(&mut Self); 12] = [
         |s| s.new_window = true,
         |s| s.print = true,
         |s| s.mute = true,
         |s| s.colors = true,
         |s| s.contact = true,
         |s| s.move_to = true,
+        |s| s.summary = true,
         |s| s.unread = true,
         |s| s.spam = true,
         |s| s.separators = true,
@@ -722,6 +745,7 @@ struct Toolbar {
     separators: bool,
     contact: bool,
     colors: bool,
+    summary: bool,
     new_window: bool,
     /// The width of "3 of 120", or `None` without it.
     position: Option<f32>,
@@ -746,6 +770,7 @@ impl Toolbar {
         add(!squeeze.mute, 1.0);
         add(self.contact && !squeeze.contact, 1.0);
         add(self.colors && !squeeze.colors, 1.0);
+        add(self.summary && !squeeze.summary, 1.0);
         add(!squeeze.print, 1.0);
         add(self.new_window && !squeeze.new_window, 1.0);
         add(self.arrows, 2.0);
@@ -853,6 +878,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
+            .on_action(cx.listener(Self::summarize_key))
             .child(self.render_reader_toolbar(th, cx))
             .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
             .children(card_outline(th, radius, edge))
@@ -906,6 +932,7 @@ impl MailWindow {
             separators: !phone,
             contact: self.contact_offered(),
             colors: self.original_colors_offered(th),
+            summary: self.summaries_on() && !self.chat_shown(),
             new_window: !self.detached,
             // About 6.5 px a character at 12 px, and its 8 px padding.
             position: self
@@ -986,7 +1013,7 @@ impl MailWindow {
             .when(separators, |d| d.child(separator(th)))
             .when(!squeeze.unread, |d| {
                 d.child(
-                    icon_button("reader-unread", "mail", 20.0, th)
+                    icon_button("reader-unread", "mark-unread", 20.0, th)
                         .tooltip(tip(tr!("reader-mark-unread"), th))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.mark_unread(&super::MarkUnread, window, cx)
@@ -1004,6 +1031,9 @@ impl MailWindow {
                 })
             })
             .when(!squeeze.mute, |d| d.child(self.reader_mute_button(th, cx)))
+            .when(!squeeze.summary && !self.chat_shown(), |d| {
+                d.children(self.summary_button("reader-summary", th, cx))
+            })
             .child(more)
             .child(div().flex_1())
             .when(!squeeze.contact, |d| {
@@ -1073,6 +1103,7 @@ impl MailWindow {
         self.fetch_remote(cx);
         self.download_bodies(cx);
         self.prepare_chat();
+        self.prepare_summary();
         self.request_thumbnails(cx);
         if let Some(key) = self.reader.as_ref().map(|r| r.key) {
             self.text.begin(key);
@@ -1099,6 +1130,8 @@ impl MailWindow {
                 self.render_mail_notes(&headers, self.reader_indent(), th, cx)
             });
         let muted = self.render_muted_strip(th, cx);
+        self.settle_summary_jump(cx);
+        let summary = self.render_summary_card(th, cx);
         let Some(reader) = &self.reader else {
             return placeholder("", th);
         };
@@ -1258,6 +1291,7 @@ impl MailWindow {
                                         .flex_col()
                                         .pb(px(24.0))
                                         .child(title)
+                                        .children(summary)
                                         .children(muted)
                                         .children(notes)
                                         .children(reply_above)
@@ -1893,6 +1927,7 @@ impl MailWindow {
         let measured = part.height.clone();
         let target = part.height.clone();
         let from = part.from;
+        let (tops, id, scroll) = (reader.tops.clone(), part.id, self.reader_scroll.clone());
         let content = div()
             .flex()
             .flex_col()
@@ -1900,6 +1935,8 @@ impl MailWindow {
             .on_children_prepainted(move |bounds, _, _| {
                 if let Some(bounds) = bounds.first() {
                     measured.set(unpx(bounds.size.height));
+                    let top = unpx(bounds.origin.y) - unpx(scroll.offset().y);
+                    tops.borrow_mut().insert(id, top);
                 }
             })
             .child(
@@ -2260,6 +2297,7 @@ mod tests {
             separators: true,
             contact: true,
             colors: true,
+            summary: true,
             new_window: true,
             position: Some(80.0),
             arrows: true,

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Writing help from an AI service (`docs/ARCHITECTURE.md` §16.5): Katna
-//! Mail sends the text the user selected to rephrase, or the paragraph
-//! being written to finish its sentence, and the daemon asks the service
+//! Mail sends the text the user selected to rephrase, the paragraph
+//! being written to finish its sentence, or a conversation's mails to sum
+//! up, and the daemon asks the service
 //! the settings name (`[ai]`): Katna AI on Katna Server with this
 //! computer's Katna account, or the user's own service with its key from
 //! the Secret Service. Nothing is kept or logged but that it happened.
@@ -10,6 +11,7 @@
 use std::time::Duration;
 
 use katna_ai::provider::{self, OTHER, ProviderError};
+use katna_ai::summary::{self, SummarizeRequest, Summary};
 use katna_ai::wire::{AiAnswer, CompleteRequest, Plan, RephraseRequest, problem};
 use katna_ai::{Prompt, Tone, prompt};
 use katna_core::config::{Ai, AiSource};
@@ -23,6 +25,8 @@ use crate::secrets::Secrets;
 const REPHRASE_TIMEOUT: Duration = Duration::from_secs(45);
 /// How long finishing a sentence may take; a late suggestion is no use.
 const COMPLETE_TIMEOUT: Duration = Duration::from_secs(8);
+/// How long summing up a conversation may take.
+const SUMMARIZE_TIMEOUT: Duration = Duration::from_secs(60);
 
 /// [`Plan::kind`] when the user's own service answered.
 pub const OWN: &str = "own";
@@ -133,6 +137,32 @@ pub async fn complete(
         "sentence finished"
     );
     Ok(AiAnswer { text, ..answer })
+}
+
+/// `request`'s conversation summed up, and where the account stands.
+pub async fn summarize(
+    settings: &Ai,
+    secrets: &Secrets,
+    request: &SummarizeRequest,
+) -> Result<(Summary, Plan), AiError> {
+    let prompt =
+        summary::summarize(request).ok_or_else(|| AiError::Failed("nothing to sum up".into()))?;
+    let asked = std::time::Instant::now();
+    let answer = match settings.source {
+        AiSource::Off => return Err(AiError::Off),
+        AiSource::Katna => {
+            katna("/api/v1/ai/summarize", request, secrets, SUMMARIZE_TIMEOUT).await?
+        }
+        AiSource::Own => own(settings, secrets, &prompt, SUMMARIZE_TIMEOUT).await?,
+    };
+    let summary = summary::parse(&answer.text, request.mails.len())
+        .ok_or_else(|| AiError::Failed("the answer was no summary".into()))?;
+    tracing::info!(
+        ms = asked.elapsed().as_millis() as u64,
+        mails = request.mails.len(),
+        "conversation summed up"
+    );
+    Ok((summary, answer.plan))
 }
 
 /// TLS for the AI services, set up once: loading the system's
@@ -335,6 +365,20 @@ mod tests {
         let done = futures_lite::future::block_on(complete(&off, &secrets, "I will send", ""));
         assert_eq!(done, Err(AiError::Off));
         let done = futures_lite::future::block_on(complete(&own, &secrets, "I will send", ""));
+        assert_eq!(done, Err(AiError::NoKey));
+        let request = SummarizeRequest {
+            subject: "Goa".into(),
+            mails: vec![summary::Mail {
+                from: "Priya".into(),
+                when: String::new(),
+                text: "Shall we do Goa?".into(),
+                new: false,
+            }],
+            catch_up: false,
+        };
+        let done = futures_lite::future::block_on(summarize(&off, &secrets, &request));
+        assert_eq!(done, Err(AiError::Off));
+        let done = futures_lite::future::block_on(summarize(&own, &secrets, &request));
         assert_eq!(done, Err(AiError::NoKey));
     }
 }

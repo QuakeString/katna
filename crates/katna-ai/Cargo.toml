@@ -1,6 +1,6 @@
 [package]
 name = "katna-ai"
-description = "Rephrasing and sentence completion with an AI service: the prompts, the requests each kind of service takes, and the answers made usable."
+description = "Rephrasing, sentence completion and conversation summaries with an AI service: the prompts, the requests each kind of service takes, and the answers made usable."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

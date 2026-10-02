@@ -7,7 +7,7 @@
 //! outside their element, so a frosted panel keeps its usual box shadow.
 
 use crate::scale::px;
-use gpui::{BorderStyle, Bounds, Hsla, IntoElement, Pixels, Styled, canvas, quad};
+use gpui::{BorderStyle, Bounds, Corners, Hsla, IntoElement, Pixels, Styled, canvas, quad};
 
 /// Whether the renderer can blur behind a panel. False before the first
 /// frame is drawn and where the window's surface cannot be copied from.
@@ -20,10 +20,12 @@ pub fn supported() -> bool {
 }
 
 /// The glass of a frosted panel, as the panel's first child: `fill` with
-/// corners of `radius` over a blur of `blur` device pixels of what is
-/// behind. The panel itself paints no background. In a panel that scrolls
-/// its own content the glass stays put while the content scrolls.
-pub fn glass(fill: Hsla, radius: Pixels, blur: f32) -> impl IntoElement {
+/// corners of `radius` (one for all four, or each its own) over a blur of
+/// `blur` device pixels of what is behind. The panel itself paints no
+/// background. In a panel that scrolls its own content the glass stays put
+/// while the content scrolls.
+pub fn glass(fill: Hsla, radius: impl Into<Corners<Pixels>>, blur: f32) -> impl IntoElement {
+    let radius = radius.into();
     canvas(
         |_, _, _| (),
         move |bounds, (), window, _| {

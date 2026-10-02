@@ -1028,6 +1028,19 @@ macro_rules! pim_proxy {
             /// answered, is sent only when the settings allow it.
             fn ai_complete(&self, before: &str, answered: &str) -> zbus::Result<(String, String)>;
 
+            /// Sums up a conversation: `request` is a
+            /// `katna_ai::summary::SummarizeRequest` as JSON and `newest`
+            /// the newest of its mails sent, which the summary is kept
+            /// with in `mail.db`. Returns the summary as JSON
+            /// (`katna_ai::summary::Summary`), the plan and free days left
+            /// as for `AiRephrase`, and a `katna_ai::wire::problem` when
+            /// there is none.
+            fn ai_summarize(
+                &self,
+                newest: i64,
+                request: &str,
+            ) -> zbus::Result<(String, String, u32, String)>;
+
             /// Saves the key of the user's own AI service in the Secret
             /// Service; an empty key deletes it.
             fn set_ai_key(&self, key: &str) -> zbus::Result<()>;

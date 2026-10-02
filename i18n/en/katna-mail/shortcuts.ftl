@@ -47,6 +47,7 @@ shortcut-important = Mark as important
 shortcut-not-important = Mark as not important
 # Mutes the conversation, or unmutes it: no notifications or taskbar count.
 shortcut-mute = Mute or unmute the conversation
+shortcut-summarize = Summarize the conversation with AI
 # Ticks the check box of the selected conversation in the list.
 shortcut-check = Tick the conversation
 shortcut-select-all = Tick all conversations

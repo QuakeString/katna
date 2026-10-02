@@ -313,10 +313,28 @@ impl MailWindow {
     }
 
     /// Shows the open conversation as a chat (`true`) or as mail.
-    pub(in crate::window) fn pick_chat(&mut self, chat: bool, cx: &mut Context<Self>) {
-        if let Some(reader) = &mut self.reader {
-            reader.chat.pick = Some(chat);
-            reader.chat.shown = 0;
+    pub(in crate::window) fn pick_chat(
+        &mut self,
+        chat: bool,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(reader) = &mut self.reader else {
+            return;
+        };
+        reader.chat.pick = Some(chat);
+        reader.chat.shown = 0;
+        let key = reader.key;
+        // A reply being written goes along, with its cursor where it was:
+        // the mail view scrolls down to it, as when it opened.
+        if self.chat_compose(key).is_some() {
+            if !chat {
+                self.reveal_inline_reply(cx);
+            }
+            // After the click that picked it, which focuses the window.
+            if let Some(body) = self.chat_reply_focus(cx) {
+                window.defer(cx, move |window, cx| window.focus(&body, cx));
+            }
         }
         cx.notify();
     }
@@ -347,9 +365,9 @@ impl MailWindow {
                 })
                 .child(icon(name, if on { th.text } else { th.text_dim }, 16.0))
                 .child(label)
-                .on_click(cx.listener(move |this, _, _, cx| {
+                .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
-                    this.pick_chat(to, cx);
+                    this.pick_chat(to, window, cx);
                 }))
         };
         div()
@@ -608,6 +626,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(header)
+            .children(self.render_chat_summary_strip(th, cx))
             .children(self.render_pin_bar(th, cx))
             .child(
                 div()
@@ -620,7 +639,7 @@ impl MailWindow {
                             .size_full()
                             .overflow_y_scroll()
                             .on_scroll_wheel(cx.listener(
-                                |this, e: &gpui::ScrollWheelEvent, window, _| {
+                                |this, e: &gpui::ScrollWheelEvent, window, cx| {
                                     let up = e.delta.pixel_delta(window.line_height()).y;
                                     if unpx(up) > 0.0
                                         && let Some(reader) = &mut this.reader
@@ -629,6 +648,8 @@ impl MailWindow {
                                         reader.chat.held.set(false);
                                         reader.chat.settle = 0;
                                     }
+                                    // Scrolling the chat folds its summary.
+                                    this.fold_chat_summary(cx);
                                 },
                             ))
                             .track_scroll(&self.reader_scroll)
@@ -664,6 +685,7 @@ impl MailWindow {
                                     ),
                             ),
                     )
+                    .children(self.render_chat_summary_drop(th, cx))
                     .children(self.render_chat_people(th, cx))
                     .children(self.render_files_picker(key, th, cx))
                     .children(self.render_pin_list(th, cx))
@@ -1079,6 +1101,7 @@ impl MailWindow {
                             ),
                     ),
             )
+            .children(self.summary_button("chat-summary", th, cx))
             .child(end)
             .into_any_element()
     }
@@ -1824,9 +1847,9 @@ impl MailWindow {
         }
         rows.item(
             item("chat-menu-mail", "mail", tr!("chat-show-as-mail")).on_click(cx.listener(
-                move |this, _, _, cx| {
+                move |this, _, window, cx| {
                     this.close_context_menu(cx);
-                    this.pick_chat(false, cx);
+                    this.pick_chat(false, window, cx);
                     // The bubble's mail opens in the mail view.
                     if let (Some(reader), Ok(mail)) = (&mut this.reader, &this.mail)
                         && let Some(ix) = reader.parts.iter().position(|p| p.id == id)
