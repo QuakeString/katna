@@ -89,7 +89,7 @@ fn join<S: AsRef<str>>(lines: &[S]) -> String {
         .join("\n")
 }
 
-fn blank(line: &str) -> bool {
+pub(crate) fn blank(line: &str) -> bool {
     line.trim().is_empty()
 }
 
@@ -239,7 +239,7 @@ fn signed(lines: &[&str]) -> bool {
     let short = own.len() <= SIGNATURE_LINES
         && own.iter().all(|l| {
             let lower = l.to_lowercase();
-            l.chars().count() <= SIGNATURE_WIDTH
+            visible_len(l) <= SIGNATURE_WIDTH
                 && !l.ends_with('?')
                 && !lower.starts_with("p.s")
                 && !lower.starts_with("ps:")
@@ -353,7 +353,7 @@ fn sentence(line: &str) -> bool {
 }
 
 /// A line drawn across: `_____`, `-----`, `=====`, `*****`.
-fn rule(line: &str) -> bool {
+pub(crate) fn rule(line: &str) -> bool {
     let line = line.trim();
     line.chars().count() >= 5
         && line.chars().all(|c| {
@@ -472,9 +472,30 @@ fn contact(line: &str) -> u8 {
     kinds
 }
 
+/// How long `line` reads, without the links and pictures text versions
+/// of HTML mail spell out (`<https://…>`, `[image: logo]`).
+fn visible_len(line: &str) -> usize {
+    let mut len = 0;
+    let mut hidden: Option<char> = None;
+    let mut rest = line;
+    while let Some(c) = rest.chars().next() {
+        match hidden {
+            Some(close) if c == close => hidden = None,
+            Some(_) => {}
+            None if c == '<' && rest[1..].trim_start().starts_with("http") => hidden = Some('>'),
+            None if c == '[' && rest[1..].to_lowercase().starts_with("image:") => {
+                hidden = Some(']');
+            }
+            None => len += 1,
+        }
+        rest = &rest[c.len_utf8()..];
+    }
+    len
+}
+
 /// Whether `text` holds a phone number: 7 to 15 digits with spaces,
 /// dashes, dots and brackets, not a date.
-fn phone(text: &str) -> bool {
+pub(crate) fn phone(text: &str) -> bool {
     let chars: Vec<char> = text.chars().collect();
     let mut at = 0;
     while at < chars.len() {
@@ -513,7 +534,7 @@ fn postal(line: &str) -> bool {
 
 /// A line of a footer: unsubscribing, why the mail came, a
 /// confidentiality notice, copyright.
-fn footer_line(line: &str) -> bool {
+pub(crate) fn footer_line(line: &str) -> bool {
     const NOTICES: &[&str] = &[
         "unsubscribe",
         "you have received this",
@@ -550,6 +571,9 @@ fn footer_line(line: &str) -> bool {
         "intended recipient",
         "intended solely",
         "disclaimer",
+        "before printing",
+        "think before you print",
+        "print only when necessary",
     ];
     let lower = line.to_lowercase();
     NOTICES.iter().any(|n| lower.contains(n))
@@ -590,21 +614,8 @@ pub fn shared_tail(text: &str, other: &str) -> Option<usize> {
     (same >= 2 && chars >= 16 && own > 0 && theirs.len() > same).then(|| ours[own].0)
 }
 
-/// The lines of a signature as a contact card shows them: without its
-/// `-- ` line, its sign-off and a footer under it. `None` when nothing is
-/// left.
-pub fn contact_lines(signature: &str) -> Option<String> {
-    let lines: Vec<&str> = signature
-        .lines()
-        .skip_while(|l| blank(l) || delimiter(l) || sign_off(l))
-        .take_while(|l| !rule(l) && !footer_line(l))
-        .collect();
-    let text = join(&lines);
-    (!text.is_empty()).then_some(text)
-}
-
 /// The signature delimiter, `-- ` (or `--` from clients that trim it).
-fn delimiter(line: &str) -> bool {
+pub(crate) fn delimiter(line: &str) -> bool {
     line.trim_end() == "--"
 }
 
@@ -1085,17 +1096,6 @@ for the use of the addressee.\n",
     }
 
     #[test]
-    fn contact_lines_leave_out_the_sign_off_and_footer() {
-        assert_eq!(
-            contact_lines("Best regards,\nOmar Haddad\nDemo Travel Co\n\n-----\nYou have received this mail because…")
-                .as_deref(),
-            Some("Omar Haddad\nDemo Travel Co")
-        );
-        assert_eq!(contact_lines("-- \nRajat").as_deref(), Some("Rajat"));
-        assert_eq!(contact_lines("Thanks\n"), None);
-    }
-
-    #[test]
     fn a_signature_two_mails_share() {
         let first = "Can we move the call to 4?\n\nArjun Mehta\nDemo Travel Co\n";
         let second = "Done, invite sent.\n\nArjun Mehta\nDemo Travel Co";
@@ -1129,6 +1129,20 @@ only for the addressee. If you are not the intended recipient, please notify the
         let signature = t.signature.unwrap();
         assert!(signature.starts_with("Warm Regards,"), "{signature}");
         assert!(signature.contains("Unsubscribe"), "{signature}");
+    }
+
+    #[test]
+    fn signature_with_links_and_banners() {
+        let body = "Could we talk next week?\n\nBest regards,\nDemo Rao | Head of Growth\n\
+                    Demo Labs\n+1 555 010 7788\n[image: Demo Labs] <https://demolabs.example>\n\
+                    [image: Best Workplace 2026 banner]\nFollow us: Facebook \
+                    <https://facebook.com/demolabs> | Twitter <https://twitter.com/demolabs> | \
+                    LinkedIn <https://www.linkedin.com/company/demolabs>\n\n\
+                    Please consider the environment before printing this e-mail.\n\n\
+                    CONFIDENTIALITY: This e-mail and any attachments are confidential.";
+        let t = plain(body);
+        assert_eq!(t.said, "Could we talk next week?");
+        assert!(t.signature.unwrap().starts_with("Best regards,"));
     }
 
     #[test]

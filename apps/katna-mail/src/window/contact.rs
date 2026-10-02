@@ -20,6 +20,7 @@ use gpui::{
 };
 use katna_dav::Occurrence;
 use katna_i18n::tr;
+use katna_render::signature;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
 use katna_ui::{Ripple, px};
@@ -78,6 +79,8 @@ pub(super) struct ContactPanel {
     companies: HashMap<String, Option<Rc<Company>>>,
     /// The person whose recent conversations show in full (More).
     more: Option<String>,
+    /// The person whose whole signature shows (Full signature).
+    full_signature: Option<String>,
     /// 0 = the first few conversations, 1 = all of them.
     more_spring: Spring,
     /// The panel folded the folders to make room: they unfold again when
@@ -97,6 +100,7 @@ impl ContactPanel {
             profiles: HashMap::new(),
             companies: HashMap::new(),
             more: None,
+            full_signature: None,
             more_spring: Spring::new(motion::SMOOTH, 0.0),
             folded_nav: false,
             nav_hold: false,
@@ -600,23 +604,36 @@ impl MailWindow {
         if let Some(company) = &company {
             sections.push(self.contact_company_section(email, company, &mut pieces, th));
         }
-        // The chat view leaves signatures out of the bubbles: the one they
-        // signed with last shows here.
+        // The chat view leaves signatures out of the bubbles: what the one
+        // they signed with last says, that the card does not, shows here.
         if let Some(signature) = self
             .chat_shown()
             .then(|| self.reader.as_ref()?.signature_of(email))
             .flatten()
         {
-            sections.push(
-                section(words(&mut pieces, tr!("contact-signature")), th)
-                    .child(
-                        words(&mut pieces, signature)
-                            .text_size(px(13.0))
-                            .line_height(px(19.0))
-                            .text_color(rgba(th.text)),
-                    )
-                    .into_any_element(),
-            );
+            let card = profile.as_ref().map(|p| &p.card);
+            let shown: Vec<&str> = card
+                .into_iter()
+                .flat_map(|c| [&c.title, &c.company, &c.phone])
+                .flatten()
+                .map(String::as_str)
+                .chain(company.as_deref().map(|c| c.name.as_str()))
+                .collect();
+            let known = signature::Known {
+                name: name.as_deref(),
+                email,
+                shown: &shown,
+            };
+            if let Some(summary) = signature::summary(&signature, &known) {
+                sections.push(self.contact_signature(
+                    email,
+                    summary,
+                    company.as_deref(),
+                    &mut pieces,
+                    th,
+                    cx,
+                ));
+            }
         }
         if let Some(profile) = &profile {
             sections.push(self.contact_mail(profile, &mut pieces, th));
@@ -898,6 +915,120 @@ impl MailWindow {
                 }))
                 .into_any_element(),
         )
+    }
+
+    /// The Signature section: the few lines of their signature the card
+    /// does not already show, its pages as a row of quiet icons, and the
+    /// rest of it behind Full signature.
+    fn contact_signature(
+        &self,
+        email: &str,
+        summary: signature::Summary,
+        company: Option<&Company>,
+        pieces: &mut Pieces,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let full = self.contact.full_signature.as_deref() == Some(email);
+        let text = if full {
+            summary.full.clone()
+        } else {
+            summary.lines.join("\n")
+        };
+        // Pages the Company section already links to are left out.
+        let company_hosts: Vec<String> = company
+            .into_iter()
+            .flat_map(|c| std::iter::once(&c.website).chain(&c.links))
+            .map(|url| signature::host(url))
+            .collect();
+        let links = summary
+            .links
+            .into_iter()
+            .filter(|l| !company_hosts.contains(&signature::host(&l.url)))
+            .enumerate()
+            .map(|(ix, link)| {
+                let url = link.url.clone();
+                let chip = div()
+                    .id(("contact-signature-link", ix))
+                    .h(px(24.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .bg(rgba(th.chip))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .tooltip(tip(link.url.clone(), th))
+                    .on_click(move |_, _, cx| cx.open_url(&url));
+                match brand_icon(link.site) {
+                    Some(name) => chip.w(px(24.0)).child(icon(name, th.text_dim, 14.0)),
+                    None => chip
+                        .px(px(10.0))
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(host_label(&link.url)),
+                }
+            })
+            .collect::<Vec<_>>();
+        let toggle = summary.more.then(|| {
+            let email = email.to_owned();
+            div()
+                .id("contact-signature-full")
+                .h(px(24.0))
+                .px(px(8.0))
+                .ml(px(-8.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(4.0))
+                .self_start()
+                .rounded_full()
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .text_size(px(12.0))
+                .text_color(rgba(th.text_dim))
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.contact.full_signature =
+                        if this.contact.full_signature.as_deref() == Some(email.as_str()) {
+                            None
+                        } else {
+                            Some(email.clone())
+                        };
+                    cx.notify();
+                }))
+                .child(if full {
+                    tr!("contact-signature-less")
+                } else {
+                    tr!("contact-signature-full")
+                })
+                .child(icon(
+                    if full { "chevron-up" } else { "chevron-down" },
+                    th.text_dim,
+                    16.0,
+                ))
+        });
+        section(words(pieces, tr!("contact-signature")), th)
+            .when(!text.is_empty(), |d| {
+                d.child(
+                    words(pieces, text)
+                        .text_size(px(13.0))
+                        .line_height(px(19.0))
+                        .text_color(rgba(th.text)),
+                )
+            })
+            .when(!links.is_empty(), |d| {
+                d.child(
+                    div()
+                        .flex()
+                        .flex_row()
+                        .flex_wrap()
+                        .gap(px(6.0))
+                        .pt(px(2.0))
+                        .children(links),
+                )
+            })
+            .children(toggle)
+            .into_any_element()
     }
 
     /// The Company section: its logo, name, where it is and since when,
@@ -1556,6 +1687,22 @@ struct Company {
     links: Vec<String>,
     summary: String,
     checked: i64,
+}
+
+/// Katna's one-colour mark for a site a signature links to.
+fn brand_icon(site: signature::Site) -> Option<&'static str> {
+    use signature::Site;
+    Some(match site {
+        Site::Web => return None,
+        Site::LinkedIn => "brand-linkedin",
+        Site::X => "brand-x",
+        Site::Facebook => "brand-facebook",
+        Site::Instagram => "brand-instagram",
+        Site::YouTube => "brand-youtube",
+        Site::GitHub => "brand-github",
+        Site::WhatsApp => "brand-whatsapp",
+        Site::Telegram => "brand-telegram",
+    })
 }
 
 /// `example.com` from `https://www.example.com/`.

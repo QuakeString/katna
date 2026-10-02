@@ -235,7 +235,7 @@ impl Conversation {
             if !from.email.eq_ignore_ascii_case(email) {
                 return None;
             }
-            trim::contact_lines(self.said(part)?.signature.as_deref()?)
+            self.said(part)?.signature.clone()
         })
     }
 }

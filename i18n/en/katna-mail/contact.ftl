@@ -55,6 +55,10 @@ contact-tasks = Tasks
 contact-meetings = Upcoming meetings
 # In the chat view: the signature they signed with last in the open conversation.
 contact-signature = Signature
+# Under the signature's first few lines: shows the rest of it.
+contact-signature-full = Full signature
+# Under the whole signature: back to its first few lines.
+contact-signature-less = Show less
 # The card's section on where they work, read from the company's home page.
 contact-company = Company
 # $year: when the company started.
