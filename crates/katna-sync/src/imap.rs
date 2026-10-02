@@ -43,8 +43,10 @@ use io_imap::{
         append::{ImapMessageAppend, ImapMessageAppendError, ImapMessageAppendOptions},
         copy::{ImapMessageCopy, ImapMessageCopyError, ImapMessageCopyOptions},
         create::{ImapMailboxCreate, ImapMailboxCreateError},
+        delete::{ImapMailboxDelete, ImapMailboxDeleteError},
         fetch::{ImapMessageFetch, ImapMessageFetchError, ImapMessageFetchOptions},
         list::{ImapMailboxList, ImapMailboxListError},
+        rename::{ImapMailboxRename, ImapMailboxRenameError},
         search::{ImapMessageSearch, ImapMessageSearchError, ImapMessageSearchOptions},
         select::{ImapMailboxSelect, ImapMailboxSelectError, ImapMailboxSelectOptions},
         store::{ImapMessageStoreError, ImapMessageStoreOptions, ImapMessageStoreSilent},
@@ -900,6 +902,39 @@ impl MailBackend for ImapBackend {
         Ok(())
     }
 
+    async fn rename_folder(&mut self, from: &str, to: &str) -> Result<()> {
+        let old = Mailbox::try_from(from.to_owned()).map_err(protocol)?;
+        let new = Mailbox::try_from(to.to_owned()).map_err(protocol)?;
+        self.run(ImapMailboxRename::new(old, new.clone())).await?;
+        // Not every server carries the subscription over.
+        if let Err(err) = self.run(ImapMailboxSubscribe::new(new)).await {
+            tracing::debug!(%err, to, "SUBSCRIBE refused");
+        }
+        Ok(())
+    }
+
+    async fn delete_folder(&mut self, folder: &str) -> Result<()> {
+        let mailbox = Mailbox::try_from(folder.to_owned()).map_err(protocol)?;
+        self.run(ImapMailboxDelete::new(mailbox)).await
+    }
+
+    async fn gmail_label(&mut self, uids: &[u32], label: &str, add: bool) -> Result<()> {
+        if !self.is_gmail() {
+            return Err(Error::Rejected("the server has no Gmail labels".into()));
+        }
+        if uids.is_empty() {
+            return Ok(());
+        }
+        let sign = if add { '+' } else { '-' };
+        self.raw_command(&format!(
+            "UID STORE {} {sign}X-GM-LABELS ({})",
+            uid_set(uids),
+            gmail_label_arg(label)?
+        ))
+        .await?;
+        Ok(())
+    }
+
     async fn append_with_flags(
         &mut self,
         folder: &str,
@@ -1088,6 +1123,8 @@ command_errors!(
     ImapMailboxSelectError,
     ImapMessageFetchError,
     ImapMailboxCreateError,
+    ImapMailboxRenameError,
+    ImapMailboxDeleteError,
     ImapMailboxSubscribeError,
     ImapMessageAppendError,
     ImapMessageSearchError,
@@ -1165,6 +1202,45 @@ fn imap_flags(flags: &Flags) -> Result<Vec<Flag<'static>>> {
         out.push(Flag::keyword(atom));
     }
     Ok(out)
+}
+
+/// A Gmail label (its folder path) as an `X-GM-LABELS` argument: in
+/// modified UTF-7, like folder names on the wire, and quoted.
+fn gmail_label_arg(label: &str) -> Result<String> {
+    use base64::Engine as _;
+    if label.is_empty() || label.contains(['\r', '\n', '\0']) {
+        return Err(Error::Protocol(format!("unsupported label {label:?}")));
+    }
+    let mut encoded = String::with_capacity(label.len());
+    let mut shifted: Vec<u8> = Vec::new();
+    let flush = |shifted: &mut Vec<u8>, out: &mut String| {
+        if !shifted.is_empty() {
+            let b64 = base64::engine::general_purpose::STANDARD_NO_PAD.encode(&*shifted);
+            out.push('&');
+            out.push_str(&b64.replace('/', ","));
+            out.push('-');
+            shifted.clear();
+        }
+    };
+    for c in label.chars() {
+        if (' '..='~').contains(&c) {
+            flush(&mut shifted, &mut encoded);
+            match c {
+                '&' => encoded.push_str("&-"),
+                c => encoded.push(c),
+            }
+        } else {
+            let mut units = [0u16; 2];
+            for unit in c.encode_utf16(&mut units) {
+                shifted.extend_from_slice(&unit.to_be_bytes());
+            }
+        }
+    }
+    flush(&mut shifted, &mut encoded);
+    Ok(format!(
+        "\"{}\"",
+        encoded.replace('\\', "\\\\").replace('"', "\\\"")
+    ))
 }
 
 /// A compact UID set: runs of consecutive UIDs become `a:b`.
@@ -1558,6 +1634,21 @@ mod tests {
     fn uid_sets_are_compact() {
         assert_eq!(uid_set(&[7]), "7");
         assert_eq!(uid_set(&[5, 1, 2, 3, 9, 10, 3]), "1:3,5,9:10");
+    }
+
+    #[test]
+    fn gmail_labels_are_quoted_in_modified_utf7() {
+        assert_eq!(gmail_label_arg("Work/2026").unwrap(), "\"Work/2026\"");
+        assert_eq!(
+            gmail_label_arg("Tom & \"Jo\"").unwrap(),
+            r#""Tom &- \"Jo\"""#
+        );
+        // RFC 3501 §5.1.3's example.
+        assert_eq!(
+            gmail_label_arg("~peter/mail/台北/日本語").unwrap(),
+            "\"~peter/mail/&U,BTFw-/&ZeVnLIqe-\""
+        );
+        assert!(gmail_label_arg("a\r\nb").is_err());
     }
 
     #[test]

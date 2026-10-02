@@ -17,6 +17,9 @@ pub const SEPARATOR: char = '/';
 /// Gmail keeps its system labels under one of these.
 const GMAIL_ROOTS: [&str; 2] = ["[Gmail]", "[Google Mail]"];
 
+/// The folder Katna's notes sync to (`katna_sync::notes::NOTES_FOLDER`).
+const NOTES_FOLDER: &str = "Notes";
+
 /// Accounts with at most this many folders start fully expanded.
 const EXPAND_ALL_UP_TO: usize = 40;
 
@@ -431,6 +434,34 @@ impl Tree {
             .collect()
     }
 
+    /// Whether `folder` is one the user made, which can be renamed and
+    /// deleted: not a special folder (by role or name), not one of Gmail's
+    /// system labels or the notes folder, and holding no special folder.
+    /// As the daemon's rule (`katna_sync::folders::is_special`), only
+    /// stricter: a special name anywhere counts.
+    pub fn editable(&self, folder: FolderId) -> bool {
+        let Some(node) = self.node(folder) else {
+            return false;
+        };
+        let root = node.path.split(SEPARATOR).next().unwrap_or_default();
+        let mut plain = true;
+        walk(std::slice::from_ref(node), &mut |n, _| {
+            plain &= n.role == Role::Other;
+        });
+        plain && !GMAIL_ROOTS.contains(&root) && node.path != NOTES_FOLDER
+    }
+
+    /// `folder` and the folders inside it.
+    pub fn subtree(&self, folder: FolderId) -> Vec<FolderId> {
+        let mut out = Vec::new();
+        if let Some(node) = self.node(folder) {
+            walk(std::slice::from_ref(node), &mut |n, _| {
+                out.extend(n.folder);
+            });
+        }
+        out
+    }
+
     /// The visible rows, given the expanded node keys: of every account,
     /// or of `only` when given. Only accounts `open` says are open show
     /// their folders.
@@ -766,6 +797,36 @@ mod tests {
             tree.nest_targets(AccountId(2)),
             [(FolderId(7), "Projects".to_owned())]
         );
+    }
+
+    #[test]
+    fn only_the_users_own_folders_are_editable() {
+        let mut sent = folder(6, 1, "Sent", 0);
+        sent.role = Some("sent".to_owned());
+        let folders = [
+            folder(1, 1, "INBOX", 1),
+            folder(2, 1, "INBOX/Receipts", 1),
+            folder(3, 1, "[Gmail]/All Mail", 1),
+            folder(4, 1, "Work", 0),
+            folder(5, 1, "Work/Clients", 0),
+            sent,
+            folder(7, 1, "Notes", 0),
+            folder(8, 1, "Old", 0),
+            folder(9, 1, "Old/Trash", 0),
+            folder(10, 1, "Snoozed", 0),
+        ];
+        let tree = Tree::build(&[], &folders, &HashMap::new());
+        let editable: Vec<i64> = folders
+            .iter()
+            .filter(|f| tree.editable(f.id))
+            .map(|f| f.id.0)
+            .collect();
+        // Not the inbox, Gmail's labels, Sent, Notes, Snoozed, or a folder
+        // holding a special one.
+        assert_eq!(editable, [2, 4, 5]);
+        assert!(!tree.editable(FolderId(99)));
+        assert_eq!(tree.subtree(FolderId(4)), [FolderId(4), FolderId(5)]);
+        assert!(tree.subtree(FolderId(99)).is_empty());
     }
 
     #[test]

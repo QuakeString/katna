@@ -451,6 +451,32 @@ menu-follow-up = Follow up
 menu-more = More
 # Heading over the list of folders to move the ticked mail to.
 menu-move-to-heading = Move to:
+# Placeholder of the search box on top of Move to's folders.
+menu-move-to-search = Move to…
+# Gmail: opens a submenu of the user's labels to tick or untick on the
+# mail, which stays where it is.
+menu-label-as = Label as
+# Placeholder of the search box on top of Label as's labels.
+menu-label-as-search = Label as…
+# Under the search box when no folder matches what was typed. $name: the
+# typed text.
+menu-no-folder = No folder called “{ $name }”
+menu-no-label = No label called “{ $name }”
+# Makes a folder (or Gmail label) with the typed name and moves the mail
+# there (or puts the label on it). $name: the typed text.
+menu-create-folder = Create “{ $name }”
+# The card that follows the pointer while mail is dragged onto a folder,
+# for several lines (one shows its subject).
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } conversation
+       *[other] { $count } conversations
+    }
+   *[message] { $count ->
+        [one] { $count } message
+       *[other] { $count } messages
+    }
+}
 # Searches for mail from the sender. $name: the sender's name or address.
 menu-find-from = Find emails from { $name }
 
@@ -488,6 +514,9 @@ toast-moved = { $kind ->
        *[other] { $count } messages moved.
     }
 }
+# Gmail: a label put on mail, or taken off it. $label: the label's name.
+toast-label-added = Label “{ $label }” added.
+toast-label-removed = Label “{ $label }” removed.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Conversation starred.

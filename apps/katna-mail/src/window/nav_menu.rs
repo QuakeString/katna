@@ -3,7 +3,8 @@
 //! The right-click menu of the folder pane, as in Thunderbird and webmail:
 //! "Check for new mail" for that folder only (its account from an
 //! account's heading, every account from All Accounts), "Mark all as
-//! read", a new folder or label inside it, and "Empty Trash". On an
+//! read", a new folder or label inside it, Rename and Delete on the
+//! folders the user made, and "Empty Trash". On an
 //! account's heading, or its row under All Accounts, the menu opens with
 //! the account: its name and address, whether it is in sync and its
 //! storage, then Sign in again when its sign-in stopped working, New mail
@@ -80,6 +81,8 @@ pub(super) struct NavMenu {
     role: Role,
     /// A new folder or label may go inside it.
     nests: bool,
+    /// The user made it: it may be renamed and deleted.
+    editable: bool,
     /// The account the line stands for, shown on top of the menu.
     about: Option<AccountId>,
     /// Where that account's sync stands, once the daemon said.
@@ -114,6 +117,7 @@ impl MailWindow {
                 unread: 0,
                 role: Role::Other,
                 nests: false,
+                editable: false,
                 about: None,
                 status: None,
             },
@@ -132,6 +136,7 @@ impl MailWindow {
                 unread: 0,
                 role: Role::Other,
                 nests: false,
+                editable: false,
                 about: None,
                 status: None,
             },
@@ -144,6 +149,7 @@ impl MailWindow {
                 unread: 0,
                 role: Role::Other,
                 nests: false,
+                editable: false,
                 about: matches!(row, sidebar::Row::Account { .. }).then_some(*id),
                 status: None,
             },
@@ -163,6 +169,7 @@ impl MailWindow {
                     .and_then(|f| self.tree.node(f))
                     .map_or(Role::Other, |n| n.role),
                 nests: false,
+                editable: false,
                 about: Some(*account),
                 status: None,
             },
@@ -188,6 +195,7 @@ impl MailWindow {
                             && matches!(role, Role::Other | Role::Inbox)
                             && self.tree.nest_targets(a).iter().any(|(id, _)| id == folder)
                     }),
+                    editable: account.is_some_and(imap) && self.tree.editable(*folder),
                     about: None,
                     status: None,
                 }
@@ -648,13 +656,17 @@ impl MailWindow {
                 )
             })
             .children(quiet_item)
+            .when(
+                menu.folder.is_some() && (menu.nests || menu.editable),
+                |d| d.child(divider()),
+            )
             .when_some(
                 menu.folder.zip(account).filter(|_| menu.nests),
                 |d, (folder, account)| {
                     d.child(
                         item(
                             "nav-menu-new",
-                            "add",
+                            "folder-add",
                             if gmail {
                                 tr!("nav-menu-new-sublabel")
                             } else {
@@ -670,6 +682,24 @@ impl MailWindow {
                     )
                 },
             )
+            .when_some(menu.folder.filter(|_| menu.editable), |d, folder| {
+                d.child(
+                    item("nav-menu-rename", "pen", tr!("nav-menu-rename").into()).on_click(
+                        cx.listener(move |this, _, window, cx| {
+                            this.nav_menu = None;
+                            this.open_rename_label(folder, window, cx);
+                        }),
+                    ),
+                )
+                .child(
+                    item("nav-menu-delete", "trash", tr!("nav-menu-delete").into()).on_click(
+                        cx.listener(move |this, _, _, cx| {
+                            this.nav_menu = None;
+                            this.ask_delete_folder(folder, cx);
+                        }),
+                    ),
+                )
+            })
             .when_some(
                 about.filter(|a| self.accounts.iter().any(|x| x.id == *a && x.kind.is_mail())),
                 |d, about| {
