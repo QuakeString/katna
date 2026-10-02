@@ -942,7 +942,7 @@ impl MailWindow {
                     KINDS
                         .into_iter()
                         .enumerate()
-                        .map(|(n, types)| self.files_kind_chip(n, types, th, cx)),
+                        .map(|(n, types)| self.files_kind_chip(n, types, false, th, cx)),
                 )
                 .child(self.files_person_chip(th, cx))
                 .child(self.files_time_chip(th, cx));
