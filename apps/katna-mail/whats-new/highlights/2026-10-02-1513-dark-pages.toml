@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Dark pages in the viewer"
+text = """
+In dark mode, the attachment viewer has a half-moon button that shows
+bright PDFs, documents, slides, sheets and text files dark. Colours keep
+their hue, photos inside a page are dimmed rather than turned into
+negatives, and scanned paper turns dark like text. Katna remembers your
+choice for the next file.
+"""

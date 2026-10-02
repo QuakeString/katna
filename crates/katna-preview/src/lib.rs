@@ -12,6 +12,7 @@
 //! alpha, which is what GPUI expects after swapping red and blue.
 
 pub mod avatar;
+pub mod dark;
 pub mod document;
 pub mod glance;
 pub mod markup;

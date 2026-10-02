@@ -736,6 +736,10 @@ pub struct MailView {
     /// In a dark theme, give HTML mail dark colors too; off, mail keeps the
     /// colors its sender picked, on a light page.
     pub dark_mail: bool,
+    /// In a dark theme, show bright attachment pages (PDF, documents,
+    /// slides, sheets, text) dark in the viewer: lightness flipped with
+    /// hue kept, photos dimmed. Set with the viewer's half-moon button.
+    pub dark_pages: bool,
     /// Show a small picture of each attachment's content on its card.
     pub attachment_previews: bool,
     /// Open the folder in the file manager after saving attachments.
@@ -916,6 +920,7 @@ impl Default for MailView {
             important_markers: true,
             limit_width: false,
             dark_mail: true,
+            dark_pages: false,
             attachment_previews: true,
             open_saved_folder: false,
             files: FilesPage::default(),

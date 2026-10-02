@@ -2568,6 +2568,16 @@ desktop's own app stays one click away.
   space around the file closes the viewer, as in Gmail; a click on the
   page, a control or the bar, or a drag, does not (nor while a menu, the
   unsaved-marks question or a note being typed is open). Escape closes the viewer. It is dark in light and dark themes alike.
+  In a dark theme a half-moon button ends the controls pill: Dark pages
+  shows PDFs, documents, slides, sheets and text files dark
+  (`katna_preview::dark`: lightness flipped with hue kept, squeezed to
+  10–90%, so paper is a soft dark grey and red stays red). On a PDF the
+  page is drawn as usual, then the pictures it draws (found by a second
+  hayro pass) are dimmed to 72% instead of flipped, unless at least half
+  of one is plain paper (a scan), which flips like text. Documents,
+  sheets and text flip their own colours. The choice is kept
+  (`[mail] dark_pages`, off by default); pictures on their own are never
+  changed, and in a light theme the button is hidden.
   - **PDF:** `hayro` (pure Rust, CPU, Apache-2.0/MIT) draws the pages.
     Only pages on screen (and one either side) are drawn, at the zoom and
     the screen's scale, one at a time on a background thread; pages far

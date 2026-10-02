@@ -139,6 +139,33 @@ impl Document {
         let image = RgbaImage::from_raw(width, height, pixmap.data_as_u8_slice().to_vec())?;
         Some(turn_image(image, self.turn))
     }
+
+    /// Page `page` drawn as [`Document::render`] does, then made dark for
+    /// reading in dark mode ([`crate::dark`]): photos dimmed, the rest
+    /// (scans too) flipped.
+    pub fn render_dark(&self, page: usize, scale: f32) -> Option<RgbaImage> {
+        let mut image = self.render(page, scale)?;
+        let pages = self.pdf.pages();
+        let pdf_page = pages.get(page)?;
+        let (w, h) = self.page_size(page);
+        // The scale `render` used, from the page's width as shown.
+        let px = f64::from(image.width()) / f64::from(w.max(1.0));
+        let (iw, ih) = (f64::from(image.width()), f64::from(image.height()));
+        let pictures: Vec<_> =
+            crate::pdf_text::pictures(pdf_page, self.shown(pdf_page, page), (w, h))
+                .into_iter()
+                .map(|r| {
+                    // Only whole pixels of the picture: edge pixels, part
+                    // paper, flip with the page.
+                    let at = |v: f64, max: f64| (v * px).clamp(0.0, max);
+                    let (x0, y0) = (at(r.x0, iw).ceil(), at(r.y0, ih).ceil());
+                    let (x1, y1) = (at(r.x1, iw).floor(), at(r.y1, ih).floor());
+                    (x0 as u32, y0 as u32, x1 as u32, y1 as u32)
+                })
+                .collect();
+        crate::dark::darken(&mut image, &pictures);
+        Some(image)
+    }
 }
 
 impl Document {
@@ -221,10 +248,28 @@ fn fit_scale(w: f32, h: f32, scale: f32) -> f32 {
 mod tests {
     use super::*;
 
+    #[test]
+    fn dark_pages_dim_photos() {
+        // A 2 × 1 dark green picture drawn 200 × 100 pt at the top left;
+        // the rest of the page is white paper.
+        let pdf = pdf_with(b"q 200 0 0 100 0 692 cm BI /W 2 /H 1 /CS /RGB /BPC 8 ID (x<(x< EI Q");
+        let doc = Document::open(pdf).unwrap();
+        let page = doc.render_dark(0, 1.0).unwrap();
+        // The photo is dimmed, not flipped.
+        let photo = page.get_pixel(100, 50).0;
+        assert!(photo[1] > photo[0] + 40 && photo[1] < 120, "{photo:?}");
+        // The paper is a dark grey.
+        assert_eq!(page.get_pixel(400, 500).0, [26, 26, 26, 255]);
+    }
+
     /// A one-page PDF (US Letter) with a black 100 × 100 pt square at the
     /// bottom left, cross-reference offsets computed.
     pub(crate) fn square_pdf() -> Vec<u8> {
-        let content = b"0 0 0 rg 0 0 100 100 re f";
+        pdf_with(b"0 0 0 rg 0 0 100 100 re f")
+    }
+
+    /// A one-page PDF (US Letter) drawing `content`.
+    fn pdf_with(content: &[u8]) -> Vec<u8> {
         let objects = [
             "<< /Type /Catalog /Pages 2 0 R >>".to_owned(),
             "<< /Type /Pages /Kids [3 0 R] /Count 1 >>".to_owned(),
