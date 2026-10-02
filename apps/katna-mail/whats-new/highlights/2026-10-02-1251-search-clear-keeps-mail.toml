@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Clearing a search keeps your mail open"
+text = """
+Open a mail from the search results and clear the search with the X: the
+mail stays open as your folder comes back, instead of folding back to the
+list.
+"""

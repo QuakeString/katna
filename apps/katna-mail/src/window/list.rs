@@ -2352,6 +2352,20 @@ impl MailWindow {
                         .child(row.count.to_string()),
                 )
             })
+            .when(row.replied, |d| {
+                // A faint reply arrow when the user answered, after the
+                // count.
+                d.child(
+                    div()
+                        .id(("row-replied", ix))
+                        .flex_none()
+                        .pl(px(4.0))
+                        .flex()
+                        .items_center()
+                        .tooltip(tip(tr!("list-replied"), th))
+                        .child(icon("reply", th.text_faint, 14.0)),
+                )
+            })
             // The account of a line of the whole unified inbox: its dot
             // after the names, with its name where the line has room.
             .children(account.map(|(color, name)| {
