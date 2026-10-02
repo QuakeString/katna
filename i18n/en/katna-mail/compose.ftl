@@ -75,8 +75,10 @@ compose-scheduled = Send scheduled for { $when }
 compose-sent-archived = Sent and archived
 compose-sent = Message sent
 compose-discarded = Draft discarded
-# The message was closed and kept in the Drafts folder.
+# The message was kept in the Drafts folder: on closing, and dim beside the
+# title while it is written.
 compose-draft-saved = Draft saved
+compose-draft-saving = Saving…
 # $error: why, such as "The Katna background service is not running."
 compose-draft-failed = The draft could not be saved: { $error }
 # A draft picked in the Drafts folder could not be read or downloaded.

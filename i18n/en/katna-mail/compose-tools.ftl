@@ -152,6 +152,8 @@ compose-tool-signature-none = No signature
 compose-tool-signature-untitled = Untitled
 # Opens Settings at the signatures.
 compose-tool-signature-manage = Manage signatures
+# The faint tag naming the signature beside it in the text.
+compose-signature-tag-tip = Choose another signature
 
 ## The templates menu, and saving a message as a template
 

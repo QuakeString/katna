@@ -14,12 +14,17 @@ use katna_i18n::tr;
 use katna_store::MessageId;
 use mail_parser::MessageParser;
 
-use super::{Attachment, Draft, Kind, MailWindow, Mode, Unsent, body_parts, scheduled};
+use super::{
+    Attachment, Draft, DraftStatus, Kind, MailWindow, Mode, Unsent, body_parts, scheduled,
+};
 use crate::daemon::{self, Command};
 use crate::outgoing::{self, Mailbox, Outgoing};
 use katna_ui::rich::html;
 
 /// A `Message-ID` for a new message's drafts, without angle brackets.
+/// How often the open message is saved as a draft while it changes.
+const AUTOSAVE_EVERY: std::time::Duration = std::time::Duration::from_secs(4);
+
 pub(super) fn new_message_id() -> String {
     static COUNTER: AtomicU64 = AtomicU64::new(0);
     let now = std::time::SystemTime::now()
@@ -108,7 +113,7 @@ impl MailWindow {
         let unsent = touched.then(|| self.snapshot(cx)).flatten();
         self.close_compose(cx);
         if let Some(unsent) = unsent {
-            self.save_draft(unsent, cx);
+            self.save_draft(unsent, false, cx);
         }
     }
 
@@ -123,6 +128,9 @@ impl MailWindow {
             return;
         };
         self.close_compose(cx);
+        if let Some(message_id) = &unsent.message_id {
+            self.drop_when_saved(message_id);
+        }
         if let (Some(account), Some(message_id)) = (unsent.saved, unsent.message_id.clone()) {
             self.discard_saved(account, message_id, cx);
         }
@@ -135,12 +143,17 @@ impl MailWindow {
     }
 
     /// Saves `unsent` in its account's Drafts folder. When that fails the
-    /// snackbar says so, and its Undo opens the message again.
-    fn save_draft(&mut self, mut unsent: Unsent, cx: &mut Context<Self>) {
+    /// snackbar says so, and its Undo opens the message again. `quiet`:
+    /// saved while it is still being written, which the title bar shows
+    /// instead of the snackbar.
+    fn save_draft(&mut self, mut unsent: Unsent, quiet: bool, cx: &mut Context<Self>) {
         let account = unsent
             .from
             .and_then(|id| self.accounts.iter().find(|a| a.id == id));
         let Some(account) = account else {
+            if quiet {
+                return;
+            }
             self.writing.closed_draft = Some(unsent);
             self.show_snackbar(
                 tr!("compose-draft-failed", error = tr!("compose-no-account")),
@@ -159,6 +172,9 @@ impl MailWindow {
         // Saved before in another account (From changed): it moves.
         let moved = unsent.saved.filter(|saved| *saved != id);
         let connection = self.daemon.clone();
+        if quiet {
+            self.writing.saving.push(message_id.clone());
+        }
         cx.spawn(async move |this, cx| {
             let result = cx
                 .background_executor()
@@ -178,6 +194,10 @@ impl MailWindow {
                 })
                 .await;
             this.update(cx, |this, cx| {
+                if quiet {
+                    this.quietly_saved(id, &message_id, &unsent, result, cx);
+                    return;
+                }
                 match result {
                     Ok(()) => this.show_snackbar(tr!("compose-draft-saved"), None, cx),
                     Err(err) => {
@@ -196,6 +216,114 @@ impl MailWindow {
             .ok();
         })
         .detach();
+    }
+
+    /// A save made while writing landed: the open message is saved as of
+    /// then, or, sent or discarded meanwhile, its draft goes again.
+    fn quietly_saved(
+        &mut self,
+        account: AccountId,
+        message_id: &str,
+        unsent: &Unsent,
+        result: Result<(), String>,
+        cx: &mut Context<Self>,
+    ) {
+        if let Some(at) = self.writing.saving.iter().position(|m| m == message_id) {
+            self.writing.saving.remove(at);
+        }
+        if let Some(at) = self
+            .writing
+            .drop_when_saved
+            .iter()
+            .position(|m| m == message_id)
+        {
+            self.writing.drop_when_saved.remove(at);
+            if result.is_ok() {
+                self.discard_saved(account, message_id.to_owned(), cx);
+            }
+            return;
+        }
+        let Some(compose) = self
+            .compose
+            .as_mut()
+            .filter(|c| !c.closing && c.message_id == message_id)
+        else {
+            return;
+        };
+        match result {
+            Ok(()) => {
+                compose.saved = Some(account);
+                compose.autosaved = Some((unsent.draft.clone(), unsent.attachments.len()));
+                compose.draft_status = DraftStatus::Saved;
+            }
+            Err(err) => {
+                tracing::warn!(%err, "saving a draft while writing");
+                compose.draft_status = DraftStatus::Failed;
+            }
+        }
+        cx.notify();
+    }
+
+    /// The draft `message_id` was sent or discarded: a save still on its
+    /// way is deleted once it lands.
+    pub(in crate::window) fn drop_when_saved(&mut self, message_id: &str) {
+        if self.writing.saving.iter().any(|m| m == message_id) {
+            self.writing.drop_when_saved.push(message_id.to_owned());
+        }
+    }
+
+    /// Starts saving the open message as a draft every few seconds while
+    /// it changes, until no message is open.
+    pub(in crate::window) fn keep_saving(&mut self, cx: &mut Context<Self>) {
+        if self.writing.autosaving || self.compose.is_none() {
+            return;
+        }
+        self.writing.autosaving = true;
+        cx.spawn(async move |this, cx| {
+            loop {
+                cx.background_executor().timer(AUTOSAVE_EVERY).await;
+                let more = this
+                    .update(cx, |this, cx| this.save_while_writing(cx))
+                    .unwrap_or(false);
+                if !more {
+                    break;
+                }
+            }
+        })
+        .detach();
+    }
+
+    /// Saves the open message if it changed since the last save; false
+    /// once no message is open.
+    fn save_while_writing(&mut self, cx: &mut Context<Self>) -> bool {
+        let Some(compose) = self.compose.as_ref() else {
+            self.writing.autosaving = false;
+            return false;
+        };
+        // The chat's reply box is a quick answer, not a draft.
+        if compose.closing
+            || compose.chat.is_some()
+            || matches!(
+                compose.draft_status,
+                DraftStatus::Saving | DraftStatus::Failed
+            )
+            || !compose.touched(cx)
+        {
+            return true;
+        }
+        let now = (compose.fields(cx), compose.attachments.len());
+        if compose.autosaved.as_ref() == Some(&now) {
+            return true;
+        }
+        let Some(unsent) = self.snapshot(cx) else {
+            return true;
+        };
+        if let Some(c) = &mut self.compose {
+            c.draft_status = DraftStatus::Saving;
+        }
+        self.save_draft(unsent, true, cx);
+        cx.notify();
+        true
     }
 
     /// Deletes every saved copy of the draft `message_id` of `account`.

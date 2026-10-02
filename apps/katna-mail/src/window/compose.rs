@@ -159,6 +159,11 @@ pub(super) struct Compose {
     message_id: String,
     /// The account whose Drafts folder has it saved, if any.
     saved: Option<AccountId>,
+    /// What the last save while writing held, so an unchanged message is
+    /// not saved again.
+    autosaved: Option<(Draft, usize)>,
+    /// Saving while writing, for the title bar.
+    draft_status: DraftStatus,
     show_cc: bool,
     show_bcc: bool,
     /// The recipients of To, Cc and Bcc; their fields hold only what is
@@ -384,6 +389,26 @@ pub(super) struct Writing {
     /// A reply put aside while a new message is written; it comes back
     /// when that message is sent or closed.
     pub(super) parked: Option<Compose>,
+    /// The timer that saves the open message as a draft while it is
+    /// written is running.
+    autosaving: bool,
+    /// The `Message-ID`s of drafts being saved while written.
+    saving: Vec<String>,
+    /// Drafts sent or discarded while a save was on its way: deleted once
+    /// that save lands.
+    drop_when_saved: Vec<String>,
+}
+
+/// Where saving the open message while it is written stands.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(super) enum DraftStatus {
+    #[default]
+    Unsaved,
+    Saving,
+    Saved,
+    /// Its account could not save it (no Drafts folder, say): it is not
+    /// tried again while written; closing it still tries, and says why.
+    Failed,
 }
 
 impl Writing {
@@ -1350,6 +1375,8 @@ impl MailWindow {
             from: None,
             message_id: drafts::new_message_id(),
             saved: None,
+            autosaved: None,
+            draft_status: DraftStatus::Unsaved,
             mode: Mode::Open,
             sealing: Sealing::new_message(),
             signature,
@@ -1654,8 +1681,10 @@ impl MailWindow {
         let chat = compose.chat.is_some();
         let answered = compose.answering;
         let answering = answered.filter(|_| archive && at.is_none());
-        // Sent, the draft it was saved as goes.
+        // Sent, the draft it was saved as goes, and one being saved goes
+        // once it lands.
         let saved = compose.saved.map(|a| (a.0, compose.message_id.clone()));
+        let sending_id = compose.message_id.clone();
         let signature = compose.signature;
         let attachments = compose.attachments.clone();
         let drive_files = compose.drive.clone();
@@ -1810,6 +1839,7 @@ impl MailWindow {
             saved: None,
         });
         self.close_compose(cx);
+        self.drop_when_saved(&sending_id);
         // A reply takes the place of its card in the conversation at once,
         // as in Gmail.
         let card = match answered {
@@ -2062,6 +2092,7 @@ impl MailWindow {
         if self.compose.is_none() && self.writing.grammar.is_some() {
             self.writing.grammar = None;
         }
+        self.keep_saving(cx);
         let (mode, conversation, closing) = self
             .compose
             .as_ref()
@@ -2106,6 +2137,13 @@ impl MailWindow {
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let mode = compose.mode;
         let title = compose.title(cx);
+        let draft_status = match compose.draft_status {
+            DraftStatus::Unsaved | DraftStatus::Failed => None,
+            // Saved before, it keeps saying so rather than flickering.
+            DraftStatus::Saving if compose.saved.is_some() => Some(tr!("compose-draft-saved")),
+            DraftStatus::Saving => Some(tr!("compose-draft-saving")),
+            DraftStatus::Saved => Some(tr!("compose-draft-saved")),
+        };
 
         let title_bar = div()
             .id("compose-title")
@@ -2126,10 +2164,26 @@ impl MailWindow {
                 div()
                     .flex_1()
                     .min_w_0()
-                    .truncate()
-                    .text_size(px(14.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .child(title),
+                    .flex()
+                    .flex_row()
+                    .items_baseline()
+                    .gap(px(8.0))
+                    .child(
+                        div()
+                            .min_w_0()
+                            .truncate()
+                            .text_size(px(14.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .child(title),
+                    )
+                    // Saving while writing, in dim text beside the title.
+                    .children(draft_status.map(|status| {
+                        div()
+                            .flex_none()
+                            .text_size(px(12.5))
+                            .text_color(rgba(th.text_faint))
+                            .child(status)
+                    })),
             )
             .child(
                 // Minimized, the same button opens it again.
@@ -2196,7 +2250,9 @@ impl MailWindow {
             w if w > 0.0 => w,
             _ => shape.width,
         };
-        let gap = lerp(24.0, 8.0, shape.phone);
+        // The same gap as the cards keep from the window's edges, so the
+        // window's corner lines up with the card's beside it.
+        let gap = shape.card_margin().max(8.0 * shape.phone);
         let (width, height) = match mode {
             _ if sheet => (sheet_width, vh),
             Mode::Minimized if shape.is_phone() => (shape.width - 2.0 * gap, TITLE_HEIGHT),
