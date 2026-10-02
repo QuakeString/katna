@@ -19,7 +19,7 @@ use katna_ui::unpx;
 
 use crate::desktop::{DecorationMode, Environment, Preset, Session};
 use crate::geometry::{Edge, FrameGeometry, RESIZE_HANDLE, Rect, Sides};
-use crate::tokens::{ChromeColors, ChromeTokens, Shadow};
+use crate::tokens::{ChromeColors, ChromeTokens, Shadow, with_alpha};
 
 /// GNOME HIG minimum window size (360×294 logical pixels), in the
 /// desktop's pixels, whatever Katna's own scale.
@@ -31,13 +31,32 @@ pub const MIN_WINDOW_SIZE: Size<Pixels> = Size {
 
 /// How the app wants its windows to look: a GPUI global that every
 /// [`WindowChrome`] follows as it changes ([`WindowChrome::sync_look`]).
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Look {
     /// Katna's own frame where the desktop would draw one
     /// ([`Environment::own_frame`]).
     pub own_frame: bool,
     /// A translucent background that the compositor blurs, where it can.
     pub blur: bool,
+    /// The corner radius of Katna's frame, in logical pixels; `None` keeps
+    /// the preset's.
+    pub radius: Option<u8>,
+    /// The thin line around Katna's frame.
+    pub border: bool,
+    /// How opaque that line is, in percent; `None` keeps the preset's.
+    pub border_opacity: Option<u8>,
+}
+
+impl Default for Look {
+    fn default() -> Self {
+        Self {
+            own_frame: false,
+            blur: false,
+            radius: None,
+            border: true,
+            border_opacity: None,
+        }
+    }
 }
 
 impl Global for Look {}
@@ -157,6 +176,11 @@ pub struct WindowChrome {
     /// Windows' own title bar is hidden and Katna's bar holds the window
     /// buttons: Katna's frame on Windows, fixed when the window opened.
     title_bar_hidden: bool,
+    /// The [`Look`] as of the last [`WindowChrome::sync_look`].
+    look: Cell<Look>,
+    /// The preset's corner radius and border opacity in percent, before
+    /// [`Look`] changes them, as of the last [`WindowChrome::tokens`].
+    natural: Cell<(f32, u8)>,
 }
 
 impl WindowChrome {
@@ -187,6 +211,8 @@ impl WindowChrome {
             backdrop: Cell::new(None),
             blur_allowed: true,
             blurred: Cell::new(false),
+            look: Cell::new(Look::default()),
+            natural: Cell::new((0.0, 0)),
         }
     }
 
@@ -225,6 +251,7 @@ impl WindowChrome {
     /// start of the root view's `render`, before [`WindowChrome::tokens`].
     pub fn sync_look(&self, window: &mut Window, cx: &App) {
         let look = cx.try_global::<Look>().copied().unwrap_or_default();
+        self.look.set(look);
         let switch = {
             let mut env = self.env.borrow_mut();
             (env.own_frame != look.own_frame).then(|| {
@@ -317,6 +344,10 @@ impl WindowChrome {
         if let Some(backdrop) = self.backdrop.get() {
             tokens.window_bg = backdrop;
         }
+        let look = self.look.get();
+        self.natural
+            .set((tokens.window_radius, percent(tokens.outline & 0xff)));
+        let tokens = with_look(tokens, &look);
         if self.blurred.get() {
             tokens.translucent()
         } else {
@@ -340,9 +371,23 @@ impl WindowChrome {
         } else {
             RESIZE_HANDLE
         };
-        // The margin and the one-pixel border on an edge that is not tiled.
-        let edge = |tiled: bool| if tiled { 0.0 } else { inset + 1.0 };
+        // The margin and the border on an edge that is not tiled.
+        let border = self.border_width();
+        let edge = |tiled: bool| if tiled { 0.0 } else { inset + border };
         (width - edge(tiling.left) - edge(tiling.right)).max(0.0)
+    }
+
+    /// The preset's corner radius, in logical pixels, and its border's
+    /// opacity, in percent: what Katna's frame has when [`Look`] leaves
+    /// them be.
+    pub fn natural_corners(&self) -> (f32, u8) {
+        self.natural.get()
+    }
+
+    /// The width of the line around Katna's frame: none when [`Look`]
+    /// turns it off.
+    fn border_width(&self) -> f32 {
+        if self.look.get().border { 1.0 } else { 0.0 }
     }
 
     /// The room the window buttons take at the start and at the end of
@@ -501,7 +546,11 @@ impl WindowChrome {
         } else {
             Vec::new()
         };
-        let border = |is_tiled: bool| if is_tiled { px(0.0) } else { px(1.0) };
+        let width = self.border_width();
+        let border = |is_tiled: bool| if is_tiled { px(0.0) } else { px(width) };
+        // Inside the border the corners nest: the outer radius less its
+        // width.
+        let inner = |r: Pixels| (r - px(width)).max(px(0.0));
 
         let frame = div()
             .id("katna-window-frame")
@@ -528,16 +577,16 @@ impl WindowChrome {
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .child(
                 self.bar(t, true, bar, window, cx)
-                    .rounded_tl(r_tl)
-                    .rounded_tr(r_tr),
+                    .rounded_tl(inner(r_tl))
+                    .rounded_tr(inner(r_tr)),
             )
             .child(
                 div()
                     .flex_1()
                     .min_h_0()
                     .overflow_hidden()
-                    .rounded_bl(r_bl)
-                    .rounded_br(r_br)
+                    .rounded_bl(inner(r_bl))
+                    .rounded_br(inner(r_br))
                     .child(content),
             );
 
@@ -700,6 +749,25 @@ impl WindowChrome {
             )
         })
     }
+}
+
+/// `tokens` with the corner radius and border [`Look`] asks for.
+fn with_look(mut tokens: ChromeTokens, look: &Look) -> ChromeTokens {
+    if let Some(radius) = look.radius {
+        tokens.window_radius = f32::from(radius);
+    }
+    if !look.border {
+        tokens.outline = with_alpha(tokens.outline, 0);
+    } else if let Some(opacity) = look.border_opacity {
+        let alpha = (f32::from(opacity.min(100)) * 255.0 / 100.0).round() as u8;
+        tokens.outline = with_alpha(tokens.outline, alpha);
+    }
+    tokens
+}
+
+/// An alpha byte as a percentage.
+fn percent(alpha: u32) -> u8 {
+    (alpha.min(255) as f32 * 100.0 / 255.0).round() as u8
 }
 
 fn x(p: gpui::Point<Pixels>) -> f32 {
@@ -930,5 +998,34 @@ fn default_button_layout() -> WindowButtonLayout {
             Some(WindowButton::Maximize),
             Some(WindowButton::Close),
         ],
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn look_sets_corners_and_border() {
+        let t = ChromeTokens::new(Preset::BreezeLike, true);
+        assert_eq!(with_look(t.clone(), &Look::default()), t);
+        let look = Look {
+            radius: Some(0),
+            border_opacity: Some(100),
+            ..Look::default()
+        };
+        let r = with_look(t.clone(), &look);
+        assert_eq!(r.window_radius, 0.0);
+        assert_eq!(r.outline, with_alpha(t.outline, 0xff));
+        let off = with_look(t.clone(), &Look { border: false, ..look });
+        assert_eq!(off.outline & 0xff, 0);
+        assert_eq!(off.outline >> 8, t.outline >> 8);
+    }
+
+    #[test]
+    fn percent_rounds_alpha() {
+        assert_eq!(percent(0), 0);
+        assert_eq!(percent(0x33), 20);
+        assert_eq!(percent(0xff), 100);
     }
 }
