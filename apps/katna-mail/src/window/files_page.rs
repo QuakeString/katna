@@ -22,8 +22,8 @@ use std::sync::Arc;
 use gpui::{
     Animation, AnimationExt, AnyElement, Bounds, ClipboardItem, Context, FocusHandle, FontWeight,
     KeyDownEvent, ListAlignment, ListState, MouseButton, MouseDownEvent, MouseUpEvent, Pixels,
-    Point, ScrollWheelEvent, SharedString, Task, Window, anchored, canvas, deferred, div,
-    ease_out_quint, list, point, prelude::*, rgba,
+    Point, ScrollHandle, ScrollWheelEvent, SharedString, Task, Window, anchored, canvas, deferred,
+    div, ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
 use katna_core::AccountId;
@@ -42,7 +42,7 @@ use super::attachments::{
 use super::compose::schedule;
 use crate::data::RowFile;
 use crate::format;
-use crate::theme::Theme;
+use crate::theme::{Theme, fade};
 use crate::widgets::{icon, icon_button, placeholder, raised, tip};
 use katna_ui::text_input::{InputEvent, TextInput};
 
@@ -428,6 +428,9 @@ pub(super) struct Library {
     wheel: Notches,
     /// Where the time chip was drawn, for its calendar to hang from.
     time_chip: Rc<Cell<Option<Bounds<Pixels>>>>,
+    /// The phone's rows of chips, when they scroll sideways.
+    kinds_scroll: ScrollHandle,
+    filters_scroll: ScrollHandle,
     sort: Sort,
     grid: bool,
     menu: Option<Menu>,
@@ -478,6 +481,8 @@ impl Default for Library {
             time: Time::Any,
             wheel: Notches::default(),
             time_chip: Rc::default(),
+            kinds_scroll: ScrollHandle::new(),
+            filters_scroll: ScrollHandle::new(),
             sort: Sort::Newest,
             grid: true,
             menu: None,
@@ -665,6 +670,71 @@ fn filter_chip(
 }
 
 /// The arrow at the end of a chip that opens a menu.
+/// Space between the chips.
+const CHIP_GAP: f32 = 8.0;
+/// A kind chip's width beside its label: border, padding, icon and gap.
+const KIND_CHIP_ROOM: f32 = 2.0 + 12.0 + 16.0 + 6.0 + 12.0;
+/// A kind chip folded to its icon: as wide as it is tall.
+const FOLDED_CHIP: f32 = 32.0;
+/// A filter chip's width beside its label, its arrow's, and the time
+/// chip's clear button's.
+const FILTER_CHIP_ROOM: f32 = 2.0 + 12.0 + 6.0;
+const CHIP_ARROW: f32 = 4.0 + 18.0;
+const CHIP_CLEAR: f32 = 4.0 + 20.0;
+/// How wide a row of chips fades out where more of it is scrolled away.
+const CHIP_FADE: f32 = 28.0;
+
+/// A row of chips on a phone or a tablet. When `wide` (wider than the
+/// room it has) it scrolls sideways and fades out at an edge with more
+/// chips past it.
+fn chip_row(
+    id: &'static str,
+    scroll: &ScrollHandle,
+    chips: gpui::Div,
+    wide: bool,
+    pad: f32,
+    th: &Theme,
+) -> gpui::Div {
+    let x = scroll.offset().x;
+    let max = scroll.max_offset().x;
+    // Until it is first laid out it starts at the left with more past
+    // its right edge.
+    let (left, right) = if wide {
+        (x < px(-0.5), max <= px(0.5) || x > -max + px(0.5))
+    } else {
+        (false, false)
+    };
+    let edge = |left: bool| {
+        div()
+            .absolute()
+            .top_0()
+            .bottom(px(10.0))
+            .w(px(CHIP_FADE))
+            .map(|d| if left { d.left_0() } else { d.right_0() })
+            .bg(linear_gradient(
+                if left { 90.0 } else { 270.0 },
+                linear_color_stop(rgba(th.surface), 0.2),
+                linear_color_stop(rgba(fade(th.surface, 0.0)), 1.0),
+            ))
+    };
+    div()
+        .relative()
+        .flex_none()
+        .child(
+            div()
+                .id(id)
+                .track_scroll(scroll)
+                .when(wide, |d| d.overflow_x_scroll())
+                .px(px(pad))
+                .pb(px(10.0))
+                .flex()
+                .flex_row()
+                .child(chips),
+        )
+        .when(left, |d| d.child(edge(true)))
+        .when(right, |d| d.child(edge(false)))
+}
+
 fn chip_arrow(on: bool, th: &Theme) -> AnyElement {
     icon(
         "drop-down",
@@ -1307,7 +1377,7 @@ impl MailWindow {
             None => placeholder(&tr!("files-loading"), th),
             Some(Err(err)) => placeholder(err, th),
             Some(Ok(files)) if files.is_empty() => placeholder(&tr!("files-empty"), th),
-            Some(Ok(_)) => self.render_files_body(card_width, pad, th, window, cx),
+            Some(Ok(_)) => self.render_files_body(card_width, room, pad, th, window, cx),
         };
         let menu = if picking {
             None
@@ -1472,6 +1542,7 @@ impl MailWindow {
     fn render_files_body(
         &mut self,
         card_width: f32,
+        room: f32,
         pad: f32,
         th: &Theme,
         window: &mut Window,
@@ -1526,10 +1597,11 @@ impl MailWindow {
                     .child(count),
             );
         let chips = div()
+            .flex_none()
             .flex()
             .flex_row()
             .items_center()
-            .gap(px(8.0))
+            .gap(px(CHIP_GAP))
             .child(person_chip)
             .child(time_chip)
             .child(sort_chip);
@@ -1559,11 +1631,73 @@ impl MailWindow {
                 )
                 .child(rule)
         } else {
-            // Kinds of file as chips, as the side column is a drawer.
+            // Kinds of file as chips, as the side column is a drawer, then
+            // the filters. A chip is never cut off: a row too narrow for
+            // them all puts the filters on a row of their own, then folds
+            // the kinds to their icons (the picked one keeps its label),
+            // and only then scrolls sideways, fading at its edges.
+            let on_kind = page.types;
+            let label_width = |text: &str, weight| {
+                super::text_width(text, 13.0, weight, self.font.as_ref(), window)
+            };
+            let kind_width = |types: Types| {
+                let weight = if types == on_kind {
+                    FontWeight::BOLD
+                } else {
+                    FontWeight::NORMAL
+                };
+                KIND_CHIP_ROOM + label_width(&types.label(), weight)
+            };
+            let row_width = |widths: &[f32]| {
+                widths.iter().sum::<f32>() + CHIP_GAP * widths.len().saturating_sub(1) as f32
+            };
+            let labelled: Vec<f32> = Types::ALL.into_iter().map(kind_width).collect();
+            let folded: Vec<f32> = Types::ALL
+                .into_iter()
+                .map(|types| {
+                    if types == on_kind {
+                        kind_width(types)
+                    } else {
+                        FOLDED_CHIP
+                    }
+                })
+                .collect();
+            let (person, _) = self.files_person_label();
+            let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
+            let filters = row_width(&[
+                FILTER_CHIP_ROOM + CHIP_ARROW + label_width(&person, FontWeight::NORMAL),
+                FILTER_CHIP_ROOM
+                    + if page.time == Time::Any {
+                        CHIP_ARROW
+                    } else {
+                        CHIP_CLEAR
+                    }
+                    + label_width(&page.time.label(today), FontWeight::NORMAL),
+                FILTER_CHIP_ROOM + CHIP_ARROW + label_width(&page.sort.label(), FontWeight::NORMAL),
+            ]);
+            let one_row = row_width(&labelled) + CHIP_GAP + filters <= room;
+            let fold = !one_row && row_width(&labelled) > room;
+            let kinds_width = row_width(if fold { &folded } else { &labelled });
             let kinds = Types::ALL
                 .into_iter()
                 .enumerate()
-                .map(|(n, types)| self.files_kind_chip(n, types, th, cx));
+                .map(|(n, types)| self.files_kind_chip(n, types, fold, th, cx));
+            let (beside, below) = if one_row {
+                (Some(chips), None)
+            } else {
+                (None, Some(chips))
+            };
+            let kinds_row = div()
+                .flex()
+                .flex_row()
+                .gap(px(CHIP_GAP))
+                .children(kinds)
+                .children(beside);
+            let row = |id: &'static str, scroll: &ScrollHandle, child: gpui::Div, wide: bool| {
+                chip_row(id, scroll, child, wide, pad, th)
+            };
+            let filters_row = below
+                .map(|chips| row("files-filters", &page.filters_scroll, chips, filters > room));
             div()
                 .flex_none()
                 .flex()
@@ -1579,18 +1713,13 @@ impl MailWindow {
                         .child(title)
                         .child(views),
                 )
-                .child(
-                    div()
-                        .id("files-chips")
-                        .overflow_x_scroll()
-                        .px(px(pad))
-                        .pb(px(10.0))
-                        .flex()
-                        .flex_row()
-                        .gap(px(8.0))
-                        .children(kinds)
-                        .child(chips),
-                )
+                .child(row(
+                    "files-chips",
+                    &page.kinds_scroll,
+                    kinds_row,
+                    kinds_width > room,
+                ))
+                .children(filters_row)
                 .child(rule)
         };
         let content = if page.shown.is_empty() {
@@ -1662,9 +1791,8 @@ impl MailWindow {
             ))
     }
 
-    /// The chip that narrows the files to one sender's: the page's and the
-    /// attach picker's.
-    fn files_person_chip(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Stateful<gpui::Div> {
+    /// The person chip's label, and whether it narrows the files.
+    fn files_person_label(&self) -> (String, bool) {
         let person = self.library.person.as_ref().map(|email| {
             self.library
                 .senders
@@ -1673,24 +1801,26 @@ impl MailWindow {
                 .map(|s| s.name.clone())
                 .unwrap_or_else(|| email.clone())
         });
-        filter_chip(
-            "files-people",
-            match &person {
-                Some(name) => tr!("files-from-person", name = name.as_str()),
-                None => tr!("files-anyone"),
-            },
-            person.is_some(),
-            th,
-        )
-        .child(chip_arrow(person.is_some(), th))
-        .on_mouse_down(
-            MouseButton::Left,
-            cx.listener(|this, e: &MouseDownEvent, _, cx| {
-                cx.stop_propagation();
-                this.library.menu = Some(Menu::People(e.position));
-                cx.notify();
-            }),
-        )
+        match &person {
+            Some(name) => (tr!("files-from-person", name = name.as_str()), true),
+            None => (tr!("files-anyone"), false),
+        }
+    }
+
+    /// The chip that narrows the files to one sender's: the page's and the
+    /// attach picker's.
+    fn files_person_chip(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Stateful<gpui::Div> {
+        let (label, on) = self.files_person_label();
+        filter_chip("files-people", label, on, th)
+            .child(chip_arrow(on, th))
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, e: &MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.library.menu = Some(Menu::People(e.position));
+                    cx.notify();
+                }),
+            )
     }
 
     /// The chip that narrows the files to some days, with its calendar:
@@ -1779,15 +1909,20 @@ impl MailWindow {
         &self,
         n: usize,
         types: Types,
+        fold: bool,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> gpui::Stateful<gpui::Div> {
         let on = self.library.types == types;
+        // Folded to its icon, with its label as a tip; the picked kind
+        // keeps its label.
+        let folded = fold && !on;
         div()
             .id(("files-kind-chip", n))
             .flex_none()
             .h(px(32.0))
-            .px(px(12.0))
+            .when(folded, |d| d.w(px(FOLDED_CHIP)).justify_center())
+            .when(!folded, |d| d.px(px(12.0)))
             .flex()
             .flex_row()
             .items_center()
@@ -1813,7 +1948,13 @@ impl MailWindow {
                 },
                 16.0,
             ))
-            .child(div().whitespace_nowrap().child(types.label()))
+            .map(|d| {
+                if folded {
+                    d.tooltip(tip(types.label(), th))
+                } else {
+                    d.child(div().whitespace_nowrap().child(types.label()))
+                }
+            })
             .on_click(cx.listener(move |this, _, _, cx| {
                 this.library.types = types;
                 this.library.changed();
