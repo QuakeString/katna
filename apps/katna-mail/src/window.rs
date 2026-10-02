@@ -551,6 +551,9 @@ pub struct MailWindow {
     selected: Option<usize>,
     /// Ticked lines.
     checked: HashSet<EntryKey>,
+    /// The line Shift+click ticks from: the last one ticked or unticked by
+    /// a click.
+    check_anchor: Option<usize>,
     /// Every line of the list is ticked, not only the ones on screen.
     checked_all: bool,
     /// How many lines "Select all" ticked on screen, while those are still
@@ -926,6 +929,7 @@ impl MailWindow {
             entries: Vec::new(),
             selected: None,
             checked: HashSet::new(),
+            check_anchor: None,
             checked_all: false,
             page_pick: None,
             picked: None,
@@ -1508,6 +1512,7 @@ impl MailWindow {
         self.reset_list(false);
         self.selected = (!self.entries.is_empty()).then_some(0);
         self.checked.clear();
+        self.check_anchor = None;
         self.checked_all = false;
         self.page_pick = None;
         self.picked = None;
@@ -1948,6 +1953,7 @@ impl MailWindow {
 
     fn select_none(&mut self, _: &SelectNone, _: &mut Window, cx: &mut Context<Self>) {
         self.checked.clear();
+        self.check_anchor = None;
         self.checked_all = false;
         self.picked = None;
         cx.notify();
@@ -2488,6 +2494,7 @@ impl MailWindow {
                 }
                 self.selected = (!self.entries.is_empty()).then_some(0);
                 self.checked.clear();
+                self.check_anchor = None;
                 self.checked_all = false;
                 self.page_pick = None;
                 self.picked = None;
@@ -3076,15 +3083,8 @@ impl MailWindow {
     }
 
     fn toggle_check(&mut self, _: &ToggleCheck, _: &mut Window, cx: &mut Context<Self>) {
-        if let Some(entry) = self.selected.and_then(|ix| self.entries.get(ix)) {
-            let key = entry.key;
-            if !self.checked.remove(&key) {
-                self.checked.insert(key);
-            }
-            self.checked_all = false;
-            self.page_pick = None;
-            self.picked = None;
-            cx.notify();
+        if let Some(ix) = self.selected {
+            self.click_check(ix, false, cx);
         }
     }
 

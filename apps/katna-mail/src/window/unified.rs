@@ -138,6 +138,7 @@ impl MailWindow {
         self.reset_list(false);
         self.selected = (!self.entries.is_empty()).then_some(0);
         self.checked.clear();
+        self.check_anchor = None;
         self.checked_all = false;
         self.page_pick = None;
         self.picked = None;

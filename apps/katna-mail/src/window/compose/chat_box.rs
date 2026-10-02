@@ -351,7 +351,8 @@ impl MailWindow {
                 .cursor_text()
                 .text_size(px(14.0))
                 .line_height(px(20.0))
-                .text_color(rgba(th.text_faint))
+                // Hint text, as faint as any empty field's.
+                .text_color(rgba(th.text).opacity(katna_ui::PLACEHOLDER_OPACITY))
                 .on_click(cx.listener(move |this, _, window, cx| start(this, window, cx)))
                 .child(tr!("chat-reply-to", names = names.to_owned()))
                 .into_any_element(),

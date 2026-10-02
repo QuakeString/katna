@@ -1510,7 +1510,18 @@ GPUI global):
   there is none (Blur effect off, other desktops); the opacity stays
   45 %. The compositor's window blur takes no strength from the window,
   so on KDE a line opens Desktop Effects for it
-  (`katna_platform::blur`, `window/frost_sliders.rs`). Dialogs and
+  (`katna_platform::blur`, `window/frost_sliders.rs`). With the switch on,
+  Opacity also sets the blurred window background: 60 % of the way from
+  the tint to solid (45 % gives 78 %, about the 75 to 80 % it has
+  otherwise), through `katna_chrome::Look::blur_opacity`.
+  Under the Katna frame choice (not on Windows, which rounds the corners
+  itself, nor on tiling compositors), Corner roundness (0 to 16 px,
+  `experimental.window_radius`), a Border switch (`window_border`) and
+  Border opacity (5 to 100 %, `window_border_opacity`) change the frame
+  live as they are dragged; unset, the frame keeps its preset's radius and
+  outline (`Look::radius`, `Look::border`, `Look::border_opacity`). The
+  title bar and content round their corners less the border's width so
+  they nest. Dialogs and
   floating cards (Add account, About, What's new, confirmations, label and
   share dialogs, the first-run card) frost the same way with their own
   color, more solid and more blurred than menus since they cover more of
@@ -1837,8 +1848,8 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   the body, attachments as cards, and Reply/Forward buttons. Opening or
   folding a message of a conversation animates its height from the old
   one; the sender picture stays in place and only the text fades.
-- **Conversation windows.** Shift+click on a line, "Open in new window"
-  on its right-click menu, or the "In new window" button on the open
+- **Conversation windows.** "Open in new window" on a line's right-click
+  menu, or the "In new window" button on the open
   conversation's toolbar opens it in a window of its own, as in Gmail. A
   plain click or double-click always opens it in place (a double-click
   opening a window felt like a glitch: its first click had already opened
@@ -1962,8 +1973,11 @@ Gemini or confidential mode):
 - **List toolbar.** A select-all checkbox with a menu (all, none, read,
   unread, starred, unstarred), refresh and more; with lines ticked it shows
   archive, report spam, delete, mark read or unread, move to and more.
-  Hovering a row shows archive, delete and mark read. Changes are shown at
-  once and sent to the daemon; the snackbar offers Undo.
+  Hovering a row shows archive, delete and mark read. Ctrl+click ticks or
+  unticks a line (with the open line too when nothing is ticked yet), and
+  Shift+click, on the line or its checkbox, ticks every line from the last
+  one clicked, as in Gmail, Thunderbird and file managers. Changes are
+  shown at once and sent to the daemon; the snackbar offers Undo.
 - **Open conversation.** A toolbar with back (or close with three panes),
   archive, spam, delete, mark unread, move to, more, and "3 of 72" with
   previous and next; the subject with folder chips; each message with an

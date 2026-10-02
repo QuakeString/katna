@@ -16,12 +16,31 @@ use super::settings::{Change, heading};
 use crate::theme::Theme;
 use crate::widgets::switch;
 
+/// How much more solid a blurred window background is than the frost's
+/// tint: part of the way from the tint to solid, so the folders and the top
+/// bar stay readable over any wallpaper.
+const WINDOW_TINT: f32 = 0.6;
+
 /// The look the settings ask for.
 pub fn look(config: &Config) -> Look {
+    let experimental = &config.experimental;
     Look {
-        own_frame: config.experimental.window_frame == WindowFrame::Katna,
-        blur: config.experimental.blur,
+        own_frame: experimental.window_frame == WindowFrame::Katna,
+        blur: experimental.blur,
+        radius: experimental.window_radius,
+        border: experimental.window_border,
+        border_opacity: experimental.window_border_opacity,
+        blur_opacity: experimental
+            .custom_frost
+            .then(|| window_opacity(experimental.frost_opacity)),
     }
+}
+
+/// A blurred window background's opacity, in percent, for the frost's tint
+/// `tint`, in percent.
+pub(super) fn window_opacity(tint: u8) -> u8 {
+    let tint = f32::from(tint.min(100));
+    (tint + (100.0 - tint) * WINDOW_TINT).round() as u8
 }
 
 impl MailWindow {
@@ -73,7 +92,12 @@ impl MailWindow {
         // GNOME on Wayland leaves every frame to the app: Native already is
         // Katna's frame there.
         if env.native_decorations() == DecorationMode::Client {
-            return explain(tr!("look-frame-client-side"), th);
+            return div()
+                .flex()
+                .flex_col()
+                .child(explain(tr!("look-frame-client-side"), th))
+                .child(self.frame_corners(th, cx))
+                .into_any_element();
         }
         let note = match env.desktop {
             _ if cfg!(windows) => tr!("look-frame-katna-note-windows"),
@@ -106,11 +130,43 @@ impl MailWindow {
                 th,
                 cx,
             ))
-            .when(frame == WindowFrame::Katna, |d| d.child(explain(note, th)))
+            .when(frame == WindowFrame::Katna, |d| {
+                d.child(explain(note, th)).child(self.frame_corners(th, cx))
+            })
             // Windows sets a window's frame when it opens.
             .when(self.chrome.frame_on_reopen(), |d| {
                 d.child(explain(tr!("look-frame-on-reopen"), th))
             })
+            .into_any_element()
+    }
+
+    /// The roundness of Katna's frame and the line around it, where Katna
+    /// draws them: not on Windows, which rounds the corners itself, nor on
+    /// tiling compositors, where the frame stays square.
+    fn frame_corners(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let env = self.chrome.environment();
+        if cfg!(windows)
+            || !env.full_client_frame()
+            || env.requested_decorations() != DecorationMode::Client
+        {
+            return div().into_any_element();
+        }
+        let border = self.config.experimental.window_border;
+        div()
+            .flex()
+            .flex_col()
+            .pt(px(4.0))
+            .child(self.frame_sliders(false, th, cx))
+            .child(self.switch_row(
+                "page-window-border",
+                tr!("look-window-border"),
+                tr!("look-window-border-detail"),
+                border,
+                Change::WindowBorder(!border),
+                th,
+                cx,
+            ))
+            .when(border, |d| d.child(self.frame_sliders(true, th, cx)))
             .into_any_element()
     }
 
