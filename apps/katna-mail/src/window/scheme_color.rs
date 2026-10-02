@@ -23,9 +23,10 @@ use katna_platform::colors::parse_css_color;
 use katna_ui::{InputEvent, TextInput, px, unpx};
 
 use super::MailWindow;
+use super::account_color::color_label;
 use super::notched::{self, notch};
 use super::settings::Change;
-use crate::theme::{Accent, Theme, fade};
+use crate::theme::{ACCOUNT_COLORS, Accent, Theme, fade};
 use crate::user_schemes::Seed;
 use crate::widgets::{icon, raised};
 
@@ -336,10 +337,13 @@ impl MailWindow {
                 }
             }
         }
+        // For an account, the standard account colors first.
+        let standard = matches!(picker.target, Target::Account(_));
         let recent = self.recent_colors.clone();
         let system = SystemDialog::find();
         let dropper = cfg!(not(windows));
         let height = PAD * 2.0
+            + if standard { DOT + GAP } else { 0.0 }
             + SQUARE
             + GAP
             + ROW
@@ -615,6 +619,30 @@ impl MailWindow {
                     this.close_color_picker(cx);
                 }
             }))
+            .when(standard, |d| {
+                let mut row = div()
+                    .h(px(DOT))
+                    .mb(px(GAP))
+                    .flex()
+                    .flex_row()
+                    .justify_between();
+                for (ix, &(name, light, _)) in ACCOUNT_COLORS.iter().enumerate() {
+                    row = row.child(
+                        div()
+                            .id(("picker-standard", ix))
+                            .size(px(DOT))
+                            .rounded_full()
+                            .bg(rgba(light))
+                            .when(light == color, |d| d.border_2().border_color(rgba(th.text)))
+                            .cursor_pointer()
+                            .tooltip(crate::widgets::tip(color_label(name), th))
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                this.set_picker_color(light, false, cx)
+                            })),
+                    );
+                }
+                d.child(row)
+            })
             .child(square)
             .child(div().mt(px(GAP)).child(hue_row))
             .child(div().mt(px(GAP)).child(hex_row))

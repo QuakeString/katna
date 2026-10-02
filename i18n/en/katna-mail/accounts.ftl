@@ -46,13 +46,14 @@ accounts-picture-remove = Remove picture
 # The colors an account can wear, named in their swatches' tooltips.
 account-color-red = Red
 account-color-pink = Pink
+account-color-magenta = Magenta
 account-color-brown = Brown
 account-color-olive = Olive
 account-color-teal = Teal
 account-color-indigo = Indigo
 account-color-slate = Slate
-# Tooltip of the rainbow wheel after the colors: it opens a color picker.
-account-color-own = A colour of your own
+# Button with the account's color: it opens a color picker.
+account-color-menu = Colour
 # Button: changes the name the account is shown with.
 accounts-rename = Rename
 # Buttons beside the field for the account's name.

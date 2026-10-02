@@ -675,15 +675,17 @@ impl MailWindow {
                     ),
                 )
             })
-            .child(
-                div()
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(4.0))
-                    .px(px(4.0))
-                    .child(icon("palette", th.text_dim, 18.0))
-                    .child(self.account_color_strip("account-color", &account.address, th, cx)),
+            .children(
+                self.account_color_dot(&account.address, th)
+                    .map(|(target, dot)| {
+                        text_button(("account-color", ix), tr!("account-color-menu"), th)
+                            .gap(px(8.0))
+                            .child(dot)
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                this.pick_account_color(target, window, cx)
+                            }))
+                    }),
             )
             .child({
                 let account = account.clone();
