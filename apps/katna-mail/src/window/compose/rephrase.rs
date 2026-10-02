@@ -931,6 +931,26 @@ pub(in crate::window) fn placeholder(th: &Theme, reduce: bool) -> AnyElement {
     pulsing("compose-rephrase-wait", lines, reduce)
 }
 
+/// Pills standing in for the reply ideas while they are asked, breathing
+/// like [`placeholder`]: in the Write reply card and the summary card.
+pub(in crate::window) fn idea_placeholder(th: &Theme, reduce: bool) -> AnyElement {
+    pulsing(
+        "compose-ideas-wait",
+        div()
+            .flex()
+            .flex_row()
+            .gap(px(6.0))
+            .children([150.0, 120.0, 140.0].map(|width| {
+                div()
+                    .w(px(width))
+                    .h(px(28.0))
+                    .rounded_full()
+                    .bg(rgba(fade(th.text_faint, 0.18)))
+            })),
+        reduce,
+    )
+}
+
 /// `shapes` standing in for text still on its way, breathing slowly
 /// (still with reduced motion): the waiting look of every AI card.
 pub(in crate::window) fn pulsing(id: &'static str, shapes: gpui::Div, reduce: bool) -> AnyElement {

@@ -29,7 +29,7 @@ use katna_store::{MessageId, SummaryKind};
 use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
-use super::super::compose::rephrase::{Fix, placeholder, problem_text, pulsing};
+use super::super::compose::rephrase::{Fix, idea_placeholder, placeholder, problem_text};
 use super::first_name;
 use crate::daemon::{self, Rephrased};
 use crate::data::EntryKey;

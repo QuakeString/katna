@@ -17,7 +17,7 @@ use super::super::super::MailWindow;
 use super::super::super::search_panel::chip;
 use super::super::recipients::Field;
 use super::super::{Kind, Mode};
-use super::{Fix, Rephrase, State, placeholder, problem_text};
+use super::{Fix, Rephrase, State, idea_placeholder, placeholder, problem_text};
 use crate::daemon::{self, Command, Rephrased};
 use crate::theme::Theme;
 use crate::widgets::{filled_button, icon, icon_button_colored, outlined_button, tip};
@@ -363,18 +363,7 @@ impl MailWindow {
                 .child(text.to_uppercase())
         };
         let ideas = match &w.ideas {
-            Ideas::Loading => div()
-                .flex()
-                .flex_row()
-                .gap(px(6.0))
-                .children([150.0, 120.0, 140.0].map(|width| {
-                    div()
-                        .w(px(width))
-                        .h(px(28.0))
-                        .rounded_full()
-                        .bg(rgba(crate::theme::fade(th.text_faint, 0.18)))
-                }))
-                .into_any_element(),
+            Ideas::Loading => idea_placeholder(th, cx.reduce_motion()),
             Ideas::Ready(ideas) => div()
                 .flex()
                 .flex_row()

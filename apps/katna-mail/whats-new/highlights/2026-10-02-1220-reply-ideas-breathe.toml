@@ -2,7 +2,7 @@
 
 title = "Reply ideas show they are on the way"
 text = """
-After Reply in a summary, the shapes standing in for the reply ideas now
+While reply ideas are asked, in a summary's Reply or in Write reply, their shapes now
 breathe like the summary's own while it is written. The summary card also
 shows how many mails the conversation has while it is asked, not 0.
 """
