@@ -1169,9 +1169,9 @@ impl MailWindow {
                                             th,
                                         )
                                         .on_click(
-                                            cx.listener(|this, _, _, cx| {
+                                            cx.listener(|this, _, window, cx| {
                                                 this.menu = None;
-                                                this.pick_chat(false, cx);
+                                                this.pick_chat(false, window, cx);
                                             }),
                                         ),
                                     )

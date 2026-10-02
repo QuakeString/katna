@@ -1581,7 +1581,10 @@ nothing goes to the mail service, which has no such thing. A bar under the
 header shows one pin; a click jumps to its bubble and moves to the next,
 and its list button lists all of them, to drag into a new order or unpin.
 A sixth pin asks which one it replaces, the oldest picked. Text selected
-in one bubble pins from its right-click menu. The person's card, in the
+in one bubble pins from its right-click menu. As the person's card
+scrolls, its picture and name go up out of sight while its round buttons
+stay at the top in a frosted bar beside the close button, with a small
+picture of the person, so nothing scrolls under the close button. The person's card, in the
 chat view and beside an open mail alike, adds a Company section: the company at the website their signature
 names, else at their address's domain (never a free-mail one). The daemon
 reads it from the company's home page `<head>` (title, `og:` and description
