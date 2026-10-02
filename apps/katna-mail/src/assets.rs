@@ -132,6 +132,7 @@ icons!(
     "minimize",
     "more",
     "move-to",
+    "no-fill",
     "notch",
     "notes",
     "open-external",

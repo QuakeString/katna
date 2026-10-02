@@ -299,6 +299,11 @@ impl MailWindow {
         }
         // 0 = in the rail, 1 = over the folders.
         let dock = self.compose_dock.value().clamp(0.0, 1.0);
+        // The whole event editor takes the page and its side column, so
+        // the button has no column to head and would sit on the title.
+        if dock > 0.0 && self.page_editor_open() {
+            return None;
+        }
         // Each page's own action, in the same button and place.
         let mail = self.app == super::RailApp::Mail;
         let (icon_name, label) = self.app.primary();

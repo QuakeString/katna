@@ -598,8 +598,10 @@ impl MailWindow {
             sections.push(details);
         }
         let company = self
-            .chat_shown()
-            .then(|| self.contact.companies.get(&email.to_lowercase())?.clone())
+            .contact
+            .companies
+            .get(&email.to_lowercase())
+            .cloned()
             .flatten();
         if let Some(company) = &company {
             sections.push(self.contact_company_section(email, company, &mut pieces, th));

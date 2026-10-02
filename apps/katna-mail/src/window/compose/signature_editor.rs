@@ -321,7 +321,11 @@ impl MailWindow {
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.toggle_signature_popup(Popup::Colors, window, cx)
                     }))
-                    .child(crate::widgets::icon("text-color", th.text_dim, 18.0))
+                    .child(super::tools::color_swatch(
+                        style.color,
+                        style.background,
+                        th,
+                    ))
                     .child(crate::widgets::icon("drop-down", th.text_dim, 18.0)),
             )
             .when(open(Popup::Colors), |d| {

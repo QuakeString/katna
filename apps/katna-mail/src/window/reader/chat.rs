@@ -602,6 +602,7 @@ impl MailWindow {
                                     .pt(px(12.0))
                                     .pb(px(8.0))
                                     .children(feed)
+                                    .map(|d| self.text_area(d, cx))
                                     .child(
                                         gpui::canvas(
                                             move |bounds, window, _| {
@@ -1143,10 +1144,15 @@ impl MailWindow {
                 .child(bubble.name.clone())
         });
         let said = bubble.said.as_ref();
+        // Its text, signature and quotes are selectable, to copy or pin.
+        let mut pieces = self.text.pieces(bubble.ix, th);
         let text = said
             .map(|s| s.text.clone())
             .filter(|t| !t.is_empty())
-            .map(|t| div().child(t));
+            .map(|t| {
+                let (styled, holder) = pieces.piece(t.into(), Vec::new());
+                self.selectable_body(bubble.ix, holder.child(styled), cx)
+            });
         let not_read = said.is_none().then(|| {
             div()
                 .text_color(rgba(th.text_faint))
@@ -1194,25 +1200,28 @@ impl MailWindow {
                 })
         });
         let hidden = said.filter(|_| open).map(|s| {
-            div()
+            let signature = s.signature.clone().map(|sig| {
+                let (styled, holder) = pieces.piece(sig.into(), Vec::new());
+                holder.text_color(rgba(th.text_dim)).child(styled)
+            });
+            let quoted = s.quoted.clone().map(|quoted| {
+                let (styled, holder) = pieces.piece(quoted.into(), Vec::new());
+                holder
+                    .pl(px(10.0))
+                    .border_l_2()
+                    .border_color(rgba(th.divider))
+                    .text_color(rgba(th.text_faint))
+                    .child(styled)
+            });
+            let hidden = div()
                 .mt(px(6.0))
                 .flex()
                 .flex_col()
                 .gap(px(6.0))
                 .text_size(px(13.0))
-                .children(
-                    s.signature
-                        .clone()
-                        .map(|sig| div().text_color(rgba(th.text_dim)).child(sig)),
-                )
-                .children(s.quoted.clone().map(|quoted| {
-                    div()
-                        .pl(px(10.0))
-                        .border_l_2()
-                        .border_color(rgba(th.divider))
-                        .text_color(rgba(th.text_faint))
-                        .child(quoted)
-                }))
+                .children(signature)
+                .children(quoted);
+            self.selectable_body(bubble.ix, hidden, cx)
         });
         let media = self.bubble_media(bubble, th, cx);
         let meta = self.bubble_meta(bubble, th);
