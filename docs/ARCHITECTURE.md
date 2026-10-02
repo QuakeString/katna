@@ -1541,13 +1541,17 @@ confidentiality notice; lines a person ends two of their mails in the
 conversation with are their signature too (`trim::shared_tail`). HTML
 mail reaches the chat as its text and is read the same way. The quote and
 signature wait behind a ··· pill, a forward is a small card. The person
-card's Signature section shows only what the signature adds to the card
-(`katna_render::signature`): pictures, banners, bare links, "print only
-when necessary" lines and footers are left out, and so are the name,
-title and phone the card already shows; at most four lines (one office
-address) show, the rest behind Full signature; its website is a chip and
-its social pages (LinkedIn, X, Facebook, Instagram, YouTube, GitHub,
-WhatsApp, Telegram) a row of Katna's one-colour marks. Attachments are
+card has no Signature section: what a signature says is read out
+(`katna_render::signature`) into the card's details (their title, every
+phone number with its kind, other addresses, their own pages such as a
+LinkedIn profile, and any other line, such as a Skype name or office
+hours) and the Company section (the company's name, group, website,
+offices and pages, beside or instead of what its home page says).
+Pictures, banners, "Follow us" lines, taglines, "print only when
+necessary" lines and footers are left out. Pages on LinkedIn, X,
+Facebook, Instagram, YouTube, GitHub, WhatsApp and Telegram show as
+Katna's one-colour marks. In a chat the signature is the one the person
+signed the conversation with; elsewhere, their newest stored one. Attachments are
 chat media: pictures in a grid of their thumbnails, other files as cards,
 both opening the viewer; inline pictures under 12 KB (logos) are left out.
 A conversation opens as a chat unless a message from someone else is bulk

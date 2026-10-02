@@ -527,7 +527,7 @@ pub(crate) fn phone(text: &str) -> bool {
 }
 
 /// Whether `line` holds a postal code: five or six digits on their own.
-fn postal(line: &str) -> bool {
+pub(crate) fn postal(line: &str) -> bool {
     line.split(|c: char| !c.is_ascii_alphanumeric())
         .any(|w| (5..=6).contains(&w.len()) && w.chars().all(|c| c.is_ascii_digit()))
 }
