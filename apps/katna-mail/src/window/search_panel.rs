@@ -782,6 +782,10 @@ impl MailWindow {
         let body = div()
             .id("search-panel")
             .occlude()
+            .on_mouse_down(
+                gpui::MouseButton::Left,
+                cx.listener(|this, _, _, _| this.search_pressed = true),
+            )
             .w(px(width))
             .max_h(px(height))
             .overflow_y_scroll()

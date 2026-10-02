@@ -612,6 +612,10 @@ impl MailWindow {
             .when(!available && !settings && !contacts, |d| d.opacity(0.6))
             // A drag here selects text rather than moving the window.
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, _, _, _| this.search_pressed = true),
+            )
             .child(self.tour_mark(Spot::Search))
             .when(phone < 0.999, |d| {
                 d.child(
