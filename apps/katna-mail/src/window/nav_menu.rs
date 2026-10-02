@@ -581,25 +581,23 @@ impl MailWindow {
             .when_some(
                 about.and_then(|a| self.accounts.iter().find(|x| x.id == a)),
                 |d, info| {
-                    // The account's color, worn at once as it is picked.
-                    d.child(
-                        div()
-                            .pl(px(16.0))
-                            .pr(px(12.0))
-                            .py(px(2.0))
-                            .flex()
-                            .flex_row()
-                            .items_center()
-                            .gap(px(14.0))
-                            .child(icon("palette", th.text_dim, 20.0))
-                            .child(self.account_color_strip(
-                                "nav-menu-color",
-                                &info.address,
-                                th,
-                                cx,
-                            )),
-                    )
-                    .child(divider())
+                    // The account's color: its picker opens beside the dot.
+                    match self.account_color_dot(&info.address, th) {
+                        Some((target, dot)) => d
+                            .child(
+                                item(
+                                    "nav-menu-color",
+                                    "palette",
+                                    tr!("account-color-menu").into(),
+                                )
+                                .on_click(cx.listener(move |this, _, window, cx| {
+                                    this.pick_account_color(target, window, cx)
+                                }))
+                                .child(dot),
+                            )
+                            .child(divider()),
+                        None => d,
+                    }
                 },
             )
             .when_some(sign_in, |d, (id, address, provider)| {

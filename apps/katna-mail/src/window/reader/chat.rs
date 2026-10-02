@@ -326,8 +326,9 @@ impl MailWindow {
         reader.chat.shown = 0;
         let key = reader.key;
         // A reply being written goes along, with its cursor where it was:
-        // the mail view scrolls down to it, as when it opened.
-        if self.chat_compose(key).is_some() {
+        // the mail view scrolls down to it, as when it opened. One with
+        // nothing in it closes, keeping no draft.
+        if self.chat_compose(key).is_some() && !self.drop_empty_reply(cx) {
             if !chat {
                 self.reveal_inline_reply(cx);
             }
@@ -711,10 +712,25 @@ impl MailWindow {
         reader
             .parts
             .iter()
-            .filter_map(|p| p.body.as_ref()?.view.as_ref())
-            .flat_map(|v| v.from.iter().chain(&v.to).chain(&v.cc))
-            .filter(|a| !self.is_me(&a.email) && seen.insert(a.email.to_lowercase()))
-            .map(|a| (a.label().to_owned(), a.email.clone()))
+            .flat_map(|p| match p.body.as_ref().and_then(|b| b.view.as_ref()) {
+                Some(v) => v
+                    .from
+                    .iter()
+                    .chain(&v.to)
+                    .chain(&v.cc)
+                    .map(|a| (a.label().to_owned(), a.email.clone()))
+                    .collect(),
+                // Until its mail is read, its sender from the list, so the
+                // header never says only "and you".
+                None => p
+                    .row
+                    .as_ref()
+                    .map(|r| vec![(r.correspondent.clone(), r.sender.clone())])
+                    .unwrap_or_default(),
+            })
+            .filter(|(_, email)| {
+                !email.is_empty() && !self.is_me(email) && seen.insert(email.to_lowercase())
+            })
             .collect()
     }
 

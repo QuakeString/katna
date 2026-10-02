@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Original colors button only where it helps"
+text = """
+In a dark theme, the button that shows a mail in its own colors now slides
+away while a conversation shows as a chat, and slides back in Mail.
+"""
