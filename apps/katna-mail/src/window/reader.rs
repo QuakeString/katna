@@ -660,6 +660,9 @@ pub(super) struct Squeeze {
     pub delete: bool,
     /// "3 of 120" beside the arrows.
     pub position: bool,
+    /// Archive, which only a phone's chat leaves to the More menu: its
+    /// header takes the toolbar's place.
+    pub archive: bool,
 }
 
 /// A toolbar button's width and the toolbar's gap between buttons.
@@ -684,6 +687,24 @@ impl Squeeze {
         separators: false,
         delete: false,
         position: false,
+        archive: false,
+    };
+
+    /// Everything in the More menu.
+    pub const ALL: Self = Self {
+        new_window: true,
+        print: true,
+        colors: true,
+        summary: true,
+        contact: true,
+        move_to: true,
+        mute: true,
+        unread: true,
+        spam: true,
+        separators: true,
+        delete: true,
+        position: true,
+        archive: true,
     };
 
     /// Fits the items `shown` into a toolbar `width` wide, leaving off
@@ -902,6 +923,10 @@ impl MailWindow {
     /// What the reading pane's toolbar leaves to the More menu.
     pub(super) fn reader_squeeze(&self, th: &Theme) -> Squeeze {
         let phone = self.layout.shape.is_phone();
+        // A phone's chat has no toolbar: its header keeps Back and More.
+        if self.phone_chat() {
+            return Squeeze::ALL;
+        }
         let shown = Toolbar {
             back: !self.detached,
             separators: !phone,
@@ -926,11 +951,20 @@ impl MailWindow {
         Squeeze::fit(self.reader_width(), &shown, start)
     }
 
+    /// The open conversation shows as a chat on a phone, whose header
+    /// takes the toolbar's place.
+    pub(super) fn phone_chat(&self) -> bool {
+        self.layout.shape.is_phone() && self.chat_shown()
+    }
+
     pub(super) fn render_reader_toolbar(
         &mut self,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
+        if self.phone_chat() {
+            return div().into_any_element();
+        }
         let count = self.entries.len();
         let back = if self.split() {
             icon_button("reader-close", "close", 20.0, th).tooltip(tip(tr!("reader-close"), th))
@@ -1343,7 +1377,7 @@ impl MailWindow {
                 .pr(px(24.0))
                 .py(px(12.0))
                 .border_t_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(super::list::message_line(th)))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .on_click(toggle)
@@ -1850,7 +1884,10 @@ impl MailWindow {
             .pr(px(16.0))
             .pt(px(12.0))
             .pb(px(if last { 0.0 } else { 16.0 }))
-            .when(ix > 0, |d| d.border_t_1().border_color(rgba(th.divider)))
+            .when(ix > 0, |d| {
+                d.border_t_1()
+                    .border_color(rgba(super::list::message_line(th)))
+            })
             .child(
                 div()
                     .w(px(PICTURE_COLUMN))
