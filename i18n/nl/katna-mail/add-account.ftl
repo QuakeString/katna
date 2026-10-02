@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = Een e-mailaccount toevoegen
+add-account-providers-intro = Kies je e-mailprovider. Katna regelt de rest.
+add-account-provider-other = Andere e-mail
+add-account-provider-other-detail = Elk IMAP- of POP3-account
+add-account-provider-google-detail = Gmail en Google Workspace
+add-account-provider-microsoft-detail = Outlook en Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = Aanmelden bij { $provider }
+add-account-form-title-other = Je e-mailaccount
+add-account-form-intro = Katna bewaart je wachtwoord in de sleutelbos van je systeem.
 add-account-looking = De e-mailservers van { $address } zoeken…
 add-account-address-intro = Voer je e-mailadres in. Katna zoekt de servers voor je.
 add-account-servers-title = Serverinstellingen
@@ -13,10 +22,18 @@ add-account-signing-in = Aanmelden…
 add-account-browser-title = Ga verder in je browser
 add-account-browser-intro = Katna heeft de aanmeldpagina van { $provider } geopend in je browser. Meld je daar aan en sta Katna toe je e-mail te lezen en te versturen, en kom dan hier terug.
 add-account-browser-hint = Geen pagina geopend? Kijk bij de vensters van je browser, of ga terug en probeer het opnieuw.
+add-account-stage-browser = Wachten tot je je aanmeldt in je browser…
+add-account-stage-signing-in-at = Aanmelden bij { $server }…
+add-account-help-app-password-link = Zo maak je een app-wachtwoord
+add-account-help-turn-on-imap = { $provider } laat e-mailapps pas toe als IMAP- en POP3-toegang aan staat in de instellingen van de webmail.
+add-account-help-turn-on-imap-link = Zo zet je het aan
 
 ## Add a mail account: fields
 
 add-account-field-address = E-mailadres
+add-account-receive-with = E-mail ontvangen met
+add-account-imap-about = IMAP bewaart je e-mail en mappen op de server, op elk apparaat hetzelfde. Kies dit als het kan.
+add-account-pop3-about = POP3 downloadt je e-mail naar deze computer. E-mail die je hier leest of verplaatst, blijft op de server en je andere apparaten zoals hij was.
 add-account-incoming = Inkomende e-mail ({ $protocol })
 add-account-outgoing = Uitgaande e-mail ({ $protocol })
 add-account-field-server = Server
@@ -38,14 +55,17 @@ add-account-servers-found = { $source ->
    *[other] Servers: { $servers }, geraden; controleer ze als aanmelden mislukt.
 }
 add-account-servers-entered = Servers: { $servers }, zoals ingevoerd.
-add-account-sign-in-with = Aanmelden met { $provider }
-add-account-sign-in-instead = In plaats daarvan aanmelden met { $provider }
 
 ## Add a mail account: buttons
+
+add-account-sign-in-with = Aanmelden met { $provider }
+add-account-sign-in-instead = In plaats daarvan aanmelden met { $provider }
 
 add-account-servers-button = Serverinstellingen
 add-account-back = Terug
 add-account-add = Account toevoegen
+add-account-done = Klaar
+add-account-another = Nog een account toevoegen
 add-account-cancel = Annuleren
 
 ## Add a mail account: problems
@@ -75,6 +95,22 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Deze versie van Katna kan zich nog niet aanmelden bij Google-accounts.
    *[other] Deze provider staat aanmelden alleen toe op zijn eigen pagina, en dat kan Katna er nog niet voor doen.
 }
+add-account-smtp-not-found = Katna heeft gevonden waar je e-mail gelezen wordt, maar niet waar hij verstuurd wordt. Vul de uitgaande server in.
+
+## Add a mail account: the last step
+
+add-account-done-title = Je account is klaar
+add-account-done-intro = Katna haalt je e-mail nu op. Nieuwe e-mail verschijnt zodra hij binnenkomt.
+add-account-done-sign-in = Aanmelden
+add-account-done-signed-in-with = Met { $provider }, in je browser
+add-account-done-receiving = E-mail ontvangen
+add-account-done-sending = E-mail versturen
+add-account-done-on-server = E-mail op de server
+add-account-done-kept = Bewaard tot je het in Katna verwijdert
+add-account-done-pop3-hint = Wat er met e-mail op de server gebeurt, wijzig je in Instellingen > Accounts.
+add-account-done-zoho-title = Taken en agenda’s
+add-account-done-zoho-about = Zoho houdt deze los van e-mail. Meld je één keer aan met Zoho om ze in Katna te halen.
+add-account-done-linked = Taken en agenda’s gekoppeld
 
 ## The account menu (from the account button on the top bar)
 

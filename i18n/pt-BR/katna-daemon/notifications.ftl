@@ -2,7 +2,7 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
-## A new-mail notification
+## A new-mail notification (the desktop shows it, even with Katna Mail closed)
 
 notify-new-emails = { $count ->
     [one] { $count } novo e-mail
@@ -12,15 +12,26 @@ notify-new-emails = { $count ->
 notify-and-more = e mais { $count }
 notify-no-subject = (sem assunto)
 notify-unknown-sender = Remetente desconhecido
+
+## Reminders the user asked for (same buttons)
+
 notify-snooze-back = De volta do adiamento
 notify-no-reply = Ainda sem resposta
 notify-no-reply-to = Ninguém respondeu a “{ $subject }”.
+
+## Open and click tracking (only for mail sent with "Track opens and clicks")
+
 notify-tracking-opened = { $who } abriu { $subject }
 notify-tracking-clicked = { $who } clicou em um link em { $subject }
+
+## An update of Katna is downloaded and ready to install
 
 notify-update-ready = O Katna Mail pode ser atualizado
 notify-update-ready-body = A versão { $version } foi baixada. Atualizar a instala e reinicia o Katna Mail.
 notify-update = Atualizar
+
+## Reminders of calendar events
+
 notify-event-now = Agora
 notify-event-in-minutes = { $count ->
     [one] Em { $count } minuto
@@ -43,10 +54,30 @@ notify-event-join = Participar
 notify-event-snooze = Adiar 5 min
 notify-task-done = Marcar como concluída
 
-## Its buttons
+## The buttons of new-mail notifications and reminders
 
 notify-open = Abrir
+notify-peek = Espiar
+notify-reply = Responder
+notify-reply-placeholder = Responder a { $name }…
+notify-send = Enviar
 notify-reply-all = Responder a todos
 notify-mark-read = Marcar como lida
 notify-mark-all-read = Marcar todas como lidas
 notify-archive = Arquivar
+
+## After Archive on a notification: a short note in the same place
+
+notify-archived = Arquivado
+notify-archived-count = { $count ->
+    [one] { $count } mensagem saiu da Caixa de entrada
+    [many] { $count } de mensagens saíram da Caixa de entrada
+   *[other] { $count } mensagens saíram da Caixa de entrada
+}
+notify-undo = Desfazer
+
+## After a reply typed into a notification: a note in the same place while
+## it waits for the undo time
+
+notify-reply-sent = Resposta enviada para { $name }
+notify-open-in-katna = Abrir no Katna

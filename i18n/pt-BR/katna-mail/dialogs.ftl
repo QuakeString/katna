@@ -8,6 +8,9 @@ about-tooltip = Sobre o Katna
 about-tagline = E-mail e agenda para o desktop Linux
 about-whats-new = Novidades
 
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
 about-update-not-checked = As atualizações ainda não foram verificadas
 about-update-checking = Verificando atualizações…
 about-update-up-to-date = O Katna Mail está atualizado
@@ -67,6 +70,7 @@ about-credit-resvg = Imagens SVG
 about-credit-jiff = Datas e fusos horários
 about-credit-spellbook = Verificação ortográfica, do editor Helix
 about-credit-smol = Fazer muitas coisas ao mesmo tempo
+about-credit-color-schemes = As paletas dos esquemas de cores incluídos
 about-all-libraries = Todas as bibliotecas que o Katna usa ({ $count })
 about-library-authors = por { $authors }
 about-license = O Katna é software livre sob a GNU GPL, versão 3 ou posterior.
@@ -125,6 +129,21 @@ onboarding-density-default = Padrão
 onboarding-density-compact = Compacta
 onboarding-continue = Continuar
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Aproveite mais com uma conta Katna
+onboarding-katna-lead = É opcional. Ela ativa os recursos on-line do Katna, e você pode criá-la depois em Configurações > Assinatura.
+onboarding-katna-receipts-title = Confirmações de leitura
+onboarding-katna-receipts-text = Veja quando as pessoas abrem os e-mails que você envia.
+onboarding-katna-links-title = Rastreamento de links
+onboarding-katna-links-text = Veja quais links dos seus e-mails são clicados.
+onboarding-katna-activity-title = Atividade
+onboarding-katna-activity-text = Aberturas e cliques de tudo o que você enviou, em um só lugar.
+onboarding-katna-translate-title = Tradução automática
+onboarding-katna-translate-text = Leia no seu idioma e-mails escritos em outros idiomas.
+onboarding-katna-private = Ela tem a própria senha. Os logins dos seus e-mails nunca saem deste computador.
+
 ## First run: done
 
 onboarding-ready-title = Tudo pronto
@@ -168,6 +187,7 @@ tour-search-text = A pesquisa também funciona off-line. O botão na ponta direi
 tour-menu-title = Mostre ou oculte as pastas
 tour-menu-text = Este botão recolhe a lista de pastas. Enquanto ela estiver oculta, pare o ponteiro sobre E-mail, à esquerda, para ver as pastas.
 tour-apps-title = Seus apps
+tour-apps-text = O e-mail fica aqui, ao lado de Agenda, Contatos, Tarefas, Notas e Arquivos.
 tour-tabs-title = Guias da Caixa de entrada
 tour-tabs-text = Os novos e-mails são separados em Principal, Promoções, Social, Atualizações e Fóruns. Você pode desativar as guias nas configurações rápidas.
 tour-list-title = Suas mensagens
@@ -195,12 +215,22 @@ crash-view = Ver relatório
 crash-view-tooltip = Abrir o relatório, salvo neste computador
 crash-copy = Copiar relatório
 crash-close = Fechar
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = O { $provider } pede que você faça login em { $address } de novo.
 sign-in-again-button = Fazer login
 sign-in-again-tooltip = Abrir a página de login do { $provider } no navegador
 sign-in-again-waiting = Aguardando o navegador…
 sign-in-again-close = Fechar
+google-api-off = A { $api } está desativada no projeto do Google Cloud do Katna.
+google-api-turn-on = Ativar
+google-api-turn-on-tooltip = Abra o Google Cloud para ativar a { $api } e depois pressione Tentar de novo
 sign-in-again-done = Login feito de novo em { $address }. Buscando seus e-mails…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] Mover esta conversa para a Lixeira?

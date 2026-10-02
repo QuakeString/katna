@@ -8,6 +8,9 @@ about-tooltip = Over Katna
 about-tagline = E-mail en agenda voor de Linux-desktop
 about-whats-new = Wat is er nieuw
 
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
 about-update-not-checked = Er is nog niet op updates gecontroleerd
 about-update-checking = Controleren op updates…
 about-update-up-to-date = Katna Mail is up-to-date
@@ -67,6 +70,7 @@ about-credit-resvg = SVG-afbeeldingen
 about-credit-jiff = Datums en tijdzones
 about-credit-spellbook = Spellingcontrole, van de Helix-editor
 about-credit-smol = Veel dingen tegelijk doen
+about-credit-color-schemes = De paletten van de ingebouwde kleurenschema’s
 about-all-libraries = Alle bibliotheken die Katna gebruikt ({ $count })
 about-library-authors = door { $authors }
 about-license = Katna is vrije software onder de GNU GPL, versie 3 of later.
@@ -124,6 +128,21 @@ onboarding-density-default = Standaard
 onboarding-density-compact = Compact
 onboarding-continue = Doorgaan
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Meer met een Katna-account
+onboarding-katna-lead = Het is optioneel. Het zet de onlinefuncties van Katna aan, en je kunt er later een maken in Instellingen > Abonnement.
+onboarding-katna-receipts-title = Leesbevestigingen
+onboarding-katna-receipts-text = Zie wanneer mensen de e-mail die je verstuurt openen.
+onboarding-katna-links-title = Links volgen
+onboarding-katna-links-text = Zie op welke links in je e-mail wordt geklikt.
+onboarding-katna-activity-title = Activiteit
+onboarding-katna-activity-text = Openingen en klikken voor alles wat je hebt verstuurd, op één plek.
+onboarding-katna-translate-title = Automatische vertaling
+onboarding-katna-translate-text = Lees e-mail in andere talen in je eigen taal.
+onboarding-katna-private = Het heeft een eigen wachtwoord. De inloggegevens van je e-mail verlaten deze computer nooit.
+
 ## First run: done
 
 onboarding-ready-title = Alles is klaar
@@ -167,6 +186,7 @@ tour-search-text = Zoeken werkt ook offline. De knop aan de rechterkant voegt fi
 tour-menu-title = De mappen tonen of verbergen
 tour-menu-text = Deze knop klapt de mappenlijst weg. Terwijl die verborgen is, laat je de aanwijzer op E-mail links rusten om de mappen te zien.
 tour-apps-title = Je apps
+tour-apps-text = E-mail woont hier, naast Agenda, Contacten, Taken, Notities en Bestanden.
 tour-tabs-title = Inbox-tabbladen
 tour-tabs-text = Nieuwe e-mail wordt gesorteerd in Primair, Reclame, Sociaal, Updates en Forums. Je kunt de tabbladen uitzetten in de snelle instellingen.
 tour-list-title = Je berichten
@@ -192,12 +212,22 @@ crash-view = Rapport bekijken
 crash-view-tooltip = Het rapport openen, bewaard op deze computer
 crash-copy = Rapport kopiëren
 crash-close = Sluiten
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } vraagt je om je opnieuw aan te melden bij { $address }.
 sign-in-again-button = Aanmelden
 sign-in-again-tooltip = Open de aanmeldpagina van { $provider } in je browser
 sign-in-again-waiting = Wachten op je browser…
 sign-in-again-close = Sluiten
+google-api-off = { $api } staat uit in het Google Cloud-project van Katna.
+google-api-turn-on = Aanzetten
+google-api-turn-on-tooltip = Open Google Cloud om { $api } aan te zetten en druk dan op Opnieuw proberen
 sign-in-again-done = Opnieuw aangemeld bij { $address }. Je e-mail wordt opgehaald…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] Dit gesprek naar de Prullenbak verplaatsen?

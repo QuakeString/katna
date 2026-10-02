@@ -14,6 +14,17 @@ accounts-unified-switch-detail = ”Alla konton” står överst i mappfönstret
 accounts-row = Konton
 accounts-row-detail = Mappfönstret och kontomenyn visar kontona i den här ordningen; det första är standard. När du tar bort ett konto raderas Katnas kopia av dess e-post på den här datorn. E-posten finns kvar på servern.
 accounts-none = Inga konton än.
+accounts-pop3-row = E-post på servern
+accounts-pop3-row-detail = POP3-konton hämtar e-post till den här datorn. Välj vad som sedan händer med kopian på servern.
+accounts-pop3-with-katna = Behåll den tills jag raderar den i Katna
+accounts-pop3-at-once = Radera den när den har hämtats
+accounts-pop3-after-days = { $count ->
+    [one] Radera den efter { $count } dag
+   *[other] Radera den efter { $count } dagar
+}
+accounts-pop3-never = Radera den aldrig
+accounts-pop3-days-less = Färre dagar
+accounts-pop3-days-more = Fler dagar
 accounts-kind-imported = Importerat
 accounts-picture-reset = Använd skrivbordets bild
 accounts-picture-change = Byt bild
@@ -72,6 +83,9 @@ accounts-confirm-word = radera
 accounts-confirm-placeholder = Skriv ”{ accounts-confirm-word }”
 accounts-confirm-prompt = Bekräfta genom att skriva ”{ accounts-confirm-word }”:
 accounts-cancel = Avbryt
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Raderar e-posten och bilagorna som Katna har hämtat, avsändarbilder och sökindexet och hämtar sedan ny e-post igen. Konton, inställningar och e-post som bara finns på den här datorn blir kvar.
 reset-cache-button = Återställ cache
 reset-cache-title = Återställa cachen?

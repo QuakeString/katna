@@ -86,6 +86,10 @@ security-missing-key = Firmado con una clave que no tienes, así que no se puede
 security-missing-key-id = Firmado con una clave que no tienes ({ $key }), así que no se puede comprobar
 security-signature-unavailable = Firmado; instala { $tool } para comprobar la firma
 security-signature-error = No se ha podido comprobar la firma.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } lo abrió { $count ->
     [one] una vez
     [many] { $count } de veces
@@ -132,10 +136,12 @@ attachment-count = { $count ->
    *[other] { $count } archivos adjuntos
 }
 attachment-save = Guardar
+attachment-forward = Reenviar
 attachment-save-all = Guardar todos
 attachment-save-all-tooltip = Guardar todos los archivos adjuntos en una carpeta
 attachment-save-here = Guardar aquí
 attachment-not-downloaded = Este mensaje no está descargado.
+attachment-open-message = Abre este mensaje para leer sus archivos adjuntos.
 attachment-not-found = No se ha encontrado este archivo adjunto en el mensaje.
 attachment-read-failed = No se ha podido leer { $name }
 attachment-numbered = archivo adjunto { $number }
@@ -160,6 +166,7 @@ attachment-encrypted-open = Este archivo llegó cifrado. Guárdalo para abrirlo 
 print-failed = No se ha podido imprimir: { $error }
 print-no-font = no se ha encontrado ninguna fuente
 print-opened-as-pdf = Se ha abierto como PDF para imprimirlo desde allí.
+
 print-preview-title = Vista previa de impresión
 print-preview-laying-out = Maquetando las páginas…
 print-preview-pages = { $count ->
@@ -187,8 +194,9 @@ print-encrypted = (Cifrado. Ábrelo en Katna Mail para imprimir su texto).
 print-to = Para: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = Abre este mensaje para leer sus archivos adjuntos.
+text-pin = Fijar arriba
+text-copy-address = Copiar dirección
 text-copy = Copiar
 text-select-all = Seleccionar todo

@@ -86,6 +86,10 @@ security-missing-key = Signé avec une clé que vous n’avez pas ; la signatur
 security-missing-key-id = Signé avec une clé que vous n’avez pas ({ $key }) ; la signature ne peut donc pas être vérifiée
 security-signature-unavailable = Signé ; installez { $tool } pour vérifier la signature
 security-signature-error = La signature n’a pas pu être vérifiée.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } l’a ouvert { $count ->
     [one] une fois
     [many] { $count } de fois
@@ -132,10 +136,12 @@ attachment-count = { $count ->
    *[other] { $count } pièces jointes
 }
 attachment-save = Enregistrer
+attachment-forward = Transférer
 attachment-save-all = Tout enregistrer
 attachment-save-all-tooltip = Enregistrer toutes les pièces jointes dans un dossier
 attachment-save-here = Enregistrer ici
 attachment-not-downloaded = Ce message n’est pas téléchargé.
+attachment-open-message = Ouvrez ce message pour lire ses pièces jointes.
 attachment-not-found = Cette pièce jointe est introuvable dans le message.
 attachment-read-failed = Impossible de lire { $name }
 attachment-numbered = pièce jointe { $number }
@@ -160,6 +166,7 @@ attachment-encrypted-open = Ce fichier a été reçu chiffré. Enregistrez-le po
 print-failed = Impossible d’imprimer : { $error }
 print-no-font = aucune police trouvée
 print-opened-as-pdf = Ouvert au format PDF pour être imprimé depuis celui-ci.
+
 print-preview-title = Aperçu avant impression
 print-preview-laying-out = Mise en page…
 print-preview-pages = { $count ->
@@ -187,8 +194,9 @@ print-encrypted = (Chiffré. Ouvrez-le dans Katna Mail pour imprimer son texte.)
 print-to = À : { $addresses }
 print-cc = Cc : { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = Ouvrez ce message pour lire ses pièces jointes.
+text-pin = Épingler en haut
+text-copy-address = Copier l’adresse
 text-copy = Copier
 text-select-all = Tout sélectionner

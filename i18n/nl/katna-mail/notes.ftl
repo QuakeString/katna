@@ -15,6 +15,7 @@ notes-loading = Je notities worden geopend…
 
 notes-take-a-note = Notitie maken…
 notes-new-list = Nieuwe lijst
+notes-new-note = Nieuwe notitie
 notes-pinned = Vastgemaakt
 notes-others = Overig
 notes-empty = Notities die je toevoegt, worden hier weergegeven

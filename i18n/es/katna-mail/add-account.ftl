@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = Añadir una cuenta de correo
+add-account-providers-intro = Elige tu proveedor de correo. Katna se encarga del resto.
+add-account-provider-other = Otro correo
+add-account-provider-other-detail = Cualquier cuenta IMAP o POP3
+add-account-provider-google-detail = Gmail y Google Workspace
+add-account-provider-microsoft-detail = Outlook y Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = Iniciar sesión en { $provider }
+add-account-form-title-other = Tu cuenta de correo
+add-account-form-intro = Katna guarda tu contraseña en el llavero del sistema.
 add-account-looking = Buscando los servidores de correo de { $address }…
 add-account-address-intro = Escribe tu dirección de correo. Katna encuentra los servidores por ti.
 add-account-servers-title = Configuración del servidor
@@ -13,10 +22,18 @@ add-account-signing-in = Iniciando sesión…
 add-account-browser-title = Continúa en tu navegador
 add-account-browser-intro = Katna ha abierto la página de inicio de sesión de { $provider } en tu navegador. Inicia sesión allí y permite que Katna lea y envíe tu correo; después, vuelve aquí.
 add-account-browser-hint = ¿No se ha abierto ninguna página? Revisa las ventanas de tu navegador, o vuelve atrás y inténtalo de nuevo.
+add-account-stage-browser = Esperando a que inicies sesión en el navegador…
+add-account-stage-signing-in-at = Iniciando sesión en { $server }…
+add-account-help-app-password-link = Cómo crear una contraseña de aplicación
+add-account-help-turn-on-imap = { $provider } solo deja entrar a las aplicaciones de correo una vez activado el acceso IMAP y POP3 en los ajustes de su correo web.
+add-account-help-turn-on-imap-link = Cómo activarlo
 
 ## Add a mail account: fields
 
 add-account-field-address = Dirección de correo
+add-account-receive-with = Recibir correo con
+add-account-imap-about = IMAP mantiene tu correo y tus carpetas en el servidor, igual en todos tus dispositivos. Elígelo siempre que puedas.
+add-account-pop3-about = POP3 descarga tu correo a este ordenador. El correo que leas o muevas aquí se queda como estaba en el servidor y en tus otros dispositivos.
 add-account-incoming = Correo entrante ({ $protocol })
 add-account-outgoing = Correo saliente ({ $protocol })
 add-account-field-server = Servidor
@@ -38,14 +55,17 @@ add-account-servers-found = { $source ->
    *[other] Servidores: { $servers }, deducidos; compruébalos si falla el inicio de sesión.
 }
 add-account-servers-entered = Servidores: { $servers }, tal como se escribieron.
-add-account-sign-in-with = Iniciar sesión con { $provider }
-add-account-sign-in-instead = Iniciar sesión con { $provider } en su lugar
 
 ## Add a mail account: buttons
+
+add-account-sign-in-with = Iniciar sesión con { $provider }
+add-account-sign-in-instead = Iniciar sesión con { $provider } en su lugar
 
 add-account-servers-button = Configuración del servidor
 add-account-back = Atrás
 add-account-add = Añadir cuenta
+add-account-done = Listo
+add-account-another = Añadir otra cuenta
 add-account-cancel = Cancelar
 
 ## Add a mail account: problems
@@ -75,6 +95,22 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Esta copia de Katna aún no puede iniciar sesión en cuentas de Google.
    *[other] Este proveedor solo permite iniciar sesión en su propia página, algo que Katna aún no puede hacer con él.
 }
+add-account-smtp-not-found = Katna ha encontrado dónde leer tu correo, pero no dónde enviarlo. Escribe el servidor de salida.
+
+## Add a mail account: the last step
+
+add-account-done-title = Tu cuenta está lista
+add-account-done-intro = Katna está obteniendo tu correo. El correo nuevo aparece a medida que llega.
+add-account-done-sign-in = Inicio de sesión
+add-account-done-signed-in-with = Con { $provider }, en tu navegador
+add-account-done-receiving = Recepción de correo
+add-account-done-sending = Envío de correo
+add-account-done-on-server = Correo en el servidor
+add-account-done-kept = Se conserva hasta que lo eliminas en Katna
+add-account-done-pop3-hint = Cambia qué pasa con el correo del servidor en Ajustes > Cuentas.
+add-account-done-zoho-title = Tareas y calendarios
+add-account-done-zoho-about = Zoho los guarda aparte del correo. Inicia sesión con Zoho una vez para traerlos a Katna.
+add-account-done-linked = Tareas y calendarios conectados
 
 ## The account menu (from the account button on the top bar)
 

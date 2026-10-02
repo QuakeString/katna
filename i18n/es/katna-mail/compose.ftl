@@ -46,6 +46,7 @@ compose-sent-archived = Enviado y archivado
 compose-sent = Mensaje enviado
 compose-discarded = Borrador descartado
 compose-draft-saved = Borrador guardado
+compose-draft-saving = Guardando…
 compose-draft-failed = No se ha podido guardar el borrador: { $error }
 compose-draft-not-opened = No se ha podido abrir el borrador.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = No se ha podido abrir el borrador.
 compose-picker-insert = Insertar
 compose-picker-attach = Adjuntar
 compose-file-too-large = { $name } es demasiado grande: un mensaje puede llevar hasta { $limit }.
+compose-forward-files-missing = Los archivos del mensaje reenviado no están descargados, así que no se adjuntan.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Quitar archivo adjunto
 compose-attachments-total = { $count ->
@@ -80,6 +82,7 @@ compose-drive-share-link = Compartir con enlace
 compose-drive-send-without = Enviar sin compartir
 compose-drive-share-cancel = Cancelar
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } supera { $limit }, así que va a tu OneDrive y el mensaje lleva un enlace.
 compose-onedrive-tip = En tu OneDrive; el mensaje lleva un enlace
 compose-onedrive-allow = Permitir OneDrive
@@ -92,8 +95,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive no puede compartir los archivos con { $addresses }. En su lugar, cualquiera que tenga el enlace podrá abrirlos.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Suelta los archivos aquí
 compose-drop-here = Suelta aquí
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = Mantener formato
 compose-paste-table = Tabla
 compose-paste-picture = Imagen
@@ -107,6 +114,9 @@ compose-encrypt = Cifrar
 compose-encrypted = Cifrado: solo los destinatarios pueden leerlo
 compose-sign = Firmar
 compose-signed = Firmado: los destinatarios pueden comprobar que es tuyo
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = Seguir aperturas y clics
 compose-tracked = Con seguimiento: verás cuándo lo abre cada destinatario o sigue un enlace
 compose-track-clicks = Seguir clics en enlaces (el texto sin formato no puede mostrar aperturas)
@@ -139,6 +149,9 @@ send-check-subject-title = ¿Enviar sin asunto?
 send-check-subject-text = Este mensaje no tiene asunto.
 send-check-add-subject = Añadir asunto
 send-check-send-anyway = Enviar de todos modos
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = No es una dirección de correo válida
 recipient-show-address = Mostrar dirección
 recipient-remove = Quitar

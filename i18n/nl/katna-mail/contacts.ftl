@@ -94,7 +94,7 @@ contacts-print-none = Geen contacten om af te drukken
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Verjaardag: { $day }
 contacts-print-nickname = Bijnaam: { $name }
-contacts-create = Contact maken
+contacts-create = Nieuw contact
 
 ## Search and the list
 

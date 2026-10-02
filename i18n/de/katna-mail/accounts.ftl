@@ -14,6 +14,17 @@ accounts-unified-switch-detail = „Alle Konten“ steht oben im Ordnerbereich, 
 accounts-row = Konten
 accounts-row-detail = Der Ordnerbereich und das Kontomenü zeigen die Konten in dieser Reihenfolge; das erste ist das Standardkonto. Wenn Sie ein Konto entfernen, wird die Kopie seiner E-Mails gelöscht, die Katna auf diesem Computer hat. Die E-Mails bleiben auf dem Server.
 accounts-none = Noch keine Konten.
+accounts-pop3-row = E-Mails auf dem Server
+accounts-pop3-row-detail = POP3-Konten laden E-Mails auf diesen Computer herunter. Wählen Sie, was danach mit der Kopie auf dem Server geschieht.
+accounts-pop3-with-katna = Behalten, bis ich sie in Katna lösche
+accounts-pop3-at-once = Nach dem Herunterladen löschen
+accounts-pop3-after-days = { $count ->
+    [one] Nach { $count } Tag löschen
+   *[other] Nach { $count } Tagen löschen
+}
+accounts-pop3-never = Nie löschen
+accounts-pop3-days-less = Weniger Tage
+accounts-pop3-days-more = Mehr Tage
 accounts-kind-imported = Importiert
 accounts-picture-reset = Bild der Arbeitsumgebung verwenden
 accounts-picture-change = Bild ändern
@@ -72,6 +83,9 @@ accounts-confirm-word = löschen
 accounts-confirm-placeholder = „{ accounts-confirm-word }“ eingeben
 accounts-confirm-prompt = Geben Sie zur Bestätigung „{ accounts-confirm-word }“ ein:
 accounts-cancel = Abbrechen
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Löscht die von Katna heruntergeladenen E-Mails und Anhänge, die Absenderbilder und den Suchindex und lädt dann aktuelle E-Mails erneut herunter. Konten, Einstellungen und E-Mails, die nur auf diesem Computer sind, bleiben erhalten.
 reset-cache-button = Cache zurücksetzen
 reset-cache-title = Cache zurücksetzen?

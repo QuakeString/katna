@@ -15,6 +15,7 @@ notes-loading = Öppnar dina anteckningar…
 
 notes-take-a-note = Skriv en anteckning…
 notes-new-list = Ny lista
+notes-new-note = Ny anteckning
 notes-pinned = Fästa
 notes-others = Övriga
 notes-empty = Anteckningar du lägger till visas här

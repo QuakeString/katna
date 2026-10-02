@@ -46,6 +46,7 @@ compose-sent-archived = Gesendet und archiviert
 compose-sent = Nachricht gesendet
 compose-discarded = Entwurf verworfen
 compose-draft-saved = Entwurf gespeichert
+compose-draft-saving = Wird gespeichert…
 compose-draft-failed = Der Entwurf konnte nicht gespeichert werden: { $error }
 compose-draft-not-opened = Der Entwurf konnte nicht geöffnet werden.
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = Der Entwurf konnte nicht geöffnet werden.
 compose-picker-insert = Einfügen
 compose-picker-attach = Anhängen
 compose-file-too-large = { $name } ist zu groß: Eine Nachricht kann bis zu { $limit } enthalten.
+compose-forward-files-missing = Die Dateien der weitergeleiteten Nachricht sind nicht heruntergeladen und daher nicht angehängt.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Anhang entfernen
 compose-attachments-total = { $count ->
@@ -78,6 +80,7 @@ compose-drive-share-link = Per Link freigeben
 compose-drive-send-without = Ohne Freigabe senden
 compose-drive-share-cancel = Abbrechen
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } ist größer als { $limit } und wird deshalb in Ihrem OneDrive abgelegt; die Nachricht enthält einen Link.
 compose-onedrive-tip = In Ihrem OneDrive; die Nachricht enthält einen Link
 compose-onedrive-allow = OneDrive erlauben
@@ -89,8 +92,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive kann die Dateien nicht für { $addresses } freigeben. Stattdessen kann jeder mit dem Link sie öffnen.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Dateien hier ablegen
 compose-drop-here = Hier ablegen
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = Formatierung beibehalten
 compose-paste-table = Tabelle
 compose-paste-picture = Bild
@@ -104,6 +111,9 @@ compose-encrypt = Verschlüsseln
 compose-encrypted = Verschlüsselt: Nur die Empfänger können sie lesen
 compose-sign = Signieren
 compose-signed = Signiert: Empfänger können prüfen, dass sie von Ihnen stammt
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = Öffnungen und Klicks verfolgen
 compose-tracked = Verfolgt: Sie sehen, wann jeder Empfänger sie öffnet oder einem Link folgt
 compose-track-clicks = Linkklicks verfolgen (Nur-Text kann keine Öffnungen anzeigen)
@@ -136,6 +146,9 @@ send-check-subject-title = Ohne Betreff senden?
 send-check-subject-text = Diese Nachricht hat keinen Betreff.
 send-check-add-subject = Betreff hinzufügen
 send-check-send-anyway = Trotzdem senden
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = Keine gültige E-Mail-Adresse
 recipient-show-address = Adresse anzeigen
 recipient-remove = Entfernen
