@@ -4959,17 +4959,26 @@ Arch is the first, Windows and the others follow the same flow.
   programs, so block matching (zsync, as AppImage uses) reuses only
   about a quarter of the package; a zstd patch is 3.2 MB for one merge
   and 6.4 MB for a day's seven, against about 40 MB in full. CI's publish
-  job keeps the last three builds' packages in the release and makes a
-  patch from each to the new one (`zstd --patch-from --long=28`, between
-  the uncompressed packages), listed in the manifest (`patches`) with
-  the new package's uncompressed SHA-256, size and signature (`tar`).
+  job keeps the last 48 builds' packages in the release (about two days)
+  and makes a patch to the new one from the builds 1, 2, 3, 6, 12, 24
+  and 48 back (`zstd --patch-from --long=28`, between the uncompressed
+  packages, four at a time), listed in the manifest (`patches`) with the
+  new package's uncompressed SHA-256, size and signature (`tar`). The
+  earlier builds' patches stay in the release and in the manifest
+  (`chain`, each with its `to` build, while that build's package is
+  kept), so an installed build without a direct patch (the first
+  version had only three, and a user 15 builds behind got the full
+  package) reaches the new one through earlier builds:
+  `Manifest::route` picks the fewest bytes over at most four patches,
+  and only when they come to at most 70% of the full package.
   After installing, the root helper keeps a copy of the installed
   package in `/var/lib/katna/installed`, which only root can change (a
   user's cache clean-up cannot remove it; removing `katna-git` does);
   after `pacman -Syu` the daemon finds it in pacman's cache instead. When
-  the manifest has a patch from the installed version and the copy is
-  there, the daemon downloads the patch, makes the uncompressed package
-  from the two, and checks its size and SHA-256; the helper checks its
+  the manifest has a route from the installed version and the copy is
+  there, the daemon downloads the patches one by one, applies each to the
+  last result (builds in between go to `updates/steps/` and are not
+  checked), and checks the final package's size and SHA-256; the helper checks its
   signature and installs it like the full package (pacman takes either).
   Anything else, or any failure, downloads the full package. The Update
   dialog shows the size actually downloaded.

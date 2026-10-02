@@ -9,6 +9,8 @@
 //! the file it offers, and (in Katna Mail) how that file is installed.
 //! Only the Arch package updates itself so far.
 
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 /// The version this build reports ([`crate::crash::VERSION`]).
@@ -135,6 +137,12 @@ pub struct Manifest {
     /// update downloads only what changed.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub patches: Vec<Patch>,
+    /// Patches between earlier builds, carried over from their own
+    /// manifests: an installed build without a patch in
+    /// [`Manifest::patches`] reaches this one through two or three of
+    /// them ([`Manifest::route`]).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub chain: Vec<Hop>,
 }
 
 /// A build's package without its zstd compression (`….pkg.tar`), which
@@ -162,6 +170,28 @@ pub struct Patch {
 
 /// Most patches a manifest lists.
 const MAX_PATCHES: usize = 10;
+
+/// A patch from one earlier build's [`Tar`] to another's, as that
+/// build's manifest listed it in [`Manifest::patches`].
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Hop {
+    pub from: String,
+    pub to: String,
+    /// The patch's file name in the same release.
+    pub file: String,
+    pub sha256: String,
+    pub size: u64,
+    /// When `to`'s commit was made (Unix seconds), which CI uses to
+    /// drop old hops; 0 when unknown.
+    #[serde(default)]
+    pub built: i64,
+}
+
+/// Most hops a manifest lists: patches from the last 48 builds, seven
+/// each.
+const MAX_CHAIN: usize = 400;
+/// Most patches an update is made from, one after another.
+const MAX_HOPS: usize = 4;
 
 /// A What's new highlight of a build, as `katna-mail --highlights`
 /// prints it.
@@ -210,8 +240,17 @@ impl Manifest {
                 && is_size(patch.size)
                 && parse_version(&patch.from).is_some()
         });
+        manifest.chain.truncate(MAX_CHAIN);
+        manifest.chain.retain(|hop| {
+            is_plain_name(&hop.file)
+                && is_sha256(&hop.sha256)
+                && is_size(hop.size)
+                && parse_version(&hop.from).is_some()
+                && parse_version(&hop.to).is_some()
+        });
         if manifest.tar.is_none() {
             manifest.patches.clear();
+            manifest.chain.clear();
         }
         (is_plain_name(&manifest.file)
             && is_sha256(&manifest.sha256)
@@ -226,6 +265,55 @@ impl Manifest {
     pub fn patch_from(&self, installed: &str) -> Option<&Patch> {
         self.tar.as_ref()?;
         self.patches.iter().find(|patch| patch.from == installed)
+    }
+
+    /// The patches that make this build from `installed`, in the order
+    /// they apply, downloading the fewest bytes: a direct patch when
+    /// there is one, else up to [`MAX_HOPS`] through earlier builds,
+    /// ending with one of [`Manifest::patches`]. `None` when there are
+    /// none, or when together they are not clearly smaller than the full
+    /// package.
+    pub fn route(&self, installed: &str) -> Option<Vec<Hop>> {
+        self.tar.as_ref()?;
+        let direct = self.patches.iter().map(|patch| Hop {
+            from: patch.from.clone(),
+            to: self.version.clone(),
+            file: patch.file.clone(),
+            sha256: patch.sha256.clone(),
+            size: patch.size,
+            built: self.built,
+        });
+        let hops: Vec<Hop> = self
+            .chain
+            .iter()
+            .filter(|hop| hop.to != self.version && hop.from != hop.to)
+            .cloned()
+            .chain(direct)
+            .collect();
+        // Fewest bytes to each build in at most `round` hops
+        // (Bellman-Ford, a few hundred hops at most).
+        let mut best: HashMap<&str, (u64, Vec<usize>)> = HashMap::new();
+        best.insert(installed, (0, Vec::new()));
+        for _round in 0..MAX_HOPS {
+            let mut next = best.clone();
+            for (i, hop) in hops.iter().enumerate() {
+                let Some((bytes, path)) = best.get(hop.from.as_str()) else {
+                    continue;
+                };
+                let bytes = bytes.saturating_add(hop.size);
+                if next.get(hop.to.as_str()).is_none_or(|(b, _)| bytes < *b) {
+                    let mut path = path.clone();
+                    path.push(i);
+                    next.insert(&hop.to, (bytes, path));
+                }
+            }
+            best = next;
+        }
+        let (bytes, path) = best.remove(self.version.as_str())?;
+        // Each patch costs a moment to apply and can fail; past this
+        // share of the full package, the full one is the better buy.
+        (!path.is_empty() && bytes.saturating_mul(10) <= self.size.saturating_mul(7))
+            .then(|| path.into_iter().map(|i| hops[i].clone()).collect())
     }
 
     /// The name the uncompressed package is saved under: the package's
@@ -435,6 +523,75 @@ mod tests {
                 .patches
                 .is_empty()
         );
+    }
+
+    #[test]
+    fn routes_through_earlier_builds() {
+        let sha = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
+        let v = |r: u32| format!("0.0.0.r{r}.g{r:07}");
+        let hop = |from: u32, to: u32, size: u64| Hop {
+            from: v(from),
+            to: v(to),
+            file: format!("katna-git-{}-to-{}.patch.zst", v(from), v(to)),
+            sha256: sha.into(),
+            size,
+            built: 0,
+        };
+        let patch = |from: u32, size: u64| Patch {
+            from: v(from),
+            file: format!("katna-git-{}-to-{}.patch.zst", v(from), v(20)),
+            sha256: sha.into(),
+            size,
+        };
+        let manifest = Manifest {
+            version: v(20),
+            file: format!("katna-git-{}-1-x86_64.pkg.tar.zst", v(20)),
+            sha256: sha.into(),
+            size: 100,
+            built: 0,
+            commit: String::new(),
+            highlights: vec![],
+            changes: vec![],
+            minisig: None,
+            tar: Some(Tar {
+                sha256: sha.into(),
+                size: 300,
+                minisig: None,
+            }),
+            patches: vec![patch(19, 5), patch(18, 6), patch(14, 9), patch(2, 80)],
+            chain: vec![
+                hop(10, 14, 8),
+                hop(10, 12, 4),
+                hop(12, 14, 3),
+                hop(8, 10, 1),
+                hop(5, 8, 1),
+                hop(4, 5, 1),
+            ],
+        };
+        let json = serde_json::to_vec(&manifest).unwrap();
+        let manifest = Manifest::parse(&json).unwrap();
+        let route = |from: u32| {
+            manifest.route(&v(from)).map(|hops| {
+                hops.iter()
+                    .map(|hop| (hop.from.clone(), hop.to.clone()))
+                    .collect::<Vec<_>>()
+            })
+        };
+        // A direct patch.
+        assert_eq!(route(19), Some(vec![(v(19), v(20))]));
+        // The fewest bytes: 4 + 3 + 9, not 8 + 9.
+        assert_eq!(
+            route(10),
+            Some(vec![(v(10), v(12)), (v(12), v(14)), (v(14), v(20))])
+        );
+        assert_eq!(route(8).unwrap().len(), 4);
+        assert_eq!(route(5).unwrap().len(), 4);
+        // Five hops are too many.
+        assert_eq!(route(4), None);
+        // More than 70% of the full package.
+        assert_eq!(route(2), None);
+        assert_eq!(route(3), None);
+        assert_eq!(route(20), None);
     }
 
     #[test]
