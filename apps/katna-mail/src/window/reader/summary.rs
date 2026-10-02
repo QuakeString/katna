@@ -821,34 +821,27 @@ impl MailWindow {
             State::Ask => (tr!("summary-title"), tr!("summary-ask-short")),
             State::Failed(problem) => (tr!("summary-title"), self.summary_problem(problem).0),
         };
-        div()
+        // The line is a soft rounded hover inside the strip or card, as
+        // everywhere else.
+        let row = div()
             .id(if card {
                 "summary-folded"
             } else {
                 "chat-summary-strip"
             })
-            .flex_none()
             .flex()
             .flex_row()
             .items_center()
             .gap(px(10.0))
-            .px(px(16.0))
-            .py(px(8.0))
             .cursor_pointer()
             .text_size(px(13.5))
             .text_color(rgba(th.text))
+            .hover(|s| s.bg(rgba(th.hover)))
             .map(|d| {
                 if card {
-                    d.rounded(px(12.0))
-                        .bg(rgba(summary_surface(th)))
-                        .border_1()
-                        .border_color(rgba(th.divider))
-                        .hover(|s| s.bg(rgba(mix(summary_surface(th), th.hover, 0.6))))
+                    d.rounded(px(11.0)).px(px(16.0)).py(px(8.0))
                 } else {
-                    d.bg(rgba(summary_surface(th)))
-                        .border_b_1()
-                        .border_color(rgba(th.divider))
-                        .hover(|s| s.bg(rgba(mix(summary_surface(th), th.hover, 0.6))))
+                    d.rounded(px(8.0)).px(px(10.0)).py(px(4.0))
                 }
             })
             .on_click(cx.listener(move |this, _, _, cx| {
@@ -895,7 +888,19 @@ impl MailWindow {
                 if open { "chevron-up" } else { "chevron-down" },
                 th.text_dim,
                 16.0,
-            ))
+            ));
+        div()
+            .flex_none()
+            .bg(rgba(summary_surface(th)))
+            .border_color(rgba(th.divider))
+            .map(|d| {
+                if card {
+                    d.rounded(px(12.0)).border_1()
+                } else {
+                    d.border_b_1().px(px(6.0)).py(px(4.0))
+                }
+            })
+            .child(row)
             .into_any_element()
     }
 
