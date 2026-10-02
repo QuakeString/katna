@@ -127,6 +127,7 @@ attachment-count = { $count ->
    *[other] { $count } aanhegsels
 }
 attachment-save = Stoor
+attachment-forward = Stuur aan
 attachment-save-all = Stoor alles
 attachment-save-all-tooltip = Stoor elke aanhegsel in 'n vouer
 attachment-save-here = Stoor hier
@@ -177,6 +178,11 @@ print-not-downloaded = (Nog nie afgelaai nie.)
 print-encrypted = (Geënkripteer. Maak dit in Katna Mail oop om die teks te druk.)
 print-to = Aan: { $addresses }
 print-cc = Afskrif: { $addresses }
+
+## Message text (right-click menu in the reading pane)
+
+text-pin = Speld bo vas
+text-copy-address = Kopieer adres
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

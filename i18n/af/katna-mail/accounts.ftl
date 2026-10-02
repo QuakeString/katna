@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “Alle rekeninge” staan bo-aan die vouerpane
 accounts-row = Rekeninge
 accounts-row-detail = Die vouerpaneel en die rekeningkieslys wys rekeninge in hierdie volgorde; die eerste is die verstek. As jy 'n rekening verwyder, word Katna se kopie van sy e-pos op hierdie rekenaar uitgevee. Die e-pos bly op die bediener.
 accounts-none = Nog geen rekeninge nie.
+accounts-pop3-row = E-pos op die bediener
+accounts-pop3-row-detail = POP3-rekeninge laai e-pos na hierdie rekenaar af. Kies wat dan met die kopie op die bediener gebeur.
+accounts-pop3-with-katna = Hou dit totdat ek dit in Katna uitvee
+accounts-pop3-at-once = Vee dit uit sodra dit afgelaai is
+accounts-pop3-after-days = { $count ->
+    [one] Vee dit ná { $count } dag uit
+   *[other] Vee dit ná { $count } dae uit
+}
+accounts-pop3-never = Vee dit nooit uit nie
+accounts-pop3-days-less = Minder dae
+accounts-pop3-days-more = Meer dae
 accounts-kind-imported = Ingevoer
 accounts-picture-reset = Gebruik werkskermprent
 accounts-picture-change = Verander prent

@@ -94,7 +94,7 @@ contacts-print-none = Akukho oxhumana nabo abazophrintwa
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Usuku lokuzalwa: { $day }
 contacts-print-nickname = Isidlaliso: { $name }
-contacts-create = Dala oxhumana naye
+contacts-create = Oxhumana naye omusha
 
 ## Search and the list
 

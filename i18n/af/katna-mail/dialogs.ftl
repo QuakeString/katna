@@ -66,6 +66,7 @@ about-credit-resvg = SVG-prente
 about-credit-jiff = Datums en tydsones
 about-credit-spellbook = Speltoets, van die Helix-redigeerder
 about-credit-smol = Baie dinge gelyk doen
+about-credit-color-schemes = Die palette van die ingeboude kleurskemas
 about-all-libraries = Elke biblioteek wat Katna gebruik ({ $count })
 about-library-authors = deur { $authors }
 about-license = Katna is vrye sagteware onder die GNU GPL, weergawe 3 of later.
@@ -123,6 +124,21 @@ onboarding-density-default = Verstek
 onboarding-density-compact = Kompak
 onboarding-continue = Gaan voort
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Kry meer met 'n Katna-rekening
+onboarding-katna-lead = Dit is opsioneel. Dit skakel Katna se aanlyn kenmerke aan, en jy kan later een maak in Instellings > Intekening.
+onboarding-katna-receipts-title = Leesbewyse
+onboarding-katna-receipts-text = Sien wanneer mense die e-pos wat jy stuur oopmaak.
+onboarding-katna-links-title = Skakelnasporing
+onboarding-katna-links-text = Sien watter skakels in jou e-pos geklik word.
+onboarding-katna-activity-title = Aktiwiteit
+onboarding-katna-activity-text = Wie oopmaak en klik, vir alles wat jy gestuur het, op een plek.
+onboarding-katna-translate-title = Outomatiese vertaling
+onboarding-katna-translate-text = Lees e-pos in ander tale in jou eie taal.
+onboarding-katna-private = Dit het sy eie wagwoord. Jou e-posaanmeldings verlaat nooit hierdie rekenaar nie.
+
 ## First run: done
 
 onboarding-ready-title = Jy is gereed
@@ -166,6 +182,7 @@ tour-search-text = Soek werk ook vanlyn. Die knoppie heel regs voeg filters by: 
 tour-menu-title = Wys of versteek die vouers
 tour-menu-text = Hierdie knoppie vou die vouerlys weg. Terwyl dit versteek is, laat die wyser op E-pos links rus om die vouers te sien.
 tour-apps-title = Jou programme
+tour-apps-text = E-pos woon hier, langs Kalender, Kontakte, Take, Notas en Lêers.
 tour-tabs-title = Inkassie-oortjies
 tour-tabs-text = Nuwe e-pos word in Primêr, Promosies, Sosiaal, Opdaterings en Forums gesorteer. Jy kan die oortjies in vinnige instellings afskakel.
 tour-list-title = Jou boodskappe
@@ -196,6 +213,9 @@ sign-in-again-button = Meld aan
 sign-in-again-tooltip = Maak die { $provider }-aanmeldbladsy in jou blaaier oop
 sign-in-again-waiting = Wag tans vir jou blaaier…
 sign-in-again-close = Maak toe
+google-api-off = { $api } is afgeskakel in Katna se Google Cloud-projek.
+google-api-turn-on = Skakel aan
+google-api-turn-on-tooltip = Maak Google Cloud oop om { $api } aan te skakel, en druk dan Probeer weer
 sign-in-again-done = Weer by { $address } aangemeld. Haal tans jou e-pos…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

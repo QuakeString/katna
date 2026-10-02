@@ -9,6 +9,7 @@ rail-calendar = Kalenda
 rail-contacts = Anwani
 rail-tasks = Majukumu
 rail-notes = Madokezo
+rail-files = Faili
 
 ## Pages of apps still to come
 

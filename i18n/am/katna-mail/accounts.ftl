@@ -14,6 +14,17 @@ accounts-unified-switch-detail = «ሁሉም መለያዎች» በአቃፊ ክ�
 accounts-row = መለያዎች
 accounts-row-detail = የአቃፊ ክፍሉ እና የመለያ ምናሌው መለያዎችን በዚህ ቅደም ተከተል ይዘረዝራሉ፤ የመጀመሪያው ነባሪ ነው። መለያን ማስወገድ በዚህ ኮምፒውተር ላይ ያለውን የKatna የደብዳቤው ቅጂ ይሰርዛል። ደብዳቤው በአገልጋዩ ላይ ይቆያል።
 accounts-none = እስካሁን ምንም መለያ የለም።
+accounts-pop3-row = በአገልጋዩ ላይ ያለ ደብዳቤ
+accounts-pop3-row-detail = የPOP3 መለያዎች ደብዳቤን ወደዚህ ኮምፒውተር ያወርዳሉ። ከዚያ በአገልጋዩ ላይ ባለው ቅጂ ላይ ምን እንደሚሆን ይምረጡ።
+accounts-pop3-with-katna = በKatna ውስጥ እስክሰርዘው ድረስ አቆየው
+accounts-pop3-at-once = እንደወረደ ሰርዘው
+accounts-pop3-after-days = { $count ->
+    [one] ከ{ $count } ቀን በኋላ ሰርዘው
+   *[other] ከ{ $count } ቀናት በኋላ ሰርዘው
+}
+accounts-pop3-never = በጭራሽ አትሰርዘው
+accounts-pop3-days-less = ያነሱ ቀናት
+accounts-pop3-days-more = ተጨማሪ ቀናት
 accounts-kind-imported = የመጣ
 accounts-picture-reset = የዴስክቶፕ ሥዕልን ተጠቀም
 accounts-picture-change = ሥዕል ቀይር

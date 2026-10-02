@@ -66,6 +66,7 @@ about-credit-resvg = የSVG ሥዕሎች
 about-credit-jiff = ቀኖች እና የሰዓት ሰቆች
 about-credit-spellbook = የፊደል ማረሚያ፣ ከHelix አርታዒ
 about-credit-smol = ብዙ ነገሮችን በአንድ ጊዜ መሥራት
+about-credit-color-schemes = የአብሮገነብ የቀለም ገጽታዎቹ ቤተ ቀለማት
 about-all-libraries = Katna የሚጠቀምባቸው ሁሉም ቤተ-መጻሕፍት ({ $count })
 about-library-authors = በ{ $authors }
 about-license = Katna በGNU GPL፣ ስሪት 3 ወይም ከዚያ በኋላ ስር ነፃ ሶፍትዌር ነው።
@@ -123,6 +124,21 @@ onboarding-density-default = ነባሪ
 onboarding-density-compact = የታመቀ
 onboarding-continue = ቀጥል
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = በKatna መለያ ተጨማሪ ያግኙ
+onboarding-katna-lead = አማራጭ ነው። የKatnaን የመስመር ላይ ባህሪያት ያበራል፣ እና በኋላ በቅንብሮች > የደንበኝነት ምዝገባ ውስጥ መፍጠር ይችላሉ።
+onboarding-katna-receipts-title = የንባብ ደረሰኞች
+onboarding-katna-receipts-text = ሰዎች የሚልኩትን ደብዳቤ መቼ እንደሚከፍቱ ይመልከቱ።
+onboarding-katna-links-title = የአገናኝ ክትትል
+onboarding-katna-links-text = በደብዳቤዎ ውስጥ የትኞቹ አገናኞች ጠቅ እንደተደረጉ ይመልከቱ።
+onboarding-katna-activity-title = እንቅስቃሴ
+onboarding-katna-activity-text = ለላኩት ሁሉ የመከፈት እና የጠቅታ መረጃ፣ በአንድ ቦታ።
+onboarding-katna-translate-title = ራስ-ሰር ትርጉም
+onboarding-katna-translate-text = በሌሎች ቋንቋዎች የተጻፈ ደብዳቤን በራስዎ ቋንቋ ያንብቡ።
+onboarding-katna-private = የራሱ የይለፍ ቃል አለው። የደብዳቤ መግቢያዎችዎ ከዚህ ኮምፒውተር በጭራሽ አይወጡም።
+
 ## First run: done
 
 onboarding-ready-title = ሁሉም ዝግጁ ነው
@@ -166,6 +182,7 @@ tour-search-text = ፍለጋ ከመስመር ውጭም ይሠራል። በቀኝ
 tour-menu-title = አቃፊዎቹን አሳይ ወይም ደብቅ
 tour-menu-text = ይህ አዝራር የአቃፊ ዝርዝሩን ያጥፈዋል። ተደብቆ ሳለ፣ አቃፊዎቹን ለማየት ጠቋሚውን በግራ በኩል ባለው ደብዳቤ ላይ ያሳርፉ።
 tour-apps-title = የእርስዎ መተግበሪያዎች
+tour-apps-text = ደብዳቤ እዚህ ይገኛል፣ ከቀን መቁጠሪያ፣ ከእውቂያዎች፣ ከተግባራት፣ ከማስታወሻዎች እና ከፋይሎች ጎን።
 tour-tabs-title = የገቢ መልዕክት ሳጥን ትሮች
 tour-tabs-text = አዲስ ደብዳቤ ወደ ዋና፣ ማስተዋወቂያዎች፣ ማህበራዊ፣ ዝማኔዎች እና መድረኮች ይለያል። ትሮቹን በፈጣን ቅንብሮች ውስጥ ማጥፋት ይችላሉ።
 tour-list-title = የእርስዎ መልዕክቶች
@@ -196,6 +213,9 @@ sign-in-again-button = ግባ
 sign-in-again-tooltip = የ{ $provider } መግቢያ ገጽን በአሳሽዎ ውስጥ ይክፈቱ
 sign-in-again-waiting = አሳሽዎን በመጠበቅ ላይ…
 sign-in-again-close = ዝጋ
+google-api-off = { $api } በKatna የGoogle Cloud ፕሮጀክት ውስጥ ጠፍቷል።
+google-api-turn-on = አብራ
+google-api-turn-on-tooltip = { $api }ን ለማብራት Google Cloudን ይክፈቱ፣ ከዚያ «እንደገና ሞክር»ን ይጫኑ
 sign-in-again-done = ወደ { $address } እንደገና ገብተዋል። ደብዳቤዎን በማምጣት ላይ…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

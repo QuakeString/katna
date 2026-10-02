@@ -90,7 +90,7 @@ contacts-print-none = Hakuna anwani za kuchapisha
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Siku ya kuzaliwa: { $day }
 contacts-print-nickname = Jina la utani: { $name }
-contacts-create = Unda anwani
+contacts-create = Anwani mpya
 
 ## Search and the list
 

@@ -88,7 +88,7 @@ contacts-print-none = Kò sí olùbásọ̀rọ̀ láti tẹ̀jáde
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Ọjọ́ ìbí: { $day }
 contacts-print-nickname = Orúkọ ìnagijẹ: { $name }
-contacts-create = Ṣẹ̀dá olùbásọ̀rọ̀
+contacts-create = Olùbásọ̀rọ̀ tuntun
 
 ## Search and the list
 

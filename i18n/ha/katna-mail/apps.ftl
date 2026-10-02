@@ -9,6 +9,7 @@ rail-calendar = Kalanda
 rail-contacts = Lambobin sadarwa
 rail-tasks = Ayyuka
 rail-notes = Bayanai
+rail-files = Fayiloli
 
 ## Pages of apps still to come
 

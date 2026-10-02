@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “Akaụntụ niile” nọ n'elu paịn folda
 accounts-row = Akaụntụ
 accounts-row-detail = Paịn folda na menu akaụntụ na-edepụta akaụntụ n'usoro a; nke mbụ bụ ndabara. Iwepụ akaụntụ na-ehichapụ mbipụta ozi ya nke Katna nwere na kọmputa a. Ozi ahụ na-anọ na sava.
 accounts-none = Enweghị akaụntụ ugbu a.
+accounts-pop3-row = Ozi dị na sava
+accounts-pop3-row-detail = Akaụntụ POP3 na-ebudata ozi na kọmputa a. Họrọ ihe ga-eme mbipụta dị na sava mgbe ahụ.
+accounts-pop3-with-katna = Debe ya ruo mgbe m hichapụrụ ya na Katna
+accounts-pop3-at-once = Hichapụ ya ozugbo e budatara ya
+accounts-pop3-after-days = { $count ->
+   *[other] Hichapụ ya mgbe ụbọchị { $count } gachara
+}
+accounts-pop3-never = Ehichapụla ya ma ọlị
+accounts-pop3-days-less = Ụbọchị ole na ole
+accounts-pop3-days-more = Ụbọchị ndị ọzọ
 accounts-kind-imported = E bubatara
 accounts-picture-reset = Jiri foto desktọpụ
 accounts-picture-change = Gbanwee foto

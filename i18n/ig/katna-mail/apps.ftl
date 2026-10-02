@@ -9,6 +9,7 @@ rail-calendar = Kalịnda
 rail-contacts = Kọntaktị
 rail-tasks = Ọrụ
 rail-notes = Ndetu
+rail-files = Faịlụ
 
 ## Pages of apps still to come
 

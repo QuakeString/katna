@@ -14,6 +14,17 @@ accounts-unified-switch-detail = “Dukkan asusu” yana saman wurin folda, tare
 accounts-row = Asusu
 accounts-row-detail = Wurin folda da menu na asusu suna jera asusu a wannan tsari; na farko shi ne na asali. Cire asusu yana share kwafin wasiƙunsa na Katna a wannan kwamfuta. Wasiƙun suna zama a sabar.
 accounts-none = Babu asusu tukuna.
+accounts-pop3-row = Wasiƙu a kan sabar
+accounts-pop3-row-detail = Asusun POP3 suna sauke wasiƙu zuwa wannan kwamfuta. Zaɓi abin da zai faru da kwafin da ke kan sabar bayan haka.
+accounts-pop3-with-katna = Ajiye shi har sai na share shi a Katna
+accounts-pop3-at-once = Share shi da zarar an sauke
+accounts-pop3-after-days = { $count ->
+    [one] Share shi bayan kwana { $count }
+   *[other] Share shi bayan kwanaki { $count }
+}
+accounts-pop3-never = Kada a taɓa share shi
+accounts-pop3-days-less = Ƙananan kwanaki
+accounts-pop3-days-more = Ƙarin kwanaki
 accounts-kind-imported = An shigo da shi
 accounts-picture-reset = Yi amfani da hoton tebur
 accounts-picture-change = Canza hoto

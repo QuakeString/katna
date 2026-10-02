@@ -112,6 +112,7 @@ remote-picture-remove-failed = Enweghị ike iwepụ foto ahụ: { $error }
 
 attachment-count = Mgbakwunye { $count }
 attachment-save = Chekwaa
+attachment-forward = Zigaa
 attachment-save-all = Chekwaa niile
 attachment-save-all-tooltip = Chekwaa mgbakwunye ọ bụla na folda
 attachment-save-here = Chekwaa ebe a
@@ -150,6 +151,11 @@ print-not-downloaded = (Ebudatabeghị ya.)
 print-encrypted = (Ezoro ezo. Mepee ya na Katna Mail ka ị bipụta ederede ya.)
 print-to = Gaa: { $addresses }
 print-cc = Cc: { $addresses }
+
+## Message text (right-click menu in the reading pane)
+
+text-pin = Kwụnye n'elu
+text-copy-address = Detuo adreesị
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

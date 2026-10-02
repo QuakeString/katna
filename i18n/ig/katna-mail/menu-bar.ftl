@@ -27,6 +27,7 @@ desktop-menu-page-calendar = Ka_lịnda
 desktop-menu-page-contacts = Kọntakt_ị
 desktop-menu-page-tasks = Ọ_rụ
 desktop-menu-page-notes = Nde_tu
+desktop-menu-page-files = _Faịlụ
 desktop-menu-next = Mkparịta ụka _ọzọ
 desktop-menu-previous = Mkparịta ụka _gara aga
 desktop-menu-message = _Ozi

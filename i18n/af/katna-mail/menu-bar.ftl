@@ -27,6 +27,7 @@ desktop-menu-page-calendar = Ka_lender
 desktop-menu-page-contacts = K_ontakte
 desktop-menu-page-tasks = _Take
 desktop-menu-page-notes = _Notas
+desktop-menu-page-files = _Lêers
 desktop-menu-next = _Volgende gesprek
 desktop-menu-previous = V_orige gesprek
 desktop-menu-message = _Boodskap

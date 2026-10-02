@@ -44,7 +44,26 @@ notify-task-done = Maka njengokwenziwe
 ## Its buttons
 
 notify-open = Vula
+notify-peek = Lunguza
+notify-reply = Phendula
+notify-reply-placeholder = Phendula u-{ $name }…
+notify-send = Thumela
 notify-reply-all = Phendula bonke
 notify-mark-read = Maka njengokufundiwe
 notify-mark-all-read = Maka konke njengokufundiwe
 notify-archive = Faka kungobo yomlando
+
+## After Archive on a notification: a short note in the same place
+
+notify-archived = Kufakwe engobeni yomlando
+notify-archived-count = { $count ->
+    [one] Umlayezo o-{ $count } ukhishwe ebhokisini lokungenayo
+   *[other] Imilayezo engu-{ $count } ikhishwe ebhokisini lokungenayo
+}
+notify-undo = Hlehlisa
+
+## After a reply typed into a notification: a note in the same place while
+## it waits for the undo time
+
+notify-reply-sent = Impendulo ithunyelwe ku-{ $name }
+notify-open-in-katna = Vula ku-Katna

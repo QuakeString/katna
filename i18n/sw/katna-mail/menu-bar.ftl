@@ -27,6 +27,7 @@ desktop-menu-page-calendar = Ka_lenda
 desktop-menu-page-contacts = _Anwani
 desktop-menu-page-tasks = _Majukumu
 desktop-menu-page-notes = Ma_dokezo
+desktop-menu-page-files = _Faili
 desktop-menu-next = Mazungumzo _Yanayofuata
 desktop-menu-previous = Mazungumzo Ya_liyotangulia
 desktop-menu-message = _Ujumbe

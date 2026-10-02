@@ -9,6 +9,7 @@ rail-calendar = Ikhalenda
 rail-contacts = Oxhumana nabo
 rail-tasks = Imisebenzi
 rail-notes = Amanothi
+rail-files = Amafayela
 
 ## Pages of apps still to come
 
