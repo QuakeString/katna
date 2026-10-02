@@ -27,6 +27,7 @@ desktop-menu-page-calendar = ပြက္ခ_ဒိန်
 desktop-menu-page-contacts = _အဆက်အသွယ်များ
 desktop-menu-page-tasks = လုပ်_ဆောင်စရာများ
 desktop-menu-page-notes = မှတ်_စုများ
+desktop-menu-page-files = _ဖိုင်များ
 desktop-menu-next = _နောက် စကားဝိုင်း
 desktop-menu-previous = _ယခင် စကားဝိုင်း
 desktop-menu-message = _မက်ဆေ့ဂျ်

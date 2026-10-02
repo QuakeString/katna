@@ -15,6 +15,7 @@ notes-loading = กำลังเปิดโน้ตของคุณ…
 
 notes-take-a-note = จดโน้ต…
 notes-new-list = รายการใหม่
+notes-new-note = โน้ตใหม่
 notes-pinned = ปักหมุดแล้ว
 notes-others = อื่นๆ
 notes-empty = โน้ตที่คุณเพิ่มจะปรากฏที่นี่

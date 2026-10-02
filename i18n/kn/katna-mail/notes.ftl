@@ -15,6 +15,7 @@ notes-loading = ನಿಮ್ಮ ಟಿಪ್ಪಣಿಗಳನ್ನು ತೆ�
 
 notes-take-a-note = ಟಿಪ್ಪಣಿ ಬರೆಯಿರಿ…
 notes-new-list = ಹೊಸ ಪಟ್ಟಿ
+notes-new-note = ಹೊಸ ಟಿಪ್ಪಣಿ
 notes-pinned = ಪಿನ್ ಮಾಡಿರುವುದು
 notes-others = ಇತರೆ
 notes-empty = ನೀವು ಸೇರಿಸುವ ಟಿಪ್ಪಣಿಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ

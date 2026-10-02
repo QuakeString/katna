@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = สร้าง
+tasks-create = งานใหม่
 tasks-all = งานทั้งหมด
 tasks-today = วันนี้
 tasks-starred = ติดดาว
 tasks-new-list = สร้างรายการใหม่
 tasks-on-this-computer = ในคอมพิวเตอร์เครื่องนี้
 tasks-my-tasks = งานของฉัน
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = ลงชื่อเข้าใช้อีกครั้งเพื่อแสดงงาน
 tasks-account-signed-in = ลงชื่อเข้าใช้ { $address } อีกครั้งแล้ว กำลังดึงงานของคุณ…
 tasks-account-sign-in-refused = { $provider } ไม่อนุญาตให้ Katna เข้าใช้ ลองอีกครั้ง และอนุญาตให้เข้าถึงงานของคุณ
@@ -21,13 +19,9 @@ tasks-account-change-password = เปลี่ยนรหัสผ่าน
 tasks-account-change-password-tooltip = เปิด การตั้งค่า > บัญชี
 tasks-account-not-enabled = ยังไม่ได้เปิดการเข้าถึงงานสำหรับ Katna
 tasks-account-failed = อ่านรายการงานไม่ได้
-# $reason is the server's own words, in English.
 tasks-account-error = อ่านรายการงานไม่ได้: { $reason }
 tasks-account-none = ไม่พบรายการงาน
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 tasks-account-none-why = ไม่พบรายการงาน: { $reason }
-# A Gmail or Outlook account added with a password: its tasks need the
-# provider's sign-in.
 tasks-account-use-sign-in = { $provider } จะแสดงงานให้เฉพาะ Katna ที่ลงชื่อเข้าใช้ด้วย { $provider } เท่านั้น
 tasks-account-sign-in-with = ลงชื่อเข้าใช้ด้วย { $provider }
 tasks-account-looking = กำลังค้นหารายการงาน…
@@ -112,6 +106,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = ไม่มีอีเมลนั้นแล้ว
 tasks-toast-list-deleted = ลบรายการแล้ว
 tasks-toast-moved = ย้ายไปที่ { $list } แล้ว
-# A task dragged to another place in its own list.
 tasks-toast-placed = ย้ายงานแล้ว
 tasks-toast-rescheduled = เลื่อนเวลางานแล้ว

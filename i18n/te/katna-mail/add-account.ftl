@@ -5,6 +5,15 @@
 ## Add a mail account: titles and steps
 
 add-account-title = మెయిల్ ఖాతాను జోడించండి
+add-account-providers-intro = మీ మెయిల్ ప్రొవైడర్‌ను ఎంచుకోండి. మిగతాది Katna చూసుకుంటుంది.
+add-account-provider-other = ఇతర మెయిల్
+add-account-provider-other-detail = ఏదైనా IMAP లేదా POP3 ఖాతా
+add-account-provider-google-detail = Gmail, Google Workspace
+add-account-provider-microsoft-detail = Outlook, Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = { $provider }కు సైన్ ఇన్ చేయండి
+add-account-form-title-other = మీ మెయిల్ ఖాతా
+add-account-form-intro = Katna మీ పాస్‌వర్డ్‌ను మీ సిస్టమ్ కీరింగ్‌లో భద్రపరుస్తుంది.
 add-account-looking = { $address } కోసం మెయిల్ సర్వర్‌లను వెతుకుతోంది…
 add-account-address-intro = మీ ఈమెయిల్ అడ్రస్‌ను ఎంటర్ చేయండి. Katna మీ కోసం సర్వర్‌లను కనుగొంటుంది.
 add-account-servers-title = సర్వర్ సెట్టింగ్‌లు
@@ -13,10 +22,18 @@ add-account-signing-in = సైన్ ఇన్ అవుతోంది…
 add-account-browser-title = మీ బ్రౌజర్‌లో కొనసాగించండి
 add-account-browser-intro = Katna మీ బ్రౌజర్‌లో { $provider } సైన్ ఇన్ పేజీని తెరిచింది. అక్కడ సైన్ ఇన్ చేసి, మీ మెయిల్‌ను చదవడానికి, పంపడానికి Katnaను అనుమతించండి, ఆ తర్వాత ఇక్కడికి తిరిగి రండి.
 add-account-browser-hint = పేజీ ఏదీ తెరుచుకోలేదా? మీ బ్రౌజర్ విండోలను చూడండి, లేదా వెనుకకు వెళ్లి మళ్లీ ప్రయత్నించండి.
+add-account-stage-browser = మీరు బ్రౌజర్‌లో సైన్ ఇన్ చేసే వరకు వేచి ఉంది…
+add-account-stage-signing-in-at = { $server }లో సైన్ ఇన్ చేస్తోంది…
+add-account-help-app-password-link = యాప్ పాస్‌వర్డ్‌ను ఎలా తయారు చేయాలి
+add-account-help-turn-on-imap = { $provider } వెబ్ మెయిల్ సెట్టింగ్‌లలో IMAP, POP3 యాక్సెస్ ఆన్ చేసిన తర్వాతే మెయిల్ యాప్‌లను అనుమతిస్తుంది.
+add-account-help-turn-on-imap-link = దీన్ని ఎలా ఆన్ చేయాలి
 
 ## Add a mail account: fields
 
 add-account-field-address = ఈమెయిల్ అడ్రస్
+add-account-receive-with = మెయిల్‌ను దీనితో స్వీకరించండి
+add-account-imap-about = IMAP మీ మెయిల్‌ను, ఫోల్డర్‌లను సర్వర్‌లో ఉంచుతుంది, ప్రతి డివైజ్‌లోనూ ఒకేలా ఉంటాయి. వీలైతే దీన్నే ఎంచుకోండి.
+add-account-pop3-about = POP3 మీ మెయిల్‌ను ఈ కంప్యూటర్‌కు డౌన్‌లోడ్ చేస్తుంది. ఇక్కడ మీరు చదివిన లేదా తరలించిన మెయిల్ సర్వర్‌లో, మీ ఇతర డివైజ్‌లలో అలాగే ఉంటుంది.
 add-account-incoming = ఇన్‌కమింగ్ మెయిల్ ({ $protocol })
 add-account-outgoing = అవుట్‌గోయింగ్ మెయిల్ ({ $protocol })
 add-account-field-server = సర్వర్
@@ -38,14 +55,16 @@ add-account-servers-found = { $source ->
    *[other] సర్వర్‌లు: { $servers }, ఊహించినవి; సైన్ ఇన్ విఫలమైతే వాటిని తనిఖీ చేయండి.
 }
 add-account-servers-entered = సర్వర్‌లు: { $servers }, ఎంటర్ చేసినట్లే.
-add-account-sign-in-with = { $provider }తో సైన్ ఇన్ చేయండి
-add-account-sign-in-instead = బదులుగా { $provider }తో సైన్ ఇన్ చేయండి
 
 ## Add a mail account: buttons
 
+add-account-sign-in-with = { $provider }తో సైన్ ఇన్ చేయండి
+add-account-sign-in-instead = బదులుగా { $provider }తో సైన్ ఇన్ చేయండి
 add-account-servers-button = సర్వర్ సెట్టింగ్‌లు
 add-account-back = వెనుకకు
 add-account-add = ఖాతాను జోడించండి
+add-account-done = పూర్తయింది
+add-account-another = మరొక ఖాతాను జోడించండి
 add-account-cancel = రద్దు చేయండి
 
 ## Add a mail account: problems
@@ -75,6 +94,22 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Katna యొక్క ఈ కాపీ ఇంకా Google ఖాతాలకు సైన్ ఇన్ చేయలేదు.
    *[other] ఈ ప్రొవైడర్ తన సొంత పేజీలో మాత్రమే సైన్ ఇన్ చేయడానికి అనుమతిస్తుంది, దాని కోసం Katna ఇంకా అలా చేయలేదు.
 }
+add-account-smtp-not-found = మీ మెయిల్‌ను ఎక్కడ చదవాలో Katna కనుగొంది, కానీ ఎక్కడ నుండి పంపాలో కనుగొనలేదు. అవుట్‌గోయింగ్ సర్వర్‌ను ఎంటర్ చేయండి.
+
+## Add a mail account: the last step
+
+add-account-done-title = మీ ఖాతా సిద్ధంగా ఉంది
+add-account-done-intro = Katna ఇప్పుడు మీ మెయిల్‌ను తీసుకువస్తోంది. కొత్త మెయిల్ వచ్చిన వెంటనే కనిపిస్తుంది.
+add-account-done-sign-in = సైన్ ఇన్
+add-account-done-signed-in-with = { $provider }తో, మీ బ్రౌజర్‌లో
+add-account-done-receiving = మెయిల్ స్వీకరించడం
+add-account-done-sending = మెయిల్ పంపడం
+add-account-done-on-server = సర్వర్‌లో మెయిల్
+add-account-done-kept = మీరు Katnaలో తొలగించే వరకు ఉంచబడుతుంది
+add-account-done-pop3-hint = సర్వర్‌లోని మెయిల్‌కు ఏమి జరగాలో సెట్టింగ్‌లు > ఖాతాలులో మార్చండి.
+add-account-done-zoho-title = టాస్క్‌లు, క్యాలెండర్‌లు
+add-account-done-zoho-about = Zoho వీటిని మెయిల్ నుండి వేరుగా ఉంచుతుంది. వీటిని Katnaలోకి తీసుకురావడానికి Zohoతో ఒకసారి సైన్ ఇన్ చేయండి.
+add-account-done-linked = టాస్క్‌లు, క్యాలెండర్‌లు కనెక్ట్ అయ్యాయి
 
 ## The account menu (from the account button on the top bar)
 

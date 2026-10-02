@@ -9,7 +9,7 @@ tray-new-message = _නව පණිවිඩය
 tray-preferences = _සැකසීම්
 tray-quit = _ඉවත් වන්න
 
-## The tray icon's tooltip
+## The tray icon's tooltip, under "Katna Mail"
 
 tray-unread = { $count ->
     [0] නොකියවූ තැපැල් නැත

@@ -1,6 +1,9 @@
 # Katna Mail, Kannada (ಕನ್ನಡ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Katna ಖಾತೆಯು Katna ದ ಆನ್‌ಲೈನ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಆನ್ ಮಾಡುತ್ತದೆ: ಓದಿದ ರಸೀದಿಗಳು, ಲಿಂಕ್ ಟ್ರ್ಯಾಕಿಂಗ್, ಚಟುವಟಿಕೆ ಮತ್ತು ಸ್ವಯಂಚಾಲಿತ ಅನುವಾದ. ಇದಕ್ಕೆ ತನ್ನದೇ ಪಾಸ್‌ವರ್ಡ್ ಇದೆ, ಮೇಲ್ ಪಾಸ್‌ವರ್ಡ್ ಅಲ್ಲ, ಮತ್ತು ನಿಮ್ಮ ಮೇಲ್ ಲಾಗಿನ್‌ಗಳು ಎಂದಿಗೂ ಈ ಕಂಪ್ಯೂಟರ್ ಬಿಟ್ಟು ಹೋಗುವುದಿಲ್ಲ.
 katna-checking = ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…
 katna-email = ಇಮೇಲ್
@@ -10,6 +13,8 @@ katna-sign-in = ಸೈನ್ ಇನ್ ಮಾಡಿ
 katna-sign-in-detail = ನಿಮಗೆ ಆನ್‌ಲೈನ್ ವೈಶಿಷ್ಟ್ಯಗಳು ಬೇಕಾದ ಪ್ರತಿ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಿ.
 katna-create = ಖಾತೆ ರಚಿಸಿ
 katna-create-detail = ನೀವು ಓದಬಹುದಾದ ವಿಳಾಸವನ್ನು ಬಳಸಿ: ಅದನ್ನು ದೃಢೀಕರಿಸಲು ನಾವು ನಿಮಗೆ ಒಂದು ಕೋಡ್ ಮೇಲ್ ಮಾಡುತ್ತೇವೆ.
+katna-onboarding-create-title = ನಿಮ್ಮ Katna ಖಾತೆಯನ್ನು ರಚಿಸಿ
+katna-onboarding-sign-in-title = Katna ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ
 katna-have-account = ನನ್ನ ಬಳಿ ಖಾತೆ ಇದೆ
 katna-forgot = ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿರಾ?
 katna-forgot-detail = ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಆಯ್ಕೆ ಮಾಡಲು ನಾವು ನಿಮಗೆ ಒಂದು ಕೋಡ್ ಮೇಲ್ ಮಾಡುತ್ತೇವೆ.
@@ -42,6 +47,9 @@ katna-delete = ಖಾತೆ ಅಳಿಸಿ
 katna-delete-detail = ಖಾತೆಯನ್ನು ಮತ್ತು ಓದಿದ ರಸೀದಿಗಳಂತಹ, ಸರ್ವರ್ ಅದಕ್ಕಾಗಿ ಇಟ್ಟುಕೊಂಡಿರುವ ಎಲ್ಲವನ್ನೂ ಅಳಿಸುತ್ತದೆ. ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿರುವ ಮೇಲ್ ಉಳಿಯುತ್ತದೆ.
 katna-delete-confirm = ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಿ
 katna-sign-in-needed = ಇದನ್ನು ಬಳಸಲು Katna ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.
+
+## Errors
+
 katna-error-wrong-password = ಇಮೇಲ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ತಪ್ಪಾಗಿದೆ.
 katna-error-exists = ಈ ವಿಳಾಸಕ್ಕೆ ಈಗಾಗಲೇ Katna ಖಾತೆ ಇದೆ. ಬದಲಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.
 katna-error-bad-email = ಅದು ಇಮೇಲ್ ವಿಳಾಸದಂತೆ ಕಾಣುತ್ತಿಲ್ಲ.

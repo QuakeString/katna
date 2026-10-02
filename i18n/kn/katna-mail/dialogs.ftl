@@ -8,8 +8,7 @@ about-tooltip = Katna ಕುರಿತು
 about-tagline = Linux ಡೆಸ್ಕ್‌ಟಾಪ್‌ಗಾಗಿ ಮೇಲ್ ಮತ್ತು ಕ್ಯಾಲೆಂಡರ್
 about-whats-new = ಹೊಸದೇನಿದೆ
 
-## Updates, in a box under the version in About (only in packages that
-## update themselves).
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
 
 about-update-not-checked = ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಇನ್ನೂ ಪರಿಶೀಲಿಸಿಲ್ಲ
 about-update-checking = ಅಪ್‌ಡೇಟ್‌ಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…
@@ -70,6 +69,7 @@ about-credit-resvg = SVG ಚಿತ್ರಗಳು
 about-credit-jiff = ದಿನಾಂಕಗಳು ಮತ್ತು ಸಮಯ ವಲಯಗಳು
 about-credit-spellbook = ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ, Helix ಎಡಿಟರ್‌ನಿಂದ
 about-credit-smol = ಹಲವು ಕೆಲಸಗಳನ್ನು ಒಂದೇ ಸಲ ಮಾಡುವುದು
+about-credit-color-schemes = ಅಂತರ್ನಿರ್ಮಿತ ಬಣ್ಣದ ಸ್ಕೀಮ್‌ಗಳ ಪ್ಯಾಲೆಟ್‌ಗಳು
 about-all-libraries = Katna ಬಳಸುವ ಎಲ್ಲಾ ಲೈಬ್ರರಿಗಳು ({ $count })
 about-library-authors = { $authors } ಅವರಿಂದ
 about-license = Katna, GNU GPL ಆವೃತ್ತಿ 3 ಅಥವಾ ನಂತರದ ಆವೃತ್ತಿಯ ಅಡಿಯಲ್ಲಿ ಮುಕ್ತ ತಂತ್ರಾಂಶವಾಗಿದೆ.
@@ -127,6 +127,20 @@ onboarding-density-default = ಡೀಫಾಲ್ಟ್
 onboarding-density-compact = ಕಾಂಪ್ಯಾಕ್ಟ್
 onboarding-continue = ಮುಂದುವರಿಸಿ
 
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna ಖಾತೆಯೊಂದಿಗೆ ಇನ್ನಷ್ಟು ಪಡೆಯಿರಿ
+onboarding-katna-lead = ಇದು ಐಚ್ಛಿಕ. ಇದು Katna ದ ಆನ್‌ಲೈನ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಆನ್ ಮಾಡುತ್ತದೆ, ಮತ್ತು ನೀವು ನಂತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳು > ಚಂದಾದಾರಿಕೆ ಎಂಬಲ್ಲಿ ಒಂದನ್ನು ಮಾಡಬಹುದು.
+onboarding-katna-receipts-title = ಓದಿದ ರಸೀದಿಗಳು
+onboarding-katna-receipts-text = ನೀವು ಕಳುಹಿಸುವ ಮೇಲ್ ಅನ್ನು ಜನರು ಯಾವಾಗ ತೆರೆಯುತ್ತಾರೆ ಎಂದು ನೋಡಿ.
+onboarding-katna-links-title = ಲಿಂಕ್ ಟ್ರ್ಯಾಕಿಂಗ್
+onboarding-katna-links-text = ನಿಮ್ಮ ಮೇಲ್‌ನಲ್ಲಿರುವ ಯಾವ ಲಿಂಕ್‌ಗಳನ್ನು ಕ್ಲಿಕ್ ಮಾಡಲಾಗಿದೆ ಎಂದು ನೋಡಿ.
+onboarding-katna-activity-title = ಚಟುವಟಿಕೆ
+onboarding-katna-activity-text = ನೀವು ಕಳುಹಿಸಿದ ಎಲ್ಲದರ ತೆರೆಯುವಿಕೆಗಳು ಮತ್ತು ಕ್ಲಿಕ್‌ಗಳು, ಒಂದೇ ಕಡೆ.
+onboarding-katna-translate-title = ಸ್ವಯಂಚಾಲಿತ ಅನುವಾದ
+onboarding-katna-translate-text = ಬೇರೆ ಭಾಷೆಗಳಲ್ಲಿ ಬರೆದ ಮೇಲ್ ಅನ್ನು ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲೇ ಓದಿ.
+onboarding-katna-private = ಇದಕ್ಕೆ ತನ್ನದೇ ಪಾಸ್‌ವರ್ಡ್ ಇದೆ. ನಿಮ್ಮ ಮೇಲ್ ಲಾಗಿನ್‌ಗಳು ಈ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಎಂದಿಗೂ ಹೊರಹೋಗುವುದಿಲ್ಲ.
+
 ## First run: done
 
 onboarding-ready-title = ಎಲ್ಲವೂ ಸಿದ್ಧವಾಗಿದೆ
@@ -170,6 +184,7 @@ tour-search-text = ಹುಡುಕಾಟ ಆಫ್‌ಲೈನ್‌ನಲ್ಲ
 tour-menu-title = ಫೋಲ್ಡರ್‌ಗಳನ್ನು ತೋರಿಸಿ ಅಥವಾ ಮರೆಮಾಡಿ
 tour-menu-text = ಈ ಬಟನ್ ಫೋಲ್ಡರ್ ಪಟ್ಟಿಯನ್ನು ಮಡಚುತ್ತದೆ. ಅದು ಮರೆಯಾಗಿರುವಾಗ, ಫೋಲ್ಡರ್‌ಗಳನ್ನು ನೋಡಲು ಎಡಭಾಗದಲ್ಲಿರುವ ಮೇಲ್ ಮೇಲೆ ಪಾಯಿಂಟರ್ ಇಡಿ.
 tour-apps-title = ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು
+tour-apps-text = ಮೇಲ್ ಇಲ್ಲಿದೆ, ಕ್ಯಾಲೆಂಡರ್, ಸಂಪರ್ಕಗಳು, ಕಾರ್ಯಗಳು, ಟಿಪ್ಪಣಿಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳ ಪಕ್ಕದಲ್ಲಿ.
 tour-tabs-title = ಇನ್‌ಬಾಕ್ಸ್ ಟ್ಯಾಬ್‌ಗಳು
 tour-tabs-text = ಹೊಸ ಮೇಲ್ ಅನ್ನು ಪ್ರಾಥಮಿಕ, ಪ್ರಚಾರಗಳು, ಸಾಮಾಜಿಕ, ಅಪ್‌ಡೇಟ್‌ಗಳು ಮತ್ತು ಫೋರಮ್‌ಗಳು ಎಂದು ವಿಂಗಡಿಸಲಾಗುತ್ತದೆ. ತ್ವರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಬಹುದು.
 tour-list-title = ನಿಮ್ಮ ಸಂದೇಶಗಳು
@@ -195,12 +210,21 @@ crash-view = ವರದಿ ವೀಕ್ಷಿಸಿ
 crash-view-tooltip = ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಉಳಿಸಿದ ವರದಿಯನ್ನು ತೆರೆಯಿರಿ
 crash-copy = ವರದಿ ನಕಲಿಸಿ
 crash-close = ಮುಚ್ಚಿ
+
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $address } ಗೆ ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡುವಂತೆ { $provider } ಕೇಳುತ್ತಿದೆ.
 sign-in-again-button = ಸೈನ್ ಇನ್ ಮಾಡಿ
 sign-in-again-tooltip = ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ { $provider } ಸೈನ್ ಇನ್ ಪುಟ ತೆರೆಯಿರಿ
 sign-in-again-waiting = ನಿಮ್ಮ ಬ್ರೌಸರ್‌ಗಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ…
 sign-in-again-close = ಮುಚ್ಚಿ
+google-api-off = Katna ದ Google Cloud ಪ್ರಾಜೆಕ್ಟ್‌ನಲ್ಲಿ { $api } ಆಫ್ ಆಗಿದೆ.
+google-api-turn-on = ಆನ್ ಮಾಡಿ
+google-api-turn-on-tooltip = { $api } ಅನ್ನು ಆನ್ ಮಾಡಲು Google Cloud ತೆರೆಯಿರಿ, ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ ಒತ್ತಿರಿ
 sign-in-again-done = { $address } ಗೆ ಮತ್ತೆ ಸೈನ್ ಇನ್ ಆಗಿದೆ. ನಿಮ್ಮ ಮೇಲ್ ಪಡೆಯಲಾಗುತ್ತಿದೆ…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] ಈ ಸಂವಾದವನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಬೇಕೆ?

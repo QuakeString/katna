@@ -1,20 +1,57 @@
 # Katna Mail, Burmese (မြန်မာ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## The list under the Activity button
+
+activity-details = အသေးစိတ်
+activity-clear-all = အားလုံး ရှင်းရန်
+activity-remove = စာရင်းမှ ဖယ်ရှားရန်
+activity-feed-opened = { $who } က “{ $subject }” ကို ဖွင့်ခဲ့သည်
+activity-feed-clicked = { $who } က “{ $subject }” ထဲရှိ လင့်ခ်ကို နှိပ်ခဲ့သည်
+activity-feed-maybe = { $who } က “{ $subject }” ကို ဖွင့်ခဲ့နိုင်သည်
+activity-feed-empty = ဖွင့်ခြင်း သို့မဟုတ် နှိပ်ခြင်း မရှိသေးပါ။ မက်ဆေ့ဂျ် ရေးသည့်အခါ ဖတ်သည့်အချိန်ကို သိရန် မျက်လုံးကို ဖွင့်ပါ။
+activity-message-gone = ထိုမက်ဆေ့ဂျ်သည် ပို့ပြီး တွင် မရှိတော့ပါ။
+
+## The Details report
+
+activity-report = လှုပ်ရှားမှု အစီရင်ခံစာ
+activity-range-week = နောက်ဆုံး ၇ ရက်
+activity-range-month = နောက်ဆုံး ၃၀ ရက်
+activity-range-all = အချိန်အားလုံး
+activity-range-custom = စိတ်ကြိုက်
+activity-range-from = မှ
+activity-range-to = အထိ
+activity-range-apply = အသုံးပြုရန်
+activity-range-of = { $days } · { $account }
+activity-accounts-all = အကောင့်အားလုံး
+activity-accounts-tip = အကောင့်တစ်ခု သို့မဟုတ် အားလုံးကို ပြရန်
+
+## Totals at the top
+
 activity-messages = ခြေရာခံထားသော မက်ဆေ့ဂျ်များ
 activity-open-rate = ဖွင့်နှုန်း
 activity-click-rate = နှိပ်နှုန်း
 activity-percent = { $percent }%
+
+## Opens and clicks over time
+
 activity-by-day = ဖွင့်ခြင်းနှင့် နှိပ်ခြင်း
 activity-opens = ဖွင့်ခြင်း- { $count }
 activity-clicks = နှိပ်ခြင်း- { $count }
 activity-by-week = တစ်ပတ်လျှင် ဘား တစ်ခု
+
+## The messages
+
 activity-by-open-rate = ဖွင့်နှုန်းအလိုက် ခေါင်းစဉ်များ
 activity-opened = { $recipients } ဦးအနက် { $opened } ဦး ဖွင့်ခဲ့သည်
 activity-clicked = { $recipients } ဦးအနက် { $clicked } ဦး လင့်ခ်ကို ဖွင့်ခဲ့သည်
 activity-no-subject = (ခေါင်းစဉ်မရှိ)
 activity-nothing-period = ဤကာလအတွင်း ခြေရာခံထားသော မေးလ် မပို့ခဲ့ပါ။
 activity-close = ပိတ်ရန်
+
+## Your mailbox: counted on this computer from all mail in the period
+
 insights-heading = သင့်မေးလ်ပုံး
 insights-counting = သင့်မေးလ်ကို ရေတွက်နေသည်…
 insights-failed = သင့်မေးလ်ကို ရေတွက်၍ မရပါ။
@@ -30,22 +67,3 @@ insights-days = { $count } ရက်
 insights-people = သင် အများဆုံး မေးလ်ရေးသော သူများ
 insights-person-counts = ပို့ { $sent } · လက်ခံ { $received }
 insights-hours-heading = မေးလ် ရောက်လာသည့်အချိန်
-activity-details = အသေးစိတ်
-activity-clear-all = အားလုံး ရှင်းရန်
-activity-remove = စာရင်းမှ ဖယ်ရှားရန်
-activity-feed-opened = { $who } က “{ $subject }” ကို ဖွင့်ခဲ့သည်
-activity-feed-clicked = { $who } က “{ $subject }” ထဲရှိ လင့်ခ်ကို နှိပ်ခဲ့သည်
-activity-feed-maybe = { $who } က “{ $subject }” ကို ဖွင့်ခဲ့နိုင်သည်
-activity-feed-empty = ဖွင့်ခြင်း သို့မဟုတ် နှိပ်ခြင်း မရှိသေးပါ။ မက်ဆေ့ဂျ် ရေးသည့်အခါ ဖတ်သည့်အချိန်ကို သိရန် မျက်လုံးကို ဖွင့်ပါ။
-activity-message-gone = ထိုမက်ဆေ့ဂျ်သည် ပို့ပြီး တွင် မရှိတော့ပါ။
-activity-report = လှုပ်ရှားမှု အစီရင်ခံစာ
-activity-range-week = နောက်ဆုံး ၇ ရက်
-activity-range-month = နောက်ဆုံး ၃၀ ရက်
-activity-range-all = အချိန်အားလုံး
-activity-range-custom = စိတ်ကြိုက်
-activity-range-from = မှ
-activity-range-to = အထိ
-activity-range-apply = အသုံးပြုရန်
-activity-range-of = { $days } · { $account }
-activity-accounts-all = အကောင့်အားလုံး
-activity-accounts-tip = အကောင့်တစ်ခု သို့မဟုတ် အားလုံးကို ပြရန်

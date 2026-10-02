@@ -32,6 +32,7 @@ compose-tool-bold = ตัวหนา (Ctrl+B)
 compose-tool-italic = ตัวเอียง (Ctrl+I)
 compose-tool-underline = ขีดเส้นใต้ (Ctrl+U)
 compose-tool-text-color = สีข้อความ
+compose-tool-colors = สีข้อความและสีไฮไลต์
 compose-tool-background-color = สีพื้นหลัง
 compose-tool-default-color = สีเริ่มต้น
 compose-tool-no-background = ไม่มีพื้นหลัง
@@ -126,6 +127,10 @@ compose-tool-signature = แทรกลายเซ็น
 compose-tool-signature-none = ไม่มีลายเซ็น
 compose-tool-signature-untitled = ไม่มีชื่อ
 compose-tool-signature-manage = จัดการลายเซ็น
+compose-signature-tag-tip = เลือกลายเซ็นอื่น
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = เทมเพลต
 compose-tool-templates-none = ยังไม่มีเทมเพลต
 compose-tool-template-save = บันทึกเป็นเทมเพลต…

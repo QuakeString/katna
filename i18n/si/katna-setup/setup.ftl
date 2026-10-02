@@ -1,9 +1,9 @@
 # Katna Setup, Sinhala (සිංහල).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Katna Mail සමඟ යවන්න
 setup-tagline = ඔබේ පරිගණකයේම රැඳෙන වේගවත්, පෞද්ගලික ඊමේල්.
 setup-update-where = { $path } හි ඇති Katna Mail යාවත්කාලීන කරයි. ඔබේ තැපැල්, සැකසීම් සහ කෙටිමං එලෙසම පවතී.
 setup-for = ස්ථාපනය කරන්නේ කා සඳහාද

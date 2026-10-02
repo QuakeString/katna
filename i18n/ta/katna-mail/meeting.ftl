@@ -1,7 +1,6 @@
 # Katna Mail, Tamil (தமிழ்): video calls around mail.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 meeting-starting = வீடியோ அழைப்பு தொடங்குகிறது…
 meeting-mail-subject = வீடியோ அழைப்பு: { $subject }
 meeting-mail-subject-plain = வீடியோ அழைப்பு

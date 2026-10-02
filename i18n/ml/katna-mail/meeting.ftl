@@ -1,7 +1,6 @@
 # Katna Mail, Malayalam (മലയാളം): video calls around mail.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 meeting-starting = വീഡിയോ കോൾ ആരംഭിക്കുന്നു…
 meeting-mail-subject = വീഡിയോ കോൾ: { $subject }
 meeting-mail-subject-plain = വീഡിയോ കോൾ

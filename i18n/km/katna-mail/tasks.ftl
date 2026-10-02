@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = បង្កើត
+tasks-create = កិច្ចការថ្មី
 tasks-all = កិច្ចការទាំងអស់
 tasks-today = ថ្ងៃនេះ
 tasks-starred = មានផ្កាយ
 tasks-new-list = បង្កើតបញ្ជីថ្មី
 tasks-on-this-computer = នៅលើកុំព្យូទ័រនេះ
 tasks-my-tasks = កិច្ចការរបស់ខ្ញុំ
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = ចូលម្ដងទៀត ដើម្បីបង្ហាញកិច្ចការ
 tasks-account-signed-in = បានចូល { $address } ម្ដងទៀត។ កំពុងទទួលកិច្ចការរបស់អ្នក…
 tasks-account-sign-in-refused = { $provider } មិនបានអនុញ្ញាតឱ្យ Katna ចូលទេ។ សូមព្យាយាមម្ដងទៀត ហើយអនុញ្ញាតឱ្យចូលប្រើកិច្ចការរបស់អ្នក។
@@ -21,13 +19,9 @@ tasks-account-change-password = ប្ដូរពាក្យសម្ងាត
 tasks-account-change-password-tooltip = បើក ការកំណត់ > គណនី
 tasks-account-not-enabled = ការចូលប្រើកិច្ចការសម្រាប់ Katna មិនទាន់បានបើកនៅឡើយទេ។
 tasks-account-failed = មិនអាចអានបញ្ជីកិច្ចការបានទេ។
-# $reason is the server's own words, in English.
 tasks-account-error = មិនអាចអានបញ្ជីកិច្ចការបានទេ៖ { $reason }
 tasks-account-none = រកមិនឃើញបញ្ជីកិច្ចការទេ
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 tasks-account-none-why = រកមិនឃើញបញ្ជីកិច្ចការទេ៖ { $reason }
-# A Gmail or Outlook account added with a password: its tasks need the
-# provider's sign-in.
 tasks-account-use-sign-in = { $provider } បង្ហាញកិច្ចការតែចំពោះ Katna ដែលបានចូលដោយប្រើ { $provider } ប៉ុណ្ណោះ។
 tasks-account-sign-in-with = ចូលដោយប្រើ { $provider }
 tasks-account-looking = កំពុងស្វែងរកបញ្ជីកិច្ចការ…
@@ -112,6 +106,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = សំបុត្រនោះលែងមាននៅទីនេះទៀតហើយ។
 tasks-toast-list-deleted = បានលុបបញ្ជី
 tasks-toast-moved = បានផ្លាស់ទីទៅ { $list }
-# A task dragged to another place in its own list.
 tasks-toast-placed = បានផ្លាស់ទីកិច្ចការ
 tasks-toast-rescheduled = បានកំណត់ពេលកិច្ចការឡើងវិញ

@@ -1,9 +1,9 @@
 # Katna Setup, Tamil (தமிழ்).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Katna Mail மூலம் அனுப்பு
 setup-tagline = உங்கள் கணினியிலேயே இருக்கும் வேகமான, தனிப்பட்ட மின்னஞ்சல்.
 setup-update-where = { $path } இல் உள்ள Katna Mail-ஐப் புதுப்பிக்கும். உங்கள் அஞ்சல், அமைப்புகள், குறுக்குவழிகள் அப்படியே இருக்கும்.
 setup-for = இவர்களுக்கு நிறுவு

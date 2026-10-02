@@ -2,6 +2,10 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+## Top bar
+
+top-brand = Katna
+
 ## App rail (and the bottom bar on a phone)
 
 rail-mail = ಮೇಲ್
@@ -9,6 +13,7 @@ rail-calendar = ಕ್ಯಾಲೆಂಡರ್
 rail-contacts = ಸಂಪರ್ಕಗಳು
 rail-tasks = ಕಾರ್ಯಗಳು
 rail-notes = ಟಿಪ್ಪಣಿಗಳು
+rail-files = ಫೈಲ್‌ಗಳು
 
 ## Pages of apps still to come
 
@@ -35,4 +40,3 @@ app-contacts-messages = { $count ->
    *[other] { $count } ಸಂದೇಶಗಳು
 }
 app-contacts-last = ಕೊನೆಯದಾಗಿ { $date }
-top-brand = Katna

@@ -1,6 +1,9 @@
 # Katna Mail, Sinhala (සිංහල).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Results
+
 search-category-mail = තැපැල්
 search-category-people = පුද්ගලයන්
 search-category-tasks = කාර්යයන්
@@ -18,6 +21,9 @@ search-event-in-days =
         [one] දින { $count } කින්
        *[other] දින { $count } කින්
     }
+
+## Buttons on a result in KRunner
+
 search-reply-all = සියල්ලන්ට පිළිතුරු දෙන්න
 search-copy-address = ලිපිනය පිටපත් කරන්න
 search-find-mail = තැපැල් සොයන්න

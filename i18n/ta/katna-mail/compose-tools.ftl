@@ -32,6 +32,7 @@ compose-tool-bold = தடிமன் (Ctrl+B)
 compose-tool-italic = சாய்வு (Ctrl+I)
 compose-tool-underline = அடிக்கோடு (Ctrl+U)
 compose-tool-text-color = உரை நிறம்
+compose-tool-colors = உரை மற்றும் ஹைலைட் வண்ணம்
 compose-tool-background-color = பின்னணி நிறம்
 compose-tool-default-color = இயல்பு நிறம்
 compose-tool-no-background = பின்னணி இல்லை
@@ -126,6 +127,10 @@ compose-tool-signature = கையொப்பத்தைச் செருக
 compose-tool-signature-none = கையொப்பம் இல்லை
 compose-tool-signature-untitled = பெயரிடப்படாதது
 compose-tool-signature-manage = கையொப்பங்களை நிர்வகி
+compose-signature-tag-tip = வேறு கையொப்பத்தைத் தேர்வுசெய்
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = டெம்ப்ளேட்கள்
 compose-tool-templates-none = இன்னும் டெம்ப்ளேட்கள் இல்லை
 compose-tool-template-save = டெம்ப்ளேட்டாகச் சேமி…

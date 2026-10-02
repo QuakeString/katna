@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _കലണ്ടർ
 desktop-menu-page-contacts = കോൺ_ടാക്റ്റുകൾ
 desktop-menu-page-tasks = ടാ_സ്‌ക്കുകൾ
 desktop-menu-page-notes = കു_റിപ്പുകൾ
+desktop-menu-page-files = _ഫയലുകൾ
 desktop-menu-next = _അടുത്ത സംഭാഷണം
 desktop-menu-previous = _മുമ്പത്തെ സംഭാഷണം
 desktop-menu-message = _സന്ദേശം

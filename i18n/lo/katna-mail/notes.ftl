@@ -15,6 +15,7 @@ notes-loading = ກຳລັງເປີດບັນທຶກຂອງທ່າ�
 
 notes-take-a-note = ຈົດບັນທຶກ…
 notes-new-list = ລາຍການໃໝ່
+notes-new-note = ບັນທຶກໃໝ່
 notes-pinned = ປັກໝຸດແລ້ວ
 notes-others = ອື່ນໆ
 notes-empty = ບັນທຶກທີ່ທ່ານເພີ່ມຈະສະແດງຢູ່ບ່ອນນີ້

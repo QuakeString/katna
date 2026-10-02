@@ -1,9 +1,9 @@
 # Katna Setup, Thai (ไทย).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = ส่งด้วย Katna Mail
 setup-tagline = อีเมลที่รวดเร็วและเป็นส่วนตัว เก็บอยู่บนคอมพิวเตอร์ของคุณ
 setup-update-where = อัปเดต Katna Mail ใน { $path } อีเมล การตั้งค่า และทางลัดของคุณจะยังคงเหมือนเดิม
 setup-for = ติดตั้งสำหรับ

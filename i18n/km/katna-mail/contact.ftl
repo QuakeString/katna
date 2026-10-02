@@ -1,8 +1,14 @@
 # Katna Mail, Khmer (ខ្មែរ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Reading pane toolbar
+
 contact-panel-show = បង្ហាញព័ត៌មានលម្អិតទំនាក់ទំនង
 contact-panel-hide = លាក់ព័ត៌មានលម្អិតទំនាក់ទំនង
+
+## The panel
+
 contact-email = ផ្ញើអ៊ីមែល
 contact-search = ស្វែងរកអ៊ីមែលជាមួយពួកគេ
 contact-add-to-contacts = បន្ថែមទៅទំនាក់ទំនង
@@ -12,6 +18,11 @@ contact-from-to = { $from } ពីពួកគេ, { $to } ពីអ្នក
 contact-first = ដំបូង
 contact-latest = ចុងក្រោយ
 contact-call = ហៅ
+contact-phone-mobile = ទូរស័ព្ទដៃ
+contact-phone-direct = ផ្ទាល់
+contact-phone-office = ការិយាល័យ
+contact-phone-fax = ទូរសារ
+contact-phone-whatsapp = WhatsApp
 contact-copy-number = ចម្លងលេខ
 contact-number-copied = បានចម្លងលេខ
 contact-local-time = { $time } ម៉ោងរបស់ពួកគេ ({ $offset })
@@ -23,5 +34,8 @@ contact-less = បង្រួម
 contact-files = ឯកសារ
 contact-tasks = កិច្ចការ
 contact-meetings = ការប្រជុំខាងមុខ
+contact-company = ក្រុមហ៊ុន
+contact-company-since = តាំងពី { $year }
+contact-company-from = ពី { $site } · បានពិនិត្យ { $when }
 contact-people = ក្នុងការសន្ទនានេះ
 contact-local-only = ពីសំបុត្ររបស់អ្នកនៅលើកុំព្យូទ័រនេះតែប៉ុណ្ណោះ

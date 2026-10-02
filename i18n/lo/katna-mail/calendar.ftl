@@ -1,7 +1,6 @@
 # Katna Mail, Lao (ລາວ): the Calendar page.
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 calendar-today = ມື້ນີ້
 calendar-today-tip = ໄປທີ່ມື້ນີ້
 calendar-view-day = ມື້
@@ -57,10 +56,7 @@ calendar-account-not-enabled = ການເຂົ້າເຖິງປະຕິ�
 calendar-account-failed = ບໍ່ສາມາດອ່ານປະຕິທິນໄດ້.
 calendar-account-error = ບໍ່ສາມາດອ່ານປະຕິທິນໄດ້: { $reason }
 calendar-account-none = ບໍ່ພົບປະຕິທິນ
-# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
 calendar-account-none-why = ບໍ່ພົບປະຕິທິນ: { $reason }
-# A Gmail or Outlook account added with a password: its calendars need the
-# provider's sign-in.
 calendar-account-use-sign-in = { $provider } ສະແດງປະຕິທິນສະເພາະໃຫ້ Katna ທີ່ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider } ເທົ່ານັ້ນ.
 calendar-account-sign-in-with = ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider }
 calendar-account-looking = ກຳລັງຊອກຫາປະຕິທິນ…
@@ -82,8 +78,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = ອີກ { $count } ລາຍການ
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = ເກີດຊ້ຳ
 calendar-join = ເຂົ້າຮ່ວມ
+calendar-join-with = ເຂົ້າຮ່ວມດ້ວຍ { $service }
 calendar-email-guests = ສົ່ງອີເມວຫາແຂກ
 calendar-running-late = ຈະໄປຊ້າ
 calendar-late-subject = ຈະໄປຊ້າ: { $title }
@@ -96,6 +94,7 @@ calendar-guest-answers = ຕອບຮັບ { $yes }, ອາດຈະ { $maybe }
 calendar-organizer = ຜູ້ຈັດ
 calendar-optional = ທາງເລືອກ
 calendar-open-web = ເປີດໃນບຣາວເຊີ
+calendar-open-mail = ເປີດອີເມວ
 calendar-open-contact = ເປີດລາຍຊື່ຜູ້ຕິດຕໍ່
 calendar-close = ປິດ
 
@@ -119,18 +118,12 @@ calendar-discard = ຖິ້ມການປ່ຽນແປງ
 calendar-edit = ແກ້ໄຂເຫດການ
 calendar-delete = ລຶບເຫດການ
 calendar-event-details = ລາຍລະອຽດເຫດການ
-# Right-click menus on the calendar: on a free time or day, an event and
-# a task.
 calendar-menu-new-event = ເຫດການໃໝ່
-# Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = ເປີດມື້
 calendar-menu-duplicate = ສຳເນົາ
 calendar-menu-color = ສີ
-# The event takes its calendar's color.
 calendar-menu-color-calendar = ສີປະຕິທິນ
-# A task's new due day, a week from today.
 calendar-menu-in-a-week = ໃນອີກໜຶ່ງອາທິດ
-# Event colors, by the names Google Calendar gives them.
 calendar-color-tomato = ໝາກເລັ່ນ
 calendar-color-flamingo = ນົກຟລາມິງໂກ
 calendar-color-tangerine = ໝາກກ້ຽງ
@@ -142,6 +135,40 @@ calendar-color-blueberry = ບລູເບີຣີ
 calendar-color-lavender = ລາເວນເດີ
 calendar-color-grape = ອະງຸ່ນ
 calendar-color-graphite = ກຣາໄຟທ໌
+calendar-menu-only-this = ສະແດງສະເພາະອັນນີ້
+calendar-menu-rename = ປ່ຽນຊື່
+calendar-menu-remove = ເອົາອອກຈາກລາຍການ
+calendar-menu-delete = ລຶບ
+calendar-menu-new-calendar = ປະຕິທິນໃໝ່
+calendar-menu-show-all = ສະແດງທັງໝົດ
+calendar-menu-hide-all = ເຊື່ອງທັງໝົດ
+calendar-menu-account-settings = ການຕັ້ງຄ່າບັນຊີ
+calendar-why-main = ປະຕິທິນຫຼັກ
+calendar-why-last = ມີອັນດຽວຢູ່ນີ້
+calendar-why-owner = ສະເພາະເຈົ້າຂອງ
+calendar-why-contacts = ຈາກລາຍຊື່ຜູ້ຕິດຕໍ່
+calendar-why-unreached = ເຊື່ອມຕໍ່ບໍ່ໄດ້
+calendar-name-placeholder = ຊື່ປະຕິທິນ
+calendar-toast-added = ເພີ່ມ “{ $name }” ແລ້ວ
+calendar-toast-renamed = ປ່ຽນຊື່ປະຕິທິນແລ້ວ
+calendar-toast-recolored = ປ່ຽນສີປະຕິທິນແລ້ວ
+calendar-toast-deleted = ລຶບ “{ $name }” ແລ້ວ
+calendar-toast-removed = ເອົາ “{ $name }” ອອກຈາກລາຍການຂອງທ່ານແລ້ວ
+calendar-edit-failed = ປະຕິທິນບໍ່ໄດ້ຖືກປ່ຽນ: { $reason }
+calendar-delete-title = ລຶບ “{ $name }” ບໍ?
+calendar-delete-confirm = ລຶບ
+calendar-deleting = ກຳລັງລຶບ…
+calendar-delete-heading = ຈະຖືກລຶບ:
+calendar-delete-events = ປະຕິທິນ ແລະ ເຫດການທັງໝົດຂອງມັນ
+calendar-delete-shared = ສຳລັບທຸກຄົນທີ່ມັນແບ່ງປັນໃຫ້
+calendar-delete-server = ມັນຈະຖືກລຶບອອກຈາກ { $account } ໃນບໍລິການອີເມວ, ບໍ່ແມ່ນແຕ່ໃນ Katna ເທົ່ານັ້ນ.
+calendar-delete-local = ມັນຈະຖືກລຶບອອກຈາກຄອມພິວເຕີນີ້.
+calendar-remove-title = ເອົາ “{ $name }” ອອກຈາກລາຍການຂອງທ່ານບໍ?
+calendar-remove-confirm = ເອົາອອກ
+calendar-removing = ກຳລັງເອົາອອກ…
+calendar-remove-heading = ສິ່ງທີ່ຈະປ່ຽນ:
+calendar-remove-events = ທ່ານຈະບໍ່ເຫັນເຫດການຂອງມັນອີກ, ທັງຢູ່ນີ້ ແລະ ໃນແອັບອື່ນຂອງທ່ານ
+calendar-remove-server = ປະຕິທິນຍັງຢູ່ກັບເຈົ້າຂອງ, ເຊິ່ງສາມາດແບ່ງປັນໃຫ້ທ່ານອີກຄັ້ງໄດ້.
 calendar-kind-event = ເຫດການ
 calendar-kind-task = ໜ້າວຽກ
 calendar-kind-focus = ເວລາໂຟກັສ

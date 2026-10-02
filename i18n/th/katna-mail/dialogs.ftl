@@ -8,7 +8,6 @@ about-tooltip = เกี่ยวกับ Katna
 about-tagline = อีเมลและปฏิทินสำหรับเดสก์ท็อป Linux
 about-whats-new = มีอะไรใหม่
 
-## Updates, in a box under the version in About (only in packages that
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
 
 about-update-not-checked = ยังไม่ได้ตรวจสอบการอัปเดต
@@ -70,6 +69,7 @@ about-credit-resvg = รูปภาพ SVG
 about-credit-jiff = วันที่และเขตเวลา
 about-credit-spellbook = การตรวจตัวสะกด จากโปรแกรมแก้ไขโค้ด Helix
 about-credit-smol = การทำหลายอย่างพร้อมกัน
+about-credit-color-schemes = ชุดสีของรูปแบบสีในตัว
 about-all-libraries = ไลบรารีทั้งหมดที่ Katna ใช้ ({ $count })
 about-library-authors = โดย { $authors }
 about-license = Katna เป็นซอฟต์แวร์เสรีภายใต้ GNU GPL เวอร์ชัน 3 หรือใหม่กว่า
@@ -126,6 +126,20 @@ onboarding-density-default = ค่าเริ่มต้น
 onboarding-density-compact = กะทัดรัด
 onboarding-continue = ดำเนินการต่อ
 
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = ได้มากขึ้นด้วยบัญชี Katna
+onboarding-katna-lead = ไม่บังคับ บัญชีนี้จะเปิดฟีเจอร์ออนไลน์ของ Katna และคุณสร้างภายหลังได้ใน การตั้งค่า > การสมัครสมาชิก
+onboarding-katna-receipts-title = การแจ้งเปิดอ่าน
+onboarding-katna-receipts-text = ดูว่าผู้รับเปิดอีเมลที่คุณส่งเมื่อใด
+onboarding-katna-links-title = การติดตามลิงก์
+onboarding-katna-links-text = ดูว่าลิงก์ใดในอีเมลของคุณถูกคลิก
+onboarding-katna-activity-title = กิจกรรม
+onboarding-katna-activity-text = การเปิดและการคลิกของทุกอย่างที่คุณส่ง รวมไว้ในที่เดียว
+onboarding-katna-translate-title = การแปลอัตโนมัติ
+onboarding-katna-translate-text = อ่านอีเมลที่เขียนเป็นภาษาอื่นเป็นภาษาของคุณ
+onboarding-katna-private = บัญชีนี้มีรหัสผ่านของตัวเอง ข้อมูลเข้าสู่ระบบอีเมลของคุณจะไม่ออกไปจากคอมพิวเตอร์เครื่องนี้
+
 ## First run: done
 
 onboarding-ready-title = พร้อมแล้ว
@@ -169,6 +183,7 @@ tour-search-text = การค้นหาใช้ได้แม้ออฟ�
 tour-menu-title = แสดงหรือซ่อนโฟลเดอร์
 tour-menu-text = ปุ่มนี้พับรายการโฟลเดอร์เก็บไว้ ขณะซ่อนอยู่ ให้วางตัวชี้บน อีเมล ที่ด้านซ้ายเพื่อดูโฟลเดอร์
 tour-apps-title = แอปของคุณ
+tour-apps-text = อีเมลอยู่ที่นี่ ข้างปฏิทิน รายชื่อติดต่อ งาน โน้ต และไฟล์
 tour-tabs-title = แท็บกล่องจดหมาย
 tour-tabs-text = อีเมลใหม่จะถูกจัดเป็น หลัก โปรโมชัน โซเชียล อัปเดต และฟอรัม คุณปิดแท็บได้ในการตั้งค่าด่วน
 tour-list-title = ข้อความของคุณ
@@ -192,12 +207,21 @@ crash-view = ดูรายงาน
 crash-view-tooltip = เปิดรายงานที่บันทึกไว้ในคอมพิวเตอร์เครื่องนี้
 crash-copy = คัดลอกรายงาน
 crash-close = ปิด
+
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } ขอให้คุณลงชื่อเข้าใช้ { $address } อีกครั้ง
 sign-in-again-button = ลงชื่อเข้าใช้
 sign-in-again-tooltip = เปิดหน้าลงชื่อเข้าใช้ { $provider } ในเบราว์เซอร์ของคุณ
 sign-in-again-waiting = กำลังรอเบราว์เซอร์ของคุณ…
 sign-in-again-close = ปิด
+google-api-off = { $api } ถูกปิดอยู่ในโปรเจกต์ Google Cloud ของ Katna
+google-api-turn-on = เปิดใช้
+google-api-turn-on-tooltip = เปิด Google Cloud เพื่อเปิดใช้ { $api } แล้วกด ลองอีกครั้ง
 sign-in-again-done = ลงชื่อเข้าใช้ { $address } อีกครั้งแล้ว กำลังรับอีเมลของคุณ…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
        *[other] ย้ายการสนทนา { $count } รายการไปที่ถังขยะไหม

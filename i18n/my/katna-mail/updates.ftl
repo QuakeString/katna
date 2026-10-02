@@ -1,7 +1,6 @@
 # Katna Mail, Burmese (မြန်မာ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 update-dialog-title = အပ်ဒိတ်များ
 update-dialog-downloading-detail = ဤဝင်းဒိုးကို ပိတ်လိုက်သော်လည်း ဒေါင်းလုဒ်ဆက်လုပ်နေမည်။
 update-dialog-progress = { $total } အနက် { $done }

@@ -1,6 +1,9 @@
 # Katna Mail, Burmese (မြန်မာ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Katna အကောင့်သည် Katna ၏ အွန်လိုင်း လုပ်ဆောင်ချက်များကို ဖွင့်ပေးသည်- ဖတ်ပြီးကြောင်း အသိအမှတ်ပြုချက်များ၊ လင့်ခ် ခြေရာခံခြင်း၊ လှုပ်ရှားမှု နှင့် အလိုအလျောက် ဘာသာပြန်ခြင်း။ ၎င်းတွင် ကိုယ်ပိုင် စကားဝှက် ရှိပြီး မေးလ် စကားဝှက် မဟုတ်ပါ။ သင့်မေးလ် ဝင်ရောက်မှု အချက်အလက်များသည် ဤကွန်ပျူတာမှ ဘယ်တော့မှ ထွက်မသွားပါ။
 katna-checking = စစ်ဆေးနေသည်…
 katna-email = အီးမေးလ်
@@ -10,6 +13,8 @@ katna-sign-in = ဝင်ရောက်ရန်
 katna-sign-in-detail = အွန်လိုင်း လုပ်ဆောင်ချက်များ လိုချင်သည့် ကွန်ပျူတာတိုင်းတွင် ဝင်ရောက်ပါ။
 katna-create = အကောင့် ဖန်တီးရန်
 katna-create-detail = သင်ဖတ်နိုင်သော လိပ်စာကို သုံးပါ- ၎င်းကို အတည်ပြုရန် ကုဒ်တစ်ခု မေးလ်ပို့ပေးပါမည်။
+katna-onboarding-create-title = သင့် Katna အကောင့် ပြုလုပ်ရန်
+katna-onboarding-sign-in-title = Katna သို့ ဝင်ရောက်ရန်
 katna-have-account = အကောင့် ရှိပြီးသား
 katna-forgot = စကားဝှက် မေ့သွားပါသလား။
 katna-forgot-detail = စကားဝှက်အသစ် ရွေးရန် ကုဒ်တစ်ခု မေးလ်ပို့ပေးပါမည်။
@@ -42,6 +47,9 @@ katna-delete = အကောင့် ဖျက်ရန်
 katna-delete-detail = အကောင့်နှင့် ဆာဗာက ၎င်းအတွက် သိမ်းထားသမျှ၊ ဥပမာ ဖတ်ပြီးကြောင်း အသိအမှတ်ပြုချက်များကို ဖျက်သည်။ ဤကွန်ပျူတာပေါ်ရှိ မေးလ်များ ကျန်ရှိနေမည်။
 katna-delete-confirm = အပြီးဖျက်ရန်
 katna-sign-in-needed = ၎င်းကို သုံးရန် Katna အကောင့်သို့ ဝင်ရောက်ပါ။
+
+## Errors
+
 katna-error-wrong-password = အီးမေးလ် သို့မဟုတ် စကားဝှက် မှားနေသည်။
 katna-error-exists = ဤလိပ်စာတွင် Katna အကောင့် ရှိပြီးသား ဖြစ်သည်။ ဝင်ရောက်ပါ။
 katna-error-bad-email = ၎င်းသည် အီးမေးလ်လိပ်စာနှင့် မတူပါ။

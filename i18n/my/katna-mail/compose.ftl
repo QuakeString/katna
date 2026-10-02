@@ -46,6 +46,7 @@ compose-sent-archived = ပို့ပြီး မှတ်တမ်းသိ�
 compose-sent = မက်ဆေ့ဂျ် ပို့ပြီး
 compose-discarded = မူကြမ်းကို ပယ်လိုက်ပြီ
 compose-draft-saved = မူကြမ်းကို သိမ်းလိုက်ပြီ
+compose-draft-saving = သိမ်းနေသည်…
 compose-draft-failed = မူကြမ်းကို သိမ်း၍ မရပါ- { $error }
 compose-draft-not-opened = မူကြမ်းကို ဖွင့်၍ မရပါ။
 
@@ -54,6 +55,7 @@ compose-draft-not-opened = မူကြမ်းကို ဖွင့်၍ မ
 compose-picker-insert = ထည့်သွင်းရန်
 compose-picker-attach = ပူးတွဲရန်
 compose-file-too-large = { $name } သည် ကြီးလွန်းသည်- မက်ဆေ့ဂျ်တစ်ခုတွင် { $limit } အထိသာ ပါနိုင်သည်။
+compose-forward-files-missing = ထပ်ဆင့်ပို့သော မက်ဆေ့ဂျ်၏ ဖိုင်များကို ဒေါင်းလုဒ် မလုပ်ရသေးသဖြင့် ပူးတွဲမထားပါ။
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ပူးတွဲဖိုင်ကို ဖယ်ရှားရန်
 compose-attachments-total = ဖိုင် { $count } ခု၊ { $size }
@@ -74,6 +76,7 @@ compose-drive-share-link = လင့်ခ်ဖြင့် မျှဝေရ�
 compose-drive-send-without = မမျှဝေဘဲ ပို့ရန်
 compose-drive-share-cancel = မလုပ်တော့ပါ
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } သည် { $limit } ထက်ကျော်နေသဖြင့် သင့် OneDrive သို့ ပို့ပြီး မက်ဆေ့ဂျ်တွင် လင့်ခ်ပါမည်။
 compose-onedrive-tip = သင့် OneDrive ထဲတွင်ရှိသည်။ မက်ဆေ့ဂျ်တွင် လင့်ခ်ပါမည်
 compose-onedrive-allow = OneDrive ကို ခွင့်ပြုရန်
@@ -84,8 +87,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive က { $addresses } နှင့် ဖိုင်များကို မျှဝေ၍ မရပါ။ ထို့အစား လင့်ခ်ရှိသူတိုင်း ဖွင့်ကြည့်နိုင်ပါမည်။
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ဖိုင်များကို ဤနေရာတွင် ချပါ
 compose-drop-here = ဤနေရာတွင် ချပါ
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = ပုံစံချမှုကို ထားရန်
 compose-paste-table = ဇယား
 compose-paste-picture = ပုံ
@@ -99,6 +106,9 @@ compose-encrypt = ကုဒ်ဝှက်ရန်
 compose-encrypted = ကုဒ်ဝှက်ထားသည်- လက်ခံသူများသာ ဖတ်နိုင်သည်
 compose-sign = လက်မှတ်ထိုးရန်
 compose-signed = လက်မှတ်ထိုးထားသည်- သင့်ထံမှ ဖြစ်ကြောင်း လက်ခံသူများ စစ်ဆေးနိုင်သည်
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = ဖွင့်ခြင်းနှင့် နှိပ်ခြင်းကို ခြေရာခံရန်
 compose-tracked = ခြေရာခံထားသည်- လက်ခံသူတစ်ဦးစီ ၎င်းကို ဖွင့်သည့်အချိန် သို့မဟုတ် လင့်ခ်ကို ဖွင့်သည့်အချိန်ကို သင် မြင်ရမည်
 compose-track-clicks = လင့်ခ်နှိပ်မှုကို ခြေရာခံရန် (စာသားသက်သက်တွင် ဖွင့်ခြင်းကို မပြနိုင်ပါ)
@@ -131,6 +141,9 @@ send-check-subject-title = ခေါင်းစဉ်မပါဘဲ ပို�
 send-check-subject-text = ဤမက်ဆေ့ဂျ်တွင် ခေါင်းစဉ်မရှိပါ။
 send-check-add-subject = ခေါင်းစဉ်ထည့်ရန်
 send-check-send-anyway = မည်သို့ပင်ဖြစ်စေ ပို့ရန်
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = မှန်ကန်သော အီးမေးလ်လိပ်စာ မဟုတ်ပါ
 recipient-show-address = လိပ်စာ ပြရန်
 recipient-remove = ဖယ်ရှားရန်

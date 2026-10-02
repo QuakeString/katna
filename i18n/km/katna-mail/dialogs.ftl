@@ -8,7 +8,6 @@ about-tooltip = អំពី Katna
 about-tagline = សំបុត្រ និងប្រតិទិនសម្រាប់ផ្ទៃតុ Linux
 about-whats-new = អ្វីដែលថ្មី
 
-## Updates, in a box under the version in About (only in packages that
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
 
 about-update-not-checked = មិនទាន់បានពិនិត្យរកបច្ចុប្បន្នភាពនៅឡើយទេ
@@ -70,6 +69,7 @@ about-credit-resvg = រូបភាព SVG
 about-credit-jiff = កាលបរិច្ឆេទ និងល្វែងម៉ោង
 about-credit-spellbook = ការពិនិត្យអក្ខរាវិរុទ្ធ ពីកម្មវិធីកែសម្រួល Helix
 about-credit-smol = ការធ្វើកិច្ចការច្រើនក្នុងពេលតែមួយ
+about-credit-color-schemes = ក្ដារលាយពណ៌នៃគ្រោងពណ៌ដែលមានស្រាប់
 about-all-libraries = បណ្ណាល័យទាំងអស់ដែល Katna ប្រើ ({ $count })
 about-library-authors = ដោយ { $authors }
 about-license = Katna ជាកម្មវិធីសេរីក្រោម GNU GPL កំណែ 3 ឬក្រោយនេះ។
@@ -124,6 +124,20 @@ onboarding-density-default = លំនាំដើម
 onboarding-density-compact = បង្រួម
 onboarding-continue = បន្ត
 
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = ទទួលបានច្រើនជាងមុនជាមួយគណនី Katna
+onboarding-katna-lead = វាជាជម្រើស។ វាបើកមុខងារអនឡាញរបស់ Katna ហើយអ្នកអាចបង្កើតមួយនៅពេលក្រោយក្នុង ការកំណត់ > ការជាវ។
+onboarding-katna-receipts-title = បង្កាន់ដៃអាន
+onboarding-katna-receipts-text = មើលថាពេលណាមនុស្សបើកសំបុត្រដែលអ្នកផ្ញើ។
+onboarding-katna-links-title = ការតាមដានតំណ
+onboarding-katna-links-text = មើលថាតំណណាខ្លះក្នុងសំបុត្ររបស់អ្នកត្រូវបានចុច។
+onboarding-katna-activity-title = សកម្មភាព
+onboarding-katna-activity-text = ការបើក និងការចុចសម្រាប់អ្វីៗទាំងអស់ដែលអ្នកបានផ្ញើ នៅកន្លែងតែមួយ។
+onboarding-katna-translate-title = ការបកប្រែស្វ័យប្រវត្តិ
+onboarding-katna-translate-text = អានសំបុត្រដែលសរសេរជាភាសាផ្សេង ជាភាសារបស់អ្នកផ្ទាល់។
+onboarding-katna-private = វាមានពាក្យសម្ងាត់ផ្ទាល់ខ្លួន។ ព័ត៌មានចូលសំបុត្ររបស់អ្នក មិនដែលចាកចេញពីកុំព្យូទ័រនេះទេ។
+
 ## First run: done
 
 onboarding-ready-title = រួចរាល់ហើយ
@@ -167,6 +181,7 @@ tour-search-text = ការស្វែងរកដំណើរការទោ�
 tour-menu-title = បង្ហាញ ឬលាក់ថត
 tour-menu-text = ប៊ូតុងនេះបត់បញ្ជីថតចូល។ ពេលវាត្រូវបានលាក់ សូមដាក់ទ្រនិចលើ សំបុត្រ នៅខាងឆ្វេង ដើម្បីមើលថត។
 tour-apps-title = កម្មវិធីរបស់អ្នក
+tour-apps-text = សំបុត្រនៅទីនេះ ក្បែរប្រតិទិន ទំនាក់ទំនង កិច្ចការ កំណត់ចំណាំ និងឯកសារ។
 tour-tabs-title = ផ្ទាំងប្រអប់ទទួល
 tour-tabs-text = សំបុត្រថ្មីត្រូវបានតម្រៀបទៅក្នុង ចម្បង ការផ្សព្វផ្សាយ សង្គម បច្ចុប្បន្នភាព និងវេទិកា។ អ្នកអាចបិទផ្ទាំងទាំងនេះនៅក្នុងការកំណត់រហ័ស។
 tour-list-title = សាររបស់អ្នក
@@ -190,12 +205,21 @@ crash-view = មើលរបាយការណ៍
 crash-view-tooltip = បើករបាយការណ៍ដែលបានរក្សាទុកនៅលើកុំព្យូទ័រនេះ
 crash-copy = ចម្លងរបាយការណ៍
 crash-close = បិទ
+
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } សុំឱ្យអ្នកចូល { $address } ម្ដងទៀត។
 sign-in-again-button = ចូល
 sign-in-again-tooltip = បើកទំព័រចូលរបស់ { $provider } នៅក្នុងកម្មវិធីរុករករបស់អ្នក
 sign-in-again-waiting = កំពុងរង់ចាំកម្មវិធីរុករករបស់អ្នក…
 sign-in-again-close = បិទ
+google-api-off = { $api } ត្រូវបានបិទនៅក្នុងគម្រោង Google Cloud របស់ Katna។
+google-api-turn-on = បើក
+google-api-turn-on-tooltip = បើក Google Cloud ដើម្បីបើក { $api } រួចចុច សាកម្ដងទៀត
 sign-in-again-done = បានចូល { $address } ម្ដងទៀត។ កំពុងទទួលសំបុត្ររបស់អ្នក…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] ផ្លាស់ទីការសន្ទនា { $count } ទៅធុងសំរាមឬ?
    *[message] ផ្លាស់ទីសារ { $count } ទៅធុងសំរាមឬ?

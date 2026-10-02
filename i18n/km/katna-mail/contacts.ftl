@@ -25,10 +25,7 @@ contacts-label-removed = បានយកចេញពី { $name }
 contacts-label-renamed = បានប្តូរឈ្មោះស្លាកទៅ { $name }
 contacts-label-deleted = បានលុបស្លាក { $name }
 contacts-label-no-email = គ្មាននរណាម្នាក់នៅក្នុងស្លាកនេះមានអាសយដ្ឋានអ៊ីមែលទេ
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = គណនី
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = ចូលម្ដងទៀត ដើម្បីបង្ហាញទំនាក់ទំនង
 contacts-account-signed-in = បានចូល { $address } ម្ដងទៀត។ កំពុងទទួលទំនាក់ទំនងរបស់អ្នក…
 contacts-account-sign-in-refused = { $provider } មិនបានអនុញ្ញាតឱ្យ Katna ចូលទេ។ សូមព្យាយាមម្ដងទៀត ហើយអនុញ្ញាតឱ្យចូលប្រើទំនាក់ទំនងរបស់អ្នក។
@@ -36,13 +33,9 @@ contacts-account-password = ម៉ាស៊ីនមេមិនបានទទ�
 contacts-account-change-password = ប្ដូរពាក្យសម្ងាត់
 contacts-account-change-password-tooltip = បើក ការកំណត់ > គណនី
 contacts-account-failed = មិនអាចអានទំនាក់ទំនងបានទេ។
-# $reason is the server's own words, in English.
 contacts-account-error = មិនអាចអានទំនាក់ទំនងបានទេ៖ { $reason }
 contacts-account-none = រកមិនឃើញសៀវភៅអាសយដ្ឋានទេ
-# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
 contacts-account-none-why = រកមិនឃើញសៀវភៅអាសយដ្ឋានទេ៖ { $reason }
-# A Gmail or Outlook account added with a password: its contacts need the
-# provider's sign-in.
 contacts-account-use-sign-in = { $provider } បង្ហាញទំនាក់ទំនងតែចំពោះ Katna ដែលបានចូលដោយប្រើ { $provider } ប៉ុណ្ណោះ។
 contacts-account-sign-in-with = ចូលដោយប្រើ { $provider }
 contacts-account-looking = កំពុងស្វែងរកទំនាក់ទំនង…
@@ -88,7 +81,7 @@ contacts-print-none = គ្មានទំនាក់ទំនងត្រូ�
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = ថ្ងៃកំណើត៖ { $day }
 contacts-print-nickname = ឈ្មោះហៅក្រៅ៖ { $name }
-contacts-create = បង្កើតទំនាក់ទំនង
+contacts-create = ទំនាក់ទំនងថ្មី
 
 ## Search and the list
 

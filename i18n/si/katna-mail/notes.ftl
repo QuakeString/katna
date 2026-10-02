@@ -15,6 +15,7 @@ notes-loading = ඔබේ සටහන් විවෘත කරමින්…
 
 notes-take-a-note = සටහනක් ගන්න…
 notes-new-list = නව ලැයිස්තුව
+notes-new-note = නව සටහන
 notes-pinned = අමුණන ලද
 notes-others = වෙනත්
 notes-empty = ඔබ එක් කරන සටහන් මෙහි දිස්වේ

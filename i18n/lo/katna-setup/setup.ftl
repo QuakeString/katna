@@ -1,9 +1,9 @@
 # Katna Setup, Lao (ລາວ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = ສົ່ງດ້ວຍ Katna Mail
 setup-tagline = ອີເມວທີ່ໄວ ແລະ ເປັນສ່ວນຕົວ, ເກັບໄວ້ໃນຄອມພິວເຕີຂອງທ່ານ.
 setup-update-where = ອັບເດດ Katna Mail ໃນ { $path }. ອີເມວ, ການຕັ້ງຄ່າ ແລະ ທາງລັດຂອງທ່ານຈະຍັງຄືເກົ່າ.
 setup-for = ຕິດຕັ້ງສຳລັບ

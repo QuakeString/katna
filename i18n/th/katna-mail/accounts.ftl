@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “ทุกบัญชี” อยู่บ�
 accounts-row = บัญชี
 accounts-row-detail = บานหน้าต่างโฟลเดอร์และเมนูบัญชีจะแสดงบัญชีตามลำดับนี้ บัญชีแรกคือบัญชีเริ่มต้น การนำบัญชีออกจะลบสำเนาอีเมลของบัญชีนั้นที่ Katna เก็บไว้ในคอมพิวเตอร์เครื่องนี้ อีเมลยังคงอยู่บนเซิร์ฟเวอร์
 accounts-none = ยังไม่มีบัญชี
+accounts-pop3-row = อีเมลบนเซิร์ฟเวอร์
+accounts-pop3-row-detail = บัญชี POP3 จะดาวน์โหลดอีเมลมาไว้ในคอมพิวเตอร์เครื่องนี้ เลือกว่าจะทำอย่างไรกับสำเนาบนเซิร์ฟเวอร์
+accounts-pop3-with-katna = เก็บไว้จนกว่าฉันจะลบใน Katna
+accounts-pop3-at-once = ลบทันทีที่ดาวน์โหลดแล้ว
+accounts-pop3-after-days = { $count ->
+   *[other] ลบหลังจาก { $count } วัน
+}
+accounts-pop3-never = ไม่ต้องลบ
+accounts-pop3-days-less = ลดจำนวนวัน
+accounts-pop3-days-more = เพิ่มจำนวนวัน
 accounts-kind-imported = นำเข้า
 accounts-picture-reset = ใช้รูปภาพของเดสก์ท็อป
 accounts-picture-change = เปลี่ยนรูปภาพ
@@ -70,6 +80,9 @@ accounts-confirm-word = ลบ
 accounts-confirm-placeholder = พิมพ์ “{ accounts-confirm-word }”
 accounts-confirm-prompt = หากต้องการยืนยัน ให้พิมพ์ “{ accounts-confirm-word }”:
 accounts-cancel = ยกเลิก
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = ลบอีเมลและไฟล์แนบที่ Katna ดาวน์โหลดไว้ รูปภาพผู้ส่ง และดัชนีการค้นหา แล้วดาวน์โหลดอีเมลล่าสุดใหม่ บัญชี การตั้งค่า และอีเมลที่มีอยู่ในคอมพิวเตอร์เครื่องนี้เท่านั้นจะยังอยู่
 reset-cache-button = รีเซ็ตแคช
 reset-cache-title = รีเซ็ตแคชไหม

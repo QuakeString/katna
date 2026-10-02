@@ -1,9 +1,9 @@
 # Katna Setup, Telugu (తెలుగు).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Katna Mailతో పంపండి
 setup-tagline = మీ కంప్యూటర్‌లోనే ఉండే వేగవంతమైన, ప్రైవేట్ ఇమెయిల్.
 setup-update-where = { $path }లో ఉన్న Katna Mailను అప్‌డేట్ చేస్తుంది. మీ మెయిల్, సెట్టింగ్‌లు, షార్ట్‌కట్‌లు అలాగే ఉంటాయి.
 setup-for = వీరి కోసం ఇన్‌స్టాల్ చేయండి

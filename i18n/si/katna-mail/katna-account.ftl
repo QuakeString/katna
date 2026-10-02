@@ -1,6 +1,9 @@
 # Katna Mail, Sinhala (සිංහල).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Katna ගිණුමක් Katna හි සබැඳි විශේෂාංග සක්‍රිය කරයි: කියවූ බවට රිසිට්පත්, සබැඳි ලුහුබැඳීම, ක්‍රියාකාරකම් සහ ස්වයංක්‍රීය පරිවර්තනය. එයට තමන්ගේම මුරපදයක් ඇත, එය තැපැල් මුරපදයක් නොවේ, ඔබේ තැපැල් පිවිසුම් කිසිදා මෙම පරිගණකයෙන් පිට නොයයි.
 katna-checking = පරීක්ෂා කරමින්…
 katna-email = ඊමේල්
@@ -10,6 +13,8 @@ katna-sign-in = පුරනය වන්න
 katna-sign-in-detail = සබැඳි විශේෂාංග අවශ්‍ය සෑම පරිගණකයකම පුරනය වන්න.
 katna-create = ගිණුම සාදන්න
 katna-create-detail = ඔබට කියවිය හැකි ලිපිනයක් භාවිත කරන්න: එය තහවුරු කිරීමට අපි ඔබට කේතයක් තැපැල් කරමු.
+katna-onboarding-create-title = ඔබේ Katna ගිණුම සාදන්න
+katna-onboarding-sign-in-title = Katna වෙත පුරනය වන්න
 katna-have-account = මට ගිණුමක් ඇත
 katna-forgot = මුරපදය අමතකද?
 katna-forgot-detail = නව මුරපදයක් තෝරා ගැනීමට අපි ඔබට කේතයක් තැපැල් කරමු.
@@ -42,6 +47,9 @@ katna-delete = ගිණුම මකන්න
 katna-delete-detail = ගිණුම සහ සේවාදායකය ඒ සඳහා තබා ගන්නා සියල්ල, කියවූ බවට රිසිට්පත් වැනි, මකයි. මෙම පරිගණකයේ තැපැල් රැඳේ.
 katna-delete-confirm = සදහටම මකන්න
 katna-sign-in-needed = මෙය භාවිත කිරීමට Katna ගිණුමකට පුරනය වන්න.
+
+## Errors
+
 katna-error-wrong-password = වැරදි ඊමේල් හෝ මුරපදය.
 katna-error-exists = මෙම ලිපිනයට දැනටමත් Katna ගිණුමක් ඇත. ඒ වෙනුවට පුරනය වන්න.
 katna-error-bad-email = එය ඊමේල් ලිපිනයක් ලෙස නොපෙනේ.
