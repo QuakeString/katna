@@ -880,6 +880,15 @@ macro_rules! pim_proxy {
             /// touching the file.
             fn cloud_link(&self, account: i64, entry: &CloudEntry) -> zbus::Result<i64>;
 
+            /// Moves items `ids` of the drive of `account` to its bin, or
+            /// (`trashed` false) back to where they were; returns how many
+            /// moved. A work OneDrive cannot take items back out.
+            fn cloud_trash(&self, account: i64, ids: &[String], trashed: bool)
+                -> zbus::Result<u32>;
+
+            /// Renames item `id` of the drive of `account` to `name`.
+            fn cloud_rename(&self, account: i64, id: &str, name: &str) -> zbus::Result<()>;
+
             /// A new video call link from the mail service of `account`
             /// (Google Meet for Gmail), or an empty string when it has no
             /// meetings Katna may make; Katna Mail then makes a Jitsi link.

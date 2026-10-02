@@ -92,6 +92,10 @@ pub enum Command {
     UnpinInChat(i64),
     /// Puts a chat's pins in this order.
     OrderChatPins(Vec<i64>),
+    /// Moves items of an account's drive to its bin, or back out of it.
+    CloudTrash(katna_core::AccountId, Vec<String>, bool),
+    /// Renames an item of an account's drive: its id and new name.
+    CloudRename(katna_core::AccountId, String, String),
     /// Sets whether a folder (or an inbox tab) notifies and counts.
     SetBell(
         FolderId,
@@ -150,6 +154,14 @@ impl Command {
             | Self::RelabelNotes(..) => true,
             Self::Several(commands) => commands.iter().any(Self::touches_notes),
             _ => false,
+        }
+    }
+
+    /// The account whose drive this changes, read again once it is done.
+    pub fn drive(&self) -> Option<katna_core::AccountId> {
+        match self {
+            Self::CloudTrash(account, ..) | Self::CloudRename(account, ..) => Some(*account),
+            _ => None,
         }
     }
 
@@ -230,6 +242,8 @@ impl Command {
             | Self::PinInChat(..)
             | Self::UnpinInChat(_)
             | Self::OrderChatPins(_)
+            | Self::CloudTrash(..)
+            | Self::CloudRename(..)
             | Self::SetBell(..) => {
                 return None;
             }
@@ -425,6 +439,10 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
             pim.set_bell(folder.0, category, bell.notify, bell.count)
                 .await
         }
+        Command::CloudTrash(account, ids, trashed) => {
+            pim.cloud_trash(account.0, ids, *trashed).await.map(|_| ())
+        }
+        Command::CloudRename(account, id, name) => pim.cloud_rename(account.0, id, name).await,
         Command::Several(commands) => {
             for command in commands {
                 Box::pin(send(connection, command)).await?;

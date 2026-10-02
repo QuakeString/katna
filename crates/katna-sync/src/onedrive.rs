@@ -339,6 +339,7 @@ fn failure(reply: &Reply, doing: &str) -> Error {
 }
 
 mod browse;
+mod manage;
 
 #[cfg(test)]
 mod tests;

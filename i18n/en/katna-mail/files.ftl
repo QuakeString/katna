@@ -154,6 +154,11 @@ files-drive-download = Download…
 files-drive-open-web = Open in { $drive }
 files-drive-copy-link = Copy link
 files-drive-link-copied = Link copied
+files-drive-rename = Rename
+files-drive-trash = Move to bin
+# $drive: Google Drive or OneDrive.
+files-drive-trashed = “{ $name }” is in the { $drive } bin
+files-drive-renamed = Renamed to “{ $name }”
 # $name from $drive, such as "Getting report.pdf from Google Drive…".
 files-drive-getting = Getting { $name } from { $drive }…
 files-drive-get-failed = Couldn’t get { $name }: { $error }

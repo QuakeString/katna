@@ -42,6 +42,8 @@ use crate::theme::Theme;
 use crate::widgets::{filled_button, icon, icon_button, outlined_button, placeholder, tip};
 use katna_core::config::OpenIn;
 
+mod manage;
+
 /// How long a folder's listing is used again without asking the drive.
 const FRESH: Duration = Duration::from_secs(3 * 60);
 
@@ -86,6 +88,8 @@ pub(in crate::window) struct Cloud {
     /// Uploads under way, by the daemon's id.
     uploads: HashMap<i64, Upload>,
     _uploads: Option<Task<()>>,
+    /// The item whose name is being typed over.
+    renaming: Option<manage::Renaming>,
 }
 
 /// A file or folder going up into a drive.
@@ -466,6 +470,7 @@ impl MailWindow {
             return;
         };
         let key = view.key();
+        cloud.renaming = None;
         view._more = None;
         view.cursor = None;
         view.stale = true;
@@ -852,6 +857,11 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         self.library.menu = None;
+        // A click elsewhere keeps the name being typed.
+        if self.library.cloud.renaming.is_some() {
+            self.finish_drive_rename(true, window, cx);
+            return;
+        }
         let Some(connection) = self.daemon.clone() else {
             return;
         };
@@ -1150,6 +1160,26 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> bool {
+        if self.library.cloud.renaming.is_some() {
+            return false;
+        }
+        let at_cursor = self.library.cloud.view.as_ref().and_then(|view| {
+            view.cursor
+                .and_then(|at| view.order.get(at))
+                .and_then(|&ix| view.entries.get(ix))
+                .cloned()
+        });
+        match (key, at_cursor) {
+            ("delete", Some(entry)) => {
+                self.trash_drive_item(&entry, cx);
+                return true;
+            }
+            ("f2", Some(entry)) => {
+                self.start_drive_rename(&entry, window, cx);
+                return true;
+            }
+            _ => {}
+        }
         let Some(view) = self.library.cloud.view.as_mut() else {
             return false;
         };
@@ -1755,11 +1785,39 @@ impl MailWindow {
                     .text_size(px(13.0))
                     .text_color(rgba(th.text))
                     .child(icon("folder", th.text_dim, 20.0))
-                    .child(div().min_w_0().truncate().child(entry.name.clone())),
+                    .child(self.drive_name_el(entry, th)),
             )
             .children(self.cursor_ring(place, CARD_RADIUS, th));
         self.drive_handlers(tile, place, entry, cx)
             .into_any_element()
+    }
+
+    /// Item `entry`'s name, or the box its new name is typed in.
+    fn drive_name_el(&self, entry: &CloudEntry, th: &Theme) -> AnyElement {
+        match self
+            .library
+            .cloud
+            .renaming
+            .as_ref()
+            .filter(|r| r.id == entry.id)
+        {
+            Some(renaming) => div()
+                .id("files-drive-renaming")
+                .flex_1()
+                .min_w_0()
+                .px(px(4.0))
+                .rounded(px(4.0))
+                .border_1()
+                .border_color(rgba(th.accent))
+                .on_click(|_, _, cx| cx.stop_propagation())
+                .child(renaming.input.clone())
+                .into_any_element(),
+            None => div()
+                .min_w_0()
+                .truncate()
+                .child(entry.name.clone())
+                .into_any_element(),
+        }
     }
 
     /// The line under a drive file's name: its size or kind, and when it
@@ -1905,11 +1963,12 @@ impl MailWindow {
                     .child(kind_badge(kind, 18.0))
                     .child(
                         div()
+                            .flex_1()
                             .min_w_0()
-                            .truncate()
+                            .flex()
                             .text_size(px(13.0))
                             .text_color(rgba(th.text))
-                            .child(entry.name.clone()),
+                            .child(self.drive_name_el(entry, th)),
                     ),
             )
             .child(panel);
@@ -2001,10 +2060,10 @@ impl MailWindow {
                     .flex_col()
                     .child(
                         div()
-                            .truncate()
+                            .flex()
                             .text_size(px(14.0))
                             .text_color(rgba(th.text))
-                            .child(entry.name.clone()),
+                            .child(self.drive_name_el(entry, th)),
                     )
                     .child(
                         div()
@@ -2162,6 +2221,35 @@ impl MailWindow {
                             this.library.menu = None;
                             cx.write_to_clipboard(ClipboardItem::new_string(link.clone()));
                             this.show_snackbar(tr!("files-drive-link-copied"), None, cx);
+                        }))
+                        .into_any_element(),
+                    );
+                }
+                if self.drive_owned() {
+                    items.push(separator());
+                    let e = entry.clone();
+                    items.push(
+                        item(
+                            "files-drive-menu-rename".into(),
+                            "pen",
+                            tr!("files-drive-rename"),
+                            false,
+                        )
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.start_drive_rename(&e, window, cx);
+                        }))
+                        .into_any_element(),
+                    );
+                    let e = entry.clone();
+                    items.push(
+                        item(
+                            "files-drive-menu-trash".into(),
+                            "trash",
+                            tr!("files-drive-trash"),
+                            false,
+                        )
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.trash_drive_item(&e, cx);
                         }))
                         .into_any_element(),
                     );

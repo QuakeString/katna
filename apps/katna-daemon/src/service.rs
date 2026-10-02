@@ -521,6 +521,30 @@ macro_rules! pim_interface {
                 Ok(self.daemon.cloud_link(AccountId(account), &entry)?)
             }
 
+            async fn cloud_trash(
+                &self,
+                account: i64,
+                ids: Vec<String>,
+                trashed: bool,
+            ) -> fdo::Result<u32> {
+                Ok(self
+                    .daemon
+                    .cloud_trash(AccountId(account), &ids, trashed)
+                    .await?)
+            }
+
+            async fn cloud_rename(
+                &self,
+                account: i64,
+                id: String,
+                name: String,
+            ) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .cloud_rename(AccountId(account), &id, &name)
+                    .await?)
+            }
+
             async fn meeting_link(&self, account: i64) -> fdo::Result<String> {
                 Ok(self.daemon.meeting_link(AccountId(account)).await?)
             }

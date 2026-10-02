@@ -77,6 +77,20 @@ impl Cloud {
         }
     }
 
+    async fn trash(&self, id: &str, trashed: bool) -> SyncResult<()> {
+        match self {
+            Self::Google(drive) => drive.trash(id, trashed).await,
+            Self::Microsoft(onedrive) => onedrive.trash(id, trashed).await,
+        }
+    }
+
+    async fn rename(&self, id: &str, name: &str) -> SyncResult<()> {
+        match self {
+            Self::Google(drive) => drive.rename(id, name).await,
+            Self::Microsoft(onedrive) => onedrive.rename(id, name).await,
+        }
+    }
+
     pub(super) async fn upload_into(
         &self,
         path: &Path,
@@ -193,14 +207,50 @@ impl Daemon {
         std::fs::create_dir_all(&dir).map_err(|err| CommandError::Failed(err.to_string()))?;
         let part = dir.join(".part");
         let item = item(entry);
-        let fetched = drive.fetch(&item, &part).await.map_err(|err| match err {
-            Error::Auth(message) => CommandError::AuthFailed(message),
-            other => CommandError::Failed(other.to_string()),
-        })?;
+        let fetched = drive.fetch(&item, &part).await.map_err(failed)?;
         let path = dir.join(file_name(&fetched.name));
         std::fs::rename(&part, &path).map_err(|err| CommandError::Failed(err.to_string()))?;
         tracing::info!(%account, size = fetched.size, "fetched a drive file");
         Ok(path.to_string_lossy().into_owned())
+    }
+
+    /// Moves items `ids` of the drive of `account` to its bin, or
+    /// (`trashed` false) back out; returns how many it moved.
+    pub async fn cloud_trash(
+        &self,
+        account: AccountId,
+        ids: &[String],
+        trashed: bool,
+    ) -> Result<u32, CommandError> {
+        let drive = self
+            .cloud(account)
+            .await?
+            .ok_or_else(|| CommandError::InvalidArgs("no drive".into()))?;
+        let mut moved = 0;
+        for id in ids {
+            drive.trash(id, trashed).await.map_err(failed)?;
+            moved += 1;
+        }
+        tracing::info!(%account, moved, trashed, "moved drive items");
+        Ok(moved)
+    }
+
+    /// Renames item `id` of the drive of `account` to `name`.
+    pub async fn cloud_rename(
+        &self,
+        account: AccountId,
+        id: &str,
+        name: &str,
+    ) -> Result<(), CommandError> {
+        let name = name.trim();
+        if name.is_empty() || name.contains('/') {
+            return Err(CommandError::InvalidArgs(format!("no name {name:?}")));
+        }
+        let drive = self
+            .cloud(account)
+            .await?
+            .ok_or_else(|| CommandError::InvalidArgs("no drive".into()))?;
+        drive.rename(id, name).await.map_err(failed)
     }
 
     pub async fn cloud_thumbnail(
@@ -217,6 +267,13 @@ impl Daemon {
             .thumbnail(link, width.clamp(64, MAX_WIDTH))
             .await
             .map_err(|err| CommandError::Failed(err.to_string()))
+    }
+}
+
+fn failed(err: Error) -> CommandError {
+    match err {
+        Error::Auth(message) => CommandError::AuthFailed(message),
+        other => CommandError::Failed(other.to_string()),
     }
 }
 

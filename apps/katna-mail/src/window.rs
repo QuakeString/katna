@@ -2846,6 +2846,7 @@ impl MailWindow {
     ) {
         let connection = self.daemon.clone();
         let notes = command.touches_notes();
+        let drive = command.drive();
         cx.spawn(async move |this, cx| {
             let result = cx
                 .background_executor()
@@ -2857,21 +2858,26 @@ impl MailWindow {
                     daemon::send(&connection, &command).await
                 })
                 .await;
-            this.update(cx, |this, cx| match result {
-                Ok(()) => {
-                    if notes {
-                        this.load_notes(cx);
-                    }
-                    if let Some(done) = done {
-                        this.show_snackbar(done, undo, cx);
-                    }
+            this.update(cx, |this, cx| {
+                if let Some(account) = drive {
+                    this.drive_listing_changed(account, cx);
                 }
-                Err(err) => {
-                    tracing::info!("{err}");
-                    if !quiet {
-                        this.show_snackbar(err, None, cx);
-                        // Show the store as it is again.
-                        this.refresh(false, cx);
+                match result {
+                    Ok(()) => {
+                        if notes {
+                            this.load_notes(cx);
+                        }
+                        if let Some(done) = done {
+                            this.show_snackbar(done, undo, cx);
+                        }
+                    }
+                    Err(err) => {
+                        tracing::info!("{err}");
+                        if !quiet {
+                            this.show_snackbar(err, None, cx);
+                            // Show the store as it is again.
+                            this.refresh(false, cx);
+                        }
                     }
                 }
             })
