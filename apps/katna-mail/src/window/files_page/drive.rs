@@ -32,6 +32,7 @@ use super::super::attachments::{
     picture_thumb,
 };
 use super::super::compose::attach::MAX_TOTAL;
+use super::picker::{pick_eye, pick_ring, pick_tick};
 use super::{
     GAP, HEADING_HEIGHT, Menu, NAME_HEIGHT, ROW_HEIGHT, Sort, THUMBS_KEPT, Time, Types, chip_arrow,
     filter_chip, thumb_height,
@@ -70,7 +71,7 @@ pub(in crate::window) struct Cloud {
     pub(in crate::window) view: Option<DriveView>,
     /// The accounts whose drive Files offers: Google accounts not turned
     /// off in Settings, with their addresses. Read as the page opens.
-    drives: Vec<(AccountId, String)>,
+    pub(in crate::window) drives: Vec<(AccountId, String)>,
     /// Listings read lately, by account and place.
     cache: HashMap<(AccountId, String), Cached>,
     thumbs: HashMap<String, (Thumb, u64)>,
@@ -400,6 +401,24 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Shows the top of the drive of `account` in the attach picker.
+    pub(super) fn open_picker_drive(&mut self, account: AccountId, cx: &mut Context<Self>) {
+        self.library.menu = None;
+        self.library.cloud.view = Some(DriveView::new(account, false));
+        self.load_drive(false, cx);
+        cx.notify();
+    }
+
+    /// Empties the box a drive is searched from: the picker's while it is
+    /// open, else the top bar's.
+    fn clear_drive_search_box(&mut self, cx: &mut Context<Self>) {
+        let search = match &self.picker {
+            Some(picker) => picker.search_box(),
+            None => self.search.clone(),
+        };
+        search.update(cx, |search, cx| search.set_text("", cx));
+    }
+
     /// Back to the mail files.
     pub(super) fn close_drive(&mut self, cx: &mut Context<Self>) {
         if self.library.cloud.view.take().is_some() {
@@ -529,7 +548,7 @@ impl MailWindow {
             view.crumbs.clear();
             view.searched.clear();
             view.search.clear();
-            self.search.update(cx, |search, cx| search.set_text("", cx));
+            self.clear_drive_search_box(cx);
         }
         if let Some(view) = self.library.cloud.view.as_mut() {
             view.crumbs.push((entry.id.clone(), entry.name.clone()));
@@ -552,7 +571,7 @@ impl MailWindow {
         view.searched.clear();
         view.search.clear();
         if searching {
-            self.search.update(cx, |search, cx| search.set_text("", cx));
+            self.clear_drive_search_box(cx);
         }
         self.load_drive(false, cx);
         cx.notify();
@@ -826,8 +845,10 @@ impl MailWindow {
             kind: fetched_kind,
             risky,
         };
+        // A file too big for mail, or one of the drive's own documents,
+        // goes as a link from the drive.
         if act == Act::Attach && (entry.native || entry.size > MAX_TOTAL as u64) {
-            self.show_snackbar(tr!("files-drive-link-later"), None, cx);
+            self.new_mail_with_link(account, entry, window, cx);
             return;
         }
         // Where to save, asked first so the file chooser opens at once.
@@ -1205,6 +1226,7 @@ impl MailWindow {
     pub(super) fn render_drive_body(
         &mut self,
         card_width: f32,
+        columns: usize,
         pad: f32,
         th: &Theme,
         window: &mut Window,
@@ -1217,9 +1239,9 @@ impl MailWindow {
             return div().into_any_element();
         };
         let strip = self.layout.shape.is_phone();
-        if view.stale || view.columns != self.library.columns || view.strip != strip {
+        if view.stale || view.columns != columns || view.strip != strip {
             let line = thumb_height(card_width) + DRIVE_FOOT + GAP;
-            view.rebuild(self.library.columns, grid, strip, time, sort, line, &tz);
+            view.rebuild(columns, grid, strip, time, sort, line, &tz);
         }
         let bar = self.render_drive_bar(pad, th, window, cx);
         let Some(view) = self.library.cloud.view.as_ref() else {
@@ -1315,7 +1337,11 @@ impl MailWindow {
         let Some(view) = self.library.cloud.view.as_ref() else {
             return div().into_any_element();
         };
-        let desktop = self.layout.shape.is_desktop();
+        let desktop = self
+            .picker
+            .as_ref()
+            .map_or(self.layout.shape.is_desktop(), |p| p.wide);
+        let crumb_size = if self.picker.is_some() { 16.0 } else { 20.0 };
         let root = if view.shared {
             tr!("files-drive-shared")
         } else {
@@ -1349,7 +1375,7 @@ impl MailWindow {
             .flex_row()
             .items_center()
             .gap(px(4.0))
-            .text_size(px(20.0));
+            .text_size(px(crumb_size));
         if cut {
             path = path
                 .child(div().text_color(rgba(th.text_faint)).child("…"))
@@ -1380,7 +1406,7 @@ impl MailWindow {
         }
         let files = view.order.len() - view.folders;
         let meta = tr!("files-drive-count", folders = view.folders, files = files);
-        let drop = self.baseline_drop(window, px(20.0), px(13.0));
+        let drop = self.baseline_drop(window, px(crumb_size), px(13.0));
         let title = div()
             .flex_1()
             .min_w_0()
@@ -1431,7 +1457,8 @@ impl MailWindow {
             .child(kind_chip)
             .child(time_chip)
             .child(sort_chip);
-        let views = self.files_view_buttons(th, cx);
+        // The picker shows cards only, its path smaller.
+        let views = (self.picker.is_none()).then(|| self.files_view_buttons(th, cx));
         let rule = div()
             .flex_none()
             .mx(px(pad))
@@ -1452,7 +1479,7 @@ impl MailWindow {
                         .gap(px(8.0))
                         .child(title)
                         .child(chips)
-                        .child(views),
+                        .children(views),
                 )
                 .child(rule)
                 .into_any_element()
@@ -1470,7 +1497,7 @@ impl MailWindow {
                         .items_center()
                         .gap(px(8.0))
                         .child(title)
-                        .child(views),
+                        .children(views),
                 )
                 .child(
                     div()
@@ -1575,6 +1602,19 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> gpui::Stateful<gpui::Div> {
         let open = entry.clone();
+        // In the attach picker a click ticks a file and opens a folder.
+        if let Some(account) = self.picker.as_ref().and(self.library.cloud.view.as_ref()) {
+            let account = account.account;
+            return el
+                .cursor_pointer()
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    if open.folder {
+                        this.enter_folder(&open, cx);
+                    } else {
+                        this.toggle_drive_pick(account, &open, cx);
+                    }
+                }));
+        }
         el.cursor_pointer()
             .on_click(cx.listener(move |this, _, window, cx| {
                 if let Some(view) = this.library.cloud.view.as_mut() {
@@ -1679,6 +1719,11 @@ impl MailWindow {
             .flatten()
             .zip(format::local(jiff::Timestamp::now().as_second(), &self.tz))
             .map(|(d, now)| format::list_date(d, now));
+        // The picker says which files go as a link (Smart attach), in
+        // place of the date.
+        if self.picker.is_some() && (entry.native || entry.size > MAX_TOTAL as u64) {
+            return tr!("files-drive-as-link", what = what.as_str());
+        }
         match date {
             Some(date) => tr!(
                 "files-drive-meta",
@@ -1703,23 +1748,22 @@ impl MailWindow {
         let kind = entry_kind(entry);
         let group = SharedString::from(format!("files-drive-card-{place}"));
         let frost = thumb.as_ref().and_then(Thumb::frosted);
+        let picking = self.picker.is_some();
         let mut buttons = Vec::new();
-        if !entry.native && entry.size <= MAX_TOTAL as u64 {
-            let e = entry.clone();
-            buttons.push(
-                panel_button(
-                    ("files-drive-attach", place),
-                    "attachment",
-                    tr!("files-drive-attach"),
-                    th,
-                )
-                .on_click(cx.listener(move |this, _, window, cx| {
-                    cx.stop_propagation();
-                    this.drive_act(e.clone(), Act::Attach, window, cx);
-                }))
-                .into_any_element(),
-            );
-        }
+        let e = entry.clone();
+        buttons.push(
+            panel_button(
+                ("files-drive-attach", place),
+                "attachment",
+                tr!("files-drive-attach"),
+                th,
+            )
+            .on_click(cx.listener(move |this, _, window, cx| {
+                cx.stop_propagation();
+                this.drive_act(e.clone(), Act::Attach, window, cx);
+            }))
+            .into_any_element(),
+        );
         let e = entry.clone();
         buttons.push(
             panel_button(("files-drive-open", place), "eye", tr!("files-open"), th)
@@ -1750,14 +1794,28 @@ impl MailWindow {
             .on_click(|_, _, cx| cx.stop_propagation())
             .into_any_element(),
         );
-        let panel = hover_panel(
-            group.clone(),
-            entry.name.clone(),
-            entry.size,
-            frost,
-            buttons,
-            th,
-        );
+        // In the attach picker a card ticks like a mail file's, its eye
+        // looking first.
+        let panel = if picking {
+            let e = entry.clone();
+            pick_eye(("files-drive-eye", place), group.clone(), th)
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    cx.stop_propagation();
+                    this.drive_act(e.clone(), Act::Open, window, cx);
+                }))
+                .into_any_element()
+        } else {
+            hover_panel(
+                group.clone(),
+                entry.name.clone(),
+                entry.size,
+                frost,
+                buttons,
+                th,
+            )
+            .into_any_element()
+        };
+        let ticked = picking && self.drive_picked(account, &entry.id);
         let head = div()
             .relative()
             .flex_none()
@@ -1819,7 +1877,9 @@ impl MailWindow {
                     .text_color(rgba(th.text_dim))
                     .child(div().min_w_0().truncate().child(self.drive_meta(entry))),
             )
-            .children(self.cursor_ring(place, CARD_RADIUS, th));
+            .children(self.cursor_ring(place, CARD_RADIUS, th))
+            .when(picking, |d| d.child(pick_tick(ticked, th)))
+            .when(ticked, |d| d.child(pick_ring(th)));
         self.drive_handlers(card, place, entry, cx)
             .into_any_element()
     }
@@ -1981,21 +2041,19 @@ impl MailWindow {
                     .into_any_element(),
                 );
                 if !entry.folder {
-                    if !entry.native && entry.size <= MAX_TOTAL as u64 {
-                        let e = entry.clone();
-                        items.push(
-                            item(
-                                "files-drive-menu-attach".into(),
-                                "attachment",
-                                tr!("files-drive-attach"),
-                                false,
-                            )
-                            .on_click(cx.listener(move |this, _, window, cx| {
-                                this.drive_act(e.clone(), Act::Attach, window, cx);
-                            }))
-                            .into_any_element(),
-                        );
-                    }
+                    let e = entry.clone();
+                    items.push(
+                        item(
+                            "files-drive-menu-attach".into(),
+                            "attachment",
+                            tr!("files-drive-attach"),
+                            false,
+                        )
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.drive_act(e.clone(), Act::Attach, window, cx);
+                        }))
+                        .into_any_element(),
+                    );
                     let e = entry.clone();
                     items.push(
                         item(

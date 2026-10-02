@@ -130,6 +130,8 @@ files-drive-folder = Folder
 # A drive file's size or kind and when it last changed, such as
 # "2.4 MB · Edited Sep 30".
 files-drive-meta = { $what } · Edited { $date }
+# In the attach picker, for a file that goes as a link: its size or kind.
+files-drive-as-link = { $what } · as a link
 files-drive-google-doc = Google Doc
 files-drive-google-sheet = Google Sheet
 files-drive-google-slides = Google Slides
@@ -153,7 +155,6 @@ files-drive-getting = Getting { $name } from { $drive }…
 files-drive-get-failed = Couldn’t get { $name }: { $error }
 # Google's own documents and files over the mail limit are attached as a
 # link, which comes in the next update.
-files-drive-link-later = This file is too big to attach, or is a Google document. Open it in Google Drive to share its link.
 # The big button at the top of the side column while a drive is open, and
 # its arrow's menu.
 files-drive-upload = Upload

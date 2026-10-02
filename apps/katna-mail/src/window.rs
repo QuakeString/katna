@@ -3664,6 +3664,10 @@ impl Render for MailWindow {
         };
         let compose = self.render_compose(&th, window, reduce, cx);
         let compose_dialog = self.render_docked_compose_dialog(&th, window, cx);
+        // The attach picker is over Compose, and the viewer over it to
+        // look at its files.
+        let files_picker = self.render_files_picker(&th, window, cx);
+        let viewer_over = files_picker.is_some();
         let scheduled = self.render_scheduled(&th, window, cx);
         let activity = self.render_activity_report(&th, window, cx);
         let activity_menu = self.render_activity_menu(&th, window, cx);
@@ -3714,10 +3718,12 @@ impl Render for MailWindow {
             .child(content)
             .children(floating_settings)
             .children(fab)
-            .children(self.files.viewer.clone())
+            .children(self.files.viewer.clone().filter(|_| !viewer_over))
             .children(search_panel)
             .children(compose)
             .children(compose_dialog)
+            .children(files_picker)
+            .children(self.files.viewer.clone().filter(|_| viewer_over))
             .children(scheduled)
             .children(activity)
             .children(activity_menu)

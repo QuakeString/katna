@@ -99,6 +99,11 @@ chat-reply-newest = Reply to the newest mail
 
 picker-title = Attach from Files
 picker-search = Search names, people, subjects
+picker-search-drive = Search this drive
+# The picker's side column: where the files come from.
+picker-mail-files = Mail files
+picker-this-chat = This conversation
+picker-this-computer = This computer…
 picker-in-chat = IN THIS CONVERSATION
 picker-recent = RECENT
 picker-preview = Preview
@@ -108,10 +113,22 @@ picker-attach-count = Attach { $count }
 picker-selected = { $count } selected
 # After the size of everything the mail would carry. $limit: 25 MB.
 picker-of-limit = of { $limit }
-# $size: how much goes through the cloud rather than in the mail.
-picker-via-drive = { $size } via Google Drive
-picker-via-onedrive = { $size } via OneDrive
+# $size: how much goes in the mail itself, when some files go as links.
+picker-in-mail = { $size } in the mail
+picker-drive-links = { $count ->
+    [one] 1 as a Google Drive link
+   *[other] { $count } as Google Drive links
+}
+picker-onedrive-links = { $count ->
+    [one] 1 as a OneDrive link
+   *[other] { $count } as OneDrive links
+}
 picker-over = { $size }, more than the { $limit } a mail can carry
+# While picked drive files download, to be attached.
+picker-getting = { $count ->
+    [one] Getting the file from the drive…
+   *[other] Getting { $count } files from the drive…
+}
 picker-some-failed = { $count ->
     [one] One file could not be read
    *[other] { $count } files could not be read

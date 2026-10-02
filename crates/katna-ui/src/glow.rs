@@ -4,7 +4,8 @@
 //! button the circle grows from the middle while it fades in, and on
 //! leaving it fades out quickly where it is. Put [`Glow`] first among the
 //! children of a `relative()` button, before its [`crate::Ripple`]; call
-//! [`Glow::fade`] for pills, whose background only fades.
+//! [`Glow::fade`] for pills, whose background only fades, and
+//! [`Glow::corners`] for one part of a split button.
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -40,6 +41,9 @@ pub struct Glow {
     id: ElementId,
     color: Hsla,
     grow: bool,
+    /// The fading layer's corners, top left round to bottom left; `None`
+    /// rounds it fully.
+    corners: Option<[f32; 4]>,
 }
 
 impl Glow {
@@ -49,12 +53,22 @@ impl Glow {
             id: id.into(),
             color: color.into(),
             grow: true,
+            corners: None,
         }
     }
 
     /// Only fade, filling the whole pill from the start.
     pub fn fade(mut self) -> Self {
         self.grow = false;
+        self
+    }
+
+    /// Only fade, with these corners (top left, top right, bottom right,
+    /// bottom left): one half of a split button, square where it meets
+    /// the other.
+    pub fn corners(mut self, corners: [f32; 4]) -> Self {
+        self.grow = false;
+        self.corners = Some(corners);
         self
     }
 }
@@ -65,6 +79,7 @@ impl RenderOnce for Glow {
         let bounds = state.read(cx).bounds.clone();
         let color = self.color;
         let grow = self.grow;
+        let corners = self.corners;
 
         let layer = state.read(cx).hovered.map(|(on, n)| {
             let size = bounds.get().size;
@@ -81,6 +96,12 @@ impl RenderOnce for Glow {
                         .top(px((h - d) / 2.0))
                         .size(px(d))
                         .rounded_full()
+                } else if let Some([tl, tr, br, bl]) = corners {
+                    el.inset_0()
+                        .rounded_tl(px(tl))
+                        .rounded_tr(px(tr))
+                        .rounded_br(px(br))
+                        .rounded_bl(px(bl))
                 } else {
                     el.inset_0().rounded_full()
                 }

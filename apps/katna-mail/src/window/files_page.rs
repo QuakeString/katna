@@ -1293,20 +1293,28 @@ impl MailWindow {
         };
         let columns = (((room + GAP) / (min + GAP)).floor() as usize).max(1);
         let card_width = ((room - GAP * (columns - 1) as f32) / columns as f32).max(min);
-        if self.library.stale || columns != self.library.columns {
+        // The attach picker over Compose borrows the files and the drive
+        // while it is open: the page under it waits.
+        let picking = self.picker.is_some();
+        if !picking && (self.library.stale || columns != self.library.columns) {
             let line = card_height(card_width) + GAP;
             self.library.rebuild(columns, line);
         }
         let body = match &self.library.files {
+            _ if picking => div().into_any_element(),
             _ if self.library.cloud.view.is_some() => {
-                self.render_drive_body(card_width, pad, th, window, cx)
+                self.render_drive_body(card_width, self.library.columns, pad, th, window, cx)
             }
             None => placeholder(&tr!("files-loading"), th),
             Some(Err(err)) => placeholder(err, th),
             Some(Ok(files)) if files.is_empty() => placeholder(&tr!("files-empty"), th),
             Some(Ok(_)) => self.render_files_body(card_width, pad, th, window, cx),
         };
-        let menu = self.render_files_menu(th, cx);
+        let menu = if picking {
+            None
+        } else {
+            self.render_files_menu(th, cx)
+        };
         let side = self.render_files_nav(th, cx);
         let side = self.page_side(side, NAV_WIDTH, true, th, cx);
         div()

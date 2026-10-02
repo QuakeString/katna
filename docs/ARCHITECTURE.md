@@ -1570,9 +1570,10 @@ answering an older bubble aims the reply at it (quote and threading) with a
 "Replying to" strip, keeping what was written. A name or picture opens the
 contact panel on that person, with the signature they last used in the
 conversation. The paperclip's From Files opens a picker over the feed with
-the Files page's filters, this conversation's files first; ticked files
-weigh against the 25 MB a mail carries, and those past it go by Google
-Drive or OneDrive when the account has one. Up to five things can be pinned
+the Files page's filters, this conversation's files first, and the drives
+(§13.8, the same picker as Compose's paperclip); ticked files weigh
+against the 25 MB a mail carries, and those past it go by Google Drive or
+OneDrive when the account has one. Up to five things can be pinned
 to the top of a chat: a mail (hover Pin, or the right-click menu) or one of
 its files (right-click on its card). Pins live in the mail store's
 `chat_pin` table (`katna_store::chat_pins`, mail.db v12), written by the
@@ -2702,8 +2703,20 @@ desktop's own app stays one click away.
   for now, and keeps fetched files in `cache/drives/` for 24 hours (gone
   on Reset cache). The app keeps listings for 3 minutes. Settings >
   Default apps > Files page > **Drives in Files** turns a drive off per
-  account (`mail.files.drives_off`). Next: the Compose and chat pickers
-  attach a copy under 25 MB, bigger files and Google Docs as a link.
+  account (`mail.files.drives_off`).
+  **Pickers (Smart attach).** Compose's paperclip and the chat's From
+  Files open the same picker (`files_page/picker.rs`): over Compose it
+  is a panel in the middle of the window, over a chat it covers the
+  feed. Its side column (pills on a narrow panel) offers Mail files,
+  This conversation (chat only), each drive and **This computer…** (the
+  system file chooser). In a drive a click ticks a file and opens a
+  folder. Attach copies drive files into the mail while everything fits
+  under 25 MB; a file over the limit, a Google Doc, or what still does
+  not fit goes as a link from its own drive (`CloudLink` registers it as
+  a finished upload, so Send shares it with the recipients as for big
+  files, and taking the chip off leaves the file in the drive: only
+  files Katna uploaded are binned). Files' own Attach does the same for
+  a big file or a Google Doc, in a new mail.
 
 ### 13.9 Window sizes
 

@@ -874,6 +874,12 @@ macro_rules! pim_proxy {
             /// `DriveUploadStatus` and `DriveChanged`; `DriveCancel` stops it.
             fn cloud_upload(&self, account: i64, folder: &str, path: &str) -> zbus::Result<i64>;
 
+            /// Links file `entry` of the drive of `account` to a message as
+            /// a finished upload: its id works with `DriveShare` and
+            /// `DriveShareWithLink`, and `DriveCancel` forgets it without
+            /// touching the file.
+            fn cloud_link(&self, account: i64, entry: &CloudEntry) -> zbus::Result<i64>;
+
             /// A new video call link from the mail service of `account`
             /// (Google Meet for Gmail), or an empty string when it has no
             /// meetings Katna may make; Katna Mail then makes a Jitsi link.

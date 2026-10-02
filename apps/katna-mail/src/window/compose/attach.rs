@@ -194,6 +194,12 @@ impl MailWindow {
         self.add_files(paths, Place::Attach, cx);
     }
 
+    /// Attaches the files at `paths`, as the paperclip's file chooser
+    /// does: those that do not fit go through the account's cloud.
+    pub(in crate::window) fn attach_paths(&mut self, paths: Vec<PathBuf>, cx: &mut Context<Self>) {
+        self.add_files(paths, Place::Attach, cx);
+    }
+
     /// Reads `paths` off the main thread and adds them where `place` says:
     /// pictures may go in the text (unless it is plain text); everything
     /// else is attached.
