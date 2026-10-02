@@ -14,7 +14,7 @@ use katna_i18n::tr;
 use katna_store::MessageId;
 use mail_parser::MessageParser;
 
-use super::{Attachment, Draft, Kind, MailWindow, Unsent, body_parts, scheduled};
+use super::{Attachment, Draft, Kind, MailWindow, Mode, Unsent, body_parts, scheduled};
 use crate::daemon::{self, Command};
 use crate::outgoing::{self, Mailbox, Outgoing};
 use katna_ui::rich::html;
@@ -227,7 +227,13 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        if self
+        let reply_aside = self.compose.as_ref().is_some_and(|c| {
+            !c.closing && c.touched(cx) && c.kind != Kind::New && c.mode != Mode::Window
+        });
+        if reply_aside && self.writing.parked.is_none() {
+            // A reply being written waits again, as it did for this one.
+            self.writing.parked = self.compose.take();
+        } else if self
             .compose
             .as_ref()
             .is_some_and(|c| !c.closing && c.touched(cx))
