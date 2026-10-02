@@ -502,7 +502,14 @@ impl MailWindow {
                     built: details.map(|d| d.built).filter(|built| *built > 0),
                     commit,
                     source: None,
-                    size: Some(details.map_or(status.total, |d| d.size)).filter(|size| *size > 0),
+                    // What the daemon downloads: only a patch when one
+                    // fits the installed version.
+                    size: Some(if status.total > 0 {
+                        status.total
+                    } else {
+                        details.map_or(0, |d| d.size)
+                    })
+                    .filter(|size| *size > 0),
                     new: true,
                 },
                 th,
