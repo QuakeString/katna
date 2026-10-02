@@ -612,6 +612,7 @@ impl MailWindow {
         let compose_open = self.compose.is_some();
         if shown <= 0.001
             || compose_open
+            || self.page_editor_open()
             || self.settings_open
             || self.settings_page.is_some()
             || !self.app.has_side()

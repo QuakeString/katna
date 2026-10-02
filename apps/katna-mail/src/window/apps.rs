@@ -364,6 +364,13 @@ impl MailWindow {
         }));
     }
 
+    /// Whether a page shows a whole editor in place of itself and its
+    /// side column (Calendar's event editor), with no room for the big
+    /// button.
+    pub(super) fn page_editor_open(&self) -> bool {
+        self.app == App::Calendar && self.event_editor_open()
+    }
+
     /// Room at the top of a page's side column for its big button.
     pub(super) fn side_button_room(&self) -> f32 {
         super::COMPOSE_NAV_ROOM * self.compose_shown.value().clamp(0.0, 1.0)
