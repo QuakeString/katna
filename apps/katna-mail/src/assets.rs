@@ -181,6 +181,7 @@ icons!(
     "snooze",
     "sparkle",
     "spell-check",
+    "spinner",
     "star-filled",
     "star",
     "table",

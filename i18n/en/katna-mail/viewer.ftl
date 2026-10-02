@@ -5,6 +5,8 @@
 
 ## Attachment viewer
 
+# Shown, under a turning arc, while a file is on its way or opening.
+viewer-opening = Opening…
 # Shown in place of a file the viewer cannot show.
 viewer-unreadable = This attachment could not be read.
 viewer-pdf-locked = This PDF is protected with a password.

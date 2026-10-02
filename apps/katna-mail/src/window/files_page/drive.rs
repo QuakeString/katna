@@ -897,7 +897,17 @@ impl MailWindow {
             name = entry.name.as_str(),
             drive = provider.as_str()
         ));
-        self.show_snackbar(getting.clone(), None, cx);
+        // A file for the viewer opens it at once, turning until the file
+        // is here; anything else says it is coming.
+        let waiting =
+            (act == Act::Open && entry.size <= VIEWER_MAX && self.open_in(&item) == OpenIn::Katna)
+                .then(|| {
+                    self.show_fetching_viewer(item.clone(), window, cx)
+                        .downgrade()
+                });
+        if waiting.is_none() {
+            self.show_snackbar(getting.clone(), None, cx);
+        }
         cx.notify();
         cx.spawn_in(window, async move |this, cx| {
             let target = match target {
@@ -938,9 +948,21 @@ impl MailWindow {
                     snackbar.shown.set(0.0);
                 }
                 cx.notify();
+                // The viewer waiting for it, unless it was closed meanwhile.
+                let viewer = waiting.as_ref().map(|waiting| {
+                    waiting
+                        .upgrade()
+                        .filter(|v| this.files.viewer.as_ref() == Some(v))
+                });
+                if matches!(viewer, Some(None)) {
+                    return;
+                }
                 let path = match fetched {
                     Ok(path) => std::path::PathBuf::from(path),
                     Err(err) => {
+                        if viewer.is_some() {
+                            this.close_viewer(window, cx);
+                        }
                         let text = tr!(
                             "files-drive-get-failed",
                             name = entry.name.as_str(),
@@ -999,6 +1021,11 @@ impl MailWindow {
                             name: item.name.clone(),
                             ..item
                         };
+                        if let Some(Some(viewer)) = viewer {
+                            let raw = std::sync::Arc::new(raw);
+                            viewer.update(cx, |viewer, cx| viewer.arrived(raw, vec![item], cx));
+                            return;
+                        }
                         this.show_viewer(
                             std::sync::Arc::new(raw),
                             false,

@@ -3090,6 +3090,7 @@ impl MailWindow {
             return None;
         }
         let s = s.max(0.0);
+        let leaving = snackbar.shown.target() == 0.0;
         // Counted down: too late to take back.
         let left = snackbar
             .countdown
@@ -3119,6 +3120,10 @@ impl MailWindow {
         let edge = lerp(24.0, 8.0, shape.phone);
         Some(
             div()
+                .id("snackbar")
+                // Clicks on the note stop here, not on what is under it,
+                // until it is fading away.
+                .when(!leaving, |d| d.occlude())
                 .absolute()
                 .left(px(edge))
                 .when(shape.is_phone(), |d| d.right(px(edge)))
