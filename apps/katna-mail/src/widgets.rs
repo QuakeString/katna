@@ -30,6 +30,46 @@ pub fn icon(name: &str, color: u32, size: f32) -> AnyElement {
         .into_any_element()
 }
 
+/// A ring `size` px across in `track`, with the stretch from turn `from`
+/// to turn `to` (0 at the top, clockwise) in `color`; it fills its parent.
+pub fn ring(from: f32, to: f32, color: u32, track: u32, size: f32) -> AnyElement {
+    let line = size / 12.0;
+    canvas(
+        |_, _, _| {},
+        move |bounds, _, window, _| {
+            let radius = (size - line) / 2.0;
+            let center = bounds.center();
+            let at = |turn: f32| {
+                let angle = std::f32::consts::TAU * turn - std::f32::consts::FRAC_PI_2;
+                point(
+                    center.x + px(radius * angle.cos()),
+                    center.y + px(radius * angle.sin()),
+                )
+            };
+            let arc = |from: f32, to: f32| {
+                let mut path = gpui::PathBuilder::stroke(px(line));
+                let steps = ((to - from) * 96.0).ceil().max(1.0) as usize;
+                path.move_to(at(from));
+                for step in 1..=steps {
+                    path.line_to(at(from + (to - from) * step as f32 / steps as f32));
+                }
+                path.build().ok()
+            };
+            if let Some(path) = arc(0.0, 1.0) {
+                window.paint_path(path, rgba(track));
+            }
+            if to > from
+                && let Some(path) = arc(from, to)
+            {
+                window.paint_path(path, rgba(color));
+            }
+        },
+    )
+    .absolute()
+    .size_full()
+    .into_any_element()
+}
+
 /// A turning arc for something that is on its way, `size` px square.
 pub fn spinner(id: impl Into<ElementId>, color: u32, size: f32) -> AnyElement {
     svg()

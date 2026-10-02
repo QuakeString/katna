@@ -190,6 +190,24 @@ pub struct CloudEntry {
     pub thumbnail: String,
 }
 
+/// One grant of access to a drive item, from `CloudAccess`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct CloudAccess {
+    /// The drive's id for it, for `CloudSetAccess`.
+    pub id: String,
+    /// `person`, `group`, `domain` or `anyone` (with the link).
+    pub who: String,
+    /// `owner`, `editor`, `commenter` or `viewer`.
+    pub role: String,
+    /// The address, or the domain.
+    pub address: String,
+    pub name: String,
+    /// Given on a folder above, and changed there.
+    pub inherited: bool,
+    /// The link anyone opens it with, when the drive says.
+    pub link: String,
+}
+
 /// One page of a drive listing, from `CloudList`.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct CloudListing {
@@ -879,6 +897,45 @@ macro_rules! pim_proxy {
             /// `DriveShareWithLink`, and `DriveCancel` forgets it without
             /// touching the file.
             fn cloud_link(&self, account: i64, entry: &CloudEntry) -> zbus::Result<i64>;
+
+            /// Moves items `ids` of the drive of `account` to its bin, or
+            /// (`trashed` false) back to where they were; returns how many
+            /// moved. A work OneDrive cannot take items back out.
+            fn cloud_trash(&self, account: i64, ids: &[String], trashed: bool)
+                -> zbus::Result<u32>;
+
+            /// Renames item `id` of the drive of `account` to `name`.
+            fn cloud_rename(&self, account: i64, id: &str, name: &str) -> zbus::Result<()>;
+
+            /// Who may open item `id` of the drive of `account`, the owner
+            /// first.
+            fn cloud_access(&self, account: i64, id: &str) -> zbus::Result<Vec<CloudAccess>>;
+
+            /// Shares item `id` with `addresses` as `role` (`editor`,
+            /// `commenter` or `viewer`), with the drive's own email when
+            /// `notify`; returns the addresses the drive refused.
+            fn cloud_grant(
+                &self,
+                account: i64,
+                id: &str,
+                addresses: &[String],
+                role: &str,
+                notify: bool,
+            ) -> zbus::Result<Vec<String>>;
+
+            /// Changes grant `permission` of item `id` to `role`; an empty
+            /// role takes it away.
+            fn cloud_set_access(
+                &self,
+                account: i64,
+                id: &str,
+                permission: &str,
+                role: &str,
+            ) -> zbus::Result<()>;
+
+            /// Lets anyone with the link open item `id` as `role`; an empty
+            /// role keeps it to the people it is shared with.
+            fn cloud_set_link(&self, account: i64, id: &str, role: &str) -> zbus::Result<()>;
 
             /// A new video call link from the mail service of `account`
             /// (Google Meet for Gmail), or an empty string when it has no

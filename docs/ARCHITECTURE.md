@@ -2717,7 +2717,25 @@ desktop's own app stays one click away.
   account's sign-in and answers `CloudReadable`, `CloudList`,
   `CloudFetch`, `CloudThumbnail`, `CloudWritable` and `CloudUpload`
   over D-Bus, and keeps fetched files in `cache/drives/` for 24 hours (gone
-  on Reset cache). The app keeps listings for 3 minutes. Settings >
+  on Reset cache). `CloudTrash` and `CloudRename` change an item of the
+  account's own drive (not Shared with me): the item menu's **Rename**
+  types over the name in place (the part before the extension selected;
+  F2), **Move to bin** (Del) sends it to the drive's bin with Undo
+  (Google untrashes; OneDrive restores only on personal drives).
+  Uploads from Files show in the **uploads tray** at the bottom right
+  over every page (`files_page/drive/tray.rs`): a ring per file from
+  `DriveChanged`, the time left, Cancel per file and Cancel all
+  (`DriveCancel`); it folds to its head, stays once everything is done
+  (a click on a finished file opens its folder) and goes when closed. The app
+  **Share…** in the same menu opens the Share dialog
+  (`files_page/drive/share.rs`; `CloudAccess`, `CloudGrant`,
+  `CloudSetAccess`, `CloudSetLink`): people added by address or from the
+  address book get Viewer, Commenter (Google only) or Editor; the drive's
+  own sharing email is off unless "Let … email them too" is ticked;
+  each grant's role can change or go (the owner and access from a parent
+  folder are fixed); General access is Restricted or Anyone with the link
+  (a Google `anyone` permission; a OneDrive anonymous view or edit link).
+  keeps listings for 3 minutes. Settings >
   Default apps > Files page > **Drives in Files** turns a drive off per
   account (`mail.files.drives_off`).
   **Pickers (Smart attach).** Compose's paperclip and the chat's From

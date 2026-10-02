@@ -11,10 +11,10 @@ use std::{
 };
 
 use katna_core::{AccountId, OAuthProvider};
-use katna_dbus::{CloudEntry, CloudListing, cloud_place, cloud_state};
+use katna_dbus::{CloudAccess, CloudEntry, CloudListing, cloud_place, cloud_state};
 use katna_sync::{
     Error, Result as SyncResult,
-    cloud::{CloudItem, CloudPage, Fetched, Place, ROOT},
+    cloud::{Access, CloudItem, CloudPage, Fetched, Place, ROOT, Role},
     drive::{Drive, DriveFile},
     net::Tls,
     onedrive::OneDrive,
@@ -74,6 +74,54 @@ impl Cloud {
         match self {
             Self::Google(drive) => drive.create_folder(name, parent).await,
             Self::Microsoft(onedrive) => onedrive.create_folder(name, parent).await,
+        }
+    }
+
+    async fn trash(&self, id: &str, trashed: bool) -> SyncResult<()> {
+        match self {
+            Self::Google(drive) => drive.trash(id, trashed).await,
+            Self::Microsoft(onedrive) => onedrive.trash(id, trashed).await,
+        }
+    }
+
+    async fn access(&self, id: &str) -> SyncResult<Vec<Access>> {
+        match self {
+            Self::Google(drive) => drive.access(id).await,
+            Self::Microsoft(onedrive) => onedrive.access(id).await,
+        }
+    }
+
+    async fn grant(
+        &self,
+        id: &str,
+        addresses: &[String],
+        role: Role,
+        notify: bool,
+    ) -> SyncResult<Vec<String>> {
+        match self {
+            Self::Google(drive) => drive.grant(id, addresses, role, notify).await,
+            Self::Microsoft(onedrive) => onedrive.grant(id, addresses, role, notify).await,
+        }
+    }
+
+    async fn set_access(&self, id: &str, permission: &str, role: Option<Role>) -> SyncResult<()> {
+        match self {
+            Self::Google(drive) => drive.set_access(id, permission, role).await,
+            Self::Microsoft(onedrive) => onedrive.set_access(id, permission, role).await,
+        }
+    }
+
+    async fn set_link(&self, id: &str, role: Option<Role>) -> SyncResult<()> {
+        match self {
+            Self::Google(drive) => drive.set_link(id, role).await,
+            Self::Microsoft(onedrive) => onedrive.set_link(id, role).await,
+        }
+    }
+
+    async fn rename(&self, id: &str, name: &str) -> SyncResult<()> {
+        match self {
+            Self::Google(drive) => drive.rename(id, name).await,
+            Self::Microsoft(onedrive) => onedrive.rename(id, name).await,
         }
     }
 
@@ -193,14 +241,126 @@ impl Daemon {
         std::fs::create_dir_all(&dir).map_err(|err| CommandError::Failed(err.to_string()))?;
         let part = dir.join(".part");
         let item = item(entry);
-        let fetched = drive.fetch(&item, &part).await.map_err(|err| match err {
-            Error::Auth(message) => CommandError::AuthFailed(message),
-            other => CommandError::Failed(other.to_string()),
-        })?;
+        let fetched = drive.fetch(&item, &part).await.map_err(failed)?;
         let path = dir.join(file_name(&fetched.name));
         std::fs::rename(&part, &path).map_err(|err| CommandError::Failed(err.to_string()))?;
         tracing::info!(%account, size = fetched.size, "fetched a drive file");
         Ok(path.to_string_lossy().into_owned())
+    }
+
+    /// Moves items `ids` of the drive of `account` to its bin, or
+    /// (`trashed` false) back out; returns how many it moved.
+    pub async fn cloud_trash(
+        &self,
+        account: AccountId,
+        ids: &[String],
+        trashed: bool,
+    ) -> Result<u32, CommandError> {
+        let drive = self
+            .cloud(account)
+            .await?
+            .ok_or_else(|| CommandError::InvalidArgs("no drive".into()))?;
+        let mut moved = 0;
+        for id in ids {
+            drive.trash(id, trashed).await.map_err(failed)?;
+            moved += 1;
+        }
+        tracing::info!(%account, moved, trashed, "moved drive items");
+        Ok(moved)
+    }
+
+    /// Renames item `id` of the drive of `account` to `name`.
+    pub async fn cloud_rename(
+        &self,
+        account: AccountId,
+        id: &str,
+        name: &str,
+    ) -> Result<(), CommandError> {
+        let name = name.trim();
+        if name.is_empty() || name.contains('/') {
+            return Err(CommandError::InvalidArgs(format!("no name {name:?}")));
+        }
+        let drive = self
+            .cloud(account)
+            .await?
+            .ok_or_else(|| CommandError::InvalidArgs("no drive".into()))?;
+        drive.rename(id, name).await.map_err(failed)
+    }
+
+    /// The drive of `account`, for a change to one of its items.
+    async fn cloud_to_change(&self, account: AccountId) -> Result<Cloud, CommandError> {
+        self.cloud(account)
+            .await?
+            .ok_or_else(|| CommandError::InvalidArgs("no drive".into()))
+    }
+
+    /// Who may open item `id` of the drive of `account`.
+    pub async fn cloud_access(
+        &self,
+        account: AccountId,
+        id: &str,
+    ) -> Result<Vec<CloudAccess>, CommandError> {
+        let drive = self.cloud_to_change(account).await?;
+        let all = drive.access(id).await.map_err(failed)?;
+        Ok(all
+            .into_iter()
+            .map(|a| CloudAccess {
+                id: a.id,
+                who: a.who.as_str().into(),
+                role: a.role.as_str().into(),
+                address: a.address,
+                name: a.name,
+                inherited: a.inherited,
+                link: a.link,
+            })
+            .collect())
+    }
+
+    /// Shares item `id` with `addresses` as `role`; returns those the
+    /// drive refused.
+    pub async fn cloud_grant(
+        &self,
+        account: AccountId,
+        id: &str,
+        addresses: &[String],
+        role: &str,
+        notify: bool,
+    ) -> Result<Vec<String>, CommandError> {
+        let role = given_role(role)?;
+        let drive = self.cloud_to_change(account).await?;
+        let refused = drive
+            .grant(id, addresses, role, notify)
+            .await
+            .map_err(failed)?;
+        tracing::info!(%account, people = addresses.len(), refused = refused.len(), "shared a drive item");
+        Ok(refused)
+    }
+
+    /// Changes grant `permission` of item `id` to `role`, or takes it away
+    /// (empty).
+    pub async fn cloud_set_access(
+        &self,
+        account: AccountId,
+        id: &str,
+        permission: &str,
+        role: &str,
+    ) -> Result<(), CommandError> {
+        let role = (!role.is_empty()).then(|| given_role(role)).transpose()?;
+        let drive = self.cloud_to_change(account).await?;
+        drive.set_access(id, permission, role).await.map_err(failed)
+    }
+
+    /// Opens item `id` to anyone with the link as `role`, or closes it
+    /// (empty).
+    pub async fn cloud_set_link(
+        &self,
+        account: AccountId,
+        id: &str,
+        role: &str,
+    ) -> Result<(), CommandError> {
+        let role = (!role.is_empty()).then(|| given_role(role)).transpose()?;
+        let drive = self.cloud_to_change(account).await?;
+        drive.set_link(id, role).await.map_err(failed)
     }
 
     pub async fn cloud_thumbnail(
@@ -217,6 +377,20 @@ impl Daemon {
             .thumbnail(link, width.clamp(64, MAX_WIDTH))
             .await
             .map_err(|err| CommandError::Failed(err.to_string()))
+    }
+}
+
+/// A role that may be given: not the owner's.
+fn given_role(role: &str) -> Result<Role, CommandError> {
+    Role::parse(role)
+        .filter(|r| *r != Role::Owner)
+        .ok_or_else(|| CommandError::InvalidArgs(format!("no role {role:?} to give")))
+}
+
+fn failed(err: Error) -> CommandError {
+    match err {
+        Error::Auth(message) => CommandError::AuthFailed(message),
+        other => CommandError::Failed(other.to_string()),
     }
 }
 

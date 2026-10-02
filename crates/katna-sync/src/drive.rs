@@ -441,6 +441,8 @@ fn failure(reply: &Reply, doing: &str) -> Error {
 }
 
 mod browse;
+mod manage;
+mod share;
 
 #[cfg(test)]
 mod tests;

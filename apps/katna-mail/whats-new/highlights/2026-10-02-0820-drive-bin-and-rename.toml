@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rename and bin drive files"
+text = """
+In Files, a file or folder in your Google Drive or OneDrive now has
+Rename and Move to bin in its menu. Rename types over the name in place
+(F2), and Move to bin (Del) comes with Undo.
+"""

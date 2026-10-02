@@ -92,6 +92,10 @@ pub enum Command {
     UnpinInChat(i64),
     /// Puts a chat's pins in this order.
     OrderChatPins(Vec<i64>),
+    /// Moves items of an account's drive to its bin, or back out of it.
+    CloudTrash(katna_core::AccountId, Vec<String>, bool),
+    /// Renames an item of an account's drive: its id and new name.
+    CloudRename(katna_core::AccountId, String, String),
     /// Sets whether a folder (or an inbox tab) notifies and counts.
     SetBell(
         FolderId,
@@ -150,6 +154,14 @@ impl Command {
             | Self::RelabelNotes(..) => true,
             Self::Several(commands) => commands.iter().any(Self::touches_notes),
             _ => false,
+        }
+    }
+
+    /// The account whose drive this changes, read again once it is done.
+    pub fn drive(&self) -> Option<katna_core::AccountId> {
+        match self {
+            Self::CloudTrash(account, ..) | Self::CloudRename(account, ..) => Some(*account),
+            _ => None,
         }
     }
 
@@ -230,6 +242,8 @@ impl Command {
             | Self::PinInChat(..)
             | Self::UnpinInChat(_)
             | Self::OrderChatPins(_)
+            | Self::CloudTrash(..)
+            | Self::CloudRename(..)
             | Self::SetBell(..) => {
                 return None;
             }
@@ -425,6 +439,10 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
             pim.set_bell(folder.0, category, bell.notify, bell.count)
                 .await
         }
+        Command::CloudTrash(account, ids, trashed) => {
+            pim.cloud_trash(account.0, ids, *trashed).await.map(|_| ())
+        }
+        Command::CloudRename(account, id, name) => pim.cloud_rename(account.0, id, name).await,
         Command::Several(commands) => {
             for command in commands {
                 Box::pin(send(connection, command)).await?;
@@ -1382,6 +1400,69 @@ pub async fn cloud_upload(
         .await
         .map_err(|err| describe(&err))?;
     pim.cloud_upload(account, folder, path)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Who may open item `id` of the drive of `account`.
+pub async fn cloud_access(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+) -> Result<Vec<katna_dbus::CloudAccess>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_access(account, id)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Shares item `id` with `addresses` as `role`; returns those the drive
+/// refused.
+pub async fn cloud_grant(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    addresses: &[String],
+    role: &str,
+    notify: bool,
+) -> Result<Vec<String>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_grant(account, id, addresses, role, notify)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Changes grant `permission` of item `id` to `role`; empty takes it away.
+pub async fn cloud_set_access(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    permission: &str,
+    role: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_set_access(account, id, permission, role)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Opens item `id` to anyone with the link as `role`; empty closes it.
+pub async fn cloud_set_link(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    role: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_set_link(account, id, role)
         .await
         .map_err(|err| describe(&err))
 }
