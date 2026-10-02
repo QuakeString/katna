@@ -75,6 +75,14 @@ pub(super) trait SelectHost: 'static + Sized {
     /// A drag or click that selects has ended (the PDF viewer turns the
     /// selection into a highlight when marking up).
     fn selected(&mut self, _cx: &mut Context<Self>) {}
+
+    /// The selection can be pinned (text in one bubble of a chat).
+    fn can_pin(&self) -> bool {
+        false
+    }
+
+    /// Pins the selection.
+    fn pin_selection(&mut self, _cx: &mut Context<Self>) {}
 }
 
 /// A place in the conversation's text: a byte offset in a piece.
@@ -228,6 +236,12 @@ impl TextSelection {
             (start.key.part, start.key.piece, start.offset),
             (end.key.part, end.key.piece, end.offset),
         ))
+    }
+
+    /// The one part the selection lies in, when it is in only one.
+    pub(super) fn single_part(&self) -> Option<usize> {
+        let (start, end) = self.ordered()?;
+        (start.key.part == end.key.part).then_some(start.key.part)
     }
 
     /// The selected part of the piece `key`, `len` bytes long.
@@ -508,6 +522,14 @@ impl SelectHost for MailWindow {
     fn selection_mut(&mut self) -> &mut TextSelection {
         &mut self.text
     }
+
+    fn can_pin(&self) -> bool {
+        self.chat_text_to_pin().is_some()
+    }
+
+    fn pin_selection(&mut self, cx: &mut Context<Self>) {
+        self.pin_chat_text(cx);
+    }
 }
 
 impl MailWindow {
@@ -684,6 +706,7 @@ pub(super) fn text_menu<T: SelectHost>(
         at,
         !this.selection().is_empty(),
         this.selection().menu_address.is_some(),
+        this.can_pin(),
         th,
         cx,
         |this: &mut T, act, cx| {
@@ -691,6 +714,7 @@ pub(super) fn text_menu<T: SelectHost>(
             this.selection_mut().menu = None;
             match act {
                 MenuAct::Close => {}
+                MenuAct::Pin => this.pin_selection(cx),
                 MenuAct::Copy => copy(this, cx),
                 MenuAct::CopyAddress => {
                     if let Some(address) = address {
@@ -708,19 +732,23 @@ pub(super) fn text_menu<T: SelectHost>(
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum MenuAct {
     Close,
+    /// Only offered when the host can pin the selection.
+    Pin,
     Copy,
     /// Only offered when the menu was opened on an address.
     CopyAddress,
     SelectAll,
 }
 
-/// A right-click menu at `at` with Copy address (when `on_address`), Copy
-/// (greyed without a selection) and Select all; `act` does what was
+/// A right-click menu at `at` with Pin to top (when `can_pin`), Copy
+/// address (when `on_address`), Copy (greyed without a selection) and
+/// Select all; `act` does what was
 /// chosen, or closes it.
 pub(super) fn copy_menu<T: 'static>(
     at: Point<Pixels>,
     can_copy: bool,
     on_address: bool,
+    can_pin: bool,
     th: &Theme,
     cx: &mut Context<T>,
     act: fn(&mut T, MenuAct, &mut Context<T>),
@@ -737,6 +765,12 @@ pub(super) fn copy_menu<T: 'static>(
         .map(|d| raised(d, th, 8.0, 3.0))
         .text_size(px(14.0))
         .text_color(rgba(th.text))
+        .when(can_pin, |d| {
+            d.child(
+                menu_item("text-pin", &tr!("text-pin"), th)
+                    .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::Pin, cx))),
+            )
+        })
         .when(on_address, |d| {
             d.child(
                 menu_item("text-copy-address", &tr!("text-copy-address"), th).on_click(
