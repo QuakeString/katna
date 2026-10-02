@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Select mails with Ctrl and Shift"
+text = """
+Ctrl+click a mail in the list to select it, and Ctrl+click more to add
+them. Shift+click selects every mail from the last one you clicked. To open
+a mail in its own window, right-click it and pick Open in new window.
+"""

@@ -1348,6 +1348,7 @@ impl MailWindow {
         self.tab = 0;
         self.selected = None;
         self.checked.clear();
+        self.check_anchor = None;
         self.clear_search(cx);
     }
 

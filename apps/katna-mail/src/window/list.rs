@@ -1318,6 +1318,52 @@ impl MailWindow {
         }
     }
 
+    /// Ticks or unticks line `ix` and makes it where Shift+click ticks
+    /// from. With `with_open`, the open line is ticked too when nothing is
+    /// ticked yet, so Ctrl+click on a second line selects both.
+    pub(super) fn click_check(&mut self, ix: usize, with_open: bool, cx: &mut Context<Self>) {
+        let Some(key) = self.entries.get(ix).map(|e| e.key) else {
+            return;
+        };
+        if with_open
+            && self.checked.is_empty()
+            && let Some(entry) = self
+                .selected
+                .filter(|&open| open != ix)
+                .and_then(|open| self.entries.get(open))
+        {
+            self.checked.insert(entry.key);
+        }
+        if !self.checked.remove(&key) {
+            self.checked.insert(key);
+        }
+        self.check_anchor = Some(ix);
+        self.checked_all = false;
+        self.page_pick = None;
+        self.picked = None;
+        cx.notify();
+    }
+
+    /// Ticks every line from the last one clicked (or the open line) to
+    /// line `ix`.
+    fn check_range(&mut self, ix: usize, cx: &mut Context<Self>) {
+        let from = self.check_anchor.or(self.selected).unwrap_or(ix);
+        let (lo, hi) = (
+            from.min(ix),
+            from.max(ix).min(self.entries.len().saturating_sub(1)),
+        );
+        if lo > hi {
+            return;
+        }
+        self.checked
+            .extend(self.entries[lo..=hi].iter().map(|e| e.key));
+        self.check_anchor = Some(ix);
+        self.checked_all = false;
+        self.page_pick = None;
+        self.picked = None;
+        cx.notify();
+    }
+
     /// Keys of the lines on screen.
     fn visible_keys(&self) -> impl Iterator<Item = EntryKey> + '_ {
         let range =
@@ -1372,6 +1418,7 @@ impl MailWindow {
         self.page_pick = None;
         self.picked = None;
         self.checked.clear();
+        self.check_anchor = None;
         match pick {
             Pick::None => {}
             // The lines on screen; the banner offers the whole list.
@@ -2063,10 +2110,14 @@ impl MailWindow {
             }))
             .on_click(
                 cx.listener(move |this, event: &gpui::ClickEvent, window, cx| {
-                    // Shift+click opens the line in a window of its own;
-                    // any other click opens it here.
-                    if event.modifiers().shift {
-                        this.open_in_window(ix, cx);
+                    // Ctrl+click ticks or unticks the line, Shift+click
+                    // ticks every line from the last one clicked; a plain
+                    // click opens it.
+                    let modifiers = event.modifiers();
+                    if modifiers.secondary() {
+                        this.click_check(ix, true, cx);
+                    } else if modifiers.shift {
+                        this.check_range(ix, cx);
                     } else {
                         this.open(ix, window, cx);
                     }
@@ -2206,15 +2257,13 @@ impl MailWindow {
             .justify_center()
             .rounded_full()
             .hover(|s| s.bg(rgba(th.hover)))
-            .on_click(cx.listener(move |this, _, _, cx| {
+            .on_click(cx.listener(move |this, event: &gpui::ClickEvent, _, cx| {
                 cx.stop_propagation();
-                if !this.checked.remove(&key) {
-                    this.checked.insert(key);
+                if event.modifiers().shift {
+                    this.check_range(ix, cx);
+                } else {
+                    this.click_check(ix, false, cx);
                 }
-                this.checked_all = false;
-                this.page_pick = None;
-                this.picked = None;
-                cx.notify();
             }))
             // One tree whether checked or not, so the tick can draw in.
             .child(
