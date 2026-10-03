@@ -795,6 +795,19 @@ enum Shown {
 }
 
 impl MailWindow {
+    /// The id of the open conversation's `ix`th message.
+    pub(super) fn part_id(&self, ix: usize) -> Option<MessageId> {
+        self.reader.as_ref()?.parts.get(ix).map(|p| p.id)
+    }
+
+    /// The plain text of message `id` in the open conversation, unless it
+    /// is encrypted or empty.
+    pub(super) fn plain_text_of(&self, id: MessageId) -> Option<String> {
+        let part = self.reader.as_ref()?.parts.iter().find(|p| p.id == id)?;
+        let body = part.body.as_ref().filter(|b| !b.encrypted())?;
+        Some(body.view.as_ref()?.body.clone()).filter(|text| !text.trim().is_empty())
+    }
+
     /// Whether the open conversation can switch between its own colors
     /// and dark ones.
     /// Not in a chat, whose bubbles show text, not the mail's own look.
@@ -1855,7 +1868,7 @@ impl MailWindow {
                 let translation = if pending {
                     None
                 } else {
-                    self.translation_bar(ix, id, &view.body, encrypted, th, cx)
+                    self.translation_bar(ix, id, &view.body, encrypted, false, th, cx)
                 };
                 let translated = self.translated_blocks(id);
                 let invite = part

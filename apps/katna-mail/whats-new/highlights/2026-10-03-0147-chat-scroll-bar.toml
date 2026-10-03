@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A scroll bar in chats"
+text = """
+Chats have the same quiet scroll bar as an open mail, shown while the
+pointer is over them.
+"""

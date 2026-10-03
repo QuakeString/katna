@@ -840,6 +840,7 @@ impl Viewer {
             view.cells.is_some(),
             false,
             false,
+            None,
             th,
             cx,
             |this: &mut Viewer, act, cx| {
@@ -847,7 +848,7 @@ impl Viewer {
                     view.menu = None;
                 }
                 match act {
-                    MenuAct::Close | MenuAct::CopyAddress | MenuAct::Pin => {}
+                    MenuAct::Close | MenuAct::CopyAddress | MenuAct::Pin | MenuAct::Translate => {}
                     MenuAct::Copy => this.copy_cells(cx),
                     MenuAct::SelectAll => this.select_all_cells(cx),
                 }

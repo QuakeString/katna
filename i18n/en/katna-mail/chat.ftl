@@ -56,6 +56,8 @@ chat-reply-only = Reply to { $name } only
 chat-forward = Forward
 chat-copy-text = Copy text
 chat-show-as-mail = Show as mail
+# The round button that takes a chat scrolled up back down to its newest mail.
+chat-go-down = Go to the newest mail
 # Pins: up to five things kept at the top of a chat, on this computer.
 chat-pin = Pin to top
 chat-pin-file = Pin file to top
