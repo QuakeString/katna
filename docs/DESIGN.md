@@ -71,6 +71,9 @@ A menu fades out in `FAST` when it closes, out of reach while it fades
 (the right-click menu keeps itself, marked closing, until the fade ends;
 a toolbar menu is noted as it closes, by `track_menu_fade`, and
 `with_menu` draws it fading).
+A notched popover does the same: it notes when it closed
+(`notched::fade_out`), draws itself through `notched::fading` until
+`notched::faded`, and treats a fading popover as closed.
 Something that opens and closes in place (a card that folds to a line, a
 section that unfolds) glides with `widgets::fold_box` and turns its
 `widgets::fold_arrow`, sharing one `widgets::Fold`: the height glides on

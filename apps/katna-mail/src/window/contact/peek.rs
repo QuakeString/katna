@@ -8,7 +8,7 @@
 
 use std::cell::Cell;
 use std::rc::Rc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use gpui::{
     AnimationExt, AnyElement, Bounds, Context, Pixels, Point, Window, anchored, canvas, deferred,
@@ -34,6 +34,8 @@ pub(in crate::window) struct ContactPeek {
     key: EntryKey,
     at: Point<Pixels>,
     height: Rc<Cell<f32>>,
+    /// When it closed and began to fade out.
+    closing: Option<Instant>,
 }
 
 impl ContactPeek {
@@ -42,6 +44,7 @@ impl ContactPeek {
             key,
             at,
             height: Rc::new(Cell::new(FIRST_HEIGHT)),
+            closing: None,
         }
     }
 }
@@ -70,9 +73,14 @@ impl MailWindow {
 
     /// Closes the popover, if open.
     pub(in crate::window) fn close_contact_peek(&mut self, cx: &mut Context<Self>) {
-        if self.contact.peek.take().is_some() {
-            cx.notify();
+        let Some(peek) = self.contact.peek.as_mut().filter(|p| p.closing.is_none()) else {
+            return;
+        };
+        peek.closing = notched::fade_out(cx);
+        if peek.closing.is_none() {
+            self.contact.peek = None;
         }
+        cx.notify();
     }
 
     /// The popover, over everything, its notch on where it was opened.
@@ -82,8 +90,13 @@ impl MailWindow {
         window: &Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        if let Some(since) = self.contact.peek.as_ref().and_then(|p| p.closing)
+            && notched::faded(since, cx)
+        {
+            self.contact.peek = None;
+        }
         let peek = self.contact.peek.as_ref()?;
-        let (at, measured) = (peek.at, peek.height.clone());
+        let (at, measured, closing) = (peek.at, peek.height.clone(), peek.closing);
         let viewport = window.viewport_size();
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let height = measured.get().min(vh - 2.0 * notched::MARGIN);
@@ -124,13 +137,18 @@ impl MailWindow {
                     .overflow_y_scroll()
                     .child(div().relative().child(body).child(measure)),
             )
-            .children(notch(side, along, th))
-            .with_animation(
-                "contact-peek",
-                gpui::Animation::new(katna_ui::motion::time(Duration::from_millis(160)))
-                    .with_easing(gpui::ease_out_quint()),
-                |el, t| el.opacity(t),
-            );
+            .children(notch(side, along, th));
+        let popover = match closing {
+            Some(_) => notched::fading(popover, "contact-peek-out"),
+            None => popover
+                .with_animation(
+                    "contact-peek",
+                    gpui::Animation::new(katna_ui::motion::time(Duration::from_millis(160)))
+                        .with_easing(gpui::ease_out_quint()),
+                    |el, t| el.opacity(t),
+                )
+                .into_any_element(),
+        };
         let layer = div().relative().w(px(vw)).h(px(vh)).child(popover);
         Some(
             deferred(anchored().position(point(px(0.0), px(0.0))).child(layer))
