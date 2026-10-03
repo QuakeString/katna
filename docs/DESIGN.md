@@ -1,0 +1,80 @@
+# Katna design system
+
+Every Katna window is built from the same named values and the same shared
+controls, so a hover, a corner or a gap looks alike wherever it appears.
+Decided 2026-10-03 (Design system study); the values come from what the
+code already used most, so moving code onto them changes little on screen.
+
+## Where things live
+
+| What | Where |
+| --- | --- |
+| Radii, spacing, text sizes, state opacities, elevation levels, durations | `katna_ui::tokens` (`crates/katna-ui/src/tokens.rs`) |
+| Springs | `katna_ui::motion` (`SMOOTH`, `GENTLE`, `SLIDE`, `QUICK`) |
+| Colour roles | Katna Mail's `Theme` (`apps/katna-mail/src/theme.rs`), built from the schemes in `katna_ui::schemes` |
+| Lengths | always through `katna_ui::px` (interface scale) |
+| Shared controls | `apps/katna-mail/src/widgets.rs`, moving to `katna-ui` as they are shared beyond Mail |
+
+## Tokens
+
+**Radius:** `XS` 4 (checkboxes, tags, inline code), `SM` 8 (fields, menu
+rows, thumbnails), `MD` 12 (cards, menus), `LG` 16 (popovers, dialogs,
+sheets, Compose), `FULL` (pills, avatars). A shape inside another takes
+`radius::inner(outer, padding)`. The title bar's roundness setting stays the
+user's.
+
+**Spacing:** `S1` 2 (optical nudges only), `S2` 4, `S3` 8, `S4` 12, `S5` 16,
+`S6` 24, `S7` 32, `S8` 48. Odd values only for 1-2 px optical alignment,
+with a comment saying why.
+
+**Text:** `MICRO` 11, `CAPTION` 12, `SMALL` 13, `BODY` 14, `SUBTITLE` 16,
+`TITLE` 20, `DISPLAY` 24, each with `text::line_height`. Weights: normal,
+medium, semibold, bold.
+
+**State layers** (the text colour at this opacity over the element): hover
+7%, pressed 14%, selected 10% (12% dark), dragged 16%, disabled 38%.
+Separating lines are a quarter of an edge's strength.
+
+**Lines:** `faint` (today's `th.divider`, `th.faint_line`) separates;
+`edge` (today's `th.outline`) outlines what can be clicked or typed in:
+fields, chips and every outlined button; a strong line marks focus and
+errors.
+
+**Elevation:** five levels, each fixing surface, shadow and edge together,
+in light and dark alike.
+
+| Level | Used for | Dark (#448) | Light |
+| --- | --- | --- | --- |
+| 0 Page | the page | page colour | page colour |
+| 1 Card | list, open mail, contact card, agenda | surface | white, edge from the card-edge decision (App window) |
+| 2 Float | floating buttons, dragging | `raised` + rim | white, edge + short shadow |
+| 3 Menu | menus, popovers | `menu` + rim | white, edge + shadow |
+| 4 Dialog | dialogs, sheets | `menu` + rim | white, edge + deeper shadow |
+
+**Motion:** springs for movement (`SLIDE` is the one with a little
+overshoot). Timed fades: `FAST` 140 ms (hover), `BASE` 220 ms (fades,
+folds), `SLOW` 400 ms (page swaps), `LINGER` 900 ms (slow reveals). Reduce
+motion is honoured by `Spring::tick`.
+
+## Shared controls
+
+The same element in two places is one shared widget. Built: icon button,
+pill button, filled and outlined buttons, menu and menu item, switch,
+checkbox, radio, colour swatch and wheel, avatar, tooltip, snackbar, scroll
+bar, skeleton. To build: one `Button` with styles, `Popover` (opens at the
+click, notch, level 3, `LG`), `Dialog` (level 4, fits the window, content
+scrolls), `Card`, `Row` (hover, soft-grey selected, ticked, count pill),
+`Chip`, `Field` (edge, focus ring, error, suggestions), and a Gallery page
+in development builds showing every control in light and dark.
+
+## Moving code over
+
+1. Tokens and this file, no visible change.
+2. `ci/check-tokens.sh` counts radii, text sizes and spacing typed as raw
+   numbers in the GPUI crates; the counts in `ci/token-budgets.txt` only go
+   down. Lower the budget in the PR that lowers the count.
+3. Light elevation, from the card-edge decision.
+4. The shared controls above, one PR each.
+5. Area by area, by the thread that owns the area. Values that change on
+   screen (15 to 16, 12.5 to 13) are shown as pictures before merging.
+   Setup and the window frame join last.
