@@ -37,16 +37,22 @@ Separating lines are a quarter of an edge's strength.
 
 **Lines:** `faint` (today's `th.divider`, `th.faint_line`) separates;
 `edge` (today's `th.outline`) outlines what can be clicked or typed in:
-fields, chips and every outlined button; a strong line marks focus and
-errors.
+fields and chips; outlined and pill buttons keep their stronger edge
+(`text_faint` at 70%, his call to keep them at full strength); a strong
+line marks focus and errors.
 
 **Elevation:** five levels, each fixing surface, shadow and edge together,
 in light and dark alike.
+Level 1 is `Theme::card_edge` and `widgets::card_shadow(th, t)` (#647):
+light `card_edge` is the shadow ink at 10% (`0x3c40431a`), drawn as a 1 px
+ring (at `CARD_REST` = 0.15 of full strength while the card rests) under a
+0,1 / blur 2 shadow at 47% of `th.shadow`; dark has no `card_edge` and
+keeps one 0,1 / blur 3 shadow at 30%.
 
 | Level | Used for | Dark (#448) | Light |
 | --- | --- | --- | --- |
 | 0 Page | the page | page colour | page colour |
-| 1 Card | list, open mail, contact card, agenda | surface | white, edge from the card-edge decision (App window) |
+| 1 Card | list, open mail, contact card, agenda | surface, one soft shadow | white, `card_edge` ring + short shadow |
 | 2 Float | floating buttons, dragging | `raised` + rim | white, edge + short shadow |
 | 3 Menu | menus, popovers | `menu` + rim | white, edge + shadow |
 | 4 Dialog | dialogs, sheets | `menu` + rim | white, edge + deeper shadow |
