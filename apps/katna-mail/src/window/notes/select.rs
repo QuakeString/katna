@@ -585,6 +585,7 @@ impl MailWindow {
         };
         let list = super::labels::render_label_choices(
             "notes-bulk-label",
+            tr!("notes-label-note"),
             picker,
             self.note_labels(),
             &state,

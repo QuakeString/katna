@@ -145,8 +145,10 @@ tasks-remind-on-time = At the time
 tasks-remind-morning = On the day, { $time }
 tasks-remind-hour-before = An hour before
 tasks-remind-day-before = The day before
-# The chip that opens the label picker in a task's details.
+# The chip that opens the label picker in a task's details, and the
+# picker's heading.
 tasks-label-add = Add label
+tasks-label-task = Label task
 # The paper clip in a task's details, and the file chooser's button.
 tasks-files-attach = Attach files
 tasks-files-pick = Attach

@@ -295,6 +295,7 @@ impl MailWindow {
             let on = ticked.to_vec();
             let list = render_label_choices(
                 "task-label-pick",
+                tr!("tasks-label-task"),
                 picker,
                 labels,
                 &move |label: &str| Check::from(on.iter().any(|l| l == label)),
