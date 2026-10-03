@@ -313,10 +313,9 @@ impl MailWindow {
                     .text_center()
                     .child(icon("check-circle", th.text_faint, 40.0))
                     .child(
-                        div()
+                        self.copyable(tr!("tasks-completed-empty"), th)
                             .text_size(px(text::BODY))
-                            .text_color(rgba(th.text_dim))
-                            .child(tr!("tasks-completed-empty")),
+                            .text_color(rgba(th.text_dim)),
                     ),
             );
         }
