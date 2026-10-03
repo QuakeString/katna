@@ -743,7 +743,8 @@ impl MailWindow {
                             .items_center()
                             .gap(px(6.0))
                             .child(
-                                words(&mut pieces, shown_name.clone())
+                                pieces
+                                    .words(shown_name.clone())
                                     .min_w_0()
                                     .text_size(px(16.0))
                                     .line_height(px(22.0))
@@ -755,7 +756,8 @@ impl MailWindow {
                     )
                     .when(name.is_some(), |d| {
                         d.child(
-                            words(&mut pieces, email.to_owned())
+                            pieces
+                                .words(email.to_owned())
                                 .text_size(px(13.0))
                                 .line_height(px(18.0))
                                 .text_color(rgba(th.text_dim))
@@ -797,7 +799,8 @@ impl MailWindow {
         let mut sections: Vec<AnyElement> = Vec::new();
         if own {
             sections.push(
-                words(&mut pieces, tr!("contact-own-account"))
+                pieces
+                    .words(tr!("contact-own-account"))
                     .text_size(px(14.0))
                     .line_height(px(20.0))
                     .text_color(rgba(th.text))
@@ -872,7 +875,8 @@ impl MailWindow {
         }
         let tint = card_tint(th);
         let foot = (profile.is_some() && !summary).then(|| {
-            words(&mut pieces, tr!("contact-local-only"))
+            pieces
+                .words(tr!("contact-local-only"))
                 .px(px(4.0))
                 .text_size(px(12.0))
                 .line_height(px(16.0))
@@ -1105,8 +1109,8 @@ impl MailWindow {
             div()
                 .flex()
                 .flex_col()
-                .child(words(pieces, first.clone()))
-                .children(under.map(|company| words(pieces, company).text_color(rgba(th.text_dim))))
+                .child(pieces.words(first.clone()))
+                .children(under.map(|company| pieces.words(company).text_color(rgba(th.text_dim))))
                 .into_any_element()
         });
         // Every number their signature gives, with its kind; the one read
@@ -1136,10 +1140,11 @@ impl MailWindow {
         });
         let emails = details
             .filter(|d| !d.emails.is_empty())
-            .map(|d| words(pieces, d.emails.join("\n")).into_any_element());
+            .map(|d| pieces.words(d.emails.join("\n")).into_any_element());
         // Any other line their signature has, quietly.
         let other = details.filter(|d| !d.other.is_empty()).map(|d| {
-            words(pieces, d.other.join("\n"))
+            pieces
+                .words(d.other.join("\n"))
                 .text_color(rgba(th.text_dim))
                 .into_any_element()
         });
@@ -1156,7 +1161,7 @@ impl MailWindow {
                 offset = profile::offset_label(minutes)
             ))
         });
-        let time = time.map(|t| words(pieces, t).into_any_element());
+        let time = time.map(|t| pieces.words(t).into_any_element());
         let rows: Vec<(&str, AnyElement)> = [
             ("work", work),
             ("phone", phone),
@@ -1240,7 +1245,8 @@ impl MailWindow {
         .collect::<Vec<_>>()
         .join(" · ");
         let text = |pieces: &mut Pieces, text: &str| {
-            words(pieces, text.to_owned())
+            pieces
+                .words(text.to_owned())
                 .text_size(px(13.0))
                 .line_height(px(19.0))
                 .text_color(rgba(th.text))
@@ -1308,7 +1314,8 @@ impl MailWindow {
                             .flex()
                             .flex_col()
                             .children(office.label.clone().map(|label| {
-                                words(pieces, label)
+                                pieces
+                                    .words(label)
                                     .text_size(px(12.0))
                                     .line_height(px(17.0))
                                     .text_color(rgba(th.text_dim))
@@ -1322,19 +1329,17 @@ impl MailWindow {
             .then(|| format::ago(company.checked, now))
             .flatten()
             .map(|when| {
-                words(
-                    pieces,
-                    tr!(
+                pieces
+                    .words(tr!(
                         "contact-company-from",
                         site = host_label(&company.website),
                         when = when
-                    ),
-                )
-                .text_size(px(11.5))
-                .line_height(px(16.0))
-                .text_color(rgba(th.text_faint))
+                    ))
+                    .text_size(px(11.5))
+                    .line_height(px(16.0))
+                    .text_color(rgba(th.text_faint))
             });
-        section(words(pieces, tr!("contact-company")), th)
+        section(pieces.words(tr!("contact-company")), th)
             .gap(px(8.0))
             .child(
                 div()
@@ -1350,7 +1355,8 @@ impl MailWindow {
                             .flex()
                             .flex_col()
                             .child(
-                                words(pieces, company.name.clone())
+                                pieces
+                                    .words(company.name.clone())
                                     .text_size(px(14.0))
                                     .line_height(px(20.0))
                                     .font_weight(FontWeight::MEDIUM)
@@ -1358,7 +1364,8 @@ impl MailWindow {
                             )
                             .when(!about.is_empty(), |d| {
                                 d.child(
-                                    words(pieces, about)
+                                    pieces
+                                        .words(about)
                                         .text_size(px(12.0))
                                         .line_height(px(16.0))
                                         .text_color(rgba(th.text_dim)),
@@ -1366,7 +1373,8 @@ impl MailWindow {
                             })
                             // "Part of the Demo Group", from the signature.
                             .children(group.map(|group| {
-                                words(pieces, group)
+                                pieces
+                                    .words(group)
                                     .text_size(px(12.0))
                                     .line_height(px(16.0))
                                     .text_color(rgba(th.text_dim))
@@ -1467,23 +1475,22 @@ impl MailWindow {
                 .map(katna_i18n::format::day_month_year)
                 .unwrap_or_default()
         };
-        let count = words(pieces, tr!("contact-messages", count = summary.messages))
+        let count = pieces
+            .words(tr!("contact-messages", count = summary.messages))
             .text_size(px(14.0))
             .line_height(px(20.0))
             .font_weight(FontWeight::MEDIUM)
             .text_color(rgba(th.text));
-        let from_to = words(
-            pieces,
-            tr!(
+        let from_to = pieces
+            .words(tr!(
                 "contact-from-to",
                 from = katna_i18n::format::number(summary.from_them),
                 to = katna_i18n::format::number(summary.to_them)
-            ),
-        )
-        .pb(px(4.0))
-        .text_size(px(13.0))
-        .line_height(px(18.0))
-        .text_color(rgba(th.text_dim));
+            ))
+            .pb(px(4.0))
+            .text_size(px(13.0))
+            .line_height(px(18.0))
+            .text_color(rgba(th.text_dim));
         let mut fact = |label: String, value: String| {
             div()
                 .flex()
@@ -1492,8 +1499,8 @@ impl MailWindow {
                 .gap(px(12.0))
                 .text_size(px(13.0))
                 .line_height(px(18.0))
-                .child(words(pieces, label).text_color(rgba(th.text_dim)))
-                .child(words(pieces, value).text_color(rgba(th.text)))
+                .child(pieces.words(label).text_color(rgba(th.text_dim)))
+                .child(pieces.words(value).text_color(rgba(th.text)))
         };
         let dates = summary.first.is_some().then(|| {
             [
@@ -1544,7 +1551,8 @@ impl MailWindow {
             row(("contact-conversation", ix), th)
                 .when(open == Some(key), |d| d.bg(rgba(th.hover)))
                 .child(
-                    words(pieces, subject)
+                    pieces
+                        .words(subject)
                         .flex_1()
                         .min_w_0()
                         .truncate()
@@ -1553,14 +1561,16 @@ impl MailWindow {
                 )
                 .when(c.count > 1, |d| {
                     d.child(
-                        words(pieces, katna_i18n::format::number(u64::from(c.count)))
+                        pieces
+                            .words(katna_i18n::format::number(u64::from(c.count)))
                             .flex_none()
                             .cursor_pointer()
                             .text_color(rgba(th.text_faint)),
                     )
                 })
                 .child(
-                    words(pieces, date)
+                    pieces
+                        .words(date)
                         .flex_none()
                         .cursor_pointer()
                         .text_size(px(12.0))
@@ -1572,7 +1582,7 @@ impl MailWindow {
         });
         let first: Vec<_> = rows.by_ref().take(SHOWN).collect();
         let rest: Vec<_> = rows.collect();
-        let mut list = section(words(pieces, tr!("contact-conversations")), th).children(first);
+        let mut list = section(pieces.words(tr!("contact-conversations")), th).children(first);
         if rest.is_empty() {
             return list.into_any_element();
         }
@@ -1650,7 +1660,7 @@ impl MailWindow {
             return None;
         }
         let today = super::tasks_page::today();
-        let title = words(pieces, tr!("contact-tasks"));
+        let title = pieces.words(tr!("contact-tasks"));
         let rows: Vec<_> = tasks
             .into_iter()
             .map(|(task, done)| {
@@ -1678,7 +1688,8 @@ impl MailWindow {
                             })),
                     )
                     .child(
-                        words(pieces, task.title.clone())
+                        pieces
+                            .words(task.title.clone())
                             .flex_1()
                             .min_w_0()
                             .truncate()
@@ -1687,7 +1698,8 @@ impl MailWindow {
                             .when(done, |d| d.line_through()),
                     )
                     .children(due.map(|(label, past)| {
-                        words(pieces, label)
+                        pieces
+                            .words(label)
                             .flex_none()
                             .cursor_pointer()
                             .text_size(px(12.0))
@@ -1740,7 +1752,8 @@ impl MailWindow {
                 )
                 .child(icon("event", color, 18.0))
                 .child(
-                    words(pieces, title)
+                    pieces
+                        .words(title)
                         .flex_1()
                         .min_w_0()
                         .truncate()
@@ -1748,7 +1761,8 @@ impl MailWindow {
                         .text_color(rgba(th.text)),
                 )
                 .child(
-                    words(pieces, when)
+                    pieces
+                        .words(when)
                         .flex_none()
                         .cursor_pointer()
                         .text_size(px(12.0))
@@ -1759,7 +1773,7 @@ impl MailWindow {
                 }))
             })
             .collect();
-        section(words(pieces, tr!("contact-meetings")), th)
+        section(pieces.words(tr!("contact-meetings")), th)
             .children(rows)
             .into_any_element()
     }
@@ -1771,7 +1785,7 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        section(words(pieces, tr!("contact-files")), th)
+        section(pieces.words(tr!("contact-files")), th)
             .children(files.iter().enumerate().map(|(ix, f)| {
                 let file = RowFile {
                     message: f.message,
@@ -1791,7 +1805,8 @@ impl MailWindow {
                     .children(fill)
                     .child(kind_badge(kind, 20.0))
                     .child(
-                        words(pieces, f.name.clone())
+                        pieces
+                            .words(f.name.clone())
                             .flex_1()
                             .min_w_0()
                             .truncate()
@@ -1799,7 +1814,8 @@ impl MailWindow {
                             .text_color(rgba(th.text)),
                     )
                     .child(
-                        words(pieces, format::size(f.size))
+                        pieces
+                            .words(format::size(f.size))
                             .flex_none()
                             .cursor_pointer()
                             .text_size(px(12.0))
@@ -1824,7 +1840,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let key = self.reader.as_ref().map(|r| r.key);
-        section(words(pieces, tr!("contact-people")), th)
+        section(pieces.words(tr!("contact-people")), th)
             .children(
                 people
                     .iter()
@@ -1837,7 +1853,8 @@ impl MailWindow {
                         row(("contact-person", ix), th)
                             .child(self.person_avatar(&label, email, 24.0))
                             .child(
-                                words(pieces, label)
+                                pieces
+                                    .words(label)
                                     .min_w_0()
                                     .truncate()
                                     .cursor_pointer()
@@ -1914,12 +1931,6 @@ fn section(title: gpui::Div, th: &Theme) -> gpui::Div {
             .font_weight(FontWeight::MEDIUM)
             .text_color(rgba(th.text_dim)),
     )
-}
-
-/// `text` as a run of the card's selectable text, in a box to style.
-fn words(pieces: &mut Pieces, text: impl Into<SharedString>) -> gpui::Div {
-    let (styled, holder) = pieces.piece(text.into(), Vec::new());
-    holder.child(styled)
 }
 
 /// A company as the daemon describes it

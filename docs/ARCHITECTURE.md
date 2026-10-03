@@ -1496,6 +1496,15 @@ Drag, double- and triple-click, Shift+click, Ctrl+A and Ctrl+C (once the
 text was clicked) and a right-click Copy work in plain and HTML mail; the
 selection also goes to the primary selection for middle-click paste.
 
+GPUI draws text that cannot be selected unless a view wires it up, so the
+rule is: text that reads as content or information (About, What's new,
+dialogs, descriptions, contact cards, details, error messages) is drawn
+with `Pieces::words` inside `select::selectable`, and controls (buttons,
+menu items, tabs, list rows, rows that open a page) stay click-only. About
+and What's new keep their own selection (`MailWindow::dialog_text`), so
+selecting in a dialog leaves the conversation's selection as it was, and a
+click in a dialog's text keeps the dialog focused for Escape and Tab.
+
 Sender pictures load without asking. Looking one up does reach the
 network (a DNS query and HTTPS requests from this computer to the
 organization), so it is kept narrow (security audit of 28 September 2026):

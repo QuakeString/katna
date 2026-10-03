@@ -19,8 +19,10 @@ use gpui::{
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
+use katna_ui::tokens::space;
 use katna_ui::unpx;
 
+use super::select::{ABOUT_PART, Pieces, selectable};
 use super::{MailWindow, PANEL_RADIUS, ShowAbout, ShowWhatsNew};
 use crate::theme::{Theme, fade};
 use crate::whats_new;
@@ -210,8 +212,8 @@ fn libraries(json: &str) -> Vec<Library> {
 }
 
 pub(super) struct About {
-    focus: FocusHandle,
-    closing: bool,
+    pub(super) focus: FocusHandle,
+    pub(super) closing: bool,
     shown: Spring,
     /// Every library is listed, not only the heart of Katna.
     all: bool,
@@ -246,6 +248,7 @@ impl MailWindow {
         window.focus(&focus, cx);
         let mut shown = Spring::new(motion::SMOOTH, 0.0);
         shown.set(1.0);
+        self.dialog_text.clear();
         self.about = Some(About {
             focus,
             closing: false,
@@ -345,7 +348,10 @@ impl MailWindow {
 
         let offset = -unpx(about.scroll.offset().y);
         let radius = if phone { 0.0 } else { PANEL_RADIUS };
-        let header = header(th, width, offset.max(0.0), radius);
+        // Its words can be selected and copied, top to bottom; buttons and
+        // rows that open a page stay buttons.
+        let mut pieces = self.dialog_text.pieces(ABOUT_PART, th);
+        let header = header(th, width, offset.max(0.0), radius, &mut pieces, cx);
 
         let changelog = whats_new::changelog_url(None);
         let links = div()
@@ -464,12 +470,14 @@ impl MailWindow {
                 .items_center()
                 .justify_center()
                 .gap(px(8.0))
-                .child(
-                    div()
+                .child(selectable(
+                    pieces
+                        .words(tr!("about-follow-me"))
                         .text_size(px(13.0))
-                        .text_color(rgba(th.text_dim))
-                        .child(tr!("about-follow-me")),
-                )
+                        .text_color(rgba(th.text_dim)),
+                    Some(ABOUT_PART),
+                    cx,
+                ))
                 .children(follow)
         });
 
@@ -491,28 +499,36 @@ impl MailWindow {
                     .min_w_0()
                     .flex()
                     .flex_col()
-                    .gap(px(4.0))
-                    .child(
+                    .gap(px(space::S2))
+                    .child(selectable(
                         div()
-                            .text_size(px(15.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .child(tr!("about-love-title")),
-                    )
-                    .child(
-                        div()
-                            .text_size(px(14.0))
-                            .line_height(px(21.0))
-                            .text_color(rgba(th.text_dim))
-                            .child(tr!("about-love-text")),
-                    )
-                    .child(
-                        div()
-                            .mt(px(6.0))
-                            .text_size(px(14.0))
-                            .line_height(px(21.0))
-                            .text_color(rgba(th.text_dim))
-                            .child(tr!("about-kde-text")),
-                    )
+                            .flex()
+                            .flex_col()
+                            .gap(px(space::S2))
+                            .child(
+                                pieces
+                                    .words(tr!("about-love-title"))
+                                    .text_size(px(15.0))
+                                    .font_weight(FontWeight::MEDIUM),
+                            )
+                            .child(
+                                pieces
+                                    .words(tr!("about-love-text"))
+                                    .text_size(px(14.0))
+                                    .line_height(px(21.0))
+                                    .text_color(rgba(th.text_dim)),
+                            )
+                            .child(
+                                pieces
+                                    .words(tr!("about-kde-text"))
+                                    .mt(px(6.0))
+                                    .text_size(px(14.0))
+                                    .line_height(px(21.0))
+                                    .text_color(rgba(th.text_dim)),
+                            ),
+                        Some(ABOUT_PART),
+                        cx,
+                    ))
                     .child(div().mt(px(8.0)).flex().flex_row().child(link_button(
                         "about-donate-kde",
                         tr!("about-donate-kde"),
@@ -521,6 +537,31 @@ impl MailWindow {
                     ))),
             );
 
+        let personal = selectable(
+            div()
+                .flex_none()
+                .px(px(24.0))
+                .pt(px(20.0))
+                .flex()
+                .flex_col()
+                .gap(px(space::S2))
+                .child(
+                    pieces
+                        .words(tr!("about-personal-title"))
+                        .text_size(px(15.0))
+                        .font_weight(FontWeight::MEDIUM),
+                )
+                .child(
+                    pieces
+                        .words(tr!("about-personal-text"))
+                        .text_size(px(14.0))
+                        .line_height(px(21.0))
+                        .text_color(rgba(th.text_dim)),
+                ),
+            Some(ABOUT_PART),
+            cx,
+        );
+
         let gpui = div()
             .flex_none()
             .mx(px(24.0))
@@ -528,22 +569,30 @@ impl MailWindow {
             .p(px(16.0))
             .flex()
             .flex_col()
-            .gap(px(4.0))
+            .gap(px(space::S2))
             .rounded(px(12.0))
             .bg(rgba(fade(th.accent, if th.dark { 0.16 } else { 0.07 })))
-            .child(
+            .child(selectable(
                 div()
-                    .text_size(px(15.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .child(tr!("about-gpui-title")),
-            )
-            .child(
-                div()
-                    .text_size(px(14.0))
-                    .line_height(px(21.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(tr!("about-gpui-text")),
-            )
+                    .flex()
+                    .flex_col()
+                    .gap(px(space::S2))
+                    .child(
+                        pieces
+                            .words(tr!("about-gpui-title"))
+                            .text_size(px(15.0))
+                            .font_weight(FontWeight::MEDIUM),
+                    )
+                    .child(
+                        pieces
+                            .words(tr!("about-gpui-text"))
+                            .text_size(px(14.0))
+                            .line_height(px(21.0))
+                            .text_color(rgba(th.text_dim)),
+                    ),
+                Some(ABOUT_PART),
+                cx,
+            ))
             .child(
                 div()
                     .mt(px(8.0))
@@ -558,27 +607,6 @@ impl MailWindow {
                         GPUI_URL.to_owned(),
                         th,
                     )),
-            );
-
-        let personal = div()
-            .flex_none()
-            .px(px(24.0))
-            .pt(px(20.0))
-            .flex()
-            .flex_col()
-            .gap(px(4.0))
-            .child(
-                div()
-                    .text_size(px(15.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .child(tr!("about-personal-title")),
-            )
-            .child(
-                div()
-                    .text_size(px(14.0))
-                    .line_height(px(21.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(tr!("about-personal-text")),
             );
 
         let credits = CREDITS
@@ -768,15 +796,17 @@ impl MailWindow {
             .gap(px(8.0))
             .border_t_1()
             .border_color(rgba(th.divider))
-            .child(
-                div()
-                    .flex_1()
-                    .min_w_0()
-                    .text_size(px(12.0))
-                    .line_height(px(17.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(tr!("about-license")),
-            )
+            .child(selectable(
+                div().flex_1().min_w_0().child(
+                    pieces
+                        .words(tr!("about-license"))
+                        .text_size(px(12.0))
+                        .line_height(px(17.0))
+                        .text_color(rgba(th.text_dim)),
+                ),
+                Some(ABOUT_PART),
+                cx,
+            ))
             .child(
                 filled_button("about-close", tr!("about-close"), th)
                     .focus_ring_filled(th)
@@ -785,6 +815,7 @@ impl MailWindow {
 
         let card = div()
             .id("about")
+            .map(|d| self.dialog_text_area(d, cx))
             .track_focus(&about.focus)
             .map(|d| super::popovers::keep_tab_inside(d, &about.focus))
             .on_key_down(cx.listener(Self::about_key))
@@ -842,6 +873,7 @@ impl MailWindow {
                         .mt(px(lerp(24.0, 0.0, t)))
                         .child(card),
                 )
+                .children(self.render_dialog_text_menu(th, cx))
                 .into_any_element(),
         )
     }
@@ -874,7 +906,14 @@ const LOGO_SHORT: f32 = 60.0;
 /// px, it shrinks with the scroll, the wordmark moving to the left with
 /// the three lines beside it, then stays while the rest scrolls under its
 /// frost.
-fn header(th: &Theme, width: f32, offset: f32, radius: f32) -> AnyElement {
+fn header(
+    th: &Theme,
+    width: f32,
+    offset: f32,
+    radius: f32,
+    pieces: &mut Pieces,
+    cx: &mut Context<MailWindow>,
+) -> AnyElement {
     let collapse = HEADER_TALL - HEADER_SHORT;
     let t = (offset / collapse).clamp(0.0, 1.0);
     // Frosted as the page nears the point where it slides under.
@@ -938,7 +977,7 @@ fn header(th: &Theme, width: f32, offset: f32, radius: f32) -> AnyElement {
                 .left(px(logo_left))
                 .child(crate::widgets::katna_wordmark_from(logo, LOGO_TALL, th)),
         )
-        .child(
+        .child(selectable(
             div()
                 .absolute()
                 .top(px(text_top))
@@ -947,31 +986,33 @@ fn header(th: &Theme, width: f32, offset: f32, radius: f32) -> AnyElement {
                 .flex()
                 .flex_col()
                 .child(line(
-                    div()
+                    pieces
+                        .words("Katna")
                         .text_size(px(name))
-                        .line_height(px(name_line))
-                        .child("Katna"),
+                        .line_height(px(name_line)),
                 ))
                 .child(line(
-                    div()
+                    pieces
+                        .words(tr!("about-tagline"))
                         .mt(px(gap_tag))
                         .text_size(px(tag))
                         .line_height(px(tag_line))
-                        .text_color(rgba(th.text_dim))
-                        .child(tr!("about-tagline")),
+                        .text_color(rgba(th.text_dim)),
                 ))
                 .child(line(
-                    div()
+                    pieces
+                        .words(format!("Katna Mail {}", whats_new::VERSION))
                         .mt(px(gap_chip))
                         .px(px(chip_x))
                         .py(px(chip_y))
                         .rounded_full()
                         .bg(rgba(th.chip))
                         .text_size(px(chip))
-                        .line_height(px(chip_line))
-                        .child(format!("Katna Mail {}", whats_new::VERSION)),
+                        .line_height(px(chip_line)),
                 )),
-        )
+            Some(ABOUT_PART),
+            cx,
+        ))
         .into_any_element()
 }
 

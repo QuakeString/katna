@@ -609,6 +609,8 @@ pub struct MailWindow {
     translations: translate::Translations,
     /// The selected text of the open conversation.
     text: select::TextSelection,
+    /// The selected text of About or What's new, while one is shown.
+    dialog_text: select::TextSelection,
     /// Whether a conversation is open: in place of the list with two
     /// panes, beside it with three.
     reading: bool,
@@ -951,6 +953,7 @@ impl MailWindow {
             hovered_link: None,
             translations: translate::Translations::default(),
             text: select::TextSelection::new(cx),
+            dialog_text: select::TextSelection::new(cx),
             accounts: Vec::new(),
             quotas: HashMap::new(),
             storage_account: std::cell::Cell::new(None),
@@ -3835,6 +3838,7 @@ impl Render for MailWindow {
         let contact_label = self.render_label_dialog(&th, window, reduce, cx);
         let scheme_editor = self.render_scheme_editor(&th, window, reduce, cx);
         let contact_qr = self.render_contact_qr(&th, window, reduce, cx);
+        self.dialog_text.begin(());
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let share_ask = if onboarding {
             None
