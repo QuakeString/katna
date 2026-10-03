@@ -180,6 +180,32 @@ impl MailWindow {
         }
     }
 
+    /// How much attachment chips under a line add to its height.
+    fn chips_extra(&self, has_chips: bool) -> f32 {
+        match (has_chips, self.stacked()) {
+            (false, _) => 0.0,
+            (true, false) => CHIPS_LINE,
+            (true, true) => CHIPS_LINE - 4.0,
+        }
+    }
+
+    /// The height line `ix` is drawn at, chips included.
+    fn line_height_at(&mut self, ix: usize) -> f32 {
+        let Some(entry) = self.entries.get(ix).copied() else {
+            return self.row_height();
+        };
+        let folder = self.listed_folder();
+        let has_chips = match &mut self.mail {
+            Ok(mail) => mail
+                .rows(&[entry], folder, self.show_recipients)
+                .pop()
+                .flatten()
+                .is_some_and(|r| !r.files.is_empty()),
+            Err(_) => false,
+        };
+        self.row_height() + self.chips_extra(has_chips)
+    }
+
     /// Keeps the line just opened where it was on screen while the reading
     /// pane opens beside the list, or scrolls just enough to show it whole
     /// when it no longer fits there. The lines may change height (two
@@ -209,16 +235,22 @@ impl MailWindow {
             }
             return;
         }
-        let height = px(self.row_height());
-        let top = keep.top.min(view.size.height - height).max(px(0.0));
-        // Whole lines above it, and how much of the one above those shows.
-        let above = (top / height).ceil() as usize;
-        let ix = keep.ix.saturating_sub(above);
-        let offset_in_item = if keep.ix >= above {
-            height * above as f32 - top
-        } else {
-            px(0.0)
-        };
+        let height = px(self.line_height_at(keep.ix));
+        let mut left = keep.top.min(view.size.height - height).max(px(0.0));
+        // Walk up the lines above it, each at its own height (lines with
+        // attachment chips are taller), to the one cut by the list's top.
+        let mut ix = keep.ix;
+        let mut offset_in_item = px(0.0);
+        while left > px(0.0) && ix > 0 {
+            ix -= 1;
+            let above = px(self.line_height_at(ix));
+            if above >= left {
+                offset_in_item = above - left;
+                left = px(0.0);
+            } else {
+                left -= above;
+            }
+        }
         self.list_state.scroll_to(ListOffset {
             item_ix: ix,
             offset_in_item,
@@ -2184,12 +2216,7 @@ impl MailWindow {
         let line_height = self.row_height();
         let stacked = self.stacked();
         let has_chips = row.as_ref().is_some_and(|r| !r.files.is_empty());
-        let height = line_height
-            + match (has_chips, stacked) {
-                (false, _) => 0.0,
-                (true, false) => CHIPS_LINE,
-                (true, true) => CHIPS_LINE - 4.0,
-            };
+        let height = line_height + self.chips_extra(has_chips);
         let scrolling = self.list_scrolling.is_some();
         let hovered = !scrolling && self.hovered == Some(ix);
         let cursor = self.selected == Some(ix);

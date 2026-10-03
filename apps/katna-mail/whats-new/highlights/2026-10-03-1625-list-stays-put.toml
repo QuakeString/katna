@@ -2,6 +2,6 @@
 
 title = "The mail list stays put when you open a mail"
 text = """
-With a mail open beside the list, clicking another mail no longer nudges
-the list down by a line. The list stays exactly where you scrolled it.
+Opening a mail no longer nudges the list down by a line in folders where
+some mails show attachments. The list stays exactly where you scrolled it.
 """
