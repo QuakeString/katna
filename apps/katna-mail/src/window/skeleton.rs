@@ -17,7 +17,7 @@ use katna_ui::px;
 use super::apps::{APP_RAIL_WIDTH, App as RailApp};
 use super::{COMPOSE_HEIGHT, COMPOSE_RADIUS, MailWindow, NAV_ROW_INSET, NAV_WIDTH, SPLIT_GAP};
 use crate::theme::{Theme, fade};
-use crate::widgets::{card_outline, card_shadow, icon};
+use crate::widgets::{card_outline, icon};
 
 /// One breath of the placeholders, dim to bright and back.
 const PULSE: Duration = Duration::from_millis(1800);
@@ -184,9 +184,7 @@ fn card(th: &Theme, radius: f32, outline: f32) -> Div {
         .flex()
         .flex_col()
         .overflow_hidden()
-        .rounded(px(radius))
-        .map(|d| crate::widgets::pane(d, th.pane(), th.surface, radius))
-        .shadow(card_shadow(th, super::SHADOW_REST))
+        .map(|d| crate::widgets::card(d, th, th.pane(), radius, super::SHADOW_REST))
         .children(card_outline(th, radius, outline))
 }
 

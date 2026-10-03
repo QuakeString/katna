@@ -43,7 +43,7 @@ use crate::format;
 use crate::profile::{self, Profile};
 use crate::theme::{Theme, mix};
 use crate::widgets::{
-    card_outline, card_shadow, icon, icon_button, icon_button_colored, tip, tonal_icon_button,
+    card_outline, icon, icon_button, icon_button_colored, tip, tonal_icon_button,
 };
 
 /// The card's width.
@@ -584,10 +584,8 @@ impl MailWindow {
             .id("contact-card")
             .size_full()
             .relative()
-            .rounded(px(radius))
             .overflow_hidden()
-            .map(|d| crate::widgets::pane(d, th.pane(), th.surface, radius))
-            .shadow(card_shadow(th, shadow))
+            .map(|d| crate::widgets::card(d, th, th.pane(), radius, shadow))
             .p(px(outline))
             .child(
                 div()

@@ -14,8 +14,9 @@ use katna_ui::{TextInput, px};
 use super::MailWindow;
 use crate::theme::{Accent, Theme};
 use crate::widgets::{
-    Check, avatar, checkbox, choice_chip, filled_button, icon_button, line_field, menu, menu_item,
-    outlined_button, pill_button, radio, raised, row, switch, tag, text_button, tonal_icon_button,
+    CARD_REST, Check, avatar, card, checkbox, choice_chip, filled_button, icon_button, line_field,
+    menu, menu_item, outlined_button, pill_button, radio, raised, row, switch, tag, text_button,
+    tonal_icon_button,
 };
 
 pub(super) struct Gallery {
@@ -92,9 +93,17 @@ impl MailWindow {
                         .overflow_y_scroll()
                         .track_scroll(&gallery.scroll)
                         .flex()
-                        .flex_row()
-                        .child(column("light", &light, &gallery.light, cx))
-                        .child(column("dark", &dark, &gallery.dark, cx)),
+                        .flex_col()
+                        // The columns sit in a row of their own, so they
+                        // grow with their controls and the page scrolls.
+                        .child(
+                            div()
+                                .flex_none()
+                                .flex()
+                                .flex_row()
+                                .child(column("light", &light, &gallery.light, cx))
+                                .child(column("dark", &dark, &gallery.dark, cx)),
+                        ),
                 )
                 .into_any_element(),
         )
@@ -228,6 +237,25 @@ fn column(
                 .w(px(200.0))
                 .child(menu_item(id("menu-1"), &tr!("gallery-reply"), th))
                 .child(menu_item(id("menu-2"), &tr!("gallery-add"), th)),
+        ))
+        .child(section(
+            tr!("gallery-cards"),
+            th,
+            line().children(
+                [
+                    (tr!("gallery-card-rest"), CARD_REST),
+                    (tr!("gallery-card-active"), 1.0),
+                ]
+                .into_iter()
+                .map(|(label, shadow)| {
+                    card(div(), th, th.pane(), radius::LG, shadow)
+                        .w(px(160.0))
+                        .h(px(96.0))
+                        .p(px(space::S4))
+                        .text_color(rgba(th.text_dim))
+                        .child(label)
+                }),
+            ),
         ))
         .child(section(
             tr!("gallery-elevation"),

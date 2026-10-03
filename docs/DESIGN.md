@@ -76,8 +76,9 @@ accent ring inside it while it has the keys; 40 px for one line), menu
 and menu item, switch,
 checkbox, radio, colour swatch and wheel, avatar, tooltip, snackbar, scroll
 bar, skeleton, `notched::popover` (opens at the click, notch, level 4,
-`LG`), `widgets::dialog` (level 3, `LG`, frosted). To build: `Card`,
-`Row`'s ticked and count-pill parts, `Field`'s error state and
+`LG`), `widgets::dialog` (level 3, `LG`, frosted), `widgets::card` (level
+1: rounds, fills through `pane` and adds `card_shadow`; the mail list, open
+mail, person card, agenda and Settings). To build: `Row`'s ticked and count-pill parts, `Field`'s error state and
 suggestions. The Gallery (`katna-mail --page gallery`, development
 builds only, `window/gallery.rs`) shows every shared control in light and
 dark; add a new control to it.
