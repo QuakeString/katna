@@ -1665,6 +1665,26 @@ impl MailWindow {
                     .into_any_element()
             }
         });
+        // Seen more than once: how many times, in a faint pill.
+        let count = seen
+            .map(|(part, _)| self.seen_count(part))
+            .filter(|n| *n > 1)
+            .map(|n| {
+                div()
+                    .mr(px(3.0))
+                    .h(px(16.0))
+                    .px(px(5.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(3.0))
+                    .rounded_full()
+                    .border_1()
+                    .border_color(rgba(th.divider))
+                    .text_color(rgba(th.text_dim))
+                    .child(icon("eye", th.text_faint, 11.0))
+                    .child(katna_i18n::format::number(n as u64))
+            });
         let meta = div()
             .flex()
             .flex_row()
@@ -1673,6 +1693,7 @@ impl MailWindow {
             .text_size(px(11.0))
             .line_height(px(14.0))
             .text_color(rgba(th.text_faint))
+            .children(count)
             .children(pinned)
             .child(time)
             .children(state);

@@ -114,6 +114,25 @@ impl MailWindow {
         )
     }
 
+    /// How many times message `part` was seen: opens by people and read
+    /// receipts.
+    pub(super) fn seen_count(&self, part: &Part) -> u32 {
+        let opens: u32 = part
+            .activity
+            .iter()
+            .flat_map(|a| &a.recipients)
+            .map(|r| r.opens)
+            .sum();
+        let receipts = self.reader.as_ref().map_or(0, |reader| {
+            reader
+                .receipts_for(part)
+                .iter()
+                .filter(|r| r.displayed)
+                .count() as u32
+        });
+        opens + receipts
+    }
+
     /// `target` (the eye, or a chat bubble's time and ticks) opening who
     /// has seen message `ix` while hovered or clicked. The popover's notch
     /// points at `target`, or with `spot` false at where [`Self::seen_spot`]
