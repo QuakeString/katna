@@ -1524,6 +1524,7 @@ impl MailWindow {
             .flex_col()
             .gap(px(4.0))
             .children(groups)
+            .children(self.render_tasks_switch(th, cx))
             .into_any_element()
     }
 
@@ -2248,7 +2249,7 @@ impl MailWindow {
             }
         }
         // Tasks too, in the accent, on days without events.
-        for (task, _) in self.dated_tasks() {
+        for (task, _) in self.calendar_tasks() {
             if let Some((day, _)) = self.task_place(task)
                 && day.year() == year.year()
             {
@@ -2424,6 +2425,8 @@ impl MailWindow {
                 .text_color(rgba(th.text_dim))
                 .child(name.to_uppercase())
         });
+        // A task dragged to another day is let go anywhere on the month.
+        let drop = cx.listener(|this, _, _, cx| this.drop_dragged_task(cx));
         let weeks = (0..6).map(|week| {
             let cells = (0..7).map(|ix| {
                 let day = first.checked_add((week * 7 + ix).days()).unwrap_or(first);
@@ -2433,13 +2436,8 @@ impl MailWindow {
                     .iter()
                     .filter(|o| o.start < next && (o.end > start || o.start == start))
                     .collect();
-                let mut day_tasks = self.tasks_on(day);
-                // Three lines, or two and "N more".
-                let total = mine.len() + day_tasks.len();
-                let room = if total > 3 { 2 } else { 3 };
-                let shown = &mine[..mine.len().min(room)];
-                day_tasks.truncate(room - shown.len());
-                let more = total - shown.len() - day_tasks.len();
+                let (count, day_tasks, more) = self.month_lines(day, mine.len());
+                let shown = &mine[..count];
                 let task_lines = self.render_month_tasks(day_tasks, day, th, cx);
                 let is_today = day == today;
                 let in_month = day.month() == month;
@@ -2506,6 +2504,7 @@ impl MailWindow {
                 });
                 div()
                     .id(SharedString::from(format!("month-day-{day}")))
+                    .on_mouse_move(self.month_drag_over(day, cx))
                     .on_mouse_down(
                         MouseButton::Right,
                         self.calendar_menu_on(CalTarget::Slot { day, time: None }, cx),
@@ -2594,6 +2593,8 @@ impl MailWindow {
                 .children(cells)
         });
         div()
+            .id("calendar-month")
+            .on_mouse_up(MouseButton::Left, drop)
             .size_full()
             .flex()
             .flex_col()

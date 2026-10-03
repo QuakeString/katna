@@ -1368,6 +1368,9 @@ pub struct CalendarView {
     /// Named groups of calendars shown together, as Fantastical's
     /// calendar sets: one click shows a set's calendars and hides the rest.
     pub sets: Vec<CalendarSet>,
+    /// Tasks are left off the Calendar (the side list's Tasks unticked).
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub hide_tasks: bool,
 }
 
 /// One of [`CalendarView::sets`].
