@@ -59,7 +59,7 @@ pub fn dimensions(bytes: &[u8]) -> Option<(u32, u32)> {
 
 /// `bytes` decoded; an SVG is drawn at twice its size, at most
 /// `max_side` pixels on a side (see [`crate::svg`]).
-fn read(bytes: &[u8], format: Picture, max_side: u32) -> Result<DynamicImage, Error> {
+pub(crate) fn read(bytes: &[u8], format: Picture, max_side: u32) -> Result<DynamicImage, Error> {
     let format = match format {
         Picture::Png => ImageFormat::Png,
         Picture::Jpeg => ImageFormat::Jpeg,

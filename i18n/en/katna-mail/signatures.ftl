@@ -36,6 +36,65 @@ signature-picture-kind = Pick a PNG, JPEG, GIF or WebP picture.
 # The file could not be read. $name: the file's name; $error: why, from the system.
 signature-picture-unreadable = { $name }: { $error }
 
+## Layouts
+# Ready-made signatures: the fields are filled in once, a layout is
+# picked, and Katna writes mail-safe HTML with a plain text twin.
+
+signature-layout = Layout
+# The choice that keeps a signature written by hand, not from a layout.
+signature-layout-own = Your own
+signature-layout-classic = Classic
+signature-layout-logo-left = Logo left
+signature-layout-photo = Photo
+signature-layout-band = Colour band
+signature-layout-one-line = One line
+signature-layout-centred = Centred
+signature-layout-banner = With banner
+signature-layout-underline = Underline
+signature-layout-side-bar = Side bar
+signature-layout-card = Card
+signature-layout-monogram = Monogram
+signature-layout-plain = Plain text
+# Labels written before numbers in the signature itself. Keep them short:
+# Katna's person card reads "M:" and "O:".
+signature-layout-mobile-label = M:
+signature-layout-office-label = O:
+signature-layout-email-label = E:
+# The fields.
+signature-layout-name = Name
+signature-layout-job = Title
+signature-layout-company = Company
+signature-layout-mobile = Mobile
+signature-layout-office = Office
+signature-layout-email = Email
+signature-layout-website = Website
+signature-layout-address = Address
+signature-layout-pictures = Pictures
+signature-layout-logo = Logo
+signature-layout-photo-picture = Photo
+signature-layout-banner-picture = Banner
+signature-layout-remove-picture = Remove
+signature-layout-pages = Pages
+# The field to add a page: a LinkedIn profile, a YouTube channel.
+signature-layout-page-placeholder = Add a page's address
+signature-layout-colour = Colour
+# A picture that could not be read. $name: the file's name.
+signature-layout-picture-failed = { $name } couldn't be used as a picture.
+# Over the preview.
+signature-layout-preview = How the reader sees it
+signature-layout-light = Light
+signature-layout-dark = Dark
+signature-layout-text = Plain text
+# $size: such as 23 KB.
+signature-layout-inside = Pictures are sent inside the mail, so they show even where remote images are off. This one adds { $size } to each mail.
+signature-layout-free = Want something else?
+signature-layout-edit = Edit by hand
+signature-layout-edit-confirm = Edit it by hand? Its fields and layout go, and it keeps its look as far as the editor can hold it.
+# $layout: the layout's name.
+signature-layout-use-confirm = Use the { $layout } layout? It replaces this signature, filled in from it.
+signature-layout-use = Use layout
+signature-layout-cancel = Cancel
+
 ## Paste HTML
 # A signature designed elsewhere (a signature website, another mail app),
 # pasted as HTML. It is sent as it is, with its pictures inside the mail.

@@ -51,6 +51,7 @@ mod notifications;
 mod rules;
 mod signature_html;
 mod signature_import;
+mod signature_layout;
 mod starter_rules;
 mod templates;
 
@@ -244,6 +245,11 @@ pub(super) struct SettingsPage {
     /// The Paste HTML panel, open in place of the signature editor.
     pasting: Option<signature_html::PasteHtml>,
     importing: Option<signature_import::ImportSignatures>,
+    /// The form of the signature being edited, when it uses a layout.
+    layout: Option<signature_layout::LayoutForm>,
+    /// The question asked before a layout replaces a signature, or a
+    /// signature leaves its layout.
+    layout_confirm: Option<signature_layout::Confirm>,
     save: Option<Task<()>>,
     recording: Option<Recording>,
     pub(super) scroll: ScrollHandle,
@@ -443,6 +449,8 @@ impl MailWindow {
                 template: None,
                 pasting: None,
                 importing: None,
+                layout: None,
+                layout_confirm: None,
                 save: None,
                 recording: None,
                 scroll: scroll.clone(),
@@ -2374,13 +2382,16 @@ impl MailWindow {
         if let Some(page) = &mut self.settings_page {
             page.pasting = None;
             page.importing = None;
+            page.layout_confirm = None;
         }
         let Some(signature) = self.config.sending.signature(id).cloned() else {
             if let Some(page) = &mut self.settings_page {
                 page.editing = None;
+                page.layout = None;
             }
             return;
         };
+        self.open_layout_form(&signature, window, cx);
         let accent = rgba(self.theme(window).accent).into();
         let name = cx.new(|cx| {
             let mut input = TextInput::new(tr!("settings-compose-signature-name"), cx);
@@ -2651,6 +2662,15 @@ impl MailWindow {
             .paste_html_panel(th, cx)
             .or_else(|| self.import_signatures_panel(th, cx));
         let pasting_open = pasting.is_some();
+        let editing_id = self
+            .settings_page
+            .as_ref()
+            .and_then(|p| p.editing.as_ref())
+            .map(|e| e.id);
+        let layout_tiles = editing_id
+            .filter(|_| !pasting_open)
+            .map(|id| self.layout_tiles(id, th, cx));
+        let layout_form = self.layout_form(th, cx);
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
         let list = sending.signatures.iter().map(|s| {
@@ -2665,36 +2685,55 @@ impl MailWindow {
             .on_click(
                 cx.listener(move |this, _, window, cx| this.edit_signature(Some(id), window, cx)),
             )
-            .child(div().truncate().child(if s.name.trim().is_empty() {
-                tr!("settings-compose-untitled")
-            } else {
-                s.name.clone()
-            }))
+            .child(
+                div()
+                    .min_w_0()
+                    .py(px(katna_ui::tokens::space::S2))
+                    .flex()
+                    .flex_col()
+                    .child(div().truncate().child(if s.name.trim().is_empty() {
+                        tr!("settings-compose-untitled")
+                    } else {
+                        s.name.clone()
+                    }))
+                    .child(
+                        div()
+                            .truncate()
+                            .text_size(px(katna_ui::tokens::text::CAPTION))
+                            .text_color(rgba(th.text_dim))
+                            .child(signature_layout::kind(s)),
+                    ),
+            )
         });
         let editor = editing.filter(|_| !pasting_open).map(|e| {
             let id = e.id;
-            let designed = sending
-                .signature(Some(id))
-                .is_some_and(|s| s.html.contains(katna_ui::rich::html::HTML_START));
+            let signature = sending.signature(Some(id));
+            let from_layout = signature.is_some_and(|s| s.layout.is_some());
+            let designed = !from_layout
+                && signature.is_some_and(|s| s.html.contains(katna_ui::rich::html::HTML_START));
             let text_focus = e.text.focus_handle(cx);
+            let form = layout_form.filter(|_| from_layout);
+            let free = form.is_none().then(|| {
+                field("page-signature-text", &text_focus, th).child(
+                    div()
+                        .id("page-signature-text-scroll")
+                        .min_h(px(138.0))
+                        .max_h(px(318.0))
+                        .overflow_y_scroll()
+                        .py(px(10.0))
+                        .line_height(px(20.0))
+                        .child(e.text.clone()),
+                )
+            });
             control_column(240.0)
                 .flex()
                 .flex_col()
                 .gap(px(8.0))
                 .child(line_field("page-signature-name", &e.name, th, cx))
-                .child(
-                    field("page-signature-text", &text_focus, th).child(
-                        div()
-                            .id("page-signature-text-scroll")
-                            .min_h(px(138.0))
-                            .max_h(px(318.0))
-                            .overflow_y_scroll()
-                            .py(px(10.0))
-                            .line_height(px(20.0))
-                            .child(e.text.clone()),
-                    ),
-                )
-                .children(tools)
+                .children(layout_tiles)
+                .children(free)
+                .children(form)
+                .children(tools.filter(|_| !from_layout))
                 .child(
                     div()
                         .flex()
@@ -2795,21 +2834,6 @@ impl MailWindow {
                                 )
                                 .child(
                                     outlined_button(
-                                        "page-signature-paste-html",
-                                        tr!("settings-compose-signature-paste-html"),
-                                        th,
-                                    )
-                                    .map(|d| self.page_control(d, th, cx))
-                                    .mt(px(katna_ui::tokens::space::S2))
-                                    .justify_center()
-                                    .on_click(cx.listener(
-                                        |this, _, window, cx| {
-                                            this.open_paste_html(None, window, cx)
-                                        },
-                                    )),
-                                )
-                                .child(
-                                    outlined_button(
                                         "page-signature-import",
                                         tr!("settings-compose-signature-import"),
                                         th,
@@ -2822,6 +2846,21 @@ impl MailWindow {
                                             this.open_import_signatures(cx)
                                         }),
                                     ),
+                                )
+                                .child(
+                                    outlined_button(
+                                        "page-signature-paste-html",
+                                        tr!("settings-compose-signature-paste-html"),
+                                        th,
+                                    )
+                                    .map(|d| self.page_control(d, th, cx))
+                                    .mt(px(katna_ui::tokens::space::S2))
+                                    .justify_center()
+                                    .on_click(cx.listener(
+                                        |this, _, window, cx| {
+                                            this.open_paste_html(None, window, cx)
+                                        },
+                                    )),
                                 ),
                         )
                         .children(pasting)
