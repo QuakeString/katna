@@ -113,7 +113,10 @@ fn no_photo_shows_initials_and_empty_fields_leave_no_label() {
         ..SignatureLayout::default()
     };
     let html = html_of(&layout);
-    assert!(html.contains(">DA</td>"), "{html}");
+    assert!(
+        html.contains(r#"<img alt="DA" width="68" height="68""#),
+        "{html}"
+    );
     assert!(html.contains("M:</span>"));
     assert!(!html.contains("O:</span>") && !html.contains("E:</span>"));
     assert_eq!(text(&layout), "Demo  alam\nM: +91 1");
@@ -138,4 +141,12 @@ fn one_line_is_short() {
         "Demo Alam\nAccounts Manager, Demo Systems <Pvt> Ltd.\n+91 90000 12345 · www.demosys.example"
     );
     assert!(!html.contains("<img"));
+}
+
+#[test]
+fn pictures_inside_are_counted() {
+    let html =
+        r#"<img src="data:image/png;base64,AAAA"><img src='data:image/gif;base64,AAAAAAAA'>"#;
+    assert_eq!(pictures_size(html), 3 + 6);
+    assert_eq!(pictures_size("<b>none</b>"), 0);
 }

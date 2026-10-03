@@ -77,7 +77,9 @@ fn backed(image: RgbaImage) -> RgbaImage {
     let ink: Vec<f32> = image
         .pixels()
         .filter(|p| p[3] >= 128)
-        .map(|p| (0.2126 * f32::from(p[0]) + 0.7152 * f32::from(p[1]) + 0.0722 * f32::from(p[2])) / 255.0)
+        .map(|p| {
+            (0.2126 * f32::from(p[0]) + 0.7152 * f32::from(p[1]) + 0.0722 * f32::from(p[2])) / 255.0
+        })
         .collect();
     let dark = !ink.is_empty() && ink.iter().sum::<f32>() / (ink.len() as f32) < 0.35;
     if clear * 20 < pixels || !dark {
@@ -185,6 +187,48 @@ pub fn tinted_mark(svg: &[u8], rgb: u32, side: u32) -> Result<Vec<u8>, Error> {
     png(&image)
 }
 
+/// `initials` in white on a circle of `rgb` (`0xrrggbb`), `side` pixels
+/// across, as PNG: round in every reader, even where rounded corners are
+/// ignored.
+pub fn monogram(initials: &str, rgb: u32, side: u32) -> Result<Vec<u8>, Error> {
+    use resvg::{tiny_skia, usvg};
+
+    let text = initials
+        .replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;");
+    let svg = format!(
+        r##"<svg xmlns="http://www.w3.org/2000/svg" width="{side}" height="{side}" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#{rgb:06x}"/><text x="50" y="50" dy="0.35em" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="38" fill="#ffffff">{text}</text></svg>"##
+    );
+    let mut options = usvg::Options {
+        fontdb: crate::table::fonts(),
+        ..usvg::Options::default()
+    };
+    options.font_family = "sans-serif".into();
+    let tree = usvg::Tree::from_str(&svg, &options).map_err(|e| Error(e.to_string()))?;
+    let mut pixmap = tiny_skia::Pixmap::new(side, side).ok_or_else(|| Error("empty".into()))?;
+    // The view box already scales it to `side`.
+    resvg::render(&tree, tiny_skia::Transform::default(), &mut pixmap.as_mut());
+    let image = RgbaImage::from_fn(side, side, |x, y| {
+        pixmap.pixel(x, y).map_or(Rgba([0; 4]), |p| {
+            let p = p.demultiply();
+            Rgba([p.red(), p.green(), p.blue(), p.alpha()])
+        })
+    });
+    png(&image)
+}
+
+/// A bar of `rgb` (`0xrrggbb`) with round ends, `width` × `height`
+/// pixels, as PNG.
+pub fn bar(rgb: u32, width: u32, height: u32) -> Result<Vec<u8>, Error> {
+    let [_, r, g, b] = rgb.to_be_bytes();
+    let radius = width.min(height) as f32 / 2.0;
+    let image = RgbaImage::from_fn(width, height, |x, y| {
+        Rgba([r, g, b, cover(x, y, width, height, radius)])
+    });
+    png(&image)
+}
+
 /// The size of a picture from its header.
 pub fn size(bytes: &[u8]) -> Option<(u32, u32)> {
     crate::picture::dimensions(bytes)
@@ -245,6 +289,22 @@ mod tests {
         let back = image::load_from_memory(&made.bytes).unwrap().into_rgba8();
         assert_eq!(back.get_pixel(0, 0)[3], 0);
         assert_eq!(back.get_pixel(68, 68)[3], 255);
+    }
+
+    #[test]
+    fn a_monogram_and_a_bar() {
+        let made = monogram("DA", 0x0e7c86, 104).unwrap();
+        let back = image::load_from_memory(&made).unwrap().into_rgba8();
+        assert_eq!(back.dimensions(), (104, 104));
+        assert_eq!(back.get_pixel(0, 0)[3], 0);
+        assert_eq!(back.get_pixel(52, 8).0, [14, 124, 134, 255]);
+        // The whole circle, not cut at the edge.
+        assert_eq!(back.get_pixel(52, 100).0, [14, 124, 134, 255]);
+        assert_eq!(back.get_pixel(100, 100)[3], 0);
+        let made = bar(0x0e7c86, 72, 6).unwrap();
+        let back = image::load_from_memory(&made).unwrap().into_rgba8();
+        assert_eq!(back.dimensions(), (72, 6));
+        assert_eq!(back.get_pixel(36, 3).0, [14, 124, 134, 255]);
     }
 
     #[test]

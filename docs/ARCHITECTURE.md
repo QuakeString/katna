@@ -2341,6 +2341,24 @@ Gemini or confidential mode):
   on the web are downloaded through the daemon, and each is cleaned as
   pasted HTML is; ones already in Katna are shown but not ticked. Other
   apps' signatures come in by Paste HTML.
+  **Layouts.** A signature can instead be made from one of twelve layouts
+  (Classic, Logo left, Photo, Colour band, One line, Centred, With banner,
+  Underline, Side bar, Card, Monogram, Plain text): its fields (name,
+  title, company, numbers, email, website, address, pages, logo, photo,
+  banner, colour) are kept in the settings (`Signature::layout`) and the
+  signature is written again from them on every change
+  (`signatures/layout.rs`), as a designed block of mail-safe HTML (tables
+  and inline styles, which Outlook's Word engine also draws) and a plain
+  text twin whose numbers are labelled "M:" and "O:", which the person card
+  reads. Pictures are made small at twice their shown size
+  (`katna_preview::signature`: a logo at most 256 × 128 px, a dark logo on
+  nothing put on a soft white card, a photo cut round, 136 px), and the
+  page marks (Simple Icons), monogram and underline bar are drawn as PNGs
+  in the layout's colour, so they look the same in every reader. The page
+  shows the result in a light or dark reader or as plain text. Picking a
+  layout for a signature written by hand fills the fields in from it (as
+  the person card reads it, and its first picture as the logo); Edit by
+  hand turns a layout signature back into one, and both ask first.
 - **Grammar.** Harper (`harper-core`, Apache-2.0) checks English drafts,
   text and subject, on this computer as you write (`grammar.rs`), on by default, under
   Settings → Compose → Grammar. Paragraphs are checked off the UI thread

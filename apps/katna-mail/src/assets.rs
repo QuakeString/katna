@@ -322,7 +322,10 @@ fn is_rgb(part: &str) -> bool {
 /// A built-in icon's SVG by name (`brand-linkedin`).
 pub fn icon_svg(name: &str) -> Option<&'static [u8]> {
     let path = format!("icons/{name}.svg");
-    ICONS.iter().find(|(n, _)| *n == path).map(|(_, data)| *data)
+    ICONS
+        .iter()
+        .find(|(n, _)| *n == path)
+        .map(|(_, data)| *data)
 }
 
 pub struct Assets;

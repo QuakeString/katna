@@ -482,7 +482,13 @@ impl<'a> Painter<'a> {
                 continue;
             };
             let start = text.len();
-            text.push_str(&run.text);
+            if t.preformatted {
+                text.push_str(&run.text);
+            } else {
+                // Long lines of `&nbsp;` and such still wrap. Replaced run
+                // by run, so the ranges below match the text drawn.
+                text.push_str(&run.text.replace('\u{a0}', " "));
+            }
             let range = start..text.len();
             let st = &run.style;
             size = size.max(st.size);
@@ -520,10 +526,6 @@ impl<'a> Painter<'a> {
                     _ => links.push((range, link.clone())),
                 }
             }
-        }
-        if !t.preformatted {
-            // Long lines of `&nbsp;` and such still wrap.
-            text = text.replace('\u{a0}', " ");
         }
         let size = if size > 0.0 { size } else { 16.0 };
         // Scaled like the app's text, but small print stays readable.

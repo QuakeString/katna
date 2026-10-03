@@ -256,7 +256,9 @@ impl Writer<'_> {
         format!(
             r#"<a href="{href}" style="color:{c};text-decoration:none">{shown}</a>"#,
             href = esc(&web_address(site)),
-            shown = esc(site.trim_start_matches("https://").trim_start_matches("http://"))
+            shown = esc(site
+                .trim_start_matches("https://")
+                .trim_start_matches("http://"))
         )
     }
 
@@ -332,12 +334,17 @@ impl Writer<'_> {
         self.initials(PHOTO)
     }
 
+    /// The initials in a circle of the colour, as a picture: round in
+    /// every reader. Empty without a name.
     fn initials(&self, side: u32) -> String {
-        let c = self.c;
-        let size = side * 3 / 8;
+        let ini = initials(&self.l.name);
+        let Some(png) = drawn(Drawn::Monogram(ini.clone(), colour(self.l), side * 2)) else {
+            return String::new();
+        };
         format!(
-            r#"<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td width="{side}" height="{side}" align="center" valign="middle" style="width:{side}px;height:{side}px;border-radius:50%;background:{c};color:#ffffff;font-size:{size}px;font-weight:bold;text-align:center">{ini}</td></tr></table>"#,
-            ini = esc(&initials(&self.l.name))
+            r#"<img alt="{alt}" width="{side}" height="{side}" style="display:block;border:0" src="data:image/png;base64,{png}">"#,
+            alt = esc(&ini),
+            png = base64_encode(&png)
         )
     }
 
@@ -460,7 +467,9 @@ impl Writer<'_> {
         } else {
             "<br>"
         };
-        format!(r#"<div style="font-size:13px;line-height:20px;color:{INK}">{first}{br}{second}</div>"#)
+        format!(
+            r#"<div style="font-size:13px;line-height:20px;color:{INK}">{first}{br}{second}</div>"#
+        )
     }
 
     fn centred(&self) -> String {
@@ -513,7 +522,6 @@ impl Writer<'_> {
     }
 
     fn underline(&self) -> String {
-        let c = self.c;
         let role = esc(&joined(&[&self.l.title, &self.l.company], ", "));
         let role = if role.is_empty() {
             String::new()
@@ -536,8 +544,14 @@ impl Writer<'_> {
             )
         };
         format!(
-            r#"{name}<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:5px 0 7px"><tr><td width="36" height="3" style="width:36px;height:3px;background:{c};border-radius:2px;font-size:0;line-height:0"></td></tr></table>{role}{contact}{web}{marks}"#,
+            r#"{name}<div style="padding:5px 0 7px">{bar}</div>{role}{contact}{web}{marks}"#,
             name = self.name(18.0),
+            bar = drawn(Drawn::Bar(colour(self.l), 72, 6))
+                .map(|png| format!(
+                    r#"<img alt="" width="36" height="3" style="display:block;border:0" src="data:image/png;base64,{}">"#,
+                    base64_encode(&png)
+                ))
+                .unwrap_or_default(),
             web = self.lines(&[Field::Website]),
             marks = self.marks(6, false)
         )
@@ -556,10 +570,12 @@ impl Writer<'_> {
         let company = if company.is_empty() {
             String::new()
         } else {
-            format!(r#"<div style="font-size:12.5px;color:{DIM};margin-bottom:5px">{company}</div>"#)
+            format!(
+                r#"<div style="font-size:12.5px;color:{DIM};margin-bottom:5px">{company}</div>"#
+            )
         };
         format!(
-            r#"<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td width="5" style="width:5px;background:{c};border-radius:3px"></td><td style="padding-left:12px">{name}{title}{company}{lines}{marks}</td></tr></table>"#,
+            r#"<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td style="border-left:4px solid {c};padding-left:12px">{name}{title}{company}{lines}{marks}</td></tr></table>"#,
             name = self.name(15.0),
             lines = self.lines(&[Mobile, Office, Email, Website, Address]),
             marks = self.marks(6, false)
@@ -662,7 +678,9 @@ fn esc(text: &str) -> String {
 fn shown_size(uri: &str, (width, height): (u32, u32)) -> Option<(u32, u32)> {
     let (w, h) = picture_size(uri)?;
     let (w, h) = (w.div_ceil(2).max(1), h.div_ceil(2).max(1));
-    let scale = (width as f32 / w as f32).min(height as f32 / h as f32).min(1.0);
+    let scale = (width as f32 / w as f32)
+        .min(height as f32 / h as f32)
+        .min(1.0);
     Some((
         ((w as f32 * scale).round() as u32).max(1),
         ((h as f32 * scale).round() as u32).max(1),
@@ -681,23 +699,57 @@ pub fn picture_bytes(uri: &str) -> Option<Vec<u8>> {
     base64_decode(data)
 }
 
+/// A picture Katna draws for a layout, at twice its shown size.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+enum Drawn {
+    /// A page's mark in a colour.
+    Mark(Site, u32),
+    /// Initials on a circle of a colour, so many pixels across.
+    Monogram(String, u32, u32),
+    /// A bar of a colour, width × height.
+    Bar(u32, u32, u32),
+}
+
 thread_local! {
-    /// Page marks already drawn, by site and colour.
-    static MARKS: RefCell<HashMap<(Site, u32), Option<Vec<u8>>>> = RefCell::new(HashMap::new());
+    /// Pictures already drawn: the layout is written again on every key.
+    static DRAWN: RefCell<HashMap<Drawn, Option<Vec<u8>>>> = RefCell::new(HashMap::new());
+}
+
+/// `what`, drawn as PNG.
+fn drawn(what: Drawn) -> Option<Vec<u8>> {
+    use katna_preview::signature as draw;
+    DRAWN.with(|cache| {
+        cache
+            .borrow_mut()
+            .entry(what.clone())
+            .or_insert_with(|| match what {
+                Drawn::Mark(site, rgb) => {
+                    let svg = crate::assets::icon_svg(mark_icon(site))?;
+                    draw::tinted_mark(svg, rgb, MARK * 2).ok()
+                }
+                Drawn::Monogram(initials, _, _) if initials.is_empty() => None,
+                Drawn::Monogram(initials, rgb, side) => draw::monogram(&initials, rgb, side).ok(),
+                Drawn::Bar(rgb, width, height) => draw::bar(rgb, width, height).ok(),
+            })
+            .clone()
+    })
 }
 
 /// The mark of `site` in `rgb`, at twice its shown size, as PNG.
 fn mark(site: Site, rgb: u32) -> Option<Vec<u8>> {
-    MARKS.with(|marks| {
-        marks
-            .borrow_mut()
-            .entry((site, rgb))
-            .or_insert_with(|| {
-                let svg = crate::assets::icon_svg(mark_icon(site))?;
-                katna_preview::signature::tinted_mark(svg, rgb, MARK * 2).ok()
-            })
-            .clone()
-    })
+    drawn(Drawn::Mark(site, rgb))
+}
+
+/// How many bytes the pictures inside `html` (as `data:` URIs) take.
+pub fn pictures_size(html: &str) -> usize {
+    html.split("data:")
+        .skip(1)
+        .filter_map(|rest| {
+            let (_, data) = rest.split_once(";base64,")?;
+            let end = data.find(['"', '\'', ')', ' ']).unwrap_or(data.len());
+            Some(data[..end].len() * 3 / 4)
+        })
+        .sum()
 }
 
 /// The icon for a page on `site`.
