@@ -9,6 +9,14 @@
 about-tooltip = About Katna
 # Under the app's name.
 about-tagline = Mail and calendar for the Linux desktop
+# The small button beside the version (About, What’s new, Settings): it
+# copies the version, build date and system for a bug report.
+about-copy-version = Copy version details
+about-version-copied = Copied
+# Lines of the copied version details. $date: when this build was made.
+about-version-built = Built: { $date }
+# $system: the operating system and desktop, such as "Arch Linux, KDE on wayland".
+about-version-system = System: { $system }
 # Opens the What’s new dialog.
 about-whats-new = What’s new
 

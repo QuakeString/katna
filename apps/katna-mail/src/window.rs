@@ -722,6 +722,9 @@ pub struct MailWindow {
     share_ask_later: bool,
     /// The About Katna dialog.
     about: Option<about::About>,
+    /// When the version's copy button was last clicked: it shows a check
+    /// for a moment.
+    version_copied: Option<std::time::Instant>,
     /// Every shared control, in development builds.
     gallery: Option<gallery::Gallery>,
     /// Updates of Katna, shown in About.
@@ -1057,6 +1060,7 @@ impl MailWindow {
             print_preview: None,
             share_ask_later: false,
             about: None,
+            version_copied: None,
             gallery: None,
             updates: updates::Updates::default(),
             drive_watch: None,

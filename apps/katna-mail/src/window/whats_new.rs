@@ -22,6 +22,7 @@ use katna_ui::px;
 use katna_ui::tokens::space;
 use katna_ui::unpx;
 
+use super::about::VERSION_GROUP;
 use super::add_account::text_button;
 use super::select::{WHATS_NEW_PART, selectable};
 use super::{MailWindow, PANEL_RADIUS};
@@ -253,6 +254,7 @@ impl MailWindow {
         let has_hero = hero.is_some();
         // The words can be selected and copied, top to bottom.
         let mut pieces = self.dialog_text.pieces(WHATS_NEW_PART, th);
+        let copy = self.copy_version_button("whats-new-version-copy", 22.0, th, cx);
         // The header stays put and the highlights scroll under it; a line
         // fades in below it once they have moved.
         let scrolled = (-unpx(dialog.scroll.offset().y) / 12.0).clamp(0.0, 1.0);
@@ -281,16 +283,27 @@ impl MailWindow {
                             .text_size(px(22.0))
                             .line_height(px(30.0)),
                     )
+                    // The version, with its copy button on hover.
                     .child(
-                        pieces
-                            .words(if dialog.updated {
-                                tr!("whats-new-updated", version = whats_new::VERSION)
-                            } else {
-                                tr!("whats-new-version", version = whats_new::VERSION)
-                            })
-                            .text_size(px(13.0))
-                            .line_height(px(18.0))
-                            .text_color(rgba(th.text_dim)),
+                        div()
+                            .group(VERSION_GROUP)
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(space::S1))
+                            .child(
+                                pieces
+                                    .words(if dialog.updated {
+                                        tr!("whats-new-updated", version = whats_new::VERSION)
+                                    } else {
+                                        tr!("whats-new-version", version = whats_new::VERSION)
+                                    })
+                                    .min_w_0()
+                                    .text_size(px(13.0))
+                                    .line_height(px(18.0))
+                                    .text_color(rgba(th.text_dim)),
+                            )
+                            .child(copy),
                     ),
                 Some(WHATS_NEW_PART),
                 cx,
