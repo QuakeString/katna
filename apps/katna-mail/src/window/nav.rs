@@ -217,6 +217,9 @@ const TITLE_LINE: f32 = 28.0;
 /// The hover circle of a button in a phone's search pill's rounded end,
 /// as wide as the account picture at the other end.
 const PILL_END_CIRCLE: f32 = 38.0;
+/// How far a sliding drawer's color reaches back over the rail's edge,
+/// past the spring's overshoot and the list's shadow there.
+const DRAWER_APRON: f32 = 12.0;
 
 /// The width of the Upload button's arrow, beside its words.
 const UPLOAD_ARROW: f32 = 44.0;
@@ -899,10 +902,14 @@ impl MailWindow {
             .bottom(px(if drawer { 0.0 } else { 16.0 * float + gap }))
             .map(|d| {
                 if slides {
-                    // It stops at the rail's edge: the spring's overshoot
-                    // would open a gap there, and the shadow would show
-                    // through it as a line.
-                    d.left(px(-width * (1.0 - t.min(1.0)))).w(px(width))
+                    // Its apron reaches back over the rail's edge, under
+                    // the list's shadow there. As the spring overshoots,
+                    // the apron stretches instead of moving, so its edge
+                    // and shadow never come into view.
+                    let over = width * (t - 1.0).max(0.0);
+                    d.left(px(-width * (1.0 - t).max(0.0)))
+                        .w(px(width + DRAWER_APRON + over))
+                        .pl(px(DRAWER_APRON + over))
                 } else {
                     d.w(px(width * t)).opacity(t.min(1.0))
                 }
@@ -932,6 +939,7 @@ impl MailWindow {
             .children(self.render_storage(th))
             .children(self.render_drawer_foot(th, cx));
         let scrim_width = shape.width - shape.rail();
+        let apron = if slides { DRAWER_APRON } else { 0.0 };
         div()
             .relative()
             .flex_none()
@@ -943,10 +951,10 @@ impl MailWindow {
                 div()
                     .absolute()
                     .top_0()
-                    .left_0()
+                    .left(px(-apron))
                     .bottom_0()
                     // Room for the panel's shadow.
-                    .w(px(width + 24.0))
+                    .w(px(width + 24.0 + apron))
                     .overflow_hidden()
                     .child(panel)
                     .children((!drawer && float > 0.0).then(|| self.render_notch(gap, float, th))),
