@@ -83,6 +83,26 @@ pub(super) trait SelectHost: 'static + Sized {
 
     /// Pins the selection.
     fn pin_selection(&mut self, _cx: &mut Context<Self>) {}
+
+    /// A right-click on the text of `part` at `at`: `true` when the host
+    /// opened a menu of its own instead of the text's.
+    fn right_click(
+        &mut self,
+        _part: Option<usize>,
+        _at: Point<Pixels>,
+        _cx: &mut Context<Self>,
+    ) -> bool {
+        false
+    }
+
+    /// What the text menu's Translate row says for `part`, when it has one.
+    fn translate_label(&self, _part: usize) -> Option<String> {
+        None
+    }
+
+    /// Translates `part`, or switches it between its translation and its
+    /// original.
+    fn translate(&mut self, _part: usize, _cx: &mut Context<Self>) {}
 }
 
 /// A place in the conversation's text: a byte offset in a piece.
@@ -165,6 +185,8 @@ pub(super) struct TextSelection {
     pub(super) menu: Option<Point<Pixels>>,
     /// The address the right-click menu was opened on, for Copy address.
     pub(super) menu_address: Option<SharedString>,
+    /// The part the right-click menu was opened on.
+    pub(super) menu_part: Option<usize>,
 }
 
 impl TextSelection {
@@ -183,6 +205,7 @@ impl TextSelection {
             origin: None,
             menu: None,
             menu_address: None,
+            menu_part: None,
         }
     }
 
@@ -530,6 +553,34 @@ impl SelectHost for MailWindow {
     fn pin_selection(&mut self, cx: &mut Context<Self>) {
         self.pin_chat_text(cx);
     }
+
+    /// In the chat, a right-click on a bubble's text with nothing selected
+    /// opens the bubble's menu, with everything its hover buttons do.
+    fn right_click(
+        &mut self,
+        part: Option<usize>,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) -> bool {
+        if !self.chat_shown() || !self.text.is_empty() {
+            return false;
+        }
+        let Some(id) = part.and_then(|ix| self.part_id(ix)) else {
+            return false;
+        };
+        self.open_chat_context_menu(id, None, at, cx);
+        true
+    }
+
+    fn translate_label(&self, part: usize) -> Option<String> {
+        self.translate_menu_label(self.part_id(part)?)
+    }
+
+    fn translate(&mut self, part: usize, cx: &mut Context<Self>) {
+        if let Some(id) = self.part_id(part) {
+            self.translate_from_menu(id, cx);
+        }
+    }
 }
 
 impl MailWindow {
@@ -576,8 +627,12 @@ pub(super) fn selectable<T: SelectHost>(
         MouseButton::Right,
         cx.listener(move |this, event: &MouseDownEvent, window, cx| {
             cx.stop_propagation();
+            if this.right_click(part, event.position, cx) {
+                return;
+            }
             window.focus(&this.text_focus(), cx);
             this.selection_mut().menu = Some(event.position);
+            this.selection_mut().menu_part = part;
             cx.notify();
         }),
     )
@@ -702,18 +757,29 @@ pub(super) fn text_menu<T: SelectHost>(
     cx: &mut Context<T>,
 ) -> Option<AnyElement> {
     let at = this.selection().menu?;
+    let translate = this
+        .selection()
+        .menu_part
+        .and_then(|part| this.translate_label(part));
     Some(copy_menu(
         at,
         !this.selection().is_empty(),
         this.selection().menu_address.is_some(),
         this.can_pin(),
+        translate,
         th,
         cx,
         |this: &mut T, act, cx| {
             let address = this.selection_mut().menu_address.take();
+            let part = this.selection_mut().menu_part.take();
             this.selection_mut().menu = None;
             match act {
                 MenuAct::Close => {}
+                MenuAct::Translate => {
+                    if let Some(part) = part {
+                        this.translate(part, cx);
+                    }
+                }
                 MenuAct::Pin => this.pin_selection(cx),
                 MenuAct::Copy => copy(this, cx),
                 MenuAct::CopyAddress => {
@@ -738,17 +804,21 @@ pub(super) enum MenuAct {
     /// Only offered when the menu was opened on an address.
     CopyAddress,
     SelectAll,
+    /// Only offered when the host can translate the text's message.
+    Translate,
 }
 
 /// A right-click menu at `at` with Pin to top (when `can_pin`), Copy
-/// address (when `on_address`), Copy (greyed without a selection) and
-/// Select all; `act` does what was
+/// address (when `on_address`), Copy (greyed without a selection), Select
+/// all and, under a line, `translate` when given; `act` does what was
 /// chosen, or closes it.
+#[allow(clippy::too_many_arguments)]
 pub(super) fn copy_menu<T: 'static>(
     at: Point<Pixels>,
     can_copy: bool,
     on_address: bool,
     can_pin: bool,
+    translate: Option<String>,
     th: &Theme,
     cx: &mut Context<T>,
     act: fn(&mut T, MenuAct, &mut Context<T>),
@@ -756,37 +826,44 @@ pub(super) fn copy_menu<T: 'static>(
     let close = || {
         cx.listener(move |this: &mut T, _: &MouseDownEvent, _, cx| act(this, MenuAct::Close, cx))
     };
-    let list = div()
-        .key_context(crate::widgets::MENU_CONTEXT)
-        .w(px(200.0))
-        .py(px(8.0))
-        .flex()
-        .flex_col()
-        .map(|d| raised(d, th, 8.0, 3.0))
-        .text_size(px(14.0))
-        .text_color(rgba(th.text))
-        .when(can_pin, |d| {
-            d.child(
-                menu_item("text-pin", &tr!("text-pin"), th)
-                    .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::Pin, cx))),
+    let list =
+        div()
+            .key_context(crate::widgets::MENU_CONTEXT)
+            .w(px(200.0))
+            .py(px(8.0))
+            .flex()
+            .flex_col()
+            .map(|d| raised(d, th, 8.0, 3.0))
+            .text_size(px(14.0))
+            .text_color(rgba(th.text))
+            .when(can_pin, |d| {
+                d.child(
+                    menu_item("text-pin", &tr!("text-pin"), th)
+                        .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::Pin, cx))),
+                )
+            })
+            .when(on_address, |d| {
+                d.child(
+                    menu_item("text-copy-address", &tr!("text-copy-address"), th).on_click(
+                        cx.listener(move |this, _, _, cx| act(this, MenuAct::CopyAddress, cx)),
+                    ),
+                )
+            })
+            .child(
+                menu_item("text-copy", &tr!("text-copy"), th)
+                    .when(!can_copy, |d| d.text_color(rgba(th.text_faint)))
+                    .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::Copy, cx))),
             )
-        })
-        .when(on_address, |d| {
-            d.child(
-                menu_item("text-copy-address", &tr!("text-copy-address"), th).on_click(
-                    cx.listener(move |this, _, _, cx| act(this, MenuAct::CopyAddress, cx)),
-                ),
+            .child(
+                menu_item("text-select-all", &tr!("text-select-all"), th)
+                    .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::SelectAll, cx))),
             )
-        })
-        .child(
-            menu_item("text-copy", &tr!("text-copy"), th)
-                .when(!can_copy, |d| d.text_color(rgba(th.text_faint)))
-                .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::Copy, cx))),
-        )
-        .child(
-            menu_item("text-select-all", &tr!("text-select-all"), th)
-                .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::SelectAll, cx))),
-        );
+            .when_some(translate, |d, label| {
+                d.child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
+                    .child(menu_item("text-translate", &label, th).on_click(
+                        cx.listener(move |this, _, _, cx| act(this, MenuAct::Translate, cx)),
+                    ))
+            });
     div()
         .absolute()
         .top_0()
