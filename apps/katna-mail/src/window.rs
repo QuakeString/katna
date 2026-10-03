@@ -610,6 +610,8 @@ pub struct MailWindow {
     translations: translate::Translations,
     /// The selected text of the open conversation.
     text: select::TextSelection,
+    /// The selected text of About or What's new, while one is shown.
+    dialog_text: select::TextSelection,
     /// Whether a conversation is open: in place of the list with two
     /// panes, beside it with three.
     reading: bool,
@@ -720,6 +722,9 @@ pub struct MailWindow {
     share_ask_later: bool,
     /// The About Katna dialog.
     about: Option<about::About>,
+    /// When the version's copy button was last clicked: it shows a check
+    /// for a moment.
+    version_copied: Option<std::time::Instant>,
     /// Every shared control, in development builds.
     gallery: Option<gallery::Gallery>,
     /// Updates of Katna, shown in About.
@@ -960,6 +965,7 @@ impl MailWindow {
             hovered_link: None,
             translations: translate::Translations::default(),
             text: select::TextSelection::new(cx),
+            dialog_text: select::TextSelection::new(cx),
             accounts: Vec::new(),
             quotas: HashMap::new(),
             storage_account: std::cell::Cell::new(None),
@@ -1054,6 +1060,7 @@ impl MailWindow {
             print_preview: None,
             share_ask_later: false,
             about: None,
+            version_copied: None,
             gallery: None,
             updates: updates::Updates::default(),
             drive_watch: None,
@@ -3236,6 +3243,7 @@ impl MailWindow {
             window,
             cx,
         );
+        self.dialog_text.begin(());
         let whats_new = self.render_whats_new(th, window, reduce, cx);
         let about = self.render_about(th, window, reduce, cx);
         let gallery = self.render_gallery(cx);

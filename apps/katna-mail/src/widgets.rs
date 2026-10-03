@@ -1023,7 +1023,7 @@ pub fn keys_ring(th: &Theme) -> Vec<BoxShadow> {
     }]
 }
 
-fn ring_style(th: &Theme) -> impl FnOnce(StyleRefinement) -> StyleRefinement + use<> {
+pub fn ring_style(th: &Theme) -> impl FnOnce(StyleRefinement) -> StyleRefinement + use<> {
     let ring = rgba(th.accent);
     let tint = rgba(fade(th.accent, 0.08));
     move |s| {
