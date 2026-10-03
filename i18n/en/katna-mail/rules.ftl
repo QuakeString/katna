@@ -163,7 +163,7 @@ rules-action-read-after = Mark read after
 rules-editor-choose-folder = Choose a folder
 rules-editor-choose-label = Choose a label
 # A starter rule's folder that saving the rule makes.
-rules-editor-new-folder = { $name } (new)
+rules-editor-new-folder = New: { $name }
 # In the folder list of a rule for several accounts. $account: an
 # address; $folder: a folder's name.
 rules-editor-folder-of = { $folder } ({ $account })
