@@ -106,6 +106,7 @@ pub(in crate::window) struct ChatState {
     /// opening it is, so each one plays its slide again.
     people: Option<usize>,
     people_runs: usize,
+    people_arrow: crate::widgets::Fold,
     /// The reply box's height as last drawn, and as the feed last saw
     /// it: chips or the formatting bar growing it keep a feed at its end
     /// there.
@@ -1304,15 +1305,15 @@ impl MailWindow {
                                                 names = names.join(", "),
                                                 count = mails
                                             )))
-                                            .child(div().flex_none().child(icon(
-                                                if people_open {
-                                                    "chevron-up"
-                                                } else {
-                                                    "chevron-down"
-                                                },
-                                                th.text_faint,
-                                                16.0,
-                                            ))),
+                                            .child(div().flex_none().child(
+                                                crate::widgets::fold_arrow(
+                                                    "chat-people-arrow",
+                                                    &reader.chat.people_arrow,
+                                                    people_open,
+                                                    th.text_faint,
+                                                    16.0,
+                                                ),
+                                            )),
                                     ),
                             ),
                     ),

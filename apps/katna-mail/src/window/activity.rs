@@ -264,6 +264,7 @@ pub(super) struct Report {
     counting: Option<Task<()>>,
     /// The account menu is open.
     accounts_open: bool,
+    accounts_arrow: crate::widgets::Fold,
 }
 
 impl MailWindow {
@@ -403,6 +404,7 @@ impl MailWindow {
             insights: None,
             counting: None,
             accounts_open: false,
+            accounts_arrow: crate::widgets::Fold::default(),
         });
         self.fill_report(Period::Month);
         self.count_insights(cx);
@@ -1369,12 +1371,10 @@ impl MailWindow {
                 d.child(self.person_avatar(&name(a), a.address.trim(), 20.0))
             })
             .child(div().min_w_0().truncate().child(label))
-            .child(icon(
-                if report.accounts_open {
-                    "chevron-up"
-                } else {
-                    "chevron-down"
-                },
+            .child(crate::widgets::fold_arrow(
+                "activity-accounts-arrow",
+                &report.accounts_arrow,
+                report.accounts_open,
                 th.text_dim,
                 16.0,
             ))
