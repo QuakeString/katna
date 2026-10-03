@@ -75,6 +75,7 @@ mod reader;
 mod remote;
 mod reply_row;
 mod rich;
+mod row_reorder;
 mod rule_editor;
 mod scale_slider;
 mod scheme_color;

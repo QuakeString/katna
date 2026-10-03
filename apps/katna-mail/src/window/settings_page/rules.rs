@@ -11,15 +11,18 @@
 //! on every folder, or on the inbox only.
 
 use gpui::{
-    AnimationExt, AnyElement, ClickEvent, Context, FontWeight, MouseButton, Pixels, Point, Render,
-    SpringAnimation, Task, Window, anchored, deferred, div, prelude::*, rgba,
+    AnimationExt, AnyElement, ClickEvent, Context, DragMoveEvent, FontWeight, MouseButton,
+    MouseDownEvent, Pixels, Point, Render, SpringAnimation, Task, Window, anchored, deferred, div,
+    prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_store::rules::Rule;
 use katna_ui::motion;
 use katna_ui::px;
+use katna_ui::unpx;
 
+use super::super::row_reorder::Reorder;
 use super::super::rule_editor::{self, dot};
 use super::super::settings::Change;
 use super::MailWindow;
@@ -41,7 +44,12 @@ pub(in crate::window) struct RulesList {
     watch: Option<Task<()>>,
     /// Starter rules being turned on, by key.
     starting: Vec<&'static str>,
+    /// Dragging a rule's row to reorder, by rule ID.
+    reorder: Reorder<i64>,
 }
+
+/// The space between two rule rows.
+const ROW_GAP: f32 = 4.0;
 
 /// A change to the rules the daemon makes.
 enum RuleOp {
@@ -54,22 +62,13 @@ enum RuleOp {
 #[derive(Clone)]
 struct RuleDrag {
     ix: usize,
-    name: String,
-    fill: u32,
-    text: u32,
 }
 
+/// The row itself follows the pointer ([`Reorder`]), so the drag draws
+/// nothing of its own.
 impl Render for RuleDrag {
     fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
         div()
-            .px(px(12.0))
-            .py(px(6.0))
-            .rounded(px(8.0))
-            .bg(rgba(self.fill))
-            .text_color(rgba(self.text))
-            .text_size(px(14.0))
-            .font_weight(FontWeight::BOLD)
-            .child(self.name.clone())
     }
 }
 
@@ -207,7 +206,11 @@ impl MailWindow {
     /// rules keep theirs.
     fn move_rule(&mut self, from: usize, to: usize, cx: &mut Context<Self>) {
         let mut shown: Vec<i64> = self.shown_rules().iter().map(|r| r.id).collect();
+        if let Some(page) = &mut self.settings_page {
+            page.rules.reorder.moved(&shown, from, to, ROW_GAP);
+        }
         if from == to || from >= shown.len() || to >= shown.len() {
+            cx.notify();
             return;
         }
         let moved = shown.remove(from);
@@ -221,6 +224,49 @@ impl MailWindow {
             .sort_by_key(|r| order.iter().position(|id| *id == r.id));
         cx.notify();
         self.change_rules(RuleOp::Reorder(order), cx);
+    }
+
+    /// The pointer moved while dragging the rule at `from` to `y`.
+    fn rule_dragged(&mut self, from: usize, y: f32, cx: &mut Context<Self>) {
+        let ids: Vec<i64> = self.shown_rules().iter().map(|r| r.id).collect();
+        if let Some(page) = &mut self.settings_page {
+            page.rules.reorder.dragged(&ids, from, y, ROW_GAP);
+        }
+        cx.notify();
+    }
+
+    /// The dragged rule was let go: it goes where the rows made room.
+    fn drop_rule(&mut self, cx: &mut Context<Self>) {
+        let Some((from, to)) = self
+            .settings_page
+            .as_ref()
+            .and_then(|p| p.rules.reorder.drop_move())
+        else {
+            return;
+        };
+        self.move_rule(from, to, cx);
+    }
+
+    /// Advances the rule rows sliding in Settings > Folders & rules.
+    pub(in crate::window) fn tick_rule_reorder(
+        &mut self,
+        window: &Window,
+        reduce: bool,
+        cx: &mut Context<Self>,
+    ) {
+        let dropped = self
+            .settings_page
+            .as_ref()
+            .is_some_and(|p| p.rules.reorder.dragging())
+            && !cx.has_active_drag();
+        if dropped {
+            // Let go somewhere with nowhere to drop it.
+            self.drop_rule(cx);
+        }
+        let count = self.shown_rules().len();
+        if let Some(page) = &mut self.settings_page {
+            page.rules.reorder.tick(count, window, reduce);
+        }
     }
 
     /// New rule: for the account picked over the list, else the one open.
@@ -482,7 +528,18 @@ impl MailWindow {
             .gap(px(4.0))
             .child(header)
             .child(div().h(px(8.0)))
-            .children(rows)
+            .child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(ROW_GAP))
+                    .on_drag_move(cx.listener(|this, event: &DragMoveEvent<RuleDrag>, _, cx| {
+                        let from = event.drag(cx).ix;
+                        this.rule_dragged(from, unpx(event.event.position.y), cx)
+                    }))
+                    .on_drop(cx.listener(|this, _: &RuleDrag, _, cx| this.drop_rule(cx)))
+                    .children(rows),
+            )
             .when(!starter_rows.is_empty(), |d| {
                 d.child(
                     div()
@@ -533,12 +590,6 @@ impl MailWindow {
         let on = rule.enabled;
         let failed = !on && rule.last_error.is_some();
         let summary = rule_editor::summary(rule, |f| self.rule_folder_name(f));
-        let drag = RuleDrag {
-            ix,
-            name: rule.name.clone(),
-            fill: th.menu,
-            text: th.text,
-        };
         let handle = div()
             .id(("rule-drag", ix))
             .flex_none()
@@ -551,7 +602,15 @@ impl MailWindow {
             .cursor_grab()
             .hover(|s| s.bg(rgba(th.hover)))
             .tooltip(tip(tr!("settings-rules-drag"), th))
-            .on_drag(drag, |drag, _, _, cx| cx.new(|_| drag.clone()))
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(move |this, event: &MouseDownEvent, _, _| {
+                    if let Some(page) = this.settings_page.as_mut() {
+                        page.rules.reorder.grab(ix, unpx(event.position.y));
+                    }
+                }),
+            )
+            .on_drag(RuleDrag { ix }, |drag, _, _, cx| cx.new(|_| drag.clone()))
             .child(icon("drag-handle", th.text_faint, 16.0));
         let toggle = div()
             .id(("rule-switch", ix))
@@ -681,8 +740,9 @@ impl MailWindow {
                         }
                     })),
             );
-        let target = fade(th.accent, 0.10);
-        div()
+        let reorder = self.settings_page.as_ref().map(|p| &p.rules.reorder);
+        let raised = reorder.is_some_and(|r| r.raised(ix, id));
+        let row = div()
             .id(("rule-row", ix))
             .mx(px(-8.0))
             .px(px(8.0))
@@ -692,14 +752,7 @@ impl MailWindow {
             .flex_row()
             .items_start()
             .gap(px(8.0))
-            .drag_over::<RuleDrag>(
-                move |s, drag, _, _| {
-                    if drag.ix == ix { s } else { s.bg(rgba(target)) }
-                },
-            )
-            .on_drop(
-                cx.listener(move |this, drag: &RuleDrag, _, cx| this.move_rule(drag.ix, ix, cx)),
-            )
+            .when_some(reorder, |d, r| r.row(d, ix, id, th))
             .child(handle)
             .child(toggle)
             .child(
@@ -714,8 +767,13 @@ impl MailWindow {
                     .gap_y(px(6.0))
                     .child(about)
                     .child(side),
-            )
-            .into_any_element()
+            );
+        // Drawn over the rows after it while lifted or landing.
+        if raised {
+            deferred(row).with_priority(1).into_any_element()
+        } else {
+            row.into_any_element()
+        }
     }
 
     /// A starter rule's row: as a rule's, switched off, without a handle
