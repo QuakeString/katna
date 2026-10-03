@@ -1540,7 +1540,7 @@ impl MailWindow {
                 .line_height(px(18.0))
                 .text_color(rgba(th.error))
                 .child(icon("warning", th.error, 18.0))
-                .child(div().flex_1().min_w_0().child(err))
+                .child(self.copyable(err, th).flex_1().min_w_0())
         });
         let buttons = self.rule_editor_buttons(e, th, cx);
         let scroll = div()

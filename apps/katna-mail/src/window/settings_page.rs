@@ -2152,7 +2152,7 @@ impl MailWindow {
                 }))
             })
             .when(accounts.is_empty() && on, |d| {
-                d.child(note(tr!("settings-inbox-no-accounts"), th))
+                d.child(self.quiet_note(tr!("settings-inbox-no-accounts"), th))
             })
             .into_any_element()
     }
@@ -2801,7 +2801,7 @@ impl MailWindow {
                         .children(pasting)
                         .children(editor)
                         .when(sending.signatures.is_empty() && !pasting_open, |d| {
-                            d.child(note(tr!("settings-compose-no-signatures"), th))
+                            d.child(self.quiet_note(tr!("settings-compose-no-signatures"), th))
                         }),
                     th,
                 ),
@@ -3414,6 +3414,7 @@ pub(super) fn setting_row(
     content: impl IntoElement,
     info: &Rc<RefCell<Option<SharedString>>>,
     flash: Option<AnyElement>,
+    words: impl FnOnce(SharedString, Option<SharedString>) -> (Div, Option<Div>),
     th: &Theme,
 ) -> Div {
     // One word, such as an address, is shown as it is: it isn't a
@@ -3457,6 +3458,8 @@ pub(super) fn setting_row(
     } else {
         detail
     };
+    // The name and description, drawn so they can be selected.
+    let (name, shown) = words(label.clone(), shown);
     div()
         .relative()
         .children(flash)
@@ -3484,20 +3487,16 @@ pub(super) fn setting_row(
                         // account's, wraps inside it rather than running
                         // under the controls.
                         .child(
-                            div()
-                                .min_w_0()
+                            name.min_w_0()
                                 .text_size(px(14.0))
-                                .font_weight(FontWeight::MEDIUM)
-                                .child(label),
+                                .font_weight(FontWeight::MEDIUM),
                         )
                         .children(button),
                 )
                 .children(shown.map(|d| {
-                    div()
-                        .text_size(px(12.0))
+                    d.text_size(px(12.0))
                         .line_height(px(17.0))
                         .text_color(rgba(th.text_faint))
-                        .child(d)
                 })),
         )
         .child(control_column(CONTROL_WIDTH).child(content))
@@ -3516,12 +3515,15 @@ fn control_column(width: f32) -> Div {
     div().flex_basis(px(width)).flex_grow(1000.0).min_w_0()
 }
 
-fn note(text: String, th: &Theme) -> Div {
-    div()
-        .py(px(12.0))
-        .text_size(px(14.0))
-        .text_color(rgba(th.text_faint))
-        .child(text)
+impl MailWindow {
+    /// A quiet line where a list is empty, which can be selected.
+    pub(super) fn quiet_note(&self, text: String, th: &Theme) -> Div {
+        div()
+            .py(px(12.0))
+            .text_size(px(14.0))
+            .text_color(rgba(th.text_faint))
+            .child(self.copyable(text, th))
+    }
 }
 
 /// A whole number from `range` in a field: Up and Down step it, as do the

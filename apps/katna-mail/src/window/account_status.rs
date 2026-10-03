@@ -388,13 +388,13 @@ impl MailWindow {
             .text_size(px(13.0))
             .line_height(px(18.0))
             .text_color(rgba(th.text_faint))
-            .children(text)
+            // The reason can be copied, to look it up or report it.
+            .children(text.map(|text| self.copyable(text, th)))
             .when(!why.is_empty(), |d| {
                 d.child(
-                    div()
+                    self.copyable(why.to_owned(), th)
                         .text_size(px(12.0))
-                        .line_height(px(16.0))
-                        .child(why.to_owned()),
+                        .line_height(px(16.0)),
                 )
             })
             .children(action)

@@ -230,12 +230,13 @@ impl MailWindow {
         let compose = self.render_compose(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
-        self.dialog_text.begin(());
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let about = self.render_about(&th, window, reduce, cx);
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
+            .map(|d| self.ui_text_root(d, cx))
+            .children(self.render_ui_text_menu(&th, window, cx))
             .relative()
             .size_full()
             .p(px(8.0))

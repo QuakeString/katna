@@ -18,7 +18,7 @@ use super::apps::App;
 use crate::daemon::{self, Command};
 use crate::data::SavedBook;
 use crate::theme::Theme;
-use crate::widgets::{icon_button, placeholder, tip};
+use crate::widgets::{icon_button, tip};
 
 /// The other contacts to show: not saved since, one per address, matching
 /// `query` (lower case).
@@ -77,7 +77,7 @@ impl MailWindow {
             } else {
                 tr!("contacts-other-empty")
             };
-            return placeholder(&text, th);
+            return self.placeholder(text, th);
         }
         let header = div()
             .flex_none()

@@ -1360,7 +1360,7 @@ impl MailWindow {
         };
         let account = view.account;
         let content = match &view.listing {
-            Listing::Loading => placeholder(&tr!("files-drive-loading"), th),
+            Listing::Loading => self.placeholder(tr!("files-drive-loading"), th),
             Listing::NeedsPermission => {
                 let allow = filled_button("files-drive-allow", tr!("files-drive-allow"), th)
                     .on_click(cx.listener(move |this, _, _, cx| {

@@ -32,9 +32,7 @@ use crate::daemon::Command;
 use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    card_outline, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
-};
+use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, tip, toolbar};
 
 mod chat;
 mod invite;
@@ -1216,10 +1214,10 @@ impl MailWindow {
         self.settle_summary_jump(cx);
         let summary = self.render_summary_card(th, cx);
         let Some(reader) = &self.reader else {
-            return placeholder("", th);
+            return self.placeholder("", th);
         };
         if reader.parts.is_empty() {
-            return placeholder(&tr!("reader-removed"), th);
+            return self.placeholder(tr!("reader-removed"), th);
         }
         let all_expanded = reader.all_expanded();
         let title = div()

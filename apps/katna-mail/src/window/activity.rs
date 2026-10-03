@@ -1060,7 +1060,7 @@ impl MailWindow {
                         div()
                             .text_size(px(12.0))
                             .text_color(rgba(th.error))
-                            .child(tr!("search-dates-unreadable")),
+                            .child(self.copyable(tr!("search-dates-unreadable"), th)),
                     )
                 })
         });
@@ -1520,7 +1520,7 @@ impl MailWindow {
                             .py(px(16.0))
                             .text_size(px(14.0))
                             .text_color(rgba(th.error))
-                            .child(tr!("insights-failed")),
+                            .child(self.copyable(tr!("insights-failed"), th)),
                     )
                     .into_any_element();
             }

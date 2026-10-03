@@ -15,7 +15,7 @@ use katna_ui::px;
 use katna_ui::rich::{RichEvent, html};
 use katna_ui::{InputEvent, RichEditor, TextInput};
 
-use super::{MailWindow, control_column, label_column, note};
+use super::{MailWindow, control_column, label_column};
 use crate::daemon;
 use crate::data;
 use crate::theme::Theme;
@@ -332,7 +332,7 @@ impl MailWindow {
                 )
                 .children(editor)
                 .when(empty, |d| {
-                    d.child(note(tr!("settings-compose-no-templates"), th))
+                    d.child(self.quiet_note(tr!("settings-compose-no-templates"), th))
                 }),
             th,
         )

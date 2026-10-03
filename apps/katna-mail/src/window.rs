@@ -609,8 +609,15 @@ pub struct MailWindow {
     translations: translate::Translations,
     /// The selected text of the open conversation.
     text: select::TextSelection,
-    /// The selected text of About or What's new, while one is shown.
-    dialog_text: select::TextSelection,
+    /// The selected text outside the conversation: dialogs, Settings,
+    /// pages, errors.
+    ui_text: select::TextSelection,
+    /// The last text pressed was outside the conversation: `ui_text` has
+    /// the selection.
+    ui_active: bool,
+    /// This window's own handle, for text made selectable where no
+    /// `Context` is at hand (`select::selectable_in`).
+    me: WeakEntity<Self>,
     /// Whether a conversation is open: in place of the list with two
     /// panes, beside it with three.
     reading: bool,
@@ -956,7 +963,9 @@ impl MailWindow {
             hovered_link: None,
             translations: translate::Translations::default(),
             text: select::TextSelection::new(cx),
-            dialog_text: select::TextSelection::new(cx),
+            ui_text: select::TextSelection::new_windowed(cx),
+            ui_active: false,
+            me: cx.entity().downgrade(),
             accounts: Vec::new(),
             quotas: HashMap::new(),
             storage_account: std::cell::Cell::new(None),
@@ -3475,6 +3484,8 @@ impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         // Text without a size of its own follows Settings > Appearance > Scaling.
         window.set_rem_size(px(16.0));
+        // Before anything draws text that can be selected.
+        self.ui_text.begin_window(window);
         self.chrome.sync_look(window, cx);
         self.track_menu_fade(cx);
         if self.detached {
@@ -3842,7 +3853,6 @@ impl Render for MailWindow {
         let contact_label = self.render_label_dialog(&th, window, reduce, cx);
         let scheme_editor = self.render_scheme_editor(&th, window, reduce, cx);
         let contact_qr = self.render_contact_qr(&th, window, reduce, cx);
-        self.dialog_text.begin(());
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let share_ask = if onboarding {
             None
@@ -3885,8 +3895,11 @@ impl Render for MailWindow {
         // GPUI does not clip to the frame's rounded corners, so the
         // backdrop rounds its own bottom ones.
         let (bottom_left, bottom_right) = self.chrome.content_corners(window);
+        let ui_text_menu = self.render_ui_text_menu(&th, window, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
+            .map(|d| self.ui_text_root(d, cx))
+            .children(ui_text_menu)
             .relative()
             .size_full()
             .bg(rgba(th.backdrop))

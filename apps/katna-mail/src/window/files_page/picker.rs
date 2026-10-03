@@ -42,7 +42,7 @@ use super::{Direction, Found, Sort, Time, Types};
 use crate::data::EntryKey;
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{filled_button, icon, icon_button, placeholder, raised, tip};
+use crate::widgets::{filled_button, icon, icon_button, raised, tip};
 
 /// Cards are at least this wide; the rest of a row is shared out.
 const CARD_MIN: f32 = 132.0;
@@ -946,9 +946,11 @@ impl MailWindow {
                 .child(self.files_time_chip(th, cx));
             let picker = self.picker.as_ref()?;
             let content = match &self.library.files {
-                None => placeholder(&tr!("files-loading"), th),
-                Some(Err(err)) => placeholder(err, th),
-                Some(Ok(_)) if picker.shown.is_empty() => placeholder(&tr!("files-none-match"), th),
+                None => self.placeholder(tr!("files-loading"), th),
+                Some(Err(err)) => self.placeholder(err.clone(), th),
+                Some(Ok(_)) if picker.shown.is_empty() => {
+                    self.placeholder(tr!("files-none-match"), th)
+                }
                 Some(Ok(_)) => list(
                     picker.state.clone(),
                     cx.processor(move |this, ix: usize, window, cx| {

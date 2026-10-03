@@ -1499,11 +1499,17 @@ selection also goes to the primary selection for middle-click paste.
 GPUI draws text that cannot be selected unless a view wires it up, so the
 rule is: text that reads as content or information (About, What's new,
 dialogs, descriptions, contact cards, details, error messages) is drawn
-with `Pieces::words` inside `select::selectable`, and controls (buttons,
-menu items, tabs, list rows, rows that open a page) stay click-only. About
-and What's new keep their own selection (`MailWindow::dialog_text`), so
-selecting in a dialog leaves the conversation's selection as it was, and a
-click in a dialog's text keeps the dialog focused for Escape and Tab.
+with `Pieces::words` inside `select::selectable`, or simply
+`MailWindow::copyable` (one run) and `MailWindow::placeholder`, and controls
+(buttons, menu items, tabs, list rows, rows that open a page, setting rows
+that toggle) stay click-only. Everything outside the conversation shares
+one selection, `MailWindow::ui_text`, so selecting there leaves the
+conversation's selection as it was. Each window (main, Settings, a
+detached app) starts its own frame of it (`TextSelection::begin_window`)
+and draws its own parts, so pieces of two windows never mix; About and
+What's new keep fixed slots (`slot_pieces`). Ctrl+C is bound in the window
+context too, so it copies whatever was selected wherever focus sits, and
+does what it did before when nothing is.
 
 Sender pictures load without asking. Looking one up does reach the
 network (a DNS query and HTTPS requests from this computer to the

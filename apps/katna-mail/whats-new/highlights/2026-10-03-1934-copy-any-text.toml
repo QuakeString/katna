@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Copy text anywhere"
+text = """
+Text that tells you something can now be selected and copied all over
+Katna: setting names and descriptions, contact and event details, account
+status, error messages, empty-page notes and dialogs. Drag across it or
+double-click a word, then Ctrl+C or right-click > Copy. Buttons and rows
+you click stay as they were.
+"""

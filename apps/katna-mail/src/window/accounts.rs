@@ -499,23 +499,20 @@ impl MailWindow {
                         .child(div().flex_1().min_w_0().child(renaming.input.clone())),
                 ),
                 None => d.child(
-                    div()
+                    self.copyable(name.clone(), th)
                         .truncate()
                         .text_size(px(14.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .child(name.clone()),
+                        .font_weight(FontWeight::MEDIUM),
                 ),
             })
             .child(
-                div()
-                    .truncate()
-                    .text_size(px(12.0))
-                    .text_color(rgba(th.text_faint))
-                    .child(format!(
-                        "{} \u{b7} {}",
-                        account.address,
-                        kind_name(account.kind)
-                    )),
+                self.copyable(
+                    format!("{} \u{b7} {}", account.address, kind_name(account.kind)),
+                    th,
+                )
+                .truncate()
+                .text_size(px(12.0))
+                .text_color(rgba(th.text_faint)),
             );
         let own = self.remote.has_own_picture(id);
         let desktop = self.remote.has_desktop_picture();
@@ -1225,16 +1222,18 @@ impl MailWindow {
             .flex_col()
             .gap(px(6.0))
             .child(
-                div()
-                    .text_size(px(14.0))
-                    .font_weight(FontWeight::SEMIBOLD)
-                    .text_color(rgba(tone))
-                    .child(match &danger.what {
+                self.copyable(
+                    match &danger.what {
                         What::ResetCache => tr!("reset-cache-deleted"),
                         What::Calendar { delete: true, .. } => tr!("calendar-delete-heading"),
                         What::Calendar { .. } => tr!("calendar-remove-heading"),
                         _ => tr!("accounts-deleted-heading"),
-                    }),
+                    },
+                    th,
+                )
+                .text_size(px(14.0))
+                .font_weight(FontWeight::SEMIBOLD)
+                .text_color(rgba(tone)),
             )
             .children(items.into_iter().map(|item| {
                 div()
@@ -1244,16 +1243,15 @@ impl MailWindow {
                     .text_size(px(14.0))
                     .line_height(px(20.0))
                     .child(div().text_color(rgba(tone)).child("\u{2022}"))
-                    .child(div().flex_1().min_w_0().child(item))
+                    .child(self.copyable(item, th).flex_1().min_w_0())
             }))
             .when(!reset && !unlist, |d| {
                 d.child(
-                    div()
+                    self.copyable(tr!("accounts-cannot-undo"), th)
                         .pt(px(4.0))
                         .text_size(px(14.0))
                         .font_weight(FontWeight::SEMIBOLD)
-                        .text_color(rgba(tone))
-                        .child(tr!("accounts-cannot-undo")),
+                        .text_color(rgba(tone)),
                 )
             });
         let server = div()
@@ -1266,13 +1264,8 @@ impl MailWindow {
             .gap(px(10.0))
             .child(icon("info", th.accent, 20.0))
             .child(
-                div()
-                    .flex_1()
-                    .min_w_0()
-                    .text_size(px(13.0))
-                    .line_height(px(19.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(match &danger.what {
+                self.copyable(
+                    match &danger.what {
                         What::ResetCache => tr!("reset-cache-kept"),
                         What::DeleteAll { .. } => tr!("accounts-server-delete-all"),
                         What::RemoveAccount(account) if account.kind == AccountKind::Local => {
@@ -1288,7 +1281,14 @@ impl MailWindow {
                             ..
                         } => tr!("calendar-delete-server", account = account.as_str()),
                         What::Calendar { .. } => tr!("calendar-remove-server"),
-                    }),
+                    },
+                    th,
+                )
+                .flex_1()
+                .min_w_0()
+                .text_size(px(13.0))
+                .line_height(px(19.0))
+                .text_color(rgba(th.text_dim)),
             );
         let confirm = match &danger.what {
             What::DeleteAll { typed, .. } => {
@@ -1332,7 +1332,7 @@ impl MailWindow {
                 .mt(px(12.0))
                 .text_size(px(13.0))
                 .text_color(rgba(th.error))
-                .child(err)
+                .child(self.copyable(err, th))
         });
         let busy = danger.busy;
         let body = div()
@@ -1360,11 +1360,10 @@ impl MailWindow {
                     }),
             )
             .child(
-                div()
+                self.copyable(title, th)
                     .mt(px(16.0))
                     .text_size(px(22.0))
-                    .line_height(px(30.0))
-                    .child(title),
+                    .line_height(px(30.0)),
             )
             .child(warning)
             .child(server)
