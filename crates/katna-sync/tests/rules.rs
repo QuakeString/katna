@@ -392,10 +392,11 @@ fn label_forward_and_trash() {
 }
 
 #[test]
-fn a_label_on_an_account_without_labels_fails_the_rule() {
+fn a_label_on_an_account_without_labels_is_a_copy_in_the_folder() {
     let (_tmp, mut store, account, server, mut watch) = synced();
     let bills = folder(&store, account, "Bills");
-    let id = store
+    let inbox = folder(&store, account, "INBOX");
+    store
         .save_rule(&subject_has(
             "news",
             vec![Action::AddLabel { folder: bills.0 }],
@@ -405,11 +406,48 @@ fn a_label_on_an_account_without_labels_fails_the_rule() {
     server.deliver("INBOX", "News");
     sync(&server, &mut store, account);
     let out = watch.run(&mut store, account, &live(NOW), true).unwrap();
-    assert_eq!(
-        out.failed,
-        [(id, "only Gmail accounts have labels".to_owned())]
-    );
-    assert!(!store.rule(id).unwrap().unwrap().enabled);
+    assert!(out.failed.is_empty(), "{:?}", out.failed);
+    assert_eq!(out.changed, 1);
+    assert_eq!(subjects(in_folder(&store, bills)), ["News"]);
+    assert!(subjects(in_folder(&store, inbox)).contains(&"News".to_owned()));
+    replay(&server, &mut store, account);
+    assert_eq!(server.state().folders["Bills"].messages.len(), 1);
+}
+
+#[test]
+fn a_rule_for_several_accounts_moves_to_the_folder_of_each() {
+    let (_tmp, mut store, account, server, mut watch) = synced();
+    let other = store
+        .add_account(katna_core::AccountKind::Imap, "Other", "bob@example.net")
+        .unwrap()
+        .id;
+    let theirs = {
+        let mut batch = store.mail_batch().unwrap();
+        let id = batch.upsert_folder(other, "Reading", None).unwrap();
+        batch.commit().unwrap();
+        id
+    };
+    let bills = folder(&store, account, "Bills");
+    let rule = Rule {
+        accounts: vec![other.0, account.0],
+        ..subject_has(
+            "letter",
+            vec![
+                Action::Move { folder: theirs.0 },
+                Action::Move { folder: bills.0 },
+            ],
+            account,
+        )
+    };
+    assert_eq!(rule.validate(), Ok(()));
+    let here = rules::for_account(&store, &rule, account).unwrap();
+    assert_eq!(here.actions, [Action::Move { folder: bills.0 }]);
+    store.save_rule(&rule).unwrap();
+    server.deliver("INBOX", "Newsletter");
+    sync(&server, &mut store, account);
+    let out = watch.run(&mut store, account, &live(NOW), true).unwrap();
+    assert!(out.failed.is_empty(), "{:?}", out.failed);
+    assert_eq!(subjects(in_folder(&store, bills)), ["Newsletter"]);
 }
 
 #[test]

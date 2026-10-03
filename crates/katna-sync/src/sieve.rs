@@ -280,7 +280,11 @@ fn headers(field: Field) -> &'static str {
         Field::AnyRecipient => "[\"to\", \"cc\", \"bcc\"]",
         Field::ReplyTo => "\"reply-to\"",
         Field::Subject => "\"subject\"",
-        Field::Body | Field::AttachmentName | Field::HasAttachment => "",
+        Field::Body
+        | Field::AttachmentName
+        | Field::HasAttachment
+        | Field::Tab
+        | Field::MailingList => "",
     }
 }
 
@@ -296,6 +300,14 @@ fn test(
         comparator: condition.comparator,
     };
     let value = condition.value.trim();
+    if condition.field == Field::MailingList {
+        let test = "exists \"list-id\"";
+        return Ok(if katna_store::rules::says_no(value) {
+            format!("not {test}")
+        } else {
+            test.to_owned()
+        });
+    }
     if value.chars().any(char::is_control) {
         return Err(cant());
     }
@@ -314,7 +326,9 @@ fn test(
         Field::From | Field::To | Field::Cc | Field::AnyRecipient | Field::ReplyTo
     );
     let positive = match (condition.field, condition.comparator) {
-        (Field::HasAttachment | Field::AttachmentName, _) => return Err(cant()),
+        // Inbox tabs are Katna's own.
+        (Field::HasAttachment | Field::AttachmentName | Field::Tab, _) => return Err(cant()),
+        (Field::MailingList, _) => return Err(cant()),
         (Field::Body, Comparator::Contains | Comparator::NotContains) => {
             if !extensions.has("body") {
                 return Err(cant());

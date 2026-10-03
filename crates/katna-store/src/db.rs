@@ -71,6 +71,7 @@ impl DbKind {
                 include_str!("schema/pim_v12.sql"),
                 include_str!("schema/pim_v13.sql"),
                 include_str!("schema/pim_v14.sql"),
+                include_str!("schema/pim_v15.sql"),
             ],
             Self::Blobs => &[include_str!("schema/blobs_v1.sql")],
         }
@@ -279,6 +280,7 @@ mod tests {
                 "mail_rule_note",
                 "mail_rule_remote",
                 "mail_rule_server",
+                "mail_rule_starter",
                 "meta",
                 "note",
                 "note_gone",

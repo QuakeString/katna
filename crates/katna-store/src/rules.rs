@@ -10,7 +10,7 @@
 //! daemon runs it. The daemon (`katna_sync::rules`) carries out the actions
 //! through the same code paths as the user's own changes.
 
-use katna_core::AccountId;
+use katna_core::{AccountId, MailCategory};
 use regex::{Regex, RegexBuilder};
 use rusqlite::{OptionalExtension, Row, TransactionBehavior, named_params, params};
 use serde::{Deserialize, Serialize};
@@ -76,6 +76,13 @@ pub enum Field {
     /// Whether it has attachments. The comparator is ignored; the value
     /// `false` (or `no`) means "has none", anything else "has some".
     HasAttachment,
+    /// The inbox tab it is in (`MailCategory::as_str`: `primary`,
+    /// `promotions`, `social`, `updates`, `forums`). "Doesn't contain"
+    /// means "isn't in"; any other comparator "is in".
+    Tab,
+    /// Whether it came from a mailing list (has a `List-Id`). Its value
+    /// reads as [`Field::HasAttachment`]'s does.
+    MailingList,
 }
 
 impl Field {
@@ -91,7 +98,12 @@ impl Field {
                 ParticipantRole::Bcc,
             ],
             Self::ReplyTo => &[ParticipantRole::ReplyTo],
-            Self::Subject | Self::Body | Self::AttachmentName | Self::HasAttachment => &[],
+            Self::Subject
+            | Self::Body
+            | Self::AttachmentName
+            | Self::HasAttachment
+            | Self::Tab
+            | Self::MailingList => &[],
         }
     }
 }
@@ -162,6 +174,18 @@ impl Action {
             _ => None,
         }
     }
+}
+
+impl Field {
+    /// Whether its value is a yes or no rather than text to compare.
+    pub fn is_yes_no(self) -> bool {
+        matches!(self, Self::HasAttachment | Self::MailingList)
+    }
+}
+
+/// Whether a yes-or-no condition's `value` says no (`false`, `no`, `0`).
+pub fn says_no(value: &str) -> bool {
+    matches!(value.trim().to_lowercase().as_str(), "false" | "no" | "0")
 }
 
 /// Where a rule runs.
@@ -265,6 +289,10 @@ pub struct Rule {
     /// Why it was switched off, when an action failed. Set by the daemon.
     #[serde(default)]
     pub last_error: Option<String>,
+    /// The key of the starter rule it was made from, which Katna Mail
+    /// then stops offering. Saving an existing rule keeps it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub starter: Option<String>,
 }
 
 /// What the daemon put on one account's mail service for a rule
@@ -307,6 +335,7 @@ impl Default for Rule {
             runs_on: RunsOn::Katna,
             runs_note: None,
             last_error: None,
+            starter: None,
         }
     }
 }
@@ -354,12 +383,21 @@ impl Rule {
                     "a condition's value is at most {MAX_VALUE} characters"
                 ));
             }
-            if condition.field != Field::HasAttachment && condition.value.trim().is_empty() {
+            if !condition.field.is_yes_no() && condition.value.trim().is_empty() {
                 return Err("a condition needs a value".into());
             }
             Test::new(condition)?;
         }
-        if self.actions.iter().filter(|a| a.moves()).count() > 1 {
+        // Several moves only to folders, one per account (the daemon
+        // checks the accounts): a rule for many accounts names a folder
+        // in each.
+        let moves = self.actions.iter().filter(|a| a.moves()).count();
+        let folder_moves = self
+            .actions
+            .iter()
+            .filter(|a| matches!(a, Action::Move { .. }))
+            .count();
+        if moves > 1 && moves != folder_moves {
             return Err("a rule moves mail to one place at most".into());
         }
         for action in &self.actions {
@@ -393,6 +431,10 @@ pub struct MailFacts {
     pub has_attachments: bool,
     /// The text of the message; its snippet while the body is not stored.
     pub body: String,
+    /// Its inbox tab.
+    pub category: MailCategory,
+    /// Whether it came from a mailing list.
+    pub mailing_list: bool,
 }
 
 impl MailFacts {
@@ -410,6 +452,11 @@ impl MailFacts {
             has_attachments: message.has_attachments || !attachment_names.is_empty(),
             attachment_names,
             body: body.or_else(|| message.snippet.clone()).unwrap_or_default(),
+            category: message.category.unwrap_or_default(),
+            mailing_list: message
+                .list_id
+                .as_deref()
+                .is_some_and(|id| !id.trim().is_empty()),
         }
     }
 }
@@ -420,14 +467,27 @@ enum Test {
     /// Lowercase text to compare with.
     Text(Comparator, String),
     Regex(Regex),
+    /// A yes-or-no field: what it must be.
     Has(bool),
+    /// In this tab, or (`false`) not.
+    Tab(MailCategory, bool),
 }
 
 impl Test {
     fn new(condition: &Condition) -> std::result::Result<Self, String> {
-        if condition.field == Field::HasAttachment {
-            let value = condition.value.trim().to_lowercase();
-            return Ok(Self::Has(!matches!(value.as_str(), "false" | "no" | "0")));
+        if condition.field.is_yes_no() {
+            return Ok(Self::Has(!says_no(&condition.value)));
+        }
+        if condition.field == Field::Tab {
+            let tab = condition
+                .value
+                .trim()
+                .parse::<MailCategory>()
+                .map_err(|_| format!("{:?} is not an inbox tab", condition.value))?;
+            return Ok(Self::Tab(
+                tab,
+                condition.comparator != Comparator::NotContains,
+            ));
         }
         if condition.comparator == Comparator::Matches {
             return RegexBuilder::new(&condition.value)
@@ -460,7 +520,7 @@ impl Test {
                 }
             }
             Self::Regex(regex) => regex.is_match(text),
-            Self::Has(_) => false,
+            Self::Has(_) | Self::Tab(..) => false,
         }
     }
 
@@ -507,14 +567,17 @@ impl Matcher {
 
 /// Whether one condition holds for `mail`.
 fn holds(field: Field, test: &Test, mail: &MailFacts) -> bool {
-    if let Test::Has(want) = test {
-        return mail.has_attachments == *want;
+    match test {
+        Test::Has(want) if field == Field::MailingList => return mail.mailing_list == *want,
+        Test::Has(want) => return mail.has_attachments == *want,
+        Test::Tab(tab, is_in) => return (mail.category == *tab) == *is_in,
+        _ => {}
     }
     let hit = match field {
         Field::Subject => test.hits(&mail.subject),
         Field::Body => test.hits(&mail.body),
         Field::AttachmentName => mail.attachment_names.iter().any(|n| test.hits(n)),
-        Field::HasAttachment => false,
+        Field::HasAttachment | Field::Tab | Field::MailingList => false,
         Field::From | Field::To | Field::Cc | Field::AnyRecipient | Field::ReplyTo => {
             let roles = field.roles();
             mail.participants
@@ -551,8 +614,9 @@ pub fn matching<'a>(matchers: &'a [Matcher], mail: &MailFacts) -> Vec<&'a Matche
 
 const RULE_COLUMNS: &str = "r.id, r.name, r.enabled, r.position, r.match_mode, r.conditions_json,
                             r.actions_json, r.stop, r.accounts_json, r.runs_on, r.last_error,
-                            n.note";
-const RULE_TABLES: &str = "mail_rule r LEFT JOIN mail_rule_note n ON n.rule_id = r.id";
+                            n.note, s.starter";
+const RULE_TABLES: &str = "mail_rule r LEFT JOIN mail_rule_note n ON n.rule_id = r.id
+                           LEFT JOIN mail_rule_starter s ON s.rule_id = r.id";
 
 fn rule_row(row: &Row<'_>) -> rusqlite::Result<Result<Rule>> {
     let id: i64 = row.get(0)?;
@@ -573,6 +637,7 @@ fn rule_row(row: &Row<'_>) -> rusqlite::Result<Result<Rule>> {
     let runs_note = row
         .get::<_, Option<String>>(11)?
         .and_then(|note| serde_json::from_str(&note).ok());
+    let starter = row.get(12)?;
     Ok((|| {
         Ok(Rule {
             id,
@@ -587,6 +652,7 @@ fn rule_row(row: &Row<'_>) -> rusqlite::Result<Result<Rule>> {
             runs_on: RunsOn::parse(&runs_on)?,
             runs_note,
             last_error,
+            starter,
         })
     })())
 }
@@ -668,7 +734,14 @@ impl Store {
                     ":now": now,
                 },
             )?;
-            tx.last_insert_rowid()
+            let id = tx.last_insert_rowid();
+            if let Some(starter) = &rule.starter {
+                tx.execute(
+                    "INSERT INTO mail_rule_starter (rule_id, starter) VALUES (?1, ?2)",
+                    params![id, starter],
+                )?;
+            }
+            id
         };
         tx.commit()?;
         Ok(id)

@@ -160,8 +160,9 @@ impl Daemon {
     }
 
     /// The accounts a rule names exist, the folders it names are in
-    /// them, and a label it adds is a Gmail account's own label (as
-    /// `SetLabels` takes).
+    /// them, a label it adds is no special folder (on Gmail, its own
+    /// label, as `SetLabels` takes; elsewhere, a folder it copies to),
+    /// and it moves mail to one folder per account.
     fn check_rule_places(&self, rule: &Rule) -> Result<(), CommandError> {
         let store = self.store();
         let accounts = store.accounts()?;
@@ -171,23 +172,34 @@ impl Daemon {
                 return Err(CommandError::UnknownAccount(id));
             }
             let own = store.folders(AccountId(id))?;
-            let gmail = katna_sync::folders::is_gmail(&own);
-            folders.extend(own.into_iter().map(|f| (f, gmail)));
+            folders.extend(own.into_iter().map(|f| (f, id)));
         }
+        let mut moved_in = Vec::new();
         for action in &rule.actions {
             let Some(folder) = action.folder() else {
                 continue;
             };
-            let Some((stored, gmail)) = folders.iter().find(|(f, _)| f.id.0 == folder) else {
+            let Some((stored, account)) = folders.iter().find(|(f, _)| f.id.0 == folder) else {
                 return Err(CommandError::UnknownFolder(folder));
             };
-            if matches!(action, katna_store::rules::Action::AddLabel { .. })
-                && (!gmail || katna_sync::folders::is_special(stored, Some('/')))
-            {
-                return Err(CommandError::InvalidArgs(format!(
-                    "\u{201c}{}\u{201d} is not a Gmail label",
-                    stored.path
-                )));
+            match action {
+                katna_store::rules::Action::AddLabel { .. }
+                    if katna_sync::folders::is_special(stored, Some('/')) =>
+                {
+                    return Err(CommandError::InvalidArgs(format!(
+                        "\u{201c}{}\u{201d} is not a label",
+                        stored.path
+                    )));
+                }
+                katna_store::rules::Action::Move { .. } => {
+                    if moved_in.contains(account) {
+                        return Err(CommandError::InvalidArgs(
+                            "a rule moves mail to one folder per account".into(),
+                        ));
+                    }
+                    moved_in.push(*account);
+                }
+                _ => {}
             }
         }
         Ok(())

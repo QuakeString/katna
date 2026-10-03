@@ -467,3 +467,22 @@ fn portable_patterns() {
         assert!(!portable_regex(bad), "{bad}");
     }
 }
+
+#[test]
+fn mailing_lists_but_not_inbox_tabs() {
+    assert_eq!(
+        sieve(condition(Field::MailingList, Comparator::Equals, "")).unwrap(),
+        "exists \"list-id\""
+    );
+    assert_eq!(
+        sieve(condition(Field::MailingList, Comparator::Equals, "no")).unwrap(),
+        "not exists \"list-id\""
+    );
+    assert!(matches!(
+        sieve(condition(Field::Tab, Comparator::Equals, "promotions")),
+        Err(RunsNote::Condition {
+            field: Field::Tab,
+            ..
+        })
+    ));
+}

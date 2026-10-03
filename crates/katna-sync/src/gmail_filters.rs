@@ -141,7 +141,13 @@ fn term(condition: &Condition) -> Result<String, RunsNote> {
         Field::Cc => &["cc"],
         Field::AnyRecipient => &["to", "cc", "bcc"],
         Field::Subject => &["subject"],
-        Field::ReplyTo | Field::Body | Field::AttachmentName | Field::HasAttachment => {
+        // Katna's inbox tabs and Gmail's categories may differ.
+        Field::ReplyTo
+        | Field::Body
+        | Field::AttachmentName
+        | Field::HasAttachment
+        | Field::Tab
+        | Field::MailingList => {
             return Err(cant());
         }
     };
