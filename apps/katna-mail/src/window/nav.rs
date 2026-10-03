@@ -577,7 +577,7 @@ impl MailWindow {
         let has_text = !self.search.read(cx).text().is_empty();
         let panel_open = self.search_panel.is_some();
         // While the Settings page is open the box searches settings.
-        let settings = self.settings_page.is_some();
+        let settings = self.settings_in_main();
         // On the Contacts page it finds people and on the Calendar page
         // events, with no mail options.
         let contacts = matches!(
@@ -655,7 +655,7 @@ impl MailWindow {
                                 |this, _, window, cx| {
                                     let text = this.search.read(cx).text().trim().to_owned();
                                     if text.is_empty()
-                                        || this.settings_page.is_some()
+                                        || this.settings_in_main()
                                         || this.app == super::RailApp::Contacts
                                         || this.app == super::RailApp::Calendar
                                     {
@@ -846,6 +846,8 @@ impl MailWindow {
         // A drawer (opened with the menu on a phone or tablet) slides in
         // whole; the desktop's panel unfolds.
         let slides = !shape.is_desktop() && !self.nav_peek;
+        // A drawer's color reaches back over the rail's edge.
+        let apron = if drawer { DRAWER_APRON } else { 0.0 };
         let width = if slides {
             self.drawer_width()
         } else {
@@ -890,7 +892,8 @@ impl MailWindow {
                         .w(px(width + DRAWER_APRON + over))
                         .pl(px(DRAWER_APRON + over))
                 } else {
-                    d.w(px(width * t)).opacity(t.min(1.0))
+                    // Unfolding from a hover, a drawer's apron does the same.
+                    d.w(px(width * t + apron)).pl(px(apron)).opacity(t.min(1.0))
                 }
             })
             .flex()
@@ -918,7 +921,6 @@ impl MailWindow {
             .children(self.render_storage(th))
             .children(self.render_drawer_foot(th, cx));
         let scrim_width = shape.width - shape.rail();
-        let apron = if slides { DRAWER_APRON } else { 0.0 };
         div()
             .relative()
             .flex_none()
@@ -927,7 +929,7 @@ impl MailWindow {
             .children(self.render_scrim(scrim_width, cx))
             // Covers the list's shadow above the drawer; apart from the
             // drawer, so the drawer's own shadow stays below the top bar.
-            .when(slides && float > 0.0, |d| {
+            .when(drawer && float > 0.0, |d| {
                 d.child(
                     div()
                         .absolute()
@@ -935,7 +937,8 @@ impl MailWindow {
                         .left(px(-apron))
                         .w(px(apron + width * t))
                         .h(px(DRAWER_TOP_APRON))
-                        .bg(rgba(th.page)),
+                        .bg(rgba(th.page))
+                        .when(!slides, |d| d.opacity(t.min(1.0))),
                 )
             })
             // Clips the drawer as it slides out from the rail's edge.
@@ -1526,7 +1529,7 @@ impl MailWindow {
         self.listing.as_ref() == Some(listing)
             && !self.reading
             && self.search_panel.is_none()
-            && self.settings_page.is_none()
+            && !self.settings_in_main()
             && self.search.read(cx).text().is_empty()
     }
 
@@ -1563,7 +1566,7 @@ impl MailWindow {
     /// A list picked in the folder pane while Settings is open takes its
     /// place, as in Gmail; folding a line does not.
     fn leave_settings(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
-        if self.settings_page.is_some() {
+        if self.settings_in_main() {
             self.close_settings_page(window, cx);
         }
     }

@@ -1937,17 +1937,28 @@ impl MailWindow {
                                 )
                                 .document(doc),
                             ),
-                            None => div().children(blocks.iter().map(|(quoted, text)| {
-                                let (styled, holder) = pieces.piece(text.clone(), Vec::new());
-                                holder
-                                    .when(*quoted, |d| {
-                                        d.pl(px(12.0))
-                                            .border_l_2()
-                                            .border_color(rgba(th.outline))
-                                            .text_color(rgba(th.text_faint))
-                                    })
-                                    .child(styled)
-                            })),
+                            // Addresses written out in plain text open as
+                            // links do.
+                            None => div().children(blocks.iter().enumerate().map(
+                                |(n, (quoted, text))| {
+                                    rich::linked_piece(
+                                        &mut pieces,
+                                        text.clone(),
+                                        &[],
+                                        |d| {
+                                            d.when(*quoted, |d| {
+                                                d.pl(px(12.0))
+                                                    .border_l_2()
+                                                    .border_color(rgba(th.outline))
+                                                    .text_color(rgba(th.text_faint))
+                                            })
+                                        },
+                                        n,
+                                        links.clone(),
+                                        th,
+                                    )
+                                },
+                            )),
                         };
                         self.selectable_body(slot, text, cx)
                     })

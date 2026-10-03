@@ -1120,7 +1120,7 @@ impl MailWindow {
     /// "Show them": searches the mail for what the rule matches.
     fn show_rule_mail(&mut self, query: String, window: &mut Window, cx: &mut Context<Self>) {
         self.close_rule_editor(cx);
-        if self.settings_page.is_some() {
+        if self.settings_in_main() {
             self.close_settings_page(window, cx);
         }
         self.search_for(query, window, cx);

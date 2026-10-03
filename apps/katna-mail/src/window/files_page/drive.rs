@@ -705,7 +705,7 @@ impl MailWindow {
     /// show, not what was shared with it.
     pub(in crate::window) fn drive_upload_here(&self) -> bool {
         self.app == super::super::RailApp::Files
-            && self.settings_page.is_none()
+            && !self.settings_in_main()
             && self.library.cloud.view.as_ref().is_some_and(|v| !v.shared)
     }
 

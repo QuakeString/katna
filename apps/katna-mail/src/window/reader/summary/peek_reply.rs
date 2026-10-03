@@ -37,6 +37,7 @@ pub(super) struct PeekReply {
     own: Entity<TextInput>,
     /// The summary's gist shown whole above, not one line.
     unfold: bool,
+    unfold_arrow: crate::widgets::Fold,
     /// The signature the reply goes out with, a
     /// [`katna_core::config::Signature::id`].
     signature: Option<u32>,
@@ -180,6 +181,7 @@ impl MailWindow {
             area: area.clone(),
             own: own.clone(),
             unfold: false,
+            unfold_arrow: crate::widgets::Fold::default(),
             signature,
             signatures_open: false,
             _ideas: None,
@@ -394,8 +396,10 @@ impl MailWindow {
                         .when(!unfold, |d| d.truncate())
                         .child(gist),
                 )
-                .child(div().pt(px(2.0)).child(icon(
-                    if unfold { "chevron-up" } else { "chevron-down" },
+                .child(div().pt(px(2.0)).child(crate::widgets::fold_arrow(
+                    "summary-reply-gist-arrow",
+                    &r.unfold_arrow,
+                    unfold,
                     th.text_faint,
                     14.0,
                 )))
