@@ -1147,11 +1147,9 @@ impl MailWindow {
         for &account in &e.accounts {
             let id = AccountId(account);
             let address = self.account_address(id).unwrap_or_default();
-            let folders: Vec<i64> = if kind == ActionKind::AddLabel {
-                // Labels are Gmail's (`SetLabels`).
-                if !self.tree.is_gmail(id) {
-                    continue;
-                }
+            let folders: Vec<i64> = if kind == ActionKind::AddLabel && self.tree.is_gmail(id) {
+                // Labels are Gmail's (`SetLabels`); elsewhere a label is a
+                // copy in the folder.
                 self.tree
                     .nest_targets(id)
                     .into_iter()
@@ -1170,10 +1168,17 @@ impl MailWindow {
                     .map(|(f, _, _)| f.0)
                     .collect()
             };
-            for folder in folders {
-                let Some(name) = self.rule_folder_name(folder) else {
-                    continue;
-                };
+            let new = e
+                .new_folders
+                .iter()
+                .filter(|(_, a, _)| *a == account)
+                .map(|(f, _, name)| (*f, tr!("rules-editor-new-folder", name = name.as_str())));
+            let named = folders
+                .into_iter()
+                .filter_map(|f| Some((f, self.rule_folder_name(f)?)))
+                .chain(new)
+                .collect::<Vec<_>>();
+            for (folder, name) in named {
                 out.push((
                     folder,
                     if several {
@@ -1402,16 +1407,13 @@ impl MailWindow {
                 .on_click(pick_at(Pick::Action(ix), cx));
                 let what: AnyElement = match row.kind {
                     ActionKind::Move | ActionKind::AddLabel => {
+                        // With several accounts, named with its account.
                         let chosen = row.folder.and_then(|f| {
-                            if f < 0 {
-                                e.new_folders.iter().find(|(id, _, _)| *id == f).map(
-                                    |(_, _, name)| {
-                                        tr!("rules-editor-new-folder", name = name.as_str())
-                                    },
-                                )
-                            } else {
-                                self.rule_folder_name(f)
-                            }
+                            self.rule_folders(e, row.kind)
+                                .into_iter()
+                                .find(|(id, _)| *id == f)
+                                .map(|(_, name)| name)
+                                .or_else(|| self.rule_folder_name(f))
                         });
                         let empty = chosen.is_none();
                         select_box(
@@ -1583,8 +1585,7 @@ impl MailWindow {
                     )
                     .child(stop)
                     .child(accounts)
-                    .child(panel)
-                    .children(error),
+                    .child(panel),
             );
         // Save and Cancel stay below the scrolling part.
         div()
@@ -1597,6 +1598,7 @@ impl MailWindow {
                     .flex_none()
                     .px(px(if narrow { 16.0 } else { 26.0 }))
                     .pb(px(20.0))
+                    .children(error)
                     .child(buttons),
             )
             .into_any_element()
