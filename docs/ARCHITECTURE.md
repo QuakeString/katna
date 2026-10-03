@@ -1636,8 +1636,8 @@ GPUI global):
   the tint to solid (45 % gives 78 %, about the 75 to 80 % it has
   otherwise), through `katna_chrome::Look::blur_opacity`.
   Under the Katna frame choice (not on Windows, which rounds the corners
-  itself, nor on tiling compositors), Corner roundness (0 to 16 px,
-  `experimental.window_radius`), a Border switch (`window_border`) and
+  itself, nor on tiling compositors), Corner roundness (0 to 32 px,
+  slid or typed in the field beside it, `experimental.window_radius`), a Border switch (`window_border`) and
   Border opacity (5 to 100 %, `window_border_opacity`) change the frame
   live as they are dragged; unset, the frame keeps its preset's radius and
   outline (`Look::radius`, `Look::border`, `Look::border_opacity`). The

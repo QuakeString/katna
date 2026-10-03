@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rounder window corners"
+text = """
+Corner roundness in Settings > Experimental now goes up to 32 pixels,
+twice as round as before, and you can type the number in the box beside
+the slider.
+"""
