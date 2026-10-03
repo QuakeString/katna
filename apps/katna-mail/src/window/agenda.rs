@@ -65,7 +65,7 @@ impl MailWindow {
         !self.detached
             && self.layout.shape.is_desktop()
             && self.app == RailApp::Mail
-            && !self.settings_in_main()
+            && self.settings_page.is_none()
     }
 
     /// Whether the card fits beside the mail.

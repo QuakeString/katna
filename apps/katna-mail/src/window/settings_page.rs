@@ -263,19 +263,11 @@ pub(super) struct SettingsPage {
     /// On a phone, the list of the scope's pages shows in place of a page
     /// until one is picked; the back arrow comes back to it.
     pub(super) list: bool,
-    /// The page shows in a window of its own ([`super::settings_window`]);
-    /// on a phone it fills the main window instead.
-    pub(super) own_window: bool,
-    /// Its own window is as narrow as a phone: the list of pages fills it
-    /// until one is picked, as on a phone.
-    pub(super) narrow: bool,
-    /// The search box at the top of its own window.
-    pub(super) search: Entity<TextInput>,
     /// Mail's pages show under it in the list, folding open and closed.
     pub(super) mail_open: bool,
     pub(super) mail_fold: crate::widgets::Fold,
-    /// What the search box has, which shows matching settings in place of
-    /// the open page.
+    /// What the top bar's search box has, which shows matching settings
+    /// in place of the open tab.
     pub(super) query: SharedString,
     /// The row a search has just led to.
     pub(super) flash: Option<super::settings_search::Flash>,
@@ -384,9 +376,6 @@ impl MailWindow {
         let this_files = self.config.mail.files.clone();
         let ai_config = self.config.ai.clone();
         let radius_now = self.window_radius_now();
-        // On a phone the page fills the window; anywhere else it opens a
-        // window of its own.
-        let own_window = !self.layout.shape.is_phone();
         let page = self.settings_page.get_or_insert_with(|| {
             let triggers = cx.new(|cx| {
                 let mut input = TextInput::new(tr!("settings-general-search-triggers-none"), cx);
@@ -458,13 +447,6 @@ impl MailWindow {
                 focus: cx.focus_handle().tab_stop(true),
                 stops: TabStops::new(scroll),
                 list: false,
-                own_window,
-                narrow: false,
-                search: cx.new(|cx| {
-                    let mut input = TextInput::new(tr!("search-settings"), cx);
-                    input.set_accent(accent);
-                    input
-                }),
                 mail_open: false,
                 mail_fold: Default::default(),
                 query: SharedString::default(),
@@ -492,8 +474,7 @@ impl MailWindow {
             }
         });
         page.mail_app = opens_mail_links();
-        let own_window = page.own_window;
-        if fresh && !own_window {
+        if fresh {
             window.focus(&page.focus, cx);
         }
         page.section = section;
@@ -529,15 +510,8 @@ impl MailWindow {
         // The page opens over the app on show, which stays picked in the
         // rail and comes back as it was when the page closes. The search
         // box goes back to mail before the page takes it.
-        if fresh && !own_window {
+        if fresh {
             self.swap_app_search(false, cx);
-        }
-        if own_window {
-            if fresh {
-                self.open_settings_window(window, cx);
-            } else {
-                self.raise_settings_window(window, cx);
-            }
         }
         self.read_drives(cx);
         self.card_seq += 1;
@@ -577,25 +551,7 @@ impl MailWindow {
     }
 
     pub(super) fn close_settings_page(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let own_window = self
-            .settings_page
-            .as_ref()
-            .is_some_and(|page| page.own_window);
-        self.drop_settings_page(cx);
-        if own_window {
-            self.close_settings_window(cx);
-            return;
-        }
-        // The search box and the keys go back to the app on show.
-        self.sync_search_box(cx);
-        self.swap_app_search(true, cx);
-        self.focus_app_page(window, cx);
-        cx.notify();
-    }
-
-    /// Forgets the page, saving a change still waiting for typing to
-    /// pause.
-    pub(super) fn drop_settings_page(&mut self, cx: &mut Context<Self>) {
+        // A change still waiting for typing to pause is saved now.
         if let Some(page) = self.settings_page.take()
             && page.save.is_some()
         {
@@ -603,6 +559,10 @@ impl MailWindow {
             self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
         }
         self.card_seq += 1;
+        // The search box and the keys go back to the app on show.
+        self.sync_search_box(cx);
+        self.swap_app_search(true, cx);
+        self.focus_app_page(window, cx);
         cx.notify();
     }
 
@@ -626,7 +586,7 @@ impl MailWindow {
             RailApp::Contacts | RailApp::Tasks | RailApp::Notes => Scope::Katna,
         };
         self.open_settings_page(scope.first(), window, cx);
-        if self.settings_phone()
+        if self.layout.shape.is_phone()
             && let Some(page) = &mut self.settings_page
         {
             page.list = true;
@@ -649,8 +609,7 @@ impl MailWindow {
             .as_ref()
             .is_some_and(|p| !p.query.is_empty())
         {
-            self.settings_search_box()
-                .update(cx, |search, cx| search.set_text("", cx));
+            self.search.update(cx, |search, cx| search.set_text("", cx));
         }
         if self
             .settings_page
@@ -707,19 +666,9 @@ impl MailWindow {
         // list, its sides come in closer, and the list of pages takes the
         // whole page until one is picked.
         let shape = self.layout.shape;
-        let own_window = self
-            .settings_page
-            .as_ref()
-            .is_some_and(|page| page.own_window);
-        let phone = self.settings_phone();
-        // In its own window the page is a desktop's, or a phone's when the
-        // window is as narrow.
-        let phone_t = if own_window {
-            f32::from(u8::from(phone))
-        } else {
-            shape.phone
-        };
-        let side = lerp(32.0, 16.0, phone_t);
+        let phone = shape.is_phone();
+        let margin = shape.card_margin();
+        let side = lerp(32.0, 16.0, shape.phone);
         let show_list = phone && list && query.is_empty();
         let body = if show_list {
             self.settings_nav(section, true, th, cx)
@@ -755,43 +704,30 @@ impl MailWindow {
         } else {
             tr!("settings")
         };
-        // In its own window the arrow goes back to the list of pages, on a
-        // page of a narrow one; the window's own buttons close it.
-        let back = !own_window || (phone && !show_list && query.is_empty());
-        let (margin, radius) = if own_window {
-            let wide = 1.0 - phone_t;
-            (super::CARD_GAP * wide, super::PANEL_RADIUS * wide)
-        } else {
-            (shape.card_margin(), shape.card_radius())
-        };
         let card = div()
             .id("settings-page")
             .size_full()
             .flex()
             .flex_col()
-            .map(|d| crate::widgets::card(d, th, th.pane(), radius, 0.0))
+            .map(|d| crate::widgets::card(d, th, th.pane(), shape.card_radius(), 0.0))
             .overflow_hidden()
             .child(
                 div()
                     .flex_none()
                     .h(px(56.0))
-                    // Without the arrow the title lines up with the
-                    // list's icons.
-                    .pl(px(if back { 8.0 } else { nav::NAV_INSET }))
+                    .pl(px(8.0))
                     .pr(px(16.0))
                     .flex()
                     .flex_row()
                     .items_center()
                     .gap(px(8.0))
-                    .when(back, |d| {
-                        d.child(
-                            icon_button("settings-page-back", "back", 20.0, th)
-                                .focus_ring(th)
-                                .on_click(cx.listener(|this, _, window, cx| {
-                                    this.settings_back(window, cx)
-                                })),
-                        )
-                    })
+                    .child(
+                        icon_button("settings-page-back", "back", 20.0, th)
+                            .focus_ring(th)
+                            .on_click(
+                                cx.listener(|this, _, window, cx| this.settings_back(window, cx)),
+                            ),
+                    )
                     .child(div().text_size(px(22.0)).child(title))
                     .child(div().flex_1())
                     .child(self.version_button(th, cx)),
@@ -823,7 +759,6 @@ impl MailWindow {
             .flex_1()
             .min_w_0()
             .h_full()
-            .when(own_window, |d| d.pl(px(margin)))
             .pr(px(margin))
             .pb(px(margin))
             .child(card)
@@ -3000,7 +2935,7 @@ impl MailWindow {
             .as_ref()
             .and_then(|p| p.recording.as_ref());
         let changed = !config.keys.is_empty();
-        let phone = self.settings_phone();
+        let phone = self.layout.shape.phone > 0.5;
         // Faint lines between the shortcuts, so the keys stand out.
         let row_line = th.faint_line(0.35);
         let groups = Group::ALL.map(|group| {

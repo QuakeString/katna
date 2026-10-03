@@ -1,8 +1,0 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
-
-title = "Settings in its own window"
-text = """
-Settings now opens in a window of its own beside your mail, with its own
-search box, so you can change something and see it at once. On a phone it
-still fills the screen.
-"""

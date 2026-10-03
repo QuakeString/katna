@@ -635,15 +635,14 @@ pub(super) struct Flash {
 }
 
 impl MailWindow {
-    /// The search box of Settings, in its own window or the top bar's.
+    /// The search box while the Settings page is open.
     pub(super) fn on_settings_search(
         &mut self,
         event: &InputEvent,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        let input = self.settings_search_box();
-        let text = input.read(cx).text().trim().to_owned();
+        let text = self.search.read(cx).text().trim().to_owned();
         match event {
             InputEvent::Changed => {
                 if let Some(page) = &mut self.settings_page {
@@ -663,7 +662,7 @@ impl MailWindow {
                         window.focus(&page.focus, cx);
                     }
                 } else {
-                    input.update(cx, |input, cx| input.set_text("", cx));
+                    self.search.update(cx, |search, cx| search.set_text("", cx));
                 }
             }
         }
@@ -673,7 +672,7 @@ impl MailWindow {
     /// and mail again once it closes. The mail search is put back if its
     /// results are still what the list shows.
     pub(super) fn sync_search_box(&mut self, cx: &mut Context<Self>) {
-        let open = self.settings_in_main();
+        let open = self.settings_page.is_some();
         if open == self.mail_query.is_some() {
             return;
         }
@@ -696,8 +695,7 @@ impl MailWindow {
 
     /// Opens the tab of a result and lights up its row.
     fn go_to_setting(&mut self, found: Found, window: &mut Window, cx: &mut Context<Self>) {
-        self.settings_search_box()
-            .update(cx, |search, cx| search.set_text("", cx));
+        self.search.update(cx, |search, cx| search.set_text("", cx));
         self.open_settings_page(found.section, window, cx);
         self.flash_seq += 1;
         let seq = self.flash_seq;

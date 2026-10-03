@@ -577,7 +577,7 @@ impl MailWindow {
         let has_text = !self.search.read(cx).text().is_empty();
         let panel_open = self.search_panel.is_some();
         // While the Settings page is open the box searches settings.
-        let settings = self.settings_in_main();
+        let settings = self.settings_page.is_some();
         // On the Contacts page it finds people and on the Calendar page
         // events, with no mail options.
         let contacts = matches!(
@@ -655,7 +655,7 @@ impl MailWindow {
                                 |this, _, window, cx| {
                                     let text = this.search.read(cx).text().trim().to_owned();
                                     if text.is_empty()
-                                        || this.settings_in_main()
+                                        || this.settings_page.is_some()
                                         || this.app == super::RailApp::Contacts
                                         || this.app == super::RailApp::Calendar
                                     {
@@ -1529,7 +1529,7 @@ impl MailWindow {
         self.listing.as_ref() == Some(listing)
             && !self.reading
             && self.search_panel.is_none()
-            && !self.settings_in_main()
+            && self.settings_page.is_none()
             && self.search.read(cx).text().is_empty()
     }
 
@@ -1566,7 +1566,7 @@ impl MailWindow {
     /// A list picked in the folder pane while Settings is open takes its
     /// place, as in Gmail; folding a line does not.
     fn leave_settings(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
-        if self.settings_in_main() {
+        if self.settings_page.is_some() {
             self.close_settings_page(window, cx);
         }
     }

@@ -371,7 +371,7 @@ impl MailWindow {
     fn slide_rows(&mut self, top: f32, open: bool, first: bool, window: &Window, reduce: bool) {
         let slides = matches!(window.window_decorations(), Decorations::Server);
         // Settings cover the list on a phone: its rows come back.
-        let covered = self.settings_open || self.settings_in_main();
+        let covered = self.settings_open || self.settings_page.is_some();
         let layout = &mut self.layout;
         let phone = layout.size == Some(Size::Phone);
         let rows_height = TOOLBAR_HEIGHT + if slides { super::TOP_BAR_HEIGHT } else { 0.0 };
@@ -620,7 +620,7 @@ impl MailWindow {
             || compose_open
             || self.page_editor_open()
             || self.settings_open
-            || self.settings_in_main()
+            || self.settings_page.is_some()
             || self.mail.is_err()
             || self.accounts.is_empty()
         {

@@ -22,8 +22,6 @@ const NAV_ICON: f32 = 18.0;
 /// How far a page of an app (Mail's Reading) sits in from its app: past
 /// the app's icon, so the names line up.
 const SUB_INDENT: f32 = NAV_ICON + space::S4;
-/// Where a row's icon starts in the list: the list's side, then the row's.
-pub(in crate::window) const NAV_INSET: f32 = space::S4 + space::S3;
 
 impl MailWindow {
     /// Mail's row: folds its pages open or closed. Opening it on another
@@ -36,7 +34,7 @@ impl MailWindow {
         page.mail_fold.turn();
         let open = page.mail_open;
         let elsewhere = page.section.scope() != Scope::Mail;
-        if open && elsewhere && !self.settings_phone() {
+        if open && elsewhere && !self.layout.shape.is_phone() {
             self.page_section(Scope::Mail.first(), window, cx);
         }
         cx.notify();
@@ -45,7 +43,7 @@ impl MailWindow {
     /// The page's back arrow: on a phone, from a page back to the list of
     /// pages; otherwise out of Settings.
     pub(in crate::window) fn settings_back(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.settings_phone()
+        if self.layout.shape.is_phone()
             && let Some(page) = &mut self.settings_page
             && !page.list
             && page.query.is_empty()
