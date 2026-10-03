@@ -37,8 +37,10 @@ mod whats_new;
 mod widgets;
 mod window;
 
+use std::cell::Cell;
 use std::path::PathBuf;
 use std::process::ExitCode;
+use std::rc::Rc;
 
 use gpui::{App, AppContext, SharedString, size};
 use katna_chrome::{Desktop, Environment, window_options};
@@ -54,6 +56,7 @@ Usage: katna-mail [--data-dir DIR] [--search QUERY | --compose | --inbox | --set
                   --message ID | --reply ID [--text TEXT] |
                   --reply-all ID [--text TEXT] | --page PAGE]
        katna-mail --attach [--from ADDRESS] FILE...
+       katna-mail --capture task|note[:TEXT]
        katna-mail --background
 
 When Katna Mail is already running, it comes to the front and does what
@@ -80,6 +83,9 @@ Options:
                    goes as a zip (Send with Katna Mail in the file
                    manager). With --from ADDRESS it goes out from that
                    account. Every argument after it is a file.
+  --capture KIND   Open the quick capture card over whatever is on screen,
+                   on task or note; task:TEXT starts it with TEXT. Started
+                   this way, Katna Mail shows only the card
   mailto:...       Write a new message as the link asks (Katna Mail is
                    the desktop's mail app when Settings > General says so)
   --background     Start the Katna service (sync, notifications, the tray
@@ -119,6 +125,10 @@ fn main() -> ExitCode {
             },
             Some("--page") => match args.next().and_then(|page| page.into_string().ok()) {
                 Some(page) => request = Some(instance::Request::Page(page)),
+                None => return usage_error(),
+            },
+            Some("--capture") => match args.next().and_then(|kind| kind.into_string().ok()) {
+                Some(param) => request = Some(instance::Request::Capture(param)),
                 None => return usage_error(),
             },
             Some("--open") => open_first = true,
@@ -192,6 +202,9 @@ fn main() -> ExitCode {
             request,
             Some(instance::Request::Search(_) | instance::Request::Page(_))
         );
+    // Quick capture started the app: only its card shows, and the mail
+    // window opens when something else is asked of the app.
+    let capture_only = matches!(request, Some(instance::Request::Capture(_)));
     // A private data directory gets a window of its own.
     let single = data_dir.is_none();
     let paths = match data_dir {
@@ -257,62 +270,98 @@ fn main() -> ExitCode {
             if let Some(font) = &font {
                 cx.set_global(katna_ui::UiFont(font.clone()));
             }
-            let mut options = window_options(
-                &env,
-                MAIL_APP_ID,
-                "Katna Mail",
-                size(desktop_px(1280.0), desktop_px(800.0)),
+            window::capture::install(
+                env.clone(),
+                paths.clone(),
+                font.clone(),
+                connection.clone(),
                 cx,
             );
-            // As it closed, while the Katna service runs.
-            let placement = placement::MailPlacement::new(
-                paths.mail_window_file(),
-                env.clone(),
-                connection.clone(),
-            );
-            let shown = placement.restore(&mut options, cx);
-            let opened = cx.open_window(options, |window, cx| {
-                cx.new(|cx| {
-                    placement.follow(window, cx);
-                    let mut view =
-                        window::MailWindow::new(env, paths, font, shown, preloading, window, cx);
-                    if open_first {
-                        view.open_first(window, cx);
+            let window_connection = connection.clone();
+            let open_main = move |cx: &mut App| {
+                let mut options = window_options(
+                    &env,
+                    MAIL_APP_ID,
+                    "Katna Mail",
+                    size(desktop_px(1280.0), desktop_px(800.0)),
+                    cx,
+                );
+                // As it closed, while the Katna service runs.
+                let placement = placement::MailPlacement::new(
+                    paths.mail_window_file(),
+                    env.clone(),
+                    window_connection,
+                );
+                let shown = placement.restore(&mut options, cx);
+                let opened = cx.open_window(options, |window, cx| {
+                    cx.new(|cx| {
+                        placement.follow(window, cx);
+                        let mut view = window::MailWindow::new(
+                            env, paths, font, shown, preloading, window, cx,
+                        );
+                        if open_first {
+                            view.open_first(window, cx);
+                        }
+                        view
+                    })
+                });
+                let handle = match opened {
+                    Ok(handle) => handle,
+                    Err(err) => {
+                        eprintln!("katna-mail: cannot open a window: {err}");
+                        cx.quit();
+                        return None;
                     }
-                    view
-                })
-            });
-            let handle = match opened {
-                Ok(handle) => handle,
-                Err(err) => {
-                    eprintln!("katna-mail: cannot open a window: {err}");
-                    cx.quit();
+                };
+                placement.save_on_quit(cx);
+                // The window has bound the keys; show them in the menu bar.
+                window::refresh_menu_bar(cx);
+                if let Ok(view) = handle.entity(cx) {
+                    window::capture::set_main(view.downgrade(), cx);
+                }
+                Some(handle)
+            };
+            let mut open_main = Some(open_main);
+            let mut main = None;
+            if !capture_only {
+                main = open_main.take().and_then(|open| open(cx));
+                if main.is_none() {
                     return;
                 }
-            };
-            placement.save_on_quit(cx);
-            // The window has bound the keys; show them in the menu bar.
-            window::refresh_menu_bar(cx);
+            }
+            // Other windows (a message being written, the quick capture
+            // card) close on their own; the app ends with the mail window,
+            // or with the card when it started with only that.
+            let main_id = Rc::new(Cell::new(main.map(|h| h.window_id())));
+            let closed_main = main_id.clone();
+            cx.on_window_closed(move |cx, id| match closed_main.get() {
+                Some(main) if main == id => cx.quit(),
+                None if cx.windows().is_empty() => cx.quit(),
+                _ => {}
+            })
+            .detach();
             cx.spawn(async move |cx| {
                 // Keeps the bus name, the app interface and the menu bar
                 // for as long as the app runs.
                 let _connection = connection;
                 while let Ok(request) = requests.recv().await {
+                    if let instance::Request::Capture(param) = &request {
+                        cx.update(|cx| window::capture::open(param, cx));
+                        continue;
+                    }
+                    if main.is_none() {
+                        main = cx.update(|cx| open_main.take().and_then(|open| open(cx)));
+                        main_id.set(main.map(|h| h.window_id()));
+                    }
+                    let Some(handle) = main else {
+                        break;
+                    };
                     let handled = handle.update(cx, |view, window, cx| {
                         view.handle_request(request, window, cx);
                     });
                     if handled.is_err() {
                         break;
                     }
-                }
-            })
-            .detach();
-            // Other windows (a message being written) close on their own;
-            // the app ends with the mail window.
-            let main = handle.window_id();
-            cx.on_window_closed(move |cx, id| {
-                if id == main {
-                    cx.quit();
                 }
             })
             .detach();

@@ -7,10 +7,14 @@
 //! Windows sends the icon's clicks to a window on the thread that made the
 //! icon, so the icon lives on a thread of its own that runs a message loop
 //! (winit's) for as long as the process runs. [`Tray`] talks to it through
-//! the loop's proxy.
+//! the loop's proxy. The global shortcuts ([`serve_shortcuts`]) live on
+//! the same thread, whose loop also receives their presses.
 
+use std::collections::HashMap;
 use std::sync::{Mutex, OnceLock};
 
+use global_hotkey::hotkey::HotKey;
+use global_hotkey::{GlobalHotKeyEvent, GlobalHotKeyManager, HotKeyState};
 use tray_icon::menu::{self, IsMenuItem, MenuEvent, PredefinedMenuItem};
 use tray_icon::{Icon, MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent};
 use winit::application::ApplicationHandler;
@@ -22,6 +26,7 @@ use zbus::Connection;
 
 use crate::dbusmenu::MenuItem;
 use crate::icon::{self, Style};
+use crate::shortcuts::{self, Keys, Shortcut};
 
 /// What the tray calls its handler with, besides menu actions.
 pub const ACTIVATE: &str = "activate";
@@ -47,6 +52,8 @@ enum Command {
     },
     Menu(Vec<MenuItem>),
     Hide,
+    /// Registers these global shortcuts, each with its action.
+    Shortcuts(Vec<(HotKey, String)>),
 }
 
 /// The icon's thread, started with the first icon.
@@ -54,6 +61,9 @@ static LOOP: OnceLock<Option<EventLoopProxy<Command>>> = OnceLock::new();
 
 /// Where clicks go: the handler of the icon that is up.
 static HANDLER: Mutex<Option<Handler>> = Mutex::new(None);
+
+/// Where global shortcuts go, and the action of each by its ID.
+static SHORTCUTS: Mutex<Option<(shortcuts::Handler, HashMap<u32, String>)>> = Mutex::new(None);
 
 /// A tray icon in the notification area. [`Tray::hide`] takes it down.
 pub struct Tray {
@@ -117,6 +127,64 @@ impl Tray {
     }
 }
 
+/// Registers `shortcuts` with Windows and calls `handler` with the action
+/// of each pressed; the same API as on Linux (`crate::shortcuts`), where
+/// `connection`, `component` and `component_name` are for KDE. A key that
+/// another program holds is left out. Waits for as long as the process
+/// runs.
+pub async fn serve_shortcuts(
+    _connection: &Connection,
+    _component: &str,
+    _component_name: &str,
+    shortcuts: Vec<Shortcut>,
+    handler: shortcuts::Handler,
+) -> zbus::Result<()> {
+    let proxy = LOOP
+        .get_or_init(start)
+        .clone()
+        .ok_or_else(|| zbus::Error::Failure("no tray thread".into()))?;
+    let keys: Vec<(HotKey, String)> = shortcuts
+        .into_iter()
+        .filter_map(|s| Some((hot_key(s.keys)?, s.action)))
+        .collect();
+    let actions = keys.iter().map(|(key, action)| (key.id(), action.clone()));
+    *SHORTCUTS.lock().unwrap() = Some((handler, actions.collect()));
+    proxy
+        .send_event(Command::Shortcuts(keys))
+        .map_err(|_| zbus::Error::Failure("the tray thread stopped".into()))?;
+    std::future::pending::<()>().await;
+    Ok(())
+}
+
+/// `keys` as the hotkey crate has it.
+fn hot_key(keys: Keys) -> Option<HotKey> {
+    let mut text = String::new();
+    for (on, name) in [
+        (keys.meta, "super+"),
+        (keys.ctrl, "control+"),
+        (keys.alt, "alt+"),
+        (keys.shift, "shift+"),
+    ] {
+        if on {
+            text.push_str(name);
+        }
+    }
+    text.push(keys.key.to_ascii_uppercase());
+    text.parse().ok()
+}
+
+fn on_shortcut(event: GlobalHotKeyEvent) {
+    if event.state() != HotKeyState::Pressed {
+        return;
+    }
+    let shortcuts = SHORTCUTS.lock().unwrap();
+    if let Some((handler, actions)) = shortcuts.as_ref()
+        && let Some(action) = actions.get(&event.id())
+    {
+        handler(action);
+    }
+}
+
 /// Starts the icon's thread and returns its loop's proxy.
 fn start() -> Option<EventLoopProxy<Command>> {
     let (sender, receiver) = std::sync::mpsc::channel();
@@ -137,6 +205,7 @@ fn start() -> Option<EventLoopProxy<Command>> {
             event_loop.set_control_flow(ControlFlow::Wait);
             let _ = sender.send(Some(event_loop.create_proxy()));
             TrayIconEvent::set_event_handler(Some(on_icon));
+            GlobalHotKeyEvent::set_event_handler(Some(on_shortcut));
             MenuEvent::set_event_handler(Some(|event: MenuEvent| click(event.id().as_ref())));
             let mut app = App::default();
             if let Err(err) = event_loop.run_app(&mut app) {
@@ -179,6 +248,9 @@ struct App {
     title: String,
     style: Style,
     badge: Option<String>,
+    /// Holds the global shortcuts; made on this thread, whose loop gets
+    /// their presses.
+    hotkeys: Option<GlobalHotKeyManager>,
 }
 
 impl ApplicationHandler<Command> for App {
@@ -222,6 +294,21 @@ impl ApplicationHandler<Command> for App {
                 }
             }
             Command::Hide => self.icon = None,
+            Command::Shortcuts(keys) => {
+                if self.hotkeys.is_none() {
+                    match GlobalHotKeyManager::new() {
+                        Ok(manager) => self.hotkeys = Some(manager),
+                        Err(err) => tracing::warn!(%err, "no global shortcuts"),
+                    }
+                }
+                if let Some(manager) = &self.hotkeys {
+                    for (key, action) in keys {
+                        if let Err(err) = manager.register(key) {
+                            tracing::warn!(%err, action, "global shortcut taken");
+                        }
+                    }
+                }
+            }
         }
     }
 }

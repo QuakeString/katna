@@ -1282,7 +1282,12 @@ pub fn dialog<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32) -> E {
 
 /// A dialog's tint opacity and blur for a menu's.
 fn dialog_frost(tint: f32, blur: f32) -> (f32, f32) {
-    (tint + (1.0 - tint) * DIALOG_TINT, blur * DIALOG_BLUR)
+    (dialog_tint(tint), blur * DIALOG_BLUR)
+}
+
+/// A dialog's tint opacity for a menu's `tint`: further towards solid.
+pub fn dialog_tint(tint: f32) -> f32 {
+    tint + (1.0 - tint) * DIALOG_TINT
 }
 
 /// A strip along the top of a card, frosted as [`frosted`] is when

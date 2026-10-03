@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Catch a thought from anywhere"
+text = """
+Meta+Alt+T opens a small card over whatever you are doing to add a task,
+and Meta+Alt+N to take a note. Type "Call the plumber fri 6pm #home" and
+chips show the day, label, list and reminder it understood; click one to
+change it. Tab switches between Task and Note, Enter saves. It is also in
+the tray menu, and in KRunner as task: and note:.
+"""

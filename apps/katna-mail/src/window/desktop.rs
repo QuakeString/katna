@@ -301,6 +301,12 @@ impl MailWindow {
                 return;
             }
             Request::Search(text) => self.search_for(text, window, cx),
+            // The card opens over whatever is in front; the mail window
+            // stays where it is.
+            Request::Capture(param) => {
+                super::capture::open(&param, cx);
+                return;
+            }
             Request::Attach { from, paths } => self.open_with_files(from, paths, window, cx),
             // The app may reopen on another page: the mail is on Mail.
             Request::ShowMessage(id) => {
