@@ -643,7 +643,7 @@ impl Sending {
             id,
             name,
             text,
-            html: String::new(),
+            ..Signature::default()
         });
         if self.signatures.len() == 1 {
             self.new_mail_signature = Some(id);
@@ -684,6 +684,74 @@ pub struct Signature {
     /// `data:` URIs; empty for a plain text one.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub html: String,
+    /// The fields and layout it is made from, when it is made from one
+    /// of Katna's layouts: [`Self::text`] and [`Self::html`] are then
+    /// written from them.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub layout: Option<SignatureLayout>,
+}
+
+/// A signature made from one of Katna's layouts ([`Signature::layout`]).
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SignatureLayout {
+    pub style: LayoutStyle,
+    /// Its colour, as `#rrggbb`.
+    pub colour: String,
+    pub name: String,
+    pub title: String,
+    pub company: String,
+    pub mobile: String,
+    pub office: String,
+    pub email: String,
+    pub website: String,
+    pub address: String,
+    /// Pages it links to (LinkedIn, YouTube…), by address.
+    pub pages: Vec<String>,
+    /// Pictures as `data:` URIs, already made small for mail; empty for
+    /// none.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub logo: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub photo: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub banner: String,
+}
+
+/// The shape of a [`SignatureLayout`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum LayoutStyle {
+    #[default]
+    Classic,
+    LogoLeft,
+    Photo,
+    Band,
+    OneLine,
+    Centred,
+    Banner,
+    Underline,
+    SideBar,
+    Card,
+    Monogram,
+    Plain,
+}
+
+impl LayoutStyle {
+    pub const ALL: [LayoutStyle; 12] = [
+        LayoutStyle::Classic,
+        LayoutStyle::LogoLeft,
+        LayoutStyle::Photo,
+        LayoutStyle::Band,
+        LayoutStyle::OneLine,
+        LayoutStyle::Centred,
+        LayoutStyle::Banner,
+        LayoutStyle::Underline,
+        LayoutStyle::SideBar,
+        LayoutStyle::Card,
+        LayoutStyle::Monogram,
+        LayoutStyle::Plain,
+    ];
 }
 
 /// How Katna Mail shows mail (its quick settings).
