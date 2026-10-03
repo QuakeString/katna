@@ -2304,6 +2304,21 @@ Gemini or confidential mode):
   user signed their newest message in the conversation with, found by
   comparing the text after its `-- ` line (`signatures.rs`); otherwise the
   reply default. The single signature of older versions becomes the first.
+  A **designed signature** (pasted as HTML in Settings → Compose →
+  Paste HTML, and later imported or made from a layout) is one fixed block
+  in the editor (`rich::Block::Html`): the compose window draws it with the
+  mail renderer, as it will be sent, and never rewrites it, since the
+  editor's own model cannot hold layout tables. Its HTML is cleaned first
+  (`katna_render::html::clean`: allow-listed elements and attributes,
+  inline styles without `url()` or positioning, web/mail/phone links only,
+  no scripts, frames, forms, style sheets or tracking pixels). Pictures on
+  the web are downloaded once through the daemon (`FetchImage`) and stored
+  inside as `data:` URIs, so nothing is hosted and readers load nothing:
+  in a message they travel as `cid:` parts like any inline picture. Stored
+  and in drafts it sits between `<!--katna-html-->` comments, so it reads
+  back as the same block; its plain text (a line per table cell) is what
+  plain text mail carries. Edit HTML opens it again with its pictures as
+  `cid:katna-N`.
 - **Grammar.** Harper (`harper-core`, Apache-2.0) checks English drafts,
   text and subject, on this computer as you write (`grammar.rs`), on by default, under
   Settings → Compose → Grammar. Paragraphs are checked off the UI thread

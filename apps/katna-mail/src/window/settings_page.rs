@@ -52,6 +52,7 @@ use crate::widgets::{
 mod ai;
 mod notifications;
 mod rules;
+mod signature_html;
 mod starter_rules;
 mod templates;
 
@@ -138,6 +139,8 @@ pub(super) struct SettingsPage {
     editing: Option<SignatureEditor>,
     /// The template being edited in Settings > Compose.
     template: Option<templates::TemplateEditor>,
+    /// The Paste HTML panel, open in place of the signature editor.
+    pasting: Option<signature_html::PasteHtml>,
     save: Option<Task<()>>,
     recording: Option<Recording>,
     pub(super) scroll: ScrollHandle,
@@ -320,6 +323,7 @@ impl MailWindow {
                 section,
                 editing: None,
                 template: None,
+                pasting: None,
                 save: None,
                 recording: None,
                 scroll: scroll.clone(),
@@ -2084,6 +2088,9 @@ impl MailWindow {
     // Signatures
 
     fn edit_signature(&mut self, id: Option<u32>, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(page) = &mut self.settings_page {
+            page.pasting = None;
+        }
         let Some(signature) = self.config.sending.signature(id).cloned() else {
             if let Some(page) = &mut self.settings_page {
                 page.editing = None;
@@ -2332,6 +2339,8 @@ impl MailWindow {
         let sending_rows = self.sending_rows(th, cx);
         let ai_rows = self.ai_rows(th, cx);
         let tools = self.render_signature_tools(th, cx);
+        let pasting = self.paste_html_panel(th, cx);
+        let pasting_open = pasting.is_some();
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
         let list = sending.signatures.iter().map(|s| {
@@ -2352,8 +2361,11 @@ impl MailWindow {
                 s.name.clone()
             }))
         });
-        let editor = editing.map(|e| {
+        let editor = editing.filter(|_| !pasting_open).map(|e| {
             let id = e.id;
+            let designed = sending
+                .signature(Some(id))
+                .is_some_and(|s| s.html.contains(katna_ui::rich::html::HTML_START));
             let text_focus = e.text.focus_handle(cx);
             control_column(240.0)
                 .flex()
@@ -2374,17 +2386,37 @@ impl MailWindow {
                 )
                 .children(tools)
                 .child(
-                    div().flex().flex_row().child(div().flex_1()).child(
-                        outlined_button(
-                            "page-signature-delete",
-                            tr!("settings-compose-signature-delete"),
-                            th,
-                        )
-                        .map(|d| self.page_control(d, th, cx))
-                        .on_click(cx.listener(
-                            move |this, _, window, cx| this.delete_signature(id, window, cx),
-                        )),
-                    ),
+                    div()
+                        .flex()
+                        .flex_row()
+                        .gap(px(katna_ui::tokens::space::S3))
+                        .child(div().flex_1())
+                        .when(designed, |d| {
+                            d.child(
+                                outlined_button(
+                                    "page-signature-edit-html",
+                                    tr!("settings-compose-signature-edit-html"),
+                                    th,
+                                )
+                                .map(|d| self.page_control(d, th, cx))
+                                .on_click(cx.listener(
+                                    move |this, _, window, cx| {
+                                        this.open_paste_html(Some(id), window, cx)
+                                    },
+                                )),
+                            )
+                        })
+                        .child(
+                            outlined_button(
+                                "page-signature-delete",
+                                tr!("settings-compose-signature-delete"),
+                                th,
+                            )
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(cx.listener(
+                                move |this, _, window, cx| this.delete_signature(id, window, cx),
+                            )),
+                        ),
                 )
         });
         let defaults = |replies: bool| {
@@ -2449,10 +2481,26 @@ impl MailWindow {
                                     .on_click(cx.listener(
                                         |this, _, window, cx| this.new_signature(window, cx),
                                     )),
+                                )
+                                .child(
+                                    outlined_button(
+                                        "page-signature-paste-html",
+                                        tr!("settings-compose-signature-paste-html"),
+                                        th,
+                                    )
+                                    .map(|d| self.page_control(d, th, cx))
+                                    .mt(px(katna_ui::tokens::space::S2))
+                                    .justify_center()
+                                    .on_click(cx.listener(
+                                        |this, _, window, cx| {
+                                            this.open_paste_html(None, window, cx)
+                                        },
+                                    )),
                                 ),
                         )
+                        .children(pasting)
                         .children(editor)
-                        .when(sending.signatures.is_empty(), |d| {
+                        .when(sending.signatures.is_empty() && !pasting_open, |d| {
                             d.child(note(tr!("settings-compose-no-signatures"), th))
                         }),
                     th,
