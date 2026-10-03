@@ -7,7 +7,7 @@
 
 use std::cell::Cell;
 use std::rc::Rc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Bounds, Context, Pixels, Size, Task, anchored, canvas, deferred, div, point,
@@ -37,6 +37,8 @@ pub(in crate::window) struct Seen {
     /// Closes it a moment after the pointer leaves both, so it can cross
     /// the gap between them.
     closing: Option<Task<()>>,
+    /// When it closed and began to fade out.
+    fading: Option<Instant>,
 }
 
 const WIDTH: f32 = 340.0;
@@ -186,7 +188,7 @@ impl MailWindow {
             return;
         };
         let seen = match &mut reader.seen {
-            Some(seen) if seen.ix == ix => seen,
+            Some(seen) if seen.ix == ix && seen.fading.is_none() => seen,
             // Leaving an eye whose popover isn't open.
             _ if eye != Some(true) => return,
             other => other.insert(Seen {
@@ -194,6 +196,7 @@ impl MailWindow {
                 over_eye: false,
                 over_popover: false,
                 closing: None,
+                fading: None,
             }),
         };
         if let Some(eye) = eye {
@@ -214,8 +217,7 @@ impl MailWindow {
                         .as_ref()
                         .is_some_and(|s| s.ix == ix && !s.over_eye && !s.over_popover)
                     {
-                        reader.seen = None;
-                        cx.notify();
+                        this.close_seen(cx);
                     }
                 })
                 .ok();
@@ -226,14 +228,28 @@ impl MailWindow {
 
     /// Closes the popover of who has seen a message, if it is open.
     pub(in crate::window) fn close_seen(&mut self, cx: &mut Context<Self>) -> bool {
-        let closed = self
+        let open = self
             .reader
-            .as_mut()
-            .is_some_and(|r| r.seen.take().is_some());
-        if closed {
-            cx.notify();
+            .as_ref()
+            .and_then(|r| r.seen.as_ref())
+            .is_some_and(|s| s.fading.is_none());
+        if !open {
+            return false;
         }
-        closed
+        let fading = notched::fade_out(cx);
+        if let Some(reader) = self.reader.as_mut() {
+            match fading {
+                Some(since) => {
+                    if let Some(seen) = &mut reader.seen {
+                        seen.fading = Some(since);
+                        seen.closing = None;
+                    }
+                }
+                None => reader.seen = None,
+            }
+        }
+        cx.notify();
+        true
     }
 
     /// Under the eye (or over it, near the window's bottom), with a notch
@@ -247,9 +263,11 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let reader = self.reader.as_ref()?;
-        if reader.seen.as_ref()?.ix != ix {
+        let seen = reader.seen.as_ref()?;
+        if seen.ix != ix || seen.fading.is_some_and(|since| notched::faded(since, cx)) {
             return None;
         }
+        let fading = seen.fading;
         let (eye, viewport) = part.eye.get()?;
         let mut lines: Vec<(&'static str, u32, String)> = part
             .activity
@@ -327,6 +345,10 @@ impl MailWindow {
                 along,
                 th,
             ));
+        let popover = match fading {
+            Some(_) => notched::fading(popover, ("seen-popover-out", ix)),
+            None => popover.into_any_element(),
+        };
         let layer = div().relative().w(px(vw)).h(px(vh)).child(popover);
         Some(
             deferred(anchored().position(point(px(0.0), px(0.0))).child(layer))

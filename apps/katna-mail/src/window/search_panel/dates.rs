@@ -7,6 +7,7 @@
 
 use std::cell::Cell;
 use std::rc::Rc;
+use std::time::Instant;
 
 use gpui::{
     AnyElement, App, Bounds, Context, Div, Entity, Focusable, FontWeight, MouseButton, Pixels,
@@ -137,6 +138,8 @@ pub(super) struct CustomDates {
     year: i16,
     month: i8,
     pub open: bool,
+    /// When it closed and began to fade out.
+    fading: Option<Instant>,
     /// Why the dates can't be searched.
     pub error: Option<DateError>,
     /// The "Date within" choice before Custom, back on Cancel if the
@@ -159,6 +162,7 @@ impl CustomDates {
             year: today.year(),
             month: today.month(),
             open: false,
+            fading: None,
             error: None,
             before: 0,
             chip: Rc::default(),
@@ -250,6 +254,7 @@ impl MailWindow {
         panel.within = super::CUSTOM;
         let custom = &mut panel.custom;
         custom.open = true;
+        custom.fading = None;
         custom.error = None;
         custom.field = 0;
         show_month(custom, cx);
@@ -265,6 +270,7 @@ impl MailWindow {
         match panel.custom.query(cx) {
             Ok(_) => {
                 panel.custom.open = false;
+                panel.custom.fading = notched::fade_out(cx);
                 panel.custom.error = None;
                 window.focus(&panel.from.focus_handle(cx), cx);
             }
@@ -283,6 +289,7 @@ impl MailWindow {
             panel.within = panel.custom.before;
         }
         panel.custom.open = false;
+        panel.custom.fading = notched::fade_out(cx);
         panel.custom.error = None;
         window.focus(&panel.from.focus_handle(cx), cx);
         cx.notify();
@@ -339,7 +346,11 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let custom = &self.search_panel.as_ref()?.custom;
-        if !custom.open {
+        // Closed: it fades out where it was.
+        let fading = custom
+            .fading
+            .filter(|since| !custom.open && !notched::faded(*since, cx));
+        if !custom.open && fading.is_none() {
             return None;
         }
         let chip_bounds = custom.chip.get()?;
@@ -490,6 +501,18 @@ impl MailWindow {
             .children(error_line)
             .child(buttons)
             .children(notch(side, along, th));
+        if fading.is_some() {
+            let layer = div()
+                .relative()
+                .w(px(vw))
+                .h(px(vh))
+                .child(notched::fading(popover, "custom-dates-out"));
+            return Some(
+                deferred(anchored().position(point(px(0.0), px(0.0))).child(layer))
+                    .with_priority(3)
+                    .into_any_element(),
+            );
+        }
         let layer = div()
             .id("custom-dates-scrim")
             .relative()

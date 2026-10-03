@@ -9,7 +9,7 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Bounds, ClickEvent, Context, FontWeight, Pixels,
@@ -66,6 +66,8 @@ struct Open {
     /// Opened by a tap: stays until a press outside it.
     pinned: bool,
     closing: Option<Task<()>>,
+    /// When it closed and began to fade out.
+    fading: Option<Instant>,
 }
 
 impl Open {
@@ -76,6 +78,7 @@ impl Open {
             over_popover: false,
             pinned,
             closing: None,
+            fading: None,
         }
     }
 }
@@ -113,7 +116,7 @@ impl MailWindow {
     pub(super) fn year_day_hover(&mut self, day: Date, hovered: bool, cx: &mut Context<Self>) {
         let peek = &mut self.calendar.peek;
         if hovered {
-            match &mut peek.open {
+            match peek.open.as_mut().filter(|o| o.fading.is_none()) {
                 Some(open) if open.day == day => {
                     open.over_day = true;
                     open.closing = None;
@@ -152,7 +155,13 @@ impl MailWindow {
 
     /// The pointer went onto or off the popover.
     fn year_popover_hover(&mut self, hovered: bool, cx: &mut Context<Self>) {
-        let Some(open) = &mut self.calendar.peek.open else {
+        let Some(open) = self
+            .calendar
+            .peek
+            .open
+            .as_mut()
+            .filter(|o| o.fading.is_none())
+        else {
             return;
         };
         open.over_popover = hovered;
@@ -165,7 +174,13 @@ impl MailWindow {
 
     /// Closes the popover after [`LINGER`] unless the pointer comes back.
     fn year_peek_linger(&mut self, cx: &mut Context<Self>) {
-        let Some(open) = &mut self.calendar.peek.open else {
+        let Some(open) = self
+            .calendar
+            .peek
+            .open
+            .as_mut()
+            .filter(|o| o.fading.is_none())
+        else {
             return;
         };
         if open.pinned || open.over_day || open.over_popover {
@@ -181,8 +196,7 @@ impl MailWindow {
                     .as_ref()
                     .is_some_and(|o| o.day == day && !o.over_day && !o.over_popover)
                 {
-                    peek.open = None;
-                    cx.notify();
+                    this.close_year_peek(cx);
                 }
             })
             .ok();
@@ -204,11 +218,28 @@ impl MailWindow {
 
     /// Closes the popover, if open.
     pub(super) fn close_year_peek(&mut self, cx: &mut Context<Self>) {
-        let peek = &mut self.calendar.peek;
-        peek.waiting = None;
-        if peek.open.take().is_some() {
-            cx.notify();
+        self.calendar.peek.waiting = None;
+        if self
+            .calendar
+            .peek
+            .open
+            .as_ref()
+            .is_none_or(|o| o.fading.is_some())
+        {
+            return;
         }
+        let fading = notched::fade_out(cx);
+        let peek = &mut self.calendar.peek;
+        match fading {
+            Some(since) => {
+                if let Some(open) = &mut peek.open {
+                    open.fading = Some(since);
+                    open.closing = None;
+                }
+            }
+            None => peek.open = None,
+        }
+        cx.notify();
     }
 
     /// The popover of the day it is open for, over everything.
@@ -220,7 +251,11 @@ impl MailWindow {
         if self.calendar.view != CalView::Year {
             return None;
         }
-        let day = self.calendar.peek.open.as_ref()?.day;
+        let open = self.calendar.peek.open.as_ref()?;
+        let (day, fading) = (open.day, open.fading);
+        if fading.is_some_and(|since| notched::faded(since, cx)) {
+            return None;
+        }
         let (cell, viewport) = *self.calendar.peek.cells.borrow().get(&day)?;
         let items = self.year_day_items(day);
         if items.is_empty() {
@@ -303,13 +338,18 @@ impl MailWindow {
             .child(head)
             .children(rows)
             .children(more_row)
-            .children(notch(side, along, th))
-            .with_animation(
-                SharedString::from(format!("year-peek-{day}")),
-                Animation::new(katna_ui::motion::time(Duration::from_millis(140)))
-                    .with_easing(ease_out_quint()),
-                |el, t| el.opacity(t),
-            );
+            .children(notch(side, along, th));
+        let popover = match fading {
+            Some(_) => notched::fading(popover, SharedString::from(format!("year-peek-out-{day}"))),
+            None => popover
+                .with_animation(
+                    SharedString::from(format!("year-peek-{day}")),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(140)))
+                        .with_easing(ease_out_quint()),
+                    |el, t| el.opacity(t),
+                )
+                .into_any_element(),
+        };
         let layer = div().relative().w(px(vw)).h(px(vh)).child(popover);
         Some(
             deferred(anchored().position(point(px(0.0), px(0.0))).child(layer))
