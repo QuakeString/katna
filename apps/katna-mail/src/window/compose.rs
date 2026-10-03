@@ -1066,6 +1066,34 @@ impl MailWindow {
         self.chips_changed(Field::To, cx);
     }
 
+    /// Opens a new message with `subject` and `blocks` as its text, above
+    /// the signature, the cursor in To: a note sent as mail.
+    pub(in crate::window) fn open_compose_with(
+        &mut self,
+        subject: String,
+        blocks: Vec<katna_ui::rich::Block>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.open_compose(Kind::New, None, window, cx);
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if compose.kind != Kind::New || compose.touched(cx) {
+            return;
+        }
+        compose
+            .subject
+            .update(cx, |input, cx| input.set_text(subject, cx));
+        let mut doc = compose.body.read(cx).doc().clone();
+        doc.blocks.splice(0..1.min(doc.blocks.len()), blocks);
+        compose.body.update(cx, |editor, cx| {
+            editor.set_doc(doc.clone(), doc.start(), cx)
+        });
+        let focus = compose.to.focus_handle(cx);
+        window.focus(&focus, cx);
+    }
+
     /// Sends the open new message from `account`, as picking it in From.
     pub(super) fn send_compose_from(&mut self, account: AccountId) {
         if let Some(compose) = &mut self.compose
@@ -1394,6 +1422,8 @@ impl MailWindow {
                     },
                     cx,
                 ),
+                // Compose turns neither on.
+                RichEvent::OpenLink(_) | RichEvent::Pick(_) => {}
             },
         ));
         let focus = if focus_body {

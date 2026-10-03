@@ -1551,6 +1551,30 @@ pub fn notes(paths: &Paths) -> Result<Vec<katna_store::Note>, String> {
         .map_err(|err| format!("Reading notes failed: {err}"))
 }
 
+/// Note `id`'s pictures. Opens its own connection.
+pub fn note_pictures(paths: &Paths, id: i64) -> Result<Vec<katna_store::NotePicture>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.note_pictures(id))
+        .map_err(|err| format!("Reading a note's pictures failed: {err}"))
+}
+
+/// The first picture of each note that has one, for the cards. Opens its
+/// own connection, for a background thread.
+pub fn note_covers(
+    paths: &Paths,
+) -> Result<std::collections::HashMap<i64, katna_store::NotePicture>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.note_covers())
+        .map_err(|err| format!("Reading notes' pictures failed: {err}"))
+}
+
+/// Note `id`'s earlier versions, newest first. Opens its own connection.
+pub fn note_versions(paths: &Paths, id: i64) -> Result<Vec<katna_store::NoteVersion>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.note_versions(id))
+        .map_err(|err| format!("Reading a note's history failed: {err}"))
+}
+
 /// The saved contacts with their labels and address books, for the
 /// Contacts page. Opens its own connection, for a background thread.
 pub fn saved_contacts(paths: &Paths) -> Result<SavedBook, String> {

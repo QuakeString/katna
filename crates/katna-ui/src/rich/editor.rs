@@ -70,6 +70,10 @@ actions!(
         DismissSuggestion,
         /// Pastes as plain text.
         PastePlain,
+        PickUp,
+        PickDown,
+        PickChoose,
+        PickCancel,
     ]
 );
 
@@ -77,6 +81,9 @@ actions!(
 pub const RICH_TEXT_CONTEXT: &str = "RichText";
 /// Added to [`RICH_TEXT_CONTEXT`] while a writing suggestion shows.
 const SUGGESTING_CONTEXT: &str = "Suggesting";
+/// Added to [`RICH_TEXT_CONTEXT`] while the owner shows choices at the
+/// cursor (see [`RichEditor::set_picking`]).
+const PICKING_CONTEXT: &str = "Picking";
 
 /// Binds the formatting keys (webmail's). Call after the text area's.
 pub fn bind_keys(cx: &mut App) {
@@ -112,6 +119,12 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("tab", AcceptSuggestion, Some("RichText && Suggesting")),
         KeyBinding::new("right", AcceptSuggestion, Some("RichText && Suggesting")),
         KeyBinding::new("escape", DismissSuggestion, Some("RichText && Suggesting")),
+        // Choices the owner shows at the cursor take these keys.
+        KeyBinding::new("up", PickUp, Some("RichText && Picking")),
+        KeyBinding::new("down", PickDown, Some("RichText && Picking")),
+        KeyBinding::new("enter", PickChoose, Some("RichText && Picking")),
+        KeyBinding::new("tab", PickChoose, Some("RichText && Picking")),
+        KeyBinding::new("escape", PickCancel, Some("RichText && Picking")),
     ]);
 }
 
@@ -143,6 +156,11 @@ pub enum RichEvent {
     /// A paste option the owner carries out was chosen (see
     /// [`RichEditor::offer_choice`]).
     PasteChoice(PasteOption),
+    /// A click landed on a link, with [`RichEditor::set_open_links`] on.
+    OpenLink(Arc<str>),
+    /// A key for the choices the owner shows at the cursor, while
+    /// [`RichEditor::set_picking`] is on.
+    Pick(PickKey),
     /// The pointer rested on, or a left click landed on, a misspelled word
     /// or a grammar mistake: the owner shows the fixes in a card under
     /// `word` (window bounds). [`RichEditor::set_cursor`] with `at` makes
@@ -154,6 +172,17 @@ pub enum RichEvent {
         suggestions: Vec<String>,
         grammar: Option<GrammarIssue>,
     },
+}
+
+/// A key pressed among choices shown at the cursor.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PickKey {
+    Up,
+    Down,
+    /// Enter or Tab.
+    Choose,
+    /// Escape.
+    Cancel,
 }
 
 /// A spelling dictionary the owner provides.
@@ -365,6 +394,15 @@ pub struct RichEditor {
     /// The marked words a left click went down on, to show their fixes if
     /// it comes up without dragging.
     clicked: Option<(Path, Range<usize>)>,
+    /// A click on a link says so ([`RichEvent::OpenLink`]).
+    open_links: bool,
+    /// The link a left click went down on.
+    clicked_link: Option<Arc<str>>,
+    /// The owner shows choices at the cursor: the arrows, Enter, Tab and
+    /// Escape go to it.
+    picking: bool,
+    /// Tab indents any paragraph, not only list items.
+    tab_indents: bool,
 }
 
 impl EventEmitter<RichEvent> for RichEditor {}
@@ -421,6 +459,71 @@ impl RichEditor {
             hover: None,
             hover_task: None,
             clicked: None,
+            open_links: false,
+            clicked_link: None,
+            picking: false,
+            tab_indents: false,
+        }
+    }
+
+    /// Whether a click on a link sends [`RichEvent::OpenLink`] (the cursor
+    /// still goes there).
+    pub fn set_open_links(&mut self, on: bool) {
+        self.open_links = on;
+    }
+
+    /// Whether the owner shows choices at the cursor, taking the arrows,
+    /// Enter, Tab and Escape as [`RichEvent::Pick`].
+    pub fn set_picking(&mut self, on: bool, cx: &mut Context<Self>) {
+        if self.picking != on {
+            self.picking = on;
+            cx.notify();
+        }
+    }
+
+    /// Whether Tab and Shift+Tab indent any paragraph, as a checklist
+    /// item goes under another.
+    pub fn set_tab_indents(&mut self, on: bool) {
+        self.tab_indents = on;
+    }
+
+    /// The text of the cursor's paragraph before the cursor.
+    pub fn text_before_cursor(&self) -> &str {
+        let offset = self.head.offset;
+        self.doc
+            .para(self.head.path)
+            .and_then(|p| p.text.get(..offset))
+            .unwrap_or("")
+    }
+
+    /// Puts `text` in place of the `len` bytes before the cursor, linked to
+    /// `link` if given, and the cursor after it.
+    pub fn replace_before_cursor(
+        &mut self,
+        len: usize,
+        text: &str,
+        link: Option<Arc<str>>,
+        cx: &mut Context<Self>,
+    ) {
+        let head = self.head;
+        let Some(start) = head.offset.checked_sub(len) else {
+            return;
+        };
+        let end = start + text.len();
+        self.edit(EditKind::Other, cx, |doc, _| {
+            if let Some(para) = doc.para_mut(head.path) {
+                let mut style = para.style_at(start);
+                para.remove(start..head.offset);
+                style.link = link.clone();
+                para.insert(start, text, &style);
+            }
+            Pos::new(head.path, end)
+        });
+        // Text typed after the link isn't part of it.
+        if let Some(para) = self.doc.para(head.path) {
+            let mut style = para.style_at(end);
+            style.link = None;
+            self.typing = Some(style);
         }
     }
 
@@ -1837,6 +1940,10 @@ impl RichEditor {
                 self.set_selection(Pos::new(pos.path, 0), Pos::new(pos.path, len), cx);
             }
             _ => {
+                self.clicked_link = (self.open_links && !event.modifiers.shift)
+                    .then(|| self.doc.para(pos.path)?.link_at(pos.offset))
+                    .flatten()
+                    .map(|(_, url)| url);
                 self.selecting = true;
                 self.clicked = (!event.modifiers.shift)
                     .then(|| self.mark_at(event.position))
@@ -1887,6 +1994,11 @@ impl RichEditor {
     /// their fixes.
     fn mouse_up(&mut self, event: &MouseUpEvent, cx: &mut Context<Self>) {
         self.selecting = false;
+        if let Some(url) = self.clicked_link.take()
+            && !self.has_selection()
+        {
+            cx.emit(RichEvent::OpenLink(url));
+        }
         let Some(clicked) = self.clicked.take() else {
             return;
         };
@@ -2461,7 +2573,7 @@ impl RichEditor {
             }
             return;
         }
-        if self.para_style().list != List::None {
+        if self.tab_indents || self.para_style().list != List::None {
             self.indent(true, cx);
             return;
         }
@@ -3201,13 +3313,30 @@ impl Render for RichEditor {
         } else {
             String::new()
         };
+        let picking = if self.picking {
+            format!(" {PICKING_CONTEXT}")
+        } else {
+            String::new()
+        };
         div()
             .relative()
             .w_full()
             .min_w_0()
             .flex()
             .flex_col()
-            .key_context(format!("{TEXT_AREA_CONTEXT} {RICH_TEXT_CONTEXT}{suggesting}").as_str())
+            .key_context(
+                format!("{TEXT_AREA_CONTEXT} {RICH_TEXT_CONTEXT}{suggesting}{picking}").as_str(),
+            )
+            .on_action(cx.listener(|_, _: &PickUp, _, cx| cx.emit(RichEvent::Pick(PickKey::Up))))
+            .on_action(
+                cx.listener(|_, _: &PickDown, _, cx| cx.emit(RichEvent::Pick(PickKey::Down))),
+            )
+            .on_action(
+                cx.listener(|_, _: &PickChoose, _, cx| cx.emit(RichEvent::Pick(PickKey::Choose))),
+            )
+            .on_action(
+                cx.listener(|_, _: &PickCancel, _, cx| cx.emit(RichEvent::Pick(PickKey::Cancel))),
+            )
             .track_focus(&self.focus_handle(cx))
             .cursor(CursorStyle::IBeam)
             .on_action(cx.listener(Self::backspace))

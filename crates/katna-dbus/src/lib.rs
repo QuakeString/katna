@@ -136,8 +136,24 @@ pub struct NoteItem {
     /// The `Message-ID` of the mail the note is about, or empty.
     pub link: String,
     /// `body` formatted, as HTML with one paragraph per line; empty when
-    /// it has no formatting.
+    /// it has no formatting. Pictures are named `cid:<cid>`.
     pub html: String,
+    /// When it reminds, in UTC seconds; 0 for never.
+    pub remind_at: i64,
+    /// Whether `pictures` replace the note's; else they stay as they are.
+    pub pictures_set: bool,
+    pub pictures: Vec<NotePictureItem>,
+}
+
+/// A picture in a note, for `SaveNote`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct NotePictureItem {
+    pub cid: String,
+    pub name: String,
+    pub mime: String,
+    pub width: u32,
+    pub height: u32,
+    pub data: Vec<u8>,
 }
 
 /// A file going up to Google Drive or OneDrive for a message, from
