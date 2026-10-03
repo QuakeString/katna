@@ -377,9 +377,32 @@ async fn get_once(
         parts.path, parts.host
     );
     conn.write_all(request.as_bytes()).await?;
+    let response = read_get(&mut conn, url, max_body, head).await?;
+    let _ = conn.close().await;
+    parse_response(&response, max_body, head)
+}
+
+/// Reads the answer to a GET, as bytes: a picture's need not end in a line
+/// break. It ends where its framing says, as [`read_answer`]'s does, so a
+/// server that drops the connection without TLS's `close_notify` (Google's
+/// picture servers, on some networks) costs nothing once it is all in.
+/// With `head`, reading stops at the end of an HTML page's `<head>`, and
+/// an answer cut there is kept.
+async fn read_get(conn: &mut Conn, url: &str, max_body: usize, head: bool) -> Result<Vec<u8>> {
     let mut response = Vec::new();
     loop {
-        let chunk = conn.read().await?;
+        let chunk = match conn.read_raw().await {
+            Ok(chunk) => chunk,
+            Err(Error::Io(err)) if err.kind() == std::io::ErrorKind::UnexpectedEof => {
+                if head || answer_complete(&response) {
+                    break;
+                }
+                return Err(Error::Closed(format!(
+                    "{url}: the connection ended in the middle of the answer"
+                )));
+            }
+            Err(err) => return Err(err),
+        };
         if chunk.is_empty() {
             break;
         }
@@ -393,12 +416,14 @@ async fn get_once(
         {
             break;
         }
+        if !head && answer_complete(&response) {
+            break;
+        }
         if response.len() > max_body + 64 * 1024 {
             return Err(Error::Protocol(format!("{url}: answer too large")));
         }
     }
-    let _ = conn.close().await;
-    parse_response(&response, max_body, head)
+    Ok(response)
 }
 
 /// The start of an HTTP/1.1 response.
@@ -868,6 +893,45 @@ mod tests {
             (200, &b"{\"access_token\":1}"[..])
         );
         assert!(started.elapsed() < Duration::from_secs(2));
+        server.join().unwrap();
+    }
+
+    /// A picture whose server keeps the connection open after it, as one
+    /// whose close the network loses does, arrives at once: its bytes need
+    /// not end in a line break.
+    #[test]
+    fn a_whole_picture_needs_no_close() {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let png: &[u8] = b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR\0\0\0\x01";
+        let server = std::thread::spawn(move || {
+            use std::io::{Read, Write};
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut request = [0; 4096];
+            let _ = stream.read(&mut request).unwrap();
+            let head = format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nContent-Length: {}\r\n\r\n",
+                png.len()
+            );
+            stream.write_all(head.as_bytes()).unwrap();
+            stream.write_all(png).unwrap();
+            std::thread::sleep(Duration::from_secs(5));
+        });
+        let started = std::time::Instant::now();
+        let response = async_io::block_on(async {
+            let mut conn = Conn::new(Tls::insecure_for_local_tests());
+            conn.connect_tcp("127.0.0.1", port).await.unwrap();
+            conn.write_all(b"GET /l.png HTTP/1.1\r\nHost: x\r\n\r\n")
+                .await
+                .unwrap();
+            read_get(&mut conn, "https://x/l.png", 1024, false).await
+        })
+        .unwrap();
+        assert!(started.elapsed() < Duration::from_secs(2));
+        match parse_response(&response, 1024, false).unwrap() {
+            Answer::Body(body) => assert_eq!(body, png),
+            _ => panic!("no picture"),
+        }
         server.join().unwrap();
     }
 

@@ -351,7 +351,6 @@ impl MailWindow {
                 .child(div().flex_none().child(self.account_ring(
                     &info.address,
                     self.person_avatar(&name, &info.address, 36.0),
-                    36.0,
                     th,
                 )))
                 .child(

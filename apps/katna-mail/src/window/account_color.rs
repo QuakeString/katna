@@ -163,23 +163,23 @@ impl MailWindow {
         self.toggle_color_picker(target, window, cx);
     }
 
-    /// `picture` of the account at `address`, `size` across, in a ring
+    /// `picture` of the account at `address` in a ring
     /// of its color [`RING`] wide, [`RING_GAP`] apart.
     pub(super) fn account_ring(
         &self,
         address: &str,
         picture: AnyElement,
-        size: f32,
         th: &Theme,
     ) -> AnyElement {
+        // The gap is padding, not centring: layout snaps padding and
+        // border to whole device pixels the same on every side, where a
+        // centred picture lands half a pixel off and snaps one way.
         div()
             .flex_none()
-            .size(px(size + 2.0 * (RING + RING_GAP)))
             .flex()
-            .items_center()
-            .justify_center()
             .rounded_full()
             .border_px(RING)
+            .p(px(RING_GAP))
             .border_color(rgba(self.account_color(address, th)))
             .child(picture)
             .into_any_element()
