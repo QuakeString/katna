@@ -27,6 +27,15 @@ settings-tab-compose = Compose
 settings-tab-mcp-server = MCP server
 settings-tab-feedback = User feedback
 settings-tab-experimental = Experimental
+settings-tab-ai = AI
+settings-tab-reading = Reading
+settings-tab-desktop = Desktop
+settings-tab-calendar = Calendar
+settings-tab-files = Files
+# The groups of Settings' list of pages: the settings every Katna app
+# shares, then each app's own.
+settings-group-all-apps = All apps
+settings-group-apps = Apps
 
 ## Settings page: tabs still to come
 
@@ -435,6 +444,13 @@ settings-default-apps-ask = Ask which app each time
 settings-default-apps-after-saving = After saving
 settings-default-apps-show-folder = Show saved files in their folder
 settings-default-apps-show-folder-detail = Opens the file manager with the saved attachments picked
+settings-calendar-density = Hour height
+settings-calendar-density-detail = How tall the hours of Day and Week are
+settings-calendar-custom-days = Custom view
+settings-calendar-custom-days-detail = How many days the custom view shows
+settings-calendar-birthdays = Birthdays
+settings-calendar-birthdays-show = Show birthdays
+settings-calendar-birthdays-show-detail = Your contacts' birthdays, as a calendar of their own
 settings-files-page = Files page
 settings-files-page-detail = Which attachments the Files page shows
 settings-files-leave-out-small = Leave out small pictures
@@ -616,6 +632,9 @@ settings-default-apps-text-summary = Where plain text, logs and code open
 settings-default-apps-sheets-summary = Where Excel, OpenDocument and CSV files open
 settings-default-apps-documents-summary = Where Word and OpenDocument text and slides open
 settings-default-apps-after-saving-summary = Show saved attachments in their folder
+settings-calendar-density-summary = Make the hours of Day and Week taller or more compact
+settings-calendar-custom-days-summary = Pick how many days the custom view shows
+settings-calendar-birthdays-summary = Show your contacts' birthdays in the calendar
 settings-files-page-summary = Leave small pictures, like signature logos, off the Files page, and pick which drives it shows
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards

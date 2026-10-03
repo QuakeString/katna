@@ -2168,7 +2168,7 @@ impl MailWindow {
                     .tooltip(tip(tr!("settings"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.account_menu = false;
-                        this.open_settings_page(super::settings_page::Section::General, window, cx);
+                        this.open_settings_here(window, cx);
                     })),
             )
             .child(language)

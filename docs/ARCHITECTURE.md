@@ -2038,7 +2038,7 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   new window sit right of the actions and move to the More menu when the
   reading pane is under 600 px. The More menus open right under their
   button, with an icon beside each item.
-- **Reading options.** Settings > General > Reading, taken from
+- **Reading options.** Settings > Mail > Reading, taken from
   Mailspring: *Newest message first* shows a conversation's latest reply on
   top, with a reply written above it (`mail.newest_first`); *Show full
   headers* opens the from, to, cc, date and subject box on every message,
@@ -2160,26 +2160,39 @@ Gemini or confidential mode):
   while dragged and applies when let go, so it doesn't grow under the
   pointer. Mail you send keeps its own font size.
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
-  place of the list (`window/settings_page.rs`). Its tabs, in the owner's
-  order: General (language, 12- or 24-hour time, conversation view,
-  reading order and headers, when mail
-  is marked read, what the reply button does, images from the web, undo
-  send, offline mail, starting at login, tray and badge), Notifications
-  (new-mail notifications, Sounds, taskbar count, which folders notify
-  and count, muted list), Inbox, Accounts, Subscription, Appearance (reading pane,
-  density, scaling, theme, desktop colors, app names, sender pictures,
-  Important markers, message width, dark colors for HTML mail, attachment
-  previews), Shortcuts, Default apps (where each kind of attachment
-  opens, and showing saved files in their folder), Folders & rules (the
+  place of the app's page (`window/settings_page.rs`), on the page of the
+  app on show (Mail's Reading, Calendar, Files; General from an app
+  without settings of its own). Layout A of the Settings layout study
+  (2026-10-03): one list beside the open page, sorted by scope
+  (`settings_page/nav.rs`). **All apps** holds what every app shares:
+  General (language, 12- or 24-hour time, video calls, offline mail,
+  updates, the cache, starting at login, tray and badge), Appearance
+  (density, scaling, theme, desktop colors, accent, app names),
+  Accounts, Notifications (new-mail notifications, Sounds, taskbar
+  count, which folders notify and count, muted list), Shortcuts,
+  Subscription, AI (writing help with Katna AI or the user's own
+  service), Default apps (where each kind of attachment opens, and
+  showing saved files in their folder), MCP server, then User feedback
+  and Experimental at the end under a faint line. Under **Apps**, Mail
+  folds open to its pages (its arrow turning, the pages gliding in):
+  Reading
+  (conversation view, reading order and headers, translation, when mail
+  is marked read, what opens next, asking before deleting, images from
+  the web, reading pane, sender pictures, Important markers, message
+  width, dark colors for HTML mail, attachment previews), Inbox, Compose
+  (the reply button, undo send, sending, signatures, plain text, spelling
+  and its language, templates), Folders & rules (the
   mail rules of §9.4 in the order they run, for every account or one:
   each with a handle to drag it to another place, a switch, a line saying
   what it does, a dot per account, where it runs, and a pencil that opens
   the rule editor; a rule the daemon switched off says why in red; and an
-  unread count on every folder or on the inbox only),
-  Compose (signatures, plain text, spelling and its language,
-  templates), MCP server, User feedback (turning crash reports and feedback off at any
-  time) and Experimental, always last. Subscription and
-  MCP server are still to come: their tabs are fainter and each shows a
+  unread count on every folder or on the inbox only) and Desktop (email
+  links, the desktop's search words). Calendar holds the hours' height,
+  the custom view's days and the Birthdays calendar; Files the Files
+  page's small pictures and drives. An app joins the list once it has
+  settings of its own. On a phone the list of the scope's pages
+  fills the page until one is picked, and the back arrow comes back to
+  it. MCP server is still to come: it is fainter in the list and shows a
   "Coming soon" page saying what it will do. The rule editor
   (`window/rule_editor.rs`), a dialog, also opens from a mail's
   right-click menu (Make a rule…, filled in with its sender). It counts
@@ -2187,10 +2200,7 @@ Gemini or confidential mode):
   (`Store::rule_preview` on the read-only store, with each message's
   stored text), offers a search for them when the search language can say
   it, and "Also apply to these" (`ApplyRule`) on Save; the daemon's
-  reasons for refusing a rule show in it. The tabs always stay on one line (`window/tab_strip.rs`): when
-  they don't fit, the row scrolls sideways by wheel or touchpad, arrows
-  show at an edge with more tabs past it (not on a phone, where the row is
-  swiped), and the arrows and picking a half-hidden tab glide the row. A
+  reasons for refusing a rule show in it. A
   setting's line that would take more than one line under its name (over
   about 40 characters) sits behind an (i) button beside the name: its
   tooltip on hover, and shown under the name after a click, Enter or a tap.
@@ -3043,7 +3053,7 @@ one of three layouts by the width inside the window frame
 |---------|---------------|--------------|
 | Desktop | 1080 px and up | §13.6 as is. |
 | Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose is a square at the top of the app rail, and the top bar shows the Katna mark and the app's name beside the menu button, the name folding away below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
-| Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). The search row and the list toolbar slide up out of sight once the list has scrolled past them, and come back as soon as it turns back up (or at the top); the list keeps still on screen while they move. An open conversation slides in over the list and the bottom bar sinks away; its messages use the room under the sender's picture, from the picture's left edge, and Reply, Reply all and Forward share the width equally. Composing takes a sheet over the whole window (below the top bar with Katna's own frame, whose window buttons sit there). Quick settings and the Settings page each fill the window between the top bar and the bottom bar, with no Compose button over them; the Settings page's section tabs stay on one line that scrolls sideways. |
+| Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). The search row and the list toolbar slide up out of sight once the list has scrolled past them, and come back as soon as it turns back up (or at the top); the list keeps still on screen while they move. An open conversation slides in over the list and the bottom bar sinks away; its messages use the room under the sender's picture, from the picture's left edge, and Reply, Reply all and Forward share the width equally. Composing takes a sheet over the whole window (below the top bar with Katna's own frame, whose window buttons sit there). Quick settings and the Settings page each fill the window between the top bar and the bottom bar, with no Compose button over them; the Settings page shows its list of pages until one is picked. |
 
 The other apps' pages (Calendar, Contacts, Tasks, Notes) fold the same
 way: on a tablet or phone their side column (calendars, labels, lists)

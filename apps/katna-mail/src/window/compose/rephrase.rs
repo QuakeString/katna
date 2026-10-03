@@ -897,17 +897,17 @@ pub(in crate::window) fn problem_text(problem: &str, service: &str) -> (String, 
             tr!("compose-ai-sign-in"),
             Fix::Settings(Section::Subscriptions),
         ),
-        problem::PAY => (tr!("compose-ai-pay"), Fix::Settings(Section::Signatures)),
+        problem::PAY => (tr!("compose-ai-pay"), Fix::Settings(Section::Ai)),
         problem::TOO_MANY => (tr!("compose-ai-too-many"), Fix::Retry),
         problem::NO_KEY => (
             tr!("compose-ai-no-key", service = service),
-            Fix::Settings(Section::Signatures),
+            Fix::Settings(Section::Ai),
         ),
         problem::BAD_KEY => (
             tr!("compose-ai-bad-key", service = service),
-            Fix::Settings(Section::Signatures),
+            Fix::Settings(Section::Ai),
         ),
-        problem::OFF => (tr!("compose-ai-off"), Fix::Settings(Section::Signatures)),
+        problem::OFF => (tr!("compose-ai-off"), Fix::Settings(Section::Ai)),
         _ => (tr!("compose-ai-failed", service = service), Fix::Retry),
     }
 }

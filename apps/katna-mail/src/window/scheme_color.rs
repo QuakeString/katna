@@ -11,6 +11,7 @@
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::time::Instant;
 
 use gpui::{
     AnyElement, Bounds, Context, DispatchPhase, Entity, Focusable, MouseButton, MouseDownEvent,
@@ -74,6 +75,8 @@ pub(super) struct ColorPicker {
     square: Rc<Cell<Option<Bounds<Pixels>>>>,
     hue: Rc<Cell<Option<Bounds<Pixels>>>>,
     _subscription: Subscription,
+    /// When it closed and began to fade out.
+    fading: Option<Instant>,
 }
 
 impl ColorPicker {
@@ -91,7 +94,11 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        let open = self.color_picker.as_ref().map(ColorPicker::target);
+        let open = self
+            .color_picker
+            .as_ref()
+            .filter(|p| p.fading.is_none())
+            .map(ColorPicker::target);
         self.close_color_picker(cx);
         if open == Some(target) {
             return;
@@ -144,18 +151,33 @@ impl MailWindow {
             square: Rc::default(),
             hue: Rc::default(),
             _subscription: subscription,
+            fading: None,
         });
         cx.notify();
     }
 
     /// Closes the picker, keeping its color among the recent ones.
     pub(super) fn close_color_picker(&mut self, cx: &mut Context<Self>) {
-        let Some(picker) = self.color_picker.take() else {
+        let Some(color) = self
+            .color_picker
+            .as_ref()
+            .filter(|p| p.fading.is_none())
+            .map(|p| p.color)
+        else {
             return;
         };
-        self.recent_colors.retain(|c| *c != picker.color);
-        self.recent_colors.insert(0, picker.color);
+        self.recent_colors.retain(|c| *c != color);
+        self.recent_colors.insert(0, color);
         self.recent_colors.truncate(RECENT);
+        // It fades out where it was.
+        match notched::fade_out(cx) {
+            Some(since) => {
+                if let Some(picker) = &mut self.color_picker {
+                    picker.fading = Some(since);
+                }
+            }
+            None => self.color_picker = None,
+        }
         cx.notify();
     }
 
@@ -319,7 +341,10 @@ impl MailWindow {
         window: &Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
-        let picker = self.color_picker.as_ref().filter(|p| here(p.target))?;
+        let picker = self.color_picker.as_ref().filter(|p| {
+            here(p.target) && !p.fading.is_some_and(|since| notched::faded(since, cx))
+        })?;
+        let fading = picker.fading;
         let swatch = *self.color_swatches.borrow().get(&picker.target)?;
         let color = picker.color;
         let [h, s, v] = picker.hsv;
@@ -681,6 +706,10 @@ impl MailWindow {
                 )
             })
             .children(notch(side_of, along, th));
+        let popover = match fading {
+            Some(_) => notched::fading(popover, "color-picker-out"),
+            None => popover.into_any_element(),
+        };
         let layer = div().relative().w(px(vw)).h(px(vh)).child(popover);
         Some(
             deferred(
