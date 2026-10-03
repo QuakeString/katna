@@ -101,6 +101,9 @@ struct Ctx {
     depth: usize,
     /// Nesting of lists, for the bullet shape.
     lists: usize,
+    /// The table being walked has no width, so it is as wide as its
+    /// content, as a signature's layout table is.
+    fit: bool,
 }
 
 /// Blocks being collected for one box, and its open paragraph.
@@ -271,6 +274,7 @@ pub(super) fn build_from(
         boxes: 0,
         depth: 0,
         lists: 0,
+        fit: false,
     };
     let mut out = Out::default();
     for &root in roots {
@@ -608,6 +612,8 @@ impl Builder<'_> {
         style.border = visible(style.border);
         style.border_top = visible(get("border-top").and_then(border_value));
         style.border_bottom = visible(get("border-bottom").and_then(border_value));
+        style.border_left = visible(get("border-left").and_then(border_value));
+        style.border_right = visible(get("border-right").and_then(border_value));
         if let Some(r) =
             get("border-radius").and_then(|r| css::px(r.split_whitespace().next()?, em))
         {
@@ -657,6 +663,7 @@ impl Builder<'_> {
         }
         ctx.align = get("text-align").and_then(align).unwrap_or_default();
         ctx.cell_border = None;
+        ctx.fit = style.width.is_none();
         if let Some(w) = node.attr("border").and_then(|b| css::px(b, 16.0))
             && w > 0.0
         {
@@ -759,6 +766,12 @@ impl Builder<'_> {
                     + style.padding[3]
                     + border)
                     .min(MAX_CELL_MIN);
+                // In a table as wide as its content, a cell of pictures (a
+                // signature's logo) is as wide as they are; the cells of
+                // text share the rest.
+                if ctx.fit && style.width.is_none() && only_images(&inner.blocks) {
+                    style.width = Some(Length::Px(style.min_width));
+                }
             }
             cells.push(Block::Box(BoxBlock {
                 kind: BoxKind::Stack,
@@ -825,7 +838,7 @@ impl Builder<'_> {
             data_url(data).and_then(data_source)
         } else if let Some(url) = remote_url(src) {
             let lower = url.to_ascii_lowercase();
-            if tiny || TRACKER_PATHS.iter().any(|p| lower.contains(p)) {
+            if tiny || tracker_path(&lower) {
                 self.doc.trackers += 1;
                 return;
             }
@@ -864,6 +877,8 @@ fn push_box(blocks: &mut Vec<Block>, kind: BoxKind, style: BoxStyle, children: V
         && style.border.is_none()
         && style.border_top.is_none()
         && style.border_bottom.is_none()
+        && style.border_left.is_none()
+        && style.border_right.is_none()
         && !style.inline
         && style.padding == [0.0; 4]
         && style.width.is_none()
@@ -973,6 +988,28 @@ fn fit_row_mins(cells: &mut [Block]) {
 /// word or image, or with `nowrap` their longest line. Glyphs count a
 /// little wider than they are on average: a cell a few pixels too wide
 /// reads better than one that breaks a word.
+/// Blocks that show only pictures.
+fn only_images(blocks: &[Block]) -> bool {
+    let mut any = false;
+    let all = blocks.iter().all(|block| match block {
+        Block::Text(t) => t.inlines.iter().all(|inline| match inline {
+            Inline::Image(_) => {
+                any = true;
+                true
+            }
+            Inline::Text(run) => run.text.trim().is_empty(),
+        }),
+        Block::Box(b) => {
+            b.kind != BoxKind::Row && only_images(&b.children) && {
+                any = true;
+                true
+            }
+        }
+        Block::Rule => false,
+    });
+    all && any
+}
+
 fn min_content(blocks: &[Block], nowrap: bool) -> f32 {
     blocks
         .iter()
@@ -1162,7 +1199,12 @@ fn safe_link(href: &str) -> Option<String> {
 }
 
 /// A remote image URL, upgraded to `https`.
-fn remote_url(src: &str) -> Option<String> {
+/// A lower-case address at a known open-tracking path.
+pub(super) fn tracker_path(lower: &str) -> bool {
+    TRACKER_PATHS.iter().any(|p| lower.contains(p))
+}
+
+pub(super) fn remote_url(src: &str) -> Option<String> {
     let lower = src.to_ascii_lowercase();
     if lower.starts_with("https://") {
         Some(src.to_owned())
@@ -1321,6 +1363,32 @@ mod tests {
                 ("file".to_owned(), None),
             ]
         );
+    }
+
+    #[test]
+    fn a_signature_logo_keeps_its_width() {
+        // A table without a width is as wide as its content: the logo's
+        // cell is as wide as the logo, and the text has the rest.
+        let d = doc("<table cellpadding=\"0\"><tr>\
+             <td style=\"padding-right:14px\"><img src=\"data:image/png;base64,iVBORw0KGgo=\" width=\"64\" height=\"64\"></td>\
+             <td style=\"border-left:2px solid #0e7c86;padding-left:14px\"><b>Demo Alam</b><br>Accounts</td>\
+             </tr></table>");
+        // The table adds nothing around its row.
+        let Block::Box(row) = &d.blocks[0] else {
+            unreachable!()
+        };
+        assert_eq!(row.kind, BoxKind::Row);
+        let styles: Vec<&BoxStyle> = row
+            .children
+            .iter()
+            .map(|c| match c {
+                Block::Box(b) => &b.style,
+                _ => unreachable!(),
+            })
+            .collect();
+        assert_eq!(styles[0].width, Some(Length::Px(78.0)));
+        assert_eq!(styles[1].width, None);
+        assert_eq!(styles[1].border_left, Some((2.0, 0x0e7c86ff)));
     }
 
     #[test]

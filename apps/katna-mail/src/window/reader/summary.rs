@@ -791,7 +791,7 @@ impl MailWindow {
                 .child(content)
                 .with_animation(
                     "chat-summary-drop",
-                    gpui::Animation::new(Duration::from_millis(180))
+                    gpui::Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
                         .with_easing(gpui::ease_out_quint()),
                     |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
                 )
@@ -1610,8 +1610,10 @@ impl MailWindow {
                                     .child(measure)
                                     .with_animation(
                                         "summary-peek",
-                                        gpui::Animation::new(Duration::from_millis(160))
-                                            .with_easing(gpui::ease_out_quint()),
+                                        gpui::Animation::new(katna_ui::motion::time(
+                                            Duration::from_millis(160),
+                                        ))
+                                        .with_easing(gpui::ease_out_quint()),
                                         |el, t| el.opacity(t).ml(px(-6.0 * (1.0 - t))),
                                     ),
                             ),

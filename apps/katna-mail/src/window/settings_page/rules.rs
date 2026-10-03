@@ -630,7 +630,11 @@ impl MailWindow {
             .on_click(cx.listener(move |this, _, _, cx| this.set_rule_on(id, !on, cx)))
             .child(div().with_spring(
                 ("rule-switch-spring", ix),
-                SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                    1.0
+                } else {
+                    0.0
+                }),
                 {
                     let th = *th;
                     move |el, s: f32| el.child(switch(s.clamp(0.0, 1.0), &th))
@@ -799,7 +803,11 @@ impl MailWindow {
             .on_click(cx.listener(move |this, _, _, cx| this.turn_on_starter(key, cx)))
             .child(div().with_spring(
                 ("starter-switch-spring", ix),
-                SpringAnimation::new(motion::SLIDE).to(if starting { 1.0 } else { 0.0 }),
+                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if starting {
+                    1.0
+                } else {
+                    0.0
+                }),
                 {
                     let th = *th;
                     move |el, s: f32| el.child(switch(s.clamp(0.0, 1.0), &th))

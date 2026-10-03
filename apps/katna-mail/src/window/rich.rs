@@ -9,7 +9,9 @@
 //! in a browser ([`link_status`]): its host stands out, and a host in
 //! another script shows as the punycode the network sees.
 
+use std::cell::RefCell;
 use std::collections::HashMap;
+use std::rc::Rc;
 use std::sync::Arc;
 
 use gpui::{
@@ -39,6 +41,58 @@ const SCALE: f32 = 14.0 / 16.0;
 pub(super) const MAX_REMOTE_IMAGES: usize = 200;
 /// Most SVG pictures carried in one message that are drawn.
 const MAX_DRAWN_SVGS: usize = 100;
+
+/// Draws designed HTML (a signature from a layout, pasted or imported) in
+/// an editor, as the reading pane would: colors as sent, pictures from the
+/// block. Laid out once per block.
+pub(super) fn html_view(th: Theme) -> katna_ui::rich::HtmlView {
+    let laid: RefCell<Vec<(Arc<str>, Rc<Document>)>> = RefCell::default();
+    Rc::new(move |block, _width, _cx| {
+        let found = laid
+            .borrow()
+            .iter()
+            .find(|(html, _)| Arc::ptr_eq(html, &block.html))
+            .map(|(_, doc)| doc.clone());
+        let doc = found.unwrap_or_else(|| {
+            let doc = Rc::new(designed_document(block));
+            let mut laid = laid.borrow_mut();
+            // Only the few blocks being edited are kept.
+            if laid.len() >= 4 {
+                laid.remove(0);
+            }
+            laid.push((block.html.clone(), doc.clone()));
+            doc
+        });
+        designed(&th, &doc)
+    })
+}
+
+/// Designed HTML laid out, its `cid:katna-N` pictures from the block.
+pub(super) fn designed_document(block: &katna_ui::rich::HtmlBlock) -> Document {
+    katna_render::html::document(&block.html, &|cid| {
+        let n: usize = cid.strip_prefix("katna-")?.parse().ok()?;
+        let image = block.images.get(n)?;
+        Some(Arc::from(image.data.as_slice()))
+    })
+}
+
+/// A laid out designed block drawn in place: in its own colors in a
+/// light theme, remapped as mail is in a dark one.
+pub(super) fn designed(th: &Theme, doc: &Document) -> AnyElement {
+    let (images, drawn) = (HashMap::new(), HashMap::new());
+    let mut painter = Painter::new(
+        th,
+        &images,
+        &drawn,
+        None,
+        false,
+        None,
+        true,
+        Pieces::alone(th),
+    );
+    painter.bare = true;
+    painter.document(doc)
+}
 
 /// Where the reading pane learns which link is under the pointer.
 #[derive(Clone)]
@@ -117,6 +171,9 @@ pub(super) struct Painter<'a> {
     bg: u32,
     /// Its text, selectable.
     pieces: Pieces,
+    /// Drawn in place, without a page's edge around it (a designed
+    /// signature in an editor).
+    bare: bool,
 }
 
 impl<'a> Painter<'a> {
@@ -150,6 +207,7 @@ impl<'a> Painter<'a> {
             dark: (th.dark && dark_mail).then(|| Dark::new(th.surface)),
             bg: th.surface,
             pieces,
+            bare: false,
         }
     }
 
@@ -207,12 +265,11 @@ impl<'a> Painter<'a> {
             .flex_col()
             .text_color(rgba(self.ink.text))
             .when_some(page, |d, page| {
-                d.bg(rgba(page))
-                    .rounded(px(8.0))
-                    .p(px(8.0))
-                    .when(!self.th.dark, |d| {
+                d.bg(rgba(page)).when(!self.bare, |d| {
+                    d.rounded(px(8.0)).p(px(8.0)).when(!self.th.dark, |d| {
                         d.border_1().border_color(rgba(self.th.outline))
                     })
+                })
             })
             .children(children)
             .into_any_element()
@@ -275,16 +332,21 @@ impl<'a> Painter<'a> {
                 d.border_px(4.0)
             }
             .border_color(rgba(self.fill(color)));
-        } else if let Some((width, color)) = s.border_top.or(s.border_bottom) {
-            // A divider along the top or bottom edge.
-            let width: gpui::AbsoluteLength = px(width.clamp(1.0, 4.0).round()).into();
+        } else if let Some((_, color)) = s
+            .border_top
+            .or(s.border_bottom)
+            .or(s.border_left)
+            .or(s.border_right)
+        {
+            // Dividers along some edges.
+            let edge = |side: Option<(f32, u32)>| {
+                side.map(|(w, _)| gpui::AbsoluteLength::from(px(w.clamp(1.0, 4.0).round())))
+            };
             let edges = &mut d.style().border_widths;
-            if s.border_top.is_some() {
-                edges.top = Some(width);
-            }
-            if s.border_bottom.is_some() {
-                edges.bottom = Some(width);
-            }
+            edges.top = edge(s.border_top);
+            edges.bottom = edge(s.border_bottom);
+            edges.left = edge(s.border_left);
+            edges.right = edge(s.border_right);
             d = d.border_color(rgba(self.fill(color)));
         }
         if s.radius > 0.0 {

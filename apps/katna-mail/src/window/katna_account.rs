@@ -133,7 +133,8 @@ impl MailWindow {
                     .bg(rgba(th.accent))
                     .with_animation(
                         id,
-                        Animation::new(Duration::from_millis(1300)).repeat(),
+                        Animation::new(katna_ui::motion::time(Duration::from_millis(1300)))
+                            .repeat(),
                         |bar, t| bar.left(px(-64.0 + 224.0 * t)),
                     ),
             )

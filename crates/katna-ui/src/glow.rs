@@ -127,18 +127,26 @@ impl RenderOnce for Glow {
                 };
                 div()
                     .absolute()
-                    .with_animation(("glow", n), Animation::new(GROW), move |el, t| {
-                        let scale = START + (1.0 - START) * ease(t);
-                        paint(el, scale, ease_out((t * fade).min(1.0)))
-                    })
+                    .with_animation(
+                        ("glow", n),
+                        Animation::new(crate::motion::time(GROW)),
+                        move |el, t| {
+                            let scale = START + (1.0 - START) * ease(t);
+                            paint(el, scale, ease_out((t * fade).min(1.0)))
+                        },
+                    )
                     .into_any_element()
             } else {
                 div()
                     .absolute()
-                    .with_animation(("glow", n), Animation::new(FADE_OUT), move |el, t| {
-                        let t = ease_in(t);
-                        paint(el, 1.0 - (1.0 - START) * t, 1.0 - t)
-                    })
+                    .with_animation(
+                        ("glow", n),
+                        Animation::new(crate::motion::time(FADE_OUT)),
+                        move |el, t| {
+                            let t = ease_in(t);
+                            paint(el, 1.0 - (1.0 - START) * t, 1.0 - t)
+                        },
+                    )
                     .into_any_element()
             }
         });

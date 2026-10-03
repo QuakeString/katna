@@ -3258,8 +3258,10 @@ impl MailWindow {
                             .child(
                                 card.with_animation(
                                     ("event-card", occurrence.event.id as usize),
-                                    Animation::new(std::time::Duration::from_millis(160))
-                                        .with_easing(ease_out_quint()),
+                                    Animation::new(katna_ui::motion::time(
+                                        std::time::Duration::from_millis(160),
+                                    ))
+                                    .with_easing(ease_out_quint()),
                                     |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
                                 ),
                             ),

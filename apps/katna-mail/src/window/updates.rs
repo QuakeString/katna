@@ -934,7 +934,10 @@ fn working_bar(th: &Theme) -> impl IntoElement {
                 .bg(rgba(th.accent))
                 .with_animation(
                     "update-working",
-                    Animation::new(std::time::Duration::from_millis(2400)).repeat(),
+                    Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                        2400,
+                    )))
+                    .repeat(),
                     |bar, t| {
                         let swing = (1.0 - (t * std::f32::consts::TAU).cos()) / 2.0;
                         bar.left(relative(lerp(0.0, 0.6, swing)))

@@ -518,9 +518,16 @@ fn body_parts(body: &Doc, plain: bool, domain: &str) -> (Option<String>, Vec<Par
     // Each picture gets a name of its own in the message, even when the
     // same one was pasted twice.
     let mut doc = body.clone();
-    for (ix, block) in doc.blocks.iter_mut().enumerate() {
-        if let Block::Image(image) = block {
-            image.id = ix as u64;
+    let mut next = 0;
+    for block in &mut doc.blocks {
+        let images = match block {
+            Block::Image(image) => std::slice::from_mut(image),
+            Block::Html(designed) => designed.images.as_mut_slice(),
+            _ => &mut [],
+        };
+        for image in images {
+            image.id = next;
+            next += 1;
         }
     }
     let seed = std::process::id() as u64 ^ jiff::Timestamp::now().as_millisecond() as u64;
@@ -1250,6 +1257,7 @@ impl MailWindow {
         let body = cx.new(|cx| {
             let mut editor = RichEditor::new("", cx);
             editor.set_palette(palette(&th));
+            editor.set_html_view(super::rich::html_view(th));
             editor.set_doc(draft.body.clone(), draft.body.start(), cx);
             editor.set_spell_check(speller, cx);
             editor.set_grammar_check(grammar, cx);
@@ -3051,6 +3059,28 @@ mod tests {
             here,
             window_open,
             answer_then_new: false,
+        }
+    }
+
+    #[test]
+    fn designed_signature_pictures_are_parts() {
+        let png = "data:image/png;base64,iVBORw0KGgo=";
+        let mut next = 0;
+        let designed = html::html_block(
+            &format!(
+                "<table><tr><td><img src=\"{png}\"></td><td><img src=\"{png}\"></td></tr></table>"
+            ),
+            &mut next,
+        );
+        let mut body = html::from_plain("Hi");
+        body.blocks.push(Block::Html(designed));
+        let (sent, inline) = body_parts(&body, false, "example.com");
+        let sent = sent.expect("html");
+        assert_eq!(inline.len(), 2);
+        let ids: Vec<String> = inline.iter().filter_map(|p| p.content_id.clone()).collect();
+        assert_ne!(ids[0], ids[1]);
+        for id in ids {
+            assert!(sent.contains(&format!("src=\"cid:{id}\"")), "{sent}");
         }
     }
 

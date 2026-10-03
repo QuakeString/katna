@@ -466,7 +466,8 @@ impl MailWindow {
                         ))
                         .with_spring(
                             ("app-pill", app as usize),
-                            SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                            SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                                .to(if on { 1.0 } else { 0.0 }),
                             {
                                 let bg = th.nav_selected;
                                 move |el, s: f32| {
@@ -497,7 +498,8 @@ impl MailWindow {
                         .child(app.label())
                         .with_spring(
                             ("app-label", app as usize),
-                            SpringAnimation::new(motion::SLIDE).to(if labels { 1.0 } else { 0.0 }),
+                            SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                                .to(if labels { 1.0 } else { 0.0 }),
                             |el, s: f32| {
                                 let s = s.clamp(0.0, 1.0);
                                 el.h(px(16.0 * s)).opacity(s)
@@ -636,8 +638,10 @@ impl MailWindow {
             )
             .with_animation(
                 ("app-page", self.app as usize),
-                gpui::Animation::new(std::time::Duration::from_millis(260))
-                    .with_easing(gpui::ease_out_quint()),
+                gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    260,
+                )))
+                .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(12.0 * (1.0 - t))),
             )
             .into_any_element()

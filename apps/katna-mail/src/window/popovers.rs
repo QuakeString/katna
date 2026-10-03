@@ -77,7 +77,7 @@ pub(super) fn pass_right_press(event: &MouseDownEvent, window: &Window) {
 impl MailWindow {
     /// Whether a menu is open, whose items the arrow keys go through.
     fn menu_open(&self) -> bool {
-        self.context_menu.is_some()
+        self.open_context_menu_ref().is_some()
             || self.nav_menu.is_some()
             || self.menu.is_some()
             || self.files_menu.is_some()
@@ -226,7 +226,7 @@ impl MailWindow {
         {
             return false;
         }
-        let closed = if self.context_menu.is_some() {
+        let closed = if self.open_context_menu_ref().is_some() {
             if !self.context_menu_back(cx) {
                 self.close_context_menu(cx);
             }

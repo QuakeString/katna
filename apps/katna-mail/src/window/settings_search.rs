@@ -246,6 +246,18 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Appearance,
+        "settings-appearance-motion-speed",
+        "settings-appearance-motion-speed-summary",
+        "animation animations motion speed fast slow duration transitions effects",
+    ),
+    entry(
+        Section::Appearance,
+        "settings-appearance-reduce-motion",
+        "settings-appearance-reduce-motion-summary",
+        "reduce motion animations off accessibility still static no animation",
+    ),
+    entry(
+        Section::Appearance,
         "settings-appearance-theme",
         "settings-appearance-theme-summary",
         "dark mode light mode night theme",
@@ -399,7 +411,7 @@ const ENTRIES: &[Entry] = &[
         Section::Signatures,
         "settings-compose-signatures",
         "settings-compose-signatures-summary",
-        "signature sign-off",
+        "signature sign-off html paste designed raw code generator logo banner",
     ),
     entry(
         Section::Signatures,
@@ -762,7 +774,7 @@ impl MailWindow {
                 )
                 .with_animation(
                     ("settings-flash", flash.seq),
-                    Animation::new(FLASH),
+                    Animation::new(katna_ui::motion::time(FLASH)),
                     move |el, t| {
                         // Holds, then fades.
                         let left = ((1.0 - t) / 0.6).min(1.0);

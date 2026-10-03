@@ -828,7 +828,7 @@ impl MailWindow {
                 )
                 .with_animation(
                     ("contact-editor", edit.card.max(0) as usize),
-                    gpui::Animation::new(Duration::from_millis(220))
+                    gpui::Animation::new(katna_ui::motion::time(Duration::from_millis(220)))
                         .with_easing(gpui::ease_out_quint()),
                     |el, t| el.opacity(t).mt(px(10.0 * (1.0 - t))),
                 )

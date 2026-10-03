@@ -852,7 +852,8 @@ impl MailWindow {
                 .child(toggle)
                 .with_animation(
                     ("reader-colors-slot", flips),
-                    Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(220)))
+                        .with_easing(ease_out_quint()),
                     move |d, t| {
                         let shown = if chat { 1.0 - t } else { t };
                         // Out of sight it takes no room, its gap neither.
@@ -1376,8 +1377,10 @@ impl MailWindow {
                                         .map(|d| self.text_area(d, cx))
                                         .with_animation(
                                             ("open-conversation", key_number(key)),
-                                            Animation::new(Duration::from_millis(280))
-                                                .with_easing(ease_out_quint()),
+                                            Animation::new(katna_ui::motion::time(
+                                                Duration::from_millis(280),
+                                            ))
+                                            .with_easing(ease_out_quint()),
                                             |el, t| el.opacity(t).mt(px(14.0 * (1.0 - t))),
                                         ),
                                 ),
@@ -1822,7 +1825,8 @@ impl MailWindow {
             self.selectable_body(super::select::DETAILS_PART + slot, details, cx)
                 .with_animation(
                     ("details", ix),
-                    Animation::new(Duration::from_millis(180)).with_easing(ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                        .with_easing(ease_out_quint()),
                     |el, t| el.opacity(t),
                 )
         });
@@ -2035,7 +2039,7 @@ impl MailWindow {
             Some(id) => content
                 .with_animation(
                     id,
-                    Animation::new(TURN).with_easing(ease_out_cubic),
+                    Animation::new(katna_ui::motion::time(TURN)).with_easing(ease_out_cubic),
                     move |el, t| {
                         if t >= 1.0 {
                             el
@@ -2199,7 +2203,7 @@ fn turn_fade(el: gpui::Div, turn: Option<SharedString>) -> AnyElement {
         Some(id) => el
             .with_animation(
                 SharedString::from(format!("{id}-text")),
-                Animation::new(TURN).with_easing(ease_out_cubic),
+                Animation::new(katna_ui::motion::time(TURN)).with_easing(ease_out_cubic),
                 |el, t| el.opacity(0.3 + 0.7 * t),
             )
             .into_any_element(),
