@@ -17,7 +17,7 @@ use gpui::{
     MouseButton, Pixels, Point, SharedString, Stateful, StyledText, Subscription, Task, Window,
     anchored, deferred, div, prelude::*, rgba,
 };
-use katna_core::AccountId;
+use katna_core::{AccountId, MailCategory};
 use katna_i18n::tr;
 use katna_store::FolderId;
 use katna_store::rules::{
@@ -47,7 +47,7 @@ const PREVIEW_DELAY: Duration = Duration::from_millis(400);
 const NARROW: f32 = 520.0;
 
 /// What a condition can look at, in the order the menu lists them.
-const FIELDS: [Field; 9] = [
+const FIELDS: [Field; 11] = [
     Field::From,
     Field::To,
     Field::Cc,
@@ -57,6 +57,8 @@ const FIELDS: [Field; 9] = [
     Field::Body,
     Field::AttachmentName,
     Field::HasAttachment,
+    Field::MailingList,
+    Field::Tab,
 ];
 
 const COMPARATORS: [Comparator; 6] = [
@@ -144,7 +146,41 @@ pub(super) fn field_label(field: Field) -> String {
         Field::Body => tr!("rules-field-body"),
         Field::AttachmentName => tr!("rules-field-attachment-name"),
         Field::HasAttachment => tr!("rules-field-has-attachment"),
+        Field::MailingList => tr!("rules-field-mailing-list"),
+        Field::Tab => tr!("rules-field-tab"),
     }
+}
+
+/// An inbox tab's name, as the mail list's tabs show it.
+pub(super) fn tab_label(tab: MailCategory) -> String {
+    match tab {
+        MailCategory::Primary => tr!("tab-primary"),
+        MailCategory::Promotions => tr!("tab-promotions"),
+        MailCategory::Social => tr!("tab-social"),
+        MailCategory::Updates => tr!("tab-updates"),
+        MailCategory::Forums => tr!("tab-forums"),
+    }
+}
+
+/// The tab an "Inbox tab" condition names (Primary for one it can't read).
+fn tab_of(value: &str) -> MailCategory {
+    value.trim().parse().unwrap_or_default()
+}
+
+/// How many alternatives of a pattern a rule's line names before "and N
+/// more".
+const MAX_LISTED: usize = 3;
+
+/// A pattern that is only words or addresses joined by `|`
+/// ("irctc.co.in|railyatri.in"), as its alternatives; `None` for any
+/// other pattern.
+fn plain_alternatives(pattern: &str) -> Option<Vec<String>> {
+    let plain = |c: char| c.is_alphanumeric() || matches!(c, '.' | '@' | '-' | ' ' | '_');
+    let words: Vec<String> = pattern.split('|').map(|w| w.trim().to_owned()).collect();
+    words
+        .iter()
+        .all(|w| !w.is_empty() && w.chars().all(plain))
+        .then_some(words)
 }
 
 pub(super) fn comparator_label(comparator: Comparator) -> String {
@@ -158,12 +194,9 @@ pub(super) fn comparator_label(comparator: Comparator) -> String {
     }
 }
 
-/// Whether a "Has attachment" condition's value means "has none".
+/// Whether a yes-or-no condition's value means no.
 fn means_no(value: &str) -> bool {
-    matches!(
-        value.trim().to_ascii_lowercase().as_str(),
-        "false" | "no" | "0"
-    )
+    katna_store::rules::says_no(value)
 }
 
 /// A rule in one line, for its row in Settings: "From contains
@@ -187,18 +220,49 @@ pub(super) fn summary(rule: &Rule, folder: impl Fn(i64) -> Option<String>) -> St
     };
     // Conditions on the same field that compare the same way say it
     // once: "From contains substack.com or medium.com".
+    // Alternatives inside one condition always read "or".
+    let any = |mut values: Vec<String>| -> String {
+        // A long list names its first few and counts the rest.
+        if values.len() > MAX_LISTED + 1 {
+            let more = values.len() - MAX_LISTED;
+            values.truncate(MAX_LISTED);
+            values.push(tr!("rules-summary-more", count = more));
+        }
+        let mut items = values.into_iter();
+        let mut text = items.next().unwrap_or_default();
+        let rest: Vec<String> = items.collect();
+        let last = rest.len().saturating_sub(1);
+        for (ix, next) in rest.into_iter().enumerate() {
+            text = if ix < last {
+                tr!("rules-summary-list", first = text, next = next)
+            } else {
+                tr!("rules-summary-or", first = text, next = next)
+            };
+        }
+        text
+    };
+    // A pattern of plain words joined by `|` reads as "contains" them.
     let mut groups: Vec<(Field, Comparator, Vec<String>)> = Vec::new();
     for c in &rule.conditions {
-        let value = c.value.trim().to_owned();
+        let (comparator, value) = match c.comparator {
+            Comparator::Matches if !c.field.is_yes_no() && c.field != Field::Tab => {
+                match plain_alternatives(&c.value) {
+                    Some(words) => (Comparator::Contains, any(words)),
+                    None => (c.comparator, c.value.trim().to_owned()),
+                }
+            }
+            comparator => (comparator, c.value.trim().to_owned()),
+        };
         match groups.last_mut() {
-            Some((field, comparator, values))
+            Some((field, last, values))
                 if *field == c.field
-                    && *comparator == c.comparator
-                    && c.field != Field::HasAttachment =>
+                    && *last == comparator
+                    && !c.field.is_yes_no()
+                    && c.field != Field::Tab =>
             {
                 values.push(value)
             }
-            _ => groups.push((c.field, c.comparator, vec![value])),
+            _ => groups.push((c.field, comparator, vec![value])),
         }
     }
     let conditions = groups
@@ -208,6 +272,18 @@ pub(super) fn summary(rule: &Rule, folder: impl Fn(i64) -> Option<String>) -> St
                 tr!("rules-summary-no-attachment")
             }
             Field::HasAttachment => tr!("rules-summary-has-attachment"),
+            Field::MailingList if values.iter().all(|v| means_no(v)) => {
+                tr!("rules-summary-not-mailing-list")
+            }
+            Field::MailingList => tr!("rules-summary-mailing-list"),
+            Field::Tab => {
+                let tab = tab_label(tab_of(&values.concat()));
+                if comparator == Comparator::NotContains {
+                    tr!("rules-summary-not-tab", tab = tab)
+                } else {
+                    tr!("rules-summary-tab", tab = tab)
+                }
+            }
             field => tr!(
                 "rules-summary-condition",
                 field = field_label(field),
@@ -217,10 +293,16 @@ pub(super) fn summary(rule: &Rule, folder: impl Fn(i64) -> Option<String>) -> St
         })
         .collect();
     let when = join(conditions);
-    let then = rule
-        .actions
-        .iter()
-        .map(|a| action_text(a, &folder))
+    // A folder in each account says its name once.
+    let mut said: Vec<String> = Vec::new();
+    for action in &rule.actions {
+        let text = action_text(action, &folder);
+        if !said.contains(&text) {
+            said.push(text);
+        }
+    }
+    let then = said
+        .into_iter()
         .reduce(|first, next| tr!("rules-summary-list", first = first, next = next));
     match (when, then) {
         (Some(when), Some(then)) => tr!("rules-summary", when = when, then = then),
@@ -274,7 +356,7 @@ pub(super) fn note_text(note: &RunsNote, folder: &impl Fn(i64) -> Option<String>
             field,
             comparator,
         } => {
-            let test = if *field == Field::HasAttachment {
+            let test = if field.is_yes_no() || *field == Field::Tab {
                 field_label(*field)
             } else {
                 tr!(
@@ -391,6 +473,7 @@ enum Pick {
     Field(usize),
     Comparator(usize),
     Has(usize),
+    Tab(usize),
     Action(usize),
     Folder(usize),
     Accounts,
@@ -409,8 +492,10 @@ struct ConditionRow {
     field: Field,
     comparator: Comparator,
     value: Entity<TextInput>,
-    /// A "Has attachment" condition's choice.
+    /// A yes-or-no condition's choice.
     has: bool,
+    /// An "Inbox tab" condition's tab.
+    tab: MailCategory,
     _subscription: Subscription,
 }
 
@@ -454,18 +539,25 @@ impl RuleEditor {
             .conditions
             .iter()
             .filter_map(|row| {
-                let value = if row.field == Field::HasAttachment {
+                let picked = row.field.is_yes_no() || row.field == Field::Tab;
+                let value = if row.field.is_yes_no() {
                     if row.has { "true" } else { "false" }.to_owned()
+                } else if row.field == Field::Tab {
+                    row.tab.as_str().to_owned()
                 } else {
                     row.value.read(cx).text().trim().to_owned()
                 };
-                (strict || row.field == Field::HasAttachment || !value.is_empty()).then_some(
-                    Condition {
-                        field: row.field,
-                        comparator: row.comparator,
-                        value,
-                    },
-                )
+                // A tab is "is in" unless it says "isn't".
+                let comparator = match (row.field, row.comparator) {
+                    (Field::Tab, Comparator::NotContains) => Comparator::NotContains,
+                    (Field::Tab, _) => Comparator::Equals,
+                    (_, comparator) => comparator,
+                };
+                (strict || picked || !value.is_empty()).then_some(Condition {
+                    field: row.field,
+                    comparator,
+                    value,
+                })
             })
             .collect();
         let mut actions = Vec::new();
@@ -658,10 +750,11 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> ConditionRow {
-        let has = condition.field == Field::HasAttachment;
+        let has = condition.field.is_yes_no();
+        let tab = condition.field == Field::Tab;
         let (value, subscription) = self.rule_input(
             tr!("rules-editor-value-hint"),
-            if has {
+            if has || tab {
                 String::new()
             } else {
                 condition.value.clone()
@@ -674,6 +767,11 @@ impl MailWindow {
             comparator: condition.comparator,
             value,
             has: !has || !means_no(&condition.value),
+            tab: if tab {
+                tab_of(&condition.value)
+            } else {
+                MailCategory::Promotions
+            },
             _subscription: subscription,
         }
     }
@@ -826,7 +924,9 @@ impl MailWindow {
                 cx,
             );
         });
-        // Only one action may move the mail: the others that do give way.
+        // Only one action may move the mail, the others that do give
+        // way, but a rule for several accounts may move to a folder in
+        // each.
         let moves = |k: ActionKind| {
             matches!(
                 k,
@@ -838,7 +938,9 @@ impl MailWindow {
         {
             let mut at = 0;
             e.actions.retain(|a| {
-                let keep = at == ix || !moves(a.kind);
+                let keep = at == ix
+                    || !moves(a.kind)
+                    || (kind == ActionKind::Move && a.kind == ActionKind::Move);
                 at += 1;
                 keep
             });
@@ -1145,8 +1247,19 @@ impl MailWindow {
                 )
                 .map(|d| if narrow { d.flex_1() } else { d.w(px(120.0)) })
                 .on_click(pick_at(Pick::Field(ix), cx));
-                let what: AnyElement = if row.field == Field::HasAttachment {
-                    select_box(
+                let what: AnyElement = if row.field == Field::Tab {
+                    let tab = select_box(
+                        ("rule-tab", ix),
+                        tab_label(row.tab),
+                        picked == Some(Pick::Tab(ix)),
+                        th,
+                    )
+                    .w(px(150.0))
+                    .on_click(pick_at(Pick::Tab(ix), cx));
+                    // Fills the row, so its remove button sits at the end.
+                    div().flex_1().child(tab).into_any_element()
+                } else if row.field.is_yes_no() {
+                    let has = select_box(
                         ("rule-has", ix),
                         if row.has {
                             tr!("rules-has-yes")
@@ -1157,8 +1270,8 @@ impl MailWindow {
                         th,
                     )
                     .w(px(150.0))
-                    .on_click(pick_at(Pick::Has(ix), cx))
-                    .into_any_element()
+                    .on_click(pick_at(Pick::Has(ix), cx));
+                    div().flex_1().child(has).into_any_element()
                 } else {
                     div()
                         .flex()
@@ -1719,6 +1832,25 @@ impl MailWindow {
                     .into_any_element()
                 })
                 .collect(),
+            Pick::Tab(ix) => MailCategory::ALL
+                .into_iter()
+                .enumerate()
+                .map(|(n, tab)| {
+                    let on = e.conditions.get(ix).is_some_and(|r| r.tab == tab);
+                    item(("rule-pick-tab", n).into(), tab_label(tab), on)
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.edit_rule(
+                                |e| {
+                                    if let Some(row) = e.conditions.get_mut(ix) {
+                                        row.tab = tab;
+                                    }
+                                },
+                                cx,
+                            )
+                        }))
+                        .into_any_element()
+                })
+                .collect(),
             Pick::Action(ix) => ActionKind::ALL
                 .into_iter()
                 .enumerate()
@@ -2124,6 +2256,47 @@ mod tests {
             "Subject contains invoice, receipt or order or From contains shop.com \
              → mark read, star, don't notify"
         );
+    }
+
+    #[test]
+    fn summarizes_tabs_lists_plain_patterns_and_a_folder_per_account() {
+        let r = rule(
+            vec![
+                (Field::From, Comparator::Matches, "irctc.co.in|railyatri.in"),
+                (
+                    Field::Subject,
+                    Comparator::Matches,
+                    "ticket|pnr|boarding pass",
+                ),
+                (Field::Tab, Comparator::NotContains, "promotions"),
+                (Field::MailingList, Comparator::Equals, "no"),
+            ],
+            vec![
+                Action::AddLabel { folder: 7 },
+                Action::AddLabel { folder: 8 },
+                Action::MarkImportant,
+            ],
+        );
+        assert_eq!(
+            summary(&r, |_| Some("Travel".to_owned())),
+            "From contains irctc.co.in or railyatri.in, \
+             Subject contains ticket, pnr or boarding pass, \
+             Not in the Promotions tab and Not from a mailing list \
+             → label Travel, mark important"
+        );
+        let long = rule(
+            vec![(Field::Subject, Comparator::Matches, "a|b|c|d|e|f")],
+            vec![Action::MarkRead],
+        );
+        assert_eq!(
+            summary(&long, |_| None),
+            "Subject contains a, b, c or 3 more → mark read"
+        );
+        let pattern = rule(
+            vec![(Field::Subject, Comparator::Matches, "^re: .*")],
+            vec![Action::MarkRead],
+        );
+        assert!(summary(&pattern, |_| None).contains("matches the pattern ^re: .*"));
     }
 
     #[test]

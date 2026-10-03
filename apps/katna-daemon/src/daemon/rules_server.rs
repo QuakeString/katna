@@ -116,7 +116,22 @@ impl Daemon {
             if !all && !accounts.contains(&account) {
                 continue;
             }
-            let placed = self.place_account(account, &rules).await?;
+            // Without the folders a rule names in its other accounts.
+            let mine = {
+                let store = self.store();
+                rules
+                    .iter()
+                    .map(|rule| {
+                        let here = katna_sync::rules::for_account(&store, rule, account)?;
+                        Ok(if here.actions.is_empty() {
+                            rule.clone()
+                        } else {
+                            here
+                        })
+                    })
+                    .collect::<Result<Vec<_>, katna_store::Error>>()?
+            };
+            let placed = self.place_account(account, &mine).await?;
             self.rules_placed.lock().unwrap().insert(account, placed);
         }
 

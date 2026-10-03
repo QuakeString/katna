@@ -48,6 +48,7 @@ use crate::widgets::{FocusRing, ScaledEdge, TabStops, icon, icon_button, outline
 mod ai;
 mod notifications;
 mod rules;
+mod starter_rules;
 mod templates;
 
 /// A signature edit is saved this long after the last key.

@@ -102,9 +102,16 @@ pub fn katna_mark(size: f32, th: &Theme) -> AnyElement {
 /// Katna Mail's wordmark, "katna mail" in script on its disc in the
 /// colour scheme's accent, `height` px tall.
 pub fn katna_wordmark(height: f32, th: &Theme) -> AnyElement {
+    katna_wordmark_from(height, height, th)
+}
+
+/// [`katna_wordmark`] drawn from its picture `source` px tall: a wordmark
+/// that grows and shrinks keeps one picture, so it never blinks while a
+/// new size loads.
+pub fn katna_wordmark_from(height: f32, source: f32, th: &Theme) -> AnyElement {
     let (w, h) = crate::assets::WORDMARK_SIZE;
     img(SharedString::from(crate::assets::wordmark_path(
-        height * katna_ui::scale::scale(),
+        source * katna_ui::scale::scale(),
         logo_tint(th),
     )))
     .w(px(height * w as f32 / h as f32))
