@@ -248,23 +248,33 @@ impl MailWindow {
     }
 
     /// The editor on starter rule `key`, for every mail account, with
-    /// the folders that exist; a folder none has is left to choose.
+    /// the folders that exist and, where an account lacks one, the folder
+    /// saving will make.
     fn edit_starter(&mut self, key: &str, window: &mut Window, cx: &mut Context<Self>) {
         let Some(starter) = starter_rules::starters().into_iter().find(|s| s.key == key) else {
             return;
         };
         let accounts: Vec<i64> = self.rule_accounts().iter().map(|(id, _)| id.0).collect();
-        // A folder no account has yet is left to choose, in its place.
+        // Folders to make stand in with IDs below 0.
+        let mut new_folders: Vec<(i64, i64, String)> = Vec::new();
+        for &account in &accounts {
+            for folder in starter.folders() {
+                let name = folder.name();
+                if self.folder_named(AccountId(account), &name).is_none() {
+                    new_folders.push((-(new_folders.len() as i64) - 1, account, name));
+                }
+            }
+        }
         let rule = starter.rule(&accounts, |account, folder| {
             let name = folder.name();
             self.folder_named(AccountId(account), &name).or_else(|| {
-                let anywhere = accounts
+                new_folders
                     .iter()
-                    .any(|a| self.folder_named(AccountId(*a), &name).is_some());
-                (!anywhere && accounts.first() == Some(&account)).then_some(0)
+                    .find(|(_, a, n)| *a == account && *n == name)
+                    .map(|(id, _, _)| *id)
             })
         });
-        self.open_rule_editor(rule, window, cx);
+        self.open_rule_editor(new_folders, rule, window, cx);
     }
 
     /// Turns on starter rule `key`: makes its folders in every mail
@@ -667,7 +677,7 @@ impl MailWindow {
                             .and_then(|p| p.rules.rules.iter().find(|r| r.id == id))
                             .cloned();
                         if let Some(rule) = rule {
-                            this.open_rule_editor(rule, window, cx);
+                            this.open_rule_editor(Vec::new(), rule, window, cx);
                         }
                     })),
             );
