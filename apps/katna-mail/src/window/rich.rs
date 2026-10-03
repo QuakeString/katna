@@ -11,13 +11,14 @@
 
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::ops::Range;
 use std::rc::Rc;
 use std::sync::Arc;
 
 use gpui::{
-    AnyElement, App, FontStyle, FontWeight, HighlightStyle, InteractiveText, ObjectFit,
-    SharedString, StrikethroughStyle, UnderlineStyle, WeakEntity, div, img, prelude::*, relative,
-    rgba,
+    AnyElement, App, Div, FontStyle, FontWeight, HighlightStyle, InteractiveText, ObjectFit,
+    SharedString, StrikethroughStyle, StyledText, UnderlineStyle, WeakEntity, div, img, prelude::*,
+    relative, rgba,
 };
 use katna_render::html::{
     Align, Block, BoxBlock, BoxKind, Document, Image, ImageKind, ImageSource, Inline, Length,
@@ -541,38 +542,7 @@ impl<'a> Painter<'a> {
             return holder.child(styled).into_any_element();
         }
         let id = self.id();
-        let (ranges, urls): (Vec<_>, Vec<_>) = links.into_iter().unzip();
-        let urls = Arc::new(urls);
-        let clicked = urls.clone();
-        let mut body = InteractiveText::new(("rich-text", id), styled).on_click(
-            ranges.clone(),
-            move |ix, _, cx: &mut App| {
-                if let Some(url) = clicked.get(ix) {
-                    cx.open_url(url);
-                }
-            },
-        );
-        let Some(hover) = self.links.clone() else {
-            return holder.child(body).into_any_element();
-        };
-        let leave = hover.clone();
-        body = body.on_hover(move |ix, _, _, cx| {
-            let url = ix
-                .and_then(|ix| ranges.iter().position(|r| r.contains(&ix)))
-                .and_then(|link| urls.get(link))
-                .cloned();
-            hover.hover(id, url, cx);
-        });
-        // The text's own hover ends only when the pointer moves on it.
-        holder
-            .id(("rich-links", id))
-            .on_hover(move |hovered, _, cx| {
-                if !*hovered {
-                    leave.hover(id, None, cx);
-                }
-            })
-            .child(body)
-            .into_any_element()
+        linked_text(holder, styled, links, id, self.links.clone())
     }
 
     fn image(&mut self, image: &Image) -> AnyElement {
@@ -798,6 +768,197 @@ pub(super) fn carried_svgs(doc: &Document) -> Vec<Arc<[u8]>> {
     out
 }
 
+/// `styled` in `holder` with `links` (byte ranges and the address each
+/// opens) clickable, opening in the browser as the reading pane does,
+/// and telling `hover` which one is under the pointer. `id` tells the
+/// links of one message apart.
+pub(super) fn linked_text(
+    holder: Div,
+    styled: StyledText,
+    links: Vec<(Range<usize>, String)>,
+    id: usize,
+    hover: Option<Links>,
+) -> AnyElement {
+    let (ranges, urls): (Vec<_>, Vec<_>) = links.into_iter().unzip();
+    let urls = Arc::new(urls);
+    let clicked = urls.clone();
+    let mut body = InteractiveText::new(("rich-text", id), styled).on_click(
+        ranges.clone(),
+        move |ix, _, cx: &mut App| {
+            if let Some(url) = clicked.get(ix) {
+                cx.open_url(url);
+            }
+        },
+    );
+    let Some(hover) = hover else {
+        return holder.child(body).into_any_element();
+    };
+    let leave = hover.clone();
+    body = body.on_hover(move |ix, _, _, cx| {
+        let url = ix
+            .and_then(|ix| ranges.iter().position(|r| r.contains(&ix)))
+            .and_then(|link| urls.get(link))
+            .cloned();
+        hover.hover(id, url, cx);
+    });
+    // The text's own hover ends only when the pointer moves on it.
+    holder
+        .id(("rich-links", id))
+        .on_hover(move |hovered, _, cx| {
+            if !*hovered {
+                leave.hover(id, None, cx);
+            }
+        })
+        .child(body)
+        .into_any_element()
+}
+
+/// `text` as the next of `pieces`, in a holder `style` shapes, with its
+/// links (see [`find_links`]) in the link colour and opening on a click.
+pub(super) fn linked_piece(
+    pieces: &mut Pieces,
+    text: SharedString,
+    anchors: &[(String, String)],
+    style: impl FnOnce(Div) -> Div,
+    id: usize,
+    hover: Option<Links>,
+    th: &Theme,
+) -> AnyElement {
+    let links = find_links(&text, anchors);
+    let color = HighlightStyle {
+        color: Some(rgba(th.accent).into()),
+        ..Default::default()
+    };
+    let highlights = links.iter().map(|(r, _)| (r.clone(), color)).collect();
+    let (styled, holder) = pieces.piece(text, highlights);
+    let holder = style(holder);
+    if links.is_empty() {
+        return holder.child(styled).into_any_element();
+    }
+    linked_text(holder, styled, links, id, hover)
+}
+
+/// The text links of `doc` in order: the words that are linked, with
+/// spaces as text has them, and the address they open. Only addresses a
+/// browser or mail app opens are kept.
+pub(super) fn anchors(doc: &Document) -> Vec<(String, String)> {
+    fn walk(blocks: &[Block], out: &mut Vec<(String, String)>) {
+        for block in blocks {
+            match block {
+                Block::Box(b) => walk(&b.children, out),
+                Block::Text(t) => {
+                    let mut last: Option<(String, &str)> = None;
+                    for inline in &t.inlines {
+                        let run = match inline {
+                            Inline::Text(run) => Some(run),
+                            Inline::Image(_) => None,
+                        };
+                        match (
+                            run.and_then(|r| Some((r, r.style.link.as_deref()?))),
+                            &mut last,
+                        ) {
+                            (Some((run, url)), Some((words, at))) if *at == url => {
+                                words.push_str(&run.text);
+                            }
+                            (next, _) => {
+                                out.extend(last.take().map(|(w, u)| (w, u.to_owned())));
+                                last = next.map(|(run, url)| (run.text.clone(), url));
+                            }
+                        }
+                    }
+                    out.extend(last.map(|(w, u)| (w, u.to_owned())));
+                }
+                Block::Rule => {}
+            }
+        }
+    }
+    let mut out = Vec::new();
+    walk(&doc.blocks, &mut out);
+    out.retain_mut(|(words, url)| {
+        *words = words.split_whitespace().collect::<Vec<_>>().join(" ");
+        let scheme = url.split_once(':').map(|(s, _)| s.to_ascii_lowercase());
+        words.chars().count() > 1
+            && matches!(scheme.as_deref(), Some("http" | "https" | "mailto" | "tel"))
+    });
+    out
+}
+
+/// Where `text` links to: the web and mail addresses written out in it,
+/// and the words of `anchors` (a mail's own links, from [`anchors`])
+/// found in it in their order. Byte ranges, in order, with the address
+/// each opens.
+pub(super) fn find_links(text: &str, anchors: &[(String, String)]) -> Vec<(Range<usize>, String)> {
+    let mut found: Vec<(Range<usize>, String)> = Vec::new();
+    let mut from = 0;
+    while let Some((start, end)) = katna_ui::rich::html::find_url(&text[from..]) {
+        let (start, end) = (from + start, from + end);
+        let url = &text[start..end];
+        let url = if url.starts_with("www.") {
+            format!("http://{url}")
+        } else {
+            url.to_owned()
+        };
+        found.push((start..end, url));
+        from = end;
+    }
+    for at in mail_addresses(text) {
+        if !found
+            .iter()
+            .any(|(r, _)| r.start < at.end && at.start < r.end)
+        {
+            found.push((at.clone(), format!("mailto:{}", &text[at])));
+        }
+    }
+    let mut after = 0;
+    for (words, url) in anchors {
+        let Some(start) = text[after..].find(words.as_str()).map(|at| after + at) else {
+            continue;
+        };
+        let range = start..start + words.len();
+        after = range.end;
+        if !found
+            .iter()
+            .any(|(r, _)| r.start < range.end && range.start < r.end)
+        {
+            found.push((range, url.clone()));
+        }
+    }
+    found.sort_by_key(|(r, _)| r.start);
+    found
+}
+
+/// The mail addresses written out in `text`, as byte ranges.
+fn mail_addresses(text: &str) -> Vec<Range<usize>> {
+    let local = |c: char| c.is_alphanumeric() || "._%+-".contains(c);
+    let domain = |c: char| c.is_alphanumeric() || ".-".contains(c);
+    let mut out = Vec::new();
+    for (at, _) in text.match_indices('@') {
+        let start = text[..at]
+            .char_indices()
+            .rev()
+            .take_while(|(_, c)| local(*c))
+            .last()
+            .map_or(at, |(i, _)| i);
+        let end = text[at + 1..]
+            .char_indices()
+            .take_while(|(_, c)| domain(*c))
+            .last()
+            .map_or(at + 1, |(i, c)| at + 1 + i + c.len_utf8());
+        let host = text[at + 1..end].trim_end_matches(['.', '-']);
+        let end = at + 1 + host.len();
+        let name = text[start..at].trim_start_matches('.');
+        let start = at - name.len();
+        if !name.is_empty()
+            && host.contains('.')
+            && !host.starts_with('.')
+            && out.last().is_none_or(|r: &Range<usize>| r.end <= start)
+        {
+            out.push(start..end);
+        }
+    }
+    out
+}
+
 /// A link's address as the foot of the reading pane shows it: what comes
 /// before the host, the host (IDN as punycode; a very long one keeps its
 /// end, where the name that owns it is), and the rest. A name and
@@ -933,5 +1094,29 @@ mod tests {
         let urls = remote_urls(&doc);
         assert_eq!(urls.len(), MAX_REMOTE_IMAGES);
         assert_eq!(urls[0], "https://img.example/0.png");
+    }
+
+    #[test]
+    fn links_are_found_in_text() {
+        let text = "See www.example.com/a, mail sara@example.org. Or our site.";
+        let anchors = vec![("our site".to_owned(), "https://example.net/".to_owned())];
+        let found = find_links(text, &anchors);
+        let shown: Vec<(&str, &str)> = found
+            .iter()
+            .map(|(r, u)| (&text[r.clone()], u.as_str()))
+            .collect();
+        assert_eq!(
+            shown,
+            [
+                ("www.example.com/a", "http://www.example.com/a"),
+                ("sara@example.org", "mailto:sara@example.org"),
+                ("our site", "https://example.net/"),
+            ]
+        );
+    }
+
+    #[test]
+    fn addresses_need_a_host() {
+        assert!(find_links("me@home and @here", &[]).is_empty());
     }
 }

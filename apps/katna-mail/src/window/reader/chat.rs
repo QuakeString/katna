@@ -18,7 +18,7 @@ use std::rc::Rc;
 use std::time::Instant;
 
 use gpui::{
-    AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, MouseButton, MouseDownEvent,
+    AnimationExt, AnyElement, ClipboardItem, Context, Div, FontWeight, MouseButton, MouseDownEvent,
     SharedString, Window, div, prelude::*, relative, rgba,
 };
 use katna_i18n::tr;
@@ -32,7 +32,8 @@ use katna_ui::{px, unpx};
 use super::super::attachments::{Thumb, kind_badge};
 use super::super::compose::Kind;
 use super::super::context_menu::Rows;
-use super::super::{MailWindow, Menu};
+use super::super::select::Pieces;
+use super::super::{MailWindow, Menu, rich};
 use super::{Conversation, Part, first_name, key_number, read, tracking};
 use crate::daemon::Command;
 use crate::data::Mail;
@@ -750,7 +751,13 @@ impl MailWindow {
                     .children(self.render_chat_summary_drop(th, cx))
                     .children(self.render_chat_people(th, cx))
                     .children(self.render_pin_list(th, cx))
-                    .children(self.render_pin_replace(th, cx)),
+                    .children(self.render_pin_replace(th, cx))
+                    // Where the link under the pointer really goes.
+                    .children(
+                        self.hovered_link
+                            .as_ref()
+                            .map(|link| rich::link_status(&link.url, th)),
+                    ),
             )
             .child(reply)
             .children(self.render_text_menu(th, cx))
@@ -1454,6 +1461,36 @@ impl MailWindow {
         }
     }
 
+    /// One run of a bubble's text (`which`: what was said, its signature
+    /// or its quotes) in a holder `style` shapes, its links opening.
+    #[allow(clippy::too_many_arguments)]
+    fn linked_piece(
+        &self,
+        pieces: &mut Pieces,
+        ix: usize,
+        which: usize,
+        text: String,
+        anchors: &[(String, String)],
+        style: impl FnOnce(Div) -> Div,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let hover = self.reader.as_ref().map(|r| rich::Links {
+            window: cx.weak_entity(),
+            conversation: key_number(r.key),
+            part: ix,
+        });
+        rich::linked_piece(
+            pieces,
+            text.into(),
+            anchors,
+            style,
+            ix * 3 + which,
+            hover,
+            th,
+        )
+    }
+
     /// The bubble itself.
     fn render_bubble(&self, bubble: &Bubble, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let id = bubble.id;
@@ -1497,14 +1534,21 @@ impl MailWindow {
             .translated_text(id)
             .map(|text| Said::of(&text).text)
             .filter(|t| !t.is_empty());
-        // Its text, signature and quotes are selectable, to copy or pin.
+        // Its text, signature and quotes are selectable, to copy or pin,
+        // and their links open as in Mail: the mail's own links, and
+        // addresses written out.
+        let anchors = part
+            .filter(|_| translated.is_none())
+            .and_then(|p| p.body.as_ref()?.doc.as_ref())
+            .map(rich::anchors)
+            .unwrap_or_default();
         let mut pieces = self.text.pieces(bubble.ix, th);
         let text = translated
             .or_else(|| said.map(|s| s.text.clone()))
             .filter(|t| !t.is_empty())
             .map(|t| {
-                let (styled, holder) = pieces.piece(t.into(), Vec::new());
-                self.selectable_body(bubble.ix, holder.child(styled), cx)
+                let text = self.linked_piece(&mut pieces, bubble.ix, 0, t, &anchors, |d| d, th, cx);
+                self.selectable_body(bubble.ix, div().child(text), cx)
             });
         let not_read = said.is_none().then(|| {
             div()
@@ -1554,17 +1598,33 @@ impl MailWindow {
         });
         let hidden = said.filter(|_| open).map(|s| {
             let signature = s.signature.clone().map(|sig| {
-                let (styled, holder) = pieces.piece(sig.into(), Vec::new());
-                holder.text_color(rgba(th.text_dim)).child(styled)
+                self.linked_piece(
+                    &mut pieces,
+                    bubble.ix,
+                    1,
+                    sig,
+                    &anchors,
+                    |d| d.text_color(rgba(th.text_dim)),
+                    th,
+                    cx,
+                )
             });
             let quoted = s.quoted.clone().map(|quoted| {
-                let (styled, holder) = pieces.piece(quoted.into(), Vec::new());
-                holder
-                    .pl(px(10.0))
-                    .border_l_2()
-                    .border_color(rgba(th.outline))
-                    .text_color(rgba(th.text_faint))
-                    .child(styled)
+                self.linked_piece(
+                    &mut pieces,
+                    bubble.ix,
+                    2,
+                    quoted,
+                    &anchors,
+                    |d| {
+                        d.pl(px(10.0))
+                            .border_l_2()
+                            .border_color(rgba(th.outline))
+                            .text_color(rgba(th.text_faint))
+                    },
+                    th,
+                    cx,
+                )
             });
             let hidden = div()
                 .mt(px(6.0))

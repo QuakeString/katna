@@ -1450,7 +1450,10 @@ their `href`, whatever their text says, so while the pointer is on a link
 its real address shows at the foot of the reading pane, as in a browser:
 the host stands out (an internationalized one as the punycode the network
 sees, a name and password before it left out), the rest is quieter
-(`rich::link_status`).
+(`rich::link_status`). Plain text and the chat view's bubbles link too
+(`rich::find_links`): web and mail addresses written out, and in a
+bubble the words of the mail's own HTML links (http, https, mailto and
+tel only), found in its text in order, with the same foot.
 In a light theme a message that sets its own colors is drawn on its own
 page; one that does not follows the app's colors. In a dark theme the
 message's colors are remapped (`window/dark.rs`): white becomes the reading
