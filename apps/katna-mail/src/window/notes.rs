@@ -2441,66 +2441,77 @@ impl MailWindow {
             .text_color(rgba(th.text))
             .shadow(elevation(th, 3.0))
             .on_click(|_, _, cx| cx.stop_propagation())
-            .children(pictures)
             .child(
+                // Pictures, title and text scroll together, as in Keep.
                 div()
-                    .flex_none()
-                    .pl(px(16.0))
-                    .pr(px(4.0))
-                    .pt(px(8.0))
+                    .id("note-editor-scroll")
+                    .flex_1()
+                    .min_h_0()
+                    .overflow_y_scroll()
                     .flex()
-                    .flex_row()
-                    .items_center()
+                    .flex_col()
+                    .children(pictures)
                     .child(
                         div()
-                            .flex_1()
-                            .min_w_0()
-                            .py(px(8.0))
-                            .text_size(px(22.0))
-                            .line_height(px(28.0))
-                            .child(editor.title.clone()),
+                            .flex_none()
+                            .pl(px(16.0))
+                            .pr(px(4.0))
+                            .pt(px(8.0))
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .min_w_0()
+                                    .py(px(8.0))
+                                    .text_size(px(22.0))
+                                    .line_height(px(28.0))
+                                    .child(editor.title.clone()),
+                            )
+                            .child(
+                                icon_button_colored(
+                                    "note-editor-pin",
+                                    if pinned { "pin-filled" } else { "pin" },
+                                    22.0,
+                                    th.text_dim,
+                                    th,
+                                )
+                                .tooltip(tip(
+                                    if pinned {
+                                        tr!("notes-unpin")
+                                    } else {
+                                        tr!("notes-pin")
+                                    },
+                                    th,
+                                ))
+                                .on_click(cx.listener(
+                                    move |this, _, _, cx| {
+                                        if for_pin.id == 0 {
+                                            if let Some(editor) =
+                                                this.notes.as_mut().and_then(|p| p.editor.as_mut())
+                                            {
+                                                editor.pinned = for_pin.pinned;
+                                            }
+                                            this.note_typed(cx);
+                                        } else {
+                                            this.change_note(for_pin.clone(), cx);
+                                        }
+                                    },
+                                )),
+                            ),
                     )
                     .child(
-                        icon_button_colored(
-                            "note-editor-pin",
-                            if pinned { "pin-filled" } else { "pin" },
-                            22.0,
-                            th.text_dim,
-                            th,
-                        )
-                        .tooltip(tip(
-                            if pinned {
-                                tr!("notes-unpin")
-                            } else {
-                                tr!("notes-pin")
-                            },
-                            th,
-                        ))
-                        .on_click(cx.listener(move |this, _, _, cx| {
-                            if for_pin.id == 0 {
-                                if let Some(editor) =
-                                    this.notes.as_mut().and_then(|p| p.editor.as_mut())
-                                {
-                                    editor.pinned = for_pin.pinned;
-                                }
-                                this.note_typed(cx);
-                            } else {
-                                this.change_note(for_pin.clone(), cx);
-                            }
-                        })),
+                        div()
+                            .id("note-editor-body")
+                            .flex_none()
+                            .min_h(px(60.0))
+                            .px(px(16.0))
+                            .pb(px(12.0))
+                            .text_size(px(15.0))
+                            .line_height(px(22.0))
+                            .child(editor.body.clone()),
                     ),
-            )
-            .child(
-                div()
-                    .id("note-editor-body")
-                    .flex_1()
-                    .min_h(px(60.0))
-                    .overflow_y_scroll()
-                    .px(px(16.0))
-                    .pb(px(12.0))
-                    .text_size(px(15.0))
-                    .line_height(px(22.0))
-                    .child(editor.body.clone()),
             )
             .children(remind.map(|chip| {
                 div()

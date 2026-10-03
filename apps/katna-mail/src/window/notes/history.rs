@@ -95,10 +95,7 @@ fn when(at: i64, now: i64, tz: &TimeZone) -> String {
     else {
         return String::new();
     };
-    let days = (now.date() - at.date())
-        .total(jiff::Unit::Day)
-        .map_or(i64::MAX, |d| d as i64);
-    match days {
+    match (now.date() - at.date()).get_days() {
         0 => tr!("notes-remind-today", time = format::time(at)),
         1 => tr!("notes-version-yesterday", time = format::time(at)),
         _ => tr!(
@@ -421,7 +418,6 @@ impl MailWindow {
                 .gap(px(space::S1))
                 .border_l_1()
                 .border_color(rgba(th.divider))
-                .bg(rgba(th.surface))
                 .child(
                     div()
                         .px(px(space::S3))
@@ -444,7 +440,6 @@ impl MailWindow {
                     .flex()
                     .items_center()
                     .justify_center()
-                    .bg(rgba(if th.dark { 0x0000_0099 } else { 0x0000_004d }))
                     .on_click(cx.listener(|this, _, _, cx| this.close_note_history(cx)))
                     .child(panel),
             )
@@ -457,6 +452,21 @@ impl MailWindow {
 #[cfg(test)]
 mod tests {
     use super::super::{TICKED, UNTICKED};
+
+    #[test]
+    fn a_version_says_when() {
+        let tz = TimeZone::UTC;
+        // Saturday, 3 October 2026, 12:00 UTC.
+        let now = 1_791_028_800;
+        let time = |at: i64| format::time(crate::format::local(at, &tz).unwrap());
+        let morning = now - 3600;
+        assert_eq!(when(morning, now, &tz), format!("Today, {}", time(morning)));
+        let friday = now - 86_400;
+        assert_eq!(
+            when(friday, now, &tz),
+            format!("Yesterday, {}", time(friday))
+        );
+    }
     use super::*;
 
     #[test]

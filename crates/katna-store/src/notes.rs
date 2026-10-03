@@ -805,7 +805,7 @@ fn keep_version(
     let newest: Option<(i64, i64, String, String, String, String)> = tx
         .query_row(
             "SELECT id, at, source, title, body, html FROM note_version
-             WHERE note_id = ?1 ORDER BY at DESC, id DESC LIMIT 1",
+             WHERE note_id = ?1 ORDER BY id DESC LIMIT 1",
             [id],
             |row| {
                 Ok((
@@ -1169,10 +1169,19 @@ mod tests {
         r.updated_at += 10;
         store.apply_remote_note(2, 8, &r).unwrap();
         let id = store.account_notes(2).unwrap()[0].id;
+        // Typed here since, then the same server copy read again: it is
+        // older than the typing but no new version.
+        let mut here = store.note(id).unwrap().unwrap();
+        here.body = "typed".to_owned();
+        store.save_note(&here).unwrap();
+        r.body = "typed".to_owned();
+        store.apply_remote_note(2, 9, &r).unwrap();
+        store.apply_remote_note(2, 9, &r).unwrap();
         let versions = store.note_versions(id).unwrap();
-        assert_eq!(versions.len(), 2);
+        assert_eq!(versions.len(), 3);
+        assert_eq!(versions[0].source, VersionSource::Here);
         assert_eq!(
-            versions[0].source,
+            versions[1].source,
             VersionSource::Elsewhere(Some("iPhone".to_owned()))
         );
     }
@@ -1193,7 +1202,10 @@ mod tests {
         let a = store
             .save_note_with(&n, Some(std::slice::from_ref(&picture)))
             .unwrap();
-        assert_eq!(store.note_pictures(a).unwrap(), std::slice::from_ref(&picture));
+        assert_eq!(
+            store.note_pictures(a).unwrap(),
+            std::slice::from_ref(&picture)
+        );
         assert_eq!(store.note_covers().unwrap()[&a], picture);
         // Saved without pictures given: they stay.
         store.save_note(&store.note(a).unwrap().unwrap()).unwrap();

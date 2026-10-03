@@ -309,7 +309,7 @@ impl MailWindow {
             let height = row
                 .iter()
                 .map(|(_, _, ratio)| {
-                    (cell / ratio.max(0.1)).min(if per_row == 1 { 360.0 } else { 200.0 })
+                    (cell / ratio.max(0.1)).min(if per_row == 1 { 260.0 } else { 180.0 })
                 })
                 .fold(f32::MAX, f32::min);
             div()
@@ -317,8 +317,12 @@ impl MailWindow {
                 .flex()
                 .flex_row()
                 .h(px(height))
-                .children(row.iter().map(|(ix, image, _)| {
+                .children(row.iter().enumerate().map(|(c, (ix, image, _))| {
                     let ix = *ix;
+                    // GPUI does not clip to the card's corners: the top
+                    // row rounds its own.
+                    let (left, right) = (r == 0 && c == 0, r == 0 && c + 1 == per_row);
+                    let corner = px(15.0);
                     let group: SharedString = format!("note-picture-{ix}").into();
                     div()
                         .id(("note-picture", ix))
@@ -332,7 +336,15 @@ impl MailWindow {
                             cx.stop_propagation();
                             this.view_note_picture(ix, window, cx)
                         }))
-                        .child(img(image.clone()).size_full().object_fit(ObjectFit::Cover))
+                        .when(left, |d| d.rounded_tl(corner))
+                        .when(right, |d| d.rounded_tr(corner))
+                        .child(
+                            img(image.clone())
+                                .size_full()
+                                .object_fit(ObjectFit::Cover)
+                                .when(left, |d| d.rounded_tl(corner))
+                                .when(right, |d| d.rounded_tr(corner)),
+                        )
                         .child(
                             div()
                                 .absolute()
