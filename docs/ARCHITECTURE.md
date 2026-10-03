@@ -2178,18 +2178,9 @@ Gemini or confidential mode):
   while dragged and applies when let go, so it doesn't grow under the
   pointer. Mail you send keeps its own font size.
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
-  a window of its own (`window/settings_window.rs`), or bring that window
-  to the front; on a phone it fills the window in place of the app's page
-  (`window/settings_page.rs`). It opens on the page of the app on show (Mail's Reading, Calendar, Files; General from an app
-  without settings of its own). Its window has the search box at the top
-  and the page on a card below; narrowed to a phone's width it shows the
-  list of pages until one is picked, as on a phone. The page stays the
-  mail window's (`MailWindow::settings_page`) and the window only draws
-  it, as a popped-out message's window does. What Settings opens (a
-  dialog, a right-click menu, a color picker, About, a note at the
-  bottom) shows in whichever of the two windows was used last; a dialog
-  stays where it opened until it closes. Closing the window closes
-  Settings, saving what was being typed. Layout A of the Settings layout study
+  place of the app's page (`window/settings_page.rs`), on the page of the
+  app on show (Mail's Reading, Calendar, Files; General from an app
+  without settings of its own). Layout A of the Settings layout study
   (2026-10-03): one list beside the open page, sorted by scope
   (`settings_page/nav.rs`). **All apps** holds what every app shares:
   General (language, 12- or 24-hour time, video calls, offline mail,
@@ -2278,14 +2269,14 @@ Gemini or confidential mode):
   tracking is not a setting: it, a read receipt and a delivery receipt
   are on for every new message and reply and turned off per message in compose (§16.1), so
   Mailspring's tracking defaults have no counterpart.
-- **Searching settings.** The search box of Settings' window, or on a
-  phone the top bar's while the Settings page is open, searches settings ("Search settings"; `window/settings_search.rs`):
+- **Searching settings.** While the Settings page is open the top bar's
+  search box searches settings ("Search settings"; `window/settings_search.rs`):
   matching rows from every tab replace the open tab, each with its tab and
   a line on it (row names, what they do, other words people use, and every
   shortcut's name). A result, or Enter for the first, opens its tab,
-  scrolls the row into view and lights it up for a moment. On a phone,
-  closing the page puts mail search back, with its words if the list
-  still shows its results.
+  scrolls the row into view and lights it up for a moment. Closing the page
+  puts mail search back, with its words if the list still shows its
+  results.
 - **Tab between controls.** Tab and Shift+Tab move the focus in the order
   things are drawn, as in any desktop form: fields (`TextInput`,
   `RichEditor`) are always Tab stops, and the Settings page's tabs, rows,
@@ -4820,7 +4811,12 @@ server error is not.
   and Schedule list them with the events. Its circle ticks it off, a
   click opens it over the Calendar, and dragging it to another day, time
   or the whole-day row moves its due day and time (a quarter hour at a
-  time, with Undo), blocking that time for it. A reminder moves with it.
+  time, with Undo), blocking that time for it. In Month view dragging it
+  to another day moves its due day and keeps its time; it shows in that
+  day's cell as it goes, even a full one. A reminder moves with it. A
+  Tasks row under the calendars in the side list, a box in the tasks'
+  colour like a calendar's, hides them from every view; it is remembered
+  on this computer (`[calendar] hide_tasks`), as Birthdays is.
 - **Reminders**: the task's details offer Don't remind, At the time (on
   the day at 9 AM for a task without a time), An hour before (with a
   time) and The day before; a time set elsewhere (To Do) shows as itself
@@ -4868,6 +4864,44 @@ server error is not.
     for tasks), so the order is kept in `pim.db` only: the list's tasks
     are numbered anew and nothing is sent. A service's answer or pull
     without a position leaves the one here.
+- **Upcoming and Completed** (`tasks_page/views.rs`, side list rows under
+  Today and after Starred, from the notes and tasks study): built from
+  what already syncs, so nothing new is stored. Upcoming shows the open
+  tasks (steps too) that are overdue, under a red "Overdue" with a count,
+  then each of the next 14 days after today, every one with its heading
+  ("Tomorrow Sunday 4 October", "Monday 5 October", in the language's
+  long formats, `katna_i18n::format::weekday_long` and kin) and an "Add a
+  task for Monday" row that adds to the default list, due that day. A
+  quiet line under each title says where it came from, its time (an
+  overdue one's day too), its steps done ("2/5") and its list. A task
+  dragged onto a day's heading or tasks is due that day, its time and a
+  reminder kept as with the Calendar's drag, with Undo. Today has its own
+  view, so Upcoming starts tomorrow, as Things does. Completed lists every
+  ticked task from every list, latest first, under the day it was ticked
+  ("TODAY", "FRIDAY 2 OCTOBER"), with its list and time; its tick unticks
+  it back into its list. At most the latest 500 show.
+- **Sort a list**, as Google Tasks' ⋮ menu offers: My order, Date (due
+  day and time, undated last), Starred recently (starred first) and
+  Title (A to Z), with a tick on the one in use; a task's steps stay under
+  it in their own order (`tasks_page/sort.rs`). The choice is kept on this
+  computer per list in `config.toml` (`[tasks.sort]`, by the list's row
+  ID); the service keeps My order. No star time is stored, so Starred
+  recently keeps My order among the starred. In a sorted list a task
+  can't be dragged to another place: let go there it goes back, and a
+  task dragged in from another list goes last there, shown where the sort
+  puts it, with no gap opening.
+- **Select several** (`tasks_page/several.rs`), as the mail list does:
+  Ctrl+click selects or lets go of a task (the task picked before is
+  selected with it), Shift+click selects every task shown from the last
+  one clicked, Esc lets go, Delete deletes them. While some are selected
+  a bar slides over the top of the list (across the board on All tasks)
+  with how many and Complete (or Mark uncompleted when all are ticked),
+  Move to list, Set date (Today, Tomorrow, Next week, No date or a day on
+  a month grid), Star (or take the stars) and Delete. Each sends its
+  commands as one `Command::Several` with one toast and one Undo. A drag
+  of a selected task takes the others with it, in the order shown (a
+  badge counts them): into a list they land one after another where the
+  gap is, and on Upcoming they all move to the day.
 - **Repeating tasks**: ticking one off moves it to its next day after
   both its due day and today, and it stays open (Google Tasks, CalDAV and
   lists on this computer; `katna_dav::todo::next_due`, done by the

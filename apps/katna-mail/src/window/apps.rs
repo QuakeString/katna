@@ -275,7 +275,7 @@ impl MailWindow {
 
     /// Shows page `app`, leaving Settings as picking a folder does.
     pub(super) fn show_page(&mut self, app: App, window: &mut Window, cx: &mut Context<Self>) {
-        if self.settings_in_main() {
+        if self.settings_page.is_some() {
             self.close_settings_page(window, cx);
         }
         self.open_app(app, cx);
@@ -544,7 +544,7 @@ impl MailWindow {
                 )
                 .tooltip(tip(tr!("settings"), th))
                 .on_click(cx.listener(|this, _, window, cx| {
-                    if this.settings_in_main() {
+                    if this.settings_page.is_some() {
                         this.close_settings_page(window, cx);
                     } else {
                         this.open_settings(&OpenSettings, window, cx);

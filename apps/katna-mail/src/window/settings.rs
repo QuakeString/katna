@@ -777,7 +777,7 @@ impl MailWindow {
                 self.config.general.language = tag.to_owned();
                 katna_i18n::apply(&self.config.general.language);
                 // Text set once rather than at every frame.
-                let placeholder = if self.settings_in_main() {
+                let placeholder = if self.settings_page.is_some() {
                     katna_i18n::tr!("search-settings")
                 } else {
                     katna_i18n::tr!("search-mail")

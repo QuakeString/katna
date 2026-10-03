@@ -10,7 +10,11 @@ tasks-create = New task
 tasks-all = All tasks
 # Tasks due today and overdue, from every list.
 tasks-today = Today
+# The next fortnight, day by day, from every list.
+tasks-upcoming = Upcoming
 tasks-starred = Starred
+# Every ticked task, by the day it was ticked.
+tasks-completed-view = Completed
 tasks-new-list = Create new list
 # Heading over the labels on tasks (the same labels as on notes); each
 # shows every task with it.
@@ -58,6 +62,16 @@ tasks-empty = No tasks yet. Add one above.
 tasks-starred-empty = Star a task to see it here.
 tasks-label-empty = No open tasks with this label.
 tasks-today-empty = Nothing due today.
+tasks-completed-empty = Tasks you complete show here.
+# Under each day on Upcoming: $day is the day's name, "Monday".
+tasks-upcoming-add = Add a task for { $day }
+# An overdue task's day on Upcoming: $weekday "Thu", $day "1 Oct".
+tasks-upcoming-overdue-day = { $weekday } { $day }
+# On the quiet line under a task on Upcoming.
+tasks-from-mail-quiet = From mail
+tasks-from-note-quiet = From note
+# A task's subtasks on Upcoming: how many are done, of how many ("2/5").
+tasks-steps-done = { $done }/{ $count }
 # Under the Today heading: $weekday is the day's name, $day the day and month.
 tasks-today-date = { $weekday }, { $day }
 # The section of Today with tasks whose day has passed.
@@ -68,6 +82,12 @@ tasks-completed = { $count ->
    *[other] Completed ({ $count })
 }
 tasks-list-options = List options
+# A list's ⋮ menu: how its tasks are sorted, as in Google Tasks.
+tasks-sort-by = Sort by
+tasks-sort-my-order = My order
+tasks-sort-date = Date
+tasks-sort-starred = Starred recently
+tasks-sort-title = Title
 tasks-rename-list = Rename list
 tasks-delete-list = Delete list
 tasks-mark-done = Mark completed
@@ -90,6 +110,18 @@ tasks-open-note = Open the note
 tasks-note-gone = That note isn't here any more.
 # The title of a task made from a mail with no subject.
 tasks-no-subject = (no subject)
+
+## Several tasks selected (Ctrl+click, Shift+click)
+
+tasks-selected = { $count ->
+    [one] { $count } selected
+   *[other] { $count } selected
+}
+tasks-select-clear = Clear selection
+tasks-select-move = Move to list
+tasks-select-date = Set date
+# Set date's choice for the first day of next week.
+tasks-next-week = Next week
 
 ## The details dialog
 
@@ -167,3 +199,28 @@ tasks-toast-moved = Moved to { $list }
 tasks-toast-placed = Task moved
 # A task dragged to another day or time on the Calendar.
 tasks-toast-rescheduled = Task rescheduled
+# Tasks given another day: dragged on Upcoming, or Set date on several.
+tasks-toast-rescheduled-several = { $count ->
+    [one] Task rescheduled
+   *[other] { $count } tasks rescheduled
+}
+tasks-toast-done-several = { $count ->
+    [one] Task completed
+   *[other] { $count } tasks completed
+}
+tasks-toast-open-several = { $count ->
+    [one] Task marked uncompleted
+   *[other] { $count } tasks marked uncompleted
+}
+tasks-toast-starred = { $count ->
+    [one] Task starred
+   *[other] { $count } tasks starred
+}
+tasks-toast-unstarred = { $count ->
+    [one] Star removed
+   *[other] Stars removed from { $count } tasks
+}
+tasks-toast-deleted-several = { $count ->
+    [one] Task deleted
+   *[other] { $count } tasks deleted
+}

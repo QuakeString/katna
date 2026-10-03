@@ -995,7 +995,7 @@ impl MailWindow {
     /// The top bar's search box searches notes while the Notes page is
     /// open, and mail again once it closes. Call after the app changes.
     pub(super) fn sync_notes_search(&mut self, cx: &mut Context<Self>) {
-        let on = self.app == super::apps::App::Notes && !self.settings_in_main();
+        let on = self.app == super::apps::App::Notes && self.settings_page.is_none();
         if on {
             self.notes_page(cx);
         }

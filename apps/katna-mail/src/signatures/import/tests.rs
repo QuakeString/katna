@@ -40,7 +40,12 @@ fn thunderbird_identities_inline_and_from_a_file() {
          user_pref(\"mail.identity.id10.useremail\", \"file@x.test\");\n\
          user_pref(\"mail.identity.id10.attach_signature\", true);\n\
          user_pref(\"mail.identity.id10.sig_file\", \"{}\");\n",
-        profile.join("sig.html").display()
+        // prefs.js escapes the backslashes of a Windows path.
+        profile
+            .join("sig.html")
+            .display()
+            .to_string()
+            .replace('\\', "\\\\")
     );
     write(&profile.join("prefs.js"), prefs.as_bytes());
     let found = find(home, &home.join(".config"), &home.join(".local/share"));
@@ -146,7 +151,8 @@ fn kmail_identities_but_never_commands() {
          Identity=Off\n\
          Inline Signature=Hidden\n\
          Signature Type=disabled\n",
-        images = images.display()
+        // KDE escapes the backslashes of a Windows path.
+        images = images.display().to_string().replace('\\', "\\\\")
     );
     write(&config.join("emailidentities"), file.as_bytes());
     let found = find(home, &config, &home.join(".local/share"));

@@ -80,6 +80,8 @@ calendar-account-try-again-tooltip = Check this account's calendars again now
 calendar-account-fixing = Working on it…
 # The calendar of saved contacts' birthdays, made on this computer.
 calendar-birthdays = Birthdays
+# The side list's switch that shows or hides tasks on the Calendar.
+calendar-tasks = Tasks
 # A saved contact's birthday on the Calendar: "Asha Rao's birthday".
 calendar-birthday-of = { $name }'s birthday
 calendar-empty-title = No calendars yet

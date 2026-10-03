@@ -87,6 +87,12 @@ pub(super) fn mail_files(raws: &[Vec<u8>]) -> Vec<NewFile> {
 }
 
 impl MailWindow {
+    /// How many files task `task` has, if any.
+    pub(super) fn task_file_count(&self, task: &katna_store::tasks::Task) -> Option<usize> {
+        let count = self.tasks.board().map_or(0, |b| b.files_of(task.id).len());
+        (count > 0).then_some(count)
+    }
+
     /// Puts the files at `paths` on task `id`: those dropped on it or
     /// picked for it.
     pub(super) fn task_attach_paths(
