@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Updates on Windows"
+text = """
+Katna on Windows now updates itself. It checks for new versions every
+hour, downloads them in the background and installs them when you press
+Update, then opens again.
+"""

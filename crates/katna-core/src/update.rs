@@ -39,12 +39,17 @@ const ARCH_CACHE: &str = "/var/cache/pacman/pkg";
 const ARCH_PACKAGE: &str = "katna-git";
 
 /// The kind of package this build came in, from `$KATNA_PACKAGE` at build
-/// time (`packaging/arch/PKGBUILD` sets `arch`).
+/// time (`packaging/arch/PKGBUILD` sets `arch`, `ci/windows-package.ps1`
+/// sets `windows`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Package {
     /// The Arch Linux package (`katna-git`), from the `arch-latest`
     /// release; installed with `pacman -U` behind polkit.
     Arch,
+    /// Katna Setup on Windows (`KatnaSetup.exe`), from the
+    /// `windows-latest` release; installed by running the new Setup
+    /// quietly. Always the full Setup: no patches yet.
+    Windows,
     /// Built from source, or a package that does not update itself yet:
     /// its own package manager, or the user, updates it.
     Other,
@@ -59,6 +64,7 @@ impl Package {
     fn parse(name: &str) -> Self {
         match name {
             "arch" => Self::Arch,
+            "windows" => Self::Windows,
             _ => Self::Other,
         }
     }
@@ -68,6 +74,7 @@ impl Package {
     pub fn release(self) -> Option<&'static str> {
         match self {
             Self::Arch => Some("arch-latest"),
+            Self::Windows => Some("windows-latest"),
             Self::Other => None,
         }
     }
@@ -84,7 +91,7 @@ impl Package {
     pub fn installed_dirs(self) -> &'static [&'static str] {
         match self {
             Self::Arch => &[ARCH_INSTALLED, ARCH_CACHE],
-            Self::Other => &[],
+            Self::Windows | Self::Other => &[],
         }
     }
 
@@ -615,6 +622,11 @@ mod tests {
     #[test]
     fn packages_and_their_urls() {
         assert_eq!(Package::parse("arch"), Package::Arch);
+        assert_eq!(Package::parse("windows"), Package::Windows);
+        assert_eq!(
+            Package::Windows.manifest_url().unwrap(),
+            format!("{RELEASES}/windows-latest/{MANIFEST_FILE}")
+        );
         assert_eq!(Package::parse(""), Package::Other);
         assert_eq!(Package::Other.manifest_url(), None);
         let url = Package::Arch.manifest_url().unwrap();

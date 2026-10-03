@@ -254,7 +254,7 @@ impl MailWindow {
                         this.updates.problem = Some(tr!("about-update-cancelled"));
                     }
                     Err(InstallError::Unsupported) => {
-                        this.updates.problem = Some(tr!("about-update-unsupported"));
+                        this.updates.problem = Some(tr!("about-update-not-self-updating"));
                     }
                     Err(InstallError::Failed(error)) => {
                         this.updates.problem = Some(tr!("about-update-failed", error = error));
@@ -313,7 +313,10 @@ impl MailWindow {
                 "download",
                 th.accent,
                 tr!("about-update-installing", version = version),
-                Some(tr!("about-update-installing-detail")),
+                Some(on_windows(
+                    tr!("about-update-installing-detail"),
+                    tr!("about-update-installing-detail-windows"),
+                )),
             )
         } else {
             match status.state.as_str() {
@@ -321,7 +324,7 @@ impl MailWindow {
                     "info",
                     th.accent,
                     tr!("update-dialog-title"),
-                    Some(tr!("about-update-unsupported")),
+                    Some(tr!("about-update-not-self-updating")),
                 ),
                 state::CHECKING => ("refresh", th.accent, tr!("about-update-checking"), None),
                 // The emoji stays out of the translation, so every
@@ -352,7 +355,10 @@ impl MailWindow {
                     "download",
                     th.accent,
                     tr!("about-update-ready", version = version),
-                    Some(tr!("about-update-confirm-detail")),
+                    Some(on_windows(
+                        tr!("about-update-confirm-detail"),
+                        tr!("about-update-confirm-detail-windows"),
+                    )),
                 ),
                 state::FAILED => (
                     "warning",
@@ -834,7 +840,18 @@ fn checked_ago(checked: i64) -> Option<String> {
 fn source() -> Option<String> {
     match katna_core::update::Package::current() {
         katna_core::update::Package::Arch => Some(tr!("update-dialog-source-arch")),
+        katna_core::update::Package::Windows => Some(tr!("update-dialog-source-windows")),
         katna_core::update::Package::Other => None,
+    }
+}
+
+/// `windows` for Katna Setup's builds, which install without a password,
+/// else `other`.
+fn on_windows(other: String, windows: String) -> String {
+    if katna_core::update::Package::current() == katna_core::update::Package::Windows {
+        windows
+    } else {
+        other
     }
 }
 
