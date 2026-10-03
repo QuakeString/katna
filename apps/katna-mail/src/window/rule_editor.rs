@@ -26,7 +26,7 @@ use katna_store::rules::{
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::unpx;
-use katna_ui::{InputEvent, TextInput};
+use katna_ui::{InputEvent, TextArea, TextInput};
 
 use super::MailWindow;
 use super::add_account::text_button;
@@ -491,7 +491,7 @@ enum Preview {
 struct ConditionRow {
     field: Field,
     comparator: Comparator,
-    value: Entity<TextInput>,
+    value: Entity<TextArea>,
     /// A yes-or-no condition's choice.
     has: bool,
     /// An "Inbox tab" condition's tab.
@@ -744,6 +744,36 @@ impl MailWindow {
         (input, subscription)
     }
 
+    /// A long field of the editor that wraps instead of scrolling
+    /// sideways; any change counts the matching mail again.
+    fn rule_area(
+        &mut self,
+        placeholder: String,
+        text: String,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> (Entity<TextArea>, Subscription) {
+        let accent = rgba(self.theme(window).accent).into();
+        let area = cx.new(|cx| {
+            let mut area = TextArea::new(placeholder, cx);
+            area.set_single_line(true);
+            area.set_text(text, 0, cx);
+            area.set_accent(accent);
+            area
+        });
+        let subscription =
+            cx.subscribe_in(
+                &area,
+                window,
+                |this, _, event: &InputEvent, _, cx| match event {
+                    InputEvent::Changed => this.rule_changed(cx),
+                    InputEvent::Submit => this.save_rule_edit(cx),
+                    InputEvent::Cancel => this.close_rule_editor(cx),
+                },
+            );
+        (area, subscription)
+    }
+
     fn condition_row(
         &mut self,
         condition: &Condition,
@@ -752,7 +782,7 @@ impl MailWindow {
     ) -> ConditionRow {
         let has = condition.field.is_yes_no();
         let tab = condition.field == Field::Tab;
-        let (value, subscription) = self.rule_input(
+        let (value, subscription) = self.rule_area(
             tr!("rules-editor-value-hint"),
             if has || tab {
                 String::new()
@@ -1287,11 +1317,13 @@ impl MailWindow {
                                 picked == Some(Pick::Comparator(ix)),
                                 th,
                             )
-                            .w(px(150.0))
+                            // As wide as its label, so "matches the
+                            // pattern" shows in full.
+                            .min_w(px(150.0))
                             .on_click(pick_at(Pick::Comparator(ix), cx)),
                         )
                         .child(
-                            text_field(("rule-value", ix), &row.value, 36.0, th, window, cx)
+                            text_area_field(("rule-value", ix), &row.value, th, window, cx)
                                 .flex_1()
                                 .min_w(px(160.0)),
                         )
@@ -1443,6 +1475,9 @@ impl MailWindow {
         let buttons = self.rule_editor_buttons(e, th, cx);
         div()
             .id("rule-editor-body")
+            // Shrinks to the card's height so it scrolls instead of running
+            // past the window.
+            .min_h_0()
             .flex()
             .flex_col()
             .overflow_y_scroll()
@@ -2113,6 +2148,41 @@ fn text_field(
         .cursor_text()
         .on_click(move |_, window, cx| window.focus(&focus, cx))
         .child(div().flex_1().min_w_0().child(input.clone()))
+}
+
+/// A [`text_field`] for a [`TextArea`]: at least as tall as a field and
+/// taller as its text wraps.
+fn text_area_field(
+    id: impl Into<ElementId>,
+    area: &Entity<TextArea>,
+    th: &Theme,
+    window: &Window,
+    cx: &App,
+) -> Stateful<gpui::Div> {
+    use crate::widgets::ScaledEdge;
+    let focus = area.focus_handle(cx);
+    let focused = focus.is_focused(window);
+    div()
+        .id(id)
+        .min_h(px(36.0))
+        .px(px(if focused { 11.0 } else { 12.0 }))
+        .py(px(if focused { 6.0 } else { 7.0 }))
+        .flex()
+        .items_center()
+        .rounded(px(8.0))
+        .map(|d| {
+            if focused {
+                d.border_px(2.0)
+            } else {
+                d.border_1()
+            }
+        })
+        .border_color(rgba(if focused { th.accent } else { th.outline }))
+        .text_size(px(15.0))
+        .line_height(px(20.0))
+        .cursor_text()
+        .on_click(move |_, window, cx| window.focus(&focus, cx))
+        .child(div().flex_1().min_w_0().child(area.clone()))
 }
 
 /// A condition or action row: its menu, what goes with it, and ✕. On a
