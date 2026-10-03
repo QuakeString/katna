@@ -988,6 +988,39 @@ fn fit_row_mins(cells: &mut [Block]) {
 /// word or image, or with `nowrap` their longest line. Glyphs count a
 /// little wider than they are on average: a cell a few pixels too wide
 /// reads better than one that breaks a word.
+/// How many pixels wide a picture carried in the message is, read from
+/// its header (PNG, GIF, JPEG).
+fn natural_width(source: &ImageSource) -> Option<f32> {
+    let ImageSource::Data { bytes, .. } = source else {
+        return None;
+    };
+    let b: &[u8] = bytes;
+    let be16 = |i: usize| Some(u16::from_be_bytes([*b.get(i)?, *b.get(i + 1)?]));
+    if b.starts_with(b"\x89PNG") {
+        let w = u32::from_be_bytes(b.get(16..20)?.try_into().ok()?);
+        return Some(w as f32);
+    }
+    if b.starts_with(b"GIF8") {
+        return Some(f32::from(u16::from_le_bytes([*b.get(6)?, *b.get(7)?])));
+    }
+    if b.starts_with(&[0xff, 0xd8]) {
+        // The first start-of-frame segment holds the size.
+        let mut i = 2;
+        while i + 9 < b.len() {
+            if b[i] != 0xff {
+                return None;
+            }
+            let marker = b[i + 1];
+            let len = usize::from(be16(i + 2)?);
+            if matches!(marker, 0xc0..=0xcf) && !matches!(marker, 0xc4 | 0xc8 | 0xcc) {
+                return Some(f32::from(be16(i + 7)?));
+            }
+            i += 2 + len;
+        }
+    }
+    None
+}
+
 /// Blocks that show only pictures.
 fn only_images(blocks: &[Block]) -> bool {
     let mut any = false;
@@ -1066,7 +1099,9 @@ fn text_min(t: &TextBlock, nowrap: bool) -> f32 {
             Inline::Image(image) => {
                 let w = match image.width {
                     Some(Length::Px(w)) => w,
-                    _ => 0.0,
+                    Some(_) => 0.0,
+                    // Without a width, a picture inside is as wide as it is.
+                    None => natural_width(&image.source).unwrap_or(0.0),
                 };
                 if nowrap {
                     word += w;
@@ -1389,6 +1424,18 @@ mod tests {
         assert_eq!(styles[0].width, Some(Length::Px(78.0)));
         assert_eq!(styles[1].width, None);
         assert_eq!(styles[1].border_left, Some((2.0, 0x0e7c86ff)));
+        // A logo without a width is as wide as the picture is.
+        let d = doc(
+            "<table><tr><td style=\"padding-right:10px\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAAA=\"></td>\
+             <td><b>Ravi Menon</b><br>Sales</td></tr></table>",
+        );
+        let Block::Box(row) = &d.blocks[0] else {
+            unreachable!()
+        };
+        let Block::Box(logo) = &row.children[0] else {
+            unreachable!()
+        };
+        assert_eq!(logo.style.width, Some(Length::Px(58.0)));
     }
 
     #[test]

@@ -50,6 +50,7 @@ mod nav;
 mod notifications;
 mod rules;
 mod signature_html;
+mod signature_import;
 mod starter_rules;
 mod templates;
 
@@ -242,6 +243,7 @@ pub(super) struct SettingsPage {
     template: Option<templates::TemplateEditor>,
     /// The Paste HTML panel, open in place of the signature editor.
     pasting: Option<signature_html::PasteHtml>,
+    importing: Option<signature_import::ImportSignatures>,
     save: Option<Task<()>>,
     recording: Option<Recording>,
     pub(super) scroll: ScrollHandle,
@@ -429,6 +431,7 @@ impl MailWindow {
                 editing: None,
                 template: None,
                 pasting: None,
+                importing: None,
                 save: None,
                 recording: None,
                 scroll: scroll.clone(),
@@ -2305,6 +2308,7 @@ impl MailWindow {
     fn edit_signature(&mut self, id: Option<u32>, window: &mut Window, cx: &mut Context<Self>) {
         if let Some(page) = &mut self.settings_page {
             page.pasting = None;
+            page.importing = None;
         }
         let Some(signature) = self.config.sending.signature(id).cloned() else {
             if let Some(page) = &mut self.settings_page {
@@ -2578,7 +2582,9 @@ impl MailWindow {
             th,
         );
         let tools = self.render_signature_tools(th, cx);
-        let pasting = self.paste_html_panel(th, cx);
+        let pasting = self
+            .paste_html_panel(th, cx)
+            .or_else(|| self.import_signatures_panel(th, cx));
         let pasting_open = pasting.is_some();
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
@@ -2736,6 +2742,21 @@ impl MailWindow {
                                             this.open_paste_html(None, window, cx)
                                         },
                                     )),
+                                )
+                                .child(
+                                    outlined_button(
+                                        "page-signature-import",
+                                        tr!("settings-compose-signature-import"),
+                                        th,
+                                    )
+                                    .map(|d| self.page_control(d, th, cx))
+                                    .mt(px(katna_ui::tokens::space::S2))
+                                    .justify_center()
+                                    .on_click(
+                                        cx.listener(|this, _, _, cx| {
+                                            this.open_import_signatures(cx)
+                                        }),
+                                    ),
                                 ),
                         )
                         .children(pasting)

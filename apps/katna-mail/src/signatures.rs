@@ -4,6 +4,8 @@
 //! finding which one a sent message was signed with, so a reply in that
 //! conversation starts with the same one. No GPUI here.
 
+pub mod import;
+
 use katna_core::config::Signature;
 use katna_ui::rich::{Doc, html};
 

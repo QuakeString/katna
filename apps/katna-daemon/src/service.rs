@@ -696,6 +696,13 @@ macro_rules! pim_interface {
                 Ok(self.daemon.company_of(&address, &website).await?)
             }
 
+            async fn gmail_signatures(
+                &self,
+                account: i64,
+            ) -> fdo::Result<Vec<(String, String, String)>> {
+                Ok(self.daemon.gmail_signatures(AccountId(account)).await?)
+            }
+
             async fn translate(
                 &self,
                 message: i64,

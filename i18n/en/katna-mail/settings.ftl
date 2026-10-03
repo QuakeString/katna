@@ -495,6 +495,8 @@ settings-compose-signature-deleted = Signature deleted
 settings-compose-signature-new = Create new
 # The button that opens a box to paste a signature designed elsewhere, as HTML.
 settings-compose-signature-paste-html = Paste HTML
+# The button that brings in signatures from Gmail and from the mail apps on this computer.
+settings-compose-signature-import = Import
 # The button that opens a designed signature's HTML to edit by hand.
 settings-compose-signature-edit-html = Edit HTML
 settings-compose-no-signatures = No signatures yet.

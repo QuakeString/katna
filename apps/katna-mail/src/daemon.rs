@@ -1182,6 +1182,27 @@ pub async fn company_of(
         .map_err(|err| describe(&err))
 }
 
+/// The signatures Gmail adds for `account`: (address, name, HTML).
+/// `Err(None)` when its sign-in does not allow reading them.
+pub async fn gmail_signatures(
+    connection: &Connection,
+    account: i64,
+) -> Result<Vec<(String, String, String)>, Option<String>> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| Some(describe(&err)))?;
+    pim.gmail_signatures(account)
+        .await
+        .map_err(|err| match &err {
+            katna_dbus::zbus::Error::MethodError(name, _, _)
+                if name.as_str() == "org.freedesktop.DBus.Error.AuthFailed" =>
+            {
+                None
+            }
+            err => Some(describe(err)),
+        })
+}
+
 /// Renames `account`; an empty name goes back to the name its own mail
 /// is sent under.
 pub async fn rename_account(

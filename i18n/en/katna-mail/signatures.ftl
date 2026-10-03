@@ -66,3 +66,27 @@ signature-html-removed = Removed scripts, forms and tracking pixels, which mail 
 signature-html-style-sheet = Left out a style sheet: mail keeps only the styles written on each part
 signature-html-links = Removed links that went somewhere other than a website, an address or a phone
 signature-html-plain-text = Plain text version made from it, for mail apps that show only text
+
+## Import
+# Signatures brought in from Gmail, and from Thunderbird, Evolution and
+# KMail on this computer. App names stay as their makers write them.
+
+signature-import-title = Import
+signature-import-subtitle = From Gmail, Thunderbird, Evolution and KMail
+signature-import-looking = Looking for signatures…
+signature-import-none = No signatures found. For another app, copy its signature's HTML and use Paste HTML.
+# Under a signature found. $app: Gmail, Thunderbird, Evolution or KMail.
+signature-import-from = From { $app }
+# Under a signature found that Katna has already.
+signature-import-already = already in Katna
+# A Gmail account whose sign-in doesn't let Katna read its signatures. $address: the account.
+signature-import-gmail-sign-in = { $address }: sign in again in Settings > Accounts so Katna may read Gmail's signatures.
+# Reading a Gmail account's signatures failed. $address: the account; $error: why, from Gmail or the system.
+signature-import-gmail-failed = { $address }: { $error }
+signature-import-cancel = Cancel
+signature-import-do = { $count ->
+    [one] Import { $count } signature
+   *[other] Import { $count } signatures
+}
+# The name an imported signature gets. $name: its name there, or the address it signs; $app: the app.
+signature-import-name = { $name } ({ $app })
