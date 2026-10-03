@@ -66,6 +66,8 @@ fn thunderbird_identities_inline_and_from_a_file() {
     assert!(found[2].html.contains("src=\"https://x.test/l.png\""));
 }
 
+// Evolution runs only on Linux, and the script link needs Unix symlinks.
+#[cfg(unix)]
 #[test]
 fn evolution_signatures_but_never_scripts() {
     let home = tempfile::tempdir().unwrap();
