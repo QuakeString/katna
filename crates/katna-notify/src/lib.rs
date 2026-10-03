@@ -6,7 +6,8 @@
 //! Talks to the desktop's `org.freedesktop.Notifications` server directly
 //! (Plasma, GNOME Shell, mako, dunst, …). So far: new-mail notifications
 //! with Peek, Reply (typed into the notification where the server can,
-//! §15.1.2), Mark as read and Archive, the note that a reply typed there
+//! §15.1.2), Mark as read and Archive, a button that copies a one-time
+//! code or opens a verify link (§15.1.3), the note that a reply typed there
 //! is on its way, with Undo, reminders (snooze,
 //! follow-up) with Open, Mark as read and Archive, and event reminders
 //! with Join and Snooze, and a note with Undo after Archive.
@@ -50,6 +51,12 @@ pub mod action {
     /// On the note that a reply is on its way: show the conversation in
     /// Katna Mail.
     pub const SHOW: &str = "show";
+    /// Only on a notification about one message with a one-time code:
+    /// copy the code.
+    pub const COPY_CODE: &str = "copy-code";
+    /// Only on a notification about one message with a verify, confirm
+    /// or activate link: open it in the browser.
+    pub const OPEN_LINK: &str = "open-link";
 }
 
 /// At most this many messages are listed in a grouped notification.
@@ -60,6 +67,8 @@ const PREVIEW_CHARS: usize = 160;
 const PEEK_CHARS: usize = 1200;
 /// How long the note that mail was archived stays, in milliseconds.
 const ARCHIVED_SHOWN_MS: i32 = 8000;
+/// How long the note that a code was copied stays, in milliseconds.
+const COPIED_SHOWN_MS: i32 = 4000;
 /// The server capability of replies typed into a notification.
 const INLINE_REPLY_CAPABILITY: &str = "inline-reply";
 
@@ -110,6 +119,47 @@ pub struct NewMail {
     pub subject: String,
     /// The start of the text, when the body is downloaded.
     pub preview: Option<String>,
+    /// Its button for a one-time code or a verify link, if any.
+    pub shortcut: Option<Shortcut>,
+}
+
+/// What a notification about one message offers besides reading and
+/// answering it (`docs/ARCHITECTURE.md` §15.1.3). A link's button names
+/// where it goes, so a link that pretends to be someone else shows it.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Shortcut {
+    /// Copy this one-time code.
+    Code(String),
+    /// Open a link to verify an address, on `domain`.
+    Verify { domain: String },
+    /// Open a link to confirm something, on `domain`.
+    Confirm { domain: String },
+    /// Open a link to activate an account, on `domain`.
+    Activate { domain: String },
+}
+
+impl Shortcut {
+    /// Its button: action key and label.
+    fn action(&self) -> (&'static str, String) {
+        match self {
+            Shortcut::Code(code) => (
+                action::COPY_CODE,
+                tr!("notify-copy-code", code = code.clone()),
+            ),
+            Shortcut::Verify { domain } => (
+                action::OPEN_LINK,
+                tr!("notify-link-verify", domain = domain.clone()),
+            ),
+            Shortcut::Confirm { domain } => (
+                action::OPEN_LINK,
+                tr!("notify-link-confirm", domain = domain.clone()),
+            ),
+            Shortcut::Activate { domain } => (
+                action::OPEN_LINK,
+                tr!("notify-link-activate", domain = domain.clone()),
+            ),
+        }
+    }
 }
 
 /// How a new-mail notification shows its mail.
@@ -231,18 +281,33 @@ impl Notifier {
         } else {
             (action::REPLY, tr!("notify-reply"))
         };
+        // A code or a link takes Reply all's place in a peek, and Reply's
+        // where Peek offers it: such mail is rarely answered, and four
+        // buttons are as many as fit.
+        let shortcut = match mails {
+            [mail] => mail.shortcut.as_ref().map(Shortcut::action),
+            _ => None,
+        };
         match (mails.len(), view) {
-            (1, View::Peek { .. }) => actions.extend([
-                reply,
-                (action::REPLY_ALL, tr!("notify-reply-all")),
-                (action::ARCHIVE, tr!("notify-archive")),
-            ]),
+            (1, View::Peek { .. }) => {
+                actions.extend(shortcut);
+                actions.push(reply);
+                if actions.len() < 3 {
+                    actions.push((action::REPLY_ALL, tr!("notify-reply-all")));
+                }
+                actions.push((action::ARCHIVE, tr!("notify-archive")));
+            }
             (1, View::Short) => {
-                if !cfg!(windows) {
+                let peek = !cfg!(windows);
+                if peek {
                     actions.push((action::PEEK, tr!("notify-peek")));
                 }
+                match shortcut {
+                    Some(shortcut) if peek => actions.push(shortcut),
+                    Some(shortcut) => actions.extend([shortcut, reply]),
+                    None => actions.push(reply),
+                }
                 actions.extend([
-                    reply,
                     (action::MARK_READ, tr!("notify-mark-read")),
                     (action::ARCHIVE, tr!("notify-archive")),
                 ]);
@@ -285,7 +350,7 @@ impl Notifier {
             .flat_map(|(key, label)| [*key, label.as_str()])
             .collect();
         let mut hints = HashMap::from([
-            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
             ("category", Value::from("email.arrived")),
             ("x-kde-origin-name", Value::from(origin)),
             ("urgency", Value::U8(1)),
@@ -355,7 +420,7 @@ impl Notifier {
             .flat_map(|(key, label)| [*key, label.as_str()])
             .collect();
         let hints = HashMap::from([
-            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
             ("category", Value::from("email")),
             ("urgency", Value::U8(0)),
             ("suppress-sound", Value::Bool(true)),
@@ -383,7 +448,7 @@ impl Notifier {
         let open = tr!("notify-open");
         let actions = [action::OPEN, open.as_str()];
         let hints = HashMap::from([
-            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
             ("category", Value::from("email")),
             ("urgency", Value::U8(1)),
             ("suppress-sound", Value::Bool(true)),
@@ -427,7 +492,7 @@ impl Notifier {
             .flat_map(|(key, label)| [*key, label.as_str()])
             .collect();
         let mut hints = HashMap::from([
-            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
             ("category", Value::from("email")),
             ("x-kde-origin-name", Value::from(origin)),
             ("urgency", Value::U8(1)),
@@ -476,7 +541,7 @@ impl Notifier {
             .flat_map(|(key, label)| [*key, label.as_str()])
             .collect();
         let mut hints = HashMap::from([
-            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
             ("category", Value::from("x-katna.event")),
             ("urgency", Value::U8(1)),
             ("resident", Value::Bool(false)),
@@ -524,7 +589,7 @@ impl Notifier {
             .flat_map(|(key, label)| [*key, label.as_str()])
             .collect();
         let mut hints = HashMap::from([
-            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
             ("category", Value::from("x-katna.task")),
             ("urgency", Value::U8(1)),
             ("resident", Value::Bool(false)),
@@ -559,7 +624,7 @@ impl Notifier {
             update.as_str(),
         ];
         let hints = HashMap::from([
-            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
             ("category", Value::from("x-katna.update")),
             ("urgency", Value::U8(1)),
             ("suppress-sound", Value::Bool(true)),
@@ -590,7 +655,7 @@ impl Notifier {
         let undo = tr!("notify-undo");
         let actions = [action::UNDO, undo.as_str()];
         let hints = HashMap::from([
-            ("desktop-entry", Value::from(ids::MAIL_APP_ID)),
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
             ("category", Value::from("email")),
             ("urgency", Value::U8(0)),
             ("suppress-sound", Value::Bool(true)),
@@ -611,6 +676,35 @@ impl Notifier {
             .await
     }
 
+    /// Says, quietly and for a few seconds, that `code` was copied, or
+    /// shows it to copy by hand when it could not be. Returns its ID.
+    pub async fn code_copied(&self, code: &str, copied: bool) -> zbus::Result<u32> {
+        let summary = if copied {
+            tr!("notify-code-copied")
+        } else {
+            tr!("notify-code-not-copied")
+        };
+        let hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
+            ("category", Value::from("email")),
+            ("urgency", Value::U8(0)),
+            ("suppress-sound", Value::Bool(true)),
+            ("transient", Value::Bool(true)),
+        ]);
+        self.proxy
+            .notify(
+                "Katna Mail",
+                0,
+                ids::MAIL_APP_ID,
+                &summary,
+                &escape(code),
+                &[],
+                hints,
+                if copied { COPIED_SHOWN_MS } else { 0 },
+            )
+            .await
+    }
+
     pub async fn close(&self, id: u32) -> zbus::Result<()> {
         self.proxy.close_notification(id).await
     }
@@ -625,6 +719,7 @@ mod tests {
             sender: sender.into(),
             subject: subject.into(),
             preview: None,
+            shortcut: None,
         }
     }
 
@@ -700,6 +795,47 @@ mod tests {
         assert_eq!(
             keys(Notifier::new_mail_actions(&two, View::Short, true)),
             [action::OPEN, action::MARK_READ, action::ARCHIVE]
+        );
+    }
+
+    #[test]
+    fn a_code_or_link_has_its_own_button() {
+        let keys = |actions: Actions| actions.into_iter().map(|(k, _)| k).collect::<Vec<_>>();
+        let mut one = mail("Acme", "Your code");
+        one.shortcut = Some(Shortcut::Code("123456".into()));
+        let short = Notifier::new_mail_actions(std::slice::from_ref(&one), View::Short, true);
+        assert!(short.iter().any(|(_, label)| label.contains("123456")));
+        let expected: &[&str] = if cfg!(windows) {
+            &[
+                action::OPEN,
+                action::COPY_CODE,
+                action::INLINE_REPLY,
+                action::MARK_READ,
+                action::ARCHIVE,
+            ]
+        } else {
+            &[
+                action::OPEN,
+                action::PEEK,
+                action::COPY_CODE,
+                action::MARK_READ,
+                action::ARCHIVE,
+            ]
+        };
+        assert_eq!(keys(short), expected);
+        one.shortcut = Some(Shortcut::Verify {
+            domain: "acme.example".into(),
+        });
+        let peek = Notifier::new_mail_actions(&[one], View::Peek { text: "" }, false);
+        assert!(peek.iter().any(|(_, label)| label.contains("acme.example")));
+        assert_eq!(
+            keys(peek),
+            [
+                action::OPEN,
+                action::OPEN_LINK,
+                action::REPLY,
+                action::ARCHIVE
+            ]
         );
     }
 

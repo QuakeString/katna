@@ -795,20 +795,10 @@ async fn search(connection: &zbus::Connection, text: &str, token: Option<String>
     mail_app::run(connection, Some(app_action::SEARCH), params, token).await;
 }
 
-/// Puts `text` on the clipboard through Plasma's clipboard (Klipper); the
-/// daemon has no window to own the clipboard with.
+/// Puts `text` on the clipboard.
 async fn copy(connection: &zbus::Connection, text: &str) {
-    let copied = connection
-        .call_method(
-            Some("org.kde.klipper"),
-            "/klipper",
-            Some("org.kde.klipper.klipper"),
-            "setClipboardContents",
-            &(text,),
-        )
-        .await;
-    if let Err(err) = copied {
-        tracing::warn!(%err, "desktop search: could not copy the address");
+    if !crate::clipboard::copy(connection, text).await {
+        tracing::warn!("desktop search: could not copy the address");
     }
 }
 

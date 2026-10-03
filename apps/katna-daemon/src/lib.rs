@@ -10,6 +10,7 @@
 
 mod agenda;
 pub mod ai;
+mod clipboard;
 mod crash_upload;
 pub mod daemon;
 mod desktop;
