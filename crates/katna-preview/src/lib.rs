@@ -22,6 +22,7 @@ mod pdf_marks;
 mod pdf_text;
 pub mod picture;
 pub mod sheet;
+pub mod signature;
 pub mod slides;
 pub mod svg;
 pub mod table;

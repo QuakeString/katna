@@ -319,6 +319,12 @@ fn is_rgb(part: &str) -> bool {
     part.len() == 6 && part.bytes().all(|b| b.is_ascii_hexdigit())
 }
 
+/// A built-in icon's SVG by name (`brand-linkedin`).
+pub fn icon_svg(name: &str) -> Option<&'static [u8]> {
+    let path = format!("icons/{name}.svg");
+    ICONS.iter().find(|(n, _)| *n == path).map(|(_, data)| *data)
+}
+
 pub struct Assets;
 
 impl AssetSource for Assets {
