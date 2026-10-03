@@ -103,7 +103,7 @@ settings-general-new-mail-detail = With Reply all, Mark as read and Archive
 # The Sounds row of Settings > Notifications: a line per event, with a
 # sound to pick, a button that plays it and a switch.
 settings-notifications-sounds = Sounds
-settings-notifications-sounds-detail = From your desktop's sound theme. Muted folders, conversations and senders stay silent, and so does everything during Do not disturb.
+settings-notifications-sounds-detail = A set of sounds for everything, and a sound of its own for any event. Muted folders, conversations and senders stay silent, and so does everything during Do not disturb.
 sounds-new-mail = New mail
 sounds-new-mail-detail = In the folders that notify
 sounds-reminders = Reminders
@@ -116,8 +116,73 @@ sounds-not-sent = Mail not sent
 sounds-not-sent-detail = When sending fails
 # Tooltip of the button that plays a sound.
 sounds-play = Play
-# The sounds to pick from (the desktop's own).
+# The sets of sounds, shown as tiles: a name, and under it what the set
+# holds. System is the desktop's own sounds.
+sound-set-system = System
+sound-set-system-detail = Your desktop's own
+sound-set-katna = Katna
+sound-set-katna-detail = Soft bells
+sound-set-nature = Nature
+sound-set-nature-detail = Drops and chimes
+sound-set-birds = Birds
+sound-set-birds-detail = Robin, wren, finch
+sound-set-animals = Animals
+sound-set-animals-detail = Frog, owl, cat
+sound-set-insects = Insects
+sound-set-insects-detail = Crickets, cicadas
+sound-set-electronic = Electronic
+sound-set-electronic-detail = Blips and tones
+sound-set-morning = Morning
+sound-set-morning-detail = Kalimba, marimba
+# First in the menu of an event's sounds: whatever sound the picked set
+# has for it, changing with the set.
+sounds-set-sound = The set's sound
+# Last in that menu: opens a file chooser for a sound file of the user's own.
+sounds-choose-file = Choose a file…
+# The file chooser's title.
+sounds-choose-file-title = Choose a sound
+# When the chosen file is not a sound Katna can play.
+sounds-file-kind = Choose a WAV, OGG, FLAC or MP3 file
+# When the chosen file is too big for a notification sound.
+sounds-file-too-big = That file is too big for a notification sound. Choose one under 10 MB.
+# When the file could not be read or kept. $error: what went wrong.
+sounds-file-failed = Couldn't use that file: { $error }
+# The sounds to pick from: Katna's own sets, then the desktop's own.
 sound-katna-chime = Katna chime
+sound-katna-twin-bells = Twin bells
+sound-katna-soft-bell = Soft bell
+sound-katna-rising = Rising
+sound-katna-falling = Falling
+sound-nature-water-drop = Water drop
+sound-nature-wind-chimes = Wind chimes
+sound-nature-ripple = Ripple
+sound-nature-breeze = Breeze
+sound-nature-pebble = Pebble
+sound-birds-robin = Robin
+sound-birds-wren-trill = Wren trill
+sound-birds-finch = Finch
+sound-birds-swallow = Swallow
+sound-birds-cuckoo = Cuckoo
+sound-animals-tree-frog = Tree frog
+sound-animals-owl = Owl
+sound-animals-cat = Cat
+sound-animals-dolphin = Dolphin
+sound-animals-bullfrog = Bullfrog
+sound-insects-cricket = Cricket
+sound-insects-cicada = Cicada
+sound-insects-katydid = Katydid
+sound-insects-bee = Bee
+sound-insects-fly = Fly
+sound-electronic-blip = Blip
+sound-electronic-beacon = Beacon
+sound-electronic-arcade = Arcade
+sound-electronic-whoosh = Whoosh
+sound-electronic-buzz = Buzz
+sound-morning-kalimba = Kalimba
+sound-morning-sunrise = Sunrise
+sound-morning-marimba = Marimba
+sound-morning-glockenspiel = Glockenspiel
+sound-morning-low-marimba = Low marimba
 sound-new-email = New email
 sound-new-message = New message
 sound-sent = Sent

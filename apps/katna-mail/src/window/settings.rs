@@ -47,8 +47,11 @@ pub(super) enum Change {
     AiEncrypted(bool),
     /// An event's sound on or off.
     Sound(SoundEvent, bool),
-    /// The sound an event plays, by its `katna_platform::sound` name.
+    /// The sound an event plays, by its `katna_platform::sound` name;
+    /// empty for its set's.
     SoundChoice(SoundEvent, &'static str),
+    /// The set of sounds, by `katna_platform::sound::Set::id`.
+    SoundSet(&'static str),
     Pane(ReadingPane),
     Density(Density),
     Theme(ThemeChoice),
@@ -670,19 +673,30 @@ impl MailWindow {
                 cx.notify();
                 return;
             }
-            Change::NewMailNotices(_) | Change::Sound(..) | Change::SoundChoice(..) => {
+            Change::NewMailNotices(_)
+            | Change::Sound(..)
+            | Change::SoundChoice(..)
+            | Change::SoundSet(_) => {
                 match change {
                     Change::NewMailNotices(on) => self.config.notifications.new_mail = on,
                     Change::Sound(event, on) => self.config.sounds.get_mut(event).on = on,
                     Change::SoundChoice(event, id) => {
-                        // The usual sound stays unnamed, so it follows a
-                        // change of the usual one.
-                        self.config.sounds.get_mut(event).sound =
-                            if id == katna_platform::sound::usual(event) {
-                                String::new()
-                            } else {
-                                id.to_owned()
-                            };
+                        // The set's sound stays unnamed, so it follows a
+                        // change of set.
+                        let set = katna_platform::sound::set(&self.config.sounds.set).id;
+                        let id = if id == katna_platform::sound::usual(event, set) {
+                            ""
+                        } else {
+                            id
+                        };
+                        self.set_event_sound(event, id.to_owned());
+                    }
+                    Change::SoundSet(id) => {
+                        self.config.sounds.set = if id == katna_platform::sound::USUAL_SET {
+                            String::new()
+                        } else {
+                            id.to_owned()
+                        };
                     }
                     _ => {}
                 }
