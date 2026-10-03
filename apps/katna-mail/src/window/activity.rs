@@ -982,7 +982,7 @@ impl MailWindow {
             )
         };
         let chip = |id: usize, label: String, on: bool| {
-            super::search_panel::chip(("activity-period", id), &label, on, th)
+            crate::widgets::choice_chip(("activity-period", id), label.clone(), on, th)
         };
         let custom = matches!(report.period, Period::Custom(..)) || report.editing;
         let periods = div()

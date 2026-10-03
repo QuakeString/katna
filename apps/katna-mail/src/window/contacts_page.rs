@@ -36,7 +36,7 @@ use super::contacts_labels::{LabelDialog, LabelMenu};
 use crate::daemon;
 use crate::data::SavedBook;
 use crate::theme::{Theme, mix};
-use crate::widgets::{filled_button, icon, icon_button, placeholder, tip, tonal_icon_button};
+use crate::widgets::{filled_button, icon, icon_button, placeholder, tag, tip, tonal_icon_button};
 
 /// Width of the column with Contacts, Frequent and the labels.
 const NAV_WIDTH: f32 = 248.0;
@@ -1454,17 +1454,9 @@ fn heading_row(ix: usize, heading: Heading, count: usize, th: &Theme) -> AnyElem
 }
 
 fn chip(label: &str, th: &Theme) -> AnyElement {
-    div()
-        .flex_none()
+    tag(label.to_owned(), th)
         .max_w(px(140.0))
         .truncate()
-        .px(px(8.0))
-        .py(px(1.0))
-        .rounded_full()
-        .bg(rgba(th.chip))
-        .text_size(px(12.0))
-        .text_color(rgba(th.text_dim))
-        .child(label.to_owned())
         .into_any_element()
 }
 

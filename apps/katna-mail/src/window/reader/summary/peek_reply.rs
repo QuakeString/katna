@@ -19,11 +19,11 @@ use katna_ui::{InputEvent, TextArea, TextInput, px};
 
 use super::super::super::MailWindow;
 use super::super::super::compose::{Kind, below_end_over, signature_name, signature_tag};
-use super::super::super::search_panel::chip;
 use super::{Fix, idea_placeholder, placeholder, problem_text};
 use crate::daemon;
 use crate::data::EntryKey;
 use crate::theme::Theme;
+use crate::widgets::choice_chip;
 use crate::widgets::{filled_button, icon, icon_button_colored, outlined_button, tip};
 
 /// Writing a reply in the summary card.
@@ -445,7 +445,7 @@ impl MailWindow {
                 .gap(px(6.0))
                 .children(ideas.iter().enumerate().map(|(n, idea)| {
                     let idea = idea.clone();
-                    chip(("summary-reply-idea", n), &idea, false, th)
+                    choice_chip(("summary-reply-idea", n), &idea, false, th)
                         .rounded_full()
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.peek_reply_draft(idea.clone(), cx)
@@ -474,7 +474,9 @@ impl MailWindow {
             .on_click(move |_, window, cx| window.focus(&focus, cx));
         let length = r.request.length;
         let manner = r.request.manner;
-        let set = |id: &'static str, text: String, on: bool| chip(id, &text, on, th).rounded_full();
+        let set = |id: &'static str, text: String, on: bool| {
+            choice_chip(id, &text, on, th).rounded_full()
+        };
         let choices = div()
             .flex()
             .flex_row()
@@ -613,7 +615,7 @@ impl MailWindow {
                 .text_color(rgba(th.text_dim))
                 .child(tr!("compose-to"))
                 .child(
-                    chip("summary-reply-to", &r.request.to, false, th)
+                    choice_chip("summary-reply-to", &r.request.to, false, th)
                         .rounded_full()
                         .h(px(24.0)),
                 )

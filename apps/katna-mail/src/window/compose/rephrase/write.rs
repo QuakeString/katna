@@ -14,12 +14,12 @@ use katna_i18n::tr;
 use katna_ui::{InputEvent, TextInput, px};
 
 use super::super::super::MailWindow;
-use super::super::super::search_panel::chip;
 use super::super::recipients::Field;
 use super::super::{Kind, Mode};
 use super::{Fix, Rephrase, State, idea_placeholder, placeholder, problem_text};
 use crate::daemon::{self, Command, Rephrased};
 use crate::theme::Theme;
+use crate::widgets::choice_chip;
 use crate::widgets::{filled_button, icon, icon_button_colored, outlined_button, tip};
 
 /// Why there are no ideas: the conversation is encrypted and Settings
@@ -371,7 +371,7 @@ impl MailWindow {
                 .gap(px(6.0))
                 .children(ideas.iter().enumerate().map(|(n, idea)| {
                     let idea = idea.clone();
-                    chip(("compose-write-idea", n), &idea, false, th)
+                    choice_chip(("compose-write-idea", n), &idea, false, th)
                         .rounded_full()
                         .on_click(
                             cx.listener(move |this, _, _, cx| this.start_draft(idea.clone(), cx)),
@@ -408,12 +408,12 @@ impl MailWindow {
             .child(div().flex_1().min_w_0().child(r.custom.clone()));
         let chat = w.request.kind == DraftKind::Chat;
         let length_chip = |length: Length, id: &'static str, label: String| {
-            chip(id, &label, w.request.length == length, th)
+            choice_chip(id, &label, w.request.length == length, th)
                 .rounded_full()
                 .on_click(cx.listener(move |this, _, _, cx| this.set_draft_length(length, cx)))
         };
         let manner_chip = |manner: Manner, id: &'static str, label: String| {
-            chip(id, &label, w.request.manner == manner, th)
+            choice_chip(id, &label, w.request.manner == manner, th)
                 .rounded_full()
                 .on_click(cx.listener(move |this, _, _, cx| this.set_draft_manner(manner, cx)))
         };
