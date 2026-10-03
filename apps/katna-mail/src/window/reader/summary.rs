@@ -429,14 +429,15 @@ impl MailWindow {
 
     /// The sparkle of the reading pane and the chat header: shows the
     /// open conversation's summary, asking for one if it has none, or
-    /// hides it.
+    /// hides it while it shows (in the chat, whether dropped or only its
+    /// strip: the press on the sparkle has already folded the card).
     pub(in crate::window) fn toggle_summary(&mut self, cx: &mut Context<Self>) {
         let Some(key) = self.reader.as_ref().map(|r| r.key) else {
             return;
         };
         let chat = self.chat_shown();
         match self.summaries.by_key.get_mut(&key) {
-            Some(sum) if sum.shown && !(chat && !sum.dropped) => {
+            Some(sum) if sum.shown => {
                 sum.shown = false;
                 sum.dropped = false;
                 cx.notify();
