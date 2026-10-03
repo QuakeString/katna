@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A crisper hover in the mail list"
+text = """
+The line under the pointer no longer lifts with a soft shadow. It takes a
+flat, slightly stronger tint instead, so its edges stay sharp in light and
+dark.
+"""

@@ -9,10 +9,9 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, BoxShadow, Context, Div, FontWeight, HighlightStyle,
-    ListOffset, SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, anchored,
-    deferred, div, ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*,
-    relative, rgba,
+    Animation, AnimationExt, AnyElement, Context, Div, FontWeight, HighlightStyle, ListOffset,
+    SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, anchored, deferred, div,
+    ease_out_quint, list, point, prelude::*, relative, rgba,
 };
 use katna_core::config::Density;
 use katna_i18n::tr;
@@ -2193,7 +2192,6 @@ impl MailWindow {
             };
         let scrolling = self.list_scrolling.is_some();
         let hovered = !scrolling && self.hovered == Some(ix);
-        let under_hovered = !scrolling && ix > 0 && self.hovered == Some(ix - 1);
         let cursor = self.selected == Some(ix);
         let checked = self.checked.contains(&key);
         let open = self.split() && self.reader.as_ref().is_some_and(|r| r.key == key);
@@ -2267,33 +2265,6 @@ impl MailWindow {
             }))
             .when(self.mail_dragged(key, cx), |d| d.opacity(0.45))
             .child(Ripple::new(("row-ripple", ix), rgba(th.ripple)).rounded(0.0))
-            // The shadow of the lifted row above, which this row would
-            // otherwise paint over.
-            .child(
-                div()
-                    .absolute()
-                    .top_0()
-                    .left_0()
-                    .right_0()
-                    .h(px(4.0))
-                    .with_spring(
-                        ("row-drop", ix),
-                        SpringAnimation::new(ROW_LIFT).to(if under_hovered { 1.0 } else { 0.0 }),
-                        {
-                            let shadow = th.shadow;
-                            move |el, s: f32| {
-                                el.bg(linear_gradient(
-                                    180.0,
-                                    linear_color_stop(
-                                        rgba(fade(shadow, 0.3 * s.clamp(0.0, 1.0))),
-                                        0.0,
-                                    ),
-                                    linear_color_stop(rgba(fade(shadow, 0.0)), 1.0),
-                                ))
-                            }
-                        },
-                    ),
-            )
             // The keyboard cursor: a bar that grows from the middle.
             .child(
                 div()
@@ -2312,13 +2283,12 @@ impl MailWindow {
                     ),
             );
         let lifted = |base: Stateful<Div>| {
-            let shadow = th.shadow;
-            // The line takes a tint of the accent color; shadows barely
-            // show on dark pages, so there it also lightens.
+            // The line takes a flat, crisp tint of the accent color, with no
+            // shadow; dark pages lighten it a touch first so it shows.
             let lit = if th.dark {
-                mix(mix(background, 0xffffffff, 0.05), th.accent, 0.12)
+                mix(mix(background, 0xffffffff, 0.05), th.accent, 0.15)
             } else {
-                mix(background, th.accent, 0.07)
+                mix(background, th.accent, 0.11)
             };
             base.with_spring(
                 ("row-lift", ix),
@@ -2326,22 +2296,7 @@ impl MailWindow {
                 move |el, s: f32| {
                     let s = s.clamp(0.0, 1.0);
                     if s > 0.001 {
-                        el.bg(rgba(mix(background, lit, s))).shadow(vec![
-                            BoxShadow {
-                                color: rgba(fade(shadow, 0.5 * s)).into(),
-                                offset: point(px(0.0), px(1.0)),
-                                blur_radius: px(2.0),
-                                spread_radius: px(0.0),
-                                inset: false,
-                            },
-                            BoxShadow {
-                                color: rgba(fade(shadow, 0.25 * s)).into(),
-                                offset: point(px(0.0), px(1.0 * s)),
-                                blur_radius: px(3.0),
-                                spread_radius: px(0.0),
-                                inset: false,
-                            },
-                        ])
+                        el.bg(rgba(mix(background, lit, s)))
                     } else {
                         el
                     }

@@ -2057,9 +2057,9 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
 - **Motion.** Springs (`katna_ui::motion::Spring`, on GPUI's spring
   solver) drive values that shape several elements: the navigation width,
   the search box turning white with a shadow when focused, the snackbar.
-  Per-element motion uses GPUI's `with_spring` (row lift on hover, the
-  list cursor bar growing from the middle, the selected folder's pill
-  fading in) and `with_animation` (the card fading between list and
+  Per-element motion uses GPUI's `with_spring` (the flat accent tint on
+  a hovered row, the list cursor bar growing from the middle, the
+  selected folder's pill fading in) and `with_animation` (the card fading between list and
   message, the message sliding up as it opens). `katna_ui::Ripple` draws
   the Material ink ripple from the pointer on buttons, folders and rows.
   Everything honors the desktop's reduce-motion setting.
