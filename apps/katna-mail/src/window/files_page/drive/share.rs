@@ -21,8 +21,8 @@ use super::super::super::compose::address_suggestions;
 use crate::outgoing;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    Check, avatar, checkbox, elevation, filled_button, icon, icon_button, menu, menu_item,
-    outlined_button, tip,
+    Check, avatar, checkbox, filled_button, icon, icon_button, menu, menu_item, outlined_button,
+    tip,
 };
 
 const WIDTH: f32 = 520.0;
@@ -869,11 +869,8 @@ impl MailWindow {
             .max_h(px((vh - 48.0).max(240.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::super::super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::super::super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(|this, _, _, cx| {

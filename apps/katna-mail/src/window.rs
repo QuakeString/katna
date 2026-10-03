@@ -316,7 +316,7 @@ fn title_width(label: f32, (brand, name): (f32, f32)) -> f32 {
 /// The space between "Katna" and the app's name.
 const TITLE_WORD_GAP: f32 = 6.0;
 /// Corners of cards that float: menus aside, dialogs and panels.
-const PANEL_RADIUS: f32 = 15.0;
+const PANEL_RADIUS: f32 = katna_ui::tokens::radius::LG;
 const SEARCH_WIDTH: f32 = 720.0;
 /// The narrowest the search box gets beside the top bar's buttons.
 const SEARCH_MIN_WIDTH: f32 = 120.0;

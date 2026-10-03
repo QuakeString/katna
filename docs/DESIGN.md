@@ -17,9 +17,10 @@ code already used most, so moving code onto them changes little on screen.
 
 ## Tokens
 
-**Radius:** `XS` 4 (checkboxes, tags, inline code), `SM` 8 (fields, menu
-rows, thumbnails), `MD` 12 (cards, menus), `LG` 16 (popovers, dialogs,
-sheets, Compose), `FULL` (pills, avatars). A shape inside another takes
+**Radius:** `XS` 4 (checkboxes, tags, inline code), `SM` 8 (fields, menus
+and their rows, thumbnails), `MD` 12 (tiles and cards inside a card), `LG`
+16 (cards, dialogs, popovers, sheets, Compose; `PANEL_RADIUS`), `FULL`
+(pills, avatars). A shape inside another takes
 `radius::inner(outer, padding)`. The title bar's roundness setting stays the
 user's.
 
@@ -54,8 +55,8 @@ keeps one 0,1 / blur 3 shadow at 30%.
 | 0 Page | the page | page colour | page colour |
 | 1 Card | list, open mail, contact card, agenda | surface, one soft shadow | white, `card_edge` ring + short shadow |
 | 2 Float | floating buttons, dragging | `raised` + rim | white, edge + short shadow |
-| 3 Menu | menus, popovers | `menu` + rim | white, edge + shadow |
-| 4 Dialog | dialogs, sheets | `menu` + rim | white, edge + deeper shadow |
+| 3 Menu | menus, dialogs (`widgets::dialog`) | `menu` + rim | white, edge + shadow |
+| 4 Popover | notched popovers (`notched::popover`), the tour | `menu` + rim | white, edge + deeper shadow |
 
 **Motion:** springs for movement (`SLIDE` is the one with a little
 overshoot). Timed fades: `FAST` 140 ms (hover), `BASE` 220 ms (fades,
@@ -67,9 +68,9 @@ motion is honoured by `Spring::tick`.
 The same element in two places is one shared widget. Built: icon button,
 pill button, filled and outlined buttons, menu and menu item, switch,
 checkbox, radio, colour swatch and wheel, avatar, tooltip, snackbar, scroll
-bar, skeleton. To build: one `Button` with styles, `Popover` (opens at the
-click, notch, level 3, `LG`), `Dialog` (level 4, fits the window, content
-scrolls), `Card`, `Row` (hover, soft-grey selected, ticked, count pill),
+bar, skeleton, `notched::popover` (opens at the click, notch, level 4,
+`LG`), `widgets::dialog` (level 3, `LG`, frosted). To build: one `Button`
+with styles, `Card`, `Row` (hover, soft-grey selected, ticked, count pill),
 `Chip`, `Field` (edge, focus ring, error, suggestions), and a Gallery page
 in development builds showing every control in light and dark.
 

@@ -24,7 +24,7 @@ use super::security::{self, Sealing};
 use super::{Draft, Threading, Unsent, addresses, schedule};
 use crate::daemon::{self, Command};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, icon_button, outlined_button, tip};
+use crate::widgets::{icon, icon_button, outlined_button, tip};
 
 use super::attach::Attachment;
 
@@ -367,10 +367,7 @@ impl MailWindow {
                         .h(px(height))
                         .flex()
                         .flex_col()
-                        .rounded(px(16.0))
-                        .overflow_hidden()
-                        .map(|d| crate::widgets::frosted(d, th, th.raised, 16.0))
-                        .shadow(elevation(th, 3.0))
+                        .map(|d| crate::widgets::dialog(d, th, th.raised))
                         .child(
                             div()
                                 .flex_none()

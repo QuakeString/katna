@@ -20,10 +20,10 @@ use katna_ui::px;
 
 use super::add_account::text_button;
 use super::settings::Change;
-use super::{MailWindow, PANEL_RADIUS, share_ask};
+use super::{MailWindow, share_ask};
 use crate::daemon;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, filled_button, icon};
+use crate::widgets::{filled_button, icon};
 
 /// How long a page takes to slide in.
 const PAGE_IN: Duration = Duration::from_millis(360);
@@ -282,9 +282,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(28.0))
-            .rounded(px(PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, PANEL_RADIUS))
-            .shadow(elevation(th, 3.0))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .child(step_dots(step, th))
             .child(page);
         // The window as it will be shows through a light, blurred scrim,
