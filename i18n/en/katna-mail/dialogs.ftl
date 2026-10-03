@@ -30,13 +30,18 @@ about-update-ready-detail = Katna Mail restarts to finish the update.
 # After pressing Update: what happens next, before it happens.
 about-update-confirm = Install version { $version }?
 about-update-confirm-detail = Katna Mail will close, install the update and open again where you left off. Your computer will ask for your password.
+# The same on Windows, where Katna Setup installs it.
+about-update-confirm-detail-windows = Katna Mail will close, install the update and open again in a moment.
 about-update-installing = Installing version { $version }…
 about-update-installing-detail = Enter your password in the window that opened.
+about-update-installing-detail-windows = Katna Mail closes now and opens again once the update is installed.
 # The password window was closed or the password was refused.
 about-update-cancelled = The update was not installed, because the password was not given.
 # $error: what the installer said.
 about-update-failed = The update could not be installed: { $error }
-about-update-unsupported = This copy of Katna Mail is updated by your package manager.
+# A build that does not update itself: built from source, or a package
+# from somewhere else.
+about-update-not-self-updating = This copy of Katna Mail doesn’t update itself. Update it the way you installed it.
 # $error: the system's reason.
 about-update-restart-failed = The update is installed, but Katna Mail could not open again ({ $error }). Open it yourself.
 # Buttons.

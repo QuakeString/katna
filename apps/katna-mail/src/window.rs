@@ -75,6 +75,7 @@ mod reader;
 mod remote;
 mod reply_row;
 mod rich;
+mod row_reorder;
 mod rule_editor;
 mod scale_slider;
 mod scheme_color;
@@ -3812,11 +3813,16 @@ impl Render for MailWindow {
             self.render_sign_in_again(&th, window, reduce, cx)
         };
         let tour = self.render_tour(&th, window, cx);
+        // GPUI does not clip to the frame's rounded corners, so the
+        // backdrop rounds its own bottom ones.
+        let (bottom_left, bottom_right) = self.chrome.content_corners(window);
         let content = div()
             .key_context(WINDOW_CONTEXT)
             .relative()
             .size_full()
             .bg(rgba(th.backdrop))
+            .rounded_bl(px(bottom_left))
+            .rounded_br(px(bottom_right))
             .text_color(rgba(th.text))
             // Where the menu bar's actions start when the focus is lost.
             .child(div().absolute().size_0().track_focus(&self.window_focus))
