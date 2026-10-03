@@ -44,6 +44,12 @@ pub(super) const TEXT_CONTEXT: &str = "MessageText";
 /// message shown `n`th are part `DETAILS_PART + n`.
 pub(super) const DETAILS_PART: usize = usize::MAX / 4;
 
+/// The parts of the dialogs' text (About, What's new), which has its own
+/// selection, `MailWindow::dialog_text`: selecting in a dialog leaves the
+/// conversation's selection as it was.
+pub(super) const ABOUT_PART: usize = usize::MAX - 64;
+pub(super) const WHATS_NEW_PART: usize = ABOUT_PART + 1;
+
 /// A run of text drawn by `part` of the text (a message of the
 /// conversation, a page of a PDF), the `piece`th in it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -550,19 +556,46 @@ impl Pieces {
         self.next += 1;
         self.marker.piece(key, text, highlights)
     }
+
+    /// `text` as the next run, plain, in a box to style (its size,
+    /// colour, weight).
+    pub(super) fn words(&mut self, text: impl Into<SharedString>) -> Div {
+        let (styled, holder) = self.piece(text.into(), Vec::new());
+        holder.child(styled)
+    }
 }
 
 impl SelectHost for MailWindow {
+    /// A dialog's selection while one is shown, else the conversation's.
     fn selection(&self) -> &TextSelection {
-        &self.text
+        if self.dialog_shown() {
+            &self.dialog_text
+        } else {
+            &self.text
+        }
     }
 
     fn selection_mut(&mut self) -> &mut TextSelection {
-        &mut self.text
+        if self.dialog_shown() {
+            &mut self.dialog_text
+        } else {
+            &mut self.text
+        }
+    }
+
+    /// A click in a dialog's text keeps the dialog focused, so its keys
+    /// (Escape, Tab) still work.
+    fn text_focus(&self) -> FocusHandle {
+        let whats_new = self.whats_new.as_ref().filter(|d| !d.closing);
+        let about = self.about.as_ref().filter(|a| !a.closing);
+        whats_new
+            .map(|d| d.focus.clone())
+            .or_else(|| about.map(|a| a.focus.clone()))
+            .unwrap_or_else(|| self.text.focus.clone())
     }
 
     fn can_pin(&self) -> bool {
-        self.chat_text_to_pin().is_some()
+        !self.dialog_shown() && self.chat_text_to_pin().is_some()
     }
 
     fn pin_selection(&mut self, cx: &mut Context<Self>) {
@@ -577,7 +610,7 @@ impl SelectHost for MailWindow {
         at: Point<Pixels>,
         cx: &mut Context<Self>,
     ) -> bool {
-        if !self.chat_shown() || !self.text.is_empty() {
+        if self.dialog_shown() || !self.chat_shown() || !self.text.is_empty() {
             return false;
         }
         let Some(id) = part.and_then(|ix| self.part_id(ix)) else {
@@ -588,6 +621,9 @@ impl SelectHost for MailWindow {
     }
 
     fn translate_label(&self, part: usize) -> Option<String> {
+        if self.dialog_shown() {
+            return None;
+        }
         self.translate_menu_label(self.part_id(part)?)
     }
 
@@ -617,6 +653,48 @@ impl MailWindow {
 
     /// The right-click menu of the conversation's text.
     pub(super) fn render_text_menu(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        if self.dialog_shown() {
+            return None;
+        }
+        text_menu(self, th, cx)
+    }
+
+    /// About or What's new is on screen, on its way in or out too: its
+    /// text has the selection.
+    pub(super) fn dialog_shown(&self) -> bool {
+        self.about.is_some() || self.whats_new.is_some()
+    }
+
+    /// A dialog's card, whose text can be selected: Ctrl+C and Ctrl+A
+    /// work in it, a drag follows the pointer and a click away from the
+    /// text drops the selection. Its pieces are made selectable with
+    /// [`selectable`].
+    pub(super) fn dialog_text_area(
+        &self,
+        card: gpui::Stateful<Div>,
+        cx: &mut Context<Self>,
+    ) -> gpui::Stateful<Div> {
+        card.key_context(TEXT_CONTEXT)
+            .on_action(cx.listener(|this, _: &CopyText, _, cx| copy(this, cx)))
+            .on_action(cx.listener(|this, _: &SelectAllText, _, cx| select_all(this, cx)))
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, _: &MouseDownEvent, _, cx| {
+                    if !this.dialog_text.is_empty() || this.dialog_text.menu.is_some() {
+                        this.dialog_text.clear();
+                        cx.notify();
+                    }
+                }),
+            )
+            .child(follow_drags(cx))
+    }
+
+    /// The right-click menu of a dialog's text.
+    pub(super) fn render_dialog_text_menu(
         &self,
         th: &Theme,
         cx: &mut Context<Self>,

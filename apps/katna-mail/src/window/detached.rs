@@ -230,6 +230,7 @@ impl MailWindow {
         let compose = self.render_compose(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
+        self.dialog_text.begin(());
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let about = self.render_about(&th, window, reduce, cx);
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);

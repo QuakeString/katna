@@ -10,7 +10,7 @@
 mod coffee;
 
 use std::sync::LazyLock;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, ScrollHandle,
@@ -19,12 +19,16 @@ use gpui::{
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
+use katna_ui::tokens::space;
 use katna_ui::unpx;
 
+use super::select::{ABOUT_PART, Pieces, selectable};
 use super::{MailWindow, PANEL_RADIUS, ShowAbout, ShowWhatsNew};
 use crate::theme::{Theme, fade};
-use crate::whats_new;
-use crate::widgets::{FocusRing, elevation, filled_button, icon, outlined_button, tip};
+use crate::widgets::{
+    FocusRing, elevation, filled_button, icon, icon_button_with, outlined_button, ring_style, tip,
+};
+use crate::{format, whats_new};
 
 const WIDTH: f32 = 520.0;
 
@@ -210,8 +214,8 @@ fn libraries(json: &str) -> Vec<Library> {
 }
 
 pub(super) struct About {
-    focus: FocusHandle,
-    closing: bool,
+    pub(super) focus: FocusHandle,
+    pub(super) closing: bool,
     shown: Spring,
     /// Every library is listed, not only the heart of Katna.
     all: bool,
@@ -246,6 +250,7 @@ impl MailWindow {
         window.focus(&focus, cx);
         let mut shown = Spring::new(motion::SMOOTH, 0.0);
         shown.set(1.0);
+        self.dialog_text.clear();
         self.about = Some(About {
             focus,
             closing: false,
@@ -292,7 +297,9 @@ impl MailWindow {
         div()
             .id("settings-version")
             .h(px(32.0))
-            .px(px(12.0))
+            .pl(px(space::S4))
+            // The copy button at the end brings its own room.
+            .pr(px(space::S2))
             .flex()
             .flex_row()
             .items_center()
@@ -304,12 +311,72 @@ impl MailWindow {
             .hover(|s| s.bg(rgba(th.hover)))
             .tooltip(tip(tr!("about-tooltip"), th))
             .on_click(cx.listener(|this, _, window, cx| this.open_about(window, cx)))
+            .group(VERSION_GROUP)
             .child(icon("info", th.text_dim, 18.0))
             .child(
                 div()
                     .truncate()
                     .child(format!("Katna Mail {}", whats_new::VERSION)),
             )
+            .child(self.copy_version_button("settings-version-copy", 24.0, th, cx))
+            .into_any_element()
+    }
+
+    /// The small button beside the version wherever it shows (About,
+    /// What's new, Settings): it shows while the pointer is on the
+    /// version (put the version in a [`VERSION_GROUP`] group) or Tab
+    /// reaches it, and copies [`version_details`], then shows a check for
+    /// a moment.
+    pub(super) fn copy_version_button(
+        &self,
+        id: &'static str,
+        size: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let copied = self
+            .version_copied
+            .is_some_and(|at| at.elapsed() < COPIED_FOR);
+        let (name, color) = if copied {
+            ("check", th.accent)
+        } else {
+            ("copy", th.text_dim)
+        };
+        let ring = ring_style(th);
+        icon_button_with(id, icon(name, color, 14.0), th)
+            .size(px(size))
+            .opacity(if copied { 1.0 } else { 0.0 })
+            .group_hover(VERSION_GROUP, |s| s.opacity(1.0))
+            .tab_index(0)
+            .focus_visible(move |s| ring(s).opacity(1.0))
+            .tooltip(tip(
+                if copied {
+                    tr!("about-version-copied")
+                } else {
+                    tr!("about-copy-version")
+                },
+                th,
+            ))
+            // A click here is not one on the pill around it.
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_click(cx.listener(|this, _, _, cx| {
+                cx.stop_propagation();
+                cx.write_to_clipboard(gpui::ClipboardItem::new_string(version_details()));
+                let at = Instant::now();
+                this.version_copied = Some(at);
+                cx.notify();
+                cx.spawn(async move |this, cx| {
+                    cx.background_executor().timer(COPIED_FOR).await;
+                    this.update(cx, |this, cx| {
+                        if this.version_copied == Some(at) {
+                            this.version_copied = None;
+                            cx.notify();
+                        }
+                    })
+                    .ok();
+                })
+                .detach();
+            }))
             .into_any_element()
     }
 
@@ -345,7 +412,14 @@ impl MailWindow {
 
         let offset = -unpx(about.scroll.offset().y);
         let radius = if phone { 0.0 } else { PANEL_RADIUS };
-        let header = header(th, width, offset.max(0.0), radius);
+        // Its words can be selected and copied, top to bottom; buttons and
+        // rows that open a page stay buttons.
+        let mut pieces = self.dialog_text.pieces(ABOUT_PART, th);
+        // As tall as the version's chip, which shrinks with the header.
+        let shrunk = (offset.max(0.0) / (HEADER_TALL - HEADER_SHORT)).clamp(0.0, 1.0);
+        let chip = lerp(18.0, 16.0, shrunk) + 2.0 * lerp(4.0, 1.0, shrunk);
+        let copy = self.copy_version_button("about-version-copy", chip, th, cx);
+        let header = header(th, width, offset.max(0.0), radius, &mut pieces, copy, cx);
 
         let changelog = whats_new::changelog_url(None);
         let links = div()
@@ -464,14 +538,88 @@ impl MailWindow {
                 .items_center()
                 .justify_center()
                 .gap(px(8.0))
-                .child(
-                    div()
+                .child(selectable(
+                    pieces
+                        .words(tr!("about-follow-me"))
                         .text_size(px(13.0))
-                        .text_color(rgba(th.text_dim))
-                        .child(tr!("about-follow-me")),
-                )
+                        .text_color(rgba(th.text_dim)),
+                    Some(ABOUT_PART),
+                    cx,
+                ))
                 .children(follow)
         });
+
+        let personal = selectable(
+            div()
+                .flex_none()
+                .px(px(24.0))
+                .pt(px(20.0))
+                .flex()
+                .flex_col()
+                .gap(px(space::S2))
+                .child(
+                    pieces
+                        .words(tr!("about-personal-title"))
+                        .text_size(px(15.0))
+                        .font_weight(FontWeight::MEDIUM),
+                )
+                .child(
+                    pieces
+                        .words(tr!("about-personal-text"))
+                        .text_size(px(14.0))
+                        .line_height(px(21.0))
+                        .text_color(rgba(th.text_dim)),
+                ),
+            Some(ABOUT_PART),
+            cx,
+        );
+
+        let gpui = div()
+            .flex_none()
+            .mx(px(24.0))
+            .mt(px(24.0))
+            .p(px(16.0))
+            .flex()
+            .flex_col()
+            .gap(px(space::S2))
+            .rounded(px(12.0))
+            .bg(rgba(fade(th.accent, if th.dark { 0.16 } else { 0.07 })))
+            .child(selectable(
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(space::S2))
+                    .child(
+                        pieces
+                            .words(tr!("about-gpui-title"))
+                            .text_size(px(15.0))
+                            .font_weight(FontWeight::MEDIUM),
+                    )
+                    .child(
+                        pieces
+                            .words(tr!("about-gpui-text"))
+                            .text_size(px(14.0))
+                            .line_height(px(21.0))
+                            .text_color(rgba(th.text_dim)),
+                    ),
+                Some(ABOUT_PART),
+                cx,
+            ))
+            .child(
+                div()
+                    .mt(px(8.0))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(8.0))
+                    .child(link_button("about-zed", "zed.dev", ZED_URL.to_owned(), th))
+                    .child(link_button(
+                        "about-gpui",
+                        tr!("about-gpui-github"),
+                        GPUI_URL.to_owned(),
+                        th,
+                    )),
+            );
 
         let love = div()
             .flex_none()
@@ -491,94 +639,42 @@ impl MailWindow {
                     .min_w_0()
                     .flex()
                     .flex_col()
-                    .gap(px(4.0))
-                    .child(
+                    .gap(px(space::S2))
+                    .child(selectable(
                         div()
-                            .text_size(px(15.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .child(tr!("about-love-title")),
-                    )
-                    .child(
-                        div()
-                            .text_size(px(14.0))
-                            .line_height(px(21.0))
-                            .text_color(rgba(th.text_dim))
-                            .child(tr!("about-love-text")),
-                    )
-                    .child(
-                        div()
-                            .mt(px(6.0))
-                            .text_size(px(14.0))
-                            .line_height(px(21.0))
-                            .text_color(rgba(th.text_dim))
-                            .child(tr!("about-kde-text")),
-                    )
+                            .flex()
+                            .flex_col()
+                            .gap(px(space::S2))
+                            .child(
+                                pieces
+                                    .words(tr!("about-love-title"))
+                                    .text_size(px(15.0))
+                                    .font_weight(FontWeight::MEDIUM),
+                            )
+                            .child(
+                                pieces
+                                    .words(tr!("about-love-text"))
+                                    .text_size(px(14.0))
+                                    .line_height(px(21.0))
+                                    .text_color(rgba(th.text_dim)),
+                            )
+                            .child(
+                                pieces
+                                    .words(tr!("about-kde-text"))
+                                    .mt(px(6.0))
+                                    .text_size(px(14.0))
+                                    .line_height(px(21.0))
+                                    .text_color(rgba(th.text_dim)),
+                            ),
+                        Some(ABOUT_PART),
+                        cx,
+                    ))
                     .child(div().mt(px(8.0)).flex().flex_row().child(link_button(
                         "about-donate-kde",
                         tr!("about-donate-kde"),
                         KDE_DONATE_URL.to_owned(),
                         th,
                     ))),
-            );
-
-        let gpui = div()
-            .flex_none()
-            .mx(px(24.0))
-            .mt(px(24.0))
-            .p(px(16.0))
-            .flex()
-            .flex_col()
-            .gap(px(4.0))
-            .rounded(px(12.0))
-            .bg(rgba(fade(th.accent, if th.dark { 0.16 } else { 0.07 })))
-            .child(
-                div()
-                    .text_size(px(15.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .child(tr!("about-gpui-title")),
-            )
-            .child(
-                div()
-                    .text_size(px(14.0))
-                    .line_height(px(21.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(tr!("about-gpui-text")),
-            )
-            .child(
-                div()
-                    .mt(px(8.0))
-                    .flex()
-                    .flex_row()
-                    .flex_wrap()
-                    .gap(px(8.0))
-                    .child(link_button("about-zed", "zed.dev", ZED_URL.to_owned(), th))
-                    .child(link_button(
-                        "about-gpui",
-                        tr!("about-gpui-github"),
-                        GPUI_URL.to_owned(),
-                        th,
-                    )),
-            );
-
-        let personal = div()
-            .flex_none()
-            .px(px(24.0))
-            .pt(px(20.0))
-            .flex()
-            .flex_col()
-            .gap(px(4.0))
-            .child(
-                div()
-                    .text_size(px(15.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .child(tr!("about-personal-title")),
-            )
-            .child(
-                div()
-                    .text_size(px(14.0))
-                    .line_height(px(21.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(tr!("about-personal-text")),
             );
 
         let credits = CREDITS
@@ -751,9 +847,9 @@ impl MailWindow {
             .child(links)
             .children(follow)
             .child(coffee)
-            .child(love)
             .child(personal)
             .child(gpui)
+            .child(love)
             .child(built_on)
             .child(libraries);
 
@@ -768,15 +864,17 @@ impl MailWindow {
             .gap(px(8.0))
             .border_t_1()
             .border_color(rgba(th.divider))
-            .child(
-                div()
-                    .flex_1()
-                    .min_w_0()
-                    .text_size(px(12.0))
-                    .line_height(px(17.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(tr!("about-license")),
-            )
+            .child(selectable(
+                div().flex_1().min_w_0().child(
+                    pieces
+                        .words(tr!("about-license"))
+                        .text_size(px(12.0))
+                        .line_height(px(17.0))
+                        .text_color(rgba(th.text_dim)),
+                ),
+                Some(ABOUT_PART),
+                cx,
+            ))
             .child(
                 filled_button("about-close", tr!("about-close"), th)
                     .focus_ring_filled(th)
@@ -785,6 +883,7 @@ impl MailWindow {
 
         let card = div()
             .id("about")
+            .map(|d| self.dialog_text_area(d, cx))
             .track_focus(&about.focus)
             .map(|d| super::popovers::keep_tab_inside(d, &about.focus))
             .on_key_down(cx.listener(Self::about_key))
@@ -842,6 +941,7 @@ impl MailWindow {
                         .mt(px(lerp(24.0, 0.0, t)))
                         .child(card),
                 )
+                .children(self.render_dialog_text_menu(th, cx))
                 .into_any_element(),
         )
     }
@@ -861,6 +961,28 @@ fn link_button(
         .on_click(move |_, _, cx| cx.open_url(&url))
 }
 
+/// The group a version and its [`MailWindow::copy_version_button`] are in.
+pub(super) const VERSION_GROUP: &str = "katna-version";
+
+/// How long the copy button shows its check.
+const COPIED_FOR: Duration = Duration::from_millis(1500);
+
+/// The version details a bug report wants: Katna Mail's version, when
+/// this build was made and the system it runs on.
+pub(super) fn version_details() -> String {
+    let mut lines = vec![format!("Katna Mail {}", whats_new::VERSION)];
+    if let Some(date) =
+        whats_new::built().and_then(|unix| format::local(unix, &jiff::tz::TimeZone::system()))
+    {
+        lines.push(tr!("about-version-built", date = format::long_date(date)));
+    }
+    lines.push(tr!(
+        "about-version-system",
+        system = katna_core::crash::system()
+    ));
+    lines.join("\n")
+}
+
 /// The header's height, open and shrunk.
 const HEADER_TALL: f32 = 250.0;
 const HEADER_SHORT: f32 = 88.0;
@@ -874,7 +996,15 @@ const LOGO_SHORT: f32 = 60.0;
 /// px, it shrinks with the scroll, the wordmark moving to the left with
 /// the three lines beside it, then stays while the rest scrolls under its
 /// frost.
-fn header(th: &Theme, width: f32, offset: f32, radius: f32) -> AnyElement {
+fn header(
+    th: &Theme,
+    width: f32,
+    offset: f32,
+    radius: f32,
+    pieces: &mut Pieces,
+    copy: AnyElement,
+    cx: &mut Context<MailWindow>,
+) -> AnyElement {
     let collapse = HEADER_TALL - HEADER_SHORT;
     let t = (offset / collapse).clamp(0.0, 1.0);
     // Frosted as the page nears the point where it slides under.
@@ -894,6 +1024,7 @@ fn header(th: &Theme, width: f32, offset: f32, radius: f32) -> AnyElement {
     let (tag, tag_line) = (lerp(14.0, 13.0, t), lerp(20.0, 18.0, t));
     let (chip, chip_line) = (lerp(13.0, 12.0, t), lerp(18.0, 16.0, t));
     let (chip_x, chip_y) = (lerp(12.0, 8.0, t), lerp(4.0, 1.0, t));
+    let chip_h = chip_line + 2.0 * chip_y;
     let (gap_tag, gap_chip) = (lerp(6.0, 0.0, t), lerp(12.0, 3.0, t));
     let text_top = lerp(28.0 + LOGO_TALL + 14.0, (HEADER_SHORT - 61.0) / 2.0, t);
 
@@ -938,7 +1069,7 @@ fn header(th: &Theme, width: f32, offset: f32, radius: f32) -> AnyElement {
                 .left(px(logo_left))
                 .child(crate::widgets::katna_wordmark_from(logo, LOGO_TALL, th)),
         )
-        .child(
+        .child(selectable(
             div()
                 .absolute()
                 .top(px(text_top))
@@ -947,31 +1078,47 @@ fn header(th: &Theme, width: f32, offset: f32, radius: f32) -> AnyElement {
                 .flex()
                 .flex_col()
                 .child(line(
-                    div()
+                    pieces
+                        .words("Katna")
                         .text_size(px(name))
-                        .line_height(px(name_line))
-                        .child("Katna"),
+                        .line_height(px(name_line)),
                 ))
                 .child(line(
-                    div()
+                    pieces
+                        .words(tr!("about-tagline"))
                         .mt(px(gap_tag))
                         .text_size(px(tag))
                         .line_height(px(tag_line))
-                        .text_color(rgba(th.text_dim))
-                        .child(tr!("about-tagline")),
+                        .text_color(rgba(th.text_dim)),
                 ))
+                // The copy button sits beside the chip, shown on hover.
                 .child(line(
                     div()
+                        .group(VERSION_GROUP)
                         .mt(px(gap_chip))
-                        .px(px(chip_x))
-                        .py(px(chip_y))
-                        .rounded_full()
-                        .bg(rgba(th.chip))
-                        .text_size(px(chip))
-                        .line_height(px(chip_line))
-                        .child(format!("Katna Mail {}", whats_new::VERSION)),
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        // Room for the button on the left too, so the chip
+                        // stays centred; none once the lines are at the left.
+                        .child(div().flex_none().w(px((chip_h + space::S1) * (1.0 - t))))
+                        .child(
+                            pieces
+                                .words(format!("Katna Mail {}", whats_new::VERSION))
+                                .min_w_0()
+                                .truncate()
+                                .px(px(chip_x))
+                                .py(px(chip_y))
+                                .rounded_full()
+                                .bg(rgba(th.chip))
+                                .text_size(px(chip))
+                                .line_height(px(chip_line)),
+                        )
+                        .child(div().flex_none().ml(px(space::S1)).child(copy)),
                 )),
-        )
+            Some(ABOUT_PART),
+            cx,
+        ))
         .into_any_element()
 }
 

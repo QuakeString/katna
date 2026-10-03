@@ -22,7 +22,9 @@ use katna_ui::px;
 use katna_ui::tokens::space;
 use katna_ui::unpx;
 
+use super::about::VERSION_GROUP;
 use super::add_account::text_button;
+use super::select::{WHATS_NEW_PART, selectable};
 use super::{MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
 use crate::whats_new::{self, Highlight, Seen, Start};
@@ -43,10 +45,10 @@ pub(super) struct WhatsNew {
     /// Decoded animations by highlight name.
     animations: HashMap<&'static str, Arc<RenderImage>>,
     _decode: Option<Task<()>>,
-    focus: FocusHandle,
+    pub(super) focus: FocusHandle,
     /// The highlights' scroll, which slides under the header.
     scroll: ScrollHandle,
-    closing: bool,
+    pub(super) closing: bool,
     shown: Spring,
 }
 
@@ -148,6 +150,7 @@ impl MailWindow {
         });
         let mut shown = Spring::new(motion::SMOOTH, 0.0);
         shown.set(1.0);
+        self.dialog_text.clear();
         if let Some(old) = self.whats_new.take() {
             self.files.released.extend(old.animations.into_values());
         }
@@ -249,6 +252,9 @@ impl MailWindow {
             });
 
         let has_hero = hero.is_some();
+        // The words can be selected and copied, top to bottom.
+        let mut pieces = self.dialog_text.pieces(WHATS_NEW_PART, th);
+        let copy = self.copy_version_button("whats-new-version-copy", 22.0, th, cx);
         // The header stays put and the highlights scroll under it; a line
         // fades in below it once they have moved.
         let scrolled = (-unpx(dialog.scroll.offset().y) / 12.0).clamp(0.0, 1.0);
@@ -264,7 +270,7 @@ impl MailWindow {
             .items_start()
             .gap(px(16.0))
             .child(crate::widgets::katna_mark(48.0, th))
-            .child(
+            .child(selectable(
                 div()
                     .flex_1()
                     .min_w_0()
@@ -272,25 +278,39 @@ impl MailWindow {
                     .flex_col()
                     .gap(px(4.0))
                     .child(
-                        div()
+                        pieces
+                            .words(tr!("whats-new-title"))
                             .text_size(px(22.0))
-                            .line_height(px(30.0))
-                            .child(tr!("whats-new-title")),
+                            .line_height(px(30.0)),
                     )
+                    // The version, with its copy button on hover.
                     .child(
                         div()
-                            .text_size(px(13.0))
-                            .line_height(px(18.0))
-                            .text_color(rgba(th.text_dim))
-                            .child(if dialog.updated {
-                                tr!("whats-new-updated", version = whats_new::VERSION)
-                            } else {
-                                tr!("whats-new-version", version = whats_new::VERSION)
-                            }),
+                            .group(VERSION_GROUP)
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(space::S1))
+                            .child(
+                                pieces
+                                    .words(if dialog.updated {
+                                        tr!("whats-new-updated", version = whats_new::VERSION)
+                                    } else {
+                                        tr!("whats-new-version", version = whats_new::VERSION)
+                                    })
+                                    .min_w_0()
+                                    .text_size(px(13.0))
+                                    .line_height(px(18.0))
+                                    .text_color(rgba(th.text_dim)),
+                            )
+                            .child(copy),
                     ),
-            );
+                Some(WHATS_NEW_PART),
+                cx,
+            ));
 
-        let items = dialog.highlights.iter().enumerate().map(|(ix, highlight)| {
+        let mut items = Vec::with_capacity(dialog.highlights.len());
+        for (ix, highlight) in dialog.highlights.iter().enumerate() {
             let inline = highlight
                 .animation
                 .as_ref()
@@ -312,7 +332,7 @@ impl MailWindow {
                         (11.0, 11.0),
                     ))
             });
-            div()
+            let item = div()
                 .flex_none()
                 .px(px(24.0))
                 .when(ix > 0, |d| d.mt(px(20.0)))
@@ -330,7 +350,7 @@ impl MailWindow {
                             th.accent,
                             20.0,
                         )))
-                        .child(
+                        .child(selectable(
                             div()
                                 .flex_1()
                                 .min_w_0()
@@ -338,29 +358,36 @@ impl MailWindow {
                                 .flex_col()
                                 .gap(px(2.0))
                                 .child(
-                                    div()
+                                    pieces
+                                        .words(highlight.title())
                                         .text_size(px(15.0))
                                         .line_height(px(22.0))
-                                        .font_weight(FontWeight::MEDIUM)
-                                        .child(highlight.title()),
+                                        .font_weight(FontWeight::MEDIUM),
                                 )
                                 .child(
-                                    div()
+                                    pieces
+                                        .words(highlight.text())
                                         .text_size(px(14.0))
                                         .line_height(px(21.0))
-                                        .text_color(rgba(th.text_dim))
-                                        .child(highlight.text()),
+                                        .text_color(rgba(th.text_dim)),
                                 ),
-                        ),
-                )
-        });
+                            Some(WHATS_NEW_PART),
+                            cx,
+                        )),
+                );
+            items.push(item);
+        }
         let more = (dialog.more > 0).then(|| {
-            div()
-                .mt(px(20.0))
-                .px(px(24.0))
-                .text_size(px(14.0))
-                .text_color(rgba(th.text_dim))
-                .child(tr!("whats-new-more", count = dialog.more))
+            selectable(
+                div().mt(px(20.0)).px(px(24.0)).child(
+                    pieces
+                        .words(tr!("whats-new-more", count = dialog.more))
+                        .text_size(px(14.0))
+                        .text_color(rgba(th.text_dim)),
+                ),
+                Some(WHATS_NEW_PART),
+                cx,
+            )
         });
         let body = div()
             .id("whats-new-body")
@@ -401,6 +428,7 @@ impl MailWindow {
 
         let card = div()
             .id("whats-new")
+            .map(|d| self.dialog_text_area(d, cx))
             .track_focus(&dialog.focus)
             .map(|d| super::popovers::keep_tab_inside(d, &dialog.focus))
             .on_key_down(cx.listener(Self::whats_new_key))
@@ -461,6 +489,7 @@ impl MailWindow {
                         .mt(px(lerp(24.0, 0.0, t)))
                         .child(card),
                 )
+                .children(self.render_dialog_text_menu(th, cx))
                 .into_any_element(),
         )
     }
