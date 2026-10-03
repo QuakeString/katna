@@ -72,6 +72,10 @@ jobs:
           KATNA_ZOHO_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_SECRET }}
         run: |
           export KATNA_VERSION="${{ steps.version.outputs.version }}"
+          # The tarball, AppImage, Flatpak and Snap all carry this build;
+          # each finds out at run time which it is
+          # (katna_core::update::Package).
+          export KATNA_PACKAGE=linux
           KATNA_BUILT="$(git log -1 --format=%ct)"
           KATNA_TITLE="$(git log -1 --format=%s)"
           export KATNA_BUILT KATNA_TITLE
@@ -80,6 +84,9 @@ jobs:
           cargo build --locked --release --package katna-mail
           cargo build --locked --release --package katna-daemon --package katnactl
           test "$(target/release/katna-mail --version)" = "katna-mail $KATNA_VERSION"
+          # For the update manifest the publish job writes.
+          mkdir -p update-info
+          target/release/katna-mail --highlights > update-info/highlights.json
           ls -l target/release/katna-mail target/release/katna-daemon target/release/katnactl
       - name: Make the tarball
         run: packaging/linux/make-tarball.sh target/release out
@@ -92,6 +99,11 @@ jobs:
         with:
           name: linux-tarball
           path: out/katna-linux-x86_64.tar.gz
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-update-info
+          path: update-info/highlights.json
           if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -494,6 +506,45 @@ jobs:
           cd out
           sha256sum -- * > SHA256SUMS
           ls -l
+      # The commits the Update dialog lists.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: src
+          fetch-depth: 200
+          persist-credentials: false
+      # What Katna from these packages checks for updates
+      # (katna_core::update::Manifest, docs/ARCHITECTURE.md §21.2): the
+      # Arch manifest's fields for the tarball, and under `files` each
+      # package's own file, which Katna picks by the package it runs from.
+      - name: Write the update manifest
+        run: |
+          entry() {
+            jq -n --arg file "$1" --arg sha256 "$(sha256sum "out/$1" | cut -d' ' -f1)" \
+              --argjson size "$(stat -c %s "out/$1")" '{$file, $sha256, $size}'
+          }
+          files=$(jq -n \
+            --argjson tarball "$(entry katna-linux-x86_64.tar.gz)" \
+            --argjson appimage "$(entry Katna-x86_64.AppImage)" \
+            --argjson rpm "$(entry katna-x86_64.rpm)" \
+            --argjson snap "$(entry katna_amd64.snap)" \
+            --argjson flatpak "$(entry katna-x86_64.flatpak)" \
+            '{$tarball, $appimage, $rpm, $snap, $flatpak}')
+          git -C src log -200 --format='%h%x09%s' HEAD |
+            jq -R 'split("\t") | {commit: .[0], title: (.[1:] | join("\t"))}' |
+            jq -s . > changes.json
+          highlights=$(jq -c '.[:50]' artifacts/linux-update-info/highlights.json)
+          jq -n \
+            --arg version "${{ needs.portable.outputs.version }}" \
+            --argjson built "$(git -C src log -1 --format=%ct HEAD)" \
+            --arg commit "$(git -C src rev-parse HEAD)" \
+            --argjson highlights "$highlights" \
+            --slurpfile changes changes.json \
+            --argjson files "$files" \
+            '$files.tarball + {$version, $built, $commit, $highlights,
+              changes: $changes[0], $files}' > out/katna-update.json
+          jq '{version, file, files: (.files | map_values(.size)),
+               highlights: (.highlights | length), changes: (.changes | length)}' \
+            out/katna-update.json
       - name: Update the linux-latest pre-release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -503,9 +554,10 @@ jobs:
           cat > notes.md <<EOF
           Katna Mail built from \`main\` at $GITHUB_SHA for Linux (x86_64),
           version ${{ needs.portable.outputs.version }}. Replaced on every push
-          to \`main\`. Nothing here is signed, and none of it updates itself:
-          download the new file to update. The screenshots show each package
-          running on its own platform in CI.
+          to \`main\`. Nothing here is signed. Katna checks for new builds:
+          it updates the AppImage and the tarball itself, and shows the
+          command that updates the others. The screenshots show each
+          package running on its own platform in CI.
 
           - **Fedora:** \`sudo dnf install $base/katna-x86_64.rpm\`
           - **Nix:** \`nix profile install github:$GH_REPO\`, or
@@ -542,7 +594,10 @@ jobs:
             id=$(gh api -X POST "$api/releases" "${fields[@]}" --jq .id)
           fi
           cd out
-          gh release upload "$tag" --clobber -- *
+          # The packages first and the manifest last, so the manifest never
+          # names a file that is not there yet.
+          gh release upload "$tag" --clobber -- $(ls | grep -vxF katna-update.json)
+          gh release upload "$tag" --clobber katna-update.json
           # Earlier builds' files.
           gh api "$api/releases/$id/assets" --paginate --jq '.[] | "\(.id) \(.name)"' |
             while read -r asset name; do
