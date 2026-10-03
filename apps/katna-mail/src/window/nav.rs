@@ -197,6 +197,9 @@ const PILL_END_CIRCLE: f32 = 38.0;
 /// How far a sliding drawer's color reaches back over the rail's edge,
 /// past the spring's overshoot and the list's shadow there.
 const DRAWER_APRON: f32 = 12.0;
+/// How far a sliding drawer's color reaches up over the top bar, under the
+/// list's shadow there, clear of the search bar.
+const DRAWER_TOP_APRON: f32 = 8.0;
 
 /// The width of the Upload button's arrow, beside its words.
 const UPLOAD_ARROW: f32 = 44.0;
@@ -923,6 +926,19 @@ impl MailWindow {
             .h_full()
             .w(px(NAV_WIDTH * reserve))
             .children(self.render_scrim(scrim_width, cx))
+            // Covers the list's shadow above the drawer; apart from the
+            // drawer, so the drawer's own shadow stays below the top bar.
+            .when(slides && float > 0.0, |d| {
+                d.child(
+                    div()
+                        .absolute()
+                        .top(px(-DRAWER_TOP_APRON))
+                        .left(px(-apron))
+                        .w(px(apron + width * t))
+                        .h(px(DRAWER_TOP_APRON))
+                        .bg(rgba(th.page)),
+                )
+            })
             // Clips the drawer as it slides out from the rail's edge.
             .child(
                 div()
