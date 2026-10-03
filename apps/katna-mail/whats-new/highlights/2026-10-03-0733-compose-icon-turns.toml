@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The big button's icon turns as you switch pages"
+text = """
+Switching between Mail, Calendar, Contacts, Tasks and Notes no longer swaps
+the icon on the big button at the top of the left bar in one jump. The old
+icon turns away and shrinks as the new one turns in, on a phone's button
+too.
+"""

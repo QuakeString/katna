@@ -627,7 +627,7 @@ impl MailWindow {
             .as_ref()
             .map_or(0.0, |s| s.shown.value().clamp(0.0, 1.0));
         let label = self.layout.fab_label.value().clamp(0.0, 1.0);
-        let (icon_name, word) = self.primary_button();
+        let word = self.primary_button().1;
         // Upload asks first whether files or a folder go up.
         let upload = self.drive_upload_here();
         Some(
@@ -655,7 +655,7 @@ impl MailWindow {
                                 this.primary_action(window, cx);
                             }
                         }))
-                        .child(icon(icon_name, th.compose_text, 24.0))
+                        .child(self.primary_icon(th))
                         .child(
                             div()
                                 .pl(px(12.0 * label))
