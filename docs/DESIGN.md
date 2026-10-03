@@ -68,7 +68,9 @@ through `motion::time`, so Settings > Appearance > Animation speed
 never in Settings) sets GPUI's `reduce_motion`: `with_animation`,
 `with_spring` and `Spring::tick` then jump to the end.
 A menu fades out in `FAST` when it closes, out of reach while it fades
-(the right-click menu keeps itself, marked closing, until the fade ends).
+(the right-click menu keeps itself, marked closing, until the fade ends;
+a toolbar menu is noted as it closes, by `track_menu_fade`, and
+`with_menu` draws it fading).
 Something that opens and closes in place (a card that folds to a line, a
 section that unfolds) glides with `widgets::fold_box` and turns its
 `widgets::fold_arrow`, sharing one `widgets::Fold`: the height glides on

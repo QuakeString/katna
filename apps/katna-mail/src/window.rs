@@ -627,6 +627,10 @@ pub struct MailWindow {
     search_panel: Option<SearchPanel>,
     search_panel_spring: Spring,
     menu: Option<Menu>,
+    /// The popup menu open at the last frame, and the one fading out
+    /// since it closed (`list::track_menu_fade`).
+    menu_was: Option<Menu>,
+    menu_fade: Option<(Menu, Instant)>,
     /// The right-click menu of the list.
     context_menu: Option<context_menu::ContextMenu>,
     /// Conversations summed up by AI, and the card beside a line.
@@ -994,6 +998,8 @@ impl MailWindow {
             search_panel: None,
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
             menu: None,
+            menu_was: None,
+            menu_fade: None,
             context_menu: None,
             summaries: reader::Summaries::default(),
             nav_menu: None,
@@ -3456,6 +3462,7 @@ impl Render for MailWindow {
         // Text without a size of its own follows Settings > Appearance > Scaling.
         window.set_rem_size(px(16.0));
         self.chrome.sync_look(window, cx);
+        self.track_menu_fade(cx);
         if self.detached {
             let detached = self.render_detached(window, cx);
             self.fetch_pictures(cx);
