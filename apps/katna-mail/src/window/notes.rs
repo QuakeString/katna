@@ -1364,7 +1364,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .on_drop(cx.listener(|this, _: &NoteDragged, _, cx| this.drop_note(cx)));
-        match self.render_select_bar(th, cx) {
+        match self.render_note_select_bar(th, cx) {
             // Ticked cards: their bar in the "Take a note" bar's place.
             Some(bar) => {
                 body = body.child(

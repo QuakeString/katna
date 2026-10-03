@@ -315,7 +315,7 @@ impl MailWindow {
     /// The bar in place of "Take a note" while cards are ticked: how many,
     /// then Pin, Remind, Colour, Label, Archive and More; in Trash,
     /// Restore and Delete forever.
-    pub(super) fn render_select_bar(
+    pub(super) fn render_note_select_bar(
         &self,
         th: &Theme,
         cx: &mut Context<Self>,
