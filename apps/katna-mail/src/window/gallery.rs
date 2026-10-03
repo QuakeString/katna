@@ -14,15 +14,18 @@ use katna_ui::{TextInput, px};
 use super::MailWindow;
 use crate::theme::{Accent, Theme};
 use crate::widgets::{
-    CARD_REST, Check, avatar, card, checkbox, choice_chip, count_pill, filled_button, icon_button,
-    line_field, menu, menu_item, outlined_button, pill_button, radio, raised, row, switch, tag,
-    text_button, ticked_row, tonal_icon_button,
+    CARD_REST, Check, Fold, avatar, card, checkbox, choice_chip, count_pill, filled_button,
+    fold_arrow, fold_box, icon_button, line_field, menu, menu_item, outlined_button, pill_button,
+    radio, raised, row, switch, tag, text_button, ticked_row, tonal_icon_button,
 };
 
 pub(super) struct Gallery {
     scroll: ScrollHandle,
     light: Entity<TextInput>,
     dark: Entity<TextInput>,
+    /// The sample fold is open.
+    open: bool,
+    fold: Fold,
 }
 
 impl MailWindow {
@@ -36,6 +39,8 @@ impl MailWindow {
             scroll: ScrollHandle::new(),
             light: input(cx),
             dark: input(cx),
+            open: true,
+            fold: Fold::default(),
         });
         window.refresh();
         cx.notify();
@@ -101,8 +106,8 @@ impl MailWindow {
                                 .flex_none()
                                 .flex()
                                 .flex_row()
-                                .child(column("light", &light, &gallery.light, cx))
-                                .child(column("dark", &dark, &gallery.dark, cx)),
+                                .child(column("light", &light, &gallery.light, gallery, cx))
+                                .child(column("dark", &dark, &gallery.dark, gallery, cx)),
                         ),
                 )
                 .into_any_element(),
@@ -115,8 +120,49 @@ fn column(
     side: &'static str,
     th: &Theme,
     input: &Entity<TextInput>,
+    gallery: &Gallery,
     cx: &mut Context<MailWindow>,
 ) -> Div {
+    let open = gallery.open;
+    let fold_head = div()
+        .id(id_of(side, "fold-head"))
+        .h(px(44.0))
+        .px(px(space::S4))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S3))
+        .cursor_pointer()
+        .child(div().flex_1().child(tr!("gallery-fold")))
+        .child(fold_arrow(
+            &format!("gallery-{side}-arrow"),
+            &gallery.fold,
+            open,
+            th.text_dim,
+            20.0,
+        ))
+        .on_click(cx.listener(|this, _, _, cx| {
+            if let Some(gallery) = this.gallery.as_mut() {
+                gallery.open = !gallery.open;
+                gallery.fold.turn();
+                cx.notify();
+            }
+        }));
+    // An edge rather than a shadow: the fold clips what lies outside it.
+    let fold_card = card(div(), th, th.pane(), radius::LG, 0.0)
+        .w(px(320.0))
+        .border_1()
+        .border_color(rgba(th.divider))
+        .child(fold_head)
+        .when(open, |d| {
+            d.child(
+                div()
+                    .px(px(space::S4))
+                    .pb(px(space::S4))
+                    .text_color(rgba(th.text_dim))
+                    .child(tr!("gallery-fold-body")),
+            )
+        });
     let id = |name: &str| gpui::SharedString::from(format!("gallery-{side}-{name}"));
     let line = || {
         div()
@@ -267,6 +313,11 @@ fn column(
             ),
         ))
         .child(section(
+            tr!("gallery-motion"),
+            th,
+            fold_box(&format!("gallery-{side}-fold"), &gallery.fold, fold_card),
+        ))
+        .child(section(
             tr!("gallery-elevation"),
             th,
             line().children(
@@ -311,6 +362,10 @@ fn column(
                 }),
             ),
         ))
+}
+
+fn id_of(side: &str, name: &str) -> gpui::SharedString {
+    gpui::SharedString::from(format!("gallery-{side}-{name}"))
 }
 
 /// A heading over its controls.

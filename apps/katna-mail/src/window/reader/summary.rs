@@ -34,7 +34,10 @@ use super::first_name;
 use crate::daemon::{self, Rephrased};
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::{filled_button, icon, icon_button_colored, outlined_button, raised, tip};
+use crate::widgets::{
+    Fold, filled_button, fold_arrow, fold_box, icon, icon_button_colored, icon_button_with,
+    outlined_button, raised, tip,
+};
 
 mod peek_reply;
 
@@ -99,6 +102,8 @@ struct Sum {
     folded: bool,
     /// Dropped down from the chat's strip.
     dropped: bool,
+    /// The glide between the card and its folded line.
+    fold: Fold,
     _task: Option<Task<()>>,
 }
 
@@ -213,6 +218,7 @@ impl MailWindow {
                 shown: true,
                 folded: false,
                 dropped: false,
+                fold: Fold::default(),
                 _task: None,
             },
         );
@@ -347,6 +353,7 @@ impl MailWindow {
             shown: true,
             folded: false,
             dropped: false,
+            fold: Fold::default(),
             _task: None,
         });
         sum.shown = true;
@@ -731,7 +738,7 @@ impl MailWindow {
                 .pl(px(self.reader_indent()))
                 .pr(px(16.0))
                 .pb(px(12.0))
-                .child(inner)
+                .child(fold_box("summary-fold", &sum.fold, inner))
                 .into_any_element(),
         )
     }
@@ -858,6 +865,7 @@ impl MailWindow {
                 if let Some(sum) = this.summaries.by_key.get_mut(&key) {
                     if card {
                         sum.folded = false;
+                        sum.fold.turn();
                     } else if !this
                         .summaries
                         .drop_folded
@@ -894,11 +902,15 @@ impl MailWindow {
                         }),
                 ),
             )
-            .child(icon(
-                if open { "chevron-up" } else { "chevron-down" },
-                th.text_dim,
-                16.0,
-            ));
+            .child(if card {
+                fold_arrow("summary-arrow", &sum.fold, false, th.text_dim, 16.0)
+            } else {
+                icon(
+                    if open { "chevron-up" } else { "chevron-down" },
+                    th.text_dim,
+                    16.0,
+                )
+            });
         div()
             .flex_none()
             .bg(rgba(summary_surface(th)))
@@ -1050,14 +1062,20 @@ impl MailWindow {
             Place::Card => {
                 title = title
                     .child(
-                        small_button("fold", "chevron-up", tr!("summary-fold")).on_click(
-                            cx.listener(move |this, _, _, cx| {
-                                if let Some(sum) = this.summaries.by_key.get_mut(&key) {
-                                    sum.folded = true;
-                                    cx.notify();
-                                }
-                            }),
-                        ),
+                        icon_button_with(
+                            id("fold"),
+                            fold_arrow("summary-arrow", &sum.fold, true, th.text_dim, 17.0),
+                            th,
+                        )
+                        .size(px(30.0))
+                        .tooltip(tip(tr!("summary-fold"), th))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            if let Some(sum) = this.summaries.by_key.get_mut(&key) {
+                                sum.folded = true;
+                                sum.fold.turn();
+                                cx.notify();
+                            }
+                        })),
                     )
                     .child(
                         small_button("close", "close", tr!("summary-hide")).on_click(cx.listener(
