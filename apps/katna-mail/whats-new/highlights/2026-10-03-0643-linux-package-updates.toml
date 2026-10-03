@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Updates for every Linux package"
+text = """
+The AppImage and the Linux tarball now update themselves like the Arch
+package. With the Fedora package, Snap, Flatpak or Nix, Katna tells you
+when a new version is out and shows the one command that installs it,
+ready to copy.
+"""

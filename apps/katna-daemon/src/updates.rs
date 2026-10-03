@@ -188,7 +188,8 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
                 schedule.checked(SystemTime::now());
                 check(&daemon, package, why == Wake::Check).await;
             }
-            Wake::Download => download(&daemon, package).await,
+            Wake::Download if package.downloads() => download(&daemon, package).await,
+            Wake::Download => {}
             Wake::Settings => {
                 if daemon.updates().state() == state::AVAILABLE && may_download(&daemon) {
                     download(&daemon, package).await;
@@ -240,7 +241,9 @@ impl Schedule {
 
 /// Whether to download without being asked.
 fn may_download(daemon: &Daemon) -> bool {
-    settings(daemon.paths()).updates.auto_download && !daemon.metered()
+    Package::current().downloads()
+        && settings(daemon.paths()).updates.auto_download
+        && !daemon.metered()
 }
 
 /// Where downloads wait to be installed.
@@ -346,7 +349,10 @@ async fn fetch_manifest(package: Package) -> Result<Manifest, String> {
         .await
         .map_err(|err| err.to_string())?
         .ok_or_else(|| format!("{url}: not found"))?;
-    Manifest::parse(&body).ok_or_else(|| format!("{url}: not a Katna update manifest"))
+    Manifest::parse(&body)
+        .ok_or_else(|| format!("{url}: not a Katna update manifest"))?
+        .for_package(package)
+        .ok_or_else(|| format!("{url}: the build has no file for {package:?}"))
 }
 
 /// Downloads the build a check found, checking its size and SHA-256.
