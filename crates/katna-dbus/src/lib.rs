@@ -1133,6 +1133,14 @@ macro_rules! pim_proxy {
             /// [`Self::sender_picture`].
             fn company_of(&self, address: &str, website: &str) -> zbus::Result<String>;
 
+            /// The signatures Gmail adds to the mail of `account`, by the
+            /// address it sends as, the default first: (address, name,
+            /// signature as HTML), only addresses that have one. Fails
+            /// with `AuthFailed` when the account's sign-in does not allow
+            /// it (sign in again), and for an account that is not a Gmail
+            /// account signed in with Google.
+            fn gmail_signatures(&self, account: i64) -> zbus::Result<Vec<(String, String, String)>>;
+
             /// Translates `text`, the plain text of `message` (HTML made
             /// plain, quotes and signature kept, never attachments), from
             /// `source` into `target`, LibreTranslate codes such as `es`,
