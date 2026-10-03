@@ -11,8 +11,8 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use gpui::{
-    AnimationExt, AnyElement, Bounds, Context, MouseButton, Pixels, Point, Window, anchored,
-    canvas, deferred, div, point, prelude::*, rgba, size,
+    AnimationExt, AnyElement, Bounds, Context, Pixels, Point, Window, anchored, canvas, deferred,
+    div, point, prelude::*, size,
 };
 use katna_ui::{px, unpx};
 
@@ -21,9 +21,8 @@ use super::super::notched::{self, notch};
 use super::CONTACT_WIDTH;
 use crate::data::EntryKey;
 use crate::theme::Theme;
-use crate::widgets::raised;
 
-const RADIUS: f32 = 16.0;
+const RADIUS: f32 = notched::RADIUS;
 /// The popover's height until it is measured.
 const FIRST_HEIGHT: f32 = 240.0;
 /// The square around the click the notch points at.
@@ -116,11 +115,7 @@ impl MailWindow {
             .top(px(y))
             .w(px(CONTACT_WIDTH))
             .h(px(height))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .map(|d| raised(d, th, RADIUS, 4.0))
-            .occlude()
-            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .map(|d| notched::popover(d, th))
             .on_mouse_down_out(cx.listener(|this, _, _, cx| this.close_contact_peek(cx)))
             .child(
                 div()
@@ -129,7 +124,7 @@ impl MailWindow {
                     .overflow_y_scroll()
                     .child(div().relative().child(body).child(measure)),
             )
-            .children(notch(side, along, (CONTACT_WIDTH, height), th))
+            .children(notch(side, along, th))
             .with_animation(
                 "contact-peek",
                 gpui::Animation::new(Duration::from_millis(160))

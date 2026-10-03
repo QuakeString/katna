@@ -12,9 +12,9 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Bounds, ClickEvent, Context, FontWeight, MouseButton,
-    Pixels, SharedString, Size, Task, Window, anchored, deferred, div, ease_out_quint, point,
-    prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, Bounds, ClickEvent, Context, FontWeight, Pixels,
+    SharedString, Size, Task, Window, anchored, deferred, div, ease_out_quint, point, prelude::*,
+    rgba,
 };
 use jiff::civil::{Date, Time};
 use katna_dav::Occurrence;
@@ -28,7 +28,7 @@ use super::super::event_edit::kind_icon;
 use super::super::notched::{self, notch};
 use super::{CalView, civil, midnight};
 use crate::theme::Theme;
-use crate::widgets::{icon, raised};
+use crate::widgets::icon;
 
 /// How long the pointer rests on a day before its popover opens, so
 /// passing over the months opens nothing.
@@ -38,7 +38,7 @@ const OPEN_DELAY: Duration = Duration::from_millis(280);
 const LINGER: Duration = Duration::from_millis(220);
 
 const WIDTH: f32 = 288.0;
-const RADIUS: f32 = 12.0;
+const RADIUS: f32 = notched::RADIUS;
 const PAD: f32 = 6.0;
 const HEAD: f32 = 34.0;
 const ROW: f32 = 32.0;
@@ -295,19 +295,15 @@ impl MailWindow {
             .py(px(PAD))
             .flex()
             .flex_col()
-            .border_1()
-            .border_color(rgba(th.outline))
-            .map(|d| raised(d, th, RADIUS, 4.0))
-            .occlude()
+            .map(|d| notched::popover(d, th))
             .on_hover(
                 cx.listener(|this, hovered: &bool, _, cx| this.year_popover_hover(*hovered, cx)),
             )
-            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_mouse_down_out(cx.listener(|this, _, _, cx| this.close_year_peek(cx)))
             .child(head)
             .children(rows)
             .children(more_row)
-            .children(notch(side, along, (WIDTH, height), th))
+            .children(notch(side, along, th))
             .with_animation(
                 SharedString::from(format!("year-peek-{day}")),
                 Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),

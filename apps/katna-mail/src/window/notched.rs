@@ -1,15 +1,26 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Popovers with a notch pointing at what they belong to (the search's
-//! custom dates, a Year view day): where the popover goes beside it, kept
-//! inside the window, and the notch on the side facing it.
+//! custom dates, a Year view day, the contact peek, the colour picker, who
+//! read a mail): the panel itself ([`popover`]), where it goes beside what
+//! it points at, kept inside the window ([`place`]), and the notch on the
+//! side facing it ([`notch`]). One radius, edge and depth for all of them
+//! (`docs/DESIGN.md`).
 
 use std::f32::consts::{FRAC_PI_2, PI};
 
-use gpui::{AnyElement, Bounds, Pixels, Transformation, prelude::*, radians, rgba, svg};
+use gpui::{
+    AnyElement, Bounds, InteractiveElement, MouseButton, Pixels, Transformation, prelude::*,
+    radians, rgba, svg,
+};
+use katna_ui::tokens::{elevation, radius};
 use katna_ui::{px, unpx};
 
 use crate::theme::Theme;
+use crate::widgets::raised;
+
+/// Every popover's corner radius.
+pub(super) const RADIUS: f32 = radius::LG;
 
 /// The notch's length out of the popover, and the popover's distance from
 /// the chip and from the window's edges.
@@ -68,33 +79,48 @@ pub(super) fn place(
     (x_centered, y, Side::Below, along_x(x_centered))
 }
 
-/// The notch on the popover's edge facing the chip: a border-colored
-/// triangle with a popover-colored one just inside it, covering the
-/// border where they meet.
-pub(super) fn notch(side: Side, along: f32, (w, h): (f32, f32), th: &Theme) -> [AnyElement; 2] {
-    // The middle of the notch's base on the popover's edge, the way out
-    // and the turn of an upward triangle to face that way.
-    let (base, out, turn) = match side {
-        Side::Below => ((along, 0.0), (0.0, -1.0), 0.0),
-        Side::Above => ((along, h), (0.0, 1.0), PI),
-        Side::Right => ((0.0, along), (-1.0, 0.0), -FRAC_PI_2),
-        Side::Left => ((w, along), (1.0, 0.0), FRAC_PI_2),
+/// The surface of a popover: the menu colour (frosted when the frost is
+/// on), corners of [`RADIUS`], the edge of a box and a dialog's depth. A
+/// click inside it stays inside. Call it before adding the popover's
+/// children, which must draw over the glass, and add [`notch`] last.
+pub(super) fn popover<E: Styled + ParentElement + InteractiveElement>(panel: E, th: &Theme) -> E {
+    raised(
+        panel.border_1().border_color(rgba(th.outline)),
+        th,
+        RADIUS,
+        elevation::DIALOG,
+    )
+    .occlude()
+    .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+}
+
+/// The notch on the popover's edge facing the chip, `along` that edge (from
+/// its left for Below/Above, from its top otherwise): a triangle in the
+/// popover's edge colour with a popover-coloured one just inside it,
+/// covering the edge where they meet.
+pub(super) fn notch(side: Side, along: f32, th: &Theme) -> [AnyElement; 2] {
+    // The turn of an upward triangle to face away from the popover.
+    let turn = match side {
+        Side::Below => 0.0,
+        Side::Above => PI,
+        Side::Right => -FRAC_PI_2,
+        Side::Left => FRAC_PI_2,
     };
     let triangle = |scale: f32, inset: f32, color: u32| {
-        // Its middle, half its length out from where its base sits.
+        // Its box, unturned, centred half its length out from the edge.
         let (bw, bh) = (20.0 * scale, NOTCH * scale);
         let reach = bh / 2.0 - inset;
-        let (mx, my) = (base.0 + out.0 * reach, base.1 + out.1 * reach);
-        svg()
-            .path("icons/notch.svg")
-            .absolute()
-            .left(px(mx - bw / 2.0))
-            .top(px(my - bh / 2.0))
-            .w(px(bw))
-            .h(px(bh))
-            .text_color(rgba(color))
+        let out = |half: f32| px(-reach - half);
+        let el = svg().path("icons/notch.svg").absolute().w(px(bw)).h(px(bh));
+        let el = match side {
+            Side::Below => el.top(out(bh / 2.0)).left(px(along - bw / 2.0)),
+            Side::Above => el.bottom(out(bh / 2.0)).left(px(along - bw / 2.0)),
+            Side::Right => el.left(out(bw / 2.0)).top(px(along - bh / 2.0)),
+            Side::Left => el.right(out(bw / 2.0)).top(px(along - bh / 2.0)),
+        };
+        el.text_color(rgba(color))
             .with_transformation(Transformation::rotate(radians(turn)))
             .into_any_element()
     };
-    [triangle(1.0, 0.0, th.divider), triangle(0.9, 1.0, th.menu)]
+    [triangle(1.0, 0.0, th.outline), triangle(0.9, 1.0, th.menu)]
 }

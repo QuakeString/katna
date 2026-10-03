@@ -6,23 +6,23 @@
 //! (`docs/ARCHITECTURE.md` §16.1).
 
 use std::cell::Cell;
-use std::f32::consts::PI;
 use std::rc::Rc;
 use std::time::Duration;
 
 use gpui::{
-    AnyElement, Bounds, Context, MouseButton, Pixels, Size, Task, Transformation, anchored, canvas,
-    deferred, div, point, prelude::*, radians, rgba, svg,
+    AnyElement, Bounds, Context, Pixels, Size, Task, anchored, canvas, deferred, div, point,
+    prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_store::RecipientActivity;
 use katna_ui::px;
 use katna_ui::unpx;
 
+use super::super::notched::{self, Side};
 use super::Part;
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button_colored, raised};
+use crate::widgets::{icon, icon_button_colored};
 use crate::window::MailWindow;
 
 /// Where an eye button was last drawn, and the window's size then.
@@ -43,7 +43,7 @@ const WIDTH: f32 = 340.0;
 const PAD: f32 = 12.0;
 const GAP: f32 = 8.0;
 const LINE: f32 = 18.0;
-const RADIUS: f32 = 12.0;
+const RADIUS: f32 = notched::RADIUS;
 /// The notch's length out of the popover, and the popover's distance from
 /// the eye and from the window's edges.
 const NOTCH: f32 = 10.0;
@@ -308,16 +308,12 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(GAP))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .map(|d| raised(d, th, RADIUS, 4.0))
+            .map(|d| notched::popover(d, th))
             .text_size(px(13.0))
             .line_height(px(LINE))
-            .occlude()
             .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
                 this.hover_seen(ix, None, Some(*hovered), cx)
             }))
-            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_mouse_down_out(cx.listener(|this, _, _, cx| {
                 this.close_seen(cx);
             }))
@@ -326,7 +322,11 @@ impl MailWindow {
                     .into_iter()
                     .map(|(name, color, text)| line(name, color, text, th)),
             )
-            .children(notch(below, along, th));
+            .children(notched::notch(
+                if below { Side::Below } else { Side::Above },
+                along,
+                th,
+            ));
         let layer = div().relative().w(px(vw)).h(px(vh)).child(popover);
         Some(
             deferred(anchored().position(point(px(0.0), px(0.0))).child(layer))
@@ -420,34 +420,4 @@ fn line(name: &'static str, color: u32, text: String, th: &Theme) -> impl IntoEl
                 }))
                 .child(text),
         )
-}
-
-/// The notch on the popover's edge facing the eye, `along` from its left:
-/// a border-colored triangle with a popover-colored one just inside it,
-/// covering the border where they meet.
-fn notch(below: bool, along: f32, th: &Theme) -> [AnyElement; 2] {
-    let triangle = |scale: f32, inset: f32, color: u32| {
-        let (w, h) = (20.0 * scale, NOTCH * scale);
-        // From the edge to the triangle's far side.
-        let out = -(h - inset);
-        svg()
-            .path("icons/notch.svg")
-            .absolute()
-            .left(px(along - w / 2.0))
-            .map(|d| {
-                if below {
-                    d.top(px(out))
-                } else {
-                    d.bottom(px(out))
-                }
-            })
-            .w(px(w))
-            .h(px(h))
-            .text_color(rgba(color))
-            .when(!below, |d| {
-                d.with_transformation(Transformation::rotate(radians(PI)))
-            })
-            .into_any_element()
-    };
-    [triangle(1.0, 0.0, th.divider), triangle(0.9, 1.0, th.menu)]
 }
