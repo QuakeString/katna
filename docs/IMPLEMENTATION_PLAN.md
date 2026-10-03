@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 2 October 2026, through PR #632). Companion to
+> Status: **v0.2** (updated 3 October 2026, through PR #653). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -10,7 +10,7 @@
 ✅ marks a task merged to `main`, with its pull requests. ◐ marks a task
 that is partly done; the table says what is left. Rows without a mark have
 not started. The plan is refreshed after each batch of merges. The
-"Daily use" track (D.1–D.58) and the "Added along the way" track (A.1–A.18)
+"Daily use" track (D.1–D.58) and the "Added along the way" track (A.1–A.19)
 in §5 list work the owner asked for while using Katna that the phases did
 not name.
 
@@ -25,8 +25,12 @@ not name.
   of the UI translated; reading and sending encrypted mail; Phase 6
   except the upstream proposals: Calendar, Tasks, Notes and Contacts pages that sync with each
   account's own service; the Windows build and installer.
-- **Merged since the last refresh (#523–#632):** Katna on Windows updates
-  itself (U.10, #632); mail rules from Phase 5
+- **Merged since the last refresh (#523–#653):** a shared design system
+  with tokens, `docs/DESIGN.md` and one widget per element (A.19); every
+  Linux package offers updates, AppImage and tarball install their own
+  (U.10, #634); Katna on Windows updates
+  itself (U.10, #632); sound sets with Birds by default (A.5); who saw a
+  chat message (A.1); wildcards in Files search (A.3); mail rules from Phase 5
   that run in Katna, as Gmail filters or as Sieve on the mail server, with
   Settings > Folders & rules, a rule editor, Make a rule and starter rules
   that start switched off (#608, #609, #619, #622, #625, #628);
@@ -363,31 +367,32 @@ Not yet checked on a real desktop: Open with (#55), Gmail Important sync
 print hand-off to KDE's print dialog (#122) and reopening the window in
 place on Plasma 6.7 Wayland (#105).
 
-### Added along the way — work outside the plan (29 September – 3 October 2026, through #632)
+### Added along the way — work outside the plan (29 September – 3 October 2026, through #653)
 
 From #342 the owner asked for much that no phase named. Each row is
 merged; the pull requests say what changed.
 
 | Task | Deliverable |
 |---|---|
-| A.1 Chat reading view ✅ #488, #497, #502, #505, #509, #512, #514, #517, #519, #520, #526, #580, #583, #593, #616, #626, #629 | Settings > Experimental > Reading: conversations between people as chat bubbles with a reply box, pins for up to five things, a person's card with Company and signature details, a line when the subject changes, attach from Files |
+| A.1 Chat reading view ✅ #488, #497, #502, #505, #509, #512, #514, #517, #519, #520, #526, #580, #583, #593, #616, #626, #629, #637, #638, #642 | Settings > Experimental > Reading: conversations between people as chat bubbles with a reply box, pins for up to five things, a person's card with Company and signature details, a line when the subject changes, attach from Files |
 | A.2 Writing help with AI ✅ #494, #499, #501, #504, #510, #511, #528, #535, #538, #544, #546, #547, #552, #571 | Rephrase a selection or the whole message (Ctrl+J) and grey autocomplete with Tab, a summary of a conversation with reply ideas, Write reply, and the subject rephrased, through Katna AI on Katna Server (30 days free) or the user's own key (Gemini, OpenAI, Claude, Mistral, DeepSeek, OpenRouter, local); the server's admin page with keys, models and spending caps (`ARCHITECTURE.md` §16.5). Payments after the free month are still to come |
-| A.3 Files page ✅ #431, #449, #464, #467, #468, #480, #483, #484, #498 | Every attachment of every account in one place (Ctrl+7), by kind, account, sender and time, with arrow keys and a two-month calendar; signature pictures left out |
+| A.3 Files page ✅ #431, #449, #464, #467, #468, #480, #483, #484, #498, #633 | Every attachment of every account in one place (Ctrl+7), by kind, account, sender and time, with arrow keys and a two-month calendar; signature pictures left out |
 | A.4 Viewer ✅ #371, #380, #385, #408, #414, #416, #436, #451, #455, #490, #577, #591, #597, #601, #614 | PDF markup (highlight, pen, sticky notes, text boxes) saved as a marked copy and replied with; page box, zoom, pinch, rotate, fit and real size; a frosted top bar; Forward from the viewer; dark pages in dark mode; controls that fold into More when narrow |
-| A.5 Notifications ✅ #413, #466, #471, #473, #475, #482, #486, #487, #543 | One rule for what notifies and counts (Primary tab by default), bells per folder and tab, mutes for accounts, folders, conversations and senders, a sound for each event played by Katna, Settings > Notifications; peek and reply inside the notification |
+| A.5 Notifications ✅ #413, #466, #471, #473, #475, #482, #486, #487, #543, #636, #639 | One rule for what notifies and counts (Primary tab by default), bells per folder and tab, mutes for accounts, folders, conversations and senders, a sound for each event played by Katna, Settings > Notifications; peek and reply inside the notification; sound sets with Birds by default and one's own file; Copy code and verify links in notifications |
 | A.6 Look ✅ #445, #448, #469, #472, #474, #476, #477, #492, #493, #500, #506, #508, #513, #516, #521, #522, #527, #530, #533, #548, #562, #572, #582, #596, #599, #610, #613, #623, #630 | Mode, color scheme and accent chosen apart; the desktop's schemes, 13 built in and the user's own (made, imported, exported); frosted menus, dialogs, panes and search box with their own switches and blur amount; window roundness and border; faint lines in light and dark; Gmail's grow-in hover on buttons; the logo in the accent; a colour or one-colour tray icon |
 | A.7 Accounts ✅ #361, #392, #415, #442, #447 | Add account with provider tiles and POP3; an account menu with sync state, storage and sign in again; a new account's inbox first; a first start that shows the window and offers a Katna account; switching account keeps the page |
 | A.8 Zoho ✅ #393, #397, #399 | Sign in with Zoho for Zoho's calendars and tasks |
 | A.9 Calendar, Tasks, Notes and Contacts polish ✅ #342, #345, #346, #347, #348, #350, #351, #352, #358, #360, #363, #364, #367, #372, #374, #381, #382, #383, #384, #388, #410, #412, #417, #418, #463, #465, #478, #518 | Phone layouts and folding side panels; every account listed with why its calendars, tasks or contacts are missing; right-click menus; dragging tasks and notes into order; the top search box on each page; typed quick add for tasks; open tasks and meetings in the contact panel |
-| A.10 Mail window polish ✅ #357, #359, #368, #375, #376, #378, #391, #395, #401, #402, #411, #421, #424, #428, #429, #430, #434, #435, #437, #439, #440, #441, #444, #450, #452, #454, #456, #457, #458, #459, #461, #470, #479, #481, #485, #491, #495, #496, #503, #507, #515, #532, #551, #554, #574, #575, #578, #581, #590, #594, #598, #600, #602, #603, #604, #607, #611, #615, #617, #618, #620, #621, #627 | Inbox tabs as a pill bar; coloured folder icons with faint count pills; one checkbox at every scale; a right-click menu that fits the window; tables that keep their columns; Back to top; selectable header details; touchpad glide on Wayland; one left-bar button and fold on every page; a soft search box; reply arrows in the list; Ctrl+click and Shift+click selection; Space and arrows on folders; the window moved from any empty space; the Feeds page removed; rename, delete and drag to folders, Move to with search, Label as |
+| A.10 Mail window polish ✅ #357, #359, #368, #375, #376, #378, #391, #395, #401, #402, #411, #421, #424, #428, #429, #430, #434, #435, #437, #439, #440, #441, #444, #450, #452, #454, #456, #457, #458, #459, #461, #470, #479, #481, #485, #491, #495, #496, #503, #507, #515, #532, #551, #554, #574, #575, #578, #581, #590, #594, #598, #600, #602, #603, #604, #607, #611, #615, #617, #618, #620, #621, #627, #640, #641, #643, #644, #645 | Inbox tabs as a pill bar; coloured folder icons with faint count pills; one checkbox at every scale; a right-click menu that fits the window; tables that keep their columns; Back to top; selectable header details; touchpad glide on Wayland; one left-bar button and fold on every page; a soft search box; reply arrows in the list; Ctrl+click and Shift+click selection; Space and arrows on folders; the window moved from any empty space; the Feeds page removed; rename, delete and drag to folders, Move to with search, Label as |
 | A.11 Sending files ✅ #432, #489, #490 | Send with Katna Mail from Dolphin, GNOME Files and Explorer; Forward keeps the original's attachments |
-| A.12 More Linux packages ✅ #462 | Fedora, Nix, AppImage, Snap, Flatpak and tarball builds tested and published on `linux-latest` |
+| A.12 More Linux packages ✅ #462, #634 | Fedora, Nix, AppImage, Snap, Flatpak and tarball builds tested and published on `linux-latest` |
 | A.13 Windows fixes ✅ #369, #425, #426, #443, #446, #460, #632 | Windows draws the shadow and corners; windows fit the screen; Katna's frame and blur; sign-in keys and DNS; cleaner uninstall; Katna updates itself on Windows |
 | A.14 Sync and daemon ✅ #390, #398, #405, #406, #407, #409, #420, #423, #453 | Newest mail first; a locked keyring waited for at login; a switched-off Google API named with a Turn on button; a refused certificate explained; restart through systemd after an update |
 | A.15 CI and README ✅ #404, #419, #422, #427, #433, #438, #529, #563 | Tests on Arch only, Ubuntu and Windows in a Secondary workflow; README says why Katna exists and that it is at a very early stage |
 | A.16 Drives in Files ✅ #534, #537, #540, #541, #542, #550, #553, #573 | Google Drive and OneDrive in the Files page and the Compose and chat pickers; upload files and folders; Move to bin, Rename, Share and an uploads tray |
 | A.17 Compose ✅ #531, #536, #539, #579, #595 | A calmer Quiet look; drafts saved while writing with "Draft saved"; a signature tag; Compose opens beside a half-written reply; click an attached file to open it; an emptied message keeps no draft |
 | A.18 Unified inbox and account colours ✅ #549, #576, #592, #624, #631 | Inbox tabs in the unified inbox shared by every account; a colour for each account, shown as a dot after the sender, with eight colours and a colour wheel |
+| A.19 Shared design system ✅ #646, #647, #648, #649, #650, #651, #652, #653 | Design tokens (`katna_ui::tokens`) and `docs/DESIGN.md`, with a CI check that raw sizes only go down; one shared popover, dialog surface, Button, choice chip, tag and settings row |
 
 ### Release track — update channels and safe updates (before the first public release)
 
@@ -412,7 +417,7 @@ mail schema stops changing every week.
 | U.7 Upgrade and rollback tests in CI | Container test: previous stable → candidate with the daemon running, against the dev servers; candidate → previous stable |
 | U.8 Release workflow | On a tag: build every format once, run the checks, publish to beta; promotion to stable copies the same files after a required reviewer approves |
 | U.9 Signing ◐ minisign-signed Arch packages and manifest, checked by the app before installing (#270); GPG and AppImage signing pending | GPG-signed pacman packages and repository databases (`SigLevel = Required`); minisign-signed manifests and AppImages; keys only in the release environment |
-| U.10 Update checks ◐ the app checks the signed `arch-latest` manifest hourly and after waking (#270, #555) and downloads a zstd patch from the installed build (#545, #570); Windows Setup installs check and update themselves too, with the full Setup (#632); channels, metered networks, Flatpak and AppImage pending | Daemon reads the signed channel manifest (daily, not on metered networks, can be turned off); Flatpak update monitor; AppImage self-update with staged rollout and the `pulled` flag |
+| U.10 Update checks ◐ the app checks the signed `arch-latest` manifest hourly and after waking (#270, #555) and downloads a zstd patch from the installed build (#545, #570); Windows Setup installs check and update themselves too, with the full Setup (#632); every `linux-latest` package offers updates: AppImage and tarball install them, RPM, Snap, Flatpak and Nix show the command (#634); channels, metered networks, Flatpak and AppImage pending | Daemon reads the signed channel manifest (daily, not on metered networks, can be turned off); Flatpak update monitor; AppImage self-update with staged rollout and the `pulled` flag |
 
 **Done when:** a beta built by the release workflow upgrades a running
 install of the previous stable on Arch and Ubuntu without losing a message,
@@ -753,7 +758,9 @@ the published container image.
 
 Started early: HTML rendering (#44), a formatting composer with tables
 (#53), spelling, grammar with Harper (#111) and writing suggestions (#118),
-scaling 75–200 % (#104), large attachments as Drive or OneDrive links (D.52). Still open: Full-fidelity HTML rendering, WYSIWYG composer, semantic search
+scaling 75–200 % (#104), large attachments as Drive or OneDrive links (D.52); the composer
+is a WYSIWYG editor since #53. Still open: `<style>` sheets in HTML mail
+(Blitz, only if such mail turns out to matter), semantic search
 (local embeddings), Katna Confidential, GNOME
 top-bar calendar (EDS backend), more languages.
 
