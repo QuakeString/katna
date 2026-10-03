@@ -15,10 +15,11 @@ use katna_ui::px;
 use katna_ui::rich::{RichEvent, html};
 use katna_ui::{InputEvent, RichEditor, TextInput};
 
-use super::{MailWindow, control_column, field_box, label_column, note};
+use super::{MailWindow, control_column, label_column, note};
 use crate::daemon;
 use crate::data;
 use crate::theme::Theme;
+use crate::widgets::{field, line_field};
 use crate::widgets::{filled_button, icon, icon_button, outlined_button, tip};
 
 /// The template open in the editor.
@@ -343,8 +344,6 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let id = e.id;
-        let name_focus = e.name.focus_handle(cx);
-        let subject_focus = e.subject.focus_handle(cx);
         let body_focus = e.body.focus_handle(cx);
         let files = e.attachments.iter().enumerate().map(|(ix, f)| {
             div()
@@ -373,32 +372,19 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(8.0))
+            .child(line_field("page-template-name", &e.name, th, cx))
+            .child(line_field("page-template-subject", &e.subject, th, cx))
             .child(
-                field_box("page-template-name", th)
-                    .h(px(40.0))
-                    .flex()
-                    .items_center()
-                    .on_click(move |_, window, cx| window.focus(&name_focus, cx))
-                    .child(div().flex_1().child(e.name.clone())),
-            )
-            .child(
-                field_box("page-template-subject", th)
-                    .h(px(40.0))
-                    .flex()
-                    .items_center()
-                    .on_click(move |_, window, cx| window.focus(&subject_focus, cx))
-                    .child(div().flex_1().child(e.subject.clone())),
-            )
-            .child(
-                field_box("page-template-text", th)
-                    .min_h(px(160.0))
-                    .max_h(px(360.0))
-                    .overflow_y_scroll()
-                    .py(px(10.0))
-                    .line_height(px(20.0))
-                    .cursor_text()
-                    .on_click(move |_, window, cx| window.focus(&body_focus, cx))
-                    .child(e.body.clone()),
+                field("page-template-text", &body_focus, th).child(
+                    div()
+                        .id("page-template-text-scroll")
+                        .min_h(px(158.0))
+                        .max_h(px(358.0))
+                        .overflow_y_scroll()
+                        .py(px(10.0))
+                        .line_height(px(20.0))
+                        .child(e.body.clone()),
+                ),
             )
             .when(!e.attachments.is_empty(), |d| {
                 d.child(

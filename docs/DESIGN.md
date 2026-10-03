@@ -71,12 +71,14 @@ pill button, `widgets::button` with `ButtonStyle::Filled`, `Outlined` and
 `tonal_icon_button` (a contact's actions), `choice_chip` (32 px, `SM`,
 edge at rest, soft grey with a check while picked), `tag` (a grey label
 pill), `row` (a clickable line: 40 px at least, `SM`, hover, soft grey
-while open, ripple), menu and menu item, switch,
+while open, ripple), `field` and `line_field` (an edge at rest, a 2 px
+accent ring inside it while it has the keys; 40 px for one line), menu
+and menu item, switch,
 checkbox, radio, colour swatch and wheel, avatar, tooltip, snackbar, scroll
 bar, skeleton, `notched::popover` (opens at the click, notch, level 4,
 `LG`), `widgets::dialog` (level 3, `LG`, frosted). To build: `Card`,
-`Row`'s ticked and count-pill parts, `Field`
-(edge, focus ring, error, suggestions), and a Gallery page in development
+`Row`'s ticked and count-pill parts, `Field`'s error state and
+suggestions, and a Gallery page in development
 builds showing every control in light and dark.
 
 ## Moving code over

@@ -679,6 +679,64 @@ pub fn row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> Stateful<Div
         .child(Ripple::new(("ripple", ripple), rgba(th.ripple)).rounded(radius::SM))
 }
 
+/// A box to type in around `focus`'s input: an edge at rest and, while
+/// it has the keys, the accent ring (2 px, inside the edge so nothing
+/// moves). A click anywhere in it gives its input the keys. A field whose
+/// text scrolls keeps the scrolling in a child, so the ring stays put.
+pub fn field(id: impl Into<gpui::ElementId>, focus: &FocusHandle, th: &Theme) -> Stateful<Div> {
+    let ring = rgba(th.accent);
+    let (shows, takes) = (focus.clone(), focus.clone());
+    div()
+        .id(id)
+        .relative()
+        .px(px(space::S4))
+        .rounded(px(radius::SM))
+        .border_1()
+        .border_color(rgba(th.outline))
+        .text_size(px(text::BODY))
+        .cursor_text()
+        .on_click(move |_, window, cx| window.focus(&takes, cx))
+        .child(
+            canvas(
+                |_, _, _| {},
+                move |bounds, _, window, _| {
+                    if shows.is_focused(window) {
+                        // Over the edge, which lies just outside the layer.
+                        window.paint_quad(gpui::quad(
+                            bounds.dilate(px(1.0)),
+                            px(radius::SM),
+                            gpui::transparent_black(),
+                            px(2.0),
+                            ring,
+                            gpui::BorderStyle::Solid,
+                        ));
+                    }
+                },
+            )
+            .absolute()
+            .top_0()
+            .left_0()
+            .size_full(),
+        )
+}
+
+/// The height of a one-line [`field`].
+pub const FIELD_HEIGHT: f32 = 40.0;
+
+/// A one-line [`field`] holding `input`.
+pub fn line_field(
+    id: impl Into<gpui::ElementId>,
+    input: &gpui::Entity<katna_ui::TextInput>,
+    th: &Theme,
+    cx: &App,
+) -> Stateful<Div> {
+    field(id, &gpui::Focusable::focus_handle(input.read(cx), cx), th)
+        .h(px(FIELD_HEIGHT))
+        .flex()
+        .items_center()
+        .child(div().flex_1().min_w_0().child(input.clone()))
+}
+
 /// A row of buttons over a card; its empty space moves the window.
 pub fn toolbar(th: &Theme) -> Div {
     div()
