@@ -275,7 +275,7 @@ impl Daemon {
             let _ = old.try_send(());
         }
         tracing::info!(%provider, "signing in in the browser");
-        open_in_browser(flow.url()).await;
+        open_in_browser(flow.url(), None).await;
         let pages = Pages {
             signed_in: tr!("daemon-signed-in", provider = provider.name()),
             failed: tr!("daemon-sign-in-failed", provider = provider.name()),
@@ -372,22 +372,23 @@ async fn save_picture(daemon: Weak<Daemon>, account: AccountId, url: String, tls
 }
 
 /// Opens `url` in the default browser: through the desktop portal, else
-/// `xdg-open`.
+/// `xdg-open`. `token` (from a notification's button) lets the browser
+/// take focus on Wayland.
 #[cfg(unix)]
-pub(crate) async fn open_in_browser(url: &str) {
+pub(crate) async fn open_in_browser(url: &str, token: Option<&str>) {
     let portal = async {
         let connection = zbus::Connection::session().await?;
+        let mut options = std::collections::HashMap::<&str, zbus::zvariant::Value<'_>>::new();
+        if let Some(token) = token {
+            options.insert("activation_token", token.into());
+        }
         connection
             .call_method(
                 Some("org.freedesktop.portal.Desktop"),
                 "/org/freedesktop/portal/desktop",
                 Some("org.freedesktop.portal.OpenURI"),
                 "OpenURI",
-                &(
-                    "",
-                    url,
-                    std::collections::HashMap::<&str, zbus::zvariant::Value<'_>>::new(),
-                ),
+                &("", url, options),
             )
             .await?;
         Ok::<_, zbus::Error>(())
@@ -396,13 +397,18 @@ pub(crate) async fn open_in_browser(url: &str) {
         return;
     };
     tracing::info!(%err, "no OpenURI portal; trying xdg-open");
-    spawn_opener(std::process::Command::new("xdg-open").arg(url));
+    let mut command = std::process::Command::new("xdg-open");
+    command.arg(url);
+    if let Some(token) = token {
+        command.env("XDG_ACTIVATION_TOKEN", token);
+    }
+    spawn_opener(&mut command);
 }
 
 /// Opens `url` in the default browser. `rundll32` takes the URL as one
 /// argument, where `cmd /c start` would split it at every `&`.
 #[cfg(windows)]
-pub(crate) async fn open_in_browser(url: &str) {
+pub(crate) async fn open_in_browser(url: &str, _token: Option<&str>) {
     spawn_opener(
         std::process::Command::new("rundll32")
             .arg("url.dll,FileProtocolHandler")

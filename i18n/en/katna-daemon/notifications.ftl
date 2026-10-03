@@ -93,6 +93,16 @@ notify-mark-read = Mark as read
 # On a notification about several messages.
 notify-mark-all-read = Mark all as read
 notify-archive = Archive
+# Only on a notification about one message with a one-time code (a sign-in
+# or verification code): copies it. $code: the code, such as 482913.
+notify-copy-code = Copy { $code }
+# Only on a notification about one message with a link to verify an
+# address, confirm something or activate an account: opens the link in the
+# browser. $domain: where the link goes, such as accounts.example.com, so
+# a link that only looks like a company's shows where it really goes.
+notify-link-verify = Verify on { $domain }
+notify-link-confirm = Confirm on { $domain }
+notify-link-activate = Activate on { $domain }
 
 ## After Archive on a notification: a short note in the same place
 
@@ -106,6 +116,13 @@ notify-archived-count = { $count ->
 # Its button: puts the mail back in the inbox. Also on the note below: keeps
 # the reply from going and opens it in Katna Mail to write on.
 notify-undo = Undo
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = Code copied
+# When the code could not be put on the clipboard: it stays shown, to copy
+# by hand.
+notify-code-not-copied = Could not copy the code
 
 ## After a reply typed into a notification: a note in the same place while
 ## it waits for the undo time

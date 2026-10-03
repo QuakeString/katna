@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Copy codes from notifications"
+text = """
+A new-mail notification with a sign-in or verification code now has a
+Copy button for it, and one with a link to verify or confirm your address
+has a button that names the site it opens. Buttons on notifications no
+longer make a bouncing Katna icon follow the mouse pointer.
+"""
