@@ -2489,7 +2489,10 @@ Gemini or confidential mode):
   `cargo metadata` together with CREDITS.md. A short "A personal project"
   note says where Katna's ideas come from (Gmail, Mailspring,
   Thunderbird) and that LLMs made it possible. On a phone it fills the
-  window.
+  window. Its header (the wordmark, Katna, the tagline and the version)
+  shrinks with the scroll: the wordmark slides to the top left with the
+  three lines beside it, then the header stays, frosted, while the rest
+  scrolls under it.
 - **After the first real install.** The owner's first run on KDE brought
   these changes. The account picture moved
   to the top right, beside the settings gear, with its card below it; the
