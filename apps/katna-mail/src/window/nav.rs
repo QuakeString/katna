@@ -424,7 +424,7 @@ impl MailWindow {
         }
         // Each page's own action, in the same button and place.
         let mail = self.app == super::RailApp::Mail;
-        let (icon_name, label) = self.primary_button();
+        let label = self.primary_button().1;
         // While a drive is open the button uploads, with an arrow beside
         // it for files or a folder.
         let upload = self.drive_upload_here();
@@ -484,12 +484,7 @@ impl MailWindow {
                     Ripple::new("compose-ripple", rgba(th.ripple)).rounded(super::COMPOSE_RADIUS),
                 )
                 .child(self.tour_mark(Spot::Compose))
-                .child(
-                    div()
-                        .flex_none()
-                        .pl(px(16.0))
-                        .child(icon(icon_name, th.compose_text, 24.0)),
-                )
+                .child(div().flex_none().pl(px(16.0)).child(self.primary_icon(th)))
                 .child(
                     div()
                         .flex_none()

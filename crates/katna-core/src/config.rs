@@ -314,6 +314,10 @@ impl Default for Notifications {
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Sounds {
+    /// The set of sounds (`katna_platform::sound::SETS`): each event plays
+    /// the set's sound unless it names its own. Empty for the usual set.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub set: String,
     pub new_mail: EventSound,
     pub reminders: EventSound,
     pub mail_back: EventSound,
@@ -326,8 +330,8 @@ pub struct Sounds {
 #[serde(default)]
 pub struct EventSound {
     pub on: bool,
-    /// The sound's name in `katna_platform::sound`; empty for the event's
-    /// usual one.
+    /// The sound's name in `katna_platform::sound` (`file:` and a path for
+    /// a file of the user's own); empty for the set's.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub sound: String,
 }
@@ -387,7 +391,7 @@ impl Sounds {
         }
     }
 
-    /// The sound `event` plays, if on: its name, empty for the usual one.
+    /// The sound `event` plays, if on: its name, empty for the set's.
     pub fn playing(&self, event: SoundEvent) -> Option<&str> {
         let sound = self.get(event);
         sound.on.then_some(sound.sound.as_str())

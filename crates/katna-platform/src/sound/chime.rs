@@ -4,10 +4,10 @@
 //! the last one ringing out, about a second and a half long and as loud
 //! as a sound can be without clipping. The desktop's own new-mail sounds
 //! can be too faint to hear; this one is made here, as a WAV file, rather
-//! than shipped.
+//! than shipped, like the other sets' sounds (`synth`).
 
-/// Samples per second.
-const RATE: u32 = 48_000;
+use super::synth::RATE;
+
 /// The notes: when each starts (seconds), its pitch (Hz), how long it
 /// rings (the time its loudness takes to fall to a third) and how loud
 /// it is.
@@ -66,31 +66,6 @@ pub(super) fn samples() -> Vec<f32> {
     out
 }
 
-/// The sound as a 16-bit mono WAV file.
-pub(super) fn wav() -> Vec<u8> {
-    let samples = samples();
-    let data = (samples.len() * 2) as u32;
-    let mut out = Vec::with_capacity(44 + data as usize);
-    out.extend_from_slice(b"RIFF");
-    out.extend_from_slice(&(36 + data).to_le_bytes());
-    out.extend_from_slice(b"WAVEfmt ");
-    out.extend_from_slice(&16u32.to_le_bytes());
-    // PCM, one channel.
-    out.extend_from_slice(&1u16.to_le_bytes());
-    out.extend_from_slice(&1u16.to_le_bytes());
-    out.extend_from_slice(&RATE.to_le_bytes());
-    out.extend_from_slice(&(RATE * 2).to_le_bytes());
-    out.extend_from_slice(&2u16.to_le_bytes());
-    out.extend_from_slice(&16u16.to_le_bytes());
-    out.extend_from_slice(b"data");
-    out.extend_from_slice(&data.to_le_bytes());
-    for sample in samples {
-        let value = (sample.clamp(-1.0, 1.0) * f32::from(i16::MAX)) as i16;
-        out.extend_from_slice(&value.to_le_bytes());
-    }
-    out
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -106,8 +81,5 @@ mod tests {
         let rms = (first.iter().map(|s| s * s).sum::<f32>() / first.len() as f32).sqrt();
         assert!(rms > 0.15, "{rms}");
         assert_eq!(samples.last().copied(), Some(0.0));
-        let wav = wav();
-        assert_eq!(&wav[..4], b"RIFF");
-        assert_eq!(wav.len(), 44 + samples.len() * 2);
     }
 }

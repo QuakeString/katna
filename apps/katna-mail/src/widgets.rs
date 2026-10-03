@@ -30,6 +30,40 @@ pub fn icon(name: &str, color: u32, size: f32) -> AnyElement {
         .into_any_element()
 }
 
+/// Icon `to` turning in from where `from` turns away, `t` of the way (0
+/// to 1): the old one turns a quarter clockwise as it shrinks and fades,
+/// the new one follows it round from a quarter back, growing in.
+pub fn morph_icon(from: &str, to: &str, t: f32, color: u32, size: f32) -> AnyElement {
+    let t = t.clamp(0.0, 1.0);
+    if t >= 0.999 || from == to {
+        return icon(to, color, size);
+    }
+    let turned = |name: &str, turn: f32, scale: f32, opacity: f32| {
+        svg()
+            .path(SharedString::from(format!("icons/{name}.svg")))
+            .absolute()
+            .top_0()
+            .left_0()
+            .size(px(size))
+            .text_color(rgba(color))
+            .opacity(opacity)
+            .with_transformation(
+                gpui::Transformation::rotate(gpui::radians(std::f32::consts::FRAC_PI_2 * turn))
+                    .with_scaling(gpui::size(scale, scale)),
+            )
+    };
+    // The two overlap in the middle so the button is never empty.
+    let out = (t / 0.6).min(1.0);
+    let into = ((t - 0.3) / 0.7).max(0.0);
+    div()
+        .relative()
+        .flex_none()
+        .size(px(size))
+        .child(turned(from, t, lerp(1.0, 0.4, out), 1.0 - out))
+        .child(turned(to, t - 1.0, lerp(0.4, 1.0, t), into))
+        .into_any_element()
+}
+
 /// A ring `size` px across in `track`, with the stretch from turn `from`
 /// to turn `to` (0 at the top, clockwise) in `color`; it fills its parent.
 pub fn ring(from: f32, to: f32, color: u32, track: u32, size: f32) -> AnyElement {
