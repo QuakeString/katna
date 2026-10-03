@@ -27,6 +27,7 @@ use gpui::{
 };
 use jiff::civil::Date;
 use katna_core::AccountId;
+use katna_core::wildcard;
 use katna_i18n::tr;
 use katna_preview::Kind;
 use katna_store::{LibraryFile, MessageId};
@@ -540,7 +541,16 @@ impl Library {
                 }
                 && self.person.as_ref().is_none_or(|p| *p == file.from_email)
                 && self.time.keeps(found.day)
-                && words.iter().all(|w| found.hay.contains(w.as_str()));
+                && words.iter().all(|w| {
+                    // `*.pdf`, `invoice*2026*`: a pattern for the whole
+                    // name; plain words anywhere in the name, subject or
+                    // sender.
+                    if wildcard::is_pattern(w) {
+                        wildcard::matches(w, &file.name)
+                    } else {
+                        found.hay.contains(w.as_str())
+                    }
+                });
             if !passes {
                 continue;
             }

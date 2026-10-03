@@ -134,3 +134,16 @@ pub struct Access {
     /// The link it opens with, for anyone with the link.
     pub link: String,
 }
+
+/// Keeps the items whose names fit every pattern in `words`.
+pub(crate) fn keep_matching(items: &mut Vec<CloudItem>, words: &str) {
+    let patterns: Vec<&str> = words
+        .split_whitespace()
+        .filter(|w| katna_core::wildcard::is_pattern(w))
+        .collect();
+    items.retain(|item| {
+        patterns
+            .iter()
+            .all(|p| katna_core::wildcard::matches(p, &item.name))
+    });
+}
