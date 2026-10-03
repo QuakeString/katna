@@ -803,6 +803,9 @@ pub struct MailWindow {
     files_menu: Option<EntryKey>,
     /// Layout and line height the list's lines were measured for.
     list_shape: (bool, u32),
+    /// The line just opened, kept where it was in the list while the
+    /// reading pane opens beside it and the lines change shape.
+    keep_line: Option<list::KeepLine>,
     nav_list: gpui::ListState,
     nav_items: Vec<nav::NavItem>,
     /// Bumped when the folder pane's lines change; `nav_synced` is what
@@ -1061,6 +1064,7 @@ impl MailWindow {
             list_state: lines::Lines::new(),
             files_menu: None,
             list_shape: (false, 0),
+            keep_line: None,
             nav_list: nav::nav_list(),
             nav_items: Vec::new(),
             nav_rev: 1,
@@ -1613,6 +1617,14 @@ impl MailWindow {
         if matches!(self.listing, Some(Listing::Search { .. })) {
             self.before_search = None;
         }
+        self.keep_line = self
+            .list_state
+            .bounds_for_item(ix)
+            .map(|bounds| list::KeepLine {
+                ix,
+                top: bounds.top() - self.list_state.viewport_bounds().top(),
+                placed: false,
+            });
         self.selected = Some(ix);
         self.reading = true;
         self.menu = None;
