@@ -80,6 +80,8 @@ rules-summary = { $when } → { $then }
 rules-summary-and = { $first } and { $next }
 # Joining the conditions of a rule that needs only one.
 rules-summary-or = { $first } or { $next }
+# The last of a long list of words: "ticket, pnr, booking or 6 more".
+rules-summary-more = { $count } more
 # Joining the actions.
 rules-summary-list = { $first }, { $next }
 # $field: "From", "Subject"…; $comparator: "contains"…; $value: what the

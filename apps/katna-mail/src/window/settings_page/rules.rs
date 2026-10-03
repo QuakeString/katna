@@ -23,7 +23,7 @@ use katna_ui::px;
 use super::super::rule_editor::{self, dot};
 use super::super::settings::Change;
 use super::MailWindow;
-use super::starter_rules::{self, Starter, Step};
+use super::starter_rules::{self, Starter};
 use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, icon, icon_button, menu, menu_item, switch, tip};
 use crate::{daemon, data};
@@ -254,23 +254,16 @@ impl MailWindow {
             return;
         };
         let accounts: Vec<i64> = self.rule_accounts().iter().map(|(id, _)| id.0).collect();
-        let mut rule = starter.rule(&accounts, |account, folder| {
-            self.folder_named(AccountId(account), &folder.name())
+        // A folder no account has yet is left to choose, in its place.
+        let rule = starter.rule(&accounts, |account, folder| {
+            let name = folder.name();
+            self.folder_named(AccountId(account), &name).or_else(|| {
+                let anywhere = accounts
+                    .iter()
+                    .any(|a| self.folder_named(AccountId(*a), &name).is_some());
+                (!anywhere && accounts.first() == Some(&account)).then_some(0)
+            })
         });
-        for step in &starter.steps {
-            let (Step::Move(folder) | Step::Label(folder)) = step else {
-                continue;
-            };
-            let anywhere = accounts
-                .iter()
-                .any(|a| self.folder_named(AccountId(*a), &folder.name()).is_some());
-            if !anywhere {
-                rule.actions.push(match step {
-                    Step::Move(_) => katna_store::rules::Action::Move { folder: 0 },
-                    _ => katna_store::rules::Action::AddLabel { folder: 0 },
-                });
-            }
-        }
         self.open_rule_editor(rule, window, cx);
     }
 

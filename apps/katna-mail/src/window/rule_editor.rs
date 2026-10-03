@@ -167,6 +167,10 @@ fn tab_of(value: &str) -> MailCategory {
     value.trim().parse().unwrap_or_default()
 }
 
+/// How many alternatives of a pattern a rule's line names before "and N
+/// more".
+const MAX_LISTED: usize = 3;
+
 /// A pattern that is only words or addresses joined by `|`
 /// ("irctc.co.in|railyatri.in"), as its alternatives; `None` for any
 /// other pattern.
@@ -217,7 +221,13 @@ pub(super) fn summary(rule: &Rule, folder: impl Fn(i64) -> Option<String>) -> St
     // Conditions on the same field that compare the same way say it
     // once: "From contains substack.com or medium.com".
     // Alternatives inside one condition always read "or".
-    let any = |values: Vec<String>| -> String {
+    let any = |mut values: Vec<String>| -> String {
+        // A long list names its first few and counts the rest.
+        if values.len() > MAX_LISTED + 1 {
+            let more = values.len() - MAX_LISTED;
+            values.truncate(MAX_LISTED);
+            values.push(tr!("rules-summary-more", count = more));
+        }
         let mut items = values.into_iter();
         let mut text = items.next().unwrap_or_default();
         let rest: Vec<String> = items.collect();
@@ -1238,17 +1248,18 @@ impl MailWindow {
                 .map(|d| if narrow { d.flex_1() } else { d.w(px(120.0)) })
                 .on_click(pick_at(Pick::Field(ix), cx));
                 let what: AnyElement = if row.field == Field::Tab {
-                    select_box(
+                    let tab = select_box(
                         ("rule-tab", ix),
                         tab_label(row.tab),
                         picked == Some(Pick::Tab(ix)),
                         th,
                     )
                     .w(px(150.0))
-                    .on_click(pick_at(Pick::Tab(ix), cx))
-                    .into_any_element()
+                    .on_click(pick_at(Pick::Tab(ix), cx));
+                    // Fills the row, so its remove button sits at the end.
+                    div().flex_1().child(tab).into_any_element()
                 } else if row.field.is_yes_no() {
-                    select_box(
+                    let has = select_box(
                         ("rule-has", ix),
                         if row.has {
                             tr!("rules-has-yes")
@@ -1259,8 +1270,8 @@ impl MailWindow {
                         th,
                     )
                     .w(px(150.0))
-                    .on_click(pick_at(Pick::Has(ix), cx))
-                    .into_any_element()
+                    .on_click(pick_at(Pick::Has(ix), cx));
+                    div().flex_1().child(has).into_any_element()
                 } else {
                     div()
                         .flex()
@@ -2272,6 +2283,14 @@ mod tests {
              Subject contains ticket, pnr or boarding pass, \
              Not in the Promotions tab and Not from a mailing list \
              → label Travel, mark important"
+        );
+        let long = rule(
+            vec![(Field::Subject, Comparator::Matches, "a|b|c|d|e|f")],
+            vec![Action::MarkRead],
+        );
+        assert_eq!(
+            summary(&long, |_| None),
+            "Subject contains a, b, c or 3 more → mark read"
         );
         let pattern = rule(
             vec![(Field::Subject, Comparator::Matches, "^re: .*")],
