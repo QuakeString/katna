@@ -2692,6 +2692,12 @@ Gemini or confidential mode):
   it goes (hidden, the mail closed, or the window grown wide enough for
   both); a pane folded by hand stays folded, and one opened by hand beside
   it wins until the panel is next shown (`fold_nav_for_contact`).
+  Where it has no room (a tablet, a narrow window, a conversation window),
+  a click on a person's name or picture opens a summary of the same card
+  (name, round buttons, details) as a popover whose notch points at the
+  click (`contact/peek.rs`); once the window has room again the popover
+  closes and the panel shows instead. A phone shows the full card as a
+  bottom sheet.
 - **Day's agenda.** A Calendar button on the top bar, beside Settings
   (the Mail page of a desktop window only), opens a card at the
   right of the mail with one day's events, as Gmail's side panel has it

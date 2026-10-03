@@ -1042,9 +1042,9 @@ impl MailWindow {
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .tooltip(tip(tr!("chat-show-card"), th))
-                .on_click(cx.listener(move |this, _, _, cx| {
+                .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                     this.close_chat_people(cx);
-                    this.show_contact_of(key, &email, cx);
+                    this.show_contact_of(key, &email, e.position(), cx);
                 }))
                 .child(self.person_avatar(&m.name, &m.email, 30.0))
                 .child(
@@ -1353,9 +1353,9 @@ impl MailWindow {
                         .id(("chat-picture", bubble.ix))
                         .cursor_pointer()
                         .tooltip(tip(tr!("chat-show-card"), th))
-                        .on_click(cx.listener(move |this, _, _, cx| {
+                        .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                             if let Some(key) = key {
-                                this.show_contact_of(key, &pick, cx);
+                                this.show_contact_of(key, &pick, e.position(), cx);
                             }
                         }))
                         .child(self.person_avatar(&bubble.name, &bubble.email, PICTURE)),
@@ -1482,9 +1482,9 @@ impl MailWindow {
                 .font_weight(FontWeight::SEMIBOLD)
                 .text_color(rgba(name_color(&bubble.email, th)))
                 .hover(|s| s.underline())
-                .on_click(cx.listener(move |this, _, _, cx| {
+                .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                     if let Some(key) = key {
-                        this.show_contact_of(key, &pick, cx);
+                        this.show_contact_of(key, &pick, e.position(), cx);
                     }
                 }))
                 .child(bubble.name.clone())
