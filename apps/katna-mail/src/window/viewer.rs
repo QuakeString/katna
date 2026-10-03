@@ -208,6 +208,10 @@ pub(super) struct Viewer {
     fetching: bool,
     /// Show bright pages dark (in a dark theme): Settings' `dark_pages`.
     pub(super) dark_pages: bool,
+    /// The radius of the window content's bottom left and right corners
+    /// (Katna's own rounded frame), which the viewer rounds itself to, as
+    /// GPUI does not clip it there.
+    pub(super) corners: (f32, f32),
     /// Where the controls' More menu was opened, while it is open.
     more_at: Option<Point<Pixels>>,
     pub(super) th: Theme,
@@ -375,6 +379,7 @@ impl Viewer {
             pick: None,
             fetching: false,
             dark_pages: false,
+            corners: (0.0, 0.0),
             more_at: None,
             th,
         };
@@ -2045,7 +2050,24 @@ impl Render for Viewer {
             .left_0()
             .size_full()
             .occlude()
-            .map(|el| glassy(el, SCRIM, SCRIM_FROSTED, 0.0, self.th.frost))
+            .rounded_bl(px(self.corners.0))
+            .rounded_br(px(self.corners.1))
+            .map(|el| {
+                let corners = gpui::Corners {
+                    bottom_left: px(self.corners.0),
+                    bottom_right: px(self.corners.1),
+                    ..Default::default()
+                };
+                if self.th.frost == 0 {
+                    el.bg(rgba(SCRIM))
+                } else {
+                    el.child(katna_ui::frost::glass(
+                        rgba(SCRIM_FROSTED).into(),
+                        corners,
+                        self.th.frost as f32,
+                    ))
+                }
+            })
             // The file shows below the bar, so the bar only ever frosts the
             // blurred window, never a bright page scrolled under it.
             .child(
@@ -2056,6 +2078,8 @@ impl Render for Viewer {
                     .right_0()
                     .bottom_0()
                     .overflow_hidden()
+                    .rounded_bl(px(self.corners.0))
+                    .rounded_br(px(self.corners.1))
                     .child(body),
             )
             .child(select::follow_drags(cx))
