@@ -2566,36 +2566,25 @@ impl MailWindow {
                 )
             })
             // The account of a line of the whole unified inbox: its dot
-            // after the names, with its name where the line has room.
+            // after the names; hovering the dot names the account.
             .children(account.map(|(color, name, address)| {
-                // Hovering the dot names the account.
-                let dot = div()
+                div()
                     .id(("row-account", ix))
                     .flex_none()
+                    .ml(px(1.0))
                     .size(px(15.0))
                     .flex()
                     .items_center()
                     .justify_center()
                     .tooltip(tip(
                         if name.eq_ignore_ascii_case(&address) {
-                            name.clone()
+                            name
                         } else {
                             format!("{name}\n{address}")
                         },
                         th,
                     ))
-                    .child(div().size(px(7.0)).rounded_full().bg(rgba(color)));
-                div()
-                    .flex_none()
-                    .pl(px(1.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(1.0))
-                    .text_size(px(12.0))
-                    .text_color(rgba(th.text_faint))
-                    .child(dot)
-                    .when(stacked, |d| d.child(name))
+                    .child(div().size(px(7.0)).rounded_full().bg(rgba(color)))
             }));
         // The quick actions fade in over the date.
         let actions = hovered.then(|| {
