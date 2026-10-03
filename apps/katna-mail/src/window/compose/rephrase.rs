@@ -961,7 +961,10 @@ pub(in crate::window) fn pulsing(id: &'static str, shapes: gpui::Div, reduce: bo
     shapes
         .with_animation(
             id,
-            Animation::new(std::time::Duration::from_millis(1800)).repeat(),
+            Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                1800,
+            )))
+            .repeat(),
             |el, t| {
                 let wave = 0.5 - 0.5 * (t * std::f32::consts::TAU).cos();
                 el.opacity(0.55 + 0.45 * wave)

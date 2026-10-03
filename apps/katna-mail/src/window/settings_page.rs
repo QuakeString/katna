@@ -28,12 +28,13 @@ use gpui::{
 };
 use katna_core::config::{
     AccountTabs, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn, ReadingPane,
-    SEND_FROM_CURRENT, ShortcutSet, TabStyle, Theme as ThemeChoice, TrayStyle,
+    ReduceMotion, SEND_FROM_CURRENT, ShortcutSet, TabStyle, Theme as ThemeChoice, TrayStyle,
 };
 use katna_i18n::tr;
 use katna_ui::motion::{self, lerp};
 use katna_ui::px;
 use katna_ui::rich::RichEvent;
+use katna_ui::tokens::space;
 use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
 
 use super::keymap::{self, Group, SHORTCUTS};
@@ -1118,6 +1119,18 @@ impl MailWindow {
                 self.scale_control(th, cx),
                 th,
             ))
+            .child(self.row(
+                tr!("settings-appearance-motion-speed"),
+                Some(&tr!("settings-appearance-motion-speed-detail")),
+                self.motion_speed_choice(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-appearance-reduce-motion"),
+                Some(&tr!("settings-appearance-reduce-motion-detail")),
+                self.reduce_motion_choice(th, cx),
+                th,
+            ))
             .child(
                 self.row(
                     tr!("settings-appearance-theme"),
@@ -1226,6 +1239,104 @@ impl MailWindow {
                 th,
             ))
             .into_any_element()
+    }
+
+    /// Settings > Appearance > Animation speed: the desktop's, or one of
+    /// Katna's own speeds as chips.
+    fn motion_speed_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let own = self.config.mail.animation_speed;
+        let desktop = speed_name(self.desktop_colors.motion.duration_factor);
+        let picked = own.map(nearest_speed);
+        let chips: Vec<_> = MOTION_SPEEDS
+            .into_iter()
+            .map(|percent| {
+                self.page_control(
+                    choice_chip(
+                        ("motion-speed", usize::from(percent)),
+                        speed_label(percent),
+                        picked == Some(percent),
+                        th,
+                    ),
+                    th,
+                    cx,
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.apply(Change::AnimationSpeed(Some(percent)), cx);
+                }))
+            })
+            .collect();
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(space::S1))
+            .child(self.radio_row(
+                "page-motion-desktop",
+                tr!("settings-appearance-motion-speed-desktop", speed = desktop),
+                own.is_none(),
+                Change::AnimationSpeed(None),
+                th,
+                cx,
+            ))
+            .child(self.radio_row(
+                "page-motion-katna",
+                tr!("settings-appearance-motion-speed-katna"),
+                own.is_some(),
+                Change::AnimationSpeed(Some(picked.unwrap_or(100))),
+                th,
+                cx,
+            ))
+            .when(own.is_some(), |d| {
+                d.child(
+                    div()
+                        .pl(px(RADIO_LABEL))
+                        .pt(px(space::S2))
+                        .pb(px(space::S3))
+                        .flex()
+                        .flex_row()
+                        .flex_wrap()
+                        .gap(px(space::S3))
+                        .children(chips),
+                )
+            })
+            .into_any_element()
+    }
+
+    /// Settings > Appearance > Reduce motion.
+    fn reduce_motion_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let now = self.config.mail.reduce_motion;
+        let state = if self.desktop_colors.motion.off() {
+            tr!("settings-appearance-reduce-motion-desktop-still")
+        } else {
+            tr!("settings-appearance-reduce-motion-desktop-animating")
+        };
+        let mut rows = div().flex().flex_col().gap(px(space::S1));
+        for (choice, id, label) in [
+            (
+                ReduceMotion::Desktop,
+                "page-reduce-motion-desktop",
+                tr!("settings-appearance-reduce-motion-desktop", state = state),
+            ),
+            (
+                ReduceMotion::On,
+                "page-reduce-motion-on",
+                tr!("settings-appearance-reduce-motion-on"),
+            ),
+            (
+                ReduceMotion::Off,
+                "page-reduce-motion-off",
+                tr!("settings-appearance-reduce-motion-off"),
+            ),
+        ] {
+            rows = rows.child(self.radio_row(
+                id,
+                label,
+                now == choice,
+                Change::ReduceMotion(choice),
+                th,
+                cx,
+            ));
+        }
+        rows.into_any_element()
     }
 
     /// How many days of mail the daemon keeps downloaded (`sync.offline_days`).
@@ -1727,7 +1838,11 @@ impl MailWindow {
                 .children(allow)
                 .child(div().with_spring(
                     ("page-files-drive-switch", n),
-                    SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                    SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                        1.0
+                    } else {
+                        0.0
+                    }),
                     {
                         let th = *th;
                         move |el, s: f32| el.child(crate::widgets::switch(s.clamp(0.0, 1.0), &th))
@@ -2932,6 +3047,41 @@ impl MailWindow {
 
 /// The offline mail choices, in days (0 for all mail).
 const OFFLINE_CHOICES: [u32; 5] = [7, 30, 90, 365, 0];
+
+/// Where the label of a [`MailWindow::radio_row`] starts: the row's
+/// padding, the radio and the gap after it.
+const RADIO_LABEL: f32 = space::S3 + 20.0 + 14.0;
+
+/// Katna's own animation speeds, in percent of normal length.
+const MOTION_SPEEDS: [u16; 5] = [50, 75, 100, 150, 200];
+
+/// The one of [`MOTION_SPEEDS`] closest to `factor` (1 is normal).
+fn nearest_speed(factor: f32) -> u16 {
+    let log = |f: f32| f.max(0.01).ln();
+    MOTION_SPEEDS
+        .into_iter()
+        .min_by(|a, b| {
+            let da = (log(f32::from(*a) / 100.0) - log(factor)).abs();
+            let db = (log(f32::from(*b) / 100.0) - log(factor)).abs();
+            da.total_cmp(&db)
+        })
+        .unwrap_or(100)
+}
+
+/// The name of the speed closest to `factor`.
+fn speed_name(factor: f32) -> String {
+    speed_label(nearest_speed(factor))
+}
+
+fn speed_label(percent: u16) -> String {
+    match percent {
+        50 => tr!("settings-appearance-motion-speed-faster"),
+        75 => tr!("settings-appearance-motion-speed-fast"),
+        150 => tr!("settings-appearance-motion-speed-slow"),
+        200 => tr!("settings-appearance-motion-speed-slower"),
+        _ => tr!("settings-appearance-motion-speed-normal"),
+    }
+}
 
 /// The name of an offline mail choice.
 fn offline_label(days: u32) -> String {

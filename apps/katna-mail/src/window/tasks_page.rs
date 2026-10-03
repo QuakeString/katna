@@ -1544,7 +1544,10 @@ impl MailWindow {
             .children(details)
             .with_animation(
                 "tasks-page-in",
-                Animation::new(std::time::Duration::from_millis(220)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    220,
+                )))
+                .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element()
@@ -2745,7 +2748,10 @@ impl MailWindow {
             .children(items)
             .with_animation(
                 "tasks-menu",
-                Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    140,
+                )))
+                .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
             );
         let close = || {
@@ -2828,8 +2834,12 @@ pub(super) fn list_title(column: &Column) -> String {
 /// longer would. The tasks below slide as they open and close.
 fn drag_gaps(drag: &Drag, list: i64, slot: usize, th: &Theme) -> Vec<AnyElement> {
     let height = drag.height;
-    let timing =
-        || Animation::new(std::time::Duration::from_millis(GAP_MS)).with_easing(gpui::ease_in_out);
+    let timing = || {
+        Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+            GAP_MS,
+        )))
+        .with_easing(gpui::ease_in_out)
+    };
     // A faint place for the task, as tall as the gap is.
     let gap = |open: f32| {
         div()
@@ -2906,7 +2916,10 @@ pub(super) fn round_tick(done: bool, hover: bool, th: &Theme) -> AnyElement {
             .child(icon("check", th.on_accent, 16.0))
             .with_animation(
                 "tick-done",
-                Animation::new(std::time::Duration::from_millis(180)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    180,
+                )))
+                .with_easing(ease_out_quint()),
                 |el, t| el.opacity(0.4 + 0.6 * t),
             )
             .into_any_element();

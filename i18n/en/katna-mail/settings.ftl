@@ -278,6 +278,26 @@ settings-appearance-density-default = Default
 settings-appearance-density-compact = Compact
 settings-appearance-scaling = Scaling
 settings-appearance-scaling-detail = Makes everything in Katna Mail bigger or smaller, on top of the desktop's own scale: text, icons, spacing and dividers. Mail you send keeps its own font size. Very small sizes can make icons hard to click.
+settings-appearance-motion-speed = Animation speed
+settings-appearance-motion-speed-detail = How long folds, slides and fades take.
+# The desktop's own animation speed setting (KDE: System Settings > Animation speed).
+# $speed is the desktop's speed, one of the speeds below, such as "Normal".
+settings-appearance-motion-speed-desktop = Follow the desktop: { $speed }
+settings-appearance-motion-speed-katna = Katna's own speed
+# Speeds: how long animations take, from much shorter to much longer than normal.
+settings-appearance-motion-speed-faster = Faster
+settings-appearance-motion-speed-fast = Fast
+settings-appearance-motion-speed-normal = Normal
+settings-appearance-motion-speed-slow = Slow
+settings-appearance-motion-speed-slower = Slower
+settings-appearance-reduce-motion = Reduce motion
+settings-appearance-reduce-motion-detail = With motion reduced, things appear and move at once instead of animating.
+# $state says whether the desktop's animations are on.
+settings-appearance-reduce-motion-desktop = Follow the desktop: { $state }
+settings-appearance-reduce-motion-desktop-animating = animations on
+settings-appearance-reduce-motion-desktop-still = animations off
+settings-appearance-reduce-motion-on = Always reduce
+settings-appearance-reduce-motion-off = Never reduce
 # Light or dark, apart from the color scheme.
 settings-appearance-theme = Mode
 # A mode choice: light or dark, following the desktop.
@@ -577,6 +597,8 @@ settings-notifications-muted-summary = Unmute folders, accounts, conversations a
 settings-accounts-accounts-summary = Add or remove an account, or change its picture
 settings-appearance-density-summary = Default or compact lines in the list
 settings-appearance-scaling-summary = Make everything bigger or smaller: text, icons, spacing and dividers
+settings-appearance-motion-speed-summary = How long folds, slides and fades take: the desktop's speed or Katna's own
+settings-appearance-reduce-motion-summary = Turn animations off, or follow the desktop
 settings-appearance-theme-summary = System, light or dark
 settings-appearance-colors-summary = Color schemes: the desktop's, Katna's or a built-in one such as Nord or Solarized
 settings-appearance-accent-summary = The color of the selected folder, Compose and counts

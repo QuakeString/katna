@@ -908,7 +908,8 @@ impl MailWindow {
         let body = selectable(body, Some(CONTACT_PART), cx)
             .with_animation(
                 ("contact-person", person_number(email)),
-                Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(220)))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element();
@@ -958,7 +959,8 @@ impl MailWindow {
             .child(actions)
             .with_animation(
                 ("contact-bar", person_number(email)),
-                Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(220)))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element();

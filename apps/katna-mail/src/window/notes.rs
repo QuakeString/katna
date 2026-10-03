@@ -2295,7 +2295,7 @@ impl MailWindow {
                 .child(card)
                 .with_animation(
                     ("note-editor-in", opening),
-                    gpui::Animation::new(Duration::from_millis(180))
+                    gpui::Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
                         .with_easing(gpui::ease_out_quint()),
                     move |el, t| el.opacity(if fades { t } else { 1.0 }),
                 )

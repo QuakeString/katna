@@ -23,6 +23,9 @@ gallery-menu = Menu
 gallery-cards = Cards
 gallery-card-rest = Resting
 gallery-card-active = Has the keys
+gallery-motion = Motion
+gallery-fold = Click to fold or unfold
+gallery-fold-body = The height glides on the slide spring with a little overshoot, the content shows as it grows and the arrow turns half round.
 gallery-elevation = Elevation
 gallery-text = Text sizes
 # A line of sample text in one of the text sizes.

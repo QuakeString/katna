@@ -348,7 +348,10 @@ impl MailWindow {
         )
         .with_animation(
             "snooze-menu",
-            Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
+            Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                140,
+            )))
+            .with_easing(ease_out_quint()),
             |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
         )
         .into_any_element()

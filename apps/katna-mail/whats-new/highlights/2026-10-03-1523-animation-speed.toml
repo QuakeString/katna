@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Choose how fast things move"
+text = """
+Settings > Appearance has an Animation speed: follow the desktop's speed,
+or pick Katna's own, from Faster to Slower. Reduce motion follows the
+desktop too, or can be always or never on.
+"""

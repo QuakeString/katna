@@ -60,8 +60,18 @@ keeps one 0,1 / blur 3 shadow at 30%.
 
 **Motion:** springs for movement (`SLIDE` is the one with a little
 overshoot). Timed fades: `FAST` 140 ms (hover), `BASE` 220 ms (fades,
-folds), `SLOW` 400 ms (page swaps), `LINGER` 900 ms (slow reveals). Reduce
-motion is honoured by `Spring::tick`.
+folds), `SLOW` 400 ms (page swaps), `LINGER` 900 ms (slow reveals).
+Every spring goes through `motion::scaled` and every timed animation
+through `motion::time`, so Settings > Appearance > Animation speed
+(the desktop's speed, KDE's `AnimationDurationFactor`, or Katna's own
+50-200%) stretches them all. Reduce motion (the desktop's, or always or
+never in Settings) sets GPUI's `reduce_motion`: `with_animation`,
+`with_spring` and `Spring::tick` then jump to the end.
+Something that opens and closes in place (a card that folds to a line, a
+section that unfolds) glides with `widgets::fold_box` and turns its
+`widgets::fold_arrow`, sharing one `widgets::Fold`: the height glides on
+`SLIDE`, the arrow turns half round on `SMOOTH`, and nothing that stays
+fades or blinks. An arrow never swaps for another icon.
 
 ## Shared controls
 

@@ -1023,8 +1023,10 @@ impl MailWindow {
                                 div().occlude().child(
                                     items.with_animation(
                                         ("menu", which as usize),
-                                        Animation::new(Duration::from_millis(160))
-                                            .with_easing(ease_out_quint()),
+                                        Animation::new(katna_ui::motion::time(
+                                            Duration::from_millis(160),
+                                        ))
+                                        .with_easing(ease_out_quint()),
                                         |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
                                     ),
                                 ),
@@ -2273,7 +2275,8 @@ impl MailWindow {
                     .bg(rgba(if keys_here { th.accent } else { th.text_faint }))
                     .with_spring(
                         ("row-cursor", ix),
-                        SpringAnimation::new(motion::SLIDE).to(if cursor { 1.0 } else { 0.0 }),
+                        SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                            .to(if cursor { 1.0 } else { 0.0 }),
                         move |el, s: f32| {
                             let s = s.clamp(0.0, 1.0);
                             el.top(px(height / 2.0 * (1.0 - s))).h(px(height * s))
@@ -2290,7 +2293,11 @@ impl MailWindow {
             };
             base.with_spring(
                 ("row-lift", ix),
-                SpringAnimation::new(ROW_LIFT).to(if hovered { 1.0 } else { 0.0 }),
+                SpringAnimation::new(katna_ui::motion::scaled(ROW_LIFT)).to(if hovered {
+                    1.0
+                } else {
+                    0.0
+                }),
                 move |el, s: f32| {
                     let s = s.clamp(0.0, 1.0);
                     if s > 0.001 {
@@ -2332,7 +2339,11 @@ impl MailWindow {
             div()
                 .with_spring(
                     (id, ix),
-                    SpringAnimation::new(ROW_LIFT).to(if rest { 0.0 } else { 1.0 }),
+                    SpringAnimation::new(katna_ui::motion::scaled(ROW_LIFT)).to(if rest {
+                        0.0
+                    } else {
+                        1.0
+                    }),
                     move |el, s: f32| el.opacity(OFF_REST + (1.0 - OFF_REST) * s.clamp(0.0, 1.0)),
                 )
                 .child(icon(name, th.text_dim, size))
@@ -2360,7 +2371,8 @@ impl MailWindow {
                 div()
                     .with_spring(
                         ("row-check-rest", ix),
-                        SpringAnimation::new(ROW_LIFT).to(if rest && !checked { 0.0 } else { 1.0 }),
+                        SpringAnimation::new(katna_ui::motion::scaled(ROW_LIFT))
+                            .to(if rest && !checked { 0.0 } else { 1.0 }),
                         move |el, s: f32| {
                             el.opacity(OFF_REST + (1.0 - OFF_REST) * s.clamp(0.0, 1.0))
                         },
@@ -2545,7 +2557,8 @@ impl MailWindow {
                 .child(self.hover_actions(ix, key, row.unread, row.pinned, th, cx))
                 .with_animation(
                     ("row-actions", ix),
-                    Animation::new(ACTIONS_IN).with_easing(ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(ACTIONS_IN))
+                        .with_easing(ease_out_quint()),
                     |el, t| el.opacity(t),
                 )
                 .into_any_element()
@@ -2982,7 +2995,7 @@ impl MailWindow {
                         .children(items)
                         .with_animation(
                             ("files-menu", ix),
-                            Animation::new(Duration::from_millis(160))
+                            Animation::new(katna_ui::motion::time(Duration::from_millis(160)))
                                 .with_easing(ease_out_quint()),
                             |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
                         ),
@@ -3076,7 +3089,8 @@ impl MailWindow {
             })
             .with_animation(
                 ("row-actions", ix),
-                Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(140)))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element()
@@ -3091,7 +3105,8 @@ fn fade_in(body: AnyElement, seq: usize) -> AnyElement {
         .child(body)
         .with_animation(
             ("card", seq),
-            Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+            Animation::new(katna_ui::motion::time(Duration::from_millis(220)))
+                .with_easing(ease_out_quint()),
             // From half-drawn, so the card never shows a blank frame.
             |el, t| el.opacity(0.5 + 0.5 * t),
         )
@@ -3162,7 +3177,8 @@ fn first_sync_placeholder(th: &Theme) -> AnyElement {
                         .bg(rgba(th.accent))
                         .with_animation(
                             "first-sync",
-                            Animation::new(Duration::from_millis(1300)).repeat(),
+                            Animation::new(katna_ui::motion::time(Duration::from_millis(1300)))
+                                .repeat(),
                             |bar, t| bar.left(px(-64.0 + 224.0 * t)),
                         ),
                 ),

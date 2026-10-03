@@ -756,8 +756,10 @@ impl MailWindow {
             .children(self.render_text_menu(th, cx))
             .with_animation(
                 ("open-chat", key_number(key)),
-                gpui::Animation::new(std::time::Duration::from_millis(280))
-                    .with_easing(gpui::ease_out_quint()),
+                gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    280,
+                )))
+                .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element()
@@ -1094,11 +1096,9 @@ impl MailWindow {
             let total = delay + PEOPLE_ROW_MS;
             row.with_animation(
                 ("chat-member-in", run * 1000 + ix),
-                gpui::Animation::new(std::time::Duration::from_millis(if reduce {
-                    1
-                } else {
-                    total as u64
-                })),
+                gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    if reduce { 1 } else { total as u64 },
+                ))),
                 move |el, t| {
                     let local = ((t * total - delay) / PEOPLE_ROW_MS).clamp(0.0, 1.0);
                     let eased = 1.0 - (1.0 - local).powi(3);
@@ -1142,11 +1142,9 @@ impl MailWindow {
             )
             .with_animation(
                 ("chat-people-in", run),
-                gpui::Animation::new(std::time::Duration::from_millis(if reduce {
-                    1
-                } else {
-                    220
-                }))
+                gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    if reduce { 1 } else { 220 },
+                )))
                 .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
             );
@@ -1445,7 +1443,9 @@ impl MailWindow {
                 let tint = th.hover;
                 row.with_animation(
                     ("chat-flash", run),
-                    gpui::Animation::new(std::time::Duration::from_millis(pins::FLASH_MS as u64)),
+                    gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                        pins::FLASH_MS as u64,
+                    ))),
                     move |el, t| el.bg(rgba(fade(tint, (1.0 - t).powi(2)))),
                 )
                 .into_any_element()
