@@ -14,10 +14,10 @@ use gpui::{
 };
 use katna_ui::motion::lerp;
 use katna_ui::px;
-use katna_ui::tokens::radius;
+use katna_ui::tokens::{radius, space, state, text};
 use katna_ui::{Glow, Ripple, Tooltip, WindowDrag};
 
-use crate::theme::{Theme, avatar_color, fade, initial};
+use crate::theme::{Theme, avatar_color, fade, initial, mix};
 use crate::window::MenuKey;
 
 pub const TOOLBAR_HEIGHT: f32 = 48.0;
@@ -457,31 +457,72 @@ pub fn card_outline(th: &Theme, radius: f32, t: f32) -> Option<AnyElement> {
     })
 }
 
+/// How a button shows. Every labelled button is one of these
+/// (`docs/DESIGN.md`); round icon buttons are [`icon_button`] and
+/// [`tonal_icon_button`].
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum ButtonStyle {
+    /// Accent fill: the primary action of a panel.
+    Filled,
+    /// An edge and accent text: a second action beside a filled one.
+    Outlined,
+    /// Accent text alone, with a soft hover: a light action inside a card.
+    Text,
+}
+
+/// The height of a labelled button.
+pub const BUTTON_HEIGHT: f32 = 36.0;
+
+/// A rounded button in `style`, ready for its label (and an icon before
+/// it, with [`ButtonStyle::Text`]): shape, colours, hover and ripple.
+pub fn button(id: impl Into<gpui::ElementId>, style: ButtonStyle, th: &Theme) -> Stateful<Div> {
+    let id = id.into();
+    let ripple = id_hash(&id);
+    let base = div()
+        .id(id)
+        .relative()
+        .overflow_hidden()
+        .flex_none()
+        .h(px(BUTTON_HEIGHT))
+        .flex()
+        .flex_row()
+        .items_center()
+        .rounded_full()
+        .text_size(px(text::BODY))
+        .font_weight(FontWeight::MEDIUM)
+        .cursor_pointer()
+        .keeps_press();
+    match style {
+        ButtonStyle::Filled => base
+            .px(px(space::S6))
+            .bg(rgba(th.accent))
+            .text_color(rgba(th.on_accent))
+            .hover(|s| s.shadow(elevation(th, 1.0)))
+            .child(Ripple::new(("ripple", ripple), rgba(0xffffff3d))),
+        // 20, between S5 and S6: the edge makes the button look wider.
+        ButtonStyle::Outlined => base
+            .px(px(20.0))
+            .border_1()
+            .border_color(rgba(fade(th.text_faint, 0.7)))
+            .text_color(rgba(th.accent))
+            .child(Glow::new(("glow", ripple), rgba(th.hover)).fade())
+            .child(Ripple::new(("ripple", ripple), rgba(th.ripple))),
+        ButtonStyle::Text => base
+            .px(px(space::S4))
+            .gap(px(6.0))
+            .text_color(rgba(th.accent))
+            .child(Glow::new(("glow", ripple), rgba(th.hover)).fade())
+            .child(Ripple::new(("ripple", ripple), rgba(th.ripple))),
+    }
+}
+
 /// A filled, rounded button (the primary action of a panel).
 pub fn filled_button(
     id: impl Into<gpui::ElementId>,
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> Stateful<Div> {
-    let id = id.into();
-    div()
-        .id(id.clone())
-        .relative()
-        .overflow_hidden()
-        .h(px(36.0))
-        .px(px(24.0))
-        .flex()
-        .items_center()
-        .rounded_full()
-        .bg(rgba(th.accent))
-        .text_color(rgba(th.on_accent))
-        .text_size(px(14.0))
-        .font_weight(FontWeight::MEDIUM)
-        .cursor_pointer()
-        .keeps_press()
-        .hover(|s| s.shadow(elevation(th, 1.0)))
-        .child(Ripple::new(("ripple", id_hash(&id)), rgba(0xffffff3d)))
-        .child(label.into())
+    button(id, ButtonStyle::Filled, th).child(label.into())
 }
 
 /// An outlined, rounded button with a label.
@@ -490,26 +531,70 @@ pub fn outlined_button(
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> Stateful<Div> {
+    button(id, ButtonStyle::Outlined, th).child(label.into())
+}
+
+/// An accent label with an icon before it, and no edge or fill until the
+/// pointer is over it ("Add email").
+pub fn text_button(
+    id: impl Into<gpui::ElementId>,
+    name: &str,
+    label: impl Into<SharedString>,
+    th: &Theme,
+) -> Stateful<Div> {
+    button(id, ButtonStyle::Text, th)
+        .child(icon(name, th.accent, 18.0))
+        .child(label.into())
+}
+
+/// The fill of a [`tonal_icon_button`] at rest and under the pointer: the
+/// accent, lightly, over the card.
+pub fn tonal_fill(th: &Theme) -> (u32, u32) {
+    let accent = th.accent | 0xff;
+    let t = if th.dark { 0.16 } else { 0.17 };
+    (
+        mix(th.surface, accent, t),
+        mix(th.surface, accent, t + 0.08),
+    )
+}
+
+/// A round icon button on a light accent fill (a contact's mail, search
+/// and call actions). `on` fills it with the accent (muted); one that is
+/// not `enabled` dims and takes no clicks.
+pub fn tonal_icon_button(
+    id: impl Into<gpui::ElementId>,
+    name: &str,
+    size: f32,
+    on: bool,
+    enabled: bool,
+    th: &Theme,
+) -> Stateful<Div> {
     let id = id.into();
+    let ripple = id_hash(&id);
+    let (rest, hover) = tonal_fill(th);
+    let (fill, glyph) = if on {
+        (th.accent | 0xff, th.on_accent)
+    } else {
+        (rest, th.accent)
+    };
     div()
-        .id(id.clone())
+        .id(id)
         .relative()
         .overflow_hidden()
-        .h(px(36.0))
-        .px(px(20.0))
+        .size(px(size))
+        .flex_none()
         .flex()
         .items_center()
+        .justify_center()
         .rounded_full()
-        .border_1()
-        .border_color(rgba(fade(th.text_faint, 0.7)))
-        .text_size(px(14.0))
-        .font_weight(FontWeight::MEDIUM)
-        .text_color(rgba(th.accent))
-        .cursor_pointer()
-        .keeps_press()
-        .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
-        .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
-        .child(label.into())
+        .bg(rgba(fill))
+        .when(!enabled, |d| d.opacity(state::DISABLED))
+        .when(enabled, |d| {
+            d.cursor_pointer()
+                .when(!on, |d| d.hover(move |s| s.bg(rgba(hover))))
+                .child(Ripple::new(("ripple", ripple), rgba(th.ripple)).centered())
+        })
+        .child(icon(name, glyph, 20.0))
 }
 
 /// A row of buttons over a card; its empty space moves the window.
