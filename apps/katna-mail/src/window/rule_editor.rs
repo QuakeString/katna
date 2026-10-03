@@ -1138,12 +1138,11 @@ impl MailWindow {
         })
     }
 
-    /// The folders action row `ix` can choose from, with their names:
-    /// any folder of the rule's accounts for Move to, their own folders
-    ///
-    /// and labels for Add label.
-    /// Only the account that has `chosen`, when a row has one: a row
-    /// moves mail of one account.
+    /// The folders an action row can choose from, with their names: any
+    /// folder of the rule's accounts for Move to, their own folders and
+    /// labels for Add label, and folders still to make. Only the account
+    /// that has `chosen`, when a row has one: a row moves mail of one
+    /// account.
     fn rule_folders_of(
         &self,
         e: &RuleEditor,
