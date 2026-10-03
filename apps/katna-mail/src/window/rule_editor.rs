@@ -1194,6 +1194,8 @@ impl MailWindow {
             .occlude()
             .w(px(width))
             .max_h(px((vh - 48.0).max(240.0)))
+            // Shrinks to the room around it; the body scrolls.
+            .min_h_0()
             .flex()
             .flex_col()
             .overflow_hidden()
@@ -1212,6 +1214,8 @@ impl MailWindow {
                 .items_center()
                 .justify_center()
                 .bg(rgba(fade(0x0000_0066, t)))
+                // Even margins inside the room below the top bar.
+                .p(px(24.0))
                 .child(
                     div()
                         .id("rule-editor-scrim")
@@ -1221,7 +1225,15 @@ impl MailWindow {
                         .size_full()
                         .on_click(cx.listener(|this, _, _, cx| this.close_rule_editor(cx))),
                 )
-                .child(div().opacity(t).mt(px(lerp(24.0, 0.0, t))).child(card))
+                .child(
+                    div()
+                        .max_h_full()
+                        .flex()
+                        .flex_col()
+                        .opacity(t)
+                        .mt(px(lerp(24.0, 0.0, t)))
+                        .child(card),
+                )
                 .children(pick)
                 .into_any_element(),
         )
@@ -1319,7 +1331,7 @@ impl MailWindow {
                             )
                             // As wide as its label, so "matches the
                             // pattern" shows in full.
-                            .min_w(px(150.0))
+                            .min_w(px(192.0))
                             .on_click(pick_at(Pick::Comparator(ix), cx)),
                         )
                         .child(
@@ -1473,7 +1485,7 @@ impl MailWindow {
                 .child(div().flex_1().min_w_0().child(err))
         });
         let buttons = self.rule_editor_buttons(e, th, cx);
-        div()
+        let scroll = div()
             .id("rule-editor-body")
             // Shrinks to the card's height so it scrolls instead of running
             // past the window.
@@ -1489,7 +1501,7 @@ impl MailWindow {
                     .flex_col()
                     .px(px(if narrow { 16.0 } else { 26.0 }))
                     .pt(px(22.0))
-                    .pb(px(20.0))
+                    .pb(px(4.0))
                     .child(
                         div()
                             .text_size(px(22.0))
@@ -1535,7 +1547,19 @@ impl MailWindow {
                     .child(stop)
                     .child(accounts)
                     .child(panel)
-                    .children(error)
+                    .children(error),
+            );
+        // Save and Cancel stay below the scrolling part.
+        div()
+            .min_h_0()
+            .flex()
+            .flex_col()
+            .child(scroll)
+            .child(
+                div()
+                    .flex_none()
+                    .px(px(if narrow { 16.0 } else { 26.0 }))
+                    .pb(px(20.0))
                     .child(buttons),
             )
             .into_any_element()
@@ -2202,7 +2226,7 @@ fn part_row(
                 div()
                     .flex()
                     .flex_row()
-                    .items_center()
+                    .items_start()
                     .gap(px(8.0))
                     .child(first)
                     .child(remove),
@@ -2213,7 +2237,7 @@ fn part_row(
     div()
         .flex()
         .flex_row()
-        .items_center()
+        .items_start()
         .gap(px(8.0))
         .child(first)
         .child(rest)
@@ -2225,6 +2249,8 @@ fn remove_button(id: impl Into<ElementId>, th: &Theme) -> Stateful<gpui::Div> {
     icon_button(id, "close", 18.0, th)
         .flex_none()
         .size(px(32.0))
+        // Centred on the 36 px boxes of its row when rows align at the top.
+        .mt(px(2.0))
         .focus_ring(th)
         .tooltip(tip(tr!("rules-editor-remove"), th))
 }
