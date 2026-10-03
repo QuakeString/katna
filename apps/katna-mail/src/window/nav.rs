@@ -492,8 +492,7 @@ impl MailWindow {
                         .opacity(dock * dock)
                         .text_size(px(super::COMPOSE_TEXT_SIZE))
                         .font_weight(FontWeight::MEDIUM)
-                        .whitespace_nowrap()
-                        .child(label),
+                        .child(self.primary_label()),
                 )
                 .when(arrow > 0.5, |d| {
                     d.child(

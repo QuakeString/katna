@@ -235,6 +235,17 @@ impl MailWindow {
         )
     }
 
+    /// The big button's word, rolling from the last page's into this
+    /// one's in a box as wide as the button gives it this frame.
+    pub(super) fn primary_label(&self) -> gpui::AnyElement {
+        crate::widgets::morph_label(
+            &self.primary_label_from,
+            &self.primary_label,
+            self.primary_icon_turn.value(),
+            self.primary_label_width,
+        )
+    }
+
     pub(super) fn primary_action(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         if self.drive_upload_here() {
             self.upload_into_drive(false, cx);
