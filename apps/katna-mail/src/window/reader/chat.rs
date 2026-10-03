@@ -804,7 +804,9 @@ impl MailWindow {
         Some(
             div()
                 .absolute()
-                .right(px(20.0))
+                // On the send button's centre line: the same size, as far
+                // in as the reply box's right padding.
+                .right(px(12.0))
                 .bottom(px(12.0 + lerp(-12.0, 0.0, t)))
                 .opacity(t)
                 .child(
