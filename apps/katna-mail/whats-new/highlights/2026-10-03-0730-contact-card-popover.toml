@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Contact card in narrow windows"
+text = """
+When the window has no room for the contact pane, clicking a person's name
+or picture opens a short card over the mail, pointing at where you clicked.
+Widen the window and the full pane takes its place.
+"""

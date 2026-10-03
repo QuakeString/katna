@@ -1726,8 +1726,8 @@ impl MailWindow {
                 _ => ix,
             };
             let mut pieces = self.text.pieces(super::select::DETAILS_PART + slot, th);
-            // Where the contact panel has no room, a click only selects.
-            let panel = self.contact_offered();
+            // Where the contact panel has no room, the card pops over.
+            let panel = !self.layout.shape.is_phone();
             let line = |label: String, value: AnyElement| {
                 div()
                     .flex()
@@ -1772,12 +1772,14 @@ impl MailWindow {
                                     .when(panel, |d| {
                                         d.cursor_pointer().hover(|s| s.text_color(rgba(th.text)))
                                     })
-                                    .on_click(cx.listener(move |this, _, _, cx| {
-                                        // A drag that selected text is not a click.
-                                        if this.text.is_empty() {
-                                            this.show_person(&email, cx);
-                                        }
-                                    }))
+                                    .on_click(cx.listener(
+                                        move |this, e: &gpui::ClickEvent, _, cx| {
+                                            // A drag that selected text is not a click.
+                                            if this.text.is_empty() {
+                                                this.show_person(&email, e.position(), cx);
+                                            }
+                                        },
+                                    ))
                                     .on_mouse_down(
                                         MouseButton::Right,
                                         cx.listener(move |this, _, _, _| {
@@ -1969,7 +1971,18 @@ impl MailWindow {
                     .flex_none()
                     .flex()
                     .justify_center()
-                    .child(self.person_avatar(&name, &email, 40.0)),
+                    // Their card: in the panel, else popping over here.
+                    .child({
+                        let pick = email.clone();
+                        div()
+                            .id(("part-picture", ix))
+                            .cursor_pointer()
+                            .tooltip(crate::widgets::tip(tr!("chat-show-card"), th))
+                            .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
+                                this.show_person(&pick, e.position(), cx);
+                            }))
+                            .child(self.person_avatar(&name, &email, 40.0))
+                    }),
             )
             .child(turn_fade(
                 div()
