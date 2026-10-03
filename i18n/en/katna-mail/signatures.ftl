@@ -35,3 +35,34 @@ signature-picture-too-big = Pictures in a signature can be up to { $size }.
 signature-picture-kind = Pick a PNG, JPEG, GIF or WebP picture.
 # The file could not be read. $name: the file's name; $error: why, from the system.
 signature-picture-unreadable = { $name }: { $error }
+
+## Paste HTML
+# A signature designed elsewhere (a signature website, another mail app),
+# pasted as HTML. It is sent as it is, with its pictures inside the mail.
+
+signature-html-title = Paste HTML
+signature-html-subtitle = For a signature you designed elsewhere
+# Shown in the empty box.
+signature-html-placeholder = Paste the signature's HTML here
+# The name given to a signature made from pasted HTML.
+signature-html-name = Pasted
+# Under the box. $name: the name the new signature gets.
+signature-html-new = Saved as a new signature, “{ $name }”
+# Under the box, when editing a signature's HTML. $name: its name.
+signature-html-replaces = Saves over “{ $name }”
+signature-html-cancel = Cancel
+signature-html-save = Save
+signature-html-fetching = Downloading its pictures…
+# $size: their total size, such as 9 KB.
+signature-html-pictures-inside = { $count ->
+    [one] { $count } picture downloaded and put inside the mail ({ $size })
+   *[other] { $count } pictures downloaded and put inside the mail ({ $size })
+}
+signature-html-pictures-web = { $count ->
+    [one] { $count } picture couldn't be downloaded, so readers load it from the web
+   *[other] { $count } pictures couldn't be downloaded, so readers load them from the web
+}
+signature-html-removed = Removed scripts, forms and tracking pixels, which mail apps block anyway
+signature-html-style-sheet = Left out a style sheet: mail keeps only the styles written on each part
+signature-html-links = Removed links that went somewhere other than a website, an address or a phone
+signature-html-plain-text = Plain text version made from it, for mail apps that show only text

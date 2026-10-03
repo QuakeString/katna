@@ -30,6 +30,9 @@ use super::doc::{
     word_left, word_range, word_right,
 };
 use super::html;
+
+/// Draws a block of designed HTML `width` pixels wide.
+pub type HtmlView = Rc<dyn Fn(&doc::HtmlBlock, f32, &mut gpui::App) -> AnyElement>;
 use super::layout::{Deco, ParaElement, ParaLayout, TextBase};
 use crate::TEXT_AREA_CONTEXT;
 mod paste;
@@ -345,6 +348,8 @@ pub struct RichEditor {
     paste_labels: Option<PasteLabels>,
     table_picture: Option<TablePicture>,
     images: HashMap<u64, Arc<gpui::Image>>,
+    /// Draws designed HTML (a signature); see [`Self::set_html_view`].
+    html_view: Option<HtmlView>,
     next_image_id: u64,
     /// The editor's width at the last paint, for sizing images.
     width: Pixels,
@@ -408,6 +413,7 @@ impl RichEditor {
             paste_labels: None,
             table_picture: None,
             images: HashMap::new(),
+            html_view: None,
             drawn_focused: std::cell::Cell::new(false),
             next_image_id: 0,
             width: px(0.0),
@@ -430,6 +436,10 @@ impl RichEditor {
         self.doc = doc;
         if self.doc.blocks.is_empty() {
             self.doc = Doc::default();
+        }
+        // The caret needs a paragraph, even beside a designed block.
+        if self.doc.paths().is_empty() {
+            self.doc.blocks.push(Block::Para(Para::default()));
         }
         self.next_image_id = self
             .doc
@@ -529,6 +539,12 @@ impl RichEditor {
 
     pub fn set_palette(&mut self, palette: Palette) {
         self.palette = palette;
+    }
+
+    /// How designed HTML is drawn: the app's mail renderer. Without one
+    /// it shows as its plain text.
+    pub fn set_html_view(&mut self, view: HtmlView) {
+        self.html_view = Some(view);
     }
 
     /// Plain text mode: formatting is off and the text draws plain.
@@ -2550,6 +2566,23 @@ impl RichEditor {
                     .into_any_element()
             }
             Block::Image(image) => self.render_image(ix, image, cx),
+            Block::Html(html) => {
+                let width = unpx(self.width).max(120.0);
+                let shown = match &self.html_view {
+                    Some(view) => view(html, width, cx),
+                    None => div()
+                        .text_color(palette.text)
+                        .child(html.text.to_string())
+                        .into_any_element(),
+                };
+                // A fixed piece: the text goes around it, not into it.
+                div()
+                    .w_full()
+                    .my(px(crate::tokens::space::S1))
+                    .overflow_hidden()
+                    .child(shown)
+                    .into_any_element()
+            }
         }
     }
 
@@ -2735,7 +2768,12 @@ pub fn insert_signature_doc(doc: &mut Doc, at: usize, signature: Doc) {
     // Its pictures get IDs of their own in the message.
     let mut next = doc.images().map(|i| i.id).max().unwrap_or(0);
     for block in &mut blocks {
-        if let Block::Image(image) = block {
+        let images = match block {
+            Block::Image(image) => std::slice::from_mut(image),
+            Block::Html(html) => html.images.as_mut_slice(),
+            _ => &mut [],
+        };
+        for image in images {
             next += 1;
             image.id = next;
         }

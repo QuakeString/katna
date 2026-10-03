@@ -10,12 +10,12 @@ pub mod html;
 mod layout;
 
 pub use doc::{
-    Align, Block, CharStyle, Doc, Font, Image, ImageSize, List, Para, ParaStyle, Path, Pos, Size,
-    Table,
+    Align, Block, CharStyle, Doc, Font, HtmlBlock, Image, ImageSize, List, Para, ParaStyle, Path,
+    Pos, Size, Table,
 };
 pub use editor::{
-    Complete, GrammarCheck, GrammarFix, GrammarIssue, Palette, PasteLabels, PasteOption, Picture,
-    RICH_TEXT_CONTEXT, RichEditor, RichEvent, SpellCheck, Suggest, TableEdit, TablePicture,
-    Transfer, bind_keys, image_mime, insert_signature_doc,
+    Complete, GrammarCheck, GrammarFix, GrammarIssue, HtmlView, Palette, PasteLabels, PasteOption,
+    Picture, RICH_TEXT_CONTEXT, RichEditor, RichEvent, SpellCheck, Suggest, TableEdit,
+    TablePicture, Transfer, bind_keys, image_mime, insert_signature_doc,
 };
 pub(crate) use editor::{GRAMMAR_WAIT, HINT_WAIT};

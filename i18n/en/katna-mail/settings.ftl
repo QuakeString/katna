@@ -457,6 +457,10 @@ settings-compose-signature-delete = Delete
 settings-compose-signature-deleted = Signature deleted
 # The button that makes a new signature.
 settings-compose-signature-new = Create new
+# The button that opens a box to paste a signature designed elsewhere, as HTML.
+settings-compose-signature-paste-html = Paste HTML
+# The button that opens a designed signature's HTML to edit by hand.
+settings-compose-signature-edit-html = Edit HTML
 settings-compose-no-signatures = No signatures yet.
 settings-compose-no-signature = No signature
 settings-compose-for-new-mail = For new mail

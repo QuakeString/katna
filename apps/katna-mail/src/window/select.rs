@@ -525,6 +525,21 @@ pub(super) struct Pieces {
 }
 
 impl Pieces {
+    /// Pieces outside the reading pane's selection, for text drawn
+    /// elsewhere (a designed signature in an editor).
+    pub(super) fn alone(th: &Theme) -> Self {
+        Self {
+            marker: Marker {
+                drawn: Rc::default(),
+                frame: 0,
+                selected: None,
+                color: selection_color(th),
+            },
+            part: 0,
+            next: 0,
+        }
+    }
+
     /// The next run: see [`Marker::piece`].
     pub(super) fn piece(
         &mut self,

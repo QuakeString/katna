@@ -105,6 +105,7 @@ impl MailWindow {
         let body = cx.new(|cx| {
             let mut editor = RichEditor::new(tr!("settings-compose-template-text"), cx);
             editor.set_palette(super::super::compose::palette(&th));
+            editor.set_html_view(super::super::rich::html_view(th));
             editor.set_doc(doc.clone(), doc.start(), cx);
             editor
         });

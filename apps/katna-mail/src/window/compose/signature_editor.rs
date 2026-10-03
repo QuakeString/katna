@@ -88,6 +88,7 @@ impl MailWindow {
         let editor = cx.new(|cx| {
             let mut editor = RichEditor::new(tr!("signature-placeholder"), cx);
             editor.set_palette(palette(&th));
+            editor.set_html_view(super::super::rich::html_view(th));
             editor.set_doc(doc.clone(), doc.start(), cx);
             editor
         });

@@ -399,7 +399,7 @@ const ENTRIES: &[Entry] = &[
         Section::Signatures,
         "settings-compose-signatures",
         "settings-compose-signatures-summary",
-        "signature sign-off",
+        "signature sign-off html paste designed raw code generator logo banner",
     ),
     entry(
         Section::Signatures,
