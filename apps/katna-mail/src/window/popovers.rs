@@ -239,6 +239,7 @@ impl MailWindow {
             || self.close_summary_peek(cx)
             || self.close_delete_ask(cx)
             || self.close_snooze_menu(cx)
+            || self.close_note_popovers(cx)
             || self.close_quiet_menu(cx)
             || self.close_danger(cx)
         {

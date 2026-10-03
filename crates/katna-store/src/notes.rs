@@ -16,6 +16,16 @@ use crate::journal::{self, ChangeOp, ObjectKind};
 /// (Google Keep's seven days).
 pub const NOTE_TRASH_KEEP: i64 = 7 * 24 * 60 * 60;
 
+/// How long a note's earlier text is kept on this computer, in seconds.
+pub const NOTE_VERSION_KEEP: i64 = 30 * 24 * 60 * 60;
+
+/// Saves within this many seconds of the last make one version.
+const VERSION_GAP: i64 = 10 * 60;
+
+/// The start of a link to another note in a note's HTML, the note's UUID
+/// after it.
+pub const NOTE_LINK_SCHEME: &str = "katna-note:";
+
 /// A note.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Note {
@@ -49,10 +59,70 @@ pub struct Note {
     pub server_uid: Option<i64>,
     /// Changed here, and not yet on the server.
     pub dirty: bool,
+    /// When it reminds, in UTC seconds.
+    pub remind_at: Option<i64>,
+}
+
+/// A picture in a note, named in its HTML as `cid:<cid>`.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct NotePicture {
+    pub cid: String,
+    pub name: String,
+    pub mime: String,
+    pub width: u32,
+    pub height: u32,
+    pub data: Vec<u8>,
+}
+
+/// Earlier text of a note, kept for [`NOTE_VERSION_KEEP`].
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct NoteVersion {
+    pub id: i64,
+    /// When it was last like this.
+    pub at: i64,
+    pub title: String,
+    pub body: String,
+    pub html: String,
+    /// Where it was written.
+    pub source: VersionSource,
+}
+
+/// Where a version of a note was written.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub enum VersionSource {
+    /// On this computer.
+    #[default]
+    Here,
+    /// On another device, named when its mail app says which.
+    Elsewhere(Option<String>),
+}
+
+impl VersionSource {
+    fn to_sql(&self) -> String {
+        match self {
+            VersionSource::Here => "here".to_owned(),
+            VersionSource::Elsewhere(None) => "sync".to_owned(),
+            VersionSource::Elsewhere(Some(device)) => format!("sync:{device}"),
+        }
+    }
+
+    fn from_sql(text: &str) -> Self {
+        match text {
+            "here" => VersionSource::Here,
+            "sync" => VersionSource::Elsewhere(None),
+            other => VersionSource::Elsewhere(
+                other
+                    .strip_prefix("sync:")
+                    .filter(|d| !d.is_empty())
+                    .map(str::to_owned),
+            ),
+        }
+    }
 }
 
 const COLUMNS: &str = "id, account_id, uuid, title, body, color, pinned, archived, labels, link,
-     position, created_at, updated_at, trashed_at, server_uid, dirty, html";
+     position, created_at, updated_at, trashed_at, server_uid, dirty, html,
+     (SELECT at FROM note_reminder WHERE note_id = note.id)";
 
 fn note_row(row: &Row<'_>) -> rusqlite::Result<Note> {
     let labels: String = row.get(8)?;
@@ -74,6 +144,7 @@ fn note_row(row: &Row<'_>) -> rusqlite::Result<Note> {
         server_uid: row.get(14)?,
         dirty: row.get(15)?,
         html: row.get(16)?,
+        remind_at: row.get(17)?,
     })
 }
 
@@ -117,6 +188,12 @@ impl Store {
     /// old one. Returns its ID. The note is marked for the server; its
     /// server copy and Trash state stay as they were.
     pub fn save_note(&mut self, note: &Note) -> Result<i64> {
+        self.save_note_with(note, None)
+    }
+
+    /// [`Store::save_note`], its pictures put in place of the ones it had
+    /// unless `pictures` is `None`.
+    pub fn save_note_with(&mut self, note: &Note, pictures: Option<&[NotePicture]>) -> Result<i64> {
         self.check_writable()?;
         let tx = self
             .pim
@@ -191,8 +268,118 @@ impl Store {
                 id
             }
         };
+        put_reminder(&tx, id, note.remind_at)?;
+        if let Some(pictures) = pictures {
+            put_pictures(&tx, id, pictures)?;
+        }
+        keep_version(&tx, id, now, &VersionSource::Here)?;
         tx.commit()?;
         Ok(id)
+    }
+
+    /// Note `id`'s pictures, in the order they were added.
+    pub fn note_pictures(&self, id: i64) -> Result<Vec<NotePicture>> {
+        let mut stmt = self.pim.prepare_cached(
+            "SELECT cid, name, mime, width, height, data FROM note_picture
+             WHERE note_id = ?1 ORDER BY ord",
+        )?;
+        let rows = stmt.query_map([id], picture_row)?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// The first picture of each note that has one, by note: what its card
+    /// shows across the top.
+    pub fn note_covers(&self) -> Result<std::collections::HashMap<i64, NotePicture>> {
+        let mut stmt = self.pim.prepare_cached(
+            "SELECT p.note_id, p.cid, p.name, p.mime, p.width, p.height, p.data
+             FROM note_picture p
+             WHERE p.ord = (SELECT min(ord) FROM note_picture q WHERE q.note_id = p.note_id)",
+        )?;
+        let rows = stmt.query_map([], |row| {
+            Ok((
+                row.get::<_, i64>(0)?,
+                NotePicture {
+                    cid: row.get(1)?,
+                    name: row.get(2)?,
+                    mime: row.get(3)?,
+                    width: row.get(4)?,
+                    height: row.get(5)?,
+                    data: row.get(6)?,
+                },
+            ))
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Note `id`'s versions, newest first; the first is how it is now.
+    pub fn note_versions(&self, id: i64) -> Result<Vec<NoteVersion>> {
+        let mut stmt = self.pim.prepare_cached(
+            "SELECT id, at, title, body, html, source FROM note_version
+             WHERE note_id = ?1 ORDER BY at DESC, id DESC",
+        )?;
+        let rows = stmt.query_map([id], |row| {
+            Ok(NoteVersion {
+                id: row.get(0)?,
+                at: row.get(1)?,
+                title: row.get(2)?,
+                body: row.get(3)?,
+                html: row.get(4)?,
+                source: VersionSource::from_sql(&row.get::<_, String>(5)?),
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Forgets versions older than [`NOTE_VERSION_KEEP`] by `now`, but
+    /// never a note's newest. Returns how many.
+    pub fn purge_note_versions(&mut self, now: i64) -> Result<usize> {
+        self.check_writable()?;
+        Ok(self.pim.execute(
+            "DELETE FROM note_version
+             WHERE at < ?1
+               AND id != (SELECT v.id FROM note_version v
+                          WHERE v.note_id = note_version.note_id
+                          ORDER BY v.at DESC, v.id DESC LIMIT 1)",
+            [now - NOTE_VERSION_KEEP],
+        )?)
+    }
+
+    /// The notes not in Trash that remind in `from < at <= to`, soonest
+    /// first, as `(id, title, body, at)`.
+    pub fn notes_reminding(&self, from: i64, to: i64) -> Result<Vec<(i64, String, String, i64)>> {
+        let mut stmt = self.pim.prepare_cached(
+            "SELECT n.id, n.title, n.body, r.at FROM note_reminder r JOIN note n ON n.id = r.note_id
+             WHERE r.at > ?1 AND r.at <= ?2 AND n.trashed_at IS NULL
+             ORDER BY r.at",
+        )?;
+        let rows = stmt.query_map([from, to], |row| {
+            Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?))
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// When the next note not in Trash reminds after `after`.
+    pub fn next_note_reminder(&self, after: i64) -> Result<Option<i64>> {
+        Ok(self.pim.query_row(
+            "SELECT min(r.at) FROM note_reminder r JOIN note n ON n.id = r.note_id
+             WHERE r.at > ?1 AND n.trashed_at IS NULL",
+            [after],
+            |row| row.get(0),
+        )?)
+    }
+
+    /// The notes not in Trash whose HTML links to the note with `uuid`.
+    pub fn notes_linking(&self, uuid: &str) -> Result<Vec<Note>> {
+        if uuid.is_empty() {
+            return Ok(Vec::new());
+        }
+        let mut stmt = self.pim.prepare_cached(&format!(
+            "SELECT {COLUMNS} FROM note
+             WHERE instr(html, ?1) > 0 AND trashed_at IS NULL AND uuid != ?2
+             ORDER BY updated_at DESC"
+        ))?;
+        let rows = stmt.query_map(params![format!("{NOTE_LINK_SCHEME}{uuid}"), uuid], note_row)?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
 
     /// Moves `ids` to Trash (`trashed` true) or back out of it. A note
@@ -360,6 +547,10 @@ pub struct RemoteNote {
     pub link: Option<String>,
     /// Unix seconds, from the message's `Date`.
     pub updated_at: i64,
+    pub remind_at: Option<i64>,
+    pub pictures: Vec<NotePicture>,
+    /// The device it was written on, when its mail app says.
+    pub device: Option<String>,
 }
 
 impl Store {
@@ -464,6 +655,14 @@ impl Store {
                             remote.html
                         ],
                     )?;
+                    put_reminder(&tx, id, remote.remind_at)?;
+                    put_pictures(&tx, id, &remote.pictures)?;
+                    keep_version(
+                        &tx,
+                        id,
+                        remote.updated_at,
+                        &VersionSource::Elsewhere(remote.device.clone()),
+                    )?;
                     journal::record(&tx, ObjectKind::Note, id, ChangeOp::Update)?;
                 }
             }
@@ -491,6 +690,14 @@ impl Store {
                     ],
                 )?;
                 let id = tx.last_insert_rowid();
+                put_reminder(&tx, id, remote.remind_at)?;
+                put_pictures(&tx, id, &remote.pictures)?;
+                keep_version(
+                    &tx,
+                    id,
+                    remote.updated_at,
+                    &VersionSource::Elsewhere(remote.device.clone()),
+                )?;
                 journal::record(&tx, ObjectKind::Note, id, ChangeOp::Insert)?;
             }
         }
@@ -532,6 +739,108 @@ impl Store {
         tx.commit()?;
         Ok(gone)
     }
+}
+
+fn picture_row(row: &Row<'_>) -> rusqlite::Result<NotePicture> {
+    Ok(NotePicture {
+        cid: row.get(0)?,
+        name: row.get(1)?,
+        mime: row.get(2)?,
+        width: row.get(3)?,
+        height: row.get(4)?,
+        data: row.get(5)?,
+    })
+}
+
+/// Sets when note `id` reminds, or that it doesn't.
+fn put_reminder(tx: &rusqlite::Transaction<'_>, id: i64, at: Option<i64>) -> Result<()> {
+    match at {
+        Some(at) => tx.execute(
+            "INSERT INTO note_reminder (note_id, at) VALUES (?1, ?2)
+             ON CONFLICT (note_id) DO UPDATE SET at = excluded.at",
+            params![id, at],
+        )?,
+        None => tx.execute("DELETE FROM note_reminder WHERE note_id = ?1", [id])?,
+    };
+    Ok(())
+}
+
+/// Puts `pictures` in place of note `id`'s.
+fn put_pictures(tx: &rusqlite::Transaction<'_>, id: i64, pictures: &[NotePicture]) -> Result<()> {
+    tx.execute("DELETE FROM note_picture WHERE note_id = ?1", [id])?;
+    for (ord, p) in pictures.iter().enumerate() {
+        tx.execute(
+            "INSERT OR REPLACE INTO note_picture
+                 (note_id, cid, ord, name, mime, width, height, data)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+            params![
+                id,
+                p.cid,
+                i64::try_from(ord).unwrap_or(i64::MAX),
+                p.name,
+                p.mime,
+                p.width,
+                p.height,
+                p.data
+            ],
+        )?;
+    }
+    Ok(())
+}
+
+/// Keeps note `id` as it now is among its versions, written at `at` from
+/// `source`: in place of the newest when that was written here moments
+/// ago too, so typing doesn't make a version a second.
+fn keep_version(
+    tx: &rusqlite::Transaction<'_>,
+    id: i64,
+    at: i64,
+    source: &VersionSource,
+) -> Result<()> {
+    let (title, body, html): (String, String, String) = tx.query_row(
+        "SELECT title, body, html FROM note WHERE id = ?1",
+        [id],
+        |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+    )?;
+    let newest: Option<(i64, i64, String, String, String, String)> = tx
+        .query_row(
+            "SELECT id, at, source, title, body, html FROM note_version
+             WHERE note_id = ?1 ORDER BY at DESC, id DESC LIMIT 1",
+            [id],
+            |row| {
+                Ok((
+                    row.get(0)?,
+                    row.get(1)?,
+                    row.get(2)?,
+                    row.get(3)?,
+                    row.get(4)?,
+                    row.get(5)?,
+                ))
+            },
+        )
+        .optional()?;
+    let source_sql = source.to_sql();
+    if let Some((vid, vat, vsource, vtitle, vbody, vhtml)) = newest {
+        if (vtitle.as_str(), vbody.as_str(), vhtml.as_str())
+            == (title.as_str(), body.as_str(), html.as_str())
+        {
+            return Ok(());
+        }
+        if vsource == source_sql && *source == VersionSource::Here && at - vat < VERSION_GAP {
+            tx.execute(
+                "UPDATE note_version SET at = ?2, title = ?3, body = ?4, html = ?5
+                 WHERE id = ?1",
+                params![vid, at.max(vat), title, body, html],
+            )?;
+            return Ok(());
+        }
+    }
+    tx.execute(
+        "INSERT INTO note_version (note_id, at, title, body, html, source)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+        params![id, at, title, body, html, source_sql],
+    )?;
+    Ok(())
 }
 
 /// Queues note `id`'s server copy, if any, for deletion and forgets it.
@@ -811,5 +1120,99 @@ mod tests {
         store.save_note(&note("other")).unwrap();
         let about = store.notes_about("abc@example.com").unwrap();
         assert_eq!(about.iter().map(|n| n.id).collect::<Vec<_>>(), [id]);
+    }
+
+    #[test]
+    fn versions_keep_earlier_text_and_typing_makes_one() {
+        let (_dir, mut store) = store();
+        let id = store.save_note(&note("a")).unwrap();
+        let mut n = store.note(id).unwrap().unwrap();
+        n.body = "one".to_owned();
+        store.save_note(&n).unwrap();
+        n.body = "two".to_owned();
+        store.save_note(&n).unwrap();
+        // Typing moments apart is one version.
+        let versions = store.note_versions(id).unwrap();
+        assert_eq!(versions.len(), 1);
+        assert_eq!(versions[0].body, "two");
+        // An hour later is another.
+        store
+            .pim
+            .execute("UPDATE note_version SET at = at - 3600", [])
+            .unwrap();
+        n.body = "three".to_owned();
+        store.save_note(&n).unwrap();
+        let versions = store.note_versions(id).unwrap();
+        assert_eq!(
+            versions.iter().map(|v| v.body.as_str()).collect::<Vec<_>>(),
+            ["three", "two"]
+        );
+        // Old ones go, but never the newest.
+        let now = unix_now();
+        assert_eq!(store.purge_note_versions(now + 3600).unwrap(), 0);
+        assert_eq!(
+            store
+                .purge_note_versions(now + NOTE_VERSION_KEEP + 60)
+                .unwrap(),
+            1
+        );
+        assert_eq!(store.note_versions(id).unwrap().len(), 1);
+    }
+
+    #[test]
+    fn a_change_from_the_server_is_a_version_of_its_own() {
+        let (_dir, mut store) = store();
+        let mut r = remote("U1", "phone note");
+        r.device = Some("iPhone".to_owned());
+        store.apply_remote_note(2, 7, &r).unwrap();
+        r.body = "edited".to_owned();
+        r.updated_at += 10;
+        store.apply_remote_note(2, 8, &r).unwrap();
+        let id = store.account_notes(2).unwrap()[0].id;
+        let versions = store.note_versions(id).unwrap();
+        assert_eq!(versions.len(), 2);
+        assert_eq!(
+            versions[0].source,
+            VersionSource::Elsewhere(Some("iPhone".to_owned()))
+        );
+    }
+
+    #[test]
+    fn pictures_reminders_and_links_are_kept() {
+        let (_dir, mut store) = store();
+        let picture = NotePicture {
+            cid: "p1".to_owned(),
+            name: "shelf.png".to_owned(),
+            mime: "image/png".to_owned(),
+            width: 4,
+            height: 3,
+            data: vec![1, 2, 3],
+        };
+        let mut n = note("a");
+        n.remind_at = Some(5_000);
+        let a = store
+            .save_note_with(&n, Some(std::slice::from_ref(&picture)))
+            .unwrap();
+        assert_eq!(store.note_pictures(a).unwrap(), std::slice::from_ref(&picture));
+        assert_eq!(store.note_covers().unwrap()[&a], picture);
+        // Saved without pictures given: they stay.
+        store.save_note(&store.note(a).unwrap().unwrap()).unwrap();
+        assert_eq!(store.note_pictures(a).unwrap().len(), 1);
+        let due = store.notes_reminding(4_000, 5_000).unwrap();
+        assert_eq!(due.iter().map(|d| d.0).collect::<Vec<_>>(), [a]);
+        assert!(store.notes_reminding(5_000, 6_000).unwrap().is_empty());
+        let uuid = store.note(a).unwrap().unwrap().uuid;
+        let mut b = note("b");
+        b.html = format!("<p><a href=\"{NOTE_LINK_SCHEME}{uuid}\">a</a></p>");
+        let b = store.save_note(&b).unwrap();
+        assert_eq!(
+            store
+                .notes_linking(&uuid)
+                .unwrap()
+                .iter()
+                .map(|n| n.id)
+                .collect::<Vec<_>>(),
+            [b]
+        );
     }
 }

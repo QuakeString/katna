@@ -9,7 +9,8 @@
 //! brings back ones long past: those missed while the computer was off
 //! show only when they fell due in the last few minutes.
 //!
-//! Tasks' reminders come the same way, with Mark as done and Snooze.
+//! Tasks' reminders come the same way, with Mark as done and Snooze, and
+//! notes' with Open and Snooze.
 
 use std::{collections::HashSet, sync::Weak, time::Duration};
 
@@ -51,6 +52,9 @@ pub(crate) struct Alarm {
     /// The task it is about, for a task's reminder; `key` is then the
     /// task's row and its reminder time.
     pub task: Option<i64>,
+    /// The note it is about, for a note's reminder; `key` is then the
+    /// note's row and its reminder time.
+    pub note: Option<i64>,
 }
 
 /// The reminders due in `(from, to]` of `occurrences`, soonest first, and
@@ -95,6 +99,7 @@ fn due(
                 join_url: join_url(data),
                 at,
                 task: None,
+                note: None,
             });
         }
     }
@@ -172,6 +177,7 @@ fn tasks_due(tasks: &[Task], from: i64, to: i64) -> (Vec<Alarm>, Option<i64>) {
                 join_url: String::new(),
                 at,
                 task: Some(task.id),
+                note: None,
             });
         }
     }
@@ -179,8 +185,36 @@ fn tasks_due(tasks: &[Task], from: i64, to: i64) -> (Vec<Alarm>, Option<i64>) {
     (alarms, next)
 }
 
+/// Notes' reminders due in `(from, to]`, from
+/// [`Store::notes_reminding`]'s rows.
+fn notes_due(rows: Vec<(i64, String, String, i64)>) -> Vec<Alarm> {
+    rows.into_iter()
+        .map(|(id, title, body, at)| {
+            let mut lines = body
+                .lines()
+                .map(|l| l.trim().trim_start_matches(['☐', '☑']).trim())
+                .filter(|l| !l.is_empty());
+            let title = match title.trim() {
+                "" => lines
+                    .next()
+                    .map_or_else(|| tr!("notify-no-subject"), str::to_owned),
+                title => title.to_owned(),
+            };
+            Alarm {
+                key: (id, at),
+                title,
+                lines: lines.next().map(str::to_owned).into_iter().collect(),
+                join_url: String::new(),
+                at,
+                task: None,
+                note: Some(id),
+            }
+        })
+        .collect()
+}
+
 /// Reads the reminders due in `(from, to]` and the next one's time:
-/// events', then tasks'.
+/// events', tasks', then notes'.
 fn read(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option<i64>) {
     let (mut alarms, next) = read_events(store, from, to, tz);
     let tasks = store.tasks(to).unwrap_or_else(|err| {
@@ -189,7 +223,16 @@ fn read(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option
     });
     let (task_alarms, task_next) = tasks_due(&tasks, from, to);
     alarms.extend(task_alarms);
-    (alarms, next.into_iter().chain(task_next).min())
+    let notes = store.notes_reminding(from, to).unwrap_or_else(|err| {
+        tracing::warn!(%err, "reminders: cannot read notes");
+        Vec::new()
+    });
+    alarms.extend(notes_due(notes));
+    let note_next = store.next_note_reminder(to).ok().flatten();
+    (
+        alarms,
+        next.into_iter().chain(task_next).chain(note_next).min(),
+    )
 }
 
 fn read_events(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option<i64>) {
@@ -236,9 +279,10 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
             .map(|n| n.snoozed_due(now))
             .unwrap_or_default();
         for alarm in alarms.into_iter().chain(snoozed) {
-            match alarm.task {
-                Some(task) => tracing::info!(task, "task reminder"),
-                None => tracing::info!(event = alarm.key.0, "event reminder"),
+            match (alarm.task, alarm.note) {
+                (Some(task), _) => tracing::info!(task, "task reminder"),
+                (_, Some(note)) => tracing::info!(note, "note reminder"),
+                _ => tracing::info!(event = alarm.key.0, "event reminder"),
             }
             if let Some(notices) = &notices {
                 notices.event_reminder(alarm).await;

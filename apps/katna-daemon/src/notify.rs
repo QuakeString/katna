@@ -279,6 +279,11 @@ impl NewMailNotices {
     pub(crate) async fn event_reminder(&self, alarm: Alarm) {
         let sound = self.sound(SoundEvent::Reminders);
         let shown = match alarm.task {
+            None if alarm.note.is_some() => {
+                self.notifier
+                    .note_reminder(&alarm.title, &alarm.lines, Self::server_sound(&sound))
+                    .await
+            }
             Some(_) => {
                 self.notifier
                     .task_reminder(&alarm.title, &alarm.lines, Self::server_sound(&sound))
@@ -624,11 +629,12 @@ impl NewMailNotices {
                             }
                         }
                         // The notification itself: the Calendar page, or
-                        // Tasks for a task.
+                        // Tasks for a task, or the note.
                         _ => {
-                            let page = match alarm.task {
-                                Some(task) => format!("tasks:{task}"),
-                                None => "calendar".to_owned(),
+                            let page = match (alarm.task, alarm.note) {
+                                (Some(task), _) => format!("tasks:{task}"),
+                                (_, Some(note)) => format!("notes:{note}"),
+                                _ => "calendar".to_owned(),
                             };
                             crate::mail_app::run(
                                 &notices.connection,

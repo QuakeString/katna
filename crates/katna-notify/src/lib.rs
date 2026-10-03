@@ -613,6 +613,51 @@ impl Notifier {
             .await
     }
 
+    /// Shows the reminder of a note, with Open and Snooze. Returns its ID.
+    pub async fn note_reminder(
+        &self,
+        summary: &str,
+        lines: &[String],
+        sound: Option<&str>,
+    ) -> zbus::Result<u32> {
+        let body = lines
+            .iter()
+            .map(|line| escape(&shorten(line, PREVIEW_CHARS)))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let labels = [
+            (action::OPEN, tr!("notify-open")),
+            (action::SNOOZE, tr!("notify-event-snooze")),
+        ];
+        let actions: Vec<&str> = labels
+            .iter()
+            .flat_map(|(key, label)| [*key, label.as_str()])
+            .collect();
+        let mut hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
+            ("category", Value::from("x-katna.note")),
+            ("urgency", Value::U8(1)),
+            ("resident", Value::Bool(false)),
+        ]);
+        if let Some(sound) = sound {
+            hints.insert("sound-name", Value::from(sound));
+        } else {
+            hints.insert("suppress-sound", Value::Bool(true));
+        }
+        self.proxy
+            .notify(
+                "Katna Notes",
+                0,
+                ids::MAIL_APP_ID,
+                summary,
+                &body,
+                &actions,
+                hints,
+                0,
+            )
+            .await
+    }
+
     /// Says that Katna `version` is downloaded, with an Update button that
     /// installs it. Returns its ID.
     pub async fn update_ready(&self, version: &str) -> zbus::Result<u32> {

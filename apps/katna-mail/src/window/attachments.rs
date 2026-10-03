@@ -1358,7 +1358,7 @@ fn write_for_opening(
 }
 
 /// `name` as a file name: no folders, no hidden files, not too long.
-fn safe_name(name: &str) -> String {
+pub(super) fn safe_name(name: &str) -> String {
     let name: String = name
         .chars()
         .filter(|&c| !katna_preview::invisible(c))
