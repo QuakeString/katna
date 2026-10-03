@@ -8,7 +8,9 @@
 //! ([`crate::profile`]); nothing is looked up online.
 //!
 //! Desktop windows only, where the reader keeps room enough beside it; the
-//! reader's toolbar shows and hides it.
+//! reader's toolbar shows and hides it. Elsewhere a click on a person
+//! opens the card's summary as a popover ([`peek`]), or a sheet on a
+//! phone.
 
 use std::cell::Cell;
 use std::collections::HashMap;
@@ -16,8 +18,8 @@ use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, ScrollHandle,
-    SharedString, Window, canvas, div, ease_out_quint, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, Pixels, Point,
+    ScrollHandle, SharedString, Window, canvas, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_dav::Occurrence;
 use katna_i18n::tr;
@@ -25,6 +27,10 @@ use katna_render::signature;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
 use katna_ui::{Ripple, px, unpx};
+
+mod peek;
+
+pub(super) use peek::ContactPeek;
 
 use super::MailWindow;
 use super::attachments::kind_badge;
@@ -112,6 +118,9 @@ pub(super) struct ContactPanel {
     nav_hold: bool,
     /// On a phone the card rises from the bottom instead.
     sheet: Sheet,
+    /// Where the panel has no room, a summary of the card pops over
+    /// where the name or picture was clicked.
+    peek: Option<ContactPeek>,
 }
 
 impl ContactPanel {
@@ -129,6 +138,7 @@ impl ContactPanel {
             actions_at: Rc::new(Cell::new((ACTIONS_AT, 1.0))),
             nav_hold: false,
             sheet: Sheet::new(),
+            peek: None,
         }
     }
 
@@ -177,6 +187,7 @@ impl MailWindow {
     /// the window has room for both. `room` is what the folders, the cards
     /// and the panel share.
     pub(super) fn fold_nav_for_contact(&mut self, room: f32) {
+        self.settle_contact_peek();
         let wanted = self.contact_wanted();
         if !wanted {
             self.contact.nav_hold = false;
@@ -240,18 +251,26 @@ impl MailWindow {
     }
 
     /// Shows `email` (lower case) in the panel, opening it if it was put
-    /// away: an address clicked in the open mail's details.
+    /// away: an address clicked at `at` in the open mail's details.
     /// A second click on the person whose card shows puts the panel away.
-    pub(super) fn show_person(&mut self, email: &str, cx: &mut Context<Self>) {
+    pub(super) fn show_person(&mut self, email: &str, at: Point<Pixels>, cx: &mut Context<Self>) {
         if let Some(key) = self.reader.as_ref().map(|r| r.key) {
-            self.show_contact_of(key, email, cx);
+            self.show_contact_of(key, email, at, cx);
         }
     }
 
     /// Shows `email`'s card for conversation `key`, opening the panel if
-    /// it is hidden: a click on a name or picture in the chat view. A
-    /// second click on the person whose card shows puts the panel away.
-    pub(super) fn show_contact_of(&mut self, key: EntryKey, email: &str, cx: &mut Context<Self>) {
+    /// it is hidden: a click at `at` on a name or picture in the chat
+    /// view. A second click on the person whose card shows puts the panel
+    /// away. Where the panel has no room, the card's summary pops over
+    /// at `at` instead.
+    pub(super) fn show_contact_of(
+        &mut self,
+        key: EntryKey,
+        email: &str,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
         let email = email.to_lowercase();
         // A phone has no room beside the chat: the card rises as a sheet.
         if self.layout.shape.is_phone() {
@@ -260,7 +279,14 @@ impl MailWindow {
             cx.notify();
             return;
         }
-        let shown = self.config.mail.contact_panel && self.contact_offered();
+        if !self.contact_offered() {
+            self.contact.picked = Some((key, email));
+            self.contact.peek = Some(ContactPeek::new(key, at));
+            cx.notify();
+            return;
+        }
+        self.contact.peek = None;
+        let shown = self.config.mail.contact_panel;
         if shown && self.contact_person_shown().as_deref() == Some(email.as_str()) {
             self.toggle_contact_panel(cx);
             return;
@@ -494,7 +520,7 @@ impl MailWindow {
         }
         let body = div()
             .pb(px(8.0))
-            .child(self.contact_card_body(th, cx).0)
+            .child(self.contact_card_body(false, th, cx).0)
             .into_any_element();
         self.bottom_sheet(
             "contact-sheet",
@@ -519,7 +545,7 @@ impl MailWindow {
         );
         let (shadow, edge) = self.card_edges(0.0, outline);
         let (place, stuck) = self.contact_bar();
-        let (body, actions) = self.contact_card_body(th, cx);
+        let (body, actions) = self.contact_card_body(false, th, cx);
         let glass = (actions.is_some() && stuck > 0.0).then(|| {
             crate::widgets::frosted_top(
                 div()
@@ -586,8 +612,11 @@ impl MailWindow {
 
     /// What the card shows of the person picked, else the newest sender,
     /// and the bar of round buttons drawn over it beside an open mail.
+    /// The `summary` is the popover's: the name, the round buttons and
+    /// the details, without the mail, conversations and files.
     fn contact_card_body(
         &mut self,
+        summary: bool,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> (AnyElement, Option<AnyElement>) {
@@ -612,18 +641,20 @@ impl MailWindow {
                 if let Some(profile) = &profile {
                     self.contact_company(&email, profile.card.website.as_deref(), cx);
                 }
-                self.render_contact_body(&email, name.as_deref(), profile, &people, th, cx)
+                self.render_contact_body(&email, name.as_deref(), profile, &people, summary, th, cx)
             }
             None => (contact_empty(th), None),
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn render_contact_body(
         &self,
         email: &str,
         name: Option<&str>,
         profile: Option<Rc<Profile>>,
         people: &[(String, Option<String>)],
+        summary: bool,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> (AnyElement, Option<AnyElement>) {
@@ -693,7 +724,7 @@ impl MailWindow {
             .items_center()
             .gap(px(12.0))
             // Clear of the close button in the corner.
-            .pr(px(30.0))
+            .when(!summary, |d| d.pr(px(30.0)))
             .child(self.person_avatar(&shown_name, email, PICTURE))
             .child(
                 div()
@@ -737,8 +768,8 @@ impl MailWindow {
                 .map(|p| p.number.clone())
         });
         // On a phone the card is a sheet with no close button, and the
-        // buttons scroll with the rest.
-        let sheet = self.layout.shape.is_phone();
+        // buttons scroll with the rest, as in the popover.
+        let sheet = self.layout.shape.is_phone() || summary;
         let stuck = if sheet { 0.0 } else { self.contact_bar().1 };
         let size = ACTION.0 + (ACTION_STUCK.0 - ACTION.0) * stuck;
         let mut actions = self.contact_actions(email, phone, size, th, cx);
@@ -779,7 +810,10 @@ impl MailWindow {
         }
         // The company as its home page describes it, else as the
         // signature does.
-        let company = looked_up.or_else(|| {
+        let company = looked_up.filter(|_| !summary).or_else(|| {
+            if summary {
+                return None;
+            }
             let from = details.as_ref().map(|d| &d.company);
             let name = from
                 .and_then(|c| c.name.clone().or_else(|| c.logo.clone()))
@@ -809,7 +843,7 @@ impl MailWindow {
                 th,
             ));
         }
-        if let Some(profile) = &profile {
+        if let Some(profile) = profile.as_ref().filter(|_| !summary) {
             sections.push(self.contact_mail(profile, &mut pieces, th));
             if let Some(tasks) = self.contact_tasks(&profile.task_mails, &mut pieces, th, cx) {
                 sections.push(tasks);
@@ -830,11 +864,11 @@ impl MailWindow {
                 sections.push(self.contact_files(&profile.files, &mut pieces, th, cx));
             }
         }
-        if people.len() > 1 {
+        if !summary && people.len() > 1 {
             sections.push(self.contact_others(email, people, &mut pieces, th, cx));
         }
         let tint = card_tint(th);
-        let foot = profile.is_some().then(|| {
+        let foot = (profile.is_some() && !summary).then(|| {
             words(&mut pieces, tr!("contact-local-only"))
                 .px(px(4.0))
                 .text_size(px(12.0))

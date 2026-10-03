@@ -2706,6 +2706,12 @@ Gemini or confidential mode):
   it goes (hidden, the mail closed, or the window grown wide enough for
   both); a pane folded by hand stays folded, and one opened by hand beside
   it wins until the panel is next shown (`fold_nav_for_contact`).
+  Where it has no room (a tablet, a narrow window, a conversation window),
+  a click on a person's name or picture opens a summary of the same card
+  (name, round buttons, details) as a popover whose notch points at the
+  click (`contact/peek.rs`); once the window has room again the popover
+  closes and the panel shows instead. A phone shows the full card as a
+  bottom sheet.
 - **Day's agenda.** A Calendar button on the top bar, beside Settings
   (the Mail page of a desktop window only), opens a card at the
   right of the mail with one day's events, as Gmail's side panel has it
@@ -5243,6 +5249,26 @@ Arch is the first, Windows and the others follow the same flow.
   administrator prompt for a Katna installed for everyone), waits, and
   opens Katna Mail again; Setup itself closes the running Katna. A failed
   Setup reopens the old Katna, which offers the update again.
+- **Linux packages from `linux-latest`** (owner's ask, 3 October 2026):
+  one portable build goes into the tarball, AppImage, Flatpak and Snap,
+  so it is built with `linux` and tells them apart at run time
+  (`/.flatpak-info` or `$FLATPAK_ID`, `$SNAP`, `$APPIMAGE`, else the
+  tarball); the Fedora spec sets `rpm` and the Nix package `nix`. CI's
+  publish job writes `katna-update.json` on `linux-latest` with each
+  package's own file under `files` (`Manifest::for_package`). The
+  **AppImage** puts the new image beside `$APPIMAGE` and renames it over
+  it; the daemon notices the image changed and restarts from it. The
+  **tarball** runs the new tarball's `install.sh` for the same folder
+  (which now copies each file beside the old one and renames it, so a
+  running Katna keeps its program); installed where only an
+  administrator writes, it shows the command instead. The **RPM, Snap
+  and Flatpak** have no repository yet: Katna downloads the new file and
+  shows the one command that installs it, with Copy. **Nix** downloads
+  nothing: Katna shows `nix profile upgrade katna`; a flake build from
+  GitHub has no commit count (`r0`), so it counts as older when its
+  commit is among the newest build's earlier ones. A dnf repository and
+  a Flatpak remote would let those update with the system; they need
+  hosting and a signing key, the owner's to decide.
 - **Manifest.** CI writes `katna-update.json` beside the package on every
   build of `main`: version, file name, SHA-256 and size, and for the
   Update dialog the commit, when it was made, the What's new highlights

@@ -46,8 +46,144 @@ pub fn install(file: &Path, sha256: &str) -> Result<(), InstallError> {
     match Package::current() {
         Package::Arch => install_arch(file, sha256),
         Package::Windows => install_windows(file),
-        Package::Other => Err(InstallError::Unsupported),
+        Package::AppImage => install_appimage(file),
+        Package::Tarball => install_tarball(file),
+        Package::Rpm | Package::Snap | Package::Flatpak | Package::Nix | Package::Other => {
+            Err(InstallError::Unsupported)
+        }
     }
+}
+
+/// The command that installs the downloaded build in `file` when Katna
+/// cannot: for the RPM, Snap, Flatpak and Nix, and for a tarball
+/// installed where only an administrator may write.
+pub fn command(file: &Path) -> Option<String> {
+    let package = Package::current();
+    if package == Package::Tarball {
+        let prefix = tarball_prefix()?;
+        if writable(&prefix.join("bin")) {
+            return None;
+        }
+        return Some(format!(
+            "tar -xzf {} -C /tmp && sudo /tmp/{TARBALL_DIR}/install.sh --prefix {}",
+            update::shell_quote(&file.display().to_string()),
+            update::shell_quote(&prefix.display().to_string()),
+        ));
+    }
+    update::update_command(package, &file.display().to_string())
+}
+
+/// The folder the tarball unpacks into.
+const TARBALL_DIR: &str = "katna-linux-x86_64";
+
+/// Puts the new AppImage in `file` in place of the one Katna runs from:
+/// beside it first, then renamed over it, so the running Katna keeps
+/// its image.
+fn install_appimage(file: &Path) -> Result<(), InstallError> {
+    let failed = |err: std::io::Error| InstallError::Failed(err.to_string());
+    let image = appimage().ok_or(InstallError::Unsupported)?;
+    let name = image
+        .file_name()
+        .ok_or(InstallError::Unsupported)?
+        .to_string_lossy()
+        .into_owned();
+    let new = image.with_file_name(format!(".{name}.new"));
+    let copied = std::fs::copy(file, &new)
+        .and_then(|_| set_executable(&new))
+        .and_then(|()| std::fs::rename(&new, &image));
+    if let Err(err) = copied {
+        let _ = std::fs::remove_file(&new);
+        return Err(failed(err));
+    }
+    let _ = std::fs::remove_file(file);
+    Ok(())
+}
+
+/// Unpacks the new tarball in `file` beside it and runs its
+/// `install.sh` for the folder this Katna is installed in.
+fn install_tarball(file: &Path) -> Result<(), InstallError> {
+    let prefix = tarball_prefix().ok_or(InstallError::Unsupported)?;
+    let work = file.with_extension("unpacked");
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&work).map_err(|err| InstallError::Failed(err.to_string()))?;
+    let installed = run(Command::new("tar")
+        .arg("-xzf")
+        .arg(file)
+        .arg("-C")
+        .arg(&work))
+    .and_then(|()| {
+        run(Command::new("sh")
+            .arg(work.join(TARBALL_DIR).join("install.sh"))
+            .arg("--prefix")
+            .arg(&prefix))
+    });
+    let _ = std::fs::remove_dir_all(&work);
+    if installed.is_ok() {
+        let _ = std::fs::remove_file(file);
+    }
+    installed
+}
+
+/// Runs `command`; its last line of errors when it fails.
+fn run(command: &mut Command) -> Result<(), InstallError> {
+    let output = command
+        .output()
+        .map_err(|err| InstallError::Failed(err.to_string()))?;
+    if output.status.success() {
+        return Ok(());
+    }
+    let said = String::from_utf8_lossy(&output.stderr)
+        .lines()
+        .rfind(|line| !line.trim().is_empty())
+        .unwrap_or_default()
+        .trim()
+        .to_owned();
+    tracing::warn!(status = ?output.status, said, "the update was not installed");
+    Err(InstallError::Failed(if said.is_empty() {
+        output.status.to_string()
+    } else {
+        said
+    }))
+}
+
+/// Where the tarball's `install.sh` installed this Katna: the folder
+/// above its `bin`.
+fn tarball_prefix() -> Option<PathBuf> {
+    let exe = installed_exe().ok()?;
+    let bin = exe.parent()?;
+    (bin.file_name()? == "bin").then(|| bin.parent().map(Path::to_path_buf))?
+}
+
+/// Whether this user may create files in `dir`.
+fn writable(dir: &Path) -> bool {
+    let probe = dir.join(format!(".katna-update-{}", std::process::id()));
+    let made = std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&probe)
+        .is_ok();
+    if made {
+        let _ = std::fs::remove_file(&probe);
+    }
+    made
+}
+
+/// The AppImage this Katna runs from.
+fn appimage() -> Option<PathBuf> {
+    std::env::var_os("APPIMAGE")
+        .filter(|path| !path.is_empty())
+        .map(PathBuf::from)
+}
+
+#[cfg(unix)]
+fn set_executable(path: &Path) -> std::io::Result<()> {
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o755))
+}
+
+#[cfg(not(unix))]
+fn set_executable(_path: &Path) -> std::io::Result<()> {
+    Ok(())
 }
 
 /// Starts the new Katna Setup (`file`, checked by the daemon) quietly
@@ -140,10 +276,14 @@ fn install_arch(file: &Path, sha256: &str) -> Result<(), InstallError> {
 /// Starts the Katna Mail just installed, which waits for this one to
 /// close before it opens its window. Quit this one next.
 pub fn start_new() -> std::io::Result<()> {
-    if Package::current() == Package::Windows {
-        return Ok(());
-    }
-    Command::new(installed_exe()?)
+    let mut command = match Package::current() {
+        Package::Windows => return Ok(()),
+        // The new image; started without a program name, it opens Katna
+        // Mail.
+        Package::AppImage => Command::new(appimage().ok_or(std::io::ErrorKind::NotFound)?),
+        _ => Command::new(installed_exe()?),
+    };
+    command
         .arg(AFTER_FLAG)
         .arg(std::process::id().to_string())
         .spawn()

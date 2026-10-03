@@ -3788,6 +3788,7 @@ impl Render for MailWindow {
         let context_menu = self.render_context_menu(&th, window, cx);
         let summary_peek = self.render_summary_peek(&th, window, cx);
         let contact_sheet = self.render_contact_sheet(&th, window, cx);
+        let contact_peek = self.render_contact_peek(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
         // An account's own color, from Settings > Accounts or its
         // right-click menu.
@@ -3854,6 +3855,7 @@ impl Render for MailWindow {
             .children(summary_peek)
             .children(context_menu)
             .children(contact_sheet)
+            .children(contact_peek)
             .children(nav_menu)
             .children(snooze_menu)
             .children(quiet_menu)
