@@ -5,17 +5,19 @@
 
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
+use std::f32::consts::PI;
 use std::rc::Rc;
+use std::time::{Duration, Instant};
 
 use gpui::{
     AnimationExt, AnyElement, AnyView, App, Bounds, BoxShadow, Div, ElementId, FocusHandle,
-    FontWeight, Pixels, ScrollHandle, SharedString, Stateful, StyleRefinement, Window, canvas, div,
-    img, point, prelude::*, rgba, svg,
+    FontWeight, Pixels, ScrollHandle, SharedString, SpringAnimation, Stateful, StyleRefinement,
+    Transformation, Window, canvas, div, img, point, prelude::*, radians, rgba, svg,
 };
-use katna_ui::motion::lerp;
-use katna_ui::px;
+use katna_ui::motion::{self, lerp};
 use katna_ui::tokens::{radius, space, state, text};
 use katna_ui::{Glow, Ripple, Tooltip, WindowDrag};
+use katna_ui::{px, unpx};
 
 use crate::theme::{Theme, avatar_color, fade, initial, mix};
 use crate::window::MenuKey;
@@ -318,6 +320,15 @@ pub fn icon_button_colored(
     color: u32,
     th: &Theme,
 ) -> Stateful<Div> {
+    icon_button_with(id, icon(name, color, size), th)
+}
+
+/// An [`icon_button_colored`] around any icon, such as a [`fold_arrow`].
+pub fn icon_button_with(
+    id: impl Into<gpui::ElementId>,
+    glyph: AnyElement,
+    th: &Theme,
+) -> Stateful<Div> {
     let id = id.into();
     div()
         .id(id.clone())
@@ -335,7 +346,92 @@ pub fn icon_button_colored(
         .on_mouse_move(|_, _, cx| cx.stop_propagation())
         .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)))
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)).centered())
-        .child(icon(name, color, size))
+        .child(glyph)
+}
+
+/// What a [`fold_box`] and its [`fold_arrow`] keep between frames: how often
+/// it turned, when it last did, and how tall its content was then and is
+/// now. Keep one per thing that opens and closes.
+#[derive(Default)]
+pub struct Fold {
+    turns: Cell<u32>,
+    at: Cell<Option<Instant>>,
+    from: Cell<f32>,
+    now: Rc<Cell<f32>>,
+}
+
+impl Fold {
+    /// Call when it opens or closes, so the next frames glide there.
+    pub fn turn(&self) {
+        self.turns.set(self.turns.get().wrapping_add(1));
+        self.at.set(Some(Instant::now()));
+        self.from.set(self.now.get());
+    }
+
+    /// It turned a moment ago and is still gliding.
+    fn moving(&self) -> bool {
+        self.at.get().is_some_and(|at| at.elapsed() < FOLD_GLIDE)
+    }
+
+    fn id(&self, name: &str) -> SharedString {
+        SharedString::from(format!("{name}-{}", self.turns.get()))
+    }
+}
+
+/// Longer than a fold's spring takes to settle.
+const FOLD_GLIDE: Duration = Duration::from_millis(700);
+
+/// A box that glides between the heights of what it showed before its
+/// [`Fold`] turned and what it shows now (`content`, the open or the
+/// folded form), on the `SLIDE` spring with its little overshoot; the
+/// new content shows through it as it grows, with no fade, so nothing
+/// that stays (a header) blinks. At rest it is as tall as `content`.
+pub fn fold_box(name: &str, fold: &Fold, content: impl IntoElement) -> AnyElement {
+    let measure = fold.now.clone();
+    let body = div().flex().flex_col().overflow_hidden().child(
+        div().flex_none().relative().child(content).child(
+            canvas(
+                move |bounds, _, _| measure.set(unpx(bounds.size.height)),
+                |_, _, _, _| {},
+            )
+            .absolute()
+            .top_0()
+            .left_0()
+            .size_full(),
+        ),
+    );
+    let from = fold.from.get();
+    if !fold.moving() || from <= 0.0 {
+        return body.into_any_element();
+    }
+    let now = fold.now.clone();
+    body.with_spring(
+        fold.id(name),
+        SpringAnimation::new(motion::SLIDE).to(1.0).from(0.0),
+        move |el, t| el.h(px(lerp(from, now.get(), t).max(0.0))),
+    )
+    .into_any_element()
+}
+
+/// The arrow of a [`fold_box`]: points down while closed and turns half round
+/// to point up as it opens, on the `SMOOTH` spring.
+pub fn fold_arrow(name: &str, fold: &Fold, open: bool, color: u32, size: f32) -> AnyElement {
+    let (was, to) = if open { (0.0, PI) } else { (PI, 0.0) };
+    let animation = SpringAnimation::new(motion::SMOOTH).to(to);
+    let animation = if fold.moving() {
+        animation.from(was)
+    } else {
+        animation
+    };
+    svg()
+        .path("icons/chevron-down.svg")
+        .size(px(size))
+        .flex_none()
+        .text_color(rgba(color))
+        .with_spring(fold.id(name), animation, |arrow, turn: f32| {
+            arrow.with_transformation(Transformation::rotate(radians(turn)))
+        })
+        .into_any_element()
 }
 
 /// A stable number for a ripple's ID derived from its button's ID.
