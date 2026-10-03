@@ -24,6 +24,33 @@ settings-rules-drag = Drag to reorder
 settings-rules-edit = Edit rule
 settings-rules-turn-off = Turn this rule off
 settings-rules-turn-on = Turn this rule on
+
+## Starter rules: offered under the user's own rules, switched off.
+## Turning one on makes it one of the user's rules.
+
+settings-rules-starters = Starter rules
+settings-rules-starters-intro = Off until you turn one on. They work for all your accounts; edit one to change it.
+# Snackbar while a starter rule's folders are made.
+settings-rules-starter-turning-on = Turning on “{ $name }”…
+# $name: the starter rule's name; $error: what went wrong.
+settings-rules-starter-failed = Couldn't turn on “{ $name }”: { $error }
+# The starter rules' names.
+rules-starter-promotions = Quiet promotions
+rules-starter-newsletters = Newsletters to Reading
+rules-starter-receipts = Receipts and invoices
+rules-starter-deliveries = Deliveries
+rules-starter-train = Train tickets
+rules-starter-flight = Flight tickets
+rules-starter-codes = One-time codes
+rules-starter-security = Security alerts
+rules-starter-social = Social mail
+rules-starter-invites = Calendar invites
+# The folders (labels, on Gmail) starter rules make when turned on.
+rules-starter-folder-reading = Reading
+rules-starter-folder-receipts = Receipts
+rules-starter-folder-deliveries = Deliveries
+rules-starter-folder-travel = Travel
+rules-starter-folder-social = Social
 # The small tag on a rule's row: where it runs.
 rules-runs-katna = Runs in Katna
 rules-runs-gmail = Runs on Gmail
@@ -53,6 +80,8 @@ rules-summary = { $when } → { $then }
 rules-summary-and = { $first } and { $next }
 # Joining the conditions of a rule that needs only one.
 rules-summary-or = { $first } or { $next }
+# The last of a long list of words: "ticket, pnr, booking or 6 more".
+rules-summary-more = { $count } more
 # Joining the actions.
 rules-summary-list = { $first }, { $next }
 # $field: "From", "Subject"…; $comparator: "contains"…; $value: what the
@@ -60,6 +89,11 @@ rules-summary-list = { $first }, { $next }
 rules-summary-condition = { $field } { $comparator } { $value }
 rules-summary-has-attachment = Has an attachment
 rules-summary-no-attachment = Has no attachment
+rules-summary-mailing-list = From a mailing list
+rules-summary-not-mailing-list = Not from a mailing list
+# $tab: an inbox tab's name, such as Promotions.
+rules-summary-tab = In the { $tab } tab
+rules-summary-not-tab = Not in the { $tab } tab
 # $folder: a folder's name.
 rules-summary-move = move to { $folder }
 rules-summary-archive = skip the inbox
@@ -99,6 +133,8 @@ rules-field-subject = Subject
 rules-field-body = Text
 rules-field-attachment-name = Attachment name
 rules-field-has-attachment = Has attachment
+rules-field-mailing-list = From a mailing list
+rules-field-tab = Inbox tab
 # How a condition compares.
 rules-comparator-contains = contains
 rules-comparator-not-contains = doesn't contain

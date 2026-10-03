@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! A button's hover background that eases in, as in Gmail: on a round
-//! button the circle grows from the middle while it fades in, and on
-//! leaving it fades out quickly where it is. Put [`Glow`] first among the
+//! A button's hover background that eases in softly: on a round button
+//! the circle grows from two thirds of its size while it fades in, and on
+//! leaving it shrinks back a little as it fades out. Put [`Glow`] first among the
 //! children of a `relative()` button, before its [`crate::Ripple`]; call
 //! [`Glow::fade`] for pills, whose background only fades, and
 //! [`Glow::corners`] for one part of a split button.
@@ -18,14 +18,24 @@ use gpui::{
     canvas, div, ease_out_quint, prelude::*,
 };
 
-/// How long the circle takes to grow to full size.
-const GROW: Duration = Duration::from_millis(130);
-/// How long it takes to fade in.
-const FADE_IN: f32 = 90.0;
-/// How long it takes to fade out when the pointer leaves.
-const FADE_OUT: Duration = Duration::from_millis(70);
+/// How long the circle takes to grow to full size, and a pill to fade in.
+const GROW: Duration = Duration::from_millis(220);
+/// How long the circle takes to fade in while it grows.
+const FADE_IN: f32 = 200.0;
+/// How long it takes to fade out (and the circle to shrink back towards
+/// [`START`]) when the pointer leaves.
+const FADE_OUT: Duration = Duration::from_millis(160);
 /// The circle's size when it starts to grow, against its full size.
-const START: f32 = 0.35;
+const START: f32 = 0.6;
+
+/// CSS's `ease-out` and `ease-in`, near enough.
+fn ease_out(t: f32) -> f32 {
+    1.0 - (1.0 - t) * (1.0 - t)
+}
+
+fn ease_in(t: f32) -> f32 {
+    t * t
+}
 
 #[derive(Default)]
 struct State {
@@ -108,19 +118,26 @@ impl RenderOnce for Glow {
             };
             if on {
                 let ease = ease_out_quint();
-                let ms = GROW.as_secs_f32() * 1000.0;
+                // A pill fades in over the whole time; a circle a little
+                // faster than it grows.
+                let fade = if grow {
+                    GROW.as_secs_f32() * 1000.0 / FADE_IN
+                } else {
+                    1.0
+                };
                 div()
                     .absolute()
                     .with_animation(("glow", n), Animation::new(GROW), move |el, t| {
                         let scale = START + (1.0 - START) * ease(t);
-                        paint(el, scale, (t * ms / FADE_IN).min(1.0))
+                        paint(el, scale, ease_out((t * fade).min(1.0)))
                     })
                     .into_any_element()
             } else {
                 div()
                     .absolute()
                     .with_animation(("glow", n), Animation::new(FADE_OUT), move |el, t| {
-                        paint(el, 1.0, 1.0 - t)
+                        let t = ease_in(t);
+                        paint(el, 1.0 - (1.0 - START) * t, 1.0 - t)
                     })
                     .into_any_element()
             }

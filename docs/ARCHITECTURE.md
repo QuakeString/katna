@@ -1173,17 +1173,31 @@ account kind. `runs_on` (`katna`, `gmail`, `sieve`) says which.
 - **Model** (`katna_store::rules`, `mail_rule` in `pim.db`, schema v13):
   name, on/off, position (rules run in list order), match all or any,
   conditions, actions, "stop" (later rules don't run on mail this one
-  matched), one or more accounts, `runs_on`, and the last error. Conditions
+  matched), one or more accounts, `runs_on`, the last error, and the
+  starter it was made from (`mail_rule_starter`, pim.db v15). Conditions
   and actions are JSON columns. A condition is a field (from, to, cc, any
-  recipient, reply-to, subject, body, attachment name, has attachment), a
+  recipient, reply-to, subject, body, attachment name, has attachment,
+  from a mailing list (a `List-Id`), inbox tab (`message.category`,
+  Katna's own sorting, so it never runs on the service)), a
   comparator (contains, doesn't contain, begins with, ends with, equals,
   matches regex) and a value; text compares without case, and addresses
   match on both the name and the address. Actions: move to a folder, skip
   the inbox (archive), move to the trash, mark read, star, mark important,
-  add a Gmail label (as Label as does, through `SetLabels`, so Gmail
-  accounts only), forward (as an
+  add a label (on Gmail as Label as does, through `SetLabels`; in other
+  accounts a copy in the folder), forward (as an
   attachment), don't notify, mark read after N days (a `read-after` value
-  of §10 on the message).
+  of §10 on the message). A rule for several accounts may move to a
+  folder in each (one per account); on an account's mail, the folders of
+  its other accounts are left out (`katna_sync::rules::for_account`).
+- **Starter rules** (Katna Mail, `settings_page/starter_rules.rs`): ten
+  rules offered under the user's own, switched off: quiet promotions,
+  newsletters to Reading, receipts, deliveries, train and flight tickets
+  (Indian Railways' IRCTC and the airlines and travel sites flying in
+  India), one-time codes, security alerts, social mail, calendar invites.
+  Turning one on makes its folders (labels, on Gmail) in every mail
+  account that lacks them (`CreateFolder`), then saves it for all of them
+  with its key in `mail_rule_starter`; the list stops offering it until
+  that rule is deleted. Its pencil opens the editor on it instead.
 - **Matching** is a pure function of a compiled rule (`Matcher`, regular
   expressions compiled once) and a message's facts, so Katna Mail previews
   a rule on the read-only store exactly as the daemon runs it
@@ -2489,7 +2503,10 @@ Gemini or confidential mode):
   `cargo metadata` together with CREDITS.md. A short "A personal project"
   note says where Katna's ideas come from (Gmail, Mailspring,
   Thunderbird) and that LLMs made it possible. On a phone it fills the
-  window.
+  window. Its header (the wordmark, Katna, the tagline and the version)
+  shrinks with the scroll: the wordmark slides to the top left with the
+  three lines beside it, then the header stays, frosted, while the rest
+  scrolls under it.
 - **After the first real install.** The owner's first run on KDE brought
   these changes. The account picture moved
   to the top right, beside the settings gear, with its card below it; the

@@ -120,6 +120,16 @@ const FOLD_OPEN_LABEL: f32 = 1.0;
 const FOLD_NO_COUNTS: f32 = 2.0;
 const FOLD_ICONS: f32 = 3.0;
 
+/// The line just opened and how far below the list's top it was, kept
+/// there while the reading pane opens (`MailWindow::keep_opened_line`).
+#[derive(Debug, Clone, Copy)]
+pub(super) struct KeepLine {
+    pub ix: usize,
+    pub top: gpui::Pixels,
+    /// Put back in place; the next frame only nudges it fully into view.
+    pub placed: bool,
+}
+
 /// What Read, Unread, Starred or Unstarred in the select menu ticked: the
 /// matching lines on screen, then, from the banner's link, every matching
 /// line of the list, as Gmail does.
@@ -166,6 +176,56 @@ impl MailWindow {
             (false, false) => 40.0,
             (false, true) => 32.0,
         }
+    }
+
+    /// Keeps the line just opened where it was on screen while the reading
+    /// pane opens beside the list, or scrolls just enough to show it whole
+    /// when it no longer fits there. The lines may change height (two
+    /// columns become three stacked lines), so this takes two frames: one
+    /// puts the line where it was, counting the new line height, and the
+    /// next, with the lines drawn at their real height, nudges it fully
+    /// into view.
+    fn keep_opened_line(&mut self, cx: &mut Context<Self>) {
+        let Some(keep) = self.keep_line.take() else {
+            return;
+        };
+        if keep.ix >= self.entries.len() || self.selected != Some(keep.ix) {
+            return;
+        }
+        let view = self.list_state.viewport_bounds();
+        if keep.placed {
+            if let Some(bounds) = self.list_state.bounds_for_item(keep.ix) {
+                if bounds.bottom() > view.bottom() {
+                    self.list_state.scroll_by(
+                        (bounds.bottom() - view.bottom()).min(bounds.top() - view.top()),
+                    );
+                } else if bounds.top() < view.top() {
+                    self.list_state.scroll_by(bounds.top() - view.top());
+                }
+            } else {
+                self.list_state.scroll_to_reveal_item(keep.ix);
+            }
+            return;
+        }
+        let height = px(self.row_height());
+        let top = keep.top.min(view.size.height - height).max(px(0.0));
+        // Whole lines above it, and how much of the one above those shows.
+        let above = (top / height).ceil() as usize;
+        let ix = keep.ix.saturating_sub(above);
+        let offset_in_item = if keep.ix >= above {
+            height * above as f32 - top
+        } else {
+            px(0.0)
+        };
+        self.list_state.scroll_to(ListOffset {
+            item_ix: ix,
+            offset_in_item,
+        });
+        self.keep_line = Some(KeepLine {
+            placed: true,
+            ..keep
+        });
+        cx.notify();
     }
 
     /// Whether lines show as three stacked lines: the list is narrow.
@@ -1936,11 +1996,14 @@ impl MailWindow {
                         div()
                             .flex_none()
                             .w(px((TAB_GAP + label_w) * label))
-                            .pl(px(TAB_GAP))
                             .overflow_hidden()
                             .whitespace_nowrap()
                             .opacity(label)
-                            .child(tab.label()),
+                            // The gap goes inside the clipped room, which
+                            // shrinks to nothing with it: as padding it would
+                            // hold the room open to the end, and the icon
+                            // would shift when the label went.
+                            .child(div().flex_none().pl(px(TAB_GAP)).child(tab.label())),
                     )
                 })
                 .when(badge > 0.001 && badge_w > 0.0, |d| {
@@ -1948,11 +2011,12 @@ impl MailWindow {
                         div()
                             .flex_none()
                             .w(px((TAB_GAP + badge_w) * badge))
-                            .pl(px(TAB_GAP))
                             .overflow_hidden()
                             .opacity(badge)
                             .child(
                                 div()
+                                    .flex_none()
+                                    .ml(px(TAB_GAP))
                                     .w(px(badge_w))
                                     .h(px(BADGE_HEIGHT))
                                     .flex()
@@ -2047,6 +2111,7 @@ impl MailWindow {
             self.list_shape = shape;
             self.list_state.remeasure();
         }
+        self.keep_opened_line(cx);
         self.list_state.follow();
         list(
             self.list_state.state().clone(),

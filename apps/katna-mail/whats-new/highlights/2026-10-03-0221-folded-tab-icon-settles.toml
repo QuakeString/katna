@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Folded tabs settle without a nudge"
+text = """
+When you switch between folded inbox tabs, the tab you leave now comes to
+rest exactly where it shrank to, without its icon shifting a pixel or two
+once the motion ends.
+"""
