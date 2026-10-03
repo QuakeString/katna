@@ -13,7 +13,7 @@ use katna_i18n::tr;
 use katna_store::TemplateFile;
 use katna_ui::px;
 use katna_ui::rich::{RichEvent, html};
-use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
+use katna_ui::{InputEvent, RichEditor, TextInput};
 
 use super::{MailWindow, control_column, field_box, label_column, note};
 use crate::daemon;
@@ -280,37 +280,24 @@ impl MailWindow {
     /// The Templates row: the list with New, and the editor beside it.
     pub(super) fn templates_row(&self, th: &Theme, cx: &mut Context<Self>) -> Div {
         let editing = self.template_editor();
-        let list = self
-            .writing_templates()
-            .iter()
-            .map(|t| {
-                let on = editing.is_some_and(|e| e.id == t.id);
-                let id = t.id;
-                div()
-                    .id(("page-template", id as usize))
-                    .map(|d| self.page_control(d, th, cx))
-                    .relative()
-                    .overflow_hidden()
-                    .h(px(40.0))
-                    .px(px(12.0))
-                    .flex()
-                    .items_center()
-                    .rounded(px(8.0))
-                    .text_size(px(14.0))
-                    .bg(rgba(if on { th.nav_selected } else { 0 }))
-                    .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-                    .cursor_pointer()
-                    .hover(|d| d.bg(rgba(if on { th.nav_selected } else { th.hover })))
+        let list =
+            self.writing_templates()
+                .iter()
+                .map(|t| {
+                    let on = editing.is_some_and(|e| e.id == t.id);
+                    let id = t.id;
+                    self.page_control(
+                        crate::widgets::row(("page-template", id as usize), on, th),
+                        th,
+                        cx,
+                    )
+                    .px(px(katna_ui::tokens::space::S4))
                     .on_click(cx.listener(move |this, _, window, cx| {
                         this.edit_template(Some(id), window, cx)
                     }))
-                    .child(
-                        Ripple::new(("page-template-ripple", id as usize), rgba(th.ripple))
-                            .rounded(8.0),
-                    )
                     .child(div().truncate().child(t.name.clone()))
-            })
-            .collect::<Vec<_>>();
+                })
+                .collect::<Vec<_>>();
         let empty = self.writing_templates().is_empty() && editing.is_none();
         let editor = editing.map(|e| self.render_template_editor(e, th, cx));
         self.row(

@@ -937,23 +937,10 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(div().id(id), th, cx)
-            .relative()
-            .overflow_hidden()
-            // A long label wraps onto a second line in a narrow window.
-            .min_h(px(40.0))
-            .py(px(8.0))
-            .px(px(8.0))
-            .flex()
-            .flex_row()
-            .items_center()
+        // A long label wraps onto a second line in a narrow window.
+        self.page_control(crate::widgets::row(id, false, th), th, cx)
             .gap(px(14.0))
-            .rounded(px(8.0))
-            .text_size(px(14.0))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(animated_radio((id, 2_usize), on, th))
             .child(div().flex_1().min_w_0().child(label.into()))
             .into_any_element()
@@ -969,24 +956,12 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(div().id(id), th, cx)
-            .relative()
-            .overflow_hidden()
-            .py(px(8.0))
-            .px(px(8.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(12.0))
-            .rounded(px(8.0))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+        self.page_control(crate::widgets::row(id, false, th), th, cx)
             .on_click(
                 cx.listener(move |this, _, window, cx| {
                     this.open_settings_page(section, window, cx)
                 }),
             )
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(
                 div()
                     .flex_1()
@@ -1057,20 +1032,8 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(div().id(id), th, cx)
-            .relative()
-            .overflow_hidden()
-            .py(px(8.0))
-            .px(px(8.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(12.0))
-            .rounded(px(8.0))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+        self.page_control(crate::widgets::row(id, false, th), th, cx)
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(
                 div()
                     .flex_1()
@@ -1222,21 +1185,8 @@ fn help_row(
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
-    div()
-        .id(id)
-        .relative()
-        .overflow_hidden()
-        .h(px(40.0))
-        .px(px(8.0))
-        .flex()
-        .flex_row()
-        .items_center()
+    crate::widgets::row(id, false, th)
         .gap(px(14.0))
-        .rounded(px(8.0))
-        .text_size(px(14.0))
-        .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
-        .child(Ripple::new((id, 0usize), rgba(th.ripple)).rounded(8.0))
         .child(icon(name, th.text_dim, 20.0))
         .child(label.into())
 }
