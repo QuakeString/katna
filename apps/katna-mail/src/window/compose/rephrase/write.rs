@@ -382,7 +382,7 @@ impl MailWindow {
                 let (text, fix) = if problem == ENCRYPTED_OFF {
                     (
                         tr!("compose-ai-write-encrypted-off"),
-                        Fix::Settings(super::super::super::settings_page::Section::Signatures),
+                        Fix::Settings(super::super::super::settings_page::Section::Ai),
                     )
                 } else {
                     problem_text(problem, service)

@@ -19,7 +19,7 @@ use katna_ui::px;
 
 use super::MailWindow;
 use super::keymap::SHORTCUTS;
-use super::settings_page::{Section, setting_row};
+use super::settings_page::{Scope, Section, setting_row};
 use crate::theme::{Theme, fade};
 
 /// How long a row found by a search stays lit.
@@ -59,7 +59,7 @@ const ENTRIES: &[Entry] = &[
         "language translation locale english hindi bengali arabic system",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-conversations",
         "settings-general-conversations-group",
         "threads threading group",
@@ -71,49 +71,49 @@ const ENTRIES: &[Entry] = &[
         "clock 24-hour 12-hour am pm time format hours",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-reading",
         "settings-general-reading-summary",
         "order oldest descending chronological reverse headers details from to cc names recipients first last",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-translation",
         "settings-translation-summary",
         "translate translation language foreign reading libretranslate always never",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-mark-read",
         "settings-general-mark-read-summary",
         "read unread seen delay mark",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-auto-advance",
         "settings-general-auto-advance-summary",
         "auto advance next previous older newer after delete archive move back list",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-confirm-delete",
         "settings-general-confirm-delete-summary",
         "confirm delete trash ask warning dialog several many",
     ),
     entry(
-        Section::General,
+        Section::Signatures,
         "settings-general-reply-button",
         "settings-general-reply-button-summary",
         "reply all default behaviour behavior",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-remote-images",
         "settings-general-remote-images-summary",
         "remote images pictures load external content tracking privacy",
     ),
     entry(
-        Section::General,
+        Section::Signatures,
         "settings-general-sending",
         "settings-general-sending-summary",
         "undo send delay cancel",
@@ -173,13 +173,13 @@ const ENTRIES: &[Entry] = &[
         "mute unmute silence quiet bell conversation thread sender account folder",
     ),
     entry(
-        Section::General,
+        Section::MailDesktop,
         "settings-general-search-triggers",
         "settings-general-search-triggers-summary",
         "krunner gnome shell desktop search trigger keyword prefix word launcher",
     ),
     entry(
-        Section::General,
+        Section::MailDesktop,
         "settings-general-mail-app",
         "settings-general-mail-app-summary",
         "default client mailto links handler email program",
@@ -227,7 +227,7 @@ const ENTRIES: &[Entry] = &[
         "reset wipe erase remove everything",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-reading-pane",
         "settings-appearance-reading-pane-detail",
         "split preview right no split layout panes",
@@ -269,31 +269,31 @@ const ENTRIES: &[Entry] = &[
         "rail labels",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-sender-pictures",
         "settings-appearance-sender-pictures-summary",
         "logo avatar picture image photo",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-important",
         "settings-appearance-important-summary",
         "important label chevron flag priority",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-message-width",
         "settings-appearance-message-width-limit",
         "narrow wide lines readable column",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-mail-colors",
         "settings-appearance-mail-colors-summary",
         "dark mode night html colors colours invert",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-attachment-previews",
         "settings-appearance-attachment-previews-summary",
         "thumbnails attachments files preview",
@@ -347,7 +347,7 @@ const ENTRIES: &[Entry] = &[
         "save download folder file manager reveal show dolphin",
     ),
     entry(
-        Section::DefaultApps,
+        Section::Files,
         "settings-files-page",
         "settings-files-page-summary",
         "files page attachments small pictures images signature logo icon size kb pixels hide \
@@ -390,7 +390,7 @@ const ENTRIES: &[Entry] = &[
         "writing suggestions autocomplete complete predict phrase ghost text tab smart compose",
     ),
     entry(
-        Section::Signatures,
+        Section::Ai,
         "settings-ai",
         "settings-ai-summary",
         "ai artificial intelligence rephrase rewrite tone katna ai own key api gemini openai chatgpt claude mistral deepseek openrouter ollama lm studio model autocomplete",
@@ -430,6 +430,24 @@ const ENTRIES: &[Entry] = &[
         "settings-compose-templates",
         "settings-compose-templates-summary",
         "template canned reply snippet",
+    ),
+    entry(
+        Section::Calendar,
+        "settings-calendar-density",
+        "settings-calendar-density-summary",
+        "hours tall compact comfortable zoom day week density",
+    ),
+    entry(
+        Section::Calendar,
+        "settings-calendar-custom-days",
+        "settings-calendar-custom-days-summary",
+        "days custom view multi day calendar",
+    ),
+    entry(
+        Section::Calendar,
+        "settings-calendar-birthdays",
+        "settings-calendar-birthdays-summary",
+        "birthday birthdays contacts calendar",
     ),
     entry(
         Section::Feedback,
@@ -483,7 +501,10 @@ fn tab_words(section: Section) -> &'static str {
     match section {
         Section::Subscriptions => "katna account sign in sign up password devices server",
         Section::MailRules => "mail rules filters folders labels",
-        Section::Signatures => "signature templates write",
+        Section::Signatures => "signature templates write sending",
+        Section::Ai => "ai artificial intelligence rephrase rewrite gemini ollama",
+        Section::Reading => "reading conversations open mail",
+        Section::MailDesktop => "desktop krunner gnome mailto default mail app links",
         Section::Feedback => "crash report feedback privacy anonymous sentry telemetry",
         _ => "",
     }
@@ -763,7 +784,14 @@ impl MailWindow {
         let empty = found.is_empty();
         let rows = found.into_iter().enumerate().map(|(ix, found)| {
             let title = found.title.clone();
-            let place = format!("{} \u{b7} {}", found.section.label(), found.detail);
+            // An app's page says whose it is: "Mail › Reading".
+            let scope = found.section.scope();
+            let page = if scope == Scope::Katna || scope.label() == found.section.label() {
+                found.section.label()
+            } else {
+                format!("{} \u{203a} {}", scope.label(), found.section.label())
+            };
+            let place = format!("{page} \u{b7} {}", found.detail);
             crate::widgets::row(("settings-result", ix), false, th)
                 .px(px(katna_ui::tokens::space::S4))
                 .py(px(10.0))

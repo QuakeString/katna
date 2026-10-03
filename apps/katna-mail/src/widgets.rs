@@ -763,6 +763,17 @@ pub fn row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> Stateful<Div
     line_row(id.into(), rest, hover, th).when(on, |d| d.text_color(rgba(th.nav_selected_text)))
 }
 
+/// A [`row`] of a side pane (folders, Settings' pages): the open one is
+/// the side panes' quiet grey rather than the accent's tint.
+pub fn pane_row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> Stateful<Div> {
+    let (rest, hover) = if on {
+        (th.row_selected, th.row_selected)
+    } else {
+        (0, th.hover)
+    };
+    line_row(id.into(), rest, hover, th).when(on, |d| d.text_color(rgba(th.row_selected_text)))
+}
+
 /// A [`row`] the user ticked (Ctrl+click, a tick box): the ticked tint at
 /// rest and under the pointer, like Mail's list.
 pub fn ticked_row(id: impl Into<gpui::ElementId>, th: &Theme) -> Stateful<Div> {

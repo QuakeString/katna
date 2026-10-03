@@ -116,6 +116,12 @@ pub(super) enum Change {
     Scale(u16),
     /// 12- or 24-hour times.
     Clock(Clock),
+    /// How tall the hours of Calendar's Day and Week are.
+    CalendarDensity(katna_core::config::CalendarDensity),
+    /// How many days Calendar's custom view shows.
+    CustomDays(u8),
+    /// The Birthdays calendar shows.
+    Birthdays(bool),
     /// What Katna starts at login, if anything (an autostart entry).
     StartAtLogin(Option<crate::autostart::Start>),
     MarkRead(MarkRead),
@@ -238,13 +244,7 @@ impl MailWindow {
                                     .flex_1()
                                     .justify_center()
                                     .on_click(cx.listener(
-                                        |this, _, window, cx| {
-                                            this.open_settings_page(
-                                                super::settings_page::Section::General,
-                                                window,
-                                                cx,
-                                            )
-                                        },
+                                        |this, _, window, cx| this.open_settings_here(window, cx),
                                     )),
                                 ),
                             )
@@ -729,6 +729,20 @@ impl MailWindow {
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();
+                return;
+            }
+            Change::CalendarDensity(density) => {
+                self.set_calendar_density(density, cx);
+                return;
+            }
+            Change::CustomDays(days) => {
+                self.keep_custom_days(days, cx);
+                return;
+            }
+            Change::Birthdays(on) => {
+                if self.config.contacts.hide_birthdays == on {
+                    self.toggle_birthdays(cx);
+                }
                 return;
             }
             Change::Clock(clock) => {

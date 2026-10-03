@@ -724,7 +724,11 @@ impl MailWindow {
         }
     }
 
-    fn set_calendar_density(&mut self, density: CalendarDensity, cx: &mut Context<Self>) {
+    pub(super) fn set_calendar_density(
+        &mut self,
+        density: CalendarDensity,
+        cx: &mut Context<Self>,
+    ) {
         self.config.calendar.density = density;
         self.save_config();
         self.menu = None;
@@ -735,6 +739,18 @@ impl MailWindow {
         self.config.calendar.second_time_zone = name;
         self.save_config();
         self.menu = None;
+        cx.notify();
+    }
+
+    /// How many days the custom view shows, picked in Settings: the
+    /// calendar stays on the view it shows.
+    pub(super) fn keep_custom_days(&mut self, days: u8, cx: &mut Context<Self>) {
+        self.config.calendar.custom_days = days;
+        self.save_config();
+        self.calendar.custom_days = days;
+        if self.calendar.view == CalView::Days {
+            self.calendar_moved(cx);
+        }
         cx.notify();
     }
 

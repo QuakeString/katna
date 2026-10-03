@@ -94,7 +94,6 @@ mod skeleton;
 mod snooze;
 mod sounds;
 mod storage;
-mod tab_strip;
 mod tasks_page;
 mod tour;
 mod translate;

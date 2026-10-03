@@ -931,7 +931,7 @@ impl MailWindow {
         if problem == PROBLEM_ENCRYPTED {
             return (
                 tr!("summary-encrypted-off"),
-                Fix::Settings(super::super::settings_page::Section::Signatures),
+                Fix::Settings(super::super::settings_page::Section::Ai),
             );
         }
         problem_text(problem, &self.ai_service_name())
