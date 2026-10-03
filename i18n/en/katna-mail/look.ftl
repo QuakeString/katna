@@ -36,6 +36,8 @@ look-frame-katna-note-windows = Katna's top bar becomes the title bar. Windows s
 look-window-radius = Corner roundness
 look-window-radius-square = Square
 look-window-radius-round = Round
+# The unit after the roundness typed beside its slider: pixels.
+look-px = px
 # A switch under the Katna frame choice.
 look-window-border = Border
 look-window-border-detail = A thin line around the window
