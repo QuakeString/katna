@@ -475,7 +475,9 @@ impl MailWindow {
                 .unwrap_or_default(),
             NameFor::New(account) => {
                 // Its group opens, so the box shows.
-                self.calendar.folded.remove(&account);
+                if self.calendar.folded.remove(&account) {
+                    self.calendar.fold(account).turn();
+                }
                 String::new()
             }
         };

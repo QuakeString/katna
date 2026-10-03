@@ -8,6 +8,7 @@
 //! expanded by `katna_dav`. Google Calendar's keys work: T today, J or N
 //! next, K or P back, D W M A (or 1 2 3 4) for the views.
 
+use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
@@ -236,6 +237,8 @@ pub(super) struct CalendarPage {
     hidden: HashSet<i64>,
     /// Accounts whose calendars are folded away in the side column.
     folded: HashSet<Option<i64>>,
+    /// Each account group's glide as it folds and opens.
+    folds: RefCell<HashMap<Option<i64>, Rc<crate::widgets::Fold>>>,
     loading: bool,
     error: Option<String>,
     task: Option<Task<()>>,
@@ -268,6 +271,11 @@ pub(super) struct CalendarPage {
 }
 
 impl CalendarPage {
+    /// Account group `account`'s fold, made on first use.
+    pub(super) fn fold(&self, account: Option<i64>) -> Rc<crate::widgets::Fold> {
+        self.folds.borrow_mut().entry(account).or_default().clone()
+    }
+
     pub(super) fn new(custom_days: u8, cx: &mut App) -> Self {
         let today = Zoned::now().date();
         Self {
@@ -279,6 +287,7 @@ impl CalendarPage {
             calendars: Rc::new(Vec::new()),
             hidden: HashSet::new(),
             folded: HashSet::new(),
+            folds: RefCell::default(),
             loading: false,
             error: None,
             task: None,
@@ -1396,6 +1405,7 @@ impl MailWindow {
             .collect();
         let groups = groups.into_iter().map(|(account, calendars)| {
             let folded = self.calendar.folded.contains(&account);
+            let fold = self.calendar.fold(account);
             let name = match account {
                 Some(id) => names
                     .get(&id)
@@ -1471,6 +1481,7 @@ impl MailWindow {
                         .cursor_pointer()
                         .hover(|s| s.bg(rgba(th.hover)))
                         .on_click(cx.listener(move |this, _, _, cx| {
+                            this.calendar.fold(account).turn();
                             if !this.calendar.folded.remove(&account) {
                                 this.calendar.folded.insert(account);
                             }
@@ -1490,14 +1501,23 @@ impl MailWindow {
                                 .text_color(rgba(th.text))
                                 .child(name),
                         )
-                        .child(icon(
-                            if folded { "chevron-down" } else { "chevron-up" },
+                        .child(crate::widgets::fold_arrow(
+                            &format!("calendar-arrow-{account:?}"),
+                            &fold,
+                            !folded,
                             th.text_dim,
                             20.0,
                         )),
                 )
                 .children(note)
-                .when(!folded, |d| d.children(rows).children(new_here))
+                .child(crate::widgets::fold_box(
+                    &format!("calendar-fold-{account:?}"),
+                    &fold,
+                    div()
+                        .flex()
+                        .flex_col()
+                        .when(!folded, |d| d.children(rows).children(new_here)),
+                ))
         });
         div()
             .flex()

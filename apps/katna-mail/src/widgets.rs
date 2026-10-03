@@ -361,6 +361,11 @@ pub struct Fold {
     at: Cell<Option<Instant>>,
     from: Cell<f32>,
     now: Rc<Cell<f32>>,
+    /// Whether `now` has been measured, so a box folded to nothing can
+    /// glide open from 0.
+    measured: Rc<Cell<bool>>,
+    /// Whether it was open when last drawn by [`fold_arrow`].
+    was_open: Cell<Option<bool>>,
 }
 
 impl Fold {
@@ -368,7 +373,23 @@ impl Fold {
     pub fn turn(&self) {
         self.turns.set(self.turns.get().wrapping_add(1));
         self.at.set(Some(Instant::now()));
-        self.from.set(self.now.get());
+        self.from.set(if self.measured.get() {
+            self.now.get()
+        } else {
+            -1.0
+        });
+    }
+
+    /// Turns it when `open` changed since the last call, so an arrow
+    /// turns however its state changed.
+    fn sync(&self, open: bool) {
+        if self
+            .was_open
+            .replace(Some(open))
+            .is_some_and(|was| was != open)
+        {
+            self.turn();
+        }
     }
 
     /// It turned a moment ago and is still gliding.
@@ -390,11 +411,14 @@ const FOLD_GLIDE: Duration = Duration::from_millis(700);
 /// new content shows through it as it grows, with no fade, so nothing
 /// that stays (a header) blinks. At rest it is as tall as `content`.
 pub fn fold_box(name: &str, fold: &Fold, content: impl IntoElement) -> AnyElement {
-    let measure = fold.now.clone();
+    let (measure, measured) = (fold.now.clone(), fold.measured.clone());
     let body = div().flex().flex_col().overflow_hidden().child(
         div().flex_none().relative().child(content).child(
             canvas(
-                move |bounds, _, _| measure.set(unpx(bounds.size.height)),
+                move |bounds, _, _| {
+                    measure.set(unpx(bounds.size.height));
+                    measured.set(true);
+                },
                 |_, _, _, _| {},
             )
             .absolute()
@@ -404,7 +428,7 @@ pub fn fold_box(name: &str, fold: &Fold, content: impl IntoElement) -> AnyElemen
         ),
     );
     let from = fold.from.get();
-    if !fold.moving() || from <= 0.0 {
+    if !fold.moving() || from < 0.0 {
         return body.into_any_element();
     }
     let now = fold.now.clone();
@@ -421,6 +445,7 @@ pub fn fold_box(name: &str, fold: &Fold, content: impl IntoElement) -> AnyElemen
 /// The arrow of a [`fold_box`]: points down while closed and turns half round
 /// to point up as it opens, on the `SMOOTH` spring.
 pub fn fold_arrow(name: &str, fold: &Fold, open: bool, color: u32, size: f32) -> AnyElement {
+    fold.sync(open);
     let (was, to) = if open { (0.0, PI) } else { (PI, 0.0) };
     let animation = SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(to);
     let animation = if fold.moving() {

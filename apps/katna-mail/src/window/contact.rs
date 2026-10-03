@@ -107,6 +107,8 @@ pub(super) struct ContactPanel {
     more: Option<String>,
     /// 0 = the first few conversations, 1 = all of them.
     more_spring: Spring,
+    /// More's arrow, turning as the list grows or shrinks.
+    more_arrow: crate::widgets::Fold,
     /// The panel folded the folders to make room: they unfold again when
     /// it goes.
     folded_nav: bool,
@@ -135,6 +137,7 @@ impl ContactPanel {
             companies: HashMap::new(),
             more: None,
             more_spring: Spring::new(motion::SMOOTH, 0.0),
+            more_arrow: crate::widgets::Fold::default(),
             folded_nav: false,
             scroll: ScrollHandle::new(),
             actions_at: Rc::new(Cell::new((ACTIONS_AT, 1.0))),
@@ -1616,12 +1619,15 @@ impl MailWindow {
                     } else {
                         tr!("contact-less")
                     })
-                    .child(icon(
-                        if more { "chevron-down" } else { "chevron-up" },
+                    .child(crate::widgets::fold_arrow(
+                        "contact-more-arrow",
+                        &self.contact.more_arrow,
+                        !more,
                         th.accent,
                         18.0,
                     ))
                     .on_click(cx.listener(move |this, _, _, cx| {
+                        this.contact.more_arrow.turn();
                         this.contact.more = more.then(|| person.clone());
                         cx.notify();
                     })),
