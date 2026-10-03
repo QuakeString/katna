@@ -495,12 +495,17 @@ pub struct MailWindow {
     /// new name has rolled in (0 to 1).
     title_from: RailApp,
     title_roll: Spring,
-    /// The big button's icon now and the one it turns away from as the
-    /// page (or a drive's upload) changes it, and how far it has turned
-    /// (0 to 1).
+    /// The big button's icon and word now and the ones it turns away from
+    /// as the page (or a drive's upload) changes them, and how far it has
+    /// turned (0 to 1).
     primary_icon: &'static str,
     primary_icon_from: &'static str,
+    primary_label: String,
+    primary_label_from: String,
     primary_icon_turn: Spring,
+    /// How wide the big button's word is drawn this frame: eased from the
+    /// old word's width to the new one's while it turns.
+    primary_label_width: f32,
     /// The account picture at the top right rolling from the last
     /// account's, and how far the new one has rolled in (0 to 1).
     avatar_roll: account_roll::AvatarRoll,
@@ -917,6 +922,9 @@ impl MailWindow {
             title_roll: Spring::new(motion::SLIDE, 1.0),
             primary_icon: "compose",
             primary_icon_from: "compose",
+            primary_label: String::new(),
+            primary_label_from: String::new(),
+            primary_label_width: 0.0,
             primary_icon_turn: Spring::new(motion::SMOOTH, 1.0),
             avatar_roll: account_roll::AvatarRoll::new(),
             avatar_turn: Spring::new(motion::SLIDE, 1.0),
@@ -3609,16 +3617,31 @@ impl Render for MailWindow {
         self.compose_dock.tick(window, reduce);
         self.reader_bar.tick(&self.reader_scroll, window, cx);
         self.title_roll.tick(window, reduce);
-        let primary_icon = self.primary_button().0;
-        if primary_icon != self.primary_icon {
+        let (primary_icon, primary_label) = self.primary_button();
+        if self.primary_label.is_empty() {
+            // The first frame shows the button as it is, with no turn.
+            self.primary_icon = primary_icon;
+            self.primary_label = primary_label;
+        } else if primary_icon != self.primary_icon || primary_label != self.primary_label {
             self.primary_icon_from = self.primary_icon;
             self.primary_icon = primary_icon;
+            self.primary_label_from = std::mem::replace(&mut self.primary_label, primary_label);
             self.primary_icon_turn.snap(0.0);
             self.primary_icon_turn.set(1.0);
         }
-        self.primary_icon_turn.tick(window, reduce);
+        let turn = self.primary_icon_turn.tick(window, reduce).clamp(0.0, 1.0);
+        let word = |label: &str| compose_text_width(label, self.font.as_ref(), window);
+        self.primary_label_width = if turn >= 0.999 {
+            word(&self.primary_label)
+        } else {
+            lerp(
+                word(&self.primary_label_from),
+                word(&self.primary_label),
+                turn,
+            )
+        };
         self.avatar_turn.tick(window, reduce);
-        let compose_text = compose_text_width(&self.primary_button().1, self.font.as_ref(), window);
+        let compose_text = self.primary_label_width;
         let content = match &self.mail {
             _ if onboarding => self.render_onboarding(&th, window, cx),
             Err(err) => self.render_error(err, &th, cx),

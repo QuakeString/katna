@@ -64,6 +64,42 @@ pub fn morph_icon(from: &str, to: &str, t: f32, color: u32, size: f32) -> AnyEle
         .into_any_element()
 }
 
+/// Word `to` rolling up into the place of `from`, `t` of the way (0 to
+/// 1), in step with [`morph_icon`]: the old word rises a little as it
+/// fades and the new one rises after it, both clipped to `width`.
+pub fn morph_label(from: &str, to: &str, t: f32, width: f32) -> AnyElement {
+    const LINE: f32 = 20.0;
+    const RISE: f32 = 8.0;
+    let t = t.clamp(0.0, 1.0);
+    let word = |text: &str, top: f32, opacity: f32| {
+        div()
+            .absolute()
+            .left_0()
+            .top(px(RISE + top))
+            .h(px(LINE))
+            .whitespace_nowrap()
+            .opacity(opacity)
+            .child(text.to_owned())
+    };
+    let out = (t / 0.6).min(1.0);
+    let into = ((t - 0.3) / 0.7).max(0.0);
+    let turning = t < 0.999 && from != to;
+    div()
+        .relative()
+        .flex_none()
+        .w(px(width))
+        .h(px(LINE + 2.0 * RISE))
+        .line_height(px(LINE))
+        .overflow_hidden()
+        .when(turning, |d| d.child(word(from, -RISE * out, 1.0 - out)))
+        .child(if turning {
+            word(to, RISE * (1.0 - t), into)
+        } else {
+            word(to, 0.0, 1.0)
+        })
+        .into_any_element()
+}
+
 /// A ring `size` px across in `track`, with the stretch from turn `from`
 /// to turn `to` (0 at the top, clockwise) in `color`; it fills its parent.
 pub fn ring(from: f32, to: f32, color: u32, track: u32, size: f32) -> AnyElement {

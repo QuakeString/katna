@@ -663,7 +663,7 @@ impl MailWindow {
                                 .overflow_hidden()
                                 .whitespace_nowrap()
                                 .opacity(label)
-                                .child(word),
+                                .child(self.primary_label()),
                         ),
                 )
                 .into_any_element(),
