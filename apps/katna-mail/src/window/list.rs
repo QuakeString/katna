@@ -97,6 +97,9 @@ const SELECT_PILL_GAP: f32 = (TOOLBAR_HEIGHT - 40.0) / 2.0;
 pub(super) struct TabChip {
     shown: Spring,
     quiet: Spring,
+    /// 1 while its tab is open: the label of a folded bar grows in and
+    /// out with it.
+    on: Spring,
     width: f32,
     count: u64,
 }
@@ -627,7 +630,7 @@ impl MailWindow {
         // buttons on either side let them.
         if self.shows_tabs() && self.tabs_fit() == TabsFit::TopRow {
             let width = self.list_width();
-            let tabs = self.tabs_width(self.tab_fold.value());
+            let tabs = self.tabs_width(self.tab_fold.value(), false);
             let left = ((width - tabs) / 2.0)
                 .min(width - TOP_ROW_RIGHT - tabs)
                 .max(TOP_ROW_LEFT);
@@ -1707,6 +1710,7 @@ impl MailWindow {
                 self.tab_chips.push(TabChip {
                     shown: Spring::new(motion::SMOOTH, shown),
                     quiet: Spring::new(motion::GENTLE, quiet),
+                    on: Spring::new(motion::SMOOTH, quiet),
                     width: 0.0,
                     count,
                 });
@@ -1719,8 +1723,10 @@ impl MailWindow {
             }
             chip.shown.set(shown);
             chip.quiet.set(quiet);
+            chip.on.set(quiet);
             chip.shown.tick(window, reduce);
             chip.quiet.tick(window, reduce);
+            chip.on.tick(window, reduce);
         }
     }
 
@@ -1745,17 +1751,23 @@ impl MailWindow {
             .sum()
     }
 
-    /// 1 for the open tab, 0 for the others. The highlight moves at once,
-    /// the tab's ripple showing the click.
-    fn tab_on(&self, ix: usize) -> f32 {
-        if ix == self.tab { 1.0 } else { 0.0 }
+    /// 1 for the open tab, 0 for the others; `settled` gives where a
+    /// switch of tabs ends, else where it is now. The highlight moves at
+    /// once, the tab's ripple showing the click, while a folded bar's
+    /// labels swap smoothly.
+    fn tab_on(&self, ix: usize, settled: bool) -> f32 {
+        let at_end = if ix == self.tab { 1.0 } else { 0.0 };
+        match self.tab_chips.get(ix) {
+            Some(chip) if !settled => chip.on.value().clamp(0.0, 1.0),
+            _ => at_end,
+        }
     }
 
     /// How much tab `ix` shows its label and its badge, 0 to 1, with the
     /// tabs folded `fold` steps: the open tab keeps its label longest;
     /// a badge shows while its tab has unread mail, the open tab's too.
-    fn tab_shares(&self, ix: usize, fold: f32) -> (f32, f32) {
-        let on = self.tab_on(ix);
+    fn tab_shares(&self, ix: usize, fold: f32, settled: bool) -> (f32, f32) {
+        let on = self.tab_on(ix, settled);
         let step = |from: f32| (fold - from).clamp(0.0, 1.0);
         let label = lerp(1.0, on, step(FOLD_LABELS)) * (1.0 - step(FOLD_NO_COUNTS));
         // The first tab, Primary, has no count, as in Gmail.
@@ -1769,32 +1781,32 @@ impl MailWindow {
 
     /// Tab `ix`'s padding and icon size: a tab without its label has less
     /// padding and a larger icon, which grows as the label folds away.
-    fn tab_pad_icon(&self, ix: usize, fold: f32) -> (f32, f32) {
-        let (label, _) = self.tab_shares(ix, fold);
+    fn tab_pad_icon(&self, ix: usize, fold: f32, settled: bool) -> (f32, f32) {
+        let (label, _) = self.tab_shares(ix, fold, settled);
         let pad = lerp(TAB_PAD, TAB_PAD_ICONS, fold.clamp(0.0, 1.0));
         (pad, lerp(TAB_ICON_ALONE, TAB_ICON, label))
     }
 
     /// Tab `ix`'s width in the pill bar.
-    fn tab_width(&self, ix: usize, fold: f32) -> f32 {
+    fn tab_width(&self, ix: usize, fold: f32, settled: bool) -> f32 {
         let label_w = self.tab_sizes.get(ix).map_or(0.0, |s| s.0);
         let badge_w = self.tab_chip(ix).2;
-        let (label, badge) = self.tab_shares(ix, fold);
-        let (pad, icon) = self.tab_pad_icon(ix, fold);
+        let (label, badge) = self.tab_shares(ix, fold, settled);
+        let (pad, icon) = self.tab_pad_icon(ix, fold, settled);
         let badge = if badge_w > 0.0 { badge } else { 0.0 };
         2.0 * pad + icon + (TAB_GAP + label_w) * label + (TAB_GAP + badge_w) * badge
     }
 
     /// The pill bar's width with every label and count showing.
     fn tabs_full_width(&self) -> f32 {
-        self.tabs_width(FOLD_LABELS)
+        self.tabs_width(FOLD_LABELS, true)
     }
 
-    /// The pill bar's width folded `fold` steps with the highlight `at`
-    /// tabs along.
-    fn tabs_width(&self, fold: f32) -> f32 {
+    /// The pill bar's width folded `fold` steps, as it is now or, when
+    /// `settled`, once a switch of tabs ends.
+    fn tabs_width(&self, fold: f32, settled: bool) -> f32 {
         (0..self.tabs.len())
-            .map(|ix| self.tab_width(ix, fold))
+            .map(|ix| self.tab_width(ix, fold, settled))
             .sum::<f32>()
             + 2.0 * TABS_INSET
             + TAB_SPACING * self.tabs.len().saturating_sub(1) as f32
@@ -1822,7 +1834,7 @@ impl MailWindow {
         let room = self.tabs_room(self.tabs_fit());
         [FOLD_LABELS, FOLD_OPEN_LABEL, FOLD_NO_COUNTS]
             .into_iter()
-            .find(|&fold| self.tabs_width(fold) <= room)
+            .find(|&fold| self.tabs_width(fold, true) <= room)
             .unwrap_or(FOLD_ICONS)
     }
 
@@ -1859,10 +1871,10 @@ impl MailWindow {
     ) -> AnyElement {
         let fold = self.tab_fold.value();
         let extra = fill.map_or(0.0, |fill| {
-            ((fill - self.tabs_width(fold)) / self.tabs.len().max(1) as f32).max(0.0)
+            ((fill - self.tabs_width(fold, false)) / self.tabs.len().max(1) as f32).max(0.0)
         });
         let widths: Vec<f32> = (0..self.tabs.len())
-            .map(|ix| self.tab_width(ix, fold) + extra)
+            .map(|ix| self.tab_width(ix, fold, false) + extra)
             .collect();
         let lefts: Vec<f32> = widths
             .iter()
@@ -1879,9 +1891,9 @@ impl MailWindow {
         let tabs = self.tabs.iter().enumerate().map(|(ix, tab)| {
             let label_w = self.tab_sizes.get(ix).map_or(0.0, |s| s.0);
             let (_, quiet, badge_w, unread) = self.tab_chip(ix);
-            let (label, badge) = self.tab_shares(ix, fold);
-            let (pad, icon_size) = self.tab_pad_icon(ix, fold);
-            let on = self.tab_on(ix);
+            let (label, badge) = self.tab_shares(ix, fold, false);
+            let (pad, icon_size) = self.tab_pad_icon(ix, fold, false);
+            let on = self.tab_on(ix, false);
             let color = mix(th.text_dim, th.nav_selected_text, on);
             // The open tab's count goes quiet: a faint tint of its
             // highlight's text color, under the tab's own color, which

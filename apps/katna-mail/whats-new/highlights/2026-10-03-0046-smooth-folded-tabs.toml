@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Folded tabs switch smoothly"
+text = """
+When a narrow window folds the inbox tabs to icons, switching tabs no
+longer snaps: the tab you leave shrinks back to its icon as its name fades
+out, and the one you open grows as its name fades in.
+"""
