@@ -294,6 +294,7 @@ mod tests {
                 "suggestion",
                 "task",
                 "task_file",
+                "task_labels",
                 "task_list",
                 "template",
                 "template_attachment",

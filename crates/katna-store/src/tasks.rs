@@ -186,7 +186,9 @@ const EDITED: i64 = 1;
 const MOVED: i64 = 2;
 
 const TASK_COLUMNS: &str = "id, list_id, parent_id, title, notes, due, due_time, remind_at, \
-                            repeat, starred, done_at, position, mail, labels";
+                            repeat, starred, done_at, position, mail, \
+                            COALESCE((SELECT l.labels FROM task_labels l \
+                                      WHERE l.task_id = task.id), '[]')";
 
 fn task_row(row: &Row<'_>) -> rusqlite::Result<Task> {
     Ok(Task {
@@ -210,6 +212,20 @@ fn task_row(row: &Row<'_>) -> rusqlite::Result<Task> {
 /// Labels kept as a JSON array; none when unreadable.
 fn labels_of(json: &str) -> Vec<String> {
     serde_json::from_str(json).unwrap_or_default()
+}
+
+/// Gives task `id` the labels `labels` (`task_labels`; no row for none).
+fn set_labels(conn: &rusqlite::Connection, id: i64, labels: &[String]) -> Result<()> {
+    let json = labels_json(labels);
+    if json == "[]" {
+        conn.execute("DELETE FROM task_labels WHERE task_id = ?1", [id])?;
+    } else {
+        conn.execute(
+            "INSERT OR REPLACE INTO task_labels (task_id, labels) VALUES (?1, ?2)",
+            params![id, json],
+        )?;
+    }
+    Ok(())
 }
 
 /// Labels as kept: a JSON array, each once, in the order given.
@@ -501,7 +517,8 @@ impl Store {
     pub fn labels_in_use(&self) -> Result<Vec<String>> {
         let mut labels: Vec<String> = Vec::new();
         for sql in [
-            "SELECT labels FROM task WHERE deleted = 0 AND labels != '[]'",
+            "SELECT l.labels FROM task_labels l JOIN task t ON t.id = l.task_id
+             WHERE t.deleted = 0 AND l.labels != '[]'",
             "SELECT labels FROM note WHERE trashed_at IS NULL AND labels != '[]'",
         ] {
             let mut stmt = self.pim.prepare_cached(sql)?;
@@ -556,8 +573,8 @@ impl Store {
         let dirty = synced(&tx, list)?;
         tx.execute(
             "INSERT INTO task (list_id, parent_id, title, notes, due, due_time, remind_at,
-                               repeat, starred, mail, dirty, created_at, updated_at, labels)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?12, ?13)",
+                               repeat, starred, mail, dirty, created_at, updated_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?12)",
             params![
                 list,
                 parent,
@@ -570,11 +587,11 @@ impl Store {
                 fields.starred,
                 fields.mail,
                 dirty,
-                now,
-                labels_json(&fields.labels)
+                now
             ],
         )?;
         let id = tx.last_insert_rowid();
+        set_labels(&tx, id, &fields.labels)?;
         tx.commit()?;
         Ok(id)
     }
@@ -584,7 +601,7 @@ impl Store {
     pub fn edit_task(&mut self, id: i64, fields: &TaskFields) -> Result<bool> {
         let changed = self.pim.execute(
             "UPDATE task SET title = ?2, notes = ?3, due = ?4, due_time = ?5, remind_at = ?6,
-                             repeat = ?7, starred = ?8, mail = ?9, updated_at = ?10, labels = ?11,
+                             repeat = ?7, starred = ?8, mail = ?9, updated_at = ?10,
                              dirty = (dirty & 2) | (SELECT account_id IS NOT NULL FROM task_list
                                                     WHERE task_list.id = task.list_id)
              WHERE id = ?1 AND deleted = 0",
@@ -598,10 +615,12 @@ impl Store {
                 fields.repeat,
                 fields.starred,
                 fields.mail,
-                unix_now(),
-                labels_json(&fields.labels)
+                unix_now()
             ],
         )?;
+        if changed > 0 {
+            set_labels(&self.pim, id, &fields.labels)?;
+        }
         Ok(changed > 0)
     }
 
@@ -1045,10 +1064,7 @@ impl Store {
                         )?;
                     }
                     if let Some(labels) = &task.labels {
-                        tx.execute(
-                            "UPDATE task SET labels = ?2 WHERE id = ?1",
-                            params![id, labels_json(labels)],
-                        )?;
+                        set_labels(&tx, id, labels)?;
                     }
                 }
                 None => {
@@ -1057,8 +1073,8 @@ impl Store {
                     changed += tx.execute(
                         "INSERT INTO task (list_id, remote_id, title, notes, due, done_at,
                                            position, etag, remind_at, repeat, starred,
-                                           created_at, updated_at, labels)
-                         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?12, ?13)",
+                                           created_at, updated_at)
+                         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?12)",
                         params![
                             list,
                             task.remote_id,
@@ -1071,10 +1087,10 @@ impl Store {
                             extras.remind_at,
                             extras.repeat,
                             task.starred.unwrap_or(false),
-                            now,
-                            labels_json(labels)
+                            now
                         ],
                     )?;
+                    set_labels(&tx, tx.last_insert_rowid(), labels)?;
                 }
             }
         }

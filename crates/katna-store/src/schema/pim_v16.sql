@@ -1,8 +1,9 @@
 -- SPDX-License-Identifier: GPL-3.0-or-later
 -- pim.db schema v16: labels and files on tasks (docs/ARCHITECTURE.md
 -- §18.1). A task's labels are the same names as the notes' labels, a JSON
--- array like `note.labels`; To Do keeps them as categories, CalDAV as
--- CATEGORIES, other services here only. A file's bytes are a blob in
+-- array like `note.labels`, in `task_labels` (a task without labels has no
+-- row; a side table, so the migration runs again harmlessly); To Do keeps
+-- them as categories, CalDAV as CATEGORIES, other services here only. A file's bytes are a blob in
 -- blobs.db (`hash`); `remote_id` is its ID on the task service once sent
 -- (To Do's attachment ID, `inline:<hash>` for a CalDAV ATTACH), and
 -- `local_only` marks one the service can't keep (Google, Zoho, too large,
@@ -10,7 +11,10 @@
 -- the service stays as a tombstone (`deleted`) until the service removed
 -- it too.
 
-ALTER TABLE task ADD COLUMN labels TEXT NOT NULL DEFAULT '[]';
+CREATE TABLE IF NOT EXISTS task_labels (
+    task_id     INTEGER PRIMARY KEY REFERENCES task (id) ON DELETE CASCADE,
+    labels      TEXT    NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS task_file (
     id          INTEGER PRIMARY KEY,
