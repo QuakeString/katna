@@ -42,6 +42,7 @@ pub struct Config {
     pub contacts: ContactsConfig,
     pub meetings: Meetings,
     pub ai: Ai,
+    pub tasks: TasksConfig,
 }
 
 /// The Contacts page's own choices.
@@ -56,6 +57,31 @@ pub struct ContactsConfig {
     /// unticked).
     #[serde(skip_serializing_if = "std::ops::Not::not")]
     pub hide_birthdays: bool,
+}
+
+/// The Tasks page's own choices, kept on this computer.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TasksConfig {
+    /// How each list is sorted, by its row ID in `pim.db`; a list not
+    /// here is in My order.
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub sort: BTreeMap<String, TaskSort>,
+}
+
+/// How a task list is sorted, as Google Tasks offers.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum TaskSort {
+    /// The order the tasks were put in, dragged or synced.
+    #[default]
+    MyOrder,
+    /// By due day and time; tasks without one last.
+    Date,
+    /// Starred tasks first.
+    Starred,
+    /// By title, A to Z.
+    Title,
 }
 
 /// Video calls started from Katna Mail (`docs/ARCHITECTURE.md` §18.2).
@@ -1591,6 +1617,24 @@ mod tests {
     }
 
     use super::*;
+
+    #[test]
+    fn task_sorts_round_trip() {
+        let mut config = Config::default();
+        config.tasks.sort.insert("2".into(), TaskSort::Date);
+        config.tasks.sort.insert("5".into(), TaskSort::Starred);
+        let text = toml::to_string(&config).unwrap();
+        assert!(text.contains("[tasks.sort]"), "{text}");
+        assert!(text.contains("2 = \"date\""), "{text}");
+        let back: Config = toml::from_str(&text).unwrap();
+        assert_eq!(back.tasks, config.tasks);
+        // Nothing sorted: nothing written.
+        assert!(
+            !toml::to_string(&Config::default())
+                .unwrap()
+                .contains("[tasks.sort]")
+        );
+    }
 
     #[test]
     fn auto_advance_picks_a_neighbor() {
