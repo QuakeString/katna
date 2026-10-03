@@ -19,6 +19,7 @@ use gpui::{
 };
 use katna_core::config::TaskSort;
 use katna_core::{AccountId, AccountKind};
+use katna_dav::quick_task::TypedTask;
 use katna_i18n::tr;
 use katna_store::tasks::Task as TaskItem;
 use katna_ui::px;
@@ -546,58 +547,14 @@ impl TasksPage {
     }
 }
 
-/// What typed quick add found in a new task's title.
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct TypedTask {
-    title: String,
-    /// `YYYY-MM-DD`; today when only a time or a repeat was typed.
-    due: Option<String>,
-    due_time: Option<u32>,
-    repeat: Option<String>,
-    /// From `#home`.
-    labels: Vec<String>,
-}
-
-/// Reads a day, a time and a repeat from a new task's title
-/// (`katna_core::quick_add`, shared with Calendar's events); `None` when it
-/// says none, or nothing would be left of the title. Tasks have no place,
-/// so "at" is left in the title.
+/// Reads a day, a time, a repeat and `#labels` from a new task's title
+/// as quick capture does ([`katna_dav::quick_task`], on Calendar's
+/// `katna_core::quick_add`); `None` when it says none, or nothing would be
+/// left of the title. Tasks have no place, so "at" is left in the title.
 fn typed_task(text: &str, today: jiff::civil::Date) -> Option<TypedTask> {
-    use katna_core::quick_add;
     let language = katna_i18n::current().language.tag.clone();
-    let words = quick_add::Words {
-        at: &[],
-        label_marks: &["#"],
-        ..*quick_add::Words::for_language(&language)
-    };
-    let typed = quick_add::parse(text, today, &words);
-    let title = typed.title.trim().to_owned();
-    // The parser keeps a title made only of such words ("tomorrow") whole.
-    if !typed.found() || title.is_empty() || title == text.trim() {
-        return None;
-    }
-    let due_time = typed
-        .start
-        .map(|t| u32::try_from(i32::from(t.hour()) * 60 + i32::from(t.minute())).unwrap_or(0));
-    // A repeat without a day starts on its first day from today ("every
-    // Monday" typed on a Tuesday: next Monday); a time alone is today.
-    let first_repeat = typed.repeat.as_deref().and_then(|rule| {
-        let yesterday = today.yesterday().ok()?;
-        let (day, _) = katna_dav::todo::next_due(&yesterday.to_string(), rule, yesterday)?;
-        day.parse().ok()
-    });
-    let due = typed
-        .day
-        .or(first_repeat)
-        .or_else(|| (due_time.is_some() || typed.repeat.is_some()).then_some(today))
-        .map(|d| d.to_string());
-    Some(TypedTask {
-        title,
-        due,
-        due_time,
-        repeat: typed.repeat,
-        labels: typed.labels,
-    })
+    let typed = katna_dav::quick_task::parse(text, today, &language);
+    (typed.title != text.trim() || !typed.labels.is_empty()).then_some(typed)
 }
 
 /// A day and month, with the year when it isn't this one.

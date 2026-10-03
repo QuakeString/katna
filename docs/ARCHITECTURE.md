@@ -4744,8 +4744,8 @@ server error is not.
   Katna is a tombstone until the service deleted it. Labels are the same
   set as Notes' (`Store::labels_in_use`): the details dialog uses Notes'
   label picker (`window/label_picker.rs`), the side list's Labels show
-  every open task with one, and `#home` in typed quick add is a label
-  (`quick_add::Words::label_marks`, tasks only). Files come from a drop
+  every open task with one, and `#home` in a new task's title is a label
+  (`katna_dav::quick_task`, as quick capture reads it). Files come from a drop
   on a task's row or its details, the details' paper clip, or the mail
   a task is made from (Add to Tasks keeps its attachments, not pictures
   shown in its text, when its body is stored); `AddTaskFile` takes up to
@@ -4871,7 +4871,7 @@ server error is not.
   label, list · account and reminder (at the time when a time was typed)
   on Task; label and where (an account's Notes, or this computer) on Note.
   Clicking a chip offers its choices in the same row (Today, Tomorrow,
-  Next week, No date; the lists; the labels notes use; the reminders; the
+  Next week, No date; the lists; the labels notes and tasks use; the reminders; the
   places), with a back arrow. Tab switches Task and Note, Enter saves and
   closes, Esc closes (or leaves a chip's choices). A task goes to the
   default list (above) or the one picked, over `Agenda1`

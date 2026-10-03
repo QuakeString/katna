@@ -34,10 +34,6 @@ const NOTE: char = 'n';
 const TASK_PREFIX: &str = "task:";
 const NOTE_PREFIX: &str = "note:";
 
-/// EditTask's field for a task's labels (`as`), which come with task
-/// labels in `pim.db`; a daemon without them leaves it out.
-const LABELS: &str = "labels";
-
 /// The capture result's button: opens the card with the text.
 pub(crate) const EDIT: &str = "capture";
 
@@ -266,7 +262,7 @@ fn typed_fields(typed: &TypedTask) -> Item {
         put(edit::REPEAT, repeat.as_str().into());
     }
     if !typed.labels.is_empty() {
-        put(LABELS, typed.labels.clone().into());
+        put(edit::LABELS, typed.labels.clone().into());
     }
     fields
 }
@@ -367,7 +363,7 @@ mod tests {
         assert!(fields.contains_key(edit::DUE));
         assert!(fields.contains_key(edit::DUE_TIME));
         assert!(fields.contains_key(edit::REMIND_AT));
-        assert!(fields.contains_key(LABELS));
+        assert!(fields.contains_key(edit::LABELS));
         assert!(!fields.contains_key(edit::REPEAT));
     }
 }
