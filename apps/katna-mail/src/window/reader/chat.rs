@@ -1759,7 +1759,14 @@ impl MailWindow {
                 .rounded(px(11.0))
                 .bg(rgba(th.surface))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(mix(th.surface, th.hover | 0xff, 0.5))))
+                // Under the pointer it lifts a little, with half the app's
+                // hover tint laid over it: solid, as the bubble shows
+                // through it otherwise.
+                .hover(|s| {
+                    let tint = (th.hover & 0xff) as f32 / 255.0 * 0.5;
+                    s.bg(rgba(mix(th.surface, th.hover | 0xff, tint)))
+                        .shadow(crate::widgets::elevation(th, 1.0))
+                })
                 .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
                     this.open_attachment(id, ix, window, cx);
