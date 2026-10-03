@@ -120,7 +120,7 @@ fn page_for(id: &str, tz: &TimeZone) -> Option<String> {
 }
 
 /// A title, trimmed to one line; not empty and not too long.
-fn title(text: &str) -> Result<String, CommandError> {
+pub(crate) fn title(text: &str) -> Result<String, CommandError> {
     let title = text.split_whitespace().collect::<Vec<_>>().join(" ");
     if title.is_empty() {
         return Err(CommandError::InvalidArgs("a task needs a title".to_owned()));
@@ -173,7 +173,7 @@ fn due(text: &str) -> Result<&str, CommandError> {
 }
 
 /// `task`'s fields with those in `fields` ([`edit`]) set.
-fn edited(task: Task, fields: &Item) -> Result<TaskFields, CommandError> {
+pub(crate) fn edited(task: Task, fields: &Item) -> Result<TaskFields, CommandError> {
     let text = |key: &str| -> Result<Option<String>, CommandError> {
         fields
             .get(key)

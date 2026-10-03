@@ -3,7 +3,8 @@
 //! The daemon's place on the desktop (`docs/ARCHITECTURE.md` §15.2): the
 //! unread count (§15.1.1) on Katna Mail's taskbar or dock icon, and the tray
 //! icon with its badge and menu. Both follow `[general]` `unread_badge` and
-//! `show_in_tray`, and stay up while the app is closed.
+//! `show_in_tray`, and stay up while the app is closed. The global
+//! shortcuts for quick capture (§15.5) are registered here too.
 
 use std::time::Duration;
 
@@ -16,6 +17,7 @@ use katna_platform::colors;
 use katna_platform::dbusmenu::MenuItem;
 use katna_platform::icon::Style;
 use katna_platform::launcher::LauncherEntry;
+use katna_platform::shortcuts::{self, Keys, Shortcut};
 use katna_platform::tray::{self, Tray};
 use katna_store::{Mode, Store};
 
@@ -27,6 +29,15 @@ const SETTLE: Duration = Duration::from_millis(500);
 /// How often the panel's color is read again, for a change no signal told
 /// of (Windows' taskbar, or `kdeglobals` written after the portal spoke).
 const PANEL_POLL: Duration = Duration::from_secs(1);
+
+/// The tray menu's and the global shortcuts' actions that open the quick
+/// capture card on Task or on Note (`app_action::CAPTURE`).
+const CAPTURE_TASK: &str = "capture-task";
+const CAPTURE_NOTE: &str = "capture-note";
+
+/// The global shortcuts' keys: Meta+Alt+T and Meta+Alt+N.
+const CAPTURE_TASK_KEYS: Keys = Keys::meta_alt('t');
+const CAPTURE_NOTE_KEYS: Keys = Keys::meta_alt('n');
 
 /// What the desktop presence reacts to.
 #[derive(Debug)]
@@ -77,6 +88,8 @@ fn tray_menu() -> Vec<MenuItem> {
     vec![
         MenuItem::action(tr!("tray-open-inbox"), app_action::OPEN_INBOX).icon("mail-folder-inbox"),
         MenuItem::action(tr!("tray-new-message"), app_action::COMPOSE).icon("mail-message-new"),
+        MenuItem::action(tr!("tray-new-task"), CAPTURE_TASK).icon("task-new"),
+        MenuItem::action(tr!("tray-new-note"), CAPTURE_NOTE).icon("view-pim-notes"),
         MenuItem::Separator,
         MenuItem::action(tr!("tray-preferences"), app_action::PREFERENCES)
             .icon("preferences-system-symbolic"),
@@ -109,6 +122,7 @@ pub(crate) async fn run(
             }
         };
     smol::spawn(watch_panel(connection.clone(), handle.clone())).detach();
+    smol::spawn(serve_shortcuts(connection.clone(), handle.clone())).detach();
     let mut tray: Option<Tray> = None;
     let mut count = None;
     let mut dirty = true;
@@ -245,6 +259,11 @@ async fn handle_now(
                 let _ = quit.send(()).await;
                 return false;
             }
+            if let Some(kind) = capture_kind(&action) {
+                let param = vec![zbus::zvariant::Value::from(kind)];
+                mail_app::run(connection, Some(app_action::CAPTURE), param, token).await;
+                return true;
+            }
             let action = match action.as_str() {
                 tray::ACTIVATE => None,
                 tray::SECONDARY_ACTIVATE => Some(app_action::COMPOSE),
@@ -254,6 +273,43 @@ async fn handle_now(
         }
     }
     true
+}
+
+/// `app_action::CAPTURE`'s parameter for a tray or shortcut action that
+/// opens the quick capture card.
+fn capture_kind(action: &str) -> Option<&'static str> {
+    match action {
+        CAPTURE_TASK => Some(app_action::CAPTURE_TASK),
+        CAPTURE_NOTE => Some(app_action::CAPTURE_NOTE),
+        _ => None,
+    }
+}
+
+/// Registers Meta+Alt+T and Meta+Alt+N with the desktop (KDE's global
+/// shortcuts, where System Settings can change them; Windows' hotkeys),
+/// for as long as the daemon runs. A press works as the tray's New task
+/// and New note do.
+async fn serve_shortcuts(connection: zbus::Connection, handle: Handle) {
+    let list = vec![
+        Shortcut {
+            action: CAPTURE_TASK.to_owned(),
+            name: tr!("shortcut-capture-task"),
+            keys: CAPTURE_TASK_KEYS,
+        },
+        Shortcut {
+            action: CAPTURE_NOTE.to_owned(),
+            name: tr!("shortcut-capture-note"),
+            keys: CAPTURE_NOTE_KEYS,
+        },
+    ];
+    let sender = handle.0.clone();
+    let pressed: shortcuts::Handler = std::sync::Arc::new(move |action: &str| {
+        let _ = sender.try_send(Event::Tray(action.to_owned(), None));
+    });
+    let served = shortcuts::serve(&connection, ids::MAIL_APP_ID, "Katna Mail", list, pressed).await;
+    if let Err(err) = served {
+        tracing::warn!(%err, "no global shortcuts");
+    }
 }
 
 /// How `general` says to draw the tray icon; one color is the panel's.
@@ -401,7 +457,7 @@ mod tests {
     }
 
     #[test]
-    fn tray_menu_has_the_four_actions() {
+    fn tray_menu_has_its_actions() {
         let actions: Vec<String> = tray_menu()
             .into_iter()
             .filter_map(|item| match item {
@@ -409,7 +465,17 @@ mod tests {
                 _ => None,
             })
             .collect();
-        assert_eq!(actions, ["open-inbox", "compose", "preferences", "quit"]);
+        assert_eq!(
+            actions,
+            [
+                "open-inbox",
+                "compose",
+                CAPTURE_TASK,
+                CAPTURE_NOTE,
+                "preferences",
+                "quit"
+            ]
+        );
     }
 
     #[test]

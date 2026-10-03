@@ -28,6 +28,7 @@ mod app_menu;
 mod apps;
 mod attachments;
 mod calendar;
+pub mod capture;
 mod colors;
 mod compose;
 mod contact;
