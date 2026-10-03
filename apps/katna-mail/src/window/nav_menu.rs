@@ -772,7 +772,13 @@ impl MailWindow {
                             .h(px(6000.0))
                             .occlude()
                             .on_mouse_down(MouseButton::Left, close())
-                            .on_mouse_down(MouseButton::Right, close()),
+                            .on_mouse_down(
+                                MouseButton::Right,
+                                cx.listener(|this, event: &gpui::MouseDownEvent, window, cx| {
+                                    this.close_nav_menu(cx);
+                                    super::popovers::pass_right_press(event, window);
+                                }),
+                            ),
                     )
                     .with_priority(3),
                 )
