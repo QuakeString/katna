@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "No line beside the sliding folders"
+text = """
+On a phone or tablet, the folders that slide in from the menu now come to
+rest against the edge without a thin line flashing beside them as they
+settle.
+"""

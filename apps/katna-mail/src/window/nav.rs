@@ -900,7 +900,10 @@ impl MailWindow {
             .bottom(px(if drawer { 0.0 } else { 16.0 * float + gap }))
             .map(|d| {
                 if slides {
-                    d.left(px(-width * (1.0 - t))).w(px(width))
+                    // It stops at the rail's edge: the spring's overshoot
+                    // would open a gap there, and the shadow would show
+                    // through it as a line.
+                    d.left(px(-width * (1.0 - t.min(1.0)))).w(px(width))
                 } else {
                     d.w(px(width * t)).opacity(t.min(1.0))
                 }
