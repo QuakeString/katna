@@ -137,7 +137,9 @@ impl MailWindow {
     /// way back. The picture rolls to it.
     pub(super) fn pick_account(&mut self, account: AccountId, cx: &mut Context<Self>) {
         let from = self.pictured_account().map(|a| a.id);
-        self.settings_page = None;
+        if self.settings_in_main() {
+            self.settings_page = None;
+        }
         if self.shown_account().is_some() {
             self.switch_account(account, cx);
         } else if let Some(inbox) = self.tree.role_folder(account, Role::Inbox) {
