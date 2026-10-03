@@ -178,6 +178,10 @@ pub(super) struct SettingsPage {
     small_kb: Entity<TextInput>,
     small_px: Entity<TextInput>,
     _small: [Subscription; 2],
+    /// Window frame > Katna: the corners' roundness, typed beside its
+    /// slider.
+    pub(super) radius: Entity<TextInput>,
+    _radius: Subscription,
     /// The Google accounts, each with whether its sign-in lets Katna
     /// read its drive (`None` until the daemon says), for Drives in Files.
     drives: Vec<(katna_core::AccountId, String, Option<bool>)>,
@@ -250,6 +254,7 @@ impl MailWindow {
         let server = self.config.meetings.jitsi_server.clone();
         let this_files = self.config.mail.files.clone();
         let ai_config = self.config.ai.clone();
+        let radius_now = self.window_radius_now();
         let page = self.settings_page.get_or_insert_with(|| {
             let triggers = cx.new(|cx| {
                 let mut input = TextInput::new(tr!("settings-general-search-triggers-none"), cx);
@@ -293,6 +298,19 @@ impl MailWindow {
                 }),
             ];
             let ai = ai::AiFields::new(&ai_config, accent, cx);
+            let radius = number_input(
+                u32::from(radius_now),
+                super::frost_sliders::RADIUS_RANGE,
+                accent,
+                cx,
+            );
+            let radius_subscription =
+                cx.subscribe(&radius, |this, input, event: &InputEvent, cx| {
+                    if *event == InputEvent::Changed {
+                        let text = input.read(cx).text().to_owned();
+                        this.type_window_radius(&text, cx);
+                    }
+                });
             SettingsPage {
                 section,
                 editing: None,
@@ -321,6 +339,8 @@ impl MailWindow {
                 small_kb,
                 small_px,
                 _small: small_subscriptions,
+                radius,
+                _radius: radius_subscription,
                 drives: Vec::new(),
                 ai,
                 rules: Default::default(),
@@ -3055,7 +3075,7 @@ fn note(text: String, th: &Theme) -> Div {
 
 /// A whole number from `range` in a field: Up and Down step it, as do the
 /// arrows at its side.
-fn number_input(
+pub(super) fn number_input(
     value: u32,
     range: RangeInclusive<u32>,
     accent: gpui::Hsla,
@@ -3086,7 +3106,7 @@ fn stepped(text: &str, by: i32, range: &RangeInclusive<u32>) -> u32 {
 }
 
 /// The field of a [`number_input`], with its up and down arrows.
-fn number_field(
+pub(super) fn number_field(
     id: &'static str,
     input: &Entity<TextInput>,
     range: RangeInclusive<u32>,
@@ -3094,7 +3114,7 @@ fn number_field(
     cx: &mut Context<MailWindow>,
 ) -> Stateful<Div> {
     let focus = input.focus_handle(cx);
-    let arrow = |which: &'static str, name: &'static str, by: i32, tip_text: String| {
+    let arrow = |which: (&'static str, usize), name: &'static str, by: i32, tip_text: String| {
         let input = input.clone();
         let range = range.clone();
         div()
@@ -3117,10 +3137,7 @@ fn number_field(
             })
             .child(icon(name, th.text_faint, 9.0))
     };
-    let (up, down) = match id {
-        "page-files-small-kb" => ("page-files-small-kb-up", "page-files-small-kb-down"),
-        _ => ("page-files-small-px-up", "page-files-small-px-down"),
-    };
+    let (up, down) = ((id, 0), (id, 1));
     field_box(id, th)
         .w(px(64.0))
         .h(px(32.0))

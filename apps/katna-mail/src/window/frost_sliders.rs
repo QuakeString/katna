@@ -44,6 +44,9 @@ const CHAT_OPACITY: u8 = 70;
 /// little more solid, so what is typed stays clear.
 const SEARCH_OPACITY: u8 = 62;
 
+/// The corners' roundness, in pixels, on the slider and in its field.
+pub(super) const RADIUS_RANGE: std::ops::RangeInclusive<u32> = 0..=32;
+
 /// One of the sliders.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub(super) enum Amount {
@@ -65,7 +68,7 @@ impl Amount {
         match self {
             Amount::Blur => (4, 48, 2),
             Amount::Opacity => (10, 95, 5),
-            Amount::Radius => (0, 16, 1),
+            Amount::Radius => (0, *RADIUS_RANGE.end() as u8, 1),
             Amount::BorderOpacity => (5, 100, 5),
             Amount::PaneOpacity => (30, 95, 5),
         }
@@ -192,6 +195,33 @@ impl MailWindow {
         (pane, chat, search)
     }
 
+    /// The corners' roundness now, in pixels: as set, or the frame's own.
+    pub(super) fn window_radius_now(&self) -> u8 {
+        self.saved_amount(Amount::Radius)
+    }
+
+    /// The roundness typed in its field, applied as it is typed.
+    pub(super) fn type_window_radius(&mut self, text: &str, cx: &mut Context<Self>) {
+        let Ok(value) = text.trim().parse::<u32>() else {
+            return;
+        };
+        let value = value.clamp(*RADIUS_RANGE.start(), *RADIUS_RANGE.end()) as u8;
+        if Some(value) != self.config.experimental.window_radius {
+            self.apply(Change::WindowRadius(value), cx);
+        }
+    }
+
+    /// Shows `value` in the roundness field, unless it already says so.
+    pub(super) fn sync_radius_field(&self, value: u8, cx: &mut Context<Self>) {
+        let Some(input) = self.settings_page.as_ref().map(|page| page.radius.clone()) else {
+            return;
+        };
+        let typed = input.read(cx).text().trim().parse::<u32>().ok();
+        if typed != Some(u32::from(value)) {
+            input.update(cx, |input, cx| input.set_text(value.to_string(), cx));
+        }
+    }
+
     fn saved_amount(&self, amount: Amount) -> u8 {
         let experimental = &self.config.experimental;
         let (radius, border) = self.natural_corners();
@@ -308,14 +338,42 @@ impl MailWindow {
                 cx,
             )
         } else {
-            self.frost_slider(
+            let slider = self.frost_slider(
                 Amount::Radius,
                 tr!("look-window-radius"),
                 tr!("look-window-radius-square"),
                 tr!("look-window-radius-round"),
                 th,
                 cx,
-            )
+            );
+            // Beside it, the number to type.
+            let field = self.settings_page.as_ref().map(|page| {
+                let input = page.radius.clone();
+                div()
+                    .flex()
+                    .items_center()
+                    .gap(px(8.0))
+                    .child(super::settings_page::number_field(
+                        "page-window-radius-field",
+                        &input,
+                        RADIUS_RANGE,
+                        th,
+                        cx,
+                    ))
+                    .child(
+                        div()
+                            .text_size(px(14.0))
+                            .text_color(rgba(th.text_dim))
+                            .child(tr!("look-px")),
+                    )
+            });
+            div()
+                .flex()
+                .items_center()
+                .gap(px(16.0))
+                .child(div().flex_1().min_w_0().child(slider))
+                .children(field)
+                .into_any_element()
         };
         div()
             .px(px(8.0))
@@ -463,6 +521,9 @@ impl MailWindow {
                                                     && page.frost.value(amount) != Some(value)
                                                 {
                                                     page.frost.dragging = Some((amount, value));
+                                                    if amount == Amount::Radius {
+                                                        this.sync_radius_field(value, cx);
+                                                    }
                                                     let look = this.look_now();
                                                     cx.set_global(look);
                                                     cx.notify();

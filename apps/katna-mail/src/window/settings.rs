@@ -578,6 +578,7 @@ impl MailWindow {
             Change::WindowRadius(radius) => {
                 self.config.experimental.window_radius = Some(radius);
                 cx.set_global(super::look(&self.config));
+                self.sync_radius_field(radius, cx);
             }
             Change::WindowBorder(on) => {
                 self.config.experimental.window_border = on;
