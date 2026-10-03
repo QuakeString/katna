@@ -2113,7 +2113,6 @@ impl MailWindow {
                 .child(self.account_ring(
                     &account.address,
                     self.person_avatar(&name, &account.address, 32.0),
-                    32.0,
                     th,
                 ))
                 .child(

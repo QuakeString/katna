@@ -782,7 +782,6 @@ impl MailWindow {
                     .child(self.account_ring(
                         &account.address,
                         self.render_rolling_avatar(32.0),
-                        32.0,
                         th,
                     ))
                     .child(self.tour_mark(Spot::Account))
