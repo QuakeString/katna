@@ -384,6 +384,26 @@ impl WindowChrome {
         (width - edge(tiling.left) - edge(tiling.right)).max(0.0)
     }
 
+    /// The radius of the content's bottom left and bottom right corners
+    /// inside Katna's frame, in logical pixels: zero where the frame is
+    /// square (a native frame, a tiled edge). GPUI does not clip to rounded
+    /// corners, so a layer over the whole content (a viewer, a dim veil)
+    /// rounds itself by these.
+    pub fn content_corners(&self, window: &Window) -> (f32, f32) {
+        let Decorations::Client { tiling } = window.window_decorations() else {
+            return (0.0, 0.0);
+        };
+        if !self.env.borrow().full_client_frame() {
+            return (0.0, 0.0);
+        }
+        let radius = (self.tokens(window).window_radius - self.border_width()).max(0.0);
+        let round = |a: bool, b: bool| if a || b { 0.0 } else { radius };
+        (
+            round(tiling.bottom, tiling.left),
+            round(tiling.bottom, tiling.right),
+        )
+    }
+
     /// The preset's corner radius, in logical pixels, and its border's
     /// opacity, in percent: what Katna's frame has when [`Look`] leaves
     /// them be.
