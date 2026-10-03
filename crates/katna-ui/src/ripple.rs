@@ -137,9 +137,10 @@ impl RenderOnce for Ripple {
                 .map(|(cx, cy)| ((cx - x).powi(2) + (cy - y).powi(2)).sqrt())
                 .fold(0.0_f32, f32::max);
             let grow = ease_out_quint();
-            div()
-                .absolute()
-                .with_animation(("wave", n), Animation::new(DURATION), move |el, t| {
+            div().absolute().with_animation(
+                ("wave", n),
+                Animation::new(crate::motion::time(DURATION)),
+                move |el, t| {
                     let r = radius * grow((t / 0.8).min(1.0)).max(0.05);
                     let fade = 1.0 - ((t - 0.4) / 0.6).clamp(0.0, 1.0);
                     let ([left, top, ww, wh], [tl, tr, br, bl]) =
@@ -156,7 +157,8 @@ impl RenderOnce for Ripple {
                             a: color.a * fade,
                             ..color
                         })
-                })
+                },
+            )
         });
 
         let store = bounds.clone();

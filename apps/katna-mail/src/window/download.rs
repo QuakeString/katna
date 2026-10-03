@@ -234,7 +234,7 @@ impl MailWindow {
                 .when(pill, |d| d.rounded_full().min_w(px(CHIP_HEIGHT - 2.0)))
                 .with_animation(
                     "chip-fill",
-                    Animation::new(Duration::from_secs(1)).repeat(),
+                    Animation::new(katna_ui::motion::time(Duration::from_secs(1))).repeat(),
                     move |fill, _| fill.w(relative(at.progress(Instant::now()))),
                 )
                 .into_any_element(),
@@ -305,7 +305,7 @@ impl MailWindow {
                         .child(icon("download", th.accent, 18.0))
                         .with_animation(
                             ("downloading", ix),
-                            Animation::new(Duration::from_millis(900))
+                            Animation::new(katna_ui::motion::time(Duration::from_millis(900)))
                                 .repeat()
                                 .with_easing(gpui::pulsating_between(0.35, 1.0)),
                             |icon, t| icon.opacity(t),

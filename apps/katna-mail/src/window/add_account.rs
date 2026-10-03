@@ -2239,7 +2239,8 @@ impl MailWindow {
                 .child(add)
                 .with_animation(
                     "account-menu",
-                    Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                        .with_easing(gpui::ease_out_quint()),
                     |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
                 )
                 .into_any_element()
@@ -2510,7 +2511,7 @@ fn progress_bar(th: &Theme) -> AnyElement {
                 .bg(rgba(th.accent))
                 .with_animation(
                     "add-account-progress",
-                    Animation::new(Duration::from_millis(1300)).repeat(),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(1300))).repeat(),
                     |bar, t| bar.left(relative(lerp(-0.4, 1.0, t))),
                 ),
         )

@@ -256,7 +256,7 @@ impl MailWindow {
                     "onboarding-page",
                     step.index() * 3 + katna_form.map_or(0, |c| 1 + c as usize),
                 ),
-                Animation::new(PAGE_IN).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(PAGE_IN)).with_easing(ease_out_quint()),
                 move |el, t| el.opacity(t).ml(px(from * (1.0 - t))),
             )
             .into_any_element()
@@ -742,7 +742,7 @@ impl MailWindow {
                     .child(icon("check-circle", th.accent, 36.0))
                     .with_animation(
                         "onboarding-ready",
-                        Animation::new(PAGE_IN).with_easing(ease_out_back),
+                        Animation::new(katna_ui::motion::time(PAGE_IN)).with_easing(ease_out_back),
                         |el, t| el.size(px(64.0 * lerp(0.6, 1.0, t))),
                     ),
             )
@@ -789,7 +789,11 @@ fn step_dots(step: Step, th: &Theme) -> AnyElement {
                 .bg(rgba(if on || done { th.accent } else { th.divider }))
                 .with_spring(
                     ("onboarding-dot", s.index()),
-                    SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                    SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                        1.0
+                    } else {
+                        0.0
+                    }),
                     |el, t: f32| el.w(px(6.0 + 18.0 * t.clamp(0.0, 1.0))),
                 )
         }))

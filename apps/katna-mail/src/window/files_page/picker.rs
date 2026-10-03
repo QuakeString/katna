@@ -806,11 +806,9 @@ impl MailWindow {
         .child(panel)
         .with_animation(
             "files-picker-in",
-            Animation::new(std::time::Duration::from_millis(if cx.reduce_motion() {
-                1
-            } else {
-                220
-            }))
+            Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                if cx.reduce_motion() { 1 } else { 220 },
+            )))
             .with_easing(ease_out_quint()),
             |el, t| el.opacity(t).mt(px(8.0 * (1.0 - t))),
         );

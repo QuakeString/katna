@@ -1408,7 +1408,10 @@ impl MailWindow {
             .children(menu)
             .with_animation(
                 "files-page-in",
-                Animation::new(std::time::Duration::from_millis(220)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    220,
+                )))
+                .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element()
@@ -2625,7 +2628,10 @@ impl MailWindow {
         };
         let panel = div().child(panel).with_animation(
             "files-menu",
-            Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
+            Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                140,
+            )))
+            .with_easing(ease_out_quint()),
             |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
         );
         div()

@@ -127,7 +127,7 @@ impl MailWindow {
             .children(notch(side, along, th))
             .with_animation(
                 "contact-peek",
-                gpui::Animation::new(Duration::from_millis(160))
+                gpui::Animation::new(katna_ui::motion::time(Duration::from_millis(160)))
                     .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t),
             );

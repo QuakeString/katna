@@ -13,7 +13,8 @@ use gpui::{
 };
 use katna_core::config::{
     AccountsShown, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn,
-    ReadingPane, SoundEvent, Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES, WindowFrame,
+    ReadingPane, ReduceMotion, SoundEvent, Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES,
+    WindowFrame,
 };
 use katna_i18n::tr;
 use katna_ui::Ripple;
@@ -114,6 +115,11 @@ pub(super) enum Change {
     SendCrashReports(bool),
     /// The interface scale, in percent.
     Scale(u16),
+    /// Katna's own animation speed, as a percentage of normal length, or
+    /// `None` for the desktop's.
+    AnimationSpeed(Option<u16>),
+    /// Whether animations are turned off.
+    ReduceMotion(ReduceMotion),
     /// 12- or 24-hour times.
     Clock(Clock),
     /// What Katna starts at login, if anything (an autostart entry).
@@ -529,6 +535,14 @@ impl MailWindow {
                 self.list_state.remeasure();
                 cx.refresh_windows();
             }
+            Change::AnimationSpeed(speed) => {
+                view.animation_speed = speed.map(|percent| f32::from(percent) / 100.0);
+                super::colors::apply_motion(view, self.desktop_colors.motion, cx);
+            }
+            Change::ReduceMotion(reduce) => {
+                view.reduce_motion = reduce;
+                super::colors::apply_motion(view, self.desktop_colors.motion, cx);
+            }
             Change::Theme(theme) => view.theme = theme,
             Change::DesktopColors(on) => {
                 view.set_colors(if on { schemes::SYSTEM } else { schemes::KATNA });
@@ -852,7 +866,7 @@ impl MailWindow {
             div()
                 .with_animation(
                     ("pane-demo", pane as usize),
-                    Animation::new(PANE_DEMO).repeat(),
+                    Animation::new(katna_ui::motion::time(PANE_DEMO)).repeat(),
                     move |el, t| el.child(pane_picture(pane, demo_open(t), &th)),
                 )
                 .into_any_element()
@@ -902,7 +916,11 @@ impl MailWindow {
         )
         .with_spring(
             ("pane-border", pane as usize),
-            SpringAnimation::new(motion::SMOOTH).to(if on { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(if on {
+                1.0
+            } else {
+                0.0
+            }),
             {
                 let (off, accent) = (th.divider, th.accent);
                 move |el, s: f32| el.border_color(rgba(mix(off, accent, s.clamp(0.0, 1.0))))
@@ -1048,7 +1066,11 @@ impl MailWindow {
             .children(extra)
             .child(div().with_spring(
                 (id, 3_usize),
-                SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                    1.0
+                } else {
+                    0.0
+                }),
                 {
                     let th = *th;
                     move |el, s: f32| el.child(switch(s.clamp(0.0, 1.0), &th))
@@ -1063,7 +1085,11 @@ pub(super) fn animated_radio(id: impl Into<gpui::ElementId>, on: bool, th: &Them
     div()
         .with_spring(
             id,
-            SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                1.0
+            } else {
+                0.0
+            }),
             move |el, s: f32| el.child(radio(s.clamp(0.0, 1.0), &th)),
         )
         .into_any_element()

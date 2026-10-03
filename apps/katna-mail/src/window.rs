@@ -873,6 +873,7 @@ impl MailWindow {
         // features know it by the time they are opened.
         cx.on_next_frame(window, |this, window, cx| this.katna_load(window, cx));
         this.listen(cx);
+        colors::apply_motion(&this.config.mail, this.desktop_colors.motion, cx);
         this.watch_colors(cx);
         if let Some(err) = this.mail.as_ref().ok().and_then(Mail::index_error) {
             tracing::info!("{err}");

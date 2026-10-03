@@ -152,7 +152,10 @@ pub fn spinner(id: impl Into<ElementId>, color: u32, size: f32) -> AnyElement {
         .text_color(rgba(color))
         .with_animation(
             id,
-            gpui::Animation::new(std::time::Duration::from_millis(900)).repeat(),
+            gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                900,
+            )))
+            .repeat(),
             |arc, t| arc.with_transformation(gpui::Transformation::rotate(gpui::percentage(t))),
         )
         .into_any_element()
@@ -407,7 +410,9 @@ pub fn fold_box(name: &str, fold: &Fold, content: impl IntoElement) -> AnyElemen
     let now = fold.now.clone();
     body.with_spring(
         fold.id(name),
-        SpringAnimation::new(motion::SLIDE).to(1.0).from(0.0),
+        SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+            .to(1.0)
+            .from(0.0),
         move |el, t| el.h(px(lerp(from, now.get(), t).max(0.0))),
     )
     .into_any_element()
@@ -417,7 +422,7 @@ pub fn fold_box(name: &str, fold: &Fold, content: impl IntoElement) -> AnyElemen
 /// to point up as it opens, on the `SMOOTH` spring.
 pub fn fold_arrow(name: &str, fold: &Fold, open: bool, color: u32, size: f32) -> AnyElement {
     let (was, to) = if open { (0.0, PI) } else { (PI, 0.0) };
-    let animation = SpringAnimation::new(motion::SMOOTH).to(to);
+    let animation = SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(to);
     let animation = if fold.moving() {
         animation.from(was)
     } else {
@@ -1393,49 +1398,52 @@ fn check_box(id: ElementId, state: Check, fill: u32, rest: u32, th: &Theme) -> A
         .flex()
         .items_center()
         .justify_center()
-        .child(div().size(px(CHECK_BOX)).flex_none().with_spring(
-            id,
-            gpui::SpringAnimation::new(katna_ui::motion::SMOOTH).to(target),
-            move |d, v: f32| {
-                // How far the edge has taken its colour, and how far the box
-                // has filled and the tick has drawn.
-                let edge = v.clamp(0.0, 1.0);
-                let full = (v - 1.0).clamp(0.0, 1.0);
-                // Partly checked is a smaller square inside the edge, with a
-                // gap between them; checking grows it to fill the box. The
-                // square is inset by the same length on every side rather
-                // than sized and centred: at scales like 175% a sized square
-                // and the box inside the edge differ by an odd number of
-                // pixels, which left the gap thinner on the top and right.
-                let half = (CHECK_BOX - 4.0) / 2.0;
-                let gap = half - (half - lerp(PARTIAL_GAP, 0.0, full)) * edge;
-                d.rounded(px(3.0))
-                    .border_px(2.0)
-                    .border_color(rgba(crate::theme::mix(rest, fill, edge)))
-                    .relative()
-                    .when(gap < half - 0.05, |d| {
-                        d.child(
+        .child(
+            div().size(px(CHECK_BOX)).flex_none().with_spring(
+                id,
+                gpui::SpringAnimation::new(katna_ui::motion::scaled(katna_ui::motion::SMOOTH))
+                    .to(target),
+                move |d, v: f32| {
+                    // How far the edge has taken its colour, and how far the box
+                    // has filled and the tick has drawn.
+                    let edge = v.clamp(0.0, 1.0);
+                    let full = (v - 1.0).clamp(0.0, 1.0);
+                    // Partly checked is a smaller square inside the edge, with a
+                    // gap between them; checking grows it to fill the box. The
+                    // square is inset by the same length on every side rather
+                    // than sized and centred: at scales like 175% a sized square
+                    // and the box inside the edge differ by an odd number of
+                    // pixels, which left the gap thinner on the top and right.
+                    let half = (CHECK_BOX - 4.0) / 2.0;
+                    let gap = half - (half - lerp(PARTIAL_GAP, 0.0, full)) * edge;
+                    d.rounded(px(3.0))
+                        .border_px(2.0)
+                        .border_color(rgba(crate::theme::mix(rest, fill, edge)))
+                        .relative()
+                        .when(gap < half - 0.05, |d| {
+                            d.child(
+                                div()
+                                    .absolute()
+                                    .top(px(gap))
+                                    .left(px(gap))
+                                    .bottom(px(gap))
+                                    .right(px(gap))
+                                    .rounded(px(lerp(1.0, 0.0, full)))
+                                    .bg(rgba(fill)),
+                            )
+                        })
+                        .when(full > 0.001, |d| d.bg(rgba(fade(fill, full))))
+                        .child(
                             div()
                                 .absolute()
-                                .top(px(gap))
-                                .left(px(gap))
-                                .bottom(px(gap))
-                                .right(px(gap))
-                                .rounded(px(lerp(1.0, 0.0, full)))
-                                .bg(rgba(fill)),
+                                .top_0()
+                                .left_0()
+                                .size_full()
+                                .child(check_mark(full, tick)),
                         )
-                    })
-                    .when(full > 0.001, |d| d.bg(rgba(fade(fill, full))))
-                    .child(
-                        div()
-                            .absolute()
-                            .top_0()
-                            .left_0()
-                            .size_full()
-                            .child(check_mark(full, tick)),
-                    )
-            },
-        ))
+                },
+            ),
+        )
         .into_any_element()
 }
 
