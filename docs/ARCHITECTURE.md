@@ -2199,14 +2199,27 @@ Gemini or confidential mode):
   marking read after 1 or 3 seconds only happens if the conversation is
   still open then; with "Always show images" off, each message's images
   still wait to be asked for. Sounds (`[sounds]`, `window/sounds.rs`)
-  has a line per event: new mail, event and task reminders, mail back in
-  the inbox (snooze, no reply), mail sent and mail not sent, each with a
-  sound to pick (a menu that plays each as it is picked), a play button
-  and a switch. New mail's usual sound on Linux is Katna's own chime
-  (`sound/chime.rs`: three bell notes rising, G5, C6, E6, 1.5 s, peak at
-  -1 dB), made in code and written once to `cache/sounds/`, because the
-  sound themes' new-mail sounds can be too faint to hear. The other sounds
-  are the desktop's own (`katna_platform::sound`):
+  starts with the sets of sounds as tiles, two to a row (an icon, the
+  set's name and what it holds, a play button; the picked one ringed in
+  the accent with a check): System (the desktop's own), Katna (the chime
+  and four bells), Nature, Birds, Animals, Insects, Electronic and
+  Morning, each with a sound for every event (`katna_platform::sound::SETS`;
+  `sounds.set`, empty for Birds, the usual set). Then a line per event:
+  new mail, event and task reminders, mail back in the inbox (snooze, no
+  reply), mail sent and mail not sent, each with a sound to pick, a play
+  button and a switch. The menu plays each sound as it is picked: "The
+  set's sound" (stored empty, so it follows a change of set), each set's
+  sounds under its name, and Choose a file…, which takes a WAV, OGG,
+  FLAC or MP3 file up to 10 MB, copies it to `data/sounds/<event>-<time>/`
+  (the original may move; the copy goes when another sound replaces it)
+  and stores `file:<path>`; such a file plays for at most 5 s, and a
+  missing one falls back to the set's sound. Every set but System is
+  made in code (`sound/synth.rs`, the chime in `sound/chime.rs`: bells,
+  struck bars, bird syllables that sweep and warble, filtered noise,
+  buzzes; at most 1.5 s, peak at -1 dB, quieter for noise and buzzes) and
+  written once to `cache/sounds/<id>-<version>.wav`, so the sets add no
+  files and need no licence. Recordings (CC0) could replace Birds and
+  Animals later. The System sounds (`katna_platform::sound`) are:
   on Linux freedesktop names found in the KDE sound theme, Ocean or
   freedesktop (with fallbacks, e.g. New email falls back to
   `message-new-instant`), played with `pw-play`, `paplay` or
@@ -2215,8 +2228,9 @@ Gemini or confidential mode):
   toast. Katna plays a notification's sound itself on Linux, because
   servers such as Plasma's leave `sound-name` unplayed, and sends
   `suppress-sound`; it stays silent while the server's `Inhibited` (Do not
-  disturb) is true. On Windows the toast plays it, so Focus Assist
-  silences it. Muted folders, conversations and senders never notify, so
+  disturb) is true. On Windows a toast plays only the Windows sounds, so
+  Focus Assist silences those; for any other sound the toast is silent
+  and Katna plays it. Muted folders, conversations and senders never notify, so
   they make no sound. Older `notifications.sound` and `sending.sent_sound`
   switches carry over when off. Open and click
   tracking is not a setting: it, a read receipt and a delivery receipt

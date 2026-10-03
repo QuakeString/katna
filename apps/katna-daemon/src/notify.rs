@@ -168,40 +168,38 @@ impl NewMailNotices {
     }
 
     /// The sound of `event`, if it plays one.
-    fn sound(&self, event: SoundEvent) -> Option<&'static str> {
+    fn sound(&self, event: SoundEvent) -> Option<String> {
         let sounds = self.sounds.lock().unwrap();
         sounds
             .playing(event)
-            .map(|chosen| sound::resolve(event, chosen))
+            .map(|chosen| sound::resolve(event, &sounds.set, chosen))
     }
 
     /// What the notification server is to play of `sound`: a toast plays
-    /// its own on Windows; elsewhere servers such as Plasma's play none, so
-    /// [`Self::ring`] does.
-    fn server_sound(sound: Option<&'static str>) -> Option<&'static str> {
-        sound.filter(|_| cfg!(windows))
+    /// the Windows sounds itself; elsewhere servers such as Plasma's play
+    /// none, and toasts no others, so [`Self::ring`] does.
+    fn server_sound(sound: &Option<String>) -> Option<&str> {
+        sound.as_deref().filter(|id| sound::toast_plays(id))
     }
 
     /// Plays `sound` for a notification just shown, where the server does
     /// not, unless Do not disturb is on.
-    async fn ring(&self, sound: Option<&'static str>) {
-        if cfg!(windows) {
-            return;
-        }
+    async fn ring(&self, sound: Option<String>) {
         if let Some(id) = sound
+            && !sound::toast_plays(&id)
             && !sound::quiet(&self.connection).await
         {
-            sound::play(id);
+            sound::play(&id);
         }
     }
 
     /// Plays `sound` now, unless Do not disturb is on: for what shows no
     /// notification of its own.
-    async fn play(&self, sound: Option<&'static str>) {
+    async fn play(&self, sound: Option<String>) {
         if let Some(id) = sound
             && !sound::quiet(&self.connection).await
         {
-            sound::play(id);
+            sound::play(&id);
         }
     }
 
@@ -283,7 +281,7 @@ impl NewMailNotices {
         let shown = match alarm.task {
             Some(_) => {
                 self.notifier
-                    .task_reminder(&alarm.title, &alarm.lines, Self::server_sound(sound))
+                    .task_reminder(&alarm.title, &alarm.lines, Self::server_sound(&sound))
                     .await
             }
             None => {
@@ -292,7 +290,7 @@ impl NewMailNotices {
                         &alarm.title,
                         &alarm.lines,
                         !alarm.join_url.is_empty(),
-                        Self::server_sound(sound),
+                        Self::server_sound(&sound),
                     )
                     .await
             }
@@ -356,7 +354,7 @@ impl NewMailNotices {
                     View::Short,
                     replies,
                     0,
-                    Self::server_sound(sound),
+                    Self::server_sound(&sound),
                 )
                 .await
             {
@@ -404,7 +402,7 @@ impl NewMailNotices {
         let sound = self.sound(SoundEvent::MailBack);
         match self
             .notifier
-            .reminder(&origin, summary, lines, Self::server_sound(sound))
+            .reminder(&origin, summary, lines, Self::server_sound(&sound))
             .await
         {
             Ok(id) => {
