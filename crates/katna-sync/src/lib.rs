@@ -54,6 +54,7 @@ pub mod folders;
 pub mod gmail_filters;
 mod google_api;
 pub mod imap;
+pub mod mail_actions;
 pub mod meet;
 pub mod methods;
 pub mod net;

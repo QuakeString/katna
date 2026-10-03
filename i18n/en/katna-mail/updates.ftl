@@ -20,6 +20,16 @@ update-dialog-latest-change = Latest change: { $title }
 # Where the installed build came from.
 update-dialog-source-arch = Arch package, nightly channel
 update-dialog-source-windows = Katna Setup for Windows, nightly channel
+update-dialog-source-appimage = AppImage, nightly channel
+update-dialog-source-tarball = Linux tarball, nightly channel
+update-dialog-source-rpm = Fedora package, nightly channel
+update-dialog-source-snap = Snap, nightly channel
+update-dialog-source-flatpak = Flatpak, nightly channel
+update-dialog-source-nix = Nix, nightly channel
+# For a package Katna cannot install itself, above the command that does.
+update-dialog-command-detail = Run this command in a terminal to install it.
+# Copies that command.
+update-dialog-copy = Copy
 # Under "Katna Mail is up to date"; $ago is like "5 minutes ago".
 update-dialog-checked = Checked { $ago }
 # $commit: the version's commit, such as "1ef4594"; opens it on GitHub.

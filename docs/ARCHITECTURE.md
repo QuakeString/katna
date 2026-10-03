@@ -3517,10 +3517,12 @@ Implemented by the daemon on `org.freedesktop.Notifications` (`zbus`).
 | **Peek** | One message only, not on Windows: the same notification (`replaces_id`, `resident` so the server keeps it after the button) shows the subject and the mail's text, up to 1200 characters with its paragraphs, with Reply, Reply all and Archive, and stays until closed (timeout 0). |
 | **Reply** | One message only. Where `GetCapabilities` lists `inline-reply` (Plasma; Katna's own toasts on Windows): action id `inline-reply` with hints `x-kde-reply-placeholder-text` ("Reply to Bob…"), `x-kde-reply-submit-button-text` ("Send") and `x-kde-reply-submit-button-icon-name`. The `NotificationReplied(id, text)` signal gives the text; the daemon builds a plain-text reply to the sender (§15.1.2), queues it with the undo delay, marks the mail read and shows "Reply sent to Bob" with Undo and Open in Katna. Elsewhere: a Reply button that opens Katna Mail's reply (`ActivateAction("reply", [id])`). Reply all (in Peek) opens Katna Mail's reply to all. |
 | **Archive / Mark read** | Buttons handled by the daemon without opening the app. |
+| **Copy code / Verify on …** | One message only, when it carries a one-time code or a verify, confirm or activate link (§15.1.3). |
 
 Content and behavior:
 
-- Hints: `desktop-entry`, `category=email.arrived`, `image-data` (sender
+- Hints: `desktop-entry` (the hidden `<mail app ID>.Notifications`
+  entry, below), `category=email.arrived`, `image-data` (sender
   avatar or organization logo), the Sounds setting's sound (§13 Settings;
   Katna plays it itself on Linux and sends `suppress-sound`),
   `x-kde-origin-name` (account name).
@@ -3616,6 +3618,16 @@ notified).
   which drops timed mutes when they end. A muted conversation follows
   thread merges.
 
+Notifications name a hidden desktop entry,
+`packaging/desktop/<mail app ID>.Notifications.desktop` (`NoDisplay`,
+`StartupNotify=false`), not Katna Mail's own. Plasma asks KWin for an
+activation token for every button, with the notification's desktop entry
+as the app; KWin starts launch feedback (the bouncing icon by the cursor)
+for an app whose entry allows it, and ends it only when a window of that
+app activates. Peek, Mark as read and Archive open no window, so with
+Katna Mail's entry the icon bounced for half a minute. The token still
+focuses the windows that Open and Reply do open.
+
 #### 15.1.2 Replies typed into a notification
 
 `katna_sync::quick_reply` reads the answered message from its stored body
@@ -3644,6 +3656,37 @@ from Windows' toast XML: an `inline-reply` action becomes a text box
 `katna`), so a replacing notification replaces its toast and
 `CloseNotification` removes it from the notification center. A toast
 cannot grow, so Windows gets no Peek.
+
+#### 15.1.3 Codes and verify links
+
+`katna_sync::mail_actions` reads a lone new message's stored body for
+one shortcut. The mail must say what it is about in its subject or first
+4000 characters (the starter "One-time codes" rule's words "OTP",
+"verification code", "one-time password", and others such as "passcode",
+"sign in", "verify", "confirm", "activate").
+
+- **Code:** on a line (the subject first) with the word "code", "OTP",
+  "passcode" or "PIN", and not "promo", "coupon", "discount" and the
+  like, or on one of the three short lines after it: 4 to 8 digits (also
+  as `123 456` or `123-456`, copied without the gap), or 5 to 8 capitals
+  and digits with both. Not years, times, amounts, phone-like groups or
+  parts of links. The button reads "Copy 482913"; the daemon puts the
+  code on the clipboard (Klipper over D-Bus, else `wl-copy` or `xclip`;
+  `clip` on Windows) and says "Code copied" for 4 s, or shows the code to
+  copy by hand when nothing could take it.
+- **Link** (when there is no code): the first `<a href>` whose text says
+  verify, confirm or activate (not "unsubscribe", "not you", "report"),
+  else one whose address says so; in plain text, an address after a line
+  that says so. The button names where it goes, from the address's real
+  host ("Verify on accounts.example.com"; `https://bank.com@evil.example`
+  reads evil.example), so a link that only looks like a company's shows
+  it. It opens in the browser only on that click, through the OpenURI
+  portal with the notification's activation token.
+
+Neither closes the notification or marks the mail read. The button takes
+Reply's place in the short notification where Peek offers Reply (Linux),
+and Reply all's in a peek, so four buttons stay four; Windows, without
+Peek, keeps Reply beside it.
 
 ### 15.2 Taskbar, tray and global menu
 
@@ -5192,6 +5235,26 @@ Arch is the first, Windows and the others follow the same flow.
   administrator prompt for a Katna installed for everyone), waits, and
   opens Katna Mail again; Setup itself closes the running Katna. A failed
   Setup reopens the old Katna, which offers the update again.
+- **Linux packages from `linux-latest`** (owner's ask, 3 October 2026):
+  one portable build goes into the tarball, AppImage, Flatpak and Snap,
+  so it is built with `linux` and tells them apart at run time
+  (`/.flatpak-info` or `$FLATPAK_ID`, `$SNAP`, `$APPIMAGE`, else the
+  tarball); the Fedora spec sets `rpm` and the Nix package `nix`. CI's
+  publish job writes `katna-update.json` on `linux-latest` with each
+  package's own file under `files` (`Manifest::for_package`). The
+  **AppImage** puts the new image beside `$APPIMAGE` and renames it over
+  it; the daemon notices the image changed and restarts from it. The
+  **tarball** runs the new tarball's `install.sh` for the same folder
+  (which now copies each file beside the old one and renames it, so a
+  running Katna keeps its program); installed where only an
+  administrator writes, it shows the command instead. The **RPM, Snap
+  and Flatpak** have no repository yet: Katna downloads the new file and
+  shows the one command that installs it, with Copy. **Nix** downloads
+  nothing: Katna shows `nix profile upgrade katna`; a flake build from
+  GitHub has no commit count (`r0`), so it counts as older when its
+  commit is among the newest build's earlier ones. A dnf repository and
+  a Flatpak remote would let those update with the system; they need
+  hosting and a signing key, the owner's to decide.
 - **Manifest.** CI writes `katna-update.json` beside the package on every
   build of `main`: version, file name, SHA-256 and size, and for the
   Update dialog the commit, when it was made, the What's new highlights

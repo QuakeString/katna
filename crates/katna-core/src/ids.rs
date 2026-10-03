@@ -20,6 +20,13 @@ pub const PREFIX: &str = prefix!();
 /// Application ID of Katna Mail (desktop file, Flatpak, D-Bus activation).
 pub const MAIL_APP_ID: &str = concat!(prefix!(), ".Mail");
 
+/// Desktop entry that Katna's notifications name (`desktop-entry` hint): a
+/// hidden copy of Katna Mail's with `StartupNotify=false`, so a click on a
+/// notification button shows no launch feedback (KWin bounces the app's
+/// icon for every token a button asks for, though most buttons open no
+/// window).
+pub const NOTIFICATIONS_DESKTOP_ID: &str = concat!(prefix!(), ".Mail.Notifications");
+
 /// Application ID of Katna Calendar.
 pub const CALENDAR_APP_ID: &str = concat!(prefix!(), ".Calendar");
 
