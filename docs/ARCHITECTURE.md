@@ -5116,7 +5116,8 @@ activated, Katna Mail and `katnactl` start the `katna-daemon` beside them
 ### 21.2 Update channels and safe updates (partly built)
 
 Planned 26 September 2026. Built so far (28 September 2026): **in-app
-updates** for the Arch package, below; the rest is still planned. Today the only update path is the `arch-latest`
+updates** for the Arch package, below, and for Katna Setup on Windows
+(3 October 2026); the rest is still planned. Today the only update path is the `arch-latest`
 pre-release (§21.1): every push to `main` replaces it, with no gate beyond
 the pull request's CI. That is fine for testers, not for people who rely
 on Katna for their mail. The work is in `IMPLEMENTATION_PLAN.md`,
@@ -5159,7 +5160,7 @@ it gets the most care.
   installed version stays until the new channel catches up, because an older
   version may not read the newer database (§5.3, `SchemaTooNew`).
 
-#### In-app updates (built for the Arch package)
+#### In-app updates (built for the Arch package and Windows)
 
 The owner asked for Katna to update itself from the app on every package
 it ships: check, download, ask for the password, install and restart.
@@ -5171,7 +5172,20 @@ Arch is the first, Windows and the others follow the same flow.
   PKGBUILD sets `arch`), the release its newest build is published in,
   and in Katna Mail (`updater.rs`) how a downloaded file is installed.
   Builds from source and packages without a plug (`Package::Other`) show
-  no updates and are never checked.
+  no updates and are never checked; the Update dialog says such a copy
+  does not update itself (it said "updated by your package manager",
+  wrong for a Windows Setup install before Windows had its plug).
+- **Windows** (`Package::Windows`, owner's ask, 3 October 2026):
+  `ci/windows-package.ps1` sets `windows`, and the Windows package
+  workflow's publish job writes the same manifest for `KatnaSetup.exe`
+  on `windows-latest` (Setup uploaded first, the manifest last). The
+  daemon checks it on the same schedule as Arch and downloads the full
+  Setup (no patches, no signature yet: the SHA-256 is checked). Update
+  starts a hidden PowerShell outside the install folder that runs the
+  new Setup with `--quiet --update` (plus `--all-users` and the
+  administrator prompt for a Katna installed for everyone), waits, and
+  opens Katna Mail again; Setup itself closes the running Katna. A failed
+  Setup reopens the old Katna, which offers the update again.
 - **Manifest.** CI writes `katna-update.json` beside the package on every
   build of `main`: version, file name, SHA-256 and size, and for the
   Update dialog the commit, when it was made, the What's new highlights

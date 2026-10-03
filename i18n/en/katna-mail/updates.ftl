@@ -4,7 +4,7 @@
 # that an update is ready. Its states and buttons are the about-update-*
 # messages in dialogs.ftl.
 
-# Its title when this copy is updated by the package manager.
+# Its title when this copy does not update itself.
 update-dialog-title = Updates
 # While downloading.
 update-dialog-downloading-detail = The download goes on when you close this window.
@@ -19,6 +19,7 @@ update-dialog-built = Built { $date }
 update-dialog-latest-change = Latest change: { $title }
 # Where the installed build came from.
 update-dialog-source-arch = Arch package, nightly channel
+update-dialog-source-windows = Katna Setup for Windows, nightly channel
 # Under "Katna Mail is up to date"; $ago is like "5 minutes ago".
 update-dialog-checked = Checked { $ago }
 # $commit: the version's commit, such as "1ef4594"; opens it on GitHub.

@@ -56,7 +56,10 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: windows-package
-          path: target/windows/KatnaSetup.exe
+          path: |
+            target/windows/KatnaSetup.exe
+            target/windows/version.txt
+            target/windows/highlights.json
           if-no-files-found: error
 
   publish:
@@ -94,7 +97,40 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: windows-package
-          path: out
+          path: build
+      # The commits the Update dialog lists.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: src
+          fetch-depth: 200
+          persist-credentials: false
+      # What Katna on Windows checks for updates
+      # (katna_core::update::Manifest, docs/ARCHITECTURE.md §21.2): the
+      # same fields as the Arch package's, for the full Setup. No patches
+      # and no signature yet; Katna checks the SHA-256 after downloading.
+      - name: Write the update manifest
+        run: |
+          mkdir out
+          mv build/KatnaSetup.exe out/
+          version=$(cat build/version.txt)
+          highlights=$(jq -c '.[:50]' build/highlights.json 2>/dev/null || echo '[]')
+          git -C src log -200 --format='%h%x09%s' HEAD |
+            jq -R 'split("\t") | {commit: .[0], title: (.[1:] | join("\t"))}' |
+            jq -s . > changes.json
+          jq -n \
+            --arg version "$version" \
+            --arg file KatnaSetup.exe \
+            --arg sha256 "$(sha256sum out/KatnaSetup.exe | cut -d' ' -f1)" \
+            --argjson size "$(stat -c %s out/KatnaSetup.exe)" \
+            --argjson built "$(git -C src log -1 --format=%ct HEAD)" \
+            --arg commit "$(git -C src rev-parse HEAD)" \
+            --argjson highlights "$highlights" \
+            --slurpfile changes changes.json \
+            '{$version, $file, $sha256, $size, $built, $commit, $highlights,
+              changes: $changes[0]}' > out/katna-update.json
+          jq '{version, file, size, built, commit,
+               highlights: (.highlights | length), changes: (.changes | length)}' \
+            out/katna-update.json
       - name: Update the windows-latest pre-release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -136,7 +172,10 @@ jobs:
             id=$(gh api -X POST "$api/releases" "${fields[@]}" --jq .id)
           fi
           cd out
-          gh release upload "$tag" --clobber -- *
+          # Setup first and the manifest last, so the manifest never names
+          # a Setup that is not there yet.
+          gh release upload "$tag" --clobber KatnaSetup.exe
+          gh release upload "$tag" --clobber katna-update.json
           # Earlier builds' files.
           gh api "$api/releases/$id/assets" --paginate --jq '.[] | "\(.id) \(.name)"' |
             while read -r asset name; do
