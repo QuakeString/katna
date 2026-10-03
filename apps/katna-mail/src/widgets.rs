@@ -1141,6 +1141,12 @@ pub fn elevation(th: &Theme, level: f32) -> Vec<BoxShadow> {
 }
 
 pub fn placeholder(text: &str, th: &Theme) -> AnyElement {
+    placeholder_with(div().child(text.to_owned()), th)
+}
+
+/// A [`placeholder`] around `text` drawn by the caller (text that can be
+/// selected, `MailWindow::placeholder`).
+pub fn placeholder_with(text: Div, th: &Theme) -> AnyElement {
     div()
         .size_full()
         .flex()
@@ -1150,7 +1156,7 @@ pub fn placeholder(text: &str, th: &Theme) -> AnyElement {
         .text_size(px(14.0))
         .text_color(rgba(th.text_faint))
         // Its own box, so a long line wraps in a narrow window.
-        .child(div().min_w_0().text_center().child(text.to_owned()))
+        .child(text.min_w_0().text_center())
         .into_any_element()
 }
 

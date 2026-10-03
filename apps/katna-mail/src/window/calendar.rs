@@ -978,7 +978,7 @@ impl MailWindow {
             self.load_calendar(cx);
         }
         let main = if let Some(err) = &self.calendar.error {
-            crate::widgets::placeholder(&tr!("calendar-read-failed", error = err.clone()), th)
+            self.placeholder(tr!("calendar-read-failed", error = err.clone()), th)
         } else if self.calendar.loaded.is_none() {
             loading(th)
         } else if self.calendar.calendars.is_empty() {
@@ -2637,7 +2637,7 @@ impl MailWindow {
         }
         days.sort_by_key(|(d, _)| *d);
         if days.is_empty() {
-            return crate::widgets::placeholder(&tr!("calendar-schedule-empty"), th);
+            return self.placeholder(tr!("calendar-schedule-empty"), th);
         }
         let rows = days.into_iter().map(|(day, list)| {
             let events = list.into_iter().map(|occurrence| {
@@ -2821,7 +2821,8 @@ impl MailWindow {
                 time = time_range(occurrence.start, occurrence.end, tz)
             )
         };
-        let line = |name: &'static str, text: String| {
+        // A detail's text can be selected and copied (`MailWindow::copyable`).
+        let line = |name: &'static str, text: gpui::Div| {
             div()
                 .flex()
                 .flex_row()
@@ -2834,13 +2835,11 @@ impl MailWindow {
                         .child(icon(name, th.text_dim, 20.0)),
                 )
                 .child(
-                    div()
-                        .flex_1()
+                    text.flex_1()
                         .min_w_0()
                         .text_size(px(14.0))
                         .line_height(px(20.0))
-                        .text_color(rgba(th.text))
-                        .child(text),
+                        .text_color(rgba(th.text)),
                 )
         };
         let guests = data.attendees.len();
@@ -2983,18 +2982,16 @@ impl MailWindow {
                         .flex_col()
                         .gap(px(4.0))
                         .child(
-                            div()
+                            self.copyable(title, th)
                                 .text_size(px(22.0))
                                 .line_height(px(28.0))
                                 .text_color(rgba(th.text))
-                                .when(data.status == EventStatus::Cancelled, |d| d.line_through())
-                                .child(title),
+                                .when(data.status == EventStatus::Cancelled, |d| d.line_through()),
                         )
                         .child(
-                            div()
+                            self.copyable(when, th)
                                 .text_size(px(14.0))
-                                .text_color(rgba(th.text_dim))
-                                .child(when),
+                                .text_color(rgba(th.text_dim)),
                         )
                         .when(
                             !data.rrule.is_empty() || occurrence.series_start.is_some(),
@@ -3075,10 +3072,10 @@ impl MailWindow {
             })
             .when_some(
                 kind_icon(data.kind).filter(|_| data.kind != EventKind::Birthday),
-                |d, name| d.child(line(name, kind_label(data.kind))),
+                |d, name| d.child(line(name, self.copyable(kind_label(data.kind), th))),
             )
             .when(!data.location.is_empty(), |d| {
-                d.child(line("pin", data.location.clone()))
+                d.child(line("pin", self.copyable(data.location.clone(), th)))
             })
             .when(guests > 0, |d| {
                 let head = format!(
@@ -3092,6 +3089,7 @@ impl MailWindow {
                         waiting = answers("needs_action")
                     )
                 );
+                let head = line("people", self.copyable(head, th));
                 let rows = data.attendees.iter().take(20).map(|attendee| {
                     let name = if attendee.name.is_empty() {
                         attendee.email.clone()
@@ -3141,7 +3139,7 @@ impl MailWindow {
                                         .flex_row()
                                         .items_center()
                                         .gap(px(6.0))
-                                        .child(div().min_w_0().truncate().child(name))
+                                        .child(self.copyable(name, th).min_w_0().truncate())
                                         .children(self.muted_mark(&attendee.email, 14.0, th)),
                                 )
                                 .when(attendee.organizer || attendee.optional, |d| {
@@ -3158,7 +3156,7 @@ impl MailWindow {
                                 }),
                         )
                 });
-                d.child(line("people", head)).child(
+                d.child(head).child(
                     div()
                         .pl(px(36.0))
                         .flex()
@@ -3175,7 +3173,7 @@ impl MailWindow {
                 d.child(self.render_event_notes(occurrence, th, cx))
             })
             .when_some(calendar, |d, calendar| {
-                d.child(line("calendar", calendar_name(calendar)))
+                d.child(line("calendar", self.copyable(calendar_name(calendar), th)))
             });
         // Only the details scroll: the title above and the answers
         // below stay in sight.

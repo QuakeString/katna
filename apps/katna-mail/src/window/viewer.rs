@@ -227,8 +227,8 @@ impl SelectHost for Viewer {
     }
 
     /// The viewer keeps the focus, so its keys still work.
-    fn text_focus(&self) -> FocusHandle {
-        self.focus.clone()
+    fn text_focus(&self) -> Option<FocusHandle> {
+        Some(self.focus.clone())
     }
 
     fn selected(&mut self, cx: &mut Context<Self>) {

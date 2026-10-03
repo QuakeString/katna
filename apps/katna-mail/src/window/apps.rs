@@ -29,7 +29,7 @@ use katna_ui::px;
 use super::{MailWindow, OpenSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button_colored, placeholder, tip};
+use crate::widgets::{icon, icon_button_colored, tip};
 
 pub(super) const APP_RAIL_WIDTH: f32 = 72.0;
 
@@ -651,13 +651,13 @@ impl MailWindow {
     pub(super) fn render_contacts(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let people = match &self.people {
             None | Some(People::Loading) => {
-                return placeholder(&tr!("app-contacts-loading"), th);
+                return self.placeholder(tr!("app-contacts-loading"), th);
             }
-            Some(People::Failed(err)) => return placeholder(err, th),
+            Some(People::Failed(err)) => return self.placeholder(err.clone(), th),
             Some(People::Loaded(people)) => people.clone(),
         };
         if people.is_empty() {
-            return placeholder(&tr!("app-contacts-empty"), th);
+            return self.placeholder(tr!("app-contacts-empty"), th);
         }
         let header = div()
             .flex_none()

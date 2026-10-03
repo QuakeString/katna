@@ -640,7 +640,7 @@ impl MailWindow {
                                 div()
                                     .text_size(px(12.0))
                                     .text_color(rgba(th.text_faint))
-                                    .child(tr!("settings-translation-none")),
+                                    .child(self.copyable(tr!("settings-translation-none"), th)),
                             )
                         }),
                 )

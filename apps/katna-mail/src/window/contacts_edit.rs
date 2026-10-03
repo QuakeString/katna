@@ -822,7 +822,7 @@ impl MailWindow {
                                 .text_size(px(14.0))
                                 .text_color(rgba(th.error))
                                 .child(icon("info", th.error, 18.0))
-                                .child(err)
+                                .child(self.copyable(err, th))
                         }))
                         .children(lines),
                 )

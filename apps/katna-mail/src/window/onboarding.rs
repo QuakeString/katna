@@ -419,7 +419,7 @@ impl MailWindow {
                         .font_weight(FontWeight::MEDIUM)
                         .text_color(rgba(th.error))
                         .child(icon("info", th.error, 20.0))
-                        .child(tr!("onboarding-service-missing")),
+                        .child(self.copyable(tr!("onboarding-service-missing"), th)),
                 )
                 .child(
                     div()

@@ -409,6 +409,13 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
         super::select::SelectAllText,
         Some(super::select::TEXT_CONTEXT),
     ));
+    // Text selected anywhere else in a window (Settings, a dialog, a
+    // page) copies too; with none selected, Ctrl+C does what it did.
+    bindings.push(KeyBinding::new(
+        "ctrl-c",
+        super::select::CopyText,
+        Some(WINDOW_CONTEXT),
+    ));
     // Google Calendar's keys on the Calendar page.
     bindings.extend(super::calendar::bindings());
     // Home with the keys in no pane takes the list to its top; the
