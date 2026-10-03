@@ -278,7 +278,7 @@ impl MailWindow {
         };
         let held = match self.folder_pick.as_ref().map(|p| (p.from, p.mode)) {
             Some((PickFrom::Toolbar, mode)) => toolbar == Some(mode),
-            Some((PickFrom::Context, _)) => self.context_menu.is_some(),
+            Some((PickFrom::Context, _)) => self.open_context_menu_ref().is_some(),
             None => false,
         };
         if !held {
@@ -333,7 +333,9 @@ impl MailWindow {
     /// Closes the search and the menu that holds it.
     fn close_folder_pick(&mut self, cx: &mut Context<Self>) {
         match self.folder_pick.take().map(|p| p.from) {
-            Some(PickFrom::Context) => self.context_menu = None,
+            Some(PickFrom::Context) => {
+                self.take_context_menu();
+            }
             Some(PickFrom::Toolbar) => self.menu = None,
             None => {}
         }
