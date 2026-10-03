@@ -33,7 +33,7 @@ use super::super::attachments::{Thumb, kind_badge};
 use super::super::compose::Kind;
 use super::super::context_menu::Rows;
 use super::super::{MailWindow, Menu};
-use super::{Conversation, Part, first_name, key_number, read};
+use super::{Conversation, Part, first_name, key_number, read, tracking};
 use crate::daemon::Command;
 use crate::data::Mail;
 use crate::format;
@@ -1584,7 +1584,7 @@ impl MailWindow {
             self.selectable_body(bubble.ix, hidden, cx)
         });
         let media = self.bubble_media(bubble, th, cx);
-        let meta = self.bubble_meta(bubble, th);
+        let meta = self.bubble_meta(bubble, th, cx);
         div()
             .id(("chat-bubble", bubble.ix))
             .max_w(relative(if self.layout.shape.is_phone() {
@@ -1633,8 +1633,11 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// The time, and for the user's own mail whether it went.
-    fn bubble_meta(&self, bubble: &Bubble, th: &Theme) -> AnyElement {
+    /// The time, and for the user's own mail whether it went and, when it
+    /// was sent with tracking, whether it was seen: the ticks turn the
+    /// eye's color, and hovering the time or ticks opens who saw it, as
+    /// the eye does in the mail view.
+    fn bubble_meta(&self, bubble: &Bubble, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let time = bubble
             .date
             .and_then(|d| format::local(d, &self.tz))
@@ -1645,13 +1648,57 @@ impl MailWindow {
             .as_ref()
             .is_some_and(|r| r.chat.pins.of(bubble.id).next().is_some())
             .then(|| icon("pin", th.text_faint, 12.0));
+        let part = self.reader.as_ref().and_then(|r| r.parts.get(bubble.ix));
+        let seen = part
+            .filter(|_| bubble.mine && bubble.pending.is_none())
+            .and_then(|part| Some((part, self.seen_state(part)?)));
         let state = bubble.mine.then(|| match bubble.pending {
             Some(false) => icon("schedule", th.text_faint, 13.0),
-            _ => icon("done-all", th.text_faint, 15.0),
+            _ => {
+                let color = tracking::seen_color(seen.is_some_and(|(_, s)| s), th);
+                // The popover of who saw it points at the ticks.
+                div()
+                    .relative()
+                    .flex()
+                    .child(icon("done-all", color, 15.0))
+                    .children(seen.map(|(part, _)| Self::seen_spot(part)))
+                    .into_any_element()
+            }
         });
-        div()
-            .self_end()
-            .mt(px(2.0))
+        // Seen more than once, or a link followed: how many times of
+        // each, in a faint pill.
+        let count = seen
+            .map(|(part, _)| self.seen_counts(part))
+            .filter(|(opens, clicks)| *opens > 1 || *clicks > 0)
+            .map(|(opens, clicks)| {
+                let number = |name: &'static str, n: u32| {
+                    div()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(3.0))
+                        .child(icon(name, th.text_faint, 11.0))
+                        .child(katna_i18n::format::number(n as u64))
+                };
+                div()
+                    .mr(px(3.0))
+                    .h(px(16.0))
+                    .px(px(5.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(5.0))
+                    .rounded_full()
+                    .border_1()
+                    .border_color(rgba(th.divider))
+                    .text_color(rgba(th.text_dim))
+                    .when(opens > 0, |d| d.child(number("eye", opens)))
+                    .when(opens > 0 && clicks > 0, |d| {
+                        d.child(div().w(px(1.0)).h(px(9.0)).bg(rgba(th.divider)))
+                    })
+                    .when(clicks > 0, |d| d.child(number("link", clicks)))
+            });
+        let meta = div()
             .flex()
             .flex_row()
             .items_center()
@@ -1659,9 +1706,20 @@ impl MailWindow {
             .text_size(px(11.0))
             .line_height(px(14.0))
             .text_color(rgba(th.text_faint))
+            .children(count)
             .children(pinned)
             .child(time)
-            .children(state)
+            .children(state);
+        let Some((part, _)) = seen else {
+            return meta.self_end().mt(px(2.0)).into_any_element();
+        };
+        let ix = bubble.ix;
+        let target = meta.id(("chat-seen", ix)).cursor_pointer();
+        div()
+            .self_end()
+            .mt(px(2.0))
+            .child(self.seen_anchor(ix, part, target, false, cx))
+            .children(self.seen_popover(ix, part, th, cx))
             .into_any_element()
     }
 

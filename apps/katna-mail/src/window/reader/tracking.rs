@@ -89,30 +89,63 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        let seen = self.seen_state(part)?;
+        let eye = icon_button_colored(("part-seen", ix), "eye", 20.0, seen_color(seen, th), th)
+            .size(px(32.0));
+        Some(self.seen_anchor(ix, part, eye, true, cx))
+    }
+
+    /// Whether message `part` was sent with tracking or a read receipt
+    /// came back for it (`None` when neither), and whether anyone has
+    /// opened it, followed a link or read it.
+    pub(super) fn seen_state(&self, part: &Part) -> Option<bool> {
         let reader = self.reader.as_ref()?;
         let receipts = reader.receipts_for(part).iter().any(|r| r.displayed);
         if part.activity.is_none() && !receipts {
             return None;
         }
-        let seen = receipts
-            || part
-                .activity
-                .iter()
-                .flat_map(|a| &a.recipients)
-                .any(|r| r.opens > 0 || r.clicks > 0);
-        let anchor = part.eye.clone();
         Some(
-            div()
-                .relative()
-                .child(
-                    icon_button_colored(
-                        ("part-seen", ix),
-                        "eye",
-                        20.0,
-                        if seen { th.accent } else { th.text_faint },
-                        th,
-                    )
-                    .size(px(32.0))
+            receipts
+                || part
+                    .activity
+                    .iter()
+                    .flat_map(|a| &a.recipients)
+                    .any(|r| r.opens > 0 || r.clicks > 0),
+        )
+    }
+
+    /// How many times message `part` was seen (opens by people and read
+    /// receipts), and how many times its links were followed.
+    pub(super) fn seen_counts(&self, part: &Part) -> (u32, u32) {
+        let recipients = || part.activity.iter().flat_map(|a| &a.recipients);
+        let opens: u32 = recipients().map(|r| r.opens).sum();
+        let clicks: u32 = recipients().map(|r| r.clicks).sum();
+        let receipts = self.reader.as_ref().map_or(0, |reader| {
+            reader
+                .receipts_for(part)
+                .iter()
+                .filter(|r| r.displayed)
+                .count() as u32
+        });
+        (opens + receipts, clicks)
+    }
+
+    /// `target` (the eye, or a chat bubble's time and ticks) opening who
+    /// has seen message `ix` while hovered or clicked. The popover's notch
+    /// points at `target`, or with `spot` false at where [`Self::seen_spot`]
+    /// is drawn inside it.
+    pub(super) fn seen_anchor(
+        &self,
+        ix: usize,
+        part: &Part,
+        target: gpui::Stateful<gpui::Div>,
+        spot: bool,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        div()
+            .relative()
+            .child(
+                target
                     .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
                         this.hover_seen(ix, Some(*hovered), None, cx)
                     }))
@@ -120,19 +153,24 @@ impl MailWindow {
                         cx.stop_propagation();
                         this.hover_seen(ix, Some(true), None, cx);
                     })),
-                )
-                .child(
-                    canvas(
-                        move |bounds, window, _| anchor.set(Some((bounds, window.viewport_size()))),
-                        |_, _, _, _| {},
-                    )
-                    .absolute()
-                    .top_0()
-                    .left_0()
-                    .size_full(),
-                )
-                .into_any_element(),
+            )
+            .when(spot, |d| d.child(Self::seen_spot(part)))
+            .into_any_element()
+    }
+
+    /// Notes where its parent is drawn as the place the popover of who
+    /// has seen `part` points at.
+    pub(super) fn seen_spot(part: &Part) -> AnyElement {
+        let anchor = part.eye.clone();
+        canvas(
+            move |bounds, window, _| anchor.set(Some((bounds, window.viewport_size()))),
+            |_, _, _, _| {},
         )
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full()
+        .into_any_element()
     }
 
     /// The pointer went over or off the eye (`eye`) or the popover
@@ -351,6 +389,12 @@ impl MailWindow {
             return None;
         })
     }
+}
+
+/// The eye's color, and a chat bubble's ticks': the accent once someone
+/// has seen the message.
+pub(super) fn seen_color(seen: bool, th: &Theme) -> u32 {
+    if seen { th.accent } else { th.text_faint }
 }
 
 fn green(th: &Theme) -> u32 {

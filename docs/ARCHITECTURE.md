@@ -4010,7 +4010,12 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   warning once it bounced. An eye left of the message's star (accent once
   anyone has opened it) opens, on hover or click, a popover with a notch
   pointing at it that lists only who opened the message or followed a
-  link, and read receipts; with none, it says so. Where no delivery
+  link, and read receipts; with none, it says so. In the chat view the
+  same popover opens from a sent bubble's time and ticks, its notch on
+  the ticks, which turn the eye's colour once anyone has opened it.
+  Seen more than once, or a link followed, a faint pill before the time
+  counts both: a small eye with the opens, a small link with the clicks.
+  Where no delivery
   receipt comes (Gmail sends
   none), the grey tick appears half an hour after sending if no bounce
   came back, and its tooltip says that is what it means: only the sending
