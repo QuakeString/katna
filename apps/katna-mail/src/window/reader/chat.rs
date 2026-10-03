@@ -1665,11 +1665,21 @@ impl MailWindow {
                     .into_any_element()
             }
         });
-        // Seen more than once: how many times, in a faint pill.
+        // Seen more than once, or a link followed: how many times of
+        // each, in a faint pill.
         let count = seen
-            .map(|(part, _)| self.seen_count(part))
-            .filter(|n| *n > 1)
-            .map(|n| {
+            .map(|(part, _)| self.seen_counts(part))
+            .filter(|(opens, clicks)| *opens > 1 || *clicks > 0)
+            .map(|(opens, clicks)| {
+                let number = |name: &'static str, n: u32| {
+                    div()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(3.0))
+                        .child(icon(name, th.text_faint, 11.0))
+                        .child(katna_i18n::format::number(n as u64))
+                };
                 div()
                     .mr(px(3.0))
                     .h(px(16.0))
@@ -1677,13 +1687,16 @@ impl MailWindow {
                     .flex()
                     .flex_row()
                     .items_center()
-                    .gap(px(3.0))
+                    .gap(px(5.0))
                     .rounded_full()
                     .border_1()
                     .border_color(rgba(th.divider))
                     .text_color(rgba(th.text_dim))
-                    .child(icon("eye", th.text_faint, 11.0))
-                    .child(katna_i18n::format::number(n as u64))
+                    .when(opens > 0, |d| d.child(number("eye", opens)))
+                    .when(opens > 0 && clicks > 0, |d| {
+                        d.child(div().w(px(1.0)).h(px(9.0)).bg(rgba(th.divider)))
+                    })
+                    .when(clicks > 0, |d| d.child(number("link", clicks)))
             });
         let meta = div()
             .flex()

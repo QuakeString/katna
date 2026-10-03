@@ -114,15 +114,12 @@ impl MailWindow {
         )
     }
 
-    /// How many times message `part` was seen: opens by people and read
-    /// receipts.
-    pub(super) fn seen_count(&self, part: &Part) -> u32 {
-        let opens: u32 = part
-            .activity
-            .iter()
-            .flat_map(|a| &a.recipients)
-            .map(|r| r.opens)
-            .sum();
+    /// How many times message `part` was seen (opens by people and read
+    /// receipts), and how many times its links were followed.
+    pub(super) fn seen_counts(&self, part: &Part) -> (u32, u32) {
+        let recipients = || part.activity.iter().flat_map(|a| &a.recipients);
+        let opens: u32 = recipients().map(|r| r.opens).sum();
+        let clicks: u32 = recipients().map(|r| r.clicks).sum();
         let receipts = self.reader.as_ref().map_or(0, |reader| {
             reader
                 .receipts_for(part)
@@ -130,7 +127,7 @@ impl MailWindow {
                 .filter(|r| r.displayed)
                 .count() as u32
         });
-        opens + receipts
+        (opens + receipts, clicks)
     }
 
     /// `target` (the eye, or a chat bubble's time and ticks) opening who

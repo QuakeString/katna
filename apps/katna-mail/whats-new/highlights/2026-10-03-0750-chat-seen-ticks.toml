@@ -3,7 +3,7 @@
 title = "Who saw your mail, in chats"
 text = """
 In the chat view, the ticks on mail you sent with tracking turn coloured
-once someone opens it, with how many times it was seen beside them. Rest
-the pointer on them to see who opened it or followed a link, as the eye
+once someone opens it. Beside them, a small eye counts the opens and a
+link counts the links followed. Rest the pointer on them to see who opened it or followed a link, as the eye
 shows in the mail view.
 """

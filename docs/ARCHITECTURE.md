@@ -3999,6 +3999,8 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   link, and read receipts; with none, it says so. In the chat view the
   same popover opens from a sent bubble's time and ticks, its notch on
   the ticks, which turn the eye's colour once anyone has opened it.
+  Seen more than once, or a link followed, a faint pill before the time
+  counts both: a small eye with the opens, a small link with the clicks.
   Where no delivery
   receipt comes (Gmail sends
   none), the grey tick appears half an hour after sending if no bounce
