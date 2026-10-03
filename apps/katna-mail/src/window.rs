@@ -495,6 +495,12 @@ pub struct MailWindow {
     /// new name has rolled in (0 to 1).
     title_from: RailApp,
     title_roll: Spring,
+    /// The big button's icon now and the one it turns away from as the
+    /// page (or a drive's upload) changes it, and how far it has turned
+    /// (0 to 1).
+    primary_icon: &'static str,
+    primary_icon_from: &'static str,
+    primary_icon_turn: Spring,
     /// The account picture at the top right rolling from the last
     /// account's, and how far the new one has rolled in (0 to 1).
     avatar_roll: account_roll::AvatarRoll,
@@ -909,6 +915,9 @@ impl MailWindow {
             search_pressed: false,
             title_from: RailApp::Mail,
             title_roll: Spring::new(motion::SLIDE, 1.0),
+            primary_icon: "compose",
+            primary_icon_from: "compose",
+            primary_icon_turn: Spring::new(motion::SMOOTH, 1.0),
             avatar_roll: account_roll::AvatarRoll::new(),
             avatar_turn: Spring::new(motion::SLIDE, 1.0),
             compose_shown: Spring::new(motion::SMOOTH, 1.0),
@@ -3600,6 +3609,14 @@ impl Render for MailWindow {
         self.compose_dock.tick(window, reduce);
         self.reader_bar.tick(&self.reader_scroll, window, cx);
         self.title_roll.tick(window, reduce);
+        let primary_icon = self.primary_button().0;
+        if primary_icon != self.primary_icon {
+            self.primary_icon_from = self.primary_icon;
+            self.primary_icon = primary_icon;
+            self.primary_icon_turn.snap(0.0);
+            self.primary_icon_turn.set(1.0);
+        }
+        self.primary_icon_turn.tick(window, reduce);
         self.avatar_turn.tick(window, reduce);
         let compose_text = compose_text_width(&self.primary_button().1, self.font.as_ref(), window);
         let content = match &self.mail {

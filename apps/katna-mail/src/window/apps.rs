@@ -223,6 +223,18 @@ impl MailWindow {
         }
     }
 
+    /// The big button's icon, turning from the last page's into this
+    /// one's: the same on the rail's square, the pill and a phone's button.
+    pub(super) fn primary_icon(&self, th: &crate::theme::Theme) -> gpui::AnyElement {
+        crate::widgets::morph_icon(
+            self.primary_icon_from,
+            self.primary_icon,
+            self.primary_icon_turn.value(),
+            th.compose_text,
+            24.0,
+        )
+    }
+
     pub(super) fn primary_action(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         if self.drive_upload_here() {
             self.upload_into_drive(false, cx);
