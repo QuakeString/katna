@@ -393,20 +393,49 @@ pub fn pill_button(
 /// How far a card's shadow reaches past its edges.
 pub const CARD_SHADOW_ROOM: f32 = 4.0;
 
-/// The very short, soft shadow under a card, for a little depth. `t`
-/// fades it away (0 on a phone, whose cards run edge to edge).
+/// The very short shadow under a card, for a little depth. `t` fades it
+/// away (0 on a phone, whose cards run edge to edge); a card at rest
+/// beside the one with the keys gets [`CARD_REST`] of it. In light colors
+/// the card also gets a crisp hairline ring ([`Theme::card_edge`]) and a
+/// tighter shadow, so its edge stays sharp on the near-white page.
 pub fn card_shadow(th: &Theme, t: f32) -> Vec<BoxShadow> {
     if t <= 0.001 {
         return Vec::new();
     }
-    vec![BoxShadow {
-        color: rgba(fade(th.shadow, 0.3 * t.min(1.0))).into(),
-        offset: point(px(0.0), px(1.0)),
-        blur_radius: px(3.0),
-        spread_radius: px(0.0),
-        inset: false,
-    }]
+    let t = t.min(1.0);
+    if th.card_edge & 0xff == 0 {
+        return vec![BoxShadow {
+            color: rgba(fade(th.shadow, 0.3 * t)).into(),
+            offset: point(px(0.0), px(1.0)),
+            blur_radius: px(3.0),
+            spread_radius: px(0.0),
+            inset: false,
+        }];
+    }
+    // The ring stays nearly full at rest (80%) so every card keeps its
+    // edge; it fades in with the card only below that.
+    let ring = (t / CARD_REST).min(1.0) * lerp(0.8, 1.0, t);
+    vec![
+        BoxShadow {
+            color: rgba(fade(th.card_edge, ring)).into(),
+            offset: point(px(0.0), px(0.0)),
+            blur_radius: px(0.0),
+            spread_radius: px(1.0),
+            inset: false,
+        },
+        BoxShadow {
+            color: rgba(fade(th.shadow, 0.47 * t)).into(),
+            offset: point(px(0.0), px(1.0)),
+            blur_radius: px(2.0),
+            spread_radius: px(0.0),
+            inset: false,
+        },
+    ]
 }
+
+/// How strongly a card at rest beside the one with the keys shows its
+/// shadow, as `t` of [`card_shadow`].
+pub const CARD_REST: f32 = 0.15;
 
 /// A faint line around a card (the list, the reading pane, Quick
 /// settings). It is drawn over the card's content, so lines of the list

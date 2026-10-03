@@ -223,7 +223,7 @@ const NAV_WIDTH: f32 = 256.0;
 const NAV_ROW_INSET: f32 = 8.0;
 /// The share of its shadow and of its edge a card keeps while another
 /// pane has the keys.
-const SHADOW_REST: f32 = 0.15;
+const SHADOW_REST: f32 = crate::widgets::CARD_REST;
 const EDGE_REST: f32 = 0.55;
 /// The one gap between the top bar's elements: the menu button and the
 /// app's name, the name and the search box (when the window is too narrow
