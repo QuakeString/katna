@@ -175,7 +175,7 @@ impl MailWindow {
             && !self.agenda_open()
             && self.reading
             && self.reader.is_some()
-            && self.settings_page.is_none()
+            && !self.settings_in_main()
             && !self.detached
             && self.layout.shape.is_desktop()
     }
@@ -244,7 +244,7 @@ impl MailWindow {
             && !self.agenda_open()
             && self.reading
             && self.reader.is_some()
-            && self.settings_page.is_none()
+            && !self.settings_in_main()
             && self.contact_fits(available + folding);
         self.contact.spring.set(if open { 1.0 } else { 0.0 });
         let t = self.contact.spring.tick(window, reduce).clamp(0.0, 1.0);
