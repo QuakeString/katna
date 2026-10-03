@@ -549,62 +549,6 @@ impl MailWindow {
                 .children(follow)
         });
 
-        let love = div()
-            .flex_none()
-            .mx(px(24.0))
-            .mt(px(24.0))
-            .p(px(16.0))
-            .flex()
-            .flex_row()
-            .items_start()
-            .gap(px(12.0))
-            .rounded(px(12.0))
-            .bg(rgba(fade(th.error, if th.dark { 0.14 } else { 0.07 })))
-            .child(div().mt(px(1.0)).child(icon("heart", th.error, 22.0)))
-            .child(
-                div()
-                    .flex_1()
-                    .min_w_0()
-                    .flex()
-                    .flex_col()
-                    .gap(px(space::S2))
-                    .child(selectable(
-                        div()
-                            .flex()
-                            .flex_col()
-                            .gap(px(space::S2))
-                            .child(
-                                pieces
-                                    .words(tr!("about-love-title"))
-                                    .text_size(px(15.0))
-                                    .font_weight(FontWeight::MEDIUM),
-                            )
-                            .child(
-                                pieces
-                                    .words(tr!("about-love-text"))
-                                    .text_size(px(14.0))
-                                    .line_height(px(21.0))
-                                    .text_color(rgba(th.text_dim)),
-                            )
-                            .child(
-                                pieces
-                                    .words(tr!("about-kde-text"))
-                                    .mt(px(6.0))
-                                    .text_size(px(14.0))
-                                    .line_height(px(21.0))
-                                    .text_color(rgba(th.text_dim)),
-                            ),
-                        Some(ABOUT_PART),
-                        cx,
-                    ))
-                    .child(div().mt(px(8.0)).flex().flex_row().child(link_button(
-                        "about-donate-kde",
-                        tr!("about-donate-kde"),
-                        KDE_DONATE_URL.to_owned(),
-                        th,
-                    ))),
-            );
-
         let personal = selectable(
             div()
                 .flex_none()
@@ -675,6 +619,62 @@ impl MailWindow {
                         GPUI_URL.to_owned(),
                         th,
                     )),
+            );
+
+        let love = div()
+            .flex_none()
+            .mx(px(24.0))
+            .mt(px(24.0))
+            .p(px(16.0))
+            .flex()
+            .flex_row()
+            .items_start()
+            .gap(px(12.0))
+            .rounded(px(12.0))
+            .bg(rgba(fade(th.error, if th.dark { 0.14 } else { 0.07 })))
+            .child(div().mt(px(1.0)).child(icon("heart", th.error, 22.0)))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .flex()
+                    .flex_col()
+                    .gap(px(space::S2))
+                    .child(selectable(
+                        div()
+                            .flex()
+                            .flex_col()
+                            .gap(px(space::S2))
+                            .child(
+                                pieces
+                                    .words(tr!("about-love-title"))
+                                    .text_size(px(15.0))
+                                    .font_weight(FontWeight::MEDIUM),
+                            )
+                            .child(
+                                pieces
+                                    .words(tr!("about-love-text"))
+                                    .text_size(px(14.0))
+                                    .line_height(px(21.0))
+                                    .text_color(rgba(th.text_dim)),
+                            )
+                            .child(
+                                pieces
+                                    .words(tr!("about-kde-text"))
+                                    .mt(px(6.0))
+                                    .text_size(px(14.0))
+                                    .line_height(px(21.0))
+                                    .text_color(rgba(th.text_dim)),
+                            ),
+                        Some(ABOUT_PART),
+                        cx,
+                    ))
+                    .child(div().mt(px(8.0)).flex().flex_row().child(link_button(
+                        "about-donate-kde",
+                        tr!("about-donate-kde"),
+                        KDE_DONATE_URL.to_owned(),
+                        th,
+                    ))),
             );
 
         let credits = CREDITS
@@ -847,9 +847,9 @@ impl MailWindow {
             .child(links)
             .children(follow)
             .child(coffee)
-            .child(love)
             .child(personal)
             .child(gpui)
+            .child(love)
             .child(built_on)
             .child(libraries);
 
