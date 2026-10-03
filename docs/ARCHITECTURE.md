@@ -2329,6 +2329,18 @@ Gemini or confidential mode):
   back as the same block; its plain text (a line per table cell) is what
   plain text mail carries. Edit HTML opens it again with its pictures as
   `cid:katna-N`.
+  **Import** (Settings → Compose → Signatures) lists the signatures Gmail
+  adds, for accounts signed in with Google (the daemon's
+  `GmailSignatures`: the Gmail API's `sendAs`, which Gmail's mail scope
+  allows), and those Thunderbird (`prefs.js` of each profile, inline or
+  from a file), Evolution (`sources/*.source` and `signatures/`) and KMail
+  (`emailidentities`) keep on this computer, usual and Flatpak installs
+  (`signatures/import.rs`). Their files are only read; signatures that run
+  a program (KMail's command, Evolution's script) are never run and are
+  left out. Pictures on this computer go inside as `data:` URIs, pictures
+  on the web are downloaded through the daemon, and each is cleaned as
+  pasted HTML is; ones already in Katna are shown but not ticked. Other
+  apps' signatures come in by Paste HTML.
 - **Grammar.** Harper (`harper-core`, Apache-2.0) checks English drafts,
   text and subject, on this computer as you write (`grammar.rs`), on by default, under
   Settings → Compose → Grammar. Paragraphs are checked off the UI thread
