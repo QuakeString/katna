@@ -12,7 +12,7 @@ use std::sync::Arc;
 
 use gpui::{
     AnyElement, Context, FocusHandle, FontWeight, ImageSource, KeyDownEvent, MouseButton,
-    ObjectFit, RenderImage, Task, Window, div, img, prelude::*, rgba,
+    ObjectFit, RenderImage, ScrollHandle, Task, Window, div, img, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_preview::image::codecs::webp::WebPDecoder;
@@ -23,7 +23,7 @@ use katna_ui::unpx;
 
 use super::add_account::text_button;
 use super::{MailWindow, PANEL_RADIUS};
-use crate::theme::Theme;
+use crate::theme::{Theme, fade};
 use crate::whats_new::{self, Highlight, Seen, Start};
 use crate::widgets::{FocusRing, elevation, filled_button, icon};
 
@@ -43,6 +43,8 @@ pub(super) struct WhatsNew {
     animations: HashMap<&'static str, Arc<RenderImage>>,
     _decode: Option<Task<()>>,
     focus: FocusHandle,
+    /// The highlights' scroll, which slides under the header.
+    scroll: ScrollHandle,
     closing: bool,
     shown: Spring,
 }
@@ -157,6 +159,7 @@ impl MailWindow {
             animations: HashMap::new(),
             _decode: decode,
             focus,
+            scroll: ScrollHandle::new(),
             closing: false,
             shown,
         });
@@ -245,8 +248,13 @@ impl MailWindow {
             });
 
         let has_hero = hero.is_some();
+        // The header stays put and the highlights scroll under it; a line
+        // fades in below it once they have moved.
+        let scrolled = (-unpx(dialog.scroll.offset().y) / 12.0).clamp(0.0, 1.0);
         let header = div()
             .flex_none()
+            .border_b_1()
+            .border_color(rgba(fade(th.divider, scrolled)))
             .px(px(24.0))
             .pt(px(if has_hero { 20.0 } else { 24.0 }))
             .pb(px(16.0))
@@ -358,10 +366,11 @@ impl MailWindow {
             .flex_1()
             .min_h_0()
             .overflow_y_scroll()
+            .track_scroll(&dialog.scroll)
+            .pt(px(4.0))
             .pb(px(8.0))
             .flex()
             .flex_col()
-            .child(header)
             .children(items)
             .children(more);
 
@@ -414,6 +423,7 @@ impl MailWindow {
             .text_color(rgba(th.text))
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .children(hero)
+            .child(header)
             .child(body)
             .child(footer);
         Some(
