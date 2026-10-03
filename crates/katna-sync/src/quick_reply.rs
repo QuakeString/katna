@@ -158,7 +158,7 @@ fn re(subject: &str) -> String {
 }
 
 /// `mailbox` as an address header: the name quoted or encoded as needed.
-fn address(mailbox: &Mailbox) -> String {
+pub(crate) fn address(mailbox: &Mailbox) -> String {
     let name = mailbox
         .name
         .as_deref()
@@ -183,7 +183,7 @@ fn address(mailbox: &Mailbox) -> String {
 
 /// `text` as a header value: as it is when plain ASCII, else RFC 2047
 /// encoded words of at most 75 characters, folded onto lines of their own.
-fn encode_words(text: &str) -> String {
+pub(crate) fn encode_words(text: &str) -> String {
     if text.chars().all(|c| c.is_ascii() && !c.is_ascii_control()) && !text.contains("=?") {
         return text.to_owned();
     }

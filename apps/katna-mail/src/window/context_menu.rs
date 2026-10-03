@@ -3,7 +3,8 @@
 //! The right-click menu of the mail list, as in webmail: reply and
 //! forward, archive, delete, read, snooze and star, then submenus: "Move
 //! to" with the folders, "Follow up" (tasks, notes, meetings, calls) and
-//! "More" (spam, importance, pin), and "Find emails from" the sender. It
+//! "More" (spam, importance, pin), "Find emails from" the sender and
+//! "Make a rule…" (the rule editor, filled in with the sender). It
 //! opens where the pointer is and always fits the window. It acts on the
 //! ticked lines when the clicked line is one of them, else on the clicked
 //! line.
@@ -27,6 +28,7 @@ use katna_i18n::tr;
 
 use super::MenuKey;
 use super::compose::Kind;
+use super::folder_pick::{PickFrom, PickMode};
 use super::sheet::{Fill, Sheet};
 use super::{Act, MailWindow};
 use crate::data::{EntryKey, Row};
@@ -247,12 +249,36 @@ impl MailWindow {
 
     /// Opens submenu `sub` of the right-click menu, or closes the open one.
     fn open_context_sub(&mut self, sub: Option<Sub>, cx: &mut Context<Self>) {
-        if let Some(menu) = &mut self.context_menu
-            && menu.open != sub
-        {
-            menu.open = sub;
-            cx.notify();
+        let Some(menu) = &mut self.context_menu else {
+            return;
+        };
+        if menu.open == sub {
+            return;
         }
+        menu.open = sub;
+        let account = match &menu.what {
+            MenuFor::Mail { row, .. } => Some(row.account),
+            _ => None,
+        };
+        let line = menu.line();
+        // Move to and Label as open on their search box.
+        let mode = match sub {
+            Some(Sub::MoveTo) => Some(PickMode::Move),
+            Some(Sub::LabelAs) => Some(PickMode::Label),
+            _ => None,
+        };
+        match (mode, account, line) {
+            (Some(mode), Some(account), Some((_, key))) => {
+                let keys = self.context_targets(key);
+                self.open_folder_pick(mode, PickFrom::Context, account, keys, cx);
+            }
+            _ => {
+                if self.folder_pick.as_ref().map(|p| p.from) == Some(PickFrom::Context) {
+                    self.folder_pick = None;
+                }
+            }
+        }
+        cx.notify();
     }
 
     /// Escape: closes the open submenu before the menu. Returns whether it
@@ -261,6 +287,9 @@ impl MailWindow {
         match &mut self.context_menu {
             Some(menu) if menu.open.is_some() => {
                 menu.open = None;
+                if self.folder_pick.as_ref().map(|p| p.from) == Some(PickFrom::Context) {
+                    self.folder_pick = None;
+                }
                 cx.notify();
                 true
             }
@@ -308,7 +337,7 @@ impl MailWindow {
         // scroll.
         let room = vh - 2.0 * MARGIN;
         let squeeze = |rows: &Rows, room: f32| {
-            let rules = rows.rules as f32 * RULE_HEIGHT;
+            let rules = rows.rules as f32 * RULE_HEIGHT + rows.fixed;
             ((room - 2.0 * PADDING - rules) / rows.items.max(1) as f32)
                 .clamp(MIN_ITEM_HEIGHT, ITEM_HEIGHT)
         };
@@ -409,14 +438,17 @@ impl MailWindow {
                                 .text_size(px(14.0))
                                 .text_color(rgba(th.text))
                                 // Left goes back from a submenu.
-                                .on_key_down(cx.listener(|this, event: &KeyDownEvent, _, cx| {
-                                    if !event.keystroke.modifiers.modified()
-                                        && event.keystroke.key == "left"
-                                        && this.context_menu_back(cx)
-                                    {
-                                        cx.stop_propagation();
-                                    }
-                                }))
+                                .on_key_down(cx.listener(
+                                    |this, event: &KeyDownEvent, window, cx| {
+                                        if !event.keystroke.modifiers.modified()
+                                            && event.keystroke.key == "left"
+                                            && !this.folder_pick_typing(window, cx)
+                                            && this.context_menu_back(cx)
+                                        {
+                                            cx.stop_propagation();
+                                        }
+                                    },
+                                ))
                                 .children(rows.els)
                                 .with_animation(
                                     id,
@@ -668,8 +700,9 @@ impl MailWindow {
         });
         main.rule(th);
         let mut parents = Vec::new();
+        let gmail = self.tree.is_gmail(row.account);
         for sub in Sub::ALL {
-            if sub == Sub::FollowUp && drafts {
+            if sub == Sub::FollowUp && drafts || sub == Sub::LabelAs && !gmail {
                 continue;
             }
             let top = main.item(self.context_parent(sub, rh, th, cx));
@@ -692,9 +725,27 @@ impl MailWindow {
                     th,
                     cx,
                 )
+                .on_click({
+                    let sender = sender.clone();
+                    cx.listener(move |this, _, window, cx| {
+                        this.close_context_menu(cx);
+                        this.search_for(format!("from:{sender}"), window, cx);
+                    })
+                }),
+            );
+            // The rule editor, filled in with the sender.
+            let account = row.account;
+            main.item(
+                self.context_item(
+                    "context-make-rule",
+                    "filter",
+                    tr!("menu-make-rule"),
+                    rh,
+                    th,
+                    cx,
+                )
                 .on_click(cx.listener(move |this, _, window, cx| {
-                    this.close_context_menu(cx);
-                    this.search_for(format!("from:{sender}"), window, cx);
+                    this.make_rule_from(name.clone(), sender.clone(), account, window, cx)
                 })),
             );
         }
@@ -779,25 +830,15 @@ impl MailWindow {
         };
         let mut rows = Rows::new(rh);
         match sub {
-            Sub::MoveTo => {
+            Sub::MoveTo | Sub::LabelAs => {
                 // Search results can be anywhere, so every folder is offered.
-                let current = self.listed_folder();
-                let folders = self
-                    .account()
-                    .map(|a| self.tree.folders_of(a))
-                    .unwrap_or_default();
-                for (id, name, role) in folders.into_iter().filter(|(id, ..)| Some(*id) != current)
-                {
-                    rows.item(
-                        menu_row(
-                            ("context-move", id.0 as usize),
-                            super::nav::role_icon(role),
-                            name.into(),
-                            th,
-                            rh,
-                        )
-                        .on_click(act(Act::MoveTo(id))),
-                    );
+                if let Some(pick) = self.folder_pick_in(PickFrom::Context, sub.pick_mode()) {
+                    for (el, h) in self.render_folder_pick(pick, rh, th, cx) {
+                        rows.line(el, h, h == rh);
+                    }
+                    if let Some((el, h)) = self.render_always_move(pick, th, cx) {
+                        rows.line(el, h, false);
+                    }
                 }
             }
             Sub::FollowUp => {
@@ -974,6 +1015,8 @@ impl MailWindow {
 pub(super) enum Sub {
     /// The folders and labels.
     MoveTo,
+    /// Gmail: the labels to put on or take off.
+    LabelAs,
     /// Tasks, notes, meetings and calls from the mail.
     FollowUp,
     /// Spam, importance and pinning.
@@ -989,11 +1032,21 @@ pub(super) enum Sub {
 }
 
 impl Sub {
-    const ALL: [Sub; 3] = [Sub::MoveTo, Sub::FollowUp, Sub::More];
+    const ALL: [Sub; 4] = [Sub::MoveTo, Sub::LabelAs, Sub::FollowUp, Sub::More];
+
+    /// What its search does, for Move to and Label as.
+    fn pick_mode(self) -> PickMode {
+        if self == Sub::LabelAs {
+            PickMode::Label
+        } else {
+            PickMode::Move
+        }
+    }
 
     fn id(self) -> &'static str {
         match self {
             Sub::MoveTo => "context-move-to",
+            Sub::LabelAs => "context-label-as",
             Sub::FollowUp => "context-follow-up",
             Sub::More => "context-more",
             Sub::Color => "context-color",
@@ -1006,6 +1059,7 @@ impl Sub {
     fn icon(self) -> &'static str {
         match self {
             Sub::MoveTo => "move-to",
+            Sub::LabelAs => "tag",
             Sub::FollowUp => "event",
             Sub::More => "more",
             Sub::Color => "contrast",
@@ -1018,6 +1072,7 @@ impl Sub {
     fn label(self) -> SharedString {
         match self {
             Sub::MoveTo => tr!("menu-move-to"),
+            Sub::LabelAs => tr!("menu-label-as"),
             Sub::FollowUp => tr!("menu-follow-up"),
             Sub::More => tr!("menu-more"),
             Sub::Color => tr!("calendar-menu-color"),
@@ -1038,6 +1093,8 @@ pub(super) struct Rows {
     h: f32,
     items: usize,
     rules: usize,
+    /// The height of lines that keep theirs in a short window.
+    fixed: f32,
 }
 
 impl Rows {
@@ -1048,6 +1105,7 @@ impl Rows {
             h: PADDING,
             items: 0,
             rules: 0,
+            fixed: 0.0,
         }
     }
 
@@ -1058,6 +1116,18 @@ impl Rows {
         self.h += self.row;
         self.items += 1;
         top
+    }
+
+    /// Adds a line `h` tall: an item when `item` (its height follows the
+    /// others'), else one that keeps its height.
+    pub(super) fn line(&mut self, el: AnyElement, h: f32, item: bool) {
+        self.els.push(el);
+        self.h += h;
+        if item {
+            self.items += 1;
+        } else {
+            self.fixed += h;
+        }
     }
 
     pub(super) fn rule(&mut self, th: &Theme) {

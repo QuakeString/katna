@@ -80,6 +80,11 @@ pub const GOOGLE_OTHER_CONTACTS: &str = "https://www.googleapis.com/auth/contact
 /// Google Tasks: the account's task lists, synced with Katna Tasks.
 pub const GOOGLE_TASKS: &str = "https://www.googleapis.com/auth/tasks";
 
+/// Gmail's basic settings: the filters Katna makes for mail rules
+/// ([`crate::gmail_filters`]), the labels and the forwarding addresses
+/// they use.
+pub const GOOGLE_GMAIL_SETTINGS: &str = "https://www.googleapis.com/auth/gmail.settings.basic";
+
 /// Google Meet, limited to the meeting spaces Katna itself made: for
 /// "Start a video call" ([`crate::meet`]).
 pub const GOOGLE_MEET: &str = "https://www.googleapis.com/auth/meetings.space.created";
@@ -270,12 +275,13 @@ impl Provider {
                 // large attachments, the whole Drive for Files,
                 // the calendars, the contacts (People API, other
                 // contacts, CardDAV), the task lists, the meetings Katna
-                // makes, and who signed in (address, name, picture) in
-                // the ID token.
+                // makes, the Gmail filters it makes for mail rules, and
+                // who signed in (address, name, picture) in the ID token.
                 scope: format!(
                     "{GOOGLE_MAIL} {GOOGLE_DRIVE_FILE} {GOOGLE_DRIVE} {GOOGLE_CALENDAR} \
                      {GOOGLE_CONTACTS} {GOOGLE_OTHER_CONTACTS} {GOOGLE_CARDDAV} \
-                     {GOOGLE_TASKS} {GOOGLE_MEET} openid email profile"
+                     {GOOGLE_TASKS} {GOOGLE_MEET} {GOOGLE_GMAIL_SETTINGS} \
+                     openid email profile"
                 ),
                 consent: String::new(),
                 redirect_host: "127.0.0.1",

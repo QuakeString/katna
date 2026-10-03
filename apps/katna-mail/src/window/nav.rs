@@ -4,6 +4,7 @@
 //! navigation with the folders, which folds away, and Compose, which sits
 //! over the folders and moves into the app rail when they fold.
 
+use katna_ui::WindowDrag;
 use std::f32::consts::FRAC_PI_2;
 
 use gpui::{
@@ -16,6 +17,7 @@ use katna_ui::px;
 use katna_ui::{Glow, Ripple};
 
 use super::apps::APP_RAIL_WIDTH;
+use super::mail_drag::MailDrag;
 use super::tour::Spot;
 use super::{
     FocusSearch, Hover, Listing, MailWindow, NAV_ROW_INSET, NAV_WIDTH, PANEL_RADIUS,
@@ -168,6 +170,7 @@ pub(super) fn side_row_with(
         .items_center()
         .rounded_full()
         .cursor_pointer()
+        .keeps_press()
         .text_size(px(14.0))
         .text_color(rgba(text))
         .when(on, |d| {
@@ -245,6 +248,7 @@ impl MailWindow {
             .justify_center()
             .rounded_full()
             .cursor_pointer()
+            .keeps_press()
             .hover(|s| s.bg(rgba(th.hover)))
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .tooltip(tip(
@@ -429,6 +433,7 @@ impl MailWindow {
                 .text_color(rgba(th.compose_text))
                 .hover(|s| s.shadow(elevation(th, 1.5)))
                 .cursor_pointer()
+                .keeps_press()
                 // In the rail, resting on it opens the folded folders over
                 // the list, as resting on Mail does.
                 .when(mail, |d| {
@@ -753,6 +758,7 @@ impl MailWindow {
                     .p(px(1.0))
                     .rounded_full()
                     .cursor_pointer()
+                    .keeps_press()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .when(self.account_menu, |d| d.bg(rgba(th.hover)))
                     .on_mouse_move(|_, _, cx| cx.stop_propagation())
@@ -866,6 +872,7 @@ impl MailWindow {
         let gap = if drawer { 0.0 } else { FLOAT_GAP * float };
         let panel = div()
             .id("navigation-panel")
+            .window_drag()
             .map(|d| self.nav_keys(d, cx))
             .occlude()
             .absolute()
@@ -1126,7 +1133,13 @@ impl MailWindow {
                             role_icon(*role)
                         },
                         label,
-                        unread: *unread,
+                        // Settings > Folders & rules can keep the counts
+                        // to the inbox.
+                        unread: if self.config.mail.folder_unread_counts || *role == Role::Inbox {
+                            *unread
+                        } else {
+                            0
+                        },
                         selected: folder.is_some_and(|f| self.listing == Some(Listing::Folder(f))),
                         bold: true,
                         chevron: has_children.then_some(*expanded),
@@ -1168,6 +1181,7 @@ impl MailWindow {
             .font_weight(FontWeight::MEDIUM)
             .text_color(rgba(th.text_faint))
             .cursor_pointer()
+            .keeps_press()
             .rounded_full()
             .when(self.nav_cursor_on(ix), |d| d.shadow(keys_ring(th)))
             // Not over its own right-click menu.
@@ -1239,6 +1253,23 @@ impl MailWindow {
             bell,
         } = pill;
         let indent = 12.0 * depth as f32;
+        let drop_folder = match self.nav_rows.get(ix) {
+            Some(
+                sidebar::Row::Folder {
+                    folder: Some(folder),
+                    ..
+                }
+                | sidebar::Row::UnifiedAccount {
+                    folder: Some(folder),
+                    ..
+                },
+            ) => self
+                .tree
+                .account_of(*folder)
+                .zip(self.tree.node(*folder))
+                .map(|(to, node)| (*folder, to, node.role)),
+            _ => None,
+        };
         let text = if selected {
             th.row_selected_text
         } else {
@@ -1292,6 +1323,23 @@ impl MailWindow {
             .when(!selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
             .when(self.nav_cursor_on(ix), |d| d.shadow(keys_ring(th)))
             .cursor_pointer()
+            .keeps_press()
+            // Mail dragged from the list lands here.
+            .when_some(drop_folder, |d, (folder, to, role)| {
+                let (fill, ring) = (th.row_selected, keys_ring(th));
+                d.drag_over::<MailDrag>(move |s, drag, _, _| {
+                    if drag.takes(to, folder, role) {
+                        s.bg(rgba(fill)).shadow(ring.clone())
+                    } else {
+                        s
+                    }
+                })
+                .on_drop(
+                    cx.listener(move |this, drag: &MailDrag, _, cx| {
+                        this.drop_mail(drag, folder, cx)
+                    }),
+                )
+            })
             .on_click(cx.listener(move |this, _, window, cx| this.click_nav_row(ix, window, cx)))
             .on_mouse_down(
                 MouseButton::Right,
@@ -1467,13 +1515,22 @@ impl MailWindow {
 
     /// After a line of the folder pane opened a list.
     pub(super) fn picked_from_nav(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
+        // Picked in the pane beside the list, the keys stay in the pane,
+        // as in Thunderbird, Outlook and KDE's apps; Tab or Enter goes on
+        // to the list.
+        let stays = self.nav_docked() && !self.nav_peek && !self.layout.drawer;
         self.leave_settings(window, cx);
         self.reader = None;
         // A folder picked from the opened navigation closes it.
         self.nav_peek = false;
         self.layout.drawer = false;
         self.peek_task = None;
-        window.focus(&self.list_focus, cx);
+        let keys = if stays {
+            &self.nav_focus
+        } else {
+            &self.list_focus
+        };
+        window.focus(keys, cx);
     }
 
     /// A list picked in the folder pane while Settings is open takes its
@@ -1792,15 +1849,14 @@ fn listing_of(row: &sidebar::Row) -> Option<Listing> {
     }
 }
 
-/// The key context of the folder pane while it has the keys.
-const NAV_CONTEXT: &str = "Navigation";
 /// The hover group of a folder's line, for its arrow.
 const NAV_PILL: &str = "nav-pill";
 
 /// The folder pane by keyboard, as in Thunderbird, Outlook and KDE's
 /// apps: F6 or Tab gives it the keys; Up and Down go through its lines and
 /// open each list at once; Right opens what a line holds and Left folds
-/// it; Enter (or Space) goes on to the list, or folds a heading.
+/// it, and Space does either; Enter goes on to the list, or folds a
+/// heading.
 impl MailWindow {
     /// Gives the pane its keys.
     fn nav_keys(
@@ -1809,7 +1865,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> gpui::Stateful<gpui::Div> {
         panel
-            .key_context(NAV_CONTEXT)
+            .key_context(super::NAV_CONTEXT)
             .track_focus(&self.nav_focus)
             .on_key_down(cx.listener(Self::nav_key))
     }
@@ -1870,7 +1926,11 @@ impl MailWindow {
             "right" => self.nav_move(at, 1, window, cx),
             "left" if expanded == Some(true) => self.toggle_nav_row(at, cx),
             "left" => self.nav_move(at, -1, window, cx),
-            "enter" | "space" => {
+            // Space folds or opens a line that holds others, as clicking
+            // its arrow does, and does nothing on the rest.
+            "space" if expanded.is_some() => self.toggle_nav_row(at, cx),
+            "space" => {}
+            "enter" => {
                 if listing_of(&self.nav_rows[at]).is_some() {
                     self.click_nav_row(at, window, cx);
                     window.focus(&self.list_focus, cx);

@@ -154,7 +154,7 @@ are testable and benchmarkable without a GUI.
 | Icons | `freedesktop-icons` + `resvg` | |
 | Spell check | `spellbook` | Hunspell dictionaries. |
 | Languages | Fluent (`fluent-bundle`) + ICU4X | UI text in `.ftl` files per language, dates, numbers and plurals from CLDR; RTL mirroring in the vendored GPUI (§13.10). |
-| Mail rules on the server | `sieve-rs` (compile) + ManageSieve | |
+| Mail rules on the server | ManageSieve (own client, `katna_sync::sieve`) + Gmail API filters | The server checks a script when it is written (`PUTSCRIPT`), so no Sieve compiler ships in the daemon (§9.4). |
 | OpenPGP and S/MIME | The user's GnuPG: `gpg` and `gpgsm` (`katna-crypto`) | Like KMail: existing keys, trust, gpg-agent, pinentry and smartcards work unchanged (§19.1). Sequoia/rPGP kept in reserve. |
 | Server | `axum`, PostgreSQL (`sqlx`) | |
 | Plasma extensions | C++ / Qt 6 / QML, KF6, libplasma | Only in `integrations/plasma-*` (§15.6). |
@@ -493,6 +493,21 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
     (`Store::trash_folder`, which the app also reads: a delete for good
     says "deleted forever" and offers no Undo). Archive moves to
     `\Archive` (or Gmail's `\All`).
+  - `SetLabels` (Gmail only) adds a label as a `UID COPY` into its
+    folder and takes one off with `UID STORE -X-GM-LABELS` in that
+    folder, so the message stays in All Mail and its other labels
+    whatever the account's IMAP expunge settings. Special folders are not
+    labels here; a refused removal puts the label back.
+- **Folder changes (`katna_sync::folders`):** `CreateFolder`,
+  `RenameFolder` and `DeleteFolder` are not queued: they need the server
+  and fail while offline. Rename changes only the last part of the path
+  (`RENAME`; folders inside move along, here too). Delete removes the
+  folders inside first, deepest first; elsewhere than on Gmail their mail
+  is moved to the Trash before (`DeleteFolder` returns how many), on
+  Gmail the mail stays in All Mail and its other labels. Special folders
+  (a role, INBOX, `[Gmail]/…`, unmarked top-level ones named like special
+  ones, Notes, Snoozed) are refused, as is a change while a queued
+  operation still needs one of the folders.
   - A move out of a folder the message was only just moved into (Undo
     right after Archive) queues with no UID; when the earlier move runs,
     its `COPYUID` answer is handed to the waiting one, so the pair
@@ -1147,6 +1162,101 @@ KRunner and GNOME search suggest saved people too, with their saved names
 - No GPU use (no GPUI dependency).
 - Memory budget and wake-up counts are measured in CI (§17).
 
+### 9.4 Mail rules
+
+Decided October 2026: rules ("when new mail matches these, do that") run
+**on the mail service** when the account's service can run them as Katna
+does (Gmail filters, or Sieve over ManageSieve), so they work on the phone
+and with the computer off, and **in the daemon** otherwise, for every
+account kind. `runs_on` (`katna`, `gmail`, `sieve`) says which.
+
+- **Model** (`katna_store::rules`, `mail_rule` in `pim.db`, schema v13):
+  name, on/off, position (rules run in list order), match all or any,
+  conditions, actions, "stop" (later rules don't run on mail this one
+  matched), one or more accounts, `runs_on`, and the last error. Conditions
+  and actions are JSON columns. A condition is a field (from, to, cc, any
+  recipient, reply-to, subject, body, attachment name, has attachment), a
+  comparator (contains, doesn't contain, begins with, ends with, equals,
+  matches regex) and a value; text compares without case, and addresses
+  match on both the name and the address. Actions: move to a folder, skip
+  the inbox (archive), move to the trash, mark read, star, mark important,
+  add a Gmail label (as Label as does, through `SetLabels`, so Gmail
+  accounts only), forward (as an
+  attachment), don't notify, mark read after N days (a `read-after` value
+  of §10 on the message).
+- **Matching** is a pure function of a compiled rule (`Matcher`, regular
+  expressions compiled once) and a message's facts, so Katna Mail previews
+  a rule on the read-only store exactly as the daemon runs it
+  (`Store::rule_preview`: "Matches 34 mails from the last 30 days").
+- **When**: only on new incoming mail, after it is stored and before its
+  notification is looked for, so "don't notify" really keeps it quiet and
+  mail moved out of the inbox never rings. New means it reached the inbox
+  after the daemon started watching the account, is at most two days old,
+  is not a draft and is not from the account's own address; never the
+  mail of a first sync, and never twice (mail moved back into the inbox is
+  not new again). A rule that needs the body waits for it (bodies follow
+  the headers within seconds) for at most two minutes, and the mail's
+  notification waits with it; on a metered connection the snippet stands
+  in at once (`katna_sync::rules::Watch`).
+- **How**: every change goes through `katna_sync::ops`, the outbox and
+  `katna-meta`, as the user's own changes do, so it reaches the server.
+  A move takes the mail out of the inbox, not out of a label a rule just
+  added. Rule changes are not in a window's Undo history, which holds the
+  user's own changes. An action that fails (its folder is gone, no archive
+  or Trash folder, an account that can't send) switches the rule off with
+  the reason in `last_error`, and `RulesChanged` tells the apps.
+- **On the service** (`katna_sync::rules_remote`, `sieve`,
+  `gmail_filters`; the daemon's `rules_server`): a few seconds after the
+  rules change, and when an account first syncs, the daemon puts each
+  account's rules on its service. Rules run in list order and the service
+  runs its rules before Katna sees the mail, so an account's rules on the
+  service are the first of its list: from the first rule that stays in
+  Katna, the later ones stay too. `mail_rule_remote` (pim.db v14) holds
+  what is on each account's service, by rule; such a rule doesn't run in
+  Katna on that account's mail. A rule shows the service when every
+  account it covers runs it there, else "in Katna" with the reason
+  (`mail_rule_note`, `RunsNote`): an action or test the service can't do,
+  the order, a sign-in without the scope, a failed upload.
+  - **Sieve**: IMAP accounts whose IMAP host answers ManageSieve
+    (RFC 5804) on port 4190, after STARTTLS, logging in as IMAP does
+    (PLAIN, or XOAUTH2/OAUTHBEARER). Whether it answers is kept per
+    account (`mail_rule_server`, asked again after a day when it didn't).
+    Katna writes one script, `katna`, and makes it active; it never
+    changes or deletes another. A script already active is run first with
+    `include :personal` (the `include` extension); without it the rules
+    stay in Katna. Tests: `header :contains/:is/:matches` (an address
+    field's header holds the name and the address, as Katna matches),
+    `address :all` for values that are addresses, `body :text` with
+    `body`, `:regex` with `regex` for patterns that mean the same in POSIX
+    and Rust; `i;unicode-casemap` for non-ASCII values when the server has
+    it. Actions: `fileinto` (move, archive, trash), `addflag` `\Seen` and
+    `\Flagged` (`imap4flags`), `redirect :copy` (forward, `copy`), `stop`.
+    Attachment tests, mark important, labels, "don't notify" and "mark
+    read after" stay in Katna. The server checks the script when it is
+    written; a refusal leaves the rules in Katna with its words.
+  - **Gmail**: Google sign-ins, through `users.settings.filters`, scope
+    `gmail.settings.basic` (accounts signed in before it was asked for keep
+    their rules in Katna until they sign in again). Criteria are a Gmail
+    search: an address field holding an address or a domain
+    (`from:(x@y.org)`), a subject phrase (`subject:"words"`; Gmail matches
+    whole words where Katna matches text), "doesn't contain" as `-op:`,
+    `has:attachment`. An "any of" rule becomes a filter per condition.
+    Actions are labels: `INBOX` off (archive), `TRASH`, `SPAM`, `STARRED`,
+    `IMPORTANT`, `UNREAD` off (mark read), the user's labels; forwarding
+    only to an address Gmail verified. Gmail runs every filter that
+    matches, so a rule with "stop" stays in Katna unless it is the
+    account's last. Katna keeps the IDs of the filters it made, with what
+    it sent; a changed rule's filters are deleted and made again (Gmail
+    can't change one), and filters Katna didn't make are never touched.
+    Reading the filters and scripts already on the service is a later
+    step.
+- **D-Bus**: `SaveRule(json) → id` (0 adds one; validates), `DeleteRule`,
+  `ReorderRules(ids)`, `SetRuleEnabled(id, on)`, `ApplyRule(id, days) →
+  changed` ("also apply to these": once over the inbox mail of the last
+  `days` days, forwarding nothing) and the `RulesChanged` signal. The app
+  reads rules from the store; `runs_on` and the reason are the daemon's,
+  and saving keeps them.
+
 ## 10. Metadata with expiration (`katna-meta`)
 
 Inspired by Mailspring's plugin metadata. Any object (message, thread,
@@ -1205,6 +1315,9 @@ this is local; Katna Server only adds opened/clicked events (§16).
 - **Surfaced** (`message`/`surfaced`: `{at}`, expires after 14 days): mail
   back from snooze or a reminder is listed as if it arrived at `at`, so it
   sits on top of the Inbox like new mail.
+- **Read after** (`message`/`read-after`: `{}`): a mail rule's "mark read
+  after N days" (§9.4); when due, the message is marked read like a
+  user's `SetFlags`.
 
 ## 11. Sending (outbox)
 
@@ -1479,6 +1592,14 @@ GPUI global):
   bar's empty space and window buttons become Windows' caption and buttons
   (`WindowControlArea`), so Windows moves, snaps and maximizes the window;
   Windows keeps drawing the corners, shadow and resize edges.
+- *Moving the window from empty space*: on Linux, besides the title bar,
+  pressing empty space in the app rail, the folders and the toolbars over
+  the cards and moving the pointer 4 px moves the window, as KDE's Breeze
+  does for its own apps (`katna_ui::window_drag`: `window_drag()` on the
+  area, `keeps_press()` on everything clickable in it, which GPUI hands
+  the press first, so a button pressed and dragged off never moves the
+  window; 4 px is past GPUI's own 2 px drags, so dragging a mail to a
+  folder still works). Windows only moves from the title bar.
 - *Blurred background*: the window's page color becomes translucent
   (`katna_chrome::tokens::blur_alpha`: 75 % light, 80 % dark; the idle
   search box's barely tinted fill lets the blur through and turns solid
@@ -1944,7 +2065,7 @@ icons and name and without Google-only features (no Chat, Meet, Drive,
 Gemini or confidential mode):
 
 - **App rail.** A 72 px column at the far left holds Mail, Calendar,
-  Contacts, Tasks, Notes and Feeds (RSS and Atom), with Settings at the
+  Contacts, Tasks, Notes and Files (Feeds was dropped, #551), with Settings at the
   bottom. Their names show under the icons unless "App names" is off in
   quick settings (`mail.app_labels`); then the icons have tooltips. Each
   app is a page (`window/apps.rs`), so new ones
@@ -2030,12 +2151,24 @@ Gemini or confidential mode):
   density, scaling, theme, desktop colors, app names, sender pictures,
   Important markers, message width, dark colors for HTML mail, attachment
   previews), Shortcuts, Default apps (where each kind of attachment
-  opens, and showing saved files in their folder), Folders & rules,
+  opens, and showing saved files in their folder), Folders & rules (the
+  mail rules of §9.4 in the order they run, for every account or one:
+  each with a handle to drag it to another place, a switch, a line saying
+  what it does, a dot per account, where it runs, and a pencil that opens
+  the rule editor; a rule the daemon switched off says why in red; and an
+  unread count on every folder or on the inbox only),
   Compose (signatures, plain text, spelling and its language,
   templates), MCP server, User feedback (turning crash reports and feedback off at any
-  time) and Experimental, always last. Subscription, Folders & rules and
+  time) and Experimental, always last. Subscription and
   MCP server are still to come: their tabs are fainter and each shows a
-  "Coming soon" page saying what it will do. The tabs always stay on one line (`window/tab_strip.rs`): when
+  "Coming soon" page saying what it will do. The rule editor
+  (`window/rule_editor.rs`), a dialog, also opens from a mail's
+  right-click menu (Make a rule…, filled in with its sender). It counts
+  the inbox mail of the last 30 days the rule matches as it changes
+  (`Store::rule_preview` on the read-only store, with each message's
+  stored text), offers a search for them when the search language can say
+  it, and "Also apply to these" (`ApplyRule`) on Save; the daemon's
+  reasons for refusing a rule show in it. The tabs always stay on one line (`window/tab_strip.rs`): when
   they don't fit, the row scrolls sideways by wheel or touchpad, arrows
   show at an edge with more tabs past it (not on a phone, where the row is
   swiped), and the arrows and picking a half-hidden tab glide the row. A
@@ -2105,7 +2238,10 @@ Gemini or confidential mode):
   sends from any field, and Esc closes it and keeps a draft, as in Gmail,
   Outlook and Thunderbird (a reply in the conversation stays). In the
   folder pane Up and Down open each folder, Right and Left unfold and
-  fold, and Enter goes to its mail, as in Thunderbird and Outlook. Whenever
+  fold (Space does either, on a folder with folders inside), and Enter
+  goes to its mail, as in Thunderbird and Outlook. A click on a folder
+  leaves the keys in the pane too; Compose, search and Gmail's other
+  letters still work there. Whenever
   the keys lose their place (a message sent, a menu or dialog gone) they
   come back to the list, or to the Settings page while it is open.
 - **Removing an account, deleting all data.** Settings → Accounts
@@ -2367,7 +2503,7 @@ Gemini or confidential mode):
   opens the folders over the list, as resting on Mail does (Escape or
   leaving closes them). The top bar shows the Katna mark and "Katna
   Mail" in its place, or Katna Calendar, Contacts, Tasks, Notes or
-  Feeds; switching apps rolls the second word, the old one down and out
+  Files; switching apps rolls the second word, the old one down and out
   and the new one down into its place. The menu button (a panel icon, not a
   hamburger: its left part is filled while the folders show and fades to
   an outline as they fold, following the drawer on a tablet or phone;
@@ -2748,7 +2884,7 @@ desktop's own app stays one click away.
 - Not yet: text search in PDFs, printing, pictures inside documents,
   old Word files and slides.
 - **Files page** (the attachment library, from the HEY study's Files):
-  the last app of the rail (after Feeds, Ctrl+7, `--page files`) shows
+  the last app of the rail (after Notes, Ctrl+7, `--page files`) shows
   every named attachment of every account as the cards above, newest
   first under month headings, or as a list. It reads the attachment lists
   sync keeps (`Store::library_files`, `katna-store/src/library.rs`): no
@@ -3316,7 +3452,10 @@ message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,
 detail; states in `katna_dbus::send_state`), `SaveTemplate((xssssa(ssay)))
 → x`, `RenameTemplate(id, name) → b`, `DeleteTemplate(id) → b` (mail
-templates in `pim.db`; apps read them from the store), `FetchImage(url) → ay` and
+templates in `pim.db`; apps read them from the store), `SaveRule(s json)
+→ x`, `DeleteRule(x)`, `ReorderRules(ax)`, `SetRuleEnabled(x, b)` and
+`ApplyRule(x id, u days) → u` (mail rules, §9.4; signal `RulesChanged`),
+`FetchImage(url) → ay` and
 `SenderPicture(address) → ay` (images for the reading pane, §12),
 `SetCalendarHidden(x id, b hidden)`, `CalendarStatus() → a(xss)`
 (account, state, detail; §18) and `EditEvent(s json) → x` (a

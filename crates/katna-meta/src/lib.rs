@@ -44,6 +44,8 @@ pub mod plugin {
     /// Came back to the Inbox (from snooze, or as a reminder): the list
     /// sorts it by when it came back.
     pub const SURFACED: &str = "surfaced";
+    /// A mail rule's "mark read after N days".
+    pub const READ_AFTER: &str = "read-after";
 }
 
 /// A snoozed message, in the Snoozed folder until `until`.
@@ -83,6 +85,8 @@ pub enum Due {
     /// By outbox ID.
     FollowUp(i64, FollowUp),
     Surfaced(MessageId),
+    /// A message a mail rule marks read now.
+    ReadAfter(MessageId),
     /// A value this version does not know, or cannot read.
     Other(MetaRow),
 }
@@ -97,6 +101,7 @@ impl Due {
                 .ok()
                 .map(|v| Self::FollowUp(row.object_id, v)),
             (kind::MESSAGE, plugin::SURFACED) => Some(Self::Surfaced(MessageId(row.object_id))),
+            (kind::MESSAGE, plugin::READ_AFTER) => Some(Self::ReadAfter(MessageId(row.object_id))),
             _ => None,
         };
         parsed.unwrap_or(Self::Other(row))
@@ -203,6 +208,15 @@ pub fn surfaced(store: &Store) -> katna_store::Result<Vec<(MessageId, i64)>> {
 
 pub fn clear_surfaced(store: &mut Store, message: MessageId) -> katna_store::Result<bool> {
     store.remove_meta(kind::MESSAGE, message.0, plugin::SURFACED)
+}
+
+/// Has a mail rule mark `message` read at `at` (Unix seconds).
+pub fn set_read_after(store: &mut Store, message: MessageId, at: i64) -> katna_store::Result<()> {
+    store.set_meta(kind::MESSAGE, message.0, plugin::READ_AFTER, "{}", Some(at))
+}
+
+pub fn clear_read_after(store: &mut Store, message: MessageId) -> katna_store::Result<bool> {
+    store.remove_meta(kind::MESSAGE, message.0, plugin::READ_AFTER)
 }
 
 /// Every value due at `now`, typed, soonest first.

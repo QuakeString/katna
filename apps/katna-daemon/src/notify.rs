@@ -55,6 +55,9 @@ struct Seen {
     /// is stored: Gmail's new mail can land in All Mail a sync before its
     /// inbox copy, and its tab can change from Updates to Primary.
     announced: HashSet<MessageId>,
+    /// New mail a mail rule has yet to run on (it waits for its body):
+    /// not news until then.
+    held: HashSet<MessageId>,
 }
 
 impl Seen {
@@ -74,7 +77,7 @@ impl Seen {
         Ok(store
             .new_ringing_mail(account, self.after, since, CANDIDATES, unix_now())?
             .into_iter()
-            .filter(|id| self.announced.insert(*id))
+            .filter(|id| !self.held.contains(id) && self.announced.insert(*id))
             .collect())
     }
 }
@@ -218,7 +221,23 @@ impl NewMailNotices {
             after: latest,
             primed: latest.0 > 0,
             announced: HashSet::new(),
+            held: HashSet::new(),
         });
+    }
+
+    /// A mail rule said not to notify about `messages` of `account`.
+    pub(crate) fn quiet(&self, account: AccountId, messages: &[MessageId]) {
+        if let Some(seen) = self.seen.lock().unwrap().get_mut(&account) {
+            seen.announced.extend(messages.iter().copied());
+        }
+    }
+
+    /// New mail of `account` that waits for a mail rule: nothing is shown
+    /// for it until it is no longer held.
+    pub(crate) fn hold(&self, account: AccountId, messages: &[MessageId]) {
+        if let Some(seen) = self.seen.lock().unwrap().get_mut(&account) {
+            seen.held = messages.iter().copied().collect();
+        }
     }
 
     /// Shows that a tracked message was opened or a link in it followed,
@@ -1021,6 +1040,7 @@ mod tests {
             after: MessageId(0),
             primed: false,
             announced: HashSet::new(),
+            held: HashSet::new(),
         };
         let since = unix_now() - 60;
         assert!(seen.fresh(&store, account, since).unwrap().is_empty());

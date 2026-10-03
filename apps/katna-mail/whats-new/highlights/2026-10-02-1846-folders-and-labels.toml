@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rename, delete and drag to folders"
+text = """
+Right-click a folder you made to rename or delete it; deleting moves its
+mail to Trash first. Drag mail from the list onto a folder to move it
+there. Move to has a search box: type to find a folder, or to create a
+new one and move the mail into it. On Gmail, Label as puts labels on
+mail and takes them off, and dropping mail on a label adds that label.
+"""

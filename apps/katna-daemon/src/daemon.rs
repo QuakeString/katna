@@ -32,6 +32,7 @@ use katna_sync::{
     autoconfig::{Discovered, Discovery},
     bodies,
     connection::Connection,
+    folders::{self, FolderError},
     net::Tls,
     oauth::TokenSource,
     ops::{self, ChangeError},
@@ -62,6 +63,8 @@ mod mutes;
 mod notes;
 mod other_contacts;
 mod reminders;
+mod rules;
+mod rules_server;
 
 pub use mutes::MuteOf;
 pub use reminders::{SNOOZED, is_snoozed_path};
@@ -121,6 +124,8 @@ pub enum Notice {
     ContactsChanged,
     /// Task sync brought changes from a task service.
     TasksChanged,
+    /// Mail rules changed, or one was switched off because it failed.
+    RulesChanged,
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -145,8 +150,20 @@ impl From<ChangeError> for CommandError {
         match err {
             ChangeError::UnknownMessage(id) => Self::UnknownMessage(id),
             ChangeError::UnknownFolder(id) => Self::UnknownFolder(id),
+            ChangeError::Invalid(reason) => Self::InvalidArgs(reason),
             ChangeError::NotPossible(reason) => Self::Failed(reason),
             ChangeError::Store(err) => err.into(),
+        }
+    }
+}
+
+impl From<FolderError> for CommandError {
+    fn from(err: FolderError) -> Self {
+        match err {
+            FolderError::Invalid(reason) => Self::InvalidArgs(reason),
+            FolderError::UnknownFolder(id) => Self::UnknownFolder(id),
+            FolderError::Failed(reason) => Self::Failed(reason),
+            FolderError::Store(err) => err.into(),
         }
     }
 }
@@ -288,6 +305,13 @@ pub struct Daemon {
     keyring_waiting: Mutex<std::collections::HashSet<AccountId>>,
     /// Tells [`keyring::run`] that an account waits.
     keyring_wake: (Sender<()>, Receiver<()>),
+    /// Which mail of each account is new, for its mail rules ([`rules`]).
+    rule_watches: Mutex<HashMap<AccountId, katna_sync::rules::Watch>>,
+    /// Has [`rules_server::run`] put the rules of an account (every
+    /// account: `None`) on its mail service.
+    rules_wake: (Sender<Option<AccountId>>, Receiver<Option<AccountId>>),
+    /// Where each account last ran each rule, since the daemon started.
+    rules_placed: Mutex<HashMap<AccountId, rules_server::Placed>>,
 }
 
 /// A refresh token that replaced the account's old one.
@@ -352,6 +376,9 @@ impl Daemon {
             tasks_status: Mutex::default(),
             keyring_waiting: Mutex::default(),
             keyring_wake: async_channel::bounded(1),
+            rule_watches: Mutex::default(),
+            rules_wake: async_channel::unbounded(),
+            rules_placed: Mutex::default(),
         });
         Ok((daemon, receiver))
     }
@@ -447,6 +474,10 @@ impl Daemon {
             notes::run(Arc::downgrade(self), self.notes_wake.1.clone()),
         );
         threads::detach("katna-alarms", alarms::run(Arc::downgrade(self)));
+        threads::detach(
+            "katna-rules",
+            rules_server::run(Arc::downgrade(self), self.rules_wake.1.clone()),
+        );
         Ok(())
     }
 
@@ -1044,6 +1075,7 @@ impl Daemon {
         if let Some(notices) = self.new_mail_notices() {
             notices.forget(id);
         }
+        self.forget_rules(id);
         if existed {
             tracing::info!(account = %id, "account removed");
             let _ = self.notices.try_send(Notice::AccountsChanged);
@@ -1386,15 +1418,7 @@ impl Daemon {
         name: &str,
         parent: Option<FolderId>,
     ) -> Result<FolderId, CommandError> {
-        let name = name.trim();
-        if name.is_empty() {
-            return Err(CommandError::InvalidArgs("the name is empty".into()));
-        }
-        if name.chars().count() > MAX_FOLDER_NAME || name.chars().any(char::is_control) {
-            return Err(CommandError::InvalidArgs(format!(
-                "a name has at most {MAX_FOLDER_NAME} characters and no line breaks"
-            )));
-        }
+        let name = folder_name(name)?;
         let account = self.account(account)?;
         let parent = match parent {
             Some(id) => Some(
@@ -1406,18 +1430,7 @@ impl Daemon {
             ),
             None => None,
         };
-        let connector = match self.connector(&account).await {
-            Ok(Some(Link::Imap(connector))) => connector,
-            Ok(_) => {
-                return Err(CommandError::InvalidArgs(
-                    "only IMAP accounts have folders on the server".into(),
-                ));
-            }
-            Err(detail) => return Err(CommandError::Failed(detail)),
-        };
-        let mut backend = connector.connect().await.map_err(|err| {
-            CommandError::Failed(format!("could not reach the mail server: {err}"))
-        })?;
+        let mut backend = self.folder_server(&account).await?;
         let created =
             create_on_server(&mut backend, name, parent.as_ref().map(|f| &f.path[..])).await;
         let _ = backend.logout().await;
@@ -1430,11 +1443,95 @@ impl Daemon {
             id
         };
         tracing::info!(account = %account.id, path, "folder created");
-        let _ = self.notices.try_send(Notice::MailChanged(account.id));
-        if let Some(running) = self.workers().get(&account.id) {
+        self.folders_changed(account.id);
+        Ok(id)
+    }
+
+    /// Renames `folder` (a label, on Gmail) to `name` on its account's
+    /// server, keeping it where it is, and in the store; the folders
+    /// inside it move along. Needs the server: fails while offline.
+    /// Special folders keep their names.
+    pub async fn rename_folder(&self, folder: FolderId, name: &str) -> Result<(), CommandError> {
+        let name = folder_name(name)?;
+        let account = self.editable_folder(folder)?;
+        let mut backend = self.folder_server(&account).await?;
+        let mut store = Store::open(&self.paths, Mode::ReadWrite)?;
+        let renamed = folders::rename_folder(&mut backend, &mut store, folder, name).await;
+        let _ = backend.logout().await;
+        renamed?;
+        self.folders_changed(account.id);
+        Ok(())
+    }
+
+    /// Deletes `folder` (a label, on Gmail) and the folders inside it on
+    /// its account's server, then in the store. Elsewhere than on Gmail
+    /// their mail goes to the Trash first, when there is one; on Gmail it
+    /// stays in All Mail and its other labels. Needs the server: fails
+    /// while offline. Special folders stay. Returns how many messages went
+    /// to the Trash.
+    pub async fn delete_folder(&self, folder: FolderId) -> Result<u32, CommandError> {
+        let account = self.editable_folder(folder)?;
+        let mut backend = self.folder_server(&account).await?;
+        let mut store = Store::open(&self.paths, Mode::ReadWrite)?;
+        let deleted = folders::delete_folder(&mut backend, &mut store, folder).await;
+        let _ = backend.logout().await;
+        let moved = deleted?;
+        self.folders_changed(account.id);
+        Ok(moved)
+    }
+
+    /// Puts Gmail labels on messages and takes others off (folder IDs),
+    /// without moving them otherwise.
+    pub fn set_labels(
+        &self,
+        messages: &[MessageId],
+        add: &[FolderId],
+        remove: &[FolderId],
+    ) -> Result<(), CommandError> {
+        self.change(|store| ops::set_labels(store, messages, add, remove))
+    }
+
+    /// The account of `folder`, unless the folder must keep its name and
+    /// stay (special folders, and Snoozed).
+    fn editable_folder(&self, folder: FolderId) -> Result<Account, CommandError> {
+        let (account, found) = folders::editable(&self.store(), folder)?;
+        if is_snoozed_path(&found.path) {
+            return Err(CommandError::InvalidArgs(format!(
+                "\u{201c}{}\u{201d} holds snoozed mail; it cannot be renamed or deleted",
+                found.path
+            )));
+        }
+        self.account(account)
+    }
+
+    /// A new connection to the IMAP server of `account`, for changes to
+    /// its folders.
+    async fn folder_server(
+        &self,
+        account: &Account,
+    ) -> Result<<ImapConnector as Connector>::Backend, CommandError> {
+        let connector = match self.connector(account).await {
+            Ok(Some(Link::Imap(connector))) => connector,
+            Ok(_) => {
+                return Err(CommandError::InvalidArgs(
+                    "only IMAP accounts have folders on the server".into(),
+                ));
+            }
+            Err(detail) => return Err(CommandError::Failed(detail)),
+        };
+        connector
+            .connect()
+            .await
+            .map_err(|err| CommandError::Failed(format!("could not reach the mail server: {err}")))
+    }
+
+    /// The folders of `account` changed on its server: the apps redraw and
+    /// the worker syncs.
+    fn folders_changed(&self, account: AccountId) {
+        let _ = self.notices.try_send(Notice::MailChanged(account));
+        if let Some(running) = self.workers().get(&account) {
             running.handle.sync_now();
         }
-        Ok(id)
     }
 
     /// Moves messages to another folder of their account.
@@ -1843,6 +1940,7 @@ impl Daemon {
         if let Some(notices) = self.new_mail_notices() {
             notices.watch(&self.store(), id);
         }
+        self.watch_rules(id);
         let (handle, control) = worker::control();
         handle.set_metered(self.metered.load(Ordering::Relaxed));
         let (events, received) = async_channel::unbounded();
@@ -1898,16 +1996,25 @@ impl Daemon {
                     }
                     if first {
                         self.name_from_mail(id);
+                        // Online: its rules go to its mail service.
+                        self.place_rules_soon(Some(id));
                     }
                     if changed && self.follow_server_mutes() {
                         self.mail_changed_everywhere();
                     }
-                    if let Some(notices) = self.new_mail_notices() {
-                        notices.synced(&self.store, id).await;
-                    }
+                    // Rules first: what they move or quiet doesn't ring.
+                    self.rules_then_notices(id).await;
                 }
-                Event::Stored(_) | Event::BodiesStored(_) => {
+                Event::Stored(_) => {
                     let _ = self.notices.try_send(Notice::MailChanged(id));
+                    continue;
+                }
+                Event::BodiesStored(_) => {
+                    let _ = self.notices.try_send(Notice::MailChanged(id));
+                    // Mail that waited for its body for a rule.
+                    if self.rules_waiting(id) {
+                        self.rules_then_notices(id).await;
+                    }
                     continue;
                 }
                 Event::ChangesSent(report) => {
@@ -2184,6 +2291,20 @@ fn unix_now() -> i64 {
 
 /// Longest folder name, in characters (Gmail's limit for labels).
 const MAX_FOLDER_NAME: usize = 225;
+
+/// `name` trimmed, if it can name a folder.
+fn folder_name(name: &str) -> Result<&str, CommandError> {
+    let name = name.trim();
+    if name.is_empty() {
+        return Err(CommandError::InvalidArgs("the name is empty".into()));
+    }
+    if name.chars().count() > MAX_FOLDER_NAME || name.chars().any(char::is_control) {
+        return Err(CommandError::InvalidArgs(format!(
+            "a name has at most {MAX_FOLDER_NAME} characters and no line breaks"
+        )));
+    }
+    Ok(name)
+}
 
 /// Creates `name` inside `parent` (a path) with the server's separator,
 /// and subscribes to it. Returns its path.

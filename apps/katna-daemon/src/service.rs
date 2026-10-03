@@ -272,6 +272,29 @@ macro_rules! pim_interface {
                     .0)
             }
 
+            async fn rename_folder(&self, folder: i64, new_name: &str) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .rename_folder(FolderId(folder), new_name)
+                    .await?)
+            }
+
+            async fn delete_folder(&self, folder: i64) -> fdo::Result<u32> {
+                Ok(self.daemon.delete_folder(FolderId(folder)).await?)
+            }
+
+            async fn set_labels(
+                &self,
+                messages: Vec<i64>,
+                add: Vec<i64>,
+                remove: Vec<i64>,
+            ) -> fdo::Result<()> {
+                let folders = |ids: &[i64]| ids.iter().map(|&id| FolderId(id)).collect::<Vec<_>>();
+                Ok(self
+                    .daemon
+                    .set_labels(&ids(&messages), &folders(&add), &folders(&remove))?)
+            }
+
             async fn move_messages(&self, messages: Vec<i64>, folder: i64) -> fdo::Result<()> {
                 Ok(self
                     .daemon
@@ -354,6 +377,30 @@ macro_rules! pim_interface {
             async fn delete_template(&self, id: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.delete_template(id)?)
             }
+
+            // ---- Mail rules (docs/ARCHITECTURE.md §9.4) ----
+
+            async fn save_rule(&self, json: String) -> fdo::Result<i64> {
+                Ok(self.daemon.save_rule(&json)?)
+            }
+
+            async fn delete_rule(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.delete_rule(id)?)
+            }
+
+            async fn reorder_rules(&self, ids: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.reorder_rules(&ids)?)
+            }
+
+            async fn set_rule_enabled(&self, id: i64, on: bool) -> fdo::Result<()> {
+                Ok(self.daemon.set_rule_enabled(id, on)?)
+            }
+
+            async fn apply_rule(&self, id: i64, days: u32) -> fdo::Result<u32> {
+                Ok(self.daemon.apply_rule(id, days)?)
+            }
+
+            // ---- End of mail rules ----
 
             async fn save_contact(
                 &self,
@@ -886,6 +933,9 @@ macro_rules! pim_interface {
 
             #[zbus(signal)]
             async fn contacts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn rules_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
         }
     };
 }
@@ -971,6 +1021,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             }
             Notice::ContactsChanged => PimService::contacts_changed(&emitter).await,
             Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
+            Notice::RulesChanged => PimService::rules_changed(&emitter).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");
