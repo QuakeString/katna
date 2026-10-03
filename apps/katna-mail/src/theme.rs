@@ -281,15 +281,14 @@ impl Theme {
 
     /// `fill` laid on a card ([`Theme::pane`]), such as a row's: as it is
     /// on a solid card. On one the blur shows through, the card's own
-    /// colour adds nothing and any other goes as see-through as the card,
-    /// so the rows keep the card's frost.
+    /// colour adds nothing and any other becomes the faintest tint that
+    /// gives that colour over the solid card, so a read row shows the
+    /// card's frost as an unread one does, only a shade darker.
     pub fn on_pane(&self, fill: u32) -> u32 {
         if self.pane_tint >= 100 {
             fill
-        } else if fill == self.surface {
-            0
         } else {
-            fade(fill, f32::from(self.pane_tint) / 100.0)
+            tint_over(self.surface | 0xff, fill)
         }
     }
 
@@ -691,6 +690,35 @@ pub fn mix(a: u32, b: u32, t: f32) -> u32 {
     })
 }
 
+/// The faintest colour that, laid over the opaque `base`, gives `fill`
+/// laid over it: transparent when `fill` adds nothing.
+pub fn tint_over(base: u32, fill: u32) -> u32 {
+    let channel = |c: u32, i: u32| ((c >> (24 - 8 * i)) & 0xff) as f32;
+    let fill_alpha = channel(fill, 3) / 255.0;
+    // What `fill` makes of the base, channel by channel.
+    let target: [f32; 3] = std::array::from_fn(|i| {
+        let (b, f) = (channel(base, i as u32), channel(fill, i as u32));
+        b + (f - b) * fill_alpha
+    });
+    // The least alpha that can reach it with a colour in range.
+    let alpha = (0..3).fold(0.0_f32, |a, i| {
+        let b = channel(base, i);
+        let d = target[i as usize] - b;
+        let room = if d < 0.0 { b } else { 255.0 - b };
+        if room > 0.0 { a.max(d.abs() / room) } else { a }
+    });
+    if alpha < 1.0 / 255.0 {
+        return 0;
+    }
+    (0..3).fold((alpha * 255.0).round() as u32, |out, i| {
+        let b = channel(base, i);
+        let c = (b + (target[i as usize] - b) / alpha)
+            .round()
+            .clamp(0.0, 255.0) as u32;
+        out | (c << (24 - 8 * i))
+    })
+}
+
 /// `color` with its alpha scaled by `t` (0..=1).
 pub fn fade(color: u32, t: f32) -> u32 {
     let alpha = ((color & 0xff) as f32 * t.clamp(0.0, 1.0)).round() as u32;
@@ -831,6 +859,30 @@ pub fn initial(name: &str) -> String {
 mod tests {
     use super::*;
     use katna_platform::colors::DesktopScheme;
+
+    #[test]
+    fn rows_tint_a_frosted_card_lightly() {
+        // Over the solid card the tint gives the row's own colour.
+        let over = |base: u32, tint: u32| {
+            let a = (tint & 0xff) as f32 / 255.0;
+            mix(base, tint | 0xff, a) | 0xff
+        };
+        for (surface, row) in [(0xffffffff, 0xf2f6fcff), (0x1f2124ff, 0x191b1eff)] {
+            let tint = tint_over(surface, row);
+            assert!(tint & 0xff < 0x40, "{tint:08x} is faint");
+            let got = over(surface, tint);
+            for shift in [24, 16, 8] {
+                let d = ((got >> shift) & 0xff).abs_diff((row >> shift) & 0xff);
+                assert!(d <= 1, "{got:08x} vs {row:08x}");
+            }
+        }
+        assert_eq!(tint_over(0xffffffff, 0xffffffff), 0);
+        // On a frosted card the card's colour adds nothing; a read row is
+        // as see-through as an unread one, only tinted.
+        let th = LIGHT.frosted_panes(Some(75), None, None);
+        assert_eq!(th.on_pane(th.surface), 0);
+        assert!(th.on_pane(th.read_row) & 0xff < 0x40);
+    }
 
     #[test]
     fn mixes_colors() {
