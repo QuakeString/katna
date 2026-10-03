@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Who saw your mail, in chats"
+text = """
+In the chat view, the ticks on mail you sent with tracking turn coloured
+once someone opens it. Rest the pointer on the time or ticks to see who
+opened it or followed a link, as the eye shows in the mail view.
+"""
