@@ -213,7 +213,7 @@ impl MailWindow {
                 .mt(px(20.0))
                 .text_size(px(14.0))
                 .text_color(rgba(th.error))
-                .child(tr!("contacts-qr-too-long"))
+                .child(self.copyable(tr!("contacts-qr-too-long"), th))
                 .into_any_element(),
         };
         let body = div()

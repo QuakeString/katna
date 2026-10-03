@@ -417,29 +417,37 @@ impl MailWindow {
                     .bg(rgba(fade(tone, if th.dark { 0.2 } else { 0.1 })))
                     .child(icon(glyph, tone, 26.0)),
             )
-            .child(
-                div()
+            .child({
+                // The title, versions and any error can be copied.
+                let mut pieces = self.ui_pieces(th);
+                let lines = div()
                     .flex_1()
                     .min_w_0()
                     .flex()
                     .flex_col()
                     .gap(px(2.0))
-                    .child(div().text_size(px(20.0)).line_height(px(28.0)).child(title))
+                    .child(
+                        pieces
+                            .words(title)
+                            .text_size(px(20.0))
+                            .line_height(px(28.0)),
+                    )
                     .children(detail.map(|detail| {
-                        div()
+                        pieces
+                            .words(detail)
                             .text_size(px(14.0))
                             .line_height(px(21.0))
                             .text_color(rgba(th.text_dim))
-                            .child(detail)
                     }))
                     .children(problem.map(|problem| {
-                        div()
+                        pieces
+                            .words(problem)
                             .text_size(px(14.0))
                             .line_height(px(21.0))
                             .text_color(rgba(th.error))
-                            .child(problem)
-                    })),
-            );
+                    }));
+                self.ui_selectable(lines, &pieces)
+            });
 
         // While checking or installing, a bar that runs to and fro where the
         // download's progress goes.

@@ -21,6 +21,7 @@ use katna_ui::tokens::{space, text};
 use katna_ui::{InputEvent, TextInput, px, unpx};
 
 use super::nav::{search_edge, search_fill};
+use super::select::CopyText;
 use super::{
     CheckForUpdates, FocusNext, FocusPrevious, FocusSearch, MailWindow, OpenSettings, Quit,
     ShowAbout, ShowShortcuts, ShowWhatsNew, TOP_BAR_HEIGHT, WINDOW_CONTEXT,
@@ -417,8 +418,15 @@ impl Render for SettingsWindow {
             {
                 return None;
             }
+            mail.ui_text.begin_window(window);
             let th = mail.theme_for(chrome, window);
             let content = mail.render_settings_window(&th, window, cx);
+            // Its text can be selected and copied too.
+            let menu = mail.render_ui_text_menu(&th, window, cx);
+            let content = mail
+                .ui_text_root(div().size_full().child(content), cx)
+                .children(menu)
+                .into_any_element();
             let search = mail.render_settings_window_search(&th, search_width, window, cx)?;
             Some((th, content, search, mail.font.clone()))
         });
@@ -468,6 +476,13 @@ impl Render for SettingsWindow {
             .capture_any_mouse_down(cx.listener(|this, _, _, cx| {
                 this.mail
                     .update(cx, |mail, cx| mail.settings_overlays_to(true, cx));
+            }))
+            // Focus can sit outside the content (the search box, or
+            // nowhere), so Ctrl+C reaches the selection from here too.
+            .on_action(cx.listener(|this, _: &CopyText, _, cx| {
+                if !this.mail.update(cx, |mail, cx| mail.copy_ui_text(cx)) {
+                    cx.propagate();
+                }
             }))
             .on_action(cx.listener(|this, _: &FocusNext, window, cx| {
                 this.mail

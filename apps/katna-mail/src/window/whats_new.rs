@@ -24,7 +24,7 @@ use katna_ui::unpx;
 
 use super::about::VERSION_GROUP;
 use super::add_account::text_button;
-use super::select::{WHATS_NEW_PART, selectable};
+use super::select::{WHATS_NEW_SLOT, selectable};
 use super::{MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
 use crate::whats_new::{self, Highlight, Seen, Start};
@@ -150,7 +150,7 @@ impl MailWindow {
         });
         let mut shown = Spring::new(motion::SMOOTH, 0.0);
         shown.set(1.0);
-        self.dialog_text.clear();
+        self.ui_text.clear();
         if let Some(old) = self.whats_new.take() {
             self.files.released.extend(old.animations.into_values());
         }
@@ -253,7 +253,7 @@ impl MailWindow {
 
         let has_hero = hero.is_some();
         // The words can be selected and copied, top to bottom.
-        let mut pieces = self.dialog_text.pieces(WHATS_NEW_PART, th);
+        let mut pieces = self.ui_text.slot_pieces(WHATS_NEW_SLOT, th);
         let copy = self.copy_version_button("whats-new-version-copy", 22.0, th, cx);
         // The header stays put and the highlights scroll under it; a line
         // fades in below it once they have moved.
@@ -305,7 +305,7 @@ impl MailWindow {
                             )
                             .child(copy),
                     ),
-                Some(WHATS_NEW_PART),
+                Some(pieces.part()),
                 cx,
             ));
 
@@ -371,7 +371,7 @@ impl MailWindow {
                                         .line_height(px(21.0))
                                         .text_color(rgba(th.text_dim)),
                                 ),
-                            Some(WHATS_NEW_PART),
+                            Some(pieces.part()),
                             cx,
                         )),
                 );
@@ -385,7 +385,7 @@ impl MailWindow {
                         .text_size(px(14.0))
                         .text_color(rgba(th.text_dim)),
                 ),
-                Some(WHATS_NEW_PART),
+                Some(pieces.part()),
                 cx,
             )
         });
@@ -428,7 +428,7 @@ impl MailWindow {
 
         let card = div()
             .id("whats-new")
-            .map(|d| self.dialog_text_area(d, cx))
+            .map(|d| self.ui_text_area(d, cx))
             .track_focus(&dialog.focus)
             .map(|d| super::popovers::keep_tab_inside(d, &dialog.focus))
             .on_key_down(cx.listener(Self::whats_new_key))
@@ -489,7 +489,6 @@ impl MailWindow {
                         .mt(px(lerp(24.0, 0.0, t)))
                         .child(card),
                 )
-                .children(self.render_dialog_text_menu(th, cx))
                 .into_any_element(),
         )
     }

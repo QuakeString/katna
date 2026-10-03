@@ -50,7 +50,7 @@ use crate::sidebar::Role;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     TOOLBAR_HEIGHT, card_outline, elevation, icon, icon_button, icon_button_colored, menu,
-    menu_item, menu_item_icon, placeholder, tip, toolbar,
+    menu_item, menu_item_icon, tip, toolbar,
 };
 use gpui::DragMoveEvent;
 
@@ -2196,7 +2196,7 @@ impl MailWindow {
                 },
                 None => String::new(),
             };
-            return placeholder(&text, th);
+            return self.placeholder(text, th);
         }
         self.update_visible();
         // Read the lines on show in one go; each line then finds its row.

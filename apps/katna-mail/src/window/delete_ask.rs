@@ -355,19 +355,17 @@ impl MailWindow {
                     )),
             )
             .child(
-                div()
+                self.copyable(title, th)
                     .mt(px(14.0))
                     .text_size(px(20.0))
-                    .line_height(px(28.0))
-                    .child(title),
+                    .line_height(px(28.0)),
             )
             .child(
-                div()
+                self.copyable(body, th)
                     .mt(px(8.0))
                     .text_size(px(14.0))
                     .line_height(px(20.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(body),
+                    .text_color(rgba(th.text_dim)),
             )
             .children(dont_ask)
             .child(
