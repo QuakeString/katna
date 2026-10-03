@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rule editor fits"
+text = """
+In the rule editor, long words or address lists wrap onto more lines
+instead of being cut off, "matches the pattern" shows in full, and the
+editor stays inside the window, scrolling when it has many conditions.
+"""
