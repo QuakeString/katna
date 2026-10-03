@@ -536,11 +536,14 @@ impl MailWindow {
         let lines = self.chat_lines();
         let room = self.contact_room();
         let phone = self.layout.shape.is_phone();
-        let at_end =
-            -unpx(self.reader_scroll.offset().y) >= unpx(self.reader_scroll.max_offset().y) - 4.0;
-        let scrolled = -unpx(self.reader_scroll.offset().y);
+        // A wheel turn past either end moves the offset before layout puts
+        // it back, so it's held within the feed here: the picture and the
+        // hover buttons stay put when nothing can scroll.
+        let max = unpx(self.reader_scroll.max_offset().y).max(0.0);
+        let scrolled = (-unpx(self.reader_scroll.offset().y)).clamp(0.0, max);
+        let at_end = scrolled >= max - 4.0;
         let screen = unpx(self.reader_scroll.bounds().size.height);
-        let from_end = unpx(self.reader_scroll.max_offset().y) - scrolled;
+        let from_end = max - scrolled;
         let reduce = cx.reduce_motion();
         let Some(reader) = &mut self.reader else {
             return div().into_any_element();
@@ -592,8 +595,7 @@ impl MailWindow {
         let change = reply_height - reader.chat.reply_seen;
         if change.abs() > 0.5 {
             reader.chat.reply_seen = reply_height;
-            let near_end = -unpx(self.reader_scroll.offset().y)
-                >= unpx(self.reader_scroll.max_offset().y) - 4.0 - change.abs();
+            let near_end = scrolled >= max - 4.0 - change.abs();
             reader.chat.stuck |= near_end;
         }
         if at_end {
