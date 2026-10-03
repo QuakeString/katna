@@ -4722,6 +4722,37 @@ server error is not.
   to-do with `RELATED-TO;RELTYPE=PARENT`. A change is written over the
   server's own text of the to-do (`katna_dav::todo`), so categories,
   attachments, other alarms and a client's own fields stay.
+- **The star, labels and files** (`pim.db` v16: `task.labels`, a JSON
+  array, and `task_file`, whose bytes are in the blob store and never
+  dropped by a cache reset). Where each is kept:
+
+  | | Star | Labels | Files |
+  |---|---|---|---|
+  | To Do | `importance` high | `categories` | attachments up to 3 MB (Graph's small upload) |
+  | CalDAV | `PRIORITY:1` | `CATEGORIES` | inline `ATTACH` (base64) up to 1 MB, if the server keeps it |
+  | Zoho | `priority` high / none | here | here |
+  | Google | here | here | here |
+
+  Each is mapped back on every pull. Unstarring clears CalDAV's
+  `PRIORITY`; a server's other priority stays while the task is
+  unstarred. Katna rewrites `CATEGORIES` only when the labels changed,
+  and `ATTACH` lines with a URL always stay. A CalDAV `PUT` with files
+  is read back: a server that refuses it (4xx, often 413) or drops the
+  `ATTACH` lines gets the to-do without them, and that task's files stay
+  on this computer (`task_file.local_only`; their details row says "Only
+  on this computer"); a larger file stays here too. A file removed in
+  Katna is a tombstone until the service deleted it. Labels are the same
+  set as Notes' (`Store::labels_in_use`): the details dialog uses Notes'
+  label picker (`window/label_picker.rs`), the side list's Labels show
+  every open task with one, and `#home` in a new task's title is a label
+  (`katna_dav::quick_task`, as quick capture reads it). Files come from a drop
+  on a task's row or its details, the details' paper clip, or the mail
+  a task is made from (Add to Tasks keeps its attachments, not pictures
+  shown in its text, when its body is stored); `AddTaskFile` takes up to
+  25 MB. A row shows a paper clip with their count and the labels in one
+  quiet line under the title; a file opens in Katna's viewer or the app
+  Default apps names, as a mail's attachment does. Deleting a task and
+  removing a file both undo with the files' bytes.
 - **Zoho** (`katna_sync::tasks::zoho`, `https://mail.zoho.<dc>/api/tasks`,
   header `Zoho-oauthtoken`) goes through the Zoho sign-in linked to the
   password account (`AccountSettings::linked`, `daemon/linked.rs`); the
@@ -4840,7 +4871,7 @@ server error is not.
   label, list · account and reminder (at the time when a time was typed)
   on Task; label and where (an account's Notes, or this computer) on Note.
   Clicking a chip offers its choices in the same row (Today, Tomorrow,
-  Next week, No date; the lists; the labels notes use; the reminders; the
+  Next week, No date; the lists; the labels notes and tasks use; the reminders; the
   places), with a back arrow. Tab switches Task and Note, Enter saves and
   closes, Esc closes (or leaves a chip's choices). A task goes to the
   default list (above) or the one picked, over `Agenda1`

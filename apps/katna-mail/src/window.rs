@@ -55,6 +55,7 @@ mod frost_sliders;
 mod gallery;
 mod katna_account;
 mod keymap;
+mod label_picker;
 mod labels;
 mod language;
 mod layout;

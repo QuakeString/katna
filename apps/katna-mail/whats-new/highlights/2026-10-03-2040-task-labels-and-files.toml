@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Labels and files on tasks"
+text = """
+Tasks take the same labels as your notes: add them in a task's details or
+type #home in a new task, and pick a label on the left to see every task
+with it. Drop a file on a task to attach it, and Add to Tasks keeps the
+mail's attachments. The star, labels and files go to Microsoft To Do and
+your CalDAV server, and the star to Zoho.
+"""

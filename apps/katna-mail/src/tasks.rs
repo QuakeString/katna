@@ -12,7 +12,7 @@ use katna_dbus::PimProxy;
 use katna_dbus::agenda::{AgendaProxy, Item, edit, task};
 use katna_dbus::zbus::Connection;
 use katna_dbus::zbus::zvariant::{OwnedValue, Value};
-use katna_store::tasks::{Task, TaskList};
+use katna_store::tasks::{Task, TaskFile, TaskList};
 use katna_store::{Mode, Store};
 
 use crate::daemon::{AccountState, describe};
@@ -39,6 +39,11 @@ pub struct Column {
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Board {
     pub columns: Vec<Column>,
+    /// The files on each task, by task.
+    pub files: HashMap<i64, Vec<TaskFile>>,
+    /// Every label on a task or a note, in order of name: the one set the
+    /// label picker offers.
+    pub labels: Vec<String>,
 }
 
 impl Board {
@@ -47,6 +52,26 @@ impl Board {
             .iter()
             .flat_map(|c| c.tasks.iter())
             .find(|t| t.id == id)
+    }
+
+    /// The files on task `id`.
+    pub fn files_of(&self, id: i64) -> &[TaskFile] {
+        self.files.get(&id).map_or(&[], Vec::as_slice)
+    }
+
+    /// The labels on tasks, each once, in order of name: the side list's
+    /// Labels.
+    pub fn task_labels(&self) -> Vec<String> {
+        let mut labels: Vec<String> = Vec::new();
+        for task in self.columns.iter().flat_map(|c| c.tasks.iter()) {
+            for label in &task.labels {
+                if !labels.contains(label) {
+                    labels.push(label.clone());
+                }
+            }
+        }
+        labels.sort_by_key(|l| l.to_lowercase());
+        labels
     }
 
     /// The steps of task `id`.
@@ -94,7 +119,16 @@ pub fn load(paths: &Paths) -> Result<Board, String> {
                 tasks,
             });
         }
-        Ok(Board { columns })
+        let mut files: HashMap<i64, Vec<TaskFile>> = HashMap::new();
+        for file in store.task_files()? {
+            files.entry(file.task).or_default().push(file);
+        }
+        let labels = store.labels_in_use()?;
+        Ok(Board {
+            columns,
+            files,
+            labels,
+        })
     };
     read().map_err(|err| format!("Reading tasks failed: {err}"))
 }
@@ -134,6 +168,7 @@ pub struct TaskEdit {
     pub remind_at: Option<Option<i64>>,
     pub repeat: Option<String>,
     pub starred: Option<bool>,
+    pub labels: Option<Vec<String>>,
 }
 
 impl TaskEdit {
@@ -166,6 +201,9 @@ impl TaskEdit {
         if let Some(starred) = self.starred {
             put(edit::STARRED, starred.into());
         }
+        if let Some(labels) = &self.labels {
+            put(edit::LABELS, labels.clone().into());
+        }
         item
     }
 
@@ -179,8 +217,17 @@ impl TaskEdit {
             remind_at: Some(task.remind_at),
             repeat: Some(task.repeat.clone()),
             starred: Some(task.starred),
+            labels: Some(task.labels.clone()),
         }
     }
+}
+
+/// A file to put on a task: dropped on it, picked, or kept from a mail.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NewFile {
+    pub name: String,
+    pub mime: String,
+    pub data: Vec<u8>,
 }
 
 /// A change the Tasks page sends to the daemon.
@@ -203,10 +250,11 @@ pub enum TaskCommand {
     Edit(i64, TaskEdit),
     /// Deletes a task with its steps.
     Delete(i64),
-    /// Puts a deleted task back in its list, with its steps.
+    /// Puts a deleted task back in its list, with its steps and files.
     Restore {
         task: Task,
         steps: Vec<Task>,
+        files: Vec<NewFile>,
     },
     Move(i64, i64),
     /// Puts a task in list `list` (its own or another) right after task
@@ -219,6 +267,13 @@ pub enum TaskCommand {
     /// Adds a task ([`TaskCommand::Add`]), then gives it these fields: what
     /// typed quick add found beyond a due day.
     AddThen(Box<TaskCommand>, TaskEdit),
+    /// Adds a task ([`TaskCommand::Add`]), then puts these files on it:
+    /// the attachments of the mail it is made from.
+    AddWithFiles(Box<TaskCommand>, Vec<NewFile>),
+    /// Puts files on a task.
+    AddFiles(i64, Vec<NewFile>),
+    /// Takes a file off its task.
+    RemoveFile(i64),
     /// Adds a list to an account, or to this computer.
     AddList(Option<AccountId>, String),
     RenameList(i64, String),
@@ -231,7 +286,26 @@ pub async fn send(connection: &Connection, command: &TaskCommand) -> Result<Opti
         .await
         .map_err(|err| describe(&err))?;
     let row = |id: String| id.strip_prefix('t').and_then(|n| n.parse::<i64>().ok());
+    let add_files = async |id: &str, files: &[NewFile]| {
+        for file in files {
+            agenda
+                .add_task_file(id, &file.name, &file.mime, &file.data)
+                .await?;
+        }
+        Ok::<_, katna_dbus::zbus::Error>(())
+    };
     let result = match command {
+        TaskCommand::AddWithFiles(add, files) => {
+            let id = Box::pin(send(connection, add)).await?;
+            if let Some(id) = id {
+                add_files(&wire_id(id), files)
+                    .await
+                    .map_err(|err| describe(&err))?;
+            }
+            return Ok(id);
+        }
+        TaskCommand::AddFiles(id, files) => add_files(&wire_id(*id), files).await,
+        TaskCommand::RemoveFile(file) => agenda.remove_task_file(*file).await,
         TaskCommand::AddThen(add, fields) => {
             let id = Box::pin(send(connection, add)).await?;
             if let Some(id) = id
@@ -302,7 +376,7 @@ pub async fn send(connection: &Connection, command: &TaskCommand) -> Result<Opti
         TaskCommand::SetDone(id, done) => agenda.set_task_done(&wire_id(*id), *done).await,
         TaskCommand::Edit(id, fields) => agenda.edit_task(&wire_id(*id), fields.item()).await,
         TaskCommand::Delete(id) => agenda.delete_task(&wire_id(*id)).await,
-        TaskCommand::Restore { task, steps } => {
+        TaskCommand::Restore { task, steps, files } => {
             let restore = async |task: &Task, parent: Option<&str>| {
                 let id = agenda
                     .add_task_to(task.list, parent.unwrap_or_default(), &task.title)
@@ -318,6 +392,7 @@ pub async fn send(connection: &Connection, command: &TaskCommand) -> Result<Opti
                 for step in steps {
                     restore(step, Some(&id)).await?;
                 }
+                add_files(&id, files).await?;
                 Ok(id)
             }
             .await;

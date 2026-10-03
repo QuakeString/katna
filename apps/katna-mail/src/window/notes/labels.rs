@@ -6,19 +6,17 @@
 //! notes, so one with no notes left is gone.
 
 use gpui::{
-    AnyElement, Context, Entity, Focusable, FontWeight, SharedString, Subscription, Window, div,
-    prelude::*, rgba,
+    AnyElement, Context, Entity, Focusable, SharedString, Subscription, Window, div, prelude::*,
+    rgba,
 };
 use katna_i18n::tr;
 use katna_ui::{InputEvent, TextInput, px};
 
+use super::super::label_picker::{self, clean};
 use super::{MailWindow, NotesView};
 use crate::daemon::Command;
 use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, icon, icon_button, tip};
-
-/// The longest label, in characters (the daemon's limit too).
-const MAX_LABEL: usize = 50;
 
 /// The label picker open on a note: a box to find or make a label, over
 /// the labels to tick.
@@ -33,14 +31,9 @@ pub(super) struct LabelsDialog {
     _subscriptions: Vec<Subscription>,
 }
 
-/// `text` as a label: trimmed, and no longer than labels may be.
-fn clean(text: &str) -> String {
-    text.trim().chars().take(MAX_LABEL).collect()
-}
-
 impl MailWindow {
     /// Every label on a note, in order of name.
-    pub(super) fn note_labels(&self) -> Vec<String> {
+    pub(in crate::window) fn note_labels(&self) -> Vec<String> {
         let mut labels: Vec<String> = self
             .notes
             .as_ref()
@@ -159,7 +152,8 @@ impl MailWindow {
         cx.notify();
     }
 
-    /// The label picker under the open note's text, when open.
+    /// The label picker under the open note's text, when open: the one
+    /// Tasks uses too, over the labels of notes and tasks.
     pub(super) fn render_label_picker(
         &self,
         th: &Theme,
@@ -167,113 +161,27 @@ impl MailWindow {
     ) -> Option<AnyElement> {
         let editor = self.notes.as_ref()?.editor.as_ref()?;
         let picker = editor.picker.as_ref()?;
-        let typed = clean(picker.input.read(cx).text());
-        let lower = typed.to_lowercase();
-        let mut labels = self.note_labels();
+        let mut labels = self.shared_labels();
         // Labels just put on this note, before the board has them.
         for label in &editor.labels {
             if !labels.contains(label) {
                 labels.push(label.clone());
             }
         }
-        let shown: Vec<String> = labels
-            .into_iter()
-            .filter(|l| l.to_lowercase().contains(&lower))
-            .collect();
-        let create = (!typed.is_empty() && !shown.contains(&typed)).then(|| {
-            let label = typed.clone();
-            div()
-                .id("note-label-create")
-                .h(px(32.0))
-                .px(px(8.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(8.0))
-                .rounded(px(6.0))
-                .text_size(px(14.0))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .on_click(cx.listener(move |this, _, _, cx| {
-                    this.toggle_note_label(label.clone(), cx);
-                    if let Some(picker) = this
-                        .notes
-                        .as_ref()
-                        .and_then(|p| p.editor.as_ref())
-                        .and_then(|e| e.picker.as_ref())
-                    {
-                        let input = picker.input.clone();
-                        input.update(cx, |input, cx| input.set_text("", cx));
-                    }
-                }))
-                .child(icon("add", th.text_dim, 18.0))
-                .child(tr!("notes-label-create", name = typed.clone()))
-        });
-        let rows = shown.into_iter().enumerate().map(|(ix, label)| {
-            let on = editor.labels.contains(&label);
-            let name = label.clone();
-            div()
-                .id(("note-label-pick", ix))
-                .h(px(32.0))
-                .px(px(8.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(8.0))
-                .rounded(px(6.0))
-                .text_size(px(14.0))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .on_click(
-                    cx.listener(move |this, _, _, cx| this.toggle_note_label(label.clone(), cx)),
-                )
-                .child(crate::widgets::checkbox(
-                    ("note-label-box", ix),
-                    crate::widgets::Check::from(on),
-                    th,
-                ))
-                .child(div().flex_1().min_w_0().truncate().child(name))
-        });
-        Some(
-            div()
-                .flex_none()
-                .mx(px(12.0))
-                .mb(px(8.0))
-                .p(px(8.0))
-                .flex()
-                .flex_col()
-                .rounded(px(8.0))
-                .bg(rgba(fade(th.text, 0.05)))
-                .child(
-                    div()
-                        .mb(px(4.0))
-                        .px(px(8.0))
-                        .text_size(px(12.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .text_color(rgba(th.text_dim))
-                        .child(tr!("notes-label-note")),
-                )
-                .child(
-                    div()
-                        .h(px(32.0))
-                        .px(px(8.0))
-                        .flex()
-                        .items_center()
-                        .text_size(px(14.0))
-                        .child(picker.input.clone()),
-                )
-                .child(
-                    div()
-                        .id("note-label-list")
-                        .max_h(px(200.0))
-                        .overflow_y_scroll()
-                        .flex()
-                        .flex_col()
-                        .children(rows)
-                        .children(create),
-                )
-                .into_any_element(),
-        )
+        let pick = label_picker::Pick {
+            heading: tr!("notes-label-note"),
+            input: &picker.input,
+            labels,
+            ticked: &editor.labels,
+            ids: label_picker::PickerIds {
+                create: "note-label-create",
+                pick: "note-label-pick",
+                check: "note-label-box",
+                list: "note-label-list",
+            },
+            toggle: Self::toggle_note_label,
+        };
+        Some(label_picker::label_picker(pick, th, cx))
     }
 
     /// The open note's labels, as chips that take themselves off.
