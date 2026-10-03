@@ -631,7 +631,11 @@ pub fn choice_chip(
         .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
         .child(Ripple::new(("ripple", ripple), rgba(th.ripple)))
         .when(on, |d| d.child(icon("check", th.nav_selected_text, 16.0)))
-        .child(label.into())
+        // A long address or name is cut short with "…" rather than
+        // running past the row.
+        .max_w_full()
+        .min_w_0()
+        .child(div().min_w_0().truncate().child(label.into()))
 }
 
 /// A small grey label that is not clicked (Coming soon, a day in a chat,

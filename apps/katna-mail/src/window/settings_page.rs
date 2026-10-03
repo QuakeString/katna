@@ -44,7 +44,8 @@ use crate::autostart::Start;
 use crate::tabs::{self, Provider};
 use crate::theme::Theme;
 use crate::widgets::{
-    FocusRing, ScaledEdge, TabStops, field, icon, icon_button, line_field, outlined_button, tip,
+    FocusRing, ScaledEdge, TabStops, choice_chip, field, icon, icon_button, line_field,
+    outlined_button, tip,
 };
 
 mod ai;
@@ -3117,34 +3118,14 @@ pub(super) fn number_field(
         )
 }
 
+/// A [`choice_chip`] whose blank name reads "Untitled".
 fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> Stateful<Div> {
-    div()
-        .id(id)
-        .px(px(12.0))
-        .h(px(30.0))
-        .flex()
-        .items_center()
-        .rounded(px(8.0))
-        .border_1()
-        .border_color(rgba(if on { th.nav_selected } else { th.outline }))
-        .bg(rgba(if on { th.nav_selected } else { th.surface }))
-        .text_color(rgba(if on {
-            th.nav_selected_text
-        } else {
-            th.text_dim
-        }))
-        .text_size(px(13.0))
-        .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
-        // A long address or name is cut short with "…" rather than
-        // running past the row.
-        .max_w_full()
-        .min_w_0()
-        .child(div().truncate().child(if label.trim().is_empty() {
-            tr!("settings-compose-untitled")
-        } else {
-            label
-        }))
+    let label = if label.trim().is_empty() {
+        tr!("settings-compose-untitled")
+    } else {
+        label
+    };
+    choice_chip(id, label, on, th)
 }
 
 /// A key as a keycap; `off` when single keys are turned off.
