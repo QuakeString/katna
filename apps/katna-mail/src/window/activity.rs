@@ -915,7 +915,8 @@ impl MailWindow {
             )
             .with_animation(
                 "activity-menu",
-                Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                    .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
             );
         let close = || {

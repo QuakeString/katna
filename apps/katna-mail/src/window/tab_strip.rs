@@ -158,7 +158,8 @@ impl TabStrip {
                     } else {
                         "tab-strip-right-in".into()
                     }),
-                    Animation::new(Duration::from_millis(160)).with_easing(ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(160)))
+                        .with_easing(ease_out_quint()),
                     |el, t| el.opacity(t),
                 )
         };

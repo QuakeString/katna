@@ -570,11 +570,9 @@ impl MailWindow {
                     .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
                     .with_animation(
                         (id, run),
-                        gpui::Animation::new(std::time::Duration::from_millis(if reduce {
-                            1
-                        } else {
-                            220
-                        }))
+                        gpui::Animation::new(katna_ui::motion::time(
+                            std::time::Duration::from_millis(if reduce { 1 } else { 220 }),
+                        ))
                         .with_easing(gpui::ease_out_quint()),
                         |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
                     ),

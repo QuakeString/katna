@@ -1404,7 +1404,11 @@ impl MailWindow {
         // above fold or open.
         let row = row.with_spring(
             ElementId::Name(format!("nav-selected:{key}").into()),
-            SpringAnimation::new(motion::SMOOTH).to(if selected { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(if selected {
+                1.0
+            } else {
+                0.0
+            }),
             {
                 let bg = th.row_selected;
                 move |row, s: f32| {
@@ -1779,7 +1783,11 @@ fn turning_chevron(key: SharedString, expanded: bool, color: u32) -> AnyElement 
         .text_color(rgba(color))
         .with_spring(
             ElementId::Name(format!("nav-turn:{key}").into()),
-            SpringAnimation::new(motion::SMOOTH).to(if expanded { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(if expanded {
+                1.0
+            } else {
+                0.0
+            }),
             |arrow, t: f32| {
                 arrow.with_transformation(Transformation::rotate(radians(FRAC_PI_2 * t)))
             },
