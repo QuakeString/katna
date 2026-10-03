@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Bring in your signatures"
+text = """
+Settings > Compose > Signatures > Import finds the signatures in Gmail,
+and in Thunderbird, Evolution and KMail on this computer, with their
+logos. Tick the ones you want; those already in Katna stay unticked.
+"""
