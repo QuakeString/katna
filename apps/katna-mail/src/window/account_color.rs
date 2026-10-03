@@ -22,6 +22,7 @@ use crate::theme::{
     ACCOUNT_COLORS, Theme, account_color, account_dark, default_account_color,
     settle_account_colors,
 };
+use crate::widgets::ScaledEdge;
 
 /// The color an account wears.
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -32,6 +33,9 @@ enum Wears {
     Own(u32),
 }
 
+/// The ring round an account's picture, and the gap inside it.
+const RING: f32 = 3.0;
+const RING_GAP: f32 = 2.5;
 /// The dot of the account's color, across.
 const DOT: f32 = 16.0;
 
@@ -160,7 +164,7 @@ impl MailWindow {
     }
 
     /// `picture` of the account at `address`, `size` across, in a ring
-    /// of its color, a hair apart.
+    /// of its color [`RING`] wide, [`RING_GAP`] apart.
     pub(super) fn account_ring(
         &self,
         address: &str,
@@ -170,12 +174,12 @@ impl MailWindow {
     ) -> AnyElement {
         div()
             .flex_none()
-            .size(px(size + 6.0))
+            .size(px(size + 2.0 * (RING + RING_GAP)))
             .flex()
             .items_center()
             .justify_center()
             .rounded_full()
-            .border_2()
+            .border_px(RING)
             .border_color(rgba(self.account_color(address, th)))
             .child(picture)
             .into_any_element()

@@ -574,7 +574,12 @@ pub struct MailWindow {
     pending: HashMap<EntryKey, Pending>,
     /// Rows of the list on screen at the last layout.
     visible: Range<usize>,
+    /// The line under the pointer. It shows as hovered only while the list
+    /// is not scrolling, as in Gmail.
     hovered: Option<usize>,
+    /// The list is scrolling: lines passing under the pointer don't light
+    /// up. Ends a moment after the last scroll.
+    list_scrolling: Option<Task<()>>,
     reader: Option<Conversation>,
     /// A window of its own showing one conversation (double-click on a
     /// line), not the main mail window.
@@ -952,6 +957,7 @@ impl MailWindow {
             pending: HashMap::new(),
             visible: 0..0,
             hovered: None,
+            list_scrolling: None,
             reader: None,
             detached: false,
             main: None,
@@ -1083,6 +1089,7 @@ impl MailWindow {
         this.list_state.state().set_scroll_handler(move |_, _, cx| {
             weak.update(cx, |this, cx| {
                 this.layout.stop_glide();
+                this.hold_hover_while_scrolling(cx);
                 cx.notify();
             })
             .ok();
