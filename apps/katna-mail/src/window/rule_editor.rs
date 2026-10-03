@@ -1140,11 +1140,34 @@ impl MailWindow {
 
     /// The folders action row `ix` can choose from, with their names:
     /// any folder of the rule's accounts for Move to, their own folders
+    ///
     /// and labels for Add label.
-    fn rule_folders(&self, e: &RuleEditor, kind: ActionKind) -> Vec<(i64, String)> {
+    /// Only the account that has `chosen`, when a row has one: a row
+    /// moves mail of one account.
+    fn rule_folders_of(
+        &self,
+        e: &RuleEditor,
+        kind: ActionKind,
+        chosen: Option<i64>,
+    ) -> Vec<(i64, String)> {
         let several = e.accounts.len() > 1;
+        let owner = chosen.and_then(|f| {
+            e.accounts.iter().copied().find(|&a| {
+                e.new_folders
+                    .iter()
+                    .any(|(id, acc, _)| *id == f && *acc == a)
+                    || self
+                        .tree
+                        .folders_of(AccountId(a))
+                        .into_iter()
+                        .any(|(id, _, _)| id.0 == f)
+            })
+        });
         let mut out = Vec::new();
         for &account in &e.accounts {
+            if owner.is_some_and(|o| o != account) {
+                continue;
+            }
             let id = AccountId(account);
             let address = self.account_address(id).unwrap_or_default();
             let folders: Vec<i64> = if kind == ActionKind::AddLabel && self.tree.is_gmail(id) {
@@ -1164,6 +1187,12 @@ impl MailWindow {
                             role,
                             Role::Inbox | Role::Drafts | Role::Sent | Role::Snoozed | Role::Flagged
                         )
+                    })
+                    // A label keeps mail where it is: never in Trash or
+                    // the archive.
+                    .filter(|(_, _, role)| {
+                        kind != ActionKind::AddLabel
+                            || !matches!(role, Role::Archive | Role::Trash | Role::Junk)
                     })
                     .map(|(f, _, _)| f.0)
                     .collect()
@@ -1409,7 +1438,7 @@ impl MailWindow {
                     ActionKind::Move | ActionKind::AddLabel => {
                         // With several accounts, named with its account.
                         let chosen = row.folder.and_then(|f| {
-                            self.rule_folders(e, row.kind)
+                            self.rule_folders_of(e, row.kind, Some(f))
                                 .into_iter()
                                 .find(|(id, _)| *id == f)
                                 .map(|(_, name)| name)
@@ -1429,6 +1458,8 @@ impl MailWindow {
                             th,
                         )
                         .flex_1()
+                        // Keeps its width; a long name ends in …
+                        .min_w_0()
                         .when(empty, |d| d.text_color(rgba(th.text_faint)))
                         .on_click(pick_at(Pick::Folder(ix), cx))
                         .into_any_element()
@@ -1969,7 +2000,7 @@ impl MailWindow {
                 .collect(),
             Pick::Folder(ix) => {
                 let row = e.actions.get(ix)?;
-                self.rule_folders(e, row.kind)
+                self.rule_folders_of(e, row.kind, row.folder)
                     .into_iter()
                     .enumerate()
                     .map(|(n, (folder, name))| {
