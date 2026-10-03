@@ -1,31 +1,39 @@
 -- SPDX-License-Identifier: GPL-3.0-or-later
--- pim.db schema v16: labels and files on tasks (docs/ARCHITECTURE.md
--- §18.1). A task's labels are the same names as the notes' labels, a JSON
--- array like `note.labels`, in `task_labels` (a task without labels has no
--- row; a side table, so the migration runs again harmlessly); To Do keeps
--- them as categories, CalDAV as CATEGORIES, other services here only. A file's bytes are a blob in
--- blobs.db (`hash`); `remote_id` is its ID on the task service once sent
--- (To Do's attachment ID, `inline:<hash>` for a CalDAV ATTACH), and
--- `local_only` marks one the service can't keep (Google, Zoho, too large,
--- or refused), which stays on this computer. A file removed here while on
--- the service stays as a tombstone (`deleted`) until the service removed
--- it too.
+-- pim.db schema v16: pictures, reminders and history for notes
+-- (docs/ARCHITECTURE.md §13.11).
+--
+-- A note's pictures sit in `note_picture`, named in its HTML as
+-- `cid:<cid>`; they travel in its Notes-folder message as inline parts.
+-- `note_reminder` says when a note reminds (UTC seconds). `note_version`
+-- keeps earlier text of a note on this computer for 30 days; `source` is
+-- `here`, or `sync` (written on another device) with the device's name
+-- after a colon when its mail app says it.
 
-CREATE TABLE IF NOT EXISTS task_labels (
-    task_id     INTEGER PRIMARY KEY REFERENCES task (id) ON DELETE CASCADE,
-    labels      TEXT    NOT NULL
+CREATE TABLE IF NOT EXISTS note_reminder (
+    note_id     INTEGER PRIMARY KEY REFERENCES note(id) ON DELETE CASCADE,
+    at          INTEGER NOT NULL
 );
+CREATE INDEX IF NOT EXISTS note_reminder_at ON note_reminder(at);
 
-CREATE TABLE IF NOT EXISTS task_file (
-    id          INTEGER PRIMARY KEY,
-    task_id     INTEGER NOT NULL REFERENCES task (id) ON DELETE CASCADE,
+CREATE TABLE IF NOT EXISTS note_picture (
+    note_id     INTEGER NOT NULL REFERENCES note(id) ON DELETE CASCADE,
+    cid         TEXT    NOT NULL,
+    ord         INTEGER NOT NULL,
     name        TEXT    NOT NULL,
-    mime        TEXT    NOT NULL DEFAULT 'application/octet-stream',
-    size        INTEGER NOT NULL,
-    hash        BLOB    NOT NULL CHECK (length(hash) = 32),
-    remote_id   TEXT,
-    local_only  INTEGER NOT NULL DEFAULT 0 CHECK (local_only IN (0, 1)),
-    deleted     INTEGER NOT NULL DEFAULT 0 CHECK (deleted IN (0, 1)),
-    created_at  INTEGER NOT NULL
+    mime        TEXT    NOT NULL,
+    width       INTEGER NOT NULL,
+    height      INTEGER NOT NULL,
+    data        BLOB    NOT NULL,
+    PRIMARY KEY (note_id, cid)
 );
-CREATE INDEX IF NOT EXISTS task_file_by_task ON task_file (task_id);
+
+CREATE TABLE IF NOT EXISTS note_version (
+    id          INTEGER PRIMARY KEY,
+    note_id     INTEGER NOT NULL REFERENCES note(id) ON DELETE CASCADE,
+    at          INTEGER NOT NULL,
+    title       TEXT    NOT NULL,
+    body        TEXT    NOT NULL,
+    html        TEXT    NOT NULL,
+    source      TEXT    NOT NULL
+);
+CREATE INDEX IF NOT EXISTS note_version_note ON note_version(note_id, at);

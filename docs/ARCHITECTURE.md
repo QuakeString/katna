@@ -3523,7 +3523,53 @@ away; he can still change them.
   folder copy carries that HTML after the title line, and formatting from
   another app (an iPhone's bold or headings) is kept when read. Cards draw
   the formatting when the HTML's paragraphs line up with `body`.
-- **Later.** Pictures.
+- **Second round** (study 2026-10-03,
+  `/mnt/project-files/research/notes-tasks/notes-tasks-study.html`; the
+  owner took every recommended option). Store changes are pim.db v16.
+  - **Pictures.** As Keep: a note's pictures sit on top of it (a strip in
+    the open note, the first as the card's cover), apart from its text.
+    `note_picture` holds them (`cid`, order, name, MIME type, size, bytes;
+    at most 50 of 20 MB each); pasting or dropping a picture into the
+    text lifts it out to the strip. The Notes-folder copy is
+    `multipart/related` with each picture an inline part named
+    `cid:<fnv-hash>@katna` by an `<img>` after the title, which Apple
+    Notes shows; Apple's `<object data="cid:…">` reads back as a picture.
+  - **Reminders.** The bell (open note, card hover, selection bar) opens
+    the Snooze menu's times and picker; `note_reminder` keeps the time and
+    `X-Katna-Remind` carries it. The daemon's alarms show a "Katna Notes"
+    notification with Open and Snooze at that time, app closed or not. A
+    card shows "🔔 Tomorrow, 09:00" (struck through once past), and the
+    side list has Reminders with a count between Notes and the labels.
+  - **Select several.** Ctrl+click or right-click ticks a card (check
+    badge, accent ring), Shift+click a range. The "Take a note" bar turns
+    into a bar with the count, Pin, Remind, Colour, Label, Archive and ⋮
+    (Make a copy, Delete); Esc clears it. Dragging a ticked card carries
+    the others along. Every change is one Undo (`Command::Several`).
+  - **Links.** Typing `[[` opens "Link a note" at the cursor: notes whose
+    title matches, or a new note of that name; ⋮ > Link a note does the
+    same. The link is `katna-note:<UUID>` in the note's HTML and opens
+    that note. A note shows the notes linking to it as "LINKED FROM"
+    chips. Sent as mail, links become plain text.
+  - **History.** `note_version` keeps earlier text for 30 days on this
+    computer: saves here less than 10 minutes apart make one version,
+    and a version from sync names the device from `X-Mailer` when it
+    says one. The clock button shows the chosen version beside VERSIONS
+    ("Now", "Today, 11:40 · 2 changes", "From iPhone", "Created"),
+    removed lines struck in red and added ones tinted green; Restore this
+    version saves it as a new change, with Undo.
+  - **More formatting.** Quote, Code and Divider in Formatting, and Tab
+    indents a checklist line, all plain HTML (`blockquote`, monospace,
+    `<hr>`, margins).
+  - **⋮ on a note.** Show checkboxes, Make it a task, Link a note, Send
+    as mail (Compose with the title as subject, text and pictures as the
+    body), Save as Markdown, Save as PDF (laid out as Print lays out
+    mail), Make a copy, Archive, Delete.
+  - **AI.** With AI on, the sparkle offers Tidy, Make a checklist and
+    Summarise through the user's AI service; the change is one editor
+    Undo. With AI off there is no sparkle.
+  - **For Tasks.** The label picker (`notes::labels::LabelPicker`,
+    `render_label_choices`), the list of labels and `create_note` are
+    shared with Tasks' quick capture (Meta+Alt+N/T, tray, KRunner).
 
 ## 14. D-Bus API (`katna-dbus`)
 
@@ -4722,7 +4768,7 @@ server error is not.
   to-do with `RELATED-TO;RELTYPE=PARENT`. A change is written over the
   server's own text of the to-do (`katna_dav::todo`), so categories,
   attachments, other alarms and a client's own fields stay.
-- **The star, labels and files** (`pim.db` v16: `task_labels`, a JSON
+- **The star, labels and files** (`pim.db` v17: `task_labels`, a JSON
   array per task in a side table, and `task_file`, whose bytes are in the blob store and never
   dropped by a cache reset). Where each is kept:
 
@@ -4743,7 +4789,7 @@ server error is not.
   on this computer"); a larger file stays here too. A file removed in
   Katna is a tombstone until the service deleted it. Labels are the same
   set as Notes' (`Store::labels_in_use`): the details dialog uses Notes'
-  label picker (`window/label_picker.rs`), the side list's Labels show
+  label picker (`notes::labels::LabelPicker`), the side list's Labels show
   every open task with one, and `#home` in a new task's title is a label
   (`katna_dav::quick_task`, as quick capture reads it). Files come from a drop
   on a task's row or its details, the details' paper clip, or the mail

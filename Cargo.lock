@@ -6092,6 +6092,7 @@ version = "0.0.0"
 dependencies = [
  "ashpd",
  "async-channel",
+ "base64 0.22.1",
  "emojis",
  "fontdb",
  "futures-lite",

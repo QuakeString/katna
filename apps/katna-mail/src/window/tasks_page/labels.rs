@@ -3,33 +3,25 @@
 //! Labels on tasks, the same labels as on notes: the side list's Labels
 //! that show every task with one, the quiet line under a task's title
 //! ("📎 1 · Home · Bills"), and the label picker in the task's details,
-//! which is Notes' own ([`super::super::label_picker`]).
+//! which is Notes' own ([`LabelPicker`]).
 
-use gpui::{AnyElement, Context, Entity, Focusable, SharedString, Subscription, Window, div};
+use std::rc::Rc;
+
+use gpui::{AnyElement, Context, SharedString, Window, div};
 use gpui::{prelude::*, rgba};
 use katna_i18n::tr;
 use katna_store::tasks::Task as TaskItem;
-use katna_ui::tokens::{space, text};
-use katna_ui::{InputEvent, TextInput, px};
+use katna_ui::px;
+use katna_ui::tokens::{radius, space, text};
 
 use super::super::MailWindow;
-use super::super::label_picker::{self, PickerIds, clean};
+use super::super::notes::labels::{LabelPicker, render_label_choices};
 use super::{Column, View, card_heading, list_title, today};
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, tip};
+use crate::widgets::{Check, icon, tip};
 
-/// The label picker open in a task's details.
-pub(super) struct Picker {
-    input: Entity<TextInput>,
-    _subscription: Subscription,
-}
-
-const IDS: PickerIds = PickerIds {
-    create: "task-label-create",
-    pick: "task-label-pick",
-    check: "task-label-box",
-    list: "task-label-list",
-};
+/// The label picker open in a task's details: Notes' own.
+pub(super) type Picker = LabelPicker;
 
 impl super::TasksPage {
     /// The labels on task `task`, as shown now.
@@ -188,7 +180,7 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        let accent = rgba(self.theme(window).accent).into();
+        let accent = self.theme(window).accent;
         let Some(details) = &mut self.tasks.details else {
             return;
         };
@@ -196,41 +188,25 @@ impl MailWindow {
             cx.notify();
             return;
         }
-        let input = cx.new(|cx| {
-            let mut input = TextInput::new(tr!("notes-label-name"), cx);
-            input.set_accent(accent);
-            input
-        });
-        let subscription = cx.subscribe_in(
-            &input,
+        let picker = LabelPicker::new(
+            accent,
             window,
-            |this, input, event: &InputEvent, window, cx| match event {
-                InputEvent::Changed => cx.notify(),
-                // Enter ticks the label typed, making it if it is new.
-                InputEvent::Submit => {
-                    let label = clean(input.read(cx).text());
-                    if label.is_empty() {
-                        return;
-                    }
-                    let has = this
-                        .tasks
-                        .details
-                        .as_ref()
-                        .is_some_and(|d| d.labels().contains(&label));
-                    if !has {
-                        this.task_details_toggle_label(label, cx);
-                    }
-                    input.update(cx, |input, cx| input.set_text("", cx));
+            cx,
+            // Enter ticks the label typed, making it if it is new.
+            |this, label, cx| {
+                let has = this
+                    .tasks
+                    .details
+                    .as_ref()
+                    .is_some_and(|d| d.labels().contains(&label));
+                if !has {
+                    this.task_details_toggle_label(label, cx);
                 }
-                InputEvent::Cancel => this.task_details_label_picker(window, cx),
             },
+            |this, window, cx| this.task_details_label_picker(window, cx),
         );
-        window.focus(&input.focus_handle(cx), cx);
         if let Some(details) = &mut self.tasks.details {
-            details.picker = Some(Picker {
-                input,
-                _subscription: subscription,
-            });
+            details.picker = Some(picker);
         }
         cx.notify();
     }
@@ -306,25 +282,35 @@ impl MailWindow {
             ))
             .child(tr!("tasks-label-add"));
         let picker = details.picker.as_ref().map(|picker| {
-            let mut labels = self.shared_labels();
-            // Labels just put on this task, before the store has them.
-            for label in ticked {
-                if !labels.contains(label) {
-                    labels.push(label.clone());
-                }
-            }
-            let pick = label_picker::Pick {
-                heading: tr!("tasks-label-task"),
-                input: &picker.input,
+            // Notes' and tasks' labels, and those just put on this task,
+            // before the store has them.
+            let mut labels = self.note_labels();
+            labels.extend(
+                self.tasks
+                    .board()
+                    .into_iter()
+                    .flat_map(|b| b.labels.clone()),
+            );
+            labels.extend(ticked.iter().cloned());
+            let on = ticked.to_vec();
+            let list = render_label_choices(
+                "task-label-pick",
+                tr!("tasks-label-task"),
+                picker,
                 labels,
-                ticked,
-                ids: IDS,
-                toggle: Self::task_details_toggle_label,
-            };
+                &move |label: &str| Check::from(on.iter().any(|l| l == label)),
+                Rc::new(|this: &mut Self, label: String, cx: &mut Context<Self>| {
+                    this.task_details_toggle_label(label, cx)
+                }),
+                th,
+                cx,
+            );
             div()
                 .mt(px(space::S3))
-                .mx(px(-12.0))
-                .child(label_picker::label_picker(pick, th, cx))
+                .p(px(space::S3))
+                .rounded(px(radius::SM))
+                .bg(rgba(fade(th.text, 0.05)))
+                .child(list)
         });
         div()
             .flex()
