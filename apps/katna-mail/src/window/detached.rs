@@ -191,7 +191,11 @@ impl MailWindow {
         let th = self.theme(window);
         self.release_images(window, cx);
         if let Some(viewer) = &self.files.viewer {
-            viewer.update(cx, |viewer, _| viewer.th = th);
+            let corners = self.chrome.content_corners(window);
+            viewer.update(cx, |viewer, _| {
+                viewer.th = th;
+                viewer.corners = corners;
+            });
         }
         let reduce = cx.reduce_motion();
         self.update_reply_row(unpx(window.viewport_size().width), window, reduce);
