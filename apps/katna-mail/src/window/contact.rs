@@ -26,7 +26,7 @@ use katna_i18n::tr;
 use katna_render::signature;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
-use katna_ui::{Ripple, px, unpx};
+use katna_ui::{px, unpx};
 
 mod peek;
 
@@ -42,7 +42,9 @@ use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
 use crate::profile::{self, Profile};
 use crate::theme::{Theme, mix};
-use crate::widgets::{card_outline, card_shadow, icon, icon_button, icon_button_colored, tip};
+use crate::widgets::{
+    card_outline, card_shadow, icon, icon_button, icon_button_colored, tip, tonal_icon_button,
+};
 
 /// The card's width.
 pub(super) const CONTACT_WIDTH: f32 = 300.0;
@@ -997,24 +999,8 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> gpui::Div {
-        let (bg, bg_hover) = action_tint(th);
         let button = |id: &'static str, name: &str, label: String| {
-            div()
-                .id(id)
-                .relative()
-                .overflow_hidden()
-                .size(px(size))
-                .flex_none()
-                .flex()
-                .items_center()
-                .justify_center()
-                .rounded_full()
-                .cursor_pointer()
-                .bg(rgba(bg))
-                .hover(move |s| s.bg(rgba(bg_hover)))
-                .tooltip(tip(label, th))
-                .child(Ripple::new((id, 0usize), rgba(th.ripple)).centered())
-                .child(icon(name, th.accent, 20.0))
+            tonal_icon_button(id, name, size, false, true, th).tooltip(tip(label, th))
         };
         let to = email.to_owned();
         let query = format!("from:{email} OR to:{email}");
@@ -1023,27 +1009,13 @@ impl MailWindow {
             (!self.is_own(email)).then(|| {
                 let muted = self.sender_muted(email);
                 let address = email.to_owned();
-                let (fill, glyph, label) = if muted {
-                    (th.accent | 0xff, th.on_accent, tr!("quiet-unmute-sender"))
+                let label = if muted {
+                    tr!("quiet-unmute-sender")
                 } else {
-                    (bg, th.accent, tr!("quiet-mute-sender"))
+                    tr!("quiet-mute-sender")
                 };
-                div()
-                    .id("contact-mute")
-                    .relative()
-                    .overflow_hidden()
-                    .size(px(size))
-                    .flex_none()
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .rounded_full()
-                    .cursor_pointer()
-                    .bg(rgba(fill))
-                    .when(!muted, |d| d.hover(move |s| s.bg(rgba(bg_hover))))
+                tonal_icon_button("contact-mute", "bell-off", size, muted, true, th)
                     .tooltip(tip(label, th))
-                    .child(Ripple::new(("contact-mute", 0usize), rgba(th.ripple)).centered())
-                    .child(icon("bell-off", glyph, 20.0))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.mute_sender(address.clone(), !muted, cx)
                     }))
@@ -1087,7 +1059,6 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let (bg, bg_hover) = action_tint(th);
         let saved = self.is_saved_contact(email);
         let adding = self.contacts.adding.contains(&email.trim().to_lowercase());
         let (glyph, label) = if saved {
@@ -1096,33 +1067,18 @@ impl MailWindow {
             ("person-add", tr!("contact-add-to-contacts"))
         };
         let email = email.to_owned();
-        div()
-            .id("contact-save")
-            .relative()
-            .overflow_hidden()
-            .size(px(size))
-            .flex_none()
-            .flex()
-            .items_center()
-            .justify_center()
-            .rounded_full()
-            .bg(rgba(bg))
+        tonal_icon_button("contact-save", glyph, size, false, !adding, th)
             .tooltip(tip(label, th))
-            .when(adding, |d| d.opacity(0.5))
             .when(!adding, |d| {
-                d.cursor_pointer()
-                    .hover(move |s| s.bg(rgba(bg_hover)))
-                    .child(Ripple::new(("contact-save", 0usize), rgba(th.ripple)).centered())
-                    .on_click(cx.listener(move |this, _, window, cx| {
-                        if this.is_saved_contact(&email) {
-                            this.show_saved_contact(&email, cx);
-                            window.focus(&this.window_focus, cx);
-                        } else {
-                            this.add_to_contacts(&email, name.clone(), signature.clone(), cx);
-                        }
-                    }))
+                d.on_click(cx.listener(move |this, _, window, cx| {
+                    if this.is_saved_contact(&email) {
+                        this.show_saved_contact(&email, cx);
+                        window.focus(&this.window_focus, cx);
+                    } else {
+                        this.add_to_contacts(&email, name.clone(), signature.clone(), cx);
+                    }
+                }))
             })
-            .child(icon(glyph, th.accent, 20.0))
             .into_any_element()
     }
 
@@ -2076,15 +2032,6 @@ fn card_tint(th: &Theme) -> u32 {
 }
 
 /// The round buttons under the name, and under the pointer.
-fn action_tint(th: &Theme) -> (u32, u32) {
-    let accent = opaque_accent(th);
-    let t = if th.dark { 0.16 } else { 0.17 };
-    (
-        mix(th.surface, accent, t),
-        mix(th.surface, accent, t + 0.08),
-    )
-}
-
 fn opaque_accent(th: &Theme) -> u32 {
     th.accent | 0xff
 }

@@ -66,13 +66,15 @@ motion is honoured by `Spring::tick`.
 ## Shared controls
 
 The same element in two places is one shared widget. Built: icon button,
-pill button, filled and outlined buttons, menu and menu item, switch,
+pill button, `widgets::button` with `ButtonStyle::Filled`, `Outlined` and
+`Text` (`filled_button`, `outlined_button`, `text_button`),
+`tonal_icon_button` (a contact's actions), menu and menu item, switch,
 checkbox, radio, colour swatch and wheel, avatar, tooltip, snackbar, scroll
 bar, skeleton, `notched::popover` (opens at the click, notch, level 4,
-`LG`), `widgets::dialog` (level 3, `LG`, frosted). To build: one `Button`
-with styles, `Card`, `Row` (hover, soft-grey selected, ticked, count pill),
-`Chip`, `Field` (edge, focus ring, error, suggestions), and a Gallery page
-in development builds showing every control in light and dark.
+`LG`), `widgets::dialog` (level 3, `LG`, frosted). To build: `Card`,
+`Row` (hover, soft-grey selected, ticked, count pill), `Chip`, `Field`
+(edge, focus ring, error, suggestions), and a Gallery page in development
+builds showing every control in light and dark.
 
 ## Moving code over
 

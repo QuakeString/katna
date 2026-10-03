@@ -13,8 +13,8 @@ use std::collections::BTreeSet;
 use std::time::Duration;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, Subscription, Task, Window,
-    div, prelude::*, rgba,
+    AnimationExt, AnyElement, Context, Entity, Focusable, Subscription, Task, Window, div,
+    prelude::*, rgba,
 };
 use katna_core::contact::{Card, PostalAddress, Typed};
 use katna_i18n::tr;
@@ -24,7 +24,7 @@ use katna_ui::{InputEvent, Ripple, TextInput, px};
 use super::MailWindow;
 use crate::daemon::{self, Command};
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon, icon_button, outlined_button, tip};
+use crate::widgets::{filled_button, icon, icon_button, outlined_button, text_button, tip};
 
 /// How long a delete waits for Undo before it goes to the account.
 const DELETE_AFTER: Duration = Duration::from_secs(8);
@@ -952,26 +952,7 @@ fn with_kind(label: String, kind: &str) -> String {
 
 /// "Add email" under the rows.
 fn add_row(id: &'static str, label: String, th: &Theme) -> gpui::Stateful<gpui::Div> {
-    div()
-        .id(id)
-        .relative()
-        .overflow_hidden()
-        .ml(px(40.0))
-        .h(px(32.0))
-        .px(px(12.0))
-        .flex()
-        .flex_row()
-        .items_center()
-        .gap(px(6.0))
-        .rounded_full()
-        .cursor_pointer()
-        .text_size(px(14.0))
-        .font_weight(FontWeight::MEDIUM)
-        .text_color(rgba(th.accent))
-        .hover(|s| s.bg(rgba(th.hover)))
-        .child(Ripple::new((id, 0usize), rgba(th.ripple)))
-        .child(icon("add", th.accent, 18.0))
-        .child(label)
+    text_button(id, "add", label, th).ml(px(40.0)).h(px(32.0))
 }
 
 /// The people not shown while their delete waits.

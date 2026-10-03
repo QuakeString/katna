@@ -36,7 +36,7 @@ use super::contacts_labels::{LabelDialog, LabelMenu};
 use crate::daemon;
 use crate::data::SavedBook;
 use crate::theme::{Theme, mix};
-use crate::widgets::{icon, placeholder, tip};
+use crate::widgets::{filled_button, icon, icon_button, placeholder, tip, tonal_icon_button};
 
 /// Width of the column with Contacts, Frequent and the labels.
 const NAV_WIDTH: f32 = 248.0;
@@ -803,26 +803,11 @@ impl MailWindow {
                         .child(text),
                 )
                 .child(
-                    div()
-                        .id("contacts-allow")
-                        .relative()
-                        .overflow_hidden()
-                        .flex_none()
-                        .px(px(16.0))
-                        .h(px(36.0))
-                        .flex()
-                        .items_center()
-                        .rounded_full()
-                        .cursor_pointer()
-                        .bg(rgba(th.accent))
-                        .text_color(rgba(th.on_accent))
-                        .text_size(px(14.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .child(Ripple::new(("contacts-allow", 0usize), rgba(th.ripple)))
-                        .child(tr!("contacts-allow-button"))
-                        .on_click(cx.listener(move |this, _, _, cx| {
+                    filled_button("contacts-allow", tr!("contacts-allow-button"), th).on_click(
+                        cx.listener(move |this, _, _, cx| {
                             this.allow_contacts(account.clone(), provider, cx)
-                        })),
+                        }),
+                    ),
                 )
                 .into_any_element(),
         )
@@ -1124,20 +1109,8 @@ impl MailWindow {
         let merged = merge(&cards);
         let email = person.emails.first().cloned();
         let phone = merged.phones.first().map(|p| p.value.clone());
-        let back = div()
-            .id("contact-back")
-            .relative()
-            .overflow_hidden()
-            .size(px(40.0))
-            .flex()
-            .items_center()
-            .justify_center()
-            .rounded_full()
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+        let back = icon_button("contact-back", "back", 20.0, th)
             .tooltip(tip(tr!("contacts-back"), th))
-            .child(Ripple::new(("contact-back", 0usize), rgba(th.ripple)).centered())
-            .child(icon("back", th.text_dim, 20.0))
             .on_click(cx.listener(|this, _, _, cx| this.close_contact(cx)));
         let job = merged.job();
         let head = div()
@@ -1349,39 +1322,13 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let tint = mix(
-            th.surface,
-            th.accent | 0xff,
-            if th.dark { 0.16 } else { 0.17 },
-        );
-        let tint_hover = mix(
-            th.surface,
-            th.accent | 0xff,
-            if th.dark { 0.24 } else { 0.25 },
-        );
         let button = |id: &'static str, glyph: &str, label: String, click: OnClick| {
             div()
                 .flex()
                 .flex_col()
                 .items_center()
                 .gap(px(4.0))
-                .child(
-                    div()
-                        .id(id)
-                        .relative()
-                        .overflow_hidden()
-                        .size(px(40.0))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .rounded_full()
-                        .cursor_pointer()
-                        .bg(rgba(tint))
-                        .hover(move |s| s.bg(rgba(tint_hover)))
-                        .on_click(click)
-                        .child(Ripple::new((id, 0usize), rgba(th.ripple)).centered())
-                        .child(icon(glyph, th.accent, 20.0)),
-                )
+                .child(tonal_icon_button(id, glyph, 40.0, false, true, th).on_click(click))
                 .child(
                     div()
                         .text_size(px(12.0))
