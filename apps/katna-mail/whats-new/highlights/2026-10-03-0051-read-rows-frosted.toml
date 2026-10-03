@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Read mail is frosted too"
+text = """
+With frosted panes on, mail you have read now shows the frost behind the
+list as unread mail does, only a shade different, instead of a solid band.
+"""
