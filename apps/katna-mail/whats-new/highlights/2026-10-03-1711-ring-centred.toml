@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Account rings sit evenly"
+text = """
+The coloured ring round your account picture now has the same gap on every
+side, at any scaling, instead of one side looking a pixel thicker.
+"""

@@ -648,7 +648,6 @@ impl MailWindow {
         let avatar = self.account_ring(
             &account.address,
             self.person_avatar(&name, &account.address, 36.0),
-            36.0,
             th,
         );
         // The buttons go below the name, together, where the row is
