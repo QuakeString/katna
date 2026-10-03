@@ -528,6 +528,9 @@ pub(super) struct RuleEditor {
     asking_delete: bool,
     closing: bool,
     shown: Spring,
+    /// Folders saving makes first, as (stand-in ID below 0, account,
+    /// name): a starter rule's folder an account doesn't have yet.
+    new_folders: Vec<(i64, i64, String)>,
 }
 
 impl RuleEditor {
@@ -563,7 +566,8 @@ impl RuleEditor {
         let mut actions = Vec::new();
         for row in &self.actions {
             let text = row.text.read(cx).text().trim().to_owned();
-            let folder = row.folder.filter(|f| *f > 0);
+            // A folder still to make counts as chosen only for saving.
+            let folder = row.folder.filter(|f| *f > 0 || (strict && *f < 0));
             actions.push(match row.kind {
                 ActionKind::Move | ActionKind::AddLabel if strict && folder.is_none() => {
                     return Err(tr!("rules-editor-needs-folder"));
@@ -605,9 +609,11 @@ impl RuleEditor {
 
 impl MailWindow {
     /// Opens the editor on `rule`: a saved one, or a new one (ID 0) to
-    /// fill in. A Move to or Add label with folder 0 has none chosen yet.
+    /// fill in. A Move to or Add label with folder 0 has none chosen yet;
+    /// one below 0 is a folder of `new_folders` that saving makes.
     pub(super) fn open_rule_editor(
         &mut self,
+        new_folders: Vec<(i64, i64, String)>,
         rule: Rule,
         window: &mut Window,
         cx: &mut Context<Self>,
@@ -645,6 +651,7 @@ impl MailWindow {
             asking_delete: false,
             closing: false,
             shown,
+            new_folders,
         });
         self.count_rule_mail(cx);
         cx.notify();
@@ -667,7 +674,7 @@ impl MailWindow {
             accounts,
             ..Rule::default()
         };
-        self.open_rule_editor(rule, window, cx);
+        self.open_rule_editor(Vec::new(), rule, window, cx);
     }
 
     /// Make a rule… on a mail: the editor filled in with its sender. (Move
@@ -692,7 +699,7 @@ impl MailWindow {
             accounts: vec![account.0],
             ..Rule::default()
         };
-        self.open_rule_editor(rule, window, cx);
+        self.open_rule_editor(Vec::new(), rule, window, cx);
     }
 
     /// Escape: an open menu of the editor, else the editor.
@@ -821,7 +828,7 @@ impl MailWindow {
         let (text, subscription) = self.rule_input(action_hint(kind), text, window, cx);
         ActionRow {
             kind,
-            folder: action.folder().filter(|f| *f > 0),
+            folder: action.folder().filter(|f| *f != 0),
             text,
             _subscription: subscription,
         }
@@ -1009,6 +1016,13 @@ impl MailWindow {
             }
         };
         let apply = e.also_apply && matches!(e.preview, Preview::Count(n) if n > 0);
+        let make: Vec<(i64, i64, String)> = e
+            .new_folders
+            .iter()
+            .filter(|(id, _, _)| rule.actions.iter().any(|a| a.folder() == Some(*id)))
+            .cloned()
+            .collect();
+        let mut rule = rule;
         e.busy = true;
         e.error = None;
         e.pick = None;
@@ -1021,6 +1035,19 @@ impl MailWindow {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
                     };
+                    for (stand_in, account, name) in make {
+                        let id = daemon::create_folder(&connection, account, &name, None).await?;
+                        for action in &mut rule.actions {
+                            match action {
+                                Action::Move { folder } | Action::AddLabel { folder }
+                                    if *folder == stand_in =>
+                                {
+                                    *folder = id;
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
                     let id = daemon::rules::save(&connection, &rule).await?;
                     let applied = if apply {
                         Some(daemon::rules::apply(&connection, id, PREVIEW_DAYS).await)
@@ -1111,20 +1138,40 @@ impl MailWindow {
         })
     }
 
-    /// The folders action row `ix` can choose from, with their names:
-    /// any folder of the rule's accounts for Move to, their own folders
-    /// and labels for Add label.
-    fn rule_folders(&self, e: &RuleEditor, kind: ActionKind) -> Vec<(i64, String)> {
+    /// The folders an action row can choose from, with their names: any
+    /// folder of the rule's accounts for Move to, their own folders and
+    /// labels for Add label, and folders still to make. Only the account
+    /// that has `chosen`, when a row has one: a row moves mail of one
+    /// account.
+    fn rule_folders_of(
+        &self,
+        e: &RuleEditor,
+        kind: ActionKind,
+        chosen: Option<i64>,
+    ) -> Vec<(i64, String)> {
         let several = e.accounts.len() > 1;
+        let owner = chosen.and_then(|f| {
+            e.accounts.iter().copied().find(|&a| {
+                e.new_folders
+                    .iter()
+                    .any(|(id, acc, _)| *id == f && *acc == a)
+                    || self
+                        .tree
+                        .folders_of(AccountId(a))
+                        .into_iter()
+                        .any(|(id, _, _)| id.0 == f)
+            })
+        });
         let mut out = Vec::new();
         for &account in &e.accounts {
+            if owner.is_some_and(|o| o != account) {
+                continue;
+            }
             let id = AccountId(account);
             let address = self.account_address(id).unwrap_or_default();
-            let folders: Vec<i64> = if kind == ActionKind::AddLabel {
-                // Labels are Gmail's (`SetLabels`).
-                if !self.tree.is_gmail(id) {
-                    continue;
-                }
+            let folders: Vec<i64> = if kind == ActionKind::AddLabel && self.tree.is_gmail(id) {
+                // Labels are Gmail's (`SetLabels`); elsewhere a label is a
+                // copy in the folder.
                 self.tree
                     .nest_targets(id)
                     .into_iter()
@@ -1140,13 +1187,26 @@ impl MailWindow {
                             Role::Inbox | Role::Drafts | Role::Sent | Role::Snoozed | Role::Flagged
                         )
                     })
+                    // A label keeps mail where it is: never in Trash or
+                    // the archive.
+                    .filter(|(_, _, role)| {
+                        kind != ActionKind::AddLabel
+                            || !matches!(role, Role::Archive | Role::Trash | Role::Junk)
+                    })
                     .map(|(f, _, _)| f.0)
                     .collect()
             };
-            for folder in folders {
-                let Some(name) = self.rule_folder_name(folder) else {
-                    continue;
-                };
+            let new = e
+                .new_folders
+                .iter()
+                .filter(|(_, a, _)| *a == account)
+                .map(|(f, _, name)| (*f, tr!("rules-editor-new-folder", name = name.as_str())));
+            let named = folders
+                .into_iter()
+                .filter_map(|f| Some((f, self.rule_folder_name(f)?)))
+                .chain(new)
+                .collect::<Vec<_>>();
+            for (folder, name) in named {
                 out.push((
                     folder,
                     if several {
@@ -1375,7 +1435,14 @@ impl MailWindow {
                 .on_click(pick_at(Pick::Action(ix), cx));
                 let what: AnyElement = match row.kind {
                     ActionKind::Move | ActionKind::AddLabel => {
-                        let chosen = row.folder.and_then(|f| self.rule_folder_name(f));
+                        // With several accounts, named with its account.
+                        let chosen = row.folder.and_then(|f| {
+                            self.rule_folders_of(e, row.kind, Some(f))
+                                .into_iter()
+                                .find(|(id, _)| *id == f)
+                                .map(|(_, name)| name)
+                                .or_else(|| self.rule_folder_name(f))
+                        });
                         let empty = chosen.is_none();
                         select_box(
                             ("rule-folder", ix),
@@ -1390,6 +1457,8 @@ impl MailWindow {
                             th,
                         )
                         .flex_1()
+                        // Keeps its width; a long name ends in …
+                        .min_w_0()
                         .when(empty, |d| d.text_color(rgba(th.text_faint)))
                         .on_click(pick_at(Pick::Folder(ix), cx))
                         .into_any_element()
@@ -1546,8 +1615,7 @@ impl MailWindow {
                     )
                     .child(stop)
                     .child(accounts)
-                    .child(panel)
-                    .children(error),
+                    .child(panel),
             );
         // Save and Cancel stay below the scrolling part.
         div()
@@ -1560,6 +1628,7 @@ impl MailWindow {
                     .flex_none()
                     .px(px(if narrow { 16.0 } else { 26.0 }))
                     .pb(px(20.0))
+                    .children(error)
                     .child(buttons),
             )
             .into_any_element()
@@ -1930,7 +1999,7 @@ impl MailWindow {
                 .collect(),
             Pick::Folder(ix) => {
                 let row = e.actions.get(ix)?;
-                self.rule_folders(e, row.kind)
+                self.rule_folders_of(e, row.kind, row.folder)
                     .into_iter()
                     .enumerate()
                     .map(|(n, (folder, name))| {
