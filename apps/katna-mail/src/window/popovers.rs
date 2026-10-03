@@ -59,6 +59,21 @@ impl MenuKey for gpui::Stateful<gpui::Div> {
     }
 }
 
+/// A right press on a menu's scrim, after the menu closed: once a frame
+/// without the scrim is drawn, the press goes to what is under the
+/// pointer, so right-clicking another mail or folder opens its menu at
+/// once instead of only closing the open one.
+pub(super) fn pass_right_press(event: &MouseDownEvent, window: &Window) {
+    let event = event.clone();
+    // The first callback runs before the frame that drops the scrim; the
+    // second after it, against that frame's hitboxes.
+    window.on_next_frame(move |window, _| {
+        window.on_next_frame(move |window, cx| {
+            window.dispatch_event(gpui::PlatformInput::MouseDown(event), cx);
+        });
+    });
+}
+
 impl MailWindow {
     /// Whether a menu is open, whose items the arrow keys go through.
     fn menu_open(&self) -> bool {
