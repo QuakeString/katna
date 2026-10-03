@@ -288,7 +288,7 @@ run on the CI distro matrix.
 | 4.3 Badge + tray ✅ #48, #65, #70 | Unity LauncherEntry unread count, tray icon with badge and menu, single-instance app actions, KDE global menu (done early, September 2026; §15.2) |
 | 4.4 KRunner ✅ #166 | `org.kde.krunner1` in the daemon: contacts, mail, organizations; actions |
 | 4.5 GNOME search ✅ #166 | `org.gnome.Shell.SearchProvider2` using the same backend |
-| 4.6 Small integrations ◐ Send with Katna Mail in Dolphin, GNOME Files and Explorer #432; global shortcut pending | Global shortcut (portal), Dolphin service menu |
+| 4.6 Small integrations ◐ Send with Katna Mail in Dolphin, GNOME Files and Explorer #432; quick capture shortcuts Meta+Alt+T/N on Plasma (kglobalaccel) and Windows; GNOME (GlobalShortcuts portal) pending | Global shortcut (portal), Dolphin service menu |
 
 Status (2 October 2026): 4.1 and 4.3 are done and translated (#129);
 4.4 and 4.5 are done for people, mail, events and tasks (#166, #334,

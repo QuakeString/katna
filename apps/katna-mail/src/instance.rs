@@ -40,6 +40,9 @@ pub enum Request {
     Search(String),
     /// The page to show (`app_action::OPEN_PAGE`): `calendar`, `tasks`…
     Page(String),
+    /// Open the quick capture card (`app_action::CAPTURE`); its parameter:
+    /// `task` or `note`, then `:` and the text it starts with if any.
+    Capture(String),
     /// Open this message in the mail window: `open-message` when it starts
     /// the app, as the new window is the place for it.
     ShowMessage(i64),
@@ -200,13 +203,11 @@ impl Application {
                 .next()
                 .and_then(|value| String::try_from(value).ok())
             {
-                let _ = self
-                    .requests
-                    .try_send(if action_name == app_action::SEARCH {
-                        Request::Search(text)
-                    } else {
-                        Request::Page(text)
-                    });
+                let _ = self.requests.try_send(match action_name.as_str() {
+                    app_action::SEARCH => Request::Search(text),
+                    app_action::CAPTURE => Request::Capture(text),
+                    _ => Request::Page(text),
+                });
             }
             return;
         }
@@ -371,6 +372,18 @@ async fn hand_off(connection: &Connection, request: Option<&Request>) -> bool {
                     interface,
                     "ActivateAction",
                     &(app_action::OPEN_PAGE, params, platform),
+                )
+                .await
+        }
+        Some(Request::Capture(param)) => {
+            let params = vec![Value::from(param.as_str())];
+            connection
+                .call_method(
+                    app,
+                    path,
+                    interface,
+                    "ActivateAction",
+                    &(app_action::CAPTURE, params, platform),
                 )
                 .await
         }

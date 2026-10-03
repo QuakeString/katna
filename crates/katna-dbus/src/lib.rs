@@ -457,6 +457,10 @@ pub mod app_action {
     /// send from (empty for the usual one), then the files' full paths.
     /// Folders go as zips.
     pub const ATTACH: &str = "attach";
+    /// Open the quick capture card over whatever is on screen ("Catch a
+    /// thought from anywhere"); the parameter (`s`) is `task` or `note`,
+    /// with `:` and the text it starts with if any ([`capture`]).
+    pub const CAPTURE: &str = "capture";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
     /// has one. The flags of [`takes_message`] actions are followed by the
@@ -474,6 +478,7 @@ pub mod app_action {
             SEARCH => Some("--search"),
             OPEN_PAGE => Some("--page"),
             ATTACH => Some("--attach"),
+            CAPTURE => Some("--capture"),
             _ => None,
         }
     }
@@ -500,6 +505,29 @@ pub mod app_action {
 
     const NEW_EVENT: &str = "new";
 
+    /// [`CAPTURE`]'s parameter for a task.
+    pub const CAPTURE_TASK: &str = "task";
+    /// [`CAPTURE`]'s parameter for a note.
+    pub const CAPTURE_NOTE: &str = "note";
+
+    /// [`CAPTURE`]'s parameter: `kind` ([`CAPTURE_TASK`] or
+    /// [`CAPTURE_NOTE`]), then the text the card starts with, if any:
+    /// `task`, `note:Call Anita back`.
+    pub fn capture(kind: &str, text: &str) -> String {
+        if text.is_empty() {
+            kind.to_owned()
+        } else {
+            format!("{kind}:{text}")
+        }
+    }
+
+    /// Takes [`CAPTURE`]'s parameter apart: whether it is a note, and the
+    /// text. Anything but `note` is a task.
+    pub fn capture_parts(param: &str) -> (bool, &str) {
+        let (kind, text) = param.split_once(':').unwrap_or((param, ""));
+        (kind.trim() == CAPTURE_NOTE, text)
+    }
+
     #[cfg(test)]
     #[test]
     fn calendar_pages_round_trip() {
@@ -509,6 +537,16 @@ pub mod app_action {
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), false));
         let page = calendar_page("2026-10-01", true);
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), true));
+    }
+
+    #[cfg(test)]
+    #[test]
+    fn capture_round_trips() {
+        assert_eq!(capture_parts(&capture(CAPTURE_TASK, "")), (false, ""));
+        assert_eq!(capture_parts("note"), (true, ""));
+        let param = capture(CAPTURE_NOTE, "Ideas: a: b");
+        assert_eq!(capture_parts(&param), (true, "Ideas: a: b"));
+        assert_eq!(capture_parts("task:Buy milk"), (false, "Buy milk"));
     }
 
     /// After a reply's message ID on the command line: the text the reply
@@ -522,7 +560,7 @@ pub mod app_action {
 
     /// Whether `action`'s parameter is text.
     pub fn takes_text(action: &str) -> bool {
-        matches!(action, SEARCH | OPEN_PAGE)
+        matches!(action, SEARCH | OPEN_PAGE | CAPTURE)
     }
 }
 

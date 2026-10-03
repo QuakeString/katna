@@ -483,6 +483,7 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
             Some(super::viewer::KEY_CONTEXT),
         ));
     }
+    super::capture::bind_keys(&mut bindings);
     cx.bind_keys(bindings);
     katna_ui::text_input::bind_keys(cx);
     katna_ui::text_area::bind_keys(cx);
