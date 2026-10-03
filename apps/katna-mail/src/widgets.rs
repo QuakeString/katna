@@ -659,10 +659,22 @@ pub const ROW_HEIGHT: f32 = 40.0;
 /// soft grey while `on` (the one open), the hover tint under the pointer,
 /// a ripple on click and `SM` corners.
 pub fn row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> Stateful<Div> {
-    let id = id.into();
+    let (rest, hover) = if on {
+        (th.nav_selected, th.nav_selected)
+    } else {
+        (0, th.hover)
+    };
+    line_row(id.into(), rest, hover, th).when(on, |d| d.text_color(rgba(th.nav_selected_text)))
+}
+
+/// A [`row`] the user ticked (Ctrl+click, a tick box): the ticked tint at
+/// rest and under the pointer, like Mail's list.
+pub fn ticked_row(id: impl Into<gpui::ElementId>, th: &Theme) -> Stateful<Div> {
+    line_row(id.into(), th.checked_row, th.checked_row, th)
+}
+
+fn line_row(id: gpui::ElementId, rest: u32, hover: u32, th: &Theme) -> Stateful<Div> {
     let ripple = id_hash(&id);
-    let rest = if on { th.nav_selected } else { 0 };
-    let hover = if on { th.nav_selected } else { th.hover };
     div()
         .id(id)
         .relative()
@@ -676,11 +688,32 @@ pub fn row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> Stateful<Div
         .gap(px(space::S4))
         .rounded(px(radius::SM))
         .text_size(px(text::BODY))
-        .when(on, |d| d.text_color(rgba(th.nav_selected_text)))
         .bg(rgba(rest))
         .cursor_pointer()
         .hover(move |s| s.bg(rgba(hover)))
         .child(Ripple::new(("ripple", ripple), rgba(th.ripple)).rounded(radius::SM))
+}
+
+/// A [`row`]'s count at its end, in a tight, faint pill of the row's text
+/// color: Mail's folders and the Files page's kinds and accounts. On the
+/// open row the pill is lighter than the row's tint.
+pub fn count_pill(count: u64, on: bool, th: &Theme) -> Div {
+    let bg = if on {
+        th.row_selected_pill
+    } else {
+        fade(th.text, 0.08)
+    };
+    div().flex_none().pl(px(space::S3)).child(
+        div()
+            .h(px(18.0))
+            .px(px(6.0))
+            .flex()
+            .items_center()
+            .rounded_full()
+            .bg(rgba(bg))
+            .text_size(px(text::CAPTION))
+            .child(crate::format::thousands(count)),
+    )
 }
 
 /// A box to type in around `focus`'s input: an edge at rest and, while

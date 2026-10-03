@@ -26,7 +26,6 @@ use super::{
 use katna_core::AccountKind;
 use katna_i18n::tr;
 
-use crate::format;
 use crate::sidebar::{self, Role, Unified};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
@@ -187,28 +186,6 @@ pub(super) fn side_row_with(
                 .truncate()
                 .child(label),
         )
-}
-
-/// A side line's count, in a tight, faint pill of the line's text color:
-/// Mail's folders and the Files page's kinds and accounts. On the open
-/// line the pill is lighter than the line's grey.
-pub(super) fn count_pill(count: u64, on: bool, th: &Theme) -> gpui::Div {
-    let bg = if on {
-        th.row_selected_pill
-    } else {
-        fade(th.text, 0.08)
-    };
-    div().flex_none().pl(px(8.0)).child(
-        div()
-            .h(px(18.0))
-            .px(px(6.0))
-            .flex()
-            .items_center()
-            .rounded_full()
-            .bg(rgba(bg))
-            .text_size(px(12.0))
-            .child(format::thousands(count)),
-    )
 }
 
 /// The line the app's name rolls through on the top bar.
@@ -1419,7 +1396,9 @@ impl MailWindow {
                         )),
                 )
             })
-            .when(unread > 0, |d| d.child(count_pill(unread, selected, th)))
+            .when(unread > 0, |d| {
+                d.child(crate::widgets::count_pill(unread, selected, th))
+            })
             .children(chevron);
         // Named by the line rather than its place, which moves as lines
         // above fold or open.

@@ -1416,7 +1416,7 @@ impl MailWindow {
 
     fn render_files_nav(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.library;
-        let count = |n: usize, on: bool| super::nav::count_pill(n as u64, on, th);
+        let count = |n: usize, on: bool| crate::widgets::count_pill(n as u64, on, th);
         let rule = || {
             div()
                 .flex_none()

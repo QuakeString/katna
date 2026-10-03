@@ -1101,7 +1101,7 @@ impl MailWindow {
                 super::super::nav::side_row_with(("picker-source", n), mark, label, on, th)
                     .when(matches!(source, Source::Drive(_)), |d| d.h(px(44.0)))
                     .when_some(count, |d, c| {
-                        d.child(super::super::nav::count_pill(c as u64, on, th))
+                        d.child(crate::widgets::count_pill(c as u64, on, th))
                     })
                     .on_click(cx.listener(move |this, _, _, cx| this.pick_source(source, cx))),
             );

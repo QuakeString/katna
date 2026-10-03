@@ -71,14 +71,15 @@ pill button, `widgets::button` with `ButtonStyle::Filled`, `Outlined` and
 `tonal_icon_button` (a contact's actions), `choice_chip` (32 px, `SM`,
 edge at rest, the selected tint with a check while picked), `tag` (a grey label
 pill), `row` (a clickable line: 40 px at least, `SM`, hover, the
-selected tint while open, ripple), `field` and `line_field` (an edge at rest, a 2 px
+selected tint while open, ripple; `ticked_row` has the ticked tint and
+`count_pill` a count at its end), `field` and `line_field` (an edge at rest, a 2 px
 accent ring inside it while it has the keys; 40 px for one line), menu
 and menu item, switch,
 checkbox, radio, colour swatch and wheel, avatar, tooltip, snackbar, scroll
 bar, skeleton, `notched::popover` (opens at the click, notch, level 4,
 `LG`), `widgets::dialog` (level 3, `LG`, frosted), `widgets::card` (level
 1: rounds, fills through `pane` and adds `card_shadow`; the mail list, open
-mail, person card, agenda and Settings). To build: `Row`'s ticked and count-pill parts, `Field`'s error state and
+mail, person card, agenda and Settings). To build: `Field`'s error state and
 suggestions. The Gallery (`katna-mail --page gallery`, development
 builds only, `window/gallery.rs`) shows every shared control in light and
 dark; add a new control to it.

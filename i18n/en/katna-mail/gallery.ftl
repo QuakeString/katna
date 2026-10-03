@@ -16,6 +16,7 @@ gallery-tag = Tag
 gallery-rows = Rows
 gallery-open-row = Open row
 gallery-row = Row
+gallery-ticked-row = Ticked row
 gallery-fields = Fields
 gallery-toggles = Switches, boxes and avatars
 gallery-menu = Menu

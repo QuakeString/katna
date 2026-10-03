@@ -14,9 +14,9 @@ use katna_ui::{TextInput, px};
 use super::MailWindow;
 use crate::theme::{Accent, Theme};
 use crate::widgets::{
-    CARD_REST, Check, avatar, card, checkbox, choice_chip, filled_button, icon_button, line_field,
-    menu, menu_item, outlined_button, pill_button, radio, raised, row, switch, tag, text_button,
-    tonal_icon_button,
+    CARD_REST, Check, avatar, card, checkbox, choice_chip, count_pill, filled_button, icon_button,
+    line_field, menu, menu_item, outlined_button, pill_button, radio, raised, row, switch, tag,
+    text_button, ticked_row, tonal_icon_button,
 };
 
 pub(super) struct Gallery {
@@ -209,8 +209,17 @@ fn column(
             div()
                 .flex()
                 .flex_col()
-                .child(row(id("row-on"), true, th).child(tr!("gallery-open-row")))
-                .child(row(id("row"), false, th).child(tr!("gallery-row"))),
+                .child(
+                    row(id("row-on"), true, th)
+                        .child(div().flex_1().child(tr!("gallery-open-row")))
+                        .child(count_pill(12, true, th)),
+                )
+                .child(
+                    row(id("row"), false, th)
+                        .child(div().flex_1().child(tr!("gallery-row")))
+                        .child(count_pill(1234, false, th)),
+                )
+                .child(ticked_row(id("row-ticked"), th).child(tr!("gallery-ticked-row"))),
         ))
         .child(section(
             tr!("gallery-fields"),
