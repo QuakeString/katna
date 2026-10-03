@@ -624,17 +624,7 @@ impl MailWindow {
                     .text_color(rgba(th.text))
                     .child(tr!("app-page-title", app = app.label())),
             )
-            .child(
-                div()
-                    .px(px(10.0))
-                    .py(px(2.0))
-                    .rounded_full()
-                    .bg(rgba(th.chip))
-                    .text_size(px(12.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .text_color(rgba(th.text_dim))
-                    .child(tr!("app-coming-soon")),
-            )
+            .child(crate::widgets::tag(tr!("app-coming-soon"), th).font_weight(FontWeight::MEDIUM))
             .child(
                 div()
                     .max_w(px(420.0))

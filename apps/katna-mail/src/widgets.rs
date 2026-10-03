@@ -597,6 +597,57 @@ pub fn tonal_icon_button(
         .child(icon(name, glyph, 20.0))
 }
 
+/// The height of a [`choice_chip`].
+pub const CHIP_HEIGHT: f32 = 32.0;
+
+/// One choice in a row of them (a date range, an address book): an edge
+/// at rest, soft grey with a check while picked.
+pub fn choice_chip(
+    id: impl Into<gpui::ElementId>,
+    label: impl Into<SharedString>,
+    on: bool,
+    th: &Theme,
+) -> Stateful<Div> {
+    let id = id.into();
+    let ripple = id_hash(&id);
+    div()
+        .id(id)
+        .relative()
+        .overflow_hidden()
+        .flex_none()
+        .h(px(CHIP_HEIGHT))
+        .px(px(space::S4))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(6.0))
+        .rounded(px(radius::SM))
+        .border_1()
+        .border_color(rgba(if on { th.nav_selected } else { th.outline }))
+        .bg(rgba(if on { th.nav_selected } else { th.surface }))
+        .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
+        .cursor_pointer()
+        .text_size(px(text::SMALL))
+        .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
+        .child(Ripple::new(("ripple", ripple), rgba(th.ripple)))
+        .when(on, |d| d.child(icon("check", th.nav_selected_text, 16.0)))
+        .child(label.into())
+}
+
+/// A small grey label that is not clicked (Coming soon, a day in a chat,
+/// a contact's label).
+pub fn tag(label: impl Into<SharedString>, th: &Theme) -> Div {
+    div()
+        .flex_none()
+        .px(px(10.0))
+        .py(px(space::S1))
+        .rounded_full()
+        .bg(rgba(th.chip))
+        .text_size(px(text::CAPTION))
+        .text_color(rgba(th.text_dim))
+        .child(label.into())
+}
+
 /// A row of buttons over a card; its empty space moves the window.
 pub fn toolbar(th: &Theme) -> Div {
     div()

@@ -616,16 +616,9 @@ impl MailWindow {
         let feed: Vec<AnyElement> = lines
             .iter()
             .map(|line| match line {
-                Line::Day(label) => div()
+                Line::Day(label) => crate::widgets::tag(label.clone(), th)
                     .self_center()
                     .my(px(8.0))
-                    .px(px(10.0))
-                    .py(px(2.0))
-                    .rounded_full()
-                    .bg(rgba(th.chip))
-                    .text_size(px(12.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(label.clone())
                     .into_any_element(),
                 Line::Joined(who, names) => div()
                     .self_center()

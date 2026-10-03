@@ -20,9 +20,9 @@ use katna_ui::px;
 use katna_ui::unpx;
 
 use super::super::notched::{self, Side, notch};
-use super::{MailWindow, chip};
+use super::MailWindow;
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon_button, tip};
+use crate::widgets::{choice_chip, filled_button, icon_button, tip};
 
 /// What a custom date filter finds.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -361,7 +361,7 @@ impl MailWindow {
         let spans: Vec<_> = SPANS
             .iter()
             .map(|&value| {
-                chip(("span", value as usize), &value.label(), value == span, th).on_click(
+                choice_chip(("span", value as usize), value.label(), value == span, th).on_click(
                     cx.listener(move |this, _, _, cx| {
                         if let Some(custom) = this.custom_mut() {
                             custom.span = value;

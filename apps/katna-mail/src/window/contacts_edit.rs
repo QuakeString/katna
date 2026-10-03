@@ -19,12 +19,14 @@ use gpui::{
 use katna_core::contact::{Card, PostalAddress, Typed};
 use katna_i18n::tr;
 use katna_store::{BookSource, BookState, SavedContact, StoredCard};
-use katna_ui::{InputEvent, Ripple, TextInput, px};
+use katna_ui::{InputEvent, TextInput, px};
 
 use super::MailWindow;
 use crate::daemon::{self, Command};
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon, icon_button, outlined_button, text_button, tip};
+use crate::widgets::{
+    choice_chip, filled_button, icon, icon_button, outlined_button, text_button, tip,
+};
 
 /// How long a delete waits for Undo before it goes to the account.
 const DELETE_AFTER: Duration = Duration::from_secs(8);
@@ -707,36 +709,18 @@ impl MailWindow {
             let chips = edit.books.iter().map(|(id, name)| {
                 let on = *id == edit.book;
                 let book = *id;
-                div()
-                    .id(("contact-edit-book", book.max(0) as usize))
-                    .relative()
-                    .overflow_hidden()
-                    .h(px(32.0))
-                    .px(px(12.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(6.0))
-                    .rounded(px(8.0))
-                    .border_1()
-                    .border_color(rgba(if on { th.nav_selected } else { th.outline }))
-                    .when(on, |d| d.bg(rgba(th.nav_selected)))
-                    .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
-                    .cursor_pointer()
-                    .text_size(px(13.0))
-                    .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-                    .child(Ripple::new(
-                        ("contact-edit-book-ripple", book.max(0) as usize),
-                        rgba(th.ripple),
-                    ))
-                    .when(on, |d| d.child(icon("check", th.nav_selected_text, 16.0)))
-                    .child(name.clone())
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        if let Some(edit) = &mut this.contacts.edit {
-                            edit.book = book;
-                        }
-                        cx.notify();
-                    }))
+                choice_chip(
+                    ("contact-edit-book", book.max(0) as usize),
+                    name.clone(),
+                    on,
+                    th,
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    if let Some(edit) = &mut this.contacts.edit {
+                        edit.book = book;
+                    }
+                    cx.notify();
+                }))
             });
             div()
                 .flex()

@@ -28,10 +28,10 @@ pub(in crate::window) mod subject;
 mod write;
 
 use super::super::MailWindow;
-use super::super::search_panel::chip;
 use super::super::settings_page::Section;
 use crate::daemon::{self, Command, Rephrased};
 use crate::theme::{Theme, fade};
+use crate::widgets::choice_chip;
 use crate::widgets::{
     elevation, filled_button, icon, icon_button_colored, outlined_button, raised, tip,
 };
@@ -631,7 +631,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let tone_chip = |tone: Tone, label: String| {
-            chip(
+            choice_chip(
                 ("compose-rephrase-tone", tone as usize),
                 &label,
                 r.tone == tone,
@@ -647,7 +647,7 @@ impl MailWindow {
             .gap(px(6.0))
             .children(FIRST_TONES.map(|tone| tone_chip(tone, tone_label(tone))))
             .child(
-                chip("compose-rephrase-more", "⋯", r.more, th)
+                choice_chip("compose-rephrase-more", "⋯", r.more, th)
                     .rounded_full()
                     .tooltip(tip(tr!("compose-ai-more"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
