@@ -721,7 +721,22 @@ pub fn count_pill(count: u64, on: bool, th: &Theme) -> Div {
 /// moves). A click anywhere in it gives its input the keys. A field whose
 /// text scrolls keeps the scrolling in a child, so the ring stays put.
 pub fn field(id: impl Into<gpui::ElementId>, focus: &FocusHandle, th: &Theme) -> Stateful<Div> {
-    let ring = rgba(th.accent);
+    edged_field(id.into(), focus, th.outline, th.accent)
+}
+
+/// A [`field`] holding something that can't be used as it is: its edge
+/// and its ring are the error color. Put a [`field_note`] under it saying
+/// what is wrong.
+pub fn invalid_field(
+    id: impl Into<gpui::ElementId>,
+    focus: &FocusHandle,
+    th: &Theme,
+) -> Stateful<Div> {
+    edged_field(id.into(), focus, th.error, th.error)
+}
+
+fn edged_field(id: gpui::ElementId, focus: &FocusHandle, edge: u32, ring: u32) -> Stateful<Div> {
+    let ring = rgba(ring);
     let (shows, takes) = (focus.clone(), focus.clone());
     div()
         .id(id)
@@ -729,7 +744,7 @@ pub fn field(id: impl Into<gpui::ElementId>, focus: &FocusHandle, th: &Theme) ->
         .px(px(space::S4))
         .rounded(px(radius::SM))
         .border_1()
-        .border_color(rgba(th.outline))
+        .border_color(rgba(edge))
         .text_size(px(text::BODY))
         .cursor_text()
         .on_click(move |_, window, cx| window.focus(&takes, cx))
@@ -767,11 +782,65 @@ pub fn line_field(
     th: &Theme,
     cx: &App,
 ) -> Stateful<Div> {
-    field(id, &gpui::Focusable::focus_handle(input.read(cx), cx), th)
+    one_line(
+        field(id, &gpui::Focusable::focus_handle(input.read(cx), cx), th),
+        input,
+    )
+}
+
+/// Makes `field` one line high, holding `input`: for an [`invalid_field`]
+/// or another field [`line_field`] doesn't build.
+pub fn one_line(field: Stateful<Div>, input: &gpui::Entity<katna_ui::TextInput>) -> Stateful<Div> {
+    field
         .h(px(FIELD_HEIGHT))
         .flex()
         .items_center()
         .child(div().flex_1().min_w_0().child(input.clone()))
+}
+
+/// A short line under a field: a hint, or what is wrong in the error
+/// color when `error`.
+pub fn field_note(note: impl Into<SharedString>, error: bool, th: &Theme) -> Div {
+    div()
+        .pt(px(space::S2))
+        .px(px(space::S4))
+        .text_size(px(text::CAPTION))
+        .text_color(rgba(if error { th.error } else { th.text_dim }))
+        .child(note.into())
+}
+
+/// The list of suggestions under a field, for a [`menu_item`] each:
+/// a menu that scrolls past [`SUGGESTIONS_HEIGHT`]. Place it with
+/// [`under_field`].
+pub fn suggestions(id: impl Into<gpui::ElementId>, th: &Theme) -> Stateful<Div> {
+    menu(th)
+        .id(id)
+        .max_h(px(SUGGESTIONS_HEIGHT))
+        .overflow_y_scroll()
+}
+
+/// How tall a list of [`suggestions`] grows before it scrolls.
+pub const SUGGESTIONS_HEIGHT: f32 = 320.0;
+
+/// Floats `list` over everything, `top` below the top of the field's
+/// box (which must be `relative`) and as wide as it; a press outside it
+/// calls `close`.
+pub fn under_field(
+    top: f32,
+    list: impl IntoElement,
+    close: impl Fn(&gpui::MouseDownEvent, &mut Window, &mut App) + 'static,
+) -> gpui::Deferred {
+    gpui::deferred(
+        div()
+            .absolute()
+            .top(px(top))
+            .left_0()
+            .right_0()
+            .occlude()
+            .on_mouse_down_out(close)
+            .child(list),
+    )
+    .with_priority(1)
 }
 
 /// A row of buttons over a card; its empty space moves the window.

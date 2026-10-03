@@ -8,7 +8,7 @@
 //! offers to the saved key, as typed.
 
 use gpui::{
-    AnyElement, Context, Div, Entity, Focusable, Subscription, Window, deferred, div, prelude::*,
+    AnyElement, Context, Div, Entity, Focusable, Subscription, Window, div, prelude::*,
     rgba,
 };
 use katna_ai::provider::{OTHER, PRESETS, preset};
@@ -21,7 +21,9 @@ use super::{MailWindow, SAVE_DELAY, chip, control_column};
 use crate::daemon;
 use crate::theme::Theme;
 use crate::widgets::line_field;
-use crate::widgets::{icon, icon_button_colored, menu, menu_item, outlined_button, tip};
+use crate::widgets::{
+    icon, icon_button_colored, menu_item, outlined_button, suggestions, tip, under_field,
+};
 use crate::window::settings::Change;
 
 /// Models suggested under the model field at most.
@@ -529,32 +531,20 @@ impl MailWindow {
                 .on_click(cx.listener(move |this, _, _, cx| this.open_ai_models(!open, true, cx)))
         });
         let list = open.then(|| {
-            deferred(
-                div()
-                    .absolute()
-                    .top(px(70.0))
-                    .left_0()
-                    .right_0()
-                    .occlude()
-                    .on_mouse_down_out(
-                        cx.listener(|this, _, _, cx| this.open_ai_models(false, false, cx)),
-                    )
-                    .child(
-                        menu(th)
-                            .id("page-ai-models-list")
-                            .max_h(px(320.0))
-                            .overflow_y_scroll()
-                            .children(matches.into_iter().enumerate().map(|(n, model)| {
-                                let picked = model.clone();
-                                menu_item(("page-ai-model-item", n), &model, th).on_click(
-                                    cx.listener(move |this, _, window, cx| {
-                                        this.pick_ai_model(picked.clone(), window, cx)
-                                    }),
-                                )
-                            })),
-                    ),
+            under_field(
+                70.0,
+                suggestions("page-ai-models-list", th).children(
+                    matches.into_iter().enumerate().map(|(n, model)| {
+                        let picked = model.clone();
+                        menu_item(("page-ai-model-item", n), &model, th).on_click(cx.listener(
+                            move |this, _, window, cx| {
+                                this.pick_ai_model(picked.clone(), window, cx)
+                            },
+                        ))
+                    }),
+                ),
+                cx.listener(|this, _, _, cx| this.open_ai_models(false, false, cx)),
             )
-            .with_priority(1)
         });
         div()
             .relative()
