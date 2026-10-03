@@ -2096,7 +2096,8 @@ impl Render for Viewer {
             .children(self.leave_dialog(&th, cx))
             .with_animation(
                 ("viewer-in", self.opened),
-                Animation::new(Duration::from_millis(160)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(160)))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
     }

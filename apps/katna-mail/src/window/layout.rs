@@ -487,96 +487,100 @@ impl MailWindow {
         // The names under the icons follow the setting the rail's follow;
         // without them the icons sit in the middle of the bar.
         let labels = self.config.mail.app_labels;
-        let items = RailApp::ALL.into_iter().map(|app| {
-            let on = self.app == app;
-            div()
-                .id(("bottom-app", app as usize))
-                .flex_1()
-                .min_w_0()
-                .h(px(BOTTOM_BAR_HEIGHT))
-                .flex()
-                .flex_col()
-                .items_center()
-                .cursor_pointer()
-                .keeps_press()
-                .when(!labels, |d| d.tooltip(tip(app.label(), th)))
-                .group("bottom-app")
-                .on_click(cx.listener(move |this, _, window, cx| {
-                    this.close_drawer(cx);
-                    this.show_page(app, window, cx)
-                }))
-                .child(
-                    div()
-                        .relative()
-                        .overflow_hidden()
-                        .w(px(56.0))
-                        .h(px(32.0))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .rounded_full()
-                        .group_hover("bottom-app", |s| s.bg(rgba(th.hover)))
-                        .child(
-                            Ripple::new(("bottom-ripple", app as usize), rgba(th.ripple))
-                                .centered(),
-                        )
-                        .child(icon(
-                            app.icon(),
-                            if on {
-                                th.nav_selected_text
-                            } else {
-                                th.text_dim
-                            },
-                            22.0,
-                        ))
-                        .with_spring(
-                            ("bottom-pill", app as usize),
-                            SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
-                            {
-                                let bg = th.nav_selected;
-                                move |el, s: f32| {
-                                    let s = s.clamp(0.0, 1.0);
-                                    if s > 0.001 {
-                                        el.bg(rgba(fade(bg, s))).w(px(32.0 + 24.0 * s))
-                                    } else {
-                                        el
+        let items =
+            RailApp::ALL.into_iter().map(|app| {
+                let on = self.app == app;
+                div()
+                    .id(("bottom-app", app as usize))
+                    .flex_1()
+                    .min_w_0()
+                    .h(px(BOTTOM_BAR_HEIGHT))
+                    .flex()
+                    .flex_col()
+                    .items_center()
+                    .cursor_pointer()
+                    .keeps_press()
+                    .when(!labels, |d| d.tooltip(tip(app.label(), th)))
+                    .group("bottom-app")
+                    .on_click(cx.listener(move |this, _, window, cx| {
+                        this.close_drawer(cx);
+                        this.show_page(app, window, cx)
+                    }))
+                    .child(
+                        div()
+                            .relative()
+                            .overflow_hidden()
+                            .w(px(56.0))
+                            .h(px(32.0))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .rounded_full()
+                            .group_hover("bottom-app", |s| s.bg(rgba(th.hover)))
+                            .child(
+                                Ripple::new(("bottom-ripple", app as usize), rgba(th.ripple))
+                                    .centered(),
+                            )
+                            .child(icon(
+                                app.icon(),
+                                if on {
+                                    th.nav_selected_text
+                                } else {
+                                    th.text_dim
+                                },
+                                22.0,
+                            ))
+                            .with_spring(
+                                ("bottom-pill", app as usize),
+                                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                                    .to(if on { 1.0 } else { 0.0 }),
+                                {
+                                    let bg = th.nav_selected;
+                                    move |el, s: f32| {
+                                        let s = s.clamp(0.0, 1.0);
+                                        if s > 0.001 {
+                                            el.bg(rgba(fade(bg, s))).w(px(32.0 + 24.0 * s))
+                                        } else {
+                                            el
+                                        }
                                     }
-                                }
-                            },
-                        ),
-                )
-                .child(
-                    div()
-                        .max_w_full()
-                        .truncate()
-                        .text_size(px(12.0))
-                        .line_height(px(16.0))
-                        .font_weight(if on {
-                            FontWeight::BOLD
-                        } else {
-                            FontWeight::MEDIUM
-                        })
-                        .text_color(rgba(if on { th.text } else { th.text_dim }))
-                        .child(app.label())
-                        .with_spring(
-                            ("bottom-label", app as usize),
-                            SpringAnimation::new(motion::SLIDE).to(if labels { 1.0 } else { 0.0 }),
-                            |el, s: f32| {
-                                let s = s.clamp(0.0, 1.0);
-                                el.h(px(16.0 * s)).opacity(s)
-                            },
-                        ),
-                )
-                .with_spring(
-                    ("bottom-room", app as usize),
-                    SpringAnimation::new(motion::SLIDE).to(if labels { 1.0 } else { 0.0 }),
-                    |el, s: f32| {
-                        let s = s.clamp(0.0, 1.0);
-                        // The icon's pill alone is centered (32 of 72).
-                        el.pt(px(lerp(20.0, 12.0, s))).gap(px(4.0 * s))
-                    },
-                )
-        });
+                                },
+                            ),
+                    )
+                    .child(
+                        div()
+                            .max_w_full()
+                            .truncate()
+                            .text_size(px(12.0))
+                            .line_height(px(16.0))
+                            .font_weight(if on {
+                                FontWeight::BOLD
+                            } else {
+                                FontWeight::MEDIUM
+                            })
+                            .text_color(rgba(if on { th.text } else { th.text_dim }))
+                            .child(app.label())
+                            .with_spring(
+                                ("bottom-label", app as usize),
+                                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                                    .to(if labels { 1.0 } else { 0.0 }),
+                                |el, s: f32| {
+                                    let s = s.clamp(0.0, 1.0);
+                                    el.h(px(16.0 * s)).opacity(s)
+                                },
+                            ),
+                    )
+                    .with_spring(
+                        ("bottom-room", app as usize),
+                        SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                            .to(if labels { 1.0 } else { 0.0 }),
+                        |el, s: f32| {
+                            let s = s.clamp(0.0, 1.0);
+                            // The icon's pill alone is centered (32 of 72).
+                            el.pt(px(lerp(20.0, 12.0, s))).gap(px(4.0 * s))
+                        },
+                    )
+            });
         // It rises from under the window's edge.
         Some(
             div()

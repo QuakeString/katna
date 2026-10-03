@@ -715,6 +715,12 @@ pub struct MailView {
     /// The size of everything in the windows, in percent, on top of the
     /// desktop's own scale (75 to 200).
     pub scale: u16,
+    /// How long animations take compared with normal (0.25 to 4): Katna's
+    /// own speed. Not set: the desktop's animation speed.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub animation_speed: Option<f32>,
+    /// Whether animations are turned off.
+    pub reduce_motion: ReduceMotion,
     pub theme: Theme,
     /// Use the desktop's color scheme and accent color instead of Katna's
     /// own colors. Older versions' choice: [`MailView::colors`] wins when
@@ -938,6 +944,8 @@ impl Default for MailView {
             account_colors: BTreeMap::new(),
             density: Density::Default,
             scale: 100,
+            animation_speed: None,
+            reduce_motion: ReduceMotion::Desktop,
             theme: Theme::System,
             desktop_colors: true,
             color_scheme: None,
@@ -1255,6 +1263,19 @@ pub enum AccountsShown {
     One,
     /// Every account, one after another.
     All,
+}
+
+/// [`MailView::reduce_motion`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ReduceMotion {
+    /// As the desktop says: off when its animations are off.
+    #[default]
+    Desktop,
+    /// Animations off: things appear and move at once.
+    On,
+    /// Animations on, whatever the desktop says.
+    Off,
 }
 
 /// [`MailView::density`].

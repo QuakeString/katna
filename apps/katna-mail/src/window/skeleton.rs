@@ -169,11 +169,15 @@ fn breathing(id: &'static str, el: Div, reduce: bool) -> AnyElement {
     if reduce {
         return el.into_any_element();
     }
-    el.with_animation(id, Animation::new(PULSE).repeat(), |el, t| {
-        // Dim to bright and back, softly at both ends.
-        let wave = 0.5 - 0.5 * (t * std::f32::consts::TAU).cos();
-        el.opacity(0.55 + 0.45 * wave)
-    })
+    el.with_animation(
+        id,
+        Animation::new(katna_ui::motion::time(PULSE)).repeat(),
+        |el, t| {
+            // Dim to bright and back, softly at both ends.
+            let wave = 0.5 - 0.5 * (t * std::f32::consts::TAU).cos();
+            el.opacity(0.55 + 0.45 * wave)
+        },
+    )
     .into_any_element()
 }
 

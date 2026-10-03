@@ -306,7 +306,8 @@ impl MailWindow {
             .children(notch(side, along, th))
             .with_animation(
                 SharedString::from(format!("year-peek-{day}")),
-                Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(140)))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             );
         let layer = div().relative().w(px(vw)).h(px(vh)).child(popover);
