@@ -13,8 +13,8 @@ use std::sync::LazyLock;
 use std::time::Instant;
 
 use gpui::{
-    AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, SharedString, Window,
-    div, prelude::*, rgba,
+    AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, ScrollHandle,
+    SharedString, Window, div, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
@@ -217,6 +217,8 @@ pub(super) struct About {
     all: bool,
     /// When the little play in "Buy me a coffee" began, while it plays.
     coffee: Option<Instant>,
+    /// The page's scroll, which shrinks the header.
+    scroll: ScrollHandle,
 }
 
 impl MailWindow {
@@ -250,6 +252,7 @@ impl MailWindow {
             shown,
             all: false,
             coffee: None,
+            scroll: ScrollHandle::new(),
         });
         cx.notify();
     }
@@ -340,38 +343,9 @@ impl MailWindow {
         let vw = unpx(window.viewport_size().width);
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
 
-        let header = div()
-            .flex_none()
-            .px(px(24.0))
-            .pt(px(28.0))
-            .flex()
-            .flex_col()
-            .items_center()
-            .gap(px(6.0))
-            .child(logo(th))
-            .child(
-                div()
-                    .mt(px(8.0))
-                    .text_size(px(24.0))
-                    .line_height(px(32.0))
-                    .child("Katna"),
-            )
-            .child(
-                div()
-                    .text_size(px(14.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(tr!("about-tagline")),
-            )
-            .child(
-                div()
-                    .mt(px(6.0))
-                    .px(px(12.0))
-                    .py(px(4.0))
-                    .rounded_full()
-                    .bg(rgba(th.chip))
-                    .text_size(px(13.0))
-                    .child(format!("Katna Mail {}", whats_new::VERSION)),
-            );
+        let offset = -unpx(about.scroll.offset().y);
+        let radius = if phone { 0.0 } else { PANEL_RADIUS };
+        let header = header(th, width, offset.max(0.0), radius);
 
         let changelog = whats_new::changelog_url(None);
         let links = div()
@@ -766,11 +740,14 @@ impl MailWindow {
             .id("about-body")
             .flex_1()
             .min_h_0()
+            .size_full()
             .overflow_y_scroll()
+            .track_scroll(&about.scroll)
             .pb(px(12.0))
             .flex()
             .flex_col()
-            .child(header)
+            // Room for the header, which floats over the top and shrinks.
+            .child(div().flex_none().h(px(HEADER_TALL)))
             .child(links)
             .children(follow)
             .child(coffee)
@@ -821,13 +798,19 @@ impl MailWindow {
             .when(!phone, |d| {
                 d.rounded(px(PANEL_RADIUS)).shadow(elevation(th, 3.0))
             })
-            .map(|d| {
-                let radius = if phone { 0.0 } else { PANEL_RADIUS };
-                crate::widgets::frosted(d, th, th.surface, radius)
-            })
+            .map(|d| crate::widgets::frosted(d, th, th.surface, radius))
             .text_color(rgba(th.text))
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
-            .child(body)
+            .child(
+                div()
+                    .flex_1()
+                    .min_h_0()
+                    .relative()
+                    .flex()
+                    .flex_col()
+                    .child(body)
+                    .child(header),
+            )
             .child(footer);
         Some(
             div()
@@ -878,9 +861,118 @@ fn link_button(
         .on_click(move |_, _, cx| cx.open_url(&url))
 }
 
-/// Katna Mail's wordmark.
-fn logo(th: &Theme) -> AnyElement {
-    crate::widgets::katna_wordmark(112.0, th)
+/// The header's height, open and shrunk.
+const HEADER_TALL: f32 = 250.0;
+const HEADER_SHORT: f32 = 88.0;
+
+/// The wordmark's height, open and shrunk.
+const LOGO_TALL: f32 = 112.0;
+const LOGO_SHORT: f32 = 60.0;
+
+/// The header over the top of the page: the wordmark with Katna, the
+/// tagline and the version centred under it. As the page scrolls `offset`
+/// px, it shrinks with the scroll, the wordmark moving to the left with
+/// the three lines beside it, then stays while the rest scrolls under its
+/// frost.
+fn header(th: &Theme, width: f32, offset: f32, radius: f32) -> AnyElement {
+    let collapse = HEADER_TALL - HEADER_SHORT;
+    let t = (offset / collapse).clamp(0.0, 1.0);
+    // Frosted as the page nears the point where it slides under.
+    let stuck = ((offset - collapse) / 12.0 + 1.0).clamp(0.0, 1.0);
+    let (w, h) = crate::assets::WORDMARK_SIZE;
+    let aspect = w as f32 / h as f32;
+    // The wordmark gets to its place first, eased, so the lines rising
+    // after it pass below and then beside it, never over it.
+    let x = (t / 0.6).min(1.0);
+    let e = x * x * (3.0 - 2.0 * x);
+    let logo = lerp(LOGO_TALL, LOGO_SHORT, e);
+    let logo_left = lerp((width - LOGO_TALL * aspect) / 2.0, 24.0, e);
+    let logo_top = lerp(28.0, 14.0, e);
+    let text_left = lerp(24.0, 24.0 + LOGO_SHORT * aspect + 16.0, t);
+    // Each line's height and the gaps, open and shrunk: 96 and 61 px.
+    let (name, name_line) = (lerp(24.0, 17.0, t), lerp(32.0, 22.0, t));
+    let (tag, tag_line) = (lerp(14.0, 13.0, t), lerp(20.0, 18.0, t));
+    let (chip, chip_line) = (lerp(13.0, 12.0, t), lerp(18.0, 16.0, t));
+    let (chip_x, chip_y) = (lerp(12.0, 8.0, t), lerp(4.0, 1.0, t));
+    let (gap_tag, gap_chip) = (lerp(6.0, 0.0, t), lerp(12.0, 3.0, t));
+    let text_top = lerp(28.0 + LOGO_TALL + 14.0, (HEADER_SHORT - 61.0) / 2.0, t);
+
+    // Centred, then at the left: the space before a line gives way.
+    let line = |child: gpui::Div| {
+        div()
+            .flex()
+            .flex_row()
+            .child(div().flex_grow(1.0 - t))
+            .child(child.min_w_0().truncate())
+            .child(div().flex_grow(1.0))
+    };
+    let glass = crate::widgets::frosted_top(
+        div().absolute().top_0().left_0().size_full().opacity(stuck),
+        th,
+        th.surface,
+        radius,
+    )
+    .child(
+        div()
+            .absolute()
+            .left_0()
+            .right_0()
+            .bottom_0()
+            .h(px(1.0))
+            .bg(rgba(th.divider)),
+    );
+    div()
+        .id("about-header")
+        .absolute()
+        .top_0()
+        .left_0()
+        .right_0()
+        .h(px(HEADER_TALL - offset.min(collapse)))
+        // The wheel still scrolls the page from the header.
+        .block_mouse_except_scroll()
+        .child(glass)
+        .child(
+            div()
+                .absolute()
+                .top(px(logo_top))
+                .left(px(logo_left))
+                .child(crate::widgets::katna_wordmark_from(logo, LOGO_TALL, th)),
+        )
+        .child(
+            div()
+                .absolute()
+                .top(px(text_top))
+                .left(px(text_left))
+                .right(px(24.0))
+                .flex()
+                .flex_col()
+                .child(line(
+                    div()
+                        .text_size(px(name))
+                        .line_height(px(name_line))
+                        .child("Katna"),
+                ))
+                .child(line(
+                    div()
+                        .mt(px(gap_tag))
+                        .text_size(px(tag))
+                        .line_height(px(tag_line))
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("about-tagline")),
+                ))
+                .child(line(
+                    div()
+                        .mt(px(gap_chip))
+                        .px(px(chip_x))
+                        .py(px(chip_y))
+                        .rounded_full()
+                        .bg(rgba(th.chip))
+                        .text_size(px(chip))
+                        .line_height(px(chip_line))
+                        .child(format!("Katna Mail {}", whats_new::VERSION)),
+                )),
+        )
+        .into_any_element()
 }
 
 #[cfg(test)]

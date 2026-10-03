@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Long mails in chats"
+text = """
+On a long bubble, the sender's picture stays at the bottom of what you see
+and the reply, pin and more buttons stay in the part in sight. Right-click
+the text to reach all of them.
+"""
