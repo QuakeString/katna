@@ -846,6 +846,8 @@ impl MailWindow {
         // A drawer (opened with the menu on a phone or tablet) slides in
         // whole; the desktop's panel unfolds.
         let slides = !shape.is_desktop() && !self.nav_peek;
+        // A drawer's color reaches back over the rail's edge.
+        let apron = if drawer { DRAWER_APRON } else { 0.0 };
         let width = if slides {
             self.drawer_width()
         } else {
@@ -890,7 +892,8 @@ impl MailWindow {
                         .w(px(width + DRAWER_APRON + over))
                         .pl(px(DRAWER_APRON + over))
                 } else {
-                    d.w(px(width * t)).opacity(t.min(1.0))
+                    // Unfolding from a hover, a drawer's apron does the same.
+                    d.w(px(width * t + apron)).pl(px(apron)).opacity(t.min(1.0))
                 }
             })
             .flex()
@@ -918,7 +921,6 @@ impl MailWindow {
             .children(self.render_storage(th))
             .children(self.render_drawer_foot(th, cx));
         let scrim_width = shape.width - shape.rail();
-        let apron = if slides { DRAWER_APRON } else { 0.0 };
         div()
             .relative()
             .flex_none()
@@ -927,7 +929,7 @@ impl MailWindow {
             .children(self.render_scrim(scrim_width, cx))
             // Covers the list's shadow above the drawer; apart from the
             // drawer, so the drawer's own shadow stays below the top bar.
-            .when(slides && float > 0.0, |d| {
+            .when(drawer && float > 0.0, |d| {
                 d.child(
                     div()
                         .absolute()
@@ -935,7 +937,8 @@ impl MailWindow {
                         .left(px(-apron))
                         .w(px(apron + width * t))
                         .h(px(DRAWER_TOP_APRON))
-                        .bg(rgba(th.page)),
+                        .bg(rgba(th.page))
+                        .when(!slides, |d| d.opacity(t.min(1.0))),
                 )
             })
             // Clips the drawer as it slides out from the rail's edge.
