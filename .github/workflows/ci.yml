@@ -113,6 +113,8 @@ jobs:
         if: env.CODE == 'true'
       - run: ci/gen-credits.sh --check
         if: env.CODE == 'true'
+      - run: ci/check-tokens.sh
+        if: env.CODE == 'true'
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
         if: env.CODE == 'true'
       - run: cargo test --workspace --locked
