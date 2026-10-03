@@ -43,7 +43,9 @@ use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts};
 use crate::autostart::Start;
 use crate::tabs::{self, Provider};
 use crate::theme::Theme;
-use crate::widgets::{FocusRing, ScaledEdge, TabStops, icon, icon_button, outlined_button, tip};
+use crate::widgets::{
+    FocusRing, ScaledEdge, TabStops, field, icon, icon_button, line_field, outlined_button, tip,
+};
 
 mod ai;
 mod notifications;
@@ -799,16 +801,8 @@ impl MailWindow {
             return div().into_any_element();
         };
         let input = page.triggers.clone();
-        let focus = input.focus_handle(cx);
         control_column(240.0)
-            .child(
-                field_box("page-search-triggers", th)
-                    .h(px(40.0))
-                    .flex()
-                    .items_center()
-                    .on_click(move |_, window, cx| window.focus(&focus, cx))
-                    .child(div().flex_1().child(input)),
-            )
+            .child(line_field("page-search-triggers", &input, th, cx))
             .into_any_element()
     }
 
@@ -818,16 +812,8 @@ impl MailWindow {
             return div().into_any_element();
         };
         let input = page.jitsi.clone();
-        let focus = input.focus_handle(cx);
         control_column(240.0)
-            .child(
-                field_box("page-jitsi-server", th)
-                    .h(px(40.0))
-                    .flex()
-                    .items_center()
-                    .on_click(move |_, window, cx| window.focus(&focus, cx))
-                    .child(div().flex_1().child(input)),
-            )
+            .child(line_field("page-jitsi-server", &input, th, cx))
             .into_any_element()
     }
 
@@ -2253,30 +2239,23 @@ impl MailWindow {
         });
         let editor = editing.map(|e| {
             let id = e.id;
-            let name_focus = e.name.focus_handle(cx);
             let text_focus = e.text.focus_handle(cx);
             control_column(240.0)
                 .flex()
                 .flex_col()
                 .gap(px(8.0))
+                .child(line_field("page-signature-name", &e.name, th, cx))
                 .child(
-                    field_box("page-signature-name", th)
-                        .h(px(40.0))
-                        .flex()
-                        .items_center()
-                        .on_click(move |_, window, cx| window.focus(&name_focus, cx))
-                        .child(div().flex_1().child(e.name.clone())),
-                )
-                .child(
-                    field_box("page-signature-text", th)
-                        .min_h(px(140.0))
-                        .max_h(px(320.0))
-                        .overflow_y_scroll()
-                        .py(px(10.0))
-                        .line_height(px(20.0))
-                        .cursor_text()
-                        .on_click(move |_, window, cx| window.focus(&text_focus, cx))
-                        .child(e.text.clone()),
+                    field("page-signature-text", &text_focus, th).child(
+                        div()
+                            .id("page-signature-text-scroll")
+                            .min_h(px(138.0))
+                            .max_h(px(318.0))
+                            .overflow_y_scroll()
+                            .py(px(10.0))
+                            .line_height(px(20.0))
+                            .child(e.text.clone()),
+                    ),
                 )
                 .children(tools)
                 .child(
@@ -3112,7 +3091,7 @@ pub(super) fn number_field(
             .child(icon(name, th.text_faint, 9.0))
     };
     let (up, down) = ((id, 0), (id, 1));
-    field_box(id, th)
+    field(id, &focus, th)
         .w(px(64.0))
         .h(px(32.0))
         .pl(px(10.0))
@@ -3120,7 +3099,6 @@ pub(super) fn number_field(
         .flex()
         .items_center()
         .gap(px(2.0))
-        .on_click(move |_, window, cx| window.focus(&focus, cx))
         .child(div().flex_1().min_w_0().child(input.clone()))
         .child(
             div()
@@ -3137,16 +3115,6 @@ pub(super) fn number_field(
                     tr!("settings-files-less-tip"),
                 )),
         )
-}
-
-fn field_box(id: &'static str, th: &Theme) -> Stateful<Div> {
-    div()
-        .id(id)
-        .px(px(12.0))
-        .rounded(px(8.0))
-        .border_1()
-        .border_color(rgba(th.outline))
-        .text_size(px(14.0))
 }
 
 fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> Stateful<Div> {
