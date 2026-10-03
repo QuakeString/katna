@@ -6,7 +6,7 @@
 
 use katna_ui::WindowDrag;
 use std::rc::Rc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, FontWeight, HighlightStyle, ListOffset,
@@ -18,6 +18,7 @@ use katna_i18n::tr;
 use katna_ui::Ripple;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
+use katna_ui::tokens::duration;
 
 /// The lift of the line under the pointer: critically damped and slower
 /// than other hover feedback, so it rises and settles without a jolt.
@@ -975,6 +976,34 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Notes a popup menu that closed since the last frame, however it
+    /// closed, so `with_menu` fades it out (`motion` FAST), and forgets
+    /// it once faded. Move to and Label as are left out: their folder
+    /// search is gone once they close.
+    pub(super) fn track_menu_fade(&mut self, cx: &mut Context<Self>) {
+        let fade = katna_ui::motion::time(duration::FAST);
+        if self.menu != self.menu_was {
+            if let Some(was) = self.menu_was
+                && !matches!(was, Menu::MoveTo | Menu::LabelAs)
+                && !cx.reduce_motion()
+            {
+                self.menu_fade = Some((was, Instant::now()));
+                // One more frame once it has faded, to take it away.
+                cx.spawn(async move |this, cx| {
+                    cx.background_executor().timer(fade).await;
+                    this.update(cx, |_, cx| cx.notify()).ok();
+                })
+                .detach();
+            }
+            self.menu_was = self.menu;
+        }
+        if let Some((which, since)) = self.menu_fade
+            && (self.menu == Some(which) || since.elapsed() >= fade)
+        {
+            self.menu_fade = None;
+        }
+    }
+
     /// Puts `anchor` in a box that also holds `which` menu when it is open,
     /// drawn over everything, with a scrim that closes it on a click
     /// elsewhere.
@@ -986,9 +1015,32 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let open = self.menu == Some(which);
+        let fading = !open && self.menu_fade.is_some_and(|(m, _)| m == which);
         div()
             .relative()
             .child(anchor)
+            // Closed: it fades where it was, out of reach.
+            .when(fading, |d| {
+                let items = self
+                    .menu_items(which, th, cx)
+                    .child(div().absolute().top_0().left_0().size_full().occlude());
+                d.child(
+                    deferred(
+                        anchored()
+                            .offset(point(px(0.0), px(4.0)))
+                            .snap_to_window_with_margin(px(8.0))
+                            .child(
+                                items.with_animation(
+                                    ("menu-out", which as usize),
+                                    Animation::new(katna_ui::motion::time(duration::FAST))
+                                        .with_easing(ease_out_quint()),
+                                    |el, t| el.opacity(1.0 - t),
+                                ),
+                            ),
+                    )
+                    .with_priority(2),
+                )
+            })
             .when(open, |d| {
                 let items = self.menu_items(which, th, cx);
                 d.child(
