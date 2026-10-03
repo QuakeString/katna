@@ -118,6 +118,9 @@ pub(super) enum TabsFit {
 const FOLD_LABELS: f32 = 0.0;
 const FOLD_OPEN_LABEL: f32 = 1.0;
 const FOLD_NO_COUNTS: f32 = 2.0;
+/// How long the list must be still after scrolling before the line under
+/// the pointer shows its hover again.
+const SCROLL_SETTLE: Duration = Duration::from_millis(150);
 const FOLD_ICONS: f32 = 3.0;
 
 /// The line just opened and how far below the list's top it was, kept
@@ -226,6 +229,20 @@ impl MailWindow {
             ..keep
         });
         cx.notify();
+    }
+
+    /// The list scrolled: hover stays off the lines passing under the
+    /// pointer until it has been still for [`SCROLL_SETTLE`], then the line
+    /// under the pointer lights up.
+    pub(super) fn hold_hover_while_scrolling(&mut self, cx: &mut Context<Self>) {
+        self.list_scrolling = Some(cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(SCROLL_SETTLE).await;
+            this.update(cx, |this, cx| {
+                this.list_scrolling = None;
+                cx.notify();
+            })
+            .ok();
+        }));
     }
 
     /// Whether lines show as three stacked lines: the list is narrow.
@@ -2174,8 +2191,9 @@ impl MailWindow {
                 (true, false) => CHIPS_LINE,
                 (true, true) => CHIPS_LINE - 4.0,
             };
-        let hovered = self.hovered == Some(ix);
-        let under_hovered = ix > 0 && self.hovered == Some(ix - 1);
+        let scrolling = self.list_scrolling.is_some();
+        let hovered = !scrolling && self.hovered == Some(ix);
+        let under_hovered = !scrolling && ix > 0 && self.hovered == Some(ix - 1);
         let cursor = self.selected == Some(ix);
         let checked = self.checked.contains(&key);
         let open = self.split() && self.reader.as_ref().is_some_and(|r| r.key == key);
@@ -2375,7 +2393,7 @@ impl MailWindow {
             .items_center()
             .justify_center()
             .rounded_full()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .when(!scrolling, |d| d.hover(|s| s.bg(rgba(th.hover))))
             .on_click(cx.listener(move |this, event: &gpui::ClickEvent, _, cx| {
                 cx.stop_propagation();
                 if event.modifiers().shift {
@@ -2418,7 +2436,7 @@ impl MailWindow {
             .items_center()
             .justify_center()
             .rounded_full()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .when(!scrolling, |d| d.hover(|s| s.bg(rgba(th.hover))))
             .on_click(cx.listener(move |this, _, _, cx| {
                 cx.stop_propagation();
                 this.act(Act::Star(!flagged), vec![key], cx);
@@ -2447,7 +2465,7 @@ impl MailWindow {
                 .items_center()
                 .justify_center()
                 .rounded_full()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .when(!scrolling, |d| d.hover(|s| s.bg(rgba(th.hover))))
                 .on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
                     this.act(Act::Important(!important), vec![key], cx);
