@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The mail list stays put when you open a mail"
+text = """
+With a mail open beside the list, clicking another mail no longer nudges
+the list down by a line. The list stays exactly where you scrolled it.
+"""

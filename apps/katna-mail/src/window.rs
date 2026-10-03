@@ -1647,14 +1647,22 @@ impl MailWindow {
         if matches!(self.listing, Some(Listing::Search { .. })) {
             self.before_search = None;
         }
-        self.keep_line = self
-            .list_state
-            .bounds_for_item(ix)
-            .map(|bounds| list::KeepLine {
-                ix,
-                top: bounds.top() - self.list_state.viewport_bounds().top(),
-                placed: false,
-            });
+        // With a conversation already beside the list the lines keep their
+        // height, so the list stays where it was scrolled; only a line cut
+        // off at an edge comes fully into view.
+        if self.pane_open() {
+            self.keep_line = None;
+            self.list_state.scroll_to_reveal_item(ix);
+        } else {
+            self.keep_line = self
+                .list_state
+                .bounds_for_item(ix)
+                .map(|bounds| list::KeepLine {
+                    ix,
+                    top: bounds.top() - self.list_state.viewport_bounds().top(),
+                    placed: false,
+                });
+        }
         self.selected = Some(ix);
         self.reading = true;
         self.menu = None;
