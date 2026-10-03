@@ -4780,7 +4780,12 @@ server error is not.
   and Schedule list them with the events. Its circle ticks it off, a
   click opens it over the Calendar, and dragging it to another day, time
   or the whole-day row moves its due day and time (a quarter hour at a
-  time, with Undo), blocking that time for it. A reminder moves with it.
+  time, with Undo), blocking that time for it. In Month view dragging it
+  to another day moves its due day and keeps its time; it shows in that
+  day's cell as it goes, even a full one. A reminder moves with it. A
+  Tasks row under the calendars in the side list, a box in the tasks'
+  colour like a calendar's, hides them from every view; it is remembered
+  on this computer (`[calendar] hide_tasks`), as Birthdays is.
 - **Reminders**: the task's details offer Don't remind, At the time (on
   the day at 9 AM for a task without a time), An hour before (with a
   time) and The day before; a time set elsewhere (To Do) shows as itself
