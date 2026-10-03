@@ -4722,8 +4722,8 @@ server error is not.
   to-do with `RELATED-TO;RELTYPE=PARENT`. A change is written over the
   server's own text of the to-do (`katna_dav::todo`), so categories,
   attachments, other alarms and a client's own fields stay.
-- **The star, labels and files** (`pim.db` v16: `task.labels`, a JSON
-  array, and `task_file`, whose bytes are in the blob store and never
+- **The star, labels and files** (`pim.db` v16: `task_labels`, a JSON
+  array per task in a side table, and `task_file`, whose bytes are in the blob store and never
   dropped by a cache reset). Where each is kept:
 
   | | Star | Labels | Files |
