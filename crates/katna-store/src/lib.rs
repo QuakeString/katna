@@ -72,7 +72,10 @@ pub use mail_view::{
     ThreadSender, ThreadSummary,
 };
 pub use meta::MetaRow;
-pub use notes::{NOTE_TRASH_KEEP, Note, RemoteNote};
+pub use notes::{
+    NOTE_LINK_SCHEME, NOTE_TRASH_KEEP, NOTE_VERSION_KEEP, Note, NotePicture, NoteVersion,
+    RemoteNote, VersionSource,
+};
 pub use ops::{Location, PinnedMessage, QueuedOp};
 pub use other_contacts::OtherContact;
 pub use outbox::{DELIVERY_RECEIPT_HEADER, OutboxEntry, SendState, take_delivery_receipt};
