@@ -25,7 +25,7 @@ use crate::schemes;
 use crate::theme::{Accent, Theme, mix};
 use crate::widgets::FocusRing;
 use crate::widgets::{
-    CARD_SHADOW_ROOM, ScaledEdge, card_outline, card_shadow, icon, icon_button, radio, switch, tip,
+    CARD_SHADOW_ROOM, ScaledEdge, card_outline, icon, icon_button, radio, switch, tip,
 };
 
 /// One loop of the reading-pane demo.
@@ -177,19 +177,16 @@ impl MailWindow {
             .flex()
             .flex_col()
             .relative()
-            .when(!phone, |d| {
-                d.rounded(px(super::PANEL_RADIUS)).shadow(card_shadow(
-                    th,
-                    t.min(1.0) * self.layout.shape.card_outline(),
-                ))
-            })
             .map(|d| {
-                crate::widgets::pane(
-                    d,
-                    th.pane(),
-                    th.surface,
-                    if phone { 0.0 } else { super::PANEL_RADIUS },
-                )
+                let (radius, shadow) = if phone {
+                    (0.0, 0.0)
+                } else {
+                    (
+                        super::PANEL_RADIUS,
+                        t.min(1.0) * self.layout.shape.card_outline(),
+                    )
+                };
+                crate::widgets::card(d, th, th.pane(), radius, shadow)
             })
             .child(
                 div()

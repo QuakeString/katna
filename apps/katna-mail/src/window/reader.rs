@@ -33,7 +33,7 @@ use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    card_outline, card_shadow, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
+    card_outline, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
 };
 
 mod chat;
@@ -918,7 +918,6 @@ impl MailWindow {
             .flex()
             .flex_col()
             .relative()
-            .rounded(px(radius))
             .overflow_hidden()
             .map(|d| {
                 let fill = if self.chat_shown() {
@@ -926,9 +925,8 @@ impl MailWindow {
                 } else {
                     th.pane()
                 };
-                crate::widgets::pane(d, fill, th.surface, radius)
+                crate::widgets::card(d, th, fill, radius, shadow)
             })
-            .shadow(card_shadow(th, shadow))
             .p(px(outline))
             .on_action(cx.listener(Self::reader_back))
             .on_action(cx.listener(Self::select_next))

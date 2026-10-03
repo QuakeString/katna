@@ -48,8 +48,8 @@ use crate::format;
 use crate::sidebar::Role;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    TOOLBAR_HEIGHT, card_outline, card_shadow, elevation, icon, icon_button, icon_button_colored,
-    menu, menu_item, menu_item_icon, placeholder, tip, toolbar,
+    TOOLBAR_HEIGHT, card_outline, elevation, icon, icon_button, icon_button_colored, menu,
+    menu_item, menu_item_icon, placeholder, tip, toolbar,
 };
 use gpui::DragMoveEvent;
 
@@ -307,7 +307,6 @@ impl MailWindow {
             .flex()
             .flex_col()
             .relative()
-            .rounded(px(radius))
             .overflow_hidden()
             .map(|d| {
                 let fill = if reading_context && self.chat_shown() {
@@ -315,9 +314,8 @@ impl MailWindow {
                 } else {
                     th.pane()
                 };
-                crate::widgets::pane(d, fill, th.surface, radius)
+                crate::widgets::card(d, th, fill, radius, shadow)
             })
-            .shadow(card_shadow(th, shadow))
             .p(px(outline))
             // GPUI clips to rectangles, so the lines stop short of the
             // rounded bottom corners rather than showing square ones.

@@ -1056,6 +1056,20 @@ pub fn pane<E: Styled + ParentElement>(card: E, fill: u32, solid: u32, radius: f
     ))
 }
 
+/// A card (level 1): the mail list, the open mail, the person card, the
+/// agenda, Settings. Rounds it to `radius`, fills it with `fill` through
+/// [`pane`] and gives it [`card_shadow`] at `shadow` (0 = none). Call it
+/// before adding the card's children.
+pub fn card<E: Styled + ParentElement>(
+    card: E,
+    th: &Theme,
+    fill: u32,
+    radius: f32,
+    shadow: f32,
+) -> E {
+    pane(card.rounded(px(radius)), fill, th.surface, radius).shadow(card_shadow(th, shadow))
+}
+
 /// How much more of the way to solid a dialog's tint goes than a menu's.
 /// A dialog covers much more of the window, and a busy list showing
 /// through all of it reads as clutter, not glass.
