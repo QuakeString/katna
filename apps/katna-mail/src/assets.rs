@@ -195,6 +195,7 @@ icons!(
     "spinner",
     "star-filled",
     "star",
+    "subtask",
     "sunrise",
     "table",
     "tag",

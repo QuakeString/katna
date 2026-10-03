@@ -10,7 +10,7 @@ use icu_calendar::Date;
 use icu_calendar::cal::Gregorian;
 use icu_calendar::types::Weekday;
 use icu_calendar::week::WeekInformation;
-use icu_datetime::fieldsets::{E, M, MD, MDT, T, YM, YMD, YMDE, YMDET};
+use icu_datetime::fieldsets::{E, M, MD, MDE, MDT, T, YM, YMD, YMDE, YMDET};
 use icu_datetime::pattern::{DateTimePattern, FixedCalendarDateTimeNames};
 use icu_datetime::{DateTimeFormatter, FixedCalendarDateTimeFormatter, NoCalendarFormatter};
 use icu_decimal::DecimalFormatter;
@@ -68,6 +68,10 @@ pub(crate) struct Formats {
     time: Option<NoCalendarFormatter<T>>,
     weekday: Option<DateTimeFormatter<E>>,
     day_month: Option<DateTimeFormatter<MD>>,
+    /// Written out, for headings: `Sunday`, `4 October`, `Sunday, 4 October`.
+    weekday_long: Option<DateTimeFormatter<E>>,
+    day_month_long: Option<DateTimeFormatter<MD>>,
+    weekday_day_month_long: Option<DateTimeFormatter<MDE>>,
     day_month_time: Option<DateTimeFormatter<MDT>>,
     date: Option<DateTimeFormatter<YMD>>,
     long: Option<DateTimeFormatter<YMDET>>,
@@ -97,6 +101,9 @@ impl Formats {
             time: NoCalendarFormatter::try_new(prefs(), T::hm()).ok(),
             weekday: DateTimeFormatter::try_new(prefs(), E::medium()).ok(),
             day_month: DateTimeFormatter::try_new(prefs(), MD::medium()).ok(),
+            weekday_long: DateTimeFormatter::try_new(prefs(), E::long()).ok(),
+            day_month_long: DateTimeFormatter::try_new(prefs(), MD::long()).ok(),
+            weekday_day_month_long: DateTimeFormatter::try_new(prefs(), MDE::long()).ok(),
             day_month_time: DateTimeFormatter::try_new(prefs(), MD::medium().with_time_hm()).ok(),
             date: DateTimeFormatter::try_new(prefs(), YMD::short()).ok(),
             long: DateTimeFormatter::try_new(prefs(), YMDE::medium().with_time_hm()).ok(),
@@ -166,6 +173,49 @@ pub fn day_month(date: jiff::civil::DateTime) -> String {
     };
     crate::catalog::with_formats(|f| {
         f.day_month
+            .as_ref()
+            .map(|w| plain(w.format(&input.date).to_string()))
+    })
+    .unwrap_or_else(fallback)
+}
+
+/// The weekday written out: `Sunday`, `रविवार`.
+pub fn weekday_long(date: jiff::civil::DateTime) -> String {
+    let fallback = || date.strftime("%A").to_string();
+    let Some(input) = convert(date) else {
+        return fallback();
+    };
+    crate::catalog::with_formats(|f| {
+        f.weekday_long
+            .as_ref()
+            .map(|w| plain(w.format(&input.date).to_string()))
+    })
+    .unwrap_or_else(fallback)
+}
+
+/// Day and month written out: `October 4`, `4 October`.
+pub fn day_month_long(date: jiff::civil::DateTime) -> String {
+    let fallback = || date.strftime("%B %-d").to_string();
+    let Some(input) = convert(date) else {
+        return fallback();
+    };
+    crate::catalog::with_formats(|f| {
+        f.day_month_long
+            .as_ref()
+            .map(|w| plain(w.format(&input.date).to_string()))
+    })
+    .unwrap_or_else(fallback)
+}
+
+/// Weekday, day and month written out: `Sunday, October 4`,
+/// `Sunday 4 October`.
+pub fn weekday_day_month_long(date: jiff::civil::DateTime) -> String {
+    let fallback = || date.strftime("%A, %B %-d").to_string();
+    let Some(input) = convert(date) else {
+        return fallback();
+    };
+    crate::catalog::with_formats(|f| {
+        f.weekday_day_month_long
             .as_ref()
             .map(|w| plain(w.format(&input.date).to_string()))
     })
@@ -427,6 +477,23 @@ mod tests {
                 .to_string(),
         );
         assert!(at.starts_with("Sep 27, 2:05"), "{at}");
+        let gb = Formats::new("en-GB", Clock::Language);
+        let d = sample();
+        let long = |f: &Option<DateTimeFormatter<MDE>>| {
+            plain(f.as_ref().unwrap().format(&d.date).to_string())
+        };
+        assert_eq!(long(&gb.weekday_day_month_long), "Sunday 27 September");
+        assert_eq!(long(&f.weekday_day_month_long), "Sunday, September 27");
+        let day = plain(
+            gb.day_month_long
+                .as_ref()
+                .unwrap()
+                .format(&d.date)
+                .to_string(),
+        );
+        assert_eq!(day, "27 September");
+        let weekday = plain(f.weekday_long.as_ref().unwrap().format(&d.date).to_string());
+        assert_eq!(weekday, "Sunday");
     }
 
     #[test]
@@ -441,6 +508,7 @@ mod tests {
             assert!(f.month.is_some(), "{}", language.tag);
             assert!(f.month_year.is_some(), "{}", language.tag);
             assert!(f.day_month_time.is_some(), "{}", language.tag);
+            assert!(f.weekday_day_month_long.is_some(), "{}", language.tag);
             assert!(f.weekday_short.is_some(), "{}", language.tag);
             assert!(f.first_weekday.is_some(), "{}", language.tag);
             assert!(f.year.is_some(), "{}", language.tag);
