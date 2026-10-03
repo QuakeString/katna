@@ -19,6 +19,7 @@ use katna_preview::image::codecs::webp::WebPDecoder;
 use katna_preview::image::{AnimationDecoder, Frame};
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
+use katna_ui::tokens::space;
 use katna_ui::unpx;
 
 use super::add_account::text_button;
@@ -367,7 +368,7 @@ impl MailWindow {
             .min_h_0()
             .overflow_y_scroll()
             .track_scroll(&dialog.scroll)
-            .pt(px(4.0))
+            .pt(px(space::S2))
             .pb(px(8.0))
             .flex()
             .flex_col()
