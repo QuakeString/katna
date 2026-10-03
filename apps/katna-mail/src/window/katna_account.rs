@@ -622,18 +622,16 @@ impl MailWindow {
             .gap(px(4.0))
             .when_some(error, |d, error| {
                 d.child(
-                    div()
+                    self.copyable(error, th)
                         .text_size(px(13.0))
-                        .text_color(rgba(th.error))
-                        .child(error),
+                        .text_color(rgba(th.error)),
                 )
             })
             .when_some(notice, |d, notice| {
                 d.child(
-                    div()
+                    self.copyable(notice, th)
                         .text_size(px(13.0))
-                        .text_color(rgba(th.text_dim))
-                        .child(notice),
+                        .text_color(rgba(th.text_dim)),
                 )
             });
         let submit = |id: &'static str, label: String, cx: &mut Context<Self>| {
@@ -844,7 +842,7 @@ impl MailWindow {
                 .flex_wrap()
                 .items_center()
                 .gap(px(12.0))
-                .child(div().text_size(px(14.0)).child(account.email.clone()))
+                .child(self.copyable(account.email.clone(), th).text_size(px(14.0)))
                 .child(
                     outlined_button("katna-sign-out", tr!("katna-sign-out"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.katna_sign_out(cx))),

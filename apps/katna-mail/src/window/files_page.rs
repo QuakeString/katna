@@ -44,7 +44,7 @@ use super::compose::schedule;
 use crate::data::RowFile;
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button, placeholder, raised, tip};
+use crate::widgets::{icon, icon_button, raised, tip};
 use katna_ui::text_input::{InputEvent, TextInput};
 
 mod drive;
@@ -1384,9 +1384,9 @@ impl MailWindow {
             _ if self.library.cloud.view.is_some() => {
                 self.render_drive_body(card_width, self.library.columns, pad, th, window, cx)
             }
-            None => placeholder(&tr!("files-loading"), th),
-            Some(Err(err)) => placeholder(err, th),
-            Some(Ok(files)) if files.is_empty() => placeholder(&tr!("files-empty"), th),
+            None => self.placeholder(tr!("files-loading"), th),
+            Some(Err(err)) => self.placeholder(err.clone(), th),
+            Some(Ok(files)) if files.is_empty() => self.placeholder(tr!("files-empty"), th),
             Some(Ok(_)) => self.render_files_body(card_width, room, pad, th, window, cx),
         };
         let menu = if picking {
@@ -1736,7 +1736,7 @@ impl MailWindow {
                 .child(rule)
         };
         let content = if page.shown.is_empty() {
-            placeholder(&tr!("files-none-match"), th)
+            self.placeholder(tr!("files-none-match"), th)
         } else {
             let files = list(
                 page.state.clone(),

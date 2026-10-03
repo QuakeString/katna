@@ -695,7 +695,7 @@ impl MailWindow {
                         .py(px(8.0))
                         .text_size(px(13.0))
                         .text_color(rgba(th.error))
-                        .child(tr!("files-share-failed", error = err.clone()))
+                        .child(self.copyable(tr!("files-share-failed", error = err.clone()), th))
                         .into_any_element(),
                 ],
                 None,
@@ -790,7 +790,7 @@ impl MailWindow {
                 .mt(px(12.0))
                 .text_size(px(13.0))
                 .text_color(rgba(th.error))
-                .child(err)
+                .child(self.copyable(err, th))
         });
         let busy = sharing.busy;
         let foot = div()

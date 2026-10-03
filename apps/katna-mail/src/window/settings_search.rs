@@ -730,7 +730,13 @@ impl MailWindow {
             .as_ref()
             .map(|p| p.info.clone())
             .unwrap_or_default();
-        setting_row(label, detail, content, &info, flash, th)
+        let words = |label: SharedString, detail: Option<SharedString>| {
+            let mut pieces = self.ui_pieces(th);
+            let name = self.ui_selectable(pieces.words(label), &pieces);
+            let detail = detail.map(|d| self.ui_selectable(pieces.words(d), &pieces));
+            (name, detail)
+        };
+        setting_row(label, detail, content, &info, flash, words, th)
     }
 
     /// Under the row named `label` when a search has just led to it: a

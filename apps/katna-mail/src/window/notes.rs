@@ -35,9 +35,7 @@ use super::MailWindow;
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    ScaledEdge, elevation, icon, icon_button, icon_button_colored, placeholder, tip,
-};
+use crate::widgets::{ScaledEdge, elevation, icon, icon_button, icon_button_colored, tip};
 
 /// A card's width on the board, as Keep's.
 const CARD_WIDTH: f32 = 240.0;
@@ -1053,7 +1051,7 @@ impl MailWindow {
     ) -> AnyElement {
         self.notes_page(cx);
         let Some(page) = &self.notes else {
-            return placeholder(&tr!("notes-loading"), th);
+            return self.placeholder(tr!("notes-loading"), th);
         };
         let view = page.view;
         let label = page.label.clone();
@@ -1131,8 +1129,8 @@ impl MailWindow {
         let view = page.view;
         let label = page.label.clone();
         let notes = match &page.notes {
-            None => return placeholder(&tr!("notes-loading"), th),
-            Some(Err(err)) => return placeholder(err, th),
+            None => return self.placeholder(tr!("notes-loading"), th),
+            Some(Err(err)) => return self.placeholder(err.clone(), th),
             Some(Ok(notes)) => notes.clone(),
         };
         // A new note being written in the bar's place joins the board when

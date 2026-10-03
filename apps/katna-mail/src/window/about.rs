@@ -22,7 +22,7 @@ use katna_ui::px;
 use katna_ui::tokens::space;
 use katna_ui::unpx;
 
-use super::select::{ABOUT_PART, Pieces, selectable};
+use super::select::{ABOUT_SLOT, Pieces, selectable};
 use super::{MailWindow, PANEL_RADIUS, ShowAbout, ShowWhatsNew};
 use crate::theme::{Theme, fade};
 use crate::widgets::{
@@ -250,7 +250,7 @@ impl MailWindow {
         window.focus(&focus, cx);
         let mut shown = Spring::new(motion::SMOOTH, 0.0);
         shown.set(1.0);
-        self.dialog_text.clear();
+        self.ui_text.clear();
         self.about = Some(About {
             focus,
             closing: false,
@@ -414,7 +414,7 @@ impl MailWindow {
         let radius = if phone { 0.0 } else { PANEL_RADIUS };
         // Its words can be selected and copied, top to bottom; buttons and
         // rows that open a page stay buttons.
-        let mut pieces = self.dialog_text.pieces(ABOUT_PART, th);
+        let mut pieces = self.ui_text.slot_pieces(ABOUT_SLOT, th);
         // As tall as the version's chip, which shrinks with the header.
         let shrunk = (offset.max(0.0) / (HEADER_TALL - HEADER_SHORT)).clamp(0.0, 1.0);
         let chip = lerp(18.0, 16.0, shrunk) + 2.0 * lerp(4.0, 1.0, shrunk);
@@ -543,7 +543,7 @@ impl MailWindow {
                         .words(tr!("about-follow-me"))
                         .text_size(px(13.0))
                         .text_color(rgba(th.text_dim)),
-                    Some(ABOUT_PART),
+                    Some(pieces.part()),
                     cx,
                 ))
                 .children(follow)
@@ -570,7 +570,7 @@ impl MailWindow {
                         .line_height(px(21.0))
                         .text_color(rgba(th.text_dim)),
                 ),
-            Some(ABOUT_PART),
+            Some(pieces.part()),
             cx,
         );
 
@@ -602,7 +602,7 @@ impl MailWindow {
                             .line_height(px(21.0))
                             .text_color(rgba(th.text_dim)),
                     ),
-                Some(ABOUT_PART),
+                Some(pieces.part()),
                 cx,
             ))
             .child(
@@ -666,7 +666,7 @@ impl MailWindow {
                                     .line_height(px(21.0))
                                     .text_color(rgba(th.text_dim)),
                             ),
-                        Some(ABOUT_PART),
+                        Some(pieces.part()),
                         cx,
                     ))
                     .child(div().mt(px(8.0)).flex().flex_row().child(link_button(
@@ -872,7 +872,7 @@ impl MailWindow {
                         .line_height(px(17.0))
                         .text_color(rgba(th.text_dim)),
                 ),
-                Some(ABOUT_PART),
+                Some(pieces.part()),
                 cx,
             ))
             .child(
@@ -883,7 +883,7 @@ impl MailWindow {
 
         let card = div()
             .id("about")
-            .map(|d| self.dialog_text_area(d, cx))
+            .map(|d| self.ui_text_area(d, cx))
             .track_focus(&about.focus)
             .map(|d| super::popovers::keep_tab_inside(d, &about.focus))
             .on_key_down(cx.listener(Self::about_key))
@@ -941,7 +941,6 @@ impl MailWindow {
                         .mt(px(lerp(24.0, 0.0, t)))
                         .child(card),
                 )
-                .children(self.render_dialog_text_menu(th, cx))
                 .into_any_element(),
         )
     }
@@ -1116,7 +1115,7 @@ fn header(
                         )
                         .child(div().flex_none().ml(px(space::S1)).child(copy)),
                 )),
-            Some(ABOUT_PART),
+            Some(pieces.part()),
             cx,
         ))
         .into_any_element()

@@ -31,7 +31,7 @@ use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::tasks::{Board, Column, TaskCommand, TaskEdit};
 use crate::theme::{Theme, fade};
-use crate::widgets::{ScaledEdge, icon, placeholder, raised, tip};
+use crate::widgets::{ScaledEdge, icon, raised, tip};
 
 /// The width of the lists on the left.
 const NAV_WIDTH: f32 = 256.0;
@@ -1522,8 +1522,8 @@ impl MailWindow {
     pub(super) fn render_tasks(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.tasks;
         let body = match &page.board {
-            None => placeholder(&tr!("tasks-loading"), th),
-            Some(Err(err)) => placeholder(err, th),
+            None => self.placeholder(tr!("tasks-loading"), th),
+            Some(Err(err)) => self.placeholder(err.clone(), th),
             Some(Ok(_)) => self.render_task_board(th, cx),
         };
         let menu = self.render_tasks_menu(th, cx);
@@ -1783,10 +1783,10 @@ impl MailWindow {
         let page = &self.tasks;
         let columns = page.shown_columns();
         if columns.is_empty() && page.searching() {
-            return placeholder(&tr!("tasks-search-none"), th);
+            return self.placeholder(tr!("tasks-search-none"), th);
         }
         if columns.is_empty() {
-            return placeholder(&tr!("tasks-no-lists"), th);
+            return self.placeholder(tr!("tasks-no-lists"), th);
         }
         match page.view {
             // As many lists side by side as fit, then more rows below,
