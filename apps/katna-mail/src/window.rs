@@ -87,7 +87,6 @@ mod select;
 mod settings;
 mod settings_page;
 mod settings_search;
-mod settings_window;
 mod share_ask;
 mod sheet;
 mod sign_in_again;
@@ -775,16 +774,8 @@ pub struct MailWindow {
     activity_unseen: usize,
     /// Where the Activity button is.
     activity_button: std::rc::Rc<std::cell::Cell<Option<gpui::Bounds<gpui::Pixels>>>>,
-    /// The Settings page, in a window of its own or, on a phone, in place
-    /// of the list.
+    /// The Settings page, when open in place of the list.
     settings_page: Option<settings_page::SettingsPage>,
-    /// Settings' own window, while it is open.
-    settings_window: Option<settings_window::Handle>,
-    /// Dialogs, menus and notes show in Settings' window rather than this
-    /// one: it was the last of the two to be used.
-    settings_overlays: bool,
-    /// Watches this window coming to the front, which takes them back.
-    settings_activation: Option<Subscription>,
     /// The question before removing an account or deleting all data.
     danger: Option<accounts::Danger>,
     /// The question before deleting several lines, or deleting for good.
@@ -1091,9 +1082,6 @@ impl MailWindow {
             activity_unseen: 0,
             activity_button: std::rc::Rc::default(),
             settings_page: None,
-            settings_window: None,
-            settings_overlays: false,
-            settings_activation: None,
             danger: None,
             delete_ask: None,
             delete_confirmed: false,
@@ -1785,7 +1773,7 @@ impl MailWindow {
             .iter()
             .any(|f| f.contains_focused(window, cx));
         let list_shown = self.app == RailApp::Mail
-            && !self.settings_in_main()
+            && self.settings_page.is_none()
             && self.mail.is_ok()
             && (!self.reading || self.split());
         if in_pane || !list_shown {
@@ -1854,14 +1842,14 @@ impl MailWindow {
     /// F6: the next pane from anywhere, a field included, as in Outlook,
     /// Thunderbird and KDE's apps.
     fn next_pane(&mut self, _: &NextPane, window: &mut Window, cx: &mut Context<Self>) {
-        if !self.cycle_panes(true, window, cx) && !self.settings_in_main() {
+        if !self.cycle_panes(true, window, cx) && self.settings_page.is_none() {
             self.focus_list(&FocusList, window, cx);
         }
     }
 
     /// Shift+F6: the pane before.
     fn previous_pane(&mut self, _: &PreviousPane, window: &mut Window, cx: &mut Context<Self>) {
-        if !self.cycle_panes(false, window, cx) && !self.settings_in_main() {
+        if !self.cycle_panes(false, window, cx) && self.settings_page.is_none() {
             self.focus_list(&FocusList, window, cx);
         }
     }
@@ -1871,7 +1859,7 @@ impl MailWindow {
     /// panes. `false` when the keys are elsewhere (a field, a dialog,
     /// Settings), where Tab goes to the next field or button.
     fn cycle_panes(&mut self, forward: bool, window: &mut Window, cx: &mut Context<Self>) -> bool {
-        if self.settings_in_main() || self.mail.is_err() {
+        if self.settings_page.is_some() || self.mail.is_err() {
             return false;
         }
         #[derive(Clone, Copy, PartialEq)]
@@ -2072,9 +2060,7 @@ impl MailWindow {
             self.show_snackbar("This account has no such folder.", None, cx);
             return;
         };
-        if self.settings_in_main() {
-            self.settings_page = None;
-        }
+        self.settings_page = None;
         self.open_app(RailApp::Mail, cx);
         self.clear_search(cx);
         self.card_seq += 1;
@@ -2396,7 +2382,7 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        if self.settings_in_main() {
+        if self.settings_page.is_some() {
             self.on_settings_search(event, window, cx);
             return;
         }
@@ -3226,56 +3212,6 @@ impl MailWindow {
         cx.notify();
     }
 
-    /// The dialogs, menus and pickers Settings can open, bottom to top.
-    /// They show in Settings' window while it is the one in use.
-    fn render_shared_overlays(
-        &mut self,
-        th: &Theme,
-        window: &mut Window,
-        reduce: bool,
-        cx: &mut Context<Self>,
-    ) -> Vec<AnyElement> {
-        let language_picker = self.render_language_picker(th, window, cx);
-        let add_account = self.render_add_account(th, window, reduce, cx);
-        let context_menu = self.render_context_menu(th, window, cx);
-        let danger = self.render_danger(th, window, reduce, cx);
-        let delete_ask = self.render_delete_ask(th, window, reduce, cx);
-        let new_label = self.render_new_label(th, window, reduce, cx);
-        let rule_editor = self.render_rule_editor(th, window, reduce, cx);
-        self.ready_folder_pick(th, window, cx);
-        let scheme_editor = self.render_scheme_editor(th, window, reduce, cx);
-        // An account's own color, from Settings > Accounts or its
-        // right-click menu.
-        let account_picker = self.render_color_picker(
-            |t| matches!(t, scheme_color::Target::Account(_)),
-            th,
-            window,
-            cx,
-        );
-        let whats_new = self.render_whats_new(th, window, reduce, cx);
-        let about = self.render_about(th, window, reduce, cx);
-        let gallery = self.render_gallery(cx);
-        let update_dialog = self.render_update_dialog(th, window, reduce, cx);
-        [
-            language_picker,
-            add_account,
-            context_menu,
-            danger,
-            delete_ask,
-            new_label,
-            rule_editor,
-            scheme_editor,
-            account_picker,
-            whats_new,
-            about,
-            gallery,
-            update_dialog,
-        ]
-        .into_iter()
-        .flatten()
-        .collect()
-    }
-
     fn render_snackbar(
         &mut self,
         th: &Theme,
@@ -3605,9 +3541,9 @@ impl Render for MailWindow {
             && self.danger.is_none();
         if dialog_gone || window.focused(cx).is_none() {
             match &self.settings_page {
-                Some(page) if !page.own_window => window.focus(&page.focus, cx),
-                _ if self.mail.is_ok() => window.focus(&self.list_focus, cx),
-                _ => {}
+                Some(page) => window.focus(&page.focus, cx),
+                None if self.mail.is_ok() => window.focus(&self.list_focus, cx),
+                None => {}
             }
         }
         let pane_open = self.pane_open();
@@ -3702,7 +3638,7 @@ impl Render for MailWindow {
             self.onboarding = Some(onboarding::Onboarding::new());
         }
         // The Settings page stays reachable, for example to delete data.
-        let onboarding = self.onboarding() && !self.settings_in_main();
+        let onboarding = self.onboarding() && self.settings_page.is_none();
         self.compose_shown.set(
             if self.mail.is_ok() && !self.accounts.is_empty() && !onboarding {
                 1.0
@@ -3753,7 +3689,7 @@ impl Render for MailWindow {
                 .flex()
                 .flex_row_reverse()
                 .children(docked_settings)
-                .child(if self.settings_in_main() {
+                .child(if self.settings_page.is_some() {
                     self.render_settings_page(&th, window, cx)
                 } else {
                     self.render_cards(&th, available, cx)
@@ -3766,7 +3702,7 @@ impl Render for MailWindow {
                 .flex()
                 .flex_row_reverse()
                 .children(docked_settings)
-                .child(if self.settings_in_main() {
+                .child(if self.settings_page.is_some() {
                     self.render_settings_page(&th, window, cx)
                 } else {
                     self.render_app_page(&th, window, cx)
@@ -3907,33 +3843,42 @@ impl Render for MailWindow {
         let activity = self.render_activity_report(&th, window, cx);
         let activity_menu = self.render_activity_menu(&th, window, cx);
         let account_menu = self.render_account_menu(&th, cx);
-        // What Settings opens shows in its window while it is the one in
-        // use.
-        let shared = !self.overlays_in_settings();
-        let shared_overlays = if shared {
-            self.render_shared_overlays(&th, window, reduce, cx)
-        } else {
-            Vec::new()
-        };
+        let language_picker = self.render_language_picker(&th, window, cx);
+        let add_account = self.render_add_account(&th, window, reduce, cx);
+        let danger = self.render_danger(&th, window, reduce, cx);
+        let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
+        let new_label = self.render_new_label(&th, window, reduce, cx);
+        let rule_editor = self.render_rule_editor(&th, window, reduce, cx);
+        self.ready_folder_pick(&th, window, cx);
         let contact_label = self.render_label_dialog(&th, window, reduce, cx);
+        let scheme_editor = self.render_scheme_editor(&th, window, reduce, cx);
         let contact_qr = self.render_contact_qr(&th, window, reduce, cx);
+        let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let share_ask = if onboarding {
             None
         } else {
             self.render_share_ask(&th, window, reduce, cx)
         };
+        let about = self.render_about(&th, window, reduce, cx);
+        let gallery = self.render_gallery(cx);
+        let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
+        let context_menu = self.render_context_menu(&th, window, cx);
         let summary_peek = self.render_summary_peek(&th, window, cx);
         let contact_sheet = self.render_contact_sheet(&th, window, cx);
         let contact_peek = self.render_contact_peek(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
+        // An account's own color, from Settings > Accounts or its
+        // right-click menu.
+        let account_picker = self.render_color_picker(
+            |t| matches!(t, scheme_color::Target::Account(_)),
+            &th,
+            window,
+            cx,
+        );
         let snooze_menu = self.render_snooze_menu(&th, cx);
         let quiet_menu = self.render_quiet_menu(&th, cx);
-        let snackbar = if shared {
-            self.render_snackbar(&th, window, reduce, cx)
-        } else {
-            None
-        };
+        let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let upload_tray = self.render_upload_tray(&th, window, cx);
         let drive_share = self.render_share_dialog(&th, window, reduce, cx);
         let crash_notice = if onboarding {
@@ -3986,18 +3931,30 @@ impl Render for MailWindow {
             .children(activity)
             .children(activity_menu)
             .children(account_menu)
+            .children(language_picker)
+            .children(add_account)
             .children(summary_peek)
+            .children(context_menu)
             .children(contact_sheet)
             .children(contact_peek)
             .children(nav_menu)
             .children(snooze_menu)
             .children(quiet_menu)
+            .children(danger)
+            .children(delete_ask)
+            .children(new_label)
+            .children(rule_editor)
             .children(contact_label)
+            .children(scheme_editor)
+            .children(account_picker)
             .children(contact_qr)
             .children(crash_notice)
             .children(sign_in_again)
-            .children(shared_overlays)
+            .children(whats_new)
             .children(share_ask)
+            .children(about)
+            .children(gallery)
+            .children(update_dialog)
             .children(print_preview)
             .children(upload_tray)
             .children(drive_share)
@@ -4065,10 +4022,6 @@ impl Render for MailWindow {
         // that is no longer drawn (the list while Settings or a
         // conversation fills the page), where GPUI starts from the root.
         let frame = frame
-            // A press here takes back the dialogs Settings' window had.
-            .capture_any_mouse_down(cx.listener(|this, _, _, cx| {
-                this.settings_overlays_to(false, cx);
-            }))
             // A press anywhere that takes no keys itself (the top bar's
             // empty room, a gap between panes) still takes them from the
             // search box, as a press on the list does.
@@ -4082,9 +4035,9 @@ impl Render for MailWindow {
                         return;
                     }
                     match &this.settings_page {
-                        Some(page) if !page.own_window => window.focus(&page.focus, cx),
-                        _ if this.mail.is_ok() => window.focus(&this.list_focus, cx),
-                        _ => window.focus(&this.window_focus, cx),
+                        Some(page) => window.focus(&page.focus, cx),
+                        None if this.mail.is_ok() => window.focus(&this.list_focus, cx),
+                        None => window.focus(&this.window_focus, cx),
                     }
                     cx.notify();
                 }),

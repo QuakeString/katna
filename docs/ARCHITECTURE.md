@@ -2178,18 +2178,9 @@ Gemini or confidential mode):
   while dragged and applies when let go, so it doesn't grow under the
   pointer. Mail you send keeps its own font size.
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
-  a window of its own (`window/settings_window.rs`), or bring that window
-  to the front; on a phone it fills the window in place of the app's page
-  (`window/settings_page.rs`). It opens on the page of the app on show (Mail's Reading, Calendar, Files; General from an app
-  without settings of its own). Its window has the search box at the top
-  and the page on a card below; narrowed to a phone's width it shows the
-  list of pages until one is picked, as on a phone. The page stays the
-  mail window's (`MailWindow::settings_page`) and the window only draws
-  it, as a popped-out message's window does. What Settings opens (a
-  dialog, a right-click menu, a color picker, About, a note at the
-  bottom) shows in whichever of the two windows was used last; a dialog
-  stays where it opened until it closes. Closing the window closes
-  Settings, saving what was being typed. Layout A of the Settings layout study
+  place of the app's page (`window/settings_page.rs`), on the page of the
+  app on show (Mail's Reading, Calendar, Files; General from an app
+  without settings of its own). Layout A of the Settings layout study
   (2026-10-03): one list beside the open page, sorted by scope
   (`settings_page/nav.rs`). **All apps** holds what every app shares:
   General (language, 12- or 24-hour time, video calls, offline mail,
@@ -2278,14 +2269,14 @@ Gemini or confidential mode):
   tracking is not a setting: it, a read receipt and a delivery receipt
   are on for every new message and reply and turned off per message in compose (§16.1), so
   Mailspring's tracking defaults have no counterpart.
-- **Searching settings.** The search box of Settings' window, or on a
-  phone the top bar's while the Settings page is open, searches settings ("Search settings"; `window/settings_search.rs`):
+- **Searching settings.** While the Settings page is open the top bar's
+  search box searches settings ("Search settings"; `window/settings_search.rs`):
   matching rows from every tab replace the open tab, each with its tab and
   a line on it (row names, what they do, other words people use, and every
   shortcut's name). A result, or Enter for the first, opens its tab,
-  scrolls the row into view and lights it up for a moment. On a phone,
-  closing the page puts mail search back, with its words if the list
-  still shows its results.
+  scrolls the row into view and lights it up for a moment. Closing the page
+  puts mail search back, with its words if the list still shows its
+  results.
 - **Tab between controls.** Tab and Shift+Tab move the focus in the order
   things are drawn, as in any desktop form: fields (`TextInput`,
   `RichEditor`) are always Tab stops, and the Settings page's tabs, rows,
