@@ -1996,11 +1996,14 @@ impl MailWindow {
                         div()
                             .flex_none()
                             .w(px((TAB_GAP + label_w) * label))
-                            .pl(px(TAB_GAP))
                             .overflow_hidden()
                             .whitespace_nowrap()
                             .opacity(label)
-                            .child(tab.label()),
+                            // The gap goes inside the clipped room, which
+                            // shrinks to nothing with it: as padding it would
+                            // hold the room open to the end, and the icon
+                            // would shift when the label went.
+                            .child(div().flex_none().pl(px(TAB_GAP)).child(tab.label())),
                     )
                 })
                 .when(badge > 0.001 && badge_w > 0.0, |d| {
@@ -2008,11 +2011,12 @@ impl MailWindow {
                         div()
                             .flex_none()
                             .w(px((TAB_GAP + badge_w) * badge))
-                            .pl(px(TAB_GAP))
                             .overflow_hidden()
                             .opacity(badge)
                             .child(
                                 div()
+                                    .flex_none()
+                                    .ml(px(TAB_GAP))
                                     .w(px(badge_w))
                                     .h(px(BADGE_HEIGHT))
                                     .flex()
