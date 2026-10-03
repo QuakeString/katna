@@ -214,6 +214,10 @@ pub(super) fn count_pill(count: u64, on: bool, th: &Theme) -> gpui::Div {
 /// The line the app's name rolls through on the top bar.
 const TITLE_LINE: f32 = 28.0;
 
+/// The hover circle of a button in a phone's search pill's rounded end,
+/// as wide as the account picture at the other end.
+const PILL_END_CIRCLE: f32 = 38.0;
+
 /// The width of the Upload button's arrow, beside its words.
 const UPLOAD_ARROW: f32 = 44.0;
 
@@ -237,10 +241,16 @@ impl MailWindow {
             self.reserve_spring.value()
         };
         let open = docked.max(self.layout.drawer_t()).clamp(0.0, 1.0);
+        // On a phone the button sits in the search pill's rounded end:
+        // centred on it, its hover a circle inside the pill's, as far from
+        // the pill's edge as the account picture at the other end.
+        let phone = self.layout.shape.phone;
+        let hover_size = lerp(48.0, PILL_END_CIRCLE, phone);
         let menu = div()
             .id("menu-button")
+            .group("menu-button")
             .relative()
-            .ml(px(6.0))
+            .ml(px(lerp(6.0, 0.0, phone)))
             .size(px(48.0))
             .flex_none()
             .flex()
@@ -249,7 +259,6 @@ impl MailWindow {
             .rounded_full()
             .cursor_pointer()
             .keeps_press()
-            .hover(|s| s.bg(rgba(th.hover)))
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .tooltip(tip(
                 match (page, open > 0.5) {
@@ -263,28 +272,39 @@ impl MailWindow {
             .on_click(cx.listener(|this, _, window, cx| {
                 this.toggle_navigation(&ToggleNavigation, window, cx)
             }))
-            .child(Ripple::new("menu-ripple", rgba(th.ripple)).centered())
             .child(self.tour_mark(Spot::Menu))
             // A panel whose left part fills while the folders show, fading
             // with the pane as it opens or folds.
             .child(
                 div()
                     .relative()
-                    .size(px(24.0))
+                    .flex_none()
+                    .size(px(hover_size))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .group_hover("menu-button", |s| s.bg(rgba(th.hover)))
+                    .child(Ripple::new("menu-ripple", rgba(th.ripple)).centered())
                     .child(
-                        svg()
-                            .path("icons/folders-pane.svg")
-                            .size_full()
-                            .text_color(rgba(th.text_dim)),
-                    )
-                    .child(
-                        svg()
-                            .path("icons/folders-pane-fill.svg")
-                            .absolute()
-                            .top_0()
-                            .left_0()
-                            .size_full()
-                            .text_color(rgba(fade(th.text_dim, open))),
+                        div()
+                            .relative()
+                            .size(px(24.0))
+                            .child(
+                                svg()
+                                    .path("icons/folders-pane.svg")
+                                    .size_full()
+                                    .text_color(rgba(th.text_dim)),
+                            )
+                            .child(
+                                svg()
+                                    .path("icons/folders-pane-fill.svg")
+                                    .absolute()
+                                    .top_0()
+                                    .left_0()
+                                    .size_full()
+                                    .text_color(rgba(fade(th.text_dim, open))),
+                            ),
                     ),
             )
             .into_any_element();
@@ -699,6 +719,7 @@ impl MailWindow {
             .when(has_text, |d| {
                 d.child(
                     icon_button("search-clear", "close", 22.0, th)
+                        .when(phone > 0.5, |d| d.size(px(PILL_END_CIRCLE)))
                         .tooltip(tip(tr!("search-clear"), th))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.clear_keeps_open = true;
@@ -716,6 +737,8 @@ impl MailWindow {
                         if panel_open { th.accent } else { th.text_dim },
                         th,
                     )
+                    // As wide as the circles in the pill's ends, on a phone.
+                    .when(phone > 0.5, |d| d.size(px(PILL_END_CIRCLE)))
                     .tooltip(tip(tr!("search-options-show"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.toggle_search_panel(window, cx);
@@ -820,7 +843,8 @@ impl MailWindow {
         end.push(
             div()
                 .ml(px(super::TOP_BAR_GAP - super::BAR_ITEM_GAP))
-                .mr(px(8.0))
+                // On a phone, centred in the search pill's rounded end.
+                .mr(px(lerp(8.0, 4.0, phone)))
                 .child(account)
                 .into_any_element(),
         );
