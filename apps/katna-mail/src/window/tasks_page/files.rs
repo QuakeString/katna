@@ -21,7 +21,7 @@ use katna_ui::tokens::{radius, space, text};
 
 use super::super::MailWindow;
 use super::super::attachments::Item;
-use super::super::compose::mime_of;
+use super::super::compose::attach::mime_of;
 use crate::tasks::{NewFile, TaskCommand};
 use crate::theme::{Theme, fade};
 use crate::widgets::{icon, icon_button, tip};
@@ -89,7 +89,12 @@ pub(super) fn mail_files(raws: &[Vec<u8>]) -> Vec<NewFile> {
 impl MailWindow {
     /// Puts the files at `paths` on task `id`: those dropped on it or
     /// picked for it.
-    pub(super) fn task_attach_paths(&mut self, id: i64, paths: Vec<PathBuf>, cx: &mut Context<Self>) {
+    pub(super) fn task_attach_paths(
+        &mut self,
+        id: i64,
+        paths: Vec<PathBuf>,
+        cx: &mut Context<Self>,
+    ) {
         let read = cx
             .background_executor()
             .spawn(async move { read_files(paths) });
@@ -99,7 +104,11 @@ impl MailWindow {
                 if !left.is_empty() {
                     let limit = crate::format::size(MAX_TASK_FILE as u64);
                     this.show_snackbar(
-                        tr!("tasks-files-left-out", names = left.join(", "), limit = limit),
+                        tr!(
+                            "tasks-files-left-out",
+                            names = left.join(", "),
+                            limit = limit
+                        ),
                         None,
                         cx,
                     );
@@ -144,10 +153,10 @@ impl MailWindow {
         let data = Store::open(&self.paths, Mode::ReadOnly)
             .ok()
             .and_then(|store| store.task_file_data(file.id).ok().flatten());
-        if let Some(board) = self.tasks.board_mut() {
-            if let Some(files) = board.files.get_mut(&file.task) {
-                files.retain(|f| f.id != file.id);
-            }
+        if let Some(board) = self.tasks.board_mut()
+            && let Some(files) = board.files.get_mut(&file.task)
+        {
+            files.retain(|f| f.id != file.id);
         }
         let undo = data.map(|data| {
             TaskCommand::AddFiles(
@@ -196,7 +205,12 @@ impl MailWindow {
     /// Opens file `file` of a task: in Katna's viewer, with the task's
     /// other files a click of the arrows away, or in another app, as
     /// Settings > Default apps says for its kind.
-    pub(super) fn task_open_file(&mut self, file: &TaskFile, window: &mut Window, cx: &mut Context<Self>) {
+    pub(super) fn task_open_file(
+        &mut self,
+        file: &TaskFile,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         let files: Vec<TaskFile> = self
             .tasks
             .board()
@@ -231,8 +245,10 @@ impl MailWindow {
                 })
                 .collect();
             cx.update_window(window_handle, |_, window, cx| {
-                this.update(cx, |this, cx| this.task_show_files(parts, index, window, cx))
-                    .ok();
+                this.update(cx, |this, cx| {
+                    this.task_show_files(parts, index, window, cx)
+                })
+                .ok();
             })
             .ok();
         })
@@ -284,7 +300,12 @@ impl MailWindow {
 
     /// The files in a task's details: each opens with a click and has a
     /// button to take it off; the paper clip picks more.
-    pub(super) fn render_details_files(&self, id: i64, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_details_files(
+        &self,
+        id: i64,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let files: Vec<TaskFile> = self
             .tasks
             .board()
@@ -294,7 +315,7 @@ impl MailWindow {
             let open = file.clone();
             let gone = file.clone();
             let kind = katna_preview::kind(&file.mime, &file.name);
-            let mark = if matches!(kind, katna_preview::Kind::Image) {
+            let mark = if matches!(kind, katna_preview::Kind::Picture(_)) {
                 "image"
             } else {
                 "file"
@@ -314,7 +335,9 @@ impl MailWindow {
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .tooltip(tip(tr!("tasks-file-open"), th))
-                .on_click(cx.listener(move |this, _, window, cx| this.task_open_file(&open, window, cx)))
+                .on_click(
+                    cx.listener(move |this, _, window, cx| this.task_open_file(&open, window, cx)),
+                )
                 .child(icon(mark, th.text_dim, 18.0))
                 .child(
                     div()
@@ -373,4 +396,46 @@ pub(super) fn takes_files<E: InteractiveElement + StatefulInteractiveElement>(
             cx.stop_propagation();
             this.task_attach_paths(id, paths.paths().to_vec(), cx)
         }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::outgoing::{Outgoing, Part, build};
+
+    fn part(name: &str, mime: &str, data: &[u8], content_id: Option<&str>) -> Part {
+        Part {
+            name: name.into(),
+            mime: mime.into(),
+            data: Arc::new(data.to_vec()),
+            content_id: content_id.map(Into::into),
+        }
+    }
+
+    #[test]
+    fn a_mails_attachments_become_files_once() {
+        let first = build(&Outgoing {
+            subject: "Trip budget".into(),
+            body: "See the budget.".into(),
+            html: Some("<p>See <img src=\"cid:logo\"></p>".into()),
+            inline: vec![part("logo.png", "image/png", b"\x89PNG logo", Some("logo"))],
+            attachments: vec![part("budget.pdf", "application/pdf", b"%PDF budget", None)],
+            ..Default::default()
+        });
+        // A reply with the same file again, and another.
+        let reply = build(&Outgoing {
+            subject: "Re: Trip budget".into(),
+            body: "And the list.".into(),
+            attachments: vec![
+                part("budget.pdf", "application/pdf", b"%PDF budget", None),
+                part("list.txt", "text/plain", b"sunscreen", None),
+            ],
+            ..Default::default()
+        });
+        let files = mail_files(&[first, reply]);
+        let names: Vec<&str> = files.iter().map(|f| f.name.as_str()).collect();
+        assert_eq!(names, ["budget.pdf", "list.txt"]);
+        assert_eq!(files[0].mime, "application/pdf");
+        assert_eq!(files[0].data, b"%PDF budget");
+    }
 }

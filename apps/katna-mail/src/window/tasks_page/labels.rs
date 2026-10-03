@@ -36,18 +36,6 @@ impl super::TasksPage {
     pub(super) fn labels_of<'a>(&'a self, task: &'a TaskItem) -> &'a [String] {
         &task.labels
     }
-
-    /// What the quiet line under a task's title says: how many files it
-    /// has, then its labels.
-    pub(super) fn task_meta_parts(&self, task: &TaskItem) -> Vec<String> {
-        let mut parts = Vec::new();
-        let files = self.board().map_or(0, |b| b.files_of(task.id).len());
-        if files > 0 {
-            parts.push(katna_i18n::format::number(files as u64));
-        }
-        parts.extend(self.labels_of(task).iter().cloned());
-        parts
-    }
 }
 
 impl MailWindow {
@@ -68,7 +56,7 @@ impl MailWindow {
             .flex_row()
             .flex_wrap()
             .items_center()
-            .gap(px(6.0))
+            .gap(px(space::S2))
             .text_size(px(text::CAPTION))
             .line_height(px(16.0))
             .text_color(rgba(color));
@@ -94,7 +82,11 @@ impl MailWindow {
 
     /// The side list's Labels: each label on a task, showing every task
     /// with it.
-    pub(super) fn render_task_labels_nav(&self, th: &Theme, cx: &mut Context<Self>) -> Vec<AnyElement> {
+    pub(super) fn render_task_labels_nav(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Vec<AnyElement> {
         let page = &self.tasks;
         let labels = page.board().map(|b| b.task_labels()).unwrap_or_default();
         if labels.is_empty() {
@@ -112,15 +104,14 @@ impl MailWindow {
                 .into_any_element(),
         ];
         for (ix, label) in labels.into_iter().enumerate() {
-            let on = page.view == View::Label(label.clone());
+            let on = page.view == View::Label && page.label == label;
             let open = label.clone();
             out.push(
-                super::super::nav::side_row(("tasks-label", ix), "tag", label, on, th)
-                    .on_click(
-                        cx.listener(move |this, _, _, cx| {
-                            this.task_set_view(View::Label(open.clone()), cx)
-                        }),
-                    )
+                super::super::nav::side_row(("tasks-label", ix), "label", label, on, th)
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.tasks.label = open.clone();
+                        this.task_set_view(View::Label, cx)
+                    }))
                     .into_any_element(),
             );
         }
@@ -192,7 +183,11 @@ impl MailWindow {
     }
 
     /// Opens the label picker in the details, or closes it.
-    pub(super) fn task_details_label_picker(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+    pub(super) fn task_details_label_picker(
+        &mut self,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         let accent = rgba(self.theme(window).accent).into();
         let Some(details) = &mut self.tasks.details else {
             return;
@@ -247,42 +242,46 @@ impl MailWindow {
             return div().into_any_element();
         };
         let ticked = details.labels();
-        let chips = ticked.iter().enumerate().map(|(ix, label)| {
-            let group: SharedString = format!("task-label-chip-{ix}").into();
-            let off = label.clone();
-            div()
-                .id(("task-label-chip", ix))
-                .group(group.clone())
-                .relative()
-                .h(px(24.0))
-                .px(px(10.0))
-                .flex()
-                .items_center()
-                .rounded_full()
-                .bg(rgba(fade(th.text, 0.08)))
-                .text_size(px(text::CAPTION))
-                .child(label.clone())
-                .child(
-                    div()
-                        .id(("task-label-off", ix))
-                        .absolute()
-                        .right(px(space::S1))
-                        .size(px(20.0))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .rounded_full()
-                        .bg(rgba(th.raised))
-                        .opacity(0.0)
-                        .group_hover(group, |s| s.opacity(1.0))
-                        .cursor_pointer()
-                        .tooltip(tip(tr!("notes-label-remove"), th))
-                        .on_click(cx.listener(move |this, _, _, cx| {
-                            this.task_details_toggle_label(off.clone(), cx)
-                        }))
-                        .child(icon("close", th.text_dim, 14.0)),
-                )
-        });
+        let chips: Vec<_> = ticked
+            .iter()
+            .enumerate()
+            .map(|(ix, label)| {
+                let group: SharedString = format!("task-label-chip-{ix}").into();
+                let off = label.clone();
+                div()
+                    .id(("task-label-chip", ix))
+                    .group(group.clone())
+                    .relative()
+                    .h(px(24.0))
+                    .px(px(space::S3))
+                    .flex()
+                    .items_center()
+                    .rounded_full()
+                    .bg(rgba(fade(th.text, 0.08)))
+                    .text_size(px(text::CAPTION))
+                    .child(label.clone())
+                    .child(
+                        div()
+                            .id(("task-label-off", ix))
+                            .absolute()
+                            .right(px(space::S1))
+                            .size(px(20.0))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .rounded_full()
+                            .bg(rgba(th.raised))
+                            .opacity(0.0)
+                            .group_hover(group, |s| s.opacity(1.0))
+                            .cursor_pointer()
+                            .tooltip(tip(tr!("notes-label-remove"), th))
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                this.task_details_toggle_label(off.clone(), cx)
+                            }))
+                            .child(icon("close", th.text_dim, 14.0)),
+                    )
+            })
+            .collect();
         let open = details.picker.is_some();
         let add = div()
             .id("task-label-add")
@@ -300,7 +299,11 @@ impl MailWindow {
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(|this, _, window, cx| this.task_details_label_picker(window, cx)))
-            .child(icon("add", if open { th.accent } else { th.text_dim }, 14.0))
+            .child(icon(
+                "add",
+                if open { th.accent } else { th.text_dim },
+                14.0,
+            ))
             .child(tr!("tasks-label-add"));
         let picker = details.picker.as_ref().map(|picker| {
             let mut labels = self.shared_labels();
@@ -333,8 +336,8 @@ impl MailWindow {
                     .flex_row()
                     .flex_wrap()
                     .items_center()
-                    .gap(px(6.0))
-                    .child(icon("tag", th.text_dim, 18.0))
+                    .gap(px(space::S3))
+                    .child(icon("label", th.text_dim, 18.0))
                     .child(div().w(px(space::S1)))
                     .children(chips)
                     .child(add),

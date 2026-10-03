@@ -629,7 +629,7 @@ fn files_go_to_the_service_or_stay_here() {
     let synced = store
         .sync_task_files(list, "A", &[ours.clone(), theirs.clone()])
         .unwrap();
-    assert_eq!(synced.wanted, [theirs.clone()]);
+    assert_eq!(synced.wanted, std::slice::from_ref(&theirs));
     let with_data = RemoteFile {
         data: Some(b"png".to_vec()),
         ..theirs

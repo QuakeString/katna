@@ -6,8 +6,8 @@
 //! notes, so one with no notes left is gone.
 
 use gpui::{
-    AnyElement, Context, Entity, Focusable, FontWeight, SharedString, Subscription, Window, div,
-    prelude::*, rgba,
+    AnyElement, Context, Entity, Focusable, SharedString, Subscription, Window, div, prelude::*,
+    rgba,
 };
 use katna_i18n::tr;
 use katna_ui::{InputEvent, TextInput, px};
@@ -33,7 +33,7 @@ pub(super) struct LabelsDialog {
 
 impl MailWindow {
     /// Every label on a note, in order of name.
-    pub(super) fn note_labels(&self) -> Vec<String> {
+    pub(in crate::window) fn note_labels(&self) -> Vec<String> {
         let mut labels: Vec<String> = self
             .notes
             .as_ref()

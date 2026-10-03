@@ -564,7 +564,7 @@ pub fn parse(text: &str, today: Date, words: &Words) -> Typed {
 /// The label `word` names after one of `marks` ("#home" is "home"), with
 /// a comma or full stop after it left off; `None` when it names none.
 fn label_of(word: &str, marks: &[&str]) -> Option<String> {
-    let word = word.trim_end_matches(|c: char| matches!(c, ',' | ';' | '.' | '!' | '?'));
+    let word = word.trim_end_matches([',', ';', '.', '!', '?']);
     let rest = marks.iter().find_map(|m| word.strip_prefix(m))?;
     let ok = !rest.is_empty()
         && rest.chars().any(char::is_alphabetic)
