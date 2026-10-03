@@ -15,7 +15,7 @@ use katna_ui::{InputEvent, TextInput, px};
 use super::{MailWindow, NotesView};
 use crate::daemon::Command;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, filled_button, icon, icon_button, tip};
+use crate::widgets::{filled_button, icon, icon_button, tip};
 
 /// The longest label, in characters (the daemon's limit too).
 const MAX_LABEL: usize = 50;
@@ -531,9 +531,7 @@ impl MailWindow {
             .p(px(24.0))
             .flex()
             .flex_col()
-            .rounded(px(15.0))
-            .map(|d| crate::widgets::frosted(d, th, th.menu, 15.0))
-            .shadow(elevation(th, 3.0))
+            .map(|d| crate::widgets::dialog(d, th, th.menu))
             .text_color(rgba(th.text))
             .on_click(|_, _, cx| cx.stop_propagation())
             .child(

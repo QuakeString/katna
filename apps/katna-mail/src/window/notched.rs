@@ -80,7 +80,7 @@ pub(super) fn place(
 }
 
 /// The surface of a popover: the menu colour (frosted when the frost is
-/// on), corners of [`RADIUS`], the edge of a box and a dialog's depth. A
+/// on), corners of [`RADIUS`], the edge of a box and a popover's depth. A
 /// click inside it stays inside. Call it before adding the popover's
 /// children, which must draw over the glass, and add [`notch`] last.
 pub(super) fn popover<E: Styled + ParentElement + InteractiveElement>(panel: E, th: &Theme) -> E {
@@ -88,7 +88,7 @@ pub(super) fn popover<E: Styled + ParentElement + InteractiveElement>(panel: E, 
         panel.border_1().border_color(rgba(th.outline)),
         th,
         RADIUS,
-        elevation::DIALOG,
+        elevation::POPOVER,
     )
     .occlude()
     .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())

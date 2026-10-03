@@ -1198,11 +1198,8 @@ impl MailWindow {
             .max_h(px((vh - 112.0).max(240.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(
                 div()
                     .id("add-account-body")

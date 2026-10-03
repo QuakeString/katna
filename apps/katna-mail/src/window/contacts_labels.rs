@@ -24,7 +24,7 @@ use super::contacts_page::View;
 use crate::daemon::{self, Command};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, ScaledEdge, elevation, filled_button, icon, raised};
+use crate::widgets::{FocusRing, ScaledEdge, filled_button, icon, raised};
 
 const MENU_WIDTH: f32 = 260.0;
 const DIALOG_WIDTH: f32 = 400.0;
@@ -663,11 +663,8 @@ impl MailWindow {
             .w(px(DIALOG_WIDTH.min(vw - 32.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
         Some(
             div()

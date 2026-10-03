@@ -29,7 +29,7 @@ use crate::daemon::Command;
 use crate::schemes::{self, SideScheme};
 use crate::theme::{Accent, Theme, fade};
 use crate::user_schemes::{self, Seed};
-use crate::widgets::{elevation, filled_button, icon};
+use crate::widgets::{filled_button, icon};
 
 const DIALOG_WIDTH: f32 = 760.0;
 const SWATCH: f32 = 22.0;
@@ -644,11 +644,8 @@ impl MailWindow {
             .w(px(DIALOG_WIDTH.min(vw - 32.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
         let picker = self.render_color_picker(|t| matches!(t, Target::Seed(..)), th, window, cx);
         Some(

@@ -15,11 +15,11 @@
 pub mod radius {
     /// Checkboxes, tags, inline code.
     pub const XS: f32 = 4.0;
-    /// Fields, menu rows, thumbnails.
+    /// Fields, menus and their rows, thumbnails.
     pub const SM: f32 = 8.0;
-    /// Cards and menus.
+    /// Tiles and cards inside a card.
     pub const MD: f32 = 12.0;
-    /// Popovers, dialogs, sheets, Compose.
+    /// Cards, dialogs, popovers, sheets, Compose.
     pub const LG: f32 = 16.0;
     /// Pills and avatars: round at any height.
     pub const FULL: f32 = 9999.0;
@@ -111,10 +111,10 @@ pub mod elevation {
     pub const CARD: f32 = 1.0;
     /// Floating buttons, something being dragged.
     pub const FLOAT: f32 = 2.0;
-    /// Menus and popovers.
+    /// Menus and dialogs.
     pub const MENU: f32 = 3.0;
-    /// Dialogs and sheets.
-    pub const DIALOG: f32 = 4.0;
+    /// Popovers that point at what they belong to, the tour.
+    pub const POPOVER: f32 = 4.0;
 }
 
 /// Durations of timed fades. Movement uses the springs in

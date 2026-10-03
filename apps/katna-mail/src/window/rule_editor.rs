@@ -32,9 +32,7 @@ use super::MailWindow;
 use super::add_account::text_button;
 use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    Check, FocusRing, checkbox, elevation, filled_button, icon, icon_button, menu, tip,
-};
+use crate::widgets::{Check, FocusRing, checkbox, filled_button, icon, icon_button, menu, tip};
 use crate::{daemon, data, format};
 
 const WIDTH: f32 = 680.0;
@@ -1258,11 +1256,8 @@ impl MailWindow {
             .min_h_0()
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
         Some(
             div()

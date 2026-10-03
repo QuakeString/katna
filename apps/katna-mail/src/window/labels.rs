@@ -21,7 +21,7 @@ use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, ScaledEdge, elevation, filled_button, radio};
+use crate::widgets::{FocusRing, ScaledEdge, filled_button, radio};
 use crate::{daemon, format};
 
 const WIDTH: f32 = 420.0;
@@ -428,11 +428,8 @@ impl MailWindow {
             .max_h(px((vh - 48.0).max(200.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
         Some(
             div()

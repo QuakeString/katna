@@ -23,7 +23,7 @@ use super::MailWindow;
 use crate::data::{Entry, Mail};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, icon_button, icon_button_colored, raised, tip};
+use crate::widgets::{icon, icon_button, icon_button_colored, raised, tip};
 
 /// At most this many tracked messages are read.
 const LIMIT: u32 = 500;
@@ -1249,10 +1249,7 @@ impl MailWindow {
                         .max_h_full()
                         .flex()
                         .flex_col()
-                        .rounded(px(16.0))
-                        .overflow_hidden()
-                        .map(|d| crate::widgets::frosted(d, th, th.surface, 16.0))
-                        .shadow(elevation(th, 3.0))
+                        .map(|d| crate::widgets::dialog(d, th, th.surface))
                         .child(
                             div()
                                 .flex_none()

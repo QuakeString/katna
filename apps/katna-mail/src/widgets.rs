@@ -14,6 +14,7 @@ use gpui::{
 };
 use katna_ui::motion::lerp;
 use katna_ui::px;
+use katna_ui::tokens::radius;
 use katna_ui::{Glow, Ripple, Tooltip, WindowDrag};
 
 use crate::theme::{Theme, avatar_color, fade, initial};
@@ -844,6 +845,20 @@ pub fn frosted<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, radiu
     }
     let (tint, blur) = dialog_frost(f32::from(th.frost_tint) / 100.0, th.frost as f32);
     glass(panel, fill, radius, tint, blur)
+}
+
+/// The surface of a dialog: `fill` (frosted when [`Theme::frost`] is on),
+/// corners of [`radius::LG`] that clip its content, and a menu's depth.
+/// Call it before adding the dialog's children, which must draw over the
+/// glass (`docs/DESIGN.md`).
+pub fn dialog<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32) -> E {
+    frosted(
+        panel.overflow_hidden().rounded(px(radius::LG)),
+        th,
+        fill,
+        radius::LG,
+    )
+    .shadow(elevation(th, katna_ui::tokens::elevation::MENU))
 }
 
 /// A dialog's tint opacity and blur for a menu's.
