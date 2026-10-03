@@ -6,10 +6,16 @@
 
 use std::collections::HashMap;
 use std::process::Command;
+use std::time::Duration;
+
+use futures_lite::FutureExt;
 
 use katna_core::ids;
 use katna_dbus::app_action;
 use zbus::zvariant::Value;
+
+/// How long a running Katna Mail has to answer the tray.
+const ANSWER_WITHIN: Duration = Duration::from_secs(5);
 
 /// Runs `action` (see [`app_action`]) with `params` in Katna Mail, or just
 /// raises its window for `None`. `token` lets the window take focus on
@@ -26,39 +32,59 @@ pub(crate) async fn run(
         Some(Value::Str(text)) => Some(text.to_string()),
         _ => None,
     };
+    // A reply's text, after its message ID.
+    let text = match params.get(1) {
+        Some(Value::Str(text)) => Some(text.to_string()),
+        _ => None,
+    };
     let mut platform: HashMap<&str, Value<'_>> = HashMap::new();
     if let Some(token) = &token {
         platform.insert("activation-token", Value::from(token.as_str()));
     }
     let interface = Some("org.freedesktop.Application");
     let path = ids::MAIL_OBJECT_PATH;
-    let called = match action {
-        Some(action) => {
-            connection
-                .call_method(
-                    Some(ids::MAIL_APP_ID),
-                    path,
-                    interface,
-                    "ActivateAction",
-                    &(action, params, platform),
-                )
-                .await
-        }
-        None => {
-            connection
-                .call_method(
-                    Some(ids::MAIL_APP_ID),
-                    path,
-                    interface,
-                    "Activate",
-                    &platform,
-                )
-                .await
+    let call = async {
+        match action {
+            Some(action) => {
+                connection
+                    .call_method(
+                        Some(ids::MAIL_APP_ID),
+                        path,
+                        interface,
+                        "ActivateAction",
+                        &(action, params, platform),
+                    )
+                    .await
+            }
+            None => {
+                connection
+                    .call_method(
+                        Some(ids::MAIL_APP_ID),
+                        path,
+                        interface,
+                        "Activate",
+                        &platform,
+                    )
+                    .await
+            }
         }
     };
+    // A Katna Mail that hangs must not keep the tray from answering the
+    // next click: those wait for this one.
+    let called = async { Some(call.await) }
+        .or(async {
+            smol::Timer::after(ANSWER_WITHIN).await;
+            None
+        })
+        .await;
     match called {
-        Ok(_) => return true,
-        Err(err) => tracing::debug!(%err, ?action, "Katna Mail is not running"),
+        Some(Ok(_)) => return true,
+        Some(Err(err)) => tracing::debug!(%err, ?action, "Katna Mail is not running"),
+        // Another copy would only hand over to the one that hangs.
+        None => {
+            tracing::warn!(?action, "Katna Mail did not answer the tray");
+            return false;
+        }
     }
     if action == Some(app_action::QUIT) {
         return false;
@@ -71,6 +97,9 @@ pub(crate) async fn run(
             // Without the message there is nothing to open: just start.
             if let Some(argument) = argument {
                 command.arg(flag).arg(argument);
+                if let Some(text) = text {
+                    command.arg(app_action::TEXT_FLAG).arg(text);
+                }
             }
         } else {
             command.arg(flag);
@@ -81,7 +110,7 @@ pub(crate) async fn run(
             .env("XDG_ACTIVATION_TOKEN", token)
             .env("DESKTOP_STARTUP_ID", token);
     }
-    spawn(command);
+    spawn(connection, command).await;
     false
 }
 
@@ -116,27 +145,33 @@ pub(crate) async fn open_mailto(
             .env("XDG_ACTIVATION_TOKEN", token)
             .env("DESKTOP_STARTUP_ID", token);
     }
-    spawn(command);
+    spawn(connection, command).await;
     false
 }
 
-/// Katna Mail: from `PATH` on Linux; on Windows the `katna-mail.exe`
-/// beside this program, as Setup installs them together.
+/// Katna Mail: the one beside this program, as every package installs
+/// them together (an AppImage, a Flatpak or a Snap only has it there, and
+/// `~/.local/bin` is often not on the service's `PATH`); else from `PATH`.
 fn mail_program() -> std::path::PathBuf {
-    let name = std::path::PathBuf::from("katna-mail");
-    if !cfg!(windows) {
-        return name;
-    }
+    let name = if cfg!(windows) {
+        "katna-mail.exe"
+    } else {
+        "katna-mail"
+    };
     std::env::current_exe()
         .ok()
-        .and_then(|exe| Some(exe.parent()?.join("katna-mail.exe")))
-        .unwrap_or(name)
+        .and_then(|exe| Some(exe.parent()?.join(name)))
+        .filter(|path| path.is_file())
+        .unwrap_or_else(|| std::path::PathBuf::from(name))
 }
 
-fn spawn(mut command: Command) {
+async fn spawn(connection: &zbus::Connection, mut command: Command) {
     match command.spawn() {
-        // Reaped on its own thread, so it leaves no zombie behind.
         Ok(mut child) => {
+            if let Err(err) = crate::systemd::move_to_own_scope(connection, child.id()).await {
+                tracing::debug!(%err, "Katna Mail stays in katna-daemon's group");
+            }
+            // Reaped on its own thread, so it leaves no zombie behind.
             std::thread::spawn(move || child.wait());
         }
         Err(err) => tracing::warn!(%err, "could not start katna-mail"),

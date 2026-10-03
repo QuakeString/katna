@@ -5,11 +5,13 @@
 //!
 //! All SQL in Katna lives in this crate.
 
+mod alerts;
 mod attachments;
 mod backfill;
 pub mod blob;
 mod cache;
 pub mod calendar;
+mod chat_pins;
 mod contact;
 pub mod contacts;
 mod db;
@@ -17,6 +19,7 @@ pub mod error;
 mod gmail_merge;
 pub mod insights;
 pub mod journal;
+mod library;
 pub mod mail;
 mod mail_read;
 mod mail_view;
@@ -30,7 +33,9 @@ pub mod pop3;
 mod quota;
 mod receipts;
 pub mod remote;
+pub mod rules;
 mod sender_auth;
+mod summaries;
 pub mod tasks;
 pub mod templates;
 mod thread;
@@ -40,9 +45,11 @@ mod translation;
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, Paths};
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 
+pub use alerts::{Bell, FolderBell, Mute, MuteTarget};
 pub use backfill::Backfill;
 pub use blob::{BlobHash, BlobStore};
 pub use cache::Forgotten;
+pub use chat_pins::{ChatPin, MAX_CHAT_PINS, Pinned};
 pub use contact::{ContactConversation, ContactFile, ContactSummary};
 pub use contacts::{
     AddressBook, BookSource, BookState, BookSync, ContactLabel, ContactRef, SavedContact,
@@ -54,14 +61,15 @@ pub use gmail_merge::Adopted;
 pub use insights::{Insights, Partner, Replies};
 pub use journal::{Change, ChangeOp, ObjectKind};
 pub use katna_core::MailCategory;
+pub use library::LibraryFile;
 pub use mail::{
     Added, FolderId, MailBatch, MessageFlags, MessageId, NewMessage, NewParticipant,
     ParticipantRole, ThreadId,
 };
 pub use mail_read::{StoredLocation, StoredMessage, StoredParticipant};
 pub use mail_view::{
-    FlagFilter, FolderMarks, FolderSummary, InboxThreads, Marks, ThreadEntry, ThreadSender,
-    ThreadSummary,
+    FlagFilter, FolderMarks, FolderSummary, InboxThreads, Marks, SpreadTabs, ThreadEntry,
+    ThreadSender, ThreadSummary,
 };
 pub use meta::MetaRow;
 pub use notes::{NOTE_TRASH_KEEP, Note, RemoteNote};
@@ -73,6 +81,7 @@ pub use pop3::Pop3Uidl;
 pub use quota::StorageQuota;
 pub use receipts::{Receipt, ReceiptKind};
 pub use remote::{FolderRole, NewAttachment, RemoteMessage, StoredAttachment, StoredFolder};
+pub use summaries::{StoredSummary, SummaryKind};
 pub use templates::{Template, TemplateFile, TemplateSummary};
 pub use tracking::{
     ActivityItem, MessageActivity, NewRecipient, RecipientActivity, TrackedMessage,
@@ -357,6 +366,25 @@ impl Store {
         mail_view::spread_message_ids(&self.mail, folders, filter)
     }
 
+    /// The unified inbox over `folders` (each account's inbox), in one tab
+    /// ([`SpreadTabs`]), with its unread conversations per tab.
+    pub fn spread_inbox_threads(
+        &self,
+        folders: &[FolderId],
+        tabs: &SpreadTabs,
+    ) -> Result<InboxThreads> {
+        mail_view::spread_inbox_threads(&self.mail, folders, tabs)
+    }
+
+    /// The messages of the unified inbox over `folders` in one tab.
+    pub fn spread_inbox_message_ids(
+        &self,
+        folders: &[FolderId],
+        tabs: &SpreadTabs,
+    ) -> Result<Vec<MessageId>> {
+        mail_view::spread_inbox_message_ids(&self.mail, folders, tabs)
+    }
+
     /// `messages` and every other stored copy of them (the same
     /// `Message-ID` in the same account: copies on servers without
     /// Gmail's message IDs, and Gmail mail synced before them), each once,
@@ -443,6 +471,12 @@ impl Store {
     /// name and size once.
     pub fn contact_files(&self, email: &str, limit: usize) -> Result<Vec<ContactFile>> {
         contact::files(&self.mail, email, limit)
+    }
+
+    /// The `limit` newest named attachments of all accounts, for the
+    /// Files page; see [`LibraryFile`].
+    pub fn library_files(&self, limit: usize) -> Result<Vec<LibraryFile>> {
+        library::files(&self.mail, &self.accounts()?, limit)
     }
 
     /// Which of the mails `headers` (`Message-ID`s, as tasks keep them)

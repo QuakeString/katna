@@ -20,6 +20,13 @@ pub const PREFIX: &str = prefix!();
 /// Application ID of Katna Mail (desktop file, Flatpak, D-Bus activation).
 pub const MAIL_APP_ID: &str = concat!(prefix!(), ".Mail");
 
+/// Desktop entry that Katna's notifications name (`desktop-entry` hint): a
+/// hidden copy of Katna Mail's with `StartupNotify=false`, so a click on a
+/// notification button shows no launch feedback (KWin bounces the app's
+/// icon for every token a button asks for, though most buttons open no
+/// window).
+pub const NOTIFICATIONS_DESKTOP_ID: &str = concat!(prefix!(), ".Mail.Notifications");
+
 /// Application ID of Katna Calendar.
 pub const CALENDAR_APP_ID: &str = concat!(prefix!(), ".Calendar");
 
@@ -107,6 +114,23 @@ pub const GOOGLE_OAUTH_CLIENT_SECRET: &str = match option_env!("KATNA_GOOGLE_OAU
 /// build time. Empty hides the button.
 pub const MICROSOFT_OAUTH_CLIENT_ID: &str = match option_env!("KATNA_MICROSOFT_OAUTH_CLIENT_ID") {
     Some(id) => id,
+    None => "",
+};
+
+/// Client ID of Katna's app in the Zoho API Console, for "Sign in with
+/// Zoho" (tasks and calendars), from `KATNA_ZOHO_OAUTH_CLIENT_ID` at build
+/// time. Empty hides the button.
+pub const ZOHO_OAUTH_CLIENT_ID: &str = match option_env!("KATNA_ZOHO_OAUTH_CLIENT_ID") {
+    Some(id) => id,
+    None => "",
+};
+
+/// The client secret the Zoho API Console gives a server-based app, from
+/// `KATNA_ZOHO_OAUTH_CLIENT_SECRET` at build time; like Google's, it cannot
+/// stay secret in an app people install (PKCE protects the sign-in), but
+/// it is kept out of the repository.
+pub const ZOHO_OAUTH_CLIENT_SECRET: &str = match option_env!("KATNA_ZOHO_OAUTH_CLIENT_SECRET") {
+    Some(secret) => secret,
     None => "",
 };
 

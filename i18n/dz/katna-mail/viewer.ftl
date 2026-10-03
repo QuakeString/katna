@@ -4,6 +4,10 @@
 
 ## Attachment viewer
 
+viewer-opening = ཁ་ཕྱེ་དོ…
+
+## Attachment viewer
+
 viewer-unreadable = མཉམ་སྦྲགས་འདི་ ལྷག་མ་ཚུགས།
 viewer-pdf-locked = PDF འདི་ ཆོག་ཡིག་གིས་ཉེན་སྐྱོབ་འབད་དེ་ཡོད།
 viewer-pdf-unreadable = PDF འདི་ ལྷག་མ་ཚུགས།
@@ -14,8 +18,17 @@ viewer-slides-unreadable = བརྙན་ཤོག་འདི་ཚུ་ ལ�
 viewer-no-preview = སྔོན་ལྟ་མིན་འདུག
 viewer-slide = བརྙན་ཤོག་ { $number }
 viewer-page = ཤོག་ལེབ
+viewer-slide-box = བཤུད་བརྙན
 viewer-page-count = { $count } ལས་
 viewer-go-to-page-tip = ཤོག་ལེབ་ཨང་བཙུགས་ཏེ་ Enter ཨེབ་ (Ctrl+G)
+viewer-rotate-clockwise-tip = ཆུ་ཚོད་ཀྱི་ཁ་ཕྱོགས་སུ་བསྒྱིར། (Ctrl+R)
+viewer-rotate-anticlockwise-tip = ཆུ་ཚོད་ཀྱི་ཁ་ཕྱོགས་ལྡོག་སྟེ་བསྒྱིར། (Ctrl+Shift+R)
+viewer-fit-page-tip = ཤོག་ལེབ་ལུ་འཁྲིལ།
+viewer-fit-picture-tip = སྒོ་སྒྲིག་ལུ་འཁྲིལ།
+viewer-fit-width-tip = རྒྱ་ཚད་ལུ་འཁྲིལ།
+viewer-real-size-tip = ངོ་མའི་ཚད (1:1)
+viewer-page-back-tip = ཧེ་མམ་གྱི་ཤོག་ལེབ
+viewer-page-on-tip = ཤུལ་མམ་གྱི་ཤོག་ལེབ
 
 ## Marking up a PDF
 
@@ -26,6 +39,8 @@ viewer-tool-underline = འོག་ཐིག
 viewer-tool-squiggly = རླབས་ཐིག
 viewer-tool-strike = བར་ཐིག
 viewer-tool-pen = སྨྱུ་གུ
+viewer-tool-note = སྦྱར་ཡིག་ཟིན་བྲིས།
+viewer-tool-text = ཡིག་འབྲུ་སྒྲོམ།
 viewer-tool-eraser = ཀྲ་བཤལ།
 viewer-color-yellow = སེར་པོ
 viewer-color-green = ལྗང་ཁུ
@@ -38,6 +53,16 @@ viewer-color-purple = རྒྱ་སྨུག
 viewer-marks-undo-tip = འབད་བཤོལ། (Ctrl+Z)
 viewer-marks-redo-tip = ལོག་འབད། (Ctrl+Shift+Z)
 viewer-save-marked-tip = ཁྱོད་ཀྱི་རྟགས་ཚུ་དང་གཅིག་ཁར་ འདྲ་བཤུས་ཅིག་སྲུང་། (Ctrl+S)
+viewer-reply-marked-tip = རྟགས་བཀལ་ཡོད་པའི་འདྲ་བཤུས་དང་གཅིག་ཁར་ ལན་སློག
+viewer-forward-tip = ཡིག་སྣོད་མདུན་སྐྱེལ་འབད།
+viewer-forward = མདུན་སྐྱེལ་འབད།
+viewer-open-with = དེ་གིས་ཁ་ཕྱེ…
+viewer-save = སྲུང་།
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = ཟིན་བྲིས་ཅིག་བྲིས།
+viewer-text-placeholder = ནཱ་ལུ་ ཡིག་དཔར་རྐྱབས།
+viewer-note-done = འབད་ཚར་ཡི།
+viewer-note-delete = བཏོན་གཏང་།
 viewer-markup-protected = PDF འདི་ བསྒྱུར་བཅོས་ལས་ ཉེན་སྐྱོབ་འབད་དེ་ཡོདཔ་ལས་ རྟགས་བཀལ་མི་ཚུགས།
 viewer-marks-save-failed = རྟགས་བཀལ་ཡོད་པའི་འདྲ་བཤུས་ སྲུང་མ་ཚུགས།
 # Asked when closing a PDF, or moving to another attachment, with marks
@@ -50,3 +75,5 @@ viewer-marks-save = འདྲ་བཤུས་སྲུང་།
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (རྟགས་བཀལ་ཡོདཔ)
+viewer-pick = གདམ།
+viewer-picked = གདམ་ཡོདཔ

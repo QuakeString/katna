@@ -9,7 +9,7 @@ tray-new-message = 新規メール(_N)
 tray-preferences = 設定(_S)
 tray-quit = 終了(_Q)
 
-## The tray icon's tooltip
+## The tray icon's tooltip, under "Katna Mail"
 
 tray-unread = { $count ->
     [0] 未読メールはありません

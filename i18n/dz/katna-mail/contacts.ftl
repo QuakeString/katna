@@ -39,6 +39,12 @@ contacts-account-failed = འབྲེལ་བ་ཚུ་ལྷག་མ་ཚ
 # $reason is the server's own words, in English.
 contacts-account-error = འབྲེལ་བ་ཚུ་ལྷག་མ་ཚུགས་: { $reason }
 contacts-account-none = ཁ་བྱང་དེབ་ག་ནི་ཡང་ མ་ཐོབ།
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = ཁ་བྱང་དེབ་ག་ནི་ཡང་ མ་ཐོབ།: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } གིས་ འབྲེལ་བ་ཚུ་ { $provider } གིས་ནང་བསྐྱོད་འབད་མི་ Katna ལུ་རྐྱངམ་ཅིག་སྟོནམ་ཨིན།
+contacts-account-sign-in-with = { $provider } གིས་ ནང་བསྐྱོད་འབད།
 contacts-account-looking = འབྲེལ་བ་ཚུ་འཚོལ་དོ…
 contacts-account-try-again = ལོག་འབད་རྩོལ་བསྐྱེད།
 contacts-account-try-again-tooltip = རྩིས་ཐོ་འདི་གི་འབྲེལ་བ་ཚུ་ ད་ལྟོ་ལོག་ཞིབ་དཔྱད་འབད།
@@ -82,7 +88,7 @@ contacts-print-none = པར་འདེབས་འབད་ནིའི་འ�
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = སྐྱེས་ཚེས: { $day }
 contacts-print-nickname = མིང་ཆུང་: { $name }
-contacts-create = འབྲེལ་བ་གསར་བསྐྲུན་འབད།
+contacts-create = འབྲེལ་བ་གསརཔ
 
 ## Search and the list
 

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "No blurred ghost when a dialog closes"
+text = """
+Closing About, What's new, Check for updates or any frosted dialog or menu
+no longer leaves a blurred patch behind for a moment: the blur fades out
+with the dialog.
+"""

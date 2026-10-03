@@ -9,6 +9,17 @@ nav-folders = فولڈرز
 nav-label-new = نیا لیبل بنائیں
 nav-folder-new = نیا فولڈر بنائیں
 nav-menu-check-mail = نئی میل چیک کریں
+nav-menu-check-inbox = یہ ان باکس چیک کریں
+nav-menu-sign-in-again = دوبارہ سائن ان کریں
+nav-menu-new-mail = اس اکاؤنٹ سے نئی میل
+nav-menu-account-settings = اکاؤنٹ کی ترتیبات
+nav-account-checked = ہم آہنگ · { $ago } چیک کیا گیا
+nav-account-in-sync = ہم آہنگ
+nav-account-connecting = منسلک ہو رہا ہے…
+nav-account-offline = آف لائن، دوبارہ کوشش ہو رہی ہے
+nav-account-signed-out = { $provider } سائن ان کی میعاد ختم ہو گئی
+nav-account-password-refused = پاس ورڈ مسترد ہو گیا
+nav-account-storage = { $total } میں سے { $used } استعمال شدہ
 nav-menu-new-subfolder = اندر نیا فولڈر
 nav-menu-new-sublabel = اندر نیا لیبل
 nav-menu-empty-trash = کوڑے دان خالی کریں
@@ -16,10 +27,6 @@ nav-account-unnamed = اکاؤنٹ { $number }
 nav-all-accounts = تمام اکاؤنٹس
 nav-expand = فولڈرز دکھائیں
 nav-collapse = فولڈرز چھپائیں
-nav-tab-new = { $count ->
-    [one] { $count } نیا
-   *[other] { $count } نئے
-}
 storage-used = { $total } میں سے { $percent }% استعمال ہو چکا
 storage-used-detail = { $address }: { $total } میں سے { $used } استعمال ہو چکا
 

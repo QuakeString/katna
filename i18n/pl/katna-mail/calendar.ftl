@@ -60,6 +60,12 @@ calendar-account-not-enabled = Dostęp do kalendarzy dla aplikacji Katna nie jes
 calendar-account-failed = Nie udało się odczytać kalendarzy.
 calendar-account-error = Nie udało się odczytać kalendarzy: { $reason }
 calendar-account-none = Nie znaleziono kalendarzy
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Nie znaleziono kalendarzy: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } pokazuje kalendarze tylko aplikacji Katna zalogowanej przez { $provider }.
+calendar-account-sign-in-with = Zaloguj się przez { $provider }
 calendar-account-looking = Szukanie kalendarzy…
 calendar-account-try-again = Spróbuj ponownie
 calendar-account-try-again-tooltip = Sprawdź teraz ponownie kalendarze tego konta
@@ -79,8 +85,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = jeszcze { $count }
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Powtarza się
 calendar-join = Dołącz
+calendar-join-with = Dołącz przez { $service }
 calendar-email-guests = Wyślij e-mail do gości
 calendar-running-late = Spóźniam się
 calendar-late-subject = Spóźnienie: { $title }
@@ -96,6 +104,7 @@ calendar-guest-answers = { $yes } tak, { $maybe } może, { $no } nie, { $waiting
 calendar-organizer = Organizator
 calendar-optional = Opcjonalny
 calendar-open-web = Otwórz w przeglądarce
+calendar-open-mail = Otwórz wiadomość
 calendar-open-contact = Otwórz kontakt
 calendar-close = Zamknij
 
@@ -119,10 +128,71 @@ calendar-discard = Odrzuć zmiany
 calendar-edit = Edytuj wydarzenie
 calendar-delete = Usuń wydarzenie
 calendar-event-details = Szczegóły wydarzenia
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Nowe wydarzenie
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Otwórz dzień
+calendar-menu-duplicate = Duplikuj
+calendar-menu-color = Kolor
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Kolor kalendarza
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Za tydzień
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Pomidor
+calendar-color-flamingo = Flaming
+calendar-color-tangerine = Mandarynka
+calendar-color-banana = Banan
+calendar-color-sage = Szałwia
+calendar-color-basil = Bazylia
+calendar-color-peacock = Paw
+calendar-color-blueberry = Borówka
+calendar-color-lavender = Lawenda
+calendar-color-grape = Winogrono
+calendar-color-graphite = Grafit
+calendar-menu-only-this = Pokaż tylko ten
+calendar-menu-rename = Zmień nazwę
+calendar-menu-remove = Usuń z listy
+calendar-menu-delete = Usuń
+calendar-menu-new-calendar = Nowy kalendarz
+calendar-menu-show-all = Pokaż wszystkie
+calendar-menu-hide-all = Ukryj wszystkie
+calendar-menu-account-settings = Ustawienia konta
+calendar-why-main = Główny kalendarz
+calendar-why-last = Jedyny tutaj
+calendar-why-owner = Tylko właściciel
+calendar-why-contacts = Z Kontaktów
+calendar-why-unreached = Brak połączenia
+calendar-name-placeholder = Nazwa kalendarza
+calendar-toast-added = Dodano „{ $name }”
+calendar-toast-renamed = Zmieniono nazwę kalendarza
+calendar-toast-recolored = Zmieniono kolor kalendarza
+calendar-toast-deleted = Usunięto „{ $name }”
+calendar-toast-removed = Usunięto „{ $name }” z Twojej listy
+calendar-edit-failed = Kalendarz nie został zmieniony: { $reason }
+calendar-delete-title = Usunąć „{ $name }”?
+calendar-delete-confirm = Usuń
+calendar-deleting = Usuwanie…
+calendar-delete-heading = Zostanie usunięte:
+calendar-delete-events = Kalendarz i wszystkie jego wydarzenia
+calendar-delete-shared = Dla wszystkich, którym go udostępniono
+calendar-delete-server = Zostanie usunięty z { $account } w usłudze pocztowej, nie tylko w Katna.
+calendar-delete-local = Zostanie usunięty z tego komputera.
+calendar-remove-title = Usunąć „{ $name }” z Twojej listy?
+calendar-remove-confirm = Usuń
+calendar-removing = Usuwanie…
+calendar-remove-heading = Co się zmieni:
+calendar-remove-events = Przestaniesz widzieć jego wydarzenia, tutaj i w innych aplikacjach
+calendar-remove-server = Kalendarz zostaje u właściciela, który może udostępnić Ci go ponownie.
 calendar-kind-event = Wydarzenie
+calendar-kind-task = Zadanie
 calendar-kind-focus = Czas na skupienie
 calendar-kind-out-of-office = Poza biurem
 calendar-kind-working-location = Miejsce pracy
+calendar-task-added = Dodano zadanie
+calendar-task-added-to = Dodano zadanie do: { $list }
+calendar-task-list-local = Na tym komputerze
 calendar-working-home = Dom
 calendar-busy = Zajęty
 calendar-free = Dostępny

@@ -133,6 +133,11 @@ impl Daemon {
         if self.closing.load(Ordering::SeqCst) {
             return Err(CommandError::Failed(tr!("daemon-deleting-data")));
         }
+        if provider == OAuthProvider::Zoho && account.is_none() {
+            return Err(CommandError::InvalidArgs(
+                "Zoho signs in for an account Katna already has".into(),
+            ));
+        }
         let tls = Tls::system().map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
         let config = Provider::new(provider, tls.clone()).ok_or_else(|| {
             CommandError::Failed(format!(
@@ -140,49 +145,28 @@ impl Daemon {
                 provider.name()
             ))
         })?;
+        if let (OAuthProvider::Zoho, Some(account)) = (provider, account) {
+            return self.link(config, account).await;
+        }
         let again = account.map(|id| self.account(id)).transpose()?;
         let hint = again
             .as_ref()
             .map_or(hint.trim(), |account| account.address.as_str())
             .to_owned();
-        let flow = SignIn::start(&config, &hint).await.map_err(|err| {
-            CommandError::Failed(format!("cannot wait for the browser's answer: {err}"))
-        })?;
-
-        // A new sign-in ends one still waiting.
-        let (cancel, cancelled) = async_channel::bounded(1);
-        if let Some(old) = self.signing_in.lock().unwrap().replace(cancel.clone()) {
-            let _ = old.try_send(());
+        let grant = self.browser_grant(&config, &hint).await?;
+        let mail_refused = provider == OAuthProvider::Google
+            && grant.scope.as_deref().is_some_and(|granted| {
+                !granted
+                    .split_whitespace()
+                    .any(|scope| scope == katna_sync::oauth::GOOGLE_MAIL)
+            });
+        if mail_refused {
+            return Err(CommandError::AuthFailed(
+                "Google did not let Katna read Gmail: sign in again and tick \
+                 \"Read, compose, send and permanently delete all your email from Gmail\""
+                    .into(),
+            ));
         }
-        tracing::info!(%provider, "signing in in the browser");
-        open_in_browser(flow.url()).await;
-        let pages = Pages {
-            signed_in: tr!("daemon-signed-in", provider = provider.name()),
-            failed: tr!("daemon-sign-in-failed", provider = provider.name()),
-        };
-        let grant = flow
-            .finish(&config, &pages)
-            .or(async {
-                let _ = cancelled.recv().await;
-                Err(katna_sync::Error::Closed(
-                    "the sign-in was cancelled".into(),
-                ))
-            })
-            .or(async {
-                async_io::Timer::after(SIGN_IN_TIMEOUT).await;
-                Err(katna_sync::Error::Timeout(SIGN_IN_TIMEOUT))
-            })
-            .await;
-        {
-            let mut current = self.signing_in.lock().unwrap();
-            if current.as_ref().is_some_and(|c| c.same_channel(&cancel)) {
-                *current = None;
-            }
-        }
-        let grant = grant.map_err(|err| match err {
-            katna_sync::Error::Auth(message) => CommandError::AuthFailed(message),
-            err => CommandError::Failed(err.to_string()),
-        })?;
         let identity = grant.identity.clone().unwrap_or_default();
         let refresh = grant.refresh_token.clone().unwrap_or_default();
 
@@ -272,6 +256,56 @@ impl Daemon {
         Ok(id)
     }
 
+    /// Shows `config`'s sign-in page in the browser and waits for its
+    /// answer, until [`Self::cancel_sign_in`], a newer sign-in or
+    /// [`SIGN_IN_TIMEOUT`].
+    pub(super) async fn browser_grant(
+        &self,
+        config: &Provider,
+        hint: &str,
+    ) -> Result<Grant, CommandError> {
+        let provider = config.kind;
+        let flow = SignIn::start(config, hint).await.map_err(|err| {
+            CommandError::Failed(format!("cannot wait for the browser's answer: {err}"))
+        })?;
+
+        // A new sign-in ends one still waiting.
+        let (cancel, cancelled) = async_channel::bounded(1);
+        if let Some(old) = self.signing_in.lock().unwrap().replace(cancel.clone()) {
+            let _ = old.try_send(());
+        }
+        tracing::info!(%provider, "signing in in the browser");
+        open_in_browser(flow.url(), None).await;
+        let pages = Pages {
+            signed_in: tr!("daemon-signed-in", provider = provider.name()),
+            failed: tr!("daemon-sign-in-failed", provider = provider.name()),
+        };
+        let grant = flow
+            .finish(config, &pages)
+            .or(async {
+                let _ = cancelled.recv().await;
+                Err(katna_sync::Error::Closed(
+                    "the sign-in was cancelled".into(),
+                ))
+            })
+            .or(async {
+                async_io::Timer::after(SIGN_IN_TIMEOUT).await;
+                Err(katna_sync::Error::Timeout(SIGN_IN_TIMEOUT))
+            })
+            .await;
+        {
+            let mut current = self.signing_in.lock().unwrap();
+            if current.as_ref().is_some_and(|c| c.same_channel(&cancel)) {
+                *current = None;
+            }
+        }
+        let grant = grant.map_err(|err| match err {
+            katna_sync::Error::Auth(message) => CommandError::AuthFailed(message),
+            err => CommandError::Failed(err.to_string()),
+        })?;
+        Ok(grant)
+    }
+
     /// Ends the browser sign-in under way. Returns whether there was one.
     pub fn cancel_sign_in(&self) -> bool {
         self.signing_in
@@ -338,22 +372,23 @@ async fn save_picture(daemon: Weak<Daemon>, account: AccountId, url: String, tls
 }
 
 /// Opens `url` in the default browser: through the desktop portal, else
-/// `xdg-open`.
+/// `xdg-open`. `token` (from a notification's button) lets the browser
+/// take focus on Wayland.
 #[cfg(unix)]
-pub(crate) async fn open_in_browser(url: &str) {
+pub(crate) async fn open_in_browser(url: &str, token: Option<&str>) {
     let portal = async {
         let connection = zbus::Connection::session().await?;
+        let mut options = std::collections::HashMap::<&str, zbus::zvariant::Value<'_>>::new();
+        if let Some(token) = token {
+            options.insert("activation_token", token.into());
+        }
         connection
             .call_method(
                 Some("org.freedesktop.portal.Desktop"),
                 "/org/freedesktop/portal/desktop",
                 Some("org.freedesktop.portal.OpenURI"),
                 "OpenURI",
-                &(
-                    "",
-                    url,
-                    std::collections::HashMap::<&str, zbus::zvariant::Value<'_>>::new(),
-                ),
+                &("", url, options),
             )
             .await?;
         Ok::<_, zbus::Error>(())
@@ -362,13 +397,18 @@ pub(crate) async fn open_in_browser(url: &str) {
         return;
     };
     tracing::info!(%err, "no OpenURI portal; trying xdg-open");
-    spawn_opener(std::process::Command::new("xdg-open").arg(url));
+    let mut command = std::process::Command::new("xdg-open");
+    command.arg(url);
+    if let Some(token) = token {
+        command.env("XDG_ACTIVATION_TOKEN", token);
+    }
+    spawn_opener(&mut command);
 }
 
 /// Opens `url` in the default browser. `rundll32` takes the URL as one
 /// argument, where `cmd /c start` would split it at every `&`.
 #[cfg(windows)]
-pub(crate) async fn open_in_browser(url: &str) {
+pub(crate) async fn open_in_browser(url: &str, _token: Option<&str>) {
     spawn_opener(
         std::process::Command::new("rundll32")
             .arg("url.dll,FileProtocolHandler")

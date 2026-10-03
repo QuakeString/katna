@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rephrase the subject"
+text = """
+Once you type a subject, a sparkle at the end of its line offers three
+other ways to say it, written from the subject and what your message says
+so far. Pick one to use it; Undo puts back what you typed. It needs
+writing help with AI on in Settings > Compose.
+"""

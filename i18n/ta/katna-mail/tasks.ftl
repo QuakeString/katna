@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = உருவாக்கு
+tasks-create = புதிய பணி
 tasks-all = அனைத்துப் பணிகளும்
 tasks-today = இன்று
 tasks-starred = நட்சத்திரமிட்டவை
 tasks-new-list = புதிய பட்டியலை உருவாக்கு
 tasks-on-this-computer = இந்தக் கணினியில்
 tasks-my-tasks = எனது பணிகள்
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = பணிகளைக் காட்ட மீண்டும் உள்நுழை
 tasks-account-signed-in = { $address } இல் மீண்டும் உள்நுழைந்தது. உங்கள் பணிகளைப் பெறுகிறது…
 tasks-account-sign-in-refused = { $provider } Katna-வை உள்ளே அனுமதிக்கவில்லை. மீண்டும் முயன்று, உங்கள் பணிகளுக்கான அணுகலை அனுமதிக்கவும்.
@@ -21,9 +19,11 @@ tasks-account-change-password = கடவுச்சொல்லை மாற�
 tasks-account-change-password-tooltip = அமைப்புகள் > கணக்குகள் என்பதைத் திற
 tasks-account-not-enabled = Katna-வுக்கான பணி அணுகல் இன்னும் இயக்கப்படவில்லை.
 tasks-account-failed = பணிப் பட்டியல்களைப் படிக்க முடியவில்லை.
-# $reason is the server's own words, in English.
 tasks-account-error = பணிப் பட்டியல்களைப் படிக்க முடியவில்லை: { $reason }
 tasks-account-none = பணிப் பட்டியல்கள் எதுவும் இல்லை
+tasks-account-none-why = பணிப் பட்டியல்கள் எதுவும் இல்லை: { $reason }
+tasks-account-use-sign-in = { $provider } மூலம் உள்நுழைந்த Katna-வுக்கு மட்டுமே { $provider } பணிகளைக் காட்டும்.
+tasks-account-sign-in-with = { $provider } மூலம் உள்நுழை
 tasks-account-looking = பணிப் பட்டியல்களைத் தேடுகிறது…
 tasks-account-try-again = மீண்டும் முயல்க
 tasks-account-try-again-tooltip = இந்தக் கணக்கின் பணிகளை இப்போது மீண்டும் சரிபார்
@@ -108,4 +108,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = அந்த அஞ்சல் இனி இங்கு இல்லை.
 tasks-toast-list-deleted = பட்டியல் நீக்கப்பட்டது
 tasks-toast-moved = { $list } பட்டியலுக்கு நகர்த்தப்பட்டது
+tasks-toast-placed = பணி நகர்த்தப்பட்டது
 tasks-toast-rescheduled = பணியின் நேரம் மாற்றப்பட்டது

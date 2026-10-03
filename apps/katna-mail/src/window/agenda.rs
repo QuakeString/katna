@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The day's agenda beside the inbox, as Gmail's side panel has it: a
-//! Calendar button on the top bar, beside the language button, opens a
+//! Calendar button on the top bar, beside Settings, opens a
 //! card at the right of the mail with one day's events (today first), their times, and Join for a
 //! call about to start. Clicking an event opens the Calendar page on its
 //! day. Desktop windows only, as the contact panel; the two take turns.
@@ -21,7 +21,7 @@ use super::MailWindow;
 use super::apps::App as RailApp;
 use super::calendar::{civil, event_color, midnight, read};
 use crate::theme::{Theme, fade};
-use crate::widgets::{card_outline, card_shadow, filled_button, icon, icon_button_colored, tip};
+use crate::widgets::{card_outline, filled_button, icon, icon_button_colored, tip};
 
 /// The card's width.
 const AGENDA_WIDTH: f32 = 300.0;
@@ -146,7 +146,7 @@ impl MailWindow {
         }
     }
 
-    /// The top bar's button, beside the language button, which opens and
+    /// The top bar's button, beside Settings, which opens and
     /// closes the card.
     pub(super) fn render_agenda_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let on = self.config.mail.agenda_panel;
@@ -347,9 +347,7 @@ impl MailWindow {
         div()
             .relative()
             .size_full()
-            .rounded(px(radius))
-            .bg(rgba(th.surface))
-            .shadow(card_shadow(th, shadow))
+            .map(|d| crate::widgets::card(d, th, th.pane(), radius, shadow))
             .flex()
             .flex_col()
             .child(

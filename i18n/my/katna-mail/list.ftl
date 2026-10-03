@@ -14,13 +14,13 @@ tab-other = အခြား
 tab-inbox = ဝင်စာ
 tab-newsletters = သတင်းလွှာများ
 tab-notifications = အကြောင်းကြားချက်များ
-tab-new = အသစ် { $count }
 tab-provider-other = Katna က စီထားသည်
 
 ## Mail list: toolbar
 
 list-select = ရွေးရန်
 list-refresh = ပြန်လည်ဆန်းသစ်ရန်
+list-back-to-top = ထိပ်သို့ ပြန်သွားရန်
 list-checking = မေးလ်အသစ်ကို စစ်ဆေးနေသည်…
 list-more = နောက်ထပ်
 list-mark-read = ဖတ်ပြီးအဖြစ် မှတ်ရန်
@@ -39,6 +39,7 @@ list-results = “{ $query }” အတွက် ရလဒ်များ
 list-results-corrected = “{ $query }” အတွက် ရလဒ်များကို ပြနေသည်
 list-search-instead = “{ $query }” ကို အစားထိုး ရှာရန်
 list-files-more = +{ $count }
+list-replied = သင် ပြန်စာရေးပြီး
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -237,6 +238,8 @@ menu-add-note = မှတ်စု ထည့်ရန်
 menu-print-all = အားလုံးကို ပုံနှိပ်ရန်
 menu-new-window = ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်
 menu-move-to = သို့ ရွှေ့ရန်
+menu-follow-up = နောက်ဆက်တွဲ
+menu-more = နောက်ထပ်
 menu-move-to-heading = သို့ ရွှေ့ရန်-
 menu-find-from = { $name } ထံမှ မေးလ်များကို ရှာရန်
 

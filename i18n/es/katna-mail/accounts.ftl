@@ -14,6 +14,18 @@ accounts-unified-switch-detail = «Todas las cuentas» encabeza el panel de carp
 accounts-row = Cuentas
 accounts-row-detail = El panel de carpetas y el menú de la cuenta muestran las cuentas en este orden; la primera es la predeterminada. Al quitar una cuenta se elimina la copia de su correo que Katna guarda en este ordenador. El correo sigue en el servidor.
 accounts-none = Aún no hay cuentas.
+accounts-pop3-row = Correo en el servidor
+accounts-pop3-row-detail = Las cuentas POP3 descargan el correo a este ordenador. Elige qué pasa después con la copia del servidor.
+accounts-pop3-with-katna = Conservarlo hasta que lo elimine en Katna
+accounts-pop3-at-once = Eliminarlo en cuanto se descargue
+accounts-pop3-after-days = { $count ->
+    [one] Eliminarlo tras { $count } día
+    [many] Eliminarlo tras { $count } de días
+   *[other] Eliminarlo tras { $count } días
+}
+accounts-pop3-never = No eliminarlo nunca
+accounts-pop3-days-less = Menos días
+accounts-pop3-days-more = Más días
 accounts-kind-imported = Importada
 accounts-picture-reset = Usar la imagen del escritorio
 accounts-picture-change = Cambiar imagen
@@ -74,6 +86,9 @@ accounts-confirm-word = eliminar
 accounts-confirm-placeholder = Escribe «{ accounts-confirm-word }»
 accounts-confirm-prompt = Para confirmar, escribe «{ accounts-confirm-word }»:
 accounts-cancel = Cancelar
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Elimina el correo y los adjuntos que descargó Katna, las imágenes de los remitentes y el índice de búsqueda, y luego vuelve a descargar el correo reciente. Se conservan las cuentas, los ajustes y el correo que solo está en este ordenador.
 reset-cache-button = Restablecer caché
 reset-cache-title = ¿Restablecer la caché?

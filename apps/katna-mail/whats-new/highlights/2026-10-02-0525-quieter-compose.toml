@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A calmer Compose window"
+text = """
+The New message window floats with an even gap from the window's edges.
+To, Cc, Bcc and From sit together without lines between them, recipients
+are soft filled chips, and From is one quiet line. Encryption, signing,
+tracking and receipts share one small group, and the writing tools sit
+on a soft bar beside Send.
+"""

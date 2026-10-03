@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Paste a signature's HTML"
+text = """
+Settings > Compose > Signatures has Paste HTML, for a signature designed
+on a signature website or in another mail app. It is cleaned, its pictures
+are downloaded and carried inside the mail, and the compose window shows
+it exactly as it will be sent.
+"""

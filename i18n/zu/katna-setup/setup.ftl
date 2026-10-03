@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Thumela nge-Katna Mail
 setup-tagline = I-imeyili esheshayo, eyimfihlo, ehlala kukhompyutha yakho.
 setup-update-where = Ibuyekeza i-Katna Mail ku-{ $path }. Imeyili yakho, izilungiselelo nezinqamuleli kuhlala kunjalo.
 setup-for = Fakela

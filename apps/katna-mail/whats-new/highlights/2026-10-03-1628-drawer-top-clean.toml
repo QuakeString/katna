@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "No shadow line above the sliding folders"
+text = """
+On a phone or tablet, the folders that slide in from the menu no longer
+have a thin shadow line along their top, under the search bar.
+"""

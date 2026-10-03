@@ -14,13 +14,13 @@ tab-other = 其他
 tab-inbox = 收件箱
 tab-newsletters = 新闻通讯
 tab-notifications = 通知
-tab-new = { $count } 封新邮件
 tab-provider-other = 由 Katna 分类
 
 ## Mail list: toolbar
 
 list-select = 选择
 list-refresh = 刷新
+list-back-to-top = 回到顶部
 list-checking = 正在检查新邮件…
 list-more = 更多
 list-mark-read = 标记为已读
@@ -39,6 +39,7 @@ list-results = “{ $query }”的搜索结果
 list-results-corrected = 显示的是“{ $query }”的搜索结果
 list-search-instead = 仍然搜索“{ $query }”
 list-files-more = +{ $count }
+list-replied = 你已回复
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -237,6 +238,8 @@ menu-add-note = 添加笔记
 menu-print-all = 全部打印
 menu-new-window = 在新窗口中打开
 menu-move-to = 移至
+menu-follow-up = 跟进
+menu-more = 更多
 menu-move-to-heading = 移至：
 menu-find-from = 查找来自 { $name } 的邮件
 

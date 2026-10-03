@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tray icon follows light and dark"
+text = """
+The one-color tray icon now changes with your panel as soon as you switch
+between light and dark, instead of waiting for new mail.
+"""

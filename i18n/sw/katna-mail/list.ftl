@@ -14,13 +14,13 @@ tab-other = Nyingine
 tab-inbox = Kikasha
 tab-newsletters = Majarida
 tab-notifications = Arifa
-tab-new = { $count } mpya
 tab-provider-other = zimepangwa na Katna
 
 ## Mail list: toolbar
 
 list-select = Chagua
 list-refresh = Onyesha upya
+list-back-to-top = Rudi juu
 list-checking = Inakagua barua mpya…
 list-more = Zaidi
 list-mark-read = Tia alama kuwa imesomwa
@@ -39,6 +39,7 @@ list-results = Matokeo ya “{ $query }”
 list-results-corrected = Inaonyesha matokeo ya “{ $query }”
 list-search-instead = Badala yake tafuta “{ $query }”
 list-files-more = +{ $count }
+list-replied = Ulijibu
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,12 @@ menu-add-note = Ongeza dokezo
 menu-print-all = Chapisha zote
 menu-new-window = Fungua katika dirisha jipya
 menu-move-to = Hamishia
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Fuatilia
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Zaidi
 menu-move-to-heading = Hamishia:
 menu-find-from = Tafuta barua pepe kutoka kwa { $name }
 

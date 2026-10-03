@@ -25,10 +25,7 @@ contacts-label-removed = { $name } から削除しました
 contacts-label-renamed = ラベル名を { $name } に変更しました
 contacts-label-deleted = ラベル { $name } を削除しました
 contacts-label-no-email = このラベルに、メールアドレスのある人はいません
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = アカウント
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = もう一度サインインして連絡先を表示
 contacts-account-signed-in = { $address } に再度サインインしました。連絡先を取得しています…
 contacts-account-sign-in-refused = { $provider } が Katna のアクセスを許可しませんでした。もう一度試して、連絡先へのアクセスを許可してください。
@@ -36,9 +33,11 @@ contacts-account-password = サーバーがパスワードを受け付けませ�
 contacts-account-change-password = パスワードを変更
 contacts-account-change-password-tooltip = 設定 > アカウント を開く
 contacts-account-failed = 連絡先を読み込めませんでした。
-# $reason is the server's own words, in English.
 contacts-account-error = 連絡先を読み込めませんでした: { $reason }
 contacts-account-none = アドレス帳が見つかりません
+contacts-account-none-why = アドレス帳が見つかりません: { $reason }
+contacts-account-use-sign-in = { $provider } の連絡先は、{ $provider } でサインインした Katna にのみ表示されます。
+contacts-account-sign-in-with = { $provider } でサインイン
 contacts-account-looking = 連絡先を探しています…
 contacts-account-try-again = 再試行
 contacts-account-try-again-tooltip = このアカウントの連絡先を今すぐ再確認
@@ -82,7 +81,7 @@ contacts-print-none = 印刷する連絡先がありません
 contacts-print-typed = { $value }（{ $kind }）
 contacts-print-birthday = 誕生日: { $day }
 contacts-print-nickname = ニックネーム: { $name }
-contacts-create = 連絡先を作成
+contacts-create = 新しい連絡先
 
 ## Search and the list
 

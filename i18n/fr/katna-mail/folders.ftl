@@ -9,6 +9,17 @@ nav-folders = Dossiers
 nav-label-new = Créer un libellé
 nav-folder-new = Créer un dossier
 nav-menu-check-mail = Rechercher de nouveaux messages
+nav-menu-check-inbox = Relever cette boîte de réception
+nav-menu-sign-in-again = Se reconnecter
+nav-menu-new-mail = Nouveau message depuis ce compte
+nav-menu-account-settings = Paramètres du compte
+nav-account-checked = Synchronisé · vérifié { $ago }
+nav-account-in-sync = Synchronisé
+nav-account-connecting = Connexion…
+nav-account-offline = Hors ligne, nouvelle tentative
+nav-account-signed-out = Connexion { $provider } expirée
+nav-account-password-refused = Mot de passe refusé
+nav-account-storage = { $used } utilisés sur { $total }
 nav-menu-new-subfolder = Nouveau dossier à l’intérieur
 nav-menu-new-sublabel = Nouveau libellé à l’intérieur
 nav-menu-empty-trash = Vider la corbeille
@@ -16,11 +27,6 @@ nav-account-unnamed = Compte { $number }
 nav-all-accounts = Tous les comptes
 nav-expand = Afficher les dossiers
 nav-collapse = Masquer les dossiers
-nav-tab-new = { $count ->
-    [one] { $count } nouveau
-    [many] { $count } de nouveaux
-   *[other] { $count } nouveaux
-}
 storage-used = { $percent } % utilisés sur { $total }
 storage-used-detail = { $address } : { $used } utilisés sur { $total }
 

@@ -6,7 +6,8 @@
 //! 1. Connect. On failure, wait and try again, doubling the wait each time
 //!    up to [`WorkerConfig::retry_max`]. A refused password is not retried
 //!    on its own: it would only lock the account on many servers.
-//! 2. Sync every folder ([`engine::sync_account`]), then download the bodies
+//! 2. Sync every folder, the inbox first ([`engine::sync_account_live`],
+//!    with [`Event::Stored`] as mail is stored), then download the bodies
 //!    of messages in the offline window ([`bodies::download_bodies`]).
 //! 3. Loop: send queued changes ([`ops::replay`]), bring the inbox and its
 //!    bodies up to date, then wait on it with IDLE until the server reports
@@ -151,6 +152,9 @@ pub enum Event {
     Connected,
     /// A sync changed something, or a full sync finished.
     Synced(Vec<FolderReport>),
+    /// A full sync stored the folder list, or this many new messages, and
+    /// goes on: the mail can show before [`Event::Synced`].
+    Stored(usize),
     /// Bodies of this many messages were downloaded.
     BodiesStored(usize),
     /// Queued changes were sent. Failed ones were undone in the store.
@@ -183,6 +187,7 @@ pub struct Handle {
     offline_days: Arc<AtomicU32>,
     changes: Sender<()>,
     bodies: Sender<BodyRequest>,
+    folders: Sender<FolderId>,
 }
 
 impl Handle {
@@ -191,6 +196,14 @@ impl Handle {
     pub fn sync_now(&self) {
         // A full channel already holds a request.
         let _ = self.wake.try_send(());
+    }
+
+    /// Asks the worker to sync `folder` now, and only it (with the inbox,
+    /// which it keeps in sync anyway). It reports [`Event::Synced`] when
+    /// done, even when nothing changed. A worker waiting to reconnect tries
+    /// again at once, as for [`Handle::sync_now`].
+    pub fn sync_folder(&self, folder: FolderId) {
+        let _ = self.folders.try_send(folder);
     }
 
     /// Asks the worker to drop its connection and connect again now,
@@ -269,6 +282,7 @@ pub struct Control {
     offline_days: Arc<AtomicU32>,
     changes: Receiver<()>,
     bodies: Receiver<BodyRequest>,
+    folders: Receiver<FolderId>,
 }
 
 /// [`Handle::set_offline_days`] was never called: the worker keeps
@@ -283,6 +297,8 @@ enum Signal {
     Wake,
     Changes,
     Fetch(BodyRequest),
+    /// [`Handle::sync_folder`].
+    Folder(FolderId),
 }
 
 /// A new handle and the control it drives.
@@ -292,6 +308,7 @@ pub fn control() -> (Handle, Control) {
     let (reconnect, reconnect_rx) = async_channel::bounded(1);
     let (changes, changes_rx) = async_channel::bounded(1);
     let (bodies, bodies_rx) = async_channel::unbounded();
+    let (folders, folders_rx) = async_channel::unbounded();
     let metered = Arc::new(AtomicBool::new(false));
     let offline_days = Arc::new(AtomicU32::new(UNSET));
     (
@@ -303,6 +320,7 @@ pub fn control() -> (Handle, Control) {
             offline_days: offline_days.clone(),
             changes,
             bodies,
+            folders,
         },
         Control {
             stop,
@@ -312,6 +330,7 @@ pub fn control() -> (Handle, Control) {
             offline_days,
             changes: changes_rx,
             bodies: bodies_rx,
+            folders: folders_rx,
         },
     )
 }
@@ -342,6 +361,12 @@ impl Control {
                 Err(_) => Signal::Stop,
             }
         })
+        .or(async {
+            match self.folders.recv().await {
+                Ok(folder) => Signal::Folder(folder),
+                Err(_) => Signal::Stop,
+            }
+        })
         .await
     }
 
@@ -356,6 +381,9 @@ impl Control {
                         .try_send(Err(Error::Closed(offline.to_owned())));
                 }
                 Signal::Changes => {}
+                // Offline, a folder's check connects at once and then
+                // syncs everything, like sync now.
+                Signal::Folder(_) => return Signal::Wake,
                 other => return other,
             }
         }
@@ -669,7 +697,8 @@ async fn pop3_wait(control: &Control, wait: Duration) -> bool {
         })
         .await;
         match signal {
-            None | Some(Signal::Wake) => return true,
+            // POP3 has only the inbox.
+            None | Some(Signal::Wake) | Some(Signal::Folder(_)) => return true,
             Some(Signal::Stop) => return false,
             // Changes to POP3 mail are local only.
             Some(Signal::Changes) => {}
@@ -698,8 +727,12 @@ async fn session<B: MailBackend>(
 ) -> Result<()> {
     let mut last_full = Instant::now();
     let mut full = true;
-    // Folders the watcher saw change, synced on the next round.
+    // Folders the watcher saw change or the handle asked for, synced on
+    // the next round.
     let mut stale: Vec<(FolderId, String)> = Vec::new();
+    // The handle asked for a folder: its sync is reported even when
+    // nothing changed.
+    let mut asked = false;
     loop {
         // Changes go out first, so a sync never overwrites them.
         let report = ops::replay(backend, store, account, unix_now()).await?;
@@ -708,13 +741,17 @@ async fn session<B: MailBackend>(
             let _ = events.try_send(Event::ChangesSent(report));
         }
         if full || last_full.elapsed() >= config.full_sync_interval {
-            let reports = engine::sync_account(backend, store, account).await?;
+            let reports = engine::sync_account_live(backend, store, account, |added| {
+                let _ = events.try_send(Event::Stored(added));
+            })
+            .await?;
             record_quota(backend, store, account, events).await?;
             let _ = events.try_send(Event::Synced(reports));
             *synced = true;
             full = false;
             last_full = Instant::now();
             stale.clear();
+            asked = false;
             if !control.metered() {
                 let window = control.offline(&config.offline);
                 download_all(backend, store, account, &window, events).await?;
@@ -763,7 +800,7 @@ async fn session<B: MailBackend>(
                     }
                 }
             }
-            if !reports.is_empty() {
+            if !reports.is_empty() || std::mem::take(&mut asked) {
                 let _ = events.try_send(Event::Synced(reports));
             }
         }
@@ -784,7 +821,7 @@ async fn session<B: MailBackend>(
             .or(async { Some(woken(control, statuses).await) });
             let woken = wait.await;
             if !on_woken(
-                backend, store, account, events, woken, &mut full, &mut stale,
+                backend, store, account, events, woken, &mut full, &mut stale, &mut asked,
             )
             .await?
             {
@@ -828,7 +865,7 @@ async fn session<B: MailBackend>(
         // selects the inbox again.
         let woken = wait.interrupted;
         if !on_woken(
-            backend, store, account, events, woken, &mut full, &mut stale,
+            backend, store, account, events, woken, &mut full, &mut stale, &mut asked,
         )
         .await?
         {
@@ -839,6 +876,7 @@ async fn session<B: MailBackend>(
 
 /// Acts on what ended a session's wait (`None`: it timed out or the
 /// server reported a change). Returns `false` when the worker should stop.
+#[allow(clippy::too_many_arguments)]
 async fn on_woken<B: MailBackend>(
     backend: &mut B,
     store: &mut Store,
@@ -847,6 +885,7 @@ async fn on_woken<B: MailBackend>(
     woken: Option<Woken>,
     full: &mut bool,
     stale: &mut Vec<(FolderId, String)>,
+    asked: &mut bool,
 ) -> Result<bool> {
     match woken {
         None | Some(Woken::Control(Signal::Changes)) => {}
@@ -860,7 +899,29 @@ async fn on_woken<B: MailBackend>(
             if found.unknown {
                 *full = true;
             }
-            *stale = found.changed;
+            // Keeps folders the handle asked for.
+            for changed in found.changed {
+                if !stale.contains(&changed) {
+                    stale.push(changed);
+                }
+            }
+        }
+        Some(Woken::Control(Signal::Folder(id))) => {
+            let path = store
+                .folders(account)?
+                .into_iter()
+                .find(|f| f.id == id)
+                .map(|f| f.path);
+            match path {
+                Some(path) => {
+                    if !stale.iter().any(|(f, _)| *f == id) {
+                        stale.push((id, path));
+                    }
+                    *asked = true;
+                }
+                // Not this account's, or gone: sync it all.
+                None => *full = true,
+            }
         }
     }
     Ok(true)

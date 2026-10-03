@@ -16,6 +16,7 @@
 //! layouts, by the window's width).
 
 mod about;
+mod account_color;
 mod account_roll;
 mod account_status;
 mod account_view;
@@ -30,7 +31,6 @@ mod calendar;
 mod colors;
 mod compose;
 mod contact;
-mod contacts_accounts;
 mod contacts_csv;
 mod contacts_edit;
 mod contacts_io;
@@ -48,6 +48,10 @@ mod detached;
 mod download;
 mod event_edit;
 mod feedback_page;
+mod files_page;
+mod folder_pick;
+mod frost_sliders;
+mod gallery;
 mod katna_account;
 mod keymap;
 mod labels;
@@ -56,29 +60,40 @@ mod layout;
 mod lines;
 mod list;
 mod look;
+mod mail_drag;
+mod mail_providers;
 mod meeting;
 mod nav;
 mod nav_menu;
+mod notched;
 mod notes;
 mod onboarding;
 mod popovers;
 mod print;
 mod print_preview;
+mod quiet;
 mod reader;
 mod remote;
 mod reply_row;
 mod rich;
+mod row_reorder;
+mod rule_editor;
 mod scale_slider;
+mod scheme_color;
+mod scheme_editor;
+mod scheme_picker;
 mod search_panel;
 mod select;
 mod settings;
 mod settings_page;
 mod settings_search;
 mod share_ask;
+mod sheet;
 mod sign_in_again;
+mod skeleton;
 mod snooze;
+mod sounds;
 mod storage;
-mod tab_strip;
 mod tasks_page;
 mod tour;
 mod translate;
@@ -95,9 +110,9 @@ use std::time::{Duration, Instant};
 
 use futures_lite::StreamExt;
 use gpui::{
-    AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, MouseButton,
-    MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task, TextRun, WeakEntity,
-    Window, actions, div, prelude::*, rgba,
+    AnyElement, App, Context, Entity, FocusHandle, Focusable, FontWeight, Hsla, ListOffset,
+    MouseButton, MouseMoveEvent, Render, ScrollHandle, SharedString, Subscription, Task, TextRun,
+    WeakEntity, Window, actions, div, prelude::*, rgba,
 };
 use jiff::tz::TimeZone;
 use katna_chrome::{Bar, ChromeColors, Environment, WindowChrome};
@@ -115,7 +130,7 @@ use crate::daemon::{self, Command};
 use crate::data::{self, Entry, EntryKey, Mail, OpenError};
 use crate::sidebar::{self, Role, Tree};
 use crate::tabs::{self, Provider, Tab};
-use crate::theme::Theme;
+use crate::theme::{Accent, Theme};
 use crate::widgets::{elevation, icon, tip};
 
 use apps::{App as RailApp, People};
@@ -136,9 +151,12 @@ actions!(
         NextPane,
         PreviousPane,
         SendMail,
+        RephraseSelection,
+        Summarize,
         OpenContextMenu,
         SelectFirst,
         SelectLast,
+        ListTop,
         PageDown,
         PageUp,
         OpenMessage,
@@ -161,6 +179,7 @@ actions!(
         ToggleStar,
         AddToTasks,
         MarkImportant,
+        ToggleMute,
         MarkNotImportant,
         ToggleCheck,
         ToggleSettings,
@@ -181,6 +200,7 @@ actions!(
         ShowContacts,
         ShowTasks,
         ShowNotes,
+        ShowFiles,
         OpenSettings,
         ShowShortcuts,
         ShowWhatsNew,
@@ -192,18 +212,18 @@ actions!(
 const WINDOW_CONTEXT: &str = "MailWindow";
 const LIST_CONTEXT: &str = "MessageList";
 const READER_CONTEXT: &str = "MessageReader";
+/// The folder pane while it has the keys.
+const NAV_CONTEXT: &str = "Navigation";
 const SEARCH_CONTEXT: &str = "SearchBox";
 
 pub(super) const TOP_BAR_HEIGHT: f32 = 64.0;
-/// How far frosted menus and popovers blur what is behind them, in pixels.
-const FROST_BLUR: f32 = 20.0;
 const NAV_WIDTH: f32 = 256.0;
 /// How far the folder highlight pill (and the drawer's) stays off the
 /// pane's left edge.
 const NAV_ROW_INSET: f32 = 8.0;
 /// The share of its shadow and of its edge a card keeps while another
 /// pane has the keys.
-const SHADOW_REST: f32 = 0.15;
+const SHADOW_REST: f32 = crate::widgets::CARD_REST;
 const EDGE_REST: f32 = 0.55;
 /// The one gap between the top bar's elements: the menu button and the
 /// app's name, the name and the search box (when the window is too narrow
@@ -211,14 +231,11 @@ const EDGE_REST: f32 = 0.55;
 /// the account picture. The header bar itself spaces its items 6 px apart.
 const TOP_BAR_GAP: f32 = 16.0;
 const BAR_ITEM_GAP: f32 = 6.0;
-/// The room the language button, Settings and the account picture take at
-/// the top bar's end, up to the window buttons: 40 px wide each (the
-/// language button a flag and a chevron), with the gap between them, and
-/// 8 px after the picture plus the bar's own spacing.
-const TOP_END_WIDTH: f32 =
-    LANGUAGE_BUTTON_WIDTH + TOP_BAR_GAP + 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
-/// The language button: its flag and chevron with 8 px either side.
-const LANGUAGE_BUTTON_WIDTH: f32 = 8.0 + 24.0 + 4.0 + 18.0 + 8.0;
+/// The room Settings and the account picture take at the top bar's end, up
+/// to the window buttons: 40 px wide each, with the gap between them, and
+/// 8 px after the picture plus the bar's own spacing. The language button
+/// is in the account menu.
+const TOP_END_WIDTH: f32 = 40.0 + TOP_BAR_GAP + 40.0 + 8.0 + BAR_ITEM_GAP;
 /// The size of the word on the Compose button.
 const COMPOSE_TEXT_SIZE: f32 = 14.0;
 /// Compose is as tall as a phone's: a 56 px square in the rail, a pill in
@@ -273,14 +290,9 @@ fn text_width(
     unpx(line.width).ceil() + 1.0
 }
 
-fn compose_text_width(font: Option<&SharedString>, window: &Window) -> f32 {
-    text_width(
-        &katna_i18n::tr!("compose"),
-        COMPOSE_TEXT_SIZE,
-        FontWeight::MEDIUM,
-        font,
-        window,
-    )
+/// How wide `label` is drawn on the big button at the top of the left bar.
+fn compose_text_width(label: &str, font: Option<&SharedString>, window: &Window) -> f32 {
+    text_width(label, COMPOSE_TEXT_SIZE, FontWeight::MEDIUM, font, window)
 }
 
 /// The widths of "Katna" and of the longest app name after it, so the
@@ -304,7 +316,7 @@ fn title_width(label: f32, (brand, name): (f32, f32)) -> f32 {
 /// The space between "Katna" and the app's name.
 const TITLE_WORD_GAP: f32 = 6.0;
 /// Corners of cards that float: menus aside, dialogs and panels.
-const PANEL_RADIUS: f32 = 15.0;
+const PANEL_RADIUS: f32 = katna_ui::tokens::radius::LG;
 const SEARCH_WIDTH: f32 = 720.0;
 /// The narrowest the search box gets beside the top bar's buttons.
 const SEARCH_MIN_WIDTH: f32 = 120.0;
@@ -333,6 +345,11 @@ const PEEK_LINGER: Duration = Duration::from_millis(250);
 const SNACKBAR_TIME: Duration = Duration::from_secs(5);
 /// Changes signalled by the daemon within this time are read together.
 const CHANGE_DELAY: Duration = Duration::from_millis(120);
+/// How often the store is tried again while the daemon updates it.
+const MIGRATION_RETRY: Duration = Duration::from_millis(250);
+/// How long the window looks as if loading while the daemon updates the
+/// store, before it says the store could not be opened.
+const MIGRATION_PATIENCE: Duration = Duration::from_secs(60);
 /// At least this long between reloads for the daemon's changes. While it
 /// downloads mail it signals every few hundred milliseconds, and each
 /// reload of a big folder holds the window up for a moment; one reload
@@ -360,6 +377,18 @@ enum Listing {
     },
 }
 
+/// What the list showed when a search started: back when the search is
+/// cancelled without a result opened.
+#[derive(Debug, Clone)]
+struct BeforeSearch {
+    listing: Listing,
+    /// The open conversation.
+    open: Option<EntryKey>,
+    /// The line the cursor was on.
+    selected: Option<EntryKey>,
+    top: ListOffset,
+}
+
 /// An open popup menu.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Menu {
@@ -369,6 +398,8 @@ enum Menu {
     ListMore,
     /// "Move to" with the folders of the account.
     MoveTo,
+    /// Gmail's "Label as" with the account's labels.
+    LabelAs,
     /// The open conversation's "more" button.
     ReaderMore,
     /// The calendar bar's options: density, second time zone.
@@ -377,6 +408,8 @@ enum Menu {
     CalendarZones,
     /// The views, when the bar is too narrow for their buttons.
     CalendarViews,
+    /// The list toolbar's bell: how long to mute the open folder or tab.
+    Quiet,
 }
 
 /// A change the user asks for on some lines of the list.
@@ -451,10 +484,28 @@ pub struct MailWindow {
     undo_reopens: Vec<(Command, EntryKey)>,
     /// The conversation to open once an undo brings it back to the list.
     reopen_after_undo: Option<EntryKey>,
+    before_search: Option<BeforeSearch>,
+    /// The search box's X was clicked: the conversation opened from the
+    /// results stays open as the folder comes back.
+    clear_keeps_open: bool,
+    /// A press landed on the search box or its options panel, so the
+    /// window's own press handler leaves the box focused.
+    search_pressed: bool,
     /// The app whose name rolls away at the top left, and how far the
     /// new name has rolled in (0 to 1).
     title_from: RailApp,
     title_roll: Spring,
+    /// The big button's icon and word now and the ones it turns away from
+    /// as the page (or a drive's upload) changes them, and how far it has
+    /// turned (0 to 1).
+    primary_icon: &'static str,
+    primary_icon_from: &'static str,
+    primary_label: String,
+    primary_label_from: String,
+    primary_icon_turn: Spring,
+    /// How wide the big button's word is drawn this frame: eased from the
+    /// old word's width to the new one's while it turns.
+    primary_label_width: f32,
     /// The account picture at the top right rolling from the last
     /// account's, and how far the new one has rolled in (0 to 1).
     avatar_roll: account_roll::AvatarRoll,
@@ -471,6 +522,10 @@ pub struct MailWindow {
     contacts: contacts_page::ContactsPage,
     /// The Tasks page.
     tasks: tasks_page::TasksPage,
+    /// The Files page: every attachment in one place.
+    library: files_page::Library,
+    /// The attach picker over the chat (paperclip > From Files).
+    picker: Option<files_page::picker::Picker>,
     /// The desktop's UI font, or `None` to leave GPUI's default.
     font: Option<SharedString>,
     /// How far text in a pill goes up to look centred in it, per pixel
@@ -489,6 +544,8 @@ pub struct MailWindow {
     tree: Tree,
     /// Unread mail per folder, counted in the background.
     unread: HashMap<FolderId, u64>,
+    /// What notifies and counts: folder bells and mutes.
+    alerts: data::Alerts,
     unread_task: Option<Task<()>>,
     expanded: HashSet<String>,
     /// Accounts folded or opened in the folder pane by their arrow; the
@@ -513,6 +570,9 @@ pub struct MailWindow {
     selected: Option<usize>,
     /// Ticked lines.
     checked: HashSet<EntryKey>,
+    /// The line Shift+click ticks from: the last one ticked or unticked by
+    /// a click.
+    check_anchor: Option<usize>,
     /// Every line of the list is ticked, not only the ones on screen.
     checked_all: bool,
     /// How many lines "Select all" ticked on screen, while those are still
@@ -526,7 +586,12 @@ pub struct MailWindow {
     pending: HashMap<EntryKey, Pending>,
     /// Rows of the list on screen at the last layout.
     visible: Range<usize>,
+    /// The line under the pointer. It shows as hovered only while the list
+    /// is not scrolling, as in Gmail.
     hovered: Option<usize>,
+    /// The list is scrolling: lines passing under the pointer don't light
+    /// up. Ends a moment after the last scroll.
+    list_scrolling: Option<Task<()>>,
     reader: Option<Conversation>,
     /// A window of its own showing one conversation (double-click on a
     /// line), not the main mail window.
@@ -544,6 +609,15 @@ pub struct MailWindow {
     translations: translate::Translations,
     /// The selected text of the open conversation.
     text: select::TextSelection,
+    /// The selected text outside the conversation: dialogs, Settings,
+    /// pages, errors.
+    ui_text: select::TextSelection,
+    /// The last text pressed was outside the conversation: `ui_text` has
+    /// the selection.
+    ui_active: bool,
+    /// This window's own handle, for text made selectable where no
+    /// `Context` is at hand (`select::selectable_in`).
+    me: WeakEntity<Self>,
     /// Whether a conversation is open: in place of the list with two
     /// panes, beside it with three.
     reading: bool,
@@ -561,10 +635,18 @@ pub struct MailWindow {
     search_panel: Option<SearchPanel>,
     search_panel_spring: Spring,
     menu: Option<Menu>,
+    /// The popup menu open at the last frame, and the one fading out
+    /// since it closed (`list::track_menu_fade`).
+    menu_was: Option<Menu>,
+    menu_fade: Option<(Menu, Instant)>,
     /// The right-click menu of the list.
     context_menu: Option<context_menu::ContextMenu>,
+    /// Conversations summed up by AI, and the card beside a line.
+    summaries: reader::Summaries,
     /// The right-click menu of the folder pane.
     nav_menu: Option<nav_menu::NavMenu>,
+    /// The mute choices opened from a folder's or account's menu.
+    quiet_menu: Option<quiet::QuietMenu>,
     /// Checks for new mail under way; the refresh arrow turns meanwhile.
     checking: Vec<nav_menu::Check>,
     check_seq: u64,
@@ -585,7 +667,6 @@ pub struct MailWindow {
     /// The pages other than Mail whose side column (calendars, lists,
     /// labels) is folded away on a desktop, and how far the one on show
     /// is open.
-    page_sides_folded: HashSet<RailApp>,
     page_side_spring: Spring,
     page_side_t: f32,
     /// 0 = folded, 1 = open: the space the navigation takes from the card.
@@ -612,8 +693,13 @@ pub struct MailWindow {
     settings_spring: Spring,
     /// The reading-pane choice of the quick settings under the pointer.
     pane_hover: Option<ReadingPane>,
-    /// The tab indicator's position, in tabs.
-    tab_spring: Spring,
+    /// How far the inbox tabs have folded to fit their room (see
+    /// `tabs_fold_target`), gliding between steps.
+    tab_fold: Spring,
+    /// Each inbox tab's label and count badge widths, measured each frame.
+    tab_sizes: Vec<(f32, f32)>,
+    /// Each inbox tab's unread chip as it shows, fades and folds away.
+    tab_chips: Vec<list::TabChip>,
     snackbar: Option<Snackbar>,
     /// What Ctrl+Z takes back, newest last: this window's actions since
     /// it opened.
@@ -642,6 +728,11 @@ pub struct MailWindow {
     share_ask_later: bool,
     /// The About Katna dialog.
     about: Option<about::About>,
+    /// When the version's copy button was last clicked: it shows a check
+    /// for a moment.
+    version_copied: Option<std::time::Instant>,
+    /// Every shared control, in development builds.
+    gallery: Option<gallery::Gallery>,
     /// Updates of Katna, shown in About.
     updates: updates::Updates,
     /// Follows uploads to Google Drive, once one started.
@@ -656,7 +747,12 @@ pub struct MailWindow {
     /// An account still waits for its first sync, so an empty folder may
     /// only be not fetched yet.
     first_sync: bool,
+    /// POP3 choices sent to the daemon, shown until the store has them.
+    pop3_keep: HashMap<AccountId, katna_core::Pop3Keep>,
     _first_sync_check: Option<Task<()>>,
+    /// Since when the store has waited for the daemon to move it to this
+    /// version's schema, and the next try.
+    migrating: Option<(Instant, Task<()>)>,
     /// The account card above the rail's account picture.
     account_menu: bool,
     /// The application menu, open from the account card's ☰ button.
@@ -688,6 +784,12 @@ pub struct MailWindow {
     /// again.
     delete_confirmed: bool,
     new_label: Option<labels::NewLabel>,
+    /// The rule editor (Settings > Folders & rules, Make a rule…).
+    rule_editor: Option<rule_editor::RuleEditor>,
+    /// The search over the folders in Move to or Label as.
+    folder_pick: Option<folder_pick::FolderPick>,
+    /// The lines a drag onto a folder carries, while it is under way.
+    mail_dragging: Vec<EntryKey>,
     /// Bodies being downloaded because their message or an attachment
     /// chip of it was opened.
     downloads: HashMap<MessageId, download::Download>,
@@ -711,6 +813,14 @@ pub struct MailWindow {
     /// A dialog without fields of its own to focus (the delete question),
     /// and any dialog's frame that keeps Tab inside it.
     dialog_focus: FocusHandle,
+    /// Settings > Appearance > Colors' editor, while open.
+    scheme_editor: Option<scheme_editor::SchemeEditor>,
+    /// The open color picker, for the scheme editor or the accent.
+    color_picker: Option<scheme_color::ColorPicker>,
+    /// Where the swatches that open the picker were drawn, for its place.
+    color_swatches: scheme_color::Swatches,
+    /// Colors picked lately, newest first.
+    recent_colors: Vec<u32>,
     /// The folder pane while it has the keys, the line they are on, and
     /// whether it had them when this frame was drawn.
     nav_focus: FocusHandle,
@@ -728,6 +838,9 @@ pub struct MailWindow {
     files_menu: Option<EntryKey>,
     /// Layout and line height the list's lines were measured for.
     list_shape: (bool, u32),
+    /// The line just opened, kept where it was in the list while the
+    /// reading pane opens beside it and the lines change shape.
+    keep_line: Option<list::KeepLine>,
     nav_list: gpui::ListState,
     nav_items: Vec<nav::NavItem>,
     /// Bumped when the folder pane's lines change; `nav_synced` is what
@@ -737,6 +850,8 @@ pub struct MailWindow {
     /// Lines of the folder pane sliding open or shut.
     nav_fold: Option<nav::Fold>,
     reader_scroll: ScrollHandle,
+    /// The open mail's scroll bar, shown while it scrolls or is pointed at.
+    reader_bar: katna_ui::ScrollBar,
     tz: TimeZone,
     _subscriptions: Vec<Subscription>,
 }
@@ -767,11 +882,13 @@ impl MailWindow {
         this.open_default_folder(cx);
         this.count_unread(cx);
         this.count_activity();
+        this.wait_for_migration(cx);
         // Whether this computer is signed in to Katna, read once the first
         // frame is up (the daemon call runs in the background) so server
         // features know it by the time they are opened.
         cx.on_next_frame(window, |this, window, cx| this.katna_load(window, cx));
         this.listen(cx);
+        colors::apply_motion(&this.config.mail, this.desktop_colors.motion, cx);
         this.watch_colors(cx);
         if let Some(err) = this.mail.as_ref().ok().and_then(Mail::index_error) {
             tracing::info!("{err}");
@@ -809,7 +926,7 @@ impl MailWindow {
             tracing::warn!("{err}; using the default settings");
             Config::default()
         });
-        let desktop_colors = colors::DesktopColors::new(&env.desktop);
+        let desktop_colors = colors::DesktopColors::new(&env.desktop, paths.config_dir());
         let mut this = Self {
             chrome: WindowChrome::new(env, "Katna Mail", window, cx),
             app: RailApp::Mail,
@@ -817,8 +934,17 @@ impl MailWindow {
             agenda: agenda::AgendaPanel::new(),
             undo_reopens: Vec::new(),
             reopen_after_undo: None,
+            before_search: None,
+            clear_keeps_open: false,
+            search_pressed: false,
             title_from: RailApp::Mail,
             title_roll: Spring::new(motion::SLIDE, 1.0),
+            primary_icon: "compose",
+            primary_icon_from: "compose",
+            primary_label: String::new(),
+            primary_label_from: String::new(),
+            primary_label_width: 0.0,
+            primary_icon_turn: Spring::new(motion::SMOOTH, 1.0),
             avatar_roll: account_roll::AvatarRoll::new(),
             avatar_turn: Spring::new(motion::SLIDE, 1.0),
             compose_shown: Spring::new(motion::SMOOTH, 1.0),
@@ -828,6 +954,8 @@ impl MailWindow {
             people_task: None,
             contacts: Default::default(),
             tasks: Default::default(),
+            library: Default::default(),
+            picker: None,
             font,
             pill_text_lift: 0.0,
             mail: Mail::open(&paths),
@@ -835,6 +963,9 @@ impl MailWindow {
             hovered_link: None,
             translations: translate::Translations::default(),
             text: select::TextSelection::new(cx),
+            ui_text: select::TextSelection::new_windowed(cx),
+            ui_active: false,
+            me: cx.entity().downgrade(),
             accounts: Vec::new(),
             quotas: HashMap::new(),
             storage_account: std::cell::Cell::new(None),
@@ -843,6 +974,7 @@ impl MailWindow {
             config_path,
             tree: Tree::default(),
             unread: HashMap::new(),
+            alerts: data::Alerts::default(),
             unread_task: None,
             expanded: HashSet::new(),
             open_accounts: HashMap::new(),
@@ -858,12 +990,14 @@ impl MailWindow {
             entries: Vec::new(),
             selected: None,
             checked: HashSet::new(),
+            check_anchor: None,
             checked_all: false,
             page_pick: None,
             picked: None,
             pending: HashMap::new(),
             visible: 0..0,
             hovered: None,
+            list_scrolling: None,
             reader: None,
             detached: false,
             main: None,
@@ -878,8 +1012,12 @@ impl MailWindow {
             search_panel: None,
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
             menu: None,
+            menu_was: None,
+            menu_fade: None,
             context_menu: None,
+            summaries: reader::Summaries::default(),
             nav_menu: None,
+            quiet_menu: None,
             checking: Vec::new(),
             check_seq: 0,
             snooze_menu: None,
@@ -889,7 +1027,6 @@ impl MailWindow {
             peek_from: Hover::Mail,
             peek_task: None,
             nav_spring: Spring::new(motion::SLIDE, 1.0),
-            page_sides_folded: HashSet::new(),
             page_side_spring: Spring::new(motion::SLIDE, 1.0),
             page_side_t: 1.0,
             reserve_spring: Spring::new(motion::SLIDE, 1.0),
@@ -905,7 +1042,9 @@ impl MailWindow {
             settings_open: false,
             pane_hover: None,
             settings_spring: Spring::new(motion::SLIDE, 0.0),
-            tab_spring: Spring::new(motion::SLIDE, 0.0),
+            tab_fold: Spring::new(motion::SMOOTH, 0.0),
+            tab_sizes: Vec::new(),
+            tab_chips: Vec::new(),
             snackbar: None,
             undo_history: Vec::new(),
             crash_notice: None,
@@ -921,6 +1060,8 @@ impl MailWindow {
             print_preview: None,
             share_ask_later: false,
             about: None,
+            version_copied: None,
+            gallery: None,
             updates: updates::Updates::default(),
             drive_watch: None,
             tour: None,
@@ -928,7 +1069,9 @@ impl MailWindow {
             tour_seen: HashMap::new(),
             read_timer: None,
             first_sync: false,
+            pop3_keep: HashMap::new(),
             _first_sync_check: None,
+            migrating: None,
             account_menu: false,
             app_menu: None,
             language_picker: None,
@@ -943,6 +1086,9 @@ impl MailWindow {
             delete_ask: None,
             delete_confirmed: false,
             new_label: None,
+            rule_editor: None,
+            folder_pick: None,
+            mail_dragging: Vec::new(),
             downloads: HashMap::new(),
             chip_download: None,
             nav_t: 1.0,
@@ -956,6 +1102,10 @@ impl MailWindow {
             reader_focus: cx.focus_handle(),
             reader_keys: false,
             dialog_focus: cx.focus_handle(),
+            scheme_editor: None,
+            color_picker: None,
+            color_swatches: Default::default(),
+            recent_colors: Vec::new(),
             nav_focus: cx.focus_handle(),
             nav_cursor: None,
             nav_keys_shown: false,
@@ -964,21 +1114,29 @@ impl MailWindow {
             list_state: lines::Lines::new(),
             files_menu: None,
             list_shape: (false, 0),
+            keep_line: None,
             nav_list: nav::nav_list(),
             nav_items: Vec::new(),
             nav_rev: 1,
             nav_synced: 0,
             nav_fold: None,
             reader_scroll: ScrollHandle::new(),
+            reader_bar: katna_ui::ScrollBar::default(),
             tz: TimeZone::try_system().unwrap_or(TimeZone::UTC),
             _subscriptions: subscriptions,
         };
         this.remote.always = this.config.mail.remote_images;
         this.watch_escape(window, cx);
         let weak = cx.entity().downgrade();
-        // The toolbar's "1–50 of N" follows the scrolling.
+        // The toolbar's "1–50 of N" follows the scrolling, and the wheel
+        // stops the list gliding back to its top.
         this.list_state.state().set_scroll_handler(move |_, _, cx| {
-            weak.update(cx, |_, cx| cx.notify()).ok();
+            weak.update(cx, |this, cx| {
+                this.layout.stop_glide();
+                this.hold_hover_while_scrolling(cx);
+                cx.notify();
+            })
+            .ok();
         });
         this
     }
@@ -1002,7 +1160,8 @@ impl MailWindow {
     }
 
     /// The colors: the desktop's light or dark, unless the settings pick
-    /// one, in the desktop's color scheme or accent color if it has them.
+    /// one, in the color scheme and accent color the settings pick
+    /// ([`Theme::pick`]).
     fn theme(&self, window: &Window) -> Theme {
         self.theme_for(&self.chrome, window)
     }
@@ -1014,35 +1173,33 @@ impl MailWindow {
             ThemeChoice::Light => Some(false),
             ThemeChoice::Dark => Some(true),
         };
-        let dark = choice.unwrap_or_else(|| WindowChrome::desktop_dark(window));
         let system = &self.desktop_colors.colors;
-        let desktop_scheme = self.config.mail.desktop_colors && system.scheme_for(dark).is_some();
-        let th = if self.config.mail.desktop_colors {
-            Theme::system(dark, system)
-        } else {
-            Theme::new(dark)
-        };
+        let view = &self.config.mail;
+        // A scheme with one side decides light or dark itself.
+        let choice = Theme::forced_dark(view.colors(), system).or(choice);
+        let dark = choice.unwrap_or_else(|| WindowChrome::desktop_dark(window));
+        let scheme = Theme::picks_scheme(dark, view.colors(), system);
+        let th = Theme::pick(dark, view.colors(), Accent::parse(&view.accent), system);
         // The window frame follows the same choices.
         chrome.set_dark(choice);
-        chrome.set_colors(desktop_scheme.then_some(ChromeColors {
+        chrome.set_colors(scheme.then_some(ChromeColors {
             window_bg: th.page,
             view_bg: th.surface,
             fg: th.text,
             accent: th.accent,
         }));
         chrome.set_backdrop(Some(th.page));
-        // Menus and popovers are frosted with the blurred background, in
-        // every window, blurred or not.
-        let th = if self.config.experimental.blur
-            && katna_chrome::Look::blur_available()
-            && katna_ui::frost::supported()
-        {
-            th.frosted(FROST_BLUR * window.scale_factor())
+        // Menus and popovers are frosted on their own switch, whether the
+        // window is blurred or not: Katna draws their blur itself.
+        let th = if self.config.experimental.frosted_popups && katna_ui::frost::supported() {
+            let (blur, tint) = self.frost_amount();
+            th.frosted(blur * window.scale_factor(), tint)
         } else {
             th
         };
         if chrome.blurred() {
-            th.translucent()
+            let (pane, chat, search) = self.pane_frost();
+            th.translucent().frosted_panes(pane, chat, search)
         } else {
             th
         }
@@ -1052,7 +1209,7 @@ impl MailWindow {
     fn needs_account(&self) -> bool {
         match &self.mail {
             Err(OpenError::NoStore { .. }) => true,
-            Err(OpenError::Other(_)) => false,
+            Err(OpenError::Migrating(_) | OpenError::Other(_)) => false,
             Ok(_) => self.accounts.is_empty(),
         }
     }
@@ -1102,6 +1259,7 @@ impl MailWindow {
         self.config.mail.order_accounts(&mut self.accounts);
         self.tree = Tree::build(&self.accounts, &mail.folders(), &self.unread);
         self.expanded = self.tree.initially_expanded();
+        self.settle_account_colors();
         self.rebuild_nav();
     }
 
@@ -1114,12 +1272,13 @@ impl MailWindow {
         self.unread_task = Some(cx.spawn(async move |this, cx| {
             // The folders are read there too, so the window never waits
             // for their counts.
-            let (folders, unread) = cx
+            let (folders, unread, alerts) = cx
                 .background_executor()
                 .spawn(async move { data::folders_and_unread(&paths) })
                 .await;
             this.update(cx, |this, cx| {
                 this.unread = unread;
+                this.alerts = alerts;
                 if let Ok(mail) = &this.mail {
                     let folders = folders.unwrap_or_else(|| mail.folders());
                     this.tree = Tree::build(&this.accounts, &folders, &this.unread);
@@ -1208,6 +1367,7 @@ impl MailWindow {
                         detail,
                     } => {
                         this.send_failed(id, cx);
+                        this.play_event_sound(katna_core::config::SoundEvent::NotSent);
                         let subject = if subject.trim().is_empty() {
                             "(no subject)".to_owned()
                         } else {
@@ -1424,6 +1584,7 @@ impl MailWindow {
         self.reset_list(false);
         self.selected = (!self.entries.is_empty()).then_some(0);
         self.checked.clear();
+        self.check_anchor = None;
         self.checked_all = false;
         self.page_pick = None;
         self.picked = None;
@@ -1436,11 +1597,25 @@ impl MailWindow {
         if self.tab == tab {
             return;
         }
+        // Another tab opens at its top, without the last one's glide.
+        self.layout.stop_glide();
         self.tab = tab;
         // No fade: the tab's lines replace the last ones in the same frame,
-        // as the indicator slides over.
+        // as the indicator slides over. A conversation open beside the
+        // list stays open, as the list is still in sight; over the list,
+        // it closes to show the tab.
+        let keep_open = self.pane_open();
         if let Some(folder) = self.folder {
             self.open_folder(folder, cx);
+        } else if let Some((view, account)) = self.unified {
+            self.open_unified(view, account, cx);
+        }
+        if keep_open {
+            self.reading = true;
+            let key = self.reader.as_ref().map(|r| r.key);
+            if let Some(ix) = self.entries.iter().position(|e| Some(e.key) == key) {
+                self.selected = Some(ix);
+            }
         }
     }
 
@@ -1488,6 +1663,26 @@ impl MailWindow {
         }
         if !self.reading && !self.split() {
             self.card_seq += 1;
+        }
+        // A result opened: cancelling the search no longer goes back.
+        if matches!(self.listing, Some(Listing::Search { .. })) {
+            self.before_search = None;
+        }
+        // With a conversation already beside the list the lines keep their
+        // height, so the list stays where it was scrolled; only a line cut
+        // off at an edge comes fully into view.
+        if self.pane_open() {
+            self.keep_line = None;
+            self.list_state.scroll_to_reveal_item(ix);
+        } else {
+            self.keep_line = self
+                .list_state
+                .bounds_for_item(ix)
+                .map(|bounds| list::KeepLine {
+                    ix,
+                    top: bounds.top() - self.list_state.viewport_bounds().top(),
+                    placed: false,
+                });
         }
         self.selected = Some(ix);
         self.reading = true;
@@ -1569,6 +1764,25 @@ impl MailWindow {
         self.select(0, cx);
     }
 
+    /// Home with the keys in none of the panes, as after a click on the
+    /// top bar: the list on screen glides back to its top. The folder pane
+    /// and a conversation keep Home for themselves, and the list's own
+    /// Home selects its first line.
+    fn list_top(&mut self, _: &ListTop, window: &mut Window, cx: &mut Context<Self>) {
+        let in_pane = [&self.nav_focus, &self.reader_focus, &self.list_focus]
+            .iter()
+            .any(|f| f.contains_focused(window, cx));
+        let list_shown = self.app == RailApp::Mail
+            && self.settings_page.is_none()
+            && self.mail.is_ok()
+            && (!self.reading || self.split());
+        if in_pane || !list_shown {
+            cx.propagate();
+            return;
+        }
+        self.glide_list_to_top(cx);
+    }
+
     fn select_last(&mut self, _: &SelectLast, _: &mut Window, cx: &mut Context<Self>) {
         self.select(self.entries.len().saturating_sub(1), cx);
     }
@@ -1613,6 +1827,14 @@ impl MailWindow {
     /// Esc (or U, Backspace) in the conversation beside the list: the keys
     /// go back to the list, and the conversation stays shown.
     fn reader_back(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
+        // Esc first folds the chat's list of people or its attach picker.
+        if self.fold_chat_summary(cx)
+            || self.fold_chat_people(cx)
+            || self.fold_chat_pins(cx)
+            || self.fold_files_picker(cx)
+        {
+            return;
+        }
         window.focus(&self.list_focus, cx);
         cx.notify();
     }
@@ -1688,6 +1910,10 @@ impl MailWindow {
     }
 
     fn close_message(&mut self, _: &CloseMessage, window: &mut Window, cx: &mut Context<Self>) {
+        // Esc first folds the chat's list of people or its attach picker.
+        if self.fold_chat_people(cx) || self.fold_chat_pins(cx) || self.fold_files_picker(cx) {
+            return;
+        }
         if self.detached {
             window.remove_window();
             return;
@@ -1734,6 +1960,10 @@ impl MailWindow {
     }
 
     fn focus_list(&mut self, _: &FocusList, window: &mut Window, cx: &mut Context<Self>) {
+        if self.app == RailApp::Files {
+            self.focus_files(window, cx);
+            return;
+        }
         window.focus(&self.list_focus, cx);
         if self.selected.is_none() && !self.entries.is_empty() {
             self.select(0, cx);
@@ -1749,15 +1979,9 @@ impl MailWindow {
             cx.notify();
             return;
         }
-        // The other pages fold their own side column, each on its own.
-        if self.app != RailApp::Mail {
-            if !self.page_sides_folded.remove(&self.app) {
-                self.page_sides_folded.insert(self.app);
-            }
-            cx.notify();
-            return;
-        }
+        // One fold for Mail's folders and every page's side column.
         self.nav_open = !self.nav_open;
+        self.nav_toggled_by_hand();
         self.nav_peek = false;
         self.peek_hover = (false, false);
         self.peek_task = None;
@@ -1804,6 +2028,7 @@ impl MailWindow {
         }
         if !self.checked.is_empty() || self.reading {
             self.menu = Some(Menu::MoveTo);
+            self.sync_folder_pick(cx);
             cx.notify();
         }
     }
@@ -1817,6 +2042,7 @@ impl MailWindow {
 
     fn select_none(&mut self, _: &SelectNone, _: &mut Window, cx: &mut Context<Self>) {
         self.checked.clear();
+        self.check_anchor = None;
         self.checked_all = false;
         self.picked = None;
         cx.notify();
@@ -1989,7 +2215,30 @@ impl MailWindow {
         self.load_tree();
         self.open_default_folder(cx);
         self.count_unread(cx);
+        if self.mail.is_ok() && self.migrating.take().is_some() {
+            // The calendar and agenda read the same store.
+            self.refresh(false, cx);
+        }
+        self.wait_for_migration(cx);
         cx.notify();
+    }
+
+    /// While the daemon moves the store up to this version, as it does
+    /// as it starts after an update, tries it again shortly.
+    fn wait_for_migration(&mut self, cx: &mut Context<Self>) {
+        if !matches!(self.mail, Err(OpenError::Migrating(_))) {
+            self.migrating = None;
+            return;
+        }
+        let since = self
+            .migrating
+            .as_ref()
+            .map_or_else(Instant::now, |(since, _)| *since);
+        let task = cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(MIGRATION_RETRY).await;
+            this.update(cx, |this, cx| this.reopen(cx)).ok();
+        });
+        self.migrating = Some((since, task));
     }
 
     /// Opens the first inbox when nothing is listed, as when the first
@@ -2060,12 +2309,16 @@ impl MailWindow {
             Some(listing @ (Listing::Folder(_) | Listing::Unified { .. })) => {
                 let (entries, unread) = match listing {
                     Listing::Folder(folder) => self.list_entries(folder),
-                    Listing::Unified { view, account } => {
-                        (self.unified_entries(view, account), None)
-                    }
+                    Listing::Unified { view, account } => self.unified_entries(view, account),
                     Listing::Search { .. } => (Vec::new(), None),
                 };
+                let open = self.kept_open_line(&listing, &entries);
                 self.entries = entries;
+                // The open conversation stays where it was until it closes,
+                // as in webmail, though reading it took it out of the list.
+                if let Some((at, entry)) = open {
+                    self.entries.insert(at.min(self.entries.len()), entry);
+                }
                 self.reset_list(true);
                 if let Some(unread) = unread {
                     self.category_unread = unread;
@@ -2149,6 +2402,10 @@ impl MailWindow {
             self.on_tasks_search(search, event, window, cx);
             return;
         }
+        if self.app == RailApp::Files {
+            self.on_files_search(search, event, window, cx);
+            return;
+        }
         match event {
             InputEvent::Changed => {
                 let text = search.read(cx).text().trim().to_owned();
@@ -2170,11 +2427,22 @@ impl MailWindow {
 
     fn start_search(&mut self, text: String, cx: &mut Context<Self>) {
         self.search_error = None;
+        let keep_open = std::mem::take(&mut self.clear_keeps_open);
         if text.is_empty() {
             self.search_task = None;
             if matches!(self.listing, Some(Listing::Search { .. })) {
+                // Only the X keeps a result open; text deleted away goes back.
+                let opened = (keep_open && self.reading)
+                    .then(|| self.reader.take())
+                    .flatten();
+                let card_seq = self.card_seq;
                 self.open_listed(cx);
+                match opened {
+                    Some(reader) => self.keep_open(reader, card_seq),
+                    None => self.restore_before_search(cx),
+                }
             }
+            self.before_search = None;
             return;
         }
         let Some(index) = self.mail.as_mut().ok().and_then(Mail::index) else {
@@ -2200,6 +2468,66 @@ impl MailWindow {
         }));
     }
 
+    /// Keeps what the list shows as a search replaces it, before the
+    /// results take the lines and the open conversation.
+    fn save_before_search(&mut self) {
+        let Some(listing) = self.listing.clone() else {
+            return;
+        };
+        let key = |ix: usize| self.entries.get(ix).map(|e| e.key);
+        self.before_search = Some(BeforeSearch {
+            listing,
+            open: self
+                .reading
+                .then(|| self.reader.as_ref().map(|r| r.key))
+                .flatten(),
+            selected: self.selected.and_then(key),
+            top: self.list_state.logical_scroll_top(),
+        });
+    }
+
+    /// A search cancelled with no result opened: the list goes back to
+    /// where it was, with the conversation that was open open again. The
+    /// list is listed again first (`open_listed`).
+    fn restore_before_search(&mut self, cx: &mut Context<Self>) {
+        let Some(before) = self.before_search.take() else {
+            return;
+        };
+        // Another folder picked meanwhile keeps its own place.
+        if self.listing.as_ref() != Some(&before.listing) {
+            return;
+        }
+        let at = |key: Option<EntryKey>| {
+            key.and_then(|key| self.entries.iter().position(|e| e.key == key))
+        };
+        if let Some(ix) = at(before.selected) {
+            self.selected = Some(ix);
+        }
+        self.list_state.scroll_to(before.top);
+        if let Some(ix) = at(before.open) {
+            if !self.reading && !self.split() {
+                self.card_seq += 1;
+            }
+            self.selected = Some(ix);
+            self.reading = true;
+            self.load_reader(ix, cx);
+        }
+        cx.notify();
+    }
+
+    /// Cleared with the X: the conversation opened from the results stays
+    /// where it is, picked in the folder when it lies there.
+    fn keep_open(&mut self, reader: Conversation, card_seq: usize) {
+        self.card_seq = card_seq;
+        let ix = self.entries.iter().position(|e| e.key == reader.key);
+        self.reader = Some(reader);
+        self.reading = true;
+        self.selected = ix;
+        if let Some(ix) = ix {
+            self.list_state.scroll_to_reveal_item(ix);
+        }
+    }
+
     fn show_results(
         &mut self,
         query: String,
@@ -2216,6 +2544,9 @@ impl MailWindow {
                     }
                 }
                 let first = !matches!(self.listing, Some(Listing::Search { .. }));
+                if first {
+                    self.save_before_search();
+                }
                 // The same search again, after the mail changed: keep the
                 // cursor, the ticks and the open conversation.
                 let again = matches!(
@@ -2252,6 +2583,7 @@ impl MailWindow {
                 }
                 self.selected = (!self.entries.is_empty()).then_some(0);
                 self.checked.clear();
+                self.check_anchor = None;
                 self.checked_all = false;
                 self.page_pick = None;
                 self.picked = None;
@@ -2560,6 +2892,24 @@ impl MailWindow {
         undo
     }
 
+    /// The open conversation's line and where it is, when the list
+    /// `listing` is about to get `entries` without it: a list of unread
+    /// mail loses the conversation that opening it marked read.
+    fn kept_open_line(&self, listing: &Listing, entries: &[Entry]) -> Option<(usize, Entry)> {
+        let Listing::Unified { view, .. } = listing else {
+            return None;
+        };
+        if view.filter() == Default::default() || !self.reading || self.detached {
+            return None;
+        }
+        let key = self.reader.as_ref()?.key;
+        if entries.iter().any(|e| e.key == key) {
+            return None;
+        }
+        let at = self.entries.iter().position(|e| e.key == key)?;
+        Some((at, self.entries[at]))
+    }
+
     /// Takes lines out of the list, keeping the cursor on the next one.
     /// When the open conversation goes, the next one opens in its place
     /// (Settings > General > Auto-advance), with no empty pane between;
@@ -2633,6 +2983,7 @@ impl MailWindow {
     ) {
         let connection = self.daemon.clone();
         let notes = command.touches_notes();
+        let drive = command.drive();
         cx.spawn(async move |this, cx| {
             let result = cx
                 .background_executor()
@@ -2644,21 +2995,26 @@ impl MailWindow {
                     daemon::send(&connection, &command).await
                 })
                 .await;
-            this.update(cx, |this, cx| match result {
-                Ok(()) => {
-                    if notes {
-                        this.load_notes(cx);
-                    }
-                    if let Some(done) = done {
-                        this.show_snackbar(done, undo, cx);
-                    }
+            this.update(cx, |this, cx| {
+                if let Some(account) = drive {
+                    this.drive_listing_changed(account, cx);
                 }
-                Err(err) => {
-                    tracing::info!("{err}");
-                    if !quiet {
-                        this.show_snackbar(err, None, cx);
-                        // Show the store as it is again.
-                        this.refresh(false, cx);
+                match result {
+                    Ok(()) => {
+                        if notes {
+                            this.load_notes(cx);
+                        }
+                        if let Some(done) = done {
+                            this.show_snackbar(done, undo, cx);
+                        }
+                    }
+                    Err(err) => {
+                        tracing::info!("{err}");
+                        if !quiet {
+                            this.show_snackbar(err, None, cx);
+                            // Show the store as it is again.
+                            this.refresh(false, cx);
+                        }
                     }
                 }
             })
@@ -2716,12 +3072,24 @@ impl MailWindow {
             self.restore_quote(window, cx);
             return;
         }
+        if undo == Command::UndoRephrase {
+            self.undo_rephrase(window, cx);
+            return;
+        }
+        if let Command::RestoreSubject(subject) = undo {
+            self.restore_subject(subject, window, cx);
+            return;
+        }
         if let Command::Event(change) = undo {
             self.undo_event_change(*change, cx);
             return;
         }
         if let Command::RestoreContacts(keys) = &undo {
             self.restore_contacts(keys, cx);
+            return;
+        }
+        if let Command::RestoreScheme(id, contents, was_used) = &undo {
+            self.restore_scheme(id, contents, *was_used, cx);
             return;
         }
         if let Command::UndoSend(id) = undo {
@@ -2799,16 +3167,13 @@ impl MailWindow {
         self.act_on_targets(Act::Important(false), cx);
     }
 
+    fn toggle_mute(&mut self, _: &ToggleMute, _: &mut Window, cx: &mut Context<Self>) {
+        self.toggle_mute_targets(cx);
+    }
+
     fn toggle_check(&mut self, _: &ToggleCheck, _: &mut Window, cx: &mut Context<Self>) {
-        if let Some(entry) = self.selected.and_then(|ix| self.entries.get(ix)) {
-            let key = entry.key;
-            if !self.checked.remove(&key) {
-                self.checked.insert(key);
-            }
-            self.checked_all = false;
-            self.page_pick = None;
-            self.picked = None;
-            cx.notify();
+        if let Some(ix) = self.selected {
+            self.click_check(ix, false, cx);
         }
     }
 
@@ -2861,6 +3226,7 @@ impl MailWindow {
             return None;
         }
         let s = s.max(0.0);
+        let leaving = snackbar.shown.target() == 0.0;
         // Counted down: too late to take back.
         let left = snackbar
             .countdown
@@ -2874,7 +3240,14 @@ impl MailWindow {
         let ring = left.map(|(left, total)| {
             window.request_animation_frame();
             let share = left.as_secs_f32() / total.as_secs_f32().max(0.001);
-            countdown_ring(share, left.as_secs_f32().ceil() as u64, th)
+            let ink = th.snackbar_text;
+            countdown_ring(
+                share,
+                left.as_secs_f32().ceil() as u64,
+                ink,
+                crate::theme::fade(ink, 0.25),
+                30.0,
+            )
         });
         let text = snackbar.text.clone();
         let has_undo = snackbar.undo.is_some();
@@ -2883,6 +3256,10 @@ impl MailWindow {
         let edge = lerp(24.0, 8.0, shape.phone);
         Some(
             div()
+                .id("snackbar")
+                // Clicks on the note stop here, not on what is under it,
+                // until it is fading away.
+                .when(!leaving, |d| d.occlude())
                 .absolute()
                 .left(px(edge))
                 .when(shape.is_phone(), |d| d.right(px(edge)))
@@ -2940,12 +3317,24 @@ impl MailWindow {
         )
     }
 
-    fn render_error(&self, error: &OpenError, th: &Theme) -> AnyElement {
+    /// Whether the daemon has had long enough to update the store.
+    fn migration_overdue(&self) -> bool {
+        self.migrating
+            .as_ref()
+            .is_some_and(|(since, _)| since.elapsed() >= MIGRATION_PATIENCE)
+    }
+
+    fn render_error(&self, error: &OpenError, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let err = match error {
             // The daemon makes the store when the first account is added;
             // until then the first-start pages show.
             OpenError::NoStore { .. } => return div().into_any_element(),
-            OpenError::Other(err) => err.clone(),
+            // Waiting on the daemon looks like the window still loading,
+            // unless it has taken far longer than an update takes.
+            OpenError::Migrating(_) if !self.migration_overdue() => {
+                return self.render_skeleton(th, cx);
+            }
+            OpenError::Migrating(err) | OpenError::Other(err) => err.clone(),
         };
         let card = page_card(th)
             .child(icon("mail", th.text_faint, 64.0))
@@ -3095,7 +3484,10 @@ impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         // Text without a size of its own follows Settings > Appearance > Scaling.
         window.set_rem_size(px(16.0));
+        // Before anything draws text that can be selected.
+        self.ui_text.begin_window(window);
         self.chrome.sync_look(window, cx);
+        self.track_menu_fade(cx);
         if self.detached {
             let detached = self.render_detached(window, cx);
             self.fetch_pictures(cx);
@@ -3106,13 +3498,24 @@ impl Render for MailWindow {
         let th = self.theme(window);
         self.release_images(window, cx);
         if let Some(viewer) = &self.files.viewer {
-            viewer.update(cx, |viewer, _| viewer.th = th);
+            let corners = self.chrome.content_corners(window);
+            viewer.update(cx, |viewer, _| {
+                viewer.th = th;
+                viewer.corners = corners;
+            });
         }
         let reduce = cx.reduce_motion();
         self.update_layout(window, reduce, cx);
         let shape = self.layout.shape;
         let width = shape.width;
 
+        // The contact panel folds the folders when it needs their room.
+        let settings_room = if self.settings_open && !shape.is_phone() {
+            SETTINGS_WIDTH
+        } else {
+            0.0
+        };
+        self.fold_nav_for_contact(width - shape.rail() - shape.card_margin() - settings_room);
         self.nav_spring.set(
             if self.nav_docked() || self.nav_peek || self.layout.drawer {
                 1.0
@@ -3122,11 +3525,8 @@ impl Render for MailWindow {
         );
         self.reserve_spring
             .set(if self.nav_docked() { 1.0 } else { 0.0 });
-        self.page_side_spring.set(if self.page_side_open(self.app) {
-            1.0
-        } else {
-            0.0
-        });
+        self.page_side_spring
+            .set(if self.page_side_open() { 1.0 } else { 0.0 });
         self.page_side_t = self.page_side_spring.tick(window, reduce);
         let search_focused = self.search.focus_handle(cx).is_focused(window);
         self.search_spring
@@ -3136,6 +3536,7 @@ impl Render for MailWindow {
         let dialog_gone = self.dialog_focus.is_focused(window)
             && self.delete_ask.is_none()
             && self.new_label.is_none()
+            && self.rule_editor.is_none()
             && self.add_account.is_none()
             && self.danger.is_none();
         if dialog_gone || window.focused(cx).is_none() {
@@ -3159,7 +3560,6 @@ impl Render for MailWindow {
             } else {
                 0.0
             });
-        self.tab_spring.set(self.tab as f32);
         self.nav_t = self.nav_spring.tick(window, reduce);
         let reserve = self.reserve_spring.tick(window, reduce);
         let search_t = self.search_spring.tick(window, reduce);
@@ -3167,7 +3567,8 @@ impl Render for MailWindow {
         self.keys_t = self.keys_spring.tick(window, reduce);
         let settings_t = self.settings_spring.tick(window, reduce);
         self.search_panel_spring.tick(window, reduce);
-        self.tab_spring.tick(window, reduce);
+        self.measure_tabs(window);
+        self.tick_tab_chips(window, reduce);
         self.tick_reorder(window, reduce, cx);
         self.tick_nav_fold(window, reduce);
         self.sync_nav_list();
@@ -3204,6 +3605,9 @@ impl Render for MailWindow {
         let (agenda_room, agenda_target) = self.tick_agenda(available, window, reduce);
         let available = (available - contact_room - agenda_room).max(200.0);
         self.cards_width = available;
+        // The inbox tabs fold to fit the list's new width.
+        self.tab_fold.set(self.tabs_fold_target());
+        self.tab_fold.tick(window, reduce);
         let reader_width = if self.split() {
             ((available - SPLIT_GAP) * self.config.mail.reading_pane_share).max(0.0)
         } else {
@@ -3243,20 +3647,41 @@ impl Render for MailWindow {
             },
         );
         self.compose_shown.tick(window, reduce);
-        // The other apps have no folders: Compose waits in the rail there.
+        // The big button heads the folders or the page's side column while
+        // it is open beside the page, and waits in the rail otherwise.
         self.compose_dock
-            .set(if self.app == RailApp::Mail && self.nav_docked() {
-                1.0
-            } else {
-                0.0
-            });
+            .set(if self.nav_docked() { 1.0 } else { 0.0 });
         self.compose_dock.tick(window, reduce);
+        self.reader_bar.tick(&self.reader_scroll, window, cx);
         self.title_roll.tick(window, reduce);
+        let (primary_icon, primary_label) = self.primary_button();
+        if self.primary_label.is_empty() {
+            // The first frame shows the button as it is, with no turn.
+            self.primary_icon = primary_icon;
+            self.primary_label = primary_label;
+        } else if primary_icon != self.primary_icon || primary_label != self.primary_label {
+            self.primary_icon_from = self.primary_icon;
+            self.primary_icon = primary_icon;
+            self.primary_label_from = std::mem::replace(&mut self.primary_label, primary_label);
+            self.primary_icon_turn.snap(0.0);
+            self.primary_icon_turn.set(1.0);
+        }
+        let turn = self.primary_icon_turn.tick(window, reduce).clamp(0.0, 1.0);
+        let word = |label: &str| compose_text_width(label, self.font.as_ref(), window);
+        self.primary_label_width = if turn >= 0.999 {
+            word(&self.primary_label)
+        } else {
+            lerp(
+                word(&self.primary_label_from),
+                word(&self.primary_label),
+                turn,
+            )
+        };
         self.avatar_turn.tick(window, reduce);
-        let compose_text = compose_text_width(self.font.as_ref(), window);
+        let compose_text = self.primary_label_width;
         let content = match &self.mail {
             _ if onboarding => self.render_onboarding(&th, window, cx),
-            Err(err) => self.render_error(err, &th),
+            Err(err) => self.render_error(err, &th, cx),
             // Reversed so the navigation paints last, over the cards, when
             // it opens from the rail.
             Ok(_) if self.app == RailApp::Mail => div()
@@ -3277,7 +3702,11 @@ impl Render for MailWindow {
                 .flex()
                 .flex_row_reverse()
                 .children(docked_settings)
-                .child(self.render_app_page(&th, window, cx))
+                .child(if self.settings_page.is_some() {
+                    self.render_settings_page(&th, window, cx)
+                } else {
+                    self.render_app_page(&th, window, cx)
+                })
                 .child(self.render_rail_slot(&th, cx))
                 .into_any_element(),
         };
@@ -3342,7 +3771,7 @@ impl Render for MailWindow {
         };
         // The box gives way first, so the buttons after it keep their
         // gaps and never overlap.
-        // The agenda button before the language button, with its gap.
+        // The agenda button before Settings, with its gap.
         let agenda_room = if self.agenda_button_shown() {
             agenda::AGENDA_BUTTON_WIDTH + TOP_BAR_GAP
         } else {
@@ -3350,7 +3779,7 @@ impl Render for MailWindow {
         };
         let room = width - open_left - room_end - TOP_END_WIDTH - agenda_room - TOP_BAR_GAP;
         // Too narrow for both (wider than a phone, with wide window
-        // buttons): the button goes rather than cover the language button.
+        // buttons): the button goes rather than cover the agenda button.
         let activity_fits = room - activity_room >= SEARCH_MIN_WIDTH;
         let open_width = (room - if activity_fits { activity_room } else { 0.0 })
             .clamp(SEARCH_MIN_WIDTH, SEARCH_WIDTH);
@@ -3403,6 +3832,13 @@ impl Render for MailWindow {
         };
         let compose = self.render_compose(&th, window, reduce, cx);
         let compose_dialog = self.render_docked_compose_dialog(&th, window, cx);
+        // The attach picker is over Compose, and the viewer over it to
+        // look at its files.
+        let files_picker = self.render_files_picker(&th, window, cx);
+        let viewer_over = files_picker.is_some()
+            || self.files.viewer_place == attachments::ViewerPlace::OverCompose;
+        // A viewer opened from the popped-out message shows there instead.
+        let in_window = self.files.viewer_place != attachments::ViewerPlace::Popout;
         let scheduled = self.render_scheduled(&th, window, cx);
         let activity = self.render_activity_report(&th, window, cx);
         let activity_menu = self.render_activity_menu(&th, window, cx);
@@ -3412,7 +3848,10 @@ impl Render for MailWindow {
         let danger = self.render_danger(&th, window, reduce, cx);
         let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
+        let rule_editor = self.render_rule_editor(&th, window, reduce, cx);
+        self.ready_folder_pick(&th, window, cx);
         let contact_label = self.render_label_dialog(&th, window, reduce, cx);
+        let scheme_editor = self.render_scheme_editor(&th, window, reduce, cx);
         let contact_qr = self.render_contact_qr(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let share_ask = if onboarding {
@@ -3421,13 +3860,27 @@ impl Render for MailWindow {
             self.render_share_ask(&th, window, reduce, cx)
         };
         let about = self.render_about(&th, window, reduce, cx);
+        let gallery = self.render_gallery(cx);
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
+        let summary_peek = self.render_summary_peek(&th, window, cx);
+        let contact_sheet = self.render_contact_sheet(&th, window, cx);
+        let contact_peek = self.render_contact_peek(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
-        let checking_pill = self.render_checking_pill(&th);
+        // An account's own color, from Settings > Accounts or its
+        // right-click menu.
+        let account_picker = self.render_color_picker(
+            |t| matches!(t, scheme_color::Target::Account(_)),
+            &th,
+            window,
+            cx,
+        );
         let snooze_menu = self.render_snooze_menu(&th, cx);
+        let quiet_menu = self.render_quiet_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
+        let upload_tray = self.render_upload_tray(&th, window, cx);
+        let drive_share = self.render_share_dialog(&th, window, reduce, cx);
         let crash_notice = if onboarding {
             None
         } else {
@@ -3439,43 +3892,72 @@ impl Render for MailWindow {
             self.render_sign_in_again(&th, window, reduce, cx)
         };
         let tour = self.render_tour(&th, window, cx);
+        // GPUI does not clip to the frame's rounded corners, so the
+        // backdrop rounds its own bottom ones.
+        let (bottom_left, bottom_right) = self.chrome.content_corners(window);
+        let ui_text_menu = self.render_ui_text_menu(&th, window, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
+            .map(|d| self.ui_text_root(d, cx))
+            .children(ui_text_menu)
             .relative()
             .size_full()
             .bg(rgba(th.backdrop))
+            .rounded_bl(px(bottom_left))
+            .rounded_br(px(bottom_right))
             .text_color(rgba(th.text))
             // Where the menu bar's actions start when the focus is lost.
             .child(div().absolute().size_0().track_focus(&self.window_focus))
             .child(content)
             .children(floating_settings)
             .children(fab)
-            .children(self.files.viewer.clone())
+            .children(
+                self.files
+                    .viewer
+                    .clone()
+                    .filter(|_| in_window && !viewer_over),
+            )
             .children(search_panel)
             .children(compose)
             .children(compose_dialog)
+            .children(files_picker)
+            .children(
+                self.files
+                    .viewer
+                    .clone()
+                    .filter(|_| in_window && viewer_over),
+            )
             .children(scheduled)
             .children(activity)
             .children(activity_menu)
             .children(account_menu)
             .children(language_picker)
             .children(add_account)
+            .children(summary_peek)
             .children(context_menu)
+            .children(contact_sheet)
+            .children(contact_peek)
             .children(nav_menu)
-            .children(checking_pill)
             .children(snooze_menu)
+            .children(quiet_menu)
             .children(danger)
             .children(delete_ask)
             .children(new_label)
+            .children(rule_editor)
             .children(contact_label)
+            .children(scheme_editor)
+            .children(account_picker)
             .children(contact_qr)
             .children(crash_notice)
             .children(sign_in_again)
             .children(whats_new)
             .children(share_ask)
             .children(about)
+            .children(gallery)
             .children(update_dialog)
             .children(print_preview)
+            .children(upload_tray)
+            .children(drive_share)
             .children(snackbar)
             .children(tour)
             .into_any_element();
@@ -3483,24 +3965,34 @@ impl Render for MailWindow {
         // The first-start pages keep the bar empty.
         let bar = Bar {
             start: if onboarding {
-                Vec::new()
+                self.skeleton_top_start(&th, titles)
             } else {
                 self.render_top_start(&th, titles, cx)
             },
-            center: (self.mail.is_ok() && !onboarding).then(|| {
-                div()
-                    .w_full()
-                    .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(8.0))
-                    .child(self.render_search(&th, search_width, search_t, window, cx))
-                    .when(shape.phone < 0.5 && activity_fits, |d| {
-                        d.children(self.render_activity_button(&th, cx))
-                    })
-                    .into_any_element()
-            }),
+            center: if onboarding {
+                Some(
+                    div()
+                        .w_full()
+                        .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
+                        .child(skeleton::search_pill(&th, search_width, shape.phone))
+                        .into_any_element(),
+                )
+            } else {
+                self.mail.is_ok().then(|| {
+                    div()
+                        .w_full()
+                        .pl(px(lerp(search_left, 6.0 + room_start, shape.phone)))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(8.0))
+                        .child(self.render_search(&th, search_width, search_t, window, cx))
+                        .when(shape.phone < 0.5 && activity_fits, |d| {
+                            d.children(self.render_activity_button(&th, cx))
+                        })
+                        .into_any_element()
+                })
+            },
             end: if onboarding {
                 Vec::new()
             } else {
@@ -3530,12 +4022,33 @@ impl Render for MailWindow {
         // that is no longer drawn (the list while Settings or a
         // conversation fills the page), where GPUI starts from the root.
         let frame = frame
+            // A press anywhere that takes no keys itself (the top bar's
+            // empty room, a gap between panes) still takes them from the
+            // search box, as a press on the list does.
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, _, window, cx| {
+                    if std::mem::take(&mut this.search_pressed)
+                        || window.default_prevented()
+                        || !this.search.focus_handle(cx).is_focused(window)
+                    {
+                        return;
+                    }
+                    match &this.settings_page {
+                        Some(page) => window.focus(&page.focus, cx),
+                        None if this.mail.is_ok() => window.focus(&this.list_focus, cx),
+                        None => window.focus(&this.window_focus, cx),
+                    }
+                    cx.notify();
+                }),
+            )
             .on_action(cx.listener(Self::focus_next))
             .on_action(cx.listener(Self::focus_previous))
             .on_action(cx.listener(Self::next_pane))
             .on_action(cx.listener(Self::previous_pane))
             .on_action(cx.listener(Self::focus_search))
             .on_action(cx.listener(Self::focus_list))
+            .on_action(cx.listener(Self::list_top))
             .on_action(cx.listener(Self::toggle_navigation))
             .on_action(cx.listener(Self::toggle_settings))
             .on_action(cx.listener(Self::compose))
@@ -3567,6 +4080,9 @@ impl Render for MailWindow {
             }))
             .on_action(cx.listener(|this, _: &ShowNotes, window, cx| {
                 this.show_page(RailApp::Notes, window, cx)
+            }))
+            .on_action(cx.listener(|this, _: &ShowFiles, window, cx| {
+                this.show_page(RailApp::Files, window, cx)
             }))
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))
@@ -3634,65 +4150,32 @@ fn page_card(th: &Theme) -> gpui::Div {
         .items_center()
         .justify_center()
         .gap(px(12.0))
-        .rounded(px(PANEL_RADIUS))
-        .bg(rgba(th.surface))
+        .map(|d| crate::widgets::card(d, th, th.pane(), PANEL_RADIUS, 0.0))
 }
 
-/// The undo-send countdown: a ring whose line runs back as time passes,
-/// `share` of it left, with the `seconds` left inside.
-fn countdown_ring(share: f32, seconds: u64, th: &Theme) -> AnyElement {
-    const SIZE: f32 = 30.0;
-    const LINE: f32 = 2.5;
-    let track = crate::theme::fade(th.snackbar_text, 0.25);
-    let color = th.snackbar_text;
+/// The undo-send countdown: a ring `size` wide in `color` on `track`,
+/// whose line runs back as time passes, `share` of it left, with the
+/// `seconds` left inside.
+fn countdown_ring(share: f32, seconds: u64, color: u32, track: u32, size: f32) -> AnyElement {
     div()
         .relative()
         .flex_none()
-        .size(px(SIZE))
+        .size(px(size))
         .flex()
         .items_center()
         .justify_center()
-        .child(
-            gpui::canvas(
-                |_, _, _| {},
-                move |bounds, _, window, _| {
-                    let radius = (SIZE - LINE) / 2.0;
-                    let center = bounds.center();
-                    let at = |turn: f32| {
-                        // From the top, clockwise.
-                        let angle = std::f32::consts::TAU * turn - std::f32::consts::FRAC_PI_2;
-                        gpui::point(
-                            center.x + px(radius * angle.cos()),
-                            center.y + px(radius * angle.sin()),
-                        )
-                    };
-                    let arc = |from: f32, to: f32| {
-                        let mut path = gpui::PathBuilder::stroke(px(LINE));
-                        let steps = ((to - from) * 96.0).ceil().max(1.0) as usize;
-                        path.move_to(at(from));
-                        for step in 1..=steps {
-                            path.line_to(at(from + (to - from) * step as f32 / steps as f32));
-                        }
-                        path.build().ok()
-                    };
-                    if let Some(path) = arc(0.0, 1.0) {
-                        window.paint_path(path, rgba(track));
-                    }
-                    // The line left runs from the top clockwise and shrinks
-                    // back towards it.
-                    if share > 0.0
-                        && let Some(path) = arc(1.0 - share.min(1.0), 1.0)
-                    {
-                        window.paint_path(path, rgba(color));
-                    }
-                },
-            )
-            .absolute()
-            .size_full(),
-        )
+        // The line left runs from the top clockwise and shrinks back
+        // towards it.
+        .child(crate::widgets::ring(
+            1.0 - share.min(1.0),
+            1.0,
+            color,
+            track,
+            size,
+        ))
         .child(
             div()
-                .text_size(px(13.0))
+                .text_size(px(size * 0.43))
                 .font_weight(gpui::FontWeight::MEDIUM)
                 .child(katna_i18n::format::number(seconds)),
         )

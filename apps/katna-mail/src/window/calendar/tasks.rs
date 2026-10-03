@@ -4,23 +4,30 @@
 //! Calendar shows them: a task due on a day sits with that day's whole-day
 //! events, one due at a time sits at that time; the circle ticks it off,
 //! a click opens it, and dragging it to another day or time moves its due
-//! day and time, blocking that time for it.
+//! day and time, blocking that time for it. In Month view a task dragged
+//! to another day keeps its time. The side list's Tasks switch hides them
+//! all, remembered on this computer as Birthdays is.
 
 use gpui::{
-    AnyElement, ClickEvent, Context, Div, ElementId, FontWeight, MouseButton, Pixels, Point,
-    SharedString, Stateful, div, prelude::*, rgba,
+    AnyElement, ClickEvent, Context, Div, ElementId, FontWeight, MouseButton, MouseMoveEvent,
+    Pixels, Point, SharedString, Stateful, Window, div, prelude::*, rgba,
 };
 use jiff::ToSpan;
 use jiff::civil::{Date, Time};
 use katna_i18n::{format, tr};
 use katna_store::tasks::Task as TaskItem;
 use katna_ui::px;
+use katna_ui::tokens::{elevation, radius, space, text};
 
 use super::super::MailWindow;
 use super::super::event_edit::time_at;
+use super::menu::CalTarget;
 use super::{ALL_DAY_LINE, MONTH_LINE};
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::icon;
+use crate::widgets::{FocusRing, icon};
+
+/// A task on a day: whether it is ticked off, and its time.
+type DayTask = (TaskItem, bool, Option<u32>);
 
 /// How much time a task with a time takes on the day grid.
 const TASK_MINUTES: u32 = 30;
@@ -41,8 +48,17 @@ fn due_day(task: &TaskItem) -> Option<Date> {
     task.due.parse().ok()
 }
 
+/// How many of `events` events and `tasks` tasks fit in a Month view cell:
+/// three lines, or two and "N more"; events first, but a task being
+/// dragged there (`held`, the first task) always shows.
+fn month_fit(events: usize, tasks: usize, held: bool) -> (usize, usize) {
+    let room = if events + tasks > 3 { 2 } else { 3 };
+    let shown = events.min(room - usize::from(held));
+    (shown, tasks.min(room - shown))
+}
+
 /// `minutes` after midnight as a time of day.
-fn clock(minutes: u32) -> Time {
+pub(super) fn clock(minutes: u32) -> Time {
     Time::new(
         i8::try_from(minutes / 60).unwrap_or(0),
         i8::try_from(minutes % 60).unwrap_or(0),
@@ -53,9 +69,80 @@ fn clock(minutes: u32) -> Time {
 }
 
 impl MailWindow {
+    /// The tasks with a due day the Calendar shows: none while the side
+    /// list's Tasks is unticked.
+    pub(super) fn calendar_tasks(&self) -> Vec<(&TaskItem, bool)> {
+        if self.config.calendar.hide_tasks {
+            return Vec::new();
+        }
+        self.dated_tasks()
+    }
+
+    /// Shows or hides tasks on the Calendar, remembered in the settings.
+    fn toggle_calendar_tasks(&mut self, cx: &mut Context<Self>) {
+        let view = &mut self.config.calendar;
+        view.hide_tasks = !view.hide_tasks;
+        self.calendar.task_drag = None;
+        self.save_config();
+        cx.notify();
+    }
+
+    /// The side list's Tasks row, as a calendar's: a box in the tasks'
+    /// colour that shows or hides them, under the accounts' calendars.
+    /// Only once there are task lists.
+    pub(super) fn render_tasks_switch(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        if self.tasks.columns().is_empty() {
+            return None;
+        }
+        let shown = !self.config.calendar.hide_tasks;
+        let row = div()
+            .id("calendar-tasks-row")
+            .h(px(space::S7))
+            .pl(px(space::S3))
+            .pr(px(space::S3))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(space::S4))
+            .rounded(px(radius::FULL))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .focus_ring(th)
+            .on_click(cx.listener(|this, _, _, cx| this.toggle_calendar_tasks(cx)))
+            .child(crate::widgets::checkbox_tinted(
+                "calendar-tasks-box",
+                shown,
+                th.accent,
+                th,
+            ))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .truncate()
+                    .text_size(px(text::BODY))
+                    .text_color(rgba(th.text))
+                    .child(tr!("calendar-tasks")),
+            );
+        // Under a line: tasks are every account's, not the group's above.
+        Some(
+            div()
+                .mt(px(space::S2))
+                .pt(px(space::S2))
+                .border_t_1()
+                .border_color(rgba(th.divider))
+                .child(row)
+                .into_any_element(),
+        )
+    }
+
     /// Where `task` shows: its due day and time, or where it is being
     /// dragged to.
-    fn task_place(&self, task: &TaskItem) -> Option<(Date, Option<u32>)> {
+    pub(super) fn task_place(&self, task: &TaskItem) -> Option<(Date, Option<u32>)> {
         let dragged = self.calendar.task_drag.as_ref().filter(|d| d.id == task.id);
         match dragged.and_then(|d| d.to) {
             Some(to) => Some(to),
@@ -67,7 +154,7 @@ impl MailWindow {
     /// ones first, then by time.
     pub(super) fn tasks_on(&self, day: Date) -> Vec<(TaskItem, bool, Option<u32>)> {
         let mut tasks: Vec<(TaskItem, bool, Option<u32>)> = self
-            .dated_tasks()
+            .calendar_tasks()
             .into_iter()
             .filter_map(|(task, done)| {
                 let (on, time) = self.task_place(task)?;
@@ -141,6 +228,10 @@ impl MailWindow {
             .cursor_pointer()
             .hover(|s| s.shadow(crate::widgets::elevation(th, 1.0)))
             .on_mouse_down(
+                MouseButton::Right,
+                self.calendar_menu_on(CalTarget::Task(task_id), cx),
+            )
+            .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
                     cx.stop_propagation();
@@ -160,6 +251,8 @@ impl MailWindow {
                 {
                     return;
                 }
+                // The press that opens it picked it up; it isn't dragged.
+                this.cancel_calendar_drags();
                 this.task_open_details(task_id, window, cx);
             }))
             .child(circle)
@@ -264,14 +357,40 @@ impl MailWindow {
             .collect()
     }
 
-    /// The tasks on `day` in a Month view cell, `room` lines at most.
+    /// What a Month view cell holds of `events` events and the tasks on
+    /// `day`: three lines, or two and "N more". Returns how many events
+    /// show, the tasks that show, and how many are left out. A task being
+    /// dragged here always shows, first.
+    pub(super) fn month_lines(&self, day: Date, events: usize) -> (usize, Vec<DayTask>, usize) {
+        let mut tasks = self.tasks_on(day);
+        let dragged = self.dragged_task_to(day);
+        let held = dragged.and_then(|id| tasks.iter().position(|t| t.0.id == id));
+        if let Some(ix) = held {
+            let task = tasks.remove(ix);
+            tasks.insert(0, task);
+        }
+        let (shown, room) = month_fit(events, tasks.len(), held.is_some());
+        let more = events + tasks.len() - shown - room;
+        tasks.truncate(room);
+        (shown, tasks, more)
+    }
+
+    /// The task being dragged onto `day`, if one is.
+    fn dragged_task_to(&self, day: Date) -> Option<i64> {
+        let drag = self.calendar.task_drag.as_ref()?;
+        drag.to.filter(|(on, _)| *on == day).map(|_| drag.id)
+    }
+
+    /// The tasks on `day` in a Month view cell, from [`Self::month_lines`].
+    /// Pressing one picks it up, to drag it to another day.
     pub(super) fn render_month_tasks(
         &self,
-        tasks: Vec<(TaskItem, bool, Option<u32>)>,
+        tasks: Vec<DayTask>,
         day: Date,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Vec<AnyElement> {
+        let dragged = self.dragged_task_to(day);
         tasks
             .into_iter()
             .map(|(task, done, time)| {
@@ -289,15 +408,57 @@ impl MailWindow {
                     SharedString::from(format!("cal-task-month-{}", task.id)),
                     &shown,
                     done,
-                    false,
+                    true,
                     th,
                     cx,
                 )
                 .h(px(MONTH_LINE))
-                .mx(px(4.0))
+                .mx(px(space::S2))
+                .when(dragged == Some(task.id), |d| {
+                    d.opacity(0.85)
+                        .shadow(crate::widgets::elevation(th, elevation::MENU))
+                })
                 .into_any_element()
             })
             .collect()
+    }
+
+    /// Month view's `day` following the pointer while a task is dragged
+    /// over it.
+    pub(super) fn month_drag_over(
+        &self,
+        day: Date,
+        cx: &Context<Self>,
+    ) -> impl Fn(&MouseMoveEvent, &mut Window, &mut gpui::App) + 'static {
+        cx.listener(move |this, event: &MouseMoveEvent, _, cx| {
+            this.drag_task_to_day(day, event, cx)
+        })
+    }
+
+    /// Follows the pointer over Month view's `day` while a task is
+    /// dragged: it would be due that day, at the time it has.
+    fn drag_task_to_day(&mut self, day: Date, event: &MouseMoveEvent, cx: &mut Context<Self>) {
+        let Some(drag) = &self.calendar.task_drag else {
+            return;
+        };
+        if event.pressed_button != Some(MouseButton::Left) {
+            self.cancel_calendar_drags();
+            cx.notify();
+            return;
+        }
+        let id = drag.id;
+        let Some((task, _)) = self.dated_tasks().into_iter().find(|(t, _)| t.id == id) else {
+            return;
+        };
+        let home = due_day(task).map(|d| (d, task.due_time));
+        let to = Some((day, task.due_time)).filter(|to| Some(*to) != home);
+        let Some(drag) = &mut self.calendar.task_drag else {
+            return;
+        };
+        if drag.to != to {
+            drag.to = to;
+            cx.notify();
+        }
     }
 
     /// The tasks on `day` in the Schedule view, laid out as its events are.
@@ -331,6 +492,10 @@ impl MailWindow {
                     .rounded(px(8.0))
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
+                    .on_mouse_down(
+                        MouseButton::Right,
+                        self.calendar_menu_on(CalTarget::Task(id), cx),
+                    )
                     .on_click(cx.listener(move |this, _: &ClickEvent, window, cx| {
                         this.task_open_details(id, window, cx);
                     }))
@@ -379,7 +544,7 @@ impl MailWindow {
     /// Where the pointer is on the day grid: the day under it, and the
     /// minutes after midnight, or `None` above the hours (the whole-day
     /// row).
-    fn grid_point(&self, at: Point<Pixels>) -> Option<(Date, Option<i64>)> {
+    pub(super) fn grid_point(&self, at: Point<Pixels>) -> Option<(Date, Option<i64>)> {
         let (first, end) = self.calendar.days();
         let count = i64::from((end - first).get_days().max(1));
         let scroll = &self.calendar.grid_scroll;
@@ -450,5 +615,23 @@ impl MailWindow {
         if let Some((day, time)) = drag.to {
             self.task_move_due(drag.id, day.to_string(), time, cx);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::month_fit;
+
+    #[test]
+    fn month_cells_fit_three_lines() {
+        // Room for all three.
+        assert_eq!(month_fit(1, 2, false), (1, 2));
+        // Two lines and "N more", events first.
+        assert_eq!(month_fit(3, 2, false), (2, 0));
+        assert_eq!(month_fit(1, 4, false), (1, 1));
+        // A task dragged to a full day still shows.
+        assert_eq!(month_fit(3, 2, true), (1, 1));
+        assert_eq!(month_fit(0, 1, true), (0, 1));
+        assert_eq!(month_fit(2, 1, true), (2, 1));
     }
 }

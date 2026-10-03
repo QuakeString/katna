@@ -5,8 +5,11 @@
 //! [`backdrop_blur_marker`] asks the renderer to blur what is already drawn
 //! under the quad before drawing the quad itself, so a translucent fill
 //! looks like frosted glass. The marker's hue is out of range, so no real
-//! colour matches it, and its alpha is zero, so a renderer without this
-//! change draws the quad as a plain fill.
+//! colour matches it, and the quad has no border, so a renderer without
+//! this change draws the quad as a plain fill. Its alpha starts at one and
+//! GPUI multiplies it by the element's opacity like any colour, so a
+//! panel fading out blurs less and less instead of leaving a blurred
+//! ghost of itself behind.
 //!
 //! The renderer ends its pass at a marked quad, copies the frame region
 //! under it, blurs the copy with a dual Kawase blur, draws it inside the
@@ -19,6 +22,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 /// The hue that marks a quad; real hues are 0 to 1.
 const MARKER_HUE: f32 = -1024.0;
+/// The hue that marks a quad that clears what is under it.
+const ERASE_HUE: f32 = -2048.0;
 
 static SUPPORTED: AtomicBool = AtomicBool::new(false);
 
@@ -29,8 +34,27 @@ pub fn backdrop_blur_marker(radius: f32) -> Hsla {
         h: MARKER_HUE,
         s: radius.max(0.0),
         l: 0.0,
-        a: 0.0,
+        a: 1.0,
     }
+}
+
+/// The border colour that marks a quad that clears what is already drawn
+/// under it, as far as it covers each pixel, so what is drawn next over a
+/// translucent window shows the desktop rather than what was under. Give
+/// the quad no border and an opaque fill: a renderer without this change
+/// draws that fill.
+pub fn erase_marker() -> Hsla {
+    Hsla {
+        h: ERASE_HUE,
+        s: 0.0,
+        l: 0.0,
+        a: 1.0,
+    }
+}
+
+/// Whether `quad` clears what is under it ([`erase_marker`]).
+pub(crate) fn is_erase(quad: &Quad) -> bool {
+    quad.border_color.h == ERASE_HUE
 }
 
 /// Whether the renderer blurs behind marked quads. False until a window
@@ -39,9 +63,19 @@ pub fn backdrop_blur_supported() -> bool {
     SUPPORTED.load(Ordering::Relaxed)
 }
 
-/// The blur radius of a marked quad, in device pixels.
+/// Below this, in device pixels, a blur is not worth drawing.
+const MIN_RADIUS: f32 = 0.5;
+
+/// The blur radius of a marked quad, in device pixels: the marker's,
+/// scaled by the opacity of the element that drew it. `None` for an
+/// unmarked quad, and for a blur too slight to draw.
 pub(crate) fn marker_radius(quad: &Quad) -> Option<f32> {
-    (quad.border_color.h == MARKER_HUE && quad.border_color.s > 0.0).then_some(quad.border_color.s)
+    let marker = quad.border_color;
+    if marker.h != MARKER_HUE {
+        return None;
+    }
+    let radius = marker.s * marker.a.clamp(0.0, 1.0);
+    (radius >= MIN_RADIUS).then_some(radius)
 }
 
 #[repr(C)]

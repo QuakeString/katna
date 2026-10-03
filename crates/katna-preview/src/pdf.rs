@@ -5,6 +5,7 @@
 use std::sync::Arc;
 
 use hayro::hayro_interpret::InterpreterSettings;
+use hayro::hayro_syntax::page::Rotation;
 use hayro::hayro_syntax::{LoadPdfError, Pdf};
 use hayro::vello_cpu::color::palette::css::WHITE;
 use hayro::vello_cpu::kurbo::Affine;
@@ -31,9 +32,13 @@ pub enum Error {
 /// An open PDF. It can be shared between threads; each [`Document::render`]
 /// draws one page.
 pub struct Document {
-    pdf: Pdf,
-    /// Each page's size in points (1/72 inch), rotation applied.
+    pdf: Arc<Pdf>,
+    /// Each page's size in points (1/72 inch), as the file draws it.
+    base: Vec<(f32, f32)>,
+    /// Each page's size in points, [`Document::turn`] applied.
     sizes: Vec<(f32, f32)>,
+    /// Quarter turns clockwise the pages are shown at, 0 to 3.
+    turn: u8,
 }
 
 impl Document {
@@ -53,7 +58,52 @@ impl Document {
         if sizes.is_empty() {
             return Err(Error::Invalid);
         }
-        Ok(Self { pdf, sizes })
+        Ok(Self {
+            pdf: Arc::new(pdf),
+            base: sizes.clone(),
+            sizes,
+            turn: 0,
+        })
+    }
+
+    /// Quarter turns clockwise the pages are shown at, 0 to 3.
+    pub fn turn(&self) -> u8 {
+        self.turn
+    }
+
+    /// The same PDF shown turned `turn` quarter turns clockwise (from how
+    /// the file draws it). Sizes, drawing, text and saved marks all follow.
+    pub fn turned(&self, turn: u8) -> Self {
+        let turn = turn % 4;
+        let sizes = self
+            .base
+            .iter()
+            .map(|&(w, h)| if turn % 2 == 1 { (h, w) } else { (w, h) })
+            .collect();
+        Self {
+            pdf: self.pdf.clone(),
+            base: self.base.clone(),
+            sizes,
+            turn,
+        }
+    }
+
+    /// From points as the file draws page `page` to points as shown.
+    fn turning(&self, page: usize) -> Affine {
+        let (w, h) = self.base.get(page).copied().unwrap_or((612.0, 792.0));
+        let (w, h) = (f64::from(w), f64::from(h));
+        match self.turn {
+            1 => Affine::new([0.0, 1.0, -1.0, 0.0, h, 0.0]),
+            2 => Affine::new([-1.0, 0.0, 0.0, -1.0, w, h]),
+            3 => Affine::new([0.0, -1.0, 1.0, 0.0, 0.0, w]),
+            _ => Affine::IDENTITY,
+        }
+    }
+
+    /// Page `page`'s transform from its own coordinates to points as shown.
+    fn shown(&self, page: &hayro::hayro_syntax::page::Page<'_>, ix: usize) -> Affine {
+        let [a, b, c, d, e, f] = page.initial_transform(true).as_coeffs();
+        self.turning(ix) * Affine::new([a, b, c, d, e, f].map(f64::from))
     }
 
     /// The number of pages; at least one.
@@ -71,7 +121,7 @@ impl Document {
     pub fn render(&self, page: usize, scale: f32) -> Option<RgbaImage> {
         let pages = self.pdf.pages();
         let pdf_page = pages.get(page)?;
-        let (w, h) = self.page_size(page);
+        let (w, h) = self.base.get(page).copied()?;
         let scale = fit_scale(w, h, scale);
         let settings = RenderSettings {
             x_scale: scale,
@@ -86,7 +136,35 @@ impl Document {
             return None;
         }
         // On an opaque white page premultiplied and straight alpha agree.
-        RgbaImage::from_raw(width, height, pixmap.data_as_u8_slice().to_vec())
+        let image = RgbaImage::from_raw(width, height, pixmap.data_as_u8_slice().to_vec())?;
+        Some(turn_image(image, self.turn))
+    }
+
+    /// Page `page` drawn as [`Document::render`] does, then made dark for
+    /// reading in dark mode ([`crate::dark`]): photos dimmed, the rest
+    /// (scans too) flipped.
+    pub fn render_dark(&self, page: usize, scale: f32) -> Option<RgbaImage> {
+        let mut image = self.render(page, scale)?;
+        let pages = self.pdf.pages();
+        let pdf_page = pages.get(page)?;
+        let (w, h) = self.page_size(page);
+        // The scale `render` used, from the page's width as shown.
+        let px = f64::from(image.width()) / f64::from(w.max(1.0));
+        let (iw, ih) = (f64::from(image.width()), f64::from(image.height()));
+        let pictures: Vec<_> =
+            crate::pdf_text::pictures(pdf_page, self.shown(pdf_page, page), (w, h))
+                .into_iter()
+                .map(|r| {
+                    // Only whole pixels of the picture: edge pixels, part
+                    // paper, flip with the page.
+                    let at = |v: f64, max: f64| (v * px).clamp(0.0, max);
+                    let (x0, y0) = (at(r.x0, iw).ceil(), at(r.y0, ih).ceil());
+                    let (x1, y1) = (at(r.x1, iw).floor(), at(r.y1, ih).floor());
+                    (x0 as u32, y0 as u32, x1 as u32, y1 as u32)
+                })
+                .collect();
+        crate::dark::darken(&mut image, &pictures);
+        Some(image)
     }
 }
 
@@ -94,11 +172,11 @@ impl Document {
     /// The text of page `page`, line by line, with where each character
     /// is drawn, in points from the page's top left.
     pub fn text(&self, page: usize) -> Vec<TextLine> {
-        self.pdf
-            .pages()
-            .get(page)
-            .map(crate::pdf_text::lines)
-            .unwrap_or_default()
+        let pages = self.pdf.pages();
+        let Some(pdf_page) = pages.get(page) else {
+            return Vec::new();
+        };
+        crate::pdf_text::lines(pdf_page, self.shown(pdf_page, page), self.page_size(page))
     }
 
     /// Whether marks can be saved into this PDF: not when it is encrypted
@@ -108,21 +186,33 @@ impl Document {
     }
 
     /// A copy of the file with `marks` added as annotations, the original
-    /// bytes unchanged at its start.
+    /// bytes unchanged at its start. Turned pages are saved turned, so
+    /// the copy opens the way it was marked.
     pub fn with_marks(&self, marks: &[crate::markup::Mark]) -> Result<Vec<u8>, SaveError> {
-        let transforms: Vec<_> = self
-            .pdf
-            .pages()
+        let pages = self.pdf.pages();
+        // From points as shown back to the page's own.
+        let transforms: Vec<_> = pages
             .iter()
-            .map(|page| {
-                // From points as drawn back to the page's own.
-                let [a, b, c, d, e, f] = page.initial_transform(true).as_coeffs();
-                Affine::new([a, b, c, d, e, f].map(f64::from))
-                    .inverse()
-                    .as_coeffs()
-            })
+            .enumerate()
+            .map(|(ix, page)| self.shown(page, ix).inverse().as_coeffs())
             .collect();
-        crate::pdf_marks::write(self.pdf.data().as_ref(), &transforms, marks)
+        let turns: Vec<i64> = if self.turn == 0 {
+            Vec::new()
+        } else {
+            pages
+                .iter()
+                .map(|page| {
+                    let own = match page.rotation() {
+                        Rotation::None => 0,
+                        Rotation::Horizontal => 90,
+                        Rotation::Flipped => 180,
+                        Rotation::FlippedHorizontal => 270,
+                    };
+                    (own + 90 * i64::from(self.turn)) % 360
+                })
+                .collect()
+        };
+        crate::pdf_marks::write(self.pdf.data().as_ref(), &transforms, &turns, marks)
     }
 }
 
@@ -134,6 +224,16 @@ pub fn thumbnail(bytes: Vec<u8>, width: u32, height: u32) -> Option<RgbaImage> {
     let page = doc.render(0, width as f32 / w)?;
     let height = height.min(page.height());
     Some(image::imageops::crop_imm(&page, 0, 0, page.width().min(width), height).to_image())
+}
+
+/// `image` turned `turn` quarter turns clockwise.
+pub fn turn_image(image: RgbaImage, turn: u8) -> RgbaImage {
+    match turn % 4 {
+        1 => image::imageops::rotate90(&image),
+        2 => image::imageops::rotate180(&image),
+        3 => image::imageops::rotate270(&image),
+        _ => image,
+    }
 }
 
 /// `scale`, made smaller so a `w` × `h` point page stays within the limits.
@@ -148,10 +248,28 @@ fn fit_scale(w: f32, h: f32, scale: f32) -> f32 {
 mod tests {
     use super::*;
 
+    #[test]
+    fn dark_pages_dim_photos() {
+        // A 2 × 1 dark green picture drawn 200 × 100 pt at the top left;
+        // the rest of the page is white paper.
+        let pdf = pdf_with(b"q 200 0 0 100 0 692 cm BI /W 2 /H 1 /CS /RGB /BPC 8 ID (x<(x< EI Q");
+        let doc = Document::open(pdf).unwrap();
+        let page = doc.render_dark(0, 1.0).unwrap();
+        // The photo is dimmed, not flipped.
+        let photo = page.get_pixel(100, 50).0;
+        assert!(photo[1] > photo[0] + 40 && photo[1] < 120, "{photo:?}");
+        // The paper is a dark grey.
+        assert_eq!(page.get_pixel(400, 500).0, [26, 26, 26, 255]);
+    }
+
     /// A one-page PDF (US Letter) with a black 100 × 100 pt square at the
     /// bottom left, cross-reference offsets computed.
     pub(crate) fn square_pdf() -> Vec<u8> {
-        let content = b"0 0 0 rg 0 0 100 100 re f";
+        pdf_with(b"0 0 0 rg 0 0 100 100 re f")
+    }
+
+    /// A one-page PDF (US Letter) drawing `content`.
+    fn pdf_with(content: &[u8]) -> Vec<u8> {
         let objects = [
             "<< /Type /Catalog /Pages 2 0 R >>".to_owned(),
             "<< /Type /Pages /Kids [3 0 R] /Count 1 >>".to_owned(),
@@ -193,6 +311,30 @@ mod tests {
         // The square is at the bottom left, the rest is white paper.
         assert_eq!(page.get_pixel(10, 390).0, [0, 0, 0, 255]);
         assert_eq!(page.get_pixel(300, 10).0, [255, 255, 255, 255]);
+    }
+
+    #[test]
+    fn turned_pages_draw_and_save_turned() {
+        let doc = Document::open(square_pdf()).unwrap().turned(1);
+        assert_eq!(doc.page_size(0), (792.0, 612.0));
+        let page = doc.render(0, 0.5).unwrap();
+        assert_eq!(page.dimensions(), (396, 306));
+        // A clockwise turn brings the bottom left to the top left.
+        assert_eq!(page.get_pixel(10, 10).0, [0, 0, 0, 255]);
+        assert_eq!(page.get_pixel(10, 300).0, [255, 255, 255, 255]);
+        let stroke = crate::markup::Mark {
+            page: 0,
+            kind: crate::markup::Kind::Ink,
+            color: [1.0, 0.0, 0.0],
+            shape: crate::markup::Shape::Ink(vec![(600.0, 400.0), (700.0, 400.0)]),
+        };
+        let saved = Document::open(doc.with_marks(&[stroke]).unwrap()).unwrap();
+        // The copy opens turned, with the stroke where it was drawn.
+        assert_eq!(saved.page_size(0), (792.0, 612.0));
+        let page = saved.render(0, 0.5).unwrap();
+        assert_eq!(page.get_pixel(10, 10).0, [0, 0, 0, 255]);
+        let [r, g, b, _] = page.get_pixel(325, 200).0;
+        assert!(r > 200 && g < 200 && b < 200, "{r} {g} {b}");
     }
 
     #[test]
@@ -297,6 +439,26 @@ mod tests {
                 color: [1.0, 0.0, 0.0],
                 shape: Shape::Ink(vec![(300.0, 300.0), (400.0, 350.0)]),
             },
+            Mark {
+                page: 0,
+                kind: Kind::Note,
+                color: [0.2, 0.8, 0.2],
+                shape: Shape::Note {
+                    at: (500.0, 100.0),
+                    text: "Check this".into(),
+                },
+            },
+            Mark {
+                page: 0,
+                kind: Kind::FreeText,
+                color: [0.0, 0.0, 1.0],
+                shape: Shape::Box {
+                    at: (100.0, 500.0),
+                    width: 200.0,
+                    size: 24.0,
+                    text: "MMMM MMMM".into(),
+                },
+            },
         ];
         let copy = doc.with_marks(&marks).unwrap();
         // An incremental update: the original, then the changes.
@@ -320,7 +482,15 @@ mod tests {
                 dict.get(b"Subtype").unwrap().as_name().unwrap().to_vec()
             })
             .collect();
-        assert_eq!(kinds, [b"Highlight".to_vec(), b"Ink".to_vec()]);
+        assert_eq!(
+            kinds,
+            [
+                b"Highlight".to_vec(),
+                b"Ink".to_vec(),
+                b"Text".to_vec(),
+                b"FreeText".to_vec()
+            ]
+        );
         // The highlight sits on the text in the page's own coordinates:
         // the baseline at 700 pt from the bottom.
         let highlight = saved
@@ -347,6 +517,17 @@ mod tests {
         );
         let red = pixel(350, 325);
         assert!(red[0] > 200 && red[1] < 80, "{red:?}");
+        // The note's green square, and the text box's blue letters.
+        let green = pixel(503, 108);
+        assert!(green[1] > 180 && green[0] < 100, "{green:?}");
+        let blue = (100..300)
+            .flat_map(|x| (500..530).map(move |y| (x, y)))
+            .filter(|&(x, y)| {
+                let p = pixel(x, y);
+                p[2] > 200 && p[0] < 80
+            })
+            .count();
+        assert!(blue > 50, "{blue}");
     }
 
     #[test]

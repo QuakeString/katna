@@ -9,6 +9,17 @@ nav-folders = Pastas
 nav-label-new = Criar novo marcador
 nav-folder-new = Criar nova pasta
 nav-menu-check-mail = Verificar novos e-mails
+nav-menu-check-inbox = Verificar esta Caixa de entrada
+nav-menu-sign-in-again = Fazer login de novo
+nav-menu-new-mail = Novo e-mail desta conta
+nav-menu-account-settings = Configurações da conta
+nav-account-checked = Sincronizada · verificada { $ago }
+nav-account-in-sync = Sincronizada
+nav-account-connecting = Conectando…
+nav-account-offline = Off-line, tentando de novo
+nav-account-signed-out = Login do { $provider } expirado
+nav-account-password-refused = Senha recusada
+nav-account-storage = { $used } de { $total } usados
 nav-menu-new-subfolder = Nova pasta dentro
 nav-menu-new-sublabel = Novo marcador dentro
 nav-menu-empty-trash = Esvaziar a lixeira
@@ -16,11 +27,6 @@ nav-account-unnamed = Conta { $number }
 nav-all-accounts = Todas as contas
 nav-expand = Mostrar pastas
 nav-collapse = Ocultar pastas
-nav-tab-new = { $count ->
-    [one] { $count } nova
-    [many] { $count } novas
-   *[other] { $count } novas
-}
 storage-used = { $percent }% de { $total } usados
 storage-used-detail = { $address }: { $used } de { $total } usados
 

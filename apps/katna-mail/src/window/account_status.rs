@@ -5,7 +5,7 @@
 //! ("Sign in again to show calendars", "Change password", "Try again"),
 //! as the daemon
 //! reports each account's sync (`katna_dbus::calendar_state`,
-//! `katna_dbus::task_state`). Each page gives its own
+//! `katna_dbus::task_state`, `katna_dbus::contacts_state`). Each page gives its own
 //! words ([`Say`]); the shape, the states and the fixes are the same on
 //! every page.
 
@@ -52,6 +52,7 @@ impl AccountStatus {
 pub(super) enum Of {
     Calendar,
     Tasks,
+    Contacts,
 }
 
 /// What a page says; each page answers with its own words.
@@ -117,6 +118,7 @@ impl Of {
         match self {
             Self::Calendar => super::calendar::say(say),
             Self::Tasks => super::tasks_page::say(say),
+            Self::Contacts => super::contacts_page::say(say),
         }
     }
 
@@ -125,6 +127,8 @@ impl Of {
         match self {
             Self::Calendar => 8.0,
             Self::Tasks => 24.0,
+            // Under the address, past the account's icon.
+            Self::Contacts => 54.0,
         }
     }
 
@@ -132,6 +136,7 @@ impl Of {
         match self {
             Self::Calendar => "calendar",
             Self::Tasks => "tasks",
+            Self::Contacts => "contacts",
         }
     }
 }
@@ -141,6 +146,7 @@ impl MailWindow {
         match of {
             Of::Calendar => &mut self.calendar.accounts,
             Of::Tasks => &mut self.tasks.accounts,
+            Of::Contacts => &mut self.contacts.accounts,
         }
     }
 
@@ -148,6 +154,7 @@ impl MailWindow {
         match of {
             Of::Calendar => &self.calendar.accounts,
             Of::Tasks => &self.tasks.accounts,
+            Of::Contacts => &self.contacts.accounts,
         }
     }
 
@@ -163,6 +170,7 @@ impl MailWindow {
                     match of {
                         Of::Calendar => daemon::calendar_status(&connection).await,
                         Of::Tasks => crate::tasks::status(&connection).await,
+                        Of::Contacts => daemon::contacts_status(&connection).await,
                     }
                 })
                 .await;
@@ -267,7 +275,18 @@ impl MailWindow {
         let provider = status
             .and_then(AccountState::provider)
             .map_or("", |p| p.name());
+        // What the other way ran into, under a sign-in line.
+        let why = status.map_or("", AccountState::use_sign_in_why);
+        // A Google API switched off in Katna's Google Cloud project: its
+        // name, and the page that turns it on.
+        let off = (state == task_state::NOT_ENABLED)
+            .then(|| katna_core::api_off::parse(detail))
+            .flatten();
         let (text, fix) = match state {
+            task_state::NOT_ENABLED if off.is_some() => (
+                katna_i18n::tr!("google-api-off", api = off.map_or("", |(api, _)| api)),
+                Fix::TryAgain,
+            ),
             task_state::NEEDS_SIGN_IN if signs_in => (String::new(), Fix::SignIn),
             task_state::USE_SIGN_IN if !provider.is_empty() => {
                 (of.say(Say::UseSignIn { provider }), Fix::SignIn)
@@ -324,6 +343,39 @@ impl MailWindow {
                 )
             }
         };
+        let turn_on = off.filter(|_| !page.busy.contains(&id)).map(|(api, url)| {
+            let url = url.to_owned();
+            div()
+                .id(SharedString::from(format!(
+                    "{}-account-turn-on-{id}",
+                    of.name()
+                )))
+                .cursor_pointer()
+                .rounded(px(4.0))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(rgba(th.accent))
+                .hover(|s| s.underline())
+                .tooltip(tip(
+                    katna_i18n::tr!("google-api-turn-on-tooltip", api = api),
+                    th,
+                ))
+                .on_click(move |_, _, cx| cx.open_url(&url))
+                .child(katna_i18n::tr!("google-api-turn-on"))
+                .into_any_element()
+        });
+        let action = match turn_on {
+            Some(turn_on) => Some(
+                div()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(12.0))
+                    .child(turn_on)
+                    .children(action)
+                    .into_any_element(),
+            ),
+            None => action,
+        };
         // A sign-in's button says it all; the others say why first.
         let text = (!text.is_empty()).then_some(text);
         div()
@@ -336,7 +388,15 @@ impl MailWindow {
             .text_size(px(13.0))
             .line_height(px(18.0))
             .text_color(rgba(th.text_faint))
-            .children(text)
+            // The reason can be copied, to look it up or report it.
+            .children(text.map(|text| self.copyable(text, th)))
+            .when(!why.is_empty(), |d| {
+                d.child(
+                    self.copyable(why.to_owned(), th)
+                        .text_size(px(12.0))
+                        .line_height(px(16.0)),
+                )
+            })
             .children(action)
             .into_any_element()
     }

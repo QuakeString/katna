@@ -46,6 +46,7 @@ compose-sent-archived = Gestuur en geargiveer
 compose-sent = Boodskap gestuur
 compose-discarded = Konsep weggegooi
 compose-draft-saved = Konsep gestoor
+compose-draft-saving = Stoor tans…
 compose-draft-failed = Die konsep kon nie gestoor word nie: { $error }
 compose-draft-not-opened = Die konsep kon nie oopgemaak word nie.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = Die konsep kon nie oopgemaak word nie.
 compose-picker-insert = Voeg in
 compose-picker-attach = Heg aan
 compose-file-too-large = { $name } is te groot: 'n boodskap kan tot { $limit } dra.
+compose-forward-files-missing = Die aangestuurde boodskap se lêers is nie afgelaai nie, dus is hulle nie aangeheg nie.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Verwyder aanhegsel
+compose-attachment-open-tip = Maak oop om dit na te gaan
 compose-attachments-total = { $count ->
     [one] { $count } lêer, { $size }
    *[other] { $count } lêers, { $size }
@@ -78,6 +81,7 @@ compose-drive-share-link = Deel met skakel
 compose-drive-send-without = Stuur sonder om te deel
 compose-drive-share-cancel = Kanselleer
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } is meer as { $limit }, so dit gaan na jou OneDrive en die boodskap bevat 'n skakel.
 compose-onedrive-tip = In jou OneDrive; die boodskap bevat 'n skakel
 compose-onedrive-allow = Laat OneDrive toe
@@ -89,6 +93,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive kan nie die lêers met { $addresses } deel nie. Enigeen met die skakel kan dit eerder oopmaak.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Los lêers hier
 compose-drop-here = Los hier
 compose-paste-keep-formatting = Behou formatering

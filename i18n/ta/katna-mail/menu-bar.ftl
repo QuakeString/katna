@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _கேலெண்டர்
 desktop-menu-page-contacts = _தொடர்புகள்
 desktop-menu-page-tasks = _பணிகள்
 desktop-menu-page-notes = கு_றிப்புகள்
+desktop-menu-page-files = _ஃபைல்கள்
 desktop-menu-next = _அடுத்த உரையாடல்
 desktop-menu-previous = _முந்தைய உரையாடல்
 desktop-menu-message = _மெசேஜ்

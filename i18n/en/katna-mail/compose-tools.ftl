@@ -40,6 +40,8 @@ compose-tool-bold = Bold (Ctrl+B)
 compose-tool-italic = Italic (Ctrl+I)
 compose-tool-underline = Underline (Ctrl+U)
 compose-tool-text-color = Text color
+# The colour button: the text colour and the highlight, side by side.
+compose-tool-colors = Text and highlight color
 compose-tool-background-color = Background color
 compose-tool-default-color = Default color
 compose-tool-no-background = No background
@@ -150,6 +152,8 @@ compose-tool-signature-none = No signature
 compose-tool-signature-untitled = Untitled
 # Opens Settings at the signatures.
 compose-tool-signature-manage = Manage signatures
+# The faint tag naming the signature beside it in the text.
+compose-signature-tag-tip = Choose another signature
 
 ## The templates menu, and saving a message as a template
 

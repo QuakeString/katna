@@ -9,6 +9,17 @@ nav-folders = Mga Folder
 nav-label-new = Gumawa ng bagong label
 nav-folder-new = Gumawa ng bagong folder
 nav-menu-check-mail = Tingnan kung may bagong mail
+nav-menu-check-inbox = Tingnan ang inbox na ito
+nav-menu-sign-in-again = Mag-sign in ulit
+nav-menu-new-mail = Bagong mail mula sa account na ito
+nav-menu-account-settings = Mga setting ng account
+nav-account-checked = Naka-sync · tiningnan { $ago }
+nav-account-in-sync = Naka-sync
+nav-account-connecting = Kumokonekta…
+nav-account-offline = Offline, sinusubukan ulit
+nav-account-signed-out = Nag-expire ang pag-sign in sa { $provider }
+nav-account-password-refused = Tinanggihan ang password
+nav-account-storage = { $used } ng { $total } ang nagamit
 nav-menu-new-subfolder = Bagong folder sa loob
 nav-menu-new-sublabel = Bagong label sa loob
 nav-menu-empty-trash = Alisin ang laman ng Basurahan
@@ -16,10 +27,6 @@ nav-account-unnamed = Account { $number }
 nav-all-accounts = Lahat ng Account
 nav-expand = Ipakita ang mga folder
 nav-collapse = Itago ang mga folder
-nav-tab-new = { $count ->
-    [one] { $count } bago
-   *[other] { $count } bago
-}
 storage-used = { $percent }% ng { $total } ang nagamit
 storage-used-detail = { $address }: { $used } ng { $total } ang nagamit
 

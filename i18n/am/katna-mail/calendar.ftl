@@ -58,6 +58,12 @@ calendar-account-not-enabled = ለKatna የቀን መቁጠሪያ መዳረሻ �
 calendar-account-failed = ቀን መቁጠሪያዎቹን ማንበብ አልተቻለም።
 calendar-account-error = ቀን መቁጠሪያዎቹን ማንበብ አልተቻለም፦ { $reason }
 calendar-account-none = ምንም ቀን መቁጠሪያ አልተገኘም
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = ምንም ቀን መቁጠሪያ አልተገኘም: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } ቀን መቁጠሪያዎችን የሚያሳየው በ{ $provider } ለገባ Katna ብቻ ነው።
+calendar-account-sign-in-with = በ{ $provider } ይግቡ
 calendar-account-looking = ቀን መቁጠሪያዎችን በመፈለግ ላይ…
 calendar-account-try-again = እንደገና ሞክር
 calendar-account-try-again-tooltip = የዚህን መለያ ቀን መቁጠሪያዎች አሁን እንደገና ፈትሽ
@@ -77,8 +83,10 @@ calendar-short-event = { $title }፣ { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = { $count } ተጨማሪ
+calendar-peek-day = { $weekday }፣ { $day }
 calendar-repeats = ይደገማል
 calendar-join = ተቀላቀል
+calendar-join-with = በ{ $service } ተቀላቀል
 calendar-email-guests = ለእንግዶች ደብዳቤ ላክ
 calendar-running-late = እዘገያለሁ
 calendar-late-subject = እዘገያለሁ፦ { $title }
@@ -92,6 +100,7 @@ calendar-guest-answers = { $yes } አዎ፣ { $maybe } ምናልባት፣ { $no 
 calendar-organizer = አዘጋጅ
 calendar-optional = አማራጭ
 calendar-open-web = በአሳሽ ውስጥ ክፈት
+calendar-open-mail = ደብዳቤውን ክፈት
 calendar-open-contact = እውቂያ ክፈት
 calendar-close = ዝጋ
 
@@ -115,10 +124,71 @@ calendar-discard = ለውጦችን አስወግድ
 calendar-edit = ክስተት አርትዕ
 calendar-delete = ክስተት ሰርዝ
 calendar-event-details = የክስተት ዝርዝሮች
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = አዲስ ክስተት
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = ቀኑን ክፈት
+calendar-menu-duplicate = አባዛ
+calendar-menu-color = ቀለም
+# The event takes its calendar's color.
+calendar-menu-color-calendar = የቀን መቁጠሪያ ቀለም
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = በአንድ ሳምንት ውስጥ
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = ቲማቲም
+calendar-color-flamingo = ፍላሚንጎ
+calendar-color-tangerine = መንደሪን
+calendar-color-banana = ሙዝ
+calendar-color-sage = ጠቢብ
+calendar-color-basil = በሶብላ
+calendar-color-peacock = ጣዎስ
+calendar-color-blueberry = ብሉቤሪ
+calendar-color-lavender = ላቬንደር
+calendar-color-grape = ወይን
+calendar-color-graphite = ግራፋይት
+calendar-menu-only-this = ይህን ብቻ አሳይ
+calendar-menu-rename = እንደገና ሰይም
+calendar-menu-remove = ከዝርዝር አስወግድ
+calendar-menu-delete = ሰርዝ
+calendar-menu-new-calendar = አዲስ ቀን መቁጠሪያ
+calendar-menu-show-all = ሁሉንም አሳይ
+calendar-menu-hide-all = ሁሉንም ደብቅ
+calendar-menu-account-settings = የመለያ ቅንብሮች
+calendar-why-main = ዋናው ቀን መቁጠሪያ
+calendar-why-last = እዚህ አንድ ብቻ ነው
+calendar-why-owner = ለባለቤቱ ብቻ
+calendar-why-contacts = ከእውቂያዎች
+calendar-why-unreached = አልተገኘም
+calendar-name-placeholder = የቀን መቁጠሪያ ስም
+calendar-toast-added = «{ $name }» ታክሏል
+calendar-toast-renamed = ቀን መቁጠሪያው እንደገና ተሰይሟል
+calendar-toast-recolored = የቀን መቁጠሪያው ቀለም ተቀይሯል
+calendar-toast-deleted = «{ $name }» ተሰርዟል
+calendar-toast-removed = «{ $name }» ከዝርዝርዎ ተወግዷል
+calendar-edit-failed = ቀን መቁጠሪያው አልተቀየረም፦ { $reason }
+calendar-delete-title = «{ $name }» ይሰረዝ?
+calendar-delete-confirm = ሰርዝ
+calendar-deleting = በመሰረዝ ላይ…
+calendar-delete-heading = የሚሰረዙ፦
+calendar-delete-events = ቀን መቁጠሪያው እና ሁሉም ክስተቶቹ
+calendar-delete-shared = ለተጋራላቸው ሁሉ
+calendar-delete-server = በKatna ውስጥ ብቻ ሳይሆን በደብዳቤ አገልግሎቱ ላይ ካለው { $account } ይሰረዛል።
+calendar-delete-local = ከዚህ ኮምፒውተር ይሰረዛል።
+calendar-remove-title = «{ $name }» ከዝርዝርዎ ይወገድ?
+calendar-remove-confirm = አስወግድ
+calendar-removing = በማስወገድ ላይ…
+calendar-remove-heading = የሚቀየረው፦
+calendar-remove-events = ክስተቶቹን እዚህም ሆነ በሌሎች መተግበሪያዎችዎ ውስጥ ማየት ያቆማሉ
+calendar-remove-server = ቀን መቁጠሪያው ከባለቤቱ ጋር ይቆያል፤ ባለቤቱ እንደገና ሊያጋራዎት ይችላል።
 calendar-kind-event = ክስተት
+calendar-kind-task = ተግባር
 calendar-kind-focus = የትኩረት ጊዜ
 calendar-kind-out-of-office = ከቢሮ ውጭ
 calendar-kind-working-location = የሥራ ቦታ
+calendar-task-added = ተግባር ታክሏል
+calendar-task-added-to = ተግባር ወደ { $list } ታክሏል
+calendar-task-list-local = በዚህ ኮምፒውተር ላይ
 calendar-working-home = ቤት
 calendar-busy = ተይዟል
 calendar-free = ነፃ

@@ -75,8 +75,10 @@ compose-scheduled = Send scheduled for { $when }
 compose-sent-archived = Sent and archived
 compose-sent = Message sent
 compose-discarded = Draft discarded
-# The message was closed and kept in the Drafts folder.
+# The message was kept in the Drafts folder: on closing, and dim beside the
+# title while it is written.
 compose-draft-saved = Draft saved
+compose-draft-saving = Saving…
 # $error: why, such as "The Katna background service is not running."
 compose-draft-failed = The draft could not be saved: { $error }
 # A draft picked in the Drafts folder could not be read or downloaded.
@@ -90,9 +92,13 @@ compose-picker-insert = Insert
 compose-picker-attach = Attach
 # $name: the file's name; $limit: the most a message can carry, such as "25 MB".
 compose-file-too-large = { $name } is too large: a message can carry up to { $limit }.
+# Forward could not bring the original files along: the message is not downloaded.
+compose-forward-files-missing = The forwarded message's files are not downloaded, so they are not attached.
 # An attached file's size, after its name. $size: such as "1.2 MB".
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Remove attachment
+# Tooltip on an attached file's chip in Compose: a click shows the file.
+compose-attachment-open-tip = Open to check it
 # Above the attachments when there are two or more. $size: such as "18.4 MB".
 compose-attachments-total = { $count ->
     [one] { $count } file, { $size }
@@ -122,6 +128,8 @@ compose-drive-send-without = Send without sharing
 compose-drive-share-cancel = Cancel
 # Under a Drive file's link in the sent message. $size: such as "84 MB".
 compose-drive-card-detail = { $size } · Google Drive
+# Under a Google Doc's link, which has no size.
+compose-drive-card-name = Google Drive
 # The same for OneDrive, for accounts that sign in with Microsoft
 # (Outlook.com, Hotmail, Microsoft 365).
 compose-onedrive-note = { $name } is over { $limit }, so it goes to your OneDrive and the message carries a link.
@@ -135,6 +143,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive can't share the files with { $addresses }. Anyone with the link can open them instead.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 # Shown over the message while files are dragged over it.
 compose-drop-files = Drop files here
 # Shown over the message while text, cells or a picture from another app

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Updates arrive sooner"
+text = """
+Katna now looks for a new version every hour and right after your computer
+wakes from sleep, so the update notification comes soon after a release.
+"""

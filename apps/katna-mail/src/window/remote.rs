@@ -53,7 +53,7 @@ use super::attachments::bitmap;
 use super::rich;
 use crate::daemon;
 use crate::theme::Theme;
-use crate::widgets::{avatar, icon};
+use crate::widgets::{avatar, avatar_filled, icon};
 
 /// Where a remote image or picture is.
 pub(crate) enum Fetch {
@@ -300,6 +300,13 @@ fn desktop_picture() -> Option<(PathBuf, Arc<gpui::Image>)> {
 }
 
 /// The domain of `email`, when it looks like one.
+impl MailWindow {
+    /// The logo of the organization at `email`, once fetched.
+    pub(super) fn domain_logo(&self, email: &str) -> Option<Arc<RenderImage>> {
+        self.remote.pictures.get(&domain_of(email)?)?.clone()
+    }
+}
+
 fn domain_of(email: &str) -> Option<String> {
     let (_, domain) = email.trim().rsplit_once('@')?;
     let domain = domain.trim().trim_end_matches('.').to_ascii_lowercase();
@@ -505,7 +512,15 @@ impl MailWindow {
                 }
             }
         }
-        avatar(name, email, size)
+        // One of the user's accounts wears its own color.
+        let own = self
+            .accounts
+            .iter()
+            .find(|a| !email.trim().is_empty() && a.address.eq_ignore_ascii_case(email.trim()));
+        match own {
+            Some(account) => avatar_filled(name, self.account_fill(&account.address), size),
+            None => avatar(name, email, size),
+        }
     }
 
     /// The picture of the user's account at `email`, if it is one.

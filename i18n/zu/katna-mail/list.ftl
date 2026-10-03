@@ -14,13 +14,13 @@ tab-other = Okunye
 tab-inbox = Ibhokisi lokungenayo
 tab-newsletters = Izincwadi zezindaba
 tab-notifications = Izaziso
-tab-new = { $count } okusha
 tab-provider-other = kuhlelwe yi-Katna
 
 ## Mail list: toolbar
 
 list-select = Khetha
 list-refresh = Vuselela
+list-back-to-top = Buyela phezulu
 list-checking = Iyahlola imeyili entsha…
 list-more = Okuningi
 list-mark-read = Maka njengokufundiwe
@@ -39,6 +39,7 @@ list-results = Imiphumela ye-“{ $query }”
 list-results-corrected = Kuboniswa imiphumela ye-“{ $query }”
 list-search-instead = Esikhundleni salokho sesha u-“{ $query }”
 list-files-more = +{ $count }
+list-replied = Uphendulile
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,12 @@ menu-add-note = Engeza inothi
 menu-print-all = Phrinta konke
 menu-new-window = Vula ewindini elisha
 menu-move-to = Hambisa ku-
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Landelela
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Okwengeziwe
 menu-move-to-heading = Hambisa ku:
 menu-find-from = Thola ama-imeyili avela ku-{ $name }
 

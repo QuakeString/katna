@@ -17,12 +17,13 @@ use gpui::{
     prelude::*, rgba,
 };
 use katna_ui::Ripple;
+use katna_ui::WindowDrag;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::unpx;
 
 use super::apps::{APP_RAIL_WIDTH, App as RailApp};
-use super::{Compose, MailWindow, NAV_ROW_INSET, NAV_WIDTH, ToggleSettings};
+use super::{MailWindow, NAV_ROW_INSET, NAV_WIDTH, ToggleSettings};
 use crate::theme::{Theme, fade};
 use crate::widgets::{TOOLBAR_HEIGHT, elevation, icon, tip};
 
@@ -49,9 +50,14 @@ const FAB_UNFOLD_AFTER: f32 = 120.0;
 /// A phone's search row and list toolbar come back once the list has
 /// turned back up this far.
 const ROWS_RETURN_AFTER: f32 = 24.0;
-/// Room for the word "Compose" on a phone's Compose button.
-const FAB_LABEL_WIDTH: f32 = 80.0;
-const FAB_SIZE: f32 = 56.0;
+/// Room for the word on a phone's big button ("Compose", "New contact").
+const FAB_LABEL_WIDTH: f32 = 120.0;
+/// The least the list scrolls down before its Back to top button shows.
+const TO_TOP_AFTER: f32 = 240.0;
+/// From further down than this many screens, the list jumps to that many
+/// screens from its top and glides the rest of the way.
+const GLIDE_SCREENS: f32 = 2.0;
+pub(super) const FAB_SIZE: f32 = 56.0;
 const FAB_RADIUS: f32 = 16.0;
 /// A phone's navigation drawer leaves this much of the window beside it.
 const DRAWER_MARGIN: f32 = 56.0;
@@ -189,6 +195,11 @@ pub(super) struct Layout {
     /// since it last turned (down positive, up negative).
     list_top: f32,
     list_run: f32,
+    /// How much the Back to top button shows.
+    to_top: Spring,
+    /// The list gliding back to its top: where it is on the way, in pixels
+    /// from the top, and where it was last frame.
+    glide: Option<(Spring, f32)>,
     pub shape: Shape,
 }
 
@@ -205,6 +216,8 @@ impl Layout {
             rows: Spring::new(motion::SMOOTH, 1.0),
             list_top: 0.0,
             list_run: 0.0,
+            to_top: Spring::new(motion::SMOOTH, 0.0),
+            glide: None,
             shape: Shape {
                 size: Size::Desktop,
                 width: 1280.0,
@@ -223,6 +236,27 @@ impl Layout {
     /// How far a phone's or tablet's drawer is open, 0 to 1.
     pub(super) fn drawer_t(&self) -> f32 {
         self.scrim.value().clamp(0.0, 1.0)
+    }
+
+    /// How much the list's Back to top button shows, 0 to 1.
+    pub(super) fn to_top_t(&self) -> f32 {
+        self.to_top.value().clamp(0.0, 1.0)
+    }
+
+    /// The list stops gliding to its top: the wheel took it.
+    pub(super) fn stop_glide(&mut self) {
+        self.glide = None;
+    }
+
+    /// Shows the Back to top button once the list is more than a screen
+    /// down, and hides it again within half a screen of the top.
+    fn show_to_top(&mut self, top: f32, screen: f32) {
+        let screen = screen.max(TO_TOP_AFTER);
+        if top > screen {
+            self.to_top.set(1.0);
+        } else if top < screen * 0.5 {
+            self.to_top.set(0.0);
+        }
     }
 
     /// Folds a phone's Compose button to its pencil as the list scrolls
@@ -309,13 +343,18 @@ impl MailWindow {
         layout.shape.page = layout.page.tick(window, reduce);
         layout.scrim.set(if layout.drawer { 1.0 } else { 0.0 });
         layout.scrim.tick(window, reduce);
+        self.glide_list(window, reduce);
         let top = unpx(self.list_state.scrolled());
+        let screen = unpx(self.list_state.viewport_bounds().size.height);
         let layout = &mut self.layout;
         layout.fold_fab(top);
+        layout.show_to_top(top, screen);
         if first {
             layout.fab_label.snap(layout.fab_label.target());
+            layout.to_top.snap(layout.to_top.target());
         }
         layout.fab_label.tick(window, reduce);
+        layout.to_top.tick(window, reduce);
         self.slide_rows(top, open, first, window, reduce);
         if !self.slides() {
             // The next conversation opened slides in from the edge again.
@@ -356,6 +395,41 @@ impl MailWindow {
         if phone && moved.abs() > 0.01 && !(moved < 0.0 && at_top) {
             self.list_state.scroll_by(px(-moved));
             self.layout.list_top -= moved;
+        }
+    }
+
+    /// Takes the list back to its top, gliding the last screens of the way.
+    pub(super) fn glide_list_to_top(&mut self, cx: &mut Context<Self>) {
+        let top = unpx(self.list_state.scrolled());
+        if top <= 0.5 {
+            return;
+        }
+        let screen = unpx(self.list_state.viewport_bounds().size.height).max(TO_TOP_AFTER);
+        let from = top.min(screen * GLIDE_SCREENS);
+        if top > from {
+            self.list_state.scroll_by(px(from - top));
+        }
+        let mut spring = Spring::new(motion::SMOOTH, from);
+        spring.set(0.0);
+        self.layout.glide = Some((spring, from));
+        cx.notify();
+    }
+
+    /// Moves the gliding list on by this frame's step. It moves by steps
+    /// rather than to a place, so the phone's rows sliding back as it goes
+    /// up keep the list where they leave it.
+    fn glide_list(&mut self, window: &Window, reduce: bool) {
+        let Some((spring, at)) = &mut self.layout.glide else {
+            return;
+        };
+        let to = spring.tick(window, reduce);
+        let step = to - *at;
+        *at = to;
+        let done = spring.settled() || to <= 0.5;
+        self.list_state.scroll_by(px(step));
+        if done {
+            self.layout.glide = None;
+            self.scroll_list_to(0);
         }
     }
 
@@ -410,78 +484,103 @@ impl MailWindow {
         if shape.bottom_bar() <= 0.01 {
             return None;
         }
-        let items = RailApp::ALL.into_iter().map(|app| {
-            let on = self.app == app;
-            div()
-                .id(("bottom-app", app as usize))
-                .flex_1()
-                .min_w_0()
-                .h(px(BOTTOM_BAR_HEIGHT))
-                .pt(px(12.0))
-                .flex()
-                .flex_col()
-                .items_center()
-                .gap(px(4.0))
-                .cursor_pointer()
-                .group("bottom-app")
-                .on_click(cx.listener(move |this, _, window, cx| {
-                    this.close_drawer(cx);
-                    this.show_page(app, window, cx)
-                }))
-                .child(
-                    div()
-                        .relative()
-                        .overflow_hidden()
-                        .w(px(56.0))
-                        .h(px(32.0))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .rounded_full()
-                        .group_hover("bottom-app", |s| s.bg(rgba(th.hover)))
-                        .child(
-                            Ripple::new(("bottom-ripple", app as usize), rgba(th.ripple))
-                                .centered(),
-                        )
-                        .child(icon(
-                            app.icon(),
-                            if on {
-                                th.nav_selected_text
-                            } else {
-                                th.text_dim
-                            },
-                            22.0,
-                        ))
-                        .with_spring(
-                            ("bottom-pill", app as usize),
-                            SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
-                            {
-                                let bg = th.nav_selected;
-                                move |el, s: f32| {
-                                    let s = s.clamp(0.0, 1.0);
-                                    if s > 0.001 {
-                                        el.bg(rgba(fade(bg, s))).w(px(32.0 + 24.0 * s))
-                                    } else {
-                                        el
+        // The names under the icons follow the setting the rail's follow;
+        // without them the icons sit in the middle of the bar.
+        let labels = self.config.mail.app_labels;
+        let items =
+            RailApp::ALL.into_iter().map(|app| {
+                let on = self.app == app;
+                div()
+                    .id(("bottom-app", app as usize))
+                    .flex_1()
+                    .min_w_0()
+                    .h(px(BOTTOM_BAR_HEIGHT))
+                    .flex()
+                    .flex_col()
+                    .items_center()
+                    .cursor_pointer()
+                    .keeps_press()
+                    .when(!labels, |d| d.tooltip(tip(app.label(), th)))
+                    .group("bottom-app")
+                    .on_click(cx.listener(move |this, _, window, cx| {
+                        this.close_drawer(cx);
+                        this.show_page(app, window, cx)
+                    }))
+                    .child(
+                        div()
+                            .relative()
+                            .overflow_hidden()
+                            .w(px(56.0))
+                            .h(px(32.0))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .rounded_full()
+                            .group_hover("bottom-app", |s| s.bg(rgba(th.hover)))
+                            .child(
+                                Ripple::new(("bottom-ripple", app as usize), rgba(th.ripple))
+                                    .centered(),
+                            )
+                            .child(icon(
+                                app.icon(),
+                                if on {
+                                    th.nav_selected_text
+                                } else {
+                                    th.text_dim
+                                },
+                                22.0,
+                            ))
+                            .with_spring(
+                                ("bottom-pill", app as usize),
+                                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                                    .to(if on { 1.0 } else { 0.0 }),
+                                {
+                                    let bg = th.nav_selected;
+                                    move |el, s: f32| {
+                                        let s = s.clamp(0.0, 1.0);
+                                        if s > 0.001 {
+                                            el.bg(rgba(fade(bg, s))).w(px(32.0 + 24.0 * s))
+                                        } else {
+                                            el
+                                        }
                                     }
-                                }
-                            },
-                        ),
-                )
-                .child(
-                    div()
-                        .max_w_full()
-                        .truncate()
-                        .text_size(px(12.0))
-                        .font_weight(if on {
-                            FontWeight::BOLD
-                        } else {
-                            FontWeight::MEDIUM
-                        })
-                        .text_color(rgba(if on { th.text } else { th.text_dim }))
-                        .child(app.label()),
-                )
-        });
+                                },
+                            ),
+                    )
+                    .child(
+                        div()
+                            .max_w_full()
+                            .truncate()
+                            .text_size(px(12.0))
+                            .line_height(px(16.0))
+                            .font_weight(if on {
+                                FontWeight::BOLD
+                            } else {
+                                FontWeight::MEDIUM
+                            })
+                            .text_color(rgba(if on { th.text } else { th.text_dim }))
+                            .child(app.label())
+                            .with_spring(
+                                ("bottom-label", app as usize),
+                                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                                    .to(if labels { 1.0 } else { 0.0 }),
+                                |el, s: f32| {
+                                    let s = s.clamp(0.0, 1.0);
+                                    el.h(px(16.0 * s)).opacity(s)
+                                },
+                            ),
+                    )
+                    .with_spring(
+                        ("bottom-room", app as usize),
+                        SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                            .to(if labels { 1.0 } else { 0.0 }),
+                        |el, s: f32| {
+                            let s = s.clamp(0.0, 1.0);
+                            // The icon's pill alone is centered (32 of 72).
+                            el.pt(px(lerp(20.0, 12.0, s))).gap(px(4.0 * s))
+                        },
+                    )
+            });
         // It rises from under the window's edge.
         Some(
             div()
@@ -504,8 +603,9 @@ impl MailWindow {
         )
     }
 
-    /// The Compose button floating over the list of a phone, above the
-    /// bottom bar and any note at the bottom.
+    /// The big button floating over a phone's page (Compose in Mail, the
+    /// page's own action elsewhere), above the bottom bar and any note at
+    /// the bottom.
     pub(super) fn render_phone_fab(
         &self,
         th: &Theme,
@@ -518,9 +618,9 @@ impl MailWindow {
         let compose_open = self.compose.is_some();
         if shown <= 0.001
             || compose_open
+            || self.page_editor_open()
             || self.settings_open
             || self.settings_page.is_some()
-            || self.app != RailApp::Mail
             || self.mail.is_err()
             || self.accounts.is_empty()
         {
@@ -531,6 +631,9 @@ impl MailWindow {
             .as_ref()
             .map_or(0.0, |s| s.shown.value().clamp(0.0, 1.0));
         let label = self.layout.fab_label.value().clamp(0.0, 1.0);
+        let word = self.primary_button().1;
+        // Upload asks first whether files or a folder go up.
+        let upload = self.drive_upload_here();
         Some(
             div()
                 .absolute()
@@ -548,13 +651,15 @@ impl MailWindow {
                         .text_size(px(14.0))
                         .font_weight(FontWeight::MEDIUM)
                         .shadow(elevation(th, 3.0))
-                        .when(label < 0.5, |d| {
-                            d.tooltip(tip(katna_i18n::tr!("compose"), th))
-                        })
-                        .on_click(
-                            cx.listener(|this, _, window, cx| this.compose(&Compose, window, cx)),
-                        )
-                        .child(icon("compose", th.compose_text, 24.0))
+                        .when(label < 0.5, |d| d.tooltip(tip(word.clone(), th)))
+                        .on_click(cx.listener(move |this, e: &gpui::ClickEvent, window, cx| {
+                            if upload {
+                                this.open_upload_menu(e.position(), cx);
+                            } else {
+                                this.primary_action(window, cx);
+                            }
+                        }))
+                        .child(self.primary_icon(th))
                         .child(
                             div()
                                 .pl(px(12.0 * label))
@@ -562,7 +667,7 @@ impl MailWindow {
                                 .overflow_hidden()
                                 .whitespace_nowrap()
                                 .opacity(label)
-                                .child(katna_i18n::tr!("compose")),
+                                .child(self.primary_label()),
                         ),
                 )
                 .into_any_element(),
@@ -603,64 +708,12 @@ impl MailWindow {
         .max(NAV_WIDTH)
     }
 
-    /// The top of the drawer of a phone or tablet: the app's name and, on a
-    /// phone, the inbox tabs.
-    pub(super) fn render_drawer_head(
-        &self,
-        th: &Theme,
-        cx: &mut Context<Self>,
-    ) -> Option<AnyElement> {
+    /// The top of the drawer of a phone or tablet: the app's name.
+    pub(super) fn render_drawer_head(&self, th: &Theme) -> Option<AnyElement> {
         let shape = self.layout.shape;
         if shape.is_desktop() || !self.layout.drawer {
             return None;
         }
-        let tabs = (shape.is_phone() && self.shows_tabs()).then(|| {
-            let rows = self.tabs.iter().enumerate().map(|(ix, tab)| {
-                let on = ix == self.tab;
-                let tint = th.tabs[tab.color];
-                let unread: u64 = tab
-                    .categories
-                    .iter()
-                    .filter_map(|c| self.category_unread.get(c))
-                    .sum();
-                drawer_row(("drawer-tab", ix), on, th)
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        this.layout.drawer = false;
-                        this.open_tab(ix, cx);
-                        cx.notify();
-                    }))
-                    .child(icon(tab.icon, if on { tint } else { th.text }, 20.0))
-                    .child(
-                        div()
-                            .flex_1()
-                            .min_w_0()
-                            .pl(px(18.0))
-                            .truncate()
-                            .child(tab.label()),
-                    )
-                    .when(unread > 0 && ix != 0, |d| {
-                        d.child(
-                            div()
-                                .flex_none()
-                                .px(px(8.0))
-                                .rounded_full()
-                                .bg(rgba(tint))
-                                .text_color(rgba(th.on_accent))
-                                .text_size(px(11.0))
-                                .line_height(px(18.0))
-                                .child(katna_i18n::tr!("nav-tab-new", count = unread)),
-                        )
-                    })
-            });
-            div()
-                .flex()
-                .flex_col()
-                .pb(px(8.0))
-                .mb(px(8.0))
-                .border_b_1()
-                .border_color(rgba(th.divider))
-                .children(rows)
-        });
         Some(
             div()
                 .flex_none()
@@ -679,7 +732,6 @@ impl MailWindow {
                         .child(icon("mail", th.accent, 24.0))
                         .child("Katna Mail"),
                 )
-                .children(tabs)
                 .into_any_element(),
         )
     }
@@ -758,6 +810,7 @@ impl MailWindow {
             .flex_none()
             .rounded_full()
             .cursor_pointer()
+            .keeps_press()
             .on_click(cx.listener(move |this, _, _, cx| {
                 cx.stop_propagation();
                 let Some(key) = key else {
@@ -804,6 +857,7 @@ fn fab_button(id: &'static str, th: &Theme) -> gpui::Stateful<gpui::Div> {
         .bg(rgba(th.compose))
         .text_color(rgba(th.compose_text))
         .cursor_pointer()
+        .keeps_press()
         .shadow(elevation(th, 1.0))
         .hover(|s| s.shadow(elevation(th, 2.0)))
         .on_mouse_move(|_, _, cx| cx.stop_propagation())
@@ -826,12 +880,13 @@ fn drawer_row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> gpui::Sta
         .items_center()
         .rounded_full()
         .text_size(px(14.0))
-        .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
+        .text_color(rgba(if on { th.row_selected_text } else { th.text }))
         .when(on, |d| {
-            d.bg(rgba(th.nav_selected)).font_weight(FontWeight::BOLD)
+            d.bg(rgba(th.row_selected)).font_weight(FontWeight::BOLD)
         })
         .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
         .cursor_pointer()
+        .keeps_press()
 }
 
 #[cfg(test)]

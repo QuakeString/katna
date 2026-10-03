@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = සාදන්න
+tasks-create = නව කාර්යය
 tasks-all = සියලු කාර්යයන්
 tasks-today = අද
 tasks-starred = තරු යෙදූ
 tasks-new-list = නව ලැයිස්තුවක් සාදන්න
 tasks-on-this-computer = මෙම පරිගණකයේ
 tasks-my-tasks = මගේ කාර්යයන්
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = කාර්යයන් පෙන්වීමට නැවත පුරනය වන්න
 tasks-account-signed-in = { $address } වෙත නැවත පුරනය විය. ඔබේ කාර්යයන් ලබා ගනිමින්…
 tasks-account-sign-in-refused = { $provider } Katna ට ඇතුළු වීමට ඉඩ දුන්නේ නැත. නැවත උත්සාහ කර, ඔබේ කාර්යයන්ට ප්‍රවේශය ඉඩ දෙන්න.
@@ -21,9 +19,11 @@ tasks-account-change-password = මුරපදය වෙනස් කරන්�
 tasks-account-change-password-tooltip = සැකසීම් > ගිණුම් විවෘත කරන්න
 tasks-account-not-enabled = Katna සඳහා කාර්ය ප්‍රවේශය තවම සක්‍රිය කර නැත.
 tasks-account-failed = කාර්ය ලැයිස්තු කියවිය නොහැකි විය.
-# $reason is the server's own words, in English.
 tasks-account-error = කාර්ය ලැයිස්තු කියවිය නොහැකි විය: { $reason }
 tasks-account-none = කාර්ය ලැයිස්තු හමු නොවීය
+tasks-account-none-why = කාර්ය ලැයිස්තු හමු නොවීය: { $reason }
+tasks-account-use-sign-in = { $provider } කාර්යයන් පෙන්වන්නේ { $provider } සමඟ පුරනය වූ Katna ට පමණි.
+tasks-account-sign-in-with = { $provider } සමඟ පුරනය වන්න
 tasks-account-looking = කාර්ය ලැයිස්තු සොයමින්…
 tasks-account-try-again = නැවත උත්සාහ කරන්න
 tasks-account-try-again-tooltip = මෙම ගිණුමේ කාර්යයන් දැන් නැවත පරීක්ෂා කරන්න
@@ -108,4 +108,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = එම තැපැල් තවදුරටත් මෙහි නැත.
 tasks-toast-list-deleted = ලැයිස්තුව මකා දමන ලදී
 tasks-toast-moved = { $list } වෙත ගෙන යන ලදී
+tasks-toast-placed = කාර්යය ගෙන යන ලදී
 tasks-toast-rescheduled = කාර්යය නැවත සැලසුම් කරන ලදී

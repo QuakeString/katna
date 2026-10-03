@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Zoom with Ctrl and the wheel"
+text = """
+In the attachment viewer, hold Ctrl and turn the mouse wheel to zoom in and
+out around the pointer, or pinch on a touchpad. It works for PDFs,
+pictures, text files, spreadsheets and documents.
+"""

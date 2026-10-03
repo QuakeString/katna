@@ -9,7 +9,7 @@ rail-calendar = Kalanda
 rail-contacts = Lambobin sadarwa
 rail-tasks = Ayyuka
 rail-notes = Bayanai
-rail-feeds = Ciyarwa
+rail-files = Fayiloli
 
 ## Pages of apps still to come
 
@@ -18,7 +18,6 @@ app-coming-soon = Yana zuwa nan ba da daɗewa ba
 app-calendar-promise = Kalandarku na CalDAV, gayyatar taro daga wasiƙunku da tunatarwa, kusa da akwatin saƙonku.
 app-tasks-promise = Jerin abubuwan yi da ke daidaitawa da CalDAV, da ayyukan da aka yi daga wasiƙu.
 app-notes-promise = Bayanai na gaggawa, da bayanai kan wasiƙa ko tattaunawa don nan gaba.
-app-feeds-promise = Karanta ciyarwar RSS da Atom kusa da wasiƙunku.
 
 ## Contacts page
 

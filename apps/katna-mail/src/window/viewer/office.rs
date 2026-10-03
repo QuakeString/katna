@@ -29,11 +29,14 @@ use katna_ui::px;
 use katna_ui::unpx;
 
 use super::super::select::{self, Key, Marker, MenuAct};
-use super::{BAR_HEIGHT, Content, Viewer, ZOOMS};
+use super::{Content, Viewer};
 use crate::theme::Theme;
+use crate::widgets::ScaledEdge;
 
 // Paper colors, the same in light and dark themes, like a printed page.
 const PAPER: u32 = 0xffffffff;
+/// The corners of the spreadsheet's panel.
+const PANEL_RADIUS: f32 = 8.0;
 const INK: u32 = 0x202124ff;
 const INK_DIM: u32 = 0x5f6368ff;
 const GRID: u32 = 0xe0e3e7ff;
@@ -66,7 +69,7 @@ pub(super) struct SheetView {
     /// A drag is extending the selection, by `Drag`.
     dragging: Option<Drag>,
     /// The right-click menu, where the pointer was.
-    menu: Option<Point<Pixels>>,
+    pub(super) menu: Option<Point<Pixels>>,
 }
 
 type Cell = (usize, usize);
@@ -219,6 +222,31 @@ impl DocumentView {
         }
     }
 
+    /// Where each slide starts, by block, for a presentation; empty for a
+    /// document.
+    pub fn slide_starts(&self) -> Vec<usize> {
+        (self.doc.blocks.iter().enumerate())
+            .filter(|(_, block)| matches!(block, Block::Slide(_)))
+            .map(|(ix, _)| ix)
+            .collect()
+    }
+
+    /// The slide (from 0) at the top of the view, of `starts`.
+    pub fn top_slide(&self, starts: &[usize]) -> usize {
+        let top = self.state.logical_scroll_top().item_ix;
+        starts.iter().rposition(|&ix| ix <= top).unwrap_or(0)
+    }
+
+    /// Scrolls slide `slide` (from 0) of `starts` to the top.
+    pub fn go_to_slide(&self, slide: usize, starts: &[usize]) {
+        if let Some(&item_ix) = starts.get(slide) {
+            self.state.scroll_to(gpui::ListOffset {
+                item_ix,
+                offset_in_item: px(0.0),
+            });
+        }
+    }
+
     /// All of the document's text, keyed as it is drawn: a block is a
     /// part, and a table's paragraphs its pieces, cell by cell.
     pub fn all_text(&self) -> Rc<Vec<(Key, SharedString)>> {
@@ -240,6 +268,15 @@ impl DocumentView {
 }
 
 /// A paragraph's text.
+/// `color`, flipped for a dark page when `dark`.
+fn ink(color: u32, dark: bool) -> gpui::Rgba {
+    rgba(if dark {
+        katna_preview::dark::flip_rgba(color)
+    } else {
+        color
+    })
+}
+
 fn text_of(p: &Paragraph) -> SharedString {
     p.runs
         .iter()
@@ -277,6 +314,22 @@ fn side_margin(vw: f32) -> f32 {
     if vw < 700.0 { 12.0 } else { 80.0 }
 }
 
+/// The zoom at which a document's page fills a viewer `vw` wide.
+pub(super) fn document_fit_width(vw: f32) -> f32 {
+    let room = vw - 2.0 * side_margin(vw);
+    room / room.clamp(280.0, PAGE_WIDTH)
+}
+
+impl SheetView {
+    /// The zoom at which every column of the sheet on show fits a viewer
+    /// `vw` wide.
+    pub(super) fn fit_width(&self, vw: f32) -> f32 {
+        let grid = self.grid(1.0);
+        let total = grid.number_width + grid.widths.iter().sum::<f32>();
+        (vw - 2.0 * side_margin(vw) - 2.0) / total.max(1.0)
+    }
+}
+
 impl Viewer {
     pub(super) fn show_sheet(&mut self, ix: usize, cx: &mut Context<Self>) {
         if let super::Content::Sheet(view) = &mut self.content
@@ -310,8 +363,9 @@ impl Viewer {
         let selected = view.range();
         let anchor = view.cells.map(|(anchor, _)| anchor);
         let accent = self.th.accent;
+        let dark = self.dark_pages_shown();
         let tint = rgba((accent & 0xffff_ff00) | 0x26);
-        let picked = rgba(PICKED);
+        let picked = ink(PICKED, dark);
         let in_rows =
             move |row: usize| selected.is_some_and(|((r0, _), (r1, _))| (r0..=r1).contains(&row));
         let in_columns = move |column: usize| {
@@ -326,9 +380,12 @@ impl Viewer {
             .flex_none()
             .h(px(row_height))
             .overflow_hidden()
-            .bg(rgba(HEADER))
+            // GPUI does not clip to the panel's rounded corners: the
+            // letters' grey rounds its own.
+            .rounded_t(px(PANEL_RADIUS))
+            .bg(ink(HEADER, dark))
             .border_b_1()
-            .border_color(rgba(GRID))
+            .border_color(ink(GRID, dark))
             .child(
                 div()
                     .relative()
@@ -343,7 +400,7 @@ impl Viewer {
                             .w(px(number_width))
                             .h_full()
                             .border_r_1()
-                            .border_color(rgba(GRID)),
+                            .border_color(ink(GRID, dark)),
                     )
                     .children(widths.iter().enumerate().map(|(ix, w)| {
                         div()
@@ -354,8 +411,8 @@ impl Viewer {
                             .items_center()
                             .justify_center()
                             .border_r_1()
-                            .border_color(rgba(GRID))
-                            .text_color(rgba(INK_DIM))
+                            .border_color(ink(GRID, dark))
+                            .text_color(ink(INK_DIM, dark))
                             .when(in_columns(ix), |d| d.bg(picked))
                             .child(sheet::column_name(first_col + ix as u32))
                     })),
@@ -388,7 +445,7 @@ impl Viewer {
                                 .flex()
                                 .flex_row()
                                 .border_b_1()
-                                .border_color(rgba(GRID))
+                                .border_color(ink(GRID, dark))
                                 .child(
                                     div()
                                         .flex_none()
@@ -397,10 +454,10 @@ impl Viewer {
                                         .flex()
                                         .items_center()
                                         .justify_center()
-                                        .bg(rgba(if in_rows(ix) { PICKED } else { HEADER }))
+                                        .bg(ink(if in_rows(ix) { PICKED } else { HEADER }, dark))
                                         .border_r_1()
-                                        .border_color(rgba(GRID))
-                                        .text_color(rgba(INK_DIM))
+                                        .border_color(ink(GRID, dark))
+                                        .text_color(ink(INK_DIM, dark))
                                         .child((sheet.origin.0 as usize + ix + 1).to_string()),
                                 )
                                 .children(widths.iter().enumerate().map(|(column, w)| {
@@ -417,13 +474,13 @@ impl Viewer {
                                         .when(numeric(cell), |d| d.justify_end())
                                         .overflow_hidden()
                                         .border_r_1()
-                                        .border_color(rgba(GRID))
+                                        .border_color(ink(GRID, dark))
                                         .when(on, |d| d.bg(tint))
                                         // The cell the selection started in, as
                                         // spreadsheets show the active cell.
                                         .when(anchor == Some((ix, column)), |d| {
-                                            d.bg(rgba(PAPER))
-                                                .border_2()
+                                            d.bg(ink(PAPER, dark))
+                                                .border_px(2.0)
                                                 .border_color(rgba(accent))
                                                 .px(px(5.0))
                                         })
@@ -461,9 +518,10 @@ impl Viewer {
                 .items_center()
                 .gap(px(2.0))
                 .overflow_x_scroll()
-                .bg(rgba(HEADER))
+                .rounded_b(px(PANEL_RADIUS))
+                .bg(ink(HEADER, dark))
                 .border_t_1()
-                .border_color(rgba(GRID))
+                .border_color(ink(GRID, dark))
                 .text_size(px(13.0))
                 .when(book.sheets.len() > 1, |d| {
                     d.children(book.sheets.iter().enumerate().map(|(ix, s)| {
@@ -477,14 +535,18 @@ impl Viewer {
                             .items_center()
                             .rounded(px(6.0))
                             .cursor_pointer()
-                            .text_color(rgba(if on { SHEET_GREEN } else { INK_DIM }))
+                            .text_color(ink(if on { SHEET_GREEN } else { INK_DIM }, dark))
                             .when(on, |d| {
-                                d.bg(rgba(PAPER))
+                                d.bg(ink(PAPER, dark))
                                     .font_weight(FontWeight::MEDIUM)
                                     .border_b_2()
-                                    .border_color(rgba(SHEET_GREEN))
+                                    .border_color(ink(SHEET_GREEN, dark))
                             })
-                            .when(!on, |d| d.hover(|s| s.bg(rgba(0x0000000f))))
+                            .when(!on, |d| {
+                                d.hover(move |s| {
+                                    s.bg(rgba(if dark { 0xffffff14 } else { 0x0000000f }))
+                                })
+                            })
                             .on_click(cx.listener(move |this, _, _, cx| this.show_sheet(ix, cx)))
                             .child(SharedString::from(s.name.clone()))
                     }))
@@ -494,7 +556,7 @@ impl Viewer {
                         div()
                             .flex_none()
                             .px(px(8.0))
-                            .text_color(rgba(INK_DIM))
+                            .text_color(ink(INK_DIM, dark))
                             .child(format!(
                                 "Only the first {} rows and {} columns are shown",
                                 sheet.rows.len().min(MAX_ROWS),
@@ -507,16 +569,16 @@ impl Viewer {
         div()
             .id("viewer-sheet-panel")
             .absolute()
-            .top(px(BAR_HEIGHT + 8.0))
+            .top(px(8.0))
             .bottom(px(80.0))
             .left(px(margin))
             .right(px(margin))
             .flex()
             .flex_col()
             .overflow_hidden()
-            .rounded(px(8.0))
-            .bg(rgba(PAPER))
-            .text_color(rgba(INK))
+            .rounded(px(PANEL_RADIUS))
+            .bg(ink(PAPER, dark))
+            .text_color(ink(INK, dark))
             .text_size(px(text_size))
             .occlude()
             // Keeps the column letters in step with the grid.
@@ -533,6 +595,7 @@ impl Viewer {
         vw: f32,
         cx: &mut Context<Self>,
     ) -> AnyElement {
+        let dark = self.dark_pages_shown();
         let super::Content::Document(view) = &mut self.content else {
             return div().into_any_element();
         };
@@ -545,9 +608,10 @@ impl Viewer {
         let page = (vw - 2.0 * side_margin(vw)).clamp(280.0, PAGE_WIDTH) * zoom;
         let pad = if vw < 700.0 { 20.0 } else { 72.0 } * zoom;
         let count = doc.blocks.len();
+        let viewer = cx.entity().downgrade();
         select::selectable(div(), None, cx)
             .size_full()
-            .pt(px(BAR_HEIGHT + 8.0))
+            .pt(px(8.0))
             .child(
                 list(view.state.clone(), move |ix, _, _| {
                     // Slides are pages of their own, each under its label.
@@ -574,13 +638,13 @@ impl Viewer {
                     let top = ix == 0 || slide_edge(ix.checked_sub(1));
                     let end = ix == count || slide_edge(Some(ix + 1));
                     let content: AnyElement = match doc.blocks.get(ix) {
-                        Some(Block::Paragraph(p)) => paragraph(p, zoom, false, &marker, Key::new(ix, 0)),
-                        Some(Block::Table(rows)) => table(rows, zoom, &marker, ix),
+                        Some(Block::Paragraph(p)) => paragraph(p, zoom, false, &marker, Key::new(ix, 0), dark),
+                        Some(Block::Table(rows)) => table(rows, zoom, &marker, ix, dark),
                         Some(Block::Slide(_)) => div().into_any_element(),
                         None if doc.cut => div()
                             .pt(px(16.0 * zoom))
                             .text_size(px(13.0 * zoom))
-                            .text_color(rgba(INK_DIM))
+                            .text_color(ink(INK_DIM, dark))
                             .child("The rest of this document is not shown. Open it in another app to read it all.")
                             .into_any_element(),
                         None => div().into_any_element(),
@@ -594,8 +658,14 @@ impl Viewer {
                             div()
                                 .w(px(page))
                                 .px(px(pad))
-                                .bg(rgba(PAPER))
-                                .text_color(rgba(INK))
+                                .bg(ink(PAPER, dark))
+                                .capture_any_mouse_down({
+                                    let viewer = viewer.clone();
+                                    move |_, _, cx| {
+                                        viewer.update(cx, |this, _| this.backdrop = None).ok();
+                                    }
+                                })
+                                .text_color(ink(INK, dark))
                                 .when(top, |d| d.pt(px(pad)).rounded_t(px(4.0)))
                                 .when(end, |d| d.pb(px(pad)).rounded_b(px(4.0)))
                                 .child(content),
@@ -609,7 +679,7 @@ impl Viewer {
 }
 
 impl Viewer {
-    fn sheet_view(&self) -> Option<&SheetView> {
+    pub(super) fn sheet_view(&self) -> Option<&SheetView> {
         match &self.content {
             Content::Sheet(view) => Some(view),
             _ => None,
@@ -634,7 +704,7 @@ impl Viewer {
     ) {
         cx.stop_propagation();
         window.focus(&self.focus, cx);
-        let zoom = ZOOMS[self.zoom];
+        let zoom = self.zoom_value();
         let Some(view) = self.sheet_view_mut() else {
             return;
         };
@@ -662,7 +732,7 @@ impl Viewer {
             self.release_cells(cx);
             return;
         }
-        let zoom = ZOOMS[self.zoom];
+        let zoom = self.zoom_value();
         let Some(view) = self.sheet_view_mut() else {
             return;
         };
@@ -768,6 +838,9 @@ impl Viewer {
         Some(select::copy_menu(
             at,
             view.cells.is_some(),
+            false,
+            false,
+            None,
             th,
             cx,
             |this: &mut Viewer, act, cx| {
@@ -775,7 +848,7 @@ impl Viewer {
                     view.menu = None;
                 }
                 match act {
-                    MenuAct::Close => {}
+                    MenuAct::Close | MenuAct::CopyAddress | MenuAct::Pin | MenuAct::Translate => {}
                     MenuAct::Copy => this.copy_cells(cx),
                     MenuAct::SelectAll => this.select_all_cells(cx),
                 }
@@ -787,7 +860,14 @@ impl Viewer {
 
 /// A paragraph: its text in its runs' looks, sized by its style,
 /// selectable as the piece `key`.
-fn paragraph(p: &Paragraph, zoom: f32, in_cell: bool, marker: &Marker, key: Key) -> AnyElement {
+fn paragraph(
+    p: &Paragraph,
+    zoom: f32,
+    in_cell: bool,
+    marker: &Marker,
+    key: Key,
+    dark: bool,
+) -> AnyElement {
     let (size, weight, color, before, after) = match p.style {
         Style::Title => (26.0, FontWeight::NORMAL, INK, 0.0, 12.0),
         Style::Subtitle => (17.0, FontWeight::NORMAL, INK_DIM, 0.0, 12.0),
@@ -825,7 +905,7 @@ fn paragraph(p: &Paragraph, zoom: f32, in_cell: bool, marker: &Marker, key: Key)
         .text_size(px(size))
         .line_height(px(size * 1.5))
         .font_weight(weight)
-        .text_color(rgba(color))
+        .text_color(ink(color, dark))
         .when_some(p.list.as_ref(), |d, (level, marker)| {
             d.pl(px(24.0 * zoom * f32::from(*level))).child(
                 div()
@@ -870,7 +950,13 @@ fn styled(p: &Paragraph) -> (SharedString, Vec<(Range<usize>, HighlightStyle)>) 
 
 /// A table: its cells side by side with thin rules, each cell its
 /// paragraphs, the pieces of `part` in order.
-fn table(rows: &[Vec<Vec<Paragraph>>], zoom: f32, marker: &Marker, part: usize) -> AnyElement {
+fn table(
+    rows: &[Vec<Vec<Paragraph>>],
+    zoom: f32,
+    marker: &Marker,
+    part: usize,
+    dark: bool,
+) -> AnyElement {
     let mut piece = 0;
     div()
         .w_full()
@@ -878,19 +964,19 @@ fn table(rows: &[Vec<Vec<Paragraph>>], zoom: f32, marker: &Marker, part: usize) 
         .flex()
         .flex_col()
         .border_1()
-        .border_color(rgba(GRID))
+        .border_color(ink(GRID, dark))
         .children(rows.iter().enumerate().map(|(r, row)| {
             div()
                 .w_full()
                 .flex()
                 .flex_row()
-                .when(r > 0, |d| d.border_t_1().border_color(rgba(GRID)))
+                .when(r > 0, |d| d.border_t_1().border_color(ink(GRID, dark)))
                 .children(row.iter().enumerate().map(|(c, cell)| {
                     div()
                         .flex_1()
                         .min_w_0()
                         .p(px(6.0 * zoom))
-                        .when(c > 0, |d| d.border_l_1().border_color(rgba(GRID)))
+                        .when(c > 0, |d| d.border_l_1().border_color(ink(GRID, dark)))
                         .children(cell.iter().map(|p| {
                             let mut p = p.clone();
                             // Inside a cell even headings stay small.
@@ -899,7 +985,7 @@ fn table(rows: &[Vec<Vec<Paragraph>>], zoom: f32, marker: &Marker, part: usize) 
                             }
                             let key = Key::new(part, piece);
                             piece += 1;
-                            paragraph(&p, zoom * 0.95, true, marker, key)
+                            paragraph(&p, zoom * 0.95, true, marker, key, dark)
                         }))
                 }))
         }))

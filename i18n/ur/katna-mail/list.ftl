@@ -14,13 +14,13 @@ tab-other = دیگر
 tab-inbox = ان باکس
 tab-newsletters = نیوز لیٹرز
 tab-notifications = اطلاعات
-tab-new = { $count } نئے
 tab-provider-other = Katna کی ترتیب
 
 ## Mail list: toolbar
 
 list-select = منتخب کریں
 list-refresh = ریفریش کریں
+list-back-to-top = اوپر واپس جائیں
 list-checking = نئی میل چیک کی جا رہی ہے…
 list-more = مزید
 list-mark-read = بطور پڑھا ہوا نشان زد کریں
@@ -39,6 +39,7 @@ list-results = ”{ $query }“ کے نتائج
 list-results-corrected = ”{ $query }“ کے نتائج دکھائے جا رہے ہیں
 list-search-instead = اس کے بجائے ”{ $query }“ تلاش کریں
 list-files-more = +{ $count }
+list-replied = آپ نے جواب دیا
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,12 @@ menu-add-note = نوٹ شامل کریں
 menu-print-all = سب پرنٹ کریں
 menu-new-window = نئی ونڈو میں کھولیں
 menu-move-to = یہاں منتقل کریں
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = فالو اپ
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = مزید
 menu-move-to-heading = یہاں منتقل کریں:
 menu-find-from = { $name } کی ای میلز تلاش کریں
 

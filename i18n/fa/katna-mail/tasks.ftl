@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = ایجاد
+tasks-create = کار جدید
 tasks-all = همه کارها
 tasks-today = امروز
 tasks-starred = ستاره‌دار
@@ -24,6 +24,12 @@ tasks-account-failed = خواندن فهرست‌های کارها ممکن نش
 # $reason is the server's own words, in English.
 tasks-account-error = خواندن فهرست‌های کارها ممکن نشد: { $reason }
 tasks-account-none = هیچ فهرست کاری پیدا نشد
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = هیچ فهرست کاری پیدا نشد: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } کارها را فقط به Katna‌ای نشان می‌دهد که با { $provider } وارد شده باشد.
+tasks-account-sign-in-with = ورود با { $provider }
 tasks-account-looking = در حال جست‌وجوی فهرست‌های کارها…
 tasks-account-try-again = امتحان مجدد
 tasks-account-try-again-tooltip = همین حالا کارهای این حساب را دوباره بررسی کنید
@@ -108,4 +114,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = آن ایمیل دیگر اینجا نیست.
 tasks-toast-list-deleted = فهرست حذف شد
 tasks-toast-moved = به { $list } منتقل شد
+# A task dragged to another place in its own list.
+tasks-toast-placed = کار جابه‌جا شد
 tasks-toast-rescheduled = کار دوباره زمان‌بندی شد

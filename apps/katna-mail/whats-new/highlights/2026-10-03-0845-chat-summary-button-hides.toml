@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The summary button hides it again"
+text = """
+In the chat view, the sparkle at the top now hides the summary when it
+shows, and shows it again on the next click, as it does in the mail
+view.
+"""

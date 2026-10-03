@@ -3,8 +3,9 @@
 //! Noticing a package update. Installing a new `katna-daemon` replaces the
 //! file on disk while the old one keeps running, so new features (the tray
 //! icon, notifications) would wait for the next login. The daemon checks
-//! its binary now and then and, once it was replaced, shuts down and starts
-//! the new one in its place (`docs/ARCHITECTURE.md` §9.2).
+//! its binary now and then and, once it was replaced, has systemd restart
+//! it, or without systemd shuts down and starts the new one in its place
+//! (`docs/ARCHITECTURE.md` §9.2).
 
 use std::path::{Path, PathBuf};
 use std::time::Duration;
@@ -18,11 +19,21 @@ const CHECK_EVERY: Duration = Duration::from_secs(30);
 const SELF_EXE: &str = "/proc/self/exe";
 
 /// Resolves with the path of the new binary once the running one was
-/// replaced on disk.
+/// replaced on disk. From an AppImage, the binary runs from the image's
+/// mount, which never changes: the image itself (`$APPIMAGE`) being
+/// replaced counts, and the new image is the new binary.
 pub async fn replaced() -> PathBuf {
+    let appimage = appimage();
+    let image_at_start = appimage.as_deref().and_then(file_id);
     let mut ticks = smol::Timer::interval(CHECK_EVERY);
     loop {
         ticks.next().await;
+        if let (Some(image), Some(before)) = (&appimage, image_at_start)
+            && file_id(image).is_some_and(|now| now != before)
+        {
+            tracing::info!(path = %image.display(), "the Katna AppImage was updated");
+            return image.clone();
+        }
         if let Ok(link) = std::fs::read_link(SELF_EXE)
             && let Some(new) = new_binary(&link)
             && new.is_file()
@@ -33,10 +44,54 @@ pub async fn replaced() -> PathBuf {
     }
 }
 
+/// The AppImage this daemon runs from, if any.
+fn appimage() -> Option<PathBuf> {
+    std::env::var_os("APPIMAGE")
+        .filter(|path| !path.is_empty())
+        .map(PathBuf::from)
+}
+
+/// Which file is at `path` now: replacing it gives another.
+#[cfg(unix)]
+fn file_id(path: &Path) -> Option<(u64, u64)> {
+    use std::os::unix::fs::MetadataExt;
+    std::fs::metadata(path).ok().map(|m| (m.dev(), m.ino()))
+}
+
+#[cfg(not(unix))]
+fn file_id(_path: &Path) -> Option<(u64, u64)> {
+    None
+}
+
 /// The path a replaced binary had: Linux adds ` (deleted)` to
 /// `/proc/self/exe` once the file it ran from is gone.
 fn new_binary(link: &Path) -> Option<PathBuf> {
     link.to_str()?.strip_suffix(" (deleted)").map(PathBuf::from)
+}
+
+/// Asks systemd to restart the service this daemon runs as, which starts
+/// the new binary. Returns whether it took the job: it then stops this
+/// process with SIGTERM, and the caller waits for that.
+///
+/// Starting the new binary in place ([`restart`]) is wrong under systemd:
+/// shutting down releases the bus name, systemd stops a `Type=dbus`
+/// service that loses its name, its SIGTERM got lost in the exec, and 90
+/// seconds later it killed the new daemon with its whole group, a Katna
+/// Mail window the tray had opened included.
+pub async fn restart_by_systemd(connection: &zbus::Connection) -> bool {
+    let Some(service) = crate::systemd::own_service(connection).await else {
+        return false;
+    };
+    match crate::systemd::restart(connection, &service).await {
+        Ok(()) => {
+            tracing::info!(%service, "systemd restarts katna-daemon");
+            true
+        }
+        Err(err) => {
+            tracing::warn!(%err, %service, "systemd did not restart katna-daemon");
+            false
+        }
+    }
 }
 
 /// Starts `binary` in place of this process, with the same arguments.
@@ -44,9 +99,12 @@ fn new_binary(link: &Path) -> Option<PathBuf> {
 #[cfg(unix)]
 pub fn restart(binary: &Path) -> std::io::Error {
     use std::os::unix::process::CommandExt;
-    std::process::Command::new(binary)
-        .args(std::env::args_os().skip(1))
-        .exec()
+    let mut command = std::process::Command::new(binary);
+    // The AppImage starts Katna Mail unless told which program.
+    if appimage().as_deref() == Some(binary) {
+        command.arg("katna-daemon");
+    }
+    command.args(std::env::args_os().skip(1)).exec()
 }
 
 /// Starts `binary` with the same arguments; the caller then exits, as

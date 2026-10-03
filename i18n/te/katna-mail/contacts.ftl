@@ -25,10 +25,7 @@ contacts-label-removed = { $name } నుండి తీసివేయబడ�
 contacts-label-renamed = లేబుల్ పేరు { $name }గా మార్చబడింది
 contacts-label-deleted = లేబుల్ { $name } తొలగించబడింది
 contacts-label-no-email = ఈ లేబుల్‌లో ఎవరికీ ఇమెయిల్ చిరునామా లేదు
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = ఖాతాలు
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = కాంటాక్ట్‌లను చూపడానికి మళ్లీ సైన్ ఇన్ చేయండి
 contacts-account-signed-in = { $address }కు మళ్లీ సైన్ ఇన్ అయింది. మీ కాంటాక్ట్‌లను తెస్తోంది…
 contacts-account-sign-in-refused = { $provider } Katnaను లోపలికి అనుమతించలేదు. మళ్లీ ట్రై చేసి, మీ కాంటాక్ట్‌లకు యాక్సెస్ అనుమతించండి.
@@ -36,9 +33,11 @@ contacts-account-password = సర్వర్ పాస్‌వర్డ్‌
 contacts-account-change-password = పాస్‌వర్డ్ మార్చండి
 contacts-account-change-password-tooltip = సెట్టింగ్‌లు > ఖాతాలు తెరవండి
 contacts-account-failed = కాంటాక్ట్‌లను చదవలేకపోయాము.
-# $reason is the server's own words, in English.
 contacts-account-error = కాంటాక్ట్‌లను చదవలేకపోయాము: { $reason }
 contacts-account-none = అడ్రస్ బుక్ ఏదీ కనుగొనబడలేదు
+contacts-account-none-why = అడ్రస్ బుక్ ఏదీ కనుగొనబడలేదు: { $reason }
+contacts-account-use-sign-in = { $provider }తో సైన్ ఇన్ అయిన Katnaకు మాత్రమే { $provider } కాంటాక్ట్‌లను చూపుతుంది.
+contacts-account-sign-in-with = { $provider }తో సైన్ ఇన్ చేయండి
 contacts-account-looking = కాంటాక్ట్‌ల కోసం వెతుకుతోంది…
 contacts-account-try-again = మళ్లీ ట్రై చేయండి
 contacts-account-try-again-tooltip = ఈ ఖాతా కాంటాక్ట్‌లను ఇప్పుడు మళ్లీ తనిఖీ చేయండి
@@ -88,7 +87,7 @@ contacts-print-none = ప్రింట్ చేయడానికి కా�
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = పుట్టినరోజు: { $day }
 contacts-print-nickname = ముద్దుపేరు: { $name }
-contacts-create = కాంటాక్ట్‌ను సృష్టించండి
+contacts-create = కొత్త కాంటాక్ట్
 
 ## Search and the list
 

@@ -39,6 +39,12 @@ contacts-account-failed = Não foi possível ler os contatos.
 # $reason is the server's own words, in English.
 contacts-account-error = Não foi possível ler os contatos: { $reason }
 contacts-account-none = Nenhum catálogo de endereços encontrado
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Nenhum catálogo de endereços encontrado: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = O { $provider } só mostra os contatos ao Katna conectado com o { $provider }.
+contacts-account-sign-in-with = Fazer login com o { $provider }
 contacts-account-looking = Procurando contatos…
 contacts-account-try-again = Tentar de novo
 contacts-account-try-again-tooltip = Verificar agora os contatos desta conta de novo
@@ -94,7 +100,7 @@ contacts-print-none = Nenhum contato para imprimir
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Aniversário: { $day }
 contacts-print-nickname = Apelido: { $name }
-contacts-create = Criar contato
+contacts-create = Novo contato
 
 ## Search and the list
 

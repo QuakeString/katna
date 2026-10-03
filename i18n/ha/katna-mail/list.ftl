@@ -14,13 +14,13 @@ tab-other = Sauran
 tab-inbox = Akwatin saƙo
 tab-newsletters = Wasiƙun labarai
 tab-notifications = Sanarwa
-tab-new = { $count } sababbi
 tab-provider-other = Katna ne ya tsara
 
 ## Mail list: toolbar
 
 list-select = Zaɓi
 list-refresh = Sabunta
+list-back-to-top = Koma sama
 list-checking = Ana duba sabbin wasiƙu…
 list-more = Ƙari
 list-mark-read = Yi alama an karanta
@@ -39,6 +39,7 @@ list-results = Sakamakon “{ $query }”
 list-results-corrected = Ana nuna sakamakon “{ $query }”
 list-search-instead = Maimakon haka bincika “{ $query }”
 list-files-more = +{ $count }
+list-replied = Kun amsa
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,12 @@ menu-add-note = Ƙara bayani
 menu-print-all = Buga duka
 menu-new-window = Buɗe a sabuwar taga
 menu-move-to = Matsar zuwa
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Bibiya
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Ƙari
 menu-move-to-heading = Matsar zuwa:
 menu-find-from = Nemo imel daga { $name }
 

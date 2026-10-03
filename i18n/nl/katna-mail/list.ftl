@@ -14,13 +14,13 @@ tab-other = Overige
 tab-inbox = Inbox
 tab-newsletters = Nieuwsbrieven
 tab-notifications = Meldingen
-tab-new = { $count } nieuw
 tab-provider-other = gesorteerd door Katna
 
 ## Mail list: toolbar
 
 list-select = Selecteren
 list-refresh = Vernieuwen
+list-back-to-top = Terug naar boven
 list-checking = Controleren op nieuwe e-mail…
 list-more = Meer
 list-mark-read = Markeren als gelezen
@@ -39,6 +39,7 @@ list-results = Resultaten voor ‘{ $query }’
 list-results-corrected = Resultaten weergegeven voor ‘{ $query }’
 list-search-instead = In plaats daarvan zoeken naar ‘{ $query }’
 list-files-more = +{ $count }
+list-replied = Je hebt geantwoord
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,12 @@ menu-add-note = Notitie toevoegen
 menu-print-all = Alles afdrukken
 menu-new-window = Openen in nieuw venster
 menu-move-to = Verplaatsen naar
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Opvolgen
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Meer
 menu-move-to-heading = Verplaatsen naar:
 menu-find-from = E-mails van { $name } zoeken
 

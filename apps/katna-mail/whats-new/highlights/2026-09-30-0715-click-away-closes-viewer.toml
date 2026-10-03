@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Click outside to close"
+text = """
+Click the dim space around an attachment to close the viewer, instead of
+reaching for the back button. Clicks on the page itself still select text
+and mark up as before.
+"""

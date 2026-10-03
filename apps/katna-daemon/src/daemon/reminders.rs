@@ -91,6 +91,9 @@ impl Daemon {
         if self.closing() {
             return None;
         }
+        if self.end_mutes(now) {
+            self.mail_changed_everywhere();
+        }
         let due = match katna_meta::due(&self.store(), now) {
             Ok(due) => due,
             Err(err) => {
@@ -116,6 +119,7 @@ impl Daemon {
                 Due::Surfaced(message) => {
                     let _ = katna_meta::clear_surfaced(&mut self.store(), message);
                 }
+                Due::ReadAfter(message) => self.read_after_due(message),
                 Due::Other(row) => {
                     // A value of a newer version: kept, but not due again.
                     tracing::info!(plugin = row.plugin, "unknown metadata expired");
@@ -148,7 +152,11 @@ impl Daemon {
                     .await;
             }
         }
-        self.store().next_meta_expiry().ok().flatten()
+        let next = self.store().next_meta_expiry().ok().flatten();
+        match (next, self.next_mute_end(now)) {
+            (Some(a), Some(b)) => Some(a.min(b)),
+            (a, b) => a.or(b),
+        }
     }
 
     /// Snoozes `messages` until `until` (Unix seconds): they move to their

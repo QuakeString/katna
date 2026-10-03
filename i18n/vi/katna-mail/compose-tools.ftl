@@ -32,6 +32,7 @@ compose-tool-bold = In đậm (Ctrl+B)
 compose-tool-italic = In nghiêng (Ctrl+I)
 compose-tool-underline = Gạch chân (Ctrl+U)
 compose-tool-text-color = Màu chữ
+compose-tool-colors = Màu chữ và màu đánh dấu
 compose-tool-background-color = Màu nền
 compose-tool-default-color = Màu mặc định
 compose-tool-no-background = Không có nền
@@ -126,6 +127,10 @@ compose-tool-signature = Chèn chữ ký
 compose-tool-signature-none = Không có chữ ký
 compose-tool-signature-untitled = Không có tiêu đề
 compose-tool-signature-manage = Quản lý chữ ký
+compose-signature-tag-tip = Chọn chữ ký khác
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = Mẫu thư
 compose-tool-templates-none = Chưa có mẫu thư nào
 compose-tool-template-save = Lưu làm mẫu thư…

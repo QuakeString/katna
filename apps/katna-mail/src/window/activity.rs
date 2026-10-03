@@ -23,7 +23,7 @@ use super::MailWindow;
 use crate::data::{Entry, Mail};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, icon_button, icon_button_colored, raised, tip};
+use crate::widgets::{icon, icon_button, icon_button_colored, raised, tip};
 
 /// At most this many tracked messages are read.
 const LIMIT: u32 = 500;
@@ -264,6 +264,7 @@ pub(super) struct Report {
     counting: Option<Task<()>>,
     /// The account menu is open.
     accounts_open: bool,
+    accounts_arrow: crate::widgets::Fold,
 }
 
 impl MailWindow {
@@ -403,6 +404,7 @@ impl MailWindow {
             insights: None,
             counting: None,
             accounts_open: false,
+            accounts_arrow: crate::widgets::Fold::default(),
         });
         self.fill_report(Period::Month);
         self.count_insights(cx);
@@ -915,7 +917,8 @@ impl MailWindow {
             )
             .with_animation(
                 "activity-menu",
-                Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                    .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
             );
         let close = || {
@@ -954,6 +957,8 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let report = self.activity_report.as_ref()?;
         let list = &report.list;
         let viewport = window.viewport_size();
@@ -980,7 +985,7 @@ impl MailWindow {
             )
         };
         let chip = |id: usize, label: String, on: bool| {
-            super::search_panel::chip(("activity-period", id), &label, on, th)
+            crate::widgets::choice_chip(("activity-period", id), label.clone(), on, th)
         };
         let custom = matches!(report.period, Period::Custom(..)) || report.editing;
         let periods = div()
@@ -1023,7 +1028,7 @@ impl MailWindow {
                         .items_center()
                         .rounded(px(8.0))
                         .border_1()
-                        .border_color(rgba(if report.error { th.error } else { th.divider }))
+                        .border_color(rgba(if report.error { th.error } else { th.outline }))
                         .text_size(px(14.0))
                         .child(report.dates[ix].clone()),
                 )
@@ -1055,7 +1060,7 @@ impl MailWindow {
                         div()
                             .text_size(px(12.0))
                             .text_color(rgba(th.error))
-                            .child(tr!("search-dates-unreadable")),
+                            .child(self.copyable(tr!("search-dates-unreadable"), th)),
                     )
                 })
         });
@@ -1224,7 +1229,10 @@ impl MailWindow {
                 .flex()
                 .items_center()
                 .justify_center()
-                .bg(rgba(fade(0x0000_0066, 1.0)))
+                // Inside the room below the top bar with even margins; the
+                // report scrolls when the window is too short for it. No
+                // veil: the window stays as it is around the dialog.
+                .p(px(24.0))
                 .child(
                     div()
                         .id("activity-scrim")
@@ -1239,13 +1247,12 @@ impl MailWindow {
                         .id("activity-dialog")
                         .occlude()
                         .w(px(680.0_f32.min(unpx(viewport.width) - 32.0)))
+                        .max_w_full()
                         .h(px(height))
+                        .max_h_full()
                         .flex()
                         .flex_col()
-                        .rounded(px(16.0))
-                        .overflow_hidden()
-                        .bg(rgba(th.surface))
-                        .shadow(elevation(th, 3.0))
+                        .map(|d| crate::widgets::dialog(d, th, th.surface))
                         .child(
                             div()
                                 .flex_none()
@@ -1338,7 +1345,7 @@ impl MailWindow {
                 a.display_name.trim().to_owned()
             }
         };
-        let label = chosen.map_or_else(|| tr!("activity-accounts-all"), &name);
+        let label = chosen.map_or_else(|| tr!("activity-accounts-all"), name);
         let button = div()
             .id("activity-accounts")
             .h(px(28.0))
@@ -1351,7 +1358,7 @@ impl MailWindow {
             .gap(px(6.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .bg(rgba(th.surface))
             .text_color(rgba(th.text))
             .text_size(px(13.0))
@@ -1364,12 +1371,10 @@ impl MailWindow {
                 d.child(self.person_avatar(&name(a), a.address.trim(), 20.0))
             })
             .child(div().min_w_0().truncate().child(label))
-            .child(icon(
-                if report.accounts_open {
-                    "chevron-up"
-                } else {
-                    "chevron-down"
-                },
+            .child(crate::widgets::fold_arrow(
+                "activity-accounts-arrow",
+                &report.accounts_arrow,
+                report.accounts_open,
                 th.text_dim,
                 16.0,
             ))
@@ -1515,7 +1520,7 @@ impl MailWindow {
                             .py(px(16.0))
                             .text_size(px(14.0))
                             .text_color(rgba(th.error))
-                            .child(tr!("insights-failed")),
+                            .child(self.copyable(tr!("insights-failed"), th)),
                     )
                     .into_any_element();
             }
@@ -1615,9 +1620,13 @@ impl MailWindow {
                                     div()
                                         .flex_1()
                                         .min_w_0()
-                                        .truncate()
+                                        .flex()
+                                        .flex_row()
+                                        .items_center()
+                                        .gap(px(6.0))
                                         .text_size(px(14.0))
-                                        .child(name),
+                                        .child(div().min_w_0().truncate().child(name))
+                                        .children(self.muted_mark(&person.email, 16.0, th)),
                                 )
                                 .child(
                                     div()

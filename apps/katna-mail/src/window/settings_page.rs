@@ -1,47 +1,58 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The Settings page, shown in place of the list as in webmail's "See all
-//! settings". Its tabs: General (conversations, undo send, offline
-//! mail, the tray),
-//! Inbox (tabs per account), Accounts (the folder pane, remove one, or
-//! delete all data), Appearance (reading pane, density, theme, pictures),
-//! Shortcuts (every one, each can be changed by pressing the new keys),
-//! Default apps (where each kind of attachment opens), Compose (signatures,
-//! with defaults for new mail and replies, and templates), User feedback (crash reports
-//! and feedback) and Experimental, with pages for
-//! the tabs still to come. The top bar's search box finds settings while
-//! the page is open (`settings_search.rs`). Changes apply at once and are
-//! saved to `config.toml`.
+//! The Settings page, shown in place of the app's page as in webmail's
+//! "See all settings". A list beside the page picks one, sorted by
+//! [`Scope`] (`settings_page/nav.rs`): what every Katna app shares
+//! (General, Appearance, Accounts, Notifications, Shortcuts, Subscription,
+//! AI, Default apps, MCP server, User feedback, Experimental), then each
+//! app's own (Mail: Reading, Inbox, Compose, Folders & rules, Desktop;
+//! Calendar; Files). The top bar's
+//! search box finds settings while the page is open (`settings_search.rs`).
+//! Changes apply at once and are saved to `config.toml`.
 
 use std::cell::RefCell;
+use std::ops::RangeInclusive;
 use std::rc::Rc;
+use std::sync::Arc;
 use std::time::Duration;
 
 use gpui::{
-    AnyElement, App, Context, Div, Entity, FocusHandle, Focusable, FontWeight, Keystroke,
-    ScrollHandle, SharedString, Stateful, Subscription, Task, Window, div, prelude::*, rgba,
+    AnimationExt, AnyElement, App, Context, Div, Entity, FocusHandle, Focusable, FontWeight,
+    Keystroke, ScrollHandle, SharedString, SpringAnimation, Stateful, Subscription, Task, Window,
+    div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountTabs, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
-    SEND_FROM_CURRENT, ShortcutSet, TabStyle, Theme as ThemeChoice,
+    AccountTabs, AutoAdvance, CalendarDensity, Clock, Density, FileGroup, FilesPage, MarkRead,
+    OpenIn, ReadingPane, ReduceMotion, SEND_FROM_CURRENT, ShortcutSet, TabStyle,
+    Theme as ThemeChoice, TrayStyle,
 };
 use katna_i18n::tr;
-use katna_ui::motion::lerp;
+use katna_ui::motion::{self, lerp};
 use katna_ui::px;
 use katna_ui::rich::RichEvent;
-use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
+use katna_ui::tokens::space;
+use katna_ui::{InputEvent, RichEditor, TextInput};
 
+use super::apps::App as RailApp;
 use super::keymap::{self, Group, SHORTCUTS};
 use super::settings::{Change, heading};
-use super::tab_strip::TabStrip;
-use super::{
-    FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts, apps::App as RailApp,
-};
+use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts};
 use crate::autostart::Start;
 use crate::tabs::{self, Provider};
 use crate::theme::Theme;
-use crate::widgets::{FocusRing, TabStops, icon, icon_button, outlined_button, tip};
+use crate::widgets::{
+    FocusRing, ScaledEdge, TabStops, choice_chip, field, icon, icon_button, line_field,
+    outlined_button, tip,
+};
 
+mod ai;
+mod nav;
+mod notifications;
+mod rules;
+mod signature_html;
+mod signature_import;
+mod signature_layout;
+mod starter_rules;
 mod templates;
 
 /// A signature edit is saved this long after the last key.
@@ -63,57 +74,165 @@ const KEYS_WIDTH: f32 = 160.0;
 const SHORTCUT_LABEL_WIDTH: f32 = 160.0;
 const SHORTCUT_COLUMN: f32 = 440.0;
 
-/// A part of the page.
+/// A page of Settings. Each belongs to a [`Scope`]: the settings every
+/// Katna app shares, or one app's own.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Section {
     General,
-    Inbox,
+    Appearance,
     Accounts,
+    /// What notifies and counts on the taskbar, and what is muted.
+    Notifications,
+    Shortcuts,
     /// Subscription: the Katna account, sign-in for Katna Server's features.
     Subscriptions,
-    Appearance,
-    Shortcuts,
+    /// Writing help with AI: Katna AI or the user's own service.
+    Ai,
     DefaultApps,
-    /// Folders & rules: folders and labels, and mail rules.
-    MailRules,
-    /// Compose: signatures and templates.
-    Signatures,
     McpServer,
     Feedback,
     Experimental,
+    /// Mail > Reading: conversations, marking read, the reading pane.
+    Reading,
+    Inbox,
+    /// Mail > Compose: sending, signatures and templates.
+    Signatures,
+    /// Mail > Folders & rules: folders and labels, and mail rules.
+    MailRules,
+    /// Mail > Desktop: email links and the desktop's search.
+    MailDesktop,
+    Calendar,
+    /// Files: the Files page's small pictures and drives.
+    Files,
 }
 
 impl Section {
-    pub(super) const ALL: [Self; 12] = [
+    pub(super) const ALL: [Self; 18] = [
         Self::General,
-        Self::Inbox,
-        Self::Accounts,
-        Self::Subscriptions,
         Self::Appearance,
+        Self::Accounts,
+        Self::Notifications,
         Self::Shortcuts,
+        Self::Subscriptions,
+        Self::Ai,
         Self::DefaultApps,
-        Self::MailRules,
-        Self::Signatures,
         Self::McpServer,
         Self::Feedback,
         Self::Experimental,
+        Self::Reading,
+        Self::Inbox,
+        Self::Signatures,
+        Self::MailRules,
+        Self::MailDesktop,
+        Self::Calendar,
+        Self::Files,
     ];
 
     pub(super) fn label(self) -> String {
         match self {
             Self::General => tr!("settings-tab-general"),
-            Self::Inbox => tr!("settings-tab-inbox"),
-            Self::Accounts => tr!("settings-tab-accounts"),
-            Self::Subscriptions => tr!("settings-tab-subscriptions"),
             Self::Appearance => tr!("settings-tab-appearance"),
+            Self::Accounts => tr!("settings-tab-accounts"),
+            Self::Notifications => tr!("settings-tab-notifications"),
             Self::Shortcuts => tr!("settings-tab-shortcuts"),
+            Self::Subscriptions => tr!("settings-tab-subscriptions"),
+            Self::Ai => tr!("settings-tab-ai"),
             Self::DefaultApps => tr!("settings-tab-default-apps"),
-            Self::MailRules => tr!("settings-tab-folders-rules"),
-            Self::Signatures => tr!("settings-tab-compose"),
             Self::McpServer => tr!("settings-tab-mcp-server"),
             Self::Feedback => tr!("settings-tab-feedback"),
             Self::Experimental => tr!("settings-tab-experimental"),
+            Self::Reading => tr!("settings-tab-reading"),
+            Self::Inbox => tr!("settings-tab-inbox"),
+            Self::Signatures => tr!("settings-tab-compose"),
+            Self::MailRules => tr!("settings-tab-folders-rules"),
+            Self::MailDesktop => tr!("settings-tab-desktop"),
+            Self::Calendar => tr!("settings-tab-calendar"),
+            Self::Files => tr!("settings-tab-files"),
         }
+    }
+
+    /// The icon beside the page's name in the side list.
+    pub(super) fn icon(self) -> &'static str {
+        match self {
+            Self::General => "tune",
+            Self::Appearance => "palette",
+            Self::Accounts => "people",
+            Self::Notifications => "bell",
+            Self::Shortcuts => "bolt",
+            Self::Subscriptions => "shield-check",
+            Self::Ai => "sparkle",
+            Self::DefaultApps => "open-external",
+            Self::McpServer => "chip",
+            Self::Feedback => "chat",
+            Self::Experimental => "pulse",
+            Self::Reading => "eye",
+            Self::Inbox => "inbox",
+            Self::Signatures => "pen",
+            Self::MailRules => "filter",
+            Self::MailDesktop => "home",
+            Self::Calendar => "calendar",
+            Self::Files => "attachment",
+        }
+    }
+
+    /// Where the page is listed.
+    pub(super) fn scope(self) -> Scope {
+        match self {
+            Self::Reading
+            | Self::Inbox
+            | Self::Signatures
+            | Self::MailRules
+            | Self::MailDesktop => Scope::Mail,
+            Self::Calendar => Scope::Calendar,
+            Self::Files => Scope::Files,
+            _ => Scope::Katna,
+        }
+    }
+
+    /// Listed under a faint line at the end of the list.
+    pub(super) fn at_end(self) -> bool {
+        matches!(self, Self::Feedback | Self::Experimental)
+    }
+}
+
+/// Whose settings a page holds, the groups of the list beside the page:
+/// those every Katna app shares, or one app's. An app joins once it has
+/// settings of its own.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum Scope {
+    Katna,
+    Mail,
+    Calendar,
+    Files,
+}
+
+impl Scope {
+    pub(super) fn label(self) -> String {
+        match self {
+            Self::Katna => tr!("settings-group-all-apps"),
+            Self::Mail => tr!("rail-mail"),
+            Self::Calendar => tr!("rail-calendar"),
+            Self::Files => tr!("rail-files"),
+        }
+    }
+
+    pub(super) fn icon(self) -> &'static str {
+        match self {
+            Self::Katna => "settings",
+            Self::Mail => "mail",
+            Self::Calendar => "calendar",
+            Self::Files => "attachment",
+        }
+    }
+
+    /// The scope's pages, in the list's order.
+    pub(super) fn sections(self) -> impl Iterator<Item = Section> {
+        Section::ALL.into_iter().filter(move |s| s.scope() == self)
+    }
+
+    /// The scope's first page.
+    pub(super) fn first(self) -> Section {
+        self.sections().next().unwrap_or(Section::General)
     }
 }
 
@@ -123,16 +242,30 @@ pub(super) struct SettingsPage {
     editing: Option<SignatureEditor>,
     /// The template being edited in Settings > Compose.
     template: Option<templates::TemplateEditor>,
+    /// The Paste HTML panel, open in place of the signature editor.
+    pasting: Option<signature_html::PasteHtml>,
+    importing: Option<signature_import::ImportSignatures>,
+    /// The form of the signature being edited, when it uses a layout.
+    layout: Option<signature_layout::LayoutForm>,
+    /// The question asked before a layout replaces a signature, or a
+    /// signature leaves its layout.
+    layout_confirm: Option<signature_layout::Confirm>,
     save: Option<Task<()>>,
     recording: Option<Recording>,
     pub(super) scroll: ScrollHandle,
+    /// The page's overlay scroll bar, as the open mail and Files have.
+    bar: katna_ui::ScrollBar,
     /// The open section's tab. It takes the focus when the page opens, so
     /// Tab goes on from there.
     pub(super) focus: FocusHandle,
     /// The controls Tab stops at, which the page scrolls to.
     stops: TabStops,
-    /// The row of section tabs, on one line that scrolls sideways.
-    tabs: TabStrip,
+    /// On a phone, the list of the scope's pages shows in place of a page
+    /// until one is picked; the back arrow comes back to it.
+    pub(super) list: bool,
+    /// Mail's pages show under it in the list, folding open and closed.
+    pub(super) mail_open: bool,
+    pub(super) mail_fold: crate::widgets::Fold,
     /// What the top bar's search box has, which shows matching settings
     /// in place of the open tab.
     pub(super) query: SharedString,
@@ -142,6 +275,8 @@ pub(super) struct SettingsPage {
     pub(super) info: Rc<RefCell<Option<SharedString>>>,
     /// A drag on the Scaling slider.
     pub(super) scale: super::scale_slider::ScaleDrag,
+    /// A drag on the frost's blur and opacity sliders.
+    pub(super) frost: super::frost_sliders::FrostDrag,
     /// The account whose name is being changed in Settings > Accounts.
     pub(super) renaming: Option<super::accounts::Renaming>,
     /// An account being dragged to a new place, and rows gliding to theirs.
@@ -160,6 +295,21 @@ pub(super) struct SettingsPage {
     /// Where new Jitsi Meet rooms go (`meetings.jitsi_server`).
     jitsi: Entity<TextInput>,
     _jitsi: Subscription,
+    /// The Files page's small-picture limits, in KB and in pixels.
+    small_kb: Entity<TextInput>,
+    small_px: Entity<TextInput>,
+    _small: [Subscription; 2],
+    /// Window frame > Katna: the corners' roundness, typed beside its
+    /// slider.
+    pub(super) radius: Entity<TextInput>,
+    _radius: Subscription,
+    /// The Google accounts, each with whether its sign-in lets Katna
+    /// read its drive (`None` until the daemon says), for Drives in Files.
+    drives: Vec<(katna_core::AccountId, String, Option<bool>)>,
+    /// Writing help with AI: the user's own service.
+    ai: ai::AiFields,
+    /// Settings > Folders & rules: the mail rules and their filter.
+    rules: rules::RulesList,
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -216,7 +366,6 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        self.open_app(RailApp::Mail, cx);
         self.settings_open = false;
         self.menu = None;
         let fresh = self.settings_page.is_none();
@@ -224,6 +373,9 @@ impl MailWindow {
         let accent = rgba(self.theme(window).accent).into();
         let words = self.config.general.search_triggers.join(", ");
         let server = self.config.meetings.jitsi_server.clone();
+        let this_files = self.config.mail.files.clone();
+        let ai_config = self.config.ai.clone();
+        let radius_now = self.window_radius_now();
         let page = self.settings_page.get_or_insert_with(|| {
             let triggers = cx.new(|cx| {
                 let mut input = TextInput::new(tr!("settings-general-search-triggers-none"), cx);
@@ -249,20 +401,59 @@ impl MailWindow {
                     this.set_jitsi_server(&text, cx);
                 }
             });
+            let files = this_files.clone();
+            let small_kb = number_input(files.small_kb, FilesPage::KB_RANGE, accent, cx);
+            let small_px = number_input(files.small_px, FilesPage::PX_RANGE, accent, cx);
+            let small_subscriptions = [
+                cx.subscribe(&small_kb, |this, input, event: &InputEvent, cx| {
+                    if *event == InputEvent::Changed {
+                        let text = input.read(cx).text().to_owned();
+                        this.set_small_picture(&text, Change::SmallPictureKb, cx);
+                    }
+                }),
+                cx.subscribe(&small_px, |this, input, event: &InputEvent, cx| {
+                    if *event == InputEvent::Changed {
+                        let text = input.read(cx).text().to_owned();
+                        this.set_small_picture(&text, Change::SmallPicturePx, cx);
+                    }
+                }),
+            ];
+            let ai = ai::AiFields::new(&ai_config, accent, cx);
+            let radius = number_input(
+                u32::from(radius_now),
+                super::frost_sliders::RADIUS_RANGE,
+                accent,
+                cx,
+            );
+            let radius_subscription =
+                cx.subscribe(&radius, |this, input, event: &InputEvent, cx| {
+                    if *event == InputEvent::Changed {
+                        let text = input.read(cx).text().to_owned();
+                        this.type_window_radius(&text, cx);
+                    }
+                });
             SettingsPage {
                 section,
                 editing: None,
                 template: None,
+                pasting: None,
+                importing: None,
+                layout: None,
+                layout_confirm: None,
                 save: None,
                 recording: None,
                 scroll: scroll.clone(),
+                bar: katna_ui::ScrollBar::default(),
                 focus: cx.focus_handle().tab_stop(true),
                 stops: TabStops::new(scroll),
-                tabs: TabStrip::default(),
+                list: false,
+                mail_open: false,
+                mail_fold: Default::default(),
                 query: SharedString::default(),
                 flash: None,
                 info: Rc::default(),
                 scale: Default::default(),
+                frost: Default::default(),
                 renaming: None,
                 reorder: Default::default(),
                 start_at_login: crate::autostart::get(),
@@ -272,6 +463,14 @@ impl MailWindow {
                 _triggers: subscription,
                 jitsi,
                 _jitsi: jitsi_subscription,
+                small_kb,
+                small_px,
+                _small: small_subscriptions,
+                radius,
+                _radius: radius_subscription,
+                drives: Vec::new(),
+                ai,
+                rules: Default::default(),
             }
         });
         page.mail_app = opens_mail_links();
@@ -279,8 +478,11 @@ impl MailWindow {
             window.focus(&page.focus, cx);
         }
         page.section = section;
-        if let Some(ix) = Section::ALL.iter().position(|s| *s == section) {
-            page.tabs.reveal(ix, fresh);
+        page.list = false;
+        // Mail's pages unfold to show the one opened.
+        if section.scope() == Scope::Mail && !page.mail_open {
+            page.mail_open = true;
+            page.mail_fold.turn();
         }
         page.recording = None;
         page.flash = None;
@@ -297,6 +499,21 @@ impl MailWindow {
             self.edit_signature(editing, window, cx);
             self.load_templates(cx);
         }
+        if section == Section::Ai {
+            self.load_ai_key_saved(cx);
+            self.load_ai_models(cx);
+        }
+        if section == Section::MailRules {
+            self.load_rules(cx);
+            self.watch_rules(cx);
+        }
+        // The page opens over the app on show, which stays picked in the
+        // rail and comes back as it was when the page closes. The search
+        // box goes back to mail before the page takes it.
+        if fresh {
+            self.swap_app_search(false, cx);
+        }
+        self.read_drives(cx);
         self.card_seq += 1;
         cx.notify();
     }
@@ -342,7 +559,10 @@ impl MailWindow {
             self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
         }
         self.card_seq += 1;
-        window.focus(&self.list_focus, cx);
+        // The search box and the keys go back to the app on show.
+        self.sync_search_box(cx);
+        self.swap_app_search(true, cx);
+        self.focus_app_page(window, cx);
         cx.notify();
     }
 
@@ -352,7 +572,25 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        self.open_settings_page(Section::General, window, cx);
+        self.open_settings_here(window, cx);
+    }
+
+    /// Opens Settings on the page of the app on show, or General for an
+    /// app without settings of its own. On a phone it opens on the list of
+    /// that app's pages.
+    pub(super) fn open_settings_here(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let scope = match self.app {
+            RailApp::Mail => Scope::Mail,
+            RailApp::Calendar => Scope::Calendar,
+            RailApp::Files => Scope::Files,
+            RailApp::Contacts | RailApp::Tasks | RailApp::Notes => Scope::Katna,
+        };
+        self.open_settings_page(scope.first(), window, cx);
+        if self.layout.shape.is_phone()
+            && let Some(page) = &mut self.settings_page
+        {
+            page.list = true;
+        }
     }
 
     pub(super) fn show_shortcuts(
@@ -365,7 +603,7 @@ impl MailWindow {
     }
 
     fn page_section(&mut self, section: Section, window: &mut Window, cx: &mut Context<Self>) {
-        // A tab picked while searching shows that tab, not the results.
+        // A page picked while searching shows that page, not the results.
         if self
             .settings_page
             .as_ref()
@@ -380,8 +618,10 @@ impl MailWindow {
         {
             self.open_settings_page(section, window, cx);
         }
-        // The tab pressed becomes the open one, which keeps the focus.
-        if let Some(page) = &self.settings_page {
+        // The page picked becomes the open one, which keeps the focus; on
+        // a phone it shows in place of the list.
+        if let Some(page) = &mut self.settings_page {
+            page.list = false;
             window.focus(&page.focus, cx);
         }
     }
@@ -397,110 +637,51 @@ impl MailWindow {
         };
         let section = page.section;
         let scroll = page.scroll.clone();
-        let focus = page.focus.clone();
-        let strip = page.tabs.clone();
-        let tabs = Section::ALL.map(|s| {
-            let on = s == section;
-            div()
-                .id(("settings-section", s as usize))
-                .when(on, |d| d.track_focus(&focus))
-                .focus_ring(th)
-                .relative()
-                .overflow_hidden()
-                .flex_none()
-                .h(px(48.0))
-                .px(px(16.0))
-                .flex()
-                .items_center()
-                .text_size(px(14.0))
-                .font_weight(if on {
-                    FontWeight::SEMIBOLD
-                } else {
-                    FontWeight::NORMAL
-                })
-                // A tab still to come is fainter until picked.
-                .text_color(rgba(if on {
-                    th.accent
-                } else if super::settings_search::is_coming(s) {
-                    th.text_faint
-                } else {
-                    th.text_dim
-                }))
-                .border_b_2()
-                .border_color(rgba(if on { th.accent } else { 0 }))
-                .cursor_pointer()
-                .hover(|d| d.bg(rgba(th.hover)))
-                .on_click(cx.listener(move |this, _, window, cx| this.page_section(s, window, cx)))
-                // The tab is square, so the wave fills all of it.
-                .child(
-                    Ripple::new(("settings-section-ripple", s as usize), rgba(th.ripple))
-                        .rounded(0.0),
-                )
-                .child(s.label())
-        });
+        let bar = page.bar.clone();
+        bar.tick(&scroll, window, cx);
+        let list = page.list;
         let query = page.query.clone();
         let body = match section {
             _ if !query.is_empty() => self.render_settings_results(&query, th, cx),
             Section::General => self.general_section(th, cx),
+            Section::Notifications => self.notifications_section(th, cx),
             Section::Inbox => self.inbox_section(th, cx),
+            Section::Reading => self.reading_section(th, cx),
+            Section::MailDesktop => self.mail_desktop_section(th, cx),
+            Section::Ai => self.ai_section(th, cx),
+            Section::Calendar => self.calendar_section(th, cx),
+            Section::Files => self.files_section(th, cx),
             Section::Accounts => self.accounts_section(th, cx),
             Section::Subscriptions => self.katna_section(th, window, cx),
-            Section::Appearance => self.appearance_section(th, cx),
+            Section::Appearance => self.appearance_section(th, window, cx),
             Section::Signatures => self.signatures_section(th, cx),
             Section::DefaultApps => self.default_apps_section(th, cx),
             Section::Shortcuts => self.shortcuts_section(th, cx),
             Section::Experimental => self.experimental_section(th, cx),
             Section::Feedback => self.feedback_section(th, cx),
-            Section::MailRules | Section::McpServer => self.coming_soon_section(section, th),
+            Section::MailRules => self.rules_section(th, cx),
+            Section::McpServer => self.coming_soon_section(section, th),
         };
         // On a phone the page fills the window below the top bar, like the
-        // list, and its sides come in closer.
+        // list, its sides come in closer, and the list of pages takes the
+        // whole page until one is picked.
         let shape = self.layout.shape;
+        let phone = shape.is_phone();
         let margin = shape.card_margin();
         let side = lerp(32.0, 16.0, shape.phone);
-        let card = div()
-            .id("settings-page")
-            .size_full()
-            .flex()
-            .flex_col()
-            .rounded(px(shape.card_radius()))
-            .bg(rgba(th.surface))
-            .overflow_hidden()
-            .child(
-                div()
-                    .flex_none()
-                    .h(px(56.0))
-                    .pl(px(8.0))
-                    .pr(px(16.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(8.0))
-                    .child(
-                        icon_button("settings-page-back", "back", 20.0, th)
-                            .focus_ring(th)
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                this.close_settings_page(window, cx)
-                            })),
-                    )
-                    .child(div().text_size(px(22.0)).child(tr!("settings")))
-                    .child(div().flex_1())
-                    .child(self.version_button(th, cx)),
-            )
-            // One line of tabs that scrolls sideways when they don't fit,
-            // with arrows at the edges except on a phone, where it's swiped.
-            .child(strip.render(
-                "settings-page-tabs",
-                tabs,
-                !shape.is_phone(),
-                lerp(16.0, 4.0, shape.phone),
-                th,
-            ))
-            .child(
+        let show_list = phone && list && query.is_empty();
+        let body = if show_list {
+            self.settings_nav(section, true, th, cx)
+        } else {
+            body
+        };
+        let page_body = div().flex_1().min_w_0().min_h_0().child(
+            bar.draw(
+                "settings-page-bar",
+                &scroll,
                 div()
                     .id("settings-page-body")
-                    .flex_1()
-                    .min_h_0()
+                    .size_full()
                     .overflow_y_scroll()
                     .track_scroll(&scroll)
                     .child(
@@ -514,6 +695,65 @@ impl MailWindow {
                             .flex_col()
                             .child(body),
                     ),
+                // The open mail's and Files page's bar.
+                th.text_dim & 0xffff_ff00 | 0x99,
+            ),
+        );
+        let title = if phone && !show_list && query.is_empty() {
+            section.label()
+        } else {
+            tr!("settings")
+        };
+        let card = div()
+            .id("settings-page")
+            .size_full()
+            .flex()
+            .flex_col()
+            .map(|d| crate::widgets::card(d, th, th.pane(), shape.card_radius(), 0.0))
+            .overflow_hidden()
+            .child(
+                div()
+                    .flex_none()
+                    .h(px(56.0))
+                    .pl(px(katna_ui::tokens::space::S3))
+                    .pr(px(katna_ui::tokens::space::S5))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(katna_ui::tokens::space::S3))
+                    .child(
+                        icon_button("settings-page-back", "back", 20.0, th)
+                            .focus_ring(th)
+                            .on_click(
+                                cx.listener(|this, _, window, cx| this.settings_back(window, cx)),
+                            ),
+                    )
+                    .child(div().text_size(px(22.0)).child(title))
+                    .child(div().flex_1())
+                    .child(self.version_button(th, cx)),
+            )
+            .child(
+                div()
+                    .flex_1()
+                    .min_h_0()
+                    .flex()
+                    .flex_row()
+                    // The scope's pages beside the open one.
+                    .when(!phone, |d| {
+                        d.child(
+                            div()
+                                .id("settings-nav")
+                                .flex_none()
+                                .w(px(nav::NAV_WIDTH))
+                                .h_full()
+                                .overflow_y_scroll()
+                                .pl(px(katna_ui::tokens::space::S4))
+                                .pt(px(katna_ui::tokens::space::S3))
+                                .pb(px(katna_ui::tokens::space::S4))
+                                .child(self.settings_nav(section, false, th, cx)),
+                        )
+                    })
+                    .child(page_body),
             );
         div()
             .flex_1()
@@ -528,7 +768,6 @@ impl MailWindow {
     // General
 
     fn general_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let view = &self.config.mail;
         div()
             .flex()
             .flex_col()
@@ -539,6 +778,176 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(tr!("settings-time"), None, self.clock_choice(th, cx), th))
+            .child(self.row(
+                tr!("settings-general-video-calls"),
+                Some(&tr!("settings-general-video-calls-detail")),
+                self.jitsi_server_field(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-general-offline"),
+                Some(&tr!("settings-general-offline-detail")),
+                self.offline_choice(th, cx),
+                th,
+            ))
+            .when(katna_core::update::Package::current().downloads(), |d| {
+                d.child(self.row(
+                    tr!("settings-general-updates"),
+                    Some(&tr!("settings-general-updates-detail")),
+                    self.switch_row(
+                        "page-auto-download-updates",
+                        tr!("settings-general-auto-download"),
+                        tr!("settings-general-auto-download-detail"),
+                        self.config.updates.auto_download,
+                        Change::AutoDownloadUpdates(!self.config.updates.auto_download),
+                        th,
+                        cx,
+                    ),
+                    th,
+                ))
+            })
+            .child(self.row(
+                tr!("settings-general-reset-cache"),
+                Some(&tr!("settings-general-reset-cache-detail")),
+                self.reset_cache_control(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-general-desktop"),
+                None,
+                self.desktop_switches(th, cx),
+                th,
+            ))
+            .into_any_element()
+    }
+
+    // AI
+
+    fn ai_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        div()
+            .flex()
+            .flex_col()
+            .children(self.ai_rows(th, cx))
+            .into_any_element()
+    }
+
+    // Calendar
+
+    fn calendar_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let calendar = &self.config.calendar;
+        let density = [
+            (
+                CalendarDensity::Responsive,
+                "calendar-density-responsive",
+                tr!("calendar-density-responsive"),
+            ),
+            (
+                CalendarDensity::Comfortable,
+                "calendar-density-comfortable",
+                tr!("calendar-density-comfortable"),
+            ),
+            (
+                CalendarDensity::Compact,
+                "calendar-density-compact",
+                tr!("calendar-density-compact"),
+            ),
+        ]
+        .map(|(choice, id, text)| {
+            self.page_control(chip(id, text, calendar.density == choice, th), th, cx)
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.apply(Change::CalendarDensity(choice), cx)
+                }))
+        });
+        let shown = calendar.custom_days();
+        let days = (2..=7u8).map(|n| {
+            self.page_control(
+                chip(
+                    ("calendar-custom-days", usize::from(n)),
+                    tr!("calendar-view-days", count = n),
+                    n == shown,
+                    th,
+                ),
+                th,
+                cx,
+            )
+            .on_click(cx.listener(move |this, _, _, cx| this.apply(Change::CustomDays(n), cx)))
+        });
+        let chips = |children: Vec<Stateful<Div>>| {
+            div()
+                .px(px(katna_ui::tokens::space::S3))
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .gap(px(6.0))
+                .children(children)
+        };
+        let birthdays = !self.config.contacts.hide_birthdays;
+        div()
+            .flex()
+            .flex_col()
+            .child(self.row(
+                tr!("settings-calendar-density"),
+                Some(&tr!("settings-calendar-density-detail")),
+                chips(density.into_iter().collect()),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-calendar-custom-days"),
+                Some(&tr!("settings-calendar-custom-days-detail")),
+                chips(days.collect()),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-calendar-birthdays"),
+                None,
+                self.switch_row(
+                    "page-birthdays",
+                    tr!("settings-calendar-birthdays-show"),
+                    tr!("settings-calendar-birthdays-show-detail"),
+                    birthdays,
+                    Change::Birthdays(!birthdays),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .into_any_element()
+    }
+
+    // Files
+
+    fn files_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        div()
+            .flex()
+            .flex_col()
+            .child(self.files_page_row(th, cx))
+            .into_any_element()
+    }
+
+    // Mail > Reading
+
+    fn reading_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let view = &self.config.mail;
+        let panes = div()
+            .max_w(px(420.0))
+            .flex()
+            .flex_row()
+            .gap(px(12.0))
+            .child(self.pane_choice(
+                ReadingPane::Right,
+                tr!("settings-appearance-pane-right"),
+                th,
+                cx,
+            ))
+            .child(self.pane_choice(
+                ReadingPane::None,
+                tr!("settings-appearance-pane-none"),
+                th,
+                cx,
+            ));
+        div()
+            .flex()
+            .flex_col()
             .child(self.row(
                 tr!("settings-general-conversations"),
                 None,
@@ -592,20 +1001,6 @@ impl MailWindow {
                 th,
             ))
             .child(self.row(
-                tr!("settings-general-reply-button"),
-                None,
-                self.switch_row(
-                    "page-reply-all",
-                    tr!("settings-general-reply-all"),
-                    tr!("settings-general-reply-all-detail"),
-                    view.reply_all,
-                    Change::ReplyAll(!view.reply_all),
-                    th,
-                    cx,
-                ),
-                th,
-            ))
-            .child(self.row(
                 tr!("settings-general-remote-images"),
                 Some(&tr!("settings-general-remote-images-detail")),
                 self.switch_row(
@@ -619,79 +1014,91 @@ impl MailWindow {
                 ),
                 th,
             ))
-            .child(
-                self.row(
-                    tr!("settings-general-sending"),
-                    Some(&tr!("settings-general-sending-detail")),
-                    div()
-                        .flex()
-                        .flex_col()
-                        .gap(px(8.0))
-                        .child(self.undo_send_choice(th, cx))
-                        .child(self.switch_row(
-                            "page-sent-sound",
-                            tr!("settings-general-sent-sound"),
-                            tr!("settings-general-sent-sound-detail"),
-                            self.config.sending.sent_sound,
-                            Change::SentSound(!self.config.sending.sent_sound),
-                            th,
-                            cx,
-                        ))
-                        .into_any_element(),
-                    th,
-                ),
-            )
             .child(self.row(
-                tr!("settings-general-video-calls"),
-                Some(&tr!("settings-general-video-calls-detail")),
-                self.jitsi_server_field(th, cx),
+                tr!("settings-appearance-reading-pane"),
+                Some(&tr!("settings-appearance-reading-pane-detail")),
+                panes,
                 th,
             ))
             .child(self.row(
-                tr!("settings-general-offline"),
-                Some(&tr!("settings-general-offline-detail")),
-                self.offline_choice(th, cx),
-                th,
-            ))
-            .child(self.row(
-                tr!("settings-general-notifications"),
-                Some(&tr!("settings-general-notifications-detail")),
-                self.notification_switches(th, cx),
-                th,
-            ))
-            .when(
-                katna_core::update::Package::current()
-                    .manifest_url()
-                    .is_some(),
-                |d| {
-                    d.child(self.row(
-                        tr!("settings-general-updates"),
-                        Some(&tr!("settings-general-updates-detail")),
-                        self.switch_row(
-                            "page-auto-download-updates",
-                            tr!("settings-general-auto-download"),
-                            tr!("settings-general-auto-download-detail"),
-                            self.config.updates.auto_download,
-                            Change::AutoDownloadUpdates(!self.config.updates.auto_download),
-                            th,
-                            cx,
-                        ),
-                        th,
-                    ))
-                },
-            )
-            .child(self.row(
-                tr!("settings-general-reset-cache"),
-                Some(&tr!("settings-general-reset-cache-detail")),
-                self.reset_cache_control(th, cx),
-                th,
-            ))
-            .child(self.row(
-                tr!("settings-general-desktop"),
+                tr!("settings-appearance-sender-pictures"),
                 None,
-                self.desktop_switches(th, cx),
+                self.switch_row(
+                    "page-sender-pictures",
+                    tr!("settings-appearance-sender-pictures-show"),
+                    tr!("settings-appearance-sender-pictures-show-detail"),
+                    view.sender_pictures,
+                    Change::SenderPictures(!view.sender_pictures),
+                    th,
+                    cx,
+                ),
                 th,
             ))
+            .child(self.row(
+                tr!("settings-appearance-important"),
+                None,
+                self.switch_row(
+                    "page-important-markers",
+                    tr!("settings-appearance-important-show"),
+                    tr!("settings-appearance-important-show-detail"),
+                    view.important_markers,
+                    Change::ImportantMarkers(!view.important_markers),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-appearance-message-width"),
+                None,
+                self.switch_row(
+                    "page-limit-width",
+                    tr!("settings-appearance-message-width-limit"),
+                    tr!("settings-appearance-message-width-limit-detail"),
+                    view.limit_width,
+                    Change::LimitWidth(!view.limit_width),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-appearance-mail-colors"),
+                Some(&tr!("settings-appearance-mail-colors-detail")),
+                self.switch_row(
+                    "page-dark-mail",
+                    tr!("settings-appearance-dark-mail"),
+                    tr!("settings-appearance-dark-mail-detail"),
+                    view.dark_mail,
+                    Change::DarkMail(!view.dark_mail),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-appearance-attachment-previews"),
+                None,
+                self.switch_row(
+                    "page-attachment-previews",
+                    tr!("settings-appearance-attachment-previews-show"),
+                    tr!("settings-appearance-attachment-previews-show-detail"),
+                    view.attachment_previews,
+                    Change::AttachmentPreviews(!view.attachment_previews),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
+            .into_any_element()
+    }
+
+    // Mail > Desktop
+
+    fn mail_desktop_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        div()
+            .flex()
+            .flex_col()
             .child(self.row(
                 tr!("settings-general-search-triggers"),
                 Some(&tr!("settings-general-search-triggers-detail")),
@@ -719,16 +1126,8 @@ impl MailWindow {
             return div().into_any_element();
         };
         let input = page.triggers.clone();
-        let focus = input.focus_handle(cx);
         control_column(240.0)
-            .child(
-                field_box("page-search-triggers", th)
-                    .h(px(40.0))
-                    .flex()
-                    .items_center()
-                    .on_click(move |_, window, cx| window.focus(&focus, cx))
-                    .child(div().flex_1().child(input)),
-            )
+            .child(line_field("page-search-triggers", &input, th, cx))
             .into_any_element()
     }
 
@@ -738,16 +1137,8 @@ impl MailWindow {
             return div().into_any_element();
         };
         let input = page.jitsi.clone();
-        let focus = input.focus_handle(cx);
         control_column(240.0)
-            .child(
-                field_box("page-jitsi-server", th)
-                    .h(px(40.0))
-                    .flex()
-                    .items_center()
-                    .on_click(move |_, window, cx| window.focus(&focus, cx))
-                    .child(div().flex_1().child(input)),
-            )
+            .child(line_field("page-jitsi-server", &input, th, cx))
             .into_any_element()
     }
 
@@ -907,34 +1298,18 @@ impl MailWindow {
         choices.into_any_element()
     }
 
-    /// New-mail notifications and their sound, which the daemon shows.
-    fn notification_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    /// New-mail notifications, which the daemon shows.
+    pub(super) fn notification_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let notifications = &self.config.notifications;
-        div()
-            .flex()
-            .flex_col()
-            .gap(px(2.0))
-            .child(self.switch_row(
-                "page-new-mail",
-                tr!("settings-general-new-mail"),
-                tr!("settings-general-new-mail-detail"),
-                notifications.new_mail,
-                Change::NewMailNotices(!notifications.new_mail),
-                th,
-                cx,
-            ))
-            .when(notifications.new_mail, |d| {
-                d.child(self.switch_row(
-                    "page-new-mail-sound",
-                    tr!("settings-general-new-mail-sound"),
-                    tr!("settings-general-new-mail-sound-detail"),
-                    notifications.sound,
-                    Change::NotificationSound(!notifications.sound),
-                    th,
-                    cx,
-                ))
-            })
-            .into_any_element()
+        self.switch_row(
+            "page-new-mail",
+            tr!("settings-general-new-mail"),
+            tr!("settings-general-new-mail-detail"),
+            notifications.new_mail,
+            Change::NewMailNotices(!notifications.new_mail),
+            th,
+            cx,
+        )
     }
 
     /// Windows lets only the user pick the default mail app: opens the
@@ -975,25 +1350,13 @@ impl MailWindow {
 
     // Appearance
 
-    fn appearance_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn appearance_section(
+        &self,
+        th: &Theme,
+        window: &Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let view = &self.config.mail;
-        let panes = div()
-            .max_w(px(420.0))
-            .flex()
-            .flex_row()
-            .gap(px(12.0))
-            .child(self.pane_choice(
-                ReadingPane::Right,
-                tr!("settings-appearance-pane-right"),
-                th,
-                cx,
-            ))
-            .child(self.pane_choice(
-                ReadingPane::None,
-                tr!("settings-appearance-pane-none"),
-                th,
-                cx,
-            ));
         let mut density = div().flex().flex_col().gap(px(2.0));
         for (choice, id, label) in [
             (
@@ -1046,12 +1409,6 @@ impl MailWindow {
         div()
             .flex()
             .flex_col()
-            .child(self.row(
-                tr!("settings-appearance-reading-pane"),
-                Some(&tr!("settings-appearance-reading-pane-detail")),
-                panes,
-                th,
-            ))
             .child(self.row(tr!("settings-appearance-density"), None, density, th))
             .child(self.row(
                 tr!("settings-appearance-scaling"),
@@ -1059,19 +1416,39 @@ impl MailWindow {
                 self.scale_control(th, cx),
                 th,
             ))
-            .child(self.row(tr!("settings-appearance-theme"), None, theme, th))
             .child(self.row(
-                tr!("settings-appearance-desktop-colors"),
-                None,
-                self.switch_row(
-                    "page-desktop-colors",
-                    tr!("settings-appearance-desktop-colors-use"),
-                    tr!("settings-appearance-desktop-colors-use-detail"),
-                    view.desktop_colors,
-                    Change::DesktopColors(!view.desktop_colors),
+                tr!("settings-appearance-motion-speed"),
+                Some(&tr!("settings-appearance-motion-speed-detail")),
+                self.motion_speed_choice(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-appearance-reduce-motion"),
+                Some(&tr!("settings-appearance-reduce-motion-detail")),
+                self.reduce_motion_choice(th, cx),
+                th,
+            ))
+            .child(
+                self.row(
+                    tr!("settings-appearance-theme"),
+                    // A scheme with one side sets light or dark itself.
+                    Theme::forced_dark(view.colors(), &self.desktop_colors.colors)
+                        .map(|_| tr!("settings-appearance-theme-forced"))
+                        .as_deref(),
+                    theme,
                     th,
-                    cx,
                 ),
+            )
+            .child(self.row(
+                tr!("settings-appearance-colors"),
+                Some(&tr!("settings-appearance-colors-detail")),
+                self.scheme_picker(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-appearance-accent"),
+                Some(&tr!("settings-appearance-accent-detail")),
+                self.accent_picker(th, window, cx),
                 th,
             ))
             .child(self.row(
@@ -1088,77 +1465,105 @@ impl MailWindow {
                 ),
                 th,
             ))
-            .child(self.row(
-                tr!("settings-appearance-sender-pictures"),
-                None,
-                self.switch_row(
-                    "page-sender-pictures",
-                    tr!("settings-appearance-sender-pictures-show"),
-                    tr!("settings-appearance-sender-pictures-show-detail"),
-                    view.sender_pictures,
-                    Change::SenderPictures(!view.sender_pictures),
-                    th,
-                    cx,
-                ),
-                th,
-            ))
-            .child(self.row(
-                tr!("settings-appearance-important"),
-                None,
-                self.switch_row(
-                    "page-important-markers",
-                    tr!("settings-appearance-important-show"),
-                    tr!("settings-appearance-important-show-detail"),
-                    view.important_markers,
-                    Change::ImportantMarkers(!view.important_markers),
-                    th,
-                    cx,
-                ),
-                th,
-            ))
-            .child(self.row(
-                tr!("settings-appearance-message-width"),
-                None,
-                self.switch_row(
-                    "page-limit-width",
-                    tr!("settings-appearance-message-width-limit"),
-                    tr!("settings-appearance-message-width-limit-detail"),
-                    view.limit_width,
-                    Change::LimitWidth(!view.limit_width),
-                    th,
-                    cx,
-                ),
-                th,
-            ))
-            .child(self.row(
-                tr!("settings-appearance-mail-colors"),
-                Some(&tr!("settings-appearance-mail-colors-detail")),
-                self.switch_row(
-                    "page-dark-mail",
-                    tr!("settings-appearance-dark-mail"),
-                    tr!("settings-appearance-dark-mail-detail"),
-                    view.dark_mail,
-                    Change::DarkMail(!view.dark_mail),
-                    th,
-                    cx,
-                ),
-                th,
-            ))
-            .child(self.row(
-                tr!("settings-appearance-attachment-previews"),
-                None,
-                self.switch_row(
-                    "page-attachment-previews",
-                    tr!("settings-appearance-attachment-previews-show"),
-                    tr!("settings-appearance-attachment-previews-show-detail"),
-                    view.attachment_previews,
-                    Change::AttachmentPreviews(!view.attachment_previews),
-                    th,
-                    cx,
-                ),
-                th,
-            ))
             .into_any_element()
+    }
+
+    /// Settings > Appearance > Animation speed: the desktop's, or one of
+    /// Katna's own speeds as chips.
+    fn motion_speed_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let own = self.config.mail.animation_speed;
+        let desktop = speed_name(self.desktop_colors.motion.duration_factor);
+        let picked = own.map(nearest_speed);
+        let chips: Vec<_> = MOTION_SPEEDS
+            .into_iter()
+            .map(|percent| {
+                self.page_control(
+                    choice_chip(
+                        ("motion-speed", usize::from(percent)),
+                        speed_label(percent),
+                        picked == Some(percent),
+                        th,
+                    ),
+                    th,
+                    cx,
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.apply(Change::AnimationSpeed(Some(percent)), cx);
+                }))
+            })
+            .collect();
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(space::S1))
+            .child(self.radio_row(
+                "page-motion-desktop",
+                tr!("settings-appearance-motion-speed-desktop", speed = desktop),
+                own.is_none(),
+                Change::AnimationSpeed(None),
+                th,
+                cx,
+            ))
+            .child(self.radio_row(
+                "page-motion-katna",
+                tr!("settings-appearance-motion-speed-katna"),
+                own.is_some(),
+                Change::AnimationSpeed(Some(picked.unwrap_or(100))),
+                th,
+                cx,
+            ))
+            .when(own.is_some(), |d| {
+                d.child(
+                    div()
+                        .pl(px(RADIO_LABEL))
+                        .pt(px(space::S2))
+                        .pb(px(space::S3))
+                        .flex()
+                        .flex_row()
+                        .flex_wrap()
+                        .gap(px(space::S3))
+                        .children(chips),
+                )
+            })
+            .into_any_element()
+    }
+
+    /// Settings > Appearance > Reduce motion.
+    fn reduce_motion_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let now = self.config.mail.reduce_motion;
+        let state = if self.desktop_colors.motion.off() {
+            tr!("settings-appearance-reduce-motion-desktop-still")
+        } else {
+            tr!("settings-appearance-reduce-motion-desktop-animating")
+        };
+        let mut rows = div().flex().flex_col().gap(px(space::S1));
+        for (choice, id, label) in [
+            (
+                ReduceMotion::Desktop,
+                "page-reduce-motion-desktop",
+                tr!("settings-appearance-reduce-motion-desktop", state = state),
+            ),
+            (
+                ReduceMotion::On,
+                "page-reduce-motion-on",
+                tr!("settings-appearance-reduce-motion-on"),
+            ),
+            (
+                ReduceMotion::Off,
+                "page-reduce-motion-off",
+                tr!("settings-appearance-reduce-motion-off"),
+            ),
+        ] {
+            rows = rows.child(self.radio_row(
+                id,
+                label,
+                now == choice,
+                Change::ReduceMotion(choice),
+                th,
+                cx,
+            ));
+        }
+        rows.into_any_element()
     }
 
     /// How many days of mail the daemon keeps downloaded (`sync.offline_days`).
@@ -1229,7 +1634,7 @@ impl MailWindow {
             .gap(px(12.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(th.divider))
+            .border_color(rgba(th.outline))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(|this, event: &gpui::ClickEvent, window, cx| {
@@ -1332,15 +1737,23 @@ impl MailWindow {
                 th,
                 cx,
             ))
-            .child(self.switch_row(
-                "page-unread-badge",
-                tr!("settings-general-unread-badge"),
-                tr!("settings-general-unread-badge-detail"),
-                general.unread_badge,
-                Change::UnreadBadge(!general.unread_badge),
-                th,
-                cx,
-            ))
+            // Only while the tray icon shows.
+            .when(general.show_in_tray, |d| {
+                let color = general.tray_style == TrayStyle::Color;
+                d.child(self.switch_row(
+                    "page-tray-color",
+                    tr!("settings-general-tray-color"),
+                    tr!("settings-general-tray-color-detail"),
+                    color,
+                    Change::TrayStyle(if color {
+                        TrayStyle::Monochrome
+                    } else {
+                        TrayStyle::Color
+                    }),
+                    th,
+                    cx,
+                ))
+            })
             .into_any_element()
     }
 
@@ -1422,6 +1835,268 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// Settings > Files: small pictures left out of the Files page, and drives.
+    fn files_page_row(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(page) = &self.settings_page else {
+            return div().into_any_element();
+        };
+        let files = &self.config.mail.files;
+        let mut limit = |label: String, input: &Entity<TextInput>, id, range, unit: String| {
+            div()
+                .flex()
+                .items_center()
+                .gap(px(8.0))
+                .text_size(px(14.0))
+                .text_color(rgba(th.text))
+                .child(label)
+                .child(number_field(id, input, range, th, cx))
+                .child(div().text_color(rgba(th.text_dim)).child(unit))
+        };
+        let limits = div()
+            .ml(px(12.0))
+            .mb(px(8.0))
+            .pl(px(18.0))
+            .py(px(4.0))
+            .border_l_1()
+            .border_color(rgba(th.divider))
+            .flex()
+            .flex_col()
+            .gap(px(12.0))
+            // Off, the limits stay to be set but read as not in use.
+            .when(!files.leave_out_small, |d| d.opacity(0.5))
+            .child(limit(
+                tr!("settings-files-smaller-than"),
+                &page.small_kb,
+                "page-files-small-kb",
+                FilesPage::KB_RANGE,
+                tr!("settings-files-kb"),
+            ))
+            .child(limit(
+                tr!("settings-files-narrower-than"),
+                &page.small_px,
+                "page-files-small-px",
+                FilesPage::PX_RANGE,
+                tr!("settings-files-px"),
+            ))
+            .child(
+                div()
+                    .text_size(px(12.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(tr!("settings-files-sizes-note")),
+            );
+        let drives = self.drives_rows(th, cx);
+        self.row(
+            tr!("settings-files-page"),
+            Some(tr!("settings-files-page-detail").as_str()),
+            div()
+                .flex()
+                .flex_col()
+                .child(self.switch_row(
+                    "page-files-leave-out-small",
+                    tr!("settings-files-leave-out-small"),
+                    tr!("settings-files-leave-out-small-detail"),
+                    files.leave_out_small,
+                    Change::LeaveOutSmallPictures(!files.leave_out_small),
+                    th,
+                    cx,
+                ))
+                .child(limits)
+                .children(drives),
+            th,
+        )
+        .into_any_element()
+    }
+
+    /// Asks the daemon which Google and Microsoft accounts let Katna use
+    /// their drive, for Drives in Files.
+    fn read_drives(&mut self, cx: &mut Context<Self>) {
+        let google: Vec<(katna_core::AccountId, String)> = match self.mail.as_ref() {
+            Ok(mail) => self
+                .accounts
+                .iter()
+                .filter(|a| {
+                    matches!(
+                        mail.sign_in_provider(a.id),
+                        Some(
+                            katna_core::OAuthProvider::Google
+                                | katna_core::OAuthProvider::Microsoft
+                        )
+                    )
+                })
+                .map(|a| (a.id, a.address.clone()))
+                .collect(),
+            Err(_) => Vec::new(),
+        };
+        let Some(page) = &mut self.settings_page else {
+            return;
+        };
+        page.drives = google
+            .iter()
+            .map(|(id, address)| {
+                let known = page.drives.iter().find(|d| d.0 == *id).and_then(|d| d.2);
+                (*id, address.clone(), known)
+            })
+            .collect();
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        cx.spawn(async move |this, cx| {
+            let mut readable = Vec::new();
+            for (id, _) in google {
+                if let Ok(can) = crate::daemon::cloud_writable(&connection, id.0).await {
+                    readable.push((id, can));
+                }
+            }
+            this.update(cx, |this, cx| {
+                if let Some(page) = &mut this.settings_page {
+                    for (id, can) in readable {
+                        if let Some(drive) = page.drives.iter_mut().find(|d| d.0 == id) {
+                            drive.2 = Some(can);
+                        }
+                    }
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Signs a Google or Microsoft account in again, now allowing Katna to
+    /// use its drive.
+    fn allow_drive_in_files(&mut self, id: katna_core::AccountId, cx: &mut Context<Self>) {
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        let provider = if self.drive_is_onedrive(id) {
+            katna_core::OAuthProvider::Microsoft
+        } else {
+            katna_core::OAuthProvider::Google
+        };
+        let address = self
+            .accounts
+            .iter()
+            .find(|a| a.id == id)
+            .map(|a| a.address.clone())
+            .unwrap_or_default();
+        cx.spawn(async move |this, cx| {
+            let signed_in =
+                crate::daemon::sign_in(&connection, provider, Some(id.0), &address).await;
+            this.update(cx, |this, cx| {
+                if signed_in.is_err() {
+                    this.show_snackbar(tr!("files-drive-allow-failed"), None, cx);
+                }
+                this.read_drives(cx);
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Drives in Files: a switch per account's drive, with Allow while
+    /// the account's sign-in doesn't let Katna read it.
+    fn drives_rows(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let page = self.settings_page.as_ref()?;
+        if page.drives.is_empty() {
+            return None;
+        }
+        let off = &self.config.mail.files.drives_off;
+        let mut rows = div().mt(px(8.0)).flex().flex_col().child(
+            div()
+                .px(px(8.0))
+                .pt(px(8.0))
+                .flex()
+                .flex_col()
+                .child(
+                    div()
+                        .text_size(px(14.0))
+                        .child(tr!("settings-files-drives")),
+                )
+                .child(
+                    div()
+                        .text_size(px(12.0))
+                        .text_color(rgba(th.text_faint))
+                        .child(tr!("settings-files-drives-detail")),
+                ),
+        );
+        for (n, (id, address, readable)) in page.drives.iter().enumerate() {
+            let id = *id;
+            let on = !off.contains(&id.0);
+            let needs = *readable == Some(false);
+            let detail = if needs {
+                tr!("settings-files-drive-needs", address = address.as_str())
+            } else {
+                address.clone()
+            };
+            let allow = needs.then(|| {
+                outlined_button(("page-files-drive-allow", n), tr!("files-drive-allow"), th)
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.allow_drive_in_files(id, cx);
+                    }))
+                    .into_any_element()
+            });
+            let row = self
+                .page_control(
+                    crate::widgets::row(("page-files-drive", n), false, th),
+                    th,
+                    cx,
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.apply(Change::DriveInFiles(id.0, !on), cx)
+                }))
+                .child(self.drive_mark_of(id, 22.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(div().text_size(px(14.0)).child(self.drive_name(id)))
+                        .child(
+                            div()
+                                .truncate()
+                                .text_size(px(12.0))
+                                .text_color(rgba(th.text_faint))
+                                .child(detail),
+                        ),
+                )
+                .children(allow)
+                .child(div().with_spring(
+                    ("page-files-drive-switch", n),
+                    SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                        1.0
+                    } else {
+                        0.0
+                    }),
+                    {
+                        let th = *th;
+                        move |el, s: f32| el.child(crate::widgets::switch(s.clamp(0.0, 1.0), &th))
+                    },
+                ));
+            rows = rows.child(row);
+        }
+        Some(rows.into_any_element())
+    }
+
+    /// A small-picture limit typed or stepped: applied once typing pauses,
+    /// so the Files page is read again once, not at every key.
+    fn set_small_picture(&mut self, text: &str, change: fn(u32) -> Change, cx: &mut Context<Self>) {
+        let Ok(value) = text.trim().parse::<u32>() else {
+            return;
+        };
+        let task = cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(SAVE_DELAY).await;
+            this.update(cx, |this, cx| this.apply(change(value), cx))
+                .ok();
+        });
+        if let Some(page) = &mut self.settings_page {
+            page.save = Some(task);
+        } else {
+            task.detach();
+        }
+    }
+
     // Inbox
 
     fn inbox_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -1449,6 +2124,14 @@ impl MailWindow {
                 ),
                 th,
             ))
+            .when(on && self.shows_unified(), |d| {
+                d.child(self.row(
+                    tr!("settings-inbox-unified"),
+                    Some(&tr!("settings-inbox-unified-detail")),
+                    self.unified_tabs_choice(th, cx),
+                    th,
+                ))
+            })
             .when(on, |d| {
                 d.children(accounts.iter().enumerate().map(|(ix, account)| {
                     let provider = self.provider(account);
@@ -1469,7 +2152,7 @@ impl MailWindow {
                 }))
             })
             .when(accounts.is_empty() && on, |d| {
-                d.child(note(tr!("settings-inbox-no-accounts"), th))
+                d.child(self.quiet_note(tr!("settings-inbox-no-accounts"), th))
             })
             .into_any_element()
     }
@@ -1546,20 +2229,12 @@ impl MailWindow {
                             )
                         }))
                 })
-                .child(icon(
-                    if shown {
-                        "checkbox-checked"
-                    } else {
-                        "checkbox"
-                    },
-                    if first {
-                        th.text_faint
-                    } else if shown {
-                        th.accent
-                    } else {
-                        th.text_dim
-                    },
-                    20.0,
+                // Inbox is always shown: checked, and greyed out.
+                .child(crate::widgets::checkbox_colored(
+                    ("page-tab-box", ix * 10 + n),
+                    crate::widgets::Check::from(shown),
+                    if first { th.text_faint } else { th.accent },
+                    th,
                 ))
                 .child(icon(tab.icon, th.tabs[tab.color], 18.0))
                 .child(tab.label())
@@ -1581,6 +2256,39 @@ impl MailWindow {
                 )
                 .children(checks)
             })
+            .into_any_element()
+    }
+
+    /// The unified inbox's tabs, shared by every account.
+    fn unified_tabs_choice(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let current = match self.config.mail.unified_tabs {
+            TabStyle::Gmail => TabStyle::Auto,
+            style => style,
+        };
+        let styles = [
+            TabStyle::Auto,
+            TabStyle::Focused,
+            TabStyle::Zoho,
+            TabStyle::Off,
+        ];
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .children(styles.into_iter().enumerate().map(|(n, style)| {
+                self.choice_row(
+                    ("page-unified-tab-style", n),
+                    style_name(style),
+                    current == style,
+                    th,
+                    cx,
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.config.mail.unified_tabs = style;
+                    this.save_config();
+                    this.relist(cx);
+                }))
+            }))
             .into_any_element()
     }
 
@@ -1606,12 +2314,19 @@ impl MailWindow {
     // Signatures
 
     fn edit_signature(&mut self, id: Option<u32>, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(page) = &mut self.settings_page {
+            page.pasting = None;
+            page.importing = None;
+            page.layout_confirm = None;
+        }
         let Some(signature) = self.config.sending.signature(id).cloned() else {
             if let Some(page) = &mut self.settings_page {
                 page.editing = None;
+                page.layout = None;
             }
             return;
         };
+        self.open_layout_form(&signature, window, cx);
         let accent = rgba(self.theme(window).accent).into();
         let name = cx.new(|cx| {
             let mut input = TextInput::new(tr!("settings-compose-signature-name"), cx);
@@ -1829,15 +2544,22 @@ impl MailWindow {
             self.row(
                 tr!("settings-compose-suggestions"),
                 Some(&tr!("settings-compose-suggestions-detail")),
-                self.switch_row(
-                    "page-suggestions",
-                    tr!("settings-compose-suggestions-on"),
-                    tr!("settings-compose-suggestions-on-detail"),
-                    sending.writing_suggestions,
-                    Change::WritingSuggestions(!sending.writing_suggestions),
-                    th,
-                    cx,
-                ),
+                div()
+                    .flex()
+                    .flex_col()
+                    .child(self.switch_row(
+                        "page-suggestions",
+                        tr!("settings-compose-suggestions-on"),
+                        tr!("settings-compose-suggestions-on-detail"),
+                        sending.writing_suggestions,
+                        Change::WritingSuggestions(!sending.writing_suggestions),
+                        th,
+                        cx,
+                    ))
+                    .when(
+                        self.config.ai.source != katna_core::config::AiSource::Off,
+                        |d| d.child(self.ai_suggestion_switches(th, cx)),
+                    ),
                 th,
             ),
         ]
@@ -1845,81 +2567,140 @@ impl MailWindow {
 
     fn signatures_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let sending_rows = self.sending_rows(th, cx);
+        let reply_row = self.row(
+            tr!("settings-general-reply-button"),
+            None,
+            self.switch_row(
+                "page-reply-all",
+                tr!("settings-general-reply-all"),
+                tr!("settings-general-reply-all-detail"),
+                self.config.mail.reply_all,
+                Change::ReplyAll(!self.config.mail.reply_all),
+                th,
+                cx,
+            ),
+            th,
+        );
+        let undo_row = self.row(
+            tr!("settings-general-sending"),
+            Some(&tr!("settings-general-sending-detail")),
+            div()
+                .flex()
+                .flex_col()
+                .gap(px(8.0))
+                .child(self.undo_send_choice(th, cx))
+                .into_any_element(),
+            th,
+        );
         let tools = self.render_signature_tools(th, cx);
+        let pasting = self
+            .paste_html_panel(th, cx)
+            .or_else(|| self.import_signatures_panel(th, cx));
+        let pasting_open = pasting.is_some();
+        let editing_id = self
+            .settings_page
+            .as_ref()
+            .and_then(|p| p.editing.as_ref())
+            .map(|e| e.id);
+        let layout_tiles = editing_id
+            .filter(|_| !pasting_open)
+            .map(|id| self.layout_tiles(id, th, cx));
+        let layout_form = self.layout_form(th, cx);
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
-        let list =
-            sending.signatures.iter().map(|s| {
-                let on = editing.is_some_and(|e| e.id == s.id);
-                let id = s.id;
+        let list = sending.signatures.iter().map(|s| {
+            let on = editing.is_some_and(|e| e.id == s.id);
+            let id = s.id;
+            self.page_control(
+                crate::widgets::row(("page-signature", id as usize), on, th),
+                th,
+                cx,
+            )
+            .px(px(katna_ui::tokens::space::S4))
+            .on_click(
+                cx.listener(move |this, _, window, cx| this.edit_signature(Some(id), window, cx)),
+            )
+            .child(
                 div()
-                    .id(("page-signature", id as usize))
-                    .map(|d| self.page_control(d, th, cx))
-                    .relative()
-                    .overflow_hidden()
-                    .h(px(40.0))
-                    .px(px(12.0))
+                    .min_w_0()
+                    .py(px(katna_ui::tokens::space::S2))
                     .flex()
-                    .items_center()
-                    .rounded(px(8.0))
-                    .text_size(px(14.0))
-                    .bg(rgba(if on { th.nav_selected } else { 0 }))
-                    .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-                    .cursor_pointer()
-                    .hover(|d| d.bg(rgba(if on { th.nav_selected } else { th.hover })))
-                    .on_click(cx.listener(move |this, _, window, cx| {
-                        this.edit_signature(Some(id), window, cx)
-                    }))
-                    .child(
-                        Ripple::new(("page-signature-ripple", id as usize), rgba(th.ripple))
-                            .rounded(8.0),
-                    )
+                    .flex_col()
                     .child(div().truncate().child(if s.name.trim().is_empty() {
                         tr!("settings-compose-untitled")
                     } else {
                         s.name.clone()
                     }))
-            });
-        let editor = editing.map(|e| {
+                    .child(
+                        div()
+                            .truncate()
+                            .text_size(px(katna_ui::tokens::text::CAPTION))
+                            .text_color(rgba(th.text_dim))
+                            .child(signature_layout::kind(s)),
+                    ),
+            )
+        });
+        let editor = editing.filter(|_| !pasting_open).map(|e| {
             let id = e.id;
-            let name_focus = e.name.focus_handle(cx);
+            let signature = sending.signature(Some(id));
+            let from_layout = signature.is_some_and(|s| s.layout.is_some());
+            let designed = !from_layout
+                && signature.is_some_and(|s| s.html.contains(katna_ui::rich::html::HTML_START));
             let text_focus = e.text.focus_handle(cx);
+            let form = layout_form.filter(|_| from_layout);
+            let free = form.is_none().then(|| {
+                field("page-signature-text", &text_focus, th).child(
+                    div()
+                        .id("page-signature-text-scroll")
+                        .min_h(px(138.0))
+                        .max_h(px(318.0))
+                        .overflow_y_scroll()
+                        .py(px(10.0))
+                        .line_height(px(20.0))
+                        .child(e.text.clone()),
+                )
+            });
             control_column(240.0)
                 .flex()
                 .flex_col()
                 .gap(px(8.0))
+                .child(line_field("page-signature-name", &e.name, th, cx))
+                .children(layout_tiles)
+                .children(free)
+                .children(form)
+                .children(tools.filter(|_| !from_layout))
                 .child(
-                    field_box("page-signature-name", th)
-                        .h(px(40.0))
+                    div()
                         .flex()
-                        .items_center()
-                        .on_click(move |_, window, cx| window.focus(&name_focus, cx))
-                        .child(div().flex_1().child(e.name.clone())),
-                )
-                .child(
-                    field_box("page-signature-text", th)
-                        .min_h(px(140.0))
-                        .max_h(px(320.0))
-                        .overflow_y_scroll()
-                        .py(px(10.0))
-                        .line_height(px(20.0))
-                        .cursor_text()
-                        .on_click(move |_, window, cx| window.focus(&text_focus, cx))
-                        .child(e.text.clone()),
-                )
-                .children(tools)
-                .child(
-                    div().flex().flex_row().child(div().flex_1()).child(
-                        outlined_button(
-                            "page-signature-delete",
-                            tr!("settings-compose-signature-delete"),
-                            th,
-                        )
-                        .map(|d| self.page_control(d, th, cx))
-                        .on_click(cx.listener(
-                            move |this, _, window, cx| this.delete_signature(id, window, cx),
-                        )),
-                    ),
+                        .flex_row()
+                        .gap(px(katna_ui::tokens::space::S3))
+                        .child(div().flex_1())
+                        .when(designed, |d| {
+                            d.child(
+                                outlined_button(
+                                    "page-signature-edit-html",
+                                    tr!("settings-compose-signature-edit-html"),
+                                    th,
+                                )
+                                .map(|d| self.page_control(d, th, cx))
+                                .on_click(cx.listener(
+                                    move |this, _, window, cx| {
+                                        this.open_paste_html(Some(id), window, cx)
+                                    },
+                                )),
+                            )
+                        })
+                        .child(
+                            outlined_button(
+                                "page-signature-delete",
+                                tr!("settings-compose-signature-delete"),
+                                th,
+                            )
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(cx.listener(
+                                move |this, _, window, cx| this.delete_signature(id, window, cx),
+                            )),
+                        ),
                 )
         });
         let defaults = |replies: bool| {
@@ -1955,6 +2736,8 @@ impl MailWindow {
         div()
             .flex()
             .flex_col()
+            .child(reply_row)
+            .child(undo_row)
             .children(sending_rows)
             .child(
                 self.row(
@@ -1983,11 +2766,42 @@ impl MailWindow {
                                     .on_click(cx.listener(
                                         |this, _, window, cx| this.new_signature(window, cx),
                                     )),
+                                )
+                                .child(
+                                    outlined_button(
+                                        "page-signature-import",
+                                        tr!("settings-compose-signature-import"),
+                                        th,
+                                    )
+                                    .map(|d| self.page_control(d, th, cx))
+                                    .mt(px(katna_ui::tokens::space::S2))
+                                    .justify_center()
+                                    .on_click(
+                                        cx.listener(|this, _, _, cx| {
+                                            this.open_import_signatures(cx)
+                                        }),
+                                    ),
+                                )
+                                .child(
+                                    outlined_button(
+                                        "page-signature-paste-html",
+                                        tr!("settings-compose-signature-paste-html"),
+                                        th,
+                                    )
+                                    .map(|d| self.page_control(d, th, cx))
+                                    .mt(px(katna_ui::tokens::space::S2))
+                                    .justify_center()
+                                    .on_click(cx.listener(
+                                        |this, _, window, cx| {
+                                            this.open_paste_html(None, window, cx)
+                                        },
+                                    )),
                                 ),
                         )
+                        .children(pasting)
                         .children(editor)
-                        .when(sending.signatures.is_empty(), |d| {
-                            d.child(note(tr!("settings-compose-no-signatures"), th))
+                        .when(sending.signatures.is_empty() && !pasting_open, |d| {
+                            d.child(self.quiet_note(tr!("settings-compose-no-signatures"), th))
                         }),
                     th,
                 ),
@@ -2121,6 +2935,9 @@ impl MailWindow {
             .as_ref()
             .and_then(|p| p.recording.as_ref());
         let changed = !config.keys.is_empty();
+        let phone = self.layout.shape.phone > 0.5;
+        // Faint lines between the shortcuts, so the keys stand out.
+        let row_line = th.faint_line(0.35);
         let groups = Group::ALL.map(|group| {
             let rows =
                 SHORTCUTS
@@ -2160,6 +2977,8 @@ impl MailWindow {
                         });
                         let adding = recording_here.is_some_and(|r| r.replace.is_none());
                         div()
+                            .id(("shortcut-row", n))
+                            .group("shortcut-row")
                             .relative()
                             .children(self.flash_mark(&s.title(), th))
                             .min_h(px(44.0))
@@ -2171,7 +2990,7 @@ impl MailWindow {
                             .gap_x(px(12.0))
                             .gap_y(px(4.0))
                             .border_b_1()
-                            .border_color(rgba(th.divider))
+                            .border_color(rgba(row_line))
                             .child(
                                 div()
                                     .w(px(SHORTCUT_LABEL_WIDTH))
@@ -2203,6 +3022,14 @@ impl MailWindow {
                                 icon_button(("key-add", n), "add", 18.0, th)
                                     .map(|d| self.page_control(d, th, cx))
                                     .size(px(32.0))
+                                    // Shown on the row the pointer is over, or
+                                    // while it has the keyboard focus; always
+                                    // on a phone, which has no pointer.
+                                    .when(!adding && !phone, |d| {
+                                        d.opacity(0.0)
+                                            .group_hover("shortcut-row", |s| s.opacity(1.0))
+                                            .focus(|s| s.opacity(1.0))
+                                    })
                                     .on_click(cx.listener(move |this, _, _, cx| {
                                         this.start_recording(name, None, cx)
                                     })),
@@ -2521,6 +3348,41 @@ impl MailWindow {
 /// The offline mail choices, in days (0 for all mail).
 const OFFLINE_CHOICES: [u32; 5] = [7, 30, 90, 365, 0];
 
+/// Where the label of a [`MailWindow::radio_row`] starts: the row's
+/// padding, the radio and the gap after it.
+const RADIO_LABEL: f32 = space::S3 + 20.0 + 14.0;
+
+/// Katna's own animation speeds, in percent of normal length.
+const MOTION_SPEEDS: [u16; 5] = [50, 75, 100, 150, 200];
+
+/// The one of [`MOTION_SPEEDS`] closest to `factor` (1 is normal).
+fn nearest_speed(factor: f32) -> u16 {
+    let log = |f: f32| f.max(0.01).ln();
+    MOTION_SPEEDS
+        .into_iter()
+        .min_by(|a, b| {
+            let da = (log(f32::from(*a) / 100.0) - log(factor)).abs();
+            let db = (log(f32::from(*b) / 100.0) - log(factor)).abs();
+            da.total_cmp(&db)
+        })
+        .unwrap_or(100)
+}
+
+/// The name of the speed closest to `factor`.
+fn speed_name(factor: f32) -> String {
+    speed_label(nearest_speed(factor))
+}
+
+fn speed_label(percent: u16) -> String {
+    match percent {
+        50 => tr!("settings-appearance-motion-speed-faster"),
+        75 => tr!("settings-appearance-motion-speed-fast"),
+        150 => tr!("settings-appearance-motion-speed-slow"),
+        200 => tr!("settings-appearance-motion-speed-slower"),
+        _ => tr!("settings-appearance-motion-speed-normal"),
+    }
+}
+
 /// The name of an offline mail choice.
 fn offline_label(days: u32) -> String {
     match days {
@@ -2552,6 +3414,7 @@ pub(super) fn setting_row(
     content: impl IntoElement,
     info: &Rc<RefCell<Option<SharedString>>>,
     flash: Option<AnyElement>,
+    words: impl FnOnce(SharedString, Option<SharedString>) -> (Div, Option<Div>),
     th: &Theme,
 ) -> Div {
     // One word, such as an address, is shown as it is: it isn't a
@@ -2595,6 +3458,8 @@ pub(super) fn setting_row(
     } else {
         detail
     };
+    // The name and description, drawn so they can be selected.
+    let (name, shown) = words(label.clone(), shown);
     div()
         .relative()
         .children(flash)
@@ -2622,20 +3487,16 @@ pub(super) fn setting_row(
                         // account's, wraps inside it rather than running
                         // under the controls.
                         .child(
-                            div()
-                                .min_w_0()
+                            name.min_w_0()
                                 .text_size(px(14.0))
-                                .font_weight(FontWeight::MEDIUM)
-                                .child(label),
+                                .font_weight(FontWeight::MEDIUM),
                         )
                         .children(button),
                 )
                 .children(shown.map(|d| {
-                    div()
-                        .text_size(px(12.0))
+                    d.text_size(px(12.0))
                         .line_height(px(17.0))
                         .text_color(rgba(th.text_faint))
-                        .child(d)
                 })),
         )
         .child(control_column(CONTROL_WIDTH).child(content))
@@ -2654,52 +3515,116 @@ fn control_column(width: f32) -> Div {
     div().flex_basis(px(width)).flex_grow(1000.0).min_w_0()
 }
 
-fn note(text: String, th: &Theme) -> Div {
-    div()
-        .py(px(12.0))
-        .text_size(px(14.0))
-        .text_color(rgba(th.text_faint))
-        .child(text)
+impl MailWindow {
+    /// A quiet line where a list is empty, which can be selected.
+    pub(super) fn quiet_note(&self, text: String, th: &Theme) -> Div {
+        div()
+            .py(px(12.0))
+            .text_size(px(14.0))
+            .text_color(rgba(th.text_faint))
+            .child(self.copyable(text, th))
+    }
 }
 
-fn field_box(id: &'static str, th: &Theme) -> Stateful<Div> {
-    div()
-        .id(id)
-        .px(px(12.0))
-        .rounded(px(8.0))
-        .border_1()
-        .border_color(rgba(th.divider))
-        .text_size(px(14.0))
+/// A whole number from `range` in a field: Up and Down step it, as do the
+/// arrows at its side.
+pub(super) fn number_input(
+    value: u32,
+    range: RangeInclusive<u32>,
+    accent: gpui::Hsla,
+    cx: &mut Context<MailWindow>,
+) -> Entity<TextInput> {
+    cx.new(|cx| {
+        let mut input = TextInput::new("", cx);
+        input.set_text(value.to_string(), cx);
+        input.set_accent(accent);
+        input.set_stepper(Some(Arc::new(move |text: &str, _, by| {
+            let text = stepped(text, by, &range).to_string();
+            let end = text.len();
+            Some((text, end))
+        })));
+        input
+    })
 }
 
-fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> Stateful<Div> {
-    div()
-        .id(id)
-        .px(px(12.0))
-        .h(px(30.0))
+/// `text`'s number one up (`by > 0`) or down, kept in `range`.
+fn stepped(text: &str, by: i32, range: &RangeInclusive<u32>) -> u32 {
+    let value = text.trim().parse::<u32>().unwrap_or(*range.start());
+    let value = if by > 0 {
+        value.saturating_add(1)
+    } else {
+        value.saturating_sub(1)
+    };
+    value.clamp(*range.start(), *range.end())
+}
+
+/// The field of a [`number_input`], with its up and down arrows.
+pub(super) fn number_field(
+    id: &'static str,
+    input: &Entity<TextInput>,
+    range: RangeInclusive<u32>,
+    th: &Theme,
+    cx: &mut Context<MailWindow>,
+) -> Stateful<Div> {
+    let focus = input.focus_handle(cx);
+    let arrow = |which: (&'static str, usize), name: &'static str, by: i32, tip_text: String| {
+        let input = input.clone();
+        let range = range.clone();
+        div()
+            .id(which)
+            .flex_1()
+            .w_full()
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded(px(3.0))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .tooltip(tip(tip_text, th))
+            .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_click(move |_, _, cx| {
+                input.update(cx, |input, cx| {
+                    let value = stepped(input.text(), by, &range);
+                    input.set_text(value.to_string(), cx);
+                });
+            })
+            .child(icon(name, th.text_faint, 9.0))
+    };
+    let (up, down) = ((id, 0), (id, 1));
+    field(id, &focus, th)
+        .w(px(64.0))
+        .h(px(32.0))
+        .pl(px(10.0))
+        .pr(px(3.0))
         .flex()
         .items_center()
-        .rounded(px(8.0))
-        .border_1()
-        .border_color(rgba(if on { th.nav_selected } else { th.divider }))
-        .bg(rgba(if on { th.nav_selected } else { th.surface }))
-        .text_color(rgba(if on {
-            th.nav_selected_text
-        } else {
-            th.text_dim
-        }))
-        .text_size(px(13.0))
-        .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
-        // A long address or name is cut short with "…" rather than
-        // running past the row.
-        .max_w_full()
-        .min_w_0()
-        .child(div().truncate().child(if label.trim().is_empty() {
-            tr!("settings-compose-untitled")
-        } else {
-            label
-        }))
+        .gap(px(2.0))
+        .child(div().flex_1().min_w_0().child(input.clone()))
+        .child(
+            div()
+                .h_full()
+                .py(px(3.0))
+                .w(px(14.0))
+                .flex()
+                .flex_col()
+                .child(arrow(up, "chevron-up", 1, tr!("settings-files-more-tip")))
+                .child(arrow(
+                    down,
+                    "chevron-down",
+                    -1,
+                    tr!("settings-files-less-tip"),
+                )),
+        )
+}
+
+/// A [`choice_chip`] whose blank name reads "Untitled".
+fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> Stateful<Div> {
+    let label = if label.trim().is_empty() {
+        tr!("settings-compose-untitled")
+    } else {
+        label
+    };
+    choice_chip(id, label, on, th)
 }
 
 /// A key as a keycap; `off` when single keys are turned off.
@@ -2715,7 +3640,7 @@ fn key_chip(id: impl Into<gpui::ElementId>, label: String, off: bool, th: &Theme
         .items_center()
         .rounded(px(6.0))
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .bg(rgba(th.page))
         .text_size(px(13.0))
         .font_weight(FontWeight::MEDIUM)
@@ -2737,9 +3662,25 @@ fn recording_chip(recording: Option<&Recording>, th: &Theme) -> Div {
         .flex()
         .items_center()
         .rounded(px(6.0))
-        .border_2()
+        .border_px(2.0)
         .border_color(rgba(th.accent))
         .text_size(px(13.0))
         .text_color(rgba(th.accent))
         .child(text)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn number_fields_step_within_their_range() {
+        let range = FilesPage::KB_RANGE;
+        assert_eq!(stepped("12", 1, &range), 13);
+        assert_eq!(stepped("12", -1, &range), 11);
+        assert_eq!(stepped("1", -1, &range), 1);
+        assert_eq!(stepped("1024", 1, &range), 1024);
+        assert_eq!(stepped("", 1, &range), 2);
+        assert_eq!(stepped("5000", -1, &range), 1024);
+    }
 }

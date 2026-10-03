@@ -1669,3 +1669,1480 @@ tekenen, in de kleur die je kiest. Maak ongedaan met Ctrl+Z, wis een
 aantekening met de gum en sla daarna een kopie met aantekeningen op. De
 oorspronkelijke bijlage blijft zoals hij was.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Waarom een account geen agenda’s heeft"
+text = """
+Als de agenda’s van een account niet verschijnen, zegt Agenda nu wat de
+server antwoordde, en “Opnieuw proberen” zoekt meteen opnieuw. Een
+Gmail- of Outlook-account dat met een wachtwoord is toegevoegd, biedt
+aan om aan te melden met Google of Microsoft, wat hun agenda’s nodig
+hebben.
+"""
+
+["2026-09-29-1610-one-checkbox"]
+title = "Selectievakjes die afvinken"
+text = """
+Elk selectievakje in Katna Mail is nu even groot als de ronde knoppen
+ernaast. Het vinkje tekent zich wanneer je het aanvinkt en veegt weg
+wanneer je het uitvinkt, in Instellingen, de e-maillijst, Agenda,
+Contacten, Notities en dialoogvensters.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Een korter rechtsklikmenu dat altijd past"
+text = """
+Het rechtsklikmenu van de e-maillijst houdt de dagelijkse acties
+bovenaan en zet de rest onder “Opvolgen” (taken, notities,
+vergaderingen, gesprekken) en “Meer” (spam, belangrijk, vastzetten). Het
+opent waar je klikt en blijft binnen het venster; in een laag of smal
+venster opent een submenu op de plek van het menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Waarom een account geen contacten heeft"
+text = """
+Als de contacten van een account niet verschijnen, zegt Contacten nu wat
+de server antwoordde, en “Opnieuw proberen” zoekt meteen opnieuw. Een
+Gmail- of Outlook-account dat met een wachtwoord is toegevoegd, biedt
+aan om aan te melden met Google of Microsoft, wat hun contacten nodig
+hebben.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Het zoekvak laat zien wanneer het actief is"
+text = """
+Het zoekvak bovenaan krijgt een rand in de accentkleur terwijl je erin
+typt, net als elk ander veld, en de hint Ctrl+F gaat opzij totdat je het
+leeg laat.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Elke takenlijst in beeld"
+text = """
+“Alle taken” toont nu zoveel lijsten naast elkaar als in het venster
+passen, met meer rijen eronder, zodat je elke lijst kunt bereiken. Een
+nieuwe lijst schuift in beeld zodra je hem maakt.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Soepel bladeren tussen bijlagen"
+text = """
+Naar de volgende of vorige bijlage gaan in de viewer met de pijlen
+flikkert niet meer. De viewer blijft open en het volgende bestand neemt
+de plaats van het vorige in zodra het klaar is.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Notities op volgorde slepen"
+text = """
+Sleep een notitie op het bord van Notities om hem te verplaatsen, zoals
+in Keep. De andere notities schuiven opzij om plaats te maken, en hij
+blijft waar je hem loslaat. Ctrl+Z zet hem terug. Kaarten sluiten nu
+netjes aan in hun kolommen, zonder gaten onder korte notities.
+"""
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Rechtsklikken in de Agenda"
+text = """
+Klik met rechts op een vrij tijdstip of een vrije dag om daar een afspraak,
+focustijd of niet op kantoor toe te voegen. Klik met rechts op een afspraak
+om hem te bewerken, dupliceren, verwijderen, beantwoorden, deel te nemen,
+de gasten te e-mailen, een kleur te geven of naar een andere agenda te
+verplaatsen, en op een taak om hem af te vinken, een ster te geven, een
+andere dag te geven of te verwijderen. Ongedaan maken draait een wijziging
+terug.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Notities en tekst op pdf's"
+text = """
+Aantekeningen maken op een pdf kan nu ook met plaknotities en tekstvakken:
+klik op de pagina, typ en druk op Ctrl+Enter. Wijs een notitie aan om hem te
+lezen, of klik erop om hem te wijzigen. Beantwoorden stuurt je kopie met
+aantekeningen meteen terug in een antwoord op het bericht.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Sleep taken waar je ze wilt hebben"
+text = """
+Sleep een taak omhoog of omlaag in de lijst, of naar een andere lijst, en de
+taken daar schuiven opzij om te laten zien waar hij terechtkomt. Google
+Tasks bewaart de nieuwe volgorde ook op je telefoon, en Ongedaan maken zet
+de taak terug.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Een taak toevoegen vanuit de agenda"
+text = """
+De kaart voor een nieuwe afspraak heeft een tabblad Taak, zoals in Google
+Agenda. Klik op een tijd, kies Taak, en de titel, dag en tijd worden een
+taak in de lijst die je kiest, met een beschrijving als je wilt.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Een taak toevoegen vanuit de agenda"
+text = """
+Klik met rechts op een vrij tijdstip of een vrije dag in de Agenda en kies
+Taak om daar een taak toe te voegen. De kaart voor een nieuwe afspraak
+opent op het tabblad Taak, met die dag en tijd al ingevuld.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Agenda’s opnieuw zoeken na een trage server"
+text = """
+Als de agendaserver van een account niet op tijd antwoordt, zegt de Agenda
+dat nu, en of de verbinding of de beveiligde handshake bleef hangen, in
+plaats van ‘Geen agenda’s gevonden’. Hij probeert het binnen enkele minuten
+opnieuw in plaats van na uren.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Bestanden van een contact tonen hun download"
+text = """
+Een bestand in het contactpaneel waarvan de e-mail nog niet op deze
+computer staat, loopt nu vol terwijl het wordt gedownload, zoals bijlagen
+in de lijst doen, en gaat daarna open.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "E-mail van een nieuw account verschijnt terwijl hij binnenkomt"
+text = """
+Nadat je een account hebt toegevoegd, wordt eerst de Inbox gedownload en
+loopt die vol terwijl je kijkt, in plaats van op ‘Je e-mail ophalen…’ te
+blijven staan tot elke map klaar is. Andere mappen vullen zich op dezelfde
+manier.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Selectievakjes op één lijn met de pictogrammen"
+text = """
+Selectievakjes zijn iets kleiner, even groot als de ster- en
+labelpictogrammen ernaast in de e-maillijst. Ze zijn net zo makkelijk aan
+te klikken en het vinkje tekent zich nog steeds.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho-agenda’s via Zoho’s eigen verbinding"
+text = """
+Zoho levert agenda’s aan andere apps via een poort die veel netwerken
+blokkeren, dus na “Aanmelden met Zoho” leest Agenda ze in plaats daarvan
+via Zoho’s eigen API. Je Zoho-afspraken staan naast je andere agenda’s;
+ze vanuit Katna wijzigen komt later.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho-taken"
+text = """
+Kies “Aanmelden met Zoho” bij een Zoho-account en de taken uit Zoho ToDo
+verschijnen in Taken, in beide richtingen: voeg in Katna een taak toe,
+bewerk, vink af of verwijder hem, en hij verandert ook in Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Vinkjes in het midden bij elke grootte"
+text = """
+Met Instellingen > Weergave > Schaal boven 100% stond het vinkje van een
+selectievakje iets naar linksboven. De randen van selectievakjes en
+ronde knoppen groeien nu mee met de schaal, zodat het vinkje bij elke
+grootte in het midden staat.
+"""
+
+["2026-09-30-0230-edges-follow-scaling"]
+title = "Randen groeien mee met de schaal"
+text = """
+Met Schaal in Instellingen > Weergave boven of onder 100% groeien en
+krimpen de accentrand van het actieve zoekvak en velden, en de randen van
+keuzekaarten en taakringen, nu mee met al het andere in plaats van dun te
+blijven.
+"""
+
+["2026-09-30-0326-google-sign-in-network"]
+title = "Aanmelden met Google op elk netwerk"
+text = """
+Aanmelden met Google stopt niet meer met ‘peer closed connection’ op
+netwerken die de verbinding met Google vroeg verbreken. Als je Gmail
+uitvinkt op de pagina van Google, zegt Katna dat nu in plaats van later
+te mislukken.
+"""
+
+["2026-09-30-0504-google-api-turned-off"]
+title = "Zegt welke Google-API uit staat"
+text = """
+Als Google een API voor Katna heeft uitgezet, zeggen Contacten, Agenda,
+Taken en Drive-bestanden nu in een korte regel welke, met een knop
+Aanzetten die de pagina van Google ervoor opent, in plaats van de kale
+foutmelding van Google.
+"""
+
+["2026-09-30-0507-newest-mail-first"]
+title = "Nieuwste e-mail eerst"
+text = """
+Als je een account toevoegt, downloadt Katna Mail nu eerst je recentste
+e-mail en werkt dan terug naar oudere e-mail, zodat de berichten van
+vandaag meteen bovenaan de inbox staan. Wordt de download onderbroken,
+dan haalt hij de oudere e-mail de volgende keer op.
+"""
+
+["2026-09-30-0601-keyring-at-login"]
+title = "Wacht bij het aanmelden op je portefeuille"
+text = """
+Als KWallet of GNOME Keyring nog vergrendeld is wanneer Katna start en
+het ontgrendelvenster gesloten is, tonen je accounts geen verkeerd
+wachtwoord meer. Ze wachten en beginnen vanzelf te synchroniseren zodra
+je de portefeuille ontgrendelt, zonder Katna af te sluiten.
+Synchroniseren vraagt nu opnieuw om hem te ontgrendelen.
+"""
+
+["2026-09-30-0606-pdf-rotate-and-top-bar"]
+title = "Pdf-pagina's draaien"
+text = """
+De pdf-viewer kan pagina's nu met de klok mee of tegen de klok in draaien
+(Ctrl+R en Ctrl+Shift+R), en een kopie met aantekeningen wordt bewaard
+zoals je hem draaide. Het paginanummer en de zoom staan nu in de bovenbalk,
+zodat niets de pagina bedekt.
+"""
+
+["2026-09-30-0610-calendar-events-stay-put"]
+title = "Afspraken blijven waar ze staan"
+text = """
+Na een klik op een afspraak of taak in de Agenda en daarna een andere
+weergave volgt hij de aanwijzer niet meer. Een afspraak beweegt nu alleen
+terwijl je de knop ingedrukt houdt en sleept, en een andere weergave of
+pagina, Esc of het openen van zijn kaart zet hem ongewijzigd terug.
+"""
+
+["2026-09-30-0620-checkbox-partial-centred"]
+title = "Half aangevinkte vakjes zien er gelijkmatig uit"
+text = """
+Als maar een deel van de berichten geselecteerd is, heeft het vierkantje
+in het vak Alles selecteren nu aan elke kant dezelfde ruimte, bij elke
+schaal van de interface.
+"""
+
+["2026-09-30-0632-year-view-day-peek"]
+title = "De plannen van een dag zien vanuit de Jaarweergave"
+text = """
+Laat in de Jaarweergave van de Agenda de aanwijzer rusten op een dag met
+een stip om de afspraken en taken ervan in een klein venster ernaast te
+zien, elk met een pictogram dat zegt wat het is en hoe laat. Klik erop om
+het te openen, of op de naam van de dag om de dag te openen. Op een
+telefoon tik je op de dag.
+"""
+
+["2026-09-30-0650-notification-opens-own-window"]
+title = "Meldingen openen de e-mail op de voorgrond"
+text = """
+Een klik op een melding van nieuwe e-mail opent die e-mail in een eigen
+venster, op de voorgrond, wat Katna op dat moment ook toont. Allen
+beantwoorden opent hem met het antwoord klaar om te typen. Archiveren
+ruimt de e-mail op zonder iets te openen en zegt dat in een korte melding
+met Ongedaan maken.
+"""
+
+["2026-09-30-0700-event-card-join-any-call"]
+title = "Deelnemen aan Teams- en Zoom-gesprekken vanuit de Agenda"
+text = """
+De kaart van een afspraak vindt het gesprek nu in de beschrijving of de
+locatie, zodat een uitnodiging voor Microsoft Teams, Zoom, Webex, Jitsi of
+Google Meet bovenaan een knop ‘Deelnemen met’ krijgt. Webadressen in de
+beschrijving zijn links, de regels met liggende streepjes zijn weg, en
+Ga je? blijft onderaan terwijl de details scrollen.
+"""
+
+["2026-09-30-0715-click-away-closes-viewer"]
+title = "Klik ernaast om te sluiten"
+text = """
+Klik op de gedimde ruimte rond een bijlage om de viewer te sluiten, in
+plaats van naar de terugknop te grijpen. Klikken op de pagina zelf
+selecteert nog steeds tekst en maakt aantekeningen zoals voorheen.
+"""
+
+["2026-09-30-0729-add-account-and-pop3"]
+title = "Een nieuw Account toevoegen, en POP3"
+text = """
+Een account toevoegen begint met je provider: Google, Yahoo, iCloud, Zoho,
+Fastmail, GMX, Yandex of een andere. Katna zegt eerst wat de provider
+nodig heeft, toont elke stap terwijl hij verbinding maakt en eindigt met
+wat hij heeft ingesteld. POP3-accounts werken ook, en in Instellingen >
+Accounts kies je hoe lang hun e-mail op de server blijft.
+"""
+
+["2026-09-30-0802-ctrl-wheel-zoom"]
+title = "Zoomen met Ctrl en het wieltje"
+text = """
+Houd in de bijlageviewer Ctrl ingedrukt en draai aan het muiswiel om in
+en uit te zoomen rond de aanwijzer, of knijp op een touchpad. Het werkt
+voor pdf's, afbeeldingen, tekstbestanden, spreadsheets en documenten.
+"""
+
+["2026-09-30-0817-event-open-the-mail"]
+title = "De e-mail achter een afspraak openen"
+text = """
+Afspraken die Gmail van een e-mail maakte, zoals treinen, vluchten en
+hotels, krijgen een knop De e-mail openen op hun kaart. Die opent de
+e-mail in Katna, of in Gmail als Katna hem niet heeft. Een taak die van
+een e-mail is gemaakt, opent zijn e-mail ook vanaf zijn kaart in de
+Agenda, en Vergadernotities maken opent zonder te knipperen.
+"""
+
+["2026-09-30-0843-calendar-side-panel-menus"]
+title = "Agenda's beheren vanuit het zijpaneel"
+text = """
+Klik met rechts op een agenda in het zijpaneel van de Agenda om alleen
+die te tonen, de kleur te wijzigen, de naam te wijzigen of hem te
+verwijderen. Klik met rechts op de naam van een account om een nieuwe
+agenda in dat account te maken of al zijn agenda's te tonen en te
+verbergen. Wijzigingen gaan naar je e-maildienst, dus ze verschijnen
+overal waar je die gebruikt.
+"""
+
+["2026-09-30-1010-unread-list-keeps-open-mail"]
+title = "Ongelezen e-mail blijft open"
+text = """
+Een gesprek openen in Alle accounts > Ongelezen sluit het niet meer
+meteen. Lezen markeert het als gelezen, en het blijft in de lijst tot je
+het sluit of een ander opent.
+"""
+
+["2026-09-30-1045-tracked-mail-arrives"]
+title = "Gevolgde e-mail komt weer aan"
+text = """
+E-mail die met tracking aan werd verzonden, kon in Verzonden staan zonder
+iemand te bereiken. Hij gaat nu naar elke ontvanger. E-mail die zo
+verloren is gegaan, moet opnieuw worden verzonden.
+"""
+
+["2026-09-30-1114-no-checking-pill"]
+title = "Geen controlemelding meer"
+text = """
+‘Controleren op nieuwe e-mail…’ verschijnt niet meer boven de lijst. De
+draaiende pijlen op de vernieuwknop en bij de inbox van elk account laten
+al zien dat er op e-mail wordt gecontroleerd, en een mislukte controle
+zegt nog steeds wat er misging.
+"""
+
+["2026-09-30-1300-windows-sign-in-and-domains"]
+title = "Aanmelden met Google op Windows"
+text = """
+Katna voor Windows biedt nu Aanmelden met Google en Zoho, net als op
+Linux, en weet wie de e-mail op je eigen domein host, zoals een Google
+Workspace-adres, als je het account toevoegt.
+"""
+
+["2026-09-30-1511-mail-tables"]
+title = "Tabellen in e-mail goed leesbaar"
+text = """
+Tabellen in e-mail, zoals de takenlijst in een melding van GitHub
+Actions, houden hun kolommen naast elkaar en lijnen ze van rij tot rij
+uit, in plaats van een kop letter voor letter over regels te breken.
+Scheidingslijnen tussen delen van een bericht worden nu ook getoond.
+"""
+
+["2026-09-30-1550-taller-important-marker"]
+title = "Hogere markering Belangrijk"
+text = """
+De markering Belangrijk naast de ster is 2 px hoger, zodat hij er naast
+de ster en het selectievakje niet meer platgedrukt uitziet. Hij blijft
+in het midden van de rij.
+"""
+
+["2026-09-30-1617-folder-click-goes-to-top"]
+title = "Terug naar het begin van de lijst"
+text = """
+Zodra de e-maillijst een scherm omlaag is, brengt een ronde knop
+rechtsonder hem terug naar boven. Klikken op de map waarin je al bent,
+zoals Inbox, doet hetzelfde, net als in Gmail, en Home ook.
+"""
+
+["2026-09-30-1622-send-from-file-manager"]
+title = "Bestanden verzenden vanuit je bestandsbeheerder"
+text = """
+Klik met rechts op bestanden of mappen in Dolphin, GNOME Bestanden of
+Windows Verkenner en kies Versturen met Katna Mail: er opent een nieuw
+bericht met ze als bijlage, en een map gaat mee als zip. Met meer dan
+één e-mailaccount kies je in het submenu het account om vanaf te
+verzenden.
+"""
+
+["2026-09-30-1624-files-page"]
+title = "Alle bestanden op één plek"
+text = """
+De nieuwe pagina Bestanden, onderaan de appbalk, toont elke bijlage van
+elk account, nieuwste eerst. Beperk het tot afbeeldingen, pdf's of
+documenten, tot één account, tot een persoon of een periode, of zoek op
+naam, afzender of onderwerp. Klik met rechts op een bestand voor meer, en
+De e-mail tonen brengt je naar de e-mail waarmee het kwam.
+"""
+
+["2026-09-30-1643-dimmer-row-markers"]
+title = "Rustigere e-maillijst"
+text = """
+Een leeg selectievakje, ster of markering Belangrijk in de e-maillijst
+is gedimd tot de aanwijzer boven de rij is. Ingestelde sterren en
+markeringen houden hun kleur.
+"""
+
+["2026-09-30-1704-folder-arrows-on-hover"]
+title = "Opgeruimder mappenpaneel"
+text = """
+De kleine pijltjes naast Inbox, Met ster en de andere mappen verschijnen
+alleen terwijl de aanwijzer boven die map is. Een map die je hebt
+uitgeklapt, houdt zijn pijltje.
+"""
+
+["2026-09-30-1712-arrow-keys-in-times"]
+title = "Pijltoetsen in tijdvakken"
+text = """
+In Datum en tijd kiezen, en in de tijd van een taak, wijzigen Omhoog en
+Omlaag het deel waarin de cursor staat: het uur, de minuten of AM/PM.
+"""
+
+["2026-09-30-1742-check-one-folder"]
+title = "Eén map controleren op nieuwe e-mail"
+text = """
+‘Controleren op nieuwe e-mail’ in het rechtsklikmenu van een map
+controleert nu alleen die map, dus het gaat snel. Op de inbox van een
+account onder Alle accounts controleert het de inbox van dat account, en
+op een lijst als Inbox of Verzonden onder Alle accounts controleert het
+die map in elk account.
+"""
+
+["2026-09-30-1742-frosted-viewer"]
+title = "Een lichtere, matglazen viewer"
+text = """
+De bovenbalk van de bijlageviewer is smaller en lichter, en pagina, zoom
+en draaien staan op een pil. Rond het bestand is Katna Mail wazig zichtbaar
+onder een zachte donkere sluier, en ook de werkbalken zijn van matglas.
+De vervaging volgt Instellingen > Experimenteel; zonder vervaging gebruikt
+de viewer een gewone donkere sluier.
+"""
+
+["2026-09-30-1752-touchpad-glide"]
+title = "Touchpad-vegen glijden door"
+text = """
+Een snelle veeg met twee vingers op een touchpad blijft scrollen en
+vertraagt geleidelijk, zoals in andere apps. Raak de touchpad opnieuw aan
+om te stoppen. Op Wayland.
+"""
+
+["2026-09-30-1800-inbox-tabs-in-top-row"]
+title = "Inboxtabbladen in de bovenste rij"
+text = """
+Primair, Reclame, Sociaal en de andere inboxtabbladen staan nu in een
+pilbalk in de bovenste rij van de lijst, elk met een gekleurd aantal
+ongelezen e-mails. De markering schuift naar het tabblad dat je kiest, en
+een klik op het open tabblad brengt de lijst terug naar boven. Is de lijst
+smal, dan krijgt de balk een eigen rij en toont hij pictogrammen, met de
+naam van het open tabblad; op een telefoon staat hij in de balk van de
+lijst, met Vernieuwen in het menu Meer.
+"""
+
+["2026-09-30-1805-account-menu"]
+title = "Accountinformatie in het rechtsklikmenu"
+text = """
+Klik met rechts op de naam van een account in de mappenlijst, of op zijn
+inbox onder Alle accounts, om het adres te zien, of het gesynchroniseerd
+is en wanneer het voor het laatst gecontroleerd is, en hoeveel opslag het
+gebruikt. Van daaruit kun je die inbox controleren, een nieuwe e-mail
+vanaf dat account schrijven, de instellingen openen of je opnieuw
+aanmelden als de aanmelding is verlopen.
+"""
+
+["2026-09-30-1819-glass-search-box"]
+title = "Een glazen zoekvak"
+text = """
+Met de wazige achtergrond aan is het zoekvak van matglas met een vage rand
+zolang je het niet gebruikt, en wordt het effen als je erin klikt om te
+typen.
+"""
+
+["2026-09-30-1820-search-cancel-restores"]
+title = "Zoekopdracht annuleren, je e-mail terug"
+text = """
+Escape of het zoekvak leegmaken brengt je nu terug naar waar je was:
+dezelfde map, dezelfde plek in de lijst en de e-mail die je open had.
+Open je in plaats daarvan een resultaat, dan neemt de zoekopdracht het
+over zoals voorheen.
+"""
+
+["2026-09-30-1840-first-run-window"]
+title = "Een vriendelijkere eerste start"
+text = """
+Terwijl je Katna Mail instelt, is het venster achter de instelpagina's
+zichtbaar onder een lichte sluier: de apps, Opstellen en het zoekvak, met
+zachte plaatshouders waar je mappen en e-mail komen. Een nieuwe stap biedt
+een Katna-account aan en somt op wat het inschakelt (leesbevestigingen,
+linktracking, Activiteit en vertaling), of je kunt hem overslaan.
+"""
+
+["2026-09-30-1850-windows-frame-and-blur"]
+title = "Katna's eigen kader en vervaging op Windows"
+text = """
+Op Windows opent Katna Mail nu binnen het scherm, gemaximaliseerd als het
+scherm klein is. Instellingen > Experimenteel kan vervagen wat achter het
+venster ligt, en het eigen kader van Katna maakt van de bovenbalk de
+titelbalk de volgende keer dat je Katna Mail opent.
+"""
+
+["2026-09-30-1851-dark-depth"]
+title = "Beter zichtbaar in donkere kleuren"
+text = """
+In donkere kleuren zijn dingen die boven de e-maillijst zweven nu een tint
+lichter met een vage lichte rand, omdat schaduwen op een donkere
+achtergrond nauwelijks te zien zijn. De knop Terug naar boven, menu's, het
+venster Opstellen en dialoogvensters springen duidelijk in het oog. Lichte
+kleuren zien er uit zoals voorheen.
+"""
+
+["2026-09-30-1911-files-scrollbar"]
+title = "Een schuifbalk op de pagina Bestanden"
+text = """
+Als er meer bestanden zijn dan er passen, verschijnt rechts een dunne
+schuifbalk terwijl je scrolt of terwijl de aanwijzer boven de bestanden
+is, en vervaagt dan weer. Sleep hem om snel door de bestanden te gaan, of
+klik erboven of eronder om daarheen te springen.
+"""
+
+["2026-09-30-1919-tabs-keep-open-mail"]
+title = "Van tabblad wisselen houdt de e-mail open"
+text = """
+Met het leesvenster naast de lijst sluit een ander inboxtabblad kiezen de
+e-mail die je leest niet meer; de lijst verandert en de e-mail blijft open.
+"""
+
+["2026-09-30-1925-inbox-tabs-centred"]
+title = "Inboxtabbladen in het midden"
+text = """
+De inboxtabbladen staan nu in het midden van de bovenste rij van de lijst
+en schuiven alleen zover opzij als de knoppen nodig hebben.
+"""
+
+["2026-09-30-1945-page-box-arrow-keys"]
+title = "Pijltoetsen in het paginavak"
+text = """
+Klik in een pdf op het paginanummer en druk op Omhoog of Omlaag om een
+pagina terug of verder te gaan. Houd de toets ingedrukt om snel door de
+pagina's te bladeren.
+"""
+
+["2026-09-30-1952-phone-bar-labels"]
+title = "Appnamen op een telefoon volgen je instelling"
+text = """
+Met appnamen uitgeschakeld in Instellingen toont de balk onderaan een
+venster ter grootte van een telefoon nu alleen de pictogrammen, in het
+midden, net als de zijbalk.
+"""
+
+["2026-09-30-1955-account-menu-icons"]
+title = "Instellingen en taal in het accountmenu"
+text = """
+Het menu onder je accountafbeelding opent nu met een rij pictogrammen:
+Instellingen openen of de taal wijzigen. De taalvlag is uit de bovenbalk
+verdwenen om ruimte te maken.
+"""
+
+["2026-09-30-2001-phone-tabs-fold"]
+title = "Elk inboxtabblad blijft binnen bereik"
+text = """
+Als het venster smal is, klappen de inboxtabbladen soepel in in plaats van
+te verdwijnen: labels worden grotere pictogrammen, daarna gaan de aantallen
+opzij. Op een telefoon verdelen de tabbladen zich over de hele balk,
+makkelijk aan te tikken, met Meer aan het eind van dezelfde pil.
+"""
+
+["2026-09-30-2012-fit-and-page-arrows"]
+title = "Passend, paginapijlen en meer in de viewer"
+text = """
+De bijlageviewer heeft een knop Passend: een pdf-pagina past in de hoogte
+van het venster, een afbeelding in het venster, en documenten, dia's en
+spreadsheets in de breedte. Afbeeldingen krijgen ook Werkelijke grootte en
+kunnen worden gedraaid. Wijs het paginavak aan voor kleine pijltjes om een
+pagina terug of verder te gaan, en dia's krijgen een eigen vak.
+"""
+
+["2026-09-30-2019-folder-icon-colours"]
+title = "Kleurrijke mappictogrammen"
+text = """
+De pictogrammen in het mappenpaneel hebben nu kleuren die zeggen wat elke
+map bevat: Ongelezen blauw, Met ster geel, Belangrijk amber, Verzonden
+groen, Spam rood, Concepten paars, en Inbox in de accentkleur van je
+desktop. Aantallen e-mails staan in kleine, vage pillen.
+"""
+
+["2026-09-30-2040-tabs-no-slide"]
+title = "Snellere inboxtabbladen"
+text = """
+Een klik op een inboxtabblad markeert het nu meteen, met alleen de
+rimpeling van de klik, in plaats van de markering over de andere
+tabbladen te laten schuiven.
+"""
+
+["2026-10-01-0145-files-tidy"]
+title = "Een opgeruimdere pagina Bestanden"
+text = """
+De aantallen naast elk soort bestand en elk account staan nu in dezelfde
+kleine pillen als de mapaantallen in E-mail. De lijn onder de titel van de
+pagina en de rijen bestanden beginnen en eindigen ook op dezelfde randen.
+"""
+
+["2026-10-01-0147-today-marker-fits"]
+title = "De datum van vandaag past in zijn markering"
+text = """
+In de Maandweergave van de Agenda bevat de markering van vandaag nu de
+hele datum. Op de 1e wordt het een pil rond ‘01 okt’ in plaats van een
+klein rondje waar het label buiten viel.
+"""
+
+["2026-10-01-0208-tab-counts-stay"]
+title = "Tabbladaantallen blijven staan"
+text = """
+Een inboxtabblad openen laat de tabbladbalk niet meer verspringen. Het open
+tabblad houdt zijn aantal nieuwe e-mails, dat langzaam vervaagt naar een
+rustig grijs, en het aantal klapt soepel weg zodra je alles in dat tabblad
+hebt gelezen.
+"""
+
+["2026-10-01-0225-files-keyboard"]
+title = "Met het toetsenbord door je bestanden"
+text = """
+Op de pagina Bestanden gaan de pijltoetsen nu van bestand naar bestand,
+Home en End gaan naar het eerste en laatste, en Enter opent er een. In de
+viewer die je van daaruit opent, gaan de pijlen door naar het volgende
+bestand op de pagina, met welke e-mail het ook kwam; Shift en een pijl
+blijft bij de bijlagen van dezelfde e-mail.
+"""
+
+["2026-10-01-0254-files-dates"]
+title = "Kies de dagen op de pagina Bestanden"
+text = """
+De tijdchip op de pagina Bestanden opent nu een kalender van twee maanden
+met snelle keuzes zoals Vorige week en Deze maand. Klik op een dag, of
+sleep van de ene dag naar de andere, en de bestanden volgen terwijl je
+sleept. Draai daarna het muiswiel boven de chip om dezelfde periode
+eerder of later te kiezen.
+"""
+
+["2026-10-01-0256-color-schemes"]
+title = "Kleurenschema's en accentkleuren"
+text = """
+Instellingen > Weergave heeft nu Modus, Kleuren en Accent als aparte
+keuzes. Kies licht of donker, dan een van 14 kleurenschema's, zoals Clear,
+Nord, Solarized of Catppuccin, of houd dat van je desktop. Elk schema werkt
+in licht en donker, en elke accentkleur kan erbovenop.
+"""
+
+["2026-10-01-0310-badge-counts-what-notifies"]
+title = "Het aantal op de taakbalk klopt met je meldingen"
+text = """
+Het aantal ongelezen e-mails op de taakbalk en in het systeemvak telt nu
+dezelfde e-mail als waarvan je een melding krijgt: het tabblad Primair van
+je Inbox. Reclame, Sociaal, Updates en Forums tellen niet meer mee.
+"""
+
+["2026-10-01-0312-quiet-selected-row"]
+title = "Een rustigere open map"
+text = """
+De open map in E-mail, en de open weergave in Contacten, Taken, Notities en
+Bestanden, is nu gemarkeerd in een zacht grijs in plaats van de
+accentkleur, zodat Opstellen en de appbalk opvallen en de mappictogrammen
+hun eigen kleuren houden.
+"""
+
+["2026-10-01-0315-desktop-schemes"]
+title = "De kleurenschema's van je desktop"
+text = """
+Instellingen > Weergave > Kleuren toont ook de eigen schema's van je
+desktop: elk kleurenschema dat op KDE Plasma is geïnstalleerd, en op
+Windows de eigen kleuren en contrastthema's. Systeem werkt nu ook op KDE in
+licht en donker, met de lichte of donkere tegenhanger van je schema, en
+Katna volgt de accentkleur van Windows.
+"""
+
+["2026-10-01-0329-mute-folders"]
+title = "Een map, tabblad of account dempen"
+text = """
+De bel boven de lijst dempt de open map of het open Inbox-tabblad voor een
+uur, tot morgenochtend, of tot je hem weer aanzet. Klik met rechts op een
+map of account voor hetzelfde. Instellingen > Meldingen toont welke mappen
+meldingen geven en welke meetellen op de taakbalk, en alles wat gedempt is.
+"""
+
+["2026-10-01-0335-tray-style"]
+title = "Systeemvakpictogram in kleur of in één kleur"
+text = """
+Instellingen > Algemeen > Desktop > Systeemvakpictogram in kleur kiest de
+kleuren van Katna of één kleur zoals de andere pictogrammen in het paneel.
+Eén kleur blijft één kleur bij ongelezen e-mail, en het aantal ongelezen is
+altijd rood. Op Linux is het systeemvakpictogram standaard één kleur; op
+Windows is het in kleur.
+"""
+
+["2026-10-01-0354-mute-conversations"]
+title = "Een gesprek of afzender dempen"
+text = """
+De bel boven een open gesprek dempt het: nieuwe antwoorden geven geen
+melding meer en tellen niet mee op de taakbalk, en een doorgestreepte bel
+markeert het in de lijst. Klik met rechts op een gesprek voor Gesprek
+dempen of Afzender dempen, of druk op M.
+"""
+
+["2026-10-01-0410-your-color-schemes"]
+title = "Maak je eigen kleurenschema"
+text = """
+Instellingen > Weergave > Kleuren > Aanpassen kopieert het schema dat je
+gebruikt naar een editor: wijzig elk van de acht kleuren aan de lichte en
+de donkere kant, zie het e-mailvenster erin, en Katna vertelt je wat
+moeilijk leesbaar zou zijn. Importeren neemt een kleurenschemabestand van
+Katna of KDE, en met een rechtsklik op je schema bewerk, dupliceer,
+exporteer of verwijder je het.
+"""
+
+["2026-10-01-0527-calendar-opens-on-week"]
+title = "De Agenda opent op Week"
+text = """
+Katna Agenda opent weer op de Weekweergave, met de komende dagen in uren.
+Maand, Dag, Jaar en de andere zijn een klik verwijderd in de bovenbalk.
+"""
+
+["2026-10-01-0552-lighter-count-on-open-row"]
+title = "Aantallen vallen op bij de open map"
+text = """
+Het aantal naast de open map in E-mail, en naast het open soort in
+Bestanden, staat nu in een pil die lichter is dan het grijs van de regel,
+zodat het er niet meer in wegzakt, in licht en donker.
+"""
+
+["2026-10-01-0652-files-leave-out-small-pictures"]
+title = "Bestanden laat handtekeninglogo's weg"
+text = """
+De pagina Bestanden loopt niet meer vol met de kleine logo's en
+pictogrammen uit e-mailhandtekeningen: afbeeldingen onder 12 KB, of minder
+dan 100 pixels breed of hoog, blijven onder hun e-mail. Wijzig beide
+grenzen, of toon elke afbeelding, in Instellingen > Standaardapps >
+Bestandenpagina.
+"""
+
+["2026-10-01-0700-mute-from-contact"]
+title = "Een afzender dempen vanaf zijn contactkaart"
+text = """
+De contactkaart naast een e-mail heeft een bel als eerste knop: die dempt
+alles van die afzender, en een doorgestreepte bel achter de naam laat dat
+zien. Klik er nog eens op om weer van hem of haar te horen.
+"""
+
+["2026-10-01-0803-select-hover-fits"]
+title = "Een nettere selectieknop"
+text = """
+De hovermarkering achter het selectievakje bovenaan de e-maillijst is nu
+even hoog als de knoppen ernaast, staat even ver van de zijkant van de
+kaart als van de bovenkant, en de hoeken volgen de hoek van de kaart.
+"""
+
+["2026-10-01-0807-files-leave-out-signature-pictures"]
+title = "Bestanden laat ook grote handtekeningafbeeldingen weg"
+text = """
+Een afbeelding die iemand in drie of meer gesprekken stuurt, zoals de
+banner of foto in een handtekening, staat niet meer op de pagina
+Bestanden, net als pictogrammen van sociale netwerken, hoe groot ook. Ze
+blijven zichtbaar onder hun e-mail, en ‘Kleine afbeeldingen weglaten’
+uitzetten brengt ze allemaal terug.
+"""
+
+["2026-10-01-0830-muted-contact-mark"]
+title = "Zie wie gedempt is"
+text = """
+Een doorgestreepte bel volgt nu de naam van een gedempte afzender overal
+waar die verschijnt: de e-maillijst, een open e-mail, Contacten, de vakken
+Aan en Cc en hun suggesties, de pagina Bestanden, gasten van afspraken en
+het Activiteitenrapport. Je hoeft je niet meer af te vragen waarom hun
+e-mail stil blijft.
+"""
+
+["2026-10-01-0839-sounds"]
+title = "Geluiden voor nieuwe e-mail, herinneringen en verzenden"
+text = """
+Instellingen > Meldingen heeft een onderdeel Geluiden: nieuwe e-mail,
+herinneringen, e-mail terug in de inbox, e-mail verzonden en e-mail niet
+verzonden kiezen elk een geluid van je desktop, spelen het af met de knop
+ernaast, of zetten het uit. Geluiden spelen nu ook op KDE Plasma, en
+blijven stil bij gedempte e-mail en tijdens Niet storen.
+"""
+
+["2026-10-01-0925-chat-view"]
+title = "Gesprekken lezen als chats (experimenteel)"
+text = """
+Zet Instellingen > Experimenteel > Gesprekken als chats aan en e-mail
+tussen mensen leest als een groepschat: een ballon per e-mail met alleen
+wat er geschreven is, die van jou rechts, afbeeldingen en bestanden als
+chatmedia. De geciteerde e-mail en handtekeningen wachten achter ··· in
+elke ballon, en een klik op een naam toont diens kaart met handtekening.
+Antwoord vanuit het vak onderaan, met Ctrl+Enter, de opmaakbalk achter Aa
+en de paperclip voor bestanden, sjablonen en handtekeningen. Nieuwsbrieven
+houden de gewone weergave, en de schakelaar Chat | E-mail zet elk gesprek om
+naar de andere kant.
+"""
+
+["2026-10-01-0946-forward-keeps-files"]
+title = "Doorsturen houdt de bestanden"
+text = """
+Een bericht doorsturen neemt nu de bijlagen mee, getoond onder het bericht
+zodat je er voor het verzenden elk van kunt verwijderen. Het doorsturen
+omzetten naar een antwoord laat ze weer weg.
+"""
+
+["2026-10-01-1009-forward-a-file"]
+title = "Alleen het bestand doorsturen"
+text = """
+De bijlageviewer heeft een knop Doorsturen in de bovenbalk: die begint een
+nieuwe e-mail met alleen dat bestand als bijlage, zonder de e-mail waarmee
+het kwam. Bestanden zonder voorbeeld bieden ook Doorsturen, net als de
+bijlagekaarten onder een open e-mail, naast Opslaan.
+"""
+
+["2026-10-01-1039-rephrase-with-ai"]
+title = "Herformuleren met AI"
+text = """
+Selecteer tekst in een bericht en druk op de fonkeling ernaast, of Ctrl+J,
+om hem duidelijker, korter, vriendelijker of formeler te laten herschrijven,
+en kies dan Vervangen. Katna AI is 30 dagen gratis, of gebruik je eigen
+sleutel van Google Gemini, OpenAI, Claude, Mistral, DeepSeek, OpenRouter of
+een model op deze computer. AI kan ook je zinnen in grijs afmaken; zet dat
+aan in Instellingen > Opstellen.
+"""
+
+["2026-10-01-1043-header-details-selectable"]
+title = "Kopiëren uit de details van een e-mail"
+text = """
+De details onder ‘aan mij’ kun je nu selecteren en kopiëren zoals de
+e-mail zelf. Klik op een adres om de kaart van die persoon naast de e-mail
+te zien, of klik er met rechts op voor Adres kopiëren. Gedempte personen
+tonen daar ook hun doorgestreepte bel.
+"""
+
+["2026-10-01-1112-left-bar-button"]
+title = "Eén grote knop, één keer inklappen, op elke pagina"
+text = """
+De grote knop bovenaan de linkerbalk ziet er nu op elke pagina hetzelfde
+uit, staat op dezelfde plek en doet wat bij die pagina hoort: Opstellen in
+E-mail en Bestanden, Nieuwe afspraak, Nieuw contact, Nieuwe taak en Nieuwe
+notitie. De linkerbalk inklappen klapt hem overal in, en zolang hij
+ingeklapt is, wacht de knop van elke pagina bovenaan de zijbalk. Op een
+telefoon is het de zwevende knop.
+"""
+
+["2026-10-01-1115-color-picker"]
+title = "Een kleurkiezer in de schema-editor"
+text = """
+Klik op een kleur in de schema-editor en er opent een kiezer vlak ernaast:
+sleep over het vierkant en de tintbalk, typ een hexwaarde, hergebruik de
+eigen kleuren van het schema of recente keuzes, of neem met de pipet een
+kleur van waar dan ook op het scherm, op KDE en GNOME.
+"""
+
+["2026-10-01-1130-contact-card-folds-folders"]
+title = "De contactkaart maakt zelf ruimte"
+text = """
+In een venster dat te smal is voor het mappenpaneel en de contactkaart
+naast elkaar, klapt de kaart de mappen nu in als hij opent, en ze komen
+terug als de kaart sluit. Mappen die je zelf inklapt, blijven ingeklapt.
+"""
+
+["2026-10-01-1132-open-mail-scroll-bar"]
+title = "Een schuifbalk in lange e-mails"
+text = """
+Een lang gesprek toont nu dezelfde rustige schuifbalk als de pagina
+Bestanden terwijl je erdoor scrolt of hem aanwijst. Beide balken zijn nu
+dunner en worden breder als de aanwijzer in de buurt komt. Sleep er een,
+of klik ergens langs de balk, om overal heen te springen.
+"""
+
+["2026-10-01-1240-contact-card-close"]
+title = "De contactkaart wegleggen, zien wie in een chat zit"
+text = """
+De contactkaart naast een gesprek heeft een ✕ in de hoek, en nog eens
+klikken op de afbeelding of het adres van dezelfde persoon legt de kaart
+weg. In de chatweergave toont een klik op de kop iedereen in de chat met
+hun adres en hoeveel e-mails elk heeft verzonden.
+"""
+
+["2026-10-01-1241-two-blur-switches"]
+title = "Vervaging zoals jij het wilt"
+text = """
+Vervaging heeft nu twee schakelaars in Instellingen, Experimenteel: een
+voor de vensterachtergrond en een voor menu's en dialoogvensters.
+Matglazen menu's staan standaard aan, ook als de vensterachtergrond effen
+blijft.
+"""
+
+["2026-10-01-1502-fainter-row-lines"]
+title = "Rustigere lijnen tussen e-mails"
+text = """
+De lijnen tussen e-mails in de lijst zijn nu vager, zodat de lijst leest
+als één rustige kolom, in licht en donker.
+"""
+
+["2026-10-01-1505-contact-close-round"]
+title = "Eén sluitknop voor elk paneel"
+text = """
+De ✕ op de contactkaart is nu dezelfde ronde knop als de ✕ op de open
+e-mail, met dezelfde grijze cirkel als je hem aanwijst.
+"""
+
+["2026-10-01-1525-thread-count"]
+title = "Een nettere e-mailteller"
+text = """
+Het aantal e-mails in een gesprek staat nu naast de namen met een klein
+chatpictogram, gecentreerd op de regel van de namen in plaats van erboven.
+"""
+
+["2026-10-01-1541-chat-attach-from-files"]
+title = "Bijvoegen uit Bestanden in een chat"
+text = """
+In een chat (Instellingen > Experimenteel) heeft de paperclip Uit
+Bestanden: kies elk bestand dat met je e-mail binnenkwam of meeging, met
+die van dit gesprek eerst. Vink er meerdere aan, bekijk er een met het oog,
+en zie hoe ze zich verhouden tot de 25 MB die een e-mail kan dragen. De
+paperclip staat nu in het antwoordvak, en Aa opent een smalle balk met
+alleen de stijlen die een chat nodig heeft.
+"""
+
+["2026-10-01-1553-rephrase-card-text"]
+title = "Herformuleren werkt met nieuwe Gemini-sleutels"
+text = """
+Met matglazen menu's aan opende de kaart Herformuleren (Ctrl+J) leeg; de
+suggesties verschijnen nu boven het matglas. Google Gemini gebruikt nu
+gemini-3.5-flash-lite tenzij je een ander model typt, omdat nieuwe
+Gemini-sleutels 2.5 Flash-Lite niet meer kunnen gebruiken, en een
+verkeerde sleutel zegt dat.
+"""
+
+["2026-10-01-1624-rephrase-button"]
+title = "Herformuleren zonder te selecteren, en snellere suggesties"
+text = """
+Een fonkeling naast Opmaak onderaan een nieuw bericht, en in het
+antwoordvak van de chatweergave, herformuleert alles wat je schreef als
+niets geselecteerd is, of alleen de selectie als die er is; Ctrl+J doet
+hetzelfde. Langere suggesties met AI komen veel sneller, en het veld Model
+in Instellingen > Opstellen toont al typend de modellen die je dienst
+aanbiedt.
+"""
+
+["2026-10-01-1626-dimmer-preview"]
+title = "Een rustigere voorbeeldregel"
+text = """
+De voorbeeldtekst onder het onderwerp van elke e-mail in de lijst is nu
+gedimd, zodat de afzender en het onderwerp opvallen, in licht en donker.
+"""
+
+["2026-10-01-1645-frosted-dialogs"]
+title = "Matglazen dialoogvensters"
+text = """
+Met Menu's en dialogen van matglas aan zijn dialoogvensters ook van
+matglas: Een e-mailaccount toevoegen, Over, Wat is er nieuw, updates,
+delen, afdrukvoorbeeld, labels, vragen over verwijderen, de kaart bij de
+eerste start en het linkvenster van Opstellen.
+"""
+
+["2026-10-01-1650-chat-pins"]
+title = "Tot 5 dingen vastzetten in een chat"
+text = """
+Wijs in een chat (Instellingen > Experimenteel) een ballon aan en druk op
+de punaise, of klik met rechts op een bestand, om het bovenaan te houden.
+Een dunne balk onder de kop toont je vastgezette items: klik erop om er
+een voor een heen te springen, of open de lijst om ze op volgorde te slepen
+of los te maken. Vastgezette items blijven op deze computer.
+"""
+
+["2026-10-01-1655-chat-signatures"]
+title = "Chats laten handtekeningen en voetteksten weg"
+text = """
+Chatballonnen tonen nu alleen wat mensen schreven. Afsluitingen als ‘Met
+vriendelijke groet’, bedrijfshandtekeningen onder een lijn of met adressen
+en telefoonnummers, en voetteksten met afmeldlinks of mededelingen wachten
+achter de pil ···, samen met een handtekening die iemand in elke e-mail
+herhaalt.
+"""
+
+["2026-10-01-1805-blur-amount"]
+title = "Kies hoe matglazen menu's eruitzien"
+text = """
+Matglazen menu's en dialoogvensters zijn nu helderder en volgen de
+vervagingssterkte van KDE. Zet Eigen mate van vervaging aan in Instellingen,
+Experimenteel, Vervaging om de sterkte en dekking van de vervaging zelf in
+te stellen.
+"""
+
+["2026-10-01-1825-chat-company"]
+title = "Waar ze werken, op hun kaart"
+text = """
+In een chat (Instellingen > Experimenteel) heeft de kaart van een persoon
+nu een onderdeel Bedrijf: wat het bedrijf doet, waar het zit, sinds
+wanneer, en links naar de website en pagina's, gelezen van de eigen
+homepage en Wikipedia. Het volgt de schakelaar Afzenderafbeeldingen.
+"""
+
+["2026-10-02-0052-smooth-start-after-updates"]
+title = "Soepele start na updates"
+text = """
+Na een update zegt Katna Mail niet meer dat de e-mailopslag niet geopend
+kon worden terwijl hij je e-mail klaarmaakt voor de nieuwe versie. Hij
+toont die paar seconden de gewone laadafbeelding, en daarna je e-mail.
+"""
+
+["2026-10-02-0106-calmer-dialogs"]
+title = "Rustigere dialoogvensters"
+text = """
+Matglazen dialoogvensters zijn minder doorzichtig dan menu's, zodat een
+drukke e-maillijst er niet meer doorheen schijnt. Over, Wat is er nieuw en
+Controleren op updates openen zonder het venster erachter donker te maken.
+"""
+
+["2026-10-02-0111-chat-pin-text"]
+title = "Een paar woorden uit een chat vastzetten"
+text = """
+In een chat (Instellingen > Experimenteel) kan de tekst in een ballon nu
+worden geselecteerd en gekopieerd zoals elke e-mail. Klik met rechts op
+woorden die je in één ballon hebt geselecteerd en kies Bovenaan vastzetten
+om ze in de vastzetbalk van de chat te houden.
+"""
+
+["2026-10-02-0124-event-editor-clear"]
+title = "Nieuwe afspraak zit de afsprakeneditor niet meer in de weg"
+text = """
+De knop Nieuwe afspraak in de linkerbalk staat niet meer op de titel van
+een afspraak die je in de volledige editor schrijft of wijzigt. Hij komt
+terug als de editor sluit.
+"""
+
+["2026-10-02-0150-chat-format-bar"]
+title = "Een vollere Aa-balk in chats"
+text = """
+De Aa-balk van het antwoordvak in een chat heeft nu de hulpmiddelen van
+Opstellen: ongedaan maken, lettertype, grootte, uitlijning en inspringen,
+naast de stijlen die hij al had. In een smal venster loopt hij door op een
+tweede regel. De kleurknop toont je tekstkleur en markeerkleur naast
+elkaar, ook in Opstellen.
+"""
+
+["2026-10-02-0210-conversation-summaries"]
+title = "Een gesprek samenvatten"
+text = """
+Klik met rechts op een gesprek en kies Samenvatten, of druk op Shift+S,
+voor een kaart ernaast die zegt waar het over gaat, wat er besloten is en
+wat op jou wacht, zonder het te openen of als gelezen te markeren. In een
+open gesprek zet de fonkeling erboven de samenvatting onder het onderwerp;
+in de chatweergave staat die in een strook onder de kop. Elk punt noemt de
+e-mail waar het vandaan komt, en als er nieuwe e-mail is sinds je laatst
+las, gaat de samenvatting alleen daarover. Het vereist dat schrijfhulp
+met AI aan staat in Instellingen > Opstellen.
+"""
+
+["2026-10-02-0215-system-colors-follow-mode"]
+title = "Licht en Donker werken met Systeemkleuren"
+text = """
+Met Kleuren op Systeem en een desktopschema dat alleen donker (of alleen
+licht) is, schakelt Instellingen > Weergave > Modus Katna weer tussen licht
+en donker: de andere kant gebruikt de eigen kleuren van Katna in de
+accentkleur van je desktop.
+"""
+
+["2026-10-02-0218-signature-details-on-card"]
+title = "Handtekeninggegevens waar ze horen"
+text = """
+De kaart van een persoon toont de handtekening niet meer als blok. De
+gegevens komen waar ze horen: elk telefoonnummer, gemarkeerd als mobiel,
+direct of fax, bij de contactgegevens, en de groep, vestigingen, website
+en pagina's van het bedrijf in het onderdeel Bedrijf. Sociale pagina's
+verschijnen als kleine eenkleurige pictogrammen, en afbeeldingen, banners
+en voetteksten worden weggelaten.
+"""
+
+["2026-10-02-0225-chat-subject-line"]
+title = "Zie wanneer het onderwerp van een chat verandert"
+text = """
+In een chat (Instellingen > Experimenteel) zegt een kleine regel in het
+midden nu wanneer iemand het onderwerp heeft gewijzigd, zoals hij al zegt
+wie wie heeft toegevoegd.
+"""
+
+["2026-10-02-0225-no-blur-ghost"]
+title = "Geen wazige schim als een dialoogvenster sluit"
+text = """
+Over, Wat is er nieuw, Controleren op updates of een ander matglazen
+dialoogvenster of menu sluiten laat niet meer even een wazige vlek achter:
+de vervaging vervaagt mee met het dialoogvenster.
+"""
+
+["2026-10-02-0236-chat-on-phones"]
+title = "Chats passen op een telefoon"
+text = """
+In een venster ter grootte van een telefoon houdt een chat (Instellingen >
+Experimenteel) het bij één koprij met Terug en ⋮, en de ballonnen gebruiken
+meer van de breedte. Houd een ballon vast om het menu van onderen te
+openen, en tik op een naam of afbeelding om de kaart van die persoon op
+dezelfde manier te zien. Veeg een van beide omlaag of tik ernaast om hem
+weg te leggen.
+"""
+
+["2026-10-02-0258-frost-stays-on-scroll"]
+title = "Matglas blijft staan als een lijst scrolt"
+text = """
+In een matglazen lijst die scrolt, zoals de mensen in een chat of een lang
+menu, blijft de matglazen achtergrond nu op zijn plek terwijl de rijen
+eroverheen scrollen.
+"""
+
+["2026-10-02-0301-rephrase-card-above-tools"]
+title = "Herformuleren staat boven de opmaakbalk"
+text = """
+De kaart Herformuleren opent nu net boven de opmaakbalk, in het
+antwoordvak en in Opstellen, in plaats van over de e-maillijst. Sleep hem
+aan het kleine handvat bovenaan om hem opzij te zetten; de volgende keer
+opent hij weer op zijn gewone plek.
+"""
+
+["2026-10-02-0306-fainter-lines-light"]
+title = "Vagere lijnen in de lichte modus"
+text = """
+In de lichte modus zijn de lijnen tussen e-mails in de lijst en tussen de
+berichten van een open e-mail vager, zodat de pagina rustiger oogt.
+"""
+
+["2026-10-02-0315-card-button-bar"]
+title = "De persoonskaart houdt zijn knoppen binnen bereik"
+text = """
+Scrol door de persoonskaart en de knoppen schuiven omhoog in een smalle
+matglazen balk naast de sluitknop, met een kleine afbeelding van de
+persoon. De sluitknop staat niet meer over wat je aan het lezen bent.
+"""
+
+["2026-10-02-0412-button-hover"]
+title = "Knoppen reageren soepel op de aanwijzer"
+text = """
+Als je een knop aanwijst, groeit de ronde achtergrond nu vanuit het midden
+en vervaagt hij in, zoals in Gmail, en verdwijnt hij snel als je verder
+gaat. Beantwoorden, Doorsturen en andere pilknoppen vervagen zacht in.
+"""
+
+["2026-10-02-0425-chat-draft-to-mail"]
+title = "Je chatantwoord volgt je naar E-mail"
+text = """
+Een chat omzetten naar E-mail terwijl je een antwoord schrijft, scrolt nu
+omlaag naar het antwoord met je cursor er nog in, en terugschakelen houdt
+het ook.
+"""
+
+["2026-10-02-0425-write-reply"]
+title = "Een antwoord schrijven met AI"
+text = """
+Zolang een antwoord of doorgestuurd bericht nog leeg is, schrijft de
+fonkeling naast Opmaak (of Ctrl+J) het voor je. Kies een van drie ideeën
+uit het gesprek, of zeg in je eigen woorden wat erin moet staan, kies dan
+Invoegen en pas het concept aan zoals je wilt. Zodra je typt, herformuleert
+de fonkeling weer. Het vereist dat schrijfhulp met AI aan staat in
+Instellingen > Opstellen.
+"""
+
+["2026-10-02-0430-compose-beside-reply"]
+title = "Opstellen terwijl een antwoord half af is"
+text = """
+Opstellen opent nu een nieuw bericht, ook terwijl je een antwoord schrijft,
+in de chat of onder het gesprek. Het antwoord wacht zoals je het liet en
+komt terug als het nieuwe bericht verzonden of gesloten is, of als je
+klikt om weer op dat gesprek te antwoorden.
+"""
+
+["2026-10-02-0436-mark-unread-icon"]
+title = "Een duidelijker pictogram voor Markeren als ongelezen"
+text = """
+Markeren als ongelezen toont nu een envelop met een stip, in menu's, in de
+werkbalken en bij de hoverknoppen van een e-mail, zodat het niet meer op
+een gewoon e-mailpictogram lijkt.
+"""
+
+["2026-10-02-0452-fainter-pane-lines"]
+title = "Rustigere werkbalken en tabbladen"
+text = """
+In de lichte modus zijn de lijnen onder de werkbalken en de kop van de
+open e-mail, en boven Beantwoorden en Doorsturen, even vaag als de lijnen
+tussen e-mails. De achtergrond achter de inboxtabbladen is ook lichter.
+"""
+
+["2026-10-02-0453-google-drive-in-files"]
+title = "Je Google Drive in Bestanden"
+text = """
+Bestanden toont nu de drive van elk Google-account onder Drives in de
+zijkolom. Open de mappen, doorzoek de drive, en open, voeg bij of download
+een bestand meteen daar. Druk de eerste keer op Toestaan zodat Katna de
+drive mag lezen.
+"""
+
+["2026-10-02-0515-rephrase-subject"]
+title = "Het onderwerp herformuleren"
+text = """
+Zodra je een onderwerp typt, biedt een fonkeling aan het eind van de regel
+drie andere manieren om het te zeggen, geschreven op basis van het
+onderwerp en wat je bericht tot nu toe zegt. Kies er een om die te
+gebruiken; Ongedaan maken zet terug wat je typte. Het vereist dat
+schrijfhulp met AI aan staat in Instellingen > Opstellen.
+"""
+
+["2026-10-02-0525-quieter-compose"]
+title = "Een rustiger venster Opstellen"
+text = """
+Het venster Nieuw bericht zweeft met een gelijke afstand tot de randen van
+het venster. Aan, Cc, Bcc en Van staan bij elkaar zonder lijnen ertussen,
+ontvangers zijn zacht gevulde chips, en Van is één rustige regel.
+Versleuteling, ondertekening, tracking en bevestigingen delen één kleine
+groep, en de schrijfhulpmiddelen staan op een zachte balk naast Verzenden.
+"""
+
+["2026-10-02-0553-upload-to-drive"]
+title = "Uploaden naar Google Drive vanuit Bestanden"
+text = """
+Met een Google Drive open in Bestanden wordt de knop Opstellen Uploaden.
+Klik erop om bestanden naar de open map te sturen, of gebruik het pijltje
+om een hele map te uploaden. Druk de eerste keer op Toestaan zodat Katna
+bestanden aan je drive mag toevoegen.
+"""
+
+["2026-10-02-0555-reply-from-summary"]
+title = "Antwoorden vanuit de samenvatting"
+text = """
+De samenvattingskaart die je via een rechtsklik opent, heeft nu
+Beantwoorden. Dat maakt van dezelfde kaart een antwoord: kies een idee of
+zeg wat erin moet staan, pas het concept aan als je wilt, en kies dan
+Versturen, of Openen in het gesprek om verder te schrijven. Een antwoord
+dat je sluit zonder te verzenden, wacht in het antwoordvak. De kaart opent
+nu ook waar je klikte.
+"""
+
+["2026-10-02-0559-draft-saved-signature-tag"]
+title = "Concepten worden opgeslagen terwijl je schrijft"
+text = """
+Een bericht dat je schrijft, slaat zichzelf nu om de paar seconden op in
+Concepten, en ‘Concept opgeslagen’ staat rustig naast de titel. Een vaag
+label naast je handtekening noemt de naam ervan; klik erop om een andere
+te kiezen. De hoek van het venster Opstellen sluit ook aan op de kaart
+ernaast.
+"""
+
+["2026-10-02-0654-attach-from-drive"]
+title = "Bijvoegen uit Google Drive"
+text = """
+De paperclip van Opstellen opent nu de bestandskiezer, dezelfde als Uit
+Bestanden in de chat, met je Google Drive naast je e-mailbestanden en
+Deze computer… voor al het andere. Bestanden die passen, gaan mee in de
+e-mail; grote bestanden en Google Docs gaan als link, gedeeld met de
+ontvangers als je verzendt.
+"""
+
+["2026-10-02-0734-peek-and-reply-in-notifications"]
+title = "Bekijken en beantwoorden vanuit de melding"
+text = """
+Een melding van nieuwe e-mail heeft nu Bekijken, dat de e-mail zelf in
+dezelfde melding toont, en Beantwoorden, waar je je antwoord meteen daar
+typt en op Versturen drukt. Het gaat vanaf het account waar de e-mail
+binnenkwam, na je wachttijd voor Verzenden ongedaan maken; Ongedaan maken
+opent het in Katna Mail om verder te schrijven. Op Linux heeft nieuwe
+e-mail ook een eigen, luider belletje; kies een ander in Instellingen >
+Meldingen.
+"""
+
+["2026-10-02-0735-drive-viewer-opens-at-once"]
+title = "Drive-bestanden openen meteen"
+text = """
+Een bestand uit je drive openen toont direct de viewer, met een draaiende
+boog tot het bestand er is. Meldingen onderaan het venster vangen nu hun
+eigen klikken op, zodat Sluiten niet meer klikt op wat eronder ligt.
+"""
+
+["2026-10-02-0740-smaller-updates"]
+title = "Kleinere updates"
+text = """
+Updates downloaden nu alleen wat er veranderd is, meestal een paar
+megabyte in plaats van het hele pakket. Katna bouwt de nieuwe versie uit
+de versie die je hebt en controleert die voor de installatie, en
+downloadt het volledige pakket als dat niet lukt.
+"""
+
+["2026-10-02-0755-faint-lines-everywhere"]
+title = "Overal vage lijnen"
+text = """
+In de lichte modus is elke lijn tussen dingen, onder koppen en rond kaarten
+nu even vaag als de lijnen tussen e-mails, ook op de samenvattingskaart.
+Velden, chips en knoppen houden hun duidelijke rand.
+"""
+
+["2026-10-02-0756-ai-replies-signed"]
+title = "AI-antwoorden eindigen met je handtekening"
+text = """
+Antwoorden en notities die AI schrijft, eindigen niet meer met ‘Met
+vriendelijke groet’ en je naam. Je handtekening ondertekent ze: in het
+antwoord van de samenvattingskaart kiest het handtekeninglabel onder de
+tekst welke, zoals in Opstellen.
+"""
+
+["2026-10-02-0801-unified-inbox-tabs"]
+title = "Tabbladen in de gecombineerde inbox"
+text = """
+De inbox van al je accounts heeft nu ook tabbladen: Primair, Reclame,
+Sociaal, Updates en Forums, met de e-mail van elk account in het tabblad
+van zijn soort. Een stip naast elke afzender toont van welk account een
+e-mail kwam. Kies er een account onder om de eigen tabbladen van dat
+account te zien, of kies een andere set in Instellingen > Inbox.
+"""
+
+["2026-10-02-0805-feeds-removed"]
+title = "Feeds is weg uit de linkerbalk"
+text = """
+Katna gaat toch geen RSS- en Atom-feeds lezen, dus de knop Feeds en de
+pagina ‘binnenkort beschikbaar’ zijn uit de balk links verdwenen.
+Bestanden houdt Ctrl+7.
+"""
+
+["2026-10-02-0820-drive-bin-and-rename"]
+title = "Drive-bestanden hernoemen en naar de prullenbak"
+text = """
+In Bestanden heeft een bestand of map in je Google Drive of OneDrive nu
+Hernoemen en Naar prullenbak verplaatsen in het menu. Hernoemen laat je
+de naam ter plekke overtypen (F2), en Naar prullenbak verplaatsen (Del)
+komt met Ongedaan maken.
+"""
+
+["2026-10-02-0827-files-chips-on-phones"]
+title = "Chips van Bestanden passen op telefoons"
+text = """
+Op een telefoon worden de chips van de pagina Bestanden niet meer aan de
+rand afgesneden. De soorten bestanden klappen in tot hun pictogrammen,
+waarbij de gekozen soort zijn label houdt, en de chips voor persoon, dagen
+en volgorde krijgen een eigen rij.
+"""
+
+["2026-10-02-0828-uploads-tray"]
+title = "Zie je uploads terwijl ze bezig zijn"
+text = """
+Bestanden die je naar Google Drive of OneDrive uploadt, verschijnen nu in
+een vak rechtsonder, elk met een ring die volloopt terwijl het wordt
+geüpload en de resterende tijd. Annuleer er een of allemaal, klap het vak
+in, en klik op een voltooid bestand om de map ervan te openen.
+"""
+
+["2026-10-02-0838-drive-share"]
+title = "Drive-bestanden delen vanuit Katna"
+text = """
+Delen… in het menu van een Google Drive- of OneDrive-bestand in Bestanden
+opent een venster Delen: voeg mensen toe als Kijker, Reageerder of Bewerker,
+wijzig of verwijder wie al toegang heeft, en open het voor iedereen met
+de link. De drive mailt hen alleen als je dat aanvinkt.
+"""
+
+["2026-10-02-0909-soft-search-box"]
+title = "Een zachter zoekvak"
+text = """
+Het zoekvak bovenaan is lichter: een heel vage rand en vulling zolang je
+het niet gebruikt, en een wit veld met een zachte accentrand terwijl je
+typt, in plaats van de grijze pil met een dikke gekleurde ring.
+"""
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Updates komen sneller binnen"
+text = """
+Katna zoekt nu elk uur naar een nieuwe versie, en meteen nadat je computer
+uit de slaapstand komt, zodat de updatemelding kort na een release verschijnt.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Ook in donkere modus subtiele lijnen"
+text = """
+In donkere modus zijn de lijnen tussen e-mails, onder kopteksten en rond
+kaarten net zo subtiel als in lichte modus. Velden, chips en knoppen houden
+hun duidelijke rand.
+"""
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Kleine updates na een pauze"
+text = """
+Updates blijven klein, ook als je een dag of twee aan nieuwe versies
+overslaat. Katna stapt nu vanaf de versie die je hebt via de eerdere
+versies, elk een paar megabyte, in plaats van het hele pakket opnieuw te
+downloaden.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Zie op welke e-mail je hebt geantwoord"
+text = """
+Een klein antwoordpijltje op een regel van de e-maillijst laat zien dat je
+hebt geantwoord: jij schreef de nieuwste e-mail van het gesprek, hier of
+op het web. Het verdwijnt zodra de ander terugschrijft.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Systeemvakpictogram volgt licht en donker"
+text = """
+Het eenkleurige systeemvakpictogram past zich nu meteen aan je paneel aan
+zodra je wisselt tussen licht en donker, in plaats van te wachten op
+nieuwe e-mail.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Antwoordideeën laten zien dat ze onderweg zijn"
+text = """
+Terwijl antwoordideeën worden opgevraagd, in Beantwoorden van een
+samenvatting of in Antwoord schrijven, ademen hun vormen nu net als die
+van de samenvatting terwijl die wordt geschreven. De samenvattingskaart
+toont tijdens het opvragen ook hoeveel e-mails het gesprek heeft, niet 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Strakkere hoeken in Bestanden"
+text = """
+Als de aanwijzer boven een bestand met een wit voorbeeld staat, schemert
+er geen wit meer door in de bovenhoeken van de kaart, het ingeklapte
+uploadvak is ook bovenaan afgerond, en het venster Delen heeft een
+sluitknop in de hoek.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Zoekopdracht wissen houdt je e-mail open"
+text = """
+Open een e-mail uit de zoekresultaten en wis de zoekopdracht met de X: de
+e-mail blijft open terwijl je map terugkomt, in plaats van terug te
+klappen naar de lijst.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Ronde hoeken bij spreadsheets"
+text = """
+Een spreadsheet in de bijlageviewer is nu aan alle vier de hoeken
+afgerond. De grijze kolomletters bovenaan en de bladtabs onderaan maakten
+ze eerder hoekig.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Nette contactgegevens op kaarten"
+text = """
+Telefoonnummers, adressen en andere gegevens uit een handtekening tonen
+geen losse sterretjes of linktekens tussen punthaken meer. Als een
+collega e-mail ondertekent vanaf een gedeeld adres zoals accounts@, houdt
+de kaart alleen de gegevens van het bedrijf, niet het nummer of de functie
+van die collega.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Controleer wat je hebt bijgevoegd"
+text = """
+Klik op een bestand bij een bericht dat je schrijft om het te
+openen in de viewer van Katna, dezelfde waarin ontvangen bestanden openen,
+en controleer of het het juiste bestand is. Een bestand dat als Google
+Drive- of OneDrive-link is verstuurd, opent op de drive.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Een schuifbalk in Instellingen"
+text = """
+Elk tabblad van Instellingen heeft dezelfde dunne schuifbalk als een
+geopende e-mail en Bestanden: hij verschijnt terwijl je scrolt of de
+aanwijzer boven de pagina houdt, en je kunt hem verslepen.
+"""

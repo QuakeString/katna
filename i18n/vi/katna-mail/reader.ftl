@@ -86,6 +86,10 @@ security-missing-key = Được ký bằng khóa mà bạn không có, nên khô
 security-missing-key-id = Được ký bằng khóa mà bạn không có ({ $key }), nên không thể kiểm tra
 security-signature-unavailable = Đã ký; hãy cài đặt { $tool } để kiểm tra chữ ký
 security-signature-error = Không thể kiểm tra chữ ký.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } đã mở thư { $count } lần, lần cuối { $when }
 tracking-opens-clicks = { $who } đã mở thư { $opens } lần và mở liên kết { $clicks } lần, lần cuối { $when }
 tracking-clicked = { $who } đã mở liên kết { $clicks } lần, lần cuối { $when }
@@ -112,10 +116,12 @@ remote-picture-remove-failed = Không thể xóa ảnh: { $error }
 
 attachment-count = { $count } tệp đính kèm
 attachment-save = Lưu
+attachment-forward = Chuyển tiếp
 attachment-save-all = Lưu tất cả
 attachment-save-all-tooltip = Lưu mọi tệp đính kèm vào một thư mục
 attachment-save-here = Lưu tại đây
 attachment-not-downloaded = Thư này chưa được tải xuống.
+attachment-open-message = Mở thư này để đọc tệp đính kèm.
 attachment-not-found = Không tìm thấy tệp đính kèm này trong thư.
 attachment-read-failed = Không thể đọc { $name }
 attachment-numbered = tệp đính kèm { $number }
@@ -151,8 +157,9 @@ print-encrypted = (Đã mã hóa. Hãy mở trong Katna Mail để in nội dung
 print-to = Tới: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = Mở thư này để đọc tệp đính kèm.
+text-pin = Ghim lên đầu
+text-copy-address = Sao chép địa chỉ
 text-copy = Sao chép
 text-select-all = Chọn tất cả

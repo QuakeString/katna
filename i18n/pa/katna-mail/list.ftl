@@ -14,13 +14,13 @@ tab-other = ਹੋਰ
 tab-inbox = ਇਨਬਾਕਸ
 tab-newsletters = ਨਿਊਜ਼ਲੈਟਰ
 tab-notifications = ਸੂਚਨਾਵਾਂ
-tab-new = { $count } ਨਵੇਂ
 tab-provider-other = Katna ਵੱਲੋਂ ਛਾਂਟਿਆ ਗਿਆ
 
 ## Mail list: toolbar
 
 list-select = ਚੁਣੋ
 list-refresh = ਤਾਜ਼ਾ ਕਰੋ
+list-back-to-top = ਸਿਖਰ ’ਤੇ ਵਾਪਸ
 list-checking = ਨਵੀਂ ਮੇਲ ਜਾਂਚੀ ਜਾ ਰਹੀ ਹੈ…
 list-more = ਹੋਰ
 list-mark-read = ਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
@@ -39,6 +39,7 @@ list-results = “{ $query }” ਲਈ ਨਤੀਜੇ
 list-results-corrected = “{ $query }” ਲਈ ਨਤੀਜੇ ਦਿਖਾਏ ਜਾ ਰਹੇ ਹਨ
 list-search-instead = ਇਸਦੀ ਬਜਾਏ “{ $query }” ਲਈ ਖੋਜੋ
 list-files-more = +{ $count }
+list-replied = ਤੁਸੀਂ ਜਵਾਬ ਦਿੱਤਾ
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,12 @@ menu-add-note = ਨੋਟ ਜੋੜੋ
 menu-print-all = ਸਭ ਪ੍ਰਿੰਟ ਕਰੋ
 menu-new-window = ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ
 menu-move-to = ਇੱਥੇ ਭੇਜੋ
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = ਅਗਲੀ ਕਾਰਵਾਈ
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = ਹੋਰ
 menu-move-to-heading = ਇੱਥੇ ਭੇਜੋ:
 menu-find-from = { $name } ਵੱਲੋਂ ਈਮੇਲਾਂ ਲੱਭੋ
 

@@ -9,6 +9,17 @@ nav-folders = Mappen
 nav-label-new = Nieuw label maken
 nav-folder-new = Nieuwe map maken
 nav-menu-check-mail = Controleren op nieuwe e-mail
+nav-menu-check-inbox = Deze inbox controleren
+nav-menu-sign-in-again = Opnieuw aanmelden
+nav-menu-new-mail = Nieuwe e-mail vanuit dit account
+nav-menu-account-settings = Accountinstellingen
+nav-account-checked = Gesynchroniseerd · gecontroleerd { $ago }
+nav-account-in-sync = Gesynchroniseerd
+nav-account-connecting = Verbinden…
+nav-account-offline = Offline, opnieuw proberen
+nav-account-signed-out = Aanmelding bij { $provider } verlopen
+nav-account-password-refused = Wachtwoord geweigerd
+nav-account-storage = { $used } van { $total } gebruikt
 nav-menu-new-subfolder = Nieuwe map erin
 nav-menu-new-sublabel = Nieuw label erin
 nav-menu-empty-trash = Prullenbak legen
@@ -16,10 +27,6 @@ nav-account-unnamed = Account { $number }
 nav-all-accounts = Alle accounts
 nav-expand = Mappen tonen
 nav-collapse = Mappen verbergen
-nav-tab-new = { $count ->
-    [one] { $count } nieuw
-   *[other] { $count } nieuw
-}
 storage-used = { $percent }% van { $total } gebruikt
 storage-used-detail = { $address }: { $used } van { $total } gebruikt
 

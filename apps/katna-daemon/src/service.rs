@@ -5,15 +5,16 @@
 use std::sync::Arc;
 
 use async_channel::Receiver;
-use katna_core::{AccountId, ids};
+use katna_core::{AccountId, Pop3Keep, ids};
 use katna_dbus::{
-    AccountStatus, DriveUpload, KatnaAccount, KatnaDevice, NewImapAccount, NewPop3Account,
-    NoteItem, OutboxItem, TemplateItem, UpdateStatus, flag,
+    AccountStatus, CloudAccess, CloudEntry, CloudListing, DriveUpload, KatnaAccount, KatnaDevice,
+    NewImapAccount, NewPop3Account, NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus,
+    flag, mute,
 };
-use katna_store::{FolderId, MessageFlags, MessageId};
+use katna_store::{Bell, FolderId, MailCategory, MessageFlags, MessageId, Pinned};
 use zbus::{fdo, object_server::SignalEmitter};
 
-use crate::daemon::{CommandError, Daemon, Notice};
+use crate::daemon::{CommandError, Daemon, MuteOf, Notice};
 use crate::translate::TranslateError;
 
 /// The object at `/in/invenia/katna/Pim1`.
@@ -86,14 +87,15 @@ macro_rules! pim_interface {
             async fn discover_account(
                 &self,
                 address: String,
-            ) -> fdo::Result<(NewImapAccount, String, String, bool)> {
-                let (account, found) = self.daemon.discover_account(&address).await?;
+            ) -> fdo::Result<(NewImapAccount, ServerSpec, String, String, bool)> {
+                let (account, pop3, found) = self.daemon.discover_account(&address).await?;
                 let sign_in = found
                     .oauth
                     .map(|p| p.as_str().to_owned())
                     .unwrap_or_default();
                 Ok((
                     account,
+                    pop3,
                     found.source.as_str().to_owned(),
                     sign_in,
                     found.password,
@@ -126,6 +128,21 @@ macro_rules! pim_interface {
                 Ok(self.daemon.rename_account(AccountId(account), &name)?)
             }
 
+            async fn set_pop3_keep(
+                &self,
+                account: i64,
+                leave_on_server: bool,
+                keep_days: u32,
+                delete_with_local: bool,
+            ) -> fdo::Result<()> {
+                let keep = Pop3Keep {
+                    leave_on_server,
+                    days: (keep_days > 0).then_some(keep_days),
+                    delete_with_local,
+                };
+                Ok(self.daemon.set_pop3_keep(AccountId(account), keep).await?)
+            }
+
             async fn remove_account(&self, account: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.remove_account(AccountId(account)).await?)
             }
@@ -142,6 +159,10 @@ macro_rules! pim_interface {
             async fn sync_now(&self, account: i64) -> fdo::Result<()> {
                 let account = (account != 0).then_some(AccountId(account));
                 Ok(self.daemon.sync_now(account).await?)
+            }
+
+            async fn sync_folder(&self, folder: i64) -> fdo::Result<()> {
+                Ok(self.daemon.sync_folder(FolderId(folder)).await?)
             }
 
             async fn fetch_body(&self, message: i64) -> fdo::Result<()> {
@@ -162,6 +183,81 @@ macro_rules! pim_interface {
                 Ok(self.daemon.set_pinned(&ids(&messages), on)?)
             }
 
+            async fn mute(
+                &self,
+                kind: &str,
+                id: i64,
+                address: &str,
+                until: i64,
+            ) -> fdo::Result<()> {
+                let what = mute_of(kind, id, address)?;
+                Ok(self.daemon.mute(what, (until != 0).then_some(until))?)
+            }
+
+            async fn unmute(&self, kind: &str, id: i64, address: &str) -> fdo::Result<()> {
+                Ok(self.daemon.unmute(mute_of(kind, id, address)?)?)
+            }
+
+            async fn pin_in_chat(
+                &self,
+                message: i64,
+                kind: &str,
+                file: i64,
+                text: &str,
+                label: &str,
+                replace: i64,
+            ) -> fdo::Result<i64> {
+                let what =
+                    match kind {
+                        "mail" => Pinned::Mail,
+                        "file" => Pinned::File(usize::try_from(file).map_err(|_| {
+                            CommandError::InvalidArgs(format!("no attachment {file}"))
+                        })?),
+                        "text" => Pinned::Text(text.to_owned()),
+                        other => {
+                            return Err(
+                                CommandError::InvalidArgs(format!("no pin kind {other}")).into()
+                            );
+                        }
+                    };
+                Ok(self
+                    .daemon
+                    .pin_in_chat(
+                        MessageId(message),
+                        what,
+                        label,
+                        (replace != 0).then_some(replace),
+                    )?
+                    .unwrap_or(0))
+            }
+
+            async fn unpin_in_chat(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.unpin_in_chat(id)?)
+            }
+
+            async fn order_chat_pins(&self, ids: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.order_chat_pins(&ids)?)
+            }
+
+            async fn set_bell(
+                &self,
+                folder: i64,
+                category: i64,
+                notify: bool,
+                count: bool,
+            ) -> fdo::Result<()> {
+                let category =
+                    match category {
+                        0 => None,
+                        n => Some(MailCategory::from_storage(n).ok_or_else(|| {
+                            CommandError::InvalidArgs(format!("no inbox tab {n}"))
+                        })?),
+                    };
+                Ok(self
+                    .daemon
+                    .set_bell(FolderId(folder), category, Bell { notify, count })?)
+            }
+
             async fn create_folder(
                 &self,
                 account: i64,
@@ -174,6 +270,29 @@ macro_rules! pim_interface {
                     .create_folder(AccountId(account), name, parent)
                     .await?
                     .0)
+            }
+
+            async fn rename_folder(&self, folder: i64, new_name: &str) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .rename_folder(FolderId(folder), new_name)
+                    .await?)
+            }
+
+            async fn delete_folder(&self, folder: i64) -> fdo::Result<u32> {
+                Ok(self.daemon.delete_folder(FolderId(folder)).await?)
+            }
+
+            async fn set_labels(
+                &self,
+                messages: Vec<i64>,
+                add: Vec<i64>,
+                remove: Vec<i64>,
+            ) -> fdo::Result<()> {
+                let folders = |ids: &[i64]| ids.iter().map(|&id| FolderId(id)).collect::<Vec<_>>();
+                Ok(self
+                    .daemon
+                    .set_labels(&ids(&messages), &folders(&add), &folders(&remove))?)
             }
 
             async fn move_messages(&self, messages: Vec<i64>, folder: i64) -> fdo::Result<()> {
@@ -258,6 +377,30 @@ macro_rules! pim_interface {
             async fn delete_template(&self, id: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.delete_template(id)?)
             }
+
+            // ---- Mail rules (docs/ARCHITECTURE.md §9.4) ----
+
+            async fn save_rule(&self, json: String) -> fdo::Result<i64> {
+                Ok(self.daemon.save_rule(&json)?)
+            }
+
+            async fn delete_rule(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.delete_rule(id)?)
+            }
+
+            async fn reorder_rules(&self, ids: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.reorder_rules(&ids)?)
+            }
+
+            async fn set_rule_enabled(&self, id: i64, on: bool) -> fdo::Result<()> {
+                Ok(self.daemon.set_rule_enabled(id, on)?)
+            }
+
+            async fn apply_rule(&self, id: i64, days: u32) -> fdo::Result<u32> {
+                Ok(self.daemon.apply_rule(id, days)?)
+            }
+
+            // ---- End of mail rules ----
 
             async fn save_contact(
                 &self,
@@ -372,12 +515,157 @@ macro_rules! pim_interface {
                 Ok(self.daemon.drive_share_with_link(&uploads).await?)
             }
 
+            async fn cloud_readable(&self, account: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.cloud_readable(AccountId(account)).await?)
+            }
+
+            async fn cloud_list(
+                &self,
+                account: i64,
+                place: String,
+                what: String,
+                page: String,
+            ) -> fdo::Result<CloudListing> {
+                Ok(self
+                    .daemon
+                    .cloud_list(AccountId(account), &place, &what, &page)
+                    .await?)
+            }
+
+            async fn cloud_fetch(&self, account: i64, entry: CloudEntry) -> fdo::Result<String> {
+                Ok(self.daemon.cloud_fetch(AccountId(account), entry).await?)
+            }
+
+            async fn cloud_thumbnail(
+                &self,
+                account: i64,
+                link: String,
+                width: u32,
+            ) -> fdo::Result<Vec<u8>> {
+                Ok(self
+                    .daemon
+                    .cloud_thumbnail(AccountId(account), &link, width)
+                    .await?)
+            }
+
+            async fn cloud_writable(&self, account: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.cloud_writable(AccountId(account)).await?)
+            }
+
+            async fn cloud_upload(
+                &self,
+                account: i64,
+                folder: String,
+                path: String,
+            ) -> fdo::Result<i64> {
+                Ok(self
+                    .daemon
+                    .cloud_upload(AccountId(account), &folder, &path)
+                    .await?)
+            }
+
+            async fn cloud_link(&self, account: i64, entry: CloudEntry) -> fdo::Result<i64> {
+                Ok(self.daemon.cloud_link(AccountId(account), &entry)?)
+            }
+
+            async fn cloud_trash(
+                &self,
+                account: i64,
+                ids: Vec<String>,
+                trashed: bool,
+            ) -> fdo::Result<u32> {
+                Ok(self
+                    .daemon
+                    .cloud_trash(AccountId(account), &ids, trashed)
+                    .await?)
+            }
+
+            async fn cloud_access(
+                &self,
+                account: i64,
+                id: String,
+            ) -> fdo::Result<Vec<CloudAccess>> {
+                Ok(self.daemon.cloud_access(AccountId(account), &id).await?)
+            }
+
+            async fn cloud_grant(
+                &self,
+                account: i64,
+                id: String,
+                addresses: Vec<String>,
+                role: String,
+                notify: bool,
+            ) -> fdo::Result<Vec<String>> {
+                Ok(self
+                    .daemon
+                    .cloud_grant(AccountId(account), &id, &addresses, &role, notify)
+                    .await?)
+            }
+
+            async fn cloud_set_access(
+                &self,
+                account: i64,
+                id: String,
+                permission: String,
+                role: String,
+            ) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .cloud_set_access(AccountId(account), &id, &permission, &role)
+                    .await?)
+            }
+
+            async fn cloud_set_link(
+                &self,
+                account: i64,
+                id: String,
+                role: String,
+            ) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .cloud_set_link(AccountId(account), &id, &role)
+                    .await?)
+            }
+
+            async fn cloud_rename(
+                &self,
+                account: i64,
+                id: String,
+                name: String,
+            ) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .cloud_rename(AccountId(account), &id, &name)
+                    .await?)
+            }
+
             async fn meeting_link(&self, account: i64) -> fdo::Result<String> {
                 Ok(self.daemon.meeting_link(AccountId(account)).await?)
             }
 
             async fn set_calendar_hidden(&self, id: i64, hidden: bool) -> fdo::Result<()> {
                 Ok(self.daemon.set_calendar_hidden(id, hidden)?)
+            }
+
+            async fn add_calendar(
+                &self,
+                account: i64,
+                name: String,
+                color: String,
+            ) -> fdo::Result<i64> {
+                Ok(self.daemon.add_calendar(account, &name, &color).await?)
+            }
+
+            async fn rename_calendar(&self, id: i64, name: String) -> fdo::Result<()> {
+                Ok(self.daemon.rename_calendar(id, &name).await?)
+            }
+
+            async fn set_calendar_color(&self, id: i64, color: String) -> fdo::Result<String> {
+                Ok(self.daemon.set_calendar_color(id, &color).await?)
+            }
+
+            async fn delete_calendar(&self, id: i64, delete: bool) -> fdo::Result<()> {
+                Ok(self.daemon.delete_calendar(id, delete).await?)
             }
 
             async fn calendar_status(&self) -> fdo::Result<Vec<(i64, String, String)>> {
@@ -404,6 +692,17 @@ macro_rules! pim_interface {
                 Ok(self.daemon.sender_picture(&address).await?)
             }
 
+            async fn company_of(&self, address: String, website: String) -> fdo::Result<String> {
+                Ok(self.daemon.company_of(&address, &website).await?)
+            }
+
+            async fn gmail_signatures(
+                &self,
+                account: i64,
+            ) -> fdo::Result<Vec<(String, String, String)>> {
+                Ok(self.daemon.gmail_signatures(AccountId(account)).await?)
+            }
+
             async fn translate(
                 &self,
                 message: i64,
@@ -424,6 +723,89 @@ macro_rules! pim_interface {
                 match self.daemon.translation_sources(&target).await {
                     Ok(sources) => (sources, String::new()),
                     Err(err) => (Vec::new(), problem(&err).to_owned()),
+                }
+            }
+
+            async fn ai_rephrase(
+                &self,
+                text: String,
+                tone: String,
+                instruction: String,
+            ) -> (String, String, u32, String) {
+                match self.daemon.ai_rephrase(&text, &tone, &instruction).await {
+                    Ok(done) => (
+                        done.text,
+                        done.plan.kind,
+                        done.plan.days_left.unwrap_or(0),
+                        String::new(),
+                    ),
+                    Err(err) => (String::new(), String::new(), 0, err.problem().to_owned()),
+                }
+            }
+
+            async fn ai_complete(&self, before: String, answered: String) -> (String, String) {
+                match self.daemon.ai_complete(&before, &answered).await {
+                    Ok(done) => (done.text, String::new()),
+                    Err(err) => (String::new(), err.problem().to_owned()),
+                }
+            }
+
+            async fn ai_summarize(
+                &self,
+                newest: i64,
+                request: String,
+            ) -> (String, String, u32, String) {
+                let Ok(request) = serde_json::from_str(&request) else {
+                    return (
+                        String::new(),
+                        String::new(),
+                        0,
+                        katna_ai::wire::problem::FAILED.to_owned(),
+                    );
+                };
+                match self.daemon.ai_summarize(MessageId(newest), &request).await {
+                    Ok((summary, plan)) => (
+                        summary,
+                        plan.kind,
+                        plan.days_left.unwrap_or(0),
+                        String::new(),
+                    ),
+                    Err(err) => (String::new(), String::new(), 0, err.problem().to_owned()),
+                }
+            }
+
+            async fn ai_draft(&self, request: String) -> (String, String, u32, String) {
+                let Ok(request) = serde_json::from_str(&request) else {
+                    return (
+                        String::new(),
+                        String::new(),
+                        0,
+                        katna_ai::wire::problem::FAILED.to_owned(),
+                    );
+                };
+                match self.daemon.ai_draft(&request).await {
+                    Ok(done) => (
+                        done.text,
+                        done.plan.kind,
+                        done.plan.days_left.unwrap_or(0),
+                        String::new(),
+                    ),
+                    Err(err) => (String::new(), String::new(), 0, err.problem().to_owned()),
+                }
+            }
+
+            async fn set_ai_key(&self, key: String) -> fdo::Result<()> {
+                Ok(self.daemon.set_ai_key(&key).await?)
+            }
+
+            async fn ai_key_saved(&self) -> fdo::Result<bool> {
+                Ok(self.daemon.ai_key_saved().await?)
+            }
+
+            async fn ai_models(&self, provider: String, address: String) -> (Vec<String>, String) {
+                match self.daemon.ai_models(&provider, &address).await {
+                    Ok(models) => (models, String::new()),
+                    Err(err) => (Vec::new(), err.problem().to_owned()),
                 }
             }
 
@@ -558,6 +940,9 @@ macro_rules! pim_interface {
 
             #[zbus(signal)]
             async fn contacts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn rules_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
         }
     };
 }
@@ -566,6 +951,21 @@ katna_core::with_dbus_names!(pim_interface);
 
 fn ids(messages: &[i64]) -> Vec<MessageId> {
     messages.iter().copied().map(MessageId).collect()
+}
+
+/// What [`katna_dbus::mute`] `kind` and `id` or `address` name.
+fn mute_of(kind: &str, id: i64, address: &str) -> Result<MuteOf, CommandError> {
+    Ok(match kind {
+        mute::ACCOUNT => MuteOf::Account(AccountId(id)),
+        mute::FOLDER => MuteOf::Folder(FolderId(id)),
+        mute::CONVERSATION => MuteOf::Conversation(MessageId(id)),
+        mute::SENDER => MuteOf::Sender(address.to_owned()),
+        other => {
+            return Err(CommandError::InvalidArgs(format!(
+                "cannot mute {other:?} (account, folder, conversation or sender)"
+            )));
+        }
+    })
 }
 
 /// Flag names from [`katna_dbus::flag`] as bits.
@@ -579,10 +979,11 @@ fn message_flags(names: &[String]) -> Result<MessageFlags, CommandError> {
             flag::DRAFT => MessageFlags::DRAFT,
             flag::FORWARDED => MessageFlags::FORWARDED,
             flag::IMPORTANT => MessageFlags::IMPORTANT,
+            flag::MUTED => MessageFlags::MUTED,
             other => {
                 return Err(CommandError::InvalidArgs(format!(
                     "unknown flag {other:?} \
-                     (seen, answered, flagged, draft, forwarded or important)"
+                     (seen, answered, flagged, draft, forwarded, important or muted)"
                 )));
             }
         };
@@ -627,6 +1028,7 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             }
             Notice::ContactsChanged => PimService::contacts_changed(&emitter).await,
             Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
+            Notice::RulesChanged => PimService::rules_changed(&emitter).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

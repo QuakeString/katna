@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Katna Mail ile gönder
 setup-tagline = Bilgisayarınızda duran hızlı ve gizli e-posta.
 setup-update-where = Katna Mail, { $path } konumunda güncellenir. Postalarınız, ayarlarınız ve kısayollarınız olduğu gibi kalır.
 setup-for = Şunun için yükle

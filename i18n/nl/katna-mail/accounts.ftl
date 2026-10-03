@@ -14,6 +14,17 @@ accounts-unified-switch-detail = ‘Alle accounts’ staat boven in het mappenve
 accounts-row = Accounts
 accounts-row-detail = Het mappenvenster en het accountmenu tonen de accounts in deze volgorde; het eerste is de standaard. Als je een account verwijdert, wordt de kopie van de e-mail die Katna op deze computer heeft verwijderd. De e-mail blijft op de server.
 accounts-none = Nog geen accounts.
+accounts-pop3-row = E-mail op de server
+accounts-pop3-row-detail = POP3-accounts downloaden e-mail naar deze computer. Kies wat er daarna met de kopie op de server gebeurt.
+accounts-pop3-with-katna = Bewaren tot ik het in Katna verwijder
+accounts-pop3-at-once = Verwijderen zodra gedownload
+accounts-pop3-after-days = { $count ->
+    [one] Verwijderen na { $count } dag
+   *[other] Verwijderen na { $count } dagen
+}
+accounts-pop3-never = Nooit verwijderen
+accounts-pop3-days-less = Minder dagen
+accounts-pop3-days-more = Meer dagen
 accounts-kind-imported = Geïmporteerd
 accounts-picture-reset = Desktopafbeelding gebruiken
 accounts-picture-change = Afbeelding wijzigen
@@ -72,6 +83,9 @@ accounts-confirm-word = verwijderen
 accounts-confirm-placeholder = Typ ‘{ accounts-confirm-word }’
 accounts-confirm-prompt = Typ ‘{ accounts-confirm-word }’ om te bevestigen:
 accounts-cancel = Annuleren
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Verwijdert de e-mail en bijlagen die Katna heeft gedownload, afzenderafbeeldingen en de zoekindex, en downloadt daarna de recente e-mail opnieuw. Accounts, instellingen en e-mail die alleen op deze computer staat, blijven.
 reset-cache-button = Cache resetten
 reset-cache-title = De cache resetten?

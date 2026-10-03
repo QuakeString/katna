@@ -9,7 +9,7 @@ tray-new-message = _Nova mensagem
 tray-preferences = _Preferências
 tray-quit = _Sair
 
-## The tray icon's tooltip
+## The tray icon's tooltip, under "Katna Mail"
 
 tray-unread = { $count ->
     [0] Nenhum e-mail não lido

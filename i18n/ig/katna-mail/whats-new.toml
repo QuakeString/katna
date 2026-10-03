@@ -1594,3 +1594,1366 @@ title = "Tinye akara na PDF"
 text = """
 Pịa pen dị na onye nlele PDF iji mee ka ederede pụta ìhè, kpọọ akara n'okpuru ya, akara ebili mmiri ma ọ bụ gbachapụ ya, ma ọ bụ see ihe na pen, na agba ị họọrọ. Megharịa na Ctrl+Z, hichapụ akara na ihe nhichapụ, wee chekwaa mbipụta nwere akara. Mgbakwunye mbụ ahụ ka dị ka ọ dị.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Ihe mere akaụntụ enweghị kalịnda"
+text = """
+Mgbe kalịnda nke akaụntụ anaghị egosi, Kalịnda na-ekwu ugbu a ihe sava zara, “Nwaa ọzọ” na-achọkwa ha ọzọ ozugbo. Akaụntụ Gmail ma ọ bụ Outlook e ji okwuntughe tinye na-enye ohere ịbanye na Google ma ọ bụ Microsoft, nke kalịnda ha chọrọ.
+"""
+
+["2026-09-29-1610-one-checkbox"]
+title = "Igbe nlele na-akara"
+text = """
+Igbe nlele ọ bụla na Katna Mail nwere ugbu a otu nha dị ka bọtịnụ gburugburu dị n'akụkụ ya. Akara ya na-ese onwe ya mgbe ị pịrị ya ma na-ehichapụ mgbe ị kagharịrị ya, n'otu ụzọ na Ntọala, ndepụta ozi, Kalịnda, Kọntaktị, Ndetu na igbe mkparịta ụka.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Menu pịa aka nri dị mkpụmkpụ nke na-adaba mgbe niile"
+text = """
+Menu pịa aka nri nke ndepụta ozi na-edebe omume kwa ụbọchị n'elu ma tinye ndị ọzọ n'okpuru “Soro ya” (ọrụ, ndetu, nzukọ, oku) na “Ndị ọzọ” (spam, mkpa, ntụkwasị). Ọ na-emepe ebe ị pịrị ma na-anọ n'ime windo; na windo dị mkpụmkpụ ma ọ bụ warara, menu nta na-emepe n'ọnọdụ menu ahụ.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Ihe mere akaụntụ enweghị kọntaktị"
+text = """
+Mgbe kọntaktị nke akaụntụ anaghị egosi, Kọntaktị na-ekwu ugbu a ihe sava zara, “Nwaa ọzọ” na-achọkwa ha ọzọ ozugbo. Akaụntụ Gmail ma ọ bụ Outlook e ji okwuntughe tinye na-enye ohere ịbanye na Google ma ọ bụ Microsoft, nke kọntaktị ha chọrọ.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Igbe ọchụchọ na-egosi mgbe ọ na-arụ ọrụ"
+text = """
+Igbe ọchụchọ dị n'elu na-enweta ọnụ agba ntụpọ mgbe ị na-ede na ya, dị ka ogige ọ bụla ọzọ, ntụziaka Ctrl+F ya na-ewepụkwa onwe ya ruo mgbe ị hapụrụ ya ka ọ tọgbọ chakoo.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Ndepụta ọrụ ọ bụla n'anya"
+text = """
+“Ọrụ niile” na-egosi ugbu a ọtụtụ ndepụta n'akụkụ ibe ha dị ka windo nwere ike ịnabata, ya na ahịrị ndị ọzọ n'okpuru, ka e wee ruo ndepụta ọ bụla. Ndepụta ọhụrụ na-apụta n'anya ozugbo ị mere ya.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Ịgafe n'ụzọ dị nro n'etiti mgbakwunye"
+text = """
+Ịga na mgbakwunye na-esote ma ọ bụ nke gara aga n'ime onye nlele site na akụ anaghịzi eme ka ihuenyo na-amụnye amụnye. Onye nlele na-anọgide na-emeghe, faịlụ na-esote na-anọchikwa nke gara aga ozugbo ọ dị njikere.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Dọrọ ndetu ka ị hazie ha"
+text = """
+Dọrọ ndetu na bọọdụ Ndetu iji bugharịa ya, dị ka na Keep. Ndetu ndị ọzọ na-amịfe n'akụkụ iji nye ohere, ọ na-anọkwa ebe ị tụbara ya. Ctrl+Z na-eweghachi ya. Kaadị na-anọ ugbu a nke ọma n'ogidi ha, na-enweghị oghere n'okpuru ndetu dị mkpụmkpụ.
+"""
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Pịa aka nri na Kalịnda"
+text = """
+Pịa aka nri n'oge efu ma ọ bụ ụbọchị iji tinye ihe omume, oge nlekwasị anya ma ọ bụ n'èzí ọfịs n'ebe ahụ. Pịa aka nri n'ihe omume iji dezie, mepụta oyiri, hichapụ, zaa, sonye, zipụ ndị ọbịa email, nye ya agba ma ọ bụ bugara ya na kalịnda ọzọ, na n'ọrụ iji kaa ya dị ka emechara, tinye ya kpakpando, nye ya ụbọchị ọzọ ma ọ bụ hichapụ ya. Mwepu na-eweghachi mgbanwe.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Ndetu na ederede na PDF"
+text = """
+Ịtinye akara na PDF ugbu a nwere ndetu nrapado na igbe ederede: pịa peeji ahụ, pịnye, ma pịa Ctrl+Enter. Bugharịa ntụaka n'elu ndetu iji gụọ ya, ma ọ bụ pịa ya iji gbanwee ya. Zaa na-eziga mbipụta gị nwere akara ozugbo n'ime nzaghachi na ozi ahụ.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Dọrọ ọrụ ebe ị chọrọ ha"
+text = """
+Dọrọ ọrụ elu ma ọ bụ ala na ndepụta ya, ma ọ bụ banye n'ndepụta ọzọ, ọrụ ndị nọ ebe ahụ ga-esebe n'akụkụ iji gosi ebe ọ ga-adakwasị. Google Tasks na-edebe usoro ọhụrụ ahụ na ekwentị gị kwa, ma Mebie na-eweghachi ọrụ ahụ.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Tinye ọrụ site na Kalịnda"
+text = """
+Kaadị ihe omume ọhụrụ nwere taabụ Ọrụ, dịka na Google Calendar. Pịa oge, họrọ Ọrụ, ma isiokwu, ụbọchị na oge ga-aghọ ọrụ n'ndepụta ị họọrọ, ya na nkọwa ma ọ bụrụ na ị chọrọ.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Tinye ọrụ site na Kalịnda"
+text = """
+Pịa aka nri n'oge efu ma ọ bụ ụbọchị na Kalịnda ma họrọ Ọrụ iji tinye ọrụ n'ebe ahụ. Kaadị ihe omume ọhụrụ na-emepe na taabụ Ọrụ ya, ya na ụbọchị na oge ahụ ejupụtara.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalịnda na-achọ ọzọ mgbe sava dị nwayọ"
+text = """
+Mgbe sava kalịnda nke akaụntụ azaghị n'oge, Kalịnda na-ekwu nke a ugbu a, na ma njikọ ahụ ma ọ bụ nkwekọrịta echekwara kwụsịrị, kama "Ahụghị kalịnda ọ bụla". Ọ na-anwa ọzọ n'ime nkeji ole na ole kama ọtụtụ awa.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Faịlụ kọntaktị na-egosi ibudata ha"
+text = """
+Faịlụ dị na panel kọntaktị nke ozi ya na-adịbeghị na kọmputa a na-ejupụta
+ugbu a ka ọ na-ebudata, dịka mgbakwunye ndị dị na ndepụta na-eme, wee meghee.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Ozi akaụntụ ọhụrụ na-apụta ka ọ na-abata"
+text = """
+Mgbe ị tinyere akaụntụ, igbe ozi mbata ya na-ebudata mbụ ma na-ejupụta ka
+ị na-ele, kama ịnọgide na "Na-enweta ozi gị…" ruo mgbe folda niile gwụrụ.
+Folda ndị ọzọ na-ejupụta n'otu ụzọ ahụ.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Igbe nlele kwụ otu ọkwa na akara ngosi"
+text = """
+Igbe nlele dị ntakịrị ugbu a, otu nha dị ka akara ngosi kpakpando na leebụl dị n'akụkụ ha na ndepụta ozi. Ọ ka dị mfe ịpị ha, akara ya ka na-esekwa onwe ya.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalịnda Zoho site n'njikọ nke Zoho n'onwe ya"
+text = """
+Zoho na-enye ngwa ndị ọzọ kalịnda site n'ọdụ (port) nke ọtụtụ netwọk
+na-egbochi, ya mere mgbe “Banye na Zoho” gasịrị, Kalịnda na-agụ ha site
+na API nke Zoho n'onwe ya kama. Ihe omume Zoho gị na-egosi n'akụkụ kalịnda
+gị ndị ọzọ; ịgbanwe ha site na Katna ga-abịa ma emechaa.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Ọrụ Zoho"
+text = """
+Banye na Zoho n'akaụntụ Zoho, ọrụ Zoho ToDo ya na-egosikwa na Ọrụ,
+n'ụzọ abụọ: tinye, dezie, kaa akara ma ọ bụ hichapụ ọrụ na Katna, ọ
+na-agbanwekwa na Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Akara na-anọ n'etiti n'nha ọ bụla"
+text = """
+Mgbe Ntọala > Ọdịdị > Nha karịrị 100%, akara igbe nlele na-anọ ntakịrị n'elu na n'aka ekpe. Nsọtụ igbe nlele na bọtịnụ gburugburu na-eso nha ahụ ebuwanye ibu ugbu a, ya mere akara ya na-anọ n'etiti n'nha ọ bụla.
+"""
+
+["2026-09-30-0230-edges-follow-scaling"]
+title = "Ahịrị gburugburu na-eto na Nha"
+text = """
+Mgbe Nha dị na Ntọala > Ọdịdị karịrị ma ọ bụ erughị 100%, ahịrị agba
+mmesi ike gburugburu igbe ọchụchọ na mpaghara ndị ị nọ na ha, na nsọtụ
+kaadị nhọrọ na mgbanaka ọrụ, na-ebuwanye ma na-ebelata ugbu a ya na ihe
+ndị ọzọ niile, kama ịnọgide dị gịrịgịrị.
+"""
+
+["2026-09-30-0326-google-sign-in-network"]
+title = "Banye na Google na netwọk ọ bụla"
+text = """
+Ịbanye na Google anaghịzi akwụsị na "peer closed connection" na netwọk
+ndị na-ebipụ njikọ Google n'oge. Ọ bụrụ na i wepụ akara na Gmail na ibe
+Google, Katna na-ekwu ya ugbu a kama ịda ada ma emesịa.
+"""
+
+["2026-09-30-0504-google-api-turned-off"]
+title = "Na-ekwu API Google gbanyụrụ"
+text = """
+Mgbe Google gbanyụrụ API maka Katna, Kọntaktị, Kalịnda, Ọrụ na faịlụ
+Drive na-ekwu ugbu a nke ọ bụ n'otu obere ahịrị, ya na bọtịnụ Gbanye
+na-emepe ibe Google maka ya, kama mperi Google n'onwe ya.
+"""
+
+["2026-09-30-0507-newest-mail-first"]
+title = "Ozi kacha ọhụrụ na-abụ ụzọ"
+text = """
+Mgbe ị gbakwunyere akaụntụ, Katna Mail na-ebu ụzọ budata ozi gị kacha
+ọhụrụ, wee laghachi azụ n'ozi ochie, ka ozi taa pụta n'elu igbe ozi
+mbata ozugbo. Ọ bụrụ na nbudata ahụ akwụsị, ọ na-aga n'ihu n'ozi ochie
+oge ọzọ.
+"""
+
+["2026-09-30-0601-keyring-at-login"]
+title = "Na-echere obere akpa gị mgbe ị banyere"
+text = """
+Ọ bụrụ na KWallet ma ọ bụ GNOME Keyring ka kpọchiri mgbe Katna malitere,
+ma windo imeghe ya emechiela, akaụntụ gị anaghịzi egosi okwuntughe
+ezighi ezi. Ha na-echere, ma malite imekọrịta n'onwe ha ozugbo i meghere
+obere akpa ahụ, na-achọghị ka ị pụọ na Katna. Mekọrịta na-arịọ ka i
+mepee ya ọzọ ugbu a.
+"""
+
+["2026-09-30-0606-pdf-rotate-and-top-bar"]
+title = "Tụgharịa peeji PDF"
+text = """
+Ihe nlele PDF nwere ike ịtụgharị peeji ugbu a n'ụzọ elekere ma ọ bụ
+n'ụzọ megidere ya (Ctrl+R na Ctrl+Shift+R), ndepụta e kara akara
+na-echekwakwa otu i si tụgharịa ya. Nọmba peeji na nha mbuli gara n'ogwe
+elu, ka ọ dịghị ihe kpuchiri peeji ahụ.
+"""
+
+["2026-09-30-0610-calendar-events-stay-put"]
+title = "Ihe omume na-anọ ebe ha nọ"
+text = """
+Ịpị ihe omume ma ọ bụ ọrụ na Kalịnda wee gbanwee nlele anaghịzi eme ka
+ọ na-eso ntụnye. Ihe omume na-akpụ naanị ugbu a mgbe ị jidere bọtịnụ wee
+dọrọ ya, ịgbanwe nlele ma ọ bụ peeji, ịpị Esc ma ọ bụ imepe kaadị ya
+na-eweghachi ya otu o si dị.
+"""
+
+["2026-09-30-0620-checkbox-partial-centred"]
+title = "Igbe a kara akara ọkara dị nhata"
+text = """
+Mgbe a họọrọ naanị ụfọdụ ozi, square dị n'ime igbe họrọ niile nwere otu
+oghere n'akụkụ ọ bụla ugbu a, n'agbanyeghị nha ngwa gị.
+"""
+
+["2026-09-30-0632-year-view-day-peek"]
+title = "Hụ atụmatụ ụbọchị site na nlele Afọ"
+text = """
+Na nlele Afọ nke Kalịnda, dobe ntụnye n'elu ụbọchị nwere ntụpọ iji hụ
+ihe omume na ọrụ ya n'obere igbe dị n'akụkụ ya, nke ọ bụla nwere akara
+ngosi na-ekwu ihe ọ bụ na oge ya. Pịa otu iji mepee ya, ma ọ bụ aha
+ụbọchị ahụ iji mepee ụbọchị ahụ. Na ekwentị, pịa ụbọchị ahụ.
+"""
+
+["2026-09-30-0650-notification-opens-own-window"]
+title = "Ọkwa na-emepe ozi n'ihu"
+text = """
+Ịpị ọkwa ozi ọhụrụ na-emepe ozi ahụ na windo nke ya, n'ihu, n'agbanyeghị
+ihe Katna na-egosi n'oge ahụ. Zaa mmadụ niile na-emepe ya ya na nzaghachi
+dị njikere ka ị dee. Chekwaa na-edowe ozi ahụ na-emepeghị ihe ọ bụla, ma
+kwuo ya n'obere ndetu nwere Megharịa.
+"""
+
+["2026-09-30-0700-event-card-join-any-call"]
+title = "Sonye n'oku Teams na Zoom site na Kalịnda"
+text = """
+Kaadị ihe omume na-achọta oku ahụ ugbu a na nkọwa ya ma ọ bụ ebe ya, ka
+akwụkwọ ịkpọ Microsoft Teams, Zoom, Webex, Jitsi ma ọ bụ Google Meet nweta
+bọtịnụ "Sonye site na" n'elu. Adreesị weebụ dị na nkọwa bụ njikọ, ahịrị
+nke underscore apụọla, Ị ga-aga? na-anọkwa n'okpuru ka nkọwa na-akpụgharị.
+"""
+
+["2026-09-30-0715-click-away-closes-viewer"]
+title = "Pịa n'èzí iji mechie"
+text = """
+Pịa oghere gbara ọchịchịrị gburugburu mgbakwunye iji mechie ihe nlele
+ahụ, kama ịchọ bọtịnụ Laghachi. Ịpị na peeji n'onwe ya ka na-ahọrọ
+ederede ma na-aka akara dị ka ọ dị na mbụ.
+"""
+
+["2026-09-30-0729-add-account-and-pop3"]
+title = "Ịgbakwunye akaụntụ ọhụrụ, na POP3"
+text = """
+Ịgbakwunye akaụntụ na-amalite site n'onye na-enye gị ọrụ: Google, Yahoo,
+iCloud, Zoho, Fastmail, GMX, Yandex ma ọ bụ onye ọzọ ọ bụla. Katna
+na-ebu ụzọ kwuo ihe onye ahụ chọrọ, na-egosi nzọụkwụ ọ bụla ka ọ
+na-ejikọ, ma mechie site n'ihe o doziri. Akaụntụ POP3 na-arụkwa ọrụ,
+Ntọala > Akaụntụ na-ahọrọkwa ogologo oge ozi ha ga-anọ na sava.
+"""
+
+["2026-09-30-0802-ctrl-wheel-zoom"]
+title = "Bulie nha site na Ctrl na wiil"
+text = """
+N'ihe nlele mgbakwunye, jide Ctrl ma tụgharịa wiil ụmụ oke iji bulie ma
+ọ bụ belata nha gburugburu ntụnye, ma ọ bụ mịkọọ mkpịsị aka na touchpad.
+Ọ na-arụ ọrụ maka PDF, foto, faịlụ ederede, spredshiit na akwụkwọ.
+"""
+
+["2026-09-30-0817-event-open-the-mail"]
+title = "Mepee ozi dị n'azụ ihe omume"
+text = """
+Ihe omume Gmail mere site n'ozi, dị ka ụgbọ okporo ígwè, ụgbọ elu na
+họtel, na-enweta bọtịnụ Mepee ozi na kaadị ha. Ọ na-emepe ozi ahụ na
+Katna, ma ọ bụ na Gmail mgbe Katna enweghị ya. Ọrụ e mere site n'ozi
+na-emepekwa ozi ya site na kaadị ya na Kalịnda, Dee ndetu nzuko
+na-emepekwa na-enweghị ntabi anya.
+"""
+
+["2026-09-30-0843-calendar-side-panel-menus"]
+title = "Jikwaa kalịnda site na panel akụkụ"
+text = """
+Pịa aka nri na kalịnda dị na panel akụkụ Kalịnda iji gosi naanị ya,
+gbanwee agba ya, gbanwee aha ya ma ọ bụ hichapụ ya. Pịa aka nri n'aha
+akaụntụ iji mepụta kalịnda ọhụrụ n'akaụntụ ahụ ma ọ bụ gosi ma zoo
+kalịnda ya niile. Mgbanwe na-aga n'ọrụ ozi gị, ka ha pụta ebe niile ị
+na-eji ya.
+"""
+
+["2026-09-30-1010-unread-list-keeps-open-mail"]
+title = "Ozi a gụghị na-anọ meghee"
+text = """
+Imepe mkparịta ụka na Akaụntụ niile > A gụghị anaghịzi emechi ya ozugbo.
+Ịgụ ya na-aka ya akara dị ka agụrụ, ọ na-anọkwa na ndepụta ruo mgbe i
+mechiri ya ma ọ bụ mepee nke ọzọ.
+"""
+
+["2026-09-30-1045-tracked-mail-arrives"]
+title = "Ozi e soro ụzọ ya na-erute ọzọ"
+text = """
+Ozi e zigara mgbe nsochi gbanyere nwere ike ịpụta na Ezigara na-erughị
+onye ọ bụla. Ọ na-erute onye nnata ọ bụla ugbu a. Ozi furu efu n'ụzọ a
+chọrọ ka e zigharịa ya.
+"""
+
+["2026-09-30-1114-no-checking-pill"]
+title = "Ọ dịghịzi ihe nlele na-apụta"
+text = """
+"Na-elele ozi ọhụrụ…" anaghịzi apụta n'elu ndepụta. Akụ na-atụgharị na
+bọtịnụ Mee ọhụrụ na n'igbe ozi mbata nke akaụntụ ọ bụla na-egosilarị na
+a na-elele ozi, nlele dara ada ka na-ekwukwa ihe mebiri.
+"""
+
+["2026-09-30-1300-windows-sign-in-and-domains"]
+title = "Banye na Google na Windows"
+text = """
+Katna maka Windows na-enye ugbu a ịbanye na Google na Zoho, dị ka ọ na-eme
+na Linux, ma mara onye na-ejide ozi n'ngalaba nke gị, dị ka adreesị
+Google Workspace, mgbe ị gbakwunyere akaụntụ ahụ.
+"""
+
+["2026-09-30-1511-mail-tables"]
+title = "Tebụl n'ozi na-agụ nke ọma"
+text = """
+Tebụl n'ozi, dị ka ndepụta ọrụ n'ọkwa GitHub Actions, na-edobe kọlụm ha
+n'akụkụ ibe ha ma kwado ha site n'ahịrị ruo n'ahịrị, kama ikewa isiokwu
+otu mkpụrụedemede n'ahịrị ọ bụla. Ahịrị nkewa n'etiti akụkụ ozi
+na-egosikwa ugbu a.
+"""
+
+["2026-09-30-1550-taller-important-marker"]
+title = "Akara Dị mkpa toro ogologo"
+text = """
+Akara Dị mkpa dị n'akụkụ kpakpando toro ogologo 2 px, ka ọ ghara iyi ihe
+a pịkọrọ n'akụkụ kpakpando na igbe akara. Ọ ka nọ n'etiti ahịrị ahụ.
+"""
+
+["2026-09-30-1617-folder-click-goes-to-top"]
+title = "Laghachi n'elu ndepụta"
+text = """
+Ozugbo ndepụta ozi gbadara otu ihuenyo, bọtịnụ gburugburu dị n'okpuru
+aka nri ya na-alaghachi ya n'elu. Ịpị folda ị nọ na ya, dị ka Igbe ozi
+mbata, na-eme otu ihe ahụ, dị ka na Gmail, Home na-emekwa ya.
+"""
+
+["2026-09-30-1622-send-from-file-manager"]
+title = "Zipu faịlụ site na njikwa faịlụ gị"
+text = """
+Pịa aka nri na faịlụ ma ọ bụ folda na Dolphin, GNOME Files ma ọ bụ Windows
+Explorer ma họrọ Zipu site na Katna Mail: ozi ọhụrụ na-emepe ya na ha
+etinyere, folda na-agakwa dị ka zip. Ọ bụrụ na i nwere karịa otu akaụntụ
+ozi, họrọ nke ị ga-esi zipu na menu nta ya.
+"""
+
+["2026-09-30-1624-files-page"]
+title = "Faịlụ niile n'otu ebe"
+text = """
+Peeji Faịlụ ọhụrụ, n'okpuru ogwe ngwa, na-egosi mgbakwunye niile site
+n'akaụntụ niile, nke kacha ọhụrụ na mbụ. Mee ka ọ bụrụ naanị foto, PDF
+ma ọ bụ akwụkwọ, otu akaụntụ, otu onye ma ọ bụ otu oge, ma ọ bụ chọọ site
+n'aha, onye zitere ma ọ bụ isiokwu. Pịa aka nri na faịlụ maka ihe ndị
+ọzọ, Gosi ozi ahụ na-akpọgakwa gị n'ozi o sooro bịa.
+"""
+
+["2026-09-30-1643-dimmer-row-markers"]
+title = "Ndepụta ozi dị jụụ"
+text = """
+Igbe akara tọgbọ chakoo, kpakpando ma ọ bụ akara Dị mkpa na ndepụta ozi
+na-adị ìhè ntakịrị ruo mgbe ntụnye nọ n'elu ahịrị ya. Kpakpando na akara
+etinyere na-edobe agba ha.
+"""
+
+["2026-09-30-1704-folder-arrows-on-hover"]
+title = "Paịn folda dị ọcha karịa"
+text = """
+Obere akụ dị n'akụkụ Igbe ozi mbata, Nwere kpakpando na folda ndị ọzọ
+na-egosi naanị mgbe ntụnye nọ n'elu folda ahụ. Folda i meghere na-edobe
+akụ ya.
+"""
+
+["2026-09-30-1712-arrow-keys-in-times"]
+title = "Igodo akụ n'igbe oge"
+text = """
+Na Họrọ ụbọchị na oge, na n'oge ọrụ, Elu na Ala na-agbanwe akụkụ cursor
+nọ na ya: awa, nkeji ma ọ bụ AM/PM.
+"""
+
+["2026-09-30-1742-check-one-folder"]
+title = "Lelee otu folda maka ozi ọhụrụ"
+text = """
+"Lelee ozi ọhụrụ" na menu ịpị aka nri nke folda na-elele naanị folda ahụ
+ugbu a, ka ọ dị ngwa. N'igbe ozi mbata nke akaụntụ n'okpuru Akaụntụ
+niile, ọ na-elele igbe ozi mbata nke akaụntụ ahụ, na ndepụta dị ka Igbe
+ozi mbata ma ọ bụ Ezigara n'okpuru Akaụntụ niile, ọ na-elele folda ahụ
+n'akaụntụ ọ bụla.
+"""
+
+["2026-09-30-1742-frosted-viewer"]
+title = "Ihe nlele dị mfe, yiri iko gbara ụzụzụ"
+text = """
+Ogwe elu nke ihe nlele mgbakwunye dị gịrịgịrị ma dịkwa mfe, peeji, nha
+mbuli na ntụgharị na-anọkwa n'otu ogwe gburugburu. Gburugburu faịlụ ahụ,
+Katna Mail na-egosi n'ụzụzụ n'okpuru ákwà ojii dị nro, ogwe ngwaọrụ
+dịkwa ka iko gbara ụzụzụ. Ụzụzụ ahụ na-agbaso Ntọala > Nnwale; ma ọ bụrụ
+na ọ nweghị, ihe nlele ahụ na-eji ákwà ojii nkịtị.
+"""
+
+["2026-09-30-1752-touchpad-glide"]
+title = "Mkpali touchpad na-amị amị"
+text = """
+Mkpali ngwa ngwa nke mkpịsị aka abụọ na touchpad na-aga n'ihu na-akpụgharị
+ma na-ebelata ọsọ, dị ka n'ngwa ndị ọzọ. Metụ touchpad ọzọ iji kwụsị ya.
+Na Wayland.
+"""
+
+["2026-09-30-1800-inbox-tabs-in-top-row"]
+title = "Taabụ igbe ozi mbata n'ahịrị elu"
+text = """
+Isi, Nkwalite, Mmekọrịta ọha na taabụ igbe ozi mbata ndị ọzọ na-anọ ugbu
+a n'ogwe gburugburu n'ahịrị elu nke ndepụta, nke ọ bụla nwere ọnụọgụ
+nwere agba nke ozi ya a gụghị. Ìhè nhọrọ na-amị gaa na taabụ ị họrọ,
+ịpị taabụ mepere emepe na-alaghachikwa ndepụta ya n'elu. Mgbe ndepụta dị
+warara, ogwe ahụ na-ewere ahịrị nke ya ma gosi akara ngosi, na-edobe aha
+taabụ mepere emepe; na ekwentị ọ na-anọ n'ogwe ndepụta, ya na Mee ọhụrụ
+na menu Ọzọ.
+"""
+
+["2026-09-30-1805-account-menu"]
+title = "Ozi akaụntụ na menu ịpị aka nri"
+text = """
+Pịa aka nri n'aha akaụntụ na ndepụta folda, ma ọ bụ igbe ozi mbata ya
+n'okpuru Akaụntụ niile, iji hụ adreesị ya, ma ọ na-emekọrịta na mgbe e
+lelere ya ikpeazụ, na oke nchekwa ọ na-eji. Site ebe ahụ ị nwere ike
+ilele igbe ozi mbata ahụ, dee ozi ọhụrụ site n'akaụntụ ahụ, mepee
+ntọala ya, ma ọ bụ banye ọzọ mgbe ịbanye agwụla.
+"""
+
+["2026-09-30-1819-glass-search-box"]
+title = "Igbe ọchụchọ yiri iko"
+text = """
+Mgbe azụ gbara ụzụzụ gbanyere, igbe ọchụchọ na-adị ka iko gbara ụzụzụ
+nwere nsọtụ dị nro mgbe ị naghị eji ya, ma na-esi ike mgbe ị pịrị n'ime
+ya ide ihe.
+"""
+
+["2026-09-30-1820-search-cancel-restores"]
+title = "Kagbuo ọchụchọ, nweta ozi gị azụ"
+text = """
+Esc ma ọ bụ ihichapụ igbe ọchụchọ na-alaghachi ugbu a ebe ị nọ: otu folda
+ahụ, otu ebe na ndepụta na ozi i meghere. Mepee nsonaazụ kama, ọchụchọ
+ahụ na-ewere ọnọdụ dị ka ọ dị na mbụ.
+"""
+
+["2026-09-30-1840-first-run-window"]
+title = "Mmalite mbụ dị mma karịa"
+text = """
+Ka ị na-edozi Katna Mail, windo ahụ na-egosi n'azụ ibe ndozi n'okpuru
+ákwà dị nro: ngwa, Dee na igbe ọchụchọ, ya na ihe nnọchi dị nro ebe
+folda na ozi gị ga-apụta. Nzọụkwụ ọhụrụ na-enye akaụntụ Katna ma depụta
+ihe ọ na-agbanye (akwụkwọ nnata ọgụgụ, nsochi njikọ, Ihe omume na
+ntụgharị asụsụ), ma ọ bụ ị nwere ike ịwụfe ya.
+"""
+
+["2026-09-30-1850-windows-frame-and-blur"]
+title = "Etiti na ụzụzụ Katna na Windows"
+text = """
+Na Windows, Katna Mail na-emepe ugbu a n'ime ihuenyo, buru ibu kacha mgbe
+ihuenyo dị obere. Ntọala > Nnwale nwere ike ime ka ihe dị n'azụ windo
+gbaa ụzụzụ, etiti Katna n'onwe ya na-emekwa ka ogwe elu ghọọ ogwe aha
+oge ọzọ i meghere Katna Mail.
+"""
+
+["2026-09-30-1851-dark-depth"]
+title = "Dị mfe ịhụ n'agba ọchịchịrị"
+text = """
+N'agba ọchịchịrị, ihe ndị na-ese n'elu ndepụta ozi na-enwu ntakịrị ugbu
+a, nwee nsọtụ ìhè dị nro, n'ihi na onyinyo anaghị egosi nke ọma n'azụ
+gbara ọchịchịrị. Bọtịnụ Laghachi n'elu, menu, windo Dee na igbe mkparịta
+na-apụta ìhè. Agba ìhè dị ka ọ dị na mbụ.
+"""
+
+["2026-09-30-1911-files-scrollbar"]
+title = "Ogwe ịkpụgharị na peeji Faịlụ"
+text = """
+Mgbe faịlụ karịrị ihe ga-adaba, ogwe ịkpụgharị dị gịrịgịrị na-egosi
+n'aka nri ka ị na-akpụgharị ma ọ bụ mgbe ntụnye nọ n'elu faịlụ, wee
+kpochapụ. Dọrọ ya iji gafee faịlụ ngwa ngwa, ma ọ bụ pịa n'elu ma ọ bụ
+n'okpuru ya iji wụlie ebe ahụ.
+"""
+
+["2026-09-30-1919-tabs-keep-open-mail"]
+title = "Ịgbanwe taabụ na-edobe ozi mepere emepe"
+text = """
+Mgbe Paịn ọgụgụ dị n'akụkụ ndepụta, ịhọrọ taabụ igbe ozi mbata ọzọ
+anaghịzi emechi ozi ị na-agụ; ndepụta na-agbanwe, ozi ahụ na-anọkwa
+meghee.
+"""
+
+["2026-09-30-1925-inbox-tabs-centred"]
+title = "Taabụ igbe ozi mbata n'etiti"
+text = """
+Taabụ igbe ozi mbata na-anọ ugbu a n'etiti ahịrị elu nke ndepụta, na-akpụ
+n'akụkụ naanị ruo ebe bọtịnụ ya chọrọ.
+"""
+
+["2026-09-30-1945-page-box-arrow-keys"]
+title = "Igodo akụ n'igbe peeji"
+text = """
+Na PDF, pịa nọmba peeji ma pịa Elu ma ọ bụ Ala iji laghachi otu peeji ma
+ọ bụ gaa n'ihu. Jide igodo ahụ iji gafee peeji ngwa ngwa.
+"""
+
+["2026-09-30-1952-phone-bar-labels"]
+title = "Aha ngwa na ekwentị na-agbaso ntọala gị"
+text = """
+Mgbe aha ngwa gbanyụrụ na Ntọala, ogwe dị n'okpuru windo nha ekwentị
+na-egosi naanị akara ngosi ugbu a, n'etiti, dị ka ogwe akụkụ na-eme.
+"""
+
+["2026-09-30-1955-account-menu-icons"]
+title = "Ntọala na asụsụ na menu akaụntụ"
+text = """
+Menu dị n'okpuru foto akaụntụ gị na-emepe ugbu a ya na ahịrị akara ngosi:
+mepee Ntọala ma ọ bụ gbanwee asụsụ. Ọkọlọtọ asụsụ ahụ ahapụla ogwe elu
+iji nye ohere.
+"""
+
+["2026-09-30-2001-phone-tabs-fold"]
+title = "Taabụ igbe ozi mbata niile na-anọ nso"
+text = """
+Mgbe windo dị warara, taabụ igbe ozi mbata na-apịaji nke ọma kama izo:
+aha na-aghọ akara ngosi buru ibu, mgbe ahụ ọnụọgụ na-ewepụ onwe ha. Na
+ekwentị, taabụ na-agbasa n'ogwe ahụ dum, dị mfe ịpị, ya na Ọzọ na njedebe
+otu ogwe ahụ.
+"""
+
+["2026-09-30-2012-fit-and-page-arrows"]
+title = "Dabara, akụ peeji na ihe ndị ọzọ n'ihe nlele"
+text = """
+Ihe nlele mgbakwunye nwere bọtịnụ Dabara: peeji PDF na-adaba n'ogo windo,
+foto na windo, akwụkwọ, slaịdị na spredshiit n'obosara ya. Foto na-enweta
+Nha n'ezie, a pụkwara ịtụgharị ha. Dobe ntụnye n'elu igbe peeji maka
+obere akụ iji laghachi otu peeji ma ọ bụ gaa n'ihu, slaịdị na-enwetakwa
+igbe nke ha.
+"""
+
+["2026-09-30-2019-folder-icon-colours"]
+title = "Akara ngosi folda nwere agba"
+text = """
+Akara ngosi nke paịn folda nwere agba ugbu a na-ekwu ihe folda ọ bụla
+jidere: A gụghị acha anụnụ anụnụ, Nwere kpakpando edo edo, Dị mkpa
+amber, Ezigara akwụkwọ ndụ, Spam uhie, Ndebiri odo odo, Igbe ozi mbata
+n'agba mmesi ike nke desktọpụ gị. Ọnụọgụ ozi na-anọ n'obere mpekere dị
+nro.
+"""
+
+["2026-09-30-2040-tabs-no-slide"]
+title = "Taabụ igbe ozi mbata dị ngwa karịa"
+text = """
+Ịpị taabụ igbe ozi mbata na-enye ya ìhè nhọrọ ozugbo ugbu a, ya na naanị
+ebili mmiri nke ịpị ahụ, kama ime ka ìhè ahụ mịa gafee taabụ ndị ọzọ.
+"""
+
+["2026-10-01-0145-files-tidy"]
+title = "Peeji Faịlụ dị ọcha karịa"
+text = """
+Ọnụọgụ dị n'akụkụ ụdị faịlụ ọ bụla na akaụntụ ọ bụla na-anọ ugbu a n'otu
+obere mpekere ahụ dị ka ọnụọgụ folda na Ozi. Ahịrị dị n'okpuru aha ibe
+ahụ na ahịrị faịlụ na-amalitekwa ma na-ejedebe n'otu nsọtụ.
+"""
+
+["2026-10-01-0147-today-marker-fits"]
+title = "Ụbọchị taa na-adaba n'akara ya"
+text = """
+Na nlele Onwa nke Kalịnda, akara taa na-ejide ụbọchị ahụ dum ugbu a. N'ụbọchị
+mbụ, ọ na-aghọ mpekere gburugburu "01 Okt" kama obere okirikiri aha ahụ
+gafere.
+"""
+
+["2026-10-01-0208-tab-counts-stay"]
+title = "Ọnụọgụ taabụ na-anọ ebe ha nọ"
+text = """
+Imepe taabụ igbe ozi mbata anaghịzi eme ka ogwe taabụ wụlie. Taabụ mepere
+emepe na-edobe ọnụọgụ ozi ọhụrụ ya, nke na-eji nwayọọ ghọọ ntụ dị jụụ,
+ọnụọgụ ahụ na-apịajikwa nke ọma ozugbo ị gụchara ihe niile dị na taabụ
+ahụ.
+"""
+
+["2026-10-01-0225-files-keyboard"]
+title = "Gafee faịlụ gị site na keyboard"
+text = """
+Na peeji Faịlụ, igodo akụ na-aga n'etiti faịlụ ugbu a, Home na End na-aga
+na nke mbụ na nke ikpeazụ, Enter na-emepekwa otu. N'ihe nlele e meghere
+site ebe ahụ, akụ na-aga na faịlụ na-esote na peeji ahụ, n'agbanyeghị
+ozi o sooro bịa; Shift na akụ na-anọ na mgbakwunye nke otu ozi ahụ.
+"""
+
+["2026-10-01-0254-files-dates"]
+title = "Họrọ ụbọchị na peeji Faịlụ"
+text = """
+Mpekere oge na peeji Faịlụ na-emepe ugbu a kalịnda ọnwa abụọ ya na nhọrọ
+ngwa ngwa dị ka Izu gara aga na Ọnwa a. Pịa otu ụbọchị, ma ọ bụ dọrọ site
+n'otu ụbọchị gaa n'ọzọ, faịlụ na-esokwa ka ị na-adọrọ. Mgbe ahụ tụgharịa
+wiil ụmụ oke n'elu mpekere ahụ iji kpụga otu ogologo oge ahụ n'azụ ma ọ
+bụ n'ihu.
+"""
+
+["2026-10-01-0256-color-schemes"]
+title = "Atụmatụ agba na agba mmesi ike"
+text = """
+Ntọala > Ọdịdị nwere ugbu a Ọnọdụ, Agba na Agba mmesi ike dị ka nhọrọ
+dị iche iche. Họrọ ìhè ma ọ bụ ọchịchịrị, wee họrọ otu n'ime atụmatụ agba
+14, dị ka Clear, Nord, Solarized ma ọ bụ Catppuccin, ma ọ bụ debe nke
+desktọpụ gị. Nke ọ bụla na-arụ ọrụ n'ìhè na n'ọchịchịrị, agba mmesi ike
+ọ bụla nwekwara ike ịnọ n'elu ya.
+"""
+
+["2026-10-01-0310-badge-counts-what-notifies"]
+title = "Ọnụọgụ ogwe ọrụ dabara n'ọkwa gị"
+text = """
+Ọnụọgụ ndị a gụghị na ogwe ọrụ na tree na-agụ ugbu a otu ozi ahụ na-enye
+gị ọkwa: taabụ Isi nke Igbe ozi mbata gị. Nkwalite, Mmekọrịta ọha,
+Mmelite na Ọgbakọ anaghịzi agbakwunye na ya.
+"""
+
+["2026-10-01-0312-quiet-selected-row"]
+title = "Folda mepere emepe dị jụụ karịa"
+text = """
+Folda mepere emepe na Ozi, na nlele mepere emepe na Kọntaktị, Ọrụ, Ndetu
+na Faịlụ, ka a na-aka akara ugbu a na ntụ dị nro kama agba mmesi ike,
+ka Dee na ogwe ngwa pụta ìhè, akara ngosi folda edobekwa agba nke ha.
+"""
+
+["2026-10-01-0315-desktop-schemes"]
+title = "Atụmatụ agba desktọpụ gị"
+text = """
+Ntọala > Ọdịdị > Agba na-edepụtakwa atụmatụ desktọpụ gị: atụmatụ agba
+ọ bụla etinyere na KDE Plasma, na Windows agba ya na isiokwu Contrast ya.
+Sistemụ na-arụ ọrụ n'ìhè na n'ọchịchịrị na KDE kwa ugbu a, na-eji onye
+òtù ìhè ma ọ bụ ọchịchịrị nke atụmatụ gị, Katna na-agbasokwa agba mmesi
+ike nke Windows.
+"""
+
+["2026-10-01-0329-mute-folders"]
+title = "Gbachie folda, taabụ ma ọ bụ akaụntụ"
+text = """
+Mgbịrịgba dị n'elu ndepụta na-agbachi folda mepere emepe ma ọ bụ taabụ
+Igbe ozi mbata maka otu awa, ruo echi ụtụtụ, ma ọ bụ ruo mgbe i gbanyere
+ya ọzọ. Pịa aka nri na folda ma ọ bụ akaụntụ maka otu ihe ahụ. Ntọala ›
+Ọkwa na-egosi folda ndị na-enye ọkwa na ndị na-agụ na ogwe ọrụ, na ihe
+niile a gbachiri.
+"""
+
+["2026-10-01-0335-tray-style"]
+title = "Akara ngosi tree n'agba ma ọ bụ otu agba"
+text = """
+Ntọala > Izugbe > Desktọpụ > Akara ngosi tree n'agba na-ahọrọ agba Katna
+ma ọ bụ otu agba dị ka akara ngosi ndị ọzọ nke panel. Otu agba na-anọ otu
+agba mgbe ozi a gụghị dị, ọnụọgụ ndị a gụghị na-achakwa uhie mgbe niile.
+Na Linux, akara ngosi tree bụ otu agba na ndabara; na Windows ọ nwere
+agba.
+"""
+
+["2026-10-01-0354-mute-conversations"]
+title = "Gbachie mkparịta ụka ma ọ bụ onye zitere"
+text = """
+Mgbịrịgba dị n'elu mkparịta ụka mepere emepe na-agbachi ya: nzaghachi
+ọhụrụ anaghịzi enye gị ọkwa ma ọ bụ agbakwunye na ọnụọgụ ogwe ọrụ,
+mgbịrịgba nwere ahịrị gafere ya na-akakwa ya akara na ndepụta. Pịa aka nri
+na mkparịta ụka maka Mee ka mkparịta ụka gbachi nkịtị ma ọ bụ Mee ka onye
+zitere gbachi nkịtị,
+ma ọ bụ pịa M.
+"""
+
+["2026-10-01-0410-your-color-schemes"]
+title = "Mepụta atụmatụ agba nke gị"
+text = """
+Ntọala > Ọdịdị > Agba > Hazie na-edepụta atụmatụ ị na-eji n'ime ihe
+ndezi: gbanwee agba ya asatọ ọ bụla n'akụkụ ìhè na nke ọchịchịrị, hụ
+windo ozi n'ime ha, Katna na-agwakwa gị ihe ga-esi ike ịgụ. Bubata
+na-anabata faịlụ atụmatụ agba Katna ma ọ bụ KDE, ịpị aka nri n'atụmatụ
+gị na-edezi ya, na-emepụta ọzọ ya, na-ebupụ ya ma ọ bụ na-ehichapụ ya.
+"""
+
+["2026-10-01-0527-calendar-opens-on-week"]
+title = "Kalịnda na-emepe na Izu"
+text = """
+Katna Calendar na-emepe ọzọ na nlele Izu, ya na ụbọchị ndị na-abịa n'awa.
+Onwa, Ụbọchị, Afọ na ndị ọzọ dị otu ịpị n'ogwe elu.
+"""
+
+["2026-10-01-0552-lighter-count-on-open-row"]
+title = "Ọnụọgụ na-apụta ìhè na folda mepere emepe"
+text = """
+Ọnụọgụ dị n'akụkụ folda mepere emepe na Ozi, na n'akụkụ ụdị mepere emepe
+na Faịlụ, na-anọ ugbu a n'mpekere na-enwu karịa ntụ nke ahịrị ahụ, ka ọ
+ghara imikpu n'ime ya, n'ìhè na n'ọchịchịrị.
+"""
+
+["2026-10-01-0652-files-leave-out-small-pictures"]
+title = "Faịlụ na-ahapụ logo mbinye aka"
+text = """
+Peeji Faịlụ anaghịzi ejupụta n'obere logo na akara ngosi ndị na-abịa na
+mbinye aka email: foto erughị 12 KB, ma ọ bụ erughị pikselụ 100 n'obosara
+ma ọ bụ n'ogo, na-anọ n'okpuru ozi ha. Gbanwee oke abụọ ahụ, ma ọ bụ gosi
+foto niile, na Ntọala > Ngwa ndabara > Peeji Faịlụ.
+"""
+
+["2026-10-01-0700-mute-from-contact"]
+title = "Gbachie onye zitere site na kaadị kọntaktị ya"
+text = """
+Kaadị kọntaktị dị n'akụkụ ozi nwere mgbịrịgba na mbụ n'etiti bọtịnụ ya:
+ọ na-agbachi ihe niile si n'aka onye zitere ahụ, mgbịrịgba nwere ahịrị gafere
+ya n'azụ aha ya na-egosikwa ya. Pịa ya ọzọ iji nụ site n'aka ha.
+"""
+
+["2026-10-01-0803-select-hover-fits"]
+title = "Bọtịnụ nhọrọ dị ọcha karịa"
+text = """
+Ìhè dị n'azụ igbe akara nhọrọ n'elu ndepụta ozi mgbe ntụnye nọ n'elu ya
+toro ogologo ugbu a dị ka bọtịnụ ndị dị n'akụkụ ya, dị anya site na
+nsọtụ kaadị ahụ dị ka site n'elu ya, nkuku ya na-agbasokwa nkuku kaadị
+ahụ.
+"""
+
+["2026-10-01-0807-files-leave-out-signature-pictures"]
+title = "Faịlụ na-ahapụkwa foto mbinye aka buru ibu"
+text = """
+Foto mmadụ na-ezipu na mkparịta ụka atọ ma ọ bụ karịa, dị ka banner ma ọ
+bụ foto dị na mbinye aka ya, anaghịzi egosi na peeji Faịlụ, ma ọ bụ akara
+ngosi netwọk mmekọrịta, n'agbanyeghị ka ha buru ibu. Ha ka na-egosi
+n'okpuru ozi ha, ịgbanyụ "Hapụ foto ndị dị obere" na-eweghachikwa ha niile.
+"""
+
+["2026-10-01-0830-muted-contact-mark"]
+title = "Hụ onye a gbachiri"
+text = """
+Mgbịrịgba nwere ahịrị gafere ya na-eso ugbu a aha onye zitere a gbachiri
+ebe ọ bụla ha pụtara: ndepụta ozi, ozi mepere emepe, Kọntaktị, igbe Gaa
+na Cc na aro ha, peeji Faịlụ, ndị ọbịa ihe omume na akụkọ Ihe omume. Ọ
+dịghịzi ịnọ na-eche ihe kpatara ozi ha ji dị jụụ.
+"""
+
+["2026-10-01-0839-sounds"]
+title = "Ụda maka ozi ọhụrụ, ncheta na izipu"
+text = """
+Ntọala > Ọkwa nwere ngalaba Ụda: ozi ọhụrụ, ncheta, ozi laghachiri
+n'igbe ozi mbata, ozi e zipuru na ozi a na-ezipughị na-ahọrọ ụda site na
+desktọpụ gị, kpọọ ya site na bọtịnụ dị n'akụkụ ya, ma ọ bụ gbanyụọ ya.
+Ụda na-akpọkwa na KDE Plasma ugbu a, ma na-agbachi nkịtị maka ozi a
+gbachiri na n'oge Akpaghasịla m.
+"""
+
+["2026-10-01-0925-chat-view"]
+title = "Gụọ mkparịta ụka dị ka nkata (nnwale)"
+text = """
+Gbanye Ntọala > Nnwale > Mkparịta ụka dị ka nkata, ozi n'etiti ndị mmadụ
+na-agụkwa dị ka nkata otu: afụ maka ozi ọ bụla na naanị ihe e dere, nke
+gị n'aka nri, foto na faịlụ dị ka mgbasa ozi nkata. Ozi e hotara na
+mbinye aka na-echere n'azụ ··· n'afụ ọ bụla, ịpị n'aha na-egosikwa kaadị
+ha ya na mbinye aka ha. Zaa site n'igbe dị n'okpuru, ya na Ctrl+Enter,
+ogwe nhazi n'azụ Aa na mkpachi akwụkwọ maka faịlụ, ndebiri ụkpụrụ na
+mbinye aka. Akwụkwọ akụkọ na-edobe nlele nkịtị, mgbanwe Nkata | Ozi
+na-atụgharịkwa mkparịta ụka ọ bụla n'ụzọ ọ bụla.
+"""
+
+["2026-10-01-0946-forward-keeps-files"]
+title = "Zigaa na-edobe faịlụ"
+text = """
+Iziga ozi n'ihu na-ebute mgbakwunye ya ugbu a, e gosiri n'okpuru ozi ka i
+nwee ike iwepụ nke ọ bụla tupu izipu. Ịgbanwe ozi e ziga n'ihu ka ọ
+bụrụ nzaghachi na-ahapụ ha ọzọ.
+"""
+
+["2026-10-01-1009-forward-a-file"]
+title = "Zigaa naanị faịlụ ahụ"
+text = """
+Ihe nlele mgbakwunye nwere bọtịnụ Zigaa n'ogwe elu ya: ọ na-amalite ozi
+ọhụrụ nwere naanị faịlụ ahụ, na-enweghị ozi o sooro bịa. Faịlụ na-enweghị
+nlele mbụ na-enyekwa Zigaa, otu ahụkwa ka kaadị mgbakwunye n'okpuru ozi
+mepere emepe, n'akụkụ Chekwaa.
+"""
+
+["2026-10-01-1039-rephrase-with-ai"]
+title = "Dee ya ọzọ site na AI"
+text = """
+Họrọ ederede n'ozi ma pịa akara mmụke dị n'akụkụ ya, ma ọ bụ Ctrl+J, ka
+e degharịa ya ka o doo anya karịa, dị mkpụmkpụ karịa, nwee obi ọma karịa
+ma ọ bụ dị nkwanye ùgwù karịa, wee Dochie. Katna AI bụ n'efu ruo ụbọchị
+30, ma ọ bụ jiri igodo nke gị site na Google Gemini, OpenAI, Claude,
+Mistral, DeepSeek, OpenRouter ma ọ bụ ụdị dị na kọmputa a. AI nwekwara
+ike imecha ahịrịokwu gị n'agba ntụ; gbanye ya na Ntọala > Ide ozi.
+"""
+
+["2026-10-01-1043-header-details-selectable"]
+title = "Detuo site na nkọwa ozi"
+text = """
+Nkọwa dị n'okpuru "gaa mụ" nwere ike ịhọrọ ma detuo ugbu a dị ka ozi n'onwe
+ya. Pịa adreesị iji hụ kaadị onye ahụ n'akụkụ ozi, ma ọ bụ pịa ya aka
+nri maka Detuo adreesị. Ndị a gbachiri na-egosikwa mgbịrịgba ha nwere
+ahịrị gafere ya ebe ahụ.
+"""
+
+["2026-10-01-1112-left-bar-button"]
+title = "Otu bọtịnụ ukwu, otu mpịaji, na peeji ọ bụla"
+text = """
+Bọtịnụ ukwu dị n'elu ogwe aka ekpe na-adị ma na-anọ ugbu a otu ụzọ ahụ
+na peeji ọ bụla ma na-arụ ọrụ peeji ahụ: Dee na Ozi na Faịlụ, Ihe omume
+ọhụrụ, Kọntaktị ọhụrụ, Ọrụ ọhụrụ na Ndetu ọhụrụ. Ịpịaji ogwe aka ekpe
+na-apịaji ya ebe niile, mgbe a pịajiri ya, bọtịnụ peeji ọ bụla na-echere
+n'elu ogwe ngwa. Na ekwentị ọ bụ bọtịnụ na-ese n'elu.
+"""
+
+["2026-10-01-1115-color-picker"]
+title = "Ihe nhọrọ agba n'ihe ndezi atụmatụ"
+text = """
+Pịa agba n'ihe ndezi atụmatụ, ihe nhọrọ agba na-emepekwa n'akụkụ ya: dọrọ
+gafee square ahụ na ogwe agba, pịnye uru hex, jiri agba atụmatụ ahụ ma ọ
+bụ ndị i họrọ n'oge na-adịbeghị anya ọzọ, ma ọ bụ were agba site n'ebe
+ọ bụla na ihuenyo site na ihe ntụtụ na KDE na GNOME.
+"""
+
+["2026-10-01-1130-contact-card-folds-folders"]
+title = "Kaadị kọntaktị na-enweta ohere nke ya"
+text = """
+Na windo dị warara maka paịn folda na kaadị kọntaktị n'akụkụ ibe ha, kaadị
+ahụ na-apịaji folda ugbu a ka ọ na-emepe, ha na-alọghachikwa mgbe kaadị
+ahụ mechiri. Folda ndị ị pịajiri n'onwe gị na-anọ apịaji.
+"""
+
+["2026-10-01-1132-open-mail-scroll-bar"]
+title = "Ogwe ịkpụgharị n'ozi ogologo"
+text = """
+Mkparịta ụka ogologo na-egosi ugbu a otu ogwe ịkpụgharị dị jụụ dị ka ibe
+Faịlụ ka ị na-akpụgharị ya ma ọ bụ na-atụ aka na ya. Ogwe abụọ ahụ dị
+gịrịgịrị ugbu a ma na-ebuwanye ka ntụnye na-abịaru ha nso. Dọrọ otu, ma ọ
+bụ pịa n'ogologo ya, iji wụlie ebe ọ bụla.
+"""
+
+["2026-10-01-1240-contact-card-close"]
+title = "Wepụ kaadị kọntaktị, hụ ndị nọ na nkata"
+text = """
+Kaadị kọntaktị dị n'akụkụ mkparịta ụka nwere ✕ na nkuku ya, ịpị foto ma
+ọ bụ adreesị otu onye ahụ ọzọ na-ewepụkwa kaadị ahụ. Na nlele nkata, ịpị
+n'isi na-edepụta onye ọ bụla nọ na nkata ahụ ya na adreesị ha na ozi ole
+onye ọ bụla zitere.
+"""
+
+["2026-10-01-1241-two-blur-switches"]
+title = "Ụzụzụ, n'ụzọ gị"
+text = """
+Ụzụzụ nwere mgbanwe abụọ ugbu a na Ntọala, Nnwale: otu maka azụ windo,
+otu maka menu na igbe mkparịta. Menu yiri iko gbara ụzụzụ gbanyere na
+ndabara, ọbụlagodi mgbe azụ windo na-adị nkịtị.
+"""
+
+["2026-10-01-1502-fainter-row-lines"]
+title = "Ahịrị dị jụụ n'etiti ozi"
+text = """
+Ahịrị dị n'etiti ozi na ndepụta adịkwaala ìhè ugbu a, ka ndepụta ahụ gụọ
+dị ka otu kọlụm dị jụụ n'ìhè na n'ọchịchịrị.
+"""
+
+["2026-10-01-1505-contact-close-round"]
+title = "Otu bọtịnụ mmechi maka paịn ọ bụla"
+text = """
+✕ dị na kaadị kọntaktị bụ ugbu a otu bọtịnụ gburugburu ahụ dị ka ✕ dị
+n'ozi mepere emepe, ya na otu okirikiri ntụ ahụ mgbe ị tụrụ aka na ya.
+"""
+
+["2026-10-01-1525-thread-count"]
+title = "Ọnụọgụ ozi dị ọcha karịa"
+text = """
+Ọnụọgụ ozi dị na mkparịta ụka na-anọ ugbu a n'akụkụ aha ya na obere akara
+ngosi nkata, n'etiti ahịrị aha ndị ahụ kama ibuli elu karịa ya.
+"""
+
+["2026-10-01-1541-chat-attach-from-files"]
+title = "Tinye site na Faịlụ na nkata"
+text = """
+Na nkata (Ntọala > Nnwale), mkpachi akwụkwọ nwere Site na Faịlụ: họrọ
+faịlụ ọ bụla bịara ma ọ bụ gara n'ozi gị, nke mkparịta ụka a na mbụ. Kaa
+ọtụtụ akara, lelee otu site na anya, ma hụ otu ha si tụnyere 25 MB ozi
+nwere ike ibu. Mkpachi akwụkwọ na-anọ ugbu a n'ime igbe nzaghachi, Aa
+na-emepekwa ogwe dị gịrịgịrị nwere naanị ụdị nkata chọrọ.
+"""
+
+["2026-10-01-1553-rephrase-card-text"]
+title = "Dee ya ọzọ na-arụ ọrụ na igodo Gemini ọhụrụ"
+text = """
+Mgbe menu yiri iko gbara ụzụzụ gbanyere, kaadị Dee ya ọzọ (Ctrl+J) mepere
+tọgbọ chakoo; aro ya na-egosi ugbu a n'elu iko gbara ụzụzụ ahụ. Google
+Gemini na-eji gemini-3.5-flash-lite ugbu a belụsọ na i pịnye ụdị ọzọ, ebe
+igodo Gemini ọhụrụ enweghịzi ike iji 2.5 Flash-Lite, igodo ezighi ezi
+na-ekwukwa ya.
+"""
+
+["2026-10-01-1624-rephrase-button"]
+title = "Dee ya ọzọ na-ahọrọghị, na aro ngwa ngwa karịa"
+text = """
+Akara mmụke dị n'akụkụ Nhazi n'okpuru ozi ọhụrụ, na n'igbe nzaghachi nke
+nlele nkata, na-edegharị ihe niile i dere mgbe ọ dịghị ihe a họọrọ, ma ọ
+bụ naanị nhọrọ ahụ mgbe e nwere otu; Ctrl+J na-eme otu ihe ahụ. Aro
+ogologo site na AI na-abịa ngwa ngwa karịa, mpaghara Ụdị AI na Ntọala > Ide
+ozi na-edepụtakwa ụdị ọrụ gị na-enye ka ị na-ede.
+"""
+
+["2026-10-01-1626-dimmer-preview"]
+title = "Ahịrị nlele mbụ dị jụụ karịa"
+text = """
+Ederede nlele mbụ dị n'okpuru isiokwu ozi ọ bụla na ndepụta adịkwaala
+ìhè ugbu a, ka onye zitere na isiokwu pụta ìhè, n'ìhè na n'ọchịchịrị.
+"""
+
+["2026-10-01-1645-frosted-dialogs"]
+title = "Igbe mkparịta yiri iko gbara ụzụzụ"
+text = """
+Mgbe menu na igbe mkparịta yiri iko gbara ụzụzụ gbanyere, igbe mkparịta
+na-adịkwa ka iko gbara ụzụzụ: Tinye akaụntụ ozi, Banyere, Ihe ọhụrụ,
+mmelite, ịkekọrịta, nlele mbụ mbipụta, leebụl, ajụjụ ihichapụ na iwepụ,
+kaadị mmalite mbụ na igbe njikọ nke Dee.
+"""
+
+["2026-10-01-1650-chat-pins"]
+title = "Kwụnye ihe ruru 5 na nkata"
+text = """
+Na nkata (Ntọala > Nnwale), tụọ aka n'afụ ma pịa ntụtụ, ma ọ bụ pịa aka
+nri na faịlụ, iji dobe ya n'elu. Ogwe dị gịrịgịrị n'okpuru isi na-egosi
+ihe ị kwụnyere: pịa ya iji wụlie gaa na nke ọ bụla n'usoro, ma ọ bụ
+mepee ndepụta iji dọrọ ha n'usoro ma ọ bụ wepụ ha. Ihe a kwụnyere na-anọ
+na kọmputa a.
+"""
+
+["2026-10-01-1655-chat-signatures"]
+title = "Nkata na-ahapụ mbinye aka na ihe dị n'ala"
+text = """
+Afụ nkata na-egosi ugbu a naanị ihe ndị mmadụ dere. Ekele njedebe dị ka
+"Best regards", mbinye aka ụlọ ọrụ n'okpuru ahịrị ma ọ bụ nwere adreesị na
+nọmba ekwentị, na ihe dị n'ala nwere njikọ ịkwụsị ndenye aha ma ọ bụ
+ọkwa, na-echere n'azụ mpekere ···, ya na mbinye aka mmadụ na-ekwughachi
+n'ozi ọ bụla.
+"""
+
+["2026-10-01-1805-blur-amount"]
+title = "Họrọ otu menu yiri iko gbara ụzụzụ si adị"
+text = """
+Menu na igbe mkparịta yiri iko gbara ụzụzụ doro anya karịa ugbu a ma
+na-agbaso ike ụzụzụ nke KDE. Gbanye Ọnụ ụzụzụ nke gị na Ntọala, Nnwale,
+Ụzụzụ iji tọọ ike ụzụzụ na ọnụ ìhè n'onwe gị.
+"""
+
+["2026-10-01-1825-chat-company"]
+title = "Ebe ha na-arụ ọrụ, na kaadị ha"
+text = """
+Na nkata (Ntọala > Nnwale), kaadị mmadụ nwere ngalaba Ụlọ ọrụ ugbu a: ihe
+ụlọ ọrụ ahụ na-eme, ebe ọ dị, kemgbe mgbe ole, na njikọ gaa na weebụsaịtị
+na peeji ya, a gụrụ site n'ibe mbụ nke ya na Wikipedia. Ọ na-agbaso
+mgbanwe Foto ndị zitere.
+"""
+
+["2026-10-02-0052-smooth-start-after-updates"]
+title = "Mmalite dị nro mgbe mmelite gasịrị"
+text = """
+Mgbe mmelite gasịrị, Katna Mail anaghịzi ekwu na enweghị ike imepe ebe
+nchekwa ozi ka ọ na-akwadebe ozi gị maka ụdị ọhụrụ ahụ. Ọ na-egosi foto
+mbudata nkịtị maka sekọnd ole na ole ahụ, wee gosi ozi gị.
+"""
+
+["2026-10-02-0106-calmer-dialogs"]
+title = "Igbe mkparịta dị jụụ karịa"
+text = """
+Igbe mkparịta yiri iko gbara ụzụzụ siri ike karịa menu, ka ndepụta ozi
+juru eju ghara igosi n'ime ha. Banyere, Ihe ọhụrụ na Lelee imelite ndị dị
+na-emepe na-emeghị ka windo dị n'azụ ha gbaa ọchịchịrị.
+"""
+
+["2026-10-02-0111-chat-pin-text"]
+title = "Kwụnye okwu ole na ole site na nkata"
+text = """
+Na nkata (Ntọala > Nnwale), ederede dị n'afụ nwere ike ịhọrọ ma detuo
+ugbu a dị ka ozi ọ bụla. Pịa aka nri n'okwu i họọrọ n'otu afụ ma họrọ
+Kwụnye n'elu iji dobe ha n'ogwe ihe a kwụnyere nke nkata ahụ.
+"""
+
+["2026-10-02-0124-event-editor-clear"]
+title = "Ihe ndezi ihe omume enweghị Ihe omume ọhụrụ n'elu ya"
+text = """
+Bọtịnụ Ihe omume ọhụrụ nke ogwe aka ekpe anaghịzi anọ n'elu aha ihe omume
+ị na-ede ma ọ bụ na-agbanwe n'ihe ndezi zuru ezu. Ọ na-alọghachi mgbe ihe
+ndezi ahụ mechiri.
+"""
+
+["2026-10-02-0150-chat-format-bar"]
+title = "Ogwe Aa zuru ezu karịa na nkata"
+text = """
+Ogwe Aa nke igbe nzaghachi nkata nwere ugbu a ngwaọrụ Dee: megharịa,
+mkpụrụedemede, nha, nhazi ahịrị na ntinye n'ime, n'akụkụ ụdị o nwere.
+Na windo dị warara, ọ na-agbada n'ahịrị nke abụọ. Bọtịnụ agba na-egosi
+agba ederede gị na agba nkọwapụta n'akụkụ ibe ha, na Dee kwa.
+"""
+
+["2026-10-02-0210-conversation-summaries"]
+title = "Chịkọta mkparịta ụka"
+text = """
+Pịa aka nri na mkparịta ụka ma họrọ Chịkọta, ma ọ bụ pịa Shift+S, maka
+kaadị n'akụkụ ya na-ekwu ihe ọ bụ maka ya, ihe e kpebiri na ihe na-echere
+gị, na-emepeghị ya ma ọ bụ na-akaghị ya akara dị ka agụrụ. N'ime
+mkparịta ụka mepere emepe, akara mmụke dị n'elu ya na-etinye nchịkọta
+ahụ n'okpuru isiokwu; na nlele nkata ọ na-anọ n'ogwe n'okpuru isi. Isi
+okwu ọ bụla na-akpọ aha ozi o si na ya, ma ọ bụrụ na ozi ọhụrụ bịara
+kemgbe ị gụrụ ikpeazụ, nchịkọta ahụ na-ekpuchi naanị nke ahụ. Ọ chọrọ ka
+enyemaka ide ihe site na AI gbanye na Ntọala > Ide ozi.
+"""
+
+["2026-10-02-0215-system-colors-follow-mode"]
+title = "Ìhè na Ọchịchịrị na-arụ ọrụ na agba Sistemụ"
+text = """
+Mgbe Agba bụ Sistemụ ma atụmatụ desktọpụ bụ naanị ọchịchịrị (ma ọ bụ naanị
+ìhè), Ntọala > Ọdịdị > Ọnọdụ na-agbanwe Katna ọzọ n'etiti ìhè na
+ọchịchịrị: akụkụ nke ọzọ na-eji agba Katna n'onwe ya n'agba mmesi ike
+desktọpụ gị.
+"""
+
+["2026-10-02-0218-signature-details-on-card"]
+title = "Nkọwa mbinye aka ebe ha kwesịrị"
+text = """
+Kaadị mmadụ anaghịzi egosi mbinye aka ya dị ka otu ngọngọ. Nkọwa ya
+na-aga ebe ha kwesịrị: nọmba ekwentị ọ bụla, akara dị ka mkpanaaka,
+kpọmkwem ma ọ bụ fax, na nkọwa kọntaktị, otu, ọfịs, weebụsaịtị na peeji
+ụlọ ọrụ ahụ na ngalaba Ụlọ ọrụ. Peeji mmekọrịta na-egosi dị ka obere
+akara ngosi otu agba, a na-ahapụkwa foto, banner na ihe dị n'ala.
+"""
+
+["2026-10-02-0225-chat-subject-line"]
+title = "Hụ mgbe isiokwu nkata gbanwere"
+text = """
+Na nkata (Ntọala > Nnwale), obere ahịrị n'etiti na-ekwu ugbu a mgbe
+mmadụ gbanwere isiokwu ahụ, dị ka o si ekwu onye gbakwunyere onye.
+"""
+
+["2026-10-02-0225-no-blur-ghost"]
+title = "Ọ dịghị mmụọ ụzụzụ mgbe igbe mkparịta mechiri"
+text = """
+Imechi Banyere, Ihe ọhụrụ, Lelee imelite ndị dị ma ọ bụ igbe mkparịta ma ọ
+bụ menu ọ bụla yiri iko gbara ụzụzụ anaghịzi ahapụ ntụpọ ụzụzụ n'azụ
+nwa oge: ụzụzụ ahụ na-ekpochapụ ya na igbe mkparịta ahụ.
+"""
+
+["2026-10-02-0236-chat-on-phones"]
+title = "Nkata na-adaba na ekwentị"
+text = """
+Na windo nha ekwentị, nkata (Ntọala > Nnwale) na-anọ n'otu ahịrị isi ya
+na Laghachi na ⋮, afụ ya na-ejikwa obosara karịa. Jide afụ iji weta menu
+ya site n'okpuru, ma pịa aha ma ọ bụ foto iji hụ kaadị onye ahụ n'otu ụzọ
+ahụ. Kpụgharịa nke ọ bụla ala ma ọ bụ pịa n'èzí iji wepụ ya.
+"""
+
+["2026-10-02-0258-frost-stays-on-scroll"]
+title = "Ụzụzụ na-anọ ebe ọ nọ mgbe ndepụta na-akpụgharị"
+text = """
+Na ndepụta yiri iko gbara ụzụzụ na-akpụgharị, dị ka ndị nọ na nkata ma ọ
+bụ menu ogologo, azụ gbara ụzụzụ na-anọ ugbu a ebe ọ nọ ka ahịrị na-akpụ
+n'elu ya.
+"""
+
+["2026-10-02-0301-rephrase-card-above-tools"]
+title = "Dee ya ọzọ na-anọ n'elu ogwe nhazi"
+text = """
+Kaadị Dee ya ọzọ na-emepe ugbu a n'elu ogwe nhazi, n'igbe nzaghachi na na
+Dee, kama n'elu ndepụta ozi. Dọrọ ya site n'obere njide dị n'elu ya iji
+wepụ ya n'ụzọ; ọ na-emepe ọzọ n'ebe ọ na-anọ oge ọzọ.
+"""
+
+["2026-10-02-0306-fainter-lines-light"]
+title = "Ahịrị dị jụụ karịa n'ọnọdụ ìhè"
+text = """
+N'ọnọdụ ìhè, ahịrị dị n'etiti ozi na ndepụta na n'etiti ozi nke ozi
+mepere emepe adịkwaala ìhè, ka peeji ahụ dị jụụ karịa.
+"""
+
+["2026-10-02-0315-card-button-bar"]
+title = "Kaadị mmadụ na-edobe bọtịnụ ya nso"
+text = """
+Kpụgharịa kaadị mmadụ, bọtịnụ ya na-amị elu n'ogwe dị gịrịgịrị yiri iko
+gbara ụzụzụ n'akụkụ bọtịnụ mmechi, ya na obere foto onye ahụ. Bọtịnụ
+mmechi anaghịzi anọ n'elu ihe ị na-agụ.
+"""
+
+["2026-10-02-0412-button-hover"]
+title = "Bọtịnụ na-enwu nke ọma mgbe ntụnye nọ n'elu ha"
+text = """
+Mgbe ị tụrụ aka na bọtịnụ, azụ ya gburugburu na-eto ugbu a site n'etiti
+ma pụta nwayọọ, dị ka na Gmail, ma na-apụ ngwa ngwa mgbe ị gara n'ihu.
+Zaa, Zigaa na bọtịnụ gburugburu ndị ọzọ na-apụta nwayọọ.
+"""
+
+["2026-10-02-0425-chat-draft-to-mail"]
+title = "Nzaghachi nkata gị na-eso gị gaa na Ozi"
+text = """
+Ịgbanwe nkata gaa na Ozi ka ị na-ede nzaghachi na-akpụgharị ugbu a gaa
+na nzaghachi ahụ ya na cursor gị ka nọ n'ime ya, ịlaghachi azụ na-edobekwa
+ya.
+"""
+
+["2026-10-02-0425-write-reply"]
+title = "Dee nzaghachi site na AI"
+text = """
+Mgbe nzaghachi ma ọ bụ ozi e ziga n'ihu ka tọgbọ chakoo, akara mmụke dị
+n'akụkụ Nhazi (ma ọ bụ Ctrl+J) na-ede ya maka gị. Họrọ otu n'ime echiche
+atọ e si na mkparịta ụka ahụ wepụta, ma ọ bụ kwuo n'okwu nke gị ihe o
+kwesịrị ikwu, wee Tinye ndebiri ahụ ma gbanwee ihe masịrị gị. Ozugbo i
+dere ihe, akara mmụke ahụ na-edegharị ọzọ. Ọ chọrọ ka enyemaka ide ihe
+site na AI gbanye na Ntọala > Ide ozi.
+"""
+
+["2026-10-02-0430-compose-beside-reply"]
+title = "Dee mgbe nzaghachi ka dị ọkara"
+text = """
+Dee na-emepe ozi ọhụrụ ugbu a ọbụlagodi mgbe ị na-ede nzaghachi, na nkata
+ma ọ bụ n'okpuru mkparịta ụka. Nzaghachi ahụ na-echere otu i si hapụ ya,
+ma na-alọghachi mgbe e zipuru ma ọ bụ mechie ozi ọhụrụ ahụ, ma ọ bụ mgbe
+i pịrị ịza mkparịta ụka ahụ ọzọ.
+"""
+
+["2026-10-02-0436-mark-unread-icon"]
+title = "Akara ngosi Kaa akara dị ka a gụghị doro anya karịa"
+text = """
+Kaa akara dị ka a gụghị na-egosi ugbu a envelọp nwere ntụpọ, na menu, n'ogwe
+ngwaọrụ na na bọtịnụ ozi na-apụta mgbe ntụnye nọ n'elu ya, ka ọ ghara iyi
+akara ngosi ozi nkịtị.
+"""
+
+["2026-10-02-0452-fainter-pane-lines"]
+title = "Ogwe ngwaọrụ na taabụ dị jụụ karịa"
+text = """
+N'ọnọdụ ìhè, ahịrị dị n'okpuru ogwe ngwaọrụ na isi ozi mepere emepe, na
+n'elu Zaa na Zigaa, dị ìhè dị ka ahịrị dị n'etiti ozi. Azụ dị n'azụ taabụ
+igbe ozi mbata na-enwukwa karịa.
+"""
+
+["2026-10-02-0453-google-drive-in-files"]
+title = "Google Drive gị na Faịlụ"
+text = """
+Faịlụ na-egosi ugbu a draịv nke akaụntụ Google ọ bụla n'okpuru Draịv
+n'ogidi akụkụ. Mepee folda ya, chọọ n'ime ya, ma mepee, tinye ma ọ bụ
+budata faịlụ ozugbo ebe ahụ. Na nke mbụ, pịa Kwe ka Katna nwee ike ịgụ
+draịv ahụ.
+"""
+
+["2026-10-02-0515-rephrase-subject"]
+title = "Dee isiokwu ọzọ"
+text = """
+Ozugbo i dere isiokwu, akara mmụke dị na njedebe ahịrị ya na-enye ụzọ
+atọ ọzọ isi kwuo ya, e dere site n'isiokwu ahụ na ihe ozi gị kwuru ruo
+ugbu a. Họrọ otu iji jiri ya; Megharịa na-eweghachi ihe i dere. Ọ chọrọ
+ka enyemaka ide ihe site na AI gbanye na Ntọala > Ide ozi.
+"""
+
+["2026-10-02-0525-quieter-compose"]
+title = "Windo Dee dị jụụ karịa"
+text = """
+Windo Ozi ọhụrụ na-ese n'elu ya na oghere nhata site na nsọtụ windo.
+Gaa, Cc, Bcc na Si na-anọ ọnụ na-enweghị ahịrị n'etiti ha, ndị nnata bụ
+mpekere jupụtara dị nro, Si bụkwa otu ahịrị dị jụụ. Izo ezo, mbinye aka,
+nsochi na akwụkwọ nnata na-ekerịta otu obere otu, ngwaọrụ ide ihe
+na-anọkwa n'ogwe dị nro n'akụkụ Zipu.
+"""
+
+["2026-10-02-0553-upload-to-drive"]
+title = "Bugote na Google Drive site na Faịlụ"
+text = """
+Mgbe Google Drive mepere emepe na Faịlụ, bọtịnụ Dee na-aghọ Bugote. Pịa ya
+iji zipu faịlụ n'ime folda mepere emepe, ma ọ bụ jiri akụ ya bugote folda
+dum. Na nke mbụ, pịa Kwe ka Katna nwee ike itinye faịlụ na draịv gị.
+"""
+
+["2026-10-02-0555-reply-from-summary"]
+title = "Zaa site na nchịkọta"
+text = """
+Kaadị nchịkọta i si n'ịpị aka nri mepee nwere Zaa ugbu a. Ọ na-eme ka
+otu kaadị ahụ ghọọ nzaghachi: họrọ echiche ma ọ bụ kwuo ihe o kwesịrị
+ikwu, gbanwee ndebiri ahụ ma ọ masịrị gị, wee Zipu, ma ọ bụ Mepee ya na
+mkparịta ụka ahụ iji gaa n'ihu na-ede. Nzaghachi i mechiri na-ezipughị
+na-echere n'igbe nzaghachi. Kaadị ahụ na-emepekwa ugbu a ebe i pịrị.
+"""
+
+["2026-10-02-0559-draft-saved-signature-tag"]
+title = "Ndebiri na-echekwa ka ị na-ede"
+text = """
+Ozi ị na-ede na-echekwa onwe ya ugbu a na Ndebiri kwa sekọnd ole na ole,
+"Echekwala ndebiri" na-egosikwa nwayọọ n'akụkụ aha ya. Obere mpado dị
+nro n'akụkụ mbinye aka gị na-akpọ aha ya; pịa ya iji họrọ nke ọzọ. Nkuku
+windo Dee na-adabakwa na kaadị dị n'akụkụ ya.
+"""
+
+["2026-10-02-0654-attach-from-drive"]
+title = "Tinye site na Google Drive"
+text = """
+Mkpachi akwụkwọ nke Dee na-emepe ugbu a ihe nhọrọ Faịlụ, otu ihe ahụ dị
+ka Site na Faịlụ nke nkata, ya na Google Drive gị n'akụkụ faịlụ ozi gị
+na Kọmputa a… maka ihe ọ bụla ọzọ. Faịlụ dabara na-aba n'ozi; faịlụ
+buru ibu na Google Docs na-aga dị ka njikọ, a na-ekekọrịta ya na ndị
+nnata mgbe ị zipuru.
+"""
+
+["2026-10-02-0734-peek-and-reply-in-notifications"]
+title = "Lelee ma zaa site n'ọkwa"
+text = """
+Ọkwa ozi ọhụrụ nwere ugbu a Lelee, nke na-egosi ozi ahụ n'otu
+ọkwa ahụ, na Zaa, ebe ị na-ede azịza gị ozugbo ebe ahụ ma pịa Zipu. Ọ
+na-esi n'akaụntụ ozi ahụ bịara, mgbe oge Megharịa izipu gị gachara;
+Megharịa na-emepe ya na Katna Mail ka i gaa n'ihu na-ede. Na Linux, ozi
+ọhụrụ nwekwara ụda nke ya dị ike karịa; họrọ nke ọzọ na Ntọala > Ọkwa.
+"""
+
+["2026-10-02-0735-drive-viewer-opens-at-once"]
+title = "Faịlụ Drive na-emepe ozugbo"
+text = """
+Imepe faịlụ site na draịv gị na-ewepụta ihe nlele ozugbo, ya na arc
+na-atụgharị ruo mgbe faịlụ ahụ rutere. Ndetu dị n'okpuru windo na-anabata
+ịpị nke ha ugbu a, ka Mechie ghara ịpị ihe dị n'okpuru ha.
+"""
+
+["2026-10-02-0740-smaller-updates"]
+title = "Mmelite dị obere karịa"
+text = """
+Mmelite na-ebudata ugbu a naanị ihe gbanwere, na-abụkarị megabaịt ole na
+ole kama ngwugwu ahụ dum. Katna na-ewu ụdị ọhụrụ site n'nke i nwere ma
+lelee ya tupu ịwụnye, ma budata ngwugwu zuru ezu mgbe ọ bụla ọ na-enweghị
+ike.
+"""
+
+["2026-10-02-0755-faint-lines-everywhere"]
+title = "Ahịrị dị jụụ ebe niile"
+text = """
+N'ọnọdụ ìhè, ahịrị ọ bụla dị n'etiti ihe, n'okpuru isi na gburugburu
+kaadị dị ìhè ugbu a dị ka ahịrị dị n'etiti ozi, gụnyere kaadị nchịkọta.
+Mpaghara, mpekere na bọtịnụ na-edobe ahịrị gburugburu ha doro anya.
+"""
+
+["2026-10-02-0756-ai-replies-signed"]
+title = "Nzaghachi AI na-ejedebe na mbinye aka gị"
+text = """
+Nzaghachi na ndetu AI dere anaghịzi ejedebe na "Best regards" na aha gị.
+Mbinye aka gị na-abịanye aka na ha kama: na nzaghachi kaadị nchịkọta,
+mpado mbinye aka dị n'okpuru ederede na-ahọrọ nke ọ bụ, dị ka na Dee.
+"""
+
+["2026-10-02-0801-unified-inbox-tabs"]
+title = "Taabụ n'igbe ozi mbata jikọtara ọnụ"
+text = """
+Igbe ozi mbata nke akaụntụ gị niile nwekwara taabụ ugbu a: Isi, Nkwalite,
+Mmekọrịta ọha, Mmelite na Ọgbakọ, ya na ozi akaụntụ ọ bụla na taabụ nke
+ụdị ya. Ntụpọ dị n'akụkụ onye zitere ọ bụla na-egosi akaụntụ ozi si bịa.
+Họrọ otu akaụntụ n'okpuru ya iji hụ taabụ nke akaụntụ ahụ, ma ọ bụ họrọ
+usoro ọzọ na Ntọala > Igbe ozi mbata.
+"""
+
+["2026-10-02-0805-feeds-removed"]
+title = "Feeds esila n'ogwe aka ekpe pụọ"
+text = """
+Katna agaghị agụ feed RSS na Atom ma ọlị, ya mere bọtịnụ Feeds na ibe ya
+"na-abịa n'oge na-adịghị anya" ahapụla ogwe dị n'aka ekpe. Faịlụ
+na-edobe Ctrl+7.
+"""
+
+["2026-10-02-0820-drive-bin-and-rename"]
+title = "Gbanwee aha ma tụfuo faịlụ draịv"
+text = """
+Na Faịlụ, faịlụ ma ọ bụ folda dị na Google Drive ma ọ bụ OneDrive gị nwere
+ugbu a Gbanwee aha na Buga na Ihe mkpofu na menu ya. Gbanwee aha
+na-edegharị aha ahụ n'ebe ọ nọ (F2), Buga na Ihe mkpofu (Del) na-abịakwa
+ya na Megharịa.
+"""
+
+["2026-10-02-0827-files-chips-on-phones"]
+title = "Mpekere Faịlụ na-adaba na ekwentị"
+text = """
+Na ekwentị, mpekere nke peeji Faịlụ anaghịzi ebipụ na nsọtụ. Ụdị faịlụ
+na-apịaji ghọọ akara ngosi ha, nke i họọrọ na-edobe aha ya, mpekere
+onye, ụbọchị na usoro na-enwetakwa ahịrị nke ha.
+"""
+
+["2026-10-02-0828-uploads-tray"]
+title = "Hụ mbugote gị ka ha na-aga"
+text = """
+Faịlụ ị na-ebugote na Google Drive ma ọ bụ OneDrive na-egosi ugbu a
+n'ogwe dị n'okpuru aka nri, nke ọ bụla nwere mgbanaka na-ejupụta ka ọ
+na-arịgo na oge fọdụrụ. Kagbuo otu ma ọ bụ ha niile, pịajie ogwe ahụ,
+ma pịa faịlụ gwụchara iji mepee folda ya.
+"""
+
+["2026-10-02-0838-drive-share"]
+title = "Kekọrịta faịlụ draịv site na Katna"
+text = """
+Kekọrịta… na menu faịlụ Google Drive ma ọ bụ OneDrive na Faịlụ na-emepe igbe
+mkparịta Kekọrịta: tinye ndị mmadụ dị ka Onye na-ele, Onye na-ekwu okwu ma ọ
+bụ Onye ndezi, gbanwee ma ọ bụ wepụ ndị nweelarị ohere, ma mepee ya nye
+onye ọ bụla nwere njikọ ahụ. Draịv ahụ na-ezigara ha email naanị ma ọ
+bụrụ na i kaara ya akara.
+"""
+
+["2026-10-02-0909-soft-search-box"]
+title = "Igbe ọchụchọ dị nro karịa"
+text = """
+Igbe ọchụchọ dị n'elu adịla mfe karịa: nsọtụ na ejupụta dị nro nke ukwuu
+mgbe ị naghị eji ya, na mpaghara ọcha nwere nsọtụ agba mmesi ike dị nro
+ka ị na-ede, kama ogwe gburugburu ntụ nwere mgbanaka agba gbara ọkpụrụkpụ.
+"""
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Mmelite na-abịa ngwa ngwa"
+text = """
+Katna na-achọ ụdị ọhụrụ kwa elekere ugbu a, na ozugbo kọmputa gị tetara n'ụra, ya mere ọkwa mmelite na-abịa obere oge ka ewepụtachara ya.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Ahịrị dị nro na ọnọdụ Ọchịchịrị kwa"
+text = """
+Na ọnọdụ Ọchịchịrị, ahịrị dị n'etiti ozi, n'okpuru isiokwu na gburugburu kaadị dị nro ugbu a dịka na ọnọdụ Ìhè. Ogige, mpekere na bọtịnụ ka nwere ahịrị gburugburu ha doro anya.
+"""
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Mmelite pere mpe mgbe ezumike gasịrị"
+text = """
+Mmelite na-anọgide na-adị pere mpe ọ bụrụgodị na ị gafere otu ụbọchị ma ọ bụ abụọ nke ụdị ọhụrụ. Katna na-esi ugbu a n'ụdị ị nwere gafee ndị bịara n'etiti, megabaịt ole na ole nke ọ bụla, kama ibudata ngwugwu niile ọzọ.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Hụ ozi ị zara"
+text = """
+Obere akụ nzaghachi n'ahịrị nke ndepụta ozi na-egosi na ị zara ya: ọ bụ gị dere ozi kacha ọhụrụ nke mkparịta ụka ahụ, ebe a ma ọ bụ na webụ. Ọ na-apụ mgbe ha zaghachiri.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Akara ngosi tree na-eso ìhè na ọchịchịrị"
+text = """
+Akara ngosi tree nwere otu agba na-agbanwe ugbu a na panel gị ozugbo ị gbanwere n'etiti ìhè na ọchịchịrị, kama ichere ozi ọhụrụ.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Echiche nzaghachi na-egosi na ha na-abịa"
+text = """
+Mgbe a na-arịọ echiche nzaghachi, na Zaa nke nchịkọta ma ọ bụ na Dee nzaghachi, ọdịdị ha na-eku ume ugbu a dị ka nke nchịkọta n'onwe ya mgbe a na-ede ya. Kaadị nchịkọta na-egosikwa ole ozi mkparịta ụka ahụ nwere mgbe a na-arịọ ya, ọ bụghị 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Nkuku dị ọcha na Faịlụ"
+text = """
+Ịnọ n'elu faịlụ nwere nlele mbụ ọcha anaghịzi ekwe ka ọcha pụta na nkuku elu kaadị ahụ, tree mbugo apịajiri apịaji nwekwara nkuku gbara gburugburu n'elu, igbe mkparịta Kekọrịta nwekwara bọtịnụ Mechie na nkuku ya.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Ikpochapụ ọchụchọ na-edobe ozi gị ka o mepere"
+text = """
+Mepee ozi site na nsonaazụ ọchụchọ ma kpochapụ ọchụchọ ahụ site na X: ozi ahụ na-anọgide na-emeghe ka folda gị na-alọghachi, kama ịlaghachi na ndepụta.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Nkuku gbara gburugburu na spredshiit"
+text = """
+Spredshiit n'ihe nlele mgbakwunye gbara gburugburu ugbu a na nkuku anọ ya niile. Mkpụrụ akwụkwọ kọlụm ntụ dị n'elu na taabụ mpempe dị n'okpuru na-eme ka ha bụrụ akụkụ anọ na mbụ.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Nkọwa kọntaktị dị ọcha na kaadị"
+text = """
+Nọmba ekwentị, adreesị na nkọwa ndị ọzọ e wepụtara na mbinye aka anaghịzi egosi kpakpando efu ma ọ bụ akara njikọ n'ime akara akụkụ. Mgbe onye ọrụ ibe gị binyere aka n'ozi site na adreesị a na-ekerịta dị ka accounts@, kaadị ahụ na-edobe naanị nkọwa ụlọ ọrụ ahụ, ọ bụghị nọmba ma ọ bụ aha ọkwa onye ọrụ ibe ahụ.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Lelee ihe ị tinyere"
+text = """
+Pịa faịlụ etinyere n'ozi ị na-ede iji mepee ya n'ihe nlele Katna, otu ihe ahụ faịlụ ndị a natara na-emepe na ya, ma jide n'aka na ọ bụ faịlụ ziri ezi. Faịlụ e zipụrụ dị ka njikọ Google Drive ma ọ bụ OneDrive na-emepe na draịv ahụ.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Ogwe ịkpụgharị na Ntọala"
+text = """
+Taabụ ọ bụla nke Ntọala nwere otu ogwe ịkpụgharị dị gịrịgịrị dị ka ozi mepere emepe na Faịlụ: ọ na-apụta mgbe ị na-akpụgharị ma ọ bụ tụọ aka na peeji ahụ, ị nwekwara ike ịdọrọ ya.
+"""

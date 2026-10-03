@@ -39,6 +39,12 @@ contacts-account-failed = خواندن مخاطبین ممکن نشد.
 # $reason is the server's own words, in English.
 contacts-account-error = خواندن مخاطبین ممکن نشد: { $reason }
 contacts-account-none = هیچ دفترچهٔ نشانی‌ای پیدا نشد
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = هیچ دفترچهٔ نشانی‌ای پیدا نشد: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } مخاطبین را فقط به Katna‌ای نشان می‌دهد که با { $provider } وارد شده باشد.
+contacts-account-sign-in-with = ورود با { $provider }
 contacts-account-looking = در حال جست‌وجوی مخاطبین…
 contacts-account-try-again = امتحان مجدد
 contacts-account-try-again-tooltip = همین حالا مخاطبین این حساب را دوباره بررسی کنید
@@ -83,7 +89,7 @@ contacts-print-none = مخاطبی برای چاپ وجود ندارد
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = تولد: { $day }
 contacts-print-nickname = نام مستعار: { $name }
-contacts-create = ایجاد مخاطب
+contacts-create = مخاطب جدید
 
 ## Search and the list
 

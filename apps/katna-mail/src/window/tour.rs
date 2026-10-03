@@ -24,7 +24,7 @@ use katna_ui::unpx;
 use super::add_account::text_button;
 use super::{MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, filled_button};
+use crate::widgets::{ScaledEdge, elevation, filled_button};
 
 const CARD_WIDTH: f32 = 340.0;
 /// Room kept around a lit part.
@@ -169,6 +169,8 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let reduce = cx.reduce_motion();
         if self.tour.as_ref()?.waiting {
             if self.tour_seen.is_empty() {
@@ -254,7 +256,7 @@ impl MailWindow {
                 .w(px(w))
                 .h(px(h))
                 .rounded(px(RADIUS))
-                .border_2()
+                .border_px(2.0)
                 .border_color(rgba(th.accent))
         });
 
@@ -321,7 +323,7 @@ impl MailWindow {
             .flex_col()
             .gap(px(8.0))
             .rounded(px(PANEL_RADIUS))
-            .bg(rgba(th.surface))
+            .map(|d| crate::widgets::frosted(d, th, th.surface, PANEL_RADIUS))
             .text_color(rgba(th.text))
             .shadow(elevation(th, 4.0))
             .when(stop.is_some(), |d| {

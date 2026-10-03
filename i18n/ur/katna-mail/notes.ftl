@@ -15,6 +15,7 @@ notes-loading = آپ کے نوٹس کھولے جا رہے ہیں…
 
 notes-take-a-note = نوٹ لکھیں…
 notes-new-list = نئی فہرست
+notes-new-note = نیا نوٹ
 notes-pinned = پن کردہ
 notes-others = دیگر
 notes-empty = آپ کے شامل کردہ نوٹس یہاں ظاہر ہوں گے

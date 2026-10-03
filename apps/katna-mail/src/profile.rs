@@ -9,6 +9,7 @@
 use std::collections::HashSet;
 
 use jiff::tz::TimeZone;
+use katna_ai::draft::is_sign_off;
 use katna_core::Paths;
 use katna_dav::Occurrence;
 use katna_store::calendar::{EventData, EventStatus, StoredEvent};
@@ -41,6 +42,9 @@ pub struct Profile {
     /// The next meetings they are in (organizer or guest), soonest first:
     /// the next occurrence of each.
     pub meetings: Vec<Occurrence>,
+    /// The signature of their newest stored mail that has one, from its
+    /// sign-off down.
+    pub signature: Option<String>,
 }
 
 /// What their signature says.
@@ -49,11 +53,16 @@ pub struct Card {
     pub phone: Option<String>,
     pub title: Option<String>,
     pub company: Option<String>,
+    /// The website it names, as written (`www.example.com`).
+    pub website: Option<String>,
 }
 
 impl Card {
     fn is_full(&self) -> bool {
-        self.phone.is_some() && self.title.is_some() && self.company.is_some()
+        self.phone.is_some()
+            && self.title.is_some()
+            && self.company.is_some()
+            && self.website.is_some()
     }
 
     /// Fills what is missing from `other`.
@@ -61,6 +70,7 @@ impl Card {
         self.phone = self.phone.take().or(other.phone);
         self.title = self.title.take().or(other.title);
         self.company = self.company.take().or(other.company);
+        self.website = self.website.take().or(other.website);
     }
 }
 
@@ -82,6 +92,7 @@ pub fn read(paths: &Paths, email: &str, task_mails: &[String]) -> Result<Profile
         .map_err(|e| e.to_string())?;
     let mut card = Card::default();
     let mut offset = None;
+    let mut signature = None;
     let signed = store
         .messages_from(&email, SIGNED)
         .map_err(|e| e.to_string())?;
@@ -90,8 +101,24 @@ pub fn read(paths: &Paths, email: &str, task_mails: &[String]) -> Result<Profile
             offset = date_offset(&raw);
         }
         let view = katna_render::message_view(&raw);
-        card.fill(signature_card(&view.body, summary.name.as_deref()));
-        if card.is_full() && offset.is_some() {
+        let signed_with = katna_render::trim::plain(&view.body).signature;
+        let mut found = signature_card(&view.body, summary.name.as_deref());
+        // A colleague signed mail from a shared address: their number and
+        // title are not this person's.
+        if signed_with
+            .as_deref()
+            .is_some_and(|s| katna_render::signature::someone_else(s, summary.name.as_deref()))
+        {
+            found = Card {
+                website: found.website,
+                ..Card::default()
+            };
+        }
+        card.fill(found);
+        if signature.is_none() {
+            signature = signed_with;
+        }
+        if card.is_full() && offset.is_some() && signature.is_some() {
             break;
         }
     }
@@ -104,6 +131,7 @@ pub fn read(paths: &Paths, email: &str, task_mails: &[String]) -> Result<Profile
         offset,
         task_mails,
         meetings,
+        signature,
     })
 }
 
@@ -209,40 +237,6 @@ fn own_lines(body: &str) -> Vec<&str> {
     lines
 }
 
-/// Whether `line` closes a message, like "Best regards,".
-fn is_sign_off(line: &str) -> bool {
-    const SIGN_OFFS: &[&str] = &[
-        "regards",
-        "best regards",
-        "kind regards",
-        "warm regards",
-        "warmest regards",
-        "with regards",
-        "many thanks",
-        "thanks",
-        "thank you",
-        "thanks and regards",
-        "thanks & regards",
-        "thanks & best regards",
-        "cheers",
-        "best",
-        "all the best",
-        "best wishes",
-        "sincerely",
-        "yours sincerely",
-        "yours truly",
-        "yours",
-        "br",
-        "cordially",
-        "respectfully",
-    ];
-    let line = line
-        .trim()
-        .trim_end_matches([',', '.', '!', ' '])
-        .to_lowercase();
-    SIGN_OFFS.contains(&line.as_str())
-}
-
 /// The lines of the signature in `lines`: after a "-- " line, else after
 /// the last sign-off. Empty when there is neither.
 fn signature(lines: &[&str]) -> Vec<String> {
@@ -255,11 +249,12 @@ fn signature(lines: &[&str]) -> Vec<String> {
     };
     let mut out = Vec::new();
     for line in &lines[start + 1..] {
+        let line = katna_render::signature::unmark(line);
         if line.chars().count() > 100 {
             break;
         }
         if !line.is_empty() {
-            out.push((*line).to_owned());
+            out.push(line);
         }
         if out.len() == SIGNATURE_LINES {
             break;
@@ -502,6 +497,7 @@ pub fn signature_card(body: &str, name: Option<&str>) -> Card {
         phone: signature
             .iter()
             .find_map(|l| l.split(['|', '\u{2022}', '\u{b7}']).find_map(phone)),
+        website: signature.iter().find_map(|l| website(l)),
         ..Card::default()
     };
     // The lines under their name; without a name line, the first lines.
@@ -526,6 +522,27 @@ pub fn signature_card(body: &str, name: Option<&str>) -> Card {
         }
     }
     card
+}
+
+/// A website named on a signature line: `www.example.com`, or an
+/// `http(s)://` address.
+fn website(line: &str) -> Option<String> {
+    line.split(|c: char| c.is_whitespace() || matches!(c, '|' | '<' | '>' | '(' | ')' | ','))
+        .map(|w| w.trim_end_matches(['.', ';']))
+        .find(|w| {
+            let lower = w.to_ascii_lowercase();
+            let host = lower
+                .strip_prefix("https://")
+                .or_else(|| lower.strip_prefix("http://"))
+                .unwrap_or(&lower);
+            (lower.starts_with("http") || host.starts_with("www."))
+                && host.split('/').next().is_some_and(|h| {
+                    h.contains('.')
+                        && h.bytes()
+                            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-')
+                })
+        })
+        .map(str::to_owned)
 }
 
 /// A UTC offset as people write it: "UTC+5:30", "UTC−8", "UTC".
@@ -596,6 +613,7 @@ mod tests {
                 phone: Some("+44 20 7946 0958".to_owned()),
                 title: Some("Senior Software Engineer".to_owned()),
                 company: Some("Analytical Engines Ltd".to_owned()),
+                website: None,
             }
         );
     }
@@ -609,6 +627,7 @@ mod tests {
                 phone: Some("(080) 4567-8901".to_owned()),
                 title: Some("Product Manager".to_owned()),
                 company: Some("Invenia Systems".to_owned()),
+                website: None,
             }
         );
     }
@@ -627,6 +646,16 @@ mod tests {
     }
 
     #[test]
+    fn gmail_marks_are_not_read() {
+        let body = "Paid.\n\nRegards,\n*Demo Alam*\n\
+                    *M: *+9 <+919000012345>1 90000 12345 <+919000012345>\n";
+        assert_eq!(
+            signature_card(body, Some("Demo Alam")).phone.as_deref(),
+            Some("+91 90000 12345")
+        );
+    }
+
+    #[test]
     fn quoted_signatures_are_not_theirs() {
         let body = "ok\n\n> Regards,\n> Carol\n> CEO, Acme Inc\n";
         assert_eq!(signature_card(body, Some("Dan")), Card::default());
@@ -641,5 +670,18 @@ mod tests {
         assert_eq!(date_offset(raw), Some(330));
         let raw = b"Date: Sat, 27 Sep 2026 09:00:00 -0700\r\n\r\nhi";
         assert_eq!(date_offset(raw), Some(-420));
+    }
+
+    #[test]
+    fn website_in_a_signature() {
+        assert_eq!(
+            website("| W      : www.kgservices.in <http://www.kgservices.in/>").as_deref(),
+            Some("www.kgservices.in")
+        );
+        assert_eq!(
+            website("Visit https://acme.example/about.").as_deref(),
+            Some("https://acme.example/about")
+        );
+        assert_eq!(website("Email ID: lhatu@bccl.bt"), None);
     }
 }

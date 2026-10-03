@@ -20,6 +20,22 @@ accounts-unified-switch-detail = "All Accounts" heads the folder pane, with the 
 accounts-row = Accounts
 accounts-row-detail = The folder pane and the account menu list accounts in this order; the first is the default. Removing an account deletes Katna's copy of its mail on this computer. The mail stays on the server.
 accounts-none = No accounts yet.
+# A Settings row, only with a POP3 account: what happens to mail on the
+# server once Katna has downloaded it.
+accounts-pop3-row = Mail on the server
+accounts-pop3-row-detail = POP3 accounts download mail to this computer. Pick what then happens to the copy on the server.
+# The choices of that row.
+accounts-pop3-with-katna = Keep it until I delete it in Katna
+accounts-pop3-at-once = Delete it once downloaded
+# $count: a number of days.
+accounts-pop3-after-days = { $count ->
+    [one] Delete it after { $count } day
+   *[other] Delete it after { $count } days
+}
+accounts-pop3-never = Never delete it
+# Tooltips of the buttons beside the days.
+accounts-pop3-days-less = Fewer days
+accounts-pop3-days-more = More days
 # Account type shown after the address, for mail imported from files (mbox, Maildir…).
 accounts-kind-imported = Imported
 # Button: the account uses the picture of the desktop's user account.
@@ -27,6 +43,17 @@ accounts-picture-reset = Use desktop picture
 accounts-picture-change = Change picture
 # Button: the account shows its coloured letter again instead of a picture.
 accounts-picture-remove = Remove picture
+# The colors an account can wear, named in their swatches' tooltips.
+account-color-red = Red
+account-color-pink = Pink
+account-color-magenta = Magenta
+account-color-brown = Brown
+account-color-olive = Olive
+account-color-teal = Teal
+account-color-indigo = Indigo
+account-color-slate = Slate
+# Button with the account's color: it opens a color picker.
+account-color-menu = Colour
 # Button: changes the name the account is shown with.
 accounts-rename = Rename
 # Buttons beside the field for the account's name.

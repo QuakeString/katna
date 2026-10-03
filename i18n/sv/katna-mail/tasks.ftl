@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Skapa
+tasks-create = Ny uppgift
 tasks-all = Alla uppgifter
 tasks-today = I dag
 tasks-starred = Stjärnmärkta
@@ -24,6 +24,12 @@ tasks-account-failed = Det gick inte att läsa uppgiftslistorna.
 # $reason is the server's own words, in English.
 tasks-account-error = Det gick inte att läsa uppgiftslistorna: { $reason }
 tasks-account-none = Inga uppgiftslistor hittades
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Inga uppgiftslistor hittades: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } visar uppgifter bara för Katna när den är inloggad med { $provider }.
+tasks-account-sign-in-with = Logga in med { $provider }
 tasks-account-looking = Letar efter uppgiftslistor…
 tasks-account-try-again = Försök igen
 tasks-account-try-again-tooltip = Kontrollera det här kontots uppgifter igen nu
@@ -108,4 +114,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Det e-postmeddelandet finns inte längre.
 tasks-toast-list-deleted = Listan har raderats
 tasks-toast-moved = Flyttad till { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = Uppgiften har flyttats
 tasks-toast-rescheduled = Uppgift omplanerad

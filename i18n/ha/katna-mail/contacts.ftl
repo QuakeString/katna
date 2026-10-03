@@ -39,6 +39,12 @@ contacts-account-failed = Ba a iya karanta lambobin sadarwar ba.
 # $reason is the server's own words, in English.
 contacts-account-error = Ba a iya karanta lambobin sadarwar ba: { $reason }
 contacts-account-none = Ba a sami littafin adireshi ba
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Ba a sami littafin adireshi ba: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } yana nuna lambobin sadarwa ga Katna ne kawai idan ya shiga da { $provider }.
+contacts-account-sign-in-with = Shiga da { $provider }
 contacts-account-looking = Ana neman lambobin sadarwa…
 contacts-account-try-again = Sake gwadawa
 contacts-account-try-again-tooltip = Sake duba lambobin sadarwar wannan asusun yanzu
@@ -88,7 +94,7 @@ contacts-print-none = Babu lambobin sadarwa da za a buga
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Ranar haihuwa: { $day }
 contacts-print-nickname = Sunan barkwanci: { $name }
-contacts-create = Ƙirƙiri lambar sadarwa
+contacts-create = Sabuwar lambar sadarwa
 
 ## Search and the list
 

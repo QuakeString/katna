@@ -14,13 +14,13 @@ tab-other = 其他
 tab-inbox = 收件匣
 tab-newsletters = 電子報
 tab-notifications = 通知
-tab-new = { $count } 封新郵件
 tab-provider-other = 由 Katna 分類
 
 ## Mail list: toolbar
 
 list-select = 選取
 list-refresh = 重新整理
+list-back-to-top = 回到頂端
 list-checking = 正在檢查新郵件…
 list-more = 更多
 list-mark-read = 標示為已讀取
@@ -39,6 +39,7 @@ list-results = 「{ $query }」的搜尋結果
 list-results-corrected = 目前顯示的是「{ $query }」的搜尋結果
 list-search-instead = 改為搜尋「{ $query }」
 list-files-more = +{ $count }
+list-replied = 你已回覆
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -237,6 +238,8 @@ menu-add-note = 新增記事
 menu-print-all = 全部列印
 menu-new-window = 在新視窗中開啟
 menu-move-to = 移至
+menu-follow-up = 後續處理
+menu-more = 更多
 menu-move-to-heading = 移至：
 menu-find-from = 搜尋來自 { $name } 的郵件
 

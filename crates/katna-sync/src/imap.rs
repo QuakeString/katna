@@ -43,8 +43,10 @@ use io_imap::{
         append::{ImapMessageAppend, ImapMessageAppendError, ImapMessageAppendOptions},
         copy::{ImapMessageCopy, ImapMessageCopyError, ImapMessageCopyOptions},
         create::{ImapMailboxCreate, ImapMailboxCreateError},
+        delete::{ImapMailboxDelete, ImapMailboxDeleteError},
         fetch::{ImapMessageFetch, ImapMessageFetchError, ImapMessageFetchOptions},
         list::{ImapMailboxList, ImapMailboxListError},
+        rename::{ImapMailboxRename, ImapMailboxRenameError},
         search::{ImapMessageSearch, ImapMessageSearchError, ImapMessageSearchOptions},
         select::{ImapMailboxSelect, ImapMailboxSelectError, ImapMailboxSelectOptions},
         store::{ImapMessageStoreError, ImapMessageStoreOptions, ImapMessageStoreSilent},
@@ -62,8 +64,8 @@ use io_sasl::{mechanism::Sasl, rfc4616::plain::SaslPlainCreds, xoauth2::SaslXoau
 
 use crate::{
     Address, AttachmentPart, Credentials, Endpoint, Envelope, Error, FlagChanges, FlagState, Flags,
-    Folder, FolderChange, FolderRole, FolderStatus, IMPORTANT, MailBackend, MessageHeaders, Quota,
-    Result, Security, Wait,
+    Folder, FolderChange, FolderRole, FolderStatus, IMPORTANT, MUTED, MailBackend, MessageHeaders,
+    Quota, Result, Security, Wait,
     backend::Login,
     net::{Conn, Tls},
 };
@@ -265,32 +267,33 @@ impl ImapBackend {
         Ok(lines.iter().filter_map(|line| gmail_fetch(line)).collect())
     }
 
-    /// Whether each message of the UID set `uids` has Gmail's Important
-    /// label (`X-GM-LABELS`).
-    async fn gmail_important(&mut self, uids: &str) -> Result<HashMap<u32, bool>> {
+    /// Gmail's Important and Muted labels (`X-GM-LABELS`) of each message
+    /// of the UID set `uids`.
+    async fn gmail_labels(&mut self, uids: &str) -> Result<HashMap<u32, GmailLabels>> {
         let lines = self
             .raw_command(&format!("UID FETCH {uids} (UID X-GM-LABELS)"))
             .await?;
-        Ok(lines
-            .iter()
-            .filter_map(|line| gmail_important(line))
-            .collect())
+        Ok(lines.iter().filter_map(|line| gmail_labels(line)).collect())
     }
 
-    /// On Gmail, adds [`IMPORTANT`] to the flags of messages with the
-    /// Important label: it is a label there, not a keyword.
-    async fn add_gmail_important<'a>(
+    /// On Gmail, adds [`IMPORTANT`] and [`MUTED`] to the flags of messages
+    /// with the Important or Muted label: they are labels there, not
+    /// keywords.
+    async fn add_gmail_labels<'a>(
         &mut self,
         uids: &str,
         flags: impl Iterator<Item = (u32, &'a mut Flags)>,
     ) -> Result<()> {
-        let important = self.gmail_important(uids).await?;
+        let labels = self.gmail_labels(uids).await?;
         for (uid, flags) in flags {
-            if important.get(&uid) == Some(&true) {
-                flags
-                    .keywords
-                    .retain(|k| !k.eq_ignore_ascii_case(IMPORTANT));
-                flags.keywords.push(IMPORTANT.to_owned());
+            let Some(labels) = labels.get(&uid) else {
+                continue;
+            };
+            for (on, keyword) in [(labels.important, IMPORTANT), (labels.muted, MUTED)] {
+                if on {
+                    flags.keywords.retain(|k| !k.eq_ignore_ascii_case(keyword));
+                    flags.keywords.push(keyword.to_owned());
+                }
             }
         }
         Ok(())
@@ -640,7 +643,7 @@ impl MailBackend for ImapBackend {
                 None => format!("{first}:*"),
             };
             let flags = messages.iter_mut().map(|m| (m.uid, &mut m.flags));
-            self.add_gmail_important(&range, flags).await?;
+            self.add_gmail_labels(&range, flags).await?;
         }
         Ok(messages)
     }
@@ -740,7 +743,7 @@ impl MailBackend for ImapBackend {
         if self.is_gmail() && !flags.is_empty() {
             let uids: Vec<u32> = flags.iter().map(|f| f.uid).collect();
             let states = flags.iter_mut().map(|f| (f.uid, &mut f.flags));
-            self.add_gmail_important(&uid_set(&uids), states).await?;
+            self.add_gmail_labels(&uid_set(&uids), states).await?;
         }
         Ok(FlagChanges {
             flags,
@@ -798,21 +801,24 @@ impl MailBackend for ImapBackend {
 
     async fn store_flags(&mut self, uids: &[u32], flags: &Flags, add: bool) -> Result<()> {
         let mut flags = flags.clone();
-        let important = flags
-            .keywords
-            .iter()
-            .any(|k| k.eq_ignore_ascii_case(IMPORTANT));
-        if important && self.is_gmail() && !uids.is_empty() {
-            // Gmail keeps importance as a label.
-            flags
-                .keywords
-                .retain(|k| !k.eq_ignore_ascii_case(IMPORTANT));
-            let sign = if add { '+' } else { '-' };
-            self.raw_command(&format!(
-                "UID STORE {} {sign}X-GM-LABELS (\\Important)",
-                uid_set(uids)
-            ))
-            .await?;
+        if self.is_gmail() && !uids.is_empty() {
+            // Gmail keeps importance and mutes as labels.
+            for (keyword, label) in [(IMPORTANT, "\\Important"), (MUTED, "\\Muted")] {
+                if !flags
+                    .keywords
+                    .iter()
+                    .any(|k| k.eq_ignore_ascii_case(keyword))
+                {
+                    continue;
+                }
+                flags.keywords.retain(|k| !k.eq_ignore_ascii_case(keyword));
+                let sign = if add { '+' } else { '-' };
+                self.raw_command(&format!(
+                    "UID STORE {} {sign}X-GM-LABELS ({label})",
+                    uid_set(uids)
+                ))
+                .await?;
+            }
         }
         let flags = imap_flags(&flags)?;
         if uids.is_empty() || flags.is_empty() {
@@ -893,6 +899,39 @@ impl MailBackend for ImapBackend {
         if let Err(err) = self.run(ImapMailboxSubscribe::new(mailbox)).await {
             tracing::debug!(%err, folder, "SUBSCRIBE refused");
         }
+        Ok(())
+    }
+
+    async fn rename_folder(&mut self, from: &str, to: &str) -> Result<()> {
+        let old = Mailbox::try_from(from.to_owned()).map_err(protocol)?;
+        let new = Mailbox::try_from(to.to_owned()).map_err(protocol)?;
+        self.run(ImapMailboxRename::new(old, new.clone())).await?;
+        // Not every server carries the subscription over.
+        if let Err(err) = self.run(ImapMailboxSubscribe::new(new)).await {
+            tracing::debug!(%err, to, "SUBSCRIBE refused");
+        }
+        Ok(())
+    }
+
+    async fn delete_folder(&mut self, folder: &str) -> Result<()> {
+        let mailbox = Mailbox::try_from(folder.to_owned()).map_err(protocol)?;
+        self.run(ImapMailboxDelete::new(mailbox)).await
+    }
+
+    async fn gmail_label(&mut self, uids: &[u32], label: &str, add: bool) -> Result<()> {
+        if !self.is_gmail() {
+            return Err(Error::Rejected("the server has no Gmail labels".into()));
+        }
+        if uids.is_empty() {
+            return Ok(());
+        }
+        let sign = if add { '+' } else { '-' };
+        self.raw_command(&format!(
+            "UID STORE {} {sign}X-GM-LABELS ({})",
+            uid_set(uids),
+            gmail_label_arg(label)?
+        ))
+        .await?;
         Ok(())
     }
 
@@ -1084,6 +1123,8 @@ command_errors!(
     ImapMailboxSelectError,
     ImapMessageFetchError,
     ImapMailboxCreateError,
+    ImapMailboxRenameError,
+    ImapMailboxDeleteError,
     ImapMailboxSubscribeError,
     ImapMessageAppendError,
     ImapMessageSearchError,
@@ -1161,6 +1202,45 @@ fn imap_flags(flags: &Flags) -> Result<Vec<Flag<'static>>> {
         out.push(Flag::keyword(atom));
     }
     Ok(out)
+}
+
+/// A Gmail label (its folder path) as an `X-GM-LABELS` argument: in
+/// modified UTF-7, like folder names on the wire, and quoted.
+fn gmail_label_arg(label: &str) -> Result<String> {
+    use base64::Engine as _;
+    if label.is_empty() || label.contains(['\r', '\n', '\0']) {
+        return Err(Error::Protocol(format!("unsupported label {label:?}")));
+    }
+    let mut encoded = String::with_capacity(label.len());
+    let mut shifted: Vec<u8> = Vec::new();
+    let flush = |shifted: &mut Vec<u8>, out: &mut String| {
+        if !shifted.is_empty() {
+            let b64 = base64::engine::general_purpose::STANDARD_NO_PAD.encode(&*shifted);
+            out.push('&');
+            out.push_str(&b64.replace('/', ","));
+            out.push('-');
+            shifted.clear();
+        }
+    };
+    for c in label.chars() {
+        if (' '..='~').contains(&c) {
+            flush(&mut shifted, &mut encoded);
+            match c {
+                '&' => encoded.push_str("&-"),
+                c => encoded.push(c),
+            }
+        } else {
+            let mut units = [0u16; 2];
+            for unit in c.encode_utf16(&mut units) {
+                shifted.extend_from_slice(&unit.to_be_bytes());
+            }
+        }
+    }
+    flush(&mut shifted, &mut encoded);
+    Ok(format!(
+        "\"{}\"",
+        encoded.replace('\\', "\\\\").replace('"', "\\\"")
+    ))
 }
 
 /// A compact UID set: runs of consecutive UIDs become `a:b`.
@@ -1351,16 +1431,23 @@ fn gmail_fetch(line: &str) -> Option<(u32, GmailIds)> {
     (ids != GmailIds::default()).then_some((uid?, ids))
 }
 
-/// `5 FETCH (UID 9 X-GM-LABELS (\Inbox "\\Important" Work))` → `(9, true)`:
-/// whether the message at that UID has Gmail's Important label.
-fn gmail_important(line: &str) -> Option<(u32, bool)> {
+/// Gmail system labels of one message that Katna keeps as flags.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+struct GmailLabels {
+    important: bool,
+    muted: bool,
+}
+
+/// `5 FETCH (UID 9 X-GM-LABELS (\Inbox "\\Important" Work))` → `(9,
+/// important)`: the Important and Muted labels of the message at that UID.
+fn gmail_labels(line: &str) -> Option<(u32, GmailLabels)> {
     let (_, rest) = line.split_once(' ')?;
     let items = rest
         .strip_prefix("FETCH")
         .or_else(|| rest.strip_prefix("fetch"))?;
     let items = items.trim().strip_prefix('(')?.strip_suffix(')')?;
     let mut tokens = fetch_tokens(items).into_iter();
-    let (mut uid, mut important) = (None, None);
+    let (mut uid, mut labels) = (None, None);
     while let Some(token) = tokens.next() {
         let FetchToken::Word(name) = token else {
             continue;
@@ -1369,13 +1456,17 @@ fn gmail_important(line: &str) -> Option<(u32, bool)> {
             Some(FetchToken::Word(value)) if name.eq_ignore_ascii_case("UID") => {
                 uid = value.parse().ok();
             }
-            Some(FetchToken::List(labels)) if name.eq_ignore_ascii_case("X-GM-LABELS") => {
-                important = Some(labels.iter().any(|l| l.eq_ignore_ascii_case("\\Important")));
+            Some(FetchToken::List(list)) if name.eq_ignore_ascii_case("X-GM-LABELS") => {
+                let has = |label: &str| list.iter().any(|l| l.eq_ignore_ascii_case(label));
+                labels = Some(GmailLabels {
+                    important: has("\\Important"),
+                    muted: has("\\Muted"),
+                });
             }
             _ => {}
         }
     }
-    Some((uid?, important?))
+    Some((uid?, labels?))
 }
 
 /// A word (atom or unquoted string) or a list of words in a FETCH line.
@@ -1546,7 +1637,33 @@ mod tests {
     }
 
     #[test]
+    fn gmail_labels_are_quoted_in_modified_utf7() {
+        assert_eq!(gmail_label_arg("Work/2026").unwrap(), "\"Work/2026\"");
+        assert_eq!(
+            gmail_label_arg("Tom & \"Jo\"").unwrap(),
+            r#""Tom &- \"Jo\"""#
+        );
+        // RFC 3501 §5.1.3's example.
+        assert_eq!(
+            gmail_label_arg("~peter/mail/台北/日本語").unwrap(),
+            "\"~peter/mail/&U,BTFw-/&ZeVnLIqe-\""
+        );
+        assert!(gmail_label_arg("a\r\nb").is_err());
+    }
+
+    #[test]
     fn parses_gmail_labels() {
+        let gmail_important = |line| gmail_labels(line).map(|(uid, l)| (uid, l.important));
+        assert_eq!(
+            gmail_labels(r"8 FETCH (UID 13 X-GM-LABELS (\Inbox \Muted))"),
+            Some((
+                13,
+                GmailLabels {
+                    important: false,
+                    muted: true
+                }
+            ))
+        );
         assert_eq!(
             gmail_important(r#"5 FETCH (UID 9 X-GM-LABELS (\Inbox "\\Important" Work))"#),
             Some((9, true))

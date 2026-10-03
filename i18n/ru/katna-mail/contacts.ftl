@@ -39,6 +39,12 @@ contacts-account-failed = Не удалось прочитать контакт�
 # $reason is the server's own words, in English.
 contacts-account-error = Не удалось прочитать контакты: { $reason }
 contacts-account-none = Адресная книга не найдена
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Адресная книга не найдена: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } показывает контакты только Katna, вошедшей через { $provider }.
+contacts-account-sign-in-with = Войти через { $provider }
 contacts-account-looking = Поиск контактов…
 contacts-account-try-again = Повторить попытку
 contacts-account-try-again-tooltip = Сейчас снова проверить контакты этого аккаунта
@@ -100,7 +106,7 @@ contacts-print-none = Нет контактов для печати
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = День рождения: { $day }
 contacts-print-nickname = Псевдоним: { $name }
-contacts-create = Создать контакт
+contacts-create = Новый контакт
 
 ## Search and the list
 

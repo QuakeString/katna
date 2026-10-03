@@ -9,6 +9,17 @@ nav-folders = ফ'ল্ডাৰসমূহ
 nav-label-new = নতুন লেবেল সৃষ্টি কৰক
 nav-folder-new = নতুন ফ'ল্ডাৰ সৃষ্টি কৰক
 nav-menu-check-mail = নতুন মেইল পৰীক্ষা কৰক
+nav-menu-check-inbox = এই ইনবক্স পৰীক্ষা কৰক
+nav-menu-sign-in-again = পুনৰ ছাইন ইন কৰক
+nav-menu-new-mail = এই একাউণ্টৰ পৰা নতুন মেইল
+nav-menu-account-settings = একাউণ্ট ছেটিংছ
+nav-account-checked = ছিংক হৈ আছে · { $ago } পৰীক্ষা কৰা হৈছিল
+nav-account-in-sync = ছিংক হৈ আছে
+nav-account-connecting = সংযোগ কৰি আছে…
+nav-account-offline = অফলাইন, পুনৰ চেষ্টা কৰি আছে
+nav-account-signed-out = { $provider } ছাইন ইনৰ ম্যাদ উকলিছে
+nav-account-password-refused = পাছৱৰ্ড অগ্ৰাহ্য কৰা হ'ল
+nav-account-storage = { $total }ৰ { $used } ব্যৱহৃত
 nav-menu-new-subfolder = ভিতৰত নতুন ফ'ল্ডাৰ
 nav-menu-new-sublabel = ভিতৰত নতুন লেবেল
 nav-menu-empty-trash = ট্ৰেছ খালী কৰক
@@ -16,10 +27,6 @@ nav-account-unnamed = একাউণ্ট { $number }
 nav-all-accounts = সকলো একাউণ্ট
 nav-expand = ফ'ল্ডাৰ দেখুৱাওক
 nav-collapse = ফ'ল্ডাৰ লুকুৱাওক
-nav-tab-new = { $count ->
-    [one] { $count }টা নতুন
-   *[other] { $count }টা নতুন
-}
 storage-used = { $total }ৰ { $percent }% ব্যৱহৃত
 storage-used-detail = { $address }: { $total }ৰ { $used } ব্যৱহৃত
 

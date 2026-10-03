@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Создать
+tasks-create = Новая задача
 tasks-all = Все задачи
 tasks-today = Сегодня
 tasks-starred = Помеченные
@@ -24,6 +24,12 @@ tasks-account-failed = Не удалось прочитать списки за�
 # $reason is the server's own words, in English.
 tasks-account-error = Не удалось прочитать списки задач: { $reason }
 tasks-account-none = Списки задач не найдены
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Списки задач не найдены: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } показывает задачи только Katna, вошедшей через { $provider }.
+tasks-account-sign-in-with = Войти через { $provider }
 tasks-account-looking = Поиск списков задач…
 tasks-account-try-again = Повторить попытку
 tasks-account-try-again-tooltip = Сейчас снова проверить задачи этого аккаунта
@@ -112,4 +118,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Этого письма больше нет.
 tasks-toast-list-deleted = Список удалён
 tasks-toast-moved = Перемещено в { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = Задача перемещена
 tasks-toast-rescheduled = Задача перенесена

@@ -32,6 +32,7 @@ compose-tool-bold = Negrito (Ctrl+B)
 compose-tool-italic = Itálico (Ctrl+I)
 compose-tool-underline = Sublinhado (Ctrl+U)
 compose-tool-text-color = Cor do texto
+compose-tool-colors = Cor do texto e do realce
 compose-tool-background-color = Cor de fundo
 compose-tool-default-color = Cor padrão
 compose-tool-no-background = Sem fundo
@@ -126,6 +127,10 @@ compose-tool-signature = Inserir assinatura
 compose-tool-signature-none = Sem assinatura
 compose-tool-signature-untitled = Sem título
 compose-tool-signature-manage = Gerenciar assinaturas
+compose-signature-tag-tip = Escolher outra assinatura
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = Modelos
 compose-tool-templates-none = Nenhum modelo ainda
 compose-tool-template-save = Salvar como modelo…

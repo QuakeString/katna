@@ -9,6 +9,17 @@ nav-folders = ਫੋਲਡਰ
 nav-label-new = ਨਵਾਂ ਲੇਬਲ ਬਣਾਓ
 nav-folder-new = ਨਵਾਂ ਫੋਲਡਰ ਬਣਾਓ
 nav-menu-check-mail = ਨਵੀਂ ਮੇਲ ਜਾਂਚੋ
+nav-menu-check-inbox = ਇਹ ਇਨਬਾਕਸ ਜਾਂਚੋ
+nav-menu-sign-in-again = ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਕਰੋ
+nav-menu-new-mail = ਇਸ ਖਾਤੇ ਤੋਂ ਨਵੀਂ ਮੇਲ
+nav-menu-account-settings = ਖਾਤਾ ਸੈਟਿੰਗਾਂ
+nav-account-checked = ਸਿੰਕ ਵਿੱਚ · { $ago } ਜਾਂਚਿਆ
+nav-account-in-sync = ਸਿੰਕ ਵਿੱਚ
+nav-account-connecting = ਕਨੈਕਟ ਹੋ ਰਿਹਾ ਹੈ…
+nav-account-offline = ਆਫ਼ਲਾਈਨ, ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਹੋ ਰਹੀ ਹੈ
+nav-account-signed-out = { $provider } ਸਾਈਨ ਇਨ ਦੀ ਮਿਆਦ ਖ਼ਤਮ
+nav-account-password-refused = ਪਾਸਵਰਡ ਅਸਵੀਕਾਰ ਹੋਇਆ
+nav-account-storage = { $total } ਵਿੱਚੋਂ { $used } ਵਰਤਿਆ
 nav-menu-new-subfolder = ਅੰਦਰ ਨਵਾਂ ਫੋਲਡਰ
 nav-menu-new-sublabel = ਅੰਦਰ ਨਵਾਂ ਲੇਬਲ
 nav-menu-empty-trash = ਰੱਦੀ ਖਾਲੀ ਕਰੋ
@@ -16,10 +27,6 @@ nav-account-unnamed = ਖਾਤਾ { $number }
 nav-all-accounts = ਸਾਰੇ ਖਾਤੇ
 nav-expand = ਫੋਲਡਰ ਦਿਖਾਓ
 nav-collapse = ਫੋਲਡਰ ਲੁਕਾਓ
-nav-tab-new = { $count ->
-    [one] { $count } ਨਵਾਂ
-   *[other] { $count } ਨਵੇਂ
-}
 storage-used = { $total } ਵਿੱਚੋਂ { $percent }% ਵਰਤਿਆ ਗਿਆ
 storage-used-detail = { $address }: { $total } ਵਿੱਚੋਂ { $used } ਵਰਤਿਆ ਗਿਆ
 

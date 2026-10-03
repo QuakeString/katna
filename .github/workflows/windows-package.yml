@@ -1,24 +1,20 @@
 name: Windows package
 
-# Builds Katna Setup (ci/windows-package.ps1). On main it replaces the
+# Builds Katna Setup (ci/windows-package.ps1). On main it updates the
 # `windows-latest` pre-release with the new KatnaSetup.exe, so Windows users
 # install and update Katna without building it (packaging/windows/README.md).
 
+# Secondary (secondary.yml) runs it after each push to main once the
+# Windows tests pass; it can also be run by hand (Actions > Windows package
+# > Run workflow). Run on main, it publishes.
 on:
-  push:
-    branches: [main]
-    # As for the Arch package: docs-only pushes keep the current Setup.
-    paths:
-      - "**"
-      - "!docs/**"
-      - "docs/credits.json"
-  pull_request:
-    paths:
-      - "apps/katna-setup/**"
-      - "packaging/windows/**"
-      - "ci/windows-*.ps1"
-      - ".github/workflows/windows-package.yml"
   workflow_dispatch:
+    inputs:
+      full:
+        description: "Full build: smallest, fastest Katna, but much slower to build"
+        type: boolean
+        default: false
+  workflow_call:
 
 concurrency:
   group: windows-package-${{ github.ref }}
@@ -47,11 +43,23 @@ jobs:
           path: target/dbus
           key: windows-dbus-${{ hashFiles('ci/windows-dbus.ps1') }}
       - name: Build Katna Setup
+        env:
+          # "Sign in with Google/Microsoft/Zoho" (katna_core::ids), as for the
+          # Arch package; unset hides the buttons.
+          KATNA_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.KATNA_GOOGLE_OAUTH_CLIENT_ID }}
+          KATNA_GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_GOOGLE_OAUTH_CLIENT_SECRET }}
+          KATNA_MICROSOFT_OAUTH_CLIENT_ID: ${{ secrets.KATNA_MICROSOFT_OAUTH_CLIENT_ID }}
+          KATNA_ZOHO_OAUTH_CLIENT_ID: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_ID }}
+          KATNA_ZOHO_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_SECRET }}
+          KATNA_PROFILE: ${{ inputs.full && 'release' || 'quick' }}
         run: ci/windows-package.ps1
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: windows-package
-          path: target/windows/KatnaSetup.exe
+          path: |
+            target/windows/KatnaSetup.exe
+            target/windows/version.txt
+            target/windows/highlights.json
           if-no-files-found: error
 
   publish:
@@ -89,8 +97,41 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: windows-package
-          path: out
-      - name: Replace the windows-latest pre-release
+          path: build
+      # The commits the Update dialog lists.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: src
+          fetch-depth: 200
+          persist-credentials: false
+      # What Katna on Windows checks for updates
+      # (katna_core::update::Manifest, docs/ARCHITECTURE.md §21.2): the
+      # same fields as the Arch package's, for the full Setup. No patches
+      # and no signature yet; Katna checks the SHA-256 after downloading.
+      - name: Write the update manifest
+        run: |
+          mkdir out
+          mv build/KatnaSetup.exe out/
+          version=$(cat build/version.txt)
+          highlights=$(jq -c '.[:50]' build/highlights.json 2>/dev/null || echo '[]')
+          git -C src log -200 --format='%h%x09%s' HEAD |
+            jq -R 'split("\t") | {commit: .[0], title: (.[1:] | join("\t"))}' |
+            jq -s . > changes.json
+          jq -n \
+            --arg version "$version" \
+            --arg file KatnaSetup.exe \
+            --arg sha256 "$(sha256sum out/KatnaSetup.exe | cut -d' ' -f1)" \
+            --argjson size "$(stat -c %s out/KatnaSetup.exe)" \
+            --argjson built "$(git -C src log -1 --format=%ct HEAD)" \
+            --arg commit "$(git -C src rev-parse HEAD)" \
+            --argjson highlights "$highlights" \
+            --slurpfile changes changes.json \
+            '{$version, $file, $sha256, $size, $built, $commit, $highlights,
+              changes: $changes[0]}' > out/katna-update.json
+          jq '{version, file, size, built, commit,
+               highlights: (.highlights | length), changes: (.changes | length)}' \
+            out/katna-update.json
+      - name: Update the windows-latest pre-release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -106,8 +147,37 @@ jobs:
           Setup is not signed yet, so Windows SmartScreen may warn: choose
           **More info**, then **Run anyway**.
           EOF
-          gh release delete windows-latest --cleanup-tag --yes || true
-          gh release create windows-latest out/* --prerelease \
-            --target "$GITHUB_SHA" \
-            --title "Katna for Windows (latest main)" \
-            --notes-file notes.md
+          # Updated in place, never deleted and created again, as arch-latest:
+          # a delete and create left arch-latest a draft (every download 404),
+          # and in between KatnaSetup.exe was gone for anyone downloading it.
+          tag=windows-latest
+          api="repos/$GH_REPO"
+          if gh api "$api/git/ref/tags/$tag" > /dev/null 2>&1; then
+            gh api -X PATCH "$api/git/refs/tags/$tag" -f sha="$GITHUB_SHA" -F force=true > /dev/null
+          else
+            gh api -X POST "$api/git/refs" -f ref="refs/tags/$tag" -f sha="$GITHUB_SHA" > /dev/null
+          fi
+          # Drafts included: the list is the only place they show.
+          ids=$(gh api --paginate "$api/releases" --jq ".[] | select(.tag_name == \"$tag\") | .id")
+          id=$(head -n1 <<<"$ids")
+          for extra in $(tail -n +2 <<<"$ids"); do
+            gh api -X DELETE "$api/releases/$extra"
+          done
+          fields=(-f tag_name="$tag" -f target_commitish="$GITHUB_SHA"
+                  -f name="Katna for Windows (latest main)"
+                  -F body=@notes.md -F draft=false -F prerelease=true)
+          if [[ -n "$id" ]]; then
+            gh api -X PATCH "$api/releases/$id" "${fields[@]}" > /dev/null
+          else
+            id=$(gh api -X POST "$api/releases" "${fields[@]}" --jq .id)
+          fi
+          cd out
+          # Setup first and the manifest last, so the manifest never names
+          # a Setup that is not there yet.
+          gh release upload "$tag" --clobber KatnaSetup.exe
+          gh release upload "$tag" --clobber katna-update.json
+          # Earlier builds' files.
+          gh api "$api/releases/$id/assets" --paginate --jq '.[] | "\(.id) \(.name)"' |
+            while read -r asset name; do
+              [[ -e "$name" ]] || gh api -X DELETE "$api/releases/assets/$asset"
+            done

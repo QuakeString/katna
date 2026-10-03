@@ -46,6 +46,7 @@ compose-sent-archived = An aika kuma an adana a ma'ajiya
 compose-sent = An aika saƙo
 compose-discarded = An yi watsi da zayyana
 compose-draft-saved = An adana zayyana
+compose-draft-saving = Ana ajiyewa…
 compose-draft-failed = Ba a iya adana zayyanar ba: { $error }
 compose-draft-not-opened = Ba a iya buɗe zayyanar ba.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = Ba a iya buɗe zayyanar ba.
 compose-picker-insert = Saka
 compose-picker-attach = Haɗa
 compose-file-too-large = { $name } ya yi girma sosai: saƙo zai iya ɗaukar har zuwa { $limit }.
+compose-forward-files-missing = Ba a sauke fayilolin saƙon da aka tura ba, don haka ba a haɗa su ba.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Cire abin haɗawa
+compose-attachment-open-tip = Buɗe don dubawa
 compose-attachments-total = { $count ->
     [one] fayil { $count }, { $size }
    *[other] fayiloli { $count }, { $size }
@@ -78,6 +81,7 @@ compose-drive-share-link = Raba ta hanyar mahaɗi
 compose-drive-send-without = Aika ba tare da rabawa ba
 compose-drive-share-cancel = Soke
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } ya wuce { $limit }, don haka ana ajiye shi a OneDrive ɗinka kuma saƙon yana ɗauke da mahaɗi.
 compose-onedrive-tip = A OneDrive ɗinka; saƙon yana ɗauke da mahaɗi
 compose-onedrive-allow = Ba da izinin OneDrive
@@ -89,6 +93,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive ba zai iya raba fayilolin da { $addresses } ba. Maimakon haka, duk wanda yake da mahaɗin zai iya buɗe su.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Saki fayiloli a nan
 compose-drop-here = Saki a nan
 compose-paste-keep-formatting = Riƙe tsari

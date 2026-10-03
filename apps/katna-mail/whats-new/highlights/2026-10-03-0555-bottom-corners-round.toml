@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rounded bottom corners stay round"
+text = """
+With Katna's own title bar and rounded corners, the window's bottom
+corners no longer show a square of its background past the rounded
+border.
+"""

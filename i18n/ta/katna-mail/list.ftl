@@ -14,13 +14,13 @@ tab-other = மற்றவை
 tab-inbox = இன்பாக்ஸ்
 tab-newsletters = செய்திமடல்கள்
 tab-notifications = அறிவிப்புகள்
-tab-new = { $count } புதியவை
 tab-provider-other = Katna வரிசைப்படுத்தியது
 
 ## Mail list: toolbar
 
 list-select = தேர்ந்தெடு
 list-refresh = புதுப்பி
+list-back-to-top = மேலே செல்
 list-checking = புதிய அஞ்சலைச் சரிபார்க்கிறது…
 list-more = மேலும்
 list-mark-read = படித்ததாகக் குறி
@@ -39,6 +39,7 @@ list-results = “{ $query }” க்கான முடிவுகள்
 list-results-corrected = “{ $query }” க்கான முடிவுகள் காட்டப்படுகின்றன
 list-search-instead = அதற்குப் பதிலாக “{ $query }” என்று தேடு
 list-files-more = +{ $count }
+list-replied = நீங்கள் பதிலளித்தீர்கள்
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,8 @@ menu-add-note = குறிப்பைச் சேர்
 menu-print-all = அனைத்தையும் அச்சிடு
 menu-new-window = புதிய சாளரத்தில் திற
 menu-move-to = இதற்கு நகர்த்து
+menu-follow-up = பின்தொடர்
+menu-more = மேலும்
 menu-move-to-heading = இதற்கு நகர்த்து:
 menu-find-from = { $name } அனுப்பிய மின்னஞ்சல்களைக் கண்டறி
 

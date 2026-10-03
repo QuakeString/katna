@@ -33,13 +33,14 @@ const HEIGHT: f32 = 780.0;
 
 /// Where the conversation was opened from, so moving it out (archive,
 /// delete) works as it does from the list.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 struct Origin {
     folder: Option<FolderId>,
     show_recipients: bool,
-    /// A reply to all to this message starts at once (a notification's
-    /// Reply all).
-    reply_all: Option<MessageId>,
+    /// A reply of this kind to this message starts at once (a
+    /// notification's Reply or Reply all), saying the text if any (typed
+    /// into the notification).
+    reply: Option<(MessageId, Kind, Option<String>)>,
 }
 
 impl MailWindow {
@@ -61,15 +62,22 @@ impl MailWindow {
         let origin = Origin {
             folder: self.listed_folder(),
             show_recipients: self.show_recipients,
-            reply_all: None,
+            reply: None,
         };
         self.open_window(entry, origin, cx);
     }
 
-    /// Opens the conversation of `message` in a window of its own with a
-    /// reply to all started, for a notification's Reply all: the mail
-    /// window stays where it is.
-    pub(super) fn reply_all_in_window(&mut self, message: MessageId, cx: &mut Context<Self>) {
+    /// Opens the conversation of `message` in a window of its own, for a
+    /// click on a notification, with a `reply` started if given (its Reply
+    /// or Reply all), saying `text` (typed into the notification): the
+    /// mail window stays where it is, whatever page it shows.
+    pub(super) fn message_in_window(
+        &mut self,
+        message: MessageId,
+        reply: Option<Kind>,
+        text: Option<String>,
+        cx: &mut Context<Self>,
+    ) {
         let mail = self.mail.as_ref().ok();
         let entry = match mail.and_then(|m| m.message_thread(message)) {
             Some(thread) => Entry {
@@ -85,7 +93,7 @@ impl MailWindow {
         let origin = Origin {
             folder: inbox.or_else(|| self.listed_folder()),
             show_recipients: false,
-            reply_all: Some(message),
+            reply: reply.map(|kind| (message, kind, text)),
         };
         self.open_window(entry, origin, cx);
     }
@@ -158,8 +166,11 @@ impl MailWindow {
         this.listen(cx);
         this.watch_colors(cx);
         window.focus(&this.list_focus, cx);
-        if let Some(message) = origin.reply_all {
-            this.open_compose(Kind::ReplyAll, Some(message), window, cx);
+        if let Some((message, kind, text)) = origin.reply {
+            if let Some(text) = text.filter(|t| !t.trim().is_empty()) {
+                this.keep_reply(entry.key, text);
+            }
+            this.open_compose(kind, Some(message), window, cx);
         }
         this
     }
@@ -180,7 +191,11 @@ impl MailWindow {
         let th = self.theme(window);
         self.release_images(window, cx);
         if let Some(viewer) = &self.files.viewer {
-            viewer.update(cx, |viewer, _| viewer.th = th);
+            let corners = self.chrome.content_corners(window);
+            viewer.update(cx, |viewer, _| {
+                viewer.th = th;
+                viewer.corners = corners;
+            });
         }
         let reduce = cx.reduce_motion();
         self.update_reply_row(unpx(window.viewport_size().width), window, reduce);
@@ -209,6 +224,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::toggle_star))
             .on_action(cx.listener(Self::add_to_tasks))
             .on_action(cx.listener(Self::mark_important))
+            .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
             .child(self.render_reader_card(&th, cx));
         let compose = self.render_compose(&th, window, reduce, cx);
@@ -219,6 +235,8 @@ impl MailWindow {
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
+            .map(|d| self.ui_text_root(d, cx))
+            .children(self.render_ui_text_menu(&th, window, cx))
             .relative()
             .size_full()
             .p(px(8.0))

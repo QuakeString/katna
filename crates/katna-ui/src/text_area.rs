@@ -133,6 +133,9 @@ pub struct TextArea {
     goal_x: Option<Pixels>,
     last_layout: Option<Layout>,
     is_selecting: bool,
+    /// One wrapped line: enter submits and pasted line breaks become
+    /// spaces.
+    single_line: bool,
 }
 
 impl EventEmitter<InputEvent> for TextArea {}
@@ -151,7 +154,15 @@ impl TextArea {
             goal_x: None,
             last_layout: None,
             is_selecting: false,
+            single_line: false,
         }
+    }
+
+    /// Keeps the text one line that wraps to the area's width, for a long
+    /// value in a form: enter submits like ctrl-enter, and pasted line
+    /// breaks become spaces.
+    pub fn set_single_line(&mut self, single_line: bool) {
+        self.single_line = single_line;
     }
 
     pub fn text(&self) -> &str {
@@ -388,6 +399,10 @@ impl TextArea {
     }
 
     fn newline(&mut self, _: &Newline, window: &mut Window, cx: &mut Context<Self>) {
+        if self.single_line {
+            cx.emit(InputEvent::Submit);
+            return;
+        }
         self.replace_text_in_range(None, "\n", window, cx)
     }
 
@@ -401,7 +416,11 @@ impl TextArea {
 
     fn paste(&mut self, _: &Paste, window: &mut Window, cx: &mut Context<Self>) {
         if let Some(text) = cx.read_from_clipboard().and_then(|item| item.text()) {
-            self.replace_text_in_range(None, &normalize_newlines(&text), window, cx);
+            let mut text = normalize_newlines(&text);
+            if self.single_line {
+                text = text.trim_matches('\n').replace('\n', " ");
+            }
+            self.replace_text_in_range(None, &text, window, cx);
         }
     }
 
@@ -1090,7 +1109,10 @@ impl Element for TextElement {
         let input = self.input.read(cx);
         let style = window.text_style();
         let (text, color) = if input.content.is_empty() {
-            (input.placeholder.clone(), style.color.opacity(0.5))
+            (
+                input.placeholder.clone(),
+                style.color.opacity(crate::PLACEHOLDER_OPACITY),
+            )
         } else {
             (input.content.clone(), style.color)
         };

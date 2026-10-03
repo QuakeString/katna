@@ -14,6 +14,17 @@ accounts-unified-switch-detail = ”تمام اکاؤنٹس“ فولڈر پین
 accounts-row = اکاؤنٹس
 accounts-row-detail = فولڈر پین اور اکاؤنٹ مینیو اکاؤنٹس کو اسی ترتیب میں دکھاتے ہیں؛ پہلا ڈیفالٹ ہے۔ اکاؤنٹ ہٹانے سے اس کمپیوٹر پر اس کی میل کی Katna والی کاپی حذف ہو جاتی ہے۔ میل سرور پر رہتی ہے۔
 accounts-none = ابھی کوئی اکاؤنٹ نہیں۔
+accounts-pop3-row = سرور پر میل
+accounts-pop3-row-detail = POP3 اکاؤنٹس میل اس کمپیوٹر پر ڈاؤن لوڈ کرتے ہیں۔ منتخب کریں کہ پھر سرور پر موجود کاپی کا کیا ہو۔
+accounts-pop3-with-katna = جب تک میں اسے Katna میں حذف نہ کروں، رکھیں
+accounts-pop3-at-once = ڈاؤن لوڈ ہوتے ہی حذف کریں
+accounts-pop3-after-days = { $count ->
+    [one] { $count } دن بعد حذف کریں
+   *[other] { $count } دن بعد حذف کریں
+}
+accounts-pop3-never = کبھی حذف نہ کریں
+accounts-pop3-days-less = کم دن
+accounts-pop3-days-more = زیادہ دن
 accounts-kind-imported = درآمد شدہ
 accounts-picture-reset = ڈیسک ٹاپ کی تصویر استعمال کریں
 accounts-picture-change = تصویر بدلیں

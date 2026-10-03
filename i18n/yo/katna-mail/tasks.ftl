@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Ṣẹ̀dá
+tasks-create = Iṣẹ́ tuntun
 tasks-all = Gbogbo iṣẹ́
 tasks-today = Òní
 tasks-starred = Àwọn tí a fi ìràwọ̀ sàmì sí
@@ -24,6 +24,12 @@ tasks-account-failed = A kò lè ka àwọn àtòjọ iṣẹ́.
 # $reason is the server's own words, in English.
 tasks-account-error = A kò lè ka àwọn àtòjọ iṣẹ́: { $reason }
 tasks-account-none = A kò rí àtòjọ iṣẹ́ kankan
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = A kò rí àtòjọ iṣẹ́ kankan: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } máa ń fi iṣẹ́ hàn fún Katna tí ó wọlé pẹ̀lú { $provider } nìkan.
+tasks-account-sign-in-with = Wọlé pẹ̀lú { $provider }
 tasks-account-looking = À ń wá àwọn àtòjọ iṣẹ́…
 tasks-account-try-again = Gbìyànjú lẹ́ẹ̀kan sí i
 tasks-account-try-again-tooltip = Ṣàyẹ̀wò àwọn iṣẹ́ àkáǹtì yìí lẹ́ẹ̀kan sí i báyìí
@@ -106,4 +112,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Lẹ́tà yẹn kò sí níbí mọ́.
 tasks-toast-list-deleted = A pa àtòjọ náà rẹ́
 tasks-toast-moved = A gbé e lọ sí { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = A gbé iṣẹ́ náà lọ
 tasks-toast-rescheduled = A ti yí àkókò iṣẹ́ padà

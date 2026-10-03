@@ -32,6 +32,7 @@ compose-tool-bold = තද (Ctrl+B)
 compose-tool-italic = ඇල (Ctrl+I)
 compose-tool-underline = යටි ඉර (Ctrl+U)
 compose-tool-text-color = පෙළ වර්ණය
+compose-tool-colors = පෙළ සහ උද්දීපන වර්ණය
 compose-tool-background-color = පසුබිම් වර්ණය
 compose-tool-default-color = පෙරනිමි වර්ණය
 compose-tool-no-background = පසුබිමක් නැත
@@ -126,6 +127,10 @@ compose-tool-signature = අත්සන ඇතුළු කරන්න
 compose-tool-signature-none = අත්සනක් නැත
 compose-tool-signature-untitled = මාතෘකා රහිත
 compose-tool-signature-manage = අත්සන් කළමනාකරණය කරන්න
+compose-signature-tag-tip = වෙනත් අත්සනක් තෝරන්න
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = අච්චු
 compose-tool-templates-none = තවම අච්චු නැත
 compose-tool-template-save = අච්චුවක් ලෙස සුරකින්න…

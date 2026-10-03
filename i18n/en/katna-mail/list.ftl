@@ -15,8 +15,6 @@ tab-other = Other
 tab-inbox = Inbox
 tab-newsletters = Newsletters
 tab-notifications = Notifications
-# Badge under a tab's name: how many unread messages it has.
-tab-new = { $count } new
 # Settings > Inbox tabs, "Automatic: Gmail (sorted by Katna)": for accounts
 # that are not Gmail, Outlook or Zoho, Katna sorts mail into tabs itself.
 tab-provider-other = sorted by Katna
@@ -26,6 +24,8 @@ tab-provider-other = sorted by Katna
 # Tooltip of the checkbox that ticks every line.
 list-select = Select
 list-refresh = Refresh
+# Tooltip of the round button that takes the list back to its top.
+list-back-to-top = Back to top
 # Tooltip of the refresh button while it checks for new mail.
 list-checking = Checking for new mail…
 # Tooltip of the "more actions" button (three dots).
@@ -56,6 +56,8 @@ list-results-corrected = Showing results for “{ $query }”
 list-search-instead = Search instead for “{ $query }”
 # The "+3" button after a line's attachment chips: $count more files.
 list-files-more = +{ $count }
+# Tooltip of the reply arrow on a line the user has answered.
+list-replied = You replied
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -441,10 +443,51 @@ menu-print-all = Print all
 menu-new-window = Open in new window
 # Opens a submenu of folders.
 menu-move-to = Move to
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Follow up
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = More
 # Heading over the list of folders to move the ticked mail to.
 menu-move-to-heading = Move to:
+# Placeholder of the search box on top of Move to's folders.
+menu-move-to-search = Move to…
+# Gmail: opens a submenu of the user's labels to tick or untick on the
+# mail, which stays where it is.
+menu-label-as = Label as
+# Placeholder of the search box on top of Label as's labels.
+menu-label-as-search = Label as…
+# Under the search box when no folder matches what was typed. $name: the
+# typed text.
+menu-no-folder = No folder called “{ $name }”
+menu-no-label = No label called “{ $name }”
+# Makes a folder (or Gmail label) with the typed name and moves the mail
+# there (or puts the label on it). $name: the typed text.
+menu-create-folder = Create “{ $name }”
+# Under Move to's folders, when all the mail is from one sender: ticked, a
+# click on a folder also makes a rule that moves their new mail there.
+# $name: the sender's name, or their address.
+menu-always-move = Always move mail from { $name } here
+# When that rule could not be saved; the mail was moved anyway.
+# $error: why.
+toast-always-move-failed = The mail was moved, but the rule wasn't made: { $error }
+# The card that follows the pointer while mail is dragged onto a folder,
+# for several lines (one shows its subject).
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } conversation
+       *[other] { $count } conversations
+    }
+   *[message] { $count ->
+        [one] { $count } message
+       *[other] { $count } messages
+    }
+}
 # Searches for mail from the sender. $name: the sender's name or address.
 menu-find-from = Find emails from { $name }
+# Opens the rule editor filled in with the mail's sender.
+menu-make-rule = Make a rule…
 
 ## Snackbar after an action on mail in the list
 # $kind: "conversation" or "message", as the list groups mail.
@@ -480,6 +523,9 @@ toast-moved = { $kind ->
        *[other] { $count } messages moved.
     }
 }
+# Gmail: a label put on mail, or taken off it. $label: the label's name.
+toast-label-added = Label “{ $label }” added.
+toast-label-removed = Label “{ $label }” removed.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Conversation starred.

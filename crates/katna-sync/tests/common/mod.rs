@@ -71,6 +71,9 @@ pub struct State {
     pub gmail: bool,
     /// Report expunges with flag fetches (QRESYNC `VANISHED (EARLIER)`).
     pub qresync: bool,
+    /// Answer this many header fetches, then break the connection on the
+    /// next one, as a sync cut off halfway would.
+    pub header_fetches_left: Option<u32>,
 }
 
 /// A shared server; clones see the same state.
@@ -378,7 +381,16 @@ impl MailBackend for FakeConnection {
         first: u32,
         last: Option<u32>,
     ) -> Result<Vec<MessageHeaders>> {
-        let state = self.state(format!("HEADERS {first}:{last:?}"))?;
+        let mut state = self.state(format!("HEADERS {first}:{last:?}"))?;
+        match &mut state.header_fetches_left {
+            Some(0) => {
+                state.header_fetches_left = None;
+                state.generation += 1;
+                return Err(Error::Closed("connection reset".into()));
+            }
+            Some(left) => *left -= 1,
+            None => {}
+        }
         let gmail = state.gmail;
         Ok(range(&state.folders[self.selected()], first, last)
             .map(|(uid, m)| MessageHeaders {
@@ -609,6 +621,91 @@ impl MailBackend for FakeConnection {
             messages: BTreeMap::new(),
             vanished: Vec::new(),
         });
+        Ok(())
+    }
+
+    /// Renames the folder and the folders inside it, as RFC 3501 says.
+    async fn rename_folder(&mut self, from: &str, to: &str) -> Result<()> {
+        let mut state = self.state(format!("RENAME {from} {to}"))?;
+        if !state.folders.contains_key(from) {
+            return Err(Error::Rejected(format!("NO no folder {from}")));
+        }
+        if state.folders.contains_key(to) {
+            return Err(Error::Rejected(format!("NO {to} exists")));
+        }
+        let inside = format!("{from}/");
+        let names: Vec<String> = state
+            .folders
+            .keys()
+            .filter(|name| *name == from || name.starts_with(&inside))
+            .cloned()
+            .collect();
+        for name in names {
+            let mailbox = state.folders.remove(&name).unwrap();
+            state
+                .folders
+                .insert(format!("{to}{}", &name[from.len()..]), mailbox);
+        }
+        Ok(())
+    }
+
+    /// Deletes the folder; refuses while folders are inside it, as some
+    /// servers do.
+    async fn delete_folder(&mut self, folder: &str) -> Result<()> {
+        let mut state = self.state(format!("DELETE {folder}"))?;
+        if !state.folders.contains_key(folder) {
+            return Err(Error::Rejected(format!("NO no folder {folder}")));
+        }
+        let inside = format!("{folder}/");
+        if state.folders.keys().any(|name| name.starts_with(&inside)) {
+            return Err(Error::Rejected(format!("NO {folder} has children")));
+        }
+        state.folders.remove(folder);
+        Ok(())
+    }
+
+    /// Shows or hides the selected folder's messages in the label's folder,
+    /// found by their Gmail message ID.
+    async fn gmail_label(&mut self, uids: &[u32], label: &str, add: bool) -> Result<()> {
+        let mut state = self.state(format!(
+            "LABEL {uids:?} {}{label}",
+            if add { "+" } else { "-" }
+        ))?;
+        if !state.gmail {
+            return Err(Error::Rejected("NO not Gmail".into()));
+        }
+        if state.refuse_changes {
+            return Err(Error::Rejected("NO not today".into()));
+        }
+        if !state.folders.contains_key(label) {
+            return Err(Error::Rejected(format!("NO no label {label}")));
+        }
+        state.modseq += 1;
+        let modseq = state.modseq;
+        let from = self.selected().to_owned();
+        for uid in uids {
+            let Some(message) = state.folders[&from].messages.get(uid).cloned() else {
+                continue;
+            };
+            let target = state.folders.get_mut(label).unwrap();
+            let there = target
+                .messages
+                .iter()
+                .find(|(_, m)| m.gm_msgid.is_some() && m.gm_msgid == message.gm_msgid)
+                .map(|(uid, _)| *uid);
+            match (there, add) {
+                (None, true) => {
+                    let new = target.uid_next;
+                    target.uid_next += 1;
+                    target.messages.insert(new, Message { modseq, ..message });
+                }
+                (Some(there), false) => {
+                    target.messages.remove(&there);
+                    target.vanished.push((there, modseq));
+                }
+                _ => {}
+            }
+        }
         Ok(())
     }
 

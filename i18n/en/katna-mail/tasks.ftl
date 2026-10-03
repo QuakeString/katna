@@ -5,8 +5,8 @@
 
 ## Left side
 
-# The button at the top left that adds a task, like Google Tasks' "Create".
-tasks-create = Create
+# The big button at the top of the left bar on Tasks.
+tasks-create = New task
 tasks-all = All tasks
 # Tasks due today and overdue, from every list.
 tasks-today = Today
@@ -137,5 +137,7 @@ tasks-mail-gone = That mail isn't here any more.
 tasks-toast-list-deleted = List deleted
 # $list: the list's name.
 tasks-toast-moved = Moved to { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = Task moved
 # A task dragged to another day or time on the Calendar.
 tasks-toast-rescheduled = Task rescheduled

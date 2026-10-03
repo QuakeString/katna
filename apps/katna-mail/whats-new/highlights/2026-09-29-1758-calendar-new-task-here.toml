@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Add a task from the Calendar"
+text = """
+Right-click a free time or day on the Calendar and choose Task to add a
+task there. The new-event card opens on its Task tab with that day and
+time filled in.
+"""

@@ -70,6 +70,7 @@ about-credit-resvg = SVG 图片
 about-credit-jiff = 日期和时区
 about-credit-spellbook = 拼写检查，来自 Helix 编辑器
 about-credit-smol = 同时处理多项任务
+about-credit-color-schemes = 内置配色方案的调色板
 about-all-libraries = Katna 使用的所有库（{ $count }）
 about-library-authors = 作者：{ $authors }
 about-license = Katna 是自由软件，采用 GNU GPL 第 3 版或更高版本授权。
@@ -126,6 +127,21 @@ onboarding-density-default = 默认
 onboarding-density-compact = 紧凑
 onboarding-continue = 继续
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = 使用 Katna 账号获得更多功能
+onboarding-katna-lead = 这是可选的。它会开启 Katna 的在线功能，你也可以稍后在“设置”>“订阅”中创建。
+onboarding-katna-receipts-title = 已读回执
+onboarding-katna-receipts-text = 查看对方何时打开你发送的邮件。
+onboarding-katna-links-title = 链接跟踪
+onboarding-katna-links-text = 查看你邮件中的哪些链接被点击。
+onboarding-katna-activity-title = 动态
+onboarding-katna-activity-text = 集中查看你发送的所有邮件的打开和点击情况。
+onboarding-katna-translate-title = 自动翻译
+onboarding-katna-translate-text = 用你的语言阅读用其他语言写的邮件。
+onboarding-katna-private = 它有自己的密码。你的邮箱登录信息永远不会离开这台电脑。
+
 ## First run: done
 
 onboarding-ready-title = 一切就绪
@@ -169,7 +185,7 @@ tour-search-text = 搜索在离线时也能使用。最右侧的按钮可以添�
 tour-menu-title = 显示或隐藏文件夹
 tour-menu-text = 此按钮可以收起文件夹列表。隐藏时，将指针停在左侧的“邮件”上即可查看文件夹。
 tour-apps-title = 你的应用
-tour-apps-text = 邮件现在就在这里。日历、联系人、任务、笔记和订阅源将陆续加入这一栏。
+tour-apps-text = 邮件就在这里，旁边是日历、联系人、任务、笔记和文件。
 tour-tabs-title = 收件箱标签页
 tour-tabs-text = 新邮件会被分类到“主要”“推广”“社交”“动态”和“论坛”中。你可以在快速设置中关闭这些标签页。
 tour-list-title = 你的邮件
@@ -193,12 +209,22 @@ crash-view = 查看报告
 crash-view-tooltip = 打开保存在这台电脑上的报告
 crash-copy = 复制报告
 crash-close = 关闭
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } 要求你重新登录 { $address }。
 sign-in-again-button = 登录
 sign-in-again-tooltip = 在浏览器中打开 { $provider } 登录页面
 sign-in-again-waiting = 正在等待浏览器…
 sign-in-again-close = 关闭
+google-api-off = Katna 的 Google Cloud 项目中已关闭 { $api }。
+google-api-turn-on = 开启
+google-api-turn-on-tooltip = 打开 Google Cloud 开启 { $api }，然后点击“重试”
 sign-in-again-done = 已重新登录 { $address }。正在收取你的邮件…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
        *[other] 将 { $count } 个会话移至已删除邮件？

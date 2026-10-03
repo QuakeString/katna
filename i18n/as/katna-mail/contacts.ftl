@@ -39,6 +39,12 @@ contacts-account-failed = সম্পৰ্কসমূহ পঢ়িব প�
 # $reason is the server's own words, in English.
 contacts-account-error = সম্পৰ্কসমূহ পঢ়িব পৰা নগ'ল: { $reason }
 contacts-account-none = কোনো ঠিকনা বহী পোৱা নগ'ল
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = কোনো ঠিকনা বহী পোৱা নগ'ল: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider }এ কেৱল { $provider }ৰে ছাইন ইন কৰা Katnaকহে সম্পৰ্কসমূহ দেখুৱায়।
+contacts-account-sign-in-with = { $provider }ৰে ছাইন ইন কৰক
 contacts-account-looking = সম্পৰ্ক বিচৰা হৈছে…
 contacts-account-try-again = পুনৰ চেষ্টা কৰক
 contacts-account-try-again-tooltip = এই একাউণ্টৰ সম্পৰ্কসমূহ এতিয়াই পুনৰ পৰীক্ষা কৰক
@@ -88,7 +94,7 @@ contacts-print-none = প্ৰিণ্ট কৰিবলৈ কোনো স�
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = জন্মদিন: { $day }
 contacts-print-nickname = ডাকনাম: { $name }
-contacts-create = সম্পৰ্ক সৃষ্টি কৰক
+contacts-create = নতুন সম্পৰ্ক
 
 ## Search and the list
 

@@ -218,44 +218,6 @@ impl Store {
         Ok(MessageId(id.unwrap_or(0)))
     }
 
-    /// Mail worth a new-mail notification: unread messages of `account`
-    /// in its inbox, in the Primary tab or not classified, stored after
-    /// message `after` and dated `since` (Unix seconds) or later. The
-    /// newest `limit`, oldest first.
-    pub fn new_inbox_mail(
-        &self,
-        account: AccountId,
-        after: MessageId,
-        since: i64,
-        limit: u32,
-    ) -> Result<Vec<MessageId>> {
-        let mut stmt = self.mail.prepare_cached(
-            "SELECT id FROM (
-               SELECT m.id FROM message m
-               WHERE m.account_id = ?1 AND m.id > ?2 AND (m.flags & ?3) = 0
-                 AND m.date >= ?4 AND (m.category IS NULL OR m.category = ?5)
-                 AND EXISTS (SELECT 1 FROM message_location l
-                             JOIN folder f ON f.id = l.folder_id
-                             WHERE l.message_id = m.id AND f.role = ?6)
-               ORDER BY m.id DESC LIMIT ?7)
-             ORDER BY id",
-        )?;
-        let unwanted = (MessageFlags::SEEN | MessageFlags::DELETED).bits();
-        let rows = stmt.query_map(
-            params![
-                account.0,
-                after.0,
-                unwanted,
-                since,
-                MailCategory::Primary.to_storage(),
-                FolderRole::Inbox.as_str(),
-                limit
-            ],
-            |row| row.get(0).map(MessageId),
-        )?;
-        Ok(rows.collect::<rusqlite::Result<_>>()?)
-    }
-
     /// The folders of `account`, ordered by path.
     pub fn folders(&self, account: AccountId) -> Result<Vec<StoredFolder>> {
         let mut stmt = self.mail.prepare_cached(
@@ -388,6 +350,26 @@ impl Store {
         let uids = stmt.query_map([folder.0], |row| row.get(0))?;
         Ok(uids.collect::<rusqlite::Result<_>>()?)
     }
+
+    /// The messages stored in `folder` with their UIDs there, by UID.
+    /// Messages whose UID is not known yet are left out.
+    pub fn folder_message_uids(&self, folder: FolderId) -> Result<Vec<(u32, MessageId)>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT uid, message_id FROM message_location
+             WHERE folder_id = ?1 AND uid IS NOT NULL ORDER BY uid",
+        )?;
+        let rows = stmt.query_map([folder.0], |row| Ok((row.get(0)?, MessageId(row.get(1)?))))?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// The account `folder` belongs to, if it exists.
+    pub fn folder_account(&self, folder: FolderId) -> Result<Option<AccountId>> {
+        Ok(self
+            .mail
+            .prepare_cached("SELECT account_id FROM folder WHERE id = ?1")?
+            .query_row([folder.0], |row| row.get(0).map(AccountId))
+            .optional()?)
+    }
 }
 
 impl MailBatch<'_> {
@@ -435,6 +417,80 @@ impl MailBatch<'_> {
             journal::record(tx, ObjectKind::Folder, folder.0, ChangeOp::Delete)?;
         }
         Ok(())
+    }
+
+    /// Renames folder `old` of `account` to `new`, and the folders inside
+    /// it (`old`, `delimiter`, then more) to the same place under `new`,
+    /// keeping their messages and sync state. A folder already at one of
+    /// the new paths (a sync that saw the server's rename first) is
+    /// removed in favour of the renamed one. Returns how many folders were
+    /// renamed.
+    pub fn rename_folder_tree(
+        &mut self,
+        account: AccountId,
+        old: &str,
+        new: &str,
+        delimiter: Option<char>,
+    ) -> Result<usize> {
+        let inside = |path: &str| {
+            path == old
+                || delimiter.is_some_and(|d| {
+                    path.strip_prefix(old)
+                        .is_some_and(|rest| rest.starts_with(d))
+                })
+        };
+        let folders: Vec<(i64, String)> = self
+            .tx()
+            .prepare_cached("SELECT id, path FROM folder WHERE account_id = ?1")?
+            .query_map([account.0], |row| Ok((row.get(0)?, row.get(1)?)))?
+            .collect::<rusqlite::Result<_>>()?;
+        let renames: Vec<(i64, String)> = folders
+            .iter()
+            .filter(|(_, path)| inside(path))
+            .map(|(id, path)| (*id, format!("{new}{}", &path[old.len()..])))
+            .collect();
+        let in_the_way: Vec<i64> = folders
+            .iter()
+            .filter(|(id, path)| {
+                !renames.iter().any(|(moving, _)| moving == id)
+                    && renames.iter().any(|(_, new)| new == path)
+            })
+            .map(|(id, _)| *id)
+            .collect();
+        for id in in_the_way {
+            self.remove_folder(FolderId(id))?;
+        }
+        let tx = self.tx();
+        for (id, path) in &renames {
+            tx.prepare_cached("UPDATE folder SET path = ?2 WHERE id = ?1")?
+                .execute(params![id, path])?;
+            journal::record(tx, ObjectKind::Folder, *id, ChangeOp::Update)?;
+        }
+        Ok(renames.len())
+    }
+
+    /// Puts `message` back in `folder` at `uid`, when both still exist.
+    /// Returns whether it was added.
+    pub fn restore_location(
+        &mut self,
+        message: MessageId,
+        folder: FolderId,
+        uid: Option<u32>,
+    ) -> Result<bool> {
+        let tx = self.tx();
+        let added = tx
+            .prepare_cached(
+                "INSERT OR IGNORE INTO message_location (message_id, folder_id, uid)
+                 SELECT ?1, ?2, ?3
+                 WHERE EXISTS (SELECT 1 FROM message WHERE id = ?1)
+                   AND EXISTS (SELECT 1 FROM folder WHERE id = ?2)",
+            )?
+            .execute(params![message.0, folder.0, uid])?
+            > 0;
+        if added {
+            journal::record(tx, ObjectKind::Message, message.0, ChangeOp::Update)?;
+        }
+        Ok(added)
     }
 
     /// Saves what the sync engine needs to continue where it stopped.
@@ -1042,11 +1098,15 @@ mod tests {
 
         assert_eq!(store.latest_message(account).unwrap(), unclassified);
         assert_eq!(
-            store.new_inbox_mail(account, before, 1_000, 10).unwrap(),
+            store
+                .new_ringing_mail(account, before, 1_000, 10, 4_000)
+                .unwrap(),
             [primary, unclassified]
         );
         assert_eq!(
-            store.new_inbox_mail(account, before, 1_000, 1).unwrap(),
+            store
+                .new_ringing_mail(account, before, 1_000, 1, 4_000)
+                .unwrap(),
             [unclassified]
         );
     }
@@ -1063,6 +1123,72 @@ mod tests {
         batch.commit().unwrap();
         assert!(store.folders(account).unwrap().is_empty());
         assert_eq!(message_count(&store), 0);
+    }
+
+    #[test]
+    fn renaming_a_folder_renames_the_folders_inside() {
+        let (_tmp, mut store, account) = open();
+        let mut batch = store.mail_batch().unwrap();
+        let work = batch.upsert_folder(account, "Work", None).unwrap();
+        let child = batch.upsert_folder(account, "Work/2026", None).unwrap();
+        let grandchild = batch.upsert_folder(account, "Work/2026/Q1", None).unwrap();
+        let sibling = batch.upsert_folder(account, "Workshop", None).unwrap();
+        // A sync that saw the new name before the store did.
+        let early = batch.upsert_folder(account, "Jobs", None).unwrap();
+        batch
+            .add_remote_message(account, child, &remote(1, &[]))
+            .unwrap();
+        batch
+            .set_folder_state(work, Some(7), Some(9), Some("{}"))
+            .unwrap();
+        assert_eq!(
+            batch
+                .rename_folder_tree(account, "Work", "Jobs", Some('/'))
+                .unwrap(),
+            3
+        );
+        batch.commit().unwrap();
+
+        let folders = store.folders(account).unwrap();
+        let path_of = |id| folders.iter().find(|f| f.id == id).map(|f| f.path.as_str());
+        assert_eq!(path_of(work), Some("Jobs"));
+        assert_eq!(path_of(child), Some("Jobs/2026"));
+        assert_eq!(path_of(grandchild), Some("Jobs/2026/Q1"));
+        assert_eq!(path_of(sibling), Some("Workshop"), "only folders inside");
+        assert_eq!(path_of(early), None, "the renamed one takes its place");
+        let renamed = folders.iter().find(|f| f.id == work).unwrap();
+        assert_eq!(
+            (renamed.uidvalidity, renamed.highestmodseq),
+            (Some(7), Some(9))
+        );
+        assert_eq!(store.folder_uids(child).unwrap(), [1], "messages stay");
+        assert_eq!(store.folder_account(child).unwrap(), Some(account));
+        assert_eq!(store.folder_account(early).unwrap(), None);
+        let uids = store.folder_message_uids(child).unwrap();
+        assert_eq!(uids.len(), 1);
+        assert_eq!(uids[0].0, 1);
+    }
+
+    #[test]
+    fn a_location_is_restored_only_where_both_exist() {
+        let (_tmp, mut store, account) = open();
+        let mut batch = store.mail_batch().unwrap();
+        let inbox = batch
+            .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
+            .unwrap();
+        let label = batch.upsert_folder(account, "Label", None).unwrap();
+        let Added::Message(id) = batch
+            .add_remote_message(account, inbox, &remote(1, &[]))
+            .unwrap()
+        else {
+            panic!("new message expected");
+        };
+        assert!(batch.restore_location(id, label, Some(4)).unwrap());
+        assert!(!batch.restore_location(id, label, Some(4)).unwrap());
+        assert!(!batch.restore_location(id, FolderId(999), None).unwrap());
+        assert!(!batch.restore_location(MessageId(999), label, None).unwrap());
+        batch.commit().unwrap();
+        assert_eq!(store.folder_uids(label).unwrap(), [4]);
     }
 
     #[test]

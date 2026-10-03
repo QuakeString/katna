@@ -12,8 +12,9 @@ use gpui::{
     SpringAnimation, Stateful, div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountsShown, AutoAdvance, Clock, Density, FileGroup, MarkRead, OpenIn, ReadingPane,
-    Theme as ThemeChoice, UNDO_SEND_CHOICES, WindowFrame,
+    AccountsShown, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn,
+    ReadingPane, ReduceMotion, SoundEvent, Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES,
+    WindowFrame,
 };
 use katna_i18n::tr;
 use katna_ui::Ripple;
@@ -21,10 +22,11 @@ use katna_ui::motion;
 use katna_ui::px;
 
 use super::{CARD_GAP, MailWindow, SETTINGS_WIDTH};
-use crate::theme::{Theme, mix};
+use crate::schemes;
+use crate::theme::{Accent, Theme, mix};
 use crate::widgets::FocusRing;
 use crate::widgets::{
-    CARD_SHADOW_ROOM, card_outline, card_shadow, icon, icon_button, radio, switch, tip,
+    CARD_SHADOW_ROOM, ScaledEdge, card_outline, icon, icon_button, radio, switch, tip,
 };
 
 /// One loop of the reading-pane demo.
@@ -34,11 +36,31 @@ const PANE_DEMO: Duration = Duration::from_millis(2600);
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Change {
     UndoSend(u32),
-    SentSound(bool),
+    /// Where writing help with AI goes (`ai.source`).
+    AiSource(katna_core::config::AiSource),
+    /// The user's own AI service, by `katna_ai::provider::Preset::id`.
+    AiProvider(&'static str),
+    /// AI finishes sentences (`ai.autocomplete`).
+    AiAutocomplete(bool),
+    /// Those suggestions also send the mail being answered.
+    AiAnswered(bool),
+    /// Rephrase is offered for encrypted mail.
+    AiEncrypted(bool),
+    /// An event's sound on or off.
+    Sound(SoundEvent, bool),
+    /// The sound an event plays, by its `katna_platform::sound` name;
+    /// empty for its set's.
+    SoundChoice(SoundEvent, &'static str),
+    /// The set of sounds, by `katna_platform::sound::Set::id`.
+    SoundSet(&'static str),
     Pane(ReadingPane),
     Density(Density),
     Theme(ThemeChoice),
+    /// The desktop's color scheme (on), or Katna's own (off).
     DesktopColors(bool),
+    /// The color scheme, by id (`crate::schemes`).
+    Colors(&'static str),
+    Accent(Accent),
     Tabs(bool),
     Conversations(bool),
     AppLabels(bool),
@@ -53,12 +75,38 @@ pub(super) enum Change {
     UnifiedInbox(bool),
     /// The tray icon, shown by the daemon.
     Tray(bool),
+    TrayStyle(TrayStyle),
     /// The unread count on the taskbar icon, shown by the daemon.
     UnreadBadge(bool),
     /// Katna's own window frame, or the desktop's.
     WindowFrame(WindowFrame),
     /// The blurred, translucent window background.
     Blur(bool),
+    /// Frosted menus, popovers, dialogs and viewer bars.
+    FrostedPopups(bool),
+    /// The frost's blur and opacity set by hand, or following the desktop.
+    CustomFrost(bool),
+    /// The frost's blur, in pixels.
+    FrostBlur(u8),
+    /// The frost's tint opacity, in percent.
+    FrostOpacity(u8),
+    /// The corner radius of Katna's frame, in pixels.
+    WindowRadius(u8),
+    /// The line around Katna's frame.
+    WindowBorder(bool),
+    /// That line's opacity, in percent.
+    WindowBorderOpacity(u8),
+    /// In a blurred window, the cards let the blur through.
+    FrostedPanes(bool),
+    /// How opaque those cards are, in percent.
+    PaneOpacity(u8),
+    /// In a blurred window, the room behind a chat's bubbles lets the
+    /// blur through.
+    FrostedChat(bool),
+    /// In a blurred window, the open search box lets the blur through.
+    FrostedSearch(bool),
+    /// Conversations between people open as a group chat.
+    ChatView(bool),
     /// Days of mail the daemon downloads ahead of time; 0 for all mail.
     OfflineDays(u32),
     /// Crash reports written on this computer (Settings > User feedback).
@@ -67,8 +115,19 @@ pub(super) enum Change {
     SendCrashReports(bool),
     /// The interface scale, in percent.
     Scale(u16),
+    /// Katna's own animation speed, as a percentage of normal length, or
+    /// `None` for the desktop's.
+    AnimationSpeed(Option<u16>),
+    /// Whether animations are turned off.
+    ReduceMotion(ReduceMotion),
     /// 12- or 24-hour times.
     Clock(Clock),
+    /// How tall the hours of Calendar's Day and Week are.
+    CalendarDensity(katna_core::config::CalendarDensity),
+    /// How many days Calendar's custom view shows.
+    CustomDays(u8),
+    /// The Birthdays calendar shows.
+    Birthdays(bool),
     /// What Katna starts at login, if anything (an autostart entry).
     StartAtLogin(Option<crate::autostart::Start>),
     MarkRead(MarkRead),
@@ -79,14 +138,23 @@ pub(super) enum Change {
     RemoteImages(bool),
     ReplyAll(bool),
     ImportantMarkers(bool),
+    /// Settings > Folders & rules: an unread count beside every folder.
+    FolderUnreadCounts(bool),
     LimitWidth(bool),
     DarkMail(bool),
     AttachmentPreviews(bool),
     OpenSavedFolder(bool),
+    /// The Files page leaves out small pictures (signature logos).
+    LeaveOutSmallPictures(bool),
+    /// Pictures under this many KB are small.
+    SmallPictureKb(u32),
+    /// Pictures under this many pixels wide or tall are small.
+    SmallPicturePx(u32),
+    /// Files and the attach pickers show the drive of an account (its
+    /// store id).
+    DriveInFiles(i64, bool),
     /// New-mail notifications, shown by the daemon.
     NewMailNotices(bool),
-    /// Their sound.
-    NotificationSound(bool),
     /// New versions of Katna downloaded as soon as the daemon finds them.
     AutoDownloadUpdates(bool),
     PlainText(bool),
@@ -121,13 +189,17 @@ impl MailWindow {
             .flex()
             .flex_col()
             .relative()
-            .when(!phone, |d| {
-                d.rounded(px(super::PANEL_RADIUS)).shadow(card_shadow(
-                    th,
-                    t.min(1.0) * self.layout.shape.card_outline(),
-                ))
+            .map(|d| {
+                let (radius, shadow) = if phone {
+                    (0.0, 0.0)
+                } else {
+                    (
+                        super::PANEL_RADIUS,
+                        t.min(1.0) * self.layout.shape.card_outline(),
+                    )
+                };
+                crate::widgets::card(d, th, th.pane(), radius, shadow)
             })
-            .bg(rgba(th.surface))
             .child(
                 div()
                     .flex_none()
@@ -178,13 +250,7 @@ impl MailWindow {
                                     .flex_1()
                                     .justify_center()
                                     .on_click(cx.listener(
-                                        |this, _, window, cx| {
-                                            this.open_settings_page(
-                                                super::settings_page::Section::General,
-                                                window,
-                                                cx,
-                                            )
-                                        },
+                                        |this, _, window, cx| this.open_settings_here(window, cx),
                                     )),
                                 ),
                             )
@@ -248,8 +314,8 @@ impl MailWindow {
                                 "desktop-colors",
                                 tr!("quick-desktop-colors"),
                                 tr!("quick-desktop-colors-detail"),
-                                view.desktop_colors,
-                                Change::DesktopColors(!view.desktop_colors),
+                                view.colors() == schemes::SYSTEM,
+                                Change::DesktopColors(view.colors() != schemes::SYSTEM),
                                 th,
                                 cx,
                             ))
@@ -394,7 +460,7 @@ impl MailWindow {
                 .items_center()
                 .rounded(px(8.0))
                 .border_1()
-                .border_color(rgba(if on { th.nav_selected } else { th.divider }))
+                .border_color(rgba(if on { th.nav_selected } else { th.outline }))
                 .bg(rgba(if on { th.nav_selected } else { th.surface }))
                 .text_color(rgba(if on {
                     th.nav_selected_text
@@ -435,6 +501,14 @@ impl MailWindow {
         let view = &mut self.config.mail;
         let mut relist = false;
         match change {
+            Change::AiSource(_)
+            | Change::AiProvider(_)
+            | Change::AiAutocomplete(_)
+            | Change::AiAnswered(_)
+            | Change::AiEncrypted(_) => {
+                self.apply_ai(change, cx);
+                return;
+            }
             Change::Pane(pane) => {
                 if view.reading_pane == pane {
                     return;
@@ -450,7 +524,6 @@ impl MailWindow {
                 }
             }
             Change::UndoSend(seconds) => sending.undo_send_seconds = seconds,
-            Change::SentSound(on) => sending.sent_sound = on,
             Change::Density(density) => view.density = density,
             Change::Scale(percent) => {
                 if view.scale == percent {
@@ -462,8 +535,20 @@ impl MailWindow {
                 self.list_state.remeasure();
                 cx.refresh_windows();
             }
+            Change::AnimationSpeed(speed) => {
+                view.animation_speed = speed.map(|percent| f32::from(percent) / 100.0);
+                super::colors::apply_motion(view, self.desktop_colors.motion, cx);
+            }
+            Change::ReduceMotion(reduce) => {
+                view.reduce_motion = reduce;
+                super::colors::apply_motion(view, self.desktop_colors.motion, cx);
+            }
             Change::Theme(theme) => view.theme = theme,
-            Change::DesktopColors(on) => view.desktop_colors = on,
+            Change::DesktopColors(on) => {
+                view.set_colors(if on { schemes::SYSTEM } else { schemes::KATNA });
+            }
+            Change::Colors(id) => view.set_colors(id),
+            Change::Accent(accent) => view.accent = accent.setting(),
             Change::AppLabels(on) => view.app_labels = on,
             Change::SenderPictures(on) => view.sender_pictures = on,
             Change::NewestFirst(on) => view.newest_first = on,
@@ -494,6 +579,37 @@ impl MailWindow {
                 self.config.experimental.blur = on;
                 cx.set_global(super::look(&self.config));
             }
+            Change::FrostedPopups(on) => self.config.experimental.frosted_popups = on,
+            Change::CustomFrost(on) => {
+                self.config.experimental.custom_frost = on;
+                cx.set_global(super::look(&self.config));
+            }
+            Change::FrostBlur(blur) => self.config.experimental.frost_blur = blur,
+            Change::FrostOpacity(opacity) => {
+                self.config.experimental.frost_opacity = opacity;
+                cx.set_global(super::look(&self.config));
+            }
+            Change::WindowRadius(radius) => {
+                self.config.experimental.window_radius = Some(radius);
+                cx.set_global(super::look(&self.config));
+                self.sync_radius_field(radius, cx);
+            }
+            Change::WindowBorder(on) => {
+                self.config.experimental.window_border = on;
+                cx.set_global(super::look(&self.config));
+            }
+            Change::WindowBorderOpacity(opacity) => {
+                self.config.experimental.window_border_opacity = Some(opacity);
+                cx.set_global(super::look(&self.config));
+            }
+            Change::FrostedPanes(on) => self.config.experimental.frosted_panes = on,
+            Change::PaneOpacity(opacity) => self.config.experimental.pane_opacity = opacity,
+            Change::FrostedChat(on) => self.config.experimental.frosted_chat = on,
+            Change::FrostedSearch(on) => self.config.experimental.frosted_search = on,
+            Change::ChatView(on) => {
+                self.config.experimental.chat_view = on;
+                self.open_chat_as_set();
+            }
             Change::SaveCrashReports(on) => self.config.feedback.save_crash_reports = on,
             Change::MarkRead(when) => view.mark_read = when,
             Change::AutoAdvance(then) => view.auto_advance = then,
@@ -504,6 +620,7 @@ impl MailWindow {
                 self.fetch_remote(cx);
             }
             Change::ReplyAll(on) => view.reply_all = on,
+            Change::FolderUnreadCounts(on) => view.folder_unread_counts = on,
             Change::ImportantMarkers(on) => {
                 view.important_markers = on;
                 self.list_state.remeasure();
@@ -515,6 +632,41 @@ impl MailWindow {
                 self.request_thumbnails(cx);
             }
             Change::OpenSavedFolder(on) => view.open_saved_folder = on,
+            Change::DriveInFiles(account, on) => {
+                let off = &mut view.files.drives_off;
+                off.retain(|a| *a != account);
+                if !on {
+                    off.push(account);
+                }
+                self.save_config();
+                self.load_drives();
+                cx.notify();
+                return;
+            }
+            Change::LeaveOutSmallPictures(_)
+            | Change::SmallPictureKb(_)
+            | Change::SmallPicturePx(_) => {
+                let files = &mut view.files;
+                match change {
+                    Change::LeaveOutSmallPictures(on) => files.leave_out_small = on,
+                    Change::SmallPictureKb(kb) => {
+                        files.small_kb =
+                            kb.clamp(*FilesPage::KB_RANGE.start(), *FilesPage::KB_RANGE.end());
+                    }
+                    Change::SmallPicturePx(side) => {
+                        files.small_px =
+                            side.clamp(*FilesPage::PX_RANGE.start(), *FilesPage::PX_RANGE.end());
+                    }
+                    _ => {}
+                }
+                self.save_config();
+                // The page read once is read again with the new rule.
+                if self.library_loaded() {
+                    self.load_library(cx);
+                }
+                cx.notify();
+                return;
+            }
             Change::PlainText(on) => sending.plain_text = on,
             Change::SpellCheck(on) => sending.spell_check = on,
             Change::StartAtLogin(start) => {
@@ -532,12 +684,32 @@ impl MailWindow {
                 cx.notify();
                 return;
             }
-            Change::NewMailNotices(on) | Change::NotificationSound(on) => {
-                let notifications = &mut self.config.notifications;
-                if matches!(change, Change::NewMailNotices(_)) {
-                    notifications.new_mail = on;
-                } else {
-                    notifications.sound = on;
+            Change::NewMailNotices(_)
+            | Change::Sound(..)
+            | Change::SoundChoice(..)
+            | Change::SoundSet(_) => {
+                match change {
+                    Change::NewMailNotices(on) => self.config.notifications.new_mail = on,
+                    Change::Sound(event, on) => self.config.sounds.get_mut(event).on = on,
+                    Change::SoundChoice(event, id) => {
+                        // The set's sound stays unnamed, so it follows a
+                        // change of set.
+                        let set = katna_platform::sound::set(&self.config.sounds.set).id;
+                        let id = if id == katna_platform::sound::usual(event, set) {
+                            ""
+                        } else {
+                            id
+                        };
+                        self.set_event_sound(event, id.to_owned());
+                    }
+                    Change::SoundSet(id) => {
+                        self.config.sounds.set = if id == katna_platform::sound::USUAL_SET {
+                            String::new()
+                        } else {
+                            id.to_owned()
+                        };
+                    }
+                    _ => {}
                 }
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
@@ -571,6 +743,20 @@ impl MailWindow {
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();
+                return;
+            }
+            Change::CalendarDensity(density) => {
+                self.set_calendar_density(density, cx);
+                return;
+            }
+            Change::CustomDays(days) => {
+                self.keep_custom_days(days, cx);
+                return;
+            }
+            Change::Birthdays(on) => {
+                if self.config.contacts.hide_birthdays == on {
+                    self.toggle_birthdays(cx);
+                }
                 return;
             }
             Change::Clock(clock) => {
@@ -644,12 +830,13 @@ impl MailWindow {
                 view.translation.reading_language = tag.to_owned();
                 self.translations.forget_sources();
             }
-            Change::Tray(on) | Change::UnreadBadge(on) => {
+            Change::Tray(_) | Change::TrayStyle(_) | Change::UnreadBadge(_) => {
                 let general = &mut self.config.general;
-                if matches!(change, Change::Tray(_)) {
-                    general.show_in_tray = on;
-                } else {
-                    general.unread_badge = on;
+                match change {
+                    Change::Tray(on) => general.show_in_tray = on,
+                    Change::TrayStyle(style) => general.tray_style = style,
+                    Change::UnreadBadge(on) => general.unread_badge = on,
+                    _ => {}
                 }
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
@@ -693,7 +880,7 @@ impl MailWindow {
             div()
                 .with_animation(
                     ("pane-demo", pane as usize),
-                    Animation::new(PANE_DEMO).repeat(),
+                    Animation::new(katna_ui::motion::time(PANE_DEMO)).repeat(),
                     move |el, t| el.child(pane_picture(pane, demo_open(t), &th)),
                 )
                 .into_any_element()
@@ -716,7 +903,7 @@ impl MailWindow {
         .flex_col()
         .gap(px(8.0))
         .rounded(px(12.0))
-        .border_2()
+        .border_px(2.0)
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
         .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
@@ -743,7 +930,11 @@ impl MailWindow {
         )
         .with_spring(
             ("pane-border", pane as usize),
-            SpringAnimation::new(motion::SMOOTH).to(if on { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(if on {
+                1.0
+            } else {
+                0.0
+            }),
             {
                 let (off, accent) = (th.divider, th.accent);
                 move |el, s: f32| el.border_color(rgba(mix(off, accent, s.clamp(0.0, 1.0))))
@@ -775,23 +966,10 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(div().id(id), th, cx)
-            .relative()
-            .overflow_hidden()
-            // A long label wraps onto a second line in a narrow window.
-            .min_h(px(40.0))
-            .py(px(8.0))
-            .px(px(8.0))
-            .flex()
-            .flex_row()
-            .items_center()
+        // A long label wraps onto a second line in a narrow window.
+        self.page_control(crate::widgets::row(id, false, th), th, cx)
             .gap(px(14.0))
-            .rounded(px(8.0))
-            .text_size(px(14.0))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(animated_radio((id, 2_usize), on, th))
             .child(div().flex_1().min_w_0().child(label.into()))
             .into_any_element()
@@ -807,24 +985,12 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(div().id(id), th, cx)
-            .relative()
-            .overflow_hidden()
-            .py(px(8.0))
-            .px(px(8.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(12.0))
-            .rounded(px(8.0))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+        self.page_control(crate::widgets::row(id, false, th), th, cx)
             .on_click(
                 cx.listener(move |this, _, window, cx| {
                     this.open_settings_page(section, window, cx)
                 }),
             )
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(
                 div()
                     .flex_1()
@@ -879,20 +1045,24 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(div().id(id), th, cx)
-            .relative()
-            .overflow_hidden()
-            .py(px(8.0))
-            .px(px(8.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(12.0))
-            .rounded(px(8.0))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+        self.switch_row_with(id, label, detail, on, change, None, th, cx)
+    }
+
+    /// A [`Self::switch_row`] with `extra` controls just before the switch.
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn switch_row_with(
+        &self,
+        id: &'static str,
+        label: impl Into<SharedString>,
+        detail: impl Into<SharedString>,
+        on: bool,
+        change: Change,
+        extra: Option<AnyElement>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        self.page_control(crate::widgets::row(id, false, th), th, cx)
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(
                 div()
                     .flex_1()
@@ -907,9 +1077,14 @@ impl MailWindow {
                             .child(detail.into()),
                     ),
             )
+            .children(extra)
             .child(div().with_spring(
                 (id, 3_usize),
-                SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                    1.0
+                } else {
+                    0.0
+                }),
                 {
                     let th = *th;
                     move |el, s: f32| el.child(switch(s.clamp(0.0, 1.0), &th))
@@ -924,7 +1099,11 @@ pub(super) fn animated_radio(id: impl Into<gpui::ElementId>, on: bool, th: &Them
     div()
         .with_spring(
             id,
-            SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                1.0
+            } else {
+                0.0
+            }),
             move |el, s: f32| el.child(radio(s.clamp(0.0, 1.0), &th)),
         )
         .into_any_element()
@@ -1043,21 +1222,8 @@ fn help_row(
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
-    div()
-        .id(id)
-        .relative()
-        .overflow_hidden()
-        .h(px(40.0))
-        .px(px(8.0))
-        .flex()
-        .flex_row()
-        .items_center()
+    crate::widgets::row(id, false, th)
         .gap(px(14.0))
-        .rounded(px(8.0))
-        .text_size(px(14.0))
-        .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
-        .child(Ripple::new((id, 0usize), rgba(th.ripple)).rounded(8.0))
         .child(icon(name, th.text_dim, 20.0))
         .child(label.into())
 }

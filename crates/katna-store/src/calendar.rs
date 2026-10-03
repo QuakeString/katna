@@ -17,6 +17,8 @@ pub enum CalendarSource {
     Google,
     Microsoft,
     CalDav,
+    /// Zoho Calendar's REST API.
+    Zoho,
     Local,
 }
 
@@ -26,6 +28,7 @@ impl CalendarSource {
             Self::Google => "google",
             Self::Microsoft => "microsoft",
             Self::CalDav => "caldav",
+            Self::Zoho => "zoho",
             Self::Local => "local",
         }
     }
@@ -35,6 +38,7 @@ impl CalendarSource {
             "google" => Self::Google,
             "microsoft" => Self::Microsoft,
             "caldav" => Self::CalDav,
+            "zoho" => Self::Zoho,
             _ => Self::Local,
         }
     }
@@ -692,6 +696,56 @@ impl Store {
         )? > 0)
     }
 
+    /// Adds a calendar on this computer named `name` in `color`. Returns
+    /// its ID.
+    pub fn add_local_calendar(&mut self, name: &str, color: &str) -> Result<i64> {
+        let position: i64 = self.pim.query_row(
+            "SELECT COALESCE(MAX(position), 0) + 1 FROM calendar WHERE account_id IS NULL",
+            [],
+            |row| row.get(0),
+        )?;
+        self.pim.execute(
+            "INSERT INTO calendar (account_id, source, remote_id, name, color, access, position)
+             VALUES (NULL, 'local', 'local-' || hex(randomblob(8)), ?1, ?2, 'owner', ?3)",
+            params![name, color, position],
+        )?;
+        Ok(self.pim.last_insert_rowid())
+    }
+
+    /// Where a new calendar of `account` goes: after the others.
+    pub fn next_calendar_position(&self, account: AccountId) -> Result<i64> {
+        Ok(self.pim.query_row(
+            "SELECT COALESCE(MAX(position), 0) + 1 FROM calendar WHERE account_id = ?1",
+            [account.0],
+            |row| row.get(0),
+        )?)
+    }
+
+    /// Renames calendar `id`. Returns whether it exists.
+    pub fn rename_calendar(&mut self, id: i64, name: &str) -> Result<bool> {
+        Ok(self.pim.execute(
+            "UPDATE calendar SET name = ?2 WHERE id = ?1",
+            params![id, name],
+        )? > 0)
+    }
+
+    /// Gives calendar `id` colour `color` (`#rrggbb`). Returns whether it
+    /// exists.
+    pub fn set_calendar_color(&mut self, id: i64, color: &str) -> Result<bool> {
+        Ok(self.pim.execute(
+            "UPDATE calendar SET color = ?2 WHERE id = ?1",
+            params![id, color],
+        )? > 0)
+    }
+
+    /// Deletes calendar `id` with its events. Returns whether it existed.
+    pub fn delete_calendar(&mut self, id: i64) -> Result<bool> {
+        Ok(self
+            .pim
+            .execute("DELETE FROM calendar WHERE id = ?1", [id])?
+            > 0)
+    }
+
     /// Keeps the token for calendar `id`'s next incremental sync; `None`
     /// makes the next sync a full one.
     pub fn set_calendar_sync_token(&mut self, id: i64, token: Option<&str>) -> Result<()> {
@@ -1061,6 +1115,26 @@ mod tests {
         let paths = Paths::with_root(dir.path());
         let store = Store::open(&paths, Mode::ReadWrite).unwrap();
         (dir, store)
+    }
+
+    #[test]
+    fn local_calendars_are_added_renamed_recoloured_and_deleted() {
+        let (_dir, mut store) = store();
+        let first = store.add_local_calendar("Home", "#33b679").unwrap();
+        let second = store.add_local_calendar("Gym", "").unwrap();
+        let read = |store: &Store, id| store.calendar(id).unwrap().unwrap();
+        assert_eq!(read(&store, first).source, CalendarSource::Local);
+        assert!(read(&store, second).position > read(&store, first).position);
+        assert!(store.rename_calendar(first, "Family").unwrap());
+        assert!(store.set_calendar_color(first, "#d50000").unwrap());
+        let calendar = read(&store, first);
+        assert_eq!(
+            (calendar.name.as_str(), calendar.color.as_str()),
+            ("Family", "#d50000")
+        );
+        assert!(store.delete_calendar(second).unwrap());
+        assert!(!store.delete_calendar(second).unwrap());
+        assert!(store.calendar(second).unwrap().is_none());
     }
 
     #[test]

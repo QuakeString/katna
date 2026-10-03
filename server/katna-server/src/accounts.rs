@@ -48,11 +48,11 @@ use crate::routes::{ApiError, AppState, ClientAddr, client_ip, limit_key};
 /// Limits on guessing passwords and on mailing codes.
 pub struct AccountLimits {
     /// Sign-in attempts per address.
-    per_email: WindowLimit<String>,
+    pub(crate) per_email: WindowLimit<String>,
     /// Sign-in and sign-up attempts per client address.
     per_ip: WindowLimit<Option<IpAddr>>,
     /// Codes mailed per address.
-    mails: WindowLimit<String>,
+    pub(crate) mails: WindowLimit<String>,
 }
 
 impl Default for AccountLimits {
@@ -105,7 +105,11 @@ pub struct AccountInfo {
     pub created_at: i64,
 }
 
-fn limited(state: &AppState, headers: &HeaderMap, addr: ClientAddr) -> Result<(), ApiError> {
+pub(crate) fn limited(
+    state: &AppState,
+    headers: &HeaderMap,
+    addr: ClientAddr,
+) -> Result<(), ApiError> {
     let ip = limit_key(client_ip(state, headers, addr.0));
     if state.account_limits().per_ip.allow(ip) {
         Ok(())

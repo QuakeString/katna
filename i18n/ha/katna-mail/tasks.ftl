@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Ƙirƙira
+tasks-create = Sabon aiki
 tasks-all = Duk ayyuka
 tasks-today = Yau
 tasks-starred = Masu tauraro
@@ -24,6 +24,12 @@ tasks-account-failed = Ba a iya karanta jerin ayyukan ba.
 # $reason is the server's own words, in English.
 tasks-account-error = Ba a iya karanta jerin ayyukan ba: { $reason }
 tasks-account-none = Ba a sami jerin ayyuka ba
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Ba a sami jerin ayyuka ba: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } yana nuna ayyuka ga Katna ne kawai idan ya shiga da { $provider }.
+tasks-account-sign-in-with = Shiga da { $provider }
 tasks-account-looking = Ana neman jerin ayyuka…
 tasks-account-try-again = Sake gwadawa
 tasks-account-try-again-tooltip = Sake duba ayyukan wannan asusun yanzu
@@ -108,4 +114,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Wannan wasiƙar ba ta nan kuma.
 tasks-toast-list-deleted = An share jerin
 tasks-toast-moved = An mayar zuwa { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = An matsar da aikin
 tasks-toast-rescheduled = An sake tsara lokacin aikin

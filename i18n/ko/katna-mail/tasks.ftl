@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = 만들기
+tasks-create = 새 할 일
 tasks-all = 모든 할 일
 tasks-today = 오늘
 tasks-starred = 별표 표시됨
 tasks-new-list = 새 목록 만들기
 tasks-on-this-computer = 이 컴퓨터
 tasks-my-tasks = 내 할 일
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = 할 일을 표시하려면 다시 로그인하세요
 tasks-account-signed-in = { $address }에 다시 로그인했습니다. 할 일을 가져오는 중…
 tasks-account-sign-in-refused = { $provider }에서 Katna의 접근을 허용하지 않았습니다. 다시 시도하고 할 일에 대한 접근을 허용하세요.
@@ -21,9 +19,11 @@ tasks-account-change-password = 비밀번호 변경
 tasks-account-change-password-tooltip = 설정 > 계정 열기
 tasks-account-not-enabled = Katna의 할 일 접근이 아직 켜져 있지 않습니다.
 tasks-account-failed = 할 일 목록을 읽을 수 없습니다.
-# $reason is the server's own words, in English.
 tasks-account-error = 할 일 목록을 읽을 수 없습니다: { $reason }
 tasks-account-none = 할 일 목록을 찾을 수 없음
+tasks-account-none-why = 할 일 목록을 찾을 수 없음: { $reason }
+tasks-account-use-sign-in = { $provider }에서는 { $provider }로 로그인한 Katna에만 할 일을 보여 줍니다.
+tasks-account-sign-in-with = { $provider }로 로그인
 tasks-account-looking = 할 일 목록을 찾는 중…
 tasks-account-try-again = 다시 시도
 tasks-account-try-again-tooltip = 지금 이 계정의 할 일을 다시 확인
@@ -106,4 +106,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = 해당 메일이 더 이상 없습니다.
 tasks-toast-list-deleted = 목록을 삭제했습니다
 tasks-toast-moved = { $list }(으)로 이동했습니다
+tasks-toast-placed = 할 일을 이동했습니다
 tasks-toast-rescheduled = 할 일의 일정을 변경했습니다

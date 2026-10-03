@@ -9,6 +9,17 @@ nav-folders = Ordner
 nav-label-new = Neues Label erstellen
 nav-folder-new = Neuen Ordner erstellen
 nav-menu-check-mail = Auf neue E-Mails prüfen
+nav-menu-check-inbox = Diesen Posteingang prüfen
+nav-menu-sign-in-again = Erneut anmelden
+nav-menu-new-mail = Neue E-Mail von diesem Konto
+nav-menu-account-settings = Kontoeinstellungen
+nav-account-checked = Synchron · geprüft { $ago }
+nav-account-in-sync = Synchron
+nav-account-connecting = Verbindung wird hergestellt…
+nav-account-offline = Offline, neuer Versuch läuft
+nav-account-signed-out = Anmeldung bei { $provider } abgelaufen
+nav-account-password-refused = Passwort abgelehnt
+nav-account-storage = { $used } von { $total } belegt
 nav-menu-new-subfolder = Neuer Ordner darin
 nav-menu-new-sublabel = Neues Label darin
 nav-menu-empty-trash = Papierkorb leeren
@@ -16,10 +27,6 @@ nav-account-unnamed = Konto { $number }
 nav-all-accounts = Alle Konten
 nav-expand = Ordner anzeigen
 nav-collapse = Ordner ausblenden
-nav-tab-new = { $count ->
-    [one] { $count } neu
-   *[other] { $count } neu
-}
 storage-used = { $percent } % von { $total } belegt
 storage-used-detail = { $address }: { $used } von { $total } belegt
 

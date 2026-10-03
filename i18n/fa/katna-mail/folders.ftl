@@ -9,6 +9,17 @@ nav-folders = پوشه‌ها
 nav-label-new = ایجاد برچسب جدید
 nav-folder-new = ایجاد پوشهٔ جدید
 nav-menu-check-mail = بررسی ایمیل جدید
+nav-menu-check-inbox = بررسی این صندوق ورودی
+nav-menu-sign-in-again = ورود دوباره
+nav-menu-new-mail = ایمیل جدید از این حساب
+nav-menu-account-settings = تنظیمات حساب
+nav-account-checked = همگام · بررسی‌شده { $ago }
+nav-account-in-sync = همگام
+nav-account-connecting = در حال اتصال…
+nav-account-offline = آفلاین، در حال تلاش دوباره
+nav-account-signed-out = ورود { $provider } منقضی شده
+nav-account-password-refused = گذرواژه پذیرفته نشد
+nav-account-storage = { $used } از { $total } استفاده‌شده
 nav-menu-new-subfolder = پوشهٔ جدید درون آن
 nav-menu-new-sublabel = برچسب جدید درون آن
 nav-menu-empty-trash = خالی کردن سطل زباله
@@ -16,10 +27,6 @@ nav-account-unnamed = حساب { $number }
 nav-all-accounts = همهٔ حساب‌ها
 nav-expand = نمایش پوشه‌ها
 nav-collapse = پنهان کردن پوشه‌ها
-nav-tab-new = { $count ->
-    [one] { $count } جدید
-   *[other] { $count } جدید
-}
 storage-used = { $percent }٪ از { $total } استفاده شده
 storage-used-detail = { $address }: { $used } از { $total } استفاده شده
 

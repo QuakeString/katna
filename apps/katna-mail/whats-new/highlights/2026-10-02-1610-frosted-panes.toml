@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Frosted panes, chat and search"
+text = """
+With Blur the window background on, the mail list, the open mail and the
+person card now let the blur through too, with a Pane opacity slider. The
+room behind a chat's bubbles shows a little more of it, and the search box
+stays frosted while you type. Each has its own switch in Settings >
+Experimental.
+"""

@@ -86,6 +86,9 @@ security-missing-key = ನಿಮ್ಮ ಬಳಿ ಇಲ್ಲದ ಕೀಯೊಂ
 security-missing-key-id = ನಿಮ್ಮ ಬಳಿ ಇಲ್ಲದ ಕೀಯೊಂದಿಗೆ ({ $key }) ಸಹಿ ಮಾಡಲಾಗಿದೆ, ಆದ್ದರಿಂದ ಅದನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ
 security-signature-unavailable = ಸಹಿ ಮಾಡಲಾಗಿದೆ; ಸಹಿಯನ್ನು ಪರಿಶೀಲಿಸಲು { $tool } ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ
 security-signature-error = ಸಹಿಯನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
+
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } ಅವರು ಇದನ್ನು { $count ->
     [one] ಒಮ್ಮೆ
    *[other] { $count } ಬಾರಿ
@@ -127,10 +130,12 @@ attachment-count = { $count ->
    *[other] { $count } ಲಗತ್ತುಗಳು
 }
 attachment-save = ಉಳಿಸಿ
+attachment-forward = ಫಾರ್ವರ್ಡ್ ಮಾಡಿ
 attachment-save-all = ಎಲ್ಲವನ್ನೂ ಉಳಿಸಿ
 attachment-save-all-tooltip = ಎಲ್ಲಾ ಲಗತ್ತುಗಳನ್ನು ಒಂದು ಫೋಲ್ಡರ್‌ಗೆ ಉಳಿಸಿ
 attachment-save-here = ಇಲ್ಲಿ ಉಳಿಸಿ
 attachment-not-downloaded = ಈ ಸಂದೇಶವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿಲ್ಲ.
+attachment-open-message = ಲಗತ್ತುಗಳನ್ನು ಓದಲು ಈ ಸಂದೇಶವನ್ನು ತೆರೆಯಿರಿ.
 attachment-not-found = ಈ ಲಗತ್ತು ಸಂದೇಶದಲ್ಲಿ ಕಂಡುಬರಲಿಲ್ಲ.
 attachment-read-failed = { $name } ಅನ್ನು ಓದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ
 attachment-numbered = ಲಗತ್ತು { $number }
@@ -178,8 +183,9 @@ print-encrypted = (ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದ
 print-to = ಇವರಿಗೆ: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = ಲಗತ್ತುಗಳನ್ನು ಓದಲು ಈ ಸಂದೇಶವನ್ನು ತೆರೆಯಿರಿ.
+text-pin = ಮೇಲಕ್ಕೆ ಪಿನ್ ಮಾಡಿ
+text-copy-address = ವಿಳಾಸ ನಕಲಿಸಿ
 text-copy = ನಕಲಿಸಿ
 text-select-all = ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ

@@ -1,6 +1,7 @@
 # Katna Mail, Korean (한국어).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
 translate-offer = 이 메일은 { $language }(으)로 작성되었습니다.
 translate-to = { $language }(으)로 번역
 translate-never = { $language }은(는) 번역 안 함

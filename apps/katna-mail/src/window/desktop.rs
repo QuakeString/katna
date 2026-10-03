@@ -14,6 +14,7 @@ use katna_i18n::tr;
 use katna_platform::dbusmenu::{Menu, MenuItem};
 use katna_store::MessageId;
 
+use super::compose::Kind;
 use super::{MailWindow, RailApp};
 use crate::data::EntryKey;
 use crate::instance::Request;
@@ -71,6 +72,7 @@ const MENU_BAR: &[(&str, &[Entry])] = &[
             Item("desktop-menu-page-contacts", "katna_mail::ShowContacts"),
             Item("desktop-menu-page-tasks", "katna_mail::ShowTasks"),
             Item("desktop-menu-page-notes", "katna_mail::ShowNotes"),
+            Item("desktop-menu-page-files", "katna_mail::ShowFiles"),
             Separator,
             Item("desktop-menu-next", "katna_mail::SelectNext"),
             Item("desktop-menu-previous", "katna_mail::SelectPrevious"),
@@ -106,9 +108,9 @@ const MENU_BAR: &[(&str, &[Entry])] = &[
     (
         "desktop-menu-help",
         &[
-            Item("desktop-menu-shortcuts", "katna_mail::ShowShortcuts"),
-            Item("desktop-menu-whats-new", "katna_mail::ShowWhatsNew"),
             Item("desktop-menu-check-updates", "katna_mail::CheckForUpdates"),
+            Item("desktop-menu-whats-new", "katna_mail::ShowWhatsNew"),
+            Item("desktop-menu-shortcuts", "katna_mail::ShowShortcuts"),
             Separator,
             Item("desktop-menu-about", "katna_mail::ShowAbout"),
         ],
@@ -299,9 +301,19 @@ impl MailWindow {
                 return;
             }
             Request::Search(text) => self.search_for(text, window, cx),
+            Request::Attach { from, paths } => self.open_with_files(from, paths, window, cx),
+            // The app may reopen on another page: the mail is on Mail.
+            Request::ShowMessage(id) => {
+                self.show_page(RailApp::Mail, window, cx);
+                self.show_message(MessageId(id), window, cx);
+            }
             // `calendar:<day>` shows that day on the Calendar page (with
             // `:new`, a new event on it); `tasks:<id>` opens that task.
             Request::Page(page) => {
+                if page == "gallery" {
+                    self.open_gallery(window, cx);
+                    return;
+                }
                 let (name, detail, new_event) = app_action::page_parts(&page);
                 let Some(app) = RailApp::from_key(name) else {
                     tracing::warn!(page, "unknown page");
@@ -334,7 +346,11 @@ impl MailWindow {
                     _ => {}
                 }
             }
-            Request::Action { name, message } => match name.as_str() {
+            Request::Action {
+                name,
+                message,
+                text,
+            } => match name.as_str() {
                 app_action::OPEN_INBOX => {
                     if !self.run_action("katna_mail::GoToInbox", window, cx) {
                         self.show_inbox(cx);
@@ -350,15 +366,17 @@ impl MailWindow {
                         self.run_action("katna_mail::ToggleSettings", window, cx);
                     }
                 }
-                app_action::OPEN_MESSAGE => {
+                // From a notification: in a window of its own, in front
+                // (the click's activation token raises it); this one stays
+                // behind, on whatever page it shows.
+                app_action::OPEN_MESSAGE | app_action::REPLY_ALL | app_action::REPLY => {
                     if let Some(id) = message {
-                        self.show_message(MessageId(id), window, cx);
-                    }
-                }
-                app_action::REPLY_ALL => {
-                    if let Some(id) = message {
-                        // In a window of its own; this one stays behind.
-                        self.reply_all_in_window(MessageId(id), cx);
+                        let reply = match name.as_str() {
+                            app_action::REPLY_ALL => Some(Kind::ReplyAll),
+                            app_action::REPLY => Some(Kind::Reply),
+                            _ => None,
+                        };
+                        self.message_in_window(MessageId(id), reply, text, cx);
                         return;
                     }
                 }

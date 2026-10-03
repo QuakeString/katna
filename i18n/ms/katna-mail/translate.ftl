@@ -1,6 +1,7 @@
 # Katna Mail, Malay (Bahasa Melayu).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
 translate-offer = Mesej ini dalam bahasa { $language }.
 translate-to = Terjemahkan ke { $language }
 translate-never = Jangan sesekali untuk { $language }

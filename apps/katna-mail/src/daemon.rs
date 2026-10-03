@@ -10,7 +10,9 @@ use std::collections::HashMap;
 use futures_lite::{Stream, StreamExt};
 use katna_core::OAuthProvider;
 use katna_dbus::zbus::Connection;
-use katna_dbus::{NewImapAccount, OutboxItem, PimProxy, flag, send_state, state};
+use katna_dbus::{
+    NewImapAccount, NewPop3Account, OutboxItem, PimProxy, ServerSpec, flag, send_state, state,
+};
 use katna_store::{FolderId, MessageId};
 
 /// A change to send to the daemon.
@@ -24,6 +26,9 @@ pub enum Command {
     Archive(Vec<MessageId>),
     Delete(Vec<MessageId>),
     Move(Vec<MessageId>, FolderId),
+    /// Gmail: puts the labels (folders) of the first list on messages and
+    /// takes those of the second off, leaving them where they are.
+    Labels(Vec<MessageId>, Vec<FolderId>, Vec<FolderId>),
     /// Snoozes messages until then (Unix seconds).
     Snooze(Vec<MessageId>, i64),
     /// Brings snoozed messages back now.
@@ -36,9 +41,19 @@ pub enum Command {
     /// Puts back the quoted message just removed from a reply. The app does
     /// this itself; the daemon never sees it.
     RestoreQuote,
+    /// Takes back the text just rephrased in the message. The app does
+    /// this itself; the daemon never sees it.
+    UndoRephrase,
+    /// Puts back the subject the user typed before picking another
+    /// wording. The app does this itself; the daemon never sees it.
+    RestoreSubject(String),
     /// Brings back the saved contacts just deleted (by their first card).
     /// The Contacts page does this itself; the daemon never sees it.
     RestoreContacts(Vec<i64>),
+    /// Brings back the color scheme just deleted: its id, its file's
+    /// contents and whether it was in use. The app does this itself; the
+    /// daemon never sees it.
+    RestoreScheme(String, String, bool),
     /// Gives saved cards these labels, by name: an undo on the Contacts
     /// page.
     ContactLabels(Vec<(i64, Vec<String>)>),
@@ -68,6 +83,52 @@ pub enum Command {
     RelabelNotes(Vec<i64>, String, String),
     /// A change on the Tasks page.
     Task(Box<crate::tasks::TaskCommand>),
+    /// A change to a calendar itself (`Pim1.RenameCalendar` and the like).
+    Calendar(CalendarEdit),
+    /// Mutes something until then (Unix seconds), or until unmuted (0).
+    Mute(Muted, i64),
+    Unmute(Muted),
+    /// Pins something of a mail to the top of its chat, with the pin bar's
+    /// label, in place of another pin (`Pim1.PinInChat`).
+    PinInChat(MessageId, katna_store::Pinned, String, Option<i64>),
+    /// Takes off a chat pin, by its ID.
+    UnpinInChat(i64),
+    /// Puts a chat's pins in this order.
+    OrderChatPins(Vec<i64>),
+    /// Moves items of an account's drive to its bin, or back out of it.
+    CloudTrash(katna_core::AccountId, Vec<String>, bool),
+    /// Renames an item of an account's drive: its id and new name.
+    CloudRename(katna_core::AccountId, String, String),
+    /// Sets whether a folder (or an inbox tab) notifies and counts.
+    SetBell(
+        FolderId,
+        Option<katna_core::MailCategory>,
+        katna_store::Bell,
+    ),
+}
+
+/// What [`Command::Mute`] acts on (`docs/ARCHITECTURE.md` §15.1.1).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Muted {
+    Account(katna_core::AccountId),
+    Folder(FolderId),
+    /// The conversation of this message.
+    Conversation(MessageId),
+    /// Mail from this address.
+    Sender(String),
+}
+
+impl Muted {
+    /// `Pim1.Mute`'s kind, id and address.
+    fn args(&self) -> (&'static str, i64, &str) {
+        use katna_dbus::mute;
+        match self {
+            Self::Account(a) => (mute::ACCOUNT, a.0, ""),
+            Self::Folder(f) => (mute::FOLDER, f.0, ""),
+            Self::Conversation(m) => (mute::CONVERSATION, m.0, ""),
+            Self::Sender(address) => (mute::SENDER, 0, address),
+        }
+    }
 }
 
 /// A saved card to write, for [`Command::WriteCards`].
@@ -99,6 +160,14 @@ impl Command {
         }
     }
 
+    /// The account whose drive this changes, read again once it is done.
+    pub fn drive(&self) -> Option<katna_core::AccountId> {
+        match self {
+            Self::CloudTrash(account, ..) | Self::CloudRename(account, ..) => Some(*account),
+            _ => None,
+        }
+    }
+
     /// `self` split into commands of at most `size` messages each, in order.
     pub fn batches(&self, size: usize) -> Vec<Command> {
         let split = |ids: &[MessageId], make: &dyn Fn(Vec<MessageId>) -> Command| {
@@ -118,6 +187,9 @@ impl Command {
             Self::Archive(ids) if ids.len() > size => split(ids, &Self::Archive),
             Self::Delete(ids) if ids.len() > size => split(ids, &Self::Delete),
             Self::Move(ids, to) if ids.len() > size => split(ids, &|ids| Self::Move(ids, *to)),
+            Self::Labels(ids, add, remove) if ids.len() > size => {
+                split(ids, &|ids| Self::Labels(ids, add.clone(), remove.clone()))
+            }
             Self::Snooze(ids, until) if ids.len() > size => {
                 split(ids, &|ids| Self::Snooze(ids, *until))
             }
@@ -153,7 +225,10 @@ impl Command {
             | Self::UndoSend(_)
             | Self::ReopenDraft
             | Self::RestoreQuote
+            | Self::UndoRephrase
+            | Self::RestoreSubject(_)
             | Self::RestoreContacts(_)
+            | Self::RestoreScheme(..)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
             | Self::DeleteContacts(_)
@@ -166,7 +241,18 @@ impl Command {
             | Self::RelabelNotes(..)
             | Self::Event(_)
             | Self::Several(_)
-            | Self::Task(_) => {
+            | Self::Task(_)
+            | Self::Calendar(_)
+            | Self::Mute(..)
+            | Self::Unmute(_)
+            | Self::PinInChat(..)
+            | Self::UnpinInChat(_)
+            | Self::OrderChatPins(_)
+            | Self::CloudTrash(..)
+            | Self::CloudRename(..)
+            | Self::SetBell(..)
+            // The window names the label.
+            | Self::Labels(..) => {
                 return None;
             }
         })
@@ -204,21 +290,41 @@ pub struct AccountState {
 
 impl AccountState {
     /// The provider to sign in with to fix it: the account's own, or the
-    /// one a password account has to switch to (`USE_SIGN_IN`).
+    /// one a password account has to sign in with (`USE_SIGN_IN`, whose
+    /// detail is `provider` or `provider: why the other way failed`).
     pub fn provider(&self) -> Option<OAuthProvider> {
         self.sign_in.or_else(|| {
             (self.state == katna_dbus::calendar_state::USE_SIGN_IN)
-                .then(|| self.detail.parse().ok())
+                .then(|| self.use_sign_in().0.parse().ok())
                 .flatten()
         })
+    }
+
+    /// Why the other way failed, when `USE_SIGN_IN` says (in English).
+    pub fn use_sign_in_why(&self) -> &str {
+        if self.state == katna_dbus::calendar_state::USE_SIGN_IN {
+            self.use_sign_in().1
+        } else {
+            ""
+        }
+    }
+
+    fn use_sign_in(&self) -> (&str, &str) {
+        self.detail
+            .split_once(':')
+            .map_or((self.detail.as_str(), ""), |(provider, why)| {
+                (provider.trim(), why.trim())
+            })
     }
 }
 
 /// Connects to the session bus.
 pub async fn connect() -> Result<Connection, String> {
-    katna_dbus::session()
+    let connection = katna_dbus::session()
         .await
-        .map_err(|err| format!("No D-Bus session: {err}"))
+        .map_err(|err| format!("No D-Bus session: {err}"))?;
+    katna_dbus::ensure_daemon(&connection).await;
+    Ok(connection)
 }
 
 /// Sends `command` and waits until the daemon has applied it to the store,
@@ -264,6 +370,11 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::Archive(messages) => pim.archive_messages(&ids(messages)).await,
         Command::Delete(messages) => pim.delete_messages(&ids(messages)).await,
         Command::Move(messages, folder) => pim.move_messages(&ids(messages), folder.0).await,
+        Command::Labels(messages, add, remove) => {
+            let folders = |list: &[FolderId]| list.iter().map(|f| f.0).collect::<Vec<i64>>();
+            pim.set_labels(&ids(messages), &folders(add), &folders(remove))
+                .await
+        }
         Command::Snooze(messages, until) => pim.snooze(&ids(messages), *until).await,
         Command::Unsnooze(messages) => pim.unsnooze(&ids(messages)).await,
         Command::ReloadConfig => pim.reload_config().await,
@@ -277,6 +388,22 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::TrashNotes(ids, trashed) => pim.trash_notes(ids, *trashed).await.map(|_| ()),
         Command::DeleteNotes(ids) => pim.delete_notes(ids).await.map(|_| ()),
         Command::OrderNotes(ids) => pim.order_notes(ids).await.map(|_| ()),
+        Command::PinInChat(message, what, label, replace) => {
+            let (kind, file, text) = match what {
+                katna_store::Pinned::Mail => ("mail", 0, ""),
+                katna_store::Pinned::File(n) => ("file", *n as i64, ""),
+                katna_store::Pinned::Text(text) => ("text", 0, text.as_str()),
+            };
+            match pim
+                .pin_in_chat(message.0, kind, file, text, label, replace.unwrap_or(0))
+                .await
+            {
+                Ok(0) => return Err(katna_i18n::tr!("chat-pins-full")),
+                other => other.map(|_| ()),
+            }
+        }
+        Command::UnpinInChat(id) => pim.unpin_in_chat(*id).await,
+        Command::OrderChatPins(ids) => pim.order_chat_pins(ids).await,
         Command::ContactLabels(cards) => {
             for (card, labels) in cards {
                 pim.set_contact_labels(*card, labels)
@@ -301,11 +428,34 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
             return Ok(());
         }
         Command::RelabelNotes(ids, old, new) => pim.relabel_notes(ids, old, new).await.map(|_| ()),
-        Command::ReopenDraft | Command::RestoreQuote | Command::RestoreContacts(_) => {
+        Command::ReopenDraft
+        | Command::RestoreQuote
+        | Command::UndoRephrase
+        | Command::RestoreSubject(_)
+        | Command::RestoreContacts(_)
+        | Command::RestoreScheme(..) => {
             return Ok(());
         }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),
         Command::Task(task) => return crate::tasks::send(connection, task).await.map(|_| ()),
+        Command::Calendar(edit) => return edit_calendar(connection, edit).await.map(|_| ()),
+        Command::Mute(what, until) => {
+            let (kind, id, address) = what.args();
+            pim.mute(kind, id, address, *until).await
+        }
+        Command::Unmute(what) => {
+            let (kind, id, address) = what.args();
+            pim.unmute(kind, id, address).await
+        }
+        Command::SetBell(folder, category, bell) => {
+            let category = category.map_or(0, katna_core::MailCategory::to_storage);
+            pim.set_bell(folder.0, category, bell.notify, bell.count)
+                .await
+        }
+        Command::CloudTrash(account, ids, trashed) => {
+            pim.cloud_trash(account.0, ids, *trashed).await.map(|_| ())
+        }
+        Command::CloudRename(account, id, name) => pim.cloud_rename(account.0, id, name).await,
         Command::Several(commands) => {
             for command in commands {
                 Box::pin(send(connection, command)).await?;
@@ -409,6 +559,74 @@ pub async fn delete_template(connection: &Connection, id: i64) -> Result<(), Str
         .map_err(|err| describe(&err))
 }
 
+/// Mail rules (`docs/ARCHITECTURE.md` §9.4). The app reads them from the
+/// store (`katna_store::rules`) and previews them there
+/// (`Store::rule_preview`); these change them.
+pub mod rules {
+    use futures_lite::{Stream, StreamExt};
+    use katna_dbus::PimProxy;
+    use katna_dbus::zbus::Connection;
+    use katna_store::rules::Rule;
+
+    use super::describe;
+
+    /// Saves `rule` (a new one when its ID is 0). Returns its ID.
+    pub async fn save(connection: &Connection, rule: &Rule) -> Result<i64, String> {
+        let json = serde_json::to_string(rule).map_err(|err| err.to_string())?;
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        pim.save_rule(&json).await.map_err(|err| describe(&err))
+    }
+
+    /// Deletes rule `id`.
+    pub async fn delete(connection: &Connection, id: i64) -> Result<(), String> {
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        pim.delete_rule(id).await.map_err(|err| describe(&err))
+    }
+
+    /// Puts rules `ids` first, in this order.
+    pub async fn reorder(connection: &Connection, ids: &[i64]) -> Result<(), String> {
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        pim.reorder_rules(ids).await.map_err(|err| describe(&err))
+    }
+
+    /// Switches rule `id` on or off.
+    pub async fn set_enabled(connection: &Connection, id: i64, on: bool) -> Result<(), String> {
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        pim.set_rule_enabled(id, on)
+            .await
+            .map_err(|err| describe(&err))
+    }
+
+    /// Runs rule `id` over the inbox mail of the last `days` days.
+    /// Returns how many messages it changed.
+    pub async fn apply(connection: &Connection, id: i64, days: u32) -> Result<u32, String> {
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        pim.apply_rule(id, days).await.map_err(|err| describe(&err))
+    }
+
+    /// Fires when the rules changed.
+    pub async fn changes(connection: &Connection) -> Result<impl Stream<Item = ()>, String> {
+        let pim = PimProxy::new(connection)
+            .await
+            .map_err(|err| describe(&err))?;
+        let changes = pim
+            .receive_rules_changed()
+            .await
+            .map_err(|err| describe(&err))?;
+        Ok(changes.map(|_| ()))
+    }
+}
+
 /// Shows or hides calendar `id`'s events (`SetCalendarHidden`).
 pub async fn set_calendar_hidden(
     connection: &Connection,
@@ -426,6 +644,33 @@ pub async fn set_calendar_hidden(
         .await
         .map(|_| ())
         .map_err(|err| describe(&err))
+}
+
+/// A calendar change on a calendar itself, sent to its service first.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CalendarEdit {
+    /// A new calendar in account (0: this computer), with a name and a
+    /// colour.
+    Add(i64, String, String),
+    Rename(i64, String),
+    Recolor(i64, String),
+    /// Deleted for everyone (`true`) or taken off the person's list.
+    Delete(i64, bool),
+}
+
+/// Sends `edit` (`AddCalendar`, `RenameCalendar`, `SetCalendarColor`,
+/// `DeleteCalendar`). Returns the new calendar's ID, or 0.
+pub async fn edit_calendar(connection: &Connection, edit: &CalendarEdit) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let done = match edit {
+        CalendarEdit::Add(account, name, color) => pim.add_calendar(*account, name, color).await,
+        CalendarEdit::Rename(id, name) => pim.rename_calendar(*id, name).await.map(|()| 0),
+        CalendarEdit::Recolor(id, color) => pim.set_calendar_color(*id, color).await.map(|_| 0),
+        CalendarEdit::Delete(id, delete) => pim.delete_calendar(*id, *delete).await.map(|()| 0),
+    };
+    done.map_err(|err| describe(&err))
 }
 
 /// Asks the daemon for a change to the calendar. Returns the ID of the
@@ -595,6 +840,147 @@ pub async fn translation_sources(
     }
 }
 
+/// What came back from rephrasing: the text, and the plan it was done
+/// under (`trial` with its days left, `paid`, or `own`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Rephrased {
+    pub text: String,
+    pub plan: String,
+    pub days_left: u32,
+}
+
+/// Rephrases `text` in `tone` with the AI service the settings name, or
+/// gives a `katna_ai::wire::problem`.
+pub async fn ai_rephrase(
+    connection: &Connection,
+    text: &str,
+    tone: &str,
+    instruction: &str,
+) -> Result<Rephrased, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    let (text, plan, days_left, problem) = pim
+        .ai_rephrase(text, tone, instruction)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    if problem.is_empty() {
+        Ok(Rephrased {
+            text,
+            plan,
+            days_left,
+        })
+    } else {
+        Err(problem)
+    }
+}
+
+/// Sums up a conversation: `request` is a
+/// `katna_ai::summary::SummarizeRequest` and `newest` the newest of its
+/// mails sent. Gives the summary (as JSON) with its plan, or a
+/// `katna_ai::wire::problem`.
+pub async fn ai_summarize(
+    connection: &Connection,
+    newest: MessageId,
+    request: &katna_ai::summary::SummarizeRequest,
+) -> Result<Rephrased, String> {
+    let failed = || katna_ai::wire::problem::FAILED.to_owned();
+    let request = serde_json::to_string(request).map_err(|_| failed())?;
+    let pim = PimProxy::new(connection).await.map_err(|_| failed())?;
+    let (text, plan, days_left, problem) = pim
+        .ai_summarize(newest.0, &request)
+        .await
+        .map_err(|_| failed())?;
+    if problem.is_empty() {
+        Ok(Rephrased {
+            text,
+            plan,
+            days_left,
+        })
+    } else {
+        Err(problem)
+    }
+}
+
+/// A first draft of a reply or a forward's note, or ideas for one (a
+/// JSON array of strings), with its plan, or a `katna_ai::wire::problem`.
+pub async fn ai_draft(
+    connection: &Connection,
+    request: &katna_ai::draft::DraftRequest,
+) -> Result<Rephrased, String> {
+    let failed = || katna_ai::wire::problem::FAILED.to_owned();
+    let request = serde_json::to_string(request).map_err(|_| failed())?;
+    let pim = PimProxy::new(connection).await.map_err(|_| failed())?;
+    let (text, plan, days_left, problem) = pim.ai_draft(&request).await.map_err(|_| failed())?;
+    if problem.is_empty() {
+        Ok(Rephrased {
+            text,
+            plan,
+            days_left,
+        })
+    } else {
+        Err(problem)
+    }
+}
+
+/// The rest of the sentence at the end of `before` (empty when unsure),
+/// or a `katna_ai::wire::problem`.
+pub async fn ai_complete(
+    connection: &Connection,
+    before: &str,
+    answered: &str,
+) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    let (text, problem) = pim
+        .ai_complete(before, answered)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    if problem.is_empty() {
+        Ok(text)
+    } else {
+        Err(problem)
+    }
+}
+
+/// Saves the key of the user's own AI service; empty deletes it.
+pub async fn set_ai_key(connection: &Connection, key: &str) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_ai_key(key).await.map_err(|err| describe(&err))
+}
+
+/// Whether a key of the user's own AI service is saved.
+pub async fn ai_key_saved(connection: &Connection) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.ai_key_saved().await.map_err(|err| describe(&err))
+}
+
+/// The models the user's own AI service `provider` offers to the saved
+/// key, or a `katna_ai::wire::problem`.
+pub async fn ai_models(
+    connection: &Connection,
+    provider: &str,
+    address: &str,
+) -> Result<Vec<String>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    let (models, problem) = pim
+        .ai_models(provider, address)
+        .await
+        .map_err(|_| katna_ai::wire::problem::FAILED.to_owned())?;
+    if problem.is_empty() {
+        Ok(models)
+    } else {
+        Err(problem)
+    }
+}
+
 /// Deletes every saved copy of the draft `message_id` of `account`.
 pub async fn discard_draft(
     connection: &Connection,
@@ -612,7 +998,11 @@ pub async fn discard_draft(
 /// What the daemon found for an address.
 #[derive(Debug, Clone)]
 pub struct Found {
+    /// The IMAP and SMTP servers; an empty host was not found.
     pub account: NewImapAccount,
+    /// The POP3 server; an empty host was not found. There is always an
+    /// IMAP or a POP3 server.
+    pub pop3: ServerSpec,
     /// Where: `built-in`, `provider`, `ispdb`, `dns-srv`, `mx` or `guess`.
     pub source: String,
     /// The provider to sign in to in the browser, if the servers are
@@ -627,12 +1017,13 @@ pub async fn discover(connection: &Connection, address: &str) -> Result<Found, S
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
-    let (account, source, sign_in, password) = pim
+    let (account, pop3, source, sign_in, password) = pim
         .discover_account(address)
         .await
         .map_err(|err| describe(&err))?;
     Ok(Found {
         account,
+        pop3,
         source,
         sign_in: sign_in.parse().ok(),
         password,
@@ -677,6 +1068,19 @@ pub async fn signed_out(
         .filter(|a| a.state == state::AUTH_FAILED)
         .filter_map(|a| Some((a.id, a.address, a.sign_in.parse().ok()?)))
         .collect())
+}
+
+/// Where account `id`'s mail sync stands, or `None` if there is no such
+/// account.
+pub async fn account_status(
+    connection: &Connection,
+    id: katna_core::AccountId,
+) -> Result<Option<katna_dbus::AccountStatus>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
+    Ok(accounts.into_iter().find(|a| a.id == id.0))
 }
 
 /// Where each account's calendar sync stands, by account.
@@ -763,6 +1167,42 @@ pub async fn sender_picture(connection: &Connection, address: &str) -> Result<Ve
         .map_err(|err| describe(&err))
 }
 
+/// Asks the daemon for the company of the person at `address`, the one at
+/// `website` first: JSON, empty for none.
+pub async fn company_of(
+    connection: &Connection,
+    address: &str,
+    website: &str,
+) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.company_of(address, website)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// The signatures Gmail adds for `account`: (address, name, HTML).
+/// `Err(None)` when its sign-in does not allow reading them.
+pub async fn gmail_signatures(
+    connection: &Connection,
+    account: i64,
+) -> Result<Vec<(String, String, String)>, Option<String>> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| Some(describe(&err)))?;
+    pim.gmail_signatures(account)
+        .await
+        .map_err(|err| match &err {
+            katna_dbus::zbus::Error::MethodError(name, _, _)
+                if name.as_str() == "org.freedesktop.DBus.Error.AuthFailed" =>
+            {
+                None
+            }
+            err => Some(describe(err)),
+        })
+}
+
 /// Renames `account`; an empty name goes back to the name its own mail
 /// is sent under.
 pub async fn rename_account(
@@ -815,6 +1255,32 @@ pub async fn create_folder(
         .map_err(|err| describe(&err))
 }
 
+/// Renames folder `folder` (a label, on Gmail) on its account's server;
+/// it stays inside the same parent.
+pub async fn rename_folder(
+    connection: &Connection,
+    folder: i64,
+    new_name: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.rename_folder(folder, new_name)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Deletes folder `folder` (a label, on Gmail) and the folders inside it
+/// on its account's server. Returns how many messages went to the Trash.
+pub async fn delete_folder(connection: &Connection, folder: i64) -> Result<u32, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.delete_folder(folder)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Has the daemon delete everything Katna keeps on this computer. It exits
 /// once done; the next call starts a new one.
 pub async fn delete_all_data(connection: &Connection) -> Result<(), String> {
@@ -855,6 +1321,41 @@ pub async fn add_account(
     pim.add_imap_account(account, password)
         .await
         .map_err(|err| add_error(&err))
+}
+
+/// Checks the password with the POP3 server and adds the account.
+/// Returns its ID.
+pub async fn add_pop3_account(
+    connection: &Connection,
+    account: &NewPop3Account,
+    password: &str,
+) -> Result<i64, AddError> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| AddError::Other(describe(&err)))?;
+    pim.add_pop3_account(account, password)
+        .await
+        .map_err(|err| add_error(&err))
+}
+
+/// Sets what a POP3 account does with mail on the server (see
+/// `NewPop3Account`).
+pub async fn set_pop3_keep(
+    connection: &Connection,
+    account: i64,
+    keep: katna_core::Pop3Keep,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_pop3_keep(
+        account,
+        keep.leave_on_server,
+        keep.days.unwrap_or(0),
+        keep.delete_with_local,
+    )
+    .await
+    .map_err(|err| describe(&err))
 }
 
 fn add_error(err: &katna_dbus::zbus::Error) -> AddError {
@@ -1005,6 +1506,156 @@ pub async fn drive_share_with_link(
         .map_err(|err| describe(&err))
 }
 
+/// Whether the sign-in of `account` lets Katna upload into its drive.
+pub async fn cloud_writable(connection: &Connection, account: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_writable(account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Starts uploading file or folder `path` into folder `folder` of the
+/// drive of `account`; returns the upload's id.
+pub async fn cloud_upload(
+    connection: &Connection,
+    account: i64,
+    folder: &str,
+    path: &str,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_upload(account, folder, path)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Who may open item `id` of the drive of `account`.
+pub async fn cloud_access(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+) -> Result<Vec<katna_dbus::CloudAccess>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_access(account, id)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Shares item `id` with `addresses` as `role`; returns those the drive
+/// refused.
+pub async fn cloud_grant(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    addresses: &[String],
+    role: &str,
+    notify: bool,
+) -> Result<Vec<String>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_grant(account, id, addresses, role, notify)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Changes grant `permission` of item `id` to `role`; empty takes it away.
+pub async fn cloud_set_access(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    permission: &str,
+    role: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_set_access(account, id, permission, role)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Opens item `id` to anyone with the link as `role`; empty closes it.
+pub async fn cloud_set_link(
+    connection: &Connection,
+    account: i64,
+    id: &str,
+    role: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_set_link(account, id, role)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Links a file already in the drive of `account` to a message; returns
+/// an upload id that is shared at Send like an uploaded file's.
+pub async fn cloud_link(
+    connection: &Connection,
+    account: i64,
+    entry: &katna_dbus::CloudEntry,
+) -> Result<i64, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_link(account, entry)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// One page of the drive of `account`: `place` is one of
+/// `katna_dbus::cloud_place`, `what` the folder id or the words.
+pub async fn cloud_list(
+    connection: &Connection,
+    account: i64,
+    place: &str,
+    what: &str,
+    page: &str,
+) -> Result<katna_dbus::CloudListing, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_list(account, place, what, page)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Downloads a drive file into Katna's cache; returns its path.
+pub async fn cloud_fetch(
+    connection: &Connection,
+    account: i64,
+    entry: &katna_dbus::CloudEntry,
+) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_fetch(account, entry)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// The picture of a drive file, about `width` pixels wide.
+pub async fn cloud_thumbnail(
+    connection: &Connection,
+    account: i64,
+    link: &str,
+    width: u32,
+) -> Result<Vec<u8>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_thumbnail(account, link, width)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// A new video call link from the mail service of `account`; empty when
 /// it has none Katna may make.
 pub async fn meeting_link(connection: &Connection, account: i64) -> Result<String, String> {
@@ -1106,6 +1757,22 @@ pub async fn check_mail(
     connection: &Connection,
     account: Option<katna_core::AccountId>,
 ) -> Result<(), String> {
+    check(connection, account, &[]).await
+}
+
+/// Like [`check_mail`], for only `folders` (each with its account).
+pub async fn check_folders(
+    connection: &Connection,
+    folders: &[(katna_core::AccountId, katna_store::FolderId)],
+) -> Result<(), String> {
+    check(connection, None, folders).await
+}
+
+async fn check(
+    connection: &Connection,
+    account: Option<katna_core::AccountId>,
+    folders: &[(katna_core::AccountId, katna_store::FolderId)],
+) -> Result<(), String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
@@ -1119,12 +1786,26 @@ pub async fn check_mail(
         .await
         .map_err(|err| describe(&err))?
         .into_iter()
-        .filter(|a| account.is_none_or(|id| id.0 == a.id) && a.state != state::NOT_SYNCED)
+        .filter(|a| {
+            if folders.is_empty() {
+                account.is_none_or(|id| id.0 == a.id)
+            } else {
+                folders.iter().any(|(id, _)| id.0 == a.id)
+            }
+        })
+        .filter(|a| a.state != state::NOT_SYNCED)
         .map(|a| a.id)
         .collect();
-    pim.sync_now(account.map_or(0, |id| id.0))
-        .await
-        .map_err(|err| describe(&err))?;
+    if folders.is_empty() {
+        pim.sync_now(account.map_or(0, |id| id.0))
+            .await
+            .map_err(|err| describe(&err))?;
+    }
+    for (_, folder) in folders {
+        pim.sync_folder(folder.0)
+            .await
+            .map_err(|err| describe(&err))?;
+    }
     // A woken account says so when its sync ends: in sync, offline or
     // with its password refused. "Connecting" comes first when it had no
     // connection.

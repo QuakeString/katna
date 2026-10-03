@@ -37,11 +37,9 @@ impl TextLine {
 }
 
 /// A page's lines of text, in the order the page draws them.
-pub(crate) fn lines(page: &Page<'_>) -> Vec<TextLine> {
-    let (w, h) = page.render_dimensions();
-    let transform = page.initial_transform(true);
-    let [a, b, c, d, e, f] = transform.as_coeffs();
-    let transform = Affine::new([a, b, c, d, e, f].map(f64::from));
+/// `transform` goes from the page's own coordinates to points as shown,
+/// `(w, h)` the page's size as shown.
+pub(crate) fn lines(page: &Page<'_>, transform: Affine, (w, h): (f32, f32)) -> Vec<TextLine> {
     let cache = InterpreterCache::new();
     let mut context = Context::new(
         transform,
@@ -53,6 +51,63 @@ pub(crate) fn lines(page: &Page<'_>) -> Vec<TextLine> {
     let mut letters = Letters::default();
     interpret_page(page, &mut context, &mut letters);
     join(letters.0)
+}
+
+/// Where page `page` draws pictures (not masks drawn in one colour), as
+/// rectangles in points as shown: left, top, right, bottom.
+pub(crate) fn pictures(page: &Page<'_>, transform: Affine, (w, h): (f32, f32)) -> Vec<Rect> {
+    let cache = InterpreterCache::new();
+    let mut context = Context::new(
+        transform,
+        Rect::new(0.0, 0.0, f64::from(w), f64::from(h)),
+        &cache,
+        page.xref(),
+        InterpreterSettings::default(),
+    );
+    let mut pictures = Pictures::default();
+    interpret_page(page, &mut context, &mut pictures);
+    pictures.0
+}
+
+#[derive(Default)]
+struct Pictures(Vec<Rect>);
+
+impl<'a> Device<'a> for Pictures {
+    fn set_soft_mask(&mut self, _: Option<SoftMask<'a>>) {}
+    fn set_blend_mode(&mut self, _: BlendMode) {}
+    fn draw_path(&mut self, _: &BezPath, _: Affine, _: &Paint<'a>, _: &PathDrawMode) {}
+    fn push_clip_path(&mut self, _: &ClipPath) {}
+    fn push_transparency_group(&mut self, _: f32, _: Option<SoftMask<'a>>, _: BlendMode) {}
+    fn pop_clip_path(&mut self) {}
+    fn pop_transparency_group(&mut self) {}
+    fn draw_glyph(
+        &mut self,
+        _: &Glyph<'a>,
+        _: Affine,
+        _: Affine,
+        _: &Paint<'a>,
+        _: &GlyphDrawMode,
+    ) {
+    }
+
+    fn draw_image(&mut self, image: Image<'a, '_>, transform: Affine) {
+        if !matches!(image, Image::Raster(_)) {
+            return;
+        }
+        // The picture fills (0, 0) to (width, height) under `transform`.
+        let (iw, ih) = (f64::from(image.width()), f64::from(image.height()));
+        let corners =
+            [(0.0, 0.0), (iw, 0.0), (0.0, ih), (iw, ih)].map(|(x, y)| transform * Point::new(x, y));
+        let rect = corners
+            .iter()
+            .skip(1)
+            .fold(Rect::from_points(corners[0], corners[0]), |r, p| {
+                r.union_pt(*p)
+            });
+        if rect.is_finite() && rect.area() > 0.0 {
+            self.0.push(rect);
+        }
+    }
 }
 
 /// A glyph drawn with a known character.

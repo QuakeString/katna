@@ -46,6 +46,7 @@ compose-sent-archived = Umetumwa na kuwekwa kwenye kumbukumbu
 compose-sent = Ujumbe umetumwa
 compose-discarded = Rasimu imetupwa
 compose-draft-saved = Rasimu imehifadhiwa
+compose-draft-saving = Inahifadhi…
 compose-draft-failed = Imeshindwa kuhifadhi rasimu: { $error }
 compose-draft-not-opened = Imeshindwa kufungua rasimu.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = Imeshindwa kufungua rasimu.
 compose-picker-insert = Weka
 compose-picker-attach = Ambatisha
 compose-file-too-large = { $name } ni kubwa mno: ujumbe unaweza kubeba hadi { $limit }.
+compose-forward-files-missing = Faili za ujumbe unaosambazwa hazijapakuliwa, kwa hivyo hazijaambatishwa.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Ondoa kiambatisho
+compose-attachment-open-tip = Fungua ili ukiangalie
 compose-attachments-total = { $count ->
     [one] Faili { $count }, { $size }
    *[other] Faili { $count }, { $size }
@@ -78,6 +81,7 @@ compose-drive-share-link = Shiriki kwa kiungo
 compose-drive-send-without = Tuma bila kushiriki
 compose-drive-share-cancel = Ghairi
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } ni kubwa kuliko { $limit }, kwa hiyo huenda kwenye OneDrive yako na ujumbe hubeba kiungo.
 compose-onedrive-tip = Kwenye OneDrive yako; ujumbe hubeba kiungo
 compose-onedrive-allow = Ruhusu OneDrive
@@ -89,6 +93,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive haiwezi kushiriki faili na { $addresses }. Badala yake, yeyote mwenye kiungo anaweza kuzifungua.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Dondosha faili hapa
 compose-drop-here = Dondosha hapa
 compose-paste-keep-formatting = Dumisha uumbizaji

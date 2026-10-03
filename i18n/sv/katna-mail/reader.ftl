@@ -86,6 +86,10 @@ security-missing-key = Signerat med en nyckel som du inte har, så det kan inte 
 security-missing-key-id = Signerat med en nyckel som du inte har ({ $key }), så det kan inte kontrolleras
 security-signature-unavailable = Signerat; installera { $tool } för att kontrollera signaturen
 security-signature-error = Signaturen kunde inte kontrolleras.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } öppnade det { $count ->
     [one] en gång
    *[other] { $count } gånger
@@ -127,10 +131,12 @@ attachment-count = { $count ->
    *[other] { $count } bilagor
 }
 attachment-save = Spara
+attachment-forward = Vidarebefordra
 attachment-save-all = Spara alla
 attachment-save-all-tooltip = Spara alla bilagor i en mapp
 attachment-save-here = Spara här
 attachment-not-downloaded = Meddelandet är inte hämtat.
+attachment-open-message = Öppna meddelandet för att läsa bilagorna.
 attachment-not-found = Bilagan hittades inte i meddelandet.
 attachment-read-failed = Det gick inte att läsa { $name }
 attachment-numbered = bilaga { $number }
@@ -153,6 +159,7 @@ attachment-encrypted-open = Filen kom krypterad. Spara den för att öppna den n
 print-failed = Det gick inte att skriva ut: { $error }
 print-no-font = inget typsnitt hittades
 print-opened-as-pdf = Öppnades som PDF för utskrift därifrån.
+
 print-preview-title = Förhandsgranskning
 print-preview-laying-out = Ordnar sidorna…
 print-preview-pages = { $count ->
@@ -178,8 +185,9 @@ print-encrypted = (Krypterat. Öppna det i Katna Mail för att skriva ut texten.
 print-to = Till: { $addresses }
 print-cc = Kopia: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = Öppna meddelandet för att läsa bilagorna.
+text-pin = Fäst högst upp
+text-copy-address = Kopiera adress
 text-copy = Kopiera
 text-select-all = Markera allt

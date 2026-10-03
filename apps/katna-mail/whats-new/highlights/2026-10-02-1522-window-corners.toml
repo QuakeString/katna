@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Choose your window's corners and border"
+text = """
+With Katna's own title bar, Settings > Experimental now has a Corner
+roundness slider, from square to round, and a Border switch with its own
+opacity. With Custom blur amount on, the Opacity slider now also sets how
+much a blurred window background lets through.
+"""

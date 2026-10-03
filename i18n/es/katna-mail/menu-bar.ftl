@@ -27,6 +27,7 @@ desktop-menu-page-calendar = C_alendario
 desktop-menu-page-contacts = C_ontactos
 desktop-menu-page-tasks = Tarea_s
 desktop-menu-page-notes = _Notas
+desktop-menu-page-files = Arc_hivos
 desktop-menu-next = Conversación _siguiente
 desktop-menu-previous = Conversación _anterior
 desktop-menu-message = _Mensaje

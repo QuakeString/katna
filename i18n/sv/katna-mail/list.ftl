@@ -14,16 +14,13 @@ tab-other = Övrigt
 tab-inbox = Inkorgen
 tab-newsletters = Nyhetsbrev
 tab-notifications = Aviseringar
-tab-new = { $count ->
-    [one] { $count } nytt
-   *[other] { $count } nya
-}
 tab-provider-other = sorteras av Katna
 
 ## Mail list: toolbar
 
 list-select = Markera
 list-refresh = Uppdatera
+list-back-to-top = Tillbaka till toppen
 list-checking = Söker efter ny e-post…
 list-more = Mer
 list-mark-read = Markera som läst
@@ -42,6 +39,7 @@ list-results = Resultat för ”{ $query }”
 list-results-corrected = Visar resultat för ”{ $query }”
 list-search-instead = Sök i stället efter ”{ $query }”
 list-files-more = +{ $count }
+list-replied = Du har svarat
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -390,6 +388,12 @@ menu-add-note = Lägg till en anteckning
 menu-print-all = Skriv ut alla
 menu-new-window = Öppna i nytt fönster
 menu-move-to = Flytta till
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Följ upp
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Mer
 menu-move-to-heading = Flytta till:
 menu-find-from = Hitta e-post från { $name }
 

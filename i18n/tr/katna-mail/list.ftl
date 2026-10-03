@@ -14,13 +14,13 @@ tab-other = Diğer
 tab-inbox = Gelen Kutusu
 tab-newsletters = Bültenler
 tab-notifications = Bildirimler
-tab-new = { $count } yeni
 tab-provider-other = Katna tarafından sıralanır
 
 ## Mail list: toolbar
 
 list-select = Seç
 list-refresh = Yenile
+list-back-to-top = En üste dön
 list-checking = Yeni postalar denetleniyor…
 list-more = Diğer
 list-mark-read = Okundu olarak işaretle
@@ -39,6 +39,7 @@ list-results = “{ $query }” için sonuçlar
 list-results-corrected = “{ $query }” için sonuçlar gösteriliyor
 list-search-instead = Bunun yerine “{ $query }” için ara
 list-files-more = +{ $count }
+list-replied = Yanıtladınız
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,12 @@ menu-add-note = Not ekle
 menu-print-all = Tümünü yazdır
 menu-new-window = Yeni pencerede aç
 menu-move-to = Taşı
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Takip et
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Diğer
 menu-move-to-heading = Şuraya taşı:
 menu-find-from = { $name } tarafından gönderilen e-postaları bul
 

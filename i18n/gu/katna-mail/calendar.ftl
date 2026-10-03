@@ -58,6 +58,12 @@ calendar-account-not-enabled = Katna માટે કૅલેન્ડર ઍ�
 calendar-account-failed = કૅલેન્ડર વાંચી શકાયાં નથી.
 calendar-account-error = કૅલેન્ડર વાંચી શકાયાં નથી: { $reason }
 calendar-account-none = કોઈ કૅલેન્ડર મળ્યું નથી
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = કોઈ કૅલેન્ડર મળ્યું નથી: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } કૅલેન્ડર ફક્ત { $provider } વડે સાઇન ઇન થયેલા Katna ને જ બતાવે છે.
+calendar-account-sign-in-with = { $provider } વડે સાઇન ઇન કરો
 calendar-account-looking = કૅલેન્ડર શોધી રહ્યાં છીએ…
 calendar-account-try-again = ફરી પ્રયાસ કરો
 calendar-account-try-again-tooltip = આ એકાઉન્ટના કૅલેન્ડર હમણાં ફરી તપાસો
@@ -77,8 +83,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = વધુ { $count }
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = પુનરાવર્તન થાય છે
 calendar-join = જોડાઓ
+calendar-join-with = { $service } વડે જોડાઓ
 calendar-email-guests = મહેમાનોને ઇમેઇલ કરો
 calendar-running-late = મોડું થઈ રહ્યું છે
 calendar-late-subject = મોડું થઈ રહ્યું છે: { $title }
@@ -92,6 +100,7 @@ calendar-guest-answers = { $yes } હા, { $maybe } કદાચ, { $no } ન�
 calendar-organizer = આયોજક
 calendar-optional = વૈકલ્પિક
 calendar-open-web = બ્રાઉઝરમાં ખોલો
+calendar-open-mail = મેઇલ ખોલો
 calendar-open-contact = સંપર્ક ખોલો
 calendar-close = બંધ કરો
 
@@ -115,10 +124,71 @@ calendar-discard = ફેરફારો કાઢી નાખો
 calendar-edit = ઇવેન્ટમાં ફેરફાર કરો
 calendar-delete = ઇવેન્ટ ડિલીટ કરો
 calendar-event-details = ઇવેન્ટની વિગતો
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = નવો ઇવેન્ટ
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = દિવસ ખોલો
+calendar-menu-duplicate = ડુપ્લિકેટ કરો
+calendar-menu-color = રંગ
+# The event takes its calendar's color.
+calendar-menu-color-calendar = કૅલેન્ડરનો રંગ
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = એક અઠવાડિયામાં
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = ટમેટું
+calendar-color-flamingo = ફ્લેમિંગો
+calendar-color-tangerine = સંતરું
+calendar-color-banana = કેળું
+calendar-color-sage = સેજ
+calendar-color-basil = તુલસી
+calendar-color-peacock = મોર
+calendar-color-blueberry = બ્લૂબેરી
+calendar-color-lavender = લવંડર
+calendar-color-grape = દ્રાક્ષ
+calendar-color-graphite = ગ્રેફાઇટ
+calendar-menu-only-this = ફક્ત આ બતાવો
+calendar-menu-rename = નામ બદલો
+calendar-menu-remove = સૂચિમાંથી દૂર કરો
+calendar-menu-delete = ડિલીટ કરો
+calendar-menu-new-calendar = નવું કૅલેન્ડર
+calendar-menu-show-all = બધા બતાવો
+calendar-menu-hide-all = બધા છુપાવો
+calendar-menu-account-settings = એકાઉન્ટ સેટિંગ
+calendar-why-main = મુખ્ય કૅલેન્ડર
+calendar-why-last = અહીં ફક્ત એક જ
+calendar-why-owner = ફક્ત માલિક
+calendar-why-contacts = સંપર્કોમાંથી
+calendar-why-unreached = પહોંચી શકાયું નથી
+calendar-name-placeholder = કૅલેન્ડરનું નામ
+calendar-toast-added = “{ $name }” ઉમેર્યું
+calendar-toast-renamed = કૅલેન્ડરનું નામ બદલ્યું
+calendar-toast-recolored = કૅલેન્ડરનો રંગ બદલ્યો
+calendar-toast-deleted = “{ $name }” ડિલીટ કર્યું
+calendar-toast-removed = “{ $name }” તમારી સૂચિમાંથી દૂર કર્યું
+calendar-edit-failed = કૅલેન્ડર બદલાયું નથી: { $reason }
+calendar-delete-title = “{ $name }” ડિલીટ કરીએ?
+calendar-delete-confirm = ડિલીટ કરો
+calendar-deleting = ડિલીટ થઈ રહ્યું છે…
+calendar-delete-heading = ડિલીટ થશે:
+calendar-delete-events = કૅલેન્ડર અને તેના બધા ઇવેન્ટ
+calendar-delete-shared = જેમની સાથે તે શેર કરેલું છે તે બધા માટે
+calendar-delete-server = તે ફક્ત Katna માં જ નહીં, મેઇલ સેવા પર { $account } માંથી ડિલીટ થાય છે.
+calendar-delete-local = તે આ કમ્પ્યુટર પરથી ડિલીટ થાય છે.
+calendar-remove-title = “{ $name }” તમારી સૂચિમાંથી દૂર કરીએ?
+calendar-remove-confirm = દૂર કરો
+calendar-removing = દૂર થઈ રહ્યું છે…
+calendar-remove-heading = શું બદલાશે:
+calendar-remove-events = તમને તેના ઇવેન્ટ અહીં અને તમારી અન્ય ઍપમાં દેખાતા બંધ થશે
+calendar-remove-server = કૅલેન્ડર તેના માલિક પાસે રહે છે, જે તેને ફરીથી તમારી સાથે શેર કરી શકે છે.
 calendar-kind-event = ઇવેન્ટ
+calendar-kind-task = કાર્ય
 calendar-kind-focus = ફોકસ સમય
 calendar-kind-out-of-office = ઑફિસની બહાર
 calendar-kind-working-location = કામ કરવાનું સ્થળ
+calendar-task-added = કાર્ય ઉમેર્યું
+calendar-task-added-to = { $list } માં કાર્ય ઉમેર્યું
+calendar-task-list-local = આ કમ્પ્યૂટર પર
 calendar-working-home = ઘર
 calendar-busy = વ્યસ્ત
 calendar-free = ખાલી

@@ -39,6 +39,12 @@ contacts-account-failed = A kò lè ka àwọn olùbásọ̀rọ̀.
 # $reason is the server's own words, in English.
 contacts-account-error = A kò lè ka àwọn olùbásọ̀rọ̀: { $reason }
 contacts-account-none = A kò rí ìwé àdírẹ́sì kankan
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = A kò rí ìwé àdírẹ́sì kankan: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } máa ń fi àwọn olùbásọ̀rọ̀ hàn fún Katna tí ó wọlé pẹ̀lú { $provider } nìkan.
+contacts-account-sign-in-with = Wọlé pẹ̀lú { $provider }
 contacts-account-looking = À ń wá àwọn olùbásọ̀rọ̀…
 contacts-account-try-again = Gbìyànjú lẹ́ẹ̀kan sí i
 contacts-account-try-again-tooltip = Ṣàyẹ̀wò àwọn olùbásọ̀rọ̀ àkáǹtì yìí lẹ́ẹ̀kan sí i báyìí
@@ -82,7 +88,7 @@ contacts-print-none = Kò sí olùbásọ̀rọ̀ láti tẹ̀jáde
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Ọjọ́ ìbí: { $day }
 contacts-print-nickname = Orúkọ ìnagijẹ: { $name }
-contacts-create = Ṣẹ̀dá olùbásọ̀rọ̀
+contacts-create = Olùbásọ̀rọ̀ tuntun
 
 ## Search and the list
 

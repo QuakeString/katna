@@ -17,6 +17,7 @@ pub(super) use line_tasks::note_of_task;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 
 use gpui::{
@@ -34,7 +35,7 @@ use super::MailWindow;
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, icon_button, icon_button_colored, placeholder, tip};
+use crate::widgets::{ScaledEdge, elevation, icon, icon_button, icon_button_colored, tip};
 
 /// A card's width on the board, as Keep's.
 const CARD_WIDTH: f32 = 240.0;
@@ -180,10 +181,19 @@ impl Render for NoDragImage {
     }
 }
 
+/// Notes opened so far, numbering each opening.
+static OPENINGS: AtomicUsize = AtomicUsize::new(0);
+
 /// The note open over the board.
 struct Editor {
     /// 0 until the new note is first saved.
     id: i64,
+    /// Which opening this is, so its fade runs once: the first save
+    /// gives the note its id without fading it in again.
+    opening: usize,
+    /// Fades in over the page; not in place of an event's card, which
+    /// would leave a frame with neither.
+    fade: bool,
     title: Entity<TextInput>,
     body: Entity<RichEditor>,
     color: i64,
@@ -459,6 +469,8 @@ impl MailWindow {
             let mut input = TextInput::new(tr!("notes-title"), cx);
             input.set_accent(accent);
             input.set_text(title_text, cx);
+            // A long title shows its start; typing goes to the text.
+            input.caret_to_start(cx);
             input
         });
         let palette = super::compose::palette(&self.theme(window));
@@ -500,6 +512,8 @@ impl MailWindow {
         let view = self.notes.as_ref().map_or(NotesView::Notes, |p| p.view);
         let editor = Editor {
             id: note.map_or(0, |n| n.id),
+            opening: OPENINGS.fetch_add(1, Ordering::Relaxed),
+            fade: true,
             title,
             body,
             color: note.map_or(0, |n| n.color),
@@ -919,7 +933,7 @@ impl MailWindow {
             .gap(px(8.0))
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.divider }))
+            .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.outline }))
             .bg(rgba(bg.unwrap_or(th.surface)))
             .cursor_pointer()
             .hover(|s| s.shadow(elevation(th, 1.0)))
@@ -1037,7 +1051,7 @@ impl MailWindow {
     ) -> AnyElement {
         self.notes_page(cx);
         let Some(page) = &self.notes else {
-            return placeholder(&tr!("notes-loading"), th);
+            return self.placeholder(tr!("notes-loading"), th);
         };
         let view = page.view;
         let label = page.label.clone();
@@ -1055,7 +1069,6 @@ impl MailWindow {
             .flex_none()
             .w(px(SIDE_WIDTH))
             .h_full()
-            .pt(px(8.0))
             .flex()
             .flex_col()
             .children(NotesView::ALL.into_iter().flat_map(|v| {
@@ -1116,8 +1129,8 @@ impl MailWindow {
         let view = page.view;
         let label = page.label.clone();
         let notes = match &page.notes {
-            None => return placeholder(&tr!("notes-loading"), th),
-            Some(Err(err)) => return placeholder(err, th),
+            None => return self.placeholder(tr!("notes-loading"), th),
+            Some(Err(err)) => return self.placeholder(err.clone(), th),
             Some(Ok(notes)) => notes.clone(),
         };
         // A new note being written in the bar's place joins the board when
@@ -1482,6 +1495,11 @@ impl MailWindow {
         self.send(Command::OrderNotes(drag.order), None, None, false, cx);
     }
 
+    /// The left bar's New note: a new note over the page.
+    pub(super) fn new_note(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        self.open_note(None, false, None, window, cx);
+    }
+
     /// Keep's "Take a note…" bar, with a new list at its right.
     /// Whether the open note is a new one from the "Take a note" bar, which
     /// opens in the bar's place rather than over the page.
@@ -1522,7 +1540,7 @@ impl MailWindow {
                 .rounded(px(8.0))
                 .bg(rgba(th.surface))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .shadow(elevation(th, 1.0))
                 .cursor_text()
                 .on_click(
@@ -1624,10 +1642,10 @@ impl MailWindow {
                                 item.body = toggle_line(&item.body, ix);
                                 this.change_note(item, cx)
                             }))
-                            .child(icon(
-                                if done { "checkbox-checked" } else { "checkbox" },
-                                th.text_dim,
-                                18.0,
+                            .child(crate::widgets::checkbox(
+                                ("note-check-box", ix),
+                                crate::widgets::Check::from(done),
+                                th,
                             )),
                     )
                     .child(div().flex_1().min_w_0().child(text))
@@ -1733,7 +1751,7 @@ impl MailWindow {
             .flex_col()
             .rounded(px(8.0))
             .border_1()
-            .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.divider }))
+            .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.outline }))
             .bg(rgba(bg.unwrap_or(th.surface)))
             .text_color(rgba(th.text))
             .cursor_default()
@@ -1856,6 +1874,7 @@ impl MailWindow {
         let bg = note_color(editor.color, th).unwrap_or(th.surface);
         let vh = unpx(window.viewport_size().height);
         let id = editor.id;
+        let (opening, fades) = (editor.opening, editor.fade);
         let pinned = editor.pinned;
         let archived = editor.archived;
         let item = editor.item(cx);
@@ -1903,7 +1922,7 @@ impl MailWindow {
                                 .items_center()
                                 .rounded_full()
                                 .border_1()
-                                .border_color(rgba(if on { th.accent } else { th.divider }))
+                                .border_color(rgba(if on { th.accent } else { th.outline }))
                                 .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
                                 .text_size(px(12.0))
                                 .text_color(rgba(if on { th.accent } else { th.text_dim }))
@@ -1967,7 +1986,7 @@ impl MailWindow {
                         .justify_center()
                         .rounded_full()
                         .bg(rgba(fill))
-                        .border_2()
+                        .border_px(2.0)
                         .border_color(rgba(if color == current {
                             th.accent
                         } else if ix == 0 {
@@ -2273,10 +2292,10 @@ impl MailWindow {
                 .on_click(cx.listener(|this, _, _, cx| this.close_note(cx)))
                 .child(card)
                 .with_animation(
-                    ("note-editor-in", id as usize),
-                    gpui::Animation::new(Duration::from_millis(180))
+                    ("note-editor-in", opening),
+                    gpui::Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
                         .with_easing(gpui::ease_out_quint()),
-                    |el, t| el.opacity(t),
+                    move |el, t| el.opacity(if fades { t } else { 1.0 }),
                 )
                 .into_any_element(),
         )

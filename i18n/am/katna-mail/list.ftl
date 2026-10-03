@@ -14,13 +14,13 @@ tab-other = ሌሎች
 tab-inbox = ገቢ መልዕክት ሳጥን
 tab-newsletters = ጋዜጣዎች
 tab-notifications = ማሳወቂያዎች
-tab-new = { $count } አዲስ
 tab-provider-other = በKatna የተደረደሩ
 
 ## Mail list: toolbar
 
 list-select = ምረጥ
 list-refresh = አድስ
+list-back-to-top = ወደ ላይ ተመለስ
 list-checking = አዲስ ደብዳቤ በመፈተሽ ላይ…
 list-more = ተጨማሪ
 list-mark-read = እንደተነበበ ምልክት አድርግ
@@ -39,6 +39,7 @@ list-results = የ«{ $query }» ውጤቶች
 list-results-corrected = የ«{ $query }» ውጤቶችን በማሳየት ላይ
 list-search-instead = በምትኩ «{ $query }»ን ፈልግ
 list-files-more = +{ $count }
+list-replied = መልሰዋል
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,12 @@ menu-add-note = ማስታወሻ አክል
 menu-print-all = ሁሉንም አትም
 menu-new-window = በአዲስ መስኮት ክፈት
 menu-move-to = ውሰድ ወደ
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = ክትትል
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = ተጨማሪ
 menu-move-to-heading = ውሰድ ወደ፦
 menu-find-from = ከ{ $name } የመጡ ኢሜይሎችን ፈልግ
 

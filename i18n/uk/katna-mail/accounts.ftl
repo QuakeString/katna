@@ -14,6 +14,19 @@ accounts-unified-switch-detail = «Усі облікові записи» сто
 accounts-row = Облікові записи
 accounts-row-detail = Панель папок і меню облікових записів показують облікові записи в цьому порядку; перший — типовий. Вилучення облікового запису видаляє копію його пошти, яку Katna зберігає на цьому комп’ютері. Пошта залишається на сервері.
 accounts-none = Облікових записів ще немає.
+accounts-pop3-row = Пошта на сервері
+accounts-pop3-row-detail = Облікові записи POP3 завантажують пошту на цей комп’ютер. Виберіть, що потім буде з копією на сервері.
+accounts-pop3-with-katna = Зберігати, доки я не видалю її в Katna
+accounts-pop3-at-once = Видаляти одразу після завантаження
+accounts-pop3-after-days = { $count ->
+    [one] Видаляти через { $count } день
+    [few] Видаляти через { $count } дні
+    [many] Видаляти через { $count } днів
+   *[other] Видаляти через { $count } дня
+}
+accounts-pop3-never = Ніколи не видаляти
+accounts-pop3-days-less = Менше днів
+accounts-pop3-days-more = Більше днів
 accounts-kind-imported = Імпортовано
 accounts-picture-reset = Використати зображення системи
 accounts-picture-change = Змінити зображення

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Copy the version in one click"
+text = """
+Rest the pointer on the version in About, What's new or Settings and a
+small copy button appears beside it. It copies the version, when it was
+built and your system, ready to paste into a bug report.
+"""

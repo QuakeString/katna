@@ -14,13 +14,13 @@ tab-other = Iba pa
 tab-inbox = Inbox
 tab-newsletters = Mga Newsletter
 tab-notifications = Mga Notification
-tab-new = { $count } bago
 tab-provider-other = inayos ng Katna
 
 ## Mail list: toolbar
 
 list-select = Piliin
 list-refresh = I-refresh
+list-back-to-top = Bumalik sa itaas
 list-checking = Tinitingnan kung may bagong mail…
 list-more = Higit pa
 list-mark-read = Markahan bilang nabasa na
@@ -39,6 +39,7 @@ list-results = Mga resulta para sa “{ $query }”
 list-results-corrected = Ipinapakita ang mga resulta para sa “{ $query }”
 list-search-instead = Hanapin na lang ang “{ $query }”
 list-files-more = +{ $count }
+list-replied = Sumagot ka na
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,8 @@ menu-add-note = Magdagdag ng tala
 menu-print-all = I-print lahat
 menu-new-window = Buksan sa bagong window
 menu-move-to = Ilipat sa
+menu-follow-up = I-follow up
+menu-more = Iba pa
 menu-move-to-heading = Ilipat sa:
 menu-find-from = Hanapin ang mga email mula kay { $name }
 

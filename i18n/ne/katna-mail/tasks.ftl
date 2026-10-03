@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = बनाउनुहोस्
+tasks-create = नयाँ कार्य
 tasks-all = सबै कार्य
 tasks-today = आज
 tasks-starred = तारा लगाइएको
@@ -24,6 +24,12 @@ tasks-account-failed = कार्य सूचीहरू पढ्न सक
 # $reason is the server's own words, in English.
 tasks-account-error = कार्य सूचीहरू पढ्न सकिएन: { $reason }
 tasks-account-none = कुनै कार्य सूची भेटिएन
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = कुनै कार्य सूची भेटिएन: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } ले { $provider } बाट साइन इन गरिएको Katna लाई मात्र कार्यहरू देखाउँछ।
+tasks-account-sign-in-with = { $provider } बाट साइन इन गर्नुहोस्
 tasks-account-looking = कार्य सूचीहरू खोज्दै…
 tasks-account-try-again = फेरि प्रयास गर्नुहोस्
 tasks-account-try-again-tooltip = यो खाताका कार्यहरू अहिले फेरि जाँच गर्नुहोस्
@@ -108,4 +114,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = त्यो मेल अब यहाँ छैन।
 tasks-toast-list-deleted = सूची मेटियो
 tasks-toast-moved = { $list } मा सारियो
+# A task dragged to another place in its own list.
+tasks-toast-placed = कार्य सारियो
 tasks-toast-rescheduled = कार्यको समय परिवर्तन गरियो

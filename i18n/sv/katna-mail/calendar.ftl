@@ -58,6 +58,12 @@ calendar-account-not-enabled = Kalenderåtkomst för Katna är inte påslagen ä
 calendar-account-failed = Det gick inte att läsa kalendrarna.
 calendar-account-error = Det gick inte att läsa kalendrarna: { $reason }
 calendar-account-none = Inga kalendrar hittades
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Inga kalendrar hittades: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } visar kalendrar bara för Katna när den är inloggad med { $provider }.
+calendar-account-sign-in-with = Logga in med { $provider }
 calendar-account-looking = Letar efter kalendrar…
 calendar-account-try-again = Försök igen
 calendar-account-try-again-tooltip = Kontrollera det här kontots kalendrar igen nu
@@ -77,8 +83,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = { $count } till
+calendar-peek-day = { $weekday } { $day }
 calendar-repeats = Återkommer
 calendar-join = Anslut
+calendar-join-with = Anslut med { $service }
 calendar-email-guests = Skicka e-post till gäster
 calendar-running-late = Jag är försenad
 calendar-late-subject = Försenad: { $title }
@@ -92,6 +100,7 @@ calendar-guest-answers = { $yes } ja, { $maybe } kanske, { $no } nej, { $waiting
 calendar-organizer = Arrangör
 calendar-optional = Valfri
 calendar-open-web = Öppna i webbläsaren
+calendar-open-mail = Öppna e-postmeddelandet
 calendar-open-contact = Öppna kontakt
 calendar-close = Stäng
 
@@ -115,10 +124,71 @@ calendar-discard = Ignorera ändringar
 calendar-edit = Redigera händelse
 calendar-delete = Radera händelse
 calendar-event-details = Händelseinformation
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Ny händelse
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Öppna dag
+calendar-menu-duplicate = Duplicera
+calendar-menu-color = Färg
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Kalenderfärg
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Om en vecka
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tomat
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Mandarin
+calendar-color-banana = Banan
+calendar-color-sage = Salvia
+calendar-color-basil = Basilika
+calendar-color-peacock = Påfågel
+calendar-color-blueberry = Blåbär
+calendar-color-lavender = Lavendel
+calendar-color-grape = Vindruva
+calendar-color-graphite = Grafit
+calendar-menu-only-this = Visa bara den här
+calendar-menu-rename = Byt namn
+calendar-menu-remove = Ta bort från listan
+calendar-menu-delete = Radera
+calendar-menu-new-calendar = Ny kalender
+calendar-menu-show-all = Visa alla
+calendar-menu-hide-all = Dölj alla
+calendar-menu-account-settings = Kontoinställningar
+calendar-why-main = Huvudkalender
+calendar-why-last = Den enda här
+calendar-why-owner = Bara ägaren
+calendar-why-contacts = Från Kontakter
+calendar-why-unreached = Inte nådd
+calendar-name-placeholder = Kalenderns namn
+calendar-toast-added = ”{ $name }” har lagts till
+calendar-toast-renamed = Kalendern har bytt namn
+calendar-toast-recolored = Kalenderns färg har ändrats
+calendar-toast-deleted = ”{ $name }” har raderats
+calendar-toast-removed = ”{ $name }” har tagits bort från din lista
+calendar-edit-failed = Kalendern ändrades inte: { $reason }
+calendar-delete-title = Radera ”{ $name }”?
+calendar-delete-confirm = Radera
+calendar-deleting = Raderar…
+calendar-delete-heading = Raderas:
+calendar-delete-events = Kalendern och alla dess händelser
+calendar-delete-shared = För alla den delas med
+calendar-delete-server = Den raderas från { $account } hos e-posttjänsten, inte bara i Katna.
+calendar-delete-local = Den raderas från den här datorn.
+calendar-remove-title = Ta bort ”{ $name }” från din lista?
+calendar-remove-confirm = Ta bort
+calendar-removing = Tar bort…
+calendar-remove-heading = Det här ändras:
+calendar-remove-events = Du slutar se dess händelser, här och i dina andra appar
+calendar-remove-server = Kalendern stannar hos ägaren, som kan dela den med dig igen.
 calendar-kind-event = Händelse
+calendar-kind-task = Uppgift
 calendar-kind-focus = Fokustid
 calendar-kind-out-of-office = Frånvaro
 calendar-kind-working-location = Arbetsplats
+calendar-task-added = Uppgiften har lagts till
+calendar-task-added-to = Uppgiften har lagts till i { $list }
+calendar-task-list-local = På den här datorn
 calendar-working-home = Hemma
 calendar-busy = Upptagen
 calendar-free = Ledig

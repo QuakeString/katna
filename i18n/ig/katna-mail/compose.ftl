@@ -46,6 +46,7 @@ compose-sent-archived = Ezigara ma chekwaa
 compose-sent = Ezigara ozi
 compose-discarded = Atụfuru ndebiri
 compose-draft-saved = Echekwala ndebiri
+compose-draft-saving = Na-echekwa…
 compose-draft-failed = Enweghị ike ịchekwa ndebiri ahụ: { $error }
 compose-draft-not-opened = Enweghị ike imeghe ndebiri ahụ.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = Enweghị ike imeghe ndebiri ahụ.
 compose-picker-insert = Tinye
 compose-picker-attach = Gbakwunye
 compose-file-too-large = { $name } buru oke ibu: ozi nwere ike ibu ruo { $limit }.
+compose-forward-files-missing = E budatabeghị faịlụ nke ozi e zigara, ya mere a gbakwunyeghị ha.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Wepụ mgbakwunye
+compose-attachment-open-tip = Mepee ya iji lelee ya
 compose-attachments-total = faịlụ { $count }, { $size }
 compose-drive-note = { $name } karịrị { $limit }, ya mere ọ na-aga na Google Drive gị, ozi ahụ ga-ebukwa njikọ.
 compose-drive-tip = Na Google Drive gị; ozi ahụ na-ebu njikọ
@@ -74,6 +77,7 @@ compose-drive-share-link = Kekọrịta site na njikọ
 compose-drive-send-without = Zipu ma ekekọrịtaghị
 compose-drive-share-cancel = Kagbuo
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } karịrị { $limit }, ya mere ọ na-aga na OneDrive gị, ozi ahụ ga-ebukwa njikọ.
 compose-onedrive-tip = Na OneDrive gị; ozi ahụ na-ebu njikọ
 compose-onedrive-allow = Kwe OneDrive
@@ -84,6 +88,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive enweghị ike ikekọrịta faịlụ ndị ahụ na { $addresses }. Onye ọ bụla nwere njikọ nwere ike imepe ha kama.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Dobe faịlụ ebe a
 compose-drop-here = Dobe ebe a
 compose-paste-keep-formatting = Debe nhazi

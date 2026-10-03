@@ -475,6 +475,7 @@ impl<'a> Flow<'a> {
     /// A table row: cells side by side, each as wide as it asks when the
     /// row has room, the rest sharing what is left.
     fn row(&mut self, cells: &[Block], x: f32, y: f32, w: f32, ink: Ink) -> f32 {
+        // A cell is never narrower than its longest word.
         let bases: Vec<Option<f32>> = cells
             .iter()
             .map(|cell| match cell {
@@ -482,7 +483,8 @@ impl<'a> Flow<'a> {
                     Some(Length::Px(v)) => Some(v * PX),
                     Some(Length::Percent(p)) => Some(w * p.clamp(0.0, 1.0)),
                     None => None,
-                },
+                }
+                .map(|basis| basis.max(b.style.min_width * PX)),
                 _ => None,
             })
             .collect();

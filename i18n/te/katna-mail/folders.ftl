@@ -9,6 +9,17 @@ nav-folders = ఫోల్డర్‌లు
 nav-label-new = కొత్త లేబుల్‌ను క్రియేట్ చేయండి
 nav-folder-new = కొత్త ఫోల్డర్‌ను క్రియేట్ చేయండి
 nav-menu-check-mail = కొత్త మెయిల్‌ను చెక్ చేయండి
+nav-menu-check-inbox = ఈ ఇన్‌బాక్స్‌ను చెక్ చేయండి
+nav-menu-sign-in-again = మళ్లీ సైన్ ఇన్ చేయండి
+nav-menu-new-mail = ఈ ఖాతా నుండి కొత్త మెయిల్
+nav-menu-account-settings = ఖాతా సెట్టింగ్‌లు
+nav-account-checked = సింక్‌లో ఉంది · { $ago } చెక్ చేయబడింది
+nav-account-in-sync = సింక్‌లో ఉంది
+nav-account-connecting = కనెక్ట్ చేస్తోంది…
+nav-account-offline = ఆఫ్‌లైన్, మళ్లీ ప్రయత్నిస్తోంది
+nav-account-signed-out = { $provider } సైన్ ఇన్ గడువు ముగిసింది
+nav-account-password-refused = పాస్‌వర్డ్ తిరస్కరించబడింది
+nav-account-storage = { $total }లో { $used } ఉపయోగించబడింది
 nav-menu-new-subfolder = లోపల కొత్త ఫోల్డర్
 nav-menu-new-sublabel = లోపల కొత్త లేబుల్
 nav-menu-empty-trash = ట్రాష్‌ను ఖాళీ చేయండి
@@ -16,10 +27,6 @@ nav-account-unnamed = ఖాతా { $number }
 nav-all-accounts = అన్ని ఖాతాలు
 nav-expand = ఫోల్డర్‌లను చూపండి
 nav-collapse = ఫోల్డర్‌లను దాచండి
-nav-tab-new = { $count ->
-    [one] { $count } కొత్తది
-   *[other] { $count } కొత్తవి
-}
 storage-used = { $total }లో { $percent }% ఉపయోగించబడింది
 storage-used-detail = { $address }: { $total }లో { $used } ఉపయోగించబడింది
 

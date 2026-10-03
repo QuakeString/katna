@@ -66,6 +66,7 @@ about-credit-resvg = SVG ছবি
 about-credit-jiff = তাৰিখ আৰু সময় অঞ্চল
 about-credit-spellbook = বানান পৰীক্ষা, Helix এডিটৰৰ পৰা
 about-credit-smol = একেলগে বহুতো কাম কৰা
+about-credit-color-schemes = বিল্ট-ইন ৰঙৰ আঁচনিসমূহৰ পেলেট
 about-all-libraries = Katnaই ব্যৱহাৰ কৰা সকলো লাইব্ৰেৰী ({ $count })
 about-library-authors = নিৰ্মাতা: { $authors }
 about-license = Katna GNU GPL, সংস্কৰণ ৩ বা পিছৰ সংস্কৰণৰ অধীনত এটা মুক্ত ছফ্টৱেৰ।
@@ -123,6 +124,21 @@ onboarding-density-default = ডিফ'ল্ট
 onboarding-density-compact = কম্পেক্ট
 onboarding-continue = আগবাঢ়ক
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna একাউণ্টৰ সৈতে অধিক পাওক
+onboarding-katna-lead = এইটো বৈকল্পিক। ই Katnaৰ অনলাইন সুবিধাসমূহ অন কৰে, আৰু আপুনি পিছত ছেটিংছ > ছাবস্ক্ৰিপশ্বনত এটা বনাব পাৰে।
+onboarding-katna-receipts-title = পঢ়াৰ ৰচিদ
+onboarding-katna-receipts-text = আপুনি পঠোৱা মেইল লোকে কেতিয়া খোলে চাওক।
+onboarding-katna-links-title = লিংক ট্ৰেকিং
+onboarding-katna-links-text = আপোনাৰ মেইলৰ কোনবোৰ লিংকত ক্লিক কৰা হয় চাওক।
+onboarding-katna-activity-title = কাৰ্যকলাপ
+onboarding-katna-activity-text = আপুনি পঠোৱা সকলোৰে খোলা আৰু ক্লিক, এক ঠাইতে।
+onboarding-katna-translate-title = স্বয়ংক্ৰিয় অনুবাদ
+onboarding-katna-translate-text = আন ভাষাত লিখা মেইল আপোনাৰ নিজৰ ভাষাত পঢ়ক।
+onboarding-katna-private = ইয়াৰ নিজৰ পাছৱৰ্ড আছে। আপোনাৰ মেইলৰ লগইন কেতিয়াও এই কম্পিউটাৰৰ বাহিৰলৈ নাযায়।
+
 ## First run: done
 
 onboarding-ready-title = সকলো সাজু
@@ -166,7 +182,7 @@ tour-search-text = সন্ধান অফলাইনতো কাম কৰ�
 tour-menu-title = ফ'ল্ডাৰবোৰ দেখুৱাওক বা লুকুৱাওক
 tour-menu-text = এই বুটামটোৱে ফ'ল্ডাৰৰ তালিকা জপাই ৰাখে। লুকুৱাই থোৱা অৱস্থাত, ফ'ল্ডাৰবোৰ চাবলৈ বাওঁফালৰ মেইলৰ ওপৰত পইণ্টাৰ ৰাখক।
 tour-apps-title = আপোনাৰ এপবোৰ
-tour-apps-text = মেইল এতিয়া ইয়াতে থাকে। কেলেণ্ডাৰ, সম্পৰ্কসমূহ, কাৰ্যসমূহ, টোকাসমূহ আৰু ফীডসমূহ এই বাৰত ইয়াৰ লগত যোগ দিব।
+tour-apps-text = মেইল ইয়াতে থাকে, কেলেণ্ডাৰ, সম্পৰ্কসমূহ, কাৰ্যসমূহ, টোকাসমূহ আৰু ফাইলৰ কাষত।
 tour-tabs-title = ইনবক্স টেব
 tour-tabs-text = নতুন মেইল মুখ্য, প্ৰচাৰ, সামাজিক, আপডেট আৰু ফ'ৰামত ভগোৱা হয়। দ্ৰুত ছেটিংছত টেববোৰ অফ কৰিব পাৰে।
 tour-list-title = আপোনাৰ বাৰ্তাবোৰ
@@ -197,6 +213,9 @@ sign-in-again-button = ছাইন ইন কৰক
 sign-in-again-tooltip = আপোনাৰ ব্ৰাউজাৰত { $provider }ৰ ছাইন-ইন পৃষ্ঠাখন খোলক
 sign-in-again-waiting = আপোনাৰ ব্ৰাউজাৰলৈ অপেক্ষা কৰি থকা হৈছে…
 sign-in-again-close = বন্ধ কৰক
+google-api-off = Katnaৰ Google Cloud প্ৰজেক্টত { $api } অফ কৰা আছে।
+google-api-turn-on = অন কৰক
+google-api-turn-on-tooltip = { $api } অন কৰিবলৈ Google Cloud খোলক, তাৰ পিছত পুনৰ চেষ্টা কৰক টিপক
 sign-in-again-done = { $address }ত পুনৰ ছাইন ইন কৰা হ'ল। আপোনাৰ মেইল অনা হৈছে…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

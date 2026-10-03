@@ -1,0 +1,605 @@
+name: Linux packages
+
+# Builds Katna for Fedora (RPM), Nix, AppImage, Snap, Flatpak and as a
+# plain tarball, installs each on its own platform and tries it there
+# (ci/linux-package-test.sh). On main, once CI passed, the files replace
+# those on the `linux-latest` pre-release (packaging/README.md). Nothing
+# here gates pull requests, main or the Arch package.
+on:
+  push:
+    branches: [main]
+    # As for the other packages: docs-only pushes change nothing built.
+    paths:
+      - "**"
+      - "!docs/**"
+      - "docs/credits.json"
+  pull_request:
+    paths:
+      - "packaging/**"
+      - "flake.nix"
+      - "flake.lock"
+      - "ci/linux-package-test.sh"
+      - ".github/workflows/linux-packages.yml"
+  workflow_dispatch:
+
+# As for the Arch package: on main a running build finishes and only the
+# newest push waits; a newer push to a pull request cancels its older run.
+concurrency:
+  group: linux-packages-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  # One build for the AppImage, the Snap, the Flatpak and the tarball, on
+  # an older glibc (Ubuntu 22.04's 2.35) so it runs on older systems too.
+  portable:
+    runs-on: ubuntu-latest
+    container: ubuntu:22.04
+    timeout-minutes: 120
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Install build tools
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential ca-certificates curl git pkg-config gettext \
+            libxkbcommon-dev libxkbcommon-x11-dev libfontconfig-dev libfreetype-dev \
+            libxcb1-dev
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # The version counts the commits.
+          fetch-depth: 0
+      - name: Install Rust
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          "$HOME/.cargo/bin/rustup" toolchain install
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          key: linux-portable
+      - id: version
+        run: echo "version=$(packaging/linux/version.sh)" >> "$GITHUB_OUTPUT"
+      - name: Build
+        env:
+          KATNA_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.KATNA_GOOGLE_OAUTH_CLIENT_ID }}
+          KATNA_GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_GOOGLE_OAUTH_CLIENT_SECRET }}
+          KATNA_MICROSOFT_OAUTH_CLIENT_ID: ${{ secrets.KATNA_MICROSOFT_OAUTH_CLIENT_ID }}
+          KATNA_ZOHO_OAUTH_CLIENT_ID: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_ID }}
+          KATNA_ZOHO_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_SECRET }}
+        run: |
+          export KATNA_VERSION="${{ steps.version.outputs.version }}"
+          # The tarball, AppImage, Flatpak and Snap all carry this build;
+          # each finds out at run time which it is
+          # (katna_core::update::Package).
+          export KATNA_PACKAGE=linux
+          KATNA_BUILT="$(git log -1 --format=%ct)"
+          KATNA_TITLE="$(git log -1 --format=%s)"
+          export KATNA_BUILT KATNA_TITLE
+          # Two builds, as in the PKGBUILD: katna-daemon and katnactl
+          # without the features GPUI turns on in shared crates.
+          cargo build --locked --release --package katna-mail
+          cargo build --locked --release --package katna-daemon --package katnactl
+          test "$(target/release/katna-mail --version)" = "katna-mail $KATNA_VERSION"
+          # For the update manifest the publish job writes.
+          mkdir -p update-info
+          target/release/katna-mail --highlights > update-info/highlights.json
+          ls -l target/release/katna-mail target/release/katna-daemon target/release/katnactl
+      - name: Make the tarball
+        run: packaging/linux/make-tarball.sh target/release out
+      # Made-up mail for every package's screenshot.
+      - name: Make the demo data
+        run: |
+          cargo build --locked --release --package katna-search-cli
+          ci/linux-demo-data.sh target/release demo/demo-data.tar.gz
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-tarball
+          path: out/katna-linux-x86_64.tar.gz
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-update-info
+          path: update-info/highlights.json
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-demo-data
+          path: demo/demo-data.tar.gz
+          if-no-files-found: error
+
+  # The plain download, installed with its install.sh on Debian.
+  tarball:
+    needs: portable
+    runs-on: ubuntu-latest
+    container: debian:trixie
+    steps:
+      - name: Install a desktop's libraries and the test tools
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            ca-certificates dbus-daemon dbus-user-session gnome-keyring imagemagick x11-utils xvfb \
+            libxkbcommon-x11-0 libfontconfig1 libfreetype6 libwayland-client0 \
+            libvulkan1 mesa-vulkan-drivers libegl1 libegl-mesa0 fonts-dejavu-core procps
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-tarball
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
+      - name: Install it for a user and try it
+        run: |
+          useradd --create-home tester
+          cp katna-linux-x86_64.tar.gz demo-data.tar.gz ci/linux-package-test.sh /home/tester/
+          chown tester: /home/tester/*
+          runuser -u tester -- sh -euc '
+            cd ~
+            tar xzf katna-linux-x86_64.tar.gz
+            katna-linux-x86_64/install.sh
+            test -x ~/.local/bin/katna-mail
+            grep -q "^Exec=$HOME/.local/bin/katna-daemon" ~/.local/share/dbus-1/services/*.service
+            grep -q "^ExecStart=$HOME/.local/bin/katna-daemon" ~/.local/share/systemd/user/*.service
+            PATH=$HOME/.local/bin:$PATH KATNA_DEMO=~/demo-data.tar.gz \
+              ./linux-package-test.sh ~/tarball-debian.png
+            katna-linux-x86_64/install.sh --uninstall
+            test ! -e ~/.local/bin/katna-mail
+          '
+          mkdir shots && cp /home/tester/tarball-debian.png shots/
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: screenshot-tarball
+          path: shots/
+
+  appimage:
+    needs: portable
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-tarball
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
+      - name: Install appimagetool and the test tools
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            libfuse2t64 desktop-file-utils dbus-daemon gnome-keyring imagemagick x11-utils xvfb \
+            libxkbcommon-x11-0 libvulkan1 mesa-vulkan-drivers
+          curl -fsSL -o appimagetool \
+            https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool
+          sudo mv appimagetool /usr/local/bin/
+      - name: Make the AppImage
+        run: |
+          tar xzf katna-linux-x86_64.tar.gz
+          packaging/appimage/make-appimage.sh katna-linux-x86_64/bin out
+          ls -l out
+      # Ubuntu, not the system it was built on, with FUSE as on a desktop.
+      - name: Try it
+        run: |
+          mkdir -p ~/Applications
+          cp out/Katna-x86_64.AppImage ~/Applications/
+          app=~/Applications/Katna-x86_64.AppImage
+          "$app" katnactl --help > /dev/null
+          mkdir shots
+          KATNACTL="$app katnactl" KATNA_MAIL="$app" KATNA_DEMO=$PWD/demo-data.tar.gz \
+            ci/linux-package-test.sh shots/appimage-ubuntu.png
+          # D-Bus found katna-daemon through the file the AppImage wrote.
+          grep -q "Katna-x86_64.AppImage\" katna-daemon" ~/.local/share/dbus-1/services/*.service
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: appimage
+          path: out/Katna-x86_64.AppImage
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: screenshot-appimage
+          path: shots/
+
+  flatpak:
+    needs: portable
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-tarball
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
+      - name: Install Flatpak and the test tools
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            flatpak flatpak-builder dbus-daemon gnome-keyring imagemagick librsvg2-common \
+            x11-utils xvfb
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+      - name: Build the Flatpak
+        run: |
+          cp katna-linux-x86_64.tar.gz packaging/flatpak/
+          manifest=$(ls packaging/flatpak/*.yml)
+          id=$(basename "$manifest" .yml)
+          echo "FLATPAK_ID=$id" >> "$GITHUB_ENV"
+          flatpak-builder --user --install-deps-from=flathub --disable-rofiles-fuse \
+            --repo=repo build "$manifest"
+          mkdir out
+          flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo \
+            repo out/katna-x86_64.flatpak "$id"
+          ls -l out
+      - name: Install the bundle and try it
+        run: |
+          flatpak install --user -y --noninteractive out/katna-x86_64.flatpak
+          flatpak info --user "$FLATPAK_ID"
+          # Where Flatpak exports the service's D-Bus activation file.
+          ls ~/.local/share/flatpak/exports/share/dbus-1/services/
+          export XDG_DATA_DIRS="$HOME/.local/share/flatpak/exports/share:/usr/local/share:/usr/share"
+          mkdir shots
+          KATNACTL="flatpak run --command=katnactl $FLATPAK_ID" \
+          KATNA_MAIL="flatpak run $FLATPAK_ID" \
+          KATNA_DEMO=$PWD/demo-data.tar.gz \
+          KATNA_DATA_HOME=~/.var/app/$FLATPAK_ID/data \
+          KATNA_CONFIG_HOME=~/.var/app/$FLATPAK_ID/config \
+            ci/linux-package-test.sh shots/flatpak-ubuntu.png
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: flatpak
+          path: out/katna-x86_64.flatpak
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: screenshot-flatpak
+          path: shots/
+
+  snap:
+    needs: portable
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-tarball
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
+      - name: Install snapcraft and the test tools
+        run: |
+          sudo snap install snapcraft --classic
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            dbus-daemon dbus-user-session gnome-keyring imagemagick x11-utils xvfb
+          # snap run puts each app in a systemd scope, so the test runs in
+          # a real user session (systemd --user and its bus) rather than
+          # dbus-run-session's bare bus.
+          sudo loginctl enable-linger "$USER"
+          uid=$(id -u)
+          for _ in $(seq 30); do
+            [ -S "/run/user/$uid/bus" ] && break
+            sleep 1
+          done
+          ls -l "/run/user/$uid/bus"
+      - name: Build the Snap
+        run: |
+          cp katna-linux-x86_64.tar.gz packaging/snap/
+          sed -i "s/^version: .*/version: '${{ needs.portable.outputs.version }}'/" packaging/snap/snapcraft.yaml
+          cd packaging/snap
+          sudo snapcraft pack --destructive-mode --verbosity=brief
+          mkdir ../../out
+          sudo mv katna_*.snap ../../out/
+          cd ../../out
+          sudo chown "$USER" katna_*.snap
+          cp katna_*.snap katna_amd64.snap
+          ls -l
+      - name: Install it and try it
+        run: |
+          sudo snap install --dangerous out/katna_amd64.snap
+          # The store would connect these; a local install asks for them.
+          for plug in password-manager-service unity7 network-status removable-media; do
+            sudo snap connect "katna:$plug" || true
+          done
+          # Katna Mail, katnactl and the service to one another.
+          for pair in daemon-client:daemon-dbus mail-client:mail-dbus; do
+            sudo snap connect "katna:${pair%%:*}" "katna:${pair#*:}" || true
+          done
+          snap connections katna
+          export XDG_RUNTIME_DIR=/run/user/$(id -u)
+          export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
+          # Makes the snap's own home folder, where the demo data goes.
+          snap run katna.katnactl --help > /dev/null
+          mkdir shots
+          KATNACTL="snap run katna.katnactl" KATNA_MAIL="snap run katna" \
+          KATNA_DEMO=$PWD/demo-data.tar.gz \
+          KATNA_DATA_HOME=~/snap/katna/current/.local/share \
+          KATNA_CONFIG_HOME=~/snap/katna/current/.config \
+          KATNA_TEST_SESSION=1 \
+            ci/linux-package-test.sh shots/snap-ubuntu.png
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: snap
+          path: out/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: screenshot-snap
+          path: shots/
+
+  # Built from source on Fedora with Fedora's Rust, as a Fedora package
+  # would be, then installed with dnf and tried there.
+  fedora:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    timeout-minutes: 120
+    steps:
+      - name: Install build tools
+        run: |
+          dnf install -y --setopt=install_weak_deps=False \
+            rpm-build rpmdevtools git dnf-plugins-core
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Build the RPM
+        env:
+          KATNA_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.KATNA_GOOGLE_OAUTH_CLIENT_ID }}
+          KATNA_GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_GOOGLE_OAUTH_CLIENT_SECRET }}
+          KATNA_MICROSOFT_OAUTH_CLIENT_ID: ${{ secrets.KATNA_MICROSOFT_OAUTH_CLIENT_ID }}
+          KATNA_ZOHO_OAUTH_CLIENT_ID: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_ID }}
+          KATNA_ZOHO_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_SECRET }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          dnf builddep -y packaging/fedora/katna.spec
+          rpmdev-setuptree
+          git archive --prefix=katna/ -o ~/rpmbuild/SOURCES/katna.tar.gz HEAD
+          KATNA_TITLE="$(git log -1 --format=%s)" rpmbuild -bb packaging/fedora/katna.spec \
+            --define "katna_version $(packaging/linux/version.sh)" \
+            --define "katna_built $(git log -1 --format=%ct)"
+          mkdir out
+          cp ~/rpmbuild/RPMS/*/katna-*.rpm out/
+          cp out/katna-*.rpm out/katna-x86_64.rpm
+          ls -l out
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fedora
+          path: out/
+          if-no-files-found: error
+
+  fedora-test:
+    needs: [fedora, portable]
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: fedora
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
+      - name: Install it with dnf and try it
+        run: |
+          dnf install -y ./katna-x86_64.rpm
+          dnf install -y --setopt=install_weak_deps=False \
+            dbus-daemon gnome-keyring ImageMagick xwininfo xorg-x11-server-Xvfb \
+            mesa-vulkan-drivers mesa-dri-drivers dejavu-sans-fonts procps-ng
+          rpm -ql katna
+          useradd --create-home tester
+          cp ci/linux-package-test.sh demo-data.tar.gz /home/tester/
+          chown tester: /home/tester/*
+          runuser -u tester -- sh -euc \
+            'cd ~ && KATNA_DEMO=~/demo-data.tar.gz ./linux-package-test.sh ~/rpm-fedora.png'
+          mkdir shots && cp /home/tester/rpm-fedora.png shots/
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: screenshot-fedora
+          path: shots/
+
+  # The flake, built by Nix; its closure goes to the test below.
+  nix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build it in the Nix image
+        run: |
+          mkdir out
+          docker run --rm -v "$PWD:/src" -w /src nixos/nix:latest sh -euc '
+            git config --global --add safe.directory "*"
+            nix --extra-experimental-features "nix-command flakes" \
+              build --print-build-logs .#katna -o /tmp/result
+            ls -l /tmp/result/bin /tmp/result/share/dbus-1/services
+            readlink /tmp/result > out/katna-nix.path
+            nix-store --export $(nix-store -qR /tmp/result) > out/katna-nix.closure
+          '
+          ls -l out
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: nix
+          path: out/
+          if-no-files-found: error
+
+  # Installed into a Nix profile and run with Nix's own Mesa for drawing.
+  nix-test:
+    needs: [nix, portable]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: nix
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
+      - name: Install it and try it in the Nix image
+        run: |
+          mkdir shots
+          # gnome-keyring-daemon drops capabilities as root, which Docker forbids
+          # without --privileged.
+          docker run --rm --privileged -v "$PWD:/src" -w /src nixos/nix:latest sh -euc '
+            git config --global --add safe.directory "*"
+            nix() { command nix --extra-experimental-features "nix-command flakes" "$@"; }
+            nix-store --import < katna-nix.closure > /dev/null
+            nix profile install "$(cat katna-nix.path)"
+            # The activation file names the Nix store path.
+            grep -q "^Exec=/nix/store/.*/bin/katna-daemon" \
+              ~/.nix-profile/share/dbus-1/services/*.service
+            nix profile install --inputs-from . nixpkgs#xorg.xorgserver nixpkgs#xorg.xwininfo \
+              nixpkgs#dbus nixpkgs#gnome-keyring nixpkgs#imagemagick nixpkgs#procps \
+              nixpkgs#dejavu_fonts
+            mesa=$(nix eval --inputs-from . --raw nixpkgs#mesa.outPath)
+            nix build --inputs-from . nixpkgs#mesa nixpkgs#fontconfig.out --no-link
+            export XDG_DATA_DIRS=$HOME/.nix-profile/share
+            export VK_ICD_FILENAMES=$(ls $mesa/share/vulkan/icd.d/lvp_icd.*.json)
+            export __EGL_VENDOR_LIBRARY_FILENAMES=$(ls $mesa/share/glvnd/egl_vendor.d/*mesa*.json)
+            export FONTCONFIG_FILE=$(nix eval --inputs-from . --raw nixpkgs#fontconfig.out.outPath)/etc/fonts/fonts.conf
+            export KATNA_DBUS_CONFIG=$HOME/.nix-profile/share/dbus-1/session.conf
+            KATNA_DEMO=/src/demo-data.tar.gz ./ci/linux-package-test.sh shots/nix.png
+          '
+          sudo chown -R "$USER" shots
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: screenshot-nix
+          path: shots/
+
+  publish:
+    needs: [portable, tarball, appimage, flatpak, snap, fedora, fedora-test, nix, nix-test]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    concurrency:
+      group: linux-packages-release
+      cancel-in-progress: false
+    steps:
+      # Only a commit whose CI passed is published, as for arch-latest.
+      - name: Wait for CI on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          for attempt in $(seq 120); do
+            result=$(gh api "repos/$GH_REPO/actions/workflows/ci.yml/runs?head_sha=$GITHUB_SHA&event=push" \
+              --jq '[.workflow_runs[] | "\(.status) \(.conclusion)"] | first // "none"')
+            echo "CI on $GITHUB_SHA: $result"
+            case "$result" in
+              "completed success") exit 0 ;;
+              "completed cancelled" | "completed skipped") exit 0 ;;
+              completed*) echo "CI did not pass; not publishing"; exit 1 ;;
+            esac
+            sleep 60
+          done
+          echo "CI did not finish in two hours; not publishing"
+          exit 1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          path: artifacts
+      - name: Gather the files
+        run: |
+          mkdir out
+          find artifacts -type f \( -name '*.rpm' -o -name '*.snap' -o -name '*.flatpak' \
+            -o -name '*.AppImage' -o -name 'katna-linux-x86_64.tar.gz' -o -name '*.png' \) \
+            -exec cp {} out/ \;
+          cd out
+          sha256sum -- * > SHA256SUMS
+          ls -l
+      # The commits the Update dialog lists.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: src
+          fetch-depth: 200
+          persist-credentials: false
+      # What Katna from these packages checks for updates
+      # (katna_core::update::Manifest, docs/ARCHITECTURE.md §21.2): the
+      # Arch manifest's fields for the tarball, and under `files` each
+      # package's own file, which Katna picks by the package it runs from.
+      - name: Write the update manifest
+        run: |
+          entry() {
+            jq -n --arg file "$1" --arg sha256 "$(sha256sum "out/$1" | cut -d' ' -f1)" \
+              --argjson size "$(stat -c %s "out/$1")" '{$file, $sha256, $size}'
+          }
+          files=$(jq -n \
+            --argjson tarball "$(entry katna-linux-x86_64.tar.gz)" \
+            --argjson appimage "$(entry Katna-x86_64.AppImage)" \
+            --argjson rpm "$(entry katna-x86_64.rpm)" \
+            --argjson snap "$(entry katna_amd64.snap)" \
+            --argjson flatpak "$(entry katna-x86_64.flatpak)" \
+            '{$tarball, $appimage, $rpm, $snap, $flatpak}')
+          git -C src log -200 --format='%h%x09%s' HEAD |
+            jq -R 'split("\t") | {commit: .[0], title: (.[1:] | join("\t"))}' |
+            jq -s . > changes.json
+          highlights=$(jq -c '.[:50]' artifacts/linux-update-info/highlights.json)
+          jq -n \
+            --arg version "${{ needs.portable.outputs.version }}" \
+            --argjson built "$(git -C src log -1 --format=%ct HEAD)" \
+            --arg commit "$(git -C src rev-parse HEAD)" \
+            --argjson highlights "$highlights" \
+            --slurpfile changes changes.json \
+            --argjson files "$files" \
+            '$files.tarball + {$version, $built, $commit, $highlights,
+              changes: $changes[0], $files}' > out/katna-update.json
+          jq '{version, file, files: (.files | map_values(.size)),
+               highlights: (.highlights | length), changes: (.changes | length)}' \
+            out/katna-update.json
+      - name: Update the linux-latest pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          base="https://github.com/$GH_REPO/releases/download/linux-latest"
+          cat > notes.md <<EOF
+          Katna Mail built from \`main\` at $GITHUB_SHA for Linux (x86_64),
+          version ${{ needs.portable.outputs.version }}. Replaced on every push
+          to \`main\`. Nothing here is signed. Katna checks for new builds:
+          it updates the AppImage and the tarball itself, and shows the
+          command that updates the others. The screenshots show each
+          package running on its own platform in CI.
+
+          - **Fedora:** \`sudo dnf install $base/katna-x86_64.rpm\`
+          - **Nix:** \`nix profile install github:$GH_REPO\`, or
+            \`nix run github:$GH_REPO\`
+          - **AppImage:** download \`Katna-x86_64.AppImage\`, make it
+            executable and run it
+          - **Snap:** \`sudo snap install --dangerous katna_amd64.snap\`, then
+            the \`snap connect\` lines in \`packaging/README.md\`
+          - **Flatpak:** \`flatpak install --user katna-x86_64.flatpak\`
+          - **Any other Linux:** unpack \`katna-linux-x86_64.tar.gz\` and run
+            its \`install.sh\`
+
+          See \`packaging/README.md\` for more.
+          EOF
+          # Updated in place, never deleted and created again, as arch-latest.
+          tag=linux-latest
+          api="repos/$GH_REPO"
+          if gh api "$api/git/ref/tags/$tag" > /dev/null 2>&1; then
+            gh api -X PATCH "$api/git/refs/tags/$tag" -f sha="$GITHUB_SHA" -F force=true > /dev/null
+          else
+            gh api -X POST "$api/git/refs" -f ref="refs/tags/$tag" -f sha="$GITHUB_SHA" > /dev/null
+          fi
+          ids=$(gh api --paginate "$api/releases" --jq ".[] | select(.tag_name == \"$tag\") | .id")
+          id=$(head -n1 <<<"$ids")
+          for extra in $(tail -n +2 <<<"$ids"); do
+            gh api -X DELETE "$api/releases/$extra"
+          done
+          fields=(-f tag_name="$tag" -f target_commitish="$GITHUB_SHA"
+                  -f name="Katna for Linux (latest main)"
+                  -F body=@notes.md -F draft=false -F prerelease=true)
+          if [[ -n "$id" ]]; then
+            gh api -X PATCH "$api/releases/$id" "${fields[@]}" > /dev/null
+          else
+            id=$(gh api -X POST "$api/releases" "${fields[@]}" --jq .id)
+          fi
+          cd out
+          # The packages first and the manifest last, so the manifest never
+          # names a file that is not there yet.
+          gh release upload "$tag" --clobber -- $(ls | grep -vxF katna-update.json)
+          gh release upload "$tag" --clobber katna-update.json
+          # Earlier builds' files.
+          gh api "$api/releases/$id/assets" --paginate --jq '.[] | "\(.id) \(.name)"' |
+            while read -r asset name; do
+              [[ -e "$name" ]] || gh api -X DELETE "$api/releases/assets/$asset"
+            done

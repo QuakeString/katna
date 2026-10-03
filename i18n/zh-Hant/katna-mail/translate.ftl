@@ -1,6 +1,7 @@
 # Katna Mail, Chinese (Traditional, Taiwan) (繁體中文).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
 translate-offer = 這封郵件是{ $language }。
 translate-to = 翻譯成{ $language }
 translate-never = 永不翻譯{ $language }

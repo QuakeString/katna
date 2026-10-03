@@ -2,6 +2,8 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+viewer-opening = Kuyavulwa…
+
 ## Attachment viewer
 
 viewer-unreadable = Lokhu okunamathiselwe akukwazanga ukufundwa.
@@ -14,8 +16,17 @@ viewer-slides-unreadable = Lawa maslayidi awakwazanga ukufundwa.
 viewer-no-preview = Akukho ukubuka kuqala
 viewer-slide = Islayidi { $number }
 viewer-page = Ikhasi
+viewer-slide-box = Islayidi
 viewer-page-count = kwangu-{ $count }
 viewer-go-to-page-tip = Thayipha inombolo yekhasi bese ucindezela u-Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = Jikisa ngokwewashi (Ctrl+R)
+viewer-rotate-anticlockwise-tip = Jikisa ngokuphambene newashi (Ctrl+Shift+R)
+viewer-fit-page-tip = Lingana nekhasi
+viewer-fit-picture-tip = Lingana newindi
+viewer-fit-width-tip = Lingana nobubanzi
+viewer-real-size-tip = Usayizi wangempela (1:1)
+viewer-page-back-tip = Ikhasi elidlule
+viewer-page-on-tip = Ikhasi elilandelayo
 
 ## Marking up a PDF
 
@@ -26,6 +37,8 @@ viewer-tool-underline = Dwebela
 viewer-tool-squiggly = Umugqa ogobile
 viewer-tool-strike = Dweba phakathi
 viewer-tool-pen = Usiba
+viewer-tool-note = Inothi elinamathelayo
+viewer-tool-text = Ibhokisi lombhalo
 viewer-tool-eraser = Isesula
 viewer-color-yellow = Phuzi
 viewer-color-green = Luhlaza
@@ -38,6 +51,16 @@ viewer-color-purple = Phephuli
 viewer-marks-undo-tip = Hlehlisa (Ctrl+Z)
 viewer-marks-redo-tip = Phinda wenze (Ctrl+Shift+Z)
 viewer-save-marked-tip = Londoloza ikhophi enamamaki akho (Ctrl+S)
+viewer-reply-marked-tip = Phendula ngekhophi emakiwe
+viewer-forward-tip = Dlulisela ifayela
+viewer-forward = Dlulisela
+viewer-open-with = Vula nge-…
+viewer-save = Londoloza
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Bhala inothi
+viewer-text-placeholder = Thayipha lapha
+viewer-note-done = Kwenziwe
+viewer-note-delete = Susa
 viewer-markup-protected = Le PDF ivikelwe ezinguqukweni, ngakho ayikwazi ukumakwa.
 viewer-marks-save-failed = Ikhophi emakiwe ayikwazanga ukulondolozwa.
 # Asked when closing a PDF, or moving to another attachment, with marks
@@ -50,3 +73,5 @@ viewer-marks-save = Londoloza ikhophi
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (emakiwe)
+viewer-pick = Khetha
+viewer-picked = Kukhethiwe

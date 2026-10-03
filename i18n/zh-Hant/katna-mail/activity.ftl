@@ -1,20 +1,57 @@
 # Katna Mail, Chinese (Traditional, Taiwan) (繁體中文).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## The list under the Activity button
+
+activity-details = 詳細資料
+activity-clear-all = 全部清除
+activity-remove = 從清單中移除
+activity-feed-opened = { $who } 開啟了「{ $subject }」
+activity-feed-clicked = { $who } 點開了「{ $subject }」中的連結
+activity-feed-maybe = { $who } 可能開啟了「{ $subject }」
+activity-feed-empty = 還沒有開信或點閱。寫郵件時開啟眼睛，就能看到郵件何時被閱讀。
+activity-message-gone = 這封郵件已不在寄件備份中。
+
+## The Details report
+
+activity-report = 動態報告
+activity-range-week = 過去 7 天
+activity-range-month = 過去 30 天
+activity-range-all = 所有時間
+activity-range-custom = 自訂
+activity-range-from = 從
+activity-range-to = 至
+activity-range-apply = 套用
+activity-range-of = { $days } · { $account }
+activity-accounts-all = 所有帳戶
+activity-accounts-tip = 顯示單一帳戶或全部
+
+## Totals at the top
+
 activity-messages = 已追蹤的郵件
 activity-open-rate = 開信率
 activity-click-rate = 點閱率
 activity-percent = { $percent }%
+
+## Opens and clicks over time
+
 activity-by-day = 開信和點閱
 activity-opens = 開信：{ $count }
 activity-clicks = 點閱：{ $count }
 activity-by-week = 每週一根長條
+
+## The messages
+
 activity-by-open-rate = 依開信率排列的主旨
 activity-opened = { $recipients } 人中有 { $opened } 人開啟
 activity-clicked = { $recipients } 人中有 { $clicked } 人點開連結
 activity-no-subject = （無主旨）
 activity-nothing-period = 這段期間內沒有寄出已追蹤的郵件。
 activity-close = 關閉
+
+## Your mailbox: counted on this computer from all mail in the period
+
 insights-heading = 你的信箱
 insights-counting = 正在統計你的郵件…
 insights-failed = 無法統計你的郵件。
@@ -30,22 +67,3 @@ insights-days = { $count } 天
 insights-people = 你最常聯絡的人
 insights-person-counts = 寄出 { $sent } · 收到 { $received }
 insights-hours-heading = 郵件何時送達
-activity-details = 詳細資料
-activity-clear-all = 全部清除
-activity-remove = 從清單中移除
-activity-feed-opened = { $who } 開啟了「{ $subject }」
-activity-feed-clicked = { $who } 點開了「{ $subject }」中的連結
-activity-feed-maybe = { $who } 可能開啟了「{ $subject }」
-activity-feed-empty = 還沒有開信或點閱。寫郵件時開啟眼睛，就能看到郵件何時被閱讀。
-activity-message-gone = 這封郵件已不在寄件備份中。
-activity-report = 動態報告
-activity-range-week = 過去 7 天
-activity-range-month = 過去 30 天
-activity-range-all = 所有時間
-activity-range-custom = 自訂
-activity-range-from = 從
-activity-range-to = 至
-activity-range-apply = 套用
-activity-range-of = { $days } · { $account }
-activity-accounts-all = 所有帳戶
-activity-accounts-tip = 顯示單一帳戶或全部

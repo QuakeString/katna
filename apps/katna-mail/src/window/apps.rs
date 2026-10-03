@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The app rail at the far left: Mail, Calendar, Contacts, Tasks, Notes
-//! and Feeds, with settings at the bottom; their names can be hidden in
+//! and Files, with settings at the bottom; their names can be hidden in
 //! quick settings. Each app is a page of the one window: the rail, Ctrl+1
 //! to Ctrl+5 (Outlook's keys), the Go menu, the desktop file's actions and
 //! `katna-mail --page NAME` (D-Bus `ActivateAction("open-page", [NAME])`)
@@ -12,6 +12,7 @@
 //! in [`MailWindow::render_app_page`], and load what it needs in
 //! [`MailWindow::open_app`]'s arm. Pages without one show "coming soon".
 
+use katna_ui::WindowDrag;
 use std::ops::Range;
 use std::rc::Rc;
 
@@ -28,7 +29,7 @@ use katna_ui::px;
 use super::{MailWindow, OpenSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button_colored, placeholder, tip};
+use crate::widgets::{icon, icon_button_colored, tip};
 
 pub(super) const APP_RAIL_WIDTH: f32 = 72.0;
 
@@ -40,7 +41,7 @@ pub(super) enum App {
     Contacts,
     Tasks,
     Notes,
-    Feeds,
+    Files,
 }
 
 impl App {
@@ -50,7 +51,7 @@ impl App {
         Self::Contacts,
         Self::Tasks,
         Self::Notes,
-        Self::Feeds,
+        Self::Files,
     ];
 
     pub(super) fn label(self) -> String {
@@ -60,14 +61,17 @@ impl App {
             Self::Contacts => "rail-contacts",
             Self::Tasks => "rail-tasks",
             Self::Notes => "rail-notes",
-            Self::Feeds => "rail-feeds",
+            Self::Files => "rail-files",
         })
     }
 
     /// The page's name for `--page` and `open-page`, and in the saved
     /// window state.
     pub(super) fn key(self) -> &'static str {
-        self.icon()
+        match self {
+            Self::Files => "files",
+            _ => self.icon(),
+        }
     }
 
     /// The page named `key`.
@@ -82,17 +86,28 @@ impl App {
             Self::Contacts => "contacts",
             Self::Tasks => "tasks",
             Self::Notes => "notes",
-            Self::Feeds => "feeds",
+            Self::Files => "attachment",
+        }
+    }
+
+    /// The big button at the top of the left bar: the page's own action,
+    /// its icon and its word. Files has nothing to create, so it writes.
+    pub(super) fn primary(self) -> (&'static str, String) {
+        match self {
+            Self::Calendar => ("event", tr!("calendar-menu-new-event")),
+            Self::Contacts => ("person-add", tr!("contacts-create")),
+            Self::Tasks => ("add", tr!("tasks-create")),
+            Self::Notes => ("pen", tr!("notes-new-note")),
+            Self::Mail | Self::Files => ("compose", tr!("compose")),
         }
     }
 
     /// What the app will do, for its "coming soon" page.
     fn promise(self) -> String {
         match self {
-            Self::Mail | Self::Contacts | Self::Tasks => String::new(),
+            Self::Mail | Self::Contacts | Self::Tasks | Self::Files => String::new(),
             Self::Calendar => tr!("app-calendar-promise"),
             Self::Notes => tr!("app-notes-promise"),
-            Self::Feeds => tr!("app-feeds-promise"),
         }
     }
 }
@@ -136,7 +151,17 @@ impl MailWindow {
                     .w(px(width * t))
                     .overflow_hidden()
                     .opacity(t)
-                    .child(div().h_full().w(px(width)).child(side))
+                    .child(
+                        div()
+                            .h_full()
+                            .w(px(width))
+                            .flex()
+                            .flex_col()
+                            // The big button heads the column, as Compose
+                            // heads Mail's folders.
+                            .child(div().flex_none().h(px(self.side_button_room())))
+                            .child(div().flex_1().min_h_0().child(side)),
+                    )
                     .into_any_element()
             });
             return PageSide {
@@ -181,9 +206,61 @@ impl MailWindow {
         }
     }
 
-    /// Whether page `app` shows its side column beside it on a desktop.
-    pub(super) fn page_side_open(&self, app: App) -> bool {
-        !self.page_sides_folded.contains(&app)
+    /// Whether the pages show their side column beside them on a desktop:
+    /// one fold for Mail's folders and every page's column.
+    pub(super) fn page_side_open(&self) -> bool {
+        self.nav_open
+    }
+
+    /// The big button's action on the page on show.
+    /// The icon and words of the big button at the top of the side
+    /// column: the page's own action, or Upload while a drive is open.
+    pub(super) fn primary_button(&self) -> (&'static str, String) {
+        if self.drive_upload_here() {
+            ("upload", tr!("files-drive-upload"))
+        } else {
+            self.app.primary()
+        }
+    }
+
+    /// The big button's icon, turning from the last page's into this
+    /// one's: the same on the rail's square, the pill and a phone's button.
+    pub(super) fn primary_icon(&self, th: &crate::theme::Theme) -> gpui::AnyElement {
+        crate::widgets::morph_icon(
+            self.primary_icon_from,
+            self.primary_icon,
+            self.primary_icon_turn.value(),
+            th.compose_text,
+            24.0,
+        )
+    }
+
+    /// The big button's word, rolling from the last page's into this
+    /// one's in a box as wide as the button gives it this frame.
+    pub(super) fn primary_label(&self) -> gpui::AnyElement {
+        crate::widgets::morph_label(
+            &self.primary_label_from,
+            &self.primary_label,
+            self.primary_icon_turn.value(),
+            self.primary_label_width,
+        )
+    }
+
+    pub(super) fn primary_action(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.drive_upload_here() {
+            self.upload_into_drive(false, cx);
+            return;
+        }
+        match self.app {
+            App::Calendar => self.create_event_button(window, cx),
+            App::Contacts => {
+                self.contacts.open = None;
+                self.start_contact_edit(None, window, cx);
+            }
+            App::Tasks => self.tasks_create(window, cx),
+            App::Notes => self.new_note(window, cx),
+            App::Mail | App::Files => self.compose(&super::Compose, window, cx),
+        }
     }
 
     /// The room a side column `width` wide takes beside the page now: none
@@ -202,19 +279,36 @@ impl MailWindow {
             self.close_settings_page(window, cx);
         }
         self.open_app(app, cx);
-        if app == App::Calendar {
-            window.focus(&self.calendar.focus, cx);
+        self.focus_app_page(window, cx);
+    }
+
+    /// Gives the keys to the page on show, so keys such as Ctrl+Z reach it
+    /// rather than the hidden mail list.
+    pub(super) fn focus_app_page(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        match self.app {
+            App::Mail => window.focus(&self.list_focus, cx),
+            App::Calendar => window.focus(&self.calendar.focus, cx),
+            App::Contacts => window.focus(&self.window_focus, cx),
+            App::Tasks => {
+                if let Some(focus) = &self.tasks.focus {
+                    window.focus(focus, cx);
+                }
+            }
+            App::Notes | App::Files => {}
         }
-        // Keys such as Ctrl+Z need focus in the page on screen, not the
-        // hidden mail list.
-        if app == App::Contacts {
-            window.focus(&self.window_focus, cx);
-        }
-        // Its keys and Ctrl+Z reach the page, not the hidden mail list.
-        if app == App::Tasks
-            && let Some(focus) = &self.tasks.focus
-        {
-            window.focus(focus, cx);
+    }
+
+    /// Hands the search box to the app on show (`entering`), or back to
+    /// mail, as switching apps does, for the Settings page opening over it
+    /// and closing.
+    pub(super) fn swap_app_search(&mut self, entering: bool, cx: &mut Context<Self>) {
+        match self.app {
+            App::Calendar => self.swap_calendar_search(entering, cx),
+            App::Tasks => self.swap_tasks_search(entering, cx),
+            App::Files => self.swap_files_search(entering, cx),
+            App::Contacts => self.swap_contacts_search(entering, cx),
+            App::Notes => self.sync_notes_search(cx),
+            App::Mail => {}
         }
     }
 
@@ -224,8 +318,10 @@ impl MailWindow {
         }
         let from = self.app;
         self.app = app;
+        // An event or task picked up on the Calendar stays where it was.
+        self.cancel_calendar_drags();
         // Each page shows its side column as it left it, without motion.
-        let open = if self.page_side_open(app) { 1.0 } else { 0.0 };
+        let open = if self.page_side_open() { 1.0 } else { 0.0 };
         self.page_side_spring.snap(open);
         self.page_side_t = open;
         super::desktop::menu_page_changed(app != App::Mail, cx);
@@ -239,6 +335,9 @@ impl MailWindow {
         }
         if from == App::Tasks {
             self.swap_tasks_search(false, cx);
+        }
+        if from == App::Files {
+            self.swap_files_search(false, cx);
         }
         if from == App::Contacts || app == App::Contacts {
             // The search box follows: contacts on this page, mail elsewhere.
@@ -266,6 +365,10 @@ impl MailWindow {
         if app == App::Tasks {
             self.open_tasks_page(cx);
         }
+        if app == App::Files {
+            self.swap_files_search(true, cx);
+            self.load_library(cx);
+        }
         cx.notify();
     }
 
@@ -286,6 +389,18 @@ impl MailWindow {
             })
             .ok();
         }));
+    }
+
+    /// Whether a page shows a whole editor in place of itself and its
+    /// side column (Calendar's event editor), with no room for the big
+    /// button.
+    pub(super) fn page_editor_open(&self) -> bool {
+        self.app == App::Calendar && self.event_editor_open()
+    }
+
+    /// Room at the top of a page's side column for its big button.
+    pub(super) fn side_button_room(&self) -> f32 {
+        super::COMPOSE_NAV_ROOM * self.compose_shown.value().clamp(0.0, 1.0)
     }
 
     /// Room at the top of the rail for Compose while it is there.
@@ -318,6 +433,7 @@ impl MailWindow {
                 .items_center()
                 .gap(px(4.0))
                 .cursor_pointer()
+                .keeps_press()
                 .group("app")
                 .when(app == App::Mail, |d| {
                     d.on_hover(cx.listener(|this, hovered: &bool, _, cx| {
@@ -350,7 +466,8 @@ impl MailWindow {
                         ))
                         .with_spring(
                             ("app-pill", app as usize),
-                            SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                            SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                                .to(if on { 1.0 } else { 0.0 }),
                             {
                                 let bg = th.nav_selected;
                                 move |el, s: f32| {
@@ -381,7 +498,8 @@ impl MailWindow {
                         .child(app.label())
                         .with_spring(
                             ("app-label", app as usize),
-                            SpringAnimation::new(motion::SLIDE).to(if labels { 1.0 } else { 0.0 }),
+                            SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                                .to(if labels { 1.0 } else { 0.0 }),
                             |el, s: f32| {
                                 let s = s.clamp(0.0, 1.0);
                                 el.h(px(16.0 * s)).opacity(s)
@@ -391,6 +509,7 @@ impl MailWindow {
         });
         div()
             .id("app-rail")
+            .window_drag()
             .relative()
             .flex_none()
             .w(px(APP_RAIL_WIDTH))
@@ -425,7 +544,7 @@ impl MailWindow {
                 )
                 .tooltip(tip(tr!("settings"), th))
                 .on_click(cx.listener(|this, _, window, cx| {
-                    if this.settings_page.is_some() && this.app == App::Mail {
+                    if this.settings_page.is_some() {
                         this.close_settings_page(window, cx);
                     } else {
                         this.open_settings(&OpenSettings, window, cx);
@@ -458,7 +577,8 @@ impl MailWindow {
             }
             App::Notes => self.render_notes(th, window, cx),
             App::Tasks => self.render_tasks(th, cx),
-            App::Mail | App::Feeds => self.render_coming_soon(th),
+            App::Files => self.render_files(th, window, cx),
+            App::Mail => self.render_coming_soon(th),
         };
         // Edge to edge on a phone, as Mail's cards are.
         let shape = self.layout.shape;
@@ -506,17 +626,7 @@ impl MailWindow {
                     .text_color(rgba(th.text))
                     .child(tr!("app-page-title", app = app.label())),
             )
-            .child(
-                div()
-                    .px(px(10.0))
-                    .py(px(2.0))
-                    .rounded_full()
-                    .bg(rgba(th.chip))
-                    .text_size(px(12.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .text_color(rgba(th.text_dim))
-                    .child(tr!("app-coming-soon")),
-            )
+            .child(crate::widgets::tag(tr!("app-coming-soon"), th).font_weight(FontWeight::MEDIUM))
             .child(
                 div()
                     .max_w(px(420.0))
@@ -528,8 +638,10 @@ impl MailWindow {
             )
             .with_animation(
                 ("app-page", self.app as usize),
-                gpui::Animation::new(std::time::Duration::from_millis(260))
-                    .with_easing(gpui::ease_out_quint()),
+                gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    260,
+                )))
+                .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(12.0 * (1.0 - t))),
             )
             .into_any_element()
@@ -539,13 +651,13 @@ impl MailWindow {
     pub(super) fn render_contacts(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let people = match &self.people {
             None | Some(People::Loading) => {
-                return placeholder(&tr!("app-contacts-loading"), th);
+                return self.placeholder(tr!("app-contacts-loading"), th);
             }
-            Some(People::Failed(err)) => return placeholder(err, th),
+            Some(People::Failed(err)) => return self.placeholder(err.clone(), th),
             Some(People::Loaded(people)) => people.clone(),
         };
         if people.is_empty() {
-            return placeholder(&tr!("app-contacts-empty"), th);
+            return self.placeholder(tr!("app-contacts-empty"), th);
         }
         let header = div()
             .flex_none()
@@ -623,6 +735,7 @@ fn render_person(
         .border_b_1()
         .border_color(rgba(th.divider))
         .cursor_pointer()
+        .keeps_press()
         .hover(|s| s.bg(rgba(th.hover)))
         .on_click(cx.listener(move |this, _, window, cx| {
             this.open_app(App::Mail, cx);
@@ -641,10 +754,19 @@ fn render_person(
                 .flex_col()
                 .child(
                     div()
-                        .truncate()
-                        .text_size(px(14.0))
-                        .text_color(rgba(th.text))
-                        .child(name.clone().unwrap_or_else(|| person.email.clone())),
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(6.0))
+                        .child(
+                            div()
+                                .min_w_0()
+                                .truncate()
+                                .text_size(px(14.0))
+                                .text_color(rgba(th.text))
+                                .child(name.clone().unwrap_or_else(|| person.email.clone())),
+                        )
+                        .children(this.muted_mark(&person.email, 16.0, th)),
                 )
                 .when(name.is_some(), |d| {
                     d.child(

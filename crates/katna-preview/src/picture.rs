@@ -47,9 +47,19 @@ pub fn thumbnail(
         .into_rgba8())
 }
 
+/// The width and height of a picture, from its header alone; `None` for
+/// an SVG (it scales to any size) or a picture that cannot be read.
+pub fn dimensions(bytes: &[u8]) -> Option<(u32, u32)> {
+    ImageReader::new(Cursor::new(bytes))
+        .with_guessed_format()
+        .ok()?
+        .into_dimensions()
+        .ok()
+}
+
 /// `bytes` decoded; an SVG is drawn at twice its size, at most
 /// `max_side` pixels on a side (see [`crate::svg`]).
-fn read(bytes: &[u8], format: Picture, max_side: u32) -> Result<DynamicImage, Error> {
+pub(crate) fn read(bytes: &[u8], format: Picture, max_side: u32) -> Result<DynamicImage, Error> {
     let format = match format {
         Picture::Png => ImageFormat::Png,
         Picture::Jpeg => ImageFormat::Jpeg,
@@ -109,6 +119,12 @@ mod tests {
         assert_eq!(full.get_pixel(0, 0).0, [255, 0, 0, 255]);
         let small = decode(&bytes, Picture::Png, 200).unwrap();
         assert_eq!(small.dimensions(), (200, 50));
+    }
+
+    #[test]
+    fn reads_the_size_from_the_header() {
+        assert_eq!(dimensions(&png(300, 80)), Some((300, 80)));
+        assert_eq!(dimensions(b"not a picture"), None);
     }
 
     #[test]

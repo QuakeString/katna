@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = Crea
+tasks-create = Nuova attività
 tasks-all = Tutte le attività
 tasks-today = Oggi
 tasks-starred = Speciali
@@ -24,6 +24,12 @@ tasks-account-failed = Impossibile leggere gli elenchi di attività.
 # $reason is the server's own words, in English.
 tasks-account-error = Impossibile leggere gli elenchi di attività: { $reason }
 tasks-account-none = Nessun elenco di attività trovato
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = Nessun elenco di attività trovato: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } mostra le attività solo a Katna con accesso tramite { $provider }.
+tasks-account-sign-in-with = Accedi con { $provider }
 tasks-account-looking = Ricerca degli elenchi di attività…
 tasks-account-try-again = Riprova
 tasks-account-try-again-tooltip = Controlla di nuovo ora le attività di questo account
@@ -110,4 +116,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Questa email non è più qui.
 tasks-toast-list-deleted = Elenco eliminato
 tasks-toast-moved = Attività spostata in { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = Attività spostata
 tasks-toast-rescheduled = Attività riprogrammata

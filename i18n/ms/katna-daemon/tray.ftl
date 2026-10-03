@@ -9,7 +9,7 @@ tray-new-message = Mesej _Baharu
 tray-preferences = _Tetapan
 tray-quit = _Keluar
 
-## The tray icon's tooltip
+## The tray icon's tooltip, under "Katna Mail"
 
 tray-unread = { $count ->
     [0] Tiada mel belum dibaca

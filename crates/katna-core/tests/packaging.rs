@@ -9,10 +9,10 @@ use std::{
 };
 
 use katna_core::ids::{
-    CLOCK_APPLET_ID, CLOCK_EXTENSION_UUID, DAEMON_BUS_NAME, MAIL_APP_ID, PREFIX,
-    RUNNER_OBJECT_PATH, SEARCH_PROVIDER_OBJECT_PATH, UPDATE_ACTION,
+    CLOCK_APPLET_ID, CLOCK_EXTENSION_UUID, DAEMON_BUS_NAME, MAIL_APP_ID, NOTIFICATIONS_DESKTOP_ID,
+    PREFIX, RUNNER_OBJECT_PATH, SEARCH_PROVIDER_OBJECT_PATH, UPDATE_ACTION,
 };
-use katna_core::update::ARCH_HELPER;
+use katna_core::update::{ARCH_HELPER, ARCH_INSTALLED};
 
 /// Name of the systemd user unit (also `katna_daemon::install::UNIT`).
 const UNIT: &str = "katna-daemon.service";
@@ -22,7 +22,8 @@ fn packaging() -> PathBuf {
 }
 
 /// Reads `packaging/<dir>/<name>`; it must be the only file in `dir`
-/// with that extension, so a stale file under an old name cannot hide.
+/// with that extension (besides the notifications' hidden desktop entry),
+/// so a stale file under an old name cannot hide.
 fn read(dir: &str, name: &str) -> String {
     let dir = packaging().join(dir);
     let extension = Path::new(name).extension();
@@ -32,8 +33,17 @@ fn read(dir: &str, name: &str) -> String {
         .filter(|path| path.extension() == extension)
         .map(|path| path.file_name().unwrap().to_string_lossy().into_owned())
         .collect();
+    let mut expected = vec![name.to_owned()];
+    if dir.ends_with("desktop") && extension.is_some_and(|e| e == "desktop") {
+        expected = vec![
+            format!("{MAIL_APP_ID}.desktop"),
+            format!("{NOTIFICATIONS_DESKTOP_ID}.desktop"),
+        ];
+        assert!(expected.iter().any(|e| e == name), "{name}");
+    }
     names.sort();
-    assert_eq!(names, [name], "files in {}", dir.display());
+    expected.sort();
+    assert_eq!(names, expected, "files in {}", dir.display());
     let text = fs::read_to_string(dir.join(name)).unwrap();
     assert!(
         text.lines()
@@ -68,6 +78,19 @@ fn desktop_entry_matches_app_id() {
     assert_eq!(value(&text, "MimeType"), Some("x-scheme-handler/mailto;"));
     assert_eq!(value(&text, "Icon"), Some(MAIL_APP_ID));
     assert_eq!(value(&text, "StartupWMClass"), Some(MAIL_APP_ID));
+}
+
+/// Notifications name a hidden Katna Mail entry that asks for no launch
+/// feedback.
+#[test]
+fn notifications_entry_is_quiet() {
+    let text = read("desktop", &format!("{NOTIFICATIONS_DESKTOP_ID}.desktop"));
+    assert!(text.contains("\n[Desktop Entry]\n"), "{text}");
+    assert!(NOTIFICATIONS_DESKTOP_ID.starts_with(&format!("{MAIL_APP_ID}.")));
+    assert_eq!(value(&text, "Name"), Some("Katna Mail"));
+    assert_eq!(value(&text, "Icon"), Some(MAIL_APP_ID));
+    assert_eq!(value(&text, "NoDisplay"), Some("true"));
+    assert_eq!(value(&text, "StartupNotify"), Some("false"));
 }
 
 /// The actions on the taskbar icon's right-click menu start Katna Mail with
@@ -193,6 +216,53 @@ fn search_provider_names_the_provider() {
     assert_eq!(value(&text, "Version"), Some("2"));
 }
 
+/// "Send with Katna Mail" in Dolphin: files and folders, local only, in the
+/// menu itself rather than under Actions, starting `katna-mail --attach`
+/// (the name is `katna_platform::file_menus::service_menu_file`, which
+/// the daemon's per-user copy with the accounts replaces).
+#[test]
+fn dolphin_menu_attaches_the_files() {
+    let text = read("kio", &format!("{MAIL_APP_ID}.SendFiles.desktop"));
+    assert_eq!(value(&text, "Type"), Some("Service"));
+    assert_eq!(value(&text, "MimeType"), Some("all/all;"));
+    assert_eq!(value(&text, "X-KDE-Protocols"), Some("file"));
+    assert_eq!(value(&text, "X-KDE-Priority"), Some("TopLevel"));
+    assert_eq!(value(&text, "Name"), Some("Send with Katna Mail"));
+    assert_eq!(value(&text, "Icon"), Some(MAIL_APP_ID));
+    assert_eq!(value(&text, "Exec"), Some("katna-mail --attach %F"));
+    let nautilus = read("nautilus", "katna-mail.py");
+    assert!(nautilus.contains("\"katna-mail\", \"--attach\""));
+}
+
+/// The Flatpak's ID is the prefix of Katna Mail's and the service's names:
+/// Flatpak exports only files named after the app ID or under it (the
+/// desktop entry, icons and the D-Bus activation file), and lets the app
+/// own only those bus names.
+#[test]
+fn flatpak_id_is_the_prefix() {
+    let text = read("flatpak", &format!("{PREFIX}.yml"));
+    assert!(text.contains(&format!("\nid: {PREFIX}\n")), "{text}");
+    for id in [MAIL_APP_ID, DAEMON_BUS_NAME] {
+        assert!(id.starts_with(&format!("{PREFIX}.")), "{id}");
+    }
+}
+
+/// The Snap owns Katna Mail's and the service's bus names, and its menu
+/// entry and "Start Katna at login" entry are Katna Mail's.
+#[test]
+fn snap_names_match_ids() {
+    let text = read("snap", "snapcraft.yaml");
+    for line in [
+        format!("    name: {DAEMON_BUS_NAME}\n"),
+        format!("    name: {MAIL_APP_ID}\n"),
+        format!("    desktop: usr/share/applications/{MAIL_APP_ID}.desktop\n"),
+        format!("    common-id: {MAIL_APP_ID}\n"),
+        format!("    autostart: {MAIL_APP_ID}.desktop\n"),
+    ] {
+        assert!(text.contains(&line), "snapcraft.yaml has no {line:?}");
+    }
+}
+
 /// Other packaging files (`packaging/*/*`) use the IDs only through file
 /// names (the PKGBUILD installs with globs), so they never need changing.
 /// Subdirectories are makepkg output and are not checked.
@@ -200,11 +270,15 @@ fn search_provider_names_the_provider() {
 fn prefix_only_in_checked_files() {
     let checked = [
         format!("desktop/{MAIL_APP_ID}.desktop"),
+        format!("desktop/{NOTIFICATIONS_DESKTOP_ID}.desktop"),
         format!("dbus/{DAEMON_BUS_NAME}.service"),
         format!("systemd/{UNIT}"),
         format!("krunner/{MAIL_APP_ID}.desktop"),
         format!("gnome-shell/{MAIL_APP_ID}.search-provider.ini"),
         format!("polkit/{UPDATE_ACTION}.policy"),
+        format!("kio/{MAIL_APP_ID}.SendFiles.desktop"),
+        format!("flatpak/{PREFIX}.yml"),
+        "snap/snapcraft.yaml".to_owned(),
     ];
     for dir in fs::read_dir(packaging()).unwrap() {
         let dir = dir.unwrap().path();
@@ -260,6 +334,22 @@ fn update_action_runs_the_update_helper() {
             "packaging/arch/katna-update-helper \"$pkgdir{ARCH_HELPER}\""
         )),
         "the PKGBUILD installs the helper at {ARCH_HELPER}"
+    );
+}
+
+/// The update helper keeps the installed package where the daemon looks
+/// for it to patch from, and removing the package removes that copy.
+#[test]
+fn installed_copy_is_where_the_daemon_looks() {
+    let helper = fs::read_to_string(packaging().join("arch/katna-update-helper")).unwrap();
+    assert!(
+        helper.contains(&format!("readonly INSTALLED={ARCH_INSTALLED}\n")),
+        "the helper keeps the installed package in {ARCH_INSTALLED}"
+    );
+    let install = fs::read_to_string(packaging().join("arch/katna-git.install")).unwrap();
+    assert!(
+        install.contains(&format!("rm -rf {ARCH_INSTALLED} ")),
+        "{install}"
     );
 }
 

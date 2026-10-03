@@ -15,6 +15,7 @@ notes-loading = Notlarınız açılıyor…
 
 notes-take-a-note = Not al…
 notes-new-list = Yeni liste
+notes-new-note = Yeni not
 notes-pinned = Sabitlenenler
 notes-others = Diğerleri
 notes-empty = Eklediğiniz notlar burada görünür

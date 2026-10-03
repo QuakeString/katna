@@ -46,6 +46,7 @@ compose-sent-archived = 已傳送並封存
 compose-sent = 郵件已傳送
 compose-discarded = 已捨棄草稿
 compose-draft-saved = 草稿已儲存
+compose-draft-saving = 正在儲存…
 compose-draft-failed = 無法儲存草稿：{ $error }
 compose-draft-not-opened = 無法開啟草稿。
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = 無法開啟草稿。
 compose-picker-insert = 插入
 compose-picker-attach = 附加
 compose-file-too-large = { $name } 太大：一封郵件最多只能夾帶 { $limit }。
+compose-forward-files-missing = 轉寄郵件中的檔案尚未下載，因此不會附加。
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 移除附件
+compose-attachment-open-tip = 開啟以檢查
 compose-attachments-total = { $count } 個檔案，共 { $size }
 compose-drive-note = { $name } 超過 { $limit }，因此會存入你的 Google Drive，郵件中會附上連結。
 compose-drive-tip = 在你的 Google Drive 中；郵件中會附上連結
@@ -74,6 +77,7 @@ compose-drive-share-link = 透過連結共用
 compose-drive-send-without = 不共用直接傳送
 compose-drive-share-cancel = 取消
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } 超過 { $limit }，因此會存入你的 OneDrive，郵件中會附上連結。
 compose-onedrive-tip = 在你的 OneDrive 中；郵件中會附上連結
 compose-onedrive-allow = 允許 OneDrive
@@ -84,8 +88,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive 無法與 { $addresses } 共用這些檔案。改為讓任何擁有連結的人都可以開啟。
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = 將檔案拖放到這裡
 compose-drop-here = 拖放到這裡
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = 保留格式
 compose-paste-table = 表格
 compose-paste-picture = 圖片
@@ -99,6 +107,9 @@ compose-encrypt = 加密
 compose-encrypted = 已加密：只有收件者能閱讀
 compose-sign = 簽署
 compose-signed = 已簽署：收件者可以驗證郵件確實來自你
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = 追蹤開信和點閱
 compose-tracked = 已追蹤：每位收件者開啟郵件或點開連結時，你都能看到
 compose-track-clicks = 追蹤連結點閱（純文字郵件無法顯示是否已開啟）
@@ -131,6 +142,9 @@ send-check-subject-title = 要在沒有主旨的情況下傳送嗎？
 send-check-subject-text = 這封郵件沒有主旨。
 send-check-add-subject = 新增主旨
 send-check-send-anyway = 仍要傳送
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = 不是有效的電子郵件地址
 recipient-show-address = 顯示地址
 recipient-remove = 移除

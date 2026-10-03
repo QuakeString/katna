@@ -777,7 +777,7 @@ fn worker_syncs_new_mail_by_push() {
                         })
                         .await
                         .unwrap();
-                    if !matches!(event, Event::BodiesStored(_)) {
+                    if !matches!(event, Event::Stored(_) | Event::BodiesStored(_)) {
                         return event;
                     }
                 }
@@ -847,7 +847,7 @@ fn worker_sees_mail_filed_in_other_folders() {
                         })
                         .await
                         .unwrap();
-                    if !matches!(event, Event::BodiesStored(_)) {
+                    if !matches!(event, Event::Stored(_) | Event::BodiesStored(_)) {
                         return event;
                     }
                 }
@@ -1198,6 +1198,141 @@ fn pop3_downloads_what_imap_delivered() {
                 .await
                 .unwrap();
             assert_eq!(again, sync::Pop3Report::default(), "{name}");
+        });
+    }
+}
+
+#[test]
+#[ignore = "needs the dev/compose.yaml servers"]
+fn radicale_calendars_are_made_renamed_recoloured_and_deleted() {
+    use katna_core::{AccountId, Paths};
+    use katna_store::{Mode, Store};
+    use katna_sync::calendar::{caldav::CalDav, edit::Remote, manage};
+
+    smol::block_on(async {
+        let origin = format!("http://127.0.0.1:{}", port("KATNA_RADICALE_PORT", 5232));
+        let dav = CalDav::with_origin(&origin, USER, PASSWORD, tls());
+        let remote = Remote::CalDav(&dav);
+        let tmp = tempfile::tempdir().unwrap();
+        let mut store = Store::open(&Paths::with_root(tmp.path()), Mode::ReadWrite).unwrap();
+        let account = AccountId(1);
+        let name = unique("katna-test-calendar");
+        let made = manage::add(&remote, &name, "#d50000").await.unwrap();
+        dav.sync(&mut store, account, USER).await.unwrap();
+        let find = |store: &Store, remote_id: &str| {
+            store
+                .calendars()
+                .unwrap()
+                .into_iter()
+                .find(|c| c.remote_id == remote_id)
+        };
+        let listed = find(&store, &made.remote_id).expect("the new calendar is listed");
+        assert_eq!(
+            (listed.name.as_str(), listed.color.as_str()),
+            (name.as_str(), "#d50000")
+        );
+
+        let renamed = format!("{name}-renamed");
+        manage::rename(&remote, &listed, &renamed).await.unwrap();
+        manage::recolor(&remote, &listed, "#33b679").await.unwrap();
+        dav.sync(&mut store, account, USER).await.unwrap();
+        let listed = find(&store, &made.remote_id).unwrap();
+        assert_eq!(
+            (listed.name.as_str(), listed.color.as_str()),
+            (renamed.as_str(), "#33b679")
+        );
+
+        manage::remove(&remote, &listed, true).await.unwrap();
+        dav.sync(&mut store, account, USER).await.unwrap();
+        assert!(
+            find(&store, &made.remote_id).is_none(),
+            "the calendar is gone"
+        );
+    });
+}
+
+/// Writes Katna's Sieve script on Dovecot and Stalwart through
+/// ManageSieve, as the daemon does for mail rules, then puts back the
+/// script that was active.
+#[test]
+#[ignore = "needs the dev/compose.yaml servers"]
+fn writes_rules_as_a_sieve_script() {
+    use katna_core::AccountId;
+    use katna_store::{
+        FolderId,
+        remote::{FolderRole, StoredFolder},
+        rules::{Action, Comparator, Condition, Field, Rule},
+    };
+    use katna_sync::sieve::{self, SCRIPT, managesieve::ManageSieve};
+
+    let folder = |id, path: &str, role| StoredFolder {
+        id: FolderId(id),
+        path: path.to_owned(),
+        role,
+        uidvalidity: None,
+        highestmodseq: None,
+        sync_state: None,
+    };
+    let folders = [
+        folder(1, "INBOX", Some(FolderRole::Inbox)),
+        folder(2, "Projects", None),
+    ];
+    let subject = unique("katna-sieve-test");
+    let rules = [Rule {
+        id: 1,
+        name: "Sieve test".into(),
+        conditions: vec![Condition {
+            field: Field::Subject,
+            comparator: Comparator::Contains,
+            value: subject.clone(),
+        }],
+        actions: vec![Action::MarkRead, Action::Move { folder: 2 }],
+        accounts: vec![1],
+        ..Rule::default()
+    }];
+    let servers = [
+        ("dovecot", port("KATNA_DOVECOT_SIEVE_PORT", 24190)),
+        ("stalwart", port("KATNA_STALWART_SIEVE_PORT", 14190)),
+    ];
+    for (name, port) in servers {
+        smol::block_on(async {
+            let mut session =
+                ManageSieve::connect("127.0.0.1", port, Security::StartTls, &creds(), tls())
+                    .await
+                    .unwrap_or_else(|e| panic!("{name}: {e}"));
+            let caps = session.capabilities().clone();
+            assert!(
+                caps.sieve.iter().any(|e| e == "fileinto"),
+                "{name}: {caps:?}"
+            );
+            let before = session.list().await.unwrap();
+            let was_active = before.iter().find(|(_, a)| *a).map(|(n, _)| n.clone());
+
+            let verdicts = sieve::push(&mut session, &rules, AccountId(1), &folders)
+                .await
+                .unwrap_or_else(|e| panic!("{name}: {e}"));
+            assert_eq!(verdicts, [(1, Ok(()))], "{name}");
+            let after = session.list().await.unwrap();
+            assert!(
+                after.contains(&(SCRIPT.to_owned(), true)),
+                "{name}: {after:?}"
+            );
+            let text = session.get(SCRIPT).await.unwrap();
+            assert!(text.contains(&subject), "{name}: {text}");
+            assert!(text.contains("fileinto \"Projects\";"), "{name}: {text}");
+            for (other, _) in &before {
+                assert!(
+                    after.iter().any(|(n, _)| n == other),
+                    "{name}: {other} kept"
+                );
+            }
+
+            // Leave the server as it was.
+            match was_active.filter(|n| n != SCRIPT) {
+                Some(old) => session.set_active(&old).await.unwrap(),
+                None => session.set_active("").await.unwrap(),
+            }
+            session.logout().await.unwrap();
         });
     }
 }

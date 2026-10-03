@@ -70,6 +70,7 @@ about-credit-resvg = SVG 圖片
 about-credit-jiff = 日期與時區
 about-credit-spellbook = 拼字檢查，來自 Helix 編輯器
 about-credit-smol = 同時處理多項工作
+about-credit-color-schemes = 內建配色的調色盤
 about-all-libraries = Katna 使用的所有程式庫（{ $count }）
 about-library-authors = 作者：{ $authors }
 about-license = Katna 是自由軟體，採用 GNU GPL 第 3 版或更新版本授權。
@@ -126,6 +127,21 @@ onboarding-density-default = 預設
 onboarding-density-compact = 精簡
 onboarding-continue = 繼續
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = 使用 Katna 帳戶享有更多功能
+onboarding-katna-lead = 這是選用的。它會開啟 Katna 的線上功能，你也可以稍後在「設定」>「訂閱」中建立。
+onboarding-katna-receipts-title = 讀取回條
+onboarding-katna-receipts-text = 查看對方何時開啟你寄出的郵件。
+onboarding-katna-links-title = 連結追蹤
+onboarding-katna-links-text = 查看郵件中有哪些連結被點按。
+onboarding-katna-activity-title = 活動
+onboarding-katna-activity-text = 所有已寄出郵件的開啟和點按次數，集中在同一處。
+onboarding-katna-translate-title = 自動翻譯
+onboarding-katna-translate-text = 用你的語言閱讀以其他語言撰寫的郵件。
+onboarding-katna-private = 它有自己的密碼。你的郵件登入資訊絕不會離開這部電腦。
+
 ## First run: done
 
 onboarding-ready-title = 一切就緒
@@ -169,7 +185,7 @@ tour-search-text = 離線時也能搜尋。最右側的按鈕可以加入篩選�
 tour-menu-title = 顯示或隱藏資料夾
 tour-menu-text = 這個按鈕會收合資料夾清單。隱藏時，將指標停在左側的「郵件」上即可查看資料夾。
 tour-apps-title = 你的應用程式
-tour-apps-text = 郵件現在就在這裡。日曆、聯絡人、工作、記事和資訊來源也將陸續加入這一列。
+tour-apps-text = 郵件就在這裡，旁邊還有日曆、聯絡人、工作、記事和檔案。
 tour-tabs-title = 收件匣分頁
 tour-tabs-text = 新郵件會分類到「主要」、「促銷內容」、「社交網路」、「最新快訊」和「論壇」。你可以在快速設定中關閉這些分頁。
 tour-list-title = 你的郵件
@@ -193,12 +209,22 @@ crash-view = 檢視報告
 crash-view-tooltip = 開啟儲存在這台電腦上的報告
 crash-copy = 複製報告
 crash-close = 關閉
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } 要求你重新登入 { $address }。
 sign-in-again-button = 登入
 sign-in-again-tooltip = 在瀏覽器中開啟 { $provider } 登入頁面
 sign-in-again-waiting = 正在等待瀏覽器…
 sign-in-again-close = 關閉
+google-api-off = Katna 的 Google Cloud 專案已關閉 { $api }。
+google-api-turn-on = 開啟
+google-api-turn-on-tooltip = 開啟 Google Cloud 以啟用 { $api }，然後按「再試一次」
 sign-in-again-done = 已重新登入 { $address }。正在接收你的郵件…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
        *[other] 將 { $count } 個會話群組移至垃圾桶？

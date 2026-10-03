@@ -37,10 +37,10 @@ use crate::widgets::{icon, tip};
 const CARD_WIDTH: f32 = 180.0;
 const THUMB_HEIGHT: f32 = 84.0;
 /// Thumbnails are drawn at twice the card's size, sharp on HiDPI screens.
-const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
+pub(super) const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
 /// The card's corner radius; its contents are rounded one pixel less, to
 /// sit inside its border.
-const CARD_RADIUS: f32 = 8.0;
+pub(super) const CARD_RADIUS: f32 = 8.0;
 /// Files handed to another app are removed after this long.
 const OPENED_KEEP: Duration = Duration::from_secs(24 * 60 * 60);
 
@@ -57,7 +57,7 @@ pub(super) struct Item {
 }
 
 impl Item {
-    fn new(index: usize, attachment: &Attachment) -> Self {
+    pub(super) fn new(index: usize, attachment: &Attachment) -> Self {
         Self {
             index,
             name: attachment.name.clone(),
@@ -70,7 +70,7 @@ impl Item {
 
 /// What the top of a card shows.
 #[derive(Clone)]
-enum Thumb {
+pub(super) enum Thumb {
     /// A PDF's first page or a picture, and a blurred copy of it shown like
     /// frosted glass behind the name and Save button when the pointer is
     /// over the card.
@@ -84,8 +84,16 @@ enum Thumb {
 }
 
 impl Thumb {
+    /// Its blurred copy, for the hover panel.
+    pub(super) fn frosted(&self) -> Option<Arc<RenderImage>> {
+        match self {
+            Thumb::Picture { frosted, .. } => Some(frosted.clone()),
+            Thumb::Glance(_) => None,
+        }
+    }
+
     /// Its bitmaps, to free when it is no longer drawn.
-    fn bitmaps(self) -> Vec<Arc<RenderImage>> {
+    pub(super) fn bitmaps(self) -> Vec<Arc<RenderImage>> {
         match self {
             Thumb::Picture { sharp, frosted } => vec![sharp, frosted],
             Thumb::Glance(_) => Vec::new(),
@@ -105,11 +113,37 @@ pub(super) struct Files {
     /// What had the keyboard before the viewer opened.
     restore: Option<FocusHandle>,
     /// The viewer shows the attachments of a decrypted message.
-    viewer_encrypted: bool,
+    pub(super) viewer_encrypted: bool,
+    /// The open conversation's message the viewer shows, which a marked
+    /// copy can be sent back to in a reply.
+    viewer_message: Option<MessageId>,
+    /// The mail of the file the viewer was opened on from the Files page,
+    /// for its Show the mail button.
+    pub(super) viewer_mail: Option<MessageId>,
+    /// Where the viewer shows: over the message being written when one of
+    /// its files was opened, in the popped-out window when opened there.
+    pub(super) viewer_place: ViewerPlace,
     _viewer_events: Option<Subscription>,
 }
 
+/// Where the viewer is drawn.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub(super) enum ViewerPlace {
+    /// In the mail window, under the message being written.
+    #[default]
+    Window,
+    /// In the mail window, over the message being written.
+    OverCompose,
+    /// In the popped-out compose window.
+    Popout,
+}
+
 impl Files {
+    /// The thumbnail of attachment `index` of message `id`, once made.
+    pub(super) fn thumb(&self, id: MessageId, index: usize) -> Option<Thumb> {
+        self.thumbs.get(&(id, index)).cloned()
+    }
+
     /// Forgets the thumbnails of messages other than `keep`.
     fn keep_only(&mut self, keep: &HashSet<MessageId>) {
         self.asked.retain(|id, _| keep.contains(id));
@@ -135,6 +169,15 @@ pub(super) fn bitmap(mut image: RgbaImage) -> Arc<RenderImage> {
     Arc::new(RenderImage::new([Frame::new(image)]))
 }
 
+/// A picture as a card's top: sharp, and blurred for the hover panel.
+pub(super) fn picture_thumb(sharp: RgbaImage) -> Thumb {
+    let frosted = bitmap(frosted(&sharp));
+    Thumb::Picture {
+        sharp: bitmap(sharp),
+        frosted,
+    }
+}
+
 /// `thumb` made small and blurred. Drawn stretched over the whole card,
 /// it reads as the thumbnail seen through frosted glass (GPUI has no
 /// backdrop blur).
@@ -147,7 +190,7 @@ fn frosted(thumb: &RgbaImage) -> RgbaImage {
 /// Where a list chip's attachment is among the message's parsed ones: the
 /// same name (the `nth` of that name), else the same place among the named
 /// ones, as the list read them from the message's structure.
-fn row_file_index(attachments: &[Attachment], file: &RowFile) -> Option<usize> {
+pub(super) fn row_file_index(attachments: &[Attachment], file: &RowFile) -> Option<usize> {
     attachments
         .iter()
         .enumerate()
@@ -187,7 +230,7 @@ pub(super) fn kind_badge(kind: Kind, size: f32) -> AnyElement {
 }
 
 /// Whether the cards show a thumbnail of this kind.
-fn has_thumbnail(kind: Kind) -> bool {
+pub(super) fn has_thumbnail(kind: Kind) -> bool {
     match kind {
         Kind::Pdf
         | Kind::Picture(_)
@@ -217,16 +260,10 @@ fn group(kind: Kind) -> Option<FileGroup> {
 const GLANCE_MAX_BYTES: usize = 20 * 1024 * 1024;
 
 /// The thumbnail of attachment `index` of `raw`.
-fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
+pub(super) fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
     let file = katna_render::attachment_file(raw, index)?;
     let (w, h) = THUMB_PIXELS;
-    let picture = |sharp: RgbaImage| {
-        let frosted = bitmap(frosted(&sharp));
-        Thumb::Picture {
-            sharp: bitmap(sharp),
-            frosted,
-        }
-    };
+    let picture = picture_thumb;
     match kind {
         Kind::Pdf => katna_preview::pdf::thumbnail(file.bytes, w, h).map(picture),
         Kind::Picture(format) => katna_preview::picture::thumbnail(&file.bytes, format, w, h)
@@ -244,6 +281,151 @@ fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
     }
 }
 
+/// The top of a card: its thumbnail, else the file type's badge `badge`
+/// wide on a tinted ground. Under a hover panel (`panel`, the card's
+/// group) it goes while the panel shows: two curves drawn over each other
+/// let a hair of a white page through at the rounded corners.
+pub(super) fn card_top(
+    thumb: Option<Thumb>,
+    kind: Kind,
+    badge: f32,
+    panel: Option<SharedString>,
+    th: &Theme,
+) -> gpui::Div {
+    let inner = px(CARD_RADIUS - 1.0);
+    let top = match thumb {
+        Some(Thumb::Picture { sharp, .. }) => div().size_full().child(
+            img(ImageSource::Render(sharp))
+                .size_full()
+                .rounded_t(inner)
+                .object_fit(ObjectFit::Cover),
+        ),
+        Some(Thumb::Glance(glance)) => div().size_full().child(glance_page(&glance, inner)),
+        None => div()
+            .size_full()
+            .flex()
+            .items_center()
+            .justify_center()
+            .bg(rgba(th.read_row))
+            .child(kind_badge(kind, badge)),
+    };
+    match panel {
+        Some(group) => top.group_hover(group, |s| s.opacity(0.0)),
+        None => top,
+    }
+}
+
+/// What a card shows while the pointer is over it (a member of `group`):
+/// its name and size on frosted glass, with `buttons` (Save, and on the
+/// Files page Show the mail) at the bottom right.
+pub(super) fn hover_panel(
+    group: SharedString,
+    name: String,
+    size: u64,
+    frost: Option<Arc<RenderImage>>,
+    buttons: Vec<AnyElement>,
+    th: &Theme,
+) -> gpui::Div {
+    let inner = px(CARD_RADIUS - 1.0);
+    // Frosted glass in the theme's own color: the blurred thumbnail
+    // under a veil of the card's surface, text in the theme's ink.
+    // Without a thumbnail there is nothing to blur, so the veil
+    // is thicker and hides the file-type badge under it.
+    let veil = (th.surface & 0xffff_ff00) | if frost.is_some() { 0xa6 } else { 0xf0 };
+    let (ink, ink_dim) = panel_ink(th);
+    div()
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full()
+        // Shown on hover. Not `hidden()`: GPUI cannot switch
+        // `display` on hover between layout and paint.
+        .opacity(0.0)
+        .group_hover(group, |s| s.opacity(1.0))
+        .rounded(inner)
+        .overflow_hidden()
+        .children(frost.map(|image| {
+            img(ImageSource::Render(image))
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full()
+                .rounded(inner)
+                .object_fit(ObjectFit::Fill)
+        }))
+        .child(
+            div()
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full()
+                .rounded(inner)
+                .bg(rgba(veil)),
+        )
+        .flex()
+        .flex_col()
+        .justify_between()
+        .p(px(10.0))
+        .text_color(rgba(ink))
+        .child(
+            div()
+                .text_size(px(13.0))
+                .font_weight(FontWeight::MEDIUM)
+                .line_clamp(2)
+                .child(name),
+        )
+        .child(
+            div()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(6.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .text_size(px(12.0))
+                        .text_color(rgba(ink_dim))
+                        .child(format::size(size)),
+                )
+                .children(buttons),
+        )
+}
+
+/// The ink of a hover panel, and its dimmer ink.
+fn panel_ink(th: &Theme) -> (u32, u32) {
+    if th.dark {
+        (0xffffffff, 0xffffffcc)
+    } else {
+        (th.text, th.text_dim)
+    }
+}
+
+/// A round button on a card's hover panel.
+pub(super) fn panel_button(
+    id: impl Into<gpui::ElementId>,
+    name: &'static str,
+    label: String,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    let (ink, _) = panel_ink(th);
+    let (button, button_hover) = if th.dark {
+        (0xffffff26, 0xffffff4d)
+    } else {
+        (0x0000001a, 0x00000033)
+    };
+    div()
+        .id(id)
+        .size(px(32.0))
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded_full()
+        .bg(rgba(button))
+        .hover(move |s| s.bg(rgba(button_hover)))
+        .tooltip(tip(label, th))
+        .child(icon(name, ink, 18.0))
+}
+
 /// Ink of a glance: it sits on a white page in every theme, like a PDF.
 const PAGE_INK: u32 = 0x3c4043ff;
 const GRID_LINE: u32 = 0xe0e3e7ff;
@@ -251,7 +433,7 @@ const GRID_HEADER: u32 = 0xf1f3f4ff;
 const GRID_HEADER_INK: u32 = 0x80868bff;
 
 /// A glance drawn on a white page the size of a card's top.
-fn glance_page(glance: &Glance, radius: gpui::Pixels) -> AnyElement {
+pub(super) fn glance_page(glance: &Glance, radius: gpui::Pixels) -> AnyElement {
     let page = div()
         .size_full()
         .overflow_hidden()
@@ -290,9 +472,12 @@ fn glance_page(glance: &Glance, radius: gpui::Pixels) -> AnyElement {
                     .flex_row()
                     .border_b_1()
                     .border_color(rgba(GRID_LINE))
-                    .when(header, |r| r.bg(rgba(GRID_HEADER)))
+                    // The header's corners follow the page's, else they
+                    // poke out past the card's rounded ones.
+                    .when(header, |r| r.rounded_t(radius).bg(rgba(GRID_HEADER)))
                     .child(
                         div()
+                            .when(header, |c| c.rounded_tl(radius))
                             .w(px(numbers))
                             .flex_none()
                             .h_full()
@@ -460,109 +645,38 @@ impl MailWindow {
                 .filter(|_| self.config.mail.attachment_previews)
                 .cloned();
             let name = item.name.clone();
-            let inner = px(CARD_RADIUS - 1.0);
-            let frost = match &thumb {
-                Some(Thumb::Picture { frosted, .. }) => Some(frosted.clone()),
-                _ => None,
-            };
-            let top = match thumb {
-                Some(Thumb::Picture { sharp, .. }) => div().size_full().child(
-                    img(ImageSource::Render(sharp))
-                        .size_full()
-                        .rounded_t(inner)
-                        .object_fit(ObjectFit::Cover),
-                ),
-                Some(Thumb::Glance(glance)) => div().size_full().child(glance_page(&glance, inner)),
-                None => div()
-                    .size_full()
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .bg(rgba(th.read_row))
-                    .child(kind_badge(item.kind, 36.0)),
-            };
+            let frost = thumb.as_ref().and_then(Thumb::frosted);
+            let top = card_top(thumb, item.kind, 36.0, Some(group.clone()), th);
             let save_name = name.clone();
-            // Frosted glass in the theme's own color: the blurred thumbnail
-            // under a veil of the card's surface, text in the theme's ink.
-            // Without a thumbnail there is nothing to blur, so the veil
-            // is thicker and hides the file-type badge under it.
-            let veil = (th.surface & 0xffff_ff00) | if frost.is_some() { 0xa6 } else { 0xf0 };
-            let (ink, ink_dim, button, button_hover) = if th.dark {
-                (0xffffffff, 0xffffffcc, 0xffffff26, 0xffffff4d)
-            } else {
-                (th.text, th.text_dim, 0x0000001a, 0x00000033)
-            };
-            let overlay = div()
-                .absolute()
-                .top_0()
-                .left_0()
-                .size_full()
-                // Shown on hover. Not `hidden()`: GPUI cannot switch
-                // `display` on hover between layout and paint.
-                .opacity(0.0)
-                .group_hover(group.clone(), |s| s.opacity(1.0))
-                .rounded(inner)
-                .overflow_hidden()
-                .children(frost.map(|image| {
-                    img(ImageSource::Render(image))
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .size_full()
-                        .rounded(inner)
-                        .object_fit(ObjectFit::Fill)
-                }))
-                .child(
-                    div()
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .size_full()
-                        .rounded(inner)
-                        .bg(rgba(veil)),
-                )
-                .flex()
-                .flex_col()
-                .justify_between()
-                .p(px(10.0))
-                .text_color(rgba(ink))
-                .child(
-                    div()
-                        .text_size(px(13.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .line_clamp(2)
-                        .child(name.clone()),
-                )
-                .child(
-                    div()
-                        .flex()
-                        .flex_row()
-                        .items_center()
-                        .justify_between()
-                        .child(
-                            div()
-                                .text_size(px(12.0))
-                                .text_color(rgba(ink_dim))
-                                .child(format::size(item.size)),
-                        )
-                        .child(
-                            div()
-                                .id(("attachment-save", ix))
-                                .size(px(32.0))
-                                .flex()
-                                .items_center()
-                                .justify_center()
-                                .rounded_full()
-                                .bg(rgba(button))
-                                .hover(move |s| s.bg(rgba(button_hover)))
-                                .tooltip(tip(tr!("attachment-save"), th))
-                                .on_click(cx.listener(move |this, _, _, cx| {
-                                    cx.stop_propagation();
-                                    this.save_from_message(id, ix, &save_name, cx);
-                                }))
-                                .child(icon("download", ink, 18.0)),
-                        ),
-                );
+            let save = panel_button(
+                ("attachment-save", ix),
+                "download",
+                tr!("attachment-save"),
+                th,
+            )
+            .on_click(cx.listener(move |this, _, _, cx| {
+                cx.stop_propagation();
+                this.save_from_message(id, ix, &save_name, cx);
+            }));
+            let forward_name = name.clone();
+            let forward = panel_button(
+                ("attachment-forward", ix),
+                "forward",
+                tr!("attachment-forward"),
+                th,
+            )
+            .on_click(cx.listener(move |this, _, window, cx| {
+                cx.stop_propagation();
+                this.forward_from_message(id, ix, &forward_name, window, cx);
+            }));
+            let overlay = hover_panel(
+                group.clone(),
+                name.clone(),
+                item.size,
+                frost,
+                vec![forward.into_any_element(), save.into_any_element()],
+                th,
+            );
             div()
                 .id(("attachment", ix))
                 .group(group)
@@ -574,7 +688,7 @@ impl MailWindow {
                 .overflow_hidden()
                 .rounded(px(CARD_RADIUS))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .cursor_pointer()
                 .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
@@ -663,7 +777,7 @@ impl MailWindow {
     }
 
     /// Opens attachment `index` of message `id` in the viewer.
-    fn open_attachment(
+    pub(super) fn open_attachment(
         &mut self,
         id: MessageId,
         index: usize,
@@ -691,7 +805,7 @@ impl MailWindow {
             self.show_snackbar(tr!("attachment-not-downloaded"), None, cx);
             return;
         };
-        self.show_viewer(raw, encrypted, items, index, window, cx);
+        self.show_viewer(raw, encrypted, items, index, Some(id), window, cx);
     }
 
     /// Opens an attachment chip of the message list in the viewer, with
@@ -734,14 +848,27 @@ impl MailWindow {
             self.open_elsewhere(file.message, index, &name, open_in == OpenIn::Ask, cx);
             return;
         }
-        self.show_viewer(raw, encrypted, items, index, window, cx);
+        self.show_viewer(raw, encrypted, items, index, None, window, cx);
+        // From the Files page the viewer can show the file's mail.
+        // Its arrows page through the page's files.
+        if self.app == super::apps::App::Files
+            && let Some(viewer) = &self.files.viewer
+        {
+            self.files.viewer_mail = Some(file.message);
+            let place = self.library_place(file);
+            viewer.update(cx, |viewer, cx| {
+                viewer.can_show_mail = true;
+                viewer.library = place;
+                cx.notify();
+            });
+        }
     }
 
     /// Where a click opens `item`: as Default apps says for its type; a
     /// file Katna has no preview for goes straight to the desktop's default
     /// app, unless it could run a program (the viewer then offers only
     /// Save).
-    fn open_in(&self, item: &Item) -> OpenIn {
+    pub(super) fn open_in(&self, item: &Item) -> OpenIn {
         match group(item.kind) {
             Some(group) => self.config.mail.open.get(group),
             None if item.risky => OpenIn::Katna,
@@ -749,23 +876,58 @@ impl MailWindow {
         }
     }
 
-    fn show_viewer(
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn show_viewer(
         &mut self,
         raw: Arc<Vec<u8>>,
         encrypted: bool,
         items: Vec<Item>,
         index: usize,
+        message: Option<MessageId>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
         self.close_viewer(window, cx);
         self.files.restore = window.focused(cx);
         self.files.viewer_encrypted = encrypted;
+        self.files.viewer_message = message;
         let th = self.theme(window);
-        let viewer = cx.new(|cx| Viewer::new(raw, items, index, th, window, cx));
+        let reply = message.is_some();
+        let dark_pages = self.config.mail.dark_pages;
+        let viewer = cx.new(|cx| {
+            let mut viewer = Viewer::new(raw, items, index, reply, th, window, cx);
+            viewer.dark_pages = dark_pages;
+            viewer.start(cx);
+            viewer
+        });
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
         self.files.viewer = Some(viewer);
         cx.notify();
+    }
+
+    /// Opens the viewer on `item` before its file is here (a drive file
+    /// still downloading): it turns until the file is handed to it.
+    pub(super) fn show_fetching_viewer(
+        &mut self,
+        item: Item,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Entity<Viewer> {
+        self.close_viewer(window, cx);
+        self.files.restore = window.focused(cx);
+        self.files.viewer_encrypted = false;
+        self.files.viewer_message = None;
+        let th = self.theme(window);
+        let dark_pages = self.config.mail.dark_pages;
+        let viewer = cx.new(|cx| {
+            let mut viewer = Viewer::fetching(item, th, window, cx);
+            viewer.dark_pages = dark_pages;
+            viewer
+        });
+        self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
+        self.files.viewer = Some(viewer.clone());
+        cx.notify();
+        viewer
     }
 
     fn on_viewer(
@@ -792,6 +954,32 @@ impl MailWindow {
                 self.close_viewer(window, cx);
                 self.open_attachment_with(file.clone(), ask, encrypted, cx)
             }
+            ViewerEvent::Step(by) => self.step_library(*by, window, cx),
+            ViewerEvent::Paged(index) => self.paged_library(*index, cx),
+            ViewerEvent::Pick => self.pick_previewed(cx),
+            ViewerEvent::ShowMail => {
+                let mail = self.files.viewer_mail;
+                self.close_viewer(window, cx);
+                if let Some(id) = mail {
+                    self.show_file_mail(id, window, cx);
+                }
+            }
+            ViewerEvent::DarkPages(on) => {
+                self.config.mail.dark_pages = *on;
+                self.save_config();
+            }
+            ViewerEvent::Forward(file) => {
+                let file = file.clone();
+                self.close_viewer(window, cx);
+                self.new_mail_with_file(&file, window, cx);
+            }
+            ViewerEvent::Reply(file) => {
+                let message = self.files.viewer_message;
+                self.close_viewer(window, cx);
+                if let Some(id) = message {
+                    self.reply_with_file(id, file, window, cx);
+                }
+            }
         }
     }
 
@@ -802,6 +990,11 @@ impl MailWindow {
         let released = viewer.update(cx, |viewer, _| viewer.take_released(true));
         self.files.released.extend(released);
         self.files._viewer_events = None;
+        self.files.viewer_mail = None;
+        self.files.viewer_place = ViewerPlace::Window;
+        if let Some(picker) = &mut self.picker {
+            picker.previewing = false;
+        }
         match self.files.restore.take() {
             Some(focus) => focus.focus(window, cx),
             None => self.list_focus.focus(window, cx),
@@ -810,7 +1003,7 @@ impl MailWindow {
     }
 
     /// Saves attachment `index` of message `id`.
-    fn save_from_message(
+    pub(super) fn save_from_message(
         &mut self,
         id: MessageId,
         index: usize,
@@ -829,6 +1022,38 @@ impl MailWindow {
                 .await;
             this.update(cx, |this, cx| match file {
                 Some(file) => this.save_attachment(Arc::new(file), cx),
+                None => this.show_snackbar(
+                    tr!("attachment-read-failed", name = name.as_str()),
+                    None,
+                    cx,
+                ),
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// Starts a new mail with only attachment `index` of message `id`.
+    fn forward_from_message(
+        &mut self,
+        id: MessageId,
+        index: usize,
+        name: &str,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some((raw, _)) = self.attachment_raw(id) else {
+            self.show_snackbar(tr!("attachment-not-downloaded"), None, cx);
+            return;
+        };
+        let name = name.to_owned();
+        cx.spawn_in(window, async move |this, cx| {
+            let file = cx
+                .background_executor()
+                .spawn(async move { katna_render::attachment_file(&raw, index) })
+                .await;
+            this.update_in(cx, |this, window, cx| match file {
+                Some(file) => this.new_mail_with_file(&file, window, cx),
                 None => this.show_snackbar(
                     tr!("attachment-read-failed", name = name.as_str()),
                     None,
@@ -981,7 +1206,7 @@ impl MailWindow {
     /// the desktop cannot ask), else the default app for its type. The copy
     /// is in the cache, or, for an `encrypted` message's attachment, in
     /// memory (never on disk). Programs and scripts are never handed over.
-    fn open_attachment_with(
+    pub(super) fn open_attachment_with(
         &mut self,
         file: Arc<AttachmentFile>,
         ask: bool,

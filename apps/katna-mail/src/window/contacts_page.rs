@@ -18,24 +18,26 @@ use std::sync::Arc;
 
 use futures_lite::StreamExt;
 use gpui::{
-    AnimationExt, AnyElement, Context, Entity, FontWeight, RenderImage, Task, div, prelude::*,
+    AnimationExt, AnyElement, Context, Div, Entity, FontWeight, RenderImage, Task, div, prelude::*,
     rgba, uniform_list,
 };
 use katna_core::contact::Card;
-use katna_core::{Account, OAuthProvider};
+use katna_core::{Account, AccountKind, OAuthProvider};
 use katna_i18n::tr;
 use katna_store::{AddressBook, BookSource, BookState, SavedContact, StoredCard};
 use katna_ui::{InputEvent, Ripple, TextInput, px};
 use zbus::Connection;
 
 use super::MailWindow;
+use super::account_status::{AccountStatus, Of, Say};
 use super::apps::App;
 use super::contacts_edit::{Deleted, Editor, PendingDelete, visible};
 use super::contacts_labels::{LabelDialog, LabelMenu};
+use super::select::{Pieces, selectable};
 use crate::daemon;
 use crate::data::SavedBook;
 use crate::theme::{Theme, mix};
-use crate::widgets::{icon, placeholder, tip};
+use crate::widgets::{filled_button, icon, icon_button, tag, tip, tonal_icon_button};
 
 /// Width of the column with Contacts, Frequent and the labels.
 const NAV_WIDTH: f32 = 248.0;
@@ -59,7 +61,7 @@ pub(super) enum View {
     /// Suggested duplicates ([`super::contacts_merge`]).
     Merge,
     Label(String),
-    /// The people saved in one account ([`super::contacts_accounts`]).
+    /// The people saved in one account.
     Account(i64),
 }
 
@@ -117,7 +119,7 @@ pub(super) struct ContactsPage {
     /// A person shown as a QR code.
     pub(super) qr: Option<super::contacts_share::QrShare>,
     /// Where each account's contacts sync stands.
-    pub(super) accounts: super::contacts_accounts::AccountStatus,
+    pub(super) accounts: AccountStatus,
 }
 
 pub(super) struct Open {
@@ -149,7 +151,7 @@ impl MailWindow {
     }
 
     pub(super) fn load_contacts(&mut self, cx: &mut Context<Self>) {
-        self.load_contacts_status(cx);
+        self.load_account_status(Of::Contacts, cx);
         let paths = self.paths.clone();
         self.contacts.load = Some(cx.spawn(async move |this, cx| {
             let book = cx
@@ -442,8 +444,8 @@ impl MailWindow {
             self.render_contact(&person, cards, book.as_deref(), th, cx)
         } else {
             match &self.contacts.book {
-                None => placeholder(&tr!("contacts-loading"), th),
-                Some(Err(_)) => placeholder(&tr!("contacts-loading"), th),
+                None => self.placeholder(tr!("contacts-loading"), th),
+                Some(Err(_)) => self.placeholder(tr!("contacts-loading"), th),
                 Some(Ok(book)) => {
                     let book = book.clone();
                     self.contacts_list(&book, &query, th, cx)
@@ -494,7 +496,7 @@ impl MailWindow {
                         .flex_none()
                         .text_size(px(12.0))
                         .text_color(rgba(if on {
-                            th.nav_selected_text
+                            th.row_selected_text
                         } else {
                             th.text_faint
                         }))
@@ -537,7 +539,6 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(2.0))
-            .child(self.create_contact_button(th, cx))
             .child(item(
                 ("contacts-nav", 0),
                 "contacts",
@@ -634,22 +635,117 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// "Create contact", at the top of the column like Compose in Mail.
-    fn create_contact_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    /// "Accounts" in the column: every mail account with how many people
+    /// are saved in it, and why one shows none.
+    pub(super) fn contacts_accounts_nav(
+        &self,
+        book: Option<&SavedBook>,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        // A mail archive on this computer has no address book.
+        let accounts: Vec<(i64, String)> = self
+            .accounts
+            .iter()
+            .filter(|a| a.kind.is_mail() && a.kind != AccountKind::Local)
+            .map(|a| (a.id.0, a.address.clone()))
+            .collect();
+        let rows = accounts.into_iter().enumerate().map(|(ix, (id, address))| {
+            let on = self.contacts.view == View::Account(id);
+            let (people, books) = book.map_or((0, 0), |b| {
+                let people = visible(&b.people, &self.contacts.hidden)
+                    .into_iter()
+                    .filter(|&i| {
+                        b.people[i]
+                            .accounts
+                            .iter()
+                            .any(|a| a.is_some_and(|a| a.0 == id))
+                    })
+                    .count();
+                let books = b
+                    .books
+                    .iter()
+                    .filter(|x| x.account.is_some_and(|a| a.0 == id))
+                    .count();
+                (people, books)
+            });
+            let row =
+                div()
+                    .id(("contacts-account", ix))
+                    .relative()
+                    .overflow_hidden()
+                    .h(px(36.0))
+                    .mr(px(12.0))
+                    .pl(px(20.0))
+                    .pr(px(16.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(14.0))
+                    .rounded_r_full()
+                    .cursor_pointer()
+                    .when(on, |d| d.bg(rgba(th.row_selected)))
+                    .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
+                    .child(Ripple::new(("contacts-account", ix), rgba(th.ripple)))
+                    .child(icon(
+                        "cloud",
+                        if on {
+                            th.row_selected_text
+                        } else {
+                            th.text_dim
+                        },
+                        20.0,
+                    ))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .truncate()
+                            .text_size(px(14.0))
+                            .when(on, |d| d.font_weight(FontWeight::SEMIBOLD))
+                            .text_color(rgba(if on { th.row_selected_text } else { th.text }))
+                            .child(address),
+                    )
+                    .when(people > 0, |d| {
+                        d.child(
+                            div()
+                                .flex_none()
+                                .text_size(px(12.0))
+                                .text_color(rgba(if on {
+                                    th.row_selected_text
+                                } else {
+                                    th.text_faint
+                                }))
+                                .child(katna_i18n::format::number(people as u64)),
+                        )
+                    })
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.set_contacts_view(View::Account(id), cx)
+                    }));
+            div()
+                .flex()
+                .flex_col()
+                .child(row)
+                // Nothing yet, or old people that no longer sync: say why.
+                .when(books == 0 || self.contacts.accounts.failing(id), |d| {
+                    d.child(self.render_account_status(Of::Contacts, id, th, cx))
+                })
+        });
         div()
             .flex()
+            .flex_col()
+            .gap(px(2.0))
             .child(
-                super::nav::side_create_button(
-                    "contact-create",
-                    "person-add",
-                    tr!("contacts-create"),
-                    th,
-                )
-                .on_click(cx.listener(|this, _, window, cx| {
-                    this.contacts.open = None;
-                    this.start_contact_edit(None, window, cx)
-                })),
+                div()
+                    .pt(px(18.0))
+                    .pb(px(6.0))
+                    .pl(px(20.0))
+                    .text_size(px(12.0))
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .text_color(rgba(th.text))
+                    .child(tr!("contacts-accounts")),
             )
+            .children(rows)
             .into_any_element()
     }
 
@@ -708,26 +804,11 @@ impl MailWindow {
                         .child(text),
                 )
                 .child(
-                    div()
-                        .id("contacts-allow")
-                        .relative()
-                        .overflow_hidden()
-                        .flex_none()
-                        .px(px(16.0))
-                        .h(px(36.0))
-                        .flex()
-                        .items_center()
-                        .rounded_full()
-                        .cursor_pointer()
-                        .bg(rgba(th.accent))
-                        .text_color(rgba(th.on_accent))
-                        .text_size(px(14.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .child(Ripple::new(("contacts-allow", 0usize), rgba(th.ripple)))
-                        .child(tr!("contacts-allow-button"))
-                        .on_click(cx.listener(move |this, _, _, cx| {
+                    filled_button("contacts-allow", tr!("contacts-allow-button"), th).on_click(
+                        cx.listener(move |this, _, _, cx| {
                             this.allow_contacts(account.clone(), provider, cx)
-                        })),
+                        }),
+                    ),
                 )
                 .into_any_element(),
         )
@@ -771,7 +852,7 @@ impl MailWindow {
             } else {
                 tr!("contacts-empty")
             };
-            return placeholder(&text, th);
+            return self.placeholder(text, th);
         }
         let starred: Vec<usize> = shown
             .iter()
@@ -924,6 +1005,7 @@ impl MailWindow {
     ) -> AnyElement {
         let open = person.clone();
         let dim = |d: gpui::Div| d.text_color(rgba(th.text_dim));
+        let mark = || self.muted_mark_any(&person.emails, 16.0, th);
         let row = div()
             .id(("contact", ix))
             .w_full()
@@ -959,10 +1041,19 @@ impl MailWindow {
                         .flex_col()
                         .child(
                             div()
-                                .truncate()
-                                .text_color(rgba(th.text))
-                                .font_weight(FontWeight::MEDIUM)
-                                .child(person.name.clone()),
+                                .flex()
+                                .flex_row()
+                                .items_center()
+                                .gap(px(6.0))
+                                .child(
+                                    div()
+                                        .min_w_0()
+                                        .truncate()
+                                        .text_color(rgba(th.text))
+                                        .font_weight(FontWeight::MEDIUM)
+                                        .child(person.name.clone()),
+                                )
+                                .children(mark()),
                         )
                         .when(!under.is_empty(), |d| {
                             d.child(
@@ -978,9 +1069,14 @@ impl MailWindow {
             .when(self.contacts_columns(), |row| {
                 row.child(
                     column(2.0)
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(6.0))
                         .text_color(rgba(th.text))
                         .font_weight(FontWeight::MEDIUM)
-                        .child(person.name.clone()),
+                        .child(div().min_w_0().truncate().child(person.name.clone()))
+                        .children(mark()),
                 )
                 .child(dim(column(2.4)).child(person.emails.first().cloned().unwrap_or_default()))
                 .child(dim(column(1.6)).child(person.phone.clone()))
@@ -1007,29 +1103,21 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let cards = match cards {
-            None => return placeholder(&tr!("contacts-loading"), th),
-            Some(Err(err)) => return placeholder(&err, th),
+            None => return self.placeholder(tr!("contacts-loading"), th),
+            Some(Err(err)) => return self.placeholder(err, th),
             Some(Ok(cards)) => cards,
         };
         let merged = merge(&cards);
         let email = person.emails.first().cloned();
         let phone = merged.phones.first().map(|p| p.value.clone());
-        let back = div()
-            .id("contact-back")
-            .relative()
-            .overflow_hidden()
-            .size(px(40.0))
-            .flex()
-            .items_center()
-            .justify_center()
-            .rounded_full()
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+        let back = icon_button("contact-back", "back", 20.0, th)
             .tooltip(tip(tr!("contacts-back"), th))
-            .child(Ripple::new(("contact-back", 0usize), rgba(th.ripple)).centered())
-            .child(icon("back", th.text_dim, 20.0))
             .on_click(cx.listener(|this, _, _, cx| this.close_contact(cx)));
         let job = merged.job();
+        // The name and details can be selected and copied, as on a web
+        // page; the buttons stay buttons.
+        let mut pieces = self.ui_pieces(th);
+        let part = pieces.part();
         let head = div()
             .flex()
             .flex_row()
@@ -1048,17 +1136,30 @@ impl MailWindow {
                     .gap(px(6.0))
                     .child(
                         div()
-                            .text_size(px(28.0))
-                            .text_color(rgba(th.text))
-                            .child(person.name.clone()),
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(10.0))
+                            .child(selectable(
+                                pieces
+                                    .words(person.name.clone())
+                                    .min_w_0()
+                                    .text_size(px(28.0))
+                                    .text_color(rgba(th.text)),
+                                Some(part),
+                                cx,
+                            ))
+                            .children(self.muted_mark_any(&person.emails, 22.0, th)),
                     )
                     .when(!job.is_empty(), |d| {
-                        d.child(
-                            div()
+                        d.child(selectable(
+                            pieces
+                                .words(job)
                                 .text_size(px(15.0))
-                                .text_color(rgba(th.text_dim))
-                                .child(job),
-                        )
+                                .text_color(rgba(th.text_dim)),
+                            Some(part),
+                            cx,
+                        ))
                     })
                     .child(
                         div()
@@ -1076,15 +1177,29 @@ impl MailWindow {
                     )
                     .child(self.contact_buttons(email, phone, th, cx)),
             );
+        let details_title = pieces.words(tr!("contacts-details"));
         let mut details: Vec<AnyElement> = Vec::new();
         for e in &merged.emails {
-            details.push(fact("mail", e.value.clone(), kind_label(&e.kind), th));
+            details.push(fact(
+                &mut pieces,
+                "mail",
+                e.value.clone(),
+                kind_label(&e.kind),
+                th,
+            ));
         }
         for p in &merged.phones {
-            details.push(fact("phone", p.value.clone(), kind_label(&p.kind), th));
+            details.push(fact(
+                &mut pieces,
+                "phone",
+                p.value.clone(),
+                kind_label(&p.kind),
+                th,
+            ));
         }
         for a in &merged.addresses {
             details.push(fact(
+                &mut pieces,
                 "location",
                 a.lines().join("\n"),
                 kind_label(&a.kind),
@@ -1092,19 +1207,27 @@ impl MailWindow {
             ));
         }
         if let Some(day) = birthday(&merged.birthday) {
-            details.push(fact("cake", day, tr!("contacts-birthday"), th));
+            details.push(fact(&mut pieces, "cake", day, tr!("contacts-birthday"), th));
         }
         for u in &merged.urls {
-            details.push(fact("link", u.value.clone(), kind_label(&u.kind), th));
+            details.push(fact(
+                &mut pieces,
+                "link",
+                u.value.clone(),
+                kind_label(&u.kind),
+                th,
+            ));
         }
         if !merged.nickname.is_empty() {
             details.push(fact(
+                &mut pieces,
                 "contacts",
                 merged.nickname.clone(),
                 tr!("contacts-nickname"),
                 th,
             ));
         }
+        let accounts_title = pieces.words(tr!("contacts-saved-in"));
         let accounts: Vec<AnyElement> = cards
             .iter()
             .map(|c| {
@@ -1125,24 +1248,25 @@ impl MailWindow {
                     .filter(|s| !s.is_empty())
                     .collect::<Vec<_>>()
                     .join(" · ");
-                fact("cloud", address, under, th)
+                fact(&mut pieces, "cloud", address, under, th)
             })
             .collect();
-        let mut sections = vec![section(tr!("contacts-details"), details, 0, th)];
-        sections.push(section(tr!("contacts-saved-in"), accounts, 1, th));
+        let mut sections = vec![
+            selectable(section(details_title, details, 0, th), Some(part), cx),
+            selectable(section(accounts_title, accounts, 1, th), Some(part), cx),
+        ];
         if !merged.note.is_empty() {
-            sections.push(section(
-                tr!("contacts-notes"),
-                vec![
-                    div()
-                        .text_size(px(14.0))
-                        .line_height(px(21.0))
-                        .text_color(rgba(th.text))
-                        .child(merged.note.clone())
-                        .into_any_element(),
-                ],
-                2,
-                th,
+            let title = pieces.words(tr!("contacts-notes"));
+            let note = pieces
+                .words(merged.note.clone())
+                .text_size(px(14.0))
+                .line_height(px(21.0))
+                .text_color(rgba(th.text))
+                .into_any_element();
+            sections.push(selectable(
+                section(title, vec![note], 2, th),
+                Some(part),
+                cx,
             ));
         }
         div()
@@ -1215,8 +1339,10 @@ impl MailWindow {
                     "contact-page",
                     person.ids.first().copied().unwrap_or(0) as usize,
                 ),
-                gpui::Animation::new(std::time::Duration::from_millis(220))
-                    .with_easing(gpui::ease_out_quint()),
+                gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    220,
+                )))
+                .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(10.0 * (1.0 - t))),
             )
             .into_any_element()
@@ -1230,39 +1356,13 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let tint = mix(
-            th.surface,
-            th.accent | 0xff,
-            if th.dark { 0.16 } else { 0.17 },
-        );
-        let tint_hover = mix(
-            th.surface,
-            th.accent | 0xff,
-            if th.dark { 0.24 } else { 0.25 },
-        );
         let button = |id: &'static str, glyph: &str, label: String, click: OnClick| {
             div()
                 .flex()
                 .flex_col()
                 .items_center()
                 .gap(px(4.0))
-                .child(
-                    div()
-                        .id(id)
-                        .relative()
-                        .overflow_hidden()
-                        .size(px(40.0))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .rounded_full()
-                        .cursor_pointer()
-                        .bg(rgba(tint))
-                        .hover(move |s| s.bg(rgba(tint_hover)))
-                        .on_click(click)
-                        .child(Ripple::new((id, 0usize), rgba(th.ripple)).centered())
-                        .child(icon(glyph, th.accent, 20.0)),
-                )
+                .child(tonal_icon_button(id, glyph, 40.0, false, true, th).on_click(click))
                 .child(
                     div()
                         .text_size(px(12.0))
@@ -1318,6 +1418,31 @@ impl MailWindow {
 
 /// Whether `person` matches the lower-case `query`: any word of the name,
 /// an address, the phone or the job.
+/// What the line under an account in the column says.
+pub(super) fn say(say: Say<'_>) -> String {
+    match say {
+        Say::SignIn => tr!("contacts-account-sign-in"),
+        Say::SignInRefused { provider } => {
+            tr!("contacts-account-sign-in-refused", provider = provider)
+        }
+        Say::SignedIn { address } => tr!("contacts-account-signed-in", address = address),
+        Say::Refused => tr!("contacts-account-password"),
+        Say::ChangePassword => tr!("contacts-account-change-password"),
+        Say::ChangePasswordTooltip => tr!("contacts-account-change-password-tooltip"),
+        // The contacts sync never reports an API switched off.
+        Say::NotEnabled | Say::Failed => tr!("contacts-account-failed"),
+        Say::Error { reason } => tr!("contacts-account-error", reason = reason),
+        Say::None => tr!("contacts-account-none"),
+        Say::NoneWhy { reason } => tr!("contacts-account-none-why", reason = reason),
+        Say::UseSignIn { provider } => tr!("contacts-account-use-sign-in", provider = provider),
+        Say::SignInWith { provider } => tr!("contacts-account-sign-in-with", provider = provider),
+        Say::Looking => tr!("contacts-account-looking"),
+        Say::TryAgain => tr!("contacts-account-try-again"),
+        Say::TryAgainTooltip => tr!("contacts-account-try-again-tooltip"),
+        Say::Fixing => tr!("contacts-account-fixing"),
+    }
+}
+
 fn matches(person: &SavedContact, query: &str) -> bool {
     let name = person.name.to_lowercase();
     name.starts_with(query)
@@ -1363,17 +1488,9 @@ fn heading_row(ix: usize, heading: Heading, count: usize, th: &Theme) -> AnyElem
 }
 
 fn chip(label: &str, th: &Theme) -> AnyElement {
-    div()
-        .flex_none()
+    tag(label.to_owned(), th)
         .max_w(px(140.0))
         .truncate()
-        .px(px(8.0))
-        .py(px(1.0))
-        .rounded_full()
-        .bg(rgba(th.chip))
-        .text_size(px(12.0))
-        .text_color(rgba(th.text_dim))
-        .child(label.to_owned())
         .into_any_element()
 }
 
@@ -1391,7 +1508,7 @@ fn label_button(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
         .gap(px(4.0))
         .rounded_full()
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(th.hover)))
         .text_size(px(12.0))
@@ -1410,7 +1527,7 @@ fn label_button(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
 }
 
 /// One detail: its icon, the value, and a quiet line under it.
-fn fact(glyph: &str, value: String, under: String, th: &Theme) -> AnyElement {
+fn fact(pieces: &mut Pieces, glyph: &str, value: String, under: String, th: &Theme) -> AnyElement {
     div()
         .flex()
         .flex_row()
@@ -1424,18 +1541,18 @@ fn fact(glyph: &str, value: String, under: String, th: &Theme) -> AnyElement {
                 .flex()
                 .flex_col()
                 .child(
-                    div()
+                    pieces
+                        .words(value)
                         .text_size(px(14.0))
                         .line_height(px(20.0))
-                        .text_color(rgba(th.text))
-                        .children(value.lines().map(|l| div().child(l.to_owned()))),
+                        .text_color(rgba(th.text)),
                 )
                 .when(!under.is_empty(), |d| {
                     d.child(
-                        div()
+                        pieces
+                            .words(under)
                             .text_size(px(12.0))
-                            .text_color(rgba(th.text_faint))
-                            .child(under),
+                            .text_color(rgba(th.text_faint)),
                     )
                 }),
         )
@@ -1443,7 +1560,7 @@ fn fact(glyph: &str, value: String, under: String, th: &Theme) -> AnyElement {
 }
 
 /// A faint tinted card with a heading, like the contact panel's.
-fn section(title: String, rows: Vec<AnyElement>, tint: usize, th: &Theme) -> AnyElement {
+fn section(title: Div, rows: Vec<AnyElement>, tint: usize, th: &Theme) -> Div {
     let hues = [th.accent | 0xff, 0x188038ff, 0xe37400ff];
     let hue = hues[tint % hues.len()];
     let top = mix(th.surface, hue, if th.dark { 0.10 } else { 0.07 });
@@ -1457,21 +1574,19 @@ fn section(title: String, rows: Vec<AnyElement>, tint: usize, th: &Theme) -> Any
         .gap(px(14.0))
         .rounded(px(14.0))
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .bg(gpui::linear_gradient(
             180.0,
             gpui::linear_color_stop(rgba(top), 0.0),
             gpui::linear_color_stop(rgba(th.surface), 0.35),
         ))
         .child(
-            div()
+            title
                 .text_size(px(15.0))
                 .font_weight(FontWeight::SEMIBOLD)
-                .text_color(rgba(th.text))
-                .child(title),
+                .text_color(rgba(th.text)),
         )
         .children(rows)
-        .into_any_element()
 }
 
 /// One card from several: the first name, every address and number once.

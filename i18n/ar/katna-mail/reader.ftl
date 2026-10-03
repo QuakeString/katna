@@ -147,6 +147,7 @@ attachment-count = { $count ->
    *[other] { $count } مرفق
 }
 attachment-save = حفظ
+attachment-forward = إعادة توجيه
 attachment-save-all = حفظ الكل
 attachment-save-all-tooltip = حفظ كل المرفقات في مجلد
 attachment-save-here = الحفظ هنا
@@ -213,6 +214,8 @@ print-not-downloaded = (لم يتم التنزيل بعد.)
 print-encrypted = (مشفّرة. افتحها في Katna Mail لطباعة نصها.)
 print-to = إلى: { $addresses }
 print-cc = نسخة إلى: { $addresses }
+text-pin = التثبيت في الأعلى
+text-copy-address = نسخ العنوان
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

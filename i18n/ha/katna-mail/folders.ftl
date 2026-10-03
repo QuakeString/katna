@@ -9,6 +9,17 @@ nav-folders = Folda
 nav-label-new = Ƙirƙiri sabon lakabi
 nav-folder-new = Ƙirƙiri sabuwar folda
 nav-menu-check-mail = Duba sabbin wasiƙu
+nav-menu-check-inbox = Duba wannan akwatin saƙo
+nav-menu-sign-in-again = Sake shiga
+nav-menu-new-mail = Sabuwar wasiƙa daga wannan asusu
+nav-menu-account-settings = Saitunan asusu
+nav-account-checked = An daidaita · an duba { $ago }
+nav-account-in-sync = An daidaita
+nav-account-connecting = Ana haɗawa…
+nav-account-offline = Babu intanet, ana sake gwadawa
+nav-account-signed-out = Shigar { $provider } ta ƙare
+nav-account-password-refused = An ƙi kalmar sirri
+nav-account-storage = An yi amfani da { $used } daga { $total }
 nav-menu-new-subfolder = Sabuwar folda a ciki
 nav-menu-new-sublabel = Sabon lakabi a ciki
 nav-menu-empty-trash = Kwashe kwandon shara
@@ -16,10 +27,6 @@ nav-account-unnamed = Asusu { $number }
 nav-all-accounts = Dukkan asusu
 nav-expand = Nuna folda
 nav-collapse = Ɓoye folda
-nav-tab-new = { $count ->
-    [one] { $count } sabo
-   *[other] { $count } sababbi
-}
 storage-used = An yi amfani da { $percent }% na { $total }
 storage-used-detail = { $address }: an yi amfani da { $used } na { $total }
 

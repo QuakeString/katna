@@ -9,7 +9,7 @@ rail-calendar = Kalender
 rail-contacts = Kontakte
 rail-tasks = Take
 rail-notes = Notas
-rail-feeds = Voere
+rail-files = Lêers
 
 ## Pages of apps still to come
 
@@ -18,7 +18,6 @@ app-coming-soon = Kom binnekort
 app-calendar-promise = Jou CalDAV-kalenders, vergaderingsuitnodigings uit jou e-pos en herinneringe, langs jou inkassie.
 app-tasks-promise = Taaklyste wat met CalDAV sinkroniseer, en take wat van e-pos gemaak is.
 app-notes-promise = Vinnige notas, en notas oor 'n e-pos of gesprek vir later.
-app-feeds-promise = Lees RSS- en Atom-voere langs jou e-pos.
 
 ## Contacts page
 

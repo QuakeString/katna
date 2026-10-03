@@ -46,6 +46,7 @@ compose-sent-archived = পঠিওৱা আৰু আৰ্কাইভ ক�
 compose-sent = বাৰ্তা পঠিওৱা হ'ল
 compose-discarded = ড্ৰাফ্ট বাতিল কৰা হ'ল
 compose-draft-saved = ড্ৰাফ্ট ছেভ কৰা হ'ল
+compose-draft-saving = ছেভ কৰি আছে…
 compose-draft-failed = ড্ৰাফ্টটো ছেভ কৰিব পৰা নগ'ল: { $error }
 compose-draft-not-opened = ড্ৰাফ্টটো খুলিব পৰা নগ'ল।
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = ড্ৰাফ্টটো খুলিব পৰা
 compose-picker-insert = সুমুৱাওক
 compose-picker-attach = সংলগ্ন কৰক
 compose-file-too-large = { $name } বহুত ডাঙৰ: এটা বাৰ্তাত সৰ্বাধিক { $limit } ৰাখিব পাৰি।
+compose-forward-files-missing = ফৰৱাৰ্ড কৰা বাৰ্তাটোৰ ফাইলবোৰ ডাউনল'ড কৰা হোৱা নাই, সেয়ে সেইবোৰ সংলগ্ন কৰা হোৱা নাই।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = সংলগ্নক আঁতৰাওক
+compose-attachment-open-tip = পৰীক্ষা কৰিবলৈ খোলক
 compose-attachments-total = { $count ->
     [one] { $count }টা ফাইল, { $size }
    *[other] { $count }টা ফাইল, { $size }
@@ -78,6 +81,7 @@ compose-drive-share-link = লিংকৰে শ্বেয়াৰ কৰক
 compose-drive-send-without = শ্বেয়াৰ নকৰাকৈ পঠিয়াওক
 compose-drive-share-cancel = বাতিল কৰক
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } { $limit }তকৈ ডাঙৰ, গতিকে ই আপোনাৰ OneDrive-লৈ যায় আৰু বাৰ্তাত ইয়াৰ লিংক থাকে।
 compose-onedrive-tip = আপোনাৰ OneDrive-ত; বাৰ্তাত লিংক থাকে
 compose-onedrive-allow = OneDrive-ৰ অনুমতি দিয়ক
@@ -89,6 +93,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive-এ { $addresses }ৰ সৈতে ফাইলবোৰ শ্বেয়াৰ কৰিব নোৱাৰে। ইয়াৰ সলনি লিংক থকা যিকোনোৱে সেইবোৰ খুলিব পাৰে।
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ফাইলসমূহ ইয়াত এৰক
 compose-drop-here = ইয়াত এৰক
 compose-paste-keep-formatting = ফৰ্মেটিং ৰাখক

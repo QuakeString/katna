@@ -5,5 +5,9 @@
 ## Errors Katna Mail shows
 
 daemon-deleting-data = Katna はすべてのデータを削除しています
+
+## The page the browser shows after signing in with Google or Microsoft
+## ($provider is "Google" or "Microsoft")
+
 daemon-signed-in = { $provider } にサインインしました。このタブを閉じて Katna に戻ってください。
 daemon-sign-in-failed = Katna は { $provider } にサインインしていません。このタブを閉じて、Katna でもう一度お試しください。

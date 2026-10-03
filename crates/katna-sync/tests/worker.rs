@@ -94,7 +94,18 @@ impl Running {
         }
     }
 
+    /// The next event other than [`Event::Stored`], which only says a
+    /// full sync is under way.
     async fn next_any(&self) -> Event {
+        loop {
+            match self.next_raw().await {
+                Event::Stored(_) => {}
+                event => return event,
+            }
+        }
+    }
+
+    async fn next_raw(&self) -> Event {
         self.events
             .recv()
             .or(async {
@@ -145,6 +156,28 @@ fn syncs_then_picks_up_new_mail_by_push() {
         worker.stop().await;
         assert_eq!(server.log().last().map(String::as_str), Some("LOGOUT"));
         assert_eq!(server.state().connects, 1);
+    });
+}
+
+#[test]
+fn a_full_sync_tells_as_each_folder_is_stored_inbox_first() {
+    let server = FakeServer::default();
+    // Listed after the archive, as Dovecot does.
+    server.create("Archive", 1);
+    server.create("INBOX", 1);
+    server.deliver("Archive", "one");
+    server.deliver("Archive", "two");
+    server.deliver("INBOX", "three");
+    smol::block_on(async {
+        let worker = start(&server, config());
+        assert!(matches!(worker.next_raw().await, Event::Connected));
+        // The folder list, then each folder's mail, before the sync ends:
+        // a new account's inbox shows while other folders still download.
+        assert!(matches!(worker.next_raw().await, Event::Stored(0)));
+        assert!(matches!(worker.next_raw().await, Event::Stored(1)));
+        assert!(matches!(worker.next_raw().await, Event::Stored(2)));
+        assert_eq!(added(&worker.next_raw().await), 3);
+        worker.stop().await;
     });
 }
 
@@ -718,6 +751,57 @@ fn reconnect_drops_the_connection_and_connects_at_once() {
         assert!(matches!(worker.next().await, Event::Synced(_)));
         assert_eq!(server.state().connects, 2);
 
+        worker.stop().await;
+    });
+}
+
+#[test]
+fn sync_folder_syncs_only_that_folder() {
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.create("Archive", 1);
+    server.create("Lists", 1);
+    smol::block_on(async {
+        let worker = start(&server, config());
+        assert!(matches!(worker.next().await, Event::Connected));
+        assert!(matches!(worker.next().await, Event::Synced(_)));
+        let folder = |path: &str| {
+            worker
+                .store()
+                .folders(katna_core::AccountId(1))
+                .unwrap()
+                .into_iter()
+                .find(|f| f.path == path)
+                .unwrap()
+                .id
+        };
+        let (archive, lists) = (folder("Archive"), folder("Lists"));
+
+        Timer::after(Duration::from_millis(50)).await;
+        server.clear_log();
+        server.deliver("Archive", "filed");
+        server.deliver("Lists", "digest");
+        worker.handle.sync_folder(archive);
+        let Event::Synced(reports) = worker.next().await else {
+            panic!("expected Synced");
+        };
+        assert_eq!(reports.len(), 1, "{reports:?}");
+        assert_eq!((reports[0].path.as_str(), reports[0].added), ("Archive", 1));
+        let log = server.log();
+        assert!(!log.contains(&"LIST".to_owned()), "{log:?}");
+        assert!(!log.iter().any(|c| c.contains("Lists")), "{log:?}");
+
+        // Nothing new still says the check is done.
+        worker.handle.sync_folder(archive);
+        let Event::Synced(reports) = worker.next().await else {
+            panic!("expected Synced");
+        };
+        assert!(reports.is_empty(), "{reports:?}");
+
+        // Lists was left alone until asked for.
+        worker.handle.sync_folder(lists);
+        let event = worker.next().await;
+        assert_eq!(added(&event), 1, "{event:?}");
         worker.stop().await;
     });
 }

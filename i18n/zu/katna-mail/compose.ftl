@@ -46,6 +46,7 @@ compose-sent-archived = Kuthunyelwe futhi kwafakwa kungobo yomlando
 compose-sent = Umlayezo uthunyelwe
 compose-discarded = Okusalungiswa kulahliwe
 compose-draft-saved = Okusalungiswa kulondoloziwe
+compose-draft-saving = Iyalondoloza…
 compose-draft-failed = Okusalungiswa akukwazanga ukulondolozwa: { $error }
 compose-draft-not-opened = Okusalungiswa akukwazanga ukuvulwa.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = Okusalungiswa akukwazanga ukuvulwa.
 compose-picker-insert = Faka
 compose-picker-attach = Namathisela
 compose-file-too-large = { $name } likhulu kakhulu: umlayezo ungathwala kufika ku-{ $limit }.
+compose-forward-files-missing = Amafayela omlayezo odluliselwayo awakalandwa, ngakho awanamathiselwanga.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Susa okunamathiselwe
+compose-attachment-open-tip = Vula ukuze ulihlole
 compose-attachments-total = { $count ->
     [one] Ifayela elingu-{ $count }, { $size }
    *[other] Amafayela angu-{ $count }, { $size }
@@ -78,6 +81,7 @@ compose-drive-share-link = Wabelane ngesixhumanisi
 compose-drive-send-without = Thumela ngaphandle kokwabelana
 compose-drive-share-cancel = Khansela
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } idlula { $limit }, ngakho iya ku-OneDrive yakho futhi umlayezo uphethe isixhumanisi.
 compose-onedrive-tip = Ku-OneDrive yakho; umlayezo uphethe isixhumanisi
 compose-onedrive-allow = Vumela i-OneDrive
@@ -89,6 +93,7 @@ compose-onedrive-share-text = { $count ->
    *[other] I-OneDrive ayikwazi ukwabelana amafayela nabo-{ $addresses }. Noma ubani onesixhumanisi angawavula esikhundleni salokho.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Yehlisela amafayela lapha
 compose-drop-here = Yehlisela lapha
 compose-paste-keep-formatting = Gcina ukufometha

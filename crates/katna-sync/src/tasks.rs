@@ -3,8 +3,9 @@
 //! Task lists synced with each account's own task service
 //! (`docs/ARCHITECTURE.md` §18.1): Google Tasks for Google accounts
 //! ([`google`]), Microsoft To Do through Graph for Microsoft accounts
-//! ([`graph`]), and to-dos on the CalDAV server of an account with a
-//! password ([`caldav`]). Only the few calls sync needs, over our own
+//! ([`graph`]), Zoho Mail's tasks for Zoho accounts ([`zoho`]), and
+//! to-dos on the CalDAV server of an account with a password
+//! ([`caldav`]). Only the few calls sync needs, over our own
 //! HTTPS client.
 //!
 //! [`sync_account`] runs one round for an account: list changes made in
@@ -17,7 +18,7 @@ use std::sync::Mutex;
 use katna_core::AccountId;
 use katna_store::{
     Store,
-    tasks::{PendingTask, RemoteTask, RemoteTaskList, Task},
+    tasks::{PendingTask, Place, RemoteTask, RemoteTaskList, Task},
 };
 
 use crate::{Error, Result, autoconfig::http::Reply};
@@ -25,12 +26,14 @@ use crate::{Error, Result, autoconfig::http::Reply};
 pub mod caldav;
 pub mod google;
 pub mod graph;
+pub mod zoho;
 
 /// An account's task service.
 pub enum TaskService {
     Google(google::GoogleTasks),
     Microsoft(graph::ToDo),
     CalDav(caldav::DavTasks),
+    Zoho(zoho::ZohoTasks),
 }
 
 /// What a pull of one list brought.
@@ -61,6 +64,7 @@ impl TaskService {
             Self::Google(service) => service.allowed().await,
             Self::Microsoft(service) => service.allowed().await,
             Self::CalDav(service) => service.allowed().await,
+            Self::Zoho(service) => service.allowed().await,
         }
     }
 
@@ -69,6 +73,7 @@ impl TaskService {
             Self::Google(service) => service.lists().await,
             Self::Microsoft(service) => service.lists().await,
             Self::CalDav(service) => service.lists().await,
+            Self::Zoho(service) => service.lists().await,
         }
     }
 
@@ -77,6 +82,7 @@ impl TaskService {
             Self::Google(service) => service.add_list(title).await,
             Self::Microsoft(service) => service.add_list(title).await,
             Self::CalDav(service) => service.add_list(title).await,
+            Self::Zoho(service) => service.add_list(title).await,
         }
     }
 
@@ -85,6 +91,7 @@ impl TaskService {
             Self::Google(service) => service.rename_list(id, title).await,
             Self::Microsoft(service) => service.rename_list(id, title).await,
             Self::CalDav(service) => service.rename_list(id, title).await,
+            Self::Zoho(service) => service.rename_list(id, title).await,
         }
     }
 
@@ -93,6 +100,7 @@ impl TaskService {
             Self::Google(service) => service.delete_list(id).await,
             Self::Microsoft(service) => service.delete_list(id).await,
             Self::CalDav(service) => service.delete_list(id).await,
+            Self::Zoho(service) => service.delete_list(id).await,
         }
     }
 
@@ -101,6 +109,7 @@ impl TaskService {
             Self::Google(service) => service.pull(list, state).await,
             Self::Microsoft(service) => service.pull(list, state).await,
             Self::CalDav(service) => service.pull(list, state).await,
+            Self::Zoho(service) => service.pull(list, state).await,
         }
     }
 
@@ -110,6 +119,7 @@ impl TaskService {
             Self::Google(service) => service.insert(list, task, parent).await,
             Self::Microsoft(service) => service.insert(list, task, parent).await,
             Self::CalDav(service) => service.insert(list, task, parent).await,
+            Self::Zoho(service) => service.insert(list, task, parent).await,
         }
     }
 
@@ -119,6 +129,19 @@ impl TaskService {
             Self::Google(service) => service.update(list, id, task).await,
             Self::Microsoft(service) => service.update(list, id, task).await,
             Self::CalDav(service) => service.update(list, id, task).await,
+            Self::Zoho(service) => service.update(list, id, task).await,
+        }
+    }
+
+    /// Moves task `id` right after task `after` of `list`, or first, where
+    /// the service keeps the order (Google Tasks). `Ok(None)` when it
+    /// keeps none, or no longer has the task.
+    async fn place(&self, list: &str, id: &str, after: Option<&str>) -> Result<Option<RemoteTask>> {
+        match self {
+            Self::Google(service) => service.place(list, id, after).await,
+            // To Do, CalDAV and Zoho keep no order Katna can set: it
+            // stays here.
+            Self::Microsoft(_) | Self::CalDav(_) | Self::Zoho(_) => Ok(None),
         }
     }
 
@@ -127,6 +150,7 @@ impl TaskService {
             Self::Google(service) => service.delete(list, id).await,
             Self::Microsoft(service) => service.delete(list, id).await,
             Self::CalDav(service) => service.delete(list, id).await,
+            Self::Zoho(service) => service.delete(list, id).await,
         }
     }
 }
@@ -148,14 +172,22 @@ pub async fn sync_account(
                 }
                 store.lock().unwrap().forget_task_list(list.id)?;
             }
-            (false, None) => {
-                let remote = service.add_list(&list.title).await?;
-                store.lock().unwrap().task_list_pushed(list.id, &remote)?;
-            }
-            (false, Some(remote)) => {
-                service.rename_list(remote, &list.title).await?;
-                store.lock().unwrap().task_list_pushed(list.id, remote)?;
-            }
+            // A list the service refuses (Zoho makes none of one's own)
+            // stays here, logged, rather than stopping the round.
+            (false, None) => match service.add_list(&list.title).await {
+                Ok(remote) => store.lock().unwrap().task_list_pushed(list.id, &remote)?,
+                Err(Error::Rejected(err)) => {
+                    tracing::warn!(list = list.id, %err, "the task service refused a new list");
+                }
+                Err(err) => return Err(err),
+            },
+            (false, Some(remote)) => match service.rename_list(remote, &list.title).await {
+                Ok(()) => store.lock().unwrap().task_list_pushed(list.id, remote)?,
+                Err(Error::Rejected(err)) => {
+                    tracing::warn!(list = list.id, %err, "the task service refused a new name");
+                }
+                Err(err) => return Err(err),
+            },
         }
     }
 
@@ -214,27 +246,48 @@ async fn push(
             // Its task is not on the service yet; next round.
             return Ok(());
         }
-        let remote = match &pending.remote_id {
+        let insert = || service.insert(list, &pending.task, pending.parent_remote.as_deref());
+        let mut remote = match &pending.remote_id {
+            // Only its place changed: nothing else to send.
+            Some(remote) if !pending.edited => RemoteTask {
+                remote_id: remote.clone(),
+                etag: pending.etag.clone().unwrap_or_default(),
+                ..RemoteTask::default()
+            },
             Some(remote) => match service.update(list, remote, &pending.task).await? {
                 Some(done) => done,
                 // Deleted on the service while changed here: the change
                 // brings it back.
-                None => {
-                    service
-                        .insert(list, &pending.task, pending.parent_remote.as_deref())
-                        .await?
-                }
+                None => insert().await?,
             },
-            None => {
-                service
-                    .insert(list, &pending.task, pending.parent_remote.as_deref())
-                    .await?
+            None => insert().await?,
+        };
+        // Dragged to a new place here: after the task before it there.
+        let placed = match &pending.place {
+            None => true,
+            Some(Place::Waiting) => false,
+            Some(place) => {
+                let after = match place {
+                    Place::After(after) => Some(after.as_str()),
+                    _ => None,
+                };
+                match service.place(list, &remote.remote_id, after).await {
+                    Ok(Some(moved)) => remote = moved,
+                    Ok(None) => {}
+                    // The task before it went meanwhile: the next pull
+                    // shows where Google put it.
+                    Err(Error::Rejected(err)) => {
+                        tracing::warn!(id, %err, "the task service refused a new place");
+                    }
+                    Err(err) => return Err(err),
+                }
+                true
             }
         };
         store
             .lock()
             .unwrap()
-            .task_pushed(id, pending.stamp, &remote)?;
+            .task_pushed(id, pending.stamp, &remote, placed)?;
         Ok(())
     };
     match sent.await {

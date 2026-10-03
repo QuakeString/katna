@@ -4,6 +4,7 @@
 
 ## Attachment viewer
 
+viewer-opening = Otwieranie…
 viewer-unreadable = Nie udało się odczytać tego załącznika.
 viewer-pdf-locked = Ten plik PDF jest chroniony hasłem.
 viewer-pdf-unreadable = Nie udało się odczytać tego pliku PDF.
@@ -14,8 +15,17 @@ viewer-slides-unreadable = Nie udało się odczytać tych slajdów.
 viewer-no-preview = Podgląd niedostępny
 viewer-slide = Slajd { $number }
 viewer-page = Strona
+viewer-slide-box = Slajd
 viewer-page-count = z { $count }
 viewer-go-to-page-tip = Wpisz numer strony i naciśnij Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = Obróć w prawo (Ctrl+R)
+viewer-rotate-anticlockwise-tip = Obróć w lewo (Ctrl+Shift+R)
+viewer-fit-page-tip = Dopasuj stronę
+viewer-fit-picture-tip = Dopasuj do okna
+viewer-fit-width-tip = Dopasuj szerokość
+viewer-real-size-tip = Rzeczywisty rozmiar (1:1)
+viewer-page-back-tip = Poprzednia strona
+viewer-page-on-tip = Następna strona
 
 ## Marking up a PDF
 
@@ -26,6 +36,8 @@ viewer-tool-underline = Podkreślenie
 viewer-tool-squiggly = Falista linia
 viewer-tool-strike = Przekreślenie
 viewer-tool-pen = Pióro
+viewer-tool-note = Karteczka
+viewer-tool-text = Pole tekstowe
 viewer-tool-eraser = Gumka
 viewer-color-yellow = Żółty
 viewer-color-green = Zielony
@@ -38,6 +50,16 @@ viewer-color-purple = Fioletowy
 viewer-marks-undo-tip = Cofnij (Ctrl+Z)
 viewer-marks-redo-tip = Ponów (Ctrl+Shift+Z)
 viewer-save-marked-tip = Zapisz kopię z adnotacjami (Ctrl+S)
+viewer-reply-marked-tip = Odpowiedz, dołączając kopię z adnotacjami
+viewer-forward-tip = Przekaż plik dalej
+viewer-forward = Przekaż dalej
+viewer-open-with = Otwórz za pomocą…
+viewer-save = Zapisz
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Napisz notatkę
+viewer-text-placeholder = Pisz tutaj
+viewer-note-done = Gotowe
+viewer-note-delete = Usuń
 viewer-markup-protected = Ten plik PDF jest chroniony przed zmianami, więc nie można dodawać do niego adnotacji.
 viewer-marks-save-failed = Nie udało się zapisać kopii z adnotacjami.
 # Asked when closing a PDF, or moving to another attachment, with marks
@@ -50,3 +72,5 @@ viewer-marks-save = Zapisz kopię
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (z adnotacjami)
+viewer-pick = Zaznacz
+viewer-picked = Zaznaczono

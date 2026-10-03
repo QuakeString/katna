@@ -46,6 +46,7 @@ compose-sent-archived = ପଠାଗଲା ଓ ଆର୍କାଇଭ ହେଲ�
 compose-sent = ମେସେଜ ପଠାଗଲା
 compose-discarded = ଡ୍ରାଫ୍ଟ ବାତିଲ ହେଲା
 compose-draft-saved = ଡ୍ରାଫ୍ଟ ସେଭ ହେଲା
+compose-draft-saving = ସେଭ କରାଯାଉଛି…
 compose-draft-failed = ଡ୍ରାଫ୍ଟ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ: { $error }
 compose-draft-not-opened = ଡ୍ରାଫ୍ଟ ଖୋଲାଯାଇପାରିଲା ନାହିଁ।
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = ଡ୍ରାଫ୍ଟ ଖୋଲାଯାଇପାର�
 compose-picker-insert = ଭର୍ତ୍ତି କରନ୍ତୁ
 compose-picker-attach = ଆଟାଚ କରନ୍ତୁ
 compose-file-too-large = { $name } ବହୁତ ବଡ଼: ଏକ ମେସେଜ { $limit } ପର୍ଯ୍ୟନ୍ତ ନେଇପାରେ।
+compose-forward-files-missing = ଫରୱାର୍ଡ କରାଯାଉଥିବା ମେସେଜର ଫାଇଲ ଡାଉନଲୋଡ ହୋଇନାହିଁ, ତେଣୁ ସେଗୁଡ଼ିକ ଆଟାଚ ହୋଇନାହିଁ।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ଆଟାଚମେଣ୍ଟ ହଟାନ୍ତୁ
+compose-attachment-open-tip = ଯାଞ୍ଚ କରିବାକୁ ଖୋଲନ୍ତୁ
 compose-attachments-total = { $count ->
     [one] { $count }ଟି ଫାଇଲ, { $size }
    *[other] { $count }ଟି ଫାଇଲ, { $size }
@@ -78,6 +81,7 @@ compose-drive-share-link = ଲିଙ୍କ ସହିତ ସେୟାର କର�
 compose-drive-send-without = ସେୟାର ନକରି ପଠାନ୍ତୁ
 compose-drive-share-cancel = ବାତିଲ କରନ୍ତୁ
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } { $limit } ରୁ ବଡ଼, ତେଣୁ ଏହା ଆପଣଙ୍କ OneDrive କୁ ଯାଏ ଏବଂ ମେସେଜରେ ଏହାର ଲିଙ୍କ ରହେ।
 compose-onedrive-tip = ଆପଣଙ୍କ OneDrive ରେ; ମେସେଜରେ ଲିଙ୍କ ରହେ
 compose-onedrive-allow = OneDrive କୁ ଅନୁମତି ଦିଅନ୍ତୁ
@@ -89,6 +93,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive ଫାଇଲଗୁଡ଼ିକୁ { $addresses } ଙ୍କ ସହିତ ସେୟାର କରିପାରିବ ନାହିଁ। ଏହା ବଦଳରେ ଲିଙ୍କ ଥିବା ଯେକେହି ସେଗୁଡ଼ିକୁ ଖୋଲିପାରିବେ।
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ଫାଇଲଗୁଡ଼ିକ ଏଠାରେ ଛାଡ଼ନ୍ତୁ
 compose-drop-here = ଏଠାରେ ଛାଡ଼ନ୍ତୁ
 compose-paste-keep-formatting = ଫର୍ମାଟିଂ ରଖନ୍ତୁ

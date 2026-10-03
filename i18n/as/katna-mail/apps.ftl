@@ -9,7 +9,7 @@ rail-calendar = কেলেণ্ডাৰ
 rail-contacts = সম্পৰ্কসমূহ
 rail-tasks = কাৰ্যসমূহ
 rail-notes = টোকাসমূহ
-rail-feeds = ফীডসমূহ
+rail-files = ফাইল
 
 ## Pages of apps still to come
 
@@ -18,7 +18,6 @@ app-coming-soon = সোনকালে আহি আছে
 app-calendar-promise = আপোনাৰ CalDAV কেলেণ্ডাৰ, আপোনাৰ মেইলত অহা মিটিঙৰ নিমন্ত্ৰণ আৰু ৰিমাইণ্ডাৰ, আপোনাৰ ইনবক্সৰ কাষতে।
 app-tasks-promise = CalDAVৰ সৈতে ছিংক হোৱা কৰিবলগীয়া কামৰ তালিকা, আৰু মেইলৰ পৰা বনোৱা কাৰ্য।
 app-notes-promise = খৰতকীয়া টোকা, আৰু পিছলৈ কোনো মেইল বা কথোপকথনৰ ওপৰত টোকা।
-app-feeds-promise = আপোনাৰ মেইলৰ কাষতে RSS আৰু Atom ফীড পঢ়ক।
 
 ## Contacts page
 

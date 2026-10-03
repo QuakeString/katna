@@ -14,13 +14,13 @@ tab-other = Òmíràn
 tab-inbox = Àpótí-ìwọlé
 tab-newsletters = Ìwé ìròyìn
 tab-notifications = Ìfitónilétí
-tab-new = { $count } tuntun
 tab-provider-other = Katna ló tò ó
 
 ## Mail list: toolbar
 
 list-select = Yàn
 list-refresh = Sọdọ̀tun
+list-back-to-top = Padà sí òkè
 list-checking = À ń ṣàyẹ̀wò lẹ́tà tuntun…
 list-more = Síi
 list-mark-read = Sàmì sí bí kíkà
@@ -39,6 +39,7 @@ list-results = Àbájáde fún “{ $query }”
 list-results-corrected = Ó ń fi àbájáde hàn fún “{ $query }”
 list-search-instead = Ṣàwárí “{ $query }” dípò
 list-files-more = +{ $count }
+list-replied = O ti fèsì
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -237,6 +238,12 @@ menu-add-note = Fi àkọsílẹ̀ kún un
 menu-print-all = Tẹ gbogbo rẹ̀ jáde
 menu-new-window = Ṣí ní fèrèsé tuntun
 menu-move-to = Gbé lọ sí
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Tẹ̀lé e
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Síwájú sí i
 menu-move-to-heading = Gbé lọ sí:
 menu-find-from = Wá àwọn ímeèlì láti ọ̀dọ̀ { $name }
 

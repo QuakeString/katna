@@ -42,7 +42,26 @@ notify-task-done = እንደተጠናቀቀ ምልክት አድርግ
 ## Its buttons
 
 notify-open = ክፈት
+notify-peek = ቅኝት
+notify-reply = መልስ
+notify-reply-placeholder = ለ{ $name } መልስ…
+notify-send = ላክ
 notify-reply-all = ለሁሉም መልስ
 notify-mark-read = እንደተነበበ ምልክት አድርግ
 notify-mark-all-read = ሁሉንም እንደተነበቡ ምልክት አድርግ
 notify-archive = ወደ ማህደር አስቀምጥ
+
+## After Archive on a notification: a short note in the same place
+
+notify-archived = ወደ ማህደር ተቀምጧል
+notify-archived-count = { $count ->
+    [one] { $count } መልዕክት ከገቢ መልዕክት ሳጥን ወጥቷል
+   *[other] { $count } መልዕክቶች ከገቢ መልዕክት ሳጥን ወጥተዋል
+}
+notify-undo = ቀልብስ
+
+## After a reply typed into a notification: a note in the same place while
+## it waits for the undo time
+
+notify-reply-sent = መልስ ለ{ $name } ተልኳል
+notify-open-in-katna = በKatna ውስጥ ክፈት

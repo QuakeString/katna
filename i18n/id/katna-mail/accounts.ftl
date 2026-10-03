@@ -14,6 +14,16 @@ accounts-unified-switch-detail = “Semua Akun” berada di bagian atas panel fo
 accounts-row = Akun
 accounts-row-detail = Panel folder dan menu akun menampilkan akun dengan urutan ini; yang pertama menjadi default. Menghapus akun akan menghapus salinan email akun tersebut milik Katna di komputer ini. Email tetap ada di server.
 accounts-none = Belum ada akun.
+accounts-pop3-row = Email di server
+accounts-pop3-row-detail = Akun POP3 mendownload email ke komputer ini. Pilih apa yang terjadi selanjutnya pada salinan di server.
+accounts-pop3-with-katna = Simpan sampai saya menghapusnya di Katna
+accounts-pop3-at-once = Hapus setelah didownload
+accounts-pop3-after-days = { $count ->
+   *[other] Hapus setelah { $count } hari
+}
+accounts-pop3-never = Jangan pernah hapus
+accounts-pop3-days-less = Lebih sedikit hari
+accounts-pop3-days-more = Lebih banyak hari
 accounts-kind-imported = Diimpor
 accounts-picture-reset = Gunakan gambar desktop
 accounts-picture-change = Ubah gambar
@@ -70,6 +80,9 @@ accounts-confirm-word = hapus
 accounts-confirm-placeholder = Ketik “{ accounts-confirm-word }”
 accounts-confirm-prompt = Untuk mengonfirmasi, ketik “{ accounts-confirm-word }”:
 accounts-cancel = Batal
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Menghapus email dan lampiran yang didownload Katna, gambar pengirim, dan indeks penelusuran, lalu mendownload ulang email terbaru. Akun, setelan, dan email yang hanya ada di komputer ini tetap disimpan.
 reset-cache-button = Reset cache
 reset-cache-title = Reset cache?

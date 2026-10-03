@@ -4,6 +4,10 @@
 
 ## Attachment viewer
 
+viewer-opening = खुल रहा है…
+
+## Attachment viewer
+
 viewer-unreadable = यह अटैचमेंट पढ़ा नहीं जा सका।
 viewer-pdf-locked = यह PDF पासवर्ड से सुरक्षित है।
 viewer-pdf-unreadable = यह PDF पढ़ी नहीं जा सकी।
@@ -14,8 +18,17 @@ viewer-slides-unreadable = ये स्लाइड पढ़ी नहीं �
 viewer-no-preview = कोई प्रीव्यू उपलब्ध नहीं
 viewer-slide = स्लाइड { $number }
 viewer-page = पृष्ठ
+viewer-slide-box = स्लाइड
 viewer-page-count = { $count } में से
 viewer-go-to-page-tip = पृष्ठ नंबर लिखें और Enter दबाएँ (Ctrl+G)
+viewer-rotate-clockwise-tip = दक्षिणावर्त घुमाएं (Ctrl+R)
+viewer-rotate-anticlockwise-tip = वामावर्त घुमाएं (Ctrl+Shift+R)
+viewer-fit-page-tip = पेज फ़िट करें
+viewer-fit-picture-tip = विंडो में फ़िट करें
+viewer-fit-width-tip = चौड़ाई फ़िट करें
+viewer-real-size-tip = असली साइज़ (1:1)
+viewer-page-back-tip = पिछला पेज
+viewer-page-on-tip = अगला पेज
 
 ## Marking up a PDF
 
@@ -26,6 +39,8 @@ viewer-tool-underline = अंडरलाइन
 viewer-tool-squiggly = लहरदार रेखा
 viewer-tool-strike = स्ट्राइकथ्रू
 viewer-tool-pen = पेन
+viewer-tool-note = स्टिकी नोट
+viewer-tool-text = टेक्स्ट बॉक्स
 viewer-tool-eraser = इरेज़र
 viewer-color-yellow = पीला
 viewer-color-green = हरा
@@ -38,6 +53,16 @@ viewer-color-purple = बैंगनी
 viewer-marks-undo-tip = पहले जैसा करें (Ctrl+Z)
 viewer-marks-redo-tip = फिर से करें (Ctrl+Shift+Z)
 viewer-save-marked-tip = अपने निशानों के साथ एक कॉपी सहेजें (Ctrl+S)
+viewer-reply-marked-tip = निशान लगी कॉपी के साथ जवाब दें
+viewer-forward-tip = फ़ाइल फ़ॉरवर्ड करें
+viewer-forward = फ़ॉरवर्ड करें
+viewer-open-with = इससे खोलें…
+viewer-save = सेव करें
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = नोट लिखें
+viewer-text-placeholder = यहां टाइप करें
+viewer-note-done = हो गया
+viewer-note-delete = मिटाएं
 viewer-markup-protected = यह PDF बदलावों से सुरक्षित है, इसलिए इस पर निशान नहीं लगाए जा सकते।
 viewer-marks-save-failed = निशान लगी कॉपी सहेजी नहीं जा सकी।
 # Asked when closing a PDF, or moving to another attachment, with marks
@@ -50,3 +75,5 @@ viewer-marks-save = कॉपी सहेजें
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (मार्क किया गया)
+viewer-pick = चुनें
+viewer-picked = चुना गया

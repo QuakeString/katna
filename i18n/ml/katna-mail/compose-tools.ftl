@@ -32,6 +32,7 @@ compose-tool-bold = ബോൾഡ് (Ctrl+B)
 compose-tool-italic = ഇറ്റാലിക് (Ctrl+I)
 compose-tool-underline = അടിവരയിടുക (Ctrl+U)
 compose-tool-text-color = ടെക്സ്റ്റ് നിറം
+compose-tool-colors = ടെക്സ്റ്റ് നിറവും ഹൈലൈറ്റ് നിറവും
 compose-tool-background-color = പശ്ചാത്തല നിറം
 compose-tool-default-color = ഡിഫോൾട്ട് നിറം
 compose-tool-no-background = പശ്ചാത്തലമില്ല
@@ -126,6 +127,10 @@ compose-tool-signature = ഒപ്പ് ചേർക്കുക
 compose-tool-signature-none = ഒപ്പില്ല
 compose-tool-signature-untitled = പേരില്ലാത്തത്
 compose-tool-signature-manage = ഒപ്പുകൾ നിയന്ത്രിക്കുക
+compose-signature-tag-tip = മറ്റൊരു ഒപ്പ് തിരഞ്ഞെടുക്കുക
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = ടെംപ്ലേറ്റുകൾ
 compose-tool-templates-none = ഇതുവരെ ടെംപ്ലേറ്റുകളൊന്നുമില്ല
 compose-tool-template-save = ടെംപ്ലേറ്റായി സംരക്ഷിക്കുക…

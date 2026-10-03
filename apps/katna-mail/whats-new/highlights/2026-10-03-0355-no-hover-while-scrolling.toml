@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calmer scrolling in the mail list"
+text = """
+While you scroll the mail list, mails passing under the pointer no longer
+light up and show their buttons. As in Gmail, the mail under the pointer
+lights up once scrolling stops.
+"""

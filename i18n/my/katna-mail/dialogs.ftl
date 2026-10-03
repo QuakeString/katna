@@ -8,7 +8,6 @@ about-tooltip = Katna အကြောင်း
 about-tagline = Linux ဒက်စ်တော့အတွက် မေးလ်နှင့် ပြက္ခဒိန်
 about-whats-new = အသစ်များ
 
-## Updates, in a box under the version in About (only in packages that
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
 
 about-update-not-checked = အပ်ဒိတ်ကို မစစ်ဆေးရသေးပါ
@@ -70,6 +69,7 @@ about-credit-resvg = SVG ပုံများ
 about-credit-jiff = ရက်စွဲများနှင့် အချိန်ဇုန်များ
 about-credit-spellbook = စာလုံးပေါင်း စစ်ဆေးခြင်း၊ Helix တည်းဖြတ်စနစ်မှ
 about-credit-smol = အလုပ်များစွာကို တစ်ပြိုင်နက် လုပ်ခြင်း
+about-credit-color-schemes = ပါဝင်ပြီးသား အရောင်အစီအစဉ်များ၏ အရောင်စုများ
 about-all-libraries = Katna အသုံးပြုသော စာကြည့်တိုက်အားလုံး ({ $count })
 about-library-authors = { $authors } ရေးသားသည်
 about-license = Katna သည် GNU GPL ဗားရှင်း 3 သို့မဟုတ် နောက်ပိုင်းဗားရှင်းအောက်ရှိ အခမဲ့ဆော့ဖ်ဝဲ ဖြစ်သည်။
@@ -124,6 +124,20 @@ onboarding-density-default = မူရင်း
 onboarding-density-compact = ကျစ်လစ်
 onboarding-continue = ဆက်လုပ်ရန်
 
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna အကောင့်ဖြင့် ပိုမိုရယူပါ
+onboarding-katna-lead = မဖြစ်မနေ မဟုတ်ပါ။ ၎င်းက Katna ၏ အွန်လိုင်း လုပ်ဆောင်ချက်များကို ဖွင့်ပေးပြီး နောက်မှ ဆက်တင်များ > စာရင်းသွင်းမှု တွင် ပြုလုပ်နိုင်သည်။
+onboarding-katna-receipts-title = ဖတ်ပြီး အသိအမှတ်ပြုချက်
+onboarding-katna-receipts-text = သင်ပို့သော မေးလ်ကို လူများ ဖွင့်သည့်အချိန်ကို ကြည့်ပါ။
+onboarding-katna-links-title = လင့်ခ် ခြေရာခံခြင်း
+onboarding-katna-links-text = သင့်မေးလ်ရှိ မည်သည့်လင့်ခ်များကို နှိပ်ကြသည်ကို ကြည့်ပါ။
+onboarding-katna-activity-title = လှုပ်ရှားမှု
+onboarding-katna-activity-text = သင်ပို့ခဲ့သမျှ၏ ဖွင့်ခြင်းနှင့် နှိပ်ခြင်းများကို တစ်နေရာတည်းတွင်။
+onboarding-katna-translate-title = အလိုအလျောက် ဘာသာပြန်ခြင်း
+onboarding-katna-translate-text = အခြားဘာသာစကားဖြင့် ရေးထားသော မေးလ်ကို သင့်ဘာသာစကားဖြင့် ဖတ်ပါ။
+onboarding-katna-private = ၎င်းတွင် ကိုယ်ပိုင် စကားဝှက် ရှိသည်။ သင့်မေးလ် ဝင်ရောက်မှုအချက်အလက်များသည် ဤကွန်ပျူတာမှ ဘယ်တော့မှ မထွက်ပါ။
+
 ## First run: done
 
 onboarding-ready-title = အားလုံး အဆင်သင့်ပါပြီ
@@ -167,7 +181,7 @@ tour-search-text = ရှာဖွေမှုသည် အော့ဖ်လိ
 tour-menu-title = ဖိုင်တွဲများကို ပြရန် သို့မဟုတ် ဖျောက်ရန်
 tour-menu-text = ဤခလုတ်က ဖိုင်တွဲစာရင်းကို ခေါက်သိမ်းသည်။ ဖျောက်ထားစဉ် ဖိုင်တွဲများကို မြင်ရန် ဘယ်ဘက်ရှိ မေးလ် ပေါ်တွင် မောက်စ်ညွှန်တံကို တင်ထားပါ။
 tour-apps-title = သင့်အက်ပ်များ
-tour-apps-text = မေးလ်သည် ယခု ဤနေရာတွင် ရှိသည်။ ပြက္ခဒိန်၊ အဆက်အသွယ်များ၊ လုပ်ဆောင်စရာများ၊ မှတ်စုများနှင့် ဖိဒ်များ ဤဘားတွင် ပါဝင်လာမည်။
+tour-apps-text = မေးလ်သည် ပြက္ခဒိန်၊ အဆက်အသွယ်များ၊ လုပ်ဆောင်စရာများ၊ မှတ်စုများနှင့် ဖိုင်များ ဘေးတွင် ဤနေရာ၌ ရှိသည်။
 tour-tabs-title = ဝင်စာ တဘ်များ
 tour-tabs-text = မေးလ်အသစ်များကို အဓိက၊ ပရိုမိုးရှင်းများ၊ လူမှုရေး၊ အပ်ဒိတ်များနှင့် ဖိုရမ်များ အဖြစ် ခွဲခြားသည်။ အမြန် ဆက်တင်များတွင် တဘ်များကို ပိတ်နိုင်သည်။
 tour-list-title = သင့်မက်ဆေ့ဂျ်များ
@@ -191,12 +205,21 @@ crash-view = အစီရင်ခံစာ ကြည့်ရန်
 crash-view-tooltip = ဤကွန်ပျူတာပေါ်တွင် သိမ်းထားသော အစီရင်ခံစာကို ဖွင့်ရန်
 crash-copy = အစီရင်ခံစာ မိတ္တူကူးရန်
 crash-close = ပိတ်ရန်
+
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } က { $address } သို့ ထပ်မံ ဝင်ရောက်ရန် တောင်းဆိုနေသည်။
 sign-in-again-button = ဝင်ရောက်ရန်
 sign-in-again-tooltip = { $provider } ဝင်ရောက်ရန် စာမျက်နှာကို သင့်ဘရောက်ဇာတွင် ဖွင့်ရန်
 sign-in-again-waiting = သင့်ဘရောက်ဇာကို စောင့်နေသည်…
 sign-in-again-close = ပိတ်ရန်
+google-api-off = Katna ၏ Google Cloud ပရောဂျက်တွင် { $api } ကို ပိတ်ထားသည်။
+google-api-turn-on = ဖွင့်ရန်
+google-api-turn-on-tooltip = { $api } ကို ဖွင့်ရန် Google Cloud ကို ဖွင့်ပြီး ထပ်စမ်းကြည့်ရန် ကို နှိပ်ပါ
 sign-in-again-done = { $address } သို့ ထပ်မံ ဝင်ရောက်ပြီးပါပြီ။ သင့်မေးလ်ကို ရယူနေသည်…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
        *[other] စကားဝိုင်း { $count } ခုကို အမှိုက်ပုံးသို့ ရွှေ့မလား။

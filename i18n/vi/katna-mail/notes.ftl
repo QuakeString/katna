@@ -15,6 +15,7 @@ notes-loading = Đang mở ghi chú của bạn…
 
 notes-take-a-note = Tạo ghi chú…
 notes-new-list = Danh sách mới
+notes-new-note = Ghi chú mới
 notes-pinned = Đã ghim
 notes-others = Khác
 notes-empty = Ghi chú bạn thêm sẽ xuất hiện ở đây

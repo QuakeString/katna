@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Aika da Katna Mail
 setup-tagline = Imel mai sauri kuma na sirri da ke zaune a kwamfutarku.
 setup-update-where = Yana sabunta Katna Mail a { $path }. Wasiƙunku, saitunanku da gajerun hanyoyinku suna nan yadda suke.
 setup-for = Shigar don

@@ -39,6 +39,12 @@ contacts-account-failed = እውቂያዎቹን ማንበብ አልተቻለም�
 # $reason is the server's own words, in English.
 contacts-account-error = እውቂያዎቹን ማንበብ አልተቻለም፦ { $reason }
 contacts-account-none = ምንም የአድራሻ ደብተር አልተገኘም
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = ምንም የአድራሻ ደብተር አልተገኘም: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } እውቂያዎችን የሚያሳየው በ{ $provider } ለገባ Katna ብቻ ነው።
+contacts-account-sign-in-with = በ{ $provider } ይግቡ
 contacts-account-looking = እውቂያዎችን በመፈለግ ላይ…
 contacts-account-try-again = እንደገና ሞክር
 contacts-account-try-again-tooltip = የዚህን መለያ እውቂያዎች አሁን እንደገና ፈትሽ
@@ -86,7 +92,7 @@ contacts-print-none = ለማተም ምንም እውቂያ የለም
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = ልደት፦ { $day }
 contacts-print-nickname = ቅጽል ስም፦ { $name }
-contacts-create = እውቂያ ፍጠር
+contacts-create = አዲስ እውቂያ
 
 ## Search and the list
 

@@ -24,7 +24,7 @@ use super::contacts_page::View;
 use crate::daemon::{self, Command};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, elevation, filled_button, icon, raised};
+use crate::widgets::{FocusRing, ScaledEdge, filled_button, icon, raised};
 
 const MENU_WIDTH: f32 = 260.0;
 const DIALOG_WIDTH: f32 = 400.0;
@@ -381,7 +381,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let menu = self.contacts.label_menu.clone()?;
-        let item = |id: SharedString, name: &'static str, color: u32, label: String| {
+        let item = |id: SharedString, lead: AnyElement, label: String| {
             div()
                 .id(id)
                 .flex_none()
@@ -394,7 +394,7 @@ impl MailWindow {
                 .gap(px(16.0))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
-                .child(icon(name, color, 20.0))
+                .child(lead)
                 .child(div().flex_1().min_w_0().truncate().child(label))
         };
         let separator = || div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider));
@@ -422,8 +422,11 @@ impl MailWindow {
                             let on = has(&mine, &name);
                             item(
                                 format!("contact-label-{ix}").into(),
-                                if on { "checkbox-checked" } else { "checkbox" },
-                                if on { th.accent } else { th.text_dim },
+                                crate::widgets::checkbox(
+                                    ("contact-label-box", ix),
+                                    crate::widgets::Check::from(on),
+                                    th,
+                                ),
                                 name.clone(),
                             )
                             .on_click(cx.listener(
@@ -444,8 +447,7 @@ impl MailWindow {
                     items.push(
                         item(
                             "contact-label-new".into(),
-                            "add",
-                            th.text_dim,
+                            icon("add", th.text_dim, 20.0),
                             tr!("contacts-label-new"),
                         )
                         .on_click(cx.listener(|this, _, window, cx| {
@@ -462,8 +464,7 @@ impl MailWindow {
                     let items = vec![
                         item(
                             "contact-label-rename".into(),
-                            "compose",
-                            th.text_dim,
+                            icon("compose", th.text_dim, 20.0),
                             tr!("contacts-label-rename"),
                         )
                         .on_click(cx.listener(move |this, _, window, cx| {
@@ -472,8 +473,7 @@ impl MailWindow {
                         .into_any_element(),
                         item(
                             "contact-label-email".into(),
-                            "mail",
-                            th.text_dim,
+                            icon("mail", th.text_dim, 20.0),
                             tr!("contacts-label-email"),
                         )
                         .on_click(cx.listener(move |this, _, window, cx| {
@@ -483,8 +483,7 @@ impl MailWindow {
                         separator().into_any_element(),
                         item(
                             "contact-label-delete".into(),
-                            "trash",
-                            th.text_dim,
+                            icon("trash", th.text_dim, 20.0),
                             tr!("contacts-label-delete"),
                         )
                         .on_click(cx.listener(move |this, _, _, cx| {
@@ -506,7 +505,10 @@ impl MailWindow {
             .children(items)
             .with_animation(
                 "contact-label-menu",
-                Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    140,
+                )))
+                .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
             );
         let close = || {
@@ -557,6 +559,8 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let dialog = self.contacts.label_dialog.as_mut()?;
         let t = dialog.shown.tick(window, reduce);
         if dialog.closing && dialog.shown.settled() {
@@ -577,7 +581,7 @@ impl MailWindow {
             .flex()
             .items_center()
             .rounded(px(8.0))
-            .border_2()
+            .border_px(2.0)
             .border_color(rgba(if focused {
                 th.accent
             } else {
@@ -592,7 +596,7 @@ impl MailWindow {
                 .mt(px(12.0))
                 .text_size(px(13.0))
                 .text_color(rgba(th.error))
-                .child(err)
+                .child(self.copyable(err, th))
         });
         let busy = dialog.busy;
         let body = div()
@@ -662,11 +666,8 @@ impl MailWindow {
             .w(px(DIALOG_WIDTH.min(vw - 32.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .bg(rgba(th.surface))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
         Some(
             div()

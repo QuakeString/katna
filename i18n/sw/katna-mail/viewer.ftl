@@ -2,6 +2,8 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
+viewer-opening = Inafungua…
+
 ## Attachment viewer
 
 viewer-unreadable = Kiambatisho hiki hakikuweza kusomwa.
@@ -14,8 +16,17 @@ viewer-slides-unreadable = Slaidi hizi hazikuweza kusomwa.
 viewer-no-preview = Hakuna onyesho la kukagua
 viewer-slide = Slaidi { $number }
 viewer-page = Ukurasa
+viewer-slide-box = Slaidi
 viewer-page-count = kati ya { $count }
 viewer-go-to-page-tip = Andika nambari ya ukurasa kisha bonyeza Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = Zungusha kisaa (Ctrl+R)
+viewer-rotate-anticlockwise-tip = Zungusha kinyume cha saa (Ctrl+Shift+R)
+viewer-fit-page-tip = Toshea ukurasa
+viewer-fit-picture-tip = Toshea dirisha
+viewer-fit-width-tip = Toshea upana
+viewer-real-size-tip = Ukubwa halisi (1:1)
+viewer-page-back-tip = Ukurasa uliotangulia
+viewer-page-on-tip = Ukurasa unaofuata
 
 ## Marking up a PDF
 
@@ -26,6 +37,8 @@ viewer-tool-underline = Pigia mstari
 viewer-tool-squiggly = Mstari wa mawimbi
 viewer-tool-strike = Kata kwa mstari
 viewer-tool-pen = Kalamu
+viewer-tool-note = Kidokezo cha kubandika
+viewer-tool-text = Kisanduku cha maandishi
 viewer-tool-eraser = Kifutio
 viewer-color-yellow = Njano
 viewer-color-green = Kijani
@@ -38,6 +51,16 @@ viewer-color-purple = Zambarau
 viewer-marks-undo-tip = Tendua (Ctrl+Z)
 viewer-marks-redo-tip = Rudia (Ctrl+Shift+Z)
 viewer-save-marked-tip = Hifadhi nakala yenye alama zako (Ctrl+S)
+viewer-reply-marked-tip = Jibu kwa nakala yenye alama
+viewer-forward-tip = Sambaza faili
+viewer-forward = Sambaza
+viewer-open-with = Fungua kwa…
+viewer-save = Hifadhi
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = Andika dokezo
+viewer-text-placeholder = Andika hapa
+viewer-note-done = Nimemaliza
+viewer-note-delete = Futa
 viewer-markup-protected = PDF hii imelindwa dhidi ya mabadiliko, kwa hivyo haiwezi kuwekewa alama.
 viewer-marks-save-failed = Nakala yenye alama haikuweza kuhifadhiwa.
 # Asked when closing a PDF, or moving to another attachment, with marks
@@ -50,3 +73,5 @@ viewer-marks-save = Hifadhi nakala
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (yenye alama)
+viewer-pick = Chagua
+viewer-picked = Imechaguliwa

@@ -9,6 +9,17 @@ nav-folders = ෆෝල්ඩර
 nav-label-new = නව ලේබලයක් සාදන්න
 nav-folder-new = නව ෆෝල්ඩරයක් සාදන්න
 nav-menu-check-mail = නව තැපැල් පරීක්ෂා කරන්න
+nav-menu-check-inbox = මෙම එන ලිපි පරීක්ෂා කරන්න
+nav-menu-sign-in-again = නැවත පුරනය වන්න
+nav-menu-new-mail = මෙම ගිණුමෙන් නව තැපැල
+nav-menu-account-settings = ගිණුම් සැකසීම්
+nav-account-checked = සමමුහුර්තයි · { $ago } පරීක්ෂා කළා
+nav-account-in-sync = සමමුහුර්තයි
+nav-account-connecting = සම්බන්ධ වෙමින්…
+nav-account-offline = නොබැඳි, නැවත උත්සාහ කරමින්
+nav-account-signed-out = { $provider } පුරනය කල් ඉකුත් විය
+nav-account-password-refused = මුරපදය ප්‍රතික්ෂේප විය
+nav-account-storage = { $total } න් { $used } භාවිතයි
 nav-menu-new-subfolder = ඇතුළත නව ෆෝල්ඩරය
 nav-menu-new-sublabel = ඇතුළත නව ලේබලය
 nav-menu-empty-trash = කුණු කූඩය හිස් කරන්න
@@ -16,10 +27,6 @@ nav-account-unnamed = ගිණුම { $number }
 nav-all-accounts = සියලු ගිණුම්
 nav-expand = ෆෝල්ඩර පෙන්වන්න
 nav-collapse = ෆෝල්ඩර සඟවන්න
-nav-tab-new = { $count ->
-    [one] නව { $count }
-   *[other] නව { $count }
-}
 storage-used = { $total } න් { $percent }% භාවිත කර ඇත
 storage-used-detail = { $address }: { $total } න් { $used } භාවිත කර ඇත
 

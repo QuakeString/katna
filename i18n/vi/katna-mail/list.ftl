@@ -14,13 +14,13 @@ tab-other = Khác
 tab-inbox = Hộp thư đến
 tab-newsletters = Bản tin
 tab-notifications = Thông báo
-tab-new = { $count } thư mới
 tab-provider-other = do Katna sắp xếp
 
 ## Mail list: toolbar
 
 list-select = Chọn
 list-refresh = Làm mới
+list-back-to-top = Lên đầu trang
 list-checking = Đang kiểm tra thư mới…
 list-more = Thêm
 list-mark-read = Đánh dấu là đã đọc
@@ -39,6 +39,7 @@ list-results = Kết quả cho “{ $query }”
 list-results-corrected = Đang hiển thị kết quả cho “{ $query }”
 list-search-instead = Thay vào đó, tìm “{ $query }”
 list-files-more = +{ $count }
+list-replied = Bạn đã trả lời
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -237,6 +238,8 @@ menu-add-note = Thêm ghi chú
 menu-print-all = In tất cả
 menu-new-window = Mở trong cửa sổ mới
 menu-move-to = Di chuyển tới
+menu-follow-up = Theo dõi
+menu-more = Thêm
 menu-move-to-heading = Di chuyển tới:
 menu-find-from = Tìm email từ { $name }
 

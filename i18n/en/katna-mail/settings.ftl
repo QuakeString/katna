@@ -6,6 +6,8 @@
 ## Settings page: its tabs
 
 settings-tab-general = General
+# What notifies and counts on the taskbar, and what is muted.
+settings-tab-notifications = Notifications
 settings-tab-inbox = Inbox
 settings-tab-accounts = Accounts
 # The tab with the Katna account (an account on Katna's own server, for
@@ -25,10 +27,18 @@ settings-tab-compose = Compose
 settings-tab-mcp-server = MCP server
 settings-tab-feedback = User feedback
 settings-tab-experimental = Experimental
+settings-tab-ai = AI
+settings-tab-reading = Reading
+settings-tab-desktop = Desktop
+settings-tab-calendar = Calendar
+settings-tab-files = Files
+# The groups of Settings' list of pages: the settings every Katna app
+# shares, then each app's own.
+settings-group-all-apps = All apps
+settings-group-apps = Apps
 
 ## Settings page: tabs still to come
 
-settings-tab-folders-rules-coming = Create, rename, move and hide folders and labels, and choose which ones sync. Rules sort, label, forward or delete new mail by itself, by sender, subject or words.
 settings-tab-mcp-server-coming = Let AI assistants on this computer search, read and draft your mail, with your say.
 
 ## Settings > General
@@ -79,8 +89,6 @@ settings-general-remote-images-always-detail = In every message, not only from s
 settings-general-sending = Sending
 settings-general-sending-detail = How long a sent message waits, so it can be taken back.
 # A switch under the undo-send choice.
-settings-general-sent-sound = Sound when mail is sent
-settings-general-sent-sound-detail = A short sound plays once a message has gone out.
 settings-general-video-calls = Video calls
 settings-general-video-calls-detail = Start a video call uses Google Meet for Gmail accounts. Other accounts get a Jitsi Meet room on this server; anyone with the link can join.
 settings-general-offline = Offline mail
@@ -97,12 +105,104 @@ settings-general-offline-years = { $count ->
 settings-general-offline-all = All mail
 settings-general-offline-note = Choosing fewer days keeps mail already downloaded. Nothing changes on the server.
 settings-general-notifications = Notifications
-settings-general-notifications-detail = For new mail in the Inbox, even while Katna Mail is closed.
+settings-general-notifications-detail = For new mail in the folders that notify, even while Katna Mail is closed.
 settings-general-new-mail = Notify me about new mail
 # The buttons a new-mail notification has.
 settings-general-new-mail-detail = With Reply all, Mark as read and Archive
-settings-general-new-mail-sound = Play a sound
-settings-general-new-mail-sound-detail = The desktop's new-mail sound
+# The Sounds row of Settings > Notifications: a line per event, with a
+# sound to pick, a button that plays it and a switch.
+settings-notifications-sounds = Sounds
+settings-notifications-sounds-detail = A set of sounds for everything, and a sound of its own for any event. Muted folders, conversations and senders stay silent, and so does everything during Do not disturb.
+sounds-new-mail = New mail
+sounds-new-mail-detail = In the folders that notify
+sounds-reminders = Reminders
+sounds-reminders-detail = Calendar events and tasks
+sounds-mail-back = Mail back in the inbox
+sounds-mail-back-detail = Snoozed mail, and mail nobody answered
+sounds-sent = Mail sent
+sounds-sent-detail = Once a message has gone out
+sounds-not-sent = Mail not sent
+sounds-not-sent-detail = When sending fails
+# Tooltip of the button that plays a sound.
+sounds-play = Play
+# The sets of sounds, shown as tiles: a name, and under it what the set
+# holds. System is the desktop's own sounds.
+sound-set-system = System
+sound-set-system-detail = Your desktop's own
+sound-set-katna = Katna
+sound-set-katna-detail = Soft bells
+sound-set-nature = Nature
+sound-set-nature-detail = Drops and chimes
+sound-set-birds = Birds
+sound-set-birds-detail = Robin, wren, finch
+sound-set-animals = Animals
+sound-set-animals-detail = Frog, owl, cat
+sound-set-insects = Insects
+sound-set-insects-detail = Crickets, cicadas
+sound-set-electronic = Electronic
+sound-set-electronic-detail = Blips and tones
+sound-set-morning = Morning
+sound-set-morning-detail = Kalimba, marimba
+# First in the menu of an event's sounds: whatever sound the picked set
+# has for it, changing with the set.
+sounds-set-sound = The set's sound
+# Last in that menu: opens a file chooser for a sound file of the user's own.
+sounds-choose-file = Choose a file…
+# The file chooser's title.
+sounds-choose-file-title = Choose a sound
+# When the chosen file is not a sound Katna can play.
+sounds-file-kind = Choose a WAV, OGG, FLAC or MP3 file
+# When the chosen file is too big for a notification sound.
+sounds-file-too-big = That file is too big for a notification sound. Choose one under 10 MB.
+# When the file could not be read or kept. $error: what went wrong.
+sounds-file-failed = Couldn't use that file: { $error }
+# The sounds to pick from: Katna's own sets, then the desktop's own.
+sound-katna-chime = Katna chime
+sound-katna-twin-bells = Twin bells
+sound-katna-soft-bell = Soft bell
+sound-katna-rising = Rising
+sound-katna-falling = Falling
+sound-nature-water-drop = Water drop
+sound-nature-wind-chimes = Wind chimes
+sound-nature-ripple = Ripple
+sound-nature-breeze = Breeze
+sound-nature-pebble = Pebble
+sound-birds-robin = Robin
+sound-birds-wren-trill = Wren trill
+sound-birds-finch = Finch
+sound-birds-swallow = Swallow
+sound-birds-cuckoo = Cuckoo
+sound-animals-tree-frog = Tree frog
+sound-animals-owl = Owl
+sound-animals-cat = Cat
+sound-animals-dolphin = Dolphin
+sound-animals-bullfrog = Bullfrog
+sound-insects-cricket = Cricket
+sound-insects-cicada = Cicada
+sound-insects-katydid = Katydid
+sound-insects-bee = Bee
+sound-insects-fly = Fly
+sound-electronic-blip = Blip
+sound-electronic-beacon = Beacon
+sound-electronic-arcade = Arcade
+sound-electronic-whoosh = Whoosh
+sound-electronic-buzz = Buzz
+sound-morning-kalimba = Kalimba
+sound-morning-sunrise = Sunrise
+sound-morning-marimba = Marimba
+sound-morning-glockenspiel = Glockenspiel
+sound-morning-low-marimba = Low marimba
+sound-new-email = New email
+sound-new-message = New message
+sound-sent = Sent
+sound-alarm = Alarm
+sound-bell = Bell
+sound-complete = Complete
+sound-information = Information
+sound-warning = Warning
+sound-error = Error
+sound-reminder = Reminder
+sound-default = Notification
 # The row about updates of Katna (only in packages that update themselves).
 settings-general-updates = Updates
 settings-general-updates-detail = Install a new version from About, or from the notification that it is ready.
@@ -119,8 +219,27 @@ settings-general-login-window = Open the Katna Mail window too
 settings-general-login-window-detail = The window opens at login as well
 settings-general-tray = Show Katna in the system tray
 settings-general-tray-detail = With the unread count and a menu
+# Under "Show Katna in the system tray", while it is on.
+settings-general-tray-color = Tray icon in color
+settings-general-tray-color-detail = Off, it is one color like the panel's other icons. The unread count stays red.
 settings-general-unread-badge = Unread count on the taskbar icon
-settings-general-unread-badge-detail = How many Inbox messages are unread
+settings-general-unread-badge-detail = Unread mail in the folders that count
+## Settings › Notifications (the bells of folders and inbox tabs, and mutes)
+
+# The row with the taskbar count's switch.
+settings-notifications-count = Taskbar count
+settings-notifications-count-detail = Also the tray icon's count.
+# The two columns of each account's table of folders and inbox tabs.
+settings-notifications-notify = Notify
+settings-notifications-counts = Count
+settings-notifications-muted = Muted
+settings-notifications-muted-detail = Folders, accounts, conversations and senders whose new mail does not notify or count.
+settings-notifications-nothing-muted = Nothing is muted. Mute a folder from its right-click menu or the bell over the list.
+# When a mute ends; { $when } is a date and time.
+settings-notifications-until = Until { $when }
+settings-notifications-until-unmuted = Until you turn it back on
+# A muted conversation whose subject is not known.
+settings-notifications-a-conversation = A conversation
 # The row with the words that, typed first in KRunner or GNOME's search,
 # search the mail. The field holds words like "k, m".
 settings-general-search-triggers = Search from the desktop
@@ -143,6 +262,8 @@ settings-inbox-tabs-detail = Sort the inbox into tabs, as your mail provider's w
 settings-inbox-tabs-show = Show inbox tabs
 settings-inbox-tabs-show-detail = Off shows one list for every account
 settings-inbox-no-accounts = Add an account to choose its tabs.
+settings-inbox-unified = Unified inbox
+settings-inbox-unified-detail = Tabs shared by every account. Each mail shows in the tab of its kind; mail of a tab an account turns off stays in its first tab.
 # $tabs: the tabs of that style, such as "Focused and Other". $provider: the mail provider, such as "Gmail".
 settings-inbox-tabs-automatic = Automatic: { $tabs } ({ $provider })
 settings-inbox-tabs-off = No tabs
@@ -166,14 +287,124 @@ settings-appearance-density-default = Default
 settings-appearance-density-compact = Compact
 settings-appearance-scaling = Scaling
 settings-appearance-scaling-detail = Makes everything in Katna Mail bigger or smaller, on top of the desktop's own scale: text, icons, spacing and dividers. Mail you send keeps its own font size. Very small sizes can make icons hard to click.
-settings-appearance-theme = Theme
-# A theme choice: light or dark, following the desktop.
+settings-appearance-motion-speed = Animation speed
+settings-appearance-motion-speed-detail = How long folds, slides and fades take.
+# The desktop's own animation speed setting (KDE: System Settings > Animation speed).
+# $speed is the desktop's speed, one of the speeds below, such as "Normal".
+settings-appearance-motion-speed-desktop = Follow the desktop: { $speed }
+settings-appearance-motion-speed-katna = Katna's own speed
+# Speeds: how long animations take, from much shorter to much longer than normal.
+settings-appearance-motion-speed-faster = Faster
+settings-appearance-motion-speed-fast = Fast
+settings-appearance-motion-speed-normal = Normal
+settings-appearance-motion-speed-slow = Slow
+settings-appearance-motion-speed-slower = Slower
+settings-appearance-reduce-motion = Reduce motion
+settings-appearance-reduce-motion-detail = With motion reduced, things appear and move at once instead of animating.
+# $state says whether the desktop's animations are on.
+settings-appearance-reduce-motion-desktop = Follow the desktop: { $state }
+settings-appearance-reduce-motion-desktop-animating = animations on
+settings-appearance-reduce-motion-desktop-still = animations off
+settings-appearance-reduce-motion-on = Always reduce
+settings-appearance-reduce-motion-off = Never reduce
+# Light or dark, apart from the color scheme.
+settings-appearance-theme = Mode
+# A mode choice: light or dark, following the desktop.
 settings-appearance-theme-system = System
 settings-appearance-theme-light = Light
 settings-appearance-theme-dark = Dark
-settings-appearance-desktop-colors = Desktop colors
-settings-appearance-desktop-colors-use = Use the desktop's colors
-settings-appearance-desktop-colors-use-detail = The color scheme and accent color of the desktop
+settings-appearance-theme-forced = The color scheme picked below has only a light or a dark side, so it decides.
+settings-appearance-colors = Colors
+settings-appearance-colors-detail = Every scheme has a light and a dark side, so Mode works with each one. The previews show both sides in the accent color picked below.
+# Heading over the color schemes that come with Katna.
+settings-appearance-colors-built-in = Built in
+# Heading over the color schemes that come from the desktop.
+settings-appearance-colors-from-system = From your system
+# The desktop's own color scheme, whatever it is.
+settings-appearance-colors-system = System
+settings-appearance-colors-system-detail = Follows the desktop
+# Under a color scheme that has a light side only, so Mode does not change it.
+settings-appearance-colors-light-only = Light only
+settings-appearance-colors-dark-only = Dark only
+# Heading over the color schemes people made or imported.
+settings-appearance-colors-yours = Yours
+# A card at the end of Yours: copies the selected scheme into the editor.
+scheme-customize-card = Customize…
+scheme-customize-card-detail = From the picked one
+# A card at the end of Yours: reads a scheme from a file.
+scheme-import-card = Import…
+scheme-import-card-detail = Katna or KDE file
+settings-appearance-accent = Accent
+settings-appearance-accent-detail = The color of Compose, the app on show in the rail, counts and highlights
+# An accent choice: the color scheme's own accent color.
+settings-appearance-accent-scheme = From colors
+# An accent choice: the desktop's accent color.
+settings-appearance-accent-system = System
+# Tooltip of the color wheel after the accent colors: it opens a color picker.
+settings-appearance-accent-more = More colors
+
+## Color scheme names: names of themes, usually left as they are.
+
+scheme-katna = Katna
+scheme-clear = Clear
+scheme-graphite = Graphite
+scheme-nord = Nord
+scheme-solarized = Solarized
+scheme-dracula = Dracula
+scheme-gruvbox = Gruvbox
+scheme-catppuccin = Catppuccin
+scheme-tokyo-night = Tokyo Night
+scheme-one = One
+scheme-rose-pine = Rosé Pine
+scheme-everforest = Everforest
+scheme-kanagawa = Kanagawa
+scheme-ayu = Ayu
+# The name a copy of a color scheme starts with.
+scheme-copy-name = { $name } copy
+
+## Color schemes people make: the right-click menu of a scheme's card, and
+## the editor.
+
+scheme-customize = Customize
+scheme-edit = Edit
+scheme-duplicate = Duplicate
+scheme-export = Export
+scheme-delete = Delete
+scheme-deleted = Deleted “{ $name }”
+scheme-exported = Saved “{ $name }”
+# The title of the file picker.
+scheme-import = Import a color scheme
+scheme-import-failed = Not a color scheme Katna can read: { $error }
+scheme-editor-new = New color scheme
+scheme-editor-edit = Edit color scheme
+# The placeholder of the name field.
+scheme-editor-name = Name
+scheme-editor-light = Light side
+scheme-editor-dark = Dark side
+scheme-editor-make-dark = Make dark from light
+scheme-editor-add-dark = Add a dark side
+scheme-editor-add-light = Add a light side
+scheme-editor-remove-side = Remove this side
+scheme-editor-readable = Easy to read
+# $colors lists the colors, like "Text, Text on accent".
+scheme-editor-hard-to-read = Hard to read: { $colors }
+# The color picker beside a color of the editor.
+scheme-picker-dropper = Pick from screen
+scheme-picker-in-scheme = In this scheme
+scheme-picker-recent = Recent
+scheme-picker-system = System picker…
+# The eight colors of a side.
+scheme-seed-page = Page
+scheme-seed-cards = Cards
+scheme-seed-text = Text
+scheme-seed-faint = Faint text
+scheme-seed-accent = Accent
+scheme-seed-bar-text = Top bar text
+scheme-seed-on-accent = Text on accent
+scheme-seed-error = Error
+
+## Settings > Appearance, continued
+
 settings-appearance-app-names = App names
 settings-appearance-app-names-show = Show app names
 settings-appearance-app-names-show-detail = Names under the app icons at the far left
@@ -213,6 +444,28 @@ settings-default-apps-ask = Ask which app each time
 settings-default-apps-after-saving = After saving
 settings-default-apps-show-folder = Show saved files in their folder
 settings-default-apps-show-folder-detail = Opens the file manager with the saved attachments picked
+settings-calendar-density = Hour height
+settings-calendar-density-detail = How tall the hours of Day and Week are
+settings-calendar-custom-days = Custom view
+settings-calendar-custom-days-detail = How many days the custom view shows
+settings-calendar-birthdays = Birthdays
+settings-calendar-birthdays-show = Show birthdays
+settings-calendar-birthdays-show-detail = Your contacts' birthdays, as a calendar of their own
+settings-files-page = Files page
+settings-files-page-detail = Which attachments the Files page shows
+settings-files-leave-out-small = Leave out small pictures
+settings-files-leave-out-small-detail = Logos and icons in signatures, which come with many mails
+settings-files-smaller-than = Smaller than
+settings-files-kb = KB
+settings-files-narrower-than = or narrower or shorter than
+settings-files-px = px
+settings-files-more-tip = More
+settings-files-less-tip = Less
+settings-files-sizes-note = Pixel sizes are read once a mail is downloaded; until then its pictures go by file size alone.
+settings-files-drives = Drives in Files
+settings-files-drives-detail = Each account’s own drive, shown on the Files page
+# Under a drive whose account was signed in before Katna asked to read it.
+settings-files-drive-needs = { $address } · Katna needs permission once
 
 ## Settings > Compose
 
@@ -240,6 +493,12 @@ settings-compose-signature-delete = Delete
 settings-compose-signature-deleted = Signature deleted
 # The button that makes a new signature.
 settings-compose-signature-new = Create new
+# The button that opens a box to paste a signature designed elsewhere, as HTML.
+settings-compose-signature-paste-html = Paste HTML
+# The button that brings in signatures from Gmail and from the mail apps on this computer.
+settings-compose-signature-import = Import
+# The button that opens a designed signature's HTML to edit by hand.
+settings-compose-signature-edit-html = Edit HTML
 settings-compose-no-signatures = No signatures yet.
 settings-compose-no-signature = No signature
 settings-compose-for-new-mail = For new mail
@@ -260,9 +519,40 @@ settings-compose-grammar-detail = Checked on this computer with Harper. English 
 settings-compose-grammar-check = Check grammar
 settings-compose-grammar-check-detail = Underline grammar mistakes while writing, in English
 settings-compose-suggestions = Writing suggestions
-settings-compose-suggestions-detail = Learned on this computer from the mail you sent and the mail you are answering; nothing leaves it. Press Tab to take a suggestion, or keep typing.
+settings-compose-suggestions-detail = Phrases are learned on this computer from the mail you sent and the mail you are answering. Press Tab to take a suggestion, or keep typing.
 settings-compose-suggestions-on = Suggest while writing
 settings-compose-suggestions-on-detail = Show the likely rest of a phrase in grey as you type
+settings-ai-autocomplete = Longer suggestions with AI
+settings-ai-autocomplete-detail = Finish the sentence after you pause, with the AI chosen below. Never for encrypted mail.
+settings-ai-answered = Use the mail you are answering
+settings-ai-answered-detail = Better guesses about names and dates; sends more text
+# Settings > Compose: where Rephrase and the longer suggestions go.
+settings-ai = Writing help with AI
+settings-ai-detail = Select text in a message and press the sparkle (or Ctrl+J) to rephrase it. Only the text you choose is sent, and nothing is kept.
+settings-ai-katna = Katna AI
+settings-ai-own = Your own key
+settings-ai-off = Off
+settings-ai-katna-detail = Free for 30 days from the first use, then $5 a month. Uses your Katna account.
+settings-ai-own-detail = Your key goes to your service only. It is kept in the system's keyring, not in Katna's settings.
+settings-ai-service = Your AI service
+settings-ai-service-detail = Any service that speaks OpenAI's API works under Other, such as Ollama or LM Studio on this computer.
+settings-ai-other = Other
+settings-ai-address = Address
+# Left empty, the service's usual model is used (shown greyed in the field).
+settings-ai-model = Model
+# The button at the end of the model field that shows the service's models.
+settings-ai-models = Models this service offers
+settings-ai-key = API key
+settings-ai-key-paste = Paste your key
+settings-ai-key-save = Save key
+settings-ai-key-saved = A key is saved.
+settings-ai-key-remove = Remove
+settings-ai-key-none = No key saved yet.
+settings-ai-key-saved-toast = Key saved
+settings-ai-key-removed = Key removed
+settings-ai-encrypted-title = Encrypted mail
+settings-ai-encrypted = Offer Rephrase in encrypted mail
+settings-ai-encrypted-detail = Asks each time before sending text of an encrypted message
 settings-compose-templates = Templates
 settings-compose-templates-detail = Save mail you write often, and start new mail or a reply from it.
 settings-compose-no-templates = No templates yet. In a message, choose Templates, then Save as template.
@@ -315,14 +605,21 @@ settings-general-remote-images-summary = Always show the images of every message
 settings-general-sending-summary = Undo send: how long a sent message waits, so it can be taken back
 settings-general-video-calls-summary = The Jitsi Meet server for new video calls from accounts without Google Meet
 settings-general-offline-summary = How many days of recent mail are downloaded whole, to read without a connection
-settings-general-notifications-summary = New-mail notifications and their sound
+settings-general-notifications-summary = New-mail notifications
+settings-notifications-sounds-summary = The sound for new mail, reminders, and mail sent or not sent
 settings-general-updates-summary = Download new versions of Katna by themselves
 settings-general-reset-cache-summary = Delete downloaded mail, sender pictures and the search index, and download them again
-settings-general-desktop-summary = Start Katna at login, the system tray icon and the unread count on the taskbar icon
+settings-general-desktop-summary = Start Katna at login and the system tray icon
+settings-notifications-count-summary = The unread count on the taskbar icon
+settings-notifications-muted-summary = Unmute folders, accounts, conversations and senders
 settings-accounts-accounts-summary = Add or remove an account, or change its picture
 settings-appearance-density-summary = Default or compact lines in the list
 settings-appearance-scaling-summary = Make everything bigger or smaller: text, icons, spacing and dividers
+settings-appearance-motion-speed-summary = How long folds, slides and fades take: the desktop's speed or Katna's own
+settings-appearance-reduce-motion-summary = Turn animations off, or follow the desktop
 settings-appearance-theme-summary = System, light or dark
+settings-appearance-colors-summary = Color schemes: the desktop's, Katna's or a built-in one such as Nord or Solarized
+settings-appearance-accent-summary = The color of the selected folder, Compose and counts
 settings-appearance-sender-pictures-summary = Company logos, looked up by the sender's domain
 settings-appearance-important-summary = The Important marker beside each message in the list
 settings-appearance-mail-colors-summary = Dark colors for HTML mail in a dark theme, or its sender's colors
@@ -335,6 +632,10 @@ settings-default-apps-text-summary = Where plain text, logs and code open
 settings-default-apps-sheets-summary = Where Excel, OpenDocument and CSV files open
 settings-default-apps-documents-summary = Where Word and OpenDocument text and slides open
 settings-default-apps-after-saving-summary = Show saved attachments in their folder
+settings-calendar-density-summary = Make the hours of Day and Week taller or more compact
+settings-calendar-custom-days-summary = Pick how many days the custom view shows
+settings-calendar-birthdays-summary = Show your contacts' birthdays in the calendar
+settings-files-page-summary = Leave small pictures, like signature logos, off the Files page, and pick which drives it shows
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line
@@ -346,11 +647,12 @@ settings-general-search-triggers-summary = Words that search your mail from KRun
 settings-general-mail-app-summary = Open email links from other apps and websites in Katna Mail
 settings-compose-grammar-summary = Underline grammar mistakes while writing, in English
 settings-compose-suggestions-summary = Show the likely rest of a phrase in grey as you type
+settings-ai-summary = Rephrase selected text and finish sentences with Katna AI or your own key
 settings-compose-templates-summary = Save mail you write often, and start new mail or a reply from it
 settings-feedback-crash-reports-summary = Save crash reports on this computer when Katna Mail or its background service crashes
 settings-feedback-saved-summary = View, copy or delete the crash reports saved on this computer
 settings-feedback-help-improve-summary = Send crash reports to help fix what went wrong; off unless you turn it on
-settings-experimental-blur-summary = The desktop shows through the top bar, blurred, and menus are frosted
+settings-experimental-blur-summary = Blur the window background, frost menus and dialogs, or both
 # The line under a keyboard shortcut found by the settings search.
 settings-search-shortcut = Keyboard shortcut
 # The line under a tab of the Settings page found by the search.

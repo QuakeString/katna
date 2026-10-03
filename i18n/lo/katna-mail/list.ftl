@@ -14,13 +14,13 @@ tab-other = ອື່ນໆ
 tab-inbox = ກ່ອງຈົດໝາຍເຂົ້າ
 tab-newsletters = ຈົດໝາຍຂ່າວ
 tab-notifications = ການແຈ້ງເຕືອນ
-tab-new = ໃໝ່ { $count }
 tab-provider-other = ຈັດຮຽງໂດຍ Katna
 
 ## Mail list: toolbar
 
 list-select = ເລືອກ
 list-refresh = ໂຫຼດຄືນໃໝ່
+list-back-to-top = ກັບໄປເທິງສຸດ
 list-checking = ກຳລັງກວດຫາອີເມວໃໝ່…
 list-more = ເພີ່ມເຕີມ
 list-mark-read = ໝາຍວ່າອ່ານແລ້ວ
@@ -39,6 +39,7 @@ list-results = ຜົນການຊອກຫາ “{ $query }”
 list-results-corrected = ກຳລັງສະແດງຜົນການຊອກຫາ “{ $query }”
 list-search-instead = ຊອກຫາ “{ $query }” ແທນ
 list-files-more = +{ $count }
+list-replied = ທ່ານຕອບກັບແລ້ວ
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -237,6 +238,8 @@ menu-add-note = ເພີ່ມບັນທຶກ
 menu-print-all = ພິມທັງໝົດ
 menu-new-window = ເປີດໃນໜ້າຕ່າງໃໝ່
 menu-move-to = ຍ້າຍໄປທີ່
+menu-follow-up = ຕິດຕາມ
+menu-more = ເພີ່ມເຕີມ
 menu-move-to-heading = ຍ້າຍໄປທີ່:
 menu-find-from = ຊອກຫາອີເມວຈາກ { $name }
 

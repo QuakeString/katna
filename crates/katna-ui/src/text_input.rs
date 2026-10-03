@@ -66,8 +66,8 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("ctrl-x", Cut, context),
         KeyBinding::new("enter", Submit, context),
         KeyBinding::new("escape", Cancel, context),
-        // Not handled by the input: for a parent's list of suggestions.
-        // Unhandled, the keys go on to the next binding for them.
+        // Handled by the input only with a stepper (a time field); else
+        // for a parent's list of suggestions, going on to the next binding.
         KeyBinding::new("up", Up, context),
         KeyBinding::new("down", Down, context),
     ]);
@@ -96,6 +96,10 @@ pub struct InputGrammarMenu {
     pub word: Option<Bounds<Pixels>>,
 }
 
+/// What Up (`1`) and Down (`-1`) do in a field like a time: given the
+/// text and the cursor, the new text and cursor, or `None` to leave it.
+pub type Stepper = Arc<dyn Fn(&str, usize, i32) -> Option<(String, usize)>>;
+
 /// A single-line text input. Create it with [`TextInput::new`] inside
 /// `cx.new` and render the entity as a child.
 pub struct TextInput {
@@ -113,6 +117,8 @@ pub struct TextInput {
     is_selecting: bool,
     /// Draws a dot for each character, for passwords.
     masked: bool,
+    /// Text shorter than the box sits in its middle.
+    centered: bool,
     grammar: Option<Arc<dyn GrammarCheck>>,
     /// The underline of grammar mistakes.
     grammar_color: Hsla,
@@ -127,6 +133,8 @@ pub struct TextInput {
     hover_task: Option<Task<()>>,
     /// The mistake a left click went down on.
     clicked: Option<Range<usize>>,
+    /// What Up and Down change, if they change the text.
+    stepper: Option<Stepper>,
 }
 
 /// What a masked input shows for each character.
@@ -151,6 +159,7 @@ impl TextInput {
             scroll_x: px(0.0),
             is_selecting: false,
             masked: false,
+            centered: false,
             grammar: None,
             grammar_color: gpui::blue(),
             grammar_found: None,
@@ -160,6 +169,32 @@ impl TextInput {
             hover: None,
             hover_task: None,
             clicked: None,
+            stepper: None,
+        }
+    }
+
+    /// Makes Up and Down change the text with `stepper`, like the part of
+    /// a time the cursor is in; with `None` they go to the parent.
+    pub fn set_stepper(&mut self, stepper: Option<Stepper>) {
+        self.stepper = stepper;
+    }
+
+    fn step(&mut self, by: i32, cx: &mut Context<Self>) {
+        let Some(stepper) = &self.stepper else {
+            return;
+        };
+        let Some((text, cursor)) = stepper(&self.content, self.cursor_offset(), by) else {
+            return;
+        };
+        let cursor = cursor.min(text.len());
+        let changed = *text != *self.content;
+        self.content = text.into();
+        self.selected_range = cursor..cursor;
+        self.selection_reversed = false;
+        self.marked_range = None;
+        cx.notify();
+        if changed {
+            cx.emit(InputEvent::Changed);
         }
     }
 
@@ -357,6 +392,15 @@ impl TextInput {
         }
     }
 
+    /// Puts the cursor at the start, showing the text from its beginning:
+    /// a long title opened to read, not to type at its end.
+    pub fn caret_to_start(&mut self, cx: &mut Context<Self>) {
+        self.selected_range = 0..0;
+        self.selection_reversed = false;
+        self.scroll_x = px(0.0);
+        cx.notify();
+    }
+
     /// Shows a dot for each character instead of the text, and keeps the
     /// text off the clipboard: for passwords.
     pub fn set_masked(&mut self, masked: bool, cx: &mut Context<Self>) {
@@ -391,6 +435,12 @@ impl TextInput {
         self.placeholder = placeholder.into();
     }
 
+    /// Centres text shorter than the box, for short fields such as a page
+    /// number.
+    pub fn set_centered(&mut self, centered: bool) {
+        self.centered = centered;
+    }
+
     /// Color of the cursor and (translucent) of the selection.
     pub fn set_accent(&mut self, accent: Hsla) {
         self.accent = accent;
@@ -422,6 +472,13 @@ impl TextInput {
 
     fn select_all(&mut self, _: &SelectAll, _: &mut Window, cx: &mut Context<Self>) {
         self.select_all_text(cx)
+    }
+
+    /// Selects bytes `range` of the text (clamped to it).
+    pub fn select_range(&mut self, range: Range<usize>, cx: &mut Context<Self>) {
+        let end = range.end.min(self.content.len());
+        self.move_to(range.start.min(end), cx);
+        self.select_to(end, cx)
     }
 
     /// Selects all the text, so typing replaces it.
@@ -829,7 +886,10 @@ impl Element for TextElement {
         let style = window.text_style();
 
         let (display_text, text_color) = if content.is_empty() {
-            (input.placeholder.clone(), style.color.opacity(0.5))
+            (
+                input.placeholder.clone(),
+                style.color.opacity(crate::PLACEHOLDER_OPACITY),
+            )
         } else {
             (content, style.color)
         };
@@ -934,6 +994,11 @@ impl Element for TextElement {
         }
         if line.width - scroll_x < width {
             scroll_x = (line.width - width).max(px(0.0));
+        }
+        // Centred text scrolls "left" by a negative amount, so clicks and the
+        // cursor follow it without anything else changing.
+        if input.centered && line.width < width {
+            scroll_x = (line.width - width) / 2.0;
         }
         let left = bounds.left() - scroll_x;
 
@@ -1048,6 +1113,10 @@ impl Render for TextInput {
             .on_action(cx.listener(Self::copy))
             .on_action(cx.listener(Self::submit))
             .on_action(cx.listener(Self::cancel))
+            .when(self.stepper.is_some(), |d| {
+                d.on_action(cx.listener(|this, _: &Up, _, cx| this.step(1, cx)))
+                    .on_action(cx.listener(|this, _: &Down, _, cx| this.step(-1, cx)))
+            })
             .on_mouse_down(MouseButton::Left, cx.listener(Self::on_mouse_down))
             .on_mouse_down(MouseButton::Right, cx.listener(Self::on_right_mouse_down))
             .on_mouse_up(MouseButton::Left, cx.listener(Self::on_mouse_up))

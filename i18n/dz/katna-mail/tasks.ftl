@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = བཟོ།
+tasks-create = ལཱ་གསརཔ
 tasks-all = ལཱ་ཆ་མཉམ།
 tasks-today = ད་རིས
 tasks-starred = སྐར་མ་བཀལ་ཡོདཔ
@@ -24,6 +24,12 @@ tasks-account-failed = ལཱ་ཐོ་ཡིག་ཚུ་ལྷག་མ་
 # $reason is the server's own words, in English.
 tasks-account-error = ལཱ་ཐོ་ཡིག་ཚུ་ལྷག་མ་ཚུགས་: { $reason }
 tasks-account-none = ལཱ་ཐོ་ཡིག་ག་ནི་ཡང་ མ་ཐོབ།
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = ལཱ་ཐོ་ཡིག་ག་ནི་ཡང་ མ་ཐོབ།: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } གིས་ ལཱ་ཚུ་ { $provider } གིས་ནང་བསྐྱོད་འབད་མི་ Katna ལུ་རྐྱངམ་ཅིག་སྟོནམ་ཨིན།
+tasks-account-sign-in-with = { $provider } གིས་ ནང་བསྐྱོད་འབད།
 tasks-account-looking = ལཱ་ཐོ་ཡིག་ཚུ་འཚོལ་དོ…
 tasks-account-try-again = ལོག་འབད་རྩོལ་བསྐྱེད།
 tasks-account-try-again-tooltip = རྩིས་ཐོ་འདི་གི་ལཱ་ཚུ་ ད་ལྟོ་ལོག་ཞིབ་དཔྱད་འབད།
@@ -106,4 +112,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = གློག་འཕྲིན་དེ་ད་ལུ་འདི་ལུ་མིན་འདུག
 tasks-toast-list-deleted = ཐོ་ཡིག་བཏོན་གཏང་ཡི།
 tasks-toast-moved = { $list } ནང་སྤོ་ཡི།
+# A task dragged to another place in its own list.
+tasks-toast-placed = ལཱ་སྤོ་ཡི།
 tasks-toast-rescheduled = ལས་འགན་གྱི་དུས་ཚོད་བསྒྱུར་ཡི།

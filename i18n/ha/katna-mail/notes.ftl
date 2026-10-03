@@ -15,6 +15,7 @@ notes-loading = Ana buɗe bayananka…
 
 notes-take-a-note = Rubuta bayani…
 notes-new-list = Sabon jeri
+notes-new-note = Sabon bayani
 notes-pinned = An maƙala
 notes-others = Sauran
 notes-empty = Bayanan da ka ƙara za su bayyana a nan

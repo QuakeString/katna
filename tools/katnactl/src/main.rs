@@ -27,6 +27,7 @@ usage: katnactl status
                 [--remove | --keep-days N] [--keep-deleted]
        katnactl discover ADDRESS
        katnactl sign-in google|microsoft [ADDRESS | ACCOUNT]
+       katnactl sign-in zoho ACCOUNT
        katnactl password ACCOUNT
        katnactl remove ACCOUNT
        katnactl sync [ACCOUNT]
@@ -66,6 +67,8 @@ discover   Shows the servers the daemon finds for an address, and where
 sign-in    Signs in to a Google or Microsoft account in your browser and
            adds it, or signs an account in again (by its number, or its
            address). The keyring keeps the sign-in, not a password.
+           `sign-in zoho ACCOUNT` links Zoho's tasks and calendars to an
+           account (by its number); its mail keeps its password.
 password   Changes an account's saved password.
 remove     Deletes an account, its synced mail and its password.
 sync       Syncs every folder now, of one account or of all.
@@ -169,9 +172,9 @@ fn run(command: &str, args: &[String]) -> Result<()> {
             [address] => {
                 let address = address.clone();
                 with_daemon(|pim| async move {
-                    let (account, source, sign_in, password) =
+                    let (account, pop3, source, sign_in, password) =
                         pim.discover_account(&address).await?;
-                    print_discovered(&account, &source);
+                    print_discovered(&account, &pop3, &source);
                     if !sign_in.is_empty() {
                         let or = if password { "or " } else { "only " };
                         println!("  sign in {or}with `katnactl sign-in {sign_in} {address}`");
@@ -484,6 +487,7 @@ where
         let connection = katna_dbus::session()
             .await
             .map_err(|err| error(format!("session bus: {err}")))?;
+        katna_dbus::ensure_daemon(&connection).await;
         let pim = PimProxy::new(&connection).await?;
         f(pim).await
     })
@@ -527,7 +531,7 @@ fn sign_in(args: &[String]) -> Result<()> {
         [provider, target] => (provider.clone(), target.clone()),
         _ => {
             return Err(usage(
-                "sign-in needs google or microsoft, and maybe an address",
+                "sign-in needs google or microsoft and maybe an address, or zoho and an account",
             ));
         }
     };
@@ -538,7 +542,11 @@ fn sign_in(args: &[String]) -> Result<()> {
     println!("finish signing in in your browser…");
     with_daemon(|pim| async move {
         let id = pim.sign_in(&provider, account, &address).await?;
-        println!("signed in; account {id} is syncing in the background");
+        if provider == "zoho" {
+            println!("signed in; account {id} reaches Zoho's tasks and calendars");
+        } else {
+            println!("signed in; account {id} is syncing in the background");
+        }
         Ok(())
     })
 }
@@ -640,8 +648,9 @@ fn add_imap(args: &[String]) -> Result<()> {
             let mut found = None;
             let slot = &mut found;
             with_daemon(|pim| async move {
-                let (account, source, sign_in, password) = pim.discover_account(&lookup).await?;
-                print_discovered(&account, &source);
+                let (account, pop3, source, sign_in, password) =
+                    pim.discover_account(&lookup).await?;
+                print_discovered(&account, &pop3, &source);
                 if !password {
                     return Err(error(format!(
                         "{lookup} takes no password; use `katnactl sign-in {sign_in} {lookup}`"
@@ -765,7 +774,7 @@ fn add_pop3(args: &[String]) -> Result<()> {
     })
 }
 
-fn print_discovered(account: &NewImapAccount, source: &str) {
+fn print_discovered(account: &NewImapAccount, pop3: &ServerSpec, source: &str) {
     let show = |spec: &ServerSpec| match spec.host.as_str() {
         "" => "not found".to_owned(),
         host => format!(
@@ -775,6 +784,9 @@ fn print_discovered(account: &NewImapAccount, source: &str) {
     };
     println!("found via {source}:");
     println!("  IMAP  {}", show(&account.imap));
+    if !pop3.host.is_empty() {
+        println!("  POP3  {}", show(pop3));
+    }
     println!("  SMTP  {}", show(&account.smtp));
 }
 

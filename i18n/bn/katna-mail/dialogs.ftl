@@ -66,6 +66,7 @@ about-credit-resvg = SVG ছবি
 about-credit-jiff = তারিখ ও টাইম জোন
 about-credit-spellbook = বানান পরীক্ষা, Helix এডিটর থেকে
 about-credit-smol = একসঙ্গে অনেক কাজ করা
+about-credit-color-schemes = বিল্ট-ইন কালার স্কিমগুলির প্যালেট
 about-all-libraries = Katna-র ব্যবহৃত সব লাইব্রেরি ({ $count })
 about-library-authors = নির্মাতা: { $authors }
 about-license = Katna মুক্ত সফটওয়্যার, GNU GPL সংস্করণ ৩ বা তার পরের সংস্করণের অধীনে।
@@ -123,6 +124,21 @@ onboarding-density-default = ডিফল্ট
 onboarding-density-compact = কমপ্যাক্ট
 onboarding-continue = চালিয়ে যান
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna অ্যাকাউন্ট দিয়ে আরও বেশি পান
+onboarding-katna-lead = এটি ঐচ্ছিক। এটি Katna-র অনলাইন ফিচারগুলি চালু করে, আর পরে সেটিংস > সাবস্ক্রিপশন-এ একটি তৈরি করতে পারেন।
+onboarding-katna-receipts-title = পড়ার রসিদ
+onboarding-katna-receipts-text = আপনার পাঠানো মেল লোকে কখন খোলে তা দেখুন।
+onboarding-katna-links-title = লিঙ্ক ট্র্যাকিং
+onboarding-katna-links-text = আপনার মেলের কোন লিঙ্কে ক্লিক হয় তা দেখুন।
+onboarding-katna-activity-title = অ্যাক্টিভিটি
+onboarding-katna-activity-text = আপনার পাঠানো সবকিছুর খোলা ও ক্লিক, এক জায়গায়।
+onboarding-katna-translate-title = স্বয়ংক্রিয় অনুবাদ
+onboarding-katna-translate-text = অন্য ভাষায় লেখা মেল নিজের ভাষায় পড়ুন।
+onboarding-katna-private = এর নিজস্ব পাসওয়ার্ড আছে। আপনার মেলের লগইন কখনও এই কম্পিউটার ছেড়ে যায় না।
+
 ## First run: done
 
 onboarding-ready-title = সব তৈরি
@@ -166,7 +182,7 @@ tour-search-text = অফলাইনেও খোঁজা যায়। ড�
 tour-menu-title = ফোল্ডার দেখান বা লুকান
 tour-menu-text = এই বোতামটি ফোল্ডারের তালিকা গুটিয়ে রাখে। লুকানো থাকলে ফোল্ডারগুলো দেখতে বাঁদিকের মেল-এর ওপর পয়েন্টার রাখুন।
 tour-apps-title = আপনার অ্যাপ
-tour-apps-text = মেল এখন এখানে থাকে। ক্যালেন্ডার, পরিচিতি, টাস্ক, নোট ও ফিড এই বারে এর সঙ্গে যোগ দেবে।
+tour-apps-text = মেল এখানে থাকে, ক্যালেন্ডার, পরিচিতি, টাস্ক, নোট ও ফাইলের পাশে।
 tour-tabs-title = ইনবক্স ট্যাব
 tour-tabs-text = নতুন মেল প্রাথমিক, প্রচার, সামাজিক, আপডেট ও ফোরাম-এ ভাগ করা হয়। দ্রুত সেটিংসে ট্যাবগুলো বন্ধ করতে পারেন।
 tour-list-title = আপনার মেসেজ
@@ -197,6 +213,9 @@ sign-in-again-button = সাইন ইন করুন
 sign-in-again-tooltip = আপনার ব্রাউজারে { $provider }-এর সাইন-ইন পৃষ্ঠা খুলুন
 sign-in-again-waiting = আপনার ব্রাউজারের জন্য অপেক্ষা করা হচ্ছে…
 sign-in-again-close = বন্ধ করুন
+google-api-off = Katna-র Google Cloud প্রজেক্টে { $api } বন্ধ আছে।
+google-api-turn-on = চালু করুন
+google-api-turn-on-tooltip = { $api } চালু করতে Google Cloud খুলুন, তারপর আবার চেষ্টা করুন চাপুন
 sign-in-again-done = { $address }-এ আবার সাইন ইন করা হয়েছে। আপনার মেল আনা হচ্ছে…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

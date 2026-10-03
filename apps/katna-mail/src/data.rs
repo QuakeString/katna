@@ -4,7 +4,7 @@
 //! here. Only `katna-daemon` writes; the app opens both read-only.
 
 use std::cell::{Cell, RefCell};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -14,8 +14,9 @@ use katna_core::{Account, AccountId, MailCategory, Paths};
 use katna_search::{Query, SearchIndex, SearchOptions, SearchResults};
 pub use katna_store::Marks;
 use katna_store::{
-    FlagFilter, FolderId, FolderMarks, FolderSummary, InboxThreads, MessageFlags, MessageId, Mode,
-    ParticipantRole, Store, StoredMessage, ThreadId, ThreadSender, ThreadSummary,
+    Bell, FlagFilter, FolderId, FolderMarks, FolderSummary, InboxThreads, MessageFlags, MessageId,
+    Mode, Mute, MuteTarget, ParticipantRole, SpreadTabs, Store, StoredMessage, ThreadId,
+    ThreadSender, ThreadSummary,
 };
 
 mod preload;
@@ -64,9 +65,16 @@ pub struct Row {
     pub key: EntryKey,
     /// The message the line shows: the newest of a conversation.
     pub id: MessageId,
+    /// The account the message is in, marked on lines of the unified
+    /// inbox.
+    pub account: AccountId,
     /// Sender, or the recipients in sent and draft folders; for a
     /// conversation, its senders.
     pub correspondent: String,
+    /// `correspondent` in pieces: each person's name with their address,
+    /// and the text between (an empty list: show it whole). Lets the line
+    /// mark a muted sender beside their name.
+    pub people: Vec<(String, Option<String>)>,
     /// The address of the message's sender.
     pub sender: String,
     /// Messages in the conversation; 1 for a single message.
@@ -90,6 +98,10 @@ pub struct Row {
     pub snippet: String,
     /// For mail sent with open and click tracking, what its recipients did.
     pub tracking: Option<Tracked>,
+    /// The user answered: they wrote the conversation's newest mail, or
+    /// the newest mail they got is marked answered (a reply whose sent
+    /// copy is not here). Never set in sent and draft folders.
+    pub replied: bool,
 }
 
 /// What the recipients of a tracked message did, for its line.
@@ -180,25 +192,30 @@ impl Row {
                 .unwrap_or(&p.email_norm)
                 .to_owned()
         };
-        let correspondent = if show_recipients {
-            let to: Vec<String> = message
+        let people: Vec<(String, Option<String>)> = if show_recipients {
+            let to: Vec<(String, Option<String>)> = message
                 .participants
                 .iter()
                 .filter(|p| matches!(p.role, ParticipantRole::To | ParticipantRole::Cc))
-                .map(name)
+                .map(|p| (name(p), Some(p.email_norm.clone())))
                 .collect();
             if to.is_empty() {
-                "(no recipients)".to_owned()
+                vec![("(no recipients)".to_owned(), None)]
             } else {
-                format!("To: {}", to.join(", "))
+                std::iter::once(("To: ".to_owned(), None))
+                    .chain(between(to, ", "))
+                    .collect()
             }
         } else {
-            message
+            vec![match message
                 .first(ParticipantRole::From)
                 .or_else(|| message.first(ParticipantRole::Sender))
-                .map(name)
-                .unwrap_or_else(|| "(unknown sender)".to_owned())
+            {
+                Some(p) => (name(p), Some(p.email_norm.clone())),
+                None => ("(unknown sender)".to_owned(), None),
+            }]
         };
+        let correspondent = joined(&people);
         let sender = message
             .first(ParticipantRole::From)
             .or_else(|| message.first(ParticipantRole::Sender))
@@ -208,8 +225,10 @@ impl Row {
         Self {
             key: EntryKey::Message(message.id),
             id: message.id,
+            account: message.account,
             count: 1,
             correspondent,
+            people,
             sender,
             subject: if subject.is_empty() {
                 "(no subject)".to_owned()
@@ -225,6 +244,7 @@ impl Row {
             attachments: message.has_attachments,
             files: Vec::new(),
             tracking: None,
+            replied: !show_recipients && message.flags.contains(MessageFlags::ANSWERED),
             snippet: message
                 .snippet
                 .as_deref()
@@ -253,16 +273,42 @@ impl Row {
             self.important = summary.important;
             self.attachments = summary.has_attachments;
             if !show_recipients && !summary.senders.is_empty() {
-                self.correspondent = senders(&summary.senders, me);
+                self.people = senders(&summary.senders, me);
+                self.correspondent = joined(&self.people);
             }
+            self.replied = !show_recipients
+                && (summary.last_answered
+                    || summary
+                        .last_from
+                        .iter()
+                        .any(|a| me.iter().any(|m| m.eq_ignore_ascii_case(a))));
         }
         self
     }
 }
 
+/// The text of a line's `people`.
+fn joined(people: &[(String, Option<String>)]) -> String {
+    people.iter().map(|(text, _)| text.as_str()).collect()
+}
+
+/// `names` with `separator` between them.
+fn between(
+    names: Vec<(String, Option<String>)>,
+    separator: &str,
+) -> impl Iterator<Item = (String, Option<String>)> {
+    let separator = separator.to_owned();
+    names.into_iter().enumerate().flat_map(move |(ix, name)| {
+        (ix > 0)
+            .then(|| (separator.clone(), None))
+            .into_iter()
+            .chain(std::iter::once(name))
+    })
+}
+
 /// "Kay, Bob, me": the senders of a conversation, first names when there
-/// are several, as webmail shows them.
-fn senders(list: &[ThreadSender], me: &[String]) -> String {
+/// are several, as webmail shows them; each name with its address.
+fn senders(list: &[ThreadSender], me: &[String]) -> Vec<(String, Option<String>)> {
     let full = |s: &ThreadSender| {
         s.name
             .as_deref()
@@ -272,12 +318,13 @@ fn senders(list: &[ThreadSender], me: &[String]) -> String {
             .to_owned()
     };
     let is_me = |s: &ThreadSender| me.iter().any(|m| m.eq_ignore_ascii_case(&s.email));
+    let email = |s: &ThreadSender| Some(s.email.clone());
     if let [only] = list {
-        return if is_me(only) {
-            "me".to_owned()
+        return vec![if is_me(only) {
+            ("me".to_owned(), None)
         } else {
-            full(only)
-        };
+            (full(only), email(only))
+        }];
     }
     let short = |s: &ThreadSender| {
         if is_me(s) {
@@ -288,11 +335,18 @@ fn senders(list: &[ThreadSender], me: &[String]) -> String {
             None => s.email.split('@').next().unwrap_or(&s.email).to_owned(),
         }
     };
-    let names: Vec<String> = list.iter().map(short).collect();
+    let mut names: Vec<(String, Option<String>)> = list
+        .iter()
+        .map(|s| (short(s), if is_me(s) { None } else { email(s) }))
+        .collect();
     if names.len() > 3 {
-        format!("{} .. {}", names[0], names[names.len() - 2..].join(", "))
+        let last = names.split_off(names.len() - 2);
+        names.truncate(1);
+        names.push((" .. ".to_owned(), None));
+        names.extend(between(last, ", "));
+        names
     } else {
-        names.join(", ")
+        between(names, ", ").collect()
     }
 }
 
@@ -303,6 +357,9 @@ pub enum OpenError {
     NoStore {
         data_dir: String,
     },
+    /// The daemon has not yet moved a database up to this version's
+    /// schema, as just after an update: it does so as it starts.
+    Migrating(String),
     Other(String),
 }
 
@@ -493,6 +550,9 @@ impl Mail {
             katna_store::Error::NotFound { .. } => OpenError::NoStore {
                 data_dir: paths.data_dir().display().to_string(),
             },
+            err @ katna_store::Error::SchemaOutdated { .. } => {
+                OpenError::Migrating(err.to_string())
+            }
             err => OpenError::Other(err.to_string()),
         })?;
         let index_dir = paths.index_dir();
@@ -571,6 +631,16 @@ impl Mail {
     pub fn incoming_host(&self, account: katna_core::AccountId) -> Option<String> {
         let settings = self.store.account_settings(account).ok()??;
         settings.imap.map(|server| server.host)
+    }
+
+    /// What a POP3 account does with mail on the server.
+    pub fn pop3_keep(&self, account: katna_core::AccountId) -> katna_core::Pop3Keep {
+        self.store
+            .account_settings(account)
+            .ok()
+            .flatten()
+            .map(|s| s.pop3_keep)
+            .unwrap_or_default()
     }
 
     /// The provider an account signs in with, if not a password.
@@ -692,6 +762,48 @@ impl Mail {
         pinned_first(entries, &self.pins)
     }
 
+    /// The unified inbox's lines in one tab ([`SpreadTabs`]), with its
+    /// unread conversations per tab, as [`Mail::inbox_entries`] gives an
+    /// inbox's.
+    pub fn spread_inbox_entries(
+        &self,
+        folders: &[FolderId],
+        tabs: &SpreadTabs,
+        conversations: bool,
+    ) -> (Vec<Entry>, HashMap<MailCategory, u64>) {
+        let (entries, unread) = if conversations {
+            let read = self.list_read(ListRead::SpreadInbox {
+                folders: folders.to_vec(),
+                tabs: tabs.clone(),
+            });
+            match read {
+                Ok((threads, unread)) => (Ok(thread_entries(threads)), unread),
+                Err(err) => (Err(err), Vec::new()),
+            }
+        } else {
+            self.other_list.set(true);
+            let unread = self
+                .store
+                .spread_inbox_threads(folders, tabs)
+                .map(|(_, unread)| unread)
+                .unwrap_or_default();
+            let ids = self.store.spread_inbox_message_ids(folders, tabs);
+            (
+                ids.map(|ids| ids.into_iter().map(Entry::message).collect()),
+                unread,
+            )
+        };
+        let entries = entries.unwrap_or_else(|err| {
+            tracing::warn!("reading {} inboxes: {err}", folders.len());
+            Vec::new()
+        });
+        let entries = surfaced_in_place(entries, &self.reminders, |e| self.date_of(e.latest));
+        (
+            pinned_first(entries, &self.pins),
+            unread.into_iter().collect(),
+        )
+    }
+
     /// Search hits as lines: grouped into conversations when asked, each
     /// where its best hit is.
     /// Lines for search hits, of account `only` when given.
@@ -790,6 +902,26 @@ impl Mail {
     /// The newest stored message with `Message-ID` `header`.
     pub fn message_with_header(&self, header: &str) -> Option<MessageId> {
         self.store.message_with_header(header).ok().flatten()
+    }
+
+    /// The chat pins of the conversation of `messages` (all of them), in
+    /// their order.
+    pub fn chat_pins(&self, messages: &[MessageId]) -> Vec<katna_store::ChatPin> {
+        self.store.chat_pins(messages).unwrap_or_else(|err| {
+            tracing::warn!("reading chat pins: {err}");
+            Vec::new()
+        })
+    }
+
+    /// The kept summaries of the conversation of `messages` (all of
+    /// them), the newest first.
+    pub fn summaries(&self, messages: &[MessageId]) -> Vec<katna_store::StoredSummary> {
+        self.store
+            .conversation_summaries(messages)
+            .unwrap_or_else(|err| {
+                tracing::warn!("reading summaries: {err}");
+                Vec::new()
+            })
     }
 
     /// The conversation of message `id`, if it has one.
@@ -1266,17 +1398,87 @@ fn open_index(dir: &std::path::Path) -> (Option<Arc<SearchIndex>>, Option<String
     }
 }
 
-/// The folders with their message counts, and unread messages per folder.
-/// Opens its own connection, so it can run on a background thread while
-/// the UI uses [`Mail`]. `None` for the folders when they could not be read.
-pub fn folders_and_unread(paths: &Paths) -> (Option<Vec<FolderSummary>>, HashMap<FolderId, u64>) {
-    let read = Store::open(paths, Mode::ReadOnly)
-        .and_then(|store| Ok((store.folder_summaries()?, store.unread_counts()?)));
+/// What rings and counts (`docs/ARCHITECTURE.md` §15.1.1): the folder
+/// bells that differ from the default, and what is muted.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Alerts {
+    /// By folder and inbox tab (`None` for the whole folder).
+    pub bells: HashMap<(FolderId, Option<MailCategory>), Bell>,
+    pub mutes: Vec<Mute>,
+    pub muted_threads: HashSet<ThreadId>,
+    /// A message of each muted conversation, which Unmute names.
+    pub thread_message: HashMap<ThreadId, MessageId>,
+}
+
+impl Alerts {
+    fn read(store: &Store, now: i64) -> katna_store::Result<Self> {
+        let mutes = store.mutes(now)?;
+        let mut thread_message = HashMap::new();
+        for mute in &mutes {
+            if let MuteTarget::Thread(thread) = mute.target
+                && let Some(message) = store.thread_messages(thread)?.first()
+            {
+                thread_message.insert(thread, *message);
+            }
+        }
+        Ok(Self {
+            bells: store
+                .folder_bells()?
+                .into_iter()
+                .map(|b| ((b.folder, b.category), b.bell))
+                .collect(),
+            mutes,
+            thread_message,
+            muted_threads: store.muted_threads(now)?,
+        })
+    }
+
+    /// The bell of `folder` (`role` its role), or of its inbox tab
+    /// `category` (`None`: an inbox's Primary tab).
+    pub fn bell(
+        &self,
+        folder: FolderId,
+        role: Option<&str>,
+        category: Option<MailCategory>,
+    ) -> Bell {
+        let inbox = role == Some(katna_store::FolderRole::Inbox.as_str());
+        let category = if inbox {
+            Some(category.unwrap_or_default())
+        } else {
+            None
+        };
+        self.bells
+            .get(&(folder, category))
+            .copied()
+            .unwrap_or_else(|| Bell::default_for(role, category))
+    }
+
+    /// The mute of `target` in force, if any.
+    pub fn mute(&self, target: &MuteTarget) -> Option<&Mute> {
+        self.mutes.iter().find(|m| &m.target == target)
+    }
+}
+
+/// The folders with their message counts, unread messages per folder and
+/// what rings and counts. Opens its own connection, so it can run on a
+/// background thread while the UI uses [`Mail`]. `None` for the folders
+/// when they could not be read.
+pub fn folders_and_unread(
+    paths: &Paths,
+) -> (Option<Vec<FolderSummary>>, HashMap<FolderId, u64>, Alerts) {
+    let now = jiff::Timestamp::now().as_second();
+    let read = Store::open(paths, Mode::ReadOnly).and_then(|store| {
+        Ok((
+            store.folder_summaries()?,
+            store.unread_counts()?,
+            Alerts::read(&store, now)?,
+        ))
+    });
     match read {
-        Ok((folders, counts)) => (Some(folders), counts.into_iter().collect()),
+        Ok((folders, counts, alerts)) => (Some(folders), counts.into_iter().collect(), alerts),
         Err(err) => {
             tracing::warn!("counting unread mail: {err}");
-            (None, HashMap::new())
+            (None, HashMap::new(), Alerts::default())
         }
     }
 }
@@ -1312,6 +1514,33 @@ pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.people(PEOPLE_LIMIT))
         .map_err(|err| format!("Reading people from the mail failed: {err}"))
+}
+
+/// The files of the Files page, newest first; see
+/// [`katna_store::LibraryFile`]. Opens its own connection, for a
+/// background thread.
+pub fn library(paths: &Paths, limit: usize) -> Result<Vec<katna_store::LibraryFile>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.library_files(limit))
+        .map_err(|err| katna_i18n::tr!("files-load-failed", error = err.to_string()))
+}
+
+/// The raw messages of `ids` whose bodies are stored, for thumbnails made
+/// in the background. Opens its own connection.
+pub fn raw_messages(paths: &Paths, ids: &[MessageId]) -> HashMap<MessageId, Vec<u8>> {
+    let Ok(store) = Store::open(paths, Mode::ReadOnly) else {
+        return HashMap::new();
+    };
+    let Ok(messages) = store.messages_by_id(ids) else {
+        return HashMap::new();
+    };
+    messages
+        .into_iter()
+        .filter_map(|m| {
+            let raw = store.blobs().get(&m.blob_hash?).ok()??;
+            Some((m.id, raw))
+        })
+        .collect()
 }
 
 /// Every note, pinned first. Opens its own connection, for a background
@@ -1385,6 +1614,33 @@ pub fn template(paths: &Paths, id: i64) -> Result<Option<katna_store::Template>,
         .map_err(|err| format!("Reading a template failed: {err}"))
 }
 
+/// The mail rules, in the order they run (Settings > Folders & rules).
+pub fn rules(paths: &Paths) -> Result<Vec<katna_store::rules::Rule>, String> {
+    Store::open(paths, Mode::ReadOnly)
+        .and_then(|store| store.rules())
+        .map_err(|err| format!("Reading the mail rules failed: {err}"))
+}
+
+/// How many messages in the inboxes of `rule`'s accounts from the last
+/// `days` days before `now` it matches, as the daemon would match them:
+/// with the stored text of each message when a condition needs it.
+pub fn rule_preview(
+    paths: &Paths,
+    rule: &katna_store::rules::Rule,
+    days: u32,
+    now: i64,
+) -> Result<u32, String> {
+    let store = Store::open(paths, Mode::ReadOnly).map_err(|err| err.to_string())?;
+    let blobs = store.blobs();
+    store
+        .rule_preview(rule, days, now, |message| {
+            let hash = message.blob_hash.as_ref()?;
+            let raw = blobs.get(hash).ok()??;
+            Some(katna_search::document::message_text(&raw).body)
+        })
+        .map_err(|err| format!("Counting the rule's mail failed: {err}"))
+}
+
 /// The address book for recipient suggestions, read from the store (a
 /// few seconds on a big mailbox). Opens its own connection, for a
 /// background thread.
@@ -1397,6 +1653,51 @@ pub fn address_book(paths: &Paths) -> Result<katna_search::contacts::ContactBook
             Ok(katna_search::contacts::ContactBook::with_saved(rows, saved))
         })
         .map_err(|err| format!("Reading addresses from the mail failed: {err}"))
+}
+
+/// Where the pixel sizes of attached pictures are kept, so the Files page
+/// can leave out small ones without reading their mail again.
+fn picture_sizes_file(paths: &Paths) -> PathBuf {
+    paths.cache_dir().join("files-picture-sizes.json")
+}
+
+/// Pixel sizes of attached pictures, by message and place among its named
+/// attachments; `(0, 0)` for one whose size cannot be read (an SVG).
+pub type PictureSizes = HashMap<(MessageId, usize), (u32, u32)>;
+
+/// The sizes saved by [`save_picture_sizes`], if any.
+pub fn picture_sizes(paths: &Paths) -> PictureSizes {
+    let Ok(bytes) = std::fs::read(picture_sizes_file(paths)) else {
+        return PictureSizes::new();
+    };
+    let saved: Vec<(i64, usize, u32, u32)> = serde_json::from_slice(&bytes)
+        .inspect_err(|err| tracing::warn!("reading the picture sizes: {err}"))
+        .unwrap_or_default();
+    saved
+        .into_iter()
+        .map(|(message, order, w, h)| ((MessageId(message), order), (w, h)))
+        .collect()
+}
+
+/// Saves the picture sizes for the next time the Files page opens.
+pub fn save_picture_sizes(paths: &Paths, sizes: &PictureSizes) {
+    let file = picture_sizes_file(paths);
+    let partial = file.with_extension("json.part");
+    let mut rows: Vec<(i64, usize, u32, u32)> = sizes
+        .iter()
+        .map(|((message, order), (w, h))| (message.0, *order, *w, *h))
+        .collect();
+    rows.sort_unstable();
+    let saved = serde_json::to_vec(&rows)
+        .map_err(std::io::Error::other)
+        .and_then(|bytes| {
+            std::fs::create_dir_all(paths.cache_dir())?;
+            std::fs::write(&partial, bytes)?;
+            std::fs::rename(&partial, &file)
+        });
+    if let Err(err) = saved {
+        tracing::warn!("saving the picture sizes: {err}");
+    }
 }
 
 /// Where the address book is kept between runs, so suggestions work at
@@ -1659,6 +1960,23 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
     }
 
     #[test]
+    fn store_waiting_for_the_daemon() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        drop(Store::open(&paths, Mode::ReadWrite).unwrap());
+        // As an update leaves it: a schema one version behind. SQLite keeps
+        // `user_version` at byte 60 of the header.
+        let db = paths.pim_db();
+        let mut bytes = std::fs::read(&db).unwrap();
+        let version = u32::from_be_bytes(bytes[60..64].try_into().unwrap());
+        bytes[60..64].copy_from_slice(&(version - 1).to_be_bytes());
+        std::fs::write(&db, bytes).unwrap();
+        assert!(matches!(Mail::open(&paths), Err(OpenError::Migrating(_))));
+        drop(Store::open(&paths, Mode::ReadWrite).unwrap());
+        assert!(Mail::open(&paths).is_ok());
+    }
+
+    #[test]
     fn folders_rows_and_bodies() {
         let tmp = tempfile::tempdir().unwrap();
         let paths = Paths::with_root(tmp.path());
@@ -1682,8 +2000,10 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
             Row {
                 key: EntryKey::Message(id),
                 id,
+                account: mail.accounts()[0].id,
                 count: 1,
                 correspondent: "Ada".into(),
+                people: vec![("Ada".into(), Some("ada@example.org".into()))],
                 sender: "ada@example.org".into(),
                 subject: "Budget".into(),
                 date: Some(989_858_340),
@@ -1696,6 +2016,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 files: Vec::new(),
                 snippet: "The budget is final.".into(),
                 tracking: None,
+                replied: false,
             }
         );
         assert_eq!(rows[1], None);

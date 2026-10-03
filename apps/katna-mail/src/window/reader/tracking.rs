@@ -6,23 +6,23 @@
 //! (`docs/ARCHITECTURE.md` §16.1).
 
 use std::cell::Cell;
-use std::f32::consts::PI;
 use std::rc::Rc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyElement, Bounds, Context, MouseButton, Pixels, Size, Task, Transformation, anchored, canvas,
-    deferred, div, point, prelude::*, radians, rgba, svg,
+    AnyElement, Bounds, Context, Pixels, Size, Task, anchored, canvas, deferred, div, point,
+    prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_store::RecipientActivity;
 use katna_ui::px;
 use katna_ui::unpx;
 
+use super::super::notched::{self, Side};
 use super::Part;
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button_colored, raised};
+use crate::widgets::{icon, icon_button_colored};
 use crate::window::MailWindow;
 
 /// Where an eye button was last drawn, and the window's size then.
@@ -37,13 +37,15 @@ pub(in crate::window) struct Seen {
     /// Closes it a moment after the pointer leaves both, so it can cross
     /// the gap between them.
     closing: Option<Task<()>>,
+    /// When it closed and began to fade out.
+    fading: Option<Instant>,
 }
 
 const WIDTH: f32 = 340.0;
 const PAD: f32 = 12.0;
 const GAP: f32 = 8.0;
 const LINE: f32 = 18.0;
-const RADIUS: f32 = 12.0;
+const RADIUS: f32 = notched::RADIUS;
 /// The notch's length out of the popover, and the popover's distance from
 /// the eye and from the window's edges.
 const NOTCH: f32 = 10.0;
@@ -71,7 +73,7 @@ impl MailWindow {
                 .py(px(8.0))
                 .rounded(px(8.0))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .text_size(px(13.0))
                 .line_height(px(LINE))
                 .child(line("read-receipt", color, text, th))
@@ -89,30 +91,63 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        let seen = self.seen_state(part)?;
+        let eye = icon_button_colored(("part-seen", ix), "eye", 20.0, seen_color(seen, th), th)
+            .size(px(32.0));
+        Some(self.seen_anchor(ix, part, eye, true, cx))
+    }
+
+    /// Whether message `part` was sent with tracking or a read receipt
+    /// came back for it (`None` when neither), and whether anyone has
+    /// opened it, followed a link or read it.
+    pub(super) fn seen_state(&self, part: &Part) -> Option<bool> {
         let reader = self.reader.as_ref()?;
         let receipts = reader.receipts_for(part).iter().any(|r| r.displayed);
         if part.activity.is_none() && !receipts {
             return None;
         }
-        let seen = receipts
-            || part
-                .activity
-                .iter()
-                .flat_map(|a| &a.recipients)
-                .any(|r| r.opens > 0 || r.clicks > 0);
-        let anchor = part.eye.clone();
         Some(
-            div()
-                .relative()
-                .child(
-                    icon_button_colored(
-                        ("part-seen", ix),
-                        "eye",
-                        20.0,
-                        if seen { th.accent } else { th.text_faint },
-                        th,
-                    )
-                    .size(px(32.0))
+            receipts
+                || part
+                    .activity
+                    .iter()
+                    .flat_map(|a| &a.recipients)
+                    .any(|r| r.opens > 0 || r.clicks > 0),
+        )
+    }
+
+    /// How many times message `part` was seen (opens by people and read
+    /// receipts), and how many times its links were followed.
+    pub(super) fn seen_counts(&self, part: &Part) -> (u32, u32) {
+        let recipients = || part.activity.iter().flat_map(|a| &a.recipients);
+        let opens: u32 = recipients().map(|r| r.opens).sum();
+        let clicks: u32 = recipients().map(|r| r.clicks).sum();
+        let receipts = self.reader.as_ref().map_or(0, |reader| {
+            reader
+                .receipts_for(part)
+                .iter()
+                .filter(|r| r.displayed)
+                .count() as u32
+        });
+        (opens + receipts, clicks)
+    }
+
+    /// `target` (the eye, or a chat bubble's time and ticks) opening who
+    /// has seen message `ix` while hovered or clicked. The popover's notch
+    /// points at `target`, or with `spot` false at where [`Self::seen_spot`]
+    /// is drawn inside it.
+    pub(super) fn seen_anchor(
+        &self,
+        ix: usize,
+        part: &Part,
+        target: gpui::Stateful<gpui::Div>,
+        spot: bool,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        div()
+            .relative()
+            .child(
+                target
                     .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
                         this.hover_seen(ix, Some(*hovered), None, cx)
                     }))
@@ -120,19 +155,24 @@ impl MailWindow {
                         cx.stop_propagation();
                         this.hover_seen(ix, Some(true), None, cx);
                     })),
-                )
-                .child(
-                    canvas(
-                        move |bounds, window, _| anchor.set(Some((bounds, window.viewport_size()))),
-                        |_, _, _, _| {},
-                    )
-                    .absolute()
-                    .top_0()
-                    .left_0()
-                    .size_full(),
-                )
-                .into_any_element(),
+            )
+            .when(spot, |d| d.child(Self::seen_spot(part)))
+            .into_any_element()
+    }
+
+    /// Notes where its parent is drawn as the place the popover of who
+    /// has seen `part` points at.
+    pub(super) fn seen_spot(part: &Part) -> AnyElement {
+        let anchor = part.eye.clone();
+        canvas(
+            move |bounds, window, _| anchor.set(Some((bounds, window.viewport_size()))),
+            |_, _, _, _| {},
         )
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full()
+        .into_any_element()
     }
 
     /// The pointer went over or off the eye (`eye`) or the popover
@@ -148,7 +188,7 @@ impl MailWindow {
             return;
         };
         let seen = match &mut reader.seen {
-            Some(seen) if seen.ix == ix => seen,
+            Some(seen) if seen.ix == ix && seen.fading.is_none() => seen,
             // Leaving an eye whose popover isn't open.
             _ if eye != Some(true) => return,
             other => other.insert(Seen {
@@ -156,6 +196,7 @@ impl MailWindow {
                 over_eye: false,
                 over_popover: false,
                 closing: None,
+                fading: None,
             }),
         };
         if let Some(eye) = eye {
@@ -176,8 +217,7 @@ impl MailWindow {
                         .as_ref()
                         .is_some_and(|s| s.ix == ix && !s.over_eye && !s.over_popover)
                     {
-                        reader.seen = None;
-                        cx.notify();
+                        this.close_seen(cx);
                     }
                 })
                 .ok();
@@ -188,14 +228,28 @@ impl MailWindow {
 
     /// Closes the popover of who has seen a message, if it is open.
     pub(in crate::window) fn close_seen(&mut self, cx: &mut Context<Self>) -> bool {
-        let closed = self
+        let open = self
             .reader
-            .as_mut()
-            .is_some_and(|r| r.seen.take().is_some());
-        if closed {
-            cx.notify();
+            .as_ref()
+            .and_then(|r| r.seen.as_ref())
+            .is_some_and(|s| s.fading.is_none());
+        if !open {
+            return false;
         }
-        closed
+        let fading = notched::fade_out(cx);
+        if let Some(reader) = self.reader.as_mut() {
+            match fading {
+                Some(since) => {
+                    if let Some(seen) = &mut reader.seen {
+                        seen.fading = Some(since);
+                        seen.closing = None;
+                    }
+                }
+                None => reader.seen = None,
+            }
+        }
+        cx.notify();
+        true
     }
 
     /// Under the eye (or over it, near the window's bottom), with a notch
@@ -209,9 +263,11 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let reader = self.reader.as_ref()?;
-        if reader.seen.as_ref()?.ix != ix {
+        let seen = reader.seen.as_ref()?;
+        if seen.ix != ix || seen.fading.is_some_and(|since| notched::faded(since, cx)) {
             return None;
         }
+        let fading = seen.fading;
         let (eye, viewport) = part.eye.get()?;
         let mut lines: Vec<(&'static str, u32, String)> = part
             .activity
@@ -270,16 +326,12 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(GAP))
-            .border_1()
-            .border_color(rgba(th.divider))
-            .map(|d| raised(d, th, RADIUS, 4.0))
+            .map(|d| notched::popover(d, th))
             .text_size(px(13.0))
             .line_height(px(LINE))
-            .occlude()
             .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
                 this.hover_seen(ix, None, Some(*hovered), cx)
             }))
-            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_mouse_down_out(cx.listener(|this, _, _, cx| {
                 this.close_seen(cx);
             }))
@@ -288,7 +340,15 @@ impl MailWindow {
                     .into_iter()
                     .map(|(name, color, text)| line(name, color, text, th)),
             )
-            .children(notch(below, along, th));
+            .children(notched::notch(
+                if below { Side::Below } else { Side::Above },
+                along,
+                th,
+            ));
+        let popover = match fading {
+            Some(_) => notched::fading(popover, ("seen-popover-out", ix)),
+            None => popover.into_any_element(),
+        };
         let layer = div().relative().w(px(vw)).h(px(vh)).child(popover);
         Some(
             deferred(anchored().position(point(px(0.0), px(0.0))).child(layer))
@@ -353,6 +413,12 @@ impl MailWindow {
     }
 }
 
+/// The eye's color, and a chat bubble's ticks': the accent once someone
+/// has seen the message.
+pub(super) fn seen_color(seen: bool, th: &Theme) -> u32 {
+    if seen { th.accent } else { th.text_faint }
+}
+
 fn green(th: &Theme) -> u32 {
     if th.dark { 0x81c995ff } else { 0x188038ff }
 }
@@ -376,34 +442,4 @@ fn line(name: &'static str, color: u32, text: String, th: &Theme) -> impl IntoEl
                 }))
                 .child(text),
         )
-}
-
-/// The notch on the popover's edge facing the eye, `along` from its left:
-/// a border-colored triangle with a popover-colored one just inside it,
-/// covering the border where they meet.
-fn notch(below: bool, along: f32, th: &Theme) -> [AnyElement; 2] {
-    let triangle = |scale: f32, inset: f32, color: u32| {
-        let (w, h) = (20.0 * scale, NOTCH * scale);
-        // From the edge to the triangle's far side.
-        let out = -(h - inset);
-        svg()
-            .path("icons/notch.svg")
-            .absolute()
-            .left(px(along - w / 2.0))
-            .map(|d| {
-                if below {
-                    d.top(px(out))
-                } else {
-                    d.bottom(px(out))
-                }
-            })
-            .w(px(w))
-            .h(px(h))
-            .text_color(rgba(color))
-            .when(!below, |d| {
-                d.with_transformation(Transformation::rotate(radians(PI)))
-            })
-            .into_any_element()
-    };
-    [triangle(1.0, 0.0, th.divider), triangle(0.9, 1.0, th.menu)]
 }

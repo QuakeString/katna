@@ -127,6 +127,7 @@ attachment-count = { $count ->
    *[other] Abubuwan haɗawa { $count }
 }
 attachment-save = Ajiye
+attachment-forward = Tura
 attachment-save-all = Ajiye duka
 attachment-save-all-tooltip = Ajiye kowane abin haɗawa a cikin folda
 attachment-save-here = Ajiye a nan
@@ -177,6 +178,11 @@ print-not-downloaded = (Har yanzu ba a sauke shi ba.)
 print-encrypted = (An ɓoye shi. Buɗe shi a cikin Katna Mail don buga rubutunsa.)
 print-to = Zuwa: { $addresses }
 print-cc = Kwafi: { $addresses }
+
+## Message text (right-click menu in the reading pane)
+
+text-pin = Maƙala a sama
+text-copy-address = Kwafa adireshi
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

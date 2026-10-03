@@ -19,6 +19,7 @@ license=('GPL-3.0-or-later')
 # dbus: the session bus that katna-daemon and the apps talk over.
 # polkit: pkexec and the password prompt for updates from Katna Mail.
 # minisign: the update helper checks an update's signature with it.
+# zstd (pacman needs it too): the helper compresses the package it keeps.
 depends=(
   'dbus'
   'fontconfig'
@@ -33,6 +34,7 @@ depends=(
   'polkit'
   'vulkan-icd-loader'
   'wayland'
+  'zstd'
 )
 makedepends=('cargo' 'gettext' 'git')
 optdepends=(
@@ -43,6 +45,7 @@ optdepends=(
   'noto-fonts: letters of Indic, Thai, Khmer, Lao, Burmese, Tibetan, Ethiopic, Arabic and Hebrew mail and translations'
   'noto-fonts-cjk: Chinese, Japanese and Korean mail and translations'
   'noto-fonts-emoji: colour emoji in mail and in the app'
+  'python-nautilus: Send with Katna Mail in the right-click menu of GNOME Files'
 )
 provides=('katna')
 conflicts=('katna')
@@ -51,6 +54,8 @@ conflicts=('katna')
 # Rust code still gets LTO from Cargo's release profile, which also strips
 # the binaries, so a -debug package would be empty.
 options=('!lto' '!debug')
+# Removes the copy of the installed package the update helper keeps.
+install=katna-git.install
 # The repository root, two levels above this file. `git -C` also works
 # from a linked worktree.
 source=("katna::git+file://$(git -C "${startdir:-.}" rev-parse --show-toplevel 2>/dev/null || realpath ../..)")
@@ -112,6 +117,9 @@ package() {
   install -Dm644 -t "$pkgdir/usr/share/applications" packaging/desktop/*.desktop
   install -Dm644 -t "$pkgdir/usr/share/krunner/dbusplugins" packaging/krunner/*.desktop
   install -Dm644 -t "$pkgdir/usr/share/gnome-shell/search-providers" packaging/gnome-shell/*.ini
+  # "Send with Katna Mail" on files and folders in Dolphin and GNOME Files.
+  install -Dm644 -t "$pkgdir/usr/share/kio/servicemenus" packaging/kio/*.desktop
+  install -Dm644 -t "$pkgdir/usr/share/nautilus-python/extensions" packaging/nautilus/*.py
   install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps" packaging/icons/*.svg
   for dir in packaging/icons/hicolor/*/apps; do
     install -Dm644 -t "$pkgdir/usr/share/icons/${dir#packaging/icons/}" "$dir"/*

@@ -45,6 +45,9 @@ shortcut-star = Star or unstar
 shortcut-add-to-tasks = Add to Tasks
 shortcut-important = Mark as important
 shortcut-not-important = Mark as not important
+# Mutes the conversation, or unmutes it: no notifications or taskbar count.
+shortcut-mute = Mute or unmute the conversation
+shortcut-summarize = Summarize the conversation with AI
 # Ticks the check box of the selected conversation in the list.
 shortcut-check = Tick the conversation
 shortcut-select-all = Tick all conversations
@@ -66,6 +69,7 @@ shortcut-page-calendar = Calendar
 shortcut-page-contacts = Contacts
 shortcut-page-tasks = Tasks
 shortcut-page-notes = Notes
+shortcut-page-files = Files
 shortcut-search = Search mail
 # Shows or hides the folder pane on the left.
 shortcut-navigation = Show or fold the menu

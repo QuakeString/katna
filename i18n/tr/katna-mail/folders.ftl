@@ -9,6 +9,17 @@ nav-folders = Klasörler
 nav-label-new = Yeni etiket oluştur
 nav-folder-new = Yeni klasör oluştur
 nav-menu-check-mail = Yeni postaları denetle
+nav-menu-check-inbox = Bu gelen kutusunu denetle
+nav-menu-sign-in-again = Yeniden oturum aç
+nav-menu-new-mail = Bu hesaptan yeni posta
+nav-menu-account-settings = Hesap ayarları
+nav-account-checked = Eşitlendi · { $ago } denetlendi
+nav-account-in-sync = Eşitlendi
+nav-account-connecting = Bağlanılıyor…
+nav-account-offline = Çevrimdışı, yeniden deneniyor
+nav-account-signed-out = { $provider } oturumunun süresi doldu
+nav-account-password-refused = Parola reddedildi
+nav-account-storage = { $total } alanın { $used } kadarı kullanılıyor
 nav-menu-new-subfolder = İçine yeni klasör
 nav-menu-new-sublabel = İçine yeni etiket
 nav-menu-empty-trash = Çöp Kutusu'nu boşalt
@@ -16,10 +27,6 @@ nav-account-unnamed = Hesap { $number }
 nav-all-accounts = Tüm Hesaplar
 nav-expand = Klasörleri göster
 nav-collapse = Klasörleri gizle
-nav-tab-new = { $count ->
-    [one] { $count } yeni
-   *[other] { $count } yeni
-}
 storage-used = { $total } alanın %{ $percent } kadarı kullanılıyor
 storage-used-detail = { $address }: { $total } alanın { $used } kadarı kullanılıyor
 

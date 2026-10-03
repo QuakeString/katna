@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Task sync against fake Google Tasks and To Do servers on the loopback.
+//! Task sync against fake Google Tasks, To Do and Zoho servers on the
+//! loopback.
 
 use std::{
     collections::BTreeMap,
@@ -29,6 +30,8 @@ use crate::{
 struct Seen {
     method: String,
     path: String,
+    /// Its `Authorization` header.
+    auth: String,
     body: Value,
 }
 
@@ -49,10 +52,18 @@ fn read_request(stream: &mut TcpStream) -> Option<Seen> {
         let mut first = lines.next()?.split(' ');
         let method = first.next()?.to_owned();
         let path = first.next()?.to_owned();
-        let length = lines
+        let headers: Vec<(&str, &str)> = lines
             .filter_map(|l| l.split_once(':'))
-            .find(|(n, _)| n.trim().eq_ignore_ascii_case("content-length"))
-            .map_or(0, |(_, v)| v.trim().parse::<usize>().unwrap());
+            .map(|(n, v)| (n.trim(), v.trim()))
+            .collect();
+        let header = |name: &str| {
+            headers
+                .iter()
+                .find(|(n, _)| n.eq_ignore_ascii_case(name))
+                .map(|(_, v)| *v)
+        };
+        let length = header("content-length").map_or(0, |v| v.parse::<usize>().unwrap());
+        let auth = header("authorization").unwrap_or_default().to_owned();
         while data.len() < end + 4 + length {
             let n = stream.read(&mut buf).ok()?;
             if n == 0 {
@@ -61,7 +72,12 @@ fn read_request(stream: &mut TcpStream) -> Option<Seen> {
             data.extend_from_slice(&buf[..n]);
         }
         let body = serde_json::from_slice(&data[end + 4..end + 4 + length]).unwrap_or(Value::Null);
-        return Some(Seen { method, path, body });
+        return Some(Seen {
+            method,
+            path,
+            auth,
+            body,
+        });
     }
 }
 
@@ -213,6 +229,24 @@ fn google(state: &mut Google, request: &Seen, _base: &str) -> (u16, Value) {
             for (key, value) in request.body.as_object().unwrap() {
                 task[key] = value.clone();
             }
+            (200, state.put(list, task))
+        }
+        ("POST", ["lists", list, "tasks", id, "move"]) => {
+            let Some((_, mut task)) = state.tasks.get(*id).cloned() else {
+                return (
+                    404,
+                    json!({ "error": { "code": 404, "message": "Not Found" } }),
+                );
+            };
+            // Right after `previous`, or before every other.
+            let position = match query.strip_prefix("previous=") {
+                Some(previous) => {
+                    let (_, before) = &state.tasks[previous];
+                    format!("{}5", before["position"].as_str().unwrap())
+                }
+                None => "0".to_owned(),
+            };
+            task["position"] = json!(position);
             (200, state.put(list, task))
         }
         ("DELETE", ["lists", _, "tasks", id]) => {
@@ -393,6 +427,123 @@ fn google_tasks_sync_both_ways() {
         .collect();
     assert_eq!(titles.len(), 2, "{titles:?}");
     assert!(!titles.contains(&"Book the train".to_owned()));
+}
+
+/// The titles of the fake Google's top-level tasks of `list`, in order.
+fn google_order(fake: &Fake<Google>, list: &str) -> Vec<String> {
+    let fake = fake.lock().unwrap();
+    let mut tasks: Vec<&Value> = fake
+        .0
+        .tasks
+        .values()
+        .filter(|(l, t)| l == list && t["parent"].is_null())
+        .map(|(_, t)| t)
+        .collect();
+    tasks.sort_by_key(|t| t["position"].as_str().unwrap_or_default().to_owned());
+    tasks
+        .into_iter()
+        .map(|t| t["title"].as_str().unwrap().to_owned())
+        .collect()
+}
+
+#[test]
+fn a_task_dragged_here_moves_on_google() {
+    let mut fake = Google::default();
+    fake.lists.insert("L0".into(), "My Tasks".into());
+    fake.lists.insert("L9".into(), "Work".into());
+    for (id, title, position) in [("A", "a", "1"), ("B", "b", "2"), ("C", "c", "3")] {
+        fake.put(
+            "L0",
+            json!({ "id": id, "title": title, "status": "needsAction", "position": position }),
+        );
+    }
+    fake.put(
+        "L9",
+        json!({ "id": "W", "title": "w", "status": "needsAction", "position": "1" }),
+    );
+    let (api, fake) = serve(fake, google);
+    let service = google_service(&api);
+    let (_dir, store, account) = store();
+    store
+        .lock()
+        .unwrap()
+        .set_account_settings(
+            account,
+            &katna_core::AccountSettings {
+                oauth: Some(OAuthProvider::Google),
+                ..katna_core::AccountSettings::default()
+            },
+        )
+        .unwrap();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let lists = account_lists(&store);
+    let list = |title: &str| lists.iter().find(|l| l.title == title).unwrap().id;
+    let (mine, work) = (list("My Tasks"), list("Work"));
+    let id = |list: i64, title: &str| {
+        store
+            .lock()
+            .unwrap()
+            .tasks_in(list)
+            .unwrap()
+            .into_iter()
+            .find(|t| t.title == title)
+            .unwrap()
+            .id
+    };
+    let (a, c) = (id(mine, "a"), id(mine, "c"));
+
+    // Within the list: only a move goes, no change of its fields.
+    assert!(store.lock().unwrap().place_task(c, mine, Some(a)).unwrap());
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert_eq!(google_order(&fake, "L0"), ["a", "c", "b"]);
+    {
+        let fake = fake.lock().unwrap();
+        let sent: Vec<&Seen> = fake.1.iter().filter(|s| s.method != "GET").collect();
+        assert_eq!(sent.len(), 1, "{sent:?}");
+        assert_eq!(sent[0].path, "/tasks/v1/lists/L0/tasks/C/move?previous=A");
+    }
+    let store_order = |list: i64| -> Vec<String> {
+        store
+            .lock()
+            .unwrap()
+            .tasks_in(list)
+            .unwrap()
+            .into_iter()
+            .map(|t| t.title)
+            .collect()
+    };
+    assert_eq!(store_order(mine), ["a", "c", "b"]);
+    assert!(
+        store
+            .lock()
+            .unwrap()
+            .pending_tasks(mine)
+            .unwrap()
+            .is_empty()
+    );
+
+    // First in another list: out of this one, in at the top of that one.
+    let w = id(work, "w");
+    assert!(store.lock().unwrap().place_task(a, work, None).unwrap());
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert_eq!(google_order(&fake, "L0"), ["c", "b"]);
+    assert_eq!(google_order(&fake, "L9"), ["a", "w"]);
+    assert_eq!(store_order(work), ["a", "w"]);
+
+    // After a task there.
+    let b = id(mine, "b");
+    assert!(store.lock().unwrap().place_task(b, work, Some(w)).unwrap());
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert_eq!(google_order(&fake, "L9"), ["a", "w", "b"]);
+    assert_eq!(store_order(work), ["a", "w", "b"]);
+    assert!(
+        store
+            .lock()
+            .unwrap()
+            .pending_tasks(work)
+            .unwrap()
+            .is_empty()
+    );
 }
 
 #[test]
@@ -813,4 +964,508 @@ fn rrules_and_graph_recurrence_round_trip() {
     assert_eq!(graph::recurrence("FREQ=HOURLY", "2026-10-01"), None);
     assert_eq!(graph::recurrence("FREQ=DAILY", ""), None);
     assert_eq!(graph::recurrence("", "2026-10-01"), None);
+}
+
+// --- Zoho Tasks -------------------------------------------------------------------
+
+#[derive(Default)]
+struct Zoho {
+    /// Group ID to name.
+    groups: BTreeMap<String, String>,
+    /// Task ID to (list: `me` or a group ID, parent, task JSON).
+    tasks: BTreeMap<String, (String, Option<String>, Value)>,
+    next: u32,
+    /// Every API call answered with this, as for a refused sign-in.
+    refuse: Option<(u16, Value)>,
+}
+
+impl Zoho {
+    fn put(&mut self, list: &str, parent: Option<&str>, mut task: Value) {
+        self.next += 1;
+        task["modifiedTime"] = json!(format!("2026-09-29T10:{:02}:00+05:30", self.next % 60));
+        let id = task["id"].as_str().unwrap().to_owned();
+        self.tasks
+            .insert(id, (list.to_owned(), parent.map(str::to_owned), task));
+    }
+
+    /// Task `id` as Zoho writes it, with its count of subtasks.
+    fn shown(&self, id: &str) -> Value {
+        let (_, _, task) = &self.tasks[id];
+        let mut task = task.clone();
+        let count = self
+            .tasks
+            .values()
+            .filter(|(_, p, _)| p.as_deref() == Some(id))
+            .count();
+        task["numberOfSubtasks"] = json!(count);
+        task["subtasks"] = json!([]);
+        task
+    }
+}
+
+fn zoho_ok(data: Value) -> (u16, Value) {
+    (
+        200,
+        json!({ "status": { "code": 200, "description": "success" }, "data": data }),
+    )
+}
+
+fn zoho_missing() -> (u16, Value) {
+    (
+        404,
+        json!({ "status": { "code": 404, "description": "Invalid Input" },
+                "data": { "errorCode": "INVALID_INPUT" } }),
+    )
+}
+
+fn zoho(state: &mut Zoho, request: &Seen, _base: &str) -> (u16, Value) {
+    if request.path == "/token" {
+        return (200, json!({ "access_token": "at-2", "expires_in": 3600 }));
+    }
+    if let Some(refused) = &state.refuse {
+        return refused.clone();
+    }
+    let path = request.path.strip_prefix("/api/tasks/").unwrap();
+    let (path, query) = path.split_once('?').unwrap_or((path, ""));
+    let parts: Vec<&str> = path.split('/').collect();
+    let (list, rest): (String, &[&str]) = match parts.as_slice() {
+        ["groups"] => {
+            let groups: Vec<Value> = state
+                .groups
+                .iter()
+                .map(|(id, name)| json!({ "id": id.parse::<u64>().unwrap(), "name": name }))
+                .collect();
+            return zoho_ok(json!({ "groups": groups }));
+        }
+        ["me", rest @ ..] => ("me".into(), rest),
+        ["groups", group, rest @ ..] => ((*group).to_owned(), rest),
+        _ => return zoho_missing(),
+    };
+    match (request.method.as_str(), rest) {
+        ("GET", []) => {
+            let query: BTreeMap<&str, usize> = query
+                .split('&')
+                .filter_map(|p| p.split_once('='))
+                .map(|(k, v)| (k, v.parse().unwrap()))
+                .collect();
+            let ids: Vec<String> = state
+                .tasks
+                .iter()
+                .filter(|(_, (l, p, _))| *l == list && p.is_none())
+                .map(|(id, _)| id.clone())
+                .collect();
+            let (from, limit) = (query["from"], query["limit"]);
+            let page: Vec<Value> = ids
+                .iter()
+                .skip(from)
+                .take(limit)
+                .map(|id| state.shown(id))
+                .collect();
+            let mut data = json!({ "tasks": page });
+            if from + limit < ids.len() {
+                data["paging"] =
+                    json!({ "nextPage": format!("/api/tasks/me?from={}", from + limit) });
+            }
+            zoho_ok(data)
+        }
+        ("POST", []) => {
+            state.next += 1;
+            let id = format!("Z{}", state.next);
+            let body = &request.body;
+            let status = if body["status"] == "completed" {
+                "Completed"
+            } else {
+                "In Progress"
+            };
+            let task = json!({
+                "id": id,
+                "title": body["title"],
+                "description": body["description"].as_str().unwrap_or_default(),
+                "dueDate": body["dueDate"].as_str().unwrap_or_default(),
+                "status": status,
+                "priority": "Normal",
+            });
+            let parent = body["parentTaskId"].as_str();
+            state.put(&list, parent, task);
+            zoho_ok(state.shown(&id))
+        }
+        ("GET", [id]) => {
+            if !state.tasks.contains_key(*id) {
+                return zoho_missing();
+            }
+            zoho_ok(json!({ "tasks": [state.shown(id)] }))
+        }
+        ("PUT", [id]) => {
+            let Some((l, parent, mut task)) = state.tasks.get(*id).cloned() else {
+                return zoho_missing();
+            };
+            // Each of Zoho's documented changes carries one field.
+            let body = request.body.as_object().unwrap();
+            assert_eq!(body.len(), 1, "{body:?}");
+            for (key, value) in body {
+                task[key] = match (key.as_str(), value.as_str()) {
+                    ("status", Some("completed")) => json!("Completed"),
+                    ("status", Some("inprogress")) => json!("In Progress"),
+                    _ => value.clone(),
+                };
+            }
+            state.put(&l, parent.as_deref(), task);
+            zoho_ok(Value::Null)
+        }
+        ("DELETE", [id]) => {
+            let id = (*id).to_owned();
+            state
+                .tasks
+                .retain(|task, (_, p, _)| *task != id && p.as_deref() != Some(id.as_str()));
+            zoho_ok(Value::Null)
+        }
+        ("GET", [id, "subtasks"]) => {
+            if !state.tasks.contains_key(*id) {
+                return zoho_missing();
+            }
+            let subtasks: Vec<Value> = state
+                .tasks
+                .values()
+                .filter(|(_, p, _)| p.as_deref() == Some(*id))
+                .map(|(_, _, t)| t.clone())
+                .collect();
+            zoho_ok(json!({ "tasks": subtasks }))
+        }
+        _ => zoho_missing(),
+    }
+}
+
+/// A Zoho service at the fake `base`, whose tokens also come from it. Any
+/// provider kind will do: the client doesn't look at it.
+fn zoho_service(base: &str, scope: Option<&str>) -> TaskService {
+    let mut provider = provider(OAuthProvider::Microsoft);
+    provider.token_url = format!("{base}/token");
+    let tokens = TokenSource::new(provider, "rt".into(), None)
+        .with_access_token("at-1".into(), Duration::from_secs(3600))
+        .with_scope(scope.map(str::to_owned));
+    TaskService::Zoho(zoho::ZohoTasks::with_api(
+        Arc::new(tokens),
+        Tls::insecure_for_local_tests(),
+        &format!("{base}/api"),
+    ))
+}
+
+fn titles_in(store: &Mutex<Store>, list: i64) -> Vec<String> {
+    store
+        .lock()
+        .unwrap()
+        .tasks_in(list)
+        .unwrap()
+        .into_iter()
+        .map(|t| t.title)
+        .collect()
+}
+
+#[test]
+fn zoho_tasks_sync_both_ways() {
+    let mut fake = Zoho::default();
+    fake.groups.insert("53658048".into(), "Marketing".into());
+    fake.put(
+        "me",
+        None,
+        json!({ "id": "P", "title": "Plan the trip", "description": "",
+                "status": "In Progress", "dueDate": "05/10/2026", "priority": "Normal" }),
+    );
+    fake.put(
+        "me",
+        Some("P"),
+        json!({ "id": "S", "title": "Book the train", "status": "Completed" }),
+    );
+    fake.put(
+        "53658048",
+        None,
+        json!({ "id": "B", "title": "Blog post", "status": "In Progress" }),
+    );
+    let (base, fake) = serve(fake, zoho);
+    let service = zoho_service(&base, Some("ZohoMail.accounts.READ ZohoMail.tasks.ALL"));
+    let (_dir, store, account) = store();
+    assert!(smol::block_on(service.allowed()).unwrap());
+
+    // Zoho's tasks come in: personal ones in the default list, each
+    // group's in a list of its own.
+    assert!(smol::block_on(sync_account(&service, &store, account)).unwrap());
+    let lists = account_lists(&store);
+    assert_eq!(lists.len(), 2, "{lists:?}");
+    let mine = lists.iter().find(|l| l.is_default).unwrap();
+    assert_eq!(mine.title, "Personal Tasks");
+    let group = lists.iter().find(|l| l.title == "Marketing").unwrap().id;
+    let mine = mine.id;
+    assert_eq!(titles_in(&store, group), ["Blog post"]);
+    let tasks = store.lock().unwrap().tasks_in(mine).unwrap();
+    assert_eq!(tasks.len(), 2, "{tasks:?}");
+    let plan = tasks.iter().find(|t| t.title == "Plan the trip").unwrap();
+    assert_eq!(plan.due, "2026-10-05");
+    assert_eq!(plan.done_at, None);
+    let step = tasks.iter().find(|t| t.title == "Book the train").unwrap();
+    assert_eq!(step.parent, Some(plan.id));
+    assert!(step.done_at.is_some());
+    let (plan, step) = (plan.id, step.id);
+    {
+        let fake = fake.lock().unwrap();
+        let requests = &fake.1;
+        assert!(
+            requests
+                .iter()
+                .any(|s| s.path == "/api/tasks/me/P/subtasks")
+        );
+    }
+
+    // Added and changed here.
+    {
+        let mut store = store.lock().unwrap();
+        store
+            .add_task_to(
+                mine,
+                None,
+                &TaskFields {
+                    title: "Call mum".into(),
+                    due: "2026-10-02".into(),
+                    ..TaskFields::default()
+                },
+            )
+            .unwrap();
+        let fields = TaskFields {
+            title: "Plan the trip to Goa".into(),
+            notes: "Window seats".into(),
+            due: "2026-10-06".into(),
+            ..TaskFields::default()
+        };
+        store.edit_task(plan, &fields).unwrap();
+        store.set_task_done(step, false).unwrap();
+    }
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    {
+        let fake = fake.lock().unwrap();
+        let (_, _, p) = &fake.0.tasks["P"];
+        assert_eq!(p["title"], "Plan the trip to Goa");
+        assert_eq!(p["description"], "Window seats");
+        assert_eq!(p["dueDate"], "06/10/2026");
+        let (_, _, s) = &fake.0.tasks["S"];
+        assert_eq!(s["status"], "In Progress");
+        let (list, parent, call) = fake
+            .0
+            .tasks
+            .values()
+            .find(|(_, _, t)| t["title"] == "Call mum")
+            .expect("sent to Zoho");
+        assert_eq!((list.as_str(), parent), ("me", &None));
+        assert_eq!(call["dueDate"], "02/10/2026");
+        // Only what changed went, a field at a time.
+        let puts: Vec<&Seen> = fake
+            .1
+            .iter()
+            .filter(|s| s.method == "PUT" && s.path == "/api/tasks/me/P")
+            .collect();
+        assert_eq!(puts.len(), 3, "{puts:?}");
+    }
+    assert!(
+        store
+            .lock()
+            .unwrap()
+            .pending_tasks(mine)
+            .unwrap()
+            .is_empty()
+    );
+
+    // A step added here goes under its task on Zoho.
+    store
+        .lock()
+        .unwrap()
+        .add_task_to(
+            mine,
+            Some(plan),
+            &TaskFields {
+                title: "Pack".into(),
+                ..TaskFields::default()
+            },
+        )
+        .unwrap();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    {
+        let fake = fake.lock().unwrap();
+        let (_, parent, _) = fake
+            .0
+            .tasks
+            .values()
+            .find(|(_, _, t)| t["title"] == "Pack")
+            .unwrap();
+        assert_eq!(parent.as_deref(), Some("P"));
+    }
+
+    // Ticked off and deleted here.
+    let call = store
+        .lock()
+        .unwrap()
+        .tasks_in(mine)
+        .unwrap()
+        .into_iter()
+        .find(|t| t.title == "Call mum")
+        .unwrap()
+        .id;
+    let blog = store.lock().unwrap().tasks_in(group).unwrap()[0].id;
+    store.lock().unwrap().set_task_done(call, true).unwrap();
+    store.lock().unwrap().delete_task(blog).unwrap();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    {
+        let fake = fake.lock().unwrap();
+        let (_, _, call) = fake
+            .0
+            .tasks
+            .values()
+            .find(|(_, _, t)| t["title"] == "Call mum")
+            .unwrap();
+        assert_eq!(call["status"], "Completed");
+        assert!(!fake.0.tasks.contains_key("B"));
+        assert!(
+            fake.1
+                .iter()
+                .any(|s| s.method == "DELETE" && s.path == "/api/tasks/groups/53658048/B")
+        );
+    }
+    assert!(titles_in(&store, group).is_empty());
+    let done = store.lock().unwrap().task(call).unwrap().unwrap();
+    assert!(done.done_at.is_some());
+
+    // Changed on Zoho: renamed, one added, a subtask deleted.
+    {
+        let mut fake = fake.lock().unwrap();
+        let (_, _, mut p) = fake.0.tasks["P"].clone();
+        p["title"] = json!("Plan the trip to Kerala");
+        fake.0.put("me", None, p);
+        fake.0.put(
+            "me",
+            None,
+            json!({ "id": "N", "title": "Pay rent", "status": "In Progress",
+                    "dueDate": "01/10/2026" }),
+        );
+        fake.0.tasks.remove("S");
+    }
+    assert!(smol::block_on(sync_account(&service, &store, account)).unwrap());
+    let mut titles = titles_in(&store, mine);
+    titles.sort();
+    assert_eq!(
+        titles,
+        ["Call mum", "Pack", "Pay rent", "Plan the trip to Kerala"]
+    );
+    let rent = store
+        .lock()
+        .unwrap()
+        .tasks_in(mine)
+        .unwrap()
+        .into_iter()
+        .find(|t| t.title == "Pay rent")
+        .unwrap();
+    assert_eq!(rent.due, "2026-10-01");
+    // Every call carried Zoho's own kind of token.
+    let fake = fake.lock().unwrap();
+    assert!(fake.1.iter().all(|s| s.auth == "Zoho-oauthtoken at-1"));
+}
+
+#[test]
+fn zoho_lists_stay_as_zoho_has_them() {
+    let mut fake = Zoho::default();
+    fake.put(
+        "me",
+        None,
+        json!({ "id": "P", "title": "Water plants", "status": "In Progress" }),
+    );
+    let (base, fake) = serve(fake, zoho);
+    let service = zoho_service(&base, None);
+    let (_dir, store, account) = store();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let mine = account_lists(&store)[0].id;
+
+    // Zoho makes no lists: one made here stays here, and the round goes
+    // on; a new name for Zoho's list is not sent and Zoho's comes back.
+    let home = store
+        .lock()
+        .unwrap()
+        .add_task_list(Some(account), "Home")
+        .unwrap();
+    store
+        .lock()
+        .unwrap()
+        .rename_task_list(mine, "Mine")
+        .unwrap();
+    fake.lock().unwrap().0.put(
+        "me",
+        None,
+        json!({ "id": "N", "title": "Pay rent", "status": "In Progress" }),
+    );
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let lists = account_lists(&store);
+    assert_eq!(lists.len(), 2, "{lists:?}");
+    assert!(lists.iter().any(|l| l.id == home));
+    let mine = lists.iter().find(|l| l.id == mine).unwrap();
+    assert_eq!(mine.title, "Personal Tasks");
+    assert_eq!(titles_in(&store, mine.id).len(), 2);
+    assert!(fake.lock().unwrap().1.iter().all(|s| s.method == "GET"));
+}
+
+#[test]
+fn a_zoho_sign_in_without_tasks_is_not_allowed() {
+    // The grant names its scopes, without the tasks'.
+    let service = zoho_service("http://127.0.0.1:1", Some("ZohoMail.messages.ALL"));
+    assert!(!smol::block_on(service.allowed()).unwrap());
+
+    // Zoho refuses the token, also a fresh one.
+    let fake = Zoho {
+        refuse: Some((
+            401,
+            json!({ "status": { "code": 401, "description": "Unauthorized" },
+                    "data": { "errorCode": "INVALID_OAUTHTOKEN" } }),
+        )),
+        ..Zoho::default()
+    };
+    let (base, seen) = serve(fake, zoho);
+    assert!(!smol::block_on(zoho_service(&base, None).allowed()).unwrap());
+    assert!(seen.lock().unwrap().1.iter().any(|s| s.path == "/token"));
+
+    // A token without the tasks scope: Zoho says so with a 404.
+    let fake = Zoho {
+        refuse: Some((
+            404,
+            json!({ "status": { "code": 404, "description": "Invalid Input" },
+                    "data": { "errorCode": "INVALID_OAUTHSCOPE" } }),
+        )),
+        ..Zoho::default()
+    };
+    let (base, _) = serve(fake, zoho);
+    let service = zoho_service(&base, None);
+    assert!(!smol::block_on(service.allowed()).unwrap());
+    let (_dir, store, account) = store();
+    let err = smol::block_on(sync_account(&service, &store, account)).unwrap_err();
+    assert!(matches!(err, Error::Auth(_)), "{err}");
+}
+
+#[test]
+fn zoho_pages_through_many_tasks() {
+    let mut fake = Zoho::default();
+    for n in 0..450 {
+        fake.put(
+            "me",
+            None,
+            json!({ "id": format!("T{n:03}"), "title": format!("Task {n}"),
+                    "status": "In Progress" }),
+        );
+    }
+    let (base, fake) = serve(fake, zoho);
+    let service = zoho_service(&base, None);
+    let (_dir, store, account) = store();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let mine = account_lists(&store)[0].id;
+    assert_eq!(titles_in(&store, mine).len(), 450);
+    let pages = fake
+        .lock()
+        .unwrap()
+        .1
+        .iter()
+        .filter(|s| s.path.starts_with("/api/tasks/me?"))
+        .count();
+    assert_eq!(pages, 3);
 }

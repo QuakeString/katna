@@ -1,31 +1,40 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The daemon's place on the desktop (`docs/ARCHITECTURE.md` §15.2): the
-//! Inbox unread count on Katna Mail's taskbar or dock icon, and the tray
+//! unread count (§15.1.1) on Katna Mail's taskbar or dock icon, and the tray
 //! icon with its badge and menu. Both follow `[general]` `unread_badge` and
 //! `show_in_tray`, and stay up while the app is closed.
 
 use std::time::Duration;
 
 use async_channel::{Receiver, Sender};
-use katna_core::{Paths, config::General, ids};
+use katna_core::config::{General, TrayStyle};
+use katna_core::{Paths, ids};
 use katna_dbus::app_action;
 use katna_i18n::tr;
+use katna_platform::colors;
 use katna_platform::dbusmenu::MenuItem;
+use katna_platform::icon::Style;
 use katna_platform::launcher::LauncherEntry;
 use katna_platform::tray::{self, Tray};
-use katna_store::{FolderRole, Mode, Store};
+use katna_store::{Mode, Store};
 
 use crate::mail_app;
 
 /// Mail changes closer together than this are counted once.
 const SETTLE: Duration = Duration::from_millis(500);
 
+/// How often the panel's color is read again, for a change no signal told
+/// of (Windows' taskbar, or `kdeglobals` written after the portal spoke).
+const PANEL_POLL: Duration = Duration::from_secs(1);
+
 /// What the desktop presence reacts to.
 #[derive(Debug)]
 pub(crate) enum Event {
     MailChanged,
     Settings(General),
+    /// The panel's icons and text are now this color (light or dark).
+    PanelText(u32),
     /// A click on the tray icon or its menu, with an activation token.
     Tray(String, Option<String>),
 }
@@ -50,21 +59,17 @@ pub(crate) fn channel() -> (Handle, Receiver<Event>) {
     (Handle(sender), receiver)
 }
 
-/// Unread messages in every account's Inbox: the number next to Inbox in
-/// Katna Mail's folder list, added up.
-pub(crate) fn inbox_unread(store: &Store) -> katna_store::Result<u64> {
-    let inboxes: Vec<_> = store
-        .folder_summaries()?
-        .into_iter()
-        .filter(|f| f.role.as_deref() == Some(FolderRole::Inbox.as_str()))
-        .map(|f| f.id)
-        .collect();
-    Ok(store
-        .unread_counts()?
-        .into_iter()
-        .filter(|(folder, _)| inboxes.contains(folder))
-        .map(|(_, count)| count)
-        .sum())
+/// Unread messages that count on the taskbar and tray, in every account:
+/// by default those in an Inbox's Primary tab, less anything muted
+/// (`docs/ARCHITECTURE.md` §15.1.1).
+pub(crate) fn counted_unread(store: &Store) -> katna_store::Result<u64> {
+    store.counted_unread(unix_now())
+}
+
+fn unix_now() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX))
 }
 
 /// The tray's right-click menu, in the current language.
@@ -103,6 +108,7 @@ pub(crate) async fn run(
                 None
             }
         };
+    smol::spawn(watch_panel(connection.clone(), handle.clone())).detach();
     let mut tray: Option<Tray> = None;
     let mut count = None;
     let mut dirty = true;
@@ -130,8 +136,15 @@ pub(crate) async fn run(
             if appeared || translated {
                 count = None;
             }
+            // Again with each count, as the panel's color may have changed.
+            if let Some(tray) = &tray
+                && let Err(err) = tray.set_style(tray_style(&general)).await
+            {
+                tracing::warn!(%err, "could not redraw the tray icon");
+            }
             let paths = paths.clone();
-            match smol::unblock(move || inbox_unread(&Store::open(&paths, Mode::ReadOnly)?)).await {
+            match smol::unblock(move || counted_unread(&Store::open(&paths, Mode::ReadOnly)?)).await
+            {
                 Ok(unread) => {
                     show_count(launcher.as_ref(), tray.as_ref(), &general, unread, count).await;
                     count = Some(unread);
@@ -146,8 +159,17 @@ pub(crate) async fn run(
         match event {
             Event::MailChanged => dirty = true,
             Event::Settings(new) => {
-                dirty = new.unread_badge != general.unread_badge;
+                dirty = new.unread_badge != general.unread_badge
+                    || new.tray_style != general.tray_style;
                 general = new;
+            }
+            Event::PanelText(color) => {
+                if let Some(tray) = &tray
+                    && general.tray_style == TrayStyle::Monochrome
+                    && let Err(err) = tray.set_style(Style::Mono(color)).await
+                {
+                    tracing::warn!(%err, "could not redraw the tray icon");
+                }
             }
             event => {
                 if !handle_now(&connection, &mut general, event, &quit).await {
@@ -167,7 +189,7 @@ async fn follow_setting(
     general: &General,
 ) -> bool {
     if general.show_in_tray && tray.is_none() {
-        *tray = show_tray(connection, handle).await;
+        *tray = show_tray(connection, handle, tray_style(general)).await;
         return tray.is_some();
     }
     if !general.show_in_tray
@@ -213,7 +235,8 @@ async fn handle_now(
     quit: &Sender<()>,
 ) -> bool {
     match event {
-        Event::MailChanged => {}
+        // Redrawn after the count settles, in the panel's color then.
+        Event::MailChanged | Event::PanelText(_) => {}
         Event::Settings(new) => *general = new,
         Event::Tray(action, token) => {
             if action == app_action::QUIT {
@@ -233,14 +256,64 @@ async fn handle_now(
     true
 }
 
-async fn show_tray(connection: &zbus::Connection, handle: &Handle) -> Option<Tray> {
+/// How `general` says to draw the tray icon; one color is the panel's.
+fn tray_style(general: &General) -> Style {
+    match general.tray_style {
+        TrayStyle::Color => Style::Color,
+        TrayStyle::Monochrome => Style::Mono(colors::panel_text()),
+    }
+}
+
+/// Sends [`Event::PanelText`] whenever the panel's color changes, as when
+/// the desktop goes from light to dark, so a one-color tray icon follows at
+/// once: on the Settings portal's word, and by reading it every
+/// [`PANEL_POLL`].
+async fn watch_panel(connection: zbus::Connection, handle: Handle) {
+    let (wake, woken) = async_channel::bounded::<()>(1);
+    #[cfg(not(windows))]
+    smol::spawn(async move {
+        use futures_lite::StreamExt;
+        let changes = match colors::setting_changes(&connection).await {
+            Ok(changes) => changes,
+            Err(err) => {
+                tracing::debug!(%err, "not following desktop settings");
+                return;
+            }
+        };
+        let mut changes = std::pin::pin!(changes);
+        while changes.next().await.is_some() {
+            let _ = wake.try_send(());
+        }
+    })
+    .detach();
+    #[cfg(windows)]
+    let _ = (connection, wake);
+    let mut shown = None;
+    while !handle.0.is_closed() {
+        let color = smol::unblock(colors::panel_text).await;
+        if shown != Some(color) {
+            shown = Some(color);
+            let _ = handle.0.try_send(Event::PanelText(color));
+        }
+        smol::future::or(
+            async {
+                let _ = woken.recv().await;
+            },
+            async {
+                smol::Timer::after(PANEL_POLL).await;
+            },
+        )
+        .await;
+    }
+}
+
+async fn show_tray(connection: &zbus::Connection, handle: &Handle, style: Style) -> Option<Tray> {
     let sender = handle.0.clone();
     let shown = Tray::show(
         connection,
         ids::MAIL_APP_ID,
         "Katna Mail",
-        // One colour, which the panel recolours to suit itself.
-        &format!("{}-symbolic", ids::MAIL_APP_ID),
+        style,
         tray_menu(),
         move |action, token| {
             let _ = sender.try_send(Event::Tray(action.to_owned(), token));
@@ -283,7 +356,7 @@ async fn show_count(
 mod tests {
     use super::*;
     use katna_core::AccountKind;
-    use katna_store::{MessageFlags, NewMessage};
+    use katna_store::{FolderRole, MessageFlags, NewMessage};
 
     #[test]
     fn counts_unread_mail_in_every_inbox_only() {
@@ -324,7 +397,7 @@ mod tests {
             batch.add_message(account, folder, &message).unwrap();
         }
         batch.commit().unwrap();
-        assert_eq!(inbox_unread(&store).unwrap(), 2);
+        assert_eq!(counted_unread(&store).unwrap(), 2);
     }
 
     #[test]

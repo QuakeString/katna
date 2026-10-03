@@ -9,10 +9,13 @@
 //! single instance.
 
 mod agenda;
+pub mod ai;
+mod clipboard;
 mod crash_upload;
 pub mod daemon;
 mod desktop;
 mod desktop_search;
+mod file_menus;
 pub mod install;
 pub mod katna_account;
 mod mail_app;
@@ -21,6 +24,7 @@ mod on_demand;
 pub mod secrets;
 pub mod service;
 pub mod system;
+mod systemd;
 mod threads;
 mod tracking;
 pub mod translate;
@@ -256,6 +260,7 @@ impl Instance {
         .detach();
         let (forward, forwarded) = async_channel::unbounded();
         smol::spawn(watch_mail(
+            daemon.clone(),
             notices,
             forward,
             indexer.as_ref().map(Indexer::waker),
@@ -405,15 +410,21 @@ fn start_indexer(paths: &Paths) -> Option<Indexer> {
 
 /// Passes `notices` on to `forward`, and wakes the indexer, updates the
 /// unread counts and has the desktop search read the addresses again when
-/// mail or saved contacts changed.
+/// mail or saved contacts changed, and rewrites the file managers' menus
+/// when the accounts did (and once at start).
 async fn watch_mail(
+    daemon: Arc<Daemon>,
     notices: Receiver<Notice>,
     forward: Sender<Notice>,
     indexer: Option<IndexerWaker>,
     desktop: desktop::Handle,
     finder: Arc<desktop_search::Finder>,
 ) {
+    file_menus::refresh(&daemon);
     while let Ok(notice) = notices.recv().await {
+        if let Notice::AccountsChanged = notice {
+            file_menus::refresh(&daemon);
+        }
         if let Notice::MailChanged(_) = notice {
             if let Some(indexer) = &indexer {
                 indexer.changed();

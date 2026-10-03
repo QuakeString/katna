@@ -1,8 +1,14 @@
 # Katna Mail, Indonesian (Bahasa Indonesia).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Reading pane toolbar
+
 contact-panel-show = Tampilkan detail kontak
 contact-panel-hide = Sembunyikan detail kontak
+
+## The panel
+
 contact-email = Kirim email
 contact-search = Cari email dengan mereka
 contact-add-to-contacts = Tambahkan ke kontak
@@ -12,6 +18,11 @@ contact-from-to = { $from } dari mereka, { $to } dari Anda
 contact-first = Pertama
 contact-latest = Terbaru
 contact-call = Telepon
+contact-phone-mobile = Seluler
+contact-phone-direct = Langsung
+contact-phone-office = Kantor
+contact-phone-fax = Faks
+contact-phone-whatsapp = WhatsApp
 contact-copy-number = Salin nomor
 contact-number-copied = Nomor disalin
 contact-local-time = { $time } waktu mereka ({ $offset })
@@ -23,5 +34,8 @@ contact-less = Lebih sedikit
 contact-files = File
 contact-tasks = Tugas
 contact-meetings = Rapat mendatang
+contact-company = Perusahaan
+contact-company-since = sejak { $year }
+contact-company-from = Dari { $site } · diperiksa { $when }
 contact-people = Dalam percakapan ini
 contact-local-only = Hanya dari email Anda di komputer ini

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Every inbox tab stays in reach"
+text = """
+When the window is narrow, the inbox tabs fold smoothly instead of hiding:
+labels turn into larger icons, then the counts step aside. On a phone the
+tabs spread across the whole bar, easy to tap, with More at the end of the
+same pill.
+"""

@@ -9,13 +9,16 @@
 //! in a browser ([`link_status`]): its host stands out, and a host in
 //! another script shows as the punycode the network sees.
 
+use std::cell::RefCell;
 use std::collections::HashMap;
+use std::ops::Range;
+use std::rc::Rc;
 use std::sync::Arc;
 
 use gpui::{
-    AnyElement, App, FontStyle, FontWeight, HighlightStyle, InteractiveText, ObjectFit,
-    SharedString, StrikethroughStyle, UnderlineStyle, WeakEntity, div, img, prelude::*, relative,
-    rgba,
+    AnyElement, App, Div, FontStyle, FontWeight, HighlightStyle, InteractiveText, ObjectFit,
+    SharedString, StrikethroughStyle, StyledText, UnderlineStyle, WeakEntity, div, img, prelude::*,
+    relative, rgba,
 };
 use katna_render::html::{
     Align, Block, BoxBlock, BoxKind, Document, Image, ImageKind, ImageSource, Inline, Length,
@@ -28,7 +31,7 @@ use super::dark::Dark;
 use super::remote::{Fetch, MailImage, svg_key};
 use super::select::Pieces;
 use crate::theme::Theme;
-use crate::widgets::icon;
+use crate::widgets::{ScaledEdge, icon};
 
 /// Mail is written for browsers, where normal text is 16 CSS pixels; the
 /// app's body text is 14.
@@ -39,6 +42,58 @@ const SCALE: f32 = 14.0 / 16.0;
 pub(super) const MAX_REMOTE_IMAGES: usize = 200;
 /// Most SVG pictures carried in one message that are drawn.
 const MAX_DRAWN_SVGS: usize = 100;
+
+/// Draws designed HTML (a signature from a layout, pasted or imported) in
+/// an editor, as the reading pane would: colors as sent, pictures from the
+/// block. Laid out once per block.
+pub(super) fn html_view(th: Theme) -> katna_ui::rich::HtmlView {
+    let laid: RefCell<Vec<(Arc<str>, Rc<Document>)>> = RefCell::default();
+    Rc::new(move |block, _width, _cx| {
+        let found = laid
+            .borrow()
+            .iter()
+            .find(|(html, _)| Arc::ptr_eq(html, &block.html))
+            .map(|(_, doc)| doc.clone());
+        let doc = found.unwrap_or_else(|| {
+            let doc = Rc::new(designed_document(block));
+            let mut laid = laid.borrow_mut();
+            // Only the few blocks being edited are kept.
+            if laid.len() >= 4 {
+                laid.remove(0);
+            }
+            laid.push((block.html.clone(), doc.clone()));
+            doc
+        });
+        designed(&th, &doc)
+    })
+}
+
+/// Designed HTML laid out, its `cid:katna-N` pictures from the block.
+pub(super) fn designed_document(block: &katna_ui::rich::HtmlBlock) -> Document {
+    katna_render::html::document(&block.html, &|cid| {
+        let n: usize = cid.strip_prefix("katna-")?.parse().ok()?;
+        let image = block.images.get(n)?;
+        Some(Arc::from(image.data.as_slice()))
+    })
+}
+
+/// A laid out designed block drawn in place: in its own colors in a
+/// light theme, remapped as mail is in a dark one.
+pub(super) fn designed(th: &Theme, doc: &Document) -> AnyElement {
+    let (images, drawn) = (HashMap::new(), HashMap::new());
+    let mut painter = Painter::new(
+        th,
+        &images,
+        &drawn,
+        None,
+        false,
+        None,
+        true,
+        Pieces::alone(th),
+    );
+    painter.bare = true;
+    painter.document(doc)
+}
 
 /// Where the reading pane learns which link is under the pointer.
 #[derive(Clone)]
@@ -117,6 +172,9 @@ pub(super) struct Painter<'a> {
     bg: u32,
     /// Its text, selectable.
     pieces: Pieces,
+    /// Drawn in place, without a page's edge around it (a designed
+    /// signature in an editor).
+    bare: bool,
 }
 
 impl<'a> Painter<'a> {
@@ -150,6 +208,7 @@ impl<'a> Painter<'a> {
             dark: (th.dark && dark_mail).then(|| Dark::new(th.surface)),
             bg: th.surface,
             pieces,
+            bare: false,
         }
     }
 
@@ -207,12 +266,11 @@ impl<'a> Painter<'a> {
             .flex_col()
             .text_color(rgba(self.ink.text))
             .when_some(page, |d, page| {
-                d.bg(rgba(page))
-                    .rounded(px(8.0))
-                    .p(px(8.0))
-                    .when(!self.th.dark, |d| {
-                        d.border_1().border_color(rgba(self.th.divider))
+                d.bg(rgba(page)).when(!self.bare, |d| {
+                    d.rounded(px(8.0)).p(px(8.0)).when(!self.th.dark, |d| {
+                        d.border_1().border_color(rgba(self.th.outline))
                     })
+                })
             })
             .children(children)
             .into_any_element()
@@ -270,11 +328,27 @@ impl<'a> Painter<'a> {
             d = if width <= 1.5 {
                 d.border_1()
             } else if width <= 3.0 {
-                d.border_2()
+                d.border_px(2.0)
             } else {
-                d.border_4()
+                d.border_px(4.0)
             }
             .border_color(rgba(self.fill(color)));
+        } else if let Some((_, color)) = s
+            .border_top
+            .or(s.border_bottom)
+            .or(s.border_left)
+            .or(s.border_right)
+        {
+            // Dividers along some edges.
+            let edge = |side: Option<(f32, u32)>| {
+                side.map(|(w, _)| gpui::AbsoluteLength::from(px(w.clamp(1.0, 4.0).round())))
+            };
+            let edges = &mut d.style().border_widths;
+            edges.top = edge(s.border_top);
+            edges.bottom = edge(s.border_bottom);
+            edges.left = edge(s.border_left);
+            edges.right = edge(s.border_right);
+            d = d.border_color(rgba(self.fill(color)));
         }
         if s.radius > 0.0 {
             d = d.rounded(px(s.radius.min(48.0)));
@@ -347,7 +421,13 @@ impl<'a> Painter<'a> {
             return self.block(block);
         };
         let el = self.boxed(b, true);
-        let d = div().min_w_0().flex().flex_col();
+        // Never narrower than its longest word, as in a browser.
+        let min = b.style.min_width;
+        let d = div()
+            .when(min > 0.0, |d| d.min_w(px(min.ceil())))
+            .when(min <= 0.0, |d| d.min_w_0())
+            .flex()
+            .flex_col();
         match b.style.width {
             Some(Length::Px(w)) => d.flex_basis(px(w)).flex_shrink(1.0),
             Some(Length::Percent(p)) => d.flex_basis(relative(p.min(1.0))).flex_shrink(1.0),
@@ -403,7 +483,13 @@ impl<'a> Painter<'a> {
                 continue;
             };
             let start = text.len();
-            text.push_str(&run.text);
+            if t.preformatted {
+                text.push_str(&run.text);
+            } else {
+                // Long lines of `&nbsp;` and such still wrap. Replaced run
+                // by run, so the ranges below match the text drawn.
+                text.push_str(&run.text.replace('\u{a0}', " "));
+            }
             let range = start..text.len();
             let st = &run.style;
             size = size.max(st.size);
@@ -442,10 +528,6 @@ impl<'a> Painter<'a> {
                 }
             }
         }
-        if !t.preformatted {
-            // Long lines of `&nbsp;` and such still wrap.
-            text = text.replace('\u{a0}', " ");
-        }
         let size = if size > 0.0 { size } else { 16.0 };
         // Scaled like the app's text, but small print stays readable.
         let size = (size * SCALE).max(size.min(11.0));
@@ -462,38 +544,7 @@ impl<'a> Painter<'a> {
             return holder.child(styled).into_any_element();
         }
         let id = self.id();
-        let (ranges, urls): (Vec<_>, Vec<_>) = links.into_iter().unzip();
-        let urls = Arc::new(urls);
-        let clicked = urls.clone();
-        let mut body = InteractiveText::new(("rich-text", id), styled).on_click(
-            ranges.clone(),
-            move |ix, _, cx: &mut App| {
-                if let Some(url) = clicked.get(ix) {
-                    cx.open_url(url);
-                }
-            },
-        );
-        let Some(hover) = self.links.clone() else {
-            return holder.child(body).into_any_element();
-        };
-        let leave = hover.clone();
-        body = body.on_hover(move |ix, _, _, cx| {
-            let url = ix
-                .and_then(|ix| ranges.iter().position(|r| r.contains(&ix)))
-                .and_then(|link| urls.get(link))
-                .cloned();
-            hover.hover(id, url, cx);
-        });
-        // The text's own hover ends only when the pointer moves on it.
-        holder
-            .id(("rich-links", id))
-            .on_hover(move |hovered, _, cx| {
-                if !*hovered {
-                    leave.hover(id, None, cx);
-                }
-            })
-            .child(body)
-            .into_any_element()
+        linked_text(holder, styled, links, id, self.links.clone())
     }
 
     fn image(&mut self, image: &Image) -> AnyElement {
@@ -719,6 +770,197 @@ pub(super) fn carried_svgs(doc: &Document) -> Vec<Arc<[u8]>> {
     out
 }
 
+/// `styled` in `holder` with `links` (byte ranges and the address each
+/// opens) clickable, opening in the browser as the reading pane does,
+/// and telling `hover` which one is under the pointer. `id` tells the
+/// links of one message apart.
+pub(super) fn linked_text(
+    holder: Div,
+    styled: StyledText,
+    links: Vec<(Range<usize>, String)>,
+    id: usize,
+    hover: Option<Links>,
+) -> AnyElement {
+    let (ranges, urls): (Vec<_>, Vec<_>) = links.into_iter().unzip();
+    let urls = Arc::new(urls);
+    let clicked = urls.clone();
+    let mut body = InteractiveText::new(("rich-text", id), styled).on_click(
+        ranges.clone(),
+        move |ix, _, cx: &mut App| {
+            if let Some(url) = clicked.get(ix) {
+                cx.open_url(url);
+            }
+        },
+    );
+    let Some(hover) = hover else {
+        return holder.child(body).into_any_element();
+    };
+    let leave = hover.clone();
+    body = body.on_hover(move |ix, _, _, cx| {
+        let url = ix
+            .and_then(|ix| ranges.iter().position(|r| r.contains(&ix)))
+            .and_then(|link| urls.get(link))
+            .cloned();
+        hover.hover(id, url, cx);
+    });
+    // The text's own hover ends only when the pointer moves on it.
+    holder
+        .id(("rich-links", id))
+        .on_hover(move |hovered, _, cx| {
+            if !*hovered {
+                leave.hover(id, None, cx);
+            }
+        })
+        .child(body)
+        .into_any_element()
+}
+
+/// `text` as the next of `pieces`, in a holder `style` shapes, with its
+/// links (see [`find_links`]) in the link colour and opening on a click.
+pub(super) fn linked_piece(
+    pieces: &mut Pieces,
+    text: SharedString,
+    anchors: &[(String, String)],
+    style: impl FnOnce(Div) -> Div,
+    id: usize,
+    hover: Option<Links>,
+    th: &Theme,
+) -> AnyElement {
+    let links = find_links(&text, anchors);
+    let color = HighlightStyle {
+        color: Some(rgba(th.accent).into()),
+        ..Default::default()
+    };
+    let highlights = links.iter().map(|(r, _)| (r.clone(), color)).collect();
+    let (styled, holder) = pieces.piece(text, highlights);
+    let holder = style(holder);
+    if links.is_empty() {
+        return holder.child(styled).into_any_element();
+    }
+    linked_text(holder, styled, links, id, hover)
+}
+
+/// The text links of `doc` in order: the words that are linked, with
+/// spaces as text has them, and the address they open. Only addresses a
+/// browser or mail app opens are kept.
+pub(super) fn anchors(doc: &Document) -> Vec<(String, String)> {
+    fn walk(blocks: &[Block], out: &mut Vec<(String, String)>) {
+        for block in blocks {
+            match block {
+                Block::Box(b) => walk(&b.children, out),
+                Block::Text(t) => {
+                    let mut last: Option<(String, &str)> = None;
+                    for inline in &t.inlines {
+                        let run = match inline {
+                            Inline::Text(run) => Some(run),
+                            Inline::Image(_) => None,
+                        };
+                        match (
+                            run.and_then(|r| Some((r, r.style.link.as_deref()?))),
+                            &mut last,
+                        ) {
+                            (Some((run, url)), Some((words, at))) if *at == url => {
+                                words.push_str(&run.text);
+                            }
+                            (next, _) => {
+                                out.extend(last.take().map(|(w, u)| (w, u.to_owned())));
+                                last = next.map(|(run, url)| (run.text.clone(), url));
+                            }
+                        }
+                    }
+                    out.extend(last.map(|(w, u)| (w, u.to_owned())));
+                }
+                Block::Rule => {}
+            }
+        }
+    }
+    let mut out = Vec::new();
+    walk(&doc.blocks, &mut out);
+    out.retain_mut(|(words, url)| {
+        *words = words.split_whitespace().collect::<Vec<_>>().join(" ");
+        let scheme = url.split_once(':').map(|(s, _)| s.to_ascii_lowercase());
+        words.chars().count() > 1
+            && matches!(scheme.as_deref(), Some("http" | "https" | "mailto" | "tel"))
+    });
+    out
+}
+
+/// Where `text` links to: the web and mail addresses written out in it,
+/// and the words of `anchors` (a mail's own links, from [`anchors`])
+/// found in it in their order. Byte ranges, in order, with the address
+/// each opens.
+pub(super) fn find_links(text: &str, anchors: &[(String, String)]) -> Vec<(Range<usize>, String)> {
+    let mut found: Vec<(Range<usize>, String)> = Vec::new();
+    let mut from = 0;
+    while let Some((start, end)) = katna_ui::rich::html::find_url(&text[from..]) {
+        let (start, end) = (from + start, from + end);
+        let url = &text[start..end];
+        let url = if url.starts_with("www.") {
+            format!("http://{url}")
+        } else {
+            url.to_owned()
+        };
+        found.push((start..end, url));
+        from = end;
+    }
+    for at in mail_addresses(text) {
+        if !found
+            .iter()
+            .any(|(r, _)| r.start < at.end && at.start < r.end)
+        {
+            found.push((at.clone(), format!("mailto:{}", &text[at])));
+        }
+    }
+    let mut after = 0;
+    for (words, url) in anchors {
+        let Some(start) = text[after..].find(words.as_str()).map(|at| after + at) else {
+            continue;
+        };
+        let range = start..start + words.len();
+        after = range.end;
+        if !found
+            .iter()
+            .any(|(r, _)| r.start < range.end && range.start < r.end)
+        {
+            found.push((range, url.clone()));
+        }
+    }
+    found.sort_by_key(|(r, _)| r.start);
+    found
+}
+
+/// The mail addresses written out in `text`, as byte ranges.
+fn mail_addresses(text: &str) -> Vec<Range<usize>> {
+    let local = |c: char| c.is_alphanumeric() || "._%+-".contains(c);
+    let domain = |c: char| c.is_alphanumeric() || ".-".contains(c);
+    let mut out = Vec::new();
+    for (at, _) in text.match_indices('@') {
+        let start = text[..at]
+            .char_indices()
+            .rev()
+            .take_while(|(_, c)| local(*c))
+            .last()
+            .map_or(at, |(i, _)| i);
+        let end = text[at + 1..]
+            .char_indices()
+            .take_while(|(_, c)| domain(*c))
+            .last()
+            .map_or(at + 1, |(i, c)| at + 1 + i + c.len_utf8());
+        let host = text[at + 1..end].trim_end_matches(['.', '-']);
+        let end = at + 1 + host.len();
+        let name = text[start..at].trim_start_matches('.');
+        let start = at - name.len();
+        if !name.is_empty()
+            && host.contains('.')
+            && !host.starts_with('.')
+            && out.last().is_none_or(|r: &Range<usize>| r.end <= start)
+        {
+            out.push(start..end);
+        }
+    }
+    out
+}
+
 /// A link's address as the foot of the reading pane shows it: what comes
 /// before the host, the host (IDN as punycode; a very long one keeps its
 /// end, where the name that owns it is), and the rest. A name and
@@ -774,7 +1016,7 @@ pub(super) fn link_status(link: &str, th: &Theme) -> AnyElement {
         .rounded(px(6.0))
         .bg(rgba(th.read_row))
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .shadow_sm()
         .text_size(px(12.0))
         .line_height(px(18.0))
@@ -854,5 +1096,29 @@ mod tests {
         let urls = remote_urls(&doc);
         assert_eq!(urls.len(), MAX_REMOTE_IMAGES);
         assert_eq!(urls[0], "https://img.example/0.png");
+    }
+
+    #[test]
+    fn links_are_found_in_text() {
+        let text = "See www.example.com/a, mail sara@example.org. Or our site.";
+        let anchors = vec![("our site".to_owned(), "https://example.net/".to_owned())];
+        let found = find_links(text, &anchors);
+        let shown: Vec<(&str, &str)> = found
+            .iter()
+            .map(|(r, u)| (&text[r.clone()], u.as_str()))
+            .collect();
+        assert_eq!(
+            shown,
+            [
+                ("www.example.com/a", "http://www.example.com/a"),
+                ("sara@example.org", "mailto:sara@example.org"),
+                ("our site", "https://example.net/"),
+            ]
+        );
+    }
+
+    #[test]
+    fn addresses_need_a_host() {
+        assert!(find_links("me@home and @here", &[]).is_empty());
     }
 }

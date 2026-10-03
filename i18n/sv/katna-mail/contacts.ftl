@@ -39,6 +39,12 @@ contacts-account-failed = Det gick inte att läsa kontakterna.
 # $reason is the server's own words, in English.
 contacts-account-error = Det gick inte att läsa kontakterna: { $reason }
 contacts-account-none = Ingen adressbok hittades
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Ingen adressbok hittades: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } visar kontakter bara för Katna när den är inloggad med { $provider }.
+contacts-account-sign-in-with = Logga in med { $provider }
 contacts-account-looking = Letar efter kontakter…
 contacts-account-try-again = Försök igen
 contacts-account-try-again-tooltip = Kontrollera det här kontots kontakter igen nu
@@ -88,7 +94,7 @@ contacts-print-none = Inga kontakter att skriva ut
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Födelsedag: { $day }
 contacts-print-nickname = Smeknamn: { $name }
-contacts-create = Skapa kontakt
+contacts-create = Ny kontakt
 
 ## Search and the list
 

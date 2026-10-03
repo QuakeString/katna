@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Settings back beside your mail"
+text = """
+Settings opens inside the main window again, in place of the page you were
+on, with its list of pages grouped into All apps and each app.
+"""

@@ -1,7 +1,6 @@
 # Katna Mail, Kannada (ಕನ್ನಡ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 update-dialog-title = ಅಪ್‌ಡೇಟ್‌ಗಳು
 update-dialog-downloading-detail = ಈ ವಿಂಡೋ ಮುಚ್ಚಿದರೂ ಡೌನ್‌ಲೋಡ್ ಮುಂದುವರಿಯುತ್ತದೆ.
 update-dialog-progress = { $total } ರಲ್ಲಿ { $done }

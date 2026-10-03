@@ -58,6 +58,12 @@ calendar-account-not-enabled = Ba a kunna damar shiga kalanda don Katna ba tukun
 calendar-account-failed = Ba a iya karanta kalandojin ba.
 calendar-account-error = Ba a iya karanta kalandojin ba: { $reason }
 calendar-account-none = Ba a sami kalanda ba
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Ba a sami kalanda ba: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } yana nuna kalandoji ga Katna ne kawai idan ya shiga da { $provider }.
+calendar-account-sign-in-with = Shiga da { $provider }
 calendar-account-looking = Ana neman kalandoji…
 calendar-account-try-again = Sake gwadawa
 calendar-account-try-again-tooltip = Sake duba kalandojin wannan asusun yanzu
@@ -77,8 +83,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = ƙarin { $count }
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Yana maimaituwa
 calendar-join = Shiga
+calendar-join-with = Shiga da { $service }
 calendar-email-guests = Aika wa baƙi wasiƙa
 calendar-running-late = Ina makara
 calendar-late-subject = Ina makara: { $title }
@@ -92,6 +100,7 @@ calendar-guest-answers = eh { $yes }, wataƙila { $maybe }, a'a { $no }, ana jir
 calendar-organizer = Mai shiryawa
 calendar-optional = Na zaɓi
 calendar-open-web = Buɗe a burauza
+calendar-open-mail = Buɗe wasiƙar
 calendar-open-contact = Buɗe lambar sadarwa
 calendar-close = Rufe
 
@@ -115,10 +124,71 @@ calendar-discard = Watsar da canje-canje
 calendar-edit = Gyara taron
 calendar-delete = Share taron
 calendar-event-details = Bayanan taron
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Sabon taro
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Buɗe ranar
+calendar-menu-duplicate = Kwafi
+calendar-menu-color = Launi
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Launin kalanda
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Bayan mako ɗaya
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tumatir
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Lemu
+calendar-color-banana = Ayaba
+calendar-color-sage = Sage
+calendar-color-basil = Daidoya
+calendar-color-peacock = Dawisu
+calendar-color-blueberry = Bulubari
+calendar-color-lavender = Lavanda
+calendar-color-grape = Inabi
+calendar-color-graphite = Toka
+calendar-menu-only-this = Nuna wannan kaɗai
+calendar-menu-rename = Sake suna
+calendar-menu-remove = Cire daga jeri
+calendar-menu-delete = Share
+calendar-menu-new-calendar = Sabuwar kalanda
+calendar-menu-show-all = Nuna duka
+calendar-menu-hide-all = Ɓoye duka
+calendar-menu-account-settings = Saitunan asusu
+calendar-why-main = Babbar kalanda
+calendar-why-last = Ɗaya kawai a nan
+calendar-why-owner = Mai shi kaɗai
+calendar-why-contacts = Daga Lambobin sadarwa
+calendar-why-unreached = Ba a isa ba
+calendar-name-placeholder = Sunan kalanda
+calendar-toast-added = An ƙara “{ $name }”
+calendar-toast-renamed = An sake sunan kalanda
+calendar-toast-recolored = An canza launin kalanda
+calendar-toast-deleted = An share “{ $name }”
+calendar-toast-removed = An cire “{ $name }” daga jerinku
+calendar-edit-failed = Ba a canza kalandar ba: { $reason }
+calendar-delete-title = A share “{ $name }”?
+calendar-delete-confirm = Share
+calendar-deleting = Ana sharewa…
+calendar-delete-heading = An share:
+calendar-delete-events = Kalandar da duk tarukanta
+calendar-delete-shared = Ga duk wanda aka raba ta da shi
+calendar-delete-server = Ana share ta daga { $account } a sabis ɗin wasiƙa, ba a Katna kaɗai ba.
+calendar-delete-local = Ana share ta daga wannan kwamfuta.
+calendar-remove-title = A cire “{ $name }” daga jerinku?
+calendar-remove-confirm = Cire
+calendar-removing = Ana cirewa…
+calendar-remove-heading = Abin da zai canza:
+calendar-remove-events = Ba za ku ƙara ganin tarukanta ba, a nan da a sauran manhajojinku
+calendar-remove-server = Kalandar tana zama a wurin mai ita, wanda zai iya sake raba ta da ku.
 calendar-kind-event = Taron
+calendar-kind-task = Aiki
 calendar-kind-focus = Lokacin mai da hankali
 calendar-kind-out-of-office = Ba a ofis
 calendar-kind-working-location = Wurin aiki
+calendar-task-added = An ƙara aiki
+calendar-task-added-to = An ƙara aiki zuwa { $list }
+calendar-task-list-local = A wannan kwamfutar
 calendar-working-home = Gida
 calendar-busy = Yana da aiki
 calendar-free = Babu aiki

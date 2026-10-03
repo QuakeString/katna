@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _કૅલેન્ડર
 desktop-menu-page-contacts = _સંપર્કો
 desktop-menu-page-tasks = કા_ર્યો
 desktop-menu-page-notes = _નોંધો
+desktop-menu-page-files = _ફાઇલો
 desktop-menu-next = _આગલો વાર્તાલાપ
 desktop-menu-previous = _પાછલો વાર્તાલાપ
 desktop-menu-message = _મેસેજ

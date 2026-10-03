@@ -30,6 +30,9 @@ use super::doc::{
     word_left, word_range, word_right,
 };
 use super::html;
+
+/// Draws a block of designed HTML `width` pixels wide.
+pub type HtmlView = Rc<dyn Fn(&doc::HtmlBlock, f32, &mut gpui::App) -> AnyElement>;
 use super::layout::{Deco, ParaElement, ParaLayout, TextBase};
 use crate::TEXT_AREA_CONTEXT;
 mod paste;
@@ -196,6 +199,20 @@ pub trait Suggest {
     fn suggest(&self, before: &str) -> Option<String>;
 }
 
+/// Longer writing suggestions the owner asks a service for, such as an
+/// AI: the rest of the sentence, once typing pauses.
+pub trait Complete {
+    /// The rest of the sentence at the end of `before`, the paragraph's
+    /// text up to the cursor, with the space it needs first; `None` when
+    /// unsure. Dropping the task cancels it.
+    fn complete(&self, before: String, cx: &mut App) -> gpui::Task<Option<String>>;
+}
+
+/// How long typing pauses before a longer suggestion is asked for.
+pub(crate) const COMPLETE_WAIT: Duration = Duration::from_millis(600);
+/// How long rephrased text stays tinted after it goes in.
+pub(crate) const FLASH: Duration = Duration::from_millis(2400);
+
 /// How long typing pauses before its paragraph's grammar is checked.
 pub(crate) const GRAMMAR_WAIT: Duration = Duration::from_millis(500);
 /// How long the pointer rests on marked words before their fixes show.
@@ -215,6 +232,8 @@ pub struct Palette {
     pub surface: Hsla,
     pub text: Hsla,
     pub hover: Hsla,
+    /// The tint of text that just went in for the selection (rephrased).
+    pub inserted: Hsla,
 }
 
 impl Default for Palette {
@@ -228,6 +247,7 @@ impl Default for Palette {
             surface: gpui::white(),
             text: gpui::black(),
             hover: gpui::rgba(0x0000_0014).into(),
+            inserted: gpui::rgba(0x1e8e_3e24).into(),
         }
     }
 }
@@ -312,6 +332,13 @@ pub struct RichEditor {
     /// The writing suggestion shown after the cursor, while the cursor
     /// stays where it was made.
     ghost: Option<(Pos, String)>,
+    /// The suggestion came from [`Self::complete`], not the phrases.
+    ghost_long: bool,
+    complete: Option<Rc<dyn Complete>>,
+    /// The wait for, then the asking of, a longer suggestion.
+    complete_task: Option<gpui::Task<()>>,
+    /// Text that just went in for the selection, tinted until it fades.
+    flash: Option<(Pos, Pos, Instant)>,
     families: RefCell<Option<Rc<HashMap<Font, SharedString>>>>,
     /// What was copied, to paste it back with its formatting.
     copied: Option<(String, Vec<Block>)>,
@@ -321,9 +348,14 @@ pub struct RichEditor {
     paste_labels: Option<PasteLabels>,
     table_picture: Option<TablePicture>,
     images: HashMap<u64, Arc<gpui::Image>>,
+    /// Draws designed HTML (a signature); see [`Self::set_html_view`].
+    html_view: Option<HtmlView>,
     next_image_id: u64,
     /// The editor's width at the last paint, for sizing images.
     width: Pixels,
+    /// The part of the editor in sight, in window coordinates: inside
+    /// whatever scrolls or clips it.
+    shown: Bounds<Pixels>,
     /// The editor had the focus when last drawn.
     pub(crate) drawn_focused: std::cell::Cell<bool>,
     /// The marked words under the pointer, and the wait before their fixes
@@ -370,6 +402,10 @@ impl RichEditor {
             grammar_ignored: Default::default(),
             suggest: None,
             ghost: None,
+            ghost_long: false,
+            complete: None,
+            complete_task: None,
+            flash: None,
             families: RefCell::new(None),
             copied: None,
             paste_offer: None,
@@ -377,9 +413,11 @@ impl RichEditor {
             paste_labels: None,
             table_picture: None,
             images: HashMap::new(),
+            html_view: None,
             drawn_focused: std::cell::Cell::new(false),
             next_image_id: 0,
             width: px(0.0),
+            shown: Bounds::default(),
             hover: None,
             hover_task: None,
             clicked: None,
@@ -398,6 +436,10 @@ impl RichEditor {
         self.doc = doc;
         if self.doc.blocks.is_empty() {
             self.doc = Doc::default();
+        }
+        // The caret needs a paragraph, even beside a designed block.
+        if self.doc.paths().is_empty() {
+            self.doc.blocks.push(Block::Para(Para::default()));
         }
         self.next_image_id = self
             .doc
@@ -490,8 +532,19 @@ impl RichEditor {
         self.placeholder = placeholder.into();
     }
 
+    /// The colors set with [`Self::set_palette`].
+    pub(crate) fn palette_now(&self) -> Palette {
+        self.palette
+    }
+
     pub fn set_palette(&mut self, palette: Palette) {
         self.palette = palette;
+    }
+
+    /// How designed HTML is drawn: the app's mail renderer. Without one
+    /// it shows as its plain text.
+    pub fn set_html_view(&mut self, view: HtmlView) {
+        self.html_view = Some(view);
     }
 
     /// Plain text mode: formatting is off and the text draws plain.
@@ -539,14 +592,26 @@ impl RichEditor {
         cx.notify();
     }
 
+    /// Turns longer suggestions on with `complete`, or off.
+    pub fn set_complete(&mut self, complete: Option<Rc<dyn Complete>>, cx: &mut Context<Self>) {
+        self.complete = complete;
+        self.complete_task = None;
+        if self.ghost_long {
+            self.ghost = None;
+        }
+        cx.notify();
+    }
+
     /// Asks for a writing suggestion after what was just typed: only at
     /// the end of a paragraph the user writes (not a quote or the
-    /// signature), with nothing selected or being composed.
-    fn request_suggestion(&mut self) {
+    /// signature), with nothing selected or being composed. Without a
+    /// phrase to suggest, a longer one is asked for once typing pauses.
+    fn request_suggestion(&mut self, cx: &mut Context<Self>) {
         self.ghost = None;
-        let Some(suggest) = &self.suggest else {
+        self.complete_task = None;
+        if self.suggest.is_none() && self.complete.is_none() {
             return;
-        };
+        }
         if self.has_selection() || self.marked.is_some() || self.selected_image.is_some() {
             return;
         }
@@ -556,9 +621,171 @@ impl RichEditor {
         if self.plain_blocked(para) || self.head.offset != para.len() {
             return;
         }
-        if let Some(text) = suggest.suggest(&para.text).filter(|t| !t.trim().is_empty()) {
+        let phrase = self
+            .suggest
+            .as_ref()
+            .and_then(|suggest| suggest.suggest(&para.text))
+            .filter(|t| !t.trim().is_empty());
+        if let Some(text) = phrase {
             self.ghost = Some((self.head, text));
+            self.ghost_long = false;
+            return;
         }
+        let Some(complete) = self.complete.clone() else {
+            return;
+        };
+        let (at, before) = (self.head, para.text.clone());
+        self.complete_task = Some(cx.spawn(async move |this, cx| {
+            cx.background_executor().timer(COMPLETE_WAIT).await;
+            let Ok(asked) = this.update(cx, |_, cx| complete.complete(before.clone(), cx)) else {
+                return;
+            };
+            let Some(text) = asked.await.filter(|t| !t.trim().is_empty()) else {
+                return;
+            };
+            this.update(cx, |this, cx| {
+                let unchanged = this.head == at
+                    && !this.has_selection()
+                    && this.marked.is_none()
+                    && this.ghost.is_none()
+                    && this
+                        .doc
+                        .para(at.path)
+                        .is_some_and(|p| p.text == before && at.offset == p.len());
+                if unchanged {
+                    this.ghost = Some((at, text));
+                    this.ghost_long = true;
+                    cx.notify();
+                }
+            })
+            .ok();
+        }));
+    }
+
+    /// Whether the suggestion showing is a longer one ([`Complete`]).
+    pub(crate) fn ghost_is_long(&self) -> bool {
+        self.ghost_long && self.showing_suggestion()
+    }
+
+    /// The part of the editor in sight, in window coordinates.
+    pub fn shown_bounds(&self) -> Bounds<Pixels> {
+        self.shown
+    }
+
+    /// The selected text when it can be rephrased, with where its end was
+    /// drawn (window coordinates): text in top paragraphs the user writes,
+    /// not reaching into a quote, the signature, a table or a picture.
+    pub fn rephrasable(&self) -> Option<(String, Bounds<Pixels>)> {
+        if !self.has_selection() || self.selected_image.is_some() || self.marked.is_some() {
+            return None;
+        }
+        let (start, end) = self.ordered();
+        if start.path.cell.is_some() || end.path.cell.is_some() {
+            return None;
+        }
+        for block in &self.doc.blocks[start.path.block..=end.path.block] {
+            match block {
+                Block::Para(para) if !self.plain_blocked(para) => {}
+                _ => return None,
+            }
+        }
+        let text = self.selected_text();
+        if !text.chars().any(char::is_alphabetic) {
+            return None;
+        }
+        // Where the selection's last drawn piece ends: a selection ending
+        // at the start of a line shows nothing on that line, so it ends
+        // on the line before.
+        let last = self
+            .doc
+            .covered(start, end)
+            .into_iter()
+            .rev()
+            .find_map(|(path, range)| {
+                let layout = self.layouts.get(&path)?;
+                let rect = layout.selection_rects(range, path != end.path).pop()?;
+                Some(Bounds::new(rect.origin + layout.bounds.origin, rect.size))
+            })?;
+        Some((text, last))
+    }
+
+    /// Puts plain `text` in place of the selection, as one step Undo takes
+    /// back, in the style the selection starts with (without a link), and
+    /// tints it for a moment. Newlines start paragraphs.
+    pub fn replace_selection(&mut self, text: &str, cx: &mut Context<Self>) {
+        if !self.has_selection() {
+            return;
+        }
+        let (start, _) = self.ordered();
+        let mut style = self
+            .doc
+            .para(start.path)
+            .map(|p| p.style_at(start.offset))
+            .unwrap_or_default();
+        style.link = None;
+        let text = text.replace("\r\n", "\n");
+        self.edit(EditKind::Other, cx, |doc, (start, end)| {
+            let at = doc.delete(start, end);
+            doc.insert_text(at, &text, &style)
+        });
+        self.flash = Some((start, self.head, Instant::now()));
+    }
+
+    /// Puts plain `text` in new paragraphs after the one the selection
+    /// ends in, an empty one between, as one step Undo takes back, leaving
+    /// the cursor after it.
+    pub fn insert_below_selection(&mut self, text: &str, cx: &mut Context<Self>) {
+        let (_, end) = self.ordered();
+        let Some(para) = self.doc.para(end.path) else {
+            return;
+        };
+        let para_end = Pos::new(end.path, para.len());
+        let mut style = para.style_at(end.offset);
+        style.link = None;
+        let text = text.replace("\r\n", "\n");
+        let mut first = para_end;
+        self.edit(EditKind::Other, cx, |doc, _| {
+            let gap = doc.split(para_end);
+            first = doc.split(gap);
+            doc.insert_text(first, &text, &style)
+        });
+        self.flash = Some((first, self.head, Instant::now()));
+    }
+
+    /// Puts plain `text` at the start of the message, where the user
+    /// writes, as one step Undo takes back, leaving the cursor after it
+    /// and tinting it for a moment. Newlines start paragraphs.
+    pub fn insert_at_start(&mut self, text: &str, cx: &mut Context<Self>) {
+        let start = self.doc.start();
+        let mut style = self
+            .doc
+            .para(start.path)
+            .map(|p| p.style_at(0))
+            .unwrap_or_default();
+        style.link = None;
+        let text = text.replace("\r\n", "\n");
+        self.edit(EditKind::Other, cx, |doc, _| {
+            doc.insert_text(start, &text, &style)
+        });
+        self.flash = Some((start, self.head, Instant::now()));
+    }
+
+    /// The tinted range in paragraph `path` and how strong the tint is
+    /// now (1 to 0), while it fades.
+    pub(crate) fn flash_in(&self, path: Path) -> Option<(Range<usize>, f32)> {
+        let (start, end, at) = self.flash?;
+        let left = 1.0 - at.elapsed().as_secs_f32() / FLASH.as_secs_f32();
+        if left <= 0.0 || path < start.path || path > end.path {
+            return None;
+        }
+        let len = self.doc.para(path)?.len();
+        let from = if path == start.path { start.offset } else { 0 };
+        let to = if path == end.path {
+            end.offset.min(len)
+        } else {
+            len
+        };
+        (from < to).then_some((from..to, left))
     }
 
     /// The writing suggestion shown in paragraph `path`, and its style.
@@ -987,6 +1214,7 @@ impl RichEditor {
         if changed {
             self.typing = None;
             self.ghost = None;
+            self.complete_task = None;
             cx.emit(RichEvent::Selection);
         }
         cx.notify();
@@ -1035,6 +1263,8 @@ impl RichEditor {
         }
         self.redo.clear();
         self.ghost = None;
+        self.complete_task = None;
+        self.flash = None;
         self.paste_offer = None;
         self.last_edit = Some((kind, now));
         let selection = self.ordered();
@@ -1379,7 +1609,55 @@ impl RichEditor {
     }
 
     pub fn select_all(&mut self, _: &SelectAll, _: &mut Window, cx: &mut Context<Self>) {
+        self.select_whole(cx);
+    }
+
+    /// Selects the whole text, as Ctrl+A does.
+    pub fn select_whole(&mut self, cx: &mut Context<Self>) {
         self.set_selection(self.doc.start(), self.doc.end(), cx);
+    }
+
+    /// Where what the user wrote ends: the last paragraph with text above
+    /// the signature, the quoted or forwarded mail, a table or a picture.
+    pub fn own_text_end(&self) -> Option<Pos> {
+        let mut last = None;
+        for (ix, block) in self.doc.blocks.iter().enumerate() {
+            match block {
+                Block::Para(para) if !self.plain_blocked(para) && !quote_start(para) => {
+                    if para.text.chars().any(char::is_alphabetic) {
+                        last = Some(Pos::new(Path::top(ix), para.len()));
+                    }
+                }
+                _ => break,
+            }
+        }
+        last
+    }
+
+    /// What the user wrote ([`Self::own_text_end`]) as plain text, empty
+    /// when there is none.
+    pub fn own_text(&self) -> String {
+        let Some(end) = self.own_text_end() else {
+            return String::new();
+        };
+        let last = end.path.block;
+        let mut lines = Vec::new();
+        for block in &self.doc.blocks[..=last] {
+            if let Block::Para(para) = block {
+                lines.push(para.text.as_str());
+            }
+        }
+        lines.join("\n").trim().to_owned()
+    }
+
+    /// Selects what the user wrote ([`Self::own_text_end`]). False when
+    /// there is none.
+    pub fn select_own_text(&mut self, cx: &mut Context<Self>) -> bool {
+        let Some(end) = self.own_text_end() else {
+            return false;
+        };
+        self.set_selection(Pos::new(Path::top(0), 0), end, cx);
+        true
     }
 
     /// Moves `dy` pixels up or down from the cursor, keeping its x.
@@ -2288,6 +2566,23 @@ impl RichEditor {
                     .into_any_element()
             }
             Block::Image(image) => self.render_image(ix, image, cx),
+            Block::Html(html) => {
+                let width = unpx(self.width).max(120.0);
+                let shown = match &self.html_view {
+                    Some(view) => view(html, width, cx),
+                    None => div()
+                        .text_color(palette.text)
+                        .child(html.text.to_string())
+                        .into_any_element(),
+                };
+                // A fixed piece: the text goes around it, not into it.
+                div()
+                    .w_full()
+                    .my(px(crate::tokens::space::S1))
+                    .overflow_hidden()
+                    .child(shown)
+                    .into_any_element()
+            }
         }
     }
 
@@ -2431,15 +2726,18 @@ fn style_without_link(style: &CharStyle) -> CharStyle {
     }
 }
 
+/// Whether `p` opens a quoted message or a forwarded header.
+fn quote_start(p: &Para) -> bool {
+    p.style.quote > 0
+        || p.text.contains("Forwarded message")
+        || (p.text.starts_with("On ") && p.text.trim_end().ends_with("wrote:"))
+}
+
 /// Where a new signature goes: after the last paragraph the user wrote,
 /// before a quoted message or forwarded header.
 fn signature_place(doc: &Doc) -> usize {
     let quote = doc.blocks.iter().position(|b| match b {
-        Block::Para(p) => {
-            p.style.quote > 0
-                || p.text.contains("Forwarded message")
-                || (p.text.starts_with("On ") && p.text.trim_end().ends_with("wrote:"))
-        }
+        Block::Para(p) => quote_start(p),
         _ => false,
     });
     let end = quote.unwrap_or(doc.blocks.len());
@@ -2470,7 +2768,12 @@ pub fn insert_signature_doc(doc: &mut Doc, at: usize, signature: Doc) {
     // Its pictures get IDs of their own in the message.
     let mut next = doc.images().map(|i| i.id).max().unwrap_or(0);
     for block in &mut blocks {
-        if let Block::Image(image) = block {
+        let images = match block {
+            Block::Image(image) => std::slice::from_mut(image),
+            Block::Html(html) => html.images.as_mut_slice(),
+            _ => &mut [],
+        };
+        for image in images {
             next += 1;
             image.id = next;
         }
@@ -2647,7 +2950,7 @@ impl EntityInputHandler for RichEditor {
         self.typing = typing;
         self.insert(new_text, cx);
         if !new_text.contains('\n') {
-            self.request_suggestion();
+            self.request_suggestion(cx);
         }
     }
 
@@ -2853,7 +3156,9 @@ impl Element for Anchor {
             }
         });
         let width = bounds.size.width;
+        let shown = bounds.intersect(&window.content_mask().bounds);
         self.editor.update(cx, |editor, cx| {
+            editor.shown = shown;
             if editor.width != width {
                 editor.width = width;
                 // Images size to the width; draw again with it.

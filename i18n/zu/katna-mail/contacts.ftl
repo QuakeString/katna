@@ -39,6 +39,12 @@ contacts-account-failed = Oxhumana nabo abakwazanga ukufundwa.
 # $reason is the server's own words, in English.
 contacts-account-error = Oxhumana nabo abakwazanga ukufundwa: { $reason }
 contacts-account-none = Ayikho incwadi yamakheli etholakele
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Ayikho incwadi yamakheli etholakele: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = I-{ $provider } ibonisa oxhumana nabo kuphela ku-Katna engene nge-{ $provider }.
+contacts-account-sign-in-with = Ngena nge-{ $provider }
 contacts-account-looking = Kufunwa oxhumana nabo…
 contacts-account-try-again = Zama futhi
 contacts-account-try-again-tooltip = Hlola oxhumana nabo bale akhawunti futhi manje
@@ -88,7 +94,7 @@ contacts-print-none = Akukho oxhumana nabo abazophrintwa
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Usuku lokuzalwa: { $day }
 contacts-print-nickname = Isidlaliso: { $name }
-contacts-create = Dala oxhumana naye
+contacts-create = Oxhumana naye omusha
 
 ## Search and the list
 

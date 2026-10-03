@@ -14,6 +14,17 @@ accounts-unified-switch-detail = Nasa itaas ng pane ng folder ang “Lahat ng Ac
 accounts-row = Mga Account
 accounts-row-detail = Sa ganitong ayos inililista ng pane ng folder at ng menu ng account ang mga account; ang una ang default. Kapag nag-alis ng account, mabubura ang kopya ng Katna ng mail nito sa computer na ito. Mananatili ang mail sa server.
 accounts-none = Wala pang account.
+accounts-pop3-row = Mail sa server
+accounts-pop3-row-detail = Dina-download ng mga POP3 account ang mail sa computer na ito. Piliin kung ano ang mangyayari pagkatapos sa kopya sa server.
+accounts-pop3-with-katna = Panatilihin ito hanggang i-delete ko sa Katna
+accounts-pop3-at-once = I-delete ito kapag na-download na
+accounts-pop3-after-days = { $count ->
+    [one] I-delete ito pagkalipas ng { $count } araw
+   *[other] I-delete ito pagkalipas ng { $count } araw
+}
+accounts-pop3-never = Huwag itong i-delete kailanman
+accounts-pop3-days-less = Mas kaunting araw
+accounts-pop3-days-more = Mas maraming araw
 accounts-kind-imported = Na-import
 accounts-picture-reset = Gamitin ang larawan ng desktop
 accounts-picture-change = Palitan ang larawan
@@ -72,6 +83,9 @@ accounts-confirm-word = burahin
 accounts-confirm-placeholder = I-type ang “{ accounts-confirm-word }”
 accounts-confirm-prompt = Para kumpirmahin, i-type ang “{ accounts-confirm-word }”:
 accounts-cancel = Kanselahin
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Dine-delete ang mail at mga attachment na na-download ng Katna, ang mga larawan ng nagpadala at ang search index, saka dina-download muli ang kamakailang mail. Nananatili ang mga account, mga setting at ang mail na nasa computer na ito lang.
 reset-cache-button = I-reset ang cache
 reset-cache-title = I-reset ang cache?

@@ -9,6 +9,14 @@
 about-tooltip = About Katna
 # Under the app's name.
 about-tagline = Mail and calendar for the Linux desktop
+# The small button beside the version (About, What’s new, Settings): it
+# copies the version, build date and system for a bug report.
+about-copy-version = Copy version details
+about-version-copied = Copied
+# Lines of the copied version details. $date: when this build was made.
+about-version-built = Built: { $date }
+# $system: the operating system and desktop, such as "Arch Linux, KDE on wayland".
+about-version-system = System: { $system }
 # Opens the What’s new dialog.
 about-whats-new = What’s new
 
@@ -30,13 +38,18 @@ about-update-ready-detail = Katna Mail restarts to finish the update.
 # After pressing Update: what happens next, before it happens.
 about-update-confirm = Install version { $version }?
 about-update-confirm-detail = Katna Mail will close, install the update and open again where you left off. Your computer will ask for your password.
+# The same on Windows, where Katna Setup installs it.
+about-update-confirm-detail-windows = Katna Mail will close, install the update and open again in a moment.
 about-update-installing = Installing version { $version }…
 about-update-installing-detail = Enter your password in the window that opened.
+about-update-installing-detail-windows = Katna Mail closes now and opens again once the update is installed.
 # The password window was closed or the password was refused.
 about-update-cancelled = The update was not installed, because the password was not given.
 # $error: what the installer said.
 about-update-failed = The update could not be installed: { $error }
-about-update-unsupported = This copy of Katna Mail is updated by your package manager.
+# A build that does not update itself: built from source, or a package
+# from somewhere else.
+about-update-not-self-updating = This copy of Katna Mail doesn’t update itself. Update it the way you installed it.
 # $error: the system's reason.
 about-update-restart-failed = The update is installed, but Katna Mail could not open again ({ $error }). Open it yourself.
 # Buttons.
@@ -112,6 +125,7 @@ about-credit-jiff = Dates and time zones
 about-credit-spellbook = Spell check, from the Helix editor
 # The library that lets Katna do many tasks at the same time.
 about-credit-smol = Doing many things at once
+about-credit-color-schemes = The palettes of the built-in color schemes
 # Shows or hides the full list of libraries. $count: how many there are.
 about-all-libraries = Every library Katna uses ({ $count })
 # Under a library's name. $authors: the names of its authors.
@@ -189,6 +203,22 @@ onboarding-density-default = Default
 onboarding-density-compact = Compact
 onboarding-continue = Continue
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Get more with a Katna account
+onboarding-katna-lead = It's optional. It turns on Katna's online features, and you can make one later in Settings > Subscription.
+onboarding-katna-receipts-title = Read receipts
+onboarding-katna-receipts-text = See when people open the mail you send.
+onboarding-katna-links-title = Link tracking
+onboarding-katna-links-text = See which links in your mail get clicked.
+onboarding-katna-activity-title = Activity
+onboarding-katna-activity-text = Opens and clicks for everything you sent, in one place.
+onboarding-katna-translate-title = Automatic translation
+onboarding-katna-translate-text = Read mail written in other languages in your own.
+# Under the list, beside a lock.
+onboarding-katna-private = It has its own password. Your mail logins never leave this computer.
+
 ## First run: done
 
 onboarding-ready-title = You're all set
@@ -244,7 +274,7 @@ tour-menu-title = Show or hide the folders
 # "Mail" is the name of the Mail app's button in the bar at the left.
 tour-menu-text = This button folds the folder list away. While it is hidden, rest the pointer on Mail at the left to see the folders.
 tour-apps-title = Your apps
-tour-apps-text = Mail lives here now. Calendar, Contacts, Tasks, Notes and Feeds will join it in this bar.
+tour-apps-text = Mail lives here, beside Calendar, Contacts, Tasks, Notes and Files.
 tour-tabs-title = Inbox tabs
 # Primary, Promotions, Social, Updates and Forums are the names of the
 # Inbox tabs; use the same words as those tabs.
@@ -289,6 +319,13 @@ sign-in-again-tooltip = Open the { $provider } sign-in page in your browser
 # In place of the button while the browser page is open.
 sign-in-again-waiting = Waiting for your browser…
 sign-in-again-close = Close
+# Under an account in Calendar, Tasks or Contacts, and on a Drive file in a
+# message, when Google has one of its APIs (People API, Google Drive API…)
+# switched off in the Google Cloud project Katna signs in with.
+google-api-off = { $api } is turned off in Katna's Google Cloud project.
+# Opens Google's page that turns the API on.
+google-api-turn-on = Turn on
+google-api-turn-on-tooltip = Open Google Cloud to turn on { $api }, then press Try again
 # Shown briefly after signing in again. $address: the account's email address.
 sign-in-again-done = Signed in to { $address } again. Getting your mail…
 

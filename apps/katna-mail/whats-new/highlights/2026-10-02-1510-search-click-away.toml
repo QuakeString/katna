@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Click anywhere to leave the search box"
+text = """
+Clicking the empty space in the top bar, beside the search box, now takes
+you out of the box, just as clicking the mail list does. Your search stays
+as it is.
+"""

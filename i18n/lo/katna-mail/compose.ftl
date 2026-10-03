@@ -46,6 +46,7 @@ compose-sent-archived = ສົ່ງ ແລະ ຈັດເກັບແລ້ວ
 compose-sent = ສົ່ງຂໍ້ຄວາມແລ້ວ
 compose-discarded = ຖິ້ມສະບັບຮ່າງແລ້ວ
 compose-draft-saved = ບັນທຶກສະບັບຮ່າງແລ້ວ
+compose-draft-saving = ກຳລັງບັນທຶກ…
 compose-draft-failed = ບໍ່ສາມາດບັນທຶກສະບັບຮ່າງໄດ້: { $error }
 compose-draft-not-opened = ບໍ່ສາມາດເປີດສະບັບຮ່າງໄດ້.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = ບໍ່ສາມາດເປີດສະບັບ�
 compose-picker-insert = ແຊກ
 compose-picker-attach = ແນບ
 compose-file-too-large = { $name } ໃຫຍ່ເກີນໄປ: ຂໍ້ຄວາມໜຶ່ງສາມາດແນບໄດ້ສູງສຸດ { $limit }.
+compose-forward-files-missing = ໄຟລ໌ຂອງຂໍ້ຄວາມທີ່ສົ່ງຕໍ່ຍັງບໍ່ໄດ້ດາວໂຫຼດ, ສະນັ້ນຈຶ່ງບໍ່ໄດ້ແນບມາ.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ລຶບໄຟລ໌ແນບ
+compose-attachment-open-tip = ເປີດເພື່ອກວດເບິ່ງ
 compose-attachments-total = { $count } ໄຟລ໌, { $size }
 compose-drive-note = { $name } ໃຫຍ່ກວ່າ { $limit } ຈຶ່ງຈະຖືກອັບໂຫຼດໄປທີ່ Google Drive ຂອງທ່ານ ແລະ ຂໍ້ຄວາມຈະມີລິ້ງ
 compose-drive-tip = ຢູ່ໃນ Google Drive ຂອງທ່ານ; ຂໍ້ຄວາມຈະມີລິ້ງ
@@ -74,6 +77,7 @@ compose-drive-share-link = ແບ່ງປັນດ້ວຍລິ້ງ
 compose-drive-send-without = ສົ່ງໂດຍບໍ່ແບ່ງປັນ
 compose-drive-share-cancel = ຍົກເລີກ
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } ໃຫຍ່ກວ່າ { $limit } ຈຶ່ງຈະຖືກອັບໂຫຼດໄປທີ່ OneDrive ຂອງທ່ານ ແລະ ຂໍ້ຄວາມຈະມີລິ້ງ
 compose-onedrive-tip = ຢູ່ໃນ OneDrive ຂອງທ່ານ; ຂໍ້ຄວາມຈະມີລິ້ງ
 compose-onedrive-allow = ອະນຸຍາດ OneDrive
@@ -84,8 +88,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive ແບ່ງປັນໄຟລ໌ກັບ { $addresses } ບໍ່ໄດ້. ແຕ່ທຸກຄົນທີ່ມີລິ້ງຈະເປີດໄຟລ໌ໄດ້ແທນ.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ວາງໄຟລ໌ໄວ້ບ່ອນນີ້
 compose-drop-here = ວາງໄວ້ບ່ອນນີ້
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = ຮັກສາການຈັດຮູບແບບ
 compose-paste-table = ຕາຕະລາງ
 compose-paste-picture = ຮູບພາບ
@@ -99,6 +107,9 @@ compose-encrypt = ເຂົ້າລະຫັດ
 compose-encrypted = ເຂົ້າລະຫັດແລ້ວ: ມີແຕ່ຜູ້ຮັບເທົ່ານັ້ນທີ່ອ່ານໄດ້
 compose-sign = ລົງລາຍເຊັນ
 compose-signed = ລົງລາຍເຊັນແລ້ວ: ຜູ້ຮັບສາມາດກວດສອບໄດ້ວ່າມັນມາຈາກທ່ານ
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = ຕິດຕາມການເປີດ ແລະ ການຄລິກ
 compose-tracked = ກຳລັງຕິດຕາມ: ທ່ານຈະເຫັນວ່າຜູ້ຮັບແຕ່ລະຄົນເປີດມັນ ຫຼື ຄລິກລິ້ງເມື່ອໃດ
 compose-track-clicks = ຕິດຕາມການຄລິກລິ້ງ (ຂໍ້ຄວາມທຳມະດາບໍ່ສາມາດສະແດງການເປີດໄດ້)
@@ -131,6 +142,9 @@ send-check-subject-title = ສົ່ງໂດຍບໍ່ມີຫົວເລ�
 send-check-subject-text = ຂໍ້ຄວາມນີ້ບໍ່ມີຫົວເລື່ອງ.
 send-check-add-subject = ເພີ່ມຫົວເລື່ອງ
 send-check-send-anyway = ສົ່ງຢູ່ດີ
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = ບໍ່ແມ່ນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ
 recipient-show-address = ສະແດງທີ່ຢູ່
 recipient-remove = ລຶບອອກ

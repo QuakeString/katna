@@ -9,6 +9,17 @@ nav-folders = Папки
 nav-label-new = Создать ярлык
 nav-folder-new = Создать папку
 nav-menu-check-mail = Проверить новую почту
+nav-menu-check-inbox = Проверить эти «Входящие»
+nav-menu-sign-in-again = Войти снова
+nav-menu-new-mail = Новое письмо с этого аккаунта
+nav-menu-account-settings = Настройки аккаунта
+nav-account-checked = Синхронизировано · проверено { $ago }
+nav-account-in-sync = Синхронизировано
+nav-account-connecting = Подключение…
+nav-account-offline = Нет сети, повторная попытка
+nav-account-signed-out = Срок входа в { $provider } истёк
+nav-account-password-refused = Пароль не принят
+nav-account-storage = Занято { $used } из { $total }
 nav-menu-new-subfolder = Новая папка внутри
 nav-menu-new-sublabel = Новый ярлык внутри
 nav-menu-empty-trash = Очистить корзину
@@ -16,12 +27,6 @@ nav-account-unnamed = Аккаунт { $number }
 nav-all-accounts = Все аккаунты
 nav-expand = Показать папки
 nav-collapse = Скрыть папки
-nav-tab-new = { $count ->
-    [one] { $count } новое
-    [few] { $count } новых
-    [many] { $count } новых
-   *[other] { $count } новых
-}
 storage-used = Занято { $percent } % из { $total }
 storage-used-detail = { $address }: занято { $used } из { $total }
 

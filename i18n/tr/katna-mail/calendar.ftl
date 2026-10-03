@@ -58,6 +58,12 @@ calendar-account-not-enabled = Katna için takvim erişimi henüz açılmadı.
 calendar-account-failed = Takvimler okunamadı.
 calendar-account-error = Takvimler okunamadı: { $reason }
 calendar-account-none = Takvim bulunamadı
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Takvim bulunamadı: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider }, takvimleri yalnızca { $provider } ile oturum açmış Katna'ya gösterir.
+calendar-account-sign-in-with = { $provider } ile oturum aç
 calendar-account-looking = Takvimler aranıyor…
 calendar-account-try-again = Tekrar dene
 calendar-account-try-again-tooltip = Bu hesabın takvimlerini şimdi yeniden denetle
@@ -77,8 +83,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = { $count } tane daha
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Tekrarlanır
 calendar-join = Katıl
+calendar-join-with = { $service } ile katıl
 calendar-email-guests = Konuklara posta gönder
 calendar-running-late = Geç kalıyorum
 calendar-late-subject = Geç kalıyorum: { $title }
@@ -92,6 +100,7 @@ calendar-guest-answers = { $yes } evet, { $maybe } belki, { $no } hayır, { $wai
 calendar-organizer = Organizatör
 calendar-optional = İsteğe bağlı
 calendar-open-web = Tarayıcıda aç
+calendar-open-mail = Postayı aç
 calendar-open-contact = Kişiyi aç
 calendar-close = Kapat
 
@@ -115,10 +124,71 @@ calendar-discard = Değişiklikleri at
 calendar-edit = Etkinliği düzenle
 calendar-delete = Etkinliği sil
 calendar-event-details = Etkinlik ayrıntıları
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Yeni etkinlik
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Günü aç
+calendar-menu-duplicate = Çoğalt
+calendar-menu-color = Renk
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Takvim rengi
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Bir hafta sonra
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Domates
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Mandalina
+calendar-color-banana = Muz
+calendar-color-sage = Adaçayı
+calendar-color-basil = Fesleğen
+calendar-color-peacock = Tavus kuşu
+calendar-color-blueberry = Yaban mersini
+calendar-color-lavender = Lavanta
+calendar-color-grape = Üzüm
+calendar-color-graphite = Grafit
+calendar-menu-only-this = Yalnızca bunu göster
+calendar-menu-rename = Yeniden adlandır
+calendar-menu-remove = Listeden kaldır
+calendar-menu-delete = Sil
+calendar-menu-new-calendar = Yeni takvim
+calendar-menu-show-all = Tümünü göster
+calendar-menu-hide-all = Tümünü gizle
+calendar-menu-account-settings = Hesap ayarları
+calendar-why-main = Ana takvim
+calendar-why-last = Buradaki tek takvim
+calendar-why-owner = Yalnızca sahibi
+calendar-why-contacts = Kişiler'den
+calendar-why-unreached = Ulaşılamadı
+calendar-name-placeholder = Takvim adı
+calendar-toast-added = “{ $name }” eklendi
+calendar-toast-renamed = Takvim yeniden adlandırıldı
+calendar-toast-recolored = Takvim rengi değiştirildi
+calendar-toast-deleted = “{ $name }” silindi
+calendar-toast-removed = “{ $name }” listenizden kaldırıldı
+calendar-edit-failed = Takvim değiştirilmedi: { $reason }
+calendar-delete-title = “{ $name }” silinsin mi?
+calendar-delete-confirm = Sil
+calendar-deleting = Siliniyor…
+calendar-delete-heading = Silinenler:
+calendar-delete-events = Takvim ve tüm etkinlikleri
+calendar-delete-shared = Paylaşıldığı herkes için
+calendar-delete-server = Yalnızca Katna'da değil, posta hizmetindeki { $account } hesabından da silinir.
+calendar-delete-local = Bu bilgisayardan silinir.
+calendar-remove-title = “{ $name }” listenizden kaldırılsın mı?
+calendar-remove-confirm = Kaldır
+calendar-removing = Kaldırılıyor…
+calendar-remove-heading = Neler değişir:
+calendar-remove-events = Etkinliklerini artık burada ve diğer uygulamalarınızda görmezsiniz
+calendar-remove-server = Takvim sahibinde kalır; sahibi onu sizinle yeniden paylaşabilir.
 calendar-kind-event = Etkinlik
+calendar-kind-task = Görev
 calendar-kind-focus = Odaklanma zamanı
 calendar-kind-out-of-office = Ofis dışında
 calendar-kind-working-location = Çalışma konumu
+calendar-task-added = Görev eklendi
+calendar-task-added-to = Görev { $list } listesine eklendi
+calendar-task-list-local = Bu bilgisayarda
 calendar-working-home = Ev
 calendar-busy = Meşgul
 calendar-free = Müsait

@@ -58,6 +58,12 @@ calendar-account-not-enabled = Ufikiaji wa kalenda kwa Katna bado haujawashwa.
 calendar-account-failed = Kalenda hazikuweza kusomwa.
 calendar-account-error = Kalenda hazikuweza kusomwa: { $reason }
 calendar-account-none = Hakuna kalenda zilizopatikana
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Hakuna kalenda zilizopatikana: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } huonyesha kalenda kwa Katna iliyoingia kwa { $provider } pekee.
+calendar-account-sign-in-with = Ingia kwa { $provider }
 calendar-account-looking = Inatafuta kalenda…
 calendar-account-try-again = Jaribu tena
 calendar-account-try-again-tooltip = Kagua kalenda za akaunti hii tena sasa
@@ -77,8 +83,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = zingine { $count }
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Hujirudia
 calendar-join = Jiunge
+calendar-join-with = Jiunge kwa { $service }
 calendar-email-guests = Tuma barua pepe kwa wageni
 calendar-running-late = Nimechelewa
 calendar-late-subject = Nimechelewa: { $title }
@@ -92,6 +100,7 @@ calendar-guest-answers = ndiyo { $yes }, labda { $maybe }, hapana { $no }, wanas
 calendar-organizer = Mwandalizi
 calendar-optional = Hiari
 calendar-open-web = Fungua kwenye kivinjari
+calendar-open-mail = Fungua barua
 calendar-open-contact = Fungua anwani
 calendar-close = Funga
 
@@ -115,10 +124,71 @@ calendar-discard = Tupa mabadiliko
 calendar-edit = Hariri tukio
 calendar-delete = Futa tukio
 calendar-event-details = Maelezo ya tukio
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Tukio jipya
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Fungua siku
+calendar-menu-duplicate = Nakili
+calendar-menu-color = Rangi
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Rangi ya kalenda
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Baada ya wiki moja
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Nyanya
+calendar-color-flamingo = Heroe
+calendar-color-tangerine = Chenza
+calendar-color-banana = Ndizi
+calendar-color-sage = Kijani kijivu
+calendar-color-basil = Mrehani
+calendar-color-peacock = Tausi
+calendar-color-blueberry = Beri ya buluu
+calendar-color-lavender = Lavenda
+calendar-color-grape = Zabibu
+calendar-color-graphite = Grafiti
+calendar-menu-only-this = Onyesha hii tu
+calendar-menu-rename = Badilisha jina
+calendar-menu-remove = Ondoa kwenye orodha
+calendar-menu-delete = Futa
+calendar-menu-new-calendar = Kalenda mpya
+calendar-menu-show-all = Onyesha zote
+calendar-menu-hide-all = Ficha zote
+calendar-menu-account-settings = Mipangilio ya akaunti
+calendar-why-main = Kalenda kuu
+calendar-why-last = Iko moja tu hapa
+calendar-why-owner = Mmiliki pekee
+calendar-why-contacts = Kutoka Anwani
+calendar-why-unreached = Haikufikiwa
+calendar-name-placeholder = Jina la kalenda
+calendar-toast-added = “{ $name }” imeongezwa
+calendar-toast-renamed = Jina la kalenda limebadilishwa
+calendar-toast-recolored = Rangi ya kalenda imebadilishwa
+calendar-toast-deleted = “{ $name }” imefutwa
+calendar-toast-removed = “{ $name }” imeondolewa kwenye orodha yako
+calendar-edit-failed = Kalenda haikubadilishwa: { $reason }
+calendar-delete-title = Ufute “{ $name }”?
+calendar-delete-confirm = Futa
+calendar-deleting = Inafuta…
+calendar-delete-heading = Kitakachofutwa:
+calendar-delete-events = Kalenda na matukio yake yote
+calendar-delete-shared = Kwa kila mtu aliyeshirikiwa nayo
+calendar-delete-server = Inafutwa kutoka { $account } kwenye huduma ya barua, si katika Katna pekee.
+calendar-delete-local = Inafutwa kutoka kwenye kompyuta hii.
+calendar-remove-title = Uondoe “{ $name }” kwenye orodha yako?
+calendar-remove-confirm = Ondoa
+calendar-removing = Inaondoa…
+calendar-remove-heading = Kinachobadilika:
+calendar-remove-events = Hutaona tena matukio yake, hapa na kwenye programu zako nyingine
+calendar-remove-server = Kalenda inabaki kwa mmiliki wake, anayeweza kukushirikisha tena.
 calendar-kind-event = Tukio
+calendar-kind-task = Jukumu
 calendar-kind-focus = Muda wa kuzingatia
 calendar-kind-out-of-office = Nje ya ofisi
 calendar-kind-working-location = Mahali pa kazi
+calendar-task-added = Jukumu limeongezwa
+calendar-task-added-to = Jukumu limeongezwa kwenye { $list }
+calendar-task-list-local = Kwenye kompyuta hii
 calendar-working-home = Nyumbani
 calendar-busy = Ana shughuli
 calendar-free = Yuko huru

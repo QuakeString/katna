@@ -27,6 +27,7 @@ desktop-menu-page-calendar = Ikha_lenda
 desktop-menu-page-contacts = _Oxhumana nabo
 desktop-menu-page-tasks = Imise_benzi
 desktop-menu-page-notes = _Amanothi
+desktop-menu-page-files = Ama_fayela
 desktop-menu-next = Ingxoxo _Elandelayo
 desktop-menu-previous = Ingxoxo E_dlule
 desktop-menu-message = _Umlayezo

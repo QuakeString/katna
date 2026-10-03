@@ -32,6 +32,7 @@ compose-tool-bold = Vet (Ctrl+B)
 compose-tool-italic = Cursief (Ctrl+I)
 compose-tool-underline = Onderstrepen (Ctrl+U)
 compose-tool-text-color = Tekstkleur
+compose-tool-colors = Tekst- en markeerkleur
 compose-tool-background-color = Achtergrondkleur
 compose-tool-default-color = Standaardkleur
 compose-tool-no-background = Geen achtergrond
@@ -126,6 +127,10 @@ compose-tool-signature = Handtekening invoegen
 compose-tool-signature-none = Geen handtekening
 compose-tool-signature-untitled = Naamloos
 compose-tool-signature-manage = Handtekeningen beheren
+compose-signature-tag-tip = Een andere handtekening kiezen
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = Sjablonen
 compose-tool-templates-none = Nog geen sjablonen
 compose-tool-template-save = Opslaan als sjabloon…

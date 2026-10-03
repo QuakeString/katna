@@ -132,6 +132,7 @@ attachment-count = { $count ->
    *[other] { $count } קבצים מצורפים
 }
 attachment-save = שמירה
+attachment-forward = העברה
 attachment-save-all = שמירת הכול
 attachment-save-all-tooltip = שמירת כל הקבצים המצורפים בתיקייה
 attachment-save-here = שמירה כאן
@@ -186,6 +187,8 @@ print-not-downloaded = (עדיין לא הורדה.)
 print-encrypted = (מוצפנת. יש לפתוח אותה ב־Katna Mail כדי להדפיס את הטקסט שלה.)
 print-to = אל: { $addresses }
 print-cc = עותק: { $addresses }
+text-pin = הצמדה למעלה
+text-copy-address = העתקת הכתובת
 
 ## Leftovers from earlier areas (reading pane and its right-click menu)
 

@@ -58,6 +58,12 @@ calendar-account-not-enabled = Katna साठी कॅलेंडर ॲक�
 calendar-account-failed = कॅलेंडर वाचता आली नाहीत.
 calendar-account-error = कॅलेंडर वाचता आली नाहीत: { $reason }
 calendar-account-none = कोणतेही कॅलेंडर सापडले नाही
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = कोणतेही कॅलेंडर सापडले नाही: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } फक्त { $provider } ने साइन इन केलेल्या Katna लाच कॅलेंडर दाखवते.
+calendar-account-sign-in-with = { $provider } ने साइन इन करा
 calendar-account-looking = कॅलेंडर शोधत आहे…
 calendar-account-try-again = पुन्हा प्रयत्न करा
 calendar-account-try-again-tooltip = या खात्याची कॅलेंडर आता पुन्हा तपासा
@@ -77,8 +83,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = आणखी { $count }
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = पुनरावृत्ती होते
 calendar-join = सहभागी व्हा
+calendar-join-with = { $service } ने सहभागी व्हा
 calendar-email-guests = पाहुण्यांना ईमेल करा
 calendar-running-late = उशीर होत आहे
 calendar-late-subject = उशीर होत आहे: { $title }
@@ -92,6 +100,7 @@ calendar-guest-answers = { $yes } हो, { $maybe } कदाचित, { $no }
 calendar-organizer = आयोजक
 calendar-optional = पर्यायी
 calendar-open-web = ब्राउझरमध्ये उघडा
+calendar-open-mail = मेल उघडा
 calendar-open-contact = संपर्क उघडा
 calendar-close = बंद करा
 
@@ -115,10 +124,71 @@ calendar-discard = बदल टाकून द्या
 calendar-edit = इव्हेंट संपादित करा
 calendar-delete = इव्हेंट हटवा
 calendar-event-details = इव्हेंटचा तपशील
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = नवीन इव्हेंट
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = दिवस उघडा
+calendar-menu-duplicate = डुप्लिकेट करा
+calendar-menu-color = रंग
+# The event takes its calendar's color.
+calendar-menu-color-calendar = कॅलेंडरचा रंग
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = एका आठवड्याने
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = टोमॅटो
+calendar-color-flamingo = फ्लेमिंगो
+calendar-color-tangerine = संत्रे
+calendar-color-banana = केळे
+calendar-color-sage = सेज
+calendar-color-basil = तुळस
+calendar-color-peacock = मोर
+calendar-color-blueberry = ब्लूबेरी
+calendar-color-lavender = लॅव्हेंडर
+calendar-color-grape = द्राक्ष
+calendar-color-graphite = ग्रॅफाइट
+calendar-menu-only-this = फक्त हेच दाखवा
+calendar-menu-rename = नाव बदला
+calendar-menu-remove = यादीतून काढा
+calendar-menu-delete = हटवा
+calendar-menu-new-calendar = नवीन कॅलेंडर
+calendar-menu-show-all = सर्व दाखवा
+calendar-menu-hide-all = सर्व लपवा
+calendar-menu-account-settings = खाते सेटिंग्ज
+calendar-why-main = मुख्य कॅलेंडर
+calendar-why-last = येथे एकच आहे
+calendar-why-owner = फक्त मालक
+calendar-why-contacts = संपर्कांमधून
+calendar-why-unreached = पोहोचता आले नाही
+calendar-name-placeholder = कॅलेंडरचे नाव
+calendar-toast-added = “{ $name }” जोडले
+calendar-toast-renamed = कॅलेंडरचे नाव बदलले
+calendar-toast-recolored = कॅलेंडरचा रंग बदलला
+calendar-toast-deleted = “{ $name }” हटवले
+calendar-toast-removed = “{ $name }” तुमच्या यादीतून काढले
+calendar-edit-failed = कॅलेंडर बदलले नाही: { $reason }
+calendar-delete-title = “{ $name }” हटवायचे?
+calendar-delete-confirm = हटवा
+calendar-deleting = हटवत आहे…
+calendar-delete-heading = हटवले जाईल:
+calendar-delete-events = कॅलेंडर आणि त्यातील सर्व इव्हेंट
+calendar-delete-shared = ज्यांच्याशी ते शेअर केले आहे त्या सर्वांसाठी
+calendar-delete-server = ते फक्त Katna मध्ये नव्हे, तर मेल सेवेवरील { $account } मधून हटवले जाते.
+calendar-delete-local = ते या कॉम्प्युटरवरून हटवले जाते.
+calendar-remove-title = “{ $name }” तुमच्या यादीतून काढायचे?
+calendar-remove-confirm = काढा
+calendar-removing = काढत आहे…
+calendar-remove-heading = काय बदलते:
+calendar-remove-events = तुम्हाला त्याचे इव्हेंट येथे आणि तुमच्या इतर ॲप्समध्ये दिसणे बंद होते
+calendar-remove-server = कॅलेंडर त्याच्या मालकाकडेच राहते, जो ते तुमच्याशी पुन्हा शेअर करू शकतो.
 calendar-kind-event = इव्हेंट
+calendar-kind-task = कार्य
 calendar-kind-focus = फोकस वेळ
 calendar-kind-out-of-office = कार्यालयाबाहेर
 calendar-kind-working-location = कामाचे ठिकाण
+calendar-task-added = कार्य जोडले
+calendar-task-added-to = { $list } मध्ये कार्य जोडले
+calendar-task-list-local = या संगणकावर
 calendar-working-home = घर
 calendar-busy = व्यग्र
 calendar-free = मोकळा

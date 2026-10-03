@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Share drive files from Katna"
+text = """
+Share… in the menu of a Google Drive or OneDrive file in Files opens a
+Share dialog: add people as Viewer, Commenter or Editor, change or remove
+who already has access, and open it to anyone with the link. The drive
+emails them only if you tick it.
+"""

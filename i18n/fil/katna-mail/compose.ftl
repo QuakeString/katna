@@ -46,6 +46,7 @@ compose-sent-archived = Naipadala at na-archive
 compose-sent = Naipadala ang mensahe
 compose-discarded = Itinapon ang draft
 compose-draft-saved = Na-save ang draft
+compose-draft-saving = Sine-save…
 compose-draft-failed = Hindi ma-save ang draft: { $error }
 compose-draft-not-opened = Hindi mabuksan ang draft.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = Hindi mabuksan ang draft.
 compose-picker-insert = Ilagay
 compose-picker-attach = I-attach
 compose-file-too-large = Masyadong malaki ang { $name }: hanggang { $limit } lang ang kaya ng isang mensahe.
+compose-forward-files-missing = Hindi pa na-download ang mga file ng ipinapasang mensahe, kaya hindi sila naka-attach.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Alisin ang attachment
+compose-attachment-open-tip = Buksan para tingnan
 compose-attachments-total = { $count ->
     [one] { $count } file, { $size }
    *[other] { $count } file, { $size }
@@ -78,6 +81,7 @@ compose-drive-share-link = Ibahagi gamit ang link
 compose-drive-send-without = Ipadala nang hindi nagbabahagi
 compose-drive-share-cancel = Kanselahin
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = Lampas sa { $limit } ang { $name }, kaya mapupunta ito sa iyong OneDrive at may link ang mensahe.
 compose-onedrive-tip = Nasa iyong OneDrive; may link ang mensahe
 compose-onedrive-allow = Payagan ang OneDrive
@@ -89,8 +93,12 @@ compose-onedrive-share-text = { $count ->
    *[other] Hindi maibabahagi ng OneDrive ang mga file kay { $addresses }. Sa halip, mabubuksan ito ng sinumang may link.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = I-drop dito ang mga file
 compose-drop-here = I-drop dito
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = Panatilihin ang format
 compose-paste-table = Talahanayan
 compose-paste-picture = Larawan
@@ -104,6 +112,9 @@ compose-encrypt = I-encrypt
 compose-encrypted = Naka-encrypt: ang mga tatanggap lang ang makakabasa nito
 compose-sign = Lagdaan
 compose-signed = Nilagdaan: masusuri ng mga tatanggap na galing ito sa iyo
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = I-track ang mga pagbukas at pag-click
 compose-tracked = Naka-track: makikita mo kung kailan ito binubuksan ng bawat tatanggap o sinusundan ang isang link
 compose-track-clicks = I-track ang mga pag-click sa link (hindi maipapakita ng plain text ang mga pagbukas)
@@ -136,6 +147,9 @@ send-check-subject-title = Ipadala nang walang paksa?
 send-check-subject-text = Walang paksa ang mensaheng ito.
 send-check-add-subject = Magdagdag ng paksa
 send-check-send-anyway = Ipadala pa rin
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = Hindi valid na email address
 recipient-show-address = Ipakita ang address
 recipient-remove = Alisin

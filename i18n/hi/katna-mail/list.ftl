@@ -14,13 +14,13 @@ tab-other = अन्य
 tab-inbox = इनबॉक्स
 tab-newsletters = न्यूज़लेटर
 tab-notifications = सूचनाएं
-tab-new = { $count } नए
 tab-provider-other = Katna ने छांटा
 
 ## Mail list: toolbar
 
 list-select = चुनें
 list-refresh = रीफ़्रेश करें
+list-back-to-top = ऊपर जाएं
 list-checking = नए मेल की जाँच हो रही है…
 list-more = ज़्यादा
 list-mark-read = पढ़ा गया के रूप में मार्क करें
@@ -39,6 +39,7 @@ list-results = “{ $query }” के नतीजे
 list-results-corrected = “{ $query }” के नतीजे दिखाए जा रहे हैं
 list-search-instead = इसके बजाय “{ $query }” खोजें
 list-files-more = +{ $count }
+list-replied = आपने जवाब दिया
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,12 @@ menu-add-note = नोट जोड़ें
 menu-print-all = सभी प्रिंट करें
 menu-new-window = नई विंडो में खोलें
 menu-move-to = इसमें ले जाएं
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = फ़ॉलो अप
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = और
 menu-move-to-heading = इसमें ले जाएं:
 menu-find-from = { $name } से आए ईमेल ढूंढें
 

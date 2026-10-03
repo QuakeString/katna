@@ -14,13 +14,13 @@ tab-other = ఇతరాలు
 tab-inbox = ఇన్‌బాక్స్
 tab-newsletters = న్యూస్‌లెటర్‌లు
 tab-notifications = నోటిఫికేషన్‌లు
-tab-new = { $count } కొత్తవి
 tab-provider-other = Katna క్రమబద్ధీకరించింది
 
 ## Mail list: toolbar
 
 list-select = ఎంచుకోండి
 list-refresh = రిఫ్రెష్ చేయండి
+list-back-to-top = పైకి వెళ్లండి
 list-checking = కొత్త మెయిల్ కోసం చెక్ చేస్తోంది…
 list-more = మరిన్ని
 list-mark-read = చదివినట్లు గుర్తు పెట్టండి
@@ -39,6 +39,7 @@ list-results = “{ $query }” కోసం ఫలితాలు
 list-results-corrected = “{ $query }” కోసం ఫలితాలను చూపుతోంది
 list-search-instead = దానికి బదులుగా “{ $query }” కోసం వెతకండి
 list-files-more = +{ $count }
+list-replied = మీరు రిప్లయి ఇచ్చారు
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,8 @@ menu-add-note = గమనికను జోడించండి
 menu-print-all = అన్నీ ప్రింట్ చేయండి
 menu-new-window = కొత్త విండోలో తెరవండి
 menu-move-to = దీనికి తరలించండి
+menu-follow-up = ఫాలో అప్
+menu-more = మరిన్ని
 menu-move-to-heading = దీనికి తరలించండి:
 menu-find-from = { $name } నుండి వచ్చిన ఈమెయిల్స్‌ను కనుగొనండి
 

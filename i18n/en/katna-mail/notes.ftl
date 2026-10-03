@@ -19,6 +19,8 @@ notes-loading = Opening your notes…
 # text of a new note.
 notes-take-a-note = Take a note…
 notes-new-list = New list
+# The big button at the top of the left bar on Notes.
+notes-new-note = New note
 # Headings over the pinned notes and the rest.
 notes-pinned = Pinned
 notes-others = Others

@@ -2,7 +2,7 @@
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
 
-## A new-mail notification
+## A new-mail notification (the desktop shows it, even with Katna Mail closed)
 
 notify-new-emails = { $count ->
     [one] { $count } ಹೊಸ ಇಮೇಲ್
@@ -11,9 +11,15 @@ notify-new-emails = { $count ->
 notify-and-more = ಮತ್ತು ಇನ್ನೂ { $count }
 notify-no-subject = (ವಿಷಯವಿಲ್ಲ)
 notify-unknown-sender = ಅಜ್ಞಾತ ಕಳುಹಿಸುವವರು
+
+## Reminders the user asked for (same buttons)
+
 notify-snooze-back = ಸ್ನೂಜ್‌ನಿಂದ ಮರಳಿದೆ
 notify-no-reply = ಇನ್ನೂ ಉತ್ತರವಿಲ್ಲ
 notify-no-reply-to = “{ $subject }” ಗೆ ಯಾರೂ ಉತ್ತರಿಸಿಲ್ಲ.
+
+## Open and click tracking (only for mail sent with "Track opens and clicks")
+
 notify-tracking-opened = { $who } ಅವರು { $subject } ತೆರೆದಿದ್ದಾರೆ
 notify-tracking-clicked = { $who } ಅವರು { $subject } ನಲ್ಲಿನ ಲಿಂಕ್ ಕ್ಲಿಕ್ ಮಾಡಿದ್ದಾರೆ
 
@@ -22,6 +28,9 @@ notify-tracking-clicked = { $who } ಅವರು { $subject } ನಲ್ಲಿನ 
 notify-update-ready = Katna Mail ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬಹುದು
 notify-update-ready-body = ಆವೃತ್ತಿ { $version } ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ. ಅಪ್‌ಡೇಟ್ ಅದನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ Katna Mail ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುತ್ತದೆ.
 notify-update = ಅಪ್‌ಡೇಟ್
+
+## Reminders of calendar events
+
 notify-event-now = ಈಗ
 notify-event-in-minutes = { $count ->
     [one] { $count } ನಿಮಿಷಗಳಲ್ಲಿ
@@ -41,10 +50,28 @@ notify-event-join = ಸೇರಿ
 notify-event-snooze = 5 ನಿಮಿಷ ಸ್ನೂಜ್ ಮಾಡಿ
 notify-task-done = ಪೂರ್ಣಗೊಂಡಿದೆ ಎಂದು ಗುರುತಿಸಿ
 
-## Its buttons
+## The buttons of new-mail notifications and reminders
 
 notify-open = ತೆರೆಯಿರಿ
+notify-peek = ಇಣುಕಿ ನೋಡಿ
+notify-reply = ಪ್ರತ್ಯುತ್ತರಿಸಿ
+notify-reply-placeholder = { $name } ಗೆ ಪ್ರತ್ಯುತ್ತರಿಸಿ…
+notify-send = ಕಳುಹಿಸಿ
 notify-reply-all = ಎಲ್ಲರಿಗೂ ಪ್ರತ್ಯುತ್ತರಿಸಿ
 notify-mark-read = ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ
 notify-mark-all-read = ಎಲ್ಲವನ್ನೂ ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ
 notify-archive = ಆರ್ಕೈವ್ ಮಾಡಿ
+
+## After Archive on a notification: a short note in the same place
+
+notify-archived = ಆರ್ಕೈವ್ ಮಾಡಲಾಗಿದೆ
+notify-archived-count = { $count ->
+    [one] { $count } ಸಂದೇಶವನ್ನು ಇನ್‌ಬಾಕ್ಸ್‌ನಿಂದ ಹೊರಗೆ ಸರಿಸಲಾಗಿದೆ
+   *[other] { $count } ಸಂದೇಶಗಳನ್ನು ಇನ್‌ಬಾಕ್ಸ್‌ನಿಂದ ಹೊರಗೆ ಸರಿಸಲಾಗಿದೆ
+}
+notify-undo = ರದ್ದುಗೊಳಿಸಿ
+
+## it waits for the undo time
+
+notify-reply-sent = { $name } ಗೆ ಪ್ರತ್ಯುತ್ತರ ಕಳುಹಿಸಲಾಗಿದೆ
+notify-open-in-katna = Katna ದಲ್ಲಿ ತೆರೆಯಿರಿ

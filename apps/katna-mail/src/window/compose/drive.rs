@@ -76,7 +76,10 @@ pub(super) fn drive_provider(window: &MailWindow, account: AccountId) -> Option<
 pub(super) fn drive_note(provider: OAuthProvider, name: String, limit: String) -> String {
     match provider {
         OAuthProvider::Google => tr!("compose-drive-note", name = name, limit = limit),
-        OAuthProvider::Microsoft => tr!("compose-onedrive-note", name = name, limit = limit),
+        // Only Google and Microsoft accounts keep large files.
+        OAuthProvider::Microsoft | OAuthProvider::Zoho => {
+            tr!("compose-onedrive-note", name = name, limit = limit)
+        }
     }
 }
 
@@ -100,10 +103,12 @@ pub(super) fn links_html(files: &[DriveFile]) -> String {
             continue;
         };
         let size = format::size(file.size);
-        let under = if file.onedrive {
-            tr!("compose-onedrive-card-detail", size = size)
-        } else {
-            tr!("compose-drive-card-detail", size = size)
+        // A drive's own document has no size.
+        let under = match (file.onedrive, file.size) {
+            (true, 0) => tr!("compose-onedrive-card-name"),
+            (false, 0) => tr!("compose-drive-card-name"),
+            (true, _) => tr!("compose-onedrive-card-detail", size = size),
+            (false, _) => tr!("compose-drive-card-detail", size = size),
         };
         html.push_str(&format!(
             "<div style=\"margin:12px 0 0\"><div style=\"display:inline-block;\
@@ -147,6 +152,102 @@ impl MailWindow {
         });
         compose.attach_scroll.scroll_to_bottom();
         self.start_drive_upload(path, cx);
+    }
+
+    /// A new message with file `entry` of the drive of `account` on it
+    /// as a link: Files' Attach for a file too big for mail or one of the
+    /// drive's own documents.
+    pub(in crate::window) fn new_mail_with_link(
+        &mut self,
+        account: AccountId,
+        entry: katna_dbus::CloudEntry,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.open_compose(super::Kind::New, None, window, cx);
+        if self
+            .compose
+            .as_ref()
+            .is_some_and(|c| c.kind == super::Kind::New)
+        {
+            self.link_drive_file(account, entry, cx);
+        }
+    }
+
+    /// Compose is open, not on its way out.
+    pub(in crate::window) fn compose_writing(&self) -> bool {
+        self.compose.as_ref().is_some_and(|c| !c.closing)
+    }
+
+    /// Takes down Compose's open popup, as the attach picker opens; and
+    /// whether Compose is open to attach to.
+    pub(in crate::window) fn compose_takes_files(&mut self) -> bool {
+        match &mut self.compose {
+            Some(compose) if !compose.closing => {
+                compose.popup = None;
+                true
+            }
+            _ => false,
+        }
+    }
+
+    /// Puts file `entry`, already in the drive of `account`, on the
+    /// message as a link chip, shared with the recipients at Send like an
+    /// uploaded file. Taking the chip off leaves the file in the drive.
+    pub(in crate::window) fn link_drive_file(
+        &mut self,
+        account: AccountId,
+        entry: katna_dbus::CloudEntry,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(connection) = self.daemon.clone() else {
+            self.show_snackbar(daemon::NOT_RUNNING.to_owned(), None, cx);
+            return;
+        };
+        let onedrive = drive_provider(self, account) == Some(OAuthProvider::Microsoft);
+        // No file on this computer: the drive's id keeps the chip apart.
+        let path = PathBuf::from(format!("drive:{}:{}", account.0, entry.id));
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if compose.drive.iter().any(|f| f.path == path) {
+            return;
+        }
+        compose.drive.push(DriveFile {
+            path: path.clone(),
+            name: entry.name.clone(),
+            size: entry.size,
+            account,
+            onedrive,
+            upload: None,
+            sent: entry.size,
+            state: DriveState::Done {
+                link: entry.link.clone(),
+            },
+        });
+        compose.attach_scroll.scroll_to_bottom();
+        cx.spawn(async move |this, cx| {
+            let linked = daemon::cloud_link(&connection, account.0, &entry).await;
+            this.update(cx, |this, cx| {
+                let Some(file) = this
+                    .compose
+                    .as_mut()
+                    .and_then(|c| c.drive.iter_mut().find(|f| f.path == path))
+                else {
+                    if let Ok(id) = linked {
+                        this.cancel_drive_upload(id, cx);
+                    }
+                    return;
+                };
+                match linked {
+                    Ok(id) => file.upload = Some(id),
+                    Err(err) => file.state = DriveState::Failed(err),
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
     }
 
     /// Asks the daemon to upload the chip of `path`, again after a
@@ -578,48 +679,73 @@ impl MailWindow {
                 .hover(|s| s.bg(rgba(th.hover)))
                 .child(label)
         };
-        let detail: AnyElement =
-            match &file.state {
-                DriveState::Uploading => {
-                    let percent = (file.sent * 100).checked_div(file.size).unwrap_or(0);
-                    div()
-                        .flex_none()
-                        .text_color(rgba(th.text_dim))
-                        .child(tr!("compose-drive-uploading", percent = percent))
-                        .into_any_element()
-                }
-                DriveState::Done { .. } => div()
+        let detail: AnyElement = match &file.state {
+            DriveState::Uploading => {
+                let percent = (file.sent * 100).checked_div(file.size).unwrap_or(0);
+                div()
                     .flex_none()
                     .text_color(rgba(th.text_dim))
-                    .child(tr!(
-                        "compose-attachment-size",
-                        size = format::size(file.size)
-                    ))
-                    .into_any_element(),
-                DriveState::NeedsPermission => {
-                    let (label, why) = if file.onedrive {
-                        (
-                            tr!("compose-onedrive-allow"),
-                            tr!("compose-onedrive-allow-tip"),
-                        )
-                    } else {
-                        (tr!("compose-drive-allow"), tr!("compose-drive-allow-tip"))
-                    };
-                    action("drive-allow", label)
-                        .tooltip(tip(why, th))
-                        .on_click(cx.listener(move |this, _, _, cx| this.allow_drive(ix, cx)))
-                        .into_any_element()
-                }
-                DriveState::Failed(error) => {
-                    let path = file.path.clone();
+                    .child(tr!("compose-drive-uploading", percent = percent))
+                    .into_any_element()
+            }
+            DriveState::Done { .. } if file.size == 0 => div().into_any_element(),
+            DriveState::Done { .. } => div()
+                .flex_none()
+                .text_color(rgba(th.text_dim))
+                .child(tr!(
+                    "compose-attachment-size",
+                    size = format::size(file.size)
+                ))
+                .into_any_element(),
+            DriveState::NeedsPermission => {
+                let (label, why) = if file.onedrive {
+                    (
+                        tr!("compose-onedrive-allow"),
+                        tr!("compose-onedrive-allow-tip"),
+                    )
+                } else {
+                    (tr!("compose-drive-allow"), tr!("compose-drive-allow-tip"))
+                };
+                action("drive-allow", label)
+                    .tooltip(tip(why, th))
+                    .on_click(cx.listener(move |this, _, _, cx| this.allow_drive(ix, cx)))
+                    .into_any_element()
+            }
+            DriveState::Failed(error) => {
+                let path = file.path.clone();
+                // The Drive API switched off in Katna's Google Cloud
+                // project: say which, and offer the page that turns
+                // it on.
+                let off = katna_core::api_off::parse(error);
+                let why = match off {
+                    Some((api, _)) => tr!("google-api-off", api = api),
+                    None => error.clone(),
+                };
+                let retry =
                     action("drive-retry", tr!("compose-drive-retry"))
-                        .tooltip(tip(error.clone(), th))
+                        .tooltip(tip(why, th))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.start_drive_upload(path.clone(), cx)
-                        }))
-                        .into_any_element()
+                        }));
+                match off {
+                    Some((api, url)) => {
+                        let url = url.to_owned();
+                        div()
+                            .flex_none()
+                            .flex()
+                            .flex_row()
+                            .child(
+                                action("drive-turn-on", tr!("google-api-turn-on"))
+                                    .tooltip(tip(tr!("google-api-turn-on-tooltip", api = api), th))
+                                    .on_click(move |_, _, cx| cx.open_url(&url)),
+                            )
+                            .child(retry)
+                            .into_any_element()
+                    }
+                    None => retry.into_any_element(),
                 }
-            };
+            }
+        };
         let progress = match file.state {
             DriveState::Uploading if file.size > 0 => {
                 Some((file.sent as f32 / file.size as f32).clamp(0.02, 1.0))
@@ -641,13 +767,18 @@ impl MailWindow {
             .rounded(px(8.0))
             .bg(rgba(th.chip))
             .text_size(px(13.0))
-            .when(file.link().is_some(), |d| {
+            .when_some(file.link().map(str::to_owned), |d, link| {
                 let text = if file.onedrive {
                     tr!("compose-onedrive-tip")
                 } else {
                     tr!("compose-drive-tip")
                 };
+                // A click opens the file on the drive, to check it is the
+                // right one.
                 d.tooltip(tip(text, th))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.chip_hover())))
+                    .on_click(move |_, _, cx| cx.open_url(&link))
             })
             .child(icon("cloud", th.accent, 18.0))
             .child(
@@ -671,7 +802,10 @@ impl MailWindow {
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
                     .tooltip(tip(tr!("compose-remove-attachment"), th))
-                    .on_click(cx.listener(move |this, _, _, cx| this.remove_drive_file(ix, cx)))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.remove_drive_file(ix, cx)
+                    }))
                     .child(icon("close", th.text_dim, 16.0)),
             )
             .children(progress.map(|done| {

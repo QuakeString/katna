@@ -35,6 +35,9 @@ use crate::autoconfig::{dns, http};
 use crate::net::Tls;
 use crate::{Error, Result};
 
+mod company;
+pub use company::Company;
+
 /// Largest remote image fetched for a message.
 pub const MAX_IMAGE: usize = 8 * 1024 * 1024;
 /// Largest sender picture: BIMI allows 32 KB; icons are small.
@@ -203,6 +206,11 @@ impl Pictures {
                 page
             }
             Err(err) => {
+                // A site whose certificate is refused answered all the
+                // same: not asked again until the answer is old.
+                if matches!(err, Error::Tls(_)) {
+                    *reached = true;
+                }
                 tracing::debug!(url, %err, "page not read");
                 None
             }
@@ -216,6 +224,11 @@ impl Pictures {
                 body
             }
             Err(err) => {
+                // A site whose certificate is refused answered all the
+                // same: not asked again until the answer is old.
+                if matches!(err, Error::Tls(_)) {
+                    *reached = true;
+                }
                 tracing::debug!(url, %err, "picture not fetched");
                 None
             }

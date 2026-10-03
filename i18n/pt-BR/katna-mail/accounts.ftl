@@ -14,6 +14,18 @@ accounts-unified-switch-detail = “Todas as contas” fica no topo do painel de
 accounts-row = Contas
 accounts-row-detail = O painel de pastas e o menu de contas mostram as contas nesta ordem; a primeira é a padrão. Remover uma conta exclui a cópia dos e-mails dela que o Katna tem neste computador. Os e-mails continuam no servidor.
 accounts-none = Nenhuma conta ainda.
+accounts-pop3-row = E-mails no servidor
+accounts-pop3-row-detail = Contas POP3 baixam os e-mails para este computador. Escolha o que acontece depois com a cópia no servidor.
+accounts-pop3-with-katna = Manter até eu excluir no Katna
+accounts-pop3-at-once = Excluir assim que for baixado
+accounts-pop3-after-days = { $count ->
+    [one] Excluir depois de { $count } dia
+    [many] Excluir depois de { $count } de dias
+   *[other] Excluir depois de { $count } dias
+}
+accounts-pop3-never = Nunca excluir
+accounts-pop3-days-less = Menos dias
+accounts-pop3-days-more = Mais dias
 accounts-kind-imported = Importada
 accounts-picture-reset = Usar imagem da área de trabalho
 accounts-picture-change = Alterar imagem
@@ -74,6 +86,9 @@ accounts-confirm-word = excluir
 accounts-confirm-placeholder = Digite “{ accounts-confirm-word }”
 accounts-confirm-prompt = Para confirmar, digite “{ accounts-confirm-word }”:
 accounts-cancel = Cancelar
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = Exclui os e-mails e anexos que o Katna baixou, as imagens dos remetentes e o índice de pesquisa, e depois baixa de novo os e-mails recentes. Contas, configurações e e-mails que estão só neste computador continuam.
 reset-cache-button = Redefinir cache
 reset-cache-title = Redefinir o cache?

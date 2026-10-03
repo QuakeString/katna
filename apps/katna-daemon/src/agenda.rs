@@ -483,6 +483,37 @@ macro_rules! agenda_interface {
                 Ok(())
             }
 
+            async fn place_task(
+                &self,
+                #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+                id: String,
+                list: i64,
+                after: String,
+            ) -> fdo::Result<()> {
+                let row = task_id(&id)?;
+                let after = if after.is_empty() {
+                    None
+                } else {
+                    Some(task_id(&after)?)
+                };
+                let found = {
+                    let mut store = self.daemon.store();
+                    let known = store.task_lists().map_err(CommandError::from)?;
+                    if !known.iter().any(|l| l.id == list) {
+                        return Err(fdo::Error::UnknownObject(format!("no task list {list}")));
+                    }
+                    store
+                        .place_task(row, list, after)
+                        .map_err(CommandError::from)?
+                };
+                if !found {
+                    return Err(fdo::Error::UnknownObject(format!("no task {id}")));
+                }
+                tracing::info!(id = row, list, "task placed");
+                self.changed_here(&emitter).await?;
+                Ok(())
+            }
+
             async fn add_task_list(
                 &self,
                 #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,

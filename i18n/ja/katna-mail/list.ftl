@@ -14,13 +14,13 @@ tab-other = その他
 tab-inbox = 受信トレイ
 tab-newsletters = ニュースレター
 tab-notifications = 通知
-tab-new = 新着 { $count } 件
 tab-provider-other = Katna が分類
 
 ## Mail list: toolbar
 
 list-select = 選択
 list-refresh = 更新
+list-back-to-top = 先頭に戻る
 list-checking = 新着メールを確認中…
 list-more = その他
 list-mark-read = 既読にする
@@ -39,6 +39,7 @@ list-results = 「{ $query }」の検索結果
 list-results-corrected = 「{ $query }」の検索結果を表示しています
 list-search-instead = 「{ $query }」で検索する
 list-files-more = +{ $count }
+list-replied = 返信済み
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -237,6 +238,8 @@ menu-add-note = メモを追加
 menu-print-all = すべて印刷
 menu-new-window = 新しいウィンドウで開く
 menu-move-to = 移動
+menu-follow-up = フォローアップ
+menu-more = その他
 menu-move-to-heading = 移動先:
 menu-find-from = { $name } からのメールを検索
 

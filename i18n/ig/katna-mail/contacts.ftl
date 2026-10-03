@@ -39,6 +39,12 @@ contacts-account-failed = Enweghị ike ịgụ kọntaktị.
 # $reason is the server's own words, in English.
 contacts-account-error = Enweghị ike ịgụ kọntaktị: { $reason }
 contacts-account-none = Ahụghị akwụkwọ adreesị ọ bụla
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Ahụghị akwụkwọ adreesị ọ bụla: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } na-egosi kọntaktị naanị Katna banyere na { $provider }.
+contacts-account-sign-in-with = Banye na { $provider }
 contacts-account-looking = Na-achọ kọntaktị…
 contacts-account-try-again = Nwaa ọzọ
 contacts-account-try-again-tooltip = Lelee kọntaktị akaụntụ a ọzọ ugbu a
@@ -82,7 +88,7 @@ contacts-print-none = Enweghị kọntaktị ị ga-ebipụta
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Ụbọchị ọmụmụ: { $day }
 contacts-print-nickname = Aha ọkpụkpọ: { $name }
-contacts-create = Mepụta kọntaktị
+contacts-create = Kọntaktị ọhụrụ
 
 ## Search and the list
 

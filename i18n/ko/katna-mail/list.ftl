@@ -14,13 +14,13 @@ tab-other = 기타
 tab-inbox = 받은편지함
 tab-newsletters = 뉴스레터
 tab-notifications = 알림
-tab-new = 새 메일 { $count }개
 tab-provider-other = Katna에서 분류
 
 ## Mail list: toolbar
 
 list-select = 선택
 list-refresh = 새로고침
+list-back-to-top = 맨 위로
 list-checking = 새 메일을 확인하는 중…
 list-more = 더보기
 list-mark-read = 읽음으로 표시
@@ -39,6 +39,7 @@ list-results = “{ $query }” 검색결과
 list-results-corrected = “{ $query }” 검색결과를 표시합니다
 list-search-instead = 대신 “{ $query }”(으)로 검색
 list-files-more = +{ $count }
+list-replied = 답장함
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -237,6 +238,8 @@ menu-add-note = 메모 추가
 menu-print-all = 모두 인쇄
 menu-new-window = 새 창에서 열기
 menu-move-to = 이동
+menu-follow-up = 후속 조치
+menu-more = 더보기
 menu-move-to-heading = 이동할 위치:
 menu-find-from = { $name }님이 보낸 메일 찾기
 

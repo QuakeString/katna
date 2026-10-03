@@ -3,16 +3,20 @@
 //! Desktop integration: portals, desktop detection, settings, tray and badges.
 //! See `docs/ARCHITECTURE.md` §13.2 and §15.
 
+pub mod blur;
 pub mod colors;
 #[cfg(windows)]
 pub mod credentials;
 pub mod dbusmenu;
+pub mod file_menus;
 pub mod font;
 pub mod icon;
 pub mod launcher;
 #[cfg(windows)]
 pub mod mail_handler;
 pub mod mimeapps;
+pub mod motion;
+pub mod sound;
 #[cfg(windows)]
 pub mod toasts;
 #[cfg(not(windows))]

@@ -8,8 +8,7 @@ about-tooltip = Katna பற்றி
 about-tagline = Linux டெஸ்க்டாப்புக்கான அஞ்சலும் கேலெண்டரும்
 about-whats-new = புதிதாக என்ன உள்ளது
 
-## Updates, in a box under the version in About (only in packages that
-## update themselves).
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
 
 about-update-not-checked = புதுப்பிப்புகள் இன்னும் சரிபார்க்கப்படவில்லை
 about-update-checking = புதுப்பிப்புகளைச் சரிபார்க்கிறது…
@@ -70,6 +69,7 @@ about-credit-resvg = SVG படங்கள்
 about-credit-jiff = தேதிகளும் நேர மண்டலங்களும்
 about-credit-spellbook = எழுத்துப்பிழை சரிபார்ப்பு, Helix எடிட்டரிலிருந்து
 about-credit-smol = பல வேலைகளை ஒரே நேரத்தில் செய்தல்
+about-credit-color-schemes = உள்ளமைந்த வண்ணத் திட்டங்களின் வண்ணத் தொகுப்புகள்
 about-all-libraries = Katna பயன்படுத்தும் எல்லா நூலகங்களும் ({ $count })
 about-library-authors = உருவாக்கியவர்கள்: { $authors }
 about-license = Katna என்பது GNU GPL பதிப்பு 3 அல்லது அதற்குப் பிந்தையதன் கீழ் உள்ள கட்டற்ற மென்பொருள்.
@@ -127,6 +127,20 @@ onboarding-density-default = இயல்புநிலை
 onboarding-density-compact = கச்சிதமானது
 onboarding-continue = தொடர்
 
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna கணக்குடன் இன்னும் அதிகம் பெறுங்கள்
+onboarding-katna-lead = இது விருப்பத்தேர்வு. இது Katna-வின் ஆன்லைன் அம்சங்களை இயக்கும்; பின்னர் அமைப்புகள் > சந்தா என்பதிலும் உருவாக்கலாம்.
+onboarding-katna-receipts-title = படித்த ரசீதுகள்
+onboarding-katna-receipts-text = நீங்கள் அனுப்பும் அஞ்சலை மற்றவர்கள் எப்போது திறக்கிறார்கள் என்று பாருங்கள்.
+onboarding-katna-links-title = இணைப்புக் கண்காணிப்பு
+onboarding-katna-links-text = உங்கள் அஞ்சலில் உள்ள எந்த இணைப்புகள் கிளிக் செய்யப்படுகின்றன என்று பாருங்கள்.
+onboarding-katna-activity-title = செயல்பாடு
+onboarding-katna-activity-text = நீங்கள் அனுப்பிய அனைத்தின் திறப்புகளும் கிளிக்குகளும் ஒரே இடத்தில்.
+onboarding-katna-translate-title = தானியங்கு மொழிபெயர்ப்பு
+onboarding-katna-translate-text = பிற மொழிகளில் எழுதப்பட்ட அஞ்சலை உங்கள் மொழியில் படியுங்கள்.
+onboarding-katna-private = இதற்கு அதன் சொந்தக் கடவுச்சொல் உண்டு. உங்கள் அஞ்சல் உள்நுழைவு விவரங்கள் இந்தக் கணினியை விட்டு ஒருபோதும் வெளியேறாது.
+
 ## First run: done
 
 onboarding-ready-title = எல்லாம் தயார்
@@ -170,7 +184,7 @@ tour-search-text = தேடல் ஆஃப்லைனிலும் வே�
 tour-menu-title = ஃபோல்டர்களைக் காட்டு அல்லது மறை
 tour-menu-text = இந்தப் பொத்தான் ஃபோல்டர் பட்டியலை மடக்கி மறைக்கும். அது மறைந்திருக்கும்போது, ஃபோல்டர்களைப் பார்க்க இடதுபுறம் உள்ள அஞ்சல் மீது சுட்டியை வையுங்கள்.
 tour-apps-title = உங்கள் செயலிகள்
-tour-apps-text = இப்போது அஞ்சல் இங்கே உள்ளது. கேலெண்டர், தொடர்புகள், பணிகள், குறிப்புகள், ஊட்டங்கள் ஆகியவை இந்தப் பட்டையில் அதனுடன் சேரும்.
+tour-apps-text = கேலெண்டர், தொடர்புகள், பணிகள், குறிப்புகள், ஃபைல்கள் ஆகியவற்றுக்கு அருகில் அஞ்சல் இங்கே இருக்கும்.
 tour-tabs-title = இன்பாக்ஸ் தாவல்கள்
 tour-tabs-text = புதிய அஞ்சல் முதன்மை, விளம்பரங்கள், சமூகம், புதுப்பிப்புகள், மன்றங்கள் எனப் பிரிக்கப்படும். தாவல்களை விரைவு அமைப்புகளில் முடக்கலாம்.
 tour-list-title = உங்கள் மெசேஜ்கள்
@@ -196,12 +210,21 @@ crash-view = அறிக்கையைப் பார்
 crash-view-tooltip = இந்தக் கணினியில் சேமித்த அறிக்கையைத் திற
 crash-copy = அறிக்கையை நகலெடு
 crash-close = மூடு
+
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $address } இல் மீண்டும் உள்நுழையுமாறு { $provider } கேட்கிறது.
 sign-in-again-button = உள்நுழை
 sign-in-again-tooltip = உங்கள் உலாவியில் { $provider } உள்நுழைவுப் பக்கத்தைத் திற
 sign-in-again-waiting = உங்கள் உலாவிக்காகக் காத்திருக்கிறது…
 sign-in-again-close = மூடு
+google-api-off = Katna-வின் Google Cloud ப்ராஜெக்ட்டில் { $api } முடக்கப்பட்டுள்ளது.
+google-api-turn-on = இயக்கு
+google-api-turn-on-tooltip = { $api } ஐ இயக்க Google Cloud ஐத் திறந்து, பின்னர் மீண்டும் முயல் என்பதை அழுத்துங்கள்
 sign-in-again-done = { $address } இல் மீண்டும் உள்நுழைந்தது. உங்கள் அஞ்சலைப் பெறுகிறது…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] இந்த உரையாடலை நீக்கியவை ஃபோல்டருக்கு நகர்த்தவா?

@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Katna Mail གིས་གཏང་།
 setup-tagline = ཁྱོད་ཀྱི་གློག་རིག་གུ་རང་སྡོད་མི་ མགྱོགས་དྲགས་ སྒེར་གྱི་གློག་འཕྲིན།
 setup-update-where = { $path } ནང་གི་ Katna Mail དུས་མཐུན་བཟོཝ་ཨིན། ཁྱོད་ཀྱི་གློག་འཕྲིན་དང་ སྒྲིག་སྟངས་ མགྱོགས་ཐབས་ཚུ་ ཧེ་མ་བཟུམ་སྡོདཔ་ཨིན།
 setup-for = གཞི་བཙུགས་འབད་ས

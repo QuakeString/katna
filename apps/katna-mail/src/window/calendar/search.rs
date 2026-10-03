@@ -10,7 +10,8 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use gpui::{
-    AnyElement, ClickEvent, Context, Entity, FontWeight, Task, Window, div, prelude::*, rgba,
+    AnyElement, ClickEvent, Context, Entity, FontWeight, MouseButton, Task, Window, div,
+    prelude::*, rgba,
 };
 use jiff::Zoned;
 use jiff::tz::TimeZone;
@@ -270,7 +271,7 @@ impl MailWindow {
         let coming: Vec<&Occurrence> = found.coming.iter().filter(|o| !hidden(o)).collect();
         let past: Vec<&Occurrence> = found.past.iter().filter(|o| !hidden(o)).collect();
         if coming.is_empty() && past.is_empty() {
-            return crate::widgets::placeholder(&tr!("calendar-search-none"), th);
+            return self.placeholder(tr!("calendar-search-none"), th);
         }
         let today = Zoned::now().with_time_zone(self.tz.clone()).date();
         let mut rows: Vec<AnyElement> = self.found_days(&coming, today, th, cx);
@@ -316,7 +317,12 @@ impl MailWindow {
             .map(|(day, events)| {
                 let events = events.into_iter().map(|occurrence| {
                     let open = occurrence.clone();
+                    let menu = self.calendar_menu_on(
+                        super::menu::CalTarget::Event(Box::new(occurrence.clone())),
+                        cx,
+                    );
                     self.schedule_event(&format!("found-{day}"), occurrence, th)
+                        .on_mouse_down(MouseButton::Right, menu)
                         .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                             cx.stop_propagation();
                             this.open_found(open.clone(), event.position(), cx);

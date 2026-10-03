@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = إنشاء
+tasks-create = مهمة جديدة
 tasks-all = كل المهام
 tasks-today = اليوم
 tasks-starred = المميّزة بنجمة
@@ -24,6 +24,12 @@ tasks-account-failed = تعذّرت قراءة قوائم المهام.
 # $reason is the server's own words, in English.
 tasks-account-error = تعذّرت قراءة قوائم المهام: { $reason }
 tasks-account-none = لم يُعثر على أي قائمة مهام
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = لم يُعثر على أي قائمة مهام: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = لا يعرض { $provider } المهام إلا لـ Katna المسجَّل دخوله باستخدام { $provider }.
+tasks-account-sign-in-with = تسجيل الدخول باستخدام { $provider }
 tasks-account-looking = جارٍ البحث عن قوائم المهام…
 tasks-account-try-again = إعادة المحاولة
 tasks-account-try-again-tooltip = التحقق من مهام هذا الحساب مجددًا الآن
@@ -116,4 +122,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = لم تعد هذه الرسالة موجودة هنا.
 tasks-toast-list-deleted = تم حذف القائمة
 tasks-toast-moved = تم النقل إلى { $list }
+# A task dragged to another place in its own list.
+tasks-toast-placed = تم نقل المهمة
 tasks-toast-rescheduled = أُعيدت جدولة المهمة

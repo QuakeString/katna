@@ -46,6 +46,7 @@ compose-sent-archived = Verzonden en gearchiveerd
 compose-sent = Bericht verzonden
 compose-discarded = Concept verwijderd
 compose-draft-saved = Concept opgeslagen
+compose-draft-saving = Opslaan…
 compose-draft-failed = Het concept kon niet worden opgeslagen: { $error }
 compose-draft-not-opened = Het concept kon niet worden geopend.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = Het concept kon niet worden geopend.
 compose-picker-insert = Invoegen
 compose-picker-attach = Bijvoegen
 compose-file-too-large = { $name } is te groot: een bericht kan maximaal { $limit } bevatten.
+compose-forward-files-missing = De bestanden van het doorgestuurde bericht zijn niet gedownload, dus ze zijn niet bijgevoegd.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Bijlage verwijderen
+compose-attachment-open-tip = Openen om te controleren
 compose-attachments-total = { $count ->
     [one] { $count } bestand, { $size }
    *[other] { $count } bestanden, { $size }
@@ -78,6 +81,7 @@ compose-drive-share-link = Delen met link
 compose-drive-send-without = Verzenden zonder te delen
 compose-drive-share-cancel = Annuleren
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } is groter dan { $limit }, dus het bestand gaat naar je OneDrive en het bericht bevat een link.
 compose-onedrive-tip = In je OneDrive; het bericht bevat een link
 compose-onedrive-allow = OneDrive toestaan
@@ -89,8 +93,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive kan de bestanden niet delen met { $addresses }. In plaats daarvan kan iedereen met de link ze openen.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Zet bestanden hier neer
 compose-drop-here = Hier neerzetten
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = Opmaak behouden
 compose-paste-table = Tabel
 compose-paste-picture = Afbeelding
@@ -104,6 +112,9 @@ compose-encrypt = Versleutelen
 compose-encrypted = Versleuteld: alleen de ontvangers kunnen het lezen
 compose-sign = Ondertekenen
 compose-signed = Ondertekend: ontvangers kunnen controleren dat het van jou komt
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = Openen en klikken volgen
 compose-tracked = Gevolgd: je ziet wanneer elke ontvanger het opent of een link volgt
 compose-track-clicks = Linkklikken volgen (platte tekst kan geen openingen tonen)
@@ -136,6 +147,9 @@ send-check-subject-title = Verzenden zonder onderwerp?
 send-check-subject-text = Dit bericht heeft geen onderwerp.
 send-check-add-subject = Onderwerp toevoegen
 send-check-send-anyway = Toch verzenden
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = Geen geldig e-mailadres
 recipient-show-address = Adres tonen
 recipient-remove = Verwijderen

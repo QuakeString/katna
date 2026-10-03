@@ -22,3 +22,30 @@ search-event-in-days =
 search-reply-all = Rispondi a tutti
 search-copy-address = Copia indirizzo
 search-find-mail = Trova posta
+
+## Results
+
+search-category-mail = Posta
+search-category-people = Persone
+search-category-tasks = Attività
+search-category-events = Eventi
+search-mail-from = Da { $sender }
+search-no-subject = (nessun oggetto)
+search-task-in = In { $list }
+search-event-at = { $when } · { $place }
+search-event-in = { $when } · { $calendar }
+search-event-now = Ora
+search-event-today = Oggi
+search-event-tomorrow = Domani
+search-event-in-days =
+    { $count ->
+        [one] Tra { $count } giorno
+        [many] Tra { $count } di giorni
+       *[other] Tra { $count } giorni
+    }
+
+## Buttons on a result in KRunner
+
+search-reply-all = Rispondi a tutti
+search-copy-address = Copia indirizzo
+search-find-mail = Trova posta

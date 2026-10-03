@@ -50,6 +50,9 @@ enum Request {
     Uids(Reply<Vec<u32>>),
     Status(String, Reply<FolderStatus>),
     CreateFolder(String, Reply<()>),
+    RenameFolder(String, String, Reply<()>),
+    DeleteFolder(String, Reply<()>),
+    GmailLabel(Vec<u32>, String, bool, Reply<()>),
     Append(String, Vec<u8>, Flags, Reply<()>),
     PollChanges(Reply<Vec<FolderChange>>),
     GmailSearch(u32, String, Reply<Option<Vec<u32>>>),
@@ -152,6 +155,24 @@ impl Connection {
     pub async fn create_folder(&self, folder: &str) -> Result<()> {
         let folder = folder.to_owned();
         self.call(|reply| Request::CreateFolder(folder, reply))
+            .await
+    }
+
+    pub async fn rename_folder(&self, from: &str, to: &str) -> Result<()> {
+        let (from, to) = (from.to_owned(), to.to_owned());
+        self.call(|reply| Request::RenameFolder(from, to, reply))
+            .await
+    }
+
+    pub async fn delete_folder(&self, folder: &str) -> Result<()> {
+        let folder = folder.to_owned();
+        self.call(|reply| Request::DeleteFolder(folder, reply))
+            .await
+    }
+
+    pub async fn gmail_label(&self, uids: &[u32], label: &str, add: bool) -> Result<()> {
+        let (uids, label) = (uids.to_vec(), label.to_owned());
+        self.call(|reply| Request::GmailLabel(uids, label, add, reply))
             .await
     }
 
@@ -285,6 +306,18 @@ impl MailBackend for Connection {
         Connection::create_folder(self, folder).await
     }
 
+    async fn rename_folder(&mut self, from: &str, to: &str) -> Result<()> {
+        Connection::rename_folder(self, from, to).await
+    }
+
+    async fn delete_folder(&mut self, folder: &str) -> Result<()> {
+        Connection::delete_folder(self, folder).await
+    }
+
+    async fn gmail_label(&mut self, uids: &[u32], label: &str, add: bool) -> Result<()> {
+        Connection::gmail_label(self, uids, label, add).await
+    }
+
     async fn append_with_flags(
         &mut self,
         folder: &str,
@@ -385,6 +418,15 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
             Request::Status(folder, reply) => answer(&reply, backend.status(&folder).await),
             Request::CreateFolder(folder, reply) => {
                 answer(&reply, backend.create_folder(&folder).await)
+            }
+            Request::RenameFolder(from, to, reply) => {
+                answer(&reply, backend.rename_folder(&from, &to).await)
+            }
+            Request::DeleteFolder(folder, reply) => {
+                answer(&reply, backend.delete_folder(&folder).await)
+            }
+            Request::GmailLabel(uids, label, add, reply) => {
+                answer(&reply, backend.gmail_label(&uids, &label, add).await)
             }
             Request::Append(folder, message, flags, reply) => answer(
                 &reply,

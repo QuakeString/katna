@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Checkboxes that tick"
+text = """
+Every checkbox in Katna Mail is now the same size as the round buttons
+beside it. Its tick draws itself in when you check it and wipes away when
+you clear it, in Settings, the mail list, Calendar, Contacts, Notes and
+dialogs alike.
+"""

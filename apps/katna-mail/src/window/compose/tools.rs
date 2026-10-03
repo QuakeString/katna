@@ -53,8 +53,14 @@ pub(in crate::window) enum Popup {
     Emoji,
     Link,
     Signature,
+    /// The signatures, opened from the faint tag beside the one in the
+    /// text.
+    SignatureTag,
     /// The templates to put in the message.
     Templates,
+    /// The paperclip of the chat view's reply box: pictures, files, a
+    /// template or another signature.
+    ChatAttach,
     /// Asks the name to save the message under as a template.
     SaveTemplate,
     More,
@@ -124,7 +130,7 @@ pub(in crate::window) struct Dialog {
     link_url: Entity<TextInput>,
     /// The link dialog changes a link that is there.
     editing_link: bool,
-    emoji_search: Entity<TextInput>,
+    pub(super) emoji_search: Entity<TextInput>,
     emoji_group: usize,
     time: Entity<TextInput>,
     /// The month the date picker shows.
@@ -155,7 +161,11 @@ impl Dialog {
             editing_link: false,
             emoji_search: input(tr!("compose-tool-emoji-search"), cx),
             emoji_group: 0,
-            time: input(schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0)), cx),
+            time: {
+                let time = input(schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0)), cx);
+                time.update(cx, |t, _| t.set_stepper(Some(schedule::time_stepper())));
+                time
+            },
             month: today,
             day: today,
             grid: (0, 0),
@@ -326,6 +336,36 @@ pub(super) fn format_button(
         ))
 }
 
+/// A button of the chat reply box's formatting bar: roomier than
+/// [`format_button`], as the bar has few.
+fn chat_format_button(
+    id: &'static str,
+    name: &'static str,
+    active: bool,
+    th: &Theme,
+) -> Stateful<gpui::Div> {
+    div()
+        .id(id)
+        .flex_none()
+        .size(px(36.0))
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded(px(8.0))
+        .cursor_pointer()
+        .when(active, |d| d.bg(rgba(format_active(th))))
+        .hover(|s| s.bg(rgba(th.hover)))
+        .child(icon(
+            name,
+            if active {
+                th.nav_selected_text
+            } else {
+                th.text_dim
+            },
+            18.0,
+        ))
+}
+
 /// The formatting bar's background: the card's color tinted with the
 /// accent, so it stands apart from the text under it.
 pub(super) fn format_bar_bg(th: &Theme) -> u32 {
@@ -334,7 +374,7 @@ pub(super) fn format_bar_bg(th: &Theme) -> u32 {
 
 /// A format that is on (Bold, a list, the alignment): the selection color,
 /// stronger than the bar's tint.
-fn format_active(th: &Theme) -> u32 {
+pub(super) fn format_active(th: &Theme) -> u32 {
     mix(th.surface, th.accent, if th.dark { 0.42 } else { 0.30 })
 }
 
@@ -357,6 +397,43 @@ pub(super) fn format_dropdown(id: &'static str, th: &Theme) -> Stateful<gpui::Di
         .hover(|s| s.bg(rgba(th.hover)))
 }
 
+/// [`format_dropdown`], as tall and round as the chat bar's buttons when
+/// `tall`.
+fn tall_dropdown(id: &'static str, tall: bool, th: &Theme) -> Stateful<gpui::Div> {
+    format_dropdown(id, th).when(tall, |d| {
+        d.h(px(36.0)).pl(px(8.0)).pr(px(4.0)).rounded(px(8.0))
+    })
+}
+
+/// The colour button's face: a rounded square with the text colour on its
+/// left half (the theme's text when none is set) and the highlight on its
+/// right, crossed out when there is none. Both are `0xRRGGBB`, as styles
+/// keep them. Compose's bar, the chat's and the signature editor share it.
+pub(super) fn color_swatch(color: Option<u32>, background: Option<u32>, th: &Theme) -> gpui::Div {
+    let opaque = |c: u32| (c << 8) | 0xff;
+    let color = color.map_or(th.text, opaque);
+    let highlight = div()
+        .flex_1()
+        .h_full()
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded_r(px(4.0));
+    div()
+        .flex_none()
+        .size(px(20.0))
+        .flex()
+        .flex_row()
+        .rounded(px(5.0))
+        .border_1()
+        .border_color(rgba(fade(th.text, 0.22)))
+        .child(div().flex_1().h_full().rounded_l(px(4.0)).bg(rgba(color)))
+        .child(match background {
+            Some(bg) => highlight.bg(rgba(opaque(bg))),
+            None => highlight.child(icon("no-fill", fade(th.text_dim, 0.6), 12.0)),
+        })
+}
+
 pub(super) fn separator(th: &Theme) -> gpui::Div {
     div()
         .flex_none()
@@ -370,8 +447,13 @@ pub(super) fn separator(th: &Theme) -> gpui::Div {
 /// kept inside the window.
 /// The width of the Send row taken by its padding, Send and the bin.
 const ACTIONS_FIXED: f32 = 200.0;
-/// The width of each of its other buttons.
-const TOOL_WIDTH: f32 = 42.0;
+/// The width of each of its other buttons, on their tray.
+const TOOL_WIDTH: f32 = TRAY_TOOL;
+/// A writing tool on the tray beside Send: a little smaller than a
+/// free-standing icon button, so the tray stays slim.
+pub(super) const TRAY_TOOL: f32 = 34.0;
+/// Its icons.
+pub(super) const TRAY_ICON: f32 = 18.0;
 
 /// Room between the floating formatting bar and the Send row.
 const FORMAT_BAR_GAP: f32 = 4.0;
@@ -389,6 +471,27 @@ pub(super) fn below(popup: impl IntoElement) -> AnyElement {
         ),
     )
     .with_priority(2)
+    .into_any_element()
+}
+
+/// `popup` just under its parent's bottom right corner, its right edge
+/// lined up with the parent's.
+pub(in crate::window) fn below_end(popup: impl IntoElement) -> AnyElement {
+    below_end_over(popup, 2)
+}
+
+/// [`below_end`] over a card itself drawn on top, at `priority`.
+pub(in crate::window) fn below_end_over(popup: impl IntoElement, priority: usize) -> AnyElement {
+    deferred(
+        div().absolute().bottom_0().right_0().child(
+            anchored()
+                .anchor(Anchor::TopRight)
+                .offset(point(px(0.0), px(4.0)))
+                .snap_to_window_with_margin(px(8.0))
+                .child(div().occlude().child(popup)),
+        ),
+    )
+    .with_priority(priority)
     .into_any_element()
 }
 
@@ -571,12 +674,14 @@ impl MailWindow {
                 d.child(above(self.render_schedule_menu(th, cx)))
             });
         let tool = |id: &'static str, name: &'static str, label: String| {
-            icon_button(id, name, 20.0, th).tooltip(tip(label, th))
+            icon_button(id, name, TRAY_ICON, th)
+                .size(px(TRAY_TOOL))
+                .tooltip(tip(label, th))
         };
         let format = icon_button_colored(
             "compose-format",
             "format-text",
-            20.0,
+            TRAY_ICON,
             if compose.format_bar {
                 th.nav_selected_text
             } else {
@@ -584,6 +689,7 @@ impl MailWindow {
             },
             th,
         )
+        .size(px(TRAY_TOOL))
         .when(compose.format_bar, |d| d.bg(rgba(format_active(th))))
         .tooltip(tip(tr!("compose-tool-formatting"), th))
         .on_click(cx.listener(|this, _, window, cx| {
@@ -613,6 +719,30 @@ impl MailWindow {
             .when(open(Popup::Emoji), |d| {
                 d.child(above(self.render_emoji_picker(th, cx)))
             });
+        // Writing help: a reply written while it is empty, then the
+        // selection or all the user wrote rephrased.
+        let sparkle = self.ai_allowed().then(|| {
+            let (name, label, works) = self.sparkle_look(cx);
+            icon_button_colored(
+                "compose-rephrase-all",
+                name,
+                TRAY_ICON,
+                if compose.rephrase.is_some() {
+                    th.accent
+                } else {
+                    th.text_dim
+                },
+                th,
+            )
+            .size(px(TRAY_TOOL))
+            .tooltip(tip(label, th))
+            .when(!works && compose.rephrase.is_none(), |d| {
+                d.opacity(0.4).cursor_default()
+            })
+            // The text keeps its selection.
+            .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_click(cx.listener(|this, _, window, cx| this.toggle_rephrase(window, cx)))
+        });
         let more = div()
             .relative()
             .child(
@@ -625,24 +755,37 @@ impl MailWindow {
         // A narrow row keeps the tools that fit beside Send and the bin,
         // dropping the calendar, photo, emoji and link buttons in turn;
         // links still come with Ctrl+K. Formatting, attaching, the
-        // signature, templates and More always stay.
+        // signature, templates, More and writing help always stay.
         let pill = if archives { 24.0 } else { 0.0 };
-        let fit = ((width - ACTIONS_FIXED - pill) / TOOL_WIDTH).floor() as i32 - 5;
+        let always = if sparkle.is_some() { 6 } else { 5 };
+        let fit = ((width - ACTIONS_FIXED - pill) / TOOL_WIDTH).floor() as i32 - always;
         let (link, emoji_fits, image, event) = (fit >= 1, fit >= 2, fit >= 3, fit >= 4);
-        div()
+        // The tools sit on one soft tray, grouped: writing (formatting,
+        // writing help), adding (files, link, emoji, photo, event), then
+        // signature, templates and More, with faint lines between groups.
+        let gap = || {
+            div()
+                .flex_none()
+                .mx(px(3.0))
+                .w(px(1.0))
+                .h(px(16.0))
+                .bg(rgba(th.faint_line(super::FAINT_LINE)))
+        };
+        let tray = div()
             .flex_none()
-            .h(px(60.0))
-            .px(px(16.0))
+            .p(px(2.0))
             .flex()
             .flex_row()
             .items_center()
-            .gap(px(2.0))
-            .child(send)
-            .child(div().w(px(8.0)))
+            .rounded_full()
+            .bg(rgba(th.tray()))
             .child(format)
+            .children(sparkle)
+            .child(gap())
             .child(
-                tool("compose-attach", "attachment", tr!("compose-tool-attach"))
-                    .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
+                tool("compose-attach", "attachment", tr!("compose-tool-attach")).on_click(
+                    cx.listener(|this, _, window, cx| this.open_compose_picker(window, cx)),
+                ),
             )
             .when(link, |d| {
                 d.child(
@@ -667,9 +810,22 @@ impl MailWindow {
                     ),
                 )
             })
+            .child(gap())
             .child(self.render_signature_button(th, cx))
             .child(self.render_templates_button(th, cx))
-            .child(more)
+            .child(more);
+        div()
+            .flex_none()
+            .h(px(60.0))
+            .pl(px(14.0))
+            .pr(px(12.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(2.0))
+            .child(send)
+            .child(div().w(px(8.0)))
+            .child(tray)
             .child(div().flex_1())
             .when(
                 compose.mode == Mode::Window && self.writing.popout_server_frame,
@@ -689,13 +845,15 @@ impl MailWindow {
             .children(self.render_popup_scrim(cx))
             .children(self.render_context_popup(th, cx))
             .children(self.render_hint(th, cx))
+            .children(self.render_rephrase_button(th, cx))
+            .children(self.render_rephrase(th, cx))
             .children(self.render_subject_grammar(th, cx))
             .children(self.render_link_bubble(th, cx))
             .into_any_element()
     }
 
     /// Catches a click anywhere outside the open menu, closing it.
-    fn render_popup_scrim(&self, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(super) fn render_popup_scrim(&self, cx: &mut Context<Self>) -> Option<AnyElement> {
         let popup = self.compose.as_ref()?.popup.as_ref()?;
         // The dialogs close with their own buttons; the cards of fixes when
         // the pointer leaves them, so the text under them still takes it.
@@ -973,7 +1131,7 @@ impl MailWindow {
                         // scroll sideways.
                         .rounded_full()
                         .border_1()
-                        .border_color(rgba(th.divider))
+                        .border_color(rgba(th.outline))
                         .bg(rgba(format_bar_bg(th)))
                         .shadow(crate::widgets::elevation(th, 1.0))
                         .overflow_x_scroll()
@@ -987,7 +1145,12 @@ impl MailWindow {
         )
     }
 
-    fn render_format_bar(&self, th: &Theme, width: f32, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_format_bar(
+        &self,
+        th: &Theme,
+        width: f32,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
@@ -1011,136 +1174,10 @@ impl MailWindow {
         let open = |p: Popup| popup.as_ref() == Some(&p);
         let wide = width >= 660.0;
 
-        let font = div()
-            .relative()
-            .child(
-                format_dropdown("format-font", th)
-                    .w(px(100.0))
-                    .tooltip(tip(tr!("compose-tool-font"), th))
-                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Font, cx)))
-                    .child(
-                        div()
-                            .flex_1()
-                            .min_w_0()
-                            .truncate()
-                            .child(style.font.label()),
-                    )
-                    .child(icon("drop-down", th.text_dim, 18.0)),
-            )
-            .when(open(Popup::Font), |d| {
-                let items = Font::ALL.into_iter().enumerate().map(|(ix, font)| {
-                    menu_item(("font", ix), font.label(), th)
-                        .when(font == style.font, |d| {
-                            d.child(div().flex_1())
-                                .child(icon("check", th.text_dim, 18.0))
-                        })
-                        .on_click(self.on_body(cx, move |e, cx| e.set_font(font, cx)))
-                });
-                d.child(above(menu(th).w(px(200.0)).children(items)))
-            });
-        let size = div()
-            .relative()
-            .child(
-                format_dropdown("format-size", th)
-                    .tooltip(tip(tr!("compose-tool-size"), th))
-                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Size, cx)))
-                    .child(icon("text-size", th.text_dim, 18.0))
-                    .child(icon("drop-down", th.text_dim, 18.0)),
-            )
-            .when(open(Popup::Size), |d| {
-                let items = Size::ALL.into_iter().enumerate().map(|(ix, size)| {
-                    div()
-                        .id(("size", ix))
-                        .min_h(px(32.0))
-                        .px(px(16.0))
-                        .flex()
-                        .flex_row()
-                        .items_center()
-                        .gap(px(12.0))
-                        .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
-                        .child(div().w(px(18.0)).when(size == style.size, |d| {
-                            d.child(icon("check", th.text_dim, 18.0))
-                        }))
-                        .child(div().text_size(px(14.0 * size.scale())).child(size.label()))
-                        .on_click(self.on_body(cx, move |e, cx| e.set_size(size, cx)))
-                });
-                d.child(above(menu(th).w(px(180.0)).children(items)))
-            });
-        let colors = div()
-            .relative()
-            .child(
-                format_dropdown("format-color", th)
-                    .tooltip(tip(tr!("compose-tool-text-color"), th))
-                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Colors, cx)))
-                    .child(icon("text-color", th.text_dim, 18.0))
-                    .child(icon("drop-down", th.text_dim, 18.0)),
-            )
-            .when(open(Popup::Colors), |d| {
-                d.child(above(self.render_colors(
-                    th,
-                    style.color,
-                    style.background,
-                    cx,
-                )))
-            });
-        let align_icon = match para.align {
-            Align::Left => "align-left",
-            Align::Center => "align-center",
-            Align::Right => "align-right",
-        };
-        let align = div()
-            .relative()
-            .child(
-                format_dropdown("format-align", th)
-                    // Centred or right-aligned text shows as on, like Bold.
-                    .when(para.align != Align::Left, |d| d.bg(rgba(format_active(th))))
-                    .tooltip(tip(tr!("compose-tool-align"), th))
-                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Align, cx)))
-                    .child(icon(
-                        align_icon,
-                        if para.align == Align::Left {
-                            th.text_dim
-                        } else {
-                            th.nav_selected_text
-                        },
-                        18.0,
-                    ))
-                    .child(icon("drop-down", th.text_dim, 18.0)),
-            )
-            .when(open(Popup::Align), |d| {
-                let mut button = |id, name, value: Align, label: String| {
-                    format_button(id, name, para.align == value, th)
-                        .tooltip(tip(label, th))
-                        .on_click(self.on_body(cx, move |e, cx| e.set_align(value, cx)))
-                };
-                d.child(above(
-                    menu(th)
-                        .min_w(px(0.0))
-                        .px(px(6.0))
-                        .py(px(6.0))
-                        .flex_row()
-                        .gap(px(2.0))
-                        .child(button(
-                            "align-left",
-                            "align-left",
-                            Align::Left,
-                            tr!("compose-tool-align-left"),
-                        ))
-                        .child(button(
-                            "align-center",
-                            "align-center",
-                            Align::Center,
-                            tr!("compose-tool-align-center"),
-                        ))
-                        .child(button(
-                            "align-right",
-                            "align-right",
-                            Align::Right,
-                            tr!("compose-tool-align-right"),
-                        )),
-                ))
-            });
+        let font = self.format_font(style.font, false, th, cx);
+        let size = self.format_size(style.size, false, th, cx);
+        let colors = self.format_colors(style.color, style.background, false, th, cx);
+        let align = self.format_align(para.align, false, th, cx);
         // What does not fit a narrow bar goes in its "more" menu.
         let table_click = cx.listener(move |this, _, _, cx| {
             let p = if in_table {
@@ -1291,6 +1328,355 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// The font dropdown of a formatting bar, taller in the chat's.
+    pub(super) fn format_font(
+        &self,
+        current: Font,
+        tall: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Div {
+        let open = |p: Popup| {
+            self.compose
+                .as_ref()
+                .is_some_and(|c| c.popup.as_ref() == Some(&p))
+        };
+        div()
+            .relative()
+            .child(
+                tall_dropdown("format-font", tall, th)
+                    .w(px(100.0))
+                    .tooltip(tip(tr!("compose-tool-font"), th))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Font, cx)))
+                    .child(div().flex_1().min_w_0().truncate().child(current.label()))
+                    .child(icon("drop-down", th.text_dim, 18.0)),
+            )
+            .when(open(Popup::Font), |d| {
+                let items = Font::ALL.into_iter().enumerate().map(|(ix, font)| {
+                    menu_item(("font", ix), font.label(), th)
+                        .when(font == current, |d| {
+                            d.child(div().flex_1())
+                                .child(icon("check", th.text_dim, 18.0))
+                        })
+                        .on_click(self.on_body(cx, move |e, cx| e.set_font(font, cx)))
+                });
+                d.child(above(menu(th).w(px(200.0)).children(items)))
+            })
+    }
+
+    /// The text size dropdown of a formatting bar.
+    pub(super) fn format_size(
+        &self,
+        current: Size,
+        tall: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Div {
+        let open = |p: Popup| {
+            self.compose
+                .as_ref()
+                .is_some_and(|c| c.popup.as_ref() == Some(&p))
+        };
+        div()
+            .relative()
+            .child(
+                tall_dropdown("format-size", tall, th)
+                    .tooltip(tip(tr!("compose-tool-size"), th))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Size, cx)))
+                    .child(icon("text-size", th.text_dim, 18.0))
+                    .child(icon("drop-down", th.text_dim, 18.0)),
+            )
+            .when(open(Popup::Size), |d| {
+                let items = Size::ALL.into_iter().enumerate().map(|(ix, size)| {
+                    div()
+                        .id(("size", ix))
+                        .min_h(px(32.0))
+                        .px(px(16.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(12.0))
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .child(div().w(px(18.0)).when(size == current, |d| {
+                            d.child(icon("check", th.text_dim, 18.0))
+                        }))
+                        .child(div().text_size(px(14.0 * size.scale())).child(size.label()))
+                        .on_click(self.on_body(cx, move |e, cx| e.set_size(size, cx)))
+                });
+                d.child(above(menu(th).w(px(180.0)).children(items)))
+            })
+    }
+
+    /// The colour button of a formatting bar: the text colour and the
+    /// highlight side by side, opening both palettes.
+    pub(super) fn format_colors(
+        &self,
+        color: Option<u32>,
+        background: Option<u32>,
+        tall: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Div {
+        let open = |p: Popup| {
+            self.compose
+                .as_ref()
+                .is_some_and(|c| c.popup.as_ref() == Some(&p))
+        };
+        div()
+            .relative()
+            .child(
+                tall_dropdown("format-color", tall, th)
+                    .tooltip(tip(tr!("compose-tool-colors"), th))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Colors, cx)))
+                    .child(color_swatch(color, background, th))
+                    // The chat's bar shows it as a square button, as drawn.
+                    .when(tall, |d| d.w(px(36.0)).p_0().justify_center())
+                    .when(!tall, |d| d.child(icon("drop-down", th.text_dim, 18.0))),
+            )
+            .when(open(Popup::Colors), |d| {
+                d.child(above(self.render_colors(th, color, background, cx)))
+            })
+    }
+
+    /// The alignment dropdown of a formatting bar.
+    pub(super) fn format_align(
+        &self,
+        current: Align,
+        tall: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Div {
+        let open = |p: Popup| {
+            self.compose
+                .as_ref()
+                .is_some_and(|c| c.popup.as_ref() == Some(&p))
+        };
+        let align_icon = match current {
+            Align::Left => "align-left",
+            Align::Center => "align-center",
+            Align::Right => "align-right",
+        };
+        div()
+            .relative()
+            .child(
+                tall_dropdown("format-align", tall, th)
+                    // Centred or right-aligned text shows as on, like Bold.
+                    .when(current != Align::Left, |d| d.bg(rgba(format_active(th))))
+                    .tooltip(tip(tr!("compose-tool-align"), th))
+                    .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Align, cx)))
+                    .child(icon(
+                        align_icon,
+                        if current == Align::Left {
+                            th.text_dim
+                        } else {
+                            th.nav_selected_text
+                        },
+                        18.0,
+                    ))
+                    .child(icon("drop-down", th.text_dim, 18.0)),
+            )
+            .when(open(Popup::Align), |d| {
+                let mut button = |id, name, value: Align, label: String| {
+                    format_button(id, name, current == value, th)
+                        .tooltip(tip(label, th))
+                        .on_click(self.on_body(cx, move |e, cx| e.set_align(value, cx)))
+                };
+                d.child(above(
+                    menu(th)
+                        .min_w(px(0.0))
+                        .px(px(6.0))
+                        .py(px(6.0))
+                        .flex_row()
+                        .gap(px(2.0))
+                        .child(button(
+                            "align-left",
+                            "align-left",
+                            Align::Left,
+                            tr!("compose-tool-align-left"),
+                        ))
+                        .child(button(
+                            "align-center",
+                            "align-center",
+                            Align::Center,
+                            tr!("compose-tool-align-center"),
+                        ))
+                        .child(button(
+                            "align-right",
+                            "align-right",
+                            Align::Right,
+                            tr!("compose-tool-align-right"),
+                        )),
+                ))
+            })
+    }
+
+    /// The chat reply box's formatting bar: Compose's tools in groups,
+    /// with roomier buttons, wrapping onto a second line when narrow
+    /// (tables stay in Compose).
+    pub(super) fn render_chat_format_bar(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(compose) = &self.compose else {
+            return div().into_any_element();
+        };
+        let editor = compose.body.read(cx);
+        if editor.is_plain() {
+            return div()
+                .h(px(44.0))
+                .px(px(16.0))
+                .flex()
+                .items_center()
+                .text_size(px(13.0))
+                .text_color(rgba(th.text_dim))
+                .child(tr!("compose-tool-plain-note"))
+                .into_any_element();
+        }
+        let style = editor.current_style();
+        let para = editor.para_style();
+        let (can_undo, can_redo) = (editor.can_undo(), editor.can_redo());
+        let button = |id: &'static str, name: &'static str, on: bool, label: String| {
+            chat_format_button(id, name, on, th).tooltip(tip(label, th))
+        };
+        let group = || div().flex().flex_row().items_center().gap(px(2.0));
+        div()
+            .min_h(px(44.0))
+            .px(px(10.0))
+            .py(px(4.0))
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .items_center()
+            .gap_x(px(14.0))
+            .gap_y(px(4.0))
+            .child(
+                group()
+                    .child(
+                        button("chat-format-undo", "undo", false, tr!("compose-tool-undo"))
+                            .when(!can_undo, |d| d.opacity(0.4))
+                            .on_click(self.on_body(cx, |e, cx| e.undo(cx))),
+                    )
+                    .child(
+                        button("chat-format-redo", "redo", false, tr!("compose-tool-redo"))
+                            .when(!can_redo, |d| d.opacity(0.4))
+                            .on_click(self.on_body(cx, |e, cx| e.redo(cx))),
+                    ),
+            )
+            .child(
+                group()
+                    .child(self.format_font(style.font, true, th, cx))
+                    .child(self.format_size(style.size, true, th, cx)),
+            )
+            .child(
+                group()
+                    .child(
+                        button(
+                            "chat-format-bold",
+                            "format-bold",
+                            style.bold,
+                            tr!("compose-tool-bold"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_bold(cx))),
+                    )
+                    .child(
+                        button(
+                            "chat-format-italic",
+                            "format-italic",
+                            style.italic,
+                            tr!("compose-tool-italic"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_italic(cx))),
+                    )
+                    .child(
+                        button(
+                            "chat-format-underline",
+                            "format-underline",
+                            style.underline,
+                            tr!("compose-tool-underline"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_underline(cx))),
+                    )
+                    .child(
+                        button(
+                            "chat-format-strike",
+                            "format-strike",
+                            style.strike,
+                            tr!("compose-tool-strikethrough"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx))),
+                    )
+                    .child(self.format_colors(style.color, style.background, true, th, cx)),
+            )
+            .child(
+                group()
+                    .child(self.format_align(para.align, true, th, cx))
+                    .child(
+                        button(
+                            "chat-format-bulleted",
+                            "list-bulleted",
+                            para.list == List::Bullet,
+                            tr!("compose-tool-bulleted-list"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx))),
+                    )
+                    .child(
+                        button(
+                            "chat-format-numbered",
+                            "list-numbered",
+                            para.list == List::Numbered,
+                            tr!("compose-tool-numbered-list"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Numbered, cx))),
+                    )
+                    .child(
+                        button(
+                            "chat-format-indent-less",
+                            "indent-less",
+                            false,
+                            tr!("compose-tool-indent-less"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.indent(false, cx))),
+                    )
+                    .child(
+                        button(
+                            "chat-format-indent-more",
+                            "indent-more",
+                            false,
+                            tr!("compose-tool-indent-more"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.indent(true, cx))),
+                    ),
+            )
+            .child(
+                group()
+                    .child(
+                        button(
+                            "chat-format-quote",
+                            "quote",
+                            para.quote > 0,
+                            tr!("compose-tool-quote"),
+                        )
+                        .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx))),
+                    )
+                    .child(
+                        button("chat-format-link", "link", false, tr!("compose-tool-link"))
+                            .on_click(
+                                cx.listener(|this, _, window, cx| {
+                                    this.open_link_dialog(window, cx)
+                                }),
+                            ),
+                    ),
+            )
+            .child(
+                button(
+                    "chat-format-clear",
+                    "clear-format",
+                    false,
+                    tr!("compose-tool-remove-formatting"),
+                )
+                .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx))),
+            )
+            .into_any_element()
+    }
+
     fn render_colors(
         &self,
         th: &Theme,
@@ -1304,8 +1690,9 @@ impl MailWindow {
             .flex_row()
             .gap(px(20.0))
             .map(|d| crate::widgets::raised(d, th, 8.0, 3.0))
-            .child(self.color_palette(th, true, background, cx))
+            // In the colour button's order: text colour, then highlight.
             .child(self.color_palette(th, false, color, cx))
+            .child(self.color_palette(th, true, background, cx))
             .into_any_element()
     }
 
@@ -1337,7 +1724,7 @@ impl MailWindow {
                 .justify_center()
                 .rounded(px(3.0))
                 .bg(rgba((c << 8) | 0xff))
-                .when(light, |d| d.border_1().border_color(rgba(th.divider)))
+                .when(light, |d| d.border_1().border_color(rgba(th.outline)))
                 .when(selected, |d| d.border_1().border_color(rgba(th.text)))
                 .cursor_pointer()
                 .hover(|s| s.border_1().border_color(rgba(th.text)))
@@ -1414,7 +1801,7 @@ impl MailWindow {
                 .size(px(18.0))
                 .rounded(px(2.0))
                 .border_1()
-                .border_color(rgba(if on { th.accent } else { th.divider }))
+                .border_color(rgba(if on { th.accent } else { th.outline }))
                 .when(on, |d| d.bg(rgba(fade(th.accent, 0.25))))
                 .cursor_pointer()
                 .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
@@ -1495,7 +1882,7 @@ impl MailWindow {
 
     // Emoji.
 
-    fn render_emoji_picker(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_emoji_picker(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
@@ -1673,7 +2060,11 @@ impl MailWindow {
     }
 
     /// "Go to link · Change · Remove" under a link the cursor is in.
-    fn render_link_bubble(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(super) fn render_link_bubble(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
         let compose = self.compose.as_ref()?;
         if compose.popup.is_some() || !compose.body.read(cx).had_focus() {
             return None;
@@ -1762,7 +2153,11 @@ impl MailWindow {
         cx.notify();
     }
 
-    fn render_context_popup(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(super) fn render_context_popup(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
         let compose = self.compose.as_ref()?;
         let Some(Popup::Context {
             position,
@@ -1982,7 +2377,7 @@ impl MailWindow {
     }
 
     /// The fixes of the marked words under the pointer or a left click.
-    fn render_hint(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(super) fn render_hint(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
         let compose = self.compose.as_ref()?;
         let Some(Popup::Hint {
             word,
@@ -2048,7 +2443,11 @@ impl MailWindow {
     }
 
     /// The fixes of a grammar mistake in the subject.
-    fn render_subject_grammar(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(super) fn render_subject_grammar(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
         let compose = self.compose.as_ref()?;
         let Some(Popup::SubjectGrammar {
             position,
@@ -2554,9 +2953,7 @@ impl MailWindow {
             .p(px(24.0))
             .flex()
             .flex_col()
-            .rounded(px(DIALOG_RADIUS))
-            .bg(rgba(th.menu))
-            .shadow(crate::widgets::elevation(th, 3.0))
+            .map(|d| crate::widgets::dialog(d, th, th.menu))
             .text_color(rgba(th.text))
             .child(div().mb(px(16.0)).text_size(px(20.0)).child(title.into()))
     }
@@ -2585,7 +2982,7 @@ impl MailWindow {
                         .items_center()
                         .rounded(px(6.0))
                         .border_1()
-                        .border_color(rgba(th.divider))
+                        .border_color(rgba(th.outline))
                         .text_size(px(14.0))
                         .child(input.clone()),
                 )
@@ -2830,7 +3227,7 @@ impl MailWindow {
                             .items_center()
                             .rounded(px(6.0))
                             .border_1()
-                            .border_color(rgba(th.divider))
+                            .border_color(rgba(th.outline))
                             .text_size(px(14.0))
                             .child(format::day_month_year(
                                 day.to_datetime(jiff::civil::Time::midnight()),
@@ -2864,13 +3261,54 @@ impl MailWindow {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
-        let current = compose.signature;
+        div()
+            .relative()
+            .child(
+                icon_button("compose-signature", "signature", TRAY_ICON, th)
+                    .size(px(TRAY_TOOL))
+                    .tooltip(tip(tr!("compose-tool-signature"), th))
+                    .on_click(
+                        cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Signature, cx)),
+                    ),
+            )
+            .when(compose.popup == Some(Popup::Signature), |d| {
+                d.child(above(self.compose_signature_menu(th, cx)))
+            })
+            .into_any_element()
+    }
+
+    /// The signature list for the open message.
+    pub(super) fn compose_signature_menu(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
+        self.signature_menu(
+            self.compose.as_ref().and_then(|c| c.signature),
+            |this, id, cx| this.choose_signature(id, cx),
+            |this| {
+                if let Some(c) = &mut this.compose {
+                    c.popup = None;
+                }
+            },
+            th,
+            cx,
+        )
+    }
+
+    /// The signatures to sign with, None, and Manage: `current` checked,
+    /// `pick` takes the one clicked, `close` puts the list away before
+    /// Manage opens Settings.
+    pub(in crate::window) fn signature_menu(
+        &self,
+        current: Option<u32>,
+        pick: fn(&mut Self, Option<u32>, &mut Context<Self>),
+        close: fn(&mut Self),
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Div {
         let item = |ix: usize, id: Option<u32>, label: &str| {
             menu_item(("compose-signature-item", ix), label, th)
                 .gap(px(12.0))
                 .child(div().flex_1())
                 .when(current == id, |d| d.child(icon("check", th.text_dim, 18.0)))
-                .on_click(cx.listener(move |this, _, _, cx| this.choose_signature(id, cx)))
+                .on_click(cx.listener(move |this, _, _, cx| pick(this, id, cx)))
         };
         let items = self
             .config
@@ -2887,44 +3325,26 @@ impl MailWindow {
                 item(ix + 1, Some(s.id), &name)
             })
             .collect::<Vec<_>>();
-        div()
-            .relative()
+        menu(th)
+            .w(px(240.0))
+            .child(item(0, None, &tr!("compose-tool-signature-none")))
+            .children(items)
+            .child(menu_divider(th))
             .child(
-                icon_button("compose-signature", "signature", 20.0, th)
-                    .tooltip(tip(tr!("compose-tool-signature"), th))
-                    .on_click(
-                        cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Signature, cx)),
-                    ),
+                menu_item(
+                    "compose-signatures-manage",
+                    &tr!("compose-tool-signature-manage"),
+                    th,
+                )
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    close(this);
+                    this.open_settings_page(
+                        super::super::settings_page::Section::Signatures,
+                        window,
+                        cx,
+                    );
+                })),
             )
-            .when(compose.popup == Some(Popup::Signature), |d| {
-                d.child(above(
-                    menu(th)
-                        .w(px(240.0))
-                        .child(item(0, None, &tr!("compose-tool-signature-none")))
-                        .children(items)
-                        .child(menu_divider(th))
-                        .child(
-                            menu_item(
-                                "compose-signatures-manage",
-                                &tr!("compose-tool-signature-manage"),
-                                th,
-                            )
-                            .on_click(cx.listener(
-                                |this, _, window, cx| {
-                                    if let Some(c) = &mut this.compose {
-                                        c.popup = None;
-                                    }
-                                    this.open_settings_page(
-                                        super::super::settings_page::Section::Signatures,
-                                        window,
-                                        cx,
-                                    );
-                                },
-                            )),
-                        ),
-                ))
-            })
-            .into_any_element()
     }
 }
 

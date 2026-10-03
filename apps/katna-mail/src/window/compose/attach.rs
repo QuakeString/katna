@@ -5,24 +5,49 @@
 
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::{Duration, Instant};
 
-use gpui::{AnyElement, Context, ExternalPaths, PathPromptOptions, div, prelude::*, rgba};
+use gpui::{AnyElement, Context, ExternalPaths, PathPromptOptions, Window, div, prelude::*, rgba};
 use katna_i18n::tr;
+use katna_render::AttachmentFile;
 use katna_ui::px;
 
 use super::super::MailWindow;
+use super::super::attachments::{Item, ViewerPlace};
+use super::{Kind, Mode};
 use crate::format;
 use crate::outgoing::Part;
 use crate::theme::Theme;
-use crate::widgets::{icon, tip};
+use crate::widgets::{ScaledEdge, icon, tip};
+use katna_core::config::OpenIn;
 
 /// What mail servers take in one message (Gmail's limit), counting the
 /// pictures in the text.
 pub(in crate::window) const MAX_TOTAL: usize = 25 * 1024 * 1024;
 
+/// The limit as mail services name it ("25 MB"); [`format::size`] of
+/// [`MAX_TOTAL`] would round its mebibytes up to 26 MB.
+pub(in crate::window) fn limit_text() -> String {
+    format::size(25 * 1000 * 1000)
+}
+
+/// Files that reach the app this soon after a file manager opened a new
+/// message with files join that message: Explorer starts Katna Mail once
+/// for each file chosen.
+const JOIN: Duration = Duration::from_secs(2);
+
 /// An attachment chip's height, and the gap between chips.
 const ROW: f32 = 36.0;
 const GAP: f32 = 8.0;
+
+/// `attachments` as one message, which the viewer reads them from by
+/// their place in the list.
+fn attached_as_message(attachments: &[Attachment]) -> Vec<u8> {
+    crate::outgoing::build(&crate::outgoing::Outgoing {
+        attachments: attachments.iter().map(Attachment::part).collect(),
+        ..Default::default()
+    })
+}
 
 /// Where added files go.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -143,23 +168,92 @@ impl MailWindow {
         .detach();
     }
 
+    /// "Send with Katna Mail" in a file manager: a new message with `paths`
+    /// attached (folders as zips), from the account with the address
+    /// `from` when one is given. A message being written is kept in
+    /// Drafts, so the files get one of their own.
+    pub(in crate::window) fn open_with_files(
+        &mut self,
+        from: Option<String>,
+        paths: Vec<PathBuf>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let account = from
+            .as_deref()
+            .and_then(|address| {
+                self.accounts
+                    .iter()
+                    .find(|a| a.address.eq_ignore_ascii_case(address))
+            })
+            .map(|a| a.id);
+        let joins = self
+            .writing
+            .files_opened
+            .is_some_and(|at| at.elapsed() < JOIN)
+            && self.compose.as_ref().is_some_and(|c| {
+                c.kind == Kind::New && !c.closing && (account.is_none() || c.from == account)
+            });
+        if !joins {
+            self.close_compose_saving(cx);
+            self.open_compose(Kind::New, None, window, cx);
+            if let Some(account) = account {
+                self.send_compose_from(account);
+                self.ask_delivery_receipts(cx);
+            }
+        }
+        self.writing.files_opened = Some(Instant::now());
+        self.add_files(paths, Place::Attach, cx);
+    }
+
+    /// Attaches the files at `paths`, as the paperclip's file chooser
+    /// does: those that do not fit go through the account's cloud.
+    pub(in crate::window) fn attach_paths(&mut self, paths: Vec<PathBuf>, cx: &mut Context<Self>) {
+        self.add_files(paths, Place::Attach, cx);
+    }
+
     /// Reads `paths` off the main thread and adds them where `place` says:
     /// pictures may go in the text (unless it is plain text); everything
     /// else is attached.
     pub(super) fn add_files(&mut self, paths: Vec<PathBuf>, place: Place, cx: &mut Context<Self>) {
+        let zips = self.paths.cache_dir().join("attach");
         let read = cx.background_executor().spawn(async move {
+            let name_of = |path: &std::path::Path| {
+                path.file_name()
+                    .map(|n| n.to_string_lossy().into_owned())
+                    .unwrap_or_else(|| "attachment".to_owned())
+            };
             paths
                 .into_iter()
-                .filter(|p| p.is_file())
-                .map(|path| {
-                    let name = path
-                        .file_name()
-                        .map(|n| n.to_string_lossy().into_owned())
-                        .unwrap_or_else(|| "attachment".to_owned());
+                .filter_map(|path| {
+                    if path.is_file() {
+                        return Some(Ok((path, false)));
+                    }
+                    // A folder goes as a zip of it.
+                    path.is_dir().then(|| {
+                        crate::folder_zip::zip_folder(&path, &zips)
+                            .map(|zip| (zip, true))
+                            .map_err(|err| format!("{}: {err}", name_of(&path)))
+                    })
+                })
+                .map(|file| {
+                    let (path, zipped) = match file {
+                        Ok(file) => file,
+                        Err(err) => return (PathBuf::new(), String::new(), 0, Some(Err(err))),
+                    };
+                    let name = name_of(&path);
                     let size = std::fs::metadata(&path).map_or(0, |m| m.len());
                     // Larger files go through Drive, never into memory.
                     let data = (size <= MAX_TOTAL as u64)
                         .then(|| std::fs::read(&path).map_err(|err| format!("{name}: {err}")));
+                    // A zip that went into memory is not needed any more;
+                    // one on its way to Drive is.
+                    if zipped
+                        && data.is_some()
+                        && let Some(dir) = path.parent()
+                    {
+                        let _ = std::fs::remove_dir_all(dir);
+                    }
                     (path, name, size, data)
                 })
                 .collect::<Vec<_>>()
@@ -193,7 +287,7 @@ impl MailWindow {
                                 problem = Some(tr!(
                                     "compose-file-too-large",
                                     name = name,
-                                    limit = format::size(MAX_TOTAL as u64)
+                                    limit = limit_text()
                                 ));
                             }
                         }
@@ -236,11 +330,7 @@ impl MailWindow {
                 if let (Some((_, name, ..)), Some((_, provider))) =
                     (to_drive.first(), drive_account)
                 {
-                    let note = super::drive::drive_note(
-                        provider,
-                        name.clone(),
-                        format::size(MAX_TOTAL as u64),
-                    );
+                    let note = super::drive::drive_note(provider, name.clone(), limit_text());
                     this.show_snackbar(note, None, cx);
                 }
                 for (path, name, size, account) in to_drive {
@@ -270,6 +360,51 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Opens attached file `ix` where its type opens (Katna's viewer, as
+    /// received files do, unless Default apps names another app), the
+    /// message's other files a click of the arrows away: to check the right
+    /// file is attached.
+    fn open_attached(&mut self, ix: usize, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(compose) = &self.compose else {
+            return;
+        };
+        let Some(file) = compose.attachments.get(ix) else {
+            return;
+        };
+        let items: Vec<Item> = compose
+            .attachments
+            .iter()
+            .enumerate()
+            .map(|(index, a)| Item {
+                index,
+                name: a.name.clone(),
+                size: a.data.len() as u64,
+                kind: katna_preview::kind(&a.mime, &a.name),
+                risky: katna_preview::risky(&a.mime, &a.name),
+            })
+            .collect();
+        let open_in = self.open_in(&items[ix]);
+        if open_in != OpenIn::Katna {
+            let file = AttachmentFile {
+                name: file.name.clone(),
+                mime: file.mime.clone(),
+                bytes: file.data.to_vec(),
+            };
+            self.open_attachment_with(Arc::new(file), open_in == OpenIn::Ask, false, cx);
+            return;
+        }
+        let place = if compose.mode == Mode::Window {
+            ViewerPlace::Popout
+        } else {
+            ViewerPlace::OverCompose
+        };
+        // The viewer reads files from a message: the attached ones, in
+        // order, make one.
+        let raw = Arc::new(attached_as_message(&compose.attachments));
+        self.show_viewer(raw, false, items, ix, None, window, cx);
+        self.files.viewer_place = place;
+    }
+
     /// The attached files, as chips with their size and a remove button.
     pub(in crate::window) fn render_attachments(
         &self,
@@ -295,6 +430,12 @@ impl MailWindow {
                 .gap(px(8.0))
                 .rounded(px(8.0))
                 .bg(rgba(th.chip))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.chip_hover())))
+                .tooltip(tip(tr!("compose-attachment-open-tip"), th))
+                .on_click(
+                    cx.listener(move |this, _, window, cx| this.open_attached(ix, window, cx)),
+                )
                 .text_size(px(13.0))
                 .child(icon(icon_of(&a.mime), th.accent, 18.0))
                 .child(
@@ -321,7 +462,10 @@ impl MailWindow {
                         .cursor_pointer()
                         .hover(|s| s.bg(rgba(th.hover)))
                         .tooltip(tip(tr!("compose-remove-attachment"), th))
-                        .on_click(cx.listener(move |this, _, _, cx| this.remove_attachment(ix, cx)))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            cx.stop_propagation();
+                            this.remove_attachment(ix, cx)
+                        }))
                         .child(icon("close", th.text_dim, 16.0)),
                 )
         });
@@ -430,7 +574,7 @@ impl MailWindow {
                     .relative()
                     .size_full()
                     .rounded(px(12.0))
-                    .border_2()
+                    .border_px(2.0)
                     .border_dashed()
                     .border_color(rgba(accent))
                     .bg(rgba(crate::theme::fade(surface, 0.92)))
@@ -440,6 +584,206 @@ impl MailWindow {
                     .child(label("drop-content", tr!("compose-drop-here"), true)),
             )
             .into_any_element()
+    }
+}
+
+impl MailWindow {
+    /// Puts the files of the message being forwarded under it, as chips
+    /// that can be taken off before sending. They are read off the main
+    /// thread; the message may have changed by then.
+    pub(super) fn attach_forwarded(&mut self, cx: &mut Context<Self>) {
+        let Some(compose) = &self.compose else {
+            return;
+        };
+        let source = compose.source;
+        let Some(id) = source else {
+            return;
+        };
+        let count = self
+            .reader
+            .as_ref()
+            .and_then(|r| r.view(source))
+            .map_or(0, |view| view.attachments.len());
+        if count == 0 {
+            return;
+        }
+        let Some((raw, _)) = self.attachment_raw(id) else {
+            self.show_snackbar(tr!("compose-forward-files-missing"), None, cx);
+            return;
+        };
+        cx.spawn(async move |this, cx| {
+            let files: Vec<_> = cx
+                .background_executor()
+                .spawn(async move {
+                    (0..count)
+                        .filter_map(|index| katna_render::attachment_file(&raw, index))
+                        .collect()
+                })
+                .await;
+            this.update(cx, |this, cx| this.add_forwarded(source, files, cx))
+                .ok();
+        })
+        .detach();
+    }
+
+    fn add_forwarded(
+        &mut self,
+        source: Option<katna_store::MessageId>,
+        files: Vec<katna_render::AttachmentFile>,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if compose.kind != Kind::Forward || compose.source != source {
+            return;
+        }
+        let mut used = compose.used_bytes(cx);
+        let mut left_out = None;
+        for file in files {
+            if used + file.bytes.len() > MAX_TOTAL {
+                left_out.get_or_insert(file.name);
+                continue;
+            }
+            used += file.bytes.len();
+            let data = Arc::new(file.bytes);
+            compose.forwarded.push(data.clone());
+            compose.attachments.push(Attachment {
+                name: file.name,
+                mime: file.mime,
+                data,
+            });
+        }
+        compose.attach_scroll.scroll_to_bottom();
+        if let Some(name) = left_out {
+            let problem = tr!("compose-file-too-large", name = name, limit = limit_text());
+            self.show_snackbar(problem, None, cx);
+        }
+        cx.notify();
+    }
+}
+
+/// Which of files `sizes` go through the cloud so the rest fit with the
+/// `used` bytes under `limit`: the biggest first, as few as need to.
+pub(in crate::window) fn cloud_bound(sizes: &[u64], used: u64, limit: u64) -> Vec<bool> {
+    let mut bound = vec![false; sizes.len()];
+    let mut total = used + sizes.iter().sum::<u64>();
+    let mut order: Vec<usize> = (0..sizes.len()).collect();
+    order.sort_by_key(|&ix| std::cmp::Reverse(sizes[ix]));
+    for ix in order {
+        if total <= limit {
+            break;
+        }
+        bound[ix] = true;
+        total -= sizes[ix];
+    }
+    bound
+}
+
+impl MailWindow {
+    /// What the message being written carries against the 25 MB limit,
+    /// and the cloud larger files would go to (Google Drive or OneDrive
+    /// of the account it goes out from).
+    pub(in crate::window) fn compose_room(
+        &self,
+        cx: &gpui::App,
+    ) -> (u64, Option<katna_core::OAuthProvider>) {
+        let Some(compose) = &self.compose else {
+            return (0, None);
+        };
+        (
+            compose.used_bytes(cx) as u64,
+            self.compose_cloud().map(|(_, p)| p),
+        )
+    }
+
+    fn compose_cloud(&self) -> Option<(katna_core::AccountId, katna_core::OAuthProvider)> {
+        let compose = self.compose.as_ref()?;
+        let id = compose
+            .from
+            .or_else(|| self.compose_account(compose.kind).map(|a| a.id))?;
+        Some((id, super::drive::drive_provider(self, id)?))
+    }
+
+    /// Attaches files picked on the Files page (each with whether its mail
+    /// was decrypted). Those that do not fit go through the account's
+    /// cloud, biggest first; with none, they are left out. `failed` files
+    /// could not be read.
+    pub(in crate::window) fn attach_picked(
+        &mut self,
+        files: Vec<(katna_render::AttachmentFile, bool)>,
+        failed: usize,
+        cx: &mut Context<Self>,
+    ) {
+        let cloud = self.compose_cloud();
+        let cache = self.paths.cache_dir().join("attach");
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        let used = compose.used_bytes(cx) as u64;
+        let sizes: Vec<u64> = files.iter().map(|(f, _)| f.bytes.len() as u64).collect();
+        let bound = cloud_bound(&sizes, used, MAX_TOTAL as u64);
+        let mut left_out = None;
+        let mut to_cloud = Vec::new();
+        for ((file, encrypted), bound) in files.into_iter().zip(bound) {
+            if !bound {
+                compose.attachments.push(Attachment {
+                    name: file.name,
+                    mime: file.mime,
+                    data: Arc::new(file.bytes),
+                });
+                continue;
+            }
+            // A decrypted file never reaches the disk unasked.
+            match cloud {
+                Some((account, _)) if !encrypted => to_cloud.push((file, account)),
+                _ => {
+                    left_out.get_or_insert(file.name);
+                }
+            }
+        }
+        compose.attach_scroll.scroll_to_bottom();
+        for (file, account) in to_cloud {
+            let dir = cache.join(format!("picked-{}", jiff::Timestamp::now().as_nanosecond()));
+            let path = dir.join(&file.name);
+            let size = file.bytes.len() as u64;
+            let written =
+                std::fs::create_dir_all(&dir).and_then(|()| std::fs::write(&path, &file.bytes));
+            match written {
+                Ok(()) => self.upload_to_drive(path, file.name, size, account, cx),
+                Err(err) => {
+                    let problem = format!("{}: {err}", file.name);
+                    self.show_snackbar(problem, None, cx);
+                }
+            }
+        }
+        if let Some(name) = left_out {
+            let problem = tr!("compose-file-too-large", name = name, limit = limit_text());
+            self.show_snackbar(problem, None, cx);
+        } else if failed > 0 {
+            self.show_snackbar(tr!("picker-some-failed", count = failed), None, cx);
+        }
+        cx.notify();
+    }
+}
+
+impl super::Compose {
+    /// Takes off the files a forward brought along, when the message
+    /// becomes a reply.
+    pub(super) fn drop_forwarded(&mut self) {
+        let forwarded = std::mem::take(&mut self.forwarded);
+        self.attachments
+            .retain(|a| !forwarded.iter().any(|f| Arc::ptr_eq(f, &a.data)));
+    }
+
+    /// The files are other than the ones a forward brought along.
+    pub(super) fn files_changed(&self) -> bool {
+        self.attachments.len() != self.forwarded.len()
+            || self
+                .attachments
+                .iter()
+                .zip(&self.forwarded)
+                .any(|(a, f)| !Arc::ptr_eq(&a.data, f))
     }
 }
 
@@ -460,6 +804,41 @@ impl super::Compose {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_biggest_files_go_to_the_cloud() {
+        const MB: u64 = 1024 * 1024;
+        let limit = 25 * MB;
+        assert_eq!(cloud_bound(&[MB, 2 * MB], 0, limit), [false, false]);
+        assert_eq!(
+            cloud_bound(&[5 * MB, 31 * MB, 10 * MB, 4 * MB], 0, limit),
+            [false, true, false, false]
+        );
+        assert_eq!(
+            cloud_bound(&[20 * MB, 12 * MB], 3 * MB, limit),
+            [true, false]
+        );
+    }
+
+    #[test]
+    fn the_viewer_finds_each_attached_file_by_its_place() {
+        let file = |name: &str, data: &[u8]| Attachment {
+            name: name.to_owned(),
+            mime: mime_of(name),
+            data: Arc::new(data.to_vec()),
+        };
+        let files = [
+            file("Report.pdf", b"%PDF-1.4"),
+            file("notes.txt", b"hello"),
+            file("photo.png", b"\x89PNG"),
+        ];
+        let raw = attached_as_message(&files);
+        for (ix, f) in files.iter().enumerate() {
+            let read = katna_render::attachment_file(&raw, ix).expect("attached file");
+            assert_eq!(read.name, f.name);
+            assert_eq!(read.bytes, *f.data);
+        }
+    }
 
     #[test]
     fn guesses_types() {

@@ -32,6 +32,7 @@ compose-tool-bold = ໂຕໜາ (Ctrl+B)
 compose-tool-italic = ໂຕອຽງ (Ctrl+I)
 compose-tool-underline = ຂີດກ້ອງ (Ctrl+U)
 compose-tool-text-color = ສີຂໍ້ຄວາມ
+compose-tool-colors = ສີຂໍ້ຄວາມ ແລະ ສີໄຮໄລ້
 compose-tool-background-color = ສີພື້ນຫຼັງ
 compose-tool-default-color = ສີເລີ່ມຕົ້ນ
 compose-tool-no-background = ບໍ່ມີພື້ນຫຼັງ
@@ -126,6 +127,10 @@ compose-tool-signature = ແຊກລາຍເຊັນ
 compose-tool-signature-none = ບໍ່ມີລາຍເຊັນ
 compose-tool-signature-untitled = ບໍ່ມີຊື່
 compose-tool-signature-manage = ຈັດການລາຍເຊັນ
+compose-signature-tag-tip = ເລືອກລາຍເຊັນອື່ນ
+
+## The templates menu, and saving a message as a template
+
 compose-tool-templates = ແມ່ແບບ
 compose-tool-templates-none = ຍັງບໍ່ມີແມ່ແບບ
 compose-tool-template-save = ບັນທຶກເປັນແມ່ແບບ…

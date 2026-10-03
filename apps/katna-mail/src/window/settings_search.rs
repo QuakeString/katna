@@ -14,12 +14,12 @@ use gpui::{
     div, point, prelude::*, rgba,
 };
 use katna_i18n::tr;
+use katna_ui::InputEvent;
 use katna_ui::px;
-use katna_ui::{InputEvent, Ripple};
 
 use super::MailWindow;
 use super::keymap::SHORTCUTS;
-use super::settings_page::{Section, setting_row};
+use super::settings_page::{Scope, Section, setting_row};
 use crate::theme::{Theme, fade};
 
 /// How long a row found by a search stays lit.
@@ -59,7 +59,7 @@ const ENTRIES: &[Entry] = &[
         "language translation locale english hindi bengali arabic system",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-conversations",
         "settings-general-conversations-group",
         "threads threading group",
@@ -71,49 +71,49 @@ const ENTRIES: &[Entry] = &[
         "clock 24-hour 12-hour am pm time format hours",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-reading",
         "settings-general-reading-summary",
         "order oldest descending chronological reverse headers details from to cc names recipients first last",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-translation",
         "settings-translation-summary",
         "translate translation language foreign reading libretranslate always never",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-mark-read",
         "settings-general-mark-read-summary",
         "read unread seen delay mark",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-auto-advance",
         "settings-general-auto-advance-summary",
         "auto advance next previous older newer after delete archive move back list",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-confirm-delete",
         "settings-general-confirm-delete-summary",
         "confirm delete trash ask warning dialog several many",
     ),
     entry(
-        Section::General,
+        Section::Signatures,
         "settings-general-reply-button",
         "settings-general-reply-button-summary",
         "reply all default behaviour behavior",
     ),
     entry(
-        Section::General,
+        Section::Reading,
         "settings-general-remote-images",
         "settings-general-remote-images-summary",
         "remote images pictures load external content tracking privacy",
     ),
     entry(
-        Section::General,
+        Section::Signatures,
         "settings-general-sending",
         "settings-general-sending-summary",
         "undo send delay cancel",
@@ -132,12 +132,6 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::General,
-        "settings-general-notifications",
-        "settings-general-notifications-summary",
-        "notify alert sound chime popup new mail",
-    ),
-    entry(
-        Section::General,
         "settings-general-updates",
         "settings-general-updates-summary",
         "update upgrade new version download install automatic",
@@ -152,16 +146,40 @@ const ENTRIES: &[Entry] = &[
         Section::General,
         "settings-general-desktop",
         "settings-general-desktop-summary",
-        "tray badge unread count taskbar dock panel startup start login autostart launch boot",
+        "tray icon color colour monochrome symbolic panel startup start login autostart launch boot",
     ),
     entry(
-        Section::General,
+        Section::Notifications,
+        "settings-general-notifications",
+        "settings-general-notifications-summary",
+        "notify alert popup new mail bell folder tab",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-notifications-sounds",
+        "settings-notifications-sounds-summary",
+        "sound chime ding audio alarm reminder sent failed error play volume quiet",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-notifications-count",
+        "settings-notifications-count-summary",
+        "badge unread count taskbar dock tray number folder",
+    ),
+    entry(
+        Section::Notifications,
+        "settings-notifications-muted",
+        "settings-notifications-muted-summary",
+        "mute unmute silence quiet bell conversation thread sender account folder",
+    ),
+    entry(
+        Section::MailDesktop,
         "settings-general-search-triggers",
         "settings-general-search-triggers-summary",
         "krunner gnome shell desktop search trigger keyword prefix word launcher",
     ),
     entry(
-        Section::General,
+        Section::MailDesktop,
         "settings-general-mail-app",
         "settings-general-mail-app-summary",
         "default client mailto links handler email program",
@@ -171,6 +189,12 @@ const ENTRIES: &[Entry] = &[
         "settings-inbox-tabs",
         "settings-inbox-tabs-detail",
         "primary promotions social updates forums focused other categories",
+    ),
+    entry(
+        Section::Inbox,
+        "settings-inbox-unified",
+        "settings-inbox-unified-detail",
+        "unified all accounts tabs shared combined categories",
     ),
     entry(
         Section::Accounts,
@@ -192,12 +216,18 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Accounts,
+        "accounts-pop3-row",
+        "accounts-pop3-row-detail",
+        "pop pop3 leave keep copy server download delete remove days",
+    ),
+    entry(
+        Section::Accounts,
         "accounts-delete-all-row",
         "accounts-delete-all-row-detail",
         "reset wipe erase remove everything",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-reading-pane",
         "settings-appearance-reading-pane-detail",
         "split preview right no split layout panes",
@@ -216,15 +246,33 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Appearance,
-        "settings-appearance-theme",
-        "settings-appearance-theme-summary",
-        "dark mode light mode night",
+        "settings-appearance-motion-speed",
+        "settings-appearance-motion-speed-summary",
+        "animation animations motion speed fast slow duration transitions effects",
     ),
     entry(
         Section::Appearance,
-        "settings-appearance-desktop-colors",
-        "settings-appearance-desktop-colors-use-detail",
-        "accent colour color scheme",
+        "settings-appearance-reduce-motion",
+        "settings-appearance-reduce-motion-summary",
+        "reduce motion animations off accessibility still static no animation",
+    ),
+    entry(
+        Section::Appearance,
+        "settings-appearance-theme",
+        "settings-appearance-theme-summary",
+        "dark mode light mode night theme",
+    ),
+    entry(
+        Section::Appearance,
+        "settings-appearance-colors",
+        "settings-appearance-colors-summary",
+        "colour color scheme theme palette desktop yours custom customize edit editor import export kde clear graphite nord solarized dracula gruvbox catppuccin tokyo night one rose pine everforest kanagawa ayu",
+    ),
+    entry(
+        Section::Appearance,
+        "settings-appearance-accent",
+        "settings-appearance-accent-summary",
+        "accent colour color highlight",
     ),
     entry(
         Section::Appearance,
@@ -233,31 +281,31 @@ const ENTRIES: &[Entry] = &[
         "rail labels",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-sender-pictures",
         "settings-appearance-sender-pictures-summary",
         "logo avatar picture image photo",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-important",
         "settings-appearance-important-summary",
         "important label chevron flag priority",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-message-width",
         "settings-appearance-message-width-limit",
         "narrow wide lines readable column",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-mail-colors",
         "settings-appearance-mail-colors-summary",
         "dark mode night html colors colours invert",
     ),
     entry(
-        Section::Appearance,
+        Section::Reading,
         "settings-appearance-attachment-previews",
         "settings-appearance-attachment-previews-summary",
         "thumbnails attachments files preview",
@@ -311,6 +359,25 @@ const ENTRIES: &[Entry] = &[
         "save download folder file manager reveal show dolphin",
     ),
     entry(
+        Section::Files,
+        "settings-files-page",
+        "settings-files-page-summary",
+        "files page attachments small pictures images signature logo icon size kb pixels hide \
+         drives google drive onedrive cloud allow",
+    ),
+    entry(
+        Section::MailRules,
+        "settings-rules",
+        "settings-rules-summary",
+        "rules filters filter sort sorting automatic move label forward notify sender subject",
+    ),
+    entry(
+        Section::MailRules,
+        "settings-folders",
+        "settings-folders-unread-counts",
+        "folders labels unread count counts numbers badge folder pane",
+    ),
+    entry(
         Section::Signatures,
         "settings-compose-send-from",
         "settings-compose-send-from-summary",
@@ -335,10 +402,16 @@ const ENTRIES: &[Entry] = &[
         "writing suggestions autocomplete complete predict phrase ghost text tab smart compose",
     ),
     entry(
+        Section::Ai,
+        "settings-ai",
+        "settings-ai-summary",
+        "ai artificial intelligence rephrase rewrite tone katna ai own key api gemini openai chatgpt claude mistral deepseek openrouter ollama lm studio model autocomplete",
+    ),
+    entry(
         Section::Signatures,
         "settings-compose-signatures",
         "settings-compose-signatures-summary",
-        "signature sign-off",
+        "signature sign-off html paste designed raw code generator logo banner",
     ),
     entry(
         Section::Signatures,
@@ -371,6 +444,24 @@ const ENTRIES: &[Entry] = &[
         "template canned reply snippet",
     ),
     entry(
+        Section::Calendar,
+        "settings-calendar-density",
+        "settings-calendar-density-summary",
+        "hours tall compact comfortable zoom day week density",
+    ),
+    entry(
+        Section::Calendar,
+        "settings-calendar-custom-days",
+        "settings-calendar-custom-days-summary",
+        "days custom view multi day calendar",
+    ),
+    entry(
+        Section::Calendar,
+        "settings-calendar-birthdays",
+        "settings-calendar-birthdays-summary",
+        "birthday birthdays contacts calendar",
+    ),
+    entry(
         Section::Feedback,
         "feedback-crash-reports",
         "settings-feedback-crash-reports-summary",
@@ -398,14 +489,19 @@ const ENTRIES: &[Entry] = &[
         Section::Experimental,
         "look-blurred-background",
         "settings-experimental-blur-summary",
-        "blur transparency frosted glass look feel",
+        "blur transparency frosted glass look feel menus popups popovers dialogs",
+    ),
+    entry(
+        Section::Experimental,
+        "chat-view",
+        "chat-view-detail",
+        "chat bubbles whatsapp group conversation messenger reading",
     ),
 ];
 
 /// What a tab that is still to come will do.
 fn coming(section: Section) -> Option<String> {
     Some(match section {
-        Section::MailRules => tr!("settings-tab-folders-rules-coming"),
         Section::McpServer => tr!("settings-tab-mcp-server-coming"),
         _ => return None,
     })
@@ -417,7 +513,10 @@ fn tab_words(section: Section) -> &'static str {
     match section {
         Section::Subscriptions => "katna account sign in sign up password devices server",
         Section::MailRules => "mail rules filters folders labels",
-        Section::Signatures => "signature templates write",
+        Section::Signatures => "signature templates write sending",
+        Section::Ai => "ai artificial intelligence rephrase rewrite gemini ollama",
+        Section::Reading => "reading conversations open mail",
+        Section::MailDesktop => "desktop krunner gnome mailto default mail app links",
         Section::Feedback => "crash report feedback privacy anonymous sentry telemetry",
         _ => "",
     }
@@ -629,7 +728,13 @@ impl MailWindow {
             .as_ref()
             .map(|p| p.info.clone())
             .unwrap_or_default();
-        setting_row(label, detail, content, &info, flash, th)
+        let words = |label: SharedString, detail: Option<SharedString>| {
+            let mut pieces = self.ui_pieces(th);
+            let name = self.ui_selectable(pieces.words(label), &pieces);
+            let detail = detail.map(|d| self.ui_selectable(pieces.words(d), &pieces));
+            (name, detail)
+        };
+        setting_row(label, detail, content, &info, flash, words, th)
     }
 
     /// Under the row named `label` when a search has just led to it: a
@@ -675,7 +780,7 @@ impl MailWindow {
                 )
                 .with_animation(
                     ("settings-flash", flash.seq),
-                    Animation::new(FLASH),
+                    Animation::new(katna_ui::motion::time(FLASH)),
                     move |el, t| {
                         // Holds, then fades.
                         let left = ((1.0 - t) / 0.6).min(1.0);
@@ -697,23 +802,23 @@ impl MailWindow {
         let empty = found.is_empty();
         let rows = found.into_iter().enumerate().map(|(ix, found)| {
             let title = found.title.clone();
-            let place = format!("{} \u{b7} {}", found.section.label(), found.detail);
-            div()
-                .id(("settings-result", ix))
-                .relative()
-                .overflow_hidden()
-                .px(px(12.0))
+            // An app's page says whose it is: "Mail › Reading".
+            let scope = found.section.scope();
+            let page = if scope == Scope::Katna || scope.label() == found.section.label() {
+                found.section.label()
+            } else {
+                format!("{} \u{203a} {}", scope.label(), found.section.label())
+            };
+            let place = format!("{page} \u{b7} {}", found.detail);
+            crate::widgets::row(("settings-result", ix), false, th)
+                .px(px(katna_ui::tokens::space::S4))
                 .py(px(10.0))
-                .flex()
                 .flex_col()
-                .gap(px(2.0))
-                .rounded(px(8.0))
-                .cursor_pointer()
-                .hover(|d| d.bg(rgba(th.hover)))
+                .items_stretch()
+                .gap(px(katna_ui::tokens::space::S1))
                 .on_click(cx.listener(move |this, _, window, cx| {
                     this.go_to_setting(found.clone(), window, cx)
                 }))
-                .child(Ripple::new(("settings-result-ripple", ix), rgba(th.ripple)).rounded(8.0))
                 .child(
                     div()
                         .text_size(px(14.0))
@@ -802,11 +907,15 @@ mod tests {
                 .map(|f| f.title.to_string())
                 .collect::<Vec<_>>()
         };
-        assert_eq!(titles("dark")[0], "Theme");
+        assert_eq!(titles("dark")[0], "Mode");
+        assert_eq!(titles("nord")[0], "Colors");
+        assert_eq!(titles("accent")[0], "Accent");
         assert_eq!(titles("reading pane")[0], "Reading pane");
         assert!(titles("undo").contains(&"Sending".to_owned()));
         assert!(titles("rules").contains(&"Folders & rules".to_owned()));
         assert!(titles("folders").contains(&"Folders & rules".to_owned()));
+        assert_eq!(titles("filters")[0], "Rules");
+        assert!(titles("unread count").contains(&"Folders".to_owned()));
         assert!(titles("template").contains(&"Templates".to_owned()));
         assert!(titles("archive").iter().any(|t| t.contains("Archive")));
         assert!(titles("sentry").contains(&"User feedback".to_owned()));

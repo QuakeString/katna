@@ -41,6 +41,10 @@ io-imap.workspace = true
 io-sasl.workspace = true
 io-smtp.workspace = true
 
+# DNS servers for autoconfig (`src/autoconfig/dns.rs`).
+[target.'cfg(windows)'.dependencies]
+winreg.workspace = true
+
 [dev-dependencies]
 tempfile.workspace = true
 smol.workspace = true

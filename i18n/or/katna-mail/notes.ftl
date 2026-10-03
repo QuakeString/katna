@@ -15,6 +15,7 @@ notes-loading = ଆପଣଙ୍କ ନୋଟ ଖୋଲୁଛି…
 
 notes-take-a-note = ନୋଟ ଲେଖନ୍ତୁ…
 notes-new-list = ନୂଆ ତାଲିକା
+notes-new-note = ନୂଆ ନୋଟ
 notes-pinned = ପିନ୍ କରାଯାଇଥିବା
 notes-others = ଅନ୍ୟାନ୍ୟ
 notes-empty = ଆପଣ ଯୋଗ କରିଥିବା ନୋଟ ଏଠାରେ ଦେଖାଯିବ

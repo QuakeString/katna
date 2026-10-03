@@ -66,6 +66,7 @@ about-credit-resvg = SVG चित्रे
 about-credit-jiff = तारखा आणि टाइम झोन
 about-credit-spellbook = स्पेल चेक, Helix एडिटरकडून
 about-credit-smol = एकाच वेळी अनेक कामे
+about-credit-color-schemes = अंगभूत रंगसंगतींचे पॅलेट
 about-all-libraries = Katna वापरत असलेल्या सर्व लायब्ररी ({ $count })
 about-library-authors = { $authors } यांच्याद्वारे
 about-license = Katna हे GNU GPL, आवृत्ती 3 किंवा नंतरच्या अंतर्गत मुक्त सॉफ्टवेअर आहे.
@@ -123,6 +124,21 @@ onboarding-density-default = डीफॉल्ट
 onboarding-density-compact = कॉम्पॅक्ट
 onboarding-continue = पुढे चला
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Katna खात्यासह आणखी मिळवा
+onboarding-katna-lead = हे ऐच्छिक आहे. यामुळे Katna ची ऑनलाइन वैशिष्ट्ये चालू होतात, आणि तुम्ही ते नंतर सेटिंग्ज > सदस्यता मध्ये बनवू शकता.
+onboarding-katna-receipts-title = वाचन पावत्या
+onboarding-katna-receipts-text = तुम्ही पाठवलेला मेल लोक केव्हा उघडतात ते पाहा.
+onboarding-katna-links-title = लिंक ट्रॅकिंग
+onboarding-katna-links-text = तुमच्या मेलमधील कोणत्या लिंकवर क्लिक होते ते पाहा.
+onboarding-katna-activity-title = ॲक्टिव्हिटी
+onboarding-katna-activity-text = तुम्ही पाठवलेल्या सर्व मेलचे उघडणे आणि क्लिक, एकाच ठिकाणी.
+onboarding-katna-translate-title = आपोआप भाषांतर
+onboarding-katna-translate-text = इतर भाषांमध्ये लिहिलेला मेल तुमच्या भाषेत वाचा.
+onboarding-katna-private = त्याचा स्वतःचा पासवर्ड असतो. तुमच्या मेलचे लॉगिन हा कॉम्प्युटर कधीही सोडत नाहीत.
+
 ## First run: done
 
 onboarding-ready-title = सर्व तयार आहे
@@ -166,7 +182,7 @@ tour-search-text = शोध ऑफलाइनसुद्धा चालत�
 tour-menu-title = फोल्डर दाखवा किंवा लपवा
 tour-menu-text = हे बटण फोल्डर यादी दुमडून बाजूला ठेवते. ती लपलेली असताना, फोल्डर पाहण्यासाठी डावीकडील मेल वर पॉइंटर ठेवा.
 tour-apps-title = तुमची ॲप्स
-tour-apps-text = मेल आता इथे राहतो. कॅलेंडर, संपर्क, कार्ये, नोट्स आणि फीड या पट्टीत त्याच्यासोबत येतील.
+tour-apps-text = मेल इथे आहे, कॅलेंडर, संपर्क, कार्ये, नोट्स आणि फाइल्स यांच्या शेजारी.
 tour-tabs-title = इनबॉक्स टॅब
 tour-tabs-text = नवीन मेल प्राथमिक, जाहिराती, सामाजिक, अपडेट आणि फोरम मध्ये वर्गीकृत होतो. तुम्ही झटपट सेटिंग्जमध्ये टॅब बंद करू शकता.
 tour-list-title = तुमचे मेसेज
@@ -197,6 +213,9 @@ sign-in-again-button = साइन इन करा
 sign-in-again-tooltip = तुमच्या ब्राउझरमध्ये { $provider } चे साइन-इन पेज उघडा
 sign-in-again-waiting = तुमच्या ब्राउझरची वाट पाहत आहे…
 sign-in-again-close = बंद करा
+google-api-off = Katna च्या Google Cloud प्रोजेक्टमध्ये { $api } बंद आहे.
+google-api-turn-on = चालू करा
+google-api-turn-on-tooltip = { $api } चालू करण्यासाठी Google Cloud उघडा, मग पुन्हा प्रयत्न करा दाबा
 sign-in-again-done = { $address } मध्ये पुन्हा साइन इन केले. तुमचे मेल आणत आहे…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

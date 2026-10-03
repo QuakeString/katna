@@ -4,6 +4,7 @@
 
 ## Attachment viewer
 
+viewer-opening = جارٍ الفتح…
 viewer-unreadable = تعذّرت قراءة هذا المرفق.
 viewer-pdf-locked = ملف PDF هذا محمي بكلمة مرور.
 viewer-pdf-unreadable = تعذّرت قراءة ملف PDF هذا.
@@ -14,8 +15,17 @@ viewer-slides-unreadable = تعذّرت قراءة هذه الشرائح.
 viewer-no-preview = لا تتوفر معاينة
 viewer-slide = الشريحة { $number }
 viewer-page = صفحة
+viewer-slide-box = شريحة
 viewer-page-count = من { $count }
 viewer-go-to-page-tip = اكتب رقم الصفحة ثم اضغط Enter (Ctrl+G)
+viewer-rotate-clockwise-tip = التدوير باتجاه عقارب الساعة (Ctrl+R)
+viewer-rotate-anticlockwise-tip = التدوير عكس اتجاه عقارب الساعة (Ctrl+Shift+R)
+viewer-fit-page-tip = ملاءمة الصفحة
+viewer-fit-picture-tip = ملاءمة النافذة
+viewer-fit-width-tip = ملاءمة العرض
+viewer-real-size-tip = الحجم الفعلي (1:1)
+viewer-page-back-tip = الصفحة السابقة
+viewer-page-on-tip = الصفحة التالية
 
 ## Marking up a PDF
 
@@ -26,6 +36,8 @@ viewer-tool-underline = تسطير
 viewer-tool-squiggly = خط متموج
 viewer-tool-strike = يتوسطه خط
 viewer-tool-pen = قلم
+viewer-tool-note = ملاحظة لاصقة
+viewer-tool-text = مربع نص
 viewer-tool-eraser = ممحاة
 viewer-color-yellow = أصفر
 viewer-color-green = أخضر
@@ -38,6 +50,16 @@ viewer-color-purple = بنفسجي
 viewer-marks-undo-tip = تراجع (Ctrl+Z)
 viewer-marks-redo-tip = إعادة (Ctrl+Shift+Z)
 viewer-save-marked-tip = حفظ نسخة مع علاماتك (Ctrl+S)
+viewer-reply-marked-tip = الرد بالنسخة المعلَّمة
+viewer-forward-tip = إعادة توجيه الملف
+viewer-forward = إعادة توجيه
+viewer-open-with = الفتح باستخدام…
+viewer-save = حفظ
+# Typing a sticky note or a text box on the page.
+viewer-note-placeholder = اكتب ملاحظة
+viewer-text-placeholder = اكتب هنا
+viewer-note-done = تم
+viewer-note-delete = حذف
 viewer-markup-protected = ملف PDF هذا محمي من التغييرات، لذا لا يمكن وضع علامات عليه.
 viewer-marks-save-failed = تعذّر حفظ النسخة المعلَّمة.
 # Asked when closing a PDF, or moving to another attachment, with marks
@@ -50,3 +72,5 @@ viewer-marks-save = حفظ نسخة
 # The name of the copy of a PDF with marks, before ".pdf". $name: the
 # attachment's name without ".pdf".
 viewer-marked-name = { $name } (معلَّم)
+viewer-pick = تحديد
+viewer-picked = محدَّد

@@ -14,13 +14,13 @@ tab-other = Ndị ọzọ
 tab-inbox = Igbe ozi mbata
 tab-newsletters = Akwụkwọ akụkọ
 tab-notifications = Ọkwa
-tab-new = { $count } ọhụrụ
 tab-provider-other = Katna haziri ya
 
 ## Mail list: toolbar
 
 list-select = Họrọ
 list-refresh = Mee ọhụrụ
+list-back-to-top = Laghachi n'elu
 list-checking = Na-elele ozi ọhụrụ…
 list-more = Ọzọ
 list-mark-read = Kaa akara dị ka agụrụ
@@ -39,6 +39,7 @@ list-results = Nsonaazụ maka “{ $query }”
 list-results-corrected = Na-egosi nsonaazụ maka “{ $query }”
 list-search-instead = Kama nke ahụ, chọọ “{ $query }”
 list-files-more = +{ $count }
+list-replied = Ị zara ya
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -237,6 +238,12 @@ menu-add-note = Tinye ndetu
 menu-print-all = Bipụta niile
 menu-new-window = Mepee na windo ọhụrụ
 menu-move-to = Bugharịa gaa
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Soro ya
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Ndị ọzọ
 menu-move-to-heading = Bugharịa gaa:
 menu-find-from = Chọta ozi-e si n'aka { $name }
 

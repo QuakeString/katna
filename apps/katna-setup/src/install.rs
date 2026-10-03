@@ -148,14 +148,15 @@ impl Layout {
     }
 
     /// Whether the programs folder can take Katna: a new folder, or one
-    /// that holds Katna already or is empty, and not a link to somewhere
+    /// that holds Katna already, is empty or holds only a Setup left by an
+    /// uninstall, and not a link to somewhere
     /// else. Setup never mixes Katna into another program's files, which
     /// removing Katna would delete.
     pub fn check_folder(&self) -> io::Result<()> {
         let dir = &self.programs;
         let usable = match std::fs::symlink_metadata(dir) {
             Ok(meta) if meta.file_type().is_symlink() || !meta.is_dir() => false,
-            Ok(_) => self.installed() || std::fs::read_dir(dir)?.next().is_none(),
+            Ok(_) => self.installed() || only_setup_left(dir)?,
             Err(err) if err.kind() == io::ErrorKind::NotFound => true,
             Err(err) => return Err(err),
         };
@@ -445,10 +446,9 @@ fn stop(programs: &Path) {
     }
     // Only the processes started from this folder: another program may
     // run its own dbus-daemon.exe.
-    let folder = ps_quote(&programs.display().to_string());
     let script = format!(
-        "Get-Process | Where-Object {{ $_.Path -and $_.Path.StartsWith('{folder}\\', \
-         [StringComparison]::OrdinalIgnoreCase) -and $_.Id -ne {me} }} | Stop-Process -Force",
+        "{} | Where-Object {{ $_.Id -ne {me} }} | Stop-Process -Force",
+        running_from(programs),
         me = std::process::id()
     );
     let stopped = std::process::Command::new(system_program(POWERSHELL))
@@ -688,6 +688,23 @@ fn register(
 
     katna_platform::mail_handler::register_in(&root, &mail)?;
 
+    // "Send with Katna Mail" on files and folders, for this user (the
+    // daemon adds each user's, with a submenu of the accounts when there
+    // are several), and Katna Mail in Send to.
+    katna_platform::file_menus::windows::apply(
+        &winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER),
+        &mail.display().to_string(),
+        &tr!("setup-file-menu-send"),
+        &[],
+    )?;
+    if let Some(path) = send_to_link() {
+        let mut link = mslnk::ShellLink::new(&mail).map_err(io::Error::other)?;
+        link.set_arguments(Some("--attach".to_owned()));
+        link.set_working_dir(Some(dir.display().to_string()));
+        link.set_icon_location(Some(icon.display().to_string()));
+        link.create_lnk(path).map_err(io::Error::other)?;
+    }
+
     // For everyone, the machine's Run key starts Katna for each user;
     // Katna Mail's own setting changes only the user's.
     let (key, _) = root.create_subkey(RUN_KEY)?;
@@ -723,9 +740,23 @@ fn register(
     Ok(())
 }
 
+/// Katna Mail in the user's Send to menu.
+#[cfg(windows)]
+fn send_to_link() -> Option<PathBuf> {
+    let data = PathBuf::from(std::env::var_os("APPDATA")?);
+    Some(data.join(r"Microsoft\Windows\SendTo").join(LINK))
+}
+
 #[cfg(windows)]
 fn unregister(layout: &Layout) {
     let root = root(layout.scope);
+    katna_platform::file_menus::windows::remove(&root);
+    katna_platform::file_menus::windows::remove(&winreg::RegKey::predef(
+        winreg::enums::HKEY_CURRENT_USER,
+    ));
+    if let Some(path) = send_to_link() {
+        let _ = std::fs::remove_file(path);
+    }
     for key in [
         UNINSTALL_KEY.to_owned(),
         app_id_key(),
@@ -764,8 +795,10 @@ fn delete_passwords() {
 fn delete_passwords() {}
 
 /// Deletes the programs folder. When Windows' Apps settings uninstall
-/// Katna, Setup's own copy in that folder is running, so a short-lived
-/// PowerShell removes the folder once Setup has exited.
+/// Katna, Setup's own copy in that folder is running, and for everyone
+/// the user's Setup waits there for the administrator's, so a PowerShell
+/// removes the folder once no program runs from it any more: Setup's
+/// window may stay open on "Katna was removed" for a while.
 fn remove_programs(programs: &Path) -> io::Result<()> {
     // Only Katna's own folder: never one without Katna Mail in it.
     if !programs.join(MAIL_EXE).is_file() {
@@ -785,8 +818,14 @@ fn remove_programs(programs: &Path) -> io::Result<()> {
         use std::os::windows::process::CommandExt;
         const CREATE_NO_WINDOW: u32 = 0x0800_0000;
         let script = format!(
-            "Start-Sleep -Seconds 2; Remove-Item -LiteralPath '{}' -Recurse -Force",
-            ps_quote(&programs.display().to_string())
+            "$until = (Get-Date).AddHours(1); \
+             while ((Get-Date) -lt $until -and ({running})) {{ Start-Sleep -Seconds 1 }}; \
+             foreach ($try in 1..10) {{ \
+             Start-Sleep -Seconds 1; \
+             Remove-Item -LiteralPath '{folder}' -Recurse -Force -ErrorAction SilentlyContinue; \
+             if (-not (Test-Path -LiteralPath '{folder}')) {{ break }} }}",
+            running = running_from(programs),
+            folder = ps_quote(&programs.display().to_string())
         );
         std::process::Command::new(system_program(POWERSHELL))
             .args(["-NoProfile", "-NonInteractive", "-Command", &script])
@@ -795,6 +834,16 @@ fn remove_programs(programs: &Path) -> io::Result<()> {
             .spawn()?;
     }
     Ok(())
+}
+
+/// A PowerShell pipeline listing the processes started from `folder`.
+#[cfg_attr(not(windows), allow(dead_code))]
+fn running_from(folder: &Path) -> String {
+    format!(
+        "Get-Process | Where-Object {{ $_.Path -and $_.Path.StartsWith('{}\\', \
+         [StringComparison]::OrdinalIgnoreCase) }}",
+        ps_quote(&folder.display().to_string())
+    )
 }
 
 /// `s` inside a single-quoted PowerShell string. PowerShell also ends such
@@ -827,6 +876,21 @@ fn system_program(name: &str) -> PathBuf {
         .unwrap_or_else(|| PathBuf::from(r"C:\Windows"))
         .join("System32")
         .join(name)
+}
+
+/// Whether `dir` is empty or holds nothing but `katna-setup.exe`: what
+/// an uninstall leaves when the Setup it ran could not remove itself
+/// (Setups before 2026-09-30 gave up after two seconds). Installing puts
+/// its own copy there.
+fn only_setup_left(dir: &Path) -> io::Result<bool> {
+    for entry in std::fs::read_dir(dir)? {
+        let entry = entry?;
+        let setup = entry.file_name().eq_ignore_ascii_case(SETUP_EXE);
+        if !setup || !entry.file_type()?.is_file() {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }
 
 #[cfg(test)]
@@ -875,6 +939,12 @@ mod tests {
             _ => return None,
         };
         Some(at(path).into_os_string())
+    }
+
+    #[test]
+    fn finds_only_programs_inside_the_folder() {
+        let script = running_from(Path::new(r"C:\Kat'na\Katna"));
+        assert!(script.contains(r"StartsWith('C:\Kat''na\Katna\', "));
     }
 
     #[test]
@@ -1007,6 +1077,9 @@ mod tests {
         // A new folder, then an empty one.
         layout.check_folder().unwrap();
         std::fs::create_dir(&layout.programs).unwrap();
+        layout.check_folder().unwrap();
+        // What an uninstall left: only Setup.
+        std::fs::write(layout.programs.join("Katna-Setup.exe"), b"").unwrap();
         layout.check_folder().unwrap();
         // Someone else's files.
         std::fs::write(layout.programs.join("other.exe"), b"").unwrap();

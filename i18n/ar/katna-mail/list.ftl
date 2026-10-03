@@ -14,13 +14,13 @@ tab-other = أخرى
 tab-inbox = البريد الوارد
 tab-newsletters = النشرات الإخبارية
 tab-notifications = الإشعارات
-tab-new = { $count } جديدة
 tab-provider-other = يفرزها Katna
 
 ## Mail list: toolbar
 
 list-select = تحديد
 list-refresh = إعادة التحميل
+list-back-to-top = العودة إلى الأعلى
 list-checking = جارٍ التحقق من وجود بريد جديد…
 list-more = المزيد
 list-mark-read = وضع علامة «مقروءة»
@@ -39,6 +39,7 @@ list-results = نتائج «{ $query }»
 list-results-corrected = يتم عرض نتائج «{ $query }»
 list-search-instead = البحث عن «{ $query }» بدلًا من ذلك
 list-files-more = +{ $count }
+list-replied = لقد رددت
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -587,6 +588,12 @@ menu-add-note = إضافة ملاحظة
 menu-print-all = طباعة الكل
 menu-new-window = فتح في نافذة جديدة
 menu-move-to = نقل إلى
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = متابعة
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = المزيد
 menu-move-to-heading = نقل إلى:
 menu-find-from = البحث عن رسائل من { $name }
 

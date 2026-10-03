@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Taller Important marker"
+text = """
+The Important marker beside the star is 2 px taller, so it no longer looks
+squashed next to the star and checkbox. It stays centred in the row.
+"""

@@ -27,6 +27,7 @@ desktop-menu-page-calendar = _Agenda
 desktop-menu-page-contacts = C_ontatos
 desktop-menu-page-tasks = Tare_fas
 desktop-menu-page-notes = _Notas
+desktop-menu-page-files = _Arquivos
 desktop-menu-next = _Próxima conversa
 desktop-menu-previous = Conversa _anterior
 desktop-menu-message = _Mensagem

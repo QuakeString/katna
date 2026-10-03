@@ -91,6 +91,18 @@ pub(super) fn presets(now: &Zoned) -> Vec<Preset> {
     presets
 }
 
+/// Tomorrow at 8 in the morning in `tz`, as Unix seconds: a mute's end.
+pub(super) fn tomorrow_morning(tz: &TimeZone) -> Option<i64> {
+    let now = Timestamp::now().to_zoned(tz.clone());
+    now.date()
+        .tomorrow()
+        .ok()?
+        .to_datetime(Time::constant(8, 0, 0, 0))
+        .to_zoned(tz.clone())
+        .ok()
+        .map(|at| at.timestamp().as_second())
+}
+
 /// When snoozed mail comes back, for the snackbar and tooltips:
 /// "Sun, Sep 27, 2026, 8:00 AM".
 pub(super) fn describe(at: i64, tz: &TimeZone) -> String {
@@ -153,6 +165,7 @@ impl MailWindow {
             input.set_accent(accent);
             input.set_text(morning, cx);
             input.select_all_text(cx);
+            input.set_stepper(Some(schedule::time_stepper()));
             input
         });
         let events = cx.subscribe_in(
@@ -335,7 +348,10 @@ impl MailWindow {
         )
         .with_animation(
             "snooze-menu",
-            Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
+            Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                140,
+            )))
+            .with_easing(ease_out_quint()),
             |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
         )
         .into_any_element()

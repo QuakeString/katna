@@ -39,6 +39,12 @@ contacts-account-failed = رابطے پڑھے نہیں جا سکے۔
 # $reason is the server's own words, in English.
 contacts-account-error = رابطے پڑھے نہیں جا سکے: { $reason }
 contacts-account-none = کوئی ایڈریس بک نہیں ملی
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = کوئی ایڈریس بک نہیں ملی: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } رابطے صرف اس Katna کو دکھاتا ہے جو { $provider } کے ساتھ سائن ان ہو۔
+contacts-account-sign-in-with = { $provider } کے ساتھ سائن ان کریں
 contacts-account-looking = رابطے تلاش کیے جا رہے ہیں…
 contacts-account-try-again = دوبارہ کوشش کریں
 contacts-account-try-again-tooltip = اس اکاؤنٹ کے رابطے ابھی دوبارہ چیک کریں
@@ -86,7 +92,7 @@ contacts-print-none = پرنٹ کرنے کے لیے کوئی رابطہ نہیں
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = سالگرہ: { $day }
 contacts-print-nickname = عرفی نام: { $name }
-contacts-create = رابطہ بنائیں
+contacts-create = نیا رابطہ
 
 ## Search and the list
 

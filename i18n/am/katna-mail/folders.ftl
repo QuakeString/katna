@@ -9,6 +9,17 @@ nav-folders = አቃፊዎች
 nav-label-new = አዲስ መሰየሚያ ፍጠር
 nav-folder-new = አዲስ አቃፊ ፍጠር
 nav-menu-check-mail = አዲስ ደብዳቤ ይፈትሹ
+nav-menu-check-inbox = ይህን ገቢ መልዕክት ሳጥን ፈትሽ
+nav-menu-sign-in-again = እንደገና ግባ
+nav-menu-new-mail = ከዚህ መለያ አዲስ ደብዳቤ
+nav-menu-account-settings = የመለያ ቅንብሮች
+nav-account-checked = ተመሳስሏል · የተፈተሸው { $ago }
+nav-account-in-sync = ተመሳስሏል
+nav-account-connecting = በመገናኘት ላይ…
+nav-account-offline = ከመስመር ውጭ፣ እንደገና በመሞከር ላይ
+nav-account-signed-out = የ{ $provider } መግቢያ ጊዜው አልፏል
+nav-account-password-refused = የይለፍ ቃሉ ተቀባይነት አላገኘም
+nav-account-storage = ከ{ $total } { $used } ጥቅም ላይ ውሏል
 nav-menu-new-subfolder = በውስጡ አዲስ አቃፊ
 nav-menu-new-sublabel = በውስጡ አዲስ መሰየሚያ
 nav-menu-empty-trash = መጣያውን ባዶ አድርግ
@@ -16,10 +27,6 @@ nav-account-unnamed = መለያ { $number }
 nav-all-accounts = ሁሉም መለያዎች
 nav-expand = አቃፊዎችን አሳይ
 nav-collapse = አቃፊዎችን ደብቅ
-nav-tab-new = { $count ->
-    [one] { $count } አዲስ
-   *[other] { $count } አዲስ
-}
 storage-used = ከ{ $total } ውስጥ { $percent }% ጥቅም ላይ ውሏል
 storage-used-detail = { $address }፦ ከ{ $total } ውስጥ { $used } ጥቅም ላይ ውሏል
 

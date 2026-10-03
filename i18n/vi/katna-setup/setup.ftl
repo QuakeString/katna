@@ -4,6 +4,7 @@
 
 setup-window-title = Katna Setup
 setup-app-name = Katna Mail
+setup-file-menu-send = Gửi bằng Katna Mail
 setup-tagline = Thư điện tử nhanh, riêng tư, nằm ngay trên máy tính của bạn.
 setup-update-where = Cập nhật Katna Mail trong { $path }. Thư, cài đặt và lối tắt của bạn vẫn được giữ nguyên.
 setup-for = Cài đặt cho

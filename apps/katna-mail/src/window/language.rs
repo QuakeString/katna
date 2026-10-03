@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The language picker (`docs/ARCHITECTURE.md` §13.10): the flag button
+//! The language picker (`docs/ARCHITECTURE.md`, the chat view): the flag button
 //! left of Settings in the top bar, the popover it opens (search, System
 //! default, then every language with its flag, own name and English name),
 //! and the phone drawer's Language row, which opens the same list over the
@@ -18,7 +18,7 @@ use katna_i18n::{Language, Status, tr};
 use katna_ui::{InputEvent, TextInput, px};
 
 use super::settings::Change;
-use super::{BAR_ITEM_GAP, MailWindow, TOP_BAR_GAP};
+use super::{BAR_ITEM_GAP, MailWindow};
 use crate::theme::Theme;
 use crate::widgets::{icon, raised, tip};
 
@@ -92,7 +92,7 @@ pub(super) fn flag(code: &str, th: &Theme) -> AnyElement {
         .rounded(px(3.0))
         .overflow_hidden()
         .border_1()
-        .border_color(rgba(th.divider))
+        .border_color(rgba(th.outline))
         .child(
             img(SharedString::from(format!("flags/{code}.svg")))
                 .w(px(24.0))
@@ -155,7 +155,7 @@ impl MailWindow {
         self.language_picker.is_some()
     }
 
-    /// Opens the picker (under `at`, else under the top bar's button), or
+    /// Opens the picker (under `at`, else under the account picture), or
     /// closes it.
     pub(super) fn toggle_language_picker(
         &mut self,
@@ -239,8 +239,8 @@ impl MailWindow {
         cx.notify();
     }
 
-    /// The top bar's language button: the flag of the language in use and
-    /// a small chevron.
+    /// The account menu's language button: the flag of the language in use
+    /// and a small chevron.
     pub(super) fn render_language_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let resolved = katna_i18n::current();
         let language = resolved.language;
@@ -277,12 +277,12 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// How far the language button's right edge is from the top bar's end:
-    /// the account picture (with 8 px after it), Settings, and a gap after
-    /// each (see `render_top_end`).
+    /// How far the picker's right edge sits from the top bar's end: under
+    /// the account picture, whose menu holds the language button (with
+    /// 8 px after it; see `render_top_end`).
     fn language_button_end(&self) -> f32 {
         let (_, room_end) = self.layout.shape.room;
-        room_end + BAR_ITEM_GAP + 8.0 + 40.0 + TOP_BAR_GAP + 40.0 + TOP_BAR_GAP
+        room_end + BAR_ITEM_GAP + 8.0
     }
 
     /// The popover, over a scrim that closes it on a press outside.
@@ -502,7 +502,8 @@ impl MailWindow {
             .children(machine)
             .with_animation(
                 "language-menu",
-                Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                    .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
             );
         let close = || {

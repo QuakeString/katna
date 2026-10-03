@@ -7,12 +7,16 @@
 //! to one row per account. The accounts below start folded; the arrow
 //! beside each account's name folds and opens it either way.
 
+use std::collections::HashMap;
+
 use gpui::Context;
-use katna_core::AccountId;
+use katna_core::{AccountId, MailCategory};
+use katna_store::SpreadTabs;
 
 use super::{Listing, MailWindow};
 use crate::data::Entry;
 use crate::sidebar::Unified;
+use crate::tabs::{self, Tab};
 
 impl MailWindow {
     /// Whether `account`'s folders show under its name: as its arrow
@@ -45,13 +49,54 @@ impl MailWindow {
         self.config.mail.unified_inbox && self.tree.accounts.len() > 1
     }
 
-    /// The lines of `view`, of `account` or of all.
-    pub(super) fn unified_entries(&self, view: Unified, account: Option<AccountId>) -> Vec<Entry> {
-        let Ok(mail) = &self.mail else {
+    /// The inbox tabs of a unified list: one account's own when it is
+    /// picked, else the set every account shares. Only the inbox has tabs.
+    pub(super) fn unified_tabs(&self, view: Unified, account: Option<AccountId>) -> Vec<Tab> {
+        if view != Unified::Inbox || !self.config.mail.inbox_tabs {
             return Vec::new();
+        }
+        match account {
+            Some(account) => self.account_tabs(account),
+            None => tabs::shared(self.config.mail.unified_tabs),
+        }
+    }
+
+    /// The lines of `view`, of `account` or of all, in the open tab, and
+    /// with tabs the unread conversations per tab.
+    pub(super) fn unified_entries(
+        &self,
+        view: Unified,
+        account: Option<AccountId>,
+    ) -> (Vec<Entry>, Option<HashMap<MailCategory, u64>>) {
+        let Ok(mail) = &self.mail else {
+            return (Vec::new(), None);
         };
         let folders = self.tree.unified_folders(view, account);
-        mail.spread_entries(&folders, view.filter(), self.config.mail.conversations)
+        let conversations = self.config.mail.conversations;
+        if self.tabs.is_empty() || view != Unified::Inbox {
+            return (
+                mail.spread_entries(&folders, view.filter(), conversations),
+                None,
+            );
+        }
+        // Each account's mail of the tabs it turned off stays in the
+        // first tab, as in its own inbox. One account's own tabs hold
+        // that already.
+        let folded = match account {
+            Some(_) => Vec::new(),
+            None => self
+                .tree
+                .accounts
+                .iter()
+                .map(|a| (a.id, tabs::folded(&self.account_tabs(a.id))))
+                .collect(),
+        };
+        let tabs = SpreadTabs {
+            categories: self.tabs.get(self.tab).map(|t| t.categories.clone()),
+            folded,
+        };
+        let (entries, unread) = mail.spread_inbox_entries(&folders, &tabs, conversations);
+        (entries, Some(unread))
     }
 
     /// What the list of `view` is called: "Inbox", or with one account's
@@ -71,7 +116,6 @@ impl MailWindow {
         account: Option<AccountId>,
         cx: &mut Context<Self>,
     ) {
-        let entries = self.unified_entries(view, account);
         let Ok(mail) = &mut self.mail else {
             return;
         };
@@ -79,10 +123,14 @@ impl MailWindow {
             self.show_recipients = view.shows_recipients();
             mail.clear_rows();
         }
-        // Inbox tabs belong to one account's inbox.
-        self.tabs.clear();
-        self.tab = 0;
-        self.category_unread.clear();
+        // Another list opens at its first tab.
+        if self.unified != Some((view, account)) {
+            self.tab = 0;
+        }
+        self.tabs = self.unified_tabs(view, account);
+        self.tab = self.tab.min(self.tabs.len().saturating_sub(1));
+        let (entries, unread) = self.unified_entries(view, account);
+        self.category_unread = unread.unwrap_or_default();
         self.folder = None;
         self.unified = Some((view, account));
         self.listing = Some(Listing::Unified { view, account });
@@ -90,6 +138,7 @@ impl MailWindow {
         self.reset_list(false);
         self.selected = (!self.entries.is_empty()).then_some(0);
         self.checked.clear();
+        self.check_anchor = None;
         self.checked_all = false;
         self.page_pick = None;
         self.picked = None;

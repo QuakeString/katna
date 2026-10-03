@@ -46,6 +46,7 @@ compose-sent-archived = Đã gửi và lưu trữ
 compose-sent = Đã gửi thư
 compose-discarded = Đã hủy thư nháp
 compose-draft-saved = Đã lưu thư nháp
+compose-draft-saving = Đang lưu…
 compose-draft-failed = Không lưu được thư nháp: { $error }
 compose-draft-not-opened = Không mở được thư nháp.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = Không mở được thư nháp.
 compose-picker-insert = Chèn
 compose-picker-attach = Đính kèm
 compose-file-too-large = { $name } quá lớn: một thư chỉ mang được tối đa { $limit }.
+compose-forward-files-missing = Tệp của thư được chuyển tiếp chưa được tải xuống, nên chưa được đính kèm.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Xóa tệp đính kèm
+compose-attachment-open-tip = Mở để kiểm tra
 compose-attachments-total = { $count } tệp, { $size }
 compose-drive-note = { $name } vượt quá { $limit }, nên tệp sẽ được đưa lên Google Drive của bạn và thư sẽ kèm một liên kết.
 compose-drive-tip = Trong Google Drive của bạn; thư kèm một liên kết
@@ -74,6 +77,7 @@ compose-drive-share-link = Chia sẻ bằng liên kết
 compose-drive-send-without = Gửi mà không chia sẻ
 compose-drive-share-cancel = Hủy
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } vượt quá { $limit }, nên tệp sẽ được đưa lên OneDrive của bạn và thư sẽ kèm một liên kết.
 compose-onedrive-tip = Trong OneDrive của bạn; thư kèm một liên kết
 compose-onedrive-allow = Cho phép OneDrive
@@ -84,8 +88,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive không thể chia sẻ các tệp với { $addresses }. Thay vào đó, bất kỳ ai có liên kết đều có thể mở chúng.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Thả tệp vào đây
 compose-drop-here = Thả vào đây
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = Giữ định dạng
 compose-paste-table = Bảng
 compose-paste-picture = Ảnh
@@ -99,6 +107,9 @@ compose-encrypt = Mã hóa
 compose-encrypted = Đã mã hóa: chỉ người nhận đọc được
 compose-sign = Ký
 compose-signed = Đã ký: người nhận có thể kiểm tra thư là của bạn
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = Theo dõi lượt mở và lượt nhấp
 compose-tracked = Đang theo dõi: bạn thấy khi mỗi người nhận mở thư hoặc mở một liên kết
 compose-track-clicks = Theo dõi lượt nhấp liên kết (văn bản thuần không thể hiển thị lượt mở)
@@ -131,6 +142,9 @@ send-check-subject-title = Gửi mà không có tiêu đề?
 send-check-subject-text = Thư này không có tiêu đề.
 send-check-add-subject = Thêm tiêu đề
 send-check-send-anyway = Vẫn gửi
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = Không phải địa chỉ email hợp lệ
 recipient-show-address = Hiện địa chỉ
 recipient-remove = Xóa

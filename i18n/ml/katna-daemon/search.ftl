@@ -1,6 +1,9 @@
 # Katna Mail, Malayalam (മലയാളം).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Results
+
 search-category-mail = മെയിൽ
 search-category-people = ആളുകൾ
 search-category-tasks = ടാസ്‌ക്കുകൾ
@@ -18,6 +21,9 @@ search-event-in-days =
         [one] { $count } ദിവസത്തിനുള്ളിൽ
        *[other] { $count } ദിവസത്തിനുള്ളിൽ
     }
+
+## Buttons on a result in KRunner
+
 search-reply-all = എല്ലാവർക്കും മറുപടി നൽകുക
 search-copy-address = വിലാസം പകർത്തുക
 search-find-mail = മെയിൽ കണ്ടെത്തുക

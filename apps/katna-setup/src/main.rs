@@ -5,7 +5,8 @@
 //!
 //! One small rounded window in Katna's look instead of a wizard: the logo,
 //! who to install for, the folder, the shortcuts, one button, a progress
-//! bar, then Open Katna Mail. It follows Windows' light or dark setting.
+//! bar, then Open Katna Mail. It is drawn in Katna Mail's Mode, colour
+//! scheme and accent, following Windows' light or dark setting by default.
 //!
 //! ```text
 //! katna-setup                    install or update, with the window
@@ -37,8 +38,11 @@ use gpui::{
     WindowAppearance, WindowBackgroundAppearance, WindowBounds, WindowControlArea, WindowOptions,
     div, img, point, prelude::*, rgba, size,
 };
+use katna_core::Paths;
+use katna_core::config::{Config, Theme as ThemeChoice};
 use katna_i18n::tr;
 use katna_ui::px;
+use katna_ui::schemes::{self, Side};
 
 use install::{Choices, Layout, Scope, Step};
 use payload::Payload;
@@ -58,8 +62,14 @@ const VERSION: &str = katna_core::crash::VERSION;
 
 /// The window's card, and the clear margin around it its shadow falls in.
 const CARD: (f32, f32) = (580.0, 520.0);
-const MARGIN: f32 = 24.0;
+const MARGIN: f32 = if WINDOWS_FRAME { 0.0 } else { 24.0 };
 const RADIUS: f32 = 16.0;
+
+/// On Windows the card is the whole window, and Windows draws its shadow,
+/// border and, on Windows 11, round corners. A see-through window there
+/// shows as a grey box behind the card, with Windows' own border and
+/// shadow around that box instead.
+const WINDOWS_FRAME: bool = cfg!(windows);
 
 /// What the command line asks for.
 #[derive(Debug, Default)]
@@ -199,7 +209,11 @@ fn main() -> ExitCode {
                 appears_transparent: true,
                 ..Default::default()
             }),
-            window_background: WindowBackgroundAppearance::Transparent,
+            window_background: if WINDOWS_FRAME {
+                WindowBackgroundAppearance::Opaque
+            } else {
+                WindowBackgroundAppearance::Transparent
+            },
             app_id: Some(katna_core::ids::MAIL_APP_ID.to_owned()),
             is_resizable: false,
             ..Default::default()
@@ -213,6 +227,7 @@ fn main() -> ExitCode {
                 screen: start,
                 progress: Arc::new(Mutex::new(None)),
                 logo: Arc::new(Image::from_bytes(ImageFormat::Png, LOGO.to_vec())),
+                look: Look::read(),
             })
         });
         if let Err(err) = opened {
@@ -273,9 +288,12 @@ struct Setup {
     /// The work's result, written by its thread: `None` while it runs.
     progress: Arc<Mutex<Option<Result<(), String>>>>,
     logo: Arc<Image>,
+    look: Look,
 }
 
-/// Setup's colours, as Katna Mail's in light and dark.
+/// Setup's colours, as Katna Mail's: its own palette in light and dark,
+/// or the built-in colour scheme and accent picked in its Settings >
+/// Appearance ([`Look`]).
 struct Colors {
     page: Hsla,
     text: Hsla,
@@ -289,35 +307,180 @@ struct Colors {
     field: Hsla,
 }
 
-impl Colors {
-    fn new(dark: bool) -> Self {
+/// [`Colors`] as `0xRRGGBBAA`.
+struct Palette {
+    page: u32,
+    text: u32,
+    dim: u32,
+    accent: u32,
+    on_accent: u32,
+    track: u32,
+    hover: u32,
+    danger: u32,
+    outline: u32,
+    field: u32,
+}
+
+impl Palette {
+    /// Katna's own colours.
+    fn katna(dark: bool) -> Self {
         if dark {
             Self {
-                page: rgba(0x1f1f1fff).into(),
-                text: rgba(0xe3e3e3ff).into(),
-                dim: rgba(0xc4c7c5ff).into(),
-                accent: rgba(0xa8c7faff).into(),
-                on_accent: rgba(0x062e6fff).into(),
-                track: rgba(0xa8c7fa33).into(),
-                hover: rgba(0xffffff14).into(),
-                danger: rgba(0xf2b8b5ff).into(),
-                outline: rgba(0xffffff1f).into(),
-                field: rgba(0x2a2a2aff).into(),
+                page: 0x1f1f1fff,
+                text: 0xe3e3e3ff,
+                dim: 0xc4c7c5ff,
+                accent: 0xa8c7faff,
+                on_accent: 0x062e6fff,
+                track: 0xa8c7fa33,
+                hover: 0xffffff14,
+                danger: 0xf2b8b5ff,
+                outline: 0xffffff1f,
+                field: 0x2a2a2aff,
             }
         } else {
             Self {
-                page: rgba(0xffffffff).into(),
-                text: rgba(0x1f1f1fff).into(),
-                dim: rgba(0x444746ff).into(),
-                accent: rgba(0x0b57d0ff).into(),
-                on_accent: rgba(0xffffffff).into(),
-                track: rgba(0x0b57d029).into(),
-                hover: rgba(0x0b57d014).into(),
-                danger: rgba(0xb3261eff).into(),
-                outline: rgba(0x0000001a).into(),
-                field: rgba(0xf0f4f9ff).into(),
+                page: 0xffffffff,
+                text: 0x1f1f1fff,
+                dim: 0x444746ff,
+                accent: 0x0b57d0ff,
+                on_accent: 0xffffffff,
+                track: 0x0b57d029,
+                hover: 0x0b57d014,
+                danger: 0xb3261eff,
+                outline: 0x0000001a,
+                field: 0xf0f4f9ff,
             }
         }
+    }
+
+    /// A built-in scheme's side: Setup's card is its cards' colour.
+    fn scheme(side: &Side, dark: bool) -> Self {
+        let mut palette = Self {
+            page: side.card,
+            text: side.text,
+            dim: side.faint,
+            accent: 0,
+            on_accent: 0,
+            track: 0,
+            hover: if dark { 0xffffff14 } else { 0 },
+            danger: side.error,
+            outline: fade(side.text, if dark { 0.12 } else { 0.1 }),
+            field: mix(side.card, side.text, 0.06),
+        };
+        palette.set_accent(side.accent, dark);
+        palette
+    }
+
+    fn set_accent(&mut self, accent: u32, dark: bool) {
+        self.accent = accent | 0xff;
+        self.on_accent = if luminance(accent) > 0.4 {
+            0x1f1f1fff
+        } else {
+            0xffffffff
+        };
+        self.track = fade(accent, if dark { 0.2 } else { 0.16 });
+        if !dark {
+            self.hover = fade(accent, 0.08);
+        }
+    }
+
+    fn colors(&self) -> Colors {
+        let c = |color: u32| -> Hsla { rgba(color).into() };
+        Colors {
+            page: c(self.page),
+            text: c(self.text),
+            dim: c(self.dim),
+            accent: c(self.accent),
+            on_accent: c(self.on_accent),
+            track: c(self.track),
+            hover: c(self.hover),
+            danger: c(self.danger),
+            outline: c(self.outline),
+            field: c(self.field),
+        }
+    }
+}
+
+/// `color` with its alpha at `alpha`.
+fn fade(color: u32, alpha: f32) -> u32 {
+    (color & 0xffffff00) | ((alpha.clamp(0.0, 1.0) * 255.0).round() as u32)
+}
+
+/// `a` mixed `t` of the way to `b`, opaque.
+fn mix(a: u32, b: u32, t: f32) -> u32 {
+    let channel = |shift: u32| {
+        let (x, y) = (((a >> shift) & 0xff) as f32, ((b >> shift) & 0xff) as f32);
+        ((x + (y - x) * t).round() as u32) << shift
+    };
+    channel(24) | channel(16) | channel(8) | 0xff
+}
+
+/// Relative luminance, 0–1.
+fn luminance(color: u32) -> f32 {
+    let channel = |shift: u32| {
+        let v = ((color >> shift) & 0xff) as f32 / 255.0;
+        if v <= 0.04045 {
+            v / 12.92
+        } else {
+            ((v + 0.055) / 1.055).powf(2.4)
+        }
+    };
+    0.2126 * channel(24) + 0.7152 * channel(16) + 0.0722 * channel(8)
+}
+
+/// What Katna Mail's Settings > Appearance says, from the settings file of
+/// the user running Setup: Mode, Colors and Accent. A scheme Setup can't
+/// draw (the desktop's, one's own) is Katna's palette in the accent.
+#[derive(Debug)]
+struct Look {
+    mode: ThemeChoice,
+    colors: String,
+    accent: Option<u32>,
+}
+
+impl Look {
+    fn read() -> Self {
+        let config = Paths::from_env()
+            .ok()
+            .and_then(|paths| Config::load(&paths.config_file()).ok());
+        Self::from(&config.unwrap_or_default())
+    }
+
+    fn from(config: &Config) -> Self {
+        let accent = &config.mail.accent;
+        let accent = accent
+            .strip_prefix('#')
+            .filter(|hex| hex.len() == 6)
+            .and_then(|hex| u32::from_str_radix(hex, 16).ok())
+            .map(|rgb| (rgb << 8) | 0xff);
+        Self {
+            mode: config.mail.theme,
+            colors: config.mail.colors().to_owned(),
+            accent,
+        }
+    }
+
+    /// Dark when Mode says so, or with the desktop (`desktop_dark`) when
+    /// it follows it.
+    fn dark(&self, desktop_dark: bool) -> bool {
+        match self.mode {
+            ThemeChoice::System => desktop_dark,
+            ThemeChoice::Light => false,
+            ThemeChoice::Dark => true,
+        }
+    }
+}
+
+impl Colors {
+    fn new(dark: bool, look: &Look) -> Self {
+        let mut palette = match schemes::built_in(&look.colors) {
+            Some(scheme) => Palette::scheme(scheme.side(dark), dark),
+            None => Palette::katna(dark),
+        };
+        if let Some(accent) = look.accent {
+            palette.set_accent(accent, dark);
+        }
+        palette.colors()
     }
 }
 
@@ -482,11 +645,11 @@ impl Setup {
 
 impl Render for Setup {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let dark = matches!(
+        let dark = self.look.dark(matches!(
             window.appearance(),
             WindowAppearance::Dark | WindowAppearance::VibrantDark
-        );
-        let c = Colors::new(dark);
+        ));
+        let c = Colors::new(dark, &self.look);
         let (title, body, bar, buttons) = self.content(&c, cx);
         let busy = matches!(self.screen, Screen::Installing(_) | Screen::Removing);
         // The choices stay put when the note under "Install for" comes and
@@ -497,27 +660,29 @@ impl Render for Setup {
             .size_full()
             .flex()
             .flex_col()
-            .rounded(px(RADIUS))
-            .border_1()
-            .border_color(c.outline)
             .bg(c.page)
             .text_color(c.text)
-            .shadow(vec![
-                BoxShadow {
-                    color: rgba(0x0000002e).into(),
-                    offset: point(px(0.0), px(8.0)),
-                    blur_radius: px(24.0),
-                    spread_radius: px(0.0),
-                    inset: false,
-                },
-                BoxShadow {
-                    color: rgba(0x0000001f).into(),
-                    offset: point(px(0.0), px(1.0)),
-                    blur_radius: px(4.0),
-                    spread_radius: px(0.0),
-                    inset: false,
-                },
-            ])
+            .when(!WINDOWS_FRAME, |card| {
+                card.rounded(px(RADIUS))
+                    .border_1()
+                    .border_color(c.outline)
+                    .shadow(vec![
+                        BoxShadow {
+                            color: rgba(0x0000002e).into(),
+                            offset: point(px(0.0), px(8.0)),
+                            blur_radius: px(24.0),
+                            spread_radius: px(0.0),
+                            inset: false,
+                        },
+                        BoxShadow {
+                            color: rgba(0x0000001f).into(),
+                            offset: point(px(0.0), px(1.0)),
+                            blur_radius: px(4.0),
+                            spread_radius: px(0.0),
+                            inset: false,
+                        },
+                    ])
+            })
             .p(px(32.0))
             .child(drag_area())
             .child(
@@ -1016,6 +1181,31 @@ fn checkbox(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn setup_follows_katna_mails_mode_scheme_and_accent() {
+        let mut config = Config::default();
+        let look = Look::from(&config);
+        assert!(look.dark(true) && !look.dark(false), "follows the desktop");
+        let katna = Colors::new(false, &look);
+        assert_eq!(katna.accent, Hsla::from(rgba(0x0b57d0ff)));
+
+        config.mail.theme = ThemeChoice::Dark;
+        config.mail.set_colors("nord");
+        config.mail.accent = "#e8590c".to_owned();
+        let look = Look::from(&config);
+        assert!(look.dark(false));
+        let nord = Colors::new(true, &look);
+        assert_eq!(nord.page, Hsla::from(rgba(0x3b4252ff)), "Nord's dark cards");
+        assert_eq!(nord.accent, Hsla::from(rgba(0xe8590cff)));
+        assert_eq!(nord.on_accent, Hsla::from(rgba(0xffffffff)));
+
+        // Schemes Setup can't draw are Katna's.
+        config.mail.set_colors("user:mine");
+        config.mail.accent.clear();
+        let mine = Colors::new(true, &Look::from(&config));
+        assert_eq!(mine.page, Hsla::from(rgba(0x1f1f1fff)));
+    }
 
     #[test]
     fn a_setup_for_everyone_gets_the_same_choices() {

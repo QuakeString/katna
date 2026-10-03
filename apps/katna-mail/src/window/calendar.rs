@@ -8,13 +8,15 @@
 //! expanded by `katna_dav`. Google Calendar's keys work: T today, J or N
 //! next, K or P back, D W M A (or 1 2 3 4) for the views.
 
+use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, App, ClickEvent, Context, Div, FocusHandle, FontWeight,
-    KeyBinding, MouseButton, Pixels, Point, ScrollHandle, SharedString, Task, Window, anchored,
-    deferred, div, ease_out_quint, prelude::*, rgba,
+    HighlightStyle, InteractiveText, KeyBinding, MouseButton, Pixels, Point, ScrollHandle,
+    SharedString, StyledText, Task, UnderlineStyle, Window, anchored, canvas, deferred, div,
+    ease_out_quint, prelude::*, rgba,
 };
 use jiff::civil::{Date, DateTime, Time};
 use jiff::tz::TimeZone;
@@ -29,13 +31,19 @@ use katna_ui::px;
 
 use super::account_status::{AccountStatus, Of, Say};
 use super::event_edit::{Draft, ScopeAsk, kind_icon, kind_label};
-use super::{MailWindow, Menu, MenuKey};
+use super::{MIGRATION_RETRY, MailWindow, Menu, MenuKey};
+use menu::CalTarget;
 
 mod birthdays;
+mod description;
 mod free;
+mod from_mail;
+pub(super) mod menu;
 mod search;
 mod sets;
+mod side_menu;
 mod tasks;
+mod year_peek;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     FocusRing, icon, icon_button, menu, menu_item, menu_item_icon, outlined_button, raised, tip,
@@ -193,6 +201,9 @@ pub(super) struct OpenEvent {
     pub(super) at: Point<Pixels>,
 }
 
+/// How far the pointer goes, pressed, before an event moves with it.
+const DRAG_START: f32 = 4.0;
+
 /// An event being dragged to another time or day, or its end to another
 /// time.
 pub(super) struct EventDrag {
@@ -226,6 +237,8 @@ pub(super) struct CalendarPage {
     hidden: HashSet<i64>,
     /// Accounts whose calendars are folded away in the side column.
     folded: HashSet<Option<i64>>,
+    /// Each account group's glide as it folds and opens.
+    folds: RefCell<HashMap<Option<i64>, Rc<crate::widgets::Fold>>>,
     loading: bool,
     error: Option<String>,
     task: Option<Task<()>>,
@@ -247,13 +260,22 @@ pub(super) struct CalendarPage {
     pub(super) focus: FocusHandle,
     /// A new calendar set's name being typed.
     naming_set: Option<sets::Naming>,
+    /// A calendar's name being typed in the side panel.
+    naming: Option<side_menu::Naming>,
     /// The top bar's search box, finding events.
     pub(super) search: search::Search,
     /// Where each account's calendar sync stands.
     pub(super) accounts: AccountStatus,
+    /// The Year view's day popover.
+    peek: year_peek::YearPeek,
 }
 
 impl CalendarPage {
+    /// Account group `account`'s fold, made on first use.
+    pub(super) fn fold(&self, account: Option<i64>) -> Rc<crate::widgets::Fold> {
+        self.folds.borrow_mut().entry(account).or_default().clone()
+    }
+
     pub(super) fn new(custom_days: u8, cx: &mut App) -> Self {
         let today = Zoned::now().date();
         Self {
@@ -265,6 +287,7 @@ impl CalendarPage {
             calendars: Rc::new(Vec::new()),
             hidden: HashSet::new(),
             folded: HashSet::new(),
+            folds: RefCell::default(),
             loading: false,
             error: None,
             task: None,
@@ -279,8 +302,10 @@ impl CalendarPage {
             ask: None,
             focus: cx.focus_handle(),
             naming_set: None,
+            naming: None,
             search: search::Search::default(),
             accounts: AccountStatus::default(),
+            peek: year_peek::YearPeek::default(),
         }
     }
 
@@ -466,12 +491,10 @@ pub(super) fn read(
     to: i64,
     tz: &TimeZone,
     birthdays: bool,
-) -> Result<(Vec<Calendar>, Vec<Occurrence>), String> {
-    let store = Store::open(paths, Mode::ReadOnly).map_err(|err| err.to_string())?;
-    let mut calendars = store.calendars().map_err(|err| err.to_string())?;
-    let rows = store
-        .event_rows_in_range(from, to)
-        .map_err(|err| err.to_string())?;
+) -> katna_store::Result<(Vec<Calendar>, Vec<Occurrence>)> {
+    let store = Store::open(paths, Mode::ReadOnly)?;
+    let mut calendars = store.calendars()?;
+    let rows = store.event_rows_in_range(from, to)?;
     let mut occurrences = katna_dav::occurrences(rows, from, to, tz);
     birthdays::add_birthdays(
         &store,
@@ -524,9 +547,19 @@ impl MailWindow {
                         });
                         page.error = None;
                     }
+                    // The daemon is moving the store up to this version,
+                    // as it does as it starts after an update: the page
+                    // keeps loading and reads it again shortly.
+                    Err(katna_store::Error::SchemaOutdated { .. }) => {
+                        page.loading = true;
+                        page.task = Some(cx.spawn(async move |this, cx| {
+                            cx.background_executor().timer(MIGRATION_RETRY).await;
+                            this.update(cx, |this, cx| this.load_calendar(cx)).ok();
+                        }));
+                    }
                     Err(err) => {
                         tracing::warn!(%err, "reading the calendar failed");
-                        page.error = Some(err);
+                        page.error = Some(err.to_string());
                     }
                 }
                 cx.notify();
@@ -537,6 +570,7 @@ impl MailWindow {
 
     fn calendar_moved(&mut self, cx: &mut Context<Self>) {
         self.calendar.open = None;
+        self.cancel_calendar_drags();
         // Moving on puts search results away; Esc brings them back.
         self.calendar.search.away = true;
         self.load_calendar(cx);
@@ -575,9 +609,10 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        if self.cancel_calendar_set(window, cx) {
+        if self.cancel_calendar_set(window, cx) || self.cancel_calendar_naming(window, cx) {
             return;
         }
+        self.cancel_calendar_drags();
         let card = self.calendar.open.take().is_some();
         // Esc goes back to search results put away.
         let search = &mut self.calendar.search;
@@ -698,7 +733,11 @@ impl MailWindow {
         }
     }
 
-    fn set_calendar_density(&mut self, density: CalendarDensity, cx: &mut Context<Self>) {
+    pub(super) fn set_calendar_density(
+        &mut self,
+        density: CalendarDensity,
+        cx: &mut Context<Self>,
+    ) {
         self.config.calendar.density = density;
         self.save_config();
         self.menu = None;
@@ -709,6 +748,18 @@ impl MailWindow {
         self.config.calendar.second_time_zone = name;
         self.save_config();
         self.menu = None;
+        cx.notify();
+    }
+
+    /// How many days the custom view shows, picked in Settings: the
+    /// calendar stays on the view it shows.
+    pub(super) fn keep_custom_days(&mut self, days: u8, cx: &mut Context<Self>) {
+        self.config.calendar.custom_days = days;
+        self.save_config();
+        self.calendar.custom_days = days;
+        if self.calendar.view == CalView::Days {
+            self.calendar_moved(cx);
+        }
         cx.notify();
     }
 
@@ -927,7 +978,7 @@ impl MailWindow {
             self.load_calendar(cx);
         }
         let main = if let Some(err) = &self.calendar.error {
-            crate::widgets::placeholder(&tr!("calendar-read-failed", error = err.clone()), th)
+            self.placeholder(tr!("calendar-read-failed", error = err.clone()), th)
         } else if self.calendar.loaded.is_none() {
             loading(th)
         } else if self.calendar.calendars.is_empty() {
@@ -1008,6 +1059,7 @@ impl MailWindow {
                     .child(div().flex_1().min_h_0().child(main)),
             )
             .children(self.render_event_card(th, cx))
+            .children(self.render_year_peek(th, cx))
             .children(side.drawer);
         div()
             .relative()
@@ -1212,7 +1264,6 @@ impl MailWindow {
             .h_full()
             .overflow_y_scroll()
             .px(px(12.0))
-            .pt(px(16.0))
             .pb(px(16.0))
             .flex()
             .flex_col()
@@ -1354,6 +1405,7 @@ impl MailWindow {
             .collect();
         let groups = groups.into_iter().map(|(account, calendars)| {
             let folded = self.calendar.folded.contains(&account);
+            let fold = self.calendar.fold(account);
             let name = match account {
                 Some(id) => names
                     .get(&id)
@@ -1367,8 +1419,12 @@ impl MailWindow {
                 }
                 _ => None,
             };
+            let naming = self.calendar.naming.as_ref();
             let rows = calendars.into_iter().map(|calendar| {
                 let id = calendar.id;
+                if let Some(naming) = naming.filter(|n| n.what == side_menu::NameFor::Rename(id)) {
+                    return self.render_calendar_naming(naming, th, cx);
+                }
                 let shown = !self.calendar_hidden(id);
                 let color = parse_color(&calendar.color).unwrap_or(DEFAULT_COLOR);
                 div()
@@ -1385,19 +1441,16 @@ impl MailWindow {
                     .hover(|s| s.bg(rgba(th.hover)))
                     .focus_ring(th)
                     .on_click(cx.listener(move |this, _, _, cx| this.toggle_calendar(id, cx)))
-                    .child(
-                        div()
-                            .flex_none()
-                            .size(px(18.0))
-                            .flex()
-                            .items_center()
-                            .justify_center()
-                            .rounded(px(3.0))
-                            .border_2()
-                            .border_color(rgba(color))
-                            .when(shown, |d| d.bg(rgba(color)))
-                            .when(shown, |d| d.child(icon("check", 0xffff_ffff, 14.0))),
+                    .on_mouse_down(
+                        MouseButton::Right,
+                        self.calendar_menu_on(CalTarget::Calendar(id), cx),
                     )
+                    .child(crate::widgets::checkbox_tinted(
+                        ("calendar-box", id as usize),
+                        shown,
+                        color,
+                        th,
+                    ))
                     .child(
                         div()
                             .flex_1()
@@ -1407,7 +1460,11 @@ impl MailWindow {
                             .text_color(rgba(th.text))
                             .child(calendar_name(calendar)),
                     )
+                    .into_any_element()
             });
+            let new_here = naming
+                .filter(|n| n.what == side_menu::NameFor::New(account))
+                .map(|n| self.render_calendar_naming(n, th, cx));
             div()
                 .flex()
                 .flex_col()
@@ -1424,11 +1481,16 @@ impl MailWindow {
                         .cursor_pointer()
                         .hover(|s| s.bg(rgba(th.hover)))
                         .on_click(cx.listener(move |this, _, _, cx| {
+                            this.calendar.fold(account).turn();
                             if !this.calendar.folded.remove(&account) {
                                 this.calendar.folded.insert(account);
                             }
                             cx.notify();
                         }))
+                        .on_mouse_down(
+                            MouseButton::Right,
+                            self.calendar_menu_on(CalTarget::Account(account), cx),
+                        )
                         .child(
                             div()
                                 .flex_1()
@@ -1439,20 +1501,30 @@ impl MailWindow {
                                 .text_color(rgba(th.text))
                                 .child(name),
                         )
-                        .child(icon(
-                            if folded { "chevron-down" } else { "chevron-up" },
+                        .child(crate::widgets::fold_arrow(
+                            &format!("calendar-arrow-{account:?}"),
+                            &fold,
+                            !folded,
                             th.text_dim,
                             20.0,
                         )),
                 )
                 .children(note)
-                .when(!folded, |d| d.children(rows))
+                .child(crate::widgets::fold_box(
+                    &format!("calendar-fold-{account:?}"),
+                    &fold,
+                    div()
+                        .flex()
+                        .flex_col()
+                        .when(!folded, |d| d.children(rows).children(new_here)),
+                ))
         });
         div()
             .flex()
             .flex_col()
             .gap(px(4.0))
             .children(groups)
+            .children(self.render_tasks_switch(th, cx))
             .into_any_element()
     }
 
@@ -1638,6 +1710,10 @@ impl MailWindow {
                             .cursor_pointer()
                             .child(div().min_w_0().truncate().child(title)),
                     )
+                    .on_mouse_down(
+                        MouseButton::Right,
+                        self.calendar_menu_on(CalTarget::Event(Box::new(occurrence.clone())), cx),
+                    )
                     .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                         this.open_calendar_event(open.clone(), event.position(), cx)
                     }))
@@ -1712,6 +1788,19 @@ impl MailWindow {
                     .min_w_0()
                     .h_full()
                     .when(ix > 0, |d| d.border_l_1().border_color(rgba(th.divider)))
+                    .on_mouse_down(MouseButton::Right, {
+                        let scroll = scroll.clone();
+                        cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                            let top = scroll.bounds().top() + scroll.offset().y;
+                            let y = katna_ui::unpx(event.position.y - top);
+                            let time = Some(super::event_edit::time_at(y, hour_height));
+                            this.open_calendar_menu(
+                                CalTarget::Slot { day, time },
+                                event.position,
+                                cx,
+                            );
+                        })
+                    })
                     .on_mouse_down(
                         MouseButton::Left,
                         cx.listener(move |this, event: &gpui::MouseDownEvent, window, cx| {
@@ -1790,9 +1879,15 @@ impl MailWindow {
         div()
             .id("calendar-days")
             .on_mouse_move(cx.listener(|this, event: &gpui::MouseMoveEvent, _, cx| {
-                if this.calendar.task_drag.is_some() {
-                    this.drag_task_to(event.position, cx);
+                if this.calendar.task_drag.is_none() {
+                    return;
                 }
+                if event.pressed_button != Some(MouseButton::Left) {
+                    this.cancel_calendar_drags();
+                    cx.notify();
+                    return;
+                }
+                this.drag_task_to(event.position, cx);
             }))
             .on_mouse_up(
                 MouseButton::Left,
@@ -1831,6 +1926,15 @@ impl MailWindow {
                             .relative()
                             .flex_1()
                             .h(px(all_day_height))
+                            .on_mouse_down(
+                                MouseButton::Right,
+                                cx.listener(|this, event: &gpui::MouseDownEvent, _, cx| {
+                                    if let Some((day, _)) = this.grid_point(event.position) {
+                                        let slot = CalTarget::Slot { day, time: None };
+                                        this.open_calendar_menu(slot, event.position, cx);
+                                    }
+                                }),
+                            )
                             .children(bars)
                             .children(task_bars),
                     ),
@@ -1839,9 +1943,16 @@ impl MailWindow {
                 div()
                     .id("calendar-grid")
                     .on_mouse_move(cx.listener(|this, event: &gpui::MouseMoveEvent, _, cx| {
-                        if this.calendar.drag.is_some() {
-                            this.drag_event_to(event.position, cx);
+                        if this.calendar.drag.is_none() {
+                            return;
                         }
+                        // The button came up where the grid didn't hear it.
+                        if event.pressed_button != Some(MouseButton::Left) {
+                            this.cancel_calendar_drags();
+                            cx.notify();
+                            return;
+                        }
+                        this.drag_event_to(event.position, cx);
                     }))
                     .on_mouse_up(
                         MouseButton::Left,
@@ -1958,6 +2069,10 @@ impl MailWindow {
                     }
                 })
             })
+            .on_mouse_down(
+                MouseButton::Right,
+                self.calendar_menu_on(CalTarget::Event(Box::new(occurrence.clone())), cx),
+            )
             .when(dragged.is_some(), |d| d.opacity(0.85))
             .absolute()
             .top(px(top + 1.0))
@@ -2064,6 +2179,14 @@ impl MailWindow {
         block.into_any_element()
     }
 
+    /// Puts down an event or task picked up and not dropped, where it
+    /// was: nothing is saved. Returns whether one was.
+    pub(super) fn cancel_calendar_drags(&mut self) -> bool {
+        let event = self.calendar.drag.take().is_some();
+        let task = self.calendar.task_drag.take().is_some();
+        event || task
+    }
+
     fn start_event_drag(&mut self, occurrence: Occurrence, at: Point<Pixels>, resize: bool) {
         self.calendar.drag = Some(EventDrag {
             occurrence,
@@ -2086,6 +2209,10 @@ impl MailWindow {
         };
         let dy = katna_ui::unpx(at.y - drag.origin.y);
         let dx = katna_ui::unpx(at.x - drag.origin.x);
+        // A press that wobbles is still a click.
+        if !drag.moved && dx.hypot(dy) < DRAG_START {
+            return;
+        }
         let minutes = ((dy / self.calendar.hour * 60.0 / 15.0).round() as i64) * 15;
         let days = if drag.resize || width <= 0.0 {
             0
@@ -2121,6 +2248,18 @@ impl MailWindow {
                 }
             }
         }
+        // Tasks too, in the accent, on days without events.
+        for (task, _) in self.calendar_tasks() {
+            if let Some((day, _)) = self.task_place(task)
+                && day.year() == year.year()
+            {
+                busy.entry(day).or_insert(th.accent);
+            }
+        }
+        let phone = self.layout.shape.size == super::layout::Size::Phone;
+        // Each day's cell, painted after the popover reads them: kept
+        // from frame to frame, each rewritten when painted.
+        let cells = self.calendar.peek.cells.clone();
         let head = format::weekdays_short();
         let months = (0..12)
             .filter_map(|m| year.checked_add(m.months()).ok())
@@ -2153,9 +2292,39 @@ impl MailWindow {
                             .items_center()
                             .justify_center()
                             .cursor_pointer()
+                            .on_mouse_down(
+                                MouseButton::Right,
+                                self.calendar_menu_on(CalTarget::Slot { day, time: None }, cx),
+                            )
                             .on_click(cx.listener(move |this, _, _, cx| {
+                                if phone && this.year_day_tap(day, cx) {
+                                    return;
+                                }
+                                this.close_year_peek(cx);
                                 this.open_calendar_day(day, Some(CalView::Day), cx)
                             }))
+                            .when(dot.is_some() && !phone, |d| {
+                                d.on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
+                                    this.year_day_hover(day, *hovered, cx)
+                                }))
+                            })
+                            .when(dot.is_some(), |d| {
+                                let cells = cells.clone();
+                                d.child(
+                                    canvas(
+                                        move |bounds, window, _| {
+                                            cells
+                                                .borrow_mut()
+                                                .insert(day, (bounds, window.viewport_size()));
+                                        },
+                                        |_, _, _, _| {},
+                                    )
+                                    .absolute()
+                                    .top_0()
+                                    .left_0()
+                                    .size_full(),
+                                )
+                            })
                             .child(
                                 div()
                                     .size(px(YEAR_DAY - 4.0))
@@ -2222,6 +2391,8 @@ impl MailWindow {
             .id("calendar-year")
             .size_full()
             .overflow_y_scroll()
+            // The popover belongs where its day was.
+            .on_scroll_wheel(cx.listener(|this, _, _, cx| this.close_year_peek(cx)))
             .p(px(16.0))
             .child(
                 div()
@@ -2254,6 +2425,8 @@ impl MailWindow {
                 .text_color(rgba(th.text_dim))
                 .child(name.to_uppercase())
         });
+        // A task dragged to another day is let go anywhere on the month.
+        let drop = cx.listener(|this, _, _, cx| this.drop_dragged_task(cx));
         let weeks = (0..6).map(|week| {
             let cells = (0..7).map(|ix| {
                 let day = first.checked_add((week * 7 + ix).days()).unwrap_or(first);
@@ -2263,13 +2436,8 @@ impl MailWindow {
                     .iter()
                     .filter(|o| o.start < next && (o.end > start || o.start == start))
                     .collect();
-                let mut day_tasks = self.tasks_on(day);
-                // Three lines, or two and "N more".
-                let total = mine.len() + day_tasks.len();
-                let room = if total > 3 { 2 } else { 3 };
-                let shown = &mine[..mine.len().min(room)];
-                day_tasks.truncate(room - shown.len());
-                let more = total - shown.len() - day_tasks.len();
+                let (count, day_tasks, more) = self.month_lines(day, mine.len());
+                let shown = &mine[..count];
                 let task_lines = self.render_month_tasks(day_tasks, day, th, cx);
                 let is_today = day == today;
                 let in_month = day.month() == month;
@@ -2323,12 +2491,24 @@ impl MailWindow {
                                 )
                         })
                         .child(div().min_w_0().truncate().child(title))
+                        .on_mouse_down(
+                            MouseButton::Right,
+                            self.calendar_menu_on(
+                                CalTarget::Event(Box::new((*occurrence).clone())),
+                                cx,
+                            ),
+                        )
                         .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                             this.open_calendar_event(open.clone(), event.position(), cx)
                         }))
                 });
                 div()
                     .id(SharedString::from(format!("month-day-{day}")))
+                    .on_mouse_move(self.month_drag_over(day, cx))
+                    .on_mouse_down(
+                        MouseButton::Right,
+                        self.calendar_menu_on(CalTarget::Slot { day, time: None }, cx),
+                    )
                     .on_click(cx.listener(move |this, event: &ClickEvent, window, cx| {
                         this.start_new_event(day, None, true, event.position(), window, cx)
                     }))
@@ -2344,7 +2524,11 @@ impl MailWindow {
                         div().flex().justify_center().pt(px(4.0)).child(
                             div()
                                 .id(SharedString::from(format!("month-num-{day}")))
-                                .size(px(24.0))
+                                // A circle round the number; a pill round
+                                // the 1st's "01 Oct", so it holds it all.
+                                .h(px(24.0))
+                                .min_w(px(24.0))
+                                .when(day.day() == 1, |d| d.px(px(8.0)))
                                 .flex()
                                 .items_center()
                                 .justify_center()
@@ -2409,6 +2593,8 @@ impl MailWindow {
                 .children(cells)
         });
         div()
+            .id("calendar-month")
+            .on_mouse_up(MouseButton::Left, drop)
             .size_full()
             .flex()
             .flex_col()
@@ -2452,12 +2638,15 @@ impl MailWindow {
         }
         days.sort_by_key(|(d, _)| *d);
         if days.is_empty() {
-            return crate::widgets::placeholder(&tr!("calendar-schedule-empty"), th);
+            return self.placeholder(tr!("calendar-schedule-empty"), th);
         }
         let rows = days.into_iter().map(|(day, list)| {
             let events = list.into_iter().map(|occurrence| {
                 let open = occurrence.clone();
+                let menu =
+                    self.calendar_menu_on(CalTarget::Event(Box::new(occurrence.clone())), cx);
                 self.schedule_event(&day.to_string(), occurrence, th)
+                    .on_mouse_down(MouseButton::Right, menu)
                     .on_click(cx.listener(move |this, event: &ClickEvent, _, cx| {
                         this.open_calendar_event(open.clone(), event.position(), cx)
                     }))
@@ -2550,10 +2739,55 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         cx.stop_propagation();
+        // The press that opened it picked the event up; it isn't dragged.
+        self.cancel_calendar_drags();
         self.calendar.open = Some(OpenEvent { occurrence, at });
         // Its card lists the event's meeting notes.
         self.notes_page(cx);
         cx.notify();
+    }
+
+    /// An event's description, tidied, its web addresses links.
+    fn render_event_description(&self, text: &str, th: &Theme) -> AnyElement {
+        let (text, links) = description::tidy(text);
+        let style = HighlightStyle {
+            color: Some(rgba(th.accent).into()),
+            underline: Some(UnderlineStyle {
+                thickness: px(1.0),
+                ..UnderlineStyle::default()
+            }),
+            ..HighlightStyle::default()
+        };
+        let styled = StyledText::new(text)
+            .with_highlights(links.iter().map(|(range, _)| (range.clone(), style)));
+        let (ranges, urls): (Vec<_>, Vec<_>) = links.into_iter().unzip();
+        let body =
+            InteractiveText::new("event-description", styled).on_click(ranges, move |ix, _, cx| {
+                if let Some(url) = urls.get(ix) {
+                    cx.open_url(url);
+                }
+            });
+        div()
+            .flex()
+            .flex_row()
+            .items_start()
+            .gap(px(16.0))
+            .child(
+                div()
+                    .flex_none()
+                    .pt(px(1.0))
+                    .child(icon("notes", th.text_dim, 20.0)),
+            )
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .text_size(px(14.0))
+                    .line_height(px(20.0))
+                    .text_color(rgba(th.text))
+                    .child(body),
+            )
+            .into_any_element()
     }
 
     /// The card of the event clicked: when, where, the call to join, who
@@ -2588,7 +2822,8 @@ impl MailWindow {
                 time = time_range(occurrence.start, occurrence.end, tz)
             )
         };
-        let line = |name: &'static str, text: String| {
+        // A detail's text can be selected and copied (`MailWindow::copyable`).
+        let line = |name: &'static str, text: gpui::Div| {
             div()
                 .flex()
                 .flex_row()
@@ -2601,19 +2836,32 @@ impl MailWindow {
                         .child(icon(name, th.text_dim, 20.0)),
                 )
                 .child(
-                    div()
-                        .flex_1()
+                    text.flex_1()
                         .min_w_0()
                         .text_size(px(14.0))
                         .line_height(px(20.0))
-                        .text_color(rgba(th.text))
-                        .child(text),
+                        .text_color(rgba(th.text)),
                 )
         };
         let guests = data.attendees.len();
         let answers = |status: &str| data.attendees.iter().filter(|a| a.status == status).count();
-        let join = data.join_url.clone();
+        // The call to join: the event's own, else a link in its place or
+        // description (a Teams invitation read from mail or CalDAV).
+        let jitsi = katna_core::meeting::jitsi_host(&self.config.meetings.jitsi_server);
+        let calls = katna_core::meeting::find(
+            [data.join_url.as_str()]
+                .into_iter()
+                .filter(|l| !l.is_empty()),
+            [data.location.as_str(), data.description.as_str()],
+            jitsi.as_deref(),
+        );
+        let join = match calls.first() {
+            Some((service, link)) => Some((Some(*service), link.clone())),
+            None => (!data.join_url.is_empty()).then(|| (None, data.join_url.clone())),
+        };
         let web = data.web_link.clone();
+        // An event Gmail made from a mail opens that mail.
+        let gmail = from_mail::gmail_link(&data.description).map(|link| (link, occurrence.clone()));
         let editable = self.can_edit(occurrence);
         let emails = !self.other_guests(occurrence).is_empty();
         // A saved contact's birthday opens their contact page.
@@ -2637,9 +2885,9 @@ impl MailWindow {
                 .occlude()
                 .w(px(CARD_WIDTH.min(self.layout.shape.width - 16.0)))
                 .max_h(px(520.0))
-                .overflow_y_scroll()
+                .overflow_hidden()
                 .p(px(8.0))
-                .pb(px(20.0))
+                .pb(px(12.0))
                 .flex()
                 .flex_col()
                 .gap(px(12.0)),
@@ -2687,6 +2935,15 @@ impl MailWindow {
                             })),
                     )
                 })
+                .when_some(gmail, |d, (link, occurrence)| {
+                    d.child(
+                        icon_button("event-mail", "inbox", 20.0, th)
+                            .tooltip(tip(tr!("calendar-open-mail"), th))
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                this.open_event_mail(&occurrence, link.clone(), window, cx)
+                            })),
+                    )
+                })
                 .when(!web.is_empty(), |d| {
                     d.child(
                         icon_button("event-web", "open-external", 20.0, th)
@@ -2726,18 +2983,16 @@ impl MailWindow {
                         .flex_col()
                         .gap(px(4.0))
                         .child(
-                            div()
+                            self.copyable(title, th)
                                 .text_size(px(22.0))
                                 .line_height(px(28.0))
                                 .text_color(rgba(th.text))
-                                .when(data.status == EventStatus::Cancelled, |d| d.line_through())
-                                .child(title),
+                                .when(data.status == EventStatus::Cancelled, |d| d.line_through()),
                         )
                         .child(
-                            div()
+                            self.copyable(when, th)
                                 .text_size(px(14.0))
-                                .text_color(rgba(th.text_dim))
-                                .child(when),
+                                .text_color(rgba(th.text_dim)),
                         )
                         .when(
                             !data.rrule.is_empty() || occurrence.series_start.is_some(),
@@ -2757,18 +3012,46 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(14.0))
-            .when(!join.is_empty(), |d| {
-                let url = join.clone();
+            .when_some(join, |d, (service, url)| {
+                let label = match service {
+                    Some(service) => tr!(
+                        "calendar-join-with",
+                        service = super::meeting::service_name(service)
+                    ),
+                    None => tr!("calendar-join"),
+                };
+                let shown = url
+                    .split_once("://")
+                    .map_or(url.as_str(), |(_, rest)| rest)
+                    .to_owned();
+                let open = url.clone();
                 d.child(
                     div()
                         .flex()
                         .flex_row()
                         .gap(px(16.0))
                         .items_center()
-                        .child(icon("event", th.text_dim, 20.0))
+                        .child(icon("video", th.text_dim, 20.0))
                         .child(
-                            crate::widgets::filled_button("event-join", tr!("calendar-join"), th)
-                                .on_click(move |_, _, cx| cx.open_url(&url)),
+                            div()
+                                .flex_1()
+                                .min_w_0()
+                                .flex()
+                                .flex_col()
+                                .items_start()
+                                .gap(px(4.0))
+                                .child(
+                                    crate::widgets::filled_button("event-join", label, th)
+                                        .on_click(move |_, _, cx| cx.open_url(&open)),
+                                )
+                                .child(
+                                    div()
+                                        .w_full()
+                                        .truncate()
+                                        .text_size(px(12.0))
+                                        .text_color(rgba(th.text_dim))
+                                        .child(shown),
+                                ),
                         ),
                 )
             })
@@ -2790,10 +3073,10 @@ impl MailWindow {
             })
             .when_some(
                 kind_icon(data.kind).filter(|_| data.kind != EventKind::Birthday),
-                |d, name| d.child(line(name, kind_label(data.kind))),
+                |d, name| d.child(line(name, self.copyable(kind_label(data.kind), th))),
             )
             .when(!data.location.is_empty(), |d| {
-                d.child(line("pin", data.location.clone()))
+                d.child(line("pin", self.copyable(data.location.clone(), th)))
             })
             .when(guests > 0, |d| {
                 let head = format!(
@@ -2807,6 +3090,7 @@ impl MailWindow {
                         waiting = answers("needs_action")
                     )
                 );
+                let head = line("people", self.copyable(head, th));
                 let rows = data.attendees.iter().take(20).map(|attendee| {
                     let name = if attendee.name.is_empty() {
                         attendee.email.clone()
@@ -2850,7 +3134,15 @@ impl MailWindow {
                                 .flex()
                                 .flex_col()
                                 .text_size(px(13.0))
-                                .child(div().truncate().child(name))
+                                .child(
+                                    div()
+                                        .flex()
+                                        .flex_row()
+                                        .items_center()
+                                        .gap(px(6.0))
+                                        .child(self.copyable(name, th).min_w_0().truncate())
+                                        .children(self.muted_mark(&attendee.email, 14.0, th)),
+                                )
                                 .when(attendee.organizer || attendee.optional, |d| {
                                     d.child(
                                         div()
@@ -2865,7 +3157,7 @@ impl MailWindow {
                                 }),
                         )
                 });
-                d.child(line("people", head)).child(
+                d.child(head).child(
                     div()
                         .pl(px(36.0))
                         .flex()
@@ -2875,17 +3167,26 @@ impl MailWindow {
                 )
             })
             .when(!data.description.is_empty(), |d| {
-                let text: String = data.description.chars().take(1200).collect();
-                d.child(line("notes", text))
+                d.child(self.render_event_description(&data.description, th))
             })
             // Nothing to take notes of on a birthday.
             .when(data.kind != EventKind::Birthday, |d| {
                 d.child(self.render_event_notes(occurrence, th, cx))
             })
             .when_some(calendar, |d, calendar| {
-                d.child(line("calendar", calendar_name(calendar)))
+                d.child(line("calendar", self.copyable(calendar_name(calendar), th)))
             });
-        card = card.child(body);
+        // Only the details scroll: the title above and the answers
+        // below stay in sight.
+        card = card.child(
+            div()
+                .id("event-card-body")
+                .flex_1()
+                .min_h_0()
+                .overflow_y_scroll()
+                .pb(px(8.0))
+                .child(body),
+        );
         let me = data.attendees.iter().find(|a| a.is_self);
         let invited = editable && me.is_some_and(|a| !a.organizer);
         let mine = if data.self_status.is_empty() {
@@ -2904,7 +3205,7 @@ impl MailWindow {
                     .items_center()
                     .rounded_full()
                     .border_1()
-                    .border_color(rgba(if on { th.accent } else { th.divider }))
+                    .border_color(rgba(if on { th.accent } else { th.outline }))
                     .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
                     .text_size(px(14.0))
                     .font_weight(FontWeight::MEDIUM)
@@ -2916,7 +3217,7 @@ impl MailWindow {
             };
             card = card.child(
                 div()
-                    .mt(px(4.0))
+                    .flex_none()
                     .pt(px(12.0))
                     .px(px(16.0))
                     .border_t_1()
@@ -2976,8 +3277,10 @@ impl MailWindow {
                             .child(
                                 card.with_animation(
                                     ("event-card", occurrence.event.id as usize),
-                                    Animation::new(std::time::Duration::from_millis(160))
-                                        .with_easing(ease_out_quint()),
+                                    Animation::new(katna_ui::motion::time(
+                                        std::time::Duration::from_millis(160),
+                                    ))
+                                    .with_easing(ease_out_quint()),
                                     |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
                                 ),
                             ),

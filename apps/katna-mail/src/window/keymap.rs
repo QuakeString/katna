@@ -12,11 +12,12 @@ use katna_i18n::tr;
 use super::{
     AddToTasks, Archive, CloseMessage, Compose, Delete, FocusList, FocusNext, FocusPrevious,
     FocusSearch, Forward, GoToAllMail, GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT,
-    MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NextPane, OpenContextMenu,
-    OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit, READER_CONTEXT, Reload, Reply,
-    ReplyAll, ReportSpam, SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp,
-    SelectAll, SelectFirst, SelectLast, SelectNext, SelectNone, SelectPrevious, SendMail,
-    ShowCalendar, ShowContacts, ShowMail, ShowNotes, ShowShortcuts, ShowTasks, ToggleCheck,
+    ListTop, MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NAV_CONTEXT, NextPane,
+    OpenContextMenu, OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit,
+    READER_CONTEXT, Reload, RephraseSelection, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT,
+    ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast,
+    SelectNext, SelectNone, SelectPrevious, SendMail, ShowCalendar, ShowContacts, ShowFiles,
+    ShowMail, ShowNotes, ShowShortcuts, ShowTasks, Summarize, ToggleCheck, ToggleMute,
     ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
@@ -40,7 +41,9 @@ impl Scope {
             Self::List => &[LIST_CONTEXT],
             Self::Reader => &[READER_CONTEXT],
             Self::Mail => &[LIST_CONTEXT, READER_CONTEXT],
-            Self::Anywhere if is_single_key(keys) => &[LIST_CONTEXT, READER_CONTEXT],
+            // The folder pane too, so Compose, search and the like still
+            // work after a click on a folder.
+            Self::Anywhere if is_single_key(keys) => &[LIST_CONTEXT, READER_CONTEXT, NAV_CONTEXT],
             Self::Anywhere => &[WINDOW_CONTEXT],
         }
     }
@@ -164,6 +167,8 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("add_to_tasks", Actions, Mail, ["shift-t"], AddToTasks),
     shortcut!("important", Actions, Mail, ["+", "="], MarkImportant),
     shortcut!("not_important", Actions, Mail, ["-"], MarkNotImportant),
+    shortcut!("mute", Actions, Mail, ["m"], ToggleMute),
+    shortcut!("summarize", Actions, Mail, ["shift-s"], Summarize),
     shortcut!("check", Actions, List, ["x"], ToggleCheck),
     shortcut!("select_all", Actions, List, ["* a"], SelectAll),
     shortcut!("select_none", Actions, List, ["* n"], SelectNone),
@@ -179,6 +184,7 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("page_contacts", GoTo, Anywhere, ["ctrl-3"], ShowContacts),
     shortcut!("page_tasks", GoTo, Anywhere, ["ctrl-4"], ShowTasks),
     shortcut!("page_notes", GoTo, Anywhere, ["ctrl-5"], ShowNotes),
+    shortcut!("page_files", GoTo, Anywhere, ["ctrl-7"], ShowFiles),
     shortcut!("search", App, Anywhere, ["/", "ctrl-f"], FocusSearch),
     shortcut!("navigation", App, Anywhere, [], ToggleNavigation),
     shortcut!("quick_settings", App, Anywhere, ["ctrl-,"], ToggleSettings),
@@ -267,6 +273,8 @@ const THUNDERBIRD: Preset = &[
     ("spam", &["j"]),
     ("mark_read", &["r"]),
     ("mark_unread", &["m"]),
+    // Ignore thread.
+    ("mute", &["k"]),
     ("select_all", &["ctrl-a"]),
     ("undo", &["ctrl-z"]),
     ("search", &["ctrl-k", "ctrl-shift-k"]),
@@ -401,8 +409,18 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
         super::select::SelectAllText,
         Some(super::select::TEXT_CONTEXT),
     ));
+    // Text selected anywhere else in a window (Settings, a dialog, a
+    // page) copies too; with none selected, Ctrl+C does what it did.
+    bindings.push(KeyBinding::new(
+        "ctrl-c",
+        super::select::CopyText,
+        Some(WINDOW_CONTEXT),
+    ));
     // Google Calendar's keys on the Calendar page.
     bindings.extend(super::calendar::bindings());
+    // Home with the keys in no pane takes the list to its top; the
+    // list's own Home (a shortcut) selects its first line.
+    bindings.push(KeyBinding::new("home", ListTop, Some(WINDOW_CONTEXT)));
     // Down in the search box goes to the list; not a shortcut to change.
     bindings.push(KeyBinding::new("down", FocusList, Some(SEARCH_CONTEXT)));
     // Tab and Shift+Tab move between fields and buttons, as in any desktop
@@ -430,6 +448,12 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
         SendMail,
         Some("Compose > TextInput"),
     ));
+    // Ctrl+J rephrases the text selected in a message with AI.
+    bindings.push(KeyBinding::new(
+        "ctrl-j",
+        RephraseSelection,
+        Some("Compose > RichText"),
+    ));
     // Typing in a field inside the reader (the inline reply) types: keys
     // that type text do nothing else there, and do not wait for a second
     // key. Bound last, so they also end sequences like "g i".
@@ -450,8 +474,9 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
         bindings.push(KeyBinding::new("ctrl-z", gpui::NoAction, Some(context)));
     }
     // In the attachment viewer, Ctrl+Z and redo are about the marks made
-    // on a PDF; the viewer takes them itself.
-    for keys in ["ctrl-z", "ctrl-shift-z", "ctrl-y"] {
+    // on a PDF, and Ctrl+R (Shift for anticlockwise) turns its pages; the
+    // viewer takes them itself.
+    for keys in ["ctrl-z", "ctrl-shift-z", "ctrl-y", "ctrl-r", "ctrl-shift-r"] {
         bindings.push(KeyBinding::new(
             keys,
             gpui::NoAction,

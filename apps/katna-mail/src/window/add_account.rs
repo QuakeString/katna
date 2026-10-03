@@ -1,24 +1,35 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Adding a mail account (`docs/ARCHITECTURE.md` §13.6), in a dialog shaped
-//! like a web sign-in: the address first, then the password. The daemon
-//! finds the servers from the address (`DiscoverAccount`), checks the login
-//! and saves the account (`AddImapAccount`). When it cannot find the
-//! servers, they are entered by hand. Google and Microsoft accounts can
-//! instead sign in in the browser (`SignIn`, OAuth2), the only way for
-//! Microsoft's; the buttons show when this build has the provider's client
-//! ID. Also the account menu of the app rail, which leads here.
+//! Adding a mail account (`docs/ARCHITECTURE.md` §13.6), in a dialog of
+//! a few steps, after Mailspring's and Thunderbird's:
+//!
+//! 1. The provider, from a grid of tiles (Google, Microsoft, Yahoo, …, and
+//!    Other for any IMAP or POP3 account).
+//! 2. Name, address and password, with a line on the app password the
+//!    provider asks for. Adding finds the servers from the address
+//!    (`DiscoverAccount`), checks the login and saves the account
+//!    (`AddImapAccount`, or `AddPop3Account` when the provider only offers
+//!    POP3), showing each stage as it goes.
+//! 3. When the servers are not found, or on "Edit servers manually": the
+//!    incoming server (IMAP or POP3), the outgoing one (SMTP), ports and
+//!    security.
+//! 4. What got set up.
+//!
+//! Google and Microsoft accounts can instead sign in in the browser
+//! (`SignIn`, OAuth2), the only way for Microsoft's; their tiles do that
+//! when this build has the provider's client ID. Also the account menu of
+//! the app rail, which leads here.
 
 use std::collections::HashMap;
 use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, EntityId, Focusable, FontWeight, Hsla,
-    MouseButton, MouseDownEvent, SharedString, Subscription, Task, Window, deferred, div,
-    prelude::*, relative, rgba,
+    KeyDownEvent, MouseButton, MouseDownEvent, SharedString, Subscription, Task, Window, deferred,
+    div, prelude::*, relative, rgba,
 };
-use katna_core::OAuthProvider;
-use katna_dbus::{NewImapAccount, ServerSpec};
+use katna_core::{OAuthProvider, Pop3Keep};
+use katna_dbus::{NewImapAccount, NewPop3Account, ServerSpec};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
@@ -27,21 +38,37 @@ use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
 use super::MenuKey;
+use super::mail_providers::{MailProvider, PasswordHelp};
 use crate::daemon::{self, AddError};
 use crate::outgoing;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, avatar, elevation, filled_button, icon, raised};
+use crate::widgets::{
+    FocusRing, ScaledEdge, elevation, filled_button, icon, icon_button, raised, tip,
+};
 
-const WIDTH: f32 = 448.0;
+/// The dialog's width with the provider tiles, and on the other steps.
+const WIDE: f32 = 640.0;
+const WIDTH: f32 = 480.0;
 const MENU_WIDTH: f32 = 340.0;
+/// Below this inner width the tiles go one to a row.
+const TWO_COLUMNS: f32 = 440.0;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Step {
-    Address,
+    Provider,
+    /// Name, address and password.
+    Form,
     Servers,
-    Password,
     /// Waiting for the provider's sign-in page in the browser.
     Browser(OAuthProvider),
+    Done,
+}
+
+/// What the dialog is waiting for, for the stages it shows.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Phase {
+    Finding,
+    SigningIn,
 }
 
 /// How a connection to a server is secured.
@@ -83,16 +110,30 @@ impl Security {
         match (kind, self) {
             (Kind::Imap, Self::Tls) => 993,
             (Kind::Imap, _) => 143,
+            (Kind::Pop3, Self::Tls) => 995,
+            (Kind::Pop3, _) => 110,
             (Kind::Smtp, Self::Tls) => 465,
             (Kind::Smtp, _) => 587,
         }
     }
 }
 
+/// A server's protocol.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Kind {
     Imap,
+    Pop3,
     Smtp,
+}
+
+impl Kind {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Imap => "IMAP",
+            Self::Pop3 => "POP3",
+            Self::Smtp => "SMTP",
+        }
+    }
 }
 
 /// One server's fields.
@@ -102,15 +143,42 @@ struct ServerFields {
     security: Security,
 }
 
+/// What was added, for the last step.
+struct Added {
+    id: i64,
+    address: String,
+    name: String,
+    /// Signed in in the browser with this provider.
+    signed_in: Option<OAuthProvider>,
+    /// The incoming protocol and server, and the outgoing server.
+    incoming: Option<(Kind, String)>,
+    smtp: String,
+}
+
+/// Linking Zoho's tasks and calendars from the last step.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum Linking {
+    Busy,
+    Done,
+    Failed(String),
+}
+
 /// The open add-account dialog.
 pub(super) struct AddAccount {
     step: Step,
+    provider: MailProvider,
     address: Entity<TextInput>,
     password: Entity<TextInput>,
     name: Entity<TextInput>,
-    imap: ServerFields,
+    /// The incoming server, IMAP or POP3 (`incoming_kind`).
+    incoming: ServerFields,
+    incoming_kind: Kind,
     smtp: ServerFields,
     username: Entity<TextInput>,
+    /// The servers discovery found, to go back to when IMAP or POP3 is
+    /// picked again.
+    found_imap: Option<ServerSpec>,
+    found_pop3: Option<ServerSpec>,
     /// The address the server fields were filled for.
     servers_for: String,
     /// Where the daemon found the servers; `None` once they are edited.
@@ -122,7 +190,10 @@ pub(super) struct AddAccount {
     accept_invalid_certs: bool,
     show_password: bool,
     busy: bool,
+    phase: Phase,
     error: Option<String>,
+    added: Option<Added>,
+    linking: Option<Linking>,
     shown: Spring,
     closing: bool,
     /// The text each field had when last seen, so that text set by the
@@ -197,6 +268,20 @@ fn guess(address: &str) -> NewImapAccount {
     }
 }
 
+/// The other protocol's usual name for a server: `imap.x.org` and
+/// `pop.x.org` in turn; other names stay.
+fn swap_host(host: &str, to: Kind) -> String {
+    let host = host.trim();
+    let rest = ["imap.", "pop3.", "pop."]
+        .iter()
+        .find_map(|prefix| host.strip_prefix(prefix));
+    match (rest, to) {
+        (Some(rest), Kind::Pop3) => format!("pop.{rest}"),
+        (Some(rest), _) => format!("imap.{rest}"),
+        (None, _) => host.to_owned(),
+    }
+}
+
 /// Whether `name` is `password` (app passwords are shown in groups, so
 /// spaces don't count).
 fn is_password(name: &str, password: &str) -> bool {
@@ -250,7 +335,7 @@ impl MailWindow {
         };
         let (address, password, name, username) = (input(cx), input(cx), input(cx), input(cx));
         password.update(cx, |p, cx| p.set_masked(true, cx));
-        let imap = ServerFields {
+        let incoming = ServerFields {
             host: input(cx),
             port: input(cx),
             security: Security::Tls,
@@ -271,7 +356,13 @@ impl MailWindow {
             ));
         }
         // Editing a server means it was not found any more.
-        for field in [&imap.host, &imap.port, &smtp.host, &smtp.port, &username] {
+        for field in [
+            &incoming.host,
+            &incoming.port,
+            &smtp.host,
+            &smtp.port,
+            &username,
+        ] {
             subscriptions.push(cx.subscribe_in(
                 field,
                 window,
@@ -284,15 +375,20 @@ impl MailWindow {
                 },
             ));
         }
-        window.focus(&address.focus_handle(cx), cx);
+        // The tiles take the keys: the dialog's own focus holds it.
+        window.focus(&self.dialog_focus, cx);
         self.add_account = Some(AddAccount {
-            step: Step::Address,
+            step: Step::Provider,
+            provider: MailProvider::Other,
             address,
             password,
             name,
-            imap,
+            incoming,
+            incoming_kind: Kind::Imap,
             smtp,
             username,
+            found_imap: None,
+            found_pop3: None,
             servers_for: String::new(),
             source: None,
             sign_in: None,
@@ -300,7 +396,10 @@ impl MailWindow {
             accept_invalid_certs: false,
             show_password: false,
             busy: false,
+            phase: Phase::Finding,
             error: None,
+            added: None,
+            linking: None,
             shown: Spring::new(motion::SLIDE, 0.0),
             closing: false,
             seen: HashMap::new(),
@@ -348,14 +447,31 @@ impl MailWindow {
 
     /// Tells the daemon to stop waiting for the browser, if it is.
     fn cancel_browser_sign_in(&mut self, cx: &mut Context<Self>) {
-        let waiting = self
-            .add_account
-            .as_ref()
-            .is_some_and(|d| matches!(d.step, Step::Browser(_)) && d.busy);
+        let waiting = self.add_account.as_ref().is_some_and(|d| {
+            (matches!(d.step, Step::Browser(_)) && d.busy) || d.linking == Some(Linking::Busy)
+        });
         if let (true, Some(connection)) = (waiting, self.daemon.clone()) {
             cx.background_executor()
                 .spawn(async move { daemon::cancel_sign_in(&connection).await })
                 .detach();
+        }
+    }
+
+    /// A provider's tile: signs in in the browser where it can, else asks
+    /// for the address and password.
+    fn pick_provider(
+        &mut self,
+        provider: MailProvider,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(dialog) = &mut self.add_account else {
+            return;
+        };
+        dialog.provider = provider;
+        match provider.sign_in() {
+            Some(oauth) => self.start_sign_in(oauth, window, cx),
+            None => self.add_account_step(Step::Form, window, cx),
         }
     }
 
@@ -378,6 +494,7 @@ impl MailWindow {
         dialog.busy = true;
         dialog.error = None;
         let connection = self.daemon.clone();
+        let typed = hint.clone();
         let task = cx.spawn_in(window, async move |this, cx| {
             let result = cx
                 .background_executor()
@@ -386,7 +503,7 @@ impl MailWindow {
                         Some(connection) => connection,
                         None => daemon::connect().await.map_err(AddError::Other)?,
                     };
-                    daemon::sign_in(&connection, provider, None, &hint).await
+                    daemon::sign_in(&connection, provider, None, &typed).await
                 })
                 .await;
             this.update_in(cx, |this, window, cx| {
@@ -394,25 +511,36 @@ impl MailWindow {
                     dialog.busy = false;
                 }
                 match result {
-                    Ok(_) => {
-                        this.close_add_account(cx);
-                        this.show_snackbar(
-                            tr!("add-account-signed-in", provider = provider.name()),
-                            None,
+                    Ok(id) => {
+                        let address = this
+                            .accounts
+                            .iter()
+                            .find(|a| a.id.0 == id)
+                            .map(|a| a.address.clone())
+                            .unwrap_or(hint);
+                        this.account_done(
+                            Added {
+                                id,
+                                name: String::new(),
+                                address,
+                                signed_in: Some(provider),
+                                incoming: None,
+                                smtp: String::new(),
+                            },
+                            window,
                             cx,
                         );
-                        this.account_added(window, cx);
                     }
                     Err(AddError::Password(detail)) => {
                         tracing::info!(%detail, "sign-in refused");
-                        this.add_account_step(Step::Address, window, cx);
+                        this.add_account_step(Step::Provider, window, cx);
                         this.add_account_error(
                             tr!("add-account-sign-in-refused", provider = provider.name()),
                             cx,
                         );
                     }
                     Err(AddError::Other(err)) => {
-                        this.add_account_step(Step::Address, window, cx);
+                        this.add_account_step(Step::Provider, window, cx);
                         this.add_account_error(err, cx);
                     }
                 }
@@ -426,46 +554,58 @@ impl MailWindow {
     }
 
     /// After discovery: signs in in the browser when the provider takes
-    /// nothing else, else asks for the password.
+    /// nothing else, asks for the servers when no SMTP server was found,
+    /// else checks the password.
     fn after_discovery(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let Some(dialog) = &self.add_account else {
             return;
         };
         if dialog.password_works {
             // Some providers publish no SMTP server.
-            let step = if dialog.smtp.host.read(cx).text().trim().is_empty() {
-                Step::Servers
+            if dialog.smtp.host.read(cx).text().trim().is_empty() {
+                self.add_account_step(Step::Servers, window, cx);
+                self.add_account_error(tr!("add-account-smtp-not-found"), cx);
             } else {
-                Step::Password
-            };
-            self.add_account_step(step, window, cx);
+                self.add_the_account(window, cx);
+            }
             return;
         }
         match dialog.sign_in {
             Some(provider) if provider.available() => self.start_sign_in(provider, window, cx),
             provider => {
                 let name = provider.map_or("", |p| p.name());
-                self.add_account_step(Step::Address, window, cx);
+                self.add_account_step(Step::Form, window, cx);
                 self.add_account_error(tr!("add-account-sign-in-unavailable", provider = name), cx);
             }
         }
     }
 
-    /// Fills the server fields from `account`.
+    /// Fills the server fields from what was found or guessed: IMAP when
+    /// there is an IMAP server, else POP3.
     fn fill_servers(
         &mut self,
         account: &NewImapAccount,
+        pop3: Option<ServerSpec>,
         source: Option<String>,
         cx: &mut Context<Self>,
     ) {
         let Some(dialog) = &mut self.add_account else {
             return;
         };
+        let imap = (!account.imap.host.trim().is_empty()).then(|| account.imap.clone());
+        let pop3 = pop3.filter(|p| !p.host.trim().is_empty());
+        let (kind, incoming) = match (&imap, &pop3) {
+            (None, Some(pop3)) => (Kind::Pop3, pop3.clone()),
+            _ => (Kind::Imap, account.imap.clone()),
+        };
+        dialog.found_imap = imap;
+        dialog.found_pop3 = pop3;
+        dialog.incoming_kind = kind;
         let fields = [
             (
-                dialog.imap.host.clone(),
-                dialog.imap.port.clone(),
-                &account.imap,
+                dialog.incoming.host.clone(),
+                dialog.incoming.port.clone(),
+                &incoming,
             ),
             (
                 dialog.smtp.host.clone(),
@@ -482,19 +622,61 @@ impl MailWindow {
             fill(&mut dialog.seen, &host, spec.host.clone(), cx);
             fill(&mut dialog.seen, &port_field, port, cx);
         }
-        dialog.imap.security = Security::parse(&account.imap.security);
+        dialog.incoming.security = Security::parse(&incoming.security);
         dialog.smtp.security = Security::parse(&account.smtp.security);
-        let username = match account.imap.username.trim() {
+        let username = match incoming.username.trim() {
             "" => account.address.clone(),
             name => name.to_owned(),
         };
         let field = dialog.username.clone();
         fill(&mut dialog.seen, &field, username, cx);
-        dialog.accept_invalid_certs = account.imap.accept_invalid_certs;
+        dialog.accept_invalid_certs = incoming.accept_invalid_certs;
         dialog.servers_for = account.address.clone();
         dialog.source = source;
         dialog.sign_in = None;
         dialog.password_works = true;
+    }
+
+    /// Picks IMAP or POP3 for mail coming in: the server found for it, or
+    /// the usual name and port.
+    fn set_incoming_kind(&mut self, kind: Kind, cx: &mut Context<Self>) {
+        let Some(dialog) = &mut self.add_account else {
+            return;
+        };
+        if dialog.incoming_kind == kind {
+            return;
+        }
+        let old = dialog.incoming_kind;
+        dialog.incoming_kind = kind;
+        let found = match kind {
+            Kind::Pop3 => dialog.found_pop3.clone(),
+            _ => dialog.found_imap.clone(),
+        };
+        let (host_field, port_field) = (dialog.incoming.host.clone(), dialog.incoming.port.clone());
+        match found {
+            Some(spec) => {
+                fill(&mut dialog.seen, &host_field, spec.host.clone(), cx);
+                fill(&mut dialog.seen, &port_field, spec.port.to_string(), cx);
+                dialog.incoming.security = Security::parse(&spec.security);
+            }
+            None => {
+                let host = swap_host(host_field.read(cx).text(), kind);
+                fill(&mut dialog.seen, &host_field, host, cx);
+                let port = port_field.read(cx).text().trim().to_owned();
+                let security = dialog.incoming.security;
+                if port.is_empty() || port == security.port(old).to_string() {
+                    fill(
+                        &mut dialog.seen,
+                        &port_field,
+                        security.port(kind).to_string(),
+                        cx,
+                    );
+                }
+                dialog.source = None;
+            }
+        }
+        dialog.error = None;
+        cx.notify();
     }
 
     fn add_account_step(&mut self, step: Step, window: &mut Window, cx: &mut Context<Self>) {
@@ -504,9 +686,19 @@ impl MailWindow {
         dialog.step = step;
         dialog.error = None;
         let focus = match step {
-            Step::Address | Step::Browser(_) => dialog.address.focus_handle(cx),
-            Step::Servers => dialog.imap.host.focus_handle(cx),
-            Step::Password => dialog.password.focus_handle(cx),
+            Step::Form => {
+                // The first empty field of name, address and password.
+                let empty = |f: &Entity<TextInput>| f.read(cx).text().is_empty();
+                if empty(&dialog.address) {
+                    dialog.address.focus_handle(cx)
+                } else if empty(&dialog.password) {
+                    dialog.password.focus_handle(cx)
+                } else {
+                    dialog.address.focus_handle(cx)
+                }
+            }
+            Step::Servers => dialog.incoming.host.focus_handle(cx),
+            Step::Provider | Step::Browser(_) | Step::Done => self.dialog_focus.clone(),
         };
         window.focus(&focus, cx);
         cx.notify();
@@ -530,7 +722,7 @@ impl MailWindow {
         }
     }
 
-    /// "Server settings": fills in guesses when nothing was found yet.
+    /// "Edit servers manually": fills in guesses when nothing was found yet.
     fn add_account_servers(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let address = match self.add_account_address(cx) {
             Ok(address) => address,
@@ -544,7 +736,7 @@ impl MailWindow {
             .as_ref()
             .is_some_and(|d| d.servers_for != address)
         {
-            self.fill_servers(&guess(&address), None, cx);
+            self.fill_servers(&guess(&address), None, None, cx);
         }
         self.add_account_step(Step::Servers, window, cx);
     }
@@ -557,7 +749,8 @@ impl MailWindow {
         cx.notify();
     }
 
-    /// Next (or Enter): goes on from the step that is showing.
+    /// The primary button (or Enter): goes on from the step that is
+    /// showing.
     fn add_account_next(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let Some(dialog) = &self.add_account else {
             return;
@@ -566,17 +759,78 @@ impl MailWindow {
             return;
         }
         match dialog.step {
-            Step::Address => self.discover_servers(window, cx),
-            Step::Servers => match self.typed_account(cx) {
-                Ok(_) => self.add_account_step(Step::Password, window, cx),
+            Step::Provider | Step::Browser(_) => {}
+            Step::Form => {
+                if self.form_ready(window, cx) {
+                    self.discover_servers(window, cx);
+                }
+            }
+            Step::Servers => match self.typed_servers(cx) {
+                Ok(()) => self.add_the_account(window, cx),
                 Err(err) => self.add_account_error(err, cx),
             },
-            Step::Password => self.sign_in(window, cx),
-            Step::Browser(_) => {}
+            Step::Done => self.close_add_account(cx),
         }
     }
 
-    /// Asks the daemon for the servers of the typed address.
+    /// Back: the step before the one showing.
+    fn add_account_back(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(dialog) = &mut self.add_account else {
+            return;
+        };
+        let back = match dialog.step {
+            Step::Form => Step::Provider,
+            Step::Servers => Step::Form,
+            Step::Browser(_) => {
+                self.cancel_browser_sign_in(cx);
+                if let Some(dialog) = &mut self.add_account {
+                    dialog._task = None;
+                    dialog.busy = false;
+                }
+                Step::Provider
+            }
+            Step::Provider | Step::Done => return,
+        };
+        if let Some(dialog) = &mut self.add_account {
+            // A lookup or login under way stops.
+            dialog._task = None;
+            dialog.busy = false;
+        }
+        self.add_account_step(back, window, cx);
+    }
+
+    /// Checks the address, password and name before anything goes out.
+    fn form_ready(&mut self, window: &mut Window, cx: &mut Context<Self>) -> bool {
+        if let Err(err) = self.add_account_address(cx) {
+            if let Some(dialog) = &self.add_account {
+                window.focus(&dialog.address.focus_handle(cx), cx);
+            }
+            self.add_account_error(err, cx);
+            return false;
+        }
+        let Some(dialog) = &self.add_account else {
+            return false;
+        };
+        let password = dialog.password.read(cx).text().to_owned();
+        if password.is_empty() {
+            window.focus(&dialog.password.focus_handle(cx), cx);
+            self.add_account_error(tr!("add-account-password-empty"), cx);
+            return false;
+        }
+        // The name is shown and stored in the open, so a password typed or
+        // pasted into it by mistake must not go through.
+        if is_password(dialog.name.read(cx).text(), &password) {
+            let name = dialog.name.clone();
+            name.update(cx, |n, cx| n.select_all_text(cx));
+            window.focus(&name.focus_handle(cx), cx);
+            self.add_account_error(tr!("add-account-name-is-password"), cx);
+            return false;
+        }
+        true
+    }
+
+    /// Asks the daemon for the servers of the typed address, then adds the
+    /// account with them.
     fn discover_servers(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let address = match self.add_account_address(cx) {
             Ok(address) => address,
@@ -593,6 +847,7 @@ impl MailWindow {
             return;
         }
         dialog.busy = true;
+        dialog.phase = Phase::Finding;
         dialog.error = None;
         let connection = self.daemon.clone();
         let lookup = address.clone();
@@ -613,7 +868,7 @@ impl MailWindow {
                 }
                 match result {
                     Ok(found) => {
-                        this.fill_servers(&found.account, Some(found.source), cx);
+                        this.fill_servers(&found.account, Some(found.pop3), Some(found.source), cx);
                         if let Some(dialog) = &mut this.add_account {
                             dialog.sign_in = found.sign_in;
                             dialog.password_works = found.password;
@@ -623,7 +878,7 @@ impl MailWindow {
                     Err(err) if err == daemon::NOT_RUNNING => this.add_account_error(err, cx),
                     Err(err) => {
                         tracing::info!(%err, "no servers found");
-                        this.fill_servers(&guess(&address), None, cx);
+                        this.fill_servers(&guess(&address), None, None, cx);
                         this.add_account_step(Step::Servers, window, cx);
                         this.add_account_error(
                             tr!("add-account-not-found", address = address.as_str()),
@@ -640,9 +895,9 @@ impl MailWindow {
         cx.notify();
     }
 
-    /// The account as typed, or what is wrong with it.
-    fn typed_account(&self, cx: &Context<Self>) -> Result<NewImapAccount, String> {
-        let address = self.add_account_address(cx)?;
+    /// The typed servers: incoming and outgoing, or what is wrong with
+    /// them.
+    fn typed_specs(&self, cx: &Context<Self>) -> Result<(ServerSpec, ServerSpec), String> {
         let Some(dialog) = &self.add_account else {
             return Err(String::new());
         };
@@ -657,19 +912,30 @@ impl MailWindow {
                 what,
             )
         };
-        Ok(NewImapAccount {
-            display_name: dialog.name.read(cx).text().trim().to_owned(),
-            address,
-            imap: spec(&dialog.imap, "incoming")?,
-            smtp: spec(&dialog.smtp, "outgoing")?,
-        })
+        Ok((
+            spec(&dialog.incoming, "incoming")?,
+            spec(&dialog.smtp, "outgoing")?,
+        ))
+    }
+
+    fn typed_servers(&self, cx: &Context<Self>) -> Result<(), String> {
+        self.typed_specs(cx).map(|_| ())
     }
 
     /// Checks the password with the server and adds the account.
-    fn sign_in(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let account = match self.typed_account(cx) {
-            Ok(account) => account,
+    fn add_the_account(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let address = match self.add_account_address(cx) {
+            Ok(address) => address,
             Err(err) => {
+                self.add_account_step(Step::Form, window, cx);
+                self.add_account_error(err, cx);
+                return;
+            }
+        };
+        let (incoming, smtp) = match self.typed_specs(cx) {
+            Ok(specs) => specs,
+            Err(err) => {
+                self.add_account_step(Step::Servers, window, cx);
                 self.add_account_error(err, cx);
                 return;
             }
@@ -679,22 +945,24 @@ impl MailWindow {
         };
         let password = dialog.password.read(cx).text().to_owned();
         if password.is_empty() {
+            self.add_account_step(Step::Form, window, cx);
             self.add_account_error(tr!("add-account-password-empty"), cx);
             return;
         }
-        // The name is shown and stored in the open, so a password typed or
-        // pasted into it by mistake must not go through.
-        if is_password(&account.display_name, &password) {
-            let name = dialog.name.clone();
-            name.update(cx, |n, cx| n.select_all_text(cx));
-            window.focus(&name.focus_handle(cx), cx);
-            self.add_account_error(tr!("add-account-name-is-password"), cx);
-            return;
-        }
+        let display_name = dialog.name.read(cx).text().trim().to_owned();
+        let kind = dialog.incoming_kind;
         dialog.busy = true;
+        dialog.phase = Phase::SigningIn;
         dialog.error = None;
+        let added = Added {
+            id: 0,
+            address: address.clone(),
+            name: display_name.clone(),
+            signed_in: None,
+            incoming: Some((kind, incoming.host.clone())),
+            smtp: smtp.host.clone(),
+        };
         let connection = self.daemon.clone();
-        let address = account.address.clone();
         let task = cx.spawn_in(window, async move |this, cx| {
             let result = cx
                 .background_executor()
@@ -703,27 +971,42 @@ impl MailWindow {
                         Some(connection) => connection,
                         None => daemon::connect().await.map_err(AddError::Other)?,
                     };
-                    daemon::add_account(&connection, &account, &password).await
+                    if kind == Kind::Pop3 {
+                        // Thunderbird's default: mail stays on the server
+                        // until it is deleted in Katna.
+                        let keep = Pop3Keep::default();
+                        let account = NewPop3Account {
+                            display_name,
+                            address,
+                            pop3: incoming,
+                            smtp,
+                            leave_on_server: keep.leave_on_server,
+                            keep_days: keep.days.unwrap_or(0),
+                            delete_with_local: keep.delete_with_local,
+                        };
+                        daemon::add_pop3_account(&connection, &account, &password).await
+                    } else {
+                        let account = NewImapAccount {
+                            display_name,
+                            address,
+                            imap: incoming,
+                            smtp,
+                        };
+                        daemon::add_account(&connection, &account, &password).await
+                    }
                 })
                 .await;
             this.update_in(cx, |this, window, cx| match result {
-                Ok(_) => {
-                    this.close_add_account(cx);
-                    this.show_snackbar(
-                        tr!("add-account-added", address = address.as_str()),
-                        None,
-                        cx,
-                    );
-                    this.account_added(window, cx);
-                }
+                Ok(id) => this.account_done(Added { id, ..added }, window, cx),
                 Err(AddError::Password(detail)) => {
                     tracing::info!(%detail, "login refused");
-                    let hint = match app_password_provider(&address) {
+                    let hint = match app_password_provider(&added.address) {
                         Some(provider) => {
                             tr!("add-account-app-password-refused", provider = provider)
                         }
                         None => tr!("add-account-password-refused"),
                     };
+                    this.add_account_step(Step::Form, window, cx);
                     this.add_account_error(hint, cx);
                     if let Some(dialog) = &this.add_account {
                         let password = dialog.password.clone();
@@ -741,6 +1024,125 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// The account is in: shows what got set up, and gets its mail.
+    fn account_done(&mut self, added: Added, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(dialog) = &mut self.add_account {
+            dialog.busy = false;
+            dialog.added = Some(added);
+            dialog.linking = None;
+        }
+        self.add_account_step(Step::Done, window, cx);
+        self.account_added(window, cx);
+    }
+
+    /// Adds another account from the last step.
+    fn add_another(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(dialog) = &mut self.add_account else {
+            return;
+        };
+        let fields = [
+            dialog.address.clone(),
+            dialog.password.clone(),
+            dialog.name.clone(),
+        ];
+        for field in fields {
+            fill(&mut dialog.seen, &field, String::new(), cx);
+        }
+        dialog.added = None;
+        dialog.linking = None;
+        dialog.servers_for.clear();
+        dialog.source = None;
+        dialog.provider = MailProvider::Other;
+        self.add_account_step(Step::Provider, window, cx);
+    }
+
+    /// Links Zoho's tasks and calendars to the Zoho Mail account just added.
+    fn link_zoho(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(dialog) = &mut self.add_account else {
+            return;
+        };
+        let Some(added) = &dialog.added else {
+            return;
+        };
+        let (id, address) = (added.id, added.address.clone());
+        dialog.linking = Some(Linking::Busy);
+        let connection = self.daemon.clone();
+        let task = cx.spawn_in(window, async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await.map_err(AddError::Other)?,
+                    };
+                    daemon::sign_in(&connection, OAuthProvider::Zoho, Some(id), &address).await
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                if let Some(dialog) = &mut this.add_account {
+                    dialog.linking = Some(match result {
+                        Ok(_) => Linking::Done,
+                        Err(AddError::Password(_)) => Linking::Failed(tr!(
+                            "add-account-sign-in-refused",
+                            provider = OAuthProvider::Zoho.name()
+                        )),
+                        Err(AddError::Other(err)) => Linking::Failed(err),
+                    });
+                }
+                cx.notify();
+            })
+            .ok();
+        });
+        if let Some(dialog) = &mut self.add_account {
+            dialog._task = Some(task);
+        }
+        cx.notify();
+    }
+
+    /// Keys on the dialog itself: Esc goes back or closes, and the arrow
+    /// keys move between the tiles.
+    fn add_account_key(
+        &mut self,
+        event: &KeyDownEvent,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(dialog) = &self.add_account else {
+            return;
+        };
+        let key = event.keystroke.key.as_str();
+        let modified = event.keystroke.modifiers.modified();
+        match (key, dialog.step) {
+            ("escape", _) if !modified => {
+                cx.stop_propagation();
+                self.close_add_account(cx);
+            }
+            ("right" | "down" | "left" | "up", Step::Provider) if !modified => {
+                cx.stop_propagation();
+                // Up and Down go a whole row, over both columns.
+                let width = unpx(window.viewport_size().width).min(WIDE + 32.0) - 32.0;
+                let columns = if width - 80.0 >= TWO_COLUMNS { 2 } else { 1 };
+                let steps = if matches!(key, "up" | "down") {
+                    columns
+                } else {
+                    1
+                };
+                for _ in 0..steps {
+                    if matches!(key, "right" | "down") {
+                        window.focus_next(cx);
+                    } else {
+                        window.focus_prev(cx);
+                    }
+                }
+            }
+            ("enter", Step::Done) if !modified => {
+                cx.stop_propagation();
+                self.close_add_account(cx);
+            }
+            _ => {}
+        }
+    }
+
     pub(super) fn render_add_account(
         &mut self,
         th: &Theme,
@@ -748,6 +1150,8 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let dialog = self.add_account.as_mut()?;
         dialog.shown.set(if dialog.closing { 0.0 } else { 1.0 });
         let t = dialog.shown.tick(window, reduce);
@@ -759,299 +1163,62 @@ impl MailWindow {
         let dialog = self.add_account.as_ref()?;
         let viewport = window.viewport_size();
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
-        let address = dialog.address.read(cx).text().trim().to_owned();
-
-        let (title, subtitle): (String, Option<String>) = match dialog.step {
-            Step::Address if dialog.busy => (
-                tr!("add-account-title"),
-                Some(tr!("add-account-looking", address = address.as_str())),
-            ),
-            Step::Address => (
-                tr!("add-account-title"),
-                Some(tr!("add-account-address-intro")),
-            ),
-            Step::Servers => (
-                tr!("add-account-servers-title"),
-                Some(tr!("add-account-servers-intro", address = address.as_str())),
-            ),
-            Step::Password if dialog.busy => (
-                tr!("add-account-password-title"),
-                Some(tr!("add-account-signing-in")),
-            ),
-            Step::Password => (tr!("add-account-password-title"), None),
-            Step::Browser(provider) => (
-                tr!("add-account-browser-title"),
-                Some(tr!("add-account-browser-intro", provider = provider.name())),
-            ),
-        };
-        let error = dialog.error.clone();
-        let mut body = div()
-            .id("add-account-body")
-            .flex()
-            .flex_col()
-            .overflow_y_scroll()
-            .px(px(40.0))
-            .pt(px(36.0))
-            .pb(px(28.0))
-            .child(logo())
-            .child(
-                div()
-                    .mt(px(16.0))
-                    .text_size(px(24.0))
-                    .line_height(px(32.0))
-                    .text_color(rgba(th.text))
-                    .child(title),
-            )
-            .children(subtitle.map(|text| {
-                div()
-                    .mt(px(8.0))
-                    .text_size(px(14.0))
-                    .line_height(px(20.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(text)
-            }));
-
-        match dialog.step {
-            Step::Address => {
-                body = body
-                    .child(div().mt(px(24.0)).child(self.outlined_field(
-                        "field-address",
-                        tr!("add-account-field-address"),
-                        &dialog.address,
-                        error.is_some(),
-                        th,
-                        window,
-                        cx,
-                    )))
-                    .children(error.clone().map(|error| error_line(error, th)));
-                let providers: Vec<OAuthProvider> = OAuthProvider::ALL
-                    .into_iter()
-                    .filter(|p| p.available())
-                    .collect();
-                if !providers.is_empty() {
-                    body =
-                        body.child(or_line(th))
-                            .children(providers.into_iter().map(|provider| {
-                                provider_button(provider, th)
-                                    .on_click(cx.listener(move |this, _, window, cx| {
-                                        this.start_sign_in(provider, window, cx)
-                                    }))
-                                    .into_any_element()
-                            }));
-                }
-            }
-            Step::Browser(_) => {
-                body = body.child(hint(tr!("add-account-browser-hint"), th));
-            }
-            Step::Servers => {
-                body = body
-                    .child(section_title(
-                        tr!("add-account-incoming", protocol = "IMAP"),
-                        th,
-                    ))
-                    .child(self.server_fields(Kind::Imap, error.is_some(), th, window, cx))
-                    .child(section_title(
-                        tr!("add-account-outgoing", protocol = "SMTP"),
-                        th,
-                    ))
-                    .child(self.server_fields(Kind::Smtp, false, th, window, cx))
-                    .child(div().mt(px(16.0)).child(self.outlined_field(
-                        "field-username",
-                        tr!("add-account-field-username"),
-                        &dialog.username,
-                        false,
-                        th,
-                        window,
-                        cx,
-                    )));
-            }
-            Step::Password => {
-                body = body
-                    .child(
-                        div().mt(px(12.0)).flex().child(
-                            div()
-                                .id("account-chip")
-                                .h(px(32.0))
-                                .pl(px(4.0))
-                                .pr(px(8.0))
-                                .flex()
-                                .flex_row()
-                                .items_center()
-                                .gap(px(8.0))
-                                .rounded_full()
-                                .border_1()
-                                .border_color(rgba(fade(th.text_faint, 0.6)))
-                                .text_size(px(14.0))
-                                .font_weight(FontWeight::MEDIUM)
-                                .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
-                                .on_click(cx.listener(|this, _, window, cx| {
-                                    this.add_account_step(Step::Address, window, cx)
-                                }))
-                                .child(avatar(&address, &address, 24.0))
-                                .child(address.clone())
-                                .child(icon("chevron-down", th.text_dim, 18.0)),
-                        ),
-                    )
-                    .child(div().mt(px(24.0)).child(self.outlined_field(
-                        "field-password",
-                        tr!("add-account-field-password"),
-                        &dialog.password,
-                        error.is_some(),
-                        th,
-                        window,
-                        cx,
-                    )))
-                    .children(error.clone().map(|error| error_line(error, th)))
-                    .child(
-                        div()
-                            .id("show-password")
-                            .mt(px(8.0))
-                            .flex()
-                            .flex_row()
-                            .items_center()
-                            .gap(px(12.0))
-                            .text_size(px(14.0))
-                            .cursor_pointer()
-                            .on_click(cx.listener(|this, _, _, cx| {
-                                if let Some(dialog) = &mut this.add_account {
-                                    dialog.show_password = !dialog.show_password;
-                                    let masked = !dialog.show_password;
-                                    dialog.password.update(cx, |p, cx| p.set_masked(masked, cx));
-                                }
-                                cx.notify();
-                            }))
-                            .child(icon(
-                                if dialog.show_password {
-                                    "checkbox-checked"
-                                } else {
-                                    "checkbox"
-                                },
-                                if dialog.show_password {
-                                    th.accent
-                                } else {
-                                    th.text_dim
-                                },
-                                20.0,
-                            ))
-                            .child(tr!("add-account-show-password")),
-                    )
-                    .children(app_password_provider(&address).map(|provider| {
-                        hint(
-                            tr!("add-account-app-password-hint", provider = provider),
-                            th,
-                        )
-                    }))
-                    .children(dialog.sign_in.filter(|p| p.available()).map(|provider| {
-                        div().mt(px(8.0)).flex().child(
-                            text_button(
-                                "add-account-sign-in-instead",
-                                tr!("add-account-sign-in-instead", provider = provider.name()),
-                                th,
-                            )
-                            .focus_ring(th)
-                            .on_click(cx.listener(
-                                move |this, _, window, cx| this.start_sign_in(provider, window, cx),
-                            )),
-                        )
-                    }))
-                    .child(div().mt(px(20.0)).child(self.outlined_field(
-                        "field-name",
-                        tr!("add-account-field-name"),
-                        &dialog.name,
-                        false,
-                        th,
-                        window,
-                        cx,
-                    )))
-                    .child(hint(tr!("add-account-name-hint"), th))
-                    .child(hint(self.servers_summary(cx), th));
-            }
+        let step = dialog.step;
+        let width = match step {
+            Step::Provider => WIDE,
+            _ => WIDTH,
         }
-
-        // Under the address or password field on those steps, else after
-        // the fields.
-        if matches!(dialog.step, Step::Servers | Step::Browser(_)) {
-            body = body.children(error.map(|error| error_line(error, th)));
-        }
-
-        let (secondary, secondary_label) = match dialog.step {
-            Step::Address | Step::Password => {
-                ("add-account-servers", tr!("add-account-servers-button"))
-            }
-            Step::Servers | Step::Browser(_) => ("add-account-back", tr!("add-account-back")),
-        };
-        let browser = matches!(dialog.step, Step::Browser(_));
-        let next_label = match dialog.step {
-            Step::Password => tr!("add-account-add"),
-            _ => tr!("add-account-next"),
-        };
+        .min(vw - 32.0);
+        // Narrow windows take less padding, so the fields keep their room.
+        let pad = if width < 400.0 { 24.0 } else { 40.0 };
         let busy = dialog.busy;
-        body =
-            body.child(
-                div()
-                    .mt(px(32.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(8.0))
-                    .child(
-                        text_button(secondary, secondary_label, th)
-                            .focus_ring(th)
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                let step = this.add_account.as_ref().map(|d| d.step);
-                                match step {
-                                    Some(Step::Servers) => {
-                                        this.add_account_step(Step::Address, window, cx)
-                                    }
-                                    Some(Step::Browser(_)) => {
-                                        this.cancel_browser_sign_in(cx);
-                                        if let Some(dialog) = &mut this.add_account {
-                                            dialog._task = None;
-                                            dialog.busy = false;
-                                        }
-                                        this.add_account_step(Step::Address, window, cx)
-                                    }
-                                    Some(_) => this.add_account_servers(window, cx),
-                                    None => {}
-                                }
-                            })),
-                    )
-                    .child(div().flex_1())
-                    .child(
-                        text_button("add-account-cancel", tr!("add-account-cancel"), th)
-                            .focus_ring(th)
-                            .on_click(cx.listener(|this, _, _, cx| this.close_add_account(cx))),
-                    )
-                    .when(!browser, |row| {
-                        row.child(
-                            filled_button("add-account-next", next_label, th)
-                                .focus_ring_filled(th)
-                                .when(busy, |d| d.opacity(0.6))
-                                .on_click(cx.listener(|this, _, window, cx| {
-                                    this.add_account_next(window, cx)
-                                })),
-                        )
-                    }),
-            );
+
+        let body = match step {
+            Step::Provider => self.provider_step(width - 2.0 * pad, th, cx),
+            Step::Form => self.form_step(th, window, cx),
+            Step::Servers => self.servers_step(th, window, cx),
+            Step::Browser(provider) => self.browser_step(provider, th),
+            Step::Done => self.done_step(th, cx),
+        };
+        let footer = self.add_account_footer(th, cx);
 
         let card = div()
             .id("add-account")
             .track_focus(&self.dialog_focus)
             .map(|d| super::popovers::keep_tab_inside(d, &self.dialog_focus))
             .key_context("AddAccount")
+            .on_key_down(cx.listener(|this, event: &KeyDownEvent, window, cx| {
+                this.add_account_key(event, window, cx)
+            }))
             .occlude()
             .relative()
-            .w(px(WIDTH.min(vw - 32.0)))
-            .max_h(px((vh - 48.0).max(200.0)))
+            .w(px(width))
+            // Clear of the window's edges and frame, whose height the
+            // viewport includes.
+            .max_h(px((vh - 112.0).max(240.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .bg(rgba(th.surface))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
-            .child(body)
+            .child(
+                div()
+                    .id("add-account-body")
+                    .flex_1()
+                    .min_h_0()
+                    .overflow_y_scroll()
+                    .px(px(pad))
+                    .pt(px(32.0))
+                    .pb(px(8.0))
+                    .child(body),
+            )
+            .child(
+                div()
+                    .flex_none()
+                    .px(px(pad))
+                    .pt(px(16.0))
+                    .pb(px(24.0))
+                    .child(footer),
+            )
             .when(busy, |d| d.child(progress_bar(th)));
 
         Some(
@@ -1077,12 +1244,606 @@ impl MailWindow {
         )
     }
 
+    /// The first step: a tile for each provider.
+    fn provider_step(&self, inner: f32, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let error = self.add_account.as_ref().and_then(|d| d.error.clone());
+        let columns = if inner >= TWO_COLUMNS { 2 } else { 1 };
+        let tile_width = if columns == 2 {
+            (inner - 12.0) / 2.0
+        } else {
+            inner
+        };
+        let tiles =
+            MailProvider::shown().enumerate().map(|(ix, provider)| {
+                let wide = provider == MailProvider::Other && columns == 2;
+                div()
+                    .id(("provider-tile", ix))
+                    .w(px(tile_width))
+                    .h(px(64.0))
+                    .px(px(16.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(14.0))
+                    .rounded(px(12.0))
+                    .border_1()
+                    .border_color(rgba(fade(th.text_faint, 0.35)))
+                    .bg(rgba(th.surface))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)).shadow(elevation(th, 1.0)))
+                    .focus_ring(th)
+                    .on_click(cx.listener(move |this, _, window, cx| {
+                        this.pick_provider(provider, window, cx)
+                    }))
+                    .child(provider.glyph(32.0, th))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .flex()
+                            .flex_col()
+                            .child(
+                                div()
+                                    .truncate()
+                                    .text_size(px(15.0))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .child(provider.name()),
+                            )
+                            .child(
+                                div()
+                                    .truncate()
+                                    .text_size(px(12.0))
+                                    .text_color(rgba(th.text_faint))
+                                    .child(provider.detail()),
+                            ),
+                    )
+                    .map(|d| if wide { d.mx_auto() } else { d })
+            });
+        div()
+            .flex()
+            .flex_col()
+            .child(centered_header(
+                logo(th),
+                tr!("add-account-title"),
+                tr!("add-account-providers-intro"),
+                th,
+            ))
+            .child(
+                div()
+                    .mt(px(24.0))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(12.0))
+                    .children(tiles),
+            )
+            .children(error.map(|error| self.error_line(error, th)))
+            .into_any_element()
+    }
+
+    /// The name, address and password, the provider's line on passwords,
+    /// and each stage of adding while it goes.
+    fn form_step(&self, th: &Theme, window: &Window, cx: &mut Context<Self>) -> AnyElement {
+        let Some(dialog) = &self.add_account else {
+            return div().into_any_element();
+        };
+        let provider = dialog.provider;
+        let error = dialog.error.clone();
+        let (title, intro) = match provider {
+            MailProvider::Other => (
+                tr!("add-account-form-title-other"),
+                tr!("add-account-address-intro"),
+            ),
+            _ => (
+                tr!("add-account-form-title", provider = provider.mail_name()),
+                tr!("add-account-form-intro"),
+            ),
+        };
+        let address = dialog.address.read(cx).text().trim().to_owned();
+        let password_help = provider.password_help().map(|(help, url)| {
+            let text = match help {
+                PasswordHelp::AppPassword => {
+                    tr!("add-account-app-password-hint", provider = provider.name())
+                }
+                PasswordHelp::TurnOnImap => {
+                    tr!("add-account-help-turn-on-imap", provider = provider.name())
+                }
+            };
+            let link = match help {
+                PasswordHelp::AppPassword => tr!("add-account-help-app-password-link"),
+                PasswordHelp::TurnOnImap => tr!("add-account-help-turn-on-imap-link"),
+            };
+            help_box(text, Some((link, url)), th)
+        });
+        // An address that signs in in the browser, typed under Other.
+        let sign_in_instead = (provider == MailProvider::Other && !dialog.busy)
+            .then(|| MailProvider::for_address(&address).sign_in())
+            .flatten()
+            .or(dialog.sign_in.filter(|p| p.available() && !dialog.busy));
+        let stages = dialog.busy.then(|| {
+            let finding = dialog.phase == Phase::Finding;
+            let host = dialog.incoming.host.read(cx).text().trim().to_owned();
+            div()
+                .mt(px(20.0))
+                .p(px(16.0))
+                .flex()
+                .flex_col()
+                .gap(px(10.0))
+                .rounded(px(12.0))
+                .bg(rgba(fade(th.accent, 0.08)))
+                .child(stage(
+                    "add-account-stage-find",
+                    tr!("add-account-looking", address = address.as_str()),
+                    if finding { Stage::Now } else { Stage::Done },
+                    th,
+                ))
+                .child(stage(
+                    "add-account-stage-sign-in",
+                    if finding || host.is_empty() {
+                        tr!("add-account-signing-in")
+                    } else {
+                        tr!("add-account-stage-signing-in-at", server = host.as_str())
+                    },
+                    if finding { Stage::Next } else { Stage::Now },
+                    th,
+                ))
+                .into_any_element()
+        });
+        let show_password = div()
+            .id("show-password")
+            .mt(px(8.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(12.0))
+            .text_size(px(14.0))
+            .cursor_pointer()
+            .on_click(cx.listener(|this, _, _, cx| {
+                if let Some(dialog) = &mut this.add_account {
+                    dialog.show_password = !dialog.show_password;
+                    let masked = !dialog.show_password;
+                    dialog.password.update(cx, |p, cx| p.set_masked(masked, cx));
+                }
+                cx.notify();
+            }))
+            .child(crate::widgets::checkbox(
+                "add-account-show-password-box",
+                crate::widgets::Check::from(dialog.show_password),
+                th,
+            ))
+            .child(tr!("add-account-show-password"));
+        div()
+            .flex()
+            .flex_col()
+            .child(header(provider.glyph(40.0, th), title, Some(intro), th))
+            .child(div().mt(px(24.0)).child(self.outlined_field(
+                "field-name",
+                tr!("add-account-field-name"),
+                &dialog.name,
+                false,
+                th,
+                window,
+                cx,
+            )))
+            .child(hint(tr!("add-account-name-hint"), th))
+            .child(div().mt(px(16.0)).child(self.outlined_field(
+                "field-address",
+                tr!("add-account-field-address"),
+                &dialog.address,
+                false,
+                th,
+                window,
+                cx,
+            )))
+            .child(div().mt(px(16.0)).child(self.outlined_field(
+                "field-password",
+                tr!("add-account-field-password"),
+                &dialog.password,
+                false,
+                th,
+                window,
+                cx,
+            )))
+            .child(show_password)
+            .children(error.map(|error| self.error_line(error, th)))
+            .children(stages)
+            .when(!dialog.busy, |d| d.children(password_help))
+            .children(sign_in_instead.map(|provider| {
+                div().mt(px(8.0)).flex().child(
+                    text_button(
+                        "add-account-sign-in-instead",
+                        tr!("add-account-sign-in-instead", provider = provider.name()),
+                        th,
+                    )
+                    .ml(px(-12.0))
+                    .focus_ring(th)
+                    .on_click(cx.listener(move |this, _, window, cx| {
+                        this.start_sign_in(provider, window, cx)
+                    })),
+                )
+            }))
+            .child(
+                div().mt(px(12.0)).flex().child(
+                    text_button(
+                        "add-account-edit-servers",
+                        tr!("add-account-servers-button"),
+                        th,
+                    )
+                    .ml(px(-12.0))
+                    .focus_ring(th)
+                    .on_click(
+                        cx.listener(|this, _, window, cx| this.add_account_servers(window, cx)),
+                    ),
+                ),
+            )
+            .into_any_element()
+    }
+
+    /// The servers, typed or corrected by hand.
+    fn servers_step(&self, th: &Theme, window: &Window, cx: &mut Context<Self>) -> AnyElement {
+        let Some(dialog) = &self.add_account else {
+            return div().into_any_element();
+        };
+        let error = dialog.error.clone();
+        let address = dialog.address.read(cx).text().trim().to_owned();
+        let kind = dialog.incoming_kind;
+        let segment = |choice: Kind| {
+            let on = kind == choice;
+            div()
+                .id(("incoming-kind", choice as usize))
+                .flex_1()
+                .h(px(36.0))
+                .flex()
+                .items_center()
+                .justify_center()
+                .gap(px(6.0))
+                .rounded_full()
+                .text_size(px(14.0))
+                .font_weight(FontWeight::MEDIUM)
+                .cursor_pointer()
+                .when(on, |d| {
+                    d.bg(rgba(th.nav_selected))
+                        .text_color(rgba(th.nav_selected_text))
+                })
+                .when(!on, |d| {
+                    d.text_color(rgba(th.text_dim))
+                        .hover(|s| s.bg(rgba(th.hover)))
+                })
+                .focus_ring(th)
+                .on_click(cx.listener(move |this, _, _, cx| this.set_incoming_kind(choice, cx)))
+                .when(on, |d| d.child(icon("check", th.nav_selected_text, 16.0)))
+                .child(choice.name())
+        };
+        let about = match kind {
+            Kind::Pop3 => tr!("add-account-pop3-about"),
+            _ => tr!("add-account-imap-about"),
+        };
+        div()
+            .flex()
+            .flex_col()
+            .child(header(
+                icon("settings", th.text_dim, 36.0),
+                tr!("add-account-servers-title"),
+                Some(tr!("add-account-servers-intro", address = address.as_str())),
+                th,
+            ))
+            .child(section_title(tr!("add-account-receive-with"), th))
+            .child(
+                div()
+                    .p(px(4.0))
+                    .flex()
+                    .flex_row()
+                    .gap(px(4.0))
+                    .rounded_full()
+                    .border_1()
+                    .border_color(rgba(fade(th.text_faint, 0.5)))
+                    .child(segment(Kind::Imap))
+                    .child(segment(Kind::Pop3)),
+            )
+            .child(hint(about, th))
+            .child(section_title(
+                tr!("add-account-incoming", protocol = kind.name()),
+                th,
+            ))
+            .child(self.server_fields(kind, error.is_some(), th, window, cx))
+            .child(section_title(
+                tr!("add-account-outgoing", protocol = "SMTP"),
+                th,
+            ))
+            .child(self.server_fields(Kind::Smtp, false, th, window, cx))
+            .child(div().mt(px(16.0)).child(self.outlined_field(
+                "field-username",
+                tr!("add-account-field-username"),
+                &dialog.username,
+                false,
+                th,
+                window,
+                cx,
+            )))
+            .children(error.map(|error| self.error_line(error, th)))
+            .into_any_element()
+    }
+
+    fn browser_step(&self, provider: OAuthProvider, th: &Theme) -> AnyElement {
+        let glyph = match provider {
+            OAuthProvider::Microsoft => MailProvider::Microsoft,
+            _ => MailProvider::Google,
+        }
+        .glyph(40.0, th);
+        let error = self.add_account.as_ref().and_then(|d| d.error.clone());
+        div()
+            .flex()
+            .flex_col()
+            .child(header(
+                glyph,
+                tr!("add-account-browser-title"),
+                Some(tr!("add-account-browser-intro", provider = provider.name())),
+                th,
+            ))
+            .child(
+                div()
+                    .mt(px(20.0))
+                    .p(px(16.0))
+                    .rounded(px(12.0))
+                    .bg(rgba(fade(th.accent, 0.08)))
+                    .child(stage(
+                        "add-account-stage-browser",
+                        tr!("add-account-stage-browser"),
+                        Stage::Now,
+                        th,
+                    )),
+            )
+            .child(hint(tr!("add-account-browser-hint"), th))
+            .children(error.map(|error| self.error_line(error, th)))
+            .into_any_element()
+    }
+
+    /// The last step: what got set up.
+    fn done_step(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(dialog) = &self.add_account else {
+            return div().into_any_element();
+        };
+        let Some(added) = &dialog.added else {
+            return div().into_any_element();
+        };
+        let name = self
+            .accounts
+            .iter()
+            .find(|a| a.id.0 == added.id)
+            .map(|a| a.display_name.clone())
+            .filter(|n| !n.trim().is_empty())
+            .or_else(|| (!added.name.is_empty()).then(|| added.name.clone()))
+            .unwrap_or_else(|| added.address.clone());
+        let mut rows: Vec<(String, String)> = Vec::new();
+        if let Some(provider) = added.signed_in {
+            rows.push((
+                tr!("add-account-done-sign-in"),
+                tr!(
+                    "add-account-done-signed-in-with",
+                    provider = provider.name()
+                ),
+            ));
+        }
+        if let Some((kind, host)) = &added.incoming {
+            rows.push((
+                tr!("add-account-done-receiving"),
+                format!("{} \u{b7} {host}", kind.name()),
+            ));
+        }
+        if !added.smtp.is_empty() {
+            rows.push((
+                tr!("add-account-done-sending"),
+                format!("SMTP \u{b7} {}", added.smtp),
+            ));
+        }
+        let pop3 = matches!(added.incoming, Some((Kind::Pop3, _)));
+        if pop3 {
+            rows.push((
+                tr!("add-account-done-on-server"),
+                tr!("add-account-done-kept"),
+            ));
+        }
+        let zoho = MailProvider::for_address(&added.address) == MailProvider::Zoho
+            || dialog.provider == MailProvider::Zoho;
+        let linking = dialog.linking.clone();
+        let fact = |label: String, value: String| {
+            div()
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .gap_x(px(12.0))
+                .text_size(px(13.0))
+                .line_height(px(20.0))
+                .child(
+                    div()
+                        .w(px(132.0))
+                        .text_color(rgba(th.text_faint))
+                        .child(label),
+                )
+                .child(div().flex_1().min_w(px(160.0)).child(value))
+        };
+        let zoho_row = (zoho && OAuthProvider::Zoho.available()).then(|| {
+            let control = match &linking {
+                Some(Linking::Done) => div()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(6.0))
+                    .child(icon("check", th.accent, 18.0))
+                    .child(tr!("add-account-done-linked"))
+                    .into_any_element(),
+                Some(Linking::Busy) => stage(
+                    "add-account-stage-zoho",
+                    tr!("add-account-stage-browser"),
+                    Stage::Now,
+                    th,
+                ),
+                _ => crate::widgets::outlined_button(
+                    "add-account-link-zoho",
+                    tr!("add-account-sign-in-with", provider = "Zoho"),
+                    th,
+                )
+                .focus_ring(th)
+                .on_click(cx.listener(|this, _, window, cx| this.link_zoho(window, cx)))
+                .into_any_element(),
+            };
+            div()
+                .mt(px(16.0))
+                .p(px(16.0))
+                .flex()
+                .flex_col()
+                .gap(px(10.0))
+                .rounded(px(12.0))
+                .border_1()
+                .border_color(rgba(fade(th.text_faint, 0.35)))
+                .child(
+                    div()
+                        .text_size(px(14.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .child(tr!("add-account-done-zoho-title")),
+                )
+                .child(
+                    div()
+                        .text_size(px(13.0))
+                        .line_height(px(18.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("add-account-done-zoho-about")),
+                )
+                .child(div().flex().child(control))
+                .children(match &linking {
+                    Some(Linking::Failed(err)) => Some(self.error_line(err.clone(), th)),
+                    _ => None,
+                })
+        });
+        div()
+            .flex()
+            .flex_col()
+            .child(header(
+                div()
+                    .size(px(40.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .bg(rgba(fade(th.accent, 0.14)))
+                    .child(icon("check", th.accent, 24.0))
+                    .into_any_element(),
+                tr!("add-account-done-title"),
+                Some(tr!("add-account-done-intro")),
+                th,
+            ))
+            .child(
+                div()
+                    .mt(px(24.0))
+                    .p(px(16.0))
+                    .flex()
+                    .flex_col()
+                    .gap(px(12.0))
+                    .rounded(px(12.0))
+                    .border_1()
+                    .border_color(rgba(fade(th.text_faint, 0.35)))
+                    .child(
+                        div()
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(12.0))
+                            .child(self.person_avatar(&name, &added.address, 40.0))
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .min_w_0()
+                                    .flex()
+                                    .flex_col()
+                                    .child(
+                                        div()
+                                            .truncate()
+                                            .text_size(px(15.0))
+                                            .font_weight(FontWeight::MEDIUM)
+                                            .child(name.clone()),
+                                    )
+                                    .child(
+                                        div()
+                                            .truncate()
+                                            .text_size(px(13.0))
+                                            .text_color(rgba(th.text_faint))
+                                            .child(added.address.clone()),
+                                    ),
+                            ),
+                    )
+                    .child(div().h(px(1.0)).bg(rgba(th.divider)))
+                    .children(rows.into_iter().map(|(label, value)| fact(label, value))),
+            )
+            .when(added.signed_in.is_none(), |d| {
+                d.child(hint(self.servers_summary(cx), th))
+            })
+            .when(pop3, |d| {
+                d.child(hint(tr!("add-account-done-pop3-hint"), th))
+            })
+            .children(zoho_row)
+            .into_any_element()
+    }
+
+    /// The buttons along the bottom of each step.
+    fn add_account_footer(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let Some(dialog) = &self.add_account else {
+            return div().into_any_element();
+        };
+        let step = dialog.step;
+        let busy = dialog.busy;
+        let back = matches!(step, Step::Form | Step::Servers | Step::Browser(_));
+        let (primary, primary_label) = match step {
+            Step::Form | Step::Servers => (true, tr!("add-account-add")),
+            Step::Done => (true, tr!("add-account-done")),
+            Step::Provider | Step::Browser(_) => (false, String::new()),
+        };
+        let mut row = div()
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .items_center()
+            .gap(px(8.0));
+        if back {
+            row = row.child(
+                text_button("add-account-back", tr!("add-account-back"), th)
+                    .ml(px(-12.0))
+                    .focus_ring(th)
+                    .on_click(cx.listener(|this, _, window, cx| this.add_account_back(window, cx))),
+            );
+        }
+        if step == Step::Done {
+            row = row.child(
+                text_button("add-account-another", tr!("add-account-another"), th)
+                    .ml(px(-12.0))
+                    .focus_ring(th)
+                    .on_click(cx.listener(|this, _, window, cx| this.add_another(window, cx))),
+            );
+        }
+        row = row.child(div().flex_1());
+        if step != Step::Done {
+            row = row.child(
+                text_button("add-account-cancel", tr!("add-account-cancel"), th)
+                    .focus_ring(th)
+                    .on_click(cx.listener(|this, _, _, cx| this.close_add_account(cx))),
+            );
+        }
+        if primary {
+            row = row.child(
+                filled_button("add-account-next", primary_label, th)
+                    .focus_ring_filled(th)
+                    .when(busy, |d| d.opacity(0.6))
+                    .on_click(cx.listener(|this, _, window, cx| this.add_account_next(window, cx))),
+            );
+        }
+        row.into_any_element()
+    }
+
     /// "Servers: imap.x.org and smtp.x.org, found in …".
     fn servers_summary(&self, cx: &Context<Self>) -> String {
         let Some(dialog) = &self.add_account else {
             return String::new();
         };
-        let imap = dialog.imap.host.read(cx).text().trim().to_owned();
+        let imap = dialog.incoming.host.read(cx).text().trim().to_owned();
         let smtp = dialog.smtp.host.read(cx).text().trim().to_owned();
         let servers = if imap == smtp {
             imap
@@ -1112,8 +1873,8 @@ impl MailWindow {
             return div().into_any_element();
         };
         let (fields, prefix) = match kind {
-            Kind::Imap => (&dialog.imap, "imap"),
             Kind::Smtp => (&dialog.smtp, "smtp"),
+            _ => (&dialog.incoming, "incoming"),
         };
         let chips = Security::ALL.map(|security| {
             let on = fields.security == security;
@@ -1140,6 +1901,7 @@ impl MailWindow {
                 }))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
+                .focus_ring(th)
                 .on_click(cx.listener(move |this, _, _, cx| this.set_security(kind, security, cx)))
                 .child(security.label())
         });
@@ -1160,6 +1922,7 @@ impl MailWindow {
                 div()
                     .flex()
                     .flex_row()
+                    .flex_wrap()
                     .items_center()
                     .gap(px(12.0))
                     .child(div().w(px(96.0)).flex_none().child(self.outlined_field(
@@ -1210,8 +1973,8 @@ impl MailWindow {
             return;
         };
         let fields = match kind {
-            Kind::Imap => &mut dialog.imap,
             Kind::Smtp => &mut dialog.smtp,
+            _ => &mut dialog.incoming,
         };
         let old = fields.security;
         fields.security = security;
@@ -1264,7 +2027,7 @@ impl MailWindow {
             .rounded(px(4.0))
             .map(|d| {
                 if focused || error {
-                    d.border_2()
+                    d.border_px(2.0)
                 } else {
                     d.border_1()
                 }
@@ -1313,9 +2076,9 @@ impl MailWindow {
         // With one account at a time, the shown one is marked and a click
         // switches to another.
         let shown = self.shown_account();
-        // On the last row: Manage accounts, or Add account without any.
-        let mut menu_button = Some(self.app_menu_button(th, cx));
         let app_menu = self.render_app_menu(th, cx);
+        let language = self.render_language_button(th, cx);
+        let menu_button = self.app_menu_button(th, cx);
         let rows = self.accounts.iter().enumerate().map(|(ix, account)| {
             let name = if account.display_name.trim().is_empty() {
                 account.address.clone()
@@ -1347,7 +2110,11 @@ impl MailWindow {
                     this.account_menu = false;
                     this.pick_account(id, cx);
                 }))
-                .child(self.person_avatar(&name, &account.address, 32.0))
+                .child(self.account_ring(
+                    &account.address,
+                    self.person_avatar(&name, &account.address, 32.0),
+                    th,
+                ))
                 .child(
                     div()
                         .flex_1()
@@ -1386,6 +2153,25 @@ impl MailWindow {
                     d.child(icon("check", th.nav_selected_text, 20.0))
                 })
         });
+        // The icon row at the top: Settings and the language, with the
+        // application menu at its end.
+        let icons = div()
+            .h(px(48.0))
+            .px(px(4.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(4.0))
+            .child(
+                icon_button("account-settings", "settings", 22.0, th)
+                    .tooltip(tip(tr!("settings"), th))
+                    .on_click(cx.listener(|this, _, window, cx| {
+                        this.account_menu = false;
+                        this.open_settings_here(window, cx);
+                    })),
+            )
+            .child(language)
+            .child(menu_button);
         let add = div()
             .id("account-add")
             .h(px(48.0))
@@ -1413,8 +2199,7 @@ impl MailWindow {
                 tr!("account-add")
             } else {
                 tr!("add-account-menu-another")
-            })
-            .when(self.accounts.is_empty(), |d| d.children(menu_button.take()));
+            });
         let card = app_menu.unwrap_or_else(|| {
             div()
                 .id("account-menu")
@@ -1430,6 +2215,16 @@ impl MailWindow {
                 .gap(px(2.0))
                 .map(|d| raised(d, th, super::PANEL_RADIUS, 2.0))
                 .text_color(rgba(th.text))
+                .child(icons)
+                .when(!self.accounts.is_empty(), |d| {
+                    d.child(
+                        div()
+                            .mx(px(16.0))
+                            .my(px(4.0))
+                            .h(px(1.0))
+                            .bg(rgba(th.divider)),
+                    )
+                })
                 .children(rows)
                 .when(!self.accounts.is_empty(), |d| {
                     d.child(
@@ -1441,45 +2236,10 @@ impl MailWindow {
                     )
                 })
                 .child(add)
-                .when(!self.accounts.is_empty(), |d| {
-                    d.child(
-                        div()
-                            .id("account-manage")
-                            .h(px(48.0))
-                            .px(px(16.0))
-                            .flex()
-                            .flex_row()
-                            .items_center()
-                            .gap(px(12.0))
-                            .rounded(px(8.0))
-                            .text_size(px(14.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
-                            .menu_key(th)
-                            .on_click(cx.listener(|this, _, window, cx| {
-                                this.account_menu = false;
-                                this.open_settings_page(
-                                    super::settings_page::Section::Accounts,
-                                    window,
-                                    cx,
-                                );
-                            }))
-                            .child(
-                                div()
-                                    .size(px(32.0))
-                                    .flex()
-                                    .items_center()
-                                    .justify_center()
-                                    .child(icon("settings", th.text_dim, 22.0)),
-                            )
-                            .child(tr!("add-account-menu-manage"))
-                            .children(menu_button.take()),
-                    )
-                })
                 .with_animation(
                     "account-menu",
-                    Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                        .with_easing(gpui::ease_out_quint()),
                     |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
                 )
                 .into_any_element()
@@ -1521,60 +2281,171 @@ impl MailWindow {
 }
 
 /// The Katna Mail mark, as in the top bar.
-pub(super) fn logo() -> AnyElement {
-    crate::widgets::katna_mark(40.0)
+pub(super) fn logo(th: &Theme) -> AnyElement {
+    crate::widgets::katna_mark(40.0, th)
 }
 
-fn error_line(error: String, th: &Theme) -> AnyElement {
+/// A step's mark, title and the line under it, centred.
+fn centered_header(mark: AnyElement, title: String, intro: String, th: &Theme) -> AnyElement {
     div()
-        .mt(px(8.0))
         .flex()
-        .flex_row()
-        .items_start()
-        .gap(px(8.0))
-        .text_size(px(12.0))
-        .line_height(px(16.0))
-        .text_color(rgba(th.error))
-        .child(icon("info", th.error, 16.0))
-        .child(div().flex_1().min_w_0().child(error))
+        .flex_col()
+        .items_center()
+        .text_center()
+        .child(mark)
+        .child(
+            div()
+                .mt(px(16.0))
+                .text_size(px(26.0))
+                .line_height(px(34.0))
+                .text_color(rgba(th.text))
+                .child(title),
+        )
+        .child(
+            div()
+                .mt(px(8.0))
+                .text_size(px(14.0))
+                .line_height(px(20.0))
+                .text_color(rgba(th.text_dim))
+                .child(intro),
+        )
         .into_any_element()
 }
 
-/// A thin line with "or" in its middle, above the sign-in buttons.
-fn or_line(th: &Theme) -> AnyElement {
-    let line = || div().flex_1().h(px(1.0)).bg(rgba(fade(th.text_faint, 0.4)));
+/// A step's mark, title and the line under it.
+fn header(mark: AnyElement, title: String, intro: Option<String>, th: &Theme) -> AnyElement {
     div()
-        .mt(px(24.0))
+        .flex()
+        .flex_col()
+        .child(mark)
+        .child(
+            div()
+                .mt(px(16.0))
+                .text_size(px(24.0))
+                .line_height(px(32.0))
+                .text_color(rgba(th.text))
+                .child(title),
+        )
+        .children(intro.map(|text| {
+            div()
+                .mt(px(8.0))
+                .text_size(px(14.0))
+                .line_height(px(20.0))
+                .text_color(rgba(th.text_dim))
+                .child(text)
+        }))
+        .into_any_element()
+}
+
+/// A tinted box saying what the provider asks for, with a link to its
+/// own page on it.
+fn help_box(text: String, link: Option<(String, &'static str)>, th: &Theme) -> AnyElement {
+    div()
+        .mt(px(20.0))
+        .p(px(16.0))
+        .flex()
+        .flex_row()
+        .items_start()
+        .gap(px(12.0))
+        .rounded(px(12.0))
+        .bg(rgba(fade(th.accent, 0.08)))
+        .child(icon("info", th.accent, 20.0))
+        .child(
+            div()
+                .flex_1()
+                .min_w_0()
+                .flex()
+                .flex_col()
+                .gap(px(8.0))
+                .child(
+                    div()
+                        .text_size(px(13.0))
+                        .line_height(px(18.0))
+                        .text_color(rgba(th.text_dim))
+                        .child(text),
+                )
+                .children(link.map(|(label, url)| {
+                    div().flex().child(
+                        div()
+                            .id("add-account-help-link")
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(6.0))
+                            .rounded(px(4.0))
+                            .text_size(px(13.0))
+                            .font_weight(FontWeight::MEDIUM)
+                            .text_color(rgba(th.accent))
+                            .cursor_pointer()
+                            .hover(|s| s.underline())
+                            .focus_ring(th)
+                            .on_click(move |_, _, cx| cx.open_url(url))
+                            .child(label)
+                            .child(icon("open-external", th.accent, 16.0)),
+                    )
+                })),
+        )
+        .into_any_element()
+}
+
+/// Where one stage of adding stands.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Stage {
+    Done,
+    Now,
+    Next,
+}
+
+/// One stage of adding: a check once done, a turning arrow while under
+/// way, a faint dot before.
+fn stage(id: &'static str, text: String, at: Stage, th: &Theme) -> AnyElement {
+    let mark = match at {
+        Stage::Done => icon("check-circle", th.accent, 20.0),
+        Stage::Now => super::nav_menu::turning_arrow(id, th.accent, 20.0).into_any_element(),
+        Stage::Next => div()
+            .size(px(20.0))
+            .flex()
+            .items_center()
+            .justify_center()
+            .child(
+                div()
+                    .size(px(8.0))
+                    .rounded_full()
+                    .bg(rgba(fade(th.text_faint, 0.6))),
+            )
+            .into_any_element(),
+    };
+    div()
         .flex()
         .flex_row()
         .items_center()
         .gap(px(12.0))
-        .text_size(px(12.0))
-        .text_color(rgba(th.text_faint))
-        .child(line())
-        .child(tr!("add-account-or"))
-        .child(line())
+        .text_size(px(14.0))
+        .text_color(rgba(match at {
+            Stage::Next => th.text_faint,
+            _ => th.text,
+        }))
+        .child(mark)
+        .child(div().flex_1().min_w_0().child(text))
         .into_any_element()
 }
 
-/// "Sign in with Google": an outlined button across the dialog.
-fn provider_button(provider: OAuthProvider, th: &Theme) -> gpui::Stateful<gpui::Div> {
-    div()
-        .id(SharedString::from(format!("sign-in-{}", provider.as_str())))
-        .mt(px(12.0))
-        .h(px(40.0))
-        .flex()
-        .items_center()
-        .justify_center()
-        .rounded_full()
-        .border_1()
-        .border_color(rgba(fade(th.text_faint, 0.6)))
-        .text_size(px(14.0))
-        .font_weight(FontWeight::MEDIUM)
-        .text_color(rgba(th.text))
-        .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
-        .child(tr!("add-account-sign-in-with", provider = provider.name()))
+impl MailWindow {
+    /// Why adding the account failed, in words that can be copied.
+    fn error_line(&self, error: String, th: &Theme) -> AnyElement {
+        div()
+            .mt(px(8.0))
+            .flex()
+            .flex_row()
+            .items_start()
+            .gap(px(8.0))
+            .text_size(px(12.0))
+            .line_height(px(16.0))
+            .text_color(rgba(th.error))
+            .child(icon("info", th.error, 16.0))
+            .child(self.copyable(error, th).flex_1().min_w_0())
+            .into_any_element()
+    }
 }
 
 fn section_title(text: String, th: &Theme) -> AnyElement {
@@ -1642,7 +2513,7 @@ fn progress_bar(th: &Theme) -> AnyElement {
                 .bg(rgba(th.accent))
                 .with_animation(
                     "add-account-progress",
-                    Animation::new(Duration::from_millis(1300)).repeat(),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(1300))).repeat(),
                     |bar, t| bar.left(relative(lerp(-0.4, 1.0, t))),
                 ),
         )
@@ -1693,6 +2564,15 @@ mod tests {
         assert_eq!(Security::StartTls.port(Kind::Smtp), 587);
         assert_eq!(Security::parse("starttls"), Security::StartTls);
         assert_eq!(Security::parse("tls").as_str(), "tls");
+    }
+
+    #[test]
+    fn pop3_ports_and_names() {
+        assert_eq!(Security::Tls.port(Kind::Pop3), 995);
+        assert_eq!(Security::StartTls.port(Kind::Pop3), 110);
+        assert_eq!(swap_host("imap.x.org", Kind::Pop3), "pop.x.org");
+        assert_eq!(swap_host(" pop3.x.org", Kind::Imap), "imap.x.org");
+        assert_eq!(swap_host("mail.x.org", Kind::Pop3), "mail.x.org");
     }
 
     #[test]

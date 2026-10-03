@@ -84,13 +84,28 @@ impl MailWindow {
     }
 
     fn sign_in_again(&mut self, cx: &mut Context<Self>) {
-        let note = &mut self.sign_in_again;
-        let (Some((id, address, provider)), None) = (note.current().cloned(), note.busy) else {
+        let Some((id, address, provider)) = self.sign_in_again.current().cloned() else {
             return;
         };
+        self.sign_in_account(id, address, provider, cx);
+    }
+
+    /// Opens `provider`'s sign-in page for account `id` (`address`), as
+    /// the note's Sign in does; also from the folder pane's menu.
+    pub(super) fn sign_in_account(
+        &mut self,
+        id: i64,
+        address: String,
+        provider: OAuthProvider,
+        cx: &mut Context<Self>,
+    ) {
+        if self.sign_in_again.busy.is_some() {
+            return;
+        }
         let Some(connection) = self.daemon.clone() else {
             return;
         };
+        let note = &mut self.sign_in_again;
         note.busy = Some(id);
         note._sign_in = Some(cx.spawn(async move |this, cx| {
             let result = cx
@@ -206,7 +221,12 @@ impl MailWindow {
                 .text_color(rgba(th.snackbar_text))
                 .text_size(px(14.0))
                 .shadow(elevation(th, 3.0))
-                .child(div().flex_1().min_w(px(180.0)).py(px(8.0)).child(text))
+                .child(
+                    self.copyable(text, th)
+                        .flex_1()
+                        .min_w(px(180.0))
+                        .py(px(8.0)),
+                )
                 .child(
                     div().flex().flex_row().items_center().child(action).child(
                         div()

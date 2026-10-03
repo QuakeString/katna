@@ -66,6 +66,7 @@ about-credit-resvg = תמונות SVG
 about-credit-jiff = תאריכים ואזורי זמן
 about-credit-spellbook = בדיקת איות, מהעורך Helix
 about-credit-smol = ביצוע דברים רבים בבת אחת
+about-credit-color-schemes = הפלטות של ערכות הצבעים המובנות
 about-all-libraries = כל הספריות ש־Katna משתמשת בהן ({ $count })
 about-library-authors = מאת { $authors }
 about-license = Katna היא תוכנה חופשית תחת GNU GPL, גרסה 3 ואילך.
@@ -123,6 +124,17 @@ onboarding-density = צפיפות
 onboarding-density-default = ברירת מחדל
 onboarding-density-compact = דחוס
 onboarding-continue = המשך
+onboarding-katna-title = יותר אפשרויות עם חשבון Katna
+onboarding-katna-lead = זה לא חובה. החשבון מפעיל את התכונות המקוונות של Katna, ואפשר ליצור אותו מאוחר יותר ב„הגדרות” > „מינוי”.
+onboarding-katna-receipts-title = אישורי קריאה
+onboarding-katna-receipts-text = לראות מתי אנשים פותחים את הדואר ששלחת.
+onboarding-katna-links-title = מעקב קישורים
+onboarding-katna-links-text = לראות על אילו קישורים בדואר שלך לוחצים.
+onboarding-katna-activity-title = פעילות
+onboarding-katna-activity-text = פתיחות ולחיצות על כל מה ששלחת, במקום אחד.
+onboarding-katna-translate-title = תרגום אוטומטי
+onboarding-katna-translate-text = לקרוא בשפה שלך דואר שנכתב בשפות אחרות.
+onboarding-katna-private = יש לו סיסמה משלו. פרטי ההתחברות לדואר שלך אף פעם לא יוצאים מהמחשב הזה.
 
 ## First run: done
 
@@ -167,7 +179,7 @@ tour-search-text = החיפוש עובד גם בלי חיבור. הכפתור ב
 tour-menu-title = הצגה או הסתרה של התיקיות
 tour-menu-text = הכפתור הזה מקפל את רשימת התיקיות. כשהיא מוסתרת, מציבים את הסמן על אימייל בצד שמאל כדי לראות את התיקיות.
 tour-apps-title = האפליקציות שלך
-tour-apps-text = כרגע יש כאן אימייל. יומן, אנשי קשר, משימות, הערות ופידים יצטרפו אליו בסרגל הזה.
+tour-apps-text = הדואר נמצא כאן, לצד יומן, אנשי קשר, משימות, הערות וקבצים.
 tour-tabs-title = כרטיסיות דואר נכנס
 tour-tabs-text = דואר חדש ממוין לראשי, קידומי מכירות, רשתות חברתיות, עדכונים ופורומים. אפשר לכבות את הכרטיסיות בהגדרות המהירות.
 tour-list-title = ההודעות שלך
@@ -200,6 +212,9 @@ sign-in-again-button = התחברות
 sign-in-again-tooltip = פתיחת דף ההתחברות של { $provider } בדפדפן
 sign-in-again-waiting = ממתינים לדפדפן…
 sign-in-again-close = סגירה
+google-api-off = { $api } כבוי בפרויקט Google Cloud של Katna.
+google-api-turn-on = הפעלה
+google-api-turn-on-tooltip = פתיחת Google Cloud כדי להפעיל את { $api }, ואז ללחוץ על „ניסיון נוסף”
 sign-in-again-done = התחברת שוב ל־{ $address }. מביאים את הדואר שלך…
 delete-ask-title = { $kind ->
     [conversation] { $count ->

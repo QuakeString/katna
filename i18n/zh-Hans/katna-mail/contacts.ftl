@@ -25,10 +25,7 @@ contacts-label-removed = 已从“{ $name }”中移除
 contacts-label-renamed = 标签已重命名为“{ $name }”
 contacts-label-deleted = 已删除标签“{ $name }”
 contacts-label-no-email = 此标签下没有人有电子邮件地址
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = 账号
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = 重新登录以显示联系人
 contacts-account-signed-in = 已重新登录 { $address }。正在获取你的联系人…
 contacts-account-sign-in-refused = { $provider } 未允许 Katna 访问。请重试，并允许访问你的联系人。
@@ -36,9 +33,11 @@ contacts-account-password = 服务器未接受该密码。Yahoo、iCloud、Zoho 
 contacts-account-change-password = 更改密码
 contacts-account-change-password-tooltip = 打开“设置 > 账号”
 contacts-account-failed = 无法读取联系人。
-# $reason is the server's own words, in English.
 contacts-account-error = 无法读取联系人：{ $reason }
 contacts-account-none = 未找到通讯录
+contacts-account-none-why = 未找到通讯录：{ $reason }
+contacts-account-use-sign-in = { $provider } 只向使用 { $provider } 登录的 Katna 显示联系人。
+contacts-account-sign-in-with = 使用 { $provider } 登录
 contacts-account-looking = 正在查找联系人…
 contacts-account-try-again = 重试
 contacts-account-try-again-tooltip = 立即重新检查此账号的联系人
@@ -82,7 +81,7 @@ contacts-print-none = 没有可打印的联系人
 contacts-print-typed = { $value }（{ $kind }）
 contacts-print-birthday = 生日：{ $day }
 contacts-print-nickname = 昵称：{ $name }
-contacts-create = 创建联系人
+contacts-create = 新建联系人
 
 ## Search and the list
 

@@ -40,7 +40,26 @@ notify-event-join = Sluit aan
 notify-event-snooze = Sluimer 5 min
 notify-task-done = Merk as klaar
 notify-open = Maak oop
+notify-peek = Loer
+notify-reply = Antwoord
+notify-reply-placeholder = Antwoord { $name }…
+notify-send = Stuur
 notify-reply-all = Antwoord almal
 notify-mark-read = Merk as gelees
 notify-mark-all-read = Merk almal as gelees
 notify-archive = Argiveer
+
+## After Archive on a notification: a short note in the same place
+
+notify-archived = Geargiveer
+notify-archived-count = { $count ->
+    [one] { $count } boodskap uit die inkassie geskuif
+   *[other] { $count } boodskappe uit die inkassie geskuif
+}
+notify-undo = Ontdoen
+
+## After a reply typed into a notification: a note in the same place while
+## it waits for the undo time
+
+notify-reply-sent = Antwoord aan { $name } gestuur
+notify-open-in-katna = Maak in Katna oop

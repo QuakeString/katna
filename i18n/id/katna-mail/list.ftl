@@ -14,13 +14,13 @@ tab-other = Lainnya
 tab-inbox = Kotak Masuk
 tab-newsletters = Buletin
 tab-notifications = Notifikasi
-tab-new = { $count } baru
 tab-provider-other = diurutkan oleh Katna
 
 ## Mail list: toolbar
 
 list-select = Pilih
 list-refresh = Muat ulang
+list-back-to-top = Kembali ke atas
 list-checking = Memeriksa email baru…
 list-more = Lainnya
 list-mark-read = Tandai sudah dibaca
@@ -39,6 +39,7 @@ list-results = Hasil untuk “{ $query }”
 list-results-corrected = Menampilkan hasil untuk “{ $query }”
 list-search-instead = Telusuri “{ $query }” saja
 list-files-more = +{ $count }
+list-replied = Anda sudah membalas
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -237,6 +238,8 @@ menu-add-note = Tambahkan catatan
 menu-print-all = Cetak semua
 menu-new-window = Buka di jendela baru
 menu-move-to = Pindahkan ke
+menu-follow-up = Tindak lanjut
+menu-more = Lainnya
 menu-move-to-heading = Pindahkan ke:
 menu-find-from = Cari email dari { $name }
 

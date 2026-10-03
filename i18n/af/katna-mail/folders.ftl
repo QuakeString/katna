@@ -9,6 +9,17 @@ nav-folders = Vouers
 nav-label-new = Skep nuwe etiket
 nav-folder-new = Skep nuwe vouer
 nav-menu-check-mail = Kyk vir nuwe e-pos
+nav-menu-check-inbox = Kyk hierdie inkassie na
+nav-menu-sign-in-again = Meld weer aan
+nav-menu-new-mail = Nuwe e-pos van hierdie rekening
+nav-menu-account-settings = Rekeninginstellings
+nav-account-checked = Gesinkroniseer · nagegaan { $ago }
+nav-account-in-sync = Gesinkroniseer
+nav-account-connecting = Koppel tans…
+nav-account-offline = Vanlyn, probeer weer
+nav-account-signed-out = { $provider }-aanmelding het verval
+nav-account-password-refused = Wagwoord geweier
+nav-account-storage = { $used } van { $total } gebruik
 nav-menu-new-subfolder = Nuwe vouer binne-in
 nav-menu-new-sublabel = Nuwe etiket binne-in
 nav-menu-empty-trash = Maak Asblik leeg
@@ -16,10 +27,6 @@ nav-account-unnamed = Rekening { $number }
 nav-all-accounts = Alle rekeninge
 nav-expand = Wys vouers
 nav-collapse = Versteek vouers
-nav-tab-new = { $count ->
-    [one] { $count } nuut
-   *[other] { $count } nuut
-}
 storage-used = { $percent }% van { $total } gebruik
 storage-used-detail = { $address }: { $used } van { $total } gebruik
 

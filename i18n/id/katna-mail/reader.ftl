@@ -86,6 +86,10 @@ security-missing-key = Ditandatangani dengan kunci yang tidak Anda miliki, jadi 
 security-missing-key-id = Ditandatangani dengan kunci yang tidak Anda miliki ({ $key }), jadi tidak dapat diperiksa
 security-signature-unavailable = Ditandatangani; instal { $tool } untuk memeriksa tanda tangan
 security-signature-error = Tanda tangan tidak dapat diperiksa.
+
+## Open and click tracking and read receipts (the eye's popover beside a
+## sent message's star, and the line above a read receipt)
+
 tracking-opened = { $who } membukanya { $count } kali, terakhir { $when }
 tracking-opens-clicks = { $who } membukanya { $opens } kali dan mengikuti link { $clicks } kali, terakhir { $when }
 tracking-clicked = { $who } mengikuti link { $clicks } kali, terakhir { $when }
@@ -112,10 +116,12 @@ remote-picture-remove-failed = Tidak dapat menghapus gambar: { $error }
 
 attachment-count = { $count } lampiran
 attachment-save = Simpan
+attachment-forward = Teruskan
 attachment-save-all = Simpan semua
 attachment-save-all-tooltip = Simpan semua lampiran ke folder
 attachment-save-here = Simpan di sini
 attachment-not-downloaded = Pesan ini tidak didownload.
+attachment-open-message = Buka pesan ini untuk membaca lampirannya.
 attachment-not-found = Lampiran ini tidak ditemukan di dalam pesan.
 attachment-read-failed = Tidak dapat membaca { $name }
 attachment-numbered = lampiran { $number }
@@ -151,8 +157,9 @@ print-encrypted = (Terenkripsi. Buka di Katna Mail untuk mencetak teksnya.)
 print-to = Kepada: { $addresses }
 print-cc = Cc: { $addresses }
 
-## Leftovers from earlier areas (reading pane and its right-click menu)
+## Message text (right-click menu in the reading pane)
 
-attachment-open-message = Buka pesan ini untuk membaca lampirannya.
+text-pin = Sematkan di atas
+text-copy-address = Salin alamat
 text-copy = Salin
 text-select-all = Pilih semua

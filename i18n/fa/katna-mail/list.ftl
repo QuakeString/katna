@@ -14,13 +14,13 @@ tab-other = سایر
 tab-inbox = صندوق ورودی
 tab-newsletters = خبرنامه‌ها
 tab-notifications = اعلان‌ها
-tab-new = { $count } جدید
 tab-provider-other = مرتب‌شده توسط Katna
 
 ## Mail list: toolbar
 
 list-select = انتخاب
 list-refresh = بازخوانی
+list-back-to-top = بازگشت به بالا
 list-checking = در حال بررسی ایمیل جدید…
 list-more = بیشتر
 list-mark-read = علامت‌گذاری به‌عنوان خوانده‌شده
@@ -39,6 +39,7 @@ list-results = نتایج برای «{ $query }»
 list-results-corrected = نمایش نتایج برای «{ $query }»
 list-search-instead = به‌جای آن «{ $query }» را جستجو کنید
 list-files-more = +{ $count }
+list-replied = پاسخ داده‌اید
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,12 @@ menu-add-note = افزودن یادداشت
 menu-print-all = چاپ همه
 menu-new-window = باز کردن در پنجرهٔ جدید
 menu-move-to = انتقال به
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = پیگیری
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = بیشتر
 menu-move-to-heading = انتقال به:
 menu-find-from = یافتن ایمیل‌های { $name }
 

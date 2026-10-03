@@ -143,7 +143,7 @@ pub(in crate::window) fn add_birthdays(
 
 impl MailWindow {
     /// Shows or hides the Birthdays calendar, remembered in the settings.
-    pub(super) fn toggle_birthdays(&mut self, cx: &mut Context<Self>) {
+    pub(in crate::window) fn toggle_birthdays(&mut self, cx: &mut Context<Self>) {
         let contacts = &mut self.config.contacts;
         contacts.hide_birthdays = !contacts.hide_birthdays;
         self.save_config();

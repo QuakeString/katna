@@ -27,6 +27,7 @@ desktop-menu-page-calendar = ཟླ་_ཐོ
 desktop-menu-page-contacts = འབྲེལ་བ་_ཚུ
 desktop-menu-page-tasks = _ལཱ་ཚུ
 desktop-menu-page-notes = _དྲན་ཐོ་ཚུ
+desktop-menu-page-files = _ཡིག་སྣོད་ཚུ
 desktop-menu-next = _ཤུལ་མམ་གྱི་གླེང་མོལ
 desktop-menu-previous = _ཧེ་མམ་གྱི་གླེང་མོལ
 desktop-menu-message = _འཕྲིན་དོན

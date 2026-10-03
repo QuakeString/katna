@@ -46,6 +46,7 @@ compose-sent-archived = བཏང་སྟེ་ཡིག་མཛོད་ན�
 compose-sent = འཕྲིན་དོན་བཏང་ཡི
 compose-discarded = ཟིན་བྲིས་བཏོན་གཏང་ཡི
 compose-draft-saved = ཟིན་བྲིས་སྲུང་བཞག་འབད་ཡི
+compose-draft-saving = སྲུང་དོ…
 compose-draft-failed = ཟིན་བྲིས་སྲུང་བཞག་འབད་མ་ཚུགས: { $error }
 compose-draft-not-opened = ཟིན་བྲིས་ཁ་ཕྱེ་མ་ཚུགས།
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = ཟིན་བྲིས་ཁ་ཕྱེ་མ་�
 compose-picker-insert = བཙུགས།
 compose-picker-attach = མཉམ་སྦྲགས།
 compose-file-too-large = { $name } འདི་ སྦོམ་དྲགས་པས། འཕྲིན་དོན་ཅིག་ནང་ { $limit } ཚུན་འབག་ཚུགས།
+compose-forward-files-missing = མདུན་སྐྱེལ་འབད་མི་འཕྲིན་དོན་གྱི་ཡིག་སྣོད་ཚུ་ ཕབ་ལེན་མ་འབད་བས་ མཉམ་སྦྲགས་མ་འབད།
 compose-attachment-size = ({ $size })
 compose-remove-attachment = མཉམ་སྦྲགས་རྩ་བསྐྲད་གཏང་།
+compose-attachment-open-tip = ཞིབ་དཔྱད་འབད་ནི་ལུ་ ཁ་ཕྱེ།
 compose-attachments-total = { $count ->
    *[other] ཡིག་སྣོད་ { $count }། { $size }
 }
@@ -76,6 +79,7 @@ compose-drive-share-link = འབྲེལ་མཐུད་དང་བརྗ�
 compose-drive-send-without = བརྗེ་སོར་མ་འབད་བར་གཏང་།
 compose-drive-share-cancel = ཆ་མེད་གཏང་།
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } འདི་ { $limit } ལས་ལྷག་སྟེ་ཡོདཔ་ལས་ ཁྱོད་ཀྱི་ OneDrive ནང་འགྱོཝ་ཨིནམ་དང་ འཕྲིན་ཡིག་གི་ཁར་ འབྲེལ་མཐུད་ཅིག་ཡོད།
 compose-onedrive-tip = ཁྱོད་ཀྱི་ OneDrive ནང་། འཕྲིན་ཡིག་གི་ཁར་ འབྲེལ་མཐུད་ཅིག་ཡོད།
 compose-onedrive-allow = OneDrive གནང་བ་སྤྲོད།
@@ -86,6 +90,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive གིས་ { $addresses } དང་ ཡིག་སྣོད་ཚུ་ བརྗེ་སོར་འབད་མི་ཚུགས། དེ་གི་ཚབ་ལུ་ འབྲེལ་མཐུད་ཡོད་མི་ སུ་ཡང་ཁ་ཕྱེ་ཚུགས།
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ཡིག་སྣོད་ཚུ་ ནཱ་ལུ་བཀོག
 compose-drop-here = ནཱ་ལུ་བཀོག
 compose-paste-keep-formatting = རྩ་སྒྲིག་བཞག

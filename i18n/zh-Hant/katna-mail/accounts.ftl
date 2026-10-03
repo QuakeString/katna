@@ -14,6 +14,16 @@ accounts-unified-switch-detail = 「所有帳戶」位於資料夾窗格頂端�
 accounts-row = 帳戶
 accounts-row-detail = 資料夾窗格和帳戶選單會依此順序列出帳戶；第一個為預設帳戶。移除帳戶會刪除 Katna 在這台電腦上保存的郵件副本。伺服器上的郵件仍會保留。
 accounts-none = 尚未新增任何帳戶。
+accounts-pop3-row = 伺服器上的郵件
+accounts-pop3-row-detail = POP3 帳戶會將郵件下載到這部電腦。請選擇之後要如何處理伺服器上的副本。
+accounts-pop3-with-katna = 保留到我在 Katna 中刪除為止
+accounts-pop3-at-once = 下載後立即刪除
+accounts-pop3-after-days = { $count ->
+   *[other] { $count } 天後刪除
+}
+accounts-pop3-never = 永不刪除
+accounts-pop3-days-less = 減少天數
+accounts-pop3-days-more = 增加天數
 accounts-kind-imported = 已匯入
 accounts-picture-reset = 使用桌面圖片
 accounts-picture-change = 變更圖片
@@ -70,6 +80,9 @@ accounts-confirm-word = 刪除
 accounts-confirm-placeholder = 輸入「{ accounts-confirm-word }」
 accounts-confirm-prompt = 如要確認，請輸入「{ accounts-confirm-word }」：
 accounts-cancel = 取消
+
+## Reset cache (Settings > General), in the same dialog
+
 reset-cache-about = 刪除 Katna 下載的郵件和附件、寄件者圖片和搜尋索引，然後重新下載近期郵件。帳戶、設定以及只存在於這台電腦上的郵件會保留。
 reset-cache-button = 重設快取
 reset-cache-title = 要重設快取嗎？

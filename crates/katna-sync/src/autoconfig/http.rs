@@ -109,11 +109,33 @@ pub async fn download(
     max_size: u64,
     sink: &mut (dyn FnMut(&[u8], u64) -> std::io::Result<()> + Send),
 ) -> Result<u64> {
+    match download_with(url, &[], tls, max_size, sink).await? {
+        Ok(size) => Ok(size),
+        Err(status) => Err(Error::Protocol(format!("{url}: HTTP status {status}"))),
+    }
+}
+
+/// Like [`download`], sending `headers` (a token) to `url` only, never on
+/// to where it redirects, and allowing plain HTTP to the loopback for
+/// tests. A status other than `200` or a redirect comes back as `Err` in
+/// the `Ok`, for the caller to read: for drive files.
+pub async fn download_with(
+    url: &str,
+    headers: &[(&str, &str)],
+    tls: &Tls,
+    max_size: u64,
+    sink: &mut (dyn FnMut(&[u8], u64) -> std::io::Result<()> + Send),
+) -> Result<std::result::Result<u64, u16>> {
     let mut url = url.to_owned();
+    let mut headers = headers;
     for _ in 0..=MAX_REDIRECTS {
-        match download_once(&url, tls, max_size, sink).await? {
-            Downloaded::Done(size) => return Ok(size),
-            Downloaded::Redirect(to) => url = resolve(&url, &to)?,
+        match download_once(&url, headers, tls, max_size, sink).await? {
+            Downloaded::Done(size) => return Ok(Ok(size)),
+            Downloaded::Refused(status) => return Ok(Err(status)),
+            Downloaded::Redirect(to) => {
+                url = resolve(&url, &to)?;
+                headers = &[];
+            }
         }
     }
     Err(Error::Protocol(format!("{url}: too many redirects")))
@@ -122,22 +144,44 @@ pub async fn download(
 enum Downloaded {
     Done(u64),
     Redirect(String),
+    Refused(u16),
 }
 
 async fn download_once(
     url: &str,
+    headers: &[(&str, &str)],
     tls: &Tls,
     max_size: u64,
     sink: &mut (dyn FnMut(&[u8], u64) -> std::io::Result<()> + Send),
 ) -> Result<Downloaded> {
-    let parts = parse_url(url)?;
+    let (parts, plain) = match url.strip_prefix("http://") {
+        Some(rest) => {
+            let parts = parse_url_loopback(rest)?;
+            if !matches!(parts.host, "localhost" | "127.0.0.1") {
+                return Err(Error::Protocol(format!("{url}: http only to localhost")));
+            }
+            (parts, true)
+        }
+        None => (parse_url(url)?, false),
+    };
     let mut conn = Conn::new(tls.clone());
-    conn.connect_tls(parts.host, parts.port).await?;
-    let request = format!(
+    if plain {
+        conn.connect_tcp(parts.host, parts.port).await?;
+    } else {
+        conn.connect_tls(parts.host, parts.port).await?;
+    }
+    let mut request = format!(
         "GET {} HTTP/1.1\r\nHost: {}\r\nUser-Agent: Katna\r\nAccept: */*\r\n\
-         Connection: close\r\n\r\n",
+         Connection: close\r\n",
         parts.path, parts.host
     );
+    for (name, value) in headers {
+        if name.contains(['\r', '\n', ':']) || value.contains(['\r', '\n']) {
+            return Err(Error::Protocol(format!("{url}: bad header {name}")));
+        }
+        request.push_str(&format!("{name}: {value}\r\n"));
+    }
+    request.push_str("\r\n");
     conn.write_all(request.as_bytes()).await?;
     let mut response = Vec::new();
     while !response.windows(4).any(|w| w == b"\r\n\r\n") {
@@ -160,7 +204,10 @@ async fn download_once(
                 .map(Downloaded::Redirect)
                 .ok_or_else(|| Error::Protocol("HTTP: redirect without Location".into()));
         }
-        other => return Err(Error::Protocol(format!("{url}: HTTP status {other}"))),
+        other => {
+            let _ = conn.close().await;
+            return Ok(Downloaded::Refused(other));
+        }
     }
     if head.chunked {
         return Err(Error::Protocol(format!("{url}: no Content-Length")));
@@ -330,9 +377,32 @@ async fn get_once(
         parts.path, parts.host
     );
     conn.write_all(request.as_bytes()).await?;
+    let response = read_get(&mut conn, url, max_body, head).await?;
+    let _ = conn.close().await;
+    parse_response(&response, max_body, head)
+}
+
+/// Reads the answer to a GET, as bytes: a picture's need not end in a line
+/// break. It ends where its framing says, as [`read_answer`]'s does, so a
+/// server that drops the connection without TLS's `close_notify` (Google's
+/// picture servers, on some networks) costs nothing once it is all in.
+/// With `head`, reading stops at the end of an HTML page's `<head>`, and
+/// an answer cut there is kept.
+async fn read_get(conn: &mut Conn, url: &str, max_body: usize, head: bool) -> Result<Vec<u8>> {
     let mut response = Vec::new();
     loop {
-        let chunk = conn.read().await?;
+        let chunk = match conn.read_raw().await {
+            Ok(chunk) => chunk,
+            Err(Error::Io(err)) if err.kind() == std::io::ErrorKind::UnexpectedEof => {
+                if head || answer_complete(&response) {
+                    break;
+                }
+                return Err(Error::Closed(format!(
+                    "{url}: the connection ended in the middle of the answer"
+                )));
+            }
+            Err(err) => return Err(err),
+        };
         if chunk.is_empty() {
             break;
         }
@@ -346,12 +416,14 @@ async fn get_once(
         {
             break;
         }
+        if !head && answer_complete(&response) {
+            break;
+        }
         if response.len() > max_body + 64 * 1024 {
             return Err(Error::Protocol(format!("{url}: answer too large")));
         }
     }
-    let _ = conn.close().await;
-    parse_response(&response, max_body, head)
+    Ok(response)
 }
 
 /// The start of an HTTP/1.1 response.
@@ -571,17 +643,7 @@ pub async fn exchange_limited(
                 }
             }
         }
-        let mut response = Vec::new();
-        loop {
-            let chunk = conn.read().await?;
-            if chunk.is_empty() {
-                break;
-            }
-            response.extend_from_slice(chunk);
-            if response.len() > max_body + 64 * 1024 {
-                return Err(Error::Protocol(format!("{url}: answer too large")));
-            }
-        }
+        let response = read_answer(&mut conn, url, max_body + 64 * 1024).await?;
         let _ = conn.close().await;
         let head = parse_head(&response)?;
         let body = parse_body(&head, max_body, false)?;
@@ -666,17 +728,7 @@ pub async fn post_form(
                 .await?;
         }
         conn.write_all(request.as_bytes()).await?;
-        let mut response = Vec::new();
-        loop {
-            let chunk = conn.read().await?;
-            if chunk.is_empty() {
-                break;
-            }
-            response.extend_from_slice(chunk);
-            if response.len() > MAX_FORM_ANSWER {
-                return Err(Error::Protocol(format!("{url}: answer too large")));
-            }
-        }
+        let response = read_answer(&mut conn, url, MAX_FORM_ANSWER).await?;
         let _ = conn.close().await;
         let head = parse_head(&response)?;
         let body = parse_body(&head, MAX_FORM_ANSWER, false)?;
@@ -687,6 +739,57 @@ pub async fn post_form(
         Err(Error::Timeout(timeout))
     })
     .await
+}
+
+/// Reads the answer to a `Connection: close` request up to where its own
+/// framing (`Content-Length`, or a chunked body's last chunk) says it
+/// ends, or else to the end of the connection. Stopping there means a
+/// server, or a network box on the way, that drops the connection without
+/// TLS's `close_notify` (seen from Google's token server on a mobile
+/// network) costs nothing once the whole answer is in.
+async fn read_answer(conn: &mut Conn, url: &str, limit: usize) -> Result<Vec<u8>> {
+    let mut response = Vec::new();
+    loop {
+        let chunk = match conn.read_raw().await {
+            Ok(chunk) => chunk,
+            Err(Error::Io(err)) if err.kind() == std::io::ErrorKind::UnexpectedEof => {
+                if answer_complete(&response) {
+                    break;
+                }
+                return Err(Error::Closed(format!(
+                    "{url}: the connection ended in the middle of the answer"
+                )));
+            }
+            Err(err) => return Err(err),
+        };
+        if chunk.is_empty() {
+            break;
+        }
+        response.extend_from_slice(chunk);
+        if answer_complete(&response) {
+            break;
+        }
+        if response.len() > limit {
+            return Err(Error::Protocol(format!("{url}: answer too large")));
+        }
+    }
+    Ok(response)
+}
+
+/// Whether `response` holds a whole answer by its own framing.
+fn answer_complete(response: &[u8]) -> bool {
+    let Ok(head) = parse_head(response) else {
+        return false;
+    };
+    // These never have a body.
+    if matches!(head.status, 204 | 304) {
+        return true;
+    }
+    if head.chunked {
+        dechunk(head.rest, false).is_some()
+    } else {
+        head.length.is_some_and(|length| head.rest.len() >= length)
+    }
 }
 
 /// `name=value&…`, escaped for a form or a URL query.
@@ -745,6 +848,92 @@ fn dechunk(mut data: &[u8], cut: bool) -> Option<Vec<u8>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn answers_end_where_their_framing_says() {
+        let whole = b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}";
+        assert!(answer_complete(whole));
+        assert!(!answer_complete(&whole[..whole.len() - 1]));
+        assert!(!answer_complete(b"HTTP/1.1 200 OK\r\nContent-Len"));
+        let chunked = b"HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n2\r\n{}\r\n0\r\n\r\n";
+        assert!(answer_complete(chunked));
+        assert!(!answer_complete(&chunked[..chunked.len() - 7]));
+        assert!(answer_complete(b"HTTP/1.1 204 No Content\r\n\r\n"));
+        // Without framing, only the end of the connection ends it.
+        assert!(!answer_complete(b"HTTP/1.1 200 OK\r\n\r\n{}"));
+    }
+
+    /// A server that keeps the connection open after its answer, as one
+    /// whose close the network loses does, still answers at once.
+    #[test]
+    fn a_whole_answer_needs_no_close() {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let server = std::thread::spawn(move || {
+            use std::io::{Read, Write};
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut request = [0; 4096];
+            let _ = stream.read(&mut request).unwrap();
+            stream
+                .write_all(b"HTTP/1.1 200 OK\r\nContent-Length: 18\r\n\r\n{\"access_token\":1}")
+                .unwrap();
+            std::thread::sleep(Duration::from_secs(5));
+        });
+        let tls = Tls::insecure_for_local_tests();
+        let started = std::time::Instant::now();
+        let (status, body) = async_io::block_on(post_form(
+            &format!("http://127.0.0.1:{port}/token"),
+            &[("code", "c")],
+            &tls,
+            Duration::from_secs(3),
+        ))
+        .unwrap();
+        assert_eq!(
+            (status, body.as_slice()),
+            (200, &b"{\"access_token\":1}"[..])
+        );
+        assert!(started.elapsed() < Duration::from_secs(2));
+        server.join().unwrap();
+    }
+
+    /// A picture whose server keeps the connection open after it, as one
+    /// whose close the network loses does, arrives at once: its bytes need
+    /// not end in a line break.
+    #[test]
+    fn a_whole_picture_needs_no_close() {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let png: &[u8] = b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR\0\0\0\x01";
+        let server = std::thread::spawn(move || {
+            use std::io::{Read, Write};
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut request = [0; 4096];
+            let _ = stream.read(&mut request).unwrap();
+            let head = format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nContent-Length: {}\r\n\r\n",
+                png.len()
+            );
+            stream.write_all(head.as_bytes()).unwrap();
+            stream.write_all(png).unwrap();
+            std::thread::sleep(Duration::from_secs(5));
+        });
+        let started = std::time::Instant::now();
+        let response = async_io::block_on(async {
+            let mut conn = Conn::new(Tls::insecure_for_local_tests());
+            conn.connect_tcp("127.0.0.1", port).await.unwrap();
+            conn.write_all(b"GET /l.png HTTP/1.1\r\nHost: x\r\n\r\n")
+                .await
+                .unwrap();
+            read_get(&mut conn, "https://x/l.png", 1024, false).await
+        })
+        .unwrap();
+        assert!(started.elapsed() < Duration::from_secs(2));
+        match parse_response(&response, 1024, false).unwrap() {
+            Answer::Body(body) => assert_eq!(body, png),
+            _ => panic!("no picture"),
+        }
+        server.join().unwrap();
+    }
 
     #[test]
     fn status_lines() {

@@ -13,12 +13,13 @@ use katna_i18n::tr;
 use katna_store::TemplateFile;
 use katna_ui::px;
 use katna_ui::rich::{RichEvent, html};
-use katna_ui::{InputEvent, RichEditor, Ripple, TextInput};
+use katna_ui::{InputEvent, RichEditor, TextInput};
 
-use super::{MailWindow, control_column, field_box, label_column, note};
+use super::{MailWindow, control_column, label_column};
 use crate::daemon;
 use crate::data;
 use crate::theme::Theme;
+use crate::widgets::{field, line_field};
 use crate::widgets::{filled_button, icon, icon_button, outlined_button, tip};
 
 /// The template open in the editor.
@@ -104,6 +105,7 @@ impl MailWindow {
         let body = cx.new(|cx| {
             let mut editor = RichEditor::new(tr!("settings-compose-template-text"), cx);
             editor.set_palette(super::super::compose::palette(&th));
+            editor.set_html_view(super::super::rich::html_view(th));
             editor.set_doc(doc.clone(), doc.start(), cx);
             editor
         });
@@ -280,37 +282,24 @@ impl MailWindow {
     /// The Templates row: the list with New, and the editor beside it.
     pub(super) fn templates_row(&self, th: &Theme, cx: &mut Context<Self>) -> Div {
         let editing = self.template_editor();
-        let list = self
-            .writing_templates()
-            .iter()
-            .map(|t| {
-                let on = editing.is_some_and(|e| e.id == t.id);
-                let id = t.id;
-                div()
-                    .id(("page-template", id as usize))
-                    .map(|d| self.page_control(d, th, cx))
-                    .relative()
-                    .overflow_hidden()
-                    .h(px(40.0))
-                    .px(px(12.0))
-                    .flex()
-                    .items_center()
-                    .rounded(px(8.0))
-                    .text_size(px(14.0))
-                    .bg(rgba(if on { th.nav_selected } else { 0 }))
-                    .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-                    .cursor_pointer()
-                    .hover(|d| d.bg(rgba(if on { th.nav_selected } else { th.hover })))
+        let list =
+            self.writing_templates()
+                .iter()
+                .map(|t| {
+                    let on = editing.is_some_and(|e| e.id == t.id);
+                    let id = t.id;
+                    self.page_control(
+                        crate::widgets::row(("page-template", id as usize), on, th),
+                        th,
+                        cx,
+                    )
+                    .px(px(katna_ui::tokens::space::S4))
                     .on_click(cx.listener(move |this, _, window, cx| {
                         this.edit_template(Some(id), window, cx)
                     }))
-                    .child(
-                        Ripple::new(("page-template-ripple", id as usize), rgba(th.ripple))
-                            .rounded(8.0),
-                    )
                     .child(div().truncate().child(t.name.clone()))
-            })
-            .collect::<Vec<_>>();
+                })
+                .collect::<Vec<_>>();
         let empty = self.writing_templates().is_empty() && editing.is_none();
         let editor = editing.map(|e| self.render_template_editor(e, th, cx));
         self.row(
@@ -343,7 +332,7 @@ impl MailWindow {
                 )
                 .children(editor)
                 .when(empty, |d| {
-                    d.child(note(tr!("settings-compose-no-templates"), th))
+                    d.child(self.quiet_note(tr!("settings-compose-no-templates"), th))
                 }),
             th,
         )
@@ -356,8 +345,6 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let id = e.id;
-        let name_focus = e.name.focus_handle(cx);
-        let subject_focus = e.subject.focus_handle(cx);
         let body_focus = e.body.focus_handle(cx);
         let files = e.attachments.iter().enumerate().map(|(ix, f)| {
             div()
@@ -370,7 +357,7 @@ impl MailWindow {
                 .gap(px(6.0))
                 .rounded(px(8.0))
                 .border_1()
-                .border_color(rgba(th.divider))
+                .border_color(rgba(th.outline))
                 .text_size(px(13.0))
                 .child(icon("attachment", th.text_dim, 16.0))
                 .child(div().max_w(px(200.0)).truncate().child(f.name.clone()))
@@ -386,32 +373,19 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(8.0))
+            .child(line_field("page-template-name", &e.name, th, cx))
+            .child(line_field("page-template-subject", &e.subject, th, cx))
             .child(
-                field_box("page-template-name", th)
-                    .h(px(40.0))
-                    .flex()
-                    .items_center()
-                    .on_click(move |_, window, cx| window.focus(&name_focus, cx))
-                    .child(div().flex_1().child(e.name.clone())),
-            )
-            .child(
-                field_box("page-template-subject", th)
-                    .h(px(40.0))
-                    .flex()
-                    .items_center()
-                    .on_click(move |_, window, cx| window.focus(&subject_focus, cx))
-                    .child(div().flex_1().child(e.subject.clone())),
-            )
-            .child(
-                field_box("page-template-text", th)
-                    .min_h(px(160.0))
-                    .max_h(px(360.0))
-                    .overflow_y_scroll()
-                    .py(px(10.0))
-                    .line_height(px(20.0))
-                    .cursor_text()
-                    .on_click(move |_, window, cx| window.focus(&body_focus, cx))
-                    .child(e.body.clone()),
+                field("page-template-text", &body_focus, th).child(
+                    div()
+                        .id("page-template-text-scroll")
+                        .min_h(px(158.0))
+                        .max_h(px(358.0))
+                        .overflow_y_scroll()
+                        .py(px(10.0))
+                        .line_height(px(20.0))
+                        .child(e.body.clone()),
+                ),
             )
             .when(!e.attachments.is_empty(), |d| {
                 d.child(

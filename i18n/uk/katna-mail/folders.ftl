@@ -9,6 +9,17 @@ nav-folders = Папки
 nav-label-new = Створити мітку
 nav-folder-new = Створити папку
 nav-menu-check-mail = Перевірити нову пошту
+nav-menu-check-inbox = Перевірити ці «Вхідні»
+nav-menu-sign-in-again = Увійти знову
+nav-menu-new-mail = Новий лист із цього облікового запису
+nav-menu-account-settings = Налаштування облікового запису
+nav-account-checked = Синхронізовано · перевірено { $ago }
+nav-account-in-sync = Синхронізовано
+nav-account-connecting = З’єднання…
+nav-account-offline = Немає з’єднання, повторна спроба
+nav-account-signed-out = Термін входу в { $provider } минув
+nav-account-password-refused = Пароль не прийнято
+nav-account-storage = Використано { $used } із { $total }
 nav-menu-new-subfolder = Нова папка всередині
 nav-menu-new-sublabel = Нова мітка всередині
 nav-menu-empty-trash = Очистити кошик
@@ -16,12 +27,6 @@ nav-account-unnamed = Обліковий запис { $number }
 nav-all-accounts = Усі облікові записи
 nav-expand = Показати папки
 nav-collapse = Сховати папки
-nav-tab-new = { $count ->
-    [one] { $count } новий
-    [few] { $count } нові
-    [many] { $count } нових
-   *[other] { $count } нового
-}
 storage-used = Використано { $percent }% із { $total }
 storage-used-detail = { $address }: використано { $used } із { $total }
 

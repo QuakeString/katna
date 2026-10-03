@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "One big button, one fold, on every page"
+text = """
+The big button at the top of the left bar now looks and sits the same on
+every page and does that page's own job: Compose in Mail and Files, New
+event, New contact, New task and New note. Folding the left bar folds it
+everywhere, and while it is folded each page's button waits at the top of
+the rail. On a phone it is the floating button.
+"""

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Your chat reply follows you to Mail"
+text = """
+Switching a chat to Mail while writing a reply now scrolls down to the
+reply with your cursor still in it, and switching back keeps it too.
+"""

@@ -1,8 +1,14 @@
 # Katna Mail, Burmese (မြန်မာ).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Reading pane toolbar
+
 contact-panel-show = အဆက်အသွယ် အသေးစိတ်ကို ပြရန်
 contact-panel-hide = အဆက်အသွယ် အသေးစိတ်ကို ဝှက်ရန်
+
+## The panel
+
 contact-email = မေးလ်ပို့ရန်
 contact-search = သူတို့နှင့် မေးလ်ရှာရန်
 contact-add-to-contacts = အဆက်အသွယ်များသို့ ထည့်ရန်
@@ -12,6 +18,11 @@ contact-from-to = သူတို့ထံမှ { $from }၊ သင့်ထံ
 contact-first = ပထမ
 contact-latest = နောက်ဆုံး
 contact-call = ဖုန်းခေါ်ရန်
+contact-phone-mobile = မိုဘိုင်း
+contact-phone-direct = တိုက်ရိုက်
+contact-phone-office = ရုံး
+contact-phone-fax = ဖက်စ်
+contact-phone-whatsapp = WhatsApp
 contact-copy-number = နံပါတ်ကို ကူးရန်
 contact-number-copied = နံပါတ်ကို ကူးပြီးပါပြီ
 contact-local-time = သူတို့၏ အချိန် { $time } ({ $offset })
@@ -23,5 +34,8 @@ contact-less = ခေါက်ရန်
 contact-files = ဖိုင်များ
 contact-tasks = လုပ်ဆောင်စရာများ
 contact-meetings = လာမည့် အစည်းအဝေးများ
+contact-company = ကုမ္ပဏီ
+contact-company-since = { $year } ကတည်းက
+contact-company-from = { $site } မှ · { $when } စစ်ဆေးခဲ့သည်
 contact-people = ဤစကားဝိုင်းတွင်
 contact-local-only = ဤကွန်ပျူတာပေါ်ရှိ သင့်မေးလ်မှသာ

@@ -9,6 +9,17 @@ nav-folders = المجلدات
 nav-label-new = إنشاء تصنيف جديد
 nav-folder-new = إنشاء مجلد جديد
 nav-menu-check-mail = التحقق من وجود بريد جديد
+nav-menu-check-inbox = التحقق من هذا البريد الوارد
+nav-menu-sign-in-again = تسجيل الدخول مجددًا
+nav-menu-new-mail = رسالة جديدة من هذا الحساب
+nav-menu-account-settings = إعدادات الحساب
+nav-account-checked = متزامن · آخر تحقق { $ago }
+nav-account-in-sync = متزامن
+nav-account-connecting = جارٍ الاتصال…
+nav-account-offline = غير متصل، تجري إعادة المحاولة
+nav-account-signed-out = انتهت صلاحية تسجيل الدخول إلى { $provider }
+nav-account-password-refused = تم رفض كلمة المرور
+nav-account-storage = مُستخدَم { $used } من { $total }
 nav-menu-new-subfolder = مجلد جديد بداخله
 nav-menu-new-sublabel = تصنيف جديد بداخله
 nav-menu-empty-trash = إفراغ المهملات
@@ -16,14 +27,6 @@ nav-account-unnamed = الحساب { $number }
 nav-all-accounts = كل الحسابات
 nav-expand = إظهار المجلدات
 nav-collapse = إخفاء المجلدات
-nav-tab-new = { $count ->
-    [zero] { $count } جديدة
-    [one] { $count } جديدة
-    [two] { $count } جديدة
-    [few] { $count } جديدة
-    [many] { $count } جديدة
-   *[other] { $count } جديدة
-}
 storage-used = مُستخدَم { $percent }٪ من { $total }
 storage-used-detail = { $address }: مُستخدَم { $used } من { $total }
 

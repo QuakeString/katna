@@ -167,7 +167,12 @@ impl MailWindow {
                 .text_color(rgba(th.snackbar_text))
                 .text_size(px(14.0))
                 .shadow(elevation(th, 3.0))
-                .child(div().flex_1().min_w(px(180.0)).py(px(8.0)).child(text))
+                .child(
+                    self.copyable(text, th)
+                        .flex_1()
+                        .min_w(px(180.0))
+                        .py(px(8.0)),
+                )
                 .child(
                     div()
                         .flex()

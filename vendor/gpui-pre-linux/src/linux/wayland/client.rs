@@ -7,6 +7,7 @@ use std::{
     time::{Duration, Instant},
 };
 
+use super::kinetic;
 use super::session::xdg_session_manager_v1;
 use ashpd::WindowIdentifier;
 use calloop::{
@@ -41,7 +42,7 @@ use wayland_protocols::ext::background_effect::v1::client::{
     ext_background_effect_manager_v1, ext_background_effect_surface_v1,
 };
 use wayland_protocols::wp::pointer_gestures::zv1::client::{
-    zwp_pointer_gesture_pinch_v1, zwp_pointer_gestures_v1,
+    zwp_pointer_gesture_hold_v1, zwp_pointer_gesture_pinch_v1, zwp_pointer_gestures_v1,
 };
 use wayland_protocols::wp::primary_selection::zv1::client::zwp_primary_selection_offer_v1::{
     self, ZwpPrimarySelectionOfferV1,
@@ -339,6 +340,8 @@ pub(crate) struct WaylandClientState {
     wl_pointer: Option<wl_pointer::WlPointer>,
     pinch_gesture: Option<zwp_pointer_gesture_pinch_v1::ZwpPointerGesturePinchV1>,
     pinch_scale: f32,
+    // Katna: fingers resting on the touchpad stop a glide (see `kinetic`).
+    hold_gesture: Option<zwp_pointer_gesture_hold_v1::ZwpPointerGestureHoldV1>,
     wl_keyboard: Option<wl_keyboard::WlKeyboard>,
     cursor_shape_device: Option<wp_cursor_shape_device_v1::WpCursorShapeDeviceV1>,
     data_device: Option<wl_data_device::WlDataDevice>,
@@ -370,6 +373,13 @@ pub(crate) struct WaylandClientState {
     vertical_modifier: f32,
     horizontal_modifier: f32,
     scroll_event_received: bool,
+    // Katna: kinetic touchpad scrolling. `axis_time` is the latest axis
+    // event's time, `axis_stop` the time the fingers lifted in this frame,
+    // and `glide_id` names the running glide (bumping it stops it).
+    kinetic: kinetic::Kinetic,
+    axis_time: u32,
+    axis_stop: Option<u32>,
+    glide_id: u64,
     enter_token: Option<()>,
     button_pressed: Option<MouseButton>,
     mouse_focused_window: Option<WaylandWindowStatePtr>,
@@ -528,7 +538,13 @@ pub(crate) enum PendingActivation {
 
 impl WaylandClientState {
     fn consume_startup_activation_token(&mut self, surface: &wl_surface::WlSurface) {
-        let Some(startup_activation_token) = self.startup_activation_token.take() else {
+        // Else a token another app passed for the click that opens this
+        // window (Katna): a notification's Open or Reply all.
+        let Some(startup_activation_token) = self
+            .startup_activation_token
+            .take()
+            .or_else(crate::linux::take_activation_token)
+        else {
             return;
         };
         let Some(activation) = self.globals.activation.as_ref() else {
@@ -1011,6 +1027,7 @@ impl WaylandClient {
             wl_pointer: None,
             wl_keyboard: None,
             pinch_gesture: None,
+            hold_gesture: None,
             pinch_scale: 1.0,
             cursor_shape_device: None,
             data_device,
@@ -1056,6 +1073,10 @@ impl WaylandClient {
             },
             capslock: Capslock { on: false },
             scroll_event_received: false,
+            kinetic: kinetic::Kinetic::default(),
+            axis_time: 0,
+            axis_stop: None,
+            glide_id: 0,
             axis_source: AxisSource::Wheel,
             mouse_location: None,
             continuous_scroll_delta: None,
@@ -1870,6 +1891,17 @@ impl Dispatch<wl_seat::WlSeat, ()> for WaylandClientStatePtr {
                     },
                 );
 
+                // Hold gestures are in version 3 of pointer-gestures.
+                if let Some(hold) = state.hold_gesture.take() {
+                    hold.destroy();
+                }
+                state.hold_gesture = state
+                    .globals
+                    .gesture_manager
+                    .as_ref()
+                    .filter(|manager| manager.version() >= 3)
+                    .map(|manager| manager.get_hold_gesture(&pointer, qh, ()));
+
                 if let Some(wl_pointer) = &state.wl_pointer {
                     wl_pointer.release();
                 }
@@ -1965,6 +1997,8 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for WaylandClientStatePtr {
                 group,
                 ..
             } => {
+                // Katna: a glide must not turn into Ctrl+scroll zooming.
+                state.glide_id += 1;
                 let focused_window = state.keyboard_focused_window.clone();
 
                 let keymap_state = state.keymap_state.as_mut().unwrap();
@@ -2275,6 +2309,7 @@ impl Dispatch<wl_pointer::WlPointer, ()> for WaylandClientStatePtr {
                 }
             }
             wl_pointer::Event::Leave { .. } => {
+                state.glide_id += 1;
                 if let Some(focused_window) = state.mouse_focused_window.clone() {
                     let input = PlatformInput::MouseExited(MouseExitEvent {
                         position: state.mouse_location.unwrap(),
@@ -2354,6 +2389,8 @@ impl Dispatch<wl_pointer::WlPointer, ()> for WaylandClientStatePtr {
                 // interactive moves) are declined when given a release serial.
                 if button_state == wl_pointer::ButtonState::Pressed {
                     state.serial_tracker.update(SerialKind::MousePress, serial);
+                    // Katna: a click stops a glide.
+                    state.glide_id += 1;
                 }
                 let button = linux_button_to_gpui(button);
                 let Some(button) = button else { return };
@@ -2437,15 +2474,28 @@ impl Dispatch<wl_pointer::WlPointer, ()> for WaylandClientStatePtr {
                 axis_source: WEnum::Value(axis_source),
             } => {
                 state.axis_source = axis_source;
+                // Katna: any new scrolling stops a glide.
+                state.glide_id += 1;
+                if axis_source != AxisSource::Finger {
+                    state.kinetic.clear();
+                }
+            }
+            wl_pointer::Event::AxisStop { time, .. } => {
+                if state.axis_source == AxisSource::Finger {
+                    state.axis_stop = Some(time);
+                    state.scroll_event_received = true;
+                }
             }
             wl_pointer::Event::Axis {
                 axis: WEnum::Value(axis),
                 value,
-                ..
+                time,
             } => {
+                state.glide_id += 1;
                 if state.axis_source == AxisSource::Wheel {
                     return;
                 }
+                state.axis_time = time;
                 let axis = if state.modifiers.shift {
                     wl_pointer::Axis::HorizontalScroll
                 } else {
@@ -2531,6 +2581,21 @@ impl Dispatch<wl_pointer::WlPointer, ()> for WaylandClientStatePtr {
                     state.scroll_event_received = false;
                     let continuous = state.continuous_scroll_delta.take();
                     let discrete = state.discrete_scroll_delta.take();
+                    // Katna: remember finger scrolling, and glide on if the
+                    // fingers lifted while moving.
+                    if state.axis_source == AxisSource::Finger {
+                        if let Some(delta) = continuous {
+                            let time = state.axis_time;
+                            state
+                                .kinetic
+                                .push(time, [delta.x.as_f32(), delta.y.as_f32()]);
+                        }
+                        if let Some(stop) = state.axis_stop.take()
+                            && let Some(glide) = state.kinetic.release(stop)
+                        {
+                            start_glide(&mut state, glide);
+                        }
+                    }
                     if let Some(continuous) = continuous {
                         if let Some(window) = state.mouse_focused_window.clone() {
                             let input = PlatformInput::ScrollWheel(ScrollWheelEvent {
@@ -2557,6 +2622,67 @@ impl Dispatch<wl_pointer::WlPointer, ()> for WaylandClientStatePtr {
                 }
             }
             _ => {}
+        }
+    }
+}
+
+// Katna: how often a glide scrolls, about once per frame at 120 Hz.
+const GLIDE_INTERVAL: Duration = Duration::from_millis(8);
+
+/// Katna: keeps a touchpad flick scrolling after the fingers lift, slowing
+/// down, until it rests or anything else happens (a touch, a click, other
+/// scrolling, a modifier key or the pointer leaving bumps `glide_id`).
+fn start_glide(state: &mut WaylandClientState, mut glide: kinetic::Glide) {
+    state.glide_id += 1;
+    let id = state.glide_id;
+    let mut last = Instant::now();
+    let started =
+        state
+            .loop_handle
+            .insert_source(Timer::from_duration(GLIDE_INTERVAL), move |_, _, this| {
+                let client = this.get_client();
+                let state = client.borrow();
+                if state.glide_id != id {
+                    return TimeoutAction::Drop;
+                }
+                let (Some(window), Some(position)) =
+                    (state.mouse_focused_window.clone(), state.mouse_location)
+                else {
+                    return TimeoutAction::Drop;
+                };
+                let now = Instant::now();
+                let dt = now.duration_since(last).as_secs_f32() * 1000.0;
+                last = now;
+                let Some([x, y]) = glide.advance(dt) else {
+                    return TimeoutAction::Drop;
+                };
+                let input = PlatformInput::ScrollWheel(ScrollWheelEvent {
+                    position,
+                    delta: ScrollDelta::Pixels(point(px(x), px(y))),
+                    modifiers: state.modifiers,
+                    touch_phase: TouchPhase::Moved,
+                });
+                drop(state);
+                window.handle_input(input);
+                TimeoutAction::ToInstant(now + GLIDE_INTERVAL)
+            });
+    if let Err(err) = started {
+        log::error!("Failed to start a touchpad glide: {err}");
+    }
+}
+
+impl Dispatch<zwp_pointer_gesture_hold_v1::ZwpPointerGestureHoldV1, ()> for WaylandClientStatePtr {
+    fn event(
+        this: &mut Self,
+        _: &zwp_pointer_gesture_hold_v1::ZwpPointerGestureHoldV1,
+        event: zwp_pointer_gesture_hold_v1::Event,
+        _: &(),
+        _: &Connection,
+        _: &QueueHandle<Self>,
+    ) {
+        // Katna: fingers touching the touchpad stop a glide, as in GTK and Qt.
+        if let zwp_pointer_gesture_hold_v1::Event::Begin { .. } = event {
+            this.get_client().borrow_mut().glide_id += 1;
         }
     }
 }

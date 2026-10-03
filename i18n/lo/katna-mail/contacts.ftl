@@ -25,10 +25,7 @@ contacts-label-removed = ເອົາອອກຈາກ { $name } ແລ້ວ
 contacts-label-renamed = ປ່ຽນຊື່ປ້າຍກຳກັບເປັນ { $name } ແລ້ວ
 contacts-label-deleted = ລຶບປ້າຍກຳກັບ { $name } ແລ້ວ
 contacts-label-no-email = ບໍ່ມີໃຜໃນປ້າຍກຳກັບນີ້ທີ່ມີທີ່ຢູ່ອີເມວ
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = ບັນຊີ
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = ເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອສະແດງລາຍຊື່ຜູ້ຕິດຕໍ່
 contacts-account-signed-in = ເຂົ້າສູ່ລະບົບ { $address } ອີກຄັ້ງແລ້ວ. ກຳລັງດຶງລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງທ່ານ…
 contacts-account-sign-in-refused = { $provider } ບໍ່ໃຫ້ Katna ເຂົ້າ. ລອງໃໝ່ ແລະ ອະນຸຍາດໃຫ້ເຂົ້າເຖິງລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງທ່ານ.
@@ -36,9 +33,11 @@ contacts-account-password = ເຊີບເວີບໍ່ຍອມຮັບລ�
 contacts-account-change-password = ປ່ຽນລະຫັດຜ່ານ
 contacts-account-change-password-tooltip = ເປີດ ການຕັ້ງຄ່າ > ບັນຊີ
 contacts-account-failed = ບໍ່ສາມາດອ່ານລາຍຊື່ຜູ້ຕິດຕໍ່ໄດ້.
-# $reason is the server's own words, in English.
 contacts-account-error = ບໍ່ສາມາດອ່ານລາຍຊື່ຜູ້ຕິດຕໍ່ໄດ້: { $reason }
 contacts-account-none = ບໍ່ພົບສະໝຸດທີ່ຢູ່
+contacts-account-none-why = ບໍ່ພົບສະໝຸດທີ່ຢູ່: { $reason }
+contacts-account-use-sign-in = { $provider } ສະແດງລາຍຊື່ຜູ້ຕິດຕໍ່ສະເພາະໃຫ້ Katna ທີ່ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider } ເທົ່ານັ້ນ.
+contacts-account-sign-in-with = ເຂົ້າສູ່ລະບົບດ້ວຍ { $provider }
 contacts-account-looking = ກຳລັງຊອກຫາລາຍຊື່ຜູ້ຕິດຕໍ່…
 contacts-account-try-again = ລອງໃໝ່
 contacts-account-try-again-tooltip = ກວດເບິ່ງລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງບັນຊີນີ້ອີກຄັ້ງດຽວນີ້
@@ -82,7 +81,7 @@ contacts-print-none = ບໍ່ມີລາຍຊື່ຜູ້ຕິດຕໍ�
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = ວັນເກີດ: { $day }
 contacts-print-nickname = ຊື່ຫຼິ້ນ: { $name }
-contacts-create = ສ້າງລາຍຊື່ຜູ້ຕິດຕໍ່
+contacts-create = ຜູ້ຕິດຕໍ່ໃໝ່
 
 ## Search and the list
 

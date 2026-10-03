@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Zoho calendars over Zoho's own connection"
+text = """
+Zoho serves calendars to other apps on a port many networks block, so
+after Sign in with Zoho the Calendar reads them through Zoho's own API
+instead. Your Zoho events show beside your other calendars; changing them
+from Katna comes later.
+"""

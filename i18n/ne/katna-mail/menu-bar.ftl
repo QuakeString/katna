@@ -27,6 +27,7 @@ desktop-menu-page-calendar = पात्_रो
 desktop-menu-page-contacts = सम्पर्क_हरू
 desktop-menu-page-tasks = _कार्यहरू
 desktop-menu-page-notes = _टिपोटहरू
+desktop-menu-page-files = _फाइलहरू
 desktop-menu-next = _अर्को वार्तालाप
 desktop-menu-previous = _अघिल्लो वार्तालाप
 desktop-menu-message = _सन्देश

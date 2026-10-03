@@ -14,13 +14,13 @@ tab-other = אחר
 tab-inbox = דואר נכנס
 tab-newsletters = ניוזלטרים
 tab-notifications = התראות
-tab-new = { $count } חדשות
 tab-provider-other = ממוין על ידי Katna
 
 ## Mail list: toolbar
 
 list-select = בחירה
 list-refresh = רענון
+list-back-to-top = חזרה למעלה
 list-checking = בודקים דואר חדש…
 list-more = עוד
 list-mark-read = סימון כנקראו
@@ -39,6 +39,7 @@ list-results = תוצאות עבור „{ $query }”
 list-results-corrected = מוצגות תוצאות עבור „{ $query }”
 list-search-instead = חיפוש „{ $query }” במקום זאת
 list-files-more = +{ $count }
+list-replied = עניתם
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -437,6 +438,12 @@ menu-add-note = הוספת הערה
 menu-print-all = הדפסת הכול
 menu-new-window = פתיחה בחלון חדש
 menu-move-to = העברה אל
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = מעקב
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = עוד
 menu-move-to-heading = העברה אל:
 menu-find-from = חיפוש הודעות מאת { $name }
 

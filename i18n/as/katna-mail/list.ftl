@@ -14,13 +14,13 @@ tab-other = অন্যান্য
 tab-inbox = ইনবক্স
 tab-newsletters = বাতৰি-পত্ৰ
 tab-notifications = জাননী
-tab-new = { $count }টা নতুন
 tab-provider-other = Katnaই সজোৱা
 
 ## Mail list: toolbar
 
 list-select = বাছনি কৰক
 list-refresh = ৰিফ্ৰেছ কৰক
+list-back-to-top = ওপৰলৈ উভতি যাওক
 list-checking = নতুন মেইল পৰীক্ষা কৰি আছে…
 list-more = অধিক
 list-mark-read = পঢ়া বুলি চিহ্নিত কৰক
@@ -39,6 +39,7 @@ list-results = “{ $query }”ৰ ফলাফল
 list-results-corrected = “{ $query }”ৰ ফলাফল দেখুওৱা হৈছে
 list-search-instead = ইয়াৰ সলনি “{ $query }” সন্ধান কৰক
 list-files-more = +{ $count }
+list-replied = আপুনি উত্তৰ দিছে
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -387,6 +388,12 @@ menu-add-note = টোকা যোগ কৰক
 menu-print-all = সকলো প্ৰিণ্ট কৰক
 menu-new-window = নতুন ৱিণ্ড'ত খোলক
 menu-move-to = ইয়ালৈ স্থানান্তৰ কৰক
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = ফ'ল' আপ
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = অধিক
 menu-move-to-heading = ইয়ালৈ স্থানান্তৰ কৰক:
 menu-find-from = { $name }ৰ পৰা অহা ইমেইল বিচাৰক
 

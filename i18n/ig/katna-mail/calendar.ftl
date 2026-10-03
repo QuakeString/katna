@@ -57,6 +57,12 @@ calendar-account-not-enabled = Agbanyebeghị ohere kalịnda maka Katna.
 calendar-account-failed = Enweghị ike ịgụ kalịnda.
 calendar-account-error = Enweghị ike ịgụ kalịnda: { $reason }
 calendar-account-none = Ahụghị kalịnda ọ bụla
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Ahụghị kalịnda ọ bụla: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } na-egosi kalịnda naanị Katna banyere na { $provider }.
+calendar-account-sign-in-with = Banye na { $provider }
 calendar-account-looking = Na-achọ kalịnda…
 calendar-account-try-again = Nwaa ọzọ
 calendar-account-try-again-tooltip = Lelee kalịnda akaụntụ a ọzọ ugbu a
@@ -76,8 +82,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = { $count } ọzọ
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Na-agbaghachi
 calendar-join = Sonye
+calendar-join-with = Sonye site na { $service }
 calendar-email-guests = Zipụ ndị ọbịa email
 calendar-running-late = Ana m egbu oge
 calendar-late-subject = Ana m egbu oge: { $title }
@@ -90,6 +98,7 @@ calendar-guest-answers = { $yes } ee, { $maybe } ikekwe, { $no } mba, { $waiting
 calendar-organizer = Onye nhazi
 calendar-optional = Nhọrọ
 calendar-open-web = Mepe na ihe nchọgharị
+calendar-open-mail = Mepee ozi
 calendar-open-contact = Meghee kọntaktị
 calendar-close = Mechie
 
@@ -113,10 +122,71 @@ calendar-discard = Tụfuo mgbanwe
 calendar-edit = Dezie ihe omume
 calendar-delete = Hichapụ ihe omume
 calendar-event-details = Nkọwa ihe omume
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Ihe omume ọhụrụ
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Mepee ụbọchị
+calendar-menu-duplicate = Mepụta oyiri
+calendar-menu-color = Agba
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Agba kalịnda
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = N'otu izu
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tomato
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Tanjirin
+calendar-color-banana = Unere
+calendar-color-sage = Sage
+calendar-color-basil = Nchuanwụ
+calendar-color-peacock = Pikọk
+calendar-color-blueberry = Bluberi
+calendar-color-lavender = Lavenda
+calendar-color-grape = Mkpụrụ vaịn
+calendar-color-graphite = Graịt
+calendar-menu-only-this = Gosi naanị nke a
+calendar-menu-rename = Gbanwee aha
+calendar-menu-remove = Wepụ na ndepụta
+calendar-menu-delete = Hichapụ
+calendar-menu-new-calendar = Kalịnda ọhụrụ
+calendar-menu-show-all = Gosi niile
+calendar-menu-hide-all = Zoo niile
+calendar-menu-account-settings = Ntọala akaụntụ
+calendar-why-main = Kalịnda isi
+calendar-why-last = Naanị otu nọ ebe a
+calendar-why-owner = Naanị onye nwe ya
+calendar-why-contacts = Site na Kọntaktị
+calendar-why-unreached = Erughị ya
+calendar-name-placeholder = Aha kalịnda
+calendar-toast-added = Etinyere “{ $name }”
+calendar-toast-renamed = Agbanwere aha kalịnda
+calendar-toast-recolored = Agbanwere agba kalịnda
+calendar-toast-deleted = Ehichapụrụ “{ $name }”
+calendar-toast-removed = Ewepụrụ “{ $name }” na ndepụta gị
+calendar-edit-failed = Agbanweghị kalịnda ahụ: { $reason }
+calendar-delete-title = Hichapụ “{ $name }”?
+calendar-delete-confirm = Hichapụ
+calendar-deleting = Na-ehichapụ…
+calendar-delete-heading = Ehichapụrụ:
+calendar-delete-events = Kalịnda ahụ na ihe omume ya niile
+calendar-delete-shared = Maka onye ọ bụla e kekọrịtara ya
+calendar-delete-server = A na-ehichapụ ya na { $account } n'ọrụ ozi, ọ bụghị naanị na Katna.
+calendar-delete-local = A na-ehichapụ ya na kọmputa a.
+calendar-remove-title = Wepụ “{ $name }” na ndepụta gị?
+calendar-remove-confirm = Wepụ
+calendar-removing = Na-ewepụ…
+calendar-remove-heading = Ihe na-agbanwe:
+calendar-remove-events = Ị kwụsịrị ịhụ ihe omume ya, ebe a na ngwa gị ndị ọzọ
+calendar-remove-server = Kalịnda ahụ na-anọ n'aka onye nwe ya, onye nwere ike ịkekọrịta ya gị ọzọ.
 calendar-kind-event = Ihe omume
+calendar-kind-task = Ọrụ
 calendar-kind-focus = Oge nlekwasị anya
 calendar-kind-out-of-office = N'èzí ọfịs
 calendar-kind-working-location = Ebe ọrụ
+calendar-task-added = Etinyela ọrụ
+calendar-task-added-to = Etinyela ọrụ na { $list }
+calendar-task-list-local = Na kọmputa a
 calendar-working-home = Ụlọ
 calendar-busy = Nwere ọrụ
 calendar-free = Nwere oge

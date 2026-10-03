@@ -39,6 +39,12 @@ contacts-account-failed = સંપર્કો વાંચી શકાયા 
 # $reason is the server's own words, in English.
 contacts-account-error = સંપર્કો વાંચી શકાયા નથી: { $reason }
 contacts-account-none = કોઈ સરનામા પુસ્તિકા મળી નથી
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = કોઈ સરનામા પુસ્તિકા મળી નથી: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } સંપર્કો ફક્ત { $provider } વડે સાઇન ઇન થયેલા Katna ને જ બતાવે છે.
+contacts-account-sign-in-with = { $provider } વડે સાઇન ઇન કરો
 contacts-account-looking = સંપર્કો શોધી રહ્યાં છીએ…
 contacts-account-try-again = ફરી પ્રયાસ કરો
 contacts-account-try-again-tooltip = આ એકાઉન્ટના સંપર્કો હમણાં ફરી તપાસો
@@ -88,7 +94,7 @@ contacts-print-none = પ્રિન્ટ કરવા માટે કોઈ 
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = જન્મદિવસ: { $day }
 contacts-print-nickname = ઉપનામ: { $name }
-contacts-create = સંપર્ક બનાવો
+contacts-create = નવો સંપર્ક
 
 ## Search and the list
 

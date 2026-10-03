@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Today's date fits its marker"
+text = """
+In the Calendar's Month view, today's marker now holds the whole date.
+On the 1st it becomes a pill around "01 Oct" instead of a small circle
+the label spilled out of.
+"""

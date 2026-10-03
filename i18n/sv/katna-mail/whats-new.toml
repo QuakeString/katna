@@ -1637,3 +1637,1470 @@ den färg du väljer. Ångra med Ctrl+Z, sudda ut en markering med
 suddgummit och spara sedan en uppmärkt kopia. Den ursprungliga bilagan
 förblir som den var.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Varför ett konto saknar kalendrar"
+text = """
+När ett kontos kalendrar inte visas säger Kalender nu vad servern
+svarade, och ”Försök igen” letar efter dem igen direkt. Ett Gmail- eller
+Outlook-konto som lagts till med lösenord erbjuder inloggning med Google
+eller Microsoft, vilket deras kalendrar kräver.
+"""
+
+["2026-09-29-1610-one-checkbox"]
+title = "Kryssrutor som bockas i"
+text = """
+Varje kryssruta i Katna Mail är nu lika stor som de runda knapparna
+bredvid. Bocken ritas fram när du markerar rutan och suddas bort när du
+avmarkerar den, i Inställningar, e-postlistan, Kalender, Kontakter,
+Anteckningar och dialogrutor.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "En kortare högerklicksmeny som alltid får plats"
+text = """
+E-postlistans högerklicksmeny har de vardagliga åtgärderna överst och
+lägger resten under Följ upp (uppgifter, anteckningar, möten, samtal)
+och Mer (skräppost, viktigt, fäst). Den öppnas där du klickar och håller
+sig inom fönstret; i ett lågt eller smalt fönster öppnas en undermeny i
+menyns ställe.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Varför ett konto saknar kontakter"
+text = """
+När ett kontos kontakter inte visas säger Kontakter nu vad servern
+svarade, och ”Försök igen” letar efter dem igen direkt. Ett Gmail- eller
+Outlook-konto som lagts till med lösenord erbjuder inloggning med Google
+eller Microsoft, vilket deras kontakter kräver.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Sökrutan visar när den är aktiv"
+text = """
+Sökrutan högst upp får en accentkant medan du skriver i den, precis som
+alla andra fält, och dess Ctrl+F-tips flyttar undan tills du lämnar den
+tom.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Alla uppgiftslistor syns"
+text = """
+”Alla uppgifter” visar nu så många listor sida vid sida som får plats i
+fönstret, med fler rader nedanför, så att varje lista går att nå. En ny
+lista rullas fram så fort du skapar den.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Mjuk bläddring mellan bilagor"
+text = """
+Att gå till nästa eller föregående bilaga i visaren med pilarna flimrar
+inte längre. Visaren förblir öppen och nästa fil tar den förras plats så
+snart den är klar.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Dra anteckningar i ordning"
+text = """
+Dra en anteckning på tavlan i Anteckningar för att flytta den, som i
+Keep. De andra anteckningarna glider undan för att ge plats, och den
+stannar där du släpper den. Ctrl+Z lägger tillbaka den. Korten sitter nu
+tätt i sina kolumner, utan luckor under korta anteckningar.
+"""
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Högerklicka i Kalender"
+text = """
+Högerklicka på en ledig tid eller dag för att lägga till en händelse,
+fokustid eller frånvaro där. Högerklicka på en händelse för att
+redigera, duplicera, radera, svara, ansluta, skicka e-post till
+gästerna, färga den eller flytta den till en annan kalender, och på en
+uppgift för att bocka av den, stjärnmärka den, ge den en annan dag eller
+radera den. Ångra tar tillbaka en ändring.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Anteckningar och text i PDF-filer"
+text = """
+När du märker upp en PDF finns nu fästisar och textrutor: klicka på
+sidan, skriv och tryck på Ctrl+Enter. Håll pekaren över en anteckning
+för att läsa den, eller klicka på den för att ändra den. Svara skickar
+den uppmärkta kopian direkt tillbaka i ett svar på meddelandet.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Dra uppgifter dit du vill ha dem"
+text = """
+Dra en uppgift uppåt eller nedåt i listan, eller till en annan lista,
+och uppgifterna där glider undan för att visa var den hamnar. Google
+Tasks behåller den nya ordningen på telefonen också, och Ångra lägger
+tillbaka uppgiften.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Lägg till en uppgift från Kalender"
+text = """
+Kortet för ny händelse har en flik Uppgift, som i Google Kalender.
+Klicka på en tid, välj Uppgift, så blir titeln, dagen och tiden en
+uppgift i den lista du väljer, med en beskrivning om du vill.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Lägg till en uppgift från Kalender"
+text = """
+Högerklicka på en ledig tid eller dag i Kalender och välj Uppgift för
+att lägga till en uppgift där. Kortet för ny händelse öppnas på fliken
+Uppgift med den dagen och tiden redan ifyllda.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalendrar försöker igen efter en långsam server"
+text = """
+När ett kontos kalenderserver inte svarar i tid säger Kalender nu det,
+och om det var anslutningen eller den säkra handskakningen som fastnade,
+i stället för "Inga kalendrar hittades". Den försöker igen inom några
+minuter i stället för timmar.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Kontaktens filer visar nedladdningen"
+text = """
+En fil i kontaktpanelen vars e-post inte finns på den här datorn än
+fylls nu medan den laddas ned, som bilagorna i listan gör, och öppnas
+sedan.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Ett nytt kontos e-post visas allt eftersom den kommer in"
+text = """
+När du har lagt till ett konto hämtas dess inkorg först och fylls på
+medan du tittar, i stället för att stå på ”Hämtar din e-post…” tills
+alla mappar är klara. Andra mappar fylls på på samma sätt.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Kryssrutorna ligger i nivå med ikonerna"
+text = """
+Kryssrutorna är lite mindre, lika stora som stjärn- och etikettikonerna
+bredvid dem i e-postlistan. De är lika lätta att klicka på som förut, och
+bocken ritas fortfarande fram.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho-kalendrar via Zohos egen anslutning"
+text = """
+Zoho delar kalendrar med andra appar på en port som många nätverk
+blockerar, så efter Logga in med Zoho läser Kalender dem via Zohos eget
+API i stället. Dina Zoho-händelser visas bredvid dina andra kalendrar;
+att ändra dem från Katna kommer senare.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho-uppgifter"
+text = """
+Logga in med Zoho på ett Zoho-konto så visas dess uppgifter i Zoho ToDo
+i Uppgifter, åt båda hållen: lägg till, redigera, bocka av eller ta bort
+en uppgift i Katna så ändras den i Zoho också.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Bocken hamnar i mitten i alla storlekar"
+text = """
+Med Skalning i Inställningar > Utseende över 100 % hamnade bocken i en
+kryssruta lite upp och till vänster. Kanterna på kryssrutor och runda
+knappar växer nu med skalan, så bocken hamnar i mitten i alla storlekar.
+"""
+
+["2026-09-30-0230-edges-follow-scaling"]
+title = "Konturerna växer med Skalning"
+text = """
+Med Skalning i Inställningar > Utseende över eller under 100 % växer och
+krymper nu accentkonturen runt den aktiva sökrutan och fälten, och
+kanterna på valkort och uppgiftsringar, med allt annat i stället för att
+förbli tunna.
+"""
+
+["2026-09-30-0326-google-sign-in-network"]
+title = "Logga in med Google på alla nätverk"
+text = """
+Logga in med Google stoppar inte längre med ”peer closed connection” på
+nätverk som bryter Googles anslutning i förtid. Om du bockar ur Gmail på
+Googles sida säger Katna nu det i stället för att misslyckas senare.
+"""
+
+["2026-09-30-0504-google-api-turned-off"]
+title = "Säger vilket Google-API som är avstängt"
+text = """
+När Google har ett API avstängt för Katna säger Kontakter, Kalender,
+Uppgifter och Drive-filer nu vilket på en kort rad, med en knapp
+Slå på som öppnar Googles sida för det, i stället för Googles råa
+felmeddelande.
+"""
+
+["2026-09-30-0507-newest-mail-first"]
+title = "Den nyaste e-posten kommer först"
+text = """
+När du lägger till ett konto hämtar Katna Mail nu din senaste e-post
+först och arbetar sig sedan bakåt till äldre e-post, så att dagens
+meddelanden syns högst upp i inkorgen direkt. Om hämtningen avbryts
+fortsätter den med den äldre e-posten nästa gång.
+"""
+
+["2026-09-30-0601-keyring-at-login"]
+title = "Väntar på din plånbok vid inloggning"
+text = """
+Om KWallet eller GNOME Keyring fortfarande är låst när Katna startar och
+dess upplåsningsfönster stängs, visar dina konton inte längre fel
+lösenord. De väntar och börjar synkronisera av sig själva så fort du
+låser upp plånboken, utan att du behöver avsluta Katna. Synkronisera ber
+nu om att låsa upp den igen.
+"""
+
+["2026-09-30-0606-pdf-rotate-and-top-bar"]
+title = "Vrid PDF-sidor"
+text = """
+PDF-visaren kan nu vrida sidor medsols eller motsols (Ctrl+R och
+Ctrl+Shift+R), och en uppmärkt kopia sparas som du vred den. Sidnumret
+och zoomen har flyttat till den övre raden, så att inget täcker sidan.
+"""
+
+["2026-09-30-0610-calendar-events-stay-put"]
+title = "Händelser stannar där de är"
+text = """
+Att klicka på en händelse eller uppgift i Kalender och sedan byta vy får
+den inte längre att följa pekaren. En händelse flyttas nu bara medan du
+håller ned knappen och drar den, och att byta vy eller sida, trycka på
+Esc eller öppna dess kort lägger tillbaka den oförändrad.
+"""
+
+["2026-09-30-0620-checkbox-partial-centred"]
+title = "Delvis ikryssade rutor ser jämna ut"
+text = """
+När bara vissa meddelanden är markerade har fyrkanten i rutan Markera
+alla nu lika stort mellanrum på alla sidor, oavsett skalning.
+"""
+
+["2026-09-30-0632-year-view-day-peek"]
+title = "Se en dags planer från årsvyn"
+text = """
+I Kalenders årsvy kan du vila pekaren på en dag med en prick för att se
+dess händelser och uppgifter i en liten ruta bredvid, var och en med en
+ikon som visar vad den är och dess tid. Klicka på en för att öppna den,
+eller på dagens namn för att öppna dagen. På en telefon trycker du på
+dagen.
+"""
+
+["2026-09-30-0650-notification-opens-own-window"]
+title = "Aviseringar öppnar e-posten överst"
+text = """
+Att klicka på en avisering om ny e-post öppnar e-postmeddelandet i ett
+eget fönster, överst, vad Katna än visar för stunden. Svara alla öppnar
+det med svaret redo att skriva. Arkivera lägger undan e-posten utan att
+öppna något och säger det i en kort notis med Ångra.
+"""
+
+["2026-09-30-0700-event-card-join-any-call"]
+title = "Anslut till Teams- och Zoom-samtal från Kalender"
+text = """
+En händelses kort hittar nu samtalet i beskrivningen eller platsen, så
+att en inbjudan till Microsoft Teams, Zoom, Webex, Jitsi eller Google
+Meet får en knapp ”Anslut med” högst upp. Webbadresser i beskrivningen
+är länkar, raderna av understreck är borta, och Kommer du? stannar
+längst ned medan detaljerna rullar.
+"""
+
+["2026-09-30-0715-click-away-closes-viewer"]
+title = "Klicka utanför för att stänga"
+text = """
+Klicka på det dämpade området runt en bilaga för att stänga visaren, i
+stället för att leta efter bakåtknappen. Klick på själva sidan markerar
+fortfarande text och märker upp som förut.
+"""
+
+["2026-09-30-0729-add-account-and-pop3"]
+title = "En ny Lägg till konto, och POP3"
+text = """
+Att lägga till ett konto börjar med din leverantör: Google, Yahoo,
+iCloud, Zoho, Fastmail, GMX, Yandex eller någon annan. Katna säger först
+vad leverantören behöver, visar varje steg medan den ansluter och
+avslutar med vad den har konfigurerat. POP3-konton fungerar också, och i
+Inställningar > Konton väljer du hur länge deras e-post ligger kvar på
+servern.
+"""
+
+["2026-09-30-0802-ctrl-wheel-zoom"]
+title = "Zooma med Ctrl och hjulet"
+text = """
+Håll ned Ctrl i bilagevisaren och vrid på mushjulet för att zooma in och
+ut runt pekaren, eller nyp på en pekplatta. Det fungerar för PDF-filer,
+bilder, textfiler, kalkylblad och dokument.
+"""
+
+["2026-09-30-0817-event-open-the-mail"]
+title = "Öppna e-posten bakom en händelse"
+text = """
+Händelser som Gmail har skapat från ett e-postmeddelande, som tåg, flyg
+och hotell, får en knapp Öppna e-postmeddelandet på sitt kort. Den
+öppnar meddelandet i Katna, eller i Gmail när Katna inte har det. En
+uppgift som skapats från ett e-postmeddelande öppnar också sitt
+meddelande från sitt kort i Kalender, och Anteckna mötet öppnas utan att
+blinka.
+"""
+
+["2026-09-30-0843-calendar-side-panel-menus"]
+title = "Hantera kalendrar från sidopanelen"
+text = """
+Högerklicka på en kalender i Kalenders sidopanel för att visa bara den,
+ändra dess färg, byta namn på den eller radera den. Högerklicka på ett
+kontos namn för att skapa en ny kalender i det kontot eller visa och
+dölja alla dess kalendrar. Ändringarna sparas hos din e-posttjänst, så
+de syns överallt där du använder den.
+"""
+
+["2026-09-30-1010-unread-list-keeps-open-mail"]
+title = "Oläst e-post förblir öppen"
+text = """
+Att öppna en konversation i Alla konton > Olästa stänger den inte längre
+direkt. När du läser den markeras den som läst, och den stannar i listan
+tills du stänger den eller öppnar en annan.
+"""
+
+["2026-09-30-1045-tracked-mail-arrives"]
+title = "Spårad e-post kommer fram igen"
+text = """
+E-post som skickades med spårning på kunde visas i Skickat utan att nå
+någon. Den går nu ut till alla mottagare. E-post som gått förlorad på
+det här sättet behöver skickas igen.
+"""
+
+["2026-09-30-1114-no-checking-pill"]
+title = "Ingen mer kontrollbubbla"
+text = """
+”Söker efter ny e-post…” dyker inte längre upp över listan. De snurrande
+pilarna på uppdateringsknappen och på varje kontos inkorg visar redan
+att e-post hämtas, och en misslyckad kontroll säger fortfarande vad som
+gick fel.
+"""
+
+["2026-09-30-1300-windows-sign-in-and-domains"]
+title = "Logga in med Google på Windows"
+text = """
+Katna för Windows erbjuder nu Logga in med Google och Zoho, precis som
+på Linux, och vet vem som hanterar e-posten på din egen domän, till
+exempel en Google Workspace-adress, när du lägger till kontot.
+"""
+
+["2026-09-30-1511-mail-tables"]
+title = "Tabeller i e-post visas rätt"
+text = """
+Tabeller i e-post, som jobblistan i en avisering från GitHub Actions,
+håller sina kolumner sida vid sida och linjerar dem från rad till rad, i
+stället för att bryta en rubrik med en bokstav per rad. Skiljelinjer
+mellan delar av ett meddelande visas nu också.
+"""
+
+["2026-09-30-1550-taller-important-marker"]
+title = "Högre Viktigt-markör"
+text = """
+Viktigt-markören bredvid stjärnan är 2 px högre, så den ser inte längre
+hoptryckt ut bredvid stjärnan och kryssrutan. Den förblir centrerad i
+raden.
+"""
+
+["2026-09-30-1617-folder-click-goes-to-top"]
+title = "Tillbaka till början av listan"
+text = """
+När e-postlistan har rullats en skärm ned tar en rund knapp nere till
+höger den tillbaka till början. Att klicka på mappen du redan är i, till
+exempel Inkorgen, gör samma sak, som i Gmail, och det gör Home också.
+"""
+
+["2026-09-30-1622-send-from-file-manager"]
+title = "Skicka filer från filhanteraren"
+text = """
+Högerklicka på filer eller mappar i Dolphin, GNOME Filer eller
+Utforskaren i Windows och välj Skicka med Katna Mail: ett nytt
+meddelande öppnas med dem bifogade, och en mapp skickas som zip. Med
+fler än ett e-postkonto väljer du vilket du skickar från i undermenyn.
+"""
+
+["2026-09-30-1624-files-page"]
+title = "Alla filer på ett ställe"
+text = """
+Den nya sidan Filer, längst ned i appraden, visar alla bilagor från alla
+konton, de nyaste först. Begränsa till bilder, PDF-filer eller dokument,
+till ett konto, en person eller en tid, eller sök efter namn, avsändare
+eller ämne. Högerklicka på en fil för mer, och Visa e-postmeddelandet
+tar dig till det meddelande den kom med.
+"""
+
+["2026-09-30-1643-dimmer-row-markers"]
+title = "Lugnare e-postlista"
+text = """
+En tom kryssruta, stjärna eller Viktigt-markör i e-postlistan är dämpad
+tills pekaren är över dess rad. Satta stjärnor och markörer behåller sin
+färg.
+"""
+
+["2026-09-30-1704-folder-arrows-on-hover"]
+title = "Snyggare mappanel"
+text = """
+De små pilarna bredvid Inkorgen, Stjärnmärkt och de andra mapparna visas
+bara medan pekaren är över den mappen. En mapp du har fällt ut behåller
+sin pil.
+"""
+
+["2026-09-30-1712-arrow-keys-in-times"]
+title = "Piltangenter i tidsrutor"
+text = """
+I Välj datum och tid, och i en uppgifts tid, ändrar Upp och Ned den del
+markören står i: timmen, minuterna eller FM/EM.
+"""
+
+["2026-09-30-1742-check-one-folder"]
+title = "Sök efter ny e-post i en mapp"
+text = """
+”Sök efter ny e-post” i en mapps högerklicksmeny kontrollerar nu bara
+den mappen, så det går snabbt. På ett kontos inkorg under Alla konton
+kontrollerar den det kontots inkorg, och på en lista som Inkorgen eller
+Skickat under Alla konton kontrollerar den den mappen i varje konto.
+"""
+
+["2026-09-30-1742-frosted-viewer"]
+title = "En lättare, frostad visare"
+text = """
+Bilagevisarens övre rad är smalare och ljusare, och sida, zoom och
+vridning ligger i en bubbla. Runt filen syns Katna Mail suddigt under en
+mjuk mörk slöja, och verktygsraderna är också frostade. Oskärpan följer
+Inställningar > Experimentellt; utan den använder visaren en enkel mörk
+slöja.
+"""
+
+["2026-09-30-1752-touchpad-glide"]
+title = "Snabba svep på pekplattan glider"
+text = """
+Ett snabbt svep med två fingrar på en pekplatta fortsätter att rulla och
+saktar in, som i andra appar. Rör vid pekplattan igen för att stoppa. På
+Wayland.
+"""
+
+["2026-09-30-1800-inbox-tabs-in-top-row"]
+title = "Inkorgsflikar i den översta raden"
+text = """
+Primär, Kampanjer, Socialt och de andra inkorgsflikarna ligger nu i en
+bubbelrad i listans översta rad, var och en med ett färgat antal olästa
+meddelanden. Markeringen glider till fliken du väljer, och att klicka på
+den öppna fliken tar dess lista tillbaka till början. När listan är smal
+får raden en egen rad och visar ikoner, med den öppna flikens namn kvar;
+på en telefon ligger den i listans rad, med Uppdatera i menyn Mer.
+"""
+
+["2026-09-30-1805-account-menu"]
+title = "Kontoinformation i högerklicksmenyn"
+text = """
+Högerklicka på ett kontos namn i mapplistan, eller dess inkorg under
+Alla konton, för att se dess adress, om det är synkroniserat och när det
+senast kontrollerades, och hur mycket lagringsutrymme det använder.
+Därifrån kan du söka efter ny e-post i inkorgen, skriva ett nytt
+meddelande från kontot, öppna dess inställningar eller logga in igen när
+inloggningen har gått ut.
+"""
+
+["2026-09-30-1819-glass-search-box"]
+title = "En sökruta av glas"
+text = """
+Med suddig bakgrund på är sökrutan av frostat glas med en svag kant
+medan du inte använder den, och blir helt fylld när du klickar i den för
+att skriva.
+"""
+
+["2026-09-30-1820-search-cancel-restores"]
+title = "Avbryt en sökning och få tillbaka din e-post"
+text = """
+Esc eller att tömma sökrutan tar dig nu tillbaka dit du var: samma mapp,
+samma plats i listan och det meddelande du hade öppet. Öppna i stället
+ett resultat så tar sökningen över som förut.
+"""
+
+["2026-09-30-1840-first-run-window"]
+title = "En vänligare första start"
+text = """
+Medan du konfigurerar Katna Mail syns fönstret bakom
+konfigurationssidorna under en lätt slöja: apparna, Skriv och sökrutan,
+med mjuka platshållare där dina mappar och din e-post kommer att visas.
+Ett nytt steg erbjuder ett Katna-konto och listar vad det slår på
+(läskvitton, länkspårning, Aktivitet och översättning), eller så kan du
+hoppa över det.
+"""
+
+["2026-09-30-1850-windows-frame-and-blur"]
+title = "Katnas ram och oskärpa på Windows"
+text = """
+På Windows öppnas Katna Mail nu inom skärmen, maximerat när skärmen är
+liten. Inställningar > Experimentellt kan göra det som finns bakom
+fönstret suddigt, och Katnas egen ram gör den övre raden till namnlist
+nästa gång du öppnar Katna Mail.
+"""
+
+["2026-09-30-1851-dark-depth"]
+title = "Lättare att se i mörka färger"
+text = """
+I mörka färger är saker som svävar över e-postlistan nu en nyans ljusare
+med en svag ljus kant, eftersom skuggor knappt syns mot en mörk
+bakgrund. Knappen Tillbaka till toppen, menyer, skrivfönstret och
+dialogrutor framträder tydligt. Ljusa färger ser ut som förut.
+"""
+
+["2026-09-30-1911-files-scrollbar"]
+title = "En rullningslist på sidan Filer"
+text = """
+När det finns fler filer än som får plats visas en tunn rullningslist
+till höger medan du rullar eller medan pekaren är över filerna, och
+tonar sedan bort. Dra i den för att snabbt flytta genom filerna, eller
+klicka ovanför eller nedanför den för att hoppa dit.
+"""
+
+["2026-09-30-1919-tabs-keep-open-mail"]
+title = "Byte av flik behåller det öppna meddelandet"
+text = """
+Med läsrutan bredvid listan stänger ett byte till en annan inkorgsflik
+inte längre det meddelande du läser; listan ändras och meddelandet
+förblir öppet.
+"""
+
+["2026-09-30-1925-inbox-tabs-centred"]
+title = "Inkorgsflikarna i mitten"
+text = """
+Inkorgsflikarna ligger nu i mitten av listans översta rad och flyttar åt
+sidan bara så långt som knapparna kräver.
+"""
+
+["2026-09-30-1945-page-box-arrow-keys"]
+title = "Piltangenter i sidrutan"
+text = """
+Klicka på sidnumret i en PDF och tryck på Upp eller Ned för att gå en
+sida bakåt eller framåt. Håll ned tangenten för att snabbt bläddra genom
+sidorna.
+"""
+
+["2026-09-30-1952-phone-bar-labels"]
+title = "Appnamn på en telefon följer din inställning"
+text = """
+Med appnamn avstängda i Inställningar visar raden längst ned i ett
+fönster i telefonstorlek nu bara ikonerna, centrerade, som sidolisten
+gör.
+"""
+
+["2026-09-30-1955-account-menu-icons"]
+title = "Inställningar och språk i kontomenyn"
+text = """
+Menyn under din kontobild öppnas nu med en rad ikoner: öppna
+Inställningar eller byt språk. Språkflaggan har lämnat den övre raden
+för att ge plats.
+"""
+
+["2026-09-30-2001-phone-tabs-fold"]
+title = "Alla inkorgsflikar förblir inom räckhåll"
+text = """
+När fönstret är smalt fälls inkorgsflikarna ihop mjukt i stället för att
+döljas: etiketterna blir större ikoner, sedan kliver antalen åt sidan.
+På en telefon sprider sig flikarna över hela raden, lätta att trycka på,
+med Mer i slutet av samma bubbla.
+"""
+
+["2026-09-30-2012-fit-and-page-arrows"]
+title = "Anpassa, sidpilar och mer i visaren"
+text = """
+Bilagevisaren har en knapp Anpassa: en PDF-sida anpassas till fönstrets
+höjd, en bild till fönstret och dokument, presentationsbilder och
+kalkylblad till dess bredd. Bilder får också Verklig storlek och kan
+vridas. Peka på sidrutan för små pilar som går en sida bakåt eller
+framåt, och presentationsbilder får en egen ruta.
+"""
+
+["2026-09-30-2019-folder-icon-colours"]
+title = "Färgglada mappikoner"
+text = """
+Mappanelens ikoner har nu färger som säger vad varje mapp innehåller:
+Olästa blå, Stjärnmärkt gul, Viktigt bärnstensgul, Skickat grön,
+Skräppost röd, Utkast lila och Inkorgen i skrivbordets accentfärg.
+Antalet meddelanden ligger i små, svaga bubblor.
+"""
+
+["2026-09-30-2040-tabs-no-slide"]
+title = "Snabbare inkorgsflikar"
+text = """
+Att klicka på en inkorgsflik markerar den nu direkt, med bara klickets
+krusning, i stället för att låta markeringen glida över de andra
+flikarna.
+"""
+
+["2026-10-01-0145-files-tidy"]
+title = "En snyggare sida Filer"
+text = """
+Antalen bredvid varje filtyp och varje konto ligger nu i samma små
+bubblor som mappantalen i E-post. Linjen under sidans titel och raderna
+med filer börjar och slutar också vid samma kanter.
+"""
+
+["2026-10-01-0147-today-marker-fits"]
+title = "Dagens datum får plats i sin markör"
+text = """
+I Kalenders månadsvy rymmer markören för i dag nu hela datumet. Den 1:a
+blir den en bubbla runt ”01 okt.” i stället för en liten cirkel som
+etiketten flödade ut ur.
+"""
+
+["2026-10-01-0208-tab-counts-stay"]
+title = "Flikarnas antal ligger still"
+text = """
+Att öppna en inkorgsflik får inte längre flikraden att hoppa. Den öppna
+fliken behåller sitt antal nya meddelanden, som långsamt tonar till ett
+dämpat grått, och antalet fälls mjukt bort när du har läst allt i
+fliken.
+"""
+
+["2026-10-01-0225-files-keyboard"]
+title = "Flytta genom dina filer med tangentbordet"
+text = """
+På sidan Filer flyttar piltangenterna nu mellan filerna, Home och End
+går till den första och den sista, och Enter öppnar en. I visaren som
+öppnas därifrån går pilarna vidare till nästa fil på sidan, vilket
+meddelande den än kom med; Shift och en pil stannar bland bilagorna i
+samma meddelande.
+"""
+
+["2026-10-01-0254-files-dates"]
+title = "Välj dagarna på sidan Filer"
+text = """
+Tidsknappen på sidan Filer öppnar nu en kalender med två månader och
+snabbval som Förra veckan och Den här månaden. Klicka på en dag, eller
+dra från en dag till en annan, så följer filerna med medan du drar. Vrid
+sedan mushjulet över knappen för att flytta lika lång tid tidigare eller
+senare.
+"""
+
+["2026-10-01-0256-color-schemes"]
+title = "Färgscheman och accentfärger"
+text = """
+Inställningar > Utseende har nu Läge, Färger och Accent som separata
+val. Välj ljust eller mörkt, sedan något av 14 färgscheman, som Klar,
+Nord, Solarized eller Catppuccin, eller behåll skrivbordets. Varje
+schema fungerar i ljust och mörkt, och vilken accentfärg som helst kan
+läggas ovanpå.
+"""
+
+["2026-10-01-0310-badge-counts-what-notifies"]
+title = "Antalet i aktivitetsfältet matchar dina aviseringar"
+text = """
+Antalet olästa i aktivitetsfältet och systemfältet räknar nu samma
+e-post som du aviseras om: fliken Primär i Inkorgen. Kampanjer, Socialt,
+Uppdateringar och Forum räknas inte längre in.
+"""
+
+["2026-10-01-0312-quiet-selected-row"]
+title = "En lugnare öppen mapp"
+text = """
+Den öppna mappen i E-post, och den öppna vyn i Kontakter, Uppgifter,
+Anteckningar och Filer, markeras nu med ett mjukt grått i stället för
+accentfärgen, så att Skriv och appraden framträder och mappikonerna
+behåller sina egna färger.
+"""
+
+["2026-10-01-0315-desktop-schemes"]
+title = "Skrivbordets färgscheman"
+text = """
+Inställningar > Utseende > Färger listar också skrivbordets egna
+scheman: alla färgscheman som är installerade i KDE Plasma, och på
+Windows dess egna färger och kontrastteman. System fungerar nu i ljust
+och mörkt även på KDE, med den ljusa eller mörka motsvarigheten till
+ditt schema, och Katna följer Windows accentfärg.
+"""
+
+["2026-10-01-0329-mute-folders"]
+title = "Tysta en mapp, en flik eller ett konto"
+text = """
+Klockan över listan tystar den öppna mappen eller inkorgsfliken i en
+timme, till i morgon bitti eller tills du slår på den igen. Högerklicka
+på en mapp eller ett konto för samma sak. Inställningar > Aviseringar
+visar vilka mappar som aviserar och vilka som räknas i aktivitetsfältet,
+och allt som är tystat.
+"""
+
+["2026-10-01-0335-tray-style"]
+title = "Systemfältsikon i färg eller en färg"
+text = """
+Inställningar > Allmänt > Skrivbord > Systemfältsikon i färg väljer
+Katnas färger eller en färg som panelens andra ikoner. En färg förblir
+en färg med oläst e-post, och antalet olästa är alltid rött. På Linux är
+ikonen i systemfältet enfärgad som standard; på Windows är den i färg.
+"""
+
+["2026-10-01-0354-mute-conversations"]
+title = "Tysta en konversation eller en avsändare"
+text = """
+Klockan över en öppen konversation tystar den: nya svar aviserar dig
+inte längre och räknas inte i aktivitetsfältet, och en överstruken
+klocka markerar den i listan. Högerklicka på en konversation för Gör
+konversationen ljudlös eller Gör avsändaren ljudlös, eller tryck på M.
+"""
+
+["2026-10-01-0410-your-color-schemes"]
+title = "Skapa ditt eget färgschema"
+text = """
+Inställningar > Utseende > Färger > Anpassa kopierar schemat du använder
+till en redigerare: ändra någon av dess åtta färger på den ljusa och den
+mörka sidan, se e-postfönstret i dem, och Katna säger vad som skulle bli
+svårt att läsa. Importera tar emot en färgschemafil från Katna eller
+KDE, och ett högerklick på ditt schema redigerar, duplicerar, exporterar
+eller raderar det.
+"""
+
+["2026-10-01-0527-calendar-opens-on-week"]
+title = "Kalender öppnas på Vecka"
+text = """
+Katna Calendar öppnas på veckovyn igen, med de kommande dagarna i
+timmar. Månad, Dag, År och de andra är ett klick bort i den övre raden.
+"""
+
+["2026-10-01-0552-lighter-count-on-open-row"]
+title = "Antalen syns på den öppna mappen"
+text = """
+Antalet bredvid den öppna mappen i E-post, och bredvid den öppna
+filtypen i Filer, ligger nu i en bubbla som är ljusare än radens grå, så
+att det inte längre sjunker in i den, i ljust och mörkt.
+"""
+
+["2026-10-01-0652-files-leave-out-small-pictures"]
+title = "Filer utelämnar signaturlogotyper"
+text = """
+Sidan Filer fylls inte längre av de små logotyper och ikoner som kommer
+i e-postsignaturer: bilder under 12 kB, eller under 100 pixlar breda
+eller höga, stannar under sitt meddelande. Ändra båda gränserna, eller
+visa alla bilder, i Inställningar > Standardappar > Filsidan.
+"""
+
+["2026-10-01-0700-mute-from-contact"]
+title = "Tysta en avsändare från kontaktkortet"
+text = """
+Kontaktkortet bredvid ett meddelande har en klocka först bland sina
+knappar: den tystar allt från avsändaren, och en överstruken klocka
+efter namnet visar det. Klicka på den igen för att höra från personen.
+"""
+
+["2026-10-01-0803-select-hover-fits"]
+title = "En snyggare markeringsknapp"
+text = """
+Hovringsbakgrunden bakom kryssrutan för markering högst upp i
+e-postlistan är nu lika hög som knapparna bredvid, ligger lika långt
+från kortets kant som från dess överkant, och dess hörn följer kortets
+eget hörn.
+"""
+
+["2026-10-01-0807-files-leave-out-signature-pictures"]
+title = "Filer utelämnar även stora signaturbilder"
+text = """
+En bild som någon skickar i tre eller fler konversationer, som
+banderollen eller fotot i signaturen, visas inte längre på sidan Filer,
+och inte heller ikoner för sociala nätverk, hur stora de än är. De visas
+fortfarande under sitt meddelande, och att stänga av ”Utelämna små
+bilder” tar tillbaka dem alla.
+"""
+
+["2026-10-01-0830-muted-contact-mark"]
+title = "Se vem som är tystad"
+text = """
+En överstruken klocka följer nu en tystad avsändares namn överallt där
+det visas: e-postlistan, ett öppet meddelande, Kontakter, rutorna Till
+och Kopia och deras förslag, sidan Filer, gäster i händelser och
+aktivitetsrapporten. Inget mer undrande över varför deras e-post är
+tyst.
+"""
+
+["2026-10-01-0839-sounds"]
+title = "Ljud för ny e-post, påminnelser och skickat"
+text = """
+Inställningar > Aviseringar har ett avsnitt Ljud: ny e-post,
+påminnelser, e-post tillbaka i inkorgen, skickad e-post och e-post som
+inte skickades väljer var och en ett ljud från skrivbordet, spelar det
+med knappen bredvid eller stänger av det. Ljud spelas nu även i KDE
+Plasma och förblir tysta för tystad e-post och under Stör ej.
+"""
+
+["2026-10-01-0925-chat-view"]
+title = "Läs konversationer som chattar (experimentellt)"
+text = """
+Slå på Inställningar > Experimentellt > Konversationer som chattar så
+läses e-post mellan personer som en gruppchatt: en bubbla för varje
+meddelande med bara det som skrevs, dina egna till höger, bilder och
+filer som chattmedia. Citerad e-post och signaturer väntar bakom ··· i
+varje bubbla, och ett klick på ett namn visar personens kort med
+signaturen. Svara från rutan längst ned, med Ctrl+Enter,
+formateringsraden bakom Aa och gemet för filer, mallar och signaturer.
+Nyhetsbrev behåller den vanliga vyn, och växeln Chatt | E-post byter
+vilken konversation som helst åt endera hållet.
+"""
+
+["2026-10-01-0946-forward-keeps-files"]
+title = "Vidarebefordra behåller filerna"
+text = """
+Att vidarebefordra ett meddelande tar nu med dess bilagor, som visas
+under meddelandet så att du kan ta bort vilka som helst innan du
+skickar. Att göra om vidarebefordringen till ett svar utelämnar dem
+igen.
+"""
+
+["2026-10-01-1009-forward-a-file"]
+title = "Vidarebefordra bara filen"
+text = """
+Bilagevisaren har en knapp Vidarebefordra i den övre raden: den startar
+ett nytt meddelande med bara den filen bifogad, utan meddelandet den kom
+med. Filer utan förhandsvisning erbjuder också Vidarebefordra, och det
+gör även bilagekorten under ett öppet meddelande, bredvid Spara.
+"""
+
+["2026-10-01-1039-rephrase-with-ai"]
+title = "Omformulera med AI"
+text = """
+Markera text i ett meddelande och tryck på gnistan bredvid, eller
+Ctrl+J, för att få den omskriven tydligare, kortare, vänligare eller mer
+formell, och välj sedan Ersätt. Katna AI är gratis i 30 dagar, eller
+använd din egen nyckel från Google Gemini, OpenAI, Claude, Mistral,
+DeepSeek, OpenRouter eller en modell på den här datorn. AI kan också
+avsluta dina meningar i grått; slå på det i Inställningar > Skriva.
+"""
+
+["2026-10-01-1043-header-details-selectable"]
+title = "Kopiera från ett meddelandes detaljer"
+text = """
+Detaljerna under ”till mig” kan nu markeras och kopieras som själva
+meddelandet. Klicka på en adress för att se personens kort bredvid
+meddelandet, eller högerklicka på den för Kopiera adress. Tystade
+personer visar sin överstrukna klocka där också.
+"""
+
+["2026-10-01-1112-left-bar-button"]
+title = "En stor knapp, en hopfällning, på varje sida"
+text = """
+Den stora knappen högst upp i vänsterpanelen ser nu likadan ut och
+sitter på samma plats på varje sida, och gör sidans eget jobb: Skriv i
+E-post och Filer, Ny händelse, Ny kontakt, Ny uppgift och Ny anteckning.
+Att fälla ihop vänsterpanelen fäller ihop den överallt, och medan den är
+hopfälld väntar varje sidas knapp högst upp i listen. På en telefon är
+den den flytande knappen.
+"""
+
+["2026-10-01-1115-color-picker"]
+title = "En färgväljare i schemaredigeraren"
+text = """
+Klicka på en färg i schemaredigeraren så öppnas en väljare precis
+bredvid: dra över kvadraten och nyansreglaget, skriv ett hexvärde,
+återanvänd schemats egna färger eller senaste val, eller hämta en färg
+från var som helst på skärmen med pipetten i KDE och GNOME.
+"""
+
+["2026-10-01-1130-contact-card-folds-folders"]
+title = "Kontaktkortet gör plats åt sig själv"
+text = """
+I ett fönster som är för smalt för mappanelen och kontaktkortet sida vid
+sida fäller kortet nu undan mapparna när det öppnas, och de kommer
+tillbaka när kortet stängs. Mappar du fäller ihop själv förblir
+hopfällda.
+"""
+
+["2026-10-01-1132-open-mail-scroll-bar"]
+title = "En rullningslist i långa meddelanden"
+text = """
+En lång konversation visar nu samma diskreta rullningslist som sidan
+Filer medan du rullar i den eller pekar på den. Båda listerna är nu
+tunnare och växer när pekaren närmar sig. Dra i en, eller klicka längs
+den, för att hoppa var som helst.
+"""
+
+["2026-10-01-1240-contact-card-close"]
+title = "Stäng kontaktkortet, se vem som är med i en chatt"
+text = """
+Kontaktkortet bredvid en konversation har ett ✕ i hörnet, och ett nytt
+klick på samma persons bild eller adress stänger kortet. I chattvyn
+listar ett klick på rubriken alla i chatten med deras adress och hur
+många meddelanden var och en har skickat.
+"""
+
+["2026-10-01-1241-two-blur-switches"]
+title = "Oskärpa på ditt sätt"
+text = """
+Oskärpa har nu två reglage i Inställningar, Experimentellt: ett för
+fönstrets bakgrund och ett för menyer och dialogrutor. Frostade menyer
+är på som standard, även när fönstrets bakgrund lämnas helt fylld.
+"""
+
+["2026-10-01-1502-fainter-row-lines"]
+title = "Lugnare linjer mellan meddelanden"
+text = """
+Linjerna mellan meddelandena i listan är svagare nu, så att listan läses
+som en lugn kolumn i ljust och mörkt.
+"""
+
+["2026-10-01-1505-contact-close-round"]
+title = "En stängningsknapp för alla paneler"
+text = """
+✕ på kontaktkortet är nu samma runda knapp som ✕ på det öppna
+meddelandet, med samma grå cirkel när du pekar på den.
+"""
+
+["2026-10-01-1525-thread-count"]
+title = "Ett snyggare antal meddelanden"
+text = """
+Antalet meddelanden i en konversation ligger nu bredvid namnen med en
+liten chattikon, centrerat på namnens rad i stället för upphöjt ovanför
+den.
+"""
+
+["2026-10-01-1541-chat-attach-from-files"]
+title = "Bifoga från Filer i en chatt"
+text = """
+I en chatt (Inställningar > Experimentellt) har gemet Från Filer: välj
+vilken fil som helst som kommit eller gått med din e-post, med den här
+konversationens först. Kryssa för flera, titta på en med ögat och se hur
+de väger mot de 25 MB ett meddelande kan bära. Gemet sitter nu inne i
+svarsrutan, och Aa öppnar en smal rad med bara de stilar en chatt
+behöver.
+"""
+
+["2026-10-01-1553-rephrase-card-text"]
+title = "Omformulera fungerar med nya Gemini-nycklar"
+text = """
+Med frostade menyer på öppnades kortet Omformulera (Ctrl+J) tomt; dess
+förslag visas nu över det frostade glaset. Google Gemini använder nu
+gemini-3.5-flash-lite om du inte skriver en annan modell, eftersom nya
+Gemini-nycklar inte längre kan använda 2.5 Flash-Lite, och en felaktig
+nyckel säger det.
+"""
+
+["2026-10-01-1624-rephrase-button"]
+title = "Omformulera utan att markera, och snabbare förslag"
+text = """
+En gnista bredvid Formatering längst ned i ett nytt meddelande, och i
+chattvyns svarsruta, omformulerar allt du har skrivit när inget är
+markerat, eller bara markeringen när det finns en; Ctrl+J gör samma sak.
+Längre förslag med AI kommer mycket tidigare, och fältet Modell i
+Inställningar > Skriva listar modellerna din tjänst erbjuder medan du
+skriver.
+"""
+
+["2026-10-01-1626-dimmer-preview"]
+title = "En lugnare förhandsvisningsrad"
+text = """
+Förhandsvisningstexten under varje meddelandes ämne i listan är dämpad
+nu, så att avsändare och ämne framträder, i ljust och mörkt.
+"""
+
+["2026-10-01-1645-frosted-dialogs"]
+title = "Frostade dialogrutor"
+text = """
+Med frostade menyer och dialogrutor på är även dialogrutorna av frostat
+glas: Lägg till ett e-postkonto, Om, Nyheter, uppdateringar, delning,
+förhandsgranskning, etiketter, frågor om att radera och ta bort, kortet
+vid första start och skrivfönstrets länkdialog.
+"""
+
+["2026-10-01-1650-chat-pins"]
+title = "Fäst upp till 5 saker i en chatt"
+text = """
+I en chatt (Inställningar > Experimentellt) håller du pekaren över en
+bubbla och trycker på nålen, eller högerklickar på en fil, för att hålla
+den högst upp. En tunn rad under rubriken visar det du har fäst: klicka
+på den för att hoppa till var och en i tur och ordning, eller öppna
+listan för att dra dem i ordning eller lossa dem. Fästa saker stannar på
+den här datorn.
+"""
+
+["2026-10-01-1655-chat-signatures"]
+title = "Chattar utelämnar signaturer och sidfötter"
+text = """
+Chattbubblor visar nu bara det personer har skrivit. Avslutningar som
+”Vänliga hälsningar”, företagssignaturer under en linje eller med
+adresser och telefonnummer, och sidfötter med avregistreringslänkar
+eller meddelanden väntar bakom bubblan ···, tillsammans med en signatur
+som någon upprepar i varje meddelande.
+"""
+
+["2026-10-01-1805-blur-amount"]
+title = "Välj hur frostade menyer ser ut"
+text = """
+Frostade menyer och dialogrutor är tydligare nu och följer KDE:s
+oskärpestyrka. Slå på Egen oskärpa i Inställningar, Experimentellt,
+Oskärpa för att själv ställa in oskärpans styrka och opacitet.
+"""
+
+["2026-10-01-1825-chat-company"]
+title = "Var de arbetar, på deras kort"
+text = """
+I en chatt (Inställningar > Experimentellt) har en persons kort nu ett
+avsnitt Företag: vad företaget gör, var det finns, sedan när, och länkar
+till dess webbplats och sidor, hämtat från dess egen startsida och
+Wikipedia. Det följer reglaget Avsändarbilder.
+"""
+
+["2026-10-02-0052-smooth-start-after-updates"]
+title = "Smidig start efter uppdateringar"
+text = """
+Efter en uppdatering säger Katna Mail inte längre att e-postlagret inte
+kunde öppnas medan det gör i ordning din e-post för den nya versionen.
+Det visar den vanliga laddningsbilden under de få sekunderna, och sedan
+din e-post.
+"""
+
+["2026-10-02-0106-calmer-dialogs"]
+title = "Lugnare dialogrutor"
+text = """
+Frostade dialogrutor är mer täckande än menyer, så att en full
+e-postlista inte längre syns igenom dem. Om, Nyheter och Sök efter
+uppdateringar öppnas utan att mörka fönstret bakom.
+"""
+
+["2026-10-02-0111-chat-pin-text"]
+title = "Fäst några ord från en chatt"
+text = """
+I en chatt (Inställningar > Experimentellt) kan texten i en bubbla nu
+markeras och kopieras som i vilket meddelande som helst. Högerklicka på
+ord du har markerat i en bubbla och välj Fäst högst upp för att behålla
+dem i chattens fästrad.
+"""
+
+["2026-10-02-0124-event-editor-clear"]
+title = "Händelseredigeraren är fri från Ny händelse"
+text = """
+Vänsterpanelens knapp Ny händelse ligger inte längre över titeln på en
+händelse du skriver eller ändrar i den fullständiga redigeraren. Den
+kommer tillbaka när redigeraren stängs.
+"""
+
+["2026-10-02-0150-chat-format-bar"]
+title = "En fylligare Aa-rad i chattar"
+text = """
+Chattens svarsruta har nu skrivfönstrets verktyg i Aa-raden: ångra,
+teckensnitt, storlek, justering och indrag, bredvid de stilar den hade.
+I ett smalt fönster bryts den till en andra rad. Färgknappen visar din
+textfärg och markeringsfärg sida vid sida, i skrivfönstret också.
+"""
+
+["2026-10-02-0210-conversation-summaries"]
+title = "Sammanfatta en konversation"
+text = """
+Högerklicka på en konversation och välj Sammanfatta, eller tryck på
+Shift+S, för ett kort bredvid som säger vad den handlar om, vad som har
+bestämts och vad som väntar på dig, utan att öppna den eller markera den
+som läst. I en öppen konversation lägger gnistan ovanför den
+sammanfattningen under ämnet; i chattvyn ligger den i en remsa under
+rubriken. Varje punkt anger vilket meddelande den kommer från, och när
+ny e-post har kommit sedan du senast läste täcker sammanfattningen bara
+den. Det kräver att skrivhjälp med AI är på i Inställningar > Skriva.
+"""
+
+["2026-10-02-0215-system-colors-follow-mode"]
+title = "Ljust och mörkt fungerar med Systemfärger"
+text = """
+Med Färger inställt på System och ett skrivbordsschema som bara är mörkt
+(eller bara ljust) växlar Inställningar > Utseende > Läge nu Katna
+mellan ljust och mörkt igen: den andra sidan använder Katnas egna färger
+i skrivbordets accentfärg.
+"""
+
+["2026-10-02-0218-signature-details-on-card"]
+title = "Signaturuppgifter där de hör hemma"
+text = """
+En persons kort visar inte längre signaturen som ett block. Uppgifterna
+hamnar där de hör hemma: varje telefonnummer, märkt mobil, direkt eller
+fax, bland kontaktuppgifterna, och företagets koncern, kontor, webbplats
+och sidor i avsnittet Företag. Sociala sidor visas som små enfärgade
+ikoner, och bilder, banderoller och sidfötter utelämnas.
+"""
+
+["2026-10-02-0225-chat-subject-line"]
+title = "Se när en chatts ämne ändras"
+text = """
+I en chatt (Inställningar > Experimentellt) säger nu en liten rad i
+mitten när någon har ändrat ämnet, på samma sätt som den säger vem som
+lade till vem.
+"""
+
+["2026-10-02-0225-no-blur-ghost"]
+title = "Inget suddigt spöke när en dialogruta stängs"
+text = """
+Att stänga Om, Nyheter, Sök efter uppdateringar eller någon frostad
+dialogruta eller meny lämnar inte längre kvar en suddig fläck ett
+ögonblick: oskärpan tonar bort med dialogrutan.
+"""
+
+["2026-10-02-0236-chat-on-phones"]
+title = "Chattar passar en telefon"
+text = """
+I ett fönster i telefonstorlek håller sig en chatt (Inställningar >
+Experimentellt) till en rubrikrad med Tillbaka och ⋮, och dess bubblor
+använder mer av bredden. Håll på en bubbla för att ta fram dess meny
+nedifrån, och tryck på ett namn eller en bild för att se personens kort
+på samma sätt. Svep ned endera eller tryck utanför för att stänga den.
+"""
+
+["2026-10-02-0258-frost-stays-on-scroll"]
+title = "Frostningen ligger still när en lista rullar"
+text = """
+I en frostad lista som rullar, som personerna i en chatt eller en lång
+meny, ligger den frostade bakgrunden nu kvar på plats medan raderna
+rullar över den.
+"""
+
+["2026-10-02-0301-rephrase-card-above-tools"]
+title = "Omformulera ligger ovanför formateringsraden"
+text = """
+Kortet Omformulera öppnas nu precis ovanför formateringsraden, i
+svarsrutan och i skrivfönstret, i stället för över e-postlistan. Dra i
+det lilla handtaget högst upp för att flytta det ur vägen; det öppnas på
+sin vanliga plats igen nästa gång.
+"""
+
+["2026-10-02-0306-fainter-lines-light"]
+title = "Svagare linjer i ljust läge"
+text = """
+I ljust läge är linjerna mellan meddelandena i listan och mellan
+meddelandena i ett öppet e-postmeddelande svagare, så att sidan ser
+lugnare ut.
+"""
+
+["2026-10-02-0315-card-button-bar"]
+title = "Personkortet håller knapparna inom räckhåll"
+text = """
+Rulla personkortet så glider dess knappar upp i en smal frostad rad
+bredvid stängningsknappen, med en liten bild av personen.
+Stängningsknappen ligger inte längre över det du läser.
+"""
+
+["2026-10-02-0412-button-hover"]
+title = "Knappar reagerar mjukt på pekaren"
+text = """
+När du pekar på en knapp växer dess runda bakgrund nu från mitten och
+tonar in, som i Gmail, och tonar snabbt bort när du går vidare. Svara,
+Vidarebefordra och andra bubbelknappar tonar in mjukt.
+"""
+
+["2026-10-02-0425-chat-draft-to-mail"]
+title = "Ditt chattsvar följer med dig till E-post"
+text = """
+Att byta en chatt till E-post medan du skriver ett svar rullar nu ned
+till svaret med markören kvar i det, och att byta tillbaka behåller det
+också.
+"""
+
+["2026-10-02-0425-write-reply"]
+title = "Skriv ett svar med AI"
+text = """
+Medan ett svar eller en vidarebefordran fortfarande är tom skriver
+gnistan bredvid Formatering (eller Ctrl+J) det åt dig. Välj en av tre
+idéer hämtade från konversationen, eller säg med egna ord vad det ska
+säga, välj sedan Infoga för utkastet och ändra det du vill. När du
+börjar skriva omformulerar gnistan igen. Det kräver att skrivhjälp med
+AI är på i Inställningar > Skriva.
+"""
+
+["2026-10-02-0430-compose-beside-reply"]
+title = "Skriv medan ett svar är halvskrivet"
+text = """
+Skriv öppnar nu ett nytt meddelande även medan du skriver ett svar, i
+chatten eller under konversationen. Svaret väntar som du lämnade det och
+kommer tillbaka när det nya meddelandet har skickats eller stängts,
+eller när du klickar för att svara på konversationen igen.
+"""
+
+["2026-10-02-0436-mark-unread-icon"]
+title = "En tydligare ikon för Markera som oläst"
+text = """
+Markera som oläst visar nu ett kuvert med en prick, i menyer, i
+verktygsraderna och på ett meddelandes hovringsknappar, så att den inte
+längre ser ut som en vanlig e-postikon.
+"""
+
+["2026-10-02-0452-fainter-pane-lines"]
+title = "Lugnare verktygsrader och flikar"
+text = """
+I ljust läge är linjerna under verktygsraderna och det öppna
+meddelandets rubrik, och ovanför Svara och Vidarebefordra, lika svaga
+som linjerna mellan meddelanden. Bakgrunden bakom inkorgsflikarna är
+också ljusare.
+"""
+
+["2026-10-02-0453-google-drive-in-files"]
+title = "Din Google Drive i Filer"
+text = """
+Filer visar nu varje Google-kontos lagringsutrymme under Molnlagring i
+sidokolumnen. Öppna dess mappar, sök i det och öppna, bifoga eller ladda
+ned en fil direkt där. Första gången trycker du på Tillåt så att Katna
+får läsa din Drive.
+"""
+
+["2026-10-02-0515-rephrase-subject"]
+title = "Omformulera ämnet"
+text = """
+När du har skrivit ett ämne erbjuder en gnista i slutet av raden tre
+andra sätt att säga det, skrivna utifrån ämnet och vad ditt meddelande
+säger hittills. Välj ett för att använda det; Ångra lägger tillbaka det
+du skrev. Det kräver att skrivhjälp med AI är på i Inställningar >
+Skriva.
+"""
+
+["2026-10-02-0525-quieter-compose"]
+title = "Ett lugnare skrivfönster"
+text = """
+Fönstret Nytt meddelande svävar med jämnt avstånd till fönstrets kanter.
+Till, Kopia, Dold kopia och Från sitter ihop utan linjer emellan,
+mottagarna är mjukt fyllda brickor, och Från är en diskret rad.
+Kryptering, signering, spårning och kvitton delar en liten grupp, och
+skrivverktygen sitter på en mjuk rad bredvid Skicka.
+"""
+
+["2026-10-02-0553-upload-to-drive"]
+title = "Ladda upp till Google Drive från Filer"
+text = """
+Med en Google Drive öppen i Filer blir knappen Skriv till Ladda upp.
+Klicka på den för att skicka filer till den öppna mappen, eller använd
+dess pil för att ladda upp en hel mapp. Första gången trycker du på
+Tillåt så att Katna får lägga till filer i din Drive.
+"""
+
+["2026-10-02-0555-reply-from-summary"]
+title = "Svara från sammanfattningen"
+text = """
+Sammanfattningskortet du öppnar med ett högerklick har nu Svara. Det gör
+om samma kort till ett svar: välj en idé eller säg vad det ska säga,
+ändra utkastet om du vill och välj sedan Skicka, eller Öppna det i
+konversationen för att fortsätta skriva. Ett svar du stänger utan att
+skicka väntar i svarsrutan. Kortet öppnas nu också där du klickade.
+"""
+
+["2026-10-02-0559-draft-saved-signature-tag"]
+title = "Utkast sparas medan du skriver"
+text = """
+Ett meddelande du skriver sparar sig nu självt i Utkast med några
+sekunders mellanrum, och ”Utkastet har sparats” visas diskret bredvid
+titeln. En svag etikett bredvid signaturen visar dess namn; klicka på
+den för att välja en annan. Skrivfönstrets hörn linjerar nu också med
+kortet bredvid.
+"""
+
+["2026-10-02-0654-attach-from-drive"]
+title = "Bifoga från Google Drive"
+text = """
+Gemet i skrivfönstret öppnar nu filväljaren i Filer, samma som chattens
+Från Filer, med din Google Drive bredvid dina e-postfiler och Den här
+datorn… för allt annat. Filer som får plats läggs i meddelandet; stora
+filer och Google Docs skickas som en länk, delad med mottagarna när du
+skickar.
+"""
+
+["2026-10-02-0734-peek-and-reply-in-notifications"]
+title = "Kika och svara från aviseringen"
+text = """
+En avisering om ny e-post har nu Kika, som visar själva meddelandet i
+samma avisering, och Svara, där du skriver ditt svar direkt där och
+trycker på Skicka. Det skickas från kontot meddelandet kom till, efter
+din tid för Ångra skicka; Ångra öppnar det i Katna Mail så att du kan
+skriva vidare. På Linux har ny e-post också en egen, tydligare signal;
+välj en annan i Inställningar > Aviseringar.
+"""
+
+["2026-10-02-0735-drive-viewer-opens-at-once"]
+title = "Drive-filer öppnas direkt"
+text = """
+Att öppna en fil från din Drive tar fram visaren direkt, med en
+snurrande båge tills filen är här. Notiser längst ned i fönstret tar nu
+emot sina egna klick, så att Stäng inte längre klickar på det som ligger
+under dem.
+"""
+
+["2026-10-02-0740-smaller-updates"]
+title = "Mindre uppdateringar"
+text = """
+Uppdateringar hämtar nu bara det som har ändrats, oftast några megabyte
+i stället för hela paketet. Katna bygger den nya versionen utifrån den
+du har och kontrollerar den före installationen, och hämtar hela paketet
+när det inte går.
+"""
+
+["2026-10-02-0755-faint-lines-everywhere"]
+title = "Svaga linjer överallt"
+text = """
+I ljust läge är varje linje mellan saker, under rubriker och runt kort
+nu lika svag som linjerna mellan meddelanden, även på
+sammanfattningskortet. Fält, brickor och knappar behåller sin tydliga
+kontur.
+"""
+
+["2026-10-02-0756-ai-replies-signed"]
+title = "AI-svar slutar med din signatur"
+text = """
+Svar och anteckningar som skrivits av AI slutar inte längre med ”Vänliga
+hälsningar” och ditt namn. Din signatur skriver under dem i stället: i
+sammanfattningskortets svar väljer signaturetiketten under texten
+vilken, som i skrivfönstret.
+"""
+
+["2026-10-02-0801-unified-inbox-tabs"]
+title = "Flikar i den gemensamma inkorgen"
+text = """
+Inkorgen för alla dina konton har nu också flikar: Primär, Kampanjer,
+Socialt, Uppdateringar och Forum, med varje kontos e-post i fliken för
+sin typ. En prick bredvid varje avsändare visar vilket konto ett
+meddelande kom från. Välj ett konto under den för att se det kontots
+egna flikar, eller välj en annan uppsättning i Inställningar > Inkorg.
+"""
+
+["2026-10-02-0805-feeds-removed"]
+title = "Flöden har tagits bort från vänsterpanelen"
+text = """
+Katna kommer inte att läsa RSS- och Atom-flöden ändå, så knappen Flöden
+och dess sida ”kommer snart” har lämnat panelen till vänster. Filer
+behåller Ctrl+7.
+"""
+
+["2026-10-02-0820-drive-bin-and-rename"]
+title = "Byt namn på och släng filer i molnlagringen"
+text = """
+I Filer har en fil eller mapp i din Google Drive eller OneDrive nu Byt
+namn och Flytta till papperskorgen i sin meny. Byt namn låter dig skriva
+över namnet på plats (F2), och Flytta till papperskorgen (Del) kommer
+med Ångra.
+"""
+
+["2026-10-02-0827-files-chips-on-phones"]
+title = "Filers brickor passar på telefoner"
+text = """
+På en telefon klipps brickorna på sidan Filer inte längre av vid kanten.
+Filtyperna fälls ihop till sina ikoner, där den du har valt behåller sin
+etikett, och brickorna för person, dagar och ordning får en egen rad.
+"""
+
+["2026-10-02-0828-uploads-tray"]
+title = "Se dina uppladdningar medan de pågår"
+text = """
+Filer du laddar upp till Google Drive eller OneDrive visas nu i en låda
+nere till höger, var och en med en ring som fylls medan den laddas upp
+och tiden som återstår. Avbryt en eller alla, fäll undan lådan och
+klicka på en färdig fil för att öppna dess mapp.
+"""
+
+["2026-10-02-0838-drive-share"]
+title = "Dela filer i molnlagringen från Katna"
+text = """
+Dela… i menyn för en Google Drive- eller OneDrive-fil i Filer öppnar en
+dialogruta Dela: lägg till personer som Läsare, Kommentator eller
+Redigerare, ändra eller ta bort vem som redan har åtkomst, och öppna den
+för alla som har länken. Molntjänsten skickar e-post till dem bara om du
+kryssar för det.
+"""
+
+["2026-10-02-0909-soft-search-box"]
+title = "En mjukare sökruta"
+text = """
+Sökrutan högst upp är lättare: en mycket svag kant och fyllning medan du
+inte använder den, och ett vitt fält med en mjuk accentkant medan du
+skriver, i stället för den grå bubblan med en tjock färgad ring.
+"""
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Uppdateringar kommer tidigare"
+text = """
+Katna letar nu efter en ny version varje timme och direkt när datorn
+vaknar ur viloläge, så uppdateringsaviseringen kommer strax efter en ny
+version släppts.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Diskreta linjer även i mörkt läge"
+text = """
+I mörkt läge är linjerna mellan mejl, under rubriker och runt kort lika
+diskreta som i ljust läge. Fält, chipp och knappar behåller sin tydliga
+kant.
+"""
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Små uppdateringar efter ett uppehåll"
+text = """
+Uppdateringarna förblir små även när du hoppar över en dag eller två med
+nya versioner. Katna går nu från versionen du har via de tidigare, några
+megabyte var, i stället för att ladda ner hela paketet igen.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Se vilka mejl du har svarat på"
+text = """
+En liten svarspil på en rad i mejllistan visar att du har svarat: du
+skrev det senaste mejlet i konversationen, här eller på webben. Den
+försvinner när de svarar igen.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Ikonen i systemfältet följer ljust och mörkt"
+text = """
+Den enfärgade ikonen i systemfältet byter nu med din panel så fort du
+växlar mellan ljust och mörkt läge, i stället för att vänta på ny e-post.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Svarsidéer visar att de är på väg"
+text = """
+Medan idéer till svar hämtas, i en sammanfattnings Svara eller i Skriv
+svar, andas deras former nu som sammanfattningens egna medan den skrivs.
+Sammanfattningskortet visar också hur många mejl konversationen har
+medan den hämtas, inte 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Renare hörn i Filer"
+text = """
+När du håller pekaren över en fil med vit förhandsvisning syns inte
+längre vitt i kortets övre hörn, den hopfällda lådan med uppladdningar
+är också rundad upptill, och dialogrutan Dela har en stängknapp i
+hörnet.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Mejlet förblir öppet när du rensar en sökning"
+text = """
+Öppna ett mejl bland sökresultaten och rensa sökningen med X: mejlet
+förblir öppet medan din mapp kommer tillbaka, i stället för att fällas
+ihop till listan.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Runda hörn på kalkylblad"
+text = """
+Ett kalkylblad i bilagevisaren är nu rundat i alla fyra hörnen. De grå
+kolumnbokstäverna överst och bladflikarna längst ner gjorde dem tidigare
+kantiga.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Rena kontaktuppgifter på korten"
+text = """
+Telefonnummer, adresser och andra uppgifter hämtade från en signatur
+visar inte längre lösa asterisker eller länkmärken inom vinkelparenteser.
+När en kollega signerar mejl från en delad adress som accounts@ behåller
+kortet bara företagets uppgifter, inte kollegans nummer eller titel.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Kontrollera vad du har bifogat"
+text = """
+Klicka på en fil som är bifogad i ett meddelande du skriver för att öppna
+den i Katnas visare, samma som mottagna filer öppnas i, och försäkra dig
+om att det är rätt fil. En fil som skickas som en Google Drive- eller
+OneDrive-länk öppnas i molnlagringen.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "En rullningslist i Inställningar"
+text = """
+Varje flik i Inställningar har samma tunna rullningslist som ett öppet
+mejl och Filer: den visas medan du scrollar eller pekar på sidan, och du
+kan dra i den.
+"""

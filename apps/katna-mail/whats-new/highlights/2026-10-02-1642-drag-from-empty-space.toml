@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Move the window from empty space"
+text = """
+On Linux you can now move the window by dragging any empty space in the left
+bar, the folders or the bar above your mail, not only the top bar.
+"""

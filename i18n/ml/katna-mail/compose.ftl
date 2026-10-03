@@ -46,6 +46,7 @@ compose-sent-archived = അയച്ചു, ആർക്കൈവ് ചെയ�
 compose-sent = സന്ദേശം അയച്ചു
 compose-discarded = ഡ്രാഫ്റ്റ് നിരസിച്ചു
 compose-draft-saved = ഡ്രാഫ്റ്റ് സംരക്ഷിച്ചു
+compose-draft-saving = സംരക്ഷിക്കുന്നു…
 compose-draft-failed = ഡ്രാഫ്റ്റ് സംരക്ഷിക്കാനായില്ല: { $error }
 compose-draft-not-opened = ഡ്രാഫ്റ്റ് തുറക്കാനായില്ല.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = ഡ്രാഫ്റ്റ് തുറക്കാ�
 compose-picker-insert = ചേർക്കുക
 compose-picker-attach = അറ്റാച്ച് ചെയ്യുക
 compose-file-too-large = { $name } വളരെ വലുതാണ്: ഒരു സന്ദേശത്തിൽ { $limit } വരെ മാത്രമേ ഉൾക്കൊള്ളാനാകൂ.
+compose-forward-files-missing = ഫോർവേഡ് ചെയ്യുന്ന സന്ദേശത്തിലെ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തിട്ടില്ല, അതിനാൽ അവ അറ്റാച്ച് ചെയ്‌തിട്ടില്ല.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = അറ്റാച്ച്‌മെന്റ് നീക്കം ചെയ്യുക
+compose-attachment-open-tip = പരിശോധിക്കാൻ തുറക്കുക
 compose-attachments-total = { $count ->
     [one] { $count } ഫയൽ, { $size }
    *[other] { $count } ഫയലുകൾ, { $size }
@@ -78,6 +81,7 @@ compose-drive-share-link = ലിങ്ക് ഉപയോഗിച്ച് പ
 compose-drive-send-without = പങ്കിടാതെ അയയ്ക്കുക
 compose-drive-share-cancel = റദ്ദാക്കുക
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } { $limit }-ൽ കൂടുതലാണ്, അതിനാൽ അത് നിങ്ങളുടെ OneDrive-ലേക്ക് പോകുന്നു, സന്ദേശത്തിൽ ഒരു ലിങ്ക് ഉണ്ടാകും.
 compose-onedrive-tip = നിങ്ങളുടെ OneDrive-ൽ; സന്ദേശത്തിൽ ഒരു ലിങ്ക് ഉണ്ടാകും
 compose-onedrive-allow = OneDrive അനുവദിക്കുക
@@ -89,8 +93,12 @@ compose-onedrive-share-text = { $count ->
    *[other] { $addresses } എന്നിവരുമായി OneDrive-ന് ഫയലുകൾ പങ്കിടാൻ കഴിയില്ല. പകരം, ലിങ്ക് ഉള്ള ആർക്കും അവ തുറക്കാം.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = ഫയലുകൾ ഇവിടെ ഇടുക
 compose-drop-here = ഇവിടെ ഇടുക
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = ഫോർമാറ്റിംഗ് നിലനിർത്തുക
 compose-paste-table = പട്ടിക
 compose-paste-picture = ചിത്രം
@@ -104,6 +112,9 @@ compose-encrypt = എൻക്രിപ്റ്റ് ചെയ്യുക
 compose-encrypted = എൻക്രിപ്റ്റ് ചെയ്‌തു: സ്വീകർത്താക്കൾക്ക് മാത്രമേ ഇത് വായിക്കാനാകൂ
 compose-sign = ഒപ്പിടുക
 compose-signed = ഒപ്പിട്ടു: ഇത് നിങ്ങളിൽ നിന്നാണെന്ന് സ്വീകർത്താക്കൾക്ക് പരിശോധിക്കാം
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = തുറക്കലും ക്ലിക്കുകളും ട്രാക്ക് ചെയ്യുക
 compose-tracked = ട്രാക്ക് ചെയ്യുന്നു: ഓരോ സ്വീകർത്താവും ഇത് എപ്പോൾ തുറക്കുന്നു അല്ലെങ്കിൽ ലിങ്ക് തുറക്കുന്നു എന്ന് നിങ്ങൾക്ക് കാണാം
 compose-track-clicks = ലിങ്ക് ക്ലിക്കുകൾ ട്രാക്ക് ചെയ്യുക (പ്ലെയിൻ ടെക്സ്റ്റിൽ തുറക്കൽ കാണിക്കാനാകില്ല)
@@ -136,6 +147,9 @@ send-check-subject-title = വിഷയമില്ലാതെ അയയ്ക�
 send-check-subject-text = ഈ സന്ദേശത്തിന് വിഷയമില്ല.
 send-check-add-subject = വിഷയം ചേർക്കുക
 send-check-send-anyway = എന്തായാലും അയയ്ക്കുക
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = സാധുവായ ഇമെയിൽ വിലാസമല്ല
 recipient-show-address = വിലാസം കാണിക്കുക
 recipient-remove = നീക്കം ചെയ്യുക

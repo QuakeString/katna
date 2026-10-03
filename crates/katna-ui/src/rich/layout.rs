@@ -14,9 +14,10 @@ use std::rc::Rc;
 
 use crate::scale::px;
 use gpui::{
-    App, AvailableSpace, Bounds, ElementId, Entity, FontStyle, FontWeight, GlobalElementId, Hsla,
-    LayoutId, Pixels, Point, ShapedLine, SharedString, StrikethroughStyle, Style, TextAlign,
-    TextRun, UnderlineStyle, Window, fill, point, prelude::*, relative, size,
+    App, AvailableSpace, BorderStyle, Bounds, ElementId, Entity, FontStyle, FontWeight,
+    GlobalElementId, Hsla, LayoutId, Pixels, Point, ShapedLine, SharedString, StrikethroughStyle,
+    Style, TextAlign, TextRun, UnderlineStyle, Window, fill, point, prelude::*, quad, relative,
+    size,
 };
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -557,7 +558,7 @@ impl Element for ParaElement {
             && let Some(placeholder) = &self.placeholder
         {
             para = Para::plain(placeholder.to_string()).with_style(para.style);
-            base.color = base.color.opacity(0.5);
+            base.color = base.color.opacity(crate::PLACEHOLDER_OPACITY);
         }
         let cache = Rc::new(RefCell::new(None));
         let measure = Measured {
@@ -683,6 +684,15 @@ impl Element for ParaElement {
                 }
             }
         }
+        // Text that just went in for the selection, fading.
+        if let Some((range, left)) = editor.flash_in(self.path) {
+            let color = editor.palette_now().inserted;
+            let color = color.opacity(left);
+            for rect in layout.selection_rects(range, false) {
+                window.paint_quad(fill(rect + origin, color));
+            }
+            window.request_animation_frame();
+        }
         if !placeholder && let Some((range, whole_end)) = selection {
             let color = if focused {
                 base.accent.opacity(0.3)
@@ -693,6 +703,11 @@ impl Element for ParaElement {
                 window.paint_quad(fill(rect + origin, color));
             }
         }
+        // A longer suggestion ends in a small "✦ Tab" key, when it fits.
+        let tab_key = (focused && editor.ghost_is_long())
+            .then(|| editor.ghost_in(self.path))
+            .flatten()
+            .map(|(offset, ghost, _)| (offset + ghost.len(), editor.palette_now().accent));
         for line in &layout.lines {
             for piece in &line.pieces {
                 let ascent = piece.shaped.ascent;
@@ -703,6 +718,9 @@ impl Element for ParaElement {
                     .shaped
                     .paint(at, ascent + descent, TextAlign::Left, None, window, cx);
             }
+        }
+        if let Some((end, accent)) = tab_key {
+            paint_tab_key(&layout, end, base, accent, window, cx);
         }
         // The list marker sits in the margin, on the first line's baseline.
         if let Some((marker, style)) = marker
@@ -746,6 +764,64 @@ impl Element for ParaElement {
             editor.layouts.insert(path, layout);
         });
     }
+}
+
+/// The key after a longer suggestion ending at `end`: "✦ Tab" in a
+/// faint rounded outline, on the suggestion's last line, left out when
+/// the line has no room for it.
+fn paint_tab_key(
+    layout: &ParaLayout,
+    end: usize,
+    base: &TextBase,
+    accent: Hsla,
+    window: &mut Window,
+    cx: &mut App,
+) {
+    let (at, height) = layout.caret(end, false);
+    let font_size = base.size * 0.78;
+    let label = "\u{2726} Tab";
+    let spark = "\u{2726} ".len();
+    let run = |len: usize, color: Hsla| TextRun {
+        len,
+        font: base.font.clone(),
+        color,
+        background_color: None,
+        underline: None,
+        strikethrough: None,
+    };
+    let runs = [
+        run(spark, accent),
+        run(label.len() - spark, base.color.opacity(0.55)),
+    ];
+    let shaped = window
+        .text_system()
+        .shape_line(label.into(), font_size, &runs, None);
+    let (pad, gap) = (px(5.0), px(8.0));
+    let key = size(shaped.width() + pad * 2.0, font_size * 1.45);
+    let origin = layout.bounds.origin + point(at.x + gap, at.y + (height - key.height) / 2.0);
+    if origin.x + key.width > layout.bounds.origin.x + layout.bounds.size.width {
+        return;
+    }
+    window.paint_quad(quad(
+        Bounds::new(origin, key),
+        px(5.0),
+        gpui::transparent_black(),
+        px(1.0),
+        base.color.opacity(0.18),
+        BorderStyle::Solid,
+    ));
+    let text_at = point(
+        origin.x + pad,
+        origin.y + (key.height - (shaped.ascent + shaped.descent)) / 2.0,
+    );
+    let _ = shaped.paint(
+        text_at,
+        shaped.ascent + shaped.descent,
+        TextAlign::Left,
+        None,
+        window,
+        cx,
+    );
 }
 
 #[cfg(test)]

@@ -1,6 +1,7 @@
 # Katna Mail, Japanese (日本語).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
 translate-offer = このメッセージは { $language } で書かれています。
 translate-to = { $language } に翻訳
 translate-never = { $language } は翻訳しない

@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Pick the days on the Files page"
+text = """
+The time chip on the Files page now opens a calendar of two months with quick picks such as Last week and This month. Click a day, or drag from one day to another, and the files follow as you drag. Then turn the mouse wheel over the chip to move the same length of time earlier or later.
+"""

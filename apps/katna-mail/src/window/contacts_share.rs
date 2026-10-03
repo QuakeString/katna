@@ -22,7 +22,7 @@ use super::attachments::bitmap;
 use super::contacts_page::{birthday, kind_label, merge};
 use super::print::PrintJob;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, elevation, filled_button};
+use crate::widgets::{FocusRing, filled_button};
 
 /// Pixels per square of the code, drawn once and shown at [`QR_SIDE`].
 const MODULE: u32 = 8;
@@ -189,6 +189,8 @@ impl MailWindow {
         reduce: bool,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // It floats: its surface is a step lighter in dark colors.
+        let th = &th.lifted();
         let qr = self.contacts.qr.as_mut()?;
         let t = qr.shown.tick(window, reduce);
         if qr.closing && qr.shown.settled() {
@@ -211,7 +213,7 @@ impl MailWindow {
                 .mt(px(20.0))
                 .text_size(px(14.0))
                 .text_color(rgba(th.error))
-                .child(tr!("contacts-qr-too-long"))
+                .child(self.copyable(tr!("contacts-qr-too-long"), th))
                 .into_any_element(),
         };
         let body = div()
@@ -261,12 +263,9 @@ impl MailWindow {
             .w(px(DIALOG_WIDTH.min(vw - 32.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .bg(rgba(th.surface))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
             .font_weight(FontWeight::NORMAL)
-            .shadow(elevation(th, 3.0))
             .child(body);
         Some(
             div()

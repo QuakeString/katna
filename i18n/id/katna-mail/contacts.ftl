@@ -25,10 +25,7 @@ contacts-label-removed = Dihapus dari { $name }
 contacts-label-renamed = Label diganti namanya menjadi { $name }
 contacts-label-deleted = Label { $name } dihapus
 contacts-label-no-email = Tidak ada orang di label ini yang memiliki alamat email
-# The column's list of mail accounts, each with the people saved in it.
 contacts-accounts = Akun
-# The line under an account whose contacts did not come: why, and the one
-# click that fixes it.
 contacts-account-sign-in = Masuk lagi untuk menampilkan kontak
 contacts-account-signed-in = Sudah masuk lagi ke { $address }. Mengambil kontak Anda…
 contacts-account-sign-in-refused = { $provider } tidak mengizinkan Katna masuk. Coba lagi, dan izinkan akses ke kontak Anda.
@@ -36,9 +33,11 @@ contacts-account-password = Server tidak menerima sandi. Yahoo, iCloud, Zoho, da
 contacts-account-change-password = Ubah sandi
 contacts-account-change-password-tooltip = Buka Setelan > Akun
 contacts-account-failed = Kontak tidak dapat dibaca.
-# $reason is the server's own words, in English.
 contacts-account-error = Kontak tidak dapat dibaca: { $reason }
 contacts-account-none = Tidak ada buku alamat yang ditemukan
+contacts-account-none-why = Tidak ada buku alamat yang ditemukan: { $reason }
+contacts-account-use-sign-in = { $provider } hanya menampilkan kontak ke Katna yang masuk dengan { $provider }.
+contacts-account-sign-in-with = Masuk dengan { $provider }
 contacts-account-looking = Mencari kontak…
 contacts-account-try-again = Coba lagi
 contacts-account-try-again-tooltip = Periksa lagi kontak akun ini sekarang
@@ -82,7 +81,7 @@ contacts-print-none = Tidak ada kontak untuk dicetak
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Ulang tahun: { $day }
 contacts-print-nickname = Nama panggilan: { $name }
-contacts-create = Buat kontak
+contacts-create = Kontak baru
 
 ## Search and the list
 

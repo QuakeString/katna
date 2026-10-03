@@ -15,6 +15,7 @@ notes-loading = మీ నోట్స్‌ను తెరుస్తోం�
 
 notes-take-a-note = గమనిక రాయండి…
 notes-new-list = కొత్త జాబితా
+notes-new-note = కొత్త నోట్
 notes-pinned = పిన్ చేసినవి
 notes-others = ఇతరాలు
 notes-empty = మీరు జోడించిన గమనికలు ఇక్కడ కనిపిస్తాయి

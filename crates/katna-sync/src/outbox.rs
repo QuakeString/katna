@@ -666,7 +666,7 @@ async fn send<O: Outgoing>(
 
     let now = unix_now();
     let mut batch = store.mail_batch()?;
-    let delivery = match result {
+    let (delivery, state, detail) = match result {
         Ok(Handover::Held) => {
             // Filed in Sent when it goes out; see `release`.
             batch.set_send_state(entry.id, SendState::Sent, None, None)?;
@@ -703,15 +703,14 @@ async fn send<O: Outgoing>(
                 "the server cannot hold it; sending it then"
             );
             batch.set_send_state(entry.id, SendState::Queued, Some(at), None)?;
-            changed(SendState::Queued, String::new());
-            Delivery::Waiting
+            (Delivery::Waiting, SendState::Queued, String::new())
         }
         Err(error @ (Error::Rejected(_) | Error::Auth(_))) => {
             let attempts = entry.attempts + 1;
             if attempts >= config.max_refusals {
                 tracing::warn!(id = entry.id, %error, "giving up sending");
                 batch.set_send_state(entry.id, SendState::Failed, None, Some(attempts))?;
-                changed(SendState::Failed, error.to_string());
+                (Delivery::Refused, SendState::Failed, error.to_string())
             } else {
                 let wait = config.retry_min * 2u32.pow(attempts - 1);
                 batch.set_send_state(
@@ -720,9 +719,8 @@ async fn send<O: Outgoing>(
                     Some(now + seconds(wait)),
                     Some(attempts),
                 )?;
-                changed(SendState::Queued, error.to_string());
+                (Delivery::Refused, SendState::Queued, error.to_string())
             }
-            Delivery::Refused
         }
         Err(error) => {
             tracing::info!(id = entry.id, %error, "cannot send now");
@@ -732,11 +730,16 @@ async fn send<O: Outgoing>(
                 Some(now + seconds(config.retry_min)),
                 None,
             )?;
-            changed(SendState::Queued, format!("offline: {error}"));
-            Delivery::Offline
+            (
+                Delivery::Offline,
+                SendState::Queued,
+                format!("offline: {error}"),
+            )
         }
     };
+    // Told only once committed: whoever hears it reads the new state.
     batch.commit()?;
+    changed(state, detail);
     Ok(delivery)
 }
 
@@ -880,8 +883,15 @@ async fn prepare_tracking<O: Outgoing>(
         return Ok(None);
     };
     let base = client.server().base().to_owned();
+    let parsed = katna_import::parse_message(raw).unwrap_or_default();
     if let Some(message) = store.tracking_for_outbox(entry.id)? {
-        return Ok(Some(TrackingPlan { base, message }));
+        // A retry of this message; an old entry's tracking where the
+        // outbox gave its ID out again.
+        if parsed.message_id.as_deref() == Some(message.message_id.as_str()) {
+            return Ok(Some(TrackingPlan { base, message }));
+        }
+        tracing::info!(id = entry.id, "an old message's tracking had this ID");
+        store.detach_tracking(entry.id)?;
     }
     let untracked = |why: &str| {
         tracing::info!(id = entry.id, why, "sending untracked");
@@ -899,7 +909,6 @@ async fn prepare_tracking<O: Outgoing>(
     if envelope.to.len() > MAX_TRACKED_RECIPIENTS {
         return untracked("too many recipients");
     }
-    let parsed = katna_import::parse_message(raw).unwrap_or_default();
     let Some(message_id) = parsed.message_id.clone() else {
         return untracked("no Message-ID");
     };

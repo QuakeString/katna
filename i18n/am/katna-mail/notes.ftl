@@ -15,6 +15,7 @@ notes-loading = ማስታወሻዎችዎን በመክፈት ላይ…
 
 notes-take-a-note = ማስታወሻ ይያዙ…
 notes-new-list = አዲስ ዝርዝር
+notes-new-note = አዲስ ማስታወሻ
 notes-pinned = የተሰኩ
 notes-others = ሌሎች
 notes-empty = የሚያክሏቸው ማስታወሻዎች እዚህ ይታያሉ

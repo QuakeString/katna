@@ -8,6 +8,9 @@ about-tooltip = Informazioni su Katna
 about-tagline = Posta e calendario per il desktop Linux
 about-whats-new = Novità
 
+## Updates, in a box under the version in About (only in packages that
+## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
+
 about-update-not-checked = Gli aggiornamenti non sono ancora stati controllati
 about-update-checking = Controllo aggiornamenti…
 about-update-up-to-date = Katna Mail è aggiornato
@@ -67,6 +70,7 @@ about-credit-resvg = Immagini SVG
 about-credit-jiff = Date e fusi orari
 about-credit-spellbook = Controllo ortografico, dall’editor Helix
 about-credit-smol = Fare tante cose insieme
+about-credit-color-schemes = Le tavolozze delle combinazioni di colori integrate
 about-all-libraries = Tutte le librerie usate da Katna ({ $count })
 about-library-authors = di { $authors }
 about-license = Katna è software libero rilasciato sotto la GNU GPL, versione 3 o successiva.
@@ -125,6 +129,21 @@ onboarding-density-default = Predefinita
 onboarding-density-compact = Compatta
 onboarding-continue = Continua
 
+## First start: the Katna account page. A Katna account is an account on
+## Katna's own server, not a mail account; see katna-account.ftl.
+
+onboarding-katna-title = Ottieni di più con un account Katna
+onboarding-katna-lead = È facoltativo. Attiva le funzioni online di Katna e puoi crearlo più tardi in Impostazioni > Abbonamento.
+onboarding-katna-receipts-title = Conferme di lettura
+onboarding-katna-receipts-text = Scopri quando le persone aprono la posta che invii.
+onboarding-katna-links-title = Tracciamento dei link
+onboarding-katna-links-text = Scopri quali link nella tua posta vengono cliccati.
+onboarding-katna-activity-title = Attività
+onboarding-katna-activity-text = Aperture e clic di tutto ciò che hai inviato, in un unico posto.
+onboarding-katna-translate-title = Traduzione automatica
+onboarding-katna-translate-text = Leggi nella tua lingua la posta scritta in altre lingue.
+onboarding-katna-private = Ha una propria password. Le credenziali della tua posta non lasciano mai questo computer.
+
 ## First run: done
 
 onboarding-ready-title = Tutto pronto
@@ -168,7 +187,7 @@ tour-search-text = La ricerca funziona anche offline. Il pulsante all’estremit
 tour-menu-title = Mostra o nascondi le cartelle
 tour-menu-text = Questo pulsante ripiega l’elenco delle cartelle. Mentre è nascosto, appoggia il puntatore su Posta a sinistra per vedere le cartelle.
 tour-apps-title = Le tue app
-tour-apps-text = Per ora qui c’è Posta. Calendario, Contatti, Attività, Note e Feed la raggiungeranno in questa barra.
+tour-apps-text = La posta si trova qui, accanto a Calendario, Contatti, Attività, Note e File.
 tour-tabs-title = Schede della Posta in arrivo
 tour-tabs-text = La nuova posta viene suddivisa in Principale, Promozioni, Social, Aggiornamenti e Forum. Puoi disattivare le schede nelle impostazioni rapide.
 tour-list-title = I tuoi messaggi
@@ -196,12 +215,22 @@ crash-view = Visualizza il rapporto
 crash-view-tooltip = Apri il rapporto, salvato su questo computer
 crash-copy = Copia il rapporto
 crash-close = Chiudi
+
+## Sign in again (a bar at the bottom when Google or Microsoft stopped
+## letting an account in; $provider: Google or Microsoft)
+
 sign-in-again-text = { $provider } ti chiede di accedere di nuovo a { $address }.
 sign-in-again-button = Accedi
 sign-in-again-tooltip = Apri la pagina di accesso di { $provider } nel browser
 sign-in-again-waiting = In attesa del browser…
 sign-in-again-close = Chiudi
+google-api-off = { $api } è disattivata nel progetto Google Cloud di Katna.
+google-api-turn-on = Attiva
+google-api-turn-on-tooltip = Apri Google Cloud per attivare { $api }, poi premi Riprova
 sign-in-again-done = Accesso a { $address } eseguito di nuovo. Scaricamento della posta…
+
+## Before deleting several conversations, or deleting for good
+
 delete-ask-title = { $kind ->
     [conversation] { $count ->
         [one] Spostare questa conversazione nel Cestino?

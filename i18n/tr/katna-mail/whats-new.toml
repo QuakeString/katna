@@ -1653,3 +1653,1452 @@ dalgalı çizin, üstünü çizin veya seçtiğiniz renkte kalemle çizim yapın
 Ctrl+Z ile geri alın, bir işareti silgiyle silin, sonra işaretli bir
 kopya kaydedin. Asıl ek olduğu gibi kalır.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Bir hesapta neden takvim yok"
+text = """
+Bir hesabın takvimleri görünmediğinde Takvim artık sunucunun ne yanıt
+verdiğini söylüyor ve “Tekrar dene” onları hemen yeniden arıyor.
+Parolayla eklenmiş bir Gmail ya da Outlook hesabı, takvimlerinin
+gerektirdiği gibi Google veya Microsoft ile oturum açmayı öneriyor.
+"""
+
+["2026-09-29-1610-one-checkbox"]
+title = "İşaretlenen onay kutuları"
+text = """
+Katna Mail'deki her onay kutusu artık yanındaki yuvarlak düğmelerle aynı
+boyutta. İşareti, kutuyu işaretlediğinizde kendini çiziyor,
+kaldırdığınızda siliniyor; Ayarlar'da, posta listesinde, Takvim'de,
+Kişiler'de, Notlar'da ve iletişim kutularında.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Her zaman sığan daha kısa bir sağ tık menüsü"
+text = """
+Posta listesinin sağ tık menüsü günlük işlemleri üstte tutuyor, gerisini
+Takip et (görevler, notlar, toplantılar, aramalar) ve Diğer (spam, önem,
+sabitleme) altına koyuyor. Tıkladığınız yerde açılıyor ve pencerenin
+içinde kalıyor; kısa ya da dar bir pencerede alt menü, menünün yerinde
+açılıyor.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Bir hesapta neden kişi yok"
+text = """
+Bir hesabın kişileri görünmediğinde Kişiler artık sunucunun ne yanıt
+verdiğini söylüyor ve “Tekrar dene” onları hemen yeniden arıyor.
+Parolayla eklenmiş bir Gmail ya da Outlook hesabı, kişilerinin
+gerektirdiği gibi Google veya Microsoft ile oturum açmayı öneriyor.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Arama kutusu etkin olduğunu gösteriyor"
+text = """
+Üstteki arama kutusu, içine yazarken diğer tüm alanlar gibi vurgu
+renginde bir kenar alıyor ve Ctrl+F ipucu, kutuyu boş bırakana kadar
+kenara çekiliyor.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Her görev listesi görünürde"
+text = """
+“Tüm görevler” artık pencereye sığdığı kadar listeyi yan yana, altında
+da başka satırlarla gösteriyor; böylece her listeye ulaşılabiliyor. Yeni
+bir liste, oluşturduğunuz anda görünür alana kayıyor.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Ekler arasında akıcı geçiş"
+text = """
+Görüntüleyicide oklarla sonraki ya da önceki eke geçmek artık
+titremiyor. Görüntüleyici açık kalıyor ve sonraki dosya hazır olur olmaz
+öncekinin yerini alıyor.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Notları sürükleyerek sıralayın"
+text = """
+Notlar panosunda bir notu taşımak için sürükleyin, Keep'teki gibi. Diğer
+notlar yer açmak için kayarak kenara çekiliyor ve not bıraktığınız yerde
+kalıyor. Ctrl+Z onu geri koyar. Kartlar artık sütunlarına sıkıca
+oturuyor; kısa notların altında boşluk kalmıyor.
+"""
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Takvim'de sağ tıklama"
+text = """
+Oraya etkinlik, odaklanma zamanı veya ofis dışında zamanı eklemek için
+boş bir saate ya da güne sağ tıklayın. Bir etkinliği düzenlemek,
+çoğaltmak, silmek, yanıtlamak, katılmak, konuklara posta göndermek,
+rengini değiştirmek veya başka bir takvime taşımak için etkinliğe; bir
+görevi tamamlandı olarak işaretlemek, yıldızlamak, başka bir güne almak
+veya silmek için göreve sağ tıklayın. Geri al, bir değişikliği geri
+alır.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "PDF'lerde notlar ve metin"
+text = """
+PDF işaretlerken artık yapışkan notlar ve metin kutuları var: sayfaya
+tıklayın, yazın ve Ctrl+Enter'a basın. Bir notu okumak için üzerine
+gelin, değiştirmek için tıklayın. Yanıtla, işaretli kopyanızı doğrudan
+ileti yanıtında geri gönderir.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Görevleri istediğiniz yere sürükleyin"
+text = """
+Bir görevi listesinde yukarı veya aşağı ya da başka bir listeye
+sürükleyin; oradaki görevler nereye yerleşeceğini göstermek için kenara
+kayar. Google Tasks yeni sırayı telefonunuzda da korur, Geri al ise
+görevi eski yerine koyar.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Takvim'den görev ekleyin"
+text = """
+Yeni etkinlik kartında, Google Takvim'deki gibi bir Görev sekmesi var.
+Bir saate tıklayın, Görev'i seçin; başlık, gün ve saat, seçtiğiniz
+listede bir görev olur, isterseniz bir açıklamayla birlikte.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Takvim'den görev ekleyin"
+text = """
+Oraya görev eklemek için Takvim'de boş bir saate ya da güne sağ
+tıklayıp Görev'i seçin. Yeni etkinlik kartı, o gün ve saat
+doldurulmuş olarak Görev sekmesinde açılır.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Yavaş bir sunucudan sonra takvimler yeniden aranır"
+text = """
+Bir hesabın takvim sunucusu zamanında yanıt vermediğinde, Takvim artık
+"Takvim bulunamadı" yerine bunu söylüyor ve takılanın bağlantı mı yoksa
+güvenli el sıkışma mı olduğunu belirtiyor. Saatler yerine birkaç dakika
+içinde yeniden deniyor.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Kişi dosyaları indirmeyi gösteriyor"
+text = """
+Kişi panelinde, e-postası henüz bu bilgisayarda olmayan bir dosya artık
+listedeki ekler gibi indirilirken dolar, ardından açılır.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Yeni bir hesabın postaları geldikçe görünür"
+text = """
+Bir hesap ekledikten sonra, tüm klasörler bitene kadar “Postalarınız
+alınıyor…” ekranında kalmak yerine önce gelen kutusu iner ve siz
+izlerken dolar. Diğer klasörler de aynı şekilde dolar.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Onay kutuları simgelerle aynı hizada"
+text = """
+Onay kutuları biraz küçüldü; posta listesinde yanlarındaki yıldız ve
+etiket simgeleriyle aynı boyutta. Tıklaması eskisi kadar kolay ve işaret
+hâlâ kendini çiziyor.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Zoho takvimleri Zoho'nun kendi bağlantısıyla"
+text = """
+Zoho, takvimleri diğer uygulamalara birçok ağın engellediği bir bağlantı
+noktasından sunuyor; bu yüzden Zoho ile oturum açtıktan sonra Takvim
+onları Zoho'nun kendi API'si üzerinden okuyor. Zoho etkinlikleriniz
+diğer takvimlerinizin yanında görünüyor; bunları Katna'dan değiştirmek
+daha sonra gelecek.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Zoho görevleri"
+text = """
+Bir Zoho hesabında Zoho ile oturum açın; hesabın Zoho ToDo görevleri
+Görevler'de iki yönlü görünür: Katna'da bir görevi ekleyin, düzenleyin,
+işaretleyin ya da silin, Zoho'da da değişir.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "İşaret her boyutta ortada"
+text = """
+Ayarlar > Görünüm'deki Ölçekleme %100'ün üzerindeyken onay kutusunun
+işareti biraz yukarıda ve solda duruyordu. Onay kutularının ve yuvarlak
+düğmelerin kenarları artık ölçekle birlikte büyüyor; böylece işaret her
+boyutta ortada.
+"""
+
+["2026-09-30-0230-edges-follow-scaling"]
+title = "Kenar çizgileri Ölçekleme ile büyür"
+text = """
+Ayarlar > Görünüm'deki Ölçekleme %100'ün üzerinde ya da altındayken, odaklı
+arama kutusunun ve alanların vurgu çizgisi, seçim kartlarının ve görev
+halkalarının kenarları artık ince kalmak yerine her şeyle birlikte büyüyüp
+küçülür.
+"""
+
+["2026-09-30-0326-google-sign-in-network"]
+title = "Her ağda Google ile oturum açın"
+text = """
+Google ile oturum açma, Google bağlantısını erken kesen ağlarda artık
+“peer closed connection” hatasıyla durmuyor. Google'ın sayfasında Gmail
+işaretini kaldırırsanız, Katna sonradan başarısız olmak yerine bunu hemen
+söyler.
+"""
+
+["2026-09-30-0504-google-api-turned-off"]
+title = "Hangi Google API'sinin kapalı olduğunu söyler"
+text = """
+Google bir API'yi Katna için kapatmışsa, Kişiler, Takvim, Görevler ve Drive
+dosyaları artık Google'ın ham hatası yerine hangisinin kapalı olduğunu kısa
+bir satırla söyler; Aç düğmesi de Google'ın ilgili sayfasını açar.
+"""
+
+["2026-09-30-0507-newest-mail-first"]
+title = "En yeni postalar önce gelir"
+text = """
+Bir hesap eklediğinizde Katna Mail artık önce en son postalarınızı indirir,
+sonra eskilere doğru ilerler; böylece bugünün iletileri gelen kutusunun
+en üstünde hemen görünür. İndirme yarıda kalırsa, eski postaları bir
+sonraki sefere kaldığı yerden alır.
+"""
+
+["2026-09-30-0601-keyring-at-login"]
+title = "Oturum açılışında cüzdanınızı bekler"
+text = """
+Katna başladığında KWallet ya da GNOME Keyring hâlâ kilitliyse ve kilit
+açma penceresi kapatılmışsa, hesaplarınız artık yanlış parola göstermez.
+Beklerler ve cüzdanın kilidini açtığınız anda, Katna'dan çıkmanıza gerek
+kalmadan kendiliğinden eşitlemeye başlarlar. Eşitle artık kilidi yeniden
+açmanızı ister.
+"""
+
+["2026-09-30-0606-pdf-rotate-and-top-bar"]
+title = "PDF sayfalarını döndürün"
+text = """
+PDF görüntüleyici artık sayfaları saat yönünde ya da saat yönünün tersine
+döndürebilir (Ctrl+R ve Ctrl+Shift+R); işaretlenmiş bir kopya da
+döndürdüğünüz gibi kaydedilir. Sayfa numarası ve yakınlaştırma üst çubuğa
+taşındı, böylece sayfanın üstünü hiçbir şey kapatmaz.
+"""
+
+["2026-09-30-0610-calendar-events-stay-put"]
+title = "Etkinlikler yerinde kalır"
+text = """
+Takvim'de bir etkinliğe ya da göreve tıklayıp görünümü değiştirmek artık
+onu işaretçinin peşinden sürüklemez. Bir etkinlik yalnızca düğmeyi basılı
+tutup sürüklediğiniz sürece taşınır; görünümü ya da sayfayı değiştirmek,
+Esc'e basmak ya da kartını açmak onu değiştirmeden yerine koyar.
+"""
+
+["2026-09-30-0620-checkbox-partial-centred"]
+title = "Kısmen işaretli kutular düzgün görünür"
+text = """
+Yalnızca bazı iletiler seçiliyken, tümünü seç kutusunun içindeki kare,
+arayüz ölçeğiniz ne olursa olsun artık her yandan aynı boşluğa sahip.
+"""
+
+["2026-09-30-0632-year-view-day-peek"]
+title = "Yıl görünümünden bir günün planlarını görün"
+text = """
+Takvim'in Yıl görünümünde, noktalı bir günün üzerinde işaretçiyi
+bekletin; o günün etkinlikleri ve görevleri yanında küçük bir açılır
+pencerede, her biri ne olduğunu ve saatini gösteren bir simgeyle görünür.
+Açmak için birine, günü açmak için günün adına tıklayın. Telefonda güne
+dokunun.
+"""
+
+["2026-09-30-0650-notification-opens-own-window"]
+title = "Bildirimler postayı önde açar"
+text = """
+Yeni posta bildirimine tıklamak, Katna o anda ne gösteriyor olursa olsun
+o postayı kendi penceresinde, önde açar. Tümünü yanıtla onu yanıt yazmaya
+hazır halde açar. Arşivle ise hiçbir şey açmadan postayı kaldırır ve bunu
+Geri al düğmeli kısa bir notla bildirir.
+"""
+
+["2026-09-30-0700-event-card-join-any-call"]
+title = "Teams ve Zoom görüşmelerine Takvim'den katılın"
+text = """
+Bir etkinliğin kartı artık açıklamasındaki ya da yerindeki görüşmeyi
+bulur; böylece Microsoft Teams, Zoom, Webex, Jitsi ya da Google Meet
+davetinin en üstünde bir “Şununla katıl” düğmesi olur. Açıklamadaki web
+adresleri bağlantıya dönüşür, alt çizgi satırları kalktı ve ayrıntılar
+kaydırılırken Katılıyor musunuz? altta kalır.
+"""
+
+["2026-09-30-0715-click-away-closes-viewer"]
+title = "Kapatmak için dışarı tıklayın"
+text = """
+Görüntüleyiciyi kapatmak için geri düğmesine uzanmak yerine ekin
+çevresindeki soluk alana tıklayın. Sayfanın kendisine yapılan tıklamalar
+eskisi gibi metin seçer ve işaretleme yapar.
+"""
+
+["2026-09-30-0729-add-account-and-pop3"]
+title = "Yeni Hesap ekle ekranı ve POP3"
+text = """
+Hesap eklemek sağlayıcınızla başlar: Google, Yahoo, iCloud, Zoho, Fastmail,
+GMX, Yandex ya da başka biri. Katna önce sağlayıcının neye ihtiyaç
+duyduğunu söyler, bağlanırken her adımı gösterir ve sonunda neyi
+kurduğunu anlatır. POP3 hesapları da çalışır; postalarının sunucuda ne
+kadar kalacağını Ayarlar > Hesaplar'dan seçebilirsiniz.
+"""
+
+["2026-09-30-0802-ctrl-wheel-zoom"]
+title = "Ctrl ve tekerlekle yakınlaştırın"
+text = """
+Ek görüntüleyicide Ctrl'yi basılı tutup fare tekerleğini çevirerek
+işaretçinin çevresinde yakınlaştırıp uzaklaştırın ya da dokunmatik
+yüzeyde iki parmakla kıstırın. PDF'lerde, resimlerde, metin dosyalarında,
+elektronik tablolarda ve belgelerde çalışır.
+"""
+
+["2026-09-30-0817-event-open-the-mail"]
+title = "Bir etkinliğin arkasındaki postayı açın"
+text = """
+Gmail'in bir postadan oluşturduğu tren, uçuş ve otel gibi etkinliklerin
+kartında artık bir E-postayı aç düğmesi var. Postayı Katna'da, Katna'da
+yoksa Gmail'de açar. Bir postadan oluşturulan görev de Takvim'deki
+kartından postasını açar; Toplantı notları al da artık hiç takılmadan
+açılır.
+"""
+
+["2026-09-30-0843-calendar-side-panel-menus"]
+title = "Takvimleri yan panelden yönetin"
+text = """
+Yalnızca onu göstermek, rengini değiştirmek, yeniden adlandırmak ya da
+silmek için Takvim'in yan panelinde bir takvime sağ tıklayın. O hesapta
+yeni bir takvim oluşturmak ya da tüm takvimlerini gösterip gizlemek için
+hesabın adına sağ tıklayın. Değişiklikler posta hizmetinize gider,
+böylece onu kullandığınız her yerde görünür.
+"""
+
+["2026-09-30-1010-unread-list-keeps-open-mail"]
+title = "Okunmamış postalar açık kalır"
+text = """
+Tüm Hesaplar > Okunmamış'ta bir ileti dizisini açmak artık onu hemen
+kapatmıyor. Okumak onu okundu olarak işaretler ve siz kapatana ya da
+başka birini açana kadar listede kalır.
+"""
+
+["2026-09-30-1045-tracked-mail-arrives"]
+title = "İzlenen postalar yeniden ulaşıyor"
+text = """
+İzleme açıkken gönderilen postalar Gönderilen'de görünüp kimseye
+ulaşmayabiliyordu. Artık her alıcıya gidiyor. Bu şekilde kaybolan
+postaların yeniden gönderilmesi gerekir.
+"""
+
+["2026-09-30-1114-no-checking-pill"]
+title = "Artık denetleme balonu yok"
+text = """
+“Yeni postalar denetleniyor…” artık listenin üzerinde belirmiyor. Yenile
+düğmesindeki ve her hesabın gelen kutusundaki dönen oklar postaların
+denetlendiğini zaten gösteriyor; başarısız bir denetim de neyin ters
+gittiğini yine söylüyor.
+"""
+
+["2026-09-30-1300-windows-sign-in-and-domains"]
+title = "Windows'ta Google ile oturum açın"
+text = """
+Windows için Katna artık Linux'ta olduğu gibi Google ve Zoho ile oturum
+açmayı sunar ve hesabı eklerken Google Workspace adresi gibi kendi alan
+adınızdaki postaları kimin barındırdığını bilir.
+"""
+
+["2026-09-30-1511-mail-tables"]
+title = "Postalardaki tablolar düzgün okunur"
+text = """
+GitHub Actions bildirimindeki iş listesi gibi postalardaki tablolar,
+bir başlığı satır başına tek harf olacak şekilde bölmek yerine sütunlarını
+yan yana tutar ve satırdan satıra hizalar. Bir iletinin bölümleri
+arasındaki ayırıcı çizgiler de artık görünür.
+"""
+
+["2026-09-30-1550-taller-important-marker"]
+title = "Daha uzun Önemli işareti"
+text = """
+Yıldızın yanındaki Önemli işareti 2 px daha uzun; böylece yıldızın ve onay
+kutusunun yanında artık basık görünmüyor. Satırda ortalı kalır.
+"""
+
+["2026-09-30-1617-folder-click-goes-to-top"]
+title = "Listenin başına dönün"
+text = """
+Posta listesi bir ekran aşağı kaydırıldığında, sağ alt köşesindeki yuvarlak
+bir düğme onu en üste geri götürür. Gmail'deki gibi, zaten içinde
+olduğunuz klasöre (örneğin Gelen Kutusu'na) tıklamak da aynısını yapar;
+Home tuşu da öyle.
+"""
+
+["2026-09-30-1622-send-from-file-manager"]
+title = "Dosyaları dosya yöneticinizden gönderin"
+text = """
+Dolphin, GNOME Dosyalar ya da Windows Gezgini'nde dosyalara veya
+klasörlere sağ tıklayıp Katna Mail ile gönder'i seçin: onları ek olarak
+taşıyan yeni bir ileti açılır, klasörler zip olarak gider. Birden çok
+posta hesabınız varsa, hangisinden gönderileceğini alt menüden seçin.
+"""
+
+["2026-09-30-1624-files-page"]
+title = "Tüm dosyalar tek yerde"
+text = """
+Uygulama çubuğunun altındaki yeni Dosyalar sayfası, her hesaptaki her eki
+en yeniden başlayarak gösterir. Resimlere, PDF'lere ya da belgelere, tek
+bir hesaba, bir kişiye ya da bir zaman aralığına göre daraltın veya ada,
+gönderene ya da konuya göre arayın. Daha fazlası için bir dosyaya sağ
+tıklayın; Postayı göster sizi dosyanın geldiği postaya götürür.
+"""
+
+["2026-09-30-1643-dimmer-row-markers"]
+title = "Daha sakin posta listesi"
+text = """
+Posta listesindeki boş onay kutusu, yıldız ya da Önemli işareti, işaretçi
+satırın üzerine gelene kadar daha soluk durur. Etkin yıldızlar ve
+işaretler renklerini korur.
+"""
+
+["2026-09-30-1704-folder-arrows-on-hover"]
+title = "Daha düzenli klasör bölmesi"
+text = """
+Gelen Kutusu, Yıldızlı ve diğer klasörlerin yanındaki küçük oklar yalnızca
+işaretçi o klasörün üzerindeyken görünür. Açtığınız klasör okunu korur.
+"""
+
+["2026-09-30-1712-arrow-keys-in-times"]
+title = "Saat kutularında ok tuşları"
+text = """
+Tarih ve saat seç'te ve bir görevin saatinde, Yukarı ve Aşağı tuşları
+imlecin bulunduğu kısmı değiştirir: saati, dakikayı ya da ÖÖ/ÖS'yi.
+"""
+
+["2026-09-30-1742-check-one-folder"]
+title = "Tek bir klasörde yeni posta denetleyin"
+text = """
+Bir klasörün sağ tık menüsündeki “Yeni postaları denetle” artık yalnızca
+o klasörü denetler, bu yüzden hızlıdır. Tüm Hesaplar altındaki bir hesabın
+gelen kutusunda o hesabın gelen kutusunu, Tüm Hesaplar altındaki Gelen
+Kutusu ya da Gönderilen gibi bir listede ise her hesaptaki o klasörü
+denetler.
+"""
+
+["2026-09-30-1742-frosted-viewer"]
+title = "Daha hafif, buzlu bir görüntüleyici"
+text = """
+Ek görüntüleyicinin üst çubuğu daha ince ve hafif; sayfa, yakınlaştırma ve
+döndürme bir balonda duruyor. Dosyanın çevresinde Katna Mail, yumuşak
+koyu bir perdenin altında bulanık görünür; araç çubukları da buzlu cam.
+Bulanıklık Ayarlar > Deneysel'i izler; kapalıyken görüntüleyici düz koyu
+bir perde kullanır.
+"""
+
+["2026-09-30-1752-touchpad-glide"]
+title = "Dokunmatik yüzeyde hızlı kaydırma süzülür"
+text = """
+Dokunmatik yüzeyde iki parmakla hızlıca kaydırınca, diğer uygulamalardaki
+gibi kaydırma devam eder ve yavaşlayarak durur. Durdurmak için dokunmatik
+yüzeye yeniden dokunun. Wayland'de.
+"""
+
+["2026-09-30-1800-inbox-tabs-in-top-row"]
+title = "Gelen kutusu sekmeleri üst satırda"
+text = """
+Birincil, Tanıtımlar, Sosyal ve diğer gelen kutusu sekmeleri artık
+listenin üst satırında bir balon çubukta, her biri okunmamış postalarının
+renkli sayısıyla duruyor. Vurgu seçtiğiniz sekmeye kayar; açık sekmeye
+tıklamak listesini en üste götürür. Liste darken çubuk kendi satırına
+geçer ve açık sekmenin adını koruyarak simgeler gösterir; telefonda
+listenin çubuğunda durur, Yenile de Diğer menüsündedir.
+"""
+
+["2026-09-30-1805-account-menu"]
+title = "Sağ tık menüsünde hesap bilgileri"
+text = """
+Adresini, eşitlenip eşitlenmediğini, en son ne zaman denetlendiğini ve ne
+kadar depolama alanı kullandığını görmek için klasör listesinde bir
+hesabın adına ya da Tüm Hesaplar altındaki gelen kutusuna sağ tıklayın.
+Buradan o gelen kutusunu denetleyebilir, o hesaptan yeni posta
+yazabilir, ayarlarını açabilir ya da oturumun süresi dolduysa yeniden
+oturum açabilirsiniz.
+"""
+
+["2026-09-30-1819-glass-search-box"]
+title = "Cam bir arama kutusu"
+text = """
+Bulanık arka plan açıkken arama kutusu, kullanmadığınız sürece ince bir
+kenarlı buzlu camdır; yazmak için içine tıkladığınızda opaklaşır.
+"""
+
+["2026-09-30-1820-search-cancel-restores"]
+title = "Aramayı iptal edin, postalarınıza dönün"
+text = """
+Esc'e basmak ya da arama kutusunu temizlemek artık sizi kaldığınız yere
+döndürür: aynı klasöre, listede aynı yere ve açık olan postaya. Bunun
+yerine bir sonucu açarsanız arama eskisi gibi devam eder.
+"""
+
+["2026-09-30-1840-first-run-window"]
+title = "Daha samimi bir ilk açılış"
+text = """
+Katna Mail'i kurarken pencere, kurulum sayfalarının arkasında hafif bir
+perdenin altında görünür: uygulamalar, Oluştur ve arama kutusu, klasörlerin
+ve postaların görüneceği yerlerde de yumuşak yer tutucular. Yeni bir adım
+bir Katna hesabı önerir ve neleri açtığını listeler (okundu bilgileri,
+bağlantı izleme, Etkinlik ve çeviri); dilerseniz atlayabilirsiniz.
+"""
+
+["2026-09-30-1850-windows-frame-and-blur"]
+title = "Windows'ta Katna'nın çerçevesi ve bulanıklığı"
+text = """
+Windows'ta Katna Mail artık ekranın içinde açılır, ekran küçükse ekranı
+kaplar. Ayarlar > Deneysel pencerenin arkasındakini bulanıklaştırabilir;
+Katna'nın kendi çerçevesi de Katna Mail'i bir sonraki açışınızda üst
+çubuğu başlık çubuğuna dönüştürür.
+"""
+
+["2026-09-30-1851-dark-depth"]
+title = "Koyu renklerde daha kolay görünür"
+text = """
+Koyu renklerde, posta listesinin üzerinde yüzen öğeler artık bir ton daha
+açık ve ince açık bir kenarlı, çünkü gölgeler koyu arka planda pek
+görünmüyor. Başa dön düğmesi, menüler, Oluştur penceresi ve iletişim
+kutuları belirgin biçimde öne çıkar. Açık renkler eskisi gibi görünür.
+"""
+
+["2026-09-30-1911-files-scrollbar"]
+title = "Dosyalar sayfasında kaydırma çubuğu"
+text = """
+Sığandan fazla dosya olduğunda, kaydırırken ya da işaretçi dosyaların
+üzerindeyken sağda ince bir kaydırma çubuğu belirir, sonra kaybolur.
+Dosyalar arasında hızla ilerlemek için onu sürükleyin ya da oraya atlamak
+için üstüne veya altına tıklayın.
+"""
+
+["2026-09-30-1919-tabs-keep-open-mail"]
+title = "Sekme değiştirmek açık postayı korur"
+text = """
+Okuma bölmesi listenin yanındayken başka bir gelen kutusu sekmesi seçmek
+artık okuduğunuz postayı kapatmıyor; liste değişir, posta açık kalır.
+"""
+
+["2026-09-30-1925-inbox-tabs-centred"]
+title = "Gelen kutusu sekmeleri ortada"
+text = """
+Gelen kutusu sekmeleri artık listenin üst satırının ortasında durur ve
+yalnızca düğmelerinin gerektirdiği kadar kenara kayar.
+"""
+
+["2026-09-30-1945-page-box-arrow-keys"]
+title = "Sayfa kutusunda ok tuşları"
+text = """
+Bir PDF'te sayfa numarasına tıklayın ve bir sayfa geri ya da ileri gitmek
+için Yukarı veya Aşağı'ya basın. Sayfaları hızla çevirmek için tuşu basılı
+tutun.
+"""
+
+["2026-09-30-1952-phone-bar-labels"]
+title = "Telefonda uygulama adları ayarınızı izler"
+text = """
+Ayarlar'da uygulama adları kapalıyken, telefon boyutundaki bir pencerenin
+altındaki çubuk artık yan ray gibi yalnızca simgeleri, ortalanmış olarak
+gösterir.
+"""
+
+["2026-09-30-1955-account-menu-icons"]
+title = "Hesap menüsünde Ayarlar ve dil"
+text = """
+Hesap resminizin altındaki menü artık bir simge satırıyla açılır: Ayarlar'ı
+açın ya da dili değiştirin. Yer açmak için dil bayrağı üst çubuktan
+kaldırıldı.
+"""
+
+["2026-09-30-2001-phone-tabs-fold"]
+title = "Her gelen kutusu sekmesi elinizin altında"
+text = """
+Pencere darken gelen kutusu sekmeleri gizlenmek yerine akıcı biçimde
+katlanır: etiketler daha büyük simgelere dönüşür, sonra sayılar kenara
+çekilir. Telefonda sekmeler tüm çubuğa yayılır, dokunması kolaydır; Diğer
+de aynı balonun sonunda durur.
+"""
+
+["2026-09-30-2012-fit-and-page-arrows"]
+title = "Görüntüleyicide Sığdır, sayfa okları ve dahası"
+text = """
+Ek görüntüleyicide bir Sığdır düğmesi var: PDF sayfası pencerenin
+yüksekliğine, resim pencereye, belgeler, slaytlar ve elektronik tablolar
+da genişliğine sığar. Resimlerde ayrıca Gerçek boyut var ve döndürülebilir.
+Bir sayfa geri ya da ileri gitmek için küçük okları görmek üzere sayfa
+kutusunun üzerine gelin; slaytların da kendi kutusu var.
+"""
+
+["2026-09-30-2019-folder-icon-colours"]
+title = "Renkli klasör simgeleri"
+text = """
+Klasör bölmesindeki simgeler artık her klasörün ne tuttuğunu söyleyen
+renklere sahip: Okunmamış mavi, Yıldızlı sarı, Önemli kehribar, Gönderilen
+yeşil, Spam kırmızı, Taslaklar mor ve Gelen Kutusu masaüstünüzün vurgu
+renginde. Posta sayıları küçük, soluk balonlarda durur.
+"""
+
+["2026-09-30-2040-tabs-no-slide"]
+title = "Daha hızlı gelen kutusu sekmeleri"
+text = """
+Bir gelen kutusu sekmesine tıklamak artık vurguyu diğer sekmelerin
+üzerinden kaydırmak yerine, yalnızca tıklamanın dalgasıyla onu hemen
+vurgular.
+"""
+
+["2026-10-01-0145-files-tidy"]
+title = "Daha düzenli bir Dosyalar sayfası"
+text = """
+Her dosya türünün ve her hesabın yanındaki sayılar artık Posta'daki klasör
+sayılarıyla aynı küçük balonlarda duruyor. Sayfa başlığının altındaki
+çizgi ve dosya satırları da aynı kenarlarda başlayıp bitiyor.
+"""
+
+["2026-10-01-0147-today-marker-fits"]
+title = "Bugünün tarihi işaretine sığar"
+text = """
+Takvim'in Ay görünümünde bugünün işareti artık tarihin tamamını içine
+alır. Ayın 1'inde, etiketin taştığı küçük bir daire yerine “01 Eki”
+çevresinde bir balona dönüşür.
+"""
+
+["2026-10-01-0208-tab-counts-stay"]
+title = "Sekme sayıları yerinde kalır"
+text = """
+Bir gelen kutusu sekmesini açmak artık sekme çubuğunu zıplatmıyor. Açık
+sekme yeni posta sayısını korur, sayı yavaşça sakin bir griye döner ve o
+sekmedeki her şeyi okuduğunuzda akıcı biçimde katlanıp kaybolur.
+"""
+
+["2026-10-01-0225-files-keyboard"]
+title = "Dosyalarınızda klavyeyle gezinin"
+text = """
+Dosyalar sayfasında ok tuşları artık dosyalar arasında gezinir, Home ve
+End ilk ve son dosyaya gider, Enter da birini açar. Oradan açılan
+görüntüleyicide oklar, hangi postayla gelmiş olursa olsun sayfadaki
+sonraki dosyaya geçer; Shift ile bir ok ise aynı postanın eklerinde kalır.
+"""
+
+["2026-10-01-0254-files-dates"]
+title = "Dosyalar sayfasında günleri seçin"
+text = """
+Dosyalar sayfasındaki zaman çipi artık Geçen hafta ve Bu ay gibi hızlı
+seçimlerle iki aylık bir takvim açar. Bir güne tıklayın ya da bir günden
+diğerine sürükleyin; dosyalar siz sürüklerken değişir. Ardından aynı süre
+kadar geriye ya da ileriye gitmek için çipin üzerinde fare tekerleğini
+çevirin.
+"""
+
+["2026-10-01-0256-color-schemes"]
+title = "Renk şemaları ve vurgu renkleri"
+text = """
+Ayarlar > Görünüm'de artık Mod, Renkler ve Vurgu ayrı seçenekler. Açık ya
+da koyuyu seçin, ardından Clear, Nord, Solarized ya da Catppuccin gibi 14
+renk şemasından birini seçin veya masaüstünüzünkini koruyun. Her biri
+açık ve koyuda çalışır; üzerine istediğiniz vurgu rengini koyabilirsiniz.
+"""
+
+["2026-10-01-0310-badge-counts-what-notifies"]
+title = "Görev çubuğu sayısı bildirimlerinizle eşleşir"
+text = """
+Görev çubuğundaki ve sistem tepsisindeki okunmamış sayısı artık size
+bildirim gönderen postaları sayar: Gelen Kutusu'nuzun Birincil sekmesini.
+Tanıtımlar, Sosyal, Güncellemeler ve Forumlar artık sayıya eklenmiyor.
+"""
+
+["2026-10-01-0312-quiet-selected-row"]
+title = "Daha sakin bir açık klasör"
+text = """
+Posta'daki açık klasör ve Kişiler, Görevler, Notlar ve Dosyalar'daki açık
+görünüm artık vurgu rengi yerine yumuşak bir griyle işaretleniyor;
+böylece Oluştur ve uygulama rayı öne çıkar, klasör simgeleri de kendi
+renklerini korur.
+"""
+
+["2026-10-01-0315-desktop-schemes"]
+title = "Masaüstünüzün renk şemaları"
+text = """
+Ayarlar > Görünüm > Renkler masaüstünüzün kendi şemalarını da listeler:
+KDE Plasma'da yüklü her renk şemasını, Windows'ta ise kendi renklerini ve
+Karşıtlık temalarını. Sistem artık KDE'de de açık ve koyuda, şemanızın
+açık ya da koyu eşini kullanarak çalışır; Katna da Windows'un vurgu
+rengini izler.
+"""
+
+["2026-10-01-0329-mute-folders"]
+title = "Bir klasörü, sekmeyi ya da hesabı sessize alın"
+text = """
+Listenin üstündeki zil, açık klasörü ya da Gelen Kutusu sekmesini bir
+saatliğine, yarın sabaha kadar ya da siz yeniden açana kadar sessize alır.
+Aynısı için bir klasöre ya da hesaba sağ tıklayın. Ayarlar › Bildirimler
+hangi klasörlerin bildirim gönderdiğini, hangilerinin görev çubuğunda
+sayıldığını ve sessize alınan her şeyi gösterir.
+"""
+
+["2026-10-01-0335-tray-style"]
+title = "Renkli ya da tek renkli tepsi simgesi"
+text = """
+Ayarlar > Genel > Masaüstü > Renkli tepsi simgesi, Katna'nın renklerini
+ya da paneldeki diğer simgeler gibi tek bir rengi seçer. Tek renk,
+okunmamış posta varken de tek renk kalır; okunmamış sayısı ise her zaman
+kırmızıdır. Linux'ta tepsi simgesi varsayılan olarak tek renkli,
+Windows'ta renklidir.
+"""
+
+["2026-10-01-0354-mute-conversations"]
+title = "Bir ileti dizisini ya da göndereni sessize alın"
+text = """
+Açık bir ileti dizisinin üstündeki zil onu sessize alır: yeni yanıtlar
+artık bildirim göndermez ya da görev çubuğu sayısına eklenmez, listede de
+üstü çizili bir zil onu işaretler. İleti dizisini sessize al ya da
+Göndereni sessize al için bir ileti dizisine sağ tıklayın veya M'ye basın.
+"""
+
+["2026-10-01-0410-your-color-schemes"]
+title = "Kendi renk şemanızı oluşturun"
+text = """
+Ayarlar > Görünüm > Renkler > Özelleştir, kullandığınız şemayı bir
+düzenleyiciye kopyalar: sekiz renginden herhangi birini açık ve koyu
+tarafta değiştirin, posta penceresini bu renklerle görün; Katna neyin zor
+okunacağını size söyler. İçe aktar bir Katna ya da KDE renk şeması dosyası
+alır; şemanıza sağ tıklayarak onu düzenleyebilir, çoğaltabilir, dışa
+aktarabilir ya da silebilirsiniz.
+"""
+
+["2026-10-01-0527-calendar-opens-on-week"]
+title = "Takvim Hafta görünümünde açılır"
+text = """
+Katna Takvim yeniden Hafta görünümünde, önünüzdeki günler saat saat
+gösterilerek açılır. Ay, Gün, Yıl ve diğerleri üst çubukta bir tık
+uzağınızda.
+"""
+
+["2026-10-01-0552-lighter-count-on-open-row"]
+title = "Açık klasörde sayılar öne çıkar"
+text = """
+Posta'da açık klasörün ve Dosyalar'da açık türün yanındaki sayı artık
+satırın grisinden daha açık bir balonda duruyor; böylece açık ve koyuda
+artık onun içinde kaybolmuyor.
+"""
+
+["2026-10-01-0652-files-leave-out-small-pictures"]
+title = "Dosyalar imza logolarını dışarıda bırakır"
+text = """
+Dosyalar sayfası artık e-posta imzalarıyla gelen küçük logolar ve
+simgelerle dolmuyor: 12 KB'tan küçük ya da 100 pikselden dar veya kısa
+resimler postalarının altında kalır. Her iki sınırı değiştirmek ya da her
+resmi göstermek için Ayarlar > Varsayılan uygulamalar > Dosyalar
+sayfası'na gidin.
+"""
+
+["2026-10-01-0700-mute-from-contact"]
+title = "Bir göndereni kişi kartından sessize alın"
+text = """
+Bir postanın yanındaki kişi kartının düğmeleri arasında ilk sırada bir
+zil var: o göndericiden gelen her şeyi sessize alır, adının ardındaki
+üstü çizili zil de bunu gösterir. Yeniden haber almak için ona tekrar
+tıklayın.
+"""
+
+["2026-10-01-0803-select-hover-fits"]
+title = "Daha düzenli bir seçim düğmesi"
+text = """
+Posta listesinin üstündeki seçim onay kutusunun arkasındaki vurgulama
+artık yanındaki düğmeler kadar uzun, kartın kenarına üstüne olduğu kadar
+uzak duruyor ve köşeleri kartın kendi köşesini izliyor.
+"""
+
+["2026-10-01-0807-files-leave-out-signature-pictures"]
+title = "Dosyalar büyük imza resimlerini de dışarıda bırakır"
+text = """
+Birinin üç ya da daha fazla ileti dizisinde gönderdiği bir resim (örneğin
+imzasındaki afiş ya da fotoğraf) artık Dosyalar sayfasında görünmüyor;
+ne kadar büyük olursa olsun sosyal ağ simgeleri de öyle. Postalarının
+altında yine görünürler; “Küçük resimleri dışarıda bırak”ı kapatmak da
+hepsini geri getirir.
+"""
+
+["2026-10-01-0830-muted-contact-mark"]
+title = "Kimin sessize alındığını görün"
+text = """
+Sessize alınmış bir göndericinin adını artık göründüğü her yerde üstü
+çizili bir zil izliyor: posta listesi, açık bir posta, Kişiler, Kime ve
+Bilgi kutuları ile önerileri, Dosyalar sayfası, etkinlik konukları ve
+Etkinlik raporu. Postalarının neden sessiz kaldığını merak etmeye son.
+"""
+
+["2026-10-01-0839-sounds"]
+title = "Yeni posta, hatırlatıcılar ve gönderme için sesler"
+text = """
+Ayarlar > Bildirimler'de bir Sesler bölümü var: yeni posta,
+hatırlatıcılar, gelen kutusuna dönen posta, gönderilen posta ve
+gönderilemeyen posta için masaüstünüzden bir ses seçin, yanındaki düğmeyle
+çalın ya da kapatın. Sesler artık KDE Plasma'da da çalar; sessize alınmış
+postalarda ve Rahatsız etmeyin sırasında sessiz kalır.
+"""
+
+["2026-10-01-0925-chat-view"]
+title = "İleti dizilerini sohbet olarak okuyun (deneysel)"
+text = """
+Ayarlar > Deneysel > İleti dizilerini sohbet olarak göster'i açın;
+insanlar arasındaki postalar bir grup sohbeti gibi okunur: her posta için
+yalnızca yazılanı içeren bir baloncuk, sizinkiler sağda, resimler ve
+dosyalar sohbet medyası olarak. Alıntılanan posta ve imzalar her
+baloncukta ··· arkasında bekler; bir ada tıklamak o kişinin kartını
+imzasıyla birlikte gösterir. Alttaki kutudan yanıtlayın: Ctrl+Enter ile,
+Aa arkasındaki biçimlendirme çubuğuyla ve dosyalar, şablonlar ve imzalar
+için ataçla. Bültenler alışılmış görünümde kalır; Sohbet | Posta anahtarı
+da herhangi bir ileti dizisini iki biçime de çevirir.
+"""
+
+["2026-10-01-0946-forward-keeps-files"]
+title = "Yönlendirme dosyaları korur"
+text = """
+Bir iletiyi yönlendirmek artık eklerini de getirir; ekler iletinin
+altında gösterilir, böylece göndermeden önce istediğinizi
+çıkarabilirsiniz. Yönlendirmeyi yanıta çevirmek onları yeniden dışarıda
+bırakır.
+"""
+
+["2026-10-01-1009-forward-a-file"]
+title = "Yalnızca dosyayı yönlendirin"
+text = """
+Ek görüntüleyicinin üst çubuğunda bir Yönlendir düğmesi var: geldiği
+postayı eklemeden, yalnızca o dosyayı ek olarak taşıyan yeni bir posta
+başlatır. Önizlemesi olmayan dosyalar da Yönlendir sunar; açık bir
+postanın altındaki ek kartları da Kaydet'in yanında öyle.
+"""
+
+["2026-10-01-1039-rephrase-with-ai"]
+title = "Yapay zekâ ile yeniden ifade edin"
+text = """
+Bir iletide metin seçin ve yanındaki ışıltıya ya da Ctrl+J'ye basarak onu
+daha net, daha kısa, daha samimi ya da daha resmi biçimde yeniden
+yazdırın, ardından Değiştir'e basın. Katna AI 30 gün ücretsizdir; ya da
+Google Gemini, OpenAI, Claude, Mistral, DeepSeek, OpenRouter'dan kendi
+anahtarınızı veya bu bilgisayardaki bir modeli kullanın. Yapay zekâ
+cümlelerinizi griyle de tamamlayabilir; bunu Ayarlar > Oluşturma'dan
+açın.
+"""
+
+["2026-10-01-1043-header-details-selectable"]
+title = "Bir postanın ayrıntılarından kopyalayın"
+text = """
+“bana” altındaki ayrıntılar artık postanın kendisi gibi seçilip
+kopyalanabilir. O kişinin kartını postanın yanında görmek için bir adrese
+tıklayın ya da Adresi kopyala için sağ tıklayın. Sessize alınmış kişiler
+orada da üstü çizili zillerini gösterir.
+"""
+
+["2026-10-01-1112-left-bar-button"]
+title = "Her sayfada tek büyük düğme, tek katlama"
+text = """
+Sol çubuğun üstündeki büyük düğme artık her sayfada aynı görünür, aynı
+yerde durur ve o sayfanın kendi işini yapar: Posta ve Dosyalar'da
+Oluştur, ayrıca Yeni etkinlik, Yeni kişi, Yeni görev ve Yeni not. Sol
+çubuğu katlamak onu her yerde katlar; katlıyken her sayfanın düğmesi
+rayın en üstünde bekler. Telefonda yüzen düğmedir.
+"""
+
+["2026-10-01-1115-color-picker"]
+title = "Şema düzenleyicide renk seçici"
+text = """
+Şema düzenleyicide bir renge tıklayın, hemen yanında bir seçici açılır:
+kare ve renk tonu çubuğu üzerinde sürükleyin, bir hex değeri yazın,
+şemanın kendi renklerini ya da son seçimleri yeniden kullanın veya KDE ve
+GNOME'da damlalıkla ekranın herhangi bir yerinden renk alın.
+"""
+
+["2026-10-01-1130-contact-card-folds-folders"]
+title = "Kişi kartı kendine yer açar"
+text = """
+Klasör bölmesi ile kişi kartının yan yana sığmadığı dar bir pencerede,
+kart artık açılırken klasörleri katlar; kart kapanınca klasörler geri
+gelir. Kendiniz katladığınız klasörler katlı kalır.
+"""
+
+["2026-10-01-1132-open-mail-scroll-bar"]
+title = "Uzun postalarda kaydırma çubuğu"
+text = """
+Uzun bir ileti dizisi artık kaydırırken ya da üzerine gelirken Dosyalar
+sayfasındakiyle aynı sakin kaydırma çubuğunu gösterir. İki çubuk da artık
+daha ince ve işaretçi yaklaştıkça büyür. Herhangi bir yere atlamak için
+birini sürükleyin ya da boyunca bir yere tıklayın.
+"""
+
+["2026-10-01-1240-contact-card-close"]
+title = "Kişi kartını kaldırın, sohbette kimin olduğunu görün"
+text = """
+Bir ileti dizisinin yanındaki kişi kartının köşesinde bir ✕ var; aynı
+kişinin resmine ya da adresine yeniden tıklamak da kartı kaldırır. Sohbet
+görünümünde başlığa tıklamak, sohbetteki herkesi adresleri ve her birinin
+kaç posta gönderdiğiyle listeler.
+"""
+
+["2026-10-01-1241-two-blur-switches"]
+title = "Bulanıklık, sizin tercihinizle"
+text = """
+Bulanıklığın artık Ayarlar, Deneysel'de iki anahtarı var: biri pencere
+arka planı, biri de menüler ve iletişim kutuları için. Buzlu menüler,
+pencere arka planı opak bırakılsa bile varsayılan olarak açık.
+"""
+
+["2026-10-01-1502-fainter-row-lines"]
+title = "Postalar arasında daha sakin çizgiler"
+text = """
+Listedeki postalar arasındaki çizgiler artık daha soluk; böylece liste
+açık ve koyuda tek, sakin bir sütun gibi okunur.
+"""
+
+["2026-10-01-1505-contact-close-round"]
+title = "Her bölme için tek kapat düğmesi"
+text = """
+Kişi kartındaki ✕ artık açık postadaki ✕ ile aynı yuvarlak düğme;
+üzerine geldiğinizde aynı gri daireyi gösterir.
+"""
+
+["2026-10-01-1525-thread-count"]
+title = "Daha düzenli bir posta sayısı"
+text = """
+Bir ileti dizisindeki posta sayısı artık adların yanında küçük bir sohbet
+simgesiyle, yukarı kaldırılmış değil adların satırına ortalanmış olarak
+duruyor.
+"""
+
+["2026-10-01-1541-chat-attach-from-files"]
+title = "Sohbette Dosyalar'dan ekleyin"
+text = """
+Bir sohbette (Ayarlar > Deneysel) ataçta Dosyalar'dan seçeneği var:
+postalarınızla gelmiş ya da gitmiş herhangi bir dosyayı, bu ileti
+dizisininkiler başta olmak üzere seçin. Birkaçını işaretleyin, birine
+gözle bakın ve bir postanın taşıyabileceği 25 MB'a göre ne kadar yer
+tuttuklarını görün. Ataç artık yanıt kutusunun içinde duruyor; Aa da
+yalnızca bir sohbetin ihtiyaç duyduğu stilleri içeren ince bir çubuk açar.
+"""
+
+["2026-10-01-1553-rephrase-card-text"]
+title = "Yeniden ifade et yeni Gemini anahtarlarıyla çalışır"
+text = """
+Buzlu menüler açıkken Yeniden ifade et kartı (Ctrl+J) boş açılıyordu;
+önerileri artık buzlu camın üzerinde görünüyor. Yeni Gemini anahtarları
+artık 2.5 Flash-Lite'ı kullanamadığı için Google Gemini, siz başka bir
+model yazmadıkça gemini-3.5-flash-lite kullanır; yanlış bir anahtar da
+bunu söyler.
+"""
+
+["2026-10-01-1624-rephrase-button"]
+title = "Seçmeden yeniden ifade edin, öneriler daha hızlı"
+text = """
+Yeni bir iletinin altında Biçimlendirme'nin yanındaki ve sohbet
+görünümünün yanıt kutusundaki ışıltı, hiçbir şey seçili değilken
+yazdığınız her şeyi, seçim varsa yalnızca seçimi yeniden ifade eder;
+Ctrl+J de aynısını yapar. Yapay zekâyla daha uzun öneriler çok daha
+çabuk gelir; Ayarlar > Oluşturma'daki Model alanı da siz yazdıkça
+hizmetinizin sunduğu modelleri listeler.
+"""
+
+["2026-10-01-1626-dimmer-preview"]
+title = "Daha sakin bir önizleme satırı"
+text = """
+Listede her postanın konusunun altındaki önizleme metni artık daha soluk;
+böylece açık ve koyuda gönderen ve konu öne çıkar.
+"""
+
+["2026-10-01-1645-frosted-dialogs"]
+title = "Buzlu iletişim kutuları"
+text = """
+Buzlu menüler ve iletişim kutuları açıkken iletişim kutuları da buzlu
+camdır: Posta hesabı ekle, Hakkında, Yenilikler, güncellemeler, paylaşım,
+baskı önizlemesi, etiketler, silme ve kaldırma soruları, ilk açılış kartı
+ve Oluştur'un bağlantı iletişim kutusu.
+"""
+
+["2026-10-01-1650-chat-pins"]
+title = "Sohbette 5 öğeye kadar sabitleyin"
+text = """
+Bir sohbette (Ayarlar > Deneysel) en üstte tutmak için bir baloncuğun
+üzerine gelip raptiyeye basın ya da bir dosyaya sağ tıklayın. Başlığın
+altındaki ince bir çubuk sabitlediklerinizi gösterir: sırayla her birine
+atlamak için ona tıklayın ya da sürükleyerek sıralamak veya sabitlemeyi
+kaldırmak için listeyi açın. Sabitlenenler bu bilgisayarda kalır.
+"""
+
+["2026-10-01-1655-chat-signatures"]
+title = "Sohbetler imzaları ve alt bilgileri dışarıda bırakır"
+text = """
+Sohbet baloncukları artık yalnızca insanların yazdığını gösterir.
+“Saygılarımla” gibi kapanışlar, bir çizginin altındaki ya da adres ve
+telefon numaralı şirket imzaları, abonelikten çıkma bağlantıları veya
+uyarılar içeren alt bilgiler, birinin her postada tekrarladığı imzayla
+birlikte ··· balonunun arkasında bekler.
+"""
+
+["2026-10-01-1805-blur-amount"]
+title = "Buzlu menülerin görünümünü seçin"
+text = """
+Buzlu menüler ve iletişim kutuları artık daha net ve KDE'nin bulanıklık
+gücünü izliyor. Bulanıklık gücünü ve opaklığı kendiniz ayarlamak için
+Ayarlar, Deneysel, Bulanıklık'ta Özel bulanıklık miktarı'nı açın.
+"""
+
+["2026-10-01-1825-chat-company"]
+title = "Nerede çalıştıkları, kartlarında"
+text = """
+Bir sohbette (Ayarlar > Deneysel) bir kişinin kartında artık bir Şirket
+bölümü var: şirketin ne iş yaptığı, nerede olduğu, ne zamandan beri var
+olduğu ve web sitesiyle sayfalarına bağlantılar; şirketin kendi ana
+sayfasından ve Wikipedia'dan okunur. Gönderen resimleri anahtarını izler.
+"""
+
+["2026-10-02-0052-smooth-start-after-updates"]
+title = "Güncellemelerden sonra sorunsuz başlangıç"
+text = """
+Bir güncellemeden sonra Katna Mail, postalarınızı yeni sürüme hazırlarken
+artık posta deposunun açılamadığını söylemiyor. O birkaç saniye boyunca
+alışılmış yükleme resmini, ardından postalarınızı gösterir.
+"""
+
+["2026-10-02-0106-calmer-dialogs"]
+title = "Daha sakin iletişim kutuları"
+text = """
+Buzlu iletişim kutuları menülerden daha opak; böylece kalabalık bir posta
+listesi artık içlerinden görünmüyor. Hakkında, Yenilikler ve Güncellemeleri
+denetle arkalarındaki pencereyi karartmadan açılır.
+"""
+
+["2026-10-02-0111-chat-pin-text"]
+title = "Sohbetten birkaç sözcük sabitleyin"
+text = """
+Bir sohbette (Ayarlar > Deneysel) baloncuktaki metin artık herhangi bir
+posta gibi seçilip kopyalanabilir. Bir baloncukta seçtiğiniz sözcüklere
+sağ tıklayıp onları sohbetin sabitleme çubuğunda tutmak için En üste
+sabitle'yi seçin.
+"""
+
+["2026-10-02-0124-event-editor-clear"]
+title = "Etkinlik düzenleyicide Yeni etkinlik engel olmaz"
+text = """
+Sol çubuğun Yeni etkinlik düğmesi artık tam düzenleyicide yazdığınız ya da
+değiştirdiğiniz etkinliğin başlığının üzerinde durmuyor. Düzenleyici
+kapanınca geri gelir.
+"""
+
+["2026-10-02-0150-chat-format-bar"]
+title = "Sohbetlerde daha dolu bir Aa çubuğu"
+text = """
+Sohbet yanıt kutusunun Aa çubuğunda artık, önceki stillerinin yanında
+Oluştur'un araçları da var: geri al, yazı tipi, boyut, hizalama ve
+girintiler. Dar bir pencerede ikinci bir satıra geçer. Renk düğmesi metin
+renginizi ve vurgulamanızı yan yana gösterir; Oluştur'da da öyle.
+"""
+
+["2026-10-02-0210-conversation-summaries"]
+title = "Bir ileti dizisini özetleyin"
+text = """
+Bir ileti dizisine sağ tıklayıp Özetle'yi seçin ya da Shift+S'ye basın;
+yanında, dizinin ne hakkında olduğunu, neyin karara bağlandığını ve neyin
+sizi beklediğini söyleyen bir kart açılır; diziyi açmadan ya da okundu
+olarak işaretlemeden. Açık bir ileti dizisinde üstündeki ışıltı özeti
+konunun altına koyar; sohbet görünümünde ise başlığın altındaki bir
+şeritte durur. Her madde geldiği postayı belirtir; son okumanızdan bu
+yana yeni posta geldiyse özet yalnızca onu kapsar. Ayarlar > Oluşturma'da
+yapay zekâ ile yazma yardımının açık olması gerekir.
+"""
+
+["2026-10-02-0215-system-colors-follow-mode"]
+title = "Sistem renkleriyle Açık ve Koyu çalışır"
+text = """
+Renkler Sistem olarak ayarlıyken ve masaüstü şeması yalnızca koyu (ya da
+yalnızca açık) olduğunda, Ayarlar > Görünüm > Mod artık Katna'yı yeniden
+açık ve koyu arasında değiştiriyor: diğer taraf, masaüstünüzün vurgu
+renginde Katna'nın kendi renklerini kullanır.
+"""
+
+["2026-10-02-0218-signature-details-on-card"]
+title = "İmza ayrıntıları ait oldukları yerde"
+text = """
+Bir kişinin kartı artık imzasını bir blok olarak göstermiyor. Ayrıntıları
+ait oldukları yere gider: cep, doğrudan ya da faks olarak işaretlenmiş her
+telefon numarası iletişim ayrıntılarına; şirketin grubu, ofisleri, web
+sitesi ve sayfaları Şirket bölümüne. Sosyal sayfalar küçük, tek renkli
+simgeler olarak görünür; resimler, afişler ve alt bilgiler dışarıda kalır.
+"""
+
+["2026-10-02-0225-chat-subject-line"]
+title = "Sohbetin konusu değiştiğinde görün"
+text = """
+Bir sohbette (Ayarlar > Deneysel), kimin kimi eklediğini söylediği gibi,
+ortadaki küçük bir satır artık birinin konuyu ne zaman değiştirdiğini de
+söylüyor.
+"""
+
+["2026-10-02-0225-no-blur-ghost"]
+title = "İletişim kutusu kapanınca bulanık iz kalmaz"
+text = """
+Hakkında, Yenilikler, Güncellemeleri denetle ya da herhangi bir buzlu
+iletişim kutusunu veya menüyü kapatmak artık bir an için arkada bulanık
+bir leke bırakmıyor: bulanıklık iletişim kutusuyla birlikte kaybolur.
+"""
+
+["2026-10-02-0236-chat-on-phones"]
+title = "Sohbetler telefona sığar"
+text = """
+Telefon boyutundaki bir pencerede bir sohbet (Ayarlar > Deneysel), Geri ve
+⋮ ile tek bir başlık satırında kalır ve baloncukları genişliğin daha
+fazlasını kullanır. Menüsünü alttan açmak için bir baloncuğa basılı tutun;
+o kişinin kartını aynı şekilde görmek için bir ada ya da resme dokunun.
+Kaldırmak için ikisini de aşağı kaydırın ya da dışarıya dokunun.
+"""
+
+["2026-10-02-0258-frost-stays-on-scroll"]
+title = "Liste kayarken buzlu cam yerinde kalır"
+text = """
+Bir sohbetteki kişiler ya da uzun bir menü gibi kayan buzlu bir listede,
+buzlu arka plan artık satırlar üzerinden kayarken yerinde kalıyor.
+"""
+
+["2026-10-02-0301-rephrase-card-above-tools"]
+title = "Yeniden ifade et, biçimlendirme çubuğunun üstünde"
+text = """
+Yeniden ifade et kartı artık posta listesinin üzerinde değil, yanıt
+kutusunda ve Oluştur'da biçimlendirme çubuğunun hemen üstünde açılıyor.
+Yoldan çekmek için üstündeki küçük tutamaktan sürükleyin; bir dahaki sefere
+yine her zamanki yerinde açılır.
+"""
+
+["2026-10-02-0306-fainter-lines-light"]
+title = "Açık modda daha soluk çizgiler"
+text = """
+Açık modda listedeki postalar arasındaki ve açık bir postanın iletileri
+arasındaki çizgiler daha soluk; böylece sayfa daha sakin görünür.
+"""
+
+["2026-10-02-0315-card-button-bar"]
+title = "Kişi kartı düğmelerini elinizin altında tutar"
+text = """
+Kişi kartını kaydırdığınızda düğmeleri, kapat düğmesinin yanındaki ince,
+buzlu bir çubuğa kişinin küçük bir resmiyle birlikte yukarı kayar. Kapat
+düğmesi artık okuduğunuz şeyin üzerinde durmuyor.
+"""
+
+["2026-10-02-0412-button-hover"]
+title = "Düğmeler üzerine gelince yumuşakça vurgulanır"
+text = """
+Bir düğmenin üzerine geldiğinizde yuvarlak arka planı artık Gmail'deki
+gibi ortadan büyüyerek belirir ve uzaklaştığınızda hızla kaybolur.
+Yanıtla, Yönlendir ve diğer balon düğmeler yumuşakça belirir.
+"""
+
+["2026-10-02-0425-chat-draft-to-mail"]
+title = "Sohbet yanıtınız sizi Posta'ya izler"
+text = """
+Yanıt yazarken bir sohbeti Posta'ya geçirmek artık imleciniz hâlâ içinde
+olacak şekilde yanıta kaydırıyor; geri geçmek de onu korur.
+"""
+
+["2026-10-02-0425-write-reply"]
+title = "Yapay zekâ ile yanıt yazın"
+text = """
+Bir yanıt ya da yönlendirme henüz boşken Biçimlendirme'nin yanındaki
+ışıltı (ya da Ctrl+J) onu sizin için yazar. İleti dizisinden alınan üç
+fikirden birini seçin ya da ne söylemesi gerektiğini kendi sözlerinizle
+anlatın, ardından taslağı Ekle'ye basıp istediğinizi değiştirin. Yazmaya
+başladığınızda ışıltı yeniden ifade etmeye döner. Ayarlar > Oluşturma'da
+yapay zekâ ile yazma yardımının açık olması gerekir.
+"""
+
+["2026-10-02-0430-compose-beside-reply"]
+title = "Yanıt yarım kalmışken yeni ileti yazın"
+text = """
+Oluştur artık sohbette ya da ileti dizisinin altında yanıt yazarken bile
+yeni bir ileti açar. Yanıt bıraktığınız gibi bekler; yeni ileti
+gönderildiğinde ya da kapatıldığında veya o ileti dizisini yanıtlamak için
+yeniden tıkladığınızda geri gelir.
+"""
+
+["2026-10-02-0436-mark-unread-icon"]
+title = "Daha anlaşılır bir Okunmadı olarak işaretle simgesi"
+text = """
+Okunmadı olarak işaretle artık menülerde, araç çubuklarında ve bir
+postanın üzerine gelince çıkan düğmelerde noktalı bir zarf gösteriyor;
+böylece sıradan bir posta simgesine benzemiyor.
+"""
+
+["2026-10-02-0452-fainter-pane-lines"]
+title = "Daha sakin araç çubukları ve sekmeler"
+text = """
+Açık modda araç çubuklarının ve açık postanın başlığının altındaki, Yanıtla
+ve Yönlendir'in üstündeki çizgiler, postalar arasındaki çizgiler kadar
+soluk. Gelen kutusu sekmelerinin arkasındaki arka plan da daha açık.
+"""
+
+["2026-10-02-0453-google-drive-in-files"]
+title = "Google Drive'ınız Dosyalar'da"
+text = """
+Dosyalar artık her Google hesabının sürücüsünü yan sütundaki Sürücüler
+altında gösteriyor. Klasörlerini açın, içinde arayın ve bir dosyayı
+orada açın, ekleyin ya da indirin. İlk seferde, Katna'nın sürücüyü
+okuyabilmesi için İzin ver'e basın.
+"""
+
+["2026-10-02-0515-rephrase-subject"]
+title = "Konuyu yeniden ifade edin"
+text = """
+Bir konu yazdığınızda, satırının sonundaki bir ışıltı onu söylemenin
+konudan ve iletinizin o ana kadar söylediğinden yazılmış üç farklı yolunu
+sunar. Kullanmak için birini seçin; Geri al yazdığınızı geri getirir.
+Ayarlar > Oluşturma'da yapay zekâ ile yazma yardımının açık olması
+gerekir.
+"""
+
+["2026-10-02-0525-quieter-compose"]
+title = "Daha sakin bir Oluştur penceresi"
+text = """
+Yeni ileti penceresi, pencerenin kenarlarından eşit bir boşlukla yüzer.
+Kime, Bilgi, Gizli ve Kimden aralarında çizgi olmadan bir arada durur,
+alıcılar yumuşak dolgulu çiplerdir, Kimden de tek bir sakin satırdır.
+Şifreleme, imzalama, izleme ve okundu bilgileri küçük bir grubu paylaşır;
+yazma araçları da Gönder'in yanındaki yumuşak bir çubukta durur.
+"""
+
+["2026-10-02-0553-upload-to-drive"]
+title = "Dosyalar'dan Google Drive'a yükleyin"
+text = """
+Dosyalar'da bir Google Drive açıkken Oluştur düğmesi Yükle olur. Dosyaları
+açık klasöre göndermek için ona tıklayın ya da bütün bir klasörü yüklemek
+için okunu kullanın. İlk seferde, Katna'nın sürücünüze dosya
+ekleyebilmesi için İzin ver'e basın.
+"""
+
+["2026-10-02-0555-reply-from-summary"]
+title = "Özetten yanıtlayın"
+text = """
+Sağ tıklamayla açtığınız özet kartında artık Yanıtla var. Aynı kartı bir
+yanıta dönüştürür: bir fikir seçin ya da ne söylemesi gerektiğini
+anlatın, isterseniz taslağı değiştirin, ardından Gönder'e basın ya da
+yazmaya devam etmek için onu ileti dizisinde açın. Göndermeden
+kapattığınız bir yanıt, yanıt kutusunda bekler. Kart artık tıkladığınız
+yerde de açılır.
+"""
+
+["2026-10-02-0559-draft-saved-signature-tag"]
+title = "Taslaklar siz yazarken kaydedilir"
+text = """
+Yazdığınız ileti artık birkaç saniyede bir kendini Taslaklar'a kaydeder ve
+başlığının yanında sessizce “Taslak kaydedildi” görünür. İmzanızın
+yanındaki soluk bir etiket onun adını gösterir; başka birini seçmek için
+ona tıklayın. Oluştur penceresinin köşesi de yanındaki kartla hizalanır.
+"""
+
+["2026-10-02-0654-attach-from-drive"]
+title = "Google Drive'dan ekleyin"
+text = """
+Oluştur'un ataçı artık sohbetteki Dosyalar'dan ile aynı olan Dosyalar
+seçiciyi açıyor; Google Drive'ınız posta dosyalarınızın yanında, geri
+kalan her şey için de Bu bilgisayar… var. Sığan dosyalar postaya girer;
+büyük dosyalar ve Google Dokümanlar bağlantı olarak gider ve gönderdiğinizde
+alıcılarla paylaşılır.
+"""
+
+["2026-10-02-0734-peek-and-reply-in-notifications"]
+title = "Bildirimden göz atın ve yanıtlayın"
+text = """
+Yeni posta bildiriminde artık postanın kendisini aynı bildirimde gösteren
+Göz at ve yanıtınızı hemen orada yazıp Gönder'e bastığınız Yanıtla var.
+Yanıt, postanın geldiği hesaptan, Göndermeyi geri al sürenizden sonra
+gider; Geri al onu üzerinde yazmaya devam etmek için Katna Mail'de açar.
+Linux'ta yeni postanın kendine ait daha yüksek bir zil sesi de var;
+Ayarlar > Bildirimler'den başkasını seçin.
+"""
+
+["2026-10-02-0735-drive-viewer-opens-at-once"]
+title = "Drive dosyaları hemen açılır"
+text = """
+Sürücünüzden bir dosya açmak görüntüleyiciyi hemen getirir; dosya gelene
+kadar dönen bir yay gösterilir. Pencerenin altındaki notlar artık kendi
+tıklamalarını alıyor, böylece Kapat artık altındaki şeye tıklamıyor.
+"""
+
+["2026-10-02-0740-smaller-updates"]
+title = "Daha küçük güncellemeler"
+text = """
+Güncellemeler artık paketin tamamı yerine yalnızca değişeni, genellikle
+birkaç megabaytı indiriyor. Katna yeni sürümü elinizdekinden oluşturur ve
+yüklemeden önce denetler; bunu yapamadığında tam paketi indirir.
+"""
+
+["2026-10-02-0755-faint-lines-everywhere"]
+title = "Her yerde soluk çizgiler"
+text = """
+Açık modda öğeler arasındaki, başlıkların altındaki ve kartların
+çevresindeki her çizgi, özet kartı da dahil, artık postalar arasındaki
+çizgiler kadar soluk. Alanlar, çipler ve düğmeler net kenarlarını korur.
+"""
+
+["2026-10-02-0756-ai-replies-signed"]
+title = "Yapay zekâ yanıtları imzanızla biter"
+text = """
+Yapay zekânın yazdığı yanıtlar ve notlar artık “Saygılarımla” ve
+adınızla bitmiyor. Onun yerine imzanız onları imzalar: özet kartının
+yanıtında, metnin altındaki imza etiketi Oluştur'daki gibi hangisinin
+kullanılacağını seçer.
+"""
+
+["2026-10-02-0801-unified-inbox-tabs"]
+title = "Birleşik gelen kutusunda sekmeler"
+text = """
+Tüm hesaplarınızın gelen kutusunda artık sekmeler de var: Birincil,
+Tanıtımlar, Sosyal, Güncellemeler ve Forumlar; her hesabın postası kendi
+türünün sekmesinde. Her göndericinin yanındaki bir nokta, postanın hangi
+hesaba geldiğini gösterir. O hesabın kendi sekmelerini görmek için altından
+bir hesap seçin ya da Ayarlar > Gelen Kutusu'nda başka bir set seçin.
+"""
+
+["2026-10-02-0805-feeds-removed"]
+title = "Akışlar sol çubuktan kaldırıldı"
+text = """
+Katna sonuçta RSS ve Atom akışlarını okumayacak; bu yüzden Akışlar düğmesi
+ve “yakında” sayfası soldaki çubuktan kaldırıldı. Dosyalar Ctrl+7'yi
+korur.
+"""
+
+["2026-10-02-0820-drive-bin-and-rename"]
+title = "Sürücü dosyalarını yeniden adlandırın ve çöpe taşıyın"
+text = """
+Dosyalar'da Google Drive'ınızdaki ya da OneDrive'ınızdaki bir dosyanın
+veya klasörün menüsünde artık Yeniden adlandır ve Çöp kutusuna taşı var.
+Yeniden adlandır, adı yerinde üzerine yazarak değiştirir (F2); Çöp
+kutusuna taşı (Del) ise Geri al ile gelir.
+"""
+
+["2026-10-02-0827-files-chips-on-phones"]
+title = "Dosyalar çipleri telefona sığar"
+text = """
+Telefonda Dosyalar sayfasının çipleri artık kenarda kesilmiyor. Dosya
+türleri simgelerine katlanır, seçtiğiniz tür etiketini korur; kişi, gün
+ve sıralama çipleri de kendi satırlarına geçer.
+"""
+
+["2026-10-02-0828-uploads-tray"]
+title = "Yüklemelerinizi ilerlerken görün"
+text = """
+Google Drive'a ya da OneDrive'a yüklediğiniz dosyalar artık sağ altta bir
+tepside, her biri yüklendikçe dolan bir halka ve kalan süreyle görünüyor.
+Birini ya da hepsini iptal edin, tepsiyi katlayın; klasörünü açmak için
+tamamlanan bir dosyaya tıklayın.
+"""
+
+["2026-10-02-0838-drive-share"]
+title = "Sürücü dosyalarını Katna'dan paylaşın"
+text = """
+Dosyalar'da bir Google Drive ya da OneDrive dosyasının menüsündeki
+Paylaş…, bir Paylaş iletişim kutusu açar: kişileri Görüntüleyen, Yorumcu
+ya da Düzenleyen olarak ekleyin, zaten erişimi olanları değiştirin ya da
+kaldırın ve bağlantıya sahip herkese açın. Sürücü onlara yalnızca siz
+işaretlerseniz e-posta gönderir.
+"""
+
+["2026-10-02-0909-soft-search-box"]
+title = "Daha yumuşak bir arama kutusu"
+text = """
+Üstteki arama kutusu daha hafif: kalın renkli halkalı gri balon yerine,
+kullanmadığınız sürece çok soluk bir kenar ve dolgu, yazarken de yumuşak
+bir vurgu kenarlı beyaz bir alan.
+"""
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Güncellemeler daha erken geliyor"
+text = """
+Katna artık her saat ve bilgisayarınız uykudan uyandıktan hemen sonra yeni sürüm arıyor; böylece güncelleme bildirimi bir sürüm çıktıktan kısa süre sonra gelir.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Koyu modda da soluk çizgiler"
+text = """
+Koyu modda postalar arasındaki, başlıkların altındaki ve kartların çevresindeki çizgiler açık moddaki kadar soluktur. Alanlar, etiketler ve düğmeler net kenarlıklarını korur.
+"""
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Ara verdikten sonra da küçük güncellemeler"
+text = """
+Bir iki günlük yeni sürümleri atlasanız bile güncellemeler küçük kalır.
+Katna artık tüm paketi yeniden indirmek yerine sizdeki sürümden önceki
+sürümler üzerinden, her biri birkaç megabaytlık adımlarla ilerler.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Hangi postayı yanıtladığınızı görün"
+text = """
+Posta listesindeki bir satırda küçük bir yanıt oku, onu yanıtladığınızı
+gösterir: ileti dizisinin en yeni postasını burada ya da web'de siz
+yazmışsınızdır. Karşı taraf yanıt verince ok kaybolur.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Tepsi simgesi açık ve koyuya uyar"
+text = """
+Tek renkli tepsi simgesi artık yeni posta beklemeden, açık ve koyu arasında
+geçiş yaptığınız anda panelinizle birlikte değişir.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Yanıt fikirleri yolda olduklarını gösterir"
+text = """
+Bir özetin Yanıtla bölümünde ya da Yanıt yaz'da yanıt fikirleri istenirken,
+şekilleri artık özet yazılırkenki gibi nefes alır. Özet kartı da özet
+istenirken 0 yerine ileti dizisinde kaç posta olduğunu gösterir.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Dosyalar'da daha temiz köşeler"
+text = """
+Önizlemesi beyaz olan bir dosyanın üzerine gelince kartın üst köşelerinde
+artık beyaz görünmüyor, katlanmış yüklemeler tepsisinin üstü de yuvarlak
+ve Paylaş iletişim kutusunun köşesinde bir kapatma düğmesi var.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Aramayı temizlemek postanızı açık tutar"
+text = """
+Arama sonuçlarından bir posta açıp aramayı X ile temizleyin: klasörünüz
+geri gelirken posta listeye geri katlanmak yerine açık kalır.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Elektronik tablolarda yuvarlak köşeler"
+text = """
+Ek görüntüleyicideki bir elektronik tablonun artık dört köşesi de
+yuvarlak. Önceden üstteki gri sütun harfleri ve alttaki sayfa sekmeleri
+köşeleri keskinleştiriyordu.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Kartlarda temiz kişi bilgileri"
+text = """
+İmzadan alınan telefon numaraları, adresler ve diğer bilgiler artık fazladan
+yıldız işaretleri ya da açılı ayraç içinde bağlantı işaretleri göstermiyor.
+Bir iş arkadaşı accounts@ gibi paylaşılan bir adresten posta imzaladığında,
+kart o iş arkadaşının numarasını veya unvanını değil, yalnızca şirketin
+bilgilerini tutar.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Eklediğiniz dosyayı kontrol edin"
+text = """
+Yazdığınız iletiye eklenmiş bir dosyaya tıklayarak onu Katna'nın
+görüntüleyicisinde, gelen dosyaların açıldığı aynı görüntüleyicide açın
+ve doğru dosya olduğundan emin olun. Google Drive veya OneDrive bağlantısı
+olarak gönderilen bir dosya, sürücüde açılır.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Ayarlar'da kaydırma çubuğu"
+text = """
+Ayarlar'ın her sekmesinde artık açık bir postadaki ve Dosyalar'daki ile
+aynı ince kaydırma çubuğu var: siz kaydırırken ya da sayfanın üzerine
+gelirken görünür ve onu sürükleyebilirsiniz.
+"""

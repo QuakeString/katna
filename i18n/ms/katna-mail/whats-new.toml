@@ -1684,3 +1684,1485 @@ berombak atau melorek teks, atau melukis dengan pen, dalam warna yang
 anda pilih. Buat asal dengan Ctrl+Z, padam tanda dengan pemadam,
 kemudian simpan salinan bertanda. Lampiran asal kekal seperti asalnya.
 """
+
+["2026-09-29-1557-calendar-accounts-why"]
+title = "Mengapa akaun tiada kalendar"
+text = """
+Apabila kalendar sesuatu akaun tidak dipaparkan, Kalendar kini
+memberitahu jawapan pelayan, dan “Cuba lagi” terus mencarinya semula.
+Akaun Gmail atau Outlook yang ditambah dengan kata laluan menawarkan log
+masuk dengan Google atau Microsoft, yang diperlukan oleh kalendarnya.
+"""
+
+["2026-09-29-1610-one-checkbox"]
+title = "Kotak semak yang menanda"
+text = """
+Setiap kotak semak dalam Katna Mail kini sama saiz dengan butang bulat
+di sebelahnya. Tandanya terlukis apabila anda menandanya dan terpadam
+apabila anda mengosongkannya, dalam Tetapan, senarai mel, Kalendar,
+Kenalan, Nota dan dialog.
+"""
+
+["2026-09-29-1622-right-click-menu-fits"]
+title = "Menu klik kanan yang lebih pendek dan sentiasa muat"
+text = """
+Menu klik kanan senarai mel mengekalkan tindakan harian di atas dan
+meletakkan yang lain di bawah “Susulan” (tugas, nota, mesyuarat,
+panggilan) dan “Lagi” (spam, kepentingan, semat). Ia dibuka di tempat
+anda klik dan kekal di dalam tetingkap; dalam tetingkap yang pendek atau
+sempit, submenu dibuka di tempat menu.
+"""
+
+["2026-09-29-1627-contacts-accounts-why"]
+title = "Mengapa akaun tiada kenalan"
+text = """
+Apabila kenalan sesuatu akaun tidak dipaparkan, Kenalan kini memberitahu
+jawapan pelayan, dan “Cuba lagi” terus mencarinya semula. Akaun Gmail
+atau Outlook yang ditambah dengan kata laluan menawarkan log masuk
+dengan Google atau Microsoft, yang diperlukan oleh kenalannya.
+"""
+
+["2026-09-29-1640-search-box-focus"]
+title = "Kotak carian menunjukkan bila ia aktif"
+text = """
+Kotak carian di bahagian atas mendapat tepi berwarna aksen semasa anda
+menaip di dalamnya, seperti setiap medan lain, dan petunjuk Ctrl+F nya
+beralih ke tepi sehingga anda membiarkannya kosong.
+"""
+
+["2026-09-29-1612-tasks-board-rows"]
+title = "Setiap senarai tugas kelihatan"
+text = """
+“Semua tugasan” kini menunjukkan seberapa banyak senarai bersebelahan
+yang muat dalam tetingkap, dengan lebih banyak baris di bawah, jadi
+setiap senarai boleh dicapai. Senarai baharu menatal ke dalam paparan
+sebaik sahaja anda membuatnya.
+"""
+
+["2026-09-29-1653-smooth-attachment-paging"]
+title = "Beralih antara lampiran dengan lancar"
+text = """
+Pergi ke lampiran seterusnya atau sebelumnya dalam pemapar dengan anak
+panah tidak lagi berkelip. Pemapar kekal terbuka dan fail seterusnya
+menggantikan fail terakhir sebaik sahaja ia sedia.
+"""
+
+["2026-09-29-1656-drag-notes"]
+title = "Seret nota untuk menyusunnya"
+text = """
+Seret nota pada papan Nota untuk mengalihkannya, seperti dalam Keep.
+Nota lain meluncur ke tepi untuk memberi ruang, dan ia kekal di tempat
+anda melepaskannya. Ctrl+Z mengembalikannya. Kad kini tersusun rapat
+dalam lajurnya, tanpa ruang kosong di bawah nota pendek.
+"""
+
+["2026-09-29-1707-calendar-right-click"]
+title = "Klik kanan pada Kalendar"
+text = """
+Klik kanan masa atau hari yang lapang untuk menambah acara, masa fokus
+atau di luar pejabat di situ. Klik kanan acara untuk mengedit, menduakan,
+memadam, menjawab, menyertai, menghantar e-mel kepada tetamu, mewarnakan
+atau mengalihkannya ke kalendar lain, dan tugas untuk menandainya selesai,
+membintanginya, memberinya hari lain atau memadamnya. Buat asal mengembalikan
+perubahan.
+"""
+
+["2026-09-29-1725-pdf-notes-and-text"]
+title = "Nota dan teks pada PDF"
+text = """
+Menanda PDF kini ada nota lekat dan kotak teks: klik halaman, taip, dan
+tekan Ctrl+Enter. Tuding pada nota untuk membacanya, atau klik untuk
+mengubahnya. Balas menghantar salinan bertanda anda terus dalam balasan
+kepada mesej itu.
+"""
+
+["2026-09-29-1657-tasks-drag-to-place"]
+title = "Seret tugasan ke tempat yang anda mahu"
+text = """
+Seret tugasan ke atas atau ke bawah dalam senarainya, atau ke senarai lain,
+dan tugasan di situ akan beralih ke tepi untuk menunjukkan tempat ia akan
+diletakkan. Google Tasks menyimpan susunan baharu itu pada telefon anda
+juga, dan Buat asal meletakkan tugasan itu semula.
+"""
+
+["2026-09-29-1719-calendar-task-tab"]
+title = "Tambah tugasan dari Kalendar"
+text = """
+Kad acara baharu ada tab Tugasan, seperti dalam Google Calendar. Klik satu
+masa, pilih Tugasan, dan tajuk, hari serta masa menjadi tugasan dalam
+senarai yang anda pilih, dengan keterangan jika anda mahu.
+"""
+
+["2026-09-29-1758-calendar-new-task-here"]
+title = "Tambah tugasan dari Kalendar"
+text = """
+Klik kanan masa atau hari yang lapang pada Kalendar dan pilih Tugasan untuk
+menambah tugasan di situ. Kad acara baharu dibuka pada tab Tugasannya
+dengan hari dan masa itu sudah diisi.
+"""
+
+["2026-09-30-0113-calendar-server-unreachable"]
+title = "Kalendar mencari semula selepas pelayan yang perlahan"
+text = """
+Apabila pelayan kalendar sesuatu akaun tidak menjawab dalam masa,
+Kalendar kini memberitahunya, dan sama ada sambungan atau jabat tangan
+selamat yang tersekat, bukannya "Tiada kalendar ditemui". Ia cuba lagi
+dalam beberapa minit, bukan beberapa jam.
+"""
+
+["2026-09-30-0123-contact-files-fill"]
+title = "Fail kenalan menunjukkan muat turunnya"
+text = """
+Fail dalam panel kenalan yang melnya belum ada pada komputer ini kini
+terisi semasa dimuat turun, seperti lampiran dalam senarai, kemudian
+dibuka.
+"""
+
+["2026-09-30-0135-new-account-mail-shows-as-it-arrives"]
+title = "Mel akaun baharu dipaparkan sebaik sahaja tiba"
+text = """
+Selepas anda menambah akaun, Peti Masuknya dimuat turun dahulu dan terisi
+semasa anda melihat, bukannya kekal pada "Mendapatkan mel anda…" sehingga
+setiap folder selesai. Folder lain terisi dengan cara yang sama.
+"""
+
+["2026-09-30-0159-checkbox-matches-icons"]
+title = "Kotak semak sebaris dengan ikon"
+text = """
+Kotak semak kini sedikit lebih kecil, sama saiz dengan ikon bintang dan
+label di sebelahnya dalam senarai mel. Ia tetap mudah diklik, dan tandanya
+masih terlukis.
+"""
+
+["2026-09-30-0201-zoho-calendars"]
+title = "Kalendar Zoho melalui sambungan Zoho sendiri"
+text = """
+Zoho menyediakan kalendar kepada apl lain pada port yang disekat oleh
+banyak rangkaian, jadi selepas “Log masuk dengan Zoho”, Kalendar
+membacanya melalui API Zoho sendiri. Acara Zoho anda dipaparkan di
+sebelah kalendar anda yang lain; mengubahnya daripada Katna akan datang
+kemudian.
+"""
+
+["2026-09-30-0216-zoho-tasks"]
+title = "Tugas Zoho"
+text = """
+Log masuk dengan Zoho pada akaun Zoho dan tugas Zoho ToDo miliknya
+dipaparkan dalam Tugas, dua hala: tambah, edit, tanda atau padam tugas
+dalam Katna dan ia turut berubah dalam Zoho.
+"""
+
+["2026-09-30-0224-checkbox-tick-centred"]
+title = "Tanda di tengah pada semua saiz"
+text = """
+Dengan Tetapan > Penampilan > Penskalaan melebihi 100%, tanda kotak
+semak terletak sedikit ke atas dan ke kiri. Tepi kotak semak dan butang
+bulat kini membesar mengikut skala, jadi tandanya berada di tengah pada
+setiap saiz.
+"""
+
+["2026-09-30-0230-edges-follow-scaling"]
+title = "Garis luar mengikut Penskalaan"
+text = """
+Apabila Penskalaan dalam Tetapan > Penampilan melebihi atau kurang
+daripada 100%, garis luar aksen pada kotak carian dan medan yang difokus,
+serta tepi kad pilihan dan cincin tugas, kini membesar dan mengecil
+bersama yang lain dan tidak lagi kekal nipis.
+"""
+
+["2026-09-30-0326-google-sign-in-network"]
+title = "Log masuk dengan Google pada setiap rangkaian"
+text = """
+Log masuk dengan Google tidak lagi terhenti dengan “peer closed
+connection” pada rangkaian yang memutuskan sambungan Google terlalu awal.
+Jika anda menyahtanda Gmail pada halaman Google, Katna kini memberitahu
+anda dan tidak gagal kemudian.
+"""
+
+["2026-09-30-0504-google-api-turned-off"]
+title = "Memberitahu API Google mana yang dimatikan"
+text = """
+Apabila Google mematikan sesuatu API untuk Katna, Kenalan, Kalendar, Tugas
+dan fail Drive kini menyatakan yang mana dalam satu baris pendek, dengan
+butang Hidupkan yang membuka halaman Google untuknya, dan bukan lagi ralat
+mentah Google.
+"""
+
+["2026-09-30-0507-newest-mail-first"]
+title = "Mel terbaharu didahulukan"
+text = """
+Apabila anda menambah akaun, Katna Mail kini memuat turun mel terkini anda
+dahulu, kemudian mel yang lebih lama, jadi mesej hari ini terus muncul di
+atas peti masuk. Jika muat turun terganggu, mel yang lebih lama
+disambung pada kali berikutnya.
+"""
+
+["2026-09-30-0601-keyring-at-login"]
+title = "Menunggu dompet anda semasa log masuk"
+text = """
+Jika KWallet atau GNOME Keyring masih berkunci semasa Katna bermula, dan
+tetingkap buka kuncinya ditutup, akaun anda tidak lagi menunjukkan kata
+laluan salah. Akaun menunggu dan mula menyegerak sendiri sebaik sahaja
+anda membuka kunci dompet, tanpa perlu keluar daripada Katna. Segerak kini
+meminta anda membuka kuncinya semula.
+"""
+
+["2026-09-30-0606-pdf-rotate-and-top-bar"]
+title = "Putar halaman PDF"
+text = """
+Pemapar PDF kini boleh memutar halaman ikut arah jam atau lawan arah jam
+(Ctrl+R dan Ctrl+Shift+R), dan salinan bertanda disimpan mengikut putaran
+anda. Nombor halaman dan zum telah berpindah ke bar atas, jadi tiada apa
+yang menutup halaman.
+"""
+
+["2026-09-30-0610-calendar-events-stay-put"]
+title = "Acara kekal di tempatnya"
+text = """
+Mengklik acara atau tugas dalam Kalendar, kemudian menukar paparan, tidak
+lagi membuatnya mengikut penuding. Acara kini hanya beralih semasa anda
+menahan butang dan menyeretnya, dan menukar paparan atau halaman, menekan
+Esc atau membuka kadnya akan mengembalikannya tanpa perubahan.
+"""
+
+["2026-09-30-0620-checkbox-partial-centred"]
+title = "Kotak separa bertanda kelihatan seimbang"
+text = """
+Apabila hanya sebahagian mesej dipilih, segi empat di dalam kotak pilih
+semua kini mempunyai jarak yang sama pada setiap sisi, tidak kira skala
+antara muka anda.
+"""
+
+["2026-09-30-0632-year-view-day-peek"]
+title = "Lihat rancangan sehari dari paparan Tahun"
+text = """
+Dalam paparan Tahun Kalendar, letakkan penuding pada hari yang bertitik
+untuk melihat acara dan tugasnya dalam popover kecil di sebelahnya,
+masing-masing dengan ikon yang menunjukkan jenis dan waktunya. Klik satu
+untuk membukanya, atau nama hari untuk membuka hari itu. Pada telefon,
+ketik hari tersebut.
+"""
+
+["2026-09-30-0650-notification-opens-own-window"]
+title = "Pemberitahuan membuka mel di hadapan"
+text = """
+Mengklik pemberitahuan mel baharu membuka mel itu dalam tetingkapnya
+sendiri, di hadapan, tidak kira apa yang sedang ditunjukkan oleh Katna.
+Balas semua membukanya dengan balasan sedia untuk ditaip. Arkibkan
+menyimpan mel tanpa membuka apa-apa dan memberitahu anda dalam nota
+pendek dengan Buat asal.
+"""
+
+["2026-09-30-0700-event-card-join-any-call"]
+title = "Sertai panggilan Teams dan Zoom dari Kalendar"
+text = """
+Kad acara kini mencari panggilan dalam keterangan atau lokasinya, jadi
+jemputan Microsoft Teams, Zoom, Webex, Jitsi atau Google Meet mendapat
+butang “Sertai dengan” di bahagian atas. Alamat web dalam keterangan
+menjadi pautan, baris garis bawah telah hilang, dan Hadir? kekal di
+bawah semasa butiran ditatal.
+"""
+
+["2026-09-30-0715-click-away-closes-viewer"]
+title = "Klik di luar untuk menutup"
+text = """
+Klik ruang malap di sekeliling lampiran untuk menutup pemapar, tanpa
+perlu mencapai butang kembali. Klik pada halaman itu sendiri masih
+memilih teks dan menanda seperti sebelum ini.
+"""
+
+["2026-09-30-0729-add-account-and-pop3"]
+title = "Tambah akaun yang baharu, dan POP3"
+text = """
+Menambah akaun bermula dengan pembekal anda: Google, Yahoo, iCloud, Zoho,
+Fastmail, GMX, Yandex atau yang lain. Katna menyatakan apa yang diperlukan
+oleh pembekal dahulu, menunjukkan setiap langkah semasa menyambung, dan
+berakhir dengan apa yang telah disediakan. Akaun POP3 juga berfungsi, dan
+Tetapan > Akaun menentukan berapa lama mel kekal pada pelayan.
+"""
+
+["2026-09-30-0802-ctrl-wheel-zoom"]
+title = "Zum dengan Ctrl dan roda tetikus"
+text = """
+Dalam pemapar lampiran, tahan Ctrl dan putar roda tetikus untuk zum masuk
+dan keluar di sekitar penuding, atau cubit pada pad sentuh. Ia berfungsi
+untuk PDF, gambar, fail teks, hamparan dan dokumen.
+"""
+
+["2026-09-30-0817-event-open-the-mail"]
+title = "Buka mel di sebalik acara"
+text = """
+Acara yang dibuat oleh Gmail daripada mel, seperti kereta api, penerbangan
+dan hotel, mendapat butang Buka mel pada kadnya. Ia membuka mel itu dalam
+Katna, atau dalam Gmail jika Katna tidak memilikinya. Tugas yang dibuat
+daripada mel juga membuka melnya dari kadnya dalam Kalendar, dan Buat
+nota mesyuarat dibuka tanpa berkelip.
+"""
+
+["2026-09-30-0843-calendar-side-panel-menus"]
+title = "Urus kalendar dari panel sisi"
+text = """
+Klik kanan kalendar dalam panel sisi Kalendar untuk menunjukkan kalendar
+itu sahaja, menukar warnanya, menamakannya semula atau memadamnya. Klik
+kanan nama akaun untuk membuat kalendar baharu dalam akaun itu atau
+menunjukkan dan menyembunyikan semua kalendarnya. Perubahan dihantar ke
+perkhidmatan mel anda, jadi ia kelihatan di mana-mana sahaja anda
+menggunakannya.
+"""
+
+["2026-09-30-1010-unread-list-keeps-open-mail"]
+title = "Mel belum dibaca kekal terbuka"
+text = """
+Membuka perbualan dalam Semua Akaun > Belum dibaca tidak lagi menutupnya
+serta-merta. Membacanya menandainya sebagai dibaca, dan ia kekal dalam
+senarai sehingga anda menutupnya atau membuka yang lain.
+"""
+
+["2026-09-30-1045-tracked-mail-arrives"]
+title = "Mel yang dijejaki sampai semula"
+text = """
+Mel yang dihantar dengan penjejakan dihidupkan boleh muncul dalam Dihantar
+tanpa sampai kepada sesiapa. Kini ia dihantar kepada setiap penerima. Mel
+yang hilang dengan cara ini perlu dihantar semula.
+"""
+
+["2026-09-30-1114-no-checking-pill"]
+title = "Tiada lagi pil semakan"
+text = """
+“Menyemak mel baharu…” tidak lagi muncul di atas senarai. Anak panah
+berpusing pada butang muat semula dan pada peti masuk setiap akaun sudah
+menunjukkan bahawa mel sedang disemak, dan semakan yang gagal masih
+menyatakan apa yang tidak kena.
+"""
+
+["2026-09-30-1300-windows-sign-in-and-domains"]
+title = "Log masuk dengan Google pada Windows"
+text = """
+Katna untuk Windows kini menawarkan Log masuk dengan Google dan Zoho,
+seperti pada Linux, dan mengenal pasti siapa yang mengehos mel pada domain
+anda sendiri, seperti alamat Google Workspace, apabila anda menambah akaun.
+"""
+
+["2026-09-30-1511-mail-tables"]
+title = "Jadual dalam mel dipaparkan dengan betul"
+text = """
+Jadual dalam mel, seperti senarai kerja dalam pemberitahuan GitHub Actions,
+mengekalkan lajurnya bersebelahan dan menyelaraskannya dari baris ke baris,
+dan tidak lagi memecahkan tajuk kepada satu huruf setiap baris. Garis
+pemisah antara bahagian mesej kini turut dipaparkan.
+"""
+
+["2026-09-30-1550-taller-important-marker"]
+title = "Penanda Penting yang lebih tinggi"
+text = """
+Penanda Penting di sebelah bintang kini 2 px lebih tinggi, jadi ia tidak
+lagi kelihatan terhimpit di sebelah bintang dan kotak semak. Ia kekal di
+tengah baris.
+"""
+
+["2026-09-30-1617-folder-click-goes-to-top"]
+title = "Kembali ke atas senarai"
+text = """
+Sebaik sahaja senarai mel ditatal ke bawah satu skrin, butang bulat di
+bahagian bawah kanannya membawanya kembali ke atas. Mengklik folder yang
+sedang anda buka, seperti Peti Masuk, melakukan perkara yang sama, seperti
+dalam Gmail, begitu juga kekunci Home.
+"""
+
+["2026-09-30-1622-send-from-file-manager"]
+title = "Hantar fail dari pengurus fail anda"
+text = """
+Klik kanan fail atau folder dalam Dolphin, GNOME Files atau Windows
+Explorer dan pilih Hantar dengan Katna Mail: mesej baharu dibuka dengan
+fail itu dilampirkan, dan folder dihantar sebagai zip. Jika anda ada lebih
+daripada satu akaun mel, pilih akaun penghantar dalam submenunya.
+"""
+
+["2026-09-30-1624-files-page"]
+title = "Setiap fail di satu tempat"
+text = """
+Halaman Fail yang baharu, di bahagian bawah bar apl, menunjukkan setiap
+lampiran daripada setiap akaun, yang terbaharu dahulu. Hadkan kepada
+gambar, PDF atau dokumen, kepada satu akaun, seseorang atau satu tempoh
+masa, atau cari mengikut nama, pengirim atau subjek. Klik kanan fail untuk
+pilihan lain, dan Tunjukkan mel membawa anda ke mel yang disertainya.
+"""
+
+["2026-09-30-1643-dimmer-row-markers"]
+title = "Senarai mel yang lebih tenang"
+text = """
+Kotak semak kosong, bintang atau penanda Penting dalam senarai mel lebih
+malap sehingga penuding berada di atas barisnya. Bintang dan penanda yang
+ditetapkan mengekalkan warnanya.
+"""
+
+["2026-09-30-1704-folder-arrows-on-hover"]
+title = "Anak tetingkap folder yang lebih kemas"
+text = """
+Anak panah kecil di sebelah Peti Masuk, Dibintangi dan folder lain hanya
+muncul semasa penuding berada di atas folder itu. Folder yang telah anda
+kembangkan mengekalkan anak panahnya.
+"""
+
+["2026-09-30-1712-arrow-keys-in-times"]
+title = "Kekunci anak panah dalam kotak masa"
+text = """
+Dalam Pilih tarikh & masa, dan dalam masa tugas, Atas dan Bawah mengubah
+bahagian tempat kursor berada: jam, minit atau AM/PM.
+"""
+
+["2026-09-30-1742-check-one-folder"]
+title = "Semak mel baharu dalam satu folder"
+text = """
+“Semak mel baharu” dalam menu klik kanan folder kini hanya menyemak folder
+itu, jadi ia pantas. Pada peti masuk akaun di bawah Semua Akaun, ia
+menyemak peti masuk akaun itu, dan pada senarai seperti Peti Masuk atau
+Dihantar di bawah Semua Akaun, ia menyemak folder itu dalam setiap akaun.
+"""
+
+["2026-09-30-1742-frosted-viewer"]
+title = "Pemapar kaca fros yang lebih ringan"
+text = """
+Bar atas pemapar lampiran lebih langsing dan lebih ringan, dan halaman, zum
+dan putaran terletak pada satu pil. Di sekeliling fail, Katna Mail
+kelihatan kabur di bawah tirai gelap yang lembut, dan bar alat juga
+menjadi kaca fros. Kesan kabur mengikut Tetapan > Percubaan; tanpanya,
+pemapar menggunakan tirai gelap biasa.
+"""
+
+["2026-09-30-1752-touchpad-glide"]
+title = "Kibasan pad sentuh meluncur"
+text = """
+Kibasan pantas dua jari pada pad sentuh terus menatal dan perlahan-lahan
+berhenti, seperti dalam apl lain. Sentuh pad sentuh sekali lagi untuk
+menghentikannya. Pada Wayland.
+"""
+
+["2026-09-30-1800-inbox-tabs-in-top-row"]
+title = "Tab peti masuk di baris atas"
+text = """
+Utama, Promosi, Sosial dan tab peti masuk yang lain kini terletak dalam
+bar pil di baris atas senarai, masing-masing dengan kiraan berwarna bagi
+mel yang belum dibaca. Serlahan menggelongsor ke tab yang anda pilih, dan
+mengklik tab yang terbuka membawa senarainya kembali ke atas. Apabila
+senarai sempit, bar itu mengambil barisnya sendiri dan menunjukkan ikon,
+sambil mengekalkan nama tab yang terbuka; pada telefon ia terletak dalam
+bar senarai, dengan Muat semula dalam menu Lagi.
+"""
+
+["2026-09-30-1805-account-menu"]
+title = "Maklumat akaun dalam menu klik kanan"
+text = """
+Klik kanan nama akaun dalam senarai folder, atau peti masuknya di bawah
+Semua Akaun, untuk melihat alamatnya, sama ada ia disegerakkan dan bila
+kali terakhir disemak, serta berapa banyak storan yang digunakannya. Dari
+situ anda boleh menyemak peti masuk itu, menulis mel baharu daripada
+akaun itu, membuka tetapannya, atau log masuk semula apabila log masuk
+telah tamat tempoh.
+"""
+
+["2026-09-30-1819-glass-search-box"]
+title = "Kotak carian kaca"
+text = """
+Dengan latar belakang kabur dihidupkan, kotak carian menjadi kaca fros
+dengan tepi yang samar semasa tidak digunakan, dan menjadi padu apabila
+anda mengkliknya untuk menaip.
+"""
+
+["2026-09-30-1820-search-cancel-restores"]
+title = "Batalkan carian, dapatkan semula mel anda"
+text = """
+Escape atau mengosongkan kotak carian kini membawa anda kembali ke tempat
+asal: folder yang sama, kedudukan yang sama dalam senarai dan mel yang
+anda buka. Jika anda membuka hasil carian, carian itu mengambil alih
+seperti sebelum ini.
+"""
+
+["2026-09-30-1840-first-run-window"]
+title = "Permulaan pertama yang lebih mesra"
+text = """
+Semasa anda menyediakan Katna Mail, tetingkap kelihatan di belakang
+halaman persediaan di bawah tirai cerah: apl, Karang dan kotak carian,
+dengan ruang letak lembut di tempat folder dan mel anda akan muncul.
+Langkah baharu menawarkan akaun Katna dan menyenaraikan apa yang
+dihidupkannya (resit baca, penjejakan pautan, Aktiviti dan terjemahan),
+atau anda boleh melangkauinya.
+"""
+
+["2026-09-30-1850-windows-frame-and-blur"]
+title = "Bingkai dan kesan kabur Katna pada Windows"
+text = """
+Pada Windows, Katna Mail kini dibuka di dalam skrin, dimaksimumkan jika
+skrin kecil. Tetapan > Percubaan boleh mengaburkan apa yang di belakang
+tetingkap, dan bingkai Katna sendiri menjadikan bar atas sebagai bar
+tajuk pada kali seterusnya anda membuka Katna Mail.
+"""
+
+["2026-09-30-1851-dark-depth"]
+title = "Lebih jelas dalam warna gelap"
+text = """
+Dalam warna gelap, unsur yang terapung di atas senarai mel kini sedikit
+lebih cerah dengan tepi cerah yang samar, kerana bayang hampir tidak
+kelihatan pada latar gelap. Butang Kembali ke atas, menu, tetingkap
+Karang dan dialog kelihatan dengan jelas. Warna cerah kekal seperti
+sebelum ini.
+"""
+
+["2026-09-30-1911-files-scrollbar"]
+title = "Bar tatal pada halaman Fail"
+text = """
+Apabila fail terlalu banyak untuk dimuatkan, bar tatal nipis muncul di
+sebelah kanan semasa anda menatal atau semasa penuding berada di atas
+fail, kemudian pudar. Seretnya untuk bergerak melalui fail dengan pantas,
+atau klik di atas atau di bawahnya untuk melompat ke situ.
+"""
+
+["2026-09-30-1919-tabs-keep-open-mail"]
+title = "Bertukar tab mengekalkan mel yang terbuka"
+text = """
+Dengan anak tetingkap bacaan di sebelah senarai, memilih tab peti masuk
+yang lain tidak lagi menutup mel yang sedang anda baca; senarai berubah
+dan mel kekal terbuka.
+"""
+
+["2026-09-30-1925-inbox-tabs-centred"]
+title = "Tab peti masuk di tengah"
+text = """
+Tab peti masuk kini terletak di tengah baris atas senarai, dan hanya
+beralih ke tepi sejauh yang diperlukan oleh butangnya.
+"""
+
+["2026-09-30-1945-page-box-arrow-keys"]
+title = "Kekunci anak panah dalam kotak halaman"
+text = """
+Dalam PDF, klik nombor halaman dan tekan Atas atau Bawah untuk pergi ke
+halaman sebelumnya atau seterusnya. Tahan kekunci untuk menyelak halaman
+dengan pantas.
+"""
+
+["2026-09-30-1952-phone-bar-labels"]
+title = "Nama apl pada telefon mengikut tetapan anda"
+text = """
+Dengan nama apl dimatikan dalam Tetapan, bar di bahagian bawah tetingkap
+bersaiz telefon kini hanya menunjukkan ikon, di tengah, seperti rel sisi.
+"""
+
+["2026-09-30-1955-account-menu-icons"]
+title = "Tetapan dan bahasa dalam menu akaun"
+text = """
+Menu di bawah gambar akaun anda kini dibuka dengan sebaris ikon: buka
+Tetapan atau tukar bahasa. Bendera bahasa telah meninggalkan bar atas
+untuk memberi ruang.
+"""
+
+["2026-09-30-2001-phone-tabs-fold"]
+title = "Setiap tab peti masuk kekal dalam capaian"
+text = """
+Apabila tetingkap sempit, tab peti masuk melipat dengan lancar dan tidak
+lagi tersembunyi: label bertukar menjadi ikon yang lebih besar, kemudian
+kiraan beralih ke tepi. Pada telefon, tab merentangi seluruh bar, mudah
+diketik, dengan Lagi di hujung pil yang sama.
+"""
+
+["2026-09-30-2012-fit-and-page-arrows"]
+title = "Muat, anak panah halaman dan banyak lagi dalam pemapar"
+text = """
+Pemapar lampiran mempunyai butang Muat: halaman PDF dimuatkan pada
+ketinggian tetingkap, gambar pada tetingkap, dan dokumen, slaid serta
+hamparan pada lebarnya. Gambar juga mendapat Saiz sebenar dan boleh
+diputar. Halakan penuding ke kotak halaman untuk anak panah kecil bagi
+pergi ke halaman sebelumnya atau seterusnya, dan slaid mendapat kotaknya
+sendiri.
+"""
+
+["2026-09-30-2019-folder-icon-colours"]
+title = "Ikon folder berwarna-warni"
+text = """
+Ikon dalam anak tetingkap folder kini mempunyai warna yang menunjukkan
+kandungan setiap folder: Belum dibaca biru, Dibintangi kuning, Penting
+ambar, Dihantar hijau, Spam merah, Draf ungu, dan Peti Masuk dalam warna
+aksen desktop anda. Kiraan mel terletak dalam pil kecil yang samar.
+"""
+
+["2026-09-30-2040-tabs-no-slide"]
+title = "Tab peti masuk yang lebih pantas"
+text = """
+Mengklik tab peti masuk kini menyerlahkannya serta-merta, dengan hanya
+riak klik, dan serlahan tidak lagi menggelongsor merentasi tab lain.
+"""
+
+["2026-10-01-0145-files-tidy"]
+title = "Halaman Fail yang lebih kemas"
+text = """
+Kiraan di sebelah setiap jenis fail dan setiap akaun kini terletak dalam
+pil kecil yang sama seperti kiraan folder dalam Mel. Garis di bawah tajuk
+halaman dan baris fail juga bermula dan berakhir pada tepi yang sama.
+"""
+
+["2026-10-01-0147-today-marker-fits"]
+title = "Tarikh hari ini muat dalam penandanya"
+text = """
+Dalam paparan Bulan Kalendar, penanda hari ini kini memuatkan seluruh
+tarikh. Pada hari pertama bulan, ia menjadi pil di sekeliling “01 Okt”,
+bukan bulatan kecil yang labelnya terkeluar.
+"""
+
+["2026-10-01-0208-tab-counts-stay"]
+title = "Kiraan tab kekal di tempatnya"
+text = """
+Membuka tab peti masuk tidak lagi membuat bar tab melompat. Tab yang
+terbuka mengekalkan kiraan mel baharunya, yang perlahan-lahan pudar
+menjadi kelabu tenang, dan kiraan itu melipat dengan lancar sebaik sahaja
+anda membaca semua dalam tab itu.
+"""
+
+["2026-10-01-0225-files-keyboard"]
+title = "Bergerak melalui fail dengan papan kekunci"
+text = """
+Pada halaman Fail, kekunci anak panah kini bergerak antara fail, Home dan
+End pergi ke yang pertama dan terakhir, dan Enter membuka fail. Dalam
+pemapar yang dibuka dari situ, anak panah pergi ke fail seterusnya pada
+halaman, daripada mel mana pun ia datang; Shift dan anak panah kekal
+dengan lampiran mel yang sama.
+"""
+
+["2026-10-01-0254-files-dates"]
+title = "Pilih hari pada halaman Fail"
+text = """
+Cip masa pada halaman Fail kini membuka kalendar dua bulan dengan pilihan
+pantas seperti Minggu lepas dan Bulan ini. Klik satu hari, atau seret dari
+satu hari ke hari lain, dan fail berubah mengikut seretan anda. Kemudian
+putar roda tetikus di atas cip untuk mengalihkan tempoh yang sama lebih
+awal atau lebih lewat.
+"""
+
+["2026-10-01-0256-color-schemes"]
+title = "Skema warna dan warna aksen"
+text = """
+Tetapan > Penampilan kini mempunyai Mod, Warna dan Aksen sebagai pilihan
+berasingan. Pilih cerah atau gelap, kemudian mana-mana daripada 14 skema
+warna, seperti Jernih, Nord, Solarized atau Catppuccin, atau kekalkan
+skema desktop anda. Setiap satu berfungsi dalam cerah dan gelap, dan apa
+sahaja warna aksen boleh diletakkan di atasnya.
+"""
+
+["2026-10-01-0310-badge-counts-what-notifies"]
+title = "Kiraan bar tugas sepadan dengan pemberitahuan anda"
+text = """
+Kiraan belum dibaca pada bar tugas dan dulang kini mengira mel yang sama
+yang memberitahu anda: tab Utama dalam Peti Masuk anda. Promosi, Sosial,
+Kemas kini dan Forum tidak lagi menambahnya.
+"""
+
+["2026-10-01-0312-quiet-selected-row"]
+title = "Folder terbuka yang lebih tenang"
+text = """
+Folder yang terbuka dalam Mel, dan paparan yang terbuka dalam Kenalan,
+Tugas, Nota dan Fail, kini ditanda dengan kelabu lembut dan bukan warna
+aksen, jadi Karang dan rel apl lebih menonjol dan ikon folder mengekalkan
+warnanya sendiri.
+"""
+
+["2026-10-01-0315-desktop-schemes"]
+title = "Skema warna desktop anda"
+text = """
+Tetapan > Penampilan > Warna juga menyenaraikan skema desktop anda
+sendiri: setiap skema warna yang dipasang pada KDE Plasma, dan pada
+Windows, warnanya sendiri serta tema Kontras. Sistem kini berfungsi dalam
+cerah dan gelap pada KDE juga, menggunakan pasangan cerah atau gelap bagi
+skema anda, dan Katna mengikut warna aksen Windows.
+"""
+
+["2026-10-01-0329-mute-folders"]
+title = "Senyapkan folder, tab atau akaun"
+text = """
+Loceng di atas senarai menyenyapkan folder atau tab Peti Masuk yang
+terbuka selama sejam, hingga pagi esok, atau hingga anda menghidupkannya
+semula. Klik kanan folder atau akaun untuk perkara yang sama. Tetapan >
+Pemberitahuan menunjukkan folder mana yang memberitahu dan yang dikira
+pada bar tugas, serta semua yang disenyapkan.
+"""
+
+["2026-10-01-0335-tray-style"]
+title = "Ikon dulang berwarna atau satu warna"
+text = """
+Tetapan > Umum > Desktop > Ikon dulang berwarna memilih warna Katna atau
+satu warna seperti ikon lain pada panel. Satu warna kekal satu warna
+apabila ada mel belum dibaca, dan kiraan belum dibaca sentiasa merah.
+Pada Linux, ikon dulang adalah satu warna secara lalai; pada Windows ia
+berwarna.
+"""
+
+["2026-10-01-0354-mute-conversations"]
+title = "Senyapkan perbualan atau pengirim"
+text = """
+Loceng di atas perbualan yang terbuka menyenyapkannya: balasan baharu
+tidak lagi memberitahu anda atau menambah kiraan bar tugas, dan loceng
+berpangkah menandainya dalam senarai. Klik kanan perbualan untuk
+Senyapkan perbualan atau Senyapkan pengirim, atau tekan M.
+"""
+
+["2026-10-01-0410-your-color-schemes"]
+title = "Cipta skema warna anda sendiri"
+text = """
+Tetapan > Penampilan > Warna > Sesuaikan menyalin skema yang anda gunakan
+ke dalam penyunting: tukar mana-mana daripada lapan warnanya pada sisi
+cerah dan gelap, lihat tetingkap mel dalam warna itu, dan Katna
+memberitahu anda apa yang sukar dibaca. Import mengambil fail skema warna
+Katna atau KDE, dan klik kanan pada skema anda boleh menyunting,
+menduplikasi, mengeksport atau memadamnya.
+"""
+
+["2026-10-01-0527-calendar-opens-on-week"]
+title = "Kalendar dibuka pada Minggu"
+text = """
+Katna Calendar dibuka pada paparan Minggu semula, dengan hari-hari akan
+datang dalam jam. Bulan, Hari, Tahun dan yang lain hanya sekali klik di
+bar atas.
+"""
+
+["2026-10-01-0552-lighter-count-on-open-row"]
+title = "Kiraan menonjol pada folder yang terbuka"
+text = """
+Kiraan di sebelah folder yang terbuka dalam Mel, dan di sebelah jenis yang
+terbuka dalam Fail, kini terletak dalam pil yang lebih cerah daripada
+kelabu baris itu, jadi ia tidak lagi tenggelam, dalam cerah dan gelap.
+"""
+
+["2026-10-01-0652-files-leave-out-small-pictures"]
+title = "Fail mengetepikan logo tandatangan"
+text = """
+Halaman Fail tidak lagi dipenuhi logo dan ikon kecil yang datang dalam
+tandatangan e-mel: gambar di bawah 12 KB, atau kurang daripada 100 piksel
+lebar atau tinggi, kekal di bawah melnya. Ubah kedua-dua had, atau
+tunjukkan setiap gambar, dalam Tetapan > Apl lalai > Halaman Fail.
+"""
+
+["2026-10-01-0700-mute-from-contact"]
+title = "Senyapkan pengirim dari kad kenalannya"
+text = """
+Kad kenalan di sebelah mel mempunyai loceng sebagai butang pertamanya: ia
+menyenyapkan semua daripada pengirim itu, dan loceng berpangkah selepas
+namanya menunjukkannya. Klik sekali lagi untuk menerima berita daripada
+mereka semula.
+"""
+
+["2026-10-01-0803-select-hover-fits"]
+title = "Butang pilih yang lebih kemas"
+text = """
+Latar tuding di belakang kotak semak pilih di bahagian atas senarai mel
+kini setinggi butang di sebelahnya, berada sejauh dari tepi kad seperti
+dari bahagian atasnya, dan bucunya mengikut bucu kad itu sendiri.
+"""
+
+["2026-10-01-0807-files-leave-out-signature-pictures"]
+title = "Fail turut mengetepikan gambar tandatangan yang besar"
+text = """
+Gambar yang dihantar oleh seseorang dalam tiga perbualan atau lebih,
+seperti sepanduk atau foto dalam tandatangannya, tidak lagi muncul pada
+halaman Fail, begitu juga ikon rangkaian sosial, walau sebesar mana pun.
+Ia masih muncul di bawah melnya, dan mematikan “Abaikan gambar kecil”
+mengembalikan semuanya.
+"""
+
+["2026-10-01-0830-muted-contact-mark"]
+title = "Lihat siapa yang disenyapkan"
+text = """
+Loceng berpangkah kini mengikuti nama pengirim yang disenyapkan di
+mana-mana sahaja ia muncul: senarai mel, mel yang terbuka, Kenalan, kotak
+Kepada dan Sk serta cadangannya, halaman Fail, tetamu acara dan laporan
+Aktiviti. Tiada lagi tertanya-tanya mengapa mel mereka senyap.
+"""
+
+["2026-10-01-0839-sounds"]
+title = "Bunyi untuk mel baharu, peringatan dan penghantaran"
+text = """
+Tetapan > Pemberitahuan mempunyai bahagian Bunyi: mel baharu, peringatan,
+mel yang kembali ke peti masuk, mel dihantar dan mel tidak dihantar
+masing-masing memilih bunyi daripada desktop anda, memainkannya dengan
+butang di sebelahnya, atau mematikannya. Bunyi kini dimainkan pada KDE
+Plasma juga, dan kekal senyap untuk mel yang disenyapkan dan semasa
+Jangan Ganggu.
+"""
+
+["2026-10-01-0925-chat-view"]
+title = "Baca perbualan sebagai sembang (percubaan)"
+text = """
+Hidupkan Tetapan > Percubaan > Perbualan sebagai sembang dan mel antara
+orang dibaca seperti sembang kumpulan: satu gelembung bagi setiap mel
+dengan hanya apa yang ditulis, gelembung anda di sebelah kanan, serta
+gambar dan fail sebagai media sembang. Mel yang dipetik dan tandatangan
+menunggu di sebalik ··· dalam setiap gelembung, dan klik pada nama
+menunjukkan kad orang itu bersama tandatangannya. Balas dari kotak di
+bawah, dengan Ctrl+Enter, bar pemformatan di sebalik Aa dan klip kertas
+untuk fail, templat dan tandatangan. Surat berita mengekalkan paparan
+biasa, dan suis Sembang | Mel menukar mana-mana perbualan ke mana-mana
+paparan.
+"""
+
+["2026-10-01-0946-forward-keeps-files"]
+title = "Majukan mengekalkan fail"
+text = """
+Memajukan mesej kini membawa lampirannya sekali, ditunjukkan di bawah
+mesej supaya anda boleh mengalih keluar mana-mana sebelum menghantar.
+Menukar majukan kepada balasan akan mengetepikannya semula.
+"""
+
+["2026-10-01-1009-forward-a-file"]
+title = "Majukan fail itu sahaja"
+text = """
+Pemapar lampiran mempunyai butang Majukan di bar atasnya: ia memulakan mel
+baharu dengan hanya fail itu dilampirkan, tanpa mel asalnya. Fail tanpa
+pratonton juga menawarkan Majukan, begitu juga kad lampiran di bawah mel
+yang terbuka, di sebelah Simpan.
+"""
+
+["2026-10-01-1039-rephrase-with-ai"]
+title = "Tulis semula dengan AI"
+text = """
+Pilih teks dalam mesej dan tekan ikon kilauan di sebelahnya, atau Ctrl+J,
+untuk menulisnya semula dengan lebih jelas, lebih ringkas, lebih mesra
+atau lebih formal, kemudian Gantikan. Katna AI percuma selama 30 hari, atau
+gunakan kunci anda sendiri daripada Google Gemini, OpenAI, Claude, Mistral,
+DeepSeek, OpenRouter atau model pada komputer ini. AI juga boleh
+melengkapkan ayat anda dalam warna kelabu; hidupkannya dalam Tetapan >
+Karang.
+"""
+
+["2026-10-01-1043-header-details-selectable"]
+title = "Salin daripada butiran mel"
+text = """
+Butiran di bawah “kepada saya” kini boleh dipilih dan disalin seperti mel
+itu sendiri. Klik alamat untuk melihat kad orang itu di sebelah mel, atau
+klik kanan untuk Salin alamat. Orang yang disenyapkan turut menunjukkan
+loceng berpangkah mereka di situ.
+"""
+
+["2026-10-01-1112-left-bar-button"]
+title = "Satu butang besar, satu lipatan, pada setiap halaman"
+text = """
+Butang besar di bahagian atas bar kiri kini kelihatan dan terletak sama
+pada setiap halaman dan menjalankan tugas halaman itu sendiri: Karang
+dalam Mel dan Fail, Acara baharu, Kenalan baharu, Tugasan baharu dan Nota
+baharu. Melipat bar kiri melipatnya di mana-mana, dan semasa ia dilipat,
+butang setiap halaman menunggu di bahagian atas rel. Pada telefon, ia
+ialah butang terapung.
+"""
+
+["2026-10-01-1115-color-picker"]
+title = "Pemilih warna dalam penyunting skema"
+text = """
+Klik warna dalam penyunting skema dan pemilih dibuka betul-betul di
+sebelahnya: seret merentasi petak dan bar rona, taip nilai heks, guna
+semula warna skema itu sendiri atau pilihan terkini, atau ambil warna
+dari mana-mana pada skrin dengan penitis pada KDE dan GNOME.
+"""
+
+["2026-10-01-1130-contact-card-folds-folders"]
+title = "Kad kenalan menyediakan ruangnya sendiri"
+text = """
+Dalam tetingkap yang terlalu sempit untuk anak tetingkap folder dan kad
+kenalan bersebelahan, kad itu kini melipat folder apabila dibuka, dan
+folder kembali apabila kad ditutup. Folder yang anda lipat sendiri kekal
+terlipat.
+"""
+
+["2026-10-01-1132-open-mail-scroll-bar"]
+title = "Bar tatal dalam mel yang panjang"
+text = """
+Perbualan yang panjang kini menunjukkan bar tatal tenang yang sama seperti
+halaman Fail semasa anda menatalnya atau menghalakan penuding padanya.
+Kedua-dua bar kini lebih nipis dan membesar apabila penuding
+menghampirinya. Seret satu, atau klik di sepanjangnya, untuk melompat ke
+mana-mana.
+"""
+
+["2026-10-01-1240-contact-card-close"]
+title = "Tutup kad kenalan, lihat siapa dalam sembang"
+text = """
+Kad kenalan di sebelah perbualan mempunyai ✕ di bucunya, dan mengklik
+gambar atau alamat orang yang sama sekali lagi akan menutup kad itu.
+Dalam paparan sembang, klik pada pengepala menyenaraikan semua orang
+dalam sembang itu bersama alamat mereka dan berapa banyak mel yang
+dihantar oleh setiap orang.
+"""
+
+["2026-10-01-1241-two-blur-switches"]
+title = "Kesan kabur, mengikut cara anda"
+text = """
+Kesan kabur kini mempunyai dua suis dalam Tetapan > Percubaan: satu untuk
+latar belakang tetingkap dan satu untuk menu dan dialog. Menu kaca fros
+dihidupkan secara lalai, walaupun latar belakang tetingkap dibiarkan
+padu.
+"""
+
+["2026-10-01-1502-fainter-row-lines"]
+title = "Garis antara mel yang lebih tenang"
+text = """
+Garis antara mel dalam senarai kini lebih samar, jadi senarai dibaca
+sebagai satu lajur yang tenang, dalam cerah dan gelap.
+"""
+
+["2026-10-01-1505-contact-close-round"]
+title = "Satu butang tutup untuk setiap anak tetingkap"
+text = """
+✕ pada kad kenalan kini butang bulat yang sama seperti ✕ pada mel yang
+terbuka, dengan bulatan kelabu yang sama apabila anda menghalakan
+penuding padanya.
+"""
+
+["2026-10-01-1525-thread-count"]
+title = "Kiraan mel yang lebih kemas"
+text = """
+Bilangan mel dalam perbualan kini terletak di sebelah nama dengan ikon
+sembang kecil, di tengah baris nama dan tidak lagi dinaikkan di atasnya.
+"""
+
+["2026-10-01-1541-chat-attach-from-files"]
+title = "Lampirkan daripada Fail dalam sembang"
+text = """
+Dalam sembang (Tetapan > Percubaan), klip kertas mempunyai Daripada Fail:
+pilih mana-mana fail yang datang atau pergi bersama mel anda, dengan fail
+perbualan ini dahulu. Tandai beberapa, lihat satu dengan ikon mata, dan
+lihat berapa beratnya berbanding 25 MB yang boleh dibawa oleh satu mel.
+Klip kertas kini terletak di dalam kotak balasan, dan Aa membuka bar
+langsing dengan hanya gaya yang diperlukan oleh sembang.
+"""
+
+["2026-10-01-1553-rephrase-card-text"]
+title = "Tulis semula berfungsi dengan kunci Gemini baharu"
+text = """
+Dengan menu kaca fros dihidupkan, kad Tulis semula (Ctrl+J) dibuka
+kosong; cadangannya kini muncul di atas kaca fros. Google Gemini kini
+menggunakan gemini-3.5-flash-lite melainkan anda menaip model lain,
+kerana kunci Gemini baharu tidak lagi boleh menggunakan 2.5 Flash-Lite,
+dan kunci yang salah akan dimaklumkan.
+"""
+
+["2026-10-01-1624-rephrase-button"]
+title = "Tulis semula tanpa memilih, dan cadangan lebih pantas"
+text = """
+Ikon kilauan di sebelah Pemformatan di bahagian bawah mesej baharu, dan
+dalam kotak balasan paparan sembang, menulis semula semua yang anda tulis
+apabila tiada apa yang dipilih, atau hanya pilihan itu jika ada; Ctrl+J
+melakukan perkara yang sama. Cadangan yang lebih panjang dengan AI muncul
+jauh lebih cepat, dan medan Model dalam Tetapan > Karang menyenaraikan
+model yang ditawarkan oleh perkhidmatan anda semasa anda menaip.
+"""
+
+["2026-10-01-1626-dimmer-preview"]
+title = "Baris pratonton yang lebih tenang"
+text = """
+Teks pratonton di bawah subjek setiap mel dalam senarai kini lebih malap,
+jadi pengirim dan subjek lebih menonjol, dalam cerah dan gelap.
+"""
+
+["2026-10-01-1645-frosted-dialogs"]
+title = "Dialog kaca fros"
+text = """
+Dengan menu dan dialog kaca fros dihidupkan, dialog juga menjadi kaca
+fros: Tambah akaun mel, Perihal, Apa yang baharu, kemas kini, perkongsian,
+pratonton cetakan, label, soalan padam dan alih keluar, kad permulaan
+pertama dan dialog pautan Karang.
+"""
+
+["2026-10-01-1650-chat-pins"]
+title = "Sematkan sehingga 5 perkara dalam sembang"
+text = """
+Dalam sembang (Tetapan > Percubaan), tuding pada gelembung dan tekan pin,
+atau klik kanan fail, untuk mengekalkannya di atas. Bar nipis di bawah
+pengepala menunjukkan semat anda: kliknya untuk melompat ke setiap satu
+secara bergilir, atau buka senarai untuk menyeretnya mengikut susunan
+atau menyahsemat. Semat kekal pada komputer ini.
+"""
+
+["2026-10-01-1655-chat-signatures"]
+title = "Sembang mengetepikan tandatangan dan pengaki"
+text = """
+Gelembung sembang kini hanya menunjukkan apa yang ditulis oleh orang.
+Ucapan penutup seperti “Salam hormat”, tandatangan syarikat di bawah garis
+atau dengan alamat dan nombor telefon, serta pengaki dengan pautan
+nyahlanggan atau notis menunggu di sebalik pil ···, bersama tandatangan
+yang diulang oleh seseorang dalam setiap mel.
+"""
+
+["2026-10-01-1805-blur-amount"]
+title = "Pilih rupa menu kaca fros"
+text = """
+Menu dan dialog kaca fros kini lebih jelas dan mengikut kekuatan kabur
+KDE. Hidupkan Jumlah kabur tersuai dalam Tetapan > Percubaan > Kabur untuk
+menetapkan kekuatan kabur dan kelegapan sendiri.
+"""
+
+["2026-10-01-1825-chat-company"]
+title = "Tempat mereka bekerja, pada kad mereka"
+text = """
+Dalam sembang (Tetapan > Percubaan), kad seseorang kini mempunyai bahagian
+Syarikat: apa yang dilakukan oleh syarikat itu, di mana ia berada, sejak
+bila, dan pautan ke laman web dan halamannya, dibaca daripada laman utama
+syarikat itu sendiri dan Wikipedia. Ia mengikut suis Gambar pengirim.
+"""
+
+["2026-10-02-0052-smooth-start-after-updates"]
+title = "Permulaan lancar selepas kemas kini"
+text = """
+Selepas kemas kini, Katna Mail tidak lagi menyatakan bahawa stor mel tidak
+dapat dibuka semasa ia menyediakan mel anda untuk versi baharu. Ia
+menunjukkan gambar pemuatan biasa selama beberapa saat itu, kemudian mel
+anda.
+"""
+
+["2026-10-02-0106-calmer-dialogs"]
+title = "Dialog yang lebih tenang"
+text = """
+Dialog kaca fros lebih padu daripada menu, jadi senarai mel yang sibuk
+tidak lagi kelihatan melaluinya. Perihal, Apa yang baharu dan Semak kemas
+kini dibuka tanpa menggelapkan tetingkap di belakangnya.
+"""
+
+["2026-10-02-0111-chat-pin-text"]
+title = "Sematkan beberapa perkataan daripada sembang"
+text = """
+Dalam sembang (Tetapan > Percubaan), teks dalam gelembung kini boleh
+dipilih dan disalin seperti mana-mana mel. Klik kanan perkataan yang anda
+pilih dalam satu gelembung dan pilih Sematkan di atas untuk menyimpannya
+dalam bar semat sembang itu.
+"""
+
+["2026-10-02-0124-event-editor-clear"]
+title = "Penyunting acara bebas daripada Acara baharu"
+text = """
+Butang Acara baharu pada bar kiri tidak lagi menutupi tajuk acara yang
+sedang anda tulis atau ubah dalam penyunting penuh. Ia kembali apabila
+penyunting ditutup.
+"""
+
+["2026-10-02-0150-chat-format-bar"]
+title = "Bar Aa yang lebih lengkap dalam sembang"
+text = """
+Bar Aa dalam kotak balasan sembang kini mempunyai alat Karang: buat asal,
+fon, saiz, penjajaran dan inden, di sebelah gaya yang sedia ada. Dalam
+tetingkap sempit, ia berbalut ke baris kedua. Butang warna menunjukkan
+warna teks dan serlahan anda bersebelahan, dalam Karang juga.
+"""
+
+["2026-10-02-0210-conversation-summaries"]
+title = "Ringkaskan perbualan"
+text = """
+Klik kanan perbualan dan pilih Ringkaskan, atau tekan Shift+S, untuk kad
+di sebelahnya yang menyatakan perbualan itu tentang apa, apa yang telah
+diputuskan dan apa yang menunggu tindakan anda, tanpa membukanya atau
+menandainya sebagai dibaca. Dalam perbualan yang terbuka, ikon kilauan di
+atasnya meletakkan ringkasan di bawah subjek; dalam paparan sembang, ia
+terletak dalam jalur di bawah pengepala. Setiap perkara menamakan mel
+asalnya, dan jika ada mel baharu sejak kali terakhir anda membaca,
+ringkasan hanya merangkumi mel itu. Ia memerlukan bantuan menulis dengan
+AI dihidupkan dalam Tetapan > Karang.
+"""
+
+["2026-10-02-0215-system-colors-follow-mode"]
+title = "Cerah dan Gelap berfungsi dengan warna Sistem"
+text = """
+Dengan Warna ditetapkan kepada Sistem dan skema desktop yang hanya gelap
+(atau hanya cerah), Tetapan > Penampilan > Mod kini menukar Katna antara
+cerah dan gelap semula: sisi yang satu lagi menggunakan warna Katna
+sendiri dalam warna aksen desktop anda.
+"""
+
+["2026-10-02-0218-signature-details-on-card"]
+title = "Butiran tandatangan di tempat yang sepatutnya"
+text = """
+Kad seseorang tidak lagi menunjukkan tandatangannya sebagai satu blok.
+Butirannya diletakkan di tempat yang sepatutnya: setiap nombor telefon,
+ditanda mudah alih, terus atau faks, dalam butiran kenalan, dan kumpulan,
+pejabat, laman web dan halaman syarikat dalam bahagian Syarikat. Halaman
+sosial ditunjukkan sebagai ikon kecil satu warna, dan gambar, sepanduk
+serta pengaki diketepikan.
+"""
+
+["2026-10-02-0225-chat-subject-line"]
+title = "Lihat bila subjek sembang berubah"
+text = """
+Dalam sembang (Tetapan > Percubaan), baris kecil di tengah kini menyatakan
+bila seseorang menukar subjek, seperti ia menyatakan siapa menambah siapa.
+"""
+
+["2026-10-02-0225-no-blur-ghost"]
+title = "Tiada bayangan kabur apabila dialog ditutup"
+text = """
+Menutup Perihal, Apa yang baharu, Semak kemas kini atau mana-mana dialog
+atau menu kaca fros tidak lagi meninggalkan tompok kabur seketika: kesan
+kabur pudar bersama dialog.
+"""
+
+["2026-10-02-0236-chat-on-phones"]
+title = "Sembang muat pada telefon"
+text = """
+Dalam tetingkap bersaiz telefon, sembang (Tetapan > Percubaan) kekal pada
+satu baris pengepala dengan Kembali dan ⋮, dan gelembungnya menggunakan
+lebih banyak lebar. Tahan gelembung untuk memaparkan menunya dari bawah,
+dan ketik nama atau gambar untuk melihat kad orang itu dengan cara yang
+sama. Leret salah satunya ke bawah atau ketik di luar untuk menutupnya.
+"""
+
+["2026-10-02-0258-frost-stays-on-scroll"]
+title = "Kaca fros kekal apabila senarai ditatal"
+text = """
+Dalam senarai kaca fros yang boleh ditatal, seperti orang dalam sembang
+atau menu yang panjang, latar belakang kaca fros kini kekal di tempatnya
+semasa baris ditatal di atasnya.
+"""
+
+["2026-10-02-0301-rephrase-card-above-tools"]
+title = "Tulis semula terletak di atas bar pemformatan"
+text = """
+Kad Tulis semula kini dibuka tepat di atas bar pemformatan, dalam kotak
+balasan dan dalam Karang, dan bukan lagi di atas senarai mel. Seretnya
+menggunakan pemegang kecil di bahagian atasnya untuk mengalihkannya; ia
+dibuka di tempat biasanya semula pada kali berikutnya.
+"""
+
+["2026-10-02-0306-fainter-lines-light"]
+title = "Garis lebih samar dalam mod cerah"
+text = """
+Dalam mod cerah, garis antara mel dalam senarai dan antara mesej dalam mel
+yang terbuka lebih samar, jadi halaman kelihatan lebih tenang.
+"""
+
+["2026-10-02-0315-card-button-bar"]
+title = "Kad orang mengekalkan butangnya dalam capaian"
+text = """
+Tatal kad orang dan butangnya menggelongsor ke atas ke dalam bar kaca fros
+yang langsing di sebelah butang tutup, dengan gambar kecil orang itu.
+Butang tutup tidak lagi menutupi apa yang sedang anda baca.
+"""
+
+["2026-10-02-0412-button-hover"]
+title = "Kesan tuding butang yang lancar"
+text = """
+Apabila anda menghalakan penuding pada butang, latar bulatnya kini
+membesar dari tengah dan muncul perlahan-lahan, seperti dalam Gmail, dan
+pudar dengan cepat apabila anda beralih. Balas, Majukan dan butang pil
+lain muncul dengan lembut.
+"""
+
+["2026-10-02-0425-chat-draft-to-mail"]
+title = "Balasan sembang anda mengikut anda ke Mel"
+text = """
+Menukar sembang kepada Mel semasa menulis balasan kini menatal ke bawah
+ke balasan itu dengan kursor anda masih di dalamnya, dan menukar kembali
+juga mengekalkannya.
+"""
+
+["2026-10-02-0425-write-reply"]
+title = "Tulis balasan dengan AI"
+text = """
+Semasa balasan atau majukan masih kosong, ikon kilauan di sebelah
+Pemformatan (atau Ctrl+J) menulisnya untuk anda. Pilih satu daripada tiga
+idea yang diambil daripada perbualan, atau nyatakan dengan kata-kata anda
+sendiri apa yang patut dikatakan, kemudian Sisipkan draf itu dan ubah apa
+yang anda mahu. Sebaik sahaja anda menaip, ikon kilauan menulis semula
+lagi. Ia memerlukan bantuan menulis dengan AI dihidupkan dalam Tetapan >
+Karang.
+"""
+
+["2026-10-02-0430-compose-beside-reply"]
+title = "Karang semasa balasan separuh ditulis"
+text = """
+Karang kini membuka mesej baharu walaupun semasa anda sedang menulis
+balasan, dalam sembang atau di bawah perbualan. Balasan menunggu seperti
+yang anda tinggalkan dan kembali apabila mesej baharu dihantar atau
+ditutup, atau apabila anda mengklik untuk membalas perbualan itu semula.
+"""
+
+["2026-10-02-0436-mark-unread-icon"]
+title = "Ikon Tandai sebagai belum dibaca yang lebih jelas"
+text = """
+Tandai sebagai belum dibaca kini menunjukkan sampul surat dengan titik,
+dalam menu, dalam bar alat dan pada butang tuding mel, jadi ia tidak lagi
+kelihatan seperti ikon mel biasa.
+"""
+
+["2026-10-02-0452-fainter-pane-lines"]
+title = "Bar alat dan tab yang lebih tenang"
+text = """
+Dalam mod cerah, garis di bawah bar alat dan pengepala mel yang terbuka,
+serta di atas Balas dan Majukan, sesamar garis antara mel. Latar di
+belakang tab peti masuk juga lebih cerah.
+"""
+
+["2026-10-02-0453-google-drive-in-files"]
+title = "Google Drive anda dalam Fail"
+text = """
+Fail kini menunjukkan drive setiap akaun Google di bawah Pemacu dalam lajur
+sisi. Buka foldernya, cari di dalamnya, dan buka, lampirkan atau muat
+turun fail terus di situ. Pada kali pertama, tekan Benarkan supaya Katna
+boleh membaca drive itu.
+"""
+
+["2026-10-02-0515-rephrase-subject"]
+title = "Tulis semula subjek"
+text = """
+Sebaik sahaja anda menaip subjek, ikon kilauan di hujung barisnya
+menawarkan tiga cara lain untuk menyatakannya, ditulis berdasarkan subjek
+dan isi mesej anda setakat ini. Pilih satu untuk menggunakannya; Buat asal
+mengembalikan apa yang anda taip. Ia memerlukan bantuan menulis dengan AI
+dihidupkan dalam Tetapan > Karang.
+"""
+
+["2026-10-02-0525-quieter-compose"]
+title = "Tetingkap Karang yang lebih tenang"
+text = """
+Tetingkap Mesej Baharu terapung dengan jarak yang sama dari tepi
+tetingkap. Kepada, Sk, Skt dan Daripada terletak bersama tanpa garis di
+antaranya, penerima ialah cip berisi yang lembut, dan Daripada ialah satu
+baris yang tenang. Penyulitan, tandatangan digital, penjejakan dan resit
+berkongsi satu kumpulan kecil, dan alat penulisan terletak pada bar
+lembut di sebelah Hantar.
+"""
+
+["2026-10-02-0553-upload-to-drive"]
+title = "Muat naik ke Google Drive dari Fail"
+text = """
+Dengan Google Drive dibuka dalam Fail, butang Karang bertukar menjadi
+Muat naik. Kliknya untuk menghantar fail ke folder yang terbuka, atau
+gunakan anak panahnya untuk memuat naik seluruh folder. Pada kali
+pertama, tekan Benarkan supaya Katna boleh menambah fail ke drive anda.
+"""
+
+["2026-10-02-0555-reply-from-summary"]
+title = "Balas dari ringkasan"
+text = """
+Kad ringkasan yang anda buka dari klik kanan kini mempunyai Balas. Ia
+menukar kad yang sama menjadi balasan: pilih idea atau nyatakan apa yang
+patut dikatakan, ubah draf jika anda mahu, kemudian Hantar, atau Bukanya
+dalam perbualan untuk terus menulis. Balasan yang anda tutup tanpa
+menghantar menunggu dalam kotak balasan. Kad itu juga kini dibuka di
+tempat anda mengklik.
+"""
+
+["2026-10-02-0559-draft-saved-signature-tag"]
+title = "Draf disimpan semasa anda menulis"
+text = """
+Mesej yang sedang anda tulis kini menyimpan dirinya ke Draf setiap
+beberapa saat, dan “Draf disimpan” muncul dengan senyap di sebelah
+tajuknya. Tag samar di sebelah tandatangan anda menamakannya; kliknya
+untuk memilih yang lain. Bucu tetingkap Karang juga sejajar dengan kad
+di sebelahnya.
+"""
+
+["2026-10-02-0654-attach-from-drive"]
+title = "Lampirkan dari Google Drive"
+text = """
+Klip kertas Karang kini membuka pemilih Fail, sama seperti Daripada Fail
+dalam sembang, dengan Google Drive anda di sebelah fail mel anda dan
+Komputer ini… untuk apa sahaja yang lain. Fail yang muat dimasukkan ke
+dalam mel; fail besar dan Google Docs dihantar sebagai pautan, dikongsi
+dengan penerima apabila anda menghantar.
+"""
+
+["2026-10-02-0734-peek-and-reply-in-notifications"]
+title = "Intai dan balas dari pemberitahuan"
+text = """
+Pemberitahuan mel baharu kini mempunyai Intai, yang menunjukkan mel itu
+sendiri dalam pemberitahuan yang sama, dan Balas, tempat anda menaip
+jawapan terus di situ dan menekan Hantar. Ia dihantar daripada akaun yang
+menerima mel itu, selepas tempoh buat asal penghantaran anda; Buat asal
+membukanya dalam Katna Mail untuk terus menulis. Pada Linux, mel baharu
+juga mempunyai bunyi loceng sendiri yang lebih kuat; pilih yang lain
+dalam Tetapan > Pemberitahuan.
+"""
+
+["2026-10-02-0735-drive-viewer-opens-at-once"]
+title = "Fail drive dibuka serta-merta"
+text = """
+Membuka fail dari drive anda memaparkan pemapar dengan segera, dengan
+lengkok berpusing sehingga fail tiba. Nota di bahagian bawah tetingkap
+kini menerima klik sendiri, jadi Tutup tidak lagi mengklik apa yang di
+bawahnya.
+"""
+
+["2026-10-02-0740-smaller-updates"]
+title = "Kemas kini yang lebih kecil"
+text = """
+Kemas kini kini hanya memuat turun apa yang berubah, biasanya beberapa
+megabait dan bukan keseluruhan pakej. Katna membina versi baharu daripada
+versi yang anda ada dan menyemaknya sebelum memasang, dan memuat turun
+pakej penuh apabila tidak dapat berbuat demikian.
+"""
+
+["2026-10-02-0755-faint-lines-everywhere"]
+title = "Garis samar di mana-mana"
+text = """
+Dalam mod cerah, setiap garis antara unsur, di bawah pengepala dan di
+sekeliling kad kini sesamar garis antara mel, termasuk kad ringkasan.
+Medan, cip dan butang mengekalkan garis luarnya yang jelas.
+"""
+
+["2026-10-02-0756-ai-replies-signed"]
+title = "Balasan AI diakhiri dengan tandatangan anda"
+text = """
+Balasan dan nota yang ditulis oleh AI tidak lagi diakhiri dengan “Salam
+hormat” dan nama anda. Tandatangan anda yang menandatanganinya: dalam
+balasan kad ringkasan, tag tandatangan di bawah teks memilih yang mana,
+seperti dalam Karang.
+"""
+
+["2026-10-02-0801-unified-inbox-tabs"]
+title = "Tab dalam peti masuk bersatu"
+text = """
+Peti masuk semua akaun anda kini juga mempunyai tab: Utama, Promosi,
+Sosial, Kemas kini dan Forum, dengan mel setiap akaun dalam tab mengikut
+jenisnya. Titik di sebelah setiap pengirim menunjukkan akaun mana yang
+menerima mel itu. Pilih satu akaun di bawahnya untuk melihat tab akaun
+itu sendiri, atau pilih set lain dalam Tetapan > Peti Masuk.
+"""
+
+["2026-10-02-0805-feeds-removed"]
+title = "Suapan telah dibuang dari bar kiri"
+text = """
+Katna tidak akan membaca suapan RSS dan Atom, jadi butang Suapan dan
+halaman “akan datang”nya telah meninggalkan bar di sebelah kiri. Fail
+mengekalkan Ctrl+7.
+"""
+
+["2026-10-02-0820-drive-bin-and-rename"]
+title = "Namakan semula dan buang fail drive ke tong sampah"
+text = """
+Dalam Fail, fail atau folder dalam Google Drive atau OneDrive anda kini
+mempunyai Namakan semula dan Alih ke tong sampah dalam menunya. Namakan
+semula membolehkan anda menaip nama baharu di tempatnya (F2), dan Alih ke
+tong sampah (Del) disertai Buat asal.
+"""
+
+["2026-10-02-0827-files-chips-on-phones"]
+title = "Cip Fail muat pada telefon"
+text = """
+Pada telefon, cip halaman Fail tidak lagi terpotong di tepi. Jenis fail
+melipat menjadi ikonnya, dengan yang anda pilih mengekalkan labelnya, dan
+cip orang, hari dan susunan mendapat barisnya sendiri.
+"""
+
+["2026-10-02-0828-uploads-tray"]
+title = "Lihat muat naik anda semasa berjalan"
+text = """
+Fail yang anda muat naik ke Google Drive atau OneDrive kini dipaparkan
+dalam dulang di bahagian bawah kanan, setiap satu dengan cincin yang
+terisi semasa dimuat naik dan baki masa. Batalkan satu atau semua, lipat
+dulang itu, dan klik fail yang selesai untuk membuka foldernya.
+"""
+
+["2026-10-02-0838-drive-share"]
+title = "Kongsi fail drive dari Katna"
+text = """
+Kongsi… dalam menu fail Google Drive atau OneDrive dalam Fail membuka
+dialog Kongsi: tambah orang sebagai Pelihat, Pengulas atau Penyunting,
+ubah atau alih keluar mereka yang sudah mempunyai akses, dan bukanya
+kepada sesiapa yang mempunyai pautan. Drive menghantar e-mel kepada
+mereka hanya jika anda menandakannya.
+"""
+
+["2026-10-02-0909-soft-search-box"]
+title = "Kotak carian yang lebih lembut"
+text = """
+Kotak carian di bahagian atas lebih ringan: tepi dan isian yang sangat
+samar semasa anda tidak menggunakannya, dan medan putih dengan tepi aksen
+yang lembut semasa anda menaip, dan bukan lagi pil kelabu dengan cincin
+berwarna yang tebal.
+"""
+
+["2026-10-02-0942-hourly-update-check"]
+title = "Kemas kini tiba lebih awal"
+text = """
+Katna kini mencari versi baharu setiap jam dan sebaik sahaja komputer anda bangun daripada mod tidur, jadi pemberitahuan kemas kini tiba tidak lama selepas keluaran.
+"""
+
+["2026-10-02-0958-faint-lines-dark"]
+title = "Garisan pudar dalam mod gelap juga"
+text = """
+Dalam mod gelap, garisan di antara mel, di bawah pengepala dan di sekeliling kad kini sepudar dalam mod cerah. Medan, cip dan butang mengekalkan garis luar yang jelas.
+"""
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Kemas kini kecil selepas berehat"
+text = """
+Kemas kini kekal kecil walaupun anda terlepas satu atau dua hari versi
+baharu. Katna kini melangkah daripada versi yang anda ada melalui versi
+sebelumnya, beberapa megabait setiap satu, dan bukan memuat turun seluruh
+pakej sekali lagi.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Lihat mel yang telah anda jawab"
+text = """
+Anak panah balas yang kecil pada baris senarai mel menunjukkan anda telah
+menjawabnya: anda menulis mel terbaharu perbualan itu, di sini atau di web.
+Ia hilang apabila mereka membalas semula.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Ikon dulang mengikut cerah dan gelap"
+text = """
+Ikon dulang satu warna kini berubah bersama panel anda sebaik sahaja anda
+bertukar antara cerah dan gelap, dan tidak lagi menunggu mel baharu.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Idea balasan menunjukkan ia sedang tiba"
+text = """
+Semasa idea balasan diminta, dalam Balas pada ringkasan atau dalam Tulis
+balasan, bentuknya kini bernafas seperti ringkasan itu sendiri semasa ia
+ditulis. Kad ringkasan juga menunjukkan bilangan mel dalam perbualan semasa
+ia diminta, dan bukan 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Bucu yang lebih kemas dalam Fail"
+text = """
+Menuding pada fail dengan pratonton putih tidak lagi menampakkan warna putih
+di bucu atas kad, dulang muat naik yang dilipat juga dibulatkan di bahagian
+atas, dan dialog Kongsi mempunyai butang tutup di bucunya.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Mengosongkan carian membiarkan mel anda terbuka"
+text = """
+Buka mel daripada hasil carian dan kosongkan carian dengan X: mel itu kekal
+terbuka semasa folder anda kembali, dan tidak lagi dilipat kembali ke
+senarai.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Bucu bulat pada hamparan"
+text = """
+Hamparan dalam pemapar lampiran kini dibulatkan pada keempat-empat bucunya.
+Huruf lajur kelabu di atas dan tab helaian di bawah dahulu menjadikannya
+bersegi.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Butiran kenalan yang bersih pada kad"
+text = """
+Nombor telefon, alamat dan butiran lain yang diambil daripada tandatangan
+tidak lagi menunjukkan asterisk yang tersasar atau tanda pautan dalam
+kurungan sudut. Apabila rakan sekerja menandatangani mel daripada alamat
+kongsi seperti accounts@, kad hanya menyimpan butiran syarikat, bukan nombor
+atau jawatan rakan sekerja itu.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Semak apa yang anda lampirkan"
+text = """
+Klik fail yang dilampirkan pada mesej yang sedang anda tulis untuk
+membukanya dalam pemapar Katna, yang sama digunakan untuk membuka fail yang
+diterima, dan pastikan ia fail yang betul. Fail yang dihantar sebagai pautan
+Google Drive atau OneDrive dibuka pada drive itu.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Bar tatal dalam Tetapan"
+text = """
+Setiap tab Tetapan mempunyai bar tatal nipis yang sama seperti mel yang
+dibuka dan Fail: ia dipaparkan semasa anda menatal atau menuding pada
+halaman, dan anda boleh menyeretnya.
+"""

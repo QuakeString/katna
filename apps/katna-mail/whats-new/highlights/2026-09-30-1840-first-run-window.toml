@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A friendlier first start"
+text = """
+While you set Katna Mail up, the window shows behind the setup pages
+under a light veil: the apps, Compose and the search box, with soft
+placeholders where your folders and mail will appear. A new step offers
+a Katna account and lists what it turns on (read receipts, link
+tracking, Activity and translation), or you can skip it.
+"""

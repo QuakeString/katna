@@ -5,19 +5,35 @@
 ## Add a mail account: titles and steps
 
 add-account-title = Lägg till ett e-postkonto
+add-account-providers-intro = Välj din e-postleverantör. Katna hittar resten.
+add-account-provider-other = Annan e-post
+add-account-provider-other-detail = Alla IMAP- eller POP3-konton
+add-account-provider-google-detail = Gmail och Google Workspace
+add-account-provider-microsoft-detail = Outlook och Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = Logga in på { $provider }
+add-account-form-title-other = Ditt e-postkonto
+add-account-form-intro = Katna sparar ditt lösenord i systemets nyckelring.
 add-account-looking = Letar efter e-postservrarna för { $address }…
 add-account-address-intro = Ange din e-postadress. Katna hittar servrarna åt dig.
 add-account-servers-title = Serverinställningar
 add-account-servers-intro = Var Katna läser och skickar e-post för { $address }.
-add-account-password-title = Ange ditt lösenord
 add-account-signing-in = Loggar in…
 add-account-browser-title = Fortsätt i webbläsaren
 add-account-browser-intro = Katna har öppnat inloggningssidan för { $provider } i din webbläsare. Logga in där och låt Katna läsa och skicka din e-post, och kom sedan tillbaka hit.
 add-account-browser-hint = Öppnades ingen sida? Titta bland webbläsarens fönster, eller gå tillbaka och försök igen.
+add-account-stage-browser = Väntar på att du loggar in i webbläsaren…
+add-account-stage-signing-in-at = Loggar in på { $server }…
+add-account-help-app-password-link = Så skapar du ett applösenord
+add-account-help-turn-on-imap = { $provider } släpper bara in e-postappar när IMAP- och POP3-åtkomst är påslagen i inställningarna för webbmejlen.
+add-account-help-turn-on-imap-link = Så slår du på det
 
 ## Add a mail account: fields
 
 add-account-field-address = E-postadress
+add-account-receive-with = Ta emot e-post med
+add-account-imap-about = IMAP behåller din e-post och dina mappar på servern, likadana på alla enheter. Välj det om du kan.
+add-account-pop3-about = POP3 hämtar din e-post till den här datorn. E-post du läser eller flyttar här förblir som den är på servern och dina andra enheter.
 add-account-incoming = Inkommande e-post ({ $protocol })
 add-account-outgoing = Utgående e-post ({ $protocol })
 add-account-field-server = Server
@@ -39,16 +55,17 @@ add-account-servers-found = { $source ->
    *[other] Servrar: { $servers }, gissade; kontrollera dem om inloggningen misslyckas.
 }
 add-account-servers-entered = Servrar: { $servers }, som angivna.
-add-account-or = eller
-add-account-sign-in-with = Logga in med { $provider }
-add-account-sign-in-instead = Logga in med { $provider } i stället
 
 ## Add a mail account: buttons
+
+add-account-sign-in-with = Logga in med { $provider }
+add-account-sign-in-instead = Logga in med { $provider } i stället
 
 add-account-servers-button = Serverinställningar
 add-account-back = Tillbaka
 add-account-add = Lägg till konto
-add-account-next = Nästa
+add-account-done = Klar
+add-account-another = Lägg till ett konto till
 add-account-cancel = Avbryt
 
 ## Add a mail account: problems
@@ -70,7 +87,6 @@ add-account-address-invalid = Ange en e-postadress som { $example }.
 add-account-not-found = Katna kunde inte hitta servrarna för { $address }, så de vanliga namnen fylldes i. Kontrollera dem med din leverantör.
 add-account-password-empty = Ange lösenordet.
 add-account-name-is-password = Namnet är detsamma som lösenordet. Skriv ditt namn där i stället, så som andra ska se det.
-add-account-added = { $address } har lagts till. Hämtar din e-post…
 add-account-app-password-refused = { $provider } avvisade lösenordet. Det krävs ett applösenord, inte det du använder på webben.
 add-account-password-refused = Servern avvisade lösenordet. Kontrollera det och försök igen.
 add-account-sign-in-refused = { $provider } släppte inte in Katna. Försök igen och ge åtkomst till din e-post.
@@ -79,11 +95,25 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Den här versionen av Katna kan inte logga in på Google-konton än.
    *[other] Den här leverantören tillåter bara inloggning på sin egen sida, vilket Katna inte kan göra för den än.
 }
-add-account-signed-in = Inloggad med { $provider }. Hämtar din e-post…
+add-account-smtp-not-found = Katna hittade var din e-post ska läsas men inte var den ska skickas. Ange servern för utgående e-post.
+
+## Add a mail account: the last step
+
+add-account-done-title = Ditt konto är klart
+add-account-done-intro = Katna hämtar din e-post nu. Ny e-post visas allt eftersom den kommer in.
+add-account-done-sign-in = Inloggning
+add-account-done-signed-in-with = Med { $provider }, i din webbläsare
+add-account-done-receiving = Ta emot e-post
+add-account-done-sending = Skicka e-post
+add-account-done-on-server = E-post på servern
+add-account-done-kept = Behålls tills du raderar den i Katna
+add-account-done-pop3-hint = Ändra vad som händer med e-post på servern i Inställningar > Konton.
+add-account-done-zoho-title = Uppgifter och kalendrar
+add-account-done-zoho-about = Zoho håller dem åtskilda från e-posten. Logga in med Zoho en gång för att få in dem i Katna.
+add-account-done-linked = Uppgifter och kalendrar anslutna
 
 ## The account menu (from the account button on the top bar)
 
 add-account-menu-another = Lägg till ett konto till
-add-account-menu-manage = Hantera konton
 app-menu = Huvudmeny
 app-menu-back = Tillbaka

@@ -49,7 +49,21 @@ notify-event-join = Приєднатися
 notify-event-snooze = Відкласти на 5 хв
 notify-task-done = Позначити як виконане
 notify-open = Відкрити
+notify-peek = Переглянути
+notify-reply = Відповісти
+notify-reply-placeholder = Відповідь для { $name }…
+notify-send = Надіслати
 notify-reply-all = Відповісти всім
 notify-mark-read = Позначити як прочитане
 notify-mark-all-read = Позначити все як прочитане
 notify-archive = Архівувати
+notify-archived = Заархівовано
+notify-archived-count = { $count ->
+    [one] { $count } лист прибрано з «Вхідних»
+    [few] { $count } листи прибрано з «Вхідних»
+    [many] { $count } листів прибрано з «Вхідних»
+   *[other] { $count } листа прибрано з «Вхідних»
+}
+notify-undo = Скасувати
+notify-reply-sent = Відповідь надіслано: { $name }
+notify-open-in-katna = Відкрити в Katna

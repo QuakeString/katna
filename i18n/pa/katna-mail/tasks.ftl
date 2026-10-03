@@ -4,7 +4,7 @@
 
 ## Left side
 
-tasks-create = ਬਣਾਓ
+tasks-create = ਨਵਾਂ ਕਾਰਜ
 tasks-all = ਸਾਰੇ ਕਾਰਜ
 tasks-today = ਅੱਜ
 tasks-starred = ਤਾਰਾਬੱਧ
@@ -24,6 +24,12 @@ tasks-account-failed = ਕਾਰਜ ਸੂਚੀਆਂ ਪੜ੍ਹੀਆਂ ਨ
 # $reason is the server's own words, in English.
 tasks-account-error = ਕਾਰਜ ਸੂਚੀਆਂ ਪੜ੍ਹੀਆਂ ਨਹੀਂ ਜਾ ਸਕੀਆਂ: { $reason }
 tasks-account-none = ਕੋਈ ਕਾਰਜ ਸੂਚੀ ਨਹੀਂ ਮਿਲੀ
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+tasks-account-none-why = ਕੋਈ ਕਾਰਜ ਸੂਚੀ ਨਹੀਂ ਮਿਲੀ: { $reason }
+# A Gmail or Outlook account added with a password: its tasks need the
+# provider's sign-in.
+tasks-account-use-sign-in = { $provider } ਸਿਰਫ਼ { $provider } ਨਾਲ ਸਾਈਨ ਇਨ ਕੀਤੇ Katna ਨੂੰ ਹੀ ਕਾਰਜ ਦਿਖਾਉਂਦਾ ਹੈ।
+tasks-account-sign-in-with = { $provider } ਨਾਲ ਸਾਈਨ ਇਨ ਕਰੋ
 tasks-account-looking = ਕਾਰਜ ਸੂਚੀਆਂ ਲੱਭ ਰਿਹਾ ਹੈ…
 tasks-account-try-again = ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ
 tasks-account-try-again-tooltip = ਇਸ ਖਾਤੇ ਦੇ ਕਾਰਜ ਹੁਣੇ ਦੁਬਾਰਾ ਜਾਂਚੋ
@@ -108,4 +114,6 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = ਉਹ ਮੇਲ ਹੁਣ ਇੱਥੇ ਨਹੀਂ ਹੈ।
 tasks-toast-list-deleted = ਸੂਚੀ ਮਿਟਾਈ ਗਈ
 tasks-toast-moved = { $list } ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ
+# A task dragged to another place in its own list.
+tasks-toast-placed = ਕਾਰਜ ਹਿਲਾਇਆ ਗਿਆ
 tasks-toast-rescheduled = ਕੰਮ ਦਾ ਸਮਾਂ ਬਦਲਿਆ ਗਿਆ

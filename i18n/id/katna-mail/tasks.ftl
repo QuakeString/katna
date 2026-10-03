@@ -4,15 +4,13 @@
 
 ## Left side
 
-tasks-create = Buat
+tasks-create = Tugas baru
 tasks-all = Semua tugas
 tasks-today = Hari ini
 tasks-starred = Berbintang
 tasks-new-list = Buat daftar baru
 tasks-on-this-computer = Di komputer ini
 tasks-my-tasks = Tugas Saya
-# The line under an account in the side list whose task lists could not
-# come: why, and the one click that fixes it.
 tasks-account-sign-in = Masuk lagi untuk menampilkan tugas
 tasks-account-signed-in = Sudah masuk lagi ke { $address }. Mengambil tugas Anda…
 tasks-account-sign-in-refused = { $provider } tidak mengizinkan Katna masuk. Coba lagi, dan izinkan akses ke tugas Anda.
@@ -21,9 +19,11 @@ tasks-account-change-password = Ubah sandi
 tasks-account-change-password-tooltip = Buka Setelan > Akun
 tasks-account-not-enabled = Akses tugas untuk Katna belum diaktifkan.
 tasks-account-failed = Daftar tugas tidak dapat dibaca.
-# $reason is the server's own words, in English.
 tasks-account-error = Daftar tugas tidak dapat dibaca: { $reason }
 tasks-account-none = Tidak ada daftar tugas yang ditemukan
+tasks-account-none-why = Tidak ada daftar tugas yang ditemukan: { $reason }
+tasks-account-use-sign-in = { $provider } hanya menampilkan tugas ke Katna yang masuk dengan { $provider }.
+tasks-account-sign-in-with = Masuk dengan { $provider }
 tasks-account-looking = Mencari daftar tugas…
 tasks-account-try-again = Coba lagi
 tasks-account-try-again-tooltip = Periksa lagi tugas akun ini sekarang
@@ -106,4 +106,5 @@ tasks-toast-added = { $count ->
 tasks-mail-gone = Email itu sudah tidak ada di sini.
 tasks-toast-list-deleted = Daftar dihapus
 tasks-toast-moved = Dipindahkan ke { $list }
+tasks-toast-placed = Tugas dipindahkan
 tasks-toast-rescheduled = Tugas dijadwalkan ulang

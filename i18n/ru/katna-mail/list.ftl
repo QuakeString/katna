@@ -14,18 +14,13 @@ tab-other = Другие
 tab-inbox = Входящие
 tab-newsletters = Рассылки
 tab-notifications = Уведомления
-tab-new = { $count ->
-    [one] { $count } новое
-    [few] { $count } новых
-    [many] { $count } новых
-   *[other] { $count } новых
-}
 tab-provider-other = сортирует Katna
 
 ## Mail list: toolbar
 
 list-select = Выбрать
 list-refresh = Обновить
+list-back-to-top = Наверх
 list-checking = Проверяем новую почту…
 list-more = Ещё
 list-mark-read = Отметить как прочитанное
@@ -44,6 +39,7 @@ list-results = Результаты по запросу «{ $query }»
 list-results-corrected = Показаны результаты по запросу «{ $query }»
 list-search-instead = Искать вместо этого «{ $query }»
 list-files-more = +{ $count }
+list-replied = Вы ответили
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -492,6 +488,12 @@ menu-add-note = Добавить заметку
 menu-print-all = Распечатать все
 menu-new-window = Открыть в новом окне
 menu-move-to = Переместить в
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = Дальнейшие шаги
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = Ещё
 menu-move-to-heading = Переместить в:
 menu-find-from = Найти письма от { $name }
 

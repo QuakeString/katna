@@ -46,6 +46,7 @@ compose-sent-archived = נשלחה והועברה לארכיון
 compose-sent = ההודעה נשלחה
 compose-discarded = הטיוטה נמחקה
 compose-draft-saved = הטיוטה נשמרה
+compose-draft-saving = שומרים…
 compose-draft-failed = לא ניתן לשמור את הטיוטה: { $error }
 compose-draft-not-opened = לא ניתן לפתוח את הטיוטה.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = לא ניתן לפתוח את הטיוטה.
 compose-picker-insert = הוספה
 compose-picker-attach = צירוף
 compose-file-too-large = { $name } גדול מדי: הודעה יכולה להכיל עד { $limit }.
+compose-forward-files-missing = הקבצים של ההודעה המועברת לא הורדו, ולכן הם לא צורפו.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = הסרת הקובץ המצורף
+compose-attachment-open-tip = פתיחה לבדיקה
 compose-attachments-total = { $count ->
     [one] קובץ אחד, { $size }
    *[other] { $count } קבצים, { $size }
@@ -78,6 +81,7 @@ compose-drive-share-link = שיתוף באמצעות קישור
 compose-drive-send-without = שליחה בלי שיתוף
 compose-drive-share-cancel = ביטול
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } גדול מ-{ $limit }, ולכן הוא עובר ל-OneDrive שלך וההודעה כוללת קישור.
 compose-onedrive-tip = ב-OneDrive שלך; ההודעה כוללת קישור
 compose-onedrive-allow = אישור גישה ל-OneDrive
@@ -89,6 +93,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive לא יכול לשתף את הקבצים עם { $addresses }. במקום זאת, כל מי שיש לו את הקישור יכול לפתוח אותם.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = אפשר לשחרר קבצים כאן
 compose-drop-here = אפשר לשחרר כאן
 compose-paste-keep-formatting = שמירת העיצוב

@@ -59,6 +59,12 @@ calendar-account-not-enabled = הגישה ליומן עבור Katna עדיין �
 calendar-account-failed = לא ניתן היה לקרוא את היומנים.
 calendar-account-error = לא ניתן היה לקרוא את היומנים: { $reason }
 calendar-account-none = לא נמצאו יומנים
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = לא נמצאו יומנים: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } מציג יומנים רק ל-Katna שמחובר עם { $provider }.
+calendar-account-sign-in-with = התחברות עם { $provider }
 calendar-account-looking = מתבצע חיפוש יומנים…
 calendar-account-try-again = ניסיון נוסף
 calendar-account-try-again-tooltip = בדיקה חוזרת של היומנים בחשבון הזה עכשיו
@@ -78,8 +84,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = { $count } נוספים
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = חוזר
 calendar-join = הצטרפות
+calendar-join-with = הצטרפות עם { $service }
 calendar-email-guests = שליחת מייל לאורחים
 calendar-running-late = יש עיכוב
 calendar-late-subject = יש עיכוב: { $title }
@@ -94,6 +102,7 @@ calendar-guest-answers = { $yes } כן, { $maybe } אולי, { $no } לא, { $wa
 calendar-organizer = מארגן
 calendar-optional = אופציונלי
 calendar-open-web = פתיחה בדפדפן
+calendar-open-mail = פתיחת ההודעה
 calendar-open-contact = פתיחת איש הקשר
 calendar-close = סגירה
 
@@ -117,10 +126,71 @@ calendar-discard = מחיקת השינויים
 calendar-edit = עריכת אירוע
 calendar-delete = מחיקת אירוע
 calendar-event-details = פרטי האירוע
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = אירוע חדש
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = פתיחת היום
+calendar-menu-duplicate = שכפול
+calendar-menu-color = צבע
+# The event takes its calendar's color.
+calendar-menu-color-calendar = צבע היומן
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = בעוד שבוע
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = עגבנייה
+calendar-color-flamingo = פלמינגו
+calendar-color-tangerine = קלמנטינה
+calendar-color-banana = בננה
+calendar-color-sage = מרווה
+calendar-color-basil = בזיליקום
+calendar-color-peacock = טווס
+calendar-color-blueberry = אוכמנית
+calendar-color-lavender = לבנדר
+calendar-color-grape = ענבים
+calendar-color-graphite = גרפיט
+calendar-menu-only-this = הצגת היומן הזה בלבד
+calendar-menu-rename = שינוי שם
+calendar-menu-remove = הסרה מהרשימה
+calendar-menu-delete = מחיקה
+calendar-menu-new-calendar = יומן חדש
+calendar-menu-show-all = הצגת הכול
+calendar-menu-hide-all = הסתרת הכול
+calendar-menu-account-settings = הגדרות החשבון
+calendar-why-main = היומן הראשי
+calendar-why-last = היחיד כאן
+calendar-why-owner = לבעלים בלבד
+calendar-why-contacts = מאנשי הקשר
+calendar-why-unreached = אין גישה
+calendar-name-placeholder = שם היומן
+calendar-toast-added = „{ $name }” נוסף
+calendar-toast-renamed = שם היומן שונה
+calendar-toast-recolored = צבע היומן שונה
+calendar-toast-deleted = „{ $name }” נמחק
+calendar-toast-removed = „{ $name }” הוסר מהרשימה שלך
+calendar-edit-failed = היומן לא שונה: { $reason }
+calendar-delete-title = למחוק את „{ $name }”?
+calendar-delete-confirm = מחיקה
+calendar-deleting = מוחקים…
+calendar-delete-heading = יימחקו:
+calendar-delete-events = היומן וכל האירועים שלו
+calendar-delete-shared = עבור כל מי שהוא משותף איתו
+calendar-delete-server = הוא נמחק מ־{ $account } בשירות הדואר, ולא רק ב־Katna.
+calendar-delete-local = הוא נמחק מהמחשב הזה.
+calendar-remove-title = להסיר את „{ $name }” מהרשימה שלך?
+calendar-remove-confirm = הסרה
+calendar-removing = מסירים…
+calendar-remove-heading = מה ישתנה:
+calendar-remove-events = האירועים שלו לא יוצגו לך יותר, כאן ובאפליקציות האחרות שלך
+calendar-remove-server = היומן נשאר אצל הבעלים שלו, שיכולים לשתף אותו איתך שוב.
 calendar-kind-event = אירוע
+calendar-kind-task = משימה
 calendar-kind-focus = זמן ריכוז
 calendar-kind-out-of-office = מחוץ למשרד
 calendar-kind-working-location = מיקום עבודה
+calendar-task-added = המשימה נוספה
+calendar-task-added-to = המשימה נוספה אל { $list }
+calendar-task-list-local = במחשב הזה
 calendar-working-home = בית
 calendar-busy = עסוק
 calendar-free = פנוי

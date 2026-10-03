@@ -26,6 +26,8 @@
 //!   filing in Sent.
 //! - [`pictures`]: remote images and sender pictures for the reading pane,
 //!   which never uses the network itself.
+//! - [`quick_reply`]: short plain-text replies typed into a notification.
+//! - [`rules`]: mail rules run on new incoming mail.
 //! - [`pop3`]: our own POP3 client, and downloading a maildrop into the
 //!   store (task 1.10).
 //! - [`worker`]: keeps an account in sync: IDLE, periodic full syncs,
@@ -40,6 +42,7 @@ mod backend;
 pub mod bodies;
 pub mod calendar;
 pub mod carddav;
+pub mod cloud;
 pub mod connection;
 pub mod contacts;
 pub mod drive;
@@ -47,7 +50,11 @@ pub mod engine;
 mod error;
 #[cfg(test)]
 mod fake_http;
+pub mod folders;
+pub mod gmail_filters;
+mod google_api;
 pub mod imap;
+pub mod mail_actions;
 pub mod meet;
 pub mod methods;
 pub mod net;
@@ -58,6 +65,10 @@ pub mod ops;
 pub mod outbox;
 pub mod pictures;
 pub mod pop3;
+pub mod quick_reply;
+pub mod rules;
+pub mod rules_remote;
+pub mod sieve;
 pub mod smtp;
 pub mod tasks;
 pub mod tracking;
@@ -65,7 +76,7 @@ pub mod worker;
 
 pub use backend::{
     Address, AttachmentPart, Credentials, Endpoint, Envelope, FlagChanges, FlagState, Flags,
-    Folder, FolderChange, FolderRole, FolderStatus, IMPORTANT, MailBackend, MailSender,
+    Folder, FolderChange, FolderRole, FolderStatus, IMPORTANT, MUTED, MailBackend, MailSender,
     MessageHeaders, Quota, Secret, Security, Wait,
 };
 pub use error::{Error, Result};

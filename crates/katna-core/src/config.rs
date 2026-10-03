@@ -34,12 +34,14 @@ pub struct Config {
     pub shortcuts: Shortcuts,
     pub sync: SyncConfig,
     pub notifications: Notifications,
+    pub sounds: Sounds,
     pub onboarding: Onboarding,
     pub experimental: Experimental,
     pub feedback: Feedback,
     pub updates: Updates,
     pub contacts: ContactsConfig,
     pub meetings: Meetings,
+    pub ai: Ai,
 }
 
 /// The Contacts page's own choices.
@@ -131,14 +133,128 @@ impl Default for Feedback {
     }
 }
 
+/// Writing help from an AI service (`docs/ARCHITECTURE.md` §16.5):
+/// rephrasing selected text, and finishing sentences. Keys live in the
+/// Secret Service, never here.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Ai {
+    /// Where requests go.
+    pub source: AiSource,
+    /// The user's own service, a `katna_ai::provider::PRESETS` id.
+    pub provider: String,
+    /// The model of the user's own service; empty for its usual one.
+    pub model: String,
+    /// The address of an `other` service (OpenAI's API, such as Ollama).
+    pub address: String,
+    /// AI finishes the sentence being written, after a pause, as a
+    /// longer writing suggestion ([`Sending::writing_suggestions`]).
+    pub autocomplete: bool,
+    /// Autocomplete also sends the mail being answered.
+    pub autocomplete_answered: bool,
+    /// Rephrase is offered for encrypted mail, asking each time.
+    pub encrypted: bool,
+}
+
+impl Default for Ai {
+    fn default() -> Self {
+        Self {
+            source: AiSource::default(),
+            provider: "gemini".to_owned(),
+            model: String::new(),
+            address: String::new(),
+            autocomplete: false,
+            autocomplete_answered: false,
+            encrypted: true,
+        }
+    }
+}
+
+/// [`Ai::source`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AiSource {
+    /// Katna AI, on Katna Server with the Katna account.
+    #[default]
+    Katna,
+    /// The user's own service and key.
+    Own,
+    /// No writing help.
+    Off,
+}
+
+/// The frost's blur, in pixels, when nothing else sets it.
+pub const FROST_BLUR: u8 = 24;
+/// The frost's tint opacity, in percent, when nothing else sets it.
+pub const FROST_OPACITY: u8 = 45;
+/// How opaque frosted panes are, in percent, when nothing else sets it.
+pub const PANE_OPACITY: u8 = 75;
+
 /// Settings > Experimental: features still being tried out.
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Experimental {
     /// Who draws the window frame.
     pub window_frame: WindowFrame,
     /// A translucent window background that the compositor blurs.
     pub blur: bool,
+    /// Menus, popovers, dialogs and viewer bars are frosted glass: they
+    /// blur what is under them, drawn by Katna itself.
+    pub frosted_popups: bool,
+    /// The frost's blur and opacity come from [`Self::frost_blur`] and
+    /// [`Self::frost_opacity`]; off, they follow the desktop's blur
+    /// strength (KDE's Blur effect) or Katna's defaults.
+    pub custom_frost: bool,
+    /// How far the frost blurs, in pixels ([`FROST_BLUR`]).
+    pub frost_blur: u8,
+    /// How opaque the frost's tint is, in percent ([`FROST_OPACITY`]).
+    /// With [`Self::custom_frost`] on, it also sets how much a blurred
+    /// window background lets through.
+    pub frost_opacity: u8,
+    /// The corner radius of Katna's window frame, in pixels; `None` keeps
+    /// the frame's own.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub window_radius: Option<u8>,
+    /// A thin line around Katna's window frame.
+    pub window_border: bool,
+    /// How opaque that line is, in percent; `None` keeps the frame's own.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub window_border_opacity: Option<u8>,
+    /// In a blurred window, the cards (the mail list, the open mail, the
+    /// person card and the pages) let the blur show through.
+    pub frosted_panes: bool,
+    /// How opaque those cards are, in percent ([`PANE_OPACITY`]).
+    pub pane_opacity: u8,
+    /// In a blurred window, the room behind a chat's bubbles lets the
+    /// blur show through, a little more than the cards.
+    pub frosted_chat: bool,
+    /// In a blurred window, the search box lets the blur show through
+    /// while it is open.
+    pub frosted_search: bool,
+    /// Conversations between people open as a group chat: a bubble per
+    /// mail with only what its sender wrote.
+    pub chat_view: bool,
+}
+
+impl Default for Experimental {
+    fn default() -> Self {
+        Self {
+            window_frame: WindowFrame::default(),
+            blur: false,
+            frosted_popups: true,
+            custom_frost: false,
+            frost_blur: FROST_BLUR,
+            frost_opacity: FROST_OPACITY,
+            window_radius: None,
+            window_border: true,
+            window_border_opacity: None,
+            frosted_panes: true,
+            pane_opacity: PANE_OPACITY,
+            frosted_chat: true,
+            frosted_search: true,
+            chat_view: false,
+        }
+    }
 }
 
 /// [`Experimental::window_frame`].
@@ -177,16 +293,108 @@ pub struct Onboarding {
 pub struct Notifications {
     /// Notify about new mail in the inbox (Primary tab).
     pub new_mail: bool,
-    /// New-mail notifications play the desktop's new-mail sound.
-    pub sound: bool,
+    /// Older versions' one switch for the sounds of notifications, now
+    /// [`Sounds`]; read once, never written.
+    #[serde(skip_serializing)]
+    pub sound: Option<bool>,
 }
 
 impl Default for Notifications {
     fn default() -> Self {
         Self {
             new_mail: true,
-            sound: true,
+            sound: None,
         }
+    }
+}
+
+/// The sounds Katna plays, one per [`SoundEvent`] (Settings >
+/// Notifications > Sounds). Muted folders, conversations and senders
+/// never notify, so they make no sound either.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Sounds {
+    /// The set of sounds (`katna_platform::sound::SETS`): each event plays
+    /// the set's sound unless it names its own. Empty for the usual set.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub set: String,
+    pub new_mail: EventSound,
+    pub reminders: EventSound,
+    pub mail_back: EventSound,
+    pub sent: EventSound,
+    pub not_sent: EventSound,
+}
+
+/// Whether one event plays a sound, and which.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct EventSound {
+    pub on: bool,
+    /// The sound's name in `katna_platform::sound` (`file:` and a path for
+    /// a file of the user's own); empty for the set's.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub sound: String,
+}
+
+impl Default for EventSound {
+    fn default() -> Self {
+        Self {
+            on: true,
+            sound: String::new(),
+        }
+    }
+}
+
+/// What a sound is for.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum SoundEvent {
+    /// New mail in a folder that notifies.
+    NewMail,
+    /// Calendar event and task reminders.
+    Reminders,
+    /// Mail back in the inbox: from snooze, or nobody replied.
+    MailBack,
+    /// A message has gone out.
+    Sent,
+    /// A message could not be sent.
+    NotSent,
+}
+
+impl SoundEvent {
+    pub const ALL: [SoundEvent; 5] = [
+        SoundEvent::NewMail,
+        SoundEvent::Reminders,
+        SoundEvent::MailBack,
+        SoundEvent::Sent,
+        SoundEvent::NotSent,
+    ];
+}
+
+impl Sounds {
+    pub fn get(&self, event: SoundEvent) -> &EventSound {
+        match event {
+            SoundEvent::NewMail => &self.new_mail,
+            SoundEvent::Reminders => &self.reminders,
+            SoundEvent::MailBack => &self.mail_back,
+            SoundEvent::Sent => &self.sent,
+            SoundEvent::NotSent => &self.not_sent,
+        }
+    }
+
+    pub fn get_mut(&mut self, event: SoundEvent) -> &mut EventSound {
+        match event {
+            SoundEvent::NewMail => &mut self.new_mail,
+            SoundEvent::Reminders => &mut self.reminders,
+            SoundEvent::MailBack => &mut self.mail_back,
+            SoundEvent::Sent => &mut self.sent,
+            SoundEvent::NotSent => &mut self.not_sent,
+        }
+    }
+
+    /// The sound `event` plays, if on: its name, empty for the set's.
+    pub fn playing(&self, event: SoundEvent) -> Option<&str> {
+        let sound = self.get(event);
+        sound.on.then_some(sound.sound.as_str())
     }
 }
 
@@ -255,6 +463,9 @@ pub struct General {
     /// `tray_icon = false` as their default into every config file the app
     /// wrote, which would keep the icon hidden. That key is ignored.
     pub show_in_tray: bool,
+    /// The tray icon in Katna's colors or in the panel's one color; the
+    /// unread badge is red either way.
+    pub tray_style: TrayStyle,
     /// Show the Inbox unread count on Katna Mail's taskbar or dock icon.
     pub unread_badge: bool,
     /// The language of the interface, a tag from `i18n/languages.toml`
@@ -287,6 +498,28 @@ impl General {
     }
 }
 
+/// How the tray icon is drawn ([`General::tray_style`]).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TrayStyle {
+    #[serde(rename = "color")]
+    Color,
+    /// One color, as the panel draws its own icons.
+    #[serde(rename = "monochrome")]
+    Monochrome,
+}
+
+impl Default for TrayStyle {
+    /// Monochrome like the rest of a Linux panel; Windows' notification
+    /// area shows apps in color.
+    fn default() -> Self {
+        if cfg!(windows) {
+            Self::Color
+        } else {
+            Self::Monochrome
+        }
+    }
+}
+
 /// How times show ([`General::clock`]).
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Clock {
@@ -307,6 +540,7 @@ impl Default for General {
         Self {
             run_in_background: true,
             show_in_tray: true,
+            tray_style: TrayStyle::default(),
             unread_badge: true,
             language: String::new(),
             clock: Clock::Language,
@@ -369,8 +603,10 @@ pub struct Sending {
     /// Send on replies and forwards also archives the conversation; the
     /// Send menu offers the other way.
     pub send_and_archive: bool,
-    /// A short sound plays when a message has gone out.
-    pub sent_sound: bool,
+    /// Older versions' switch for the sound when a message has gone out,
+    /// now [`Sounds::sent`]; read once, never written.
+    #[serde(skip_serializing)]
+    pub sent_sound: Option<bool>,
 }
 
 impl Default for Sending {
@@ -389,7 +625,7 @@ impl Default for Sending {
             writing_suggestions: true,
             send_from: String::new(),
             send_and_archive: false,
-            sent_sound: true,
+            sent_sound: None,
         }
     }
 }
@@ -407,7 +643,7 @@ impl Sending {
             id,
             name,
             text,
-            html: String::new(),
+            ..Signature::default()
         });
         if self.signatures.len() == 1 {
             self.new_mail_signature = Some(id);
@@ -448,6 +684,74 @@ pub struct Signature {
     /// `data:` URIs; empty for a plain text one.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub html: String,
+    /// The fields and layout it is made from, when it is made from one
+    /// of Katna's layouts: [`Self::text`] and [`Self::html`] are then
+    /// written from them.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub layout: Option<SignatureLayout>,
+}
+
+/// A signature made from one of Katna's layouts ([`Signature::layout`]).
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SignatureLayout {
+    pub style: LayoutStyle,
+    /// Its colour, as `#rrggbb`.
+    pub colour: String,
+    pub name: String,
+    pub title: String,
+    pub company: String,
+    pub mobile: String,
+    pub office: String,
+    pub email: String,
+    pub website: String,
+    pub address: String,
+    /// Pages it links to (LinkedIn, YouTube…), by address.
+    pub pages: Vec<String>,
+    /// Pictures as `data:` URIs, already made small for mail; empty for
+    /// none.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub logo: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub photo: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub banner: String,
+}
+
+/// The shape of a [`SignatureLayout`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum LayoutStyle {
+    #[default]
+    Classic,
+    LogoLeft,
+    Photo,
+    Band,
+    OneLine,
+    Centred,
+    Banner,
+    Underline,
+    SideBar,
+    Card,
+    Monogram,
+    Plain,
+}
+
+impl LayoutStyle {
+    pub const ALL: [LayoutStyle; 12] = [
+        LayoutStyle::Classic,
+        LayoutStyle::LogoLeft,
+        LayoutStyle::Photo,
+        LayoutStyle::Band,
+        LayoutStyle::OneLine,
+        LayoutStyle::Centred,
+        LayoutStyle::Banner,
+        LayoutStyle::Underline,
+        LayoutStyle::SideBar,
+        LayoutStyle::Card,
+        LayoutStyle::Monogram,
+        LayoutStyle::Plain,
+    ];
 }
 
 /// How Katna Mail shows mail (its quick settings).
@@ -467,14 +771,39 @@ pub struct MailView {
     /// Which tabs each account's inbox has, by lower-case address.
     /// Accounts not listed use [`TabStyle::Auto`].
     pub account_tabs: BTreeMap<String, AccountTabs>,
+    /// Which tabs the unified inbox has, shared by every account: each
+    /// mail shows in the tab of its category. [`TabStyle::Auto`] is
+    /// Gmail's five.
+    pub unified_tabs: TabStyle,
+    /// Each account's color, by lower-case address: a name from Katna
+    /// Mail's account colors (`teal`, `pink`, ...). Accounts not listed
+    /// wear one picked from their address.
+    pub account_colors: BTreeMap<String, String>,
     pub density: Density,
     /// The size of everything in the windows, in percent, on top of the
     /// desktop's own scale (75 to 200).
     pub scale: u16,
+    /// How long animations take compared with normal (0.25 to 4): Katna's
+    /// own speed. Not set: the desktop's animation speed.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub animation_speed: Option<f32>,
+    /// Whether animations are turned off.
+    pub reduce_motion: ReduceMotion,
     pub theme: Theme,
     /// Use the desktop's color scheme and accent color instead of Katna's
-    /// own colors.
+    /// own colors. Older versions' choice: [`MailView::colors`] wins when
+    /// it is set, and is kept in step with it.
     pub desktop_colors: bool,
+    /// The color scheme, by id: `system` for the desktop's, `katna` for
+    /// Katna's own, or a built-in scheme's (`nord`, `clear`, ...). Not set
+    /// in files from before schemes, which [`MailView::desktop_colors`]
+    /// decides; see [`MailView::colors`].
+    #[serde(rename = "colors", skip_serializing_if = "Option::is_none")]
+    pub color_scheme: Option<String>,
+    /// The accent color: empty for the scheme's own, `system` for the
+    /// desktop's, or `#rrggbb`.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub accent: String,
     /// Show the names under the icons of the app bar (Mail, Calendar, ...).
     pub app_labels: bool,
     /// Show the logo of each sender's organization (its BIMI logo or
@@ -511,15 +840,24 @@ pub struct MailView {
     pub reply_all: bool,
     /// Show the Important marker in the message list.
     pub important_markers: bool,
+    /// Show how many are unread beside every folder in the folder pane;
+    /// off, only the inbox shows its count.
+    pub folder_unread_counts: bool,
     /// Keep the lines of a message no wider than is easy to read.
     pub limit_width: bool,
     /// In a dark theme, give HTML mail dark colors too; off, mail keeps the
     /// colors its sender picked, on a light page.
     pub dark_mail: bool,
+    /// In a dark theme, show bright attachment pages (PDF, documents,
+    /// slides, sheets, text) dark in the viewer: lightness flipped with
+    /// hue kept, photos dimmed. Set with the viewer's half-moon button.
+    pub dark_pages: bool,
     /// Show a small picture of each attachment's content on its card.
     pub attachment_previews: bool,
     /// Open the folder in the file manager after saving attachments.
     pub open_saved_folder: bool,
+    /// What the Files page leaves out.
+    pub files: FilesPage,
     /// With several accounts: the folder pane shows one account, picked in
     /// the account card, or all of them one after another.
     pub accounts_shown: AccountsShown,
@@ -553,6 +891,78 @@ pub struct MailView {
     /// empty for all accounts.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub activity_account: String,
+}
+
+/// The Files page (Settings > Default apps): its small pictures (logos
+/// and icons in signatures, which come with many mails) and the accounts'
+/// drives it shows.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct FilesPage {
+    /// Leave pictures smaller than these out of the Files page.
+    pub leave_out_small: bool,
+    /// A picture under this many KB is small...
+    pub small_kb: u32,
+    /// ... and so is one under this many pixels wide or tall.
+    pub small_px: u32,
+    /// Accounts (store ids) whose cloud drive Files and the attach
+    /// pickers leave out. Every drive an account allows shows otherwise.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub drives_off: Vec<i64>,
+}
+
+impl FilesPage {
+    pub const KB_RANGE: std::ops::RangeInclusive<u32> = 1..=1024;
+    pub const PX_RANGE: std::ops::RangeInclusive<u32> = 1..=2000;
+
+    /// Whether a picture of `bytes`, `size` pixels (once known), is left
+    /// out.
+    pub fn leaves_out(&self, bytes: u64, size: Option<(u32, u32)>) -> bool {
+        self.leave_out_small
+            && (bytes < u64::from(self.small_kb) * 1024
+                || size.is_some_and(|(w, h)| w.min(h) < self.small_px))
+    }
+
+    /// Whether a picture named `name` is part of an email signature,
+    /// whatever its size: its sender sent the same picture in
+    /// `conversations` conversations (three or more), or it is a social
+    /// network's icon. Left out with the small pictures.
+    pub fn is_signature(&self, name: &str, conversations: usize) -> bool {
+        const SIGNATURE_CONVERSATIONS: usize = 3;
+        const WORDS: [&str; 11] = [
+            "facebook",
+            "twitter",
+            "linkedin",
+            "instagram",
+            "youtube",
+            "whatsapp",
+            "tiktok",
+            "pinterest",
+            "telegram",
+            "signature",
+            "emailsignature",
+        ];
+        if !self.leave_out_small {
+            return false;
+        }
+        let stem = name.rsplit_once('.').map_or(name, |(stem, _)| stem);
+        conversations >= SIGNATURE_CONVERSATIONS
+            || stem
+                .to_lowercase()
+                .split(|c: char| !c.is_alphanumeric())
+                .any(|word| WORDS.contains(&word))
+    }
+}
+
+impl Default for FilesPage {
+    fn default() -> Self {
+        Self {
+            leave_out_small: true,
+            small_kb: 12,
+            small_px: 100,
+            drives_off: Vec::new(),
+        }
+    }
 }
 
 fn is_zero(n: &i64) -> bool {
@@ -598,10 +1008,16 @@ impl Default for MailView {
             conversations: true,
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
+            unified_tabs: TabStyle::Auto,
+            account_colors: BTreeMap::new(),
             density: Density::Default,
             scale: 100,
+            animation_speed: None,
+            reduce_motion: ReduceMotion::Desktop,
             theme: Theme::System,
             desktop_colors: true,
+            color_scheme: None,
+            accent: String::new(),
             app_labels: true,
             sender_pictures: true,
             newest_first: false,
@@ -616,10 +1032,13 @@ impl Default for MailView {
             remote_images: false,
             reply_all: false,
             important_markers: true,
+            folder_unread_counts: true,
             limit_width: false,
             dark_mail: true,
+            dark_pages: false,
             attachment_previews: true,
             open_saved_folder: false,
+            files: FilesPage::default(),
             accounts_shown: AccountsShown::One,
             unified_inbox: false,
             current_account: String::new(),
@@ -634,6 +1053,24 @@ impl Default for MailView {
 }
 
 impl MailView {
+    /// The color scheme's id: [`Self::color_scheme`], or for files from
+    /// before schemes the desktop's (`system`) or Katna's own (`katna`),
+    /// as [`Self::desktop_colors`] says.
+    pub fn colors(&self) -> &str {
+        match &self.color_scheme {
+            Some(id) => id,
+            None if self.desktop_colors => "system",
+            None => "katna",
+        }
+    }
+
+    /// Picks the color scheme `id`. Older versions read
+    /// [`Self::desktop_colors`], kept on for the desktop's scheme.
+    pub fn set_colors(&mut self, id: &str) {
+        self.desktop_colors = id == "system";
+        self.color_scheme = Some(id.to_owned());
+    }
+
     /// The tab settings of the account with `address`.
     pub fn tabs_of(&self, address: &str) -> AccountTabs {
         self.account_tabs
@@ -896,6 +1333,19 @@ pub enum AccountsShown {
     All,
 }
 
+/// [`MailView::reduce_motion`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ReduceMotion {
+    /// As the desktop says: off when its animations are off.
+    #[default]
+    Desktop,
+    /// Animations off: things appear and move at once.
+    On,
+    /// Animations on, whatever the desktop says.
+    Off,
+}
+
 /// [`MailView::density`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -918,6 +1368,9 @@ pub struct CalendarView {
     /// Named groups of calendars shown together, as Fantastical's
     /// calendar sets: one click shows a set's calendars and hides the rest.
     pub sets: Vec<CalendarSet>,
+    /// Tasks are left off the Calendar (the side list's Tasks unticked).
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub hide_tasks: bool,
 }
 
 /// One of [`CalendarView::sets`].
@@ -983,8 +1436,25 @@ impl Config {
     fn parse(text: &str) -> Result<Self, ParseError> {
         let mut config: Self = toml::from_str(text).map_err(ParseError::Toml)?;
         config.sending.upgrade();
+        config.upgrade_sounds();
         config.validate().map_err(ParseError::Invalid)?;
         Ok(config)
+    }
+
+    /// Carries older versions' sound switches into [`Sounds`].
+    fn upgrade_sounds(&mut self) {
+        if self.notifications.sound.take() == Some(false) {
+            for event in [
+                SoundEvent::NewMail,
+                SoundEvent::Reminders,
+                SoundEvent::MailBack,
+            ] {
+                self.sounds.get_mut(event).on = false;
+            }
+        }
+        if self.sending.sent_sound.take() == Some(false) {
+            self.sounds.sent.on = false;
+        }
     }
 
     /// Checks that every value is in range.
@@ -1074,6 +1544,22 @@ fn tempfile_in(dir: &Path) -> Result<(std::path::PathBuf, fs::File)> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn older_sound_switches_carry_over() {
+        use super::{Config, SoundEvent};
+        let config =
+            Config::parse("[notifications]\nsound = false\n[sending]\nsent_sound = false\n")
+                .unwrap();
+        for event in SoundEvent::ALL {
+            let on = config.sounds.get(event).on;
+            assert_eq!(on, event == SoundEvent::NotSent, "{event:?}");
+        }
+        let text = toml::to_string(&config).unwrap();
+        assert!(!text.contains("sent_sound"), "never written back");
+        let fresh = Config::parse("").unwrap();
+        assert_eq!(fresh.sounds.playing(SoundEvent::Sent), Some(""));
+    }
+
     #[test]
     fn accounts_follow_the_chosen_order() {
         use crate::{Account, AccountId, AccountKind};
@@ -1167,14 +1653,73 @@ mod tests {
     }
 
     #[test]
+    fn color_schemes() {
+        // Files from before schemes: the old switch decides.
+        assert_eq!(Config::default().mail.colors(), "system");
+        let config = Config::parse("[mail]\ndesktop_colors = false\n").unwrap();
+        assert_eq!(config.mail.colors(), "katna");
+        let mut config =
+            Config::parse("[mail]\ncolors = \"nord\"\naccent = \"#e8590c\"\n").unwrap();
+        assert_eq!(config.mail.colors(), "nord");
+        assert_eq!(config.mail.accent, "#e8590c");
+        // A pick keeps the old switch in step for older versions.
+        config.mail.set_colors("system");
+        assert!(config.mail.desktop_colors);
+        config.mail.set_colors("clear");
+        assert!(!config.mail.desktop_colors);
+        let saved = Config::parse(&toml::to_string(&config).unwrap()).unwrap();
+        assert_eq!(saved.mail.colors(), "clear");
+    }
+
+    #[test]
     fn experimental_look() {
         let config = Config::default();
         assert_eq!(config.experimental.window_frame, WindowFrame::Native);
         assert!(!config.experimental.blur);
+        assert!(config.experimental.frosted_popups);
+        assert!(config.experimental.frosted_panes);
+        assert_eq!(config.experimental.pane_opacity, PANE_OPACITY);
+        assert!(config.experimental.frosted_chat && config.experimental.frosted_search);
+        assert!(!config.experimental.chat_view);
         let config =
             Config::parse("[experimental]\nwindow_frame = \"katna\"\nblur = true\n").unwrap();
         assert_eq!(config.experimental.window_frame, WindowFrame::Katna);
+        assert!(config.experimental.window_border);
+        assert_eq!(config.experimental.window_radius, None);
         assert!(config.experimental.blur);
+        assert!(config.experimental.frosted_popups);
+        let config = Config::parse("[experimental]\nfrosted_popups = false\n").unwrap();
+        assert!(!config.experimental.frosted_popups);
+        // The frost follows the desktop unless set by hand.
+        assert!(!config.experimental.custom_frost);
+        assert_eq!(config.experimental.frost_blur, FROST_BLUR);
+        assert_eq!(config.experimental.frost_opacity, FROST_OPACITY);
+    }
+
+    #[test]
+    fn files_page_leaves_out_small_pictures() {
+        let files = Config::default().mail.files;
+        assert!(files.leaves_out(11 * 1024, None));
+        assert!(!files.leaves_out(40 * 1024, None));
+        // A wide, short logo.
+        assert!(files.leaves_out(40 * 1024, Some((300, 80))));
+        assert!(!files.leaves_out(40 * 1024, Some((640, 480))));
+        let config = Config::parse("[mail.files]\nleave_out_small = false\n").unwrap();
+        assert!(!config.mail.files.leaves_out(1, Some((1, 1))));
+        assert_eq!(config.mail.files.small_kb, 12);
+        assert!(!config.mail.files.is_signature("linkedin.png", 5));
+    }
+
+    #[test]
+    fn files_page_leaves_out_signature_pictures() {
+        let files = Config::default().mail.files;
+        assert!(files.is_signature("image001.png", 3));
+        assert!(!files.is_signature("image001.png", 2));
+        assert!(files.is_signature("LinkedIn_icon.png", 1));
+        assert!(files.is_signature("email-signature.jpg", 1));
+        assert!(!files.is_signature("site-visit.jpg", 1));
+        // Only whole words: "signatures-page-scan" is a file.
+        assert!(!files.is_signature("signatures-scan.jpg", 1));
     }
 
     #[test]
@@ -1367,6 +1912,19 @@ mod tests {
         assert!(config.general.show_in_tray);
         let config = Config::parse("[general]\nshow_in_tray = false\n").unwrap();
         assert!(!config.general.show_in_tray);
+    }
+
+    #[test]
+    fn tray_style_defaults_by_platform() {
+        let config = Config::parse("").unwrap();
+        let expected = if cfg!(windows) {
+            TrayStyle::Color
+        } else {
+            TrayStyle::Monochrome
+        };
+        assert_eq!(config.general.tray_style, expected);
+        let config = Config::parse("[general]\ntray_style = \"color\"\n").unwrap();
+        assert_eq!(config.general.tray_style, TrayStyle::Color);
     }
 
     #[test]

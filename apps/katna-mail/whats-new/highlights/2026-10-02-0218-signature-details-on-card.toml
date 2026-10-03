@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Signature details where they belong"
+text = """
+A person's card no longer shows their signature as a block. Its details
+go where they belong: every phone number, marked mobile, direct or fax,
+in the contact details, and the company's group, offices, website and
+pages in the Company section. Social pages show as small one-colour
+icons, and pictures, banners and footers are left out.
+"""

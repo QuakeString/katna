@@ -1,7 +1,6 @@
 # Katna Mail, Malayalam (മലയാളം).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-
 update-dialog-title = അപ്‌ഡേറ്റുകൾ
 update-dialog-downloading-detail = ഈ വിൻഡോ അടച്ചാലും ഡൗൺലോഡ് തുടരും.
 update-dialog-progress = { $total }-ൽ { $done }

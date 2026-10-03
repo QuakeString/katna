@@ -5,19 +5,35 @@
 ## Add a mail account: titles and steps
 
 add-account-title = Magdagdag ng mail account
+add-account-providers-intro = Piliin ang iyong mail provider. Ang Katna na ang bahala sa iba.
+add-account-provider-other = Ibang mail
+add-account-provider-other-detail = Anumang IMAP o POP3 na account
+add-account-provider-google-detail = Gmail at Google Workspace
+add-account-provider-microsoft-detail = Outlook at Microsoft 365
+add-account-provider-mail = { $provider } Mail
+add-account-form-title = Mag-sign in sa { $provider }
+add-account-form-title-other = Ang iyong mail account
+add-account-form-intro = Itinatago ng Katna ang iyong password sa keyring ng iyong system.
 add-account-looking = Hinahanap ang mga mail server ng { $address }…
 add-account-address-intro = Ilagay ang iyong email address. Hahanapin ng Katna ang mga server para sa iyo.
 add-account-servers-title = Mga setting ng server
 add-account-servers-intro = Kung saan nagbabasa at nagpapadala ang Katna ng mail para sa { $address }.
-add-account-password-title = Ilagay ang iyong password
 add-account-signing-in = Nagsa-sign in…
 add-account-browser-title = Magpatuloy sa iyong browser
 add-account-browser-intro = Binuksan ng Katna ang sign-in page ng { $provider } sa iyong browser. Mag-sign in doon at payagan ang Katna na magbasa at magpadala ng iyong mail, pagkatapos ay bumalik dito.
 add-account-browser-hint = Walang page na bumukas? Tingnan ang mga window ng iyong browser, o bumalik at subukang muli.
+add-account-stage-browser = Hinihintay kang mag-sign in sa iyong browser…
+add-account-stage-signing-in-at = Nagsa-sign in sa { $server }…
+add-account-help-app-password-link = Paano gumawa ng app password
+add-account-help-turn-on-imap = Pinapapasok lang ng { $provider } ang mga mail app kapag naka-on ang access sa IMAP at POP3 sa mga setting ng web mail nito.
+add-account-help-turn-on-imap-link = Paano ito i-on
 
 ## Add a mail account: fields
 
 add-account-field-address = Email address
+add-account-receive-with = Tumanggap ng mail gamit ang
+add-account-imap-about = Pinapanatili ng IMAP ang iyong mail at mga folder sa server, pare-pareho sa bawat device. Piliin ito kung kaya.
+add-account-pop3-about = Dina-download ng POP3 ang iyong mail sa computer na ito. Ang mail na binabasa o inililipat mo rito ay mananatili gaya ng dati sa server at sa iba mong device.
 add-account-incoming = Papasok na mail ({ $protocol })
 add-account-outgoing = Papalabas na mail ({ $protocol })
 add-account-field-server = Server
@@ -39,16 +55,16 @@ add-account-servers-found = { $source ->
    *[other] Mga server: { $servers }, hula lang; tingnan ang mga ito kung pumalya ang pag-sign in.
 }
 add-account-servers-entered = Mga server: { $servers }, gaya ng inilagay.
-add-account-or = o
-add-account-sign-in-with = Mag-sign in gamit ang { $provider }
-add-account-sign-in-instead = Mag-sign in na lang gamit ang { $provider }
 
 ## Add a mail account: buttons
 
+add-account-sign-in-with = Mag-sign in gamit ang { $provider }
+add-account-sign-in-instead = Mag-sign in na lang gamit ang { $provider }
 add-account-servers-button = Mga setting ng server
 add-account-back = Bumalik
 add-account-add = Idagdag ang account
-add-account-next = Susunod
+add-account-done = Tapos na
+add-account-another = Magdagdag ng isa pang account
 add-account-cancel = Kanselahin
 
 ## Add a mail account: problems
@@ -70,7 +86,6 @@ add-account-address-invalid = Maglagay ng email address gaya ng { $example }.
 add-account-not-found = Hindi mahanap ng Katna ang mga server para sa { $address }, kaya inilagay nito ang mga karaniwang pangalan. Tingnan ang mga ito sa iyong provider.
 add-account-password-empty = Ilagay ang password.
 add-account-name-is-password = Pareho ang pangalan at ang password. Sa halip, i-type doon ang pangalan mo, gaya ng dapat makita ng mga tao.
-add-account-added = Naidagdag ang { $address }. Kinukuha ang mail mo…
 add-account-app-password-refused = Tinanggihan ng { $provider } ang password. Kailangan nito ng app password, hindi ang ginagamit mo sa web.
 add-account-password-refused = Tinanggihan ng server ang password. Tingnan ito at subukang muli.
 add-account-sign-in-refused = Hindi pinapasok ng { $provider } ang Katna. Subukang muli, at payagan ang access sa iyong mail.
@@ -79,11 +94,25 @@ add-account-sign-in-unavailable = { $provider ->
     [Google] Hindi pa makakapag-sign in ang kopyang ito ng Katna sa mga Google account.
    *[other] Pinapayagan lang ng provider na ito ang pag-sign in sa sarili nitong page, na hindi pa kayang gawin ng Katna para dito.
 }
-add-account-signed-in = Naka-sign in gamit ang { $provider }. Kinukuha ang mail mo…
+add-account-smtp-not-found = Nakita ng Katna kung saan babasahin ang iyong mail pero hindi kung saan ito ipapadala. Ilagay ang papalabas na server.
+
+## Add a mail account: the last step
+
+add-account-done-title = Handa na ang iyong account
+add-account-done-intro = Kinukuha na ng Katna ang iyong mail. Lumalabas ang bagong mail habang dumarating.
+add-account-done-sign-in = Pag-sign in
+add-account-done-signed-in-with = Gamit ang { $provider }, sa iyong browser
+add-account-done-receiving = Pagtanggap ng mail
+add-account-done-sending = Pagpapadala ng mail
+add-account-done-on-server = Mail sa server
+add-account-done-kept = Pinapanatili hanggang i-delete mo sa Katna
+add-account-done-pop3-hint = Baguhin kung ano ang mangyayari sa mail sa server sa Mga setting > Mga Account.
+add-account-done-zoho-title = Mga gawain at kalendaryo
+add-account-done-zoho-about = Hiwalay ang mga ito sa mail sa Zoho. Mag-sign in gamit ang Zoho nang isang beses para dalhin ang mga ito sa Katna.
+add-account-done-linked = Nakakonekta ang mga gawain at kalendaryo
 
 ## The account menu (from the account button on the top bar)
 
 add-account-menu-another = Magdagdag ng isa pang account
-add-account-menu-manage = Pamahalaan ang mga account
 app-menu = Pangunahing menu
 app-menu-back = Bumalik

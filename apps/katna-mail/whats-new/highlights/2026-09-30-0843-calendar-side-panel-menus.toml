@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Manage calendars from the side panel"
+text = """
+Right-click a calendar in the Calendar's side panel to show only it,
+change its color, rename it or delete it. Right-click an account's name to
+make a new calendar in that account or show and hide all its calendars.
+Changes go to your mail service, so they show up everywhere you use it.
+"""

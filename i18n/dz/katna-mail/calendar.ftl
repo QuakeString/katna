@@ -54,6 +54,12 @@ calendar-account-not-enabled = Katna གི་དོན་ལུ་ ཟླ་ཐ
 calendar-account-failed = ཟླ་ཐོ་ཚུ་ལྷག་མ་ཚུགས།
 calendar-account-error = ཟླ་ཐོ་ཚུ་ལྷག་མ་ཚུགས་: { $reason }
 calendar-account-none = ཟླ་ཐོ་ག་ནི་ཡང་ མ་ཐོབ།
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = ཟླ་ཐོ་ག་ནི་ཡང་ མ་ཐོབ།: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } གིས་ ཟླ་ཐོ་ཚུ་ { $provider } གིས་ནང་བསྐྱོད་འབད་མི་ Katna ལུ་རྐྱངམ་ཅིག་སྟོནམ་ཨིན།
+calendar-account-sign-in-with = { $provider } གིས་ ནང་བསྐྱོད་འབད།
 calendar-account-looking = ཟླ་ཐོ་ཚུ་འཚོལ་དོ…
 calendar-account-try-again = ལོག་འབད་རྩོལ་བསྐྱེད།
 calendar-account-try-again-tooltip = རྩིས་ཐོ་འདི་གི་ཟླ་ཐོ་ཚུ་ ད་ལྟོ་ལོག་ཞིབ་དཔྱད་འབད།
@@ -73,8 +79,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = { $count } ལྷག་མ
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = བསྐྱར་ལོག་འབདཝ་ཨིན
 calendar-join = ཚུད་གནང་
+calendar-join-with = { $service } དང་གཅིག་ཁར་ཚུད།
 calendar-email-guests = འབོད་མི་ལུ་ གློག་འཕྲིན་གཏང་།
 calendar-running-late = འགོར་དོ།
 calendar-late-subject = འགོར་དོ།: { $title }
@@ -87,6 +95,7 @@ calendar-guest-answers = { $yes } ཨིན, { $maybe } འོང་སྲིད
 calendar-organizer = སྒྲིག་འཛིན་པ
 calendar-optional = གདམ་ཁ།
 calendar-open-web = བརྡ་འཚོལ་ཆས་ནང་ཁ་ཕྱེ
+calendar-open-mail = གློག་འཕྲིན་ཁ་ཕྱེ།
 calendar-open-contact = འབྲེལ་བ་ཁ་ཕྱེ།
 calendar-close = ཁ་བསྡམས།
 
@@ -110,10 +119,71 @@ calendar-discard = བསྒྱུར་བཅོས་བཏོན་གཏང�
 calendar-edit = བྱུང་རིམ་ཞུན་དག་འབད།
 calendar-delete = བྱུང་རིམ་བཏོན་གཏང་།
 calendar-event-details = བྱུང་རིམ་གྱི་ཁ་གསལ།
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = བྱུང་རིམ་གསརཔ
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = ཉིནམ་ཁ་ཕྱེ
+calendar-menu-duplicate = འདྲ་བཤུས་འབད
+calendar-menu-color = ཚོས་གཞི
+# The event takes its calendar's color.
+calendar-menu-color-calendar = ཟླ་ཐོའི་ཚོས་གཞི
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = བདུན་ཕྲག་གཅིག་ནང་
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = ཊོ་མ་ཊོ
+calendar-color-flamingo = ཕེ་ལ་མིང་གོ
+calendar-color-tangerine = ཚལ་ལུ་མ
+calendar-color-banana = ལ་ཧུ་ལ
+calendar-color-sage = སེཇ
+calendar-color-basil = བེ་སིལ
+calendar-color-peacock = རྨ་བྱ
+calendar-color-blueberry = བླུ་བེ་རི
+calendar-color-lavender = ལེ་ཝེན་ཌར
+calendar-color-grape = རྒུན་འབྲུམ
+calendar-color-graphite = ཞ་ཉེ
+calendar-menu-only-this = འདི་རྐྱངམ་ཅིག་སྟོན།
+calendar-menu-rename = མིང་བསྐྱར་བཏགས།
+calendar-menu-remove = ཐོ་ཡིག་ལས་བཏོན།
+calendar-menu-delete = བཏོན་གཏང་།
+calendar-menu-new-calendar = ཟླ་ཐོ་གསརཔ
+calendar-menu-show-all = ཆ་མཉམ་སྟོན།
+calendar-menu-hide-all = ཆ་མཉམ་སྦ།
+calendar-menu-account-settings = རྩིས་ཐོའི་སྒྲིག་སྟངས
+calendar-why-main = ཟླ་ཐོ་གཙོ་བོ
+calendar-why-last = ནཱ་ལུ་གཅིག་རྐྱངམ
+calendar-why-owner = བདག་པོ་རྐྱངམ་ཅིག
+calendar-why-contacts = འབྲེལ་བ་ཚུ་ལས
+calendar-why-unreached = མ་ལྷོད
+calendar-name-placeholder = ཟླ་ཐོའི་མིང
+calendar-toast-added = “{ $name }” ཁ་སྐོང་འབད་ཡི།
+calendar-toast-renamed = ཟླ་ཐོའི་མིང་བསྒྱུར་ཡི།
+calendar-toast-recolored = ཟླ་ཐོའི་ཚོས་གཞི་བསྒྱུར་ཡི།
+calendar-toast-deleted = “{ $name }” བཏོན་གཏང་ཡི།
+calendar-toast-removed = “{ $name }” ཁྱོད་ཀྱི་ཐོ་ཡིག་ལས་བཏོན་ཡི།
+calendar-edit-failed = ཟླ་ཐོ་མ་བསྒྱུར: { $reason }
+calendar-delete-title = “{ $name }” བཏོན་གཏང་ནི་ཨིན་ན?
+calendar-delete-confirm = བཏོན་གཏང་།
+calendar-deleting = བཏོན་གཏང་དོ…
+calendar-delete-heading = བཏོན་གཏང་མི:
+calendar-delete-events = ཟླ་ཐོ་དང་ དེ་གི་བྱུང་རིམ་ཆ་མཉམ
+calendar-delete-shared = དེ་བགོ་བཤའ་རྐྱབ་ཡོད་མི་ མི་ག་ར་གི་དོན་ལུ
+calendar-delete-server = འདི་ Katna ནང་རྐྱངམ་ཅིག་མེན་པར་ གློག་འཕྲིན་ཞབས་ཏོག་གུ་ { $account } ལས་ བཏོན་གཏངམ་ཨིན།
+calendar-delete-local = འདི་ གློག་རིག་འདི་ལས་ བཏོན་གཏངམ་ཨིན།
+calendar-remove-title = “{ $name }” ཁྱོད་ཀྱི་ཐོ་ཡིག་ལས་བཏོན་ནི་ཨིན་ན?
+calendar-remove-confirm = བཏོན།
+calendar-removing = བཏོན་དོ…
+calendar-remove-heading = ག་ཅི་འགྱུརཝ་ཨིན:
+calendar-remove-events = ནཱ་དང་ ཁྱོད་ཀྱི་གློག་རིམ་གཞན་ཚུ་ནང་ དེ་གི་བྱུང་རིམ་ཚུ་ མཐོང་མི་ཚུགས།
+calendar-remove-server = ཟླ་ཐོ་འདི་ དེ་གི་བདག་པོ་གཏང་སྡོདཔ་ཨིན་ ཁོ་གིས་ ཁྱོད་དང་ལོག་བགོ་བཤའ་རྐྱབ་ཚུགས།
 calendar-kind-event = བྱུང་རིམ
+calendar-kind-task = ལཱ།
 calendar-kind-focus = དོ་སྣང་དུས་ཚོད
 calendar-kind-out-of-office = ཡིག་ཚང་ལས་ཕྱི
 calendar-kind-working-location = ལས་ཀའི་ས་ཁོངས
+calendar-task-added = ལཱ་ཁ་སྐོང་བརྐྱབ་ཡི།
+calendar-task-added-to = { $list } ནང་ ལཱ་ཁ་སྐོང་བརྐྱབ་ཡི།
+calendar-task-list-local = གློག་རིག་འདི་ནང་།
 calendar-working-home = ཁྱིམ
 calendar-busy = ལཱ་ཡོད།
 calendar-free = སྟོངམ།

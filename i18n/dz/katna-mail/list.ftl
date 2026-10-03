@@ -14,13 +14,13 @@ tab-other = གཞན
 tab-inbox = ནང་འབྱོར་སྒྲོམ
 tab-newsletters = གསར་ཤོག
 tab-notifications = བརྡ་བསྐུལ
-tab-new = གསརཔ་ { $count }
 tab-provider-other = Katna གིས་དབྱེ་སེལ་འབད་ཡོདཔ
 
 ## Mail list: toolbar
 
 list-select = གདམ།
 list-refresh = གསར་བཟོ།
+list-back-to-top = ཡར་མགོ་ལུ་ལོག
 list-checking = གློག་འཕྲིན་གསརཔ་ཞིབ་དཔྱད་འབད་དོ…
 list-more = གཞན་ཡང་།
 list-mark-read = ལྷག་ཡོདཔ་སྦེ་རྟགས་བཀལ།
@@ -39,6 +39,7 @@ list-results = “{ $query }” གི་གྲུབ་འབྲས་ཚུ
 list-results-corrected = “{ $query }” གི་གྲུབ་འབྲས་ཚུ་སྟོན་དོ
 list-search-instead = དེ་གི་ཚབ་ལུ་ “{ $query }” འཚོལ།
 list-files-more = +{ $count }
+list-replied = ཁྱོད་ཀྱིས་ལན་བཏང་ཡི
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -317,6 +318,12 @@ menu-add-note = དྲན་ཐོ་ཅིག་ཁ་སྣོན་འབད�
 menu-print-all = ཆ་མཉམ་དཔར་བསྐྲུན་འབད།
 menu-new-window = སྒོ་སྒྲིག་གསརཔ་ནང་ཁ་ཕྱེ།
 menu-move-to = ལུ་སྤོ།
+# Opens a submenu: Add to Tasks, Add a note, Schedule a meeting and Start a
+# video call.
+menu-follow-up = རྗེས་འདེད།
+# Opens a submenu of the rarer actions: Report spam, Mark as important and
+# Pin to top.
+menu-more = ཧེང་བཀལ།
 menu-move-to-heading = ལུ་སྤོ:
 menu-find-from = { $name } ལས་འོང་མི་གློག་འཕྲིན་ཚུ་འཚོལ།
 

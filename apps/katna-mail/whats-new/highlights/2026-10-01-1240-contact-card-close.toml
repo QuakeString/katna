@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Put the contact card away, see who is in a chat"
+text = """
+The contact card beside a conversation has a ✕ in its corner, and clicking
+the same person's picture or address again puts the card away. In the chat
+view, a click on the header lists everyone in the chat with their address
+and how many mails each sent.
+"""

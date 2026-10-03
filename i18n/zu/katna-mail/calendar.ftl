@@ -58,6 +58,12 @@ calendar-account-not-enabled = Ukufinyelela kwekhalenda kwe-Katna akukavulwa.
 calendar-account-failed = Amakhalenda awakwazanga ukufundwa.
 calendar-account-error = Amakhalenda awakwazanga ukufundwa: { $reason }
 calendar-account-none = Awekho amakhalenda atholakele
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Awekho amakhalenda atholakele: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = I-{ $provider } ibonisa amakhalenda kuphela ku-Katna engene nge-{ $provider }.
+calendar-account-sign-in-with = Ngena nge-{ $provider }
 calendar-account-looking = Kufunwa amakhalenda…
 calendar-account-try-again = Zama futhi
 calendar-account-try-again-tooltip = Hlola amakhalenda ale akhawunti futhi manje
@@ -77,8 +83,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = { $count } ngaphezulu
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Iyaphindaphinda
 calendar-join = Joyina
+calendar-join-with = Joyina nge-{ $service }
 calendar-email-guests = Thumela izihambeli i-imeyili
 calendar-running-late = Ngiyephuza
 calendar-late-subject = Ngiyephuza: { $title }
@@ -92,6 +100,7 @@ calendar-guest-answers = { $yes } yebo, { $maybe } mhlawumbe, { $no } cha, { $wa
 calendar-organizer = Umhleli
 calendar-optional = Okungakhethwa
 calendar-open-web = Vula esiphequluli
+calendar-open-mail = Vula imeyili
 calendar-open-contact = Vula oxhumana naye
 calendar-close = Vala
 
@@ -115,10 +124,71 @@ calendar-discard = Lahla izinguquko
 calendar-edit = Hlela umcimbi
 calendar-delete = Susa umcimbi
 calendar-event-details = Imininingwane yomcimbi
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Umcimbi omusha
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Vula usuku
+calendar-menu-duplicate = Yenza ikhophi
+calendar-menu-color = Umbala
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Umbala wekhalenda
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Emva kwesonto
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Utamatisi
+calendar-color-flamingo = I-Flamingo
+calendar-color-tangerine = I-Tangerine
+calendar-color-banana = Ubhanana
+calendar-color-sage = I-Sage
+calendar-color-basil = I-Basil
+calendar-color-peacock = Ipigogo
+calendar-color-blueberry = I-Blueberry
+calendar-color-lavender = I-Lavender
+calendar-color-grape = Igilebhisi
+calendar-color-graphite = I-Graphite
+calendar-menu-only-this = Bonisa lokhu kuphela
+calendar-menu-rename = Qamba kabusha
+calendar-menu-remove = Susa ohlwini
+calendar-menu-delete = Susa
+calendar-menu-new-calendar = Ikhalenda elisha
+calendar-menu-show-all = Bonisa konke
+calendar-menu-hide-all = Fihla konke
+calendar-menu-account-settings = Izilungiselelo ze-akhawunti
+calendar-why-main = Ikhalenda eliyinhloko
+calendar-why-last = Elilodwa kuphela lapha
+calendar-why-owner = Umnikazi kuphela
+calendar-why-contacts = Kusuka koxhumana nabo
+calendar-why-unreached = Akufinyelelwanga
+calendar-name-placeholder = Igama lekhalenda
+calendar-toast-added = “{ $name }” lengeziwe
+calendar-toast-renamed = Ikhalenda liqanjwe kabusha
+calendar-toast-recolored = Umbala wekhalenda ushintshiwe
+calendar-toast-deleted = “{ $name }” lisusiwe
+calendar-toast-removed = “{ $name }” lisusiwe ohlwini lwakho
+calendar-edit-failed = Ikhalenda alishintshwanga: { $reason }
+calendar-delete-title = Susa “{ $name }”?
+calendar-delete-confirm = Susa
+calendar-deleting = Iyasusa…
+calendar-delete-heading = Kuzosuswa:
+calendar-delete-events = Ikhalenda nayo yonke imicimbi yalo
+calendar-delete-shared = Kubo bonke abahlanganyela nalo
+calendar-delete-server = Lisuswa ku-{ $account } kusevisi yemeyili, hhayi nje ku-Katna.
+calendar-delete-local = Lisuswa kule khompyutha.
+calendar-remove-title = Susa “{ $name }” ohlwini lwakho?
+calendar-remove-confirm = Susa
+calendar-removing = Iyasusa…
+calendar-remove-heading = Okushintshayo:
+calendar-remove-events = Uyayeka ukubona imicimbi yalo, lapha nakwamanye ama-app akho
+calendar-remove-server = Ikhalenda lihlala nomnikazi walo, ongaphinda ahlanganyele nawe ngalo.
 calendar-kind-event = Umcimbi
+calendar-kind-task = Umsebenzi
 calendar-kind-focus = Isikhathi sokugxila
 calendar-kind-out-of-office = Ngingekho ehhovisi
 calendar-kind-working-location = Indawo yokusebenza
+calendar-task-added = Umsebenzi wengeziwe
+calendar-task-added-to = Umsebenzi wengezwe ku-{ $list }
+calendar-task-list-local = Kule khompyutha
 calendar-working-home = Ekhaya
 calendar-busy = Umatasa
 calendar-free = Ukhululekile

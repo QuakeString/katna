@@ -5,12 +5,12 @@
 //! and GnuPG run on the finished message before it goes to the outbox, so
 //! the outbox and Sent hold only what was sent.
 
-use gpui::{AnyElement, Context, prelude::*, rgba};
+use gpui::{AnyElement, Context, div, prelude::*, rgba};
 use katna_crypto::{Gnupg, Protect, Recipients, Security, Standard};
 use katna_i18n::tr;
 use katna_ui::px;
 
-use crate::theme::{Theme, fade};
+use crate::theme::Theme;
 use crate::widgets::{icon_button_colored, tip};
 use crate::window::MailWindow;
 
@@ -120,13 +120,37 @@ pub(in crate::window) fn unseal(raw: Vec<u8>) -> Option<(Vec<u8>, Sealing)> {
 }
 
 impl MailWindow {
-    /// The Encrypt and Sign toggles, at the end of the recipients row.
+    /// Encrypt and Sign, a faint line, then Track, Read receipt and
+    /// Delivery receipt, together on one soft tray. A toggle that is on
+    /// takes the accent; nothing else is coloured.
+    pub(super) fn render_security_group(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        div()
+            .flex_none()
+            .p(px(2.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .rounded_full()
+            .bg(rgba(th.tray()))
+            .children(self.render_sealing(th, cx))
+            .child(
+                div()
+                    .flex_none()
+                    .mx(px(2.0))
+                    .w(px(1.0))
+                    .h(px(14.0))
+                    .bg(rgba(th.faint_line(super::FAINT_LINE))),
+            )
+            .children(self.render_tracking(th, cx))
+            .into_any_element()
+    }
+
+    /// The Encrypt and Sign toggles, in the security group.
     pub(super) fn render_sealing(&self, th: &Theme, cx: &mut Context<Self>) -> [AnyElement; 2] {
         let sealing = self.compose.as_ref().map(|c| c.sealing).unwrap_or_default();
         let toggle = |id: &'static str, name: &'static str, on: bool, label: String| {
             icon_button_colored(id, name, 18.0, if on { th.accent } else { th.text_dim }, th)
                 .size(px(28.0))
-                .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
                 .tooltip(tip(label, th))
         };
         [

@@ -25,8 +25,11 @@ katna-i18n.workspace = true
 katna-notify.workspace = true
 # SHA-256 of downloaded updates (already in the tree through rustls).
 ring.workspace = true
+# Makes an update from a patch (already in the tree through katna-store).
+zstd.workspace = true
 katna-platform.workspace = true
 katna-translate.workspace = true
+katna-ai.workspace = true
 async-channel.workspace = true
 async-io.workspace = true
 async-signal.workspace = true
@@ -42,6 +45,10 @@ zbus.workspace = true
 # passwords in its Credential Manager.
 [target.'cfg(unix)'.dependencies]
 oo7.workspace = true
+
+# The file managers' menu entry on Windows lives in the registry.
+[target.'cfg(windows)'.dependencies]
+winreg.workspace = true
 
 [build-dependencies]
 winresource.workspace = true

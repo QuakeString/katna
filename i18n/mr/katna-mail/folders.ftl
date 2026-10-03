@@ -9,6 +9,17 @@ nav-folders = फोल्डर
 nav-label-new = नवीन लेबल तयार करा
 nav-folder-new = नवीन फोल्डर तयार करा
 nav-menu-check-mail = नवीन मेल तपासा
+nav-menu-check-inbox = हा इनबॉक्स तपासा
+nav-menu-sign-in-again = पुन्हा साइन इन करा
+nav-menu-new-mail = या खात्यावरून नवीन मेल
+nav-menu-account-settings = खाते सेटिंग्ज
+nav-account-checked = सिंकमध्ये · { $ago } तपासले
+nav-account-in-sync = सिंकमध्ये
+nav-account-connecting = कनेक्ट करत आहे…
+nav-account-offline = ऑफलाइन, पुन्हा प्रयत्न करत आहे
+nav-account-signed-out = { $provider } साइन-इनची मुदत संपली
+nav-account-password-refused = पासवर्ड नाकारला
+nav-account-storage = { $total } पैकी { $used } वापरले
 nav-menu-new-subfolder = आत नवीन फोल्डर
 nav-menu-new-sublabel = आत नवीन लेबल
 nav-menu-empty-trash = कचरापेटी रिकामी करा
@@ -16,10 +27,6 @@ nav-account-unnamed = खाते { $number }
 nav-all-accounts = सर्व खाती
 nav-expand = फोल्डर दाखवा
 nav-collapse = फोल्डर लपवा
-nav-tab-new = { $count ->
-    [one] { $count } नवीन
-   *[other] { $count } नवीन
-}
 storage-used = { $total } पैकी { $percent }% वापरले
 storage-used-detail = { $address }: { $total } पैकी { $used } वापरले
 

@@ -16,7 +16,7 @@ use katna_core::{AccountId, ids};
 pub enum Secrets {
     /// The desktop's Secret Service.
     #[cfg(unix)]
-    Keyring(oo7::Keyring),
+    Keyring(keyring::Keyring),
     /// The Windows Credential Manager.
     #[cfg(windows)]
     Keyring(windows::Store),
@@ -37,11 +37,26 @@ impl From<oo7::Error> for Error {
     }
 }
 
+#[cfg(unix)]
+impl From<zbus::Error> for Error {
+    fn from(err: zbus::Error) -> Self {
+        Self(err.to_string())
+    }
+}
+
 #[cfg_attr(windows, allow(dead_code))]
 fn attributes(account: AccountId) -> [(&'static str, String); 2] {
     [
         ("application", ids::PREFIX.to_owned()),
         ("account", account.to_string()),
+    ]
+}
+
+#[cfg_attr(windows, allow(dead_code))]
+fn ai_key_attributes() -> [(&'static str, String); 2] {
+    [
+        ("application", ids::PREFIX.to_owned()),
+        ("ai-key", "own".to_owned()),
     ]
 }
 
@@ -53,14 +68,34 @@ fn server_attributes() -> [(&'static str, String); 2] {
     ]
 }
 
+/// The attributes of the refresh token of a sign-in linked to `account`
+/// (`AccountSettings::linked`). Its own attribute names, not `account`:
+/// the Secret Service finds items by a subset of their attributes, so a
+/// password lookup would otherwise find this token too.
+#[cfg_attr(windows, allow(dead_code))]
+fn linked_attributes(account: AccountId) -> [(&'static str, String); 2] {
+    [
+        ("application", ids::PREFIX.to_owned()),
+        ("linked-account", account.to_string()),
+    ]
+}
+
+/// Where the linked sign-in of `account` sits in the in-memory store,
+/// apart from the accounts' passwords (ids are positive).
+fn linked_key(account: AccountId) -> AccountId {
+    AccountId(-1 - account.0)
+}
+
 /// Where the Katna Server token sits in the in-memory store.
 const SERVER_KEY: AccountId = AccountId(i64::MIN);
+/// Where [`Secrets::Memory`] keeps the key of the user's own AI service.
+const AI_KEY: AccountId = AccountId(i64::MIN + 1);
 
 impl Secrets {
     /// Connects to the Secret Service.
     #[cfg(unix)]
     pub async fn keyring() -> Result<Self, Error> {
-        Ok(Self::Keyring(oo7::Keyring::new().await?))
+        Ok(Self::Keyring(keyring::Keyring::new().await?))
     }
 
     /// Opens the Windows Credential Manager.
@@ -74,12 +109,47 @@ impl Secrets {
         Self::Memory(Arc::default())
     }
 
+    /// Whether the keyring is locked and the user turned down unlocking
+    /// it: reading passwords then fails until they unlock it themselves
+    /// (in KWallet, GNOME Keyring's Passwords, or a Sync now in Katna).
+    pub fn declined(&self) -> bool {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => keyring.declined(),
+            #[cfg(windows)]
+            Self::Keyring(_) => false,
+            Self::Memory(_) => false,
+        }
+    }
+
+    /// After [`Self::declined`]: whether the keyring is open now, looked up
+    /// without asking the user.
+    pub async fn unlocked_since(&self) -> bool {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => keyring.unlocked_since().await,
+            #[cfg(windows)]
+            Self::Keyring(_) => true,
+            Self::Memory(_) => true,
+        }
+    }
+
+    /// Lets the next read ask the user to unlock the keyring again: they
+    /// asked for something that needs it, such as Sync now.
+    pub fn ask_again(&self) {
+        #[cfg(unix)]
+        if let Self::Keyring(keyring) = self {
+            keyring.ask_again();
+        }
+    }
+
     /// The password of `account`, if one is saved.
     pub async fn password(&self, account: AccountId) -> Result<Option<String>, Error> {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                // Asks the user to unlock the keyring if it is locked.
+                // Asks the user to unlock the keyring if it is locked,
+                // unless they turned that down (keyring::Keyring::unlock).
                 keyring.unlock().await?;
                 let Some(item) = keyring
                     .search_items(&attributes(account))
@@ -110,7 +180,7 @@ impl Secrets {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                keyring.unlock().await?;
+                keyring.unlock_asking().await?;
                 keyring
                     .create_item(
                         &format!("Katna: {address}"),
@@ -128,6 +198,83 @@ impl Secrets {
             }
             Self::Memory(map) => {
                 map.lock().unwrap().insert(account, password.to_owned());
+            }
+        }
+        Ok(())
+    }
+
+    /// The refresh token of the sign-in linked to `account`, if saved.
+    pub async fn linked_token(&self, account: AccountId) -> Result<Option<String>, Error> {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => {
+                keyring.unlock().await?;
+                let Some(item) = keyring
+                    .search_items(&linked_attributes(account))
+                    .await?
+                    .into_iter()
+                    .next()
+                else {
+                    return Ok(None);
+                };
+                let secret = item.secret().await?;
+                String::from_utf8(secret.to_vec())
+                    .map(Some)
+                    .map_err(|_| Error("the saved sign-in is not UTF-8".into()))
+            }
+            #[cfg(windows)]
+            Self::Keyring(store) => store.get(&windows::linked(account)).await,
+            Self::Memory(map) => Ok(map.lock().unwrap().get(&linked_key(account)).cloned()),
+        }
+    }
+
+    /// Saves the refresh token of the sign-in linked to `account`.
+    pub async fn set_linked_token(
+        &self,
+        account: AccountId,
+        label: &str,
+        token: &str,
+    ) -> Result<(), Error> {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => {
+                keyring.unlock_asking().await?;
+                keyring
+                    .create_item(
+                        &format!("Katna: {label}"),
+                        &linked_attributes(account),
+                        token,
+                        true,
+                    )
+                    .await?;
+            }
+            #[cfg(windows)]
+            Self::Keyring(store) => {
+                let _ = label;
+                store.set(&windows::linked(account), token).await?
+            }
+            Self::Memory(map) => {
+                map.lock()
+                    .unwrap()
+                    .insert(linked_key(account), token.to_owned());
+            }
+        }
+        Ok(())
+    }
+
+    /// Deletes the refresh token of the sign-in linked to `account`, if
+    /// any.
+    pub async fn delete_linked_token(&self, account: AccountId) -> Result<(), Error> {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => {
+                keyring.unlock_asking().await?;
+                keyring.delete(&linked_attributes(account)).await?;
+            }
+            #[cfg(windows)]
+            Self::Keyring(store) => store.delete(&windows::linked(account)).await?,
+            Self::Memory(map) => {
+                map.lock().unwrap().remove(&linked_key(account));
             }
         }
         Ok(())
@@ -163,7 +310,7 @@ impl Secrets {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                keyring.unlock().await?;
+                keyring.unlock_asking().await?;
                 keyring
                     .create_item("Katna account", &server_attributes(), token, true)
                     .await?;
@@ -177,12 +324,71 @@ impl Secrets {
         Ok(())
     }
 
+    /// The key of the user's own AI service, if saved.
+    pub async fn ai_key(&self) -> Result<Option<String>, Error> {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => {
+                keyring.unlock().await?;
+                let Some(item) = keyring
+                    .search_items(&ai_key_attributes())
+                    .await?
+                    .into_iter()
+                    .next()
+                else {
+                    return Ok(None);
+                };
+                let secret = item.secret().await?;
+                String::from_utf8(secret.to_vec())
+                    .map(Some)
+                    .map_err(|_| Error("the saved AI key is not UTF-8".into()))
+            }
+            #[cfg(windows)]
+            Self::Keyring(store) => store.get(windows::AI_KEY).await,
+            Self::Memory(map) => Ok(map.lock().unwrap().get(&AI_KEY).cloned()),
+        }
+    }
+
+    /// Saves the key of the user's own AI service; an empty key deletes it.
+    pub async fn set_ai_key(&self, key: &str) -> Result<(), Error> {
+        match self {
+            #[cfg(unix)]
+            Self::Keyring(keyring) => {
+                keyring.unlock_asking().await?;
+                if key.is_empty() {
+                    keyring.delete(&ai_key_attributes()).await?;
+                } else {
+                    keyring
+                        .create_item("Katna AI key", &ai_key_attributes(), key, true)
+                        .await?;
+                }
+            }
+            #[cfg(windows)]
+            Self::Keyring(store) => {
+                if key.is_empty() {
+                    store.delete(windows::AI_KEY).await?;
+                } else {
+                    store.set(windows::AI_KEY, key).await?;
+                }
+            }
+            Self::Memory(map) => {
+                let mut map = map.lock().unwrap();
+                if key.is_empty() {
+                    map.remove(&AI_KEY);
+                } else {
+                    map.insert(AI_KEY, key.to_owned());
+                }
+            }
+        }
+        Ok(())
+    }
+
     /// Deletes every password Katna saved, also of accounts that are gone.
     pub async fn delete_all(&self) -> Result<(), Error> {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                keyring.unlock().await?;
+                keyring.unlock_asking().await?;
                 keyring
                     .delete(&[("application", ids::PREFIX.to_owned())])
                     .await?;
@@ -199,7 +405,7 @@ impl Secrets {
         match self {
             #[cfg(unix)]
             Self::Keyring(keyring) => {
-                keyring.unlock().await?;
+                keyring.unlock_asking().await?;
                 keyring.delete(&attributes(account)).await?;
             }
             #[cfg(windows)]
@@ -209,6 +415,156 @@ impl Secrets {
             }
         }
         Ok(())
+    }
+}
+
+/// The Secret Service at login: the keyring may still be locked when the
+/// daemon starts, and its unlock prompt may be dismissed or never answered.
+/// Katna then asks once, not once per account, and waits for the user to
+/// unlock it rather than asking again at every read.
+#[cfg(unix)]
+mod keyring {
+    use std::sync::atomic::{AtomicBool, Ordering};
+
+    use smol::lock::Mutex;
+    use zbus::proxy::CacheProperties;
+
+    use super::Error;
+
+    pub struct Keyring {
+        inner: oo7::Keyring,
+        /// Our own connection, for reading `Locked` without a cache: the
+        /// keyring may not say when it changes.
+        connection: zbus::Connection,
+        /// One unlock prompt at a time; the others wait for its answer.
+        prompt: Mutex<()>,
+        /// The user dismissed the prompt and has not unlocked it since.
+        declined: AtomicBool,
+    }
+
+    impl std::ops::Deref for Keyring {
+        type Target = oo7::Keyring;
+
+        fn deref(&self) -> &oo7::Keyring {
+            &self.inner
+        }
+    }
+
+    impl Keyring {
+        pub async fn new() -> Result<Self, Error> {
+            Ok(Self {
+                inner: match oo7::Keyring::new().await {
+                    Ok(keyring) => keyring,
+                    // In a Snap (or a Flatpak) oo7 asks the secret portal
+                    // first and gives up if no portal service runs at all;
+                    // the Secret Service itself (the Snap's
+                    // password-manager-service plug) still does, as oo7
+                    // does when the portal is merely missing its Secret part.
+                    Err(oo7::Error::File(err)) => {
+                        tracing::info!("no secret portal ({err}); using the Secret Service");
+                        let service = oo7::dbus::Service::new().await.map_err(oo7::Error::from)?;
+                        oo7::Keyring::DBus(
+                            service
+                                .default_collection()
+                                .await
+                                .map_err(oo7::Error::from)?,
+                        )
+                    }
+                    Err(err) => return Err(err.into()),
+                },
+                connection: zbus::Connection::session().await?,
+                prompt: Mutex::new(()),
+                declined: AtomicBool::new(false),
+            })
+        }
+
+        pub fn declined(&self) -> bool {
+            self.declined.load(Ordering::SeqCst)
+        }
+
+        pub fn ask_again(&self) {
+            self.declined.store(false, Ordering::SeqCst);
+        }
+
+        /// Unlocks the keyring for a read: asks the user unless they
+        /// turned that down, then only checks whether they unlocked it.
+        pub async fn unlock(&self) -> Result<(), Error> {
+            let _one = self.prompt.lock().await;
+            if self.declined() {
+                return if self.unlocked_since().await {
+                    Ok(())
+                } else {
+                    Err(Error(LOCKED.into()))
+                };
+            }
+            self.ask().await
+        }
+
+        /// Unlocks the keyring for a change the user made: asks even if
+        /// they turned it down before.
+        pub async fn unlock_asking(&self) -> Result<(), Error> {
+            let _one = self.prompt.lock().await;
+            self.ask().await
+        }
+
+        async fn ask(&self) -> Result<(), Error> {
+            match self.inner.unlock().await {
+                Ok(()) => {
+                    self.ask_again();
+                    Ok(())
+                }
+                Err(err) if still_locked(&err) => {
+                    tracing::warn!(%err, "the keyring stays locked; waiting for it");
+                    self.declined.store(true, Ordering::SeqCst);
+                    Err(Error(LOCKED.into()))
+                }
+                Err(err) => Err(err.into()),
+            }
+        }
+
+        /// Whether the keyring is unlocked now, without asking; clears
+        /// `declined` when it is.
+        pub async fn unlocked_since(&self) -> bool {
+            let locked = match &self.inner {
+                oo7::Keyring::DBus(collection) => {
+                    self.locked(collection.path().to_owned().into()).await
+                }
+                other => other.is_locked().await.map_err(Error::from),
+            };
+            match locked {
+                Ok(false) => {
+                    self.ask_again();
+                    true
+                }
+                Ok(true) => false,
+                Err(err) => {
+                    tracing::debug!(%err, "is the keyring locked?");
+                    false
+                }
+            }
+        }
+
+        async fn locked(&self, path: zbus::zvariant::OwnedObjectPath) -> Result<bool, Error> {
+            let collection = zbus::proxy::Builder::<zbus::Proxy<'_>>::new(&self.connection)
+                .destination("org.freedesktop.secrets")?
+                .path(path)?
+                .interface("org.freedesktop.Secret.Collection")?
+                .cache_properties(CacheProperties::No)
+                .build()
+                .await?;
+            Ok(collection.get_property::<bool>("Locked").await?)
+        }
+    }
+
+    const LOCKED: &str = "the keyring is locked; unlock it to sync";
+
+    /// The prompt was dismissed or the keyring said it is locked.
+    fn still_locked(err: &oo7::Error) -> bool {
+        use oo7::dbus::{Error, ServiceError};
+        matches!(
+            err,
+            oo7::Error::DBus(Error::Dismissed | Error::Service(ServiceError::IsLocked(_)))
+        )
     }
 }
 
@@ -246,9 +602,18 @@ mod windows {
     /// The user name of the Katna Server token.
     pub const SERVER: &str = "katna-server";
 
+    /// The user name of the key of the user's own AI service.
+    pub const AI_KEY: &str = "ai-key";
+
     /// The user name of an account's password.
     pub fn account(account: AccountId) -> String {
         format!("account-{account}")
+    }
+
+    /// The user name of the refresh token of a sign-in linked to an
+    /// account.
+    pub fn linked(account: AccountId) -> String {
+        format!("linked-{account}")
     }
 
     /// The user name of part `index` of a long secret; part 0 is `user`.
@@ -311,7 +676,28 @@ mod windows {
 
 #[cfg(test)]
 mod tests {
-    use super::{PART_UNITS, split};
+    use katna_core::AccountId;
+
+    use super::{PART_UNITS, Secrets, split};
+
+    #[test]
+    fn linked_sign_ins_are_kept_apart_from_passwords() {
+        smol::block_on(async {
+            let secrets = Secrets::memory();
+            let id = AccountId(3);
+            secrets.set_password(id, "a@zoho.in", "pw").await.unwrap();
+            secrets.set_linked_token(id, "Zoho", "rt").await.unwrap();
+            assert_eq!(secrets.password(id).await.unwrap().as_deref(), Some("pw"));
+            assert_eq!(
+                secrets.linked_token(id).await.unwrap().as_deref(),
+                Some("rt")
+            );
+            assert_eq!(secrets.linked_token(AccountId(4)).await.unwrap(), None);
+            secrets.delete_linked_token(id).await.unwrap();
+            assert_eq!(secrets.linked_token(id).await.unwrap(), None);
+            assert_eq!(secrets.password(id).await.unwrap().as_deref(), Some("pw"));
+        });
+    }
 
     #[test]
     fn long_secrets_are_split() {

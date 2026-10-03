@@ -46,6 +46,7 @@ compose-sent-archived = A ti fi ránṣẹ́, a sì ti fi pamọ́
 compose-sent = A ti fi ìfiránṣẹ́ ránṣẹ́
 compose-discarded = A ti ju àkọ̀pamọ́ nù
 compose-draft-saved = A ti fi àkọ̀pamọ́ pamọ́
+compose-draft-saving = Ń fi pamọ́…
 compose-draft-failed = A kò lè fi àkọ̀pamọ́ náà pamọ́: { $error }
 compose-draft-not-opened = A kò lè ṣí àkọ̀pamọ́ náà.
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = A kò lè ṣí àkọ̀pamọ́ náà.
 compose-picker-insert = Fi sínú
 compose-picker-attach = So mọ́ ọn
 compose-file-too-large = { $name } ti tóbi jù: ìfiránṣẹ́ kan lè gbé tó { $limit } nìkan.
+compose-forward-files-missing = A kò tíì gba àwọn fáìlì ìfiránṣẹ́ tí a fi ránṣẹ́ síwájú sílẹ̀, nítorí náà a kò so wọ́n mọ́ ọn.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Yọ àfikún kúrò
+compose-attachment-open-tip = Ṣí i láti ṣàyẹ̀wò rẹ̀
 compose-attachments-total = Fáìlì { $count }, { $size }
 compose-drive-note = { $name } tóbi ju { $limit } lọ, nítorí náà ó ń lọ sí Google Drive rẹ, ìfiránṣẹ́ náà sì ní ìjápọ̀.
 compose-drive-tip = Nínú Google Drive rẹ; ìfiránṣẹ́ náà ní ìjápọ̀
@@ -74,6 +77,7 @@ compose-drive-share-link = Pín pẹ̀lú ìjápọ̀
 compose-drive-send-without = Fi ránṣẹ́ láìpín
 compose-drive-share-cancel = Fagilé
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } tóbi ju { $limit } lọ, nítorí náà ó ń lọ sí OneDrive rẹ, ìfiránṣẹ́ náà sì ní ìjápọ̀.
 compose-onedrive-tip = Nínú OneDrive rẹ; ìfiránṣẹ́ náà ní ìjápọ̀
 compose-onedrive-allow = Yọ̀ǹda OneDrive
@@ -84,6 +88,7 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive kò lè pín àwọn fáìlì náà pẹ̀lú { $addresses }. Dípò bẹ́ẹ̀, ẹnikẹ́ni tó bá ní ìjápọ̀ náà lè ṣí wọn.
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = Ju àwọn fáìlì sí ibí
 compose-drop-here = Ju sí ibí
 compose-paste-keep-formatting = Pa ìgúnrege mọ́

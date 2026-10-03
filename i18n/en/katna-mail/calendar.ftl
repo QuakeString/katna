@@ -80,6 +80,8 @@ calendar-account-try-again-tooltip = Check this account's calendars again now
 calendar-account-fixing = Working on it…
 # The calendar of saved contacts' birthdays, made on this computer.
 calendar-birthdays = Birthdays
+# The side list's switch that shows or hides tasks on the Calendar.
+calendar-tasks = Tasks
 # A saved contact's birthday on the Calendar: "Asha Rao's birthday".
 calendar-birthday-of = { $name }'s birthday
 calendar-empty-title = No calendars yet
@@ -102,8 +104,12 @@ calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 # In a month's day when not all its events fit.
 calendar-more = { $count } more
+# The Year view's day popover heading: "Tuesday, 29 Sept".
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Repeats
 calendar-join = Join
+# The Join button of a call found in an event: "Join with Microsoft Teams".
+calendar-join-with = Join with { $service }
 # Opens a new mail to the event's guests.
 calendar-email-guests = Email guests
 # Opens a new mail telling the event's guests the user is late.
@@ -119,6 +125,7 @@ calendar-guest-answers = { $yes } yes, { $maybe } maybe, { $no } no, { $waiting 
 calendar-organizer = Organizer
 calendar-optional = Optional
 calendar-open-web = Open in the browser
+calendar-open-mail = Open the mail
 calendar-open-contact = Open contact
 calendar-close = Close
 
@@ -142,11 +149,78 @@ calendar-discard = Discard changes
 calendar-edit = Edit event
 calendar-delete = Delete event
 calendar-event-details = Event details
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = New event
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Open day
+calendar-menu-duplicate = Duplicate
+calendar-menu-color = Color
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Calendar color
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = In a week
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tomato
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Tangerine
+calendar-color-banana = Banana
+calendar-color-sage = Sage
+calendar-color-basil = Basil
+calendar-color-peacock = Peacock
+calendar-color-blueberry = Blueberry
+calendar-color-lavender = Lavender
+calendar-color-grape = Grape
+calendar-color-graphite = Graphite
+# Right-click menus in the side panel: on a calendar, and on an
+# account's heading.
+calendar-menu-only-this = Show only this
+calendar-menu-rename = Rename
+# Takes a calendar shared with you off your list; its owner keeps it.
+calendar-menu-remove = Remove from list
+calendar-menu-delete = Delete
+calendar-menu-new-calendar = New calendar
+calendar-menu-show-all = Show all
+calendar-menu-hide-all = Hide all
+calendar-menu-account-settings = Account settings
+# Why a side-panel menu item can't be used, shown dimmed after it. Short.
+calendar-why-main = Main calendar
+calendar-why-last = Only one here
+calendar-why-owner = Owner only
+calendar-why-contacts = From Contacts
+calendar-why-unreached = Not reached
+calendar-name-placeholder = Calendar name
+calendar-toast-added = “{ $name }” added
+calendar-toast-renamed = Calendar renamed
+calendar-toast-recolored = Calendar color changed
+calendar-toast-deleted = “{ $name }” deleted
+calendar-toast-removed = “{ $name }” removed from your list
+# The service refused a change to a calendar; $reason is its answer.
+calendar-edit-failed = The calendar wasn't changed: { $reason }
+calendar-delete-title = Delete “{ $name }”?
+calendar-delete-confirm = Delete
+calendar-deleting = Deleting…
+calendar-delete-heading = Deleted:
+calendar-delete-events = The calendar and all its events
+calendar-delete-shared = For everyone it's shared with
+# $account is the account's address.
+calendar-delete-server = It's deleted from { $account } on the mail service, not only in Katna.
+calendar-delete-local = It's deleted from this computer.
+calendar-remove-title = Remove “{ $name }” from your list?
+calendar-remove-confirm = Remove
+calendar-removing = Removing…
+calendar-remove-heading = What changes:
+calendar-remove-events = You stop seeing its events, here and in your other apps
+calendar-remove-server = The calendar stays with its owner, who can share it with you again.
 # Tabs above a new event's times, as Google Calendar's.
 calendar-kind-event = Event
+calendar-kind-task = Task
 calendar-kind-focus = Focus time
 calendar-kind-out-of-office = Out of office
 calendar-kind-working-location = Working location
+calendar-task-added = Task added
+calendar-task-added-to = Task added to { $list }
+calendar-task-list-local = On this computer
 # A new working location's title until another place is typed.
 calendar-working-home = Home
 calendar-busy = Busy

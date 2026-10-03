@@ -1,6 +1,9 @@
 # Katna Mail, Japanese (日本語).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
+## Settings > Subscription: the Katna account
+
 katna-intro = Katna アカウントで、Katna のオンライン機能（開封確認、リンクのトラッキング、アクティビティ、自動翻訳）が使えるようになります。パスワードはメールのパスワードとは別の専用のものです。メールのログイン情報がこのパソコンの外に出ることはありません。
 katna-checking = 確認しています…
 katna-email = メールアドレス
@@ -10,6 +13,8 @@ katna-sign-in = サインイン
 katna-sign-in-detail = オンライン機能を使いたいパソコンごとにサインインしてください。
 katna-create = アカウントを作成
 katna-create-detail = 受信できるアドレスを使ってください。確認用のコードをメールでお送りします。
+katna-onboarding-create-title = Katna アカウントを作成
+katna-onboarding-sign-in-title = Katna にサインイン
 katna-have-account = アカウントを持っています
 katna-forgot = パスワードをお忘れですか？
 katna-forgot-detail = 新しいパスワードを設定するためのコードをメールでお送りします。
@@ -42,6 +47,9 @@ katna-delete = アカウントを削除
 katna-delete-detail = アカウントと、開封確認など、サーバーがそのアカウント用に保存しているものをすべて削除します。このパソコンのメールは残ります。
 katna-delete-confirm = 完全に削除
 katna-sign-in-needed = これを使うには Katna アカウントにサインインしてください。
+
+## Errors
+
 katna-error-wrong-password = メールアドレスまたはパスワードが違います。
 katna-error-exists = このアドレスにはすでに Katna アカウントがあります。サインインしてください。
 katna-error-bad-email = メールアドレスの形式ではないようです。

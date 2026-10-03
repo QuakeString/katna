@@ -1,6 +1,7 @@
 # Katna Mail, Filipino (Filipino).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
+
 translate-offer = Nasa { $language } ang mensaheng ito.
 translate-to = Isalin sa { $language }
 translate-never = Huwag kailanman para sa { $language }

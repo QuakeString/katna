@@ -58,6 +58,12 @@ calendar-account-not-enabled = Kalendertoegang vir Katna is nog nie aangeskakel 
 calendar-account-failed = Die kalenders kon nie gelees word nie.
 calendar-account-error = Die kalenders kon nie gelees word nie: { $reason }
 calendar-account-none = Geen kalenders gevind nie
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Geen kalenders gevind nie: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } wys kalenders net aan Katna as dit met { $provider } aangemeld is.
+calendar-account-sign-in-with = Meld aan met { $provider }
 calendar-account-looking = Soek tans kalenders…
 calendar-account-try-again = Probeer weer
 calendar-account-try-again-tooltip = Kyk nou weer na hierdie rekening se kalenders
@@ -77,8 +83,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = { $count } meer
+calendar-peek-day = { $weekday }, { $day }
 calendar-repeats = Herhaal
 calendar-join = Sluit aan
+calendar-join-with = Sluit aan met { $service }
 calendar-email-guests = Stuur e-pos aan gaste
 calendar-running-late = Ek is laat
 calendar-late-subject = Laat: { $title }
@@ -92,6 +100,7 @@ calendar-guest-answers = { $yes } ja, { $maybe } miskien, { $no } nee, { $waitin
 calendar-organizer = Organiseerder
 calendar-optional = Opsioneel
 calendar-open-web = Maak in die blaaier oop
+calendar-open-mail = Maak die e-pos oop
 calendar-open-contact = Maak kontak oop
 calendar-close = Maak toe
 
@@ -115,10 +124,71 @@ calendar-discard = Verwerp veranderinge
 calendar-edit = Wysig geleentheid
 calendar-delete = Vee geleentheid uit
 calendar-event-details = Geleentheidbesonderhede
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Nuwe geleentheid
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Maak dag oop
+calendar-menu-duplicate = Dupliseer
+calendar-menu-color = Kleur
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Kalenderkleur
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Oor 'n week
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tamatie
+calendar-color-flamingo = Flamink
+calendar-color-tangerine = Nartjie
+calendar-color-banana = Piesang
+calendar-color-sage = Salie
+calendar-color-basil = Basilie
+calendar-color-peacock = Pou
+calendar-color-blueberry = Bloubessie
+calendar-color-lavender = Laventel
+calendar-color-grape = Druif
+calendar-color-graphite = Grafiet
+calendar-menu-only-this = Wys net hierdie
+calendar-menu-rename = Hernoem
+calendar-menu-remove = Verwyder van lys
+calendar-menu-delete = Vee uit
+calendar-menu-new-calendar = Nuwe kalender
+calendar-menu-show-all = Wys alles
+calendar-menu-hide-all = Versteek alles
+calendar-menu-account-settings = Rekeninginstellings
+calendar-why-main = Hoofkalender
+calendar-why-last = Enigste een hier
+calendar-why-owner = Net eienaar
+calendar-why-contacts = Uit Kontakte
+calendar-why-unreached = Nie bereik nie
+calendar-name-placeholder = Kalendernaam
+calendar-toast-added = “{ $name }” bygevoeg
+calendar-toast-renamed = Kalender hernoem
+calendar-toast-recolored = Kalenderkleur verander
+calendar-toast-deleted = “{ $name }” uitgevee
+calendar-toast-removed = “{ $name }” van jou lys verwyder
+calendar-edit-failed = Die kalender is nie verander nie: { $reason }
+calendar-delete-title = Vee “{ $name }” uit?
+calendar-delete-confirm = Vee uit
+calendar-deleting = Vee tans uit…
+calendar-delete-heading = Uitgevee:
+calendar-delete-events = Die kalender en al sy geleenthede
+calendar-delete-shared = Vir almal met wie dit gedeel is
+calendar-delete-server = Dit word van { $account } op die e-posdiens uitgevee, nie net in Katna nie.
+calendar-delete-local = Dit word van hierdie rekenaar uitgevee.
+calendar-remove-title = Verwyder “{ $name }” van jou lys?
+calendar-remove-confirm = Verwyder
+calendar-removing = Verwyder tans…
+calendar-remove-heading = Wat verander:
+calendar-remove-events = Jy sien nie meer sy geleenthede nie, hier en in jou ander programme
+calendar-remove-server = Die kalender bly by sy eienaar, wat dit weer met jou kan deel.
 calendar-kind-event = Geleentheid
+calendar-kind-task = Taak
 calendar-kind-focus = Fokustyd
 calendar-kind-out-of-office = Uit die kantoor
 calendar-kind-working-location = Werkplek
+calendar-task-added = Taak bygevoeg
+calendar-task-added-to = Taak by { $list } gevoeg
+calendar-task-list-local = Op hierdie rekenaar
 calendar-working-home = Tuis
 calendar-busy = Besig
 calendar-free = Beskikbaar

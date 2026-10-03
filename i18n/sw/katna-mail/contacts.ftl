@@ -39,6 +39,12 @@ contacts-account-failed = Anwani hazikuweza kusomwa.
 # $reason is the server's own words, in English.
 contacts-account-error = Anwani hazikuweza kusomwa: { $reason }
 contacts-account-none = Hakuna kitabu cha anwani kilichopatikana
+# $reason is what the server answered, in English: "CardDAV https://dav.example.in/: status 404".
+contacts-account-none-why = Hakuna kitabu cha anwani kilichopatikana: { $reason }
+# A Gmail or Outlook account added with a password: its contacts need the
+# provider's sign-in.
+contacts-account-use-sign-in = { $provider } huonyesha anwani kwa Katna iliyoingia kwa { $provider } pekee.
+contacts-account-sign-in-with = Ingia kwa { $provider }
 contacts-account-looking = Inatafuta anwani…
 contacts-account-try-again = Jaribu tena
 contacts-account-try-again-tooltip = Kagua anwani za akaunti hii tena sasa
@@ -84,7 +90,7 @@ contacts-print-none = Hakuna anwani za kuchapisha
 contacts-print-typed = { $value } ({ $kind })
 contacts-print-birthday = Siku ya kuzaliwa: { $day }
 contacts-print-nickname = Jina la utani: { $name }
-contacts-create = Unda anwani
+contacts-create = Anwani mpya
 
 ## Search and the list
 

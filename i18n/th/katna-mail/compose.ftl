@@ -46,6 +46,7 @@ compose-sent-archived = ส่งและเก็บถาวรแล้ว
 compose-sent = ส่งข้อความแล้ว
 compose-discarded = ทิ้งฉบับร่างแล้ว
 compose-draft-saved = บันทึกฉบับร่างแล้ว
+compose-draft-saving = กำลังบันทึก…
 compose-draft-failed = บันทึกฉบับร่างไม่ได้: { $error }
 compose-draft-not-opened = เปิดฉบับร่างไม่ได้
 
@@ -54,8 +55,10 @@ compose-draft-not-opened = เปิดฉบับร่างไม่ได�
 compose-picker-insert = แทรก
 compose-picker-attach = แนบ
 compose-file-too-large = { $name } ใหญ่เกินไป: ข้อความหนึ่งรับได้สูงสุด { $limit }
+compose-forward-files-missing = ไฟล์ของข้อความที่ส่งต่อยังไม่ได้ดาวน์โหลด จึงไม่ได้แนบไป
 compose-attachment-size = ({ $size })
 compose-remove-attachment = นำไฟล์แนบออก
+compose-attachment-open-tip = เปิดเพื่อตรวจดู
 compose-attachments-total = { $count } ไฟล์ รวม { $size }
 compose-drive-note = { $name } มีขนาดเกิน { $limit } จึงจะถูกอัปโหลดไปที่ Google Drive ของคุณ และข้อความจะมีลิงก์ของไฟล์
 compose-drive-tip = อยู่ใน Google Drive ของคุณ ข้อความจะมีลิงก์
@@ -74,6 +77,7 @@ compose-drive-share-link = แชร์ด้วยลิงก์
 compose-drive-send-without = ส่งโดยไม่แชร์
 compose-drive-share-cancel = ยกเลิก
 compose-drive-card-detail = { $size } · Google Drive
+compose-drive-card-name = Google Drive
 compose-onedrive-note = { $name } มีขนาดเกิน { $limit } จึงจะถูกอัปโหลดไปที่ OneDrive ของคุณ และข้อความจะมีลิงก์ของไฟล์
 compose-onedrive-tip = อยู่ใน OneDrive ของคุณ ข้อความจะมีลิงก์
 compose-onedrive-allow = อนุญาต OneDrive
@@ -84,8 +88,12 @@ compose-onedrive-share-text = { $count ->
    *[other] OneDrive แชร์ไฟล์กับ { $addresses } ไม่ได้ แต่ทุกคนที่มีลิงก์จะเปิดไฟล์ได้แทน
 }
 compose-onedrive-card-detail = { $size } · OneDrive
+compose-onedrive-card-name = OneDrive
 compose-drop-files = วางไฟล์ที่นี่
 compose-drop-here = วางที่นี่
+
+## Paste options (a small bar under what was just pasted or dropped)
+
 compose-paste-keep-formatting = คงการจัดรูปแบบไว้
 compose-paste-table = ตาราง
 compose-paste-picture = รูปภาพ
@@ -99,6 +107,9 @@ compose-encrypt = เข้ารหัส
 compose-encrypted = เข้ารหัสแล้ว: มีเพียงผู้รับที่อ่านได้
 compose-sign = ลงลายเซ็น
 compose-signed = ลงลายเซ็นแล้ว: ผู้รับตรวจสอบได้ว่ามาจากคุณ
+
+## Open and click tracking and read receipts (toggles after Sign)
+
 compose-track = ติดตามการเปิดและการคลิก
 compose-tracked = ติดตามอยู่: คุณจะเห็นเมื่อผู้รับแต่ละคนเปิดอีเมลหรือคลิกลิงก์
 compose-track-clicks = ติดตามการคลิกลิงก์ (ข้อความธรรมดาไม่สามารถแสดงการเปิดได้)
@@ -131,6 +142,9 @@ send-check-subject-title = ส่งโดยไม่มีหัวเรื�
 send-check-subject-text = ข้อความนี้ไม่มีหัวเรื่อง
 send-check-add-subject = เพิ่มหัวเรื่อง
 send-check-send-anyway = ส่งเลย
+
+## Recipients (To, Cc and Bcc)
+
 recipient-not-valid = ไม่ใช่ที่อยู่อีเมลที่ถูกต้อง
 recipient-show-address = แสดงที่อยู่
 recipient-remove = นำออก

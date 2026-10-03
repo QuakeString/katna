@@ -58,6 +58,12 @@ calendar-account-not-enabled = Agendatoegang voor Katna is nog niet ingeschakeld
 calendar-account-failed = De agenda’s konden niet worden gelezen.
 calendar-account-error = De agenda’s konden niet worden gelezen: { $reason }
 calendar-account-none = Geen agenda’s gevonden
+# $reason is what the server answered, in English: "calendar.zoho.in answered 404".
+calendar-account-none-why = Geen agenda’s gevonden: { $reason }
+# A Gmail or Outlook account added with a password: its calendars need the
+# provider's sign-in.
+calendar-account-use-sign-in = { $provider } toont agenda’s alleen aan Katna als die is aangemeld met { $provider }.
+calendar-account-sign-in-with = Aanmelden met { $provider }
 calendar-account-looking = Agenda’s zoeken…
 calendar-account-try-again = Opnieuw proberen
 calendar-account-try-again-tooltip = De agenda’s van dit account nu opnieuw controleren
@@ -77,8 +83,10 @@ calendar-short-event = { $title }, { $time }
 calendar-when = { $day } · { $time }
 calendar-days-range = { $first } – { $last }
 calendar-more = nog { $count }
+calendar-peek-day = { $weekday } { $day }
 calendar-repeats = Herhaalt
 calendar-join = Deelnemen
+calendar-join-with = Deelnemen met { $service }
 calendar-email-guests = Gasten e-mailen
 calendar-running-late = Ik ben te laat
 calendar-late-subject = Te laat: { $title }
@@ -92,6 +100,7 @@ calendar-guest-answers = { $yes } ja, { $maybe } misschien, { $no } nee, { $wait
 calendar-organizer = Organisator
 calendar-optional = Optioneel
 calendar-open-web = Openen in de browser
+calendar-open-mail = De e-mail openen
 calendar-open-contact = Contact openen
 calendar-close = Sluiten
 
@@ -115,10 +124,71 @@ calendar-discard = Wijzigingen negeren
 calendar-edit = Afspraak bewerken
 calendar-delete = Afspraak verwijderen
 calendar-event-details = Afspraakdetails
+# Right-click menus on the calendar: on a free time or day, an event and
+# a task.
+calendar-menu-new-event = Nieuwe afspraak
+# Shows the day right-clicked on its own, in the Day view.
+calendar-menu-open-day = Dag openen
+calendar-menu-duplicate = Dupliceren
+calendar-menu-color = Kleur
+# The event takes its calendar's color.
+calendar-menu-color-calendar = Agendakleur
+# A task's new due day, a week from today.
+calendar-menu-in-a-week = Over een week
+# Event colors, by the names Google Calendar gives them.
+calendar-color-tomato = Tomaat
+calendar-color-flamingo = Flamingo
+calendar-color-tangerine = Mandarijn
+calendar-color-banana = Banaan
+calendar-color-sage = Salie
+calendar-color-basil = Basilicum
+calendar-color-peacock = Pauw
+calendar-color-blueberry = Bosbes
+calendar-color-lavender = Lavendel
+calendar-color-grape = Druif
+calendar-color-graphite = Grafiet
+calendar-menu-only-this = Alleen deze tonen
+calendar-menu-rename = Hernoemen
+calendar-menu-remove = Uit lijst verwijderen
+calendar-menu-delete = Verwijderen
+calendar-menu-new-calendar = Nieuwe agenda
+calendar-menu-show-all = Alle tonen
+calendar-menu-hide-all = Alle verbergen
+calendar-menu-account-settings = Accountinstellingen
+calendar-why-main = Hoofdagenda
+calendar-why-last = Enige hier
+calendar-why-owner = Alleen eigenaar
+calendar-why-contacts = Uit Contacten
+calendar-why-unreached = Niet bereikt
+calendar-name-placeholder = Naam van agenda
+calendar-toast-added = “{ $name }” toegevoegd
+calendar-toast-renamed = Agenda hernoemd
+calendar-toast-recolored = Agendakleur gewijzigd
+calendar-toast-deleted = “{ $name }” verwijderd
+calendar-toast-removed = “{ $name }” uit je lijst verwijderd
+calendar-edit-failed = De agenda is niet gewijzigd: { $reason }
+calendar-delete-title = “{ $name }” verwijderen?
+calendar-delete-confirm = Verwijderen
+calendar-deleting = Verwijderen…
+calendar-delete-heading = Verwijderd:
+calendar-delete-events = De agenda en al zijn afspraken
+calendar-delete-shared = Voor iedereen met wie hij gedeeld is
+calendar-delete-server = Hij wordt verwijderd uit { $account } bij de maildienst, niet alleen in Katna.
+calendar-delete-local = Hij wordt van deze computer verwijderd.
+calendar-remove-title = “{ $name }” uit je lijst verwijderen?
+calendar-remove-confirm = Verwijderen
+calendar-removing = Verwijderen…
+calendar-remove-heading = Wat er verandert:
+calendar-remove-events = Je ziet de afspraken ervan niet meer, hier en in je andere apps
+calendar-remove-server = De agenda blijft bij de eigenaar, die hem opnieuw met je kan delen.
 calendar-kind-event = Afspraak
+calendar-kind-task = Taak
 calendar-kind-focus = Focustijd
 calendar-kind-out-of-office = Niet op kantoor
 calendar-kind-working-location = Werklocatie
+calendar-task-added = Taak toegevoegd
+calendar-task-added-to = Taak toegevoegd aan { $list }
+calendar-task-list-local = Op deze computer
 calendar-working-home = Thuis
 calendar-busy = Bezet
 calendar-free = Beschikbaar

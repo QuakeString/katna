@@ -5913,6 +5913,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "katna-ai"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "katna-bench"
 version = "0.0.0"
 dependencies = [
@@ -5981,6 +5989,7 @@ dependencies = [
  "async-signal",
  "futures-lite",
  "jiff",
+ "katna-ai",
  "katna-core",
  "katna-dav",
  "katna-dbus",
@@ -6002,8 +6011,10 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tracing",
+ "winreg 0.56.0",
  "winresource",
  "zbus",
+ "zstd",
 ]
 
 [[package]]
@@ -6072,6 +6083,7 @@ dependencies = [
  "gpui-pre-platform",
  "harper-core",
  "jiff",
+ "katna-ai",
  "katna-chrome",
  "katna-core",
  "katna-crypto",
@@ -6089,6 +6101,7 @@ dependencies = [
  "katna-ui",
  "mail-parser",
  "qrcodegen",
+ "serde",
  "serde_json",
  "spellbook",
  "tempfile",
@@ -6098,6 +6111,7 @@ dependencies = [
  "winreg 0.56.0",
  "winresource",
  "zbus",
+ "zip 8.6.0",
 ]
 
 [[package]]
@@ -6141,9 +6155,9 @@ dependencies = [
  "katna-core",
  "keyring-core",
  "serde",
- "tauri-winrt-notification 0.8.1",
  "tracing",
  "tray-icon",
+ "windows 0.62.2",
  "windows-native-keyring-store",
  "winit",
  "winreg 0.56.0",
@@ -6216,16 +6230,20 @@ dependencies = [
  "http-body-util",
  "hyper",
  "hyper-util",
+ "katna-ai",
  "lettre",
+ "rpassword",
  "serde",
  "serde_json",
  "sha2 0.10.9",
  "thiserror 2.0.21",
  "tokio",
  "tokio-postgres",
+ "tokio-rustls",
  "tower",
  "tracing",
  "tracing-subscriber",
+ "webpki-roots",
 ]
 
 [[package]]
@@ -6253,6 +6271,7 @@ version = "0.0.0"
 dependencies = [
  "blake3",
  "katna-core",
+ "regex",
  "rusqlite",
  "serde",
  "serde_json",
@@ -6296,6 +6315,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tracing",
  "tracing-subscriber",
+ "winreg 0.56.0",
 ]
 
 [[package]]
@@ -7213,7 +7233,7 @@ dependencies = [
  "log",
  "mac-notification-sys",
  "serde",
- "tauri-winrt-notification 0.7.3",
+ "tauri-winrt-notification",
  "zbus",
 ]
 
@@ -10384,17 +10404,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tauri-winrt-notification"
-version = "0.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f37a6c354fd28fc9e322ed9bd47e3959576dad28c9d58ea1cf888cce1c7ccb36"
-dependencies = [
- "thiserror 2.0.21",
- "windows 0.62.2",
- "windows-version",
-]
-
-[[package]]
 name = "tempfile"
 version = "3.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -12926,9 +12935,9 @@ dependencies = [
 
 [[package]]
 name = "yoke-derive"
-version = "0.8.3"
+version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33811428bee40dbceb6d545e95754741d17a6aef9a4849f0fd62e2ba4f412a78"
+checksum = "ec8ebde2db3681e8c9980cc27822030e68752690ddfa9473e739aeb4dbde6d71"
 dependencies = [
  "proc-macro2",
  "quote",
