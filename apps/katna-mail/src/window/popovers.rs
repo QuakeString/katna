@@ -261,7 +261,8 @@ impl MailWindow {
         } else if self.about_open() {
             self.close_about(window, cx);
             true
-        } else if self.dismiss_activity(cx)
+        } else if self.close_gallery(cx)
+            || self.dismiss_activity(cx)
             || self.close_seen(cx)
             || self.menu.take().is_some()
             || self.contacts.label_menu.take().is_some()

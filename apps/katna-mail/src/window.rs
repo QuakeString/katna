@@ -51,6 +51,7 @@ mod feedback_page;
 mod files_page;
 mod folder_pick;
 mod frost_sliders;
+mod gallery;
 mod katna_account;
 mod keymap;
 mod labels;
@@ -715,6 +716,8 @@ pub struct MailWindow {
     share_ask_later: bool,
     /// The About Katna dialog.
     about: Option<about::About>,
+    /// Every shared control, in development builds.
+    gallery: Option<gallery::Gallery>,
     /// Updates of Katna, shown in About.
     updates: updates::Updates,
     /// Follows uploads to Google Drive, once one started.
@@ -1036,6 +1039,7 @@ impl MailWindow {
             print_preview: None,
             share_ask_later: false,
             about: None,
+            gallery: None,
             updates: updates::Updates::default(),
             drive_watch: None,
             tour: None,
@@ -3823,6 +3827,7 @@ impl Render for MailWindow {
             self.render_share_ask(&th, window, reduce, cx)
         };
         let about = self.render_about(&th, window, reduce, cx);
+        let gallery = self.render_gallery(cx);
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
@@ -3912,6 +3917,7 @@ impl Render for MailWindow {
             .children(whats_new)
             .children(share_ask)
             .children(about)
+            .children(gallery)
             .children(update_dialog)
             .children(print_preview)
             .children(upload_tray)

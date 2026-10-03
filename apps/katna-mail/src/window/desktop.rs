@@ -310,6 +310,10 @@ impl MailWindow {
             // `calendar:<day>` shows that day on the Calendar page (with
             // `:new`, a new event on it); `tasks:<id>` opens that task.
             Request::Page(page) => {
+                if page == "gallery" {
+                    self.open_gallery(window, cx);
+                    return;
+                }
                 let (name, detail, new_event) = app_action::page_parts(&page);
                 let Some(app) = RailApp::from_key(name) else {
                     tracing::warn!(page, "unknown page");
