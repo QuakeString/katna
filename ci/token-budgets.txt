@@ -1,5 +1,5 @@
 # Raw numbers typed in the GPUI crates instead of katna_ui::tokens
 # (ci/check-tokens.sh). Only ever lower these.
-radius 307
-text_size 859
-spacing 2325
+radius 299
+text_size 855
+spacing 2309

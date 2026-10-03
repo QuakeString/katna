@@ -14,8 +14,8 @@ use gpui::{
     div, point, prelude::*, rgba,
 };
 use katna_i18n::tr;
+use katna_ui::InputEvent;
 use katna_ui::px;
-use katna_ui::{InputEvent, Ripple};
 
 use super::MailWindow;
 use super::keymap::SHORTCUTS;
@@ -764,22 +764,15 @@ impl MailWindow {
         let rows = found.into_iter().enumerate().map(|(ix, found)| {
             let title = found.title.clone();
             let place = format!("{} \u{b7} {}", found.section.label(), found.detail);
-            div()
-                .id(("settings-result", ix))
-                .relative()
-                .overflow_hidden()
-                .px(px(12.0))
+            crate::widgets::row(("settings-result", ix), false, th)
+                .px(px(katna_ui::tokens::space::S4))
                 .py(px(10.0))
-                .flex()
                 .flex_col()
-                .gap(px(2.0))
-                .rounded(px(8.0))
-                .cursor_pointer()
-                .hover(|d| d.bg(rgba(th.hover)))
+                .items_stretch()
+                .gap(px(katna_ui::tokens::space::S1))
                 .on_click(cx.listener(move |this, _, window, cx| {
                     this.go_to_setting(found.clone(), window, cx)
                 }))
-                .child(Ripple::new(("settings-result-ripple", ix), rgba(th.ripple)).rounded(8.0))
                 .child(
                     div()
                         .text_size(px(14.0))

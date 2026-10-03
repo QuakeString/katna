@@ -1710,22 +1710,14 @@ impl MailWindow {
                     .into_any_element()
             });
             let row = self
-                .page_control(div().id(("page-files-drive", n)), th, cx)
-                .relative()
-                .overflow_hidden()
-                .py(px(8.0))
-                .px(px(8.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(12.0))
-                .rounded(px(8.0))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .page_control(
+                    crate::widgets::row(("page-files-drive", n), false, th),
+                    th,
+                    cx,
+                )
                 .on_click(cx.listener(move |this, _, _, cx| {
                     this.apply(Change::DriveInFiles(id.0, !on), cx)
                 }))
-                .child(Ripple::new(("page-files-drive-ripple", n), rgba(th.ripple)).rounded(8.0))
                 .child(self.drive_mark_of(id, 22.0))
                 .child(
                     div()
@@ -2241,38 +2233,24 @@ impl MailWindow {
         let tools = self.render_signature_tools(th, cx);
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
-        let list =
-            sending.signatures.iter().map(|s| {
-                let on = editing.is_some_and(|e| e.id == s.id);
-                let id = s.id;
-                div()
-                    .id(("page-signature", id as usize))
-                    .map(|d| self.page_control(d, th, cx))
-                    .relative()
-                    .overflow_hidden()
-                    .h(px(40.0))
-                    .px(px(12.0))
-                    .flex()
-                    .items_center()
-                    .rounded(px(8.0))
-                    .text_size(px(14.0))
-                    .bg(rgba(if on { th.nav_selected } else { 0 }))
-                    .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-                    .cursor_pointer()
-                    .hover(|d| d.bg(rgba(if on { th.nav_selected } else { th.hover })))
-                    .on_click(cx.listener(move |this, _, window, cx| {
-                        this.edit_signature(Some(id), window, cx)
-                    }))
-                    .child(
-                        Ripple::new(("page-signature-ripple", id as usize), rgba(th.ripple))
-                            .rounded(8.0),
-                    )
-                    .child(div().truncate().child(if s.name.trim().is_empty() {
-                        tr!("settings-compose-untitled")
-                    } else {
-                        s.name.clone()
-                    }))
-            });
+        let list = sending.signatures.iter().map(|s| {
+            let on = editing.is_some_and(|e| e.id == s.id);
+            let id = s.id;
+            self.page_control(
+                crate::widgets::row(("page-signature", id as usize), on, th),
+                th,
+                cx,
+            )
+            .px(px(katna_ui::tokens::space::S4))
+            .on_click(
+                cx.listener(move |this, _, window, cx| this.edit_signature(Some(id), window, cx)),
+            )
+            .child(div().truncate().child(if s.name.trim().is_empty() {
+                tr!("settings-compose-untitled")
+            } else {
+                s.name.clone()
+            }))
+        });
         let editor = editing.map(|e| {
             let id = e.id;
             let name_focus = e.name.focus_handle(cx);

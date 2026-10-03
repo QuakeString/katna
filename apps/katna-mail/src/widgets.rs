@@ -648,6 +648,37 @@ pub fn tag(label: impl Into<SharedString>, th: &Theme) -> Div {
         .child(label.into())
 }
 
+/// The height a [`row`] is at least.
+pub const ROW_HEIGHT: f32 = 40.0;
+
+/// A clickable line of a list or a settings page, ready for its content:
+/// soft grey while `on` (the one open), the hover tint under the pointer,
+/// a ripple on click and `SM` corners.
+pub fn row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> Stateful<Div> {
+    let id = id.into();
+    let ripple = id_hash(&id);
+    let rest = if on { th.nav_selected } else { 0 };
+    let hover = if on { th.nav_selected } else { th.hover };
+    div()
+        .id(id)
+        .relative()
+        .overflow_hidden()
+        .min_h(px(ROW_HEIGHT))
+        .py(px(space::S3))
+        .px(px(space::S3))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S4))
+        .rounded(px(radius::SM))
+        .text_size(px(text::BODY))
+        .when(on, |d| d.text_color(rgba(th.nav_selected_text)))
+        .bg(rgba(rest))
+        .cursor_pointer()
+        .hover(move |s| s.bg(rgba(hover)))
+        .child(Ripple::new(("ripple", ripple), rgba(th.ripple)).rounded(radius::SM))
+}
+
 /// A row of buttons over a card; its empty space moves the window.
 pub fn toolbar(th: &Theme) -> Div {
     div()
