@@ -32,6 +32,8 @@ impl Store {
     /// (IMAP), never POP3 or imported mail.
     pub fn forget_downloaded_mail(&mut self, accounts: &[AccountId]) -> Result<Forgotten> {
         self.check_writable()?;
+        // Files on tasks are kept here only: never forgotten.
+        let task_files = self.task_file_hashes()?;
         let tx = self
             .mail
             .transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)?;
@@ -51,7 +53,7 @@ impl Store {
                 messages += forget.execute(params![account.0])?;
             }
         }
-        let keep: Vec<BlobHash> = {
+        let mut keep: Vec<BlobHash> = {
             let mut stmt = tx.prepare(
                 "SELECT blob_hash FROM message WHERE blob_hash IS NOT NULL
                  UNION SELECT blob_hash FROM attachment WHERE blob_hash IS NOT NULL",
@@ -65,6 +67,7 @@ impl Store {
             })
             .collect::<rusqlite::Result<_>>()?
         };
+        keep.extend(task_files);
         // Rows first: a crash in between leaves unused blobs, never a
         // message pointing at a deleted one. The blob lock is taken before
         // the rows are committed, so no batch stores a body in between.

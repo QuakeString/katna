@@ -10,13 +10,17 @@
 //! etag changed. What the last pull saw (each to-do's etag and `UID`) is
 //! the list's sync state, so a to-do gone from the listing is a deletion.
 //! A change is written over the server's own text of the to-do
-//! ([`katna_dav::todo::write`]), so what Katna doesn't show stays.
+//! ([`katna_dav::todo::write`]), so what Katna doesn't show stays. The
+//! star is `PRIORITY:1` and labels are `CATEGORIES`. Files go inside the
+//! to-do (`ATTACH;VALUE=BINARY`, up to [`MAX_FILE`] each) and stay on this
+//! computer when the server refuses or drops them ([`DavTasks::set_files`]).
 
 use std::collections::{BTreeMap, HashMap};
 
 use jiff::tz::TimeZone;
-use katna_dav::todo::{self, Todo};
-use katna_store::tasks::{RemoteTask, RemoteTaskList, Task, TaskExtras};
+use katna_dav::todo::{self, Todo, TodoFile};
+use katna_store::BlobHash;
+use katna_store::tasks::{RemoteFile, RemoteTask, RemoteTaskList, Task, TaskExtras};
 use ring::rand::{SecureRandom, SystemRandom};
 use serde::{Deserialize, Serialize};
 
@@ -42,6 +46,16 @@ const ETAGS: &str = r#"<?xml version="1.0" encoding="utf-8"?>
 </c:calendar-query>"#;
 
 const ICAL: &str = "text/calendar; charset=utf-8";
+
+/// The largest file sent inside a to-do; larger ones stay on this
+/// computer. Inline files make the whole to-do large on every sync.
+pub const MAX_FILE: u64 = 1024 * 1024;
+
+/// The ID of a file kept inside a to-do: its content's hash, since an
+/// `ATTACH` has no ID of its own.
+pub fn inline_id(data: &[u8]) -> String {
+    format!("inline:{}", BlobHash::of(data).to_hex())
+}
 
 /// One account's to-dos on its CalDAV server.
 pub struct DavTasks {
@@ -92,6 +106,9 @@ fn todo_of(task: &Task, uid: String, parent: Option<String>) -> Todo {
         remind_at: task.remind_at,
         repeat: task.repeat.clone(),
         starred: task.starred,
+        labels: task.labels.clone(),
+        // Files go apart, with `set_files`.
+        files: None,
     }
 }
 
@@ -381,7 +398,20 @@ impl DavTasks {
                 extras: Some(TaskExtras {
                     remind_at: todo.remind_at,
                     repeat: todo.repeat.clone(),
-                    starred: todo.starred,
+                }),
+                starred: Some(todo.starred),
+                labels: Some(todo.labels.clone()),
+                files: todo.files.as_ref().map(|files| {
+                    files
+                        .iter()
+                        .map(|file| RemoteFile {
+                            remote_id: inline_id(&file.data),
+                            name: file.name.clone(),
+                            mime: file.mime.clone(),
+                            size: file.data.len() as u64,
+                            data: Some(file.data.clone()),
+                        })
+                        .collect()
                 }),
             })
             .collect();
@@ -490,6 +520,66 @@ impl DavTasks {
                 remote_id: id.to_owned(),
                 ..RemoteTask::default()
             }));
+        }
+        Err(Error::Closed(
+            "the to-do keeps changing on the server".into(),
+        ))
+    }
+
+    /// Puts `files` inside the to-do at `id`, in place of the files it
+    /// kept there. Returns whether the server kept them: `false` when it
+    /// refused the to-do with them, or dropped them from it (read back),
+    /// so they stay on this computer; `None` when the to-do is gone.
+    pub async fn set_files(
+        &self,
+        list: &str,
+        id: &str,
+        files: &[TodoFile],
+    ) -> Result<Option<bool>> {
+        let url = self.url(id).await?;
+        let zone = TimeZone::system();
+        for _ in 0..2 {
+            let Some((etag, old)) = self.current(list, id).await? else {
+                return Ok(None);
+            };
+            let Some(mut todo) = todo::parse(&old, &zone) else {
+                return Ok(Some(false));
+            };
+            todo.files = Some(files.to_vec());
+            let text = todo::write(&todo, Some(&old), now(), &zone);
+            let quoted;
+            let mut headers = Vec::new();
+            if !etag.is_empty() {
+                quoted = etag;
+                headers.push(("If-Match", quoted.as_str()));
+            }
+            let reply = self
+                .dav
+                .request("PUT", &url, &headers, Some((ICAL, text.as_bytes())))
+                .await?;
+            match reply.status {
+                404 | 410 => return Ok(None),
+                412 => continue,
+                200..=299 => {}
+                // Too large, or no attachments here: kept on this computer.
+                400..=499 => {
+                    tracing::info!(id, status = reply.status, "the CalDAV server refused files");
+                    return Ok(Some(false));
+                }
+                status => check(status, "adding files to a to-do")?,
+            }
+            // Some servers take the to-do and drop what they don't keep.
+            let kept = match self.current(list, id).await? {
+                Some((_, text)) => todo::parse(&text, &zone)
+                    .and_then(|t| t.files)
+                    .unwrap_or_default(),
+                None => return Ok(None),
+            };
+            let all = files.iter().all(|f| kept.iter().any(|k| k.data == f.data));
+            if !all {
+                tracing::info!(id, "the CalDAV server dropped the files of a to-do");
+            }
+            return Ok(Some(all));
         }
         Err(Error::Closed(
             "the to-do keeps changing on the server".into(),

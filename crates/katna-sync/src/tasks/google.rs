@@ -105,6 +105,9 @@ impl From<Item> for RemoteTask {
             position: item.position,
             etag: item.etag,
             extras: None,
+            starred: None,
+            labels: None,
+            files: None,
         }
     }
 }

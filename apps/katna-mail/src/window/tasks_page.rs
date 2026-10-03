@@ -435,6 +435,7 @@ fn typed_task(text: &str, today: jiff::civil::Date) -> Option<TypedTask> {
     let language = katna_i18n::current().language.tag.clone();
     let words = quick_add::Words {
         at: &[],
+        label_marks: &["#"],
         ..*quick_add::Words::for_language(&language)
     };
     let typed = quick_add::parse(text, today, &words);

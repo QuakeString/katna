@@ -28,6 +28,9 @@ pub struct Typed {
     /// An RFC 5545 RRULE value ("FREQ=WEEKLY;BYDAY=MO"), without "RRULE:".
     pub repeat: Option<String>,
     pub location: Option<String>,
+    /// Labels, from words after a label mark ("#home" with
+    /// [`Words::label_marks`] `["#"]`), each once, without the mark.
+    pub labels: Vec<String>,
 }
 
 impl Typed {
@@ -38,6 +41,7 @@ impl Typed {
             || self.minutes.is_some()
             || self.repeat.is_some()
             || self.location.is_some()
+            || !self.labels.is_empty()
     }
 }
 
@@ -85,6 +89,9 @@ pub struct Words {
     pub weekday_word: &'static [&'static str],
     /// Between weekdays ("every Mon and Thu").
     pub and: &'static [&'static str],
+    /// What starts a label ("#home"): none for events, `#` for tasks. A
+    /// label is letters, digits, `-` and `_` after the mark.
+    pub label_marks: &'static [&'static str],
 }
 
 impl Words {
@@ -138,6 +145,7 @@ impl Words {
         month_units: &["month", "months"],
         year_units: &["year", "years"],
         weekday_word: &["weekday", "weekdays", "workday", "workdays"],
+        label_marks: &[],
         and: &["and", "&", "+"],
     };
 
@@ -313,6 +321,16 @@ pub fn parse(text: &str, today: Date, words: &Words) -> Typed {
     while i < count {
         let word = lower[i].as_str();
         let next = lower.get(i + 1).map(String::as_str);
+
+        // Labels: "#home", as typed (its case kept).
+        if let Some(label) = label_of(original[i], words.label_marks) {
+            if !typed.labels.contains(&label) {
+                typed.labels.push(label);
+            }
+            take(i, i + 1, &mut used);
+            i += 1;
+            continue;
+        }
 
         // Repeats: "every day", "every 2 weeks", "every Mon and Thu",
         // "every weekday", "daily".
@@ -543,6 +561,19 @@ pub fn parse(text: &str, today: Date, words: &Words) -> Typed {
     typed
 }
 
+/// The label `word` names after one of `marks` ("#home" is "home"), with
+/// a comma or full stop after it left off; `None` when it names none.
+fn label_of(word: &str, marks: &[&str]) -> Option<String> {
+    let word = word.trim_end_matches(|c: char| matches!(c, ',' | ';' | '.' | '!' | '?'));
+    let rest = marks.iter().find_map(|m| word.strip_prefix(m))?;
+    let ok = !rest.is_empty()
+        && rest.chars().any(char::is_alphabetic)
+        && rest
+            .chars()
+            .all(|c| c.is_alphanumeric() || c == '-' || c == '_');
+    ok.then(|| rest.to_owned())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -559,6 +590,28 @@ mod tests {
 
     fn t(h: i8, m: i8) -> Option<Time> {
         Some(Time::constant(h, m, 0, 0))
+    }
+
+    #[test]
+    fn hash_words_are_labels_for_tasks_only() {
+        let tasks = Words {
+            label_marks: &["#"],
+            ..Words::ENGLISH
+        };
+        let typed = parse("Call the plumber fri 6pm #home", today(), &tasks);
+        assert_eq!(typed.title, "Call the plumber");
+        assert_eq!(typed.labels, ["home"]);
+        assert_eq!(typed.day, Some(date(2026, 10, 2)));
+        assert_eq!(typed.start, t(18, 0));
+        let typed = parse("#Work Pay #Bills, #bills #Work #42 #", today(), &tasks);
+        assert_eq!(typed.title, "Pay #42 #");
+        assert_eq!(typed.labels, ["Work", "Bills", "bills"]);
+        assert!(parse("Pay rent #home", today(), &tasks).found());
+        assert!(!parse("Issue #42", today(), &tasks).found());
+        // Events keep the word in their title.
+        let typed = en("Standup #team");
+        assert_eq!(typed.title, "Standup #team");
+        assert!(typed.labels.is_empty());
     }
 
     #[test]
