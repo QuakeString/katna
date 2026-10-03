@@ -281,6 +281,24 @@ pub fn apply_recent(
     Ok(out)
 }
 
+/// `rule` as it runs on the mail of `account`: without the folders and
+/// labels it names in its other accounts.
+pub fn for_account(store: &Store, rule: &Rule, account: AccountId) -> katna_store::Result<Rule> {
+    let mut out = rule.clone();
+    let mut actions = Vec::with_capacity(rule.actions.len());
+    for action in &rule.actions {
+        let elsewhere = match action.folder() {
+            Some(folder) => matches!(place(store, rule, folder, account)?, Place::Elsewhere),
+            None => false,
+        };
+        if !elsewhere {
+            actions.push(action.clone());
+        }
+    }
+    out.actions = actions;
+    Ok(out)
+}
+
 /// Where a folder an action names is.
 enum Place {
     /// A folder of the message's account.
@@ -338,9 +356,13 @@ fn apply(
             Action::MarkImportant => {
                 ops::set_flags(store, &ids, MessageFlags::IMPORTANT, MessageFlags::empty())
             }
-            // As Label as does (`SetLabels`): Gmail accounts only.
+            // As Label as does (`SetLabels`) on Gmail; elsewhere, a copy
+            // in the folder.
             Action::AddLabel { folder } => match place(store, rule, *folder, account)? {
-                Place::Here(to) => ops::set_labels(store, &ids, &[to], &[]),
+                Place::Here(to) if crate::folders::is_gmail(&store.folders(account)?) => {
+                    ops::set_labels(store, &ids, &[to], &[])
+                }
+                Place::Here(to) => ops::copy_messages(store, &ids, to),
                 Place::Elsewhere => continue,
                 Place::Gone => return Ok(Err(gone(*folder))),
             },
@@ -380,7 +402,16 @@ fn apply(
                 changed = true;
                 continue;
             }
-            Action::Move { .. } | Action::Archive | Action::Trash => {
+            // A rule for several accounts names a folder in each: the one
+            // of this account.
+            Action::Move { folder } => {
+                match place(store, rule, *folder, account)? {
+                    Place::Here(_) | Place::Gone => moves = Some(action),
+                    Place::Elsewhere => {}
+                }
+                continue;
+            }
+            Action::Archive | Action::Trash => {
                 moves = Some(action);
                 continue;
             }

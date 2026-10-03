@@ -6,8 +6,9 @@
 //! name and a line saying what it does, a dot in the color of each of its
 //! accounts, where it runs, and a pencil that opens the rule editor
 //! (`window/rule_editor.rs`). A rule the daemon switched off says why, in
-//! red. Under the rules, the Folders row: an unread count on every folder,
-//! or on the inbox only.
+//! red. Under them, the starter rules not used yet, switched off
+//! (`starter_rules.rs`). Under the rules, the Folders row: an unread count
+//! on every folder, or on the inbox only.
 
 use gpui::{
     AnimationExt, AnyElement, ClickEvent, Context, FontWeight, MouseButton, Pixels, Point, Render,
@@ -22,6 +23,7 @@ use katna_ui::px;
 use super::super::rule_editor::{self, dot};
 use super::super::settings::Change;
 use super::MailWindow;
+use super::starter_rules::{self, Starter, Step};
 use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, icon, icon_button, menu, menu_item, switch, tip};
 use crate::{daemon, data};
@@ -37,6 +39,8 @@ pub(in crate::window) struct RulesList {
     menu: Option<Point<Pixels>>,
     load: Option<Task<()>>,
     watch: Option<Task<()>>,
+    /// Starter rules being turned on, by key.
+    starting: Vec<&'static str>,
 }
 
 /// A change to the rules the daemon makes.
@@ -231,6 +235,127 @@ impl MailWindow {
         self.new_rule(account.map(|a| vec![a.0]).unwrap_or_default(), window, cx);
     }
 
+    /// The ID of the folder called `name` among the user's own folders
+    /// of `account`, if there is one.
+    fn folder_named(&self, account: AccountId, name: &str) -> Option<i64> {
+        self.tree
+            .folders_of(account)
+            .into_iter()
+            .find(|(_, label, role)| {
+                *role == crate::sidebar::Role::Other && label.eq_ignore_ascii_case(name)
+            })
+            .map(|(id, _, _)| id.0)
+    }
+
+    /// The editor on starter rule `key`, for every mail account, with
+    /// the folders that exist; a folder none has is left to choose.
+    fn edit_starter(&mut self, key: &str, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(starter) = starter_rules::starters().into_iter().find(|s| s.key == key) else {
+            return;
+        };
+        let accounts: Vec<i64> = self.rule_accounts().iter().map(|(id, _)| id.0).collect();
+        let mut rule = starter.rule(&accounts, |account, folder| {
+            self.folder_named(AccountId(account), &folder.name())
+        });
+        for step in &starter.steps {
+            let (Step::Move(folder) | Step::Label(folder)) = step else {
+                continue;
+            };
+            let anywhere = accounts
+                .iter()
+                .any(|a| self.folder_named(AccountId(*a), &folder.name()).is_some());
+            if !anywhere {
+                rule.actions.push(match step {
+                    Step::Move(_) => katna_store::rules::Action::Move { folder: 0 },
+                    _ => katna_store::rules::Action::AddLabel { folder: 0 },
+                });
+            }
+        }
+        self.open_rule_editor(rule, window, cx);
+    }
+
+    /// Turns on starter rule `key`: makes its folders in every mail
+    /// account that lacks them, then saves it for all of them.
+    fn turn_on_starter(&mut self, key: &'static str, cx: &mut Context<Self>) {
+        let Some(starter) = starter_rules::starters().into_iter().find(|s| s.key == key) else {
+            return;
+        };
+        let accounts: Vec<i64> = self.rule_accounts().iter().map(|(id, _)| id.0).collect();
+        if accounts.is_empty() {
+            return;
+        }
+        let Some(page) = &mut self.settings_page else {
+            return;
+        };
+        if page.rules.starting.contains(&key) {
+            return;
+        }
+        page.rules.starting.push(key);
+        // The folders there are, and those to make.
+        let mut have: Vec<(i64, String, i64)> = Vec::new();
+        let mut make: Vec<(i64, String)> = Vec::new();
+        for &account in &accounts {
+            for folder in starter.folders() {
+                let name = folder.name();
+                match self.folder_named(AccountId(account), &name) {
+                    Some(id) => have.push((account, name, id)),
+                    None => make.push((account, name)),
+                }
+            }
+        }
+        let name = starter.name();
+        if !make.is_empty() {
+            self.show_snackbar(
+                tr!("settings-rules-starter-turning-on", name = name.as_str()),
+                None,
+                cx,
+            );
+        }
+        cx.notify();
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    for (account, folder) in make {
+                        let id = daemon::create_folder(&connection, account, &folder, None).await?;
+                        have.push((account, folder, id));
+                    }
+                    let rule = starter.rule(&accounts, |account, folder| {
+                        let name = folder.name();
+                        have.iter()
+                            .find(|(a, n, _)| *a == account && *n == name)
+                            .map(|(_, _, id)| *id)
+                    });
+                    daemon::rules::save(&connection, &rule).await
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                if let Some(page) = &mut this.settings_page {
+                    page.rules.starting.retain(|k| *k != key);
+                }
+                if let Err(err) = result {
+                    this.show_snackbar(
+                        tr!(
+                            "settings-rules-starter-failed",
+                            name = name.as_str(),
+                            error = err
+                        ),
+                        None,
+                        cx,
+                    );
+                }
+                this.load_rules(cx);
+            })
+            .ok();
+        })
+        .detach();
+    }
+
     /// The Rules and Folders rows.
     pub(super) fn rules_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let folders = self.row(
@@ -337,6 +462,17 @@ impl MailWindow {
             .enumerate()
             .map(|(ix, rule)| self.rule_row(ix, rule, th, cx))
             .collect::<Vec<_>>();
+        let starters = if page.rules.loaded {
+            starter_rules::offered(&page.rules.rules)
+        } else {
+            Vec::new()
+        };
+        let starting = page.rules.starting.clone();
+        let starter_rows = starters
+            .iter()
+            .enumerate()
+            .map(|(ix, s)| self.starter_row(ix, s, starting.contains(&s.key), th, cx))
+            .collect::<Vec<_>>();
         div()
             .flex()
             .flex_col()
@@ -344,7 +480,34 @@ impl MailWindow {
             .child(header)
             .child(div().h(px(8.0)))
             .children(rows)
-            .when(empty, |d| {
+            .when(!starter_rows.is_empty(), |d| {
+                d.child(
+                    div()
+                        .mt(px(if empty { 4.0 } else { 14.0 }))
+                        .mb(px(2.0))
+                        .flex()
+                        .flex_row()
+                        .flex_wrap()
+                        .items_baseline()
+                        .gap_x(px(10.0))
+                        .child(
+                            div()
+                                .text_size(px(14.0))
+                                .font_weight(FontWeight::BOLD)
+                                .text_color(rgba(th.text))
+                                .child(tr!("settings-rules-starters")),
+                        )
+                        .child(
+                            div()
+                                .text_size(px(13.0))
+                                .line_height(px(18.0))
+                                .text_color(rgba(th.text_faint))
+                                .child(tr!("settings-rules-starters-intro")),
+                        ),
+                )
+                .children(starter_rows)
+            })
+            .when(empty && starters.is_empty(), |d| {
                 d.child(
                     div()
                         .py(px(12.0))
@@ -548,6 +711,91 @@ impl MailWindow {
                     .gap_y(px(6.0))
                     .child(about)
                     .child(side),
+            )
+            .into_any_element()
+    }
+
+    /// A starter rule's row: as a rule's, switched off, without a handle
+    /// or a tag. `starting` while it is being turned on.
+    fn starter_row(
+        &self,
+        ix: usize,
+        starter: &Starter,
+        starting: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let key = starter.key;
+        let summary = rule_editor::summary(&starter.preview(), starter_rules::preview_folder);
+        let toggle = div()
+            .id(("starter-switch", ix))
+            .map(|d| self.page_control(d, th, cx))
+            .flex_none()
+            .p(px(4.0))
+            .rounded_full()
+            .cursor_pointer()
+            .tooltip(tip(tr!("settings-rules-turn-on"), th))
+            .on_click(cx.listener(move |this, _, _, cx| this.turn_on_starter(key, cx)))
+            .child(div().with_spring(
+                ("starter-switch-spring", ix),
+                SpringAnimation::new(motion::SLIDE).to(if starting { 1.0 } else { 0.0 }),
+                {
+                    let th = *th;
+                    move |el, s: f32| el.child(switch(s.clamp(0.0, 1.0), &th))
+                },
+            ));
+        let about = div()
+            .flex_1()
+            .min_w(px(200.0))
+            .flex()
+            .flex_col()
+            .gap(px(1.0))
+            .child(
+                div()
+                    .text_size(px(15.0))
+                    .font_weight(FontWeight::BOLD)
+                    .text_color(rgba(th.text_faint))
+                    .truncate()
+                    .child(starter.name()),
+            )
+            .child(
+                div()
+                    .text_size(px(13.0))
+                    .line_height(px(18.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(summary),
+            );
+        let edit = icon_button(("starter-edit", ix), "pen", 18.0, th)
+            .map(|d| self.page_control(d, th, cx))
+            .flex_none()
+            .size(px(32.0))
+            .tooltip(tip(tr!("settings-rules-edit"), th))
+            .on_click(cx.listener(move |this, _, window, cx| this.edit_starter(key, window, cx)));
+        div()
+            .id(("starter-row", ix))
+            .mx(px(-8.0))
+            .px(px(8.0))
+            .py(px(6.0))
+            .rounded(px(10.0))
+            .flex()
+            .flex_row()
+            .items_start()
+            .gap(px(8.0))
+            // Where a rule's drag handle is.
+            .child(div().flex_none().w(px(20.0)).h(px(32.0)))
+            .child(toggle)
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .items_center()
+                    .gap_x(px(12.0))
+                    .gap_y(px(6.0))
+                    .child(about)
+                    .child(edit),
             )
             .into_any_element()
     }

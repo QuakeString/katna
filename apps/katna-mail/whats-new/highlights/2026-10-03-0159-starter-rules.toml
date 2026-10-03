@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Starter rules"
+text = """
+Settings > Folders & rules now offers ready-made rules, switched off:
+quiet promotions, newsletters to Reading, receipts, deliveries, train and
+flight tickets (IRCTC, Air India, IndiGo and more), one-time codes,
+security alerts, social mail and calendar invites. Turn one on and it
+works for all your accounts, making folders like Travel when needed.
+Rules can also check the inbox tab and whether mail came from a mailing
+list.
+"""

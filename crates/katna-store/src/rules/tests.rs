@@ -34,6 +34,8 @@ fn mail() -> MailFacts {
         attachment_names: vec!["Invoice-42.PDF".to_owned()],
         has_attachments: true,
         body: "Please pay by Friday.\nThanks".to_owned(),
+        category: MailCategory::Updates,
+        mailing_list: false,
     }
 }
 
@@ -125,6 +127,34 @@ fn body_and_attachments() {
 }
 
 #[test]
+fn inbox_tab_and_mailing_list() {
+    use Comparator::*;
+    assert!(hits(Field::Tab, Equals, "updates"));
+    assert!(hits(Field::Tab, Contains, "Updates"));
+    assert!(!hits(Field::Tab, Equals, "promotions"));
+    assert!(hits(Field::Tab, NotContains, "promotions"));
+    assert!(!hits(Field::MailingList, Equals, "true"));
+    assert!(hits(Field::MailingList, Equals, "no"));
+    let mut list = mail();
+    list.mailing_list = true;
+    list.category = MailCategory::Forums;
+    let from_list = Matcher::new(rule(vec![
+        condition(Field::MailingList, Equals, ""),
+        condition(Field::Tab, Equals, "forums"),
+    ]))
+    .unwrap();
+    assert!(from_list.matches(&list));
+    assert!(!from_list.matches(&mail()));
+    let bad = rule(vec![condition(Field::Tab, Equals, "inbox")]);
+    assert!(bad.validate().unwrap_err().contains("tab"));
+    // A yes-or-no field needs no value.
+    assert_eq!(
+        rule(vec![condition(Field::MailingList, Equals, "")]).validate(),
+        Ok(())
+    );
+}
+
+#[test]
 fn all_or_any_and_stop() {
     let one = condition(Field::Subject, Comparator::Contains, "invoice");
     let other = condition(Field::From, Comparator::Contains, "nobody");
@@ -176,6 +206,14 @@ fn validation_says_what_is_wrong() {
             .contains("regular")
     );
     assert!(bad(&|r| r.actions = vec![Action::Archive, Action::Trash]).contains("one place"));
+    assert!(
+        bad(&|r| r.actions = vec![Action::Move { folder: 3 }, Action::Archive])
+            .contains("one place")
+    );
+    // A folder in each account (the daemon checks the accounts).
+    let mut each = good.clone();
+    each.actions = vec![Action::Move { folder: 3 }, Action::Move { folder: 8 }];
+    assert_eq!(each.validate(), Ok(()));
     assert!(
         bad(&|r| r.actions = vec![Action::Forward {
             to: "nobody".into()
@@ -280,6 +318,24 @@ fn saves_lists_reorders_switches_and_deletes() {
     assert!(store.delete_rule(ids[1]).unwrap());
     assert!(!store.delete_rule(ids[1]).unwrap());
     assert_eq!(names(&store), ["c", "a", "d"]);
+
+    // A rule made from a starter keeps its key, also when saved again.
+    let id = store
+        .save_rule(&Rule {
+            name: "Receipts".into(),
+            starter: Some("receipts".into()),
+            ..base.clone()
+        })
+        .unwrap();
+    let mut saved = store.rule(id).unwrap().unwrap();
+    assert_eq!(saved.starter.as_deref(), Some("receipts"));
+    saved.name = "Bills".into();
+    saved.starter = None;
+    store.save_rule(&saved).unwrap();
+    assert_eq!(
+        store.rule(id).unwrap().unwrap().starter.as_deref(),
+        Some("receipts")
+    );
 }
 
 #[test]
