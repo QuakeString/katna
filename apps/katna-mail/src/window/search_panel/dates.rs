@@ -22,7 +22,7 @@ use katna_ui::unpx;
 use super::super::notched::{self, Side, notch};
 use super::{MailWindow, chip};
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon_button, raised, tip};
+use crate::widgets::{filled_button, icon_button, tip};
 
 /// What a custom date filter finds.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -225,7 +225,7 @@ const WEEKDAY_ROW: f32 = 24.0;
 const ERROR: f32 = 18.0;
 const BUTTONS: f32 = 36.0;
 const WIDTH: f32 = 7.0 * DAY + 2.0 * PAD;
-const RADIUS: f32 = 15.0;
+const RADIUS: f32 = notched::RADIUS;
 /// The popover's top left corner, its side of the chip and where the notch
 /// meets its edge ([`notched::place`]).
 fn place(chip: Bounds<Pixels>, size: (f32, f32), viewport: (f32, f32)) -> (f32, f32, Side, f32) {
@@ -475,12 +475,8 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(GAP))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .map(|d| raised(d, th, RADIUS, 4.0))
+            .map(|d| notched::popover(d, th))
             .text_color(rgba(th.text))
-            .occlude()
-            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .child(
                 div()
                     .h(px(CHIPS))
@@ -493,7 +489,7 @@ impl MailWindow {
             .child(self.render_calendar(custom, first, th, cx))
             .children(error_line)
             .child(buttons)
-            .children(notch(side, along, (WIDTH, height), th));
+            .children(notch(side, along, th));
         let layer = div()
             .id("custom-dates-scrim")
             .relative()

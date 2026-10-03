@@ -28,7 +28,7 @@ use super::notched::{self, notch};
 use super::settings::Change;
 use crate::theme::{ACCOUNT_COLORS, Accent, Theme, fade};
 use crate::user_schemes::Seed;
-use crate::widgets::{icon, raised};
+use crate::widgets::icon;
 
 const WIDTH: f32 = 264.0;
 const PAD: f32 = 12.0;
@@ -38,7 +38,7 @@ const ROW: f32 = 32.0;
 const CAPTION: f32 = 16.0;
 const DOT: f32 = 22.0;
 const LINK: f32 = 24.0;
-const RADIUS: f32 = 16.0;
+const RADIUS: f32 = notched::RADIUS;
 /// How many lately picked colors the popover keeps.
 pub(super) const RECENT: usize = 8;
 
@@ -607,12 +607,8 @@ impl MailWindow {
             .p(px(PAD))
             .flex()
             .flex_col()
-            .border_1()
-            .border_color(rgba(th.outline))
-            .map(|d| raised(d, th, RADIUS, 4.0))
+            .map(|d| notched::popover(d, th))
             .text_color(rgba(th.text))
-            .occlude()
-            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_mouse_down_out(cx.listener(move |this, event: &MouseDownEvent, _, cx| {
                 // The swatch's own click toggles the picker.
                 if !swatch_bounds.contains(&event.position) {
@@ -684,7 +680,7 @@ impl MailWindow {
                     ),
                 )
             })
-            .children(notch(side_of, along, (WIDTH, height), th));
+            .children(notch(side_of, along, th));
         let layer = div().relative().w(px(vw)).h(px(vh)).child(popover);
         Some(
             deferred(
