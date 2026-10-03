@@ -2073,6 +2073,11 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   light edge (`Theme::rim`) to every shadow. A dialog draws its contents
   with `Theme::lifted`, so fields and chips inside it keep their contrast.
   Light colors keep the white card and its shadow (the owner, 2026-09-30).
+  A white card on the near-white page has no edge of its own, so in light
+  colors `widgets::card_shadow` draws a 1 px hairline ring
+  (`Theme::card_edge`, the shadow's ink at 10%, about 8% at rest) and a
+  tight 2 px shadow instead of the soft 3 px one: "Tight", the owner's
+  pick on 2026-10-03, and elevation level 1 of the design system.
 
 The owner then asked for the rest of Gmail's pattern, with Katna's own
 icons and name and without Google-only features (no Chat, Meet, Drive,
