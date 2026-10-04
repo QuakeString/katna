@@ -4684,6 +4684,11 @@ most useful reason is shown. Changes go back the way their calendar came
   daemon as the Tasks page's Add does. With no calendar to add events to
   but task lists, the card opens on Task.
 - Alarms fire from the daemon as notifications (§15.1).
+- Settings > Calendar's Accounts shown switches (`[hidden_accounts]
+  calendar`) leave an account out: its calendars, events and dated tasks
+  leave every view, the side list, search, the day's agenda and shared
+  free times, and the daemon's reminders skip its events. It keeps
+  syncing.
 - Views: Day, Week (the default), Month, Year (Y or 5: twelve small
   months with a dot under days with events or tasks; a day opens Day, a
   month's name opens Month; resting the pointer on a dotted day, or
