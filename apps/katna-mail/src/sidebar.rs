@@ -563,6 +563,21 @@ impl Tree {
         rows
     }
 
+    /// The unified Inbox's unread count, without the inboxes left out.
+    pub fn unified_inbox_unread(&self) -> u64 {
+        self.unified_parts(Unified::Inbox)
+            .iter()
+            .map(|p| match p {
+                Row::UnifiedAccount {
+                    unread,
+                    left_out: false,
+                    ..
+                } => *unread,
+                _ => 0,
+            })
+            .sum()
+    }
+
     /// The rows of each account in `view`: every account for a list by
     /// flag, those with the folder for a special folder.
     fn unified_parts(&self, view: Unified) -> Vec<Row> {

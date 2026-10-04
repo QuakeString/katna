@@ -773,7 +773,13 @@ impl MailWindow {
                         let fill = search_fill(th, 0.0);
                         let pill = mix(th.backdrop, fill | 0xff, (fill & 0xff) as f32 / 255.0);
                         let cut = mix(th.backdrop, pill, this.layout.shape.phone);
-                        this.render_account_stack(accounts, this.account_hovered, cut, th)
+                        this.render_account_stack(
+                            accounts,
+                            super::account_stack::PICTURE,
+                            this.account_hovered,
+                            cut,
+                            th,
+                        )
                     }
                     None => {
                         this.account_ring(&account.address, this.render_rolling_avatar(32.0), th)

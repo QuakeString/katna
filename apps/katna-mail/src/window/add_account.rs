@@ -2067,9 +2067,10 @@ impl MailWindow {
         if !self.account_menu {
             return None;
         }
-        // With one account at a time, the shown one is marked and a click
-        // switches to another.
-        let shown = self.shown_account();
+        // What is open is marked: All Accounts or one account. A click
+        // on another switches to it.
+        let open = self.menu_current();
+        let all = self.all_accounts_row(open == Some(None), th, cx);
         let app_menu = self.render_app_menu(th, cx);
         let language = self.render_language_button(th, cx);
         let menu_button = self.app_menu_button(th, cx);
@@ -2080,7 +2081,7 @@ impl MailWindow {
                 account.display_name.clone()
             };
             let id = account.id;
-            let current = shown == Some(id);
+            let current = open == Some(Some(id));
             let offline = self.offline_text(id);
             let unread = self
                 .tree
@@ -2098,8 +2099,8 @@ impl MailWindow {
                 .gap(px(12.0))
                 .rounded(px(8.0))
                 .cursor_pointer()
-                .when(current, |d| d.bg(rgba(th.nav_selected)))
-                .hover(move |s| s.bg(rgba(if current { th.nav_selected } else { th.hover })))
+                .when(current, |d| d.bg(rgba(th.row_selected)))
+                .hover(move |s| s.bg(rgba(if current { th.row_selected } else { th.hover })))
                 .menu_key(th)
                 .on_click(cx.listener(move |this, _, _, cx| {
                     this.account_menu = false;
@@ -2151,17 +2152,11 @@ impl MailWindow {
                         div()
                             .text_size(px(12.0))
                             .font_weight(FontWeight::SEMIBOLD)
-                            .text_color(rgba(if current {
-                                th.nav_selected_text
-                            } else {
-                                th.text_dim
-                            }))
+                            .text_color(rgba(th.text_dim))
                             .child(crate::format::thousands(unread)),
                     )
                 })
-                .when(current, |d| {
-                    d.child(icon("check", th.nav_selected_text, 20.0))
-                })
+                .when(current, |d| d.child(icon("check", th.text, 20.0)))
         });
         // The icon row at the top: Settings and the language, with the
         // application menu at its end.
@@ -2238,6 +2233,7 @@ impl MailWindow {
                             .bg(rgba(th.divider)),
                     )
                 })
+                .children(all)
                 .children(rows)
                 .when(!self.accounts.is_empty(), |d| {
                     d.child(
