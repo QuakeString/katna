@@ -2225,24 +2225,31 @@ impl MailWindow {
                         .top_0()
                         .bottom_0()
                         .right_0()
-                        .flex()
-                        .items_center()
-                        .pr(px(space::S1))
                         .rounded_r(px(radius::XS))
                         .bg(rgba(th.surface))
                         .opacity(0.0)
                         .group_hover(group, |s| s.opacity(1.0))
                         .child(
+                            // The chip's own fill over the solid patch, so
+                            // the end keeps its colour and corners.
                             div()
-                                .size(px(16.0))
+                                .size_full()
                                 .flex()
                                 .items_center()
-                                .justify_center()
-                                .rounded(px(radius::inner(4.0, space::S1)))
+                                .pr(px(space::S1))
+                                .rounded_r(px(radius::XS))
                                 .bg(rgba(th.chip))
-                                .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
-                                .child(icon("close", th.text_dim, 12.0)),
+                                .child(
+                                    div()
+                                        .size(px(16.0))
+                                        .flex()
+                                        .items_center()
+                                        .justify_center()
+                                        .rounded(px(radius::inner(4.0, space::S1)))
+                                        .cursor_pointer()
+                                        .hover(|s| s.bg(rgba(th.hover)))
+                                        .child(icon("close", th.text_dim, 12.0)),
+                                ),
                         )
                         .tooltip(tip(
                             tr!("reader-chip-remove", label = chip.text.as_str()),
