@@ -97,6 +97,15 @@ key, the pointer leaving, or fingers touching the touchpad again (the
 stops it. Mouse wheels are unchanged. X11 does not say when the fingers
 lift, so it has no glide.
 
+It also keeps a window still while it is resized under client-side
+decorations (`wayland/window.rs`). `set_input_region` commits the surface
+so a new region applies at once, but Katna's frame sets a new region in
+every render while the window is resized, between the new size's
+viewport and geometry and its buffer. That commit showed the old buffer
+stretched to the new size for a frame, so the content shook. Now, while a
+new size waits for its buffer (`size_pending`), the region rides on that
+buffer's commit.
+
 The first commit that added this directory holds the crate unchanged, so
 `git diff` against it shows the whole patch. When GPUI is upgraded, copy the
 new version here and apply the same change, or drop the patch once upstream
