@@ -128,6 +128,8 @@ pub(super) enum Change {
     CustomDays(u8),
     /// The Birthdays calendar shows.
     Birthdays(bool),
+    /// An account is shown in an app (`true`) or left out of it.
+    AppAccount(katna_core::config::AppKind, katna_core::AccountId, bool),
     /// What Katna starts at login, if anything (an autostart entry).
     StartAtLogin(Option<crate::autostart::Start>),
     MarkRead(MarkRead),
@@ -753,6 +755,10 @@ impl MailWindow {
                 self.keep_custom_days(days, cx);
                 return;
             }
+            Change::AppAccount(app, id, shown) => {
+                self.set_app_account_shown(app, id, shown, cx);
+                return;
+            }
             Change::Birthdays(on) => {
                 if self.config.contacts.hide_birthdays == on {
                     self.toggle_birthdays(cx);
@@ -1037,7 +1043,7 @@ impl MailWindow {
     #[allow(clippy::too_many_arguments)]
     pub(super) fn switch_row(
         &self,
-        id: &'static str,
+        id: impl Into<gpui::ElementId>,
         label: impl Into<SharedString>,
         detail: impl Into<SharedString>,
         on: bool,
@@ -1052,7 +1058,7 @@ impl MailWindow {
     #[allow(clippy::too_many_arguments)]
     pub(super) fn switch_row_with(
         &self,
-        id: &'static str,
+        id: impl Into<gpui::ElementId>,
         label: impl Into<SharedString>,
         detail: impl Into<SharedString>,
         on: bool,
@@ -1061,7 +1067,8 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(crate::widgets::row(id, false, th), th, cx)
+        let id: gpui::ElementId = id.into();
+        self.page_control(crate::widgets::row(id.clone(), false, th), th, cx)
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
             .child(
                 div()
@@ -1079,7 +1086,7 @@ impl MailWindow {
             )
             .children(extra)
             .child(div().with_spring(
-                (id, 3_usize),
+                (id, "switch"),
                 SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
                     1.0
                 } else {

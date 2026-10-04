@@ -22,7 +22,7 @@ mod select;
 pub(super) use line_tasks::note_of_task;
 
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -32,6 +32,7 @@ use gpui::{
     AnimationExt, AnyElement, Bounds, Context, Div, DragMoveEvent, ElementId, Entity, Focusable,
     FontWeight, SharedString, Subscription, Task, Window, div, prelude::*, rgba,
 };
+use katna_core::config::AppKind;
 use katna_dbus::{NoteItem, NotePictureItem};
 use katna_i18n::tr;
 use katna_store::Note;
@@ -506,6 +507,11 @@ impl MailWindow {
 
     /// Reads the notes from the store again.
     pub(super) fn load_notes(&mut self, cx: &mut Context<Self>) {
+        let hidden: HashSet<i64> = self
+            .hidden_ids(AppKind::Notes)
+            .into_iter()
+            .map(|a| a.0)
+            .collect();
         let Some(page) = self.notes.as_mut() else {
             return;
         };
@@ -527,7 +533,11 @@ impl MailWindow {
                             Some((id, (image, w, h)))
                         })
                         .collect::<Vec<_>>();
-                    (crate::data::notes(&paths), covers)
+                    let notes = crate::data::notes(&paths).map(|mut notes| {
+                        notes.retain(|n| n.account_id.is_none_or(|a| !hidden.contains(&a)));
+                        notes
+                    });
+                    (notes, covers)
                 })
                 .await;
             this.update(cx, |this, cx| {

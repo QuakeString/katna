@@ -17,7 +17,7 @@ use gpui::{
     FontWeight, KeyDownEvent, MouseButton, Pixels, Point, ScrollHandle, SharedString, Subscription,
     Task, Window, anchored, deferred, div, ease_out_quint, prelude::*, rgba,
 };
-use katna_core::config::TaskSort;
+use katna_core::config::{AppKind, TaskSort};
 use katna_core::{AccountId, AccountKind};
 use katna_dav::quick_task::TypedTask;
 use katna_i18n::tr;
@@ -820,13 +820,14 @@ impl MailWindow {
         )
     }
 
-    fn load_tasks(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn load_tasks(&mut self, cx: &mut Context<Self>) {
         self.load_account_status(Of::Tasks, cx);
         let paths = self.paths.clone();
+        let hidden = self.hidden_ids(AppKind::Tasks);
         self.tasks.loading = Some(cx.spawn(async move |this, cx| {
             let mut board = cx
                 .background_executor()
-                .spawn(async move { crate::tasks::load(&paths) })
+                .spawn(async move { crate::tasks::load(&paths, &hidden) })
                 .await;
             this.update(cx, |this, cx| {
                 let page = &mut this.tasks;
