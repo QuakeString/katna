@@ -28,7 +28,7 @@ use katna_ui::{ScrollBar, px};
 
 use super::super::MailWindow;
 use super::super::attachments::{
-    CARD_RADIUS, Item, THUMB_PIXELS, Thumb, card_top, hover_panel, kind_badge, panel_button,
+    CARD_RADIUS, Item, Lifted, THUMB_PIXELS, Thumb, card_top, corner_button, kind_badge,
     picture_thumb,
 };
 use super::super::compose::attach::MAX_TOTAL;
@@ -1759,14 +1759,17 @@ impl MailWindow {
             )
     }
 
-    fn cursor_ring(&self, place: usize, radius: f32, th: &Theme) -> Option<AnyElement> {
-        let on = self
-            .library
+    /// Whether the arrow keys' cursor is on the item at `place`.
+    fn drive_cursor(&self, place: usize) -> bool {
+        self.library
             .cloud
             .view
             .as_ref()
-            .is_some_and(|v| v.cursor == Some(place));
-        on.then(|| {
+            .is_some_and(|v| v.cursor == Some(place))
+    }
+
+    fn cursor_ring(&self, place: usize, radius: f32, th: &Theme) -> Option<AnyElement> {
+        self.drive_cursor(place).then(|| {
             div()
                 .absolute()
                 .inset_0()
@@ -1893,12 +1896,11 @@ impl MailWindow {
         let thumb_height = thumb_height(width);
         let kind = entry_kind(entry);
         let group = SharedString::from(format!("files-drive-card-{place}"));
-        let frost = thumb.as_ref().and_then(Thumb::frosted);
         let picking = self.picker.is_some();
         let mut buttons = Vec::new();
         let e = entry.clone();
         buttons.push(
-            panel_button(
+            corner_button(
                 ("files-drive-attach", place),
                 "attachment",
                 tr!("files-drive-attach"),
@@ -1907,20 +1909,19 @@ impl MailWindow {
             .on_click(cx.listener(move |this, _, window, cx| {
                 cx.stop_propagation();
                 this.drive_act(e.clone(), Act::Attach, window, cx);
-            }))
-            .into_any_element(),
+            })),
         );
         let e = entry.clone();
         buttons.push(
-            panel_button(("files-drive-open", place), "eye", tr!("files-open"), th)
-                .on_click(cx.listener(move |this, _, window, cx| {
+            corner_button(("files-drive-open", place), "eye", tr!("files-open"), th).on_click(
+                cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
                     this.drive_act(e.clone(), Act::Open, window, cx);
-                }))
-                .into_any_element(),
+                }),
+            ),
         );
         buttons.push(
-            panel_button(
+            corner_button(
                 ("files-drive-more", place),
                 "more",
                 tr!("files-drive-more"),
@@ -1937,30 +1938,20 @@ impl MailWindow {
                     cx.notify();
                 }),
             )
-            .on_click(|_, _, cx| cx.stop_propagation())
-            .into_any_element(),
+            .on_click(|_, _, cx| cx.stop_propagation()),
         );
         // In the attach picker a card ticks like a mail file's, its eye
-        // looking first.
-        let panel = if picking {
+        // looking first, in place of the corner buttons.
+        let eye = picking.then(|| {
             let e = entry.clone();
-            pick_eye(("files-drive-eye", place), group.clone(), th)
-                .on_click(cx.listener(move |this, _, window, cx| {
+            buttons.clear();
+            pick_eye(("files-drive-eye", place), group.clone(), th).on_click(cx.listener(
+                move |this, _, window, cx| {
                     cx.stop_propagation();
                     this.drive_act(e.clone(), Act::Open, window, cx);
-                }))
-                .into_any_element()
-        } else {
-            hover_panel(
-                group.clone(),
-                entry.name.clone(),
-                entry.size,
-                frost,
-                buttons,
-                th,
-            )
-            .into_any_element()
-        };
+                },
+            ))
+        });
         let ticked = picking && self.drive_picked(account, &entry.id);
         let head = div()
             .relative()
@@ -1968,13 +1959,12 @@ impl MailWindow {
             .h(px(thumb_height + NAME_HEIGHT))
             .flex()
             .flex_col()
-            .child(div().h(px(thumb_height)).w_full().child(card_top(
-                thumb,
-                kind,
-                44.0,
-                (!picking).then(|| group.clone()),
-                th,
-            )))
+            .child(
+                div()
+                    .h(px(thumb_height))
+                    .w_full()
+                    .child(card_top(thumb, kind, 44.0, th)),
+            )
             .child(
                 div()
                     .h(px(NAME_HEIGHT))
@@ -1996,7 +1986,7 @@ impl MailWindow {
                             .child(self.drive_name_el(entry, th)),
                     ),
             )
-            .child(panel);
+            .children(eye);
         let card = div()
             .id(("files-drive-card", place))
             .group(group)
@@ -2025,7 +2015,12 @@ impl MailWindow {
             .children(self.cursor_ring(place, CARD_RADIUS, th))
             .when(picking, |d| d.child(pick_tick(ticked, th)))
             .when(ticked, |d| d.child(pick_ring(th)));
-        self.drive_handlers(card, place, entry, cx)
+        // Its size is on the line under its name, so not on a pill.
+        let cursor = self.drive_cursor(place);
+        let card = self.drive_handlers(card, place, entry, cx);
+        Lifted::new(card, format!("files-drive-card-{place}"), th)
+            .buttons(buttons)
+            .cursor(cursor)
             .into_any_element()
     }
 
