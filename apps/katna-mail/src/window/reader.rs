@@ -22,6 +22,7 @@ use katna_render::html::Document;
 use katna_store::{MessageFlags, MessageId};
 use katna_ui::motion::lerp;
 use katna_ui::px;
+use katna_ui::tokens::space;
 use katna_ui::unpx;
 
 use super::compose::{Kind, SentCard};
@@ -1347,6 +1348,22 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_col()
+            // The subject stays at the top while the mails scroll under it,
+            // as the chat's header does, with the same line under it.
+            .child(
+                div()
+                    .flex_none()
+                    .border_b_1()
+                    .border_color(rgba(th.divider))
+                    .child(
+                        title.with_animation(
+                            ("open-subject", key_number(key)),
+                            Animation::new(katna_ui::motion::time(Duration::from_millis(280)))
+                                .with_easing(ease_out_quint()),
+                            |el, t| el.opacity(t),
+                        ),
+                    ),
+            )
             .child(
                 div()
                     .flex_1()
@@ -1365,8 +1382,8 @@ impl MailWindow {
                                     div()
                                         .flex()
                                         .flex_col()
+                                        .pt(px(space::S4))
                                         .pb(px(24.0))
-                                        .child(title)
                                         .children(summary)
                                         .children(muted)
                                         .children(notes)
