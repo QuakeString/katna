@@ -52,6 +52,8 @@ reader-tick-read = Read { $when } (read receipt)
 reader-tick-opened = Opened, last { $when } (open tracking)
 # Tooltip of the star button on a starred message.
 reader-starred = Starred
+# The × on a label chip under the subject.
+reader-chip-remove = Remove { $label }
 # Tooltip of the star button on a message that is not starred.
 reader-not-starred = Not starred
 reader-too-long = The message is too long to show in full.
