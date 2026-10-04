@@ -2219,7 +2219,8 @@ impl MailWindow {
                 .absolute()
                 .right(px(16.0))
                 .top(px(4.0))
-                .w(px(MENU_WIDTH))
+                // Narrower on a narrow phone, with the same room each side.
+                .w(px(MENU_WIDTH.min(self.room_width() - 32.0)))
                 .p(px(8.0))
                 .flex()
                 .flex_col()
