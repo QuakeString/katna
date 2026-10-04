@@ -1392,7 +1392,7 @@ pub fn frosted_top<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, r
 }
 
 /// A bar pinned over the top of something that scrolls under it (the
-/// list's bar, the chat's header): frosted when
+/// chat's header): frosted when
 /// Blur is on and `frost` (Frosted chat header), else `fill`, with a line under
 /// it when `under` (something is beneath). What scrolls under never shows
 /// through as it is: the frost blurs it, else the bar clears it first, as

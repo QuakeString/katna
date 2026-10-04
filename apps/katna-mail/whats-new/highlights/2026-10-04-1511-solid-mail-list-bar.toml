@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-title = "A solid bar over the mail list"
+title = "Mails start below the list's bar"
 text = """
-The bar at the top of the mail list stays solid while the mails scroll
-under it, with no blur, and so does the open mail. Only a chat's header
-still frosts the bubbles under it; Settings > Experimental calls that
-switch Frosted chat header now.
+The mail list's mails start below its bar instead of sliding under it,
+with no blur, and so does the open mail. Only a chat's header still
+frosts the bubbles under it; Settings > Experimental calls that switch
+Frosted chat header now.
 """

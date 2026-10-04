@@ -868,10 +868,6 @@ pub struct MailWindow {
     /// ([`katna_chrome::WindowChrome::content_corners`]), this frame: a
     /// phone's card reaches them and rounds itself by them.
     bottom_corners: (f32, f32),
-    /// How tall the bar pinned over the list was last drawn.
-    list_head: std::rc::Rc<std::cell::Cell<f32>>,
-    /// How much of a phone's list toolbar that bar showed.
-    list_head_rows: std::cell::Cell<f32>,
     nav_list: gpui::ListState,
     nav_items: Vec<nav::NavItem>,
     /// Bumped when the folder pane's lines change; `nav_synced` is what
@@ -1156,8 +1152,6 @@ impl MailWindow {
             reader_head: Default::default(),
             reader_top: None,
             bottom_corners: (0.0, 0.0),
-            list_head: Default::default(),
-            list_head_rows: std::cell::Cell::new(1.0),
             nav_list: nav::nav_list(),
             nav_items: Vec::new(),
             nav_rev: 1,
