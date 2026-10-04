@@ -20,7 +20,7 @@ use katna_dbus::zbus::Connection;
 use katna_dbus::{UpdateStatus, update_state as state};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{px, unpx};
+use katna_ui::px;
 
 use super::{CheckForUpdates, MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
@@ -284,7 +284,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let dialog = self.updates.dialog.as_ref()?;
         let phone = self.layout.shape.is_phone();
-        let vw = unpx(window.viewport_size().width);
+        let vw = self.room_width();
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
 
         let status = self.updates.status.clone().unwrap_or_else(|| UpdateStatus {

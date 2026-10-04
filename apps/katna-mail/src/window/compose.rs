@@ -2243,8 +2243,7 @@ impl MailWindow {
         }
         let t = t.clamp(0.0, 1.0);
         let compose = self.compose.as_ref()?;
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let (vw, vh) = (self.room_width(), self.room_height(window));
         let mode = compose.mode;
         let title = compose.title(cx);
         let draft_status = match compose.draft_status {

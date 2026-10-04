@@ -466,6 +466,18 @@ impl MailWindow {
         }
     }
 
+    /// How wide the window's content is, for a dialog to fit inside it:
+    /// less Katna's frame, its shadow and resize border, which the
+    /// window's own size counts.
+    pub(super) fn room_width(&self) -> f32 {
+        self.layout.shape.width
+    }
+
+    /// How tall the window's content is, as [`Self::room_width`] the width.
+    pub(super) fn room_height(&self, window: &Window) -> f32 {
+        self.chrome.inner_height(window)
+    }
+
     pub(super) fn slides(&self) -> bool {
         !self.layout.shape.is_desktop() && !self.split()
     }
@@ -624,6 +636,9 @@ impl MailWindow {
                 .h(px(shape.bottom_bar()))
                 .overflow_hidden()
                 .bg(rgba(th.backdrop))
+                // Along the window's bottom edge, so round with its corners.
+                .rounded_bl(px(self.bottom_corners.0))
+                .rounded_br(px(self.bottom_corners.1))
                 .child(
                     div()
                         .h(px(BOTTOM_BAR_HEIGHT))

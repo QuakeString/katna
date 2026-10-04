@@ -1464,8 +1464,7 @@ impl MailWindow {
                         .on_click(cx.listener(|this, _, _, cx| this.confirm_danger(cx))),
                     ),
             );
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let (vw, vh) = (self.room_width(), self.room_height(window));
         let card = div()
             .id("danger")
             .track_focus(&self.dialog_focus)
