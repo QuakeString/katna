@@ -313,14 +313,11 @@ crash-close = Close
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-# $address: the account's email address.
-sign-in-again-text = { $provider } asks you to sign in to { $address } again.
 # Opens the provider's sign-in page in the browser.
 sign-in-again-button = Sign in
 sign-in-again-tooltip = Open the { $provider } sign-in page in your browser
 # In place of the button while the browser page is open.
 sign-in-again-waiting = Waiting for your browser…
-sign-in-again-close = Close
 # Under an account in Calendar, Tasks or Contacts, and on a Drive file in a
 # message, when Google has one of its APIs (People API, Google Drive API…)
 # switched off in the Google Cloud project Katna signs in with.

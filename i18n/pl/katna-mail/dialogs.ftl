@@ -222,11 +222,9 @@ crash-close = Zamknij
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } prosi o ponowne zalogowanie się do { $address }.
 sign-in-again-button = Zaloguj się
 sign-in-again-tooltip = Otwórz stronę logowania { $provider } w przeglądarce
 sign-in-again-waiting = Czekanie na przeglądarkę…
-sign-in-again-close = Zamknij
 google-api-off = { $api } jest wyłączone w projekcie Google Cloud Katna.
 google-api-turn-on = Włącz
 google-api-turn-on-tooltip = Otwórz Google Cloud, aby włączyć { $api }, a potem naciśnij Spróbuj ponownie

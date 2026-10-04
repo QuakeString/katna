@@ -211,11 +211,9 @@ crash-close = 閉じる
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } から { $address } への再サインインを求められています。
 sign-in-again-button = サインイン
 sign-in-again-tooltip = ブラウザーで { $provider } のサインイン ページを開く
 sign-in-again-waiting = ブラウザーを待っています…
-sign-in-again-close = 閉じる
 google-api-off = Katna の Google Cloud プロジェクトで { $api } がオフになっています。
 google-api-turn-on = オンにする
 google-api-turn-on-tooltip = Google Cloud を開いて { $api } をオンにしてから、「再試行」を押してください

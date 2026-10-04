@@ -13,9 +13,9 @@
 use std::time::Duration;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, Div, MouseButton, Pixels, Point, SharedString,
-    Stateful, Transformation, Window, anchored, deferred, div, ease_out_quint, percentage,
-    prelude::*, rgba, svg,
+    Animation, AnimationExt, AnyElement, ClickEvent, Context, Div, MouseButton, Pixels, Point,
+    SharedString, Stateful, Transformation, Window, anchored, deferred, div, ease_out_quint,
+    percentage, prelude::*, rgba, svg,
 };
 use katna_core::AccountId;
 use katna_i18n::tr;
@@ -297,7 +297,7 @@ impl MailWindow {
                 state::CONNECTING => (th.text_faint, tr!("nav-account-connecting")),
                 state::OFFLINE => (th.text_faint, tr!("nav-account-offline")),
                 state::AUTH_FAILED => (
-                    th.error,
+                    th.warning,
                     match provider {
                         Some(provider) => {
                             tr!("nav-account-signed-out", provider = provider.name())
@@ -556,18 +556,11 @@ impl MailWindow {
         let check = menu.check.clone();
         let about = menu.about;
         let card = about.and_then(|a| self.render_nav_account(a, menu.status.as_ref(), th));
-        // Sign in again, for an account whose provider stopped letting it in.
-        let sign_in = menu
-            .status
-            .as_ref()
-            .filter(|s| s.state == state::AUTH_FAILED)
-            .and_then(|s| {
-                Some((
-                    s.id,
-                    s.address.clone(),
-                    s.sign_in.parse::<OAuthProvider>().ok()?,
-                ))
-            });
+        // The fix of an account that needs the user: Sign in again, or a
+        // new password.
+        let fix = about
+            .and_then(|a| self.account_problem(a))
+            .filter(|p| p.needs_you());
         // Mute… (or Unmute) the folder, or the account on its heading.
         let at = menu.at;
         let quiet = match (menu.folder, about) {
@@ -625,18 +618,18 @@ impl MailWindow {
                     }
                 },
             )
-            .when_some(sign_in, |d, (id, address, provider)| {
+            .when_some(fix, |d, fix| {
+                let label = match fix {
+                    super::problems::Problem::SignIn { .. } => tr!("nav-menu-sign-in-again"),
+                    _ => tr!("problems-new-password"),
+                };
                 d.child(
-                    item(
-                        "nav-menu-sign-in",
-                        "warning",
-                        tr!("nav-menu-sign-in-again").into(),
-                    )
-                    .text_color(rgba(th.error))
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        this.nav_menu = None;
-                        this.sign_in_account(id, address.clone(), provider, cx);
-                    })),
+                    item("nav-menu-fix", "warning", label.into())
+                        .text_color(rgba(th.warning))
+                        .on_click(cx.listener(move |this, event: &ClickEvent, window, cx| {
+                            this.nav_menu = None;
+                            this.fix_problem(fix.clone(), event.position(), window, cx);
+                        })),
                 )
                 .child(divider())
             })

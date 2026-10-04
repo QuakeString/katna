@@ -420,6 +420,7 @@ impl MailWindow {
                     .child(self.render_tabs(None, th, cx))
             });
         let banner = self.render_select_banner(th, cx);
+        let problems = self.render_problems(th, cx);
         let list = self.render_list(th, cx);
         // A phone's toolbar slides up out of sight as the list moves on.
         let toolbar = self.render_list_toolbar(th, cx);
@@ -444,7 +445,8 @@ impl MailWindow {
                 .flex_col()
                 .child(toolbar)
                 .children(tabs)
-                .children(banner),
+                .children(banner)
+                .children(problems),
             th.pane(),
             under,
             self.config.experimental.frosted_headers,

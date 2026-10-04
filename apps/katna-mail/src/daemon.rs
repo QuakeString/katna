@@ -1065,20 +1065,30 @@ pub async fn cancel_sign_in(connection: &Connection) {
     }
 }
 
-/// The accounts that signed in with a provider which now asks to sign in
-/// again: (ID, address, provider).
-pub async fn signed_out(
+/// Checks `password` with account `id`'s server, keeps it in the keyring
+/// and has the account sync again. `AddError::Password` when the server
+/// refuses it.
+pub async fn set_password(
     connection: &Connection,
-) -> Result<Vec<(i64, String, OAuthProvider)>, String> {
+    id: i64,
+    password: &str,
+) -> Result<(), AddError> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| AddError::Other(describe(&err)))?;
+    pim.set_password(id, password)
+        .await
+        .map_err(|err| add_error(&err))
+}
+
+/// Where every account's mail sync stands.
+pub async fn accounts_status(
+    connection: &Connection,
+) -> Result<Vec<katna_dbus::AccountStatus>, String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
-    let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
-    Ok(accounts
-        .into_iter()
-        .filter(|a| a.state == state::AUTH_FAILED)
-        .filter_map(|a| Some((a.id, a.address, a.sign_in.parse().ok()?)))
-        .collect())
+    pim.accounts().await.map_err(|err| describe(&err))
 }
 
 /// Where account `id`'s mail sync stands, or `None` if there is no such

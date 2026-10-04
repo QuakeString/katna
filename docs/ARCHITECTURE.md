@@ -584,8 +584,8 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   refresh tokens Microsoft replaces. IMAP and SMTP log in with SASL XOAUTH2,
   which both providers take; a refused access token is dropped and a fresh
   one tried once. A refused refresh token (`invalid_grant`) is an auth
-  failure: the account stops syncing and Katna Mail shows "Sign in again",
-  which runs `SignIn` for that account. Network trouble while refreshing is
+  failure: the account stops syncing and Katna Mail shows "Sign in" on its
+  line at the top of the mail list, which runs `SignIn` for that account. Network trouble while refreshing is
   not, and retries like any other. The client IDs live in
   `katna_core::ids` (`GOOGLE_OAUTH_CLIENT_ID`, with Google's non-secret
   desktop `GOOGLE_OAUTH_CLIENT_SECRET`, and `MICROSOFT_OAUTH_CLIENT_ID`),
@@ -2551,8 +2551,17 @@ Gemini or confidential mode):
   set up (receiving and sending servers, and for POP3 what stays on the
   server) with "Add another account"; a Zoho account is offered "Sign in
   with Zoho" there for its tasks and calendars. An
-  OAuth2 account whose sign-in stopped working shows a note at the bottom
-  of the window with "Sign in" (`window/sign_in_again.rs`). It opens from the first-start pages
+  account that needs the user shows a line at the top of the mail list
+  (`window/problems.rs`), in the band of "All 50 conversations are
+  selected": an OAuth2 account signed out offers "Sign in"; a refused
+  password offers "New password", a small card at the click that checks
+  the password with `SetPassword` before keeping it. Each line has "Later"
+  (a day); three or more fold into one. These show in the theme's amber
+  `warning` colour, with the same sign on the account's heading in the
+  folder pane, on the account picture's corner and in the account menu.
+  An account the server has not answered for 30 minutes gets a grey line
+  with "Try again"; when every account is unreachable one grey line says
+  you're offline instead. It opens from the first-start pages
   (no account yet), the account card above the rail's account picture ("Add
   another account", which also lists the accounts and opens their
   inboxes), and Send without an account. The daemon signals `MailChanged`
