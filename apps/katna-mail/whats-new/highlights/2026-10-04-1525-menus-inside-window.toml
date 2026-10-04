@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Menus and tooltips stay inside the window"
+text = """
+With Katna's own window frame, right-click menus, popovers and tooltips near
+an edge no longer spill over the window's shadow; they stay inside it.
+"""
