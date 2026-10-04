@@ -38,11 +38,15 @@ const ARCH_CACHE: &str = "/var/cache/pacman/pkg";
 /// The Arch package's name, which starts its files' names.
 const ARCH_PACKAGE: &str = "katna-git";
 
+/// dpkg's list of the Debian package's files, there once it is installed.
+const DEB_FILES: &str = "/var/lib/dpkg/info/katna.list";
+
 /// The kind of package this build came in, from `$KATNA_PACKAGE` at build
 /// time (`packaging/arch/PKGBUILD` sets `arch`, `ci/windows-package.ps1`
 /// `windows`, the Fedora spec `rpm`, the Nix package `nix`, and the
-/// portable Linux build `linux`, which the tarball, AppImage, Flatpak and
-/// Snap all carry, so which of those it is shows only at run time).
+/// portable Linux build `linux`, which the tarball, AppImage, Flatpak,
+/// Snap and Debian package all carry, so which of those it is shows only
+/// at run time).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Package {
     /// The Arch Linux package (`katna-git`), from the `arch-latest`
@@ -62,6 +66,9 @@ pub enum Package {
     /// bundle: there is no repository yet, so Katna downloads the new
     /// file and shows the command that installs it ([`update_command`]).
     Rpm,
+    /// The Debian package (`katna_amd64.deb`) for Ubuntu and Debian, from
+    /// `linux-latest`, installed with apt: as the RPM.
+    Deb,
     Snap,
     Flatpak,
     /// The Nix flake: Katna says a new build is out and shows the
@@ -76,10 +83,13 @@ impl Package {
     /// This build's package.
     pub fn current() -> Self {
         match Self::parse(option_env!("KATNA_PACKAGE").unwrap_or_default()) {
-            Self::Tarball => Self::portable(
+            Self::Tarball => match Self::portable(
                 |name| std::env::var_os(name).is_some_and(|value| !value.is_empty()),
                 std::path::Path::new("/.flatpak-info").exists(),
-            ),
+            ) {
+                Self::Tarball if Self::from_deb() => Self::Deb,
+                package => package,
+            },
             package => package,
         }
     }
@@ -110,6 +120,15 @@ impl Package {
         }
     }
 
+    /// Whether this program is the one the Debian package installed: in
+    /// `/usr/bin`, with dpkg's list of the package's files beside it. A
+    /// tarball installed into `/usr` has no such list.
+    fn from_deb() -> bool {
+        std::env::current_exe()
+            .is_ok_and(|exe| exe.parent() == Some(std::path::Path::new("/usr/bin")))
+            && std::path::Path::new(DEB_FILES).exists()
+    }
+
     /// The name of this package's file in a `linux-latest` manifest's
     /// [`Manifest::files`].
     fn format(self) -> Option<&'static str> {
@@ -117,6 +136,7 @@ impl Package {
             Self::AppImage => Some("appimage"),
             Self::Tarball => Some("tarball"),
             Self::Rpm => Some("rpm"),
+            Self::Deb => Some("deb"),
             Self::Snap => Some("snap"),
             Self::Flatpak => Some("flatpak"),
             Self::Arch | Self::Windows | Self::Nix | Self::Other => None,
@@ -144,9 +164,13 @@ impl Package {
         match self {
             Self::Arch => Some("arch-latest"),
             Self::Windows => Some("windows-latest"),
-            Self::AppImage | Self::Tarball | Self::Rpm | Self::Snap | Self::Flatpak | Self::Nix => {
-                Some("linux-latest")
-            }
+            Self::AppImage
+            | Self::Tarball
+            | Self::Rpm
+            | Self::Deb
+            | Self::Snap
+            | Self::Flatpak
+            | Self::Nix => Some("linux-latest"),
             Self::Other => None,
         }
     }
@@ -180,6 +204,7 @@ pub fn update_command(package: Package, file: &str) -> Option<String> {
     let file = shell_quote(file);
     match package {
         Package::Rpm => Some(format!("sudo dnf install {file}")),
+        Package::Deb => Some(format!("sudo apt install {file}")),
         Package::Snap => Some(format!("sudo snap install --dangerous {file}")),
         Package::Flatpak => Some(format!("flatpak install --user --reinstall -y {file}")),
         Package::Nix => Some("nix profile upgrade katna".to_owned()),
@@ -249,7 +274,7 @@ pub struct Manifest {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub chain: Vec<Hop>,
     /// In `linux-latest`'s manifest: each package's own file, by
-    /// [`Package`] format (`appimage`, `tarball`, `rpm`, `snap`,
+    /// [`Package`] format (`appimage`, `tarball`, `rpm`, `deb`, `snap`,
     /// `flatpak`); [`Manifest::for_package`] picks one.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub files: BTreeMap<String, Download>,
@@ -800,6 +825,8 @@ mod tests {
             format!("{RELEASES}/linux-latest/{MANIFEST_FILE}")
         );
         assert!(!Package::Nix.downloads() && Package::Rpm.downloads());
+        assert!(Package::Deb.downloads() && !Package::Deb.installs_itself());
+        assert_eq!(Package::Deb.format(), Some("deb"));
         assert!(Package::AppImage.installs_itself() && !Package::Flatpak.installs_itself());
     }
 
@@ -823,6 +850,7 @@ mod tests {
             "a bad name is left out"
         );
         assert!(manifest.clone().for_package(Package::Rpm).is_none());
+        assert!(manifest.clone().for_package(Package::Deb).is_none());
         assert_eq!(manifest.clone().for_package(Package::Nix).unwrap().size, 10);
         assert_eq!(
             update_command(
@@ -831,6 +859,14 @@ mod tests {
             )
             .unwrap(),
             "sudo dnf install /home/me/.cache/katna/updates/katna-x86_64.rpm"
+        );
+        assert_eq!(
+            update_command(
+                Package::Deb,
+                "/home/me/.cache/katna/updates/katna_amd64.deb"
+            )
+            .unwrap(),
+            "sudo apt install /home/me/.cache/katna/updates/katna_amd64.deb"
         );
         assert_eq!(
             update_command(Package::Snap, "/home/o'neil/k a.snap").unwrap(),
