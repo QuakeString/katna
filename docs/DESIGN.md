@@ -58,6 +58,11 @@ keeps one 0,1 / blur 3 shadow at 30%.
 | 3 Menu | menus, dialogs (`widgets::dialog`) | `menu` + rim | white, edge + shadow |
 | 4 Popover | notched popovers (`notched::popover`), the tour | `menu` + rim | white, edge + deeper shadow |
 
+A tile (`widgets::tile`) rests at level 1 at full strength; a file card
+rises to level 2 under the pointer in `FAST` (`widgets::tile_lift`), and
+the buttons on its corners are level 2 on frosted glass
+(`attachments::Lifted`).
+
 **Motion:** a hover never switches on at once: round and pill
 buttons carry `katna_ui::Glow`, and any other box that tints on hover
 puts `widgets::hover_fade` first among its children. Springs for movement (`SLIDE` is the one with a little

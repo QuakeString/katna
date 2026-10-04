@@ -3019,7 +3019,9 @@ desktop's own app stays one click away.
   on release; the wheel over the chip moves the days, keeping their
   length, whole months by months) and the order; the top bar's search box matches names, subjects
   and senders. A click opens a file as the list's chips do (downloading
-  its mail first); the hover panel, the right-click menu and the viewer
+  its mail first); under the pointer a card lifts and shows its size and
+  round buttons on its top corners, on frosted glass, its preview left as
+  it is; those buttons, the right-click menu and the viewer
   (opened from this page) offer **Show the mail**, and the menu also
   opens the mail in a new window, forwards the file in a new mail, and
   shows the sender's files. Thumbnails are made in the background only

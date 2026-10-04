@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calmer file cards"
+text = """
+File cards in Files and under a mail now rest on a soft shadow and lift a
+little as you point at one. The preview stays as it is: the file's size
+fades in at its top left and its buttons at its top right, on frosted
+glass, so nothing jumps.
+"""
