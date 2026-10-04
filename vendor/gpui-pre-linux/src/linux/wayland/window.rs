@@ -140,6 +140,9 @@ pub struct WaylandWindowState {
     pending_frame_callback: Option<wl_callback::WlCallback>,
     in_progress_configure: Option<InProgressConfigure>,
     resize_throttle: bool,
+    /// A new size or scale has been set but no buffer drawn at it yet. A
+    /// commit now would show the old buffer stretched to the new size.
+    size_pending: bool,
     in_progress_window_controls: Option<WindowControls>,
     window_controls: WindowControls,
     client_inset: Option<Pixels>,
@@ -668,6 +671,7 @@ impl WaylandWindowState {
             window_bounds: options.bounds,
             in_progress_configure: None,
             resize_throttle: false,
+            size_pending: false,
             client,
             appearance,
             handle,
@@ -1543,6 +1547,7 @@ impl WaylandWindowStatePtr {
             if let Some(scale) = scale {
                 state.scale = scale;
             }
+            state.size_pending = true;
             let device_bounds = state.bounds.to_device_pixels(state.scale);
             state.renderer.update_drawable_size(device_bounds.size);
             (state.bounds.size, state.scale)
@@ -2037,6 +2042,7 @@ impl PlatformWindow for WaylandWindow {
             state.pending_frame_callback = Some(callback);
         }
         if state.renderer.draw(scene) {
+            state.size_pending = false;
             state.presentation = PresentationState::Presented;
             self.0.frame_loop.set(FrameLoop::AwaitingCallback);
         } else {
@@ -2148,8 +2154,13 @@ impl PlatformWindow for WaylandWindow {
 
         // Commit so the new input region applies immediately. Otherwise it
         // waits for the next frame, which could be the very click we want to
-        // allow passing through.
-        state.surface.commit();
+        // allow passing through. While a resize waits for its buffer, the
+        // region rides on that buffer's commit instead: committing now would
+        // show the old buffer stretched to the new size, and the window's
+        // content would shake while it is resized.
+        if !state.size_pending {
+            state.surface.commit();
+        }
     }
 
     fn window_decorations(&self) -> Decorations {
