@@ -845,6 +845,8 @@ pub struct MailWindow {
     /// How tall the header pinned over the open mail or chat was last
     /// drawn, so what scrolls under it starts below it.
     reader_head: std::rc::Rc<std::cell::Cell<f32>>,
+    /// How tall the bar pinned over the list was last drawn.
+    list_head: std::rc::Rc<std::cell::Cell<f32>>,
     nav_list: gpui::ListState,
     nav_items: Vec<nav::NavItem>,
     /// Bumped when the folder pane's lines change; `nav_synced` is what
@@ -1120,6 +1122,7 @@ impl MailWindow {
             list_shape: (false, 0),
             keep_line: None,
             reader_head: Default::default(),
+            list_head: Default::default(),
             nav_list: nav::nav_list(),
             nav_items: Vec::new(),
             nav_rev: 1,

@@ -1349,6 +1349,62 @@ pub fn frosted_top<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, r
     ))
 }
 
+/// A bar pinned over the top of something that scrolls under it (the
+/// list's bar, the open mail's subject, the chat's header): frosted when
+/// Blur is on, else `fill`, with a line under it when `under` (something
+/// is beneath). Its height goes into `height` each frame, for the space
+/// above what scrolls; a change draws the window again.
+pub fn pinned_head(
+    content: impl IntoElement,
+    fill: u32,
+    under: bool,
+    height: Rc<Cell<f32>>,
+    th: &Theme,
+) -> AnyElement {
+    frosted_top(
+        div()
+            .absolute()
+            .top_0()
+            .left_0()
+            .right_0()
+            .flex()
+            .flex_col(),
+        th,
+        fill,
+        0.0,
+    )
+    .child(content)
+    .when(under, |d| {
+        d.child(
+            div()
+                .absolute()
+                .left_0()
+                .right_0()
+                .bottom_0()
+                .h(px(1.0))
+                .bg(rgba(th.divider)),
+        )
+    })
+    .child(
+        canvas(
+            move |bounds, window, _| {
+                let h = unpx(bounds.size.height);
+                if (height.get() - h).abs() > 0.5 {
+                    height.set(h);
+                    // Drawn again with the room above what scrolls.
+                    window.request_animation_frame();
+                }
+            },
+            |_, _, _, _| {},
+        )
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full(),
+    )
+    .into_any_element()
+}
+
 fn glass<E: Styled + ParentElement>(panel: E, fill: u32, radius: f32, tint: f32, blur: f32) -> E {
     panel.child(katna_ui::frost::glass(
         rgba(fade(fill, tint)).into(),

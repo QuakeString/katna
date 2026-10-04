@@ -1416,11 +1416,9 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// The header pinned over the top of the open mail or chat: what
-    /// scrolls goes under it, frosted when Blur is on and else `fill`, with
-    /// a line under it once something is beneath (when `line`; the chat's
-    /// header draws its own). Its height is kept in `reader_head` for the
-    /// space above what scrolls.
+    /// The header pinned over the top of the open mail or chat
+    /// ([`crate::widgets::pinned_head`]), with a line under it once
+    /// something is beneath when `line` (the chat's header draws its own).
     pub(super) fn pinned_head(
         &self,
         content: impl IntoElement,
@@ -1428,49 +1426,8 @@ impl MailWindow {
         line: bool,
         th: &Theme,
     ) -> AnyElement {
-        let height = self.reader_head.clone();
         let under = line && unpx(self.reader_scroll.offset().y) < -0.5;
-        crate::widgets::frosted_top(
-            div()
-                .absolute()
-                .top_0()
-                .left_0()
-                .right_0()
-                .flex()
-                .flex_col(),
-            th,
-            fill,
-            0.0,
-        )
-        .child(content)
-        .when(under, |d| {
-            d.child(
-                div()
-                    .absolute()
-                    .left_0()
-                    .right_0()
-                    .bottom_0()
-                    .h(px(1.0))
-                    .bg(rgba(th.divider)),
-            )
-        })
-        .child(
-            gpui::canvas(
-                move |bounds, window, _| {
-                    let h = unpx(bounds.size.height);
-                    if (height.get() - h).abs() > 0.5 {
-                        height.set(h);
-                        window.refresh();
-                    }
-                },
-                |_, _, _, _| {},
-            )
-            .absolute()
-            .top_0()
-            .left_0()
-            .size_full(),
-        )
-        .into_any_element()
+        crate::widgets::pinned_head(content, fill, under, self.reader_head.clone(), th)
     }
 
     fn render_part_content(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
