@@ -1145,6 +1145,7 @@ impl MailWindow {
                         bell: None,
                         offline: None,
                         left_out: None,
+                        warn: false,
                     },
                     th,
                     cx,
@@ -1186,6 +1187,7 @@ impl MailWindow {
                         offline: (*view == Unified::Inbox && self.is_account_offline(*account))
                             .then_some(*account),
                         left_out: left_out.then_some(*account),
+                        warn: false,
                     },
                     th,
                     cx,
@@ -1202,10 +1204,13 @@ impl MailWindow {
                 expanded,
             } => {
                 let scheduled = key == compose::SCHEDULED_NAV_KEY;
+                let outbox = key == compose::OUTBOX_NAV_KEY;
                 // Special folders show their name in the current language;
                 // the user's own keep theirs.
                 let label = if scheduled {
                     tr!("folder-scheduled")
+                } else if outbox {
+                    tr!("folder-outbox")
                 } else {
                     role.title().unwrap_or_else(|| label.clone())
                 };
@@ -1216,13 +1221,18 @@ impl MailWindow {
                         depth: *depth,
                         icon: if scheduled {
                             "schedule"
+                        } else if outbox {
+                            "outbox"
                         } else {
                             role_icon(*role)
                         },
                         label,
                         // Settings > Folders & rules can keep the counts
                         // to the inbox.
-                        unread: if self.config.mail.folder_unread_counts || *role == Role::Inbox {
+                        unread: if self.config.mail.folder_unread_counts
+                            || *role == Role::Inbox
+                            || outbox
+                        {
                             *unread
                         } else {
                             0
@@ -1239,6 +1249,7 @@ impl MailWindow {
                         bell: folder.and_then(|f| self.folder_bell_icon(f)),
                         offline: None,
                         left_out: None,
+                        warn: outbox && self.writing.outbox_needs_you(),
                     },
                     th,
                     cx,
@@ -1372,6 +1383,7 @@ impl MailWindow {
             bell,
             offline,
             left_out,
+            warn,
         } = pill;
         let indent = 12.0 * depth as f32;
         let drop_folder = match self.nav_rows.get(ix) {
@@ -1521,7 +1533,10 @@ impl MailWindow {
                 d.child(self.offline_mark(("nav-offline", ix), account, OFFLINE_MARK, th, cx))
             })
             .when(unread > 0 && left_out.is_none(), |d| {
-                d.child(crate::widgets::count_pill(unread, selected, th))
+                d.child(
+                    crate::widgets::count_pill(unread, selected, th)
+                        .when(warn, |d| d.text_color(rgba(th.warning))),
+                )
             })
             .when_some(left_out, |d, account| {
                 d.child(
@@ -1623,6 +1638,10 @@ impl MailWindow {
                 self.leave_settings(window, cx);
                 self.open_scheduled(cx);
             }
+            sidebar::Row::Folder { key, .. } if key == compose::OUTBOX_NAV_KEY => {
+                self.leave_settings(window, cx);
+                self.open_outbox(cx);
+            }
             _ => self.toggle_nav_row(ix, cx),
         }
     }
@@ -1690,7 +1709,7 @@ impl MailWindow {
 
     /// A list picked in the folder pane while Settings is open takes its
     /// place, as in Gmail; folding a line does not.
-    fn leave_settings(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
+    pub(super) fn leave_settings(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
         if self.settings_page.is_some() {
             self.close_settings_page(window, cx);
         }
@@ -1921,6 +1940,8 @@ struct Pill {
     /// An account's inbox left out of the unified Inbox: it shows dimmed,
     /// with an eye in place of its count that brings it back.
     left_out: Option<AccountId>,
+    /// The count shows in amber: the outbox has mail that needs the user.
+    warn: bool,
 }
 
 /// An arrow that turns from pointing right to down as its line opens.

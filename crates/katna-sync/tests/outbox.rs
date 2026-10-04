@@ -32,6 +32,8 @@ enum Answer {
     Accept,
     Offline,
     Refuse,
+    /// The login is refused.
+    SignedOut,
 }
 
 /// One message as the SMTP server got it.
@@ -79,6 +81,9 @@ impl Outgoing for FakeSmtp {
             .unwrap_or(Answer::Accept);
         if let Answer::Offline = answer {
             return Err(Error::Io(std::io::ErrorKind::ConnectionRefused.into()));
+        }
+        if let Answer::SignedOut = answer {
+            return Err(Error::Auth("535 authentication failed".into()));
         }
         Ok(FakeSender {
             answer,
@@ -363,6 +368,41 @@ fn refused_mail_fails_and_stays() {
     let entry = store.outbox_entry(id).unwrap().unwrap();
     assert_eq!((entry.state, entry.attempts), (SendState::Failed, 2));
     assert!(smtp.received.lock().unwrap().is_empty());
+}
+
+#[test]
+fn a_refused_login_holds_mail_without_counting() {
+    let (tmp, mut store, account) = setup();
+    let id = outbox::queue(&mut store, account, MESSAGE, 0, now()).unwrap();
+    let smtp = FakeSmtp::default();
+    smtp.script
+        .lock()
+        .unwrap()
+        .extend([Answer::SignedOut, Answer::SignedOut]);
+    // One refusal would fail it, were logins counted.
+    let events = run_until(&smtp, &tmp, config(1), SendState::Sent);
+    let held: Vec<_> = events
+        .iter()
+        .filter(|e| e.state == SendState::Queued)
+        .collect();
+    assert_eq!(held.len(), 2, "{events:?}");
+    assert!(held[0].detail.starts_with(outbox::SIGN_IN), "{held:?}");
+    assert_eq!(events.last().unwrap().id, id);
+}
+
+#[test]
+fn failed_mail_is_sent_again_on_retry() {
+    let (tmp, mut store, account) = setup();
+    let id = outbox::queue(&mut store, account, MESSAGE, 0, now()).unwrap();
+    let smtp = FakeSmtp::default();
+    smtp.script.lock().unwrap().push_back(Answer::Refuse);
+    run_until(&smtp, &tmp, config(1), SendState::Failed);
+    assert!(outbox::retry(&mut store, id).unwrap());
+    assert_eq!(store.outbox_entry(id).unwrap().unwrap().attempts, 0);
+    // Only failed mail.
+    assert!(!outbox::retry(&mut store, id).unwrap());
+    run_until(&smtp, &tmp, config(1), SendState::Sent);
+    assert_eq!(smtp.received.lock().unwrap().len(), 1);
 }
 
 #[test]

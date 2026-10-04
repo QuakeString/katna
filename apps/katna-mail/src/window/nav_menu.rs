@@ -210,7 +210,7 @@ impl MailWindow {
                     left_out: None,
                 }
             }
-            // Scheduled mail lives on this computer only.
+            // Scheduled mail and the outbox live on this computer only.
             sidebar::Row::Folder { .. } => return,
         };
         let about = menu.about;

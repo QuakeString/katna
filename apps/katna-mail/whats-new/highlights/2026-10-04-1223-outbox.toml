@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "An Outbox for mail that hasn't gone out"
+text = """
+Mail that couldn't be sent now waits in an Outbox under Sent, which shows
+only while there is some. Each message says why in plain words, with Try
+again, Edit and Delete. Mail you send while an account's password has
+changed or its sign-in ended waits there and goes out as soon as you fix
+it, instead of failing.
+"""
