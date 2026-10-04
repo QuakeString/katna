@@ -42,7 +42,8 @@ const ARCH_PACKAGE: &str = "katna-git";
 /// time (`packaging/arch/PKGBUILD` sets `arch`, `ci/windows-package.ps1`
 /// `windows`, the Fedora spec `rpm`, the Nix package `nix`, and the
 /// portable Linux build `linux`, which the tarball, AppImage, Flatpak and
-/// Snap all carry, so which of those it is shows only at run time).
+/// Snap all carry, so which of those it is shows only at run time; the
+/// Microsoft Store package carries the `windows` build too).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Package {
     /// The Arch Linux package (`katna-git`), from the `arch-latest`
@@ -52,6 +53,9 @@ pub enum Package {
     /// `windows-latest` release; installed by running the new Setup
     /// quietly. Always the full Setup: no patches yet.
     Windows,
+    /// The Microsoft Store package (MSIX, `packaging/windows/store`): the
+    /// Store updates it (Store policy 10.2), so Katna never does.
+    MsStore,
     /// The AppImage from `linux-latest`: the new AppImage replaces the
     /// file Katna runs from (`$APPIMAGE`).
     AppImage,
@@ -80,8 +84,18 @@ impl Package {
                 |name| std::env::var_os(name).is_some_and(|value| !value.is_empty()),
                 std::path::Path::new("/.flatpak-info").exists(),
             ),
+            Self::Windows if Self::in_msix() => Self::MsStore,
             package => package,
         }
+    }
+
+    /// Whether this program runs from an MSIX package: its folder holds
+    /// the package's `AppxManifest.xml`, which Katna Setup never installs.
+    fn in_msix() -> bool {
+        std::env::current_exe()
+            .ok()
+            .and_then(|exe| Some(exe.parent()?.join("AppxManifest.xml")))
+            .is_some_and(|manifest| manifest.is_file())
     }
 
     fn parse(name: &str) -> Self {
@@ -119,14 +133,14 @@ impl Package {
             Self::Rpm => Some("rpm"),
             Self::Snap => Some("snap"),
             Self::Flatpak => Some("flatpak"),
-            Self::Arch | Self::Windows | Self::Nix | Self::Other => None,
+            Self::Arch | Self::Windows | Self::MsStore | Self::Nix | Self::Other => None,
         }
     }
 
     /// Whether Katna downloads this package's new builds: Nix builds its
-    /// own.
+    /// own, and the Store brings its own.
     pub fn downloads(self) -> bool {
-        !matches!(self, Self::Nix | Self::Other)
+        !matches!(self, Self::Nix | Self::MsStore | Self::Other)
     }
 
     /// Whether Katna installs the downloaded build itself; else it shows
@@ -147,7 +161,7 @@ impl Package {
             Self::AppImage | Self::Tarball | Self::Rpm | Self::Snap | Self::Flatpak | Self::Nix => {
                 Some("linux-latest")
             }
-            Self::Other => None,
+            Self::MsStore | Self::Other => None,
         }
     }
 

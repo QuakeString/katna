@@ -53,11 +53,18 @@ jobs:
           KATNA_ZOHO_OAUTH_CLIENT_SECRET: ${{ secrets.KATNA_ZOHO_OAUTH_CLIENT_SECRET }}
           KATNA_PROFILE: ${{ inputs.full && 'release' || 'quick' }}
         run: ci/windows-package.ps1
+      # The same programs as a Microsoft Store package
+      # (packaging/windows/store/README.md). Setup is published without it
+      # if it fails.
+      - name: Build the Store package
+        continue-on-error: true
+        run: ci/windows-store-package.ps1
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: windows-package
           path: |
             target/windows/KatnaSetup.exe
+            target/windows/KatnaMail.msix
             target/windows/version.txt
             target/windows/highlights.json
           if-no-files-found: error
@@ -112,6 +119,7 @@ jobs:
         run: |
           mkdir out
           mv build/KatnaSetup.exe out/
+          if [[ -f build/KatnaMail.msix ]]; then mv build/KatnaMail.msix out/; fi
           version=$(cat build/version.txt)
           highlights=$(jq -c '.[:50]' build/highlights.json 2>/dev/null || echo '[]')
           git -C src log -200 --format='%h%x09%s' HEAD |
@@ -146,6 +154,10 @@ jobs:
 
           Setup is not signed yet, so Windows SmartScreen may warn: choose
           **More info**, then **Run anyway**.
+
+          **KatnaMail.msix** is the same build packaged for the Microsoft
+          Store, to upload in Partner Center. It is not signed and does
+          not install by double-clicking; use KatnaSetup.exe.
           EOF
           # Updated in place, never deleted and created again, as arch-latest:
           # a delete and create left arch-latest a draft (every download 404),
@@ -175,6 +187,7 @@ jobs:
           # Setup first and the manifest last, so the manifest never names
           # a Setup that is not there yet.
           gh release upload "$tag" --clobber KatnaSetup.exe
+          if [[ -f KatnaMail.msix ]]; then gh release upload "$tag" --clobber KatnaMail.msix; fi
           gh release upload "$tag" --clobber katna-update.json
           # Earlier builds' files.
           gh api "$api/releases/$id/assets" --paginate --jq '.[] | "\(.id) \(.name)"' |

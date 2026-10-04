@@ -48,9 +48,12 @@ pub fn install(file: &Path, sha256: &str) -> Result<(), InstallError> {
         Package::Windows => install_windows(file),
         Package::AppImage => install_appimage(file),
         Package::Tarball => install_tarball(file),
-        Package::Rpm | Package::Snap | Package::Flatpak | Package::Nix | Package::Other => {
-            Err(InstallError::Unsupported)
-        }
+        Package::Rpm
+        | Package::Snap
+        | Package::Flatpak
+        | Package::Nix
+        | Package::MsStore
+        | Package::Other => Err(InstallError::Unsupported),
     }
 }
 
