@@ -36,7 +36,7 @@ use katna_ui::{InputEvent, RichEditor, TextInput};
 use super::apps::App as RailApp;
 use super::keymap::{self, Group, SHORTCUTS};
 use super::settings::{Change, heading};
-use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts};
+use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings};
 use crate::autostart::Start;
 use crate::tabs::{self, Provider};
 use crate::theme::Theme;
@@ -591,15 +591,6 @@ impl MailWindow {
         {
             page.list = true;
         }
-    }
-
-    pub(super) fn show_shortcuts(
-        &mut self,
-        _: &ShowShortcuts,
-        window: &mut Window,
-        cx: &mut Context<Self>,
-    ) {
-        self.open_settings_page(Section::Shortcuts, window, cx);
     }
 
     fn page_section(&mut self, section: Section, window: &mut Window, cx: &mut Context<Self>) {
@@ -3631,12 +3622,20 @@ fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> 
 
 /// A key as a keycap; `off` when single keys are turned off.
 fn key_chip(id: impl Into<gpui::ElementId>, label: String, off: bool, th: &Theme) -> Stateful<Div> {
-    div()
+    key_cap(label, off, th)
         .id(id)
         .group("key-chip")
-        .h(px(28.0))
-        .pl(px(10.0))
         .pr(px(6.0))
+        .cursor_pointer()
+        .hover(|s| s.border_color(rgba(th.text_faint)))
+}
+
+/// A key as Settings > Shortcuts and Help > Keyboard shortcuts show it:
+/// struck through while single keys are `off`.
+pub(super) fn key_cap(label: String, off: bool, th: &Theme) -> Div {
+    div()
+        .h(px(28.0))
+        .px(px(10.0))
         .flex()
         .flex_row()
         .items_center()
@@ -3648,8 +3647,6 @@ fn key_chip(id: impl Into<gpui::ElementId>, label: String, off: bool, th: &Theme
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(if off { th.text_faint } else { th.text }))
         .when(off, |d| d.line_through())
-        .cursor_pointer()
-        .hover(|s| s.border_color(rgba(th.text_faint)))
         .child(label)
 }
 
