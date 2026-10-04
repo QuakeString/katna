@@ -2569,7 +2569,7 @@ impl MailWindow {
             }
             item
         };
-        let width = EDITOR_WIDTH.min(unpx(window.viewport_size().width) - 32.0);
+        let width = EDITOR_WIDTH.min(self.room_width() - 32.0);
         let pictures = self.render_note_pictures(width, th, cx);
         let remind = editor
             .remind_at
@@ -2582,9 +2582,7 @@ impl MailWindow {
             .relative()
             .when(inline, |d| d.w_full().max_w(px(EDITOR_WIDTH)))
             .when(!inline, |d| {
-                d.w(px(
-                    EDITOR_WIDTH.min(unpx(window.viewport_size().width) - 32.0)
-                ))
+                d.w(px(EDITOR_WIDTH.min(self.room_width() - 32.0)))
             })
             .max_h(px(vh * 0.7))
             .flex()

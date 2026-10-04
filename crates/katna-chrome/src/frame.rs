@@ -365,23 +365,36 @@ impl WindowChrome {
     /// The width the content gets: the window's surface less the shadow,
     /// resize margins and border that the frame draws around it.
     pub fn inner_width(&self, window: &Window) -> f32 {
-        let width = unpx(window.viewport_size().width);
+        let [_, right, _, left] = self.insets(window);
+        (unpx(window.viewport_size().width) - left - right).max(0.0)
+    }
+
+    /// The height the content gets, as [`WindowChrome::inner_width`] the width.
+    pub fn inner_height(&self, window: &Window) -> f32 {
+        let [top, _, bottom, _] = self.insets(window);
+        (unpx(window.viewport_size().height) - top - bottom).max(0.0)
+    }
+
+    /// How far in from each edge of the window's surface the content
+    /// starts (top, right, bottom, left): the shadow or resize margin and
+    /// the border the frame draws on an edge that is not tiled.
+    fn insets(&self, window: &Window) -> [f32; 4] {
         let Decorations::Client { tiling } = window.window_decorations() else {
-            return width;
+            return [0.0; 4];
         };
-        let full = self.env.borrow().full_client_frame();
-        if !full && tiling.top && tiling.right && tiling.bottom && tiling.left {
-            return width;
-        }
-        let inset = if full {
+        let inset = if self.env.borrow().full_client_frame() {
             self.tokens(window).shadow_inset
         } else {
             RESIZE_HANDLE
         };
-        // The margin and the border on an edge that is not tiled.
         let border = self.border_width();
         let edge = |tiled: bool| if tiled { 0.0 } else { inset + border };
-        (width - edge(tiling.left) - edge(tiling.right)).max(0.0)
+        [
+            edge(tiling.top),
+            edge(tiling.right),
+            edge(tiling.bottom),
+            edge(tiling.left),
+        ]
     }
 
     /// The radius of the content's bottom left and bottom right corners
