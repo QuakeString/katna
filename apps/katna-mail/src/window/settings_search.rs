@@ -197,6 +197,12 @@ const ENTRIES: &[Entry] = &[
         "unified all accounts tabs shared combined categories",
     ),
     entry(
+        Section::Inbox,
+        "settings-unified-accounts",
+        "settings-unified-accounts-detail",
+        "unified all accounts hide leave out exclude account",
+    ),
+    entry(
         Section::Accounts,
         "accounts-folder-pane",
         "accounts-folder-pane-detail",
