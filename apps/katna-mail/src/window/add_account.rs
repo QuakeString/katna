@@ -1198,11 +1198,8 @@ impl MailWindow {
             .max_h(px((vh - 112.0).max(240.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(
                 div()
                     .id("add-account-body")
@@ -1320,7 +1317,7 @@ impl MailWindow {
                     .gap(px(12.0))
                     .children(tiles),
             )
-            .children(error.map(|error| error_line(error, th)))
+            .children(error.map(|error| self.error_line(error, th)))
             .into_any_element()
     }
 
@@ -1448,7 +1445,7 @@ impl MailWindow {
                 cx,
             )))
             .child(show_password)
-            .children(error.map(|error| error_line(error, th)))
+            .children(error.map(|error| self.error_line(error, th)))
             .children(stages)
             .when(!dialog.busy, |d| d.children(password_help))
             .children(sign_in_instead.map(|provider| {
@@ -1563,7 +1560,7 @@ impl MailWindow {
                 window,
                 cx,
             )))
-            .children(error.map(|error| error_line(error, th)))
+            .children(error.map(|error| self.error_line(error, th)))
             .into_any_element()
     }
 
@@ -1597,7 +1594,7 @@ impl MailWindow {
                     )),
             )
             .child(hint(tr!("add-account-browser-hint"), th))
-            .children(error.map(|error| error_line(error, th)))
+            .children(error.map(|error| self.error_line(error, th)))
             .into_any_element()
     }
 
@@ -1714,7 +1711,7 @@ impl MailWindow {
                 )
                 .child(div().flex().child(control))
                 .children(match &linking {
-                    Some(Linking::Failed(err)) => Some(error_line(err.clone(), th)),
+                    Some(Linking::Failed(err)) => Some(self.error_line(err.clone(), th)),
                     _ => None,
                 })
         });
@@ -2116,7 +2113,6 @@ impl MailWindow {
                 .child(self.account_ring(
                     &account.address,
                     self.person_avatar(&name, &account.address, 32.0),
-                    32.0,
                     th,
                 ))
                 .child(
@@ -2171,7 +2167,7 @@ impl MailWindow {
                     .tooltip(tip(tr!("settings"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.account_menu = false;
-                        this.open_settings_page(super::settings_page::Section::General, window, cx);
+                        this.open_settings_here(window, cx);
                     })),
             )
             .child(language)
@@ -2242,7 +2238,8 @@ impl MailWindow {
                 .child(add)
                 .with_animation(
                     "account-menu",
-                    Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                        .with_easing(gpui::ease_out_quint()),
                     |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
                 )
                 .into_any_element()
@@ -2433,19 +2430,22 @@ fn stage(id: &'static str, text: String, at: Stage, th: &Theme) -> AnyElement {
         .into_any_element()
 }
 
-fn error_line(error: String, th: &Theme) -> AnyElement {
-    div()
-        .mt(px(8.0))
-        .flex()
-        .flex_row()
-        .items_start()
-        .gap(px(8.0))
-        .text_size(px(12.0))
-        .line_height(px(16.0))
-        .text_color(rgba(th.error))
-        .child(icon("info", th.error, 16.0))
-        .child(div().flex_1().min_w_0().child(error))
-        .into_any_element()
+impl MailWindow {
+    /// Why adding the account failed, in words that can be copied.
+    fn error_line(&self, error: String, th: &Theme) -> AnyElement {
+        div()
+            .mt(px(8.0))
+            .flex()
+            .flex_row()
+            .items_start()
+            .gap(px(8.0))
+            .text_size(px(12.0))
+            .line_height(px(16.0))
+            .text_color(rgba(th.error))
+            .child(icon("info", th.error, 16.0))
+            .child(self.copyable(error, th).flex_1().min_w_0())
+            .into_any_element()
+    }
 }
 
 fn section_title(text: String, th: &Theme) -> AnyElement {
@@ -2513,7 +2513,7 @@ fn progress_bar(th: &Theme) -> AnyElement {
                 .bg(rgba(th.accent))
                 .with_animation(
                     "add-account-progress",
-                    Animation::new(Duration::from_millis(1300)).repeat(),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(1300))).repeat(),
                     |bar, t| bar.left(relative(lerp(-0.4, 1.0, t))),
                 ),
         )

@@ -14,7 +14,7 @@
 
 use std::cell::Cell;
 use std::rc::Rc;
-use std::time::Duration;
+use std::time::Instant;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, ElementId, FontWeight, KeyDownEvent,
@@ -22,6 +22,7 @@ use gpui::{
     ease_out_quint, point, prelude::*, rgba,
 };
 use katna_ui::px;
+use katna_ui::tokens::duration;
 use katna_ui::unpx;
 
 use katna_i18n::tr;
@@ -64,9 +65,27 @@ pub(super) struct ContextMenu {
     height: Cell<f32>,
     /// On a phone, a chat bubble's menu rises as a sheet.
     sheet: Sheet,
+    /// When it began to fade out, after it closed. It stays drawn,
+    /// fading and out of reach, until the fade ends.
+    closing: Option<Instant>,
+}
+
+impl Clone for ContextMenu {
+    /// What a closed menu leaves behind to fade. Its sheet starts fresh.
+    fn clone(&self) -> Self {
+        ContextMenu {
+            what: self.what.clone(),
+            at: self.at,
+            open: self.open,
+            height: self.height.clone(),
+            sheet: Sheet::new(),
+            closing: self.closing,
+        }
+    }
 }
 
 /// What a right-click menu is for.
+#[derive(Clone)]
 enum MenuFor {
     /// Line `ix` of the mail list.
     Mail {
@@ -91,6 +110,7 @@ impl ContextMenu {
             open: None,
             height: Cell::new(0.0),
             sheet: Sheet::rising(),
+            closing: None,
         }
     }
 
@@ -185,7 +205,7 @@ impl MailWindow {
     /// Closes the menu; returns the Calendar thing it was for and where
     /// it opened.
     pub(super) fn take_calendar_target(&mut self) -> Option<(CalTarget, Point<Pixels>)> {
-        let menu = self.context_menu.take()?;
+        let menu = self.take_context_menu()?;
         match menu.what {
             MenuFor::Calendar(target) => Some((target, menu.at)),
             MenuFor::Mail { .. } | MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(..) => {
@@ -195,9 +215,26 @@ impl MailWindow {
     }
 
     pub(super) fn close_context_menu(&mut self, cx: &mut Context<Self>) {
-        if self.context_menu.take().is_some() {
+        if self.take_context_menu().is_some() {
             cx.notify();
         }
+    }
+
+    /// The right-click menu, unless it is closed and fading out.
+    pub(super) fn open_context_menu_ref(&self) -> Option<&ContextMenu> {
+        self.context_menu.as_ref().filter(|m| m.closing.is_none())
+    }
+
+    fn open_context_menu_mut(&mut self) -> Option<&mut ContextMenu> {
+        self.context_menu.as_mut().filter(|m| m.closing.is_none())
+    }
+
+    /// Closes the menu and returns it. What stays behind fades out
+    /// (`motion` FAST), then goes.
+    pub(super) fn take_context_menu(&mut self) -> Option<ContextMenu> {
+        let menu = self.open_context_menu_mut()?;
+        menu.closing = Some(Instant::now());
+        Some(menu.clone())
     }
 
     /// The ticked lines if the clicked one is ticked, else the clicked one.
@@ -215,7 +252,7 @@ impl MailWindow {
 
     /// Closes the menu; returns the mail list line it was for.
     fn take_context_line(&mut self) -> Option<(usize, EntryKey)> {
-        self.context_menu.take().and_then(|m| m.line())
+        self.take_context_menu().and_then(|m| m.line())
     }
 
     fn context_act(&mut self, act: Act, cx: &mut Context<Self>) {
@@ -228,7 +265,7 @@ impl MailWindow {
 
     /// Opens the snooze menu where the right-click menu was.
     fn context_snooze(&mut self, cx: &mut Context<Self>) {
-        let Some(menu) = self.context_menu.take() else {
+        let Some(menu) = self.take_context_menu() else {
             return;
         };
         let Some((_, key)) = menu.line() else {
@@ -249,7 +286,7 @@ impl MailWindow {
 
     /// Opens submenu `sub` of the right-click menu, or closes the open one.
     fn open_context_sub(&mut self, sub: Option<Sub>, cx: &mut Context<Self>) {
-        let Some(menu) = &mut self.context_menu else {
+        let Some(menu) = self.open_context_menu_mut() else {
             return;
         };
         if menu.open == sub {
@@ -284,7 +321,7 @@ impl MailWindow {
     /// Escape: closes the open submenu before the menu. Returns whether it
     /// did.
     pub(super) fn context_menu_back(&mut self, cx: &mut Context<Self>) -> bool {
-        match &mut self.context_menu {
+        match self.open_context_menu_mut() {
             Some(menu) if menu.open.is_some() => {
                 menu.open = None;
                 if self.folder_pick.as_ref().map(|p| p.from) == Some(PickFrom::Context) {
@@ -298,17 +335,31 @@ impl MailWindow {
     }
 
     pub(super) fn render_context_menu(
-        &self,
+        &mut self,
         th: &Theme,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        // A closed menu fades out, then goes.
+        let fade = katna_ui::motion::time(duration::FAST);
+        let closing = self.context_menu.as_ref().and_then(|m| m.closing);
+        if let Some(since) = closing {
+            if since.elapsed() >= fade || cx.reduce_motion() {
+                self.context_menu = None;
+                return None;
+            }
+            window.request_animation_frame();
+        }
         let menu = self.context_menu.as_ref()?;
         // A phone's long press on a chat bubble: the menu rises from the
         // bottom, its rows tall enough for a finger.
         if let MenuFor::Bubble(id, file) = menu.what
             && self.layout.shape.is_phone()
         {
+            // The sheet sinks on its own.
+            if closing.is_some() {
+                return None;
+            }
             let rows = self.bubble_menu_rows(id, file, SHEET_ITEM_HEIGHT, th, cx);
             let body = div()
                 .pb(px(PADDING))
@@ -450,12 +501,31 @@ impl MailWindow {
                                     },
                                 ))
                                 .children(rows.els)
-                                .with_animation(
-                                    id,
-                                    Animation::new(Duration::from_millis(140))
-                                        .with_easing(ease_out_quint()),
-                                    |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
-                                ),
+                                .map(|d| match closing {
+                                    // Out of reach while it fades.
+                                    Some(since) => {
+                                        let t = (since.elapsed().as_secs_f32()
+                                            / fade.as_secs_f32())
+                                        .min(1.0);
+                                        d.opacity(1.0 - ease_out_quint()(t))
+                                            .child(
+                                                div()
+                                                    .absolute()
+                                                    .top_0()
+                                                    .left_0()
+                                                    .size_full()
+                                                    .occlude(),
+                                            )
+                                            .into_any_element()
+                                    }
+                                    None => d
+                                        .with_animation(
+                                            id,
+                                            Animation::new(fade).with_easing(ease_out_quint()),
+                                            |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
+                                        )
+                                        .into_any_element(),
+                                }),
                         ),
                     ),
             )
@@ -487,27 +557,32 @@ impl MailWindow {
                 .top_0()
                 .left_0()
                 .size_full()
-                .child(
-                    deferred(
-                        div()
-                            .id("context-scrim")
-                            .absolute()
-                            .top(px(-2000.0))
-                            .left(px(-4000.0))
-                            .w(px(8000.0))
-                            .h(px(6000.0))
-                            .occlude()
-                            .on_mouse_down(MouseButton::Left, close())
-                            .on_mouse_down(
-                                MouseButton::Right,
-                                cx.listener(|this, event: &gpui::MouseDownEvent, window, cx| {
-                                    this.close_context_menu(cx);
-                                    super::popovers::pass_right_press(event, window);
-                                }),
-                            ),
+                // A fading menu lets the window be clicked at once.
+                .when(closing.is_none(), |d| {
+                    d.child(
+                        deferred(
+                            div()
+                                .id("context-scrim")
+                                .absolute()
+                                .top(px(-2000.0))
+                                .left(px(-4000.0))
+                                .w(px(8000.0))
+                                .h(px(6000.0))
+                                .occlude()
+                                .on_mouse_down(MouseButton::Left, close())
+                                .on_mouse_down(
+                                    MouseButton::Right,
+                                    cx.listener(
+                                        |this, event: &gpui::MouseDownEvent, window, cx| {
+                                            this.close_context_menu(cx);
+                                            super::popovers::pass_right_press(event, window);
+                                        },
+                                    ),
+                                ),
+                        )
+                        .with_priority(3),
                     )
-                    .with_priority(3),
-                )
+                })
                 .child(card(key.into(), content, x, card_y, MENU_WIDTH, 4))
                 .children(beside.map(|(sub, rows, sub_x, sub_y)| {
                     card(
@@ -1003,7 +1078,7 @@ impl MailWindow {
                             rh,
                         )
                         .on_click(cx.listener(move |this, _, _, cx| {
-                            this.context_menu = None;
+                            this.take_context_menu();
                             this.mute_sender(sender.clone(), !muted, cx);
                         })),
                     );

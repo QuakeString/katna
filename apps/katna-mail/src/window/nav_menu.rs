@@ -61,7 +61,7 @@ pub(super) fn turning_arrow(id: &'static str, color: u32, size: f32) -> impl Int
         .text_color(rgba(color))
         .with_animation(
             id,
-            Animation::new(Duration::from_millis(900)).repeat(),
+            Animation::new(katna_ui::motion::time(Duration::from_millis(900))).repeat(),
             |arrow, t| arrow.with_transformation(Transformation::rotate(percentage(t))),
         )
 }
@@ -351,7 +351,6 @@ impl MailWindow {
                 .child(div().flex_none().child(self.account_ring(
                     &info.address,
                     self.person_avatar(&name, &info.address, 36.0),
-                    36.0,
                     th,
                 )))
                 .child(
@@ -749,7 +748,8 @@ impl MailWindow {
             )
             .with_animation(
                 ("nav-menu", menu.ix),
-                Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(140)))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
             );
         let close = || {

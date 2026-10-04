@@ -32,9 +32,7 @@ use crate::daemon::Command;
 use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    card_outline, card_shadow, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
-};
+use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, tip, toolbar};
 
 mod chat;
 mod invite;
@@ -852,7 +850,8 @@ impl MailWindow {
                 .child(toggle)
                 .with_animation(
                     ("reader-colors-slot", flips),
-                    Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(220)))
+                        .with_easing(ease_out_quint()),
                     move |d, t| {
                         let shown = if chat { 1.0 - t } else { t };
                         // Out of sight it takes no room, its gap neither.
@@ -918,7 +917,6 @@ impl MailWindow {
             .flex()
             .flex_col()
             .relative()
-            .rounded(px(radius))
             .overflow_hidden()
             .map(|d| {
                 let fill = if self.chat_shown() {
@@ -926,9 +924,8 @@ impl MailWindow {
                 } else {
                     th.pane()
                 };
-                crate::widgets::pane(d, fill, th.surface, radius)
+                crate::widgets::card(d, th, fill, radius, shadow)
             })
-            .shadow(card_shadow(th, shadow))
             .p(px(outline))
             .on_action(cx.listener(Self::reader_back))
             .on_action(cx.listener(Self::select_next))
@@ -1217,10 +1214,10 @@ impl MailWindow {
         self.settle_summary_jump(cx);
         let summary = self.render_summary_card(th, cx);
         let Some(reader) = &self.reader else {
-            return placeholder("", th);
+            return self.placeholder("", th);
         };
         if reader.parts.is_empty() {
-            return placeholder(&tr!("reader-removed"), th);
+            return self.placeholder(tr!("reader-removed"), th);
         }
         let all_expanded = reader.all_expanded();
         let title = div()
@@ -1378,8 +1375,10 @@ impl MailWindow {
                                         .map(|d| self.text_area(d, cx))
                                         .with_animation(
                                             ("open-conversation", key_number(key)),
-                                            Animation::new(Duration::from_millis(280))
-                                                .with_easing(ease_out_quint()),
+                                            Animation::new(katna_ui::motion::time(
+                                                Duration::from_millis(280),
+                                            ))
+                                            .with_easing(ease_out_quint()),
                                             |el, t| el.opacity(t).mt(px(14.0 * (1.0 - t))),
                                         ),
                                 ),
@@ -1726,8 +1725,8 @@ impl MailWindow {
                 _ => ix,
             };
             let mut pieces = self.text.pieces(super::select::DETAILS_PART + slot, th);
-            // Where the contact panel has no room, a click only selects.
-            let panel = self.contact_offered();
+            // Where the contact panel has no room, the card pops over.
+            let panel = !self.layout.shape.is_phone();
             let line = |label: String, value: AnyElement| {
                 div()
                     .flex()
@@ -1772,12 +1771,14 @@ impl MailWindow {
                                     .when(panel, |d| {
                                         d.cursor_pointer().hover(|s| s.text_color(rgba(th.text)))
                                     })
-                                    .on_click(cx.listener(move |this, _, _, cx| {
-                                        // A drag that selected text is not a click.
-                                        if this.text.is_empty() {
-                                            this.show_person(&email, cx);
-                                        }
-                                    }))
+                                    .on_click(cx.listener(
+                                        move |this, e: &gpui::ClickEvent, _, cx| {
+                                            // A drag that selected text is not a click.
+                                            if this.text.is_empty() {
+                                                this.show_person(&email, e.position(), cx);
+                                            }
+                                        },
+                                    ))
                                     .on_mouse_down(
                                         MouseButton::Right,
                                         cx.listener(move |this, _, _, _| {
@@ -1822,7 +1823,8 @@ impl MailWindow {
             self.selectable_body(super::select::DETAILS_PART + slot, details, cx)
                 .with_animation(
                     ("details", ix),
-                    Animation::new(Duration::from_millis(180)).with_easing(ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                        .with_easing(ease_out_quint()),
                     |el, t| el.opacity(t),
                 )
         });
@@ -1933,17 +1935,28 @@ impl MailWindow {
                                 )
                                 .document(doc),
                             ),
-                            None => div().children(blocks.iter().map(|(quoted, text)| {
-                                let (styled, holder) = pieces.piece(text.clone(), Vec::new());
-                                holder
-                                    .when(*quoted, |d| {
-                                        d.pl(px(12.0))
-                                            .border_l_2()
-                                            .border_color(rgba(th.outline))
-                                            .text_color(rgba(th.text_faint))
-                                    })
-                                    .child(styled)
-                            })),
+                            // Addresses written out in plain text open as
+                            // links do.
+                            None => div().children(blocks.iter().enumerate().map(
+                                |(n, (quoted, text))| {
+                                    rich::linked_piece(
+                                        &mut pieces,
+                                        text.clone(),
+                                        &[],
+                                        |d| {
+                                            d.when(*quoted, |d| {
+                                                d.pl(px(12.0))
+                                                    .border_l_2()
+                                                    .border_color(rgba(th.outline))
+                                                    .text_color(rgba(th.text_faint))
+                                            })
+                                        },
+                                        n,
+                                        links.clone(),
+                                        th,
+                                    )
+                                },
+                            )),
                         };
                         self.selectable_body(slot, text, cx)
                     })
@@ -1969,7 +1982,18 @@ impl MailWindow {
                     .flex_none()
                     .flex()
                     .justify_center()
-                    .child(self.person_avatar(&name, &email, 40.0)),
+                    // Their card: in the panel, else popping over here.
+                    .child({
+                        let pick = email.clone();
+                        div()
+                            .id(("part-picture", ix))
+                            .cursor_pointer()
+                            .tooltip(crate::widgets::tip(tr!("chat-show-card"), th))
+                            .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
+                                this.show_person(&pick, e.position(), cx);
+                            }))
+                            .child(self.person_avatar(&name, &email, 40.0))
+                    }),
             )
             .child(turn_fade(
                 div()
@@ -2024,7 +2048,7 @@ impl MailWindow {
             Some(id) => content
                 .with_animation(
                     id,
-                    Animation::new(TURN).with_easing(ease_out_cubic),
+                    Animation::new(katna_ui::motion::time(TURN)).with_easing(ease_out_cubic),
                     move |el, t| {
                         if t >= 1.0 {
                             el
@@ -2188,7 +2212,7 @@ fn turn_fade(el: gpui::Div, turn: Option<SharedString>) -> AnyElement {
         Some(id) => el
             .with_animation(
                 SharedString::from(format!("{id}-text")),
-                Animation::new(TURN).with_easing(ease_out_cubic),
+                Animation::new(katna_ui::motion::time(TURN)).with_easing(ease_out_cubic),
                 |el, t| el.opacity(0.3 + 0.7 * t),
             )
             .into_any_element(),

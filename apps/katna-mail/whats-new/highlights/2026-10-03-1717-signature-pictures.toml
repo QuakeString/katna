@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Pictures in signatures load again"
+text = """
+Pictures from the web, such as the logos in Gmail signatures, now load
+on networks that drop Google's connection early, instead of staying an
+empty box.
+"""

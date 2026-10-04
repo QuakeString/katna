@@ -8,8 +8,8 @@
 mod dates;
 
 use gpui::{
-    AnyElement, Context, Div, Entity, Focusable, FontWeight, Stateful, Subscription, Window,
-    canvas, div, prelude::*, rgba,
+    AnyElement, Context, Div, Entity, Focusable, FontWeight, Subscription, Window, canvas, div,
+    prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_search::contacts::Suggestion;
@@ -20,7 +20,7 @@ use katna_ui::{InputEvent, TextInput};
 use super::compose::address_suggestions;
 use super::{FocusNext, MailWindow};
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon, icon_button, raised, tip};
+use crate::widgets::{CHIP_HEIGHT, choice_chip, filled_button, icon, icon_button, raised, tip};
 use dates::{CustomDates, DateError};
 
 /// Width of a field's label.
@@ -556,9 +556,9 @@ impl MailWindow {
             .iter()
             .enumerate()
             .map(|(ix, exts)| {
-                chip(
+                choice_chip(
                     ("attachment-type", ix),
-                    &exts[0].to_uppercase(),
+                    exts[0].to_uppercase(),
                     types.chosen[ix],
                     th,
                 )
@@ -574,9 +574,9 @@ impl MailWindow {
             })
             .collect();
         chips.push(
-            chip(
+            choice_chip(
                 ("attachment-type", TYPES.len()),
-                &tr!("search-attachment-custom"),
+                tr!("search-attachment-custom"),
                 types.custom,
                 th,
             )
@@ -735,7 +735,7 @@ impl MailWindow {
             .iter()
             .enumerate()
             .map(|(ix, age)| {
-                chip(("within", ix), &within_label(age), ix == within, th)
+                choice_chip(("within", ix), within_label(age), ix == within, th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         if let Some(panel) = &mut this.search_panel {
                             panel.within = ix;
@@ -756,7 +756,7 @@ impl MailWindow {
             div()
                 .relative()
                 .child(
-                    chip(("within", CUSTOM), &label, within == CUSTOM, th).on_click(
+                    choice_chip(("within", CUSTOM), label, within == CUSTOM, th).on_click(
                         cx.listener(|this, _, window, cx| this.open_custom_dates(window, cx)),
                     ),
                 )
@@ -830,7 +830,11 @@ impl MailWindow {
                     .pt(px(8.0))
                     .when(stacked, |d| d.gap(px(8.0)))
                     .items_start()
-                    .child(caption(tr!("search-date-within")).when(!stacked, |d| d.pt(px(4.0))))
+                    .child(
+                        // Centred on the first row of chips.
+                        caption(tr!("search-date-within"))
+                            .when(!stacked, |d| d.pt(px((CHIP_HEIGHT - 20.0) / 2.0))),
+                    )
                     .child(
                         div()
                             .when(stacked, |d| d.w_full())
@@ -851,7 +855,7 @@ impl MailWindow {
                         div()
                             .id("has-attachment")
                             .flex_none()
-                            .h(px(28.0))
+                            .h(px(CHIP_HEIGHT))
                             .flex()
                             .flex_row()
                             .items_center()
@@ -921,34 +925,6 @@ impl MailWindow {
                 .into_any_element(),
         )
     }
-}
-
-/// A chip in a row of choices.
-pub(super) fn chip(
-    id: impl Into<gpui::ElementId>,
-    label: &str,
-    on: bool,
-    th: &Theme,
-) -> Stateful<Div> {
-    div()
-        .id(id)
-        .px(px(10.0))
-        .h(px(28.0))
-        .flex()
-        .items_center()
-        .rounded(px(8.0))
-        .border_1()
-        .border_color(rgba(if on { th.nav_selected } else { th.outline }))
-        .bg(rgba(if on { th.nav_selected } else { th.surface }))
-        .text_color(rgba(if on {
-            th.nav_selected_text
-        } else {
-            th.text_dim
-        }))
-        .text_size(px(13.0))
-        .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
-        .child(label.to_owned())
 }
 
 #[cfg(test)]

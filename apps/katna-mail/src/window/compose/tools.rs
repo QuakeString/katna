@@ -2953,9 +2953,7 @@ impl MailWindow {
             .p(px(24.0))
             .flex()
             .flex_col()
-            .rounded(px(DIALOG_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.menu, DIALOG_RADIUS))
-            .shadow(crate::widgets::elevation(th, 3.0))
+            .map(|d| crate::widgets::dialog(d, th, th.menu))
             .text_color(rgba(th.text))
             .child(div().mb(px(16.0)).text_size(px(20.0)).child(title.into()))
     }

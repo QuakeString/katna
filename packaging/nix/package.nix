@@ -37,8 +37,10 @@ rustPlatform.buildRustPackage {
   ];
 
   # Katna Mail names this version in What's new, and the build's date in
-  # the Update dialog. Nix updates it, so it offers no updates itself.
+  # the Update dialog. Nix updates it: Katna only says a new build is out
+  # and shows the command (katna_core::update::Package::Nix).
   env = {
+    KATNA_PACKAGE = "nix";
     KATNA_VERSION = version;
     KATNA_BUILT = toString built;
   };

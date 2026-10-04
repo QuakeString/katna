@@ -27,6 +27,7 @@ use gpui::{
 };
 use jiff::civil::Date;
 use katna_core::AccountId;
+use katna_core::wildcard;
 use katna_i18n::tr;
 use katna_preview::Kind;
 use katna_store::{LibraryFile, MessageId};
@@ -43,7 +44,7 @@ use super::compose::schedule;
 use crate::data::RowFile;
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button, placeholder, raised, tip};
+use crate::widgets::{icon, icon_button, raised, tip};
 use katna_ui::text_input::{InputEvent, TextInput};
 
 mod drive;
@@ -540,7 +541,16 @@ impl Library {
                 }
                 && self.person.as_ref().is_none_or(|p| *p == file.from_email)
                 && self.time.keeps(found.day)
-                && words.iter().all(|w| found.hay.contains(w.as_str()));
+                && words.iter().all(|w| {
+                    // `*.pdf`, `invoice*2026*`: a pattern for the whole
+                    // name; plain words anywhere in the name, subject or
+                    // sender.
+                    if wildcard::is_pattern(w) {
+                        wildcard::matches(w, &file.name)
+                    } else {
+                        found.hay.contains(w.as_str())
+                    }
+                });
             if !passes {
                 continue;
             }
@@ -1374,9 +1384,9 @@ impl MailWindow {
             _ if self.library.cloud.view.is_some() => {
                 self.render_drive_body(card_width, self.library.columns, pad, th, window, cx)
             }
-            None => placeholder(&tr!("files-loading"), th),
-            Some(Err(err)) => placeholder(err, th),
-            Some(Ok(files)) if files.is_empty() => placeholder(&tr!("files-empty"), th),
+            None => self.placeholder(tr!("files-loading"), th),
+            Some(Err(err)) => self.placeholder(err.clone(), th),
+            Some(Ok(files)) if files.is_empty() => self.placeholder(tr!("files-empty"), th),
             Some(Ok(_)) => self.render_files_body(card_width, room, pad, th, window, cx),
         };
         let menu = if picking {
@@ -1398,7 +1408,10 @@ impl MailWindow {
             .children(menu)
             .with_animation(
                 "files-page-in",
-                Animation::new(std::time::Duration::from_millis(220)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    220,
+                )))
+                .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element()
@@ -1406,7 +1419,7 @@ impl MailWindow {
 
     fn render_files_nav(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.library;
-        let count = |n: usize, on: bool| super::nav::count_pill(n as u64, on, th);
+        let count = |n: usize, on: bool| crate::widgets::count_pill(n as u64, on, th);
         let rule = || {
             div()
                 .flex_none()
@@ -1723,7 +1736,7 @@ impl MailWindow {
                 .child(rule)
         };
         let content = if page.shown.is_empty() {
-            placeholder(&tr!("files-none-match"), th)
+            self.placeholder(tr!("files-none-match"), th)
         } else {
             let files = list(
                 page.state.clone(),
@@ -2615,7 +2628,10 @@ impl MailWindow {
         };
         let panel = div().child(panel).with_animation(
             "files-menu",
-            Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
+            Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                140,
+            )))
+            .with_easing(ease_out_quint()),
             |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
         );
         div()

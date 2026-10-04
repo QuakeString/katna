@@ -20,10 +20,10 @@ use katna_ui::px;
 
 use super::add_account::text_button;
 use super::settings::Change;
-use super::{MailWindow, PANEL_RADIUS, share_ask};
+use super::{MailWindow, share_ask};
 use crate::daemon;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, filled_button, icon};
+use crate::widgets::{filled_button, icon};
 
 /// How long a page takes to slide in.
 const PAGE_IN: Duration = Duration::from_millis(360);
@@ -256,7 +256,7 @@ impl MailWindow {
                     "onboarding-page",
                     step.index() * 3 + katna_form.map_or(0, |c| 1 + c as usize),
                 ),
-                Animation::new(PAGE_IN).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(PAGE_IN)).with_easing(ease_out_quint()),
                 move |el, t| el.opacity(t).ml(px(from * (1.0 - t))),
             )
             .into_any_element()
@@ -282,9 +282,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(28.0))
-            .rounded(px(PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, PANEL_RADIUS))
-            .shadow(elevation(th, 3.0))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .child(step_dots(step, th))
             .child(page);
         // The window as it will be shows through a light, blurred scrim,
@@ -421,7 +419,7 @@ impl MailWindow {
                         .font_weight(FontWeight::MEDIUM)
                         .text_color(rgba(th.error))
                         .child(icon("info", th.error, 20.0))
-                        .child(tr!("onboarding-service-missing")),
+                        .child(self.copyable(tr!("onboarding-service-missing"), th)),
                 )
                 .child(
                     div()
@@ -744,7 +742,7 @@ impl MailWindow {
                     .child(icon("check-circle", th.accent, 36.0))
                     .with_animation(
                         "onboarding-ready",
-                        Animation::new(PAGE_IN).with_easing(ease_out_back),
+                        Animation::new(katna_ui::motion::time(PAGE_IN)).with_easing(ease_out_back),
                         |el, t| el.size(px(64.0 * lerp(0.6, 1.0, t))),
                     ),
             )
@@ -791,7 +789,11 @@ fn step_dots(step: Step, th: &Theme) -> AnyElement {
                 .bg(rgba(if on || done { th.accent } else { th.divider }))
                 .with_spring(
                     ("onboarding-dot", s.index()),
-                    SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                    SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                        1.0
+                    } else {
+                        0.0
+                    }),
                     |el, t: f32| el.w(px(6.0 + 18.0 * t.clamp(0.0, 1.0))),
                 )
         }))

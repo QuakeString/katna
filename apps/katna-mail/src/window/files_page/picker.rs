@@ -42,7 +42,7 @@ use super::{Direction, Found, Sort, Time, Types};
 use crate::data::EntryKey;
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{filled_button, icon, icon_button, placeholder, raised, tip};
+use crate::widgets::{filled_button, icon, icon_button, raised, tip};
 
 /// Cards are at least this wide; the rest of a row is shared out.
 const CARD_MIN: f32 = 132.0;
@@ -806,11 +806,9 @@ impl MailWindow {
         .child(panel)
         .with_animation(
             "files-picker-in",
-            Animation::new(std::time::Duration::from_millis(if cx.reduce_motion() {
-                1
-            } else {
-                220
-            }))
+            Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                if cx.reduce_motion() { 1 } else { 220 },
+            )))
             .with_easing(ease_out_quint()),
             |el, t| el.opacity(t).mt(px(8.0 * (1.0 - t))),
         );
@@ -948,9 +946,11 @@ impl MailWindow {
                 .child(self.files_time_chip(th, cx));
             let picker = self.picker.as_ref()?;
             let content = match &self.library.files {
-                None => placeholder(&tr!("files-loading"), th),
-                Some(Err(err)) => placeholder(err, th),
-                Some(Ok(_)) if picker.shown.is_empty() => placeholder(&tr!("files-none-match"), th),
+                None => self.placeholder(tr!("files-loading"), th),
+                Some(Err(err)) => self.placeholder(err.clone(), th),
+                Some(Ok(_)) if picker.shown.is_empty() => {
+                    self.placeholder(tr!("files-none-match"), th)
+                }
                 Some(Ok(_)) => list(
                     picker.state.clone(),
                     cx.processor(move |this, ix: usize, window, cx| {
@@ -1101,7 +1101,7 @@ impl MailWindow {
                 super::super::nav::side_row_with(("picker-source", n), mark, label, on, th)
                     .when(matches!(source, Source::Drive(_)), |d| d.h(px(44.0)))
                     .when_some(count, |d, c| {
-                        d.child(super::super::nav::count_pill(c as u64, on, th))
+                        d.child(crate::widgets::count_pill(c as u64, on, th))
                     })
                     .on_click(cx.listener(move |this, _, _, cx| this.pick_source(source, cx))),
             );

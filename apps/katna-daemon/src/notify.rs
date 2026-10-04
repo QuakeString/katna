@@ -6,7 +6,8 @@
 //! one notification per account and sync, with Open, Mark as read and
 //! Archive, and for one message Peek (more of it, in the same notification)
 //! and Reply: typed into the notification where the desktop can (§15.1.2),
-//! sent from here after the undo time, else Katna Mail's reply window.
+//! sent from here after the undo time, else Katna Mail's reply window, and
+//! a button that copies a one-time code or opens a verify link (§15.1.3).
 //! Notifications close when their mail is read or leaves the inbox
 //! anywhere, or is muted.
 
@@ -26,6 +27,7 @@ use katna_i18n::tr;
 use katna_notify::{NewMail, Notifier, View, action};
 use katna_platform::sound;
 use katna_store::{FolderRole, MessageFlags, MessageId, ParticipantRole, Store, StoredMessage};
+use katna_sync::mail_actions::{self, LinkKind, Shortcut};
 use katna_sync::quick_reply::{self, Mailbox};
 use zbus::zvariant::Value;
 
@@ -88,6 +90,8 @@ struct Found {
     origin: String,
     mails: Vec<NewMail>,
     messages: Vec<MessageId>,
+    /// One message's code or link.
+    shortcut: Option<Shortcut>,
 }
 
 /// A reply typed into a notification, waiting out the undo time.
@@ -108,6 +112,8 @@ struct Shown {
     /// A new-mail notification, which also closes once its mail is muted
     /// or its folder stops notifying. Reminders stay until read or moved.
     new_mail: bool,
+    /// One message's code or link, which its button copies or opens.
+    shortcut: Option<Shortcut>,
 }
 
 pub(crate) struct NewMailNotices {
@@ -162,40 +168,38 @@ impl NewMailNotices {
     }
 
     /// The sound of `event`, if it plays one.
-    fn sound(&self, event: SoundEvent) -> Option<&'static str> {
+    fn sound(&self, event: SoundEvent) -> Option<String> {
         let sounds = self.sounds.lock().unwrap();
         sounds
             .playing(event)
-            .map(|chosen| sound::resolve(event, chosen))
+            .map(|chosen| sound::resolve(event, &sounds.set, chosen))
     }
 
     /// What the notification server is to play of `sound`: a toast plays
-    /// its own on Windows; elsewhere servers such as Plasma's play none, so
-    /// [`Self::ring`] does.
-    fn server_sound(sound: Option<&'static str>) -> Option<&'static str> {
-        sound.filter(|_| cfg!(windows))
+    /// the Windows sounds itself; elsewhere servers such as Plasma's play
+    /// none, and toasts no others, so [`Self::ring`] does.
+    fn server_sound(sound: &Option<String>) -> Option<&str> {
+        sound.as_deref().filter(|id| sound::toast_plays(id))
     }
 
     /// Plays `sound` for a notification just shown, where the server does
     /// not, unless Do not disturb is on.
-    async fn ring(&self, sound: Option<&'static str>) {
-        if cfg!(windows) {
-            return;
-        }
+    async fn ring(&self, sound: Option<String>) {
         if let Some(id) = sound
+            && !sound::toast_plays(&id)
             && !sound::quiet(&self.connection).await
         {
-            sound::play(id);
+            sound::play(&id);
         }
     }
 
     /// Plays `sound` now, unless Do not disturb is on: for what shows no
     /// notification of its own.
-    async fn play(&self, sound: Option<&'static str>) {
+    async fn play(&self, sound: Option<String>) {
         if let Some(id) = sound
             && !sound::quiet(&self.connection).await
         {
-            sound::play(id);
+            sound::play(&id);
         }
     }
 
@@ -262,6 +266,7 @@ impl NewMailNotices {
                             account,
                             messages: vec![message],
                             new_mail: false,
+                            shortcut: None,
                         },
                     );
                 }
@@ -274,9 +279,14 @@ impl NewMailNotices {
     pub(crate) async fn event_reminder(&self, alarm: Alarm) {
         let sound = self.sound(SoundEvent::Reminders);
         let shown = match alarm.task {
+            None if alarm.note.is_some() => {
+                self.notifier
+                    .note_reminder(&alarm.title, &alarm.lines, Self::server_sound(&sound))
+                    .await
+            }
             Some(_) => {
                 self.notifier
-                    .task_reminder(&alarm.title, &alarm.lines, Self::server_sound(sound))
+                    .task_reminder(&alarm.title, &alarm.lines, Self::server_sound(&sound))
                     .await
             }
             None => {
@@ -285,7 +295,7 @@ impl NewMailNotices {
                         &alarm.title,
                         &alarm.lines,
                         !alarm.join_url.is_empty(),
-                        Self::server_sound(sound),
+                        Self::server_sound(&sound),
                     )
                     .await
             }
@@ -340,6 +350,7 @@ impl NewMailNotices {
                 origin,
                 mails,
                 messages,
+                shortcut,
             })) => match self
                 .notifier
                 .new_mail(
@@ -348,7 +359,7 @@ impl NewMailNotices {
                     View::Short,
                     replies,
                     0,
-                    Self::server_sound(sound),
+                    Self::server_sound(&sound),
                 )
                 .await
             {
@@ -361,6 +372,7 @@ impl NewMailNotices {
                             account,
                             messages,
                             new_mail: true,
+                            shortcut,
                         },
                     );
                 }
@@ -395,7 +407,7 @@ impl NewMailNotices {
         let sound = self.sound(SoundEvent::MailBack);
         match self
             .notifier
-            .reminder(&origin, summary, lines, Self::server_sound(sound))
+            .reminder(&origin, summary, lines, Self::server_sound(&sound))
             .await
         {
             Ok(id) => {
@@ -406,6 +418,7 @@ impl NewMailNotices {
                         account,
                         messages,
                         new_mail: false,
+                        shortcut: None,
                     },
                 );
             }
@@ -434,15 +447,20 @@ impl NewMailNotices {
             .find(|a| a.id == account)
             .map(|a| a.address)
             .unwrap_or_default();
-        let mails = store
-            .messages_by_id(&ids)?
-            .into_iter()
-            .map(new_mail)
-            .collect();
+        let stored = store.messages_by_id(&ids)?;
+        let shortcut = match &stored[..] {
+            [one] => find_shortcut(store, one),
+            _ => None,
+        };
+        let mut mails: Vec<NewMail> = stored.into_iter().map(new_mail).collect();
+        if let [mail] = &mut mails[..] {
+            mail.shortcut = shortcut.as_ref().map(button);
+        }
         Ok(Some(Found {
             origin,
             mails,
             messages: ids,
+            shortcut,
         }))
     }
 
@@ -588,7 +606,7 @@ impl NewMailNotices {
                     match key.as_str() {
                         // Only web links, whatever the event says.
                         action::JOIN if alarm.join_url.starts_with("https://") => {
-                            crate::daemon::open_in_browser(&alarm.join_url).await;
+                            crate::daemon::open_in_browser(&alarm.join_url, token.as_deref()).await;
                         }
                         action::JOIN => {}
                         action::SNOOZE => {
@@ -611,11 +629,12 @@ impl NewMailNotices {
                             }
                         }
                         // The notification itself: the Calendar page, or
-                        // Tasks for a task.
+                        // Tasks for a task, or the note.
                         _ => {
-                            let page = match alarm.task {
-                                Some(task) => format!("tasks:{task}"),
-                                None => "calendar".to_owned(),
+                            let page = match (alarm.task, alarm.note) {
+                                (Some(task), _) => format!("tasks:{task}"),
+                                (_, Some(note)) => format!("notes:{note}"),
+                                _ => "calendar".to_owned(),
                             };
                             crate::mail_app::run(
                                 &notices.connection,
@@ -691,6 +710,32 @@ impl NewMailNotices {
                 // Typing a reply does not close the notification; Plasma
                 // only says the field opened, if anything.
                 Got::Action(_, key) if key == action::INLINE_REPLY => {}
+                // Copying or opening a link leaves the notification and its
+                // mail as they are.
+                Got::Action(id, key) if key == action::COPY_CODE || key == action::OPEN_LINK => {
+                    let shortcut = notices
+                        .shown
+                        .lock()
+                        .unwrap()
+                        .get(&id)
+                        .and_then(|s| s.shortcut.clone());
+                    let token = notices.tokens.lock().unwrap().remove(&id);
+                    tracing::info!(id, key, "notification shortcut");
+                    match shortcut {
+                        Some(Shortcut::Code(code)) => {
+                            let copied = crate::clipboard::copy(&notices.connection, &code).await;
+                            if let Err(err) = notices.notifier.code_copied(&code, copied).await {
+                                tracing::warn!(%err, "could not say that a code was copied");
+                            }
+                        }
+                        // Only ever after a click on the button that names
+                        // where it goes.
+                        Some(Shortcut::Link { url, .. }) => {
+                            crate::daemon::open_in_browser(&url, token.as_deref()).await;
+                        }
+                        None => {}
+                    }
+                }
                 Got::Action(id, key) if key == action::PEEK => {
                     let shown = notices.shown.lock().unwrap().get(&id).cloned();
                     if let Some(shown) = shown {
@@ -788,9 +833,10 @@ impl NewMailNotices {
                     (origin, new_mail(stored), text)
                 })
         };
-        let Some((origin, mail, text)) = found else {
+        let Some((origin, mut mail, text)) = found else {
             return;
         };
+        mail.shortcut = shown.shortcut.as_ref().map(button);
         let replies = self.notifier.takes_replies().await;
         let view = View::Peek { text: &text };
         match self
@@ -971,6 +1017,28 @@ fn original(store: &Store, message: &StoredMessage) -> Option<quick_reply::Origi
     quick_reply::original(&raw)
 }
 
+/// The one-time code or verify link in `message`, when its body is
+/// downloaded.
+fn find_shortcut(store: &Store, message: &StoredMessage) -> Option<Shortcut> {
+    let raw = store.blobs().get(message.blob_hash.as_ref()?).ok()??;
+    mail_actions::shortcut(&raw)
+}
+
+/// The button for `shortcut`.
+fn button(shortcut: &Shortcut) -> katna_notify::Shortcut {
+    match shortcut {
+        Shortcut::Code(code) => katna_notify::Shortcut::Code(code.clone()),
+        Shortcut::Link { kind, domain, .. } => {
+            let domain = domain.clone();
+            match kind {
+                LinkKind::Verify => katna_notify::Shortcut::Verify { domain },
+                LinkKind::Confirm => katna_notify::Shortcut::Confirm { domain },
+                LinkKind::Activate => katna_notify::Shortcut::Activate { domain },
+            }
+        }
+    }
+}
+
 /// `message` as a new-mail notification shows it.
 fn new_mail(message: StoredMessage) -> NewMail {
     let from = message.first(ParticipantRole::From);
@@ -983,6 +1051,7 @@ fn new_mail(message: StoredMessage) -> NewMail {
         sender,
         subject: message.subject,
         preview: message.snippet,
+        shortcut: None,
     }
 }
 

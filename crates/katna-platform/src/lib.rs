@@ -15,6 +15,8 @@ pub mod launcher;
 #[cfg(windows)]
 pub mod mail_handler;
 pub mod mimeapps;
+pub mod motion;
+pub mod shortcuts;
 pub mod sound;
 #[cfg(windows)]
 pub mod toasts;

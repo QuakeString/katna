@@ -87,6 +87,8 @@ impl MailWindow {
             self.open_app(app, cx);
             self.title_from = app;
             self.title_roll.snap(1.0);
+            (self.primary_icon, self.primary_label) = self.primary_button();
+            self.primary_icon_turn.snap(1.0);
         }
     }
 }

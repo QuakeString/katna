@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Menus fade away"
+text = """
+A right-click menu now fades out when it closes, instead of vanishing.
+"""

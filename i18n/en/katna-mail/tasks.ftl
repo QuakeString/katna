@@ -10,8 +10,15 @@ tasks-create = New task
 tasks-all = All tasks
 # Tasks due today and overdue, from every list.
 tasks-today = Today
+# The next fortnight, day by day, from every list.
+tasks-upcoming = Upcoming
 tasks-starred = Starred
+# Every ticked task, by the day it was ticked.
+tasks-completed-view = Completed
 tasks-new-list = Create new list
+# Heading over the labels on tasks (the same labels as on notes); each
+# shows every task with it.
+tasks-labels-heading = Labels
 # Heading over the lists kept on this computer, not in an account.
 tasks-on-this-computer = On this computer
 # The name of the list kept on this computer.
@@ -53,7 +60,18 @@ tasks-title-placeholder = Title
 tasks-add-step = Add a subtask
 tasks-empty = No tasks yet. Add one above.
 tasks-starred-empty = Star a task to see it here.
+tasks-label-empty = No open tasks with this label.
 tasks-today-empty = Nothing due today.
+tasks-completed-empty = Tasks you complete show here.
+# Under each day on Upcoming: $day is the day's name, "Monday".
+tasks-upcoming-add = Add a task for { $day }
+# An overdue task's day on Upcoming: $weekday "Thu", $day "1 Oct".
+tasks-upcoming-overdue-day = { $weekday } { $day }
+# On the quiet line under a task on Upcoming.
+tasks-from-mail-quiet = From mail
+tasks-from-note-quiet = From note
+# A task's subtasks on Upcoming: how many are done, of how many ("2/5").
+tasks-steps-done = { $done }/{ $count }
 # Under the Today heading: $weekday is the day's name, $day the day and month.
 tasks-today-date = { $weekday }, { $day }
 # The section of Today with tasks whose day has passed.
@@ -64,6 +82,12 @@ tasks-completed = { $count ->
    *[other] Completed ({ $count })
 }
 tasks-list-options = List options
+# A list's ⋮ menu: how its tasks are sorted, as in Google Tasks.
+tasks-sort-by = Sort by
+tasks-sort-my-order = My order
+tasks-sort-date = Date
+tasks-sort-starred = Starred recently
+tasks-sort-title = Title
 tasks-rename-list = Rename list
 tasks-delete-list = Delete list
 tasks-mark-done = Mark completed
@@ -87,6 +111,18 @@ tasks-note-gone = That note isn't here any more.
 # The title of a task made from a mail with no subject.
 tasks-no-subject = (no subject)
 
+## Several tasks selected (Ctrl+click, Shift+click)
+
+tasks-selected = { $count ->
+    [one] { $count } selected
+   *[other] { $count } selected
+}
+tasks-select-clear = Clear selection
+tasks-select-move = Move to list
+tasks-select-date = Set date
+# Set date's choice for the first day of next week.
+tasks-next-week = Next week
+
 ## The details dialog
 
 tasks-notes-placeholder = Add details
@@ -109,6 +145,18 @@ tasks-remind-on-time = At the time
 tasks-remind-morning = On the day, { $time }
 tasks-remind-hour-before = An hour before
 tasks-remind-day-before = The day before
+# The chip that opens the label picker in a task's details, and the
+# picker's heading.
+tasks-label-add = Add label
+tasks-label-task = Label task
+# The paper clip in a task's details, and the file chooser's button.
+tasks-files-attach = Attach files
+tasks-files-pick = Attach
+tasks-file-open = Open
+tasks-file-remove = Remove file
+# Beside a file To Do or the CalDAV server would not take (too large, or
+# the service keeps no files): it stays with the task on this computer.
+tasks-file-here = Only on this computer
 tasks-cancel = Cancel
 tasks-save = Save
 # $text: what was typed; $example: a time written the usual way, like "4:00 PM".
@@ -128,6 +176,16 @@ tasks-toast-done = Task completed
 # A repeating task was ticked off and comes back on its next day ("5 Oct").
 tasks-toast-next = Done. Next one on { $date }
 tasks-toast-deleted = Task deleted
+tasks-files-added = { $count ->
+    [one] File attached
+   *[other] { $count } files attached
+}
+# $name: the file's name.
+tasks-file-removed = Removed “{ $name }”
+# $names: the files' names; $limit: the largest file a task takes ("25 MB").
+tasks-files-left-out = Not attached: { $names }. A task takes files up to { $limit }, not folders.
+# A task's file could not be read (removed meanwhile).
+tasks-file-missing = That file isn't here any more.
 tasks-toast-added = { $count ->
     [one] Added to Tasks
    *[other] { $count } tasks added
@@ -141,3 +199,28 @@ tasks-toast-moved = Moved to { $list }
 tasks-toast-placed = Task moved
 # A task dragged to another day or time on the Calendar.
 tasks-toast-rescheduled = Task rescheduled
+# Tasks given another day: dragged on Upcoming, or Set date on several.
+tasks-toast-rescheduled-several = { $count ->
+    [one] Task rescheduled
+   *[other] { $count } tasks rescheduled
+}
+tasks-toast-done-several = { $count ->
+    [one] Task completed
+   *[other] { $count } tasks completed
+}
+tasks-toast-open-several = { $count ->
+    [one] Task marked uncompleted
+   *[other] { $count } tasks marked uncompleted
+}
+tasks-toast-starred = { $count ->
+    [one] Task starred
+   *[other] { $count } tasks starred
+}
+tasks-toast-unstarred = { $count ->
+    [one] Star removed
+   *[other] Stars removed from { $count } tasks
+}
+tasks-toast-deleted-several = { $count ->
+    [one] Task deleted
+   *[other] { $count } tasks deleted
+}

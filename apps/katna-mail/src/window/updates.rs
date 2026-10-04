@@ -11,11 +11,11 @@
 
 use futures_lite::StreamExt;
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, FocusHandle, FontWeight, KeyDownEvent,
-    MouseButton, SharedString, Task, Window, div, prelude::*, relative, rgba,
+    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FocusHandle, FontWeight,
+    KeyDownEvent, MouseButton, SharedString, Task, Window, div, prelude::*, relative, rgba,
 };
 use jiff::tz::TimeZone;
-use katna_core::update::Manifest;
+use katna_core::update::{Manifest, Package};
 use katna_dbus::zbus::Connection;
 use katna_dbus::{UpdateStatus, update_state as state};
 use katna_i18n::tr;
@@ -254,7 +254,7 @@ impl MailWindow {
                         this.updates.problem = Some(tr!("about-update-cancelled"));
                     }
                     Err(InstallError::Unsupported) => {
-                        this.updates.problem = Some(tr!("about-update-unsupported"));
+                        this.updates.problem = Some(tr!("about-update-not-self-updating"));
                     }
                     Err(InstallError::Failed(error)) => {
                         this.updates.problem = Some(tr!("about-update-failed", error = error));
@@ -306,6 +306,20 @@ impl MailWindow {
             .as_ref()
             .filter(|d| offered && d.version == status.version);
 
+        // For a package Katna does not install itself: the command that
+        // does, in place of the Update button.
+        let command = if busy {
+            None
+        } else {
+            match status.state.as_str() {
+                state::READY => updater::command(status.file.as_ref()),
+                state::AVAILABLE if !Package::current().downloads() => {
+                    katna_core::update::update_command(Package::current(), "")
+                }
+                _ => None,
+            }
+        };
+
         // What happens now, and what comes next.
         let version = status.version.as_str();
         let (glyph, tone, title, detail): (&str, u32, String, Option<String>) = if busy {
@@ -313,7 +327,10 @@ impl MailWindow {
                 "download",
                 th.accent,
                 tr!("about-update-installing", version = version),
-                Some(tr!("about-update-installing-detail")),
+                Some(by_password(
+                    tr!("about-update-installing-detail"),
+                    tr!("about-update-installing-detail-windows"),
+                )),
             )
         } else {
             match status.state.as_str() {
@@ -321,7 +338,7 @@ impl MailWindow {
                     "info",
                     th.accent,
                     tr!("update-dialog-title"),
-                    Some(tr!("about-update-unsupported")),
+                    Some(tr!("about-update-not-self-updating")),
                 ),
                 state::CHECKING => ("refresh", th.accent, tr!("about-update-checking"), None),
                 // The emoji stays out of the translation, so every
@@ -352,7 +369,10 @@ impl MailWindow {
                     "download",
                     th.accent,
                     tr!("about-update-ready", version = version),
-                    Some(tr!("about-update-confirm-detail")),
+                    Some(by_password(
+                        tr!("about-update-confirm-detail"),
+                        tr!("about-update-confirm-detail-windows"),
+                    )),
                 ),
                 state::FAILED => (
                     "warning",
@@ -368,6 +388,11 @@ impl MailWindow {
                 ),
                 _ => ("refresh", th.accent, tr!("about-update-not-checked"), None),
             }
+        };
+        let detail = if command.is_some() {
+            Some(tr!("update-dialog-command-detail"))
+        } else {
+            detail
         };
         let problem = self.updates.problem.clone().filter(|_| !busy);
 
@@ -392,29 +417,37 @@ impl MailWindow {
                     .bg(rgba(fade(tone, if th.dark { 0.2 } else { 0.1 })))
                     .child(icon(glyph, tone, 26.0)),
             )
-            .child(
-                div()
+            .child({
+                // The title, versions and any error can be copied.
+                let mut pieces = self.ui_pieces(th);
+                let lines = div()
                     .flex_1()
                     .min_w_0()
                     .flex()
                     .flex_col()
                     .gap(px(2.0))
-                    .child(div().text_size(px(20.0)).line_height(px(28.0)).child(title))
+                    .child(
+                        pieces
+                            .words(title)
+                            .text_size(px(20.0))
+                            .line_height(px(28.0)),
+                    )
                     .children(detail.map(|detail| {
-                        div()
+                        pieces
+                            .words(detail)
                             .text_size(px(14.0))
                             .line_height(px(21.0))
                             .text_color(rgba(th.text_dim))
-                            .child(detail)
                     }))
                     .children(problem.map(|problem| {
-                        div()
+                        pieces
+                            .words(problem)
                             .text_size(px(14.0))
                             .line_height(px(21.0))
                             .text_color(rgba(th.error))
-                            .child(problem)
-                    })),
-            );
+                    }));
+                self.ui_selectable(lines, &pieces)
+            });
 
         // While checking or installing, a bar that runs to and fro where the
         // download's progress goes.
@@ -424,6 +457,36 @@ impl MailWindow {
                 .px(px(24.0))
                 .pt(px(16.0))
                 .child(working_bar(th))
+        });
+        let command_box = command.clone().map(|command| {
+            div()
+                .flex_none()
+                .px(px(24.0))
+                .pt(px(16.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(8.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .px(px(12.0))
+                        .py(px(8.0))
+                        .rounded(px(8.0))
+                        .bg(rgba(th.chip))
+                        .font_family("monospace")
+                        .text_size(px(13.0))
+                        .line_height(px(19.0))
+                        .child(command.clone()),
+                )
+                .child(
+                    outlined_button("update-copy", tr!("update-dialog-copy"), th)
+                        .focus_ring(th)
+                        .on_click(move |_, _, cx| {
+                            cx.write_to_clipboard(ClipboardItem::new_string(command.clone()));
+                        }),
+                )
         });
         let progress = (status.state == state::DOWNLOADING && !busy).then(|| {
             let share = if status.total > 0 {
@@ -691,6 +754,7 @@ impl MailWindow {
             .flex_col()
             .child(header)
             .children(working)
+            .children(command_box)
             .children(progress)
             .child(versions)
             .children(whats_new_section)
@@ -707,7 +771,7 @@ impl MailWindow {
                 .focus_ring(th)
                 .on_click(cx.listener(|this, _, window, cx| this.close_update_dialog(window, cx)))
         });
-        let next = if busy {
+        let next = if busy || command.is_some() {
             None
         } else {
             match status.state.as_str() {
@@ -834,7 +898,24 @@ fn checked_ago(checked: i64) -> Option<String> {
 fn source() -> Option<String> {
     match katna_core::update::Package::current() {
         katna_core::update::Package::Arch => Some(tr!("update-dialog-source-arch")),
+        katna_core::update::Package::Windows => Some(tr!("update-dialog-source-windows")),
+        katna_core::update::Package::AppImage => Some(tr!("update-dialog-source-appimage")),
+        katna_core::update::Package::Tarball => Some(tr!("update-dialog-source-tarball")),
+        katna_core::update::Package::Rpm => Some(tr!("update-dialog-source-rpm")),
+        katna_core::update::Package::Snap => Some(tr!("update-dialog-source-snap")),
+        katna_core::update::Package::Flatpak => Some(tr!("update-dialog-source-flatpak")),
+        katna_core::update::Package::Nix => Some(tr!("update-dialog-source-nix")),
         katna_core::update::Package::Other => None,
+    }
+}
+
+/// `password` for the Arch package, which asks for the password to
+/// install, else `no_password` (Windows, the AppImage, a tarball).
+fn by_password(password: String, no_password: String) -> String {
+    if Package::current() == Package::Arch {
+        password
+    } else {
+        no_password
     }
 }
 
@@ -861,7 +942,10 @@ fn working_bar(th: &Theme) -> impl IntoElement {
                 .bg(rgba(th.accent))
                 .with_animation(
                     "update-working",
-                    Animation::new(std::time::Duration::from_millis(2400)).repeat(),
+                    Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                        2400,
+                    )))
+                    .repeat(),
                     |bar, t| {
                         let swing = (1.0 - (t * std::f32::consts::TAU).cos()) / 2.0;
                         bar.left(relative(lerp(0.0, 0.6, swing)))

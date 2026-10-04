@@ -26,7 +26,6 @@ use super::{
 use katna_core::AccountKind;
 use katna_i18n::tr;
 
-use crate::format;
 use crate::sidebar::{self, Role, Unified};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
@@ -189,34 +188,18 @@ pub(super) fn side_row_with(
         )
 }
 
-/// A side line's count, in a tight, faint pill of the line's text color:
-/// Mail's folders and the Files page's kinds and accounts. On the open
-/// line the pill is lighter than the line's grey.
-pub(super) fn count_pill(count: u64, on: bool, th: &Theme) -> gpui::Div {
-    let bg = if on {
-        th.row_selected_pill
-    } else {
-        fade(th.text, 0.08)
-    };
-    div().flex_none().pl(px(8.0)).child(
-        div()
-            .h(px(18.0))
-            .px(px(6.0))
-            .flex()
-            .items_center()
-            .rounded_full()
-            .bg(rgba(bg))
-            .text_size(px(12.0))
-            .child(format::thousands(count)),
-    )
-}
-
 /// The line the app's name rolls through on the top bar.
 const TITLE_LINE: f32 = 28.0;
 
 /// The hover circle of a button in a phone's search pill's rounded end,
 /// as wide as the account picture at the other end.
 const PILL_END_CIRCLE: f32 = 38.0;
+/// How far a sliding drawer's color reaches back over the rail's edge,
+/// past the spring's overshoot and the list's shadow there.
+const DRAWER_APRON: f32 = 12.0;
+/// How far a sliding drawer's color reaches up over the top bar, under the
+/// list's shadow there, clear of the search bar.
+const DRAWER_TOP_APRON: f32 = 8.0;
 
 /// The width of the Upload button's arrow, beside its words.
 const UPLOAD_ARROW: f32 = 44.0;
@@ -424,7 +407,7 @@ impl MailWindow {
         }
         // Each page's own action, in the same button and place.
         let mail = self.app == super::RailApp::Mail;
-        let (icon_name, label) = self.primary_button();
+        let label = self.primary_button().1;
         // While a drive is open the button uploads, with an arrow beside
         // it for files or a folder.
         let upload = self.drive_upload_here();
@@ -484,12 +467,7 @@ impl MailWindow {
                     Ripple::new("compose-ripple", rgba(th.ripple)).rounded(super::COMPOSE_RADIUS),
                 )
                 .child(self.tour_mark(Spot::Compose))
-                .child(
-                    div()
-                        .flex_none()
-                        .pl(px(16.0))
-                        .child(icon(icon_name, th.compose_text, 24.0)),
-                )
+                .child(div().flex_none().pl(px(16.0)).child(self.primary_icon(th)))
                 .child(
                     div()
                         .flex_none()
@@ -497,8 +475,7 @@ impl MailWindow {
                         .opacity(dock * dock)
                         .text_size(px(super::COMPOSE_TEXT_SIZE))
                         .font_weight(FontWeight::MEDIUM)
-                        .whitespace_nowrap()
-                        .child(label),
+                        .child(self.primary_label()),
                 )
                 .when(arrow > 0.5, |d| {
                     d.child(
@@ -805,7 +782,6 @@ impl MailWindow {
                     .child(self.account_ring(
                         &account.address,
                         self.render_rolling_avatar(32.0),
-                        32.0,
                         th,
                     ))
                     .child(self.tour_mark(Spot::Account))
@@ -870,6 +846,8 @@ impl MailWindow {
         // A drawer (opened with the menu on a phone or tablet) slides in
         // whole; the desktop's panel unfolds.
         let slides = !shape.is_desktop() && !self.nav_peek;
+        // A drawer's color reaches back over the rail's edge.
+        let apron = if drawer { DRAWER_APRON } else { 0.0 };
         let width = if slides {
             self.drawer_width()
         } else {
@@ -905,9 +883,17 @@ impl MailWindow {
             .bottom(px(if drawer { 0.0 } else { 16.0 * float + gap }))
             .map(|d| {
                 if slides {
-                    d.left(px(-width * (1.0 - t))).w(px(width))
+                    // Its apron reaches back over the rail's edge, under
+                    // the list's shadow there. As the spring overshoots,
+                    // the apron stretches instead of moving, so its edge
+                    // and shadow never come into view.
+                    let over = width * (t - 1.0).max(0.0);
+                    d.left(px(-width * (1.0 - t).max(0.0)))
+                        .w(px(width + DRAWER_APRON + over))
+                        .pl(px(DRAWER_APRON + over))
                 } else {
-                    d.w(px(width * t)).opacity(t.min(1.0))
+                    // Unfolding from a hover, a drawer's apron does the same.
+                    d.w(px(width * t + apron)).pl(px(apron)).opacity(t.min(1.0))
                 }
             })
             .flex()
@@ -941,15 +927,29 @@ impl MailWindow {
             .h_full()
             .w(px(NAV_WIDTH * reserve))
             .children(self.render_scrim(scrim_width, cx))
+            // Covers the list's shadow above the drawer; apart from the
+            // drawer, so the drawer's own shadow stays below the top bar.
+            .when(drawer && float > 0.0, |d| {
+                d.child(
+                    div()
+                        .absolute()
+                        .top(px(-DRAWER_TOP_APRON))
+                        .left(px(-apron))
+                        .w(px(apron + width * t))
+                        .h(px(DRAWER_TOP_APRON))
+                        .bg(rgba(th.page))
+                        .when(!slides, |d| d.opacity(t.min(1.0))),
+                )
+            })
             // Clips the drawer as it slides out from the rail's edge.
             .child(
                 div()
                     .absolute()
                     .top_0()
-                    .left_0()
+                    .left(px(-apron))
                     .bottom_0()
                     // Room for the panel's shadow.
-                    .w(px(width + 24.0))
+                    .w(px(width + 24.0 + apron))
                     .overflow_hidden()
                     .child(panel)
                     .children((!drawer && float > 0.0).then(|| self.render_notch(gap, float, th))),
@@ -1414,13 +1414,19 @@ impl MailWindow {
                         )),
                 )
             })
-            .when(unread > 0, |d| d.child(count_pill(unread, selected, th)))
+            .when(unread > 0, |d| {
+                d.child(crate::widgets::count_pill(unread, selected, th))
+            })
             .children(chevron);
         // Named by the line rather than its place, which moves as lines
         // above fold or open.
         let row = row.with_spring(
             ElementId::Name(format!("nav-selected:{key}").into()),
-            SpringAnimation::new(motion::SMOOTH).to(if selected { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(if selected {
+                1.0
+            } else {
+                0.0
+            }),
             {
                 let bg = th.row_selected;
                 move |row, s: f32| {
@@ -1795,7 +1801,11 @@ fn turning_chevron(key: SharedString, expanded: bool, color: u32) -> AnyElement 
         .text_color(rgba(color))
         .with_spring(
             ElementId::Name(format!("nav-turn:{key}").into()),
-            SpringAnimation::new(motion::SMOOTH).to(if expanded { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(if expanded {
+                1.0
+            } else {
+                0.0
+            }),
             |arrow, t: f32| {
                 arrow.with_transformation(Transformation::rotate(radians(FRAC_PI_2 * t)))
             },

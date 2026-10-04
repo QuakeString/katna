@@ -29,7 +29,7 @@ use katna_ui::px;
 use super::{MailWindow, OpenSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button_colored, placeholder, tip};
+use crate::widgets::{icon, icon_button_colored, tip};
 
 pub(super) const APP_RAIL_WIDTH: f32 = 72.0;
 
@@ -221,6 +221,29 @@ impl MailWindow {
         } else {
             self.app.primary()
         }
+    }
+
+    /// The big button's icon, turning from the last page's into this
+    /// one's: the same on the rail's square, the pill and a phone's button.
+    pub(super) fn primary_icon(&self, th: &crate::theme::Theme) -> gpui::AnyElement {
+        crate::widgets::morph_icon(
+            self.primary_icon_from,
+            self.primary_icon,
+            self.primary_icon_turn.value(),
+            th.compose_text,
+            24.0,
+        )
+    }
+
+    /// The big button's word, rolling from the last page's into this
+    /// one's in a box as wide as the button gives it this frame.
+    pub(super) fn primary_label(&self) -> gpui::AnyElement {
+        crate::widgets::morph_label(
+            &self.primary_label_from,
+            &self.primary_label,
+            self.primary_icon_turn.value(),
+            self.primary_label_width,
+        )
     }
 
     pub(super) fn primary_action(&mut self, window: &mut Window, cx: &mut Context<Self>) {
@@ -443,7 +466,8 @@ impl MailWindow {
                         ))
                         .with_spring(
                             ("app-pill", app as usize),
-                            SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                            SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                                .to(if on { 1.0 } else { 0.0 }),
                             {
                                 let bg = th.nav_selected;
                                 move |el, s: f32| {
@@ -474,7 +498,8 @@ impl MailWindow {
                         .child(app.label())
                         .with_spring(
                             ("app-label", app as usize),
-                            SpringAnimation::new(motion::SLIDE).to(if labels { 1.0 } else { 0.0 }),
+                            SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                                .to(if labels { 1.0 } else { 0.0 }),
                             |el, s: f32| {
                                 let s = s.clamp(0.0, 1.0);
                                 el.h(px(16.0 * s)).opacity(s)
@@ -601,17 +626,7 @@ impl MailWindow {
                     .text_color(rgba(th.text))
                     .child(tr!("app-page-title", app = app.label())),
             )
-            .child(
-                div()
-                    .px(px(10.0))
-                    .py(px(2.0))
-                    .rounded_full()
-                    .bg(rgba(th.chip))
-                    .text_size(px(12.0))
-                    .font_weight(FontWeight::MEDIUM)
-                    .text_color(rgba(th.text_dim))
-                    .child(tr!("app-coming-soon")),
-            )
+            .child(crate::widgets::tag(tr!("app-coming-soon"), th).font_weight(FontWeight::MEDIUM))
             .child(
                 div()
                     .max_w(px(420.0))
@@ -623,8 +638,10 @@ impl MailWindow {
             )
             .with_animation(
                 ("app-page", self.app as usize),
-                gpui::Animation::new(std::time::Duration::from_millis(260))
-                    .with_easing(gpui::ease_out_quint()),
+                gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    260,
+                )))
+                .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(12.0 * (1.0 - t))),
             )
             .into_any_element()
@@ -634,13 +651,13 @@ impl MailWindow {
     pub(super) fn render_contacts(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let people = match &self.people {
             None | Some(People::Loading) => {
-                return placeholder(&tr!("app-contacts-loading"), th);
+                return self.placeholder(tr!("app-contacts-loading"), th);
             }
-            Some(People::Failed(err)) => return placeholder(err, th),
+            Some(People::Failed(err)) => return self.placeholder(err.clone(), th),
             Some(People::Loaded(people)) => people.clone(),
         };
         if people.is_empty() {
-            return placeholder(&tr!("app-contacts-empty"), th);
+            return self.placeholder(tr!("app-contacts-empty"), th);
         }
         let header = div()
             .flex_none()

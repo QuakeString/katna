@@ -11,7 +11,7 @@ use async_channel::Receiver;
 use futures_lite::FutureExt;
 use katna_core::{AccountId, AccountKind};
 use katna_dbus::NoteItem;
-use katna_store::{Mode, Note, Store};
+use katna_store::{Mode, Note, NotePicture, Store};
 
 use super::{CommandError, Daemon, Notice, unix_now};
 
@@ -32,6 +32,11 @@ const MAX_NOTE_BODY: usize = 1_000_000;
 const MAX_NOTE_LABELS: usize = 50;
 /// The longest label, in characters (Keep's limit).
 const MAX_LABEL: usize = 50;
+/// The most pictures in one note.
+const MAX_NOTE_PICTURES: usize = 50;
+/// The most bytes of pictures in one note (a mail server takes a message
+/// of about 25 MB).
+const MAX_NOTE_PICTURE_BYTES: usize = 20_000_000;
 
 impl Daemon {
     /// Saves a note (a new one for ID 0). Returns its ID.
@@ -59,6 +64,14 @@ impl Daemon {
                 "a note has at most {MAX_NOTE_LABELS} labels"
             )));
         }
+        if note.pictures.len() > MAX_NOTE_PICTURES
+            || note.pictures.iter().map(|p| p.data.len()).sum::<usize>() > MAX_NOTE_PICTURE_BYTES
+        {
+            return Err(CommandError::InvalidArgs(format!(
+                "a note's pictures are at most {} MB",
+                MAX_NOTE_PICTURE_BYTES / 1_000_000
+            )));
+        }
         let account_id = (note.account != 0).then_some(note.account);
         if let Some(account) = account_id
             && self
@@ -84,14 +97,35 @@ impl Daemon {
                 .filter(|l| !l.is_empty())
                 .collect(),
             link: Some(note.link).filter(|l| !l.is_empty()),
+            remind_at: (note.remind_at > 0).then_some(note.remind_at),
             ..Note::default()
         };
+        let pictures: Option<Vec<NotePicture>> = note.pictures_set.then(|| {
+            note.pictures
+                .into_iter()
+                .map(|p| NotePicture {
+                    cid: p.cid,
+                    name: p.name,
+                    mime: p.mime,
+                    width: p.width,
+                    height: p.height,
+                    data: p.data,
+                })
+                .collect()
+        });
         let old_account = if saved.id == 0 {
             None
         } else {
             self.store().note(saved.id)?.and_then(|n| n.account_id)
         };
-        let id = self.store().save_note(&saved)?;
+        let id = {
+            let mut store = self.store();
+            let id = store.save_note_with(&saved, pictures.as_deref())?;
+            if saved.id == 0 {
+                store.purge_note_versions(unix_now())?;
+            }
+            id
+        };
         tracing::debug!(id, "note saved");
         self.notes_changed(account_id);
         if old_account != account_id {

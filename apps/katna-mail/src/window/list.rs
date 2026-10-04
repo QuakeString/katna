@@ -6,19 +6,19 @@
 
 use katna_ui::WindowDrag;
 use std::rc::Rc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, BoxShadow, Context, Div, FontWeight, HighlightStyle,
-    ListOffset, SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, anchored,
-    deferred, div, ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*,
-    relative, rgba,
+    Animation, AnimationExt, AnyElement, Context, Div, FontWeight, HighlightStyle, ListOffset,
+    SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, anchored, deferred, div,
+    ease_out_quint, list, point, prelude::*, relative, rgba,
 };
 use katna_core::config::Density;
 use katna_i18n::tr;
 use katna_ui::Ripple;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
+use katna_ui::tokens::duration;
 
 /// The lift of the line under the pointer: critically damped and slower
 /// than other hover feedback, so it rises and settles without a jolt.
@@ -49,8 +49,8 @@ use crate::format;
 use crate::sidebar::Role;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    TOOLBAR_HEIGHT, card_outline, card_shadow, elevation, icon, icon_button, icon_button_colored,
-    menu, menu_item, menu_item_icon, placeholder, tip, toolbar,
+    TOOLBAR_HEIGHT, card_outline, elevation, icon, icon_button, icon_button_colored, menu,
+    menu_item, menu_item_icon, tip, toolbar,
 };
 use gpui::DragMoveEvent;
 
@@ -181,6 +181,32 @@ impl MailWindow {
         }
     }
 
+    /// How much attachment chips under a line add to its height.
+    fn chips_extra(&self, has_chips: bool) -> f32 {
+        match (has_chips, self.stacked()) {
+            (false, _) => 0.0,
+            (true, false) => CHIPS_LINE,
+            (true, true) => CHIPS_LINE - 4.0,
+        }
+    }
+
+    /// The height line `ix` is drawn at, chips included.
+    fn line_height_at(&mut self, ix: usize) -> f32 {
+        let Some(entry) = self.entries.get(ix).copied() else {
+            return self.row_height();
+        };
+        let folder = self.listed_folder();
+        let has_chips = match &mut self.mail {
+            Ok(mail) => mail
+                .rows(&[entry], folder, self.show_recipients)
+                .pop()
+                .flatten()
+                .is_some_and(|r| !r.files.is_empty()),
+            Err(_) => false,
+        };
+        self.row_height() + self.chips_extra(has_chips)
+    }
+
     /// Keeps the line just opened where it was on screen while the reading
     /// pane opens beside the list, or scrolls just enough to show it whole
     /// when it no longer fits there. The lines may change height (two
@@ -210,16 +236,22 @@ impl MailWindow {
             }
             return;
         }
-        let height = px(self.row_height());
-        let top = keep.top.min(view.size.height - height).max(px(0.0));
-        // Whole lines above it, and how much of the one above those shows.
-        let above = (top / height).ceil() as usize;
-        let ix = keep.ix.saturating_sub(above);
-        let offset_in_item = if keep.ix >= above {
-            height * above as f32 - top
-        } else {
-            px(0.0)
-        };
+        let height = px(self.line_height_at(keep.ix));
+        let mut left = keep.top.min(view.size.height - height).max(px(0.0));
+        // Walk up the lines above it, each at its own height (lines with
+        // attachment chips are taller), to the one cut by the list's top.
+        let mut ix = keep.ix;
+        let mut offset_in_item = px(0.0);
+        while left > px(0.0) && ix > 0 {
+            ix -= 1;
+            let above = px(self.line_height_at(ix));
+            if above >= left {
+                offset_in_item = above - left;
+                left = px(0.0);
+            } else {
+                left -= above;
+            }
+        }
         self.list_state.scroll_to(ListOffset {
             item_ix: ix,
             offset_in_item,
@@ -308,7 +340,6 @@ impl MailWindow {
             .flex()
             .flex_col()
             .relative()
-            .rounded(px(radius))
             .overflow_hidden()
             .map(|d| {
                 let fill = if reading_context && self.chat_shown() {
@@ -316,9 +347,8 @@ impl MailWindow {
                 } else {
                     th.pane()
                 };
-                crate::widgets::pane(d, fill, th.surface, radius)
+                crate::widgets::card(d, th, fill, radius, shadow)
             })
-            .shadow(card_shadow(th, shadow))
             .p(px(outline))
             // GPUI clips to rectangles, so the lines stop short of the
             // rounded bottom corners rather than showing square ones.
@@ -978,6 +1008,34 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Notes a popup menu that closed since the last frame, however it
+    /// closed, so `with_menu` fades it out (`motion` FAST), and forgets
+    /// it once faded. Move to and Label as are left out: their folder
+    /// search is gone once they close.
+    pub(super) fn track_menu_fade(&mut self, cx: &mut Context<Self>) {
+        let fade = katna_ui::motion::time(duration::FAST);
+        if self.menu != self.menu_was {
+            if let Some(was) = self.menu_was
+                && !matches!(was, Menu::MoveTo | Menu::LabelAs)
+                && !cx.reduce_motion()
+            {
+                self.menu_fade = Some((was, Instant::now()));
+                // One more frame once it has faded, to take it away.
+                cx.spawn(async move |this, cx| {
+                    cx.background_executor().timer(fade).await;
+                    this.update(cx, |_, cx| cx.notify()).ok();
+                })
+                .detach();
+            }
+            self.menu_was = self.menu;
+        }
+        if let Some((which, since)) = self.menu_fade
+            && (self.menu == Some(which) || since.elapsed() >= fade)
+        {
+            self.menu_fade = None;
+        }
+    }
+
     /// Puts `anchor` in a box that also holds `which` menu when it is open,
     /// drawn over everything, with a scrim that closes it on a click
     /// elsewhere.
@@ -989,9 +1047,32 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let open = self.menu == Some(which);
+        let fading = !open && self.menu_fade.is_some_and(|(m, _)| m == which);
         div()
             .relative()
             .child(anchor)
+            // Closed: it fades where it was, out of reach.
+            .when(fading, |d| {
+                let items = self
+                    .menu_items(which, th, cx)
+                    .child(div().absolute().top_0().left_0().size_full().occlude());
+                d.child(
+                    deferred(
+                        anchored()
+                            .offset(point(px(0.0), px(4.0)))
+                            .snap_to_window_with_margin(px(8.0))
+                            .child(
+                                items.with_animation(
+                                    ("menu-out", which as usize),
+                                    Animation::new(katna_ui::motion::time(duration::FAST))
+                                        .with_easing(ease_out_quint()),
+                                    |el, t| el.opacity(1.0 - t),
+                                ),
+                            ),
+                    )
+                    .with_priority(2),
+                )
+            })
             .when(open, |d| {
                 let items = self.menu_items(which, th, cx);
                 d.child(
@@ -1026,8 +1107,10 @@ impl MailWindow {
                                 div().occlude().child(
                                     items.with_animation(
                                         ("menu", which as usize),
-                                        Animation::new(Duration::from_millis(160))
-                                            .with_easing(ease_out_quint()),
+                                        Animation::new(katna_ui::motion::time(
+                                            Duration::from_millis(160),
+                                        ))
+                                        .with_easing(ease_out_quint()),
                                         |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
                                     ),
                                 ),
@@ -2113,7 +2196,7 @@ impl MailWindow {
                 },
                 None => String::new(),
             };
-            return placeholder(&text, th);
+            return self.placeholder(text, th);
         }
         self.update_visible();
         // Read the lines on show in one go; each line then finds its row.
@@ -2185,15 +2268,9 @@ impl MailWindow {
         let line_height = self.row_height();
         let stacked = self.stacked();
         let has_chips = row.as_ref().is_some_and(|r| !r.files.is_empty());
-        let height = line_height
-            + match (has_chips, stacked) {
-                (false, _) => 0.0,
-                (true, false) => CHIPS_LINE,
-                (true, true) => CHIPS_LINE - 4.0,
-            };
+        let height = line_height + self.chips_extra(has_chips);
         let scrolling = self.list_scrolling.is_some();
         let hovered = !scrolling && self.hovered == Some(ix);
-        let under_hovered = !scrolling && ix > 0 && self.hovered == Some(ix - 1);
         let cursor = self.selected == Some(ix);
         let checked = self.checked.contains(&key);
         let open = self.split() && self.reader.as_ref().is_some_and(|r| r.key == key);
@@ -2267,33 +2344,6 @@ impl MailWindow {
             }))
             .when(self.mail_dragged(key, cx), |d| d.opacity(0.45))
             .child(Ripple::new(("row-ripple", ix), rgba(th.ripple)).rounded(0.0))
-            // The shadow of the lifted row above, which this row would
-            // otherwise paint over.
-            .child(
-                div()
-                    .absolute()
-                    .top_0()
-                    .left_0()
-                    .right_0()
-                    .h(px(4.0))
-                    .with_spring(
-                        ("row-drop", ix),
-                        SpringAnimation::new(ROW_LIFT).to(if under_hovered { 1.0 } else { 0.0 }),
-                        {
-                            let shadow = th.shadow;
-                            move |el, s: f32| {
-                                el.bg(linear_gradient(
-                                    180.0,
-                                    linear_color_stop(
-                                        rgba(fade(shadow, 0.3 * s.clamp(0.0, 1.0))),
-                                        0.0,
-                                    ),
-                                    linear_color_stop(rgba(fade(shadow, 0.0)), 1.0),
-                                ))
-                            }
-                        },
-                    ),
-            )
             // The keyboard cursor: a bar that grows from the middle.
             .child(
                 div()
@@ -2304,7 +2354,8 @@ impl MailWindow {
                     .bg(rgba(if keys_here { th.accent } else { th.text_faint }))
                     .with_spring(
                         ("row-cursor", ix),
-                        SpringAnimation::new(motion::SLIDE).to(if cursor { 1.0 } else { 0.0 }),
+                        SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                            .to(if cursor { 1.0 } else { 0.0 }),
                         move |el, s: f32| {
                             let s = s.clamp(0.0, 1.0);
                             el.top(px(height / 2.0 * (1.0 - s))).h(px(height * s))
@@ -2312,36 +2363,24 @@ impl MailWindow {
                     ),
             );
         let lifted = |base: Stateful<Div>| {
-            let shadow = th.shadow;
-            // The line takes a tint of the accent color; shadows barely
-            // show on dark pages, so there it also lightens.
+            // The line takes a flat, crisp tint of the accent color, with no
+            // shadow; dark pages lighten it a touch first so it shows.
             let lit = if th.dark {
-                mix(mix(background, 0xffffffff, 0.05), th.accent, 0.12)
+                mix(mix(background, 0xffffffff, 0.05), th.accent, 0.15)
             } else {
-                mix(background, th.accent, 0.07)
+                mix(background, th.accent, 0.11)
             };
             base.with_spring(
                 ("row-lift", ix),
-                SpringAnimation::new(ROW_LIFT).to(if hovered { 1.0 } else { 0.0 }),
+                SpringAnimation::new(katna_ui::motion::scaled(ROW_LIFT)).to(if hovered {
+                    1.0
+                } else {
+                    0.0
+                }),
                 move |el, s: f32| {
                     let s = s.clamp(0.0, 1.0);
                     if s > 0.001 {
-                        el.bg(rgba(mix(background, lit, s))).shadow(vec![
-                            BoxShadow {
-                                color: rgba(fade(shadow, 0.5 * s)).into(),
-                                offset: point(px(0.0), px(1.0)),
-                                blur_radius: px(2.0),
-                                spread_radius: px(0.0),
-                                inset: false,
-                            },
-                            BoxShadow {
-                                color: rgba(fade(shadow, 0.25 * s)).into(),
-                                offset: point(px(0.0), px(1.0 * s)),
-                                blur_radius: px(3.0),
-                                spread_radius: px(0.0),
-                                inset: false,
-                            },
-                        ])
+                        el.bg(rgba(mix(background, lit, s)))
                     } else {
                         el
                     }
@@ -2379,7 +2418,11 @@ impl MailWindow {
             div()
                 .with_spring(
                     (id, ix),
-                    SpringAnimation::new(ROW_LIFT).to(if rest { 0.0 } else { 1.0 }),
+                    SpringAnimation::new(katna_ui::motion::scaled(ROW_LIFT)).to(if rest {
+                        0.0
+                    } else {
+                        1.0
+                    }),
                     move |el, s: f32| el.opacity(OFF_REST + (1.0 - OFF_REST) * s.clamp(0.0, 1.0)),
                 )
                 .child(icon(name, th.text_dim, size))
@@ -2407,7 +2450,8 @@ impl MailWindow {
                 div()
                     .with_spring(
                         ("row-check-rest", ix),
-                        SpringAnimation::new(ROW_LIFT).to(if rest && !checked { 0.0 } else { 1.0 }),
+                        SpringAnimation::new(katna_ui::motion::scaled(ROW_LIFT))
+                            .to(if rest && !checked { 0.0 } else { 1.0 }),
                         move |el, s: f32| {
                             el.opacity(OFF_REST + (1.0 - OFF_REST) * s.clamp(0.0, 1.0))
                         },
@@ -2566,36 +2610,25 @@ impl MailWindow {
                 )
             })
             // The account of a line of the whole unified inbox: its dot
-            // after the names, with its name where the line has room.
+            // after the names; hovering the dot names the account.
             .children(account.map(|(color, name, address)| {
-                // Hovering the dot names the account.
-                let dot = div()
+                div()
                     .id(("row-account", ix))
                     .flex_none()
+                    .ml(px(1.0))
                     .size(px(15.0))
                     .flex()
                     .items_center()
                     .justify_center()
                     .tooltip(tip(
                         if name.eq_ignore_ascii_case(&address) {
-                            name.clone()
+                            name
                         } else {
                             format!("{name}\n{address}")
                         },
                         th,
                     ))
-                    .child(div().size(px(7.0)).rounded_full().bg(rgba(color)));
-                div()
-                    .flex_none()
-                    .pl(px(1.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(1.0))
-                    .text_size(px(12.0))
-                    .text_color(rgba(th.text_faint))
-                    .child(dot)
-                    .when(stacked, |d| d.child(name))
+                    .child(div().size(px(7.0)).rounded_full().bg(rgba(color)))
             }));
         // The quick actions fade in over the date.
         let actions = hovered.then(|| {
@@ -2603,7 +2636,8 @@ impl MailWindow {
                 .child(self.hover_actions(ix, key, row.unread, row.pinned, th, cx))
                 .with_animation(
                     ("row-actions", ix),
-                    Animation::new(ACTIONS_IN).with_easing(ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(ACTIONS_IN))
+                        .with_easing(ease_out_quint()),
                     |el, t| el.opacity(t),
                 )
                 .into_any_element()
@@ -3040,7 +3074,7 @@ impl MailWindow {
                         .children(items)
                         .with_animation(
                             ("files-menu", ix),
-                            Animation::new(Duration::from_millis(160))
+                            Animation::new(katna_ui::motion::time(Duration::from_millis(160)))
                                 .with_easing(ease_out_quint()),
                             |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
                         ),
@@ -3134,7 +3168,8 @@ impl MailWindow {
             })
             .with_animation(
                 ("row-actions", ix),
-                Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(140)))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element()
@@ -3149,7 +3184,8 @@ fn fade_in(body: AnyElement, seq: usize) -> AnyElement {
         .child(body)
         .with_animation(
             ("card", seq),
-            Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+            Animation::new(katna_ui::motion::time(Duration::from_millis(220)))
+                .with_easing(ease_out_quint()),
             // From half-drawn, so the card never shows a blank frame.
             |el, t| el.opacity(0.5 + 0.5 * t),
         )
@@ -3220,7 +3256,8 @@ fn first_sync_placeholder(th: &Theme) -> AnyElement {
                         .bg(rgba(th.accent))
                         .with_animation(
                             "first-sync",
-                            Animation::new(Duration::from_millis(1300)).repeat(),
+                            Animation::new(katna_ui::motion::time(Duration::from_millis(1300)))
+                                .repeat(),
                             |bar, t| bar.left(px(-64.0 + 224.0 * t)),
                         ),
                 ),

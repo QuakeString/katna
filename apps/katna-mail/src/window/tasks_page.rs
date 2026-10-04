@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The Tasks page (`docs/ARCHITECTURE.md` §18.1), laid out like Google
-//! Tasks: on the left, Create, All tasks, Starred and every list grouped
-//! by account; on the right, each list as a card side by side, or one
-//! list or the starred tasks alone. A task is a round tick, its title,
+//! Tasks: on the left, Create, All tasks, Today, Upcoming, Starred,
+//! Completed and every list grouped by account; on the right, each list as
+//! a card side by side, or one list or one of those views alone. A task is a round tick, its title,
 //! notes, due day and a star; its steps sit under it. Done tasks fold
 //! into "Completed" at the bottom of each list.
 //!
@@ -17,13 +17,20 @@ use gpui::{
     FontWeight, KeyDownEvent, MouseButton, Pixels, Point, ScrollHandle, SharedString, Subscription,
     Task, Window, anchored, deferred, div, ease_out_quint, prelude::*, rgba,
 };
+use katna_core::config::TaskSort;
 use katna_core::{AccountId, AccountKind};
+use katna_dav::quick_task::TypedTask;
 use katna_i18n::tr;
 use katna_store::tasks::Task as TaskItem;
 use katna_ui::px;
 use katna_ui::text_input::{InputEvent, TextInput};
 
 mod details;
+mod files;
+mod labels;
+mod several;
+mod sort;
+mod views;
 
 use super::MailWindow;
 use super::account_status::{AccountStatus, Of, Say};
@@ -31,7 +38,8 @@ use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::tasks::{Board, Column, TaskCommand, TaskEdit};
 use crate::theme::{Theme, fade};
-use crate::widgets::{ScaledEdge, icon, placeholder, raised, tip};
+use crate::widgets::{ScaledEdge, icon, raised, tip};
+use katna_ui::tokens::{radius, space, text};
 
 /// The width of the lists on the left.
 const NAV_WIDTH: f32 = 256.0;
@@ -49,8 +57,14 @@ pub(super) enum View {
     All,
     /// Due today or overdue, from every list.
     Today,
+    /// Overdue, then the next fortnight day by day, from every list.
+    Upcoming,
     Starred,
+    /// Every ticked task, by the day it was ticked.
+    Completed,
     List(i64),
+    /// Every task with the label [`TasksPage::label`], from every list.
+    Label,
 }
 
 /// A task typed into a list's "Add a task" row.
@@ -80,10 +94,26 @@ struct Naming {
     _subscription: Subscription,
 }
 
-/// A list's ⋮ menu, or a task's right-click menu.
+/// A list's ⋮ menu, a task's right-click menu, or one of the select
+/// bar's.
 enum Menu {
-    List { list: i64, at: Point<Pixels> },
-    Task { id: i64, at: Point<Pixels> },
+    List {
+        list: i64,
+        at: Point<Pixels>,
+    },
+    Task {
+        id: i64,
+        at: Point<Pixels>,
+    },
+    /// The select bar's Move to list.
+    MoveSelected {
+        at: Point<Pixels>,
+    },
+    /// The select bar's Set date, showing `month` on its grid.
+    DateSelected {
+        at: Point<Pixels>,
+        month: jiff::civil::Date,
+    },
 }
 
 /// Changes sent but not read back yet, shown at once.
@@ -95,6 +125,30 @@ struct Pending {
 
 /// A task with the list it is in.
 type Placed<'a> = (&'a Column, &'a TaskItem);
+
+/// How a task's row shows, beyond the task itself.
+#[derive(Debug, Clone, Copy, Default)]
+struct RowLook<'a> {
+    /// The list's name among the chips, in views over every list; on a
+    /// [`Quiet`] line, in it.
+    list: Option<&'a str>,
+    /// A quiet line under the title in place of the notes and chips.
+    quiet: Option<Quiet>,
+    /// It drags onto another day (Upcoming), steps too.
+    drag: bool,
+    /// Its star shows unstarred too, not only under the pointer.
+    star_shown: bool,
+}
+
+/// What the quiet line under a title says, as Upcoming and Completed
+/// show it: "From mail · 10:00 · 2/5 · Work".
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Quiet {
+    /// Under a day's heading: its time; overdue, its day too.
+    Upcoming { overdue: bool },
+    /// When it was ticked off.
+    Completed,
+}
 
 /// The Tasks page's state, kept while other apps show.
 #[derive(Default)]
@@ -136,12 +190,23 @@ pub(super) struct TasksPage {
     reveal_new: Option<HashSet<i64>>,
     /// A task being dragged over the lists, while it is.
     drag: Option<Drag>,
+    /// The tasks ticked with Ctrl+click and Shift+click, for the select
+    /// bar.
+    selected: HashSet<i64>,
+    /// The task Shift+click selects from: the last one clicked.
+    anchor: Option<i64>,
+    /// How each list is sorted (`Config::tasks`), by list.
+    sorts: HashMap<i64, TaskSort>,
+    /// The label [`View::Label`] shows.
+    label: String,
 }
 
 /// A task being dragged: the lists open a gap where it would land, as in
 /// Google Tasks. Only while GPUI has a [`TaskDragged`] under way.
 struct Drag {
     id: i64,
+    /// Every task dragged: `id`, and the others selected with it.
+    ids: Vec<i64>,
     /// Its list, and its slot there among the open tasks shown.
     from: (i64, usize),
     /// The height of its row with its steps: the gap it leaves and opens.
@@ -171,6 +236,9 @@ const GAP_MS: u64 = 150;
 #[derive(Clone)]
 struct TaskDragged {
     id: i64,
+    /// Every task dragged, in the order shown: `id`, and the others
+    /// selected with it.
+    ids: Vec<i64>,
     list: i64,
     title: String,
     th: Theme,
@@ -189,8 +257,36 @@ impl Render for TaskDragged {
             .text_size(px(14.0))
             .line_height(px(20.0))
             .text_color(rgba(th.text))
-            .truncate()
-            .child(self.title.clone())
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(space::S3))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .truncate()
+                    .child(self.title.clone()),
+            )
+            // Several tasks: how many, in a badge.
+            .when(self.ids.len() > 1, |d| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .h(px(space::S6))
+                        .min_w(px(space::S6))
+                        .px(px(space::S3))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded_full()
+                        .bg(rgba(th.accent))
+                        .text_color(rgba(th.on_accent))
+                        .text_size(px(text::CAPTION))
+                        .font_weight(FontWeight::BOLD)
+                        .child(katna_i18n::format::number(self.ids.len() as u64)),
+                )
+            })
     }
 }
 
@@ -239,6 +335,15 @@ impl TasksPage {
             .unwrap_or(task.starred)
     }
 
+    /// What the page shows, once read.
+    pub(super) fn board(&self) -> Option<&Board> {
+        self.board.as_ref().and_then(|b| b.as_ref().ok())
+    }
+
+    fn board_mut(&mut self) -> Option<&mut Board> {
+        self.board.as_mut().and_then(|b| b.as_mut().ok())
+    }
+
     pub(super) fn columns(&self) -> &[Column] {
         match &self.board {
             Some(Ok(board)) => &board.columns,
@@ -281,11 +386,26 @@ impl TasksPage {
         katna_dav::todo::next_due(&task.due, &task.repeat, today())
     }
 
-    /// The open tasks shown, in order, for keys to move through.
+    /// The tasks shown, in order, for keys and Shift+click to move
+    /// through: the open ones, or the ticked ones on Completed.
     fn shown(&self) -> Vec<i64> {
+        match self.view {
+            View::Upcoming => {
+                let (overdue, days) = self.upcoming(today());
+                return overdue
+                    .into_iter()
+                    .chain(days.into_iter().flat_map(|(_, tasks)| tasks))
+                    .map(|(_, t)| t.id)
+                    .collect();
+            }
+            View::Completed => {
+                return self.completed().into_iter().map(|(_, t)| t.id).collect();
+            }
+            _ => {}
+        }
         let mut shown = Vec::new();
         for column in self.shown_columns() {
-            for task in &column.tasks {
+            for task in self.ordered(column) {
                 if !self.done(task) && self.parent_open(task) && self.found(task) {
                     shown.push(task.id);
                 }
@@ -294,6 +414,12 @@ impl TasksPage {
         match self.view {
             View::Starred => {
                 shown.retain(|id| self.task(*id).is_some_and(|t| self.starred(t)));
+            }
+            View::Label => {
+                shown.retain(|id| {
+                    self.task(*id)
+                        .is_some_and(|t| t.labels.contains(&self.label))
+                });
             }
             View::Today => {
                 let (overdue, due) = self.due_now(today());
@@ -304,7 +430,7 @@ impl TasksPage {
                     .map(|(_, t)| t.id)
                     .collect();
             }
-            View::All | View::List(_) => {}
+            View::All | View::List(_) | View::Upcoming | View::Completed => {}
         }
         shown
     }
@@ -355,14 +481,16 @@ impl TasksPage {
         }
     }
 
-    /// The open tasks (not steps) list `list` shows, in order, less task
-    /// `except`: the slots a dragged task lands between.
-    fn slots(&self, list: i64, except: i64) -> Vec<i64> {
+    /// The open tasks (not steps) list `list` shows, in order, less the
+    /// tasks `except`: the slots dragged tasks land between.
+    fn slots(&self, list: i64, except: &[i64]) -> Vec<i64> {
         self.columns()
             .iter()
             .filter(|c| c.list.id == list)
             .flat_map(|c| c.tasks.iter())
-            .filter(|t| t.parent.is_none() && t.id != except && !self.done(t) && self.found(t))
+            .filter(|t| {
+                t.parent.is_none() && !except.contains(&t.id) && !self.done(t) && self.found(t)
+            })
             .map(|t| t.id)
             .collect()
     }
@@ -370,10 +498,11 @@ impl TasksPage {
     /// The drag of `dragged` as tracked here: a new one when it isn't yet.
     fn drag_of(&mut self, dragged: &TaskDragged) -> &mut Drag {
         if self.drag.as_ref().is_none_or(|d| d.id != dragged.id) {
-            let slots = self.slots(dragged.list, -1);
+            let slots = self.slots(dragged.list, &[]);
             let slot = slots.iter().position(|t| *t == dragged.id).unwrap_or(0);
             self.drag = Some(Drag {
                 id: dragged.id,
+                ids: dragged.ids.clone(),
                 from: (dragged.list, slot),
                 height: 44.0,
                 to: Some((dragged.list, slot)),
@@ -410,60 +539,22 @@ impl TasksPage {
                 .iter()
                 .filter(|c| !self.searching() || c.tasks.iter().any(|t| self.found(t)))
                 .collect(),
-            View::Today | View::Starred => self.columns().iter().collect(),
+            View::Today | View::Upcoming | View::Starred | View::Completed | View::Label => {
+                self.columns().iter().collect()
+            }
             View::List(id) => self.columns().iter().filter(|c| c.list.id == id).collect(),
         }
     }
 }
 
-/// What typed quick add found in a new task's title.
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct TypedTask {
-    title: String,
-    /// `YYYY-MM-DD`; today when only a time or a repeat was typed.
-    due: Option<String>,
-    due_time: Option<u32>,
-    repeat: Option<String>,
-}
-
-/// Reads a day, a time and a repeat from a new task's title
-/// (`katna_core::quick_add`, shared with Calendar's events); `None` when it
-/// says none, or nothing would be left of the title. Tasks have no place,
-/// so "at" is left in the title.
+/// Reads a day, a time, a repeat and `#labels` from a new task's title
+/// as quick capture does ([`katna_dav::quick_task`], on Calendar's
+/// `katna_core::quick_add`); `None` when it says none, or nothing would be
+/// left of the title. Tasks have no place, so "at" is left in the title.
 fn typed_task(text: &str, today: jiff::civil::Date) -> Option<TypedTask> {
-    use katna_core::quick_add;
     let language = katna_i18n::current().language.tag.clone();
-    let words = quick_add::Words {
-        at: &[],
-        ..*quick_add::Words::for_language(&language)
-    };
-    let typed = quick_add::parse(text, today, &words);
-    let title = typed.title.trim().to_owned();
-    // The parser keeps a title made only of such words ("tomorrow") whole.
-    if !typed.found() || title.is_empty() || title == text.trim() {
-        return None;
-    }
-    let due_time = typed
-        .start
-        .map(|t| u32::try_from(i32::from(t.hour()) * 60 + i32::from(t.minute())).unwrap_or(0));
-    // A repeat without a day starts on its first day from today ("every
-    // Monday" typed on a Tuesday: next Monday); a time alone is today.
-    let first_repeat = typed.repeat.as_deref().and_then(|rule| {
-        let yesterday = today.yesterday().ok()?;
-        let (day, _) = katna_dav::todo::next_due(&yesterday.to_string(), rule, yesterday)?;
-        day.parse().ok()
-    });
-    let due = typed
-        .day
-        .or(first_repeat)
-        .or_else(|| (due_time.is_some() || typed.repeat.is_some()).then_some(today))
-        .map(|d| d.to_string());
-    Some(TypedTask {
-        title,
-        due,
-        due_time,
-        repeat: typed.repeat,
-    })
+    let typed = katna_dav::quick_task::parse(text, today, &language);
+    (typed.title != text.trim() || !typed.labels.is_empty()).then_some(typed)
 }
 
 /// A day and month, with the year when it isn't this one.
@@ -521,6 +612,7 @@ impl MailWindow {
     /// Opening the page: reads the lists, and keeps them read as they
     /// change.
     pub(super) fn open_tasks_page(&mut self, cx: &mut Context<Self>) {
+        self.read_task_sorts();
         if self.tasks.focus.is_none() {
             self.tasks.focus = Some(cx.focus_handle());
         }
@@ -758,7 +850,34 @@ impl MailWindow {
         );
     }
 
+    /// Sends several changes as one, with one note and one Undo.
+    fn send_tasks(
+        &mut self,
+        commands: Vec<TaskCommand>,
+        done: Option<String>,
+        undo: Vec<TaskCommand>,
+        cx: &mut Context<Self>,
+    ) {
+        let several = |commands: Vec<TaskCommand>| {
+            Command::Several(
+                commands
+                    .into_iter()
+                    .map(|c| Command::Task(Box::new(c)))
+                    .collect(),
+            )
+        };
+        if commands.is_empty() {
+            return;
+        }
+        let undo = (!undo.is_empty()).then(|| several(undo));
+        self.send(several(commands), done, undo, false, cx);
+    }
+
     fn task_set_view(&mut self, view: View, cx: &mut Context<Self>) {
+        if self.tasks.view != view {
+            self.tasks.selected.clear();
+            self.tasks.anchor = None;
+        }
         self.tasks.view = view;
         self.tasks.menu = None;
         self.tasks.adding = None;
@@ -936,6 +1055,7 @@ impl MailWindow {
             return;
         };
         let steps = board.steps(id);
+        let files = self.task_files_for_undo(id);
         // Gone from the page at once; the store follows.
         if let Some(Ok(board)) = &mut self.tasks.board {
             for column in &mut board.columns {
@@ -949,7 +1069,7 @@ impl MailWindow {
         self.send_task(
             TaskCommand::Delete(id),
             Some(tr!("tasks-toast-deleted")),
-            Some(TaskCommand::Restore { task, steps }),
+            Some(TaskCommand::Restore { task, steps, files }),
             cx,
         );
         cx.notify();
@@ -977,7 +1097,8 @@ impl MailWindow {
     }
 
     /// A dragged task moved over list `list`'s card (`card`, drawn there):
-    /// the gap follows the pointer, between the tasks it is between.
+    /// the gap follows the pointer, between the tasks it is between. A
+    /// sorted list opens no gap: the task goes where its sort puts it.
     fn task_drag_over(
         &mut self,
         list: i64,
@@ -987,17 +1108,22 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         let page = &mut self.tasks;
-        let slots = page.slots(list, dragged.id);
+        let slots = page.slots(list, &dragged.ids);
+        let sorted = page.sort_of(list) != TaskSort::MyOrder;
         let drag = page.drag_of(dragged);
-        if drag.rows.is_empty() {
+        if drag.rows.is_empty() && !sorted {
             // Not a row seen yet: the gap stays where the task was.
             return;
         }
         let to = if card.contains(&at) {
-            let slot = slots
-                .iter()
-                .filter(|t| drag.rows.get(t).is_some_and(|b| b.center().y < at.y))
-                .count();
+            let slot = if sorted {
+                0
+            } else {
+                slots
+                    .iter()
+                    .filter(|t| drag.rows.get(t).is_some_and(|b| b.center().y < at.y))
+                    .count()
+            };
             Some((list, slot))
         } else if drag.to.is_some_and(|(l, _)| l == list) {
             // Out of this list, over none yet.
@@ -1020,8 +1146,10 @@ impl MailWindow {
         drag.rows.insert(task, row);
     }
 
-    /// The dragged task was let go on list `list`: it goes where the gap
-    /// is, at once here, and Undo puts it back where it was.
+    /// The dragged tasks were let go on list `list`: they go where the gap
+    /// is, in the order shown, at once here, and Undo puts them back where
+    /// they were. On a sorted list they only change lists: dropped on
+    /// their own, they go back.
     fn task_drop(&mut self, list: i64, dragged: &TaskDragged, cx: &mut Context<Self>) {
         let Some(drag) = self.tasks.drag.take() else {
             return;
@@ -1029,40 +1157,67 @@ impl MailWindow {
         let Some((to_list, slot)) = drag.to.filter(|(l, _)| *l == list) else {
             return;
         };
-        if drag.id != dragged.id || (to_list, slot) == drag.from {
+        let sorted = self.tasks.sort_of(list) != TaskSort::MyOrder;
+        let ids: Vec<i64> = drag
+            .ids
+            .iter()
+            .copied()
+            .filter(|id| self.tasks.task(*id).is_some())
+            .collect();
+        let single = ids.len() <= 1;
+        let from_list = self.tasks.task(drag.id).map(|t| t.list);
+        if drag.id != dragged.id
+            || ids.is_empty()
+            || (single && (to_list, slot) == drag.from && !sorted)
+            || (sorted
+                && from_list == Some(list)
+                && ids
+                    .iter()
+                    .all(|id| self.tasks.task(*id).is_some_and(|t| t.list == list)))
+        {
             cx.notify();
             return;
         }
-        let id = drag.id;
-        let Some(task) = self.tasks.task(id).cloned() else {
-            return;
+        let slots = self.tasks.slots(list, &ids);
+        // A sorted list takes them last; its sort shows them in place.
+        let after = if sorted {
+            slots.last().copied()
+        } else {
+            slot.checked_sub(1).and_then(|ix| slots.get(ix).copied())
         };
-        let slots = self.tasks.slots(list, id);
-        let after = slot.checked_sub(1).and_then(|ix| slots.get(ix).copied());
-        // Where it was: after the task before it in its list, done ones
-        // and those the search hides too.
-        let before = self
-            .tasks
-            .columns()
+        // Where each was: after the task before it in its list, done ones
+        // and those the search hides too. Put back in the order they were
+        // in, each finds the one before it there again.
+        let mut back = Vec::new();
+        for column in self.tasks.columns() {
+            let mut before = None;
+            for t in column.tasks.iter().filter(|t| t.parent.is_none()) {
+                if ids.contains(&t.id) {
+                    back.push(TaskCommand::Place {
+                        id: t.id,
+                        list: column.list.id,
+                        after: before,
+                    });
+                }
+                before = Some(t.id);
+            }
+        }
+        let moved_lists = ids
             .iter()
-            .filter(|c| c.list.id == task.list)
-            .flat_map(|c| c.tasks.iter())
-            .filter(|t| t.parent.is_none())
-            .take_while(|t| t.id != id)
-            .last()
-            .map(|t| t.id);
-        let from = task.list;
+            .any(|id| self.tasks.task(*id).is_some_and(|t| t.list != list));
         // Shown there at once; the store follows.
         if let Some(Ok(board)) = &mut self.tasks.board {
             let mut moving = Vec::new();
-            for column in &mut board.columns {
-                column.tasks.retain(|t| {
-                    let ours = t.id == id || t.parent == Some(id);
-                    if ours {
-                        moving.push(t.clone());
-                    }
-                    !ours
-                });
+            for &id in &ids {
+                for column in &mut board.columns {
+                    column.tasks.retain(|t| {
+                        let ours = t.id == id || t.parent == Some(id);
+                        if ours {
+                            moving.push(t.clone());
+                        }
+                        !ours
+                    });
+                }
             }
             for t in &mut moving {
                 t.list = list;
@@ -1088,7 +1243,7 @@ impl MailWindow {
                 column.tasks.splice(at..at, moving);
             }
         }
-        let text = if from == list {
+        let text = if !moved_lists {
             tr!("tasks-toast-placed")
         } else {
             let name = self
@@ -1100,16 +1255,19 @@ impl MailWindow {
                 .unwrap_or_default();
             tr!("tasks-toast-moved", list = name)
         };
-        self.send_task(
-            TaskCommand::Place { id, list, after },
-            Some(text),
-            Some(TaskCommand::Place {
+        // Each after the one before it.
+        let mut place = Vec::new();
+        let mut previous = after;
+        for &id in &ids {
+            place.push(TaskCommand::Place {
                 id,
-                list: from,
-                after: before,
-            }),
-            cx,
-        );
+                list,
+                after: previous,
+            });
+            previous = Some(id);
+        }
+        self.tasks.selected.clear();
+        self.send_tasks(place, Some(text), back, cx);
         cx.notify();
     }
 
@@ -1178,6 +1336,7 @@ impl MailWindow {
                 let fields = TaskEdit {
                     due_time: typed.due_time.map(Some),
                     repeat: typed.repeat,
+                    labels: (!typed.labels.is_empty()).then_some(typed.labels),
                     ..TaskEdit::default()
                 };
                 (typed.title, due, fields)
@@ -1371,7 +1530,8 @@ impl MailWindow {
     // --- From mail -----------------------------------------------------------
 
     /// Add to Tasks (Shift+T, as in Gmail): a task for each picked line in
-    /// the default list, titled with its subject, leading back to the mail.
+    /// the default list, titled with its subject, leading back to the mail,
+    /// with the mail's attachments as its files.
     pub(super) fn add_to_tasks(
         &mut self,
         _: &super::AddToTasks,
@@ -1386,11 +1546,41 @@ impl MailWindow {
         let Ok(mail) = self.mail.as_ref() else {
             return;
         };
-        let sources: Vec<(String, String)> =
-            keys.iter().filter_map(|k| mail.task_source(*k)).collect();
+        let sources: Vec<(String, String, Vec<katna_store::MessageId>)> = keys
+            .iter()
+            .filter_map(|k| {
+                let (subject, header) = mail.task_source(*k)?;
+                Some((subject, header, mail.entry_messages(*k)))
+            })
+            .collect();
+        // The attachments are read away from the window: a few mails'.
+        let paths = self.paths.clone();
+        let read = cx.background_executor().spawn(async move {
+            sources
+                .into_iter()
+                .map(|(subject, header, ids)| {
+                    let mut raws = crate::data::raw_messages(&paths, &ids);
+                    let raws: Vec<Vec<u8>> = ids.iter().filter_map(|id| raws.remove(id)).collect();
+                    (subject, header, files::mail_files(&raws))
+                })
+                .collect::<Vec<_>>()
+        });
+        cx.spawn(async move |this, cx| {
+            let sources = read.await;
+            this.update(cx, |this, cx| this.add_tasks_from_mails(sources, cx))
+                .ok();
+        })
+        .detach();
+    }
+
+    fn add_tasks_from_mails(
+        &mut self,
+        sources: Vec<(String, String, Vec<crate::tasks::NewFile>)>,
+        cx: &mut Context<Self>,
+    ) {
         let count = sources.len();
-        let mails: Vec<String> = sources.iter().map(|(_, m)| m.clone()).collect();
-        for (ix, (subject, header)) in sources.into_iter().enumerate() {
+        let mails: Vec<String> = sources.iter().map(|(_, m, _)| m.clone()).collect();
+        for (ix, (subject, header, files)) in sources.into_iter().enumerate() {
             let title = if subject.is_empty() {
                 tr!("tasks-no-subject")
             } else {
@@ -1398,14 +1588,20 @@ impl MailWindow {
             };
             // One note and one Undo for them all, with the last.
             let last = ix + 1 == count;
+            let add = TaskCommand::Add {
+                list: 0,
+                parent: None,
+                title,
+                due: String::new(),
+                mail: header,
+            };
+            let add = if files.is_empty() {
+                add
+            } else {
+                TaskCommand::AddWithFiles(Box::new(add), files)
+            };
             self.send_task(
-                TaskCommand::Add {
-                    list: 0,
-                    parent: None,
-                    title,
-                    due: String::new(),
-                    mail: header,
-                },
+                add,
                 last.then(|| tr!("tasks-toast-added", count = count as u64)),
                 last.then(|| TaskCommand::RemoveFromMail(mails.clone())),
                 cx,
@@ -1494,6 +1690,13 @@ impl MailWindow {
                     self.task_start_editing(id, window, cx);
                 }
             }
+            "delete" if !self.tasks.selected.is_empty() => {
+                self.tasks_delete_selected(cx);
+            }
+            // Esc closes a menu first, then lets go of the selection.
+            "escape" if !self.tasks.selected.is_empty() && self.tasks.menu.is_none() => {
+                self.tasks_clear_selection(cx);
+            }
             "delete" => {
                 if let Some(id) = self.tasks.picked {
                     let next = at.and_then(|i| {
@@ -1521,11 +1724,12 @@ impl MailWindow {
     pub(super) fn render_tasks(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let page = &self.tasks;
         let body = match &page.board {
-            None => placeholder(&tr!("tasks-loading"), th),
-            Some(Err(err)) => placeholder(err, th),
+            None => self.placeholder(tr!("tasks-loading"), th),
+            Some(Err(err)) => self.placeholder(err.clone(), th),
             Some(Ok(_)) => self.render_task_board(th, cx),
         };
         let menu = self.render_tasks_menu(th, cx);
+        let bar = self.render_select_bar(th, cx);
         let details = self.render_task_details(th, cx);
         let side = self.render_tasks_nav(th, cx);
         let side = self.page_side(side, NAV_WIDTH, true, th, cx);
@@ -1538,13 +1742,24 @@ impl MailWindow {
             .when_some(page.focus.as_ref(), |d, focus| d.track_focus(focus))
             .on_key_down(cx.listener(Self::tasks_key))
             .children(side.docked)
-            .child(div().flex_1().min_w_0().h_full().child(body))
+            .child(
+                div()
+                    .relative()
+                    .flex_1()
+                    .min_w_0()
+                    .h_full()
+                    .child(body)
+                    .children(bar),
+            )
             .children(side.drawer)
             .children(menu)
             .children(details)
             .with_animation(
                 "tasks-page-in",
-                Animation::new(std::time::Duration::from_millis(220)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    220,
+                )))
+                .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element()
@@ -1623,6 +1838,15 @@ impl MailWindow {
             )
             .child(
                 row(
+                    "tasks-upcoming".into(),
+                    "calendar",
+                    tr!("tasks-upcoming"),
+                    page.view == View::Upcoming,
+                )
+                .on_click(cx.listener(|this, _, _, cx| this.task_set_view(View::Upcoming, cx))),
+            )
+            .child(
+                row(
                     "tasks-starred".into(),
                     "star",
                     tr!("tasks-starred"),
@@ -1639,6 +1863,15 @@ impl MailWindow {
                 .on_click(cx.listener(|this, _, _, cx| this.task_set_view(View::Starred, cx))),
             )
             .child(
+                row(
+                    "tasks-completed-view".into(),
+                    "check-circle",
+                    tr!("tasks-completed-view"),
+                    page.view == View::Completed,
+                )
+                .on_click(cx.listener(|this, _, _, cx| this.task_set_view(View::Completed, cx))),
+            )
+            .child(
                 div()
                     .mt(px(16.0))
                     .mx(px(24.0))
@@ -1646,6 +1879,7 @@ impl MailWindow {
                     .h(px(1.0))
                     .bg(rgba(th.divider)),
             );
+        nav = nav.children(self.render_task_labels_nav(th, cx));
         // Lists by account, Mailspring-style: the address, then its lists.
         // Every account shows, also one whose lists did not come, with the
         // reason under it.
@@ -1779,10 +2013,10 @@ impl MailWindow {
         let page = &self.tasks;
         let columns = page.shown_columns();
         if columns.is_empty() && page.searching() {
-            return placeholder(&tr!("tasks-search-none"), th);
+            return self.placeholder(tr!("tasks-search-none"), th);
         }
         if columns.is_empty() {
-            return placeholder(&tr!("tasks-no-lists"), th);
+            return self.placeholder(tr!("tasks-no-lists"), th);
         }
         match page.view {
             // As many lists side by side as fit, then more rows below,
@@ -1819,6 +2053,9 @@ impl MailWindow {
                 .into_any_element(),
             View::Starred => self.render_starred(columns, th, cx),
             View::Today => self.render_today(th, cx),
+            View::Upcoming => self.render_upcoming(th, cx),
+            View::Completed => self.render_completed(th, cx),
+            View::Label => self.render_label_view(&page.label, columns, th, cx),
         }
     }
 
@@ -1940,7 +2177,7 @@ impl MailWindow {
         let add = match adding {
             Some(adding) => self.adding_row(adding, false, th, cx),
             None => self
-                .add_row("tasks-today-add".into(), th)
+                .add_row("tasks-today-add".into(), tr!("tasks-add"), th)
                 .on_click(cx.listener(|this, _, window, cx| {
                     this.task_start_adding(0, None, today().to_string(), window, cx)
                 }))
@@ -2002,7 +2239,7 @@ impl MailWindow {
     }
 
     /// The "Add a task" row at the top of a card.
-    fn add_row(&self, id: gpui::ElementId, th: &Theme) -> gpui::Stateful<gpui::Div> {
+    fn add_row(&self, id: gpui::ElementId, label: String, th: &Theme) -> gpui::Stateful<gpui::Div> {
         div()
             .id(id)
             .h(px(40.0))
@@ -2023,7 +2260,7 @@ impl MailWindow {
                     .justify_center()
                     .child(icon("add", th.accent, 20.0)),
             )
-            .child(tr!("tasks-add"))
+            .child(label)
     }
 
     fn render_task_card(
@@ -2036,9 +2273,10 @@ impl MailWindow {
         let page = &self.tasks;
         let id = column.list.id;
         let today = today();
-        let (done, open): (Vec<&TaskItem>, Vec<&TaskItem>) = column
-            .tasks
-            .iter()
+        let sorted = page.sort_of(id) != TaskSort::MyOrder;
+        let (done, open): (Vec<&TaskItem>, Vec<&TaskItem>) = page
+            .ordered(column)
+            .into_iter()
             .filter(|t| page.parent_open(t) || !page.done(t))
             .filter(|t| page.found(t))
             .partition(|t| page.done(t));
@@ -2064,12 +2302,15 @@ impl MailWindow {
                 continue;
             };
             if let Some(drag) = drag {
-                // The dragged task leaves its place; a gap follows the
-                // pointer.
-                if task == drag.id {
+                // The dragged tasks leave their places; a gap follows the
+                // pointer, but for a sorted list, which puts them by its
+                // sort.
+                if drag.ids.contains(&task) {
                     continue;
                 }
-                open_rows.extend(drag_gaps(drag, id, slot, th));
+                if !sorted {
+                    open_rows.extend(drag_gaps(drag, id, slot, th));
+                }
             }
             slot += 1;
             // Each task with its steps says where it is to a drag.
@@ -2088,7 +2329,7 @@ impl MailWindow {
                     .into_any_element(),
             );
         }
-        if let Some(drag) = drag {
+        if let Some(drag) = drag.filter(|_| !sorted) {
             open_rows.extend(drag_gaps(drag, id, slot, th));
         }
         let done_open = page.open_done.contains(&id);
@@ -2115,7 +2356,10 @@ impl MailWindow {
                 .rounded_full()
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
-                .tooltip(tip(tr!("tasks-list-options"), th))
+                // Not over its own menu.
+                .when(page.menu.is_none(), |d| {
+                    d.tooltip(tip(tr!("tasks-list-options"), th))
+                })
                 .child(icon("more", th.text_dim, 20.0))
                 .on_mouse_down(
                     MouseButton::Left,
@@ -2132,7 +2376,7 @@ impl MailWindow {
         let add = match adding_top {
             Some(adding) => self.adding_row(adding, false, th, cx),
             None => self
-                .add_row(("tasks-add", id as usize).into(), th)
+                .add_row(("tasks-add", id as usize).into(), tr!("tasks-add"), th)
                 .on_click(cx.listener(move |this, _, window, cx| {
                     this.task_start_adding(id, None, String::new(), window, cx)
                 }))
@@ -2310,11 +2554,28 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
+        let look = RowLook {
+            list,
+            ..RowLook::default()
+        };
+        self.render_task_row_as(task, look, today, th, cx)
+    }
+
+    fn render_task_row_as(
+        &self,
+        task: &TaskItem,
+        look: RowLook<'_>,
+        today: jiff::civil::Date,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let list = look.list;
         let page = &self.tasks;
         let id = task.id;
         let done = page.done(task);
         let starred = page.starred(task);
         let picked = page.picked == Some(id);
+        let selected = page.selected.contains(&id);
         let step = task.parent.is_some() && !done;
         let editing = page.editing.as_ref().filter(|e| e.id == id);
         let due = due_label(task, today);
@@ -2331,7 +2592,8 @@ impl MailWindow {
                 .child(task.title.clone())
                 .into_any_element(),
         };
-        let notes = (!task.notes.is_empty() && !done).then(|| {
+        let quiet = look.quiet.map(|q| self.quiet_line(task, q, list, th));
+        let notes = (!task.notes.is_empty() && !done && quiet.is_none()).then(|| {
             div()
                 .text_size(px(12.0))
                 .line_height(px(16.0))
@@ -2446,7 +2708,7 @@ impl MailWindow {
                         .child(list.to_owned()),
                 );
             }
-            any.then_some(chips)
+            (any && quiet.is_none()).then_some(chips)
         };
         let star = div()
             .id(("task-star", id as usize))
@@ -2466,7 +2728,7 @@ impl MailWindow {
                 },
                 th,
             ))
-            .when(!starred, |d| {
+            .when(!starred && !look.star_shown, |d| {
                 d.invisible().group_hover("task-row", |s| s.visible())
             })
             .child(icon(
@@ -2513,8 +2775,13 @@ impl MailWindow {
             .items_start()
             .gap(px(16.0))
             .cursor_pointer()
-            .when(picked, |d| d.bg(rgba(fade(th.accent, 0.12))))
-            .when(!picked, |d| d.hover(|s| s.bg(rgba(th.hover))))
+            .when(look.quiet.is_some(), |d| {
+                d.mx(px(space::S3)).rounded(px(radius::SM))
+            })
+            .when(selected, |d| d.bg(rgba(th.row_selected)))
+            .when(picked && !selected, |d| d.bg(rgba(fade(th.accent, 0.12))))
+            .when(!picked && !selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
+            .map(|d| files::takes_files(d, id, th, cx))
             .child(tick)
             .child(
                 div()
@@ -2524,17 +2791,25 @@ impl MailWindow {
                     .flex_col()
                     .child(title)
                     .children(notes)
-                    .children(chips),
+                    .children(chips)
+                    .when(look.quiet.is_none(), |d| {
+                        d.children(self.render_task_meta(task, th))
+                    })
+                    .children(quiet),
             )
             .when(!done, |d| d.child(star))
             // An open task, not a step, drags to another place in its list
-            // or in another, on the lists' cards.
+            // or in another, on the lists' cards; on Upcoming, any open task
+            // drags to another day. Selected with others, they go together.
             .when(
-                !done && task.parent.is_none() && editing.is_none() && list.is_none(),
+                !done
+                    && editing.is_none()
+                    && (look.drag || (task.parent.is_none() && list.is_none())),
                 |d| {
                     d.on_drag(
                         TaskDragged {
                             id,
+                            ids: page.dragged_with(id, look.drag),
                             list: task.list,
                             title: task.title.clone(),
                             th: *th,
@@ -2550,6 +2825,22 @@ impl MailWindow {
             )
             .on_click(
                 cx.listener(move |this, event: &gpui::ClickEvent, window, cx| {
+                    // Ctrl+click selects or lets go of the task, Shift+click
+                    // selects every task from the last one clicked, as in
+                    // the mail list.
+                    let modifiers = event.modifiers();
+                    if modifiers.secondary() {
+                        this.task_click_select(id, cx);
+                        return;
+                    }
+                    if modifiers.shift {
+                        this.task_select_range(id, cx);
+                        return;
+                    }
+                    if !this.tasks.selected.is_empty() {
+                        this.tasks.selected.clear();
+                        this.tasks.anchor = None;
+                    }
                     if event.click_count() >= 2 {
                         this.task_open_details(id, window, cx);
                     } else if this.tasks.picked == Some(id) {
@@ -2596,7 +2887,13 @@ impl MailWindow {
                 .child(div().flex_1().min_w_0().truncate().child(label))
         };
         let separator = || div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider));
+        let mut width = MENU_WIDTH;
         let (at, items): (Point<Pixels>, Vec<AnyElement>) = match *menu {
+            Menu::MoveSelected { .. } | Menu::DateSelected { .. } => {
+                let (at, w, items) = self.render_select_menu(menu, th, cx)?;
+                width = w;
+                (at, items)
+            }
             Menu::List { list, at } => {
                 let account = self
                     .tasks
@@ -2610,17 +2907,17 @@ impl MailWindow {
                     .iter()
                     .find(|c| c.list.id == list)
                     .is_some_and(|c| c.list.is_default && c.list.account.is_some());
-                let mut items = vec![
-                    item(
-                        "tasks-menu-rename".into(),
-                        "compose",
-                        tr!("tasks-rename-list"),
-                    )
-                    .on_click(cx.listener(move |this, _, window, cx| {
-                        this.task_start_naming(Some(list), account, window, cx)
-                    }))
-                    .into_any_element(),
-                ];
+                let mut items = self.render_sort_items(list, th, cx);
+                items.push(separator().into_any_element());
+                items.extend([item(
+                    "tasks-menu-rename".into(),
+                    "compose",
+                    tr!("tasks-rename-list"),
+                )
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    this.task_start_naming(Some(list), account, window, cx)
+                }))
+                .into_any_element()]);
                 // The service's default list can't be deleted.
                 if !is_default {
                     items.push(
@@ -2735,7 +3032,7 @@ impl MailWindow {
             }
         };
         let list = div()
-            .w(px(MENU_WIDTH))
+            .w(px(width))
             .py(px(8.0))
             .flex()
             .flex_col()
@@ -2745,7 +3042,10 @@ impl MailWindow {
             .children(items)
             .with_animation(
                 "tasks-menu",
-                Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    140,
+                )))
+                .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
             );
         let close = || {
@@ -2828,8 +3128,12 @@ pub(super) fn list_title(column: &Column) -> String {
 /// longer would. The tasks below slide as they open and close.
 fn drag_gaps(drag: &Drag, list: i64, slot: usize, th: &Theme) -> Vec<AnyElement> {
     let height = drag.height;
-    let timing =
-        || Animation::new(std::time::Duration::from_millis(GAP_MS)).with_easing(gpui::ease_in_out);
+    let timing = || {
+        Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+            GAP_MS,
+        )))
+        .with_easing(gpui::ease_in_out)
+    };
     // A faint place for the task, as tall as the gap is.
     let gap = |open: f32| {
         div()
@@ -2906,7 +3210,10 @@ pub(super) fn round_tick(done: bool, hover: bool, th: &Theme) -> AnyElement {
             .child(icon("check", th.on_accent, 16.0))
             .with_animation(
                 "tick-done",
-                Animation::new(std::time::Duration::from_millis(180)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    180,
+                )))
+                .with_easing(ease_out_quint()),
                 |el, t| el.opacity(0.4 + 0.6 * t),
             )
             .into_any_element();
@@ -2939,12 +3246,18 @@ mod tests {
                 due: Some("2026-09-30".into()),
                 due_time: Some(15 * 60),
                 repeat: None,
+                labels: Vec::new(),
             })
         );
         // A repeat alone starts on its first day from today (a Tuesday).
         let plants = typed("Water the plants every Monday").unwrap();
         assert_eq!(plants.title, "Water the plants");
         assert!(plants.repeat.is_some_and(|r| r.contains("FREQ=WEEKLY")));
+        // "#home" is a label.
+        let bills = typed("Pay electricity bill #Home #bills").unwrap();
+        assert_eq!(bills.title, "Pay electricity bill");
+        assert_eq!(bills.labels, ["Home", "bills"]);
+        assert_eq!(bills.due, None);
         assert_eq!(plants.due.as_deref(), Some("2026-10-05"));
         assert_eq!(
             typed("Stretch every day").and_then(|t| t.due).as_deref(),

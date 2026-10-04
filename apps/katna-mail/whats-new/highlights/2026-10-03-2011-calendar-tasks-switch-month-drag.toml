@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tasks on the Calendar: show or hide, drag in Month"
+text = """
+The Calendar's side list has a Tasks box under your calendars: untick it
+and tasks leave Day, Week, Month and Schedule until you tick it again.
+In Month view you can now drag a task to another day; it keeps its time,
+and Undo puts it back.
+"""

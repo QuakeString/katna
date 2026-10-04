@@ -13,7 +13,8 @@ use gpui::{
 };
 use katna_core::config::{
     AccountsShown, AutoAdvance, Clock, Density, FileGroup, FilesPage, MarkRead, OpenIn,
-    ReadingPane, SoundEvent, Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES, WindowFrame,
+    ReadingPane, ReduceMotion, SoundEvent, Theme as ThemeChoice, TrayStyle, UNDO_SEND_CHOICES,
+    WindowFrame,
 };
 use katna_i18n::tr;
 use katna_ui::Ripple;
@@ -25,7 +26,7 @@ use crate::schemes;
 use crate::theme::{Accent, Theme, mix};
 use crate::widgets::FocusRing;
 use crate::widgets::{
-    CARD_SHADOW_ROOM, ScaledEdge, card_outline, card_shadow, icon, icon_button, radio, switch, tip,
+    CARD_SHADOW_ROOM, ScaledEdge, card_outline, icon, icon_button, radio, switch, tip,
 };
 
 /// One loop of the reading-pane demo.
@@ -47,8 +48,11 @@ pub(super) enum Change {
     AiEncrypted(bool),
     /// An event's sound on or off.
     Sound(SoundEvent, bool),
-    /// The sound an event plays, by its `katna_platform::sound` name.
+    /// The sound an event plays, by its `katna_platform::sound` name;
+    /// empty for its set's.
     SoundChoice(SoundEvent, &'static str),
+    /// The set of sounds, by `katna_platform::sound::Set::id`.
+    SoundSet(&'static str),
     Pane(ReadingPane),
     Density(Density),
     Theme(ThemeChoice),
@@ -111,8 +115,19 @@ pub(super) enum Change {
     SendCrashReports(bool),
     /// The interface scale, in percent.
     Scale(u16),
+    /// Katna's own animation speed, as a percentage of normal length, or
+    /// `None` for the desktop's.
+    AnimationSpeed(Option<u16>),
+    /// Whether animations are turned off.
+    ReduceMotion(ReduceMotion),
     /// 12- or 24-hour times.
     Clock(Clock),
+    /// How tall the hours of Calendar's Day and Week are.
+    CalendarDensity(katna_core::config::CalendarDensity),
+    /// How many days Calendar's custom view shows.
+    CustomDays(u8),
+    /// The Birthdays calendar shows.
+    Birthdays(bool),
     /// What Katna starts at login, if anything (an autostart entry).
     StartAtLogin(Option<crate::autostart::Start>),
     MarkRead(MarkRead),
@@ -174,19 +189,16 @@ impl MailWindow {
             .flex()
             .flex_col()
             .relative()
-            .when(!phone, |d| {
-                d.rounded(px(super::PANEL_RADIUS)).shadow(card_shadow(
-                    th,
-                    t.min(1.0) * self.layout.shape.card_outline(),
-                ))
-            })
             .map(|d| {
-                crate::widgets::pane(
-                    d,
-                    th.pane(),
-                    th.surface,
-                    if phone { 0.0 } else { super::PANEL_RADIUS },
-                )
+                let (radius, shadow) = if phone {
+                    (0.0, 0.0)
+                } else {
+                    (
+                        super::PANEL_RADIUS,
+                        t.min(1.0) * self.layout.shape.card_outline(),
+                    )
+                };
+                crate::widgets::card(d, th, th.pane(), radius, shadow)
             })
             .child(
                 div()
@@ -238,13 +250,7 @@ impl MailWindow {
                                     .flex_1()
                                     .justify_center()
                                     .on_click(cx.listener(
-                                        |this, _, window, cx| {
-                                            this.open_settings_page(
-                                                super::settings_page::Section::General,
-                                                window,
-                                                cx,
-                                            )
-                                        },
+                                        |this, _, window, cx| this.open_settings_here(window, cx),
                                     )),
                                 ),
                             )
@@ -529,6 +535,14 @@ impl MailWindow {
                 self.list_state.remeasure();
                 cx.refresh_windows();
             }
+            Change::AnimationSpeed(speed) => {
+                view.animation_speed = speed.map(|percent| f32::from(percent) / 100.0);
+                super::colors::apply_motion(view, self.desktop_colors.motion, cx);
+            }
+            Change::ReduceMotion(reduce) => {
+                view.reduce_motion = reduce;
+                super::colors::apply_motion(view, self.desktop_colors.motion, cx);
+            }
             Change::Theme(theme) => view.theme = theme,
             Change::DesktopColors(on) => {
                 view.set_colors(if on { schemes::SYSTEM } else { schemes::KATNA });
@@ -670,19 +684,30 @@ impl MailWindow {
                 cx.notify();
                 return;
             }
-            Change::NewMailNotices(_) | Change::Sound(..) | Change::SoundChoice(..) => {
+            Change::NewMailNotices(_)
+            | Change::Sound(..)
+            | Change::SoundChoice(..)
+            | Change::SoundSet(_) => {
                 match change {
                     Change::NewMailNotices(on) => self.config.notifications.new_mail = on,
                     Change::Sound(event, on) => self.config.sounds.get_mut(event).on = on,
                     Change::SoundChoice(event, id) => {
-                        // The usual sound stays unnamed, so it follows a
-                        // change of the usual one.
-                        self.config.sounds.get_mut(event).sound =
-                            if id == katna_platform::sound::usual(event) {
-                                String::new()
-                            } else {
-                                id.to_owned()
-                            };
+                        // The set's sound stays unnamed, so it follows a
+                        // change of set.
+                        let set = katna_platform::sound::set(&self.config.sounds.set).id;
+                        let id = if id == katna_platform::sound::usual(event, set) {
+                            ""
+                        } else {
+                            id
+                        };
+                        self.set_event_sound(event, id.to_owned());
+                    }
+                    Change::SoundSet(id) => {
+                        self.config.sounds.set = if id == katna_platform::sound::USUAL_SET {
+                            String::new()
+                        } else {
+                            id.to_owned()
+                        };
                     }
                     _ => {}
                 }
@@ -718,6 +743,20 @@ impl MailWindow {
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();
+                return;
+            }
+            Change::CalendarDensity(density) => {
+                self.set_calendar_density(density, cx);
+                return;
+            }
+            Change::CustomDays(days) => {
+                self.keep_custom_days(days, cx);
+                return;
+            }
+            Change::Birthdays(on) => {
+                if self.config.contacts.hide_birthdays == on {
+                    self.toggle_birthdays(cx);
+                }
                 return;
             }
             Change::Clock(clock) => {
@@ -841,7 +880,7 @@ impl MailWindow {
             div()
                 .with_animation(
                     ("pane-demo", pane as usize),
-                    Animation::new(PANE_DEMO).repeat(),
+                    Animation::new(katna_ui::motion::time(PANE_DEMO)).repeat(),
                     move |el, t| el.child(pane_picture(pane, demo_open(t), &th)),
                 )
                 .into_any_element()
@@ -891,7 +930,11 @@ impl MailWindow {
         )
         .with_spring(
             ("pane-border", pane as usize),
-            SpringAnimation::new(motion::SMOOTH).to(if on { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(if on {
+                1.0
+            } else {
+                0.0
+            }),
             {
                 let (off, accent) = (th.divider, th.accent);
                 move |el, s: f32| el.border_color(rgba(mix(off, accent, s.clamp(0.0, 1.0))))
@@ -923,23 +966,10 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(div().id(id), th, cx)
-            .relative()
-            .overflow_hidden()
-            // A long label wraps onto a second line in a narrow window.
-            .min_h(px(40.0))
-            .py(px(8.0))
-            .px(px(8.0))
-            .flex()
-            .flex_row()
-            .items_center()
+        // A long label wraps onto a second line in a narrow window.
+        self.page_control(crate::widgets::row(id, false, th), th, cx)
             .gap(px(14.0))
-            .rounded(px(8.0))
-            .text_size(px(14.0))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(animated_radio((id, 2_usize), on, th))
             .child(div().flex_1().min_w_0().child(label.into()))
             .into_any_element()
@@ -955,24 +985,12 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(div().id(id), th, cx)
-            .relative()
-            .overflow_hidden()
-            .py(px(8.0))
-            .px(px(8.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(12.0))
-            .rounded(px(8.0))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+        self.page_control(crate::widgets::row(id, false, th), th, cx)
             .on_click(
                 cx.listener(move |this, _, window, cx| {
                     this.open_settings_page(section, window, cx)
                 }),
             )
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(
                 div()
                     .flex_1()
@@ -1043,20 +1061,8 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(div().id(id), th, cx)
-            .relative()
-            .overflow_hidden()
-            .py(px(8.0))
-            .px(px(8.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(12.0))
-            .rounded(px(8.0))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+        self.page_control(crate::widgets::row(id, false, th), th, cx)
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
-            .child(Ripple::new((id, 1_usize), rgba(th.ripple)).rounded(8.0))
             .child(
                 div()
                     .flex_1()
@@ -1074,7 +1080,11 @@ impl MailWindow {
             .children(extra)
             .child(div().with_spring(
                 (id, 3_usize),
-                SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                    1.0
+                } else {
+                    0.0
+                }),
                 {
                     let th = *th;
                     move |el, s: f32| el.child(switch(s.clamp(0.0, 1.0), &th))
@@ -1089,7 +1099,11 @@ pub(super) fn animated_radio(id: impl Into<gpui::ElementId>, on: bool, th: &Them
     div()
         .with_spring(
             id,
-            SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                1.0
+            } else {
+                0.0
+            }),
             move |el, s: f32| el.child(radio(s.clamp(0.0, 1.0), &th)),
         )
         .into_any_element()
@@ -1208,21 +1222,8 @@ fn help_row(
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
-    div()
-        .id(id)
-        .relative()
-        .overflow_hidden()
-        .h(px(40.0))
-        .px(px(8.0))
-        .flex()
-        .flex_row()
-        .items_center()
+    crate::widgets::row(id, false, th)
         .gap(px(14.0))
-        .rounded(px(8.0))
-        .text_size(px(14.0))
-        .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
-        .child(Ripple::new((id, 0usize), rgba(th.ripple)).rounded(8.0))
         .child(icon(name, th.text_dim, 20.0))
         .child(label.into())
 }

@@ -42,6 +42,7 @@ pub struct Config {
     pub contacts: ContactsConfig,
     pub meetings: Meetings,
     pub ai: Ai,
+    pub tasks: TasksConfig,
 }
 
 /// The Contacts page's own choices.
@@ -56,6 +57,31 @@ pub struct ContactsConfig {
     /// unticked).
     #[serde(skip_serializing_if = "std::ops::Not::not")]
     pub hide_birthdays: bool,
+}
+
+/// The Tasks page's own choices, kept on this computer.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TasksConfig {
+    /// How each list is sorted, by its row ID in `pim.db`; a list not
+    /// here is in My order.
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub sort: BTreeMap<String, TaskSort>,
+}
+
+/// How a task list is sorted, as Google Tasks offers.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum TaskSort {
+    /// The order the tasks were put in, dragged or synced.
+    #[default]
+    MyOrder,
+    /// By due day and time; tasks without one last.
+    Date,
+    /// Starred tasks first.
+    Starred,
+    /// By title, A to Z.
+    Title,
 }
 
 /// Video calls started from Katna Mail (`docs/ARCHITECTURE.md` §18.2).
@@ -314,6 +340,10 @@ impl Default for Notifications {
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Sounds {
+    /// The set of sounds (`katna_platform::sound::SETS`): each event plays
+    /// the set's sound unless it names its own. Empty for the usual set.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub set: String,
     pub new_mail: EventSound,
     pub reminders: EventSound,
     pub mail_back: EventSound,
@@ -326,8 +356,8 @@ pub struct Sounds {
 #[serde(default)]
 pub struct EventSound {
     pub on: bool,
-    /// The sound's name in `katna_platform::sound`; empty for the event's
-    /// usual one.
+    /// The sound's name in `katna_platform::sound` (`file:` and a path for
+    /// a file of the user's own); empty for the set's.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub sound: String,
 }
@@ -387,7 +417,7 @@ impl Sounds {
         }
     }
 
-    /// The sound `event` plays, if on: its name, empty for the usual one.
+    /// The sound `event` plays, if on: its name, empty for the set's.
     pub fn playing(&self, event: SoundEvent) -> Option<&str> {
         let sound = self.get(event);
         sound.on.then_some(sound.sound.as_str())
@@ -639,7 +669,7 @@ impl Sending {
             id,
             name,
             text,
-            html: String::new(),
+            ..Signature::default()
         });
         if self.signatures.len() == 1 {
             self.new_mail_signature = Some(id);
@@ -680,6 +710,74 @@ pub struct Signature {
     /// `data:` URIs; empty for a plain text one.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub html: String,
+    /// The fields and layout it is made from, when it is made from one
+    /// of Katna's layouts: [`Self::text`] and [`Self::html`] are then
+    /// written from them.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub layout: Option<SignatureLayout>,
+}
+
+/// A signature made from one of Katna's layouts ([`Signature::layout`]).
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SignatureLayout {
+    pub style: LayoutStyle,
+    /// Its colour, as `#rrggbb`.
+    pub colour: String,
+    pub name: String,
+    pub title: String,
+    pub company: String,
+    pub mobile: String,
+    pub office: String,
+    pub email: String,
+    pub website: String,
+    pub address: String,
+    /// Pages it links to (LinkedIn, YouTube…), by address.
+    pub pages: Vec<String>,
+    /// Pictures as `data:` URIs, already made small for mail; empty for
+    /// none.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub logo: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub photo: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub banner: String,
+}
+
+/// The shape of a [`SignatureLayout`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum LayoutStyle {
+    #[default]
+    Classic,
+    LogoLeft,
+    Photo,
+    Band,
+    OneLine,
+    Centred,
+    Banner,
+    Underline,
+    SideBar,
+    Card,
+    Monogram,
+    Plain,
+}
+
+impl LayoutStyle {
+    pub const ALL: [LayoutStyle; 12] = [
+        LayoutStyle::Classic,
+        LayoutStyle::LogoLeft,
+        LayoutStyle::Photo,
+        LayoutStyle::Band,
+        LayoutStyle::OneLine,
+        LayoutStyle::Centred,
+        LayoutStyle::Banner,
+        LayoutStyle::Underline,
+        LayoutStyle::SideBar,
+        LayoutStyle::Card,
+        LayoutStyle::Monogram,
+        LayoutStyle::Plain,
+    ];
 }
 
 /// How Katna Mail shows mail (its quick settings).
@@ -711,6 +809,12 @@ pub struct MailView {
     /// The size of everything in the windows, in percent, on top of the
     /// desktop's own scale (75 to 200).
     pub scale: u16,
+    /// How long animations take compared with normal (0.25 to 4): Katna's
+    /// own speed. Not set: the desktop's animation speed.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub animation_speed: Option<f32>,
+    /// Whether animations are turned off.
+    pub reduce_motion: ReduceMotion,
     pub theme: Theme,
     /// Use the desktop's color scheme and accent color instead of Katna's
     /// own colors. Older versions' choice: [`MailView::colors`] wins when
@@ -934,6 +1038,8 @@ impl Default for MailView {
             account_colors: BTreeMap::new(),
             density: Density::Default,
             scale: 100,
+            animation_speed: None,
+            reduce_motion: ReduceMotion::Desktop,
             theme: Theme::System,
             desktop_colors: true,
             color_scheme: None,
@@ -1253,6 +1359,19 @@ pub enum AccountsShown {
     All,
 }
 
+/// [`MailView::reduce_motion`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ReduceMotion {
+    /// As the desktop says: off when its animations are off.
+    #[default]
+    Desktop,
+    /// Animations off: things appear and move at once.
+    On,
+    /// Animations on, whatever the desktop says.
+    Off,
+}
+
 /// [`MailView::density`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -1275,6 +1394,9 @@ pub struct CalendarView {
     /// Named groups of calendars shown together, as Fantastical's
     /// calendar sets: one click shows a set's calendars and hides the rest.
     pub sets: Vec<CalendarSet>,
+    /// Tasks are left off the Calendar (the side list's Tasks unticked).
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub hide_tasks: bool,
 }
 
 /// One of [`CalendarView::sets`].
@@ -1495,6 +1617,24 @@ mod tests {
     }
 
     use super::*;
+
+    #[test]
+    fn task_sorts_round_trip() {
+        let mut config = Config::default();
+        config.tasks.sort.insert("2".into(), TaskSort::Date);
+        config.tasks.sort.insert("5".into(), TaskSort::Starred);
+        let text = toml::to_string(&config).unwrap();
+        assert!(text.contains("[tasks.sort]"), "{text}");
+        assert!(text.contains("2 = \"date\""), "{text}");
+        let back: Config = toml::from_str(&text).unwrap();
+        assert_eq!(back.tasks, config.tasks);
+        // Nothing sorted: nothing written.
+        assert!(
+            !toml::to_string(&Config::default())
+                .unwrap()
+                .contains("[tasks.sort]")
+        );
+    }
 
     #[test]
     fn auto_advance_picks_a_neighbor() {

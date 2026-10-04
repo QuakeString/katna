@@ -10,8 +10,8 @@ use std::ops::Range;
 use std::sync::Arc;
 
 use super::doc::{
-    Align, Block, CharStyle, Doc, Font, Image, ImageSize, List, MAX_INDENT, Para, ParaStyle, Size,
-    Table, image_size, list_marker, list_numbers,
+    Align, Block, CharStyle, Doc, Font, HtmlBlock, Image, ImageSize, List, MAX_INDENT, Para,
+    ParaStyle, Size, Table, image_size, list_marker, list_numbers,
 };
 
 /// Widest an image is sent at when it fits the text.
@@ -19,6 +19,12 @@ const BEST_FIT_WIDTH: f32 = 600.0;
 const QUOTE_STYLE: &str =
     "margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex";
 const CELL_STYLE: &str = "border:1px solid rgb(204,204,204);padding:4px 8px;min-width:40px";
+/// Around a designed block, so that it reads back as one when a draft or
+/// a stored signature is opened again.
+pub const HTML_START: &str = "<!--katna-html-->";
+const HTML_END: &str = "<!--/katna-html-->";
+/// How a designed block names its `N`th picture.
+const PICTURE_SRC: &str = "cid:katna-";
 
 /// The document as the body of an HTML message. `image_src` gives each
 /// image's address (a `cid:` in mail, a `data:` URI when stored).
@@ -34,6 +40,12 @@ pub fn to_html(doc: &Doc, image_src: &dyn Fn(&Image) -> String) -> String {
     for (ix, block) in doc.blocks.iter().enumerate() {
         let style = match block {
             Block::Para(para) => para.style,
+            // A designed signature stays inside the signature.
+            Block::Html(_) => ParaStyle {
+                quote: writer.quote,
+                signature: writer.signature,
+                ..ParaStyle::default()
+            },
             _ => ParaStyle::default(),
         };
         writer.enter(&style);
@@ -49,11 +61,113 @@ pub fn to_html(doc: &Doc, image_src: &dyn Fn(&Image) -> String) -> String {
                     escape(&image.name),
                 );
             }
+            Block::Html(block) => {
+                writer.out.push_str(HTML_START);
+                writer.out.push_str(&with_pictures(block, image_src));
+                writer.out.push_str(HTML_END);
+            }
         }
     }
     writer.enter(&ParaStyle::default());
     out.push_str("</div>");
     out
+}
+
+/// A designed block's HTML with each `cid:katna-N` given its picture's
+/// address.
+fn with_pictures(block: &HtmlBlock, image_src: &dyn Fn(&Image) -> String) -> String {
+    let html = &*block.html;
+    let mut out = String::with_capacity(html.len());
+    let mut rest = html;
+    while let Some(at) = rest.find(PICTURE_SRC) {
+        out.push_str(&rest[..at]);
+        let after = &rest[at + PICTURE_SRC.len()..];
+        let digits = after.len() - after.trim_start_matches(|c: char| c.is_ascii_digit()).len();
+        match after[..digits]
+            .parse::<usize>()
+            .ok()
+            .and_then(|n| block.images.get(n))
+        {
+            Some(image) => out.push_str(&escape(&image_src(image))),
+            None => out.push_str(&rest[at..at + PICTURE_SRC.len() + digits]),
+        }
+        rest = &after[digits..];
+    }
+    out.push_str(rest);
+    out
+}
+
+/// A designed block from mail-safe HTML whose pictures are `data:` URIs
+/// (in `src` attributes): they become the block's pictures.
+pub fn html_block(html: &str, next_id: &mut u64) -> HtmlBlock {
+    let mut images = Vec::new();
+    let mut out = String::with_capacity(html.len());
+    let mut rest = html;
+    while let Some(at) = find_ascii_ci(rest, "src=") {
+        let value = &rest[at + 4..];
+        let quote = value.chars().next().filter(|c| *c == '"' || *c == '\'');
+        let Some(quote) = quote else {
+            out.push_str(&rest[..at + 4]);
+            rest = value;
+            continue;
+        };
+        let inner = &value[1..];
+        let end = inner.find(quote).unwrap_or(inner.len());
+        let src = decode_entities(&inner[..end]);
+        out.push_str(&rest[..at + 4]);
+        out.push(quote);
+        match image_from_data_uri(src.trim(), String::new(), None, next_id) {
+            Some(image) => {
+                let _ = write!(out, "{PICTURE_SRC}{}", images.len());
+                images.push(image);
+            }
+            None => out.push_str(&inner[..end]),
+        }
+        rest = &inner[end..];
+    }
+    out.push_str(rest);
+    HtmlBlock {
+        html: out.into(),
+        text: designed_text(html).into(),
+        images,
+    }
+}
+
+/// What designed HTML says, a line each: its tables are layout, so each
+/// cell's lines stand on their own.
+fn designed_text(html: &str) -> String {
+    let mut scratch = 0;
+    let doc = read_html(html, &mut scratch, false);
+    let mut lines: Vec<String> = Vec::new();
+    for block in doc.blocks {
+        match block {
+            Block::Table(table) => {
+                let cells = table.rows.into_iter().flatten();
+                lines.extend(cells.map(|cell| plain_para(&cell)));
+            }
+            block => lines.push(to_plain(&Doc {
+                blocks: vec![block],
+            })),
+        }
+    }
+    lines
+        .iter()
+        .flat_map(|l| l.lines())
+        .map(str::trim_end)
+        .filter(|l| !l.trim().is_empty())
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+/// A designed block from HTML that may also name the pictures of
+/// `images` as `cid:katna-N` (a block's HTML edited by hand).
+pub fn html_block_with(html: &str, images: &[Image], next_id: &mut u64) -> HtmlBlock {
+    let kept = HtmlBlock {
+        html: html.into(),
+        text: "".into(),
+        images: images.to_vec(),
+    };
+    html_block(&with_pictures(&kept, &data_uri), next_id)
 }
 
 struct Writer<'a> {
@@ -383,6 +497,7 @@ pub fn to_plain(doc: &Doc) -> String {
                 }
             }
             Block::Image(image) => lines.push(format!("[image: {}]", image.name)),
+            Block::Html(block) => lines.extend(block.text.lines().map(str::to_owned)),
         }
     }
     let mut out = lines.join("\n");
@@ -470,6 +585,12 @@ fn read_html(html: &str, next_id: &mut u64, pasted: bool) -> Doc {
     };
     let mut rest = html;
     while !rest.is_empty() {
+        if let Some(after) = rest.strip_prefix(HTML_START) {
+            let end = after.find(HTML_END).unwrap_or(after.len());
+            reader.html(&after[..end]);
+            rest = after.get(end + HTML_END.len()..).unwrap_or("");
+            continue;
+        }
         if let Some(after) = rest.strip_prefix("<!--") {
             rest = after.find("-->").map_or("", |e| &after[e + 3..]);
             continue;
@@ -1140,6 +1261,17 @@ impl Reader<'_> {
         self.blocks.push(Block::Image(image));
     }
 
+    /// A designed block, kept whole.
+    fn html(&mut self, html: &str) {
+        let block = html_block(html, self.next_id);
+        if self.table.is_some() {
+            return;
+        }
+        self.drop_empty();
+        self.flush(false);
+        self.blocks.push(Block::Html(block));
+    }
+
     fn line_break(&mut self) {
         if self.table.is_some() {
             let style = self.style();
@@ -1777,6 +1909,7 @@ mod tests {
                     .collect::<Vec<_>>()
                     .join("/"),
                 Block::Image(i) => format!("[{}]", i.name),
+                Block::Html(h) => format!("<{}>", h.text),
             })
             .collect()
     }
@@ -1986,5 +2119,36 @@ mod tests {
         assert_eq!(parse_color("Red"), Some(0xff0000));
         assert_eq!(parse_color("windowtext"), None);
         assert_eq!(parse_color("rgb(1 2 3 / 50%)"), Some(0x010203));
+    }
+
+    #[test]
+    fn designed_blocks_round_trip() {
+        let png = "data:image/png;base64,iVBORw0KGgo=";
+        let designed = format!(
+            "<table><tr><td style=\"background:#0b7\"><img src=\"{png}\" width=\"48\"></td>\
+             <td><b>Kay Rowe</b><br>Enron</td></tr></table>"
+        );
+        let mut next = 0;
+        let block = html_block(&designed, &mut next);
+        assert_eq!(block.images.len(), 1);
+        assert!(block.html.contains("src=\"cid:katna-0\""));
+        assert!(!block.html.contains("base64"));
+        assert!(block.text.contains("Kay Rowe"));
+
+        let again = html_block_with(&block.html, &block.images, &mut next);
+        assert_eq!(again.html, block.html);
+        assert_eq!(again.images.len(), 1);
+
+        // In a message the pictures are parts; a draft reads them back.
+        let mut doc = from_plain("Hi");
+        doc.blocks.push(Block::Html(block));
+        let html = to_html(&doc, &|image| format!("cid:part{}", image.id));
+        assert!(
+            html.contains(&format!("src=\"cid:part{}\"", next - 1)),
+            "{html}"
+        );
+        let reopened = from_html(&to_html(&doc, &data_uri), &mut next);
+        assert!(matches!(reopened.blocks.last(), Some(Block::Html(h)) if h.images.len() == 1));
+        assert_eq!(to_plain(&doc), "Hi\nKay Rowe\nEnron\n");
     }
 }

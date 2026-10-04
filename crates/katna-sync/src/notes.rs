@@ -13,7 +13,8 @@ use std::collections::HashSet;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
 use katna_core::AccountId;
-use katna_store::{Note, RemoteNote, Store};
+use katna_store::{Note, NotePicture, RemoteNote, Store};
+use mail_parser::MimeHeaders as _;
 
 use crate::backend::Flags;
 use crate::connection::Connection;
@@ -112,8 +113,9 @@ pub async fn sync_notes(
         ..Flags::default()
     };
     for note in &to_upload {
+        let pictures = store.note_pictures(note.id).map_err(map)?;
         connection
-            .append_with_flags(&folder, build_note(note, from, now), &seen)
+            .append_with_flags(&folder, build_note_with(note, &pictures, from, now), &seen)
             .await?;
         store.note_uploaded(note.id, note.updated_at).map_err(map)?;
         done.uploaded += 1;
@@ -154,6 +156,13 @@ pub async fn sync_notes(
 
 /// `note` as a message for the Notes folder of `from`'s account.
 pub fn build_note(note: &Note, from: &str, now: i64) -> Vec<u8> {
+    build_note_with(note, &[], from, now)
+}
+
+/// [`build_note`] with the note's pictures, as inline parts its HTML
+/// names by `cid:` (`multipart/related`, as mail apps send pictures in a
+/// message's text).
+pub fn build_note_with(note: &Note, pictures: &[NotePicture], from: &str, now: i64) -> Vec<u8> {
     let title = if note.title.trim().is_empty() {
         note.body
             .lines()
@@ -166,6 +175,14 @@ pub fn build_note(note: &Note, from: &str, now: i64) -> Vec<u8> {
     let mut html = String::from("<html><head></head><body>");
     // Apple takes a note's first line as its title.
     html.push_str(&format!("<div>{}</div>", escape(title)));
+    // Pictures under the title, as Keep shows them on top.
+    let pictures: Vec<&NotePicture> = pictures
+        .iter()
+        .filter(|p| is_header_safe(&p.cid) && !p.cid.contains(['"', '<', '>']))
+        .collect();
+    for picture in &pictures {
+        html.push_str(&format!("<div><img src=\"cid:{}\"></div>", picture.cid));
+    }
     if note.html.is_empty() {
         let mut lines: Vec<&str> = note.body.split('\n').collect();
         if note.title.trim().is_empty() && lines.first().is_some_and(|l| l.trim() == title) {
@@ -230,21 +247,146 @@ pub fn build_note(note: &Note, from: &str, now: i64) -> Vec<u8> {
     if let Some(link) = note.link.as_deref().filter(|l| is_header_safe(l)) {
         header(&mut out, "X-Katna-Link", link);
     }
+    if let Some(at) = note.remind_at {
+        header(&mut out, "X-Katna-Remind", &at.to_string());
+    }
+    header(&mut out, "X-Mailer", KATNA_MAILER);
     header(
         &mut out,
         "Message-ID",
         &format!("<{}@katna.notes>", note.uuid),
     );
     header(&mut out, "MIME-Version", "1.0");
+    let base64 = |out: &mut String, data: &[u8]| {
+        let encoded = STANDARD.encode(data);
+        for chunk in encoded.as_bytes().chunks(76) {
+            out.push_str(std::str::from_utf8(chunk).unwrap_or_default());
+            out.push_str("\r\n");
+        }
+    };
+    if pictures.is_empty() {
+        header(&mut out, "Content-Type", "text/html; charset=utf-8");
+        header(&mut out, "Content-Transfer-Encoding", "base64");
+        out.push_str("\r\n");
+        base64(&mut out, html.as_bytes());
+        return out.into_bytes();
+    }
+    let boundary = format!("katna-note-{}", note.uuid);
+    header(
+        &mut out,
+        "Content-Type",
+        &format!("multipart/related; type=\"text/html\"; boundary=\"{boundary}\""),
+    );
+    out.push_str("\r\n");
+    out.push_str(&format!("--{boundary}\r\n"));
     header(&mut out, "Content-Type", "text/html; charset=utf-8");
     header(&mut out, "Content-Transfer-Encoding", "base64");
     out.push_str("\r\n");
-    let encoded = STANDARD.encode(html.as_bytes());
-    for chunk in encoded.as_bytes().chunks(76) {
-        out.push_str(std::str::from_utf8(chunk).unwrap_or_default());
+    base64(&mut out, html.as_bytes());
+    for picture in pictures {
+        let name = encode_word(&picture.name).replace('"', "'");
+        let mime = if is_header_safe(&picture.mime) && picture.mime.contains('/') {
+            picture.mime.as_str()
+        } else {
+            "application/octet-stream"
+        };
+        out.push_str(&format!("--{boundary}\r\n"));
+        header(
+            &mut out,
+            "Content-Type",
+            &format!("{mime}; name=\"{name}\""),
+        );
+        header(
+            &mut out,
+            "Content-Disposition",
+            &format!("inline; filename=\"{name}\""),
+        );
+        header(&mut out, "Content-ID", &format!("<{}>", picture.cid));
+        header(&mut out, "Content-Transfer-Encoding", "base64");
         out.push_str("\r\n");
+        base64(&mut out, &picture.data);
     }
+    out.push_str(&format!("--{boundary}--\r\n"));
     out.into_bytes()
+}
+
+/// Katna's `X-Mailer`, so its notes are not taken for another device's.
+const KATNA_MAILER: &str = "Katna Notes";
+
+/// The device a note was written on, from its `X-Mailer`.
+fn device_of(mailer: &str) -> Option<String> {
+    let lower = mailer.to_ascii_lowercase();
+    ["iPhone", "iPad", "Mac", "Android", "Windows"]
+        .into_iter()
+        .find(|d| lower.contains(&d.to_ascii_lowercase()))
+        .or_else(|| lower.contains("ios").then_some("iPhone"))
+        .map(str::to_owned)
+}
+
+/// The `cid:` names of the pictures `html` shows, in order.
+fn picture_cids(html: &str) -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    let mut rest = html;
+    while let Some(at) = rest.find("src=\"cid:") {
+        let after = &rest[at + 9..];
+        let Some(end) = after.find('"') else { break };
+        let cid = after[..end].to_owned();
+        if !cid.is_empty() && !out.contains(&cid) {
+            out.push(cid);
+        }
+        rest = &after[end..];
+    }
+    out
+}
+
+/// `html` without its `cid:` pictures, and without the lines that held
+/// only a picture.
+fn strip_pictures(html: &str) -> String {
+    let mut out = String::with_capacity(html.len());
+    let mut rest = html;
+    while let Some(at) = rest.find("<img") {
+        let Some(end) = rest[at..].find('>').map(|e| at + e + 1) else {
+            break;
+        };
+        out.push_str(&rest[..at]);
+        if !rest[at..end].contains("src=\"cid:") {
+            out.push_str(&rest[at..end]);
+        }
+        rest = &rest[end..];
+    }
+    out.push_str(rest);
+    out.replace("<div></div>", "").replace("<p></p>", "")
+}
+
+/// Apple Notes shows a picture as an `object` naming its part; the
+/// editor reads `img`.
+fn objects_to_images(html: &str) -> String {
+    let lower = html.to_ascii_lowercase();
+    let mut out = String::with_capacity(html.len());
+    let mut at = 0;
+    while let Some(start) = lower[at..].find("<object").map(|ix| at + ix) {
+        let Some(open_end) = lower[start..].find('>').map(|ix| start + ix + 1) else {
+            break;
+        };
+        let tag = &html[start..open_end];
+        let Some(cid) = tag
+            .find("data=\"cid:")
+            .map(|ix| &tag[ix + 10..])
+            .and_then(|rest| rest.find('"').map(|end| &rest[..end]))
+        else {
+            out.push_str(&html[at..open_end]);
+            at = open_end;
+            continue;
+        };
+        let close = lower[open_end..]
+            .find("</object>")
+            .map_or(open_end, |ix| open_end + ix + 9);
+        out.push_str(&html[at..start]);
+        out.push_str(&format!("<img src=\"cid:{cid}\">"));
+        at = close;
+    }
+    out.push_str(&html[at..]);
+    out
 }
 
 /// A note from a message of the Notes folder, or `None` for one that is
@@ -264,7 +406,10 @@ pub fn parse_note(raw: &[u8]) -> Option<RemoteNote> {
     let uuid = raw_header("X-Universally-Unique-Identifier")
         .or_else(|| message.message_id().map(str::to_owned))?;
     let subject = message.subject().unwrap_or("").trim().to_owned();
-    let html = message.body_html(0);
+    // Pictures are kept apart from the text, shown on top as Keep does.
+    let html = message.body_html(0).map(|h| objects_to_images(&h));
+    let cids: Vec<String> = html.as_deref().map(picture_cids).unwrap_or_default();
+    let html = html.map(|h| strip_pictures(&h));
     let text = match &html {
         Some(html) => html_lines(html),
         None => message
@@ -308,6 +453,34 @@ pub fn parse_note(raw: &[u8]) -> Option<RemoteNote> {
         .and_then(|json| serde_json::from_slice::<Vec<String>>(&json).ok())
         .unwrap_or_default();
     let yes = |name: &str| raw_header(name).is_some_and(|v| v.eq_ignore_ascii_case("yes"));
+    // Pictures its text shows.
+    let pictures: Vec<NotePicture> = message
+        .attachments()
+        .filter_map(|part| {
+            let cid = part.content_id()?.trim_matches(['<', '>', ' ']).to_owned();
+            if !cids.contains(&cid) {
+                return None;
+            }
+            let mime = part.content_type().map_or_else(
+                || "application/octet-stream".to_owned(),
+                |ct| match ct.subtype() {
+                    Some(sub) => format!("{}/{sub}", ct.ctype()).to_ascii_lowercase(),
+                    None => ct.ctype().to_ascii_lowercase(),
+                },
+            );
+            Some(NotePicture {
+                name: part.attachment_name().unwrap_or(&cid).to_owned(),
+                mime,
+                width: 0,
+                height: 0,
+                data: part.contents().to_vec(),
+                cid,
+            })
+        })
+        .collect();
+    let device = raw_header("X-Mailer")
+        .filter(|m| m != KATNA_MAILER)
+        .and_then(|m| device_of(&m));
     Some(RemoteNote {
         uuid,
         title,
@@ -321,6 +494,9 @@ pub fn parse_note(raw: &[u8]) -> Option<RemoteNote> {
         labels,
         link: raw_header("X-Katna-Link"),
         updated_at: message.date().map_or(0, |d| d.to_timestamp()),
+        remind_at: raw_header("X-Katna-Remind").and_then(|v| v.parse().ok()),
+        pictures,
+        device,
     })
 }
 
@@ -374,11 +550,33 @@ fn after_first_block(html: &str) -> &str {
 }
 
 /// Whether a note's HTML has any formatting: bold, italic, underline,
-/// struck, headings, lists or sized text.
+/// struck, headings, lists, sized text, pictures, quotes, code, dividers
+/// or links.
 fn is_formatted(html: &str) -> bool {
-    const TAGS: [&str; 16] = [
-        "b", "strong", "i", "em", "u", "s", "strike", "h1", "h2", "h3", "h4", "h5", "h6", "ul",
-        "ol", "font",
+    const TAGS: [&str; 23] = [
+        "b",
+        "strong",
+        "i",
+        "em",
+        "u",
+        "s",
+        "strike",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "ul",
+        "ol",
+        "font",
+        "img",
+        "blockquote",
+        "pre",
+        "code",
+        "tt",
+        "hr",
+        "a",
     ];
     const STYLES: [&str; 4] = ["font-weight", "font-style", "text-decoration", "font-size"];
     let lower = html.to_ascii_lowercase();
@@ -615,5 +813,55 @@ Content-Type: text/html; charset=utf-8\r\n\
     fn other_mail_is_not_a_note() {
         let raw = b"Subject: hi\r\nMessage-ID: <a@b>\r\n\r\nhello\r\n";
         assert_eq!(parse_note(raw), None);
+    }
+
+    #[test]
+    fn pictures_and_reminders_go_there_and_back() {
+        let mut n = note();
+        n.body = "Shelf".to_owned();
+        n.html = "<div dir=\"ltr\"><p><b>Shelf</b></p></div>".to_owned();
+        n.remind_at = Some(1_790_700_000);
+        let picture = NotePicture {
+            cid: "p1".to_owned(),
+            name: "shelf.png".to_owned(),
+            mime: "image/png".to_owned(),
+            data: vec![137, 80, 78, 71, 0, 1, 2, 3],
+            ..NotePicture::default()
+        };
+        let raw = build_note_with(&n, std::slice::from_ref(&picture), "me@example.org", 0);
+        let text = String::from_utf8(raw.clone()).unwrap();
+        assert!(text.contains("multipart/related"));
+        assert!(text.contains("Content-ID: <p1>"));
+        let back = parse_note(&raw).unwrap();
+        assert_eq!(back.remind_at, Some(1_790_700_000));
+        assert_eq!(back.device, None);
+        assert_eq!(back.pictures.len(), 1);
+        assert_eq!(back.pictures[0].cid, "p1");
+        assert_eq!(back.pictures[0].mime, "image/png");
+        assert_eq!(back.pictures[0].data, picture.data);
+        // The text comes back as it was, the picture apart.
+        assert!(!back.html.contains("cid:"));
+        assert_eq!(back.body, n.body);
+        assert!(back.html.contains("<b>Shelf</b>"));
+    }
+
+    #[test]
+    fn an_apple_picture_reads_as_an_image() {
+        assert_eq!(
+            objects_to_images(
+                "<div>a</div><object type=\"application/x-apple-msg-attachment\" data=\"cid:X1\"></object>b"
+            ),
+            "<div>a</div><img src=\"cid:X1\">b"
+        );
+        assert_eq!(
+            strip_pictures("<div>a</div><div><img src=\"cid:X1\"></div><div>b</div>"),
+            "<div>a</div><div>b</div>"
+        );
+        assert_eq!(
+            picture_cids("<img src=\"cid:a\"><img src=\"cid:b\">"),
+            ["a", "b"]
+        );
+        assert_eq!(device_of("iOS Notes"), Some("iPhone".to_owned()));
+        assert_eq!(device_of("Apple Mail (2.3654)"), None);
     }
 }

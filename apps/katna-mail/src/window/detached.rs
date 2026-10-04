@@ -235,6 +235,8 @@ impl MailWindow {
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
+            .map(|d| self.ui_text_root(d, cx))
+            .children(self.render_ui_text_menu(&th, window, cx))
             .relative()
             .size_full()
             .p(px(8.0))

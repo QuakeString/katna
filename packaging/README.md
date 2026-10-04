@@ -9,6 +9,7 @@ Files that distribution packages install, and the Arch Linux package.
 | `systemd/katna-daemon.service` | `/usr/lib/systemd/user/katna-daemon.service` (systemd user unit) |
 | `dbus/<daemon bus name>.service` | `/usr/share/dbus-1/services/` (D-Bus activation, starts the unit) |
 | `desktop/<mail app ID>.desktop` | `/usr/share/applications/` |
+| `desktop/<mail app ID>.Notifications.desktop` | `/usr/share/applications/` (hidden; what notifications name as their app, without launch feedback) |
 | `krunner/<mail app ID>.desktop` | `/usr/share/krunner/dbusplugins/` (KRunner results from the daemon) |
 | `gnome-shell/<mail app ID>.search-provider.ini` | `/usr/share/gnome-shell/search-providers/` (GNOME search results from the daemon) |
 | `kio/<mail app ID>.SendFiles.desktop` | `/usr/share/kio/servicemenus/` ("Send with Katna Mail" in Dolphin; the daemon writes the user's copy with an account submenu) |

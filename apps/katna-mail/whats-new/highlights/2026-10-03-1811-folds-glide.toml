@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calendar groups fold smoothly"
+text = """
+An account's calendars in the Calendar side column now glide open and
+closed, and the small arrows on folding things (the contact card's More,
+the chat's people, Activity's accounts, an AI reply's gist) turn instead
+of flipping.
+"""

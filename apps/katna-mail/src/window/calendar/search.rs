@@ -271,7 +271,7 @@ impl MailWindow {
         let coming: Vec<&Occurrence> = found.coming.iter().filter(|o| !hidden(o)).collect();
         let past: Vec<&Occurrence> = found.past.iter().filter(|o| !hidden(o)).collect();
         if coming.is_empty() && past.is_empty() {
-            return crate::widgets::placeholder(&tr!("calendar-search-none"), th);
+            return self.placeholder(tr!("calendar-search-none"), th);
         }
         let today = Zoned::now().with_time_zone(self.tz.clone()).date();
         let mut rows: Vec<AnyElement> = self.found_days(&coming, today, th, cx);

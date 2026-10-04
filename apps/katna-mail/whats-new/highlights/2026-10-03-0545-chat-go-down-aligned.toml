@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Go-down button lined up"
+text = """
+In chats, the round button that takes you to the newest mail now sits
+right above the send button, on the same line.
+"""

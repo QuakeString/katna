@@ -28,6 +28,7 @@ mod app_menu;
 mod apps;
 mod attachments;
 mod calendar;
+pub mod capture;
 mod colors;
 mod compose;
 mod contact;
@@ -51,6 +52,7 @@ mod feedback_page;
 mod files_page;
 mod folder_pick;
 mod frost_sliders;
+mod gallery;
 mod katna_account;
 mod keymap;
 mod labels;
@@ -93,7 +95,6 @@ mod skeleton;
 mod snooze;
 mod sounds;
 mod storage;
-mod tab_strip;
 mod tasks_page;
 mod tour;
 mod translate;
@@ -223,7 +224,7 @@ const NAV_WIDTH: f32 = 256.0;
 const NAV_ROW_INSET: f32 = 8.0;
 /// The share of its shadow and of its edge a card keeps while another
 /// pane has the keys.
-const SHADOW_REST: f32 = 0.15;
+const SHADOW_REST: f32 = crate::widgets::CARD_REST;
 const EDGE_REST: f32 = 0.55;
 /// The one gap between the top bar's elements: the menu button and the
 /// app's name, the name and the search box (when the window is too narrow
@@ -316,7 +317,7 @@ fn title_width(label: f32, (brand, name): (f32, f32)) -> f32 {
 /// The space between "Katna" and the app's name.
 const TITLE_WORD_GAP: f32 = 6.0;
 /// Corners of cards that float: menus aside, dialogs and panels.
-const PANEL_RADIUS: f32 = 15.0;
+const PANEL_RADIUS: f32 = katna_ui::tokens::radius::LG;
 const SEARCH_WIDTH: f32 = 720.0;
 /// The narrowest the search box gets beside the top bar's buttons.
 const SEARCH_MIN_WIDTH: f32 = 120.0;
@@ -495,6 +496,17 @@ pub struct MailWindow {
     /// new name has rolled in (0 to 1).
     title_from: RailApp,
     title_roll: Spring,
+    /// The big button's icon and word now and the ones it turns away from
+    /// as the page (or a drive's upload) changes them, and how far it has
+    /// turned (0 to 1).
+    primary_icon: &'static str,
+    primary_icon_from: &'static str,
+    primary_label: String,
+    primary_label_from: String,
+    primary_icon_turn: Spring,
+    /// How wide the big button's word is drawn this frame: eased from the
+    /// old word's width to the new one's while it turns.
+    primary_label_width: f32,
     /// The account picture at the top right rolling from the last
     /// account's, and how far the new one has rolled in (0 to 1).
     avatar_roll: account_roll::AvatarRoll,
@@ -598,6 +610,15 @@ pub struct MailWindow {
     translations: translate::Translations,
     /// The selected text of the open conversation.
     text: select::TextSelection,
+    /// The selected text outside the conversation: dialogs, Settings,
+    /// pages, errors.
+    ui_text: select::TextSelection,
+    /// The last text pressed was outside the conversation: `ui_text` has
+    /// the selection.
+    ui_active: bool,
+    /// This window's own handle, for text made selectable where no
+    /// `Context` is at hand (`select::selectable_in`).
+    me: WeakEntity<Self>,
     /// Whether a conversation is open: in place of the list with two
     /// panes, beside it with three.
     reading: bool,
@@ -615,6 +636,10 @@ pub struct MailWindow {
     search_panel: Option<SearchPanel>,
     search_panel_spring: Spring,
     menu: Option<Menu>,
+    /// The popup menu open at the last frame, and the one fading out
+    /// since it closed (`list::track_menu_fade`).
+    menu_was: Option<Menu>,
+    menu_fade: Option<(Menu, Instant)>,
     /// The right-click menu of the list.
     context_menu: Option<context_menu::ContextMenu>,
     /// Conversations summed up by AI, and the card beside a line.
@@ -704,6 +729,11 @@ pub struct MailWindow {
     share_ask_later: bool,
     /// The About Katna dialog.
     about: Option<about::About>,
+    /// When the version's copy button was last clicked: it shows a check
+    /// for a moment.
+    version_copied: Option<std::time::Instant>,
+    /// Every shared control, in development builds.
+    gallery: Option<gallery::Gallery>,
     /// Updates of Katna, shown in About.
     updates: updates::Updates,
     /// Follows uploads to Google Drive, once one started.
@@ -859,6 +889,7 @@ impl MailWindow {
         // features know it by the time they are opened.
         cx.on_next_frame(window, |this, window, cx| this.katna_load(window, cx));
         this.listen(cx);
+        colors::apply_motion(&this.config.mail, this.desktop_colors.motion, cx);
         this.watch_colors(cx);
         if let Some(err) = this.mail.as_ref().ok().and_then(Mail::index_error) {
             tracing::info!("{err}");
@@ -909,6 +940,12 @@ impl MailWindow {
             search_pressed: false,
             title_from: RailApp::Mail,
             title_roll: Spring::new(motion::SLIDE, 1.0),
+            primary_icon: "compose",
+            primary_icon_from: "compose",
+            primary_label: String::new(),
+            primary_label_from: String::new(),
+            primary_label_width: 0.0,
+            primary_icon_turn: Spring::new(motion::SMOOTH, 1.0),
             avatar_roll: account_roll::AvatarRoll::new(),
             avatar_turn: Spring::new(motion::SLIDE, 1.0),
             compose_shown: Spring::new(motion::SMOOTH, 1.0),
@@ -927,6 +964,9 @@ impl MailWindow {
             hovered_link: None,
             translations: translate::Translations::default(),
             text: select::TextSelection::new(cx),
+            ui_text: select::TextSelection::new_windowed(cx),
+            ui_active: false,
+            me: cx.entity().downgrade(),
             accounts: Vec::new(),
             quotas: HashMap::new(),
             storage_account: std::cell::Cell::new(None),
@@ -973,6 +1013,8 @@ impl MailWindow {
             search_panel: None,
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
             menu: None,
+            menu_was: None,
+            menu_fade: None,
             context_menu: None,
             summaries: reader::Summaries::default(),
             nav_menu: None,
@@ -1019,6 +1061,8 @@ impl MailWindow {
             print_preview: None,
             share_ask_later: false,
             about: None,
+            version_copied: None,
+            gallery: None,
             updates: updates::Updates::default(),
             drive_watch: None,
             tour: None,
@@ -1625,14 +1669,22 @@ impl MailWindow {
         if matches!(self.listing, Some(Listing::Search { .. })) {
             self.before_search = None;
         }
-        self.keep_line = self
-            .list_state
-            .bounds_for_item(ix)
-            .map(|bounds| list::KeepLine {
-                ix,
-                top: bounds.top() - self.list_state.viewport_bounds().top(),
-                placed: false,
-            });
+        // With a conversation already beside the list the lines keep their
+        // height, so the list stays where it was scrolled; only a line cut
+        // off at an edge comes fully into view.
+        if self.pane_open() {
+            self.keep_line = None;
+            self.list_state.scroll_to_reveal_item(ix);
+        } else {
+            self.keep_line = self
+                .list_state
+                .bounds_for_item(ix)
+                .map(|bounds| list::KeepLine {
+                    ix,
+                    top: bounds.top() - self.list_state.viewport_bounds().top(),
+                    placed: false,
+                });
+        }
         self.selected = Some(ix);
         self.reading = true;
         self.menu = None;
@@ -3433,7 +3485,10 @@ impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         // Text without a size of its own follows Settings > Appearance > Scaling.
         window.set_rem_size(px(16.0));
+        // Before anything draws text that can be selected.
+        self.ui_text.begin_window(window);
         self.chrome.sync_look(window, cx);
+        self.track_menu_fade(cx);
         if self.detached {
             let detached = self.render_detached(window, cx);
             self.fetch_pictures(cx);
@@ -3600,8 +3655,31 @@ impl Render for MailWindow {
         self.compose_dock.tick(window, reduce);
         self.reader_bar.tick(&self.reader_scroll, window, cx);
         self.title_roll.tick(window, reduce);
+        let (primary_icon, primary_label) = self.primary_button();
+        if self.primary_label.is_empty() {
+            // The first frame shows the button as it is, with no turn.
+            self.primary_icon = primary_icon;
+            self.primary_label = primary_label;
+        } else if primary_icon != self.primary_icon || primary_label != self.primary_label {
+            self.primary_icon_from = self.primary_icon;
+            self.primary_icon = primary_icon;
+            self.primary_label_from = std::mem::replace(&mut self.primary_label, primary_label);
+            self.primary_icon_turn.snap(0.0);
+            self.primary_icon_turn.set(1.0);
+        }
+        let turn = self.primary_icon_turn.tick(window, reduce).clamp(0.0, 1.0);
+        let word = |label: &str| compose_text_width(label, self.font.as_ref(), window);
+        self.primary_label_width = if turn >= 0.999 {
+            word(&self.primary_label)
+        } else {
+            lerp(
+                word(&self.primary_label_from),
+                word(&self.primary_label),
+                turn,
+            )
+        };
         self.avatar_turn.tick(window, reduce);
-        let compose_text = compose_text_width(&self.primary_button().1, self.font.as_ref(), window);
+        let compose_text = self.primary_label_width;
         let content = match &self.mail {
             _ if onboarding => self.render_onboarding(&th, window, cx),
             Err(err) => self.render_error(err, &th, cx),
@@ -3783,11 +3861,13 @@ impl Render for MailWindow {
             self.render_share_ask(&th, window, reduce, cx)
         };
         let about = self.render_about(&th, window, reduce, cx);
+        let gallery = self.render_gallery(cx);
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
         let context_menu = self.render_context_menu(&th, window, cx);
         let summary_peek = self.render_summary_peek(&th, window, cx);
         let contact_sheet = self.render_contact_sheet(&th, window, cx);
+        let contact_peek = self.render_contact_peek(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
         // An account's own color, from Settings > Accounts or its
         // right-click menu.
@@ -3813,11 +3893,19 @@ impl Render for MailWindow {
             self.render_sign_in_again(&th, window, reduce, cx)
         };
         let tour = self.render_tour(&th, window, cx);
+        // GPUI does not clip to the frame's rounded corners, so the
+        // backdrop rounds its own bottom ones.
+        let (bottom_left, bottom_right) = self.chrome.content_corners(window);
+        let ui_text_menu = self.render_ui_text_menu(&th, window, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
+            .map(|d| self.ui_text_root(d, cx))
+            .children(ui_text_menu)
             .relative()
             .size_full()
             .bg(rgba(th.backdrop))
+            .rounded_bl(px(bottom_left))
+            .rounded_br(px(bottom_right))
             .text_color(rgba(th.text))
             // Where the menu bar's actions start when the focus is lost.
             .child(div().absolute().size_0().track_focus(&self.window_focus))
@@ -3849,6 +3937,7 @@ impl Render for MailWindow {
             .children(summary_peek)
             .children(context_menu)
             .children(contact_sheet)
+            .children(contact_peek)
             .children(nav_menu)
             .children(snooze_menu)
             .children(quiet_menu)
@@ -3865,6 +3954,7 @@ impl Render for MailWindow {
             .children(whats_new)
             .children(share_ask)
             .children(about)
+            .children(gallery)
             .children(update_dialog)
             .children(print_preview)
             .children(upload_tray)
@@ -4061,8 +4151,7 @@ fn page_card(th: &Theme) -> gpui::Div {
         .items_center()
         .justify_center()
         .gap(px(12.0))
-        .rounded(px(PANEL_RADIUS))
-        .map(|d| crate::widgets::pane(d, th.pane(), th.surface, PANEL_RADIUS))
+        .map(|d| crate::widgets::card(d, th, th.pane(), PANEL_RADIUS, 0.0))
 }
 
 /// The undo-send countdown: a ring `size` wide in `color` on `track`,

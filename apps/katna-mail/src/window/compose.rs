@@ -518,9 +518,16 @@ fn body_parts(body: &Doc, plain: bool, domain: &str) -> (Option<String>, Vec<Par
     // Each picture gets a name of its own in the message, even when the
     // same one was pasted twice.
     let mut doc = body.clone();
-    for (ix, block) in doc.blocks.iter_mut().enumerate() {
-        if let Block::Image(image) = block {
-            image.id = ix as u64;
+    let mut next = 0;
+    for block in &mut doc.blocks {
+        let images = match block {
+            Block::Image(image) => std::slice::from_mut(image),
+            Block::Html(designed) => designed.images.as_mut_slice(),
+            _ => &mut [],
+        };
+        for image in images {
+            image.id = next;
+            next += 1;
         }
     }
     let seed = std::process::id() as u64 ^ jiff::Timestamp::now().as_millisecond() as u64;
@@ -1059,6 +1066,34 @@ impl MailWindow {
         self.chips_changed(Field::To, cx);
     }
 
+    /// Opens a new message with `subject` and `blocks` as its text, above
+    /// the signature, the cursor in To: a note sent as mail.
+    pub(in crate::window) fn open_compose_with(
+        &mut self,
+        subject: String,
+        blocks: Vec<katna_ui::rich::Block>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.open_compose(Kind::New, None, window, cx);
+        let Some(compose) = &mut self.compose else {
+            return;
+        };
+        if compose.kind != Kind::New || compose.touched(cx) {
+            return;
+        }
+        compose
+            .subject
+            .update(cx, |input, cx| input.set_text(subject, cx));
+        let mut doc = compose.body.read(cx).doc().clone();
+        doc.blocks.splice(0..1.min(doc.blocks.len()), blocks);
+        compose.body.update(cx, |editor, cx| {
+            editor.set_doc(doc.clone(), doc.start(), cx)
+        });
+        let focus = compose.to.focus_handle(cx);
+        window.focus(&focus, cx);
+    }
+
     /// Sends the open new message from `account`, as picking it in From.
     pub(super) fn send_compose_from(&mut self, account: AccountId) {
         if let Some(compose) = &mut self.compose
@@ -1250,6 +1285,7 @@ impl MailWindow {
         let body = cx.new(|cx| {
             let mut editor = RichEditor::new("", cx);
             editor.set_palette(palette(&th));
+            editor.set_html_view(super::rich::html_view(th));
             editor.set_doc(draft.body.clone(), draft.body.start(), cx);
             editor.set_spell_check(speller, cx);
             editor.set_grammar_check(grammar, cx);
@@ -1386,6 +1422,8 @@ impl MailWindow {
                     },
                     cx,
                 ),
+                // Compose turns neither on.
+                RichEvent::OpenLink(_) | RichEvent::Pick(_) => {}
             },
         ));
         let focus = if focus_body {
@@ -3051,6 +3089,28 @@ mod tests {
             here,
             window_open,
             answer_then_new: false,
+        }
+    }
+
+    #[test]
+    fn designed_signature_pictures_are_parts() {
+        let png = "data:image/png;base64,iVBORw0KGgo=";
+        let mut next = 0;
+        let designed = html::html_block(
+            &format!(
+                "<table><tr><td><img src=\"{png}\"></td><td><img src=\"{png}\"></td></tr></table>"
+            ),
+            &mut next,
+        );
+        let mut body = html::from_plain("Hi");
+        body.blocks.push(Block::Html(designed));
+        let (sent, inline) = body_parts(&body, false, "example.com");
+        let sent = sent.expect("html");
+        assert_eq!(inline.len(), 2);
+        let ids: Vec<String> = inline.iter().filter_map(|p| p.content_id.clone()).collect();
+        assert_ne!(ids[0], ids[1]);
+        for id in ids {
+            assert!(sent.contains(&format!("src=\"cid:{id}\"")), "{sent}");
         }
     }
 

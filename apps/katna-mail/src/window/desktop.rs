@@ -301,6 +301,12 @@ impl MailWindow {
                 return;
             }
             Request::Search(text) => self.search_for(text, window, cx),
+            // The card opens over whatever is in front; the mail window
+            // stays where it is.
+            Request::Capture(param) => {
+                super::capture::open(&param, cx);
+                return;
+            }
             Request::Attach { from, paths } => self.open_with_files(from, paths, window, cx),
             // The app may reopen on another page: the mail is on Mail.
             Request::ShowMessage(id) => {
@@ -308,8 +314,13 @@ impl MailWindow {
                 self.show_message(MessageId(id), window, cx);
             }
             // `calendar:<day>` shows that day on the Calendar page (with
-            // `:new`, a new event on it); `tasks:<id>` opens that task.
+            // `:new`, a new event on it); `tasks:<id>` opens that task, and
+            // `notes:<id>` that note.
             Request::Page(page) => {
+                if page == "gallery" {
+                    self.open_gallery(window, cx);
+                    return;
+                }
                 let (name, detail, new_event) = app_action::page_parts(&page);
                 let Some(app) = RailApp::from_key(name) else {
                     tracing::warn!(page, "unknown page");
@@ -337,6 +348,12 @@ impl MailWindow {
                     RailApp::Tasks => {
                         if let Some(id) = detail.and_then(|id| id.parse::<i64>().ok()) {
                             self.task_open_when_read(id, window, cx);
+                        }
+                    }
+                    // `notes:<id>`: a note's reminder was clicked.
+                    RailApp::Notes => {
+                        if let Some(id) = detail.and_then(|id| id.parse::<i64>().ok()) {
+                            self.open_note_by_id(id, window, cx);
                         }
                     }
                     _ => {}

@@ -32,9 +32,7 @@ use super::MailWindow;
 use super::add_account::text_button;
 use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    Check, FocusRing, checkbox, elevation, filled_button, icon, icon_button, menu, tip,
-};
+use crate::widgets::{Check, FocusRing, checkbox, filled_button, icon, icon_button, menu, tip};
 use crate::{daemon, data, format};
 
 const WIDTH: f32 = 680.0;
@@ -1245,7 +1243,7 @@ impl MailWindow {
         let width = WIDTH.min(vw - 32.0);
         let narrow = width < NARROW;
         let e = self.rule_editor.as_ref()?;
-        let body = self.rule_editor_body(e, narrow, th, window, cx);
+        let body = self.rule_editor_body(e, narrow, th, cx);
         let pick = self.render_rule_pick(e, th, cx);
         let card = div()
             .id("rule-editor")
@@ -1258,11 +1256,8 @@ impl MailWindow {
             .min_h_0()
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
         Some(
             div()
@@ -1304,7 +1299,6 @@ impl MailWindow {
         e: &RuleEditor,
         narrow: bool,
         th: &Theme,
-        window: &Window,
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let picked = e.pick.map(|p| p.0);
@@ -1313,7 +1307,7 @@ impl MailWindow {
         } else {
             tr!("rules-editor-edit-title")
         };
-        let name = text_field("rule-name", &e.name, 44.0, th, window, cx);
+        let name = text_field("rule-name", &e.name, 44.0, th, cx);
         let when = div()
             .mt(px(16.0))
             .flex()
@@ -1395,7 +1389,7 @@ impl MailWindow {
                             .on_click(pick_at(Pick::Comparator(ix), cx)),
                         )
                         .child(
-                            text_area_field(("rule-value", ix), &row.value, th, window, cx)
+                            text_area_field(("rule-value", ix), &row.value, th, cx)
                                 .flex_1()
                                 .min_w(px(160.0)),
                         )
@@ -1463,21 +1457,16 @@ impl MailWindow {
                         .on_click(pick_at(Pick::Folder(ix), cx))
                         .into_any_element()
                     }
-                    ActionKind::Forward => {
-                        text_field(("rule-text", ix), &row.text, 36.0, th, window, cx)
-                            .flex_1()
-                            .into_any_element()
-                    }
+                    ActionKind::Forward => text_field(("rule-text", ix), &row.text, 36.0, th, cx)
+                        .flex_1()
+                        .into_any_element(),
                     ActionKind::MarkReadAfter => div()
                         .flex_1()
                         .flex()
                         .flex_row()
                         .items_center()
                         .gap(px(8.0))
-                        .child(
-                            text_field(("rule-text", ix), &row.text, 36.0, th, window, cx)
-                                .w(px(80.0)),
-                        )
+                        .child(text_field(("rule-text", ix), &row.text, 36.0, th, cx).w(px(80.0)))
                         .child(
                             div()
                                 .text_size(px(14.0))
@@ -1551,7 +1540,7 @@ impl MailWindow {
                 .line_height(px(18.0))
                 .text_color(rgba(th.error))
                 .child(icon("warning", th.error, 18.0))
-                .child(div().flex_1().min_w_0().child(err))
+                .child(self.copyable(err, th).flex_1().min_w_0())
         });
         let buttons = self.rule_editor_buttons(e, th, cx);
         let scroll = div()
@@ -2216,30 +2205,12 @@ fn text_field(
     input: &Entity<TextInput>,
     height: f32,
     th: &Theme,
-    window: &Window,
     cx: &App,
 ) -> Stateful<gpui::Div> {
-    use crate::widgets::ScaledEdge;
-    let focus = input.focus_handle(cx);
-    let focused = focus.is_focused(window);
-    div()
-        .id(id)
+    crate::widgets::field(id, &input.focus_handle(cx), th)
         .h(px(height))
-        .px(px(if focused { 11.0 } else { 12.0 }))
         .flex()
         .items_center()
-        .rounded(px(8.0))
-        .map(|d| {
-            if focused {
-                d.border_px(2.0)
-            } else {
-                d.border_1()
-            }
-        })
-        .border_color(rgba(if focused { th.accent } else { th.outline }))
-        .text_size(px(15.0))
-        .cursor_text()
-        .on_click(move |_, window, cx| window.focus(&focus, cx))
         .child(div().flex_1().min_w_0().child(input.clone()))
 }
 
@@ -2249,32 +2220,14 @@ fn text_area_field(
     id: impl Into<ElementId>,
     area: &Entity<TextArea>,
     th: &Theme,
-    window: &Window,
     cx: &App,
 ) -> Stateful<gpui::Div> {
-    use crate::widgets::ScaledEdge;
-    let focus = area.focus_handle(cx);
-    let focused = focus.is_focused(window);
-    div()
-        .id(id)
+    crate::widgets::field(id, &area.focus_handle(cx), th)
         .min_h(px(36.0))
-        .px(px(if focused { 11.0 } else { 12.0 }))
-        .py(px(if focused { 6.0 } else { 7.0 }))
+        .py(px(7.0))
         .flex()
         .items_center()
-        .rounded(px(8.0))
-        .map(|d| {
-            if focused {
-                d.border_px(2.0)
-            } else {
-                d.border_1()
-            }
-        })
-        .border_color(rgba(if focused { th.accent } else { th.outline }))
-        .text_size(px(15.0))
         .line_height(px(20.0))
-        .cursor_text()
-        .on_click(move |_, window, cx| window.focus(&focus, cx))
         .child(div().flex_1().min_w_0().child(area.clone()))
 }
 

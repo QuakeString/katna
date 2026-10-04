@@ -28,10 +28,10 @@ pub(in crate::window) mod subject;
 mod write;
 
 use super::super::MailWindow;
-use super::super::search_panel::chip;
 use super::super::settings_page::Section;
 use crate::daemon::{self, Command, Rephrased};
 use crate::theme::{Theme, fade};
+use crate::widgets::choice_chip;
 use crate::widgets::{
     elevation, filled_button, icon, icon_button_colored, outlined_button, raised, tip,
 };
@@ -631,7 +631,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let tone_chip = |tone: Tone, label: String| {
-            chip(
+            choice_chip(
                 ("compose-rephrase-tone", tone as usize),
                 &label,
                 r.tone == tone,
@@ -647,7 +647,7 @@ impl MailWindow {
             .gap(px(6.0))
             .children(FIRST_TONES.map(|tone| tone_chip(tone, tone_label(tone))))
             .child(
-                chip("compose-rephrase-more", "⋯", r.more, th)
+                choice_chip("compose-rephrase-more", "⋯", r.more, th)
                     .rounded_full()
                     .tooltip(tip(tr!("compose-ai-more"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
@@ -897,17 +897,17 @@ pub(in crate::window) fn problem_text(problem: &str, service: &str) -> (String, 
             tr!("compose-ai-sign-in"),
             Fix::Settings(Section::Subscriptions),
         ),
-        problem::PAY => (tr!("compose-ai-pay"), Fix::Settings(Section::Signatures)),
+        problem::PAY => (tr!("compose-ai-pay"), Fix::Settings(Section::Ai)),
         problem::TOO_MANY => (tr!("compose-ai-too-many"), Fix::Retry),
         problem::NO_KEY => (
             tr!("compose-ai-no-key", service = service),
-            Fix::Settings(Section::Signatures),
+            Fix::Settings(Section::Ai),
         ),
         problem::BAD_KEY => (
             tr!("compose-ai-bad-key", service = service),
-            Fix::Settings(Section::Signatures),
+            Fix::Settings(Section::Ai),
         ),
-        problem::OFF => (tr!("compose-ai-off"), Fix::Settings(Section::Signatures)),
+        problem::OFF => (tr!("compose-ai-off"), Fix::Settings(Section::Ai)),
         _ => (tr!("compose-ai-failed", service = service), Fix::Retry),
     }
 }
@@ -961,7 +961,10 @@ pub(in crate::window) fn pulsing(id: &'static str, shapes: gpui::Div, reduce: bo
     shapes
         .with_animation(
             id,
-            Animation::new(std::time::Duration::from_millis(1800)).repeat(),
+            Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                1800,
+            )))
+            .repeat(),
             |el, t| {
                 let wave = 0.5 - 0.5 * (t * std::f32::consts::TAU).cos();
                 el.opacity(0.55 + 0.45 * wave)

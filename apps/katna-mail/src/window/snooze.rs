@@ -25,9 +25,14 @@ use crate::widgets::{filled_button, icon, icon_button, raised};
 
 const MENU_WIDTH: f32 = 300.0;
 
-/// The open snooze menu, for the lines `keys`.
+/// The open snooze menu, for the lines `keys`; or the reminder menu of
+/// notes, the same times and picker.
 pub(super) struct SnoozeMenu {
     keys: Vec<EntryKey>,
+    /// The notes it sets a reminder on, when it is their menu.
+    notes: Vec<i64>,
+    /// Those notes have a reminder, which it can take off.
+    reminded: bool,
     /// Where it opens, in the window.
     at: Point<Pixels>,
     picker: Option<Picker>,
@@ -126,6 +131,32 @@ impl MailWindow {
         self.context_menu = None;
         self.snooze_menu = Some(SnoozeMenu {
             keys,
+            notes: Vec::new(),
+            reminded: false,
+            at,
+            picker: None,
+        });
+        cx.notify();
+    }
+
+    /// Opens the reminder menu of notes `ids` at `at`; `reminded` offers
+    /// to take their reminder off.
+    pub(super) fn open_remind_menu(
+        &mut self,
+        ids: Vec<i64>,
+        reminded: bool,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        if ids.is_empty() {
+            return;
+        }
+        self.menu = None;
+        self.context_menu = None;
+        self.snooze_menu = Some(SnoozeMenu {
+            keys: Vec::new(),
+            notes: ids,
+            reminded,
             at,
             picker: None,
         });
@@ -152,6 +183,10 @@ impl MailWindow {
         let Some(menu) = self.snooze_menu.take() else {
             return;
         };
+        if !menu.notes.is_empty() {
+            self.remind_notes(menu.notes, Some(until.as_second()), cx);
+            return;
+        }
         self.act(Act::Snooze(until.as_second()), menu.keys, cx);
     }
 
@@ -211,7 +246,19 @@ impl MailWindow {
             return;
         };
         if at.as_second() < Timestamp::now().as_second() + 60 {
-            self.show_snackbar(tr!("snooze-in-the-past"), None, cx);
+            let notes = self
+                .snooze_menu
+                .as_ref()
+                .is_some_and(|m| !m.notes.is_empty());
+            self.show_snackbar(
+                if notes {
+                    tr!("notes-remind-in-the-past")
+                } else {
+                    tr!("snooze-in-the-past")
+                },
+                None,
+                cx,
+            );
             return;
         }
         self.snooze_until(at, cx);
@@ -284,6 +331,10 @@ impl MailWindow {
 
     fn render_snooze_times(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let now = Timestamp::now().to_zoned(self.tz.clone());
+        let (notes, reminded) = self
+            .snooze_menu
+            .as_ref()
+            .map_or((false, false), |m| (!m.notes.is_empty(), m.reminded));
         let items = presets(&now).into_iter().enumerate().map(|(ix, preset)| {
             let at = preset.at.timestamp();
             div()
@@ -326,7 +377,11 @@ impl MailWindow {
                 .text_size(px(12.0))
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.text_dim))
-                .child(tr!("snooze-until")),
+                .child(if notes {
+                    tr!("notes-remind-me")
+                } else {
+                    tr!("snooze-until")
+                }),
         )
         .children(items)
         .child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
@@ -346,9 +401,34 @@ impl MailWindow {
                 .child(tr!("snooze-pick"))
                 .on_click(cx.listener(|this, _, window, cx| this.open_snooze_picker(window, cx))),
         )
+        .when(reminded, |d| {
+            d.child(
+                div()
+                    .id("remind-off")
+                    .h(px(40.0))
+                    .px(px(16.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(16.0))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.hover)))
+                    .menu_key(th)
+                    .child(icon("bell-off", th.text_dim, 20.0))
+                    .child(tr!("notes-remind-off"))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        if let Some(menu) = this.snooze_menu.take() {
+                            this.remind_notes(menu.notes, None, cx);
+                        }
+                    })),
+            )
+        })
         .with_animation(
             "snooze-menu",
-            Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
+            Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                140,
+            )))
+            .with_easing(ease_out_quint()),
             |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
         )
         .into_any_element()

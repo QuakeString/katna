@@ -136,8 +136,24 @@ pub struct NoteItem {
     /// The `Message-ID` of the mail the note is about, or empty.
     pub link: String,
     /// `body` formatted, as HTML with one paragraph per line; empty when
-    /// it has no formatting.
+    /// it has no formatting. Pictures are named `cid:<cid>`.
     pub html: String,
+    /// When it reminds, in UTC seconds; 0 for never.
+    pub remind_at: i64,
+    /// Whether `pictures` replace the note's; else they stay as they are.
+    pub pictures_set: bool,
+    pub pictures: Vec<NotePictureItem>,
+}
+
+/// A picture in a note, for `SaveNote`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct NotePictureItem {
+    pub cid: String,
+    pub name: String,
+    pub mime: String,
+    pub width: u32,
+    pub height: u32,
+    pub data: Vec<u8>,
 }
 
 /// A file going up to Google Drive or OneDrive for a message, from
@@ -457,6 +473,10 @@ pub mod app_action {
     /// send from (empty for the usual one), then the files' full paths.
     /// Folders go as zips.
     pub const ATTACH: &str = "attach";
+    /// Open the quick capture card over whatever is on screen ("Catch a
+    /// thought from anywhere"); the parameter (`s`) is `task` or `note`,
+    /// with `:` and the text it starts with if any ([`capture`]).
+    pub const CAPTURE: &str = "capture";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
     /// has one. The flags of [`takes_message`] actions are followed by the
@@ -474,6 +494,7 @@ pub mod app_action {
             SEARCH => Some("--search"),
             OPEN_PAGE => Some("--page"),
             ATTACH => Some("--attach"),
+            CAPTURE => Some("--capture"),
             _ => None,
         }
     }
@@ -500,6 +521,29 @@ pub mod app_action {
 
     const NEW_EVENT: &str = "new";
 
+    /// [`CAPTURE`]'s parameter for a task.
+    pub const CAPTURE_TASK: &str = "task";
+    /// [`CAPTURE`]'s parameter for a note.
+    pub const CAPTURE_NOTE: &str = "note";
+
+    /// [`CAPTURE`]'s parameter: `kind` ([`CAPTURE_TASK`] or
+    /// [`CAPTURE_NOTE`]), then the text the card starts with, if any:
+    /// `task`, `note:Call Anita back`.
+    pub fn capture(kind: &str, text: &str) -> String {
+        if text.is_empty() {
+            kind.to_owned()
+        } else {
+            format!("{kind}:{text}")
+        }
+    }
+
+    /// Takes [`CAPTURE`]'s parameter apart: whether it is a note, and the
+    /// text. Anything but `note` is a task.
+    pub fn capture_parts(param: &str) -> (bool, &str) {
+        let (kind, text) = param.split_once(':').unwrap_or((param, ""));
+        (kind.trim() == CAPTURE_NOTE, text)
+    }
+
     #[cfg(test)]
     #[test]
     fn calendar_pages_round_trip() {
@@ -509,6 +553,16 @@ pub mod app_action {
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), false));
         let page = calendar_page("2026-10-01", true);
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), true));
+    }
+
+    #[cfg(test)]
+    #[test]
+    fn capture_round_trips() {
+        assert_eq!(capture_parts(&capture(CAPTURE_TASK, "")), (false, ""));
+        assert_eq!(capture_parts("note"), (true, ""));
+        let param = capture(CAPTURE_NOTE, "Ideas: a: b");
+        assert_eq!(capture_parts(&param), (true, "Ideas: a: b"));
+        assert_eq!(capture_parts("task:Buy milk"), (false, "Buy milk"));
     }
 
     /// After a reply's message ID on the command line: the text the reply
@@ -522,7 +576,7 @@ pub mod app_action {
 
     /// Whether `action`'s parameter is text.
     pub fn takes_text(action: &str) -> bool {
-        matches!(action, SEARCH | OPEN_PAGE)
+        matches!(action, SEARCH | OPEN_PAGE | CAPTURE)
     }
 }
 
@@ -1132,6 +1186,14 @@ macro_rules! pim_proxy {
             /// website, and under the same authentication rule as
             /// [`Self::sender_picture`].
             fn company_of(&self, address: &str, website: &str) -> zbus::Result<String>;
+
+            /// The signatures Gmail adds to the mail of `account`, by the
+            /// address it sends as, the default first: (address, name,
+            /// signature as HTML), only addresses that have one. Fails
+            /// with `AuthFailed` when the account's sign-in does not allow
+            /// it (sign in again), and for an account that is not a Gmail
+            /// account signed in with Google.
+            fn gmail_signatures(&self, account: i64) -> zbus::Result<Vec<(String, String, String)>>;
 
             /// Translates `text`, the plain text of `message` (HTML made
             /// plain, quotes and signature kept, never attachments), from

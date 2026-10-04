@@ -23,7 +23,7 @@ use super::MailWindow;
 use crate::data::{Entry, Mail};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, icon_button, icon_button_colored, raised, tip};
+use crate::widgets::{icon, icon_button, icon_button_colored, raised, tip};
 
 /// At most this many tracked messages are read.
 const LIMIT: u32 = 500;
@@ -264,6 +264,7 @@ pub(super) struct Report {
     counting: Option<Task<()>>,
     /// The account menu is open.
     accounts_open: bool,
+    accounts_arrow: crate::widgets::Fold,
 }
 
 impl MailWindow {
@@ -403,6 +404,7 @@ impl MailWindow {
             insights: None,
             counting: None,
             accounts_open: false,
+            accounts_arrow: crate::widgets::Fold::default(),
         });
         self.fill_report(Period::Month);
         self.count_insights(cx);
@@ -915,7 +917,8 @@ impl MailWindow {
             )
             .with_animation(
                 "activity-menu",
-                Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                    .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
             );
         let close = || {
@@ -982,7 +985,7 @@ impl MailWindow {
             )
         };
         let chip = |id: usize, label: String, on: bool| {
-            super::search_panel::chip(("activity-period", id), &label, on, th)
+            crate::widgets::choice_chip(("activity-period", id), label.clone(), on, th)
         };
         let custom = matches!(report.period, Period::Custom(..)) || report.editing;
         let periods = div()
@@ -1057,7 +1060,7 @@ impl MailWindow {
                         div()
                             .text_size(px(12.0))
                             .text_color(rgba(th.error))
-                            .child(tr!("search-dates-unreadable")),
+                            .child(self.copyable(tr!("search-dates-unreadable"), th)),
                     )
                 })
         });
@@ -1249,10 +1252,7 @@ impl MailWindow {
                         .max_h_full()
                         .flex()
                         .flex_col()
-                        .rounded(px(16.0))
-                        .overflow_hidden()
-                        .map(|d| crate::widgets::frosted(d, th, th.surface, 16.0))
-                        .shadow(elevation(th, 3.0))
+                        .map(|d| crate::widgets::dialog(d, th, th.surface))
                         .child(
                             div()
                                 .flex_none()
@@ -1371,12 +1371,10 @@ impl MailWindow {
                 d.child(self.person_avatar(&name(a), a.address.trim(), 20.0))
             })
             .child(div().min_w_0().truncate().child(label))
-            .child(icon(
-                if report.accounts_open {
-                    "chevron-up"
-                } else {
-                    "chevron-down"
-                },
+            .child(crate::widgets::fold_arrow(
+                "activity-accounts-arrow",
+                &report.accounts_arrow,
+                report.accounts_open,
                 th.text_dim,
                 16.0,
             ))
@@ -1522,7 +1520,7 @@ impl MailWindow {
                             .py(px(16.0))
                             .text_size(px(14.0))
                             .text_color(rgba(th.error))
-                            .child(tr!("insights-failed")),
+                            .child(self.copyable(tr!("insights-failed"), th)),
                     )
                     .into_any_element();
             }

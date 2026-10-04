@@ -115,6 +115,7 @@ impl Daemon {
                         repeat,
                         starred: task.starred,
                         mail: task.mail,
+                        labels: task.labels,
                     },
                 )?);
             }

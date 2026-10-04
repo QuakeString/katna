@@ -10,6 +10,8 @@
 
 mod agenda;
 pub mod ai;
+mod capture;
+mod clipboard;
 mod crash_upload;
 pub mod daemon;
 mod desktop;
@@ -214,6 +216,7 @@ impl Instance {
             daemon::settings(&index_paths).general.search_triggers,
         );
         daemon.set_finder(finder.clone());
+        finder.set_daemon(&daemon);
         desktop_search::serve(&connection, finder.clone()).await?;
         agenda::serve(&connection, daemon.clone()).await?;
         let (shell, shell_paths) = (connection.clone(), index_paths.clone());

@@ -18,7 +18,7 @@ use std::rc::Rc;
 use std::time::Instant;
 
 use gpui::{
-    AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, MouseButton, MouseDownEvent,
+    AnimationExt, AnyElement, ClipboardItem, Context, Div, FontWeight, MouseButton, MouseDownEvent,
     SharedString, Window, div, prelude::*, relative, rgba,
 };
 use katna_i18n::tr;
@@ -32,8 +32,9 @@ use katna_ui::{px, unpx};
 use super::super::attachments::{Thumb, kind_badge};
 use super::super::compose::Kind;
 use super::super::context_menu::Rows;
-use super::super::{MailWindow, Menu};
-use super::{Conversation, Part, first_name, key_number, read};
+use super::super::select::Pieces;
+use super::super::{MailWindow, Menu, rich};
+use super::{Conversation, Part, first_name, key_number, read, tracking};
 use crate::daemon::Command;
 use crate::data::Mail;
 use crate::format;
@@ -106,6 +107,7 @@ pub(in crate::window) struct ChatState {
     /// opening it is, so each one plays its slide again.
     people: Option<usize>,
     people_runs: usize,
+    people_arrow: crate::widgets::Fold,
     /// The reply box's height as last drawn, and as the feed last saw
     /// it: chips or the formatting bar growing it keep a feed at its end
     /// there.
@@ -616,16 +618,9 @@ impl MailWindow {
         let feed: Vec<AnyElement> = lines
             .iter()
             .map(|line| match line {
-                Line::Day(label) => div()
+                Line::Day(label) => crate::widgets::tag(label.clone(), th)
                     .self_center()
                     .my(px(8.0))
-                    .px(px(10.0))
-                    .py(px(2.0))
-                    .rounded_full()
-                    .bg(rgba(th.chip))
-                    .text_size(px(12.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(label.clone())
                     .into_any_element(),
                 Line::Joined(who, names) => div()
                     .self_center()
@@ -757,14 +752,22 @@ impl MailWindow {
                     .children(self.render_chat_summary_drop(th, cx))
                     .children(self.render_chat_people(th, cx))
                     .children(self.render_pin_list(th, cx))
-                    .children(self.render_pin_replace(th, cx)),
+                    .children(self.render_pin_replace(th, cx))
+                    // Where the link under the pointer really goes.
+                    .children(
+                        self.hovered_link
+                            .as_ref()
+                            .map(|link| rich::link_status(&link.url, th)),
+                    ),
             )
             .child(reply)
             .children(self.render_text_menu(th, cx))
             .with_animation(
                 ("open-chat", key_number(key)),
-                gpui::Animation::new(std::time::Duration::from_millis(280))
-                    .with_easing(gpui::ease_out_quint()),
+                gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    280,
+                )))
+                .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element()
@@ -804,7 +807,9 @@ impl MailWindow {
         Some(
             div()
                 .absolute()
-                .right(px(20.0))
+                // On the send button's centre line: the same size, as far
+                // in as the reply box's right padding.
+                .right(px(12.0))
                 .bottom(px(12.0 + lerp(-12.0, 0.0, t)))
                 .opacity(t)
                 .child(
@@ -1040,9 +1045,9 @@ impl MailWindow {
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .tooltip(tip(tr!("chat-show-card"), th))
-                .on_click(cx.listener(move |this, _, _, cx| {
+                .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                     this.close_chat_people(cx);
-                    this.show_contact_of(key, &email, cx);
+                    this.show_contact_of(key, &email, e.position(), cx);
                 }))
                 .child(self.person_avatar(&m.name, &m.email, 30.0))
                 .child(
@@ -1099,11 +1104,9 @@ impl MailWindow {
             let total = delay + PEOPLE_ROW_MS;
             row.with_animation(
                 ("chat-member-in", run * 1000 + ix),
-                gpui::Animation::new(std::time::Duration::from_millis(if reduce {
-                    1
-                } else {
-                    total as u64
-                })),
+                gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    if reduce { 1 } else { total as u64 },
+                ))),
                 move |el, t| {
                     let local = ((t * total - delay) / PEOPLE_ROW_MS).clamp(0.0, 1.0);
                     let eased = 1.0 - (1.0 - local).powi(3);
@@ -1147,11 +1150,9 @@ impl MailWindow {
             )
             .with_animation(
                 ("chat-people-in", run),
-                gpui::Animation::new(std::time::Duration::from_millis(if reduce {
-                    1
-                } else {
-                    220
-                }))
+                gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    if reduce { 1 } else { 220 },
+                )))
                 .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
             );
@@ -1311,15 +1312,15 @@ impl MailWindow {
                                                 names = names.join(", "),
                                                 count = mails
                                             )))
-                                            .child(div().flex_none().child(icon(
-                                                if people_open {
-                                                    "chevron-up"
-                                                } else {
-                                                    "chevron-down"
-                                                },
-                                                th.text_faint,
-                                                16.0,
-                                            ))),
+                                            .child(div().flex_none().child(
+                                                crate::widgets::fold_arrow(
+                                                    "chat-people-arrow",
+                                                    &reader.chat.people_arrow,
+                                                    people_open,
+                                                    th.text_faint,
+                                                    16.0,
+                                                ),
+                                            )),
                                     ),
                             ),
                     ),
@@ -1351,9 +1352,9 @@ impl MailWindow {
                         .id(("chat-picture", bubble.ix))
                         .cursor_pointer()
                         .tooltip(tip(tr!("chat-show-card"), th))
-                        .on_click(cx.listener(move |this, _, _, cx| {
+                        .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                             if let Some(key) = key {
-                                this.show_contact_of(key, &pick, cx);
+                                this.show_contact_of(key, &pick, e.position(), cx);
                             }
                         }))
                         .child(self.person_avatar(&bubble.name, &bubble.email, PICTURE)),
@@ -1450,13 +1451,45 @@ impl MailWindow {
                 let tint = th.hover;
                 row.with_animation(
                     ("chat-flash", run),
-                    gpui::Animation::new(std::time::Duration::from_millis(pins::FLASH_MS as u64)),
+                    gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                        pins::FLASH_MS as u64,
+                    ))),
                     move |el, t| el.bg(rgba(fade(tint, (1.0 - t).powi(2)))),
                 )
                 .into_any_element()
             }
             _ => row.into_any_element(),
         }
+    }
+
+    /// One run of a bubble's text (`which`: what was said, its signature
+    /// or its quotes) in a holder `style` shapes, its links opening.
+    #[allow(clippy::too_many_arguments)]
+    fn linked_piece(
+        &self,
+        pieces: &mut Pieces,
+        ix: usize,
+        which: usize,
+        text: String,
+        anchors: &[(String, String)],
+        style: impl FnOnce(Div) -> Div,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let hover = self.reader.as_ref().map(|r| rich::Links {
+            window: cx.weak_entity(),
+            conversation: key_number(r.key),
+            part: ix,
+        });
+        rich::linked_piece(
+            pieces,
+            text.into(),
+            anchors,
+            style,
+            ix * 3 + which,
+            hover,
+            th,
+        )
     }
 
     /// The bubble itself.
@@ -1480,9 +1513,9 @@ impl MailWindow {
                 .font_weight(FontWeight::SEMIBOLD)
                 .text_color(rgba(name_color(&bubble.email, th)))
                 .hover(|s| s.underline())
-                .on_click(cx.listener(move |this, _, _, cx| {
+                .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                     if let Some(key) = key {
-                        this.show_contact_of(key, &pick, cx);
+                        this.show_contact_of(key, &pick, e.position(), cx);
                     }
                 }))
                 .child(bubble.name.clone())
@@ -1502,14 +1535,21 @@ impl MailWindow {
             .translated_text(id)
             .map(|text| Said::of(&text).text)
             .filter(|t| !t.is_empty());
-        // Its text, signature and quotes are selectable, to copy or pin.
+        // Its text, signature and quotes are selectable, to copy or pin,
+        // and their links open as in Mail: the mail's own links, and
+        // addresses written out.
+        let anchors = part
+            .filter(|_| translated.is_none())
+            .and_then(|p| p.body.as_ref()?.doc.as_ref())
+            .map(rich::anchors)
+            .unwrap_or_default();
         let mut pieces = self.text.pieces(bubble.ix, th);
         let text = translated
             .or_else(|| said.map(|s| s.text.clone()))
             .filter(|t| !t.is_empty())
             .map(|t| {
-                let (styled, holder) = pieces.piece(t.into(), Vec::new());
-                self.selectable_body(bubble.ix, holder.child(styled), cx)
+                let text = self.linked_piece(&mut pieces, bubble.ix, 0, t, &anchors, |d| d, th, cx);
+                self.selectable_body(bubble.ix, div().child(text), cx)
             });
         let not_read = said.is_none().then(|| {
             div()
@@ -1559,17 +1599,33 @@ impl MailWindow {
         });
         let hidden = said.filter(|_| open).map(|s| {
             let signature = s.signature.clone().map(|sig| {
-                let (styled, holder) = pieces.piece(sig.into(), Vec::new());
-                holder.text_color(rgba(th.text_dim)).child(styled)
+                self.linked_piece(
+                    &mut pieces,
+                    bubble.ix,
+                    1,
+                    sig,
+                    &anchors,
+                    |d| d.text_color(rgba(th.text_dim)),
+                    th,
+                    cx,
+                )
             });
             let quoted = s.quoted.clone().map(|quoted| {
-                let (styled, holder) = pieces.piece(quoted.into(), Vec::new());
-                holder
-                    .pl(px(10.0))
-                    .border_l_2()
-                    .border_color(rgba(th.outline))
-                    .text_color(rgba(th.text_faint))
-                    .child(styled)
+                self.linked_piece(
+                    &mut pieces,
+                    bubble.ix,
+                    2,
+                    quoted,
+                    &anchors,
+                    |d| {
+                        d.pl(px(10.0))
+                            .border_l_2()
+                            .border_color(rgba(th.outline))
+                            .text_color(rgba(th.text_faint))
+                    },
+                    th,
+                    cx,
+                )
             });
             let hidden = div()
                 .mt(px(6.0))
@@ -1582,7 +1638,7 @@ impl MailWindow {
             self.selectable_body(bubble.ix, hidden, cx)
         });
         let media = self.bubble_media(bubble, th, cx);
-        let meta = self.bubble_meta(bubble, th);
+        let meta = self.bubble_meta(bubble, th, cx);
         div()
             .id(("chat-bubble", bubble.ix))
             .max_w(relative(if self.layout.shape.is_phone() {
@@ -1631,8 +1687,11 @@ impl MailWindow {
             .into_any_element()
     }
 
-    /// The time, and for the user's own mail whether it went.
-    fn bubble_meta(&self, bubble: &Bubble, th: &Theme) -> AnyElement {
+    /// The time, and for the user's own mail whether it went and, when it
+    /// was sent with tracking, whether it was seen: the ticks turn the
+    /// eye's color, and hovering the time or ticks opens who saw it, as
+    /// the eye does in the mail view.
+    fn bubble_meta(&self, bubble: &Bubble, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let time = bubble
             .date
             .and_then(|d| format::local(d, &self.tz))
@@ -1643,13 +1702,57 @@ impl MailWindow {
             .as_ref()
             .is_some_and(|r| r.chat.pins.of(bubble.id).next().is_some())
             .then(|| icon("pin", th.text_faint, 12.0));
+        let part = self.reader.as_ref().and_then(|r| r.parts.get(bubble.ix));
+        let seen = part
+            .filter(|_| bubble.mine && bubble.pending.is_none())
+            .and_then(|part| Some((part, self.seen_state(part)?)));
         let state = bubble.mine.then(|| match bubble.pending {
             Some(false) => icon("schedule", th.text_faint, 13.0),
-            _ => icon("done-all", th.text_faint, 15.0),
+            _ => {
+                let color = tracking::seen_color(seen.is_some_and(|(_, s)| s), th);
+                // The popover of who saw it points at the ticks.
+                div()
+                    .relative()
+                    .flex()
+                    .child(icon("done-all", color, 15.0))
+                    .children(seen.map(|(part, _)| Self::seen_spot(part)))
+                    .into_any_element()
+            }
         });
-        div()
-            .self_end()
-            .mt(px(2.0))
+        // Seen more than once, or a link followed: how many times of
+        // each, in a faint pill.
+        let count = seen
+            .map(|(part, _)| self.seen_counts(part))
+            .filter(|(opens, clicks)| *opens > 1 || *clicks > 0)
+            .map(|(opens, clicks)| {
+                let number = |name: &'static str, n: u32| {
+                    div()
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(3.0))
+                        .child(icon(name, th.text_faint, 11.0))
+                        .child(katna_i18n::format::number(n as u64))
+                };
+                div()
+                    .mr(px(3.0))
+                    .h(px(16.0))
+                    .px(px(5.0))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(5.0))
+                    .rounded_full()
+                    .border_1()
+                    .border_color(rgba(th.divider))
+                    .text_color(rgba(th.text_dim))
+                    .when(opens > 0, |d| d.child(number("eye", opens)))
+                    .when(opens > 0 && clicks > 0, |d| {
+                        d.child(div().w(px(1.0)).h(px(9.0)).bg(rgba(th.divider)))
+                    })
+                    .when(clicks > 0, |d| d.child(number("link", clicks)))
+            });
+        let meta = div()
             .flex()
             .flex_row()
             .items_center()
@@ -1657,9 +1760,20 @@ impl MailWindow {
             .text_size(px(11.0))
             .line_height(px(14.0))
             .text_color(rgba(th.text_faint))
+            .children(count)
             .children(pinned)
             .child(time)
-            .children(state)
+            .children(state);
+        let Some((part, _)) = seen else {
+            return meta.self_end().mt(px(2.0)).into_any_element();
+        };
+        let ix = bubble.ix;
+        let target = meta.id(("chat-seen", ix)).cursor_pointer();
+        div()
+            .self_end()
+            .mt(px(2.0))
+            .child(self.seen_anchor(ix, part, target, false, cx))
+            .children(self.seen_popover(ix, part, th, cx))
             .into_any_element()
     }
 

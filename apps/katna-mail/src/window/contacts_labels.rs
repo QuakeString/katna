@@ -24,7 +24,7 @@ use super::contacts_page::View;
 use crate::daemon::{self, Command};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, ScaledEdge, elevation, filled_button, icon, raised};
+use crate::widgets::{FocusRing, ScaledEdge, filled_button, icon, raised};
 
 const MENU_WIDTH: f32 = 260.0;
 const DIALOG_WIDTH: f32 = 400.0;
@@ -505,7 +505,10 @@ impl MailWindow {
             .children(items)
             .with_animation(
                 "contact-label-menu",
-                Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    140,
+                )))
+                .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
             );
         let close = || {
@@ -593,7 +596,7 @@ impl MailWindow {
                 .mt(px(12.0))
                 .text_size(px(13.0))
                 .text_color(rgba(th.error))
-                .child(err)
+                .child(self.copyable(err, th))
         });
         let busy = dialog.busy;
         let body = div()
@@ -663,11 +666,8 @@ impl MailWindow {
             .w(px(DIALOG_WIDTH.min(vw - 32.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
         Some(
             div()

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A summary that folds smoothly"
+text = """
+Folding or unfolding a conversation's summary now glides to its new height,
+and its arrow turns with it instead of jumping.
+"""

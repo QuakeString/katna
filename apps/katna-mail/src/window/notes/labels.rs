@@ -5,26 +5,186 @@
 //! dialog that renames and deletes them. A label lives only on its
 //! notes, so one with no notes left is gone.
 
+use std::rc::Rc;
+
 use gpui::{
     AnyElement, Context, Entity, Focusable, FontWeight, SharedString, Subscription, Window, div,
     prelude::*, rgba,
 };
 use katna_i18n::tr;
+use katna_ui::tokens::{radius, space, text};
 use katna_ui::{InputEvent, TextInput, px};
 
 use super::{MailWindow, NotesView};
 use crate::daemon::Command;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, filled_button, icon, icon_button, tip};
+use crate::widgets::{Check, filled_button, icon, icon_button, tip};
 
 /// The longest label, in characters (the daemon's limit too).
 const MAX_LABEL: usize = 50;
 
-/// The label picker open on a note: a box to find or make a label, over
-/// the labels to tick.
-pub(super) struct Picker {
-    input: Entity<TextInput>,
+/// A label picker: a box to find or make a label, over the labels to
+/// tick. Notes use it on an open note and on the ticked cards, and Tasks
+/// with the same labels.
+pub(in crate::window) struct LabelPicker {
+    pub input: Entity<TextInput>,
     _subscription: Subscription,
+}
+
+/// What a picker does with a label typed and entered.
+type OnLabel = fn(&mut MailWindow, String, &mut Context<MailWindow>);
+/// What a picker does when Escape closes it.
+type OnClose = fn(&mut MailWindow, &mut Window, &mut Context<MailWindow>);
+
+impl LabelPicker {
+    /// A picker whose Enter calls `on_submit` with the label typed (made
+    /// if new) and whose Escape calls `on_cancel`. It takes the focus.
+    pub(in crate::window) fn new(
+        accent: u32,
+        window: &mut Window,
+        cx: &mut Context<MailWindow>,
+        on_submit: OnLabel,
+        on_cancel: OnClose,
+    ) -> Self {
+        let accent = rgba(accent).into();
+        let input = cx.new(|cx| {
+            let mut input = TextInput::new(tr!("notes-label-name"), cx);
+            input.set_accent(accent);
+            input
+        });
+        let subscription = cx.subscribe_in(
+            &input,
+            window,
+            move |this, input, event: &InputEvent, window, cx| match event {
+                InputEvent::Changed => cx.notify(),
+                InputEvent::Submit => {
+                    let label = clean(input.read(cx).text());
+                    if label.is_empty() {
+                        return;
+                    }
+                    on_submit(this, label, cx);
+                    input.update(cx, |input, cx| input.set_text("", cx));
+                }
+                InputEvent::Cancel => on_cancel(this, window, cx),
+            },
+        );
+        window.focus(&input.focus_handle(cx), cx);
+        Self {
+            input,
+            _subscription: subscription,
+        }
+    }
+
+    /// The label typed, cleaned.
+    pub(in crate::window) fn typed(&self, cx: &gpui::App) -> String {
+        clean(self.input.read(cx).text())
+    }
+}
+
+/// What ticking or unticking a label in [`render_label_choices`] does.
+pub(in crate::window) type OnToggle = Rc<dyn Fn(&mut MailWindow, String, &mut Context<MailWindow>)>;
+
+/// A [`LabelPicker`]'s box under `heading` ("Label note") and the labels
+/// of `labels` matching what is typed, each ticked as `state` says, with
+/// "Create" for a new one; clicking one calls `on_toggle`.
+#[allow(clippy::too_many_arguments)]
+pub(in crate::window) fn render_label_choices(
+    id: &'static str,
+    heading: String,
+    picker: &LabelPicker,
+    mut labels: Vec<String>,
+    state: &dyn Fn(&str) -> Check,
+    on_toggle: OnToggle,
+    th: &Theme,
+    cx: &mut Context<MailWindow>,
+) -> AnyElement {
+    let typed = picker.typed(cx);
+    let lower = typed.to_lowercase();
+    labels.sort_by_key(|l| l.to_lowercase());
+    labels.dedup();
+    let shown: Vec<String> = labels
+        .into_iter()
+        .filter(|l| l.to_lowercase().contains(&lower))
+        .collect();
+    let create = (!typed.is_empty() && !shown.contains(&typed)).then(|| {
+        let label = typed.clone();
+        let toggle = on_toggle.clone();
+        let input = picker.input.clone();
+        div()
+            .id((id, usize::MAX))
+            .h(px(32.0))
+            .px(px(space::S3))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(space::S3))
+            .rounded(px(radius::SM))
+            .text_size(px(text::BODY))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .on_click(cx.listener(move |this, _, _, cx| {
+                toggle(this, label.clone(), cx);
+                input.update(cx, |input, cx| input.set_text("", cx));
+            }))
+            .child(icon("add", th.text_dim, 18.0))
+            .child(tr!("notes-label-create", name = typed.clone()))
+    });
+    let rows = shown.into_iter().enumerate().map(|(ix, label)| {
+        let check = state(&label);
+        let name = label.clone();
+        let toggle = on_toggle.clone();
+        div()
+            .id((id, ix))
+            .h(px(32.0))
+            .px(px(space::S3))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(space::S3))
+            .rounded(px(radius::SM))
+            .text_size(px(text::BODY))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .on_click(cx.listener(move |this, _, _, cx| toggle(this, label.clone(), cx)))
+            .child(crate::widgets::checkbox(
+                (SharedString::from(format!("{id}-box")), ix),
+                check,
+                th,
+            ))
+            .child(div().flex_1().min_w_0().truncate().child(name))
+    });
+    div()
+        .flex()
+        .flex_col()
+        .child(
+            div()
+                .mb(px(space::S2))
+                .px(px(space::S3))
+                .text_size(px(text::CAPTION))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(rgba(th.text_dim))
+                .child(heading),
+        )
+        .child(
+            div()
+                .h(px(32.0))
+                .px(px(space::S3))
+                .flex()
+                .items_center()
+                .text_size(px(text::BODY))
+                .child(picker.input.clone()),
+        )
+        .child(
+            div()
+                .id((id, usize::MAX - 1))
+                .max_h(px(200.0))
+                .overflow_y_scroll()
+                .flex()
+                .flex_col()
+                .children(rows)
+                .children(create),
+        )
+        .into_any_element()
 }
 
 /// The Edit labels dialog: a box per label, to rename it.
@@ -40,7 +200,7 @@ fn clean(text: &str) -> String {
 
 impl MailWindow {
     /// Every label on a note, in order of name.
-    pub(super) fn note_labels(&self) -> Vec<String> {
+    pub(in crate::window) fn note_labels(&self) -> Vec<String> {
         let mut labels: Vec<String> = self
             .notes
             .as_ref()
@@ -108,7 +268,7 @@ impl MailWindow {
 
     /// Opens the label picker on the open note, or closes it.
     pub(super) fn toggle_label_picker(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let accent = rgba(self.theme(window).accent).into();
+        let accent = self.theme(window).accent;
         let Some(editor) = self.notes.as_mut().and_then(|p| p.editor.as_mut()) else {
             return;
         };
@@ -120,41 +280,24 @@ impl MailWindow {
             cx.notify();
             return;
         }
-        let input = cx.new(|cx| {
-            let mut input = TextInput::new(tr!("notes-label-name"), cx);
-            input.set_accent(accent);
-            input
-        });
-        let subscription = cx.subscribe_in(
-            &input,
+        let picker = LabelPicker::new(
+            accent,
             window,
-            |this, input, event: &InputEvent, window, cx| match event {
-                InputEvent::Changed => cx.notify(),
-                // Enter ticks the label typed, making it if it is new.
-                InputEvent::Submit => {
-                    let label = clean(input.read(cx).text());
-                    if label.is_empty() {
-                        return;
-                    }
-                    let has = this
-                        .notes
-                        .as_ref()
-                        .and_then(|p| p.editor.as_ref())
-                        .is_some_and(|e| e.labels.contains(&label));
-                    if !has {
-                        this.toggle_note_label(label, cx);
-                    }
-                    input.update(cx, |input, cx| input.set_text("", cx));
+            cx,
+            |this, label, cx| {
+                let has = this
+                    .notes
+                    .as_ref()
+                    .and_then(|p| p.editor.as_ref())
+                    .is_some_and(|e| e.labels.contains(&label));
+                if !has {
+                    this.toggle_note_label(label, cx);
                 }
-                InputEvent::Cancel => this.toggle_label_picker(window, cx),
             },
+            |this, window, cx| this.toggle_label_picker(window, cx),
         );
-        window.focus(&input.focus_handle(cx), cx);
         if let Some(editor) = self.notes.as_mut().and_then(|p| p.editor.as_mut()) {
-            editor.picker = Some(Picker {
-                input,
-                _subscription: subscription,
-            });
+            editor.picker = Some(picker);
         }
         cx.notify();
     }
@@ -167,111 +310,31 @@ impl MailWindow {
     ) -> Option<AnyElement> {
         let editor = self.notes.as_ref()?.editor.as_ref()?;
         let picker = editor.picker.as_ref()?;
-        let typed = clean(picker.input.read(cx).text());
-        let lower = typed.to_lowercase();
         let mut labels = self.note_labels();
         // Labels just put on this note, before the board has them.
-        for label in &editor.labels {
-            if !labels.contains(label) {
-                labels.push(label.clone());
-            }
-        }
-        let shown: Vec<String> = labels
-            .into_iter()
-            .filter(|l| l.to_lowercase().contains(&lower))
-            .collect();
-        let create = (!typed.is_empty() && !shown.contains(&typed)).then(|| {
-            let label = typed.clone();
-            div()
-                .id("note-label-create")
-                .h(px(32.0))
-                .px(px(8.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(8.0))
-                .rounded(px(6.0))
-                .text_size(px(14.0))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .on_click(cx.listener(move |this, _, _, cx| {
-                    this.toggle_note_label(label.clone(), cx);
-                    if let Some(picker) = this
-                        .notes
-                        .as_ref()
-                        .and_then(|p| p.editor.as_ref())
-                        .and_then(|e| e.picker.as_ref())
-                    {
-                        let input = picker.input.clone();
-                        input.update(cx, |input, cx| input.set_text("", cx));
-                    }
-                }))
-                .child(icon("add", th.text_dim, 18.0))
-                .child(tr!("notes-label-create", name = typed.clone()))
-        });
-        let rows = shown.into_iter().enumerate().map(|(ix, label)| {
-            let on = editor.labels.contains(&label);
-            let name = label.clone();
-            div()
-                .id(("note-label-pick", ix))
-                .h(px(32.0))
-                .px(px(8.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(8.0))
-                .rounded(px(6.0))
-                .text_size(px(14.0))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .on_click(
-                    cx.listener(move |this, _, _, cx| this.toggle_note_label(label.clone(), cx)),
-                )
-                .child(crate::widgets::checkbox(
-                    ("note-label-box", ix),
-                    crate::widgets::Check::from(on),
-                    th,
-                ))
-                .child(div().flex_1().min_w_0().truncate().child(name))
-        });
+        labels.extend(editor.labels.iter().cloned());
+        let on = editor.labels.clone();
+        let list = render_label_choices(
+            "note-label-pick",
+            tr!("notes-label-note"),
+            picker,
+            labels,
+            &move |label: &str| Check::from(on.iter().any(|l| l == label)),
+            Rc::new(|this: &mut Self, label: String, cx: &mut Context<Self>| {
+                this.toggle_note_label(label, cx)
+            }),
+            th,
+            cx,
+        );
         Some(
             div()
                 .flex_none()
-                .mx(px(12.0))
-                .mb(px(8.0))
-                .p(px(8.0))
-                .flex()
-                .flex_col()
-                .rounded(px(8.0))
+                .mx(px(space::S4))
+                .mb(px(space::S3))
+                .p(px(space::S3))
+                .rounded(px(radius::SM))
                 .bg(rgba(fade(th.text, 0.05)))
-                .child(
-                    div()
-                        .mb(px(4.0))
-                        .px(px(8.0))
-                        .text_size(px(12.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .text_color(rgba(th.text_dim))
-                        .child(tr!("notes-label-note")),
-                )
-                .child(
-                    div()
-                        .h(px(32.0))
-                        .px(px(8.0))
-                        .flex()
-                        .items_center()
-                        .text_size(px(14.0))
-                        .child(picker.input.clone()),
-                )
-                .child(
-                    div()
-                        .id("note-label-list")
-                        .max_h(px(200.0))
-                        .overflow_y_scroll()
-                        .flex()
-                        .flex_col()
-                        .children(rows)
-                        .children(create),
-                )
+                .child(list)
                 .into_any_element(),
         )
     }
@@ -531,9 +594,7 @@ impl MailWindow {
             .p(px(24.0))
             .flex()
             .flex_col()
-            .rounded(px(15.0))
-            .map(|d| crate::widgets::frosted(d, th, th.menu, 15.0))
-            .shadow(elevation(th, 3.0))
+            .map(|d| crate::widgets::dialog(d, th, th.menu))
             .text_color(rgba(th.text))
             .on_click(|_, _, cx| cx.stop_propagation())
             .child(

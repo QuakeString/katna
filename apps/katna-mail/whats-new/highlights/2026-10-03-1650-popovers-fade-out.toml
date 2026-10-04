@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Popovers fade away"
+text = """
+The small cards that point at what they belong to, such as the contact
+card, who has seen a mail, a Year view day, custom search dates and the
+colour picker, fade out when they close instead of vanishing.
+"""

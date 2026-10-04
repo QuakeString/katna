@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Sets of notification sounds"
+text = """
+Settings > Notifications has sets of sounds now: Birds, Nature, Animals,
+Insects, Electronic, Morning, Katna's bells, or your desktop's own. New
+mail sings like a robin unless you pick another set. Any event can also
+have a sound of its own, or a sound file you choose.
+"""
