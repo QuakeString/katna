@@ -19,7 +19,7 @@ use katna_ui::tokens::{duration, radius, space, text};
 use super::{Menu, NAV_WIDTH, SINGLE_WIDTH, TasksPage, View, list_title, today};
 use crate::tasks::{TaskCommand, TaskEdit};
 use crate::theme::Theme;
-use crate::widgets::{elevation, icon, icon_button, tip};
+use crate::widgets::{elevation, icon_button, tip};
 use crate::window::MailWindow;
 use crate::window::compose::schedule;
 
@@ -286,14 +286,15 @@ impl MailWindow {
             });
         }
         let ids: Vec<i64> = tasks.iter().map(|t| t.id).collect();
-        // Gone from the page at once; the store follows.
-        if let Some(Ok(board)) = &mut self.tasks.board {
-            for column in &mut board.columns {
-                column
-                    .tasks
-                    .retain(|t| !ids.contains(&t.id) && t.parent.is_none_or(|p| !ids.contains(&p)));
-            }
-        }
+        // They fold away, then are gone from the page; the store follows.
+        let gone: Vec<i64> = board
+            .columns
+            .iter()
+            .flat_map(|c| c.tasks.iter())
+            .filter(|t| ids.contains(&t.id) || t.parent.is_some_and(|p| ids.contains(&p)))
+            .map(|t| t.id)
+            .collect();
+        self.task_leave_motion(&gone, Self::tasks_take_off, cx);
         if self.tasks.picked.is_some_and(|p| ids.contains(&p)) {
             self.tasks.picked = None;
         }
@@ -445,19 +446,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<(Point<Pixels>, f32, Vec<AnyElement>)> {
         let item = |id: gpui::ElementId, name: &'static str, label: String| {
-            div()
-                .id(id)
-                .h(px(36.0))
-                .pl(px(space::S5))
-                .pr(px(space::S6))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(space::S5))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .child(icon(name, th.text_dim, 20.0))
-                .child(div().flex_1().min_w_0().truncate().child(label))
+            super::menu_row(id, Some(name), label, th)
         };
         match *menu {
             Menu::MoveSelected { at } => {
@@ -505,15 +494,9 @@ impl MailWindow {
                             .into_any_element(),
                     );
                 }
-                items.push(
-                    div()
-                        .my(px(space::S2))
-                        .h(px(1.0))
-                        .bg(rgba(th.divider))
-                        .into_any_element(),
-                );
+                items.push(super::menu_separator(th).into_any_element());
                 items.push(self.render_select_month(at, month, th, cx));
-                Some((at, 7.0 * DAY + 2.0 * space::S4, items))
+                Some((at, 7.0 * DAY + 2.0 * (space::S4 + space::S2), items))
             }
             _ => None,
         }
@@ -548,7 +531,11 @@ impl MailWindow {
                             .border_color(rgba(th.accent))
                             .text_color(rgba(th.accent))
                     })
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(katna_ui::Glow::new(
+                        ("tasks-select-grid-glow", ix),
+                        rgba(th.hover),
+                    ))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         let ids: Vec<i64> = this.tasks.selected.iter().copied().collect();
                         this.tasks_set_due(&ids, Some(date), cx)

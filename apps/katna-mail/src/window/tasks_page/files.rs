@@ -17,14 +17,14 @@ use katna_render::AttachmentFile;
 use katna_store::tasks::TaskFile;
 use katna_store::{MessageId, Mode, Store};
 use katna_ui::px;
-use katna_ui::tokens::{radius, space, text};
+use katna_ui::tokens::{space, text};
 
 use super::super::MailWindow;
 use super::super::attachments::Item;
 use super::super::compose::attach::mime_of;
 use crate::tasks::{NewFile, TaskCommand};
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button, tip};
+use crate::widgets::{icon, icon_button, row, tag, tip};
 
 /// Reads `paths` as files to put on a task: folders and files too large
 /// are left out, and named in the second list.
@@ -326,20 +326,13 @@ impl MailWindow {
             } else {
                 "file"
             };
-            div()
-                .id(("task-file", ix))
-                .h(px(40.0))
+            // A row with an edge, as it can be clicked.
+            row(("task-file", ix), false, th)
                 .pl(px(space::S4))
                 .pr(px(space::S2))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(space::S4))
-                .rounded(px(radius::SM))
+                .py(px(space::S1))
                 .border_1()
                 .border_color(rgba(th.outline))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
                 .tooltip(tip(tr!("tasks-file-open"), th))
                 .on_click(
                     cx.listener(move |this, _, window, cx| this.task_open_file(&open, window, cx)),
@@ -354,13 +347,7 @@ impl MailWindow {
                         .child(file.name.clone()),
                 )
                 .when(file.local_only, |d| {
-                    d.child(
-                        div()
-                            .flex_none()
-                            .text_size(px(text::CAPTION))
-                            .text_color(rgba(th.text_faint))
-                            .child(tr!("tasks-file-here")),
-                    )
+                    d.child(tag(tr!("tasks-file-here"), th))
                 })
                 .child(
                     div()
