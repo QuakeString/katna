@@ -861,7 +861,10 @@ fn line_row(id: gpui::ElementId, rest: u32, hover: u32, th: &Theme) -> Stateful<
         .text_size(px(text::BODY))
         .bg(rgba(rest))
         .cursor_pointer()
-        .hover(move |s| s.bg(rgba(hover)))
+        // The hover tint eases in and out, as a button's does.
+        .when(hover != rest, |d| {
+            d.child(Glow::new(("row-glow", ripple), rgba(hover)).corners([radius::SM; 4]))
+        })
         .child(Ripple::new(("ripple", ripple), rgba(th.ripple)).rounded(radius::SM))
 }
 
