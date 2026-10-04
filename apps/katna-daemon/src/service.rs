@@ -464,6 +464,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.undo_send(id)?)
             }
 
+            async fn retry_send(&self, id: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.retry_send(id)?)
+            }
+
             async fn discard_send(&self, id: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.discard_send(id)?)
             }

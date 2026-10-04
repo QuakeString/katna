@@ -1064,6 +1064,8 @@ impl Daemon {
         }
         self.start_account(&account).await;
         self.wake_task_sync();
+        // Mail held for the new password goes now.
+        self.send_waiting_mail(id);
         Ok(())
     }
 
@@ -1842,6 +1844,20 @@ impl Daemon {
             let _ = self.notices.try_send(Notice::OutboxChanged(id));
         }
         Ok(undone)
+    }
+
+    /// Sends a failed message again now.
+    pub fn retry_send(&self, id: i64) -> Result<bool, CommandError> {
+        let queued = outbox::retry(&mut self.store(), id)?;
+        if queued {
+            self.send_errors.lock().unwrap().remove(&id);
+            tracing::info!(id, "sending again");
+            let _ = self.notices.try_send(Notice::OutboxChanged(id));
+            if let Some(sending) = self.outbox.lock().unwrap().as_ref() {
+                sending.handle.wake();
+            }
+        }
+        Ok(queued)
     }
 
     /// Forgets a cancelled or failed message.

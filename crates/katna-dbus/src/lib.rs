@@ -918,6 +918,10 @@ macro_rules! pim_proxy {
             /// takes the label away and keeps its people.
             fn rename_contact_label(&self, old: &str, new: &str) -> zbus::Result<()>;
 
+            /// Sends a failed message again now, its tries counted afresh.
+            /// Returns whether it was one.
+            fn retry_send(&self, id: i64) -> zbus::Result<bool>;
+
             /// Forgets a cancelled or failed message. Returns whether it
             /// was one.
             fn discard_send(&self, id: i64) -> zbus::Result<bool>;

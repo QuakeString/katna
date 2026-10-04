@@ -58,6 +58,9 @@ pub enum Command {
     /// off, or "Turn on" where it was asked for. The app does this itself;
     /// the daemon hears of it through `ReloadConfig`.
     TurnAppOn(katna_core::config::AppKind),
+    /// Opens the outbox: the button of "… wasn't sent". The app does this
+    /// itself.
+    OpenOutbox,
     /// Gives saved cards these labels, by name: an undo on the Contacts
     /// page.
     ContactLabels(Vec<(i64, Vec<String>)>),
@@ -237,6 +240,7 @@ impl Command {
             | Self::RestoreContacts(_)
             | Self::RestoreScheme(..)
             | Self::TurnAppOn(_)
+            | Self::OpenOutbox
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
             | Self::DeleteContacts(_)
@@ -444,7 +448,8 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         | Command::RestoreSubject(_)
         | Command::RestoreContacts(_)
         | Command::RestoreScheme(..)
-        | Command::TurnAppOn(_) => {
+        | Command::TurnAppOn(_)
+        | Command::OpenOutbox => {
             return Ok(());
         }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),
@@ -1446,6 +1451,22 @@ pub async fn outbox(connection: &Connection) -> Result<Vec<OutboxItem>, String> 
         .await
         .map_err(|err| describe(&err))?;
     pim.outbox().await.map_err(|err| describe(&err))
+}
+
+/// Sends a failed message again now; `false` when it was not one.
+pub async fn retry_send(connection: &Connection, id: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.retry_send(id).await.map_err(|err| describe(&err))
+}
+
+/// Forgets a failed or cancelled message; `false` when it was not one.
+pub async fn discard_send(connection: &Connection, id: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.discard_send(id).await.map_err(|err| describe(&err))
 }
 
 /// Yields whenever an outbox entry changes.

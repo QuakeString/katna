@@ -1403,12 +1403,21 @@ impl MailWindow {
                         this.send_failed(id, cx);
                         this.play_event_sound(katna_core::config::SoundEvent::NotSent);
                         let subject = if subject.trim().is_empty() {
-                            "(no subject)".to_owned()
+                            katna_i18n::tr!("schedule-no-subject")
                         } else {
                             subject
                         };
-                        let text = format!("\u{201c}{subject}\u{201d} could not be sent: {detail}");
+                        // Plain words; the server's own are in the outbox.
+                        let text = katna_i18n::tr!(
+                            "outbox-snackbar-not-sent",
+                            subject = subject,
+                            reason = compose::outbox_reason(&detail)
+                        );
                         this.show_snackbar_for(text, None, FAILURE_TIME, cx);
+                        if let Some(snackbar) = &mut this.snackbar {
+                            snackbar.undo = Some(Command::OpenOutbox);
+                            snackbar.label = Some(katna_i18n::tr!("outbox-open").into());
+                        }
                     }
                 });
                 if shown.is_err() {
@@ -1469,10 +1478,11 @@ impl MailWindow {
             all.append(&mut rows);
             rows = all;
         }
-        // Scheduled mail shows under the first Sent folder while there is
-        // some.
+        // Scheduled mail and the outbox show under the first Sent folder
+        // while there is some.
         let scheduled = self.writing.scheduled_count();
-        if scheduled > 0 {
+        let outbox = self.writing.outbox_count();
+        if scheduled > 0 || outbox > 0 {
             let after_sent = |ix: usize| {
                 ix + 1
                     + rows[ix + 1..]
@@ -1495,19 +1505,22 @@ impl MailWindow {
                     )
                 })
                 .map_or(rows.len(), after_sent);
-            rows.insert(
-                at,
-                sidebar::Row::Folder {
-                    key: compose::SCHEDULED_NAV_KEY.to_owned(),
-                    depth: 0,
-                    label: "Scheduled".to_owned(),
-                    role: Role::Other,
-                    folder: None,
-                    unread: scheduled as u64,
-                    has_children: false,
-                    expanded: false,
-                },
-            );
+            let row = |key: &str, label: &str, count: usize| sidebar::Row::Folder {
+                key: key.to_owned(),
+                depth: 0,
+                label: label.to_owned(),
+                role: Role::Other,
+                folder: None,
+                unread: count as u64,
+                has_children: false,
+                expanded: false,
+            };
+            if outbox > 0 {
+                rows.insert(at, row(compose::OUTBOX_NAV_KEY, "Outbox", outbox));
+            }
+            if scheduled > 0 {
+                rows.insert(at, row(compose::SCHEDULED_NAV_KEY, "Scheduled", scheduled));
+            }
         }
         rows
     }
@@ -3147,6 +3160,11 @@ impl MailWindow {
             self.set_app_on(app, true, cx);
             return;
         }
+        if undo == Command::OpenOutbox {
+            self.leave_settings(window, cx);
+            self.open_outbox(cx);
+            return;
+        }
         if let Command::RestoreScheme(id, contents, was_used) = &undo {
             self.restore_scheme(id, contents, *was_used, cx);
             return;
@@ -3907,6 +3925,7 @@ impl Render for MailWindow {
         // A viewer opened from the popped-out message shows there instead.
         let in_window = self.files.viewer_place != attachments::ViewerPlace::Popout;
         let scheduled = self.render_scheduled(&th, window, cx);
+        let outbox = self.render_outbox(&th, window, cx);
         let activity = self.render_activity_report(&th, window, cx);
         let activity_menu = self.render_activity_menu(&th, window, cx);
         let account_menu = self.render_account_menu(&th, cx);
@@ -3994,6 +4013,7 @@ impl Render for MailWindow {
                     .filter(|_| in_window && viewer_over),
             )
             .children(scheduled)
+            .children(outbox)
             .children(activity)
             .children(activity_menu)
             .children(account_menu)

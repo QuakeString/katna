@@ -13,9 +13,10 @@
 //!    (Gmail).
 //!
 //! Network failures are retried with growing waits for as long as it
-//! takes. A server that refuses the message (or the login) gets
+//! takes. A refused login holds the message, uncounted, until the account
+//! is let in again ([`SIGN_IN`]). A server that refuses the message gets
 //! [`OutboxConfig::max_refusals`] tries; then the message is marked
-//! failed and kept.
+//! failed and kept, and [`retry`] sends it again.
 
 use std::{
     future::Future,
@@ -33,6 +34,10 @@ use katna_store::{
 
 use crate::tracking::{self, rewrite};
 use crate::{Error, MailSender, Result, ops};
+
+/// How an event's `detail` starts when the server refused the login: the
+/// message waits for the account to be signed in again.
+pub const SIGN_IN: &str = "sign-in: ";
 
 /// Most recipients a tracked message may have; more go out untracked.
 pub const MAX_TRACKED_RECIPIENTS: usize = 50;
@@ -257,6 +262,21 @@ pub fn cancel(store: &mut Store, id: i64) -> katna_store::Result<bool> {
     let cancelled = batch.cancel_send(id)?;
     batch.commit()?;
     Ok(cancelled)
+}
+
+/// Queues a failed message to be sent again now, with its tries counted
+/// afresh. Returns `false` for any other.
+pub fn retry(store: &mut Store, id: i64) -> katna_store::Result<bool> {
+    let Some(entry) = store.outbox_entry(id)? else {
+        return Ok(false);
+    };
+    if entry.state != SendState::Failed {
+        return Ok(false);
+    }
+    let mut batch = store.mail_batch()?;
+    batch.set_send_state(id, SendState::Queued, Some(unix_now()), Some(0))?;
+    batch.commit()?;
+    Ok(true)
 }
 
 /// Forgets a cancelled or failed message. Returns `false` for any other.
@@ -705,7 +725,23 @@ async fn send<O: Outgoing>(
             batch.set_send_state(entry.id, SendState::Queued, Some(at), None)?;
             (Delivery::Waiting, SendState::Queued, String::new())
         }
-        Err(error @ (Error::Rejected(_) | Error::Auth(_))) => {
+        Err(error @ Error::Auth(_)) => {
+            // Signed out, or the password changed: held, not counted, until
+            // the account is let in again (`send_waiting` sends it then).
+            tracing::info!(id = entry.id, %error, "waiting for sign-in");
+            batch.set_send_state(
+                entry.id,
+                SendState::Queued,
+                Some(now + seconds(config.retry_max)),
+                None,
+            )?;
+            (
+                Delivery::Refused,
+                SendState::Queued,
+                format!("{SIGN_IN}{error}"),
+            )
+        }
+        Err(error @ Error::Rejected(_)) => {
             let attempts = entry.attempts + 1;
             if attempts >= config.max_refusals {
                 tracing::warn!(id = entry.id, %error, "giving up sending");
