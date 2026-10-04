@@ -1,8 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-title = "A calmer summary button in chat view"
+title = "A calmer summary button that slides the summary open"
 text = """
 In chat view, the summary sparkle now sits in a small grey pill of its own
-beside the Chat and Mail switch, at the same height. While the summary
-shows, the pill lifts white like the picked side of the switch.
+beside the Chat and Mail switch, at the same height, and lifts white while
+the summary shows. The summary now glides open and closed instead of
+appearing at once, and its arrow turns as the card drops down.
 """

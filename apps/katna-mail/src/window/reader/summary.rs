@@ -46,6 +46,10 @@ mod peek_reply;
 const PEEK_WIDTH: f32 = 420.0;
 /// The room kept between a card and the window's edge.
 const MARGIN: f32 = 8.0;
+/// How long the chat's card takes to drop down and to fold back up.
+const DROP_IN: Duration = Duration::from_millis(180);
+const DROP_OUT: Duration = Duration::from_millis(140);
+
 /// How soon after a press outside folded the dropped card a click on
 /// its strip counts as that same press.
 const JUST_FOLDED: Duration = Duration::from_millis(400);
@@ -105,6 +109,10 @@ struct Sum {
     dropped: bool,
     /// The glide between the card and its folded line.
     fold: Fold,
+    /// The glide as it shows or hides (the sparkle, ×).
+    show: Fold,
+    /// The chat's card dropping from its strip, and the strip's arrow.
+    drop: Fold,
     _task: Option<Task<()>>,
 }
 
@@ -220,6 +228,8 @@ impl MailWindow {
                 folded: false,
                 dropped: false,
                 fold: Fold::default(),
+                show: Fold::closed(),
+                drop: Fold::closed(),
                 _task: None,
             },
         );
@@ -355,6 +365,8 @@ impl MailWindow {
             folded: false,
             dropped: false,
             fold: Fold::default(),
+            show: Fold::closed(),
+            drop: Fold::closed(),
             _task: None,
         });
         sum.shown = true;
@@ -776,23 +788,30 @@ impl MailWindow {
     ) -> Option<AnyElement> {
         let reader = self.reader.as_ref()?;
         let key = reader.key;
-        let sum = self.summaries.by_key.get(&key).filter(|s| s.shown)?;
+        let sum = self.summaries.by_key.get(&key)?;
         if !self.summaries_on() {
             return None;
         }
-        let inner = if sum.folded {
-            self.summary_strip(key, true, th, cx)
-        } else {
-            self.summary_content(key, Place::Card, th, cx)?
-        };
-        Some(
+        // It glides open from the sparkle and closed with ×, as folds do.
+        sum.show.sync(sum.shown);
+        if !sum.shown && !sum.show.moving() {
+            return None;
+        }
+        let card = if sum.shown {
+            let inner = if sum.folded {
+                self.summary_strip(key, true, th, cx)
+            } else {
+                self.summary_content(key, Place::Card, th, cx)?
+            };
             div()
                 .pl(px(self.reader_indent()))
                 .pr(px(16.0))
                 .pb(px(12.0))
                 .child(fold_box("summary-fold", &sum.fold, inner))
-                .into_any_element(),
-        )
+        } else {
+            div()
+        };
+        Some(fold_box("summary-show", &sum.show, card))
     }
 
     /// The chat's strip under its header, and the card it drops down.
@@ -802,11 +821,20 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let key = self.reader.as_ref()?.key;
-        self.summaries.by_key.get(&key).filter(|s| s.shown)?;
+        let sum = self.summaries.by_key.get(&key)?;
         if !self.summaries_on() {
             return None;
         }
-        Some(self.summary_strip(key, false, th, cx))
+        sum.show.sync(sum.shown);
+        if !sum.shown && !sum.show.moving() {
+            return None;
+        }
+        let strip = if sum.shown {
+            self.summary_strip(key, false, th, cx)
+        } else {
+            div().into_any_element()
+        };
+        Some(fold_box("chat-summary-show", &sum.show, strip))
     }
 
     /// The card the chat's strip drops over the chat.
@@ -816,21 +844,26 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let key = self.reader.as_ref()?.key;
-        self.summaries
-            .by_key
-            .get(&key)
-            .filter(|s| s.shown && s.dropped)?;
+        let sum = self.summaries.by_key.get(&key)?;
         if !self.summaries_on() {
             return None;
         }
+        let open = sum.shown && sum.dropped;
+        sum.drop.sync(open);
+        // Folding up, it fades back the way it came and lets clicks
+        // through to the chat at once.
+        if !open && !sum.drop.moving() {
+            return None;
+        }
         let content = self.summary_content(key, Place::Drop, th, cx)?;
-        Some(
-            div()
-                .absolute()
-                .top(px(8.0))
-                .left(px(12.0))
-                .right(px(12.0))
-                .occlude()
+        let card = div()
+            .absolute()
+            .top(px(8.0))
+            .left(px(12.0))
+            .right(px(12.0))
+            .child(content);
+        let card = if open {
+            card.occlude()
                 .on_mouse_down_out(cx.listener(move |this, _, _, cx| {
                     if let Some(sum) = this.summaries.by_key.get_mut(&key)
                         && sum.dropped
@@ -840,14 +873,25 @@ impl MailWindow {
                         cx.notify();
                     }
                 }))
-                .child(content)
-                .with_animation(
-                    "chat-summary-drop",
-                    gpui::Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
-                        .with_easing(gpui::ease_out_quint()),
-                    |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
-                )
-                .into_any_element(),
+        } else {
+            card
+        };
+        let (time, from, to) = if open {
+            (DROP_IN, 0.0, 1.0)
+        } else {
+            (DROP_OUT, 1.0, 0.0)
+        };
+        Some(
+            card.with_animation(
+                sum.drop.id("chat-summary-drop"),
+                gpui::Animation::new(katna_ui::motion::time(time))
+                    .with_easing(gpui::ease_out_quint()),
+                move |el, t| {
+                    let t = from + (to - from) * t;
+                    el.opacity(t).mt(px(-6.0 * (1.0 - t)))
+                },
+            )
+            .into_any_element(),
         )
     }
 
@@ -957,11 +1001,7 @@ impl MailWindow {
             .child(if card {
                 fold_arrow("summary-arrow", &sum.fold, false, th.text_dim, 16.0)
             } else {
-                icon(
-                    if open { "chevron-up" } else { "chevron-down" },
-                    th.text_dim,
-                    16.0,
-                )
+                fold_arrow("summary-drop-arrow", &sum.drop, open, th.text_dim, 16.0)
             });
         div()
             .flex_none()
