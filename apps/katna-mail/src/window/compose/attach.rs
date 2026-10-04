@@ -460,7 +460,8 @@ impl MailWindow {
                         .justify_center()
                         .rounded_full()
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", None, th))
                         .tooltip(tip(tr!("compose-remove-attachment"), th))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             cx.stop_propagation();

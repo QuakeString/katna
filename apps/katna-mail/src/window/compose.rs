@@ -2663,11 +2663,7 @@ impl MailWindow {
             .min_w_0()
             .flex()
             .flex_col()
-            .rounded(px(12.0))
-            .bg(rgba(th.surface))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .shadow(elevation(th, 1.5))
+            .map(|d| crate::widgets::tile(d, th))
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
                 this.drop_on_compose(paths, cx);
             }))
@@ -3063,7 +3059,8 @@ fn small_button(id: &'static str, name: &'static str, th: &Theme) -> gpui::State
         .justify_center()
         .rounded_full()
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", None, th))
         .child(icon(name, th.text_dim, 18.0))
 }
 

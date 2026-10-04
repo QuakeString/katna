@@ -58,7 +58,9 @@ keeps one 0,1 / blur 3 shadow at 30%.
 | 3 Menu | menus, dialogs (`widgets::dialog`) | `menu` + rim | white, edge + shadow |
 | 4 Popover | notched popovers (`notched::popover`), the tour | `menu` + rim | white, edge + deeper shadow |
 
-**Motion:** springs for movement (`SLIDE` is the one with a little
+**Motion:** a hover never switches on at once: round and pill
+buttons carry `katna_ui::Glow`, and any other box that tints on hover
+puts `widgets::hover_fade` first among its children. Springs for movement (`SLIDE` is the one with a little
 overshoot). Timed fades: `FAST` 140 ms (hover), `BASE` 220 ms (fades,
 folds), `SLOW` 400 ms (page swaps), `LINGER` 900 ms (slow reveals).
 Every spring goes through `motion::scaled` and every timed animation
@@ -98,7 +100,11 @@ checkbox, radio, colour swatch and wheel, avatar, tooltip, snackbar, scroll
 bar, skeleton, `notched::popover` (opens at the click, notch, level 4,
 `LG`), `widgets::dialog` (level 3, `LG`, frosted), `widgets::card` (level
 1: rounds, fills through `pane` and adds `card_shadow`; the mail list, open
-mail, person card, agenda and Settings). To build: `Field`'s error state and
+mail, person card, agenda and Settings), `widgets::tile` (level 1 at full
+strength, `MD`, `th.surface`: a file, folder, attachment, invitation,
+summary, inline reply or mail service to pick; a clickable one adds
+`tile_hover` first). A card or tile never draws its own outline
+in place of the shared edge and shadow. To build: `Field`'s error state and
 suggestions. The Gallery (`katna-mail --page gallery`, development
 builds only, `window/gallery.rs`) shows every shared control in light and
 dark; add a new control to it.

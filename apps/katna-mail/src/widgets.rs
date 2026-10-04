@@ -288,7 +288,8 @@ fn swatch_ring(
         .keeps_press()
         .border_2()
         .border_color(rgba(ring.unwrap_or(0x00000000)))
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", None, th))
 }
 
 /// The logo's disc takes the accent and its mark the accent's text
@@ -462,6 +463,19 @@ pub fn fold_arrow(name: &str, fold: &Fold, open: bool, color: u32, size: f32) ->
             arrow.with_transformation(Transformation::rotate(radians(turn)))
         })
         .into_any_element()
+}
+
+/// The shared hover fade (`katna_ui::Glow`) for a box that is not one of
+/// the round or pill buttons above: it eases in and out instead of
+/// switching, and follows Animation speed and Reduce motion. Make the box
+/// `relative()` and put this first among its children; `radius` is its
+/// corner radius, `None` for a pill or circle.
+pub fn hover_fade(id: impl Into<gpui::ElementId>, radius: Option<f32>, th: &Theme) -> Glow {
+    let glow = Glow::new(id, rgba(th.hover));
+    match radius {
+        Some(r) => glow.corners([r; 4]),
+        None => glow.fade(),
+    }
 }
 
 /// A stable number for a ripple's ID derived from its button's ID.
@@ -1264,6 +1278,22 @@ pub fn card<E: Styled + ParentElement>(
     shadow: f32,
 ) -> E {
     pane(card.rounded(px(radius)), fill, th.surface, radius).shadow(card_shadow(th, shadow))
+}
+
+/// A tile: a small card on a page or inside another card (a file, a
+/// folder, an attachment, an invitation, a mail service to pick). Level 1
+/// like [`card`], on `th.surface` with corners of [`radius::MD`], and its
+/// edge and shadow at full strength, so it lifts off what is under it.
+/// A tile that can be clicked adds [`tile_hover`] first among its
+/// children.
+pub fn tile<E: Styled + ParentElement>(tile: E, th: &Theme) -> E {
+    card(tile, th, th.surface, radius::MD, 1.0)
+}
+
+/// The hover tint of a [`tile`], easing in and out. Its parent needs an
+/// id and `relative()`.
+pub fn tile_hover(th: &Theme) -> Glow {
+    hover_fade("tile-hover", Some(radius::MD), th)
 }
 
 /// How much more of the way to solid a dialog's tint goes than a menu's.

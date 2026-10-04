@@ -913,15 +913,17 @@ impl MailWindow {
             });
         div()
             .flex_none()
-            .bg(rgba(summary_surface(th)))
-            .border_color(rgba(th.divider))
             .map(|d| {
                 if card {
-                    d.rounded(px(12.0)).border_1()
+                    crate::widgets::tile(d, th)
                 } else {
-                    d.border_b_1().px(px(6.0)).py(px(4.0))
+                    d.border_b_1()
+                        .border_color(rgba(th.divider))
+                        .px(px(6.0))
+                        .py(px(4.0))
                 }
             })
+            .bg(rgba(summary_surface(th)))
             .child(row)
             .into_any_element()
     }
@@ -1175,7 +1177,8 @@ impl MailWindow {
                                 .font_weight(FontWeight::MEDIUM)
                                 .text_color(rgba(th.accent))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", None, th))
                                 .child(tr!("summary-stop"))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     this.stop_summary(key, cx);
@@ -1228,11 +1231,7 @@ impl MailWindow {
                 .pt(px(12.0))
                 .pb(px(10.0))
                 .map(|d| match place {
-                    Place::Card => d
-                        .rounded(px(14.0))
-                        .bg(rgba(summary_surface(th)))
-                        .border_1()
-                        .border_color(rgba(th.divider)),
+                    Place::Card => crate::widgets::tile(d, th).bg(rgba(summary_surface(th))),
                     Place::Drop | Place::Peek => raised(d, th, 16.0, 3.0),
                 })
                 .text_color(rgba(th.text))

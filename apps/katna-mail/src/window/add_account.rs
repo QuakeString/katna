@@ -42,9 +42,7 @@ use super::mail_providers::{MailProvider, PasswordHelp};
 use crate::daemon::{self, AddError};
 use crate::outgoing;
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    FocusRing, ScaledEdge, elevation, filled_button, icon, icon_button, raised, tip,
-};
+use crate::widgets::{FocusRing, ScaledEdge, filled_button, icon, icon_button, raised, tip};
 
 /// The dialog's width with the provider tiles, and on the other steps.
 const WIDE: f32 = 640.0;
@@ -1265,12 +1263,10 @@ impl MailWindow {
                     .flex_row()
                     .items_center()
                     .gap(px(14.0))
-                    .rounded(px(12.0))
-                    .border_1()
-                    .border_color(rgba(fade(th.text_faint, 0.35)))
-                    .bg(rgba(th.surface))
+                    .relative()
+                    .map(|d| crate::widgets::tile(d, th))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)).shadow(elevation(th, 1.0)))
+                    .child(crate::widgets::tile_hover(th))
                     .focus_ring(th)
                     .on_click(cx.listener(move |this, _, window, cx| {
                         this.pick_provider(provider, window, cx)
@@ -1739,9 +1735,7 @@ impl MailWindow {
                     .flex()
                     .flex_col()
                     .gap(px(12.0))
-                    .rounded(px(12.0))
-                    .border_1()
-                    .border_color(rgba(fade(th.text_faint, 0.35)))
+                    .map(|d| crate::widgets::tile(d, th))
                     .child(
                         div()
                             .flex()
@@ -2184,7 +2178,8 @@ impl MailWindow {
             .text_size(px(14.0))
             .font_weight(FontWeight::MEDIUM)
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .menu_key(th)
             .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)))
             .child(

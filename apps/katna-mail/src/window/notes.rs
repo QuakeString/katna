@@ -1110,7 +1110,8 @@ impl MailWindow {
                         .text_size(px(text::SMALL))
                         .text_color(rgba(th.text_dim))
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                         .on_click(cx.listener(move |this, _, window, cx| {
                             let subject = this
                                 .reader
@@ -1485,7 +1486,8 @@ impl MailWindow {
                                 .font_weight(FontWeight::MEDIUM)
                                 .text_color(rgba(th.accent))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     this.delete_notes_forever(ids.clone(), cx)
                                 }))
@@ -2690,7 +2692,8 @@ impl MailWindow {
                             .gap(px(space::S1))
                             .rounded(px(radius::SM))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                             .tooltip(tip(tr!("notes-where"), th))
                             .on_click(cx.listener(|this, _, _, cx| {
                                 if let Some(editor) =
@@ -2806,7 +2809,8 @@ impl MailWindow {
                             .text_size(px(text::BODY))
                             .font_weight(FontWeight::MEDIUM)
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
                             .on_click(cx.listener(|this, _, _, cx| this.close_note(cx)))
                             .child(tr!("notes-close")),
                     ),

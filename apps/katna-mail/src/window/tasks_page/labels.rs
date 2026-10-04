@@ -273,7 +273,8 @@ impl MailWindow {
             .text_size(px(text::CAPTION))
             .text_color(rgba(if open { th.accent } else { th.text_dim }))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", None, th))
             .on_click(cx.listener(|this, _, window, cx| this.task_details_label_picker(window, cx)))
             .child(icon(
                 "add",

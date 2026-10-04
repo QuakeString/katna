@@ -454,7 +454,8 @@ impl MailWindow {
                                 .border_color(rgba(th.outline))
                                 .text_size(px(text::CAPTION))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", None, th))
                                 .on_click(cx.listener(move |this, _, window, cx| {
                                     this.close_note_now(cx);
                                     this.open_note(Some(&open), false, None, window, cx)

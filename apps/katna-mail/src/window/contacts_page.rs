@@ -1018,7 +1018,8 @@ impl MailWindow {
             .rounded(px(8.0))
             .cursor_pointer()
             .text_size(px(14.0))
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .on_click(cx.listener(move |this, _, _, cx| this.open_contact(open.clone(), cx)))
             .child(
                 div()
@@ -1510,7 +1511,8 @@ fn label_button(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
         .border_1()
         .border_color(rgba(th.outline))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", None, th))
         .text_size(px(12.0))
         .text_color(rgba(th.text_dim))
         .child(icon("add", th.text_dim, 16.0))
@@ -1572,9 +1574,8 @@ fn section(title: Div, rows: Vec<AnyElement>, tint: usize, th: &Theme) -> Div {
         .flex()
         .flex_col()
         .gap(px(14.0))
-        .rounded(px(14.0))
-        .border_1()
-        .border_color(rgba(th.outline))
+        .rounded(px(katna_ui::tokens::radius::LG))
+        .shadow(crate::widgets::card_shadow(th, 1.0))
         .bg(gpui::linear_gradient(
             180.0,
             gpui::linear_color_stop(rgba(top), 0.0),

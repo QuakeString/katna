@@ -165,7 +165,8 @@ impl MailWindow {
                                 .font_weight(FontWeight::MEDIUM)
                                 .text_color(rgba(th.accent))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                                 .on_click(cx.listener(move |this, _, window, cx| {
                                     this.take_meeting_notes(&occurrence, window, cx)
                                 }))

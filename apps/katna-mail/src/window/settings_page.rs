@@ -1636,7 +1636,8 @@ impl MailWindow {
             .border_1()
             .border_color(rgba(th.outline))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .on_click(cx.listener(|this, event: &gpui::ClickEvent, window, cx| {
                 let at = event.position();
                 this.toggle_language_picker(Some(at), window, cx);
@@ -3579,7 +3580,8 @@ pub(super) fn number_field(
             .justify_center()
             .rounded(px(3.0))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(3.0), th))
             .tooltip(tip(tip_text, th))
             .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(move |_, _, cx| {
