@@ -408,7 +408,7 @@ impl MailWindow {
         }
         let about = self.about.as_ref()?;
         let phone = self.layout.shape.is_phone();
-        let vw = unpx(window.viewport_size().width);
+        let vw = self.room_width();
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
 
         let offset = -unpx(about.scroll.offset().y);

@@ -222,7 +222,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let dialog = self.whats_new.as_ref()?;
         let phone = self.layout.shape.is_phone();
-        let vw = unpx(window.viewport_size().width);
+        let vw = self.room_width();
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
         // Room for the animations: the card less its padding.
         let inner = width - 48.0;

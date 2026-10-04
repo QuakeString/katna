@@ -15,7 +15,7 @@ use katna_i18n::tr;
 use katna_preview::pdf::Document;
 use katna_render::print::{Paper, PrintOptions};
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{px, unpx};
+use katna_ui::px;
 
 use super::attachments::bitmap;
 use super::print::{PrintJob, local_paper};
@@ -251,7 +251,8 @@ impl MailWindow {
         let focus = preview.focus.clone();
         let paper = preview.paper;
         let phone = self.layout.shape.is_phone();
-        let vw = unpx(window.viewport_size().width);
+        // `room_width`, while the preview is borrowed.
+        let vw = self.layout.shape.width;
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
         let page_width = PAGE_WIDTH.min(width - 48.0).max(120.0);
         let page_height = page_width * paper.height / paper.width;
