@@ -459,6 +459,14 @@ settings-calendar-birthdays-show = Show birthdays
 settings-calendar-birthdays-show-detail = Your contacts' birthdays, as a calendar of their own
 settings-files-page = Files page
 settings-files-page-detail = Which attachments the Files page shows
+
+## Settings > Contacts, Tasks, Notes, Files: leaving an account out of the app
+# { $app } is the app's name, as on the rail (Tasks, Notes, …).
+
+settings-app-accounts = Accounts shown
+settings-app-accounts-detail = Turn an account off to leave it out of { $app }. Its items keep syncing and come back when you turn it on. Its mail is not affected.
+settings-app-account-shown = Shown in { $app }
+settings-app-account-hidden = Left out of { $app }
 settings-files-leave-out-small = Leave out small pictures
 settings-files-leave-out-small-detail = Logos and icons in signatures, which come with many mails
 settings-files-smaller-than = Smaller than
@@ -642,6 +650,7 @@ settings-calendar-density-summary = Make the hours of Day and Week taller or mor
 settings-calendar-custom-days-summary = Pick how many days the custom view shows
 settings-calendar-birthdays-summary = Show your contacts' birthdays in the calendar
 settings-files-page-summary = Leave small pictures, like signature logos, off the Files page, and pick which drives it shows
+settings-app-accounts-summary = Leave an account out of this app, while its items keep syncing
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line

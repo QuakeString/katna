@@ -131,6 +131,8 @@ pub(super) enum Change {
     CustomDays(u8),
     /// The Birthdays calendar shows.
     Birthdays(bool),
+    /// An account is shown in an app (`true`) or left out of it.
+    AppAccount(katna_core::config::AppKind, katna_core::AccountId, bool),
     /// What Katna starts at login, if anything (an autostart entry).
     StartAtLogin(Option<crate::autostart::Start>),
     MarkRead(MarkRead),
@@ -754,6 +756,10 @@ impl MailWindow {
             }
             Change::CustomDays(days) => {
                 self.keep_custom_days(days, cx);
+                return;
+            }
+            Change::AppAccount(app, id, shown) => {
+                self.set_app_account_shown(app, id, shown, cx);
                 return;
             }
             Change::Birthdays(on) => {

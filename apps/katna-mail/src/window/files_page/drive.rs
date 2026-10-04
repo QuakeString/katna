@@ -411,11 +411,12 @@ impl MailWindow {
     /// Reads which accounts have a drive Files can show, as the page opens.
     pub(in crate::window) fn load_drives(&mut self) {
         let off = &self.config.mail.files.drives_off;
+        let hidden = self.hidden_ids(katna_core::config::AppKind::Files);
         let drives: Vec<(AccountId, String)> = match self.mail.as_ref() {
             Ok(mail) => self
                 .accounts
                 .iter()
-                .filter(|a| !off.contains(&a.id.0))
+                .filter(|a| !off.contains(&a.id.0) && !hidden.contains(&a.id))
                 .filter(|a| {
                     matches!(
                         mail.sign_in_provider(a.id),

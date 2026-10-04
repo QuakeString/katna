@@ -143,10 +143,16 @@ impl MailWindow {
                 th.text_faint,
                 NAV_ICON,
             ));
-        let apps: Vec<_> = [Scope::Calendar, Scope::Files]
-            .into_iter()
-            .map(|scope| row(scope.first(), false, cx))
-            .collect();
+        let apps: Vec<_> = [
+            Scope::Calendar,
+            Scope::Contacts,
+            Scope::Tasks,
+            Scope::Notes,
+            Scope::Files,
+        ]
+        .into_iter()
+        .map(|scope| row(scope.first(), false, cx))
+        .collect();
         div()
             .flex()
             .flex_col()
