@@ -3611,9 +3611,19 @@ Pwvq1VzDLXk7ikbLDPym9n, decided Oct 4 2026). Mail cannot.
   app that is off with a snackbar "X is off · Turn on".
 - **Turning off.** Settings › Apps (Mail locked), a "Use X" switch on top
   of each app's page, and Turn off X… on the rail's right-click menu. A
-  sheet lists what goes away, then a snackbar with Undo. The local copy is
-  kept; nothing changes on the accounts. In first-run setup, the last page
-  has a row of app chips.
+  sheet lists what goes away, then a snackbar with Undo. Nothing changes
+  on the accounts. The sheet keeps the local copy unless "Remove the copy"
+  is picked: `katna_store::forget` deletes what came from the accounts
+  (the next sync downloads it again, and nothing is sent as a delete),
+  keeping what is on this computer only or not sent yet (local calendars,
+  books, lists and notes; calendars with held or pending changes; lists
+  with unsent tasks, files or mail links; unsent and trashed notes;
+  `note_gone`). Files only has the drives' opened files. In first-run
+  setup, the last page has a row of app chips.
+- **Sign-in.** `Provider::only_for` asks for the calendars, contacts, task
+  lists or whole Drive only while their app is on; Mail's scopes and the
+  large-attachment files always. Turning an app on later shows its "sign
+  in again" row where the permission is missing.
 - **Only Mail.** With every other app off, the rail goes while the
   folders are docked open, and the phone's bottom bar goes.
 - **Ways in from Mail.** Add to Tasks (and Shift+T), Add a note, Schedule

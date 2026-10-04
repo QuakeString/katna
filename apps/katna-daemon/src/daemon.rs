@@ -1363,6 +1363,56 @@ impl Daemon {
         self.wake_scheduler();
     }
 
+    /// Deletes the local copy of app `key` ([`AppKind::key`]), which must
+    /// be off, so no sync runs into it; once it is on again, its sync
+    /// downloads everything afresh. Whatever only this computer has, or
+    /// has not reached its service yet, stays (`katna_store::forget`).
+    pub fn forget_app(&self, key: &str) -> Result<(), CommandError> {
+        let app = AppKind::from_key(key)
+            .ok_or_else(|| CommandError::InvalidArgs(format!("no app {key:?}")))?;
+        // The settings saying it is off may not have been read yet.
+        if self.app_on(app) {
+            self.reload_config()?;
+        }
+        if self.app_on(app) {
+            return Err(CommandError::InvalidArgs(format!(
+                "{key} is on; turn it off first"
+            )));
+        }
+        match app {
+            AppKind::Calendar => {
+                let gone = self.forget_calendar_copy()?;
+                tracing::info!(gone, "calendars' local copy removed");
+            }
+            AppKind::Contacts => {
+                if self.store().forget_account_contacts()? {
+                    let _ = self.notices.try_send(Notice::ContactsChanged);
+                }
+                tracing::info!("contacts' local copy removed");
+            }
+            AppKind::Tasks => {
+                let gone = self.store().forget_account_task_lists()?;
+                let _ = self.notices.try_send(Notice::TasksChanged);
+                tracing::info!(gone, "task lists' local copy removed");
+            }
+            AppKind::Notes => {
+                let gone = self.store().forget_account_notes()?;
+                tracing::info!(gone, "notes' local copy removed");
+            }
+            AppKind::Files => {
+                // Files keeps no copy of its own: its list is read from
+                // the mail; only the drives' opened files are kept.
+                let drives = self.paths.cache_dir().join("drives");
+                if drives.exists() {
+                    std::fs::remove_dir_all(&drives)
+                        .map_err(|err| CommandError::Failed(err.to_string()))?;
+                }
+                tracing::info!("drive files' local copy removed");
+            }
+        }
+        Ok(())
+    }
+
     /// Workers download bodies ahead of time only when not metered, and
     /// catch up when that ends.
     fn apply_metered(&self) {

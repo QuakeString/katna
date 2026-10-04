@@ -24,7 +24,7 @@ use super::settings_page::Section;
 use super::{MailWindow, desktop};
 use crate::daemon::Command;
 use crate::theme::{Theme, fade};
-use crate::widgets::{ButtonStyle, FocusRing, button, icon, menu};
+use crate::widgets::{ButtonStyle, FocusRing, button, icon, menu, radio};
 
 const SHEET_WIDTH: f32 = 420.0;
 
@@ -32,6 +32,9 @@ const SHEET_WIDTH: f32 = 420.0;
 pub(super) struct AppOffAsk {
     app: AppKind,
     closing: bool,
+    /// "Remove the copy on this computer" is picked; "Keep a copy" is the
+    /// default.
+    remove: bool,
     /// The sheet has had the keys given to it.
     focused: bool,
     shown: Spring,
@@ -164,6 +167,7 @@ impl MailWindow {
         self.app_off_ask = Some(AppOffAsk {
             app,
             closing: false,
+            remove: false,
             focused: false,
             shown,
         });
@@ -188,8 +192,13 @@ impl MailWindow {
         };
         ask.closing = true;
         ask.shown.set(0.0);
-        let app = ask.app;
+        let (app, remove) = (ask.app, ask.remove);
         self.set_app_on(app, false, cx);
+        if remove {
+            // Only what came from the accounts goes; Undo turns the app on
+            // again and it downloads it afresh.
+            self.send(Command::ForgetApp(app), None, None, true, cx);
+        }
         self.show_snackbar(
             tr!("app-off-done", app = app_name(app)),
             Some(Command::TurnAppOn(app)),
@@ -219,6 +228,7 @@ impl MailWindow {
             window.focus(&self.dialog_focus, cx);
         }
         let app = ask.app;
+        let picked_remove = ask.remove;
         let name = app_name(app);
         let lines = leaves(app).into_iter().map(|line| {
             div()
@@ -283,12 +293,52 @@ impl MailWindow {
                     .children(lines),
             )
             .child(
-                div()
-                    .mt(px(space::S5))
-                    .text_size(px(text::SMALL))
-                    .line_height(px(18.0))
-                    .text_color(rgba(th.text_faint))
-                    .child(tr!("app-off-kept", app = app_name(app))),
+                div().mt(px(space::S4)).flex().flex_col().children(
+                    [
+                        (false, tr!("app-off-keep"), tr!("app-off-keep-detail")),
+                        (true, tr!("app-off-remove"), tr!("app-off-remove-detail")),
+                    ]
+                    .into_iter()
+                    .map(|(remove, title, detail)| {
+                        let on = picked_remove == remove;
+                        div()
+                            .id(("app-off-copy", remove as usize))
+                            .py(px(space::S2))
+                            .flex()
+                            .flex_row()
+                            .items_start()
+                            .gap(px(space::S4))
+                            .cursor_pointer()
+                            .child(radio(if on { 1.0 } else { 0.0 }, th))
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .min_w_0()
+                                    .flex()
+                                    .flex_col()
+                                    .child(
+                                        div()
+                                            .text_size(px(text::BODY))
+                                            .line_height(px(20.0))
+                                            .text_color(rgba(th.text))
+                                            .child(title),
+                                    )
+                                    .child(
+                                        div()
+                                            .text_size(px(text::SMALL))
+                                            .line_height(px(18.0))
+                                            .text_color(rgba(th.text_faint))
+                                            .child(detail),
+                                    ),
+                            )
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                if let Some(ask) = &mut this.app_off_ask {
+                                    ask.remove = remove;
+                                }
+                                cx.notify();
+                            }))
+                    }),
+                ),
             )
             .child(
                 div()

@@ -16,6 +16,7 @@ mod contact;
 pub mod contacts;
 mod db;
 pub mod error;
+mod forget;
 mod gmail_merge;
 pub mod insights;
 pub mod journal;

@@ -70,6 +70,9 @@ pub enum Command {
     WriteCards(Vec<WriteCard>),
     /// Has the daemon read the settings file again.
     ReloadConfig,
+    /// Has the daemon delete the local copy of an app just turned off
+    /// ("Remove the copy").
+    ForgetApp(katna_core::config::AppKind),
     /// These, one after the other: an undo that moves mail back to
     /// several folders.
     Several(Vec<Command>),
@@ -239,6 +242,7 @@ impl Command {
             | Self::DeleteContacts(_)
             | Self::WriteCards(_)
             | Self::ReloadConfig
+            | Self::ForgetApp(_)
             | Self::SaveNote(_)
             | Self::TrashNotes(..)
             | Self::DeleteNotes(_)
@@ -383,6 +387,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::Snooze(messages, until) => pim.snooze(&ids(messages), *until).await,
         Command::Unsnooze(messages) => pim.unsnooze(&ids(messages)).await,
         Command::ReloadConfig => pim.reload_config().await,
+        Command::ForgetApp(app) => pim.forget_app(app.key()).await,
         Command::UndoSend(id) => match pim.undo_send(*id).await {
             // The app opens the message again, so the outbox can forget it.
             Ok(true) => pim.discard_send(*id).await.map(|_| ()),
