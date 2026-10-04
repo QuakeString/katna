@@ -307,26 +307,20 @@ impl MailWindow {
             self.render_sliding(th, cx)
         } else {
             let (toolbar, body) = if two_pane_reading {
-                (
-                    self.render_reader_toolbar(th, cx),
-                    self.render_reader(th, cx),
-                )
+                (None, self.render_reader_with_toolbar(th, cx))
             } else {
-                self.render_list_parts(th, cx)
+                let (toolbar, body) = self.render_list_parts(th, cx);
+                (Some(toolbar), body)
             };
+            // The bar floats over the top of the lines; the open mail's
+            // toolbar floats over it inside its own header.
             div()
                 .size_full()
                 .flex()
                 .flex_col()
                 .relative()
-                .map(|d| {
-                    if two_pane_reading {
-                        d.child(toolbar).child(fade_in(body, self.card_seq))
-                    } else {
-                        // The bar floats over the top of the lines.
-                        d.child(fade_in(body, self.card_seq)).child(toolbar)
-                    }
-                })
+                .child(fade_in(body, self.card_seq))
+                .children(toolbar)
                 .into_any_element()
         };
         // Beside a conversation, the list keeps its own keys: Up and Down
@@ -437,7 +431,7 @@ impl MailWindow {
         };
         // The bar, the tabs and the banner stay at the top while the lines
         // scroll under them, frosted when Blur and Frosted headers are on,
-        // as the open mail's subject does.
+        // as a chat's header does.
         let under = katna_ui::unpx(self.list_state.scrolled()) > 0.5;
         let head = crate::widgets::pinned_head(
             div()
@@ -450,6 +444,8 @@ impl MailWindow {
             th.pane(),
             under,
             self.config.experimental.frosted_headers,
+            // Inside the card's edge, so its corners follow the card's.
+            (self.layout.shape.card_radius() - self.layout.shape.card_outline()).max(0.0),
             self.list_head.clone(),
             th,
         );
@@ -560,8 +556,7 @@ impl MailWindow {
                 .when(shown < 0.999, |d| {
                     d.shadow(crate::widgets::elevation(th, 2.0))
                 })
-                .child(self.render_reader_toolbar(th, cx))
-                .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
+                .child(self.render_reader_with_toolbar(th, cx))
         });
         div()
             .relative()
@@ -2273,6 +2268,7 @@ impl MailWindow {
                 // The first line starts below the bar pinned over the top.
                 if ix == 0 {
                     return div()
+                        .w_full()
                         .flex()
                         .flex_col()
                         .child(div().h(px(this.list_head.get())))

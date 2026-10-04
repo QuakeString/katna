@@ -466,9 +466,8 @@ pub struct Experimental {
     /// In a blurred window, the search box lets the blur show through
     /// while it is open.
     pub frosted_search: bool,
-    /// In a blurred window, the bars at the top of the mail list, the
-    /// open mail and a chat frost what scrolls under them; off, they
-    /// stay solid.
+    /// In a blurred window, the bars at the top of the mail list and a
+    /// chat frost what scrolls under them; off, they stay solid.
     pub frosted_headers: bool,
     /// Conversations between people open as a group chat: a bubble per
     /// mail with only what its sender wrote.

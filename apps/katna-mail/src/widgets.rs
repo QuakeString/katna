@@ -1382,15 +1382,20 @@ pub fn frosted_top<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, r
 }
 
 /// A bar pinned over the top of something that scrolls under it (the
-/// list's bar, the open mail's subject, the chat's header): frosted when
-/// Blur is on and `frost` (Frosted headers), else `fill`, with a line under it when `under` (something
-/// is beneath). Its height goes into `height` each frame, for the space
-/// above what scrolls; a change draws the window again.
+/// list's bar, the chat's header): frosted when
+/// Blur is on and `frost` (Frosted headers), else `fill`, with a line under
+/// it when `under` (something is beneath). What scrolls under never shows
+/// through as it is: the frost blurs it, else the bar clears it first, as
+/// a see-through card clears the window under it. `radius` rounds the top
+/// corners, for a bar at the top of a card. Its height goes into `height`
+/// each frame, for the space above what scrolls; a change draws the window
+/// again.
 pub fn pinned_head(
     content: impl IntoElement,
     fill: u32,
     under: bool,
     frost: bool,
+    radius: f32,
     height: Rc<Cell<f32>>,
     th: &Theme,
 ) -> AnyElement {
@@ -1400,11 +1405,24 @@ pub fn pinned_head(
         .left_0()
         .right_0()
         .flex()
-        .flex_col();
-    let bar = if frost {
-        frosted_top(bar, th, fill, 0.0)
-    } else {
+        .flex_col()
+        .rounded_t(px(radius));
+    // Without a renderer that blurs, the glass would be a plain see-through
+    // fill with the lines sharp under it.
+    let bar = if frost && th.frost != 0 && katna_ui::frost::supported() {
+        frosted_top(bar, th, fill, radius)
+    } else if fill & 0xff == 0xff {
         bar.bg(rgba(fill))
+    } else {
+        bar.child(katna_ui::frost::clear_fill(
+            rgba(fill).into(),
+            rgba(th.surface | 0xff).into(),
+            gpui::Corners {
+                top_left: px(radius),
+                top_right: px(radius),
+                ..Default::default()
+            },
+        ))
     };
     bar.child(content)
         .when(under, |d| {
