@@ -620,7 +620,8 @@ impl MailWindow {
                             .justify_center()
                             .rounded_full()
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .tooltip(tip(tr!("search-attachment-remove"), th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 if let Some(panel) = &mut this.search_panel
@@ -901,7 +902,8 @@ impl MailWindow {
                             .font_weight(FontWeight::MEDIUM)
                             .text_color(rgba(th.accent))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.search_panel = None;
                                 this.toggle_search_panel(window, cx);

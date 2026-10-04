@@ -583,8 +583,13 @@ impl MailWindow {
             .ml(px(SELECT_PILL_GAP - 8.0))
             .pl(px((40.0 - 28.0) / 2.0))
             .pr(px(4.0))
+            .relative()
             .rounded(px(select_radius))
-            .hover(|s| s.bg(rgba(th.hover)))
+            .child(crate::widgets::hover_fade(
+                "select-glow",
+                Some(select_radius),
+                th,
+            ))
             .child(
                 div()
                     .id("select-box")
@@ -914,8 +919,9 @@ impl MailWindow {
             .flex()
             .items_center()
             .justify_center()
+            .relative()
             .rounded_full()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .child(crate::widgets::hover_fade("refresh-glow", None, th))
             .tooltip(tip(tr!("list-checking"), th))
             .child(super::nav_menu::turning_arrow(
                 "refresh-turning",
@@ -2079,7 +2085,10 @@ impl MailWindow {
                 .text_color(rgba(color))
                 .cursor_pointer()
                 .keeps_press()
-                .when(ix != self.tab, |d| d.hover(|s| s.bg(rgba(th.hover))))
+                .when(ix != self.tab, |d| {
+                    d.relative()
+                        .child(crate::widgets::hover_fade(("tab-glow", ix), None, th))
+                })
                 .when(label < 0.5, |d| d.tooltip(tip(tab.label(), th)))
                 .on_click(cx.listener(move |this, _, _, cx| {
                     // The open tab goes back to its top, as its folder does.
@@ -2962,7 +2971,8 @@ impl MailWindow {
                 }))
                 .cursor_pointer()
                 .keeps_press()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", None, th))
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_dim))
                 .child(tr!("list-files-more", count = rest.len() as u64))

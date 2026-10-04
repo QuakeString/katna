@@ -628,7 +628,8 @@ impl MailWindow {
             .justify_center()
             .rounded_full()
             .cursor_grab()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", None, th))
             .tooltip(crate::widgets::tip(tr!("accounts-drag"), th))
             .on_mouse_down(
                 MouseButton::Left,
@@ -1473,7 +1474,8 @@ fn text_button(
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.accent))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", None, th))
         .child(label.into())
 }
 

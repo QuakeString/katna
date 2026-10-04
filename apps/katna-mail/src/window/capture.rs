@@ -21,12 +21,12 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, AppContext, Bounds, Context, Entity, FocusHandle, Focusable, FontWeight,
-    Global, KeyBinding, SharedString, Subscription, Task, WeakEntity, Window,
+    Global, KeyBinding, Pixels, SharedString, Subscription, Task, WeakEntity, Window,
     WindowBackgroundAppearance, WindowBounds, WindowDecorations, WindowHandle, WindowKind,
     WindowOptions, actions, canvas, div, point, prelude::*, rgba, size,
 };
 use jiff::civil::Date;
-use katna_chrome::{Environment, Look, WindowChrome};
+use katna_chrome::{Environment, Look, Session, WindowChrome};
 use katna_core::config::{Config, FROST_OPACITY, Theme as ThemeChoice};
 use katna_core::ids::MAIL_APP_ID;
 use katna_core::{AccountKind, Paths};
@@ -36,7 +36,7 @@ use katna_dbus::zbus::Connection;
 use katna_i18n::{format, tr};
 use katna_store::{Mode, Store};
 use katna_ui::tokens::{elevation as level, radius, space, text};
-use katna_ui::{InputEvent, TextInput, px, unpx};
+use katna_ui::{InputEvent, TextInput, WindowDrag, px, unpx};
 
 use super::MailWindow;
 use super::colors::DesktopColors;
@@ -85,6 +85,9 @@ pub struct CaptureHost {
     connection: Option<Connection>,
     /// The card, while it is open.
     open: Option<WindowHandle<CaptureCard>>,
+    /// Where the card was last, moved or not, so it opens there again
+    /// while Katna runs. Wayland keeps the place to the compositor.
+    last: Option<Bounds<Pixels>>,
     /// The mail window, once it is open: it reads its notes again after a
     /// note was saved here.
     main: Option<WeakEntity<MailWindow>>,
@@ -110,6 +113,7 @@ pub fn install(
         font,
         connection,
         open: None,
+        last: None,
         main: None,
     });
 }
@@ -166,8 +170,14 @@ pub fn open(param: &str, cx: &mut App) {
 /// screen narrower than the card (a phone), it is as wide as the screen.
 fn window_options(cx: &App) -> WindowOptions {
     let mut surface = size(px(WIDTH + 2.0 * MARGIN), px(FIRST_HEIGHT + 2.0 * MARGIN));
-    let bounds = match cx.primary_display() {
-        Some(display) => {
+    let host = cx.global::<CaptureHost>();
+    let last = host
+        .last
+        .filter(|_| host.env.session != Session::Wayland)
+        .map(|last| last.origin);
+    let bounds = match (last, cx.primary_display()) {
+        (Some(origin), _) => Bounds::new(origin, surface),
+        (None, Some(display)) => {
             let screen = display.bounds();
             surface.width = surface.width.min(screen.size.width);
             Bounds::new(
@@ -178,7 +188,7 @@ fn window_options(cx: &App) -> WindowOptions {
                 surface,
             )
         }
-        None => Bounds::centered(None, surface, cx),
+        (None, None) => Bounds::centered(None, surface, cx),
     };
     WindowOptions {
         window_bounds: Some(WindowBounds::Windowed(bounds)),
@@ -394,6 +404,9 @@ impl CaptureCard {
             },
         );
         let appearance = cx.observe_window_appearance(window, |_, _, cx| cx.notify());
+        let moved = cx.observe_window_bounds(window, |_, window, cx| {
+            cx.global_mut::<CaptureHost>().last = Some(window.bounds());
+        });
         window.focus(&input.focus_handle(cx), cx);
         // Read in the background; the chips name the list once it is. A
         // daemon that has just started may still be updating the store,
@@ -449,7 +462,7 @@ impl CaptureCard {
             error: None,
             height: Rc::new(Cell::new(0.0)),
             focus: cx.focus_handle(),
-            _subscriptions: vec![typed, appearance],
+            _subscriptions: vec![typed, appearance, moved],
             _task: Some(task),
         }
     }
@@ -683,6 +696,7 @@ impl CaptureCard {
                         .hover(|s| s.text_color(rgba(th.text)))
                 })
                 .child(label)
+                .keeps_press()
                 .on_click(cx.listener(move |this, _, window, cx| {
                     this.set_kind(note, cx);
                     window.focus(&this.input.focus_handle(cx), cx);
@@ -704,6 +718,7 @@ impl CaptureCard {
 
     fn render_field(&self, th: &Theme) -> AnyElement {
         div()
+            .keeps_press()
             .h(px(FIELD_HEIGHT))
             .px(px(space::S4))
             .flex()
@@ -768,6 +783,7 @@ impl CaptureCard {
                 14.0,
             ))
             .child(label)
+            .keeps_press()
             .on_click(cx.listener(move |this, _, _, cx| this.choose(chip, cx)))
             .into_any_element()
     }
@@ -860,8 +876,10 @@ impl CaptureCard {
             .justify_center()
             .rounded_full()
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", None, th))
             .child(icon("chevron-left", th.text_dim, 16.0))
+            .keeps_press()
             .on_click(cx.listener(|this, _, _, cx| {
                 this.choosing = None;
                 cx.notify();
@@ -881,6 +899,7 @@ impl CaptureCard {
                     let on = pick == day;
                     out.push(
                         choice(("capture-day", ix), label, on)
+                            .keeps_press()
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.due = Some(match pick {
                                     Some(day) => DueChoice::Day(day),
@@ -902,6 +921,7 @@ impl CaptureCard {
                             remind.label(time.is_some()),
                             remind == now,
                         )
+                        .keeps_press()
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.remind = Some(remind);
                             this.choosing = None;
@@ -926,6 +946,7 @@ impl CaptureCard {
                     let id = list.id;
                     out.push(
                         choice(("capture-list-choice", ix), label, now == Some(id))
+                            .keeps_press()
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.list = Some(id);
                                 this.choosing = None;
@@ -947,6 +968,7 @@ impl CaptureCard {
                     let on = now.contains(&name);
                     out.push(
                         choice(("capture-label-choice", ix), name.clone(), on)
+                            .keeps_press()
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.labels = Some(vec![name.clone()]);
                                 this.choosing = None;
@@ -961,6 +983,7 @@ impl CaptureCard {
                         tr!("capture-no-label"),
                         now.is_empty(),
                     )
+                    .keeps_press()
                     .on_click(cx.listener(|this, _, _, cx| {
                         this.labels = Some(Vec::new());
                         this.choosing = None;
@@ -984,6 +1007,7 @@ impl CaptureCard {
                             self.place_name(place),
                             now == place,
                         )
+                        .keeps_press()
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.place = Some(place);
                             this.choosing = None;
@@ -1062,6 +1086,8 @@ impl Render for CaptureCard {
         let card = div()
             .id("capture-card")
             .key_context(CONTEXT)
+            // Empty space moves the card, as a title bar would.
+            .window_drag()
             .on_action(cx.listener(Self::switch_kind))
             .relative()
             .w_full()

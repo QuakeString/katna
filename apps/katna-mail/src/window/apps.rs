@@ -451,7 +451,11 @@ impl MailWindow {
                         .items_center()
                         .justify_center()
                         .rounded_full()
-                        .group_hover("app", |s| s.bg(rgba(th.hover)))
+                        .child(crate::widgets::hover_fade(
+                            ("app-glow", app as usize),
+                            None,
+                            th,
+                        ))
                         .child(
                             Ripple::new(("app-ripple", app as usize), rgba(th.ripple)).centered(),
                         )

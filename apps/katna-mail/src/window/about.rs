@@ -308,7 +308,8 @@ impl MailWindow {
             .text_size(px(13.0))
             .text_color(rgba(th.text_dim))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", None, th))
             .tooltip(tip(tr!("about-tooltip"), th))
             .on_click(cx.listener(|this, _, window, cx| this.open_about(window, cx)))
             .group(VERSION_GROUP)
@@ -520,7 +521,8 @@ impl MailWindow {
                     .text_size(px(13.0))
                     .font_weight(FontWeight::MEDIUM)
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .on_click(move |_, _, cx| cx.open_url(url))
                     .child(icon(logo, th.text, 14.0))
                     .child(site)
@@ -693,7 +695,8 @@ impl MailWindow {
                     .gap(px(12.0))
                     .rounded(px(8.0))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                     .on_click(move |_, _, cx| cx.open_url(url))
                     .child(
                         div()
@@ -759,7 +762,8 @@ impl MailWindow {
                     .gap(px(12.0))
                     .rounded(px(8.0))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                     .on_click(cx.listener(|this, _, _, cx| {
                         if let Some(about) = &mut this.about {
                             about.all = !about.all;
@@ -795,7 +799,8 @@ impl MailWindow {
                         .gap(px(12.0))
                         .rounded(px(8.0))
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                         .tooltip(tip(lib.repository.clone(), th))
                         .on_click(move |_, _, cx| cx.open_url(&url))
                         .child(

@@ -110,7 +110,8 @@ impl MailWindow {
             .gap(px(space::S4))
             .rounded(px(radius::FULL))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", None, th))
             .focus_ring(th)
             .on_click(cx.listener(|this, _, _, cx| this.toggle_calendar_tasks(cx)))
             .child(crate::widgets::checkbox_tinted(
@@ -491,7 +492,8 @@ impl MailWindow {
                     .gap(px(16.0))
                     .rounded(px(8.0))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                     .on_mouse_down(
                         MouseButton::Right,
                         self.calendar_menu_on(CalTarget::Task(id), cx),
