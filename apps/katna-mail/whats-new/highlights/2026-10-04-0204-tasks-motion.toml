@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tasks that move"
+text = """
+Ticking off a task fills its circle, strikes through the title and folds
+the row away. New and deleted tasks slide in and out, reordered ones glide
+to their place, and the list cards lift a little as you point at them.
+"""

@@ -25,6 +25,7 @@ use katna_preview::image::{Frame, RgbaImage, imageops};
 use katna_render::{Attachment, AttachmentFile};
 use katna_store::MessageId;
 use katna_ui::px;
+use katna_ui::tokens::radius;
 
 use super::MailWindow;
 use super::reader::AttachmentSource;
@@ -38,9 +39,8 @@ const CARD_WIDTH: f32 = 180.0;
 const THUMB_HEIGHT: f32 = 84.0;
 /// Thumbnails are drawn at twice the card's size, sharp on HiDPI screens.
 pub(super) const THUMB_PIXELS: (u32, u32) = (2 * CARD_WIDTH as u32, 2 * THUMB_HEIGHT as u32);
-/// The card's corner radius; its contents are rounded one pixel less, to
-/// sit inside its border.
-pub(super) const CARD_RADIUS: f32 = 8.0;
+/// The card's corner radius: a tile's (`widgets::tile`).
+pub(super) const CARD_RADIUS: f32 = radius::MD;
 /// Files handed to another app are removed after this long.
 const OPENED_KEEP: Duration = Duration::from_secs(24 * 60 * 60);
 
@@ -292,7 +292,7 @@ pub(super) fn card_top(
     panel: Option<SharedString>,
     th: &Theme,
 ) -> gpui::Div {
-    let inner = px(CARD_RADIUS - 1.0);
+    let inner = px(CARD_RADIUS);
     let top = match thumb {
         Some(Thumb::Picture { sharp, .. }) => div().size_full().child(
             img(ImageSource::Render(sharp))
@@ -326,7 +326,7 @@ pub(super) fn hover_panel(
     buttons: Vec<AnyElement>,
     th: &Theme,
 ) -> gpui::Div {
-    let inner = px(CARD_RADIUS - 1.0);
+    let inner = px(CARD_RADIUS);
     // Frosted glass in the theme's own color: the blurred thumbnail
     // under a veil of the card's surface, text in the theme's ink.
     // Without a thumbnail there is nothing to blur, so the veil
@@ -686,10 +686,9 @@ impl MailWindow {
                 .flex()
                 .flex_col()
                 .overflow_hidden()
-                .rounded(px(CARD_RADIUS))
-                .border_1()
-                .border_color(rgba(th.outline))
+                .map(|d| crate::widgets::tile(d, th))
                 .cursor_pointer()
+                .child(crate::widgets::tile_hover(th))
                 .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
                     this.open_attachment(id, ix, window, cx);

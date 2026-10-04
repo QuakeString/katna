@@ -240,7 +240,7 @@ impl MailWindow {
 
     /// Shows the board of notes with `label`.
     pub(super) fn show_label(&mut self, label: String, cx: &mut Context<Self>) {
-        self.close_note(cx);
+        self.close_note_now(cx);
         if let Some(page) = &mut self.notes {
             page.view = NotesView::Notes;
             page.label = Some(label);
@@ -349,36 +349,31 @@ impl MailWindow {
         if editor.labels.is_empty() {
             return None;
         }
+        let tint = super::chip_tint(super::note_color(editor.color, th), th);
         Some(
             div()
                 .flex_none()
-                .px(px(16.0))
-                .pb(px(8.0))
+                .px(px(space::S5))
+                .pb(px(space::S3))
                 .flex()
                 .flex_row()
                 .flex_wrap()
-                .gap(px(6.0))
+                .gap(px(space::S2))
                 .children(editor.labels.iter().enumerate().map(|(ix, label)| {
                     let group: SharedString = format!("note-label-chip-{ix}").into();
                     let off = label.clone();
-                    div()
+                    crate::widgets::tag(label.clone(), th)
                         .id(("note-label-chip", ix))
                         .group(group.clone())
                         .relative()
-                        .h(px(24.0))
-                        .px(px(10.0))
-                        .flex()
-                        .items_center()
-                        .rounded_full()
-                        .bg(rgba(fade(th.text, 0.08)))
-                        .text_size(px(12.0))
-                        .child(label.clone())
+                        .bg(rgba(tint))
                         .child(
                             div()
                                 .id(("note-label-off", ix))
                                 .absolute()
-                                .right(px(2.0))
-                                .size(px(20.0))
+                                .right(px(space::S1))
+                                .top(px(space::S1))
+                                .size(px(18.0))
                                 .flex()
                                 .items_center()
                                 .justify_center()
@@ -431,7 +426,7 @@ impl MailWindow {
 
     /// Opens the Edit labels dialog.
     fn open_labels_dialog(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        self.close_note(cx);
+        self.close_note_now(cx);
         let accent = rgba(self.theme(window).accent).into();
         let mut rows = Vec::new();
         let mut subscriptions = Vec::new();
@@ -557,7 +552,7 @@ impl MailWindow {
                 .flex()
                 .flex_row()
                 .items_center()
-                .gap(px(8.0))
+                .gap(px(space::S3))
                 .child(icon("label", th.text_dim, 20.0))
                 .child(
                     div()
@@ -568,7 +563,7 @@ impl MailWindow {
                         .items_center()
                         .border_b_1()
                         .border_color(rgba(th.divider))
-                        .text_size(px(14.0))
+                        .text_size(px(text::BODY))
                         .child(input.clone()),
                 )
                 .child(
@@ -581,8 +576,8 @@ impl MailWindow {
         });
         let empty = dialog.rows.is_empty().then(|| {
             div()
-                .py(px(12.0))
-                .text_size(px(14.0))
+                .py(px(space::S4))
+                .text_size(px(text::BODY))
                 .text_color(rgba(th.text_dim))
                 .child(tr!("notes-labels-none"))
         });
@@ -591,7 +586,7 @@ impl MailWindow {
             .occlude()
             .w(px(360.0))
             .max_h(px(super::super::about::dialog_max_height(window)))
-            .p(px(24.0))
+            .p(px(space::S6))
             .flex()
             .flex_col()
             .map(|d| crate::widgets::dialog(d, th, th.menu))
@@ -599,8 +594,8 @@ impl MailWindow {
             .on_click(|_, _, cx| cx.stop_propagation())
             .child(
                 div()
-                    .mb(px(12.0))
-                    .text_size(px(20.0))
+                    .mb(px(space::S4))
+                    .text_size(px(text::TITLE))
                     .child(tr!("notes-edit-labels")),
             )
             .child(
@@ -615,10 +610,16 @@ impl MailWindow {
                     .children(empty),
             )
             .child(
-                div().mt(px(20.0)).flex().flex_row().justify_end().child(
-                    filled_button("notes-labels-done", tr!("notes-labels-done"), th)
-                        .on_click(cx.listener(|this, _, _, cx| this.close_labels_dialog(true, cx))),
-                ),
+                div()
+                    .mt(px(space::S6))
+                    .flex()
+                    .flex_row()
+                    .justify_end()
+                    .child(
+                        filled_button("notes-labels-done", tr!("notes-labels-done"), th).on_click(
+                            cx.listener(|this, _, _, cx| this.close_labels_dialog(true, cx)),
+                        ),
+                    ),
             );
         Some(
             div()
