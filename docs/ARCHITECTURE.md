@@ -6216,3 +6216,17 @@ pre-release. The Windows package workflow can also be run by hand
 what breaks there. Without a code-signing
 certificate Windows SmartScreen warns on first run; the certificate is the
 owner's and goes into GitHub secrets.
+
+### 27.3 Microsoft Store package
+
+The Store is how Windows users get Katna without a SmartScreen warning:
+the Store signs the MSIX it accepts. `KatnaMail.msix` holds the same
+programs as Setup (`ci/windows-store-package.ps1`,
+`packaging/windows/store`) and goes on `windows-latest` beside Setup,
+which stays for testers. Katna knows it runs from the package by the
+`AppxManifest.xml` beside its programs (`update::Package::MsStore`):
+the Store updates it, so Katna never checks for updates; the package's
+startup task starts it at sign-in, since a package's registry writes
+(the `Run` key) stay inside the package; and its toasts use the package's
+app ID. The manifest's identity values come from Partner Center and the
+submission is the owner's.
