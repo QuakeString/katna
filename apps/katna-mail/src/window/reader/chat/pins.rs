@@ -283,8 +283,7 @@ impl MailWindow {
         reader.chat.settle = 0;
         if let Some(top) = top {
             let max = unpx(self.reader_scroll.max_offset().y);
-            // Below the header pinned over the top.
-            let y = (top - feed_top - self.reader_head.get() - 12.0).clamp(0.0, max.max(0.0));
+            let y = (top - feed_top - 12.0).clamp(0.0, max.max(0.0));
             self.reader_scroll.set_offset(point(px(0.0), px(-y)));
         }
         cx.notify();

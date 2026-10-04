@@ -554,6 +554,10 @@ impl MailWindow {
         // conversation rather than showing through it.
         let see_through = th.pane_tint < 100;
         let (bottom_left, bottom_right) = self.phone_bottom_corners();
+        // GPUI doesn't clip to the card's rounded corners: what fills the
+        // card from its top edge rounds its own top corners as the card's
+        // inside does, or they show square over the card's.
+        let top = (self.layout.shape.card_radius() - self.layout.shape.card_outline()).max(0.0);
         let list = (shown < 0.999 || !has_reader).then(|| {
             let (toolbar, body) = self.render_list_parts(th, cx);
             div()
@@ -574,6 +578,7 @@ impl MailWindow {
                             .top_0()
                             .left_0()
                             .size_full()
+                            .rounded_t(px(top))
                             .rounded_bl(px(bottom_left))
                             .rounded_br(px(bottom_right))
                             .bg(rgba(fade(th.shadow, 0.5 * shown))),
@@ -594,6 +599,7 @@ impl MailWindow {
                         .rounded_bl(px(bottom_left))
                         .rounded_br(px(bottom_right))
                 })
+                .rounded_t(px(top))
                 .when(shown < 0.999, |d| {
                     d.shadow(crate::widgets::elevation(th, 2.0))
                 })

@@ -466,10 +466,6 @@ pub struct Experimental {
     /// In a blurred window, the search box lets the blur show through
     /// while it is open.
     pub frosted_search: bool,
-    /// In a blurred window, a chat's header frosts the bubbles that scroll
-    /// under it; off, it stays solid. (The mail list's bar is always
-    /// solid.)
-    pub frosted_headers: bool,
     /// Conversations between people open as a group chat: a bubble per
     /// mail with only what its sender wrote.
     pub chat_view: bool,
@@ -491,7 +487,6 @@ impl Default for Experimental {
             pane_opacity: PANE_OPACITY,
             frosted_chat: true,
             frosted_search: true,
-            frosted_headers: true,
             chat_view: false,
         }
     }
@@ -2005,7 +2000,6 @@ mod tests {
         assert!(config.experimental.frosted_panes);
         assert_eq!(config.experimental.pane_opacity, PANE_OPACITY);
         assert!(config.experimental.frosted_chat && config.experimental.frosted_search);
-        assert!(config.experimental.frosted_headers);
         assert!(!config.experimental.chat_view);
         let config =
             Config::parse("[experimental]\nwindow_frame = \"katna\"\nblur = true\n").unwrap();

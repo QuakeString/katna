@@ -1716,7 +1716,12 @@ GPUI global):
   background* (`frosted_chat`) makes the open mail's card 5 points
   clearer while it shows a chat (70 % with solid panes), bubbles staying
   solid; *Frosted search box* (`frosted_search`) keeps the focused search
-  field 62 % opaque, clearing the bar's tint under it as it opens. The theme carries them (`Theme::frosted_panes`,
+  field 62 % opaque, clearing the bar's tint under it as it opens. Nothing
+  scrolls under a card's bars: the mail list's rows, the open mail and a
+  chat's bubbles start below their toolbar and header, which stay solid
+  (a frosted slide-under header was tried in October 2026 and dropped,
+  since GPUI doesn't clip what passes under a bar to the card's rounded
+  corners). The theme carries them (`Theme::frosted_panes`,
   `pane`, `chat_pane`, `on_pane`): rows and chips that match the card
   draw nothing, others go as see-through as the card. Over see-through
   cards dim and faint text move closer to the text colour (a fifth and

@@ -1,9 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-title = "Mails start below the list's bar"
+title = "Nothing slides under the bars"
 text = """
-The mail list's mails start below its bar instead of sliding under it,
-with no blur, and so does the open mail. Only a chat's header still
-frosts the bubbles under it; Settings > Experimental calls that switch
-Frosted chat header now.
+The mail list's mails, the open mail and a chat's bubbles now start below
+their bars instead of sliding under them, and the bars stay solid. The
+Frosted headers switch is gone, and so are the odd corners it brought.
 """
