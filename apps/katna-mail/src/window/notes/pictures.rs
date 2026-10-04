@@ -380,7 +380,7 @@ impl MailWindow {
                 .w_full()
                 .flex()
                 .flex_col()
-                .rounded_t(px(15.0))
+                .rounded_t(px(radius::LG))
                 .overflow_hidden()
                 .children(rows)
                 .into_any_element(),
