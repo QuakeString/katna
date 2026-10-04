@@ -36,6 +36,13 @@ medium, semibold, bold.
 7%, pressed 14%, selected 10% (12% dark), dragged 16%, disabled 38%.
 Separating lines are a quarter of an edge's strength.
 
+**Status colours:** `Theme::error` (red) is for errors and destructive
+actions. `Theme::warning` (amber: light `#A05A00`, dark `#FDD663`) means
+"needs you": a problem only the user can fix, such as an account Google
+signed out or mail that can't go. With Colours = System it follows the
+desktop's warning colour (KDE's `ForegroundNeutral`, libadwaita's
+`warning_color`) as error follows its negative one.
+
 **Lines:** `faint` (today's `th.divider`, `th.faint_line`) separates;
 `edge` (today's `th.outline`) outlines what can be clicked or typed in:
 fields and chips; outlined and pill buttons keep their stronger edge

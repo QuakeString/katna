@@ -27,6 +27,10 @@ gallery-motion = Motion
 gallery-fold = Click to fold or unfold
 gallery-fold-body = The height glides on the slide spring with a little overshoot, the content shows as it grows and the arrow turns half round.
 gallery-elevation = Elevation
+gallery-status = Status colours
+# Amber: a problem the user has to act on, such as signing in again.
+gallery-status-warning = Needs you
+gallery-status-error = Error
 gallery-text = Text sizes
 # A line of sample text in one of the text sizes.
 gallery-sample = { $size } px: The quick brown fox jumps over the lazy dog

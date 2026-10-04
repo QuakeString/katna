@@ -139,6 +139,10 @@ pub struct Theme {
     pub snackbar_text: u32,
     /// Error text and the frame of a field in error.
     pub error: u32,
+    /// What needs the user before it gets better: an account signed out
+    /// or refusing its password, a mail not sent. Amber, readable as
+    /// text. Errors stay [`Theme::error`].
+    pub warning: u32,
     /// Shadow color; its alpha is the strongest shadow.
     pub shadow: u32,
 }
@@ -485,6 +489,9 @@ impl Theme {
             snackbar: base.snackbar,
             snackbar_text: base.snackbar_text,
             error: readable(s.negative, surface, 3.0),
+            warning: s
+                .neutral
+                .map_or(base.warning, |c| readable(c, surface, 4.5)),
             shadow: base.shadow,
         }
     }
@@ -627,6 +634,7 @@ const LIGHT: Theme = Theme {
     snackbar: 0x313033ff,
     snackbar_text: 0xf4eff4ff,
     error: 0xb3261eff,
+    warning: 0xa05a00ff,
     shadow: 0x3c40434d,
 };
 
@@ -685,6 +693,7 @@ const DARK: Theme = Theme {
     snackbar: 0xe3e3e3ff,
     snackbar_text: 0x1f1f1fff,
     error: 0xf2b8b5ff,
+    warning: 0xfdd663ff,
     shadow: 0x00000099,
 };
 
@@ -1029,6 +1038,7 @@ mod tests {
             accent: 0x3daee9ff,
             accent_fg: 0xffffffff,
             negative: 0xda4453ff,
+            neutral: None,
         };
         let desktop = SystemColors::default().with_schemes(vec![DesktopScheme {
             id: "kde:BreezeClassic".to_owned(),
