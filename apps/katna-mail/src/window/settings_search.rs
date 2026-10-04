@@ -543,7 +543,7 @@ const ENTRIES: &[Entry] = &[
         Section::Experimental,
         "look-frosted-headers",
         "look-frosted-headers-detail",
-        "blur frosted glass header bar top sticky pinned subject scroll under",
+        "blur frosted glass chat header bar top sticky pinned bubbles scroll under",
     ),
     entry(
         Section::Experimental,

@@ -452,8 +452,8 @@ impl MailWindow {
             toolbar
         };
         // The bar, the tabs and the banner stay at the top while the lines
-        // scroll under them, frosted when Blur and Frosted headers are on,
-        // as a chat's header does.
+        // scroll under them. The bar stays solid, never frosted (the owner's
+        // call); only a chat's header frosts.
         let under = katna_ui::unpx(self.list_state.scrolled()) > 0.5;
         let head = crate::widgets::pinned_head(
             div()
@@ -465,7 +465,7 @@ impl MailWindow {
                 .children(problems),
             th.pane(),
             under,
-            self.config.experimental.frosted_headers,
+            false,
             // Inside the card's edge, so its corners follow the card's.
             (self.layout.shape.card_radius() - self.layout.shape.card_outline()).max(0.0),
             self.list_head.clone(),
