@@ -20,7 +20,7 @@ use gpui::{
 use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_store::FolderId;
-use katna_ui::px;
+use katna_ui::{px, tokens};
 
 use super::MenuKey;
 use super::{Act, Listing, MailWindow};
@@ -267,7 +267,12 @@ impl MailWindow {
         } else {
             info.display_name.clone()
         };
+        // Taken offline here: the daemon has stopped it.
+        let offline = self.offline_text(account);
         let state = status.and_then(|status| {
+            if let Some(text) = offline.clone() {
+                return Some((th.text_faint, text));
+            }
             let provider = status.sign_in.parse::<OAuthProvider>().ok();
             let (color, text) = match status.state.as_str() {
                 state::ONLINE => (
@@ -292,7 +297,11 @@ impl MailWindow {
                 ),
                 _ => return None,
             };
-            Some(
+            Some((color, text))
+        });
+        let state = state
+            .or_else(|| offline.map(|text| (th.text_faint, text)))
+            .map(|(color, text)| {
                 div()
                     .flex()
                     .flex_row()
@@ -307,9 +316,8 @@ impl MailWindow {
                             .rounded_full()
                             .bg(rgba(color)),
                     )
-                    .child(div().min_w_0().truncate().child(text)),
-            )
-        });
+                    .child(div().min_w_0().truncate().child(text))
+            });
         let storage = self.quotas.get(&account).copied().map(|quota| {
             let fraction = quota.fraction();
             div()
@@ -702,6 +710,14 @@ impl MailWindow {
             .when_some(
                 about.filter(|a| self.accounts.iter().any(|x| x.id == *a && x.kind.is_mail())),
                 |d, about| {
+                    d.child(divider())
+                        .children(self.offline_items(about, th, cx))
+                        .child(divider())
+                },
+            )
+            .when_some(
+                about.filter(|a| self.accounts.iter().any(|x| x.id == *a && x.kind.is_mail())),
+                |d, about| {
                     d.child(
                         item(
                             "nav-menu-new-mail",
@@ -793,6 +809,79 @@ impl MailWindow {
                 )
                 .into_any_element(),
         )
+    }
+}
+
+impl MailWindow {
+    /// Go offline (for an hour, until tomorrow), or Go online, for
+    /// `account`.
+    fn offline_items(
+        &self,
+        account: AccountId,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Vec<AnyElement> {
+        use super::offline::OfflineFor;
+        let line = |id: &'static str, glyph: Option<&str>, label: String| {
+            div()
+                .id(id)
+                .h(px(ITEM_HEIGHT))
+                .pl(px(tokens::space::S5))
+                .pr(px(tokens::space::S6))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(tokens::space::S5))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .menu_key(th)
+                .child(match glyph {
+                    Some(glyph) => icon(glyph, th.text_dim, 20.0),
+                    // Under the item it belongs to, its label in line.
+                    None => div().flex_none().size(px(20.0)).into_any_element(),
+                })
+                .child(div().flex_1().min_w_0().truncate().child(label))
+        };
+        if self.is_account_offline(account) {
+            return vec![
+                line("nav-menu-online", Some("cloud"), tr!("offline-go-online"))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.nav_menu = None;
+                        this.set_account_offline(account, None, cx);
+                    }))
+                    .into_any_element(),
+            ];
+        }
+        [
+            (
+                "nav-menu-offline",
+                Some("cloud-off"),
+                tr!("offline-go-offline"),
+                OfflineFor::Now,
+            ),
+            (
+                "nav-menu-offline-hour",
+                None,
+                tr!("offline-for-hour"),
+                OfflineFor::Hour,
+            ),
+            (
+                "nav-menu-offline-tomorrow",
+                None,
+                tr!("offline-until-tomorrow"),
+                OfflineFor::Tomorrow,
+            ),
+        ]
+        .into_iter()
+        .map(|(id, glyph, label, time)| {
+            line(id, glyph, label)
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.nav_menu = None;
+                    this.set_account_offline(account, Some(time), cx);
+                }))
+                .into_any_element()
+        })
+        .collect()
     }
 }
 

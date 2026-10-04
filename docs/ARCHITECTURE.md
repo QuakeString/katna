@@ -339,6 +339,28 @@ One worker per account inside the daemon:
   `ReloadConfig`, and the daemon answers `Metered` and signals
   `MeteredChanged`. Not built yet: the portal network monitor (for
   Flatpak).
+- **Taking an account offline:** the user can take one account offline
+  (its right-click menu, the account card, Settings > Accounts >
+  Connected), for an hour, until 8 tomorrow morning or until brought back;
+  "Work offline" in the account card takes every account at once. It is
+  kept in the settings (`[offline]`: lower-case address = Unix seconds it
+  ends, 0 for never), so it survives restarts, and Katna Mail calls
+  `ReloadConfig`. The daemon (`daemon/offline.rs`) stops the account's
+  worker and its connection for opened messages, and connects for nothing
+  of that account: mail, calendars, contacts, tasks, notes and rules on
+  the server; its status is `paused`. Changes wait where they always do:
+  the op queue, the outbox (sending fails like a lost network and stays
+  queued), unsent tasks and notes in the store, and event changes held in
+  memory (dropped on restart, as unsent event changes always are).
+  Contacts save on their service straight away, so they cannot be edited
+  while offline. Back online (by hand, or when its time ends, which the
+  daemon times itself), the worker starts and replays the queue first,
+  waiting mail is sent at once, and every other sync runs. Katna Mail
+  shows a crossed cloud before the account's count in the folder pane (a
+  click brings it back), on the account picture in the top bar while any
+  account is offline, in the account card with what waits, and an
+  "Offline" tag and a note in Compose's From; a message not downloaded
+  says so instead of trying.
 
 ### 6.2 Sync levels (per account)
 

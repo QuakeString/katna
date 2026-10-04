@@ -2845,7 +2845,17 @@ impl MailWindow {
                     .font_weight(FontWeight::MEDIUM)
                     .child(self.render_subject_field(th, cx)),
             )
+            .children(self.compose_offline_strip(th, cx))
             .into_any_element()
+    }
+
+    /// The account the message goes out from.
+    pub(super) fn compose_from_id(&self) -> Option<AccountId> {
+        let compose = self.compose.as_ref()?;
+        compose
+            .from
+            .filter(|id| self.accounts.iter().any(|a| a.id == *id))
+            .or_else(|| self.compose_account(compose.kind).map(|a| a.id))
     }
 
     /// The account the message goes out from, with the others to pick
@@ -2864,6 +2874,9 @@ impl MailWindow {
             menu_item(("compose-from-account", ix), &sender_label(account), th)
                 .gap(px(12.0))
                 .child(div().flex_1())
+                .when(self.is_account_offline(id), |d| {
+                    d.child(crate::widgets::tag(tr!("offline-tag"), th))
+                })
                 .when(chosen, |d| {
                     d.child(icon("check", th.nav_selected_text, 20.0))
                 })
@@ -2918,6 +2931,9 @@ impl MailWindow {
                             .child(SharedString::from(from.address.clone())),
                     ),
             )
+            .when(self.is_account_offline(from.id), |d| {
+                d.child(crate::widgets::tag(tr!("offline-tag"), th))
+            })
             .when(several, |d| {
                 d.cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))

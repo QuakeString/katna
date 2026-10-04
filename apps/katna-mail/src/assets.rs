@@ -70,6 +70,7 @@ icons!(
     "clear-format",
     "close-full",
     "close",
+    "cloud-off",
     "cloud",
     "code",
     "coffee",

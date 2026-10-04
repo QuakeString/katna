@@ -627,6 +627,12 @@ impl Mail {
             .collect()
     }
 
+    /// How many changes and messages wait to go to each account's
+    /// servers, for an account taken offline.
+    pub fn waiting(&self) -> HashMap<katna_core::AccountId, u64> {
+        self.store.waiting().unwrap_or_default()
+    }
+
     /// The IMAP server of an account, to tell its provider.
     pub fn incoming_host(&self, account: katna_core::AccountId) -> Option<String> {
         let settings = self.store.account_settings(account).ok()??;

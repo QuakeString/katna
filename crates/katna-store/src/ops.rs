@@ -43,6 +43,31 @@ pub struct PinnedMessage {
 }
 
 impl Store {
+    /// How many changes and messages wait to go to each account's
+    /// servers: queued operations and unsent mail in the outbox. Accounts
+    /// with none are left out.
+    pub fn waiting(&self) -> Result<std::collections::HashMap<AccountId, u64>> {
+        let mut waiting = std::collections::HashMap::new();
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT account_id, count(*) FROM op_queue
+             WHERE state IN ('pending', 'running') GROUP BY account_id",
+        )?;
+        let rows = stmt.query_map([], |row| Ok((row.get::<_, i64>(0)?, row.get::<_, i64>(1)?)))?;
+        for row in rows {
+            let (account, count) = row?;
+            *waiting.entry(AccountId(account)).or_insert(0) += count.max(0) as u64;
+        }
+        for entry in self.outbox()? {
+            if matches!(
+                entry.state,
+                crate::SendState::Queued | crate::SendState::Sending
+            ) {
+                *waiting.entry(entry.account).or_insert(0) += 1;
+            }
+        }
+        Ok(waiting)
+    }
+
     /// Every pinned message, most recently pinned first.
     pub fn pinned(&self) -> Result<Vec<PinnedMessage>> {
         let mut stmt = self.mail.prepare_cached(
@@ -356,6 +381,7 @@ mod tests {
         let first = batch.enqueue_op(account, r#"{"op":"a"}"#).unwrap();
         let second = batch.enqueue_op(account, r#"{"op":"b"}"#).unwrap();
         batch.commit().unwrap();
+        assert_eq!(store.waiting().unwrap().get(&account), Some(&2));
         assert_eq!(store.next_op_due(account).unwrap(), Some(0));
         let due = store.due_ops(account, 100, 10).unwrap();
         assert_eq!(
@@ -383,6 +409,7 @@ mod tests {
         assert_eq!(batch.clear_ops(account).unwrap(), 2, "failed ones too");
         batch.commit().unwrap();
         assert_eq!(store.next_op_due(account).unwrap(), None);
+        assert!(store.waiting().unwrap().is_empty());
     }
 
     #[test]
