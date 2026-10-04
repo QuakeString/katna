@@ -255,6 +255,7 @@ impl Instance {
             connection.clone(),
             index_paths.clone(),
             daemon::settings(&index_paths).general,
+            daemon::settings(&index_paths).apps,
             desktop.clone(),
             desktop_events,
             quit_sender,

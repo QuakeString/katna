@@ -14,6 +14,7 @@ use std::time::{Duration, Instant};
 
 use async_channel::Receiver;
 use futures_lite::FutureExt;
+use katna_core::config::AppKind;
 use katna_core::contact::Card;
 use katna_core::{Account, AccountId, AccountKind, OAuthProvider};
 use katna_dbus::contacts_state;
@@ -57,6 +58,11 @@ pub(crate) async fn run(daemon: Weak<Daemon>, wake: Receiver<()>) {
         };
         if daemon.closing() {
             return;
+        }
+        // Turned off in Settings > Apps: nothing syncs until it is on again,
+        // which wakes this.
+        if !daemon.app_on(AppKind::Contacts) {
+            continue;
         }
         // "Try again" looks for the address books from scratch.
         for id in std::mem::take(&mut *daemon.contacts_recheck.lock().unwrap()) {

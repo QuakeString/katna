@@ -45,16 +45,88 @@ pub struct Config {
     pub tasks: TasksConfig,
     pub hidden_accounts: HiddenAccounts,
     pub offline: OfflineAccounts,
+    pub apps: AppsOn,
 }
 
-/// An app whose items come from the accounts and can leave one out.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+impl Config {
+    /// Whether `app` is turned on in Settings > Apps. Mail has no switch:
+    /// it is always on.
+    pub fn app_on(&self, app: AppKind) -> bool {
+        self.apps.is_on(app)
+    }
+}
+
+/// An app beside Mail: its items come from the accounts and can leave one
+/// out, and the whole app can be turned off.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AppKind {
     Calendar,
     Contacts,
     Tasks,
     Notes,
     Files,
+}
+
+impl AppKind {
+    pub const ALL: [Self; 5] = [
+        Self::Calendar,
+        Self::Contacts,
+        Self::Tasks,
+        Self::Notes,
+        Self::Files,
+    ];
+}
+
+/// Which apps beside Mail are turned on (Settings > Apps). An app turned
+/// off is gone from everywhere and stops syncing; what is on the servers is
+/// not touched. All are on until turned off.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AppsOn {
+    pub calendar: bool,
+    pub contacts: bool,
+    pub tasks: bool,
+    pub notes: bool,
+    pub files: bool,
+}
+
+impl Default for AppsOn {
+    fn default() -> Self {
+        Self {
+            calendar: true,
+            contacts: true,
+            tasks: true,
+            notes: true,
+            files: true,
+        }
+    }
+}
+
+impl AppsOn {
+    pub fn is_on(&self, app: AppKind) -> bool {
+        match app {
+            AppKind::Calendar => self.calendar,
+            AppKind::Contacts => self.contacts,
+            AppKind::Tasks => self.tasks,
+            AppKind::Notes => self.notes,
+            AppKind::Files => self.files,
+        }
+    }
+
+    pub fn set(&mut self, app: AppKind, on: bool) {
+        *match app {
+            AppKind::Calendar => &mut self.calendar,
+            AppKind::Contacts => &mut self.contacts,
+            AppKind::Tasks => &mut self.tasks,
+            AppKind::Notes => &mut self.notes,
+            AppKind::Files => &mut self.files,
+        } = on;
+    }
+
+    /// Whether every app beside Mail is off, so Katna is just a mail app.
+    pub fn mail_only(&self) -> bool {
+        AppKind::ALL.into_iter().all(|app| !self.is_on(app))
+    }
 }
 
 /// Accounts left out of each app, by lower-case address: their items are
@@ -1730,7 +1802,7 @@ mod tests {
         assert!(hidden.hides(AppKind::Notes, "b@x.org"));
         assert!(!hidden.hides(AppKind::Tasks, "a@x.org"));
         let text = toml::to_string(&config).unwrap();
-        assert!(text.contains("notes = [\"b@x.org\"]") && !text.contains("tasks ="));
+        assert!(text.contains("notes = [\"b@x.org\"]") && !text.contains("tasks = ["));
     }
 
     #[test]
@@ -1764,6 +1836,20 @@ mod tests {
     }
 
     use super::*;
+
+    #[test]
+    fn apps_start_on_and_turn_off() {
+        let config: Config = toml::from_str("").unwrap();
+        assert!(AppKind::ALL.into_iter().all(|app| config.app_on(app)));
+        let config: Config = toml::from_str("[apps]\nnotes = false\n").unwrap();
+        assert!(!config.app_on(AppKind::Notes));
+        assert!(config.app_on(AppKind::Calendar));
+        let mut apps = AppsOn::default();
+        for app in AppKind::ALL {
+            apps.set(app, false);
+        }
+        assert!(apps.mail_only());
+    }
 
     #[test]
     fn offline_accounts_round_trip_and_end() {

@@ -93,6 +93,8 @@ pub(super) enum Section {
     McpServer,
     Feedback,
     Experimental,
+    /// Apps: which apps beside Mail are on.
+    Apps,
     /// Mail > Reading: conversations, marking read, the reading pane.
     Reading,
     Inbox,
@@ -114,7 +116,7 @@ pub(super) enum Section {
 }
 
 impl Section {
-    pub(super) const ALL: [Self; 21] = [
+    pub(super) const ALL: [Self; 22] = [
         Self::General,
         Self::Appearance,
         Self::Accounts,
@@ -126,6 +128,7 @@ impl Section {
         Self::McpServer,
         Self::Feedback,
         Self::Experimental,
+        Self::Apps,
         Self::Reading,
         Self::Inbox,
         Self::Signatures,
@@ -151,6 +154,7 @@ impl Section {
             Self::McpServer => tr!("settings-tab-mcp-server"),
             Self::Feedback => tr!("settings-tab-feedback"),
             Self::Experimental => tr!("settings-tab-experimental"),
+            Self::Apps => tr!("settings-tab-apps"),
             Self::Reading => tr!("settings-tab-reading"),
             Self::Inbox => tr!("settings-tab-inbox"),
             Self::Signatures => tr!("settings-tab-compose"),
@@ -178,6 +182,7 @@ impl Section {
             Self::McpServer => "chip",
             Self::Feedback => "chat",
             Self::Experimental => "pulse",
+            Self::Apps => "apps",
             Self::Reading => "eye",
             Self::Inbox => "inbox",
             Self::Signatures => "pen",
@@ -204,6 +209,7 @@ impl Section {
             Self::Tasks => Scope::Tasks,
             Self::Notes => Scope::Notes,
             Self::Files => Scope::Files,
+            Self::Apps => Scope::Apps,
             _ => Scope::Katna,
         }
     }
@@ -220,6 +226,8 @@ impl Section {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Scope {
     Katna,
+    /// The Apps page heading the apps' own pages.
+    Apps,
     Mail,
     Calendar,
     Contacts,
@@ -232,6 +240,7 @@ impl Scope {
     pub(super) fn label(self) -> String {
         match self {
             Self::Katna => tr!("settings-group-all-apps"),
+            Self::Apps => tr!("settings-tab-apps"),
             Self::Mail => tr!("rail-mail"),
             Self::Calendar => tr!("rail-calendar"),
             Self::Contacts => tr!("rail-contacts"),
@@ -244,12 +253,25 @@ impl Scope {
     pub(super) fn icon(self) -> &'static str {
         match self {
             Self::Katna => "settings",
+            Self::Apps => "apps",
             Self::Mail => "mail",
             Self::Calendar => "calendar",
             Self::Contacts => "contacts",
             Self::Tasks => "tasks",
             Self::Notes => "notes",
             Self::Files => "attachment",
+        }
+    }
+
+    /// The app whose pages these are, when it can be turned off.
+    pub(super) fn app(self) -> Option<AppKind> {
+        match self {
+            Self::Katna | Self::Apps | Self::Mail => None,
+            Self::Calendar => Some(AppKind::Calendar),
+            Self::Contacts => Some(AppKind::Contacts),
+            Self::Tasks => Some(AppKind::Tasks),
+            Self::Notes => Some(AppKind::Notes),
+            Self::Files => Some(AppKind::Files),
         }
     }
 
@@ -673,11 +695,28 @@ impl MailWindow {
             Section::Reading => self.reading_section(th, cx),
             Section::MailDesktop => self.mail_desktop_section(th, cx),
             Section::Ai => self.ai_section(th, cx),
-            Section::Calendar => self.calendar_section(th, cx),
-            Section::Contacts => self.app_accounts_rows(AppKind::Contacts, th, cx),
-            Section::Tasks => self.app_accounts_rows(AppKind::Tasks, th, cx),
-            Section::Notes => self.app_accounts_rows(AppKind::Notes, th, cx),
-            Section::Files => self.files_section(th, cx),
+            Section::Apps => self.apps_section(th, cx),
+            // Each app's page starts with its switch from Settings > Apps.
+            Section::Calendar => {
+                let rows = self.calendar_section(th, cx);
+                self.with_app_switch(AppKind::Calendar, rows, th, cx)
+            }
+            Section::Contacts => {
+                let rows = self.app_accounts_rows(AppKind::Contacts, th, cx);
+                self.with_app_switch(AppKind::Contacts, rows, th, cx)
+            }
+            Section::Tasks => {
+                let rows = self.app_accounts_rows(AppKind::Tasks, th, cx);
+                self.with_app_switch(AppKind::Tasks, rows, th, cx)
+            }
+            Section::Notes => {
+                let rows = self.app_accounts_rows(AppKind::Notes, th, cx);
+                self.with_app_switch(AppKind::Notes, rows, th, cx)
+            }
+            Section::Files => {
+                let rows = self.files_section(th, cx);
+                self.with_app_switch(AppKind::Files, rows, th, cx)
+            }
             Section::Accounts => self.accounts_section(th, cx),
             Section::Subscriptions => self.katna_section(th, window, cx),
             Section::Appearance => self.appearance_section(th, window, cx),
@@ -2978,6 +3017,7 @@ impl MailWindow {
                     .iter()
                     .enumerate()
                     .filter(|(_, s)| s.group == group)
+                    .filter(|(_, s)| s.app().is_none_or(|app| self.config.app_on(app)))
                     .map(|(n, s)| {
                         let keys = keymap::keys(s, config);
                         let custom = config.keys.contains_key(s.name);

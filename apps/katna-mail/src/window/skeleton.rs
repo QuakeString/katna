@@ -40,6 +40,9 @@ impl MailWindow {
         let margin = shape.card_margin();
         let radius = shape.card_radius();
         let outline = shape.card_outline();
+        // Only the apps turned on; with Mail alone there is no rail.
+        let apps: Vec<RailApp> = self.apps().collect();
+        let solo = apps.len() < 2;
 
         let list = card(th, radius, outline)
             .child(list_toolbar(th, phone))
@@ -81,7 +84,7 @@ impl MailWindow {
                     .min_h_0()
                     .flex()
                     .flex_row()
-                    .when(!phone, |d| d.child(rail(th)))
+                    .when(!phone && !solo, |d| d.child(rail(th, &apps)))
                     .when(desktop, |d| {
                         d.child(breathing("skeleton-folders", folders(th), reduce))
                     })
@@ -90,7 +93,7 @@ impl MailWindow {
                     .when(!desktop && !phone, |d| d.child(div().w(px(margin))))
                     .child(cards),
             )
-            .when(phone, |d| d.child(bottom_bar(th)))
+            .when(phone && !solo, |d| d.child(bottom_bar(th, &apps)))
             .into_any_element()
     }
 
@@ -193,7 +196,7 @@ fn card(th: &Theme, radius: f32, outline: f32) -> Div {
 }
 
 /// The apps: they are there with or without an account.
-fn rail(th: &Theme) -> AnyElement {
+fn rail(th: &Theme, apps: &[RailApp]) -> AnyElement {
     div()
         .flex_none()
         .w(px(APP_RAIL_WIDTH))
@@ -205,7 +208,7 @@ fn rail(th: &Theme) -> AnyElement {
             // Compose, where it sits while the folders show.
             div().h(px(super::COMPOSE_NAV_ROOM - COMPOSE_HEIGHT - 8.0)),
         )
-        .children(RailApp::ALL.into_iter().map(|app| {
+        .children(apps.iter().copied().map(|app| {
             let on = app == RailApp::Mail;
             div()
                 .w(px(APP_RAIL_WIDTH))
@@ -423,13 +426,13 @@ fn reader(th: &Theme) -> Div {
 }
 
 /// The apps along the bottom of a phone.
-fn bottom_bar(th: &Theme) -> AnyElement {
+fn bottom_bar(th: &Theme, apps: &[RailApp]) -> AnyElement {
     div()
         .flex_none()
         .h(px(super::layout::BOTTOM_BAR_HEIGHT))
         .flex()
         .flex_row()
-        .children(RailApp::ALL.into_iter().map(|app| {
+        .children(apps.iter().copied().map(|app| {
             let on = app == RailApp::Mail;
             div()
                 .flex_1()

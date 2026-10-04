@@ -422,7 +422,7 @@ impl MailWindow {
             super::COMPOSE_RAIL_LEFT,
             APP_RAIL_WIDTH + NAV_ROW_INSET,
             dock,
-        ) - APP_RAIL_WIDTH * shape.phone;
+        ) - (APP_RAIL_WIDTH - shape.rail());
         let top = super::COMPOSE_TOP;
         Some(
             div()

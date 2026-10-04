@@ -16,7 +16,7 @@ use std::{collections::HashSet, sync::Weak, time::Duration};
 
 use jiff::tz::TimeZone;
 use katna_core::AccountId;
-use katna_core::config::{AppKind, HiddenAccounts};
+use katna_core::config::{AppKind, AppsOn, HiddenAccounts};
 use katna_dav::Occurrence;
 use katna_i18n::tr;
 use katna_store::{
@@ -231,19 +231,29 @@ fn hidden_ids(store: &Store, hidden: &HiddenAccounts, app: AppKind) -> HashSet<A
 
 /// Reads the reminders due in `(from, to]` and the next one's time:
 /// events', tasks', then notes'. The events, tasks and notes of accounts
-/// left out of Calendar, Tasks or Notes stay quiet.
+/// left out of Calendar, Tasks or Notes stay quiet, and so do those of an
+/// app that is turned off.
 fn read(
     store: &Store,
     from: i64,
     to: i64,
     tz: &TimeZone,
     hidden: &HiddenAccounts,
+    apps: &AppsOn,
 ) -> (Vec<Alarm>, Option<i64>) {
-    let (mut alarms, next) = read_events(store, from, to, tz, hidden);
-    let mut tasks = store.tasks(to).unwrap_or_else(|err| {
-        tracing::warn!(%err, "reminders: cannot read tasks");
+    let (mut alarms, next) = if apps.calendar {
+        read_events(store, from, to, tz, hidden)
+    } else {
+        (Vec::new(), None)
+    };
+    let mut tasks = if apps.tasks {
+        store.tasks(to).unwrap_or_else(|err| {
+            tracing::warn!(%err, "reminders: cannot read tasks");
+            Vec::new()
+        })
+    } else {
         Vec::new()
-    });
+    };
     let quiet = hidden_ids(store, hidden, AppKind::Tasks);
     if !quiet.is_empty() {
         let lists: HashSet<i64> = store
@@ -257,6 +267,9 @@ fn read(
     }
     let (task_alarms, task_next) = tasks_due(&tasks, from, to);
     alarms.extend(task_alarms);
+    if !apps.notes {
+        return (alarms, next.into_iter().chain(task_next).min());
+    }
     let mut notes = store.notes_reminding(from, to).unwrap_or_else(|err| {
         tracing::warn!(%err, "reminders: cannot read notes");
         Vec::new()
@@ -330,7 +343,14 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
             return;
         }
         let now = unix_now();
-        let (alarms, next) = read(&daemon.store(), from, now, &tz, &daemon.hidden_accounts());
+        let (alarms, next) = read(
+            &daemon.store(),
+            from,
+            now,
+            &tz,
+            &daemon.hidden_accounts(),
+            &daemon.apps(),
+        );
         let notices = daemon.new_mail_notices();
         let snoozed = notices
             .as_ref()

@@ -38,6 +38,7 @@ const MORE_SIZE: f32 = 30.0;
 /// The Back to top button's size.
 const TO_TOP_SIZE: f32 = 40.0;
 
+use super::apps::App;
 use super::attachments::kind_badge;
 use super::folder_pick::{PickFrom, PickMode};
 use super::layout::FAB_SIZE;
@@ -1311,34 +1312,40 @@ impl MailWindow {
                                 this.act_on_targets(Act::Important(false), cx)
                             })),
                         )
-                        .child(
-                            menu_item_icon(
-                                "more-add-to-tasks",
-                                "tasks",
-                                &tr!("menu-add-to-tasks"),
-                                th,
+                        .when(self.app_on(App::Tasks), |d| {
+                            d.child(
+                                menu_item_icon(
+                                    "more-add-to-tasks",
+                                    "tasks",
+                                    &tr!("menu-add-to-tasks"),
+                                    th,
+                                )
+                                .on_click(cx.listener(
+                                    |this, _, _, cx| {
+                                        this.menu = None;
+                                        let keys = this.target_keys();
+                                        this.add_to_tasks_from(keys, cx);
+                                    },
+                                )),
                             )
-                            .on_click(cx.listener(|this, _, _, cx| {
-                                this.menu = None;
-                                let keys = this.target_keys();
-                                this.add_to_tasks_from(keys, cx);
-                            })),
-                        )
-                        .child(
-                            menu_item_icon(
-                                "more-schedule-meeting",
-                                "calendar",
-                                &tr!("menu-schedule-meeting"),
-                                th,
+                        })
+                        .when(self.app_on(App::Calendar), |d| {
+                            d.child(
+                                menu_item_icon(
+                                    "more-schedule-meeting",
+                                    "calendar",
+                                    &tr!("menu-schedule-meeting"),
+                                    th,
+                                )
+                                .on_click(cx.listener(
+                                    |this, _, window, cx| {
+                                        this.menu = None;
+                                        let key = this.target_keys().first().copied();
+                                        this.schedule_meeting_from(key, window, cx);
+                                    },
+                                )),
                             )
-                            .on_click(cx.listener(
-                                |this, _, window, cx| {
-                                    this.menu = None;
-                                    let key = this.target_keys().first().copied();
-                                    this.schedule_meeting_from(key, window, cx);
-                                },
-                            )),
-                        )
+                        })
                         .child(
                             menu_item_icon("more-start-call", "video", &tr!("menu-start-call"), th)
                                 .on_click(cx.listener(|this, _, window, cx| {
@@ -1347,14 +1354,16 @@ impl MailWindow {
                                     this.start_call_from(key, window, cx);
                                 })),
                         )
-                        .child(
-                            menu_item_icon("more-add-note", "notes", &tr!("menu-add-note"), th)
-                                .on_click(cx.listener(|this, _, window, cx| {
-                                    this.menu = None;
-                                    let keys = this.target_keys();
-                                    this.add_note_from(keys, window, cx);
-                                })),
-                        )
+                        .when(self.app_on(App::Notes), |d| {
+                            d.child(
+                                menu_item_icon("more-add-note", "notes", &tr!("menu-add-note"), th)
+                                    .on_click(cx.listener(|this, _, window, cx| {
+                                        this.menu = None;
+                                        let keys = this.target_keys();
+                                        this.add_note_from(keys, window, cx);
+                                    })),
+                            )
+                        })
                         .child(
                             menu_item_icon("more-pin", "pin", &tr!("menu-pin"), th).on_click(
                                 cx.listener(|this, _, _, cx| {

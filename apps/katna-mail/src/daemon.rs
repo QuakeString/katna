@@ -54,6 +54,10 @@ pub enum Command {
     /// contents and whether it was in use. The app does this itself; the
     /// daemon never sees it.
     RestoreScheme(String, String, bool),
+    /// Turns an app on again in Settings > Apps: the Undo after turning it
+    /// off, or "Turn on" where it was asked for. The app does this itself;
+    /// the daemon hears of it through `ReloadConfig`.
+    TurnAppOn(katna_core::config::AppKind),
     /// Gives saved cards these labels, by name: an undo on the Contacts
     /// page.
     ContactLabels(Vec<(i64, Vec<String>)>),
@@ -229,6 +233,7 @@ impl Command {
             | Self::RestoreSubject(_)
             | Self::RestoreContacts(_)
             | Self::RestoreScheme(..)
+            | Self::TurnAppOn(_)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
             | Self::DeleteContacts(_)
@@ -433,7 +438,8 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         | Command::UndoRephrase
         | Command::RestoreSubject(_)
         | Command::RestoreContacts(_)
-        | Command::RestoreScheme(..) => {
+        | Command::RestoreScheme(..)
+        | Command::TurnAppOn(_) => {
             return Ok(());
         }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),

@@ -27,6 +27,7 @@ use std::{
 
 use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
+use katna_core::config::AppKind;
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, OAuthProvider};
 use katna_dbus::calendar_state;
 use katna_store::{
@@ -504,6 +505,11 @@ async fn run(daemon: Weak<Daemon>, wake: Receiver<()>) {
             return;
         }
         if daemon.resetting.load(std::sync::atomic::Ordering::SeqCst) {
+            continue;
+        }
+        // Turned off in Settings > Apps: nothing syncs until it is on again,
+        // which wakes this.
+        if !daemon.app_on(AppKind::Calendar) {
             continue;
         }
         let store = match &mut store {

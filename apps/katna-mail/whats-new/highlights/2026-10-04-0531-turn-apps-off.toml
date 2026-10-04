@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Turn off the apps you don't use"
+text = """
+Settings › Apps has a switch for Calendar, Contacts, Tasks, Notes and
+Files, and right-clicking one in the rail offers Turn off. An app turned
+off leaves the rail and its keys, and nothing changes on your accounts.
+With only Mail on, the rail goes and Katna is just a mail app.
+"""

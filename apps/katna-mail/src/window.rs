@@ -26,6 +26,7 @@ mod add_account;
 mod agenda;
 mod app_menu;
 mod apps;
+mod apps_off;
 mod attachments;
 mod calendar;
 pub mod capture;
@@ -457,6 +458,9 @@ const UNDO_STEPS: usize = 50;
 struct Snackbar {
     text: SharedString,
     undo: Option<Command>,
+    /// The button's word in place of Undo, for a note whose button does
+    /// something new ("Turn on").
+    label: Option<SharedString>,
     /// Counting down to this moment from this long before, in a ring
     /// with the seconds inside; Undo goes when it is reached.
     countdown: Option<(Instant, Duration)>,
@@ -789,6 +793,10 @@ pub struct MailWindow {
     danger: Option<accounts::Danger>,
     /// The question before deleting several lines, or deleting for good.
     delete_ask: Option<delete_ask::DeleteAsk>,
+    /// The question before turning an app off (Settings > Apps).
+    app_off_ask: Option<apps_off::AppOffAsk>,
+    /// The right-click menu of an app in the rail.
+    rail_menu: Option<apps_off::RailMenu>,
     /// Set while the answered question's delete runs, so it isn't asked
     /// again.
     delete_confirmed: bool,
@@ -881,6 +889,7 @@ impl MailWindow {
         let config_existed = paths.config_file().exists();
         let mut this = Self::build(env, paths, font, window, cx);
         keymap::bind(&this.config.shortcuts, cx);
+        this.share_off_apps(cx);
         if let Ok(mail) = &mut this.mail {
             mail.use_preload(preloading.wait());
         }
@@ -1097,6 +1106,8 @@ impl MailWindow {
             settings_page: None,
             danger: None,
             delete_ask: None,
+            app_off_ask: None,
+            rail_menu: None,
             delete_confirmed: false,
             new_label: None,
             rule_editor: None,
@@ -2138,11 +2149,28 @@ impl MailWindow {
         self.snackbar = Some(Snackbar {
             text: text.into(),
             undo,
+            label: None,
             countdown: None,
             shown,
             _hide: hide,
         });
         cx.notify();
+    }
+
+    /// A snackbar whose button, `label`, sends `command`: something new to
+    /// do, not a step Ctrl+Z takes back.
+    fn show_snackbar_action(
+        &mut self,
+        text: impl Into<SharedString>,
+        label: impl Into<SharedString>,
+        command: Command,
+        cx: &mut Context<Self>,
+    ) {
+        self.show_snackbar(text, None, cx);
+        if let Some(snackbar) = &mut self.snackbar {
+            snackbar.undo = Some(command);
+            snackbar.label = Some(label.into());
+        }
     }
 
     /// A snackbar counting the seconds down to `until`, with Undo until
@@ -3108,6 +3136,10 @@ impl MailWindow {
             self.restore_contacts(keys, cx);
             return;
         }
+        if let Command::TurnAppOn(app) = undo {
+            self.set_app_on(app, true, cx);
+            return;
+        }
         if let Command::RestoreScheme(id, contents, was_used) = &undo {
             self.restore_scheme(id, contents, *was_used, cx);
             return;
@@ -3271,6 +3303,10 @@ impl MailWindow {
         });
         let text = snackbar.text.clone();
         let has_undo = snackbar.undo.is_some();
+        let undo_label = snackbar
+            .label
+            .clone()
+            .unwrap_or_else(|| katna_i18n::tr!("toast-undo").into());
         // On a phone the note spans the window above the bottom bar.
         let shape = self.layout.shape;
         let edge = lerp(24.0, 8.0, shape.phone);
@@ -3315,7 +3351,7 @@ impl MailWindow {
                             .cursor_pointer()
                             .hover(|s| s.bg(rgba(0xffffff1f)))
                             .on_click(cx.listener(|this, _, window, cx| this.undo(window, cx)))
-                            .child(katna_i18n::tr!("toast-undo")),
+                            .child(undo_label),
                     )
                 })
                 .child(
@@ -3555,6 +3591,7 @@ impl Render for MailWindow {
         // gone) come back to the list, so its keys work without a click.
         let dialog_gone = self.dialog_focus.is_focused(window)
             && self.delete_ask.is_none()
+            && self.app_off_ask.is_none()
             && self.new_label.is_none()
             && self.rule_editor.is_none()
             && self.add_account.is_none()
@@ -3636,6 +3673,9 @@ impl Render for MailWindow {
         self.update_reply_row(reader_width, window, reduce);
         let (rail, margin) = if shape.is_phone() {
             (0.0, 0.0)
+        } else if self.mail_only() && self.nav_docked() {
+            // Nothing to switch to: the rail goes, Compose heads the folders.
+            (0.0, CARD_GAP)
         } else {
             (apps::APP_RAIL_WIDTH, CARD_GAP)
         };
@@ -3867,6 +3907,8 @@ impl Render for MailWindow {
         let add_account = self.render_add_account(&th, window, reduce, cx);
         let danger = self.render_danger(&th, window, reduce, cx);
         let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
+        let app_off_ask = self.render_app_off_ask(&th, window, reduce, cx);
+        let rail_menu = self.render_rail_menu(&th, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let rule_editor = self.render_rule_editor(&th, window, reduce, cx);
         self.ready_folder_pick(&th, window, cx);
@@ -3959,10 +4001,12 @@ impl Render for MailWindow {
             .children(contact_sheet)
             .children(contact_peek)
             .children(nav_menu)
+            .children(rail_menu)
             .children(snooze_menu)
             .children(quiet_menu)
             .children(danger)
             .children(delete_ask)
+            .children(app_off_ask)
             .children(new_label)
             .children(rule_editor)
             .children(contact_label)

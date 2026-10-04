@@ -131,6 +131,8 @@ pub(super) enum Change {
     CustomDays(u8),
     /// The Birthdays calendar shows.
     Birthdays(bool),
+    /// An app is turned on (`true`), or asked about turning it off.
+    AppOn(katna_core::config::AppKind, bool),
     /// An account is shown in an app (`true`) or left out of it.
     AppAccount(katna_core::config::AppKind, katna_core::AccountId, bool),
     /// An account is connected (`true`) or taken offline until brought
@@ -759,6 +761,10 @@ impl MailWindow {
             }
             Change::CustomDays(days) => {
                 self.keep_custom_days(days, cx);
+                return;
+            }
+            Change::AppOn(app, on) => {
+                self.flip_app(app, on, cx);
                 return;
             }
             Change::AppAccount(app, id, shown) => {

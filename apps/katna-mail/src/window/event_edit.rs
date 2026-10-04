@@ -18,6 +18,7 @@ use gpui::{
 use jiff::civil::{Date, DateTime, Time, Weekday};
 use jiff::tz::TimeZone;
 use jiff::{Timestamp, ToSpan, Zoned};
+use katna_core::config::AppKind;
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
 use katna_store::calendar::{Attendee, Calendar, EditScope, EventChange, EventEdit, EventKind};
@@ -585,6 +586,9 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if !self.needs_app(AppKind::Calendar, cx) {
+            return;
+        }
         let Some((subject, people)) = key.and_then(|key| {
             self.mail
                 .as_ref()
@@ -936,7 +940,7 @@ impl MailWindow {
         let mut tabs = vec![kind_tab(EventKind::Default)];
         // A task is made on the small card only; the whole editor is an
         // event's.
-        if !draft.full {
+        if !draft.full && self.config.app_on(AppKind::Tasks) {
             tabs.push(
                 tab(
                     "draft-kind-task".into(),

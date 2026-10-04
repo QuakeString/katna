@@ -73,9 +73,9 @@ pub(super) fn clock(minutes: u32) -> Time {
 
 impl MailWindow {
     /// The tasks with a due day the Calendar shows: none while the side
-    /// list's Tasks is unticked.
+    /// list's Tasks is unticked, or while Tasks is off.
     pub(super) fn calendar_tasks(&self) -> Vec<(&TaskItem, bool)> {
-        if self.config.calendar.hide_tasks {
+        if self.config.calendar.hide_tasks || !self.config.app_on(AppKind::Tasks) {
             return Vec::new();
         }
         let left_out = self.hidden_ids(AppKind::Calendar);
@@ -107,13 +107,13 @@ impl MailWindow {
 
     /// The side list's Tasks row, as a calendar's: a box in the tasks'
     /// colour that shows or hides them, under the accounts' calendars.
-    /// Only once there are task lists.
+    /// Only once there are task lists, and while Tasks is on.
     pub(super) fn render_tasks_switch(
         &self,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
-        if self.tasks.columns().is_empty() {
+        if self.tasks.columns().is_empty() || !self.config.app_on(AppKind::Tasks) {
             return None;
         }
         let shown = !self.config.calendar.hide_tasks;

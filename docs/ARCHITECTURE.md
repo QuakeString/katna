@@ -3600,6 +3600,35 @@ away; he can still change them.
     `render_label_choices`), the list of labels and `create_note` are
     shared with Tasks' quick capture (Meta+Alt+N/T, tray, KRunner).
 
+### 13.12 Turning apps off
+
+Any app beside Mail can be turned off (Settings › Apps; study artifact
+Pwvq1VzDLXk7ikbLDPym9n, decided Oct 4 2026). Mail cannot.
+
+- **Switch.** `Config.apps: AppsOn` (`[apps]`, every app on by default),
+  read through `Config::app_on(AppKind)`. The window's `MailWindow::apps()`
+  lists only the apps that are on; `open_app` and `show_page` refuse an
+  app that is off with a snackbar "X is off · Turn on".
+- **Turning off.** Settings › Apps (Mail locked), a "Use X" switch on top
+  of each app's page, and Turn off X… on the rail's right-click menu. A
+  sheet lists what goes away, then a snackbar with Undo. The local copy is
+  kept; nothing changes on the accounts. In first-run setup, the last page
+  has a row of app chips.
+- **Only Mail.** With every other app off, the rail goes while the
+  folders are docked open, and the phone's bottom bar goes.
+- **Ways in from Mail.** Add to Tasks (and Shift+T), Add a note, Schedule
+  meeting, the agenda card, Open in Calendar on invitations (the card
+  still answers by mail), the contact card's Add to contacts and tasks,
+  Birthdays, tasks and meeting notes in the Calendar, the Files panel on
+  the paperclip (the system's file picker instead), the Go menu and the
+  shortcut lists all follow the switch. With Contacts off, Compose
+  suggests only people mailed. A What's new highlight can name its
+  `apps`, and waits while they are all off.
+- **Daemon.** The calendar, contacts, tasks and notes loops skip an app
+  that is off; `reload_config` wakes the one turned back on. Reminders,
+  the tray's New task / New note, Meta+Alt+T/N, Agenda1 (the desktop
+  clock) and KRunner leave it out too.
+
 ## 14. D-Bus API (`katna-dbus`)
 
 ### 14.1 Interface `in.invenia.katna.Pim1` (object `/in/invenia/katna/Pim1`, bus name `in.invenia.katna.Daemon`)

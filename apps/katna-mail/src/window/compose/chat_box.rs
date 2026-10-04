@@ -552,16 +552,18 @@ impl MailWindow {
                 item("chat-attach-file", "attachment", tr!("chat-attach-file"))
                     .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
             )
-            .child(
-                item("chat-attach-library", "folder", tr!("chat-attach-library")).on_click(
-                    cx.listener(|this, _, window, cx| {
-                        if let Some(c) = &mut this.compose {
-                            c.popup = None;
-                        }
-                        this.open_files_picker(window, cx);
-                    }),
-                ),
-            )
+            .when(self.app_on(crate::window::apps::App::Files), |d| {
+                d.child(
+                    item("chat-attach-library", "folder", tr!("chat-attach-library")).on_click(
+                        cx.listener(|this, _, window, cx| {
+                            if let Some(c) = &mut this.compose {
+                                c.popup = None;
+                            }
+                            this.open_files_picker(window, cx);
+                        }),
+                    ),
+                )
+            })
             .child(menu_divider(th))
             .child(
                 item(

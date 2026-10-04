@@ -21,6 +21,7 @@ use std::{
 use async_channel::Receiver;
 use futures_lite::FutureExt;
 use jiff::tz::TimeZone;
+use katna_core::config::AppKind;
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, OAuthProvider};
 use katna_dbus::task_state;
 use katna_store::tasks::TaskFields;
@@ -449,6 +450,11 @@ pub(crate) async fn run(daemon: Weak<Daemon>, wakes: Receiver<()>) {
         };
         if daemon.closing() {
             return;
+        }
+        // Turned off in Settings > Apps: nothing syncs until it is on again,
+        // which wakes this.
+        if !daemon.app_on(AppKind::Tasks) {
+            continue;
         }
         if daemon.sync_tasks(&mut known).await {
             let _ = daemon.notices().try_send(Notice::TasksChanged);
