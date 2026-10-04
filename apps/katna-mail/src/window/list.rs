@@ -434,8 +434,8 @@ impl MailWindow {
             toolbar
         };
         // The bar, the tabs and the banner stay at the top while the lines
-        // scroll under them, frosted when Blur is on, as the open mail's
-        // subject does.
+        // scroll under them, frosted when Blur and Frosted headers are on,
+        // as the open mail's subject does.
         let under = katna_ui::unpx(self.list_state.scrolled()) > 0.5;
         let head = crate::widgets::pinned_head(
             div()
@@ -446,6 +446,7 @@ impl MailWindow {
                 .children(banner),
             th.pane(),
             under,
+            self.config.experimental.frosted_headers,
             self.list_head.clone(),
             th,
         );

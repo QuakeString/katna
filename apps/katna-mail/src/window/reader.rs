@@ -1427,7 +1427,8 @@ impl MailWindow {
         th: &Theme,
     ) -> AnyElement {
         let under = line && unpx(self.reader_scroll.offset().y) < -0.5;
-        crate::widgets::pinned_head(content, fill, under, self.reader_head.clone(), th)
+        let frost = self.config.experimental.frosted_headers;
+        crate::widgets::pinned_head(content, fill, under, frost, self.reader_head.clone(), th)
     }
 
     fn render_part_content(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
