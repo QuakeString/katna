@@ -38,7 +38,7 @@ use super::MailWindow;
 use super::account_roll::Notches;
 use super::apps::App;
 use super::attachments::{
-    CARD_RADIUS, Item, Thumb, card_top, has_thumbnail, hover_panel, kind_badge, panel_button,
+    CARD_RADIUS, Item, Lifted, Thumb, card_top, corner_button, has_thumbnail, kind_badge,
     row_file_index, thumbnail,
 };
 use super::compose::schedule;
@@ -2100,15 +2100,13 @@ impl MailWindow {
         let thumb_height = thumb_height(width);
         let file = found.row_file();
         let message = file.message;
-        let group = SharedString::from(format!("files-card-{ix}"));
-        let frost = thumb.as_ref().and_then(Thumb::frosted);
-        let show = panel_button(("files-card-mail", ix), "mail", tr!("files-show-mail"), th)
+        let show = corner_button(("files-card-mail", ix), "mail", tr!("files-show-mail"), th)
             .on_click(cx.listener(move |this, _, window, cx| {
                 cx.stop_propagation();
                 this.show_file_mail(message, window, cx);
             }));
         let save_file = file.clone();
-        let save = panel_button(
+        let save = corner_button(
             ("files-card-save", ix),
             "download",
             tr!("attachment-save"),
@@ -2118,14 +2116,6 @@ impl MailWindow {
             cx.stop_propagation();
             this.file_act(save_file.clone(), Act::Save, window, cx);
         }));
-        let panel = hover_panel(
-            group.clone(),
-            found.file.name.clone(),
-            found.file.size,
-            frost,
-            vec![show.into_any_element(), save.into_any_element()],
-            th,
-        );
         let fill = self.chip_fill(&file, false, th);
         let date = found
             .file
@@ -2141,21 +2131,18 @@ impl MailWindow {
         } else {
             found.file.subject.clone()
         };
-        // The thumbnail and name, which the hover panel covers; the lines
-        // under them stay, so the subject can be clicked.
         let head = div()
             .relative()
             .flex_none()
             .h(px(thumb_height + NAME_HEIGHT))
             .flex()
             .flex_col()
-            .child(div().h(px(thumb_height)).w_full().child(card_top(
-                thumb,
-                found.kind,
-                44.0,
-                Some(group.clone()),
-                th,
-            )))
+            .child(
+                div()
+                    .h(px(thumb_height))
+                    .w_full()
+                    .child(card_top(thumb, found.kind, 44.0, th)),
+            )
             .child(
                 div()
                     .relative()
@@ -2178,11 +2165,9 @@ impl MailWindow {
                             .text_color(rgba(th.text))
                             .child(found.file.name.clone()),
                     ),
-            )
-            .child(panel);
+            );
         let card = div()
             .id(("files-card", ix))
-            .group(group)
             .relative()
             .flex_1()
             .flex_basis(px(0.0))
@@ -2237,7 +2222,8 @@ impl MailWindow {
                     .child(div().min_w_0().truncate().child(subject)),
             );
         // The arrow keys' cursor: a ring over the card's edge.
-        let card = card.when(self.library.cursor == Some(ix), |d| {
+        let cursor = self.library.cursor == Some(ix);
+        let card = card.when(cursor, |d| {
             d.child(
                 div()
                     .absolute()
@@ -2247,7 +2233,12 @@ impl MailWindow {
                     .border_color(rgba(th.accent)),
             )
         });
-        self.file_handlers(card, ix, file, cx).into_any_element()
+        let card = self.file_handlers(card, ix, file, cx);
+        Lifted::new(card, format!("files-card-{ix}"), th)
+            .size(found.file.size)
+            .buttons(vec![show, save])
+            .cursor(cursor)
+            .into_any_element()
     }
 
     fn render_file_row(

@@ -68,6 +68,7 @@ mod nav;
 mod nav_menu;
 mod notched;
 mod notes;
+mod offline;
 mod onboarding;
 mod popovers;
 mod print;
@@ -540,6 +541,10 @@ pub struct MailWindow {
     accounts: Vec<Account>,
     /// How full each account's mail storage is, when its server says.
     quotas: HashMap<AccountId, katna_store::StorageQuota>,
+    /// Changes and mail waiting to go to each account's servers.
+    waiting: HashMap<AccountId, u64>,
+    /// Redraws when an account taken offline for a while comes back.
+    offline_end: Option<Task<()>>,
     /// The account the storage line last showed, kept while the list
     /// shows no one account's folder.
     storage_account: std::cell::Cell<Option<AccountId>>,
@@ -897,6 +902,7 @@ impl MailWindow {
         // features know it by the time they are opened.
         cx.on_next_frame(window, |this, window, cx| this.katna_load(window, cx));
         this.listen(cx);
+        this.watch_offline_ends(cx);
         colors::apply_motion(&this.config.mail, this.desktop_colors.motion, cx);
         this.watch_colors(cx);
         if let Some(err) = this.mail.as_ref().ok().and_then(Mail::index_error) {
@@ -977,6 +983,8 @@ impl MailWindow {
             me: cx.entity().downgrade(),
             accounts: Vec::new(),
             quotas: HashMap::new(),
+            waiting: HashMap::new(),
+            offline_end: None,
             storage_account: std::cell::Cell::new(None),
             paths,
             config,
@@ -1268,6 +1276,7 @@ impl MailWindow {
         };
         self.accounts = mail.accounts();
         self.quotas = mail.quotas();
+        self.waiting = mail.waiting();
         self.config.mail.order_accounts(&mut self.accounts);
         self.tree = Tree::build(&self.accounts, &mail.folders(), &self.unread);
         self.tree.unified_out = self.unified_out();

@@ -134,6 +134,9 @@ pub(super) enum Change {
     Birthdays(bool),
     /// An account is shown in an app (`true`) or left out of it.
     AppAccount(katna_core::config::AppKind, katna_core::AccountId, bool),
+    /// An account is connected (`true`) or taken offline until brought
+    /// back.
+    AccountOnline(katna_core::AccountId, bool),
     /// What Katna starts at login, if anything (an autostart entry).
     StartAtLogin(Option<crate::autostart::Start>),
     MarkRead(MarkRead),
@@ -762,6 +765,11 @@ impl MailWindow {
             }
             Change::AppAccount(app, id, shown) => {
                 self.set_app_account_shown(app, id, shown, cx);
+                return;
+            }
+            Change::AccountOnline(id, online) => {
+                let time = (!online).then_some(super::offline::OfflineFor::Now);
+                self.set_account_offline(id, time, cx);
                 return;
             }
             Change::Birthdays(on) => {

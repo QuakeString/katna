@@ -1066,10 +1066,20 @@ impl MailWindow {
                 .cursor_pointer()
                 .child(crate::widgets::hover_fade("hover-glow", Some(10.0), th))
                 .tooltip(tip(tr!("chat-show-card"), th))
+                .on_hover({
+                    let email = email.clone();
+                    cx.listener(move |this, hovered: &bool, _, cx| {
+                        if *hovered {
+                            this.read_person_ahead(&email, cx);
+                        }
+                    })
+                })
                 .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                     this.close_chat_people(cx);
-                    this.show_contact_of(key, &email, e.position(), cx);
+                    let at = this.person_at(("chat-member", ix), e.position());
+                    this.show_contact_of(key, &email, at, cx);
                 }))
+                .child(self.person_spot(("chat-member", ix)))
                 .child(self.person_avatar(&m.name, &m.email, 30.0))
                 .child(
                     div()
@@ -1369,16 +1379,28 @@ impl MailWindow {
                 .pb(px(lift));
             if bubble.last {
                 let pick = email.clone();
+                let ix = bubble.ix;
                 slot.child(
                     div()
                         .id(("chat-picture", bubble.ix))
+                        .relative()
                         .cursor_pointer()
                         .tooltip(tip(tr!("chat-show-card"), th))
+                        .on_hover({
+                            let pick = pick.clone();
+                            cx.listener(move |this, hovered: &bool, _, cx| {
+                                if *hovered {
+                                    this.read_person_ahead(&pick, cx);
+                                }
+                            })
+                        })
                         .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                             if let Some(key) = key {
-                                this.show_contact_of(key, &pick, e.position(), cx);
+                                let at = this.person_at(("chat-picture", ix), e.position());
+                                this.show_contact_of(key, &pick, at, cx);
                             }
                         }))
+                        .child(self.person_spot(("chat-picture", bubble.ix)))
                         .child(self.person_avatar(&bubble.name, &bubble.email, PICTURE)),
                 )
             } else {
@@ -1528,18 +1550,31 @@ impl MailWindow {
         let name = (!bubble.mine && bubble.first).then(|| {
             let pick = bubble.email.clone();
             let key = self.reader.as_ref().map(|r| r.key);
+            let ix = bubble.ix;
             div()
-                .id(("chat-name", bubble.ix))
+                .id(("chat-name", ix))
+                .relative()
+                .self_start()
                 .cursor_pointer()
                 .text_size(px(13.0))
                 .font_weight(FontWeight::SEMIBOLD)
                 .text_color(rgba(name_color(&bubble.email, th)))
                 .hover(|s| s.underline())
+                .on_hover({
+                    let pick = pick.clone();
+                    cx.listener(move |this, hovered: &bool, _, cx| {
+                        if *hovered {
+                            this.read_person_ahead(&pick, cx);
+                        }
+                    })
+                })
                 .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                     if let Some(key) = key {
-                        this.show_contact_of(key, &pick, e.position(), cx);
+                        let at = this.person_at(("chat-name", ix), e.position());
+                        this.show_contact_of(key, &pick, at, cx);
                     }
                 }))
+                .child(self.person_spot(("chat-name", ix)))
                 .child(bubble.name.clone())
         });
         let said = bubble.said.as_ref();

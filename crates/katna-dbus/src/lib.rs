@@ -95,6 +95,9 @@ pub mod state {
     /// The server refused the password. `SetPassword` or `SyncNow` retries;
     /// for an account that signs in with OAuth2, `SignIn`.
     pub const AUTH_FAILED: &str = "auth-failed";
+    /// Taken offline by the user (`[offline]` in the settings): the daemon
+    /// doesn't connect until it is brought back or its time ends.
+    pub const PAUSED: &str = "paused";
 }
 
 /// A mail template for `SaveTemplate`; `id` 0 saves a new one.

@@ -72,6 +72,7 @@ reader-details-subject = subject:
 
 reader-downloading = Downloading this message from the server…
 reader-download-failed = Could not download this message.
+reader-download-offline = This account is offline. Go online to download this message.
 reader-try-again = Try again
 
 ## Reply row

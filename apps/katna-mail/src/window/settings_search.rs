@@ -222,6 +222,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Accounts,
+        "offline-settings-row",
+        "offline-settings-detail",
+        "offline work offline disconnect pause connection sync stop online",
+    ),
+    entry(
+        Section::Accounts,
         "accounts-pop3-row",
         "accounts-pop3-row-detail",
         "pop pop3 leave keep copy server download delete remove days",

@@ -347,6 +347,10 @@ impl Daemon {
             if self.closing() {
                 break;
             }
+            // Its changes wait in the store until it is back online.
+            if self.is_offline(account.id) {
+                continue;
+            }
             let (status, account_changed) = self.sync_account_tasks(&account, known).await;
             changed |= account_changed;
             let old = self

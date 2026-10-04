@@ -1745,9 +1745,10 @@ pub async fn first_sync_pending(connection: &Connection) -> Result<bool, String>
         .await
         .map_err(|err| describe(&err))?;
     let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
-    Ok(accounts
-        .iter()
-        .any(|a| a.last_sync == 0 && a.state != state::NOT_SYNCED && a.state != state::AUTH_FAILED))
+    Ok(accounts.iter().any(|a| {
+        a.last_sync == 0
+            && ![state::NOT_SYNCED, state::AUTH_FAILED, state::PAUSED].contains(&a.state.as_str())
+    }))
 }
 
 /// Has the daemon check `account` for new mail now, every folder of it, or
@@ -1793,7 +1794,7 @@ async fn check(
                 folders.iter().any(|(id, _)| id.0 == a.id)
             }
         })
-        .filter(|a| a.state != state::NOT_SYNCED)
+        .filter(|a| a.state != state::NOT_SYNCED && a.state != state::PAUSED)
         .map(|a| a.id)
         .collect();
     if folders.is_empty() {

@@ -44,6 +44,7 @@ pub struct Config {
     pub ai: Ai,
     pub tasks: TasksConfig,
     pub hidden_accounts: HiddenAccounts,
+    pub offline: OfflineAccounts,
 }
 
 /// An app whose items come from the accounts and can leave one out.
@@ -107,6 +108,61 @@ impl HiddenAccounts {
         } else {
             set.insert(address);
         }
+    }
+}
+
+/// Accounts taken offline, by lower-case address: Katna doesn't connect
+/// to their servers (mail, calendars, contacts, tasks, notes) until each
+/// is brought back online or its time ends. What is already here stays
+/// readable; changes made meanwhile wait and go out when it is back.
+/// Kept across restarts.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct OfflineAccounts {
+    /// When each account comes back online by itself, in Unix seconds;
+    /// 0 for when it is brought back.
+    pub until: BTreeMap<String, i64>,
+}
+
+impl OfflineAccounts {
+    /// Whether the account at `address` is offline at `now` (Unix
+    /// seconds).
+    pub fn is_offline(&self, address: &str, now: i64) -> bool {
+        self.ends(address, now).is_some()
+    }
+
+    /// When the account at `address` comes back online by itself:
+    /// `Some(None)` when only by hand, `None` when it is online at `now`.
+    pub fn ends(&self, address: &str, now: i64) -> Option<Option<i64>> {
+        if self.until.is_empty() {
+            return None;
+        }
+        match self.until.get(&address.to_lowercase()) {
+            Some(0) => Some(None),
+            Some(&until) if until > now => Some(Some(until)),
+            _ => None,
+        }
+    }
+
+    /// Takes the account at `address` offline until `until` (Unix
+    /// seconds; `None` until brought back), or brings it back online.
+    pub fn set(&mut self, address: &str, offline: bool, until: Option<i64>) {
+        let address = address.to_lowercase();
+        if offline {
+            self.until.insert(address, until.unwrap_or(0).max(0));
+        } else {
+            self.until.remove(&address);
+        }
+    }
+
+    /// The next time an account comes back online by itself, after `now`.
+    pub fn next_end(&self, now: i64) -> Option<i64> {
+        self.until.values().copied().filter(|&u| u > now).min()
+    }
+
+    /// Forgets the times that ended before `now`.
+    pub fn prune(&mut self, now: i64) {
+        self.until.retain(|_, until| *until == 0 || *until > now);
     }
 }
 
@@ -1713,6 +1769,33 @@ mod tests {
     }
 
     use super::*;
+
+    #[test]
+    fn offline_accounts_round_trip_and_end() {
+        let mut config = Config::default();
+        config.offline.set("Kay@Work.example", true, None);
+        config
+            .offline
+            .set("codes@mailbox.example", true, Some(1_000));
+        let text = toml::to_string(&config).unwrap();
+        let back: Config = toml::from_str(&text).unwrap();
+        assert_eq!(back.offline, config.offline);
+        let offline = &back.offline;
+        assert_eq!(offline.ends("kay@work.example", 5_000), Some(None));
+        assert_eq!(
+            offline.ends("codes@mailbox.example", 999),
+            Some(Some(1_000))
+        );
+        assert!(!offline.is_offline("codes@mailbox.example", 1_000));
+        assert!(!offline.is_offline("other@example.org", 0));
+        assert_eq!(offline.next_end(10), Some(1_000));
+        let mut pruned = offline.clone();
+        pruned.prune(2_000);
+        assert_eq!(pruned.until.len(), 1);
+        let mut online = pruned;
+        online.set("KAY@work.example", false, None);
+        assert!(online.until.is_empty());
+    }
 
     #[test]
     fn task_sorts_round_trip() {

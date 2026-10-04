@@ -1837,6 +1837,8 @@ impl MailWindow {
                         let (styled, holder) = pieces.piece(shown.into(), Vec::new());
                         let email = a.email.to_lowercase();
                         let copied = a.email.clone();
+                        let spot = SharedString::from(format!("details-{ix}-{field}-{i}"));
+                        let spot_id = spot.clone();
                         // A long address wraps in a narrow pane.
                         div()
                             .min_w_0()
@@ -1846,18 +1848,29 @@ impl MailWindow {
                             .child(
                                 holder
                                     .min_w_0()
-                                    .id(SharedString::from(format!("details-{ix}-{field}-{i}")))
+                                    .relative()
+                                    .id(spot.clone())
                                     .when(panel, |d| {
                                         d.cursor_pointer().hover(|s| s.text_color(rgba(th.text)))
+                                    })
+                                    .on_hover({
+                                        let email = email.clone();
+                                        cx.listener(move |this, hovered: &bool, _, cx| {
+                                            if *hovered {
+                                                this.read_person_ahead(&email, cx);
+                                            }
+                                        })
                                     })
                                     .on_click(cx.listener(
                                         move |this, e: &gpui::ClickEvent, _, cx| {
                                             // A drag that selected text is not a click.
                                             if this.text.is_empty() {
-                                                this.show_person(&email, e.position(), cx);
+                                                let at = this.person_at(spot.clone(), e.position());
+                                                this.show_person(&email, at, cx);
                                             }
                                         },
                                     ))
+                                    .child(self.person_spot(spot_id))
                                     .on_mouse_down(
                                         MouseButton::Right,
                                         cx.listener(move |this, _, _, _| {
@@ -2066,11 +2079,22 @@ impl MailWindow {
                         let pick = email.clone();
                         div()
                             .id(("part-picture", ix))
+                            .relative()
                             .cursor_pointer()
                             .tooltip(crate::widgets::tip(tr!("chat-show-card"), th))
+                            .on_hover({
+                                let pick = pick.clone();
+                                cx.listener(move |this, hovered: &bool, _, cx| {
+                                    if *hovered {
+                                        this.read_person_ahead(&pick, cx);
+                                    }
+                                })
+                            })
                             .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
-                                this.show_person(&pick, e.position(), cx);
+                                let at = this.person_at(("part-picture", ix), e.position());
+                                this.show_person(&pick, at, cx);
                             }))
+                            .child(self.person_spot(("part-picture", ix)))
                             .child(self.person_avatar(&name, &email, 40.0))
                     }),
             )

@@ -907,7 +907,7 @@ fn source() -> Option<String> {
         katna_core::update::Package::Snap => Some(tr!("update-dialog-source-snap")),
         katna_core::update::Package::Flatpak => Some(tr!("update-dialog-source-flatpak")),
         katna_core::update::Package::Nix => Some(tr!("update-dialog-source-nix")),
-        katna_core::update::Package::Other => None,
+        katna_core::update::Package::MsStore | katna_core::update::Package::Other => None,
     }
 }
 

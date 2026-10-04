@@ -1302,6 +1302,15 @@ pub fn tile<E: Styled + ParentElement>(tile: E, th: &Theme) -> E {
     card(tile, th, th.surface, radius::MD, 1.0)
 }
 
+/// A [`tile`]'s shadow `t` of the way from level 1, where it rests, to
+/// level 2 ([`elevation::FLOAT`](katna_ui::tokens::elevation::FLOAT)),
+/// where it rises under the pointer.
+pub fn tile_lift(th: &Theme, t: f32) -> Vec<BoxShadow> {
+    let mut shadows = card_shadow(th, 1.0);
+    shadows.extend(elevation(th, katna_ui::tokens::elevation::FLOAT * t));
+    shadows
+}
+
 /// The hover tint of a [`tile`], easing in and out. Its parent needs an
 /// id and `relative()`.
 pub fn tile_hover(th: &Theme) -> Glow {

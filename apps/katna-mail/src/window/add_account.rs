@@ -32,9 +32,9 @@ use katna_core::{OAuthProvider, Pop3Keep};
 use katna_dbus::{NewImapAccount, NewPop3Account, ServerSpec};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::px;
 use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
+use katna_ui::{px, tokens};
 
 use super::MailWindow;
 use super::MenuKey;
@@ -2081,6 +2081,7 @@ impl MailWindow {
             };
             let id = account.id;
             let current = shown == Some(id);
+            let offline = self.offline_text(id);
             let unread = self
                 .tree
                 .accounts
@@ -2104,9 +2105,14 @@ impl MailWindow {
                     this.account_menu = false;
                     this.pick_account(id, cx);
                 }))
-                .child(self.account_ring(
-                    &account.address,
-                    self.person_avatar(&name, &account.address, 32.0),
+                .child(self.offline_badge(
+                    self.account_ring(
+                        &account.address,
+                        self.person_avatar(&name, &account.address, 32.0),
+                        th,
+                    ),
+                    32.0,
+                    offline.is_some(),
                     th,
                 ))
                 .child(
@@ -2127,9 +2133,19 @@ impl MailWindow {
                                 .truncate()
                                 .text_size(px(12.0))
                                 .text_color(rgba(th.text_faint))
-                                .child(account.address.clone()),
+                                // An offline account says so, and what waits.
+                                .child(offline.clone().unwrap_or_else(|| account.address.clone())),
                         ),
                 )
+                .when(offline.is_some(), |d| {
+                    d.child(self.offline_mark(
+                        ("account-row-offline", ix),
+                        id,
+                        tokens::space::S7,
+                        th,
+                        cx,
+                    ))
+                })
                 .when(unread > 0, |d| {
                     d.child(
                         div()
@@ -2211,6 +2227,7 @@ impl MailWindow {
                 .map(|d| raised(d, th, super::PANEL_RADIUS, 2.0))
                 .text_color(rgba(th.text))
                 .child(icons)
+                .children(self.work_offline_row(th, cx))
                 .when(!self.accounts.is_empty(), |d| {
                     d.child(
                         div()

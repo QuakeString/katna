@@ -339,6 +339,28 @@ One worker per account inside the daemon:
   `ReloadConfig`, and the daemon answers `Metered` and signals
   `MeteredChanged`. Not built yet: the portal network monitor (for
   Flatpak).
+- **Taking an account offline:** the user can take one account offline
+  (its right-click menu, the account card, Settings > Accounts >
+  Connected), for an hour, until 8 tomorrow morning or until brought back;
+  "Work offline" in the account card takes every account at once. It is
+  kept in the settings (`[offline]`: lower-case address = Unix seconds it
+  ends, 0 for never), so it survives restarts, and Katna Mail calls
+  `ReloadConfig`. The daemon (`daemon/offline.rs`) stops the account's
+  worker and its connection for opened messages, and connects for nothing
+  of that account: mail, calendars, contacts, tasks, notes and rules on
+  the server; its status is `paused`. Changes wait where they always do:
+  the op queue, the outbox (sending fails like a lost network and stays
+  queued), unsent tasks and notes in the store, and event changes held in
+  memory (dropped on restart, as unsent event changes always are).
+  Contacts save on their service straight away, so they cannot be edited
+  while offline. Back online (by hand, or when its time ends, which the
+  daemon times itself), the worker starts and replays the queue first,
+  waiting mail is sent at once, and every other sync runs. Katna Mail
+  shows a crossed cloud before the account's count in the folder pane (a
+  click brings it back), on the account picture in the top bar while any
+  account is offline, in the account card with what waits, and an
+  "Offline" tag and a note in Compose's From; a message not downloaded
+  says so instead of trying.
 
 ### 6.2 Sync levels (per account)
 
@@ -2787,7 +2809,12 @@ Gemini or confidential mode):
   Where it has no room (a tablet, a narrow window, a conversation window),
   a click on a person's name or picture opens a summary of the same card
   (name, round buttons, details) as a popover whose notch points at the
-  click (`contact/peek.rs`); once the window has room again the popover
+  name or picture clicked, from the bounds each one records as it paints
+  (`ContactPanel::spots`; the click spot only when none was recorded)
+  (`contact/peek.rs`). Resting the pointer on a name or picture starts
+  reading that person's details, and the popover is laid out once unseen
+  before it fades in, so it never shows at a guessed height or place. Once
+  the window has room again the popover
   closes and the panel shows instead. A phone shows the full card as a
   bottom sheet.
 - **Day's agenda.** A Calendar button on the top bar, beside Settings
@@ -3019,7 +3046,9 @@ desktop's own app stays one click away.
   on release; the wheel over the chip moves the days, keeping their
   length, whole months by months) and the order; the top bar's search box matches names, subjects
   and senders. A click opens a file as the list's chips do (downloading
-  its mail first); the hover panel, the right-click menu and the viewer
+  its mail first); under the pointer a card lifts and shows its size and
+  round buttons on its top corners, on frosted glass, its preview left as
+  it is; those buttons, the right-click menu and the viewer
   (opened from this page) offer **Show the mail**, and the menu also
   opens the mail in a new window, forwards the file in a new mail, and
   shows the sender's files. Thumbnails are made in the background only
@@ -6209,3 +6238,17 @@ pre-release. The Windows package workflow can also be run by hand
 what breaks there. Without a code-signing
 certificate Windows SmartScreen warns on first run; the certificate is the
 owner's and goes into GitHub secrets.
+
+### 27.3 Microsoft Store package
+
+The Store is how Windows users get Katna without a SmartScreen warning:
+the Store signs the MSIX it accepts. `KatnaMail.msix` holds the same
+programs as Setup (`ci/windows-store-package.ps1`,
+`packaging/windows/store`) and goes on `windows-latest` beside Setup,
+which stays for testers. Katna knows it runs from the package by the
+`AppxManifest.xml` beside its programs (`update::Package::MsStore`):
+the Store updates it, so Katna never checks for updates; the package's
+startup task starts it at sign-in, since a package's registry writes
+(the `Run` key) stay inside the package; and its toasts use the package's
+app ID. The manifest's identity values come from Partner Center and the
+submission is the owner's.

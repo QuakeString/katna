@@ -9,6 +9,7 @@
 //! Toasts appear under Katna Mail's AppUserModelID, which [`serve`]
 //! registers for the user (`HKCU\Software\Classes\AppUserModelId`), so
 //! Windows shows them with Katna Mail's name without a Start menu shortcut.
+//! From the Store package they appear under the package's own app ID.
 
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -293,17 +294,29 @@ fn show(id: u32, toast: &Toast, events: async_channel::Sender<Event>) -> windows
             Ok(())
         },
     ))?;
-    ToastNotificationManager::CreateToastNotifierWithId(&HSTRING::from(ids::MAIL_APP_ID))?
-        .Show(&notification)
+    let notifier = if in_store_package() {
+        ToastNotificationManager::CreateToastNotifier()?
+    } else {
+        ToastNotificationManager::CreateToastNotifierWithId(&HSTRING::from(ids::MAIL_APP_ID))?
+    };
+    notifier.Show(&notification)
+}
+
+/// Whether Katna runs from its Store package, whose toasts go under the
+/// package's own app ID: Windows ignores another one for it.
+fn in_store_package() -> bool {
+    katna_core::update::Package::current() == katna_core::update::Package::MsStore
 }
 
 /// Takes toast `id` out of the notification center.
 fn remove(id: u32) -> windows::core::Result<()> {
-    ToastNotificationManager::History()?.RemoveGroupedTagWithId(
-        &HSTRING::from(id.to_string()),
-        &HSTRING::from(GROUP),
-        &HSTRING::from(ids::MAIL_APP_ID),
-    )
+    let (tag, group) = (HSTRING::from(id.to_string()), HSTRING::from(GROUP));
+    let history = ToastNotificationManager::History()?;
+    if in_store_package() {
+        history.RemoveGroupedTag(&tag, &group)
+    } else {
+        history.RemoveGroupedTagWithId(&tag, &group, &HSTRING::from(ids::MAIL_APP_ID))
+    }
 }
 
 /// The notification's text without its markup: `katna-notify` escapes
