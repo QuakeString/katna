@@ -22,8 +22,8 @@ use gpui::{
     div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountTabs, AutoAdvance, CalendarDensity, Clock, Density, FileGroup, FilesPage, MarkRead,
-    OpenIn, ReadingPane, ReduceMotion, SEND_FROM_CURRENT, ShortcutSet, TabStyle,
+    AccountTabs, AppKind, AutoAdvance, CalendarDensity, Clock, Density, FileGroup, FilesPage,
+    MarkRead, OpenIn, ReadingPane, ReduceMotion, SEND_FROM_CURRENT, ShortcutSet, TabStyle,
     Theme as ThemeChoice, TrayStyle,
 };
 use katna_i18n::tr;
@@ -46,6 +46,7 @@ use crate::widgets::{
 };
 
 mod ai;
+mod app_accounts;
 mod nav;
 mod notifications;
 mod rules;
@@ -102,12 +103,18 @@ pub(super) enum Section {
     /// Mail > Desktop: email links and the desktop's search.
     MailDesktop,
     Calendar,
+    /// Contacts: the accounts it shows.
+    Contacts,
+    /// Tasks: the accounts it shows.
+    Tasks,
+    /// Notes: the accounts it shows.
+    Notes,
     /// Files: the Files page's small pictures and drives.
     Files,
 }
 
 impl Section {
-    pub(super) const ALL: [Self; 18] = [
+    pub(super) const ALL: [Self; 21] = [
         Self::General,
         Self::Appearance,
         Self::Accounts,
@@ -125,6 +132,9 @@ impl Section {
         Self::MailRules,
         Self::MailDesktop,
         Self::Calendar,
+        Self::Contacts,
+        Self::Tasks,
+        Self::Notes,
         Self::Files,
     ];
 
@@ -147,6 +157,9 @@ impl Section {
             Self::MailRules => tr!("settings-tab-folders-rules"),
             Self::MailDesktop => tr!("settings-tab-desktop"),
             Self::Calendar => tr!("settings-tab-calendar"),
+            Self::Contacts => tr!("rail-contacts"),
+            Self::Tasks => tr!("rail-tasks"),
+            Self::Notes => tr!("rail-notes"),
             Self::Files => tr!("settings-tab-files"),
         }
     }
@@ -171,6 +184,9 @@ impl Section {
             Self::MailRules => "filter",
             Self::MailDesktop => "home",
             Self::Calendar => "calendar",
+            Self::Contacts => "contacts",
+            Self::Tasks => "tasks",
+            Self::Notes => "notes",
             Self::Files => "attachment",
         }
     }
@@ -184,6 +200,9 @@ impl Section {
             | Self::MailRules
             | Self::MailDesktop => Scope::Mail,
             Self::Calendar => Scope::Calendar,
+            Self::Contacts => Scope::Contacts,
+            Self::Tasks => Scope::Tasks,
+            Self::Notes => Scope::Notes,
             Self::Files => Scope::Files,
             _ => Scope::Katna,
         }
@@ -203,6 +222,9 @@ pub(super) enum Scope {
     Katna,
     Mail,
     Calendar,
+    Contacts,
+    Tasks,
+    Notes,
     Files,
 }
 
@@ -212,6 +234,9 @@ impl Scope {
             Self::Katna => tr!("settings-group-all-apps"),
             Self::Mail => tr!("rail-mail"),
             Self::Calendar => tr!("rail-calendar"),
+            Self::Contacts => tr!("rail-contacts"),
+            Self::Tasks => tr!("rail-tasks"),
+            Self::Notes => tr!("rail-notes"),
             Self::Files => tr!("rail-files"),
         }
     }
@@ -221,6 +246,9 @@ impl Scope {
             Self::Katna => "settings",
             Self::Mail => "mail",
             Self::Calendar => "calendar",
+            Self::Contacts => "contacts",
+            Self::Tasks => "tasks",
+            Self::Notes => "notes",
             Self::Files => "attachment",
         }
     }
@@ -586,7 +614,9 @@ impl MailWindow {
             RailApp::Mail => Scope::Mail,
             RailApp::Calendar => Scope::Calendar,
             RailApp::Files => Scope::Files,
-            RailApp::Contacts | RailApp::Tasks | RailApp::Notes => Scope::Katna,
+            RailApp::Contacts => Scope::Contacts,
+            RailApp::Tasks => Scope::Tasks,
+            RailApp::Notes => Scope::Notes,
         };
         self.open_settings_page(scope.first(), window, cx);
         if self.layout.shape.is_phone()
@@ -644,6 +674,9 @@ impl MailWindow {
             Section::MailDesktop => self.mail_desktop_section(th, cx),
             Section::Ai => self.ai_section(th, cx),
             Section::Calendar => self.calendar_section(th, cx),
+            Section::Contacts => self.app_accounts_rows(AppKind::Contacts, th, cx),
+            Section::Tasks => self.app_accounts_rows(AppKind::Tasks, th, cx),
+            Section::Notes => self.app_accounts_rows(AppKind::Notes, th, cx),
             Section::Files => self.files_section(th, cx),
             Section::Accounts => self.accounts_section(th, cx),
             Section::Subscriptions => self.katna_section(th, window, cx),
@@ -915,6 +948,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(self.files_page_row(th, cx))
+            .child(self.app_accounts_rows(AppKind::Files, th, cx))
             .into_any_element()
     }
 

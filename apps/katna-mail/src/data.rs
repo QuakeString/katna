@@ -1596,6 +1596,21 @@ pub fn saved_contacts(paths: &Paths) -> Result<SavedBook, String> {
         .map_err(|err| format!("Reading contacts failed: {err}"))
 }
 
+impl SavedBook {
+    /// Leaves out the `hidden` accounts' address books and other
+    /// contacts, and the people saved only in them.
+    pub fn leave_out(&mut self, hidden: &HashSet<AccountId>) {
+        if hidden.is_empty() {
+            return;
+        }
+        let shown = |account: &Option<AccountId>| account.is_none_or(|a| !hidden.contains(&a));
+        self.people
+            .retain(|p| p.accounts.is_empty() || p.accounts.iter().any(shown));
+        self.books.retain(|b| shown(&b.account));
+        self.others.retain(|o| !hidden.contains(&o.account));
+    }
+}
+
 /// Everyone saved, one entry per person, with the labels and books.
 #[derive(Debug, Default)]
 pub struct SavedBook {

@@ -16,7 +16,7 @@ use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{
     Account, AccountId, AccountKind, AccountSettings, Config, Paths, Pop3Keep, Security, Server,
-    config::Metered,
+    config::{HiddenAccounts, Metered},
 };
 use katna_dbus::{
     AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, TemplateItem, state,
@@ -234,6 +234,9 @@ pub struct Daemon {
     offline_days: Mutex<Option<u32>>,
     /// The user's `general.language` setting, as last applied.
     language: Mutex<String>,
+    /// The accounts left out of each app (`hidden_accounts`): their
+    /// tasks' and notes' reminders stay quiet.
+    hidden_accounts: Mutex<HiddenAccounts>,
     status: Mutex<HashMap<AccountId, Status>>,
     outbox: Mutex<Option<Sending>>,
     /// Why each outbox entry's last try failed.
@@ -343,6 +346,7 @@ impl Daemon {
             metered_setting: Mutex::new(setting),
             offline_days: Mutex::new(sync.offline_window()),
             language: Mutex::new(saved.general.language),
+            hidden_accounts: Mutex::new(saved.hidden_accounts),
             status: Mutex::default(),
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
@@ -1257,6 +1261,11 @@ impl Daemon {
     /// it (`sync.metered`, `sync.offline_days`, `notifications`, `sounds`,
     /// the `general` language, tray and badge switches, search trigger words,
     /// `feedback.send_crash_reports`). Katna Mail calls this after saving
+    /// The accounts left out of each app, as last read from the settings.
+    pub(crate) fn hidden_accounts(&self) -> HiddenAccounts {
+        self.hidden_accounts.lock().unwrap().clone()
+    }
+
     /// settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
         let config = Config::load(&self.paths.config_file())
@@ -1283,6 +1292,7 @@ impl Daemon {
         if std::mem::replace(&mut *self.language.lock().unwrap(), language.clone()) != *language {
             katna_i18n::apply(language);
         }
+        *self.hidden_accounts.lock().unwrap() = config.hidden_accounts.clone();
         if let Some(finder) = self.finder.get() {
             finder.set_triggers(config.general.search_triggers.clone());
         }
