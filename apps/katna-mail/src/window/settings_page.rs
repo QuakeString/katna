@@ -2163,6 +2163,9 @@ impl MailWindow {
                     th,
                 ))
             })
+            .when(self.shows_unified(), |d| {
+                d.child(self.unified_accounts_rows(&accounts, th, cx))
+            })
             .when(on, |d| {
                 d.children(accounts.iter().enumerate().map(|(ix, account)| {
                     let provider = self.provider(account);

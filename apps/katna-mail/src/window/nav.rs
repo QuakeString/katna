@@ -32,6 +32,7 @@ use crate::widgets::{
     elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
 };
 use katna_platform::colors::over;
+use katna_ui::tokens;
 
 /// How far the floating folder pane stands off the rail and the top bar.
 const FLOAT_GAP: f32 = 8.0;
@@ -1088,6 +1089,7 @@ impl MailWindow {
                                 .into_iter()
                                 .any(|f| self.checking_folder(f)),
                         bell: None,
+                        left_out: None,
                     },
                     th,
                     cx,
@@ -1099,6 +1101,7 @@ impl MailWindow {
                 name,
                 folder,
                 unread,
+                left_out,
             } => {
                 let selected = match folder {
                     Some(f) => self.listing == Some(Listing::Folder(*f)),
@@ -1125,6 +1128,7 @@ impl MailWindow {
                         checking: (*view == Unified::Inbox && self.checking_account(*account))
                             || folder.is_some_and(|f| self.checking_folder(f)),
                         bell: self.account_bell_icon(*account),
+                        left_out: left_out.then_some(*account),
                     },
                     th,
                     cx,
@@ -1176,6 +1180,7 @@ impl MailWindow {
                                     .and_then(|f| self.tree.account_of(f))
                                     .is_some_and(|a| self.checking_account(a)),
                         bell: folder.and_then(|f| self.folder_bell_icon(f)),
+                        left_out: None,
                     },
                     th,
                     cx,
@@ -1278,6 +1283,7 @@ impl MailWindow {
             chevron,
             checking,
             bell,
+            left_out,
         } = pill;
         let indent = 12.0 * depth as f32;
         let drop_folder = match self.nav_rows.get(ix) {
@@ -1381,6 +1387,8 @@ impl MailWindow {
                 icon_name,
                 if selected {
                     text
+                } else if left_out.is_some() {
+                    th.text_faint
                 } else {
                     folder_icon_color(icon_name, th)
                 },
@@ -1392,6 +1400,9 @@ impl MailWindow {
                     .min_w_0()
                     .pl(px(18.0))
                     .truncate()
+                    .when(left_out.is_some() && !selected, |d| {
+                        d.text_color(rgba(th.text_faint))
+                    })
                     .child(label),
             )
             // Beside the name, so the markers of lines line up whatever
@@ -1417,8 +1428,27 @@ impl MailWindow {
                         )),
                 )
             })
-            .when(unread > 0, |d| {
+            .when(unread > 0 && left_out.is_none(), |d| {
                 d.child(crate::widgets::count_pill(unread, selected, th))
+            })
+            .when_some(left_out, |d, account| {
+                d.child(
+                    div()
+                        .id(("nav-left-out", ix))
+                        .flex_none()
+                        .size(px(NAV_ROW_HEIGHT - 2.0 * tokens::space::S1))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded_full()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .child(icon("eye-off", th.text_dim, 18.0))
+                        .tooltip(tip(tr!("nav-unified-bring-back"), th))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            cx.stop_propagation();
+                            this.set_inbox_left_out(account, false, cx);
+                        })),
+                )
             })
             .children(chevron);
         // Named by the line rather than its place, which moves as lines
@@ -1793,6 +1823,9 @@ struct Pill {
     /// A bell, or a crossed bell, when its notifications differ from
     /// the usual (§15.1.1).
     bell: Option<&'static str>,
+    /// An account's inbox left out of the unified Inbox: it shows dimmed,
+    /// with an eye in place of its count that brings it back.
+    left_out: Option<katna_core::AccountId>,
 }
 
 /// An arrow that turns from pointing right to down as its line opens.
