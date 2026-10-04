@@ -1256,6 +1256,11 @@ impl Mail {
         })
     }
 
+    /// The inbox tab message `id` was sorted into, if it was.
+    pub fn message_category(&self, id: MessageId) -> Option<MailCategory> {
+        self.store.message_category(id).ok().flatten()
+    }
+
     /// The `Message-ID` of message `id`, without angle brackets.
     pub fn message_id_header(&self, id: MessageId) -> Option<String> {
         self.store.message_id_header(id).ok().flatten()
