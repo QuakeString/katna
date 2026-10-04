@@ -37,6 +37,11 @@ drawn only outside its element, as in CSS, so it does not darken a
 translucent element. Upstream draws it under the whole element, which an
 opaque element hides.
 
+Adapter choice (`wgpu_context.rs`): Mesa's software Vulkan (lavapipe)
+older than 25 shows a black window on X11 (Debian 12, Ubuntu 22.04), so
+there its OpenGL (llvmpipe) is tried first (`is_old_software_vulkan`).
+Real GPUs and newer Mesa keep Vulkan.
+
 `diff -r` against the published crate (in `~/.cargo/registry/src/` once
 fetched) shows the whole patch. When GPUI is upgraded, copy the new version
 here and apply the same change, or drop the patch once upstream GPUI can do
