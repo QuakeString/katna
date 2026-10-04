@@ -883,6 +883,7 @@ fn katna_side(dark: bool) -> Scheme {
         accent: opaque(th.accent),
         accent_fg: opaque(th.on_accent),
         negative: opaque(th.error),
+        neutral: None,
     }
 }
 

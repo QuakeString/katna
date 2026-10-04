@@ -140,7 +140,8 @@ pub struct Theme {
     /// Error text and the frame of a field in error.
     pub error: u32,
     /// What needs the user before it gets better: an account signed out
-    /// or refusing its password, a mail not sent. Amber, readable as text.
+    /// or refusing its password, a mail not sent. Amber, readable as
+    /// text. Errors stay [`Theme::error`].
     pub warning: u32,
     /// Shadow color; its alpha is the strongest shadow.
     pub shadow: u32,
@@ -488,12 +489,9 @@ impl Theme {
             snackbar: base.snackbar,
             snackbar_text: base.snackbar_text,
             error: readable(s.negative, surface, 3.0),
-            // Katna's own amber, made readable on the scheme's cards.
-            warning: readable(
-                if dark { DARK.warning } else { LIGHT.warning },
-                surface,
-                4.5,
-            ),
+            warning: s
+                .neutral
+                .map_or(base.warning, |c| readable(c, surface, 4.5)),
             shadow: base.shadow,
         }
     }
@@ -1040,6 +1038,7 @@ mod tests {
             accent: 0x3daee9ff,
             accent_fg: 0xffffffff,
             negative: 0xda4453ff,
+            neutral: None,
         };
         let desktop = SystemColors::default().with_schemes(vec![DesktopScheme {
             id: "kde:BreezeClassic".to_owned(),
