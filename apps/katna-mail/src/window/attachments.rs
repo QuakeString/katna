@@ -753,7 +753,8 @@ impl MailWindow {
                                     .text_size(px(13.0))
                                     .font_weight(FontWeight::MEDIUM)
                                     .text_color(rgba(th.text_dim))
-                                    .hover(|s| s.bg(rgba(th.hover)))
+                                    .relative()
+                                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                                     .tooltip(tip(tr!("attachment-save-all-tooltip"), th))
                                     .on_click(cx.listener(move |this, _, _, cx| {
                                         cx.stop_propagation();

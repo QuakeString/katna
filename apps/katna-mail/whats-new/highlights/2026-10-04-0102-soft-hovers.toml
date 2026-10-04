@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Softer hovers"
+text = """
+Resting the pointer on the app rail, the select box, a tab and many other
+buttons now fades their highlight in and out instead of switching it on.
+"""

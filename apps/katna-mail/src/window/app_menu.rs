@@ -145,7 +145,8 @@ impl MailWindow {
                 .text_size(px(14.0))
                 .font_weight(FontWeight::MEDIUM)
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                 .menu_key(th)
                 .tooltip(tip(tr!("app-menu-back"), th))
                 .on_click(cx.listener(|this, _, _, cx| {
@@ -289,7 +290,8 @@ impl MailWindow {
                         .rounded(px(8.0))
                         .text_size(px(14.0))
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                         .menu_key(th)
                         .on_click(cx.listener(move |this, _, window, cx| {
                             cx.stop_propagation();

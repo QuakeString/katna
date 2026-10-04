@@ -183,7 +183,8 @@ impl MailWindow {
                     .justify_center()
                     .rounded(px(8.0))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                     .child(checkbox_colored(
                         ("bell-box", id * 2 + which),
                         Check::from(on),

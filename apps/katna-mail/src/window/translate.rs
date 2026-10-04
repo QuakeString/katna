@@ -254,7 +254,8 @@ impl MailWindow {
                 .rounded(px(6.0))
                 .cursor_pointer()
                 .text_color(rgba(th.accent))
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                 .child(label)
         };
         let (note, links): (String, Vec<AnyElement>) = match states.get(&id) {
@@ -547,7 +548,8 @@ impl MailWindow {
             .border_1()
             .border_color(rgba(th.outline))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .on_click(cx.listener(|this, event: &gpui::ClickEvent, window, cx| {
                 this.toggle_reading_language_picker(event.position(), window, cx);
             }))

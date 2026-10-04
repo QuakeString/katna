@@ -288,7 +288,8 @@ fn swatch_ring(
         .keeps_press()
         .border_2()
         .border_color(rgba(ring.unwrap_or(0x00000000)))
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", None, th))
 }
 
 /// The logo's disc takes the accent and its mark the accent's text
@@ -462,6 +463,19 @@ pub fn fold_arrow(name: &str, fold: &Fold, open: bool, color: u32, size: f32) ->
             arrow.with_transformation(Transformation::rotate(radians(turn)))
         })
         .into_any_element()
+}
+
+/// The shared hover fade (`katna_ui::Glow`) for a box that is not one of
+/// the round or pill buttons above: it eases in and out instead of
+/// switching, and follows Animation speed and Reduce motion. Make the box
+/// `relative()` and put this first among its children; `radius` is its
+/// corner radius, `None` for a pill or circle.
+pub fn hover_fade(id: impl Into<gpui::ElementId>, radius: Option<f32>, th: &Theme) -> Glow {
+    let glow = Glow::new(id, rgba(th.hover));
+    match radius {
+        Some(r) => glow.corners([r; 4]),
+        None => glow.fade(),
+    }
 }
 
 /// A stable number for a ripple's ID derived from its button's ID.

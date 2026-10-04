@@ -1175,7 +1175,8 @@ impl MailWindow {
                                 .font_weight(FontWeight::MEDIUM)
                                 .text_color(rgba(th.accent))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", None, th))
                                 .child(tr!("summary-stop"))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     this.stop_summary(key, cx);

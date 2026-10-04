@@ -3063,7 +3063,8 @@ fn small_button(id: &'static str, name: &'static str, th: &Theme) -> gpui::State
         .justify_center()
         .rounded_full()
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", None, th))
         .child(icon(name, th.text_dim, 18.0))
 }
 

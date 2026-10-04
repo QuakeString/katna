@@ -1584,7 +1584,8 @@ impl MailWindow {
             .px(px(4.0))
             .rounded(px(4.0))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
             .text_size(px(14.0))
             .text_color(rgba(th.text))
             .child(crate::widgets::checkbox(
@@ -2043,7 +2044,8 @@ impl MailWindow {
                 .items_center()
                 .gap(px(12.0))
                 .rounded(px(4.0))
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
                 .child(crate::widgets::avatar(&name, &guest.email, 28.0))
                 .child(
                     div()
@@ -2599,7 +2601,8 @@ fn text_button(
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.accent))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", None, th))
         .child(label.into())
 }
 

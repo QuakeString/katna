@@ -394,7 +394,8 @@ pub(super) fn format_dropdown(id: &'static str, th: &Theme) -> Stateful<gpui::Di
         .cursor_pointer()
         .text_size(px(13.0))
         .text_color(rgba(th.text_dim))
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
 }
 
 /// [`format_dropdown`], as tall and round as the chat bar's buttons when
@@ -1927,7 +1928,8 @@ impl MailWindow {
                 .rounded(px(6.0))
                 .text_size(px(22.0))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                 .tooltip(tip(emoji.name().to_owned(), th))
                 .on_click(self.on_body(cx, move |e, cx| e.insert(text, cx)))
                 .child(text)
@@ -2936,7 +2938,8 @@ impl MailWindow {
                     .font_weight(FontWeight::MEDIUM)
                     .text_color(rgba(th.accent))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .on_click(cx.listener(|this, _, window, cx| this.close_popup(window, cx)))
                     .child(tr!("compose-tool-cancel")),
             )
@@ -3086,7 +3089,8 @@ impl MailWindow {
                             .font_weight(FontWeight::MEDIUM)
                             .text_color(rgba(th.accent))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .on_click(cx.listener(move |this, _, window, cx| match check {
                                 SendCheck::Attachment => this.pick_files(false, cx),
                                 SendCheck::Subject => {
