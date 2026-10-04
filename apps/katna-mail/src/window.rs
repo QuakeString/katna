@@ -3850,23 +3850,23 @@ impl Render for MailWindow {
         let activity_fits = room - activity_room >= SEARCH_MIN_WIDTH;
         let open_width = (room - if activity_fits { activity_room } else { 0.0 })
             .clamp(SEARCH_MIN_WIDTH, SEARCH_WIDTH);
+        // The title's box has room for the longest app name; the box
+        // comes up to the name shown, on a tablet too.
+        let shown = text_width(
+            &self.app.label(),
+            TITLE_TEXT_SIZE,
+            FontWeight::NORMAL,
+            self.font.as_ref(),
+            window,
+        );
+        let after_name = room_start
+            + TITLE_LEFT
+            + title_width(shape.title_label(), (titles.0, shown))
+            + TOP_BAR_GAP;
         let search_left = if shape.is_desktop() {
-            // The title's box has room for the longest app name; the box
-            // comes up to the name shown.
-            let shown = text_width(
-                &self.app.label(),
-                TITLE_TEXT_SIZE,
-                FontWeight::NORMAL,
-                self.font.as_ref(),
-                window,
-            );
-            let after_name = room_start
-                + TITLE_LEFT
-                + title_width(shape.title_label(), (titles.0, shown))
-                + TOP_BAR_GAP;
             lerp(after_name, open_left, reserve.clamp(0.0, 1.0))
         } else {
-            open_left
+            after_name
         };
         let regular = open_width + open_left - search_left;
         let pill = (width - 12.0 - room_start - room_end).max(200.0);
