@@ -18,6 +18,11 @@ nav-folder-new = Create new folder
 nav-menu-check-mail = Check for new mail
 # The same, on an account's inbox under All Accounts.
 nav-menu-check-inbox = Check this inbox
+# On an account's inbox under All Accounts: its mail stops showing in the
+# unified Inbox; the row stays, dimmed, and still opens that inbox.
+nav-unified-leave-out = Leave out of unified Inbox
+# On such a left-out inbox, in the same menu and on its eye: undoes it.
+nav-unified-bring-back = Bring back into unified Inbox
 # On an account's heading or its row under All Accounts: shown when the
 # account's sign-in stopped working; opens the provider's sign-in page.
 nav-menu-sign-in-again = Sign in again

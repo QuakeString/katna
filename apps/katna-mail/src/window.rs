@@ -1263,6 +1263,7 @@ impl MailWindow {
         self.quotas = mail.quotas();
         self.config.mail.order_accounts(&mut self.accounts);
         self.tree = Tree::build(&self.accounts, &mail.folders(), &self.unread);
+        self.tree.unified_out = self.unified_out();
         self.expanded = self.tree.initially_expanded();
         self.settle_account_colors();
         self.rebuild_nav();
@@ -1287,6 +1288,7 @@ impl MailWindow {
                 if let Ok(mail) = &this.mail {
                     let folders = folders.unwrap_or_else(|| mail.folders());
                     this.tree = Tree::build(&this.accounts, &folders, &this.unread);
+                    this.tree.unified_out = this.unified_out();
                     this.rebuild_nav();
                 }
                 cx.notify();

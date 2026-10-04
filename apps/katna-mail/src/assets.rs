@@ -91,6 +91,7 @@ icons!(
     "event",
     "expand",
     "eye",
+    "eye-off",
     "eyedropper",
     "file",
     "filter",

@@ -73,6 +73,9 @@ pub(super) enum Change {
     AccountsShown(AccountsShown),
     /// The unified inbox over the accounts in the folder pane.
     UnifiedInbox(bool),
+    /// An account is in the unified inbox (`true`) or only in the account
+    /// card.
+    InUnified(katna_core::AccountId, bool),
     /// The tray icon, shown by the daemon.
     Tray(bool),
     TrayStyle(TrayStyle),
@@ -810,6 +813,10 @@ impl MailWindow {
                 self.set_unified_inbox(on, cx);
                 return;
             }
+            Change::InUnified(id, on) => {
+                self.set_in_unified(id, on, cx);
+                return;
+            }
             Change::TranslateOffer(on) => view.translation.offer = on,
             Change::TranslateAlways(code, on) | Change::TranslateNever(code, on) => {
                 let translation = &mut view.translation;
@@ -1037,7 +1044,7 @@ impl MailWindow {
     #[allow(clippy::too_many_arguments)]
     pub(super) fn switch_row(
         &self,
-        id: &'static str,
+        id: impl Into<gpui::ElementId>,
         label: impl Into<SharedString>,
         detail: impl Into<SharedString>,
         on: bool,
@@ -1052,7 +1059,7 @@ impl MailWindow {
     #[allow(clippy::too_many_arguments)]
     pub(super) fn switch_row_with(
         &self,
-        id: &'static str,
+        id: impl Into<gpui::ElementId>,
         label: impl Into<SharedString>,
         detail: impl Into<SharedString>,
         on: bool,
@@ -1061,7 +1068,8 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(crate::widgets::row(id, false, th), th, cx)
+        let id: gpui::ElementId = id.into();
+        self.page_control(crate::widgets::row(id.clone(), false, th), th, cx)
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
             .child(
                 div()
@@ -1079,7 +1087,7 @@ impl MailWindow {
             )
             .children(extra)
             .child(div().with_spring(
-                (id, 3_usize),
+                (id, "switch"),
                 SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
                     1.0
                 } else {
