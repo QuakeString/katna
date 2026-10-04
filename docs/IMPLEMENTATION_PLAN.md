@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 4 October 2026, through PR #719). Companion to
+> Status: **v0.2** (updated 4 October 2026, through PR #727). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -25,9 +25,14 @@ not name.
   of the UI translated; reading and sending encrypted mail; Phase 6
   except the upstream proposals: Calendar, Tasks, Notes and Contacts pages that sync with each
   account's own service; the Windows build and installer.
-- **Merged since the last refresh (#523–#719):** account problems shown at
-  the top of the list and in Settings › Accounts with their fix, and an
-  Outbox that holds mail while signed out (A.21); apps that can be turned
+- **Merged since the last refresh (#523–#727):** account problems shown at
+  the top of the list and in Settings › Accounts with their fix, an
+  Outbox that holds mail while signed out, plain words when a server
+  refuses a change, and one desktop notification and tray line per
+  problem (A.21, #720, #723); the accounts' pictures stacked at the top
+  right of All Accounts (A.18, #727); dialogs and menus kept inside
+  Katna's frame, and lists that start below solid bars with nothing
+  sliding under them (A.10, #716, #724, #725, #726); apps that can be turned
   off, accounts left out of single apps or the unified inbox, and an
   account taken offline (A.20); a Debian and Ubuntu package (3.11, #695)
   that draws without a GPU (#709); a Microsoft Store package (A.13, #700); Tasks with Upcoming,
@@ -397,7 +402,7 @@ merged; the pull requests say what changed.
 | A.7 Accounts ✅ #361, #392, #415, #442, #447 | Add account with provider tiles and POP3; an account menu with sync state, storage and sign in again; a new account's inbox first; a first start that shows the window and offers a Katna account; switching account keeps the page |
 | A.8 Zoho ✅ #393, #397, #399 | Sign in with Zoho for Zoho's calendars and tasks |
 | A.9 Calendar, Tasks, Notes and Contacts polish ✅ #342, #345, #346, #347, #348, #350, #351, #352, #358, #360, #363, #364, #367, #372, #374, #381, #382, #383, #384, #388, #410, #412, #417, #418, #463, #465, #478, #518 | Phone layouts and folding side panels; every account listed with why its calendars, tasks or contacts are missing; right-click menus; dragging tasks and notes into order; the top search box on each page; typed quick add for tasks; open tasks and meetings in the contact panel |
-| A.10 Mail window polish ✅ #357, #359, #368, #375, #376, #378, #391, #395, #401, #402, #411, #421, #424, #428, #429, #430, #434, #435, #437, #439, #440, #441, #444, #450, #452, #454, #456, #457, #458, #459, #461, #470, #479, #481, #485, #491, #495, #496, #503, #507, #515, #532, #551, #554, #574, #575, #578, #581, #590, #594, #598, #600, #602, #603, #604, #607, #611, #615, #617, #618, #620, #621, #627, #640, #641, #643, #644, #645, #662, #664, #665, #666, #667, #668, #669, #673, #675, #676, #679, #681, #682, #694, #697, #698, #719 | Inbox tabs as a pill bar; coloured folder icons with faint count pills; one checkbox at every scale; a right-click menu that fits the window; tables that keep their columns; Back to top; selectable header details; touchpad glide on Wayland; one left-bar button and fold on every page; a soft search box; reply arrows in the list; Ctrl+click and Shift+click selection; Space and arrows on folders; the window moved from any empty space; the Feeds page removed; rename, delete and drag to folders, Move to with search, Label as; Settings sorted into all apps and each app's pages (its own window, #676, was reverted in #681); menus and popovers fade out; text selectable and copyable across the app |
+| A.10 Mail window polish ✅ #357, #359, #368, #375, #376, #378, #391, #395, #401, #402, #411, #421, #424, #428, #429, #430, #434, #435, #437, #439, #440, #441, #444, #450, #452, #454, #456, #457, #458, #459, #461, #470, #479, #481, #485, #491, #495, #496, #503, #507, #515, #532, #551, #554, #574, #575, #578, #581, #590, #594, #598, #600, #602, #603, #604, #607, #611, #615, #617, #618, #620, #621, #627, #640, #641, #643, #644, #645, #662, #664, #665, #666, #667, #668, #669, #673, #675, #676, #679, #681, #682, #694, #697, #698, #719, #716, #721, #724, #725, #726 | Inbox tabs as a pill bar; coloured folder icons with faint count pills; one checkbox at every scale; a right-click menu that fits the window; tables that keep their columns; Back to top; selectable header details; touchpad glide on Wayland; one left-bar button and fold on every page; a soft search box; reply arrows in the list; Ctrl+click and Shift+click selection; Space and arrows on folders; the window moved from any empty space; the Feeds page removed; rename, delete and drag to folders, Move to with search, Label as; Settings sorted into all apps and each app's pages (its own window, #676, was reverted in #681); menus and popovers fade out; text selectable and copyable across the app; dialogs, menus and tooltips stay inside Katna's frame; mail, chat and list content starts below solid bars (Frosted headers dropped); a steady phone list after a quick scroll |
 | A.11 Sending files ✅ #432, #489, #490 | Send with Katna Mail from Dolphin, GNOME Files and Explorer; Forward keeps the original's attachments |
 | A.12 More Linux packages ✅ #462, #634, #695, #709 | Fedora, Nix, AppImage, Snap, Flatpak and tarball builds tested and published on `linux-latest`; a .deb for Debian and Ubuntu; drawing without a GPU on Debian 12 and Ubuntu 22.04 |
 | A.13 Windows fixes ✅ #369, #425, #426, #443, #446, #460, #632, #700 | Windows draws the shadow and corners; windows fit the screen; Katna's frame and blur; sign-in keys and DNS; cleaner uninstall; Katna updates itself on Windows; a Microsoft Store package (MSIX) beside Katna Setup |
@@ -405,10 +410,10 @@ merged; the pull requests say what changed.
 | A.15 CI and README ✅ #404, #419, #422, #427, #433, #438, #529, #563 | Tests on Arch only, Ubuntu and Windows in a Secondary workflow; README says why Katna exists and that it is at a very early stage |
 | A.16 Drives in Files ✅ #534, #537, #540, #541, #542, #550, #553, #573 | Google Drive and OneDrive in the Files page and the Compose and chat pickers; upload files and folders; Move to bin, Rename, Share and an uploads tray |
 | A.17 Compose ✅ #531, #536, #539, #579, #595, #663, #672, #677, #680, #683 | A calmer Quiet look; drafts saved while writing with "Draft saved"; a signature tag; Compose opens beside a half-written reply; click an attached file to open it; an emptied message keeps no draft; signatures imported from Gmail, Thunderbird, Evolution and KMail, designed signatures as one block, Paste HTML; twelve signature layouts with a fields form |
-| A.18 Unified inbox and account colours ✅ #549, #576, #592, #624, #631, #670 | Inbox tabs in the unified inbox shared by every account; a colour for each account, shown as a dot after the sender, with eight colours and a colour wheel |
+| A.18 Unified inbox and account colours ✅ #549, #576, #592, #624, #631, #670, #727 | Inbox tabs in the unified inbox shared by every account; a colour for each account, shown as a dot after the sender, with eight colours and a colour wheel; the accounts' pictures stacked at the top right of All Accounts |
 | A.19 Shared design system ✅ #646, #647, #648, #649, #650, #651, #652, #653, #654, #656, #657, #658, #659, #690, #691, #692, #699 | Design tokens (`katna_ui::tokens`) and `docs/DESIGN.md`, with a CI check that raw sizes only go down; one shared popover, dialog surface, Button, choice chip, tag, settings row, field and card; a Gallery of the controls in development builds |
 | A.20 Apps and accounts ✅ #701, #702, #703, #708, #710, #711 | Turn Calendar, Contacts, Tasks, Notes or Files off (Mail stays), which stops their sync and removes their copy on request; leave an account out of single apps or the unified inbox; take an account offline |
-| A.21 Problems and the Outbox ✅ #713, #715, #717, #718 | An amber "needs you" colour; an account's problem at the top of the mail list with its fix (a New password card) and in Settings › Accounts; an Outbox for mail that has not gone out, holding mail while an account is signed out |
+| A.21 Problems and the Outbox ✅ #713, #715, #717, #718, #720, #723 | An amber "needs you" colour; an account's problem at the top of the mail list with its fix (a New password card) and in Settings › Accounts; an Outbox for mail that has not gone out, holding mail while an account is signed out; a server's refusal of a change said in plain words; one desktop notification per problem and a tray line |
 
 ### Release track — update channels and safe updates (before the first public release)
 
