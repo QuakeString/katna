@@ -861,6 +861,7 @@ impl MailWindow {
     // Calendar
 
     fn calendar_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let accounts = self.app_accounts_rows(AppKind::Calendar, th, cx);
         let calendar = &self.config.calendar;
         let density = [
             (
@@ -912,6 +913,7 @@ impl MailWindow {
         div()
             .flex()
             .flex_col()
+            .child(accounts)
             .child(self.row(
                 tr!("settings-calendar-density"),
                 Some(&tr!("settings-calendar-density-detail")),
