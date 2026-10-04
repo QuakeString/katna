@@ -531,9 +531,11 @@ impl MailWindow {
     }
 
     /// The window frame's bottom corners where the card reaches them (on a
-    /// phone), else none.
+    /// phone with the bottom bar gone), else none: the bottom bar rounds
+    /// itself while it shows.
     fn phone_bottom_corners(&self) -> (f32, f32) {
-        if self.layout.shape.is_phone() {
+        let shape = self.layout.shape;
+        if shape.is_phone() && shape.bottom_bar() <= 0.01 {
             self.bottom_corners
         } else {
             (0.0, 0.0)
