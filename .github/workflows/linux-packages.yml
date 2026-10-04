@@ -1,8 +1,8 @@
 name: Linux packages
 
-# Builds Katna for Fedora (RPM), Nix, AppImage, Snap, Flatpak and as a
-# plain tarball, installs each on its own platform and tries it there
-# (ci/linux-package-test.sh). On main, once CI passed, the files replace
+# Builds Katna for Fedora (RPM), Ubuntu and Debian (.deb), Nix, AppImage,
+# Snap, Flatpak and as a plain tarball, installs each on its own platform
+# and tries it there (ci/linux-package-test.sh). On main, once CI passed, the files replace
 # those on the `linux-latest` pre-release (packaging/README.md). Nothing
 # here gates pull requests, main or the Arch package.
 on:
@@ -32,8 +32,9 @@ permissions:
   contents: read
 
 jobs:
-  # One build for the AppImage, the Snap, the Flatpak and the tarball, on
-  # an older glibc (Ubuntu 22.04's 2.35) so it runs on older systems too.
+  # One build for the AppImage, the Snap, the Flatpak, the .deb and the
+  # tarball, on an older glibc (Ubuntu 22.04's 2.35) so it runs on older
+  # systems too.
   portable:
     runs-on: ubuntu-latest
     container: ubuntu:22.04
@@ -397,6 +398,77 @@ jobs:
           name: screenshot-fedora
           path: shots/
 
+  # The Debian package for Ubuntu 22.04+ and Debian 12+, made from the
+  # portable build (Ubuntu 22.04's glibc).
+  deb:
+    needs: portable
+    runs-on: ubuntu-latest
+    container: ubuntu:22.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-tarball
+      - name: Build the .deb
+        run: |
+          packaging/deb/make-deb.sh katna-linux-x86_64.tar.gz \
+            "${{ needs.portable.outputs.version }}" out
+          cp out/katna_*.deb out/katna_amd64.deb
+          dpkg-deb --info out/katna_amd64.deb
+          ls -l out
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: deb
+          path: out/
+          if-no-files-found: error
+
+  # Installed with apt on a clean image of the oldest and newest Ubuntu LTS
+  # and Debian 12: apt brings in what Depends names.
+  deb-test:
+    needs: [deb, portable]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: ubuntu:22.04
+            name: ubuntu-22.04
+          - image: ubuntu:24.04
+            name: ubuntu-24.04
+          - image: debian:12
+            name: debian-12
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: deb
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: linux-demo-data
+      - name: Install it with apt and try it
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y ./katna_amd64.deb
+          dpkg -L katna | grep -x /usr/bin/katna-mail
+          # Every library the programs link to is there.
+          ! ldd /usr/bin/katna-mail /usr/bin/katna-daemon /usr/bin/katnactl | grep "not found"
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            gnome-keyring imagemagick x11-utils xvfb mesa-vulkan-drivers libegl-mesa0 \
+            fonts-dejavu-core procps
+          useradd --create-home tester
+          cp ci/linux-package-test.sh demo-data.tar.gz /home/tester/
+          chown tester: /home/tester/*
+          runuser -u tester -- sh -euc \
+            'cd ~ && KATNA_DEMO=~/demo-data.tar.gz ./linux-package-test.sh ~/deb-${{ matrix.name }}.png'
+          mkdir shots && cp /home/tester/deb-${{ matrix.name }}.png shots/
+          DEBIAN_FRONTEND=noninteractive apt-get remove -y katna
+          test ! -e /usr/bin/katna-mail
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: screenshot-deb-${{ matrix.name }}
+          path: shots/
+
   # The flake, built by Nix; its closure goes to the test below.
   nix:
     runs-on: ubuntu-latest
@@ -465,7 +537,7 @@ jobs:
           path: shots/
 
   publish:
-    needs: [portable, tarball, appimage, flatpak, snap, fedora, fedora-test, nix, nix-test]
+    needs: [portable, tarball, appimage, flatpak, snap, fedora, fedora-test, deb, deb-test, nix, nix-test]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -500,7 +572,7 @@ jobs:
       - name: Gather the files
         run: |
           mkdir out
-          find artifacts -type f \( -name '*.rpm' -o -name '*.snap' -o -name '*.flatpak' \
+          find artifacts -type f \( -name '*.rpm' -o -name '*.deb' -o -name '*.snap' -o -name '*.flatpak' \
             -o -name '*.AppImage' -o -name 'katna-linux-x86_64.tar.gz' -o -name '*.png' \) \
             -exec cp {} out/ \;
           cd out
@@ -526,9 +598,10 @@ jobs:
             --argjson tarball "$(entry katna-linux-x86_64.tar.gz)" \
             --argjson appimage "$(entry Katna-x86_64.AppImage)" \
             --argjson rpm "$(entry katna-x86_64.rpm)" \
+            --argjson deb "$(entry katna_amd64.deb)" \
             --argjson snap "$(entry katna_amd64.snap)" \
             --argjson flatpak "$(entry katna-x86_64.flatpak)" \
-            '{$tarball, $appimage, $rpm, $snap, $flatpak}')
+            '{$tarball, $appimage, $rpm, $deb, $snap, $flatpak}')
           git -C src log -200 --format='%h%x09%s' HEAD |
             jq -R 'split("\t") | {commit: .[0], title: (.[1:] | join("\t"))}' |
             jq -s . > changes.json
@@ -560,6 +633,8 @@ jobs:
           package running on its own platform in CI.
 
           - **Fedora:** \`sudo dnf install $base/katna-x86_64.rpm\`
+          - **Ubuntu 22.04+ and Debian 12+:** download \`katna_amd64.deb\`,
+            then \`sudo apt install ./katna_amd64.deb\`
           - **Nix:** \`nix profile install github:$GH_REPO\`, or
             \`nix run github:$GH_REPO\`
           - **AppImage:** download \`Katna-x86_64.AppImage\`, make it
