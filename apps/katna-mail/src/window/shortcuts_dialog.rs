@@ -2,7 +2,7 @@
 
 //! Help > Keyboard shortcuts (and `?`): every shortcut with its keys in a
 //! dialog over the window, to look up and close again, with a box to find
-//! one. Changing keys stays in Settings > Shortcuts, a click away.
+//! one. It only shows them: keys are changed in Settings > Shortcuts.
 
 use gpui::{
     AnyElement, Context, Entity, FocusHandle, Focusable, KeyDownEvent, MouseButton, ScrollHandle,
@@ -16,10 +16,10 @@ use katna_ui::{InputEvent, TextInput, px, unpx};
 use super::keymap::{self, Group, SHORTCUTS};
 use super::select::{SHORTCUTS_SLOT, selectable};
 use super::settings::heading;
-use super::settings_page::{Section, key_cap};
+use super::settings_page::key_cap;
 use super::{MailWindow, ShowShortcuts};
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, field, icon, icon_button, text_button, tip};
+use crate::widgets::{FocusRing, field, icon, icon_button, tip};
 
 /// Wide enough for the two columns of groups side by side.
 const WIDTH: f32 = 760.0;
@@ -98,12 +98,6 @@ impl MailWindow {
             }
         }
         cx.notify();
-    }
-
-    /// Settings > Shortcuts, where keys are changed.
-    fn change_shortcuts(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        self.close_shortcuts_dialog(window, cx);
-        self.open_settings_page(Section::Shortcuts, window, cx);
     }
 
     fn shortcuts_dialog_key(
@@ -303,26 +297,6 @@ impl MailWindow {
             .pb(px(space::S5))
             .child(selectable(list, Some(pieces.part()), cx));
 
-        let footer = div()
-            .flex_none()
-            .px(px(space::S4))
-            .py(px(space::S4))
-            .border_t_1()
-            .border_color(rgba(th.divider))
-            .flex()
-            .flex_row()
-            .items_center()
-            .child(
-                text_button(
-                    "shortcuts-dialog-change",
-                    "settings",
-                    tr!("shortcuts-dialog-change"),
-                    th,
-                )
-                .focus_ring(th)
-                .on_click(cx.listener(|this, _, window, cx| this.change_shortcuts(window, cx))),
-            );
-
         let card = div()
             .id("shortcuts-dialog")
             .map(|d| self.ui_text_area(d, cx))
@@ -345,8 +319,7 @@ impl MailWindow {
             .text_color(rgba(th.text))
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .child(header)
-            .child(body)
-            .child(footer);
+            .child(body);
         Some(
             div()
                 .absolute()

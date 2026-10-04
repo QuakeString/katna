@@ -17,7 +17,6 @@ shortcut-group-app = Application
 shortcuts-dialog-title = Keyboard shortcuts
 shortcuts-dialog-search = Find a shortcut
 shortcuts-dialog-none = No shortcut matches
-shortcuts-dialog-change = Change shortcuts
 shortcuts-dialog-close = Close
 
 ## Settings > Keyboard shortcuts: what each shortcut does
