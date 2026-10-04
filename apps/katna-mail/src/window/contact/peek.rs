@@ -15,6 +15,7 @@ use gpui::{
     AnimationExt, AnyElement, Bounds, Context, ElementId, Pixels, Point, Window, anchored, canvas,
     deferred, div, point, prelude::*, size,
 };
+use katna_ui::motion::{self, Spring};
 use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
@@ -44,6 +45,11 @@ pub(in crate::window) struct ContactPeek {
     /// Its height was measured: it shows from then on, so its first frame
     /// is never one at a guessed height.
     measured: Rc<Cell<bool>>,
+    /// The height it is drawn at, easing to a new one when its details
+    /// come in place of the placeholder lines.
+    shown: Spring,
+    /// It has been drawn at a measured height.
+    shown_once: bool,
     /// When it closed and began to fade out.
     closing: Option<Instant>,
 }
@@ -55,6 +61,8 @@ impl ContactPeek {
             at,
             height: Rc::new(Cell::new(FIRST_HEIGHT)),
             measured: Rc::default(),
+            shown: Spring::new(motion::SMOOTH, FIRST_HEIGHT),
+            shown_once: false,
             closing: None,
         }
     }
@@ -148,15 +156,26 @@ impl MailWindow {
         {
             self.contact.peek = None;
         }
-        let peek = self.contact.peek.as_ref()?;
+        let reduce = cx.reduce_motion();
+        let peek = self.contact.peek.as_mut()?;
         let (origin, measured, closing) = (peek.at, peek.height.clone(), peek.closing);
         let seen = peek.measured.clone();
         let ready = seen.get();
         let viewport = window.viewport_size();
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
-        let height = measured.get().min(vh - 2.0 * notched::MARGIN);
+        // It opens at its first measured height, then eases to the next.
+        let height = if ready && peek.shown_once {
+            peek.shown.set(measured.get());
+            peek.shown.tick(window, reduce)
+        } else {
+            peek.shown.snap(measured.get());
+            peek.shown_once = ready;
+            measured.get()
+        };
+        let height = height.min(vh - 2.0 * notched::MARGIN);
         let (x, y, side, along) = notched::place(origin, (CONTACT_WIDTH, height), (vw, vh), RADIUS);
         let body = self.contact_card_body(true, th, cx).0;
+        let view = cx.entity_id();
         let measure = canvas(
             move |bounds, window, _| {
                 // With the border round it.
@@ -165,6 +184,10 @@ impl MailWindow {
                     measured.set(h);
                     seen.set(true);
                     window.refresh();
+                    // The window draws its last frame again unless told
+                    // the view changed, and a smaller card would keep
+                    // its old height.
+                    window.on_next_frame(move |_, cx| cx.notify(view));
                 }
             },
             |_, _, _, _| {},
@@ -187,7 +210,11 @@ impl MailWindow {
                     .id("contact-peek-scroll")
                     .size_full()
                     .overflow_y_scroll()
-                    .child(div().relative().child(body).child(measure)),
+                    // A column, so what is measured keeps its own height
+                    // and is not stretched to the popover's: it can shrink.
+                    .flex()
+                    .flex_col()
+                    .child(div().flex_none().relative().child(body).child(measure)),
             )
             .children(notch(side, along, th));
         let popover = match closing {
