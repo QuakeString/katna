@@ -139,8 +139,9 @@ pub struct Theme {
     pub snackbar_text: u32,
     /// Error text and the frame of a field in error.
     pub error: u32,
-    /// Amber: something that needs the user (a signed-out account, mail
-    /// that can't go). Errors stay [`Theme::error`].
+    /// What needs the user before it gets better: an account signed out
+    /// or refusing its password, a mail not sent. Amber, readable as
+    /// text. Errors stay [`Theme::error`].
     pub warning: u32,
     /// Shadow color; its alpha is the strongest shadow.
     pub shadow: u32,
@@ -490,7 +491,7 @@ impl Theme {
             error: readable(s.negative, surface, 3.0),
             warning: s
                 .neutral
-                .map_or(base.warning, |c| readable(c, surface, 3.0)),
+                .map_or(base.warning, |c| readable(c, surface, 4.5)),
             shadow: base.shadow,
         }
     }
