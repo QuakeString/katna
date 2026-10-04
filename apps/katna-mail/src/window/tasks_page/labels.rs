@@ -17,8 +17,8 @@ use katna_ui::tokens::{radius, space, text};
 use super::super::MailWindow;
 use super::super::notes::labels::{LabelPicker, render_label_choices};
 use super::{Column, View, card_heading, list_title, today};
-use crate::theme::{Theme, fade};
-use crate::widgets::{Check, icon, tip};
+use crate::theme::Theme;
+use crate::widgets::{CARD_REST, Check, card, icon, tag, text_button, tip};
 
 /// The label picker open in a task's details: Notes' own.
 pub(super) type Picker = LabelPicker;
@@ -50,7 +50,7 @@ impl MailWindow {
             .items_center()
             .gap(px(space::S2))
             .text_size(px(text::CAPTION))
-            .line_height(px(16.0))
+            .line_height(px(text::line_height(text::CAPTION)))
             .text_color(rgba(color));
         if files > 0 {
             line = line.child(
@@ -135,24 +135,23 @@ impl MailWindow {
             .items_start()
             .justify_center()
             .child(
-                self.card_frame(
-                    "tasks-label-card".into(),
+                self.lifted_frame(
+                    "tasks-label-card",
                     super::SINGLE_WIDTH,
                     th,
                     div()
                         .child(card_heading(label.to_owned(), th))
                         .when(empty, |d| {
-                            d.child(
-                                div()
-                                    .py(px(space::S7))
-                                    .px(px(space::S6))
-                                    .text_center()
-                                    .text_size(px(text::BODY))
-                                    .text_color(rgba(th.text_faint))
-                                    .child(tr!("tasks-label-empty")),
-                            )
+                            d.child(self.empty_card(
+                                "tasks-label-empty",
+                                None,
+                                tr!("tasks-label-empty"),
+                                th,
+                                cx,
+                            ))
                         })
                         .children(rows),
+                    cx,
                 ),
             )
             .into_any_element()
@@ -213,10 +212,12 @@ impl MailWindow {
 
     /// The details' labels: a chip for each, which takes itself off, and
     /// the button that opens the picker, with the picker under them.
-    pub(super) fn render_details_labels(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let Some(details) = self.tasks.details.as_ref() else {
-            return div().into_any_element();
-        };
+    pub(super) fn render_details_labels(
+        &self,
+        details: &super::details::Details,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let ticked = details.labels();
         let chips: Vec<_> = ticked
             .iter()
@@ -224,18 +225,11 @@ impl MailWindow {
             .map(|(ix, label)| {
                 let group: SharedString = format!("task-label-chip-{ix}").into();
                 let off = label.clone();
-                div()
+                // A tag, with a button to take it off over its end.
+                tag(label.clone(), th)
                     .id(("task-label-chip", ix))
                     .group(group.clone())
                     .relative()
-                    .h(px(24.0))
-                    .px(px(space::S3))
-                    .flex()
-                    .items_center()
-                    .rounded_full()
-                    .bg(rgba(fade(th.text, 0.08)))
-                    .text_size(px(text::CAPTION))
-                    .child(label.clone())
                     .child(
                         div()
                             .id(("task-label-off", ix))
@@ -258,29 +252,9 @@ impl MailWindow {
                     )
             })
             .collect();
-        let open = details.picker.is_some();
-        let add = div()
-            .id("task-label-add")
-            .h(px(24.0))
-            .px(px(space::S3))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(space::S2))
-            .rounded_full()
-            .border_1()
-            .border_color(rgba(if open { th.accent } else { th.divider }))
-            .text_size(px(text::CAPTION))
-            .text_color(rgba(if open { th.accent } else { th.text_dim }))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
-            .on_click(cx.listener(|this, _, window, cx| this.task_details_label_picker(window, cx)))
-            .child(icon(
-                "add",
-                if open { th.accent } else { th.text_dim },
-                14.0,
-            ))
-            .child(tr!("tasks-label-add"));
+        let add = text_button("task-label-add", "add", tr!("tasks-label-add"), th).on_click(
+            cx.listener(|this, _, window, cx| this.task_details_label_picker(window, cx)),
+        );
         let picker = details.picker.as_ref().map(|picker| {
             // Notes' and tasks' labels, and those just put on this task,
             // before the store has them.
@@ -305,12 +279,14 @@ impl MailWindow {
                 th,
                 cx,
             );
-            div()
+            // A panel in the dialog: level 1, rising under the pointer.
+            let panel = div()
+                .id("task-label-panel")
                 .mt(px(space::S3))
                 .p(px(space::S3))
-                .rounded(px(radius::SM))
-                .bg(rgba(fade(th.text, 0.05)))
-                .child(list)
+                .map(|d| card(d, th, th.menu, radius::MD, CARD_REST))
+                .child(list);
+            self.tasks.lifted(panel, "task-label-panel", th, cx)
         });
         div()
             .flex()
