@@ -213,11 +213,9 @@ crash-close = 关闭
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } 要求你重新登录 { $address }。
 sign-in-again-button = 登录
 sign-in-again-tooltip = 在浏览器中打开 { $provider } 登录页面
 sign-in-again-waiting = 正在等待浏览器…
-sign-in-again-close = 关闭
 google-api-off = Katna 的 Google Cloud 项目中已关闭 { $api }。
 google-api-turn-on = 开启
 google-api-turn-on-tooltip = 打开 Google Cloud 开启 { $api }，然后点击“重试”

@@ -244,6 +244,7 @@ impl MailWindow {
             || self.close_note_popovers(cx)
             || self.close_quiet_menu(cx)
             || self.close_danger(cx)
+            || self.close_password_card(cx)
         {
             true
         } else if self.print_preview_open() {

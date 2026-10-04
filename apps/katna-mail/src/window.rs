@@ -74,6 +74,7 @@ mod onboarding;
 mod popovers;
 mod print;
 mod print_preview;
+mod problems;
 mod quiet;
 mod reader;
 mod remote;
@@ -93,7 +94,6 @@ mod settings_search;
 mod share_ask;
 mod sheet;
 mod shortcuts_dialog;
-mod sign_in_again;
 mod skeleton;
 mod snooze;
 mod sounds;
@@ -718,7 +718,7 @@ pub struct MailWindow {
     /// After a crash: the report to view or copy.
     crash_notice: Option<crash_notice::CrashNotice>,
     /// "Sign in again" for accounts whose OAuth2 sign-in stopped working.
-    sign_in_again: sign_in_again::SignInAgain,
+    problems: problems::Problems,
     /// Settings > User feedback's list of crash reports, as last read.
     saved_reports: Option<feedback_page::SavedReports>,
     /// Settings > Subscription (the Katna account), once shown.
@@ -1074,7 +1074,7 @@ impl MailWindow {
             snackbar: None,
             undo_history: Vec::new(),
             crash_notice: None,
-            sign_in_again: sign_in_again::SignInAgain::default(),
+            problems: problems::Problems::default(),
             saved_reports: None,
             katna: None,
             compose: None,
@@ -1344,7 +1344,7 @@ impl MailWindow {
                     this.watch_contacts(connection.clone(), cx);
                     this.watch_tasks(cx);
                     this.check_first_sync(cx);
-                    this.check_signed_out(cx);
+                    this.check_problems(cx);
                 }
             })
             .ok();
@@ -1370,7 +1370,7 @@ impl MailWindow {
                     }
                     if !this.detached {
                         this.check_first_sync(cx);
-                        this.check_signed_out(cx);
+                        this.check_problems(cx);
                     }
                 });
                 if refreshed.is_err() {
@@ -3956,11 +3956,7 @@ impl Render for MailWindow {
         } else {
             self.render_crash_notice(&th, window, reduce, cx)
         };
-        let sign_in_again = if onboarding {
-            None
-        } else {
-            self.render_sign_in_again(&th, window, reduce, cx)
-        };
+        let password_card = self.render_password_card(&th, window, cx);
         let tour = self.render_tour(&th, window, cx);
         // GPUI does not clip to the frame's rounded corners, so the
         // backdrop rounds its own bottom ones.
@@ -4021,7 +4017,7 @@ impl Render for MailWindow {
             .children(account_picker)
             .children(contact_qr)
             .children(crash_notice)
-            .children(sign_in_again)
+            .children(password_card)
             .children(whats_new)
             .children(shortcuts_dialog)
             .children(share_ask)

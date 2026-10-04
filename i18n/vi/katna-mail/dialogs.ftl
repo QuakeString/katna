@@ -213,11 +213,9 @@ crash-close = Đóng
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } yêu cầu bạn đăng nhập lại vào { $address }.
 sign-in-again-button = Đăng nhập
 sign-in-again-tooltip = Mở trang đăng nhập { $provider } trong trình duyệt
 sign-in-again-waiting = Đang chờ trình duyệt…
-sign-in-again-close = Đóng
 google-api-off = { $api } đang bị tắt trong dự án Google Cloud của Katna.
 google-api-turn-on = Bật
 google-api-turn-on-tooltip = Mở Google Cloud để bật { $api }, rồi nhấn Thử lại

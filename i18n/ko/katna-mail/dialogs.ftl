@@ -211,11 +211,9 @@ crash-close = 닫기
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider }에서 { $address }에 다시 로그인하라고 요청합니다.
 sign-in-again-button = 로그인
 sign-in-again-tooltip = 브라우저에서 { $provider } 로그인 페이지 열기
 sign-in-again-waiting = 브라우저를 기다리는 중…
-sign-in-again-close = 닫기
 google-api-off = Katna의 Google Cloud 프로젝트에서 { $api }이(가) 꺼져 있습니다.
 google-api-turn-on = 켜기
 google-api-turn-on-tooltip = Google Cloud를 열어 { $api }을(를) 켠 다음 다시 시도를 누르세요

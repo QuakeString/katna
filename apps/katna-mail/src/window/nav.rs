@@ -796,6 +796,10 @@ impl MailWindow {
                                     tr!("offline-account-tip", account = label.clone())
                                 ));
                             }
+                            // And what needs the user, under the amber sign.
+                            for problem in self.all_problems() {
+                                text.push_str(&format!("\n{}", problem.text()));
+                            }
                             text
                         },
                         th,
@@ -809,12 +813,29 @@ impl MailWindow {
                         this.app_menu = None;
                         cx.notify();
                     }))
-                    .child(self.offline_badge(
-                        self.account_ring(&account.address, self.render_rolling_avatar(32.0), th),
-                        32.0,
-                        self.any_account_offline(),
-                        th,
-                    ))
+                    .child(match self.top_problem() {
+                        // What needs the user wins the corner over offline.
+                        Some(problem) => self.problem_badge(
+                            self.account_ring(
+                                &account.address,
+                                self.render_rolling_avatar(32.0),
+                                th,
+                            ),
+                            32.0,
+                            Some(&problem),
+                            th,
+                        ),
+                        None => self.offline_badge(
+                            self.account_ring(
+                                &account.address,
+                                self.render_rolling_avatar(32.0),
+                                th,
+                            ),
+                            32.0,
+                            self.any_account_offline(),
+                            th,
+                        ),
+                    })
                     .child(self.tour_mark(Spot::Account))
                     .into_any_element()
             }
@@ -1031,7 +1052,7 @@ impl MailWindow {
                 ix,
                 tr!("nav-all-accounts"),
                 (*expanded, self.checking_all(), None),
-                None,
+                (None, None),
                 th,
                 cx,
             ),
@@ -1045,7 +1066,10 @@ impl MailWindow {
                     self.checking_account(*id),
                     self.account_bell_icon(*id),
                 ),
-                self.is_account_offline(*id).then_some(*id),
+                (
+                    self.is_account_offline(*id).then_some(*id),
+                    self.account_problem(*id),
+                ),
                 th,
                 cx,
             ),
@@ -1230,7 +1254,7 @@ impl MailWindow {
         ix: usize,
         name: String,
         (expanded, checking, bell): (bool, bool, Option<&'static str>),
-        offline: Option<AccountId>,
+        (offline, problem): (Option<AccountId>, Option<super::problems::Problem>),
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -1285,6 +1309,20 @@ impl MailWindow {
                         .child(self.offline_mark(
                             ("nav-heading-offline", ix),
                             account,
+                            OFFLINE_HEADING_MARK,
+                            th,
+                            cx,
+                        )),
+                )
+            })
+            .when_some(problem, |d, problem| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .pl(px(tokens::space::S2))
+                        .child(self.problem_mark(
+                            ("nav-heading-problem", ix),
+                            problem,
                             OFFLINE_HEADING_MARK,
                             th,
                             cx,

@@ -62,7 +62,7 @@ calendar-account-signed-in = Signed in to { $address } again. Getting your calen
 calendar-account-sign-in-refused = { $provider } did not let Katna in. Try again, and allow access to your calendars.
 calendar-account-refused = The server did not accept the password. Yahoo, iCloud, Zoho and others need an app password.
 calendar-account-change-password = Change password
-calendar-account-change-password-tooltip = Open Settings > Accounts
+calendar-account-change-password-tooltip = Type the new password; Katna checks it with the server
 calendar-account-not-enabled = Calendar access for Katna is not switched on yet.
 calendar-account-failed = The calendars could not be read.
 # $reason is the server's own words, in English.

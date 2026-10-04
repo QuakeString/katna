@@ -208,11 +208,9 @@ crash-close = ປິດ
 
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } ຂໍໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ { $address } ອີກຄັ້ງ.
 sign-in-again-button = ເຂົ້າສູ່ລະບົບ
 sign-in-again-tooltip = ເປີດໜ້າເຂົ້າສູ່ລະບົບຂອງ { $provider } ໃນບຣາວເຊີຂອງທ່ານ
 sign-in-again-waiting = ກຳລັງລໍຖ້າບຣາວເຊີຂອງທ່ານ…
-sign-in-again-close = ປິດ
 google-api-off = { $api } ຖືກປິດໄວ້ໃນໂຄງການ Google Cloud ຂອງ Katna.
 google-api-turn-on = ເປີດ
 google-api-turn-on-tooltip = ເປີດ Google Cloud ເພື່ອເປີດ { $api }, ແລ້ວກົດ ລອງໃໝ່

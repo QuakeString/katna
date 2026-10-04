@@ -208,11 +208,9 @@ crash-close = ပိတ်ရန်
 
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } က { $address } သို့ ထပ်မံ ဝင်ရောက်ရန် တောင်းဆိုနေသည်။
 sign-in-again-button = ဝင်ရောက်ရန်
 sign-in-again-tooltip = { $provider } ဝင်ရောက်ရန် စာမျက်နှာကို သင့်ဘရောက်ဇာတွင် ဖွင့်ရန်
 sign-in-again-waiting = သင့်ဘရောက်ဇာကို စောင့်နေသည်…
-sign-in-again-close = ပိတ်ရန်
 google-api-off = Katna ၏ Google Cloud ပရောဂျက်တွင် { $api } ကို ပိတ်ထားသည်။
 google-api-turn-on = ဖွင့်ရန်
 google-api-turn-on-tooltip = { $api } ကို ဖွင့်ရန် Google Cloud ကို ဖွင့်ပြီး ထပ်စမ်းကြည့်ရန် ကို နှိပ်ပါ

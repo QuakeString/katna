@@ -216,11 +216,9 @@ crash-close = Stäng
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } ber dig logga in på { $address } igen.
 sign-in-again-button = Logga in
 sign-in-again-tooltip = Öppna inloggningssidan för { $provider } i webbläsaren
 sign-in-again-waiting = Väntar på webbläsaren…
-sign-in-again-close = Stäng
 google-api-off = { $api } är avstängt i Katnas Google Cloud-projekt.
 google-api-turn-on = Slå på
 google-api-turn-on-tooltip = Öppna Google Cloud för att slå på { $api } och tryck sedan på Försök igen
