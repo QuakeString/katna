@@ -1,0 +1,5 @@
+title = "Settings has the window to itself"
+text = """
+While Settings is open the folders fold away, so you see only Settings' own
+list of pages beside the page you picked. They come back when you leave.
+"""
