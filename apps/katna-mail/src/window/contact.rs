@@ -127,6 +127,10 @@ pub(super) struct ContactPanel {
     peek: Option<ContactPeek>,
     /// Where the names and pictures that open the card were drawn.
     spots: peek::Spots,
+    /// Who the popover was last showing, what it pointed at and when it
+    /// closed: a press on that same name or picture closes it first, and
+    /// the click that follows must not open it again.
+    peek_shut: Option<(String, Bounds<Pixels>, Instant)>,
 }
 
 impl ContactPanel {
@@ -147,6 +151,7 @@ impl ContactPanel {
             sheet: Sheet::new(),
             peek: None,
             spots: Default::default(),
+            peek_shut: None,
         }
     }
 
@@ -289,6 +294,15 @@ impl MailWindow {
             return;
         }
         if !self.contact_offered() {
+            // A second click on what the popover points at closes it: the
+            // press already did, so the click leaves it shut.
+            if let Some((who, was, when)) = self.contact.peek_shut.take()
+                && who == email
+                && was.dilate(px(2.0)).contains(&at.center())
+                && when.elapsed() < Duration::from_secs(1)
+            {
+                return;
+            }
             self.contact.picked = Some((key, email));
             self.contact.peek = Some(ContactPeek::new(key, at));
             cx.notify();

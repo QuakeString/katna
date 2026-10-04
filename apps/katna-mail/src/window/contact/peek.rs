@@ -126,6 +126,9 @@ impl MailWindow {
         let Some(peek) = self.contact.peek.as_mut().filter(|p| p.closing.is_none()) else {
             return;
         };
+        if let Some((_, who)) = &self.contact.picked {
+            self.contact.peek_shut = Some((who.clone(), peek.at, Instant::now()));
+        }
         peek.closing = notched::fade_out(cx);
         if peek.closing.is_none() {
             self.contact.peek = None;

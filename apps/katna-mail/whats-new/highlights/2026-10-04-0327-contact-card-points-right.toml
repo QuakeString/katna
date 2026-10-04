@@ -5,5 +5,6 @@ text = """
 In a narrow window, the contact card that opens from a person's name or
 picture now points right at it, in the chat view and in the mail view
 alike, and opens smoothly the first time too: Katna starts reading the
-person's details as soon as the pointer rests on them.
+person's details as soon as the pointer rests on them. A second click on
+the same name or picture closes the card.
 """
