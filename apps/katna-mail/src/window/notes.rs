@@ -1856,21 +1856,9 @@ impl MailWindow {
             return row.child(card).into_any_element();
         }
         row.child(
-            div()
-                .id("notes-take")
-                .w_full()
-                .max_w(px(EDITOR_WIDTH))
-                .h(px(48.0))
+            top_bar("notes-take", th)
                 .pl(px(16.0))
                 .pr(px(4.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .rounded(px(8.0))
-                .bg(rgba(th.surface))
-                .border_1()
-                .border_color(rgba(th.outline))
-                .shadow(elevation(th, 1.0))
                 .cursor_text()
                 .on_click(
                     cx.listener(|this, _, window, cx| {
@@ -2703,6 +2691,24 @@ impl MailWindow {
                 .into_any_element(),
         )
     }
+}
+
+/// The bar over the board: "Take a note…", or the selection's bar in
+/// its place, so ticking a card swaps only what is inside.
+pub(super) fn top_bar(id: &'static str, th: &Theme) -> gpui::Stateful<Div> {
+    div()
+        .id(id)
+        .w_full()
+        .max_w(px(EDITOR_WIDTH))
+        .h(px(48.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .rounded(px(katna_ui::tokens::radius::SM))
+        .bg(rgba(th.surface))
+        .border_1()
+        .border_color(rgba(th.outline))
+        .shadow(elevation(th, 1.0))
 }
 
 #[cfg(test)]

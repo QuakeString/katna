@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Notes: one bar for writing and selecting"
+text = """
+When you select notes, the bar that shows Pin, Remind, Colour, Label and
+Archive now has the same shape as the "Take a note" bar it replaces, so only
+its contents change.
+"""
