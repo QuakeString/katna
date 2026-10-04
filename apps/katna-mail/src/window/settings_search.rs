@@ -53,6 +53,12 @@ const fn entry(
 /// result can find its row.
 const ENTRIES: &[Entry] = &[
     entry(
+        Section::Apps,
+        "settings-apps",
+        "settings-apps-summary",
+        "apps turn off disable remove hide calendar contacts tasks notes files mail only just mail",
+    ),
+    entry(
         Section::General,
         "language-setting",
         "settings-general-language-summary",
@@ -840,7 +846,16 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let found = search(query);
+        // Nothing from an app turned off, which is no longer listed.
+        let found: Vec<_> = search(query)
+            .into_iter()
+            .filter(|f| {
+                f.section
+                    .scope()
+                    .app()
+                    .is_none_or(|app| self.config.app_on(app))
+            })
+            .collect();
         let empty = found.is_empty();
         let rows = found.into_iter().enumerate().map(|(ix, found)| {
             let title = found.title.clone();

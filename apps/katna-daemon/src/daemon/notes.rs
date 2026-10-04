@@ -9,6 +9,7 @@ use std::time::Duration;
 
 use async_channel::Receiver;
 use futures_lite::FutureExt;
+use katna_core::config::AppKind;
 use katna_core::{AccountId, AccountKind};
 use katna_dbus::NoteItem;
 use katna_store::{Mode, Note, NotePicture, Store};
@@ -199,6 +200,16 @@ impl Daemon {
         Ok(accounts)
     }
 
+    /// Brings every IMAP account's notes in step soon: Notes was turned on.
+    pub(super) fn wake_notes(&self) {
+        let Ok(accounts) = self.store().accounts() else {
+            return;
+        };
+        for account in accounts.iter().filter(|a| a.kind == AccountKind::Imap) {
+            let _ = self.notes_wake.0.try_send(account.id);
+        }
+    }
+
     /// Has the notes of `account` go to its Notes folder soon.
     pub(super) fn notes_changed(&self, account: Option<i64>) {
         if let Some(account) = account {
@@ -209,8 +220,9 @@ impl Daemon {
     /// Brings `account`'s notes and its Notes folder in step, on a
     /// connection of its own.
     async fn sync_account_notes(&self, account: AccountId) -> Result<(), CommandError> {
-        // Its changes wait in the store until it is back online.
-        if self.is_offline(account) {
+        // Its changes wait in the store until it is back online, or until
+        // Notes is turned on again in Settings > Apps.
+        if self.is_offline(account) || !self.app_on(AppKind::Notes) {
             return Ok(());
         }
         let from = self.account(account)?.address;

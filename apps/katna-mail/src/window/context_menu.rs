@@ -28,6 +28,7 @@ use katna_ui::unpx;
 use katna_i18n::tr;
 
 use super::MenuKey;
+use super::apps::App;
 use super::compose::Kind;
 use super::folder_pick::{PickFrom, PickMode};
 use super::sheet::{Fill, Sheet};
@@ -923,53 +924,59 @@ impl MailWindow {
                 }
             }
             Sub::FollowUp => {
-                rows.item(
-                    menu_row(
-                        "context-add-to-tasks",
-                        "tasks",
-                        tr!("menu-add-to-tasks").into(),
-                        th,
-                        rh,
-                    )
-                    .on_click(cx.listener(|this, _, _, cx| {
-                        let Some((_, key)) = this.take_context_line() else {
-                            return;
-                        };
-                        let keys = this.context_targets(key);
-                        this.add_to_tasks_from(keys, cx);
-                    })),
-                );
-                rows.item(
-                    menu_row(
-                        "context-add-note",
-                        "notes",
-                        tr!("menu-add-note").into(),
-                        th,
-                        rh,
-                    )
-                    .on_click(cx.listener(|this, _, window, cx| {
-                        let Some((_, key)) = this.take_context_line() else {
-                            return;
-                        };
-                        let keys = this.context_targets(key);
-                        this.add_note_from(keys, window, cx);
-                    })),
-                );
-                rows.item(
-                    menu_row(
-                        "context-schedule-meeting",
-                        "calendar",
-                        tr!("menu-schedule-meeting").into(),
-                        th,
-                        rh,
-                    )
-                    .on_click(cx.listener(|this, _, window, cx| {
-                        let Some((_, key)) = this.take_context_line() else {
-                            return;
-                        };
-                        this.schedule_meeting_from(Some(key), window, cx);
-                    })),
-                );
+                if self.app_on(App::Tasks) {
+                    rows.item(
+                        menu_row(
+                            "context-add-to-tasks",
+                            "tasks",
+                            tr!("menu-add-to-tasks").into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            let Some((_, key)) = this.take_context_line() else {
+                                return;
+                            };
+                            let keys = this.context_targets(key);
+                            this.add_to_tasks_from(keys, cx);
+                        })),
+                    );
+                }
+                if self.app_on(App::Notes) {
+                    rows.item(
+                        menu_row(
+                            "context-add-note",
+                            "notes",
+                            tr!("menu-add-note").into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            let Some((_, key)) = this.take_context_line() else {
+                                return;
+                            };
+                            let keys = this.context_targets(key);
+                            this.add_note_from(keys, window, cx);
+                        })),
+                    );
+                }
+                if self.app_on(App::Calendar) {
+                    rows.item(
+                        menu_row(
+                            "context-schedule-meeting",
+                            "calendar",
+                            tr!("menu-schedule-meeting").into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            let Some((_, key)) = this.take_context_line() else {
+                                return;
+                            };
+                            this.schedule_meeting_from(Some(key), window, cx);
+                        })),
+                    );
+                }
                 rows.item(
                     menu_row(
                         "context-start-call",

@@ -9,7 +9,7 @@
 use std::time::Duration;
 
 use async_channel::{Receiver, Sender};
-use katna_core::config::{General, TrayStyle};
+use katna_core::config::{AppKind, AppsOn, General, TrayStyle};
 use katna_core::{Paths, ids};
 use katna_dbus::app_action;
 use katna_i18n::tr;
@@ -43,7 +43,8 @@ const CAPTURE_NOTE_KEYS: Keys = Keys::meta_alt('n');
 #[derive(Debug)]
 pub(crate) enum Event {
     MailChanged,
-    Settings(General),
+    /// The `[general]` settings, and which apps are on (`[apps]`).
+    Settings(General, AppsOn),
     /// The panel's icons and text are now this color (light or dark).
     PanelText(u32),
     /// A click on the tray icon or its menu, with an activation token.
@@ -59,8 +60,8 @@ impl Handle {
         let _ = self.0.try_send(Event::MailChanged);
     }
 
-    pub(crate) fn settings(&self, general: General) {
-        let _ = self.0.try_send(Event::Settings(general));
+    pub(crate) fn settings(&self, general: General, apps: AppsOn) {
+        let _ = self.0.try_send(Event::Settings(general, apps));
     }
 }
 
@@ -83,19 +84,27 @@ fn unix_now() -> i64 {
         .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX))
 }
 
-/// The tray's right-click menu, in the current language.
-fn tray_menu() -> Vec<MenuItem> {
-    vec![
+/// The tray's right-click menu, in the current language. New task and New
+/// note are there while Tasks and Notes are on.
+fn tray_menu(apps: &AppsOn) -> Vec<MenuItem> {
+    let mut menu = vec![
         MenuItem::action(tr!("tray-open-inbox"), app_action::OPEN_INBOX).icon("mail-folder-inbox"),
         MenuItem::action(tr!("tray-new-message"), app_action::COMPOSE).icon("mail-message-new"),
-        MenuItem::action(tr!("tray-new-task"), CAPTURE_TASK).icon("task-new"),
-        MenuItem::action(tr!("tray-new-note"), CAPTURE_NOTE).icon("view-pim-notes"),
+    ];
+    if apps.is_on(AppKind::Tasks) {
+        menu.push(MenuItem::action(tr!("tray-new-task"), CAPTURE_TASK).icon("task-new"));
+    }
+    if apps.is_on(AppKind::Notes) {
+        menu.push(MenuItem::action(tr!("tray-new-note"), CAPTURE_NOTE).icon("view-pim-notes"));
+    }
+    menu.extend([
         MenuItem::Separator,
         MenuItem::action(tr!("tray-preferences"), app_action::PREFERENCES)
             .icon("preferences-system-symbolic"),
         MenuItem::Separator,
         MenuItem::action(tr!("tray-quit"), app_action::QUIT).icon("application-exit"),
-    ]
+    ]);
+    menu
 }
 
 /// The tooltip's second line.
@@ -109,6 +118,7 @@ pub(crate) async fn run(
     connection: zbus::Connection,
     paths: Paths,
     mut general: General,
+    mut apps: AppsOn,
     handle: Handle,
     events: Receiver<Event>,
     quit: Sender<()>,
@@ -131,8 +141,8 @@ pub(crate) async fn run(
     loop {
         // A new tray icon shows no count yet; after a new language, the
         // tooltip is in the old one.
-        let appeared = follow_setting(&connection, &handle, &mut tray, &general).await;
-        let translated = follow_language(tray.as_ref(), &general, &mut language).await;
+        let appeared = follow_setting(&connection, &handle, &mut tray, &general, &apps).await;
+        let translated = follow_language(tray.as_ref(), &general, &apps, &mut language).await;
         if appeared || translated {
             count = None;
             dirty = true;
@@ -141,12 +151,16 @@ pub(crate) async fn run(
             // Let a burst of changes settle, then count once.
             smol::Timer::after(SETTLE).await;
             while let Ok(event) = events.try_recv() {
-                if !handle_now(&connection, &mut general, event, &quit).await {
+                let was = apps.clone();
+                if !handle_now(&connection, &mut general, &mut apps, event, &quit).await {
                     return hide(tray).await;
                 }
+                if apps != was {
+                    follow_apps(tray.as_ref(), &apps).await;
+                }
             }
-            let appeared = follow_setting(&connection, &handle, &mut tray, &general).await;
-            let translated = follow_language(tray.as_ref(), &general, &mut language).await;
+            let appeared = follow_setting(&connection, &handle, &mut tray, &general, &apps).await;
+            let translated = follow_language(tray.as_ref(), &general, &apps, &mut language).await;
             if appeared || translated {
                 count = None;
             }
@@ -172,10 +186,14 @@ pub(crate) async fn run(
         };
         match event {
             Event::MailChanged => dirty = true,
-            Event::Settings(new) => {
+            Event::Settings(new, new_apps) => {
                 dirty = new.unread_badge != general.unread_badge
                     || new.tray_style != general.tray_style;
                 general = new;
+                if new_apps != apps {
+                    apps = new_apps;
+                    follow_apps(tray.as_ref(), &apps).await;
+                }
             }
             Event::PanelText(color) => {
                 if let Some(tray) = &tray
@@ -186,7 +204,7 @@ pub(crate) async fn run(
                 }
             }
             event => {
-                if !handle_now(&connection, &mut general, event, &quit).await {
+                if !handle_now(&connection, &mut general, &mut apps, event, &quit).await {
                     return hide(tray).await;
                 }
             }
@@ -201,9 +219,10 @@ async fn follow_setting(
     handle: &Handle,
     tray: &mut Option<Tray>,
     general: &General,
+    apps: &AppsOn,
 ) -> bool {
     if general.show_in_tray && tray.is_none() {
-        *tray = show_tray(connection, handle, tray_style(general)).await;
+        *tray = show_tray(connection, handle, tray_style(general), apps).await;
         return tray.is_some();
     }
     if !general.show_in_tray
@@ -218,17 +237,31 @@ async fn follow_setting(
 /// Rebuilds the tray's menu when `general.language` is no longer
 /// `language`, which the daemon has applied already
 /// (`Daemon::reload_config`); `true` when the tooltip must be set again.
-async fn follow_language(tray: Option<&Tray>, general: &General, language: &mut String) -> bool {
+async fn follow_language(
+    tray: Option<&Tray>,
+    general: &General,
+    apps: &AppsOn,
+    language: &mut String,
+) -> bool {
     if general.language == *language {
         return false;
     }
     language.clone_from(&general.language);
     if let Some(tray) = tray
-        && let Err(err) = tray.set_menu(tray_menu()).await
+        && let Err(err) = tray.set_menu(tray_menu(apps)).await
     {
         tracing::warn!(%err, "could not translate the tray menu");
     }
     true
+}
+
+/// Rebuilds the tray's menu after an app was turned on or off.
+async fn follow_apps(tray: Option<&Tray>, apps: &AppsOn) {
+    if let Some(tray) = tray
+        && let Err(err) = tray.set_menu(tray_menu(apps)).await
+    {
+        tracing::warn!(%err, "could not rebuild the tray menu");
+    }
 }
 
 /// Takes the tray icon away at once after Quit, while the rest of the
@@ -245,13 +278,17 @@ async fn hide(tray: Option<Tray>) {
 async fn handle_now(
     connection: &zbus::Connection,
     general: &mut General,
+    apps: &mut AppsOn,
     event: Event,
     quit: &Sender<()>,
 ) -> bool {
     match event {
         // Redrawn after the count settles, in the panel's color then.
         Event::MailChanged | Event::PanelText(_) => {}
-        Event::Settings(new) => *general = new,
+        Event::Settings(new, new_apps) => {
+            *general = new;
+            *apps = new_apps;
+        }
         Event::Tray(action, token) => {
             if action == app_action::QUIT {
                 mail_app::run(connection, Some(app_action::QUIT), Vec::new(), None).await;
@@ -260,6 +297,15 @@ async fn handle_now(
                 return false;
             }
             if let Some(kind) = capture_kind(&action) {
+                // Meta+Alt+T and Meta+Alt+N do nothing while their app is off.
+                let app = if kind == app_action::CAPTURE_TASK {
+                    AppKind::Tasks
+                } else {
+                    AppKind::Notes
+                };
+                if !apps.is_on(app) {
+                    return true;
+                }
                 let param = vec![zbus::zvariant::Value::from(kind)];
                 mail_app::run(connection, Some(app_action::CAPTURE), param, token).await;
                 return true;
@@ -363,14 +409,19 @@ async fn watch_panel(connection: zbus::Connection, handle: Handle) {
     }
 }
 
-async fn show_tray(connection: &zbus::Connection, handle: &Handle, style: Style) -> Option<Tray> {
+async fn show_tray(
+    connection: &zbus::Connection,
+    handle: &Handle,
+    style: Style,
+    apps: &AppsOn,
+) -> Option<Tray> {
     let sender = handle.0.clone();
     let shown = Tray::show(
         connection,
         ids::MAIL_APP_ID,
         "Katna Mail",
         style,
-        tray_menu(),
+        tray_menu(apps),
         move |action, token| {
             let _ = sender.try_send(Event::Tray(action.to_owned(), token));
         },
@@ -458,13 +509,26 @@ mod tests {
 
     #[test]
     fn tray_menu_has_its_actions() {
-        let actions: Vec<String> = tray_menu()
-            .into_iter()
-            .filter_map(|item| match item {
-                MenuItem::Action { action, .. } => Some(action),
-                _ => None,
-            })
-            .collect();
+        let actions = |apps: &AppsOn| -> Vec<String> {
+            tray_menu(apps)
+                .into_iter()
+                .filter_map(|item| match item {
+                    MenuItem::Action { action, .. } => Some(action),
+                    _ => None,
+                })
+                .collect()
+        };
+        assert_eq!(
+            actions(&AppsOn {
+                calendar: false,
+                contacts: false,
+                tasks: false,
+                notes: false,
+                files: false,
+            }),
+            ["open-inbox", "compose", "preferences", "quit"]
+        );
+        let actions = actions(&AppsOn::default());
         assert_eq!(
             actions,
             [

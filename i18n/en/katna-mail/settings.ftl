@@ -27,6 +27,7 @@ settings-tab-compose = Compose
 settings-tab-mcp-server = MCP server
 settings-tab-feedback = User feedback
 settings-tab-experimental = Experimental
+settings-tab-apps = Apps
 settings-tab-ai = AI
 settings-tab-reading = Reading
 settings-tab-desktop = Desktop
@@ -463,6 +464,20 @@ settings-files-page-detail = Which attachments the Files page shows
 ## Settings > Contacts, Tasks, Notes, Files: leaving an account out of the app
 # { $app } is the app's name, as on the rail (Tasks, Notes, …).
 
+# Settings > Apps: a switch for each app.
+settings-apps = Apps you use
+settings-apps-detail = Turn off the apps you don't use. Katna stops syncing them and takes them out of everywhere. Nothing changes on your accounts. Mail is always on.
+settings-apps-mail = Mail from all your accounts
+settings-apps-calendar = Events, invitations and reminders
+settings-apps-contacts = People from your accounts
+settings-apps-tasks = To-do lists and reminders
+settings-apps-notes = Notes kept in your mail accounts
+settings-apps-files = Every attachment, and your drives
+settings-apps-off = Off · nothing changed on your accounts
+settings-apps-mail-always = Mail is always on
+# The switch heading each app's own page. $app: its name, such as "Calendar".
+settings-app-on = Use { $app }
+settings-app-on-detail = Turn off to take { $app } out of Katna and stop syncing it
 settings-app-accounts = Accounts shown
 settings-app-accounts-detail = Turn an account off to leave it out of { $app }. Its items keep syncing and come back when you turn it on. Its mail is not affected.
 settings-app-account-shown = Shown in { $app }
@@ -650,6 +665,7 @@ settings-calendar-density-summary = Make the hours of Day and Week taller or mor
 settings-calendar-custom-days-summary = Pick how many days the custom view shows
 settings-calendar-birthdays-summary = Show your contacts' birthdays in the calendar
 settings-files-page-summary = Leave small pictures, like signature logos, off the Files page, and pick which drives it shows
+settings-apps-summary = Turn Calendar, Contacts, Tasks, Notes or Files off, or keep just Mail
 settings-app-accounts-summary = Leave an account out of this app, while its items keep syncing
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards

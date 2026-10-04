@@ -490,7 +490,7 @@ pub(super) fn read(
     from: i64,
     to: i64,
     tz: &TimeZone,
-    birthdays: bool,
+    birthdays: Option<bool>,
     left_out: &[i64],
 ) -> katna_store::Result<(Vec<Calendar>, Vec<Occurrence>)> {
     let store = Store::open(paths, Mode::ReadOnly)?;
@@ -555,7 +555,10 @@ impl MailWindow {
         let tz = self.tz.clone();
         let (from, to) = (midnight(first, &tz), midnight(end, &tz));
         let paths = self.paths.clone();
-        let birthdays = !self.config.contacts.hide_birthdays;
+        // No Birthdays calendar while Contacts is off.
+        let birthdays = self
+            .app_on(super::apps::App::Contacts)
+            .then_some(!self.config.contacts.hide_birthdays);
         let left_out = self.calendar_left_out();
         self.calendar.loading = true;
         self.load_account_status(Of::Calendar, cx);
@@ -3206,10 +3209,11 @@ impl MailWindow {
             .when(!data.description.is_empty(), |d| {
                 d.child(self.render_event_description(&data.description, th))
             })
-            // Nothing to take notes of on a birthday.
-            .when(data.kind != EventKind::Birthday, |d| {
-                d.child(self.render_event_notes(occurrence, th, cx))
-            })
+            // Nothing to take notes of on a birthday, nor with Notes off.
+            .when(
+                data.kind != EventKind::Birthday && self.config.app_on(AppKind::Notes),
+                |d| d.child(self.render_event_notes(occurrence, th, cx)),
+            )
             .when_some(calendar, |d, calendar| {
                 d.child(line("calendar", self.copyable(calendar_name(calendar), th)))
             });

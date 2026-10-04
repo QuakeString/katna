@@ -10,6 +10,8 @@
 
 use std::collections::HashSet;
 
+use katna_core::config::{AppKind, AppsOn};
+
 /// The version of this build, as the package names it (`0.0.0.r90.gabc1234`
 /// for a build of `main`). The Arch package sets `KATNA_VERSION`; other
 /// builds show the crate's version.
@@ -46,6 +48,9 @@ pub struct Highlight {
     translations: &'static [Translation],
     /// A short animation of the feature, for major ones only.
     pub animation: Option<Animation>,
+    /// The apps beside Mail it is about; while every one of them is
+    /// turned off, it is left out. None: it is about Mail.
+    apps: &'static [AppKind],
 }
 
 /// A highlight in another language, from
@@ -59,6 +64,11 @@ pub struct Translation {
 }
 
 impl Highlight {
+    /// Whether it shows with `apps` on: one about Mail always does.
+    fn shown_with(&self, apps: &AppsOn) -> bool {
+        self.apps.is_empty() || self.apps.iter().any(|app| apps.is_on(*app))
+    }
+
     /// The title in the current language, else English.
     pub fn title(&self) -> &'static str {
         self.in_language(&katna_i18n::current().language.translation)
@@ -164,16 +174,20 @@ pub fn names() -> Vec<String> {
 /// Highlights not shown yet, newest first but major ones (with an
 /// animation) before the rest, and how many more there are beyond
 /// [`SHOWN`]. One merged after a newer one was shown still counts.
-pub fn unseen(seen: &Seen) -> (Vec<&'static Highlight>, usize) {
-    newest(HIGHLIGHTS.iter().filter(|h| !seen.contains(h.name)))
+pub fn unseen(seen: &Seen, apps: &AppsOn) -> (Vec<&'static Highlight>, usize) {
+    newest(
+        HIGHLIGHTS
+            .iter()
+            .filter(|h| !seen.contains(h.name) && h.shown_with(apps)),
+    )
 }
 
 /// The newest highlights, for opening What's new by hand. An older
 /// major one is not brought forward: it would show the same animation
 /// long after its update.
-pub fn recent() -> (Vec<&'static Highlight>, usize) {
+pub fn recent(apps: &AppsOn) -> (Vec<&'static Highlight>, usize) {
     let start = HIGHLIGHTS.len().saturating_sub(SHOWN);
-    let (shown, _) = newest(HIGHLIGHTS[start..].iter());
+    let (shown, _) = newest(HIGHLIGHTS[start..].iter().filter(|h| h.shown_with(apps)));
     (shown, start)
 }
 
@@ -290,6 +304,7 @@ mod tests {
             text: "Help > About Katna",
             translations: JA,
             animation: None,
+            apps: &[],
         };
         assert_eq!(highlight.in_language("ja"), ("新着", "本文"));
         assert_eq!(
@@ -335,7 +350,7 @@ mod tests {
     #[test]
     fn unseen_is_newest_first_and_capped() {
         let none = Seen::new(&[], None);
-        let (all, more) = unseen(&none);
+        let (all, more) = unseen(&none, &AppsOn::default());
         assert_eq!(all.len(), HIGHLIGHTS.len().min(SHOWN));
         assert_eq!(more, HIGHLIGHTS.len().saturating_sub(SHOWN));
         let major: Vec<bool> = all.iter().map(|h| h.animation.is_some()).collect();
@@ -350,17 +365,47 @@ mod tests {
             assert!(major[0], "an older major highlight still shows");
         }
         let every = names();
-        assert!(unseen(&Seen::new(&every, None)).0.is_empty());
+        assert!(
+            unseen(&Seen::new(&every, None), &AppsOn::default())
+                .0
+                .is_empty()
+        );
         // One merged late, after newer ones were shown, still shows.
         let late = HIGHLIGHTS[1].name;
         let others: Vec<String> = every.iter().filter(|n| *n != late).cloned().collect();
-        let (one, more) = unseen(&Seen::new(&others, None));
+        let (one, more) = unseen(&Seen::new(&others, None), &AppsOn::default());
         assert_eq!((one.len(), more, one[0].name), (1, 0, late));
     }
 
     #[test]
+    fn highlights_of_apps_turned_off_wait() {
+        let about = |apps| Highlight {
+            name: "2026-10-04-0000-test",
+            title: "",
+            text: "",
+            translations: &[],
+            animation: None,
+            apps,
+        };
+        let mail_only = AppsOn {
+            calendar: false,
+            contacts: false,
+            tasks: false,
+            notes: false,
+            files: false,
+        };
+        assert!(about(&[]).shown_with(&mail_only));
+        assert!(!about(&[AppKind::Tasks]).shown_with(&mail_only));
+        let tasks = AppsOn {
+            tasks: true,
+            ..mail_only.clone()
+        };
+        assert!(about(&[AppKind::Calendar, AppKind::Tasks]).shown_with(&tasks));
+    }
+
+    #[test]
     fn recent_is_the_newest_only() {
-        let (shown, more) = recent();
+        let (shown, more) = recent(&AppsOn::default());
         assert_eq!(shown.len(), HIGHLIGHTS.len().min(SHOWN));
         assert_eq!(more, HIGHLIGHTS.len().saturating_sub(SHOWN));
         let start = HIGHLIGHTS.len().saturating_sub(SHOWN);
@@ -376,13 +421,13 @@ mod tests {
         // A settings file from before the names: 14 shown.
         let seen = Seen::new(&[], Some(14));
         assert!(seen.any());
-        let (shown, more) = unseen(&seen);
+        let (shown, more) = unseen(&seen, &AppsOn::default());
         let expected = HIGHLIGHTS.len() - 14;
         assert_eq!(shown.len() + more, expected);
         assert!(shown.iter().all(|h| !NUMBERED[..14].contains(&h.name)));
         let all = Seen::new(&[], Some(NUMBERED.len() as u32));
         assert_eq!(
-            unseen(&all).0.len() + unseen(&all).1,
+            unseen(&all, &AppsOn::default()).0.len() + unseen(&all, &AppsOn::default()).1,
             HIGHLIGHTS.len() - NUMBERED.len()
         );
         assert!(!Seen::new(&[], None).any());

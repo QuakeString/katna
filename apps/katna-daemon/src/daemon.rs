@@ -16,7 +16,7 @@ use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{
     Account, AccountId, AccountKind, AccountSettings, Config, Paths, Pop3Keep, Security, Server,
-    config::{HiddenAccounts, Metered, OfflineAccounts},
+    config::{AppKind, AppsOn, HiddenAccounts, Metered, OfflineAccounts},
 };
 use katna_dbus::{
     AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, TemplateItem, state,
@@ -238,6 +238,9 @@ pub struct Daemon {
     /// The accounts left out of each app (`hidden_accounts`): their
     /// tasks' and notes' reminders stay quiet.
     hidden_accounts: Mutex<HiddenAccounts>,
+    /// Which apps are on (`[apps]`): one turned off isn't synced and its
+    /// reminders, tray items and search results stay away.
+    apps: Mutex<AppsOn>,
     status: Mutex<HashMap<AccountId, Status>>,
     outbox: Mutex<Option<Sending>>,
     /// Why each outbox entry's last try failed.
@@ -355,6 +358,7 @@ impl Daemon {
             offline_days: Mutex::new(sync.offline_window()),
             language: Mutex::new(saved.general.language),
             hidden_accounts: Mutex::new(saved.hidden_accounts),
+            apps: Mutex::new(saved.apps),
             offline: Mutex::new(saved.offline),
             offline_now: Mutex::default(),
             offline_wake: async_channel::bounded(1),
@@ -1284,6 +1288,16 @@ impl Daemon {
         self.hidden_accounts.lock().unwrap().clone()
     }
 
+    /// Which apps are on, as last read from the settings.
+    pub(crate) fn apps(&self) -> AppsOn {
+        self.apps.lock().unwrap().clone()
+    }
+
+    /// Whether `app` is on: its sync, reminders and search results run.
+    pub(crate) fn app_on(&self, app: AppKind) -> bool {
+        self.apps.lock().unwrap().is_on(app)
+    }
+
     /// settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
         let config = Config::load(&self.paths.config_file())
@@ -1311,12 +1325,16 @@ impl Daemon {
             katna_i18n::apply(language);
         }
         *self.hidden_accounts.lock().unwrap() = config.hidden_accounts.clone();
+        let was = std::mem::replace(&mut *self.apps.lock().unwrap(), config.apps.clone());
+        if was != config.apps {
+            self.apps_changed(&was, &config.apps);
+        }
         self.set_offline(config.offline.clone());
         if let Some(finder) = self.finder.get() {
             finder.set_triggers(config.general.search_triggers.clone());
         }
         if let Some(desktop) = self.desktop.get() {
-            desktop.settings(config.general.clone());
+            desktop.settings(config.general.clone(), config.apps.clone());
         }
         self.apply_metered();
         // Sending crash reports may have been turned on.
@@ -1324,6 +1342,25 @@ impl Daemon {
         // Downloading updates may have been turned on.
         self.updates.settings_changed();
         Ok(())
+    }
+
+    /// An app turned on syncs at once; reminders are read again either way,
+    /// so an app turned off goes quiet.
+    fn apps_changed(&self, was: &AppsOn, now: &AppsOn) {
+        tracing::info!(?now, "apps turned on or off");
+        for app in AppKind::ALL {
+            if was.is_on(app) || !now.is_on(app) {
+                continue;
+            }
+            match app {
+                AppKind::Calendar => self.wake_calendars(),
+                AppKind::Contacts => self.wake_contacts(),
+                AppKind::Tasks => self.wake_task_sync(),
+                AppKind::Notes => self.wake_notes(),
+                AppKind::Files => {}
+            }
+        }
+        self.wake_scheduler();
     }
 
     /// Workers download bodies ahead of time only when not metered, and

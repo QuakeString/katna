@@ -13,17 +13,19 @@ use gpui::{
     Animation, AnimationExt, AnyElement, Context, FontWeight, SharedString, SpringAnimation, Task,
     Window, div, ease_out_quint, prelude::*, rgba,
 };
-use katna_core::config::{Density, ReadingPane, Theme as ThemeChoice};
+use katna_core::config::{AppKind, Density, ReadingPane, Theme as ThemeChoice};
 use katna_i18n::tr;
 use katna_ui::motion::{self, lerp};
 use katna_ui::px;
+use katna_ui::tokens::space;
 
 use super::add_account::text_button;
+use super::apps_off::app_name;
 use super::settings::Change;
 use super::{MailWindow, share_ask};
 use crate::daemon;
 use crate::theme::{Theme, fade};
-use crate::widgets::{filled_button, icon};
+use crate::widgets::{choice_chip, filled_button, icon, tip};
 
 /// How long a page takes to slide in.
 const PAGE_IN: Duration = Duration::from_millis(360);
@@ -755,6 +757,7 @@ impl MailWindow {
                 },
                 th,
             ))
+            .child(self.ready_apps(th, cx))
             .child(lead(&tr!("onboarding-ready-tour"), th));
         let actions =
             actions_row(
@@ -770,6 +773,41 @@ impl MailWindow {
                 ),
             );
         (body.into_any_element(), actions)
+    }
+}
+
+impl MailWindow {
+    /// The apps to use, as one row of chips: Mail always, the others
+    /// ticked until clicked. Nothing is in them yet, so turning one off
+    /// here needs no asking; Settings › Apps changes it later.
+    fn ready_apps(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let mail = choice_chip("onboarding-app-mail", tr!("settings-apps-mail"), true, th)
+            .cursor_default()
+            .tooltip(tip(tr!("settings-apps-mail-always"), th));
+        let others = AppKind::ALL.into_iter().map(|app| {
+            let on = self.config.app_on(app);
+            choice_chip(("onboarding-app", app as usize), app_name(app), on, th)
+                .on_click(cx.listener(move |this, _, _, cx| this.set_app_on(app, !on, cx)))
+        });
+        div()
+            .mt(px(space::S3))
+            .flex()
+            .flex_col()
+            .items_center()
+            .gap(px(space::S3))
+            .child(label(&tr!("onboarding-apps"), th))
+            .child(
+                div()
+                    .max_w(px(460.0))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .justify_center()
+                    .gap(px(space::S2))
+                    .child(mail)
+                    .children(others),
+            )
+            .into_any_element()
     }
 }
 

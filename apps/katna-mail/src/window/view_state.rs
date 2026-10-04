@@ -83,7 +83,7 @@ impl MailWindow {
                 self.open_tab(view.tab, cx);
             }
         }
-        if let Some(app) = RailApp::from_key(&view.app) {
+        if let Some(app) = RailApp::from_key(&view.app).filter(|app| self.app_on(*app)) {
             self.open_app(app, cx);
             self.title_from = app;
             self.title_roll.snap(1.0);

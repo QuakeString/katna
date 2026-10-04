@@ -197,6 +197,7 @@ impl MailWindow {
             let rows: Vec<_> = SHORTCUTS
                 .iter()
                 .filter(|s| s.group == group)
+                .filter(|s| s.app().is_none_or(|app| self.config.app_on(app)))
                 .filter_map(|s| {
                     let title = s.title();
                     let keys = keymap::keys(s, config);

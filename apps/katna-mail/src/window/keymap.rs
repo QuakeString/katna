@@ -6,7 +6,7 @@
 //! lists and edits them; [`bind`] loads them into GPUI.
 
 use gpui::{Action, App, KeyBinding, Keystroke};
-use katna_core::config::{ShortcutSet, Shortcuts};
+use katna_core::config::{AppKind, ShortcutSet, Shortcuts};
 use katna_i18n::tr;
 
 use super::{
@@ -91,6 +91,19 @@ pub(super) struct Shortcut {
 }
 
 impl Shortcut {
+    /// The app beside Mail the shortcut leads into, if any: while that app
+    /// is off, the shortcut is left out of the lists.
+    pub(super) fn app(&self) -> Option<AppKind> {
+        match self.name {
+            "page_calendar" => Some(AppKind::Calendar),
+            "page_contacts" => Some(AppKind::Contacts),
+            "page_tasks" | "add_to_tasks" => Some(AppKind::Tasks),
+            "page_notes" => Some(AppKind::Notes),
+            "page_files" => Some(AppKind::Files),
+            _ => None,
+        }
+    }
+
     /// What the shortcut does, in the current language: message
     /// `shortcut-<name>`, with `-` for `_`.
     pub(super) fn title(&self) -> String {

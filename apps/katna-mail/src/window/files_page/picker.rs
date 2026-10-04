@@ -227,6 +227,11 @@ impl MailWindow {
         if !self.compose_takes_files() {
             return;
         }
+        // With Files off, the paperclip opens the system's file picker.
+        if !self.app_on(crate::window::apps::App::Files) {
+            self.pick_files(false, cx);
+            return;
+        }
         self.open_picker(None, HashSet::new(), window, cx);
     }
 

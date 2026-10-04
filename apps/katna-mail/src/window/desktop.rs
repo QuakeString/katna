@@ -120,6 +120,11 @@ const MENU_BAR: &[(&str, &[Entry])] = &[
 /// The menu bar with the actions this build has, and their shortcuts.
 pub fn menu_bar(cx: &App) -> Vec<MenuItem> {
     let side_panel = cx.try_global::<SidePanelMenu>().is_some_and(|page| page.0);
+    // The pages of the apps turned off in Settings > Apps.
+    let off = cx
+        .try_global::<super::apps_off::OffApps>()
+        .map(|off| off.0.clone())
+        .unwrap_or_default();
     MENU_BAR
         .iter()
         .filter_map(|(label, entries)| {
@@ -127,6 +132,7 @@ pub fn menu_bar(cx: &App) -> Vec<MenuItem> {
                 .iter()
                 .filter_map(|entry| match entry {
                     Separator => Some(MenuItem::Separator),
+                    Item(_, name) if off.contains(name) => None,
                     Item(label, name) => {
                         let action = cx.build_action(name, None).ok()?;
                         let label = if *label == "desktop-menu-folder-list" && side_panel {
@@ -326,6 +332,11 @@ impl MailWindow {
                     tracing::warn!(page, "unknown page");
                     return;
                 };
+                // A turned-off app's launcher action or old link says so.
+                if let Some(kind) = app.kind().filter(|_| !self.app_on(app)) {
+                    self.say_app_off(kind, cx);
+                    return;
+                }
                 self.show_page(app, window, cx);
                 match app {
                     RailApp::Calendar => {

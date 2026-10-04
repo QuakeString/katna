@@ -225,6 +225,8 @@ onboarding-ready-title = You're all set
 onboarding-ready-lead = Katna is getting your mail. It shows up as it arrives, and new mail appears on its own.
 # $address: the email address of the account just added.
 onboarding-ready-lead-address = Katna is getting the mail of { $address }. It shows up as it arrives, and new mail appears on its own.
+# Above a row of app chips on the last setup page; Mail is always on.
+onboarding-apps = Apps you'll use
 onboarding-ready-tour = Take a one-minute tour to see where everything is?
 # Closes the first-run pages without the tour.
 onboarding-skip = Skip for now

@@ -117,6 +117,12 @@ pub(super) struct Shape {
     pub page: f32,
     /// The room the window buttons take at the two ends of the top bar.
     pub room: (f32, f32),
+    /// How far the rail has gone because only Mail is on and its folders
+    /// sit beside the list: nothing to switch to, and Compose heads the
+    /// folders. 1 = gone.
+    pub rail_gone: f32,
+    /// How far the phone's bottom bar has gone because only Mail is on.
+    pub solo: f32,
     /// How much of a phone's search row and list toolbar shows: they slide
     /// away as the list moves on. 1 = all of them.
     pub rows: f32,
@@ -146,12 +152,12 @@ impl Shape {
     /// The height the bottom bar takes. It sinks away while a
     /// conversation is open over the list.
     pub(super) fn bottom_bar(&self) -> f32 {
-        BOTTOM_BAR_HEIGHT * self.phone * (1.0 - self.page.clamp(0.0, 1.0))
+        BOTTOM_BAR_HEIGHT * self.phone * (1.0 - self.page.clamp(0.0, 1.0)) * (1.0 - self.solo)
     }
 
     /// The width the app rail takes.
     pub(super) fn rail(&self) -> f32 {
-        APP_RAIL_WIDTH * (1.0 - self.phone)
+        APP_RAIL_WIDTH * (1.0 - self.phone) * (1.0 - self.rail_gone)
     }
 
     /// The margin around the cards, which a phone does without.
@@ -185,6 +191,10 @@ pub(super) struct Layout {
     page: Spring,
     /// 0 = no drawer, 1 = the drawer is open over the dimmed window.
     scrim: Spring,
+    /// The rail going when only Mail is on ([`Shape::rail_gone`]).
+    rail_gone: Spring,
+    /// The bottom bar going when only Mail is on ([`Shape::solo`]).
+    solo: Spring,
     /// The navigation drawer of a phone or tablet is open.
     pub drawer: bool,
     /// How much of the word "Compose" a phone's Compose button shows.
@@ -211,6 +221,8 @@ impl Layout {
             label: Spring::new(motion::SMOOTH, 1.0),
             page: Spring::new(motion::SLIDE, 0.0),
             scrim: Spring::new(motion::SMOOTH, 0.0),
+            rail_gone: Spring::new(motion::SLIDE, 0.0),
+            solo: Spring::new(motion::SLIDE, 0.0),
             drawer: false,
             fab_label: Spring::new(motion::SMOOTH, 1.0),
             rows: Spring::new(motion::SMOOTH, 1.0),
@@ -225,6 +237,8 @@ impl Layout {
                 label: 1.0,
                 page: 0.0,
                 room: (0.0, 0.0),
+                rail_gone: 0.0,
+                solo: 0.0,
                 rows: 1.0,
                 top_bar_slides: false,
             },
@@ -323,6 +337,18 @@ impl MailWindow {
         }
         let label = layout.label.tick(window, reduce).clamp(0.0, 1.0);
         let phone = layout.phone.tick(window, reduce).clamp(0.0, 1.0);
+        let solo = self.mail_only();
+        let rail_gone =
+            solo && self.nav_open && size == Size::Desktop && self.settings_page.is_none();
+        let layout = &mut self.layout;
+        layout.rail_gone.set(if rail_gone { 1.0 } else { 0.0 });
+        layout.solo.set(if solo { 1.0 } else { 0.0 });
+        if first {
+            layout.rail_gone.snap(layout.rail_gone.target());
+            layout.solo.snap(layout.solo.target());
+        }
+        let rail_gone = layout.rail_gone.tick(window, reduce).clamp(0.0, 1.0);
+        let solo = layout.solo.tick(window, reduce).clamp(0.0, 1.0);
         // The shape's size decides `split` below, so it goes in first.
         layout.shape = Shape {
             size,
@@ -331,6 +357,8 @@ impl MailWindow {
             label,
             page: layout.shape.page,
             room,
+            rail_gone,
+            solo,
             rows: layout.shape.rows,
             top_bar_slides: layout.shape.top_bar_slides,
         };
@@ -456,7 +484,7 @@ impl MailWindow {
     }
 
     /// The app rail, sliding out to the left as the window turns into a
-    /// phone.
+    /// phone, or when only Mail is on and its folders are open.
     pub(super) fn render_rail_slot(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let shape = self.layout.shape;
         div()
@@ -468,8 +496,8 @@ impl MailWindow {
                 div()
                     .w(px(APP_RAIL_WIDTH))
                     .h_full()
-                    .ml(px(-APP_RAIL_WIDTH * shape.phone))
-                    .opacity(1.0 - shape.phone)
+                    .ml(px(shape.rail() - APP_RAIL_WIDTH))
+                    .opacity((1.0 - shape.phone) * (1.0 - shape.rail_gone))
                     .child(self.render_app_rail(th, cx)),
             )
             .into_any_element()
@@ -488,8 +516,9 @@ impl MailWindow {
         // The names under the icons follow the setting the rail's follow;
         // without them the icons sit in the middle of the bar.
         let labels = self.config.mail.app_labels;
+        let apps: Vec<RailApp> = self.apps().collect();
         let items =
-            RailApp::ALL.into_iter().map(|app| {
+            apps.into_iter().map(|app| {
                 let on = self.app == app;
                 div()
                     .id(("bottom-app", app as usize))

@@ -1692,14 +1692,22 @@ pub fn rule_preview(
 }
 
 /// The address book for recipient suggestions, read from the store (a
-/// few seconds on a big mailbox). Opens its own connection, for a
+/// few seconds on a big mailbox): the people mailed, and with `saved` the
+/// saved contacts too (Contacts is on). Opens its own connection, for a
 /// background thread.
-pub fn address_book(paths: &Paths) -> Result<katna_search::contacts::ContactBook, String> {
+pub fn address_book(
+    paths: &Paths,
+    saved: bool,
+) -> Result<katna_search::contacts::ContactBook, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| {
             let rows = store.correspondents()?;
             // An older store without saved contacts still suggests.
-            let saved = store.saved_names().unwrap_or_default();
+            let saved = if saved {
+                store.saved_names().unwrap_or_default()
+            } else {
+                Vec::new()
+            };
             Ok(katna_search::contacts::ContactBook::with_saved(rows, saved))
         })
         .map_err(|err| format!("Reading addresses from the mail failed: {err}"))
@@ -1752,13 +1760,22 @@ pub fn save_picture_sizes(paths: &Paths, sizes: &PictureSizes) {
 
 /// Where the address book is kept between runs, so suggestions work at
 /// once while it is read again.
-fn address_book_file(paths: &Paths) -> PathBuf {
-    paths.cache_dir().join("addresses.json")
+/// The saved copy of the address book, one with the saved contacts and
+/// one of the people mailed only.
+fn address_book_file(paths: &Paths, saved: bool) -> PathBuf {
+    paths.cache_dir().join(if saved {
+        "addresses.json"
+    } else {
+        "addresses-mailed.json"
+    })
 }
 
 /// The address book saved by [`save_address_book`], if any.
-pub fn cached_address_book(paths: &Paths) -> Option<katna_search::contacts::ContactBook> {
-    let bytes = std::fs::read(address_book_file(paths)).ok()?;
+pub fn cached_address_book(
+    paths: &Paths,
+    saved: bool,
+) -> Option<katna_search::contacts::ContactBook> {
+    let bytes = std::fs::read(address_book_file(paths, saved)).ok()?;
     let contacts = serde_json::from_slice(&bytes)
         .inspect_err(|err| tracing::warn!("reading the saved address book: {err}"))
         .ok()?;
@@ -1766,11 +1783,11 @@ pub fn cached_address_book(paths: &Paths) -> Option<katna_search::contacts::Cont
 }
 
 /// Saves the address book for the next run, readable only by the user.
-pub fn save_address_book(paths: &Paths, book: &katna_search::contacts::ContactBook) {
+pub fn save_address_book(paths: &Paths, book: &katna_search::contacts::ContactBook, saved: bool) {
     use std::io::Write;
     #[cfg(unix)]
     use std::os::unix::fs::OpenOptionsExt;
-    let file = address_book_file(paths);
+    let file = address_book_file(paths, saved);
     let partial = file.with_extension("json.part");
     let saved = serde_json::to_vec(book.contacts())
         .map_err(std::io::Error::other)

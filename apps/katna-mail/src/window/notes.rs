@@ -1007,6 +1007,9 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if !self.needs_app(AppKind::Notes, cx) {
+            return;
+        }
         let Some((subject, header)) = keys
             .first()
             .and_then(|key| self.mail.as_ref().ok()?.task_source(*key))

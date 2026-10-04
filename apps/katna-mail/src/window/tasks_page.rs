@@ -1602,6 +1602,9 @@ impl MailWindow {
     }
 
     pub(super) fn add_to_tasks_from(&mut self, keys: Vec<EntryKey>, cx: &mut Context<Self>) {
+        if !self.needs_app(AppKind::Tasks, cx) {
+            return;
+        }
         let Ok(mail) = self.mail.as_ref() else {
             return;
         };

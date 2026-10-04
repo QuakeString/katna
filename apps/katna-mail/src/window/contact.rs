@@ -803,7 +803,10 @@ impl MailWindow {
         let size = ACTION.0 + (ACTION_STUCK.0 - ACTION.0) * stuck;
         let mut actions = self.contact_actions(email, phone, size, th, cx);
         // Their address book entry: open it, or save them in one click.
-        if !own && self.contacts.book.as_ref().is_some_and(|b| b.is_ok()) {
+        if !own
+            && self.app_on(super::apps::App::Contacts)
+            && self.contacts.book.as_ref().is_some_and(|b| b.is_ok())
+        {
             actions = actions.child(self.contact_save_button(
                 email,
                 name.clone(),
@@ -1681,7 +1684,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let tasks = self.tasks_of_mails(mails);
-        if tasks.is_empty() {
+        if tasks.is_empty() || !self.app_on(super::apps::App::Tasks) {
             return None;
         }
         let today = super::tasks_page::today();
