@@ -614,7 +614,8 @@ impl MailWindow {
                                 .p(px(2.0))
                                 .rounded(px(6.0))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     this.apply(change, cx);
                                 }))

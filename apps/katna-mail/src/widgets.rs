@@ -792,6 +792,26 @@ pub fn tag(label: impl Into<SharedString>, th: &Theme) -> Div {
         .child(label.into())
 }
 
+/// A [`tag`] with a small icon before its label (a reminder's time, a
+/// note's mail).
+pub fn icon_tag(name: &str, label: impl IntoElement, th: &Theme) -> Div {
+    div()
+        .flex_none()
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S2))
+        .pl(px(space::S3))
+        .pr(px(10.0))
+        .py(px(space::S1))
+        .rounded_full()
+        .bg(rgba(th.chip))
+        .text_size(px(text::CAPTION))
+        .text_color(rgba(th.text_dim))
+        .child(icon(name, th.text_dim, 14.0))
+        .child(label)
+}
+
 /// The height a [`row`] is at least.
 pub const ROW_HEIGHT: f32 = 40.0;
 
@@ -1258,6 +1278,22 @@ pub fn card<E: Styled + ParentElement>(
     shadow: f32,
 ) -> E {
     pane(card.rounded(px(radius)), fill, th.surface, radius).shadow(card_shadow(th, shadow))
+}
+
+/// A tile: a small card on a page or inside another card (a file, a
+/// folder, an attachment, an invitation, a mail service to pick). Level 1
+/// like [`card`], on `th.surface` with corners of [`radius::MD`], and its
+/// edge and shadow at full strength, so it lifts off what is under it.
+/// A tile that can be clicked adds [`tile_hover`] first among its
+/// children.
+pub fn tile<E: Styled + ParentElement>(tile: E, th: &Theme) -> E {
+    card(tile, th, th.surface, radius::MD, 1.0)
+}
+
+/// The hover tint of a [`tile`], easing in and out. Its parent needs an
+/// id and `relative()`.
+pub fn tile_hover(th: &Theme) -> Glow {
+    hover_fade("tile-hover", Some(radius::MD), th)
 }
 
 /// How much more of the way to solid a dialog's tint goes than a menu's.

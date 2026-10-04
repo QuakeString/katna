@@ -15,6 +15,7 @@ use katna_ui::px;
 use katna_ui::rich::{
     Block, CharStyle, Doc, Font, HtmlBlock, Para, ParaStyle, RichEditor, Size, html,
 };
+use katna_ui::tokens::{radius, space, text};
 
 use super::{MailWindow, TICKED, UNTICKED, check_of};
 use crate::theme::Theme;
@@ -261,11 +262,11 @@ impl MailWindow {
             div()
                 .id(id)
                 .h(px(34.0))
-                .px(px(10.0))
+                .px(px(space::S4))
                 .flex()
                 .items_center()
-                .rounded(px(8.0))
-                .text_size(px(13.0))
+                .rounded(px(radius::SM))
+                .text_size(px(text::SMALL))
                 .when(value != Heading::Normal, |d| {
                     d.font_weight(FontWeight::BOLD)
                 })
@@ -278,15 +279,15 @@ impl MailWindow {
         Some(
             div()
                 .flex_none()
-                .mx(px(12.0))
-                .mb(px(4.0))
-                .px(px(4.0))
+                .mx(px(space::S4))
+                .mb(px(space::S2))
+                .px(px(space::S2))
                 .flex()
                 .flex_row()
                 .flex_wrap()
                 .items_center()
-                .gap(px(2.0))
-                .rounded(px(10.0))
+                .gap(px(space::S1))
+                .rounded(px(radius::SM))
                 .bg(rgba(th.chip))
                 .child(heading_button(
                     "note-h1",
@@ -307,7 +308,7 @@ impl MailWindow {
                     div()
                         .w(px(1.0))
                         .h(px(20.0))
-                        .mx(px(4.0))
+                        .mx(px(space::S2))
                         .bg(rgba(th.divider)),
                 )
                 .child(
@@ -353,7 +354,7 @@ impl MailWindow {
                     div()
                         .w(px(1.0))
                         .h(px(20.0))
-                        .mx(px(4.0))
+                        .mx(px(space::S2))
                         .bg(rgba(th.divider)),
                 )
                 .child(
