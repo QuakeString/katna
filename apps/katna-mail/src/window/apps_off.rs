@@ -9,11 +9,12 @@
 //! offers the same.
 
 use gpui::{
-    AnimationExt, AnyElement, Context, FontWeight, MouseButton, Pixels, Point, Window, anchored,
-    deferred, div, prelude::*, rgba,
+    AnimationExt, AnyElement, Context, FontWeight, MouseButton, Pixels, Point, Window, deferred,
+    div, prelude::*, rgba,
 };
 use katna_core::config::AppKind;
 use katna_i18n::tr;
+use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::tokens::{space, text};
 use katna_ui::{WindowDrag, px};

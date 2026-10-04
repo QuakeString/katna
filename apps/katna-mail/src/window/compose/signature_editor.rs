@@ -7,10 +7,11 @@
 //! its pictures inside, and as plain text.
 
 use gpui::{
-    AnyElement, Context, Entity, Focusable, MouseButton, Window, anchored, deferred, div, point,
-    prelude::*, rgba,
+    AnyElement, Context, Entity, Focusable, MouseButton, Window, deferred, div, point, prelude::*,
+    rgba,
 };
 use katna_i18n::tr;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::rich::{Align, Doc, Font, List, RichEditor, Size, html};
 use katna_ui::{InputEvent, TextInput};

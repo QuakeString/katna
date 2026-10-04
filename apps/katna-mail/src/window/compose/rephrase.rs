@@ -12,14 +12,15 @@ use std::rc::Rc;
 
 use gpui::{
     Anchor, AnyElement, App, Bounds, ClipboardItem, Context, DragMoveEvent, Entity, Focusable,
-    MouseButton, MouseDownEvent, Pixels, Point, Subscription, Task, WeakEntity, Window, anchored,
-    canvas, deferred, div, point, prelude::*, rgba,
+    MouseButton, MouseDownEvent, Pixels, Point, Subscription, Task, WeakEntity, Window, canvas,
+    deferred, div, point, prelude::*, rgba,
 };
 use katna_ai::Tone;
 use katna_ai::provider::{self, OTHER};
 use katna_ai::wire::{plan, problem};
 use katna_core::config::AiSource;
 use katna_i18n::tr;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::rich::Complete;
 use katna_ui::{InputEvent, TextInput};

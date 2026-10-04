@@ -8,10 +8,10 @@
 use std::rc::Rc;
 
 use gpui::{
-    AnyElement, Context, MouseButton, Pixels, Point, Window, anchored, deferred, div, prelude::*,
-    rgba,
+    AnyElement, Context, MouseButton, Pixels, Point, Window, deferred, div, prelude::*, rgba,
 };
 use katna_i18n::tr;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::tokens::{elevation, radius, space, text};
 

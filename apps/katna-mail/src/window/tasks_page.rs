@@ -15,13 +15,14 @@ use std::collections::{HashMap, HashSet};
 use gpui::{
     Animation, AnimationExt, AnyElement, Bounds, Context, Entity, FocusHandle, Focusable,
     FontWeight, KeyDownEvent, MouseButton, Pixels, Point, ScrollHandle, SharedString, Subscription,
-    Task, Window, anchored, deferred, div, ease_out_quint, prelude::*, rgba,
+    Task, Window, deferred, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_core::config::{AppKind, TaskSort};
 use katna_core::{AccountId, AccountKind};
 use katna_dav::quick_task::TypedTask;
 use katna_i18n::tr;
 use katna_store::tasks::Task as TaskItem;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::text_input::{InputEvent, TextInput};
 

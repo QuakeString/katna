@@ -15,7 +15,7 @@ use std::time::Duration;
 use gpui::{
     AnyElement, App, ClickEvent, Context, ElementId, Entity, Focusable, FontWeight, HighlightStyle,
     MouseButton, Pixels, Point, SharedString, Stateful, StyledText, Subscription, Task, Window,
-    anchored, deferred, div, prelude::*, rgba,
+    deferred, div, prelude::*, rgba,
 };
 use katna_core::{AccountId, MailCategory};
 use katna_i18n::tr;
@@ -23,6 +23,7 @@ use katna_store::FolderId;
 use katna_store::rules::{
     Action, Comparator, Condition, Field, MAX_READ_AFTER_DAYS, MatchMode, Rule, RunsNote, RunsOn,
 };
+use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::unpx;

@@ -13,7 +13,7 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, ClickEvent, Context, Entity, Focusable, FontWeight, MouseButton, Pixels, Point,
-    ScrollHandle, SharedString, Subscription, Window, anchored, deferred, div, prelude::*, rgba,
+    ScrollHandle, SharedString, Subscription, Window, deferred, div, prelude::*, rgba,
 };
 use jiff::civil::{Date, DateTime, Time, Weekday};
 use jiff::tz::TimeZone;
@@ -22,6 +22,7 @@ use katna_core::config::AppKind;
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
 use katna_store::calendar::{Attendee, Calendar, EditScope, EventChange, EventEdit, EventKind};
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::text_area::TextArea;
 use katna_ui::text_input::{InputEvent, TextInput};
