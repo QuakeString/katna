@@ -1268,13 +1268,23 @@ pub fn raised<E: Styled + ParentElement>(panel: E, th: &Theme, radius: f32, leve
 /// says rather than its tint over the window's. `radius` is the card's
 /// corner radius. Call it before adding the card's children.
 pub fn pane<E: Styled + ParentElement>(card: E, fill: u32, solid: u32, radius: f32) -> E {
+    pane_corners(card, fill, solid, gpui::Corners::all(px(radius)))
+}
+
+/// [`pane`] with each corner its own radius.
+pub fn pane_corners<E: Styled + ParentElement>(
+    card: E,
+    fill: u32,
+    solid: u32,
+    corners: gpui::Corners<gpui::Pixels>,
+) -> E {
     if fill & 0xff == 0xff {
         return card.bg(rgba(fill));
     }
     card.child(katna_ui::frost::clear_fill(
         rgba(fill).into(),
         rgba(solid | 0xff).into(),
-        px(radius),
+        corners,
     ))
 }
 

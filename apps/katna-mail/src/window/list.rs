@@ -332,6 +332,9 @@ impl MailWindow {
             self.layout.shape.card_outline(),
         );
         let (shadow, edge) = self.card_edges(self.card_keys(false), outline);
+        // On a phone the card reaches the window's bottom edge, so it rounds
+        // its bottom corners as the window frame does.
+        let (bottom_left, bottom_right) = self.phone_bottom_corners();
         let card = div()
             .id("card")
             .key_context(if reading_context {
@@ -351,12 +354,29 @@ impl MailWindow {
                 } else {
                     th.pane()
                 };
-                crate::widgets::card(d, th, fill, radius, shadow)
+                if bottom_left + bottom_right > 0.0 {
+                    let corners = gpui::Corners {
+                        top_left: px(radius),
+                        top_right: px(radius),
+                        bottom_left: px(bottom_left),
+                        bottom_right: px(bottom_right),
+                    };
+                    crate::widgets::pane_corners(
+                        d.rounded(px(radius))
+                            .rounded_bl(px(bottom_left))
+                            .rounded_br(px(bottom_right)),
+                        fill,
+                        th.surface,
+                        corners,
+                    )
+                } else {
+                    crate::widgets::card(d, th, fill, radius, shadow)
+                }
             })
             .p(px(outline))
             // GPUI clips to rectangles, so the lines stop short of the
             // rounded bottom corners rather than showing square ones.
-            .pb(px(radius.max(outline)))
+            .pb(px(radius.max(outline).max(bottom_left).max(bottom_right)))
             .on_action(cx.listener(Self::select_next))
             .on_action(cx.listener(Self::select_previous))
             .on_action(cx.listener(Self::select_first))
@@ -510,6 +530,16 @@ impl MailWindow {
         )
     }
 
+    /// The window frame's bottom corners where the card reaches them (on a
+    /// phone), else none.
+    fn phone_bottom_corners(&self) -> (f32, f32) {
+        if self.layout.shape.is_phone() {
+            self.bottom_corners
+        } else {
+            (0.0, 0.0)
+        }
+    }
+
     /// The list with the open conversation sliding in over it from the
     /// right, as on a phone; the list drifts left and dims beneath.
     fn render_sliding(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -519,6 +549,7 @@ impl MailWindow {
         // On a card the blur shows through, the list fades out under the
         // conversation rather than showing through it.
         let see_through = th.pane_tint < 100;
+        let (bottom_left, bottom_right) = self.phone_bottom_corners();
         let list = (shown < 0.999 || !has_reader).then(|| {
             let (toolbar, body) = self.render_list_parts(th, cx);
             div()
@@ -539,6 +570,8 @@ impl MailWindow {
                             .top_0()
                             .left_0()
                             .size_full()
+                            .rounded_bl(px(bottom_left))
+                            .rounded_br(px(bottom_right))
                             .bg(rgba(fade(th.shadow, 0.5 * shown))),
                     )
                 })
@@ -552,7 +585,11 @@ impl MailWindow {
                 .w_full()
                 .flex()
                 .flex_col()
-                .when(!see_through, |d| d.bg(rgba(th.surface)))
+                .when(!see_through, |d| {
+                    d.bg(rgba(th.surface))
+                        .rounded_bl(px(bottom_left))
+                        .rounded_br(px(bottom_right))
+                })
                 .when(shown < 0.999, |d| {
                     d.shadow(crate::widgets::elevation(th, 2.0))
                 })

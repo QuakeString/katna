@@ -864,6 +864,10 @@ pub struct MailWindow {
     /// The open mail's toolbar, waiting to go into its pinned header
     /// ([`Self::render_reader_with_toolbar`]).
     reader_top: Option<AnyElement>,
+    /// The window frame's rounded bottom corners, left and right
+    /// ([`katna_chrome::WindowChrome::content_corners`]), this frame: a
+    /// phone's card reaches them and rounds itself by them.
+    bottom_corners: (f32, f32),
     /// How tall the bar pinned over the list was last drawn.
     list_head: std::rc::Rc<std::cell::Cell<f32>>,
     nav_list: gpui::ListState,
@@ -1149,6 +1153,7 @@ impl MailWindow {
             keep_line: None,
             reader_head: Default::default(),
             reader_top: None,
+            bottom_corners: (0.0, 0.0),
             list_head: Default::default(),
             nav_list: nav::nav_list(),
             nav_items: Vec::new(),
@@ -3564,8 +3569,9 @@ impl Render for MailWindow {
         self.measure_pill_text(window);
         let th = self.theme(window);
         self.release_images(window, cx);
+        self.bottom_corners = self.chrome.content_corners(window);
         if let Some(viewer) = &self.files.viewer {
-            let corners = self.chrome.content_corners(window);
+            let corners = self.bottom_corners;
             viewer.update(cx, |viewer, _| {
                 viewer.th = th;
                 viewer.corners = corners;
