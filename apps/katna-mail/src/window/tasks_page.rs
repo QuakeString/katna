@@ -28,6 +28,7 @@ use katna_ui::text_input::{InputEvent, TextInput};
 mod details;
 mod files;
 mod labels;
+mod motion;
 mod several;
 mod sort;
 mod views;
@@ -38,8 +39,11 @@ use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::tasks::{Board, Column, TaskCommand, TaskEdit};
 use crate::theme::{Theme, fade};
-use crate::widgets::{ScaledEdge, icon, raised, tip};
-use katna_ui::tokens::{radius, space, text};
+use crate::widgets::{
+    CARD_REST, FIELD_HEIGHT, ScaledEdge, card, count_pill, elevation, field, icon, icon_button,
+    icon_button_colored, line_field, raised, row, tag, ticked_row, tip,
+};
+use katna_ui::tokens::{elevation as level, radius, space, text};
 
 /// The width of the lists on the left.
 const NAV_WIDTH: f32 = 256.0;
@@ -96,6 +100,7 @@ struct Naming {
 
 /// A list's ⋮ menu, a task's right-click menu, or one of the select
 /// bar's.
+#[derive(Clone, Copy, PartialEq)]
 enum Menu {
     List {
         list: i64,
@@ -160,7 +165,14 @@ pub(super) struct TasksPage {
     editing: Option<Editing>,
     naming: Option<Naming>,
     details: Option<details::Details>,
+    /// The details just closed, fading out, and since when.
+    details_out: Option<(details::Details, std::time::Instant)>,
     menu: Option<Menu>,
+    /// The menu open when last drawn, and the one just closed, fading out.
+    menu_was: std::cell::Cell<Option<Menu>>,
+    menu_out: std::cell::Cell<Option<(Menu, std::time::Instant)>>,
+    /// How rows and cards move.
+    motion: motion::Rows,
     /// Lists whose Completed section is open.
     open_done: HashSet<i64>,
     /// The task picked by click or keys.
@@ -247,15 +259,16 @@ struct TaskDragged {
 impl Render for TaskDragged {
     fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
         let th = &self.th;
+        // A row lifted off its list: level 2, as everything dragged is.
         div()
-            .w(px(CARD_WIDTH - 32.0))
-            .py(px(10.0))
-            .px(px(16.0))
-            .rounded(px(8.0))
-            .bg(rgba(th.surface))
-            .shadow(crate::widgets::elevation(th, 3.0))
-            .text_size(px(14.0))
-            .line_height(px(20.0))
+            .w(px(CARD_WIDTH - 2.0 * space::S5))
+            .py(px(space::S3))
+            .px(px(space::S5))
+            .rounded(px(radius::SM))
+            .bg(rgba(th.raised))
+            .shadow(elevation(th, level::FLOAT))
+            .text_size(px(text::BODY))
+            .line_height(px(text::line_height(text::BODY)))
             .text_color(rgba(th.text))
             .flex()
             .flex_row()
@@ -321,7 +334,12 @@ impl TasksPage {
         !self.query.trim().is_empty()
     }
 
+    /// Whether `task` is ticked off, as the page places it: a row ticked a
+    /// moment ago stays where it was until it has folded away.
     fn done(&self, task: &TaskItem) -> bool {
+        if let Some(done) = self.motion.placed_done(task.id) {
+            return done;
+        }
         self.pending
             .get(&task.id)
             .and_then(|p| p.done)
@@ -775,19 +793,20 @@ impl MailWindow {
                 .id(("row-task", ix))
                 .flex_none()
                 .h(px(22.0))
-                .pl(px(6.0))
-                .pr(px(8.0))
+                .pl(px(space::S2))
+                .pr(px(space::S3))
                 .flex()
                 .flex_row()
                 .items_center()
-                .gap(px(4.0))
+                .gap(px(space::S2))
                 .rounded_full()
                 .border_1()
                 .border_color(rgba(fade(th.text, 0.16)))
-                .text_size(px(12.0))
+                .text_size(px(text::CAPTION))
                 .text_color(rgba(color))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(fade(th.text, 0.08))))
+                .relative()
+                .child(katna_ui::Glow::new(("row-task-glow", ix), rgba(fade(th.text, 0.08))).fade())
                 .tooltip(tip(tr!("row-task-open", title = task.title.clone()), th))
                 .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
                 .on_click(cx.listener(move |this, _, window, cx| {
@@ -805,12 +824,38 @@ impl MailWindow {
         self.load_account_status(Of::Tasks, cx);
         let paths = self.paths.clone();
         self.tasks.loading = Some(cx.spawn(async move |this, cx| {
-            let board = cx
+            let mut board = cx
                 .background_executor()
                 .spawn(async move { crate::tasks::load(&paths) })
                 .await;
             this.update(cx, |this, cx| {
                 let page = &mut this.tasks;
+                // Tasks new since the last read glide open; deleted ones
+                // still folding away stay until they have.
+                let mut came = Vec::new();
+                if let (Ok(new), Some(Ok(old))) = (&mut board, &page.board) {
+                    came = new
+                        .columns
+                        .iter()
+                        .flat_map(|c| c.tasks.iter())
+                        .filter(|t| old.task(t.id).is_none())
+                        .map(|t| t.id)
+                        .collect();
+                    for column in &mut new.columns {
+                        let Some(was) = old.columns.iter().find(|c| c.list.id == column.list.id)
+                        else {
+                            continue;
+                        };
+                        for (ix, task) in was.tasks.iter().enumerate() {
+                            if page.motion.leaving(task.id)
+                                && !column.tasks.iter().any(|t| t.id == task.id)
+                            {
+                                let at = ix.min(column.tasks.len());
+                                column.tasks.insert(at, task.clone());
+                            }
+                        }
+                    }
+                }
                 if let (Ok(board), View::List(id)) = (&board, page.view)
                     && !board.columns.iter().any(|c| c.list.id == id)
                 {
@@ -828,6 +873,7 @@ impl MailWindow {
                 page.board = Some(board);
                 page.reveal_list();
                 this.map_task_mails();
+                this.task_arrive_motion(came, cx);
                 cx.notify();
             })
             .ok();
@@ -925,7 +971,11 @@ impl MailWindow {
         let Some(task) = self.tasks.task(id) else {
             return;
         };
-        let done = !self.tasks.done(task);
+        let done = !self
+            .tasks
+            .motion
+            .ticking(id)
+            .unwrap_or_else(|| self.tasks.done(task));
         // A repeating task moves to its next day and stays open.
         if done && let Some((due, repeat)) = self.tasks.next_due(task) {
             let old = task.clone();
@@ -955,6 +1005,7 @@ impl MailWindow {
         if self.tasks.picked == Some(id) && done {
             self.tasks.picked = None;
         }
+        self.task_check_motion(id, done, cx);
         let text = done.then(|| tr!("tasks-toast-done"));
         let undo = done.then_some(TaskCommand::SetDone(id, false));
         self.send_task(TaskCommand::SetDone(id, done), text, undo, cx);
@@ -1056,12 +1107,10 @@ impl MailWindow {
         };
         let steps = board.steps(id);
         let files = self.task_files_for_undo(id);
-        // Gone from the page at once; the store follows.
-        if let Some(Ok(board)) = &mut self.tasks.board {
-            for column in &mut board.columns {
-                column.tasks.retain(|t| t.id != id && t.parent != Some(id));
-            }
-        }
+        // It folds away, then is gone from the page; the store follows.
+        let mut ids = vec![id];
+        ids.extend(steps.iter().map(|t| t.id));
+        self.task_leave_motion(&ids, Self::tasks_take_off, cx);
         if self.tasks.picked == Some(id) {
             self.tasks.picked = None;
         }
@@ -1073,6 +1122,15 @@ impl MailWindow {
             cx,
         );
         cx.notify();
+    }
+
+    /// Takes tasks `ids` (deleted) off the page.
+    fn tasks_take_off(&mut self, ids: &[i64]) {
+        if let Some(Ok(board)) = &mut self.tasks.board {
+            for column in &mut board.columns {
+                column.tasks.retain(|t| !ids.contains(&t.id));
+            }
+        }
     }
 
     fn move_task_to(&mut self, id: i64, list: i64, cx: &mut Context<Self>) {
@@ -1756,10 +1814,8 @@ impl MailWindow {
             .children(details)
             .with_animation(
                 "tasks-page-in",
-                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
-                    220,
-                )))
-                .with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(katna_ui::tokens::duration::BASE))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element()
@@ -1807,7 +1863,7 @@ impl MailWindow {
         // them first when there are many lists and accounts.
         let mut nav = div()
             .flex_none()
-            .pb(px(16.0))
+            .pb(px(space::S5))
             .flex()
             .flex_col()
             .child(
@@ -1827,12 +1883,7 @@ impl MailWindow {
                     page.view == View::Today,
                 )
                 .when(due_now > 0, |d| {
-                    d.child(
-                        div()
-                            .text_size(px(12.0))
-                            .text_color(rgba(th.text_faint))
-                            .child(katna_i18n::format::number(due_now as u64)),
-                    )
+                    d.child(count_pill(due_now as u64, page.view == View::Today, th))
                 })
                 .on_click(cx.listener(|this, _, _, cx| this.task_set_view(View::Today, cx))),
             )
@@ -1853,12 +1904,7 @@ impl MailWindow {
                     page.view == View::Starred,
                 )
                 .when(starred > 0, |d| {
-                    d.child(
-                        div()
-                            .text_size(px(12.0))
-                            .text_color(rgba(th.text_faint))
-                            .child(katna_i18n::format::number(starred as u64)),
-                    )
+                    d.child(count_pill(starred as u64, page.view == View::Starred, th))
                 })
                 .on_click(cx.listener(|this, _, _, cx| this.task_set_view(View::Starred, cx))),
             )
@@ -1873,9 +1919,9 @@ impl MailWindow {
             )
             .child(
                 div()
-                    .mt(px(16.0))
-                    .mx(px(24.0))
-                    .mb(px(4.0))
+                    .mt(px(space::S5))
+                    .mx(px(space::S6))
+                    .mb(px(space::S2))
                     .h(px(1.0))
                     .bg(rgba(th.divider)),
             );
@@ -1911,10 +1957,10 @@ impl MailWindow {
             };
             nav = nav.child(
                 div()
-                    .mt(px(12.0))
-                    .mb(px(4.0))
-                    .px(px(24.0))
-                    .text_size(px(12.0))
+                    .mt(px(space::S4))
+                    .mb(px(space::S2))
+                    .px(px(space::S6))
+                    .text_size(px(text::CAPTION))
                     .font_weight(FontWeight::MEDIUM)
                     .text_color(rgba(th.text_faint))
                     .truncate()
@@ -1940,12 +1986,7 @@ impl MailWindow {
                         page.view == View::List(id),
                     )
                     .when(count > 0, |d| {
-                        d.child(
-                            div()
-                                .text_size(px(12.0))
-                                .text_color(rgba(th.text_faint))
-                                .child(katna_i18n::format::number(count as u64)),
-                        )
+                        d.child(count_pill(count as u64, page.view == View::List(id), th))
                     })
                     .on_click(
                         cx.listener(move |this, _, _, cx| this.task_set_view(View::List(id), cx)),
@@ -1996,16 +2037,9 @@ impl MailWindow {
                     this.task_finish_naming(false, window, cx);
                 }
             }))
-            .mx(px(8.0))
-            .h(px(40.0))
-            .px(px(16.0))
-            .flex()
-            .items_center()
-            .rounded_full()
-            .border_1()
-            .border_color(rgba(th.accent))
-            .text_size(px(14.0))
-            .child(div().flex_1().child(naming.input.clone()))
+            .flex_none()
+            .mx(px(space::S3))
+            .child(line_field("tasks-naming", &naming.input, th, cx))
             .into_any_element()
     }
 
@@ -2026,13 +2060,13 @@ impl MailWindow {
                 .size_full()
                 .overflow_y_scroll()
                 .track_scroll(&page.board_scroll)
-                .p(px(16.0))
+                .p(px(space::S5))
                 .flex()
                 .flex_row()
                 .flex_wrap()
                 .items_start()
                 .content_start()
-                .gap(px(16.0))
+                .gap(px(space::S5))
                 .children(
                     columns
                         .into_iter()
@@ -2041,7 +2075,7 @@ impl MailWindow {
                 .into_any_element(),
             View::List(_) => div()
                 .size_full()
-                .p(px(16.0))
+                .p(px(space::S5))
                 .flex()
                 .items_start()
                 .justify_center()
@@ -2059,9 +2093,24 @@ impl MailWindow {
         }
     }
 
+    /// A [`Self::card_frame`] `SINGLE_WIDTH` wide, rising under the
+    /// pointer.
+    pub(super) fn lifted_frame(
+        &self,
+        id: &'static str,
+        width: f32,
+        th: &Theme,
+        rows: gpui::Div,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let card = self.card_frame(id.into(), width, th, rows);
+        self.tasks.lifted(card, id, th, cx)
+    }
+
     /// A card of tasks, `width` wide, that scrolls once taller than the
-    /// page. `rows` keep their heights: in a column that scrolls, a flex
-    /// column would squeeze them first.
+    /// page: level 1 (`widgets::card` at [`CARD_REST`]), `MD` as a card
+    /// inside the page's card. `rows` keep their heights: in a column that
+    /// scrolls, a flex column would squeeze them first.
     fn card_frame(
         &self,
         id: SharedString,
@@ -2073,18 +2122,28 @@ impl MailWindow {
         // card fills it.
         let shape = self.layout.shape;
         let side = self.page_side_width(NAV_WIDTH);
-        let room = shape.width - shape.rail() - side - shape.card_margin() - 32.0;
+        let room = shape.width - shape.rail() - side - shape.card_margin() - 2.0 * space::S5;
         div()
             .id(id)
             .flex_none()
             .w(px(width.min(room)))
             .max_h_full()
             .overflow_y_scroll()
-            .rounded(px(16.0))
-            .bg(rgba(if th.dark { th.read_row } else { th.surface }))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .child(rows.flex_none().pb(px(8.0)).flex().flex_col())
+            .map(|d| card(d, th, card_fill(th), radius::MD, CARD_REST))
+            .child(rows.flex_none().pb(px(space::S3)).flex().flex_col())
+    }
+
+    /// A card's [`empty_box`], rising under the pointer as cards do.
+    pub(super) fn empty_card(
+        &self,
+        key: &'static str,
+        mark: Option<&str>,
+        text_: impl IntoElement,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let card = empty_box(key.into(), mark, text_, th);
+        self.tasks.lifted(card, key, th, cx)
     }
 
     fn render_starred(
@@ -2104,29 +2163,28 @@ impl MailWindow {
         let empty = rows.is_empty();
         div()
             .size_full()
-            .p(px(16.0))
+            .p(px(space::S5))
             .flex()
             .items_start()
             .justify_center()
             .child(
-                self.card_frame(
-                    "tasks-starred-card".into(),
+                self.lifted_frame(
+                    "tasks-starred-card",
                     SINGLE_WIDTH,
                     th,
                     div()
                         .child(card_heading(tr!("tasks-starred"), th))
                         .when(empty, |d| {
-                            d.child(
-                                div()
-                                    .py(px(32.0))
-                                    .px(px(24.0))
-                                    .text_center()
-                                    .text_size(px(14.0))
-                                    .text_color(rgba(th.text_faint))
-                                    .child(tr!("tasks-starred-empty")),
-                            )
+                            d.child(self.empty_card(
+                                "tasks-starred-empty",
+                                None,
+                                tr!("tasks-starred-empty"),
+                                th,
+                                cx,
+                            ))
                         })
                         .children(rows),
+                    cx,
                 ),
             )
             .into_any_element()
@@ -2150,12 +2208,12 @@ impl MailWindow {
         };
         let section = |label: String, color: u32| {
             div()
-                .mt(px(8.0))
-                .px(px(20.0))
+                .mt(px(space::S3))
+                .px(px(space::S5))
                 .h(px(32.0))
                 .flex()
                 .items_center()
-                .text_size(px(12.0))
+                .text_size(px(text::CAPTION))
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(color))
                 .child(label)
@@ -2185,45 +2243,27 @@ impl MailWindow {
         };
         div()
             .size_full()
-            .p(px(16.0))
+            .p(px(space::S5))
             .flex()
             .items_start()
             .justify_center()
             .child(
-                self.card_frame(
-                    "tasks-today-card".into(),
+                self.lifted_frame(
+                    "tasks-today-card",
                     SINGLE_WIDTH,
                     th,
                     div()
                         .child(card_heading(tr!("tasks-today"), th))
-                        .child(
-                            div()
-                                .px(px(20.0))
-                                .mt(px(-8.0))
-                                .mb(px(4.0))
-                                .text_size(px(12.0))
-                                .text_color(rgba(th.text_faint))
-                                .child(date),
-                        )
+                        .child(card_subheading(date, th))
                         .child(add)
                         .when(empty, |d| {
-                            d.child(
-                                div()
-                                    .py(px(24.0))
-                                    .px(px(24.0))
-                                    .flex()
-                                    .flex_col()
-                                    .items_center()
-                                    .gap(px(8.0))
-                                    .text_center()
-                                    .child(icon("check-circle", th.text_faint, 40.0))
-                                    .child(
-                                        div()
-                                            .text_size(px(14.0))
-                                            .text_color(rgba(th.text_dim))
-                                            .child(tr!("tasks-today-empty")),
-                                    ),
-                            )
+                            d.child(self.empty_card(
+                                "tasks-today-empty",
+                                Some("check-circle"),
+                                tr!("tasks-today-empty"),
+                                th,
+                                cx,
+                            ))
                         })
                         .when(has_overdue, |d| {
                             d.child(section(tr!("tasks-overdue"), th.error))
@@ -2233,32 +2273,26 @@ impl MailWindow {
                                 })
                         })
                         .children(due_rows),
+                    cx,
                 ),
             )
             .into_any_element()
     }
 
-    /// The "Add a task" row at the top of a card.
+    /// The "Add a task" row at the top of a card: a [`row`], its plus in
+    /// the ticks' column.
     fn add_row(&self, id: gpui::ElementId, label: String, th: &Theme) -> gpui::Stateful<gpui::Div> {
-        div()
-            .id(id)
-            .h(px(40.0))
-            .px(px(16.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(16.0))
-            .cursor_pointer()
-            .text_size(px(14.0))
+        row(id, false, th)
+            .mx(px(space::S3))
             .text_color(rgba(th.accent))
-            .hover(|s| s.bg(rgba(th.hover)))
             .child(
                 div()
-                    .size(px(20.0))
+                    .flex_none()
+                    .size(px(TICK_SLOT))
                     .flex()
                     .items_center()
                     .justify_center()
-                    .child(icon("add", th.accent, 20.0)),
+                    .child(icon("add", th.accent, 16.0)),
             )
             .child(label)
     }
@@ -2296,6 +2330,13 @@ impl MailWindow {
         let drag = page.drag.as_ref().filter(|_| cx.has_active_drag());
         let mut open_rows: Vec<AnyElement> = Vec::new();
         let mut slot = 0;
+        // The tasks in the order drawn: sorted anew, they glide there.
+        let order: Vec<i64> = groups
+            .iter()
+            .filter_map(|(task, _)| *task)
+            .filter(|task| drag.is_none_or(|d| !d.ids.contains(task)))
+            .collect();
+        page.motion.reorder(id, &order);
         for (task, rows) in groups {
             let Some(task) = task else {
                 open_rows.extend(rows);
@@ -2314,20 +2355,19 @@ impl MailWindow {
             }
             slot += 1;
             // Each task with its steps says where it is to a drag.
-            open_rows.push(
-                div()
-                    .id(("task-group", task as usize))
-                    .flex()
-                    .flex_col()
-                    .on_drag_move(cx.listener(
-                        move |this, event: &gpui::DragMoveEvent<TaskDragged>, _, cx| {
-                            let dragged = event.drag(cx).clone();
-                            this.task_drag_row(task, event.bounds, &dragged);
-                        },
-                    ))
-                    .children(rows)
-                    .into_any_element(),
-            );
+            let group = div()
+                .id(("task-group", task as usize))
+                .flex()
+                .flex_col()
+                .on_drag_move(cx.listener(
+                    move |this, event: &gpui::DragMoveEvent<TaskDragged>, _, cx| {
+                        let dragged = event.drag(cx).clone();
+                        this.task_drag_row(task, event.bounds, &dragged);
+                    },
+                ))
+                .children(rows);
+            let group = page.motion.group(task, group).into_any_element();
+            open_rows.push(page.motion.glide(task, group));
         }
         if let Some(drag) = drag.filter(|_| !sorted) {
             open_rows.extend(drag_gaps(drag, id, slot, th));
@@ -2347,21 +2387,12 @@ impl MailWindow {
             .filter(|a| a.list == id && a.parent.is_none());
         let empty = open_rows.is_empty() && adding_top.is_none();
         let heading = card_heading(list_title(column), th).child(
-            div()
-                .id(("tasks-list-menu", id as usize))
+            icon_button(("tasks-list-menu", id as usize), "more", 20.0, th)
                 .size(px(32.0))
-                .flex()
-                .items_center()
-                .justify_center()
-                .rounded_full()
-                .cursor_pointer()
-                .relative()
-                .child(crate::widgets::hover_fade("hover-glow", None, th))
                 // Not over its own menu.
                 .when(page.menu.is_none(), |d| {
                     d.tooltip(tip(tr!("tasks-list-options"), th))
                 })
-                .child(icon("more", th.text_dim, 20.0))
                 .on_mouse_down(
                     MouseButton::Left,
                     cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
@@ -2390,71 +2421,61 @@ impl MailWindow {
             div()
                 .child(heading)
                 .when(!column.account.is_empty() && page.view != View::All, |d| {
-                    d.child(
-                        div()
-                            .px(px(20.0))
-                            .mt(px(-8.0))
-                            .mb(px(4.0))
-                            .text_size(px(12.0))
-                            .text_color(rgba(th.text_faint))
-                            .child(column.account.clone()),
-                    )
+                    d.child(card_subheading(column.account.clone(), th))
                 })
                 .child(add)
                 .when(empty, |d| {
-                    d.child(
-                        div()
-                            .py(px(24.0))
-                            .px(px(24.0))
-                            .flex()
-                            .flex_col()
-                            .items_center()
-                            .gap(px(8.0))
-                            .text_center()
-                            .child(icon("check-circle", th.text_faint, 40.0))
-                            .child(
-                                div()
-                                    .text_size(px(14.0))
-                                    .text_color(rgba(th.text_dim))
-                                    .child(tr!("tasks-empty")),
-                            ),
-                    )
+                    d.child(self.tasks.lifted(
+                        empty_box(
+                            format!("tasks-empty-{id}").into(),
+                            Some("check-circle"),
+                            tr!("tasks-empty"),
+                            th,
+                        ),
+                        format!("tasks-empty-{id}"),
+                        th,
+                        cx,
+                    ))
                 })
                 .children(open_rows)
                 .when(done_count > 0, |d| {
+                    // A line over the fold, then the fold as a row.
                     d.child(
                         div()
-                            .id(("tasks-done-fold", id as usize))
-                            .mt(px(4.0))
-                            .h(px(40.0))
-                            .px(px(16.0))
-                            .flex()
-                            .flex_row()
-                            .items_center()
-                            .gap(px(12.0))
+                            .mt(px(space::S2))
+                            .pt(px(space::S2))
                             .border_t_1()
                             .border_color(rgba(th.divider))
-                            .cursor_pointer()
-                            .text_size(px(14.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .text_color(rgba(th.text_dim))
-                            .hover(|s| s.bg(rgba(th.hover)))
-                            .child(icon(
-                                if done_open {
-                                    "chevron-down"
-                                } else {
-                                    "chevron-right"
-                                },
-                                th.text_dim,
-                                20.0,
-                            ))
-                            .child(tr!("tasks-completed", count = done_count as u64))
-                            .on_click(cx.listener(move |this, _, _, cx| {
-                                if !this.tasks.open_done.remove(&id) {
-                                    this.tasks.open_done.insert(id);
-                                }
-                                cx.notify();
-                            })),
+                            .child(
+                                row(("tasks-done-fold", id as usize), false, th)
+                                    .mx(px(space::S3))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.text_dim))
+                                    .child(
+                                        div()
+                                            .flex_none()
+                                            .size(px(TICK_SLOT))
+                                            .flex()
+                                            .items_center()
+                                            .justify_center()
+                                            .child(icon(
+                                                if done_open {
+                                                    "chevron-down"
+                                                } else {
+                                                    "chevron-right"
+                                                },
+                                                th.text_dim,
+                                                20.0,
+                                            )),
+                                    )
+                                    .child(tr!("tasks-completed", count = done_count as u64))
+                                    .on_click(cx.listener(move |this, _, _, cx| {
+                                        if !this.tasks.open_done.remove(&id) {
+                                            this.tasks.open_done.insert(id);
+                                        }
+                                        cx.notify();
+                                    })),
+                            ),
                     )
                 })
                 .children(done_rows),
@@ -2462,12 +2483,14 @@ impl MailWindow {
         // A task dragged here, from this list or another, lands where the
         // gap opened.
         .drag_over::<TaskDragged>({
-            let accent = th.accent;
+            // An accent ring in place of the card's edge, over another
+            // list; a ring, not a border, so nothing inside moves.
+            let ring = drop_ring(th);
             move |style, dragged, _, _| {
                 if dragged.list == id {
                     style
                 } else {
-                    style.border_color(rgba(accent))
+                    style.shadow(ring.clone())
                 }
             }
         })
@@ -2480,7 +2503,7 @@ impl MailWindow {
         .on_drop(cx.listener(move |this, dragged: &TaskDragged, _, cx| {
             this.task_drop(id, dragged, cx);
         }))
-        .into_any_element()
+        .map(|card| self.tasks.lifted(card, format!("tasks-card-{id}"), th, cx))
     }
 
     fn adding_row(
@@ -2501,6 +2524,7 @@ impl MailWindow {
             let (label, _) = due_label(&shown, today)?;
             Some((label, typed.repeat.is_some()))
         });
+        let focus = adding.input.read(cx).focus_handle(cx);
         div()
             // A click elsewhere with nothing typed puts the new task away.
             .on_mouse_down_out(cx.listener(|this, _, window, cx| {
@@ -2513,36 +2537,49 @@ impl MailWindow {
                     this.task_finish_adding(false, window, cx);
                 }
             }))
-            .min_h(px(44.0))
-            .pl(px(if step { 48.0 } else { 16.0 }))
-            .pr(px(16.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(16.0))
-            .bg(rgba(fade(th.accent, 0.06)))
-            .child(round_tick(false, false, th))
+            .flex_none()
+            .py(px(space::S1))
+            .pl(px(space::S3 + if step { STEP_INDENT } else { 0.0 }))
+            .pr(px(space::S3))
             .child(
-                div()
-                    .flex_1()
-                    .min_w_0()
+                // A field with the new task's tick, in the rows' columns.
+                field("tasks-adding", &focus, th)
+                    .px(px(space::S3))
+                    .min_h(px(FIELD_HEIGHT))
                     .flex()
-                    .flex_col()
-                    .text_size(px(14.0))
-                    .child(adding.input.clone())
-                    .children(understood.map(|(label, repeats)| {
+                    .flex_row()
+                    .items_center()
+                    .gap(px(space::S4))
+                    .child(
                         div()
-                            .pb(px(6.0))
+                            .flex_none()
+                            .size(px(TICK_SLOT))
                             .flex()
-                            .flex_row()
                             .items_center()
-                            .gap(px(4.0))
-                            .text_size(px(12.0))
-                            .text_color(rgba(th.accent))
-                            .child(icon("calendar", th.accent, 14.0))
-                            .child(label)
-                            .when(repeats, |d| d.child(icon("refresh", th.accent, 14.0)))
-                    })),
+                            .justify_center()
+                            .child(round_tick(false, false, th)),
+                    )
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .flex()
+                            .flex_col()
+                            .child(adding.input.clone())
+                            .children(understood.map(|(label, repeats)| {
+                                div()
+                                    .pb(px(space::S2))
+                                    .flex()
+                                    .flex_row()
+                                    .items_center()
+                                    .gap(px(space::S2))
+                                    .text_size(px(text::CAPTION))
+                                    .text_color(rgba(th.accent))
+                                    .child(icon("calendar", th.accent, 14.0))
+                                    .child(label)
+                                    .when(repeats, |d| d.child(icon("refresh", th.accent, 14.0)))
+                            })),
+                    ),
             )
             .into_any_element()
     }
@@ -2580,24 +2617,28 @@ impl MailWindow {
         let step = task.parent.is_some() && !done;
         let editing = page.editing.as_ref().filter(|e| e.id == id);
         let due = due_label(task, today);
+        // Ticked a moment ago, its tick and title show it at once; it keeps
+        // its place until it folds away.
+        let ticking = page.motion.ticking(id);
+        let ticked = ticking.unwrap_or(done);
         let title: AnyElement = match editing {
             Some(editing) => div()
-                .text_size(px(14.0))
+                .text_size(px(text::BODY))
                 .child(editing.input.clone())
                 .into_any_element(),
             None => div()
-                .text_size(px(14.0))
-                .line_height(px(20.0))
-                .text_color(rgba(if done { th.text_faint } else { th.text }))
-                .when(done, |d| d.line_through())
+                .text_size(px(text::BODY))
+                .line_height(px(text::line_height(text::BODY)))
+                .text_color(rgba(if ticked { th.text_faint } else { th.text }))
+                .when(ticked, |d| d.line_through())
                 .child(task.title.clone())
                 .into_any_element(),
         };
         let quiet = look.quiet.map(|q| self.quiet_line(task, q, list, th));
         let notes = (!task.notes.is_empty() && !done && quiet.is_none()).then(|| {
             div()
-                .text_size(px(12.0))
-                .line_height(px(16.0))
+                .text_size(px(text::CAPTION))
+                .line_height(px(text::line_height(text::CAPTION)))
                 .text_color(rgba(th.text_dim))
                 .truncate()
                 .child(task.notes.lines().next().unwrap_or_default().to_owned())
@@ -2608,8 +2649,8 @@ impl MailWindow {
                 .flex_row()
                 .flex_wrap()
                 .items_center()
-                .gap(px(6.0))
-                .pt(px(4.0));
+                .gap(px(space::S2))
+                .pt(px(space::S2));
             let mut any = false;
             if let Some((label, past)) = due.filter(|_| !done) {
                 any = true;
@@ -2617,16 +2658,19 @@ impl MailWindow {
                 chips = chips.child(
                     div()
                         .id(("task-due", id as usize))
-                        .h(px(24.0))
-                        .px(px(8.0))
+                        .h(px(space::S6))
+                        .px(px(space::S3))
                         .flex()
                         .flex_row()
                         .items_center()
-                        .gap(px(4.0))
-                        .rounded(px(8.0))
+                        .gap(px(space::S2))
+                        .rounded(px(radius::SM))
                         .cursor_pointer()
                         .relative()
-                        .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
+                        .child(
+                            katna_ui::Glow::new(("task-due-glow", id as usize), rgba(th.hover))
+                                .corners([radius::SM; 4]),
+                        )
                         .on_click(cx.listener(move |this, _, window, cx| {
                             cx.stop_propagation();
                             this.task_open_details(id, window, cx)
@@ -2635,9 +2679,9 @@ impl MailWindow {
                         .border_color(rgba(if past {
                             fade(th.error, 0.5)
                         } else {
-                            th.divider
+                            th.outline
                         }))
-                        .text_size(px(12.0))
+                        .text_size(px(text::CAPTION))
                         .text_color(rgba(color))
                         .child(icon("calendar", color, 14.0))
                         .child(label)
@@ -2655,21 +2699,25 @@ impl MailWindow {
                     div()
                         .id(("task-note", id as usize))
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(
+                            katna_ui::Glow::new(("task-note-glow", id as usize), rgba(th.hover))
+                                .fade(),
+                        )
                         .tooltip(tip(tr!("tasks-open-note"), th))
                         .on_click(cx.listener(move |this, _, window, cx| {
                             cx.stop_propagation();
                             this.open_task_note(note, window, cx)
                         }))
-                        .h(px(24.0))
-                        .px(px(8.0))
+                        .h(px(space::S6))
+                        .px(px(space::S3))
                         .flex()
                         .flex_row()
                         .items_center()
-                        .gap(px(4.0))
-                        .rounded(px(8.0))
+                        .gap(px(space::S2))
+                        .rounded_full()
                         .bg(rgba(th.chip))
-                        .text_size(px(12.0))
+                        .text_size(px(text::CAPTION))
                         .text_color(rgba(th.text_dim))
                         .child(icon("notes", th.text_dim, 14.0))
                         .child(tr!("tasks-from-note")),
@@ -2681,21 +2729,25 @@ impl MailWindow {
                     div()
                         .id(("task-mail", id as usize))
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(
+                            katna_ui::Glow::new(("task-mail-glow", id as usize), rgba(th.hover))
+                                .fade(),
+                        )
                         .tooltip(tip(tr!("tasks-open-mail"), th))
                         .on_click(cx.listener(move |this, _, window, cx| {
                             cx.stop_propagation();
                             this.open_task_mail(&header, window, cx)
                         }))
-                        .h(px(24.0))
-                        .px(px(8.0))
+                        .h(px(space::S6))
+                        .px(px(space::S3))
                         .flex()
                         .flex_row()
                         .items_center()
-                        .gap(px(4.0))
-                        .rounded(px(8.0))
+                        .gap(px(space::S2))
+                        .rounded_full()
                         .bg(rgba(th.chip))
-                        .text_size(px(12.0))
+                        .text_size(px(text::CAPTION))
                         .text_color(rgba(th.text_dim))
                         .child(icon("mail", th.text_dim, 14.0))
                         .child(tr!("tasks-from-mail")),
@@ -2703,87 +2755,79 @@ impl MailWindow {
             }
             if let Some(list) = list {
                 any = true;
-                chips = chips.child(
-                    div()
-                        .text_size(px(12.0))
-                        .text_color(rgba(th.text_faint))
-                        .child(list.to_owned()),
-                );
+                chips = chips.child(tag(list.to_owned(), th));
             }
             (any && quiet.is_none()).then_some(chips)
         };
-        let star = div()
-            .id(("task-star", id as usize))
-            .size(px(32.0))
-            .flex_none()
-            .flex()
-            .items_center()
-            .justify_center()
-            .rounded_full()
-            .cursor_pointer()
-            .relative()
-            .child(crate::widgets::hover_fade("hover-glow", None, th))
-            .tooltip(tip(
-                if starred {
-                    tr!("tasks-unstar")
-                } else {
-                    tr!("tasks-star")
-                },
-                th,
-            ))
-            .when(!starred && !look.star_shown, |d| {
-                d.invisible().group_hover("task-row", |s| s.visible())
-            })
-            .child(icon(
-                if starred { "star-filled" } else { "star" },
-                if starred { th.star } else { th.text_dim },
-                20.0,
-            ))
-            .on_click(cx.listener(move |this, _, _, cx| {
-                cx.stop_propagation();
-                this.task_toggle_star(id, cx)
-            }));
+        // Shown unstarred too (Upcoming), it is faint.
+        let star = icon_button_colored(
+            ("task-star", id as usize),
+            if starred { "star-filled" } else { "star" },
+            18.0,
+            if starred {
+                th.star
+            } else if look.star_shown {
+                th.text_faint
+            } else {
+                th.text_dim
+            },
+            th,
+        )
+        .size(px(32.0))
+        .tooltip(tip(
+            if starred {
+                tr!("tasks-unstar")
+            } else {
+                tr!("tasks-star")
+            },
+            th,
+        ))
+        .when(!starred && !look.star_shown, |d| {
+            d.invisible().group_hover("task-row", |s| s.visible())
+        })
+        .on_click(cx.listener(move |this, _, _, cx| {
+            cx.stop_propagation();
+            this.task_toggle_star(id, cx)
+        }));
         let tick = div()
             .id(("task-tick", id as usize))
             .flex_none()
-            .size(px(24.0))
-            .mt(px(-2.0))
+            .size(px(TICK_SLOT))
+            // Its ring's middle on the title's first line.
+            .when(look.quiet.is_none(), |d| d.mt(px(-space::S1)))
             .flex()
             .items_center()
             .justify_center()
             .rounded_full()
             .cursor_pointer()
             .tooltip(tip(
-                if done {
+                if ticked {
                     tr!("tasks-mark-open")
                 } else {
                     tr!("tasks-mark-done")
                 },
                 th,
             ))
-            .child(round_tick(done, true, th))
+            .child(tick_mark(ticked, true, TICK, ticking.map(|_| id), th))
             .on_click(cx.listener(move |this, _, _, cx| {
                 cx.stop_propagation();
                 this.task_toggle_done(id, cx)
             }));
-        div()
-            .id(("task-row", id as usize))
+        // Ticked with others: the ticked tint; picked: the open one's.
+        let line = if selected {
+            ticked_row(("task-row", id as usize), th)
+        } else {
+            row(("task-row", id as usize), picked, th)
+        };
+        let row_el = line
             .group("task-row")
-            .min_h(px(44.0))
-            .py(px(10.0))
-            .pl(px(if step { 48.0 } else { 16.0 }))
-            .pr(px(8.0))
-            .flex()
-            .flex_row()
+            .mx(px(space::S3))
+            .pl(px(space::S3 + if step { STEP_INDENT } else { 0.0 }))
+            .pr(px(space::S2))
             .items_start()
-            .gap(px(16.0))
-            .cursor_pointer()
-            .when(look.quiet.is_some(), |d| {
-                d.mx(px(space::S3)).rounded(px(radius::SM))
-            })
-            .when(selected, |d| d.bg(rgba(th.row_selected)))
-            .when(picked && !selected, |d| d.bg(rgba(fade(th.accent, 0.12))))
-            .when(!picked && !selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
+            // Upcoming and Completed: the tick beside the title and its
+            // quiet line, in the middle, and the rows closer together.
+            .when(look.quiet.is_some(), |d| d.items_center().py(px(space::S2)))
             .map(|d| files::takes_files(d, id, th, cx))
             .child(tick)
             .child(
@@ -2868,28 +2912,34 @@ impl MailWindow {
                     cx.stop_propagation();
                     cx.notify();
                 }),
-            )
-            .into_any_element()
+            );
+        page.motion.row(id, row_el.into_any_element())
     }
 
     fn render_tasks_menu(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
-        let menu = self.tasks.menu.as_ref()?;
-        let item = |id: SharedString, name: &'static str, label: String| {
-            div()
-                .id(id)
-                .h(px(36.0))
-                .pl(px(16.0))
-                .pr(px(24.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(16.0))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .child(icon(name, th.text_dim, 20.0))
-                .child(div().flex_1().min_w_0().truncate().child(label))
+        // A menu just closed fades out where it was (`notched::fade_out`).
+        let open = self.tasks.menu;
+        if let Some(was) = self.tasks.menu_was.replace(open)
+            && open.is_none()
+            && let Some(since) = super::notched::fade_out(cx)
+        {
+            self.tasks.menu_out.set(Some((was, since)));
+        }
+        let (menu, closing) = match open {
+            Some(menu) => (menu, false),
+            None => match self.tasks.menu_out.get() {
+                Some((menu, since)) if !super::notched::faded(since, cx) => (menu, true),
+                _ => {
+                    self.tasks.menu_out.set(None);
+                    return None;
+                }
+            },
         };
-        let separator = || div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider));
+        let menu = &menu;
+        let item = |id: SharedString, name: &'static str, label: String| {
+            menu_row(id, Some(name), label, th)
+        };
+        let separator = || menu_separator(th);
         let mut width = MENU_WIDTH;
         let (at, items): (Point<Pixels>, Vec<AnyElement>) = match *menu {
             Menu::MoveSelected { .. } | Menu::DateSelected { .. } => {
@@ -3034,29 +3084,31 @@ impl MailWindow {
                 (at, items)
             }
         };
-        let list = div()
-            .w(px(width))
-            .py(px(8.0))
-            .flex()
-            .flex_col()
-            .map(|d| raised(d, th, 8.0, 3.0))
-            .text_size(px(14.0))
-            .text_color(rgba(th.text))
-            .children(items)
-            .with_animation(
-                "tasks-menu",
-                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
-                    140,
-                )))
+        let list = menu_panel(th).w(px(width)).children(items).with_animation(
+            "tasks-menu",
+            Animation::new(katna_ui::motion::time(katna_ui::tokens::duration::FAST))
                 .with_easing(ease_out_quint()),
-                |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
-            );
+            |el, t| el.opacity(t).mt(px(-space::S2 * (1.0 - t))),
+        );
         let close = || {
             cx.listener(|this: &mut Self, _: &gpui::MouseDownEvent, _, cx| {
                 this.tasks.menu = None;
                 cx.notify();
             })
         };
+        if closing {
+            let list = div().occlude().child(list);
+            return Some(
+                deferred(
+                    anchored()
+                        .position(at)
+                        .snap_to_window_with_margin(px(space::S3))
+                        .child(super::notched::fading(list, "tasks-menu-out")),
+                )
+                .with_priority(4)
+                .into_any_element(),
+            );
+        }
         Some(
             div()
                 .absolute()
@@ -3082,7 +3134,7 @@ impl MailWindow {
                     deferred(
                         anchored()
                             .position(at)
-                            .snap_to_window_with_margin(px(8.0))
+                            .snap_to_window_with_margin(px(space::S3))
                             .child(div().occlude().child(list)),
                     )
                     .with_priority(4),
@@ -3144,12 +3196,16 @@ fn drag_gaps(drag: &Drag, list: i64, slot: usize, th: &Theme) -> Vec<AnyElement>
             .overflow_hidden()
             .h(px(height * open))
             .child(
-                div().h(px(height)).py(px(2.0)).px(px(8.0)).child(
-                    div()
-                        .size_full()
-                        .rounded(px(8.0))
-                        .bg(rgba(fade(th.accent, 0.08))),
-                ),
+                div()
+                    .h(px(height))
+                    .py(px(space::S1))
+                    .px(px(space::S3))
+                    .child(
+                        div()
+                            .size_full()
+                            .rounded(px(radius::SM))
+                            .bg(rgba(fade(th.accent, 0.08))),
+                    ),
             )
     };
     let mut gaps = Vec::new();
@@ -3178,21 +3234,146 @@ fn drag_gaps(drag: &Drag, list: i64, slot: usize, th: &Theme) -> Vec<AnyElement>
     gaps
 }
 
-fn card_heading(title: String, th: &Theme) -> gpui::Div {
+/// The width of the ticks' column in a row, which the Add row's plus and
+/// the Completed fold's arrow share.
+const TICK_SLOT: f32 = space::S6;
+/// How far a step sits in from its task.
+const STEP_INDENT: f32 = space::S7 + space::S2;
+
+/// A list card's fill: the card's white in light colours, a step under
+/// the page's card in dark ones, where a shadow barely shows.
+pub(super) fn card_fill(th: &Theme) -> u32 {
+    if th.dark { th.read_row } else { th.surface }
+}
+
+/// The accent ring around a list card a task from another list is over.
+fn drop_ring(th: &Theme) -> Vec<gpui::BoxShadow> {
+    vec![gpui::BoxShadow {
+        color: rgba(th.accent).into(),
+        offset: gpui::point(px(0.0), px(0.0)),
+        blur_radius: px(0.0),
+        spread_radius: px(1.0),
+        inset: false,
+    }]
+}
+
+/// The line between parts of a menu.
+pub(super) fn menu_separator(th: &Theme) -> gpui::Div {
+    div()
+        .my(px(space::S2))
+        .mx(px(space::S2))
+        .h(px(1.0))
+        .bg(rgba(th.divider))
+}
+
+/// The height of a menu's row.
+const MENU_ROW: f32 = 32.0;
+
+/// A menu of the page (a list's ⋮, a task's right-click menu, the select
+/// bar's): the shared floating surface (`widgets::raised`, level 3) at
+/// `MD`, its rows `SM` inside it, as in the study's mockup.
+pub(super) fn menu_panel(th: &Theme) -> gpui::Div {
+    raised(
+        div()
+            .key_context(crate::widgets::MENU_CONTEXT)
+            .p(px(space::S2))
+            .flex()
+            .flex_col()
+            .text_size(px(text::BODY))
+            .text_color(rgba(th.text)),
+        th,
+        radius::MD,
+        level::MENU,
+    )
+}
+
+/// A row of a [`menu_panel`]: a compact [`row`] with its icon (or the
+/// room for one) and its label, which the arrow keys reach.
+pub(super) fn menu_row(
+    id: impl Into<gpui::ElementId>,
+    mark: Option<&str>,
+    label: String,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    use super::MenuKey;
+    row(id, false, th)
+        .min_h(px(MENU_ROW))
+        .py_0()
+        .px(px(space::S3))
+        .gap(px(space::S3))
+        .menu_key(th)
+        .child(
+            div()
+                .flex_none()
+                .size(px(MENU_MARK))
+                .flex()
+                .items_center()
+                .justify_center()
+                .children(mark.map(|m| icon(m, th.text_dim, MENU_MARK))),
+        )
+        .child(div().flex_1().min_w_0().truncate().child(label))
+}
+
+/// A menu row's icon.
+const MENU_MARK: f32 = 16.0;
+
+/// What a card says when it has nothing to show: a box inside it, at
+/// level 1 like any card inside a card.
+fn empty_box(
+    key: SharedString,
+    mark: Option<&str>,
+    text_: impl IntoElement,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    div()
+        .id(key)
+        .mx(px(space::S3))
+        .my(px(space::S2))
+        .py(px(space::S6))
+        .px(px(space::S6))
+        .map(|d| card(d, th, th.surface, radius::MD, CARD_REST))
+        .flex()
+        .flex_col()
+        .items_center()
+        .gap(px(space::S3))
+        .text_center()
+        .children(mark.map(|m| icon(m, th.text_faint, 40.0)))
+        .child(
+            div()
+                .text_size(px(text::BODY))
+                .text_color(rgba(th.text_dim))
+                .child(text_),
+        )
+}
+
+/// The quiet line under a card's heading: the day on Today, the account
+/// of a list shown alone.
+fn card_subheading(line: String, th: &Theme) -> gpui::Div {
+    div()
+        .px(px(space::S5))
+        .mt(px(-space::S3))
+        .mb(px(space::S2))
+        .text_size(px(text::CAPTION))
+        .text_color(rgba(th.text_faint))
+        .child(line)
+}
+
+pub(super) fn card_heading(title: String, th: &Theme) -> gpui::Div {
     div()
         .h(px(56.0))
-        .pl(px(20.0))
-        .pr(px(8.0))
+        .pl(px(space::S5))
+        .pr(px(space::S3))
         .flex()
         .flex_row()
         .items_center()
-        .gap(px(8.0))
+        .gap(px(space::S3))
         .child(
             div()
                 .flex_1()
                 .min_w_0()
                 .truncate()
-                .text_size(px(18.0))
+                .text_size(px(text::SUBTITLE))
+                .font_weight(FontWeight::SEMIBOLD)
                 .text_color(rgba(th.text))
                 .child(title),
         )
@@ -3201,16 +3382,63 @@ fn card_heading(title: String, th: &Theme) -> gpui::Div {
 /// The round tick of a task: an empty ring, a check on hover, and a
 /// filled disc with a check once done.
 pub(super) fn round_tick(done: bool, hover: bool, th: &Theme) -> AnyElement {
+    tick_mark(done, hover, 20.0, None, th)
+}
+
+/// The page's round tick, as in the study's mockup.
+const TICK: f32 = 16.0;
+
+/// A [`round_tick`] `size` across. `spring`: the task just ticked, whose
+/// disc fills from the middle and whose check springs in (`SLIDE`).
+fn tick_mark(done: bool, hover: bool, size: f32, spring: Option<i64>, th: &Theme) -> AnyElement {
+    // 2 px round the 20 px tick, as `widgets::checkbox`; 1.5 round the
+    // smaller one, as the mockup's.
+    let edge = if size >= 20.0 { 2.0 } else { 1.5 };
     let ring = div()
-        .size(px(20.0))
+        .relative()
+        .size(px(size))
         .flex()
         .items_center()
         .justify_center()
         .rounded_full();
+    if done && let Some(id) = spring {
+        let springy = || {
+            gpui::SpringAnimation::new(katna_ui::motion::scaled(katna_ui::motion::SLIDE))
+                .to(1.0)
+                .from(0.0)
+        };
+        let accent = th.accent;
+        return ring
+            .border_px(edge)
+            .border_color(rgba(accent))
+            .child(
+                div()
+                    .absolute()
+                    .rounded_full()
+                    .bg(rgba(accent))
+                    .with_spring(("tick-fill", id as usize), springy(), move |el, s: f32| {
+                        let d = size * s.max(0.0);
+                        el.left(px((size - d) / 2.0 - edge))
+                            .top(px((size - d) / 2.0 - edge))
+                            .size(px(d))
+                    }),
+            )
+            .child(
+                gpui::svg()
+                    .path("icons/check.svg")
+                    .size(px(size * 0.75))
+                    .text_color(rgba(th.on_accent))
+                    .with_spring(("tick-check", id as usize), springy(), |el, s: f32| {
+                        let s = s.max(0.0);
+                        el.with_transformation(gpui::Transformation::scale(gpui::size(s, s)))
+                    }),
+            )
+            .into_any_element();
+    }
     if done {
         return ring
             .bg(rgba(th.accent))
-            .child(icon("check", th.on_accent, 16.0))
+            .child(icon("check", th.on_accent, size * 0.75))
             .with_animation(
                 "tick-done",
                 Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
@@ -3221,14 +3449,18 @@ pub(super) fn round_tick(done: bool, hover: bool, th: &Theme) -> AnyElement {
             )
             .into_any_element();
     }
-    ring.border_px(2.0)
-        .border_color(rgba(th.text_dim))
+    ring.border_px(edge)
+        .border_color(rgba(if size >= 20.0 {
+            th.text_dim
+        } else {
+            th.text_faint
+        }))
         .when(hover, |d| {
             d.child(
                 div()
                     .invisible()
                     .group_hover("task-row", |s| s.visible())
-                    .child(icon("check", th.text_dim, 14.0)),
+                    .child(icon("check", th.text_dim, size * 0.7)),
             )
         })
         .into_any_element()

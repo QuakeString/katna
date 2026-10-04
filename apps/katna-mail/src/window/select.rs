@@ -58,6 +58,7 @@ const UI_WINDOW_PARTS: usize = 1 << 16;
 /// rest are handed out in drawing order ([`TextSelection::next_pieces`]).
 pub(super) const ABOUT_SLOT: usize = 0;
 pub(super) const WHATS_NEW_SLOT: usize = 1;
+pub(super) const SHORTCUTS_SLOT: usize = 2;
 const SLOTS: usize = 64;
 
 /// A run of text drawn by `part` of the text (a message of the

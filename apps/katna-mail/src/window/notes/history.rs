@@ -184,7 +184,7 @@ impl MailWindow {
         let Some(version) = history.versions.get(history.selected) else {
             return;
         };
-        self.close_note(cx);
+        self.close_note_now(cx);
         let mut restored = history.note.clone();
         restored.title = version.title.clone();
         restored.body = version.body.clone();

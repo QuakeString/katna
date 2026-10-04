@@ -90,6 +90,7 @@ mod settings_page;
 mod settings_search;
 mod share_ask;
 mod sheet;
+mod shortcuts_dialog;
 mod sign_in_again;
 mod skeleton;
 mod snooze;
@@ -721,6 +722,8 @@ pub struct MailWindow {
     onboarding: Option<onboarding::Onboarding>,
     /// The What's new dialog, after an update or from quick settings.
     whats_new: Option<whats_new::WhatsNew>,
+    /// Help > Keyboard shortcuts, while open.
+    shortcuts_dialog: Option<shortcuts_dialog::ShortcutsDialog>,
     /// "Help improve Katna", asked once after an update.
     share_ask: Option<share_ask::ShareAsk>,
     /// The print preview, before the desktop's print dialog.
@@ -1057,6 +1060,7 @@ impl MailWindow {
             add_account: None,
             onboarding: None,
             whats_new: None,
+            shortcuts_dialog: None,
             share_ask: None,
             print_preview: None,
             share_ask_later: false,
@@ -2175,7 +2179,11 @@ impl MailWindow {
             }
             Hover::Panel => self.peek_hover.1 = hovered,
         }
-        if self.nav_docked() || self.layout.drawer || self.app != RailApp::Mail {
+        if self.nav_docked()
+            || self.layout.drawer
+            || self.app != RailApp::Mail
+            || self.settings_page.is_some()
+        {
             return;
         }
         let on = self.peek_hover.0 || self.peek_hover.1;
@@ -3855,6 +3863,7 @@ impl Render for MailWindow {
         let scheme_editor = self.render_scheme_editor(&th, window, reduce, cx);
         let contact_qr = self.render_contact_qr(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
+        let shortcuts_dialog = self.render_shortcuts_dialog(&th, window, reduce, cx);
         let share_ask = if onboarding {
             None
         } else {
@@ -3952,6 +3961,7 @@ impl Render for MailWindow {
             .children(crash_notice)
             .children(sign_in_again)
             .children(whats_new)
+            .children(shortcuts_dialog)
             .children(share_ask)
             .children(about)
             .children(gallery)

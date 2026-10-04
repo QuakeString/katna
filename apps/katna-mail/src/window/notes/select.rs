@@ -16,7 +16,7 @@ use katna_ui::px;
 use katna_ui::tokens::{elevation, radius, space, text};
 
 use super::labels::LabelPicker;
-use super::{COLORS, EDITOR_WIDTH, MailWindow, NotesView, item_of, note_color};
+use super::{COLORS, MailWindow, NotesView, item_of, note_color};
 use crate::daemon::Command;
 use crate::theme::Theme;
 use crate::widgets::{Check, icon, icon_button, menu_item_icon, raised, tip};
@@ -51,7 +51,7 @@ impl MailWindow {
 
     /// Ticks card `id`, or unticks it.
     pub(super) fn toggle_note_check(&mut self, id: i64, cx: &mut Context<Self>) {
-        self.close_note(cx);
+        self.close_note_now(cx);
         let Some(page) = self.notes.as_mut() else {
             return;
         };
@@ -76,7 +76,7 @@ impl MailWindow {
             self.toggle_note_check(id, cx);
             return;
         };
-        self.close_note(cx);
+        self.close_note_now(cx);
         let Some(page) = self.notes.as_mut() else {
             return;
         };
@@ -336,22 +336,10 @@ impl MailWindow {
         let all_archived = notes.iter().all(|n| n.archived);
         let ids: Vec<i64> = notes.iter().map(|n| n.id).collect();
         let reminded = notes.iter().any(|n| n.remind_at.is_some());
-        let mut bar = div()
-            .id("notes-select-bar")
-            .w_full()
-            .max_w(px(EDITOR_WIDTH))
-            .h(px(48.0))
+        let mut bar = super::top_bar("notes-select-bar", th)
             .pl(px(space::S3))
-            .pr(px(space::S3))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(space::S2))
-            .rounded_full()
-            .bg(rgba(th.surface))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .shadow(crate::widgets::elevation(th, elevation::CARD))
+            .pr(px(space::S2))
+            .gap(px(space::S1))
             .child(
                 tool("notes-select-clear", "close", tr!("notes-select-clear")).on_click(
                     cx.listener(|this, _, _, cx| {

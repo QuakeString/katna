@@ -442,9 +442,10 @@ impl MailWindow {
         self.layout.page.target() == 0.0 && self.layout.page.settled()
     }
 
-    /// The folders stay open beside the list: only on a desktop.
+    /// The folders stay open beside the list: only on a desktop, and not
+    /// while Settings is open, whose own list of pages takes their place.
     pub(super) fn nav_docked(&self) -> bool {
-        self.nav_open && self.layout.shape.is_desktop()
+        self.nav_open && self.layout.shape.is_desktop() && self.settings_page.is_none()
     }
 
     pub(super) fn close_drawer(&mut self, cx: &mut Context<Self>) {

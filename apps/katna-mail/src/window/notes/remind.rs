@@ -9,13 +9,11 @@ use gpui::{AnyElement, Context, ElementId, div, prelude::*, rgba};
 use jiff::Timestamp;
 use jiff::tz::TimeZone;
 use katna_i18n::{format, tr};
-use katna_ui::px;
-use katna_ui::tokens::{space, text};
 
 use super::{MailWindow, item_of};
 use crate::daemon::Command;
-use crate::theme::{Theme, fade};
-use crate::widgets::{icon, tip};
+use crate::theme::Theme;
+use crate::widgets::tip;
 
 /// When a reminder is, as its chip says it: "Today, 18:00",
 /// "Tomorrow, 09:00", "Mon, 10:30", "27 Sept, 08:00".
@@ -121,38 +119,28 @@ impl MailWindow {
         id: impl Into<ElementId>,
         note: i64,
         at: i64,
+        tint: u32,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let now = Timestamp::now().as_second();
         let past = at <= now;
-        div()
-            .id(id)
-            .h(px(24.0))
-            .pl(px(space::S3))
-            .pr(px(space::S4))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(space::S2))
-            .rounded_full()
-            .bg(rgba(fade(th.text, 0.08)))
-            .text_size(px(text::CAPTION))
-            .text_color(rgba(th.text))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(fade(th.text, 0.14))))
-            .tooltip(tip(super::super::snooze::describe(at, &self.tz), th))
-            .on_click(cx.listener(move |this, event: &gpui::ClickEvent, _, cx| {
-                cx.stop_propagation();
-                this.open_remind_menu(vec![note], true, event.position(), cx);
-            }))
-            .child(icon("bell", th.text_dim, 14.0))
-            .child(
-                div()
-                    .when(past, |d| d.line_through())
-                    .child(remind_label(at, now, &self.tz)),
-            )
-            .into_any_element()
+        let label = remind_label(at, now, &self.tz);
+        crate::widgets::icon_tag(
+            "bell",
+            div().when(past, |d| d.line_through()).child(label),
+            th,
+        )
+        .id(id)
+        .bg(rgba(tint))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(super::chip_hover(tint, th))))
+        .tooltip(tip(super::super::snooze::describe(at, &self.tz), th))
+        .on_click(cx.listener(move |this, event: &gpui::ClickEvent, _, cx| {
+            cx.stop_propagation();
+            this.open_remind_menu(vec![note], true, event.position(), cx);
+        }))
+        .into_any_element()
     }
 }
 
