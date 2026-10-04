@@ -143,6 +143,30 @@ pub(in crate::window) fn add_birthdays(
 
 impl MailWindow {
     /// Shows or hides the Birthdays calendar, remembered in the settings.
+    /// Shows `account` in the Calendar, or leaves it out (Settings >
+    /// Calendar): its calendars, events and tasks, and the reminders of its
+    /// events, which the daemon reads from the settings.
+    pub(in crate::window) fn show_account_in_calendar(
+        &mut self,
+        account: katna_core::account::AccountId,
+        on: bool,
+        cx: &mut Context<Self>,
+    ) {
+        let left_out = &mut self.config.calendar.left_out;
+        if on {
+            left_out.retain(|a| *a != account.0);
+        } else if !left_out.contains(&account.0) {
+            left_out.push(account.0);
+        } else {
+            return;
+        }
+        self.calendar.task_drag = None;
+        self.save_config();
+        self.load_calendar(cx);
+        self.load_agenda(cx);
+        cx.notify();
+    }
+
     pub(in crate::window) fn toggle_birthdays(&mut self, cx: &mut Context<Self>) {
         let contacts = &mut self.config.contacts;
         contacts.hide_birthdays = !contacts.hide_birthdays;

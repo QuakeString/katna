@@ -1397,6 +1397,12 @@ pub struct CalendarView {
     /// Tasks are left off the Calendar (the side list's Tasks unticked).
     #[serde(skip_serializing_if = "std::ops::Not::not")]
     pub hide_tasks: bool,
+    /// Accounts left out of the Calendar (Settings > Calendar, their
+    /// switch off): their calendars, events and tasks don't show there and
+    /// their events don't remind. They still sync, so they come back at
+    /// once.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub left_out: Vec<i64>,
 }
 
 /// One of [`CalendarView::sets`].
@@ -1409,6 +1415,12 @@ pub struct CalendarSet {
 }
 
 impl CalendarView {
+    /// Whether the Calendar shows what `account` holds; `None` (this
+    /// computer) always shows.
+    pub fn shows(&self, account: Option<crate::account::AccountId>) -> bool {
+        account.is_none_or(|a| !self.left_out.contains(&a.0))
+    }
+
     /// The days of the custom view: [`Self::custom_days`], or 4 as
     /// Google Calendar starts it.
     pub fn custom_days(&self) -> u8 {
@@ -1570,6 +1582,18 @@ fn tempfile_in(dir: &Path) -> Result<(std::path::PathBuf, fs::File)> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn accounts_left_out_of_the_calendar() {
+        use super::Config;
+        use crate::account::AccountId;
+        let config = Config::parse("[calendar]\nleft_out = [4]\n").unwrap();
+        assert!(!config.calendar.shows(Some(AccountId(4))));
+        assert!(config.calendar.shows(Some(AccountId(5))));
+        assert!(config.calendar.shows(None), "this computer's calendars");
+        let text = toml::to_string(&Config::default()).unwrap();
+        assert!(!text.contains("left_out"), "not written while empty");
+    }
+
     #[test]
     fn older_sound_switches_carry_over() {
         use super::{Config, SoundEvent};

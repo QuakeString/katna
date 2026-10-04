@@ -445,6 +445,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Calendar,
+        "settings-calendar-accounts",
+        "settings-calendar-accounts-summary",
+        "account accounts exclude hide leave out show calendar events",
+    ),
+    entry(
+        Section::Calendar,
         "settings-calendar-density",
         "settings-calendar-density-summary",
         "hours tall compact comfortable zoom day week density",

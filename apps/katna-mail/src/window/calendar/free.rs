@@ -93,7 +93,14 @@ impl MailWindow {
         let now = Zoned::now().with_time_zone(tz.clone());
         let from = midnight(now.date(), &tz);
         let to = midnight(now.date().checked_add(14.days()).unwrap_or(now.date()), &tz);
-        let occurrences = match read(&self.paths, from, to, &tz, false) {
+        let occurrences = match read(
+            &self.paths,
+            from,
+            to,
+            &tz,
+            false,
+            &self.config.calendar.left_out,
+        ) {
             Ok((_, occurrences)) => occurrences,
             Err(err) => {
                 tracing::warn!(%err, "reading the calendar for free times failed");

@@ -829,6 +829,26 @@ impl MailWindow {
 
     fn calendar_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let calendar = &self.config.calendar;
+        // One switch per account: off leaves it out of the Calendar.
+        let switches: Vec<AnyElement> = self
+            .accounts
+            .iter()
+            .map(|account| {
+                let on = calendar.shows(Some(account.id));
+                self.switch_row(
+                    (
+                        "page-calendar-account",
+                        usize::try_from(account.id.0).unwrap_or_default(),
+                    ),
+                    account.address.clone(),
+                    tr!("settings-calendar-account-show-detail"),
+                    on,
+                    Change::CalendarAccount(account.id, !on),
+                    th,
+                    cx,
+                )
+            })
+            .collect();
         let density = [
             (
                 CalendarDensity::Responsive,
@@ -876,9 +896,18 @@ impl MailWindow {
                 .children(children)
         };
         let birthdays = !self.config.contacts.hide_birthdays;
+        let accounts = (!switches.is_empty()).then(|| {
+            self.row(
+                tr!("settings-calendar-accounts"),
+                Some(&tr!("settings-calendar-accounts-detail")),
+                div().flex().flex_col().children(switches),
+                th,
+            )
+        });
         div()
             .flex()
             .flex_col()
+            .children(accounts)
             .child(self.row(
                 tr!("settings-calendar-density"),
                 Some(&tr!("settings-calendar-density-detail")),

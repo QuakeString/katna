@@ -215,8 +215,14 @@ fn notes_due(rows: Vec<(i64, String, String, i64)>) -> Vec<Alarm> {
 
 /// Reads the reminders due in `(from, to]` and the next one's time:
 /// events', tasks', then notes'.
-fn read(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option<i64>) {
-    let (mut alarms, next) = read_events(store, from, to, tz);
+fn read(
+    store: &Store,
+    from: i64,
+    to: i64,
+    tz: &TimeZone,
+    left_out: &[i64],
+) -> (Vec<Alarm>, Option<i64>) {
+    let (mut alarms, next) = read_events(store, from, to, tz, left_out);
     let tasks = store.tasks(to).unwrap_or_else(|err| {
         tracing::warn!(%err, "reminders: cannot read tasks");
         Vec::new()
@@ -235,8 +241,21 @@ fn read(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option
     )
 }
 
-fn read_events(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option<i64>) {
-    let calendars = store.calendars().unwrap_or_default();
+/// Events' reminders; none for the accounts `left_out` of the Calendar
+/// (Settings > Calendar), whose calendars count as hidden.
+fn read_events(
+    store: &Store,
+    from: i64,
+    to: i64,
+    tz: &TimeZone,
+    left_out: &[i64],
+) -> (Vec<Alarm>, Option<i64>) {
+    let mut calendars = store.calendars().unwrap_or_default();
+    for calendar in &mut calendars {
+        if calendar.account.is_some_and(|a| left_out.contains(&a.0)) {
+            calendar.hidden = true;
+        }
+    }
     let rows = match store.event_rows_in_range(from, to + AHEAD) {
         Ok(rows) => rows,
         Err(err) => {
@@ -272,7 +291,8 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
             return;
         }
         let now = unix_now();
-        let (alarms, next) = read(&daemon.store(), from, now, &tz);
+        let left_out = super::settings(&daemon.paths).calendar.left_out;
+        let (alarms, next) = read(&daemon.store(), from, now, &tz, &left_out);
         let notices = daemon.new_mail_notices();
         let snoozed = notices
             .as_ref()

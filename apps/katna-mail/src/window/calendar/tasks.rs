@@ -8,6 +8,8 @@
 //! to another day keeps its time. The side list's Tasks switch hides them
 //! all, remembered on this computer as Birthdays is.
 
+use std::collections::HashSet;
+
 use gpui::{
     AnyElement, ClickEvent, Context, Div, ElementId, FontWeight, MouseButton, MouseMoveEvent,
     Pixels, Point, SharedString, Stateful, Window, div, prelude::*, rgba,
@@ -75,7 +77,22 @@ impl MailWindow {
         if self.config.calendar.hide_tasks {
             return Vec::new();
         }
+        let view = &self.config.calendar;
+        if view.left_out.is_empty() {
+            return self.dated_tasks();
+        }
+        // Not those of accounts left out of the Calendar.
+        let shown: HashSet<i64> = self
+            .tasks
+            .columns()
+            .iter()
+            .filter(|c| view.shows(c.list.account))
+            .map(|c| c.list.id)
+            .collect();
         self.dated_tasks()
+            .into_iter()
+            .filter(|(t, _)| shown.contains(&t.list))
+            .collect()
     }
 
     /// Shows or hides tasks on the Calendar, remembered in the settings.
