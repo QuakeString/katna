@@ -173,6 +173,7 @@ pub(super) struct Problems {
     _sign_in: Option<Task<()>>,
     _timer: Option<Task<()>>,
     _sync: Option<Task<()>>,
+    _refused: Option<Task<()>>,
 }
 
 impl Problems {
@@ -256,7 +257,59 @@ impl Problems {
     }
 }
 
+/// What the note says when a mail server refused `count` changes of kind
+/// `change` in `address`, which were undone.
+fn refused_text(change: &str, count: u32, address: &str) -> String {
+    let count = i64::from(count);
+    match change {
+        "flags" => tr!("problems-refused-flags", count = count, address = address),
+        "move" => tr!("problems-refused-move", count = count, address = address),
+        "label" => tr!("problems-refused-label", count = count, address = address),
+        "delete" => tr!("problems-refused-delete", count = count, address = address),
+        _ => tr!("problems-refused-other", count = count, address = address),
+    }
+}
+
 impl MailWindow {
+    /// Says when a mail server refused changes for good, which the
+    /// daemon undid, in words of what the user did, with the server's own
+    /// under Details.
+    pub(super) fn watch_refused(
+        &mut self,
+        connection: katna_dbus::zbus::Connection,
+        cx: &mut Context<Self>,
+    ) {
+        use futures_lite::StreamExt;
+        self.problems._refused = Some(cx.spawn(async move |this, cx| {
+            let mut refused = match daemon::changes_refused(&connection).await {
+                Ok(refused) => Box::pin(refused),
+                Err(err) => {
+                    tracing::info!("not following refused changes: {err}");
+                    return;
+                }
+            };
+            while let Some(refused) = refused.next().await {
+                let shown = this.update(cx, |this, cx| {
+                    let address = this
+                        .accounts
+                        .iter()
+                        .find(|a| a.id == AccountId(refused.account))
+                        .map(|a| a.address.clone())
+                        .unwrap_or_default();
+                    let text = refused_text(&refused.change, refused.count, &address);
+                    this.show_snackbar_for(text, None, super::FAILURE_TIME, cx);
+                    if let Some(snackbar) = &mut this.snackbar {
+                        snackbar.undo = Some(daemon::Command::ShowDetails(refused.reason));
+                        snackbar.label = Some(tr!("problems-details").into());
+                    }
+                });
+                if shown.is_err() {
+                    break;
+                }
+            }
+        }));
+    }
+
     /// Asks the daemon how every account's sync stands; after every
     /// change it reports.
     pub(super) fn check_problems(&mut self, cx: &mut Context<Self>) {
@@ -987,5 +1040,22 @@ impl ProblemLine {
 
     fn into_any(self) -> AnyElement {
         self.line.into_any_element()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn says_refused_changes_as_what_was_done() {
+        let one = refused_text("move", 1, "ada@example.org");
+        assert!(one.contains("moving a message") && one.contains("ada@example.org"));
+        assert!(refused_text("flags", 3, "a@b").contains("3 messages"));
+        assert_ne!(
+            refused_text("label", 1, "a@b"),
+            refused_text("delete", 1, "a@b")
+        );
+        assert_eq!(refused_text("other", 2, "a@b"), refused_text("?", 2, "a@b"));
     }
 }

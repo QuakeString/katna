@@ -47,3 +47,31 @@ problems-password-checking = Checking…
 problems-password-refused-again = { $provider } refused this password too. Check it and try again.
 # Snackbar once the new password works.
 problems-password-saved = Password saved for { $address }. Getting your mail…
+
+## When a mail server refuses a change for good (a note at the bottom)
+
+# Katna undid the change. $count: how many messages; $address: the
+# account's email address.
+problems-refused-move = The mail server of { $address } didn't accept moving { $count ->
+    [one] a message, so it's back where it was.
+   *[other] { $count } messages, so they're back where they were.
+}
+problems-refused-flags = The mail server of { $address } didn't accept marking { $count ->
+    [one] a message (read, starred…), so it's back as it was.
+   *[other] { $count } messages (read, starred…), so they're back as they were.
+}
+problems-refused-label = The mail server of { $address } didn't accept changing the labels of { $count ->
+    [one] a message, so it's back as it was.
+   *[other] { $count } messages, so they're back as they were.
+}
+problems-refused-delete = The mail server of { $address } didn't accept deleting { $count ->
+    [one] a message, so it's back.
+   *[other] { $count } messages, so they're back.
+}
+# Anything else, or a mix of changes.
+problems-refused-other = The mail server of { $address } didn't accept { $count ->
+    [one] a change, so Katna put it back as it was.
+   *[other] { $count } changes, so Katna put them back as they were.
+}
+# The note's button: shows the server's own words.
+problems-details = Details

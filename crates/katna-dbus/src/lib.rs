@@ -1376,6 +1376,19 @@ macro_rules! pim_proxy {
             #[zbus(signal)]
             fn mail_changed(&self, account: i64) -> zbus::Result<()>;
 
+            /// The server of `account` refused `count` changes for good and
+            /// they were undone: `change` is what they were (`flags`,
+            /// `move`, `label`, `delete`, or `other` for anything else or a
+            /// mix) and `reason` the server's first answer.
+            #[zbus(signal)]
+            fn changes_refused(
+                &self,
+                account: i64,
+                change: &str,
+                count: u32,
+                reason: &str,
+            ) -> zbus::Result<()>;
+
             /// Outbox entry `id` changed state; see `Outbox`.
             #[zbus(signal)]
             fn outbox_changed(&self, id: i64) -> zbus::Result<()>;

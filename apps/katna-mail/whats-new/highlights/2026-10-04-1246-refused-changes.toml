@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Changes the server refused are no longer undone silently"
+text = """
+When a mail server keeps refusing a change, such as moving a message to a
+folder deleted elsewhere, Katna puts it back as before and now says so in
+plain words, with Details for the server's own reply.
+"""

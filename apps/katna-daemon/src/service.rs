@@ -930,6 +930,15 @@ macro_rules! pim_interface {
             async fn mail_changed(emitter: &SignalEmitter<'_>, account: i64) -> zbus::Result<()>;
 
             #[zbus(signal)]
+            async fn changes_refused(
+                emitter: &SignalEmitter<'_>,
+                account: i64,
+                change: &str,
+                count: u32,
+                reason: &str,
+            ) -> zbus::Result<()>;
+
+            #[zbus(signal)]
             async fn outbox_changed(emitter: &SignalEmitter<'_>, id: i64) -> zbus::Result<()>;
 
             #[zbus(signal)]
@@ -1038,6 +1047,12 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::ContactsChanged => PimService::contacts_changed(&emitter).await,
             Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
             Notice::RulesChanged => PimService::rules_changed(&emitter).await,
+            Notice::ChangesRefused {
+                account,
+                change,
+                count,
+                ref reason,
+            } => PimService::changes_refused(&emitter, account.0, change, count, reason).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

@@ -1342,6 +1342,7 @@ impl MailWindow {
                 // The main window reports sending and the first sync.
                 if !this.detached {
                     this.watch_sending(connection.clone(), cx);
+                    this.watch_refused(connection.clone(), cx);
                     this.watch_scheduled(connection.clone(), cx);
                     this.watch_updates(connection.clone(), cx);
                     this.watch_contacts(connection.clone(), cx);
@@ -3161,6 +3162,10 @@ impl MailWindow {
         }
         if let Command::TurnAppOn(app) = undo {
             self.set_app_on(app, true, cx);
+            return;
+        }
+        if let Command::ShowDetails(details) = undo {
+            self.show_snackbar_for(details, None, FAILURE_TIME, cx);
             return;
         }
         if undo == Command::OpenOutbox {
