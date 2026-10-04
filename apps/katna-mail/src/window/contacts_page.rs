@@ -1574,9 +1574,8 @@ fn section(title: Div, rows: Vec<AnyElement>, tint: usize, th: &Theme) -> Div {
         .flex()
         .flex_col()
         .gap(px(14.0))
-        .rounded(px(14.0))
-        .border_1()
-        .border_color(rgba(th.outline))
+        .rounded(px(katna_ui::tokens::radius::LG))
+        .shadow(crate::widgets::card_shadow(th, 1.0))
         .bg(gpui::linear_gradient(
             180.0,
             gpui::linear_color_stop(rgba(top), 0.0),

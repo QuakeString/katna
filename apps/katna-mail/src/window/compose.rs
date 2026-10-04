@@ -2663,11 +2663,7 @@ impl MailWindow {
             .min_w_0()
             .flex()
             .flex_col()
-            .rounded(px(12.0))
-            .bg(rgba(th.surface))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .shadow(elevation(th, 1.5))
+            .map(|d| crate::widgets::tile(d, th))
             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| {
                 this.drop_on_compose(paths, cx);
             }))

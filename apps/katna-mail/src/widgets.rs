@@ -1260,6 +1260,22 @@ pub fn card<E: Styled + ParentElement>(
     pane(card.rounded(px(radius)), fill, th.surface, radius).shadow(card_shadow(th, shadow))
 }
 
+/// A tile: a small card on a page or inside another card (a file, a
+/// folder, an attachment, an invitation, a mail service to pick). Level 1
+/// like [`card`], on `th.surface` with corners of [`radius::MD`], and its
+/// edge and shadow at full strength, so it lifts off what is under it.
+/// A tile that can be clicked adds [`tile_hover`] first among its
+/// children.
+pub fn tile<E: Styled + ParentElement>(tile: E, th: &Theme) -> E {
+    card(tile, th, th.surface, radius::MD, 1.0)
+}
+
+/// The hover tint of a [`tile`], easing in and out. Its parent needs an
+/// id and `relative()`.
+pub fn tile_hover(th: &Theme) -> Glow {
+    hover_fade("tile-hover", Some(radius::MD), th)
+}
+
 /// How much more of the way to solid a dialog's tint goes than a menu's.
 /// A dialog covers much more of the window, and a busy list showing
 /// through all of it reads as clutter, not glass.

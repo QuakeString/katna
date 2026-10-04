@@ -1795,11 +1795,8 @@ impl MailWindow {
                 None => d.flex_1().flex_basis(px(0.0)).min_w_0(),
             })
             .h(px(FOLDER_HEIGHT))
-            .rounded(px(CARD_RADIUS))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .bg(rgba(th.surface))
-            .hover(|s| s.bg(rgba(th.hover)))
+            .map(|d| crate::widgets::tile(d, th))
+            .child(crate::widgets::tile_hover(th))
             .child(
                 div()
                     .size_full()
@@ -2010,11 +2007,8 @@ impl MailWindow {
             .flex()
             .flex_col()
             .overflow_hidden()
-            .rounded(px(CARD_RADIUS))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .bg(rgba(th.surface))
-            .hover(|s| s.shadow(crate::widgets::elevation(th, 1.0)))
+            .map(|d| crate::widgets::tile(d, th))
+            .child(crate::widgets::tile_hover(th))
             .child(head)
             .child(
                 div()

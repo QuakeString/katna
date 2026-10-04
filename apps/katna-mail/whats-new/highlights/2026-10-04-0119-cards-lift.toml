@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Cards that lift"
+text = """
+Files, attachments, Drive folders, invitations, summaries, the reply box
+and the mail services in Add account are now cards with the same soft
+edge and shadow as the rest of Katna, instead of a flat outline.
+"""

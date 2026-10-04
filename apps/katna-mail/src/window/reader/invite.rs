@@ -19,7 +19,7 @@ use katna_ui::px;
 
 use super::super::MailWindow;
 use super::super::calendar::{civil, event_color, read, time_range};
-use crate::theme::{Theme, fade};
+use crate::theme::{Theme, fade, mix};
 use crate::widgets::{icon, outlined_button};
 
 /// How far around the event the user's day is shown (seconds).
@@ -530,10 +530,8 @@ impl MailWindow {
             .id(("invite", ix))
             .mb(px(16.0))
             .p(px(16.0))
-            .rounded(px(12.0))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .bg(rgba(fade(color, 0.05)))
+            .map(|d| crate::widgets::tile(d, th))
+            .bg(rgba(mix(th.surface, color | 0xff, 0.05)))
             .flex()
             .flex_col()
             .gap(px(12.0))

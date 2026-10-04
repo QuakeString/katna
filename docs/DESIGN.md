@@ -100,7 +100,11 @@ checkbox, radio, colour swatch and wheel, avatar, tooltip, snackbar, scroll
 bar, skeleton, `notched::popover` (opens at the click, notch, level 4,
 `LG`), `widgets::dialog` (level 3, `LG`, frosted), `widgets::card` (level
 1: rounds, fills through `pane` and adds `card_shadow`; the mail list, open
-mail, person card, agenda and Settings). To build: `Field`'s error state and
+mail, person card, agenda and Settings), `widgets::tile` (level 1 at full
+strength, `MD`, `th.surface`: a file, folder, attachment, invitation,
+summary, inline reply or mail service to pick; a clickable one adds
+`tile_hover` first). A card or tile never draws its own outline
+in place of the shared edge and shadow. To build: `Field`'s error state and
 suggestions. The Gallery (`katna-mail --page gallery`, development
 builds only, `window/gallery.rs`) shows every shared control in light and
 dark; add a new control to it.

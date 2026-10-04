@@ -2188,11 +2188,8 @@ impl MailWindow {
             .flex()
             .flex_col()
             .overflow_hidden()
-            .rounded(px(CARD_RADIUS))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .bg(rgba(th.surface))
-            .hover(|s| s.shadow(crate::widgets::elevation(th, 1.0)))
+            .map(|d| crate::widgets::tile(d, th))
+            .child(crate::widgets::tile_hover(th))
             .child(head)
             .child(
                 div()
