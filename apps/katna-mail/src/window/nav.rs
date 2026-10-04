@@ -758,6 +758,27 @@ impl MailWindow {
                 } else {
                     account.display_name.clone()
                 };
+                // All Accounts open: the accounts' pictures, stacked.
+                let stacked = self.stacked_accounts();
+                let label = |a: &katna_core::Account| {
+                    if a.display_name.trim().is_empty() {
+                        a.address.clone()
+                    } else {
+                        a.display_name.clone()
+                    }
+                };
+                let picture = |this: &Self| match &stacked {
+                    Some(accounts) => {
+                        // On a phone the pictures sit in the search pill's end.
+                        let fill = search_fill(th, 0.0);
+                        let pill = mix(th.backdrop, fill | 0xff, (fill & 0xff) as f32 / 255.0);
+                        let cut = mix(th.backdrop, pill, this.layout.shape.phone);
+                        this.render_account_stack(accounts, this.account_hovered, cut, th)
+                    }
+                    None => {
+                        this.account_ring(&account.address, this.render_rolling_avatar(32.0), th)
+                    }
+                };
                 div()
                     .id("top-account")
                     .relative()
@@ -770,7 +791,14 @@ impl MailWindow {
                     .on_mouse_move(|_, _, cx| cx.stop_propagation())
                     .tooltip(tip(
                         {
-                            let mut text = if self.accounts.len() > 1 {
+                            let mut text = if let Some(accounts) = &stacked {
+                                let mut text = tr!("nav-all-accounts");
+                                for a in accounts {
+                                    text.push_str(&format!("\n{}", label(a)));
+                                }
+                                text.push_str(&format!("\n{}", tr!("account-wheel-hint")));
+                                text
+                            } else if self.accounts.len() > 1 {
                                 format!(
                                     "{name}\n{}\n{}",
                                     account.address,
@@ -808,6 +836,12 @@ impl MailWindow {
                         cx.stop_propagation();
                         this.wheel_accounts(event, cx);
                     }))
+                    .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
+                        if this.account_hovered != *hovered {
+                            this.account_hovered = *hovered;
+                            cx.notify();
+                        }
+                    }))
                     .on_click(cx.listener(|this, _, _, cx| {
                         this.account_menu = !this.account_menu;
                         this.app_menu = None;
@@ -815,26 +849,12 @@ impl MailWindow {
                     }))
                     .child(match self.top_problem() {
                         // What needs the user wins the corner over offline.
-                        Some(problem) => self.problem_badge(
-                            self.account_ring(
-                                &account.address,
-                                self.render_rolling_avatar(32.0),
-                                th,
-                            ),
-                            32.0,
-                            Some(&problem),
-                            th,
-                        ),
-                        None => self.offline_badge(
-                            self.account_ring(
-                                &account.address,
-                                self.render_rolling_avatar(32.0),
-                                th,
-                            ),
-                            32.0,
-                            self.any_account_offline(),
-                            th,
-                        ),
+                        Some(problem) => {
+                            self.problem_badge(picture(self), 32.0, Some(&problem), th)
+                        }
+                        None => {
+                            self.offline_badge(picture(self), 32.0, self.any_account_offline(), th)
+                        }
                     })
                     .child(self.tour_mark(Spot::Account))
                     .into_any_element()
