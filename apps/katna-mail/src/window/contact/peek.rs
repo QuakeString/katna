@@ -3,16 +3,17 @@
 //! The person card's summary as a popover: where the window has no room
 //! for the panel beside the open mail, a click on a name or picture opens
 //! the name, the round buttons and the details over the mail, with a
-//! notch pointing at where the click was. Once the window has room again,
+//! notch pointing at the name or picture clicked. Once the window has room again,
 //! the panel takes its place: the two are never open together.
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
+use std::collections::HashMap;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnimationExt, AnyElement, Bounds, Context, Pixels, Point, Window, anchored, canvas, deferred,
-    div, point, prelude::*, size,
+    AnimationExt, AnyElement, Bounds, Context, ElementId, Pixels, Point, Window, anchored, canvas,
+    deferred, div, point, prelude::*, size,
 };
 use katna_ui::{px, unpx};
 
@@ -25,31 +26,80 @@ use crate::theme::Theme;
 const RADIUS: f32 = notched::RADIUS;
 /// The popover's height until it is measured.
 const FIRST_HEIGHT: f32 = 240.0;
-/// The square around the click the notch points at.
+/// The square around a click the notch points at, when what was clicked
+/// was not seen drawn.
 const ORIGIN: f32 = 16.0;
+
+/// Where the names and pictures that open the card were last drawn, by
+/// element: the popover points at the one clicked.
+pub(in crate::window) type Spots = Rc<RefCell<HashMap<ElementId, Bounds<Pixels>>>>;
 
 /// An open popover: its conversation, where it was opened and its
 /// height as last laid out.
 pub(in crate::window) struct ContactPeek {
     key: EntryKey,
-    at: Point<Pixels>,
+    /// What was clicked.
+    at: Bounds<Pixels>,
     height: Rc<Cell<f32>>,
+    /// Its height was measured: it shows from then on, so its first frame
+    /// is never one at a guessed height.
+    measured: Rc<Cell<bool>>,
     /// When it closed and began to fade out.
     closing: Option<Instant>,
 }
 
 impl ContactPeek {
-    pub(super) fn new(key: EntryKey, at: Point<Pixels>) -> Self {
+    pub(super) fn new(key: EntryKey, at: Bounds<Pixels>) -> Self {
         Self {
             key,
             at,
             height: Rc::new(Cell::new(FIRST_HEIGHT)),
+            measured: Rc::default(),
             closing: None,
         }
     }
 }
 
 impl MailWindow {
+    /// Records where the name or picture `id`, which opens the card, is
+    /// drawn: a child of it, which must be `relative`.
+    pub(in crate::window) fn person_spot(&self, id: impl Into<ElementId>) -> AnyElement {
+        let (spots, id) = (self.contact.spots.clone(), id.into());
+        canvas(
+            move |bounds, _, _| {
+                spots.borrow_mut().insert(id.clone(), bounds);
+            },
+            |_, _, _, _| {},
+        )
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full()
+        .into_any_element()
+    }
+
+    /// What the popover points at for a click at `click` on `id`: where
+    /// `id` was drawn, or a small square round the click.
+    pub(in crate::window) fn person_at(
+        &self,
+        id: impl Into<ElementId>,
+        click: Point<Pixels>,
+    ) -> Bounds<Pixels> {
+        let slack = px(4.0);
+        self.contact
+            .spots
+            .borrow()
+            .get(&id.into())
+            .copied()
+            .filter(|b| b.dilate(slack).contains(&click))
+            .unwrap_or_else(|| {
+                Bounds::new(
+                    click - point(px(ORIGIN / 2.0), px(ORIGIN / 2.0)),
+                    size(px(ORIGIN), px(ORIGIN)),
+                )
+            })
+    }
+
     /// Before a frame: the popover goes with its conversation, and gives
     /// way to the panel once the window has room for it.
     pub(super) fn settle_contact_peek(&mut self) {
@@ -76,6 +126,9 @@ impl MailWindow {
         let Some(peek) = self.contact.peek.as_mut().filter(|p| p.closing.is_none()) else {
             return;
         };
+        if let Some((_, who)) = &self.contact.picked {
+            self.contact.peek_shut = Some((who.clone(), peek.at, Instant::now()));
+        }
         peek.closing = notched::fade_out(cx);
         if peek.closing.is_none() {
             self.contact.peek = None;
@@ -96,22 +149,21 @@ impl MailWindow {
             self.contact.peek = None;
         }
         let peek = self.contact.peek.as_ref()?;
-        let (at, measured, closing) = (peek.at, peek.height.clone(), peek.closing);
+        let (origin, measured, closing) = (peek.at, peek.height.clone(), peek.closing);
+        let seen = peek.measured.clone();
+        let ready = seen.get();
         let viewport = window.viewport_size();
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let height = measured.get().min(vh - 2.0 * notched::MARGIN);
-        let origin = Bounds::new(
-            at - point(px(ORIGIN / 2.0), px(ORIGIN / 2.0)),
-            size(px(ORIGIN), px(ORIGIN)),
-        );
         let (x, y, side, along) = notched::place(origin, (CONTACT_WIDTH, height), (vw, vh), RADIUS);
         let body = self.contact_card_body(true, th, cx).0;
         let measure = canvas(
             move |bounds, window, _| {
                 // With the border round it.
                 let h = unpx(bounds.size.height) + 2.0;
-                if (measured.get() - h).abs() > 0.5 {
+                if (measured.get() - h).abs() > 0.5 || !seen.get() {
                     measured.set(h);
+                    seen.set(true);
                     window.refresh();
                 }
             },
@@ -140,6 +192,9 @@ impl MailWindow {
             .children(notch(side, along, th));
         let popover = match closing {
             Some(_) => notched::fading(popover, "contact-peek-out"),
+            // Laid out unseen once, to learn its height; it fades in from
+            // the next frame, already in its place.
+            None if !ready => popover.opacity(0.0).into_any_element(),
             None => popover
                 .with_animation(
                     "contact-peek",

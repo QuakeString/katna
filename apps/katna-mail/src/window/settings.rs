@@ -73,6 +73,9 @@ pub(super) enum Change {
     AccountsShown(AccountsShown),
     /// The unified inbox over the accounts in the folder pane.
     UnifiedInbox(bool),
+    /// An account is in the unified inbox (`true`) or only in the account
+    /// card.
+    InUnified(katna_core::AccountId, bool),
     /// The tray icon, shown by the daemon.
     Tray(bool),
     TrayStyle(TrayStyle),
@@ -822,6 +825,10 @@ impl MailWindow {
             }
             Change::UnifiedInbox(on) => {
                 self.set_unified_inbox(on, cx);
+                return;
+            }
+            Change::InUnified(id, on) => {
+                self.set_in_unified(id, on, cx);
                 return;
             }
             Change::TranslateOffer(on) => view.translation.offer = on,

@@ -87,6 +87,9 @@ pub(super) struct NavMenu {
     about: Option<AccountId>,
     /// Where that account's sync stands, once the daemon said.
     status: Option<katna_dbus::AccountStatus>,
+    /// An account's inbox under the unified Inbox, and whether the
+    /// unified Inbox leaves it out.
+    left_out: Option<(AccountId, bool)>,
 }
 
 impl MailWindow {
@@ -120,6 +123,7 @@ impl MailWindow {
                 editable: false,
                 about: None,
                 status: None,
+                left_out: None,
             },
             // Each account's own folder of that kind; a list by flag
             // spans every folder, so every account is checked.
@@ -139,6 +143,7 @@ impl MailWindow {
                 editable: false,
                 about: None,
                 status: None,
+                left_out: None,
             },
             sidebar::Row::Account { id, .. } | sidebar::Row::Labels { account: id } => NavMenu {
                 ix,
@@ -152,11 +157,14 @@ impl MailWindow {
                 editable: false,
                 about: matches!(row, sidebar::Row::Account { .. }).then_some(*id),
                 status: None,
+                left_out: None,
             },
             sidebar::Row::UnifiedAccount {
+                view,
                 account,
                 folder,
                 unread,
+                left_out,
                 ..
             } => NavMenu {
                 ix,
@@ -172,6 +180,7 @@ impl MailWindow {
                 editable: false,
                 about: Some(*account),
                 status: None,
+                left_out: (*view == sidebar::Unified::Inbox).then_some((*account, *left_out)),
             },
             sidebar::Row::Folder {
                 folder: Some(folder),
@@ -198,6 +207,7 @@ impl MailWindow {
                     editable: account.is_some_and(imap) && self.tree.editable(*folder),
                     about: None,
                     status: None,
+                    left_out: None,
                 }
             }
             // Scheduled mail lives on this computer only.
@@ -663,6 +673,24 @@ impl MailWindow {
                 )
             })
             .children(quiet_item)
+            .when_some(menu.left_out, |d, (account, out)| {
+                d.child(
+                    item(
+                        "nav-menu-left-out",
+                        if out { "eye" } else { "eye-off" },
+                        if out {
+                            tr!("nav-unified-bring-back")
+                        } else {
+                            tr!("nav-unified-leave-out")
+                        }
+                        .into(),
+                    )
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.nav_menu = None;
+                        this.set_inbox_left_out(account, !out, cx);
+                    })),
+                )
+            })
             .when(
                 menu.folder.is_some() && (menu.nests || menu.editable),
                 |d| d.child(divider()),

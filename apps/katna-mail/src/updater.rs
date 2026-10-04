@@ -53,6 +53,7 @@ pub fn install(file: &Path, sha256: &str) -> Result<(), InstallError> {
         | Package::Snap
         | Package::Flatpak
         | Package::Nix
+        | Package::MsStore
         | Package::Other => Err(InstallError::Unsupported),
     }
 }

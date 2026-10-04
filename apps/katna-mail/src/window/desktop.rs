@@ -337,9 +337,11 @@ impl MailWindow {
                                 // The page reads its calendars in the
                                 // background; the new event needs them now.
                                 if self.calendar.calendars.is_empty() {
-                                    self.calendar.calendars = std::rc::Rc::new(
-                                        super::calendar::read_calendars(&self.paths),
-                                    );
+                                    self.calendar.calendars =
+                                        std::rc::Rc::new(super::calendar::read_calendars(
+                                            &self.paths,
+                                            &self.calendar_left_out(),
+                                        ));
                                 }
                                 self.create_event_key(window, cx);
                             }

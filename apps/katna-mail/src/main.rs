@@ -109,6 +109,10 @@ fn main() -> ExitCode {
         let language = given.next().unwrap_or_default();
         return grammar::run_helper(&language, &given.next().unwrap_or_default());
     }
+    // From the Store, Windows starts Katna at sign-in without arguments.
+    if std::env::args_os().len() == 1 && autostart::quiet_sign_in() {
+        return autostart::start_service();
+    }
     let mut data_dir: Option<PathBuf> = None;
     let mut open_first = false;
     let mut request = None;

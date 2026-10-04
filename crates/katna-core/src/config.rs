@@ -922,6 +922,15 @@ pub struct MailView {
     /// mail shows in the tab of its category. [`TabStyle::Auto`] is
     /// Gmail's five.
     pub unified_tabs: TabStyle,
+    /// Accounts whose inbox the unified Inbox leaves out, by lower-case
+    /// address: their row stays under it, dimmed, and opens that inbox
+    /// on its own.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub unified_left_out: BTreeSet<String>,
+    /// Accounts kept out of the unified inbox altogether, by lower-case
+    /// address: none of its lists shows them; the account card still does.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub unified_hidden: BTreeSet<String>,
     /// Each account's color, by lower-case address: a name from Katna
     /// Mail's account colors (`teal`, `pink`, ...). Accounts not listed
     /// wear one picked from their address.
@@ -1156,6 +1165,8 @@ impl Default for MailView {
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
             unified_tabs: TabStyle::Auto,
+            unified_left_out: BTreeSet::new(),
+            unified_hidden: BTreeSet::new(),
             account_colors: BTreeMap::new(),
             density: Density::Default,
             scale: 100,

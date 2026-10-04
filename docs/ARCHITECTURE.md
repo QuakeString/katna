@@ -2809,7 +2809,12 @@ Gemini or confidential mode):
   Where it has no room (a tablet, a narrow window, a conversation window),
   a click on a person's name or picture opens a summary of the same card
   (name, round buttons, details) as a popover whose notch points at the
-  click (`contact/peek.rs`); once the window has room again the popover
+  name or picture clicked, from the bounds each one records as it paints
+  (`ContactPanel::spots`; the click spot only when none was recorded)
+  (`contact/peek.rs`). Resting the pointer on a name or picture starts
+  reading that person's details, and the popover is laid out once unseen
+  before it fades in, so it never shows at a guessed height or place. Once
+  the window has room again the popover
   closes and the panel shows instead. A phone shows the full card as a
   bottom sheet.
 - **Day's agenda.** A Calendar button on the top bar, beside Settings
@@ -3041,7 +3046,9 @@ desktop's own app stays one click away.
   on release; the wheel over the chip moves the days, keeping their
   length, whole months by months) and the order; the top bar's search box matches names, subjects
   and senders. A click opens a file as the list's chips do (downloading
-  its mail first); the hover panel, the right-click menu and the viewer
+  its mail first); under the pointer a card lifts and shows its size and
+  round buttons on its top corners, on frosted glass, its preview left as
+  it is; those buttons, the right-click menu and the viewer
   (opened from this page) offer **Show the mail**, and the menu also
   opens the mail in a new window, forwards the file in a new mail, and
   shows the sender's files. Thumbnails are made in the background only
@@ -4701,6 +4708,11 @@ most useful reason is shown. Changes go back the way their calendar came
   daemon as the Tasks page's Add does. With no calendar to add events to
   but task lists, the card opens on Task.
 - Alarms fire from the daemon as notifications (§15.1).
+- Settings > Calendar's Accounts shown switches (`[hidden_accounts]
+  calendar`) leave an account out: its calendars, events and dated tasks
+  leave every view, the side list, search, the day's agenda and shared
+  free times, and the daemon's reminders skip its events. It keeps
+  syncing.
 - Views: Day, Week (the default), Month, Year (Y or 5: twelve small
   months with a dot under days with events or tasks; a day opens Day, a
   month's name opens Month; resting the pointer on a dotted day, or
@@ -6226,3 +6238,17 @@ pre-release. The Windows package workflow can also be run by hand
 what breaks there. Without a code-signing
 certificate Windows SmartScreen warns on first run; the certificate is the
 owner's and goes into GitHub secrets.
+
+### 27.3 Microsoft Store package
+
+The Store is how Windows users get Katna without a SmartScreen warning:
+the Store signs the MSIX it accepts. `KatnaMail.msix` holds the same
+programs as Setup (`ci/windows-store-package.ps1`,
+`packaging/windows/store`) and goes on `windows-latest` beside Setup,
+which stays for testers. Katna knows it runs from the package by the
+`AppxManifest.xml` beside its programs (`update::Package::MsStore`):
+the Store updates it, so Katna never checks for updates; the package's
+startup task starts it at sign-in, since a package's registry writes
+(the `Run` key) stay inside the package; and its toasts use the package's
+app ID. The manifest's identity values come from Partner Center and the
+submission is the owner's.

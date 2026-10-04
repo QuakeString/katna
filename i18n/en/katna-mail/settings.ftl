@@ -264,6 +264,12 @@ settings-inbox-tabs-show-detail = Off shows one list for every account
 settings-inbox-no-accounts = Add an account to choose its tabs.
 settings-inbox-unified = Unified inbox
 settings-inbox-unified-detail = Tabs shared by every account. Each mail shows in the tab of its kind; mail of a tab an account turns off stays in its first tab.
+# A switch per mail account: whether All Accounts in the folder pane shows it.
+settings-unified-accounts = In the unified inbox
+settings-unified-accounts-detail = An account switched off is left out of All Accounts and its lists. Pick it in the account menu to see its mail.
+# Under an account's name in that list, as its switch stands.
+settings-unified-account-in = Shown in All Accounts
+settings-unified-account-out = Only in the account menu
 # $tabs: the tabs of that style, such as "Focused and Other". $provider: the mail provider, such as "Gmail".
 settings-inbox-tabs-automatic = Automatic: { $tabs } ({ $provider })
 settings-inbox-tabs-off = No tabs
@@ -674,6 +680,9 @@ settings-search-results = Settings that match “{ $query }”
 
 # $error: the system's error, in English.
 settings-open-at-login-failed = Could not change starting at login: { $error }
+# The error in settings-open-at-login-failed when Katna from the Microsoft
+# Store asks to start at sign-in after the user turned that off in Windows.
+settings-open-at-login-off-in-windows = it is turned off in Windows Settings > Apps > Startup
 
 ## Settings > General > Time
 
