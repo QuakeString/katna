@@ -368,6 +368,9 @@ impl MailWindow {
     ) {
         self.settings_open = false;
         self.menu = None;
+        // Settings' own list of pages takes the folders' place.
+        self.nav_peek = false;
+        self.peek_task = None;
         let fresh = self.settings_page.is_none();
         let scroll = ScrollHandle::new();
         let accent = rgba(self.theme(window).accent).into();

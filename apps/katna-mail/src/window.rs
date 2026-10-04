@@ -2175,7 +2175,11 @@ impl MailWindow {
             }
             Hover::Panel => self.peek_hover.1 = hovered,
         }
-        if self.nav_docked() || self.layout.drawer || self.app != RailApp::Mail {
+        if self.nav_docked()
+            || self.layout.drawer
+            || self.app != RailApp::Mail
+            || self.settings_page.is_some()
+        {
             return;
         }
         let on = self.peek_hover.0 || self.peek_hover.1;
