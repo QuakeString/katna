@@ -2787,7 +2787,12 @@ Gemini or confidential mode):
   Where it has no room (a tablet, a narrow window, a conversation window),
   a click on a person's name or picture opens a summary of the same card
   (name, round buttons, details) as a popover whose notch points at the
-  click (`contact/peek.rs`); once the window has room again the popover
+  name or picture clicked, from the bounds each one records as it paints
+  (`ContactPanel::spots`; the click spot only when none was recorded)
+  (`contact/peek.rs`). Resting the pointer on a name or picture starts
+  reading that person's details, and the popover is laid out once unseen
+  before it fades in, so it never shows at a guessed height or place. Once
+  the window has room again the popover
   closes and the panel shows instead. A phone shows the full card as a
   bottom sheet.
 - **Day's agenda.** A Calendar button on the top bar, beside Settings
