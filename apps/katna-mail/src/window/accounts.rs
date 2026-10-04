@@ -8,14 +8,16 @@
 //! what is kept.
 
 use gpui::{
-    AnyElement, Context, Div, DragMoveEvent, ElementId, Entity, Focusable, FontWeight, MouseButton,
-    MouseDownEvent, SharedString, Stateful, Subscription, Window, deferred, div, prelude::*, rgba,
+    AnyElement, ClickEvent, Context, Div, DragMoveEvent, ElementId, Entity, Focusable, FontWeight,
+    MouseButton, MouseDownEvent, SharedString, Stateful, Subscription, Window, deferred, div,
+    prelude::*, rgba,
 };
 use katna_core::config::AccountsShown;
 use katna_core::{Account, AccountId, AccountKind, Config, Pop3Keep};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
+use katna_ui::tokens::{space, text};
 use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
@@ -474,6 +476,7 @@ impl MailWindow {
             account.display_name.clone()
         };
         let id = account.id;
+        let problem = self.account_problem(id);
         let renaming = self
             .settings_page
             .as_ref()
@@ -514,7 +517,51 @@ impl MailWindow {
                 .truncate()
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_faint)),
-            );
+            )
+            // What is wrong with it, as the line over the mail list says.
+            .children(problem.as_ref().map(|problem| {
+                div()
+                    .pt(px(space::S1))
+                    .flex()
+                    .flex_row()
+                    .items_start()
+                    .gap(px(space::S2))
+                    .text_size(px(text::SMALL))
+                    .text_color(rgba(th.text_dim))
+                    .child(div().flex_none().child(icon(
+                        problem.icon(),
+                        problem.color(th),
+                        text::SMALL + 2.0,
+                    )))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .child(problem.text())
+                            // Its fix, as on the line over the mail list.
+                            .child(
+                                div()
+                                    .id(("account-fix", ix))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.accent))
+                                    .cursor_pointer()
+                                    .hover(|s| s.underline())
+                                    .child(problem.action())
+                                    .map(|d| self.page_control(d, th, cx))
+                                    .on_click({
+                                        let problem = problem.clone();
+                                        cx.listener(move |this, event: &ClickEvent, window, cx| {
+                                            this.fix_problem(
+                                                problem.clone(),
+                                                event.position(),
+                                                window,
+                                                cx,
+                                            )
+                                        })
+                                    }),
+                            ),
+                    )
+            }));
         let own = self.remote.has_own_picture(id);
         let desktop = self.remote.has_desktop_picture();
         let buttons = div()
@@ -644,9 +691,14 @@ impl MailWindow {
                 cx.new(|_| drag.clone())
             })
             .child(icon("drag-handle", th.text_faint, 20.0));
-        let avatar = self.account_ring(
-            &account.address,
-            self.person_avatar(&name, &account.address, 36.0),
+        let avatar = self.problem_badge(
+            self.account_ring(
+                &account.address,
+                self.person_avatar(&name, &account.address, 36.0),
+                th,
+            ),
+            36.0,
+            problem.as_ref(),
             th,
         );
         // The buttons go below the name, together, where the row is

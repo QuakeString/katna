@@ -2561,7 +2561,8 @@ Gemini or confidential mode):
   folder pane, on the account picture's corner and in the account menu.
   An account the server has not answered for 30 minutes gets a grey line
   with "Try again"; when every account is unreachable one grey line says
-  you're offline instead. It opens from the first-start pages
+  you're offline instead. Settings › Accounts shows the same sentence and fix
+  under the account, with the sign on its picture. It opens from the first-start pages
   (no account yet), the account card above the rail's account picture ("Add
   another account", which also lists the accounts and opens their
   inboxes), and Send without an account. The daemon signals `MailChanged`
