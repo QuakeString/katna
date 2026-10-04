@@ -26,6 +26,7 @@ use katna_i18n::tr;
 use katna_render::signature;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
+use katna_ui::tokens::space;
 use katna_ui::{px, unpx};
 
 mod peek;
@@ -2147,13 +2148,14 @@ fn contact_placeholder(th: &Theme, reduce: bool) -> AnyElement {
     let rows = div()
         .flex()
         .flex_col()
-        .gap(px(10.0))
+        // As far apart as the details' rows.
+        .gap(px(space::S3 + space::S1))
         .children(PLACEHOLDER_LINES.iter().map(|width| {
             div()
                 .flex()
                 .flex_row()
                 .items_center()
-                .gap(px(12.0))
+                .gap(px(space::S4))
                 .h(px(20.0))
                 .child(super::skeleton::bone(th).size(px(18.0)))
                 .child(
