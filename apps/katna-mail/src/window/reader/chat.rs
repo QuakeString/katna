@@ -1043,7 +1043,7 @@ impl MailWindow {
                 .py(px(7.0))
                 .rounded(px(10.0))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .child(crate::widgets::hover_fade("hover-glow", Some(10.0), th))
                 .tooltip(tip(tr!("chat-show-card"), th))
                 .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                     this.close_chat_people(cx);
@@ -1270,7 +1270,8 @@ impl MailWindow {
                     .py(px(4.0))
                     .rounded(px(10.0))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", Some(10.0), th))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_chat_people(cx)))
                     .child(
                         div()
@@ -2080,7 +2081,8 @@ impl MailWindow {
                         .text_size(px(12.0))
                         .font_weight(FontWeight::SEMIBOLD)
                         .text_color(rgba(th.text))
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", None, th))
                         .on_click(cx.listener(move |this, _, window, cx| {
                             cx.stop_propagation();
                             this.run_undo(Command::UndoSend(outbox), window, cx);

@@ -283,7 +283,8 @@ impl MailWindow {
             .font_weight(FontWeight::MEDIUM)
             .text_color(rgba(th.text))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
             .child(tr!(
                 "calendar-peek-day",
                 weekday = format::weekday(date),
@@ -312,7 +313,8 @@ impl MailWindow {
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.text_dim))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                 .child(tr!("calendar-more", count = more))
                 .on_click(cx.listener(move |this, _, _, cx| {
                     this.close_year_peek(cx);
@@ -413,7 +415,8 @@ impl MailWindow {
             .rounded(px(6.0))
             .text_size(px(13.0))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
             .child(div().flex_none().child(icon(glyph, color, 18.0)))
             .when_some(time, |d, time| {
                 d.child(

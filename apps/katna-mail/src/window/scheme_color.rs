@@ -544,7 +544,8 @@ impl MailWindow {
                         .justify_center()
                         .rounded(px(10.0))
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", Some(10.0), th))
                         .tooltip(crate::widgets::tip(tr!("scheme-picker-dropper"), th))
                         .on_click(cx.listener(|this, _, _, cx| {
                             #[cfg(not(windows))]
@@ -697,7 +698,8 @@ impl MailWindow {
                             .text_size(px(13.0))
                             .text_color(rgba(th.accent))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.open_system_picker(dialog, cx)
                             }))

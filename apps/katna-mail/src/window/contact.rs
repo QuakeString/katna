@@ -1620,7 +1620,8 @@ impl MailWindow {
                     .h(px(28.0))
                     .rounded_full()
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .text_size(px(13.0))
                     .font_weight(FontWeight::MEDIUM)
                     .text_color(rgba(th.accent))
@@ -1967,7 +1968,8 @@ fn page_chips(id: &'static str, pages: &[signature::Link], th: &Theme) -> AnyEle
                 .rounded_full()
                 .bg(rgba(th.chip))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", None, th))
                 .tooltip(tip(link.url.clone(), th))
                 .on_click(move |_, _, cx| cx.open_url(&url));
             match brand_icon(link.site) {
@@ -2067,7 +2069,8 @@ fn row(id: impl Into<gpui::ElementId>, th: &Theme) -> gpui::Stateful<gpui::Div> 
         .rounded(px(8.0))
         .text_size(px(13.0))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
 }
 
 /// A stable number for an address, for its fade-in.

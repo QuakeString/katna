@@ -58,7 +58,9 @@ keeps one 0,1 / blur 3 shadow at 30%.
 | 3 Menu | menus, dialogs (`widgets::dialog`) | `menu` + rim | white, edge + shadow |
 | 4 Popover | notched popovers (`notched::popover`), the tour | `menu` + rim | white, edge + deeper shadow |
 
-**Motion:** springs for movement (`SLIDE` is the one with a little
+**Motion:** a hover never switches on at once: round and pill
+buttons carry `katna_ui::Glow`, and any other box that tints on hover
+puts `widgets::hover_fade` first among its children. Springs for movement (`SLIDE` is the one with a little
 overshoot). Timed fades: `FAST` 140 ms (hover), `BASE` 220 ms (fades,
 folds), `SLOW` 400 ms (page swaps), `LINGER` 900 ms (slow reveals).
 Every spring goes through `motion::scaled` and every timed animation

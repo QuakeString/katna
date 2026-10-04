@@ -2193,7 +2193,8 @@ fn select_box_with(
         .border_color(rgba(if open { th.accent } else { th.outline }))
         .text_size(px(14.0))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
         .child(content)
         .child(icon("chevron-down", th.text_dim, 16.0))
 }

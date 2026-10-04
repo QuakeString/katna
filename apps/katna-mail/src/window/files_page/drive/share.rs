@@ -517,7 +517,8 @@ impl MailWindow {
                             .justify_center()
                             .rounded_full()
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 if let Some(sharing) = &mut this.library.cloud.sharing
                                     && ix < sharing.people.len()
@@ -543,7 +544,8 @@ impl MailWindow {
             .text_size(px(13.0))
             .text_color(rgba(th.text_dim))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(|this, e: &MouseDownEvent, _, cx| {
@@ -763,7 +765,8 @@ impl MailWindow {
                             .text_size(px(14.0))
                             .font_weight(FontWeight::MEDIUM)
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                             .on_mouse_down(
                                 MouseButton::Left,
                                 cx.listener(|this, e: &MouseDownEvent, _, cx| {

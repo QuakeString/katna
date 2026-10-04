@@ -1409,7 +1409,8 @@ impl MailWindow {
             .text_size(px(14.0))
             .font_weight(FontWeight::MEDIUM)
             .text_color(rgba(th.text_dim))
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", None, th))
             .on_click(cx.listener(|this, _, _, cx| this.close_files_picker(cx)))
             .child(tr!("picker-cancel"));
         let weight = div()

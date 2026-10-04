@@ -1898,7 +1898,8 @@ impl MailWindow {
                             .items_center()
                             .justify_center()
                             .rounded_full()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .child(icon("close", th.nav_selected_text, 16.0))
                             .on_mouse_down(
                                 MouseButton::Left,
@@ -2964,7 +2965,8 @@ impl MailWindow {
                                 .items_center()
                                 .rounded(px(8.0))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                                 .text_size(px(13.0))
                                 .text_color(rgba(th.accent))
                                 .child(tr!("files-time-clear"))

@@ -661,7 +661,8 @@ impl MailWindow {
                 .rounded(px(6.0))
                 .cursor_pointer()
                 .text_color(rgba(th.accent))
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                 .child(label)
         };
         let sender_owned = sender.to_owned();
