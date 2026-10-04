@@ -378,6 +378,7 @@ mod tests {
             done_at,
             position: String::new(),
             mail: String::new(),
+            labels: Vec::new(),
         };
         let tasks = [
             task(1, Some(at), None),

@@ -7,6 +7,9 @@
 
 use jiff::{Timestamp, civil::Date, tz::TimeZone};
 
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD as BASE64;
+
 use crate::ical::{self, Component, Property};
 
 /// What Katna keeps of a to-do.
@@ -29,6 +32,21 @@ pub struct Todo {
     pub repeat: String,
     /// High priority (1 to 4).
     pub starred: bool,
+    /// Its `CATEGORIES`: Katna's labels.
+    pub labels: Vec<String>,
+    /// Its files kept in the to-do itself (`ATTACH;VALUE=BINARY`); a link
+    /// to a file elsewhere (`ATTACH:https://…`) is not one. `None` in
+    /// [`write`] leaves the to-do's files as they are.
+    pub files: Option<Vec<TodoFile>>,
+}
+
+/// A file inside a to-do: an `ATTACH` with its bytes in base64.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct TodoFile {
+    pub name: String,
+    /// `type/subtype`, from `FMTTYPE`.
+    pub mime: String,
+    pub data: Vec<u8>,
 }
 
 /// The first to-do of `text` that isn't one changed instance of a
@@ -94,7 +112,107 @@ fn read(todo: &Component, zone: &TimeZone) -> Todo {
             .map(|p| p.value.trim().to_owned())
             .unwrap_or_default(),
         starred: (1..=4).contains(&priority),
+        labels: categories(todo),
+        files: Some(files(todo)),
     }
+}
+
+/// Every `CATEGORIES` value, each once, in order: a line may hold several,
+/// split at commas not escaped.
+fn categories(todo: &Component) -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    for prop in todo.all("CATEGORIES") {
+        let mut parts = Vec::new();
+        let mut part = String::new();
+        let mut chars = prop.value.chars();
+        while let Some(c) = chars.next() {
+            match c {
+                '\\' => {
+                    part.push(c);
+                    if let Some(next) = chars.next() {
+                        part.push(next);
+                    }
+                }
+                ',' => parts.push(std::mem::take(&mut part)),
+                c => part.push(c),
+            }
+        }
+        parts.push(part);
+        for part in parts {
+            let label = ical::unescape(&part).trim().to_owned();
+            if !label.is_empty() && !out.contains(&label) {
+                out.push(label);
+            }
+        }
+    }
+    out
+}
+
+/// Whether an `ATTACH` holds its file's bytes rather than a link.
+fn inline(prop: &Property) -> bool {
+    prop.param("VALUE")
+        .is_some_and(|v| v.eq_ignore_ascii_case("BINARY"))
+        || prop
+            .param("ENCODING")
+            .is_some_and(|e| e.eq_ignore_ascii_case("BASE64"))
+}
+
+/// The files kept in the to-do.
+fn files(todo: &Component) -> Vec<TodoFile> {
+    todo.all("ATTACH")
+        .filter(|p| inline(p))
+        .filter_map(|p| {
+            let clean: String = p.value.chars().filter(|c| !c.is_whitespace()).collect();
+            let data = BASE64.decode(clean.as_bytes()).ok()?;
+            let name = [
+                "FILENAME",
+                "X-FILENAME",
+                "X-APPLE-FILENAME",
+                "X-ORACLE-FILENAME",
+            ]
+            .iter()
+            .find_map(|n| p.param(n))
+            .map(str::to_owned)
+            .unwrap_or_default();
+            Some(TodoFile {
+                name,
+                mime: p
+                    .param("FMTTYPE")
+                    .unwrap_or("application/octet-stream")
+                    .to_ascii_lowercase(),
+                data,
+            })
+        })
+        .collect()
+}
+
+/// A parameter value, quoted when it holds `;`, `:` or `,` (RFC 5545
+/// §3.2); a `"` can't be written and goes.
+fn param_value(value: &str) -> String {
+    let value: String = value
+        .chars()
+        .filter(|c| *c != '"' && !c.is_control())
+        .collect();
+    if value.contains([';', ':', ',']) {
+        format!("\"{value}\"")
+    } else {
+        value
+    }
+}
+
+/// `file` as an `ATTACH` line.
+fn attach_line(file: &TodoFile) -> String {
+    let mime = if file.mime.is_empty() {
+        "application/octet-stream"
+    } else {
+        file.mime.as_str()
+    };
+    format!(
+        "ATTACH;ENCODING=BASE64;VALUE=BINARY;FMTTYPE={};FILENAME={}:{}",
+        param_value(mime),
+        param_value(&file.name),
+        BASE64.encode(&file.data)
+    )
 }
 
 fn day_of(at: i64, zone: &TimeZone) -> String {
@@ -189,6 +307,23 @@ pub fn write(todo: &Todo, old: Option<&str>, now: i64, zone: &TimeZone) -> Strin
     if starred_changed && todo.starred {
         own.push("PRIORITY:1".into());
     }
+    // Labels and files are written only when they changed, so the
+    // server's own way of writing them stays otherwise.
+    let labels_changed = before.as_ref().is_none_or(|b| b.labels != todo.labels);
+    if labels_changed && !todo.labels.is_empty() {
+        let joined: Vec<String> = todo.labels.iter().map(|l| escape(l)).collect();
+        own.push(format!("CATEGORIES:{}", joined.join(",")));
+    }
+    if let Some(files) = &todo.files {
+        own.extend(files.iter().map(attach_line));
+    }
+    let changed = Changed {
+        alarms: alarms_changed,
+        starred: starred_changed,
+        labels: labels_changed,
+        files: todo.files.is_some(),
+        has_due: due.is_some(),
+    };
     let mut new_alarm = Vec::new();
     if alarms_changed && let Some(at) = todo.remind_at {
         new_alarm = vec![
@@ -239,14 +374,7 @@ pub fn write(todo: &Todo, old: Option<&str>, now: i64, zone: &TimeZone) -> Strin
                 .any(|l| l.to_ascii_uppercase().starts_with("RECURRENCE-ID"));
             if master && !in_master {
                 in_master = true;
-                out.extend(rewrite(
-                    &todo_lines,
-                    &own,
-                    &new_alarm,
-                    alarms_changed,
-                    starred_changed,
-                    due.is_some(),
-                ));
+                out.extend(rewrite(&todo_lines, &own, &new_alarm, &changed));
             } else {
                 out.append(&mut todo_lines);
             }
@@ -258,15 +386,22 @@ pub fn write(todo: &Todo, old: Option<&str>, now: i64, zone: &TimeZone) -> Strin
     fold_all(&out)
 }
 
+/// What [`write`] replaces of the old text beyond the lines it owns.
+struct Changed {
+    alarms: bool,
+    starred: bool,
+    labels: bool,
+    files: bool,
+    has_due: bool,
+}
+
 /// A master to-do's lines (from `BEGIN:VTODO`, without `END:VTODO`) with
 /// Katna's `own` lines instead of the old ones.
 fn rewrite(
     lines: &[String],
     own: &[String],
     new_alarm: &[String],
-    alarms_changed: bool,
-    starred_changed: bool,
-    has_due: bool,
+    changed: &Changed,
 ) -> Vec<String> {
     let mut out = Vec::with_capacity(lines.len() + own.len());
     let mut depth = 0usize;
@@ -280,7 +415,7 @@ fn rewrite(
         if upper.starts_with("BEGIN:") {
             depth += 1;
             if depth == 1 {
-                dropping = alarms_changed && upper == "BEGIN:VALARM";
+                dropping = changed.alarms && upper == "BEGIN:VALARM";
             }
         }
         let inside = depth > 0;
@@ -303,11 +438,18 @@ fn rewrite(
             if OWNED.contains(&name.as_str()) && !parent_link {
                 continue;
             }
-            if name == "PRIORITY" && starred_changed {
+            if name == "PRIORITY" && changed.starred {
+                continue;
+            }
+            if name == "CATEGORIES" && changed.labels {
+                continue;
+            }
+            if name == "ATTACH" && changed.files && ical::property(line).is_some_and(|p| inline(&p))
+            {
                 continue;
             }
             // A start with no due day to count a repeat from goes too.
-            if name == "DTSTART" && !has_due {
+            if name == "DTSTART" && !changed.has_due {
                 continue;
             }
         }
@@ -521,6 +663,51 @@ END:VTODO\r\nEND:VCALENDAR\r\n";
         assert_eq!(again.done_at, Some(1_790_000_000));
         assert!(!again.starred);
         assert_eq!(again.repeat, "FREQ=MONTHLY");
+    }
+
+    #[test]
+    fn labels_and_files_round_trip_and_links_stay() {
+        let zone = TimeZone::UTC;
+        let old = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VTODO\r\nUID:f1\r\n\
+SUMMARY:Bills\r\nCATEGORIES:Home,Bills\\, June\r\nCATEGORIES:Home\r\n\
+ATTACH:https://example.test/shared.pdf\r\n\
+ATTACH;ENCODING=BASE64;VALUE=BINARY;FMTTYPE=text/plain;X-FILENAME=a.txt:aGk=\r\n\
+END:VTODO\r\nEND:VCALENDAR\r\n";
+        let mut todo = parse(old, &zone).unwrap();
+        assert_eq!(todo.labels, ["Home", "Bills, June"]);
+        let files = todo.files.clone().unwrap();
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0].name, "a.txt");
+        assert_eq!(files[0].mime, "text/plain");
+        assert_eq!(files[0].data, b"hi");
+
+        // Unchanged: the server's lines stay as they were.
+        todo.files = None;
+        let same = write(&todo, Some(old), 1_790_000_000, &zone);
+        assert!(same.contains("CATEGORIES:Home,Bills\\, June\r\n"));
+        assert!(
+            same.replace("\r\n ", "")
+                .contains("X-FILENAME=a.txt:aGk=\r\n")
+        );
+
+        // New labels and files replace them; a link to a file stays.
+        todo.labels = vec!["Work".into()];
+        todo.files = Some(vec![TodoFile {
+            name: "q3; final.pdf".into(),
+            mime: "application/pdf".into(),
+            data: b"%PDF".to_vec(),
+        }]);
+        let text = write(&todo, Some(old), 1_790_000_000, &zone);
+        assert!(text.contains("CATEGORIES:Work\r\n"));
+        assert_eq!(text.matches("CATEGORIES").count(), 1);
+        assert!(text.contains("ATTACH:https://example.test/shared.pdf\r\n"));
+        assert!(!text.contains("a.txt"));
+        let again = parse(&text, &zone).unwrap();
+        assert_eq!(again.labels, ["Work"]);
+        let files = again.files.unwrap();
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0].name, "q3; final.pdf");
+        assert_eq!(files[0].data, b"%PDF");
     }
 
     #[test]

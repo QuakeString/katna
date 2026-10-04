@@ -295,7 +295,7 @@ struct Places {
     default_list: Option<i64>,
     /// The mail accounts whose server keeps a Notes folder.
     note_accounts: Vec<(i64, String)>,
-    /// The labels notes have, which tasks share.
+    /// The labels on notes and tasks: one set.
     labels: Vec<String>,
 }
 
@@ -323,16 +323,7 @@ impl Places {
             .filter(|a| a.kind == AccountKind::Imap)
             .map(|a| (a.id.0, a.display_name.clone()))
             .collect();
-        let mut labels: Vec<String> = Vec::new();
-        for label in store.notes()?.into_iter().flat_map(|n| n.labels) {
-            if !labels
-                .iter()
-                .any(|l| l.to_lowercase() == label.to_lowercase())
-            {
-                labels.push(label);
-            }
-        }
-        labels.sort_by_key(|l| l.to_lowercase());
+        let labels = store.labels_in_use()?;
         Ok(Self {
             lists,
             default_list,
@@ -1143,16 +1134,13 @@ async fn set_task_labels(
         .map_err(|err| crate::daemon::describe(&err))?;
     let mut fields = Item::new();
     if let Ok(value) = OwnedValue::try_from(Value::from(labels)) {
-        fields.insert(TASK_LABELS.to_owned(), value);
+        fields.insert(katna_dbus::agenda::edit::LABELS.to_owned(), value);
     }
     agenda
         .edit_task(&crate::tasks::wire_id(id), fields)
         .await
         .map_err(|err| crate::daemon::describe(&err))
 }
-
-/// EditTask's field for a task's labels (`as`).
-const TASK_LABELS: &str = "labels";
 
 /// The mail window reads its notes again.
 fn notes_changed(cx: &mut App) {

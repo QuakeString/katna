@@ -81,7 +81,7 @@ impl Attachment {
 }
 
 /// The MIME type of a file, from its name.
-pub(super) fn mime_of(name: &str) -> String {
+pub(in crate::window) fn mime_of(name: &str) -> String {
     if let Some(image) = katna_ui::rich::image_mime(name) {
         return image.to_owned();
     }

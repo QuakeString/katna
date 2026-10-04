@@ -167,7 +167,11 @@ impl MailWindow {
             }
             Quiet::Completed => {}
         }
+        if let Some(files) = self.task_file_count(task) {
+            parts.push(with_icon("attachment", format::number(files as u64)));
+        }
         parts.extend(list.map(|l| word(l.to_owned())));
+        parts.extend(task.labels.iter().map(|l| word(l.clone())));
         if quiet == Quiet::Completed
             && let Some(at) = task.done_at.and_then(local)
         {
@@ -415,6 +419,7 @@ mod tests {
         TasksPage {
             board: Some(Ok(Board {
                 columns: vec![column],
+                ..Board::default()
             })),
             ..TasksPage::default()
         }

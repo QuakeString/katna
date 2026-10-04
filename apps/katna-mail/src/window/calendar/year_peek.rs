@@ -86,7 +86,7 @@ impl Open {
 /// One line of the popover.
 enum Item {
     Event(Occurrence),
-    Task(TaskItem, bool, Option<u32>),
+    Task(Box<TaskItem>, bool, Option<u32>),
 }
 
 impl MailWindow {
@@ -107,7 +107,7 @@ impl MailWindow {
         items.extend(
             self.tasks_on(day)
                 .into_iter()
-                .map(|(task, done, time)| Item::Task(task, done, time)),
+                .map(|(task, done, time)| Item::Task(Box::new(task), done, time)),
         );
         items
     }
