@@ -51,7 +51,7 @@ impl MailWindow {
 
     /// Ticks card `id`, or unticks it.
     pub(super) fn toggle_note_check(&mut self, id: i64, cx: &mut Context<Self>) {
-        self.close_note(cx);
+        self.close_note_now(cx);
         let Some(page) = self.notes.as_mut() else {
             return;
         };
@@ -76,7 +76,7 @@ impl MailWindow {
             self.toggle_note_check(id, cx);
             return;
         };
-        self.close_note(cx);
+        self.close_note_now(cx);
         let Some(page) = self.notes.as_mut() else {
             return;
         };
@@ -337,8 +337,8 @@ impl MailWindow {
         let ids: Vec<i64> = notes.iter().map(|n| n.id).collect();
         let reminded = notes.iter().any(|n| n.remind_at.is_some());
         let mut bar = super::top_bar("notes-select-bar", th)
-            .pl(px(space::S2))
-            .pr(px(space::S1))
+            .pl(px(space::S3))
+            .pr(px(space::S2))
             .gap(px(space::S1))
             .child(
                 tool("notes-select-clear", "close", tr!("notes-select-clear")).on_click(

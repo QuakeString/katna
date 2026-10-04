@@ -204,7 +204,7 @@ impl MailWindow {
         let Some((note, doc, pictures)) = self.open_note_now(cx) else {
             return;
         };
-        self.close_note(cx);
+        self.close_note_now(cx);
         let mut next = 1_000_000u64;
         let mut blocks: Vec<Block> = pictures
             .into_iter()

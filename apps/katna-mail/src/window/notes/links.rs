@@ -294,7 +294,7 @@ impl MailWindow {
         let found = self.all_notes().iter().find(|n| n.uuid == uuid).cloned();
         match found {
             Some(note) if note.trashed_at.is_none() => {
-                self.close_note(cx);
+                self.close_note_now(cx);
                 self.open_note(Some(&note), false, None, window, cx);
             }
             _ => self.show_snackbar(tr!("notes-link-gone"), None, cx),
@@ -456,7 +456,7 @@ impl MailWindow {
                                 .cursor_pointer()
                                 .hover(|s| s.bg(rgba(th.hover)))
                                 .on_click(cx.listener(move |this, _, window, cx| {
-                                    this.close_note(cx);
+                                    this.close_note_now(cx);
                                     this.open_note(Some(&open), false, None, window, cx)
                                 }))
                                 .child(icon("link", th.text_dim, 14.0))
