@@ -256,6 +256,9 @@ impl MailWindow {
         } else if self.whats_new_open() {
             self.close_whats_new(window, cx);
             true
+        } else if self.shortcuts_dialog_open() {
+            self.close_shortcuts_dialog(window, cx);
+            true
         } else if self.update_dialog_open() {
             self.close_update_dialog(window, cx);
             true
@@ -306,6 +309,7 @@ impl MailWindow {
             || self.contacts.label_dialog.is_some()
             || self.contacts.qr.is_some()
             || self.whats_new.is_some()
+            || self.shortcuts_dialog.is_some()
             || self.share_ask.is_some()
             || self.print_preview.is_some()
             || self.about.is_some()
