@@ -282,6 +282,7 @@ impl MailWindow {
                 list,
                 th,
             ))
+            .children(self.connected_section(&accounts, th, cx))
             .children(self.pop3_section(th, cx))
             .child(self.row(
                 tr!("accounts-delete-all-row"),

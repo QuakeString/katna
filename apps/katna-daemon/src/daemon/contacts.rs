@@ -70,7 +70,11 @@ pub(crate) async fn run(daemon: Weak<Daemon>, wake: Receiver<()>) {
             }
         };
         let mut changed = false;
-        for account in accounts.iter().filter(|a| a.kind.is_mail()) {
+        // An account taken offline keeps its last status until it is back.
+        for account in accounts
+            .iter()
+            .filter(|a| a.kind.is_mail() && !daemon.is_offline(a.id))
+        {
             if daemon.closing() {
                 return;
             }
@@ -417,6 +421,9 @@ pub(super) async fn card_dav(
     account: AccountId,
     tls: Tls,
 ) -> Result<Option<CardDav>, String> {
+    if daemon.is_offline(account) {
+        return Err("the account is offline".into());
+    }
     let oauth = daemon
         .store()
         .account_settings(account)
@@ -595,6 +602,13 @@ impl Daemon {
         };
         let remote = old.as_ref().map(|o| o.remote_id.as_str());
         let etag = old.as_ref().and_then(|o| o.etag.as_deref());
+        // Contacts are saved on their service straight away, so not
+        // while it is offline.
+        if book.source != BookSource::Local
+            && book.account.is_some_and(|account| self.is_offline(account))
+        {
+            return Err(CommandError::Failed("the account is offline".into()));
+        }
         let tls = || Tls::system().map_err(|e| CommandError::Failed(e.to_string()));
         let saved = match (book.source, book.account) {
             (BookSource::Local, _) | (_, None) => SyncedContact {
@@ -702,6 +716,9 @@ impl Daemon {
         account: AccountId,
         old: &ContactRef,
     ) -> Result<(), CommandError> {
+        if self.is_offline(account) {
+            return Err(CommandError::Failed("the account is offline".into()));
+        }
         let tls = Tls::system().map_err(|e| CommandError::Failed(e.to_string()))?;
         match source {
             BookSource::Google | BookSource::Microsoft => {

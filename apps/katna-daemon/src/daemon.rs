@@ -16,7 +16,7 @@ use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{
     Account, AccountId, AccountKind, AccountSettings, Config, Paths, Pop3Keep, Security, Server,
-    config::{HiddenAccounts, Metered},
+    config::{HiddenAccounts, Metered, OfflineAccounts},
 };
 use katna_dbus::{
     AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, TemplateItem, state,
@@ -61,6 +61,7 @@ mod linked;
 mod meet;
 mod mutes;
 mod notes;
+mod offline;
 mod other_contacts;
 mod reminders;
 mod rules;
@@ -315,6 +316,13 @@ pub struct Daemon {
     rules_wake: (Sender<Option<AccountId>>, Receiver<Option<AccountId>>),
     /// Where each account last ran each rule, since the daemon started.
     rules_placed: Mutex<HashMap<AccountId, rules_server::Placed>>,
+    /// The accounts the user took offline (`[offline]`), as last read
+    /// from the settings ([`offline`]).
+    offline: Mutex<OfflineAccounts>,
+    /// The accounts offline now, as last applied.
+    offline_now: Mutex<std::collections::HashSet<AccountId>>,
+    /// Has [`offline::run`] apply the settings again.
+    offline_wake: (Sender<()>, Receiver<()>),
 }
 
 /// A refresh token that replaced the account's old one.
@@ -347,6 +355,9 @@ impl Daemon {
             offline_days: Mutex::new(sync.offline_window()),
             language: Mutex::new(saved.general.language),
             hidden_accounts: Mutex::new(saved.hidden_accounts),
+            offline: Mutex::new(saved.offline),
+            offline_now: Mutex::default(),
+            offline_wake: async_channel::bounded(1),
             status: Mutex::default(),
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
@@ -438,6 +449,13 @@ impl Daemon {
         .detach();
         // In the background: at login the keyring may ask to be unlocked,
         // and nothing else waits for that answer.
+        // Before any worker starts: an offline account never connects.
+        self.apply_offline_at_start();
+        smol::spawn(offline::run(
+            Arc::downgrade(self),
+            self.offline_wake.1.clone(),
+        ))
+        .detach();
         let daemon = self.clone();
         smol::spawn(async move {
             for account in accounts {
@@ -1260,7 +1278,7 @@ impl Daemon {
     /// Reads the settings file again and applies what the daemon uses from
     /// it (`sync.metered`, `sync.offline_days`, `notifications`, `sounds`,
     /// the `general` language, tray and badge switches, search trigger words,
-    /// `feedback.send_crash_reports`). Katna Mail calls this after saving
+    /// `feedback.send_crash_reports`, the accounts taken `offline`). Katna Mail calls this after saving
     /// The accounts left out of each app, as last read from the settings.
     pub(crate) fn hidden_accounts(&self) -> HiddenAccounts {
         self.hidden_accounts.lock().unwrap().clone()
@@ -1293,6 +1311,7 @@ impl Daemon {
             katna_i18n::apply(language);
         }
         *self.hidden_accounts.lock().unwrap() = config.hidden_accounts.clone();
+        self.set_offline(config.offline.clone());
         if let Some(finder) = self.finder.get() {
             finder.set_triggers(config.general.search_triggers.clone());
         }
@@ -1341,6 +1360,9 @@ impl Daemon {
         let account = account.ok_or_else(|| {
             CommandError::Failed(format!("message {} is not on a server", message.0))
         })?;
+        if self.is_offline(account) {
+            return Err(CommandError::Failed("the account is offline".into()));
+        }
         let session = self.on_demand.session(account);
         let mut connection = session.connection.lock().await;
         let mut store = Store::open(&self.paths, Mode::ReadWrite)?;
@@ -1884,6 +1906,11 @@ impl Daemon {
         if let Some(old) = old {
             stop(account.id, old).await;
         }
+        // It starts when it is brought back online.
+        if self.is_offline(account.id) {
+            self.set_status(account.id, Status::new(state::PAUSED, ""));
+            return;
+        }
         let connector = self.connector(account).await;
         // The keyring may have kept it waiting while the daemon stopped.
         if self.closing.load(Ordering::SeqCst) || self.resetting.load(Ordering::SeqCst) {
@@ -1907,6 +1934,9 @@ impl Daemon {
     /// How to reach the account's IMAP or POP3 server; `None` if it has
     /// none.
     async fn connector(&self, account: &Account) -> Result<Option<Link>, String> {
+        if self.is_offline(account.id) {
+            return Err("the account is offline".into());
+        }
         let settings = self
             .store()
             .account_settings(account.id)
@@ -2200,6 +2230,10 @@ impl Outgoing for SmtpAccounts {
 
     async fn connect(&self, account: AccountId) -> katna_sync::Result<SmtpSender> {
         let (daemon, settings) = self.settings(account)?;
+        // Waits in the outbox like on a lost network, until it is back.
+        if daemon.is_offline(account) {
+            return Err(katna_sync::Error::Closed("the account is offline".into()));
+        }
         let smtp = settings.smtp.clone().ok_or_else(|| {
             katna_sync::Error::Rejected(format!("account {account} has no SMTP server"))
         })?;

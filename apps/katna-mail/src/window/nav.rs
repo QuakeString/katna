@@ -13,8 +13,8 @@ use gpui::{
     canvas, div, list, point, prelude::*, radians, rgba, svg,
 };
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::px;
 use katna_ui::{Glow, Ripple};
+use katna_ui::{px, tokens};
 
 use super::apps::APP_RAIL_WIDTH;
 use super::mail_drag::MailDrag;
@@ -23,7 +23,7 @@ use super::{
     FocusSearch, Hover, Listing, MailWindow, NAV_ROW_INSET, NAV_WIDTH, PANEL_RADIUS,
     SEARCH_CONTEXT, ToggleNavigation, ToggleSettings, compose,
 };
-use katna_core::AccountKind;
+use katna_core::{AccountId, AccountKind};
 use katna_i18n::tr;
 
 use crate::sidebar::{self, Role, Unified};
@@ -32,7 +32,10 @@ use crate::widgets::{
     elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
 };
 use katna_platform::colors::over;
-use katna_ui::tokens;
+
+/// The crossed cloud of an offline account's line, and of its heading.
+const OFFLINE_MARK: f32 = tokens::space::S6 + tokens::space::S2;
+const OFFLINE_HEADING_MARK: f32 = tokens::space::S5 + tokens::space::S2;
 
 /// How far the floating folder pane stands off the rail and the top bar.
 const FLOAT_GAP: f32 = 8.0;
@@ -766,10 +769,34 @@ impl MailWindow {
                     .when(self.account_menu, |d| d.bg(rgba(th.hover)))
                     .on_mouse_move(|_, _, cx| cx.stop_propagation())
                     .tooltip(tip(
-                        if self.accounts.len() > 1 {
-                            format!("{name}\n{}\n{}", account.address, tr!("account-wheel-hint"))
-                        } else {
-                            format!("{name}\n{}", account.address)
+                        {
+                            let mut text = if self.accounts.len() > 1 {
+                                format!(
+                                    "{name}\n{}\n{}",
+                                    account.address,
+                                    tr!("account-wheel-hint")
+                                )
+                            } else {
+                                format!("{name}\n{}", account.address)
+                            };
+                            // Which accounts are offline, under the crossed
+                            // cloud on the picture.
+                            for offline in self
+                                .accounts
+                                .iter()
+                                .filter(|a| a.kind.is_mail() && self.is_account_offline(a.id))
+                            {
+                                let label = if offline.display_name.trim().is_empty() {
+                                    &offline.address
+                                } else {
+                                    &offline.display_name
+                                };
+                                text.push_str(&format!(
+                                    "\n{}",
+                                    tr!("offline-account-tip", account = label.clone())
+                                ));
+                            }
+                            text
                         },
                         th,
                     ))
@@ -782,9 +809,10 @@ impl MailWindow {
                         this.app_menu = None;
                         cx.notify();
                     }))
-                    .child(self.account_ring(
-                        &account.address,
-                        self.render_rolling_avatar(32.0),
+                    .child(self.offline_badge(
+                        self.account_ring(&account.address, self.render_rolling_avatar(32.0), th),
+                        32.0,
+                        self.any_account_offline(),
                         th,
                     ))
                     .child(self.tour_mark(Spot::Account))
@@ -1003,6 +1031,7 @@ impl MailWindow {
                 ix,
                 tr!("nav-all-accounts"),
                 (*expanded, self.checking_all(), None),
+                None,
                 th,
                 cx,
             ),
@@ -1016,6 +1045,7 @@ impl MailWindow {
                     self.checking_account(*id),
                     self.account_bell_icon(*id),
                 ),
+                self.is_account_offline(*id).then_some(*id),
                 th,
                 cx,
             ),
@@ -1089,6 +1119,7 @@ impl MailWindow {
                                 .into_iter()
                                 .any(|f| self.checking_folder(f)),
                         bell: None,
+                        offline: None,
                         left_out: None,
                     },
                     th,
@@ -1128,6 +1159,8 @@ impl MailWindow {
                         checking: (*view == Unified::Inbox && self.checking_account(*account))
                             || folder.is_some_and(|f| self.checking_folder(f)),
                         bell: self.account_bell_icon(*account),
+                        offline: (*view == Unified::Inbox && self.is_account_offline(*account))
+                            .then_some(*account),
                         left_out: left_out.then_some(*account),
                     },
                     th,
@@ -1180,6 +1213,7 @@ impl MailWindow {
                                     .and_then(|f| self.tree.account_of(f))
                                     .is_some_and(|a| self.checking_account(a)),
                         bell: folder.and_then(|f| self.folder_bell_icon(f)),
+                        offline: None,
                         left_out: None,
                     },
                     th,
@@ -1196,6 +1230,7 @@ impl MailWindow {
         ix: usize,
         name: String,
         (expanded, checking, bell): (bool, bool, Option<&'static str>),
+        offline: Option<AccountId>,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -1242,6 +1277,20 @@ impl MailWindow {
                     14.0,
                 )))
             })
+            .when_some(offline, |d, account| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .pl(px(tokens::space::S2))
+                        .child(self.offline_mark(
+                            ("nav-heading-offline", ix),
+                            account,
+                            OFFLINE_HEADING_MARK,
+                            th,
+                            cx,
+                        )),
+                )
+            })
             .child(div().flex_1().pl(px(6.0)).pb(px(3.0)).when(checking, |d| {
                 d.child(super::nav_menu::turning_arrow(
                     "heading-checking",
@@ -1283,6 +1332,7 @@ impl MailWindow {
             chevron,
             checking,
             bell,
+            offline,
             left_out,
         } = pill;
         let indent = 12.0 * depth as f32;
@@ -1427,6 +1477,10 @@ impl MailWindow {
                             14.0,
                         )),
                 )
+            })
+            // Before the count, which stays where it is.
+            .when_some(offline, |d, account| {
+                d.child(self.offline_mark(("nav-offline", ix), account, OFFLINE_MARK, th, cx))
             })
             .when(unread > 0 && left_out.is_none(), |d| {
                 d.child(crate::widgets::count_pill(unread, selected, th))
@@ -1823,9 +1877,12 @@ struct Pill {
     /// A bell, or a crossed bell, when its notifications differ from
     /// the usual (§15.1.1).
     bell: Option<&'static str>,
+    /// An account taken offline: a crossed cloud before its count, which
+    /// brings it back online.
+    offline: Option<AccountId>,
     /// An account's inbox left out of the unified Inbox: it shows dimmed,
     /// with an eye in place of its count that brings it back.
-    left_out: Option<katna_core::AccountId>,
+    left_out: Option<AccountId>,
 }
 
 /// An arrow that turns from pointing right to down as its line opens.

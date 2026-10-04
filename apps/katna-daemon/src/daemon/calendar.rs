@@ -68,6 +68,9 @@ pub(crate) struct Calendars {
     services: smol::lock::Mutex<Services>,
     /// Changes written to the store, to send to their services.
     changes: (Sender<Applied>, Receiver<Applied>),
+    /// Changes to calendars of accounts taken offline, sent once they
+    /// are back ([`Daemon::resend_held_event_changes`]).
+    held: Mutex<Vec<Applied>>,
     /// Accounts to look for again from scratch next round ("Try again"),
     /// not waiting out a server found without calendars.
     recheck: Mutex<HashSet<AccountId>>,
@@ -80,6 +83,7 @@ impl Default for Calendars {
             status: Mutex::default(),
             services: smol::lock::Mutex::default(),
             changes: async_channel::unbounded(),
+            held: Mutex::default(),
             recheck: Mutex::default(),
         }
     }
@@ -241,6 +245,9 @@ impl Daemon {
         account: &Account,
         method: Method,
     ) -> Result<Option<&'a Service>, String> {
+        if self.is_offline(account.id) {
+            return Err("the account is offline".into());
+        }
         let at = (account.id, method);
         match self.calendar_service(account, method).await? {
             Some((key, service)) => {
@@ -534,6 +541,10 @@ async fn send_changes(daemon: Weak<Daemon>, changes: Receiver<Applied>) {
                 }
             },
         };
+        if daemon.offline_change(store, &applied) {
+            daemon.calendars.held.lock().unwrap().push(applied);
+            continue;
+        }
         match daemon.send_change(store, &applied).await {
             Ok(()) => {
                 if let Err(err) = store.events_pushed(&applied.rows) {
@@ -549,6 +560,26 @@ async fn send_changes(daemon: Weak<Daemon>, changes: Receiver<Applied>) {
 }
 
 impl Daemon {
+    /// Whether `applied` changes a calendar of an account taken offline.
+    fn offline_change(&self, store: &Store, applied: &Applied) -> bool {
+        applied.steps.iter().any(|step| {
+            store
+                .calendar(step.calendar())
+                .ok()
+                .flatten()
+                .and_then(|calendar| calendar.account)
+                .is_some_and(|account| self.is_offline(account))
+        })
+    }
+
+    /// Sends the event changes held while their accounts were offline;
+    /// any still offline are held again.
+    pub(super) fn resend_held_event_changes(&self) {
+        for applied in std::mem::take(&mut *self.calendars.held.lock().unwrap()) {
+            let _ = self.calendars.changes.0.try_send(applied);
+        }
+    }
+
     /// Gives up sending `applied`: its calendars sync again.
     fn give_up_change(&self, store: Option<&mut Store>, applied: &Applied) {
         let forgot = match store {
@@ -630,6 +661,10 @@ impl Daemon {
         for account in &accounts {
             if self.closing() {
                 return;
+            }
+            // It keeps its last status until it is back online.
+            if self.is_offline(account.id) {
+                continue;
             }
             let (status, synced) = self.sync_calendars(store, services, account).await;
             changed |= synced;

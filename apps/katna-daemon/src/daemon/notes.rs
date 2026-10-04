@@ -200,7 +200,7 @@ impl Daemon {
     }
 
     /// Has the notes of `account` go to its Notes folder soon.
-    fn notes_changed(&self, account: Option<i64>) {
+    pub(super) fn notes_changed(&self, account: Option<i64>) {
         if let Some(account) = account {
             let _ = self.notes_wake.0.try_send(AccountId(account));
         }
@@ -209,6 +209,10 @@ impl Daemon {
     /// Brings `account`'s notes and its Notes folder in step, on a
     /// connection of its own.
     async fn sync_account_notes(&self, account: AccountId) -> Result<(), CommandError> {
+        // Its changes wait in the store until it is back online.
+        if self.is_offline(account) {
+            return Ok(());
+        }
         let from = self.account(account)?.address;
         let connection = self.connect_on_demand(account).await?;
         let mut store = Store::open(&self.paths, Mode::ReadWrite)?;
