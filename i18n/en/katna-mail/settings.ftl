@@ -674,6 +674,9 @@ settings-search-results = Settings that match “{ $query }”
 
 # $error: the system's error, in English.
 settings-open-at-login-failed = Could not change starting at login: { $error }
+# The error in settings-open-at-login-failed when Katna from the Microsoft
+# Store asks to start at sign-in after the user turned that off in Windows.
+settings-open-at-login-off-in-windows = it is turned off in Windows Settings > Apps > Startup
 
 ## Settings > General > Time
 

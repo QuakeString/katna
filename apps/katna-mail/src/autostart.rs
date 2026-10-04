@@ -13,7 +13,11 @@
 //!
 //! On Windows the setting is the `Katna` value of the user's `Run` key
 //! (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`), which Settings >
-//! Apps > Startup also shows and turns off.
+//! Apps > Startup also shows and turns off. From the Microsoft Store it is
+//! the package's startup task instead (`katna_platform::store`), which
+//! starts Katna Mail without `--background`: a file in Katna's config
+//! folder says to open the window, and without it Katna Mail started by
+//! the task starts only the service ([`quiet_sign_in`]).
 //!
 //! [`General::start_at_login_set`]: katna_core::config::General::start_at_login_set
 
@@ -134,9 +138,44 @@ const RUN_KEY: &str = r"Software\Microsoft\Windows\CurrentVersion\Run";
 #[cfg(windows)]
 const RUN_VALUE: &str = "Katna";
 
+/// Whether this is the Store package, whose startup task starts Katna.
+#[cfg(windows)]
+fn store() -> bool {
+    katna_core::update::Package::current() == katna_core::update::Package::MsStore
+}
+
+/// The file that says the Store package's startup task opens the window.
+#[cfg(windows)]
+fn window_at_sign_in() -> Option<std::path::PathBuf> {
+    let paths = katna_core::paths::Paths::from_env().ok()?;
+    Some(paths.config_dir().join("open-window-at-sign-in"))
+}
+
+/// Whether Windows started this Katna Mail from the Store package at
+/// sign-in to start only the service, as `--background` does elsewhere.
+#[cfg(windows)]
+pub fn quiet_sign_in() -> bool {
+    store()
+        && katna_platform::store::started_at_sign_in()
+        && !window_at_sign_in().is_some_and(|file| file.exists())
+}
+
+#[cfg(not(windows))]
+pub fn quiet_sign_in() -> bool {
+    false
+}
+
 /// What Katna starts at login, or `None` for nothing.
 #[cfg(windows)]
 pub fn get() -> Option<Start> {
+    if store() {
+        let window = window_at_sign_in().is_some_and(|file| file.exists());
+        return katna_platform::store::starts_at_sign_in().then_some(if window {
+            Start::Window
+        } else {
+            Start::Quietly
+        });
+    }
     let key = winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER)
         .open_subkey(RUN_KEY)
         .ok()?;
@@ -170,6 +209,9 @@ fn run_command(exe: &Path, start: Start) -> String {
 /// Makes Katna start at login as `start` says, or not at all.
 #[cfg(windows)]
 pub fn set(start: Option<Start>) -> io::Result<()> {
+    if store() {
+        return set_store(start);
+    }
     let (key, _) =
         winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER).create_subkey(RUN_KEY)?;
     let Some(start) = start else {
@@ -180,6 +222,32 @@ pub fn set(start: Option<Start>) -> io::Result<()> {
     };
     let exe = std::env::current_exe()?;
     key.set_value(RUN_VALUE, &run_command(&exe, start))
+}
+
+/// [`set`] for the Store package: its startup task, and the file that
+/// says whether it opens the window.
+#[cfg(windows)]
+fn set_store(start: Option<Start>) -> io::Result<()> {
+    use katna_platform::store::{Outcome, set_starts_at_sign_in};
+
+    let file = window_at_sign_in().ok_or_else(|| io::Error::other("no config folder"))?;
+    if start == Some(Start::Window) {
+        if let Some(dir) = file.parent() {
+            std::fs::create_dir_all(dir)?;
+        }
+        std::fs::write(&file, b"")?;
+    } else {
+        match std::fs::remove_file(&file) {
+            Err(err) if err.kind() != io::ErrorKind::NotFound => return Err(err),
+            _ => {}
+        }
+    }
+    match set_starts_at_sign_in(start.is_some()).map_err(io::Error::other)? {
+        Outcome::Done => Ok(()),
+        Outcome::OffInWindows => Err(io::Error::other(katna_i18n::tr!(
+            "settings-open-at-login-off-in-windows"
+        ))),
+    }
 }
 
 /// `katna-mail --background`: starts the Katna service through D-Bus
