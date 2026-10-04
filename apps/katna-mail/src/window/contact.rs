@@ -18,7 +18,7 @@ use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, Pixels, Point,
+    Animation, AnimationExt, AnyElement, Bounds, ClipboardItem, Context, FontWeight, Pixels,
     ScrollHandle, SharedString, Window, canvas, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_dav::Occurrence;
@@ -125,6 +125,8 @@ pub(super) struct ContactPanel {
     /// Where the panel has no room, a summary of the card pops over
     /// where the name or picture was clicked.
     peek: Option<ContactPeek>,
+    /// Where the names and pictures that open the card were drawn.
+    spots: peek::Spots,
 }
 
 impl ContactPanel {
@@ -144,6 +146,7 @@ impl ContactPanel {
             nav_hold: false,
             sheet: Sheet::new(),
             peek: None,
+            spots: Default::default(),
         }
     }
 
@@ -256,24 +259,25 @@ impl MailWindow {
     }
 
     /// Shows `email` (lower case) in the panel, opening it if it was put
-    /// away: an address clicked at `at` in the open mail's details.
-    /// A second click on the person whose card shows puts the panel away.
-    pub(super) fn show_person(&mut self, email: &str, at: Point<Pixels>, cx: &mut Context<Self>) {
+    /// away: an address clicked in the open mail's details (`at`, see
+    /// [`MailWindow::person_at`]). A second click on the person whose
+    /// card shows puts the panel away.
+    pub(super) fn show_person(&mut self, email: &str, at: Bounds<Pixels>, cx: &mut Context<Self>) {
         if let Some(key) = self.reader.as_ref().map(|r| r.key) {
             self.show_contact_of(key, email, at, cx);
         }
     }
 
     /// Shows `email`'s card for conversation `key`, opening the panel if
-    /// it is hidden: a click at `at` on a name or picture in the chat
-    /// view. A second click on the person whose card shows puts the panel
-    /// away. Where the panel has no room, the card's summary pops over
-    /// at `at` instead.
+    /// it is hidden: a click on a name or picture in the chat view, drawn
+    /// at `at`. A second click on the person whose card shows puts the
+    /// panel away. Where the panel has no room, the card's summary pops
+    /// over, pointing at `at`, instead.
     pub(super) fn show_contact_of(
         &mut self,
         key: EntryKey,
         email: &str,
-        at: Point<Pixels>,
+        at: Bounds<Pixels>,
         cx: &mut Context<Self>,
     ) {
         let email = email.to_lowercase();
@@ -423,6 +427,12 @@ impl MailWindow {
             .detach();
         }
         known.and_then(|(_, p)| p)
+    }
+
+    /// The pointer is on a name or picture that opens `email`'s card:
+    /// its profile is read now, so the card opens with it.
+    pub(in crate::window) fn read_person_ahead(&mut self, email: &str, cx: &mut Context<Self>) {
+        self.contact_profile(&email.to_lowercase(), cx);
     }
 
     /// Asks the daemon once for the company of the person at `email`:
