@@ -9,13 +9,13 @@
 //! on. Every change has Undo.
 
 use gpui::{
-    AnyElement, Context, MouseButton, Pixels, Point, SharedString, anchored, deferred, div,
-    prelude::*,
+    AnyElement, Context, MouseButton, Pixels, Point, SharedString, deferred, div, prelude::*,
 };
 use jiff::Timestamp;
 use katna_core::{AccountId, MailCategory};
 use katna_i18n::tr;
 use katna_store::{Bell, FolderId, MessageId, MuteTarget, ThreadId};
+use katna_ui::anchored;
 
 use crate::data::EntryKey;
 use katna_ui::px;

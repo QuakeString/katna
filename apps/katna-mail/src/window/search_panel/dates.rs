@@ -11,12 +11,13 @@ use std::time::Instant;
 
 use gpui::{
     AnyElement, App, Bounds, Context, Div, Entity, Focusable, FontWeight, MouseButton, Pixels,
-    Window, anchored, deferred, div, point, prelude::*, rgba,
+    Window, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::{Date, Time, Weekday};
 use jiff::tz::TimeZone;
 use katna_i18n::{format, tr};
 use katna_ui::TextInput;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::unpx;
 

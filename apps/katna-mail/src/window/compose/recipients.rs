@@ -13,10 +13,11 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Context, Div, DragMoveEvent, FontWeight, Global, HighlightStyle, KeyDownEvent,
-    SharedString, StyledText, anchored, deferred, div, point, prelude::*, rgba,
+    SharedString, StyledText, deferred, div, point, prelude::*, rgba,
 };
 use katna_core::config::AppKind;
 use katna_search::contacts::{ContactBook, Suggestion};
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::text_input::{Backspace, Cancel, Delete, Down, Left, Right, Submit, Up};
 

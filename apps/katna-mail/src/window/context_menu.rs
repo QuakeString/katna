@@ -18,9 +18,10 @@ use std::time::Instant;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, ElementId, FontWeight, KeyDownEvent,
-    MouseButton, Pixels, Point, SharedString, Stateful, Window, anchored, deferred, div,
-    ease_out_quint, point, prelude::*, rgba,
+    MouseButton, Pixels, Point, SharedString, Stateful, Window, deferred, div, ease_out_quint,
+    point, prelude::*, rgba,
 };
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::tokens::duration;
 use katna_ui::unpx;

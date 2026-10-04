@@ -8,12 +8,13 @@
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, Hsla, MouseButton,
-    Pixels, Point, Subscription, Window, anchored, deferred, div, ease_out_quint, prelude::*, rgba,
+    Pixels, Point, Subscription, Window, deferred, div, ease_out_quint, prelude::*, rgba,
 };
 use jiff::civil::{Date, Time, Weekday};
 use jiff::tz::TimeZone;
 use jiff::{Timestamp, Zoned};
 use katna_i18n::{format, tr};
+use katna_ui::anchored;
 use katna_ui::{InputEvent, TextInput, px};
 
 use super::MenuKey;

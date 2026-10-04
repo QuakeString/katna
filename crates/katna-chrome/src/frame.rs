@@ -7,7 +7,7 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use gpui::{
-    AnyElement, App, Bounds, BoxShadow, ClickEvent, Context, CursorStyle, Decorations, Div,
+    AnyElement, App, Bounds, BoxShadow, ClickEvent, Context, CursorStyle, Decorations, Div, Edges,
     FontWeight, Global, HitboxBehavior, Hsla, IntoElement, MouseButton, ParentElement, PathBuilder,
     Pixels, ResizeEdge, SharedString, Size, Styled, Tiling, TitlebarOptions, Window,
     WindowAppearance, WindowBackgroundAppearance, WindowButton, WindowButtonLayout,
@@ -476,6 +476,18 @@ impl WindowChrome {
         cx: &mut App,
     ) -> Div {
         let t = self.tokens(window);
+        // Menus, popovers and tooltips keep inside the content.
+        let [top, right, bottom, left] = self.insets(window).map(px);
+        katna_ui::anchored::set_content_insets(
+            window,
+            Edges {
+                top,
+                right,
+                bottom,
+                left,
+            },
+            cx,
+        );
         match window.window_decorations() {
             Decorations::Server => {
                 self.set_input_region(None, window);

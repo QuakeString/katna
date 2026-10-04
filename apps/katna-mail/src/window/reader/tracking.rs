@@ -10,11 +10,11 @@ use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyElement, Bounds, Context, Pixels, Size, Task, anchored, canvas, deferred, div, point,
-    prelude::*, rgba,
+    AnyElement, Bounds, Context, Pixels, Size, Task, canvas, deferred, div, point, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_store::RecipientActivity;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::unpx;
 

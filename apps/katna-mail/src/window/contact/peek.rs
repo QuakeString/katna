@@ -12,9 +12,10 @@ use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnimationExt, AnyElement, Bounds, Context, ElementId, Pixels, Point, Window, anchored, canvas,
-    deferred, div, point, prelude::*, size,
+    AnimationExt, AnyElement, Bounds, Context, ElementId, Pixels, Point, Window, canvas, deferred,
+    div, point, prelude::*, size,
 };
+use katna_ui::anchored;
 use katna_ui::motion::{self, Spring};
 use katna_ui::{px, unpx};
 

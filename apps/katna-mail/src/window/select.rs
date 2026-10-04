@@ -24,9 +24,10 @@ use std::rc::Rc;
 use gpui::{
     AnyElement, App, Bounds, ClipboardItem, Context, DispatchPhase, Div, FocusHandle,
     HighlightStyle, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, Pixels, Point,
-    SharedString, StyledText, TextLayout, WeakEntity, Window, WindowId, actions, anchored, canvas,
-    deferred, div, prelude::*, rgba,
+    SharedString, StyledText, TextLayout, WeakEntity, Window, WindowId, actions, canvas, deferred,
+    div, prelude::*, rgba,
 };
+use katna_ui::anchored;
 
 use katna_i18n::tr;
 use katna_ui::{px, unpx};

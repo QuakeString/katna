@@ -14,9 +14,10 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, Bounds, Context, FocusHandle, FontWeight, KeyDownEvent, MouseButton, PathBuilder,
-    Pixels, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
+    Pixels, Window, canvas, deferred, div, point, prelude::*, rgba,
 };
 use katna_i18n::tr;
+use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::unpx;

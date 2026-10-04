@@ -14,12 +14,13 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, ClickEvent, Context, Div, MouseButton, Pixels, Point,
-    SharedString, Stateful, Transformation, Window, anchored, deferred, div, ease_out_quint,
-    percentage, prelude::*, rgba, svg,
+    SharedString, Stateful, Transformation, Window, deferred, div, ease_out_quint, percentage,
+    prelude::*, rgba, svg,
 };
 use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_store::FolderId;
+use katna_ui::anchored;
 use katna_ui::{px, tokens};
 
 use super::MenuKey;

@@ -1081,7 +1081,7 @@ impl MailWindow {
         let layer = div().relative().w(px(vw)).h(px(vh)).child(panel);
         Some(
             deferred(
-                gpui::anchored()
+                katna_ui::anchored()
                     .position(point(px(0.0), px(0.0)))
                     .child(layer),
             )

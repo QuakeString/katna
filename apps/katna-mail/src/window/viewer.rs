@@ -2495,7 +2495,7 @@ impl Viewer {
                 )
                 .child(
                     gpui::deferred(
-                        gpui::anchored()
+                        katna_ui::anchored()
                             .position(at)
                             // Pressed at the foot: the menu opens upwards.
                             .anchor(gpui::Anchor::BottomRight)
