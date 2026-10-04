@@ -989,8 +989,7 @@ impl MailWindow {
             .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::summarize_key))
-            .child(self.render_reader_toolbar(th, cx))
-            .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
+            .child(self.render_reader_with_toolbar(th, cx))
             .children(card_outline(th, radius, edge))
             // Which pane has the keys: a faint accent edge on this one.
             .when(keys, |d| {
@@ -1223,6 +1222,26 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// The open mail under its toolbar. A chat's toolbar goes into the
+    /// header pinned over its top, so the bubbles scroll under it too; the
+    /// mail view, where nothing is pinned, keeps it above.
+    pub(super) fn render_reader_with_toolbar(
+        &mut self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        self.reader_top = Some(self.render_reader_toolbar(th, cx));
+        let reader = self.render_reader(th, cx);
+        div()
+            .flex_1()
+            .min_h_0()
+            .flex()
+            .flex_col()
+            .children(self.reader_top.take())
+            .child(div().flex_1().min_h_0().child(reader))
+            .into_any_element()
+    }
+
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         self.open_sealed(cx);
         self.fetch_remote(cx);
@@ -1236,6 +1255,9 @@ impl MailWindow {
         if self.chat_shown() {
             return self.render_chat(th, cx);
         }
+        // The mail view's subject scrolls with the mails: nothing is pinned
+        // over them.
+        self.reader_head.set(0.0);
         // The link under the pointer was in another conversation.
         let conversation = self.reader.as_ref().map(|r| key_number(r.key));
         if self
@@ -1414,8 +1436,8 @@ impl MailWindow {
                                     div()
                                         .flex()
                                         .flex_col()
-                                        .pt(px(self.reader_head.get() + space::S4))
                                         .pb(px(24.0))
+                                        .child(title)
                                         .children(summary)
                                         .children(muted)
                                         .children(notes)
@@ -1436,21 +1458,6 @@ impl MailWindow {
                             th.text_dim & 0xffff_ff00 | 0x99,
                         ),
                     )
-                    // The subject stays at the top while the mails scroll
-                    // under it, as the chat's header does.
-                    .child(
-                        self.pinned_head(
-                            title.with_animation(
-                                ("open-subject", key_number(key)),
-                                Animation::new(katna_ui::motion::time(Duration::from_millis(280)))
-                                    .with_easing(ease_out_quint()),
-                                |el, t| el.opacity(t),
-                            ),
-                            th.pane(),
-                            true,
-                            th,
-                        ),
-                    )
                     .children(link_status),
             )
             .children(footer.map(|footer| {
@@ -1468,7 +1475,7 @@ impl MailWindow {
     /// ([`crate::widgets::pinned_head`]), with a line under it once
     /// something is beneath when `line` (the chat's header draws its own).
     pub(super) fn pinned_head(
-        &self,
+        &mut self,
         content: impl IntoElement,
         fill: u32,
         line: bool,
@@ -1476,7 +1483,23 @@ impl MailWindow {
     ) -> AnyElement {
         let under = line && unpx(self.reader_scroll.offset().y) < -0.5;
         let frost = self.config.experimental.frosted_headers;
-        crate::widgets::pinned_head(content, fill, under, frost, self.reader_head.clone(), th)
+        // The toolbar, when there is one, heads the bar at the card's top,
+        // so its corners follow the card's.
+        let toolbar = self.reader_top.take();
+        let radius = if toolbar.is_some() {
+            (self.layout.shape.card_radius() - self.layout.shape.card_outline()).max(0.0)
+        } else {
+            0.0
+        };
+        crate::widgets::pinned_head(
+            div().flex().flex_col().children(toolbar).child(content),
+            fill,
+            under,
+            frost,
+            radius,
+            self.reader_head.clone(),
+            th,
+        )
     }
 
     fn render_part_content(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
