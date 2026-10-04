@@ -23,6 +23,7 @@ use katna_render::html::Document;
 use katna_store::{FolderId, MessageFlags, MessageId};
 use katna_ui::motion::lerp;
 use katna_ui::px;
+use katna_ui::tokens::{radius, space};
 use katna_ui::unpx;
 
 use super::compose::{Kind, SentCard};
@@ -1308,7 +1309,7 @@ impl MailWindow {
                                 .flex()
                                 .flex_row()
                                 .flex_wrap()
-                                .gap(px(6.0))
+                                .gap(px(space::S2))
                                 .children(chips),
                         )
                     }),
@@ -2209,7 +2210,7 @@ impl MailWindow {
             .flex()
             .flex_row()
             .items_center()
-            .gap(px(2.0))
+            .gap(px(space::S1))
             .pl(px(6.0))
             .pr(px(if chip.remove.is_some() { 2.0 } else { 6.0 }))
             .py(px(1.0))
@@ -2226,7 +2227,7 @@ impl MailWindow {
                         .flex()
                         .items_center()
                         .justify_center()
-                        .rounded(px(3.0))
+                        .rounded(px(radius::inner(4.0, space::S1)))
                         .cursor_pointer()
                         .opacity(0.0)
                         .group_hover(group, |s| s.opacity(1.0))
