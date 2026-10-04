@@ -68,6 +68,22 @@ pub enum AppKind {
 }
 
 impl AppKind {
+    /// Its name in `[apps]` and over D-Bus: `calendar`, `contacts`, …
+    pub fn key(self) -> &'static str {
+        match self {
+            Self::Calendar => "calendar",
+            Self::Contacts => "contacts",
+            Self::Tasks => "tasks",
+            Self::Notes => "notes",
+            Self::Files => "files",
+        }
+    }
+
+    /// The app named `key` ([`AppKind::key`]).
+    pub fn from_key(key: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|app| app.key() == key)
+    }
+
     pub const ALL: [Self; 5] = [
         Self::Calendar,
         Self::Contacts,

@@ -1280,6 +1280,12 @@ macro_rules! pim_proxy {
             /// the daemon uses (`sync.metered`).
             fn reload_config(&self) -> zbus::Result<()>;
 
+            /// Deletes what app `app` (`calendar`, `contacts`, `tasks`,
+            /// `notes` or `files`), turned off, downloaded from the
+            /// accounts; its next sync downloads it again. Whatever is on
+            /// this computer only, or not sent yet, stays.
+            fn forget_app(&self, app: &str) -> zbus::Result<()>;
+
             /// Whether the daemon saves data as on a metered network (no
             /// bodies downloaded ahead of time).
             fn metered(&self) -> zbus::Result<bool>;

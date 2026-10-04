@@ -32,7 +32,11 @@ rail-menu-turn-off = Turn off { $app }…
 # The sheet before an app is turned off. $app: its name, such as "Calendar".
 app-off-title = Turn off { $app }?
 app-off-body = Katna stops syncing { $app } and takes it out of:
-app-off-kept = Nothing changes on your accounts. Turn { $app } on again in Settings › Apps whenever you like.
+# Two choices under the list; Keep is picked at first.
+app-off-keep = Keep a copy on this computer
+app-off-keep-detail = Turning it back on is instant
+app-off-remove = Remove the copy on this computer
+app-off-remove-detail = Nothing changes on your accounts, and turning it back on downloads it again. What's only on this computer, or not sent yet, stays.
 app-off-cancel = Cancel
 app-off-confirm = Turn off
 # The snackbar after, with Undo.

@@ -38,7 +38,7 @@ use katna_sync::{
     calendar::{
         CalendarError,
         caldav::CalDav,
-        edit::{self, Applied, EditError, Remote},
+        edit::{self, Applied, EditError, Remote, Step},
         google::GoogleCalendar,
         graph::GraphCalendar,
         zoho::ZohoCalendar,
@@ -171,6 +171,37 @@ impl Daemon {
         tracing::info!(calendar = id, hidden, "calendar shown or hidden");
         let _ = self.notices.try_send(Notice::CalendarChanged);
         Ok(())
+    }
+
+    /// "Remove the copy" of the Calendar, turned off: the account
+    /// calendars go, but not one with a change still to send (held for an
+    /// account offline). While a change is on its way, nothing goes: its
+    /// steps name event rows, which must not go first. Returns how many
+    /// calendars went.
+    pub(super) fn forget_calendar_copy(&self) -> Result<usize, CommandError> {
+        if !self.calendars.changes.1.is_empty() {
+            return Err(CommandError::Failed(
+                "calendar changes are still being sent; try again in a moment".into(),
+            ));
+        }
+        let keep: HashSet<i64> = self
+            .calendars
+            .held
+            .lock()
+            .unwrap()
+            .iter()
+            .flat_map(|applied| &applied.steps)
+            .flat_map(|step| match step {
+                Step::GoogleMove { calendar, to, .. } => vec![*calendar, *to],
+                step => vec![step.calendar()],
+            })
+            .collect();
+        let gone = self.store().forget_account_calendars(&keep)?;
+        self.calendars.status.lock().unwrap().clear();
+        if gone > 0 {
+            let _ = self.notices.try_send(Notice::CalendarChanged);
+        }
+        Ok(gone)
     }
 
     /// Forgets the calendars of `account`, which went away.

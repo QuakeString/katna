@@ -481,6 +481,11 @@ macro_rules! pim_interface {
                 Ok(self.daemon.reload_config()?)
             }
 
+            /// Deletes the local copy of an app turned off.
+            async fn forget_app(&self, app: String) -> fdo::Result<()> {
+                Ok(self.daemon.forget_app(&app)?)
+            }
+
             /// Whether the daemon saves data as on a metered network: from
             /// NetworkManager, or the `sync.metered` setting.
             async fn metered(&self) -> bool {
