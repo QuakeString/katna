@@ -2207,31 +2207,43 @@ impl MailWindow {
         div()
             .id(("header-chip", ix))
             .group(group.clone())
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(space::S1))
-            .pl(px(6.0))
-            .pr(px(if chip.remove.is_some() { 2.0 } else { 6.0 }))
+            .relative()
+            .px(px(6.0))
             .py(px(1.0))
-            .rounded(px(4.0))
+            .rounded(px(radius::XS))
             .bg(rgba(th.chip))
             .text_size(px(12.0))
             .text_color(rgba(th.text_dim))
             .child(chip.text.clone())
+            // The × keeps no room at rest, so every chip's text sits
+            // evenly; on hover it covers the chip's end on a solid patch.
             .when_some(chip.remove, |d, remove| {
                 d.child(
                     div()
                         .id(("header-chip-remove", ix))
-                        .size(px(16.0))
+                        .absolute()
+                        .top_0()
+                        .bottom_0()
+                        .right_0()
                         .flex()
                         .items_center()
-                        .justify_center()
-                        .rounded(px(radius::inner(4.0, space::S1)))
-                        .cursor_pointer()
+                        .pr(px(space::S1))
+                        .rounded_r(px(radius::XS))
+                        .bg(rgba(th.surface))
                         .opacity(0.0)
                         .group_hover(group, |s| s.opacity(1.0))
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .child(
+                            div()
+                                .size(px(16.0))
+                                .flex()
+                                .items_center()
+                                .justify_center()
+                                .rounded(px(radius::inner(4.0, space::S1)))
+                                .bg(rgba(th.chip))
+                                .cursor_pointer()
+                                .hover(|s| s.bg(rgba(th.hover)))
+                                .child(icon("close", th.text_dim, 12.0)),
+                        )
                         .tooltip(tip(
                             tr!("reader-chip-remove", label = chip.text.as_str()),
                             th,
@@ -2241,8 +2253,7 @@ impl MailWindow {
                             ChipRemove::Label(label, name) => {
                                 this.toggle_label(vec![key], *label, name, false, cx)
                             }
-                        }))
-                        .child(icon("close", th.text_dim, 12.0)),
+                        })),
                 )
             })
             .into_any_element()
