@@ -359,6 +359,12 @@ const ENTRIES: &[Entry] = &[
         "save download folder file manager reveal show dolphin",
     ),
     entry(
+        Section::Calendar,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts calendar calendars events reminders show hide leave out exclude account",
+    ),
+    entry(
         Section::Contacts,
         "settings-app-accounts",
         "settings-app-accounts-summary",
