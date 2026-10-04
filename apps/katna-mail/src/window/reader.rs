@@ -1348,22 +1348,6 @@ impl MailWindow {
             .size_full()
             .flex()
             .flex_col()
-            // The subject stays at the top while the mails scroll under it,
-            // as the chat's header does, with the same line under it.
-            .child(
-                div()
-                    .flex_none()
-                    .border_b_1()
-                    .border_color(rgba(th.divider))
-                    .child(
-                        title.with_animation(
-                            ("open-subject", key_number(key)),
-                            Animation::new(katna_ui::motion::time(Duration::from_millis(280)))
-                                .with_easing(ease_out_quint()),
-                            |el, t| el.opacity(t),
-                        ),
-                    ),
-            )
             .child(
                 div()
                     .flex_1()
@@ -1382,7 +1366,7 @@ impl MailWindow {
                                     div()
                                         .flex()
                                         .flex_col()
-                                        .pt(px(space::S4))
+                                        .pt(px(self.reader_head.get() + space::S4))
                                         .pb(px(24.0))
                                         .children(summary)
                                         .children(muted)
@@ -1404,6 +1388,21 @@ impl MailWindow {
                             th.text_dim & 0xffff_ff00 | 0x99,
                         ),
                     )
+                    // The subject stays at the top while the mails scroll
+                    // under it, as the chat's header does.
+                    .child(
+                        self.pinned_head(
+                            title.with_animation(
+                                ("open-subject", key_number(key)),
+                                Animation::new(katna_ui::motion::time(Duration::from_millis(280)))
+                                    .with_easing(ease_out_quint()),
+                                |el, t| el.opacity(t),
+                            ),
+                            th.pane(),
+                            true,
+                            th,
+                        ),
+                    )
                     .children(link_status),
             )
             .children(footer.map(|footer| {
@@ -1415,6 +1414,63 @@ impl MailWindow {
             }))
             .children(self.render_text_menu(th, cx))
             .into_any_element()
+    }
+
+    /// The header pinned over the top of the open mail or chat: what
+    /// scrolls goes under it, frosted when Blur is on and else `fill`, with
+    /// a line under it once something is beneath (when `line`; the chat's
+    /// header draws its own). Its height is kept in `reader_head` for the
+    /// space above what scrolls.
+    pub(super) fn pinned_head(
+        &self,
+        content: impl IntoElement,
+        fill: u32,
+        line: bool,
+        th: &Theme,
+    ) -> AnyElement {
+        let height = self.reader_head.clone();
+        let under = line && unpx(self.reader_scroll.offset().y) < -0.5;
+        crate::widgets::frosted_top(
+            div()
+                .absolute()
+                .top_0()
+                .left_0()
+                .right_0()
+                .flex()
+                .flex_col(),
+            th,
+            fill,
+            0.0,
+        )
+        .child(content)
+        .when(under, |d| {
+            d.child(
+                div()
+                    .absolute()
+                    .left_0()
+                    .right_0()
+                    .bottom_0()
+                    .h(px(1.0))
+                    .bg(rgba(th.divider)),
+            )
+        })
+        .child(
+            gpui::canvas(
+                move |bounds, window, _| {
+                    let h = unpx(bounds.size.height);
+                    if (height.get() - h).abs() > 0.5 {
+                        height.set(h);
+                        window.refresh();
+                    }
+                },
+                |_, _, _, _| {},
+            )
+            .absolute()
+            .top_0()
+            .left_0()
+            .size_full(),
+        )
+        .into_any_element()
     }
 
     fn render_part_content(&self, ix: usize, th: &Theme, cx: &mut Context<Self>) -> AnyElement {

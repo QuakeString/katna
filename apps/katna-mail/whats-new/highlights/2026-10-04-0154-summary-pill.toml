@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-title = "A calmer summary button, and a subject that stays put"
+title = "A calmer summary button, and a header that stays put"
 text = """
 In chat view, the summary sparkle now sits in a small grey pill of its own
 beside the Chat and Mail switch, and lifts white while the summary shows.
-The summary glides open and closed instead of appearing at once. In the
-mail view, the subject now stays at the top while the mails scroll under
-it, as it does in chat view.
+The summary glides open and closed instead of appearing at once. In both
+the mail and chat views, the header now stays at the top while the mails
+scroll under it, frosted when Blur is on.
 """

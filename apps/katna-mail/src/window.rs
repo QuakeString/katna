@@ -842,6 +842,9 @@ pub struct MailWindow {
     /// The line just opened, kept where it was in the list while the
     /// reading pane opens beside it and the lines change shape.
     keep_line: Option<list::KeepLine>,
+    /// How tall the header pinned over the open mail or chat was last
+    /// drawn, so what scrolls under it starts below it.
+    reader_head: std::rc::Rc<std::cell::Cell<f32>>,
     nav_list: gpui::ListState,
     nav_items: Vec<nav::NavItem>,
     /// Bumped when the folder pane's lines change; `nav_synced` is what
@@ -1116,6 +1119,7 @@ impl MailWindow {
             files_menu: None,
             list_shape: (false, 0),
             keep_line: None,
+            reader_head: Default::default(),
             nav_list: nav::nav_list(),
             nav_items: Vec::new(),
             nav_rev: 1,

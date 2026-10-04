@@ -647,7 +647,8 @@ impl MailWindow {
                 reader.jump = None;
                 let view = unpx(self.reader_scroll.bounds().origin.y);
                 let max = unpx(self.reader_scroll.max_offset().y);
-                let y = (top - view - 8.0).clamp(0.0, max.max(0.0));
+                // Below the subject pinned over the top.
+                let y = (top - view - self.reader_head.get() - 8.0).clamp(0.0, max.max(0.0));
                 self.reader_scroll.set_offset(point(px(0.0), px(-y)));
             }
             _ if tries < 4 => reader.jump = Some((id, tries + 1)),
