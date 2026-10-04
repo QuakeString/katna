@@ -10,7 +10,8 @@
 //! code or opens a verify link (§15.1.3), the note that a reply typed there
 //! is on its way, with Undo, reminders (snooze,
 //! follow-up) with Open, Mark as read and Archive, and event reminders
-//! with Join and Snooze, and a note with Undo after Archive.
+//! with Join and Snooze, a note with Undo after Archive, and a note when
+//! something needs the user, with its fix.
 
 use std::collections::HashMap;
 
@@ -57,6 +58,9 @@ pub mod action {
     /// Only on a notification about one message with a verify, confirm
     /// or activate link: open it in the browser.
     pub const OPEN_LINK: &str = "open-link";
+    /// On a notification that something needs the user (a password
+    /// refused, a sign-in ended, mail not sent): its fix in Katna Mail.
+    pub const FIX: &str = "fix";
 }
 
 /// At most this many messages are listed in a grouped notification.
@@ -746,6 +750,31 @@ impl Notifier {
                 &[],
                 hints,
                 if copied { COPIED_SHOWN_MS } else { 0 },
+            )
+            .await
+    }
+
+    /// Says that something needs the user, with `fix` as the button that
+    /// opens its fix in Katna Mail. It stays until clicked or closed, and
+    /// makes no sound. Returns its ID.
+    pub async fn needs_you(&self, summary: &str, body: &str, fix: &str) -> zbus::Result<u32> {
+        let actions = [action::OPEN, fix, action::FIX, fix];
+        let hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
+            ("category", Value::from("x-katna.problem")),
+            ("urgency", Value::U8(1)),
+            ("suppress-sound", Value::Bool(true)),
+        ]);
+        self.proxy
+            .notify(
+                "Katna Mail",
+                0,
+                ids::MAIL_APP_ID,
+                summary,
+                &escape(body),
+                &actions,
+                hints,
+                0,
             )
             .await
     }

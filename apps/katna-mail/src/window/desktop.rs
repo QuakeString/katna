@@ -369,6 +369,18 @@ impl MailWindow {
                             self.open_note_by_id(id, window, cx);
                         }
                     }
+                    // From a notification that something needs the user:
+                    // `mail:outbox` opens the Outbox, `mail:fix-<id>` the
+                    // fix of that account's problem.
+                    RailApp::Mail => {
+                        if detail == Some("outbox") {
+                            self.leave_settings(window, cx);
+                            self.open_outbox(cx);
+                        } else if let Some(id) = detail.and_then(app_action::fix_account) {
+                            self.leave_settings(window, cx);
+                            self.fix_problem_when_known(id, window, cx);
+                        }
+                    }
                     _ => {}
                 }
             }

@@ -468,8 +468,9 @@ pub mod app_action {
     pub const INSTALL_UPDATE: &str = "install-update";
     /// Show one page of the window: Mail, Calendar, Contacts, Tasks or
     /// Notes; the parameter is its name (`s`: `mail`, `calendar`,
-    /// `contacts`, `tasks`, `notes`); `tasks:<id>` opens that task, and
-    /// the Calendar takes a day too ([`calendar_page`]).
+    /// `contacts`, `tasks`, `notes`); `tasks:<id>` opens that task, the
+    /// Calendar takes a day too ([`calendar_page`]), and Mail the Outbox
+    /// ([`OUTBOX_PAGE`]) or an account's fix ([`fix_page`]).
     pub const OPEN_PAGE: &str = "open-page";
     /// Start a new message with files attached ("Send with Katna Mail" in
     /// a file manager); the parameters are texts (`s`): the address to
@@ -524,6 +525,20 @@ pub mod app_action {
 
     const NEW_EVENT: &str = "new";
 
+    /// `open-page`'s parameter for Katna Mail's Outbox.
+    pub const OUTBOX_PAGE: &str = "mail:outbox";
+
+    /// `open-page`'s parameter that opens the fix of account `id`'s
+    /// problem: New password, or Sign in.
+    pub fn fix_page(id: i64) -> String {
+        format!("mail:fix-{id}")
+    }
+
+    /// The account whose problem a `mail` page's detail asks to fix.
+    pub fn fix_account(detail: &str) -> Option<i64> {
+        detail.strip_prefix("fix-")?.parse().ok()
+    }
+
     /// [`CAPTURE`]'s parameter for a task.
     pub const CAPTURE_TASK: &str = "task";
     /// [`CAPTURE`]'s parameter for a note.
@@ -556,6 +571,10 @@ pub mod app_action {
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), false));
         let page = calendar_page("2026-10-01", true);
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), true));
+        let page = fix_page(7);
+        let (name, detail, _) = page_parts(&page);
+        assert_eq!((name, detail.and_then(fix_account)), ("mail", Some(7)));
+        assert_eq!(page_parts(OUTBOX_PAGE), ("mail", Some("outbox"), false));
     }
 
     #[cfg(test)]

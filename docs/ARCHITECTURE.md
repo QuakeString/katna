@@ -3927,6 +3927,22 @@ Reply's place in the short notification where Peek offers Reply (Linux),
 and Reply all's in a peek, so four buttons stay four; Windows, without
 Peek, keeps Reply beside it.
 
+#### 15.1.4 Something needs the user
+
+What only the user can fix gets one notification each, with the window
+open or closed (`katna-daemon` `needs_you`, error-handling study
+2026-10-04): a password the server refused ("Password refused", New
+password), a Google or Microsoft sign-in that ended ("Sign in again", Sign
+in), and a message the server refused for good ("“Subject” wasn't sent",
+Open Outbox). The click or the button opens Katna Mail on the fix
+(`open-page` `mail:fix-<account>`: the New password card at the problem's
+line, or the sign-in page; `mail:outbox`: the Outbox). Each is told once
+while it lasts, recomputed on `SyncStatusChanged`, `OutboxChanged` and
+`AccountsChanged`; once fixed its notification closes, and it is told
+again only if it comes back (or after the daemon restarts). They make no
+sound. What Katna waits out by itself (offline, a server not answering)
+gets no notification. On Windows they are toasts like the others (§27.1).
+
 ### 15.2 Taskbar, tray and global menu
 
 The count and the tray live in `katna-daemon`, so they stay while the app
@@ -3965,7 +3981,11 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, New task, New
   note, Preferences and Quit; New task and New note open quick capture
-  (§18.1), on Windows too. Quit closes the app and stops the daemon until the next login or
+  (§18.1), on Windows too. The tooltip says "Katna Mail" over the unread
+  count, then a line for each thing that needs the user (§15.1.4): "New
+  password needed for …", "Sign in again to …" (three or more accounts
+  fold to "3 accounts need you") and "2 messages weren't sent". The icon
+  itself stays as it is. Quit closes the app and stops the daemon until the next login or
   until the app starts it again (D-Bus activation). Setting
   `general.show_in_tray` (default on; the older `tray_icon` key is ignored
   because versions without a tray saved it as `false`). Both switches are

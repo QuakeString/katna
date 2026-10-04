@@ -15,12 +15,15 @@
 //! - "New password": a card where it was clicked that checks the
 //!   password with the server before keeping it (`SetPassword`).
 
+use std::cell::RefCell;
 use std::collections::HashMap;
+use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Bounds, ClickEvent, Context, Entity, Focusable, FontWeight, MouseDownEvent, Pixels,
-    Point, SharedString, Size, Subscription, Task, Window, deferred, div, point, prelude::*, rgba,
+    Point, SharedString, Size, Subscription, Task, Window, canvas, deferred, div, point,
+    prelude::*, rgba,
 };
 use katna_core::{AccountId, OAuthProvider};
 use katna_dbus::{AccountStatus, state};
@@ -28,9 +31,9 @@ use katna_i18n::tr;
 use katna_ui::tokens::{space, text};
 use katna_ui::{InputEvent, TextInput, WindowDrag, px, unpx};
 
-use super::MailWindow;
 use super::mail_providers::MailProvider;
 use super::notched::{self, RADIUS};
+use super::{MailWindow, TOP_BAR_HEIGHT};
 use crate::daemon::{self, AddError};
 use crate::theme::Theme;
 use crate::widgets::{ButtonStyle, button, filled_button, icon, icon_button, line_field, tip};
@@ -174,6 +177,10 @@ pub(super) struct Problems {
     _timer: Option<Task<()>>,
     _sync: Option<Task<()>>,
     _refused: Option<Task<()>>,
+    _fix: Option<Task<()>>,
+    /// Where each account's fix shows on its line, last drawn: a desktop
+    /// notification's New password card points there.
+    fix_links: Rc<RefCell<HashMap<i64, Bounds<Pixels>>>>,
 }
 
 impl Problems {
@@ -484,6 +491,53 @@ impl MailWindow {
         }
     }
 
+    /// Opens the fix of account `id`'s problem once its state is read: a
+    /// desktop notification's button, which may have just started the
+    /// app. The New password card points at the top of the list, where
+    /// the problem's line is.
+    pub(super) fn fix_problem_when_known(
+        &mut self,
+        id: i64,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(connection) = self.daemon.clone() else {
+            return;
+        };
+        self.problems._fix = Some(cx.spawn_in(window, async move |this, cx| {
+            let accounts = cx
+                .background_executor()
+                .spawn(async move { daemon::accounts_status(&connection).await })
+                .await;
+            this.update_in(cx, |this, window, cx| {
+                if let Ok(accounts) = accounts {
+                    this.problems.accounts = accounts;
+                }
+                this.problems.later.remove(&id);
+                cx.notify();
+                // Once a frame with the line is drawn, at its fix.
+                cx.on_next_frame(window, move |_, window, cx| {
+                    cx.on_next_frame(window, move |this, window, cx| {
+                        let Some(problem) = this.account_problem(AccountId(id)) else {
+                            return;
+                        };
+                        let at = this
+                            .problems
+                            .fix_links
+                            .borrow()
+                            .get(&id)
+                            .map(|link| link.center())
+                            .unwrap_or_else(|| {
+                                point(window.viewport_size().width / 2.0, px(TOP_BAR_HEIGHT))
+                            });
+                        this.fix_problem(problem, at, window, cx);
+                    });
+                });
+            })
+            .ok();
+        }));
+    }
+
     /// Opens `provider`'s sign-in page for account `id` (`address`), as
     /// a problem line's Sign in does; also from the folder pane's menu.
     pub(super) fn sign_in_account(
@@ -554,6 +608,7 @@ impl MailWindow {
                     tr!("problems-offline"),
                     None,
                     true,
+                    None,
                     th,
                     cx,
                 )
@@ -585,6 +640,7 @@ impl MailWindow {
                         ),
                     )),
                     false,
+                    None,
                     th,
                     cx,
                 )
@@ -621,6 +677,7 @@ impl MailWindow {
                         text,
                         action,
                         true,
+                        Some(id),
                         th,
                         cx,
                     )
@@ -653,6 +710,7 @@ impl MailWindow {
         text: String,
         action: Option<(String, LineClick)>,
         later: bool,
+        anchor: Option<i64>,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> ProblemLine {
@@ -667,11 +725,25 @@ impl MailWindow {
                 .hover(|s| s.underline())
                 .child(label)
         };
+        let links = self.problems.fix_links.clone();
         let action = action.map(|(label, click)| {
             link(format!("{id}-fix").into(), label, th.accent)
+                .relative()
                 .on_click(
                     cx.listener(move |this, event, window, cx| click(this, event, window, cx)),
                 )
+                .when_some(anchor, |link, account| {
+                    link.child(
+                        canvas(
+                            move |bounds, _, _| {
+                                links.borrow_mut().insert(account, bounds);
+                            },
+                            |_, _, _, _| {},
+                        )
+                        .absolute()
+                        .size_full(),
+                    )
+                })
                 .into_any_element()
         });
         let line = div()

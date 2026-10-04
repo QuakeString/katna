@@ -2,7 +2,8 @@
 
 //! The daemon's place on the desktop (`docs/ARCHITECTURE.md` §15.2): the
 //! unread count (§15.1.1) on Katna Mail's taskbar or dock icon, and the tray
-//! icon with its badge and menu. Both follow `[general]` `unread_badge` and
+//! icon with its badge, menu and tooltip (with what needs the user,
+//! §15.1.4). Both follow `[general]` `unread_badge` and
 //! `show_in_tray`, and stay up while the app is closed. The global
 //! shortcuts for quick capture (§15.5) are registered here too.
 
@@ -49,6 +50,8 @@ pub(crate) enum Event {
     PanelText(u32),
     /// A click on the tray icon or its menu, with an activation token.
     Tray(String, Option<String>),
+    /// The tooltip's lines about what needs the user (`needs_you`).
+    Problems(Vec<String>),
 }
 
 /// Sends events to a running [`run`].
@@ -62,6 +65,10 @@ impl Handle {
 
     pub(crate) fn settings(&self, general: General, apps: AppsOn) {
         let _ = self.0.try_send(Event::Settings(general, apps));
+    }
+
+    pub(crate) fn problems(&self, lines: Vec<String>) {
+        let _ = self.0.try_send(Event::Problems(lines));
     }
 }
 
@@ -107,9 +114,12 @@ fn tray_menu(apps: &AppsOn) -> Vec<MenuItem> {
     menu
 }
 
-/// The tooltip's second line.
-fn status_line(count: u64) -> String {
-    tr!("tray-unread", count = count)
+/// The tooltip's text under "Katna Mail": the unread count, then a line
+/// for each thing that needs the user.
+fn status_line(count: u64, problems: &[String]) -> String {
+    let mut lines = vec![tr!("tray-unread", count = count)];
+    lines.extend(problems.iter().cloned());
+    lines.join("\n")
 }
 
 /// Keeps the badge and the tray up to date until `events` closes. The
@@ -135,6 +145,7 @@ pub(crate) async fn run(
     smol::spawn(serve_shortcuts(connection.clone(), handle.clone())).detach();
     let mut tray: Option<Tray> = None;
     let mut count = None;
+    let mut problems: Vec<String> = Vec::new();
     let mut dirty = true;
     // The language the tray's menu and tooltip are in.
     let mut language = general.language.clone();
@@ -151,6 +162,11 @@ pub(crate) async fn run(
             // Let a burst of changes settle, then count once.
             smol::Timer::after(SETTLE).await;
             while let Ok(event) = events.try_recv() {
+                if let Event::Problems(lines) = event {
+                    problems = lines;
+                    count = None;
+                    continue;
+                }
                 let was = apps.clone();
                 if !handle_now(&connection, &mut general, &mut apps, event, &quit).await {
                     return hide(tray).await;
@@ -174,7 +190,16 @@ pub(crate) async fn run(
             match smol::unblock(move || counted_unread(&Store::open(&paths, Mode::ReadOnly)?)).await
             {
                 Ok(unread) => {
-                    show_count(launcher.as_ref(), tray.as_ref(), &general, unread, count).await;
+                    let status = status_line(unread, &problems);
+                    show_count(
+                        launcher.as_ref(),
+                        tray.as_ref(),
+                        &general,
+                        unread,
+                        count,
+                        &status,
+                    )
+                    .await;
                     count = Some(unread);
                 }
                 Err(err) => tracing::warn!(%err, "counting unread mail"),
@@ -186,6 +211,14 @@ pub(crate) async fn run(
         };
         match event {
             Event::MailChanged => dirty = true,
+            // Shown with the next count.
+            Event::Problems(lines) => {
+                if lines != problems {
+                    problems = lines;
+                    count = None;
+                    dirty = true;
+                }
+            }
             Event::Settings(new, new_apps) => {
                 dirty = new.unread_badge != general.unread_badge
                     || new.tray_style != general.tray_style;
@@ -284,7 +317,7 @@ async fn handle_now(
 ) -> bool {
     match event {
         // Redrawn after the count settles, in the panel's color then.
-        Event::MailChanged | Event::PanelText(_) => {}
+        Event::MailChanged | Event::PanelText(_) | Event::Problems(_) => {}
         Event::Settings(new, new_apps) => {
             *general = new;
             *apps = new_apps;
@@ -444,6 +477,7 @@ async fn show_count(
     general: &General,
     unread: u64,
     before: Option<u64>,
+    status: &str,
 ) {
     if let Some(launcher) = launcher {
         let shown = if general.unread_badge { unread } else { 0 };
@@ -453,7 +487,7 @@ async fn show_count(
     }
     if let Some(tray) = tray
         && before != Some(unread)
-        && let Err(err) = tray.set_unread(unread, &status_line(unread)).await
+        && let Err(err) = tray.set_unread(unread, status).await
     {
         tracing::debug!(%err, "tray badge");
     }
@@ -544,8 +578,12 @@ mod tests {
 
     #[test]
     fn status_line_counts() {
-        assert_eq!(status_line(0), "No unread mail");
-        assert_eq!(status_line(1), "1 unread message");
-        assert_eq!(status_line(5), "5 unread messages");
+        assert_eq!(status_line(0, &[]), "No unread mail");
+        assert_eq!(status_line(1, &[]), "1 unread message");
+        assert_eq!(status_line(5, &[]), "5 unread messages");
+        assert_eq!(
+            status_line(0, &["Sign in again to a@b".into()]),
+            "No unread mail\nSign in again to a@b"
+        );
     }
 }

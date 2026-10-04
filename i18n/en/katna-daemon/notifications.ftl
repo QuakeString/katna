@@ -50,6 +50,27 @@ notify-update-ready-body = Version { $version } is downloaded. Update installs i
 # Its button: shows the update in Katna Mail, ready to install.
 notify-update = Update
 
+## Something needs the user, shown once per problem
+
+# A Google or Microsoft sign-in ended; mail stopped syncing.
+notify-signed-out = Sign in again
+# Under it. $provider: like "Google".
+notify-signed-out-body = { $provider } signed Katna out of { $address }. Mail stopped syncing.
+# Its button: opens Katna Mail's sign-in for the account.
+notify-sign-in = Sign in
+# The server refused the saved password (it was changed, or an app
+# password was removed).
+notify-password-refused = Password refused
+notify-password-refused-body = The mail server refused the password for { $address }. It may have changed.
+# Its button: opens Katna Mail's New password card for the account.
+notify-new-password = New password
+# A message the server refused for good. $subject: its subject.
+notify-not-sent = “{ $subject }” wasn't sent
+notify-not-sent-no-subject = A message wasn't sent
+notify-not-sent-body = It's in the Outbox, which says why.
+# Its button: opens Katna Mail's Outbox.
+notify-open-outbox = Open Outbox
+
 ## Reminders of calendar events
 
 # Under the event's title: how soon it starts.
