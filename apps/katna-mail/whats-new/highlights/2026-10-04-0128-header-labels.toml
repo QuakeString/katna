@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Every label on an open mail"
+text = """
+An open mail now shows all its chips under the subject, like Gmail:
+Inbox, Important, its inbox tab, Starred, and every folder or label it
+is in. Point at one to take it off with its ×, with Undo.
+"""

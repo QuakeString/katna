@@ -22,7 +22,7 @@ use jiff::civil::{Date, DateTime, Time};
 use jiff::tz::TimeZone;
 use jiff::{ToSpan, Zoned};
 use katna_core::Paths;
-use katna_core::config::CalendarDensity;
+use katna_core::config::{AppKind, CalendarDensity};
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
 use katna_store::calendar::{Calendar, EventKind, EventStatus};
@@ -491,11 +491,13 @@ pub(super) fn read(
     to: i64,
     tz: &TimeZone,
     birthdays: bool,
+    left_out: &[i64],
 ) -> katna_store::Result<(Vec<Calendar>, Vec<Occurrence>)> {
     let store = Store::open(paths, Mode::ReadOnly)?;
     let mut calendars = store.calendars()?;
     let rows = store.event_rows_in_range(from, to)?;
     let mut occurrences = katna_dav::occurrences(rows, from, to, tz);
+    leave_out(left_out, &mut calendars, &mut occurrences);
     birthdays::add_birthdays(
         &store,
         birthdays,
@@ -508,18 +510,45 @@ pub(super) fn read(
     Ok((calendars, occurrences))
 }
 
+/// Drops the calendars of the accounts `left_out` of the Calendar
+/// (Settings > Calendar) and their events.
+pub(super) fn leave_out(
+    left_out: &[i64],
+    calendars: &mut Vec<Calendar>,
+    occurrences: &mut Vec<Occurrence>,
+) {
+    if left_out.is_empty() {
+        return;
+    }
+    let out = |c: &Calendar| c.account.is_some_and(|a| left_out.contains(&a.0));
+    let gone: HashSet<i64> = calendars.iter().filter(|c| out(c)).map(|c| c.id).collect();
+    calendars.retain(|c| !out(c));
+    occurrences.retain(|o| !gone.contains(&o.event.calendar_id));
+}
+
 /// Reads the calendars alone, for an event made before the page has read
-/// them.
-pub(super) fn read_calendars(paths: &Paths) -> Vec<Calendar> {
-    Store::open(paths, Mode::ReadOnly)
+/// them; none of the accounts `left_out` of the Calendar.
+pub(super) fn read_calendars(paths: &Paths, left_out: &[i64]) -> Vec<Calendar> {
+    let mut calendars = Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.calendars())
         .unwrap_or_else(|err| {
             tracing::warn!(%err, "reading the calendars failed");
             Vec::new()
-        })
+        });
+    leave_out(left_out, &mut calendars, &mut Vec::new());
+    calendars
 }
 
 impl MailWindow {
+    /// The accounts left out of the Calendar (Settings > Calendar), by
+    /// row ID.
+    pub(in crate::window) fn calendar_left_out(&self) -> Vec<i64> {
+        self.hidden_ids(AppKind::Calendar)
+            .into_iter()
+            .map(|a| a.0)
+            .collect()
+    }
+
     /// Reads what the Calendar page shows, when it is on show.
     pub(super) fn load_calendar(&mut self, cx: &mut Context<Self>) {
         let (first, end) = self.calendar.days();
@@ -527,12 +556,13 @@ impl MailWindow {
         let (from, to) = (midnight(first, &tz), midnight(end, &tz));
         let paths = self.paths.clone();
         let birthdays = !self.config.contacts.hide_birthdays;
+        let left_out = self.calendar_left_out();
         self.calendar.loading = true;
         self.load_account_status(Of::Calendar, cx);
         self.calendar.task = Some(cx.spawn(async move |this, cx| {
             let read = cx
                 .background_executor()
-                .spawn(async move { read(&paths, from, to, &tz, birthdays) })
+                .spawn(async move { read(&paths, from, to, &tz, birthdays, &left_out) })
                 .await;
             this.update(cx, |this, cx| {
                 let page = &mut this.calendar;
@@ -1385,11 +1415,13 @@ impl MailWindow {
     }
 
     fn render_calendar_list(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let left_out = self.hidden_ids(AppKind::Calendar);
         // Every account shows, also one whose calendars did not come, with
-        // the reason under it.
+        // the reason under it; not one left out of the Calendar.
         let mut groups: Vec<(Option<i64>, Vec<&Calendar>)> = self
             .accounts
             .iter()
+            .filter(|a| !left_out.contains(&a.id))
             .map(|a| (Some(a.id.0), Vec::new()))
             .collect();
         for calendar in self.calendar.calendars.iter() {
@@ -3465,6 +3497,38 @@ mod tests {
             end,
             series_start: None,
         }
+    }
+
+    #[test]
+    fn an_account_left_out_takes_its_calendars_and_events() {
+        use katna_core::account::AccountId;
+        use katna_store::calendar::{CalendarAccess, CalendarSource};
+        let calendar = |id: i64, account: Option<i64>| Calendar {
+            id,
+            account: account.map(AccountId),
+            source: CalendarSource::Local,
+            remote_id: String::new(),
+            name: String::new(),
+            color: String::new(),
+            access: CalendarAccess::Owner,
+            is_primary: false,
+            hidden: false,
+            time_zone: String::new(),
+            sync_token: None,
+            position: 0,
+        };
+        let mut calendars = vec![
+            calendar(1, Some(7)),
+            calendar(2, Some(8)),
+            calendar(3, None),
+        ];
+        let mut occurrences = vec![occurrence(10, 0, 1), occurrence(11, 0, 1)];
+        Arc::get_mut(&mut occurrences[1].event).unwrap().calendar_id = 2;
+        leave_out(&[7], &mut calendars, &mut occurrences);
+        let ids: Vec<i64> = calendars.iter().map(|c| c.id).collect();
+        assert_eq!(ids, [2, 3], "this computer's calendar stays");
+        let events: Vec<i64> = occurrences.iter().map(|o| o.event.id).collect();
+        assert_eq!(events, [11]);
     }
 
     #[test]

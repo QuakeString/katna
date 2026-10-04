@@ -197,6 +197,12 @@ const ENTRIES: &[Entry] = &[
         "unified all accounts tabs shared combined categories",
     ),
     entry(
+        Section::Inbox,
+        "settings-unified-accounts",
+        "settings-unified-accounts-detail",
+        "unified all accounts hide leave out exclude account",
+    ),
+    entry(
         Section::Accounts,
         "accounts-folder-pane",
         "accounts-folder-pane-detail",
@@ -357,6 +363,36 @@ const ENTRIES: &[Entry] = &[
         "settings-default-apps-after-saving",
         "settings-default-apps-after-saving-summary",
         "save download folder file manager reveal show dolphin",
+    ),
+    entry(
+        Section::Calendar,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts calendar calendars events reminders show hide leave out exclude account",
+    ),
+    entry(
+        Section::Contacts,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts contacts people address book show hide leave out exclude account",
+    ),
+    entry(
+        Section::Tasks,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts tasks lists to do show hide leave out exclude account",
+    ),
+    entry(
+        Section::Notes,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts notes show hide leave out exclude account",
+    ),
+    entry(
+        Section::Files,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts files attachments drives show hide leave out exclude account",
     ),
     entry(
         Section::Files,

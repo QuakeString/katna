@@ -591,6 +591,10 @@ impl WindowChrome {
             .rounded_tr(r_tr)
             .rounded_bl(r_bl)
             .rounded_br(r_br)
+            // Clipped here rather than below the bar, so the cards' edges
+            // and shadows along the top of the content still show, as
+            // under the desktop's own frame.
+            .overflow_hidden()
             .border_color(rgba(t.outline))
             .border_t(border(tiled.top))
             .border_r(border(tiled.right))
@@ -611,7 +615,6 @@ impl WindowChrome {
                 div()
                     .flex_1()
                     .min_h_0()
-                    .overflow_hidden()
                     .rounded_bl(inner(r_bl))
                     .rounded_br(inner(r_br))
                     .child(content),

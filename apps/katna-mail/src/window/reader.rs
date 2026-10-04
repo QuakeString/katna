@@ -16,22 +16,24 @@ use gpui::{
     Animation, AnimationExt, AnyElement, Context, FontWeight, MouseButton, SharedString, div,
     ease_out_quint, prelude::*, rgba,
 };
+use katna_core::MailCategory;
 use katna_i18n::tr;
 use katna_render::MessageView;
 use katna_render::html::Document;
-use katna_store::{MessageFlags, MessageId};
+use katna_store::{FolderId, MessageFlags, MessageId};
 use katna_ui::motion::lerp;
 use katna_ui::px;
-use katna_ui::tokens::space;
+use katna_ui::tokens::{radius, space};
 use katna_ui::unpx;
 
 use super::compose::{Kind, SentCard};
 use super::list::separator;
 use super::rich::{self, Painter};
-use super::{MailWindow, Menu, READER_CONTEXT, SelectNext, SelectPrevious};
+use super::{Act, MailWindow, Menu, READER_CONTEXT, SelectNext, SelectPrevious};
 use crate::daemon::Command;
 use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
+use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
 use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, tip, toolbar};
 
@@ -93,6 +95,24 @@ pub(super) struct Conversation {
     /// is drawn (with the frames waited).
     tops: Rc<std::cell::RefCell<std::collections::HashMap<MessageId, f32>>>,
     jump: Option<(MessageId, u8)>,
+    /// Every folder or label its messages are in, for the chips under
+    /// the subject, and the inbox tab of its newest message.
+    folders: Vec<FolderId>,
+    category: Option<MailCategory>,
+}
+
+/// A chip under the subject: a folder, label, tab or mark.
+struct HeaderChip {
+    text: String,
+    /// What its × does; none where the service can't take it off.
+    remove: Option<ChipRemove>,
+}
+
+/// What a chip's × does, with an Undo like the toolbar's.
+enum ChipRemove {
+    Act(Act),
+    /// Takes a Gmail label off.
+    Label(FolderId, String),
 }
 
 /// One message of the conversation.
@@ -396,10 +416,32 @@ impl Conversation {
             came_unread,
             tops: Rc::default(),
             jump: None,
+            folders: Vec::new(),
+            category: None,
         };
+        conversation.read_labels(mail);
         conversation.read_tracking(mail);
         conversation.read_drafts(mail);
         conversation
+    }
+
+    /// Reads where its messages are and the inbox tab of the newest.
+    fn read_labels(&mut self, mail: &Mail) {
+        let mut folders = Vec::new();
+        for part in self.parts.iter().filter(|p| p.pending.is_none()) {
+            for folder in mail.message_folders(part.id) {
+                if !folders.contains(&folder) {
+                    folders.push(folder);
+                }
+            }
+        }
+        self.folders = folders;
+        self.category = self
+            .parts
+            .iter()
+            .rev()
+            .find(|p| p.pending.is_none())
+            .and_then(|p| mail.message_category(p.id));
     }
 
     /// Notes which of its messages are drafts.
@@ -492,6 +534,7 @@ impl Conversation {
         // Replies just sent stay until the store has them.
         self.parts
             .extend(old.into_iter().filter(|p| p.pending.is_some()));
+        self.read_labels(mail);
         self.read_tracking(mail);
         self.read_drafts(mail);
         self.chat.pins.forget();
@@ -1221,6 +1264,13 @@ impl MailWindow {
             return self.placeholder(tr!("reader-removed"), th);
         }
         let all_expanded = reader.all_expanded();
+        let key = reader.key;
+        let chips: Vec<AnyElement> = self
+            .header_chips(reader)
+            .into_iter()
+            .enumerate()
+            .map(|(ix, chip)| self.render_header_chip(ix, chip, key, th, cx))
+            .collect();
         let title = div()
             .flex()
             .flex_row()
@@ -1253,16 +1303,14 @@ impl MailWindow {
                             .text_color(rgba(th.text))
                             .child(reader.subject.clone()),
                     )
-                    .when_some(self.folder_name(), |d, folder| {
+                    .when(!chips.is_empty(), |d| {
                         d.child(
                             div()
-                                .px(px(6.0))
-                                .py(px(1.0))
-                                .rounded(px(4.0))
-                                .bg(rgba(th.chip))
-                                .text_size(px(12.0))
-                                .text_color(rgba(th.text_dim))
-                                .child(folder),
+                                .flex()
+                                .flex_row()
+                                .flex_wrap()
+                                .gap(px(space::S2))
+                                .children(chips),
                         )
                     }),
             )
@@ -2093,6 +2141,161 @@ impl MailWindow {
     }
 
     /// Stars or unstars one message of the open conversation.
+    /// The chips under the subject, in Gmail's order: Inbox, Important,
+    /// the inbox tab, Starred, the other special folders, then the
+    /// user's own folders and labels. Each says what its × takes off,
+    /// where the service can.
+    fn header_chips(&self, reader: &Conversation) -> Vec<HeaderChip> {
+        let rows: Vec<&Row> = reader
+            .parts
+            .iter()
+            .filter_map(|p| p.row.as_deref())
+            .collect();
+        let gmail = rows.first().is_some_and(|r| self.tree.is_gmail(r.account));
+        let nodes: Vec<(FolderId, Role, String)> = reader
+            .folders
+            .iter()
+            .filter_map(|f| {
+                let node = self.tree.node(*f)?;
+                let name = if node.role == Role::Other {
+                    node.path.clone()
+                } else {
+                    node.label()
+                };
+                Some((*f, node.role, name))
+            })
+            .collect();
+        let has = |role: Role| nodes.iter().any(|(_, r, _)| *r == role);
+        let mut chips = Vec::new();
+        if let Some((_, _, name)) = nodes.iter().find(|(_, r, _)| *r == Role::Inbox) {
+            chips.push(HeaderChip {
+                text: name.clone(),
+                // Taking Gmail's Inbox label off archives.
+                remove: gmail.then_some(ChipRemove::Act(Act::Archive)),
+            });
+        }
+        if rows.iter().any(|r| r.important) {
+            chips.push(HeaderChip {
+                text: tr!("folder-important"),
+                remove: Some(ChipRemove::Act(Act::Important(false))),
+            });
+        }
+        if has(Role::Inbox)
+            && let Some(category) = reader.category.filter(|c| *c != MailCategory::Primary)
+        {
+            chips.push(HeaderChip {
+                text: super::rule_editor::tab_label(category),
+                remove: None,
+            });
+        }
+        if rows.iter().any(|r| r.flagged) {
+            chips.push(HeaderChip {
+                text: tr!("folder-starred"),
+                remove: Some(ChipRemove::Act(Act::Star(false))),
+            });
+        }
+        for role in [Role::Sent, Role::Drafts, Role::Junk, Role::Trash] {
+            if let Some((_, _, name)) = nodes.iter().find(|(_, r, _)| *r == role) {
+                chips.push(HeaderChip {
+                    text: name.clone(),
+                    remove: None,
+                });
+            }
+        }
+        let mut own: Vec<&(FolderId, Role, String)> =
+            nodes.iter().filter(|(_, r, _)| *r == Role::Other).collect();
+        own.sort_by_key(|(_, _, name)| name.to_lowercase());
+        for (id, _, name) in own {
+            chips.push(HeaderChip {
+                text: name.clone(),
+                // Only a Gmail label comes off; a folder holds the mail.
+                remove: gmail.then(|| ChipRemove::Label(*id, name.clone())),
+            });
+        }
+        // Mail the store doesn't place yet shows the list's folder.
+        if chips.is_empty()
+            && let Some(folder) = self.folder_name()
+        {
+            chips.push(HeaderChip {
+                text: folder,
+                remove: None,
+            });
+        }
+        chips
+    }
+
+    /// One chip under the subject; its × shows on hover.
+    fn render_header_chip(
+        &self,
+        ix: usize,
+        chip: HeaderChip,
+        key: EntryKey,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let group = SharedString::from(format!("header-chip-{ix}"));
+        div()
+            .id(("header-chip", ix))
+            .group(group.clone())
+            .relative()
+            .px(px(6.0))
+            .py(px(1.0))
+            .rounded(px(radius::XS))
+            .bg(rgba(th.chip))
+            .text_size(px(12.0))
+            .text_color(rgba(th.text_dim))
+            .child(chip.text.clone())
+            // The × keeps no room at rest, so every chip's text sits
+            // evenly; on hover it covers the chip's end on a solid patch.
+            .when_some(chip.remove, |d, remove| {
+                d.child(
+                    div()
+                        .id(("header-chip-remove", ix))
+                        .absolute()
+                        .top_0()
+                        .bottom_0()
+                        .right_0()
+                        .rounded_r(px(radius::XS))
+                        .bg(rgba(th.surface))
+                        .opacity(0.0)
+                        .group_hover(group, |s| s.opacity(1.0))
+                        .child(
+                            // The chip's own fill over the solid patch, so
+                            // the end keeps its colour and corners.
+                            div()
+                                .size_full()
+                                .flex()
+                                .items_center()
+                                .pr(px(space::S1))
+                                .rounded_r(px(radius::XS))
+                                .bg(rgba(th.chip))
+                                .child(
+                                    div()
+                                        .size(px(16.0))
+                                        .flex()
+                                        .items_center()
+                                        .justify_center()
+                                        .rounded(px(radius::inner(4.0, space::S1)))
+                                        .cursor_pointer()
+                                        .hover(|s| s.bg(rgba(th.hover)))
+                                        .child(icon("close", th.text_dim, 12.0)),
+                                ),
+                        )
+                        .tooltip(tip(
+                            tr!("reader-chip-remove", label = chip.text.as_str()),
+                            th,
+                        ))
+                        .on_click(cx.listener(move |this, _, _, cx| match &remove {
+                            ChipRemove::Act(act) => this.act(*act, vec![key], cx),
+                            ChipRemove::Label(label, name) => {
+                                this.toggle_label(vec![key], *label, name, false, cx)
+                            }
+                        })),
+                )
+            })
+            .into_any_element()
+    }
+
     fn star_message(&mut self, ix: usize, id: MessageId, on: bool, cx: &mut Context<Self>) {
         if let Some(part) = self.reader.as_mut().and_then(|r| r.parts.get_mut(ix))
             && let Some(row) = &part.row

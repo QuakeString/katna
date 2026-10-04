@@ -1,0 +1,6 @@
+title = "Leave an account out of Calendar"
+text = """
+Settings > Calendar lists your accounts with a switch too. Turn one off and
+its calendars, events and tasks leave Calendar, and its events stop
+reminding you. It keeps syncing, so it is back as soon as you turn it on.
+"""

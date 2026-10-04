@@ -264,6 +264,12 @@ settings-inbox-tabs-show-detail = Off shows one list for every account
 settings-inbox-no-accounts = Add an account to choose its tabs.
 settings-inbox-unified = Unified inbox
 settings-inbox-unified-detail = Tabs shared by every account. Each mail shows in the tab of its kind; mail of a tab an account turns off stays in its first tab.
+# A switch per mail account: whether All Accounts in the folder pane shows it.
+settings-unified-accounts = In the unified inbox
+settings-unified-accounts-detail = An account switched off is left out of All Accounts and its lists. Pick it in the account menu to see its mail.
+# Under an account's name in that list, as its switch stands.
+settings-unified-account-in = Shown in All Accounts
+settings-unified-account-out = Only in the account menu
 # $tabs: the tabs of that style, such as "Focused and Other". $provider: the mail provider, such as "Gmail".
 settings-inbox-tabs-automatic = Automatic: { $tabs } ({ $provider })
 settings-inbox-tabs-off = No tabs
@@ -453,6 +459,14 @@ settings-calendar-birthdays-show = Show birthdays
 settings-calendar-birthdays-show-detail = Your contacts' birthdays, as a calendar of their own
 settings-files-page = Files page
 settings-files-page-detail = Which attachments the Files page shows
+
+## Settings > Contacts, Tasks, Notes, Files: leaving an account out of the app
+# { $app } is the app's name, as on the rail (Tasks, Notes, …).
+
+settings-app-accounts = Accounts shown
+settings-app-accounts-detail = Turn an account off to leave it out of { $app }. Its items keep syncing and come back when you turn it on. Its mail is not affected.
+settings-app-account-shown = Shown in { $app }
+settings-app-account-hidden = Left out of { $app }
 settings-files-leave-out-small = Leave out small pictures
 settings-files-leave-out-small-detail = Logos and icons in signatures, which come with many mails
 settings-files-smaller-than = Smaller than
@@ -636,6 +650,7 @@ settings-calendar-density-summary = Make the hours of Day and Week taller or mor
 settings-calendar-custom-days-summary = Pick how many days the custom view shows
 settings-calendar-birthdays-summary = Show your contacts' birthdays in the calendar
 settings-files-page-summary = Leave small pictures, like signature logos, off the Files page, and pick which drives it shows
+settings-app-accounts-summary = Leave an account out of this app, while its items keep syncing
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line

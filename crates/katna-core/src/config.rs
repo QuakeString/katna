@@ -6,7 +6,7 @@
 //! error. Unknown keys are ignored, so an older Katna can read a file written
 //! by a newer one.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
@@ -43,6 +43,71 @@ pub struct Config {
     pub meetings: Meetings,
     pub ai: Ai,
     pub tasks: TasksConfig,
+    pub hidden_accounts: HiddenAccounts,
+}
+
+/// An app whose items come from the accounts and can leave one out.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AppKind {
+    Calendar,
+    Contacts,
+    Tasks,
+    Notes,
+    Files,
+}
+
+/// Accounts left out of each app, by lower-case address: their items are
+/// not shown there (lists, search, reminders) but keep syncing, so showing
+/// them again is instant. The account's mail is not affected.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HiddenAccounts {
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub calendar: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub contacts: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub tasks: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub notes: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub files: BTreeSet<String>,
+}
+
+impl HiddenAccounts {
+    /// The accounts left out of `app`, by lower-case address.
+    pub fn in_app(&self, app: AppKind) -> &BTreeSet<String> {
+        match app {
+            AppKind::Calendar => &self.calendar,
+            AppKind::Contacts => &self.contacts,
+            AppKind::Tasks => &self.tasks,
+            AppKind::Notes => &self.notes,
+            AppKind::Files => &self.files,
+        }
+    }
+
+    /// Whether `app` leaves out the account at `address`.
+    pub fn hides(&self, app: AppKind, address: &str) -> bool {
+        let set = self.in_app(app);
+        !set.is_empty() && set.contains(&address.to_lowercase())
+    }
+
+    /// Shows the account at `address` in `app`, or leaves it out.
+    pub fn set_shown(&mut self, app: AppKind, address: &str, shown: bool) {
+        let set = match app {
+            AppKind::Calendar => &mut self.calendar,
+            AppKind::Contacts => &mut self.contacts,
+            AppKind::Tasks => &mut self.tasks,
+            AppKind::Notes => &mut self.notes,
+            AppKind::Files => &mut self.files,
+        };
+        let address = address.to_lowercase();
+        if shown {
+            set.remove(&address);
+        } else {
+            set.insert(address);
+        }
+    }
 }
 
 /// The Contacts page's own choices.
@@ -806,6 +871,15 @@ pub struct MailView {
     /// mail shows in the tab of its category. [`TabStyle::Auto`] is
     /// Gmail's five.
     pub unified_tabs: TabStyle,
+    /// Accounts whose inbox the unified Inbox leaves out, by lower-case
+    /// address: their row stays under it, dimmed, and opens that inbox
+    /// on its own.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub unified_left_out: BTreeSet<String>,
+    /// Accounts kept out of the unified inbox altogether, by lower-case
+    /// address: none of its lists shows them; the account card still does.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub unified_hidden: BTreeSet<String>,
     /// Each account's color, by lower-case address: a name from Katna
     /// Mail's account colors (`teal`, `pink`, ...). Accounts not listed
     /// wear one picked from their address.
@@ -1040,6 +1114,8 @@ impl Default for MailView {
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
             unified_tabs: TabStyle::Auto,
+            unified_left_out: BTreeSet::new(),
+            unified_hidden: BTreeSet::new(),
             account_colors: BTreeMap::new(),
             density: Density::Default,
             scale: 100,
@@ -1589,6 +1665,21 @@ mod tests {
         assert!(!text.contains("sent_sound"), "never written back");
         let fresh = Config::parse("").unwrap();
         assert_eq!(fresh.sounds.playing(SoundEvent::Sent), Some(""));
+    }
+
+    #[test]
+    fn accounts_hide_per_app() {
+        use super::{AppKind, Config};
+        let mut config = Config::parse("[hidden_accounts]\ntasks = [\"a@x.org\"]\n").unwrap();
+        let hidden = &mut config.hidden_accounts;
+        assert!(hidden.hides(AppKind::Tasks, "A@x.org"));
+        assert!(!hidden.hides(AppKind::Notes, "a@x.org"));
+        hidden.set_shown(AppKind::Notes, "B@x.org", false);
+        hidden.set_shown(AppKind::Tasks, "a@x.org", true);
+        assert!(hidden.hides(AppKind::Notes, "b@x.org"));
+        assert!(!hidden.hides(AppKind::Tasks, "a@x.org"));
+        let text = toml::to_string(&config).unwrap();
+        assert!(text.contains("notes = [\"b@x.org\"]") && !text.contains("tasks ="));
     }
 
     #[test]

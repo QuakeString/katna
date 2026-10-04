@@ -8,12 +8,15 @@
 //! to another day keeps its time. The side list's Tasks switch hides them
 //! all, remembered on this computer as Birthdays is.
 
+use std::collections::HashSet;
+
 use gpui::{
     AnyElement, ClickEvent, Context, Div, ElementId, FontWeight, MouseButton, MouseMoveEvent,
     Pixels, Point, SharedString, Stateful, Window, div, prelude::*, rgba,
 };
 use jiff::ToSpan;
 use jiff::civil::{Date, Time};
+use katna_core::config::AppKind;
 use katna_i18n::{format, tr};
 use katna_store::tasks::Task as TaskItem;
 use katna_ui::px;
@@ -75,7 +78,22 @@ impl MailWindow {
         if self.config.calendar.hide_tasks {
             return Vec::new();
         }
+        let left_out = self.hidden_ids(AppKind::Calendar);
+        if left_out.is_empty() {
+            return self.dated_tasks();
+        }
+        // Not those of accounts left out of the Calendar.
+        let shown: HashSet<i64> = self
+            .tasks
+            .columns()
+            .iter()
+            .filter(|c| c.list.account.is_none_or(|a| !left_out.contains(&a)))
+            .map(|c| c.list.id)
+            .collect();
         self.dated_tasks()
+            .into_iter()
+            .filter(|(t, _)| shown.contains(&t.list))
+            .collect()
     }
 
     /// Shows or hides tasks on the Calendar, remembered in the settings.
