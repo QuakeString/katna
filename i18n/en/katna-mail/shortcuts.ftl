@@ -12,6 +12,13 @@ shortcut-group-go-to = Go to
 # Shortcuts of the app itself (search, settings, quit).
 shortcut-group-app = Application
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Keyboard shortcuts
+shortcuts-dialog-search = Find a shortcut
+shortcuts-dialog-none = No shortcut matches
+shortcuts-dialog-close = Close
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Next conversation

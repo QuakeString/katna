@@ -8,16 +8,15 @@
 
 use std::cmp::Ordering;
 
-use gpui::{AnyElement, Context, FontWeight, SharedString, div, prelude::*, rgba};
+use gpui::{AnyElement, Context, SharedString, div, prelude::*, rgba};
 use katna_core::config::TaskSort;
 use katna_i18n::tr;
 use katna_store::tasks::Task as TaskItem;
 use katna_ui::px;
 use katna_ui::tokens::{space, text};
 
-use super::{Column, TasksPage};
+use super::{Column, TasksPage, menu_row};
 use crate::theme::Theme;
-use crate::widgets::icon;
 use crate::window::MailWindow;
 
 /// The choices, in the menu's order.
@@ -117,41 +116,20 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Vec<AnyElement> {
         let now = self.tasks.sort_of(list);
+        // As in the study's mockup: a quiet heading, then a row for each,
+        // the one in use ticked.
         let heading = div()
-            .px(px(space::S5))
+            .px(px(space::S3))
             .pt(px(space::S2))
-            .pb(px(space::S2))
-            .text_size(px(text::CAPTION))
-            .font_weight(FontWeight::MEDIUM)
-            .text_color(rgba(th.text_dim))
+            .pb(px(space::S1))
+            .text_size(px(text::MICRO))
+            .text_color(rgba(th.text_faint))
             .child(tr!("tasks-sort-by"))
             .into_any_element();
         let items = SORTS.into_iter().map(|sort| {
             let on = sort == now;
             let id: SharedString = format!("tasks-sort-{sort:?}").into();
-            div()
-                .id(id)
-                .h(px(36.0))
-                .mx(px(space::S2))
-                .pl(px(space::S3))
-                .pr(px(space::S6))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(space::S3))
-                .rounded(px(katna_ui::tokens::radius::SM))
-                .cursor_pointer()
-                .when(on, |d| d.bg(rgba(th.hover)))
-                .hover(|s| s.bg(rgba(th.hover)))
-                .child(
-                    div()
-                        .size(px(20.0))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .when(on, |d| d.child(icon("check", th.text, 16.0))),
-                )
-                .child(div().flex_1().min_w_0().truncate().child(sort_label(sort)))
+            menu_row(id, on.then_some("check"), sort_label(sort), th)
                 .on_click(cx.listener(move |this, _, _, cx| this.task_set_sort(list, sort, cx)))
                 .into_any_element()
         });

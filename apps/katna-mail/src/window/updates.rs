@@ -903,6 +903,7 @@ fn source() -> Option<String> {
         katna_core::update::Package::AppImage => Some(tr!("update-dialog-source-appimage")),
         katna_core::update::Package::Tarball => Some(tr!("update-dialog-source-tarball")),
         katna_core::update::Package::Rpm => Some(tr!("update-dialog-source-rpm")),
+        katna_core::update::Package::Deb => Some(tr!("update-dialog-source-deb")),
         katna_core::update::Package::Snap => Some(tr!("update-dialog-source-snap")),
         katna_core::update::Package::Flatpak => Some(tr!("update-dialog-source-flatpak")),
         katna_core::update::Package::Nix => Some(tr!("update-dialog-source-nix")),

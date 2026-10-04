@@ -6,7 +6,7 @@
 //! The operations themselves are JSON owned by `katna-sync`; this module
 //! only stores and schedules them.
 
-use katna_core::AccountId;
+use katna_core::{AccountId, MailCategory};
 use rusqlite::{OptionalExtension, params};
 
 use crate::error::Result;
@@ -106,6 +106,16 @@ impl Store {
             })
         })?;
         Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// The inbox tab `message` was sorted into, if it was.
+    pub fn message_category(&self, message: MessageId) -> Result<Option<MailCategory>> {
+        let stored: Option<Option<i64>> = self
+            .mail
+            .prepare_cached("SELECT category FROM message WHERE id = ?1")?
+            .query_row([message.0], |row| row.get(0))
+            .optional()?;
+        Ok(stored.flatten().and_then(MailCategory::from_storage))
     }
 }
 

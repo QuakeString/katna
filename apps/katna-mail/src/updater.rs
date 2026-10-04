@@ -49,6 +49,7 @@ pub fn install(file: &Path, sha256: &str) -> Result<(), InstallError> {
         Package::AppImage => install_appimage(file),
         Package::Tarball => install_tarball(file),
         Package::Rpm
+        | Package::Deb
         | Package::Snap
         | Package::Flatpak
         | Package::Nix
@@ -58,7 +59,7 @@ pub fn install(file: &Path, sha256: &str) -> Result<(), InstallError> {
 }
 
 /// The command that installs the downloaded build in `file` when Katna
-/// cannot: for the RPM, Snap, Flatpak and Nix, and for a tarball
+/// cannot: for the RPM, Debian package, Snap, Flatpak and Nix, and for a tarball
 /// installed where only an administrator may write.
 pub fn command(file: &Path) -> Option<String> {
     let package = Package::current();
