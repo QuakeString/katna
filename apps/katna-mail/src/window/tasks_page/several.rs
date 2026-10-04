@@ -282,6 +282,7 @@ impl MailWindow {
             undo.push(TaskCommand::Restore {
                 task: task.clone(),
                 steps: board.steps(task.id),
+                files: self.task_files_for_undo(task.id),
             });
         }
         let ids: Vec<i64> = tasks.iter().map(|t| t.id).collect();

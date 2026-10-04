@@ -10,11 +10,12 @@
 //! it as Katna Mail's search box does. Open tasks come up when every word
 //! starts a word of their title or details, and open in the Tasks page.
 //! Events of the coming year come up the same way, by their title, place
-//! or details, and open in the Calendar on their day.
+//! or details, and open in the Calendar on their day. `task: …` and
+//! `note: …` add a task or a note (quick capture, [`crate::capture`]).
 
 use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::sync::{Arc, Mutex, MutexGuard, Weak};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use jiff::tz::TimeZone;
@@ -27,6 +28,8 @@ use katna_store::calendar::{EventData, EventStatus, StoredEvent};
 use katna_store::{MessageFlags, MessageId, Mode, ParticipantRole, Store};
 use zbus::zvariant::Value;
 
+use crate::capture::{self, Capture};
+use crate::daemon::Daemon;
 use crate::mail_app;
 
 /// What searches everything in the mail: with this prefix, or one of the
@@ -106,6 +109,8 @@ pub(crate) struct Finder {
     token: Mutex<Option<String>>,
     /// Words that search all the mail (`general.search_triggers`).
     triggers: Mutex<Vec<String>>,
+    /// The daemon, which adds what `task:` and `note:` capture.
+    daemon: Mutex<Weak<Daemon>>,
 }
 
 #[derive(Default)]
@@ -126,7 +131,13 @@ impl Finder {
             stale: AtomicBool::new(false),
             recent: Mutex::default(),
             token: Mutex::default(),
+            daemon: Mutex::default(),
         })
+    }
+
+    /// The daemon that adds the tasks and notes captured here.
+    pub(crate) fn set_daemon(&self, daemon: &Arc<Daemon>) {
+        *lock(&self.daemon) = Arc::downgrade(daemon);
     }
 
     /// Reads the address book ahead of the first search, so the first
@@ -156,7 +167,9 @@ impl Finder {
         let started = Instant::now();
         let text = text.trim();
         let mut found = Vec::new();
-        if let Some(rest) = self.strip_trigger(text) {
+        if let Some(capture) = capture::typed(text) {
+            found.push(self.capture_result(&capture));
+        } else if let Some(rest) = self.strip_trigger(text) {
             if rest.chars().count() >= MIN_CHARS {
                 found = self.mail(rest, true);
             }
@@ -195,6 +208,7 @@ impl Finder {
         match parse_id(id)? {
             Target::Mail(message) => self.messages(&[message], None).pop(),
             Target::Task(task) => self.tasks("", Some(task)).pop(),
+            Target::Capture(capture) => Some(self.capture_result(&capture)),
             Target::Event(event, start) => self.events("", Some((event, start))).pop(),
             Target::Contact(email) => {
                 let book = lock(&self.book).book.clone()?;
@@ -207,6 +221,12 @@ impl Finder {
                 ))
             }
         }
+    }
+
+    /// The one result for `task: …` or `note: …`.
+    fn capture_result(&self, capture: &Capture) -> Found {
+        self.read_store("capture", |store| Ok(capture.found(Some(store))))
+            .unwrap_or_else(|| capture.found(None))
     }
 
     /// People whose name or address starts with the words of `text`.
@@ -617,6 +637,12 @@ impl Finder {
                 let page = vec![Value::from(app_action::calendar_page(&day, false))];
                 mail_app::run(connection, Some(app_action::OPEN_PAGE), page, token).await;
             }
+            (Some(Target::Capture(capture)), "" | capture::EDIT) => {
+                let daemon = lock(&self.daemon).upgrade();
+                capture
+                    .run(connection, daemon.as_deref(), !action.is_empty(), token)
+                    .await;
+            }
             (Some(Target::Contact(email)), FIND) => {
                 let query = format!("from:{email} OR to:{email}");
                 search(connection, &query, token).await;
@@ -667,6 +693,8 @@ enum Target {
     Task(i64),
     /// An event's row and the start of the occurrence found.
     Event(i64, i64),
+    /// A task or note to add.
+    Capture(Capture),
 }
 
 /// When an occurrence is, from `now`: "Now", "Today", "Tomorrow" or "In 3
@@ -715,6 +743,7 @@ fn parse_id(id: &str) -> Option<Target> {
             let (event, start) = chars.as_str().split_once(':')?;
             Some(Target::Event(event.parse().ok()?, start.parse().ok()?))
         }
+        capture::CAPTURE_ID => capture::parse_id(id).map(Target::Capture),
         _ => None,
     }
 }
@@ -838,6 +867,11 @@ impl Runner {
             ),
             (COPY.into(), tr!("search-copy-address"), "edit-copy".into()),
             (FIND.into(), tr!("search-find-mail"), "edit-find".into()),
+            (
+                capture::EDIT.into(),
+                tr!("search-edit-capture"),
+                "document-edit".into(),
+            ),
         ]
     }
 
@@ -867,7 +901,19 @@ impl Runner {
 }
 
 fn krunner_match(found: Found) -> Match {
-    let (category, actions) = if found.is_mail() {
+    let (category, actions) = if let Some(capture) = capture::parse_id(&found.id) {
+        let category = if capture.note {
+            tr!("search-category-notes")
+        } else {
+            tr!("search-category-tasks")
+        };
+        let edit = if capture.text.is_empty() {
+            vec![]
+        } else {
+            vec![capture::EDIT]
+        };
+        (category, edit)
+    } else if found.is_mail() {
         (tr!("search-category-mail"), vec![REPLY_ALL])
     } else if found.is_task() {
         (tr!("search-category-tasks"), vec![])

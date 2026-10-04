@@ -3862,8 +3862,9 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   the signal) and with each count, so the icon follows a light/dark switch
   at once. Left click raises the
   app, middle click starts a new message. The right-click menu
-  (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
-  Quit. Quit closes the app and stops the daemon until the next login or
+  (`com.canonical.dbusmenu`) has Open Inbox, New Message, New task, New
+  note, Preferences and Quit; New task and New note open quick capture
+  (§18.1), on Windows too. Quit closes the app and stops the daemon until the next login or
   until the app starts it again (D-Bus activation). Setting
   `general.show_in_tray` (default on; the older `tray_icon` key is ignored
   because versions without a tray saved it as `false`). Both switches are
@@ -3872,7 +3873,9 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
 - **Single instance and actions**: Katna Mail owns `in.invenia.katna.Mail`
   and serves `org.freedesktop.Application` at `/in/invenia/katna/Mail` with
   the actions `open-inbox`, `compose`, `preferences`, `open-message` and
-  `reply-all` (a message ID) and `quit` (`katna_dbus::app_action`). A second `katna-mail`
+  `reply-all` (a message ID), `capture` (`task` or `note`, optionally
+  `task:TEXT`; `katna-mail --capture KIND`) and `quit`
+  (`katna_dbus::app_action`). A second `katna-mail`
   hands its request to the first and exits. The tray, notifications and
   the desktop file use this: its actions New Message, Open Inbox and
   Preferences (right-click on the taskbar icon in Plasma and GNOME) run
@@ -3959,6 +3962,15 @@ Today, Tomorrow, In 3 days; the service formats no dates) and the place,
 or else the calendar. Enter opens the Calendar on that day
 (`calendar:YYYY-MM-DD`, as the clock does).
 
+`task: …` and `note: …` (any case) are quick capture (§18.1) in
+KRunner: one result, "Add task “Call the plumber”" with what the parser
+found under it (Fri 9 Oct, 18:00 · My Tasks) or "Add note “…”" with where
+it goes. Enter adds it at once, as the card would, without opening Katna
+Mail (`apps/katna-daemon/src/capture.rs`); the result's button "Change
+before adding" opens the card with the text in it instead, and a bare
+`task:` or `note:` offers "New task" / "New note", which opens the empty
+card. GNOME Shell's search shows the same result; activating it adds.
+
 Flatpak: KRunner D-Bus runners are designed to work with sandboxed apps;
 verify that Flatpak exports the `krunner/dbusplugins` file. Distro
 packages install it directly.
@@ -4044,7 +4056,19 @@ knows it; after that turning it off is the user's choice.
 ### 15.5 Other integration
 
 - Default handler for `mailto:` and `text/calendar` (`.ics`).
-- Global shortcut "Compose new email" via the GlobalShortcuts portal.
+- Global shortcuts (`katna_platform::shortcuts`, served by the daemon):
+  Meta+Alt+T opens quick capture on Task and Meta+Alt+N on Note (§18.1).
+  On Plasma they are registered with KDE's global shortcuts service
+  (`org.kde.kglobalaccel`: `doRegister`, `setShortcutKeys` with the
+  default key, `getComponent`; presses arrive as the component's
+  `globalShortcutPressed`) under the component `in.invenia.katna.Mail`,
+  named Katna Mail, so they can be changed in System Settings >
+  Shortcuts; registered again whenever the service restarts. On Windows
+  the `global-hotkey` crate (`RegisterHotKey`, no unsafe code of ours) on
+  the tray's thread. GNOME has none yet: that needs the GlobalShortcuts
+  portal (and "Compose new email" could join it then). On Wayland a
+  press carries no activation token, so the compositor may not give the
+  card focus.
 - Dolphin service menu "Send as email attachment with Katna"
   (`share/kio/servicemenus/`, no code).
 - Portal file chooser, color scheme, accent color (§13.2).
@@ -4744,6 +4768,37 @@ server error is not.
   to-do with `RELATED-TO;RELTYPE=PARENT`. A change is written over the
   server's own text of the to-do (`katna_dav::todo`), so categories,
   attachments, other alarms and a client's own fields stay.
+- **The star, labels and files** (`pim.db` v17: `task_labels`, a JSON
+  array per task in a side table, and `task_file`, whose bytes are in the blob store and never
+  dropped by a cache reset). Where each is kept:
+
+  | | Star | Labels | Files |
+  |---|---|---|---|
+  | To Do | `importance` high | `categories` | attachments up to 3 MB (Graph's small upload) |
+  | CalDAV | `PRIORITY:1` | `CATEGORIES` | inline `ATTACH` (base64) up to 1 MB, if the server keeps it |
+  | Zoho | `priority` high / none | here | here |
+  | Google | here | here | here |
+
+  Each is mapped back on every pull. Unstarring clears CalDAV's
+  `PRIORITY`; a server's other priority stays while the task is
+  unstarred. Katna rewrites `CATEGORIES` only when the labels changed,
+  and `ATTACH` lines with a URL always stay. A CalDAV `PUT` with files
+  is read back: a server that refuses it (4xx, often 413) or drops the
+  `ATTACH` lines gets the to-do without them, and that task's files stay
+  on this computer (`task_file.local_only`; their details row says "Only
+  on this computer"); a larger file stays here too. A file removed in
+  Katna is a tombstone until the service deleted it. Labels are the same
+  set as Notes' (`Store::labels_in_use`): the details dialog uses Notes'
+  label picker (`notes::labels::LabelPicker`), the side list's Labels show
+  every open task with one, and `#home` in a new task's title is a label
+  (`katna_dav::quick_task`, as quick capture reads it). Files come from a drop
+  on a task's row or its details, the details' paper clip, or the mail
+  a task is made from (Add to Tasks keeps its attachments, not pictures
+  shown in its text, when its body is stored); `AddTaskFile` takes up to
+  25 MB. A row shows a paper clip with their count and the labels in one
+  quiet line under the title; a file opens in Katna's viewer or the app
+  Default apps names, as a mail's attachment does. Deleting a task and
+  removing a file both undo with the files' bytes.
 - **Zoho** (`katna_sync::tasks::zoho`, `https://mail.zoho.<dc>/api/tasks`,
   header `Zoho-oauthtoken`) goes through the Zoho sign-in linked to the
   password account (`AccountSettings::linked`, `daemon/linked.rs`); the
@@ -4848,6 +4903,29 @@ server error is not.
   plants every Monday 8am"); a repeat without a day starts on its first
   day from today. Tasks have no place, so "at …" stays in the title, and
   a title that is only such words ("tomorrow") stays as typed.
+- **Quick capture** (`window/capture.rs`), "catch a thought from
+  anywhere": a small frosted card with Task and Note tabs over whatever is
+  on screen, in its own undecorated window of Katna Mail (430 px, a
+  quarter down the screen, the window as wide as the screen on a phone,
+  fitted to the card's height as chips wrap). Opened by Meta+Alt+T /
+  Meta+Alt+N (§15.5), the tray's New task / New note (§15.2), KRunner's
+  `task:` / `note:` (§15.3), or the `capture` app action; without a
+  running app `katna-mail --capture task` starts one that shows only the
+  card and quits when it closes. The text is read as it is typed
+  (`katna_dav::quick_task`, `quick_add` plus `#label` words, shared with
+  the KRunner path) and what was understood shows as chips: day and time,
+  label, list · account and reminder (at the time when a time was typed)
+  on Task; label and where (an account's Notes, or this computer) on Note.
+  Clicking a chip offers its choices in the same row (Today, Tomorrow,
+  Next week, No date; the lists; the labels notes and tasks use; the reminders; the
+  places), with a back arrow. Tab switches Task and Note, Enter saves and
+  closes, Esc closes (or leaves a chip's choices). A task goes to the
+  default list (above) or the one picked, over `Agenda1`
+  (`AddTaskTo` then `EditTask` for time, reminder, repeat and labels); a
+  note goes through the daemon's existing `Pim1.SaveNote`, to the first
+  mail account's Notes, its labels matched to existing ones by case.
+  Labels on tasks are kept once the store has them (the `labels` field of
+  `EditTask`; a daemon without it ignores the field).
 - **Search**: on the Tasks page the top bar's box says "Search tasks"
   and shows only tasks whose title or notes hold every word typed, with
   a step's task and a task's matching steps; lists with none found hide

@@ -84,11 +84,13 @@ impl LabelPicker {
 /// What ticking or unticking a label in [`render_label_choices`] does.
 pub(in crate::window) type OnToggle = Rc<dyn Fn(&mut MailWindow, String, &mut Context<MailWindow>)>;
 
-/// A [`LabelPicker`]'s box and the labels of `labels` matching what is
-/// typed, each ticked as `state` says, with "Create" for a new one;
-/// clicking one calls `on_toggle`.
+/// A [`LabelPicker`]'s box under `heading` ("Label note") and the labels
+/// of `labels` matching what is typed, each ticked as `state` says, with
+/// "Create" for a new one; clicking one calls `on_toggle`.
+#[allow(clippy::too_many_arguments)]
 pub(in crate::window) fn render_label_choices(
     id: &'static str,
+    heading: String,
     picker: &LabelPicker,
     mut labels: Vec<String>,
     state: &dyn Fn(&str) -> Check,
@@ -161,7 +163,7 @@ pub(in crate::window) fn render_label_choices(
                 .text_size(px(text::CAPTION))
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.text_dim))
-                .child(tr!("notes-label-note")),
+                .child(heading),
         )
         .child(
             div()
@@ -314,6 +316,7 @@ impl MailWindow {
         let on = editor.labels.clone();
         let list = render_label_choices(
             "note-label-pick",
+            tr!("notes-label-note"),
             picker,
             labels,
             &move |label: &str| Check::from(on.iter().any(|l| l == label)),

@@ -16,6 +16,9 @@ tasks-starred = Starred
 # Every ticked task, by the day it was ticked.
 tasks-completed-view = Completed
 tasks-new-list = Create new list
+# Heading over the labels on tasks (the same labels as on notes); each
+# shows every task with it.
+tasks-labels-heading = Labels
 # Heading over the lists kept on this computer, not in an account.
 tasks-on-this-computer = On this computer
 # The name of the list kept on this computer.
@@ -57,6 +60,7 @@ tasks-title-placeholder = Title
 tasks-add-step = Add a subtask
 tasks-empty = No tasks yet. Add one above.
 tasks-starred-empty = Star a task to see it here.
+tasks-label-empty = No open tasks with this label.
 tasks-today-empty = Nothing due today.
 tasks-completed-empty = Tasks you complete show here.
 # Under each day on Upcoming: $day is the day's name, "Monday".
@@ -141,6 +145,18 @@ tasks-remind-on-time = At the time
 tasks-remind-morning = On the day, { $time }
 tasks-remind-hour-before = An hour before
 tasks-remind-day-before = The day before
+# The chip that opens the label picker in a task's details, and the
+# picker's heading.
+tasks-label-add = Add label
+tasks-label-task = Label task
+# The paper clip in a task's details, and the file chooser's button.
+tasks-files-attach = Attach files
+tasks-files-pick = Attach
+tasks-file-open = Open
+tasks-file-remove = Remove file
+# Beside a file To Do or the CalDAV server would not take (too large, or
+# the service keeps no files): it stays with the task on this computer.
+tasks-file-here = Only on this computer
 tasks-cancel = Cancel
 tasks-save = Save
 # $text: what was typed; $example: a time written the usual way, like "4:00 PM".
@@ -160,6 +176,16 @@ tasks-toast-done = Task completed
 # A repeating task was ticked off and comes back on its next day ("5 Oct").
 tasks-toast-next = Done. Next one on { $date }
 tasks-toast-deleted = Task deleted
+tasks-files-added = { $count ->
+    [one] File attached
+   *[other] { $count } files attached
+}
+# $name: the file's name.
+tasks-file-removed = Removed “{ $name }”
+# $names: the files' names; $limit: the largest file a task takes ("25 MB").
+tasks-files-left-out = Not attached: { $names }. A task takes files up to { $limit }, not folders.
+# A task's file could not be read (removed meanwhile).
+tasks-file-missing = That file isn't here any more.
 tasks-toast-added = { $count ->
     [one] Added to Tasks
    *[other] { $count } tasks added

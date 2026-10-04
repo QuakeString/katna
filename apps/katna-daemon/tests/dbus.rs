@@ -518,6 +518,39 @@ fn answers_krunner_and_gnome_search() {
         let description = String::try_from(metas[0]["description"].try_clone().unwrap()).unwrap();
         assert_eq!(name, "2001 budget");
         assert_eq!(description, "From Kenneth Lay");
+
+        // `task:` and `note:` are quick capture: Enter adds at once.
+        let run = |id: String, action: &'static str| {
+            let connection = connection.clone();
+            async move {
+                connection
+                    .call_method(
+                        Some(katna_core::ids::DAEMON_BUS_NAME),
+                        katna_core::ids::RUNNER_OBJECT_PATH,
+                        Some("org.kde.krunner1"),
+                        "Run",
+                        &(id, action),
+                    )
+                    .await
+                    .unwrap();
+            }
+        };
+        let task = krunner("task: Buy milk tomorrow").await;
+        assert_eq!(task.len(), 1, "{task:?}");
+        assert_eq!(task[0].1, "Add task \u{201c}Buy milk\u{201d}");
+        run(task[0].0.clone(), "").await;
+        let note = krunner("Note: Gate code 4471 #home").await;
+        assert_eq!(note.len(), 1, "{note:?}");
+        assert_eq!(note[0].1, "Add note \u{201c}Gate code 4471\u{201d}");
+        run(note[0].0.clone(), "").await;
+        let store = Store::open(&paths, Mode::ReadOnly).unwrap();
+        let tasks = store.tasks(0).unwrap();
+        let added = tasks.iter().find(|t| t.title == "Buy milk").unwrap();
+        let tomorrow = jiff::Zoned::now().date().tomorrow().unwrap().to_string();
+        assert_eq!(added.due, tomorrow);
+        let notes = store.notes().unwrap();
+        let added = notes.iter().find(|n| n.body == "Gate code 4471").unwrap();
+        assert_eq!(added.labels, ["home"]);
         instance.shutdown().await;
     });
 }
@@ -2597,7 +2630,14 @@ fn shows_the_unread_count_on_the_taskbar_and_in_the_tray() {
         }
         assert_eq!(
             labels,
-            ["Open _Inbox", "_New Message", "_Preferences", "_Quit"]
+            [
+                "Open _Inbox",
+                "_New Message",
+                "New _task",
+                "New n_ote",
+                "_Preferences",
+                "_Quit"
+            ]
         );
 
         // Quit asks the (absent) app to close, then stops the daemon.

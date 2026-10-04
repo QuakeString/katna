@@ -19,12 +19,15 @@ use gpui::{
 };
 use katna_core::config::TaskSort;
 use katna_core::{AccountId, AccountKind};
+use katna_dav::quick_task::TypedTask;
 use katna_i18n::tr;
 use katna_store::tasks::Task as TaskItem;
 use katna_ui::px;
 use katna_ui::text_input::{InputEvent, TextInput};
 
 mod details;
+mod files;
+mod labels;
 mod several;
 mod sort;
 mod views;
@@ -60,6 +63,8 @@ pub(super) enum View {
     /// Every ticked task, by the day it was ticked.
     Completed,
     List(i64),
+    /// Every task with the label [`TasksPage::label`], from every list.
+    Label,
 }
 
 /// A task typed into a list's "Add a task" row.
@@ -192,6 +197,8 @@ pub(super) struct TasksPage {
     anchor: Option<i64>,
     /// How each list is sorted (`Config::tasks`), by list.
     sorts: HashMap<i64, TaskSort>,
+    /// The label [`View::Label`] shows.
+    label: String,
 }
 
 /// A task being dragged: the lists open a gap where it would land, as in
@@ -328,6 +335,15 @@ impl TasksPage {
             .unwrap_or(task.starred)
     }
 
+    /// What the page shows, once read.
+    pub(super) fn board(&self) -> Option<&Board> {
+        self.board.as_ref().and_then(|b| b.as_ref().ok())
+    }
+
+    fn board_mut(&mut self) -> Option<&mut Board> {
+        self.board.as_mut().and_then(|b| b.as_mut().ok())
+    }
+
     pub(super) fn columns(&self) -> &[Column] {
         match &self.board {
             Some(Ok(board)) => &board.columns,
@@ -398,6 +414,12 @@ impl TasksPage {
         match self.view {
             View::Starred => {
                 shown.retain(|id| self.task(*id).is_some_and(|t| self.starred(t)));
+            }
+            View::Label => {
+                shown.retain(|id| {
+                    self.task(*id)
+                        .is_some_and(|t| t.labels.contains(&self.label))
+                });
             }
             View::Today => {
                 let (overdue, due) = self.due_now(today());
@@ -517,7 +539,7 @@ impl TasksPage {
                 .iter()
                 .filter(|c| !self.searching() || c.tasks.iter().any(|t| self.found(t)))
                 .collect(),
-            View::Today | View::Upcoming | View::Starred | View::Completed => {
+            View::Today | View::Upcoming | View::Starred | View::Completed | View::Label => {
                 self.columns().iter().collect()
             }
             View::List(id) => self.columns().iter().filter(|c| c.list.id == id).collect(),
@@ -525,54 +547,14 @@ impl TasksPage {
     }
 }
 
-/// What typed quick add found in a new task's title.
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct TypedTask {
-    title: String,
-    /// `YYYY-MM-DD`; today when only a time or a repeat was typed.
-    due: Option<String>,
-    due_time: Option<u32>,
-    repeat: Option<String>,
-}
-
-/// Reads a day, a time and a repeat from a new task's title
-/// (`katna_core::quick_add`, shared with Calendar's events); `None` when it
-/// says none, or nothing would be left of the title. Tasks have no place,
-/// so "at" is left in the title.
+/// Reads a day, a time, a repeat and `#labels` from a new task's title
+/// as quick capture does ([`katna_dav::quick_task`], on Calendar's
+/// `katna_core::quick_add`); `None` when it says none, or nothing would be
+/// left of the title. Tasks have no place, so "at" is left in the title.
 fn typed_task(text: &str, today: jiff::civil::Date) -> Option<TypedTask> {
-    use katna_core::quick_add;
     let language = katna_i18n::current().language.tag.clone();
-    let words = quick_add::Words {
-        at: &[],
-        ..*quick_add::Words::for_language(&language)
-    };
-    let typed = quick_add::parse(text, today, &words);
-    let title = typed.title.trim().to_owned();
-    // The parser keeps a title made only of such words ("tomorrow") whole.
-    if !typed.found() || title.is_empty() || title == text.trim() {
-        return None;
-    }
-    let due_time = typed
-        .start
-        .map(|t| u32::try_from(i32::from(t.hour()) * 60 + i32::from(t.minute())).unwrap_or(0));
-    // A repeat without a day starts on its first day from today ("every
-    // Monday" typed on a Tuesday: next Monday); a time alone is today.
-    let first_repeat = typed.repeat.as_deref().and_then(|rule| {
-        let yesterday = today.yesterday().ok()?;
-        let (day, _) = katna_dav::todo::next_due(&yesterday.to_string(), rule, yesterday)?;
-        day.parse().ok()
-    });
-    let due = typed
-        .day
-        .or(first_repeat)
-        .or_else(|| (due_time.is_some() || typed.repeat.is_some()).then_some(today))
-        .map(|d| d.to_string());
-    Some(TypedTask {
-        title,
-        due,
-        due_time,
-        repeat: typed.repeat,
-    })
+    let typed = katna_dav::quick_task::parse(text, today, &language);
+    (typed.title != text.trim() || !typed.labels.is_empty()).then_some(typed)
 }
 
 /// A day and month, with the year when it isn't this one.
@@ -1073,6 +1055,7 @@ impl MailWindow {
             return;
         };
         let steps = board.steps(id);
+        let files = self.task_files_for_undo(id);
         // Gone from the page at once; the store follows.
         if let Some(Ok(board)) = &mut self.tasks.board {
             for column in &mut board.columns {
@@ -1086,7 +1069,7 @@ impl MailWindow {
         self.send_task(
             TaskCommand::Delete(id),
             Some(tr!("tasks-toast-deleted")),
-            Some(TaskCommand::Restore { task, steps }),
+            Some(TaskCommand::Restore { task, steps, files }),
             cx,
         );
         cx.notify();
@@ -1353,6 +1336,7 @@ impl MailWindow {
                 let fields = TaskEdit {
                     due_time: typed.due_time.map(Some),
                     repeat: typed.repeat,
+                    labels: (!typed.labels.is_empty()).then_some(typed.labels),
                     ..TaskEdit::default()
                 };
                 (typed.title, due, fields)
@@ -1546,7 +1530,8 @@ impl MailWindow {
     // --- From mail -----------------------------------------------------------
 
     /// Add to Tasks (Shift+T, as in Gmail): a task for each picked line in
-    /// the default list, titled with its subject, leading back to the mail.
+    /// the default list, titled with its subject, leading back to the mail,
+    /// with the mail's attachments as its files.
     pub(super) fn add_to_tasks(
         &mut self,
         _: &super::AddToTasks,
@@ -1561,11 +1546,41 @@ impl MailWindow {
         let Ok(mail) = self.mail.as_ref() else {
             return;
         };
-        let sources: Vec<(String, String)> =
-            keys.iter().filter_map(|k| mail.task_source(*k)).collect();
+        let sources: Vec<(String, String, Vec<katna_store::MessageId>)> = keys
+            .iter()
+            .filter_map(|k| {
+                let (subject, header) = mail.task_source(*k)?;
+                Some((subject, header, mail.entry_messages(*k)))
+            })
+            .collect();
+        // The attachments are read away from the window: a few mails'.
+        let paths = self.paths.clone();
+        let read = cx.background_executor().spawn(async move {
+            sources
+                .into_iter()
+                .map(|(subject, header, ids)| {
+                    let mut raws = crate::data::raw_messages(&paths, &ids);
+                    let raws: Vec<Vec<u8>> = ids.iter().filter_map(|id| raws.remove(id)).collect();
+                    (subject, header, files::mail_files(&raws))
+                })
+                .collect::<Vec<_>>()
+        });
+        cx.spawn(async move |this, cx| {
+            let sources = read.await;
+            this.update(cx, |this, cx| this.add_tasks_from_mails(sources, cx))
+                .ok();
+        })
+        .detach();
+    }
+
+    fn add_tasks_from_mails(
+        &mut self,
+        sources: Vec<(String, String, Vec<crate::tasks::NewFile>)>,
+        cx: &mut Context<Self>,
+    ) {
         let count = sources.len();
-        let mails: Vec<String> = sources.iter().map(|(_, m)| m.clone()).collect();
-        for (ix, (subject, header)) in sources.into_iter().enumerate() {
+        let mails: Vec<String> = sources.iter().map(|(_, m, _)| m.clone()).collect();
+        for (ix, (subject, header, files)) in sources.into_iter().enumerate() {
             let title = if subject.is_empty() {
                 tr!("tasks-no-subject")
             } else {
@@ -1573,14 +1588,20 @@ impl MailWindow {
             };
             // One note and one Undo for them all, with the last.
             let last = ix + 1 == count;
+            let add = TaskCommand::Add {
+                list: 0,
+                parent: None,
+                title,
+                due: String::new(),
+                mail: header,
+            };
+            let add = if files.is_empty() {
+                add
+            } else {
+                TaskCommand::AddWithFiles(Box::new(add), files)
+            };
             self.send_task(
-                TaskCommand::Add {
-                    list: 0,
-                    parent: None,
-                    title,
-                    due: String::new(),
-                    mail: header,
-                },
+                add,
                 last.then(|| tr!("tasks-toast-added", count = count as u64)),
                 last.then(|| TaskCommand::RemoveFromMail(mails.clone())),
                 cx,
@@ -1858,6 +1879,7 @@ impl MailWindow {
                     .h(px(1.0))
                     .bg(rgba(th.divider)),
             );
+        nav = nav.children(self.render_task_labels_nav(th, cx));
         // Lists by account, Mailspring-style: the address, then its lists.
         // Every account shows, also one whose lists did not come, with the
         // reason under it.
@@ -2033,6 +2055,7 @@ impl MailWindow {
             View::Today => self.render_today(th, cx),
             View::Upcoming => self.render_upcoming(th, cx),
             View::Completed => self.render_completed(th, cx),
+            View::Label => self.render_label_view(&page.label, columns, th, cx),
         }
     }
 
@@ -2758,6 +2781,7 @@ impl MailWindow {
             .when(selected, |d| d.bg(rgba(th.row_selected)))
             .when(picked && !selected, |d| d.bg(rgba(fade(th.accent, 0.12))))
             .when(!picked && !selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
+            .map(|d| files::takes_files(d, id, th, cx))
             .child(tick)
             .child(
                 div()
@@ -2768,6 +2792,9 @@ impl MailWindow {
                     .child(title)
                     .children(notes)
                     .children(chips)
+                    .when(look.quiet.is_none(), |d| {
+                        d.children(self.render_task_meta(task, th))
+                    })
                     .children(quiet),
             )
             .when(!done, |d| d.child(star))
@@ -3219,12 +3246,18 @@ mod tests {
                 due: Some("2026-09-30".into()),
                 due_time: Some(15 * 60),
                 repeat: None,
+                labels: Vec::new(),
             })
         );
         // A repeat alone starts on its first day from today (a Tuesday).
         let plants = typed("Water the plants every Monday").unwrap();
         assert_eq!(plants.title, "Water the plants");
         assert!(plants.repeat.is_some_and(|r| r.contains("FREQ=WEEKLY")));
+        // "#home" is a label.
+        let bills = typed("Pay electricity bill #Home #bills").unwrap();
+        assert_eq!(bills.title, "Pay electricity bill");
+        assert_eq!(bills.labels, ["Home", "bills"]);
+        assert_eq!(bills.due, None);
         assert_eq!(plants.due.as_deref(), Some("2026-10-05"));
         assert_eq!(
             typed("Stretch every day").and_then(|t| t.due).as_deref(),

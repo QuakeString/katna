@@ -2,7 +2,7 @@
 
 //! A task's details in a dialog, as Google Tasks' task editor: the title,
 //! details (notes), a due day on a month grid, a time, how it repeats and
-//! when it reminds.
+//! when it reminds, its labels and its files.
 //! Save sends only what changed; Ctrl+Z puts the task back as it was.
 
 use gpui::{
@@ -11,6 +11,7 @@ use gpui::{
 };
 use jiff::civil::{Date, Time};
 use katna_i18n::{format, tr};
+use katna_ui::tokens::space;
 use katna_ui::{InputEvent, TextArea, TextInput, px, unpx};
 
 use super::super::compose::schedule;
@@ -145,6 +146,10 @@ pub(super) struct Details {
     day: Option<Date>,
     repeat: Repeat,
     remind: Remind,
+    /// Its labels, as ticked here.
+    labels: Vec<String>,
+    /// The label picker, while open.
+    pub(super) picker: Option<super::labels::Picker>,
     focus: FocusHandle,
     /// The window's size when opened, to center the dialog in.
     viewport: Size<Pixels>,
@@ -160,6 +165,16 @@ fn time_of(minutes: u32) -> Time {
         0,
     )
     .unwrap_or_default()
+}
+
+impl Details {
+    pub(super) fn labels(&self) -> &[String] {
+        &self.labels
+    }
+
+    pub(super) fn labels_mut(&mut self) -> &mut Vec<String> {
+        &mut self.labels
+    }
 }
 
 fn minutes_of(time: Time) -> u32 {
@@ -234,6 +249,8 @@ impl MailWindow {
             day,
             repeat: Repeat::from_rule(&task.repeat),
             remind: Remind::of(&task),
+            labels: task.labels.clone(),
+            picker: None,
             focus: cx.focus_handle(),
             viewport: window.viewport_size(),
             _subscriptions: subscriptions,
@@ -302,6 +319,7 @@ impl MailWindow {
             due_time: (due_time != task.due_time).then_some(due_time),
             repeat: (repeat != task.repeat).then_some(repeat),
             remind_at: (remind_at != task.remind_at).then_some(remind_at),
+            labels: (details.labels != task.labels).then(|| details.labels.clone()),
             ..TaskEdit::default()
         };
         self.task_close_details(window, cx);
@@ -333,6 +351,9 @@ impl MailWindow {
             }
             if let Some(remind_at) = edit.remind_at {
                 shown.remind_at = remind_at;
+            }
+            if let Some(labels) = &edit.labels {
+                shown.labels = labels.clone();
             }
         }
         self.send_task(TaskCommand::Edit(id, edit), None, None, cx);
@@ -704,6 +725,18 @@ impl MailWindow {
             .tooltip(tip(tr!("tasks-delete"), th))
             .on_click(cx.listener(|this, _, window, cx| this.task_details_delete(window, cx)));
         // A task made from a mail opens it, as its line on the board does.
+        let attach = icon_button("task-details-attach", "attachment", 20.0, th)
+            .size(px(36.0))
+            .tooltip(tip(tr!("tasks-files-attach"), th))
+            .on_click(cx.listener(|this, _, _, cx| {
+                if let Some(id) = this.tasks.details.as_ref().map(|d| d.id) {
+                    this.task_pick_files(id, cx);
+                }
+            }));
+        let has_files = self
+            .tasks
+            .board()
+            .is_some_and(|b| !b.files_of(details.id).is_empty());
         let mail = self
             .tasks
             .task(details.id)
@@ -720,8 +753,8 @@ impl MailWindow {
             });
 
         let focus = details.focus.clone();
-        let card = div()
-            .id("task-details")
+        let card = super::files::takes_files(div().id("task-details"), details.id, th, cx);
+        let card = card
             .track_focus(&focus)
             .map(|d| super::super::popovers::keep_tab_inside(d, &focus))
             .on_key_down(cx.listener(|this, event: &gpui::KeyDownEvent, window, cx| {
@@ -749,6 +782,18 @@ impl MailWindow {
             .shadow(elevation(th, 3.0))
             .child(title)
             .child(div().mt(px(12.0)).child(notes))
+            .child(
+                div()
+                    .mt(px(space::S4))
+                    .child(self.render_details_labels(th, cx)),
+            )
+            .when(has_files, |d| {
+                d.child(
+                    div()
+                        .mt(px(space::S4))
+                        .child(self.render_details_files(details.id, th, cx)),
+                )
+            })
             .child(date_part)
             .child(
                 div()
@@ -758,6 +803,7 @@ impl MailWindow {
                     .items_center()
                     .gap(px(8.0))
                     .child(delete)
+                    .child(attach)
                     .children(mail)
                     .child(div().flex_1())
                     .child(cancel)
