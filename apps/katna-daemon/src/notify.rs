@@ -33,6 +33,7 @@ use zbus::zvariant::Value;
 
 use crate::daemon::Daemon;
 use crate::daemon::alarms::{self, Alarm};
+use crate::needs_you::{self, NeedsYou};
 
 /// Older mail is not news, even when it is new to the store (a folder
 /// synced for the first time, mail moved back into the inbox).
@@ -137,6 +138,11 @@ pub(crate) struct NewMailNotices {
     replied: Mutex<HashMap<u32, Replied>>,
     /// The outbox entries of those replies, until they go out.
     outgoing: Mutex<HashSet<i64>>,
+    /// What needs the user, told once each, with its notification's ID
+    /// while that shows.
+    told: Mutex<HashMap<needs_you::Key, Option<u32>>>,
+    /// Those notifications on show, and the Katna Mail page each opens.
+    problems: Mutex<HashMap<u32, String>>,
 }
 
 impl NewMailNotices {
@@ -158,6 +164,8 @@ impl NewMailNotices {
             archived: Mutex::default(),
             replied: Mutex::default(),
             outgoing: Mutex::default(),
+            told: Mutex::default(),
+            problems: Mutex::default(),
         })
     }
 
@@ -330,6 +338,47 @@ impl NewMailNotices {
             .await
             .map_err(|err| tracing::warn!(%err, "could not show that an update is ready"))
             .ok()
+    }
+
+    /// Shows one notification for each thing in `now` that needs the
+    /// user and wasn't told yet; closes those of what was fixed, which are
+    /// told again should they come back.
+    pub(crate) async fn needs_you(&self, now: &[NeedsYou]) {
+        let (fixed, new): (Vec<u32>, Vec<&NeedsYou>) = {
+            let mut told = self.told.lock().unwrap();
+            let mut fixed = Vec::new();
+            told.retain(|key, id| {
+                let lasts = now.iter().any(|n| n.key() == *key);
+                if !lasts {
+                    fixed.extend(*id);
+                }
+                lasts
+            });
+            let new = now
+                .iter()
+                .filter(|n| !told.contains_key(&n.key()))
+                .collect();
+            (fixed, new)
+        };
+        for problem in new {
+            let (summary, body, fix) = problem.notification();
+            let id = match self.notifier.needs_you(&summary, &body, &fix).await {
+                Ok(id) => {
+                    self.problems.lock().unwrap().insert(id, problem.page());
+                    Some(id)
+                }
+                Err(err) => {
+                    tracing::warn!(%err, "could not say that something needs the user");
+                    None
+                }
+            };
+            tracing::info!(problem = ?problem.key(), "told the user");
+            self.told.lock().unwrap().insert(problem.key(), id);
+        }
+        for id in &fixed {
+            self.problems.lock().unwrap().remove(id);
+        }
+        self.close(fixed).await;
     }
 
     pub(crate) fn forget(&self, account: AccountId) {
@@ -571,6 +620,7 @@ impl NewMailNotices {
                     if notices.shown.lock().unwrap().contains_key(&id)
                         || notices.events.lock().unwrap().contains_key(&id)
                         || notices.replied.lock().unwrap().contains_key(&id)
+                        || notices.problems.lock().unwrap().contains_key(&id)
                         || daemon.updates().is_notice(id)
                     {
                         notices.tokens.lock().unwrap().insert(id, token);
@@ -580,6 +630,7 @@ impl NewMailNotices {
                     notices.archived.lock().unwrap().remove(&id);
                     notices.replied.lock().unwrap().remove(&id);
                     notices.events.lock().unwrap().remove(&id);
+                    notices.problems.lock().unwrap().remove(&id);
                     daemon.updates().take_notice(id);
                     notices.shown.lock().unwrap().remove(&id);
                     notices.tokens.lock().unwrap().remove(&id);
@@ -592,6 +643,22 @@ impl NewMailNotices {
                         &notices.connection,
                         Some(katna_dbus::app_action::INSTALL_UPDATE),
                         Vec::new(),
+                        token,
+                    )
+                    .await;
+                    notices.close(vec![id]).await;
+                }
+                Got::Action(id, _) if notices.problems.lock().unwrap().contains_key(&id) => {
+                    // The notification itself or its button: Katna Mail
+                    // opens the fix (New password, Sign in, the Outbox).
+                    let Some(page) = notices.problems.lock().unwrap().remove(&id) else {
+                        continue;
+                    };
+                    let token = notices.tokens.lock().unwrap().remove(&id);
+                    crate::mail_app::run(
+                        &notices.connection,
+                        Some(katna_dbus::app_action::OPEN_PAGE),
+                        vec![Value::from(page)],
                         token,
                     )
                     .await;

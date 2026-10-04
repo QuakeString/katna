@@ -20,6 +20,7 @@ mod file_menus;
 pub mod install;
 pub mod katna_account;
 mod mail_app;
+mod needs_you;
 mod notify;
 mod on_demand;
 pub mod secrets;
@@ -411,6 +412,19 @@ fn start_indexer(paths: &Paths) -> Option<Indexer> {
     }
 }
 
+/// Tells the user, once each, what needs them (`needs_you`): a desktop
+/// notification and the tray tooltip's lines.
+async fn tell_needs_you(daemon: &Daemon, desktop: &desktop::Handle) {
+    let (Ok(accounts), Ok(outbox)) = (daemon.accounts(), daemon.outbox()) else {
+        return;
+    };
+    let now = needs_you::find(&accounts, &outbox);
+    desktop.problems(needs_you::tray_lines(&now));
+    if let Some(notices) = daemon.new_mail_notices() {
+        notices.needs_you(&now).await;
+    }
+}
+
 /// Passes `notices` on to `forward`, and wakes the indexer, updates the
 /// unread counts and has the desktop search read the addresses again when
 /// mail or saved contacts changed, and rewrites the file managers' menus
@@ -438,6 +452,12 @@ async fn watch_mail(
         // Saved names are in the book too.
         if let Notice::ContactsChanged = notice {
             finder.mail_changed();
+        }
+        if matches!(
+            notice,
+            Notice::StatusChanged(_) | Notice::OutboxChanged(_) | Notice::AccountsChanged
+        ) {
+            tell_needs_you(&daemon, &desktop).await;
         }
         if forward.send(notice).await.is_err() {
             break;
