@@ -457,7 +457,7 @@ settings-files-page-detail = Which attachments the Files page shows
 ## Settings > Contacts, Tasks, Notes, Files: leaving an account out of the app
 # { $app } is the app's name, as on the rail (Tasks, Notes, …).
 
-settings-app-accounts = Accounts
+settings-app-accounts = Accounts shown
 settings-app-accounts-detail = Turn an account off to leave it out of { $app }. Its items keep syncing and come back when you turn it on. Its mail is not affected.
 settings-app-account-shown = Shown in { $app }
 settings-app-account-hidden = Left out of { $app }
