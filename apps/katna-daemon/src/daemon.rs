@@ -102,7 +102,7 @@ fn template_name(name: &str) -> Result<String, CommandError> {
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// Something D-Bus clients should hear about.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Notice {
     AccountsChanged,
     StatusChanged(AccountId),
@@ -127,6 +127,15 @@ pub enum Notice {
     TasksChanged,
     /// Mail rules changed, or one was switched off because it failed.
     RulesChanged,
+    /// The server refused changes for good and they were undone here:
+    /// how many, of what kind (`katna_sync::ops::Change`, or `other` for
+    /// a mix) and the server's first answer.
+    ChangesRefused {
+        account: AccountId,
+        change: &'static str,
+        count: u32,
+        reason: String,
+    },
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -2164,6 +2173,20 @@ impl Daemon {
                     // Refused changes were undone in the store.
                     if report.failed > 0 {
                         let _ = self.notices.try_send(Notice::MailChanged(id));
+                    }
+                    // And the user hears of it, in words of what they did.
+                    if let Some(first) = report.refused.first() {
+                        let same = report.refused.iter().all(|r| r.change == first.change);
+                        let _ = self.notices.try_send(Notice::ChangesRefused {
+                            account: id,
+                            change: if same {
+                                first.change.as_str()
+                            } else {
+                                katna_sync::ops::Change::Other.as_str()
+                            },
+                            count: report.refused.len() as u32,
+                            reason: first.reason.clone(),
+                        });
                     }
                     continue;
                 }

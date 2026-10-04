@@ -537,7 +537,11 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   - A refused operation is retried after 60 s. After three refusals it is
     marked failed (kept for inspection) and undone locally: moves at once,
     flags by forgetting the folder's HIGHESTMODSEQ so the next sync reads
-    them again. A broken connection keeps the operation queued.
+    them again. A move whose message a sync meanwhile listed again in its
+    old folder only drops the moved copy, so it never shows twice. The
+    replay reports each refused change by kind (`ops::Change`) with the
+    server's words, and the daemon signals `ChangesRefused` once per
+    account and replay. A broken connection keeps the operation queued.
   - Imported (`local`) accounts only change in the store.
 - **POP3** (task 1.10, `katna_sync::pop3`): our own small client (RFC 1939
   with CAPA and STLS; USER/PASS login). POP3 mail is always fully local and
@@ -2573,7 +2577,10 @@ Gemini or confidential mode):
   An account the server has not answered for 30 minutes gets a grey line
   with "Try again"; when every account is unreachable one grey line says
   you're offline instead. Settings › Accounts shows the same sentence and fix
-  under the account, with the sign on its picture. It opens from the first-start pages
+  under the account, with the sign on its picture. A change the server
+  refused three times (`ChangesRefused`) is put back and said as what the
+  user did, "The mail server of … didn't accept moving a message, so it's
+  back where it was.", with Details showing the server's own words. It opens from the first-start pages
   (no account yet), the account card above the rail's account picture ("Add
   another account", which also lists the accounts and opens their
   inboxes), and Send without an account. The daemon signals `MailChanged`
@@ -3719,7 +3726,9 @@ changed, or 0; `InvalidArgs` for a calendar that can't be changed; §18),
 and the
 signals
 `AccountsChanged`, `SyncStatusChanged(id)`, `MailChanged(id)`,
-`OutboxChanged(id)` and `CalendarChanged()`. `MailChanged` carries the
+`OutboxChanged(id)`, `ChangesRefused(x account, s change, u count, s
+reason)` (`change` is `flags`, `move`, `label`, `delete` or `other` when
+mixed) and `CalendarChanged()`. `MailChanged` carries the
 account, not message IDs: clients read the change journal. Errors use the
 standard names `org.freedesktop.DBus.Error.AuthFailed`, `InvalidArgs`,
 `UnknownObject` and `Failed`. zbus needs the interface name as a literal, so

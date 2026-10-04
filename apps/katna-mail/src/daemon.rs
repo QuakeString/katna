@@ -61,6 +61,9 @@ pub enum Command {
     /// Opens the outbox: the button of "… wasn't sent". The app does this
     /// itself.
     OpenOutbox,
+    /// Shows a server's own words in the note: the button of a note that
+    /// said what went wrong in plain ones. The app does this itself.
+    ShowDetails(String),
     /// Gives saved cards these labels, by name: an undo on the Contacts
     /// page.
     ContactLabels(Vec<(i64, Vec<String>)>),
@@ -241,6 +244,7 @@ impl Command {
             | Self::RestoreScheme(..)
             | Self::TurnAppOn(_)
             | Self::OpenOutbox
+            | Self::ShowDetails(_)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
             | Self::DeleteContacts(_)
@@ -449,7 +453,8 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         | Command::RestoreContacts(_)
         | Command::RestoreScheme(..)
         | Command::TurnAppOn(_)
-        | Command::OpenOutbox => {
+        | Command::OpenOutbox
+        | Command::ShowDetails(_) => {
             return Ok(());
         }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),
@@ -1443,6 +1448,39 @@ pub async fn send_outcomes(
             }
         })
         .filter_map(|outcome| outcome))
+}
+
+/// Changes a mail server refused for good, which the daemon undid.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Refused {
+    pub account: i64,
+    /// `flags`, `move`, `label`, `delete` or `other`.
+    pub change: String,
+    pub count: u32,
+    /// The server's answer.
+    pub reason: String,
+}
+
+/// Yields each time a mail server refuses changes for good.
+pub async fn changes_refused(
+    connection: &Connection,
+) -> Result<impl Stream<Item = Refused>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let signals = pim
+        .receive_changes_refused()
+        .await
+        .map_err(|err| describe(&err))?;
+    Ok(signals.filter_map(|signal| {
+        let args = signal.args().ok()?;
+        Some(Refused {
+            account: args.account,
+            change: args.change.to_owned(),
+            count: args.count,
+            reason: args.reason.to_owned(),
+        })
+    }))
 }
 
 /// Every message in the outbox: waiting, being sent, sent or failed.

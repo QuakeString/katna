@@ -361,6 +361,36 @@ impl MailBatch<'_> {
     pub fn remove_from_folder(&mut self, message: MessageId, folder: FolderId) -> Result<()> {
         remove_location(self.tx(), message, folder)
     }
+
+    /// Takes back a move the server refused: `message` goes from `to` back
+    /// to `from` at `uid`. When a sync has meanwhile listed that UID in
+    /// `from` as another message, that one stays and `message` only leaves
+    /// `to`, so the mail isn't shown twice.
+    pub fn move_back(
+        &mut self,
+        message: MessageId,
+        to: FolderId,
+        from: FolderId,
+        uid: Option<u32>,
+    ) -> Result<()> {
+        let tx = self.tx();
+        let taken = match uid {
+            Some(uid) => tx
+                .prepare_cached(
+                    "SELECT 1 FROM message_location
+                     WHERE folder_id = ?1 AND uid = ?2 AND message_id != ?3",
+                )?
+                .query_row(params![from.0, uid, message.0], |_| Ok(()))
+                .optional()?
+                .is_some(),
+            None => false,
+        };
+        if taken {
+            return remove_location(tx, message, to);
+        }
+        self.move_location(message, to, from, uid)?;
+        Ok(())
+    }
 }
 
 #[cfg(test)]
