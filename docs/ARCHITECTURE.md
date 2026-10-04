@@ -2813,7 +2813,10 @@ Gemini or confidential mode):
   (`ContactPanel::spots`; the click spot only when none was recorded)
   (`contact/peek.rs`). Resting the pointer on a name or picture starts
   reading that person's details, and the popover is laid out once unseen
-  before it fades in, so it never shows at a guessed height or place. Once
+  before it fades in, so it never shows at a guessed height or place.
+  While a person's details are still being read the first time, faint
+  breathing lines stand where they will go, and the popover then eases to
+  its new height as they fill in. Once
   the window has room again the popover
   closes and the panel shows instead. A phone shows the full card as a
   bottom sheet.

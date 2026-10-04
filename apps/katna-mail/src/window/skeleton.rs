@@ -160,7 +160,7 @@ pub(super) fn search_pill(th: &Theme, width: f32, phone: f32) -> AnyElement {
 }
 
 /// A shape that stands in for text or a picture.
-fn bone(th: &Theme) -> Div {
+pub(super) fn bone(th: &Theme) -> Div {
     div()
         .flex_none()
         .rounded_full()
@@ -168,7 +168,7 @@ fn bone(th: &Theme) -> Div {
 }
 
 /// Placeholders breathe gently, as content that is on its way.
-fn breathing(id: &'static str, el: Div, reduce: bool) -> AnyElement {
+pub(super) fn breathing(id: &'static str, el: Div, reduce: bool) -> AnyElement {
     if reduce {
         return el.into_any_element();
     }

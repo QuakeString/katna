@@ -400,6 +400,11 @@ impl MailWindow {
 
     /// The profile of `email`, read in the background when not known or
     /// stale; the old one shows meanwhile.
+    /// `email`'s details are being read for the first time.
+    fn contact_reading(&self, email: &str) -> bool {
+        matches!(self.contact.profiles.get(email), Some((_, None)))
+    }
+
     fn contact_profile(&mut self, email: &str, cx: &mut Context<Self>) -> Option<Rc<Profile>> {
         let known = self.contact.profiles.get(email).cloned();
         // Being read for the first time, or read a while ago.
@@ -422,7 +427,10 @@ impl MailWindow {
                     .background_executor()
                     .spawn({
                         let address = address.clone();
-                        async move { profile::read(&paths, &address, &task_mails) }
+                        async move {
+                            std::thread::sleep(std::time::Duration::from_millis(1500));
+                            profile::read(&paths, &address, &task_mails)
+                        }
                     })
                     .await;
                 this.update(cx, |this, cx| {
@@ -840,6 +848,11 @@ impl MailWindow {
                 self.contact_details(profile, card, details.as_ref(), &mut pieces, th, cx)
         {
             sections.push(details);
+        }
+        // The popover while their details are still being read: faint
+        // lines where they will go, so it opens at about its full height.
+        if summary && !own && profile.is_none() && self.contact_reading(email) {
+            sections.push(contact_placeholder(th, cx.reduce_motion()));
         }
         // The company as its home page describes it, else as the
         // signature does.
@@ -2123,4 +2136,33 @@ fn snap(offset: f32, device: f32) -> f32 {
     }
     let dev = offset * device;
     (dev.abs() - 0.5).ceil().copysign(dev) / device
+}
+
+/// Widths of the placeholder lines, as parts of the row.
+const PLACEHOLDER_LINES: [f32; 3] = [0.7, 0.55, 0.8];
+
+/// Faint lines in the shape of the details' rows: an icon and a line of
+/// text each, breathing gently until the details come.
+fn contact_placeholder(th: &Theme, reduce: bool) -> AnyElement {
+    let rows = div()
+        .flex()
+        .flex_col()
+        .gap(px(10.0))
+        .children(PLACEHOLDER_LINES.iter().map(|width| {
+            div()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(12.0))
+                .h(px(20.0))
+                .child(super::skeleton::bone(th).size(px(18.0)))
+                .child(
+                    div().flex_1().child(
+                        super::skeleton::bone(th)
+                            .h(px(10.0))
+                            .w(gpui::relative(*width)),
+                    ),
+                )
+        }));
+    super::skeleton::breathing("contact-placeholder", rows, reduce)
 }
