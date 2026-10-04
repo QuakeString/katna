@@ -108,7 +108,7 @@ impl Problem {
     }
 
     /// The fix's label.
-    fn action(&self) -> String {
+    pub(super) fn action(&self) -> String {
         match self {
             Self::SignIn { .. } => tr!("sign-in-again-button"),
             Self::Password { .. } => tr!("problems-new-password"),
@@ -116,7 +116,7 @@ impl Problem {
         }
     }
 
-    fn icon(&self) -> &'static str {
+    pub(super) fn icon(&self) -> &'static str {
         if self.needs_you() {
             "warning"
         } else {
