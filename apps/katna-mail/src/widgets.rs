@@ -792,6 +792,26 @@ pub fn tag(label: impl Into<SharedString>, th: &Theme) -> Div {
         .child(label.into())
 }
 
+/// A [`tag`] with a small icon before its label (a reminder's time, a
+/// note's mail).
+pub fn icon_tag(name: &str, label: impl IntoElement, th: &Theme) -> Div {
+    div()
+        .flex_none()
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S2))
+        .pl(px(space::S3))
+        .pr(px(10.0))
+        .py(px(space::S1))
+        .rounded_full()
+        .bg(rgba(th.chip))
+        .text_size(px(text::CAPTION))
+        .text_color(rgba(th.text_dim))
+        .child(icon(name, th.text_dim, 14.0))
+        .child(label)
+}
+
 /// The height a [`row`] is at least.
 pub const ROW_HEIGHT: f32 = 40.0;
 
