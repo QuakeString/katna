@@ -27,6 +27,7 @@ mod checks;
 mod chips;
 mod drafts;
 mod drive;
+mod outbox;
 mod paste;
 mod popout;
 mod quote;
@@ -81,6 +82,8 @@ use crate::widgets::{elevation, icon, menu, menu_item, tip};
 pub(super) use attach::Attachment;
 use checks::Passed;
 use chips::Chips;
+pub(super) use outbox::NAV_KEY as OUTBOX_NAV_KEY;
+pub(super) use outbox::reason_text as outbox_reason;
 pub(super) use quote::{signature_name, signature_tag};
 pub(in crate::window) use recipients::address_suggestions;
 use recipients::{Field, Suggestions};
@@ -396,6 +399,11 @@ pub(super) struct Writing {
     scheduled: Vec<OutboxItem>,
     /// The list of scheduled mail shows.
     scheduled_open: bool,
+    /// Mail that has not gone out: waiting for a connection or a sign-in,
+    /// or refused.
+    outbox: Vec<OutboxItem>,
+    /// The outbox's list shows.
+    outbox_open: bool,
     watch: Option<Task<()>>,
     /// The signature being edited on the Settings page, and its bar.
     signature_editor: Option<Entity<RichEditor>>,
@@ -447,6 +455,19 @@ impl Writing {
     /// How many messages wait for their scheduled time.
     pub(super) fn scheduled_count(&self) -> usize {
         self.scheduled.len()
+    }
+
+    /// How many messages have not gone out.
+    pub(super) fn outbox_count(&self) -> usize {
+        self.outbox.len()
+    }
+
+    /// Whether one of them waits for the user: refused, or waiting for a
+    /// sign-in. Its count is amber then.
+    pub(super) fn outbox_needs_you(&self) -> bool {
+        self.outbox
+            .iter()
+            .any(|i| outbox::why(i).is_some_and(|w| w.needs_you()))
     }
 }
 

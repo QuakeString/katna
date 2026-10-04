@@ -104,9 +104,9 @@ impl Daemon {
         }
     }
 
-    /// Mail that waited for `account` to come back goes out now, not at
-    /// its next try.
-    fn send_waiting_mail(&self, account: AccountId) {
+    /// Mail that waited for `account` to come back, or to be signed in
+    /// again, goes out now, not at its next try.
+    pub(super) fn send_waiting_mail(&self, account: AccountId) {
         let waited: Vec<i64> = self.send_errors.lock().unwrap().keys().copied().collect();
         let mut store = self.store();
         let Ok(entries) = store.outbox() else {

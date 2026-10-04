@@ -43,6 +43,7 @@ usage: katnactl status
        katnactl send ACCOUNT [FILE] [--delay SECONDS]
        katnactl outbox
        katnactl undo ID
+       katnactl retry ID
        katnactl discard ID
        katnactl crashes [show [NAME] | delete]
 
@@ -92,6 +93,7 @@ send       Sends a message (RFC 5322 text, from FILE or standard input)
            seconds (default 0). A copy goes to the Sent folder.
 outbox     Messages waiting to be sent, failed or undone.
 undo       Takes a message back while it waits for its delay.
+retry      Sends a failed message again now.
 discard    Forgets a failed or undone message.
 crashes    Crash reports saved on this computer, newest first (a native
            crash is picked up from systemd-coredump first). `show` prints
@@ -261,6 +263,17 @@ fn run(command: &str, args: &[String]) -> Result<()> {
                     Ok(())
                 } else {
                     Err(error(format!("{id} is not waiting to be sent")))
+                }
+            })
+        }
+        "retry" => {
+            let id = outbox_id(args)?;
+            with_daemon(|pim| async move {
+                if pim.retry_send(id).await? {
+                    println!("sending again");
+                    Ok(())
+                } else {
+                    Err(error(format!("{id} is not a failed message")))
                 }
             })
         }

@@ -89,6 +89,9 @@ folder-trash = Trash
 folder-all-mail = All mail
 # Messages scheduled to be sent later.
 folder-scheduled = Scheduled
+# Mail that has not gone out yet: waiting for a connection or a sign-in,
+# or refused by the mail server. Shows only while there is some.
+folder-outbox = Outbox
 # How mail sent with open and click tracking did.
 folder-activity = Activity
 

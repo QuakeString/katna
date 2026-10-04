@@ -154,6 +154,7 @@ icons!(
     "onedrive",
     "open-external",
     "open-full",
+    "outbox",
     "palette",
     "paw",
     "pen-sparkle",

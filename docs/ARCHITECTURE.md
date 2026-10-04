@@ -1385,10 +1385,14 @@ this is local; Katna Server only adds opened/clicked events (§16).
   `To`, `Cc` and `Bcc` address once; the `Bcc` header is removed from the
   copy on the wire and kept in the sender's copy.
 - Network and TLS failures requeue the entry after 30 s without counting
-  a try, so mail waits in the outbox while offline. A refused message or
-  login counts; after three the entry is `failed`, with the server's reply
-  in `Outbox()`'s detail. Entries left `sending` by a crash are queued
-  again at start: sending twice beats losing mail.
+  a try, so mail waits in the outbox while offline. A refused login does
+  not count either: the entry waits (detail `sign-in: …`, retried every
+  15 minutes) and goes out as soon as `SignIn` or `SetPassword` lets the
+  account in again. A refused message counts; after three the entry is
+  `failed`, with the server's reply in `Outbox()`'s detail, and
+  `RetrySend` queues it again with its tries counted afresh. Entries left
+  `sending` by a crash are queued again at start: sending twice beats
+  losing mail.
 - Once sent, the copy is filed in the account's Sent folder by an `Append`
   operation in the op queue (flag `\Seen`), which the account's worker
   replays at once; then the local copy is forgotten and the next sync
@@ -2529,8 +2533,15 @@ Gemini or confidential mode):
   builds an RFC 5322 message (`outgoing.rs`) and hands it to the
   daemon's outbox (`QueueSend`) with the undo-send delay; the snackbar's
   Undo takes it back (`UndoSend`, then `DiscardSend`) and opens it again. A
-  message the server refuses for good raises a snackbar
-  (`OutboxChanged`).
+  message the server refuses for good raises a snackbar in plain words
+  ("… wasn't sent because an address it's sent to doesn't exist") with an
+  Outbox button. **Outbox** (`window/compose/outbox.rs`) shows under the
+  first Sent folder, like Scheduled, only while some mail has not gone
+  out: refused (Try again, `RetrySend`), waiting for a sign-in or a new
+  password (the account's fix), waiting for a connection, or refused and
+  being tried again. Each says why in plain words, with the server's
+  own reply on hover, and has Edit (taken back and opened, from its
+  account) and Delete. Its count is amber while one needs the user.
 - **Adding an account.** A dialog in steps (`window/add_account.rs`),
   shaped after Mailspring's and Thunderbird's. First a grid of provider
   tiles (`window/mail_providers.rs`): Google, Microsoft (only when this
@@ -3690,7 +3701,7 @@ on)` (local only; more than ten pinned conversations is an error),
 `Snooze(ax messages, x until)`, `Unsnooze(ax messages)` and
 `SetFollowUp(x outbox, x after)` (§10.1),
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
-message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
+message, u delay) → id`, `UndoSend(id) → b`, `RetrySend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,
 detail; states in `katna_dbus::send_state`), `SaveTemplate((xssssa(ssay)))
 → x`, `RenameTemplate(id, name) → b`, `DeleteTemplate(id) → b` (mail
