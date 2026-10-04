@@ -22,8 +22,8 @@ use std::sync::Arc;
 use gpui::{
     Animation, AnimationExt, AnyElement, Bounds, ClipboardItem, Context, FocusHandle, FontWeight,
     KeyDownEvent, ListAlignment, ListState, MouseButton, MouseDownEvent, MouseUpEvent, Pixels,
-    Point, ScrollHandle, ScrollWheelEvent, SharedString, Task, Window, anchored, canvas, deferred,
-    div, ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*, rgba,
+    Point, ScrollHandle, ScrollWheelEvent, SharedString, Task, Window, canvas, deferred, div,
+    ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
 use katna_core::AccountId;
@@ -32,6 +32,7 @@ use katna_core::wildcard;
 use katna_i18n::tr;
 use katna_preview::Kind;
 use katna_store::{LibraryFile, MessageId};
+use katna_ui::anchored;
 use katna_ui::{ScrollBar, px};
 
 use super::MailWindow;

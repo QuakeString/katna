@@ -15,8 +15,8 @@ use std::rc::Rc;
 use gpui::{
     Animation, AnimationExt, AnyElement, App, ClickEvent, Context, Div, FocusHandle, FontWeight,
     HighlightStyle, InteractiveText, KeyBinding, MouseButton, Pixels, Point, ScrollHandle,
-    SharedString, StyledText, Task, UnderlineStyle, Window, anchored, canvas, deferred, div,
-    ease_out_quint, prelude::*, rgba,
+    SharedString, StyledText, Task, UnderlineStyle, Window, canvas, deferred, div, ease_out_quint,
+    prelude::*, rgba,
 };
 use jiff::civil::{Date, DateTime, Time};
 use jiff::tz::TimeZone;
@@ -27,6 +27,7 @@ use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
 use katna_store::calendar::{Calendar, EventKind, EventStatus};
 use katna_store::{Mode, Store};
+use katna_ui::anchored;
 use katna_ui::px;
 
 use super::account_status::{AccountStatus, Of, Say};

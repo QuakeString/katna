@@ -18,6 +18,7 @@
 mod about;
 mod account_color;
 mod account_roll;
+mod account_stack;
 mod account_status;
 mod account_view;
 mod accounts;
@@ -517,6 +518,8 @@ pub struct MailWindow {
     /// account's, and how far the new one has rolled in (0 to 1).
     avatar_roll: account_roll::AvatarRoll,
     avatar_turn: Spring,
+    /// The pointer is over the account picture at the top right.
+    account_hovered: bool,
     /// 0 = hidden, 1 = shown: Compose, in the folder pane or the rail.
     compose_shown: Spring,
     /// 0 = Compose is in the rail, 1 = over the folders beside the list.
@@ -970,6 +973,7 @@ impl MailWindow {
             primary_icon_turn: Spring::new(motion::SMOOTH, 1.0),
             avatar_roll: account_roll::AvatarRoll::new(),
             avatar_turn: Spring::new(motion::SLIDE, 1.0),
+            account_hovered: false,
             compose_shown: Spring::new(motion::SMOOTH, 1.0),
             compose_dock: Spring::new(motion::SLIDE, 1.0),
             people: None,
@@ -3866,7 +3870,14 @@ impl Render for MailWindow {
         } else {
             0.0
         };
-        let room = width - open_left - room_end - TOP_END_WIDTH - agenda_room - TOP_BAR_GAP;
+        // All Accounts' stacked pictures are wider than one in its ring.
+        let room = width
+            - open_left
+            - room_end
+            - TOP_END_WIDTH
+            - self.account_stack_room()
+            - agenda_room
+            - TOP_BAR_GAP;
         // Too narrow for both (wider than a phone, with wide window
         // buttons): the button goes rather than cover the agenda button.
         let activity_fits = room - activity_room >= SEARCH_MIN_WIDTH;

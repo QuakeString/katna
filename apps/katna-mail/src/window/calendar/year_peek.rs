@@ -13,14 +13,14 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Bounds, ClickEvent, Context, FontWeight, Pixels,
-    SharedString, Size, Task, Window, anchored, deferred, div, ease_out_quint, point, prelude::*,
-    rgba,
+    SharedString, Size, Task, Window, deferred, div, ease_out_quint, point, prelude::*, rgba,
 };
 use jiff::civil::{Date, Time};
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
 use katna_store::calendar::EventKind;
 use katna_store::tasks::Task as TaskItem;
+use katna_ui::anchored;
 use katna_ui::{px, unpx};
 
 use super::super::MailWindow;

@@ -36,6 +36,8 @@ enum Wears {
 /// The ring round an account's picture, and the gap inside it.
 const RING: f32 = 3.0;
 const RING_GAP: f32 = 2.5;
+/// A 32 px picture in its ring, across.
+pub(super) const RING_WIDTH: f32 = 32.0 + 2.0 * (RING + RING_GAP);
 /// The dot of the account's color, across.
 const DOT: f32 = 16.0;
 

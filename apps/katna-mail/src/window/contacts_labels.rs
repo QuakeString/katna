@@ -10,11 +10,12 @@ use std::collections::BTreeSet;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, MouseButton,
-    Pixels, Point, SharedString, Subscription, Window, anchored, deferred, div, ease_out_quint,
-    prelude::*, rgba,
+    Pixels, Point, SharedString, Subscription, Window, deferred, div, ease_out_quint, prelude::*,
+    rgba,
 };
 use katna_i18n::tr;
 use katna_store::StoredCard;
+use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::{InputEvent, TextInput, px};
 

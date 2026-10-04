@@ -10,12 +10,13 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, FontWeight, HighlightStyle, ListOffset,
-    SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, anchored, deferred, div,
+    SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, deferred, div,
     ease_out_quint, list, point, prelude::*, relative, rgba,
 };
 use katna_core::config::Density;
 use katna_i18n::tr;
 use katna_ui::Ripple;
+use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::tokens::duration;

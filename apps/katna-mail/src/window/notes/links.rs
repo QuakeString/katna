@@ -8,12 +8,11 @@
 
 use std::rc::Rc;
 
-use gpui::{
-    AnyElement, Context, Focusable as _, Window, anchored, deferred, div, point, prelude::*, rgba,
-};
+use gpui::{AnyElement, Context, Focusable as _, Window, deferred, div, point, prelude::*, rgba};
 use katna_dbus::NoteItem;
 use katna_i18n::tr;
 use katna_store::{NOTE_LINK_SCHEME, Note};
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::rich::PickKey;
 use katna_ui::tokens::{elevation, radius, space, text};

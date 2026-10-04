@@ -18,7 +18,7 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, MouseButton, Pixels, Point,
-    SharedString, Task, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
+    SharedString, Task, Window, canvas, deferred, div, point, prelude::*, rgba,
 };
 use katna_ai::summary::{self, PointKind, SummarizeRequest, Summary};
 use katna_ai::wire::{plan, problem};
@@ -26,6 +26,7 @@ use katna_core::config::AiSource;
 use katna_i18n::tr;
 use katna_render::trim;
 use katna_store::{MessageId, SummaryKind};
+use katna_ui::anchored;
 use katna_ui::tokens::space;
 use katna_ui::{px, unpx};
 

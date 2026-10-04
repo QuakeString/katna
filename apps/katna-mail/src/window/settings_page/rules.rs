@@ -12,12 +12,13 @@
 
 use gpui::{
     AnimationExt, AnyElement, ClickEvent, Context, DragMoveEvent, FontWeight, MouseButton,
-    MouseDownEvent, Pixels, Point, Render, SpringAnimation, Task, Window, anchored, deferred, div,
+    MouseDownEvent, Pixels, Point, Render, SpringAnimation, Task, Window, deferred, div,
     prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_store::rules::Rule;
+use katna_ui::anchored;
 use katna_ui::motion;
 use katna_ui::px;
 use katna_ui::unpx;

@@ -11,12 +11,13 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, MouseButton,
-    MouseDownEvent, Task, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
+    MouseDownEvent, Task, Window, canvas, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
 use katna_core::{Account, AccountId};
 use katna_i18n::tr;
 use katna_store::{ActivityItem, Insights, MessageActivity};
+use katna_ui::anchored;
 use katna_ui::{TextInput, px, unpx};
 
 use super::MailWindow;

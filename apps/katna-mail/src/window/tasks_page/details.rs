@@ -7,11 +7,11 @@
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, FocusHandle, Focusable, FontWeight,
-    Pixels, Size, Subscription, Window, anchored, deferred, div, ease_out_quint, point, prelude::*,
-    rgba,
+    Pixels, Size, Subscription, Window, deferred, div, ease_out_quint, point, prelude::*, rgba,
 };
 use jiff::civil::{Date, Time};
 use katna_i18n::{format, tr};
+use katna_ui::anchored;
 use katna_ui::motion::lerp;
 use katna_ui::tokens::{duration, radius, space, text};
 use katna_ui::{InputEvent, TextArea, TextInput, px, unpx};
