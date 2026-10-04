@@ -659,7 +659,12 @@ impl MailWindow {
                                 .rounded(px(radius::SM))
                                 .border_1()
                                 .border_color(rgba(th.outline))
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade(
+                                    "hover-glow",
+                                    Some(radius::SM),
+                                    th,
+                                ))
                                 .cursor_pointer()
                                 .text_size(px(text::SMALL)),
                             th,

@@ -110,7 +110,8 @@ impl MailWindow {
             .gap(px(space::S4))
             .rounded(px(radius::FULL))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", None, th))
             .focus_ring(th)
             .on_click(cx.listener(|this, _, _, cx| this.toggle_calendar_tasks(cx)))
             .child(crate::widgets::checkbox_tinted(

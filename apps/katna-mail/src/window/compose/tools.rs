@@ -1776,7 +1776,8 @@ impl MailWindow {
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_dim))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
                     .when(current.is_none(), |d| d.font_weight(FontWeight::MEDIUM))
                     .child(if background {
                         tr!("compose-tool-no-background")
@@ -1946,10 +1947,15 @@ impl MailWindow {
             .h(px(380.0))
             .flex()
             .flex_col()
-            .rounded(px(12.0))
             .overflow_hidden()
-            .bg(rgba(th.menu))
-            .shadow(crate::widgets::elevation(th, 3.0))
+            .map(|d| {
+                crate::widgets::raised(
+                    d,
+                    th,
+                    katna_ui::tokens::radius::MD,
+                    katna_ui::tokens::elevation::MENU,
+                )
+            })
             .text_color(rgba(th.text))
             .child(
                 div()
