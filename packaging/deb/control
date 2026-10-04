@@ -1,0 +1,16 @@
+Package: katna
+Version: @VERSION@
+Architecture: amd64
+Maintainer: Mozammel <5375918+QuakeString@users.noreply.github.com>
+Installed-Size: @SIZE@
+Depends: libc6 (>= 2.35), libgcc-s1, libxkbcommon0, libxkbcommon-x11-0, libxcb1, libfontconfig1, libfreetype6, libwayland-client0, libvulkan1, libegl1, dbus
+Recommends: mesa-vulkan-drivers, gnome-keyring | kwalletmanager
+Section: mail
+Priority: optional
+Homepage: https://github.com/QuakeString/katna
+Description: Fast, local-first mail for Linux
+ Katna Mail is a mail app written in Rust, with a Gmail-style look and
+ KDE and GNOME integration. This package holds Katna Mail, katna-daemon,
+ the background service that syncs your accounts, and katnactl.
+ .
+ Built from the main branch; Katna says when a newer build is out.

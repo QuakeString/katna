@@ -23,6 +23,7 @@ update-dialog-source-windows = Katna Setup for Windows, nightly channel
 update-dialog-source-appimage = AppImage, nightly channel
 update-dialog-source-tarball = Linux tarball, nightly channel
 update-dialog-source-rpm = Fedora package, nightly channel
+update-dialog-source-deb = Ubuntu and Debian package, nightly channel
 update-dialog-source-snap = Snap, nightly channel
 update-dialog-source-flatpak = Flatpak, nightly channel
 update-dialog-source-nix = Nix, nightly channel

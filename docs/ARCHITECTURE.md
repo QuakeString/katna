@@ -4681,6 +4681,11 @@ most useful reason is shown. Changes go back the way their calendar came
   daemon as the Tasks page's Add does. With no calendar to add events to
   but task lists, the card opens on Task.
 - Alarms fire from the daemon as notifications (§15.1).
+- Settings > Calendar's Accounts shown switches (`[hidden_accounts]
+  calendar`) leave an account out: its calendars, events and dated tasks
+  leave every view, the side list, search, the day's agenda and shared
+  free times, and the daemon's reminders skip its events. It keeps
+  syncing.
 - Views: Day, Week (the default), Month, Year (Y or 5: twelve small
   months with a dot under days with events or tasks; a day opens Day, a
   month's name opens Month; resting the pointer on a dotted day, or
@@ -5415,7 +5420,12 @@ installed and tried on its own platform (Fedora, Nix, Ubuntu with FUSE,
 snapd, Flatpak, Debian): D-Bus must start the daemon for `katnactl`, and
 Katna Mail must open a window, whose screenshot is published with the
 files on the `linux-latest` pre-release. `packaging/linux/stage.sh` lays out
-the same files the PKGBUILD installs for all of them. None of these
+the same files the PKGBUILD installs for all of them. Since 4 October 2026
+there is also a Debian package (`katna_amd64.deb`, `packaging/deb/`) for
+Ubuntu 22.04+ and Debian 12+: the tarball's files under `/usr`, with a
+`Depends` line naming the libraries the programs load, so
+`apt install ./katna_amd64.deb` brings them in; it is tried with apt on
+Ubuntu 22.04, Ubuntu 24.04 and Debian 12. None of these
 updates itself yet (`Package::Other`): their own tools, or a new download,
 update them. They are unsigned and in no store; Flathub, the Snap Store,
 Copr and nixpkgs are later steps. The Flatpak's ID is the ID prefix
@@ -5502,10 +5512,13 @@ Arch is the first, Windows and the others follow the same flow.
   opens Katna Mail again; Setup itself closes the running Katna. A failed
   Setup reopens the old Katna, which offers the update again.
 - **Linux packages from `linux-latest`** (owner's ask, 3 October 2026):
-  one portable build goes into the tarball, AppImage, Flatpak and Snap,
+  one portable build goes into the tarball, AppImage, Flatpak, Snap and
+  .deb,
   so it is built with `linux` and tells them apart at run time
   (`/.flatpak-info` or `$FLATPAK_ID`, `$SNAP`, `$APPIMAGE`, else the
-  tarball); the Fedora spec sets `rpm` and the Nix package `nix`. CI's
+  tarball, or the **Debian package** when the program is `/usr/bin`'s and
+  dpkg lists `katna` as installed); the Fedora spec sets `rpm` and the Nix
+  package `nix`. CI's
   publish job writes `katna-update.json` on `linux-latest` with each
   package's own file under `files` (`Manifest::for_package`). The
   **AppImage** puts the new image beside `$APPIMAGE` and renames it over
@@ -5513,13 +5526,13 @@ Arch is the first, Windows and the others follow the same flow.
   **tarball** runs the new tarball's `install.sh` for the same folder
   (which now copies each file beside the old one and renames it, so a
   running Katna keeps its program); installed where only an
-  administrator writes, it shows the command instead. The **RPM, Snap
-  and Flatpak** have no repository yet: Katna downloads the new file and
+  administrator writes, it shows the command instead. The **RPM, .deb,
+  Snap and Flatpak** have no repository yet: Katna downloads the new file and
   shows the one command that installs it, with Copy. **Nix** downloads
   nothing: Katna shows `nix profile upgrade katna`; a flake build from
   GitHub has no commit count (`r0`), so it counts as older when its
-  commit is among the newest build's earlier ones. A dnf repository and
-  a Flatpak remote would let those update with the system; they need
+  commit is among the newest build's earlier ones. A dnf or apt
+  repository and a Flatpak remote would let those update with the system; they need
   hosting and a signing key, the owner's to decide.
 - **Manifest.** CI writes `katna-update.json` beside the package on every
   build of `main`: version, file name, SHA-256 and size, and for the

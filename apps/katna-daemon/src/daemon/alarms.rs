@@ -230,8 +230,8 @@ fn hidden_ids(store: &Store, hidden: &HiddenAccounts, app: AppKind) -> HashSet<A
 }
 
 /// Reads the reminders due in `(from, to]` and the next one's time:
-/// events', tasks', then notes'. The tasks and notes of accounts left out
-/// of Tasks or Notes stay quiet.
+/// events', tasks', then notes'. The events, tasks and notes of accounts
+/// left out of Calendar, Tasks or Notes stay quiet.
 fn read(
     store: &Store,
     from: i64,
@@ -239,7 +239,7 @@ fn read(
     tz: &TimeZone,
     hidden: &HiddenAccounts,
 ) -> (Vec<Alarm>, Option<i64>) {
-    let (mut alarms, next) = read_events(store, from, to, tz);
+    let (mut alarms, next) = read_events(store, from, to, tz, hidden);
     let mut tasks = store.tasks(to).unwrap_or_else(|err| {
         tracing::warn!(%err, "reminders: cannot read tasks");
         Vec::new()
@@ -279,8 +279,22 @@ fn read(
     )
 }
 
-fn read_events(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option<i64>) {
-    let calendars = store.calendars().unwrap_or_default();
+/// Events' reminders; the calendars of accounts left out of the Calendar
+/// count as hidden.
+fn read_events(
+    store: &Store,
+    from: i64,
+    to: i64,
+    tz: &TimeZone,
+    hidden: &HiddenAccounts,
+) -> (Vec<Alarm>, Option<i64>) {
+    let mut calendars = store.calendars().unwrap_or_default();
+    let quiet = hidden_ids(store, hidden, AppKind::Calendar);
+    for calendar in &mut calendars {
+        if calendar.account.is_some_and(|a| quiet.contains(&a)) {
+            calendar.hidden = true;
+        }
+    }
     let rows = match store.event_rows_in_range(from, to + AHEAD) {
         Ok(rows) => rows,
         Err(err) => {
