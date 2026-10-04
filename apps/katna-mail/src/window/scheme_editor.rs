@@ -18,7 +18,7 @@ use gpui::{
 use katna_i18n::tr;
 use katna_platform::colors::{DesktopScheme, Scheme};
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{InputEvent, TextInput, px, unpx};
+use katna_ui::{InputEvent, TextInput, px};
 
 use super::MailWindow;
 use super::context_menu::Rows;
@@ -548,8 +548,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let editor = self.scheme_editor.as_ref()?;
         let ready = !editor.name.read(cx).text().trim().is_empty();
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let (vw, vh) = (self.room_width(), self.room_height(window));
         let narrow = vw < DIALOG_WIDTH + 32.0;
         let name_focus = editor.name.focus_handle(cx);
         let name_focused = name_focus.is_focused(window);

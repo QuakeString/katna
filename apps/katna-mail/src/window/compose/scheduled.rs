@@ -16,7 +16,6 @@ use katna_i18n::tr;
 use katna_store::MessageId;
 use katna_ui::px;
 use katna_ui::rich::html;
-use katna_ui::unpx;
 use mail_parser::{MessageParser, MimeHeaders};
 
 use super::super::MailWindow;
@@ -342,8 +341,8 @@ impl MailWindow {
             rows,
             empty.map(IntoElement::into_any_element),
             |this: &mut MailWindow| this.writing.scheduled_open = false,
+            (self.room_width(), self.room_height(window)),
             th,
-            window,
             cx,
         ))
     }
@@ -359,12 +358,12 @@ pub(super) fn list_dialog(
     rows: Vec<AnyElement>,
     empty: Option<AnyElement>,
     close: fn(&mut MailWindow),
+    // The room inside the window (`MailWindow::room_width`).
+    (vw, vh): (f32, f32),
     th: &Theme,
-    window: &mut Window,
     cx: &mut Context<MailWindow>,
 ) -> AnyElement {
-    let viewport = window.viewport_size();
-    let height = (unpx(viewport.height) - 160.0).clamp(200.0, 560.0);
+    let height = (vh - 160.0).clamp(200.0, 560.0);
     let shut = move |this: &mut MailWindow, cx: &mut Context<MailWindow>| {
         close(this);
         cx.notify();
@@ -391,7 +390,7 @@ pub(super) fn list_dialog(
             div()
                 .id((id, 1usize))
                 .occlude()
-                .w(px(560.0_f32.min(unpx(viewport.width) - 32.0)))
+                .w(px(560.0_f32.min(vw - 32.0)))
                 .h(px(height))
                 .flex()
                 .flex_col()

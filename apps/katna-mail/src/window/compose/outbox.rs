@@ -469,8 +469,8 @@ impl MailWindow {
             rows,
             None,
             |this: &mut MailWindow| this.writing.outbox_open = false,
+            (self.room_width(), self.room_height(window)),
             th,
-            window,
             cx,
         ))
     }

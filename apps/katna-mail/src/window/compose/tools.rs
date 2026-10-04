@@ -17,9 +17,9 @@ use gpui::{
 use jiff::civil::Date;
 use katna_i18n::{format, tr};
 use katna_ui::anchored;
+use katna_ui::px;
 use katna_ui::rich::{Align, Font, GrammarIssue, List, Pos, RichEditor, Size, TableEdit, html};
 use katna_ui::{InputEvent, TextInput};
-use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
 use super::checks::{Passed, SendCheck};
@@ -2835,8 +2835,7 @@ impl MailWindow {
         if !has_field(popup) && !focus.is_focused(window) {
             window.focus(&focus, cx);
         }
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let (vw, vh) = (self.room_width(), self.room_height(window));
         Some(
             div()
                 .id("compose-dialog-scrim")

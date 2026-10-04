@@ -17,7 +17,7 @@ use katna_i18n::tr;
 use katna_store::StoredCard;
 use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{InputEvent, TextInput, px, unpx};
+use katna_ui::{InputEvent, TextInput, px};
 
 use super::MailWindow;
 use super::apps::App;
@@ -657,8 +657,7 @@ impl MailWindow {
                         .on_click(cx.listener(|this, _, _, cx| this.submit_label_dialog(cx))),
                     ),
             );
-        let viewport = window.viewport_size();
-        let vw = unpx(viewport.width);
+        let vw = self.room_width();
         let card = div()
             .id("contact-label-dialog")
             .track_focus(&self.dialog_focus)

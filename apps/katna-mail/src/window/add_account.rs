@@ -1118,7 +1118,7 @@ impl MailWindow {
             ("right" | "down" | "left" | "up", Step::Provider) if !modified => {
                 cx.stop_propagation();
                 // Up and Down go a whole row, over both columns.
-                let width = unpx(window.viewport_size().width).min(WIDE + 32.0) - 32.0;
+                let width = self.room_width().min(WIDE + 32.0) - 32.0;
                 let columns = if width - 80.0 >= TWO_COLUMNS { 2 } else { 1 };
                 let steps = if matches!(key, "up" | "down") {
                     columns
@@ -2219,7 +2219,8 @@ impl MailWindow {
                 .absolute()
                 .right(px(16.0))
                 .top(px(4.0))
-                .w(px(MENU_WIDTH))
+                // Narrower on a narrow phone, with the same room each side.
+                .w(px(MENU_WIDTH.min(self.room_width() - 32.0)))
                 .p(px(8.0))
                 .flex()
                 .flex_col()

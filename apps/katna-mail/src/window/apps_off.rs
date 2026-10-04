@@ -17,7 +17,7 @@ use katna_i18n::tr;
 use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::tokens::{space, text};
-use katna_ui::{WindowDrag, px, unpx};
+use katna_ui::{WindowDrag, px};
 
 use super::MenuKey;
 use super::apps::App;
@@ -364,7 +364,7 @@ impl MailWindow {
                             .child(tr!("app-off-confirm")),
                     ),
             );
-        let vw = unpx(window.viewport_size().width);
+        let vw = self.room_width();
         let focus = self.dialog_focus.clone();
         let card = div()
             .id("app-off-ask")
