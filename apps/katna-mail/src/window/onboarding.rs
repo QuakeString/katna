@@ -781,7 +781,7 @@ impl MailWindow {
     /// ticked until clicked. Nothing is in them yet, so turning one off
     /// here needs no asking; Settings › Apps changes it later.
     fn ready_apps(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let mail = choice_chip("onboarding-app-mail", tr!("settings-apps-mail"), true, th)
+        let mail = choice_chip("onboarding-app-mail", tr!("rail-mail"), true, th)
             .cursor_default()
             .tooltip(tip(tr!("settings-apps-mail-always"), th));
         let others = AppKind::ALL.into_iter().map(|app| {

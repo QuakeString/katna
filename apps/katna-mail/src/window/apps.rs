@@ -490,6 +490,7 @@ impl MailWindow {
         let compose_room = self.rail_compose_room();
         // An app turned off in Settings > Apps folds away; one turned on
         // grows back in its place.
+        let mail_only = self.mail_only();
         let items = App::ALL.into_iter().map(|app| {
             let on = self.app == app;
             let item = div()
@@ -588,7 +589,13 @@ impl MailWindow {
             div().overflow_hidden().child(item).with_spring(
                 ("app-on", app as usize),
                 SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
-                    .to(if self.app_on(app) { 1.0 } else { 0.0 }),
+                    // With only Mail on there is nothing to switch to, so
+                    // Mail's button goes too; Compose and Settings stay.
+                    .to(if self.app_on(app) && !mail_only {
+                        1.0
+                    } else {
+                        0.0
+                    }),
                 |el, s: f32| {
                     let s = s.clamp(0.0, 1.0);
                     // Taller than an app's button with its name.
