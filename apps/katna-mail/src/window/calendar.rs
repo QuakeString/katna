@@ -1223,7 +1223,8 @@ impl MailWindow {
                             .font_weight(FontWeight::MEDIUM)
                             .text_color(rgba(th.text))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .focus_ring(th)
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.toggle_menu(Menu::CalendarViews, cx)
@@ -1438,7 +1439,8 @@ impl MailWindow {
                     .gap(px(12.0))
                     .rounded_full()
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .focus_ring(th)
                     .on_click(cx.listener(move |this, _, _, cx| this.toggle_calendar(id, cx)))
                     .on_mouse_down(
@@ -1479,7 +1481,8 @@ impl MailWindow {
                         .items_center()
                         .rounded_full()
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", None, th))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.calendar.fold(account).turn();
                             if !this.calendar.folded.remove(&account) {
@@ -2574,7 +2577,8 @@ impl MailWindow {
                                 .font_weight(FontWeight::MEDIUM)
                                 .text_color(rgba(th.text_dim))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     cx.stop_propagation();
                                     this.open_calendar_day(day, Some(CalView::Day), cx)
@@ -2704,7 +2708,8 @@ impl MailWindow {
             .gap(px(16.0))
             .rounded(px(8.0))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .child(
                 div()
                     .flex_none()

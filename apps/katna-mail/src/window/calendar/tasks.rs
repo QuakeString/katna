@@ -491,7 +491,8 @@ impl MailWindow {
                     .gap(px(16.0))
                     .rounded(px(8.0))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                     .on_mouse_down(
                         MouseButton::Right,
                         self.calendar_menu_on(CalTarget::Task(id), cx),

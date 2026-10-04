@@ -2355,7 +2355,8 @@ impl MailWindow {
                 .justify_center()
                 .rounded_full()
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", None, th))
                 // Not over its own menu.
                 .when(page.menu.is_none(), |d| {
                     d.tooltip(tip(tr!("tasks-list-options"), th))
@@ -2624,7 +2625,8 @@ impl MailWindow {
                         .gap(px(4.0))
                         .rounded(px(8.0))
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                         .on_click(cx.listener(move |this, _, window, cx| {
                             cx.stop_propagation();
                             this.task_open_details(id, window, cx)
@@ -2719,7 +2721,8 @@ impl MailWindow {
             .justify_center()
             .rounded_full()
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", None, th))
             .tooltip(tip(
                 if starred {
                     tr!("tasks-unstar")

@@ -2184,7 +2184,8 @@ impl MailWindow {
             .text_size(px(14.0))
             .font_weight(FontWeight::MEDIUM)
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .menu_key(th)
             .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)))
             .child(

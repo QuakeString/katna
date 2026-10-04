@@ -288,7 +288,8 @@ impl MailWindow {
                         .text_color(rgba(th.accent))
                         .font_weight(FontWeight::MEDIUM)
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", None, th))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.downloads.remove(&id);
                             this.download_bodies(cx);

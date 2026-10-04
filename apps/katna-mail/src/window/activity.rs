@@ -863,7 +863,8 @@ impl MailWindow {
                                 .font_weight(FontWeight::MEDIUM)
                                 .text_color(rgba(th.accent))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", None, th))
                                 .on_click(cx.listener(|this, _, _, cx| this.clear_activity(cx)))
                                 .child(tr!("activity-clear-all")),
                         )
@@ -882,7 +883,8 @@ impl MailWindow {
                             .font_weight(FontWeight::MEDIUM)
                             .text_color(rgba(th.accent))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .on_click(cx.listener(|this, _, _, cx| this.open_report(cx)))
                             .child(icon("activity", th.accent, 18.0))
                             .child(tr!("activity-details")),
@@ -1363,7 +1365,8 @@ impl MailWindow {
             .text_color(rgba(th.text))
             .text_size(px(13.0))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .when(!report.accounts_open, |d| {
                 d.tooltip(tip(tr!("activity-accounts-tip"), th))
             })

@@ -600,7 +600,8 @@ impl MailWindow {
             .justify_center()
             .rounded(px(6.0))
             .cursor_grab()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
             .tooltip(tip(tr!("settings-rules-drag"), th))
             .on_mouse_down(
                 MouseButton::Left,

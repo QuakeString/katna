@@ -175,7 +175,9 @@ pub(super) fn side_row_with(
         .when(on, |d| {
             d.bg(rgba(th.row_selected)).font_weight(FontWeight::BOLD)
         })
-        .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
+        .when(!on, |d| {
+            d.child(crate::widgets::hover_fade("hover-glow", None, th))
+        })
         .child(Ripple::new(id, rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
         .child(mark)
         .child(
@@ -759,7 +761,7 @@ impl MailWindow {
                     .rounded_full()
                     .cursor_pointer()
                     .keeps_press()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .when(self.account_menu, |d| d.bg(rgba(th.hover)))
                     .on_mouse_move(|_, _, cx| cx.stop_propagation())
                     .tooltip(tip(
@@ -1251,7 +1253,8 @@ impl MailWindow {
                     .items_center()
                     .justify_center()
                     .rounded_full()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .child(turning_chevron(
                         SharedString::from(format!("heading:{ix}")),
                         expanded,
