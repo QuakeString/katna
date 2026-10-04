@@ -21,6 +21,7 @@ use gpui::{
     AnimationExt, AnyElement, Context, Div, Entity, FontWeight, RenderImage, Task, div, prelude::*,
     rgba, uniform_list,
 };
+use katna_core::config::AppKind;
 use katna_core::contact::Card;
 use katna_core::{Account, AccountKind, OAuthProvider};
 use katna_i18n::tr;
@@ -153,11 +154,13 @@ impl MailWindow {
     pub(super) fn load_contacts(&mut self, cx: &mut Context<Self>) {
         self.load_account_status(Of::Contacts, cx);
         let paths = self.paths.clone();
+        let hidden = self.hidden_ids(AppKind::Contacts);
         self.contacts.load = Some(cx.spawn(async move |this, cx| {
             let book = cx
                 .background_executor()
                 .spawn(async move {
-                    let book = crate::data::saved_contacts(&paths)?;
+                    let mut book = crate::data::saved_contacts(&paths)?;
+                    book.leave_out(&hidden);
                     let with_photos = crate::data::people_with_photos(&paths).unwrap_or_default();
                     Ok::<_, String>((book, with_photos))
                 })

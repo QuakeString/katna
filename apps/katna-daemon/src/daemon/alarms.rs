@@ -15,6 +15,8 @@
 use std::{collections::HashSet, sync::Weak, time::Duration};
 
 use jiff::tz::TimeZone;
+use katna_core::AccountId;
+use katna_core::config::{AppKind, HiddenAccounts};
 use katna_dav::Occurrence;
 use katna_i18n::tr;
 use katna_store::{
@@ -213,20 +215,62 @@ fn notes_due(rows: Vec<(i64, String, String, i64)>) -> Vec<Alarm> {
         .collect()
 }
 
+/// The accounts `app` leaves out, by ID.
+fn hidden_ids(store: &Store, hidden: &HiddenAccounts, app: AppKind) -> HashSet<AccountId> {
+    if hidden.in_app(app).is_empty() {
+        return HashSet::new();
+    }
+    store
+        .accounts()
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|a| hidden.hides(app, &a.address))
+        .map(|a| a.id)
+        .collect()
+}
+
 /// Reads the reminders due in `(from, to]` and the next one's time:
-/// events', tasks', then notes'.
-fn read(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option<i64>) {
+/// events', tasks', then notes'. The tasks and notes of accounts left out
+/// of Tasks or Notes stay quiet.
+fn read(
+    store: &Store,
+    from: i64,
+    to: i64,
+    tz: &TimeZone,
+    hidden: &HiddenAccounts,
+) -> (Vec<Alarm>, Option<i64>) {
     let (mut alarms, next) = read_events(store, from, to, tz);
-    let tasks = store.tasks(to).unwrap_or_else(|err| {
+    let mut tasks = store.tasks(to).unwrap_or_else(|err| {
         tracing::warn!(%err, "reminders: cannot read tasks");
         Vec::new()
     });
+    let quiet = hidden_ids(store, hidden, AppKind::Tasks);
+    if !quiet.is_empty() {
+        let lists: HashSet<i64> = store
+            .task_lists()
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|l| l.account.is_some_and(|a| quiet.contains(&a)))
+            .map(|l| l.id)
+            .collect();
+        tasks.retain(|t| !lists.contains(&t.list));
+    }
     let (task_alarms, task_next) = tasks_due(&tasks, from, to);
     alarms.extend(task_alarms);
-    let notes = store.notes_reminding(from, to).unwrap_or_else(|err| {
+    let mut notes = store.notes_reminding(from, to).unwrap_or_else(|err| {
         tracing::warn!(%err, "reminders: cannot read notes");
         Vec::new()
     });
+    let quiet: HashSet<i64> = hidden_ids(store, hidden, AppKind::Notes)
+        .into_iter()
+        .map(|a| a.0)
+        .collect();
+    if !quiet.is_empty() {
+        notes.retain(|(id, ..)| {
+            let account = store.note(*id).ok().flatten().and_then(|n| n.account_id);
+            account.is_none_or(|a| !quiet.contains(&a))
+        });
+    }
     alarms.extend(notes_due(notes));
     let note_next = store.next_note_reminder(to).ok().flatten();
     (
@@ -272,7 +316,7 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
             return;
         }
         let now = unix_now();
-        let (alarms, next) = read(&daemon.store(), from, now, &tz);
+        let (alarms, next) = read(&daemon.store(), from, now, &tz, &daemon.hidden_accounts());
         let notices = daemon.new_mail_notices();
         let snoozed = notices
             .as_ref()

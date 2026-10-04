@@ -359,6 +359,30 @@ const ENTRIES: &[Entry] = &[
         "save download folder file manager reveal show dolphin",
     ),
     entry(
+        Section::Contacts,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts contacts people address book show hide leave out exclude account",
+    ),
+    entry(
+        Section::Tasks,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts tasks lists to do show hide leave out exclude account",
+    ),
+    entry(
+        Section::Notes,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts notes show hide leave out exclude account",
+    ),
+    entry(
+        Section::Files,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts files attachments drives show hide leave out exclude account",
+    ),
+    entry(
         Section::Files,
         "settings-files-page",
         "settings-files-page-summary",

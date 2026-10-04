@@ -85,9 +85,9 @@ impl Board {
     }
 }
 
-/// Reads every list and task. Opens its own connection, for a background
-/// thread.
-pub fn load(paths: &Paths) -> Result<Board, String> {
+/// Reads every list and task, but those of the `hidden` accounts. Opens
+/// its own connection, for a background thread.
+pub fn load(paths: &Paths, hidden: &HashSet<AccountId>) -> Result<Board, String> {
     let read = || -> katna_store::Result<Board> {
         let store = Store::open(paths, Mode::ReadOnly)?;
         let accounts = store.accounts()?;
@@ -107,6 +107,9 @@ pub fn load(paths: &Paths) -> Result<Board, String> {
             accounts.into_iter().map(|a| (a.id, a.address)).collect();
         let mut columns = Vec::new();
         for list in store.task_lists()? {
+            if list.account.is_some_and(|a| hidden.contains(&a)) {
+                continue;
+            }
             let tasks = store.tasks_in(list.id)?;
             let account = list
                 .account

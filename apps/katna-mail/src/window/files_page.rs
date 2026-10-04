@@ -27,6 +27,7 @@ use gpui::{
 };
 use jiff::civil::Date;
 use katna_core::AccountId;
+use katna_core::config::AppKind;
 use katna_core::wildcard;
 use katna_i18n::tr;
 use katna_preview::Kind;
@@ -843,6 +844,7 @@ impl MailWindow {
         let mut senders: HashMap<String, Sender> = HashMap::new();
         let mut per_account = HashMap::new();
         let rule = self.config.mail.files.clone();
+        let hidden = self.hidden_ids(AppKind::Files);
         let library = &mut self.library;
         // Sizes of files no longer on the page are forgotten.
         let present: HashSet<(MessageId, usize)> =
@@ -851,6 +853,7 @@ impl MailWindow {
         library.unmeasured.clear();
         let found: Vec<Found> = files
             .into_iter()
+            .filter(|file| !hidden.contains(&file.account))
             .filter_map(|file| {
                 let kind = katna_preview::kind(&file.mime, &file.name);
                 // Signature logos and the like.
