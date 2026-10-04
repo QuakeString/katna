@@ -26,6 +26,7 @@ use katna_core::config::AiSource;
 use katna_i18n::tr;
 use katna_render::trim;
 use katna_store::{MessageId, SummaryKind};
+use katna_ui::tokens::space;
 use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
@@ -712,6 +713,57 @@ impl MailWindow {
                 this.toggle_summary(cx);
             }))
             .into_any_element(),
+        )
+    }
+
+    /// The chat header's sparkle: a pill of its own beside the Chat | Mail
+    /// switch, as tall as it, whose inside lifts like the switch's picked
+    /// side while the summary shows.
+    pub(super) fn summary_pill(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        if !self.summaries_on() {
+            return None;
+        }
+        let on = self.summary_shown();
+        Some(
+            div()
+                .flex_none()
+                .p(px(space::S1))
+                .rounded_full()
+                .bg(rgba(th.chip))
+                .child(
+                    div()
+                        .id("chat-summary")
+                        .h(px(28.0))
+                        .w(px(36.0))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded_full()
+                        .cursor_pointer()
+                        .when(on, |d| {
+                            d.bg(rgba(th.surface))
+                                .shadow(crate::widgets::elevation(th, 0.5))
+                        })
+                        .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
+                        .child(icon(
+                            "sparkle",
+                            if on { th.accent } else { th.text_dim },
+                            16.0,
+                        ))
+                        .tooltip(tip(
+                            if on {
+                                tr!("summary-hide")
+                            } else {
+                                tr!("summary-summarize")
+                            },
+                            th,
+                        ))
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            cx.stop_propagation();
+                            this.toggle_summary(cx);
+                        })),
+                )
+                .into_any_element(),
         )
     }
 

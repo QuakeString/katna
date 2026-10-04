@@ -1326,7 +1326,7 @@ impl MailWindow {
                             ),
                     ),
             )
-            .children(self.summary_button("chat-summary", th, cx))
+            .children(self.summary_pill(th, cx))
             .child(end)
             .into_any_element()
     }
