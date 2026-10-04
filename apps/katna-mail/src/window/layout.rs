@@ -417,14 +417,9 @@ impl MailWindow {
         let rows = layout.rows.tick(window, reduce).clamp(0.0, 1.0);
         layout.shape.rows = rows;
         layout.shape.top_bar_slides = slides;
-        // The top bar going by `moved` lifts the list by as much: scroll it
-        // back. At the top the list comes down with the bar instead. The
-        // toolbar slides over the list, which keeps its room under it
-        // (`list_room`), so the list stays put without help: scrolling it
-        // back too shook it up and down for good, each move undoing the
-        // last.
-        let bar = if slides { super::TOP_BAR_HEIGHT } else { 0.0 };
-        let moved = bar * (before - rows);
+        // Hiding by `moved` would lift the list by as much: scroll it back.
+        // At the top the list comes down with the rows instead.
+        let moved = rows_height * (before - rows);
         if phone && moved.abs() > 0.01 && !(moved < 0.0 && at_top) {
             self.list_state.scroll_by(px(-moved));
             self.layout.list_top -= moved;

@@ -861,20 +861,10 @@ pub struct MailWindow {
     /// The line just opened, kept where it was in the list while the
     /// reading pane opens beside it and the lines change shape.
     keep_line: Option<list::KeepLine>,
-    /// How tall the header pinned over the open mail or chat was last
-    /// drawn, so what scrolls under it starts below it.
-    reader_head: std::rc::Rc<std::cell::Cell<f32>>,
-    /// The open mail's toolbar, waiting to go into its pinned header
-    /// ([`Self::render_reader_with_toolbar`]).
-    reader_top: Option<AnyElement>,
     /// The window frame's rounded bottom corners, left and right
     /// ([`katna_chrome::WindowChrome::content_corners`]), this frame: a
     /// phone's card reaches them and rounds itself by them.
     bottom_corners: (f32, f32),
-    /// How tall the bar pinned over the list was last drawn.
-    list_head: std::rc::Rc<std::cell::Cell<f32>>,
-    /// How much of a phone's list toolbar that bar showed.
-    list_head_rows: std::cell::Cell<f32>,
     nav_list: gpui::ListState,
     nav_items: Vec<nav::NavItem>,
     /// Bumped when the folder pane's lines change; `nav_synced` is what
@@ -1157,11 +1147,7 @@ impl MailWindow {
             files_menu: None,
             list_shape: (false, 0),
             keep_line: None,
-            reader_head: Default::default(),
-            reader_top: None,
             bottom_corners: (0.0, 0.0),
-            list_head: Default::default(),
-            list_head_rows: std::cell::Cell::new(1.0),
             nav_list: nav::nav_list(),
             nav_items: Vec::new(),
             nav_rev: 1,

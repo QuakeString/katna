@@ -206,9 +206,7 @@ impl MailWindow {
                 .is_some_and(|r| !r.files.is_empty()),
             Err(_) => false,
         };
-        // The first line holds the room under the bar pinned over the top.
-        let head = if ix == 0 { self.list_room() } else { 0.0 };
-        self.row_height() + self.chips_extra(has_chips) + head
+        self.row_height() + self.chips_extra(has_chips)
     }
 
     /// Keeps the line just opened where it was on screen while the reading
@@ -313,15 +311,15 @@ impl MailWindow {
                 let (toolbar, body) = self.render_list_parts(th, cx);
                 (Some(toolbar), body)
             };
-            // The bar floats over the top of the lines; the open mail's
-            // toolbar floats over it inside its own header.
+            // The bar above the lines; the open mail keeps its toolbar above
+            // it.
             div()
                 .size_full()
                 .flex()
                 .flex_col()
                 .relative()
-                .child(fade_in(body, self.card_seq))
                 .children(toolbar)
+                .child(fade_in(body, self.card_seq))
                 .into_any_element()
         };
         // Beside a conversation, the list keeps its own keys: Up and Down
@@ -440,9 +438,7 @@ impl MailWindow {
         // A phone's toolbar slides up out of sight as the list moves on.
         let toolbar = self.render_list_toolbar(th, cx);
         let rows = self.layout.shape.rows;
-        let sliding = self.layout.shape.is_phone() && rows < 0.999;
-        self.list_head_rows.set(if sliding { rows } else { 1.0 });
-        let toolbar = if sliding {
+        let toolbar = if self.layout.shape.is_phone() && rows < 0.999 {
             div()
                 .flex_none()
                 .h(px(TOOLBAR_HEIGHT * rows))
@@ -452,26 +448,30 @@ impl MailWindow {
         } else {
             toolbar
         };
-        // The bar, the tabs and the banner stay at the top while the lines
-        // scroll under them, frosted when Blur and Frosted headers are on,
-        // as a chat's header does.
-        let under = katna_ui::unpx(self.list_state.scrolled()) > 0.5;
-        let head = crate::widgets::pinned_head(
-            div()
-                .flex()
-                .flex_col()
-                .child(toolbar)
-                .children(tabs)
-                .children(banner)
-                .children(problems),
-            th.pane(),
-            under,
-            self.config.experimental.frosted_headers,
-            // Inside the card's edge, so its corners follow the card's.
-            (self.layout.shape.card_radius() - self.layout.shape.card_outline()).max(0.0),
-            self.list_head.clone(),
-            th,
-        );
+        // The bar, the tabs and the banner sit above the lines, which start
+        // below them, with a line under them once the list has scrolled.
+        let scrolled = katna_ui::unpx(self.list_state.scrolled()) > 0.5;
+        let head = div()
+            .flex_none()
+            .relative()
+            .flex()
+            .flex_col()
+            .child(toolbar)
+            .children(tabs)
+            .children(banner)
+            .children(problems)
+            .when(scrolled, |d| {
+                d.child(
+                    div()
+                        .absolute()
+                        .left_0()
+                        .right_0()
+                        .bottom_0()
+                        .h(px(1.0))
+                        .bg(rgba(th.divider)),
+                )
+            })
+            .into_any_element();
         (
             head,
             div()
@@ -482,16 +482,6 @@ impl MailWindow {
                 .child(self.tour_mark(super::tour::Spot::List))
                 .into_any_element(),
         )
-    }
-
-    /// The room the first line keeps under the bar pinned over the list:
-    /// the bar's height with a phone's toolbar showing whole. The toolbar
-    /// only slides away once that line has scrolled off, so the room stays
-    /// put and the list's place doesn't change under the sliding rows.
-    fn list_room(&self) -> f32 {
-        // Whole pixels, so the toolbar's sliding height rounding either way
-        // doesn't nudge the lines.
-        (self.list_head.get() + TOOLBAR_HEIGHT * (1.0 - self.list_head_rows.get())).round()
     }
 
     /// The round button that takes the list back to its top, once it is
@@ -565,6 +555,10 @@ impl MailWindow {
         // conversation rather than showing through it.
         let see_through = th.pane_tint < 100;
         let (bottom_left, bottom_right) = self.phone_bottom_corners();
+        // GPUI doesn't clip to the card's rounded corners: what fills the
+        // card from its top edge rounds its own top corners as the card's
+        // inside does, or they show square over the card's.
+        let top = (self.layout.shape.card_radius() - self.layout.shape.card_outline()).max(0.0);
         let list = (shown < 0.999 || !has_reader).then(|| {
             let (toolbar, body) = self.render_list_parts(th, cx);
             div()
@@ -575,8 +569,8 @@ impl MailWindow {
                 .w_full()
                 .flex()
                 .flex_col()
-                .child(fade_in(body, self.card_seq))
                 .child(toolbar)
+                .child(fade_in(body, self.card_seq))
                 .when(see_through && has_reader, |d| d.opacity(1.0 - shown))
                 .when(has_reader && shown > 0.001, |d| {
                     d.child(
@@ -585,6 +579,7 @@ impl MailWindow {
                             .top_0()
                             .left_0()
                             .size_full()
+                            .rounded_t(px(top))
                             .rounded_bl(px(bottom_left))
                             .rounded_br(px(bottom_right))
                             .bg(rgba(fade(th.shadow, 0.5 * shown))),
@@ -605,6 +600,7 @@ impl MailWindow {
                         .rounded_bl(px(bottom_left))
                         .rounded_br(px(bottom_right))
                 })
+                .rounded_t(px(top))
                 .when(shown < 0.999, |d| {
                     d.shadow(crate::widgets::elevation(th, 2.0))
                 })
@@ -2296,7 +2292,6 @@ impl MailWindow {
             self.list_state.remeasure();
         }
         self.keep_opened_line(cx);
-        self.list_state.set_head(px(self.list_room()));
         self.list_state.follow();
         list(
             self.list_state.state().clone(),
@@ -2317,16 +2312,6 @@ impl MailWindow {
                 let row = row.map(|r| this.with_pending(r));
                 let row = this.render_row(ix, entry.key, row, &th, cx);
                 this.fetch_pictures(cx);
-                // The first line starts below the bar pinned over the top.
-                if ix == 0 {
-                    return div()
-                        .w_full()
-                        .flex()
-                        .flex_col()
-                        .child(div().h(px(this.list_room())))
-                        .child(row)
-                        .into_any_element();
-                }
                 row
             }),
         )
