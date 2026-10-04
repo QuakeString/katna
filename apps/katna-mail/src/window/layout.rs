@@ -636,6 +636,9 @@ impl MailWindow {
                 .h(px(shape.bottom_bar()))
                 .overflow_hidden()
                 .bg(rgba(th.backdrop))
+                // Along the window's bottom edge, so round with its corners.
+                .rounded_bl(px(self.bottom_corners.0))
+                .rounded_br(px(self.bottom_corners.1))
                 .child(
                     div()
                         .h(px(BOTTOM_BAR_HEIGHT))

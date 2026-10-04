@@ -308,26 +308,20 @@ impl MailWindow {
             self.render_sliding(th, cx)
         } else {
             let (toolbar, body) = if two_pane_reading {
-                (
-                    self.render_reader_toolbar(th, cx),
-                    self.render_reader(th, cx),
-                )
+                (None, self.render_reader_with_toolbar(th, cx))
             } else {
-                self.render_list_parts(th, cx)
+                let (toolbar, body) = self.render_list_parts(th, cx);
+                (Some(toolbar), body)
             };
+            // The bar floats over the top of the lines; the open mail's
+            // toolbar floats over it inside its own header.
             div()
                 .size_full()
                 .flex()
                 .flex_col()
                 .relative()
-                .map(|d| {
-                    if two_pane_reading {
-                        d.child(toolbar).child(fade_in(body, self.card_seq))
-                    } else {
-                        // The bar floats over the top of the lines.
-                        d.child(fade_in(body, self.card_seq)).child(toolbar)
-                    }
-                })
+                .child(fade_in(body, self.card_seq))
+                .children(toolbar)
                 .into_any_element()
         };
         // Beside a conversation, the list keeps its own keys: Up and Down
@@ -339,6 +333,9 @@ impl MailWindow {
             self.layout.shape.card_outline(),
         );
         let (shadow, edge) = self.card_edges(self.card_keys(false), outline);
+        // On a phone the card reaches the window's bottom edge, so it rounds
+        // its bottom corners as the window frame does.
+        let (bottom_left, bottom_right) = self.phone_bottom_corners();
         let card = div()
             .id("card")
             .key_context(if reading_context {
@@ -358,12 +355,29 @@ impl MailWindow {
                 } else {
                     th.pane()
                 };
-                crate::widgets::card(d, th, fill, radius, shadow)
+                if bottom_left + bottom_right > 0.0 {
+                    let corners = gpui::Corners {
+                        top_left: px(radius),
+                        top_right: px(radius),
+                        bottom_left: px(bottom_left),
+                        bottom_right: px(bottom_right),
+                    };
+                    crate::widgets::pane_corners(
+                        d.rounded(px(radius))
+                            .rounded_bl(px(bottom_left))
+                            .rounded_br(px(bottom_right)),
+                        fill,
+                        th.surface,
+                        corners,
+                    )
+                } else {
+                    crate::widgets::card(d, th, fill, radius, shadow)
+                }
             })
             .p(px(outline))
             // GPUI clips to rectangles, so the lines stop short of the
             // rounded bottom corners rather than showing square ones.
-            .pb(px(radius.max(outline)))
+            .pb(px(radius.max(outline).max(bottom_left).max(bottom_right)))
             .on_action(cx.listener(Self::select_next))
             .on_action(cx.listener(Self::select_previous))
             .on_action(cx.listener(Self::select_first))
@@ -440,7 +454,7 @@ impl MailWindow {
         };
         // The bar, the tabs and the banner stay at the top while the lines
         // scroll under them, frosted when Blur and Frosted headers are on,
-        // as the open mail's subject does.
+        // as a chat's header does.
         let under = katna_ui::unpx(self.list_state.scrolled()) > 0.5;
         let head = crate::widgets::pinned_head(
             div()
@@ -453,6 +467,8 @@ impl MailWindow {
             th.pane(),
             under,
             self.config.experimental.frosted_headers,
+            // Inside the card's edge, so its corners follow the card's.
+            (self.layout.shape.card_radius() - self.layout.shape.card_outline()).max(0.0),
             self.list_head.clone(),
             th,
         );
@@ -527,6 +543,18 @@ impl MailWindow {
         )
     }
 
+    /// The window frame's bottom corners where the card reaches them (on a
+    /// phone with the bottom bar gone), else none: the bottom bar rounds
+    /// itself while it shows.
+    fn phone_bottom_corners(&self) -> (f32, f32) {
+        let shape = self.layout.shape;
+        if shape.is_phone() && shape.bottom_bar() <= 0.01 {
+            self.bottom_corners
+        } else {
+            (0.0, 0.0)
+        }
+    }
+
     /// The list with the open conversation sliding in over it from the
     /// right, as on a phone; the list drifts left and dims beneath.
     fn render_sliding(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -536,6 +564,7 @@ impl MailWindow {
         // On a card the blur shows through, the list fades out under the
         // conversation rather than showing through it.
         let see_through = th.pane_tint < 100;
+        let (bottom_left, bottom_right) = self.phone_bottom_corners();
         let list = (shown < 0.999 || !has_reader).then(|| {
             let (toolbar, body) = self.render_list_parts(th, cx);
             div()
@@ -556,6 +585,8 @@ impl MailWindow {
                             .top_0()
                             .left_0()
                             .size_full()
+                            .rounded_bl(px(bottom_left))
+                            .rounded_br(px(bottom_right))
                             .bg(rgba(fade(th.shadow, 0.5 * shown))),
                     )
                 })
@@ -569,12 +600,15 @@ impl MailWindow {
                 .w_full()
                 .flex()
                 .flex_col()
-                .when(!see_through, |d| d.bg(rgba(th.surface)))
+                .when(!see_through, |d| {
+                    d.bg(rgba(th.surface))
+                        .rounded_bl(px(bottom_left))
+                        .rounded_br(px(bottom_right))
+                })
                 .when(shown < 0.999, |d| {
                     d.shadow(crate::widgets::elevation(th, 2.0))
                 })
-                .child(self.render_reader_toolbar(th, cx))
-                .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
+                .child(self.render_reader_with_toolbar(th, cx))
         });
         div()
             .relative()
@@ -2286,6 +2320,7 @@ impl MailWindow {
                 // The first line starts below the bar pinned over the top.
                 if ix == 0 {
                     return div()
+                        .w_full()
                         .flex()
                         .flex_col()
                         .child(div().h(px(this.list_room())))
