@@ -437,6 +437,10 @@ impl MailWindow {
         let mut people: HashSet<String> = HashSet::new();
         let mut subject: Option<String> = None;
         for (ix, part) in reader.parts.iter().enumerate() {
+            // A read receipt for the user's mail: ticks on it instead.
+            if reader.hidden(ix) {
+                continue;
+            }
             let view = part.body.as_ref().and_then(|b| b.view.as_ref());
             let row = part.row.as_ref();
             let (name, email) = match (view.and_then(|v| v.from.first()), row) {
@@ -557,7 +561,7 @@ impl MailWindow {
         if at_end {
             reader.chat.left_at = None;
         } else if reader.chat.left_at.is_none() {
-            reader.chat.left_at = Some(reader.parts.len());
+            reader.chat.left_at = Some(reader.shown_count());
         }
         let down = reader
             .chat
@@ -575,7 +579,7 @@ impl MailWindow {
         let newer = reader
             .chat
             .left_at
-            .map_or(0, |at| reader.parts.len().saturating_sub(at));
+            .map_or(0, |at| reader.shown_count().saturating_sub(at));
         // Opens at its newest mail, and goes there when mail comes or is
         // sent.
         if reader.chat.shown != reader.parts.len() {
@@ -1217,7 +1221,9 @@ impl MailWindow {
         };
         let people = self.chat_people();
         let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
-        let mails = reader.parts.iter().filter(|p| p.pending.is_none()).count();
+        let mails = (0..reader.parts.len())
+            .filter(|&ix| reader.parts[ix].pending.is_none() && !reader.hidden(ix))
+            .count();
         let people_open = reader.chat.people.is_some();
         // Overlapping pictures, each ringed in the card's colour.
         let shown = people.len().min(3);

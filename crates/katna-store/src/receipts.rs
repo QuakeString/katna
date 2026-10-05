@@ -3,11 +3,12 @@
 //! Delivery and read receipts per recipient of sent mail, recorded as the
 //! receipts arrive (`docs/ARCHITECTURE.md` §16.1).
 
-use rusqlite::params;
+use rusqlite::{OptionalExtension, params};
 
 use crate::Store;
-use crate::error::Result;
-use crate::mail::MailBatch;
+use crate::blob::BlobHash;
+use crate::error::{Error, Result};
+use crate::mail::{MailBatch, MessageId};
 
 /// What a receipt says happened to a sent message for one recipient.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -64,6 +65,25 @@ impl MailBatch<'_> {
         Ok(())
     }
 
+    /// Records that `message` is a receipt for mail here, which the lists
+    /// leave out (mail.db v14). Returns whether it was new.
+    pub fn mark_receipt_mail(&mut self, message: MessageId) -> Result<bool> {
+        let tx = self.tx();
+        let added = tx
+            .prepare_cached("INSERT OR IGNORE INTO receipt_mail (message_id) VALUES (?1)")?
+            .execute([message.0])?
+            > 0;
+        let thread: Option<i64> = tx
+            .prepare_cached("SELECT thread_id FROM message WHERE id = ?1")?
+            .query_row([message.0], |row| row.get(0))
+            .optional()?
+            .flatten();
+        if added && let Some(thread) = thread {
+            self.thread_changed(thread);
+        }
+        Ok(added)
+    }
+
     fn upsert(&mut self, column: &str, original: &str, recipient: &str, at: i64) -> Result<()> {
         // `column` is one of ours, never outside input.
         let sql = format!(
@@ -95,6 +115,35 @@ impl Store {
             })
         })?;
         Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Downloaded messages that may be receipts stored before mail.db v14
+    /// marked them: in a conversation with sent mail that a receipt has
+    /// answered, not themselves that sent mail, and not marked yet.
+    pub fn possible_receipt_mail(&self) -> Result<Vec<(MessageId, BlobHash)>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT m.id, m.blob_hash FROM message m
+             WHERE m.blob_hash IS NOT NULL
+               AND m.thread_id IN (
+                   SELECT o.thread_id FROM message o JOIN receipt r
+                       ON r.message_id_hdr = o.message_id_hdr
+                   WHERE r.read_at IS NOT NULL OR r.delivered_at IS NOT NULL
+               )
+               AND (m.message_id_hdr IS NULL
+                    OR m.message_id_hdr NOT IN (SELECT message_id_hdr FROM receipt))
+               AND m.id NOT IN (SELECT message_id FROM receipt_mail)
+             ORDER BY m.id",
+        )?;
+        let rows = stmt.query_map([], |row| {
+            Ok((row.get::<_, i64>(0)?, row.get::<_, Vec<u8>>(1)?))
+        })?;
+        rows.map(|row| {
+            let (id, hash) = row?;
+            let hash = <[u8; 32]>::try_from(hash.as_slice())
+                .map_err(|_| Error::InvalidData(format!("message {id}: bad blob hash")))?;
+            Ok((MessageId(id), BlobHash::from_bytes(hash)))
+        })
+        .collect()
     }
 }
 
