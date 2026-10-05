@@ -88,7 +88,7 @@ impl MailWindow {
                 .py(px(8.0))
                 .flex()
                 .flex_col()
-                .gap(px(4.0))
+                .gap(px(katna_ui::tokens::space::S2))
                 .rounded(px(8.0))
                 .border_1()
                 .border_color(rgba(th.outline))
