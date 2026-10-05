@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Katna Mail opens even if a copy got stuck"
+text = """
+If Katna Mail stopped responding in the background, opening it again now
+closes the stuck copy and opens a fresh window, instead of doing nothing.
+"""

@@ -246,18 +246,23 @@ fn main() -> ExitCode {
     }
     format::set_clock(general.clock);
     katna_i18n::apply(&general.language);
-    let (connection, sender, requests) = match instance::start(request, single) {
+    let (connection, sender, requests, pings) = match instance::start(request, single) {
         instance::Started::HandedOff => return ExitCode::SUCCESS,
         instance::Started::First {
             connection,
             sender,
             requests,
-        } => (connection, sender, requests),
+            pings,
+        } => (connection, sender, requests, pings),
     };
 
     gpui_platform::application()
         .with_assets(assets::Assets)
         .run(move |cx: &mut App| {
+            // Shows another launch, the tray and notifications that this
+            // thread runs, before anything that could take a while.
+            cx.spawn(async move |_| instance::answer_pings(pings).await)
+                .detach();
             // Before the window opens, which reads the menu bar's address.
             if let Some(connection) = &connection {
                 serve_menu_bar(connection, sender, cx);
