@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 4 October 2026, through PR #727). Companion to
+> Status: **v0.2** (updated 4 October 2026, through PR #729). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -25,12 +25,13 @@ not name.
   of the UI translated; reading and sending encrypted mail; Phase 6
   except the upstream proposals: Calendar, Tasks, Notes and Contacts pages that sync with each
   account's own service; the Windows build and installer.
-- **Merged since the last refresh (#523–#727):** account problems shown at
+- **Merged since the last refresh (#523–#729):** account problems shown at
   the top of the list and in Settings › Accounts with their fix, an
   Outbox that holds mail while signed out, plain words when a server
   refuses a change, and one desktop notification and tray line per
   problem (A.21, #720, #723); the accounts' pictures stacked at the top
-  right of All Accounts (A.18, #727); dialogs and menus kept inside
+  right of All Accounts and an All Accounts row in the account menu
+  (A.18, #727, #729); dialogs and menus kept inside
   Katna's frame, and lists that start below solid bars with nothing
   sliding under them (A.10, #716, #724, #725, #726); apps that can be turned
   off, accounts left out of single apps or the unified inbox, and an
@@ -410,7 +411,7 @@ merged; the pull requests say what changed.
 | A.15 CI and README ✅ #404, #419, #422, #427, #433, #438, #529, #563 | Tests on Arch only, Ubuntu and Windows in a Secondary workflow; README says why Katna exists and that it is at a very early stage |
 | A.16 Drives in Files ✅ #534, #537, #540, #541, #542, #550, #553, #573 | Google Drive and OneDrive in the Files page and the Compose and chat pickers; upload files and folders; Move to bin, Rename, Share and an uploads tray |
 | A.17 Compose ✅ #531, #536, #539, #579, #595, #663, #672, #677, #680, #683 | A calmer Quiet look; drafts saved while writing with "Draft saved"; a signature tag; Compose opens beside a half-written reply; click an attached file to open it; an emptied message keeps no draft; signatures imported from Gmail, Thunderbird, Evolution and KMail, designed signatures as one block, Paste HTML; twelve signature layouts with a fields form |
-| A.18 Unified inbox and account colours ✅ #549, #576, #592, #624, #631, #670, #727 | Inbox tabs in the unified inbox shared by every account; a colour for each account, shown as a dot after the sender, with eight colours and a colour wheel; the accounts' pictures stacked at the top right of All Accounts |
+| A.18 Unified inbox and account colours ✅ #549, #576, #592, #624, #631, #670, #727, #729 | Inbox tabs in the unified inbox shared by every account; a colour for each account, shown as a dot after the sender, with eight colours and a colour wheel; the accounts' pictures stacked at the top right of All Accounts; an All Accounts row in the account menu |
 | A.19 Shared design system ✅ #646, #647, #648, #649, #650, #651, #652, #653, #654, #656, #657, #658, #659, #690, #691, #692, #699 | Design tokens (`katna_ui::tokens`) and `docs/DESIGN.md`, with a CI check that raw sizes only go down; one shared popover, dialog surface, Button, choice chip, tag, settings row, field and card; a Gallery of the controls in development builds |
 | A.20 Apps and accounts ✅ #701, #702, #703, #708, #710, #711 | Turn Calendar, Contacts, Tasks, Notes or Files off (Mail stays), which stops their sync and removes their copy on request; leave an account out of single apps or the unified inbox; take an account offline |
 | A.21 Problems and the Outbox ✅ #713, #715, #717, #718, #720, #723 | An amber "needs you" colour; an account's problem at the top of the mail list with its fix (a New password card) and in Settings › Accounts; an Outbox for mail that has not gone out, holding mail while an account is signed out; a server's refusal of a change said in plain words; one desktop notification per problem and a tray line |
