@@ -1751,10 +1751,15 @@ GPUI global):
   filter, so Katna's copy of its renderer (`vendor/gpui-pre-wgpu`) adds
   one: a quad marked through its border color is drawn over a dual Kawase
   blur of the frame under it, clamped to the quad (as CSS
-  `backdrop-filter`). The same renderer draws every drop shadow only
-  outside its element, as CSS does, so a translucent panel or frame keeps
-  one plain box shadow that follows its rounded corners. Where the
-  window's surface cannot be copied from, panels stay opaque.
+  `backdrop-filter`). On Windows, where GPUI draws with Direct3D 11,
+  Katna's copy of its Windows backend (`vendor/gpui-pre-windows`) draws
+  the same blur from the same markers (`backdrop_blur.rs`,
+  `backdrop_blur.hlsl`), so frost looks the same on both. The same
+  renderers draw every drop shadow only outside its element, as CSS
+  does, so a translucent panel or frame keeps one plain box shadow that
+  follows its rounded corners. Where the window's surface cannot be
+  copied from, or the blur's shaders cannot be made, panels stay
+  opaque.
 
 **Settings > Experimental > Reading** (config `[experimental] chat_view`,
 off by default): conversations between people show as a group chat

@@ -14,9 +14,10 @@ use gpui::{BorderStyle, Bounds, Corners, Hsla, IntoElement, Pixels, Styled, canv
 pub fn supported() -> bool {
     #[cfg(not(windows))]
     return gpui_wgpu::backdrop_blur_supported();
-    // GPUI draws with Direct3D on Windows, without Katna's blur.
+    // GPUI draws with Direct3D on Windows; Katna's copy of that renderer
+    // has the same blur.
     #[cfg(windows)]
-    return false;
+    return gpui_windows::backdrop_blur_supported();
 }
 
 /// The glass of a frosted panel, as the panel's first child: `fill` with
@@ -89,10 +90,9 @@ fn eraser() -> Option<Hsla> {
     Some(gpui_wgpu::erase_marker())
 }
 
-/// Windows has no blurred window to clear.
 #[cfg(windows)]
 fn eraser() -> Option<Hsla> {
-    None
+    Some(gpui_windows::erase_marker())
 }
 
 /// Where the glass goes for `bounds` inside a panel clipped to `clip`. A
@@ -113,10 +113,9 @@ fn marker(blur: f32) -> Hsla {
     gpui_wgpu::backdrop_blur_marker(blur)
 }
 
-/// Without the blur, the panel is just its fill.
 #[cfg(windows)]
-fn marker(_blur: f32) -> Hsla {
-    gpui::transparent_black()
+fn marker(blur: f32) -> Hsla {
+    gpui_windows::backdrop_blur_marker(blur)
 }
 
 #[cfg(test)]
