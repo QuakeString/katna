@@ -62,7 +62,8 @@ pub async fn daemon_running(connection: &zbus::Connection) -> bool {
 /// Starts `katna-daemon` if it isn't running, the way it is installed:
 /// through D-Bus activation (systemd's unit where there is one, first
 /// cleared of an earlier failure, which otherwise keeps systemd from
-/// starting it again), or the `katna-daemon` beside this program. Returns
+/// starting it again), or the `katna-daemon` beside this program, also
+/// when activation fails. Returns
 /// once it owns its bus name, or why it didn't, in words for a report.
 pub async fn start_daemon(connection: &zbus::Connection) -> Result<(), String> {
     let dbus = zbus::fdo::DBusProxy::new(connection)
@@ -88,10 +89,18 @@ pub async fn start_daemon(connection: &zbus::Connection) -> Result<(), String> {
         )
         .await
         .and_then(|reply| reply.body().deserialize());
-    if let Err(err) = started {
-        return Err(format!("starting {}: {err}", ids::DAEMON_BUS_NAME));
+    let activated = match started {
+        Ok(_) => wait_for_owner(&dbus, &name, STARTED_WAIT).await,
+        Err(err) => Err(format!("starting {}: {err}", ids::DAEMON_BUS_NAME)),
+    };
+    // When systemd or D-Bus won't start it, the `katna-daemon` beside this
+    // program still can: the user never needs a terminal for it.
+    match activated {
+        Ok(()) => Ok(()),
+        Err(activation) => start_beside(&dbus, WAIT)
+            .await
+            .map_err(|beside| format!("{activation}; {beside}")),
     }
-    wait_for_owner(&dbus, &name, STARTED_WAIT).await
 }
 
 /// Whether the session bus has an activation file for the daemon.
