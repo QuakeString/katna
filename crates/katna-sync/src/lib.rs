@@ -66,6 +66,7 @@ pub mod outbox;
 pub mod pictures;
 pub mod pop3;
 pub mod quick_reply;
+mod receipts;
 pub mod rules;
 pub mod rules_remote;
 pub mod sieve;
