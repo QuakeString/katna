@@ -98,7 +98,10 @@ pub fn parse(raw: &[u8]) -> Option<Receipt> {
     Some(Receipt {
         by,
         name,
-        original: original.filter(|o| !o.is_empty()),
+        // Outlook names the message only in `In-Reply-To`.
+        original: original
+            .filter(|o| !o.is_empty())
+            .or_else(|| message.in_reply_to().as_text().map(str::to_owned)),
         displayed,
     })
 }
@@ -159,6 +162,20 @@ Disposition: manual-action/MDN-sent-manually;\r\n\
         );
         let deleted = THUNDERBIRD.replace(" displayed\r\n", " deleted\r\n");
         assert!(!parse(deleted.as_bytes()).unwrap().displayed);
+    }
+
+    #[test]
+    fn an_outlook_receipt_answers_its_in_reply_to() {
+        let outlook = THUNDERBIRD
+            .replace("Original-Message-ID: <m1@example.com>\r\n", "")
+            .replace(
+                "To: a@example.com\r\n",
+                "To: a@example.com\r\nIn-Reply-To: <m9@example.com>\r\n",
+            );
+        assert_eq!(
+            parse(outlook.as_bytes()).and_then(|r| r.original),
+            Some("m9@example.com".into())
+        );
     }
 
     #[test]

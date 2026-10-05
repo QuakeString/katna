@@ -142,6 +142,8 @@ tracking-maybe-opened = { $who } may have opened it (Apple Mail loads pictures f
 tracking-seen-none = No one has opened it or followed a link yet
 # A read receipt came back from $who.
 tracking-receipt = { $who } sent a read receipt
+# A read receipt came back from $who; $when as above.
+tracking-receipt-read = { $who } read it (read receipt), { $when }
 # On a read receipt itself.
 tracking-receipt-displayed = Read receipt: { $who } opened your message
 tracking-receipt-other = Read receipt: { $who } deleted or handled your message without opening it

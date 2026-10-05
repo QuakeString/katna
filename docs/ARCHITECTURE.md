@@ -4310,8 +4310,15 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   came back, and its tooltip says that is what it means: only the sending
   server knows whether mail arrived, and relaying through Katna Server
   would fail SPF and DKIM and need the mail login. Receipt mail
-  (`multipart/report`) stays in the mailbox, under Updates, so it raises
-  no notification. Legal
+  (`multipart/report`) stays in the mailbox and in search, under Updates.
+  A read receipt (known by its header, and matched by `In-Reply-To` or
+  `References` too, as Outlook names the message only there) or a
+  delivery report without a bounce that answers a message stored here is
+  marked read as it arrives, so it neither counts as unread nor notifies;
+  bounces are left as news. The reading view and the chat view leave out
+  a read receipt that answers one of the user's messages in the
+  conversation: that message shows a line "Bea read it (read receipt),
+  10:04 AM" instead (decided 5 October 2026). Legal
   review is needed before selling in the EU (GDPR/ePrivacy). Read receipts
   (MDN) are offered as a consent-based alternative.
 - Tracking events arrive at the daemon over the server's event stream and

@@ -244,7 +244,10 @@ impl Conversation {
     /// Its subject, a message of it, and the sender of its newest
     /// message, for muting it or its sender.
     pub(super) fn mute_info(&self) -> Option<(String, MessageId, String)> {
-        let last = self.parts.iter().rev().find(|p| p.pending.is_none())?;
+        let last = (0..self.parts.len())
+            .rev()
+            .find(|&ix| self.parts[ix].pending.is_none() && !self.hidden(ix))
+            .map(|ix| &self.parts[ix])?;
         let sender = last
             .row
             .as_ref()
@@ -419,10 +422,40 @@ impl Conversation {
             folders: Vec::new(),
             category: None,
         };
-        conversation.read_labels(mail);
         conversation.read_tracking(mail);
+        conversation.read_labels(mail);
         conversation.read_drafts(mail);
+        // A read receipt last: the message it answers opens instead.
+        if let Some(ix) = conversation.last_shown()
+            && let Some(part) = conversation.parts.get_mut(ix)
+            && !part.expanded
+        {
+            part.set_expanded(true, mail);
+        }
         conversation
+    }
+
+    /// Whether message `ix` is a read receipt for one of the user's
+    /// messages here: not shown, as it shows as ticks on that message.
+    pub(super) fn hidden(&self, ix: usize) -> bool {
+        let Some(Some(Some(receipt))) = self.parts.get(ix).map(|p| p.receipt.as_ref()) else {
+            return false;
+        };
+        receipt.original.is_some()
+            && self
+                .parts
+                .iter()
+                .any(|p| p.message_id.is_some() && p.message_id == receipt.original)
+    }
+
+    /// The newest message shown.
+    pub(super) fn last_shown(&self) -> Option<usize> {
+        (0..self.parts.len()).rev().find(|&ix| !self.hidden(ix))
+    }
+
+    /// How many messages show.
+    pub(super) fn shown_count(&self) -> usize {
+        (0..self.parts.len()).filter(|&ix| !self.hidden(ix)).count()
     }
 
     /// Reads where its messages are and the inbox tab of the newest.
@@ -436,12 +469,10 @@ impl Conversation {
             }
         }
         self.folders = folders;
-        self.category = self
-            .parts
-            .iter()
+        self.category = (0..self.parts.len())
             .rev()
-            .find(|p| p.pending.is_none())
-            .and_then(|p| mail.message_category(p.id));
+            .find(|&ix| self.parts[ix].pending.is_none() && !self.hidden(ix))
+            .and_then(|ix| mail.message_category(self.parts[ix].id));
     }
 
     /// Notes which of its messages are drafts.
@@ -496,14 +527,15 @@ impl Conversation {
     }
 
     /// The read receipts in the conversation for `part`.
-    fn receipts_for(&self, part: &Part) -> Vec<&crate::receipts::Receipt> {
+    /// With when each came (Unix seconds).
+    fn receipts_for(&self, part: &Part) -> Vec<(&crate::receipts::Receipt, Option<i64>)> {
         let Some(id) = &part.message_id else {
             return Vec::new();
         };
         self.parts
             .iter()
-            .filter_map(|p| p.receipt.as_ref()?.as_ref())
-            .filter(|r| r.original.as_ref() == Some(id))
+            .filter_map(|p| Some((p.receipt.as_ref()?.as_ref()?, p.row.as_ref()?.date)))
+            .filter(|(r, _)| r.original.as_ref() == Some(id))
             .collect()
     }
 
@@ -608,15 +640,15 @@ impl Conversation {
     }
 
     fn set_all(&mut self, expanded: bool, mail: &Mail) {
-        let last = self.parts.len().saturating_sub(1);
+        let last = self.last_shown();
         for (ix, part) in self.parts.iter_mut().enumerate() {
-            part.set_expanded(expanded || ix == last, mail);
+            part.set_expanded(expanded || Some(ix) == last, mail);
         }
         self.show_all = expanded;
     }
 
     fn all_expanded(&self) -> bool {
-        self.parts.iter().all(|p| p.expanded)
+        (0..self.parts.len()).all(|ix| self.parts[ix].expanded || self.hidden(ix))
     }
 
     /// Each open message's remote images, with what decides whether they
@@ -1335,7 +1367,7 @@ impl MailWindow {
             .when(self.config.experimental.chat_view, |d| {
                 d.child(self.chat_switch(false, th, cx))
             })
-            .when(reader.parts.len() > 1, |d| {
+            .when(reader.shown_count() > 1, |d| {
                 d.child(
                     icon_button_colored(
                         "expand-all",
@@ -1365,11 +1397,13 @@ impl MailWindow {
         // messages as shown: oldest first, or newest first by the setting.
         let newest_first = self.config.mail.newest_first;
         let n = reader.parts.len();
+        // Read receipts for the user's mail show as ticks on it instead.
         let order: Vec<usize> = if newest_first {
-            (0..n).rev().collect()
+            (0..n).rev().filter(|&ix| !reader.hidden(ix)).collect()
         } else {
-            (0..n).collect()
+            (0..n).filter(|&ix| !reader.hidden(ix)).collect()
         };
+        let n = order.len();
         let mut shown = Vec::new();
         let mut at = 0;
         while at < n {
@@ -1472,7 +1506,7 @@ impl MailWindow {
         };
         let part = &reader.parts[ix];
         let turn = part_turn(reader.key, ix, part.turns);
-        let last = ix + 1 == reader.parts.len();
+        let last = reader.last_shown() == Some(ix);
         let row = part.row.clone();
         let view = part.body.as_ref().and_then(|b| b.view.as_ref());
         let (name, email) = match (view.and_then(|v| v.from.first()), &row) {
