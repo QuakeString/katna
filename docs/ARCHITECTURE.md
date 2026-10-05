@@ -1751,10 +1751,15 @@ GPUI global):
   filter, so Katna's copy of its renderer (`vendor/gpui-pre-wgpu`) adds
   one: a quad marked through its border color is drawn over a dual Kawase
   blur of the frame under it, clamped to the quad (as CSS
-  `backdrop-filter`). The same renderer draws every drop shadow only
-  outside its element, as CSS does, so a translucent panel or frame keeps
-  one plain box shadow that follows its rounded corners. Where the
-  window's surface cannot be copied from, panels stay opaque.
+  `backdrop-filter`). On Windows, where GPUI draws with Direct3D 11,
+  Katna's copy of its Windows backend (`vendor/gpui-pre-windows`) draws
+  the same blur from the same markers (`backdrop_blur.rs`,
+  `backdrop_blur.hlsl`), so frost looks the same on both. The same
+  renderers draw every drop shadow only outside its element, as CSS
+  does, so a translucent panel or frame keeps one plain box shadow that
+  follows its rounded corners. Where the window's surface cannot be
+  copied from, or the blur's shaders cannot be made, panels stay
+  opaque.
 
 **Settings > Experimental > Reading** (config `[experimental] chat_view`,
 off by default): conversations between people show as a group chat
@@ -4312,8 +4317,20 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   came back, and its tooltip says that is what it means: only the sending
   server knows whether mail arrived, and relaying through Katna Server
   would fail SPF and DKIM and need the mail login. Receipt mail
-  (`multipart/report`) stays in the mailbox, under Updates, so it raises
-  no notification. Legal
+  (`multipart/report`) stays in the mailbox and in search, under Updates.
+  A read receipt (known by its header, and matched by `In-Reply-To` or
+  `References` too, as Outlook names the message only there) or a
+  delivery report without a bounce that answers a message stored here is
+  marked read as it arrives, so it neither counts as unread nor notifies;
+  bounces are left as news. The reading view and the chat view leave out
+  a read receipt that answers one of the user's messages in the
+  conversation: that message shows a line "Bea read it (read receipt),
+  10:04 AM" instead (decided 5 October 2026). Such receipts are kept in
+  `mail.db`'s `receipt_mail` table (v14), and the mail lists leave them
+  out, so a receipt never becomes a conversation's newest message, its
+  subject or its preview, and a conversation with nothing else in a folder
+  doesn't show there; the daemon finds receipts stored before v14 among
+  downloaded mail once at start. Legal
   review is needed before selling in the EU (GDPR/ePrivacy). Read receipts
   (MDN) are offered as a consent-based alternative.
 - Tracking events arrive at the daemon over the server's event stream and
