@@ -2740,12 +2740,8 @@ impl MailWindow {
                             } else {
                                 rgba(0)
                             })
-                            .children(self.render_floating_format_bar(
-                                th,
-                                card_width.max(320.0) - 24.0,
-                                cx,
-                            ))
-                            .child(self.render_compose_actions(th, card_width.max(320.0), cx)),
+                            .children(self.render_floating_format_bar(th, card_width - 24.0, cx))
+                            .child(self.render_compose_actions(th, card_width, cx)),
                     ),
             )
             .child(self.render_drop_target(th));
