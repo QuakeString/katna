@@ -4012,7 +4012,12 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   `reply-all` (a message ID), `capture` (`task` or `note`, optionally
   `task:TEXT`; `katna-mail --capture KIND`) and `quit`
   (`katna_dbus::app_action`). A second `katna-mail`
-  hands its request to the first and exits. The tray, notifications and
+  hands its request to the first and exits, printing one line when it was
+  started in a terminal. Each method answers only once the first app's
+  window thread answers a ping (within 3 s), so a stuck app reads as an
+  error: the new launch then ends it (`SIGTERM`, only a `katna-mail` older
+  than 30 s, so one still starting is left alone), takes the name and opens
+  its window; the tray, which waits 5 s, starts a new one the same way. The tray, notifications and
   the desktop file use this: its actions New Message, Open Inbox and
   Preferences (right-click on the taskbar icon in Plasma and GNOME) run
   `katna-mail --compose`, `--inbox` and `--settings`. With `--data-dir` the
