@@ -4325,7 +4325,12 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   bounces are left as news. The reading view and the chat view leave out
   a read receipt that answers one of the user's messages in the
   conversation: that message shows a line "Bea read it (read receipt),
-  10:04 AM" instead (decided 5 October 2026). Legal
+  10:04 AM" instead (decided 5 October 2026). Such receipts are kept in
+  `mail.db`'s `receipt_mail` table (v14), and the mail lists leave them
+  out, so a receipt never becomes a conversation's newest message, its
+  subject or its preview, and a conversation with nothing else in a folder
+  doesn't show there; the daemon finds receipts stored before v14 among
+  downloaded mail once at start. Legal
   review is needed before selling in the EU (GDPR/ePrivacy). Read receipts
   (MDN) are offered as a consent-based alternative.
 - Tracking events arrive at the daemon over the server's event stream and

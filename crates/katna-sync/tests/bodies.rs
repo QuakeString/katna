@@ -337,6 +337,8 @@ fn a_receipt_for_sent_mail_is_marked_read() {
     // Read: it shows as ticks on the sent mail. The other answers no mail
     // here, so it stays new.
     assert_eq!(seen, [true, false]);
+    // And the lists leave it out.
+    assert_eq!(store.folder_message_ids(inbox).unwrap().len(), 1);
     assert_eq!(
         store.receipts("rates@example.org").unwrap()[0].recipient,
         "bea@example.org"
