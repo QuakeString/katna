@@ -1149,9 +1149,11 @@ KRunner and GNOME search suggest saved people too, with their saved names
   or the daemon's name goes away for more than 10 s (an update or systemd
   restarts it sooner by itself), the window starts it
   (`katna_dbus::start_daemon`: clears a failed systemd unit with
-  `ResetFailedUnit`, then D-Bus activation, or the binary beside it) and
+  `ResetFailedUnit`, then D-Bus activation, or the binary beside it, also
+  when activation fails) and
   tries again for 20 s. A grey line shows after 10 s, an amber line with
-  Start again and Details if it never starts, and a note if it had stopped
+  Start again and Details (the report scrolls inside a dialog that fits
+  the window) if it never starts, and a note if it had stopped
   while the window was open (`apps/katna-mail/src/window/service.rs`). The
   unit restarts it after a crash 5 s later (`RestartSec=5`), which never
   reaches systemd's start limit.

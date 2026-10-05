@@ -20,15 +20,15 @@ use std::time::{Duration, Instant};
 
 use futures_lite::StreamExt;
 use gpui::{
-    AnyElement, ClipboardItem, Context, FontWeight, KeyDownEvent, SharedString, Task, Window, div,
-    prelude::*, rgba,
+    AnyElement, ClipboardItem, Context, FontWeight, KeyDownEvent, ScrollHandle, SharedString, Task,
+    Window, div, prelude::*, rgba,
 };
 use katna_core::ids;
 use katna_dbus::zbus::Connection;
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::px;
 use katna_ui::tokens::{radius, space, text};
+use katna_ui::{ScrollBar, px};
 
 use super::MailWindow;
 use super::problems::LineClick;
@@ -48,6 +48,8 @@ const RETRY: [Duration; 2] = [Duration::from_secs(2), Duration::from_secs(5)];
 const GRACE: Duration = Duration::from_secs(10);
 /// How many lines of the service's log Details shows.
 const LOG_LINES: &str = "20";
+/// The report's tallest, on a tall window; a short one gets less.
+const REPORT_MAX_HEIGHT: f32 = 320.0;
 /// The Details dialog's width.
 const DIALOG_WIDTH: f32 = 520.0;
 
@@ -68,6 +70,9 @@ struct DetailsDialog {
     shown: Spring,
     closing: bool,
     focused: bool,
+    /// The report scrolls inside the dialog; title and buttons stay put.
+    scroll: ScrollHandle,
+    bar: ScrollBar,
 }
 
 #[derive(Default)]
@@ -271,6 +276,8 @@ impl MailWindow {
             shown,
             closing: false,
             focused: false,
+            scroll: ScrollHandle::new(),
+            bar: ScrollBar::default(),
         });
         cx.notify();
     }
@@ -325,12 +332,14 @@ impl MailWindow {
             dialog.focused = true;
             window.focus(&self.dialog_focus, cx);
         }
-        let body = div()
+        let (scroll, bar) = (dialog.scroll.clone(), dialog.bar.clone());
+        bar.tick(&scroll, window, cx);
+        let header = div()
+            .flex_none()
             .flex()
             .flex_col()
             .px(px(space::S6))
             .pt(px(space::S6))
-            .pb(px(space::S5))
             .child(
                 self.copyable(tr!("service-details-title"), th)
                     .text_size(px(text::TITLE))
@@ -342,52 +351,78 @@ impl MailWindow {
                     .text_size(px(text::BODY))
                     .text_color(rgba(th.text_dim))
                     .child(tr!("service-details-body")),
-            )
-            .child(
-                self.copyable(SharedString::from(details), th)
-                    .mt(px(space::S4))
-                    .px(px(space::S4))
-                    .py(px(space::S3))
-                    .rounded(px(radius::SM))
-                    .bg(rgba(th.on_pane(th.read_row)))
-                    .border_1()
-                    .border_color(rgba(th.divider))
-                    .font_family("monospace")
-                    .text_size(px(text::CAPTION))
-                    .line_height(px(18.0))
-                    .text_color(rgba(th.text_dim)),
-            )
-            .child(
-                div()
-                    .mt(px(space::S6))
-                    .flex()
-                    .flex_row()
-                    .flex_wrap()
-                    .items_center()
-                    .justify_end()
-                    .gap(px(space::S3))
-                    .child(
-                        button("service-details-close", ButtonStyle::Text, th)
-                            .focus_ring(th)
-                            .on_click(cx.listener(|this, _, _, cx| {
-                                this.close_service_details(cx);
-                            }))
-                            .child(tr!("service-details-close")),
-                    )
-                    .child(
-                        button("service-details-copy", ButtonStyle::Outlined, th)
-                            .focus_ring(th)
-                            .on_click(cx.listener(|this, _, _, cx| this.copy_service_details(cx)))
-                            .child(tr!("service-details-copy")),
-                    )
-                    .child(
-                        button("service-details-again", ButtonStyle::Filled, th)
-                            .focus_ring_filled(th)
-                            .on_click(cx.listener(|this, _, _, cx| this.start_service_again(cx)))
-                            .child(tr!("service-start-again")),
-                    ),
             );
-        let vw = self.room_width();
+        // However long the report, it scrolls in here: the title and the
+        // buttons always stay in the window.
+        let width = DIALOG_WIDTH.min(self.room_width() - 32.0);
+        let report_height = report_height(&details, width - 2.0 * (space::S6 + space::S4));
+        let report = div()
+            .h(px(report_height))
+            .flex_shrink_1()
+            .min_h_0()
+            .mt(px(space::S4))
+            .mx(px(space::S6))
+            .flex()
+            .flex_col()
+            .rounded(px(radius::SM))
+            .bg(rgba(th.on_pane(th.read_row)))
+            .border_1()
+            .border_color(rgba(th.divider))
+            .overflow_hidden()
+            .child(
+                bar.draw(
+                    "service-details-bar",
+                    &scroll,
+                    div()
+                        .id("service-details-report")
+                        .size_full()
+                        .overflow_y_scroll()
+                        .track_scroll(&scroll)
+                        .child(
+                            self.copyable(SharedString::from(details), th)
+                                .px(px(space::S4))
+                                .py(px(space::S3))
+                                .font_family("monospace")
+                                .text_size(px(text::CAPTION))
+                                .line_height(px(18.0))
+                                .text_color(rgba(th.text_dim)),
+                        ),
+                    th.text_dim & 0xffff_ff00 | 0x99,
+                )
+                .flex_shrink_1()
+                .min_h_0(),
+            );
+        let buttons = div()
+            .flex_none()
+            .px(px(space::S6))
+            .pt(px(space::S6))
+            .pb(px(space::S5))
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .items_center()
+            .justify_end()
+            .gap(px(space::S3))
+            .child(
+                button("service-details-close", ButtonStyle::Text, th)
+                    .focus_ring(th)
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        this.close_service_details(cx);
+                    }))
+                    .child(tr!("service-details-close")),
+            )
+            .child(
+                button("service-details-copy", ButtonStyle::Outlined, th)
+                    .focus_ring(th)
+                    .on_click(cx.listener(|this, _, _, cx| this.copy_service_details(cx)))
+                    .child(tr!("service-details-copy")),
+            )
+            .child(
+                button("service-details-again", ButtonStyle::Filled, th)
+                    .focus_ring_filled(th)
+                    .on_click(cx.listener(|this, _, _, cx| this.start_service_again(cx)))
+                    .child(tr!("service-start-again")),
+            );
         let focus = self.dialog_focus.clone();
         let card = div()
             .id("service-details")
@@ -402,13 +437,18 @@ impl MailWindow {
                 }
             }))
             .occlude()
-            .w(px(DIALOG_WIDTH.min(vw - 32.0)))
+            .w(px(width))
+            .max_h_full()
+            .min_h_0()
             .flex()
             .flex_col()
+            .overflow_hidden()
             .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
             .font_weight(FontWeight::NORMAL)
-            .child(body);
+            .child(header)
+            .child(report)
+            .child(buttons);
         Some(
             div()
                 .absolute()
@@ -418,6 +458,7 @@ impl MailWindow {
                 .flex()
                 .items_center()
                 .justify_center()
+                .p(px(space::S4))
                 .bg(rgba(fade(0x0000_0066, t)))
                 .child(
                     div()
@@ -430,10 +471,35 @@ impl MailWindow {
                             this.close_service_details(cx);
                         })),
                 )
-                .child(div().opacity(t).mt(px(lerp(24.0, 0.0, t))).child(card))
+                .child(
+                    div()
+                        .max_h_full()
+                        .min_h_0()
+                        .flex()
+                        .flex_col()
+                        .opacity(t)
+                        .mt(px(lerp(24.0, 0.0, t)))
+                        .child(card),
+                )
                 .into_any_element(),
         )
     }
+}
+
+/// How tall the report's box is for `details` in a box `width` wide: as
+/// tall as its lines (each one wrapped, at the monospace caption's width
+/// per character), up to [`REPORT_MAX_HEIGHT`]. A short window shrinks
+/// it further, and it scrolls.
+fn report_height(details: &str, width: f32) -> f32 {
+    // A little wider than the font's advance, so a guess errs to room.
+    const CHAR_WIDTH: f32 = 7.5;
+    let per_line = (width / CHAR_WIDTH).floor().max(1.0) as usize;
+    let lines: usize = details
+        .lines()
+        .map(|line| line.chars().count().div_ceil(per_line).max(1))
+        .sum();
+    // The line height, the padding and the border.
+    (lines as f32 * 18.0 + 2.0 * space::S3 + 2.0).min(REPORT_MAX_HEIGHT)
 }
 
 /// What Details shows and Copy copies: the errors of every try, the end
