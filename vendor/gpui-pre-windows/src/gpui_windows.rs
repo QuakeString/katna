@@ -1,5 +1,6 @@
 #![cfg(target_os = "windows")]
 
+mod backdrop_blur;
 mod clipboard;
 mod destination_list;
 mod dialog;
@@ -38,6 +39,7 @@ pub(crate) use vsync::*;
 pub(crate) use window::*;
 pub(crate) use wrapper::*;
 
+pub use backdrop_blur::{backdrop_blur_marker, backdrop_blur_supported, erase_marker};
 pub use platform::WindowsPlatform;
 
 pub(crate) use windows::Win32::Foundation::HWND;

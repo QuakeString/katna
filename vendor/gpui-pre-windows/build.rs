@@ -55,6 +55,22 @@ mod shader_compilation {
             );
         }
 
+        // Katna: the backdrop blur's passes.
+        {
+            let shader_path = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap())
+                .join("src/backdrop_blur.hlsl");
+            println!("cargo:rerun-if-changed={}", shader_path.display());
+            for module in ["blur_down", "blur_up", "blur_composite"] {
+                compile_shader_for_module(
+                    module,
+                    &out_dir,
+                    &fxc_path,
+                    shader_path.to_str().unwrap(),
+                    &rust_binding_path,
+                );
+            }
+        }
+
         {
             let shader_path = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap())
                 .join("src/color_text_raster.hlsl");

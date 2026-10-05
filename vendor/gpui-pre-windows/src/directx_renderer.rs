@@ -19,6 +19,7 @@ use windows::{
     core::{HSTRING, Interface},
 };
 
+use crate::backdrop_blur::{BackdropBlur, Frame, is_erase, marker_radius};
 use crate::directx_renderer::shader_resources::{RawShaderBytes, ShaderModule, ShaderTarget};
 use crate::*;
 use gpui::*;
@@ -86,6 +87,10 @@ struct DirectXResources {
 struct DirectXRenderPipelines {
     shadow_pipeline: PipelineState<Shadow>,
     quad_pipeline: PipelineState<Quad>,
+    /// Katna: quads that clear what is under them are drawn with this.
+    quad_erase_blend: ID3D11BlendState,
+    /// Katna: blurs behind marked quads; `None` if it could not be made.
+    backdrop_blur: Option<BackdropBlur>,
     path_rasterization_pipeline: PipelineState<PathRasterizationSprite>,
     path_sprite_pipeline: PipelineState<PathSprite>,
     underline_pipeline: PipelineState<Underline>,
@@ -362,13 +367,14 @@ impl DirectXRenderer {
             .as_ref()
             .and_then(|devices| devices.annotation.clone())
             .filter(|annotation| unsafe { annotation.GetStatus().as_bool() });
+        let mut blurs = 0;
         for batch in scene.batches() {
             let _annotation = annotation
                 .as_ref()
                 .map(|annotation| Annotation::new(annotation, HSTRING::from(batch.label())));
             match batch {
                 PrimitiveBatch::Shadows(range) => self.draw_shadows(range.start, range.len()),
-                PrimitiveBatch::Quads(range) => self.draw_quads(range.start, range.len()),
+                PrimitiveBatch::Quads(range) => self.draw_quad_batch(scene, range, &mut blurs),
                 PrimitiveBatch::Paths(range) => {
                     let paths = &scene.paths[range];
                     self.draw_paths_to_intermediate(paths)?;
@@ -609,6 +615,72 @@ impl DirectXRenderer {
                 .context("batch params buffer missing")?,
             start as u32,
             len as u32,
+        )
+    }
+
+    /// Katna: draws a batch of quads, first blurring what is under each
+    /// quad marked for a backdrop blur, and drawing each quad marked to
+    /// erase so it clears what is under it.
+    fn draw_quad_batch(
+        &mut self,
+        scene: &Scene,
+        range: std::ops::Range<usize>,
+        blurs: &mut usize,
+    ) -> Result<()> {
+        let mut start = range.start;
+        let blurs_here = self.pipelines.backdrop_blur.is_some();
+        for index in range.clone() {
+            let quad = &scene.quads[index];
+            if is_erase(quad) {
+                self.draw_quads(start, index - start)?;
+                self.draw_erase_quad(index)?;
+                start = index + 1;
+                continue;
+            }
+            if !blurs_here {
+                continue;
+            }
+            let Some(radius) = marker_radius(quad) else {
+                continue;
+            };
+            self.draw_quads(start, index - start)?;
+            start = index;
+            let devices = self.devices.as_ref().context("devices missing")?;
+            let resources = self.resources.as_ref().context("resources missing")?;
+            let frame = Frame {
+                texture: resources
+                    .render_target
+                    .as_ref()
+                    .context("missing render target")?,
+                view: &resources.render_target_view,
+                viewport: &resources.viewport,
+            };
+            if let Some(blur) = self.pipelines.backdrop_blur.as_mut() {
+                blur.blur(
+                    &devices.device,
+                    &devices.device_context,
+                    frame,
+                    quad,
+                    radius,
+                    *blurs,
+                )?;
+            }
+            *blurs += 1;
+        }
+        self.draw_quads(start, range.end - start)
+    }
+
+    fn draw_erase_quad(&mut self, index: usize) -> Result<()> {
+        let devices = self.devices.as_ref().context("devices missing")?;
+        self.pipelines.quad_pipeline.draw_range_blended(
+            &devices.device_context,
+            self.globals
+                .batch_params_buffer
+                .as_ref()
+                .context("batch params buffer missing")?,
+            index as u32,
+            1,
+            &self.pipelines.quad_erase_blend,
         )
     }
 
@@ -949,6 +1021,8 @@ impl DirectXRenderPipelines {
             64,
             create_blend_state(device)?,
         )?;
+        let quad_erase_blend = create_blend_state_for_erase(device)?;
+        let backdrop_blur = BackdropBlur::new(device, RENDER_TARGET_FORMAT);
         let path_rasterization_pipeline = PipelineState::new(
             device,
             "path_rasterization_pipeline",
@@ -995,6 +1069,8 @@ impl DirectXRenderPipelines {
         Ok(Self {
             shadow_pipeline,
             quad_pipeline,
+            quad_erase_blend,
+            backdrop_blur,
             path_rasterization_pipeline,
             path_sprite_pipeline,
             underline_pipeline,
@@ -1220,6 +1296,35 @@ impl<T> PipelineState<T> {
             &self.vertex,
             &self.fragment,
             &self.blend_state,
+        );
+        unsafe {
+            device_context.DrawInstanced(4, instance_count, 0, 0);
+        }
+        Ok(())
+    }
+
+    /// Katna: [`Self::draw_range`] with another blend state.
+    fn draw_range_blended(
+        &self,
+        device_context: &ID3D11DeviceContext,
+        batch_params_buffer: &ID3D11Buffer,
+        first_instance: u32,
+        instance_count: u32,
+        blend_state: &ID3D11BlendState,
+    ) -> Result<()> {
+        anyhow::ensure!(
+            first_instance as usize + instance_count as usize <= self.buffer_size,
+            "DirectX instance range exceeds the {} buffer",
+            self.label
+        );
+        update_batch_start(device_context, batch_params_buffer, first_instance)?;
+        set_pipeline_state(
+            device_context,
+            slice::from_ref(&self.view),
+            D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
+            &self.vertex,
+            &self.fragment,
+            blend_state,
         );
         unsafe {
             device_context.DrawInstanced(4, instance_count, 0, 0);
@@ -1503,6 +1608,25 @@ fn create_blend_state(device: &ID3D11Device) -> Result<ID3D11BlendState> {
     }
 }
 
+/// Katna: a quad drawn with this keeps of what is under it only what it
+/// does not cover; its own colour is not drawn.
+fn create_blend_state_for_erase(device: &ID3D11Device) -> Result<ID3D11BlendState> {
+    let mut desc = D3D11_BLEND_DESC::default();
+    desc.RenderTarget[0].BlendEnable = true.into();
+    desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
+    desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+    desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+    desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL.0 as u8;
+    unsafe {
+        let mut state = None;
+        device.CreateBlendState(&desc, Some(&mut state))?;
+        Ok(state.unwrap())
+    }
+}
+
 #[inline]
 fn create_blend_state_for_subpixel_rendering(device: &ID3D11Device) -> Result<ID3D11BlendState> {
     let mut desc = D3D11_BLEND_DESC::default();
@@ -1711,6 +1835,10 @@ pub(crate) mod shader_resources {
         SubpixelSprite,
         PolychromeSprite,
         EmojiRasterization,
+        // Katna: the backdrop blur's passes (`backdrop_blur.hlsl`).
+        BlurDown,
+        BlurUp,
+        BlurComposite,
     }
 
     #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -1788,6 +1916,18 @@ pub(crate) mod shader_resources {
                     ShaderTarget::Vertex => EMOJI_RASTERIZATION_VERTEX_BYTES,
                     ShaderTarget::Fragment => EMOJI_RASTERIZATION_FRAGMENT_BYTES,
                 },
+                ShaderModule::BlurDown => match target {
+                    ShaderTarget::Vertex => BLUR_DOWN_VERTEX_BYTES,
+                    ShaderTarget::Fragment => BLUR_DOWN_FRAGMENT_BYTES,
+                },
+                ShaderModule::BlurUp => match target {
+                    ShaderTarget::Vertex => BLUR_UP_VERTEX_BYTES,
+                    ShaderTarget::Fragment => BLUR_UP_FRAGMENT_BYTES,
+                },
+                ShaderModule::BlurComposite => match target {
+                    ShaderTarget::Vertex => BLUR_COMPOSITE_VERTEX_BYTES,
+                    ShaderTarget::Fragment => BLUR_COMPOSITE_FRAGMENT_BYTES,
+                },
             };
             Self { inner: bytes }
         }
@@ -1800,10 +1940,12 @@ pub(crate) mod shader_resources {
                 Direct3D::ID3DInclude, Hlsl::D3D_COMPILE_STANDARD_FILE_INCLUDE,
             };
 
-            let shader_name = if matches!(entry, ShaderModule::EmojiRasterization) {
-                "color_text_raster.hlsl"
-            } else {
-                "shaders.hlsl"
+            let shader_name = match entry {
+                ShaderModule::EmojiRasterization => "color_text_raster.hlsl",
+                ShaderModule::BlurDown | ShaderModule::BlurUp | ShaderModule::BlurComposite => {
+                    "backdrop_blur.hlsl"
+                }
+                _ => "shaders.hlsl",
             };
 
             let entry = format!(
@@ -1875,6 +2017,9 @@ pub(crate) mod shader_resources {
                 ShaderModule::SubpixelSprite => "subpixel_sprite",
                 ShaderModule::PolychromeSprite => "polychrome_sprite",
                 ShaderModule::EmojiRasterization => "emoji_rasterization",
+                ShaderModule::BlurDown => "blur_down",
+                ShaderModule::BlurUp => "blur_up",
+                ShaderModule::BlurComposite => "blur_composite",
             }
         }
     }
