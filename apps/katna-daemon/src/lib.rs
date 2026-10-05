@@ -176,6 +176,16 @@ fn run_backfill(
         return Ok(());
     }
 
+    // Receipts stored before they were shown as ticks leave the lists.
+    let receipts = katna_sync::receipts::backfill(&mut store)?;
+    if receipts > 0 {
+        tell();
+        tracing::info!(receipts, "found receipts among old mail");
+    }
+    if stop.load(Ordering::Relaxed) {
+        return Ok(());
+    }
+
     // Attachment lists for downloaded mail stored without one; Gmail's AMP
     // body is not a file.
     let started = Instant::now();
