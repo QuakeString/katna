@@ -761,7 +761,7 @@ impl MailWindow {
                         cx.listener(|this, _, window, cx| this.send_compose_default(window, cx)),
                     )
                     .when(compact, |d| {
-                        d.pl(px(14.0)).pr(px(10.0)).child(icon(
+                        d.px(px(katna_ui::tokens::space::S4)).child(icon(
                             if archives { "archive" } else { "send" },
                             th.on_accent,
                             18.0,
