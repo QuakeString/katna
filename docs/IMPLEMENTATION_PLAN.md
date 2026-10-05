@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 4 October 2026, through PR #729). Companion to
+> Status: **v0.2** (updated 4 October 2026, through PR #736). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -25,7 +25,11 @@ not name.
   of the UI translated; reading and sending encrypted mail; Phase 6
   except the upstream proposals: Calendar, Tasks, Notes and Contacts pages that sync with each
   account's own service; the Windows build and installer.
-- **Merged since the last refresh (#523–#729):** account problems shown at
+- **Merged since the last refresh (#523–#736):** Katna Mail starting
+  the background service itself when it is not running, and opening a
+  window when an earlier launch is stuck (A.14, #731–#733); read receipts
+  shown as ticks on the mail they answer instead of as mail (7.1, #734,
+  #736); frosted glass on Windows (A.13, #735); account problems shown at
   the top of the list and in Settings › Accounts with their fix, an
   Outbox that holds mail while signed out, plain words when a server
   refuses a change, and one desktop notification and tray line per
@@ -406,8 +410,8 @@ merged; the pull requests say what changed.
 | A.10 Mail window polish ✅ #357, #359, #368, #375, #376, #378, #391, #395, #401, #402, #411, #421, #424, #428, #429, #430, #434, #435, #437, #439, #440, #441, #444, #450, #452, #454, #456, #457, #458, #459, #461, #470, #479, #481, #485, #491, #495, #496, #503, #507, #515, #532, #551, #554, #574, #575, #578, #581, #590, #594, #598, #600, #602, #603, #604, #607, #611, #615, #617, #618, #620, #621, #627, #640, #641, #643, #644, #645, #662, #664, #665, #666, #667, #668, #669, #673, #675, #676, #679, #681, #682, #694, #697, #698, #719, #716, #721, #724, #725, #726 | Inbox tabs as a pill bar; coloured folder icons with faint count pills; one checkbox at every scale; a right-click menu that fits the window; tables that keep their columns; Back to top; selectable header details; touchpad glide on Wayland; one left-bar button and fold on every page; a soft search box; reply arrows in the list; Ctrl+click and Shift+click selection; Space and arrows on folders; the window moved from any empty space; the Feeds page removed; rename, delete and drag to folders, Move to with search, Label as; Settings sorted into all apps and each app's pages (its own window, #676, was reverted in #681); menus and popovers fade out; text selectable and copyable across the app; dialogs, menus and tooltips stay inside Katna's frame; mail, chat and list content starts below solid bars (Frosted headers dropped); a steady phone list after a quick scroll |
 | A.11 Sending files ✅ #432, #489, #490 | Send with Katna Mail from Dolphin, GNOME Files and Explorer; Forward keeps the original's attachments |
 | A.12 More Linux packages ✅ #462, #634, #695, #709 | Fedora, Nix, AppImage, Snap, Flatpak and tarball builds tested and published on `linux-latest`; a .deb for Debian and Ubuntu; drawing without a GPU on Debian 12 and Ubuntu 22.04 |
-| A.13 Windows fixes ✅ #369, #425, #426, #443, #446, #460, #632, #700 | Windows draws the shadow and corners; windows fit the screen; Katna's frame and blur; sign-in keys and DNS; cleaner uninstall; Katna updates itself on Windows; a Microsoft Store package (MSIX) beside Katna Setup |
-| A.14 Sync and daemon ✅ #390, #398, #405, #406, #407, #409, #420, #423, #453, #671 | Newest mail first; a locked keyring waited for at login; a switched-off Google API named with a Turn on button; a refused certificate explained; restart through systemd after an update |
+| A.13 Windows fixes ✅ #369, #425, #426, #443, #446, #460, #632, #700, #735 | Windows draws the shadow and corners; windows fit the screen; Katna's frame and blur, with frosted glass (#735); sign-in keys and DNS; cleaner uninstall; Katna updates itself on Windows; a Microsoft Store package (MSIX) beside Katna Setup |
+| A.14 Sync and daemon ✅ #390, #398, #405, #406, #407, #409, #420, #423, #453, #671, #731, #732, #733 | Newest mail first; a locked keyring waited for at login; a switched-off Google API named with a Turn on button; a refused certificate explained; restart through systemd after an update; Katna Mail starts the background service when it is not running and opens a window when an earlier launch is stuck |
 | A.15 CI and README ✅ #404, #419, #422, #427, #433, #438, #529, #563 | Tests on Arch only, Ubuntu and Windows in a Secondary workflow; README says why Katna exists and that it is at a very early stage |
 | A.16 Drives in Files ✅ #534, #537, #540, #541, #542, #550, #553, #573 | Google Drive and OneDrive in the Files page and the Compose and chat pickers; upload files and folders; Move to bin, Rename, Share and an uploads tray |
 | A.17 Compose ✅ #531, #536, #539, #579, #595, #663, #672, #677, #680, #683 | A calmer Quiet look; drafts saved while writing with "Draft saved"; a signature tag; Compose opens beside a half-written reply; click an attached file to open it; an emptied message keeps no draft; signatures imported from Gmail, Thunderbird, Evolution and KMail, designed signatures as one block, Paste HTML; twelve signature layouts with a fields form |
@@ -748,7 +752,7 @@ says so and the owner has decided it.
 | Task | Where it runs | Deliverable | Status |
 |---|---|---|---|
 | 7.0 Katna accounts ✅ #170 | Server + app | A Katna account on the server, like Mailspring ID (owner, 27 September 2026): sign-up with an email address and password, address verification, per-device tokens that replace the per-install token, a Katna account page in Settings, and every server feature (7.1–7.3, 7.8) behind sign-in. No payments yet. The account holds no mail logins (7.10) | Done |
-| 7.1 Read receipts ✅ #160, #182 | Server + daemon + app | Opens per recipient through a tracking picture; a standard read-receipt request (MDN, RFC 8098) is offered as the no-server choice, which the recipient may decline; per-recipient sending (ARCHITECTURE.md §11); Apple Mail Privacy Protection shown as "maybe", scanners as "scanner"; off by default, per message | Done |
+| 7.1 Read receipts ✅ #160, #182, #734, #736 | Server + daemon + app | Opens per recipient through a tracking picture; a standard read-receipt request (MDN, RFC 8098) is offered as the no-server choice, which the recipient may decline; per-recipient sending (ARCHITECTURE.md §11); Apple Mail Privacy Protection shown as "maybe", scanners as "scanner"; off by default, per message | Done |
 | 7.2 Link tracking ✅ #160, #182 | Server + daemon + app | Clicks through `/l/<id>/<n>` redirects stored on the server (never an open redirect); shown per recipient and link | Done |
 | 7.3 Mailbox insights ✅ #184, #187 | App, with 7.1–7.2 events | An Activity view: open and click rates of tracked mail, reply rates and times, busiest senders and hours, subject lines that got replies; counted from the local store, only tracking events come from the server | Done: an Activity button beside search with a feed of opens and clicks, a Details report for the last 7 or 30 days, all time or chosen dates, each recipient's opens and clicks in the reader, and mail sent and received, reply rates and times, top correspondents and a weekday by hour grid from `mail.db` |
 | 7.4 Mail templates ✅ #168 | App (local) | Save mail as a template, start new mail or a reply from one, fields such as the first name; Settings > Compose > Templates; stored in `pim.db`. Sync between devices later with 7.12 | Done |
