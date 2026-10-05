@@ -75,3 +75,21 @@ problems-refused-other = The mail server of { $address } didn't accept { $count 
 }
 # The note's button: shows the server's own words.
 problems-details = Details
+
+## Katna's background service (katna-daemon) isn't running
+
+# A grey line at the top of the list while Katna Mail starts the service,
+# shown only when that takes more than a few seconds.
+service-starting = Starting Katna's background service…
+# An amber line at the top of the list when the service still won't start.
+service-failed = Katna's background service won't start, so mail isn't syncing.
+# The amber line's and the Details dialog's button: tries to start it again.
+service-start-again = Start again
+# A note after Katna Mail started the service again, when it had stopped
+# while the window was open.
+service-started-again = Katna's background service stopped and was started again.
+# The Details dialog: what went wrong, ready to copy.
+service-details-title = Why the service won't start
+service-details-body = Copy this and send it with your report. It has no mail or passwords in it.
+service-details-copy = Copy
+service-details-close = Close

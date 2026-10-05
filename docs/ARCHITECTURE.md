@@ -1145,6 +1145,16 @@ KRunner and GNOME search suggest saved people too, with their saved names
 - User settings: "Keep running in background" (default on), optional tray
   icon, and a real "Quit" (stops the daemon until next login or activation).
 - Single instance, enforced by owning the D-Bus name.
+- Katna Mail keeps it running: when its window opens without the daemon,
+  or the daemon's name goes away for more than 10 s (an update or systemd
+  restarts it sooner by itself), the window starts it
+  (`katna_dbus::start_daemon`: clears a failed systemd unit with
+  `ResetFailedUnit`, then D-Bus activation, or the binary beside it) and
+  tries again for 20 s. A grey line shows after 10 s, an amber line with
+  Start again and Details if it never starts, and a note if it had stopped
+  while the window was open (`apps/katna-mail/src/window/service.rs`). The
+  unit restarts it after a crash 5 s later (`RestartSec=5`), which never
+  reaches systemd's start limit.
 - Graceful shutdown: finish in-flight sends, flush the index, close IMAP sessions.
 - Updates: a package update replaces the binary while the old one runs.
   Every 30 s the daemon checks `/proc/self/exe`; once the file was replaced

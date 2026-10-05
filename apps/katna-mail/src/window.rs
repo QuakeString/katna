@@ -89,6 +89,7 @@ mod scheme_editor;
 mod scheme_picker;
 mod search_panel;
 mod select;
+mod service;
 mod settings;
 mod settings_page;
 mod settings_search;
@@ -722,6 +723,8 @@ pub struct MailWindow {
     crash_notice: Option<crash_notice::CrashNotice>,
     /// "Sign in again" for accounts whose OAuth2 sign-in stopped working.
     problems: problems::Problems,
+    /// Katna's background service, started again when it isn't running.
+    service: service::Service,
     /// Settings > User feedback's list of crash reports, as last read.
     saved_reports: Option<feedback_page::SavedReports>,
     /// Settings > Subscription (the Katna account), once shown.
@@ -1078,6 +1081,7 @@ impl MailWindow {
             undo_history: Vec::new(),
             crash_notice: None,
             problems: problems::Problems::default(),
+            service: service::Service::default(),
             saved_reports: None,
             katna: None,
             compose: None,
@@ -1346,6 +1350,7 @@ impl MailWindow {
                     this.watch_updates(connection.clone(), cx);
                     this.watch_contacts(connection.clone(), cx);
                     this.watch_tasks(cx);
+                    this.watch_service(connection.clone(), cx);
                     this.check_first_sync(cx);
                     this.check_problems(cx);
                 }
@@ -3625,6 +3630,7 @@ impl Render for MailWindow {
         let dialog_gone = self.dialog_focus.is_focused(window)
             && self.delete_ask.is_none()
             && self.app_off_ask.is_none()
+            && !self.service_details_open()
             && self.new_label.is_none()
             && self.rule_editor.is_none()
             && self.add_account.is_none()
@@ -3949,6 +3955,7 @@ impl Render for MailWindow {
         let danger = self.render_danger(&th, window, reduce, cx);
         let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let app_off_ask = self.render_app_off_ask(&th, window, reduce, cx);
+        let service_details = self.render_service_details(&th, window, reduce, cx);
         let rail_menu = self.render_rail_menu(&th, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let rule_editor = self.render_rule_editor(&th, window, reduce, cx);
@@ -4045,6 +4052,7 @@ impl Render for MailWindow {
             .children(danger)
             .children(delete_ask)
             .children(app_off_ask)
+            .children(service_details)
             .children(new_label)
             .children(rule_editor)
             .children(contact_label)

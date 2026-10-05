@@ -595,18 +595,18 @@ impl MailWindow {
             && !problems
                 .offline_later
                 .is_some_and(|until| until > Instant::now());
-        if shown.is_empty() && !offline {
+        let service = self.render_service_line(th, cx);
+        if shown.is_empty() && !offline && service.is_none() {
             return None;
         }
-        let mut lines: Vec<AnyElement> = Vec::new();
+        let mut lines: Vec<AnyElement> = service.into_iter().collect();
         if offline {
             lines.push(
                 self.problem_line(
                     "problems-offline".into(),
-                    "cloud-off",
-                    th.text_dim,
+                    icon("cloud-off", th.text_dim, 18.0),
                     tr!("problems-offline"),
-                    None,
+                    Vec::new(),
                     true,
                     None,
                     th,
@@ -624,10 +624,9 @@ impl MailWindow {
             lines.push(
                 self.problem_line(
                     "problems-folded".into(),
-                    "warning",
-                    th.warning,
+                    icon("warning", th.warning, 18.0),
                     tr!("problems-accounts-need-you", count = count),
-                    Some((
+                    vec![(
                         tr!("problems-show"),
                         Box::new(
                             |this: &mut Self,
@@ -638,7 +637,7 @@ impl MailWindow {
                                 cx.notify();
                             },
                         ),
-                    )),
+                    )],
                     false,
                     None,
                     th,
@@ -672,10 +671,9 @@ impl MailWindow {
                 lines.push(
                     self.problem_line(
                         SharedString::from(format!("problem-{id}")),
-                        problem.icon(),
-                        problem.color(th),
+                        icon(problem.icon(), problem.color(th), 18.0),
                         text,
-                        action,
+                        action.into_iter().collect(),
                         true,
                         Some(id),
                         th,
@@ -700,15 +698,15 @@ impl MailWindow {
     }
 
     /// One line: the band "select all" uses, with its sign, what happened,
-    /// the fix in the accent colour and Later.
+    /// the fixes in the accent colour and Later. `anchor` marks where the
+    /// first fix shows.
     #[allow(clippy::too_many_arguments)]
-    fn problem_line(
+    pub(super) fn problem_line(
         &self,
         id: SharedString,
-        sign: &'static str,
-        sign_color: u32,
+        sign: AnyElement,
         text: String,
-        action: Option<(String, LineClick)>,
+        actions: Vec<(String, LineClick)>,
         later: bool,
         anchor: Option<i64>,
         th: &Theme,
@@ -726,13 +724,19 @@ impl MailWindow {
                 .child(label)
         };
         let links = self.problems.fix_links.clone();
-        let action = action.map(|(label, click)| {
-            link(format!("{id}-fix").into(), label, th.accent)
+        let actions = actions.into_iter().enumerate().map(|(n, (label, click))| {
+            let fix_id: SharedString = if n == 0 {
+                format!("{id}-fix").into()
+            } else {
+                format!("{id}-fix-{n}").into()
+            };
+            link(fix_id, label, th.accent)
                 .relative()
                 .on_click(
                     cx.listener(move |this, event, window, cx| click(this, event, window, cx)),
                 )
-                .when_some(anchor, |link, account| {
+                .when_some(anchor.filter(|_| n == 0), |link, account| {
+                    let links = links.clone();
                     link.child(
                         canvas(
                             move |bounds, _, _| {
@@ -762,9 +766,18 @@ impl MailWindow {
             .border_b_1()
             .border_color(rgba(th.divider))
             .text_size(px(text::SMALL))
-            .child(icon(sign, sign_color, 18.0))
-            .child(div().min_w_0().child(text))
-            .children(action);
+            // The sign stays beside the words when the line wraps.
+            .child(
+                div()
+                    .min_w_0()
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(space::S3))
+                    .child(div().flex_none().child(sign))
+                    .child(div().min_w_0().child(text)),
+            )
+            .children(actions);
         ProblemLine {
             line,
             later: later.then(|| {
@@ -1092,16 +1105,17 @@ impl MailWindow {
 }
 
 /// What a problem line's fix does when clicked.
-type LineClick = Box<dyn Fn(&mut MailWindow, &ClickEvent, &mut Window, &mut Context<MailWindow>)>;
+pub(super) type LineClick =
+    Box<dyn Fn(&mut MailWindow, &ClickEvent, &mut Window, &mut Context<MailWindow>)>;
 
 /// A problem line, before its Later link is wired.
-struct ProblemLine {
+pub(super) struct ProblemLine {
     line: gpui::Div,
     later: Option<gpui::Stateful<gpui::Div>>,
 }
 
 impl ProblemLine {
-    fn on_click_later(
+    pub(super) fn on_click_later(
         self,
         handler: impl Fn(&ClickEvent, &mut Window, &mut gpui::App) + 'static,
     ) -> AnyElement {
@@ -1110,7 +1124,7 @@ impl ProblemLine {
             .into_any_element()
     }
 
-    fn into_any(self) -> AnyElement {
+    pub(super) fn into_any(self) -> AnyElement {
         self.line.into_any_element()
     }
 }
