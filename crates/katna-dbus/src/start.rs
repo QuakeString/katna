@@ -17,9 +17,13 @@ use katna_core::ids;
 /// How long to wait for a daemon this started to take its bus name.
 const WAIT: Duration = Duration::from_secs(10);
 
-/// How long to wait for a daemon that D-Bus or systemd started to take
-/// its bus name.
+/// How long to wait for a daemon that D-Bus started to take its bus name.
 const STARTED_WAIT: Duration = Duration::from_secs(5);
+
+/// How long to wait for the daemon systemd started to take its bus name:
+/// with many accounts it opens a while before it takes it.
+#[cfg(not(windows))]
+const UNIT_WAIT: Duration = Duration::from_secs(15);
 
 /// Makes sure `katna-daemon` runs or can be started by D-Bus: when its bus
 /// name has no owner and no activation file, starts the `katna-daemon`
@@ -60,11 +64,15 @@ pub async fn daemon_running(connection: &zbus::Connection) -> bool {
 }
 
 /// Starts `katna-daemon` if it isn't running, the way it is installed:
-/// through D-Bus activation (systemd's unit where there is one, first
-/// cleared of an earlier failure, which otherwise keeps systemd from
-/// starting it again), or the `katna-daemon` beside this program, also
-/// when activation fails. Returns
-/// once it owns its bus name, or why it didn't, in words for a report.
+/// through its systemd user unit where there is one (first cleared of an
+/// earlier failure, which otherwise keeps systemd from starting it), else
+/// through D-Bus activation or the `katna-daemon` beside this program.
+/// Returns once it owns its bus name, or why it didn't, in words for a
+/// report.
+///
+/// With a systemd unit it never starts a copy of its own: one outside
+/// systemd would keep the unit from ever starting (it finds the name
+/// taken), so `systemctl` would show the service as failed.
 pub async fn start_daemon(connection: &zbus::Connection) -> Result<(), String> {
     let dbus = zbus::fdo::DBusProxy::new(connection)
         .await
@@ -74,11 +82,14 @@ pub async fn start_daemon(connection: &zbus::Connection) -> Result<(), String> {
     if dbus.name_has_owner(name.clone()).await.unwrap_or(false) {
         return Ok(());
     }
+    #[cfg(not(windows))]
+    if let Some(started) = start_unit(connection).await {
+        started?;
+        return wait_for_owner(&dbus, &name, UNIT_WAIT).await;
+    }
     if !activatable(&dbus).await {
         return start_beside(&dbus, WAIT).await;
     }
-    #[cfg(not(windows))]
-    reset_failed_unit(connection).await;
     let started: zbus::Result<u32> = connection
         .call_method(
             Some("org.freedesktop.DBus"),
@@ -93,14 +104,49 @@ pub async fn start_daemon(connection: &zbus::Connection) -> Result<(), String> {
         Ok(_) => wait_for_owner(&dbus, &name, STARTED_WAIT).await,
         Err(err) => Err(format!("starting {}: {err}", ids::DAEMON_BUS_NAME)),
     };
-    // When systemd or D-Bus won't start it, the `katna-daemon` beside this
-    // program still can: the user never needs a terminal for it.
+    // When D-Bus won't start it, the `katna-daemon` beside this program
+    // still can: the user never needs a terminal for it.
     match activated {
         Ok(()) => Ok(()),
         Err(activation) => start_beside(&dbus, WAIT)
             .await
             .map_err(|beside| format!("{activation}; {beside}")),
     }
+}
+
+/// Has systemd start the daemon's user unit, as `systemctl --user start`
+/// does, after clearing an earlier failure. `None` where there is no
+/// systemd or no such unit; else whether systemd took the job.
+#[cfg(not(windows))]
+async fn start_unit(connection: &zbus::Connection) -> Option<Result<(), String>> {
+    let manager = zbus::Proxy::new(
+        connection,
+        "org.freedesktop.systemd1",
+        "/org/freedesktop/systemd1",
+        "org.freedesktop.systemd1.Manager",
+    )
+    .await
+    .ok()?;
+    let path: zbus::zvariant::OwnedObjectPath = manager.call("LoadUnit", &(UNIT,)).await.ok()?;
+    let unit = zbus::Proxy::new(
+        connection,
+        "org.freedesktop.systemd1",
+        path,
+        "org.freedesktop.systemd1.Unit",
+    )
+    .await
+    .ok()?;
+    let state: String = unit.get_property("LoadState").await.ok()?;
+    if state != "loaded" {
+        return None;
+    }
+    let _: zbus::Result<()> = manager.call("ResetFailedUnit", &(UNIT,)).await;
+    let job: zbus::Result<zbus::zvariant::OwnedObjectPath> =
+        manager.call("StartUnit", &(UNIT, "replace")).await;
+    Some(
+        job.map(|_| ())
+            .map_err(|err| format!("systemd, starting {UNIT}: {err}")),
+    )
 }
 
 /// Whether the session bus has an activation file for the daemon.
@@ -110,22 +156,6 @@ async fn activatable(dbus: &zbus::fdo::DBusProxy<'_>) -> bool {
         .unwrap_or_default()
         .iter()
         .any(|n| n.as_str() == ids::DAEMON_BUS_NAME)
-}
-
-/// Clears an earlier failure of the daemon's systemd unit, so systemd
-/// starts it again (after a crash loop it refuses until then). Where
-/// there is no systemd or no unit, does nothing.
-#[cfg(not(windows))]
-async fn reset_failed_unit(connection: &zbus::Connection) {
-    let _ = connection
-        .call_method(
-            Some("org.freedesktop.systemd1"),
-            "/org/freedesktop/systemd1",
-            Some("org.freedesktop.systemd1.Manager"),
-            "ResetFailedUnit",
-            &(UNIT,),
-        )
-        .await;
 }
 
 /// The daemon's systemd user unit (`packaging/systemd`).
