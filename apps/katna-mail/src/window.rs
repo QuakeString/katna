@@ -3887,6 +3887,8 @@ impl Render for MailWindow {
         // Too narrow for both (wider than a phone, with wide window
         // buttons): the button goes rather than cover the agenda button.
         let activity_fits = room - activity_room >= SEARCH_MIN_WIDTH;
+        // Otherwise (and always on a phone) it moves into the box's end.
+        let activity_beside = shape.phone < 0.5 && activity_fits;
         let open_width = (room - if activity_fits { activity_room } else { 0.0 })
             .clamp(SEARCH_MIN_WIDTH, SEARCH_WIDTH);
         // The title's box has room for the longest app name; the box
@@ -4098,9 +4100,16 @@ impl Render for MailWindow {
                         .flex_row()
                         .items_center()
                         .gap(px(8.0))
-                        .child(self.render_search(&th, search_width, search_t, window, cx))
-                        .when(shape.phone < 0.5 && activity_fits, |d| {
-                            d.children(self.render_activity_button(&th, cx))
+                        .child(self.render_search(
+                            &th,
+                            search_width,
+                            search_t,
+                            !activity_beside,
+                            window,
+                            cx,
+                        ))
+                        .when(activity_beside, |d| {
+                            d.children(self.render_activity_button(&th, ACTIVITY_BUTTON_WIDTH, cx))
                         })
                         .into_any_element()
                 })
