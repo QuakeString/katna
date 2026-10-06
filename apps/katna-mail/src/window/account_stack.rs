@@ -88,12 +88,15 @@ impl MailWindow {
 
     /// The pictures of `accounts`, each `size` across, overlapping, eased
     /// apart while `spread`, each in a cut of `cut`: the colour behind
-    /// them.
+    /// them. With `reserve` the row always takes its spread width and the
+    /// pictures ease apart to the left inside it, so nothing beside it
+    /// moves.
     pub(super) fn render_account_stack(
         &self,
         accounts: &[&Account],
         size: f32,
         spread: bool,
+        reserve: bool,
         cut: u32,
         th: &Theme,
     ) -> AnyElement {
@@ -157,12 +160,19 @@ impl MailWindow {
                         // The cut takes on the hover's tint as it fades in.
                         let tint = (hover & 0xff) as f32 / 255.0 * s.clamp(0.0, 1.0);
                         let place = place.border_color(rgba(mix(cut, hover | 0xff, tint)));
-                        place.left(px(ix as f32 * (side - motion::lerp(rest, apart, s))))
+                        let step = side - motion::lerp(rest, apart, s);
+                        // In a reserved row the last place stays put at the
+                        // right and the first moves out into the room.
+                        if reserve {
+                            place.left(px(width(1.0) - side - (n - 1.0 - ix as f32) * step))
+                        } else {
+                            place.left(px(ix as f32 * step))
+                        }
                     })
                     .into_any_element()
             }))
             .with_spring("account-stack-width", spring(), move |row, s: f32| {
-                row.w(px(width(s)))
+                row.w(px(width(if reserve { 1.0 } else { s })))
             })
             .into_any_element()
     }
@@ -198,7 +208,7 @@ impl MailWindow {
         } else {
             menu
         };
-        let stack = self.render_account_stack(&accounts, ROW_PICTURE, false, cut, th);
+        let stack = self.render_account_stack(&accounts, ROW_PICTURE, false, false, cut, th);
         Some(
             div()
                 .id("account-row-all")

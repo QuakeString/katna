@@ -326,7 +326,7 @@ const PANEL_RADIUS: f32 = katna_ui::tokens::radius::LG;
 const SEARCH_WIDTH: f32 = 720.0;
 /// The narrowest the search box gets beside the top bar's buttons.
 const SEARCH_MIN_WIDTH: f32 = 120.0;
-/// The Activity button beside the search box.
+/// The Activity button at the bar's right end.
 const ACTIVITY_BUTTON_WIDTH: f32 = 40.0;
 /// Quick settings panel, with its right margin.
 const SETTINGS_WIDTH: f32 = 336.0;
@@ -3862,9 +3862,10 @@ impl Render for MailWindow {
             0.0
         };
         let open_left = list_left.max(after_title);
-        // The Activity button after the box, with the gap before it.
+        // The Activity button first among the buttons at the right, with
+        // the gap after it.
         let activity_room = if self.activity_shown() && shape.phone < 0.5 {
-            ACTIVITY_BUTTON_WIDTH + 8.0
+            ACTIVITY_BUTTON_WIDTH + TOP_BAR_GAP
         } else {
             0.0
         };
@@ -3888,7 +3889,7 @@ impl Render for MailWindow {
         // buttons): the button goes rather than cover the agenda button.
         let activity_fits = room - activity_room >= SEARCH_MIN_WIDTH;
         // Otherwise (and always on a phone) it moves into the box's end.
-        let activity_beside = shape.phone < 0.5 && activity_fits;
+        let activity_at_end = shape.phone < 0.5 && activity_fits;
         let open_width = (room - if activity_fits { activity_room } else { 0.0 })
             .clamp(SEARCH_MIN_WIDTH, SEARCH_WIDTH);
         // The title's box has room for the longest app name; the box
@@ -4104,20 +4105,17 @@ impl Render for MailWindow {
                             &th,
                             search_width,
                             search_t,
-                            !activity_beside,
+                            !activity_at_end,
                             window,
                             cx,
                         ))
-                        .when(activity_beside, |d| {
-                            d.children(self.render_activity_button(&th, ACTIVITY_BUTTON_WIDTH, cx))
-                        })
                         .into_any_element()
                 })
             },
             end: if onboarding {
                 Vec::new()
             } else {
-                self.render_top_end(&th, cx)
+                self.render_top_end(&th, activity_at_end, cx)
             },
             height: Some(TOP_BAR_HEIGHT),
             background: Some(th.backdrop),

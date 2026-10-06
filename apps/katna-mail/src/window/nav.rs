@@ -730,7 +730,7 @@ impl MailWindow {
                     })),
                 )
             })
-            // Activity, when the bar has no room for it after the box.
+            // Activity, when the bar has no room for it at the right end.
             .when(activity_inside, |d| {
                 d.children(self.render_activity_button(
                     th,
@@ -741,7 +741,14 @@ impl MailWindow {
             .into_any_element()
     }
 
-    pub(super) fn render_top_end(&self, th: &Theme, cx: &mut Context<Self>) -> Vec<AnyElement> {
+    /// The buttons at the bar's right end; `activity` puts Activity first
+    /// among them.
+    pub(super) fn render_top_end(
+        &self,
+        th: &Theme,
+        activity: bool,
+        cx: &mut Context<Self>,
+    ) -> Vec<AnyElement> {
         let settings = icon_button_colored(
             "settings-button",
             "settings",
@@ -786,7 +793,10 @@ impl MailWindow {
                         this.render_account_stack(
                             accounts,
                             super::account_stack::PICTURE,
-                            this.account_hovered,
+                            // Spread while the menu is open too, so the
+                            // button's fill fits the pictures.
+                            this.account_hovered || this.account_menu,
+                            true,
                             cut,
                             th,
                         )
@@ -883,6 +893,19 @@ impl MailWindow {
         // A phone has Settings in its drawer.
         let phone = self.layout.shape.phone;
         let mut end = Vec::new();
+        // Opens and clicks, with the same gap as the buttons after it.
+        if activity {
+            end.extend(
+                self.render_activity_button(th, super::ACTIVITY_BUTTON_WIDTH, cx)
+                    .map(|button| {
+                        div()
+                            .flex_none()
+                            .mr(px(super::TOP_BAR_GAP - super::BAR_ITEM_GAP))
+                            .child(button)
+                            .into_any_element()
+                    }),
+            );
+        }
         // The day's agenda, on the Mail page of a desktop window.
         if self.agenda_button_shown() {
             end.push(
