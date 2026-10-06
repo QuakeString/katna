@@ -309,16 +309,33 @@ impl ScrollBar {
                         window.refresh();
                     },
                 )
-                .child(
-                    div()
-                        .absolute()
-                        .right(px((TRACK - width) / 2.0))
-                        .top(px(thumb.top))
-                        .w(px(width))
-                        .h(px(thumb.height))
-                        .rounded_full()
-                        .bg(rgba(fill)),
-                )
+                .child({
+                    // The thumb is placed as it paints, from the sizes laid
+                    // out this frame: those read while building it are last
+                    // frame's, so a list that just grew or shrank (a bar
+                    // above it came or went) would show it out of place for
+                    // a frame.
+                    let laid = state.clone();
+                    canvas(
+                        |_, _, _| (),
+                        move |track, (), window, _| {
+                            let (visible, max, scrolled) = laid.heights();
+                            let at = Thumb::new(visible, max, scrolled).unwrap_or(thumb);
+                            let bounds = Bounds::new(
+                                point(
+                                    track.right() - px((TRACK + width) / 2.0),
+                                    track.top() + px(at.top),
+                                ),
+                                gpui::size(px(width), px(at.height)),
+                            );
+                            window.paint_quad(
+                                gpui::fill(bounds, rgba(fill)).corner_radii(px(width / 2.0)),
+                            );
+                        },
+                    )
+                    .absolute()
+                    .size_full()
+                })
                 .child(
                     canvas(
                         move |bounds, _, _| record.borrow_mut().track = Some(bounds),
