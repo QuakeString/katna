@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 4 October 2026, through PR #748). Companion to
+> Status: **v0.2** (updated 4 October 2026, through PR #751). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -25,11 +25,13 @@ not name.
   of the UI translated; reading and sending encrypted mail; Phase 6
   except the upstream proposals: Calendar, Tasks, Notes and Contacts pages that sync with each
   account's own service; the Windows build and installer.
-- **Merged since the last refresh (#523–#748):** an Activity button in
+- **Merged since the last refresh (#523–#751):** an Activity button in
   the phone search bar beside All Accounts' pictures, a phone Compose
   button that keeps hover off the list, star and Important markers that
   show only on hover when off, unset tick boxes and markers that rest
-  fainter, and steadier scroll bars (A.10, #741, #742, #744–#746, #748); a chat pinned bar that fades in without moving the chat
+  fainter, steadier scroll bars, Activity beside Calendar, a steady
+  account stack hover and a search box that fills its bar (A.10, #741,
+  #742, #744–#746, #748, #750, #751); a chat pinned bar that fades in without moving the chat
   (A.1, #743); Katna Mail starting
   the background service itself when it is not running, always through
   its systemd unit, and opening a window when an earlier launch is stuck
@@ -414,7 +416,7 @@ merged; the pull requests say what changed.
 | A.7 Accounts ✅ #361, #392, #415, #442, #447 | Add account with provider tiles and POP3; an account menu with sync state, storage and sign in again; a new account's inbox first; a first start that shows the window and offers a Katna account; switching account keeps the page |
 | A.8 Zoho ✅ #393, #397, #399 | Sign in with Zoho for Zoho's calendars and tasks |
 | A.9 Calendar, Tasks, Notes and Contacts polish ✅ #342, #345, #346, #347, #348, #350, #351, #352, #358, #360, #363, #364, #367, #372, #374, #381, #382, #383, #384, #388, #410, #412, #417, #418, #463, #465, #478, #518 | Phone layouts and folding side panels; every account listed with why its calendars, tasks or contacts are missing; right-click menus; dragging tasks and notes into order; the top search box on each page; typed quick add for tasks; open tasks and meetings in the contact panel |
-| A.10 Mail window polish ✅ #357, #359, #368, #375, #376, #378, #391, #395, #401, #402, #411, #421, #424, #428, #429, #430, #434, #435, #437, #439, #440, #441, #444, #450, #452, #454, #456, #457, #458, #459, #461, #470, #479, #481, #485, #491, #495, #496, #503, #507, #515, #532, #551, #554, #574, #575, #578, #581, #590, #594, #598, #600, #602, #603, #604, #607, #611, #615, #617, #618, #620, #621, #627, #640, #641, #643, #644, #645, #662, #664, #665, #666, #667, #668, #669, #673, #675, #676, #679, #681, #682, #694, #697, #698, #719, #716, #721, #724, #725, #726, #741, #742, #744, #745, #746, #748 | Inbox tabs as a pill bar; coloured folder icons with faint count pills; one checkbox at every scale; a right-click menu that fits the window; tables that keep their columns; Back to top; selectable header details; touchpad glide on Wayland; one left-bar button and fold on every page; a soft search box; reply arrows in the list; Ctrl+click and Shift+click selection; Space and arrows on folders; the window moved from any empty space; the Feeds page removed; rename, delete and drag to folders, Move to with search, Label as; Settings sorted into all apps and each app's pages (its own window, #676, was reverted in #681); menus and popovers fade out; text selectable and copyable across the app; dialogs, menus and tooltips stay inside Katna's frame; mail, chat and list content starts below solid bars (Frosted headers dropped); a steady phone list after a quick scroll; an Activity button in the phone search bar; star and Important markers that are off show only on hover; unset tick boxes, stars and Important markers rest fainter |
+| A.10 Mail window polish ✅ #357, #359, #368, #375, #376, #378, #391, #395, #401, #402, #411, #421, #424, #428, #429, #430, #434, #435, #437, #439, #440, #441, #444, #450, #452, #454, #456, #457, #458, #459, #461, #470, #479, #481, #485, #491, #495, #496, #503, #507, #515, #532, #551, #554, #574, #575, #578, #581, #590, #594, #598, #600, #602, #603, #604, #607, #611, #615, #617, #618, #620, #621, #627, #640, #641, #643, #644, #645, #662, #664, #665, #666, #667, #668, #669, #673, #675, #676, #679, #681, #682, #694, #697, #698, #719, #716, #721, #724, #725, #726, #741, #742, #744, #745, #746, #748, #750, #751 | Inbox tabs as a pill bar; coloured folder icons with faint count pills; one checkbox at every scale; a right-click menu that fits the window; tables that keep their columns; Back to top; selectable header details; touchpad glide on Wayland; one left-bar button and fold on every page; a soft search box; reply arrows in the list; Ctrl+click and Shift+click selection; Space and arrows on folders; the window moved from any empty space; the Feeds page removed; rename, delete and drag to folders, Move to with search, Label as; Settings sorted into all apps and each app's pages (its own window, #676, was reverted in #681); menus and popovers fade out; text selectable and copyable across the app; dialogs, menus and tooltips stay inside Katna's frame; mail, chat and list content starts below solid bars (Frosted headers dropped); a steady phone list after a quick scroll; an Activity button in the phone search bar; star and Important markers that are off show only on hover; unset tick boxes, stars and Important markers rest fainter; Activity beside Calendar; a search box that fills the bar with its options centred under it |
 | A.11 Sending files ✅ #432, #489, #490 | Send with Katna Mail from Dolphin, GNOME Files and Explorer; Forward keeps the original's attachments |
 | A.12 More Linux packages ✅ #462, #634, #695, #709 | Fedora, Nix, AppImage, Snap, Flatpak and tarball builds tested and published on `linux-latest`; a .deb for Debian and Ubuntu; drawing without a GPU on Debian 12 and Ubuntu 22.04 |
 | A.13 Windows fixes ✅ #369, #425, #426, #443, #446, #460, #632, #700, #735 | Windows draws the shadow and corners; windows fit the screen; Katna's frame and blur, with frosted glass (#735); sign-in keys and DNS; cleaner uninstall; Katna updates itself on Windows; a Microsoft Store package (MSIX) beside Katna Setup |
