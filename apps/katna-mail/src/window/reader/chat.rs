@@ -19,7 +19,7 @@ use std::time::Instant;
 
 use gpui::{
     AnimationExt, AnyElement, ClipboardItem, Context, Div, FontWeight, MouseButton, MouseDownEvent,
-    SharedString, Window, div, prelude::*, relative, rgba,
+    SharedString, Window, div, point, prelude::*, relative, rgba,
 };
 use katna_i18n::tr;
 use katna_preview::Kind as FileKind;
@@ -555,6 +555,14 @@ impl MailWindow {
             return div().into_any_element();
         };
         let key = reader.key;
+        // The pin bar comes or goes above the feed: the feed scrolls by its
+        // height in this same frame, so nothing in it jumps.
+        let shift = reader.chat.pins.bar_shift();
+        if shift != 0.0 {
+            let offset = self.reader_scroll.offset();
+            self.reader_scroll
+                .set_offset(point(offset.x, offset.y + px(shift)));
+        }
         reader.chat.sight.set((scrolled, scrolled + screen));
         // A screen up from the end, the go-down button fades in; within half
         // a screen of it, out.
