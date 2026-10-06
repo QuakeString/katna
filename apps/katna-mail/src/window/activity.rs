@@ -597,7 +597,7 @@ impl MailWindow {
         closed
     }
 
-    /// The Activity button beside the search box, with the number of new
+    /// The Activity button at the bar's right end, with the number of new
     /// opens and clicks.
     pub(super) fn render_activity_button(
         &self,
