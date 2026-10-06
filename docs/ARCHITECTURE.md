@@ -2043,7 +2043,9 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   right-click menus). Importance is the `$Important` keyword (RFC 8457,
   `MessageFlags::IMPORTANT`); on Gmail it is the Important label, read
   with `X-GM-LABELS` along with flags and set with `STORE X-GM-LABELS`,
-  and `is:important` searches it. Lines with named attachments grow a
+  and `is:important` searches it. A star or marker that is off stays
+  hidden until the pointer is over its line, keeping its place so nothing
+  moves; on a phone only set ones show. Lines with named attachments grow a
   second row of chips (file-type badge and name, the full name as a
   tooltip; as many as fit, at most three) and a round "+N" that lists
   the rest; a chip opens the built-in viewer (§13.8) on that file, with

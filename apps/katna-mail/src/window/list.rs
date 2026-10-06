@@ -24,7 +24,7 @@ use katna_ui::tokens::duration;
 /// The lift of the line under the pointer: critically damped and slower
 /// than other hover feedback, so it rises and settles without a jolt.
 const ROW_LIFT: SpringConfig = SpringConfig::new(500.0, 44.7, 1.0);
-/// How strongly a tick box, star or marker that is off shows while the
+/// How strongly a tick box that is off shows while the
 /// pointer is not over its line.
 const OFF_REST: f32 = 0.3;
 /// How long the quick actions of a line take to fade in.
@@ -2490,11 +2490,18 @@ impl MailWindow {
         } else {
             FontWeight::NORMAL
         };
-        // As in Gmail, a tick box, star or marker that is off rests dim and
-        // comes up to full contrast while the pointer is over its line. A
-        // phone has no pointer, so there they stay as they are.
-        let rest = !hovered && !self.layout.shape.is_phone();
+        // As in Gmail, a tick box that is off rests dim and comes up to full
+        // contrast while the pointer is over its line. A star or Important
+        // marker that is off stays out of sight until then, so only the set
+        // ones show; each keeps its place, so nothing moves as they appear.
+        // A phone has no pointer: there only set ones show, and the empty
+        // place takes no tap.
+        let phone = self.layout.shape.is_phone();
+        let rest = !hovered && !phone;
         let off = |id: &'static str, name: &'static str, size: f32| {
+            if phone {
+                return div().size(px(size)).into_any_element();
+            }
             div()
                 .with_spring(
                     (id, ix),
@@ -2503,7 +2510,7 @@ impl MailWindow {
                     } else {
                         1.0
                     }),
-                    move |el, s: f32| el.opacity(OFF_REST + (1.0 - OFF_REST) * s.clamp(0.0, 1.0)),
+                    move |el, s: f32| el.opacity(s.clamp(0.0, 1.0)),
                 )
                 .child(icon(name, th.text_dim, size))
                 .into_any_element()
@@ -2560,11 +2567,15 @@ impl MailWindow {
             .items_center()
             .justify_center()
             .rounded_full()
-            .when(!scrolling, |d| d.hover(|s| s.bg(rgba(th.hover))))
-            .on_click(cx.listener(move |this, _, _, cx| {
-                cx.stop_propagation();
-                this.act(Act::Star(!flagged), vec![key], cx);
-            }))
+            .when(!scrolling && !(phone && !flagged), |d| {
+                d.hover(|s| s.bg(rgba(th.hover)))
+            })
+            .when(!phone || flagged, |d| {
+                d.on_click(cx.listener(move |this, _, _, cx| {
+                    cx.stop_propagation();
+                    this.act(Act::Star(!flagged), vec![key], cx);
+                }))
+            })
             .child(if row.flagged {
                 icon("star-filled", th.star, 20.0)
             } else {
@@ -2589,11 +2600,15 @@ impl MailWindow {
                 .items_center()
                 .justify_center()
                 .rounded_full()
-                .when(!scrolling, |d| d.hover(|s| s.bg(rgba(th.hover))))
-                .on_click(cx.listener(move |this, _, _, cx| {
-                    cx.stop_propagation();
-                    this.act(Act::Important(!important), vec![key], cx);
-                }))
+                .when(!scrolling && !(phone && !important), |d| {
+                    d.hover(|s| s.bg(rgba(th.hover)))
+                })
+                .when(!phone || important, |d| {
+                    d.on_click(cx.listener(move |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.act(Act::Important(!important), vec![key], cx);
+                    }))
+                })
                 .child(if important {
                     icon("important-filled", th.important, 18.0)
                 } else {

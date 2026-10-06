@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Only set stars show in the mail list"
+text = """
+A star or Important marker now shows in the mail list only on mail that
+has it. Point at a line to see the others and set them; nothing moves as
+they appear. On a phone only the set ones show.
+"""
