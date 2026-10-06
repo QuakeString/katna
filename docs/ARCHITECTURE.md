@@ -1148,15 +1148,18 @@ KRunner and GNOME search suggest saved people too, with their saved names
 - Katna Mail keeps it running: when its window opens without the daemon,
   or the daemon's name goes away for more than 10 s (an update or systemd
   restarts it sooner by itself), the window starts it
-  (`katna_dbus::start_daemon`: clears a failed systemd unit with
-  `ResetFailedUnit`, then D-Bus activation, or the binary beside it, also
-  when activation fails) and
+  (`katna_dbus::start_daemon`: where the systemd user unit exists, clears
+  a failure with `ResetFailedUnit` and starts it with `StartUnit`, never a
+  copy outside systemd, which would keep the unit from starting; elsewhere
+  D-Bus activation, or the binary beside it, also when activation fails)
+  and
   tries again for 20 s. A grey line shows after 10 s, an amber line with
   Start again and Details (the report scrolls inside a dialog that fits
   the window) if it never starts, and a note if it had stopped
   while the window was open (`apps/katna-mail/src/window/service.rs`). The
   unit restarts it after a crash 5 s later (`RestartSec=5`), which never
-  reaches systemd's start limit.
+  reaches systemd's start limit. A daemon that finds another one running
+  exits cleanly (status 0), so systemd doesn't keep starting it.
 - Graceful shutdown: finish in-flight sends, flush the index, close IMAP sessions.
 - Updates: a package update replaces the binary while the old one runs.
   Every 30 s the daemon checks `/proc/self/exe`; once the file was replaced
