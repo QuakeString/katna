@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Reply tools fit a narrow window"
+text = """
+When the reading pane or the window is narrow, the formatting bar and the
+row beside Send no longer run past the reply. Tools that don't fit move into
+⋮ More, the least used first, and on a phone Send shows just its icon.
+"""

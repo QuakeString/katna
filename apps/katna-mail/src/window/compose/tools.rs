@@ -451,6 +451,19 @@ pub(super) fn separator(th: &Theme) -> gpui::Div {
 const ACTIONS_FIXED: f32 = 200.0;
 /// The width of each of its other buttons, on their tray.
 const TOOL_WIDTH: f32 = TRAY_TOOL;
+/// What Send showing only its icon saves.
+const SEND_COMPACT_SAVES: f32 = 24.0;
+/// The bin at the end of the Send row, with its gap.
+const BIN_WIDTH: f32 = 36.0;
+
+/// The Send row's tools folded into its More menu on a narrow row.
+#[derive(Clone, Copy)]
+struct Folded {
+    attach: bool,
+    signature: bool,
+    templates: bool,
+    discard: bool,
+}
 /// A writing tool on the tray beside Send: a little smaller than a
 /// free-standing icon button, so the tray stays slim.
 pub(super) const TRAY_TOOL: f32 = 34.0;
@@ -461,6 +474,80 @@ pub(super) const TRAY_ICON: f32 = 18.0;
 const FORMAT_BAR_GAP: f32 = 4.0;
 /// How much of the text the open formatting bar covers.
 pub(super) const FORMAT_BAR_COVER: f32 = 40.0 + FORMAT_BAR_GAP + 8.0;
+
+/// The formatting bar's buttons, as [`format_button`] draws them.
+const FORMAT_TOOL: f32 = 28.0;
+/// Its font dropdown.
+const FONT_WIDTH: f32 = 100.0;
+/// Its size and alignment dropdowns: an icon and an arrow.
+const DROPDOWN_WIDTH: f32 = 46.0;
+/// Its colour dropdown: the swatch and an arrow.
+const COLORS_WIDTH: f32 = 48.0;
+/// Its padding and edge.
+const FORMAT_BAR_PAD: f32 = 26.0;
+/// A [`separator`] with its margins.
+const SEPARATOR_WIDTH: f32 = 7.0;
+/// When each tool folds into ⋮ More on a narrow bar: the least used
+/// first. Bold, italic, underline and colours stay.
+const FOLD_TABLE: u8 = 1;
+const FOLD_ALIGN: u8 = 7;
+const FOLD_UNDO: u8 = 10;
+const FOLD_FONT: u8 = 11;
+const FOLD_SIZE: u8 = 12;
+
+/// How many of the formatting bar's tools fold into ⋮ More so the rest
+/// fit `room`: every tool whose fold (`widths`, in bar order, `None` for
+/// a line between groups) is at most the answer, 0 when all fit.
+fn folded_tools(widths: &[Option<(f32, u8)>], room: f32) -> u8 {
+    let last = widths.iter().flatten().map(|(_, f)| *f).max().unwrap_or(0);
+    (0..=last)
+        .find(|&folds| {
+            let shown = |fold: u8| fold == 0 || fold > folds;
+            let mut need = if folds > 0 { FORMAT_TOOL } else { 0.0 };
+            let (mut items, mut line) = (usize::from(folds > 0), false);
+            for w in widths {
+                match w {
+                    None => line = items > usize::from(folds > 0),
+                    Some((width, fold)) if shown(*fold) => {
+                        if line {
+                            need += SEPARATOR_WIDTH;
+                            items += 1;
+                        }
+                        need += width;
+                        items += 1;
+                        line = false;
+                    }
+                    Some(_) => {}
+                }
+            }
+            need + items.saturating_sub(1) as f32 <= room
+        })
+        .unwrap_or(last)
+}
+
+/// The formatting bar's tools split into those shown on it, with a line
+/// between groups, and those in ⋮ More, which wraps them without lines.
+fn split_tools(
+    tools: Vec<Option<(AnyElement, f32, u8)>>,
+    folds: u8,
+    th: &Theme,
+) -> (Vec<AnyElement>, Vec<AnyElement>) {
+    let (mut bar, mut rest) = (Vec::new(), Vec::new());
+    let mut line = false;
+    for tool in tools {
+        match tool {
+            None => line = !bar.is_empty(),
+            Some((el, _, fold)) if fold == 0 || fold > folds => {
+                if std::mem::take(&mut line) {
+                    bar.push(separator(th).into_any_element());
+                }
+                bar.push(el);
+            }
+            Some((el, _, _)) => rest.push(el),
+        }
+    }
+    (bar, rest)
+}
 
 /// `popup` just under its parent's bottom left corner.
 pub(super) fn below(popup: impl IntoElement) -> AnyElement {
@@ -615,6 +702,29 @@ impl MailWindow {
         // A reply or forward archives its conversation too when that is
         // the default; the Send menu offers the other way.
         let archives = compose.answering.is_some() && self.config.sending.send_and_archive;
+        // A narrow row keeps the tools that fit beside Send and the bin,
+        // dropping the calendar, photo, emoji and link buttons in turn
+        // (links still come with Ctrl+K), then folding templates, the
+        // signature and attaching into More. Narrower still, Send keeps
+        // only its icon and the bin goes into More too. Formatting,
+        // writing help and More always stay.
+        let pill = if archives { 24.0 } else { 0.0 };
+        let core = if self.ai_allowed() { 3 } else { 2 };
+        let room = width - ACTIONS_FIXED - pill;
+        let slots = |room: f32| (room / TOOL_WIDTH).floor() as i32;
+        let compact = slots(room) < core;
+        let bin_folds = slots(room + SEND_COMPACT_SAVES) < core;
+        let fit = slots(
+            room + if compact { SEND_COMPACT_SAVES } else { 0.0 }
+                + if bin_folds { BIN_WIDTH } else { 0.0 },
+        ) - core;
+        let folded = Folded {
+            attach: fit < 1,
+            signature: fit < 2,
+            templates: fit < 3,
+            discard: bin_folds,
+        };
+        let (link, emoji_fits, image, event) = (fit >= 4, fit >= 5, fit >= 6, fit >= 7);
         let send = div()
             .relative()
             .flex_none()
@@ -650,8 +760,17 @@ impl MailWindow {
                     .on_click(
                         cx.listener(|this, _, window, cx| this.send_compose_default(window, cx)),
                     )
-                    .when(archives, |d| d.child(icon("archive", th.on_accent, 18.0)))
-                    .child(tr!("compose-tool-send")),
+                    .when(compact, |d| {
+                        d.px(px(katna_ui::tokens::space::S4)).child(icon(
+                            if archives { "archive" } else { "send" },
+                            th.on_accent,
+                            18.0,
+                        ))
+                    })
+                    .when(!compact, |d| {
+                        d.when(archives, |d| d.child(icon("archive", th.on_accent, 18.0)))
+                            .child(tr!("compose-tool-send"))
+                    }),
             )
             .child(div().w(px(1.0)).h(px(20.0)).bg(rgba(0xffffff66)))
             .child(
@@ -752,16 +871,15 @@ impl MailWindow {
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::More, cx))),
             )
             .when(open(Popup::More) || open(Popup::Label), |d| {
-                d.child(above(self.render_more_menu(th, cx)))
+                d.child(above(self.render_more_menu(folded, th, cx)))
+            })
+            // A folded tool's own menu opens where More is.
+            .when(folded.signature && open(Popup::Signature), |d| {
+                d.child(above(self.compose_signature_menu(th, cx)))
+            })
+            .when(folded.templates && open(Popup::Templates), |d| {
+                d.child(above(self.templates_menu(th, cx)))
             });
-        // A narrow row keeps the tools that fit beside Send and the bin,
-        // dropping the calendar, photo, emoji and link buttons in turn;
-        // links still come with Ctrl+K. Formatting, attaching, the
-        // signature, templates, More and writing help always stay.
-        let pill = if archives { 24.0 } else { 0.0 };
-        let always = if sparkle.is_some() { 6 } else { 5 };
-        let fit = ((width - ACTIONS_FIXED - pill) / TOOL_WIDTH).floor() as i32 - always;
-        let (link, emoji_fits, image, event) = (fit >= 1, fit >= 2, fit >= 3, fit >= 4);
         // The tools sit on one soft tray, grouped: writing (formatting,
         // writing help), adding (files, link, emoji, photo, event), then
         // signature, templates and More, with faint lines between groups.
@@ -784,11 +902,13 @@ impl MailWindow {
             .child(format)
             .children(sparkle)
             .child(gap())
-            .child(
-                tool("compose-attach", "attachment", tr!("compose-tool-attach")).on_click(
-                    cx.listener(|this, _, window, cx| this.open_compose_picker(window, cx)),
-                ),
-            )
+            .when(!folded.attach, |d| {
+                d.child(
+                    tool("compose-attach", "attachment", tr!("compose-tool-attach")).on_click(
+                        cx.listener(|this, _, window, cx| this.open_compose_picker(window, cx)),
+                    ),
+                )
+            })
             .when(link, |d| {
                 d.child(
                     tool("compose-link", "link", tr!("compose-tool-link")).on_click(
@@ -812,9 +932,13 @@ impl MailWindow {
                     ),
                 )
             })
-            .child(gap())
-            .child(self.render_signature_button(th, cx))
-            .child(self.render_templates_button(th, cx))
+            .when(!folded.attach, |d| d.child(gap()))
+            .when(!folded.signature, |d| {
+                d.child(self.render_signature_button(th, cx))
+            })
+            .when(!folded.templates, |d| {
+                d.child(self.render_templates_button(th, cx))
+            })
             .child(more);
         div()
             .flex_none()
@@ -839,11 +963,13 @@ impl MailWindow {
                     )
                 },
             )
-            .child(
-                icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
-                    .tooltip(tip(tr!("compose-tool-discard"), th))
-                    .on_click(cx.listener(|this, _, _, cx| this.discard_compose(cx))),
-            )
+            .when(!bin_folds, |d| {
+                d.child(
+                    icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
+                        .tooltip(tip(tr!("compose-tool-discard"), th))
+                        .on_click(cx.listener(|this, _, _, cx| this.discard_compose(cx))),
+                )
+            })
             .children(self.render_popup_scrim(cx))
             .children(self.render_context_popup(th, cx))
             .children(self.render_hint(th, cx))
@@ -1174,13 +1300,10 @@ impl MailWindow {
             (editor.can_undo(), editor.can_redo(), editor.in_table());
         let popup = compose.popup.clone();
         let open = |p: Popup| popup.as_ref() == Some(&p);
-        let wide = width >= 660.0;
-
         let font = self.format_font(style.font, false, th, cx);
         let size = self.format_size(style.size, false, th, cx);
         let colors = self.format_colors(style.color, style.background, false, th, cx);
         let align = self.format_align(para.align, false, th, cx);
-        // What does not fit a narrow bar goes in its "more" menu.
         let table_click = cx.listener(move |this, _, _, cx| {
             let p = if in_table {
                 Popup::TableEdit
@@ -1192,39 +1315,6 @@ impl MailWindow {
             }
             this.toggle_popup(p, cx)
         });
-        let rest: Vec<AnyElement> = vec![
-            format_button("format-indent-less", "indent-less", false, th)
-                .tooltip(tip(tr!("compose-tool-indent-less"), th))
-                .on_click(self.on_body(cx, |e, cx| e.indent(false, cx)))
-                .into_any_element(),
-            format_button("format-indent-more", "indent-more", false, th)
-                .tooltip(tip(tr!("compose-tool-indent-more"), th))
-                .on_click(self.on_body(cx, |e, cx| e.indent(true, cx)))
-                .into_any_element(),
-            format_button("format-quote", "quote", para.quote > 0, th)
-                .tooltip(tip(tr!("compose-tool-quote"), th))
-                .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx)))
-                .into_any_element(),
-            format_button("format-strike", "format-strike", style.strike, th)
-                .tooltip(tip(tr!("compose-tool-strikethrough"), th))
-                .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx)))
-                .into_any_element(),
-            format_button("format-clear", "clear-format", false, th)
-                .tooltip(tip(tr!("compose-tool-remove-formatting"), th))
-                .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx)))
-                .into_any_element(),
-            format_button("format-table", "table", in_table, th)
-                .tooltip(tip(
-                    if in_table {
-                        tr!("compose-tool-table")
-                    } else {
-                        tr!("compose-tool-insert-table")
-                    },
-                    th,
-                ))
-                .on_click(table_click)
-                .into_any_element(),
-        ];
         let table_popup = if open(Popup::Table) {
             Some(above(self.render_table_grid(th, cx)))
         } else if open(Popup::TableEdit) {
@@ -1232,81 +1322,77 @@ impl MailWindow {
         } else {
             None
         };
-        let tail = if wide {
-            div()
-                .relative()
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(1.0))
-                .children(rest)
-                .children(table_popup)
-        } else {
-            div()
-                .relative()
-                .child(
-                    format_button("format-more", "drop-down", open(Popup::MoreFormat), th)
-                        .tooltip(tip(tr!("compose-tool-more-formatting"), th))
-                        .on_click(
-                            cx.listener(|this, _, _, cx| this.toggle_popup(Popup::MoreFormat, cx)),
-                        ),
-                )
-                .when(open(Popup::MoreFormat), |d| {
-                    d.child(above(
-                        menu(th)
-                            .min_w(px(0.0))
-                            .px(px(6.0))
-                            .py(px(6.0))
-                            .flex_row()
-                            .gap(px(2.0))
-                            .children(rest),
-                    ))
-                })
-                .children(table_popup)
-        };
-        div()
-            .h(px(40.0))
-            .px(px(12.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(1.0))
+        let table = div()
+            .relative()
             .child(
+                format_button("format-table", "table", in_table, th)
+                    .tooltip(tip(
+                        if in_table {
+                            tr!("compose-tool-table")
+                        } else {
+                            tr!("compose-tool-insert-table")
+                        },
+                        th,
+                    ))
+                    .on_click(table_click),
+            )
+            .children(table_popup);
+        // The bar's tools in order, each with its width and when it folds
+        // into ⋮ More on a bar too narrow for all of them: the least used
+        // first (0 never folds). `None` is a line between groups.
+        let tool = |el: AnyElement, width: f32, fold: u8| Some((el, width, fold));
+        let tools: Vec<Option<(AnyElement, f32, u8)>> = vec![
+            tool(
                 format_button("format-undo", "undo", false, th)
                     .when(!can_undo, |d| d.opacity(0.4))
                     .tooltip(tip(tr!("compose-tool-undo"), th))
-                    .on_click(self.on_body(cx, |e, cx| e.undo(cx))),
-            )
-            .child(
+                    .on_click(self.on_body(cx, |e, cx| e.undo(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                FOLD_UNDO,
+            ),
+            tool(
                 format_button("format-redo", "redo", false, th)
                     .when(!can_redo, |d| d.opacity(0.4))
                     .tooltip(tip(tr!("compose-tool-redo"), th))
-                    .on_click(self.on_body(cx, |e, cx| e.redo(cx))),
-            )
-            .child(separator(th))
-            .child(font)
-            .child(separator(th))
-            .child(size)
-            .child(separator(th))
-            .child(
+                    .on_click(self.on_body(cx, |e, cx| e.redo(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                FOLD_UNDO,
+            ),
+            None,
+            tool(font.into_any_element(), FONT_WIDTH, FOLD_FONT),
+            None,
+            tool(size.into_any_element(), DROPDOWN_WIDTH, FOLD_SIZE),
+            None,
+            tool(
                 format_button("format-bold", "format-bold", style.bold, th)
                     .tooltip(tip(tr!("compose-tool-bold"), th))
-                    .on_click(self.on_body(cx, |e, cx| e.toggle_bold(cx))),
-            )
-            .child(
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_bold(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                0,
+            ),
+            tool(
                 format_button("format-italic", "format-italic", style.italic, th)
                     .tooltip(tip(tr!("compose-tool-italic"), th))
-                    .on_click(self.on_body(cx, |e, cx| e.toggle_italic(cx))),
-            )
-            .child(
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_italic(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                0,
+            ),
+            tool(
                 format_button("format-underline", "format-underline", style.underline, th)
                     .tooltip(tip(tr!("compose-tool-underline"), th))
-                    .on_click(self.on_body(cx, |e, cx| e.toggle_underline(cx))),
-            )
-            .child(colors)
-            .child(separator(th))
-            .child(align)
-            .child(
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_underline(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                0,
+            ),
+            tool(colors.into_any_element(), COLORS_WIDTH, 0),
+            None,
+            tool(align.into_any_element(), DROPDOWN_WIDTH, FOLD_ALIGN),
+            tool(
                 format_button(
                     "format-numbered",
                     "list-numbered",
@@ -1314,9 +1400,12 @@ impl MailWindow {
                     th,
                 )
                 .tooltip(tip(tr!("compose-tool-numbered-list"), th))
-                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Numbered, cx))),
-            )
-            .child(
+                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Numbered, cx)))
+                .into_any_element(),
+                FORMAT_TOOL,
+                9,
+            ),
+            tool(
                 format_button(
                     "format-bulleted",
                     "list-bulleted",
@@ -1324,9 +1413,101 @@ impl MailWindow {
                     th,
                 )
                 .tooltip(tip(tr!("compose-tool-bulleted-list"), th))
-                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx))),
-            )
-            .child(tail)
+                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx)))
+                .into_any_element(),
+                FORMAT_TOOL,
+                8,
+            ),
+            tool(
+                format_button("format-indent-less", "indent-less", false, th)
+                    .tooltip(tip(tr!("compose-tool-indent-less"), th))
+                    .on_click(self.on_body(cx, |e, cx| e.indent(false, cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                5,
+            ),
+            tool(
+                format_button("format-indent-more", "indent-more", false, th)
+                    .tooltip(tip(tr!("compose-tool-indent-more"), th))
+                    .on_click(self.on_body(cx, |e, cx| e.indent(true, cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                6,
+            ),
+            tool(
+                format_button("format-quote", "quote", para.quote > 0, th)
+                    .tooltip(tip(tr!("compose-tool-quote"), th))
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                4,
+            ),
+            tool(
+                format_button("format-strike", "format-strike", style.strike, th)
+                    .tooltip(tip(tr!("compose-tool-strikethrough"), th))
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                3,
+            ),
+            tool(
+                format_button("format-clear", "clear-format", false, th)
+                    .tooltip(tip(tr!("compose-tool-remove-formatting"), th))
+                    .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                2,
+            ),
+            tool(table.into_any_element(), FORMAT_TOOL, FOLD_TABLE),
+        ];
+        let widths: Vec<Option<(f32, u8)>> = tools
+            .iter()
+            .map(|t| t.as_ref().map(|(_, width, fold)| (*width, *fold)))
+            .collect();
+        let folds = folded_tools(&widths, width - FORMAT_BAR_PAD);
+        // A folded tool's own menu keeps ⋮ More open under it.
+        let folded = |p: Popup, fold: u8| open(p) && fold <= folds;
+        let more_open = open(Popup::MoreFormat)
+            || folded(Popup::Font, FOLD_FONT)
+            || folded(Popup::Size, FOLD_SIZE)
+            || folded(Popup::Align, FOLD_ALIGN)
+            || folded(Popup::Table, FOLD_TABLE)
+            || folded(Popup::TableEdit, FOLD_TABLE);
+        let (bar, rest) = split_tools(tools, folds, th);
+        let more = (folds > 0).then(|| {
+            div()
+                .relative()
+                .child(
+                    format_button("format-more", "more", more_open, th)
+                        .tooltip(tip(tr!("compose-tool-more-formatting"), th))
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.toggle_popup(Popup::MoreFormat, cx)),
+                        ),
+                )
+                .when(more_open, |d| {
+                    d.child(above(
+                        menu(th)
+                            .min_w(px(0.0))
+                            .max_w(px(width.max(FORMAT_TOOL * 4.0)))
+                            .px(px(6.0))
+                            .py(px(6.0))
+                            .flex_row()
+                            .flex_wrap()
+                            .items_center()
+                            .gap(px(2.0))
+                            .children(rest),
+                    ))
+                })
+        });
+        div()
+            .h(px(40.0))
+            .px(px(12.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(1.0))
+            .children(bar)
+            .children(more)
             .into_any_element()
     }
 
@@ -2550,7 +2731,7 @@ impl MailWindow {
 
     // More options.
 
-    fn render_more_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn render_more_menu(&self, folded: Folded, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
@@ -2599,8 +2780,50 @@ impl MailWindow {
                         .child(tr!("compose-tool-label-coming")),
                 )
             });
+        // The Send row's tools that did not fit it come first.
+        let folded_item =
+            |id: &'static str, name: &'static str, label: String| tool_item(id, name, &label, th);
+        let any_folded = folded.attach || folded.signature || folded.templates || folded.discard;
+        let folded_items = div()
+            .when(folded.attach, |d| {
+                d.child(
+                    folded_item("more-attach", "attachment", tr!("compose-tool-attach")).on_click(
+                        cx.listener(|this, _, window, cx| {
+                            if let Some(c) = &mut this.compose {
+                                c.popup = None;
+                            }
+                            this.open_compose_picker(window, cx)
+                        }),
+                    ),
+                )
+            })
+            .when(folded.signature, |d| {
+                d.child(
+                    folded_item("more-signature", "signature", tr!("compose-tool-signature"))
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Signature, cx)),
+                        ),
+                )
+            })
+            .when(folded.templates, |d| {
+                d.child(
+                    folded_item("more-templates", "template", tr!("compose-tool-templates"))
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            this.toggle_popup(Popup::Templates, cx);
+                            this.load_templates(cx);
+                        })),
+                )
+            })
+            .when(folded.discard, |d| {
+                d.child(
+                    folded_item("more-discard", "trash", tr!("compose-tool-discard"))
+                        .on_click(cx.listener(|this, _, _, cx| this.discard_compose(cx))),
+                )
+            })
+            .when(any_folded, |d| d.child(menu_divider(th)));
         menu(th)
             .w(px(260.0))
+            .child(folded_items)
             .child(
                 tool_item(
                     "more-full-screen",
