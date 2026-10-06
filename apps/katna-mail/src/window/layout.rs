@@ -903,6 +903,8 @@ fn fab_button(id: &'static str, th: &Theme) -> gpui::Stateful<gpui::Div> {
         .text_color(rgba(th.compose_text))
         .cursor_pointer()
         .keeps_press()
+        // The line under it neither lights up nor takes the click.
+        .occlude()
         .shadow(elevation(th, 1.0))
         .hover(|s| s.shadow(elevation(th, 2.0)))
         .on_mouse_move(|_, _, cx| cx.stop_propagation())
