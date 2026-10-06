@@ -592,7 +592,7 @@ impl MailWindow {
             super::RailApp::Contacts | super::RailApp::Calendar
         );
         // On a phone the box is a pill across the bar, with the menu button
-        // and the account picture over its two ends.
+        // and the account picture (or pictures) over its two ends.
         let phone = self.layout.shape.phone;
         div()
             .id("search-box")
@@ -601,7 +601,8 @@ impl MailWindow {
             .w(px(width))
             .h(px(lerp(SEARCH_HEIGHT, 48.0, phone)))
             .pl(px(lerp(0.0, 56.0, phone)))
-            .pr(px(lerp(0.0, 50.0, phone)))
+            // All Accounts' stacked pictures reach further in than one.
+            .pr(px(lerp(0.0, 50.0 + self.account_stack_room(), phone)))
             .flex()
             .flex_row()
             .items_center()
