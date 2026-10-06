@@ -576,6 +576,7 @@ impl MailWindow {
         th: &Theme,
         width: f32,
         t: f32,
+        activity_inside: bool,
         window: &gpui::Window,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -727,6 +728,14 @@ impl MailWindow {
                         this.toggle_search_panel(window, cx);
                     })),
                 )
+            })
+            // Activity, when the bar has no room for it after the box.
+            .when(activity_inside, |d| {
+                d.children(self.render_activity_button(
+                    th,
+                    lerp(SEARCH_HEIGHT - 8.0, PILL_END_CIRCLE, phone),
+                    cx,
+                ))
             })
             .into_any_element()
     }
