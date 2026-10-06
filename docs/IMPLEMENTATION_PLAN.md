@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 4 October 2026, through PR #736). Companion to
+> Status: **v0.2** (updated 4 October 2026, through PR #739). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -25,9 +25,11 @@ not name.
   of the UI translated; reading and sending encrypted mail; Phase 6
   except the upstream proposals: Calendar, Tasks, Notes and Contacts pages that sync with each
   account's own service; the Windows build and installer.
-- **Merged since the last refresh (#523–#736):** Katna Mail starting
-  the background service itself when it is not running, and opening a
-  window when an earlier launch is stuck (A.14, #731–#733); read receipts
+- **Merged since the last refresh (#523–#739):** Katna Mail starting
+  the background service itself when it is not running, always through
+  its systemd unit, and opening a window when an earlier launch is stuck
+  (A.14, #731–#733, #738); a reply's formatting bar and Send row folding
+  into More on a narrow window (A.17, #739); read receipts
   shown as ticks on the mail they answer instead of as mail (7.1, #734,
   #736); frosted glass on Windows (A.13, #735); account problems shown at
   the top of the list and in Settings › Accounts with their fix, an
@@ -411,10 +413,10 @@ merged; the pull requests say what changed.
 | A.11 Sending files ✅ #432, #489, #490 | Send with Katna Mail from Dolphin, GNOME Files and Explorer; Forward keeps the original's attachments |
 | A.12 More Linux packages ✅ #462, #634, #695, #709 | Fedora, Nix, AppImage, Snap, Flatpak and tarball builds tested and published on `linux-latest`; a .deb for Debian and Ubuntu; drawing without a GPU on Debian 12 and Ubuntu 22.04 |
 | A.13 Windows fixes ✅ #369, #425, #426, #443, #446, #460, #632, #700, #735 | Windows draws the shadow and corners; windows fit the screen; Katna's frame and blur, with frosted glass (#735); sign-in keys and DNS; cleaner uninstall; Katna updates itself on Windows; a Microsoft Store package (MSIX) beside Katna Setup |
-| A.14 Sync and daemon ✅ #390, #398, #405, #406, #407, #409, #420, #423, #453, #671, #731, #732, #733 | Newest mail first; a locked keyring waited for at login; a switched-off Google API named with a Turn on button; a refused certificate explained; restart through systemd after an update; Katna Mail starts the background service when it is not running and opens a window when an earlier launch is stuck |
+| A.14 Sync and daemon ✅ #390, #398, #405, #406, #407, #409, #420, #423, #453, #671, #731, #732, #733, #738 | Newest mail first; a locked keyring waited for at login; a switched-off Google API named with a Turn on button; a refused certificate explained; restart through systemd after an update; Katna Mail starts the background service through its systemd unit when it is not running and opens a window when an earlier launch is stuck |
 | A.15 CI and README ✅ #404, #419, #422, #427, #433, #438, #529, #563 | Tests on Arch only, Ubuntu and Windows in a Secondary workflow; README says why Katna exists and that it is at a very early stage |
 | A.16 Drives in Files ✅ #534, #537, #540, #541, #542, #550, #553, #573 | Google Drive and OneDrive in the Files page and the Compose and chat pickers; upload files and folders; Move to bin, Rename, Share and an uploads tray |
-| A.17 Compose ✅ #531, #536, #539, #579, #595, #663, #672, #677, #680, #683 | A calmer Quiet look; drafts saved while writing with "Draft saved"; a signature tag; Compose opens beside a half-written reply; click an attached file to open it; an emptied message keeps no draft; signatures imported from Gmail, Thunderbird, Evolution and KMail, designed signatures as one block, Paste HTML; twelve signature layouts with a fields form |
+| A.17 Compose ✅ #531, #536, #539, #579, #595, #663, #672, #677, #680, #683, #739 | A calmer Quiet look; drafts saved while writing with "Draft saved"; a signature tag; Compose opens beside a half-written reply; click an attached file to open it; an emptied message keeps no draft; signatures imported from Gmail, Thunderbird, Evolution and KMail, designed signatures as one block, Paste HTML; twelve signature layouts with a fields form; a reply's formatting bar and Send row fold into More when narrow |
 | A.18 Unified inbox and account colours ✅ #549, #576, #592, #624, #631, #670, #727, #729 | Inbox tabs in the unified inbox shared by every account; a colour for each account, shown as a dot after the sender, with eight colours and a colour wheel; the accounts' pictures stacked at the top right of All Accounts; an All Accounts row in the account menu |
 | A.19 Shared design system ✅ #646, #647, #648, #649, #650, #651, #652, #653, #654, #656, #657, #658, #659, #690, #691, #692, #699 | Design tokens (`katna_ui::tokens`) and `docs/DESIGN.md`, with a CI check that raw sizes only go down; one shared popover, dialog surface, Button, choice chip, tag, settings row, field and card; a Gallery of the controls in development builds |
 | A.20 Apps and accounts ✅ #701, #702, #703, #708, #710, #711 | Turn Calendar, Contacts, Tasks, Notes or Files off (Mail stays), which stops their sync and removes their copy on request; leave an account out of single apps or the unified inbox; take an account offline |
