@@ -323,7 +323,6 @@ fn title_width(label: f32, (brand, name): (f32, f32)) -> f32 {
 const TITLE_WORD_GAP: f32 = 6.0;
 /// Corners of cards that float: menus aside, dialogs and panels.
 const PANEL_RADIUS: f32 = katna_ui::tokens::radius::LG;
-const SEARCH_WIDTH: f32 = 720.0;
 /// The narrowest the search box gets beside the top bar's buttons.
 const SEARCH_MIN_WIDTH: f32 = 120.0;
 /// The Activity button at the bar's right end.
@@ -3890,8 +3889,9 @@ impl Render for MailWindow {
         let activity_fits = room - activity_room >= SEARCH_MIN_WIDTH;
         // Otherwise (and always on a phone) it moves into the box's end.
         let activity_at_end = shape.phone < 0.5 && activity_fits;
-        let open_width = (room - if activity_fits { activity_room } else { 0.0 })
-            .clamp(SEARCH_MIN_WIDTH, SEARCH_WIDTH);
+        // The box reaches the buttons, however wide the window.
+        let open_width =
+            (room - if activity_fits { activity_room } else { 0.0 }).max(SEARCH_MIN_WIDTH);
         // The title's box has room for the longest app name; the box
         // comes up to the name shown, on a tablet too.
         let shown = text_width(
@@ -3913,10 +3913,14 @@ impl Render for MailWindow {
         let regular = open_width + open_left - search_left;
         let pill = (width - 12.0 - room_start - room_end).max(200.0);
         let search_width = lerp(regular, pill, shape.phone);
-        // Search options: under the box and at least as wide, widened
-        // in a narrow window and kept inside it.
-        let panel_width = regular.max(search_panel::MIN_WIDTH).min(width - 16.0);
-        let panel_left = search_left.min(width - 8.0 - panel_width).max(8.0);
+        // Search options: centred under the box, as wide as it within the
+        // panel's limits, and kept inside the window.
+        let panel_width = regular
+            .clamp(search_panel::MIN_WIDTH, search_panel::MAX_WIDTH)
+            .min(width - 16.0);
+        let panel_left = (search_left + (regular - panel_width) / 2.0)
+            .min(width - 8.0 - panel_width)
+            .max(8.0);
         let search_panel_width = lerp(panel_width, width - 16.0, shape.phone);
         let search_panel_left = lerp(panel_left, 8.0, shape.phone);
         // The window's inner height: its frame takes as much at the top

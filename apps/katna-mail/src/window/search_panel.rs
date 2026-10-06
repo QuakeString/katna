@@ -27,6 +27,8 @@ use dates::{CustomDates, DateError};
 const LABEL: f32 = 120.0;
 /// The narrowest the panel gets while the window has room.
 pub(super) const MIN_WIDTH: f32 = 640.0;
+/// The widest it gets under a long search box.
+pub(super) const MAX_WIDTH: f32 = 720.0;
 /// Below this width labels go above their fields.
 const STACK_BELOW: f32 = 600.0;
 
