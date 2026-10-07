@@ -13,6 +13,7 @@ pub mod error;
 pub mod ids;
 pub mod image;
 pub mod logging;
+pub mod mcp_activity;
 pub mod meeting;
 pub mod mime;
 pub mod paths;

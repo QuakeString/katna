@@ -22,7 +22,6 @@ settings-tab-experimental = Majaribio
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = Unda, badilisha jina, hamisha na ficha folda na lebo, na uchague zipi zisawazishwe. Sheria hupanga, huweka lebo, husambaza au hufuta barua mpya zenyewe, kulingana na mtumaji, mada au maneno.
-settings-tab-mcp-server-coming = Ruhusu wasaidizi wa AI kwenye kompyuta hii watafute, wasome na waandike rasimu za barua zako, kwa idhini yako.
 
 ## Settings > General
 

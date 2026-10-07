@@ -22,7 +22,6 @@ settings-tab-experimental = Pang-eksperimento
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = Gumawa, mag-rename, maglipat at magtago ng mga folder at label, at piliin kung alin ang magsi-sync. Kusang inaayos, nilalagyan ng label, ipinapasa o dine-delete ng mga panuntunan ang bagong mail, ayon sa nagpadala, subject o mga salita.
-settings-tab-mcp-server-coming = Payagan ang mga AI assistant sa computer na ito na maghanap, magbasa at mag-draft ng iyong mail, nang may pahintulot mo.
 
 ## Settings > General
 

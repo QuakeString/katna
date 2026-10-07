@@ -22,7 +22,6 @@ settings-tab-experimental = ทดลอง
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = สร้าง เปลี่ยนชื่อ ย้าย และซ่อนโฟลเดอร์และป้ายกำกับ และเลือกว่าจะซิงค์รายการใด กฎจะจัดเรียง ติดป้ายกำกับ ส่งต่อ หรือลบอีเมลใหม่โดยอัตโนมัติ ตามผู้ส่ง หัวเรื่อง หรือคำ
-settings-tab-mcp-server-coming = ให้ผู้ช่วย AI ในคอมพิวเตอร์เครื่องนี้ค้นหา อ่าน และร่างอีเมลของคุณได้ โดยคุณเป็นผู้อนุญาต
 
 ## Settings > General
 

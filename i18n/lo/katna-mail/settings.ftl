@@ -22,7 +22,6 @@ settings-tab-experimental = ທົດລອງ
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = ສ້າງ, ປ່ຽນຊື່, ຍ້າຍ ແລະ ເຊື່ອງໂຟນເດີ ແລະ ປ້າຍກຳກັບ, ແລະ ເລືອກວ່າຈະຊິງຄ໌ອັນໃດ. ກົດຈະຈັດຮຽງ, ຕິດປ້າຍກຳກັບ, ສົ່ງຕໍ່ ຫຼື ລຶບອີເມວໃໝ່ໂດຍອັດຕະໂນມັດ, ຕາມຜູ້ສົ່ງ, ຫົວຂໍ້ ຫຼື ຄຳ.
-settings-tab-mcp-server-coming = ໃຫ້ຜູ້ຊ່ວຍ AI ໃນຄອມພິວເຕີນີ້ຊອກຫາ, ອ່ານ ແລະ ຮ່າງອີເມວຂອງທ່ານ, ໂດຍທ່ານເປັນຜູ້ອະນຸຍາດ.
 
 ## Settings > General
 

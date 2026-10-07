@@ -63,6 +63,9 @@ pub fn serve() -> Result<()> {
 
 /// The tools an assistant can call.
 pub trait Tools {
+    /// The assistant said who it is (`clientInfo` of `initialize`).
+    fn connected(&mut self, _client: &str) {}
+
     /// Runs the tool `name`: its result, or why it failed (shown to the
     /// assistant as a failed call). `None` when there is no such tool.
     fn call(&mut self, name: &str, arguments: &Value) -> Option<Result<Value, String>>;
@@ -98,7 +101,15 @@ pub fn handle(line: &str, tools: &mut impl Tools) -> Option<Value> {
     let id = id?;
     let params = object.get("params").cloned().unwrap_or(Value::Null);
     let result = match method {
-        "initialize" => Ok(initialize(&params)),
+        "initialize" => {
+            let info = &params["clientInfo"];
+            let client = info["title"]
+                .as_str()
+                .or(info["name"].as_str())
+                .unwrap_or_default();
+            tools.connected(client);
+            Ok(initialize(&params))
+        }
         "ping" => Ok(json!({})),
         "tools/list" => Ok(json!({ "tools": tool_list() })),
         "tools/call" => call(&params, tools),

@@ -47,6 +47,7 @@ use crate::widgets::{
 
 mod ai;
 mod app_accounts;
+mod mcp;
 mod nav;
 mod notifications;
 mod rules;
@@ -360,6 +361,8 @@ pub(super) struct SettingsPage {
     ai: ai::AiFields,
     /// Settings > Folders & rules: the mail rules and their filter.
     rules: rules::RulesList,
+    /// Settings > MCP server.
+    mcp: mcp::McpPage,
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -524,6 +527,7 @@ impl MailWindow {
                 drives: Vec::new(),
                 ai,
                 rules: Default::default(),
+                mcp: Default::default(),
             }
         });
         page.mail_app = opens_mail_links();
@@ -555,6 +559,9 @@ impl MailWindow {
         if section == Section::Ai {
             self.load_ai_key_saved(cx);
             self.load_ai_models(cx);
+        }
+        if section == Section::McpServer {
+            self.load_mcp_activity();
         }
         if section == Section::MailRules {
             self.load_rules(cx);
@@ -726,7 +733,7 @@ impl MailWindow {
             Section::Experimental => self.experimental_section(th, cx),
             Section::Feedback => self.feedback_section(th, cx),
             Section::MailRules => self.rules_section(th, cx),
-            Section::McpServer => self.coming_soon_section(section, th),
+            Section::McpServer => self.mcp_section(th, cx),
         };
         // On a phone the page fills the window below the top bar, like the
         // list, its sides come in closer, and the list of pages takes the

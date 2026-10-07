@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Let AI assistants use your mail"
+text = """
+Settings › MCP server lets AI assistants on this computer, such as Claude
+Desktop, Claude Code and LM Studio, search and read your mail and save
+drafts for you to check. It is off until you turn it on. Pick which
+accounts they see, copy what to paste into your assistant, and see what
+they did lately. Assistants never send, delete or move mail.
+"""
