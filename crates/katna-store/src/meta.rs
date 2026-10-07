@@ -5,7 +5,7 @@
 //! values their types and runs the scheduler in the daemon; this module
 //! only stores them.
 
-use katna_core::AccountId;
+use katna_core::{AccountId, MailCategory};
 use rusqlite::{OptionalExtension, params};
 
 use crate::Store;
@@ -165,22 +165,40 @@ impl Store {
             .optional()?)
     }
 
-    /// Whether the conversation of `message` has a message written after
-    /// it (another `Message-ID`, a later date): a reply, or a follow-up.
-    pub fn has_later_in_thread(&self, message: MessageId) -> Result<bool> {
-        Ok(self
-            .mail
-            .prepare_cached(
-                "SELECT EXISTS (
-                     SELECT 1 FROM message m JOIN message o ON o.thread_id = m.thread_id
-                     WHERE m.id = ?1 AND o.id <> m.id
-                       AND o.message_id_hdr IS NOT m.message_id_hdr
-                       AND o.date > m.date
-                       AND EXISTS (SELECT 1 FROM message_location l WHERE l.message_id = o.id)
-                 )",
-            )?
-            .query_row([message.0], |row| row.get(0))?)
+    /// The messages of the conversation of `message` written after it
+    /// (another `Message-ID`, a later date) that are in a folder, oldest
+    /// first: replies, or follow-ups.
+    pub fn later_in_thread(&self, message: MessageId) -> Result<Vec<LaterMessage>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT o.message_id_hdr, COALESCE(o.subject, ''), o.category
+             FROM message m JOIN message o ON o.thread_id = m.thread_id
+             WHERE m.id = ?1 AND o.id <> m.id
+               AND o.message_id_hdr IS NOT m.message_id_hdr
+               AND o.date > m.date
+               AND EXISTS (SELECT 1 FROM message_location l WHERE l.message_id = o.id)
+             ORDER BY o.date, o.id",
+        )?;
+        let rows = stmt.query_map([message.0], |row| {
+            Ok(LaterMessage {
+                message_id: row.get(0)?,
+                subject: row.get(1)?,
+                category: row
+                    .get::<_, Option<i64>>(2)?
+                    .and_then(MailCategory::from_storage),
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
+}
+
+/// A message later in a conversation ([`Store::later_in_thread`]).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LaterMessage {
+    /// Its `Message-ID`, without angle brackets.
+    pub message_id: Option<String>,
+    pub subject: String,
+    /// Its inbox tab, if it was sorted into one.
+    pub category: Option<MailCategory>,
 }
 
 #[cfg(test)]

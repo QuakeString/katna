@@ -865,6 +865,24 @@ macro_rules! pim_proxy {
             /// takes the reminder back; `UndoSend` does too.
             fn set_follow_up(&self, id: i64, after: i64) -> zbus::Result<()>;
 
+            /// Like `SetFollowUp`, but Katna sends `mail` for the user when
+            /// nobody replied: a follow-up (RFC 5322, threaded under the
+            /// message, without `Date` and `Message-ID`) that goes out in
+            /// working hours and, with `again` seconds, a second time if
+            /// still nobody replied. One due a day or more ago (the computer
+            /// was off) is not sent but waits for `SendFollowUpNow`, the
+            /// conversation back in the Inbox. Auto-replies are not replies.
+            fn set_follow_up_mail(
+                &self,
+                id: i64,
+                after: i64,
+                again: i64,
+                mail: &[u8],
+            ) -> zbus::Result<()>;
+
+            /// Sends the follow-up of outbox entry `id` now.
+            fn send_follow_up_now(&self, id: i64) -> zbus::Result<()>;
+
             /// Queues `message` (RFC 5322, with `Bcc` if any) from `account`
             /// to be sent in `delay` seconds; `UndoSend` works until then.
             /// Adds `Date` and `Message-ID` when missing. Once sent it is

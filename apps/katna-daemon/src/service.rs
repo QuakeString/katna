@@ -321,6 +321,20 @@ macro_rules! pim_interface {
                 Ok(self.daemon.set_follow_up(id, after)?)
             }
 
+            async fn set_follow_up_mail(
+                &self,
+                id: i64,
+                after: i64,
+                again: i64,
+                mail: Vec<u8>,
+            ) -> fdo::Result<()> {
+                Ok(self.daemon.set_follow_up_mail(id, after, again, &mail)?)
+            }
+
+            async fn send_follow_up_now(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.send_follow_up_now(id)?)
+            }
+
             async fn queue_send(
                 &self,
                 account: i64,
