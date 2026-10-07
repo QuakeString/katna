@@ -19,6 +19,8 @@
 use std::cell::Cell;
 use std::rc::Rc;
 
+use async_channel::Sender;
+
 use gpui::{
     AnyElement, App, AppContext, Bounds, Context, Entity, FocusHandle, Focusable, FontWeight,
     Global, KeyBinding, Pixels, SharedString, Subscription, Task, WeakEntity, Window,
@@ -40,6 +42,7 @@ use katna_ui::{InputEvent, TextInput, WindowDrag, px, unpx};
 
 use super::MailWindow;
 use super::colors::DesktopColors;
+use crate::instance::Request;
 use crate::tasks::{TaskCommand, TaskEdit};
 use crate::theme::{Accent, Theme, fade};
 use crate::widgets::{dialog_tint, elevation, icon};
@@ -91,9 +94,42 @@ pub struct CaptureHost {
     /// The mail window, once it is open: it reads its notes again after a
     /// note was saved here.
     main: Option<WeakEntity<MailWindow>>,
+    /// Asks the app for what the card can't do itself: the mail window
+    /// (opened if need be) for a new event's More options.
+    requests: Option<Sender<Request>>,
+    /// The New event window, while it is open.
+    event: Option<WindowHandle<MailWindow>>,
 }
 
 impl Global for CaptureHost {}
+
+/// What the New event window needs from the card's host: the app's look,
+/// its paths and font, and where to send More options.
+pub(super) fn host(cx: &App) -> Option<(Environment, Paths, Option<SharedString>)> {
+    let host = cx.try_global::<CaptureHost>()?;
+    Some((host.env.clone(), host.paths.clone(), host.font.clone()))
+}
+
+/// The open New event window, if any.
+pub(super) fn event_window(cx: &App) -> Option<WindowHandle<MailWindow>> {
+    cx.try_global::<CaptureHost>()?.event
+}
+
+pub(super) fn set_event_window(handle: Option<WindowHandle<MailWindow>>, cx: &mut App) {
+    if cx.has_global::<CaptureHost>() {
+        cx.global_mut::<CaptureHost>().event = handle;
+    }
+}
+
+/// Sends `request` to the app, as another launch would.
+pub(super) fn ask_app(request: Request, cx: &App) {
+    if let Some(sender) = cx
+        .try_global::<CaptureHost>()
+        .and_then(|h| h.requests.as_ref())
+    {
+        let _ = sender.try_send(request);
+    }
+}
 
 /// Keeps what the card needs. Call once, before any request is handled.
 pub fn install(
@@ -101,6 +137,7 @@ pub fn install(
     paths: Paths,
     font: Option<SharedString>,
     connection: Option<Connection>,
+    requests: Option<Sender<Request>>,
     cx: &mut App,
 ) {
     // The card's keys (and the fields'), also when it opens before the
@@ -115,6 +152,8 @@ pub fn install(
         open: None,
         last: None,
         main: None,
+        requests,
+        event: None,
     });
 }
 
@@ -129,6 +168,11 @@ pub fn set_main(main: WeakEntity<MailWindow>, cx: &mut App) {
 /// Note, with the text typed if any; an open card comes forward and
 /// switches.
 pub fn open(param: &str, cx: &mut App) {
+    // The desktop clock's Add…: a new event, in a window of its own.
+    if let Some(day) = app_action::capture_event_day(param) {
+        super::event_window::open(day, cx);
+        return;
+    }
     let (note, text) = app_action::capture_parts(param);
     let text = text.to_owned();
     let Some(open) = cx.try_global::<CaptureHost>().map(|host| host.open) else {

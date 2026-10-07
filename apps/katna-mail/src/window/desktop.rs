@@ -355,6 +355,10 @@ impl MailWindow {
                                         ));
                                 }
                                 self.create_event_key(window, cx);
+                                // Typed in the New event window.
+                                if let Some(title) = app_action::new_event_title(&page) {
+                                    self.set_draft_title(title, window, cx);
+                                }
                             }
                         }
                     }

@@ -517,7 +517,7 @@ pub mod app_action {
     /// Takes `open-page`'s parameter apart: the page's name, what after it
     /// (the Calendar's day, a task's ID), and whether to start a new event.
     pub fn page_parts(page: &str) -> (&str, Option<&str>, bool) {
-        let mut parts = page.splitn(3, ':');
+        let mut parts = page.splitn(4, ':');
         let name = parts.next().unwrap_or_default();
         let detail = parts.next().filter(|detail| !detail.is_empty());
         (name, detail, parts.next() == Some(NEW_EVENT))
@@ -555,6 +555,36 @@ pub mod app_action {
         }
     }
 
+    /// [`CAPTURE`]'s parameter for a new event on `day` (`YYYY-MM-DD`), in
+    /// a small window of its own: `event:2026-10-01`.
+    pub fn capture_event(day: &str) -> String {
+        format!("{CAPTURE_EVENT}:{day}")
+    }
+
+    /// The day of a [`capture_event`] parameter; `None` for a task or note.
+    pub fn capture_event_day(param: &str) -> Option<&str> {
+        let (kind, day) = param.split_once(':')?;
+        (kind.trim() == CAPTURE_EVENT && !day.is_empty()).then_some(day)
+    }
+
+    const CAPTURE_EVENT: &str = "event";
+
+    /// `open-page`'s parameter for the Calendar's whole editor with a new
+    /// event on `day` titled `title`: `calendar:2026-10-01:new:Lunch`.
+    pub fn new_event_page(day: &str, title: &str) -> String {
+        let page = calendar_page(day, true);
+        if title.is_empty() {
+            page
+        } else {
+            format!("{page}:{title}")
+        }
+    }
+
+    /// The title a [`new_event_page`] carries, if any.
+    pub fn new_event_title(page: &str) -> Option<&str> {
+        page.splitn(4, ':').nth(3).filter(|title| !title.is_empty())
+    }
+
     /// Takes [`CAPTURE`]'s parameter apart: whether it is a note, and the
     /// text. Anything but `note` is a task.
     pub fn capture_parts(param: &str) -> (bool, &str) {
@@ -571,6 +601,16 @@ pub mod app_action {
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), false));
         let page = calendar_page("2026-10-01", true);
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), true));
+        assert_eq!(new_event_title(&page), None);
+        let page = new_event_page("2026-10-01", "Lunch: Asha");
+        assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), true));
+        assert_eq!(new_event_title(&page), Some("Lunch: Asha"));
+        assert_eq!(
+            capture_event_day(&capture_event("2026-10-01")),
+            Some("2026-10-01")
+        );
+        assert_eq!(capture_event_day("task:buy milk"), None);
+        assert!(!capture_parts(&capture_event("2026-10-01")).0);
         let page = fix_page(7);
         let (name, detail, _) = page_parts(&page);
         assert_eq!((name, detail.and_then(fix_account)), ("mail", Some(7)));

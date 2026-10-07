@@ -418,7 +418,21 @@ async fn push(
             // Its task is not on the service yet; next round.
             return Ok(());
         }
-        let insert = || service.insert(list, &pending.task, pending.parent_remote.as_deref());
+        // A new task on the service: its ID is saved at once, before
+        // anything else can fail, or the next round would send it again
+        // and the pull would bring the first copy in beside it.
+        let insert = || async {
+            let remote = service
+                .insert(list, &pending.task, pending.parent_remote.as_deref())
+                .await?;
+            store.lock().unwrap().task_pushed(
+                id,
+                pending.stamp,
+                &remote,
+                pending.place.is_none(),
+            )?;
+            Ok::<_, Error>(remote)
+        };
         let mut remote = match &pending.remote_id {
             // Only its place changed: nothing else to send.
             Some(remote) if !pending.edited => RemoteTask {
