@@ -20,12 +20,20 @@ viewer-page-count = ng { $count }
 viewer-go-to-page-tip = Mag-type ng numero ng pahina at pindutin ang Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = I-rotate pakanan (Ctrl+R)
 viewer-rotate-anticlockwise-tip = I-rotate pakaliwa (Ctrl+Shift+R)
+viewer-dark-pages-tip = Madidilim na pahina
+viewer-light-pages-tip = Ipakita ang mga pahina kung ano sila
 viewer-fit-page-tip = Ikasya ang pahina
 viewer-fit-picture-tip = Ikasya sa window
 viewer-fit-width-tip = Ikasya ang lapad
 viewer-real-size-tip = Totoong laki (1:1)
 viewer-page-back-tip = Nakaraang pahina
 viewer-page-on-tip = Susunod na pahina
+viewer-more-tip = Iba pa
+viewer-zoom-in = Palakihin
+viewer-zoom-out = Paliitin
+viewer-real-size = Totoong laki
+viewer-rotate-anticlockwise = I-rotate pakaliwa
+viewer-rotate-clockwise = I-rotate pakanan
 
 ## Marking up a PDF
 

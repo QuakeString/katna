@@ -20,12 +20,20 @@ viewer-page-count = dari { $count }
 viewer-go-to-page-tip = Ketik nomor halaman lalu tekan Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = Putar searah jarum jam (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Putar berlawanan arah jarum jam (Ctrl+Shift+R)
+viewer-dark-pages-tip = Halaman gelap
+viewer-light-pages-tip = Tampilkan halaman apa adanya
 viewer-fit-page-tip = Sesuaikan halaman
 viewer-fit-picture-tip = Sesuaikan dengan jendela
 viewer-fit-width-tip = Sesuaikan lebar
 viewer-real-size-tip = Ukuran asli (1:1)
 viewer-page-back-tip = Halaman sebelumnya
 viewer-page-on-tip = Halaman berikutnya
+viewer-more-tip = Lainnya
+viewer-zoom-in = Perbesar
+viewer-zoom-out = Perkecil
+viewer-real-size = Ukuran asli
+viewer-rotate-anticlockwise = Putar berlawanan arah jarum jam
+viewer-rotate-clockwise = Putar searah jarum jam
 
 ## Marking up a PDF
 

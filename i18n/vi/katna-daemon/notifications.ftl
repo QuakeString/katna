@@ -14,6 +14,10 @@ notify-unknown-sender = Người gửi không xác định
 notify-snooze-back = Thư tạm ẩn đã quay lại
 notify-no-reply = Chưa có trả lời
 notify-no-reply-to = Chưa ai trả lời “{ $subject }”.
+notify-follow-up-sent = Đã gửi thư theo dõi
+notify-follow-up-sent-to = Chưa ai trả lời “{ $subject }”, nên Katna đã gửi thư theo dõi.
+notify-follow-up-waiting = Chưa gửi thư theo dõi
+notify-follow-up-waiting-to = Thư đến hạn khi máy tính này đang tắt. “{ $subject }” đã quay lại Hộp thư đến của bạn.
 
 ## Open and click tracking (only for mail sent with "Track opens and clicks")
 
@@ -25,6 +29,19 @@ notify-tracking-clicked = { $who } đã nhấp vào một liên kết trong { $s
 notify-update-ready = Có thể cập nhật Katna Mail
 notify-update-ready-body = Phiên bản { $version } đã được tải xuống. Cập nhật sẽ cài đặt nó và khởi động lại Katna Mail.
 notify-update = Cập nhật
+
+## Something needs the user, shown once per problem
+
+notify-signed-out = Đăng nhập lại
+notify-signed-out-body = { $provider } đã đăng xuất Katna khỏi { $address }. Thư đã ngừng đồng bộ.
+notify-sign-in = Đăng nhập
+notify-password-refused = Mật khẩu bị từ chối
+notify-password-refused-body = Máy chủ thư đã từ chối mật khẩu của { $address }. Có thể mật khẩu đã thay đổi.
+notify-new-password = Mật khẩu mới
+notify-not-sent = Chưa gửi được “{ $subject }”
+notify-not-sent-no-subject = Chưa gửi được một thư
+notify-not-sent-body = Thư đang ở Hộp thư đi, nơi cho biết lý do.
+notify-open-outbox = Mở Hộp thư đi
 
 ## Reminders of calendar events
 
@@ -55,6 +72,12 @@ notify-reply-all = Trả lời tất cả
 notify-mark-read = Đánh dấu là đã đọc
 notify-mark-all-read = Đánh dấu tất cả là đã đọc
 notify-archive = Lưu trữ
+notify-snooze-hour = Tạm ẩn 1 giờ
+notify-snooze-tomorrow = Ngày mai
+notify-copy-code = Sao chép { $code }
+notify-link-verify = Xác minh trên { $domain }
+notify-link-confirm = Xác nhận trên { $domain }
+notify-link-activate = Kích hoạt trên { $domain }
 
 ## After Archive on a notification: a short note in the same place
 
@@ -63,6 +86,11 @@ notify-archived-count = { $count ->
    *[other] Đã chuyển { $count } thư ra khỏi hộp thư đến
 }
 notify-undo = Hoàn tác
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = Đã sao chép mã
+notify-code-not-copied = Không thể sao chép mã
 
 ## After a reply typed into a notification: a note in the same place while
 ## it waits for the undo time

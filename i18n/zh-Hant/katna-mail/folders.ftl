@@ -10,6 +10,8 @@ nav-label-new = 建立新標籤
 nav-folder-new = 建立新資料夾
 nav-menu-check-mail = 檢查新郵件
 nav-menu-check-inbox = 檢查此收件匣
+nav-unified-leave-out = 從整合收件匣中排除
+nav-unified-bring-back = 重新加入整合收件匣
 nav-menu-sign-in-again = 重新登入
 nav-menu-new-mail = 從此帳戶寄送新郵件
 nav-menu-account-settings = 帳戶設定
@@ -22,6 +24,8 @@ nav-account-password-refused = 密碼遭拒
 nav-account-storage = 已使用 { $total } 中的 { $used }
 nav-menu-new-subfolder = 在其中建立新資料夾
 nav-menu-new-sublabel = 在其中建立新標籤
+nav-menu-rename = 重新命名
+nav-menu-delete = 刪除
 nav-menu-empty-trash = 清空垃圾桶
 nav-account-unnamed = 帳戶 { $number }
 nav-all-accounts = 所有帳戶
@@ -44,6 +48,10 @@ folder-spam = 垃圾郵件
 folder-trash = 垃圾桶
 folder-all-mail = 所有郵件
 folder-scheduled = 已排定
+folder-waiting = 等候回覆
+folder-waiting-short = 等候中
+folder-reminders = 提醒
+folder-outbox = 寄件匣
 folder-activity = 動態
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,32 @@ label-create = 建立
 label-creating = 正在建立…
 label-created = 已建立標籤「{ $name }」。
 label-folder-created = 已建立資料夾「{ $name }」。
+label-rename-title = 重新命名標籤
+label-folder-rename-title = 重新命名資料夾
+label-rename = 重新命名
+label-renaming = 正在重新命名…
+label-renamed = 標籤已重新命名為「{ $name }」。
+label-folder-renamed = 資料夾已重新命名為「{ $name }」。
+
+## Deleting a folder or label (asked first)
+
+folder-delete-title = 要刪除「{ $name }」嗎？
+folder-delete-body = { $count ->
+    [0] 其中沒有郵件。資料夾會從伺服器上移除，因此網頁版郵件和你的手機上也會消失。
+   *[other] { $kind ->
+        [conversation] 其中的 { $count } 個會話群組會移至垃圾桶，你仍可以救回。
+       *[message] 其中的 { $count } 封郵件會移至垃圾桶，你仍可以救回。
+    }資料夾會從伺服器上移除，因此網頁版郵件和你的手機上也會消失。
+}
+folder-delete-forever-body = { $count ->
+    [0] 其中沒有郵件。資料夾會從伺服器上移除，因此網頁版郵件和你的手機上也會消失。
+   *[other] { $kind ->
+        [conversation] 其中的 { $count } 個會話群組會被永久刪除，因為此帳戶沒有垃圾桶。
+       *[message] 其中的 { $count } 封郵件會被永久刪除，因為此帳戶沒有垃圾桶。
+    }資料夾會從伺服器上移除，因此網頁版郵件和你的手機上也會消失。
+}
+folder-delete-label-body = 標籤會被移除。其郵件仍保留在「所有郵件」和其他標籤中。
+folder-delete-confirm = 刪除資料夾
+folder-delete-label-confirm = 刪除標籤
+folder-deleted = 已刪除資料夾「{ $name }」
+label-deleted = 已刪除標籤「{ $name }」

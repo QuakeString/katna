@@ -6,6 +6,10 @@
 
 about-tooltip = Katna について
 about-tagline = Linux デスクトップのためのメールとカレンダー
+about-copy-version = バージョン情報をコピー
+about-version-copied = コピーしました
+about-version-built = ビルド日: { $date }
+about-version-system = システム: { $system }
 about-whats-new = 新機能
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = バージョン { $version } のインストール準備が
 about-update-ready-detail = 更新を完了するため、Katna Mail が再起動します。
 about-update-confirm = バージョン { $version } をインストールしますか？
 about-update-confirm-detail = Katna Mail が終了し、更新をインストールしてから、元の状態で再び開きます。パソコンがパスワードを求めます。
+about-update-confirm-detail-windows = Katna Mail を閉じて更新をインストールし、すぐにもう一度開きます。
 about-update-installing = バージョン { $version } をインストール中…
 about-update-installing-detail = 開いたウィンドウにパスワードを入力してください。
+about-update-installing-detail-windows = Katna Mail を今すぐ閉じ、更新のインストール後にもう一度開きます。
 about-update-cancelled = パスワードが入力されなかったため、更新はインストールされませんでした。
 about-update-failed = 更新をインストールできませんでした: { $error }
-about-update-unsupported = このコピーの Katna Mail は、お使いのパッケージマネージャーによって更新されます。
+about-update-not-self-updating = この Katna Mail は自動で更新されません。インストールしたときと同じ方法で更新してください。
 about-update-restart-failed = 更新はインストールされましたが、Katna Mail を再び開けませんでした（{ $error }）。手動で開いてください。
 about-update-check = 更新を確認
 about-update-download = ダウンロード
@@ -145,6 +151,7 @@ onboarding-katna-private = 専用のパスワードを使います。メール�
 onboarding-ready-title = 準備ができました
 onboarding-ready-lead = Katna がメールを取得しています。届いたものから表示され、新しいメールも自動的に表示されます。
 onboarding-ready-lead-address = Katna が { $address } のメールを取得しています。届いたものから表示され、新しいメールも自動的に表示されます。
+onboarding-apps = 使うアプリ
 onboarding-ready-tour = 1 分間のツアーで、どこに何があるかご覧になりますか？
 onboarding-skip = 今はスキップ
 onboarding-take-tour = ツアーを見る

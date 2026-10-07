@@ -6,6 +6,10 @@
 
 about-tooltip = Tungkol sa Katna
 about-tagline = Mail at kalendaryo para sa Linux desktop
+about-copy-version = Kopyahin ang detalye ng bersyon
+about-version-copied = Nakopya na
+about-version-built = Ginawa: { $date }
+about-version-system = System: { $system }
 about-whats-new = Ano’ng bago
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = Handa nang i-install ang bersyon { $version }
 about-update-ready-detail = Mag-re-restart ang Katna Mail para tapusin ang update.
 about-update-confirm = I-install ang bersyon { $version }?
 about-update-confirm-detail = Magsasara ang Katna Mail, iini-install ang update, at magbubukas ulit ito sa kinahinto mo. Hihingin ng computer mo ang password mo.
+about-update-confirm-detail-windows = Magsasara ang Katna Mail, ii-install ang update at magbubukas muli sa ilang sandali.
 about-update-installing = Ini-install ang bersyon { $version }…
 about-update-installing-detail = Ilagay ang password mo sa window na nabuksan.
+about-update-installing-detail-windows = Magsasara na ang Katna Mail at magbubukas muli kapag na-install na ang update.
 about-update-cancelled = Hindi na-install ang update, dahil hindi ibinigay ang password.
 about-update-failed = Hindi ma-install ang update: { $error }
-about-update-unsupported = Ina-update ang kopyang ito ng Katna Mail ng package manager mo.
+about-update-not-self-updating = Hindi kusang nag-a-update ang kopyang ito ng Katna Mail. I-update ito sa paraang ginamit mo sa pag-install.
 about-update-restart-failed = Na-install na ang update, pero hindi mabuksan ulit ang Katna Mail ({ $error }). Buksan mo ito mismo.
 about-update-check = Suriin ang mga update
 about-update-download = I-download
@@ -148,6 +154,7 @@ onboarding-katna-private = May sarili itong password. Hindi kailanman umaalis sa
 onboarding-ready-title = Handa ka na
 onboarding-ready-lead = Kinukuha ng Katna ang mail mo. Lumalabas ito habang dumarating, at kusang lumalabas ang bagong mail.
 onboarding-ready-lead-address = Kinukuha ng Katna ang mail ng { $address }. Lumalabas ito habang dumarating, at kusang lumalabas ang bagong mail.
+onboarding-apps = Mga app na gagamitin mo
 onboarding-ready-tour = Mag-tour nang isang minuto para makita kung nasaan ang lahat?
 onboarding-skip = Laktawan muna
 onboarding-take-tour = Mag-tour
