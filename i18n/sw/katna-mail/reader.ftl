@@ -8,6 +8,8 @@ reader-close = Funga
 reader-back = Rudi
 reader-mark-unread = Tia alama kuwa haijasomwa
 reader-move-to = Hamishia
+reader-snooze = Ahirisha
+reader-remind = Nikumbushe
 reader-more = Zaidi
 reader-original-colors = Onyesha rangi za awali
 reader-dark-colors = Onyesha kwa rangi nyeusi
@@ -35,6 +37,7 @@ reader-tick-bounced = Haikufikishwa: ilirudishwa { $when }
 reader-tick-read = Imesomwa { $when } (stakabadhi ya kusoma)
 reader-tick-opened = Imefunguliwa, mara ya mwisho { $when } (ufuatiliaji wa kufunguliwa)
 reader-starred = Ina nyota
+reader-chip-remove = Ondoa { $label }
 reader-not-starred = Haina nyota
 reader-too-long = Ujumbe ni mrefu mno kuonyeshwa wote.
 reader-encrypted-images = Picha kutoka kwenye wavuti hazipakiwi kamwe katika barua iliyosimbwa.
@@ -52,6 +55,7 @@ reader-details-subject = mada:
 
 reader-downloading = Inapakua ujumbe huu kutoka kwenye seva…
 reader-download-failed = Imeshindwa kupakua ujumbe huu.
+reader-download-offline = Akaunti hii iko nje ya mtandao. Rudi mtandaoni ili kupakua ujumbe huu.
 reader-try-again = Jaribu tena
 
 ## Reply row
@@ -104,6 +108,7 @@ tracking-clicked = { $who } amefuata kiungo { $clicks ->
 tracking-maybe-opened = Huenda { $who } ameufungua (Apple Mail hupakia picha kwa ajili ya faragha)
 tracking-seen-none = Bado hakuna aliyeufungua au kufuata kiungo
 tracking-receipt = { $who } ametuma stakabadhi ya kusoma
+tracking-receipt-read = { $who } ameusoma (stakabadhi ya kusoma), { $when }
 tracking-receipt-displayed = Stakabadhi ya kusoma: { $who } amefungua ujumbe wako
 tracking-receipt-other = Stakabadhi ya kusoma: { $who } amefuta au ameshughulikia ujumbe wako bila kuufungua
 

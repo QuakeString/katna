@@ -9,6 +9,13 @@ shortcut-group-actions = Àwọn ìgbésẹ̀
 shortcut-group-go-to = Lọ sí
 shortcut-group-app = Áàpù
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Ọ̀nà àbùjá kíbọ́ọ̀dù
+shortcuts-dialog-search = Wá ọ̀nà àbùjá kan
+shortcuts-dialog-none = Kò sí ọ̀nà àbùjá tó bá a mu
+shortcuts-dialog-close = Pa á dé
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Ìjíròrò tókàn
@@ -37,6 +44,8 @@ shortcut-mark-read = Sàmì sí bí kíkà
 shortcut-mark-unread = Sàmì sí bí àìkà
 shortcut-star = Fi ìràwọ̀ sí tàbí yọ ọ́ kúrò
 shortcut-add-to-tasks = Fi kún Iṣẹ́
+shortcut-snooze = Sún síwájú
+shortcut-remind = Rán mi létí
 shortcut-important = Sàmì sí bí pàtàkì
 shortcut-not-important = Sàmì sí bí kò ṣe pàtàkì
 shortcut-mute = Pa ohùn ìjíròrò tàbí dá a padà

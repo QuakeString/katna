@@ -34,7 +34,7 @@ contacts-account-signed-in = Weer aangemeld by { $address }. Haal tans jou konta
 contacts-account-sign-in-refused = { $provider } het Katna nie ingelaat nie. Probeer weer, en gee toegang tot jou kontakte.
 contacts-account-password = Die bediener het die wagwoord nie aanvaar nie. Yahoo, iCloud, Zoho en ander het 'n programwagwoord nodig.
 contacts-account-change-password = Verander wagwoord
-contacts-account-change-password-tooltip = Maak Instellings > Rekeninge oop
+contacts-account-change-password-tooltip = Tik die nuwe wagwoord; Katna gaan dit by die bediener na
 contacts-account-failed = Die kontakte kon nie gelees word nie.
 # $reason is the server's own words, in English.
 contacts-account-error = Die kontakte kon nie gelees word nie: { $reason }

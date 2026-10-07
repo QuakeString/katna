@@ -34,7 +34,7 @@ contacts-account-signed-in = Umeingia tena kwenye { $address }. Inapata anwani z
 contacts-account-sign-in-refused = { $provider } haikuruhusu Katna kuingia. Jaribu tena, na uruhusu ufikiaji wa anwani zako.
 contacts-account-password = Seva haikukubali nenosiri. Yahoo, iCloud, Zoho na nyinginezo zinahitaji nenosiri la programu.
 contacts-account-change-password = Badilisha nenosiri
-contacts-account-change-password-tooltip = Fungua Mipangilio > Akaunti
+contacts-account-change-password-tooltip = Andika nenosiri jipya; Katna hulikagua na seva
 contacts-account-failed = Anwani hazikuweza kusomwa.
 # $reason is the server's own words, in English.
 contacts-account-error = Anwani hazikuweza kusomwa: { $reason }

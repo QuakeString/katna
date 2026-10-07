@@ -21,12 +21,20 @@ viewer-page-count = na { $count }
 viewer-go-to-page-tip = Rubuta lambar shafi sannan ka danna Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = Juya zuwa dama (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Juya zuwa hagu (Ctrl+Shift+R)
+viewer-dark-pages-tip = Shafuka masu duhu
+viewer-light-pages-tip = Nuna shafuka yadda suke
 viewer-fit-page-tip = Daidaita shafi
 viewer-fit-picture-tip = Daidaita da taga
 viewer-fit-width-tip = Daidaita faɗi
 viewer-real-size-tip = Ainihin girma (1:1)
 viewer-page-back-tip = Shafin baya
 viewer-page-on-tip = Shafi na gaba
+viewer-more-tip = Ƙari
+viewer-zoom-in = Ƙara girma
+viewer-zoom-out = Rage girma
+viewer-real-size = Ainihin girma
+viewer-rotate-anticlockwise = Juya hagu
+viewer-rotate-clockwise = Juya dama
 
 ## Marking up a PDF
 
