@@ -1179,6 +1179,9 @@ pub struct MailView {
     pub activity_account: String,
     /// What the snooze menu's suggested times mean.
     pub snooze: SnoozeTimes,
+    /// Nudges: mail the user sent that asked something and got no answer
+    /// in three days comes back to the top of the Inbox.
+    pub nudges: bool,
 }
 
 /// What the snooze menu's suggested times mean (Settings > Inbox >
@@ -1403,6 +1406,7 @@ impl Default for MailView {
             activity_removed: Vec::new(),
             activity_account: String::new(),
             snooze: SnoozeTimes::default(),
+            nudges: true,
         }
     }
 }

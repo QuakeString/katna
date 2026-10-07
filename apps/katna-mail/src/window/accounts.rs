@@ -1140,7 +1140,8 @@ impl MailWindow {
         self.settings_page = None;
         self.close_listing(cx);
         self.unread.clear();
-        self.mail = Mail::open(&self.paths);
+        let nudges = self.config.mail.nudges;
+        self.mail = Mail::open(&self.paths).map(|mail| mail.with_nudges(nudges));
         self.load_tree();
         self.show_snackbar(tr!("accounts-all-deleted"), None, cx);
     }

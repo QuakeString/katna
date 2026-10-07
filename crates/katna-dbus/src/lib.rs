@@ -927,6 +927,10 @@ macro_rules! pim_proxy {
             /// seconds); one that waited for the user goes out then.
             fn move_follow_up(&self, id: i64, at: i64) -> zbus::Result<()>;
 
+            /// Dismisses the nudge on sent message `id`: it does not come
+            /// back to the Inbox.
+            fn dismiss_nudge(&self, id: i64) -> zbus::Result<()>;
+
             /// Queues `message` (RFC 5322, with `Bcc` if any) from `account`
             /// to be sent in `delay` seconds; `UndoSend` works until then.
             /// Adds `Date` and `Message-ID` when missing. Once sent it is

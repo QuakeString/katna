@@ -1424,6 +1424,19 @@ this is local; Katna Server only adds opened/clicked events (§16).
   Send opens its menu on right-click or a long press (Send now, Schedule
   send, Follow up if no reply). The daemon signals `MailChanged` whenever
   a follow-up changes.
+- **Nudges** (`message`/`nudge`: `{sent, asks, dismissed}`; October 2026,
+  step 5 of the follow-up study): after each sync (and at start) the
+  daemon looks once at each message in Sent from the last 14 days and
+  keeps whether the user's own words ask something (a `?` before the
+  quote or signature; the preview counts until the body is downloaded).
+  Mailing lists and mail with a follow-up set are left out. The app puts
+  the ones 3 to 14 days old that nobody answered (`waiting_nudges`, the
+  same test as follow-ups) on top of the Inbox's Primary tab, above all
+  but pinned mail, with "Sent 3 days ago. Follow up?" (reply to all) and
+  an x (`DismissNudge(x message)`); the open conversation shows a card,
+  and a chat a small line like the day labels whose Follow up goes to the
+  reply box. Settings > Inbox > Nudges (`mail.nudges`) turns them off.
+  Local only; nothing changes on the server.
 - **Surfaced** (`message`/`surfaced`: `{at}`, expires after 14 days): mail
   back from snooze or a reminder is listed as if it arrived at `at`, so it
   sits on top of the Inbox like new mail.

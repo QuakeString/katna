@@ -289,6 +289,10 @@ settings-snooze-own-detail = Shown in the menu while it is still to come
 settings-snooze-own-placeholder = Like “monday 10:00”
 # $date: when the user's own time comes next, such as "Mon, Oct 12, 2026, 10:00 AM".
 settings-snooze-own-next = Next: { $date }
+# Gmail-style nudges: questions the user sent that nobody answered.
+settings-nudges = Nudges
+settings-nudges-on = Bring back questions nobody answered
+settings-nudges-on-detail = Mail you sent that asked something and got no reply in 3 days goes back to the top of the Inbox
 
 ## Settings > Appearance
 

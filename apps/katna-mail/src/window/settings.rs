@@ -62,6 +62,7 @@ pub(super) enum Change {
     Colors(&'static str),
     Accent(Accent),
     Tabs(bool),
+    Nudges(bool),
     Conversations(bool),
     AppLabels(bool),
     SenderPictures(bool),
@@ -573,6 +574,13 @@ impl MailWindow {
             Change::OpenIn(group, open) => view.open.set(group, open),
             Change::Tabs(on) => {
                 view.inbox_tabs = on;
+                relist = true;
+            }
+            Change::Nudges(on) => {
+                view.nudges = on;
+                if let Ok(mail) = &mut self.mail {
+                    mail.set_nudges(on);
+                }
                 relist = true;
             }
             Change::Conversations(on) => {

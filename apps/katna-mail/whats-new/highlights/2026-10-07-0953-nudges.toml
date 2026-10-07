@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Questions nobody answered come back"
+text = """
+Mail you sent that asked something and got no answer in three days comes
+back to the top of the Inbox with "Sent 3 days ago. Follow up?". Click it
+to follow up, or the x to put it away. Settings > Inbox turns it off.
+"""

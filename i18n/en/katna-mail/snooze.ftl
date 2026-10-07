@@ -127,3 +127,23 @@ follow-up-chat-remind = Back in Inbox { $date } if no reply
 toast-follow-up-sent = Follow-up sent
 toast-follow-up-stopped = Follow-up stopped
 toast-follow-up-moved = Follow-up moved to { $date }
+
+# Nudges: a question the user sent that nobody answered in 3 days comes
+# back to the top of the Inbox. $days: whole days since it was sent.
+nudge-row = Sent { $days ->
+    [one] 1 day ago
+   *[other] { $days } days ago
+}. Follow up?
+nudge-row-tip = Write a follow-up to everyone in it
+nudge-follow-up = Follow up
+nudge-dismiss = Dismiss
+nudge-card-title = No reply yet
+nudge-card-text = You asked something { $days ->
+    [one] 1 day ago
+   *[other] { $days } days ago
+} and nobody answered.
+nudge-chat-line = Sent { $days ->
+    [one] 1 day ago
+   *[other] { $days } days ago
+}, no reply yet
+toast-nudge-dismissed = Nudge dismissed

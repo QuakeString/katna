@@ -38,6 +38,8 @@ pub enum Command {
     SendFollowUpNow(i64),
     MoveFollowUp(i64, i64),
     StopFollowUp(i64),
+    /// Dismisses the nudge on a sent message.
+    DismissNudge(MessageId),
     /// Sets a follow-up as it was: seconds after sending, seconds to a
     /// second one and the mail Katna sends (none to remind). The Undo of
     /// Stop.
@@ -247,6 +249,7 @@ impl Command {
             | Self::SendFollowUpNow(_)
             | Self::MoveFollowUp(..)
             | Self::StopFollowUp(_)
+            | Self::DismissNudge(_)
             | Self::SetFollowUp(..)
             | Self::UndoSend(_)
             | Self::ReopenDraft
@@ -409,6 +412,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         Command::Unsnooze(messages) => pim.unsnooze(&ids(messages)).await,
         Command::SendFollowUpNow(id) => pim.send_follow_up_now(*id).await,
         Command::MoveFollowUp(id, at) => pim.move_follow_up(*id, *at).await,
+        Command::DismissNudge(id) => pim.dismiss_nudge(id.0).await,
         Command::StopFollowUp(id) => pim.set_follow_up(*id, 0).await,
         Command::SetFollowUp(id, after, again, mail) => match mail {
             Some(mail) => {

@@ -190,6 +190,22 @@ impl Store {
         Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
 
+    /// The messages in a Sent folder dated from `from` to `to` (Unix
+    /// seconds), oldest first: where nudges look for questions with no
+    /// answer.
+    pub fn sent_between(&self, from: i64, to: i64) -> Result<Vec<MessageId>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT DISTINCT m.id
+             FROM message m
+             JOIN message_location l ON l.message_id = m.id
+             JOIN folder f ON f.id = l.folder_id
+             WHERE f.role = 'sent' AND m.date BETWEEN ?1 AND ?2
+             ORDER BY m.date, m.id",
+        )?;
+        let rows = stmt.query_map([from, to], |row| Ok(MessageId(row.get(0)?)))?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
     /// The newest message row: messages stored later have larger IDs.
     pub fn newest_message(&self) -> Result<MessageId> {
         Ok(MessageId(self.mail.query_row(
@@ -376,5 +392,8 @@ mod tests {
                 .unwrap()
                 .is_empty()
         );
+        // Sent mail by its date, for nudges.
+        assert_eq!(store.sent_between(250, 350).unwrap(), vec![mine]);
+        assert!(store.sent_between(0, 250).unwrap().is_empty());
     }
 }

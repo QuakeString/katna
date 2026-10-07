@@ -92,6 +92,8 @@ pub struct Row {
     pub snoozed_until: Option<i64>,
     /// A follow-up waits on the user's message in it: its chip.
     pub follow_up: Option<LineFollowUp>,
+    /// A nudge: the user asked something in it and nobody answered.
+    pub nudge: Option<LineNudge>,
     pub attachments: bool,
     /// The named attachments, in conversation order, for the chips under
     /// the line. Empty when only `attachments` is known (mail synced
@@ -104,6 +106,16 @@ pub struct Row {
     /// the newest mail they got is marked answered (a reply whose sent
     /// copy is not here). Never set in sent and draft folders.
     pub replied: bool,
+}
+
+/// A question the user sent that nobody answered in three days (a nudge),
+/// for the chip on its line and the card on the open conversation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct LineNudge {
+    /// The question.
+    pub message: MessageId,
+    /// When it was sent (Unix seconds).
+    pub sent: i64,
 }
 
 /// A follow-up or "remind me if no reply" on mail the user sent, for the
@@ -281,6 +293,7 @@ impl Row {
             pinned: false,
             snoozed_until: None,
             follow_up: None,
+            nudge: None,
             attachments: message.has_attachments,
             files: Vec::new(),
             tracking: None,
@@ -426,6 +439,8 @@ pub struct Mail {
     last_list: RefCell<Option<ListRead>>,
     /// Whether a list was read in another way, which is not read early.
     other_list: Cell<bool>,
+    /// Settings > Inbox > Nudges.
+    nudges_on: bool,
 }
 
 /// Snoozed mail, and mail back from snooze or a follow-up reminder
@@ -443,6 +458,19 @@ struct Reminders {
     follow_ups: HashMap<MessageId, LineFollowUp>,
     follow_up_threads: HashMap<ThreadId, LineFollowUp>,
     waiting: Vec<MessageId>,
+    /// Questions the user sent that nobody answered (nudges), newest
+    /// first, and when each was sent by message and conversation.
+    nudges: Vec<Nudged>,
+    nudge_messages: HashMap<MessageId, LineNudge>,
+    nudge_threads: HashMap<ThreadId, LineNudge>,
+}
+
+/// A question the user sent that nobody answered in three days.
+#[derive(Debug, Clone, Copy)]
+struct Nudged {
+    message: MessageId,
+    thread: Option<ThreadId>,
+    account: AccountId,
 }
 
 impl Reminders {
@@ -455,6 +483,7 @@ impl Reminders {
             Err(err) => tracing::warn!("reading snoozed mail: {err}"),
         }
         reminders.read_follow_ups(store);
+        reminders.read_nudges(store);
         let surfaced = katna_meta::surfaced(store).unwrap_or_else(|err| {
             tracing::warn!("reading mail back from snooze: {err}");
             Vec::new()
@@ -506,6 +535,54 @@ impl Reminders {
                 }
             }
         }
+    }
+
+    /// The questions the user sent that nobody answered (`katna-meta`'s
+    /// nudges).
+    fn read_nudges(&mut self, store: &Store) {
+        let now = jiff::Timestamp::now().as_second();
+        let list = katna_meta::waiting_nudges(store, now).unwrap_or_else(|err| {
+            tracing::warn!("reading nudges: {err}");
+            Vec::new()
+        });
+        if list.is_empty() {
+            return;
+        }
+        let ids: Vec<MessageId> = list.iter().map(|(id, _)| *id).collect();
+        let messages: HashMap<MessageId, StoredMessage> = store
+            .messages_by_id(&ids)
+            .unwrap_or_default()
+            .into_iter()
+            .map(|m| (m.id, m))
+            .collect();
+        for (id, nudge) in list {
+            let Some(message) = messages.get(&id) else {
+                continue;
+            };
+            let line = LineNudge {
+                message: id,
+                sent: nudge.sent,
+            };
+            self.nudge_messages.insert(id, line);
+            if let Some(thread) = message.thread_id {
+                self.nudge_threads.entry(thread).or_insert(line);
+            }
+            self.nudges.push(Nudged {
+                message: id,
+                thread: message.thread_id,
+                account: message.account,
+            });
+        }
+    }
+
+    /// The question a line waits on, if it is a nudge.
+    fn nudge(&self, key: EntryKey, latest: MessageId) -> Option<LineNudge> {
+        match key {
+            EntryKey::Thread(thread) => self.nudge_threads.get(&thread),
+            EntryKey::Message(id) => self.nudge_messages.get(&id),
+        }
+        .or_else(|| self.nudge_messages.get(&latest))
+        .copied()
     }
 
     /// The follow-up waiting on a line, if one does.
@@ -660,6 +737,7 @@ impl Mail {
             preloaded: RefCell::default(),
             last_list: RefCell::default(),
             other_list: Cell::new(false),
+            nudges_on: true,
         })
     }
 
@@ -791,9 +869,14 @@ impl Mail {
         categories: Option<&[MailCategory]>,
         conversations: bool,
     ) -> (Vec<Entry>, HashMap<MailCategory, u64>) {
+        let account = self.store.folder_account(folder).ok().flatten();
+        let nudged = |entries: Vec<Entry>| match account {
+            Some(account) => self.nudged_first(entries, &[account], categories, conversations),
+            None => entries,
+        };
         if !conversations {
             return (
-                self.entries(folder, categories, false),
+                nudged(self.entries(folder, categories, false)),
                 self.category_unread(folder),
             );
         }
@@ -803,11 +886,78 @@ impl Mail {
         };
         match self.list_read(read) {
             Ok((threads, unread)) => (
-                self.folder_lines(folder, Ok(thread_entries(threads))),
+                nudged(self.folder_lines(folder, Ok(thread_entries(threads)))),
                 unread.into_iter().collect(),
             ),
             Err(err) => (self.folder_lines(folder, Err(err)), HashMap::new()),
         }
+    }
+
+    /// The store with nudges on or off, as [`Mail::set_nudges`].
+    pub fn with_nudges(mut self, on: bool) -> Self {
+        self.set_nudges(on);
+        self
+    }
+
+    /// Turns nudges on or off (Settings > Inbox > Nudges).
+    pub fn set_nudges(&mut self, on: bool) {
+        if self.nudges_on != on {
+            self.nudges_on = on;
+            self.rows.clear();
+        }
+    }
+
+    /// Puts the questions the user sent from `accounts` that nobody
+    /// answered at the top of an inbox's lines (below pinned ones, which
+    /// go first after this), newest first, as Gmail's nudges do. Only in
+    /// the Primary tab (`categories` lists it, or there are no tabs).
+    fn nudged_first(
+        &self,
+        entries: Vec<Entry>,
+        accounts: &[AccountId],
+        categories: Option<&[MailCategory]>,
+        conversations: bool,
+    ) -> Vec<Entry> {
+        if !self.nudges_on
+            || self.reminders.nudges.is_empty()
+            || categories.is_some_and(|c| !c.contains(&MailCategory::Primary))
+        {
+            return entries;
+        }
+        let mut top: Vec<Entry> = Vec::new();
+        for nudge in &self.reminders.nudges {
+            if !accounts.contains(&nudge.account) {
+                continue;
+            }
+            let key = match nudge.thread {
+                Some(thread) if conversations => EntryKey::Thread(thread),
+                _ => EntryKey::Message(nudge.message),
+            };
+            if top.iter().any(|e| e.key == key) {
+                continue;
+            }
+            top.push(Entry {
+                key,
+                latest: nudge.message,
+            });
+        }
+        if top.is_empty() {
+            return entries;
+        }
+        let keys: HashSet<EntryKey> = top.iter().map(|e| e.key).collect();
+        top.extend(entries.into_iter().filter(|e| !keys.contains(&e.key)));
+        top
+    }
+
+    /// The nudge on an open conversation of `ids`: the question and when
+    /// it was sent.
+    pub fn nudge_in(&self, ids: &[MessageId]) -> Option<LineNudge> {
+        if !self.nudges_on {
+            return None;
+        }
+        ids.iter()
+            .find_map(|id| self.reminders.nudge_messages.get(id))
+            .copied()
     }
 
     /// `folder`'s lines as read, with mail back from snooze in place and
@@ -889,6 +1039,16 @@ impl Mail {
             Vec::new()
         });
         let entries = surfaced_in_place(entries, &self.reminders, |e| self.date_of(e.latest));
+        let accounts: Vec<AccountId> = folders
+            .iter()
+            .filter_map(|f| self.store.folder_account(*f).ok().flatten())
+            .collect();
+        let primary = match &tabs.categories {
+            None => None,
+            Some(list) if list.contains(&MailCategory::Primary) => None,
+            Some(list) => Some(list.as_slice()),
+        };
+        let entries = self.nudged_first(entries, &accounts, primary, conversations);
         (
             pinned_first(entries, &self.pins),
             unread.into_iter().collect(),
@@ -1276,6 +1436,13 @@ impl Mail {
             let Some(message) = messages.get(&entry.latest) else {
                 continue;
             };
+            // A nudge is the user's own question: its line says who it
+            // went to, as in Sent.
+            let nudge = self
+                .reminders
+                .nudge(entry.key, entry.latest)
+                .filter(|_| self.nudges_on);
+            let show_recipients = show_recipients || nudge.is_some();
             let mut row = Row::new(message, show_recipients);
             row.tracking = activity.get(&entry.latest).map(Tracked::from);
             if let Some(ids) = attached.get(&entry.key) {
@@ -1305,6 +1472,7 @@ impl Mail {
                 pinned: self.pins.rank(row.key).is_some(),
                 snoozed_until,
                 follow_up: self.reminders.follow_up(row.key, row.id),
+                nudge,
                 ..row
             };
             self.rows.insert(row.key, Rc::new(row));
@@ -2235,6 +2403,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 pinned: false,
                 snoozed_until: None,
                 follow_up: None,
+                nudge: None,
                 attachments: false,
                 files: Vec::new(),
                 snippet: "The budget is final.".into(),
