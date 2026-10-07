@@ -2281,7 +2281,12 @@ Gemini or confidential mode):
   page's small pictures and drives. An app joins the list once it has
   settings of its own. On a phone the list of the scope's pages
   fills the page until one is picked, and the back arrow comes back to
-  it. MCP server is still to come: it is fainter in the list and shows a
+  it. The MCP server itself is built: `katnactl mcp` (#756) speaks
+  the Model Context Protocol on stdio to AI assistants on the same
+  computer, with tools to list accounts and folders, search and read mail
+  and save plain-text drafts, and never sends, deletes, moves or flags
+  mail. Its Settings page (on or off, allow drafts, copy the client setup)
+  is still to come: until then it is fainter in the list and shows a
   "Coming soon" page saying what it will do. The rule editor
   (`window/rule_editor.rs`), a dialog, also opens from a mail's
   right-click menu (Make a rule…, filled in with its sender). It counts
@@ -4158,8 +4163,11 @@ read again. Events are those of the calendars Katna syncs; tasks are
 those of every task list, synced with each account's own service
 (§18.1), and a task added in the clock goes to the first account's
 default list. `Open` shows an event (the Calendar on its day) or a task
-(the Tasks page) in Katna Mail, and `NewEvent` starts an event on a day
-there, both through `katna-mail --page` (`calendar:YYYY-MM-DD[:new]`).
+(the Tasks page) in Katna Mail through `katna-mail --page`
+(`calendar:YYYY-MM-DD`), and `NewEvent` opens a small New event window on
+a day, without the mail window, through `katna-mail --capture`
+(`event:YYYY-MM-DD`); its More options opens the whole editor there
+(`calendar:YYYY-MM-DD:new[:title]`).
 `integrations/README.md` has the details.
 
 **A. Calendar-events plugin (planned, `integrations/plasma-calendar-plugin`)**
@@ -4194,8 +4202,15 @@ there, both through `katna-mail --page` (`calendar:YYYY-MM-DD[:new]`).
     picked, when that isn't today), tick one off;
   - click a Katna event to open Katna's Calendar on its day; a Join
     button for its video call;
-  - **"Add…"** starts a new event in Katna's Calendar on the day picked,
-    without needing a `text/calendar` app;
+  - **"Add…"** opens Katna's small New event window on the day picked
+    (the Calendar's quick card on its own), without needing a
+    `text/calendar` app;
+  - the time zone and its time sit beside the date, a menu of the other
+    zones and Switch… under it, in place of the Time Zones section under
+    the lists, which the popup's height cut off;
+  - the Tasks heading folds the list to its heading and count, kept
+    between openings (`katnaTasksFolded`); open, the list takes the room
+    the day's events leave and scrolls inside it;
   - right-click a day in the month (`KatnaDayMenu.qml`): Add a Task for
     that day, Add an Event on it;
   - later: right-click edit, delete, drag to reschedule, organization

@@ -14,6 +14,7 @@ pub mod ids;
 pub mod image;
 pub mod logging;
 pub mod meeting;
+pub mod mime;
 pub mod paths;
 pub mod quick_add;
 pub mod sentry;

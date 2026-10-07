@@ -5,6 +5,8 @@
 //! Commands go to the daemon over D-Bus; `folders` and `list` read the store
 //! read-only, as the apps do.
 
+mod mcp;
+
 use std::{
     io::{self, BufRead, IsTerminal, Read},
     process::ExitCode,
@@ -46,6 +48,7 @@ usage: katnactl status
        katnactl retry ID
        katnactl discard ID
        katnactl crashes [show [NAME] | delete]
+       katnactl mcp
 
 Talks to katna-daemon, which syncs your accounts in the background.
 
@@ -99,6 +102,12 @@ crashes    Crash reports saved on this computer, newest first (a native
            crash is picked up from systemd-coredump first). `show` prints
            the newest report or the one named; `delete` deletes them all.
            Nothing is sent anywhere.
+mcp        Lets an AI assistant on this computer (Claude Desktop, Claude
+           Code, LM Studio, ...) search and read your mail and save drafts
+           for you to check and send: add `katnactl mcp` to the
+           assistant's MCP servers. It speaks the Model Context Protocol
+           on standard input and output, and never sends, deletes or moves
+           mail.
 
 Changes show at once and reach the server when the account is online.
 Mail waits in the outbox while offline.";
@@ -227,6 +236,7 @@ fn run(command: &str, args: &[String]) -> Result<()> {
         }),
         "watch" => no_args(args).and_then(|()| with_daemon(watch)),
         "crashes" => crashes(args),
+        "mcp" => no_args(args).and_then(|()| mcp::serve()),
         "folders" => folders(one_account(args)?),
         "list" => list(args),
         "show" => match args {
@@ -980,9 +990,18 @@ fn truncate(text: &str, width: usize) -> String {
 
 /// `YYYY-MM-DD HH:MM` in UTC.
 fn format_time(unix: i64) -> String {
-    let days = unix.div_euclid(86_400);
+    let (year, month, day) = civil_from_days(unix.div_euclid(86_400));
     let seconds = unix.rem_euclid(86_400);
-    // Howard Hinnant's civil_from_days.
+    format!(
+        "{year:04}-{month:02}-{day:02} {:02}:{:02}",
+        seconds / 3600,
+        seconds % 3600 / 60
+    )
+}
+
+/// Days since 1970-01-01 as (year, month, day), by Howard Hinnant's
+/// `civil_from_days`.
+fn civil_from_days(days: i64) -> (i64, i64, i64) {
     let z = days + 719_468;
     let era = z.div_euclid(146_097);
     let doe = z.rem_euclid(146_097);
@@ -992,11 +1011,7 @@ fn format_time(unix: i64) -> String {
     let day = doy - (153 * mp + 2) / 5 + 1;
     let month = if mp < 10 { mp + 3 } else { mp - 9 };
     let year = yoe + era * 400 + i64::from(month <= 2);
-    format!(
-        "{year:04}-{month:02}-{day:02} {:02}:{:02}",
-        seconds / 3600,
-        seconds % 3600 / 60
-    )
+    (year, month, day)
 }
 
 #[cfg(test)]

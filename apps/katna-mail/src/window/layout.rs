@@ -753,10 +753,11 @@ impl MailWindow {
         .max(NAV_WIDTH)
     }
 
-    /// The top of the drawer of a phone or tablet: the app's name.
+    /// The top of a phone's drawer: the app's name. A tablet's top bar
+    /// already shows it beside the drawer.
     pub(super) fn render_drawer_head(&self, th: &Theme) -> Option<AnyElement> {
         let shape = self.layout.shape;
-        if shape.is_desktop() || !self.layout.drawer {
+        if !shape.is_phone() || !self.layout.drawer {
             return None;
         }
         Some(
@@ -767,14 +768,16 @@ impl MailWindow {
                 .child(
                     div()
                         .h(px(48.0))
-                        .pl(px(26.0))
+                        // The logo centred on the folder icons below.
+                        .pl(px(26.0 + 12.0 - super::TITLE_MARK / 2.0))
                         .flex()
                         .flex_row()
                         .items_center()
-                        .gap(px(12.0))
+                        .gap(px(super::TITLE_MARK_GAP))
                         .text_size(px(20.0))
                         .text_color(rgba(th.text))
-                        .child(icon("mail", th.accent, 24.0))
+                        // The same logo as the top bar's on a desktop.
+                        .child(crate::widgets::katna_mark(super::TITLE_MARK, th))
                         .child("Katna Mail"),
                 )
                 .into_any_element(),

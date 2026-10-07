@@ -152,6 +152,8 @@ calendar-event-details = Event details
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = New event
+# The title of the small window the desktop clock's Add… opens.
+calendar-event-window-title = New event
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Open day
 calendar-menu-duplicate = Duplicate
