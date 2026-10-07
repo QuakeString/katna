@@ -6,25 +6,27 @@
 //! opens the whole editor in the mail window (opened if need be), and the
 //! window closes once the event is saved.
 
+use std::cell::Cell;
 use std::rc::Rc;
 use std::time::Duration;
 
-use gpui::{App, Context, Decorations, Window, div, point, prelude::*, rgba, size};
+use gpui::{App, Context, Decorations, Window, canvas, div, point, prelude::*, rgba, size};
 use jiff::civil::Date;
 use katna_chrome::window_options;
 use katna_core::ids::MAIL_APP_ID;
 use katna_dbus::app_action;
 use katna_i18n::tr;
-use katna_ui::px;
 use katna_ui::scale::desktop_px;
 use katna_ui::tokens::space;
+use katna_ui::{px, unpx};
 
 use super::calendar::read_calendars;
 use super::event_edit::next_hour;
 use super::{MailWindow, RailApp, WINDOW_CONTEXT, capture};
 use crate::instance::Request;
 
-/// The window's size: the small card, with room under it for its pickers.
+/// The window's size as it opens. It then fits the card, and grows back
+/// to this height while a picker is open so the picker has room.
 const WIDTH: f32 = 520.0;
 const HEIGHT: f32 = 360.0;
 
@@ -137,12 +139,18 @@ impl MailWindow {
         let th = self.theme(window);
         let reduce = cx.reduce_motion();
         let server_frame = matches!(window.window_decorations(), Decorations::Server);
+        let picking = self.draft_picking();
+        self.fit_event_window(picking, window);
+        let fit = self.event_fit.clone();
         let card = self.calendar.draft.as_ref().map(|draft| {
             self.quick_card_body(draft, &th, cx)
-                .size_full()
+                .relative()
+                .w_full()
+                .flex_none()
                 .px(px(space::S3))
                 .pt(px(space::S6))
                 .pb(px(space::S5))
+                .child(measure(fit))
         });
         let pick = self.render_draft_pick(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
@@ -167,4 +175,39 @@ impl MailWindow {
             None => page.into_any_element(),
         }
     }
+}
+
+impl MailWindow {
+    /// Fits the window to the card as last drawn, so nothing empty is
+    /// left under it. A picker gets the opening height back.
+    fn fit_event_window(&self, picking: bool, window: &mut Window) {
+        let bottom = self.event_fit.get();
+        if bottom <= 0.0 {
+            return;
+        }
+        let want = if picking { bottom.max(HEIGHT) } else { bottom };
+        let now = unpx(window.viewport_size().height);
+        if (want - now).abs() >= 1.0 {
+            window.resize(size(window.viewport_size().width, px(want)));
+        }
+    }
+}
+
+/// An empty layer over the card that keeps where the card ends in the
+/// window, and draws again next frame when that moved (a refresh asked
+/// for while drawing is dropped).
+fn measure(bottom: Rc<Cell<f32>>) -> impl IntoElement {
+    canvas(
+        move |bounds, window, _| {
+            let drawn = unpx(bounds.bottom());
+            if (bottom.replace(drawn) - drawn).abs() >= 1.0 {
+                window.on_next_frame(|window, _| window.refresh());
+            }
+        },
+        |_, _, _, _| {},
+    )
+    .absolute()
+    .top_0()
+    .left_0()
+    .size_full()
 }

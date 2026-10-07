@@ -1549,6 +1549,14 @@ impl MailWindow {
         Some(self.render_pick(draft, pick, at, th, cx))
     }
 
+    /// Whether a picker (day, time, calendar…) is open over the card.
+    pub(super) fn draft_picking(&self) -> bool {
+        self.calendar
+            .draft
+            .as_ref()
+            .is_some_and(|d| d.pick.is_some())
+    }
+
     /// Whether the whole editor is open, in place of the page.
     pub(super) fn event_editor_open(&self) -> bool {
         self.calendar.draft.as_ref().is_some_and(|d| d.full)
