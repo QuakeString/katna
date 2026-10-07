@@ -84,7 +84,8 @@ chat-undo = Undo
 
 # The reply box at the foot of the chat. $names: the people's first names.
 chat-reply-to = Reply to { $names }
-chat-send = Send (Ctrl+Enter)
+chat-send = Send (Ctrl+Enter). Right-click or hold for more
+chat-send-now = Send now
 chat-attach = Attach
 chat-attach-photo = Photo
 chat-attach-file = File

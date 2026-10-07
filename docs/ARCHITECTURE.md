@@ -1387,8 +1387,12 @@ this is local; Katna Server only adds opened/clicked events (§16).
   replied ones are left out at once, as the app checks the conversation
   with `katna_meta::replied`), as a chip on every line of the sent
   message in any list, and as a card on the open conversation with Edit
-  (`MoveFollowUp`), Send now and Stop. The daemon signals `MailChanged`
-  whenever a follow-up changes.
+  (`MoveFollowUp`), Send now and Stop. In Chat View the card is a faint
+  dashed bubble at the end of the chat, with the follow-up's text (a
+  reminder is a small line, like the day labels), and the reply box's
+  Send opens its menu on right-click or a long press (Send now, Schedule
+  send, Follow up if no reply). The daemon signals `MailChanged` whenever
+  a follow-up changes.
 - **Surfaced** (`message`/`surfaced`: `{at}`, expires after 14 days): mail
   back from snooze or a reminder is listed as if it arrived at `at`, so it
   sits on top of the Inbox like new mail.

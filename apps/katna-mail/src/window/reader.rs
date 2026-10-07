@@ -38,6 +38,7 @@ use crate::theme::{Theme, fade};
 use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, tip, toolbar};
 
 mod chat;
+pub(in crate::window) use chat::{LONG_PRESS, PRESS_SLOP};
 mod invite;
 mod security;
 mod summary;
