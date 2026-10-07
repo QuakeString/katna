@@ -2927,6 +2927,7 @@ impl MailWindow {
                         })))
                         .child(
                             line(snippet)
+                                .children(self.render_row_nudge(ix, &row, th, cx))
                                 .children(self.render_row_follow_up(ix, &row, th))
                                 .children(self.render_row_task(ix, key, th, cx))
                                 .when(row.attachments && !has_chips, |d| {
@@ -2988,6 +2989,10 @@ impl MailWindow {
                     .child(correspondent),
             )
             .child(div().flex_1().min_w_0().truncate().child(text))
+            .children(
+                self.render_row_nudge(ix, &row, th, cx)
+                    .map(|chip| div().pl(px(katna_ui::tokens::space::S3)).child(chip)),
+            )
             .children(
                 self.render_row_follow_up(ix, &row, th)
                     .map(|chip| div().pl(px(katna_ui::tokens::space::S3)).child(chip)),

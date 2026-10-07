@@ -61,6 +61,7 @@ mod linked;
 mod meet;
 mod mutes;
 mod notes;
+mod nudges;
 mod offline;
 mod other_contacts;
 mod reminders;
@@ -484,6 +485,9 @@ impl Daemon {
         ))
         .detach();
         self.start_scheduler();
+        // Sent mail from before this start, for nudges.
+        let daemon = self.clone();
+        smol::unblock(move || daemon.find_nudges()).detach();
         smol::spawn(crate::crash_upload::run(
             Arc::downgrade(self),
             self.crash_uploads.1.clone(),

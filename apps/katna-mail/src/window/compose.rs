@@ -717,6 +717,15 @@ fn draft(
                 to.extend(view.to.iter().filter(|a| !is_me(&a.email)));
                 cc.extend(view.cc.iter().filter(|a| !is_me(&a.email)));
             }
+            // Replying to all on one's own message lists its recipients
+            // once.
+            let mut seen: Vec<String> = Vec::new();
+            to.retain(|a| {
+                let email = a.email.to_lowercase();
+                let new = !seen.contains(&email);
+                seen.push(email);
+                new
+            });
             let to_emails: Vec<String> = to.iter().map(|a| a.email.to_lowercase()).collect();
             cc.retain(|a| !to_emails.contains(&a.email.to_lowercase()));
             body.blocks.push(para(""));
@@ -3356,6 +3365,22 @@ mod tests {
         let d = draft(Kind::ReplyAll, Some(&original), me, None);
         assert_eq!(d.to, "Kay Mann <kay@enron.com>, Bob <bob@enron.com>");
         assert_eq!(d.cc, "sara@enron.com");
+    }
+
+    #[test]
+    fn reply_all_to_my_own_mail_lists_each_recipient_once() {
+        let view = MessageView {
+            from: vec![addr(None, "me@enron.com")],
+            to: vec![addr(Some("Bob"), "bob@enron.com")],
+            ..view()
+        };
+        let original = Original {
+            view: &view,
+            date: "Tue".to_owned(),
+        };
+        let d = draft(Kind::ReplyAll, Some(&original), me, None);
+        assert_eq!(d.to, "Bob <bob@enron.com>");
+        assert_eq!(d.cc, "sara@enron.com, kay@enron.com");
     }
 
     #[test]

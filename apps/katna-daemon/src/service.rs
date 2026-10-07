@@ -339,6 +339,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.move_follow_up(id, at)?)
             }
 
+            async fn dismiss_nudge(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.dismiss_nudge(id)?)
+            }
+
             async fn queue_send(
                 &self,
                 account: i64,

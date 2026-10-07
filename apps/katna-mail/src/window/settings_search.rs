@@ -210,6 +210,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Inbox,
+        "settings-nudges",
+        "settings-nudges-on-detail",
+        "nudge nudges follow up reply question unanswered sent remind",
+    ),
+    entry(
+        Section::Inbox,
         "settings-unified-accounts",
         "settings-unified-accounts-detail",
         "unified all accounts hide leave out exclude account",

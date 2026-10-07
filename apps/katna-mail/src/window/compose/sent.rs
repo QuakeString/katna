@@ -120,6 +120,7 @@ pub(super) fn row(
         pinned: false,
         snoozed_until: None,
         follow_up: None,
+        nudge: None,
         attachments: false,
         files: Vec::new(),
         snippet,

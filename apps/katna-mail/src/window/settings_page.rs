@@ -2246,6 +2246,20 @@ impl MailWindow {
                 self.snooze_times_rows(th, cx),
                 th,
             ))
+            .child(self.row(
+                tr!("settings-nudges"),
+                None,
+                self.switch_row(
+                    "page-nudges",
+                    tr!("settings-nudges-on"),
+                    tr!("settings-nudges-on-detail"),
+                    self.config.mail.nudges,
+                    Change::Nudges(!self.config.mail.nudges),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
             .into_any_element()
     }
 

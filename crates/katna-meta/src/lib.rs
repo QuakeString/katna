@@ -23,7 +23,11 @@ use katna_store::{MessageId, MetaRow, Store};
 use serde::{Deserialize, Serialize};
 
 mod follow_up;
+mod nudge;
 pub use follow_up::{WORK_END, WORK_START, counts_as_reply, replied, working_time};
+pub use nudge::{
+    NUDGE_AFTER, NUDGE_UNTIL, Nudge, asks, clear_nudge, nudge_of, nudges, set_nudge, waiting_nudges,
+};
 
 /// The longest the scheduler sleeps before looking at the clock again.
 /// Timers stop while the computer sleeps; the wall clock does not.
@@ -49,6 +53,9 @@ pub mod plugin {
     pub const SURFACED: &str = "surfaced";
     /// A mail rule's "mark read after N days".
     pub const READ_AFTER: &str = "read-after";
+    /// What the daemon found on a sent message for nudges: whether it
+    /// asked something, and whether the user dismissed its nudge.
+    pub const NUDGE: &str = "nudge";
 }
 
 /// A snoozed message, in the Snoozed folder until `until`.

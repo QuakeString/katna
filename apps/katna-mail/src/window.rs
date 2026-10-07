@@ -71,6 +71,7 @@ mod nav;
 mod nav_menu;
 mod notched;
 mod notes;
+mod nudge;
 mod offline;
 mod onboarding;
 mod popovers;
@@ -1007,7 +1008,7 @@ impl MailWindow {
             picker: None,
             font,
             pill_text_lift: 0.0,
-            mail: Mail::open(&paths),
+            mail: Mail::open(&paths).map(|mail| mail.with_nudges(config.mail.nudges)),
             remote: remote::Remote::load(&paths),
             hovered_link: None,
             translations: translate::Translations::default(),
@@ -2323,7 +2324,8 @@ impl MailWindow {
 
     /// Tries the store again after it could not be opened.
     fn reopen(&mut self, cx: &mut Context<Self>) {
-        self.mail = Mail::open(&self.paths);
+        let nudges = self.config.mail.nudges;
+        self.mail = Mail::open(&self.paths).map(|mail| mail.with_nudges(nudges));
         self.load_tree();
         self.open_default_folder(cx);
         self.count_unread(cx);

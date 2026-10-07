@@ -1344,6 +1344,7 @@ impl MailWindow {
             });
         let muted = self.render_muted_strip(th, cx);
         let follow_up = self.render_follow_up_card(th, cx);
+        let nudge = self.render_nudge_card(th, cx);
         self.settle_summary_jump(cx);
         let summary = self.render_summary_card(th, cx);
         let Some(reader) = &self.reader else {
@@ -1510,6 +1511,7 @@ impl MailWindow {
                                         .children(summary)
                                         .children(muted)
                                         .children(follow_up)
+                                        .children(nudge)
                                         .children(notes)
                                         .children(parts)
                                         .children(reply)
