@@ -6,6 +6,10 @@
 
 about-tooltip = Acerca de Katna
 about-tagline = Correo y calendario para el escritorio Linux
+about-copy-version = Copiar detalles de la versión
+about-version-copied = Copiado
+about-version-built = Compilado: { $date }
+about-version-system = Sistema: { $system }
 about-whats-new = Novedades
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = La versión { $version } está lista para instalarse
 about-update-ready-detail = Katna Mail se reinicia para terminar la actualización.
 about-update-confirm = ¿Instalar la versión { $version }?
 about-update-confirm-detail = Katna Mail se cerrará, instalará la actualización y se abrirá de nuevo donde lo dejaste. Tu equipo te pedirá la contraseña.
+about-update-confirm-detail-windows = Katna Mail se cerrará, instalará la actualización y se volverá a abrir en un momento.
 about-update-installing = Instalando la versión { $version }…
 about-update-installing-detail = Escribe tu contraseña en la ventana que se ha abierto.
+about-update-installing-detail-windows = Katna Mail se cierra ahora y se vuelve a abrir cuando la actualización esté instalada.
 about-update-cancelled = La actualización no se instaló, porque no se dio la contraseña.
 about-update-failed = La actualización no se pudo instalar: { $error }
-about-update-unsupported = Esta copia de Katna Mail la actualiza tu gestor de paquetes.
+about-update-not-self-updating = Esta copia de Katna Mail no se actualiza sola. Actualízala del mismo modo en que la instalaste.
 about-update-restart-failed = La actualización está instalada, pero Katna Mail no pudo abrirse de nuevo ({ $error }). Ábrelo tú mismo.
 about-update-check = Buscar actualizaciones
 about-update-download = Descargar
@@ -149,6 +155,7 @@ onboarding-katna-private = Tiene su propia contraseña. Tus credenciales de corr
 onboarding-ready-title = Todo listo
 onboarding-ready-lead = Katna está descargando tu correo. Aparece a medida que llega, y el correo nuevo aparece solo.
 onboarding-ready-lead-address = Katna está descargando el correo de { $address }. Aparece a medida que llega, y el correo nuevo aparece solo.
+onboarding-apps = Aplicaciones que usarás
 onboarding-ready-tour = ¿Hacer un recorrido de un minuto para ver dónde está todo?
 onboarding-skip = Ahora no
 onboarding-take-tour = Hacer el recorrido

@@ -53,7 +53,7 @@ calendar-account-signed-in = Opnieuw aangemeld bij { $address }. Je agenda’s w
 calendar-account-sign-in-refused = { $provider } heeft Katna niet binnengelaten. Probeer het opnieuw en geef toegang tot je agenda’s.
 calendar-account-refused = De server heeft het wachtwoord niet geaccepteerd. Yahoo, iCloud, Zoho en andere hebben een app-wachtwoord nodig.
 calendar-account-change-password = Wachtwoord wijzigen
-calendar-account-change-password-tooltip = Instellingen > Accounts openen
+calendar-account-change-password-tooltip = Typ het nieuwe wachtwoord; Katna controleert het bij de server
 calendar-account-not-enabled = Agendatoegang voor Katna is nog niet ingeschakeld.
 calendar-account-failed = De agenda’s konden niet worden gelezen.
 calendar-account-error = De agenda’s konden niet worden gelezen: { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = Opnieuw proberen
 calendar-account-try-again-tooltip = De agenda’s van dit account nu opnieuw controleren
 calendar-account-fixing = Bezig…
 calendar-birthdays = Verjaardagen
+calendar-tasks = Taken
 calendar-birthday-of = Verjaardag van { $name }
 calendar-empty-title = Nog geen agenda’s
 calendar-empty-text = Katna toont hier de agenda’s van je Google- en Microsoft-accounts zodra ze zijn gesynchroniseerd, en die van andere servers die CalDAV bieden.
@@ -127,6 +128,7 @@ calendar-event-details = Afspraakdetails
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = Nieuwe afspraak
+calendar-event-window-title = Nieuwe afspraak
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Dag openen
 calendar-menu-duplicate = Dupliceren

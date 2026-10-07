@@ -28,6 +28,7 @@ search-find-mail = Trova posta
 search-category-mail = Posta
 search-category-people = Persone
 search-category-tasks = Attività
+search-category-notes = Note
 search-category-events = Eventi
 search-mail-from = Da { $sender }
 search-no-subject = (nessun oggetto)
@@ -44,8 +45,20 @@ search-event-in-days =
        *[other] Tra { $count } giorni
     }
 
+## Quick capture: "task: …" or "note: …" typed in KRunner
+
+search-add-task = Aggiungi l’attività «{ $title }»
+search-add-task-to = In { $list }
+search-add-task-when = { $when } · { $list }
+search-add-note = Aggiungi la nota «{ $title }»
+search-add-note-to = In Note su { $place }
+search-add-note-here = In Note su questo computer
+search-new-task = Nuova attività
+search-new-note = Nuova nota
+
 ## Buttons on a result in KRunner
 
 search-reply-all = Rispondi a tutti
 search-copy-address = Copia indirizzo
 search-find-mail = Trova posta
+search-edit-capture = Modifica prima di aggiungere

@@ -57,3 +57,4 @@ search-options-show = Mostrar opciones de búsqueda
 settings = Ajustes
 account-add = Añadir una cuenta
 account-wheel-hint = Desplázate para cambiar de cuenta
+account-menu-all-detail = { $count } cuentas juntas

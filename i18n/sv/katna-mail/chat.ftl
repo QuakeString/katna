@@ -40,6 +40,7 @@ chat-reply-only = Svara bara { $name }
 chat-forward = Vidarebefordra
 chat-copy-text = Kopiera text
 chat-show-as-mail = Visa som e-post
+chat-go-down = Gå till det senaste meddelandet
 chat-pin = Fäst högst upp
 chat-pin-file = Fäst filen högst upp
 chat-unpin = Lossa
@@ -59,7 +60,8 @@ chat-pins-cancel = Avbryt
 chat-undo = Ångra
 
 chat-reply-to = Svara { $names }
-chat-send = Skicka (Ctrl+Enter)
+chat-send = Skicka (Ctrl+Enter). Högerklicka eller håll ned för fler val
+chat-send-now = Skicka nu
 chat-attach = Bifoga
 chat-attach-photo = Foto
 chat-attach-file = Fil

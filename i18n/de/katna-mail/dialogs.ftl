@@ -6,6 +6,10 @@
 
 about-tooltip = Über Katna
 about-tagline = E-Mail und Kalender für den Linux-Desktop
+about-copy-version = Versionsdetails kopieren
+about-version-copied = Kopiert
+about-version-built = Erstellt: { $date }
+about-version-system = System: { $system }
 about-whats-new = Neuigkeiten
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = Version { $version } ist bereit zur Installation
 about-update-ready-detail = Katna Mail startet neu, um das Update abzuschließen.
 about-update-confirm = Version { $version } installieren?
 about-update-confirm-detail = Katna Mail wird geschlossen, installiert das Update und öffnet sich wieder dort, wo Sie aufgehört haben. Ihr Computer fragt nach Ihrem Passwort.
+about-update-confirm-detail-windows = Katna Mail wird geschlossen, installiert das Update und öffnet sich gleich wieder.
 about-update-installing = Version { $version } wird installiert…
 about-update-installing-detail = Geben Sie Ihr Passwort in dem geöffneten Fenster ein.
+about-update-installing-detail-windows = Katna Mail wird jetzt geschlossen und öffnet sich wieder, sobald das Update installiert ist.
 about-update-cancelled = Das Update wurde nicht installiert, weil das Passwort nicht eingegeben wurde.
 about-update-failed = Das Update konnte nicht installiert werden: { $error }
-about-update-unsupported = Diese Kopie von Katna Mail wird von Ihrer Paketverwaltung aktualisiert.
+about-update-not-self-updating = Diese Kopie von Katna Mail aktualisiert sich nicht selbst. Aktualisieren Sie sie auf dem Weg, auf dem Sie sie installiert haben.
 about-update-restart-failed = Das Update ist installiert, aber Katna Mail konnte sich nicht erneut öffnen ({ $error }). Öffnen Sie es selbst.
 about-update-check = Nach Updates suchen
 about-update-download = Herunterladen
@@ -148,6 +154,7 @@ onboarding-katna-private = Es hat ein eigenes Passwort. Ihre E-Mail-Zugangsdaten
 onboarding-ready-title = Alles bereit
 onboarding-ready-lead = Katna ruft Ihre E-Mails ab. Sie erscheinen, sobald sie ankommen, und neue E-Mails kommen von selbst hinzu.
 onboarding-ready-lead-address = Katna ruft die E-Mails von { $address } ab. Sie erscheinen, sobald sie ankommen, und neue E-Mails kommen von selbst hinzu.
+onboarding-apps = Apps, die Sie nutzen werden
 onboarding-ready-tour = Eine einminütige Tour machen, um zu sehen, wo alles ist?
 onboarding-skip = Vorerst überspringen
 onboarding-take-tour = Tour starten

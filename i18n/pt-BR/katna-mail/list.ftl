@@ -389,6 +389,8 @@ list-empty-tab = Nenhum e-mail em { $tab }.
 list-empty-tab-unknown = Nenhum e-mail nesta guia.
 list-empty-folder = Nenhuma mensagem em { $folder }.
 list-empty-folder-unknown = Nenhuma mensagem nesta pasta.
+list-empty-waiting = Nada está aguardando resposta.
+list-empty-reminders = Nenhum lembrete. Pressione H em um e-mail para adicionar um.
 list-first-sync = Buscando seus e-mails…
 list-first-sync-detail = Eles aparecem aqui à medida que chegam.
 
@@ -408,6 +410,14 @@ row-tracking-clicked = Aberta por { $opened } de { $recipients }, link acessado 
 row-pin = Fixar no topo
 row-unpin = Desafixar
 row-snoozed-until = Adiado até { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Hoje
+snoozed-group-tomorrow = Amanhã
+snoozed-group-this-week = Esta semana
+snoozed-group-later = Mais tarde
+row-follow-up-step = Acompanhamento { $step } de { $steps } · { $date }
+row-follow-up-waiting = Acompanhamento pendente
+row-reminder = Lembrete { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -430,6 +440,7 @@ menu-not-important = Marcar como não importante
 menu-pin = Fixar no topo
 menu-unpin = Desafixar
 menu-snooze = Adiar
+menu-remind = Lembrar-me
 menu-unsnooze = Cancelar adiamento
 menu-add-to-tasks = Adicionar às Tarefas
 menu-schedule-meeting = Agendar uma reunião
@@ -445,7 +456,28 @@ menu-follow-up = Acompanhar
 # Pin to top.
 menu-more = Mais
 menu-move-to-heading = Mover para:
+menu-move-to-search = Mover para…
+menu-label-as = Marcar como
+menu-label-as-search = Marcar como…
+menu-no-folder = Nenhuma pasta chamada “{ $name }”
+menu-no-label = Nenhum marcador chamado “{ $name }”
+menu-create-folder = Criar “{ $name }”
+menu-always-move = Sempre mover e-mails de { $name } para cá
+toast-always-move-failed = O e-mail foi movido, mas a regra não foi criada: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } conversa
+        [many] { $count } de conversas
+       *[other] { $count } conversas
+    }
+   *[message] { $count ->
+        [one] { $count } mensagem
+        [many] { $count } de mensagens
+       *[other] { $count } mensagens
+    }
+}
 menu-find-from = Encontrar e-mails de { $name }
+menu-make-rule = Criar uma regra…
 
 ## Snackbar after an action on mail in the list
 
@@ -485,6 +517,8 @@ toast-moved = { $kind ->
        *[other] { $count } mensagens movidas.
     }
 }
+toast-label-added = Marcador “{ $label }” adicionado.
+toast-label-removed = Marcador “{ $label }” removido.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Conversa marcada com estrela.

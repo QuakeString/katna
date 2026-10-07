@@ -3109,3 +3109,1248 @@ Każda karta Ustawień ma ten sam cienki pasek przewijania co otwarta
 wiadomość i Pliki: pojawia się, gdy przewijasz lub trzymasz kursor nad
 stroną, i można go przeciągać.
 """
+
+["2026-10-02-1248-account-colors"]
+title = "Kolor dla każdego konta"
+text = """
+Wybierz kolor dla każdego konta w Ustawienia > Konta albo kliknij konto
+prawym przyciskiem w panelu folderów: jeden z siedmiu albo dowolny kolor z
+tęczowego koła za nimi. Kropka przy każdym nadawcy we Wspólnej skrzynce
+odbiorczej i obwódka wokół zdjęcia konta przyjmują ten kolor, a najechanie
+na kropkę pokazuje nazwę konta. Każde konto zaczyna z własnym kolorem,
+nigdy takim jak jedna z Kart skrzynki odbiorczej.
+"""
+
+["2026-10-02-1340-colors-button-mail-only"]
+title = "Przycisk oryginalnych kolorów tylko tam, gdzie pomaga"
+text = """
+W ciemnym motywie przycisk Pokaż oryginalne kolory wysuwa się teraz, gdy
+rozmowa jest wyświetlana jako Czat, i wraca w widoku Poczta.
+"""
+
+["2026-10-02-1340-logo-and-custom-accent"]
+title = "Logo w twoich kolorach i dowolny akcent"
+text = """
+Logo Katna w oknie przyjmuje teraz twój kolor akcentu, w trybie jasnym i
+ciemnym. A Ustawienia > Wygląd > Akcent kończy się teraz kołem kolorów:
+kliknij je, aby wybrać dowolny akcent.
+"""
+
+["2026-10-02-1358-empty-reply-no-draft"]
+title = "Puste odpowiedzi nie zostawiają wersji roboczej"
+text = """
+Odpowiedź, w którą kliknąłeś, ale nic nie napisałeś, w polu czatu lub pod
+wiadomością, po prostu się zamyka, gdy ją opuścisz. Nie zostawia wersji
+roboczej i nie wraca po przełączeniu między Czat i Poczta.
+"""
+
+["2026-10-02-1400-folder-right-click-selects"]
+title = "Prawy przycisk otwiera folder"
+text = """
+Kliknięcie folderu prawym przyciskiem w panelu folderów zaznacza go teraz
+i otwiera, zanim pojawi się menu, więc menu wyraźnie działa na folderze,
+który widzisz.
+"""
+
+["2026-10-02-1405-viewer-arrows-hover"]
+title = "Strzałki przeglądarki pozostają widoczne"
+text = """
+Strzałki po bokach przeglądarki załączników nie bledną już niemal do bieli,
+gdy wskażesz je kursorem. Zamiast tego stają się odrobinę jaśniejsze,
+więc pozostają dobrze widoczne na białej stronie.
+"""
+
+["2026-10-02-1432-account-colour-button"]
+title = "Jeden przycisk koloru na konto"
+text = """
+Każde konto pokazuje teraz tylko swój kolor, na przycisku Kolor w
+Ustawienia > Konta i w menu konta pod prawym przyciskiem. Kliknij go, aby
+wybrać jeden z ośmiu kolorów albo dowolny własny, tuż w miejscu
+kliknięcia.
+"""
+
+["2026-10-02-1443-reply-at-the-end"]
+title = "Twoja odpowiedź zostaje na końcu"
+text = """
+Odpowiedź jest teraz zawsze na końcu rozmowy, nawet gdy najnowsza
+wiadomość jest pokazana na górze. Przełączenie z Czat na Poczta przewija
+do niej, z kursorem tam, gdzie go zostawiłeś.
+"""
+
+["2026-10-02-1451-card-shows-signer"]
+title = "Karta pokazuje, kto podpisał otwartą wiadomość"
+text = """
+Karta osoby odczytuje teraz podpis otwartej wiadomości, a nie tylko
+najnowszej. Gdy współpracownik podpisuje wiadomość ze wspólnego adresu,
+takiego jak accounts@, karta pokazuje jego imię i nazwisko, stanowisko,
+telefon i adres firmy z tej wiadomości.
+"""
+
+["2026-10-02-1510-search-click-away"]
+title = "Kliknij gdziekolwiek, aby opuścić pole wyszukiwania"
+text = """
+Kliknięcie pustego miejsca na górnym pasku, obok pola wyszukiwania,
+wyprowadza teraz z pola, tak jak kliknięcie listy poczty. Wyszukiwanie
+pozostaje bez zmian.
+"""
+
+["2026-10-02-1515-empty-message-no-draft"]
+title = "Bez pustych wersji roboczych"
+text = """
+Nowa wiadomość, którą przed zamknięciem znów opróżniłeś, nie zostaje już
+w Wersjach roboczych, tak samo jak pusta odpowiedź w rozmowie.
+"""
+
+["2026-10-02-1513-dark-pages"]
+title = "Ciemne strony w przeglądarce"
+text = """
+W trybie ciemnym przeglądarka załączników ma przycisk z półksiężycem,
+który pokazuje jasne pliki PDF, dokumenty, prezentacje, arkusze i pliki
+tekstowe w ciemnych barwach. Kolory zachowują swój odcień, zdjęcia na
+stronie są przyciemniane, a nie zamieniane w negatyw, a zeskanowany papier
+ciemnieje tak jak tekst. Katna zapamiętuje twój wybór dla kolejnego pliku.
+"""
+
+["2026-10-02-1522-window-corners"]
+title = "Wybierz rogi i obramowanie okna"
+text = """
+Przy własnym pasku tytułu Katna Ustawienia > Eksperymentalne mają teraz
+suwak Zaokrąglenie rogów, od kwadratowych po okrągłe, oraz przełącznik
+Obramowanie z własnym kryciem. Gdy Własna siła rozmycia jest włączona,
+suwak Krycie ustala też, ile przepuszcza rozmyte tło okna.
+"""
+
+["2026-10-02-1535-ctrl-shift-click-select"]
+title = "Zaznaczaj wiadomości z Ctrl i Shift"
+text = """
+Kliknij wiadomość na liście z Ctrl, aby ją zaznaczyć, i klikaj z Ctrl
+kolejne, aby je dodać. Kliknięcie z Shift zaznacza wszystkie wiadomości od
+ostatnio klikniętej. Aby otworzyć wiadomość w osobnym oknie, kliknij ją
+prawym przyciskiem i wybierz Otwórz w nowym oknie.
+"""
+
+["2026-10-02-1610-frosted-panes"]
+title = "Matowe panele, czat i wyszukiwanie"
+text = """
+Gdy Rozmywaj tło okna jest włączone, lista poczty, otwarta wiadomość i
+karta osoby też przepuszczają rozmycie, z suwakiem Krycie paneli. Miejsce
+za dymkami czatu pokazuje go nieco więcej, a pole wyszukiwania pozostaje
+matowe podczas pisania. Każde z nich ma własny przełącznik w Ustawienia >
+Eksperymentalne.
+"""
+
+["2026-10-02-1618-fainter-hints"]
+title = "Bledsze podpowiedzi w pustych polach"
+text = """
+Szara podpowiedź w pustym polu, taka jak „Odpowiedz…” pod czatem czy
+„Przeszukaj pocztę”, jest teraz bledsza, więc nigdy nie wygląda jak
+wpisany przez ciebie tekst.
+"""
+
+["2026-10-02-1642-drag-from-empty-space"]
+title = "Przesuwaj okno za puste miejsce"
+text = """
+W systemie Linux możesz teraz przesuwać okno, przeciągając dowolne puste
+miejsce na lewym pasku, w folderach lub na pasku nad pocztą, a nie tylko
+górny pasek.
+"""
+
+["2026-10-02-1643-space-folds-folders"]
+title = "Spacja zwija foldery"
+text = """
+Kliknij folder, który zawiera inne foldery, i naciśnij Spację, aby go
+rozwinąć lub zwinąć, tak jak kliknięciem jego strzałki. Po kliknięciu
+klawisze strzałek poruszają się też po panelu folderów, a Tab przechodzi
+do listy poczty.
+"""
+
+["2026-10-02-1646-viewer-more-menu"]
+title = "Przyciski przeglądarki mieszczą się w wąskim oknie"
+text = """
+W wąskim oknie przyciski u dołu przeglądarki załączników nie wychodzą już
+poza nią. Te, które się nie mieszczą, trafiają do menu ⋮ Więcej: najpierw
+obracanie, potem Dopasuj, a potem Ciemne strony. Numer strony i
+powiększenie pozostają widoczne najdłużej.
+"""
+
+["2026-10-02-1743-activity-report-fits"]
+title = "Raport aktywności mieści się w oknie"
+text = """
+Raport aktywności pozostaje teraz w oknie z równymi marginesami i przewija
+się, gdy okno jest niskie, więc jego ostatnie wiersze nigdy nie są ucięte.
+"""
+
+["2026-10-02-1846-folders-and-labels"]
+title = "Zmieniaj nazwy, usuwaj i przeciągaj do folderów"
+text = """
+Kliknij prawym przyciskiem utworzony przez siebie folder, aby zmienić jego
+nazwę lub go usunąć; usunięcie najpierw przenosi jego pocztę do Kosza.
+Przeciągnij wiadomości z listy na folder, aby je tam przenieść. Przenieś do
+ma pole wyszukiwania: pisz, aby znaleźć folder albo utworzyć nowy i
+przenieść do niego wiadomości. W Gmailu Oznacz etykietą dodaje etykiety do
+wiadomości i je zdejmuje, a upuszczenie wiadomości na etykietę dodaje tę
+etykietę.
+"""
+
+["2026-10-02-1928-mail-rules"]
+title = "Reguły poczty"
+text = """
+Reguły same porządkują nową pocztę: według nadawcy, tematu lub słów
+przenoszą ją, dodają etykietę, gwiazdkę, przekazują dalej lub wyciszają.
+Utwórz regułę w Ustawienia > Foldery i reguły albo kliknij wiadomość prawym
+przyciskiem i wybierz Utwórz regułę…, a przed zapisaniem zobacz, ilu
+ostatnim wiadomościom odpowiada. W Przenieś do zaznacz „Zawsze przenoś tu
+pocztę od …”, aby jednym kliknięciem przenieść obecną i przyszłą pocztę
+nadawcy.
+"""
+
+["2026-10-02-2017-rules-on-the-server"]
+title = "Reguły działające przy wyłączonym komputerze"
+text = """
+Reguły poczty działają teraz w Gmailu albo na twoim serwerze poczty, jeśli
+obsługuje reguły Sieve, więc porządkują pocztę także w telefonie i wtedy,
+gdy ten komputer jest wyłączony. Ustawienia > Foldery i reguły pokazują,
+gdzie działa każda reguła i dlaczego któraś zostaje w Katna.
+"""
+
+["2026-10-03-0046-smooth-folded-tabs"]
+title = "Zwinięte karty przełączają się płynnie"
+text = """
+Gdy wąskie okno zwija karty skrzynki odbiorczej do ikon, przełączanie kart
+nie odbywa się już skokowo: opuszczana karta kurczy się z powrotem do
+ikony, a jej nazwa znika, zaś otwierana rośnie, a jej nazwa się pojawia.
+"""
+
+["2026-10-03-0051-read-rows-frosted"]
+title = "Przeczytane wiadomości też są matowe"
+text = """
+Przy włączonych matowych panelach przeczytane wiadomości pokazują teraz
+matowe tło za listą tak jak nieprzeczytane, tylko w nieco innym odcieniu,
+zamiast jednolitego pasa.
+"""
+
+["2026-10-03-0101-rounder-corners"]
+title = "Bardziej zaokrąglone rogi okna"
+text = """
+Zaokrąglenie rogów w Ustawienia > Eksperymentalne sięga teraz 32 pikseli,
+dwa razy więcej niż wcześniej, a liczbę możesz wpisać w polu obok suwaka.
+"""
+
+["2026-10-03-0113-viewer-round-corners"]
+title = "Przeglądarka dopasowuje się do zaokrąglonych rogów"
+text = """
+Przy własnym pasku tytułu Katna i zaokrąglonych rogach przeglądarka
+załączników zaokrągla teraz dolne rogi tak jak okno, zamiast pokazywać
+kwadratowe szare rogi wystające poza krawędź okna.
+"""
+
+["2026-10-03-0147-chat-go-down"]
+title = "Z powrotem do najnowszej wiadomości"
+text = """
+Gdy przewiniesz czat daleko w górę, w prawym dolnym rogu pojawia się
+okrągły przycisk. Płynnie przenosi cię do najnowszej wiadomości i liczy
+te, które w międzyczasie nadeszły.
+"""
+
+["2026-10-03-0147-chat-long-mails"]
+title = "Długie wiadomości w czatach"
+text = """
+Przy długim dymku zdjęcie nadawcy zostaje na dole widocznej części, a
+przyciski odpowiedzi, przypięcia i więcej pozostają w tej części, którą
+widać. Kliknij tekst prawym przyciskiem, aby dotrzeć do nich wszystkich.
+"""
+
+["2026-10-03-0147-chat-scroll-bar"]
+title = "Pasek przewijania w czatach"
+text = """
+Czaty mają ten sam dyskretny pasek przewijania co otwarta wiadomość,
+widoczny, gdy kursor jest nad nimi.
+"""
+
+["2026-10-03-0147-chat-translate"]
+title = "Tłumaczenie w czatach"
+text = """
+Wiadomość w innym języku proponuje tłumaczenie także w czacie, tak jak w
+widoku Poczta. Kliknij dowolny dymek prawym przyciskiem i wybierz
+Przetłumacz, aby przetłumaczyć go samodzielnie, a ponownie, aby pokazać
+oryginał.
+"""
+
+["2026-10-03-0150-search-pill-hovers"]
+title = "Równe podświetlenia na pasku wyszukiwania w telefonie"
+text = """
+W telefonie przycisk folderów i zdjęcie twojego konta są teraz
+wyśrodkowane w zaokrąglonych końcach paska wyszukiwania, a każdy przycisk
+na pasku ma takie samo okrągłe podświetlenie, w równej odległości od
+krawędzi paska.
+"""
+
+["2026-10-03-0159-starter-rules"]
+title = "Gotowe reguły"
+text = """
+Ustawienia > Foldery i reguły oferują teraz gotowe reguły, domyślnie
+wyłączone: wyciszanie promocji, newslettery do folderu Czytanie, paragony,
+przesyłki, bilety kolejowe i lotnicze (IRCTC, Air India, IndiGo i inne),
+kody jednorazowe, alerty bezpieczeństwa, pocztę z serwisów
+społecznościowych i zaproszenia z kalendarza. Włącz którąś, a zadziała na
+wszystkich twoich kontach, w razie potrzeby tworząc foldery takie jak
+Podróże. Reguły mogą też sprawdzać kartę skrzynki odbiorczej i to, czy
+wiadomość przyszła z listy mailingowej.
+"""
+
+["2026-10-03-0200-chat-file-hover"]
+title = "Łagodniejsze karty plików w czatach"
+text = """
+Plik w dymku czatu nie ciemnieje już pod kursorem. Lekko się unosi z
+delikatnym zabarwieniem, a jego nazwa pozostaje czytelna.
+"""
+
+["2026-10-03-0210-opened-mail-stays-in-view"]
+title = "Otwierana wiadomość pozostaje w widoku"
+text = """
+Gdy panel podglądu jest obok listy, kliknięta wiadomość zostaje tam, gdzie
+była na liście, kiedy panel się otwiera, albo lista przewija się tylko
+tyle, by pokazać ją w całości. Nie znika już z pola widzenia, niezależnie
+od tego, czy otworzysz ją z listy, czy z wyników wyszukiwania.
+"""
+
+["2026-10-03-0212-about-header-stays"]
+title = "O Katna zachowuje nagłówek w widoku"
+text = """
+Przewijanie okna O Katna zmniejsza teraz duże logo do małego w lewym
+górnym rogu, z nazwą Katna, hasłem i wersją obok, a ten nagłówek zostaje
+na miejscu, gdy reszta przewija się pod nim.
+"""
+
+["2026-10-03-0221-folded-tab-icon-settles"]
+title = "Zwinięte karty zatrzymują się bez drgnięcia"
+text = """
+Gdy przełączasz się między zwiniętymi kartami skrzynki odbiorczej,
+opuszczana karta zatrzymuje się teraz dokładnie tam, dokąd się skurczyła,
+a jej ikona nie przesuwa się o piksel czy dwa po zakończeniu ruchu.
+"""
+
+["2026-10-03-0228-right-click-another-mail"]
+title = "Wystarczy jedno kliknięcie prawym przyciskiem"
+text = """
+Gdy menu wiadomości lub folderu jest otwarte, kliknięcie prawym
+przyciskiem innej wiadomości lub folderu zamyka teraz otwarte menu i od
+razu otwiera nowe, bez potrzeby drugiego kliknięcia.
+"""
+
+["2026-10-03-0235-rule-editor-fits"]
+title = "Edytor reguł się mieści"
+text = """
+W edytorze reguł długie słowa lub listy adresów zawijają się do kolejnych
+wierszy zamiast być ucinane, „pasuje do wzorca” jest widoczne w całości,
+a edytor pozostaje w oknie i przewija się, gdy ma wiele warunków.
+"""
+
+["2026-10-03-0235-soft-button-hover"]
+title = "Łagodniejsze podświetlenie przycisków"
+text = """
+Wskazanie okrągłego przycisku łagodnie powiększa teraz jego koło od dwóch
+trzecich rozmiaru i płynnie je wyświetla, a przyciski w kształcie pigułki,
+takie jak Odpowiedz, pojawiają się nieco wolniej. Odsunięcie kursora
+lekko zmniejsza koło, gdy znika.
+"""
+
+["2026-10-03-0249-account-ring"]
+title = "Wyraźniejsza obwódka konta"
+text = """
+Kolorowa obwódka wokół zdjęcia każdego konta jest grubsza i nieco bardziej
+odsunięta od zdjęcia, na górnym pasku, w menu konta i w Ustawieniach.
+"""
+
+["2026-10-03-0335-chat-picture-steady"]
+title = "Stabilne zdjęcia w czatach"
+text = """
+Przewinięcie poza koniec czatu albo czat, którego nie da się przewijać,
+nie sprawia już, że zdjęcie nadawcy i przyciski dymka podskakują.
+"""
+
+["2026-10-03-0355-no-hover-while-scrolling"]
+title = "Spokojniejsze przewijanie listy poczty"
+text = """
+Podczas przewijania listy poczty wiadomości przesuwające się pod kursorem
+nie podświetlają się już i nie pokazują przycisków. Tak jak w Gmailu,
+wiadomość pod kursorem podświetla się, gdy przewijanie się zatrzyma.
+"""
+
+["2026-10-03-0541-rule-rows-drag"]
+title = "Reguły przeciąga się jak konta"
+text = """
+W Ustawienia > Foldery i reguły przeciągnięcie reguły unosi teraz cały jej
+wiersz, pozostałe reguły usuwają się jej z drogi, a ona zatrzymuje się
+tam, gdzie ją puścisz, tak jak przy zmianie kolejności kont.
+"""
+
+["2026-10-03-0545-chat-go-down-aligned"]
+title = "Przycisk przewijania w dół wyrównany"
+text = """
+W czatach okrągły przycisk, który przenosi do najnowszej wiadomości,
+znajduje się teraz tuż nad przyciskiem wysyłania, w tej samej linii.
+"""
+
+["2026-10-03-0555-bottom-corners-round"]
+title = "Zaokrąglone dolne rogi pozostają okrągłe"
+text = """
+Przy własnym pasku tytułu Katna i zaokrąglonych rogach dolne rogi okna nie
+pokazują już kwadratu tła wystającego poza zaokrąglone obramowanie.
+"""
+
+["2026-10-03-0606-account-dot-only"]
+title = "Spokojniejsza lista poczty"
+text = """
+Wiersze we Wspólnej skrzynce odbiorczej pokazują obok nadawcy tylko
+kolorową kropkę konta. Najedź na kropkę, aby zobaczyć, do którego konta
+należy wiadomość.
+"""
+
+["2026-10-03-0623-windows-updates"]
+title = "Aktualizacje w systemie Windows"
+text = """
+Katna w systemie Windows aktualizuje się teraz sama. Co godzinę sprawdza,
+czy są nowe wersje, pobiera je w tle i instaluje, gdy naciśniesz
+Aktualizuj, a potem uruchamia się ponownie.
+"""
+
+["2026-10-03-0643-files-wildcard-search"]
+title = "Symbole wieloznaczne w wyszukiwaniu Plików"
+text = """
+W Plikach wyszukanie *.pdf znajduje teraz każdy plik PDF, a * i ? działają
+w dowolnym miejscu nazwy: faktura*2026* znajduje wszystkie faktury z 2026
+roku. Działa to dla plików z twojej poczty oraz w Google Drive i OneDrive.
+"""
+
+["2026-10-03-0643-linux-package-updates"]
+title = "Aktualizacje dla każdego pakietu Linux"
+text = """
+AppImage i archiwum tar dla Linuksa aktualizują się teraz same, tak jak
+pakiet dla Arch. Przy pakiecie Fedory, Snap, Flatpak lub Nix Katna
+informuje o nowej wersji i pokazuje jedno polecenie, które ją instaluje,
+gotowe do skopiowania.
+"""
+
+["2026-10-03-0708-copy-codes"]
+title = "Kopiuj kody z powiadomień"
+text = """
+Powiadomienie o nowej wiadomości z kodem logowania lub weryfikacyjnym ma
+teraz przycisk Kopiuj, a powiadomienie z linkiem do weryfikacji lub
+potwierdzenia adresu ma przycisk z nazwą witryny, którą otwiera. Przyciski
+w powiadomieniach nie sprawiają już, że podskakująca ikona Katna podąża za
+kursorem.
+"""
+
+["2026-10-03-0730-contact-card-popover"]
+title = "Karta kontaktu w wąskich oknach"
+text = """
+Gdy w oknie nie ma miejsca na panel kontaktu, kliknięcie imienia lub
+zdjęcia osoby otwiera nad wiadomością krótką kartę wskazującą miejsce
+kliknięcia. Poszerz okno, a jej miejsce zajmie pełny panel.
+"""
+
+["2026-10-03-0733-compose-icon-turns"]
+title = "Ikona dużego przycisku obraca się przy zmianie stron"
+text = """
+Przełączanie między Pocztą, Kalendarzem, Kontaktami, Zadaniami i
+Notatkami nie zmienia już skokowo ikony na dużym przycisku u góry lewego
+paska. Stara ikona obraca się i kurczy, a nowa się wyłania, również na
+przycisku w telefonie.
+"""
+
+["2026-10-03-0746-sound-sets"]
+title = "Zestawy dźwięków powiadomień"
+text = """
+Ustawienia > Powiadomienia mają teraz zestawy dźwięków: Ptaki, Natura,
+Zwierzęta, Owady, Elektroniczne, Poranek, dzwonki Katna albo dźwięki
+twojego pulpitu. Nowa poczta śpiewa jak rudzik, chyba że wybierzesz inny
+zestaw. Każde zdarzenie może też mieć własny dźwięk lub wybrany przez
+ciebie plik dźwiękowy.
+"""
+
+["2026-10-03-0750-chat-seen-ticks"]
+title = "Kto zobaczył twoją wiadomość, w czatach"
+text = """
+W widoku czatu znaczniki przy wiadomościach wysłanych ze śledzeniem
+zmieniają kolor, gdy ktoś je otworzy. Obok nich małe oko liczy otwarcia,
+a link liczy kliknięte linki. Zatrzymaj na nich kursor, aby zobaczyć, kto
+otworzył wiadomość lub kliknął link, tak jak pokazuje oko w widoku poczty.
+"""
+
+["2026-10-03-0834-drawer-edge-clean"]
+title = "Bez linii obok wysuwanych folderów"
+text = """
+W telefonie lub tablecie foldery wysuwane z menu dosuwają się teraz do
+krawędzi bez cienkiej linii migającej obok nich, gdy się zatrzymują.
+"""
+
+["2026-10-03-0845-chat-summary-button-hides"]
+title = "Przycisk podsumowania znów je ukrywa"
+text = """
+W widoku czatu iskierka u góry ukrywa teraz podsumowanie, gdy jest
+widoczne, i pokazuje je ponownie przy następnym kliknięciu, tak jak w
+widoku poczty.
+"""
+
+["2026-10-03-0915-big-button-glides"]
+title = "Duży przycisk płynnie przechodzi między stronami"
+text = """
+Gdy foldery są otwarte, przełączanie stron nie zmienia już skokowo
+szerokości dużego przycisku u góry ani jego słowa. Przycisk płynnie
+przyjmuje nową szerokość, a stare słowo unosi się i znika, gdy nowe
+wyłania się od dołu, razem z obracającą się ikoną.
+"""
+
+["2026-10-03-0945-flat-row-hover"]
+title = "Wyraźniejsze podświetlenie na liście poczty"
+text = """
+Wiersz pod kursorem nie unosi się już z miękkim cieniem. Zamiast tego
+dostaje płaskie, nieco mocniejsze zabarwienie, więc jego krawędzie
+pozostają ostre w jasnym i ciemnym motywie.
+"""
+
+["2026-10-03-0959-drawer-bounce-back"]
+title = "Foldery wysuwają się ze sprężystością, z czystą krawędzią"
+text = """
+W telefonie lub tablecie foldery wysuwane z menu znów lekko się odbijają,
+a wzdłuż ich krawędzi obok paska bocznego nie ma już cienia.
+"""
+
+["2026-10-03-1030-crisp-card-edges"]
+title = "Ostrzejsze krawędzie kart w jasnym motywie"
+text = """
+W jasnym motywie lista poczty, otwarta wiadomość i inne karty mają teraz
+cienką, ostrą krawędź i bardzo krótki cień zamiast miękkiego rozmycia, więc
+odcinają się od strony tak wyraźnie jak w ciemnym motywie.
+"""
+
+["2026-10-03-1206-matching-choice-chips"]
+title = "Pasujące do siebie przyciski wyboru"
+text = """
+Opcje w Opcjach wyszukiwania, Aktywności, pisaniu z AI i książkach
+adresowych kontaktu to teraz jeden rodzaj przycisku: wszędzie tej samej
+wielkości, z zaznaczeniem przy wybranym.
+"""
+
+["2026-10-03-1453-summary-folds-smoothly"]
+title = "Podsumowanie zwija się płynnie"
+text = """
+Zwijanie i rozwijanie podsumowania rozmowy płynnie przechodzi teraz do
+nowej wysokości, a jego strzałka obraca się razem z nim zamiast
+przeskakiwać.
+"""
+
+["2026-10-03-1523-animation-speed"]
+title = "Wybierz, jak szybko wszystko się porusza"
+text = """
+Ustawienia > Wygląd mają Szybkość animacji: zgodną z pulpitem albo własną
+Katna, od Szybciej do Wolniej. Ograniczenie ruchu także może podążać za
+pulpitem albo być zawsze włączone lub zawsze wyłączone.
+"""
+
+["2026-10-03-1536-paste-signature-html"]
+title = "Wklej HTML podpisu"
+text = """
+Ustawienia > Tworzenie > Podpisy mają Wklej HTML, dla podpisu
+zaprojektowanego w serwisie do tworzenia podpisów lub w innym programie
+pocztowym. Kod jest oczyszczany, jego obrazy są pobierane i dołączane do
+wiadomości, a okno tworzenia pokazuje podpis dokładnie tak, jak zostanie
+wysłany.
+"""
+
+["2026-10-03-1546-whats-new-header-stays"]
+title = "Co nowego zachowuje nagłówek"
+text = """
+Przewijanie okna Co nowego przesuwa teraz tylko nowości: nagłówek zostaje
+u góry, a Rozumiem na dole.
+"""
+
+["2026-10-03-1611-menus-fade-out"]
+title = "Menu płynnie znikają"
+text = """
+Menu kontekstowe płynnie wygasa teraz przy zamykaniu, zamiast znikać
+nagle.
+"""
+
+["2026-10-03-1625-list-stays-put"]
+title = "Lista poczty nie przesuwa się, gdy otwierasz wiadomość"
+text = """
+Otwarcie wiadomości nie przesuwa już listy o wiersz w dół w folderach, w
+których niektóre wiadomości pokazują załączniki. Lista zostaje dokładnie
+tam, dokąd ją przewinąłeś.
+"""
+
+["2026-10-03-1628-drawer-top-clean"]
+title = "Bez linii cienia nad wysuwanymi folderami"
+text = """
+W telefonie lub tablecie foldery wysuwane z menu nie mają już cienkiej
+linii cienia wzdłuż górnej krawędzi, pod paskiem wyszukiwania.
+"""
+
+["2026-10-03-1631-toolbar-menus-fade-out"]
+title = "Menu paska narzędzi też płynnie znikają"
+text = """
+Menu pod przyciskami paska narzędzi, takie jak Więcej i pole zaznaczania,
+płynnie wygasają przy zamykaniu, zamiast znikać nagle.
+"""
+
+["2026-10-03-1632-settings-by-app"]
+title = "Ustawienia uporządkowane według aplikacji"
+text = """
+Ustawienia mają teraz z boku listę stron: Wszystkie aplikacje dla tego, co
+wspólne dla każdej aplikacji, a potem Poczta, Kalendarz i Pliki z ich
+własnymi ustawieniami, przy czym strony Poczty rozwijają się pod nią.
+Ustawienia otwierają się na aplikacji, w której jesteś, a Kalendarz ma tam
+swoje pierwsze ustawienia.
+"""
+
+["2026-10-03-1650-popovers-fade-out"]
+title = "Okienka wyskakujące płynnie znikają"
+text = """
+Małe karty wskazujące to, czego dotyczą, takie jak karta kontaktu, kto
+widział wiadomość, dzień w widoku Rok, własne daty wyszukiwania i
+selektor kolorów, płynnie wygasają przy zamykaniu, zamiast znikać nagle.
+"""
+
+["2026-10-03-1711-ring-centred"]
+title = "Obwódki kont leżą równo"
+text = """
+Kolorowa obwódka wokół zdjęcia konta ma teraz taki sam odstęp z każdej
+strony, przy dowolnym skalowaniu, zamiast wyglądać z jednej strony o piksel
+grubiej.
+"""
+
+["2026-10-03-1717-signature-pictures"]
+title = "Obrazy w podpisach znów się wczytują"
+text = """
+Obrazy z sieci, takie jak logo w podpisach z Gmaila, wczytują się teraz w
+sieciach, które wcześnie zrywają połączenie z Google, zamiast zostawać
+pustym polem.
+"""
+
+["2026-10-03-1723-import-signatures"]
+title = "Przenieś swoje podpisy"
+text = """
+Ustawienia > Tworzenie > Podpisy > Importuj znajduje podpisy w Gmailu
+oraz w Thunderbirdzie, Evolution i KMail na tym komputerze, razem z ich
+logo. Zaznacz te, których chcesz; te, które już są w Katna, pozostają
+niezaznaczone.
+"""
+
+["2026-10-03-1750-hover-folders-clean"]
+title = "Czyste krawędzie folderów otwieranych z Utwórz"
+text = """
+W oknie wielkości tabletu foldery, które otwierają się po zatrzymaniu
+kursora na Utwórz, nie pokazują już cienkich linii wzdłuż górnej i lewej
+krawędzi.
+"""
+
+["2026-10-03-1757-chat-links"]
+title = "Linki otwierają się z czatów"
+text = """
+W widoku czatu linki w wiadomości otwierają się kliknięciem, tak jak w
+widoku poczty: jej własne linki oraz adresy stron i adresy e-mail
+wpisane w tekście. Zatrzymaj wskaźnik na jednym, aby zobaczyć, dokąd
+prowadzi. W widoku poczty wpisane adresy otwierają się teraz także w
+wiadomościach zwykłym tekstem.
+"""
+
+["2026-10-03-1811-folds-glide"]
+title = "Grupy kalendarzy zwijają się płynnie"
+text = """
+Kalendarze konta w bocznej kolumnie Kalendarza płynnie się teraz
+rozwijają i zwijają, a małe strzałki przy zwijanych elementach (Więcej
+na karcie kontaktu, osoby w czacie, konta w Aktywności, sedno odpowiedzi
+AI) obracają się, zamiast przeskakiwać.
+"""
+
+["2026-10-03-1844-signature-layouts"]
+title = "Podpisy z dwunastu układów"
+text = """
+Ustawienia > Tworzenie > Podpisy mają teraz dwanaście gotowych układów.
+Raz wpisz swoje imię i nazwisko, numery, logo, zdjęcie i strony, wybierz
+układ i kolor, i zobacz podpis tak, jak zobaczy go odbiorca: w trybie
+jasnym, ciemnym lub jako zwykły tekst. Obrazy jadą w środku wiadomości,
+więc wyświetlają się wszędzie.
+"""
+
+["2026-10-03-1850-copy-about-whats-new"]
+title = "Kopiowanie z O Katna i Co nowego"
+text = """
+Tekst w oknach O Katna i Co nowego można teraz zaznaczać i kopiować jak w
+przeglądarce: przeciągnij po nim, kliknij dwukrotnie słowo lub
+trzykrotnie akapit, a potem Ctrl+C lub prawy przycisk > Kopiuj. Wersja
+przyda się do wklejenia w zgłoszeniu błędu.
+"""
+
+["2026-10-03-1904-copy-version"]
+title = "Skopiuj wersję jednym kliknięciem"
+text = """
+Zatrzymaj wskaźnik na numerze wersji w O Katna, Co nowego lub
+Ustawieniach, a obok pojawi się mały przycisk kopiowania. Kopiuje
+wersję, datę jej zbudowania i twój system, gotowe do wklejenia w
+zgłoszeniu błędu.
+"""
+
+["2026-10-03-1924-settings-in-window"]
+title = "Ustawienia znów obok poczty"
+text = """
+Ustawienia otwierają się znów w głównym oknie, w miejscu strony, na
+której byłeś, a ich lista stron jest podzielona na Wszystkie aplikacje i
+poszczególne aplikacje.
+"""
+
+["2026-10-03-1934-copy-any-text"]
+title = "Kopiuj tekst wszędzie"
+text = """
+Tekst, który coś ci mówi, można teraz zaznaczać i kopiować w całej
+Katna: nazwy i opisy ustawień, dane kontaktów i wydarzeń, stan kont,
+komunikaty o błędach, notki na pustych stronach i okna dialogowe.
+Przeciągnij po nim lub kliknij dwukrotnie słowo, a potem Ctrl+C lub
+prawy przycisk > Kopiuj. Przyciski i klikane wiersze działają jak
+dawniej.
+"""
+
+["2026-10-03-2011-calendar-tasks-switch-month-drag"]
+title = "Zadania w Kalendarzu: pokaż lub ukryj, przeciągaj w widoku Miesiąc"
+text = """
+Boczna lista Kalendarza ma pod twoimi kalendarzami pole Zadania: odznacz
+je, a zadania znikną z widoków Dzień, Tydzień, Miesiąc i Harmonogram, aż
+znów je zaznaczysz. W widoku Miesiąc możesz teraz przeciągnąć zadanie na
+inny dzień; zachowuje swoją godzinę, a Cofnij przywraca je na miejsce.
+"""
+
+["2026-10-03-2023-tasks-upcoming-completed-sort-select"]
+title = "Nadchodzące, Ukończone, sortowanie i zaznaczanie w Zadaniach"
+text = """
+Zadania mają dwa nowe widoki. Nadchodzące pokazuje najbliższe dwa
+tygodnie dzień po dniu, z zaległymi zadaniami na górze; przeciągnij
+zadanie na inny dzień, aby je przenieść. Ukończone pokazuje wszystko, co
+odhaczyłeś, według dni, a odznaczenie zadania przywraca je. Menu ⋮
+każdej listy sortuje ją według daty, gwiazdki lub tytułu. Ctrl+kliknij
+lub Shift+kliknij kilka zadań, aby za jednym razem je ukończyć,
+przenieść, ustawić im datę, oznaczyć gwiazdką lub usunąć.
+"""
+
+["2026-10-03-2040-task-labels-and-files"]
+title = "Etykiety i pliki w zadaniach"
+text = """
+Zadania przyjmują te same etykiety co notatki: dodaj je w szczegółach
+zadania lub wpisz #dom w nowym zadaniu, a potem wybierz etykietę po
+lewej, aby zobaczyć wszystkie zadania z nią. Upuść plik na zadanie, aby
+go załączyć, a Dodaj do Zadań zachowuje załączniki wiadomości. Gwiazdka,
+etykiety i pliki trafiają do Microsoft To Do i na twój serwer CalDAV, a
+gwiazdka także do Zoho.
+"""
+
+["2026-10-03-2102-notes-pictures-reminders-history"]
+title = "Notatki: obrazy, przypomnienia i historia"
+text = """
+Notatki przyjmują obrazy, przypominają o wybranej porze i przechowują 30
+dni historii, którą możesz przywrócić. Ctrl+kliknij kilka notatek, aby
+razem je przypiąć, pokolorować, oznaczyć etykietą lub zarchiwizować,
+wpisz [[, aby połączyć jedną notatkę z drugą, i dodawaj cytaty, kod oraz
+linie podziału. Wyślij notatkę pocztą albo zapisz ją jako Markdown lub
+PDF, a gdy AI jest włączone, iskierka ją porządkuje, zamienia w listę
+lub streszcza.
+"""
+
+["2026-10-03-2102-quick-capture"]
+title = "Złap myśl z dowolnego miejsca"
+text = """
+Meta+Alt+T otwiera małą kartę nad tym, co właśnie robisz, aby dodać
+zadanie, a Meta+Alt+N, aby zapisać notatkę. Wpisz „Zadzwoń do hydraulika
+pt 18:00 #dom”, a plakietki pokażą rozpoznany dzień, etykietę, listę i
+przypomnienie; kliknij jedną, aby ją zmienić. Tab przełącza między
+Zadaniem a Notatką, Enter zapisuje. Jest to też w menu zasobnika oraz w
+KRunnerze jako task: i note:.
+"""
+
+["2026-10-04-0102-soft-hovers"]
+title = "Łagodniejsze podświetlenia"
+text = """
+Zatrzymanie wskaźnika na pasku aplikacji, polu wyboru, karcie i wielu
+innych przyciskach płynnie rozjaśnia i wygasza teraz ich podświetlenie,
+zamiast je po prostu włączać.
+"""
+
+["2026-10-04-0119-cards-lift"]
+title = "Karty, które się unoszą"
+text = """
+Pliki, załączniki, foldery na Dysku, zaproszenia, podsumowania, pole
+odpowiedzi i usługi pocztowe w Dodaj konto są teraz kartami z tą samą
+miękką krawędzią i cieniem co reszta Katna, zamiast płaskiego obrysu.
+"""
+
+["2026-10-04-0119-notes-select-bar-matches"]
+title = "Notatki: łagodniejsze karty w ruchu"
+text = """
+Notatki używają teraz tych samych kart, plakietek i pasków co reszta
+Katna. Karty leżą na miękkim cieniu i delikatnie unoszą się pod
+wskaźnikiem, nowe notatki płynnie się pojawiają, usunięte płynnie
+znikają, a notatka otwiera się i zamyka krótkim powiększeniem. Pasek do
+zaznaczania notatek ma ten sam zaokrąglony kształt co „Utwórz
+notatkę”, więc zmienia się tylko jego zawartość. Wszystko to stosuje się
+do ustawień Ogranicz ruch i Szybkość animacji.
+"""
+
+["2026-10-04-0128-header-labels"]
+title = "Wszystkie etykiety otwartej wiadomości"
+text = """
+Otwarta wiadomość pokazuje teraz pod tematem wszystkie swoje plakietki,
+jak w Gmail: Odebrane, Ważne, swoją kartę skrzynki odbiorczej, Oznaczone
+gwiazdką oraz każdy folder lub etykietę, w których się znajduje. Wskaż
+jedną, aby zdjąć ją jej znakiem ×, z możliwością cofnięcia.
+"""
+
+["2026-10-04-0150-settings-own-list"]
+title = "Ustawienia mają okno dla siebie"
+text = """
+Gdy Ustawienia są otwarte, foldery się chowają, więc widzisz tylko
+własną listę stron Ustawień obok wybranej strony. Wracają, gdy wyjdziesz.
+"""
+
+["2026-10-04-0154-summary-pill"]
+title = "Spokojniejszy przycisk podsumowania i nagłówek, który zostaje na miejscu"
+text = """
+W widoku czatu iskierka podsumowania siedzi teraz we własnej małej
+szarej pigułce obok przełącznika Czat i Poczta i robi się biała, gdy
+podsumowanie jest widoczne. Podsumowanie płynnie się rozwija i zwija,
+zamiast pojawiać się od razu. W widoku poczty i czatu nagłówek zostaje
+teraz na górze, gdy wiadomości przewijają się pod nim, a wiersze listy
+poczty tak samo wsuwają się pod jej górny pasek, matowe, gdy Rozmycie
+jest włączone. Ustawienia > Eksperymentalne mają przełącznik Matowe
+nagłówki, aby zostawić je jednolite.
+"""
+
+["2026-10-04-0204-tasks-motion"]
+title = "Zadania w ruchu"
+text = """
+Odhaczenie zadania wypełnia jego kółko, przekreśla tytuł i zwija
+wiersz. Nowe i usunięte zadania wsuwają się i wysuwają, przestawione
+płynnie przesuwają się na swoje miejsce, a karty list lekko się unoszą,
+gdy je wskazujesz.
+"""
+
+["2026-10-04-0225-shortcuts-dialog"]
+title = "Skróty klawiszowe w jednym spojrzeniu"
+text = """
+Pomoc > Skróty klawiszowe lub klawisz ? pokazuje teraz wszystkie skróty w
+małym oknie nad pocztą, z polem do wyszukiwania. Klawisze nadal zmienia
+się w Ustawienia > Skróty.
+"""
+
+["2026-10-04-0305-unified-leave-out"]
+title = "Pomiń skrzynkę odbiorczą we Wszystkich kontach"
+text = """
+Kliknij prawym przyciskiem skrzynkę odbiorczą konta pod Wszystkie konta i
+wybierz Pomiń we wspólnej skrzynce odbiorczej: jej poczta przestaje
+trafiać do wspólnej skrzynki, ale wiersz zostaje i otwiera tę skrzynkę.
+Kliknij jej oko, aby ją przywrócić. W Ustawienia > Odebrane możesz też
+wyłączyć ze Wszystkich kont całe konto.
+"""
+
+["2026-10-04-0310-leave-account-out"]
+title = "Pomiń konto w aplikacji"
+text = """
+Ustawienia mają teraz stronę dla Kontaktów, Zadań i Notatek, a każda z
+nich oraz Pliki pokazuje twoje konta z przełącznikiem. Wyłącz jedno, aby
+pominąć to konto w aplikacji, a jego przypomnienia ucichną. Jego
+elementy dalej się synchronizują, więc wracają, gdy tylko znów je
+włączysz.
+"""
+
+["2026-10-04-0320-calendar-leave-account-out"]
+title = "Pomiń konto w Kalendarzu"
+text = """
+Ustawienia > Kalendarz też pokazują twoje konta z przełącznikiem. Wyłącz
+jedno, a jego kalendarze, wydarzenia i zadania znikną z Kalendarza, a
+jego wydarzenia przestaną ci przypominać. Dalej się synchronizuje, więc
+wraca, gdy tylko je włączysz.
+"""
+
+["2026-10-04-0327-contact-card-points-right"]
+title = "Karty kontaktu otwierają się tam, gdzie kliknąłeś"
+text = """
+W wąskim oknie karta kontaktu otwierana z imienia lub zdjęcia osoby
+wskazuje teraz dokładnie na nie, w widoku czatu i w widoku poczty, i
+otwiera się płynnie także za pierwszym razem: Katna zaczyna wczytywać
+dane osoby, gdy tylko zatrzymasz na nich wskaźnik. Drugie kliknięcie
+tego samego imienia lub zdjęcia zamyka kartę.
+"""
+
+["2026-10-04-0336-files-card-corners"]
+title = "Spokojniejsze karty plików"
+text = """
+Karty plików w Plikach i pod wiadomością leżą teraz na miękkim cieniu i
+lekko się unoszą, gdy którąś wskażesz. Podgląd zostaje bez zmian:
+rozmiar pliku płynnie pojawia się w jego lewym górnym rogu, a przyciski
+w prawym górnym, na matowym szkle, więc nic nie podskakuje.
+"""
+
+["2026-10-04-0345-pane-tops-whole"]
+title = "Górne krawędzie paneli nie są już ucięte"
+text = """
+Z własnym paskiem tytułu Katna górna krawędź i miękki cień listy poczty,
+otwartej wiadomości i paneli bocznych są teraz widoczne w całości, gdy
+okno nie jest zmaksymalizowane, zamiast wyglądać na płasko ucięte pod
+górnym paskiem.
+"""
+
+["2026-10-04-0354-account-offline"]
+title = "Przełącz konto w tryb offline"
+text = """
+Kliknij konto prawym przyciskiem i wybierz Przejdź w tryb offline,
+jeśli chcesz, na godzinę lub do jutra. Katna przestaje się z nim łączyć,
+a przekreślona chmurka pojawia się obok jego licznika i na twoim
+zdjęciu. Jego poczta zostaje tutaj do czytania, a to, co w tym czasie
+zarchiwizujesz, usuniesz lub wyślesz, wychodzi, gdy klikniesz chmurkę,
+aby wrócić do trybu online. Ustawienia > Konta mają przełącznik
+Połączone dla każdego konta, a karta konta może przełączyć w tryb
+offline wszystkie konta naraz.
+"""
+
+["2026-10-04-0420-resize-steady"]
+title = "Spokojnie przy zmianie rozmiaru"
+text = """
+Z własnym paskiem tytułu Katna na Wayland zawartość okna stoi w miejscu,
+gdy przeciągasz krawędź, aby zmienić jego rozmiar, zamiast się trząść.
+"""
+
+["2026-10-04-0531-turn-apps-off"]
+title = "Wyłącz aplikacje, których nie używasz"
+text = """
+Ustawienia › Aplikacje mają przełącznik dla Kalendarza, Kontaktów,
+Zadań, Notatek i Plików, a kliknięcie jednej z nich prawym przyciskiem
+na pasku aplikacji oferuje Wyłącz. Wyłączona aplikacja znika z paska i
+ze skrótów klawiszowych, a na twoich kontach nic się nie zmienia. Gdy
+włączona jest tylko Poczta, pasek znika, a Katna jest po prostu
+aplikacją pocztową.
+"""
+
+["2026-10-04-0635-remove-app-copy"]
+title = "Zwolnij miejsce po wyłączonej aplikacji"
+text = """
+Wyłączenie aplikacji w Ustawienia › Aplikacje proponuje teraz usunięcie
+jej kopii z tego komputera. Na twoich kontach nic się nie zmienia, a
+ponowne włączenie pobiera ją znowu. Nowe konta proszą tylko o to, czego
+potrzebują aplikacje, których używasz.
+"""
+
+["2026-10-04-1100-account-problems"]
+title = "Problemy z kontami widoczne i naprawiane w jednym miejscu"
+text = """
+Gdy konto cię potrzebuje, wiersz na górze listy poczty mówi prostymi
+słowami, co się stało, z rozwiązaniem obok. Zmienione hasło otwiera małą
+kartę, w której wpisujesz nowe, a Katna sprawdza je, zanim je zapisze.
+Bursztynowy znak oznacza też konto w panelu folderów i na twoim zdjęciu.
+Gdy stracisz połączenie, jeden dyskretny wiersz mówi, że jesteś offline
+i że wysyłana poczta poczeka, aż wrócisz.
+"""
+
+["2026-10-04-1110-contact-card-placeholder"]
+title = "Karty kontaktu otwierają się w całości"
+text = """
+Gdy wczytanie danych osoby chwilę trwa, karta kontaktu wyskakująca nad
+imieniem lub zdjęciem otwiera się teraz w zwykłym rozmiarze z bladymi
+liniami w miejscu danych, potem je wypełnia i płynnie dopasowuje się do
+nich, zamiast otwierać się mała i nagle wydłużać.
+"""
+
+["2026-10-04-1144-account-problems-settings"]
+title = "Problemy z kontami także w Ustawieniach"
+text = """
+Ustawienia › Konta pokazują teraz pod nazwą konta, co jest z nim nie
+tak, na przykład odrzucone hasło, z rozwiązaniem tuż obok.
+"""
+
+["2026-10-04-1147-subject-scrolls-again"]
+title = "Temat znów przewija się z wiadomością"
+text = """
+W widoku poczty temat znów odjeżdża z wiadomościami pod zwykłym paskiem
+narzędzi. W widoku czatu pasek narzędzi łączy się z przypiętym
+nagłówkiem, więc dymki wsuwają się pod oba, matowe, gdy Rozmycie jest
+włączone. Górny pasek listy poczty zachowuje teraz zaokrąglone rogi
+karty, a przy wyłączonych Matowych nagłówkach wiersze już przez niego
+nie prześwitują. W oknie wielkości telefonu dolne rogi też są okrągłe.
+"""
+
+["2026-10-04-1223-outbox"]
+title = "Skrzynka nadawcza na pocztę, która nie wyszła"
+text = """
+Poczta, której nie udało się wysłać, czeka teraz w Skrzynce nadawczej
+pod Wysłanymi, widocznej tylko wtedy, gdy coś w niej jest. Każda
+wiadomość mówi prostymi słowami, dlaczego, z przyciskami Spróbuj
+ponownie, Edytuj i Usuń. Poczta wysłana, gdy hasło konta się zmieniło
+lub logowanie wygasło, czeka tam i wychodzi, gdy tylko to naprawisz,
+zamiast kończyć się błędem.
+"""
+
+["2026-10-04-1246-refused-changes"]
+title = "Zmiany odrzucone przez serwer nie są już cofane po cichu"
+text = """
+Gdy serwer poczty wciąż odrzuca zmianę, na przykład przeniesienie
+wiadomości do folderu usuniętego gdzie indziej, Katna przywraca stan
+sprzed zmiany i teraz mówi o tym prostymi słowami, ze Szczegółami
+zawierającymi odpowiedź samego serwera.
+"""
+
+["2026-10-04-1250-phone-scroll-steady"]
+title = "Stabilna lista w oknie wielkości telefonu"
+text = """
+Szybkie przewijanie listy poczty w oknie wielkości telefonu nie sprawia
+już, że lista trzęsie się w górę i w dół, gdy karty się chowają.
+"""
+
+["2026-10-04-1309-needs-you-notifications"]
+title = "Jedno powiadomienie, gdy konto lub wiadomość cię potrzebuje"
+text = """
+Gdy serwer poczty odrzuci twoje hasło, logowanie wygaśnie lub
+wiadomości nie da się wysłać, powiadomienie na pulpicie mówi o tym raz,
+nawet gdy Katna Mail jest zamknięta. Jego przycisk otwiera rozwiązanie:
+Nowe hasło, Zaloguj się lub Skrzynkę nadawczą. Podpowiedź ikony w
+zasobniku pokazuje, co czeka na ciebie.
+"""
+
+["2026-10-04-1510-dialogs-fit-phone"]
+title = "Okna dialogowe mieszczą się w oknie wielkości telefonu"
+text = """
+Co nowego, O Katna, Aktualizacje, Skróty klawiszowe i inne okna
+dialogowe mieszczą się teraz w wąskim oknie z własną ramką Katna,
+zamiast wychodzić poza jego krawędzie.
+"""
+
+["2026-10-04-1511-solid-mail-list-bar"]
+title = "Nic nie wsuwa się pod paski"
+text = """
+Wiadomości na liście poczty, otwarta wiadomość i dymki czatu zaczynają
+się teraz pod swoimi paskami, zamiast się pod nie wsuwać, a paski
+pozostają jednolite. Przełącznik Matowe nagłówki zniknął, a wraz z nim
+dziwne rogi, które powodował.
+"""
+
+["2026-10-04-1525-menus-inside-window"]
+title = "Menu i podpowiedzi zostają w oknie"
+text = """
+Z własną ramką okna Katna menu kontekstowe, wyskakujące okienka i
+podpowiedzi przy krawędzi nie wylewają się już na cień okna; zostają w
+jego środku.
+"""
+
+["2026-10-04-1525-unified-stacked-picture"]
+title = "Wszystkie konta pokazują każde zdjęcie"
+text = """
+Gdy otwarte są Wszystkie konta, zdjęcie w prawym górnym rogu jest teraz
+małym stosem zdjęć twoich kont, z +N dla pozostałych, więc od razu
+odróżnisz je od pojedynczego konta. Wskaż je, a zdjęcia płynnie się
+rozsuną.
+"""
+
+["2026-10-04-2338-all-accounts-row"]
+title = "Powrót do Wszystkich kont z menu konta"
+text = """
+Menu konta zaczyna się teraz od Wszystkich kont, z ich liczbą
+nieprzeczytanych, więc po wybraniu jednego konta jedno kliknięcie
+zabiera cię z powrotem. Menu oznacza otwarte konto znacznikiem, a
+przewijanie nad zdjęciem też zatrzymuje się na Wszystkich kontach.
+"""
+
+["2026-10-05-1257-service-starts-again"]
+title = "Katna sama uruchamia swoją usługę w tle"
+text = """
+Jeśli usługa, która synchronizuje pocztę i pokazuje ikonę w zasobniku,
+nie działa, Katna Mail sama uruchamia ją ponownie. Terminal nie jest
+potrzebny. Jeśli nadal nie chce wystartować, mówi o tym wiersz nad
+pocztą, z przyciskiem Uruchom ponownie i szczegółami do skopiowania do
+zgłoszenia.
+"""
+
+["2026-10-05-1430-stuck-window-replaced"]
+title = "Katna Mail otwiera się, nawet gdy jakaś kopia się zawiesiła"
+text = """
+Jeśli Katna Mail przestała odpowiadać w tle, ponowne otwarcie zamyka
+teraz zawieszoną kopię i otwiera świeże okno, zamiast nic nie robić.
+"""
+
+["2026-10-05-1605-read-receipts-as-ticks"]
+title = "Potwierdzenia przeczytania nie wyglądają już jak poczta"
+text = """
+Gdy czyjś program pocztowy wyśle potwierdzenie przeczytania wysłanej
+przez ciebie wiadomości, nie pojawia się ono już jako nowa wiadomość w
+rozmowie. Twoja wiadomość dostaje niebieskie znaczniki i wiersz z
+informacją, kto ją przeczytał i kiedy, a potwierdzenie jest oznaczane
+jako przeczytane, więc nie wywołuje powiadomienia. Zostaje w skrzynce i
+w wynikach wyszukiwania.
+"""
+
+["2026-10-05-1620-reply-tools-fold"]
+title = "Narzędzia odpowiedzi mieszczą się w wąskim oknie"
+text = """
+Gdy okienko odczytu lub okno jest wąskie, pasek formatowania i wiersz
+obok Wyślij nie wychodzą już poza odpowiedź. Narzędzia, które się nie
+mieszczą, trafiają do ⋮ Więcej, najrzadziej używane najpierw, a na
+telefonie Wyślij pokazuje tylko swoją ikonę.
+"""
+
+["2026-10-05-1637-read-receipts-out-of-the-list"]
+title = "Potwierdzenia przeczytania nie trafiają na listę poczty"
+text = """
+Potwierdzenie przeczytania wysłanej przez ciebie wiadomości nie pojawia
+się już na liście poczty jako wiersz „Przeczytano: …”. Rozmowa zachowuje
+swój temat i podgląd, a twoja wysłana wiadomość pokazuje znaczniki.
+"""
+
+["2026-10-05-1640-windows-frost"]
+title = "Matowe szkło w Windows"
+text = """
+Menu, wyskakujące okienka, okna dialogowe, paski przeglądarki i matowe
+panele rozmywają teraz to, co pod nimi, także w Windows, z tymi samymi
+ustawieniami siły rozmycia i krycia co w Linuksie. Włącz lub wyłącz to w
+Ustawienia, Eksperymentalne, Menu i okna dialogowe z matowego szkła.
+"""
+
+["2026-10-06-0156-phone-activity"]
+title = "Aktywność na telefonie"
+text = """
+W oknie wielkości telefonu Aktywność jest teraz na pasku wyszukiwania
+obok zdjęcia twojego konta, z liczbą nowych otwarć i kliknięć. Jej lista
+mieści się w oknie.
+"""
+
+["2026-10-06-0215-pin-bar-no-jump"]
+title = "Przypinanie nie porusza czatem"
+text = """
+W widoku czatu przypięcie lub odpięcie wiadomości nie sprawia już, że
+rozmowa podskakuje, nawet na samym jej końcu: przypięty pasek płynnie
+pojawia się nad nią, a wiadomości zostają tam, gdzie były.
+"""
+
+["2026-10-06-0942-fainter-row-marks"]
+title = "Dyskretniejsze pola wyboru i gwiazdki"
+text = """
+Na liście poczty pole wyboru, gwiazdka i znacznik Ważne w wierszu są
+bledsze, dopóki nie wskażesz wiersza. Ustawione gwiazdki i znaczniki
+wyglądają jak dawniej.
+"""
+
+["2026-10-06-1448-activity-beside-calendar"]
+title = "Aktywność obok innych przycisków"
+text = """
+W szerszym oknie przycisk Aktywność jest teraz po prawej, obok
+Kalendarza i Ustawień. Gdy otwarte są Wszystkie konta, zdjęcia kont
+rozsuwają się po najechaniu, nie przesuwając przycisków obok nich.
+"""
+
+["2026-10-06-1524-search-fills-bar"]
+title = "Dłuższe pole wyszukiwania"
+text = """
+W szerokim oknie pole wyszukiwania sięga teraz do przycisków po prawej,
+zamiast kończyć się w połowie drogi. Opcje wyszukiwania otwierają się
+wyśrodkowane pod nim i mają wygodną szerokość.
+"""
+
+["2026-10-07-0110-follow-up-for-you"]
+title = "Przypomnienia, które wysyłają się same"
+text = """
+W menu obok Wyślij opcja Przypomnij, jeśli nikt nie odpowie może teraz
+sama wysłać krótkie przypomnienie, gdy nikt nie odpisze: napisz je raz,
+wybierz kiedy i zdecyduj, czy spróbować jeszcze raz. Wychodzi w dni
+robocze w godzinach pracy, zatrzymuje się, gdy tylko ktoś odpowie
+(automatyczne odpowiedzi się nie liczą), i czeka na ciebie, zamiast
+wyjść z opóźnieniem, jeśli komputer był wyłączony. Plakietka obok
+Wyślij pokazuje, co jest ustawione. Możesz też poprzestać na
+przypomnieniu dla siebie, teraz z dowolną wybraną datą.
+"""
+
+["2026-10-07-0117-drawer-logo"]
+title = "Logo Katna w szufladzie"
+text = """
+Na telefonie szuflada z folderami pokazuje teraz logo Katna obok nazwy,
+w twoim kolorze akcentu, zamiast zwykłej koperty. Na tablecie, gdzie
+górny pasek już je pokazuje, szuflada zaczyna się od folderów.
+"""
+
+["2026-10-07-0118-clock-popup"]
+title = "Schludniejszy zegar na pulpicie"
+text = """
+W Katna Digital Clock twoje strefy czasowe są teraz obok daty u góry, a
+lista Zadania zwija się po kliknięciu jej nagłówka. Dodanie wydarzenia
+otwiera małe okno Nowe wydarzenie zamiast całej aplikacji. Nowe zadania
+nie pojawiają się już podwójnie po zakłóceniu synchronizacji.
+"""
+
+["2026-10-07-0232-mcp-server"]
+title = "Pozwól asystentom AI korzystać z twojej poczty"
+text = """
+Ustawienia › Serwer MCP pozwalają asystentom AI na tym komputerze, takim
+jak Claude Desktop, Claude Code i LM Studio, przeszukiwać i czytać twoją
+pocztę oraz zapisywać wersje robocze do twojego sprawdzenia. Jest to
+wyłączone, dopóki tego nie włączysz. Wybierz, które konta widzą,
+skopiuj, co wkleić do asystenta, i zobacz, co ostatnio robiły.
+Asystenci nigdy nie wysyłają, nie usuwają ani nie przenoszą poczty.
+"""
+
+["2026-10-07-0359-waiting-for-reply"]
+title = "Zobacz, co czeka na odpowiedź"
+text = """
+Wiadomości wysłane z przypomnieniem automatycznym lub dla siebie są
+wymienione w Oczekujących, pod Wysłanymi. Ich wiersze pokazują
+plakietkę z tym, co i kiedy nastąpi, w Oczekujących i także w
+Odebranych. Otwórz jedną, aby przenieść przypomnienie na inny termin,
+wysłać je teraz lub je zatrzymać.
+"""
+
+["2026-10-07-0505-follow-ups-in-chats"]
+title = "Przypomnienia w widoku Czat"
+text = """
+W widoku Czat przypomnienie czekające na wysłanie pokazuje się jako
+blady dymek na końcu czatu, z przyciskami Edytuj, Wyślij teraz i
+Zatrzymaj. Aby je ustawić, kliknij prawym przyciskiem lub przytrzymaj
+Wyślij i wybierz Przypomnij, jeśli nikt nie odpowie.
+"""
+
+["2026-10-07-0603-remind-me"]
+title = "Przypomnienie o dowolnej wiadomości"
+text = """
+Naciśnij H na wiadomości lub użyj Przypomnij mi obok Odłóż, aby dostać
+przypomnienie o wybranej porze, podczas gdy wiadomość zostaje na
+miejscu. Jeśli wiadomość mówi, że coś jest do zrobienia do jakiegoś
+dnia, Katna proponuje poranek dzień wcześniej. Przypomnienia to zadania
+w Zadaniach, wymienione w Przypomnieniach i pokazane w wierszu
+wiadomości. B odkłada.
+"""
+
+["2026-10-07-0718-snooze-extras"]
+title = "Odłożenie wie, kiedy ktoś odpowie"
+text = """
+Odłożona rozmowa wraca od razu, gdy ktoś w niej napisze. W Wybierz datę
+i godzinę możesz wpisać „wt 15:00” lub „za 2 godziny”. Powiadomienie o
+nowej wiadomości może ją odłożyć na godzinę lub do jutra.
+"""
+
+["2026-10-07-0802-your-snooze-times"]
+title = "Odkładaj po swojemu"
+text = """
+Ustaw, co znaczą Później dzisiaj, Jutro, W ten weekend i W przyszłym
+tygodniu, i dodaj własną porę w Ustawienia > Odebrane. Odłożone
+porządkują pocztę według tego, kiedy wróci. Na telefonie przesuń wiersz
+w lewo, aby go odłożyć.
+"""
+
+["2026-10-07-0913-pick-date-in-place"]
+title = "Wybierz datę tam, gdzie kliknąłeś"
+text = """
+Wybierz datę i godzinę wsuwa się teraz w samo menu odkładania i
+Przypomnij mi, zamiast otwierać okienko na środku okna. Strzałka wstecz
+wraca do listy godzin.
+"""
+
+["2026-10-07-0953-nudges"]
+title = "Pytania, na które nikt nie odpowiedział, wracają"
+text = """
+Wysłana przez ciebie wiadomość z pytaniem, na które przez trzy dni nikt
+nie odpowiedział, wraca na górę Odebranych z napisem „Wysłano 3 dni
+temu. Przypomnieć się?”. Kliknij go, aby wysłać przypomnienie, lub x,
+aby go schować. Wyłączysz to w Ustawienia > Odebrane.
+"""

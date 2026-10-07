@@ -20,12 +20,20 @@ viewer-page-count = di { $count }
 viewer-go-to-page-tip = Digita un numero di pagina e premi Invio (Ctrl+G)
 viewer-rotate-clockwise-tip = Ruota in senso orario (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Ruota in senso antiorario (Ctrl+Shift+R)
+viewer-dark-pages-tip = Pagine scure
+viewer-light-pages-tip = Mostra le pagine così come sono
 viewer-fit-page-tip = Adatta alla pagina
 viewer-fit-picture-tip = Adatta alla finestra
 viewer-fit-width-tip = Adatta alla larghezza
 viewer-real-size-tip = Dimensioni reali (1:1)
 viewer-page-back-tip = Pagina precedente
 viewer-page-on-tip = Pagina successiva
+viewer-more-tip = Altro
+viewer-zoom-in = Ingrandisci
+viewer-zoom-out = Riduci
+viewer-real-size = Dimensione reale
+viewer-rotate-anticlockwise = Ruota in senso antiorario
+viewer-rotate-clockwise = Ruota in senso orario
 
 ## Marking up a PDF
 
