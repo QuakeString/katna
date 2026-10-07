@@ -67,8 +67,8 @@ const GRID: usize = 4;
 const SMALL_PICTURE: u64 = 12 * 1024;
 /// How long a bubble is held on a phone before its menu opens, and how far
 /// the finger may stray meanwhile.
-const LONG_PRESS: std::time::Duration = std::time::Duration::from_millis(450);
-const PRESS_SLOP: f32 = 10.0;
+pub(in crate::window) const LONG_PRESS: std::time::Duration = std::time::Duration::from_millis(450);
+pub(in crate::window) const PRESS_SLOP: f32 = 10.0;
 
 /// The go-down button's size, and how far from the end (in screens) the
 /// feed must be before it shows.
@@ -661,6 +661,8 @@ impl MailWindow {
                 Line::Bubble(bubble) => self.render_bubble_row(bubble, th, cx),
             })
             .collect();
+        // A follow-up waiting to go sits where it will land.
+        let follow_up = self.render_chat_follow_up(phone, th, cx);
         self.adopt_chat_reply(key, cx);
         let people = self.chat_people();
         let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
@@ -736,6 +738,7 @@ impl MailWindow {
                                         .pt(px(katna_ui::tokens::space::S4))
                                         .pb(px(8.0))
                                         .children(feed)
+                                        .children(follow_up)
                                         .map(|d| self.text_area(d, cx))
                                         .child(
                                             gpui::canvas(

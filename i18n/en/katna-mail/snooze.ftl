@@ -87,6 +87,12 @@ follow-up-card-edit = Edit
 follow-up-card-edit-title = Follow up on
 follow-up-card-send-now = Send now
 follow-up-card-stop = Stop
+# The follow-up waiting at the end of a chat, over its text.
+follow-up-chat-send = Follow-up · { $date } if nobody replies
+follow-up-chat-step = Follow-up { $step } of { $steps } · { $date } if nobody replies
+follow-up-chat-waiting = Follow-up waiting · it fell due while your computer was off
+# A reminder follow-up at the end of a chat, as a small line.
+follow-up-chat-remind = Back in Inbox { $date } if no reply
 toast-follow-up-sent = Follow-up sent
 toast-follow-up-stopped = Follow-up stopped
 toast-follow-up-moved = Follow-up moved to { $date }

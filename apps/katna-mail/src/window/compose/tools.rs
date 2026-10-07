@@ -593,6 +593,22 @@ pub(in crate::window) fn below_end_over(popup: impl IntoElement, priority: usize
     .into_any_element()
 }
 
+/// As [`above`], lined up with the parent's right edge: for a button at
+/// the right of its bar, like the chat's Send.
+pub(super) fn above_end(popup: impl IntoElement) -> AnyElement {
+    deferred(
+        div().absolute().top_0().right_0().child(
+            anchored()
+                .anchor(Anchor::BottomRight)
+                .offset(point(px(0.0), px(-6.0)))
+                .snap_to_window_with_margin(px(8.0))
+                .child(div().occlude().child(popup)),
+        ),
+    )
+    .with_priority(2)
+    .into_any_element()
+}
+
 pub(super) fn above(popup: impl IntoElement) -> AnyElement {
     // Anchored to the parent's top left corner.
     deferred(
@@ -811,7 +827,7 @@ impl MailWindow {
                     .child(icon("drop-down", th.on_accent, 20.0)),
             )
             .when(open(Popup::Send), |d| {
-                d.child(above(self.render_send_menu(th, cx)))
+                d.child(above(self.render_send_menu(false, th, cx)))
             })
             .when(open(Popup::Schedule), |d| {
                 d.child(above(self.render_schedule_menu(th, cx)))
@@ -1050,12 +1066,31 @@ impl MailWindow {
         )
     }
 
-    fn render_send_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    /// Send's menu. In a chat (`chat`), it starts with Send now, for the
+    /// Send button it opens from, and leaves archiving to the mail window.
+    pub(super) fn render_send_menu(
+        &self,
+        chat: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let count = self.writing.scheduled.len();
-        let answering = self.compose.as_ref().is_some_and(|c| c.answering.is_some());
+        let answering = !chat && self.compose.as_ref().is_some_and(|c| c.answering.is_some());
         let archives = self.config.sending.send_and_archive;
         menu(th)
             .w(px(240.0))
+            .when(chat, |d| {
+                d.child(
+                    tool_item("chat-send-now", "send", &tr!("chat-send-now"), th).on_click(
+                        cx.listener(|this, _, window, cx| {
+                            if let Some(c) = &mut this.compose {
+                                c.popup = None;
+                            }
+                            this.send_compose_default(window, cx)
+                        }),
+                    ),
+                )
+            })
             .when(answering, |d| {
                 let (name, label) = if archives {
                     ("send", tr!("compose-tool-send-without-archiving"))
@@ -1105,7 +1140,7 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn render_schedule_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_schedule_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let now = jiff::Timestamp::now().to_zoned(self.tz.clone());
         let presets = schedule::presets(&now);
         let items = presets.into_iter().enumerate().map(|(ix, preset)| {
