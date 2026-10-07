@@ -16,8 +16,8 @@ use katna_core::ids::MAIL_APP_ID;
 use katna_dbus::app_action;
 use katna_i18n::tr;
 use katna_ui::px;
-use katna_ui::tokens::space;
 use katna_ui::scale::desktop_px;
+use katna_ui::tokens::space;
 
 use super::calendar::read_calendars;
 use super::event_edit::next_hour;
