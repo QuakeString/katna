@@ -90,6 +90,8 @@ pub struct Row {
     /// Snoozed: when it comes back (Unix seconds), shown in place of the
     /// date.
     pub snoozed_until: Option<i64>,
+    /// A follow-up waits on the user's message in it: its chip.
+    pub follow_up: Option<LineFollowUp>,
     pub attachments: bool,
     /// The named attachments, in conversation order, for the chips under
     /// the line. Empty when only `attachments` is known (mail synced
@@ -102,6 +104,43 @@ pub struct Row {
     /// the newest mail they got is marked answered (a reply whose sent
     /// copy is not here). Never set in sent and draft folders.
     pub replied: bool,
+}
+
+/// A follow-up or "remind me if no reply" on mail the user sent, for the
+/// chip on its line and the card on the open conversation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct LineFollowUp {
+    /// The sent message's outbox entry, which the daemon keys it on.
+    pub outbox: i64,
+    /// When it is due (Unix seconds): for one Katna sends, the working
+    /// time it goes out.
+    pub at: i64,
+    /// Katna sends a follow-up, rather than remind.
+    pub sends: bool,
+    /// The follow-up due next (1 or 2) of how many.
+    pub step: usize,
+    pub steps: usize,
+    /// It fell due while the computer was off and waits for the user.
+    pub waiting: bool,
+}
+
+impl LineFollowUp {
+    fn of(outbox: i64, follow_up: &katna_meta::FollowUp, tz: &jiff::tz::TimeZone) -> Self {
+        let sends = follow_up.sends();
+        let at = if sends && !follow_up.waiting {
+            katna_meta::working_time(follow_up.remind_at, tz)
+        } else {
+            follow_up.remind_at
+        };
+        Self {
+            outbox,
+            at,
+            sends,
+            step: follow_up.sent.len() + 1,
+            steps: if sends && follow_up.again > 0 { 2 } else { 1 },
+            waiting: follow_up.waiting,
+        }
+    }
 }
 
 /// What the recipients of a tracked message did, for its line.
@@ -241,6 +280,7 @@ impl Row {
             important: message.flags.contains(MessageFlags::IMPORTANT),
             pinned: false,
             snoozed_until: None,
+            follow_up: None,
             attachments: message.has_attachments,
             files: Vec::new(),
             tracking: None,
@@ -398,6 +438,11 @@ struct Reminders {
     /// arrived then.
     surfaced_messages: HashMap<MessageId, i64>,
     surfaced_threads: HashMap<ThreadId, i64>,
+    /// Follow-ups nobody answered yet, by the sent message (every copy)
+    /// and its conversation; the messages oldest follow-up first.
+    follow_ups: HashMap<MessageId, LineFollowUp>,
+    follow_up_threads: HashMap<ThreadId, LineFollowUp>,
+    waiting: Vec<MessageId>,
 }
 
 impl Reminders {
@@ -409,6 +454,7 @@ impl Reminders {
             }
             Err(err) => tracing::warn!("reading snoozed mail: {err}"),
         }
+        reminders.read_follow_ups(store);
         let surfaced = katna_meta::surfaced(store).unwrap_or_else(|err| {
             tracing::warn!("reading mail back from snooze: {err}");
             Vec::new()
@@ -431,6 +477,45 @@ impl Reminders {
             }
         }
         reminders
+    }
+
+    /// The follow-ups the daemon still watches whose conversation got no
+    /// answer yet (the daemon drops the answered ones when they fall due).
+    fn read_follow_ups(&mut self, store: &Store) {
+        let list = katna_meta::follow_ups(store).unwrap_or_else(|err| {
+            tracing::warn!("reading follow-ups: {err}");
+            Vec::new()
+        });
+        let tz = jiff::tz::TimeZone::system();
+        for (outbox, follow_up) in list {
+            if katna_meta::replied(store, &follow_up).unwrap_or(false) {
+                continue;
+            }
+            let copies = store
+                .messages_with_header(AccountId(follow_up.account), &follow_up.message_id)
+                .unwrap_or_default();
+            let Some(&first) = copies.first() else {
+                continue;
+            };
+            let line = LineFollowUp::of(outbox, &follow_up, &tz);
+            self.waiting.push(first);
+            for message in store.messages_by_id(&copies).unwrap_or_default() {
+                self.follow_ups.insert(message.id, line);
+                if let Some(thread) = message.thread_id {
+                    self.follow_up_threads.insert(thread, line);
+                }
+            }
+        }
+    }
+
+    /// The follow-up waiting on a line, if one does.
+    fn follow_up(&self, key: EntryKey, latest: MessageId) -> Option<LineFollowUp> {
+        match key {
+            EntryKey::Thread(thread) => self.follow_up_threads.get(&thread),
+            EntryKey::Message(id) => self.follow_ups.get(&id),
+        }
+        .or_else(|| self.follow_ups.get(&latest))
+        .copied()
     }
 
     /// When a line came back to the Inbox, if it did.
@@ -1037,6 +1122,35 @@ impl Mail {
             .and_then(|m| m.date)
     }
 
+    /// Lines of the sent mail a follow-up waits on, for Waiting for
+    /// reply: newest first, as conversations when `conversations`.
+    pub fn waiting_entries(&self, conversations: bool) -> Vec<Entry> {
+        let mut ids = self.reminders.waiting.clone();
+        ids.sort_by_key(|id| std::cmp::Reverse(self.date_of(*id)));
+        self.hit_entries(&ids, conversations, None)
+    }
+
+    /// The follow-up of outbox entry `outbox` as the daemon keeps it, for
+    /// an Undo that sets it again.
+    pub fn follow_up_value(&self, outbox: i64) -> Option<katna_meta::FollowUp> {
+        katna_meta::follow_up_of(&self.store, outbox).ok().flatten()
+    }
+
+    /// How many follow-ups wait, for the folder list.
+    pub fn waiting_count(&self) -> usize {
+        self.reminders.waiting.len()
+    }
+
+    /// The follow-up waiting on one of `messages` (a conversation), if
+    /// any: the soonest due.
+    pub fn follow_up_in(&self, messages: &[MessageId]) -> Option<LineFollowUp> {
+        messages
+            .iter()
+            .filter_map(|id| self.reminders.follow_ups.get(id))
+            .min_by_key(|f| f.at)
+            .copied()
+    }
+
     /// When snoozed `messages` come back: the soonest, if any is snoozed.
     pub fn snoozed_until(&self, messages: &[MessageId]) -> Option<i64> {
         messages
@@ -1176,6 +1290,7 @@ impl Mail {
             let row = Row {
                 pinned: self.pins.rank(row.key).is_some(),
                 snoozed_until: self.reminders.snoozed.get(&row.id).copied(),
+                follow_up: self.reminders.follow_up(row.key, row.id),
                 ..row
             };
             self.rows.insert(row.key, Rc::new(row));
@@ -1904,6 +2019,31 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
     }
 
     #[test]
+    fn follow_up_chips_say_which_follow_up_is_next_and_when() {
+        let tz = jiff::tz::TimeZone::get("Asia/Kolkata").unwrap();
+        // Saturday 10 Oct 2026, 11:00 in Kolkata: sent on Monday.
+        let saturday = 1_791_610_200;
+        let monday_nine = saturday + 2 * 86_400 - 2 * 3600;
+        let mut f = katna_meta::FollowUp {
+            remind_at: saturday,
+            mail: Some("To: b@x\r\n\r\nHi".into()),
+            again: 7 * 86_400,
+            ..Default::default()
+        };
+        let line = LineFollowUp::of(4, &f, &tz);
+        assert_eq!((line.at, line.step, line.steps), (monday_nine, 1, 2));
+        f.sent.push("f1@katna".into());
+        let line = LineFollowUp::of(4, &f, &tz);
+        assert_eq!((line.step, line.steps), (2, 2));
+        // A reminder keeps its time; a waiting one says so.
+        f.mail = None;
+        let line = LineFollowUp::of(4, &f, &tz);
+        assert_eq!((line.at, line.sends, line.steps), (saturday, false, 1));
+        f.waiting = true;
+        assert!(LineFollowUp::of(4, &f, &tz).waiting);
+    }
+
+    #[test]
     fn mail_back_from_snooze_sorts_by_when_it_came_back() {
         let line = |n| Entry::message(MessageId(n));
         // Dates: 5 newest, then 4, 3, 2, 1; 1 and 2 came back at 450 and
@@ -1917,6 +2057,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
             snoozed: HashMap::new(),
             surfaced_messages: HashMap::from([(MessageId(1), 450), (MessageId(2), 350)]),
             surfaced_threads: HashMap::from([(ThreadId(7), 999)]),
+            ..Reminders::default()
         };
         let entries = vec![line(5), line(4), line(3), line(2), line(1), thread];
         assert_eq!(
@@ -2079,6 +2220,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 important: false,
                 pinned: false,
                 snoozed_until: None,
+                follow_up: None,
                 attachments: false,
                 files: Vec::new(),
                 snippet: "The budget is final.".into(),

@@ -927,6 +927,15 @@ fn follow_ups_wait_on_outgoing_mail() {
             Some(&mail[..])
         );
         assert_eq!((follow_up.again, follow_up.waiting), (7 * 86_400, false));
+        // Edit moves it; a time already past is refused.
+        let at = katna_meta::unix_now() + 2 * 86_400;
+        pim.move_follow_up(id, at).await.unwrap();
+        let moved = katna_meta::follow_up_of(&reader, id).unwrap().unwrap();
+        assert_eq!((moved.remind_at, moved.mail), (at, follow_up.mail.clone()));
+        let err = pim.move_follow_up(id, 1000).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        let err = pim.move_follow_up(424_242, at).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
         let err = pim
             .set_follow_up_mail(id, 86_400, 0, b"Subject: nobody\r\n\r\nHi\r\n")
             .await

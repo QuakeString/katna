@@ -821,6 +821,39 @@ pub fn icon_tag(name: &str, label: impl IntoElement, th: &Theme) -> Div {
         .child(label)
 }
 
+/// A chip on a mail line (a task's due day, a follow-up's time): a small
+/// outlined capsule with an icon, in `color`, lit on hover. The line's
+/// height does not change for it.
+pub fn line_chip(
+    id: impl Into<ElementId>,
+    glow: impl Into<ElementId>,
+    name: &str,
+    label: impl Into<SharedString>,
+    color: u32,
+    th: &Theme,
+) -> Stateful<Div> {
+    div()
+        .id(id)
+        .flex_none()
+        .min_w_0()
+        .h(px(22.0))
+        .pl(px(space::S2))
+        .pr(px(space::S3))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S2))
+        .rounded_full()
+        .border_1()
+        .border_color(rgba(fade(th.text, 0.16)))
+        .text_size(px(text::CAPTION))
+        .text_color(rgba(color))
+        .relative()
+        .child(Glow::new(glow, rgba(fade(th.text, 0.08))).fade())
+        .child(icon(name, color, 14.0))
+        .child(div().min_w_0().truncate().child(label.into()))
+}
+
 /// The height a [`row`] is at least.
 pub const ROW_HEIGHT: f32 = 40.0;
 

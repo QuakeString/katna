@@ -368,6 +368,7 @@ list-empty-tab-unknown = No mail in this tab.
 # $folder: the folder's name.
 list-empty-folder = No messages in { $folder }.
 list-empty-folder-unknown = No messages in this folder.
+list-empty-waiting = Nothing is waiting for a reply.
 # While the first sync of a new account downloads its mail.
 list-first-sync = Getting your mail…
 list-first-sync-detail = It shows up here as it arrives.
@@ -399,6 +400,12 @@ row-pin = Pin to top
 row-unpin = Unpin
 # Tooltip of the time on a snoozed line. $when: date and time it comes back.
 row-snoozed-until = Snoozed until { $when }
+# On a line of sent mail Katna follows up on twice: which one is next, and
+# when it goes out.
+row-follow-up-step = Follow-up { $step } of { $steps } · { $date }
+# A follow-up that fell due while the computer was off and was not sent
+# late.
+row-follow-up-waiting = Follow-up waiting
 
 ## Mail list: More menu and right-click menu
 

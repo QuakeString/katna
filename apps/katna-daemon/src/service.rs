@@ -335,6 +335,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.send_follow_up_now(id)?)
             }
 
+            async fn move_follow_up(&self, id: i64, at: i64) -> fdo::Result<()> {
+                Ok(self.daemon.move_follow_up(id, at)?)
+            }
+
             async fn queue_send(
                 &self,
                 account: i64,

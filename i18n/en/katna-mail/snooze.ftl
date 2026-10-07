@@ -73,3 +73,20 @@ follow-up-chip-send = Follow-up in { $time }
 follow-up-chip-remind = Reminder in { $time }
 follow-up-chip-send-on = Follow-up { $date }
 follow-up-chip-remind-on = Reminder { $date }
+
+## The card over an open conversation a follow-up waits on.
+
+follow-up-card-title = No reply yet
+follow-up-card-title-waiting = Your follow-up is waiting
+follow-up-card-send = Katna sends your follow-up on { $date }. It stops when anyone replies.
+follow-up-card-send-twice = Katna sends your follow-up on { $date }, then once more later. It stops when anyone replies.
+follow-up-card-remind = If nobody replies, this conversation comes back to your Inbox on { $date }.
+follow-up-card-waiting = It fell due while your computer was off, so it wasn't sent late. Send it now, pick a new time, or stop it.
+follow-up-card-edit = Edit
+# Over the times Edit offers.
+follow-up-card-edit-title = Follow up on
+follow-up-card-send-now = Send now
+follow-up-card-stop = Stop
+toast-follow-up-sent = Follow-up sent
+toast-follow-up-stopped = Follow-up stopped
+toast-follow-up-moved = Follow-up moved to { $date }

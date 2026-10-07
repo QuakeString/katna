@@ -6138,6 +6138,7 @@ dependencies = [
  "async-channel",
  "async-io",
  "futures-lite",
+ "jiff",
  "katna-core",
  "katna-store",
  "serde",

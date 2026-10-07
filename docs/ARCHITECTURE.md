@@ -1377,12 +1377,18 @@ this is local; Katna Server only adds opened/clicked events (§16).
   9:00 to 17:00 local; later a setting) and is notified. One due more than
   a day before (the computer was off) is not sent late: it waits, with no
   expiry, the conversation back in the Inbox, for `SendFollowUpNow(x
-  outbox)` or `SetFollowUp(outbox, 0)`. Not replies: Katna's own
+  outbox)`, `MoveFollowUp(x outbox, x at)` or `SetFollowUp(outbox, 0)`. Not replies: Katna's own
   follow-ups, mail sorted into Updates (it has `Auto-Submitted`) and
   subjects of automatic answers (out of office, bounces). Encrypted mail
   gets reminders only, as a follow-up would quote it in the clear. Kept on
   this computer; sending from another device of the same Katna account
   while this one is off is planned, not built.
+  The app shows them in **Waiting** (under Sent while there are any;
+  replied ones are left out at once, as the app checks the conversation
+  with `katna_meta::replied`), as a chip on every line of the sent
+  message in any list, and as a card on the open conversation with Edit
+  (`MoveFollowUp`), Send now and Stop. The daemon signals `MailChanged`
+  whenever a follow-up changes.
 - **Surfaced** (`message`/`surfaced`: `{at}`, expires after 14 days): mail
   back from snooze or a reminder is listed as if it arrived at `at`, so it
   sits on top of the Inbox like new mail.
@@ -3753,7 +3759,8 @@ on)` (local only; more than ten pinned conversations is an error),
 `MoveMessages(ax, folder)`,
 `Snooze(ax messages, x until)`, `Unsnooze(ax messages)` and
 `SetFollowUp(x outbox, x after)`, `SetFollowUpMail(x outbox, x after, x
-again, ay mail)` and `SendFollowUpNow(x outbox)` (§10.1),
+again, ay mail)`, `SendFollowUpNow(x outbox)` and `MoveFollowUp(x outbox,
+x at)` (§10.1),
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
 message, u delay) → id`, `UndoSend(id) → b`, `RetrySend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,

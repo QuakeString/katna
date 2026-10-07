@@ -923,6 +923,10 @@ macro_rules! pim_proxy {
             /// Sends the follow-up of outbox entry `id` now.
             fn send_follow_up_now(&self, id: i64) -> zbus::Result<()>;
 
+            /// Moves the follow-up of outbox entry `id` to `at` (Unix
+            /// seconds); one that waited for the user goes out then.
+            fn move_follow_up(&self, id: i64, at: i64) -> zbus::Result<()>;
+
             /// Queues `message` (RFC 5322, with `Bcc` if any) from `account`
             /// to be sent in `delay` seconds; `UndoSend` works until then.
             /// Adds `Date` and `Message-ID` when missing. Once sent it is

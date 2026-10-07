@@ -790,34 +790,23 @@ impl MailWindow {
         let (label, past) = due_label(task, today()).unwrap_or((tr!("row-task"), false));
         let color = if past { th.error } else { th.text_dim };
         Some(
-            div()
-                .id(("row-task", ix))
-                .flex_none()
-                .h(px(22.0))
-                .pl(px(space::S2))
-                .pr(px(space::S3))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(space::S2))
-                .rounded_full()
-                .border_1()
-                .border_color(rgba(fade(th.text, 0.16)))
-                .text_size(px(text::CAPTION))
-                .text_color(rgba(color))
-                .cursor_pointer()
-                .relative()
-                .child(katna_ui::Glow::new(("row-task-glow", ix), rgba(fade(th.text, 0.08))).fade())
-                .tooltip(tip(tr!("row-task-open", title = task.title.clone()), th))
-                .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
-                .on_click(cx.listener(move |this, _, window, cx| {
-                    cx.stop_propagation();
-                    this.show_page(super::apps::App::Tasks, window, cx);
-                    this.task_open_details(id, window, cx);
-                }))
-                .child(icon("tasks", color, 14.0))
-                .child(label)
-                .into_any_element(),
+            crate::widgets::line_chip(
+                ("row-task", ix),
+                ("row-task-glow", ix),
+                "tasks",
+                label,
+                color,
+                th,
+            )
+            .cursor_pointer()
+            .tooltip(tip(tr!("row-task-open", title = task.title.clone()), th))
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_click(cx.listener(move |this, _, window, cx| {
+                cx.stop_propagation();
+                this.show_page(super::apps::App::Tasks, window, cx);
+                this.task_open_details(id, window, cx);
+            }))
+            .into_any_element(),
         )
     }
 

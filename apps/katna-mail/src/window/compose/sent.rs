@@ -119,6 +119,7 @@ pub(super) fn row(
         important: false,
         pinned: false,
         snoozed_until: None,
+        follow_up: None,
         attachments: false,
         files: Vec::new(),
         snippet,

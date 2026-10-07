@@ -1109,7 +1109,7 @@ impl MailWindow {
         if listed
             || matches!(
                 self.listing,
-                Some(Listing::Search { .. } | Listing::Unified { .. })
+                Some(Listing::Search { .. } | Listing::Unified { .. } | Listing::Waiting)
             )
         {
             self.close_listing(cx);

@@ -2270,6 +2270,7 @@ impl MailWindow {
                         None => tr!("list-empty-tab-unknown"),
                     }
                 }
+                Some(Listing::Waiting) => tr!("list-empty-waiting"),
                 Some(Listing::Folder(_) | Listing::Unified { .. }) => match self.folder_name() {
                     Some(folder) => tr!("list-empty-folder", folder = folder),
                     None => tr!("list-empty-folder-unknown"),
@@ -2864,6 +2865,7 @@ impl MailWindow {
                         })))
                         .child(
                             line(snippet)
+                                .children(self.render_row_follow_up(ix, &row, th))
                                 .children(self.render_row_task(ix, key, th, cx))
                                 .when(row.attachments && !has_chips, |d| {
                                     d.child(icon("attachment", th.text_faint, 16.0))
@@ -2924,6 +2926,10 @@ impl MailWindow {
                     .child(correspondent),
             )
             .child(div().flex_1().min_w_0().truncate().child(text))
+            .children(
+                self.render_row_follow_up(ix, &row, th)
+                    .map(|chip| div().pl(px(katna_ui::tokens::space::S3)).child(chip)),
+            )
             .children(
                 self.render_row_task(ix, key, th, cx)
                     .map(|chip| div().pl(px(8.0)).child(chip)),
