@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Katna logo in the drawer"
+text = """
+On a phone or tablet, the drawer with your folders now shows the Katna logo
+beside its name, in your accent colour, instead of a plain envelope.
+"""
