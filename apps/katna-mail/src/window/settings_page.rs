@@ -54,6 +54,7 @@ mod rules;
 mod signature_html;
 mod signature_import;
 mod signature_layout;
+mod snooze_times;
 mod starter_rules;
 mod templates;
 
@@ -363,6 +364,8 @@ pub(super) struct SettingsPage {
     rules: rules::RulesList,
     /// Settings > MCP server.
     mcp: mcp::McpPage,
+    /// Settings > Inbox > Snooze times.
+    snooze: snooze_times::SnoozeFields,
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -431,6 +434,7 @@ impl MailWindow {
         let server = self.config.meetings.jitsi_server.clone();
         let this_files = self.config.mail.files.clone();
         let ai_config = self.config.ai.clone();
+        let snooze_times = self.config.mail.snooze.clone();
         let radius_now = self.window_radius_now();
         let page = self.settings_page.get_or_insert_with(|| {
             let triggers = cx.new(|cx| {
@@ -475,6 +479,7 @@ impl MailWindow {
                 }),
             ];
             let ai = ai::AiFields::new(&ai_config, accent, cx);
+            let snooze = snooze_times::SnoozeFields::new(&snooze_times, accent, cx);
             let radius = number_input(
                 u32::from(radius_now),
                 super::frost_sliders::RADIUS_RANGE,
@@ -528,6 +533,7 @@ impl MailWindow {
                 ai,
                 rules: Default::default(),
                 mcp: Default::default(),
+                snooze,
             }
         });
         page.mail_app = opens_mail_links();
@@ -2234,6 +2240,12 @@ impl MailWindow {
             .when(accounts.is_empty() && on, |d| {
                 d.child(self.quiet_note(tr!("settings-inbox-no-accounts"), th))
             })
+            .child(self.row(
+                tr!("settings-snooze-times"),
+                Some(&tr!("settings-snooze-times-detail")),
+                self.snooze_times_rows(th, cx),
+                th,
+            ))
             .into_any_element()
     }
 

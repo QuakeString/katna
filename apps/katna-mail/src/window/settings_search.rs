@@ -204,6 +204,12 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Inbox,
+        "settings-snooze-times",
+        "settings-snooze-times-detail",
+        "snooze later today tomorrow weekend next week morning hour time own custom",
+    ),
+    entry(
+        Section::Inbox,
         "settings-unified-accounts",
         "settings-unified-accounts-detail",
         "unified all accounts hide leave out exclude account",

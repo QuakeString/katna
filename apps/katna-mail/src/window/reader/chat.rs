@@ -664,6 +664,7 @@ impl MailWindow {
         // A follow-up waiting to go sits where it will land.
         let follow_up = self.render_chat_follow_up(phone, th, cx);
         let reminder = self.render_chat_reminder(th, cx);
+        let snoozed = self.render_chat_snoozed(th, cx);
         self.adopt_chat_reply(key, cx);
         let people = self.chat_people();
         let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
@@ -741,6 +742,7 @@ impl MailWindow {
                                         .children(feed)
                                         .children(follow_up)
                                         .children(reminder)
+                                        .children(snoozed)
                                         .map(|d| self.text_area(d, cx))
                                         .child(
                                             gpui::canvas(

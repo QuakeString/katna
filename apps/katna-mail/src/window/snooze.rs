@@ -7,12 +7,14 @@
 //! the app closed (`katna-daemon`, `docs/ARCHITECTURE.md` §10.1).
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, Hsla, MouseButton,
-    Pixels, Point, Subscription, Window, deferred, div, ease_out_quint, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, ClickEvent, Context, Entity, Focusable, FontWeight, Hsla,
+    MouseButton, Pixels, Point, Subscription, Window, deferred, div, ease_out_quint, prelude::*,
+    relative, rgba,
 };
-use jiff::civil::{Date, Time, Weekday};
+use jiff::civil::{Date, Time};
 use jiff::tz::TimeZone;
 use jiff::{Timestamp, Zoned};
+use katna_core::config::SnoozeTimes;
 use katna_i18n::{format, tr};
 use katna_ui::anchored;
 use katna_ui::tokens::{radius, space, text};
@@ -23,7 +25,8 @@ use super::compose::schedule;
 use super::{Act, MailWindow};
 use crate::data::EntryKey;
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon, icon_button, raised};
+use crate::widgets::{filled_button, icon, icon_button, icon_tag, raised};
+use katna_store::MessageId;
 
 const MENU_WIDTH: f32 = 300.0;
 
@@ -76,47 +79,87 @@ pub(super) struct Preset {
     pub at: Zoned,
 }
 
-/// The suggested times at `now`: later today (6 PM, until 5 PM), tomorrow
-/// morning, this weekend (Saturday morning, Monday to Thursday) and next
-/// week (Monday morning).
-pub(super) fn presets(now: &Zoned) -> Vec<Preset> {
-    let at = |date: Date, hour: i8| -> Option<Zoned> {
-        date.to_datetime(Time::constant(hour, 0, 0, 0))
+/// The suggested times at `now`, as `times` (Settings > Inbox > Snooze
+/// times) has them: later today (6 PM, until an hour before), tomorrow
+/// morning, this weekend (Saturday morning, two to five days ahead), next
+/// week (Monday morning), and the user's own time when it is still to
+/// come, soonest first.
+pub(super) fn presets(now: &Zoned, times: &SnoozeTimes) -> Vec<Preset> {
+    let clock = |minutes: u32| {
+        let minutes = minutes.min(24 * 60 - 1);
+        Time::new((minutes / 60) as i8, (minutes % 60) as i8, 0, 0).unwrap_or(Time::midnight())
+    };
+    let at = |date: Date, time: Time| -> Option<Zoned> {
+        date.to_datetime(time)
             .to_zoned(now.time_zone().clone())
             .ok()
     };
+    let morning = clock(times.morning);
     let today = now.date();
     let mut presets = Vec::new();
-    if now.hour() < 17 {
-        presets.extend(at(today, 18).map(|at| Preset {
+    let later = clock(times.later_today);
+    if now
+        .time()
+        .checked_add(jiff::Span::new().hours(1))
+        .is_ok_and(|t| t <= later)
+    {
+        presets.extend(at(today, later).map(|at| Preset {
             label: tr!("snooze-later-today"),
             at,
         }));
     }
     if let Ok(tomorrow) = today.tomorrow() {
-        presets.extend(at(tomorrow, 8).map(|at| Preset {
+        presets.extend(at(tomorrow, morning).map(|at| Preset {
             label: tr!("snooze-tomorrow"),
             at,
         }));
     }
-    let weekday = today.weekday();
-    if matches!(
-        weekday,
-        Weekday::Monday | Weekday::Tuesday | Weekday::Wednesday | Weekday::Thursday
-    ) && let Ok(saturday) = today.nth_weekday(1, Weekday::Saturday)
+    if let Ok(weekend) = today.nth_weekday(1, times.weekend.weekday())
+        && (2..=5).contains(&(weekend - today).get_days())
     {
-        presets.extend(at(saturday, 8).map(|at| Preset {
+        presets.extend(at(weekend, morning).map(|at| Preset {
             label: tr!("snooze-this-weekend"),
             at,
         }));
     }
-    if let Ok(monday) = today.nth_weekday(1, Weekday::Monday) {
-        presets.extend(at(monday, 8).map(|at| Preset {
+    if let Ok(week) = today.nth_weekday(1, times.next_week.weekday())
+        && let Some(at) = at(week, morning)
+        && !presets.iter().any(|p| p.at == at)
+    {
+        presets.push(Preset {
             label: tr!("snooze-next-week"),
             at,
-        }));
+        });
+    }
+    if let Some(own) = own_time(&times.own, now, morning)
+        && !presets.iter().any(|p| p.at == own.at)
+    {
+        presets.push(own);
+        presets.sort_by_key(|p| p.at.timestamp());
     }
     presets
+}
+
+/// The user's own snooze time `text` ("monday 10:00") at `now`: named as
+/// typed, when it is still to come.
+pub(super) fn own_time(text: &str, now: &Zoned, morning: Time) -> Option<Preset> {
+    let text = text.trim();
+    if text.is_empty() {
+        return None;
+    }
+    let language = katna_i18n::current().language.tag.clone();
+    let words = katna_core::quick_add::Words::for_language(&language);
+    let at = katna_core::quick_add::moment(text, now.datetime(), morning, words)?
+        .to_zoned(now.time_zone().clone())
+        .ok()?;
+    let mut label: Vec<char> = text.chars().collect();
+    if let Some(first) = label.first_mut() {
+        *first = first.to_uppercase().next().unwrap_or(*first);
+    }
+    Some(Preset {
+        label: label.into_iter().collect(),
+        at,
+    })
 }
 
 /// Tomorrow at 8 in the morning in `tz`, as Unix seconds: a mute's end.
@@ -513,7 +556,7 @@ impl MailWindow {
             .filter(|r| r.on)
             .and_then(|r| r.before_due.as_ref())
             .map(|at| item("remind-before-due".into(), tr!("remind-before-due"), at));
-        let items = presets(&now)
+        let items = presets(&now, &self.config.mail.snooze)
             .into_iter()
             .enumerate()
             .map(|(ix, preset)| item(("snooze-preset", ix).into(), preset.label, &preset.at));
@@ -933,6 +976,67 @@ impl MailWindow {
     }
 }
 
+impl MailWindow {
+    /// A snoozed conversation open in a chat: a small line at its end, like
+    /// the reminder's, with Change and Unsnooze.
+    pub(super) fn render_chat_snoozed(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let reader = self.reader.as_ref()?;
+        let mail = self.mail.as_ref().ok()?;
+        let ids: Vec<MessageId> = reader.message_ids().into_iter().collect();
+        let until = mail.snoozed_until(&ids)?;
+        let key = reader.key;
+        let when = Timestamp::from_second(until)
+            .map(|at| schedule::short(&at.to_zoned(self.tz.clone())))
+            .unwrap_or_default();
+        let link = |id: &'static str, label: String| {
+            div()
+                .id(id)
+                .flex_none()
+                .px(px(space::S1))
+                .rounded(px(radius::XS))
+                .text_color(rgba(th.accent))
+                .font_weight(FontWeight::MEDIUM)
+                .cursor_pointer()
+                .hover(|s| s.underline())
+                .child(label)
+        };
+        Some(
+            icon_tag(
+                "schedule",
+                div()
+                    .min_w_0()
+                    .truncate()
+                    .child(tr!("snooze-chat-line", date = when)),
+                th,
+            )
+            .flex_shrink(1.0)
+            .min_w_0()
+            .self_center()
+            .max_w(relative(0.9))
+            .my(px(space::S3))
+            .child(
+                link("snoozed-change", tr!("snooze-chat-change")).on_click(cx.listener(
+                    move |this, event: &ClickEvent, _, cx| {
+                        this.open_mail_times(vec![key], false, event.position(), cx);
+                    },
+                )),
+            )
+            .child(
+                link("snoozed-unsnooze", tr!("list-unsnooze")).on_click(cx.listener(
+                    move |this, _, _, cx| {
+                        this.act(super::Act::Unsnooze, vec![key], cx);
+                    },
+                )),
+            )
+            .into_any_element(),
+        )
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -944,7 +1048,11 @@ mod tests {
     }
 
     fn names(now: &Zoned) -> Vec<(String, String)> {
-        presets(now)
+        names_with(now, &SnoozeTimes::default())
+    }
+
+    fn names_with(now: &Zoned, times: &SnoozeTimes) -> Vec<(String, String)> {
+        presets(now, times)
             .into_iter()
             .map(|p| (p.label, p.at.datetime().to_string()))
             .collect()
@@ -968,6 +1076,29 @@ mod tests {
             [
                 ("Tomorrow".into(), "2026-10-03T08:00:00".into()),
                 ("Next week".into(), "2026-10-05T08:00:00".into()),
+            ]
+        );
+    }
+
+    #[test]
+    fn follows_the_users_own_times() {
+        use katna_core::config::SnoozeDay;
+        let times = SnoozeTimes {
+            later_today: 20 * 60,
+            morning: 9 * 60 + 30,
+            weekend: SnoozeDay::Sunday,
+            next_week: SnoozeDay::Sunday,
+            own: "thursday 10am".into(),
+        };
+        // Tuesday afternoon, the week starting on Sunday: Sunday is both
+        // the weekend and next week, so it shows once.
+        assert_eq!(
+            names_with(&at("2026-09-29", "14:00"), &times),
+            [
+                ("Later today".into(), "2026-09-29T20:00:00".into()),
+                ("Tomorrow".into(), "2026-09-30T09:30:00".into()),
+                ("Thursday 10am".into(), "2026-10-01T10:00:00".into()),
+                ("This weekend".into(), "2026-10-04T09:30:00".into()),
             ]
         );
     }

@@ -401,6 +401,13 @@ row-pin = Pin to top
 row-unpin = Unpin
 # Tooltip of the time on a snoozed line. $when: date and time it comes back.
 row-snoozed-until = Snoozed until { $when }
+# The time on a snoozed line coming back this week. $day: short weekday, such as "Thu". $time: such as "8:00 AM".
+row-snoozed-day-time = { $day } { $time }
+# The Snoozed folder groups its lines by when they come back.
+snoozed-group-today = Today
+snoozed-group-tomorrow = Tomorrow
+snoozed-group-this-week = This week
+snoozed-group-later = Later
 # On a line of sent mail Katna follows up on twice: which one is next, and
 # when it goes out.
 row-follow-up-step = Follow-up { $step } of { $steps } · { $date }

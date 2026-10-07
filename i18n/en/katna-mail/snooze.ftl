@@ -39,6 +39,11 @@ remind-chat-line = Reminder { $date } · { $title }
 # Ticks the reminder off (its task is done).
 remind-done = Done
 toast-remind-done = Reminder done
+# A snoozed conversation open in a chat: a small line at its end.
+# $date: "Oct 9, 8:00 AM".
+snooze-chat-line = Snoozed until { $date }
+# Picks another time for the snooze.
+snooze-chat-change = Change
 
 ## The date and time picker
 

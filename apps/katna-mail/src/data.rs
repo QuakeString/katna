@@ -1160,6 +1160,14 @@ impl Mail {
             .copied()
     }
 
+    /// When the line `entry` comes back from snooze, if it is snoozed.
+    pub fn entry_snoozed_until(&self, entry: &Entry) -> Option<i64> {
+        match entry.key {
+            EntryKey::Message(id) => self.reminders.snoozed.get(&id).copied(),
+            key => self.snoozed_until(&self.entry_messages(key)),
+        }
+    }
+
     /// Picks up what the daemon wrote since the last call.
     pub fn refresh(&mut self) {
         self.rows.clear();

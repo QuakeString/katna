@@ -20,6 +20,7 @@ use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::tokens::duration;
+use katna_ui::tokens::{space, text};
 
 /// The lift of the line under the pointer: critically damped and slower
 /// than other hover feedback, so it rises and settles without a jolt.
@@ -2331,12 +2332,48 @@ impl MailWindow {
                 };
                 let row = row.map(|r| this.with_pending(r));
                 let row = this.render_row(ix, entry.key, row, &th, cx);
+                let row = div()
+                    .on_scroll_wheel(cx.listener(
+                        move |this, event: &gpui::ScrollWheelEvent, _, cx| {
+                            this.swipe_row(ix, event, cx);
+                        },
+                    ))
+                    .child(this.swiped_row(ix, row, &th))
+                    .into_any_element();
                 this.fetch_pictures(cx);
-                row
+                match this.snoozed_group_at(ix) {
+                    Some(group) => div()
+                        .flex()
+                        .flex_col()
+                        .child(snoozed_group_label(group, ix == 0, &th))
+                        .child(row)
+                        .into_any_element(),
+                    None => row,
+                }
             }),
         )
         .size_full()
         .into_any_element()
+    }
+
+    /// In the Snoozed folder: the group line `ix` starts, when it starts
+    /// one (Today, Tomorrow, This week, Later).
+    fn snoozed_group_at(&self, ix: usize) -> Option<SnoozedGroup> {
+        if self.folder_role() != Role::Snoozed {
+            return None;
+        }
+        let mail = self.mail.as_ref().ok()?;
+        let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
+        let group = |ix: usize| {
+            let until = mail.entry_snoozed_until(self.entries.get(ix)?)?;
+            let day = jiff::Timestamp::from_second(until)
+                .ok()?
+                .to_zoned(self.tz.clone())
+                .date();
+            Some(SnoozedGroup::of(day, today))
+        };
+        let this = group(ix)?;
+        (ix == 0 || group(ix - 1) != Some(this)).then_some(this)
     }
 
     /// The account of a line of the whole unified inbox, which mixes
@@ -2497,14 +2534,19 @@ impl MailWindow {
             );
         };
         let now = jiff::Timestamp::now().as_second();
-        // Snoozed mail shows when it comes back instead.
-        let date = row
-            .snoozed_until
-            .or(row.date)
-            .and_then(|d| format::local(d, &self.tz))
-            .zip(format::local(now, &self.tz))
-            .map(|(d, now)| format::list_date(d, now))
-            .unwrap_or_default();
+        // Snoozed mail shows when it comes back instead: the time today, the
+        // day and time this week.
+        let date = match row.snoozed_until.and_then(|d| format::local(d, &self.tz)) {
+            Some(back) => format::local(now, &self.tz)
+                .map(|now| back_date(back, now))
+                .unwrap_or_default(),
+            None => row
+                .date
+                .and_then(|d| format::local(d, &self.tz))
+                .zip(format::local(now, &self.tz))
+                .map(|(d, now)| format::list_date(d, now))
+                .unwrap_or_default(),
+        };
         let weight = if row.unread {
             FontWeight::BOLD
         } else {
@@ -3437,4 +3479,62 @@ fn tracking_mark(ix: usize, row: &Row, size: f32, th: &Theme) -> Option<AnyEleme
             .tooltip(tip(text, th))
             .into_any_element(),
     )
+}
+
+/// When a snoozed line comes back, as its date: "6:00 PM" today, "Thu
+/// 8:00 AM" this week, else the date.
+fn back_date(back: jiff::civil::DateTime, now: jiff::civil::DateTime) -> String {
+    match (back.date() - now.date()).get_days() {
+        ..=0 => katna_i18n::format::time(back),
+        1..=6 => tr!(
+            "row-snoozed-day-time",
+            day = katna_i18n::format::weekday(back),
+            time = katna_i18n::format::time(back)
+        ),
+        _ => format::list_date(back, now),
+    }
+}
+
+/// When snoozed mail comes back, as the Snoozed folder groups it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SnoozedGroup {
+    Today,
+    Tomorrow,
+    ThisWeek,
+    Later,
+}
+
+impl SnoozedGroup {
+    fn of(day: jiff::civil::Date, today: jiff::civil::Date) -> Self {
+        match (day - today).get_days() {
+            ..=0 => Self::Today,
+            1 => Self::Tomorrow,
+            2..=6 => Self::ThisWeek,
+            _ => Self::Later,
+        }
+    }
+
+    fn label(self) -> String {
+        match self {
+            Self::Today => tr!("snoozed-group-today"),
+            Self::Tomorrow => tr!("snoozed-group-tomorrow"),
+            Self::ThisWeek => tr!("snoozed-group-this-week"),
+            Self::Later => tr!("snoozed-group-later"),
+        }
+    }
+}
+
+/// The small label over the first line of a [`SnoozedGroup`].
+fn snoozed_group_label(group: SnoozedGroup, first: bool, th: &Theme) -> AnyElement {
+    div()
+        .px(px(space::S5))
+        .pt(px(if first { space::S3 } else { space::S5 }))
+        .pb(px(space::S2))
+        .text_size(px(text::CAPTION))
+        .font_weight(FontWeight::MEDIUM)
+        .text_color(rgba(th.text_dim))
+        .border_b_1()
+        .border_color(rgba(row_line(th)))
+        .child(group.label())
+        .into_any_element()
 }

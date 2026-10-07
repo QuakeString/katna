@@ -84,6 +84,7 @@ mod remote;
 mod reply_row;
 mod rich;
 mod row_reorder;
+mod row_swipe;
 mod rule_editor;
 mod scale_slider;
 mod scheme_color;
@@ -683,6 +684,8 @@ pub struct MailWindow {
     check_seq: u64,
     /// The snooze menu, or its date and time picker.
     snooze_menu: Option<snooze::SnoozeMenu>,
+    /// A line being swiped left to snooze it, on a phone.
+    row_swipe: row_swipe::RowSwipe,
     /// The navigation is open (not folded to the rail).
     nav_open: bool,
     /// The folded navigation is opened over the list while the pointer is
@@ -1072,6 +1075,7 @@ impl MailWindow {
             checking: Vec::new(),
             check_seq: 0,
             snooze_menu: None,
+            row_swipe: Default::default(),
             nav_open: true,
             nav_peek: false,
             peek_hover: (false, false),
@@ -1634,6 +1638,11 @@ impl MailWindow {
         if role == Role::Inbox {
             let (entries, unread) = mail.inbox_entries(folder, categories, conversations);
             (entries, Some(unread))
+        } else if role == Role::Snoozed {
+            // Soonest back first, under Today, Tomorrow, This week, Later.
+            let mut entries = mail.entries(folder, categories, conversations);
+            entries.sort_by_cached_key(|e| mail.entry_snoozed_until(e).unwrap_or(i64::MAX));
+            (entries, None)
         } else {
             (mail.entries(folder, categories, conversations), None)
         }

@@ -77,10 +77,12 @@ impl MailWindow {
         let folders = self.tree.unified_folders(view, account);
         let conversations = self.config.mail.conversations;
         if self.tabs.is_empty() || view != Unified::Inbox {
-            return (
-                mail.spread_entries(&folders, view.filter(), conversations),
-                None,
-            );
+            let mut entries = mail.spread_entries(&folders, view.filter(), conversations);
+            if view.role() == Some(super::Role::Snoozed) {
+                // Soonest back first, as in an account's Snoozed folder.
+                entries.sort_by_cached_key(|e| mail.entry_snoozed_until(e).unwrap_or(i64::MAX));
+            }
+            return (entries, None);
         }
         // Each account's mail of the tabs it turned off stays in the
         // first tab, as in its own inbox. One account's own tabs hold
