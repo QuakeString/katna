@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Activity on a phone"
+text = """
+On a phone-sized window, Activity now sits in the search bar beside your
+account picture, with its count of new opens and clicks. Its list fits
+inside the window.
+"""

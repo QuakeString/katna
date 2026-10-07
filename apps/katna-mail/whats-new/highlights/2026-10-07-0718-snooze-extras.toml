@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Snooze knows when someone replies"
+text = """
+A snoozed conversation comes back at once when someone writes in it. In
+Pick date & time you can type "tue 3pm" or "in 2 hours". A new mail's
+notification can snooze it for an hour or until tomorrow.
+"""

@@ -13,12 +13,15 @@ pub mod error;
 pub mod ids;
 pub mod image;
 pub mod logging;
+pub mod mcp_activity;
 pub mod meeting;
+pub mod mime;
 pub mod paths;
 pub mod quick_add;
 pub mod sentry;
 pub mod subject;
 pub mod update;
+pub mod wildcard;
 pub mod window;
 
 pub use account::{

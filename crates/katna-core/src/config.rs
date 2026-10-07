@@ -6,7 +6,7 @@
 //! error. Unknown keys are ignored, so an older Katna can read a file written
 //! by a newer one.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
@@ -42,6 +42,217 @@ pub struct Config {
     pub contacts: ContactsConfig,
     pub meetings: Meetings,
     pub ai: Ai,
+    pub mcp: Mcp,
+    pub tasks: TasksConfig,
+    pub hidden_accounts: HiddenAccounts,
+    pub offline: OfflineAccounts,
+    pub apps: AppsOn,
+}
+
+impl Config {
+    /// Whether `app` is turned on in Settings > Apps. Mail has no switch:
+    /// it is always on.
+    pub fn app_on(&self, app: AppKind) -> bool {
+        self.apps.is_on(app)
+    }
+}
+
+/// An app beside Mail: its items come from the accounts and can leave one
+/// out, and the whole app can be turned off.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum AppKind {
+    Calendar,
+    Contacts,
+    Tasks,
+    Notes,
+    Files,
+}
+
+impl AppKind {
+    /// Its name in `[apps]` and over D-Bus: `calendar`, `contacts`, …
+    pub fn key(self) -> &'static str {
+        match self {
+            Self::Calendar => "calendar",
+            Self::Contacts => "contacts",
+            Self::Tasks => "tasks",
+            Self::Notes => "notes",
+            Self::Files => "files",
+        }
+    }
+
+    /// The app named `key` ([`AppKind::key`]).
+    pub fn from_key(key: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|app| app.key() == key)
+    }
+
+    pub const ALL: [Self; 5] = [
+        Self::Calendar,
+        Self::Contacts,
+        Self::Tasks,
+        Self::Notes,
+        Self::Files,
+    ];
+}
+
+/// Which apps beside Mail are turned on (Settings > Apps). An app turned
+/// off is gone from everywhere and stops syncing; what is on the servers is
+/// not touched. All are on until turned off.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AppsOn {
+    pub calendar: bool,
+    pub contacts: bool,
+    pub tasks: bool,
+    pub notes: bool,
+    pub files: bool,
+}
+
+impl Default for AppsOn {
+    fn default() -> Self {
+        Self {
+            calendar: true,
+            contacts: true,
+            tasks: true,
+            notes: true,
+            files: true,
+        }
+    }
+}
+
+impl AppsOn {
+    pub fn is_on(&self, app: AppKind) -> bool {
+        match app {
+            AppKind::Calendar => self.calendar,
+            AppKind::Contacts => self.contacts,
+            AppKind::Tasks => self.tasks,
+            AppKind::Notes => self.notes,
+            AppKind::Files => self.files,
+        }
+    }
+
+    pub fn set(&mut self, app: AppKind, on: bool) {
+        *match app {
+            AppKind::Calendar => &mut self.calendar,
+            AppKind::Contacts => &mut self.contacts,
+            AppKind::Tasks => &mut self.tasks,
+            AppKind::Notes => &mut self.notes,
+            AppKind::Files => &mut self.files,
+        } = on;
+    }
+
+    /// Whether every app beside Mail is off, so Katna is just a mail app.
+    pub fn mail_only(&self) -> bool {
+        AppKind::ALL.into_iter().all(|app| !self.is_on(app))
+    }
+}
+
+/// Accounts left out of each app, by lower-case address: their items are
+/// not shown there (lists, search, reminders) but keep syncing, so showing
+/// them again is instant. The account's mail is not affected.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HiddenAccounts {
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub calendar: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub contacts: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub tasks: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub notes: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub files: BTreeSet<String>,
+}
+
+impl HiddenAccounts {
+    /// The accounts left out of `app`, by lower-case address.
+    pub fn in_app(&self, app: AppKind) -> &BTreeSet<String> {
+        match app {
+            AppKind::Calendar => &self.calendar,
+            AppKind::Contacts => &self.contacts,
+            AppKind::Tasks => &self.tasks,
+            AppKind::Notes => &self.notes,
+            AppKind::Files => &self.files,
+        }
+    }
+
+    /// Whether `app` leaves out the account at `address`.
+    pub fn hides(&self, app: AppKind, address: &str) -> bool {
+        let set = self.in_app(app);
+        !set.is_empty() && set.contains(&address.to_lowercase())
+    }
+
+    /// Shows the account at `address` in `app`, or leaves it out.
+    pub fn set_shown(&mut self, app: AppKind, address: &str, shown: bool) {
+        let set = match app {
+            AppKind::Calendar => &mut self.calendar,
+            AppKind::Contacts => &mut self.contacts,
+            AppKind::Tasks => &mut self.tasks,
+            AppKind::Notes => &mut self.notes,
+            AppKind::Files => &mut self.files,
+        };
+        let address = address.to_lowercase();
+        if shown {
+            set.remove(&address);
+        } else {
+            set.insert(address);
+        }
+    }
+}
+
+/// Accounts taken offline, by lower-case address: Katna doesn't connect
+/// to their servers (mail, calendars, contacts, tasks, notes) until each
+/// is brought back online or its time ends. What is already here stays
+/// readable; changes made meanwhile wait and go out when it is back.
+/// Kept across restarts.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct OfflineAccounts {
+    /// When each account comes back online by itself, in Unix seconds;
+    /// 0 for when it is brought back.
+    pub until: BTreeMap<String, i64>,
+}
+
+impl OfflineAccounts {
+    /// Whether the account at `address` is offline at `now` (Unix
+    /// seconds).
+    pub fn is_offline(&self, address: &str, now: i64) -> bool {
+        self.ends(address, now).is_some()
+    }
+
+    /// When the account at `address` comes back online by itself:
+    /// `Some(None)` when only by hand, `None` when it is online at `now`.
+    pub fn ends(&self, address: &str, now: i64) -> Option<Option<i64>> {
+        if self.until.is_empty() {
+            return None;
+        }
+        match self.until.get(&address.to_lowercase()) {
+            Some(0) => Some(None),
+            Some(&until) if until > now => Some(Some(until)),
+            _ => None,
+        }
+    }
+
+    /// Takes the account at `address` offline until `until` (Unix
+    /// seconds; `None` until brought back), or brings it back online.
+    pub fn set(&mut self, address: &str, offline: bool, until: Option<i64>) {
+        let address = address.to_lowercase();
+        if offline {
+            self.until.insert(address, until.unwrap_or(0).max(0));
+        } else {
+            self.until.remove(&address);
+        }
+    }
+
+    /// The next time an account comes back online by itself, after `now`.
+    pub fn next_end(&self, now: i64) -> Option<i64> {
+        self.until.values().copied().filter(|&u| u > now).min()
+    }
+
+    /// Forgets the times that ended before `now`.
+    pub fn prune(&mut self, now: i64) {
+        self.until.retain(|_, until| *until == 0 || *until > now);
+    }
 }
 
 /// The Contacts page's own choices.
@@ -56,6 +267,31 @@ pub struct ContactsConfig {
     /// unticked).
     #[serde(skip_serializing_if = "std::ops::Not::not")]
     pub hide_birthdays: bool,
+}
+
+/// The Tasks page's own choices, kept on this computer.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TasksConfig {
+    /// How each list is sorted, by its row ID in `pim.db`; a list not
+    /// here is in My order.
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub sort: BTreeMap<String, TaskSort>,
+}
+
+/// How a task list is sorted, as Google Tasks offers.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum TaskSort {
+    /// The order the tasks were put in, dragged or synced.
+    #[default]
+    MyOrder,
+    /// By due day and time; tasks without one last.
+    Date,
+    /// Starred tasks first.
+    Starred,
+    /// By title, A to Z.
+    Title,
 }
 
 /// Video calls started from Katna Mail (`docs/ARCHITECTURE.md` §18.2).
@@ -183,10 +419,53 @@ pub enum AiSource {
     Off,
 }
 
+/// Settings > MCP server: what AI assistants on this computer may do
+/// with the mail through `katnactl mcp`. Off until turned on.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Mcp {
+    /// Assistants may search and read mail.
+    pub enabled: bool,
+    /// Assistants may save drafts (never send them).
+    pub drafts: bool,
+    /// Accounts assistants don't see, by lower-case address.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub hidden_accounts: BTreeSet<String>,
+}
+
+impl Default for Mcp {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            drafts: true,
+            hidden_accounts: BTreeSet::new(),
+        }
+    }
+}
+
+impl Mcp {
+    /// Whether assistants see the account at `address`.
+    pub fn shows(&self, address: &str) -> bool {
+        self.hidden_accounts.is_empty() || !self.hidden_accounts.contains(&address.to_lowercase())
+    }
+
+    /// Shows the account at `address` to assistants, or hides it.
+    pub fn set_shown(&mut self, address: &str, shown: bool) {
+        let address = address.to_lowercase();
+        if shown {
+            self.hidden_accounts.remove(&address);
+        } else {
+            self.hidden_accounts.insert(address);
+        }
+    }
+}
+
 /// The frost's blur, in pixels, when nothing else sets it.
 pub const FROST_BLUR: u8 = 24;
 /// The frost's tint opacity, in percent, when nothing else sets it.
 pub const FROST_OPACITY: u8 = 45;
+/// How opaque frosted panes are, in percent, when nothing else sets it.
+pub const PANE_OPACITY: u8 = 75;
 
 /// Settings > Experimental: features still being tried out.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -206,7 +485,29 @@ pub struct Experimental {
     /// How far the frost blurs, in pixels ([`FROST_BLUR`]).
     pub frost_blur: u8,
     /// How opaque the frost's tint is, in percent ([`FROST_OPACITY`]).
+    /// With [`Self::custom_frost`] on, it also sets how much a blurred
+    /// window background lets through.
     pub frost_opacity: u8,
+    /// The corner radius of Katna's window frame, in pixels; `None` keeps
+    /// the frame's own.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub window_radius: Option<u8>,
+    /// A thin line around Katna's window frame.
+    pub window_border: bool,
+    /// How opaque that line is, in percent; `None` keeps the frame's own.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub window_border_opacity: Option<u8>,
+    /// In a blurred window, the cards (the mail list, the open mail, the
+    /// person card and the pages) let the blur show through.
+    pub frosted_panes: bool,
+    /// How opaque those cards are, in percent ([`PANE_OPACITY`]).
+    pub pane_opacity: u8,
+    /// In a blurred window, the room behind a chat's bubbles lets the
+    /// blur show through, a little more than the cards.
+    pub frosted_chat: bool,
+    /// In a blurred window, the search box lets the blur show through
+    /// while it is open.
+    pub frosted_search: bool,
     /// Conversations between people open as a group chat: a bubble per
     /// mail with only what its sender wrote.
     pub chat_view: bool,
@@ -221,6 +522,13 @@ impl Default for Experimental {
             custom_frost: false,
             frost_blur: FROST_BLUR,
             frost_opacity: FROST_OPACITY,
+            window_radius: None,
+            window_border: true,
+            window_border_opacity: None,
+            frosted_panes: true,
+            pane_opacity: PANE_OPACITY,
+            frosted_chat: true,
+            frosted_search: true,
             chat_view: false,
         }
     }
@@ -283,6 +591,10 @@ impl Default for Notifications {
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Sounds {
+    /// The set of sounds (`katna_platform::sound::SETS`): each event plays
+    /// the set's sound unless it names its own. Empty for the usual set.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub set: String,
     pub new_mail: EventSound,
     pub reminders: EventSound,
     pub mail_back: EventSound,
@@ -295,8 +607,8 @@ pub struct Sounds {
 #[serde(default)]
 pub struct EventSound {
     pub on: bool,
-    /// The sound's name in `katna_platform::sound`; empty for the event's
-    /// usual one.
+    /// The sound's name in `katna_platform::sound` (`file:` and a path for
+    /// a file of the user's own); empty for the set's.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub sound: String,
 }
@@ -356,7 +668,7 @@ impl Sounds {
         }
     }
 
-    /// The sound `event` plays, if on: its name, empty for the usual one.
+    /// The sound `event` plays, if on: its name, empty for the set's.
     pub fn playing(&self, event: SoundEvent) -> Option<&str> {
         let sound = self.get(event);
         sound.on.then_some(sound.sound.as_str())
@@ -608,7 +920,7 @@ impl Sending {
             id,
             name,
             text,
-            html: String::new(),
+            ..Signature::default()
         });
         if self.signatures.len() == 1 {
             self.new_mail_signature = Some(id);
@@ -649,6 +961,74 @@ pub struct Signature {
     /// `data:` URIs; empty for a plain text one.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub html: String,
+    /// The fields and layout it is made from, when it is made from one
+    /// of Katna's layouts: [`Self::text`] and [`Self::html`] are then
+    /// written from them.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub layout: Option<SignatureLayout>,
+}
+
+/// A signature made from one of Katna's layouts ([`Signature::layout`]).
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SignatureLayout {
+    pub style: LayoutStyle,
+    /// Its colour, as `#rrggbb`.
+    pub colour: String,
+    pub name: String,
+    pub title: String,
+    pub company: String,
+    pub mobile: String,
+    pub office: String,
+    pub email: String,
+    pub website: String,
+    pub address: String,
+    /// Pages it links to (LinkedIn, YouTube…), by address.
+    pub pages: Vec<String>,
+    /// Pictures as `data:` URIs, already made small for mail; empty for
+    /// none.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub logo: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub photo: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub banner: String,
+}
+
+/// The shape of a [`SignatureLayout`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum LayoutStyle {
+    #[default]
+    Classic,
+    LogoLeft,
+    Photo,
+    Band,
+    OneLine,
+    Centred,
+    Banner,
+    Underline,
+    SideBar,
+    Card,
+    Monogram,
+    Plain,
+}
+
+impl LayoutStyle {
+    pub const ALL: [LayoutStyle; 12] = [
+        LayoutStyle::Classic,
+        LayoutStyle::LogoLeft,
+        LayoutStyle::Photo,
+        LayoutStyle::Band,
+        LayoutStyle::OneLine,
+        LayoutStyle::Centred,
+        LayoutStyle::Banner,
+        LayoutStyle::Underline,
+        LayoutStyle::SideBar,
+        LayoutStyle::Card,
+        LayoutStyle::Monogram,
+        LayoutStyle::Plain,
+    ];
 }
 
 /// How Katna Mail shows mail (its quick settings).
@@ -672,6 +1052,15 @@ pub struct MailView {
     /// mail shows in the tab of its category. [`TabStyle::Auto`] is
     /// Gmail's five.
     pub unified_tabs: TabStyle,
+    /// Accounts whose inbox the unified Inbox leaves out, by lower-case
+    /// address: their row stays under it, dimmed, and opens that inbox
+    /// on its own.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub unified_left_out: BTreeSet<String>,
+    /// Accounts kept out of the unified inbox altogether, by lower-case
+    /// address: none of its lists shows them; the account card still does.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub unified_hidden: BTreeSet<String>,
     /// Each account's color, by lower-case address: a name from Katna
     /// Mail's account colors (`teal`, `pink`, ...). Accounts not listed
     /// wear one picked from their address.
@@ -680,6 +1069,12 @@ pub struct MailView {
     /// The size of everything in the windows, in percent, on top of the
     /// desktop's own scale (75 to 200).
     pub scale: u16,
+    /// How long animations take compared with normal (0.25 to 4): Katna's
+    /// own speed. Not set: the desktop's animation speed.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub animation_speed: Option<f32>,
+    /// Whether animations are turned off.
+    pub reduce_motion: ReduceMotion,
     pub theme: Theme,
     /// Use the desktop's color scheme and accent color instead of Katna's
     /// own colors. Older versions' choice: [`MailView::colors`] wins when
@@ -731,11 +1126,18 @@ pub struct MailView {
     pub reply_all: bool,
     /// Show the Important marker in the message list.
     pub important_markers: bool,
+    /// Show how many are unread beside every folder in the folder pane;
+    /// off, only the inbox shows its count.
+    pub folder_unread_counts: bool,
     /// Keep the lines of a message no wider than is easy to read.
     pub limit_width: bool,
     /// In a dark theme, give HTML mail dark colors too; off, mail keeps the
     /// colors its sender picked, on a light page.
     pub dark_mail: bool,
+    /// In a dark theme, show bright attachment pages (PDF, documents,
+    /// slides, sheets, text) dark in the viewer: lightness flipped with
+    /// hue kept, photos dimmed. Set with the viewer's half-moon button.
+    pub dark_pages: bool,
     /// Show a small picture of each attachment's content on its card.
     pub attachment_previews: bool,
     /// Open the folder in the file manager after saving attachments.
@@ -775,6 +1177,75 @@ pub struct MailView {
     /// empty for all accounts.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub activity_account: String,
+    /// What the snooze menu's suggested times mean.
+    pub snooze: SnoozeTimes,
+    /// Nudges: mail the user sent that asked something and got no answer
+    /// in three days comes back to the top of the Inbox.
+    pub nudges: bool,
+}
+
+/// What the snooze menu's suggested times mean (Settings > Inbox >
+/// Snooze times), as in Spark.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SnoozeTimes {
+    /// Later today, in minutes after midnight.
+    pub later_today: u32,
+    /// Tomorrow, This weekend and Next week, in minutes after midnight.
+    pub morning: u32,
+    /// The day This weekend comes back on.
+    pub weekend: SnoozeDay,
+    /// The day Next week comes back on.
+    pub next_week: SnoozeDay,
+    /// One more time of the user's own, as typed ("monday 10:00"),
+    /// offered when it is still to come; empty for none.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub own: String,
+}
+
+impl Default for SnoozeTimes {
+    fn default() -> Self {
+        Self {
+            later_today: 18 * 60,
+            morning: 8 * 60,
+            weekend: SnoozeDay::Saturday,
+            next_week: SnoozeDay::Monday,
+            own: String::new(),
+        }
+    }
+}
+
+/// A day of the week for [`SnoozeTimes`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SnoozeDay {
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday,
+}
+
+impl SnoozeDay {
+    /// The days a weekend can start on.
+    pub const WEEKEND: [Self; 3] = [Self::Friday, Self::Saturday, Self::Sunday];
+    /// The days a week can start on.
+    pub const WEEK: [Self; 3] = [Self::Saturday, Self::Sunday, Self::Monday];
+
+    pub fn weekday(self) -> jiff::civil::Weekday {
+        use jiff::civil::Weekday;
+        match self {
+            Self::Monday => Weekday::Monday,
+            Self::Tuesday => Weekday::Tuesday,
+            Self::Wednesday => Weekday::Wednesday,
+            Self::Thursday => Weekday::Thursday,
+            Self::Friday => Weekday::Friday,
+            Self::Saturday => Weekday::Saturday,
+            Self::Sunday => Weekday::Sunday,
+        }
+    }
 }
 
 /// The Files page (Settings > Default apps): its small pictures (logos
@@ -893,9 +1364,13 @@ impl Default for MailView {
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
             unified_tabs: TabStyle::Auto,
+            unified_left_out: BTreeSet::new(),
+            unified_hidden: BTreeSet::new(),
             account_colors: BTreeMap::new(),
             density: Density::Default,
             scale: 100,
+            animation_speed: None,
+            reduce_motion: ReduceMotion::Desktop,
             theme: Theme::System,
             desktop_colors: true,
             color_scheme: None,
@@ -914,8 +1389,10 @@ impl Default for MailView {
             remote_images: false,
             reply_all: false,
             important_markers: true,
+            folder_unread_counts: true,
             limit_width: false,
             dark_mail: true,
+            dark_pages: false,
             attachment_previews: true,
             open_saved_folder: false,
             files: FilesPage::default(),
@@ -928,6 +1405,8 @@ impl Default for MailView {
             activity_cleared: 0,
             activity_removed: Vec::new(),
             activity_account: String::new(),
+            snooze: SnoozeTimes::default(),
+            nudges: true,
         }
     }
 }
@@ -1213,6 +1692,19 @@ pub enum AccountsShown {
     All,
 }
 
+/// [`MailView::reduce_motion`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ReduceMotion {
+    /// As the desktop says: off when its animations are off.
+    #[default]
+    Desktop,
+    /// Animations off: things appear and move at once.
+    On,
+    /// Animations on, whatever the desktop says.
+    Off,
+}
+
 /// [`MailView::density`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -1235,6 +1727,9 @@ pub struct CalendarView {
     /// Named groups of calendars shown together, as Fantastical's
     /// calendar sets: one click shows a set's calendars and hides the rest.
     pub sets: Vec<CalendarSet>,
+    /// Tasks are left off the Calendar (the side list's Tasks unticked).
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub hide_tasks: bool,
 }
 
 /// One of [`CalendarView::sets`].
@@ -1425,6 +1920,35 @@ mod tests {
     }
 
     #[test]
+    fn assistants_are_off_until_turned_on() {
+        use super::Config;
+        let mut config = Config::parse("").unwrap();
+        assert!(!config.mcp.enabled && config.mcp.drafts);
+        config.mcp.set_shown("A@x.org", false);
+        assert!(!config.mcp.shows("a@X.org") && config.mcp.shows("b@x.org"));
+        let text = toml::to_string(&config).unwrap();
+        let back = Config::parse(&text).unwrap();
+        assert_eq!(back.mcp, config.mcp);
+        config.mcp.set_shown("a@x.org", true);
+        assert!(config.mcp.shows("a@x.org"));
+    }
+
+    #[test]
+    fn accounts_hide_per_app() {
+        use super::{AppKind, Config};
+        let mut config = Config::parse("[hidden_accounts]\ntasks = [\"a@x.org\"]\n").unwrap();
+        let hidden = &mut config.hidden_accounts;
+        assert!(hidden.hides(AppKind::Tasks, "A@x.org"));
+        assert!(!hidden.hides(AppKind::Notes, "a@x.org"));
+        hidden.set_shown(AppKind::Notes, "B@x.org", false);
+        hidden.set_shown(AppKind::Tasks, "a@x.org", true);
+        assert!(hidden.hides(AppKind::Notes, "b@x.org"));
+        assert!(!hidden.hides(AppKind::Tasks, "a@x.org"));
+        let text = toml::to_string(&config).unwrap();
+        assert!(text.contains("notes = [\"b@x.org\"]") && !text.contains("tasks = ["));
+    }
+
+    #[test]
     fn accounts_follow_the_chosen_order() {
         use crate::{Account, AccountId, AccountKind};
         let account = |id, address: &str| Account {
@@ -1455,6 +1979,65 @@ mod tests {
     }
 
     use super::*;
+
+    #[test]
+    fn apps_start_on_and_turn_off() {
+        let config: Config = toml::from_str("").unwrap();
+        assert!(AppKind::ALL.into_iter().all(|app| config.app_on(app)));
+        let config: Config = toml::from_str("[apps]\nnotes = false\n").unwrap();
+        assert!(!config.app_on(AppKind::Notes));
+        assert!(config.app_on(AppKind::Calendar));
+        let mut apps = AppsOn::default();
+        for app in AppKind::ALL {
+            apps.set(app, false);
+        }
+        assert!(apps.mail_only());
+    }
+
+    #[test]
+    fn offline_accounts_round_trip_and_end() {
+        let mut config = Config::default();
+        config.offline.set("Kay@Work.example", true, None);
+        config
+            .offline
+            .set("codes@mailbox.example", true, Some(1_000));
+        let text = toml::to_string(&config).unwrap();
+        let back: Config = toml::from_str(&text).unwrap();
+        assert_eq!(back.offline, config.offline);
+        let offline = &back.offline;
+        assert_eq!(offline.ends("kay@work.example", 5_000), Some(None));
+        assert_eq!(
+            offline.ends("codes@mailbox.example", 999),
+            Some(Some(1_000))
+        );
+        assert!(!offline.is_offline("codes@mailbox.example", 1_000));
+        assert!(!offline.is_offline("other@example.org", 0));
+        assert_eq!(offline.next_end(10), Some(1_000));
+        let mut pruned = offline.clone();
+        pruned.prune(2_000);
+        assert_eq!(pruned.until.len(), 1);
+        let mut online = pruned;
+        online.set("KAY@work.example", false, None);
+        assert!(online.until.is_empty());
+    }
+
+    #[test]
+    fn task_sorts_round_trip() {
+        let mut config = Config::default();
+        config.tasks.sort.insert("2".into(), TaskSort::Date);
+        config.tasks.sort.insert("5".into(), TaskSort::Starred);
+        let text = toml::to_string(&config).unwrap();
+        assert!(text.contains("[tasks.sort]"), "{text}");
+        assert!(text.contains("2 = \"date\""), "{text}");
+        let back: Config = toml::from_str(&text).unwrap();
+        assert_eq!(back.tasks, config.tasks);
+        // Nothing sorted: nothing written.
+        assert!(
+            !toml::to_string(&Config::default())
+                .unwrap()
+                .contains("[tasks.sort]")
+        );
+    }
 
     #[test]
     fn auto_advance_picks_a_neighbor() {
@@ -1541,10 +2124,15 @@ mod tests {
         assert_eq!(config.experimental.window_frame, WindowFrame::Native);
         assert!(!config.experimental.blur);
         assert!(config.experimental.frosted_popups);
+        assert!(config.experimental.frosted_panes);
+        assert_eq!(config.experimental.pane_opacity, PANE_OPACITY);
+        assert!(config.experimental.frosted_chat && config.experimental.frosted_search);
         assert!(!config.experimental.chat_view);
         let config =
             Config::parse("[experimental]\nwindow_frame = \"katna\"\nblur = true\n").unwrap();
         assert_eq!(config.experimental.window_frame, WindowFrame::Katna);
+        assert!(config.experimental.window_border);
+        assert_eq!(config.experimental.window_radius, None);
         assert!(config.experimental.blur);
         assert!(config.experimental.frosted_popups);
         let config = Config::parse("[experimental]\nfrosted_popups = false\n").unwrap();

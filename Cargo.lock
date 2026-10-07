@@ -4170,6 +4170,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e4eba85ea1d0a966a983acd07deee566e67395d2d96b6fb39e62b5a833f1eb0b"
 
 [[package]]
+name = "global-hotkey"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c386b0a4a70cb2d39fffd74480f985b6f0bfbcb934b6a6b6b7e630e448f242e"
+dependencies = [
+ "crossbeam-channel",
+ "keyboard-types 0.7.0",
+ "objc2 0.6.4",
+ "objc2-app-kit 0.3.2",
+ "once_cell",
+ "thiserror 2.0.21",
+ "windows-sys 0.59.0",
+ "x11rb",
+ "xkeysym",
+]
+
+[[package]]
 name = "glow"
 version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4663,8 +4680,6 @@ dependencies = [
 [[package]]
 name = "gpui-pre-windows"
 version = "0.3.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27662e65bfcf4445d2cccfad91f1570ec07f4b1b5de98400a9f207fd19c464cf"
 dependencies = [
  "accesskit",
  "accesskit_windows",
@@ -5960,6 +5975,7 @@ name = "katna-core"
 version = "0.0.0"
 dependencies = [
  "backtrace",
+ "base64 0.22.1",
  "jiff",
  "serde",
  "serde_json",
@@ -6075,6 +6091,7 @@ version = "0.0.0"
 dependencies = [
  "ashpd",
  "async-channel",
+ "base64 0.22.1",
  "emojis",
  "fontdb",
  "futures-lite",
@@ -6121,6 +6138,7 @@ dependencies = [
  "async-channel",
  "async-io",
  "futures-lite",
+ "jiff",
  "katna-core",
  "katna-store",
  "serde",
@@ -6152,6 +6170,7 @@ version = "0.0.0"
 dependencies = [
  "async-channel",
  "futures-lite",
+ "global-hotkey",
  "katna-core",
  "keyring-core",
  "serde",
@@ -6271,6 +6290,7 @@ version = "0.0.0"
 dependencies = [
  "blake3",
  "katna-core",
+ "regex",
  "rusqlite",
  "serde",
  "serde_json",
@@ -6333,6 +6353,7 @@ dependencies = [
  "gpui-pre",
  "gpui-pre-linux",
  "gpui-pre-wgpu",
+ "gpui-pre-windows",
  "katna-core",
  "unicode-segmentation",
 ]
@@ -6344,9 +6365,23 @@ dependencies = [
  "futures-lite",
  "katna-core",
  "katna-dbus",
+ "katna-search",
  "katna-store",
+ "mail-parser",
  "rpassword",
+ "serde_json",
  "zbus",
+]
+
+[[package]]
+name = "keyboard-types"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b750dcadc39a09dbadd74e118f6dd6598df77fa01df0cfcdc52c28dece74528a"
+dependencies = [
+ "bitflags 2.13.2",
+ "serde",
+ "unicode-segmentation",
 ]
 
 [[package]]
@@ -7048,7 +7083,7 @@ checksum = "cca139e57da4383727f189e43e66e84fa372347027fc996f9f1a007ec0a37996"
 dependencies = [
  "crossbeam-channel",
  "dpi",
- "keyboard-types",
+ "keyboard-types 0.8.3",
  "objc2 0.6.4",
  "objc2-app-kit 0.3.2",
  "objc2-core-foundation",

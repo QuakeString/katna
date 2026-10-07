@@ -22,7 +22,6 @@ settings-tab-experimental = የሙከራ
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = አቃፊዎችን እና መሰየሚያዎችን ይፍጠሩ፣ እንደገና ይሰይሙ፣ ያንቀሳቅሱ እና ይደብቁ፣ እና የትኞቹ እንደሚሰምሩ ይምረጡ። ደንቦች አዲስ ደብዳቤን በራሳቸው በላኪ፣ በርዕሰ ጉዳይ ወይም በቃላት ይለያሉ፣ ይሰይማሉ፣ ያስተላልፋሉ ወይም ይሰርዛሉ።
-settings-tab-mcp-server-coming = በዚህ ኮምፒውተር ላይ ያሉ የAI ረዳቶች ደብዳቤዎን እንዲፈልጉ፣ እንዲያነቡ እና ረቂቅ እንዲጽፉ ይፍቀዱ፣ በእርስዎ ፈቃድ።
 
 ## Settings > General
 

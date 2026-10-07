@@ -15,7 +15,7 @@ use gpui::{
 };
 use katna_i18n::tr;
 use katna_store::MessageId;
-use katna_ui::px;
+use katna_ui::{px, tokens};
 use std::time::{Duration, Instant};
 
 use super::MailWindow;
@@ -32,6 +32,8 @@ pub(super) enum Download {
         _end: async_channel::Sender<()>,
     },
     Failed(String),
+    /// Its account is offline: it downloads once the account is back.
+    Offline,
 }
 
 /// An attachment chip that was clicked while its message was not
@@ -96,6 +98,11 @@ impl MailWindow {
             return done.clone();
         }
         let (end, done) = async_channel::bounded(1);
+        let account = self.mail.as_ref().ok().and_then(|m| m.message_account(id));
+        if account.is_some_and(|a| self.is_account_offline(a)) {
+            self.downloads.insert(id, Download::Offline);
+            return done;
+        }
         self.downloads.insert(
             id,
             Download::Running {
@@ -234,7 +241,7 @@ impl MailWindow {
                 .when(pill, |d| d.rounded_full().min_w(px(CHIP_HEIGHT - 2.0)))
                 .with_animation(
                     "chip-fill",
-                    Animation::new(Duration::from_secs(1)).repeat(),
+                    Animation::new(katna_ui::motion::time(Duration::from_secs(1))).repeat(),
                     move |fill, _| fill.w(relative(at.progress(Instant::now()))),
                 )
                 .into_any_element(),
@@ -288,7 +295,8 @@ impl MailWindow {
                         .text_color(rgba(th.accent))
                         .font_weight(FontWeight::MEDIUM)
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", None, th))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.downloads.remove(&id);
                             this.download_bodies(cx);
@@ -297,6 +305,37 @@ impl MailWindow {
                         .child(tr!("reader-try-again")),
                 )
                 .into_any_element(),
+            Some(Download::Offline) => {
+                let account = self.mail.as_ref().ok().and_then(|m| m.message_account(id));
+                note.child(icon("cloud-off", th.text_dim, 18.0))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .text_color(rgba(th.text))
+                            .child(tr!("reader-download-offline")),
+                    )
+                    .when_some(account, |d, account| {
+                        d.child(
+                            div()
+                                .id(("download-online", ix))
+                                .flex_none()
+                                .px(px(tokens::space::S4))
+                                .py(px(tokens::space::S2))
+                                .rounded_full()
+                                .text_color(rgba(th.accent))
+                                .font_weight(FontWeight::MEDIUM)
+                                .cursor_pointer()
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", None, th))
+                                .on_click(cx.listener(move |this, _, _, cx| {
+                                    this.set_account_offline(account, None, cx);
+                                }))
+                                .child(tr!("offline-go-online")),
+                        )
+                    })
+                    .into_any_element()
+            }
             // Starting, or started on the next frame.
             _ => note
                 .child(
@@ -305,7 +344,7 @@ impl MailWindow {
                         .child(icon("download", th.accent, 18.0))
                         .with_animation(
                             ("downloading", ix),
-                            Animation::new(Duration::from_millis(900))
+                            Animation::new(katna_ui::motion::time(Duration::from_millis(900)))
                                 .repeat()
                                 .with_easing(gpui::pulsating_between(0.35, 1.0)),
                             |icon, t| icon.opacity(t),

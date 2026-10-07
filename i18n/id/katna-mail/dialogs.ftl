@@ -211,11 +211,9 @@ crash-close = Tutup
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } meminta Anda masuk lagi ke { $address }.
 sign-in-again-button = Masuk
 sign-in-again-tooltip = Buka halaman masuk { $provider } di browser Anda
 sign-in-again-waiting = Menunggu browser Anda…
-sign-in-again-close = Tutup
 google-api-off = { $api } dinonaktifkan di project Google Cloud milik Katna.
 google-api-turn-on = Aktifkan
 google-api-turn-on-tooltip = Buka Google Cloud untuk mengaktifkan { $api }, lalu tekan Coba lagi

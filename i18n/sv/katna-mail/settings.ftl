@@ -22,7 +22,6 @@ settings-tab-experimental = Experimentellt
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = Skapa, byt namn på, flytta och dölj mappar och etiketter, och välj vilka som synkroniseras. Regler sorterar, etiketterar, vidarebefordrar eller raderar ny e-post automatiskt, efter avsändare, ämne eller ord.
-settings-tab-mcp-server-coming = Låt AI-assistenter på den här datorn söka i, läsa och skriva utkast till din e-post, med ditt godkännande.
 
 ## Settings > General
 

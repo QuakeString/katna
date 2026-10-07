@@ -22,7 +22,6 @@ settings-tab-experimental = Experimenteel
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = Maak, hernoem, verplaats en verberg mappen en labels, en kies welke worden gesynchroniseerd. Met regels wordt nieuwe e-mail vanzelf gesorteerd, gelabeld, doorgestuurd of verwijderd, op afzender, onderwerp of woorden.
-settings-tab-mcp-server-coming = Laat AI-assistenten op deze computer je e-mail doorzoeken, lezen en concepten opstellen, met jouw toestemming.
 
 ## Settings > General
 

@@ -18,17 +18,18 @@ use gpui::{
 use katna_i18n::tr;
 use katna_store::MessageId;
 use katna_ui::motion::lerp;
-use katna_ui::px;
 use katna_ui::rich::{Block, Doc};
+use katna_ui::{px, unpx};
 
 use super::recipients::Field;
-use super::tools::{Popup, above, format_active, menu_divider};
+use super::tools::{Popup, above, above_end, format_active, menu_divider};
 use super::{Kind, Mode, Original, SendMail, Threading, draft, para, quote, trim_quote};
 use crate::data::EntryKey;
 use crate::format;
 use crate::theme::Theme;
 use crate::widgets::{icon, icon_button_colored, menu, menu_item_icon, tip};
 use crate::window::RephraseSelection;
+use crate::window::reader::{LONG_PRESS, PRESS_SLOP};
 
 use super::super::MailWindow;
 
@@ -44,6 +45,12 @@ const JOINED: f32 = 4.0;
 pub(in crate::window) struct ChatReply {
     /// The signature, out of sight while writing: added on Send.
     pub(super) held: Vec<Block>,
+    /// Send held down: its run, while it may still become a long press.
+    press: Option<usize>,
+    presses: usize,
+    /// A long press opened the Send menu: the click that ends it sends
+    /// nothing.
+    pressed_long: bool,
 }
 
 /// The blocks `signature` adds after a reply's text: a blank line, then
@@ -150,7 +157,12 @@ impl MailWindow {
                 editor.set_doc(doc.clone(), doc.start(), cx)
             });
         }
-        compose.chat = Some(ChatReply { held });
+        compose.chat = Some(ChatReply {
+            held,
+            press: None,
+            presses: 0,
+            pressed_long: false,
+        });
     }
 
     /// Aims the reply being written at `source`: what it quotes and
@@ -351,7 +363,8 @@ impl MailWindow {
                 .cursor_text()
                 .text_size(px(14.0))
                 .line_height(px(20.0))
-                .text_color(rgba(th.text_faint))
+                // Hint text, as faint as any empty field's.
+                .text_color(rgba(th.text).opacity(katna_ui::PLACEHOLDER_OPACITY))
                 .on_click(cx.listener(move |this, _, window, cx| start(this, window, cx)))
                 .child(tr!("chat-reply-to", names = names.to_owned()))
                 .into_any_element(),
@@ -376,6 +389,8 @@ impl MailWindow {
             .children(sparkle.map(|s| div().pb(px(6.0)).child(s)))
             .child(div().pb(px(8.0)).child(aa))
             .child(div().pb(px(6.0)).child(clip));
+        // Right-click or a long press on Send opens its menu: send now,
+        // schedule, follow up if nobody replies.
         let send = div()
             .id("chat-send")
             .flex_none()
@@ -387,13 +402,62 @@ impl MailWindow {
             .bg(rgba(th.accent))
             .cursor_pointer()
             .hover(|s| s.opacity(0.9))
-            .tooltip(tip(tr!("chat-send"), th))
+            .when(popup.is_none(), |d| d.tooltip(tip(tr!("chat-send"), th)))
+            .on_mouse_down(
+                gpui::MouseButton::Left,
+                cx.listener(move |this, e: &gpui::MouseDownEvent, window, cx| {
+                    this.press_chat_send(key, e.position, window, cx);
+                }),
+            )
+            .on_mouse_up(
+                gpui::MouseButton::Left,
+                cx.listener(|this, _, _, _| {
+                    if let Some(chat) = this.compose.as_mut().and_then(|c| c.chat.as_mut()) {
+                        chat.press = None;
+                    }
+                }),
+            )
+            .on_mouse_down(
+                gpui::MouseButton::Right,
+                cx.listener(move |this, _, _, cx| {
+                    if this.chat_compose(key).is_some() {
+                        this.toggle_popup(Popup::Send, cx);
+                    }
+                }),
+            )
             .on_click(cx.listener(move |this, _, window, cx| {
-                if this.chat_compose(key).is_some() {
+                let long = this
+                    .compose
+                    .as_mut()
+                    .and_then(|c| c.chat.as_mut())
+                    .is_some_and(|chat| std::mem::take(&mut chat.pressed_long));
+                if !long && this.chat_compose(key).is_some() {
                     this.send_compose_default(window, cx);
                 }
             }))
             .child(icon("send", th.on_accent, 18.0));
+        let send = div()
+            .relative()
+            .flex_none()
+            .child(send)
+            .when(popup == Some(Popup::Send), |d| {
+                d.child(above_end(self.render_send_menu(true, th, cx)))
+            })
+            .when(popup == Some(Popup::Schedule), |d| {
+                d.child(above_end(self.render_schedule_menu(th, cx)))
+            })
+            .when(popup == Some(Popup::FollowUp), |d| {
+                d.child(above_end(self.render_follow_up(th, cx)))
+            });
+        // A follow-up set shows beside Send, as in the mail window: as its
+        // icon, so the text keeps its width; the time is in its tooltip.
+        let follow_up = compose.filter(|c| c.follow_up.on()).map(|_| {
+            div()
+                .h(px(40.0))
+                .flex()
+                .items_center()
+                .child(self.render_follow_up_chip(true, th, cx))
+        });
         let strip = aimed.map(|(name, said)| {
             div()
                 .mx(px(16.0))
@@ -522,6 +586,7 @@ impl MailWindow {
                     .items_end()
                     .gap(px(6.0))
                     .child(field)
+                    .children(follow_up)
                     .child(send),
             )
             .when(compose.is_some(), |d| {
@@ -533,6 +598,47 @@ impl MailWindow {
                     .children(self.render_link_bubble(th, cx))
             })
             .into_any_element()
+    }
+
+    /// Send pressed in the chat of conversation `key`: held still for a
+    /// long press, it opens the Send menu, as a right-click does.
+    fn press_chat_send(
+        &mut self,
+        key: EntryKey,
+        at: gpui::Point<gpui::Pixels>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if self.chat_compose(key).is_none() {
+            return;
+        }
+        let Some(chat) = self.compose.as_mut().and_then(|c| c.chat.as_mut()) else {
+            return;
+        };
+        chat.presses += 1;
+        chat.pressed_long = false;
+        let run = chat.presses;
+        chat.press = Some(run);
+        cx.spawn_in(window, async move |this, cx| {
+            cx.background_executor().timer(LONG_PRESS).await;
+            let _ = this.update_in(cx, |this, window, cx| {
+                let now = window.mouse_position();
+                let strayed = (unpx(now.x) - unpx(at.x)).hypot(unpx(now.y) - unpx(at.y));
+                let Some(c) = this.compose.as_mut() else {
+                    return;
+                };
+                let Some(chat) = c.chat.as_mut().filter(|chat| chat.press == Some(run)) else {
+                    return;
+                };
+                chat.press = None;
+                if strayed <= PRESS_SLOP {
+                    chat.pressed_long = true;
+                    c.popup = Some(Popup::Send);
+                    cx.notify();
+                }
+            });
+        })
+        .detach();
     }
 
     /// The paperclip's menu: a picture, a file from the computer or the
@@ -551,16 +657,18 @@ impl MailWindow {
                 item("chat-attach-file", "attachment", tr!("chat-attach-file"))
                     .on_click(cx.listener(|this, _, _, cx| this.pick_files(false, cx))),
             )
-            .child(
-                item("chat-attach-library", "folder", tr!("chat-attach-library")).on_click(
-                    cx.listener(|this, _, window, cx| {
-                        if let Some(c) = &mut this.compose {
-                            c.popup = None;
-                        }
-                        this.open_files_picker(window, cx);
-                    }),
-                ),
-            )
+            .when(self.app_on(crate::window::apps::App::Files), |d| {
+                d.child(
+                    item("chat-attach-library", "folder", tr!("chat-attach-library")).on_click(
+                        cx.listener(|this, _, window, cx| {
+                            if let Some(c) = &mut this.compose {
+                                c.popup = None;
+                            }
+                            this.open_files_picker(window, cx);
+                        }),
+                    ),
+                )
+            })
             .child(menu_divider(th))
             .child(
                 item(

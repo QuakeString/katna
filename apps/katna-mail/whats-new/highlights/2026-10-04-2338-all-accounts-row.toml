@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Back to All Accounts from the account menu"
+text = """
+The account menu now starts with All Accounts, with its unread count, so
+one click takes you back after picking a single account. The menu marks
+what is open with a check, and scrolling over the picture stops at All
+Accounts too.
+"""

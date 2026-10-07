@@ -18,6 +18,11 @@ nav-folder-new = Create new folder
 nav-menu-check-mail = Check for new mail
 # The same, on an account's inbox under All Accounts.
 nav-menu-check-inbox = Check this inbox
+# On an account's inbox under All Accounts: its mail stops showing in the
+# unified Inbox; the row stays, dimmed, and still opens that inbox.
+nav-unified-leave-out = Leave out of unified Inbox
+# On such a left-out inbox, in the same menu and on its eye: undoes it.
+nav-unified-bring-back = Bring back into unified Inbox
 # On an account's heading or its row under All Accounts: shown when the
 # account's sign-in stopped working; opens the provider's sign-in page.
 nav-menu-sign-in-again = Sign in again
@@ -41,6 +46,10 @@ nav-account-storage = { $used } of { $total } used
 nav-menu-new-subfolder = New folder inside
 # Gmail: makes a label nested under the one right-clicked.
 nav-menu-new-sublabel = New label inside
+# On a folder (or Gmail label) the user made: gives it another name.
+nav-menu-rename = Rename
+# On a folder (or Gmail label) the user made: deletes it, after asking.
+nav-menu-delete = Delete
 # Deletes everything in Trash for good, after asking.
 nav-menu-empty-trash = Empty Trash
 # An account whose name is unknown. $number: its number.
@@ -80,6 +89,15 @@ folder-trash = Trash
 folder-all-mail = All mail
 # Messages scheduled to be sent later.
 folder-scheduled = Scheduled
+# Mail the user sent that a follow-up or "remind me if no reply" waits on.
+folder-waiting = Waiting for reply
+# Its short name in the folder pane.
+folder-waiting-short = Waiting
+# Mail with a reminder (Remind me).
+folder-reminders = Reminders
+# Mail that has not gone out yet: waiting for a connection or a sign-in,
+# or refused by the mail server. Shows only while there is some.
+folder-outbox = Outbox
 # How mail sent with open and click tracking did.
 folder-activity = Activity
 
@@ -101,3 +119,52 @@ label-creating = Creating…
 # $name: the name the user gave it.
 label-created = Label “{ $name }” created.
 label-folder-created = Folder “{ $name }” created.
+# The same dialog, renaming a label or folder the user made.
+label-rename-title = Rename label
+label-folder-rename-title = Rename folder
+label-rename = Rename
+label-renaming = Renaming…
+# $name: the new name.
+label-renamed = Label renamed to “{ $name }”.
+label-folder-renamed = Folder renamed to “{ $name }”.
+
+## Deleting a folder or label (asked first)
+
+# $name: the folder's name.
+folder-delete-title = Delete “{ $name }”?
+# $count: the mail in it and in the folders inside it; $kind:
+# "conversation" or "message", as the list groups mail.
+folder-delete-body = { $count ->
+    [0] It holds no mail. The folder is removed from the server, so webmail and your phone lose it too.
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] Its { $count } conversation goes to Trash, so you can still get it back.
+           *[other] Its { $count } conversations go to Trash, so you can still get them back.
+        }
+       *[message] { $count ->
+            [one] Its { $count } message goes to Trash, so you can still get it back.
+           *[other] Its { $count } messages go to Trash, so you can still get them back.
+        }
+    } The folder is removed from the server, so webmail and your phone lose it too.
+}
+# The same, on an account without a Trash folder.
+folder-delete-forever-body = { $count ->
+    [0] It holds no mail. The folder is removed from the server, so webmail and your phone lose it too.
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] Its { $count } conversation is deleted for good; this account has no Trash.
+           *[other] Its { $count } conversations are deleted for good; this account has no Trash.
+        }
+       *[message] { $count ->
+            [one] Its { $count } message is deleted for good; this account has no Trash.
+           *[other] Its { $count } messages are deleted for good; this account has no Trash.
+        }
+    } The folder is removed from the server, so webmail and your phone lose it too.
+}
+# Gmail: a label goes, its mail stays.
+folder-delete-label-body = The label is removed. Its mail stays in All mail and in its other labels.
+folder-delete-confirm = Delete folder
+folder-delete-label-confirm = Delete label
+# The snackbar once it is gone. $name: its name.
+folder-deleted = Folder “{ $name }” deleted
+label-deleted = Label “{ $name }” deleted

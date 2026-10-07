@@ -17,6 +17,9 @@ pub const SEPARATOR: char = '/';
 /// Gmail keeps its system labels under one of these.
 const GMAIL_ROOTS: [&str; 2] = ["[Gmail]", "[Google Mail]"];
 
+/// The folder Katna's notes sync to (`katna_sync::notes::NOTES_FOLDER`).
+const NOTES_FOLDER: &str = "Notes";
+
 /// Accounts with at most this many folders start fully expanded.
 const EXPAND_ALL_UP_TO: usize = 40;
 
@@ -226,6 +229,19 @@ pub struct AccountNode {
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Tree {
     pub accounts: Vec<AccountNode>,
+    /// What the unified inbox keeps out.
+    pub unified_out: UnifiedOut,
+}
+
+/// The accounts the unified inbox keeps out, from Settings and the
+/// right-click menu of an account's inbox under it.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct UnifiedOut {
+    /// Out of every list of it, rows and mail.
+    pub hidden: HashSet<AccountId>,
+    /// Their inbox's mail is out of the unified Inbox and its count; its
+    /// row stays, dimmed, and opens that inbox.
+    pub left_out: HashSet<AccountId>,
 }
 
 /// A visible line of the sidebar.
@@ -247,6 +263,8 @@ pub enum Row {
         name: String,
         folder: Option<FolderId>,
         unread: u64,
+        /// An inbox left out of the unified Inbox.
+        left_out: bool,
     },
     Account {
         id: AccountId,
@@ -329,7 +347,10 @@ impl Tree {
                 }
             })
             .collect();
-        Self { accounts }
+        Self {
+            accounts,
+            unified_out: UnifiedOut::default(),
+        }
     }
 
     /// Keys of the nodes that start expanded: every node of small accounts.
@@ -431,6 +452,34 @@ impl Tree {
             .collect()
     }
 
+    /// Whether `folder` is one the user made, which can be renamed and
+    /// deleted: not a special folder (by role or name), not one of Gmail's
+    /// system labels or the notes folder, and holding no special folder.
+    /// As the daemon's rule (`katna_sync::folders::is_special`), only
+    /// stricter: a special name anywhere counts.
+    pub fn editable(&self, folder: FolderId) -> bool {
+        let Some(node) = self.node(folder) else {
+            return false;
+        };
+        let root = node.path.split(SEPARATOR).next().unwrap_or_default();
+        let mut plain = true;
+        walk(std::slice::from_ref(node), &mut |n, _| {
+            plain &= n.role == Role::Other;
+        });
+        plain && !GMAIL_ROOTS.contains(&root) && node.path != NOTES_FOLDER
+    }
+
+    /// `folder` and the folders inside it.
+    pub fn subtree(&self, folder: FolderId) -> Vec<FolderId> {
+        let mut out = Vec::new();
+        if let Some(node) = self.node(folder) {
+            walk(std::slice::from_ref(node), &mut |n, _| {
+                out.extend(n.folder);
+            });
+        }
+        out
+    }
+
     /// The visible rows, given the expanded node keys: of every account,
     /// or of `only` when given. Only accounts `open` says are open show
     /// their folders.
@@ -497,7 +546,11 @@ impl Tree {
                 unread: parts
                     .iter()
                     .map(|p| match p {
-                        Row::UnifiedAccount { unread, .. } => *unread,
+                        Row::UnifiedAccount {
+                            unread,
+                            left_out: false,
+                            ..
+                        } => *unread,
                         _ => 0,
                     })
                     .sum(),
@@ -510,11 +563,27 @@ impl Tree {
         rows
     }
 
+    /// The unified Inbox's unread count, without the inboxes left out.
+    pub fn unified_inbox_unread(&self) -> u64 {
+        self.unified_parts(Unified::Inbox)
+            .iter()
+            .map(|p| match p {
+                Row::UnifiedAccount {
+                    unread,
+                    left_out: false,
+                    ..
+                } => *unread,
+                _ => 0,
+            })
+            .sum()
+    }
+
     /// The rows of each account in `view`: every account for a list by
     /// flag, those with the folder for a special folder.
     fn unified_parts(&self, view: Unified) -> Vec<Row> {
         self.accounts
             .iter()
+            .filter(|a| !self.unified_out.hidden.contains(&a.id))
             .filter_map(|account| {
                 let (folder, unread) = match view.role() {
                     Some(role) => {
@@ -531,16 +600,26 @@ impl Tree {
                     name: account.name.clone(),
                     folder,
                     unread,
+                    left_out: view == Unified::Inbox
+                        && self.unified_out.left_out.contains(&account.id),
                 })
             })
             .collect()
     }
 
-    /// The folders `view` lists mail from, of `account` or of all.
+    /// The folders `view` lists mail from, of `account` or of all those
+    /// it keeps in.
     pub fn unified_folders(&self, view: Unified, account: Option<AccountId>) -> Vec<FolderId> {
+        let out = &self.unified_out;
         self.accounts
             .iter()
-            .filter(|a| account.is_none_or(|id| id == a.id))
+            .filter(|a| match account {
+                Some(id) => id == a.id,
+                None => {
+                    !out.hidden.contains(&a.id)
+                        && !(view == Unified::Inbox && out.left_out.contains(&a.id))
+                }
+            })
             .flat_map(|a| match view.role() {
                 Some(role) => a
                     .folders()
@@ -714,9 +793,11 @@ mod tests {
                     name,
                     folder,
                     unread,
+                    left_out,
                     ..
                 } => {
-                    format!("  {name} {:?} {unread}", folder.map(|f| f.0))
+                    let out = if *left_out { " out" } else { "" };
+                    format!("  {name} {:?} {unread}{out}", folder.map(|f| f.0))
                 }
                 Row::Account { name, expanded, .. } => {
                     format!("# {name}{}", if *expanded { "" } else { " +" })
@@ -766,6 +847,36 @@ mod tests {
             tree.nest_targets(AccountId(2)),
             [(FolderId(7), "Projects".to_owned())]
         );
+    }
+
+    #[test]
+    fn only_the_users_own_folders_are_editable() {
+        let mut sent = folder(6, 1, "Sent", 0);
+        sent.role = Some("sent".to_owned());
+        let folders = [
+            folder(1, 1, "INBOX", 1),
+            folder(2, 1, "INBOX/Receipts", 1),
+            folder(3, 1, "[Gmail]/All Mail", 1),
+            folder(4, 1, "Work", 0),
+            folder(5, 1, "Work/Clients", 0),
+            sent,
+            folder(7, 1, "Notes", 0),
+            folder(8, 1, "Old", 0),
+            folder(9, 1, "Old/Trash", 0),
+            folder(10, 1, "Snoozed", 0),
+        ];
+        let tree = Tree::build(&[], &folders, &HashMap::new());
+        let editable: Vec<i64> = folders
+            .iter()
+            .filter(|f| tree.editable(f.id))
+            .map(|f| f.id.0)
+            .collect();
+        // Not the inbox, Gmail's labels, Sent, Notes, Snoozed, or a folder
+        // holding a special one.
+        assert_eq!(editable, [2, 4, 5]);
+        assert!(!tree.editable(FolderId(99)));
+        assert_eq!(tree.subtree(FolderId(4)), [FolderId(4), FolderId(5)]);
+        assert!(tree.subtree(FolderId(99)).is_empty());
     }
 
     #[test]
@@ -949,6 +1060,35 @@ mod tests {
             tree.unified_folders(Unified::Unread, None),
             [FolderId(1), FolderId(2), FolderId(4), FolderId(5)]
         );
+
+        // A left-out inbox keeps its row, out of the Inbox's count and
+        // mail, and still opens on its own.
+        let mut out = tree.clone();
+        out.unified_out.left_out.insert(AccountId(1));
+        let rows = out.unified_rows(&HashSet::from(["all:inbox".to_owned()]), true);
+        assert_eq!(
+            labels(&rows)[1..4],
+            [
+                "Inbox 1 -",
+                "  ada@example.org Some(1) 2 out",
+                "  kay@example.org Some(5) 1"
+            ]
+        );
+        assert_eq!(out.unified_folders(Unified::Inbox, None), [FolderId(5)]);
+        assert_eq!(
+            out.unified_folders(Unified::Inbox, Some(AccountId(1))),
+            [FolderId(1)]
+        );
+        assert_eq!(out.unified_folders(Unified::Sent, None), [FolderId(2)]);
+        // A hidden account is out of every list.
+        let mut hidden = tree.clone();
+        hidden.unified_out.hidden.insert(AccountId(1));
+        let rows = hidden.unified_rows(&HashSet::from(["all:inbox".to_owned()]), true);
+        assert_eq!(
+            labels(&rows)[1..3],
+            ["Inbox 1 -", "  kay@example.org Some(5) 1"]
+        );
+        assert_eq!(hidden.unified_folders(Unified::Unread, None), [FolderId(5)]);
 
         // Folded accounts show only their name.
         let rows = tree.rows(&HashSet::new(), None, |id| id == AccountId(2));

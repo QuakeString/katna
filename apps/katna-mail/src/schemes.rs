@@ -24,6 +24,7 @@ impl SideScheme for Side {
             accent: self.accent,
             accent_fg: 0xffffffff,
             negative: self.error,
+            neutral: None,
         }
     }
 }

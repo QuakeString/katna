@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rules drag like accounts"
+text = """
+In Settings > Folders & rules, dragging a rule now lifts its whole row,
+the other rules slide out of its way, and it settles where you let go,
+just like reordering accounts.
+"""

@@ -22,7 +22,6 @@ settings-tab-experimental = ניסיוני
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = יצירה, שינוי שם, העברה והסתרה של תיקיות ותוויות, ובחירה אילו מהן יסונכרנו. כללים ממיינים, מתייגים, מעבירים או מוחקים דואר חדש באופן אוטומטי, לפי שולח, נושא או מילים.
-settings-tab-mcp-server-coming = מתן אפשרות לעוזרי AI במחשב הזה לחפש, לקרוא ולנסח טיוטות בדואר שלך, באישורך.
 
 ## Settings > General
 

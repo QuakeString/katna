@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A clearer account ring"
+text = """
+The coloured ring round each account's picture is thicker, with a little
+more space between it and the picture, in the top bar, the account menu
+and Settings.
+"""

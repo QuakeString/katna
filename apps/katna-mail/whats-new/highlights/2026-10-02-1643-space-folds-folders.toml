@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Space folds folders"
+text = """
+Click a folder that has folders inside, then press Space to open or
+fold it, just like clicking its arrow. After a click the arrow keys
+move through the folder pane too, and Tab goes on to the mail list.
+"""

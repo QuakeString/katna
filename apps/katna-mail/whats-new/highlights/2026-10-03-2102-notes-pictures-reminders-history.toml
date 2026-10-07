@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Notes: pictures, reminders and history"
+text = """
+Notes take pictures, remind you at a time you pick, and keep 30 days of
+history you can restore. Ctrl+click several notes to pin, colour, label or
+archive them together, type [[ to link one note to another, and add quotes,
+code and dividers. Send a note as mail or save it as Markdown or PDF, and with
+AI on, the sparkle tidies, lists or summarises it.
+"""

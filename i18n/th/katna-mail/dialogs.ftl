@@ -210,11 +210,9 @@ crash-close = ปิด
 
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } ขอให้คุณลงชื่อเข้าใช้ { $address } อีกครั้ง
 sign-in-again-button = ลงชื่อเข้าใช้
 sign-in-again-tooltip = เปิดหน้าลงชื่อเข้าใช้ { $provider } ในเบราว์เซอร์ของคุณ
 sign-in-again-waiting = กำลังรอเบราว์เซอร์ของคุณ…
-sign-in-again-close = ปิด
 google-api-off = { $api } ถูกปิดอยู่ในโปรเจกต์ Google Cloud ของ Katna
 google-api-turn-on = เปิดใช้
 google-api-turn-on-tooltip = เปิด Google Cloud เพื่อเปิดใช้ { $api } แล้วกด ลองอีกครั้ง

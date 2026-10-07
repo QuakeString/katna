@@ -9,11 +9,14 @@
 //! brings back ones long past: those missed while the computer was off
 //! show only when they fell due in the last few minutes.
 //!
-//! Tasks' reminders come the same way, with Mark as done and Snooze.
+//! Tasks' reminders come the same way, with Mark as done and Snooze, and
+//! notes' with Open and Snooze.
 
 use std::{collections::HashSet, sync::Weak, time::Duration};
 
 use jiff::tz::TimeZone;
+use katna_core::AccountId;
+use katna_core::config::{AppKind, AppsOn, HiddenAccounts};
 use katna_dav::Occurrence;
 use katna_i18n::tr;
 use katna_store::{
@@ -51,6 +54,9 @@ pub(crate) struct Alarm {
     /// The task it is about, for a task's reminder; `key` is then the
     /// task's row and its reminder time.
     pub task: Option<i64>,
+    /// The note it is about, for a note's reminder; `key` is then the
+    /// note's row and its reminder time.
+    pub note: Option<i64>,
 }
 
 /// The reminders due in `(from, to]` of `occurrences`, soonest first, and
@@ -95,6 +101,7 @@ fn due(
                 join_url: join_url(data),
                 at,
                 task: None,
+                note: None,
             });
         }
     }
@@ -172,6 +179,7 @@ fn tasks_due(tasks: &[Task], from: i64, to: i64) -> (Vec<Alarm>, Option<i64>) {
                 join_url: String::new(),
                 at,
                 task: Some(task.id),
+                note: None,
             });
         }
     }
@@ -179,21 +187,127 @@ fn tasks_due(tasks: &[Task], from: i64, to: i64) -> (Vec<Alarm>, Option<i64>) {
     (alarms, next)
 }
 
-/// Reads the reminders due in `(from, to]` and the next one's time:
-/// events', then tasks'.
-fn read(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option<i64>) {
-    let (mut alarms, next) = read_events(store, from, to, tz);
-    let tasks = store.tasks(to).unwrap_or_else(|err| {
-        tracing::warn!(%err, "reminders: cannot read tasks");
-        Vec::new()
-    });
-    let (task_alarms, task_next) = tasks_due(&tasks, from, to);
-    alarms.extend(task_alarms);
-    (alarms, next.into_iter().chain(task_next).min())
+/// Notes' reminders due in `(from, to]`, from
+/// [`Store::notes_reminding`]'s rows.
+fn notes_due(rows: Vec<(i64, String, String, i64)>) -> Vec<Alarm> {
+    rows.into_iter()
+        .map(|(id, title, body, at)| {
+            let mut lines = body
+                .lines()
+                .map(|l| l.trim().trim_start_matches(['☐', '☑']).trim())
+                .filter(|l| !l.is_empty());
+            let title = match title.trim() {
+                "" => lines
+                    .next()
+                    .map_or_else(|| tr!("notify-no-subject"), str::to_owned),
+                title => title.to_owned(),
+            };
+            Alarm {
+                key: (id, at),
+                title,
+                lines: lines.next().map(str::to_owned).into_iter().collect(),
+                join_url: String::new(),
+                at,
+                task: None,
+                note: Some(id),
+            }
+        })
+        .collect()
 }
 
-fn read_events(store: &Store, from: i64, to: i64, tz: &TimeZone) -> (Vec<Alarm>, Option<i64>) {
-    let calendars = store.calendars().unwrap_or_default();
+/// The accounts `app` leaves out, by ID.
+fn hidden_ids(store: &Store, hidden: &HiddenAccounts, app: AppKind) -> HashSet<AccountId> {
+    if hidden.in_app(app).is_empty() {
+        return HashSet::new();
+    }
+    store
+        .accounts()
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|a| hidden.hides(app, &a.address))
+        .map(|a| a.id)
+        .collect()
+}
+
+/// Reads the reminders due in `(from, to]` and the next one's time:
+/// events', tasks', then notes'. The events, tasks and notes of accounts
+/// left out of Calendar, Tasks or Notes stay quiet, and so do those of an
+/// app that is turned off.
+fn read(
+    store: &Store,
+    from: i64,
+    to: i64,
+    tz: &TimeZone,
+    hidden: &HiddenAccounts,
+    apps: &AppsOn,
+) -> (Vec<Alarm>, Option<i64>) {
+    let (mut alarms, next) = if apps.calendar {
+        read_events(store, from, to, tz, hidden)
+    } else {
+        (Vec::new(), None)
+    };
+    let mut tasks = if apps.tasks {
+        store.tasks(to).unwrap_or_else(|err| {
+            tracing::warn!(%err, "reminders: cannot read tasks");
+            Vec::new()
+        })
+    } else {
+        Vec::new()
+    };
+    let quiet = hidden_ids(store, hidden, AppKind::Tasks);
+    if !quiet.is_empty() {
+        let lists: HashSet<i64> = store
+            .task_lists()
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|l| l.account.is_some_and(|a| quiet.contains(&a)))
+            .map(|l| l.id)
+            .collect();
+        tasks.retain(|t| !lists.contains(&t.list));
+    }
+    let (task_alarms, task_next) = tasks_due(&tasks, from, to);
+    alarms.extend(task_alarms);
+    if !apps.notes {
+        return (alarms, next.into_iter().chain(task_next).min());
+    }
+    let mut notes = store.notes_reminding(from, to).unwrap_or_else(|err| {
+        tracing::warn!(%err, "reminders: cannot read notes");
+        Vec::new()
+    });
+    let quiet: HashSet<i64> = hidden_ids(store, hidden, AppKind::Notes)
+        .into_iter()
+        .map(|a| a.0)
+        .collect();
+    if !quiet.is_empty() {
+        notes.retain(|(id, ..)| {
+            let account = store.note(*id).ok().flatten().and_then(|n| n.account_id);
+            account.is_none_or(|a| !quiet.contains(&a))
+        });
+    }
+    alarms.extend(notes_due(notes));
+    let note_next = store.next_note_reminder(to).ok().flatten();
+    (
+        alarms,
+        next.into_iter().chain(task_next).chain(note_next).min(),
+    )
+}
+
+/// Events' reminders; the calendars of accounts left out of the Calendar
+/// count as hidden.
+fn read_events(
+    store: &Store,
+    from: i64,
+    to: i64,
+    tz: &TimeZone,
+    hidden: &HiddenAccounts,
+) -> (Vec<Alarm>, Option<i64>) {
+    let mut calendars = store.calendars().unwrap_or_default();
+    let quiet = hidden_ids(store, hidden, AppKind::Calendar);
+    for calendar in &mut calendars {
+        if calendar.account.is_some_and(|a| quiet.contains(&a)) {
+            calendar.hidden = true;
+        }
+    }
     let rows = match store.event_rows_in_range(from, to + AHEAD) {
         Ok(rows) => rows,
         Err(err) => {
@@ -229,16 +343,24 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
             return;
         }
         let now = unix_now();
-        let (alarms, next) = read(&daemon.store(), from, now, &tz);
+        let (alarms, next) = read(
+            &daemon.store(),
+            from,
+            now,
+            &tz,
+            &daemon.hidden_accounts(),
+            &daemon.apps(),
+        );
         let notices = daemon.new_mail_notices();
         let snoozed = notices
             .as_ref()
             .map(|n| n.snoozed_due(now))
             .unwrap_or_default();
         for alarm in alarms.into_iter().chain(snoozed) {
-            match alarm.task {
-                Some(task) => tracing::info!(task, "task reminder"),
-                None => tracing::info!(event = alarm.key.0, "event reminder"),
+            match (alarm.task, alarm.note) {
+                (Some(task), _) => tracing::info!(task, "task reminder"),
+                (_, Some(note)) => tracing::info!(note, "note reminder"),
+                _ => tracing::info!(event = alarm.key.0, "event reminder"),
             }
             if let Some(notices) = &notices {
                 notices.event_reminder(alarm).await;
@@ -334,6 +456,7 @@ mod tests {
             done_at,
             position: String::new(),
             mail: String::new(),
+            labels: Vec::new(),
         };
         let tasks = [
             task(1, Some(at), None),

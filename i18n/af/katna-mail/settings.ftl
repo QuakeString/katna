@@ -22,7 +22,6 @@ settings-tab-experimental = Eksperimenteel
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = Skep, hernoem, skuif en versteek vouers en etikette, en kies watter een sinkroniseer. Reëls sorteer, etiketteer, stuur aan of vee nuwe e-pos vanself uit, volgens sender, onderwerp of woorde.
-settings-tab-mcp-server-coming = Laat KI-assistente op hierdie rekenaar jou e-pos deursoek, lees en konsepte skryf, met jou toestemming.
 
 ## Settings > General
 

@@ -22,7 +22,6 @@ settings-tab-experimental = પ્રાયોગિક
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = ફોલ્ડર અને લેબલ બનાવો, તેમનું નામ બદલો, ખસેડો અને છુપાવો, તેમજ કયા સિંક થાય તે પસંદ કરો. નિયમો નવા મેઇલને મોકલનાર, વિષય કે શબ્દો મુજબ આપમેળે ગોઠવે છે, લેબલ લગાવે છે, ફૉરવર્ડ કરે છે અથવા ડિલીટ કરે છે.
-settings-tab-mcp-server-coming = આ કમ્પ્યુટર પરના AI આસિસ્ટન્ટને તમારી મંજૂરીથી તમારા મેઇલ શોધવા, વાંચવા અને ડ્રાફ્ટ કરવા દો.
 
 ## Settings > General
 

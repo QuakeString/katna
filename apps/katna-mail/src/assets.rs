@@ -27,12 +27,16 @@ icons!(
     "align-left",
     "align-right",
     "all-mail",
+    "apps",
     "archive",
+    "arrow-down",
     "arrow-up",
     "attachment",
     "back",
     "bell-off",
+    "bell-plus",
     "bell",
+    "bird",
     "bolt",
     "brand-facebook",
     "brand-fastmail-blue",
@@ -51,6 +55,7 @@ icons!(
     "brand-yandex",
     "brand-youtube",
     "brand-zoho",
+    "bug",
     "cake",
     "calendar",
     "chat",
@@ -63,10 +68,13 @@ icons!(
     "chevron-left",
     "chevron-right",
     "chevron-up",
+    "chip",
     "clear-format",
     "close-full",
     "close",
+    "cloud-off",
     "cloud",
+    "code",
     "coffee",
     "color-wheel",
     "compose",
@@ -74,6 +82,7 @@ icons!(
     "contrast",
     "copy",
     "delivery-receipt",
+    "divider",
     "document",
     "done-all",
     "download",
@@ -84,12 +93,15 @@ icons!(
     "eraser",
     "event",
     "expand",
+    "eye-off",
     "eye",
     "eyedropper",
     "file",
+    "filter",
     "fit-page",
     "fit-width",
     "flight",
+    "folder-add",
     "folder",
     "folders-pane-fill",
     "folders-pane",
@@ -112,6 +124,7 @@ icons!(
     "headphones",
     "heart",
     "highlight",
+    "history",
     "home",
     "image",
     "important-filled",
@@ -142,7 +155,9 @@ icons!(
     "onedrive",
     "open-external",
     "open-full",
+    "outbox",
     "palette",
+    "paw",
     "pen-sparkle",
     "pen",
     "people",
@@ -153,6 +168,7 @@ icons!(
     "plain-text",
     "play",
     "pointer",
+    "power",
     "print",
     "pulse",
     "qr-code",
@@ -185,6 +201,8 @@ icons!(
     "spinner",
     "star-filled",
     "star",
+    "subtask",
+    "sunrise",
     "table",
     "tag",
     "tasks",
@@ -200,7 +218,9 @@ icons!(
     "unread",
     "upload",
     "video",
+    "volume",
     "warning",
+    "water-drop",
     "window-restore",
     "work",
     "zoom-in",
@@ -307,6 +327,15 @@ fn logo(path: &str) -> Option<Vec<u8>> {
 
 fn is_rgb(part: &str) -> bool {
     part.len() == 6 && part.bytes().all(|b| b.is_ascii_hexdigit())
+}
+
+/// A built-in icon's SVG by name (`brand-linkedin`).
+pub fn icon_svg(name: &str) -> Option<&'static [u8]> {
+    let path = format!("icons/{name}.svg");
+    ICONS
+        .iter()
+        .find(|(n, _)| *n == path)
+        .map(|(_, data)| *data)
 }
 
 pub struct Assets;

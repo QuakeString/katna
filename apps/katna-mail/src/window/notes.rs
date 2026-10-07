@@ -7,37 +7,45 @@
 //! the way Apple's Notes folder keeps them. Archive and Trash sit in the
 //! list at the left; Trash empties itself after seven days.
 
+mod ai;
+mod export;
 mod format;
-mod labels;
+mod history;
+pub(super) mod labels;
 mod line_tasks;
+mod links;
 mod meetings;
+mod pictures;
+mod remind;
+mod select;
 
 pub(super) use line_tasks::note_of_task;
 
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
+use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use gpui::{
     AnimationExt, AnyElement, Bounds, Context, Div, DragMoveEvent, ElementId, Entity, Focusable,
     FontWeight, SharedString, Subscription, Task, Window, div, prelude::*, rgba,
 };
-use katna_dbus::NoteItem;
+use katna_core::config::AppKind;
+use katna_dbus::{NoteItem, NotePictureItem};
 use katna_i18n::tr;
 use katna_store::Note;
 use katna_ui::motion::{self, Spring};
 use katna_ui::rich::{RichEditor, RichEvent};
+use katna_ui::tokens::{duration, radius, space, text};
 use katna_ui::{InputEvent, TextInput, px, unpx};
 
 use super::MailWindow;
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    ScaledEdge, elevation, icon, icon_button, icon_button_colored, placeholder, tip,
-};
+use crate::widgets::{ScaledEdge, elevation, icon, icon_button, icon_button_colored, tip};
 
 /// A card's width on the board, as Keep's.
 const CARD_WIDTH: f32 = 240.0;
@@ -86,16 +94,19 @@ fn note_color(color: i64, th: &Theme) -> Option<u32> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum NotesView {
     Notes,
+    /// Notes with a reminder, soonest first.
+    Reminders,
     Archive,
     Trash,
 }
 
 impl NotesView {
-    const ALL: [Self; 3] = [Self::Notes, Self::Archive, Self::Trash];
+    const ALL: [Self; 4] = [Self::Notes, Self::Reminders, Self::Archive, Self::Trash];
 
     fn label(self) -> String {
         tr!(match self {
             Self::Notes => "notes-view-notes",
+            Self::Reminders => "notes-view-reminders",
             Self::Archive => "notes-view-archive",
             Self::Trash => "notes-view-trash",
         })
@@ -104,6 +115,7 @@ impl NotesView {
     fn icon(self) -> &'static str {
         match self {
             Self::Notes => "notes",
+            Self::Reminders => "bell",
             Self::Archive => "archive",
             Self::Trash => "trash",
         }
@@ -112,6 +124,7 @@ impl NotesView {
     fn shows(self, note: &Note) -> bool {
         match self {
             Self::Notes => note.trashed_at.is_none() && !note.archived,
+            Self::Reminders => note.trashed_at.is_none() && note.remind_at.is_some(),
             Self::Archive => note.trashed_at.is_none() && note.archived,
             Self::Trash => note.trashed_at.is_some(),
         }
@@ -134,11 +147,32 @@ pub(super) struct NotesPage {
     heights: Rc<RefCell<HashMap<i64, f32>>>,
     /// Where each card is on its way to, so cards glide to new places.
     slots: RefCell<HashMap<i64, Slot>>,
+    /// How far each card has risen under the pointer, 0 to 1.
+    lift: RefCell<HashMap<i64, Spring>>,
+    /// The pointer is over this card.
+    hovered: Option<i64>,
+    /// Each section's notes as last drawn, so one that goes fades out.
+    drawn: RefCell<HashMap<&'static str, (NotesView, Vec<Note>)>>,
+    /// Cards fading out of a section.
+    leaving: RefCell<Vec<Leaving>>,
     /// Each section's cards as last laid out, and whether every height
     /// was drawn.
     layout: RefCell<HashMap<&'static str, (Vec<Placed>, bool)>>,
     /// The card being dragged to a new place.
     drag: Option<NoteDrag>,
+    /// Each note's first picture, decoded, with its size.
+    covers: HashMap<i64, (Arc<gpui::Image>, u32, u32)>,
+    /// The ticked cards, in the order they were ticked.
+    checked: Vec<i64>,
+    /// The card Shift+click ticks from.
+    check_anchor: Option<i64>,
+    /// The ⋮ menu of the open note or of the ticked cards, open at a
+    /// point in the window.
+    more: Option<select::MoreMenu>,
+    /// The colour or label popover of the ticked cards.
+    bulk: Option<select::Bulk>,
+    /// The version history of the open note, when shown.
+    history: Option<history::History>,
     _load: Option<Task<()>>,
 }
 
@@ -152,6 +186,32 @@ struct Slot {
     at: (NotesView, &'static str),
     x: Spring,
     y: Spring,
+    /// When it came onto the board, while it fades in.
+    born: Option<Instant>,
+}
+
+/// A card fading out where it was: archived, deleted, or gone elsewhere.
+struct Leaving {
+    view: NotesView,
+    section: &'static str,
+    note: Note,
+    /// Left, top, width and height in its section.
+    rect: [f32; 4],
+    since: Instant,
+}
+
+/// How far `since` is through a card's fade, 0 to 1, eased; asks for
+/// another frame while it runs.
+fn card_fade(since: Instant, reduce: bool, window: &Window) -> f32 {
+    if reduce {
+        return 1.0;
+    }
+    let total = motion::time(duration::BASE).as_secs_f32().max(0.001);
+    let t = (since.elapsed().as_secs_f32() / total).min(1.0);
+    if t < 1.0 {
+        window.request_animation_frame();
+    }
+    1.0 - (1.0 - t).powi(3)
 }
 
 /// A card being dragged among the notes of its section.
@@ -196,6 +256,8 @@ struct Editor {
     /// Fades in over the page; not in place of an event's card, which
     /// would leave a frame with neither.
     fade: bool,
+    /// Closing since then: it fades out, then is put away.
+    closing: Option<Instant>,
     title: Entity<TextInput>,
     body: Entity<RichEditor>,
     color: i64,
@@ -216,7 +278,21 @@ struct Editor {
     /// A new note from the "Take a note" bar, shown in the bar's place.
     in_bar: bool,
     /// The label picker, when open.
-    picker: Option<labels::Picker>,
+    picker: Option<labels::LabelPicker>,
+    /// When it reminds.
+    remind_at: Option<i64>,
+    /// Its pictures, on top of the note.
+    pictures: Vec<NotePictureItem>,
+    /// The pictures changed since it opened, so they go with the save.
+    pictures_set: bool,
+    /// The pictures decoded for drawing, by `cid`.
+    decoded: HashMap<String, Arc<gpui::Image>>,
+    /// Its UUID, which links to it name; empty until saved.
+    uuid: String,
+    /// The `[[` link being typed, and the suggestion picked.
+    link_pick: Option<links::LinkPick>,
+    /// The AI sparkle's menu is open, or an AI change is on its way.
+    ai: ai::AiState,
     /// A save is on its way; another waits for it.
     saving: bool,
     _save: Option<Task<()>>,
@@ -236,11 +312,20 @@ impl Editor {
             archived: self.archived,
             labels: self.labels.clone(),
             link: self.link.clone().unwrap_or_default(),
+            remind_at: self.remind_at.unwrap_or(0),
+            pictures_set: self.pictures_set,
+            pictures: if self.pictures_set {
+                self.pictures.clone()
+            } else {
+                Vec::new()
+            },
         }
     }
 
     fn is_empty(&self, cx: &gpui::App) -> bool {
-        self.title.read(cx).text().trim().is_empty() && self.body.read(cx).is_blank()
+        self.title.read(cx).text().trim().is_empty()
+            && self.body.read(cx).is_blank()
+            && self.pictures.is_empty()
     }
 }
 
@@ -257,6 +342,9 @@ fn item_of(note: &Note) -> NoteItem {
         labels: note.labels.clone(),
         link: note.link.clone().unwrap_or_default(),
         html: note.html.clone(),
+        remind_at: note.remind_at.unwrap_or(0),
+        pictures_set: false,
+        pictures: Vec::new(),
     }
 }
 
@@ -400,8 +488,18 @@ impl MailWindow {
             editor: None,
             heights: Rc::default(),
             slots: RefCell::default(),
+            lift: RefCell::default(),
+            hovered: None,
+            drawn: RefCell::default(),
+            leaving: RefCell::default(),
             layout: RefCell::default(),
             drag: None,
+            covers: HashMap::new(),
+            checked: Vec::new(),
+            check_anchor: None,
+            more: None,
+            bulk: None,
+            history: None,
             _load: None,
         });
         self.load_notes(cx);
@@ -409,14 +507,38 @@ impl MailWindow {
 
     /// Reads the notes from the store again.
     pub(super) fn load_notes(&mut self, cx: &mut Context<Self>) {
+        let hidden: HashSet<i64> = self
+            .hidden_ids(AppKind::Notes)
+            .into_iter()
+            .map(|a| a.0)
+            .collect();
         let Some(page) = self.notes.as_mut() else {
             return;
         };
         let paths = self.paths.clone();
         page._load = Some(cx.spawn(async move |this, cx| {
-            let notes = cx
+            let (notes, covers) = cx
                 .background_executor()
-                .spawn(async move { crate::data::notes(&paths) })
+                .spawn(async move {
+                    let covers = crate::data::note_covers(&paths)
+                        .unwrap_or_default()
+                        .into_iter()
+                        .filter_map(|(id, p)| {
+                            let image = pictures::decoded(&p.mime, &p.data)?;
+                            let (w, h) = if p.width == 0 {
+                                katna_ui::rich::image_size(&p.data).unwrap_or((0, 0))
+                            } else {
+                                (p.width, p.height)
+                            };
+                            Some((id, (image, w, h)))
+                        })
+                        .collect::<Vec<_>>();
+                    let notes = crate::data::notes(&paths).map(|mut notes| {
+                        notes.retain(|n| n.account_id.is_none_or(|a| !hidden.contains(&a)));
+                        notes
+                    });
+                    (notes, covers)
+                })
                 .await;
             this.update(cx, |this, cx| {
                 if let Some(page) = &mut this.notes {
@@ -426,6 +548,22 @@ impl MailWindow {
                         && !notes.iter().any(|n| n.labels.contains(label))
                     {
                         page.label = None;
+                    }
+                    // A cover drawn already keeps its decoded picture, so
+                    // the card doesn't flash.
+                    let mut kept: HashMap<i64, (Arc<gpui::Image>, u32, u32)> = HashMap::new();
+                    for (id, cover) in covers {
+                        let same = page
+                            .covers
+                            .get(&id)
+                            .filter(|old| old.0.id() == cover.0.id());
+                        kept.insert(id, same.cloned().unwrap_or(cover));
+                    }
+                    page.covers = kept;
+                    if let Ok(notes) = &notes {
+                        let view = page.view;
+                        page.checked
+                            .retain(|id| notes.iter().any(|n| n.id == *id && view.shows(n)));
                     }
                     page.notes = Some(notes.map(Rc::new));
                 }
@@ -446,7 +584,7 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        self.close_note(cx);
+        self.close_note_now(cx);
         // An event's card would sit over the note.
         self.calendar.open = None;
         let accent = rgba(self.theme(window).accent).into();
@@ -476,9 +614,15 @@ impl MailWindow {
             input
         });
         let palette = super::compose::palette(&self.theme(window));
+        let html_view = super::rich::html_view(self.theme(window));
         let body = cx.new(|cx| {
             let mut area = RichEditor::new(tr!("notes-take-a-note"), cx);
             area.set_palette(palette);
+            area.set_html_view(html_view);
+            // Tab puts a checklist item under the one before, as Keep
+            // does; a click on a link to a note opens it.
+            area.set_tab_indents(true);
+            area.set_open_links(true);
             let doc = format::doc_of(&body_text, &body_html);
             let end = doc.end();
             area.set_doc(doc, end, cx);
@@ -498,13 +642,32 @@ impl MailWindow {
                     InputEvent::Cancel => this.close_note(cx),
                 }
             });
-        let on_body = cx.subscribe(&body, |this, _, event: &RichEvent, cx| match event {
-            RichEvent::Changed => this.note_typed(cx),
-            RichEvent::Cancel => this.close_note(cx),
-            // Make it a task and the formatting row follow the cursor.
-            RichEvent::Selection => cx.notify(),
-            _ => {}
-        });
+        let on_body =
+            cx.subscribe_in(
+                &body,
+                window,
+                |this, _, event: &RichEvent, window, cx| match event {
+                    RichEvent::Changed => {
+                        this.lift_note_pictures(cx);
+                        this.note_typed(cx);
+                        this.update_link_pick(cx);
+                    }
+                    RichEvent::Cancel => {
+                        if !this.cancel_link_pick(cx) {
+                            this.close_note(cx)
+                        }
+                    }
+                    // Make it a task, the formatting row and the link
+                    // suggestions follow the cursor.
+                    RichEvent::Selection => {
+                        this.update_link_pick(cx);
+                        cx.notify()
+                    }
+                    RichEvent::Pick(key) => this.link_pick_key(*key, window, cx),
+                    RichEvent::OpenLink(url) => this.open_note_link(url, window, cx),
+                    _ => {}
+                },
+            );
         let focus = if note.is_some() || checklist || about_title.is_some() {
             body.focus_handle(cx)
         } else {
@@ -512,10 +675,27 @@ impl MailWindow {
         };
         window.focus(&focus, cx);
         let view = self.notes.as_ref().map_or(NotesView::Notes, |p| p.view);
+        let pictures: Vec<NotePictureItem> = match note {
+            Some(n) => crate::data::note_pictures(&self.paths, n.id)
+                .unwrap_or_default()
+                .iter()
+                .map(pictures::item_of_picture)
+                .collect(),
+            None => Vec::new(),
+        };
+        let decoded = pictures
+            .iter()
+            .filter_map(|p| Some((p.cid.clone(), pictures::decoded(&p.mime, &p.data)?)))
+            .collect();
+        if let Some(page) = &mut self.notes {
+            page.more = None;
+            page.bulk = None;
+        }
         let editor = Editor {
             id: note.map_or(0, |n| n.id),
             opening: OPENINGS.fetch_add(1, Ordering::Relaxed),
             fade: true,
+            closing: None,
             title,
             body,
             color: note.map_or(0, |n| n.color),
@@ -539,6 +719,13 @@ impl MailWindow {
                 None => self.notes_account(),
             },
             updated_at: note.map_or(0, |n| n.updated_at),
+            remind_at: note.and_then(|n| n.remind_at),
+            pictures,
+            pictures_set: false,
+            decoded,
+            uuid: note.map(|n| n.uuid.clone()).unwrap_or_default(),
+            link_pick: None,
+            ai: ai::AiState::default(),
             changed: false,
             palette: false,
             places: false,
@@ -598,6 +785,16 @@ impl MailWindow {
                         if let Ok(id) = result {
                             editor.id = id;
                             editor.updated_at = jiff::Timestamp::now().as_second();
+                            // The pictures are in, unless they changed
+                            // again on the way.
+                            let same = editor
+                                .pictures
+                                .iter()
+                                .map(|p| &p.cid)
+                                .eq(item.pictures.iter().map(|p| &p.cid));
+                            if item.pictures_set && same {
+                                editor.pictures_set = false;
+                            }
                         }
                         editor.changed
                     }
@@ -619,6 +816,46 @@ impl MailWindow {
     /// Puts the open note back on the board, saved; an empty new one is
     /// dropped.
     pub(super) fn close_note(&mut self, cx: &mut Context<Self>) {
+        let reduce = cx.reduce_motion();
+        let Some(editor) = self.notes.as_mut().and_then(|p| p.editor.as_mut()) else {
+            return;
+        };
+        if editor.closing.is_some() {
+            return;
+        }
+        // The note in the "Take a note" bar's place folds away at once;
+        // one over the board fades out first.
+        if reduce || self.new_note_inline() {
+            self.close_note_now(cx);
+            return;
+        }
+        let Some(editor) = self.notes.as_mut().and_then(|p| p.editor.as_mut()) else {
+            return;
+        };
+        editor.closing = Some(Instant::now());
+        let opening = editor.opening;
+        cx.spawn(async move |this, cx| {
+            cx.background_executor()
+                .timer(motion::time(duration::FAST))
+                .await;
+            this.update(cx, |this, cx| {
+                let still = this
+                    .notes
+                    .as_ref()
+                    .and_then(|p| p.editor.as_ref())
+                    .is_some_and(|e| e.opening == opening);
+                if still {
+                    this.close_note_now(cx);
+                }
+            })
+            .ok();
+        })
+        .detach();
+        cx.notify();
+    }
+
+    /// Puts the open note away now, saved, with no fade.
+    pub(super) fn close_note_now(&mut self, cx: &mut Context<Self>) {
         let Some(editor) = self.notes.as_mut().and_then(|p| p.editor.take()) else {
             return;
         };
@@ -680,6 +917,7 @@ impl MailWindow {
             editor.pinned = item.pinned;
             editor.archived = item.archived;
             editor.labels = item.labels.clone();
+            editor.remind_at = (item.remind_at > 0).then_some(item.remind_at);
         }
         // Shown at once; the store catches up.
         if let Some(Ok(notes)) = self.notes.as_mut().and_then(|p| p.notes.as_mut())
@@ -690,6 +928,7 @@ impl MailWindow {
             note.archived = item.archived;
             note.body = item.body.clone();
             note.labels = item.labels.clone();
+            note.remind_at = (item.remind_at > 0).then_some(item.remind_at);
         }
         self.send(Command::SaveNote(Box::new(item)), None, None, false, cx);
         cx.notify();
@@ -755,7 +994,7 @@ impl MailWindow {
             .and_then(|p| p.editor.as_ref())
             .is_some_and(|e| e.id == id);
         if open {
-            self.close_note(cx);
+            self.close_note_now(cx);
         }
     }
 
@@ -768,6 +1007,9 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if !self.needs_app(AppKind::Notes, cx) {
+            return;
+        }
         let Some((subject, header)) = keys
             .first()
             .and_then(|key| self.mail.as_ref().ok()?.task_source(*key))
@@ -787,7 +1029,7 @@ impl MailWindow {
             .and_then(|m| m.message_with_header(header));
         match found {
             Some(message) => {
-                self.close_note(cx);
+                self.close_note_now(cx);
                 self.open_app(super::apps::App::Mail, cx);
                 self.show_message(message, window, cx);
             }
@@ -801,51 +1043,40 @@ impl MailWindow {
         &self,
         id: impl Into<ElementId>,
         link: String,
+        tint: u32,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> gpui::Stateful<Div> {
         let event = meetings::event_start(&link);
-        div()
-            .id(id)
-            .mt(px(8.0))
-            .h(px(24.0))
-            .pl(px(6.0))
-            .pr(px(10.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(4.0))
-            .rounded_full()
-            .bg(rgba(fade(th.text, 0.08)))
-            .text_size(px(12.0))
-            .text_color(rgba(th.text))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(fade(th.text, 0.14))))
-            .tooltip(tip(
-                if event.is_some() {
-                    tr!("notes-open-event")
-                } else {
-                    tr!("notes-open-mail")
-                },
-                th,
-            ))
-            .on_click(cx.listener(move |this, _, window, cx| {
-                cx.stop_propagation();
-                match event {
-                    Some(start) => this.open_note_event(start, cx),
-                    None => this.open_note_mail(&link, window, cx),
-                }
-            }))
-            .child(icon(
-                if event.is_some() { "event" } else { "mail" },
-                th.text_dim,
-                16.0,
-            ))
-            .child(if event.is_some() {
+        crate::widgets::icon_tag(
+            if event.is_some() { "event" } else { "mail" },
+            if event.is_some() {
                 tr!("notes-event")
             } else {
                 tr!("notes-mail")
-            })
+            },
+            th,
+        )
+        .id(id)
+        .mt(px(space::S3))
+        .bg(rgba(tint))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(chip_hover(tint, th))))
+        .tooltip(tip(
+            if event.is_some() {
+                tr!("notes-open-event")
+            } else {
+                tr!("notes-open-mail")
+            },
+            th,
+        ))
+        .on_click(cx.listener(move |this, _, window, cx| {
+            cx.stop_propagation();
+            match event {
+                Some(start) => this.open_note_event(start, cx),
+                None => this.open_note_mail(&link, window, cx),
+            }
+        }))
     }
 
     /// The notes about an open conversation (its messages' `Message-ID`s
@@ -872,27 +1103,28 @@ impl MailWindow {
         Some(
             div()
                 .pl(px(indent))
-                .pr(px(16.0))
-                .pb(px(12.0))
+                .pr(px(space::S5))
+                .pb(px(space::S4))
                 .flex()
                 .flex_row()
                 .flex_wrap()
-                .gap(px(8.0))
+                .gap(px(space::S3))
                 .children(about.into_iter().map(|note| self.linked_note(note, th, cx)))
                 .child(
                     div()
                         .id("mail-note-add")
                         .h(px(36.0))
-                        .px(px(12.0))
+                        .px(px(space::S4))
                         .flex()
                         .flex_row()
                         .items_center()
-                        .gap(px(6.0))
-                        .rounded(px(8.0))
-                        .text_size(px(13.0))
+                        .gap(px(space::S3))
+                        .rounded(px(radius::SM))
+                        .text_size(px(text::SMALL))
                         .text_color(rgba(th.text_dim))
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                         .on_click(cx.listener(move |this, _, window, cx| {
                             let subject = this
                                 .reader
@@ -928,12 +1160,12 @@ impl MailWindow {
         div()
             .id(("mail-note", note.id as usize))
             .w(px(220.0))
-            .px(px(12.0))
-            .py(px(8.0))
+            .px(px(space::S4))
+            .py(px(space::S3))
             .flex()
             .flex_row()
-            .gap(px(8.0))
-            .rounded(px(8.0))
+            .gap(px(space::S3))
+            .rounded(px(radius::SM))
             .border_1()
             .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.outline }))
             .bg(rgba(bg.unwrap_or(th.surface)))
@@ -943,7 +1175,11 @@ impl MailWindow {
             .on_click(cx.listener(move |this, _, window, cx| {
                 this.open_note(Some(&open), false, None, window, cx)
             }))
-            .child(div().pt(px(2.0)).child(icon("notes", th.text_dim, 16.0)))
+            .child(
+                div()
+                    .pt(px(space::S1))
+                    .child(icon("notes", th.text_dim, 16.0)),
+            )
             .child(
                 div()
                     .flex_1()
@@ -953,7 +1189,7 @@ impl MailWindow {
                     .child(
                         div()
                             .truncate()
-                            .text_size(px(13.0))
+                            .text_size(px(text::SMALL))
                             .font_weight(FontWeight::MEDIUM)
                             .text_color(rgba(th.text))
                             .child(heading),
@@ -961,7 +1197,7 @@ impl MailWindow {
                     .children(text.filter(|t| !t.is_empty()).map(|t| {
                         div()
                             .truncate()
-                            .text_size(px(12.0))
+                            .text_size(px(text::CAPTION))
                             .text_color(rgba(th.text_dim))
                             .child(t)
                     })),
@@ -1014,7 +1250,7 @@ impl MailWindow {
                 search.set_text("", cx);
             });
         } else {
-            self.close_note(cx);
+            self.close_note_now(cx);
             // The mail search comes back, as the other pages expect.
             let query = self.notes.as_mut().and_then(|p| p.mail_query.take());
             self.search.update(cx, |search, cx| {
@@ -1053,10 +1289,20 @@ impl MailWindow {
     ) -> AnyElement {
         self.notes_page(cx);
         let Some(page) = &self.notes else {
-            return placeholder(&tr!("notes-loading"), th);
+            return self.placeholder(tr!("notes-loading"), th);
         };
         let view = page.view;
         let label = page.label.clone();
+        let reminders = page
+            .notes
+            .as_ref()
+            .and_then(|n| n.as_ref().ok())
+            .map_or(0, |notes| {
+                notes
+                    .iter()
+                    .filter(|n| NotesView::Reminders.shows(n))
+                    .count()
+            });
         let mut side_labels = self.render_side_labels(th, cx);
         // Keys (Ctrl+Z) keep working when the open note closes, and find
         // nothing on a focused mail pane the page hides.
@@ -1075,10 +1321,15 @@ impl MailWindow {
             .flex_col()
             .children(NotesView::ALL.into_iter().flat_map(|v| {
                 let on = v == view && label.is_none();
+                let count = (v == NotesView::Reminders)
+                    .then_some(reminders)
+                    .filter(|n| *n > 0);
                 let entry =
                     super::nav::side_row(("notes-view", v as usize), v.icon(), v.label(), on, th)
+                        .children(count.map(|n| crate::widgets::count_pill(n as u64, on, th)))
                         .on_click(cx.listener(move |this, _, _, cx| {
-                            this.close_note(cx);
+                            this.close_note_now(cx);
+                            this.clear_checks(cx);
                             if let Some(page) = &mut this.notes {
                                 page.view = v;
                                 page.label = None;
@@ -1086,7 +1337,8 @@ impl MailWindow {
                             cx.notify();
                         }))
                         .into_any_element();
-                let labels = if v == NotesView::Notes {
+                // Labels sit under Reminders, as in Keep.
+                let labels = if v == NotesView::Reminders {
                     std::mem::take(&mut side_labels)
                 } else {
                     Vec::new()
@@ -1104,6 +1356,10 @@ impl MailWindow {
             self.render_editor(th, false, window, cx)
         };
         let dialog = self.render_labels_dialog(th, window, cx);
+        let menus = self.render_note_menus(th, window, cx);
+        let history = self.render_note_history(th, window, cx);
+        let link_pick = self.render_link_pick(th, cx);
+        let ai_menu = self.render_note_ai_menu(th, cx);
         let side = self.page_side(side.into_any_element(), SIDE_WIDTH, true, th, cx);
         div()
             .relative()
@@ -1115,6 +1371,10 @@ impl MailWindow {
             .children(side.drawer)
             .children(editor)
             .children(dialog)
+            .children(menus)
+            .children(history)
+            .children(link_pick)
+            .children(ai_menu)
             .into_any_element()
     }
 
@@ -1131,14 +1391,14 @@ impl MailWindow {
         let view = page.view;
         let label = page.label.clone();
         let notes = match &page.notes {
-            None => return placeholder(&tr!("notes-loading"), th),
-            Some(Err(err)) => return placeholder(err, th),
+            None => return self.placeholder(tr!("notes-loading"), th),
+            Some(Err(err)) => return self.placeholder(err.clone(), th),
             Some(Ok(notes)) => notes.clone(),
         };
         // A new note being written in the bar's place joins the board when
         // it closes, as in Keep.
         let writing = page.editor.as_ref().filter(|e| e.in_bar).map(|e| e.id);
-        let shown: Vec<&Note> = notes
+        let mut shown: Vec<&Note> = notes
             .iter()
             .filter(|n| {
                 Some(n.id) != writing
@@ -1147,6 +1407,14 @@ impl MailWindow {
                     && label.as_ref().is_none_or(|l| n.labels.contains(l))
             })
             .collect();
+        // Reminders: the soonest first, as Keep lists them.
+        if view == NotesView::Reminders {
+            shown.sort_by_key(|n| (!n.pinned, n.remind_at));
+        }
+        let order: Rc<Vec<i64>> = Rc::new({
+            let (pinned, others): (Vec<&&Note>, Vec<&&Note>) = shown.iter().partition(|n| n.pinned);
+            pinned.into_iter().chain(others).map(|n| n.id).collect()
+        });
         // The board's width: the window less the rail, the side list (a
         // drawer on a phone or tablet), the page's margin and its own.
         let shape = self.layout.shape;
@@ -1166,10 +1434,10 @@ impl MailWindow {
                 .w_full()
                 .max_w(px(columns as f32 * (card + GAP) - GAP))
                 .mx_auto()
-                .mt(px(8.0))
-                .mb(px(8.0))
-                .pl(px(8.0))
-                .text_size(px(11.0))
+                .mt(px(space::S3))
+                .mb(px(space::S3))
+                .pl(px(space::S3))
+                .text_size(px(text::MICRO))
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.text_dim))
                 .child(text.to_uppercase())
@@ -1181,25 +1449,40 @@ impl MailWindow {
             .h_full()
             .overflow_y_scroll()
             .px(px(pad))
-            .pb(px(48.0))
+            .pb(px(space::S8))
             .flex()
             .flex_col()
             .on_drop(cx.listener(|this, _: &NoteDragged, _, cx| this.drop_note(cx)));
-        if view == NotesView::Notes {
-            body = body.child(self.render_take_note(th, window, cx));
+        match self.render_note_select_bar(th, cx) {
+            // Ticked cards: their bar in the "Take a note" bar's place.
+            Some(bar) => {
+                body = body.child(
+                    div()
+                        .flex()
+                        .flex_row()
+                        .justify_center()
+                        .pt(px(space::S7))
+                        .pb(px(space::S6))
+                        .child(bar),
+                )
+            }
+            None if view == NotesView::Notes => {
+                body = body.child(self.render_take_note(th, window, cx));
+            }
+            None => {}
         }
         if view == NotesView::Trash {
             let ids: Vec<i64> = shown.iter().map(|n| n.id).collect();
             body = body.child(
                 div()
-                    .mt(px(20.0))
-                    .mb(px(12.0))
+                    .mt(px(space::S6))
+                    .mb(px(space::S4))
                     .flex()
                     .flex_row()
                     .justify_center()
                     .items_center()
-                    .gap(px(16.0))
-                    .text_size(px(14.0))
+                    .gap(px(space::S5))
+                    .text_size(px(text::BODY))
                     .italic()
                     .text_color(rgba(th.text_dim))
                     .child(tr!("notes-trash-note"))
@@ -1207,16 +1490,17 @@ impl MailWindow {
                         d.child(
                             div()
                                 .id("notes-empty-trash")
-                                .px(px(16.0))
+                                .px(px(space::S5))
                                 .h(px(36.0))
                                 .flex()
                                 .items_center()
-                                .rounded(px(4.0))
+                                .rounded(px(radius::XS))
                                 .not_italic()
                                 .font_weight(FontWeight::MEDIUM)
                                 .text_color(rgba(th.accent))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     this.delete_notes_forever(ids.clone(), cx)
                                 }))
@@ -1230,6 +1514,7 @@ impl MailWindow {
                 _ if !query.is_empty() => ("search", tr!("notes-none-found")),
                 _ if label.is_some() => ("label", tr!("notes-label-empty")),
                 NotesView::Notes => ("notes", tr!("notes-empty")),
+                NotesView::Reminders => ("bell", tr!("notes-reminders-empty")),
                 NotesView::Archive => ("archive", tr!("notes-archive-empty")),
                 NotesView::Trash => ("trash", tr!("notes-trash-empty")),
             };
@@ -1242,12 +1527,12 @@ impl MailWindow {
                         .flex_col()
                         .items_center()
                         .justify_center()
-                        .gap(px(20.0))
+                        .gap(px(space::S5))
                         .child(icon(name, fade(th.text_faint, 0.5), 120.0))
                         .child(
                             div()
                                 .text_center()
-                                .text_size(px(22.0))
+                                .text_size(px(text::TITLE))
                                 .text_color(rgba(th.text_dim))
                                 .child(text),
                         ),
@@ -1258,7 +1543,16 @@ impl MailWindow {
         if !pinned.is_empty() {
             body = body
                 .child(heading(tr!("notes-pinned")))
-                .child(self.render_grid(&pinned, "notes-pinned", columns, card, th, window, cx));
+                .child(self.render_grid(
+                    &pinned,
+                    "notes-pinned",
+                    columns,
+                    card,
+                    &order,
+                    th,
+                    window,
+                    cx,
+                ));
             if !others.is_empty() {
                 body = body
                     .child(div().h(px(24.0)))
@@ -1273,6 +1567,7 @@ impl MailWindow {
                 "notes-others",
                 columns,
                 card,
+                &order,
                 th,
                 window,
                 cx,
@@ -1290,6 +1585,7 @@ impl MailWindow {
         key: &'static str,
         columns: usize,
         card: f32,
+        shown: &Rc<Vec<i64>>,
         th: &Theme,
         window: &mut Window,
         cx: &mut Context<Self>,
@@ -1321,7 +1617,7 @@ impl MailWindow {
         let (places, height) = masonry(&heights, columns, card);
         // Cards glide only once the board stands on drawn heights, so
         // the page doesn't move as it opens.
-        let glide = {
+        let (glide, was) = {
             let mut layout = page.layout.borrow_mut();
             let was_exact = layout.get(key).is_some_and(|(_, exact)| *exact);
             let cards = order
@@ -1330,10 +1626,41 @@ impl MailWindow {
                 .zip(&heights)
                 .map(|((n, &(x, y)), &h)| (n.id, [x, y, card, h]))
                 .collect();
-            layout.insert(key, (cards, exact));
-            was_exact && exact
+            let was = layout.insert(key, (cards, exact)).map(|(cards, _)| cards);
+            (was_exact && exact, was.unwrap_or_default())
         };
         let reduce = cx.reduce_motion();
+        let now = Instant::now();
+        // A card that left this section since it was last drawn fades out
+        // where it was.
+        {
+            let mut drawn = page.drawn.borrow_mut();
+            if let Some((view, before)) = drawn.get(key)
+                && *view == page.view
+                && glide
+                && drag.is_none()
+            {
+                let mut leaving = page.leaving.borrow_mut();
+                for note in before {
+                    if order.iter().any(|n| n.id == note.id) {
+                        continue;
+                    }
+                    if let Some((_, rect)) = was.iter().find(|(id, _)| *id == note.id) {
+                        leaving.push(Leaving {
+                            view: page.view,
+                            section: key,
+                            note: note.clone(),
+                            rect: *rect,
+                            since: now,
+                        });
+                    }
+                }
+            }
+            drawn.insert(
+                key,
+                (page.view, order.iter().map(|n| (*n).clone()).collect()),
+            );
+        }
         let here = (page.view, key);
         let mut slots = page.slots.borrow_mut();
         let mut cards: Vec<(i64, AnyElement)> = order
@@ -1344,8 +1671,19 @@ impl MailWindow {
                     at: here,
                     x: Spring::new(motion::SLIDE, x),
                     y: Spring::new(motion::SLIDE, y),
+                    // A card new to a board already shown fades in.
+                    born: glide.then_some(now),
                 });
                 let held = drag.filter(|d| d.id == note.id);
+                // Ticked cards dragged with the held one wait faded.
+                let carried = drag.is_some_and(|d| {
+                    d.id != note.id
+                        && page.checked.contains(&d.id)
+                        && page.checked.contains(&note.id)
+                });
+                let carrying = held
+                    .filter(|d| page.checked.contains(&d.id))
+                    .map_or(0, |_| page.checked.len());
                 let (x, y) = if let Some(held) = held {
                     // The dragged card is under the pointer, and glides
                     // from there to its place when let go.
@@ -1353,6 +1691,11 @@ impl MailWindow {
                     slot.y.snap(held.at.1);
                     held.at
                 } else if slot.at != here || !glide {
+                    // Back on a board shown afresh: it fades in only if it
+                    // left this section while the board was showing.
+                    if slot.at != here {
+                        slot.born = glide.then_some(now);
+                    }
                     slot.at = here;
                     slot.x.snap(x);
                     slot.y.snap(y);
@@ -1362,14 +1705,66 @@ impl MailWindow {
                     slot.y.set(y);
                     (slot.x.tick(window, reduce), slot.y.tick(window, reduce))
                 };
+                let appear = slot
+                    .born
+                    .map_or(1.0, |born| card_fade(born, reduce, window));
+                if appear >= 1.0 {
+                    slot.born = None;
+                }
+                let lift = {
+                    let mut lifts = page.lift.borrow_mut();
+                    let spring = lifts
+                        .entry(note.id)
+                        .or_insert_with(|| Spring::new(motion::QUICK, 0.0));
+                    spring.set(if page.hovered == Some(note.id) && held.is_none() {
+                        1.0
+                    } else {
+                        0.0
+                    });
+                    spring.tick(window, reduce)
+                };
+                let id = note.id;
                 let element = div()
+                    .id(("note-slot", id as usize))
                     .absolute()
                     .left(px(x))
-                    .top(px(y))
+                    // A new card rises the last few pixels into place.
+                    .top(px(y + space::S3 * (1.0 - appear)))
                     .w(px(card))
-                    .rounded(px(8.0))
+                    .rounded(px(radius::MD))
                     .when(held.is_some(), |d| d.shadow(elevation(th, 3.0)))
-                    .child(self.render_card(note, Some(key), th, cx))
+                    .opacity(if carried { 0.4 } else { appear })
+                    .on_hover(cx.listener(move |this, hovered: &bool, _, cx| {
+                        if let Some(page) = this.notes.as_mut() {
+                            if *hovered {
+                                page.hovered = Some(id);
+                            } else if page.hovered == Some(id) {
+                                page.hovered = None;
+                            }
+                        }
+                        cx.notify();
+                    }))
+                    .child(self.render_card(note, Some(key), card, lift, shown.clone(), th, cx))
+                    .when(carrying > 1, |d| {
+                        d.child(
+                            div()
+                                .absolute()
+                                .top(px(-10.0))
+                                .right(px(-10.0))
+                                .min_w(px(24.0))
+                                .h(px(24.0))
+                                .px(px(space::S3))
+                                .flex()
+                                .items_center()
+                                .justify_center()
+                                .rounded_full()
+                                .bg(rgba(th.accent))
+                                .text_color(rgba(th.on_accent))
+                                .text_size(px(text::CAPTION))
+                                .font_weight(FontWeight::SEMIBOLD)
+                                .child(katna_i18n::format::number(carrying as u64)),
+                        )
+                    })
                     .into_any_element();
                 (note.id, element)
             })
@@ -1382,6 +1777,31 @@ impl MailWindow {
             let held = cards.remove(ix);
             cards.push(held);
         }
+        let ghosts: Vec<AnyElement> = {
+            let mut leaving = page.leaving.borrow_mut();
+            leaving.retain(|l| {
+                l.view == page.view
+                    && l.section == key
+                    && motion::time(duration::BASE) > l.since.elapsed()
+                    || l.section != key
+            });
+            leaving
+                .iter()
+                .filter(|l| l.section == key && l.view == page.view)
+                .map(|l| {
+                    let t = card_fade(l.since, reduce, window);
+                    let [x, y, w, _] = l.rect;
+                    div()
+                        .absolute()
+                        .left(px(x))
+                        .top(px(y))
+                        .w(px(w))
+                        .opacity(1.0 - t)
+                        .child(self.render_card(&l.note, None, w, 0.0, shown.clone(), th, cx))
+                        .into_any_element()
+                })
+                .collect()
+        };
         let ids: Vec<i64> = cards.iter().map(|(id, _)| *id).collect();
         let known = page.heights.clone();
         div()
@@ -1391,6 +1811,7 @@ impl MailWindow {
             .w(px(columns as f32 * (card + GAP) - GAP))
             .h(px(height))
             .children(cards.into_iter().map(|(_, element)| element))
+            .children(ghosts)
             // Cards are placed by estimate until drawn once, then by the
             // heights they came out.
             .on_children_prepainted(move |bounds: Vec<Bounds<gpui::Pixels>>, window, _| {
@@ -1486,6 +1907,23 @@ impl MailWindow {
             return;
         };
         cx.notify();
+        // Ticked cards dragged together land after the held one, in the
+        // order the board had them.
+        let mut drag = drag;
+        if page.checked.contains(&drag.id) && page.checked.len() > 1 {
+            let carried: Vec<i64> = drag
+                .was
+                .iter()
+                .copied()
+                .filter(|id| *id != drag.id && page.checked.contains(id))
+                .collect();
+            drag.order.retain(|id| !carried.contains(id));
+            if let Some(at) = drag.order.iter().position(|id| *id == drag.id) {
+                for (ix, id) in carried.into_iter().enumerate() {
+                    drag.order.insert(at + 1 + ix, id);
+                }
+            }
+        }
         if drag.order == drag.was {
             return;
         }
@@ -1495,6 +1933,80 @@ impl MailWindow {
         }
         self.remember(super::UndoStep::Command(Command::OrderNotes(drag.was)));
         self.send(Command::OrderNotes(drag.order), None, None, false, cx);
+    }
+
+    /// Opens note `id` on the Notes page: a reminder was clicked.
+    pub(super) fn open_note_by_id(&mut self, id: i64, window: &mut Window, cx: &mut Context<Self>) {
+        self.notes_page(cx);
+        let loaded = self
+            .notes
+            .as_ref()
+            .and_then(|p| p.notes.as_ref())
+            .and_then(|n| n.as_ref().ok())
+            .and_then(|notes| notes.iter().find(|n| n.id == id).cloned());
+        // The page may not have read its notes yet.
+        let note = loaded.or_else(|| {
+            crate::data::notes(&self.paths)
+                .ok()?
+                .into_iter()
+                .find(|n| n.id == id)
+        });
+        match note {
+            Some(note) if note.trashed_at.is_none() => {
+                self.open_note(Some(&note), false, None, window, cx)
+            }
+            _ => self.show_snackbar(tr!("notes-link-gone"), None, cx),
+        }
+    }
+
+    /// Saves a new note of `title` and `body` (plain lines; "☐ " starts a
+    /// checklist item) with `labels`, in the account new notes go to: quick
+    /// capture, from the shortcut, the tray or KRunner.
+    #[allow(dead_code, reason = "Tasks wires quick capture to it")]
+    pub(in crate::window) fn create_note(
+        &mut self,
+        title: String,
+        body: String,
+        labels: Vec<String>,
+        cx: &mut Context<Self>,
+    ) {
+        let item = NoteItem {
+            account: self.notes_account().unwrap_or(0),
+            title,
+            body,
+            labels,
+            ..NoteItem::default()
+        };
+        self.send(
+            Command::SaveNote(Box::new(item)),
+            Some(tr!("notes-saved")),
+            None,
+            false,
+            cx,
+        );
+    }
+
+    /// Escape: closes the open ⋮ menu, popover or history, else unticks
+    /// the cards. Returns whether anything closed.
+    pub(super) fn close_note_popovers(&mut self, cx: &mut Context<Self>) -> bool {
+        if self.app != super::apps::App::Notes {
+            return false;
+        }
+        let Some(page) = self.notes.as_mut() else {
+            return false;
+        };
+        if page.more.take().is_some() || page.bulk.take().is_some() || page.history.take().is_some()
+        {
+            cx.notify();
+            return true;
+        }
+        if let Some(editor) = page.editor.as_mut()
+            && editor.ai.menu.take().is_some()
+        {
+            cx.notify();
+            return true;
+        }
+        page.editor.is_none() && self.clear_checks(cx)
     }
 
     /// The left bar's New note: a new note over the page.
@@ -1521,29 +2033,17 @@ impl MailWindow {
             .flex()
             .flex_row()
             .justify_center()
-            .pt(px(32.0))
-            .pb(px(24.0));
+            .pt(px(space::S7))
+            .pb(px(space::S6));
         if self.new_note_inline()
             && let Some(card) = self.render_editor(th, true, window, cx)
         {
             return row.child(card).into_any_element();
         }
         row.child(
-            div()
-                .id("notes-take")
-                .w_full()
-                .max_w(px(EDITOR_WIDTH))
-                .h(px(48.0))
-                .pl(px(16.0))
-                .pr(px(4.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .rounded(px(8.0))
-                .bg(rgba(th.surface))
-                .border_1()
-                .border_color(rgba(th.outline))
-                .shadow(elevation(th, 1.0))
+            top_bar("notes-take", th)
+                .pl(px(space::S5))
+                .pr(px(space::S2))
                 .cursor_text()
                 .on_click(
                     cx.listener(|this, _, window, cx| {
@@ -1553,7 +2053,7 @@ impl MailWindow {
                 .child(
                     div()
                         .flex_1()
-                        .text_size(px(15.0))
+                        .text_size(px(text::BODY))
                         .font_weight(FontWeight::MEDIUM)
                         .text_color(rgba(th.text_dim))
                         .child(tr!("notes-take-a-note")),
@@ -1570,16 +2070,24 @@ impl MailWindow {
         .into_any_element()
     }
 
-    /// A note's card on the board; one of `section` drags to a new place.
+    /// A note's card on the board, `width` wide; one of `section` drags to
+    /// a new place. `shown` is the board's order, for Shift+click.
+    #[allow(clippy::too_many_arguments)]
     fn render_card(
         &self,
         note: &Note,
         section: Option<&'static str>,
+        width: f32,
+        lift: f32,
+        shown: Rc<Vec<i64>>,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let bg = note_color(note.color, th);
+        let tint = chip_tint(bg, th);
         let id = note.id;
+        let checked = self.notes.as_ref().is_some_and(|p| p.checked.contains(&id));
+        let checking = self.notes.as_ref().is_some_and(|p| !p.checked.is_empty());
         let trashed = note.trashed_at.is_some();
         let group: SharedString = format!("note-{id}").into();
         let open = Rc::new(note.clone());
@@ -1604,6 +2112,10 @@ impl MailWindow {
         lines.truncate(CARD_LINES);
         // A formatted note shows its headings, bold, italic and underline.
         let formatted = format::card_paras(&note.body, &note.html);
+        let reminder = note
+            .remind_at
+            .filter(|_| !trashed)
+            .map(|at| self.reminder_chip(("note-card-remind", id as usize), id, at, tint, th, cx));
         let body = lines.into_iter().map(|(ix, check, text)| {
             let styled = formatted
                 .as_ref()
@@ -1617,7 +2129,7 @@ impl MailWindow {
                 .flex()
                 .flex_row()
                 .items_start()
-                .gap(px(8.0))
+                .gap(px(space::S3))
                 .text_size(px(14.0 * scale))
                 .line_height(px(20.0 * scale));
             let text = match styled {
@@ -1744,6 +2256,37 @@ impl MailWindow {
                     })),
                 )
         });
+        // The tick at the top left: on a ticked card, and on hover to
+        // tick one, as Keep shows it.
+        let tick = div()
+            .id(("note-tick", id as usize))
+            .absolute()
+            .top(px(-7.0))
+            .left(px(-7.0))
+            .size(px(22.0))
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded_full()
+            .border_2()
+            .border_color(rgba(th.page))
+            .bg(rgba(if checked { th.accent } else { th.text }))
+            .when(!checked, |d| {
+                d.opacity(0.0)
+                    .group_hover(group.clone(), |s| s.opacity(0.85))
+            })
+            .cursor_pointer()
+            .tooltip(tip(tr!("notes-select"), th))
+            .on_click(cx.listener(move |this, _, _, cx| {
+                cx.stop_propagation();
+                this.toggle_note_check(id, cx)
+            }))
+            .child(icon(
+                "check",
+                if checked { th.on_accent } else { th.page },
+                14.0,
+            ));
+        let cover = self.render_card_cover(id, width - 2.0);
         div()
             .id(("note", id as usize))
             .group(group.clone())
@@ -1751,18 +2294,25 @@ impl MailWindow {
             .w_full()
             .flex()
             .flex_col()
-            .rounded(px(8.0))
-            .border_1()
-            .border_color(rgba(if bg.is_some() { 0x00000000 } else { th.outline }))
-            .bg(rgba(bg.unwrap_or(th.surface)))
+            .map(|d| crate::widgets::card(d, th, bg.unwrap_or(card_fill(th)), radius::MD, 1.0))
+            .shadow(card_lift(th, lift, checked))
             .text_color(rgba(th.text))
             .cursor_default()
-            .hover(|s| s.shadow(elevation(th, 1.0)))
-            .on_click(cx.listener(move |this, _, window, cx| {
-                if !trashed {
-                    this.open_note(Some(&open), false, None, window, cx)
-                }
-            }))
+            .on_click(
+                cx.listener(move |this, event: &gpui::ClickEvent, window, cx| {
+                    // Ctrl+click ticks or unticks the card, Shift+click ticks
+                    // every card from the last one; while some are ticked a
+                    // plain click ticks too, as in Keep.
+                    let modifiers = event.modifiers();
+                    if modifiers.secondary() || (checking && !modifiers.shift) {
+                        this.toggle_note_check(id, cx);
+                    } else if modifiers.shift {
+                        this.check_note_range(id, &shown, cx);
+                    } else if !trashed {
+                        this.open_note(Some(&open), false, None, window, cx)
+                    }
+                }),
+            )
             .when_some(section.filter(|_| !trashed), |d, section| {
                 let this = cx.entity().downgrade();
                 d.on_drag(NoteDragged, move |_, grab, _, cx| {
@@ -1772,20 +2322,21 @@ impl MailWindow {
                     cx.new(|_| NoDragImage)
                 })
             })
+            .children(cover)
             .child(
                 div()
-                    .px(px(16.0))
-                    .pt(px(12.0))
+                    .px(px(space::S5))
+                    .pt(px(space::S4))
                     .flex()
                     .flex_col()
-                    .gap(px(4.0))
+                    .gap(px(space::S2))
                     .when(!note.title.is_empty(), |d| {
                         d.child(
                             div()
-                                .pr(px(24.0))
-                                .text_size(px(16.0))
+                                .pr(px(space::S6))
+                                .text_size(px(text::SUBTITLE))
                                 .line_height(px(24.0))
-                                .font_weight(FontWeight::MEDIUM)
+                                .font_weight(FontWeight::SEMIBOLD)
                                 .line_clamp(3)
                                 .child(note.title.clone()),
                         )
@@ -1794,7 +2345,7 @@ impl MailWindow {
                     .when(more > 0, |d| {
                         d.child(
                             div()
-                                .text_size(px(14.0))
+                                .text_size(px(text::BODY))
                                 .text_color(rgba(th.text_dim))
                                 .child("…"),
                         )
@@ -1802,38 +2353,32 @@ impl MailWindow {
                     .when(ticked > 0, |d| {
                         d.child(
                             div()
-                                .pt(px(4.0))
-                                .text_size(px(13.0))
+                                .pt(px(space::S2))
+                                .text_size(px(text::SMALL))
                                 .text_color(rgba(th.text_dim))
                                 .child(tr!("notes-ticked", count = ticked as u64)),
                         )
                     })
-                    .when(!note.labels.is_empty(), |d| {
+                    .when(!note.labels.is_empty() || reminder.is_some(), |d| {
                         d.child(
                             div()
-                                .pt(px(8.0))
+                                .pt(px(space::S3))
                                 .flex()
                                 .flex_row()
                                 .flex_wrap()
-                                .gap(px(6.0))
+                                .gap(px(space::S2))
+                                .children(reminder)
                                 .children(note.labels.iter().enumerate().map(|(ix, label)| {
                                     let show = label.clone();
-                                    div()
+                                    crate::widgets::tag(label.clone(), th)
                                         .id(("note-card-label", id as usize * 64 + ix))
+                                        .bg(rgba(tint))
                                         .cursor_pointer()
-                                        .hover(|s| s.bg(rgba(fade(th.text, 0.14))))
+                                        .hover(|s| s.bg(rgba(chip_hover(tint, th))))
                                         .on_click(cx.listener(move |this, _, _, cx| {
                                             cx.stop_propagation();
                                             this.show_label(show.clone(), cx)
                                         }))
-                                        .px(px(10.0))
-                                        .h(px(24.0))
-                                        .flex()
-                                        .items_center()
-                                        .rounded_full()
-                                        .bg(rgba(fade(th.text, 0.08)))
-                                        .text_size(px(12.0))
-                                        .child(label.clone())
                                 })),
                         )
                     })
@@ -1842,6 +2387,7 @@ impl MailWindow {
                         div().flex().flex_row().child(self.mail_chip(
                             ("note-card-mail", id as usize),
                             link,
+                            tint,
                             th,
                             cx,
                         ))
@@ -1850,15 +2396,16 @@ impl MailWindow {
             .child(
                 div()
                     .h(px(38.0))
-                    .px(px(6.0))
+                    .px(px(space::S3))
                     .flex()
                     .flex_row()
                     .items_center()
                     .opacity(0.0)
-                    .group_hover(group, |s| s.opacity(1.0))
+                    .when(!checking, |d| d.group_hover(group, |s| s.opacity(1.0)))
                     .child(actions),
             )
-            .children(pin)
+            .when(!checking, |d| d.children(pin))
+            .when(!trashed || checking, |d| d.child(tick))
             .into_any_element()
     }
 
@@ -1874,11 +2421,11 @@ impl MailWindow {
     ) -> Option<AnyElement> {
         let editor = self.notes.as_ref()?.editor.as_ref()?;
         let bg = note_color(editor.color, th).unwrap_or(th.surface);
+        let tint = chip_tint(note_color(editor.color, th), th);
         let vh = unpx(window.viewport_size().height);
         let id = editor.id;
-        let (opening, fades) = (editor.opening, editor.fade);
+        let (opening, fades, closing) = (editor.opening, editor.fade, editor.closing);
         let pinned = editor.pinned;
-        let archived = editor.archived;
         let item = editor.item(cx);
         let edited = (editor.updated_at > 0)
             .then(|| {
@@ -1905,9 +2452,9 @@ impl MailWindow {
                 .flex_row()
                 .flex_wrap()
                 .justify_end()
-                .gap(px(6.0))
-                .px(px(12.0))
-                .pb(px(8.0))
+                .gap(px(space::S3))
+                .px(px(space::S4))
+                .pb(px(space::S3))
                 .children(
                     options
                         .into_iter()
@@ -1919,14 +2466,14 @@ impl MailWindow {
                             div()
                                 .id(("note-place", ix))
                                 .h(px(28.0))
-                                .px(px(12.0))
+                                .px(px(space::S4))
                                 .flex()
                                 .items_center()
                                 .rounded_full()
                                 .border_1()
                                 .border_color(rgba(if on { th.accent } else { th.outline }))
                                 .when(on, |d| d.bg(rgba(fade(th.accent, 0.12))))
-                                .text_size(px(12.0))
+                                .text_size(px(text::CAPTION))
                                 .text_color(rgba(if on { th.accent } else { th.text_dim }))
                                 .cursor_pointer()
                                 .hover(|s| s.bg(rgba(th.hover)))
@@ -1967,9 +2514,9 @@ impl MailWindow {
                 .flex()
                 .flex_row()
                 .flex_wrap()
-                .gap(px(6.0))
-                .px(px(12.0))
-                .pb(px(8.0))
+                .gap(px(space::S3))
+                .px(px(space::S4))
+                .pb(px(space::S3))
                 .children((0..=COLORS.len()).map(|ix| {
                     let color = ix as i64;
                     let fill = note_color(color, th).unwrap_or(th.surface);
@@ -2022,117 +2569,142 @@ impl MailWindow {
             }
             item
         };
+        let width = EDITOR_WIDTH.min(self.room_width() - 32.0);
+        let pictures = self.render_note_pictures(width, th, cx);
+        let remind = editor
+            .remind_at
+            .map(|at| self.reminder_chip("note-editor-remind", id, at, tint, th, cx));
+        let ai_on = self.notes_ai_on();
+        let ai_busy = editor.ai.busy.is_some();
         let card = div()
             .id("note-editor")
             .occlude()
             .relative()
             .when(inline, |d| d.w_full().max_w(px(EDITOR_WIDTH)))
             .when(!inline, |d| {
-                d.w(px(
-                    EDITOR_WIDTH.min(unpx(window.viewport_size().width) - 32.0)
-                ))
+                d.w(px(EDITOR_WIDTH.min(self.room_width() - 32.0)))
             })
             .max_h(px(vh * 0.7))
             .flex()
             .flex_col()
-            .rounded(px(15.0))
+            .rounded(px(radius::LG))
             .bg(rgba(bg))
             .text_color(rgba(th.text))
             .shadow(elevation(th, 3.0))
             .on_click(|_, _, cx| cx.stop_propagation())
             .child(
+                // Pictures, title and text scroll together, as in Keep.
                 div()
-                    .flex_none()
-                    .pl(px(16.0))
-                    .pr(px(4.0))
-                    .pt(px(8.0))
+                    .id("note-editor-scroll")
+                    .flex_1()
+                    .min_h_0()
+                    .overflow_y_scroll()
                     .flex()
-                    .flex_row()
-                    .items_center()
+                    .flex_col()
+                    .children(pictures)
                     .child(
                         div()
-                            .flex_1()
-                            .min_w_0()
-                            .py(px(8.0))
-                            .text_size(px(22.0))
-                            .line_height(px(28.0))
-                            .child(editor.title.clone()),
+                            .flex_none()
+                            .pl(px(space::S5))
+                            .pr(px(space::S2))
+                            .pt(px(space::S3))
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .min_w_0()
+                                    .py(px(space::S3))
+                                    .text_size(px(text::TITLE))
+                                    .line_height(px(28.0))
+                                    .child(editor.title.clone()),
+                            )
+                            .child(
+                                icon_button_colored(
+                                    "note-editor-pin",
+                                    if pinned { "pin-filled" } else { "pin" },
+                                    22.0,
+                                    th.text_dim,
+                                    th,
+                                )
+                                .tooltip(tip(
+                                    if pinned {
+                                        tr!("notes-unpin")
+                                    } else {
+                                        tr!("notes-pin")
+                                    },
+                                    th,
+                                ))
+                                .on_click(cx.listener(
+                                    move |this, _, _, cx| {
+                                        if for_pin.id == 0 {
+                                            if let Some(editor) =
+                                                this.notes.as_mut().and_then(|p| p.editor.as_mut())
+                                            {
+                                                editor.pinned = for_pin.pinned;
+                                            }
+                                            this.note_typed(cx);
+                                        } else {
+                                            this.change_note(for_pin.clone(), cx);
+                                        }
+                                    },
+                                )),
+                            ),
                     )
                     .child(
-                        icon_button_colored(
-                            "note-editor-pin",
-                            if pinned { "pin-filled" } else { "pin" },
-                            22.0,
-                            th.text_dim,
-                            th,
-                        )
-                        .tooltip(tip(
-                            if pinned {
-                                tr!("notes-unpin")
-                            } else {
-                                tr!("notes-pin")
-                            },
-                            th,
-                        ))
-                        .on_click(cx.listener(move |this, _, _, cx| {
-                            if for_pin.id == 0 {
-                                if let Some(editor) =
-                                    this.notes.as_mut().and_then(|p| p.editor.as_mut())
-                                {
-                                    editor.pinned = for_pin.pinned;
-                                }
-                                this.note_typed(cx);
-                            } else {
-                                this.change_note(for_pin.clone(), cx);
-                            }
-                        })),
+                        div()
+                            .id("note-editor-body")
+                            .flex_none()
+                            .min_h(px(60.0))
+                            .px(px(space::S5))
+                            .pb(px(space::S4))
+                            .text_size(px(text::BODY))
+                            .line_height(px(22.0))
+                            .child(editor.body.clone()),
                     ),
             )
-            .child(
+            .children(remind.map(|chip| {
                 div()
-                    .id("note-editor-body")
-                    .flex_1()
-                    .min_h(px(60.0))
-                    .overflow_y_scroll()
-                    .px(px(16.0))
-                    .pb(px(12.0))
-                    .text_size(px(15.0))
-                    .line_height(px(22.0))
-                    .child(editor.body.clone()),
-            )
+                    .flex_none()
+                    .px(px(space::S5))
+                    .pb(px(space::S3))
+                    .flex()
+                    .flex_row()
+                    .child(chip)
+            }))
             .children(self.render_note_label_chips(th, cx))
+            .children(self.render_linked_from(th, cx))
             .child(
                 div()
                     .flex_none()
-                    .px(px(16.0))
-                    .pb(px(4.0))
+                    .px(px(space::S5))
+                    .pb(px(space::S2))
                     .flex()
                     .flex_row()
-                    .justify_end()
                     .items_center()
-                    .gap(px(4.0))
-                    .text_size(px(12.0))
+                    .gap(px(space::S2))
+                    .text_size(px(text::CAPTION))
                     .text_color(rgba(th.text_dim))
                     .children(
                         editor
                             .link
                             .clone()
-                            .map(|link| self.mail_chip("note-editor-mail", link, th, cx)),
+                            .map(|link| self.mail_chip("note-editor-mail", link, tint, th, cx)),
                     )
-                    .child(div().flex_1())
-                    .children(edited.map(|edited| format!("{edited} ·")))
                     .child(
                         div()
                             .id("note-place")
-                            .px(px(6.0))
+                            .px(px(space::S3))
                             .h(px(22.0))
                             .flex()
                             .flex_row()
                             .items_center()
-                            .gap(px(2.0))
-                            .rounded(px(6.0))
+                            .gap(px(space::S1))
+                            .rounded(px(radius::SM))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                             .tooltip(tip(tr!("notes-where"), th))
                             .on_click(cx.listener(|this, _, _, cx| {
                                 if let Some(editor) =
@@ -2146,7 +2718,9 @@ impl MailWindow {
                             }))
                             .child(where_)
                             .child(icon("drop-down", th.text_dim, 16.0)),
-                    ),
+                    )
+                    .child(div().flex_1())
+                    .children(edited),
             )
             .children(places)
             .children(palette)
@@ -2155,12 +2729,12 @@ impl MailWindow {
             .child(
                 div()
                     .flex_none()
-                    .px(px(8.0))
-                    .pb(px(8.0))
+                    .px(px(space::S3))
+                    .pb(px(space::S3))
                     .flex()
                     .flex_row()
                     .items_center()
-                    .gap(px(2.0))
+                    .gap(px(space::S1))
                     .child(
                         tool("format-text", tr!("notes-format")).on_click(cx.listener(
                             |this, _, window, cx| {
@@ -2179,7 +2753,21 @@ impl MailWindow {
                             },
                         )),
                     )
-                    .child(tool("text-color", tr!("notes-color")).on_click(cx.listener(
+                    .child(tool("bell", tr!("notes-remind")).on_click(cx.listener(
+                        move |this, event: &gpui::ClickEvent, _, cx| {
+                            let Some(editor) = this.notes.as_ref().and_then(|p| p.editor.as_ref())
+                            else {
+                                return;
+                            };
+                            let reminded = editor.remind_at.is_some();
+                            this.open_remind_menu(vec![editor.id], reminded, event.position(), cx)
+                        },
+                    )))
+                    .child(
+                        tool("image", tr!("notes-add-picture"))
+                            .on_click(cx.listener(|this, _, _, cx| this.pick_note_pictures(cx))),
+                    )
+                    .child(tool("palette", tr!("notes-color")).on_click(cx.listener(
                         |this, _, _, cx| {
                             if let Some(editor) =
                                 this.notes.as_mut().and_then(|p| p.editor.as_mut())
@@ -2194,80 +2782,46 @@ impl MailWindow {
                     .child(tool("label", tr!("notes-labels")).on_click(
                         cx.listener(|this, _, window, cx| this.toggle_label_picker(window, cx)),
                     ))
-                    .child(
-                        tool("checkbox-checked", tr!("notes-checkboxes")).on_click(cx.listener(
-                            |this, _, window, cx| {
-                                let Some(editor) =
-                                    this.notes.as_ref().and_then(|p| p.editor.as_ref())
-                                else {
-                                    return;
-                                };
-                                let body = editor.body.clone();
-                                body.update(cx, |area, cx| {
-                                    area.edit_doc(format::toggle_checklist_doc, cx)
-                                });
-                                window.focus(&body.focus_handle(cx), cx);
-                            },
-                        )),
-                    )
-                    .when(self.task_line(cx).is_some(), |d| {
-                        d.child(tool("tasks", tr!("notes-make-task")).on_click(
-                            cx.listener(|this, _, window, cx| this.make_line_task(window, cx)),
-                        ))
-                    })
                     .when(id != 0, |d| {
-                        let note = Note {
-                            id,
-                            archived,
-                            ..Note::default()
-                        };
                         d.child(
-                            tool(
-                                "archive",
-                                if archived {
-                                    tr!("notes-unarchive")
-                                } else {
-                                    tr!("notes-archive")
-                                },
-                            )
-                            .on_click(cx.listener(
-                                move |this, _, _, cx| {
-                                    let Some(editor) =
-                                        this.notes.as_ref().and_then(|p| p.editor.as_ref())
-                                    else {
-                                        return;
-                                    };
-                                    let mut note = note.clone();
-                                    let item = editor.item(cx);
-                                    note.title = item.title;
-                                    note.body = item.body;
-                                    note.color = item.color;
-                                    note.labels = item.labels;
-                                    note.link = Some(item.link).filter(|l| !l.is_empty());
-                                    note.account_id = (item.account != 0).then_some(item.account);
-                                    this.archive_note(&note, !archived, cx)
-                                },
-                            )),
-                        )
-                        .child(
-                            tool("trash", tr!("notes-delete")).on_click(
-                                cx.listener(move |this, _, _, cx| this.trash_note(id, true, cx)),
-                            ),
+                            tool("history", tr!("notes-history"))
+                                .on_click(cx.listener(|this, _, _, cx| this.open_note_history(cx))),
                         )
                     })
+                    .when(ai_on, |d| {
+                        d.child(
+                            tool(if ai_busy { "spinner" } else { "sparkle" }, tr!("notes-ai"))
+                                .on_click(cx.listener(|this, event: &gpui::ClickEvent, _, cx| {
+                                    this.toggle_note_ai(event.position(), cx)
+                                })),
+                        )
+                    })
+                    .child(tool("more", tr!("notes-more")).on_click(cx.listener(
+                        |this, event: &gpui::ClickEvent, _, cx| {
+                            if let Some(page) = this.notes.as_mut() {
+                                page.bulk = None;
+                                page.more = Some(select::MoreMenu {
+                                    at: event.position(),
+                                    open_note: true,
+                                });
+                            }
+                            cx.notify();
+                        },
+                    )))
                     .child(div().flex_1())
                     .child(
                         div()
                             .id("note-editor-close")
                             .h(px(36.0))
-                            .px(px(24.0))
+                            .px(px(space::S6))
                             .flex()
                             .items_center()
-                            .rounded(px(4.0))
-                            .text_size(px(14.0))
+                            .rounded(px(radius::XS))
+                            .text_size(px(text::BODY))
                             .font_weight(FontWeight::MEDIUM)
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
                             .on_click(cx.listener(|this, _, _, cx| this.close_note(cx)))
                             .child(tr!("notes-close")),
                     ),
@@ -2289,19 +2843,100 @@ impl MailWindow {
                 .flex()
                 .flex_col()
                 .items_center()
-                .pt(px(48.0))
-                .bg(rgba(if th.dark { 0x00000099 } else { 0x0000004d }))
+                // The board stays in sight under a veil of the page's
+                // own colour, not a dark one.
+                .bg(rgba(fade(th.page, 0.85)))
                 .on_click(cx.listener(|this, _, _, cx| this.close_note(cx)))
                 .child(card)
-                .with_animation(
-                    ("note-editor-in", opening),
-                    gpui::Animation::new(Duration::from_millis(180))
-                        .with_easing(gpui::ease_out_quint()),
-                    move |el, t| el.opacity(if fades { t } else { 1.0 }),
-                )
-                .into_any_element(),
+                .map(|scrim| match closing {
+                    // Closing: it fades out and sinks a little.
+                    Some(_) => scrim
+                        .with_animation(
+                            ("note-editor-out", opening),
+                            gpui::Animation::new(motion::time(duration::FAST))
+                                .with_easing(gpui::ease_in_out),
+                            |el, t| el.opacity(1.0 - t).pt(px(space::S8 + space::S3 * t)),
+                        )
+                        .into_any_element(),
+                    // Opening: it fades in and rises the last few pixels.
+                    None => scrim
+                        .with_animation(
+                            ("note-editor-in", opening),
+                            gpui::Animation::new(motion::time(duration::BASE))
+                                .with_easing(gpui::ease_out_quint()),
+                            move |el, t| {
+                                if fades {
+                                    el.opacity(t).pt(px(space::S8 + space::S4 * (1.0 - t)))
+                                } else {
+                                    el.pt(px(space::S8))
+                                }
+                            },
+                        )
+                        .into_any_element(),
+                }),
         )
     }
+}
+
+/// A plain card's fill. The board is itself a card, so in dark colours
+/// its cards take the raised step to stand off it; in light colours they
+/// are white, edged by their shadow.
+fn card_fill(th: &Theme) -> u32 {
+    if th.dark { th.raised } else { th.surface }
+}
+
+/// A chip's fill on a card or note of colour `bg` (None: the plain
+/// surface): the chip grey, or a see-through shade on a coloured one.
+fn chip_tint(bg: Option<u32>, th: &Theme) -> u32 {
+    match bg {
+        None => th.chip,
+        Some(_) if th.dark => 0xffff_ff1a,
+        Some(_) => 0x0000_0014,
+    }
+}
+
+/// A chip's fill under the pointer: its own, a hover layer deeper.
+fn chip_hover(tint: u32, th: &Theme) -> u32 {
+    if tint == th.chip {
+        crate::theme::mix(th.chip, th.text, 0.07)
+    } else {
+        // The see-through shade, half as strong again.
+        (tint & 0xffff_ff00) | ((tint & 0xff) * 3 / 2)
+    }
+}
+
+/// A card's shadow: level 1 at rest, rising toward level 2 as `lift`
+/// goes to 1 under the pointer; a ticked card gets the accent ring.
+fn card_lift(th: &Theme, lift: f32, checked: bool) -> Vec<gpui::BoxShadow> {
+    let mut shadows = Vec::new();
+    if checked {
+        shadows.push(gpui::BoxShadow {
+            color: rgba(th.accent).into(),
+            offset: gpui::point(px(0.0), px(0.0)),
+            blur_radius: px(0.0),
+            spread_radius: px(2.0),
+            inset: false,
+        });
+    }
+    shadows.extend(crate::widgets::card_shadow(th, 1.0));
+    if lift > 0.001 {
+        shadows.extend(elevation(th, 2.0 * lift));
+    }
+    shadows
+}
+
+/// The bar over the board: "Take a note…", or the selection's bar in
+/// its place, so ticking a card swaps only what is inside.
+pub(super) fn top_bar(id: &'static str, th: &Theme) -> gpui::Stateful<Div> {
+    div()
+        .id(id)
+        .w_full()
+        .max_w(px(EDITOR_WIDTH))
+        .h(px(48.0))
+        .flex()
+        .flex_row()
+        .items_center()
+        .map(|d| crate::widgets::card(d, th, card_fill(th), radius::FULL, 1.0))
 }
 
 #[cfg(test)]

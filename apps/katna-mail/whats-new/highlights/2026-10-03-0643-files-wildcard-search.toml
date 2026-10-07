@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Wildcards in Files search"
+text = """
+In Files, searching *.pdf now finds every PDF, and * and ? work anywhere in
+a name: invoice*2026* finds every invoice of 2026. It works for your mail's
+files and in Google Drive and OneDrive.
+"""

@@ -24,13 +24,14 @@ use std::rc::Rc;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, ListAlignment,
-    ListState, SharedString, Subscription, Window, anchored, div, ease_out_quint, list, point,
-    prelude::*, rgba,
+    ListState, SharedString, Subscription, Window, div, ease_out_quint, list, point, prelude::*,
+    rgba,
 };
 use katna_core::{AccountId, OAuthProvider};
 use katna_dbus::CloudEntry;
 use katna_i18n::tr;
 use katna_store::MessageId;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::text_input::{InputEvent, TextInput};
 use katna_ui::unpx;
@@ -42,7 +43,7 @@ use super::{Direction, Found, Sort, Time, Types};
 use crate::data::EntryKey;
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{filled_button, icon, icon_button, placeholder, raised, tip};
+use crate::widgets::{filled_button, icon, icon_button, raised, tip};
 
 /// Cards are at least this wide; the rest of a row is shared out.
 const CARD_MIN: f32 = 132.0;
@@ -225,6 +226,11 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         if !self.compose_takes_files() {
+            return;
+        }
+        // With Files off, the paperclip opens the system's file picker.
+        if !self.app_on(crate::window::apps::App::Files) {
+            self.pick_files(false, cx);
             return;
         }
         self.open_picker(None, HashSet::new(), window, cx);
@@ -806,11 +812,9 @@ impl MailWindow {
         .child(panel)
         .with_animation(
             "files-picker-in",
-            Animation::new(std::time::Duration::from_millis(if cx.reduce_motion() {
-                1
-            } else {
-                220
-            }))
+            Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                if cx.reduce_motion() { 1 } else { 220 },
+            )))
             .with_easing(ease_out_quint()),
             |el, t| el.opacity(t).mt(px(8.0 * (1.0 - t))),
         );
@@ -948,9 +952,11 @@ impl MailWindow {
                 .child(self.files_time_chip(th, cx));
             let picker = self.picker.as_ref()?;
             let content = match &self.library.files {
-                None => placeholder(&tr!("files-loading"), th),
-                Some(Err(err)) => placeholder(err, th),
-                Some(Ok(_)) if picker.shown.is_empty() => placeholder(&tr!("files-none-match"), th),
+                None => self.placeholder(tr!("files-loading"), th),
+                Some(Err(err)) => self.placeholder(err.clone(), th),
+                Some(Ok(_)) if picker.shown.is_empty() => {
+                    self.placeholder(tr!("files-none-match"), th)
+                }
                 Some(Ok(_)) => list(
                     picker.state.clone(),
                     cx.processor(move |this, ix: usize, window, cx| {
@@ -1101,7 +1107,7 @@ impl MailWindow {
                 super::super::nav::side_row_with(("picker-source", n), mark, label, on, th)
                     .when(matches!(source, Source::Drive(_)), |d| d.h(px(44.0)))
                     .when_some(count, |d, c| {
-                        d.child(super::super::nav::count_pill(c as u64, on, th))
+                        d.child(crate::widgets::count_pill(c as u64, on, th))
                     })
                     .on_click(cx.listener(move |this, _, _, cx| this.pick_source(source, cx))),
             );
@@ -1250,12 +1256,9 @@ impl MailWindow {
             .flex()
             .flex_col()
             .overflow_hidden()
-            .rounded(px(CARD_RADIUS))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .bg(rgba(th.surface))
+            .map(|d| crate::widgets::tile(d, th))
             .cursor_pointer()
-            .hover(|s| s.shadow(crate::widgets::elevation(th, 1.0)))
+            .child(crate::widgets::tile_hover(th))
             .on_click(cx.listener(move |this, _, _, cx| this.toggle_pick(key, cx)))
             .child(
                 div()
@@ -1263,7 +1266,7 @@ impl MailWindow {
                     .h(px(THUMB))
                     .w_full()
                     .overflow_hidden()
-                    .child(card_top(thumb, found.kind, 36.0, None, th)),
+                    .child(card_top(thumb, found.kind, 36.0, th)),
             )
             .child(
                 div()
@@ -1409,7 +1412,8 @@ impl MailWindow {
             .text_size(px(14.0))
             .font_weight(FontWeight::MEDIUM)
             .text_color(rgba(th.text_dim))
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", None, th))
             .on_click(cx.listener(|this, _, _, cx| this.close_files_picker(cx)))
             .child(tr!("picker-cancel"));
         let weight = div()

@@ -18,7 +18,7 @@ use gpui::{
 use katna_i18n::tr;
 use katna_platform::colors::{DesktopScheme, Scheme};
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{InputEvent, TextInput, px, unpx};
+use katna_ui::{InputEvent, TextInput, px};
 
 use super::MailWindow;
 use super::context_menu::Rows;
@@ -29,7 +29,7 @@ use crate::daemon::Command;
 use crate::schemes::{self, SideScheme};
 use crate::theme::{Accent, Theme, fade};
 use crate::user_schemes::{self, Seed};
-use crate::widgets::{elevation, filled_button, icon};
+use crate::widgets::{filled_button, icon};
 
 const DIALOG_WIDTH: f32 = 760.0;
 const SWATCH: f32 = 22.0;
@@ -548,8 +548,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let editor = self.scheme_editor.as_ref()?;
         let ready = !editor.name.read(cx).text().trim().is_empty();
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let (vw, vh) = (self.room_width(), self.room_height(window));
         let narrow = vw < DIALOG_WIDTH + 32.0;
         let name_focus = editor.name.focus_handle(cx);
         let name_focused = name_focus.is_focused(window);
@@ -571,7 +570,7 @@ impl MailWindow {
                 .mt(px(12.0))
                 .text_size(px(13.0))
                 .text_color(rgba(th.error))
-                .child(err)
+                .child(self.copyable(err, th))
         });
         let body = div()
             .id("scheme-editor-body")
@@ -644,11 +643,8 @@ impl MailWindow {
             .w(px(DIALOG_WIDTH.min(vw - 32.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
         let picker = self.render_color_picker(|t| matches!(t, Target::Seed(..)), th, window, cx);
         Some(
@@ -757,7 +753,8 @@ impl MailWindow {
                     .justify_center()
                     .rounded_full()
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .tooltip(crate::widgets::tip(tr!("scheme-editor-remove-side"), th))
                     .on_click(cx.listener(move |this, _, _, cx| this.remove_scheme_side(dark, cx)))
                     .child(icon("remove", th.text_dim, 18.0)),
@@ -885,6 +882,7 @@ fn katna_side(dark: bool) -> Scheme {
         accent: opaque(th.accent),
         accent_fg: opaque(th.on_accent),
         negative: opaque(th.error),
+        neutral: None,
     }
 }
 

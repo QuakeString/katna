@@ -27,6 +27,7 @@
 //! - [`pictures`]: remote images and sender pictures for the reading pane,
 //!   which never uses the network itself.
 //! - [`quick_reply`]: short plain-text replies typed into a notification.
+//! - [`rules`]: mail rules run on new incoming mail.
 //! - [`pop3`]: our own POP3 client, and downloading a maildrop into the
 //!   store (task 1.10).
 //! - [`worker`]: keeps an account in sync: IDLE, periodic full syncs,
@@ -49,8 +50,11 @@ pub mod engine;
 mod error;
 #[cfg(test)]
 mod fake_http;
+pub mod folders;
+pub mod gmail_filters;
 mod google_api;
 pub mod imap;
+pub mod mail_actions;
 pub mod meet;
 pub mod methods;
 pub mod net;
@@ -62,6 +66,10 @@ pub mod outbox;
 pub mod pictures;
 pub mod pop3;
 pub mod quick_reply;
+pub mod receipts;
+pub mod rules;
+pub mod rules_remote;
+pub mod sieve;
 pub mod smtp;
 pub mod tasks;
 pub mod tracking;

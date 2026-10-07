@@ -20,7 +20,7 @@ use super::contacts_edit::visible;
 use crate::daemon::{self, Command, WriteCard};
 use crate::data::SavedBook;
 use crate::theme::Theme;
-use crate::widgets::{filled_button, outlined_button, placeholder};
+use crate::widgets::{filled_button, outlined_button};
 
 /// The name two people must share to look like one: in lower case with
 /// single spaces, and not just an address or a word of two letters.
@@ -220,7 +220,7 @@ impl MailWindow {
     ) -> AnyElement {
         let groups = self.merge_suggestions(book);
         if groups.is_empty() {
-            return placeholder(&tr!("contacts-merge-none"), th);
+            return self.placeholder(tr!("contacts-merge-none"), th);
         }
         let all = groups.clone();
         let header = div()
@@ -333,9 +333,7 @@ impl MailWindow {
         });
         div()
             .flex_none()
-            .rounded(px(12.0))
-            .border_1()
-            .border_color(rgba(th.outline))
+            .map(|d| crate::widgets::tile(d, th))
             .py(px(8.0))
             .flex()
             .flex_col()

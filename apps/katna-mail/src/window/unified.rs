@@ -7,16 +7,19 @@
 //! to one row per account. The accounts below start folded; the arrow
 //! beside each account's name folds and opens it either way.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
-use gpui::Context;
+use gpui::{AnyElement, Context, div, prelude::*};
 use katna_core::{AccountId, MailCategory};
+use katna_i18n::tr;
 use katna_store::SpreadTabs;
 
+use super::settings::Change;
 use super::{Listing, MailWindow};
 use crate::data::Entry;
-use crate::sidebar::Unified;
+use crate::sidebar::{Unified, UnifiedOut};
 use crate::tabs::{self, Tab};
+use crate::theme::Theme;
 
 impl MailWindow {
     /// Whether `account`'s folders show under its name: as its arrow
@@ -74,10 +77,12 @@ impl MailWindow {
         let folders = self.tree.unified_folders(view, account);
         let conversations = self.config.mail.conversations;
         if self.tabs.is_empty() || view != Unified::Inbox {
-            return (
-                mail.spread_entries(&folders, view.filter(), conversations),
-                None,
-            );
+            let mut entries = mail.spread_entries(&folders, view.filter(), conversations);
+            if view.role() == Some(super::Role::Snoozed) {
+                // Soonest back first, as in an account's Snoozed folder.
+                entries.sort_by_cached_key(|e| mail.entry_snoozed_until(e).unwrap_or(i64::MAX));
+            }
+            return (entries, None);
         }
         // Each account's mail of the tabs it turned off stays in the
         // first tab, as in its own inbox. One account's own tabs hold
@@ -138,6 +143,7 @@ impl MailWindow {
         self.reset_list(false);
         self.selected = (!self.entries.is_empty()).then_some(0);
         self.checked.clear();
+        self.check_anchor = None;
         self.checked_all = false;
         self.page_pick = None;
         self.picked = None;
@@ -154,6 +160,126 @@ impl MailWindow {
         } else if let Some((view, account)) = self.unified {
             self.open_unified(view, account, cx);
         }
+    }
+
+    /// What the unified inbox keeps out, from the settings.
+    pub(super) fn unified_out(&self) -> UnifiedOut {
+        let mail = &self.config.mail;
+        let ids = |addresses: &std::collections::BTreeSet<String>| -> HashSet<AccountId> {
+            self.accounts
+                .iter()
+                .filter(|a| addresses.contains(&a.address.to_lowercase()))
+                .map(|a| a.id)
+                .collect()
+        };
+        UnifiedOut {
+            hidden: ids(&mail.unified_hidden),
+            left_out: ids(&mail.unified_left_out),
+        }
+    }
+
+    /// Whether `account` is in the unified inbox at all.
+    pub(super) fn in_unified(&self, account: AccountId) -> bool {
+        !self.tree.unified_out.hidden.contains(&account)
+    }
+
+    /// The right-click menu of an account's inbox under the unified
+    /// Inbox, and the eye on a left-out one: leaves it out, or brings it
+    /// back.
+    pub(super) fn set_inbox_left_out(
+        &mut self,
+        account: AccountId,
+        out: bool,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(address) = self.account_address(account).map(|a| a.to_lowercase()) else {
+            return;
+        };
+        let set = &mut self.config.mail.unified_left_out;
+        let changed = if out {
+            set.insert(address)
+        } else {
+            set.remove(&address)
+        };
+        if changed {
+            self.unified_out_changed(cx);
+        }
+    }
+
+    /// Settings > Inbox > In the unified inbox: an account's switch.
+    pub(super) fn set_in_unified(&mut self, account: AccountId, on: bool, cx: &mut Context<Self>) {
+        let Some(address) = self.account_address(account).map(|a| a.to_lowercase()) else {
+            return;
+        };
+        let set = &mut self.config.mail.unified_hidden;
+        let changed = if on {
+            set.remove(&address)
+        } else {
+            set.insert(address)
+        };
+        if changed {
+            self.unified_out_changed(cx);
+        }
+    }
+
+    /// Settings > Inbox > In the unified inbox: a switch for each mail
+    /// account, the same rows as an app's "Show in" switches.
+    pub(super) fn unified_accounts_rows(
+        &self,
+        accounts: &[katna_core::Account],
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let switches: Vec<_> = accounts
+            .iter()
+            .map(|account| {
+                let on = self.in_unified(account.id);
+                let label = if account.display_name.trim().is_empty() {
+                    account.address.clone()
+                } else {
+                    account.display_name.clone()
+                };
+                let detail = if on {
+                    tr!("settings-unified-account-in")
+                } else {
+                    tr!("settings-unified-account-out")
+                };
+                let detail = if label == account.address {
+                    detail
+                } else {
+                    format!("{} · {detail}", account.address)
+                };
+                self.switch_row(
+                    ("unified-account", account.id.0 as usize),
+                    label,
+                    detail,
+                    on,
+                    Change::InUnified(account.id, !on),
+                    th,
+                    cx,
+                )
+            })
+            .collect();
+        self.row(
+            tr!("settings-unified-accounts"),
+            Some(&tr!("settings-unified-accounts-detail")),
+            div().flex().flex_col().children(switches),
+            th,
+        )
+        .into_any_element()
+    }
+
+    /// Saves what the unified inbox keeps out and lists it again: a list
+    /// of an account it now keeps out gives way to the list of all.
+    fn unified_out_changed(&mut self, cx: &mut Context<Self>) {
+        self.save_config();
+        self.tree.unified_out = self.unified_out();
+        self.rebuild_nav();
+        if let Some(Listing::Unified { view, account }) = self.listing {
+            let account = account.filter(|a| self.in_unified(*a));
+            self.open_unified(view, account, cx);
+        }
+        cx.notify();
     }
 
     /// Settings > General > Unified inbox. On, the accounts fold under

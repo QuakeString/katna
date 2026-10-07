@@ -16,7 +16,7 @@ use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{
     Account, AccountId, AccountKind, AccountSettings, Config, Paths, Pop3Keep, Security, Server,
-    config::Metered,
+    config::{AppKind, AppsOn, HiddenAccounts, Metered, OfflineAccounts},
 };
 use katna_dbus::{
     AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, TemplateItem, state,
@@ -32,6 +32,7 @@ use katna_sync::{
     autoconfig::{Discovered, Discovery},
     bodies,
     connection::Connection,
+    folders::{self, FolderError},
     net::Tls,
     oauth::TokenSource,
     ops::{self, ChangeError},
@@ -60,8 +61,12 @@ mod linked;
 mod meet;
 mod mutes;
 mod notes;
+mod nudges;
+mod offline;
 mod other_contacts;
 mod reminders;
+mod rules;
+mod rules_server;
 
 pub use mutes::MuteOf;
 pub use reminders::{SNOOZED, is_snoozed_path};
@@ -98,7 +103,7 @@ fn template_name(name: &str) -> Result<String, CommandError> {
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// Something D-Bus clients should hear about.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Notice {
     AccountsChanged,
     StatusChanged(AccountId),
@@ -121,6 +126,17 @@ pub enum Notice {
     ContactsChanged,
     /// Task sync brought changes from a task service.
     TasksChanged,
+    /// Mail rules changed, or one was switched off because it failed.
+    RulesChanged,
+    /// The server refused changes for good and they were undone here:
+    /// how many, of what kind (`katna_sync::ops::Change`, or `other` for
+    /// a mix) and the server's first answer.
+    ChangesRefused {
+        account: AccountId,
+        change: &'static str,
+        count: u32,
+        reason: String,
+    },
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -145,8 +161,20 @@ impl From<ChangeError> for CommandError {
         match err {
             ChangeError::UnknownMessage(id) => Self::UnknownMessage(id),
             ChangeError::UnknownFolder(id) => Self::UnknownFolder(id),
+            ChangeError::Invalid(reason) => Self::InvalidArgs(reason),
             ChangeError::NotPossible(reason) => Self::Failed(reason),
             ChangeError::Store(err) => err.into(),
+        }
+    }
+}
+
+impl From<FolderError> for CommandError {
+    fn from(err: FolderError) -> Self {
+        match err {
+            FolderError::Invalid(reason) => Self::InvalidArgs(reason),
+            FolderError::UnknownFolder(id) => Self::UnknownFolder(id),
+            FolderError::Failed(reason) => Self::Failed(reason),
+            FolderError::Store(err) => err.into(),
         }
     }
 }
@@ -217,6 +245,12 @@ pub struct Daemon {
     offline_days: Mutex<Option<u32>>,
     /// The user's `general.language` setting, as last applied.
     language: Mutex<String>,
+    /// The accounts left out of each app (`hidden_accounts`): their
+    /// tasks' and notes' reminders stay quiet.
+    hidden_accounts: Mutex<HiddenAccounts>,
+    /// Which apps are on (`[apps]`): one turned off isn't synced and its
+    /// reminders, tray items and search results stay away.
+    apps: Mutex<AppsOn>,
     status: Mutex<HashMap<AccountId, Status>>,
     outbox: Mutex<Option<Sending>>,
     /// Why each outbox entry's last try failed.
@@ -288,6 +322,20 @@ pub struct Daemon {
     keyring_waiting: Mutex<std::collections::HashSet<AccountId>>,
     /// Tells [`keyring::run`] that an account waits.
     keyring_wake: (Sender<()>, Receiver<()>),
+    /// Which mail of each account is new, for its mail rules ([`rules`]).
+    rule_watches: Mutex<HashMap<AccountId, katna_sync::rules::Watch>>,
+    /// Has [`rules_server::run`] put the rules of an account (every
+    /// account: `None`) on its mail service.
+    rules_wake: (Sender<Option<AccountId>>, Receiver<Option<AccountId>>),
+    /// Where each account last ran each rule, since the daemon started.
+    rules_placed: Mutex<HashMap<AccountId, rules_server::Placed>>,
+    /// The accounts the user took offline (`[offline]`), as last read
+    /// from the settings ([`offline`]).
+    offline: Mutex<OfflineAccounts>,
+    /// The accounts offline now, as last applied.
+    offline_now: Mutex<std::collections::HashSet<AccountId>>,
+    /// Has [`offline::run`] apply the settings again.
+    offline_wake: (Sender<()>, Receiver<()>),
 }
 
 /// A refresh token that replaced the account's old one.
@@ -319,6 +367,11 @@ impl Daemon {
             metered_setting: Mutex::new(setting),
             offline_days: Mutex::new(sync.offline_window()),
             language: Mutex::new(saved.general.language),
+            hidden_accounts: Mutex::new(saved.hidden_accounts),
+            apps: Mutex::new(saved.apps),
+            offline: Mutex::new(saved.offline),
+            offline_now: Mutex::default(),
+            offline_wake: async_channel::bounded(1),
             status: Mutex::default(),
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
@@ -352,6 +405,9 @@ impl Daemon {
             tasks_status: Mutex::default(),
             keyring_waiting: Mutex::default(),
             keyring_wake: async_channel::bounded(1),
+            rule_watches: Mutex::default(),
+            rules_wake: async_channel::unbounded(),
+            rules_placed: Mutex::default(),
         });
         Ok((daemon, receiver))
     }
@@ -407,6 +463,13 @@ impl Daemon {
         .detach();
         // In the background: at login the keyring may ask to be unlocked,
         // and nothing else waits for that answer.
+        // Before any worker starts: an offline account never connects.
+        self.apply_offline_at_start();
+        smol::spawn(offline::run(
+            Arc::downgrade(self),
+            self.offline_wake.1.clone(),
+        ))
+        .detach();
         let daemon = self.clone();
         smol::spawn(async move {
             for account in accounts {
@@ -422,6 +485,9 @@ impl Daemon {
         ))
         .detach();
         self.start_scheduler();
+        // Sent mail from before this start, for nudges.
+        let daemon = self.clone();
+        smol::unblock(move || daemon.find_nudges()).detach();
         smol::spawn(crate::crash_upload::run(
             Arc::downgrade(self),
             self.crash_uploads.1.clone(),
@@ -447,6 +513,10 @@ impl Daemon {
             notes::run(Arc::downgrade(self), self.notes_wake.1.clone()),
         );
         threads::detach("katna-alarms", alarms::run(Arc::downgrade(self)));
+        threads::detach(
+            "katna-rules",
+            rules_server::run(Arc::downgrade(self), self.rules_wake.1.clone()),
+        );
         Ok(())
     }
 
@@ -1007,6 +1077,8 @@ impl Daemon {
         }
         self.start_account(&account).await;
         self.wake_task_sync();
+        // Mail held for the new password goes now.
+        self.send_waiting_mail(id);
         Ok(())
     }
 
@@ -1044,6 +1116,7 @@ impl Daemon {
         if let Some(notices) = self.new_mail_notices() {
             notices.forget(id);
         }
+        self.forget_rules(id);
         if existed {
             tracing::info!(account = %id, "account removed");
             let _ = self.notices.try_send(Notice::AccountsChanged);
@@ -1224,7 +1297,22 @@ impl Daemon {
     /// Reads the settings file again and applies what the daemon uses from
     /// it (`sync.metered`, `sync.offline_days`, `notifications`, `sounds`,
     /// the `general` language, tray and badge switches, search trigger words,
-    /// `feedback.send_crash_reports`). Katna Mail calls this after saving
+    /// `feedback.send_crash_reports`, the accounts taken `offline`). Katna Mail calls this after saving
+    /// The accounts left out of each app, as last read from the settings.
+    pub(crate) fn hidden_accounts(&self) -> HiddenAccounts {
+        self.hidden_accounts.lock().unwrap().clone()
+    }
+
+    /// Which apps are on, as last read from the settings.
+    pub(crate) fn apps(&self) -> AppsOn {
+        self.apps.lock().unwrap().clone()
+    }
+
+    /// Whether `app` is on: its sync, reminders and search results run.
+    pub(crate) fn app_on(&self, app: AppKind) -> bool {
+        self.apps.lock().unwrap().is_on(app)
+    }
+
     /// settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
         let config = Config::load(&self.paths.config_file())
@@ -1251,17 +1339,92 @@ impl Daemon {
         if std::mem::replace(&mut *self.language.lock().unwrap(), language.clone()) != *language {
             katna_i18n::apply(language);
         }
+        *self.hidden_accounts.lock().unwrap() = config.hidden_accounts.clone();
+        let was = std::mem::replace(&mut *self.apps.lock().unwrap(), config.apps.clone());
+        if was != config.apps {
+            self.apps_changed(&was, &config.apps);
+        }
+        self.set_offline(config.offline.clone());
         if let Some(finder) = self.finder.get() {
             finder.set_triggers(config.general.search_triggers.clone());
         }
         if let Some(desktop) = self.desktop.get() {
-            desktop.settings(config.general.clone());
+            desktop.settings(config.general.clone(), config.apps.clone());
         }
         self.apply_metered();
         // Sending crash reports may have been turned on.
         let _ = self.crash_uploads.0.try_send(());
         // Downloading updates may have been turned on.
         self.updates.settings_changed();
+        Ok(())
+    }
+
+    /// An app turned on syncs at once; reminders are read again either way,
+    /// so an app turned off goes quiet.
+    fn apps_changed(&self, was: &AppsOn, now: &AppsOn) {
+        tracing::info!(?now, "apps turned on or off");
+        for app in AppKind::ALL {
+            if was.is_on(app) || !now.is_on(app) {
+                continue;
+            }
+            match app {
+                AppKind::Calendar => self.wake_calendars(),
+                AppKind::Contacts => self.wake_contacts(),
+                AppKind::Tasks => self.wake_task_sync(),
+                AppKind::Notes => self.wake_notes(),
+                AppKind::Files => {}
+            }
+        }
+        self.wake_scheduler();
+    }
+
+    /// Deletes the local copy of app `key` ([`AppKind::key`]), which must
+    /// be off, so no sync runs into it; once it is on again, its sync
+    /// downloads everything afresh. Whatever only this computer has, or
+    /// has not reached its service yet, stays (`katna_store::forget`).
+    pub fn forget_app(&self, key: &str) -> Result<(), CommandError> {
+        let app = AppKind::from_key(key)
+            .ok_or_else(|| CommandError::InvalidArgs(format!("no app {key:?}")))?;
+        // The settings saying it is off may not have been read yet.
+        if self.app_on(app) {
+            self.reload_config()?;
+        }
+        if self.app_on(app) {
+            return Err(CommandError::InvalidArgs(format!(
+                "{key} is on; turn it off first"
+            )));
+        }
+        match app {
+            AppKind::Calendar => {
+                let gone = self.forget_calendar_copy()?;
+                tracing::info!(gone, "calendars' local copy removed");
+            }
+            AppKind::Contacts => {
+                if self.store().forget_account_contacts()? {
+                    let _ = self.notices.try_send(Notice::ContactsChanged);
+                }
+                tracing::info!("contacts' local copy removed");
+            }
+            AppKind::Tasks => {
+                let gone = self.store().forget_account_task_lists()?;
+                let _ = self.notices.try_send(Notice::TasksChanged);
+                tracing::info!(gone, "task lists' local copy removed");
+            }
+            AppKind::Notes => {
+                let gone = self.store().forget_account_notes()?;
+                tracing::info!(gone, "notes' local copy removed");
+            }
+            AppKind::Files => {
+                // Files keeps no copy of its own: its list is read from
+                // the mail; only the drives' opened files are kept.
+                let drives = self.paths.cache_dir().join("drives");
+                if drives.exists() {
+                    std::fs::remove_dir_all(&drives)
+                        .map_err(|err| CommandError::Failed(err.to_string()))?;
+                }
+                tracing::info!("drive files' local copy removed");
+            }
+        }
         Ok(())
     }
 
@@ -1299,6 +1462,9 @@ impl Daemon {
         let account = account.ok_or_else(|| {
             CommandError::Failed(format!("message {} is not on a server", message.0))
         })?;
+        if self.is_offline(account) {
+            return Err(CommandError::Failed("the account is offline".into()));
+        }
         let session = self.on_demand.session(account);
         let mut connection = session.connection.lock().await;
         let mut store = Store::open(&self.paths, Mode::ReadWrite)?;
@@ -1386,15 +1552,7 @@ impl Daemon {
         name: &str,
         parent: Option<FolderId>,
     ) -> Result<FolderId, CommandError> {
-        let name = name.trim();
-        if name.is_empty() {
-            return Err(CommandError::InvalidArgs("the name is empty".into()));
-        }
-        if name.chars().count() > MAX_FOLDER_NAME || name.chars().any(char::is_control) {
-            return Err(CommandError::InvalidArgs(format!(
-                "a name has at most {MAX_FOLDER_NAME} characters and no line breaks"
-            )));
-        }
+        let name = folder_name(name)?;
         let account = self.account(account)?;
         let parent = match parent {
             Some(id) => Some(
@@ -1406,18 +1564,7 @@ impl Daemon {
             ),
             None => None,
         };
-        let connector = match self.connector(&account).await {
-            Ok(Some(Link::Imap(connector))) => connector,
-            Ok(_) => {
-                return Err(CommandError::InvalidArgs(
-                    "only IMAP accounts have folders on the server".into(),
-                ));
-            }
-            Err(detail) => return Err(CommandError::Failed(detail)),
-        };
-        let mut backend = connector.connect().await.map_err(|err| {
-            CommandError::Failed(format!("could not reach the mail server: {err}"))
-        })?;
+        let mut backend = self.folder_server(&account).await?;
         let created =
             create_on_server(&mut backend, name, parent.as_ref().map(|f| &f.path[..])).await;
         let _ = backend.logout().await;
@@ -1430,11 +1577,95 @@ impl Daemon {
             id
         };
         tracing::info!(account = %account.id, path, "folder created");
-        let _ = self.notices.try_send(Notice::MailChanged(account.id));
-        if let Some(running) = self.workers().get(&account.id) {
+        self.folders_changed(account.id);
+        Ok(id)
+    }
+
+    /// Renames `folder` (a label, on Gmail) to `name` on its account's
+    /// server, keeping it where it is, and in the store; the folders
+    /// inside it move along. Needs the server: fails while offline.
+    /// Special folders keep their names.
+    pub async fn rename_folder(&self, folder: FolderId, name: &str) -> Result<(), CommandError> {
+        let name = folder_name(name)?;
+        let account = self.editable_folder(folder)?;
+        let mut backend = self.folder_server(&account).await?;
+        let mut store = Store::open(&self.paths, Mode::ReadWrite)?;
+        let renamed = folders::rename_folder(&mut backend, &mut store, folder, name).await;
+        let _ = backend.logout().await;
+        renamed?;
+        self.folders_changed(account.id);
+        Ok(())
+    }
+
+    /// Deletes `folder` (a label, on Gmail) and the folders inside it on
+    /// its account's server, then in the store. Elsewhere than on Gmail
+    /// their mail goes to the Trash first, when there is one; on Gmail it
+    /// stays in All Mail and its other labels. Needs the server: fails
+    /// while offline. Special folders stay. Returns how many messages went
+    /// to the Trash.
+    pub async fn delete_folder(&self, folder: FolderId) -> Result<u32, CommandError> {
+        let account = self.editable_folder(folder)?;
+        let mut backend = self.folder_server(&account).await?;
+        let mut store = Store::open(&self.paths, Mode::ReadWrite)?;
+        let deleted = folders::delete_folder(&mut backend, &mut store, folder).await;
+        let _ = backend.logout().await;
+        let moved = deleted?;
+        self.folders_changed(account.id);
+        Ok(moved)
+    }
+
+    /// Puts Gmail labels on messages and takes others off (folder IDs),
+    /// without moving them otherwise.
+    pub fn set_labels(
+        &self,
+        messages: &[MessageId],
+        add: &[FolderId],
+        remove: &[FolderId],
+    ) -> Result<(), CommandError> {
+        self.change(|store| ops::set_labels(store, messages, add, remove))
+    }
+
+    /// The account of `folder`, unless the folder must keep its name and
+    /// stay (special folders, and Snoozed).
+    fn editable_folder(&self, folder: FolderId) -> Result<Account, CommandError> {
+        let (account, found) = folders::editable(&self.store(), folder)?;
+        if is_snoozed_path(&found.path) {
+            return Err(CommandError::InvalidArgs(format!(
+                "\u{201c}{}\u{201d} holds snoozed mail; it cannot be renamed or deleted",
+                found.path
+            )));
+        }
+        self.account(account)
+    }
+
+    /// A new connection to the IMAP server of `account`, for changes to
+    /// its folders.
+    async fn folder_server(
+        &self,
+        account: &Account,
+    ) -> Result<<ImapConnector as Connector>::Backend, CommandError> {
+        let connector = match self.connector(account).await {
+            Ok(Some(Link::Imap(connector))) => connector,
+            Ok(_) => {
+                return Err(CommandError::InvalidArgs(
+                    "only IMAP accounts have folders on the server".into(),
+                ));
+            }
+            Err(detail) => return Err(CommandError::Failed(detail)),
+        };
+        connector
+            .connect()
+            .await
+            .map_err(|err| CommandError::Failed(format!("could not reach the mail server: {err}")))
+    }
+
+    /// The folders of `account` changed on its server: the apps redraw and
+    /// the worker syncs.
+    fn folders_changed(&self, account: AccountId) {
+        let _ = self.notices.try_send(Notice::MailChanged(account));
+        if let Some(running) = self.workers().get(&account) {
             running.handle.sync_now();
         }
-        Ok(id)
     }
 
     /// Moves messages to another folder of their account.
@@ -1628,6 +1859,20 @@ impl Daemon {
         Ok(undone)
     }
 
+    /// Sends a failed message again now.
+    pub fn retry_send(&self, id: i64) -> Result<bool, CommandError> {
+        let queued = outbox::retry(&mut self.store(), id)?;
+        if queued {
+            self.send_errors.lock().unwrap().remove(&id);
+            tracing::info!(id, "sending again");
+            let _ = self.notices.try_send(Notice::OutboxChanged(id));
+            if let Some(sending) = self.outbox.lock().unwrap().as_ref() {
+                sending.handle.wake();
+            }
+        }
+        Ok(queued)
+    }
+
     /// Forgets a cancelled or failed message.
     pub fn discard_send(&self, id: i64) -> Result<bool, CommandError> {
         let discarded = outbox::discard(&mut self.store(), id)?;
@@ -1777,6 +2022,11 @@ impl Daemon {
         if let Some(old) = old {
             stop(account.id, old).await;
         }
+        // It starts when it is brought back online.
+        if self.is_offline(account.id) {
+            self.set_status(account.id, Status::new(state::PAUSED, ""));
+            return;
+        }
         let connector = self.connector(account).await;
         // The keyring may have kept it waiting while the daemon stopped.
         if self.closing.load(Ordering::SeqCst) || self.resetting.load(Ordering::SeqCst) {
@@ -1800,6 +2050,9 @@ impl Daemon {
     /// How to reach the account's IMAP or POP3 server; `None` if it has
     /// none.
     async fn connector(&self, account: &Account) -> Result<Option<Link>, String> {
+        if self.is_offline(account.id) {
+            return Err("the account is offline".into());
+        }
         let settings = self
             .store()
             .account_settings(account.id)
@@ -1843,6 +2096,7 @@ impl Daemon {
         if let Some(notices) = self.new_mail_notices() {
             notices.watch(&self.store(), id);
         }
+        self.watch_rules(id);
         let (handle, control) = worker::control();
         handle.set_metered(self.metered.load(Ordering::Relaxed));
         let (events, received) = async_channel::unbounded();
@@ -1898,22 +2152,45 @@ impl Daemon {
                     }
                     if first {
                         self.name_from_mail(id);
+                        // Online: its rules go to its mail service.
+                        self.place_rules_soon(Some(id));
                     }
                     if changed && self.follow_server_mutes() {
                         self.mail_changed_everywhere();
                     }
-                    if let Some(notices) = self.new_mail_notices() {
-                        notices.synced(&self.store, id).await;
-                    }
+                    // Rules first: what they move or quiet doesn't ring.
+                    self.rules_then_notices(id).await;
                 }
-                Event::Stored(_) | Event::BodiesStored(_) => {
+                Event::Stored(_) => {
                     let _ = self.notices.try_send(Notice::MailChanged(id));
+                    continue;
+                }
+                Event::BodiesStored(_) => {
+                    let _ = self.notices.try_send(Notice::MailChanged(id));
+                    // Mail that waited for its body for a rule.
+                    if self.rules_waiting(id) {
+                        self.rules_then_notices(id).await;
+                    }
                     continue;
                 }
                 Event::ChangesSent(report) => {
                     // Refused changes were undone in the store.
                     if report.failed > 0 {
                         let _ = self.notices.try_send(Notice::MailChanged(id));
+                    }
+                    // And the user hears of it, in words of what they did.
+                    if let Some(first) = report.refused.first() {
+                        let same = report.refused.iter().all(|r| r.change == first.change);
+                        let _ = self.notices.try_send(Notice::ChangesRefused {
+                            account: id,
+                            change: if same {
+                                first.change.as_str()
+                            } else {
+                                katna_sync::ops::Change::Other.as_str()
+                            },
+                            count: report.refused.len() as u32,
+                            reason: first.reason.clone(),
+                        });
                     }
                     continue;
                 }
@@ -2083,6 +2360,10 @@ impl Outgoing for SmtpAccounts {
 
     async fn connect(&self, account: AccountId) -> katna_sync::Result<SmtpSender> {
         let (daemon, settings) = self.settings(account)?;
+        // Waits in the outbox like on a lost network, until it is back.
+        if daemon.is_offline(account) {
+            return Err(katna_sync::Error::Closed("the account is offline".into()));
+        }
         let smtp = settings.smtp.clone().ok_or_else(|| {
             katna_sync::Error::Rejected(format!("account {account} has no SMTP server"))
         })?;
@@ -2184,6 +2465,20 @@ fn unix_now() -> i64 {
 
 /// Longest folder name, in characters (Gmail's limit for labels).
 const MAX_FOLDER_NAME: usize = 225;
+
+/// `name` trimmed, if it can name a folder.
+fn folder_name(name: &str) -> Result<&str, CommandError> {
+    let name = name.trim();
+    if name.is_empty() {
+        return Err(CommandError::InvalidArgs("the name is empty".into()));
+    }
+    if name.chars().count() > MAX_FOLDER_NAME || name.chars().any(char::is_control) {
+        return Err(CommandError::InvalidArgs(format!(
+            "a name has at most {MAX_FOLDER_NAME} characters and no line breaks"
+        )));
+    }
+    Ok(name)
+}
 
 /// Creates `name` inside `parent` (a path) with the server's separator,
 /// and subscribes to it. Returns its path.

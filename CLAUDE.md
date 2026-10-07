@@ -7,6 +7,7 @@ Read first:
 
 - `docs/ARCHITECTURE.md` — what we build and why.
 - `docs/IMPLEMENTATION_PLAN.md` — phases, tasks and "done when" checks.
+- `docs/DESIGN.md` — design tokens and shared controls.
 
 ## Commands
 
@@ -20,6 +21,7 @@ cargo build --release --workspace --bins \
   && cargo build --release -p katna-daemon -p katnactl -p katna-search-cli -p katna-bench \
   && ci/check-sizes.sh                   # non-GUI bins rebuilt without GPUI's features
 ci/gen-credits.sh                        # after adding or removing a dependency
+ci/check-tokens.sh                       # raw radii/text sizes/spacing only go down
 ```
 
 The toolchain is always the latest stable Rust (`rust-toolchain.toml`).
@@ -60,6 +62,10 @@ The toolchain is always the latest stable Rust (`rust-toolchain.toml`).
   `katna_ui::unpx`, never `gpui::px` or `f32::from(Pixels)`, so Settings >
   Appearance > Scaling applies everywhere (`crates/katna-ui/src/scale.rs`;
   clippy's `disallowed-methods` stops `gpui::px`).
+- Radii, spacing, text sizes, state opacities and durations come from
+  `katna_ui::tokens` (`docs/DESIGN.md`), not raw numbers;
+  `ci/check-tokens.sh` only lets the raw count go down (lower
+  `ci/token-budgets.txt` when you lower it).
 - Text people see goes through `katna_i18n::tr!("id")`, never a string
   literal, with the English message added in the same PR to its area's file
   in `i18n/en/<binary>/` (e.g. `i18n/en/katna-mail/settings.ftl`), beside

@@ -22,7 +22,6 @@ settings-tab-experimental = Àdánwò
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = Ṣẹ̀dá, tún orúkọ ṣe, gbé kiri kí o sì fi àwọn fódà àti àmì pamọ́, kí o sì yan èyí tí yóò máa bá ara wọn mu. Àwọn òfin ń tò, ń sàmì sí, ń fi ránṣẹ́ síwájú tàbí ń pa lẹ́tà tuntun rẹ́ fúnra wọn, nípa olùfiránṣẹ́, àkọlé tàbí ọ̀rọ̀.
-settings-tab-mcp-server-coming = Jẹ́ kí àwọn olùrànlọ́wọ́ AI lórí kọ̀ǹpútà yìí ṣàwárí, kà kí wọ́n sì kọ àkọ̀pamọ́ lẹ́tà rẹ, pẹ̀lú àṣẹ rẹ.
 
 ## Settings > General
 

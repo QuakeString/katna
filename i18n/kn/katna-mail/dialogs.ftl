@@ -213,11 +213,9 @@ crash-close = ಮುಚ್ಚಿ
 
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $address } ಗೆ ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡುವಂತೆ { $provider } ಕೇಳುತ್ತಿದೆ.
 sign-in-again-button = ಸೈನ್ ಇನ್ ಮಾಡಿ
 sign-in-again-tooltip = ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ { $provider } ಸೈನ್ ಇನ್ ಪುಟ ತೆರೆಯಿರಿ
 sign-in-again-waiting = ನಿಮ್ಮ ಬ್ರೌಸರ್‌ಗಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ…
-sign-in-again-close = ಮುಚ್ಚಿ
 google-api-off = Katna ದ Google Cloud ಪ್ರಾಜೆಕ್ಟ್‌ನಲ್ಲಿ { $api } ಆಫ್ ಆಗಿದೆ.
 google-api-turn-on = ಆನ್ ಮಾಡಿ
 google-api-turn-on-tooltip = { $api } ಅನ್ನು ಆನ್ ಮಾಡಲು Google Cloud ತೆರೆಯಿರಿ, ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ ಒತ್ತಿರಿ

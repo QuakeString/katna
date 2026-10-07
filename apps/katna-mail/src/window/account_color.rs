@@ -22,6 +22,7 @@ use crate::theme::{
     ACCOUNT_COLORS, Theme, account_color, account_dark, default_account_color,
     settle_account_colors,
 };
+use crate::widgets::ScaledEdge;
 
 /// The color an account wears.
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -32,6 +33,11 @@ enum Wears {
     Own(u32),
 }
 
+/// The ring round an account's picture, and the gap inside it.
+const RING: f32 = 3.0;
+const RING_GAP: f32 = 2.5;
+/// A 32 px picture in its ring, across.
+pub(super) const RING_WIDTH: f32 = 32.0 + 2.0 * (RING + RING_GAP);
 /// The dot of the account's color, across.
 const DOT: f32 = 16.0;
 
@@ -159,23 +165,23 @@ impl MailWindow {
         self.toggle_color_picker(target, window, cx);
     }
 
-    /// `picture` of the account at `address`, `size` across, in a ring
-    /// of its color, a hair apart.
+    /// `picture` of the account at `address` in a ring
+    /// of its color [`RING`] wide, [`RING_GAP`] apart.
     pub(super) fn account_ring(
         &self,
         address: &str,
         picture: AnyElement,
-        size: f32,
         th: &Theme,
     ) -> AnyElement {
+        // The gap is padding, not centring: layout snaps padding and
+        // border to whole device pixels the same on every side, where a
+        // centred picture lands half a pixel off and snaps one way.
         div()
             .flex_none()
-            .size(px(size + 6.0))
             .flex()
-            .items_center()
-            .justify_center()
             .rounded_full()
-            .border_2()
+            .border_px(RING)
+            .p(px(RING_GAP))
             .border_color(rgba(self.account_color(address, th)))
             .child(picture)
             .into_any_element()

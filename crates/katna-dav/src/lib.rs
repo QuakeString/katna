@@ -5,6 +5,7 @@
 
 pub mod ical;
 pub mod occurrences;
+pub mod quick_task;
 pub mod recurrence;
 pub mod todo;
 pub mod vcard;

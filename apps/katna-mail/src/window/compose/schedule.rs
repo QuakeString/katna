@@ -60,13 +60,13 @@ pub(super) fn presets(now: &Zoned) -> Vec<Preset> {
 }
 
 /// When a preset goes out, as the menu shows it: "Sep 27, 8:00 AM".
-pub(super) fn short(at: &Zoned) -> String {
+pub(in crate::window) fn short(at: &Zoned) -> String {
     format::day_month_time(at.datetime())
 }
 
 /// `at` in the user's zone for the snackbar and the list of scheduled
 /// mail: "Sun, Sep 27, 2026, 8:00 AM".
-pub(super) fn describe(at: Timestamp, tz: &TimeZone) -> String {
+pub(in crate::window) fn describe(at: Timestamp, tz: &TimeZone) -> String {
     format::long(at.to_zoned(tz.clone()).datetime())
 }
 

@@ -3,6 +3,7 @@
 //! Shared GPUI components for Katna apps. GPUI types stay in this crate,
 //! `katna-chrome` and the GUI apps. See `docs/ARCHITECTURE.md` §13.
 
+pub mod anchored;
 pub mod frost;
 pub mod glow;
 pub mod motion;
@@ -14,8 +15,15 @@ pub mod schemes;
 pub mod scrollbar;
 pub mod text_area;
 pub mod text_input;
+pub mod tokens;
 pub mod tooltip;
+pub mod window_drag;
 
+/// How strongly hint text in an empty field shows, against the field's
+/// own text colour: faint, so it never reads as something typed.
+pub const PLACEHOLDER_OPACITY: f32 = 0.42;
+
+pub use anchored::anchored;
 pub use glow::Glow;
 pub use motion::Spring;
 pub use rich::RichEditor;
@@ -25,3 +33,4 @@ pub use scrollbar::ScrollBar;
 pub use text_area::{TEXT_AREA_CONTEXT, TextArea};
 pub use text_input::{InputEvent, InputGrammarMenu, TextInput};
 pub use tooltip::{Tooltip, UiFont};
+pub use window_drag::WindowDrag;

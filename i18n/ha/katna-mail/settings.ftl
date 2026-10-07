@@ -22,7 +22,6 @@ settings-tab-experimental = Na gwaji
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = Ƙirƙira, sake suna, matsar da ɓoye folda da lakabai, kuma zaɓi waɗanda za su daidaita. Ƙa'idoji suna tsara, lakaftawa, turawa ko share sabbin wasiƙu da kansu, bisa mai aikawa, jigo ko kalmomi.
-settings-tab-mcp-server-coming = Bari mataimakan AI da ke kan wannan kwamfuta su bincika, karanta da zayyana wasiƙunku, da izininku.
 
 ## Settings > General
 

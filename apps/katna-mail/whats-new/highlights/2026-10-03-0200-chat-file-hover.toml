@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Softer file cards in chats"
+text = """
+A file in a chat bubble no longer turns dark under the pointer. It lifts
+a little with a faint tint, and its name stays easy to read.
+"""

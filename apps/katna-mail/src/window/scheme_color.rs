@@ -11,6 +11,7 @@
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::time::Instant;
 
 use gpui::{
     AnyElement, Bounds, Context, DispatchPhase, Entity, Focusable, MouseButton, MouseDownEvent,
@@ -28,7 +29,7 @@ use super::notched::{self, notch};
 use super::settings::Change;
 use crate::theme::{ACCOUNT_COLORS, Accent, Theme, fade};
 use crate::user_schemes::Seed;
-use crate::widgets::{icon, raised};
+use crate::widgets::icon;
 
 const WIDTH: f32 = 264.0;
 const PAD: f32 = 12.0;
@@ -38,7 +39,7 @@ const ROW: f32 = 32.0;
 const CAPTION: f32 = 16.0;
 const DOT: f32 = 22.0;
 const LINK: f32 = 24.0;
-const RADIUS: f32 = 16.0;
+const RADIUS: f32 = notched::RADIUS;
 /// How many lately picked colors the popover keeps.
 pub(super) const RECENT: usize = 8;
 
@@ -74,6 +75,8 @@ pub(super) struct ColorPicker {
     square: Rc<Cell<Option<Bounds<Pixels>>>>,
     hue: Rc<Cell<Option<Bounds<Pixels>>>>,
     _subscription: Subscription,
+    /// When it closed and began to fade out.
+    fading: Option<Instant>,
 }
 
 impl ColorPicker {
@@ -91,7 +94,11 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        let open = self.color_picker.as_ref().map(ColorPicker::target);
+        let open = self
+            .color_picker
+            .as_ref()
+            .filter(|p| p.fading.is_none())
+            .map(ColorPicker::target);
         self.close_color_picker(cx);
         if open == Some(target) {
             return;
@@ -144,18 +151,33 @@ impl MailWindow {
             square: Rc::default(),
             hue: Rc::default(),
             _subscription: subscription,
+            fading: None,
         });
         cx.notify();
     }
 
     /// Closes the picker, keeping its color among the recent ones.
     pub(super) fn close_color_picker(&mut self, cx: &mut Context<Self>) {
-        let Some(picker) = self.color_picker.take() else {
+        let Some(color) = self
+            .color_picker
+            .as_ref()
+            .filter(|p| p.fading.is_none())
+            .map(|p| p.color)
+        else {
             return;
         };
-        self.recent_colors.retain(|c| *c != picker.color);
-        self.recent_colors.insert(0, picker.color);
+        self.recent_colors.retain(|c| *c != color);
+        self.recent_colors.insert(0, color);
         self.recent_colors.truncate(RECENT);
+        // It fades out where it was.
+        match notched::fade_out(cx) {
+            Some(since) => {
+                if let Some(picker) = &mut self.color_picker {
+                    picker.fading = Some(since);
+                }
+            }
+            None => self.color_picker = None,
+        }
         cx.notify();
     }
 
@@ -319,7 +341,10 @@ impl MailWindow {
         window: &Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
-        let picker = self.color_picker.as_ref().filter(|p| here(p.target))?;
+        let picker = self.color_picker.as_ref().filter(|p| {
+            here(p.target) && !p.fading.is_some_and(|since| notched::faded(since, cx))
+        })?;
+        let fading = picker.fading;
         let swatch = *self.color_swatches.borrow().get(&picker.target)?;
         let color = picker.color;
         let [h, s, v] = picker.hsv;
@@ -519,7 +544,8 @@ impl MailWindow {
                         .justify_center()
                         .rounded(px(10.0))
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", Some(10.0), th))
                         .tooltip(crate::widgets::tip(tr!("scheme-picker-dropper"), th))
                         .on_click(cx.listener(|this, _, _, cx| {
                             #[cfg(not(windows))]
@@ -607,12 +633,8 @@ impl MailWindow {
             .p(px(PAD))
             .flex()
             .flex_col()
-            .border_1()
-            .border_color(rgba(th.outline))
-            .map(|d| raised(d, th, RADIUS, 4.0))
+            .map(|d| notched::popover(d, th))
             .text_color(rgba(th.text))
-            .occlude()
-            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_mouse_down_out(cx.listener(move |this, event: &MouseDownEvent, _, cx| {
                 // The swatch's own click toggles the picker.
                 if !swatch_bounds.contains(&event.position) {
@@ -676,7 +698,8 @@ impl MailWindow {
                             .text_size(px(13.0))
                             .text_color(rgba(th.accent))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.open_system_picker(dialog, cx)
                             }))
@@ -684,11 +707,15 @@ impl MailWindow {
                     ),
                 )
             })
-            .children(notch(side_of, along, (WIDTH, height), th));
+            .children(notch(side_of, along, th));
+        let popover = match fading {
+            Some(_) => notched::fading(popover, "color-picker-out"),
+            None => popover.into_any_element(),
+        };
         let layer = div().relative().w(px(vw)).h(px(vh)).child(popover);
         Some(
             deferred(
-                gpui::anchored()
+                katna_ui::anchored()
                     .position(point(px(0.0), px(0.0)))
                     .child(layer),
             )

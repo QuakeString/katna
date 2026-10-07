@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Settings sorted by app"
+text = """
+Settings now has a list of pages at its side: All apps for what every app
+shares, then Mail, Calendar and Files for their own settings, with Mail's
+pages folding open under it. Settings opens on the app you are in, and
+Calendar has its first settings there.
+"""

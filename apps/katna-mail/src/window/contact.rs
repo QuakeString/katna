@@ -8,7 +8,9 @@
 //! ([`crate::profile`]); nothing is looked up online.
 //!
 //! Desktop windows only, where the reader keeps room enough beside it; the
-//! reader's toolbar shows and hides it.
+//! reader's toolbar shows and hides it. Elsewhere a click on a person
+//! opens the card's summary as a popover ([`peek`]), or a sheet on a
+//! phone.
 
 use std::cell::Cell;
 use std::collections::HashMap;
@@ -16,15 +18,20 @@ use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, ScrollHandle,
-    SharedString, Window, canvas, div, ease_out_quint, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, Bounds, ClipboardItem, Context, FontWeight, Pixels,
+    ScrollHandle, SharedString, Window, canvas, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_dav::Occurrence;
 use katna_i18n::tr;
 use katna_render::signature;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
-use katna_ui::{Ripple, px, unpx};
+use katna_ui::tokens::space;
+use katna_ui::{px, unpx};
+
+mod peek;
+
+pub(super) use peek::ContactPeek;
 
 use super::MailWindow;
 use super::attachments::kind_badge;
@@ -36,7 +43,9 @@ use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
 use crate::profile::{self, Profile};
 use crate::theme::{Theme, mix};
-use crate::widgets::{card_outline, card_shadow, icon, icon_button, icon_button_colored, tip};
+use crate::widgets::{
+    card_outline, icon, icon_button, icon_button_colored, tip, tonal_icon_button,
+};
 
 /// The card's width.
 pub(super) const CONTACT_WIDTH: f32 = 300.0;
@@ -99,6 +108,8 @@ pub(super) struct ContactPanel {
     more: Option<String>,
     /// 0 = the first few conversations, 1 = all of them.
     more_spring: Spring,
+    /// More's arrow, turning as the list grows or shrinks.
+    more_arrow: crate::widgets::Fold,
     /// The panel folded the folders to make room: they unfold again when
     /// it goes.
     folded_nav: bool,
@@ -112,6 +123,15 @@ pub(super) struct ContactPanel {
     nav_hold: bool,
     /// On a phone the card rises from the bottom instead.
     sheet: Sheet,
+    /// Where the panel has no room, a summary of the card pops over
+    /// where the name or picture was clicked.
+    peek: Option<ContactPeek>,
+    /// Where the names and pictures that open the card were drawn.
+    spots: peek::Spots,
+    /// Who the popover was last showing, what it pointed at and when it
+    /// closed: a press on that same name or picture closes it first, and
+    /// the click that follows must not open it again.
+    peek_shut: Option<(String, Bounds<Pixels>, Instant)>,
 }
 
 impl ContactPanel {
@@ -124,11 +144,15 @@ impl ContactPanel {
             companies: HashMap::new(),
             more: None,
             more_spring: Spring::new(motion::SMOOTH, 0.0),
+            more_arrow: crate::widgets::Fold::default(),
             folded_nav: false,
             scroll: ScrollHandle::new(),
             actions_at: Rc::new(Cell::new((ACTIONS_AT, 1.0))),
             nav_hold: false,
             sheet: Sheet::new(),
+            peek: None,
+            spots: Default::default(),
+            peek_shut: None,
         }
     }
 
@@ -177,6 +201,7 @@ impl MailWindow {
     /// the window has room for both. `room` is what the folders, the cards
     /// and the panel share.
     pub(super) fn fold_nav_for_contact(&mut self, room: f32) {
+        self.settle_contact_peek();
         let wanted = self.contact_wanted();
         if !wanted {
             self.contact.nav_hold = false;
@@ -240,18 +265,27 @@ impl MailWindow {
     }
 
     /// Shows `email` (lower case) in the panel, opening it if it was put
-    /// away: an address clicked in the open mail's details.
-    /// A second click on the person whose card shows puts the panel away.
-    pub(super) fn show_person(&mut self, email: &str, cx: &mut Context<Self>) {
+    /// away: an address clicked in the open mail's details (`at`, see
+    /// [`MailWindow::person_at`]). A second click on the person whose
+    /// card shows puts the panel away.
+    pub(super) fn show_person(&mut self, email: &str, at: Bounds<Pixels>, cx: &mut Context<Self>) {
         if let Some(key) = self.reader.as_ref().map(|r| r.key) {
-            self.show_contact_of(key, email, cx);
+            self.show_contact_of(key, email, at, cx);
         }
     }
 
     /// Shows `email`'s card for conversation `key`, opening the panel if
-    /// it is hidden: a click on a name or picture in the chat view. A
-    /// second click on the person whose card shows puts the panel away.
-    pub(super) fn show_contact_of(&mut self, key: EntryKey, email: &str, cx: &mut Context<Self>) {
+    /// it is hidden: a click on a name or picture in the chat view, drawn
+    /// at `at`. A second click on the person whose card shows puts the
+    /// panel away. Where the panel has no room, the card's summary pops
+    /// over, pointing at `at`, instead.
+    pub(super) fn show_contact_of(
+        &mut self,
+        key: EntryKey,
+        email: &str,
+        at: Bounds<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
         let email = email.to_lowercase();
         // A phone has no room beside the chat: the card rises as a sheet.
         if self.layout.shape.is_phone() {
@@ -260,7 +294,23 @@ impl MailWindow {
             cx.notify();
             return;
         }
-        let shown = self.config.mail.contact_panel && self.contact_offered();
+        if !self.contact_offered() {
+            // A second click on what the popover points at closes it: the
+            // press already did, so the click leaves it shut.
+            if let Some((who, was, when)) = self.contact.peek_shut.take()
+                && who == email
+                && was.dilate(px(2.0)).contains(&at.center())
+                && when.elapsed() < Duration::from_secs(1)
+            {
+                return;
+            }
+            self.contact.picked = Some((key, email));
+            self.contact.peek = Some(ContactPeek::new(key, at));
+            cx.notify();
+            return;
+        }
+        self.contact.peek = None;
+        let shown = self.config.mail.contact_panel;
         if shown && self.contact_person_shown().as_deref() == Some(email.as_str()) {
             self.toggle_contact_panel(cx);
             return;
@@ -351,6 +401,11 @@ impl MailWindow {
 
     /// The profile of `email`, read in the background when not known or
     /// stale; the old one shows meanwhile.
+    /// `email`'s details are being read for the first time.
+    fn contact_reading(&self, email: &str) -> bool {
+        matches!(self.contact.profiles.get(email), Some((_, None)))
+    }
+
     fn contact_profile(&mut self, email: &str, cx: &mut Context<Self>) -> Option<Rc<Profile>> {
         let known = self.contact.profiles.get(email).cloned();
         // Being read for the first time, or read a while ago.
@@ -373,7 +428,10 @@ impl MailWindow {
                     .background_executor()
                     .spawn({
                         let address = address.clone();
-                        async move { profile::read(&paths, &address, &task_mails) }
+                        async move {
+                            std::thread::sleep(std::time::Duration::from_millis(1500));
+                            profile::read(&paths, &address, &task_mails)
+                        }
                     })
                     .await;
                 this.update(cx, |this, cx| {
@@ -392,6 +450,12 @@ impl MailWindow {
             .detach();
         }
         known.and_then(|(_, p)| p)
+    }
+
+    /// The pointer is on a name or picture that opens `email`'s card:
+    /// its profile is read now, so the card opens with it.
+    pub(in crate::window) fn read_person_ahead(&mut self, email: &str, cx: &mut Context<Self>) {
+        self.contact_profile(&email.to_lowercase(), cx);
     }
 
     /// Asks the daemon once for the company of the person at `email`:
@@ -494,7 +558,7 @@ impl MailWindow {
         }
         let body = div()
             .pb(px(8.0))
-            .child(self.contact_card_body(th, cx).0)
+            .child(self.contact_card_body(false, th, cx).0)
             .into_any_element();
         self.bottom_sheet(
             "contact-sheet",
@@ -519,7 +583,7 @@ impl MailWindow {
         );
         let (shadow, edge) = self.card_edges(0.0, outline);
         let (place, stuck) = self.contact_bar();
-        let (body, actions) = self.contact_card_body(th, cx);
+        let (body, actions) = self.contact_card_body(false, th, cx);
         let glass = (actions.is_some() && stuck > 0.0).then(|| {
             crate::widgets::frosted_top(
                 div()
@@ -556,10 +620,8 @@ impl MailWindow {
             .id("contact-card")
             .size_full()
             .relative()
-            .rounded(px(radius))
             .overflow_hidden()
-            .bg(rgba(th.surface))
-            .shadow(card_shadow(th, shadow))
+            .map(|d| crate::widgets::card(d, th, th.pane(), radius, shadow))
             .p(px(outline))
             .child(
                 div()
@@ -586,8 +648,11 @@ impl MailWindow {
 
     /// What the card shows of the person picked, else the newest sender,
     /// and the bar of round buttons drawn over it beside an open mail.
+    /// The `summary` is the popover's: the name, the round buttons and
+    /// the details, without the mail, conversations and files.
     fn contact_card_body(
         &mut self,
+        summary: bool,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> (AnyElement, Option<AnyElement>) {
@@ -612,18 +677,20 @@ impl MailWindow {
                 if let Some(profile) = &profile {
                     self.contact_company(&email, profile.card.website.as_deref(), cx);
                 }
-                self.render_contact_body(&email, name.as_deref(), profile, &people, th, cx)
+                self.render_contact_body(&email, name.as_deref(), profile, &people, summary, th, cx)
             }
             None => (contact_empty(th), None),
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn render_contact_body(
         &self,
         email: &str,
         name: Option<&str>,
         profile: Option<Rc<Profile>>,
         people: &[(String, Option<String>)],
+        summary: bool,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> (AnyElement, Option<AnyElement>) {
@@ -693,7 +760,7 @@ impl MailWindow {
             .items_center()
             .gap(px(12.0))
             // Clear of the close button in the corner.
-            .pr(px(30.0))
+            .when(!summary, |d| d.pr(px(30.0)))
             .child(self.person_avatar(&shown_name, email, PICTURE))
             .child(
                 div()
@@ -709,7 +776,8 @@ impl MailWindow {
                             .items_center()
                             .gap(px(6.0))
                             .child(
-                                words(&mut pieces, shown_name.clone())
+                                pieces
+                                    .words(shown_name.clone())
                                     .min_w_0()
                                     .text_size(px(16.0))
                                     .line_height(px(22.0))
@@ -721,7 +789,8 @@ impl MailWindow {
                     )
                     .when(name.is_some(), |d| {
                         d.child(
-                            words(&mut pieces, email.to_owned())
+                            pieces
+                                .words(email.to_owned())
                                 .text_size(px(13.0))
                                 .line_height(px(18.0))
                                 .text_color(rgba(th.text_dim))
@@ -737,13 +806,16 @@ impl MailWindow {
                 .map(|p| p.number.clone())
         });
         // On a phone the card is a sheet with no close button, and the
-        // buttons scroll with the rest.
-        let sheet = self.layout.shape.is_phone();
+        // buttons scroll with the rest, as in the popover.
+        let sheet = self.layout.shape.is_phone() || summary;
         let stuck = if sheet { 0.0 } else { self.contact_bar().1 };
         let size = ACTION.0 + (ACTION_STUCK.0 - ACTION.0) * stuck;
         let mut actions = self.contact_actions(email, phone, size, th, cx);
         // Their address book entry: open it, or save them in one click.
-        if !own && self.contacts.book.as_ref().is_some_and(|b| b.is_ok()) {
+        if !own
+            && self.app_on(super::apps::App::Contacts)
+            && self.contacts.book.as_ref().is_some_and(|b| b.is_ok())
+        {
             actions = actions.child(self.contact_save_button(
                 email,
                 name.clone(),
@@ -763,7 +835,8 @@ impl MailWindow {
         let mut sections: Vec<AnyElement> = Vec::new();
         if own {
             sections.push(
-                words(&mut pieces, tr!("contact-own-account"))
+                pieces
+                    .words(tr!("contact-own-account"))
                     .text_size(px(14.0))
                     .line_height(px(20.0))
                     .text_color(rgba(th.text))
@@ -777,9 +850,17 @@ impl MailWindow {
         {
             sections.push(details);
         }
+        // The popover while their details are still being read: faint
+        // lines where they will go, so it opens at about its full height.
+        if summary && !own && profile.is_none() && self.contact_reading(email) {
+            sections.push(contact_placeholder(th, cx.reduce_motion()));
+        }
         // The company as its home page describes it, else as the
         // signature does.
-        let company = looked_up.or_else(|| {
+        let company = looked_up.filter(|_| !summary).or_else(|| {
+            if summary {
+                return None;
+            }
             let from = details.as_ref().map(|d| &d.company);
             let name = from
                 .and_then(|c| c.name.clone().or_else(|| c.logo.clone()))
@@ -809,7 +890,7 @@ impl MailWindow {
                 th,
             ));
         }
-        if let Some(profile) = &profile {
+        if let Some(profile) = profile.as_ref().filter(|_| !summary) {
             sections.push(self.contact_mail(profile, &mut pieces, th));
             if let Some(tasks) = self.contact_tasks(&profile.task_mails, &mut pieces, th, cx) {
                 sections.push(tasks);
@@ -830,12 +911,13 @@ impl MailWindow {
                 sections.push(self.contact_files(&profile.files, &mut pieces, th, cx));
             }
         }
-        if people.len() > 1 {
+        if !summary && people.len() > 1 {
             sections.push(self.contact_others(email, people, &mut pieces, th, cx));
         }
         let tint = card_tint(th);
-        let foot = profile.is_some().then(|| {
-            words(&mut pieces, tr!("contact-local-only"))
+        let foot = (profile.is_some() && !summary).then(|| {
+            pieces
+                .words(tr!("contact-local-only"))
                 .px(px(4.0))
                 .text_size(px(12.0))
                 .line_height(px(16.0))
@@ -874,7 +956,8 @@ impl MailWindow {
         let body = selectable(body, Some(CONTACT_PART), cx)
             .with_animation(
                 ("contact-person", person_number(email)),
-                Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(220)))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element();
@@ -924,7 +1007,8 @@ impl MailWindow {
             .child(actions)
             .with_animation(
                 ("contact-bar", person_number(email)),
-                Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(220)))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
             .into_any_element();
@@ -963,24 +1047,8 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> gpui::Div {
-        let (bg, bg_hover) = action_tint(th);
         let button = |id: &'static str, name: &str, label: String| {
-            div()
-                .id(id)
-                .relative()
-                .overflow_hidden()
-                .size(px(size))
-                .flex_none()
-                .flex()
-                .items_center()
-                .justify_center()
-                .rounded_full()
-                .cursor_pointer()
-                .bg(rgba(bg))
-                .hover(move |s| s.bg(rgba(bg_hover)))
-                .tooltip(tip(label, th))
-                .child(Ripple::new((id, 0usize), rgba(th.ripple)).centered())
-                .child(icon(name, th.accent, 20.0))
+            tonal_icon_button(id, name, size, false, true, th).tooltip(tip(label, th))
         };
         let to = email.to_owned();
         let query = format!("from:{email} OR to:{email}");
@@ -989,27 +1057,13 @@ impl MailWindow {
             (!self.is_own(email)).then(|| {
                 let muted = self.sender_muted(email);
                 let address = email.to_owned();
-                let (fill, glyph, label) = if muted {
-                    (th.accent | 0xff, th.on_accent, tr!("quiet-unmute-sender"))
+                let label = if muted {
+                    tr!("quiet-unmute-sender")
                 } else {
-                    (bg, th.accent, tr!("quiet-mute-sender"))
+                    tr!("quiet-mute-sender")
                 };
-                div()
-                    .id("contact-mute")
-                    .relative()
-                    .overflow_hidden()
-                    .size(px(size))
-                    .flex_none()
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .rounded_full()
-                    .cursor_pointer()
-                    .bg(rgba(fill))
-                    .when(!muted, |d| d.hover(move |s| s.bg(rgba(bg_hover))))
+                tonal_icon_button("contact-mute", "bell-off", size, muted, true, th)
                     .tooltip(tip(label, th))
-                    .child(Ripple::new(("contact-mute", 0usize), rgba(th.ripple)).centered())
-                    .child(icon("bell-off", glyph, 20.0))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.mute_sender(address.clone(), !muted, cx)
                     }))
@@ -1053,7 +1107,6 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let (bg, bg_hover) = action_tint(th);
         let saved = self.is_saved_contact(email);
         let adding = self.contacts.adding.contains(&email.trim().to_lowercase());
         let (glyph, label) = if saved {
@@ -1062,33 +1115,18 @@ impl MailWindow {
             ("person-add", tr!("contact-add-to-contacts"))
         };
         let email = email.to_owned();
-        div()
-            .id("contact-save")
-            .relative()
-            .overflow_hidden()
-            .size(px(size))
-            .flex_none()
-            .flex()
-            .items_center()
-            .justify_center()
-            .rounded_full()
-            .bg(rgba(bg))
+        tonal_icon_button("contact-save", glyph, size, false, !adding, th)
             .tooltip(tip(label, th))
-            .when(adding, |d| d.opacity(0.5))
             .when(!adding, |d| {
-                d.cursor_pointer()
-                    .hover(move |s| s.bg(rgba(bg_hover)))
-                    .child(Ripple::new(("contact-save", 0usize), rgba(th.ripple)).centered())
-                    .on_click(cx.listener(move |this, _, window, cx| {
-                        if this.is_saved_contact(&email) {
-                            this.show_saved_contact(&email, cx);
-                            window.focus(&this.window_focus, cx);
-                        } else {
-                            this.add_to_contacts(&email, name.clone(), signature.clone(), cx);
-                        }
-                    }))
+                d.on_click(cx.listener(move |this, _, window, cx| {
+                    if this.is_saved_contact(&email) {
+                        this.show_saved_contact(&email, cx);
+                        window.focus(&this.window_focus, cx);
+                    } else {
+                        this.add_to_contacts(&email, name.clone(), signature.clone(), cx);
+                    }
+                }))
             })
-            .child(icon(glyph, th.accent, 20.0))
             .into_any_element()
     }
 
@@ -1112,8 +1150,8 @@ impl MailWindow {
             div()
                 .flex()
                 .flex_col()
-                .child(words(pieces, first.clone()))
-                .children(under.map(|company| words(pieces, company).text_color(rgba(th.text_dim))))
+                .child(pieces.words(first.clone()))
+                .children(under.map(|company| pieces.words(company).text_color(rgba(th.text_dim))))
                 .into_any_element()
         });
         // Every number their signature gives, with its kind; the one read
@@ -1143,10 +1181,11 @@ impl MailWindow {
         });
         let emails = details
             .filter(|d| !d.emails.is_empty())
-            .map(|d| words(pieces, d.emails.join("\n")).into_any_element());
+            .map(|d| pieces.words(d.emails.join("\n")).into_any_element());
         // Any other line their signature has, quietly.
         let other = details.filter(|d| !d.other.is_empty()).map(|d| {
-            words(pieces, d.other.join("\n"))
+            pieces
+                .words(d.other.join("\n"))
                 .text_color(rgba(th.text_dim))
                 .into_any_element()
         });
@@ -1163,7 +1202,7 @@ impl MailWindow {
                 offset = profile::offset_label(minutes)
             ))
         });
-        let time = time.map(|t| words(pieces, t).into_any_element());
+        let time = time.map(|t| pieces.words(t).into_any_element());
         let rows: Vec<(&str, AnyElement)> = [
             ("work", work),
             ("phone", phone),
@@ -1247,7 +1286,8 @@ impl MailWindow {
         .collect::<Vec<_>>()
         .join(" · ");
         let text = |pieces: &mut Pieces, text: &str| {
-            words(pieces, text.to_owned())
+            pieces
+                .words(text.to_owned())
                 .text_size(px(13.0))
                 .line_height(px(19.0))
                 .text_color(rgba(th.text))
@@ -1315,7 +1355,8 @@ impl MailWindow {
                             .flex()
                             .flex_col()
                             .children(office.label.clone().map(|label| {
-                                words(pieces, label)
+                                pieces
+                                    .words(label)
                                     .text_size(px(12.0))
                                     .line_height(px(17.0))
                                     .text_color(rgba(th.text_dim))
@@ -1329,19 +1370,17 @@ impl MailWindow {
             .then(|| format::ago(company.checked, now))
             .flatten()
             .map(|when| {
-                words(
-                    pieces,
-                    tr!(
+                pieces
+                    .words(tr!(
                         "contact-company-from",
                         site = host_label(&company.website),
                         when = when
-                    ),
-                )
-                .text_size(px(11.5))
-                .line_height(px(16.0))
-                .text_color(rgba(th.text_faint))
+                    ))
+                    .text_size(px(11.5))
+                    .line_height(px(16.0))
+                    .text_color(rgba(th.text_faint))
             });
-        section(words(pieces, tr!("contact-company")), th)
+        section(pieces.words(tr!("contact-company")), th)
             .gap(px(8.0))
             .child(
                 div()
@@ -1357,7 +1396,8 @@ impl MailWindow {
                             .flex()
                             .flex_col()
                             .child(
-                                words(pieces, company.name.clone())
+                                pieces
+                                    .words(company.name.clone())
                                     .text_size(px(14.0))
                                     .line_height(px(20.0))
                                     .font_weight(FontWeight::MEDIUM)
@@ -1365,7 +1405,8 @@ impl MailWindow {
                             )
                             .when(!about.is_empty(), |d| {
                                 d.child(
-                                    words(pieces, about)
+                                    pieces
+                                        .words(about)
                                         .text_size(px(12.0))
                                         .line_height(px(16.0))
                                         .text_color(rgba(th.text_dim)),
@@ -1373,7 +1414,8 @@ impl MailWindow {
                             })
                             // "Part of the Demo Group", from the signature.
                             .children(group.map(|group| {
-                                words(pieces, group)
+                                pieces
+                                    .words(group)
                                     .text_size(px(12.0))
                                     .line_height(px(16.0))
                                     .text_color(rgba(th.text_dim))
@@ -1474,23 +1516,22 @@ impl MailWindow {
                 .map(katna_i18n::format::day_month_year)
                 .unwrap_or_default()
         };
-        let count = words(pieces, tr!("contact-messages", count = summary.messages))
+        let count = pieces
+            .words(tr!("contact-messages", count = summary.messages))
             .text_size(px(14.0))
             .line_height(px(20.0))
             .font_weight(FontWeight::MEDIUM)
             .text_color(rgba(th.text));
-        let from_to = words(
-            pieces,
-            tr!(
+        let from_to = pieces
+            .words(tr!(
                 "contact-from-to",
                 from = katna_i18n::format::number(summary.from_them),
                 to = katna_i18n::format::number(summary.to_them)
-            ),
-        )
-        .pb(px(4.0))
-        .text_size(px(13.0))
-        .line_height(px(18.0))
-        .text_color(rgba(th.text_dim));
+            ))
+            .pb(px(4.0))
+            .text_size(px(13.0))
+            .line_height(px(18.0))
+            .text_color(rgba(th.text_dim));
         let mut fact = |label: String, value: String| {
             div()
                 .flex()
@@ -1499,8 +1540,8 @@ impl MailWindow {
                 .gap(px(12.0))
                 .text_size(px(13.0))
                 .line_height(px(18.0))
-                .child(words(pieces, label).text_color(rgba(th.text_dim)))
-                .child(words(pieces, value).text_color(rgba(th.text)))
+                .child(pieces.words(label).text_color(rgba(th.text_dim)))
+                .child(pieces.words(value).text_color(rgba(th.text)))
         };
         let dates = summary.first.is_some().then(|| {
             [
@@ -1551,7 +1592,8 @@ impl MailWindow {
             row(("contact-conversation", ix), th)
                 .when(open == Some(key), |d| d.bg(rgba(th.hover)))
                 .child(
-                    words(pieces, subject)
+                    pieces
+                        .words(subject)
                         .flex_1()
                         .min_w_0()
                         .truncate()
@@ -1560,14 +1602,16 @@ impl MailWindow {
                 )
                 .when(c.count > 1, |d| {
                     d.child(
-                        words(pieces, katna_i18n::format::number(u64::from(c.count)))
+                        pieces
+                            .words(katna_i18n::format::number(u64::from(c.count)))
                             .flex_none()
                             .cursor_pointer()
                             .text_color(rgba(th.text_faint)),
                     )
                 })
                 .child(
-                    words(pieces, date)
+                    pieces
+                        .words(date)
                         .flex_none()
                         .cursor_pointer()
                         .text_size(px(12.0))
@@ -1579,7 +1623,7 @@ impl MailWindow {
         });
         let first: Vec<_> = rows.by_ref().take(SHOWN).collect();
         let rest: Vec<_> = rows.collect();
-        let mut list = section(words(pieces, tr!("contact-conversations")), th).children(first);
+        let mut list = section(pieces.words(tr!("contact-conversations")), th).children(first);
         if rest.is_empty() {
             return list.into_any_element();
         }
@@ -1617,7 +1661,8 @@ impl MailWindow {
                     .h(px(28.0))
                     .rounded_full()
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .text_size(px(13.0))
                     .font_weight(FontWeight::MEDIUM)
                     .text_color(rgba(th.accent))
@@ -1626,12 +1671,15 @@ impl MailWindow {
                     } else {
                         tr!("contact-less")
                     })
-                    .child(icon(
-                        if more { "chevron-down" } else { "chevron-up" },
+                    .child(crate::widgets::fold_arrow(
+                        "contact-more-arrow",
+                        &self.contact.more_arrow,
+                        !more,
                         th.accent,
                         18.0,
                     ))
                     .on_click(cx.listener(move |this, _, _, cx| {
+                        this.contact.more_arrow.turn();
                         this.contact.more = more.then(|| person.clone());
                         cx.notify();
                     })),
@@ -1650,11 +1698,11 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let tasks = self.tasks_of_mails(mails);
-        if tasks.is_empty() {
+        if tasks.is_empty() || !self.app_on(super::apps::App::Tasks) {
             return None;
         }
         let today = super::tasks_page::today();
-        let title = words(pieces, tr!("contact-tasks"));
+        let title = pieces.words(tr!("contact-tasks"));
         let rows: Vec<_> = tasks
             .into_iter()
             .map(|(task, done)| {
@@ -1682,7 +1730,8 @@ impl MailWindow {
                             })),
                     )
                     .child(
-                        words(pieces, task.title.clone())
+                        pieces
+                            .words(task.title.clone())
                             .flex_1()
                             .min_w_0()
                             .truncate()
@@ -1691,7 +1740,8 @@ impl MailWindow {
                             .when(done, |d| d.line_through()),
                     )
                     .children(due.map(|(label, past)| {
-                        words(pieces, label)
+                        pieces
+                            .words(label)
                             .flex_none()
                             .cursor_pointer()
                             .text_size(px(12.0))
@@ -1744,7 +1794,8 @@ impl MailWindow {
                 )
                 .child(icon("event", color, 18.0))
                 .child(
-                    words(pieces, title)
+                    pieces
+                        .words(title)
                         .flex_1()
                         .min_w_0()
                         .truncate()
@@ -1752,7 +1803,8 @@ impl MailWindow {
                         .text_color(rgba(th.text)),
                 )
                 .child(
-                    words(pieces, when)
+                    pieces
+                        .words(when)
                         .flex_none()
                         .cursor_pointer()
                         .text_size(px(12.0))
@@ -1763,7 +1815,7 @@ impl MailWindow {
                 }))
             })
             .collect();
-        section(words(pieces, tr!("contact-meetings")), th)
+        section(pieces.words(tr!("contact-meetings")), th)
             .children(rows)
             .into_any_element()
     }
@@ -1775,7 +1827,7 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        section(words(pieces, tr!("contact-files")), th)
+        section(pieces.words(tr!("contact-files")), th)
             .children(files.iter().enumerate().map(|(ix, f)| {
                 let file = RowFile {
                     message: f.message,
@@ -1795,7 +1847,8 @@ impl MailWindow {
                     .children(fill)
                     .child(kind_badge(kind, 20.0))
                     .child(
-                        words(pieces, f.name.clone())
+                        pieces
+                            .words(f.name.clone())
                             .flex_1()
                             .min_w_0()
                             .truncate()
@@ -1803,7 +1856,8 @@ impl MailWindow {
                             .text_color(rgba(th.text)),
                     )
                     .child(
-                        words(pieces, format::size(f.size))
+                        pieces
+                            .words(format::size(f.size))
                             .flex_none()
                             .cursor_pointer()
                             .text_size(px(12.0))
@@ -1828,7 +1882,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let key = self.reader.as_ref().map(|r| r.key);
-        section(words(pieces, tr!("contact-people")), th)
+        section(pieces.words(tr!("contact-people")), th)
             .children(
                 people
                     .iter()
@@ -1841,7 +1895,8 @@ impl MailWindow {
                         row(("contact-person", ix), th)
                             .child(self.person_avatar(&label, email, 24.0))
                             .child(
-                                words(pieces, label)
+                                pieces
+                                    .words(label)
                                     .min_w_0()
                                     .truncate()
                                     .cursor_pointer()
@@ -1920,12 +1975,6 @@ fn section(title: gpui::Div, th: &Theme) -> gpui::Div {
     )
 }
 
-/// `text` as a run of the card's selectable text, in a box to style.
-fn words(pieces: &mut Pieces, text: impl Into<SharedString>) -> gpui::Div {
-    let (styled, holder) = pieces.piece(text.into(), Vec::new());
-    holder.child(styled)
-}
-
 /// A company as the daemon describes it
 /// (`katna_sync::pictures::Company`).
 #[derive(Debug, Default, serde::Deserialize)]
@@ -1960,7 +2009,8 @@ fn page_chips(id: &'static str, pages: &[signature::Link], th: &Theme) -> AnyEle
                 .rounded_full()
                 .bg(rgba(th.chip))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", None, th))
                 .tooltip(tip(link.url.clone(), th))
                 .on_click(move |_, _, cx| cx.open_url(&url));
             match brand_icon(link.site) {
@@ -2042,15 +2092,6 @@ fn card_tint(th: &Theme) -> u32 {
 }
 
 /// The round buttons under the name, and under the pointer.
-fn action_tint(th: &Theme) -> (u32, u32) {
-    let accent = opaque_accent(th);
-    let t = if th.dark { 0.16 } else { 0.17 };
-    (
-        mix(th.surface, accent, t),
-        mix(th.surface, accent, t + 0.08),
-    )
-}
-
 fn opaque_accent(th: &Theme) -> u32 {
     th.accent | 0xff
 }
@@ -2069,7 +2110,8 @@ fn row(id: impl Into<gpui::ElementId>, th: &Theme) -> gpui::Stateful<gpui::Div> 
         .rounded(px(8.0))
         .text_size(px(13.0))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
 }
 
 /// A stable number for an address, for its fade-in.
@@ -2095,4 +2137,34 @@ fn snap(offset: f32, device: f32) -> f32 {
     }
     let dev = offset * device;
     (dev.abs() - 0.5).ceil().copysign(dev) / device
+}
+
+/// Widths of the placeholder lines, as parts of the row.
+const PLACEHOLDER_LINES: [f32; 3] = [0.7, 0.55, 0.8];
+
+/// Faint lines in the shape of the details' rows: an icon and a line of
+/// text each, breathing gently until the details come.
+fn contact_placeholder(th: &Theme, reduce: bool) -> AnyElement {
+    let rows = div()
+        .flex()
+        .flex_col()
+        // As far apart as the details' rows.
+        .gap(px(space::S3 + space::S1))
+        .children(PLACEHOLDER_LINES.iter().map(|width| {
+            div()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(space::S4))
+                .h(px(20.0))
+                .child(super::skeleton::bone(th).size(px(18.0)))
+                .child(
+                    div().flex_1().child(
+                        super::skeleton::bone(th)
+                            .h(px(10.0))
+                            .w(gpui::relative(*width)),
+                    ),
+                )
+        }));
+    super::skeleton::breathing("contact-placeholder", rows, reduce)
 }

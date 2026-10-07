@@ -165,7 +165,8 @@ impl MailWindow {
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.accent))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(16.0), th))
         };
         let (view, copy, delete) = (report.clone(), report.clone(), report.clone());
         div()

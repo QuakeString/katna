@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "All Accounts shows every picture"
+text = """
+With All Accounts open, the picture at the top right is now a small stack
+of your accounts' pictures, with +N for the rest, so you can tell it from a
+single account at a glance. Point at it and the pictures ease apart.
+"""

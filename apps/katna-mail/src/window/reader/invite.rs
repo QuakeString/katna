@@ -19,7 +19,7 @@ use katna_ui::px;
 
 use super::super::MailWindow;
 use super::super::calendar::{civil, event_color, read, time_range};
-use crate::theme::{Theme, fade};
+use crate::theme::{Theme, fade, mix};
 use crate::widgets::{icon, outlined_button};
 
 /// How far around the event the user's day is shown (seconds).
@@ -98,7 +98,7 @@ impl Invite {
         let event = &self.event;
         let (from, to) = (event.start - AROUND, event.end.max(event.start) + AROUND);
         // Birthdays take no time.
-        let look = match read(paths, from, to, tz, false) {
+        let look = match read(paths, from, to, tz, Some(false), &[]) {
             Ok((calendars, occurrences)) => {
                 let (found, others): (Vec<_>, Vec<_>) = occurrences
                     .into_iter()
@@ -503,7 +503,10 @@ impl MailWindow {
 
         let join = (!event.join_url.is_empty() && event.status != EventStatus::Cancelled)
             .then(|| event.join_url.clone());
-        let day = found.map(|o| civil(o.start, tz).date());
+        // With the Calendar off, the card still answers by mail.
+        let day = found
+            .filter(|_| self.app_on(super::super::apps::App::Calendar))
+            .map(|o| civil(o.start, tz).date());
         let actions = div()
             .flex()
             .flex_row()
@@ -530,10 +533,8 @@ impl MailWindow {
             .id(("invite", ix))
             .mb(px(16.0))
             .p(px(16.0))
-            .rounded(px(12.0))
-            .border_1()
-            .border_color(rgba(th.outline))
-            .bg(rgba(fade(color, 0.05)))
+            .map(|d| crate::widgets::tile(d, th))
+            .bg(rgba(mix(th.surface, color | 0xff, 0.05)))
             .flex()
             .flex_col()
             .gap(px(12.0))

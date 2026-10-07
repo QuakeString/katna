@@ -16,7 +16,6 @@ use katna_i18n::tr;
 use katna_store::MessageId;
 use katna_ui::px;
 use katna_ui::rich::html;
-use katna_ui::unpx;
 use mail_parser::{MessageParser, MimeHeaders};
 
 use super::super::MailWindow;
@@ -24,7 +23,7 @@ use super::security::{self, Sealing};
 use super::{Draft, Threading, Unsent, addresses, schedule};
 use crate::daemon::{self, Command};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, icon_button, outlined_button, tip};
+use crate::widgets::{icon, icon_button, outlined_button, tip};
 
 use super::attach::Attachment;
 
@@ -52,6 +51,7 @@ impl MailWindow {
                 let alive = this
                     .update(cx, |this, cx| {
                         let later = now + i64::from(this.config.sending.undo_send_seconds) + LATER;
+                        this.set_outbox(&items);
                         let mut scheduled: Vec<OutboxItem> = items
                             .into_iter()
                             .filter(|i| {
@@ -264,8 +264,6 @@ impl MailWindow {
         if !self.writing.scheduled_open {
             return None;
         }
-        let viewport = window.viewport_size();
-        let height = (unpx(viewport.height) - 160.0).clamp(200.0, 560.0);
         let rows = self.writing.scheduled.iter().enumerate().map(|(ix, item)| {
             let subject = if item.subject.trim().is_empty() {
                 tr!("schedule-no-subject")
@@ -336,82 +334,98 @@ impl MailWindow {
                 .child(icon("schedule", th.text_faint, 48.0))
                 .child(tr!("schedule-nothing"))
         });
-        let close = cx.listener(|this, _, _, cx| {
-            this.writing.scheduled_open = false;
-            cx.notify();
-        });
-        Some(
+        let rows: Vec<AnyElement> = rows.map(IntoElement::into_any_element).collect();
+        Some(list_dialog(
+            "scheduled",
+            tr!("folder-scheduled"),
+            rows,
+            empty.map(IntoElement::into_any_element),
+            |this: &mut MailWindow| this.writing.scheduled_open = false,
+            (self.room_width(), self.room_height(window)),
+            th,
+            cx,
+        ))
+    }
+}
+
+/// A list over the window with its title and a close button: scheduled
+/// mail and the outbox. `close` closes it, from the button or a click
+/// beside it; `empty` shows when there are no `rows`.
+#[allow(clippy::too_many_arguments)]
+pub(super) fn list_dialog(
+    id: &'static str,
+    title: String,
+    rows: Vec<AnyElement>,
+    empty: Option<AnyElement>,
+    close: fn(&mut MailWindow),
+    // The room inside the window (`MailWindow::room_width`).
+    (vw, vh): (f32, f32),
+    th: &Theme,
+    cx: &mut Context<MailWindow>,
+) -> AnyElement {
+    let height = (vh - 160.0).clamp(200.0, 560.0);
+    let shut = move |this: &mut MailWindow, cx: &mut Context<MailWindow>| {
+        close(this);
+        cx.notify();
+    };
+    div()
+        .absolute()
+        .top_0()
+        .left_0()
+        .size_full()
+        .flex()
+        .items_center()
+        .justify_center()
+        .bg(rgba(fade(0x0000_0066, 1.0)))
+        .child(
             div()
+                .id((id, 0usize))
                 .absolute()
                 .top_0()
                 .left_0()
                 .size_full()
+                .on_click(cx.listener(move |this, _, _, cx| shut(this, cx))),
+        )
+        .child(
+            div()
+                .id((id, 1usize))
+                .occlude()
+                .w(px(560.0_f32.min(vw - 32.0)))
+                .h(px(height))
                 .flex()
-                .items_center()
-                .justify_center()
-                .bg(rgba(fade(0x0000_0066, 1.0)))
+                .flex_col()
+                .map(|d| crate::widgets::dialog(d, th, th.raised))
                 .child(
                     div()
-                        .id("scheduled-scrim")
-                        .absolute()
-                        .top_0()
-                        .left_0()
-                        .size_full()
-                        .on_click(close),
-                )
-                .child(
-                    div()
-                        .id("scheduled-dialog")
-                        .occlude()
-                        .w(px(560.0_f32.min(unpx(viewport.width) - 32.0)))
-                        .h(px(height))
+                        .flex_none()
+                        .h(px(64.0))
+                        .pl(px(24.0))
+                        .pr(px(12.0))
                         .flex()
-                        .flex_col()
-                        .rounded(px(16.0))
-                        .overflow_hidden()
-                        .map(|d| crate::widgets::frosted(d, th, th.raised, 16.0))
-                        .shadow(elevation(th, 3.0))
+                        .flex_row()
+                        .items_center()
+                        .border_b_1()
+                        .border_color(rgba(th.divider))
+                        .child(div().flex_1().text_size(px(20.0)).child(title))
                         .child(
-                            div()
-                                .flex_none()
-                                .h(px(64.0))
-                                .pl(px(24.0))
-                                .pr(px(12.0))
-                                .flex()
-                                .flex_row()
-                                .items_center()
-                                .border_b_1()
-                                .border_color(rgba(th.divider))
-                                .child(
-                                    div()
-                                        .flex_1()
-                                        .text_size(px(20.0))
-                                        .child(tr!("folder-scheduled")),
-                                )
-                                .child(
-                                    icon_button("scheduled-close", "close", 20.0, th)
-                                        .tooltip(tip(tr!("schedule-close"), th))
-                                        .on_click(cx.listener(|this, _, _, cx| {
-                                            this.writing.scheduled_open = false;
-                                            cx.notify();
-                                        })),
-                                ),
-                        )
-                        .child(
-                            div()
-                                .id("scheduled-list")
-                                .flex_1()
-                                .min_h_0()
-                                .flex()
-                                .flex_col()
-                                .overflow_y_scroll()
-                                .children(rows)
-                                .children(empty),
+                            icon_button((id, 2usize), "close", 20.0, th)
+                                .tooltip(tip(tr!("schedule-close"), th))
+                                .on_click(cx.listener(move |this, _, _, cx| shut(this, cx))),
                         ),
                 )
-                .into_any_element(),
+                .child(
+                    div()
+                        .id((id, 3usize))
+                        .flex_1()
+                        .min_h_0()
+                        .flex()
+                        .flex_col()
+                        .overflow_y_scroll()
+                        .children(rows)
+                        .children(empty),
+                ),
         )
-    }
+        .into_any_element()
 }
 
 /// The message a scheduled `raw` message was written from, to edit again.

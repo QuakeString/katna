@@ -22,7 +22,6 @@ settings-tab-experimental = ਪ੍ਰਯੋਗਾਤਮਕ
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = ਫੋਲਡਰ ਅਤੇ ਲੇਬਲ ਬਣਾਓ, ਉਨ੍ਹਾਂ ਦਾ ਨਾਮ ਬਦਲੋ, ਹਿਲਾਓ ਅਤੇ ਲੁਕਾਓ, ਅਤੇ ਚੁਣੋ ਕਿ ਕਿਹੜੇ ਸਿੰਕ ਹੋਣ। ਨਿਯਮ ਨਵੀਂ ਮੇਲ ਨੂੰ ਭੇਜਣ ਵਾਲੇ, ਵਿਸ਼ੇ ਜਾਂ ਸ਼ਬਦਾਂ ਮੁਤਾਬਕ ਆਪਣੇ-ਆਪ ਛਾਂਟਦੇ, ਲੇਬਲ ਲਗਾਉਂਦੇ, ਅੱਗੇ ਭੇਜਦੇ ਜਾਂ ਮਿਟਾਉਂਦੇ ਹਨ।
-settings-tab-mcp-server-coming = ਇਸ ਕੰਪਿਊਟਰ ’ਤੇ AI ਸਹਾਇਕਾਂ ਨੂੰ ਤੁਹਾਡੀ ਮਰਜ਼ੀ ਨਾਲ ਤੁਹਾਡੀ ਮੇਲ ਖੋਜਣ, ਪੜ੍ਹਨ ਅਤੇ ਡਰਾਫਟ ਕਰਨ ਦਿਓ।
 
 ## Settings > General
 

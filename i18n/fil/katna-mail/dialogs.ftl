@@ -216,11 +216,9 @@ crash-close = Isara
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = Hinihiling ng { $provider } na mag-sign in ka ulit sa { $address }.
 sign-in-again-button = Mag-sign in
 sign-in-again-tooltip = Buksan ang sign-in page ng { $provider } sa iyong browser
 sign-in-again-waiting = Hinihintay ang iyong browser…
-sign-in-again-close = Isara
 google-api-off = Naka-off ang { $api } sa Google Cloud project ng Katna.
 google-api-turn-on = I-on
 google-api-turn-on-tooltip = Buksan ang Google Cloud para i-on ang { $api }, pagkatapos ay pindutin ang Subukang muli

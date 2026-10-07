@@ -13,11 +13,14 @@ katna-core.workspace = true
 gpui.workspace = true
 unicode-segmentation.workspace = true
 
-# Katna's patched Linux backend and renderer (vendor/); Windows uses GPUI's
-# own backend, reached through `native`.
+# Katna's patched Linux backend and renderer, and its patched Windows
+# backend, for the backdrop blur (vendor/).
 [target.'cfg(not(windows))'.dependencies]
 gpui-linux.workspace = true
 gpui-wgpu.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+gpui-windows.workspace = true
 
 [lints]
 workspace = true

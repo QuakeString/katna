@@ -22,6 +22,13 @@ use futures_lite::FutureExt;
 use katna_store::{MessageId, MetaRow, Store};
 use serde::{Deserialize, Serialize};
 
+mod follow_up;
+mod nudge;
+pub use follow_up::{WORK_END, WORK_START, counts_as_reply, replied, working_time};
+pub use nudge::{
+    NUDGE_AFTER, NUDGE_UNTIL, Nudge, asks, clear_nudge, nudge_of, nudges, set_nudge, waiting_nudges,
+};
+
 /// The longest the scheduler sleeps before looking at the clock again.
 /// Timers stop while the computer sleeps; the wall clock does not.
 pub const MAX_SLEEP: Duration = Duration::from_secs(60);
@@ -44,6 +51,11 @@ pub mod plugin {
     /// Came back to the Inbox (from snooze, or as a reminder): the list
     /// sorts it by when it came back.
     pub const SURFACED: &str = "surfaced";
+    /// A mail rule's "mark read after N days".
+    pub const READ_AFTER: &str = "read-after";
+    /// What the daemon found on a sent message for nudges: whether it
+    /// asked something, and whether the user dismissed its nudge.
+    pub const NUDGE: &str = "nudge";
 }
 
 /// A snoozed message, in the Snoozed folder until `until`.
@@ -55,10 +67,15 @@ pub struct Snooze {
     pub back_to: i64,
     /// The Snoozed folder it waits in.
     pub snoozed_in: i64,
+    /// The newest message row when it was snoozed: a message of the
+    /// conversation stored after it, in an Inbox, brings it back early.
+    /// 0 (snoozed by an older Katna): only the time does.
+    #[serde(default)]
+    pub newest: i64,
 }
 
 /// "Remind me if nobody replies": on a sent message, by its outbox entry.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FollowUp {
     pub account: i64,
     /// The sent message's `Message-ID`, to find its copy in Sent.
@@ -68,6 +85,43 @@ pub struct FollowUp {
     pub remind_at: i64,
     /// Seconds after sending, as chosen: 1, 3 or 7 days, or custom.
     pub after: i64,
+    /// The follow-up Katna sends for the user when it is due (RFC 5322,
+    /// threaded under the message, without `Date` and `Message-ID`); with
+    /// none, the conversation only comes back to the Inbox.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mail: Option<String>,
+    /// Seconds after the first follow-up to send it a second time if
+    /// still nobody replied; 0 for once. There are never more than two.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub again: i64,
+    /// The `Message-ID`s of the follow-ups sent so far: they are not
+    /// replies.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub sent: Vec<String>,
+    /// It fell due while the computer was off, and waits for the user to
+    /// send it or stop it rather than go out late.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub waiting: bool,
+}
+
+impl FollowUp {
+    /// Whether it sends a follow-up for the user, rather than remind.
+    pub fn sends(&self) -> bool {
+        self.mail.is_some()
+    }
+
+    /// Whether another follow-up goes out after the next one.
+    pub fn sends_again(&self) -> bool {
+        self.again > 0 && self.sent.is_empty()
+    }
+}
+
+fn is_zero(value: &i64) -> bool {
+    *value == 0
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 /// A message that came back to the Inbox at `at`.
@@ -83,6 +137,8 @@ pub enum Due {
     /// By outbox ID.
     FollowUp(i64, FollowUp),
     Surfaced(MessageId),
+    /// A message a mail rule marks read now.
+    ReadAfter(MessageId),
     /// A value this version does not know, or cannot read.
     Other(MetaRow),
 }
@@ -97,6 +153,7 @@ impl Due {
                 .ok()
                 .map(|v| Self::FollowUp(row.object_id, v)),
             (kind::MESSAGE, plugin::SURFACED) => Some(Self::Surfaced(MessageId(row.object_id))),
+            (kind::MESSAGE, plugin::READ_AFTER) => Some(Self::ReadAfter(MessageId(row.object_id))),
             _ => None,
         };
         parsed.unwrap_or(Self::Other(row))
@@ -142,7 +199,8 @@ pub fn clear_snooze(store: &mut Store, message: MessageId) -> katna_store::Resul
     store.remove_meta(kind::MESSAGE, message.0, plugin::SNOOZE)
 }
 
-/// Sets the follow-up reminder of outbox entry `outbox`.
+/// Sets the follow-up reminder of outbox entry `outbox`. One waiting for
+/// the user is not due again.
 pub fn set_follow_up(
     store: &mut Store,
     outbox: i64,
@@ -153,7 +211,7 @@ pub fn set_follow_up(
         outbox,
         plugin::FOLLOW_UP,
         &to_json(follow_up),
-        Some(follow_up.remind_at),
+        (!follow_up.waiting).then_some(follow_up.remind_at),
     )
 }
 
@@ -203,6 +261,15 @@ pub fn surfaced(store: &Store) -> katna_store::Result<Vec<(MessageId, i64)>> {
 
 pub fn clear_surfaced(store: &mut Store, message: MessageId) -> katna_store::Result<bool> {
     store.remove_meta(kind::MESSAGE, message.0, plugin::SURFACED)
+}
+
+/// Has a mail rule mark `message` read at `at` (Unix seconds).
+pub fn set_read_after(store: &mut Store, message: MessageId, at: i64) -> katna_store::Result<()> {
+    store.set_meta(kind::MESSAGE, message.0, plugin::READ_AFTER, "{}", Some(at))
+}
+
+pub fn clear_read_after(store: &mut Store, message: MessageId) -> katna_store::Result<bool> {
+    store.remove_meta(kind::MESSAGE, message.0, plugin::READ_AFTER)
 }
 
 /// Every value due at `now`, typed, soonest first.
@@ -298,6 +365,7 @@ mod tests {
             until: 500,
             back_to: 1,
             snoozed_in: 9,
+            newest: 3,
         };
         set_snooze(&mut store, MessageId(4), &snooze).unwrap();
         let follow_up = FollowUp {
@@ -306,6 +374,7 @@ mod tests {
             subject: "Offer".into(),
             remind_at: 300,
             after: 86_400,
+            ..FollowUp::default()
         };
         set_follow_up(&mut store, 2, &follow_up).unwrap();
         set_surfaced(&mut store, MessageId(5), 100).unwrap();
@@ -331,6 +400,29 @@ mod tests {
         assert!(clear_follow_up(&mut store, 2).unwrap());
         assert!(clear_surfaced(&mut store, MessageId(5)).unwrap());
         assert_eq!(snooze_of(&store, MessageId(4)).unwrap(), None);
+    }
+
+    #[test]
+    fn follow_ups_read_old_values_and_waiting_ones_are_not_due() {
+        let old =
+            r#"{"account":1,"message_id":"<a@b>","subject":"Offer","remind_at":300,"after":60}"#;
+        let read: FollowUp = serde_json::from_str(old).unwrap();
+        assert!(!read.sends() && !read.waiting && read.sent.is_empty());
+        assert_eq!(to_json(&read), old);
+
+        let dir = tempfile::tempdir().unwrap();
+        let mut store = Store::open(&Paths::with_root(dir.path()), Mode::ReadWrite).unwrap();
+        let waiting = FollowUp {
+            remind_at: 300,
+            mail: Some("Subject: Re: Offer\r\n\r\nHi\r\n".into()),
+            again: 7 * 86_400,
+            waiting: true,
+            ..FollowUp::default()
+        };
+        assert!(waiting.sends() && waiting.sends_again());
+        set_follow_up(&mut store, 3, &waiting).unwrap();
+        assert!(due(&store, 1_000).unwrap().is_empty());
+        assert_eq!(follow_up_of(&store, 3).unwrap(), Some(waiting));
     }
 
     #[test]

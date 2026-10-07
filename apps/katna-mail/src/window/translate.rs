@@ -46,6 +46,8 @@ struct Translated {
     /// The translation in blocks of quoted and unquoted lines, as the
     /// reading pane shows a plain text message.
     blocks: Vec<(bool, SharedString)>,
+    /// The translation as one text, for the chat's bubbles.
+    text: String,
 }
 
 /// Translations of the messages opened this session.
@@ -125,15 +127,72 @@ impl MailWindow {
         }
     }
 
+    /// The translation of message `id` as one text, if the user chose to
+    /// see it.
+    pub(super) fn translated_text(&self, id: MessageId) -> Option<String> {
+        match self.translations.states.borrow().get(&id) {
+            Some(State::Shown(translated)) => Some(translated.text.clone()),
+            _ => None,
+        }
+    }
+
+    /// What a right-click menu's Translate row says for message `id`:
+    /// translate it, show the original or the translation again, or that
+    /// it is being translated. `None` when it cannot be translated.
+    pub(super) fn translate_menu_label(&self, id: MessageId) -> Option<String> {
+        self.plain_text_of(id)?;
+        Some(match self.translations.states.borrow().get(&id) {
+            Some(State::Working) => tr!("translate-working"),
+            Some(State::Shown(_)) => tr!("translate-show-original"),
+            Some(State::Original(_)) => tr!("translate-show-translation"),
+            None | Some(State::Failed(_)) => {
+                tr!(
+                    "translate-to",
+                    language = language_name(&self.reading_code())
+                )
+            }
+        })
+    }
+
+    /// The right-click menu's Translate row for message `id`: translates
+    /// it, even when no bar offered it, or switches between the
+    /// translation and the original.
+    pub(super) fn translate_from_menu(&mut self, id: MessageId, cx: &mut Context<Self>) {
+        let Some(text) = self.plain_text_of(id) else {
+            return;
+        };
+        let state = self.translations.states.borrow_mut().remove(&id);
+        match state {
+            Some(state @ (State::Shown(_) | State::Original(_) | State::Working)) => {
+                self.translations.states.borrow_mut().insert(id, state);
+                self.flip_translation(id);
+            }
+            None | Some(State::Failed(_)) => {
+                let source = *self
+                    .translations
+                    .detected
+                    .borrow_mut()
+                    .entry(id)
+                    .or_insert_with(|| katna_translate::detect(&text));
+                let target = self.reading_code();
+                self.start_translation(id, &text, source.unwrap_or("auto"), &target, cx);
+            }
+        }
+        cx.notify();
+    }
+
     /// The bar above message `id` (the `ix`th of the conversation) whose
     /// plain text is `text`, when it is in another language that can be
     /// translated. Starts a translation the user chose to always have.
+    /// `compact` draws it as a line inside a chat bubble.
+    #[allow(clippy::too_many_arguments)]
     pub(super) fn translation_bar(
         &self,
         ix: usize,
         id: MessageId,
         text: &str,
         encrypted: bool,
+        compact: bool,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
@@ -195,7 +254,8 @@ impl MailWindow {
                 .rounded(px(6.0))
                 .cursor_pointer()
                 .text_color(rgba(th.accent))
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                 .child(label)
         };
         let (note, links): (String, Vec<AnyElement>) = match states.get(&id) {
@@ -303,11 +363,18 @@ impl MailWindow {
         };
         Some(
             div()
-                .mb(px(12.0))
-                .px(px(12.0))
-                .py(px(6.0))
-                .rounded(px(8.0))
-                .bg(rgba(th.read_row))
+                .map(|d| {
+                    if compact {
+                        // A line at the top of the bubble.
+                        d.mb(px(4.0)).ml(px(-2.0))
+                    } else {
+                        d.mb(px(12.0))
+                            .px(px(12.0))
+                            .py(px(6.0))
+                            .rounded(px(8.0))
+                            .bg(rgba(th.read_row))
+                    }
+                })
                 .flex()
                 .flex_row()
                 .flex_wrap()
@@ -427,7 +494,11 @@ impl MailWindow {
                 let state = match result {
                     Ok((source, text)) => {
                         let (blocks, _) = super::reader::body_blocks(&text, usize::MAX);
-                        State::Shown(Translated { source, blocks })
+                        State::Shown(Translated {
+                            source,
+                            blocks,
+                            text,
+                        })
                     }
                     Err(why) => State::Failed(why),
                 };
@@ -477,7 +548,8 @@ impl MailWindow {
             .border_1()
             .border_color(rgba(th.outline))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .on_click(cx.listener(|this, event: &gpui::ClickEvent, window, cx| {
                 this.toggle_reading_language_picker(event.position(), window, cx);
             }))
@@ -542,7 +614,8 @@ impl MailWindow {
                                 .p(px(2.0))
                                 .rounded(px(6.0))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     this.apply(change, cx);
                                 }))
@@ -570,7 +643,7 @@ impl MailWindow {
                                 div()
                                     .text_size(px(12.0))
                                     .text_color(rgba(th.text_faint))
-                                    .child(tr!("settings-translation-none")),
+                                    .child(self.copyable(tr!("settings-translation-none"), th)),
                             )
                         }),
                 )

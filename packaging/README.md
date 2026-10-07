@@ -9,6 +9,7 @@ Files that distribution packages install, and the Arch Linux package.
 | `systemd/katna-daemon.service` | `/usr/lib/systemd/user/katna-daemon.service` (systemd user unit) |
 | `dbus/<daemon bus name>.service` | `/usr/share/dbus-1/services/` (D-Bus activation, starts the unit) |
 | `desktop/<mail app ID>.desktop` | `/usr/share/applications/` |
+| `desktop/<mail app ID>.Notifications.desktop` | `/usr/share/applications/` (hidden; what notifications name as their app, without launch feedback) |
 | `krunner/<mail app ID>.desktop` | `/usr/share/krunner/dbusplugins/` (KRunner results from the daemon) |
 | `gnome-shell/<mail app ID>.search-provider.ini` | `/usr/share/gnome-shell/search-providers/` (GNOME search results from the daemon) |
 | `kio/<mail app ID>.SendFiles.desktop` | `/usr/share/kio/servicemenus/` ("Send with Katna Mail" in Dolphin; the daemon writes the user's copy with an account submenu) |
@@ -19,6 +20,7 @@ Files that distribution packages install, and the Arch Linux package.
 | `windows/` | Katna Setup for Windows (`windows/README.md`) |
 | `linux/` | `stage.sh` (the files above under a prefix, for every package below), the plain tarball and its `install.sh` |
 | `fedora/katna.spec` | Fedora RPM `katna` |
+| `deb/` | Ubuntu and Debian package `katna` (`katna_amd64.deb`) |
 | `nix/package.nix` | Nix package (`flake.nix` at the top builds it) |
 | `appimage/` | `Katna-x86_64.AppImage` |
 | `snap/snapcraft.yaml` | Snap `katna` |
@@ -143,11 +145,12 @@ Katna Mail opens a window (`ci/linux-package-test.sh`). Once CI on `main`
 has passed, they replace the files on the
 [`linux-latest`](https://github.com/QuakeString/katna/releases/tag/linux-latest)
 pre-release, with a screenshot of each running. They are x86_64 only, not
-signed, in no store, and do not update themselves: their own package
-manager, or a new download, updates them.
+signed and in no store. Katna checks `linux-latest` for new builds: it
+updates the AppImage and the tarball itself, and for the others shows the
+command that installs the new build.
 
-The AppImage, Snap, Flatpak and tarball share one build made on Ubuntu
-22.04, so they need glibc 2.35 or newer. The RPM and the Nix package are
+The AppImage, Snap, Flatpak, .deb and tarball share one build made on
+Ubuntu 22.04, so they need glibc 2.35 or newer. The RPM and the Nix package are
 built from source by Fedora and Nix.
 
 ### Fedora
@@ -168,6 +171,21 @@ rpmbuild -bb packaging/fedora/katna.spec \
   --define "katna_version $(packaging/linux/version.sh)" \
   --define "katna_built $(git log -1 --format=%ct)"
 ```
+
+### Ubuntu and Debian
+
+For Ubuntu 22.04 and later and Debian 12 and later:
+
+```sh
+wget https://github.com/QuakeString/katna/releases/download/linux-latest/katna_amd64.deb
+sudo apt install ./katna_amd64.deb
+```
+
+apt brings in the libraries the package's `Depends` names. There is no apt
+repository yet, so `apt upgrade` does not see new builds: Katna downloads
+each new one and shows the `sudo apt install` command that installs it
+(`katna_core::update::Package::Deb`). `packaging/deb/make-deb.sh` makes the
+package from the tarball, so it holds the same files under `/usr`.
 
 ### Nix
 

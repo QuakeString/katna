@@ -9,6 +9,14 @@
 about-tooltip = About Katna
 # Under the app's name.
 about-tagline = Mail and calendar for the Linux desktop
+# The small button beside the version (About, What’s new, Settings): it
+# copies the version, build date and system for a bug report.
+about-copy-version = Copy version details
+about-version-copied = Copied
+# Lines of the copied version details. $date: when this build was made.
+about-version-built = Built: { $date }
+# $system: the operating system and desktop, such as "Arch Linux, KDE on wayland".
+about-version-system = System: { $system }
 # Opens the What’s new dialog.
 about-whats-new = What’s new
 
@@ -30,13 +38,18 @@ about-update-ready-detail = Katna Mail restarts to finish the update.
 # After pressing Update: what happens next, before it happens.
 about-update-confirm = Install version { $version }?
 about-update-confirm-detail = Katna Mail will close, install the update and open again where you left off. Your computer will ask for your password.
+# The same on Windows, where Katna Setup installs it.
+about-update-confirm-detail-windows = Katna Mail will close, install the update and open again in a moment.
 about-update-installing = Installing version { $version }…
 about-update-installing-detail = Enter your password in the window that opened.
+about-update-installing-detail-windows = Katna Mail closes now and opens again once the update is installed.
 # The password window was closed or the password was refused.
 about-update-cancelled = The update was not installed, because the password was not given.
 # $error: what the installer said.
 about-update-failed = The update could not be installed: { $error }
-about-update-unsupported = This copy of Katna Mail is updated by your package manager.
+# A build that does not update itself: built from source, or a package
+# from somewhere else.
+about-update-not-self-updating = This copy of Katna Mail doesn’t update itself. Update it the way you installed it.
 # $error: the system's reason.
 about-update-restart-failed = The update is installed, but Katna Mail could not open again ({ $error }). Open it yourself.
 # Buttons.
@@ -212,6 +225,8 @@ onboarding-ready-title = You're all set
 onboarding-ready-lead = Katna is getting your mail. It shows up as it arrives, and new mail appears on its own.
 # $address: the email address of the account just added.
 onboarding-ready-lead-address = Katna is getting the mail of { $address }. It shows up as it arrives, and new mail appears on its own.
+# Above a row of app chips on the last setup page; Mail is always on.
+onboarding-apps = Apps you'll use
 onboarding-ready-tour = Take a one-minute tour to see where everything is?
 # Closes the first-run pages without the tour.
 onboarding-skip = Skip for now
@@ -298,14 +313,11 @@ crash-close = Close
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-# $address: the account's email address.
-sign-in-again-text = { $provider } asks you to sign in to { $address } again.
 # Opens the provider's sign-in page in the browser.
 sign-in-again-button = Sign in
 sign-in-again-tooltip = Open the { $provider } sign-in page in your browser
 # In place of the button while the browser page is open.
 sign-in-again-waiting = Waiting for your browser…
-sign-in-again-close = Close
 # Under an account in Calendar, Tasks or Contacts, and on a Drive file in a
 # message, when Google has one of its APIs (People API, Google Drive API…)
 # switched off in the Google Cloud project Katna signs in with.

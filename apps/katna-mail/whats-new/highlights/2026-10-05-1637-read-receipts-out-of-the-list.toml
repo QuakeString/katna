@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Read receipts stay out of the mail list"
+text = """
+A read receipt for mail you sent no longer shows in the mail list as a
+"Read: …" line. The conversation keeps its own subject and preview, and
+your sent mail shows the ticks.
+"""

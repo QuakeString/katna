@@ -219,11 +219,9 @@ crash-close = Cerrar
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } te pide que vuelvas a iniciar sesión en { $address }.
 sign-in-again-button = Iniciar sesión
 sign-in-again-tooltip = Abrir la página de inicio de sesión de { $provider } en tu navegador
 sign-in-again-waiting = Esperando a tu navegador…
-sign-in-again-close = Cerrar
 google-api-off = { $api } está desactivada en el proyecto de Google Cloud de Katna.
 google-api-turn-on = Activar
 google-api-turn-on-tooltip = Abre Google Cloud para activar { $api } y luego pulsa Reintentar

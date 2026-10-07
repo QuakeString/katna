@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Viewer controls fit narrow windows"
+text = """
+In a narrow window, the controls at the foot of the attachment viewer
+now stay inside it. Buttons that don't fit move into a ⋮ More menu:
+rotate first, then Fit, then Dark pages. The page number and zoom stay
+in view the longest.
+"""

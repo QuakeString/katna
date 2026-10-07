@@ -4,15 +4,18 @@
 //! [`MICROSOFT_TASKS`]; like OneDrive's, its tokens come separately.
 //!
 //! To Do keeps a task's title, notes, due day, whether it is done, a
-//! reminder, repeat and importance (the star), so those come from To Do
-//! ([`RemoteTask::extras`]). Steps are To Do's checklist items: a step's
+//! reminder, repeat, importance (high is the star), categories (labels)
+//! and files (attachments up to [`MAX_FILE`]; larger ones stay on this
+//! computer), so those come from To Do ([`RemoteTask::extras`]). Steps are To Do's checklist items: a step's
 //! ID here is `task|item`, and To Do keeps only its title and whether it
 //! is ticked. A pull follows the list's delta link, so only changes come
 //! after the first; each changed task's steps are read again with it.
 
 use std::{sync::Arc, time::Duration};
 
-use katna_store::tasks::{RemoteTask, RemoteTaskList, Task, TaskExtras};
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD as BASE64;
+use katna_store::tasks::{RemoteFile, RemoteTask, RemoteTaskList, Task, TaskExtras};
 use serde::Deserialize;
 use serde_json::{Map, Value, json};
 
@@ -26,6 +29,10 @@ use crate::{
 };
 
 const TIMEOUT: Duration = Duration::from_secs(60);
+
+/// The largest file sent as a task's attachment in one request (Graph's
+/// small-file upload); larger ones stay on this computer.
+pub const MAX_FILE: u64 = 3 * 1024 * 1024;
 
 /// Graph writes times in UTC when asked this way.
 const PREFER_UTC: &str = "outlook.timezone=\"UTC\"";
@@ -95,6 +102,40 @@ struct Item {
     #[serde(rename = "reminderDateTime")]
     reminder: Option<DateTimeZone>,
     recurrence: Option<Value>,
+    #[serde(default)]
+    categories: Vec<String>,
+    #[serde(rename = "hasAttachments", default)]
+    has_attachments: bool,
+}
+
+/// A task's attachment (`taskFileAttachment`).
+#[derive(Deserialize, Default)]
+struct Attachment {
+    id: String,
+    #[serde(default)]
+    name: String,
+    #[serde(rename = "contentType", default)]
+    content_type: String,
+    #[serde(default)]
+    size: u64,
+    #[serde(rename = "contentBytes")]
+    content: Option<String>,
+}
+
+impl From<Attachment> for RemoteFile {
+    fn from(file: Attachment) -> Self {
+        let data = file
+            .content
+            .as_deref()
+            .and_then(|bytes| BASE64.decode(bytes.as_bytes()).ok());
+        Self {
+            remote_id: file.id,
+            name: file.name,
+            mime: file.content_type,
+            size: file.size,
+            data,
+        }
+    }
 }
 
 /// A task's checklist item: a step.
@@ -137,7 +178,7 @@ fn step(task: &str, index: usize, check: Check) -> RemoteTask {
         due: String::new(),
         done_at,
         position: format!("{index:08}"),
-        extras: None,
+        ..RemoteTask::default()
     }
 }
 
@@ -364,8 +405,11 @@ impl From<Item> for RemoteTask {
             extras: Some(TaskExtras {
                 remind_at,
                 repeat: item.recurrence.as_ref().map(rrule).unwrap_or_default(),
-                starred: item.importance == "high",
             }),
+            starred: Some(item.importance == "high"),
+            labels: Some(item.categories),
+            // Read apart, in a pull.
+            files: None,
             parent: None,
             remote_id: item.id,
         }
@@ -383,6 +427,7 @@ fn body(task: &Task) -> Vec<u8> {
         "title": task.title,
         "body": { "content": task.notes, "contentType": "text" },
         "importance": if task.starred { "high" } else { "normal" },
+        "categories": task.labels,
         "status": if task.done_at.is_some() { "completed" } else { "notStarted" },
         "dueDateTime": due,
         "isReminderOn": task.remind_at.is_some(),
@@ -506,6 +551,7 @@ impl ToDo {
         let mut all = state.is_none();
         let mut url = state.map_or_else(|| first.clone(), str::to_owned);
         let mut tasks = Vec::new();
+        let mut with_files = Vec::new();
         loop {
             let reply = self.call("GET", &url, None).await?;
             if reply.status == 410 && !all {
@@ -513,6 +559,7 @@ impl ToDo {
                 all = true;
                 url = first.clone();
                 tasks.clear();
+                with_files.clear();
                 continue;
             }
             if gone(&reply) {
@@ -525,7 +572,12 @@ impl ToDo {
                 });
             }
             let page: Page<Item> = parse(&reply, "reading tasks")?;
-            tasks.extend(page.value.into_iter().map(RemoteTask::from));
+            for item in page.value {
+                if item.has_attachments && item.removed.is_none() {
+                    with_files.push(item.id.clone());
+                }
+                tasks.push(RemoteTask::from(item));
+            }
             match (page.next, page.delta) {
                 (Some(next), _) => url = next,
                 (None, delta) => {
@@ -533,8 +585,15 @@ impl ToDo {
                     // delta holds none.
                     let mut steps_of = Vec::new();
                     let mut steps = Vec::new();
-                    for task in &tasks {
+                    for task in &mut tasks {
                         if !task.deleted {
+                            // Its files, without their content: Katna
+                            // reads those it lacks apart.
+                            task.files = if with_files.contains(&task.remote_id) {
+                                self.files(list, &task.remote_id).await?
+                            } else {
+                                Some(Vec::new())
+                            };
                             match self.steps(list, &task.remote_id).await? {
                                 Some(found) => steps.extend(found),
                                 // Gone meanwhile: the next pull says so.
@@ -553,6 +612,80 @@ impl ToDo {
                 }
             }
         }
+    }
+
+    fn files_url(&self, list: &str, task: &str) -> String {
+        format!("{}/{}/attachments", self.tasks_url(list), segment(task))
+    }
+
+    /// Task `task`'s files, without their content; `None` when To Do no
+    /// longer has the task.
+    async fn files(&self, list: &str, task: &str) -> Result<Option<Vec<RemoteFile>>> {
+        let mut url = self.files_url(list, task);
+        let mut files = Vec::new();
+        loop {
+            let reply = self.call("GET", &url, None).await?;
+            if gone(&reply) {
+                return Ok(None);
+            }
+            let page: Page<Attachment> = parse(&reply, "reading files")?;
+            files.extend(page.value.into_iter().map(|file| RemoteFile {
+                data: None,
+                ..RemoteFile::from(file)
+            }));
+            match page.next {
+                Some(next) => url = next,
+                None => break,
+            }
+        }
+        Ok(Some(files))
+    }
+
+    /// The content of file `id` of task `task`; `None` when it is gone.
+    pub async fn file_data(&self, list: &str, task: &str, id: &str) -> Result<Option<Vec<u8>>> {
+        let url = format!("{}/{}", self.files_url(list, task), segment(id));
+        let reply = self.call("GET", &url, None).await?;
+        if gone(&reply) {
+            return Ok(None);
+        }
+        let file: Attachment = parse(&reply, "reading a file")?;
+        Ok(RemoteFile::from(file).data)
+    }
+
+    /// Adds a file to task `task`. Returns its ID; `None` when it is
+    /// larger than one request may carry, so it stays on this computer.
+    pub async fn add_file(
+        &self,
+        list: &str,
+        task: &str,
+        name: &str,
+        mime: &str,
+        data: &[u8],
+    ) -> Result<Option<String>> {
+        if data.len() as u64 > MAX_FILE {
+            return Ok(None);
+        }
+        let body = json!({
+            "@odata.type": "#microsoft.graph.taskFileAttachment",
+            "name": name,
+            "contentType": mime,
+            "contentBytes": BASE64.encode(data),
+        })
+        .to_string();
+        let reply = self
+            .call("POST", &self.files_url(list, task), Some(body.as_bytes()))
+            .await?;
+        let file: Attachment = parse(&reply, "adding a file")?;
+        Ok(Some(file.id))
+    }
+
+    pub async fn delete_file(&self, list: &str, task: &str, id: &str) -> Result<()> {
+        let url = format!("{}/{}", self.files_url(list, task), segment(id));
+        let reply = self.call("DELETE", &url, None).await?;
+        if gone(&reply) {
+            return Ok(());
+        }
+        check(&reply, "removing a file")
     }
 
     fn checks_url(&self, list: &str, task: &str) -> String {

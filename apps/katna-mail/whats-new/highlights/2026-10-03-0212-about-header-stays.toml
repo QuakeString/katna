@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "About keeps its header in view"
+text = """
+Scrolling About now shrinks the big logo into a small one at the top
+left, with Katna, its tagline and the version beside it, and that header
+stays in place while the rest scrolls under it.
+"""

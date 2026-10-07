@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Crisper card edges in light colors"
+text = """
+In light colors, the mail list, the open mail and the other cards now have
+a fine, crisp edge and a very short shadow instead of a soft blur, so they
+stand out from the page as sharply as they do in dark colors.
+"""

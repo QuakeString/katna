@@ -5,17 +5,24 @@
 //! always before deleting for good (in Trash, or on an account without
 //! one). A single conversation moved to Trash goes without asking; its
 //! snackbar offers Undo.
+//!
+//! The same card asks before deleting a folder or label the user made,
+//! from the folder pane's right-click menu: how much mail it holds and
+//! where that goes.
 
 use gpui::{AnyElement, Context, FontWeight, Window, div, prelude::*, rgba};
 use katna_i18n::tr;
+use katna_store::FolderId;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::{px, unpx};
 
 use super::settings::Change;
 use super::{Act, MailWindow};
 use crate::data::EntryKey;
+use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
 use crate::widgets::{FocusRing, elevation, icon};
+use crate::{daemon, format};
 
 const WIDTH: f32 = 440.0;
 
@@ -29,6 +36,20 @@ pub(super) struct DeleteAsk {
     /// The dialog has had the keys given to it.
     focused: bool,
     shown: Spring,
+    /// Deleting this folder or label, not mail.
+    folder: Option<FolderAsk>,
+}
+
+/// A folder or label to delete.
+struct FolderAsk {
+    folder: FolderId,
+    name: String,
+    /// A Gmail label: its mail stays where else it is.
+    gmail: bool,
+    /// The account has a Trash for its mail to go to.
+    trash: bool,
+    /// The lines in it and in the folders inside it.
+    count: u64,
 }
 
 impl MailWindow {
@@ -53,8 +74,100 @@ impl MailWindow {
             closing: false,
             focused: false,
             shown,
+            folder: None,
         });
         cx.notify();
+    }
+
+    /// Asks before deleting `folder`, a folder or label the user made, and
+    /// the folders inside it.
+    pub(super) fn ask_delete_folder(&mut self, folder: FolderId, cx: &mut Context<Self>) {
+        let (Some(account), Some(node)) = (self.tree.account_of(folder), self.tree.node(folder))
+        else {
+            return;
+        };
+        let name = node.label();
+        let conversations = self.config.mail.conversations;
+        let count = match &self.mail {
+            Ok(mail) => {
+                let mut keys = std::collections::HashSet::new();
+                for id in self.tree.subtree(folder) {
+                    keys.extend(
+                        mail.entries(id, None, conversations)
+                            .into_iter()
+                            .map(|e| e.key),
+                    );
+                }
+                keys.len() as u64
+            }
+            Err(_) => 0,
+        };
+        let mut shown = Spring::new(motion::SMOOTH, 0.0);
+        shown.set(1.0);
+        self.delete_ask = Some(DeleteAsk {
+            keys: Vec::new(),
+            forever: true,
+            dont_ask: false,
+            closing: false,
+            focused: false,
+            shown,
+            folder: Some(FolderAsk {
+                folder,
+                name,
+                gmail: self.tree.is_gmail(account),
+                trash: self.tree.role_folder(account, Role::Trash).is_some(),
+                count,
+            }),
+        });
+        cx.notify();
+    }
+
+    /// Deletes `folder` on the server through the daemon; once gone, says
+    /// so, and opens the inbox if the list showed it or a folder inside.
+    fn delete_folder(
+        &mut self,
+        folder: FolderId,
+        name: String,
+        gmail: bool,
+        cx: &mut Context<Self>,
+    ) {
+        let connection = self.daemon.clone();
+        let gone = self.tree.subtree(folder);
+        let inbox = self
+            .tree
+            .account_of(folder)
+            .and_then(|a| self.tree.role_folder(a, Role::Inbox));
+        cx.spawn(async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    daemon::delete_folder(&connection, folder.0).await
+                })
+                .await;
+            this.update(cx, |this, cx| match result {
+                Ok(_) => {
+                    if let (Some(listed), Some(inbox)) = (this.listed_folder(), inbox)
+                        && gone.contains(&listed)
+                    {
+                        this.open_folder(inbox, cx);
+                    }
+                    this.refresh(false, cx);
+                    let text = if gmail {
+                        tr!("label-deleted", name = name.as_str())
+                    } else {
+                        tr!("folder-deleted", name = name.as_str())
+                    };
+                    this.show_snackbar(text, None, cx);
+                }
+                Err(err) => this.show_snackbar(format::sentence(&err), None, cx),
+            })
+            .ok();
+        })
+        .detach();
     }
 
     /// Closes the question without deleting. Returns whether it was open.
@@ -74,6 +187,11 @@ impl MailWindow {
         };
         ask.closing = true;
         ask.shown.set(0.0);
+        if let Some(folder) = &ask.folder {
+            let (id, name, gmail) = (folder.folder, folder.name.clone(), folder.gmail);
+            self.delete_folder(id, name, gmail, cx);
+            return;
+        }
         let keys = ask.keys.clone();
         if ask.dont_ask && !ask.forever {
             self.apply(Change::ConfirmDelete(false), cx);
@@ -112,7 +230,29 @@ impl MailWindow {
         } else {
             "message"
         };
-        let (title, body, action) = if ask.forever {
+        let (title, body, action) = if let Some(folder) = &ask.folder {
+            let name = folder.name.as_str();
+            let body = if folder.gmail {
+                tr!("folder-delete-label-body")
+            } else if folder.trash {
+                tr!("folder-delete-body", count = folder.count, kind = kind)
+            } else {
+                tr!(
+                    "folder-delete-forever-body",
+                    count = folder.count,
+                    kind = kind
+                )
+            };
+            (
+                tr!("folder-delete-title", name = name),
+                body,
+                if folder.gmail {
+                    tr!("folder-delete-label-confirm")
+                } else {
+                    tr!("folder-delete-confirm")
+                },
+            )
+        } else if ask.forever {
             (
                 tr!("delete-forever-title", count = count, kind = kind),
                 tr!("delete-forever-body", count = count),
@@ -141,7 +281,8 @@ impl MailWindow {
                 .gap(px(10.0))
                 .rounded(px(8.0))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                 .text_size(px(14.0))
                 .on_click(cx.listener(|this, _, _, cx| {
                     if let Some(ask) = &mut this.delete_ask {
@@ -204,22 +345,28 @@ impl MailWindow {
                     .justify_center()
                     .rounded_full()
                     .bg(rgba(fade(tone, 0.14)))
-                    .child(icon("trash", tone, 24.0)),
+                    .child(icon(
+                        if ask.folder.is_some() {
+                            "warning"
+                        } else {
+                            "trash"
+                        },
+                        tone,
+                        24.0,
+                    )),
             )
             .child(
-                div()
+                self.copyable(title, th)
                     .mt(px(14.0))
                     .text_size(px(20.0))
-                    .line_height(px(28.0))
-                    .child(title),
+                    .line_height(px(28.0)),
             )
             .child(
-                div()
+                self.copyable(body, th)
                     .mt(px(8.0))
                     .text_size(px(14.0))
                     .line_height(px(20.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(body),
+                    .text_color(rgba(th.text_dim)),
             )
             .children(dont_ask)
             .child(

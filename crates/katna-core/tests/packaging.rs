@@ -9,8 +9,8 @@ use std::{
 };
 
 use katna_core::ids::{
-    CLOCK_APPLET_ID, CLOCK_EXTENSION_UUID, DAEMON_BUS_NAME, MAIL_APP_ID, PREFIX,
-    RUNNER_OBJECT_PATH, SEARCH_PROVIDER_OBJECT_PATH, UPDATE_ACTION,
+    CLOCK_APPLET_ID, CLOCK_EXTENSION_UUID, DAEMON_BUS_NAME, MAIL_APP_ID, NOTIFICATIONS_DESKTOP_ID,
+    PREFIX, RUNNER_OBJECT_PATH, SEARCH_PROVIDER_OBJECT_PATH, UPDATE_ACTION,
 };
 use katna_core::update::{ARCH_HELPER, ARCH_INSTALLED};
 
@@ -22,7 +22,8 @@ fn packaging() -> PathBuf {
 }
 
 /// Reads `packaging/<dir>/<name>`; it must be the only file in `dir`
-/// with that extension, so a stale file under an old name cannot hide.
+/// with that extension (besides the notifications' hidden desktop entry),
+/// so a stale file under an old name cannot hide.
 fn read(dir: &str, name: &str) -> String {
     let dir = packaging().join(dir);
     let extension = Path::new(name).extension();
@@ -32,8 +33,17 @@ fn read(dir: &str, name: &str) -> String {
         .filter(|path| path.extension() == extension)
         .map(|path| path.file_name().unwrap().to_string_lossy().into_owned())
         .collect();
+    let mut expected = vec![name.to_owned()];
+    if dir.ends_with("desktop") && extension.is_some_and(|e| e == "desktop") {
+        expected = vec![
+            format!("{MAIL_APP_ID}.desktop"),
+            format!("{NOTIFICATIONS_DESKTOP_ID}.desktop"),
+        ];
+        assert!(expected.iter().any(|e| e == name), "{name}");
+    }
     names.sort();
-    assert_eq!(names, [name], "files in {}", dir.display());
+    expected.sort();
+    assert_eq!(names, expected, "files in {}", dir.display());
     let text = fs::read_to_string(dir.join(name)).unwrap();
     assert!(
         text.lines()
@@ -68,6 +78,19 @@ fn desktop_entry_matches_app_id() {
     assert_eq!(value(&text, "MimeType"), Some("x-scheme-handler/mailto;"));
     assert_eq!(value(&text, "Icon"), Some(MAIL_APP_ID));
     assert_eq!(value(&text, "StartupWMClass"), Some(MAIL_APP_ID));
+}
+
+/// Notifications name a hidden Katna Mail entry that asks for no launch
+/// feedback.
+#[test]
+fn notifications_entry_is_quiet() {
+    let text = read("desktop", &format!("{NOTIFICATIONS_DESKTOP_ID}.desktop"));
+    assert!(text.contains("\n[Desktop Entry]\n"), "{text}");
+    assert!(NOTIFICATIONS_DESKTOP_ID.starts_with(&format!("{MAIL_APP_ID}.")));
+    assert_eq!(value(&text, "Name"), Some("Katna Mail"));
+    assert_eq!(value(&text, "Icon"), Some(MAIL_APP_ID));
+    assert_eq!(value(&text, "NoDisplay"), Some("true"));
+    assert_eq!(value(&text, "StartupNotify"), Some("false"));
 }
 
 /// The actions on the taskbar icon's right-click menu start Katna Mail with
@@ -247,6 +270,7 @@ fn snap_names_match_ids() {
 fn prefix_only_in_checked_files() {
     let checked = [
         format!("desktop/{MAIL_APP_ID}.desktop"),
+        format!("desktop/{NOTIFICATIONS_DESKTOP_ID}.desktop"),
         format!("dbus/{DAEMON_BUS_NAME}.service"),
         format!("systemd/{UNIT}"),
         format!("krunner/{MAIL_APP_ID}.desktop"),

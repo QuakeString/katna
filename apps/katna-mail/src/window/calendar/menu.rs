@@ -20,6 +20,7 @@ use gpui::{
 };
 use jiff::civil::{Date, Time};
 use jiff::{ToSpan, Zoned};
+use katna_core::config::AppKind;
 use katna_dav::Occurrence;
 use katna_i18n::tr;
 use katna_store::calendar::EventKind;
@@ -157,9 +158,12 @@ impl MailWindow {
                     item("cal-new-event", "event", tr!("calendar-menu-new-event"))
                         .on_click(new(Some(EventKind::Default))),
                 );
-                rows.item(
-                    item("cal-new-task", "tasks", tr!("calendar-kind-task")).on_click(new(None)),
-                );
+                if self.config.app_on(AppKind::Tasks) {
+                    rows.item(
+                        item("cal-new-task", "tasks", tr!("calendar-kind-task"))
+                            .on_click(new(None)),
+                    );
+                }
                 if time.is_some() {
                     rows.item(
                         item("cal-new-focus", "headphones", tr!("calendar-kind-focus"))
