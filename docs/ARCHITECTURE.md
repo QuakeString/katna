@@ -2291,9 +2291,13 @@ Gemini or confidential mode):
   the Model Context Protocol on stdio to AI assistants on the same
   computer, with tools to list accounts and folders, search and read mail
   and save plain-text drafts, and never sends, deletes, moves or flags
-  mail. Its Settings page (on or off, allow drafts, copy the client setup)
-  is still to come: until then it is fainter in the list and shows a
-  "Coming soon" page saying what it will do. The rule editor
+  mail. Its Settings page (#759) lets assistants use the mail only once
+  turned on, with a drafts switch, a switch per account (hidden accounts'
+  mail is left out of every answer), Connect an assistant (Claude Desktop,
+  Claude Code, LM Studio, Other) with the text to paste and Copy, and
+  Recently, what assistants did, kept on this computer
+  (`state/mcp-activity.jsonl`, last 50 lines) with Clear; `katnactl mcp`
+  reads `[mcp]` on every call. The rule editor
   (`window/rule_editor.rs`), a dialog, also opens from a mail's
   right-click menu (Make a rule…, filled in with its sender). It counts
   the inbox mail of the last 30 days the rule matches as it changes
