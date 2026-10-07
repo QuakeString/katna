@@ -189,6 +189,45 @@ impl Store {
         })?;
         Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
+
+    /// The newest message row: messages stored later have larger IDs.
+    pub fn newest_message(&self) -> Result<MessageId> {
+        Ok(MessageId(self.mail.query_row(
+            "SELECT COALESCE(MAX(id), 0) FROM message",
+            [],
+            |row| row.get(0),
+        )?))
+    }
+
+    /// The messages of the conversation of `message` stored after row
+    /// `after` ([`Store::newest_message`] then) that are in an Inbox,
+    /// oldest first: what brings a snoozed conversation back early.
+    pub fn arrived_in_inbox_after(
+        &self,
+        message: MessageId,
+        after: MessageId,
+    ) -> Result<Vec<LaterMessage>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT o.message_id_hdr, COALESCE(o.subject, ''), o.category
+             FROM message m JOIN message o ON o.thread_id = m.thread_id
+             WHERE m.id = ?1 AND o.id > ?2
+               AND o.message_id_hdr IS NOT m.message_id_hdr
+               AND EXISTS (SELECT 1 FROM message_location l
+                           JOIN folder f ON f.id = l.folder_id
+                           WHERE l.message_id = o.id AND f.role = 'inbox')
+             ORDER BY o.id",
+        )?;
+        let rows = stmt.query_map([message.0, after.0], |row| {
+            Ok(LaterMessage {
+                message_id: row.get(0)?,
+                subject: row.get(1)?,
+                category: row
+                    .get::<_, Option<i64>>(2)?
+                    .and_then(MailCategory::from_storage),
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
 }
 
 /// A message later in a conversation ([`Store::later_in_thread`]).
@@ -274,5 +313,68 @@ mod tests {
         drop(Store::open(&paths, Mode::ReadWrite).unwrap());
         let mut reader = Store::open(&paths, Mode::ReadOnly).unwrap();
         assert!(reader.set_meta("message", 1, "snooze", "{}", None).is_err());
+    }
+
+    #[test]
+    fn finds_what_reached_the_inbox_after_a_snooze() {
+        use crate::FolderRole;
+        use crate::mail::{Added, MessageFlags, NewMessage};
+        let (_dir, mut store) = store();
+        let account = store
+            .add_account(katna_core::AccountKind::Local, "a", "a@local")
+            .unwrap()
+            .id;
+        let mut batch = store.mail_batch().unwrap();
+        let inbox = batch
+            .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
+            .unwrap();
+        let sent = batch
+            .upsert_folder(account, "Sent", Some(FolderRole::Sent))
+            .unwrap();
+        let mut add = |folder, id: &str, reply: Option<&str>, date| {
+            let raw = format!("Message-ID: {id}\r\nSubject: Offer\r\n\r\nHi.\r\n");
+            let added = batch
+                .add_message(
+                    account,
+                    folder,
+                    &NewMessage {
+                        raw: raw.as_bytes(),
+                        message_id_hdr: Some(id),
+                        subject: Some("Offer"),
+                        date: Some(date),
+                        flags: MessageFlags::SEEN,
+                        has_attachments: false,
+                        list_id: None,
+                        snippet: None,
+                        participants: &[],
+                        in_reply_to: reply,
+                        references: &[],
+                        category: None,
+                    },
+                )
+                .unwrap();
+            let Added::Message(id) = added else {
+                unreachable!()
+            };
+            id
+        };
+        let first = add(inbox, "<1@x>", None, 100);
+        let earlier = add(inbox, "<2@x>", Some("<1@x>"), 200);
+        let mine = add(sent, "<3@x>", Some("<2@x>"), 300);
+        let newest = MessageId(mine.0);
+        let reply = add(inbox, "<4@x>", Some("<3@x>"), 400);
+        batch.commit().unwrap();
+        assert!(earlier.0 < newest.0 && newest.0 < reply.0);
+        // Only what came after the snooze, and only into the Inbox.
+        let after = store.arrived_in_inbox_after(first, newest).unwrap();
+        assert_eq!(after.len(), 1);
+        assert_eq!(after[0].message_id.as_deref(), Some("<4@x>"));
+        assert_eq!(store.newest_message().unwrap(), reply);
+        assert!(
+            store
+                .arrived_in_inbox_after(first, reply)
+                .unwrap()
+                .is_empty()
+        );
     }
 }

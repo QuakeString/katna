@@ -60,6 +60,11 @@ pub struct Snooze {
     pub back_to: i64,
     /// The Snoozed folder it waits in.
     pub snoozed_in: i64,
+    /// The newest message row when it was snoozed: a message of the
+    /// conversation stored after it, in an Inbox, brings it back early.
+    /// 0 (snoozed by an older Katna): only the time does.
+    #[serde(default)]
+    pub newest: i64,
 }
 
 /// "Remind me if nobody replies": on a sent message, by its outbox entry.
@@ -353,6 +358,7 @@ mod tests {
             until: 500,
             back_to: 1,
             snoozed_in: 9,
+            newest: 3,
         };
         set_snooze(&mut store, MessageId(4), &snooze).unwrap();
         let follow_up = FollowUp {

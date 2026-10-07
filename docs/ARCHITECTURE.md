@@ -1349,7 +1349,7 @@ this is local; Katna Server only adds opened/clicked events (§16).
   while the computer sleeps and the wall clock does not; resuming also
   wakes it. Values are in `pim.db`, so they survive restarts; one that fell
   due while the computer was off fires when the daemon starts.
-- **Snooze** (`message`/`snooze`: `{until, back_to, snoozed_in}`): the
+- **Snooze** (`message`/`snooze`: `{until, back_to, snoozed_in, newest}`): the
   messages of the conversation in the folder it was snoozed from (the
   Inbox, a label or Archive, never Sent, Drafts, Trash, Spam or All Mail)
   move to the account's `Snoozed` folder, made on the server the first
@@ -1360,6 +1360,15 @@ this is local; Katna Server only adds opened/clicked events (§16).
   moves them back at once without marking them unread. Gmail, Outlook.com,
   Zoho and Yahoo do not share their own snooze over IMAP, so a snooze set
   on their websites stays there.
+  - **Back early on a reply**: `newest` is the newest message row when it
+    was snoozed. After each sync, a message of the conversation stored
+    later and in an Inbox (not an automatic reply) brings it back at once;
+    the new mail notifies as usual.
+  - **From a notification**: a new mail's peek (and a Windows toast) has
+    Snooze 1 hour and Tomorrow (8:00), which snooze the conversation's
+    messages in the same folder.
+  - **Typed times**: Pick date & time reads "tue 3pm", "tomorrow" or "in 2
+    hours" (`quick_add::moment`) into its day and time.
 - **Remind me** (no meta of its own): a task in Tasks made from the mail
   (its `mail` is the newest message's `Message-ID`), due and with
   `remind_at` at the time, titled with the optional note or the subject;
