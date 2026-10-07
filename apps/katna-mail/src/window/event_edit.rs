@@ -12,8 +12,8 @@
 use std::rc::Rc;
 
 use gpui::{
-    AnyElement, ClickEvent, Context, Entity, Focusable, FontWeight, MouseButton, Pixels, Point,
-    ScrollHandle, SharedString, Subscription, Window, deferred, div, prelude::*, rgba,
+    AnyElement, ClickEvent, Context, Div, Entity, Focusable, FontWeight, MouseButton, Pixels,
+    Point, ScrollHandle, SharedString, Subscription, Window, deferred, div, prelude::*, rgba,
 };
 use jiff::civil::{Date, DateTime, Time, Weekday};
 use jiff::tz::TimeZone;
@@ -298,7 +298,7 @@ enum UndoPlan {
 }
 
 /// The next whole hour after now, on `day`.
-fn next_hour(day: Date, tz: &TimeZone) -> Time {
+pub(super) fn next_hour(day: Date, tz: &TimeZone) -> Time {
     let now = Zoned::now().with_time_zone(tz.clone());
     if now.date() == day {
         Time::new((now.hour() + 1).min(23), 0, 0, 0).unwrap_or(Time::midnight())
@@ -735,7 +735,37 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Gives the new event's draft `title` (More options from the New
+    /// event window).
+    pub(super) fn set_draft_title(
+        &mut self,
+        title: &str,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if let Some(draft) = &self.calendar.draft {
+            draft
+                .title
+                .update(cx, |input, cx| input.set_text(title.to_owned(), cx));
+            focus_later(&draft.title, window, cx);
+        }
+    }
+
+    /// The new event's day and title, for the whole editor in the mail
+    /// window.
+    pub(super) fn draft_day_and_title(&self, cx: &Context<Self>) -> Option<(Date, String)> {
+        let draft = self.calendar.draft.as_ref()?;
+        Some((
+            draft.start_day,
+            draft.title.read(cx).text().trim().to_owned(),
+        ))
+    }
+
     fn more_options(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.event_only {
+            self.more_options_in_main(window, cx);
+            return;
+        }
         if let Some(draft) = &mut self.calendar.draft {
             draft.full = true;
             draft.pick = None;
@@ -1030,7 +1060,12 @@ impl MailWindow {
         }
         let calendar = draft.calendar;
         let Some(occurrence) = draft.editing.clone() else {
-            self.calendar.draft = None;
+            // A window of its own stays, as typed, until the event is in.
+            if self.event_only {
+                self.event_saving = true;
+            } else {
+                self.calendar.draft = None;
+            }
             self.edit_calendar(
                 EventChange::Add { calendar, edit },
                 UndoPlan::DeleteAdded,
@@ -1338,6 +1373,15 @@ impl MailWindow {
             }
             .await;
             this.update(cx, |this, cx| {
+                if this.event_only {
+                    this.event_saving = false;
+                    if result.is_ok() {
+                        // Saved: the window closes.
+                        this.calendar.draft = None;
+                        cx.notify();
+                        return;
+                    }
+                }
                 match result {
                     Ok(id) => {
                         let undo = match undo {
@@ -1494,6 +1538,17 @@ impl MailWindow {
         layers
     }
 
+    /// The draft's open picker (a day, a time, the calendar), if any.
+    pub(super) fn render_draft_pick(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let draft = self.calendar.draft.as_ref()?;
+        let (pick, at) = draft.pick?;
+        Some(self.render_pick(draft, pick, at, th, cx))
+    }
+
     /// Whether the whole editor is open, in place of the page.
     pub(super) fn event_editor_open(&self) -> bool {
         self.calendar.draft.as_ref().is_some_and(|d| d.full)
@@ -1638,117 +1693,18 @@ impl MailWindow {
     }
 
     fn render_quick_card(&self, draft: &Draft, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let row = |name: &'static str| {
-            div().flex().flex_row().items_center().gap(px(16.0)).child(
-                div()
-                    .flex_none()
-                    .w(px(24.0))
-                    .child(icon(name, th.text_dim, 20.0)),
-            )
-        };
         let card = raised(
-            div()
+            self.quick_card_body(draft, th, cx)
                 .id("event-draft")
                 .occlude()
                 // A phone's window, less a margin at each side.
                 .w(px(QUICK_WIDTH.min(self.layout.shape.width - 16.0)))
                 .p(px(8.0))
                 .pb(px(16.0))
-                .flex()
-                .flex_col()
-                .gap(px(12.0))
-                .text_color(rgba(th.text))
                 .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation()),
             th,
             15.0,
             3.0,
-        )
-        .child(
-            div().flex().flex_row().justify_end().child(
-                icon_button("draft-close", "close", 20.0, th)
-                    .tooltip(tip(tr!("calendar-close"), th))
-                    .on_click(cx.listener(|this, _, _, cx| {
-                        this.calendar.draft = None;
-                        cx.notify();
-                    })),
-            ),
-        )
-        .child(
-            div()
-                .ml(px(48.0))
-                .mr(px(16.0))
-                .pb(px(4.0))
-                .border_b_2()
-                .border_color(rgba(th.accent))
-                .text_size(px(22.0))
-                .child(draft.title.clone()),
-        )
-        .children(
-            self.render_kind_tabs(draft, th, cx)
-                .map(|tabs| div().ml(px(40.0)).mr(px(8.0)).child(tabs)),
-        )
-        .when(draft.task, |d| {
-            d.child(self.render_task_fields(draft, th, cx))
-        })
-        .when(!draft.task, |d| {
-            d.child(
-                div()
-                    .px(px(8.0))
-                    .flex()
-                    .flex_col()
-                    .gap(px(8.0))
-                    .child(row("schedule").child(self.render_when(draft, th, cx)))
-                    // The place the title named (typed quick add).
-                    .when(draft.quick.as_ref().is_some_and(|q| q.placed), |d| {
-                        d.child(
-                            row("location").child(
-                                div()
-                                    .h(px(36.0))
-                                    .px(px(10.0))
-                                    .flex()
-                                    .items_center()
-                                    .text_size(px(14.0))
-                                    .child(draft.location.read(cx).text().to_owned()),
-                            ),
-                        )
-                    })
-                    // The repeat the title named.
-                    .when(draft.quick.as_ref().is_some_and(|q| q.repeated), |d| {
-                        d.child(
-                            row("repeat").child(
-                                div()
-                                    .h(px(36.0))
-                                    .px(px(10.0))
-                                    .flex()
-                                    .items_center()
-                                    .text_size(px(14.0))
-                                    .child(draft.repeat.label(draft.start_day)),
-                            ),
-                        )
-                    })
-                    .child(row("calendar").child(self.calendar_chip(draft, th, cx))),
-            )
-        })
-        .child(
-            div()
-                .px(px(16.0))
-                .flex()
-                .flex_row()
-                .justify_end()
-                .items_center()
-                .gap(px(8.0))
-                .when(!draft.task, |d| {
-                    d.child(
-                        text_button("draft-more", tr!("calendar-more-options"), th).on_click(
-                            cx.listener(|this, _, window, cx| this.more_options(window, cx)),
-                        ),
-                    )
-                })
-                .child(
-                    filled_button("draft-save", tr!("calendar-save"), th).on_click(
-                        cx.listener(|this, _, window, cx| this.save_event_draft(None, window, cx)),
-                    ),
-                ),
         );
         deferred(
             anchored()
@@ -1758,6 +1714,116 @@ impl MailWindow {
         )
         .with_priority(4)
         .into_any_element()
+    }
+
+    /// What the small card shows: its title, when, calendar, More options
+    /// and Save. In a window of its own (`event_window`), the desktop's
+    /// frame closes it, so it has no close button.
+    pub(super) fn quick_card_body(&self, draft: &Draft, th: &Theme, cx: &mut Context<Self>) -> Div {
+        let row = |name: &'static str| {
+            div().flex().flex_row().items_center().gap(px(16.0)).child(
+                div()
+                    .flex_none()
+                    .w(px(24.0))
+                    .child(icon(name, th.text_dim, 20.0)),
+            )
+        };
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(12.0))
+            .text_color(rgba(th.text))
+            .when(!self.event_only, |d| {
+                d.child(
+                    div().flex().flex_row().justify_end().child(
+                        icon_button("draft-close", "close", 20.0, th)
+                            .tooltip(tip(tr!("calendar-close"), th))
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.calendar.draft = None;
+                                cx.notify();
+                            })),
+                    ),
+                )
+            })
+            .child(
+                div()
+                    .ml(px(48.0))
+                    .mr(px(16.0))
+                    .pb(px(4.0))
+                    .border_b_2()
+                    .border_color(rgba(th.accent))
+                    .text_size(px(22.0))
+                    .child(draft.title.clone()),
+            )
+            .children(
+                self.render_kind_tabs(draft, th, cx)
+                    .map(|tabs| div().ml(px(40.0)).mr(px(8.0)).child(tabs)),
+            )
+            .when(draft.task, |d| {
+                d.child(self.render_task_fields(draft, th, cx))
+            })
+            .when(!draft.task, |d| {
+                d.child(
+                    div()
+                        .px(px(8.0))
+                        .flex()
+                        .flex_col()
+                        .gap(px(8.0))
+                        .child(row("schedule").child(self.render_when(draft, th, cx)))
+                        // The place the title named (typed quick add).
+                        .when(draft.quick.as_ref().is_some_and(|q| q.placed), |d| {
+                            d.child(
+                                row("location").child(
+                                    div()
+                                        .h(px(36.0))
+                                        .px(px(10.0))
+                                        .flex()
+                                        .items_center()
+                                        .text_size(px(14.0))
+                                        .child(draft.location.read(cx).text().to_owned()),
+                                ),
+                            )
+                        })
+                        // The repeat the title named.
+                        .when(draft.quick.as_ref().is_some_and(|q| q.repeated), |d| {
+                            d.child(
+                                row("repeat").child(
+                                    div()
+                                        .h(px(36.0))
+                                        .px(px(10.0))
+                                        .flex()
+                                        .items_center()
+                                        .text_size(px(14.0))
+                                        .child(draft.repeat.label(draft.start_day)),
+                                ),
+                            )
+                        })
+                        .child(row("calendar").child(self.calendar_chip(draft, th, cx))),
+                )
+            })
+            .child(
+                div()
+                    .px(px(16.0))
+                    .flex()
+                    .flex_row()
+                    .justify_end()
+                    .items_center()
+                    .gap(px(8.0))
+                    .when(!draft.task, |d| {
+                        d.child(
+                            text_button("draft-more", tr!("calendar-more-options"), th).on_click(
+                                cx.listener(|this, _, window, cx| this.more_options(window, cx)),
+                            ),
+                        )
+                    })
+                    .child(
+                        filled_button("draft-save", tr!("calendar-save"), th).on_click(
+                            cx.listener(|this, _, window, cx| {
+                                this.save_event_draft(None, window, cx)
+                            }),
+                        ),
+                    ),
+            )
     }
 
     /// The whole editor, in place of the page (Google's "More options").

@@ -673,10 +673,11 @@ macro_rules! agenda_interface {
                     );
                 }
                 let day = self::due(&day)?;
+                // A small New event window, not the whole app.
                 crate::mail_app::run(
                     connection,
-                    Some(app_action::OPEN_PAGE),
-                    vec![Value::from(app_action::calendar_page(day, true))],
+                    Some(app_action::CAPTURE),
+                    vec![Value::from(app_action::capture_event(day))],
                     None,
                 )
                 .await;
