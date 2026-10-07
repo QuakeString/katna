@@ -872,6 +872,8 @@ mod tests {
         assert_eq!(package_version("other-0.1.0-1-x86_64.pkg.tar.zst"), None);
     }
 
+    // pacman's folder names carry the epoch's ':', which Windows can't name.
+    #[cfg(unix)]
     #[test]
     fn reads_the_installed_version_from_pacman() {
         let local = std::env::temp_dir().join(format!("katna-pacman-{}", std::process::id()));
