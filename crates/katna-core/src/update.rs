@@ -189,6 +189,16 @@ impl Package {
         }
     }
 
+    /// The version of this package installed on the computer now, as its
+    /// package manager records it. After an update it is newer than the
+    /// running program's [`VERSION`] until that program restarts.
+    pub fn installed_version(self) -> Option<String> {
+        match self {
+            Self::Arch => pacman_version(std::path::Path::new(PACMAN_LOCAL), ARCH_NAME),
+            _ => None,
+        }
+    }
+
     /// The URL of the [`Manifest`] of this package's newest build.
     pub fn manifest_url(self) -> Option<String> {
         self.release()
@@ -209,6 +219,51 @@ impl Package {
     pub fn file_url(self, file: &str) -> Option<String> {
         self.release()
             .map(|release| format!("{RELEASES}/{release}/{file}"))
+    }
+}
+
+/// Where pacman records each installed package, in `NAME-VERSION/desc`.
+const PACMAN_LOCAL: &str = "/var/lib/pacman/local";
+
+/// The Arch package's name.
+const ARCH_NAME: &str = "katna-git";
+
+/// The version, without pacman's epoch and release, of package `name` in
+/// pacman's records in `local`.
+fn pacman_version(local: &std::path::Path, name: &str) -> Option<String> {
+    let prefix = format!("{name}-");
+    std::fs::read_dir(local).ok()?.flatten().find_map(|entry| {
+        if !entry.file_name().to_str()?.starts_with(&prefix) {
+            return None;
+        }
+        let desc = std::fs::read_to_string(entry.path().join("desc")).ok()?;
+        (desc_field(&desc, "%NAME%")? == name)
+            .then(|| desc_field(&desc, "%VERSION%"))
+            .flatten()
+            .map(|version| {
+                let version = version.split_once(':').map_or(version, |(_, v)| v);
+                version
+                    .rsplit_once('-')
+                    .map_or(version, |(v, _)| v)
+                    .to_owned()
+            })
+    })
+}
+
+/// The first line under `field` in a pacman `desc` file.
+fn desc_field<'a>(desc: &'a str, field: &str) -> Option<&'a str> {
+    let mut lines = desc.lines();
+    lines.find(|line| line.trim() == field)?;
+    lines.next().map(str::trim).filter(|line| !line.is_empty())
+}
+
+/// The version updates are measured against: the newest of the running
+/// program's and the installed package's. A program still running after
+/// its package was updated never offers the update it already has.
+pub fn installed(package: Package) -> String {
+    match package.installed_version() {
+        Some(version) if newer(VERSION, &version) => version,
+        _ => VERSION.to_owned(),
     }
 }
 
@@ -815,6 +870,38 @@ mod tests {
             None
         );
         assert_eq!(package_version("other-0.1.0-1-x86_64.pkg.tar.zst"), None);
+    }
+
+    #[test]
+    fn reads_the_installed_version_from_pacman() {
+        let local = std::env::temp_dir().join(format!("katna-pacman-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&local);
+        for (dir, name, version) in [
+            (
+                "katna-git-debug-0.0.0.r700.gaaaaaaa-1",
+                "katna-git-debug",
+                "0.0.0.r700.gaaaaaaa-1",
+            ),
+            (
+                "katna-git-1:0.0.0.r765.g3928dee-2",
+                "katna-git",
+                "1:0.0.0.r765.g3928dee-2",
+            ),
+        ] {
+            std::fs::create_dir_all(local.join(dir)).unwrap();
+            std::fs::write(
+                local.join(dir).join("desc"),
+                format!("%NAME%\n{name}\n\n%VERSION%\n{version}\n\n%BASE%\nkatna-git\n"),
+            )
+            .unwrap();
+        }
+        assert_eq!(
+            pacman_version(&local, "katna-git").as_deref(),
+            Some("0.0.0.r765.g3928dee")
+        );
+        assert_eq!(pacman_version(&local, "other"), None);
+        assert_eq!(pacman_version(&local.join("missing"), "katna-git"), None);
+        std::fs::remove_dir_all(&local).unwrap();
     }
 
     #[test]

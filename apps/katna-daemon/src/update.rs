@@ -34,12 +34,28 @@ pub async fn replaced() -> PathBuf {
             tracing::info!(path = %image.display(), "the Katna AppImage was updated");
             return image.clone();
         }
-        if let Ok(link) = std::fs::read_link(SELF_EXE)
-            && let Some(new) = new_binary(&link)
-            && new.is_file()
-        {
-            tracing::info!(path = %new.display(), "katna-daemon was updated");
-            return new;
+        if let Ok(link) = std::fs::read_link(SELF_EXE) {
+            if let Some(new) = new_binary(&link)
+                && new.is_file()
+            {
+                tracing::info!(path = %new.display(), "katna-daemon was updated");
+                return new;
+            }
+            // The package manager says a newer build is installed, though
+            // this binary's file looks unchanged: restart all the same,
+            // or this daemon would offer the update that is installed.
+            // Only for the packaged binary, which the restart replaces.
+            if link.starts_with("/usr/")
+                && let Some(installed) = katna_core::update::Package::current().installed_version()
+                && katna_core::update::newer(katna_core::update::VERSION, &installed)
+            {
+                tracing::info!(
+                    running = katna_core::update::VERSION,
+                    installed,
+                    "a newer katna-daemon is installed"
+                );
+                return link;
+            }
         }
     }
 }
