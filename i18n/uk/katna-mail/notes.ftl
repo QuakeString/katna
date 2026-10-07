@@ -5,6 +5,7 @@
 ## Side list and search
 
 notes-view-notes = Нотатки
+notes-view-reminders = Нагадування
 notes-view-archive = Архів
 notes-view-trash = Кошик
 notes-edit-labels = Редагувати мітки
@@ -23,6 +24,7 @@ notes-archive-empty = Тут з’являтимуться ваші архіво
 notes-trash-empty = У кошику немає нотаток
 notes-none-found = Немає відповідних нотаток
 notes-label-empty = Нотаток із цією міткою ще немає
+notes-reminders-empty = Тут з’являться нотатки з майбутніми нагадуваннями
 notes-trash-note = Нотатки в кошику видаляються через 7 днів.
 notes-empty-trash = Очистити кошик
 notes-ticked = { $count ->
@@ -31,6 +33,14 @@ notes-ticked = { $count ->
     [many] + { $count } позначених пунктів
    *[other] + { $count } позначеного пункту
 }
+notes-select = Вибрати нотатку
+notes-selected = { $count ->
+    [one] Вибрано { $count }
+    [few] Вибрано { $count }
+    [many] Вибрано { $count }
+   *[other] Вибрано { $count }
+}
+notes-select-clear = Скасувати вибір
 
 ## A note's buttons
 
@@ -45,6 +55,15 @@ notes-color = Колір фону
 notes-checkboxes = Показати або сховати прапорці
 notes-labels = Мітки
 notes-close = Закрити
+notes-more = Більше
+notes-make-copy = Створити копію
+notes-remind = Нагадати мені
+notes-add-picture = Додати зображення
+notes-history = Історія версій
+notes-ai = Допомогти написати
+notes-send-as-mail = Надіслати листом
+notes-save-markdown = Зберегти як Markdown
+notes-save-pdf = Зберегти як PDF
 
 ## The open note
 
@@ -52,6 +71,47 @@ notes-title = Назва
 notes-edited = Змінено: { $date }
 notes-on-this-computer = На цьому комп’ютері
 notes-where = Де зберігається ця нотатка
+notes-untitled = Нотатка без назви
+notes-picture-choose = Додати зображення
+notes-picture-remove = Прибрати зображення
+notes-picture-too-big = До нотатки можна додати зображення розміром до { $size }
+notes-picture-kind = Цей файл не є зображенням, яке Katna може показати
+notes-picture-unreadable = Не вдалося прочитати { $name }: { $error }
+notes-remind-me = Нагадати мені
+notes-remind-off = Прибрати нагадування
+notes-remind-in-the-past = Виберіть час, який ще не минув
+notes-remind-today = Сьогодні, { $time }
+notes-remind-tomorrow = Завтра, { $time }
+notes-remind-weekday = { $day }, { $time }
+notes-reminder-set = Нагадування встановлено на { $when }
+notes-reminder-off = Нагадування прибрано
+notes-link-note = Пов’язати нотатку
+notes-link-new = Нова нотатка «{ $title }»
+notes-linked-from = Посилання з
+notes-link-gone = Цієї нотатки тут більше немає
+notes-versions = Версії
+notes-version-now = Зараз
+notes-version-here = Ви, на цьому комп’ютері
+notes-version-yesterday = Учора, { $time }
+notes-version-changes = { $count ->
+    [one] { $count } зміна
+    [few] { $count } зміни
+    [many] { $count } змін
+   *[other] { $count } зміни
+}
+notes-version-from = З пристрою { $device }
+notes-version-elsewhere = З іншого пристрою
+notes-version-created = Створено
+notes-version-restore = Відновити цю версію
+notes-version-restored = Версію відновлено
+notes-history-none = Попередніх версій ще немає
+notes-ai-tidy = Упорядкувати текст
+notes-ai-checklist = Перетворити на список із прапорцями
+notes-ai-summarise = Підсумувати
+notes-ai-empty = Спершу щось напишіть
+notes-ai-tidied = Текст упорядковано. Ctrl+Z поверне як було.
+notes-ai-listed = Перетворено на список із прапорцями. Ctrl+Z поверне як було.
+notes-ai-summarised = Підсумок додано вгорі
 
 ## Labels
 
@@ -90,6 +150,9 @@ notes-format-normal = Звичайний текст
 notes-format-bold = Жирний
 notes-format-italic = Курсив
 notes-format-underline = Підкреслений
+notes-format-quote = Цитата
+notes-format-code = Код
+notes-format-divider = Роздільник
 notes-format-clear = Очистити форматування
 
 ## Tasks
@@ -117,6 +180,53 @@ notes-archived = Нотатку архівовано
 notes-unarchived = Нотатку розархівовано
 notes-trashed = Нотатку переміщено в кошик
 notes-restored = Нотатку відновлено
+notes-saved = Нотатку збережено
+notes-pinned-count = { $count ->
+    [one] { $count } нотатку закріплено
+    [few] { $count } нотатки закріплено
+    [many] { $count } нотаток закріплено
+   *[other] { $count } нотатки закріплено
+}
+notes-unpinned-count = { $count ->
+    [one] { $count } нотатку відкріплено
+    [few] { $count } нотатки відкріплено
+    [many] { $count } нотаток відкріплено
+   *[other] { $count } нотатки відкріплено
+}
+notes-colored-count = { $count ->
+    [one] Колір змінено в { $count } нотатці
+   *[other] Колір змінено в нотатках: { $count }
+}
+notes-archived-count = { $count ->
+    [one] { $count } нотатку архівовано
+    [few] { $count } нотатки архівовано
+    [many] { $count } нотаток архівовано
+   *[other] { $count } нотатки архівовано
+}
+notes-unarchived-count = { $count ->
+    [one] { $count } нотатку повернуто з архіву
+    [few] { $count } нотатки повернуто з архіву
+    [many] { $count } нотаток повернуто з архіву
+   *[other] { $count } нотатки повернуто з архіву
+}
+notes-trashed-count = { $count ->
+    [one] { $count } нотатку переміщено в кошик
+    [few] { $count } нотатки переміщено в кошик
+    [many] { $count } нотаток переміщено в кошик
+   *[other] { $count } нотатки переміщено в кошик
+}
+notes-restored-count = { $count ->
+    [one] { $count } нотатку відновлено
+    [few] { $count } нотатки відновлено
+    [many] { $count } нотаток відновлено
+   *[other] { $count } нотатки відновлено
+}
+notes-copied-count = { $count ->
+    [one] Створено { $count } копію
+    [few] Створено { $count } копії
+    [many] Створено { $count } копій
+   *[other] Створено { $count } копії
+}
 notes-empty-discarded = Порожню нотатку відхилено
 notes-mail-gone = Цього листа тут більше немає
 notes-deleted-forever = { $count ->

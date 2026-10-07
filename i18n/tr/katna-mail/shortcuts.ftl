@@ -8,6 +8,10 @@ shortcut-group-moving = Gezinme
 shortcut-group-actions = İşlemler
 shortcut-group-go-to = Git
 shortcut-group-app = Uygulama
+shortcuts-dialog-title = Klavye kısayolları
+shortcuts-dialog-search = Kısayol bul
+shortcuts-dialog-none = Eşleşen kısayol yok
+shortcuts-dialog-close = Kapat
 
 ## Settings > Keyboard shortcuts: what each shortcut does
 
@@ -37,6 +41,8 @@ shortcut-mark-read = Okundu olarak işaretle
 shortcut-mark-unread = Okunmadı olarak işaretle
 shortcut-star = Yıldız ekle veya kaldır
 shortcut-add-to-tasks = Görevlere ekle
+shortcut-snooze = Ertele
+shortcut-remind = Bana hatırlat
 shortcut-important = Önemli olarak işaretle
 shortcut-not-important = Önemli değil olarak işaretle
 shortcut-mute = İleti dizisini sessize al veya sesini aç

@@ -20,12 +20,20 @@ viewer-page-count = / { $count }
 viewer-go-to-page-tip = Bir sayfa numarası yazıp Enter’a basın (Ctrl+G)
 viewer-rotate-clockwise-tip = Saat yönünde döndür (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Saat yönünün tersine döndür (Ctrl+Shift+R)
+viewer-dark-pages-tip = Koyu sayfalar
+viewer-light-pages-tip = Sayfaları olduğu gibi göster
 viewer-fit-page-tip = Sayfaya sığdır
 viewer-fit-picture-tip = Pencereye sığdır
 viewer-fit-width-tip = Genişliğe sığdır
 viewer-real-size-tip = Gerçek boyut (1:1)
 viewer-page-back-tip = Önceki sayfa
 viewer-page-on-tip = Sonraki sayfa
+viewer-more-tip = Diğer
+viewer-zoom-in = Yakınlaştır
+viewer-zoom-out = Uzaklaştır
+viewer-real-size = Gerçek boyut
+viewer-rotate-anticlockwise = Saat yönünün tersine döndür
+viewer-rotate-clockwise = Saat yönünde döndür
 
 ## Marking up a PDF
 

@@ -57,7 +57,7 @@ calendar-account-signed-in = تم تسجيل الدخول إلى { $address } م
 calendar-account-sign-in-refused = لم يسمح { $provider } لـ Katna بالدخول. حاول مجددًا، واسمح بالوصول إلى تقاويمك.
 calendar-account-refused = لم يقبل الخادم كلمة المرور. تحتاج Yahoo وiCloud وZoho وغيرها إلى كلمة مرور للتطبيقات.
 calendar-account-change-password = تغيير كلمة المرور
-calendar-account-change-password-tooltip = فتح الإعدادات > الحسابات
+calendar-account-change-password-tooltip = اكتب كلمة المرور الجديدة؛ يتحقق منها Katna مع الخادم
 calendar-account-not-enabled = لم يُفعَّل الوصول إلى التقويم لـ Katna بعد.
 calendar-account-failed = تعذّرت قراءة التقاويم.
 calendar-account-error = تعذّرت قراءة التقاويم: { $reason }
@@ -73,6 +73,7 @@ calendar-account-try-again = إعادة المحاولة
 calendar-account-try-again-tooltip = التحقق من تقاويم هذا الحساب مجددًا الآن
 calendar-account-fixing = جارٍ العمل على ذلك…
 calendar-birthdays = أعياد الميلاد
+calendar-tasks = المهام
 calendar-birthday-of = عيد ميلاد { $name }
 calendar-empty-title = لا توجد تقاويم بعد
 calendar-empty-text = تظهر هنا تقاويم حساباتك على Google وMicrosoft بعد مزامنتها، وكذلك تقاويم الخوادم الأخرى التي تدعم CalDAV.
@@ -135,6 +136,7 @@ calendar-event-details = تفاصيل الحدث
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = حدث جديد
+calendar-event-window-title = حدث جديد
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = فتح اليوم
 calendar-menu-duplicate = تكرار

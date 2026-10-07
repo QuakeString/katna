@@ -8,6 +8,8 @@ reader-close = Kapat
 reader-back = Geri
 reader-mark-unread = Okunmadı olarak işaretle
 reader-move-to = Taşı
+reader-snooze = Ertele
+reader-remind = Bana hatırlat
 reader-more = Diğer
 reader-original-colors = Özgün renkleri göster
 reader-dark-colors = Koyu renklerde göster
@@ -35,6 +37,7 @@ reader-tick-bounced = Teslim edilmedi: geri döndü, { $when }
 reader-tick-read = Okundu: { $when } (okundu bilgisi)
 reader-tick-opened = Açıldı, son olarak { $when } (açılma izleme)
 reader-starred = Yıldızlı
+reader-chip-remove = { $label } etiketini kaldır
 reader-not-starred = Yıldızlı değil
 reader-too-long = İleti tamamen gösterilemeyecek kadar uzun.
 reader-encrypted-images = Şifreli postalarda web'deki resimler hiçbir zaman yüklenmez.
@@ -52,6 +55,7 @@ reader-details-subject = konu:
 
 reader-downloading = Bu ileti sunucudan indiriliyor…
 reader-download-failed = Bu ileti indirilemedi.
+reader-download-offline = Bu hesap çevrimdışı. Bu iletiyi indirmek için çevrimiçi olun.
 reader-try-again = Tekrar dene
 
 ## Reply row
@@ -104,6 +108,7 @@ tracking-clicked = { $who } bir bağlantıyı { $clicks ->
 tracking-maybe-opened = { $who } iletiyi açmış olabilir (Apple Mail gizlilik için resimleri yükler)
 tracking-seen-none = Henüz kimse iletiyi açmadı veya bir bağlantıyı izlemedi
 tracking-receipt = { $who } okundu bilgisi gönderdi
+tracking-receipt-read = { $who } okudu (okundu bilgisi), { $when }
 tracking-receipt-displayed = Okundu bilgisi: { $who } iletinizi açtı
 tracking-receipt-other = Okundu bilgisi: { $who } iletinizi açmadan sildi veya işledi
 

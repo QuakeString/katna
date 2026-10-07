@@ -34,7 +34,7 @@ contacts-account-signed-in = تم تسجيل الدخول إلى { $address } م
 contacts-account-sign-in-refused = لم يسمح { $provider } لـ Katna بالدخول. حاول مجددًا، واسمح بالوصول إلى جهات اتصالك.
 contacts-account-password = لم يقبل الخادم كلمة المرور. تحتاج Yahoo وiCloud وZoho وغيرها إلى كلمة مرور للتطبيقات.
 contacts-account-change-password = تغيير كلمة المرور
-contacts-account-change-password-tooltip = فتح الإعدادات > الحسابات
+contacts-account-change-password-tooltip = اكتب كلمة المرور الجديدة؛ يتحقق منها Katna مع الخادم
 contacts-account-failed = تعذّرت قراءة جهات الاتصال.
 # $reason is the server's own words, in English.
 contacts-account-error = تعذّرت قراءة جهات الاتصال: { $reason }

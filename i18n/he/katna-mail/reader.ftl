@@ -8,6 +8,8 @@ reader-close = סגירה
 reader-back = חזרה
 reader-mark-unread = סימון כלא נקראה
 reader-move-to = העברה אל
+reader-snooze = השהיה
+reader-remind = להזכיר לי
 reader-more = עוד
 reader-original-colors = הצגת הצבעים המקוריים
 reader-dark-colors = הצגה בצבעים כהים
@@ -35,6 +37,7 @@ reader-tick-bounced = לא נמסרה: חזרה { $when }
 reader-tick-read = נקראה { $when } (אישור קריאה)
 reader-tick-opened = נפתחה, לאחרונה { $when } (מעקב פתיחות)
 reader-starred = מסומנת בכוכב
+reader-chip-remove = הסרת { $label }
 reader-not-starred = לא מסומנת בכוכב
 reader-too-long = ההודעה ארוכה מדי ולא ניתן להציג אותה במלואה.
 reader-encrypted-images = תמונות מהאינטרנט אף פעם לא נטענות בדואר מוצפן.
@@ -52,6 +55,7 @@ reader-details-subject = נושא:
 
 reader-downloading = ההודעה הזו מורדת מהשרת…
 reader-download-failed = לא ניתן להוריד את ההודעה הזו.
+reader-download-offline = החשבון הזה במצב לא מקוון. כדי להוריד את ההודעה הזו יש לעבור למצב מקוון.
 reader-try-again = ניסיון נוסף
 
 ## Reply row
@@ -108,6 +112,7 @@ tracking-clicked = קישור בה נפתח אצל { $who } { $clicks ->
 tracking-maybe-opened = ייתכן שנפתחה אצל { $who } (Apple Mail טוען תמונות לשמירה על הפרטיות)
 tracking-seen-none = עדיין אף אחד לא פתח אותה או לחץ על קישור בה
 tracking-receipt = התקבל אישור קריאה מ־{ $who }
+tracking-receipt-read = { $who } קרא/ה אותה (אישור קריאה), { $when }
 tracking-receipt-displayed = אישור קריאה: ההודעה שלך נפתחה אצל { $who }
 tracking-receipt-other = אישור קריאה: ההודעה שלך נמחקה או טופלה אצל { $who } בלי שנפתחה
 

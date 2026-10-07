@@ -20,12 +20,20 @@ viewer-page-count = מתוך { $count }
 viewer-go-to-page-tip = הקלידו מספר עמוד ולחצו על Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = סיבוב עם כיוון השעון (Ctrl+R)
 viewer-rotate-anticlockwise-tip = סיבוב נגד כיוון השעון (Ctrl+Shift+R)
+viewer-dark-pages-tip = דפים כהים
+viewer-light-pages-tip = הצגת הדפים כמו שהם
 viewer-fit-page-tip = התאמה לעמוד
 viewer-fit-picture-tip = התאמה לחלון
 viewer-fit-width-tip = התאמה לרוחב
 viewer-real-size-tip = גודל אמיתי (1:1)
 viewer-page-back-tip = העמוד הקודם
 viewer-page-on-tip = העמוד הבא
+viewer-more-tip = עוד
+viewer-zoom-in = הגדלה
+viewer-zoom-out = הקטנה
+viewer-real-size = גודל אמיתי
+viewer-rotate-anticlockwise = סיבוב נגד כיוון השעון
+viewer-rotate-clockwise = סיבוב עם כיוון השעון
 
 ## Marking up a PDF
 
