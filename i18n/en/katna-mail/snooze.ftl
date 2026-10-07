@@ -14,6 +14,7 @@ snooze-this-weekend = This weekend
 snooze-next-week = Next week
 # Opens the date and time picker; also its title.
 snooze-pick = Pick date & time
+snooze-back = Back to the times
 snooze-type-placeholder = Type a time
 snooze-type-hint = Like “tue 3pm”, “tomorrow” or “in 2 hours”
 snooze-type-hint-unclear = Katna can’t read that as a time

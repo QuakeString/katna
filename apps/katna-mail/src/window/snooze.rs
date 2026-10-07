@@ -25,10 +25,14 @@ use super::compose::schedule;
 use super::{Act, MailWindow};
 use crate::data::EntryKey;
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon, icon_button, icon_tag, raised};
+use crate::widgets::{filled_button, icon, icon_button, icon_tag, raised, tip};
 use katna_store::MessageId;
 
 const MENU_WIDTH: f32 = 300.0;
+/// How long the times and the date picker take to slide past each other.
+const SLIDE: std::time::Duration = katna_ui::tokens::duration::BASE;
+/// How far they slide.
+const SLIDE_BY: f32 = space::S8;
 
 /// The open snooze menu, for the lines `keys`; or the reminder menu of
 /// notes, the same times and picker.
@@ -44,6 +48,9 @@ pub(super) struct SnoozeMenu {
     /// Where it opens, in the window.
     at: Point<Pixels>,
     picker: Option<Picker>,
+    /// The times slid back in from the picker, so they slide rather than
+    /// drop in.
+    back: bool,
     /// On mail lines: Remind me beside Snooze, one click (or B and H)
     /// apart.
     remind: Option<Remind>,
@@ -219,6 +226,7 @@ impl MailWindow {
             follow_up: None,
             at,
             picker: None,
+            back: false,
             remind: Some(Remind {
                 on: remind,
                 note,
@@ -257,6 +265,7 @@ impl MailWindow {
             follow_up: None,
             at,
             picker: None,
+            back: false,
             remind: None,
         });
         cx.notify();
@@ -279,6 +288,7 @@ impl MailWindow {
             follow_up: Some(outbox),
             at,
             picker: None,
+            back: false,
             remind: None,
         });
         cx.notify();
@@ -338,9 +348,7 @@ impl MailWindow {
             window,
             |this, _, event: &InputEvent, _, cx| match event {
                 InputEvent::Submit => this.snooze_picked(cx),
-                InputEvent::Cancel => {
-                    this.close_snooze_menu(cx);
-                }
+                InputEvent::Cancel => this.close_snooze_picker(cx),
                 InputEvent::Changed => cx.notify(),
             },
         );
@@ -355,9 +363,7 @@ impl MailWindow {
                 window,
                 |this, _, event: &InputEvent, _, cx| match event {
                     InputEvent::Submit => this.snooze_picked(cx),
-                    InputEvent::Cancel => {
-                        this.close_snooze_menu(cx);
-                    }
+                    InputEvent::Cancel => this.close_snooze_picker(cx),
                     InputEvent::Changed => this.snooze_typed(cx),
                 },
             );
@@ -373,6 +379,16 @@ impl MailWindow {
             });
         }
         cx.notify();
+    }
+
+    /// Slides back from the picker to the times.
+    fn close_snooze_picker(&mut self, cx: &mut Context<Self>) {
+        if let Some(menu) = &mut self.snooze_menu
+            && menu.picker.take().is_some()
+        {
+            menu.back = true;
+            cx.notify();
+        }
     }
 
     /// Reads the typed moment into the picker's day and time.
@@ -466,21 +482,16 @@ impl MailWindow {
                 .w(px(8000.0))
                 .h(px(6000.0))
                 .occlude()
-                .when(menu.picker.is_some(), |d| d.bg(rgba(0x0000_0040)))
                 .on_mouse_down(MouseButton::Left, close())
                 .on_mouse_down(MouseButton::Right, close()),
         )
         .with_priority(3);
         let panel = match &menu.picker {
+            // The picker takes the menu's place, where it was clicked.
             Some(picker) => deferred(
-                div()
-                    .absolute()
-                    .top_0()
-                    .left_0()
-                    .size_full()
-                    .flex()
-                    .items_center()
-                    .justify_center()
+                anchored()
+                    .position(menu.at)
+                    .snap_to_window_with_margin(px(8.0))
                     .child(
                         div()
                             .id("snooze-picker")
@@ -686,6 +697,7 @@ impl MailWindow {
                 )
         });
         let typing = remind.is_some_and(|r| r.note.focus_handle(cx).is_focused(window));
+        let back = self.snooze_menu.as_ref().is_some_and(|m| m.back);
         raised(
             div()
                 .key_context(crate::widgets::MENU_CONTEXT)
@@ -713,59 +725,85 @@ impl MailWindow {
                 cx.stop_propagation();
             }))
         })
-        .child(header)
-        .children(before_due)
-        .children(items)
-        .child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
+        .when(back, |d| d.overflow_hidden())
         .child(
             div()
-                .id("snooze-pick")
-                .h(px(40.0))
-                .px(px(16.0))
                 .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(16.0))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .menu_key(th)
-                .child(icon("calendar", th.text_dim, 20.0))
-                .child(tr!("snooze-pick"))
-                .on_click(cx.listener(|this, _, window, cx| this.open_snooze_picker(window, cx))),
-        )
-        .when(reminded, |d| {
-            d.child(
-                div()
-                    .id("remind-off")
-                    .h(px(40.0))
-                    .px(px(16.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(16.0))
-                    .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
-                    .menu_key(th)
-                    .child(icon("bell-off", th.text_dim, 20.0))
-                    .child(tr!("notes-remind-off"))
-                    .on_click(cx.listener(|this, _, _, cx| {
-                        if let Some(menu) = this.snooze_menu.take() {
-                            this.remind_notes(menu.notes, None, cx);
+                .flex_col()
+                .child(header)
+                .children(before_due)
+                .children(items)
+                .child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
+                .child(
+                    div()
+                        .id("snooze-pick")
+                        .h(px(40.0))
+                        .px(px(16.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(16.0))
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .menu_key(th)
+                        .child(icon("calendar", th.text_dim, 20.0))
+                        .child(tr!("snooze-pick"))
+                        .on_click(
+                            cx.listener(|this, _, window, cx| this.open_snooze_picker(window, cx)),
+                        ),
+                )
+                .when(reminded, |d| {
+                    d.child(
+                        div()
+                            .id("remind-off")
+                            .h(px(40.0))
+                            .px(px(16.0))
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .gap(px(16.0))
+                            .cursor_pointer()
+                            .hover(|s| s.bg(rgba(th.hover)))
+                            .menu_key(th)
+                            .child(icon("bell-off", th.text_dim, 20.0))
+                            .child(tr!("notes-remind-off"))
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                if let Some(menu) = this.snooze_menu.take() {
+                                    this.remind_notes(menu.notes, None, cx);
+                                }
+                            })),
+                    )
+                })
+                .when_some(note, |d, note| {
+                    d.child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
+                        .child(note)
+                })
+                // Back from the picker, the times slide in from the left.
+                .with_animation(
+                    ("snooze-menu-back", usize::from(back)),
+                    Animation::new(katna_ui::motion::time(SLIDE)).with_easing(ease_out_quint()),
+                    move |el, t| {
+                        if back {
+                            el.relative().left(px(-SLIDE_BY * (1.0 - t))).opacity(t)
+                        } else {
+                            el
                         }
-                    })),
-            )
-        })
-        .when_some(note, |d, note| {
-            d.child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
-                .child(note)
-        })
+                    },
+                ),
+        )
         .with_animation(
-            "snooze-menu",
+            ("snooze-menu", usize::from(back)),
             Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
                 140,
             )))
             .with_easing(ease_out_quint()),
-            |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
+            move |el, t| {
+                if back {
+                    el
+                } else {
+                    el.opacity(t).mt(px(-4.0 * (1.0 - t)))
+                }
+            },
         )
         .into_any_element()
     }
@@ -852,124 +890,146 @@ impl MailWindow {
         };
         div()
             .w(px(330.0))
-            .p(px(24.0))
-            .flex()
-            .flex_col()
+            .overflow_hidden()
             .map(|d| crate::widgets::dialog(d, th, th.menu))
             .text_color(rgba(th.text))
             .child(
                 div()
-                    .mb(px(16.0))
-                    .text_size(px(20.0))
-                    .child(tr!("snooze-pick")),
-            )
-            .child(
-                field()
-                    .border_color(rgba(if picker.unclear {
-                        th.warning
-                    } else {
-                        th.accent
-                    }))
-                    .child(picker.typed.clone()),
-            )
-            .child(
-                div()
-                    .mt(px(space::S2))
-                    .mb(px(space::S3))
-                    .text_size(px(text::CAPTION))
-                    .text_color(rgba(if picker.unclear {
-                        th.warning
-                    } else {
-                        th.text_dim
-                    }))
-                    .child(if picker.unclear {
-                        tr!("snooze-type-hint-unclear")
-                    } else {
-                        tr!("snooze-type-hint")
-                    }),
-            )
-            .child(
-                div()
+                    .p(px(24.0))
                     .flex()
-                    .flex_row()
-                    .items_center()
+                    .flex_col()
                     .child(
                         div()
-                            .flex_1()
-                            .text_size(px(14.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .child(format::month_year(month)),
-                    )
-                    .child(
-                        icon_button("snooze-prev", "chevron-left", 20.0, th)
-                            .size(px(32.0))
-                            .on_click(cx.listener(step(-1))),
-                    )
-                    .child(
-                        icon_button("snooze-next", "chevron-right", 20.0, th)
-                            .size(px(32.0))
-                            .on_click(cx.listener(step(1))),
-                    ),
-            )
-            .child(
-                div()
-                    .mt(px(8.0))
-                    .w(px(7.0 * 40.0))
-                    .flex()
-                    .flex_row()
-                    .flex_wrap()
-                    .gap_x(px(4.0))
-                    .children(weekdays)
-                    .children(days),
-            )
-            .child(
-                div()
-                    .mt(px(12.0))
-                    .flex()
-                    .flex_row()
-                    .gap(px(12.0))
-                    .child(
-                        field()
-                            .flex_1()
-                            .border_color(rgba(th.divider))
-                            .child(format::day_month_year(day.to_datetime(Time::midnight()))),
-                    )
-                    .child(
-                        field()
-                            .w(px(110.0))
-                            .border_color(rgba(th.outline))
-                            .child(picker.time.clone()),
-                    ),
-            )
-            .child(
-                div()
-                    .mt(px(20.0))
-                    .flex()
-                    .flex_row()
-                    .justify_end()
-                    .gap(px(8.0))
-                    .child(
-                        div()
-                            .id("snooze-cancel")
-                            .h(px(36.0))
-                            .px(px(16.0))
+                            .mb(px(16.0))
+                            .ml(px(-space::S3))
                             .flex()
+                            .flex_row()
                             .items_center()
-                            .rounded_full()
-                            .text_size(px(14.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .text_color(rgba(th.accent))
-                            .cursor_pointer()
-                            .relative()
-                            .child(crate::widgets::hover_fade("hover-glow", None, th))
-                            .on_click(cx.listener(|this, _, _, cx| {
-                                this.close_snooze_menu(cx);
-                            }))
-                            .child(tr!("snooze-cancel")),
+                            .gap(px(space::S2))
+                            .text_size(px(20.0))
+                            .child(
+                                icon_button("snooze-back", "back", 20.0, th)
+                                    .size(px(32.0))
+                                    .tooltip(tip(tr!("snooze-back"), th))
+                                    .on_click(
+                                        cx.listener(|this, _, _, cx| this.close_snooze_picker(cx)),
+                                    ),
+                            )
+                            .child(tr!("snooze-pick")),
                     )
                     .child(
-                        filled_button("snooze-save", tr!("snooze-save"), th)
-                            .on_click(cx.listener(|this, _, _, cx| this.snooze_picked(cx))),
+                        field()
+                            .border_color(rgba(if picker.unclear {
+                                th.warning
+                            } else {
+                                th.accent
+                            }))
+                            .child(picker.typed.clone()),
+                    )
+                    .child(
+                        div()
+                            .mt(px(space::S2))
+                            .mb(px(space::S3))
+                            .text_size(px(text::CAPTION))
+                            .text_color(rgba(if picker.unclear {
+                                th.warning
+                            } else {
+                                th.text_dim
+                            }))
+                            .child(if picker.unclear {
+                                tr!("snooze-type-hint-unclear")
+                            } else {
+                                tr!("snooze-type-hint")
+                            }),
+                    )
+                    .child(
+                        div()
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .text_size(px(14.0))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .child(format::month_year(month)),
+                            )
+                            .child(
+                                icon_button("snooze-prev", "chevron-left", 20.0, th)
+                                    .size(px(32.0))
+                                    .on_click(cx.listener(step(-1))),
+                            )
+                            .child(
+                                icon_button("snooze-next", "chevron-right", 20.0, th)
+                                    .size(px(32.0))
+                                    .on_click(cx.listener(step(1))),
+                            ),
+                    )
+                    .child(
+                        div()
+                            .mt(px(8.0))
+                            .w(px(7.0 * 40.0))
+                            .flex()
+                            .flex_row()
+                            .flex_wrap()
+                            .gap_x(px(4.0))
+                            .children(weekdays)
+                            .children(days),
+                    )
+                    .child(
+                        div()
+                            .mt(px(12.0))
+                            .flex()
+                            .flex_row()
+                            .gap(px(12.0))
+                            .child(
+                                field().flex_1().border_color(rgba(th.divider)).child(
+                                    format::day_month_year(day.to_datetime(Time::midnight())),
+                                ),
+                            )
+                            .child(
+                                field()
+                                    .w(px(110.0))
+                                    .border_color(rgba(th.outline))
+                                    .child(picker.time.clone()),
+                            ),
+                    )
+                    .child(
+                        div()
+                            .mt(px(20.0))
+                            .flex()
+                            .flex_row()
+                            .justify_end()
+                            .gap(px(8.0))
+                            .child(
+                                div()
+                                    .id("snooze-cancel")
+                                    .h(px(36.0))
+                                    .px(px(16.0))
+                                    .flex()
+                                    .items_center()
+                                    .rounded_full()
+                                    .text_size(px(14.0))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.accent))
+                                    .cursor_pointer()
+                                    .relative()
+                                    .child(crate::widgets::hover_fade("hover-glow", None, th))
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.close_snooze_menu(cx);
+                                    }))
+                                    .child(tr!("snooze-cancel")),
+                            )
+                            .child(
+                                filled_button("snooze-save", tr!("snooze-save"), th)
+                                    .on_click(cx.listener(|this, _, _, cx| this.snooze_picked(cx))),
+                            ),
+                    )
+                    // It slides in from the right, over where the times were.
+                    .with_animation(
+                        "snooze-picker-in",
+                        Animation::new(katna_ui::motion::time(SLIDE)).with_easing(ease_out_quint()),
+                        |el, t| el.relative().left(px(SLIDE_BY * (1.0 - t))).opacity(t),
                     ),
             )
             .into_any_element()
