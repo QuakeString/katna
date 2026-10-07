@@ -1264,10 +1264,13 @@ impl MailWindow {
             } => {
                 let scheduled = key == compose::SCHEDULED_NAV_KEY;
                 let outbox = key == compose::OUTBOX_NAV_KEY;
+                let waiting = key == super::waiting::NAV_KEY;
                 // Special folders show their name in the current language;
                 // the user's own keep theirs.
                 let label = if scheduled {
                     tr!("folder-scheduled")
+                } else if waiting {
+                    tr!("folder-waiting-short")
                 } else if outbox {
                     tr!("folder-outbox")
                 } else {
@@ -1280,6 +1283,8 @@ impl MailWindow {
                         depth: *depth,
                         icon: if scheduled {
                             "schedule"
+                        } else if waiting {
+                            "history"
                         } else if outbox {
                             "outbox"
                         } else {
@@ -1296,7 +1301,8 @@ impl MailWindow {
                         } else {
                             0
                         },
-                        selected: folder.is_some_and(|f| self.listing == Some(Listing::Folder(f))),
+                        selected: folder.is_some_and(|f| self.listing == Some(Listing::Folder(f)))
+                            || waiting && self.listing == Some(Listing::Waiting),
                         bold: true,
                         chevron: has_children.then_some(*expanded),
                         // New mail lands in the inbox.
@@ -1697,6 +1703,11 @@ impl MailWindow {
                 self.leave_settings(window, cx);
                 self.open_scheduled(cx);
             }
+            sidebar::Row::Folder { key, .. } if key == super::waiting::NAV_KEY => {
+                self.leave_listing(Listing::Waiting, cx);
+                self.open_waiting(cx);
+                self.picked_from_nav(window, cx);
+            }
             sidebar::Row::Folder { key, .. } if key == compose::OUTBOX_NAV_KEY => {
                 self.leave_settings(window, cx);
                 self.open_outbox(cx);
@@ -2069,6 +2080,9 @@ pub(super) fn role_icon(role: Role) -> &'static str {
 /// The list a line of the folder pane opens, if it opens one.
 fn listing_of(row: &sidebar::Row) -> Option<Listing> {
     match row {
+        sidebar::Row::Folder { key, .. } if key == super::waiting::NAV_KEY => {
+            Some(Listing::Waiting)
+        }
         sidebar::Row::Folder {
             folder: Some(folder),
             ..

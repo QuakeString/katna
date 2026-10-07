@@ -89,6 +89,10 @@ folder-trash = Trash
 folder-all-mail = All mail
 # Messages scheduled to be sent later.
 folder-scheduled = Scheduled
+# Mail the user sent that a follow-up or "remind me if no reply" waits on.
+folder-waiting = Waiting for reply
+# Its short name in the folder pane.
+folder-waiting-short = Waiting
 # Mail that has not gone out yet: waiting for a connection or a sign-in,
 # or refused by the mail server. Shows only while there is some.
 folder-outbox = Outbox

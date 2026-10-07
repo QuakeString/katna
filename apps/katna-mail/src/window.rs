@@ -108,6 +108,7 @@ mod unified;
 mod updates;
 mod view_state;
 mod viewer;
+mod waiting;
 mod whats_new;
 
 use std::collections::{HashMap, HashSet};
@@ -374,6 +375,8 @@ enum Listing {
         view: sidebar::Unified,
         account: Option<AccountId>,
     },
+    /// Waiting for reply: sent mail a follow-up waits on.
+    Waiting,
     Search {
         query: String,
         total: Option<usize>,
@@ -1497,7 +1500,8 @@ impl MailWindow {
         // while there is some.
         let scheduled = self.writing.scheduled_count();
         let outbox = self.writing.outbox_count();
-        if scheduled > 0 || outbox > 0 {
+        let waiting = self.waiting_count();
+        if scheduled > 0 || outbox > 0 || waiting > 0 {
             let after_sent = |ix: usize| {
                 ix + 1
                     + rows[ix + 1..]
@@ -1535,6 +1539,9 @@ impl MailWindow {
             }
             if scheduled > 0 {
                 rows.insert(at, row(compose::SCHEDULED_NAV_KEY, "Scheduled", scheduled));
+            }
+            if waiting > 0 {
+                rows.insert(at, row(waiting::NAV_KEY, "Waiting for reply", waiting));
             }
         }
         rows
@@ -2389,10 +2396,14 @@ impl MailWindow {
             .and_then(|ix| self.entries.get(ix))
             .map(|e| e.key);
         match self.listing.clone() {
-            Some(listing @ (Listing::Folder(_) | Listing::Unified { .. })) => {
+            Some(listing @ (Listing::Folder(_) | Listing::Unified { .. } | Listing::Waiting)) => {
                 let (entries, unread) = match listing {
                     Listing::Folder(folder) => self.list_entries(folder),
                     Listing::Unified { view, account } => self.unified_entries(view, account),
+                    Listing::Waiting => match &self.mail {
+                        Ok(mail) => (mail.waiting_entries(self.config.mail.conversations), None),
+                        Err(_) => (Vec::new(), None),
+                    },
                     Listing::Search { .. } => (Vec::new(), None),
                 };
                 let open = self.kept_open_line(&listing, &entries);
@@ -2686,6 +2697,7 @@ impl MailWindow {
         match &self.listing {
             Some(Listing::Folder(folder)) => self.tree.node(*folder).map(|n| n.label()),
             Some(Listing::Unified { view, account }) => Some(self.unified_name(*view, *account)),
+            Some(Listing::Waiting) => Some(katna_i18n::tr!("folder-waiting")),
             _ => None,
         }
     }

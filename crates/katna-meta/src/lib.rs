@@ -22,6 +22,9 @@ use futures_lite::FutureExt;
 use katna_store::{MessageId, MetaRow, Store};
 use serde::{Deserialize, Serialize};
 
+mod follow_up;
+pub use follow_up::{WORK_END, WORK_START, counts_as_reply, replied, working_time};
+
 /// The longest the scheduler sleeps before looking at the clock again.
 /// Timers stop while the computer sleeps; the wall clock does not.
 pub const MAX_SLEEP: Duration = Duration::from_secs(60);

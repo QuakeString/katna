@@ -33,6 +33,15 @@ pub enum Command {
     Snooze(Vec<MessageId>, i64),
     /// Brings snoozed messages back now.
     Unsnooze(Vec<MessageId>),
+    /// The follow-up of a sent message, by its outbox ID: sends it now,
+    /// moves it (Unix seconds) or stops it.
+    SendFollowUpNow(i64),
+    MoveFollowUp(i64, i64),
+    StopFollowUp(i64),
+    /// Sets a follow-up as it was: seconds after sending, seconds to a
+    /// second one and the mail Katna sends (none to remind). The Undo of
+    /// Stop.
+    SetFollowUp(i64, i64, i64, Option<String>),
     /// Takes back the queued message with this outbox ID.
     UndoSend(i64),
     /// Opens the message just discarded, or not saved, again. The app does
@@ -235,6 +244,10 @@ impl Command {
             // The window says until when.
             Self::Snooze(..) => return None,
             Self::MarkRead(..)
+            | Self::SendFollowUpNow(_)
+            | Self::MoveFollowUp(..)
+            | Self::StopFollowUp(_)
+            | Self::SetFollowUp(..)
             | Self::UndoSend(_)
             | Self::ReopenDraft
             | Self::RestoreQuote
@@ -394,6 +407,16 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         }
         Command::Snooze(messages, until) => pim.snooze(&ids(messages), *until).await,
         Command::Unsnooze(messages) => pim.unsnooze(&ids(messages)).await,
+        Command::SendFollowUpNow(id) => pim.send_follow_up_now(*id).await,
+        Command::MoveFollowUp(id, at) => pim.move_follow_up(*id, *at).await,
+        Command::StopFollowUp(id) => pim.set_follow_up(*id, 0).await,
+        Command::SetFollowUp(id, after, again, mail) => match mail {
+            Some(mail) => {
+                pim.set_follow_up_mail(*id, *after, *again, mail.as_bytes())
+                    .await
+            }
+            None => pim.set_follow_up(*id, *after).await,
+        },
         Command::ReloadConfig => pim.reload_config().await,
         Command::ForgetApp(app) => pim.forget_app(app.key()).await,
         Command::UndoSend(id) => match pim.undo_send(*id).await {

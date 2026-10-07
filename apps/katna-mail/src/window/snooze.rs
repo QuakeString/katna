@@ -34,6 +34,9 @@ pub(super) struct SnoozeMenu {
     notes: Vec<i64>,
     /// Those notes have a reminder, which it can take off.
     reminded: bool,
+    /// The follow-up (by outbox entry) it moves, when it is the menu of
+    /// a follow-up's Edit.
+    follow_up: Option<i64>,
     /// Where it opens, in the window.
     at: Point<Pixels>,
     picker: Option<Picker>,
@@ -134,6 +137,7 @@ impl MailWindow {
             keys,
             notes: Vec::new(),
             reminded: false,
+            follow_up: None,
             at,
             picker: None,
         });
@@ -158,6 +162,28 @@ impl MailWindow {
             keys: Vec::new(),
             notes: ids,
             reminded,
+            follow_up: None,
+            at,
+            picker: None,
+        });
+        cx.notify();
+    }
+
+    /// Opens the menu of times for the follow-up of outbox entry `outbox`
+    /// at `at`: Edit on the card of a conversation it waits on.
+    pub(super) fn open_follow_up_times(
+        &mut self,
+        outbox: i64,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = None;
+        self.snooze_menu = Some(SnoozeMenu {
+            keys: Vec::new(),
+            notes: Vec::new(),
+            reminded: false,
+            follow_up: Some(outbox),
             at,
             picker: None,
         });
@@ -186,6 +212,10 @@ impl MailWindow {
         };
         if !menu.notes.is_empty() {
             self.remind_notes(menu.notes, Some(until.as_second()), cx);
+            return;
+        }
+        if let Some(outbox) = menu.follow_up {
+            self.move_follow_up(outbox, until.as_second(), cx);
             return;
         }
         self.act(Act::Snooze(until.as_second()), menu.keys, cx);
@@ -332,10 +362,12 @@ impl MailWindow {
 
     fn render_snooze_times(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let now = Timestamp::now().to_zoned(self.tz.clone());
-        let (notes, reminded) = self
+        let (notes, reminded, follow_up) = self
             .snooze_menu
             .as_ref()
-            .map_or((false, false), |m| (!m.notes.is_empty(), m.reminded));
+            .map_or((false, false, false), |m| {
+                (!m.notes.is_empty(), m.reminded, m.follow_up.is_some())
+            });
         let items = presets(&now).into_iter().enumerate().map(|(ix, preset)| {
             let at = preset.at.timestamp();
             div()
@@ -380,6 +412,8 @@ impl MailWindow {
                 .text_color(rgba(th.text_dim))
                 .child(if notes {
                     tr!("notes-remind-me")
+                } else if follow_up {
+                    tr!("follow-up-card-edit-title")
                 } else {
                     tr!("snooze-until")
                 }),
