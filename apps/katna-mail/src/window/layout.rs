@@ -753,10 +753,11 @@ impl MailWindow {
         .max(NAV_WIDTH)
     }
 
-    /// The top of the drawer of a phone or tablet: the app's name.
+    /// The top of a phone's drawer: the app's name. A tablet's top bar
+    /// already shows it beside the drawer.
     pub(super) fn render_drawer_head(&self, th: &Theme) -> Option<AnyElement> {
         let shape = self.layout.shape;
-        if shape.is_desktop() || !self.layout.drawer {
+        if !shape.is_phone() || !self.layout.drawer {
             return None;
         }
         Some(
