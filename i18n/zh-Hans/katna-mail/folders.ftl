@@ -10,6 +10,8 @@ nav-label-new = 新建标签
 nav-folder-new = 新建文件夹
 nav-menu-check-mail = 检查新邮件
 nav-menu-check-inbox = 检查此收件箱
+nav-unified-leave-out = 不在统一收件箱中显示
+nav-unified-bring-back = 重新在统一收件箱中显示
 nav-menu-sign-in-again = 重新登录
 nav-menu-new-mail = 从此账号写新邮件
 nav-menu-account-settings = 账号设置
@@ -22,6 +24,8 @@ nav-account-password-refused = 密码被拒绝
 nav-account-storage = 已使用 { $used }，共 { $total }
 nav-menu-new-subfolder = 在其中新建文件夹
 nav-menu-new-sublabel = 在其中新建标签
+nav-menu-rename = 重命名
+nav-menu-delete = 删除
 nav-menu-empty-trash = 清空已删除邮件
 nav-account-unnamed = 账号 { $number }
 nav-all-accounts = 所有账号
@@ -44,6 +48,10 @@ folder-spam = 垃圾邮件
 folder-trash = 已删除邮件
 folder-all-mail = 所有邮件
 folder-scheduled = 已安排
+folder-waiting = 等待回复
+folder-waiting-short = 等待中
+folder-reminders = 提醒
+folder-outbox = 发件箱
 folder-activity = 动态
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,32 @@ label-create = 创建
 label-creating = 正在创建…
 label-created = 已创建标签“{ $name }”。
 label-folder-created = 已创建文件夹“{ $name }”。
+label-rename-title = 重命名标签
+label-folder-rename-title = 重命名文件夹
+label-rename = 重命名
+label-renaming = 正在重命名…
+label-renamed = 标签已重命名为“{ $name }”。
+label-folder-renamed = 文件夹已重命名为“{ $name }”。
+
+## Deleting a folder or label (asked first)
+
+folder-delete-title = 要删除“{ $name }”吗？
+folder-delete-body = { $count ->
+    [0] 其中没有邮件。该文件夹将从服务器上移除，因此网页邮箱和你的手机上也会随之消失。
+   *[other] { $kind ->
+        [conversation] 其中的 { $count } 个会话将移至“已删除邮件”，你仍可将其找回。
+       *[message] 其中的 { $count } 封邮件将移至“已删除邮件”，你仍可将其找回。
+    }该文件夹将从服务器上移除，因此网页邮箱和你的手机上也会随之消失。
+}
+folder-delete-forever-body = { $count ->
+    [0] 其中没有邮件。该文件夹将从服务器上移除，因此网页邮箱和你的手机上也会随之消失。
+   *[other] { $kind ->
+        [conversation] 其中的 { $count } 个会话将被永久删除；此账号没有“已删除邮件”文件夹。
+       *[message] 其中的 { $count } 封邮件将被永久删除；此账号没有“已删除邮件”文件夹。
+    }该文件夹将从服务器上移除，因此网页邮箱和你的手机上也会随之消失。
+}
+folder-delete-label-body = 该标签将被移除。其中的邮件仍保留在“所有邮件”及其其他标签中。
+folder-delete-confirm = 删除文件夹
+folder-delete-label-confirm = 删除标签
+folder-deleted = 已删除文件夹“{ $name }”
+label-deleted = 已删除标签“{ $name }”

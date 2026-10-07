@@ -189,6 +189,8 @@ list-empty-tab = 「{ $tab }」中沒有郵件。
 list-empty-tab-unknown = 這個分頁中沒有郵件。
 list-empty-folder = 「{ $folder }」中沒有郵件。
 list-empty-folder-unknown = 這個資料夾中沒有郵件。
+list-empty-waiting = 沒有等候回覆的郵件。
+list-empty-reminders = 沒有提醒。在郵件上按 H 即可新增。
 list-first-sync = 正在取得你的郵件…
 list-first-sync-detail = 郵件送達後會顯示在這裡。
 
@@ -208,6 +210,14 @@ row-tracking-clicked = { $recipients } 人中有 { $opened } 人開啟，{ $clic
 row-pin = 置頂
 row-unpin = 取消置頂
 row-snoozed-until = 延後至 { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = 今天
+snoozed-group-tomorrow = 明天
+snoozed-group-this-week = 本週
+snoozed-group-later = 稍後
+row-follow-up-step = 後續追蹤 { $step }/{ $steps } · { $date }
+row-follow-up-waiting = 後續追蹤待處理
+row-reminder = 提醒 { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,6 +240,7 @@ menu-not-important = 標示為不重要
 menu-pin = 置頂
 menu-unpin = 取消置頂
 menu-snooze = 延後
+menu-remind = 提醒我
 menu-unsnooze = 取消延後
 menu-add-to-tasks = 新增至工作
 menu-schedule-meeting = 安排會議
@@ -241,7 +252,20 @@ menu-move-to = 移至
 menu-follow-up = 後續處理
 menu-more = 更多
 menu-move-to-heading = 移至：
+menu-move-to-search = 移至…
+menu-label-as = 加上標籤
+menu-label-as-search = 加上標籤…
+menu-no-folder = 沒有名為「{ $name }」的資料夾
+menu-no-label = 沒有名為「{ $name }」的標籤
+menu-create-folder = 建立「{ $name }」
+menu-always-move = 一律將 { $name } 的郵件移至這裡
+toast-always-move-failed = 郵件已移動，但未能建立規則：{ $error }
+drag-mail = { $kind ->
+    [conversation] { $count } 個會話群組
+   *[message] { $count } 封郵件
+}
 menu-find-from = 搜尋來自 { $name } 的郵件
+menu-make-rule = 建立規則…
 
 ## Snackbar after an action on mail in the list
 
@@ -257,6 +281,8 @@ toast-moved = { $kind ->
     [conversation] 已移動 { $count } 個會話群組。
    *[message] 已移動 { $count } 封郵件。
 }
+toast-label-added = 已加上標籤「{ $label }」。
+toast-label-removed = 已移除標籤「{ $label }」。
 toast-starred = { $kind ->
     [conversation] 已為 { $count } 個會話群組加上星號。
    *[message] 已為 { $count } 封郵件加上星號。

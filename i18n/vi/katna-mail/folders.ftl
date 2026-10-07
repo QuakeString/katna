@@ -10,6 +10,8 @@ nav-label-new = Tạo nhãn mới
 nav-folder-new = Tạo thư mục mới
 nav-menu-check-mail = Kiểm tra thư mới
 nav-menu-check-inbox = Kiểm tra hộp thư đến này
+nav-unified-leave-out = Bỏ khỏi Hộp thư đến hợp nhất
+nav-unified-bring-back = Đưa trở lại Hộp thư đến hợp nhất
 nav-menu-sign-in-again = Đăng nhập lại
 nav-menu-new-mail = Thư mới từ tài khoản này
 nav-menu-account-settings = Cài đặt tài khoản
@@ -22,6 +24,8 @@ nav-account-password-refused = Mật khẩu bị từ chối
 nav-account-storage = Đã dùng { $used } trong { $total }
 nav-menu-new-subfolder = Thư mục mới bên trong
 nav-menu-new-sublabel = Nhãn mới bên trong
+nav-menu-rename = Đổi tên
+nav-menu-delete = Xóa
 nav-menu-empty-trash = Dọn sạch Thùng rác
 nav-account-unnamed = Tài khoản { $number }
 nav-all-accounts = Tất cả tài khoản
@@ -44,6 +48,10 @@ folder-spam = Thư rác
 folder-trash = Thùng rác
 folder-all-mail = Tất cả thư
 folder-scheduled = Đã lên lịch
+folder-waiting = Đang chờ trả lời
+folder-waiting-short = Đang chờ
+folder-reminders = Lời nhắc
+folder-outbox = Hộp thư đi
 folder-activity = Hoạt động
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,32 @@ label-create = Tạo
 label-creating = Đang tạo…
 label-created = Đã tạo nhãn “{ $name }”.
 label-folder-created = Đã tạo thư mục “{ $name }”.
+label-rename-title = Đổi tên nhãn
+label-folder-rename-title = Đổi tên thư mục
+label-rename = Đổi tên
+label-renaming = Đang đổi tên…
+label-renamed = Đã đổi tên nhãn thành “{ $name }”.
+label-folder-renamed = Đã đổi tên thư mục thành “{ $name }”.
+
+## Deleting a folder or label (asked first)
+
+folder-delete-title = Xóa “{ $name }”?
+folder-delete-body = { $count ->
+    [0] Thư mục này không chứa thư nào. Thư mục sẽ bị xóa khỏi máy chủ, nên webmail và điện thoại của bạn cũng mất nó.
+   *[other] { $kind ->
+        [conversation] { $count } cuộc hội thoại trong đó sẽ được chuyển vào Thùng rác, nên bạn vẫn có thể lấy lại.
+       *[message] { $count } thư trong đó sẽ được chuyển vào Thùng rác, nên bạn vẫn có thể lấy lại.
+    } Thư mục sẽ bị xóa khỏi máy chủ, nên webmail và điện thoại của bạn cũng mất nó.
+}
+folder-delete-forever-body = { $count ->
+    [0] Thư mục này không chứa thư nào. Thư mục sẽ bị xóa khỏi máy chủ, nên webmail và điện thoại của bạn cũng mất nó.
+   *[other] { $kind ->
+        [conversation] { $count } cuộc hội thoại trong đó sẽ bị xóa vĩnh viễn; tài khoản này không có Thùng rác.
+       *[message] { $count } thư trong đó sẽ bị xóa vĩnh viễn; tài khoản này không có Thùng rác.
+    } Thư mục sẽ bị xóa khỏi máy chủ, nên webmail và điện thoại của bạn cũng mất nó.
+}
+folder-delete-label-body = Nhãn sẽ bị xóa. Thư của nhãn vẫn ở trong Tất cả thư và trong các nhãn khác.
+folder-delete-confirm = Xóa thư mục
+folder-delete-label-confirm = Xóa nhãn
+folder-deleted = Đã xóa thư mục “{ $name }”
+label-deleted = Đã xóa nhãn “{ $name }”

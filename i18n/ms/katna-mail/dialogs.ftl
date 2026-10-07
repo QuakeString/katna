@@ -6,6 +6,10 @@
 
 about-tooltip = Perihal Katna
 about-tagline = Mel dan kalendar untuk desktop Linux
+about-copy-version = Salin butiran versi
+about-version-copied = Disalin
+about-version-built = Dibina: { $date }
+about-version-system = Sistem: { $system }
 about-whats-new = Apa yang baharu
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = Versi { $version } sedia untuk dipasang
 about-update-ready-detail = Katna Mail akan memulakan semula untuk melengkapkan kemas kini.
 about-update-confirm = Pasang versi { $version }?
 about-update-confirm-detail = Katna Mail akan tutup, memasang kemas kini dan buka semula di tempat anda berhenti. Komputer anda akan meminta kata laluan anda.
+about-update-confirm-detail-windows = Katna Mail akan tutup, memasang kemas kini dan dibuka semula sebentar lagi.
 about-update-installing = Memasang versi { $version }…
 about-update-installing-detail = Masukkan kata laluan anda dalam tetingkap yang dibuka.
+about-update-installing-detail-windows = Katna Mail ditutup sekarang dan dibuka semula sebaik sahaja kemas kini dipasang.
 about-update-cancelled = Kemas kini tidak dipasang, kerana kata laluan tidak diberikan.
 about-update-failed = Kemas kini tidak dapat dipasang: { $error }
-about-update-unsupported = Salinan Katna Mail ini dikemas kini oleh pengurus pakej anda.
+about-update-not-self-updating = Salinan Katna Mail ini tidak mengemas kini dirinya sendiri. Kemas kininya mengikut cara anda memasangnya.
 about-update-restart-failed = Kemas kini telah dipasang, tetapi Katna Mail tidak dapat dibuka semula ({ $error }). Buka sendiri.
 about-update-check = Semak kemas kini
 about-update-download = Muat turun
@@ -145,6 +151,7 @@ onboarding-katna-private = Ia mempunyai kata laluannya sendiri. Butiran log masu
 onboarding-ready-title = Semuanya sedia
 onboarding-ready-lead = Katna sedang mengambil mel anda. Ia muncul sebaik sahaja tiba, dan mel baharu muncul dengan sendirinya.
 onboarding-ready-lead-address = Katna sedang mengambil mel untuk { $address }. Ia muncul sebaik sahaja tiba, dan mel baharu muncul dengan sendirinya.
+onboarding-apps = Apl yang akan anda gunakan
 onboarding-ready-tour = Ikuti lawatan seminit untuk melihat di mana semuanya?
 onboarding-skip = Langkau buat masa ini
 onboarding-take-tour = Ikuti lawatan

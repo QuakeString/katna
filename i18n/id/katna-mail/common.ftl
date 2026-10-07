@@ -41,3 +41,4 @@ search-options-show = Tampilkan opsi penelusuran
 settings = Setelan
 account-add = Tambahkan akun
 account-wheel-hint = Gulir untuk beralih akun
+account-menu-all-detail = { $count } akun sekaligus

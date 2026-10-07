@@ -41,3 +41,4 @@ search-options-show = Hiện tùy chọn tìm kiếm
 settings = Cài đặt
 account-add = Thêm tài khoản
 account-wheel-hint = Cuộn để chuyển tài khoản
+account-menu-all-detail = { $count } tài khoản gộp chung

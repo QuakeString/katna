@@ -10,6 +10,8 @@ nav-label-new = Buat label baru
 nav-folder-new = Buat folder baru
 nav-menu-check-mail = Periksa email baru
 nav-menu-check-inbox = Periksa kotak masuk ini
+nav-unified-leave-out = Keluarkan dari Kotak Masuk terpadu
+nav-unified-bring-back = Masukkan kembali ke Kotak Masuk terpadu
 nav-menu-sign-in-again = Masuk lagi
 nav-menu-new-mail = Email baru dari akun ini
 nav-menu-account-settings = Setelan akun
@@ -22,6 +24,8 @@ nav-account-password-refused = Sandi ditolak
 nav-account-storage = { $used } dari { $total } terpakai
 nav-menu-new-subfolder = Folder baru di dalamnya
 nav-menu-new-sublabel = Label baru di dalamnya
+nav-menu-rename = Ganti nama
+nav-menu-delete = Hapus
 nav-menu-empty-trash = Kosongkan Sampah
 nav-account-unnamed = Akun { $number }
 nav-all-accounts = Semua Akun
@@ -44,6 +48,10 @@ folder-spam = Spam
 folder-trash = Sampah
 folder-all-mail = Semua Email
 folder-scheduled = Terjadwal
+folder-waiting = Menunggu balasan
+folder-waiting-short = Menunggu
+folder-reminders = Pengingat
+folder-outbox = Kotak Keluar
 folder-activity = Aktivitas
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,32 @@ label-create = Buat
 label-creating = Membuat…
 label-created = Label “{ $name }” dibuat.
 label-folder-created = Folder “{ $name }” dibuat.
+label-rename-title = Ganti nama label
+label-folder-rename-title = Ganti nama folder
+label-rename = Ganti nama
+label-renaming = Mengganti nama…
+label-renamed = Label diganti namanya menjadi “{ $name }”.
+label-folder-renamed = Folder diganti namanya menjadi “{ $name }”.
+
+## Deleting a folder or label (asked first)
+
+folder-delete-title = Hapus “{ $name }”?
+folder-delete-body = { $count ->
+    [0] Folder ini tidak berisi email. Folder dihapus dari server, jadi juga hilang dari webmail dan ponsel Anda.
+   *[other] { $kind ->
+        [conversation] { $count } percakapan di dalamnya dipindahkan ke Sampah, jadi masih bisa dikembalikan.
+       *[message] { $count } pesan di dalamnya dipindahkan ke Sampah, jadi masih bisa dikembalikan.
+    } Folder dihapus dari server, jadi juga hilang dari webmail dan ponsel Anda.
+}
+folder-delete-forever-body = { $count ->
+    [0] Folder ini tidak berisi email. Folder dihapus dari server, jadi juga hilang dari webmail dan ponsel Anda.
+   *[other] { $kind ->
+        [conversation] { $count } percakapan di dalamnya dihapus selamanya; akun ini tidak memiliki Sampah.
+       *[message] { $count } pesan di dalamnya dihapus selamanya; akun ini tidak memiliki Sampah.
+    } Folder dihapus dari server, jadi juga hilang dari webmail dan ponsel Anda.
+}
+folder-delete-label-body = Label dihapus. Emailnya tetap ada di Semua Email dan di label lainnya.
+folder-delete-confirm = Hapus folder
+folder-delete-label-confirm = Hapus label
+folder-deleted = Folder “{ $name }” dihapus
+label-deleted = Label “{ $name }” dihapus

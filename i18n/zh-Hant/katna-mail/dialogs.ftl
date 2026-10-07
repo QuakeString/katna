@@ -6,6 +6,10 @@
 
 about-tooltip = 關於 Katna
 about-tagline = 適用於 Linux 桌面的郵件與日曆
+about-copy-version = 複製版本詳細資料
+about-version-copied = 已複製
+about-version-built = 建置時間：{ $date }
+about-version-system = 系統：{ $system }
 about-whats-new = 最新消息
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = 版本 { $version } 已可安裝
 about-update-ready-detail = Katna Mail 將重新啟動以完成更新。
 about-update-confirm = 要安裝版本 { $version } 嗎？
 about-update-confirm-detail = Katna Mail 將會關閉、安裝更新，然後回到你離開時的位置重新開啟。你的電腦會要求輸入密碼。
+about-update-confirm-detail-windows = Katna Mail 會關閉、安裝更新，然後在片刻後重新開啟。
 about-update-installing = 正在安裝版本 { $version }…
 about-update-installing-detail = 請在開啟的視窗中輸入你的密碼。
+about-update-installing-detail-windows = Katna Mail 現在會關閉，並在更新安裝完成後重新開啟。
 about-update-cancelled = 由於未輸入密碼，更新未安裝。
 about-update-failed = 更新無法安裝：{ $error }
-about-update-unsupported = 這份 Katna Mail 由你的套件管理員負責更新。
+about-update-not-self-updating = 這份 Katna Mail 不會自行更新。請以你安裝它的方式更新。
 about-update-restart-failed = 更新已安裝，但 Katna Mail 無法重新開啟（{ $error }）。請自行開啟它。
 about-update-check = 檢查更新
 about-update-download = 下載
@@ -147,6 +153,7 @@ onboarding-katna-private = 它有自己的密碼。你的郵件登入資訊絕�
 onboarding-ready-title = 一切就緒
 onboarding-ready-lead = Katna 正在接收你的郵件。郵件一到就會顯示，新郵件也會自動出現。
 onboarding-ready-lead-address = Katna 正在接收 { $address } 的郵件。郵件一到就會顯示，新郵件也會自動出現。
+onboarding-apps = 你會使用的應用程式
 onboarding-ready-tour = 花一分鐘導覽，看看所有功能在哪裡？
 onboarding-skip = 暫時略過
 onboarding-take-tour = 開始導覽

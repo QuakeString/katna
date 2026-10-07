@@ -9,6 +9,13 @@ shortcut-group-actions = 작업
 shortcut-group-go-to = 바로가기
 shortcut-group-app = 애플리케이션
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = 단축키
+shortcuts-dialog-search = 단축키 찾기
+shortcuts-dialog-none = 일치하는 단축키가 없습니다
+shortcuts-dialog-close = 닫기
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = 다음 대화
@@ -37,6 +44,8 @@ shortcut-mark-read = 읽음으로 표시
 shortcut-mark-unread = 읽지 않음으로 표시
 shortcut-star = 별표 추가/삭제
 shortcut-add-to-tasks = 할 일에 추가
+shortcut-snooze = 다시 알림
+shortcut-remind = 알림 받기
 shortcut-important = 중요 표시
 shortcut-not-important = 중요하지 않음으로 표시
 shortcut-mute = 대화 알림 끄기 또는 켜기
