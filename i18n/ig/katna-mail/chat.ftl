@@ -37,6 +37,7 @@ chat-reply-only = Zaa naanị { $name }
 chat-forward = Zigaa
 chat-copy-text = Detuo ederede
 chat-show-as-mail = Gosi dị ka ozi
+chat-go-down = Gaa n'ozi kachasị ọhụrụ
 chat-pin = Kwụnye n'elu
 chat-pin-file = Kwụnye faịlụ n'elu
 chat-unpin = Wepụ n'elu
@@ -56,7 +57,8 @@ chat-pins-cancel = Kagbuo
 chat-undo = Megharịa
 
 chat-reply-to = Zaa { $names }
-chat-send = Zipu (Ctrl+Enter)
+chat-send = Zipu (Ctrl+Enter). Pịa aka nri ma ọ bụ jide maka ndị ọzọ
+chat-send-now = Zipu ugbu a
 chat-attach = Gbakwunye
 chat-attach-photo = Foto
 chat-attach-file = Faịlụ

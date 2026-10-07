@@ -9,6 +9,13 @@ shortcut-group-actions = Vitendo
 shortcut-group-go-to = Nenda kwenye
 shortcut-group-app = Programu
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Njia za mkato za kibodi
+shortcuts-dialog-search = Tafuta njia ya mkato
+shortcuts-dialog-none = Hakuna njia ya mkato inayolingana
+shortcuts-dialog-close = Funga
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Mazungumzo yanayofuata
@@ -37,6 +44,8 @@ shortcut-mark-read = Tia alama kuwa imesomwa
 shortcut-mark-unread = Tia alama kuwa haijasomwa
 shortcut-star = Weka au ondoa nyota
 shortcut-add-to-tasks = Ongeza kwenye Majukumu
+shortcut-snooze = Ahirisha
+shortcut-remind = Nikumbushe
 shortcut-important = Tia alama kuwa muhimu
 shortcut-not-important = Tia alama kuwa si muhimu
 shortcut-mute = Nyamazisha au acha kunyamazisha mazungumzo

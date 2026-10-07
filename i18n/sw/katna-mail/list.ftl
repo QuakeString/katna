@@ -339,6 +339,8 @@ list-empty-tab = Hakuna barua katika { $tab }.
 list-empty-tab-unknown = Hakuna barua katika kichupo hiki.
 list-empty-folder = Hakuna ujumbe katika { $folder }.
 list-empty-folder-unknown = Hakuna ujumbe katika folda hii.
+list-empty-waiting = Hakuna kinachosubiri jibu.
+list-empty-reminders = Hakuna vikumbusho. Bonyeza H kwenye barua ili kuongeza.
 list-first-sync = Inaleta barua zako…
 list-first-sync-detail = Zitaonekana hapa zinapowasili.
 
@@ -358,6 +360,14 @@ row-tracking-clicked = Umefunguliwa na { $opened } kati ya { $recipients }, kiun
 row-pin = Bandika juu
 row-unpin = Bandua
 row-snoozed-until = Imeahirishwa hadi { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Leo
+snoozed-group-tomorrow = Kesho
+snoozed-group-this-week = Wiki hii
+snoozed-group-later = Baadaye
+row-follow-up-step = Ufuatiliaji { $step } kati ya { $steps } · { $date }
+row-follow-up-waiting = Ufuatiliaji unasubiri
+row-reminder = Kikumbusho { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +390,7 @@ menu-not-important = Tia alama kuwa si muhimu
 menu-pin = Bandika juu
 menu-unpin = Bandua
 menu-snooze = Ahirisha
+menu-remind = Nikumbushe
 menu-unsnooze = Acha kuahirisha
 menu-add-to-tasks = Ongeza kwenye Majukumu
 menu-schedule-meeting = Panga mkutano
@@ -395,7 +406,26 @@ menu-follow-up = Fuatilia
 # Pin to top.
 menu-more = Zaidi
 menu-move-to-heading = Hamishia:
+menu-move-to-search = Hamishia…
+menu-label-as = Weka lebo
+menu-label-as-search = Weka lebo…
+menu-no-folder = Hakuna folda inayoitwa “{ $name }”
+menu-no-label = Hakuna lebo inayoitwa “{ $name }”
+menu-create-folder = Unda “{ $name }”
+menu-always-move = Hamishia hapa barua za { $name } kila mara
+toast-always-move-failed = Barua imehamishwa, lakini sheria haikuundwa: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] Mazungumzo { $count }
+       *[other] Mazungumzo { $count }
+    }
+   *[message] { $count ->
+        [one] Ujumbe { $count }
+       *[other] Jumbe { $count }
+    }
+}
 menu-find-from = Tafuta barua pepe kutoka kwa { $name }
+menu-make-rule = Unda sheria…
 
 ## Snackbar after an action on mail in the list
 
@@ -429,6 +459,8 @@ toast-moved = { $kind ->
        *[other] Jumbe { $count } zimehamishwa.
     }
 }
+toast-label-added = Lebo “{ $label }” imeongezwa.
+toast-label-removed = Lebo “{ $label }” imeondolewa.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Mazungumzo yamewekewa nyota.

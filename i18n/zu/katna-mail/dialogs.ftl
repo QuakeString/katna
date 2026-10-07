@@ -6,6 +6,10 @@
 
 about-tooltip = Mayelana ne-Katna
 about-tagline = Imeyili nekhalenda yedeskithophu ye-Linux
+about-copy-version = Kopisha imininingwane yenguqulo
+about-version-copied = Kukopishiwe
+about-version-built = Yakhiwe: { $date }
+about-version-system = Isistimu: { $system }
 about-whats-new = Okusha
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = Inguqulo { $version } isilungele ukufakwa
 about-update-ready-detail = I-Katna Mail izoqala kabusha ukuze iqedele ukubuyekeza.
 about-update-confirm = Faka inguqulo { $version }?
 about-update-confirm-detail = I-Katna Mail izovaleka, ifake ukubuyekeza bese ivuleka futhi lapho oshiye khona. Ikhompyutha yakho izocela iphasiwedi yakho.
+about-update-confirm-detail-windows = I-Katna Mail izovala, ifake isibuyekezo bese ivuleka futhi emzuzwini.
 about-update-installing = Ifaka inguqulo { $version }…
 about-update-installing-detail = Faka iphasiwedi yakho ewindini elivuliwe.
+about-update-installing-detail-windows = I-Katna Mail ivala manje futhi ivuleka futhi uma isibuyekezo sesifakiwe.
 about-update-cancelled = Ukubuyekeza akufakwanga, ngoba iphasiwedi ayinikezwanga.
 about-update-failed = Ukubuyekeza akukwazanga ukufakwa: { $error }
-about-update-unsupported = Le khophi ye-Katna Mail ibuyekezwa umphathi wephakheji yakho.
+about-update-not-self-updating = Le khophi ye-Katna Mail ayizibuyekezi. Yibuyekeze ngendlela oyifake ngayo.
 about-update-restart-failed = Ukubuyekeza sekufakiwe, kodwa i-Katna Mail ayikwazanga ukuvuleka futhi ({ $error }). Yivule ngokwakho.
 about-update-check = Qinisekisa izibuyekezo
 about-update-download = Landa
@@ -148,6 +154,7 @@ onboarding-katna-private = Inephasiwedi yayo. Imininingwane yakho yokungena yeme
 onboarding-ready-title = Konke sekulungile
 onboarding-ready-lead = I-Katna ilanda imeyili yakho. Ivela njengoba ifika, futhi imeyili entsha ivela ngokwayo.
 onboarding-ready-lead-address = I-Katna ilanda imeyili ka-{ $address }. Ivela njengoba ifika, futhi imeyili entsha ivela ngokwayo.
+onboarding-apps = Ama-app ozowasebenzisa
 onboarding-ready-tour = Uthanda ukuthatha uhambo lomzuzu owodwa ukuze ubone ukuthi yonke into ikuphi?
 onboarding-skip = Yeqa okwamanje
 onboarding-take-tour = Thatha uhambo

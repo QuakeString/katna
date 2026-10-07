@@ -8,6 +8,8 @@ reader-close = Pa á dé
 reader-back = Padà
 reader-mark-unread = Sàmì sí bí àìkà
 reader-move-to = Gbé lọ sí
+reader-snooze = Sún síwájú
+reader-remind = Rán mi létí
 reader-more = Síi
 reader-original-colors = Fi àwọn àwọ̀ ìpilẹ̀ hàn
 reader-dark-colors = Fi hàn ní àwọ̀ òkùnkùn
@@ -35,6 +37,7 @@ reader-tick-bounced = Kò dé: ó padà { $when }
 reader-tick-read = A ti kà á { $when } (ìwé-ẹ̀rí kíkà)
 reader-tick-opened = A ti ṣí i, ìgbà tó kẹ́yìn ni { $when } (títọpa ṣíṣí)
 reader-starred = Oní ìràwọ̀
+reader-chip-remove = Yọ { $label } kúrò
 reader-not-starred = Aláìní ìràwọ̀
 reader-too-long = Ìfiránṣẹ́ náà gùn jù láti fi hàn lódindi.
 reader-encrypted-images = A kì í gbé àwọn àwòrán láti orí wẹ́ẹ̀bù wọlé nínú lẹ́tà tí a ti pa lároko.
@@ -52,6 +55,7 @@ reader-details-subject = àkọlé:
 
 reader-downloading = Ó ń gba ìfiránṣẹ́ yìí sílẹ̀ láti ọ̀dọ̀ sáfà…
 reader-download-failed = Kò lè gba ìfiránṣẹ́ yìí sílẹ̀.
+reader-download-offline = Àkáǹtì yìí kò sí lórí ayélujára. Padà sórí ayélujára láti gba ìfiránṣẹ́ yìí sílẹ̀.
 reader-try-again = Gbìyànjú lẹ́ẹ̀kan sí i
 
 ## Reply row
@@ -92,6 +96,7 @@ tracking-clicked = { $who } ti tẹ̀lé ìjápọ̀ nígbà { $clicks }, ìgbà
 tracking-maybe-opened = Ó ṣeé ṣe kí { $who } ti ṣí i (Apple Mail máa ń gbé àwọn àwòrán wọlé fún àṣírí)
 tracking-seen-none = Kò sí ẹni tó ti ṣí i tàbí tẹ̀lé ìjápọ̀ kan síbẹ̀
 tracking-receipt = { $who } ti fi ìwé-ẹ̀rí kíkà ránṣẹ́
+tracking-receipt-read = { $who } ti kà á (ìwé ẹ̀rí kíkà), { $when }
 tracking-receipt-displayed = Ìwé-ẹ̀rí kíkà: { $who } ti ṣí ìfiránṣẹ́ rẹ
 tracking-receipt-other = Ìwé-ẹ̀rí kíkà: { $who } ti pa ìfiránṣẹ́ rẹ rẹ́ tàbí bójú tó o láìṣí i
 

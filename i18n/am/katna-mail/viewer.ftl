@@ -21,12 +21,20 @@ viewer-page-count = ከ { $count }
 viewer-go-to-page-tip = የገጽ ቁጥር ይተይቡና Enter ይጫኑ (Ctrl+G)
 viewer-rotate-clockwise-tip = በሰዓት አቅጣጫ አዙር (Ctrl+R)
 viewer-rotate-anticlockwise-tip = ከሰዓት አቅጣጫ በተቃራኒ አዙር (Ctrl+Shift+R)
+viewer-dark-pages-tip = ጠቆር ያሉ ገጾች
+viewer-light-pages-tip = ገጾችን እንዳሉ አሳይ
 viewer-fit-page-tip = ገጹን አስማማ
 viewer-fit-picture-tip = ከመስኮቱ ጋር አስማማ
 viewer-fit-width-tip = ስፋቱን አስማማ
 viewer-real-size-tip = እውነተኛ መጠን (1:1)
 viewer-page-back-tip = ያለፈው ገጽ
 viewer-page-on-tip = ቀጣዩ ገጽ
+viewer-more-tip = ተጨማሪ
+viewer-zoom-in = አጉላ
+viewer-zoom-out = አሳንስ
+viewer-real-size = እውነተኛ መጠን
+viewer-rotate-anticlockwise = ከሰዓት አቅጣጫ በተቃራኒ አዙር
+viewer-rotate-clockwise = በሰዓት አቅጣጫ አዙር
 
 ## Marking up a PDF
 

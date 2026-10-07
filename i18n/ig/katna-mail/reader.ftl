@@ -8,6 +8,8 @@ reader-close = Mechie
 reader-back = Laghachi
 reader-mark-unread = Kaa akara dị ka a gụghị
 reader-move-to = Bugharịa gaa
+reader-snooze = Yigharịa
+reader-remind = Chetara m
 reader-more = Ọzọ
 reader-original-colors = Gosi agba mbụ
 reader-dark-colors = Gosi n'agba ọchịchịrị
@@ -35,6 +37,7 @@ reader-tick-bounced = Ọ rughị: ọ laghachiri { $when }
 reader-tick-read = A gụrụ ya { $when } (akara na-egosi na a gụrụ ozi)
 reader-tick-opened = E mepere ya, nke ikpeazụ { $when } (nsochi mmeghe)
 reader-starred = Nwere kpakpando
+reader-chip-remove = Wepụ { $label }
 reader-not-starred = Enweghị kpakpando
 reader-too-long = Ozi a toro ogologo nke ukwuu igosi ya niile.
 reader-encrypted-images = A naghị ebudata foto si na weebụ n'ozi ezoro ezo.
@@ -52,6 +55,7 @@ reader-details-subject = isiokwu:
 
 reader-downloading = Na-ebudata ozi a site na sava…
 reader-download-failed = Enweghị ike ibudata ozi a.
+reader-download-offline = Akaụntụ a anọghị n'ịntanetị. Laghachi n'ịntanetị iji budata ozi a.
 reader-try-again = Nwaa ọzọ
 
 ## Reply row
@@ -92,6 +96,7 @@ tracking-clicked = { $who } soro njikọ ugboro { $clicks }, nke ikpeazụ { $wh
 tracking-maybe-opened = O nwere ike ịbụ na { $who } mepere ya (Apple Mail na-ebudata foto maka nzuzo)
 tracking-seen-none = Ọ dịbeghị onye mepere ya ma ọ bụ soro njikọ
 tracking-receipt = { $who } zitere akara na-egosi na a gụrụ ozi
+tracking-receipt-read = { $who } gụrụ ya (akara na-egosi na a gụrụ ozi), { $when }
 tracking-receipt-displayed = Akara na-egosi na a gụrụ ozi: { $who } mepere ozi gị
 tracking-receipt-other = Akara na-egosi na a gụrụ ozi: { $who } hichapụrụ ma ọ bụ jikwaa ozi gị n'emeghe ya
 

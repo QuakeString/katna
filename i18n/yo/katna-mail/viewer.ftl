@@ -21,12 +21,20 @@ viewer-page-count = nínú { $count }
 viewer-go-to-page-tip = Tẹ nọ́mbà ojú ìwé, lẹ́yìn náà tẹ Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = Yí i lọ́nà aago (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Yí i lòdì sí ọ̀nà aago (Ctrl+Shift+R)
+viewer-dark-pages-tip = Ojú-ìwé dúdú
+viewer-light-pages-tip = Fi àwọn ojú-ìwé hàn bí wọ́n ṣe wà
 viewer-fit-page-tip = Bá ojú-ìwé mu
 viewer-fit-picture-tip = Bá fèrèsé mu
 viewer-fit-width-tip = Bá fífẹ̀ mu
 viewer-real-size-tip = Ìwọ̀n gidi (1:1)
 viewer-page-back-tip = Ojú-ìwé tó ṣáájú
 viewer-page-on-tip = Ojú-ìwé tó kàn
+viewer-more-tip = Síwájú sí i
+viewer-zoom-in = Sún mọ́
+viewer-zoom-out = Sún jìnnà
+viewer-real-size = Ìwọ̀n gidi
+viewer-rotate-anticlockwise = Yí i lòdì sí ọ̀nà aago
+viewer-rotate-clockwise = Yí i lọ́nà aago
 
 ## Marking up a PDF
 

@@ -339,6 +339,8 @@ list-empty-tab = Ayikho imeyili ku-{ $tab }.
 list-empty-tab-unknown = Ayikho imeyili kule thebhu.
 list-empty-folder = Ayikho imilayezo ku-{ $folder }.
 list-empty-folder-unknown = Ayikho imilayezo kule folda.
+list-empty-waiting = Akukho okulinde impendulo.
+list-empty-reminders = Azikho izikhumbuzo. Cindezela u-H kumeyili ukuze wengeze esisodwa.
 list-first-sync = Kulandwa imeyili yakho…
 list-first-sync-detail = Izovela lapha njengoba ifika.
 
@@ -358,6 +360,14 @@ row-tracking-clicked = Ivulwe ngu-{ $opened } kwabangu-{ $recipients }, isixhuma
 row-pin = Phina phezulu
 row-unpin = Susa ukuphina
 row-snoozed-until = Kulibazisiwe kuze kube ngu-{ $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Namuhla
+snoozed-group-tomorrow = Kusasa
+snoozed-group-this-week = Leli viki
+snoozed-group-later = Kamuva
+row-follow-up-step = Ukulandelela { $step } kokungu-{ $steps } · { $date }
+row-follow-up-waiting = Ukulandelela kulindile
+row-reminder = Isikhumbuzo { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +390,7 @@ menu-not-important = Maka njengokungabalulekile
 menu-pin = Phina phezulu
 menu-unpin = Susa ukuphina
 menu-snooze = Libazisa
+menu-remind = Ngikhumbuze
 menu-unsnooze = Yeka ukulibazisa
 menu-add-to-tasks = Engeza Kumisebenzi
 menu-schedule-meeting = Hlela umhlangano
@@ -395,7 +406,26 @@ menu-follow-up = Landelela
 # Pin to top.
 menu-more = Okwengeziwe
 menu-move-to-heading = Hambisa ku:
+menu-move-to-search = Hambisa ku-…
+menu-label-as = Faka ilebula
+menu-label-as-search = Faka ilebula…
+menu-no-folder = Ayikho ifolda ebizwa ngokuthi “{ $name }”
+menu-no-label = Alikho ilebula elibizwa ngokuthi “{ $name }”
+menu-create-folder = Dala “{ $name }”
+menu-always-move = Njalo hambisa imeyili evela ku-{ $name } lapha
+toast-always-move-failed = Imeyili ihanjisiwe, kodwa umthetho awenziwanga: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] Ingxoxo engu-{ $count }
+       *[other] Izingxoxo ezingu-{ $count }
+    }
+   *[message] { $count ->
+        [one] Umlayezo ongu-{ $count }
+       *[other] Imilayezo engu-{ $count }
+    }
+}
 menu-find-from = Thola ama-imeyili avela ku-{ $name }
+menu-make-rule = Yenza umthetho…
 
 ## Snackbar after an action on mail in the list
 
@@ -429,6 +459,8 @@ toast-moved = { $kind ->
        *[other] Imilayezo engu-{ $count } ihanjisiwe.
     }
 }
+toast-label-added = Ilebula elithi “{ $label }” lengeziwe.
+toast-label-removed = Ilebula elithi “{ $label }” lisusiwe.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Ingxoxo ifakwe inkanyezi.

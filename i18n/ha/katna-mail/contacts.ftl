@@ -34,7 +34,7 @@ contacts-account-signed-in = An sake shiga { $address }. Ana samo lambobin sadar
 contacts-account-sign-in-refused = { $provider } bai bar Katna ya shiga ba. Ku sake gwadawa, kuma ku ba da izinin shiga lambobin sadarwarku.
 contacts-account-password = Sabar ba ta karɓi kalmar sirrin ba. Yahoo, iCloud, Zoho da wasu suna buƙatar kalmar sirrin manhaja.
 contacts-account-change-password = Canza kalmar sirri
-contacts-account-change-password-tooltip = Buɗe Saituna > Asusu
+contacts-account-change-password-tooltip = Rubuta sabuwar kalmar sirri; Katna za ta duba ta da sabar
 contacts-account-failed = Ba a iya karanta lambobin sadarwar ba.
 # $reason is the server's own words, in English.
 contacts-account-error = Ba a iya karanta lambobin sadarwar ba: { $reason }

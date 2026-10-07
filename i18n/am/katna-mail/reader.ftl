@@ -8,6 +8,8 @@ reader-close = ዝጋ
 reader-back = ተመለስ
 reader-mark-unread = እንዳልተነበበ ምልክት አድርግ
 reader-move-to = ውሰድ ወደ
+reader-snooze = አሸልብ
+reader-remind = አስታውሰኝ
 reader-more = ተጨማሪ
 reader-original-colors = የመጀመሪያዎቹን ቀለሞች አሳይ
 reader-dark-colors = በጨለማ ቀለሞች አሳይ
@@ -35,6 +37,7 @@ reader-tick-bounced = አልደረሰም፦ { $when } ተመልሷል
 reader-tick-read = ተነቧል { $when } (የንባብ ማረጋገጫ)
 reader-tick-opened = ተከፍቷል፣ መጨረሻ { $when } (የመከፈት ክትትል)
 reader-starred = ኮከብ የተደረገበት
+reader-chip-remove = { $label }ን አስወግድ
 reader-not-starred = ኮከብ ያልተደረገበት
 reader-too-long = መልዕክቱ ሙሉ በሙሉ ለማሳየት በጣም ረጅም ነው።
 reader-encrypted-images = በተመሰጠረ ደብዳቤ ውስጥ ከድር የሚመጡ ምስሎች በጭራሽ አይጫኑም።
@@ -52,6 +55,7 @@ reader-details-subject = ርዕሰ ጉዳይ፦
 
 reader-downloading = ይህን መልዕክት ከአገልጋዩ በማውረድ ላይ…
 reader-download-failed = ይህን መልዕክት ማውረድ አልተቻለም።
+reader-download-offline = ይህ መለያ ከመስመር ውጭ ነው። ይህን መልዕክት ለማውረድ መስመር ላይ ይሁኑ።
 reader-try-again = እንደገና ሞክር
 
 ## Reply row
@@ -104,6 +108,7 @@ tracking-clicked = { $who } አገናኝ { $clicks ->
 tracking-maybe-opened = { $who } ከፍቶት ሊሆን ይችላል (Apple Mail ለግላዊነት ሲባል ምስሎችን ይጭናል)
 tracking-seen-none = እስካሁን ማንም አልከፈተውም ወይም አገናኝ አልተከተለም
 tracking-receipt = { $who } የንባብ ማረጋገጫ ልኳል
+tracking-receipt-read = { $who } አንብቦታል (የንባብ ማረጋገጫ)፣ { $when }
 tracking-receipt-displayed = የንባብ ማረጋገጫ፦ { $who } መልዕክትዎን ከፍቷል
 tracking-receipt-other = የንባብ ማረጋገጫ፦ { $who } መልዕክትዎን ሳይከፍት ሰርዞታል ወይም አስተናግዶታል
 
