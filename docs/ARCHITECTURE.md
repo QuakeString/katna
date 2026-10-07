@@ -2265,7 +2265,12 @@ Gemini or confidential mode):
   page's small pictures and drives. An app joins the list once it has
   settings of its own. On a phone the list of the scope's pages
   fills the page until one is picked, and the back arrow comes back to
-  it. MCP server is still to come: it is fainter in the list and shows a
+  it. The MCP server itself is built: `katnactl mcp` (#756) speaks
+  the Model Context Protocol on stdio to AI assistants on the same
+  computer, with tools to list accounts and folders, search and read mail
+  and save plain-text drafts, and never sends, deletes, moves or flags
+  mail. Its Settings page (on or off, allow drafts, copy the client setup)
+  is still to come: until then it is fainter in the list and shows a
   "Coming soon" page saying what it will do. The rule editor
   (`window/rule_editor.rs`), a dialog, also opens from a mail's
   right-click menu (Make a rule…, filled in with its sender). It counts
