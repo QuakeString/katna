@@ -189,6 +189,7 @@ settings-appearance-accent = ایکسنٹ
 settings-appearance-accent-detail = تحریر کریں، ریل میں دکھائی جانے والی ایپ، تعداد اور نمایاں چیزوں کا رنگ
 settings-appearance-accent-scheme = رنگوں سے
 settings-appearance-accent-system = سسٹم
+settings-appearance-accent-more = مزید رنگ
 scheme-katna = Katna
 scheme-clear = صاف
 scheme-graphite = گریفائٹ

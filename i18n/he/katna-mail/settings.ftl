@@ -191,6 +191,7 @@ settings-appearance-accent = צבע הדגשה
 settings-appearance-accent-detail = הצבע של „כתיבה”, של האפליקציה המוצגת בסרגל האפליקציות, של המונים ושל ההדגשות
 settings-appearance-accent-scheme = מהצבעים
 settings-appearance-accent-system = מערכת
+settings-appearance-accent-more = צבעים נוספים
 scheme-katna = Katna
 scheme-clear = צלול
 scheme-graphite = גרפיט

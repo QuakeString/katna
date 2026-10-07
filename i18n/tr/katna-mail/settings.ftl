@@ -189,6 +189,7 @@ settings-appearance-accent = Vurgu
 settings-appearance-accent-detail = Oluştur'un, kenar çubuğunda gösterilen uygulamanın, sayıların ve vurguların rengi
 settings-appearance-accent-scheme = Renklerden
 settings-appearance-accent-system = Sistem
+settings-appearance-accent-more = Diğer renkler
 scheme-katna = Katna
 scheme-clear = Berrak
 scheme-graphite = Grafit

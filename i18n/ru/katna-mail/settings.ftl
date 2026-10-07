@@ -193,6 +193,7 @@ settings-appearance-accent = Акцент
 settings-appearance-accent-detail = Цвет кнопки «Написать», открытого приложения на боковой панели, счётчиков и выделения
 settings-appearance-accent-scheme = Из цветов
 settings-appearance-accent-system = Системный
+settings-appearance-accent-more = Другие цвета
 scheme-katna = Katna
 scheme-clear = Clear
 scheme-graphite = Графит

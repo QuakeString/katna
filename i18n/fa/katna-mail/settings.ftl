@@ -189,6 +189,7 @@ settings-appearance-accent = رنگ تأکیدی
 settings-appearance-accent-detail = رنگ «نوشتن»، برنامهٔ نمایش‌داده‌شده در نوار کناری، شمارش‌ها و برجسته‌ها
 settings-appearance-accent-scheme = از رنگ‌ها
 settings-appearance-accent-system = سیستم
+settings-appearance-accent-more = رنگ‌های بیشتر
 scheme-katna = Katna
 scheme-clear = شفاف
 scheme-graphite = گرافیت

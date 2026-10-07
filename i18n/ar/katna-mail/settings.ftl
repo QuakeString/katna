@@ -197,6 +197,7 @@ settings-appearance-accent = لون التمييز
 settings-appearance-accent-detail = لون زر «إنشاء»، والتطبيق المعروض في الشريط الجانبي، والأعداد، والعناصر المميَّزة
 settings-appearance-accent-scheme = من الألوان
 settings-appearance-accent-system = النظام
+settings-appearance-accent-more = ألوان أخرى
 scheme-katna = Katna
 scheme-clear = صافٍ
 scheme-graphite = جرافيت

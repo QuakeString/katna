@@ -193,6 +193,7 @@ settings-appearance-accent = Акцент
 settings-appearance-accent-detail = Колір кнопки «Написати», активної програми на панелі програм, лічильників і виділення
 settings-appearance-accent-scheme = Зі схеми
 settings-appearance-accent-system = Системний
+settings-appearance-accent-more = Інші кольори
 scheme-katna = Katna
 scheme-clear = Прозора
 scheme-graphite = Графіт
