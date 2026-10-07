@@ -8,6 +8,8 @@ reader-close = Chiudi
 reader-back = Indietro
 reader-mark-unread = Segna come da leggere
 reader-move-to = Sposta in
+reader-snooze = Posticipa
+reader-remind = Ricordamelo
 reader-more = Altro
 reader-original-colors = Mostra i colori originali
 reader-dark-colors = Mostra in colori scuri
@@ -35,6 +37,7 @@ reader-tick-bounced = Non consegnato: respinto { $when }
 reader-tick-read = Letto { $when } (conferma di lettura)
 reader-tick-opened = Aperto, l’ultima volta { $when } (tracciamento delle aperture)
 reader-starred = Speciale
+reader-chip-remove = Rimuovi { $label }
 reader-not-starred = Non speciale
 reader-too-long = Il messaggio è troppo lungo per essere mostrato per intero.
 reader-encrypted-images = Le immagini dal web non vengono mai caricate nella posta crittografata.
@@ -52,6 +55,7 @@ reader-details-subject = oggetto:
 
 reader-downloading = Download di questo messaggio dal server…
 reader-download-failed = Impossibile scaricare questo messaggio.
+reader-download-offline = Questo account è offline. Torna online per scaricare questo messaggio.
 reader-try-again = Riprova
 
 ## Reply row
@@ -112,6 +116,7 @@ tracking-clicked = { $who } ha seguito un link { $clicks ->
 tracking-maybe-opened = { $who } potrebbe averlo aperto (Apple Mail carica le immagini per la privacy)
 tracking-seen-none = Nessuno l’ha ancora aperto né ha seguito un link
 tracking-receipt = { $who } ha inviato una conferma di lettura
+tracking-receipt-read = { $who } l’ha letto (conferma di lettura), { $when }
 tracking-receipt-displayed = Conferma di lettura: { $who } ha aperto il tuo messaggio
 tracking-receipt-other = Conferma di lettura: { $who } ha eliminato o gestito il tuo messaggio senza aprirlo
 

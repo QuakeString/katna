@@ -21,6 +21,10 @@ notify-unknown-sender = Mittente sconosciuto
 notify-snooze-back = Di nuovo in Posta in arrivo
 notify-no-reply = Ancora nessuna risposta
 notify-no-reply-to = Nessuno ha risposto a «{ $subject }».
+notify-follow-up-sent = Sollecito inviato
+notify-follow-up-sent-to = Nessuno aveva risposto a «{ $subject }», così Katna ha inviato un sollecito.
+notify-follow-up-waiting = Sollecito non inviato
+notify-follow-up-waiting-to = Era previsto mentre questo computer era spento. «{ $subject }» è di nuovo nella tua Posta in arrivo.
 
 ## Open and click tracking (only for mail sent with "Track opens and clicks")
 
@@ -32,6 +36,19 @@ notify-tracking-clicked = { $who } ha cliccato un link in { $subject }
 notify-update-ready = Katna Mail può essere aggiornato
 notify-update-ready-body = La versione { $version } è stata scaricata. Aggiorna la installa e riavvia Katna Mail.
 notify-update = Aggiorna
+
+## Something needs the user, shown once per problem
+
+notify-signed-out = Accedi di nuovo
+notify-signed-out-body = { $provider } ha disconnesso Katna da { $address }. La posta non si sincronizza più.
+notify-sign-in = Accedi
+notify-password-refused = Password rifiutata
+notify-password-refused-body = Il server di posta ha rifiutato la password di { $address }. Potrebbe essere cambiata.
+notify-new-password = Nuova password
+notify-not-sent = «{ $subject }» non è stato inviato
+notify-not-sent-no-subject = Un messaggio non è stato inviato
+notify-not-sent-body = È in Posta in uscita, che ne spiega il motivo.
+notify-open-outbox = Apri Posta in uscita
 
 ## Reminders of calendar events
 
@@ -65,6 +82,12 @@ notify-reply-all = Rispondi a tutti
 notify-mark-read = Segna come già letto
 notify-mark-all-read = Segna tutti come già letti
 notify-archive = Archivia
+notify-snooze-hour = Posticipa di 1 ora
+notify-snooze-tomorrow = Domani
+notify-copy-code = Copia { $code }
+notify-link-verify = Verifica su { $domain }
+notify-link-confirm = Conferma su { $domain }
+notify-link-activate = Attiva su { $domain }
 
 ## After Archive on a notification: a short note in the same place
 
@@ -75,6 +98,11 @@ notify-archived-count = { $count ->
    *[other] { $count } messaggi spostati fuori dalla posta in arrivo
 }
 notify-undo = Annulla
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = Codice copiato
+notify-code-not-copied = Impossibile copiare il codice
 
 ## After a reply typed into a notification: a note in the same place while
 ## it waits for the undo time

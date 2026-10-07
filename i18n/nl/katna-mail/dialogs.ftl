@@ -6,6 +6,10 @@
 
 about-tooltip = Over Katna
 about-tagline = E-mail en agenda voor de Linux-desktop
+about-copy-version = Versiegegevens kopiëren
+about-version-copied = Gekopieerd
+about-version-built = Gebouwd: { $date }
+about-version-system = Systeem: { $system }
 about-whats-new = Wat is er nieuw
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = Versie { $version } is klaar om te installeren
 about-update-ready-detail = Katna Mail herstart om de update te voltooien.
 about-update-confirm = Versie { $version } installeren?
 about-update-confirm-detail = Katna Mail sluit af, installeert de update en opent opnieuw waar je gebleven was. Je computer vraagt om je wachtwoord.
+about-update-confirm-detail-windows = Katna Mail sluit af, installeert de update en opent zo weer.
 about-update-installing = Versie { $version } wordt geïnstalleerd…
 about-update-installing-detail = Voer je wachtwoord in het geopende venster in.
+about-update-installing-detail-windows = Katna Mail sluit nu en opent weer zodra de update is geïnstalleerd.
 about-update-cancelled = De update is niet geïnstalleerd, omdat het wachtwoord niet is opgegeven.
 about-update-failed = De update kon niet worden geïnstalleerd: { $error }
-about-update-unsupported = Deze versie van Katna Mail wordt bijgewerkt door je pakketbeheer.
+about-update-not-self-updating = Deze kopie van Katna Mail werkt zichzelf niet bij. Werk hem bij op de manier waarop je hem hebt geïnstalleerd.
 about-update-restart-failed = De update is geïnstalleerd, maar Katna Mail kon niet opnieuw worden geopend ({ $error }). Open het zelf.
 about-update-check = Controleren op updates
 about-update-download = Downloaden
@@ -148,6 +154,7 @@ onboarding-katna-private = Het heeft een eigen wachtwoord. De inloggegevens van 
 onboarding-ready-title = Alles is klaar
 onboarding-ready-lead = Katna haalt je e-mail op. Die verschijnt zodra hij binnenkomt, en nieuwe e-mail komt er vanzelf bij.
 onboarding-ready-lead-address = Katna haalt de e-mail van { $address } op. Die verschijnt zodra hij binnenkomt, en nieuwe e-mail komt er vanzelf bij.
+onboarding-apps = Apps die je gebruikt
 onboarding-ready-tour = Een rondleiding van een minuut volgen om te zien waar alles zit?
 onboarding-skip = Nu overslaan
 onboarding-take-tour = Rondleiding volgen

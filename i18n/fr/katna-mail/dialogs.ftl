@@ -6,6 +6,10 @@
 
 about-tooltip = À propos de Katna
 about-tagline = Courrier et calendrier pour le bureau Linux
+about-copy-version = Copier les détails de la version
+about-version-copied = Copié
+about-version-built = Compilée le : { $date }
+about-version-system = Système : { $system }
 about-whats-new = Nouveautés
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = La version { $version } est prête à être installée
 about-update-ready-detail = Katna Mail redémarre pour terminer la mise à jour.
 about-update-confirm = Installer la version { $version } ?
 about-update-confirm-detail = Katna Mail va se fermer, installer la mise à jour et se rouvrir là où vous en étiez. Votre ordinateur vous demandera votre mot de passe.
+about-update-confirm-detail-windows = Katna Mail va se fermer, installer la mise à jour et se rouvrir dans un instant.
 about-update-installing = Installation de la version { $version }…
 about-update-installing-detail = Saisissez votre mot de passe dans la fenêtre qui s’est ouverte.
+about-update-installing-detail-windows = Katna Mail se ferme maintenant et se rouvre une fois la mise à jour installée.
 about-update-cancelled = La mise à jour n’a pas été installée, car le mot de passe n’a pas été donné.
 about-update-failed = La mise à jour n’a pas pu être installée : { $error }
-about-update-unsupported = Cette copie de Katna Mail est mise à jour par votre gestionnaire de paquets.
+about-update-not-self-updating = Cette copie de Katna Mail ne se met pas à jour elle-même. Mettez-la à jour de la même façon que vous l’avez installée.
 about-update-restart-failed = La mise à jour est installée, mais Katna Mail n’a pas pu se rouvrir ({ $error }). Ouvrez-le vous-même.
 about-update-check = Vérifier les mises à jour
 about-update-download = Télécharger
@@ -149,6 +155,7 @@ onboarding-katna-private = Il a son propre mot de passe. Vos identifiants de mes
 onboarding-ready-title = Tout est prêt
 onboarding-ready-lead = Katna récupère votre courrier. Il s’affiche au fur et à mesure qu’il arrive, et le nouveau courrier apparaît de lui-même.
 onboarding-ready-lead-address = Katna récupère le courrier de { $address }. Il s’affiche au fur et à mesure qu’il arrive, et le nouveau courrier apparaît de lui-même.
+onboarding-apps = Les applications que vous utiliserez
 onboarding-ready-tour = Faire une visite d’une minute pour voir où tout se trouve ?
 onboarding-skip = Plus tard
 onboarding-take-tour = Faire la visite guidée

@@ -6,6 +6,10 @@
 
 about-tooltip = Sobre o Katna
 about-tagline = E-mail e agenda para o desktop Linux
+about-copy-version = Copiar detalhes da versão
+about-version-copied = Copiado
+about-version-built = Compilado: { $date }
+about-version-system = Sistema: { $system }
 about-whats-new = Novidades
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = A versão { $version } está pronta para instalar
 about-update-ready-detail = O Katna Mail reinicia para concluir a atualização.
 about-update-confirm = Instalar a versão { $version }?
 about-update-confirm-detail = O Katna Mail vai fechar, instalar a atualização e abrir de novo de onde você parou. Seu computador vai pedir sua senha.
+about-update-confirm-detail-windows = O Katna Mail vai fechar, instalar a atualização e abrir de novo em instantes.
 about-update-installing = Instalando a versão { $version }…
 about-update-installing-detail = Digite sua senha na janela que abriu.
+about-update-installing-detail-windows = O Katna Mail fecha agora e abre de novo assim que a atualização for instalada.
 about-update-cancelled = A atualização não foi instalada, porque a senha não foi informada.
 about-update-failed = Não foi possível instalar a atualização: { $error }
-about-update-unsupported = Esta cópia do Katna Mail é atualizada pelo seu gerenciador de pacotes.
+about-update-not-self-updating = Esta cópia do Katna Mail não se atualiza sozinha. Atualize-a da mesma forma como você a instalou.
 about-update-restart-failed = A atualização está instalada, mas o Katna Mail não conseguiu abrir de novo ({ $error }). Abra-o você mesmo.
 about-update-check = Verificar atualizações
 about-update-download = Baixar
@@ -149,6 +155,7 @@ onboarding-katna-private = Ela tem a própria senha. Os logins dos seus e-mails 
 onboarding-ready-title = Tudo pronto
 onboarding-ready-lead = O Katna está buscando seus e-mails. Eles aparecem conforme chegam, e os novos e-mails aparecem sozinhos.
 onboarding-ready-lead-address = O Katna está buscando os e-mails de { $address }. Eles aparecem conforme chegam, e os novos e-mails aparecem sozinhos.
+onboarding-apps = Apps que você vai usar
 onboarding-ready-tour = Quer fazer um tour de um minuto para ver onde fica cada coisa?
 onboarding-skip = Pular por enquanto
 onboarding-take-tour = Fazer o tour

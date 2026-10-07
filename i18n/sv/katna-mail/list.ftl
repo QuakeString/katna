@@ -339,6 +339,8 @@ list-empty-tab = Ingen e-post i { $tab }.
 list-empty-tab-unknown = Ingen e-post på den här fliken.
 list-empty-folder = Inga meddelanden i { $folder }.
 list-empty-folder-unknown = Inga meddelanden i den här mappen.
+list-empty-waiting = Inget väntar på svar.
+list-empty-reminders = Inga påminnelser. Tryck H på ett meddelande för att lägga till en.
 list-first-sync = Hämtar din e-post…
 list-first-sync-detail = Den visas här allt eftersom den kommer in.
 
@@ -358,6 +360,14 @@ row-tracking-clicked = { $opened } av { $recipients } har öppnat, { $clicked } 
 row-pin = Fäst högst upp
 row-unpin = Lossa
 row-snoozed-until = Snoozad till { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Idag
+snoozed-group-tomorrow = I morgon
+snoozed-group-this-week = Den här veckan
+snoozed-group-later = Senare
+row-follow-up-step = Uppföljning { $step } av { $steps } · { $date }
+row-follow-up-waiting = Uppföljning väntar
+row-reminder = Påminnelse { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +390,7 @@ menu-not-important = Markera som inte viktigt
 menu-pin = Fäst högst upp
 menu-unpin = Lossa
 menu-snooze = Snooza
+menu-remind = Påminn mig
 menu-unsnooze = Avbryt snooze
 menu-add-to-tasks = Lägg till i Uppgifter
 menu-schedule-meeting = Boka ett möte
@@ -395,7 +406,26 @@ menu-follow-up = Följ upp
 # Pin to top.
 menu-more = Mer
 menu-move-to-heading = Flytta till:
+menu-move-to-search = Flytta till…
+menu-label-as = Etikettera som
+menu-label-as-search = Etikettera som…
+menu-no-folder = Ingen mapp som heter ”{ $name }”
+menu-no-label = Ingen etikett som heter ”{ $name }”
+menu-create-folder = Skapa ”{ $name }”
+menu-always-move = Flytta alltid e-post från { $name } hit
+toast-always-move-failed = E-posten flyttades, men regeln skapades inte: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } konversation
+       *[other] { $count } konversationer
+    }
+   *[message] { $count ->
+        [one] { $count } meddelande
+       *[other] { $count } meddelanden
+    }
+}
 menu-find-from = Hitta e-post från { $name }
+menu-make-rule = Skapa en regel…
 
 ## Snackbar after an action on mail in the list
 
@@ -429,6 +459,8 @@ toast-moved = { $kind ->
        *[other] { $count } meddelanden har flyttats.
     }
 }
+toast-label-added = Etiketten ”{ $label }” lades till.
+toast-label-removed = Etiketten ”{ $label }” togs bort.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Konversationen har stjärnmärkts.

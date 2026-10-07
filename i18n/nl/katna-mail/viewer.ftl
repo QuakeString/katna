@@ -20,12 +20,20 @@ viewer-page-count = van { $count }
 viewer-go-to-page-tip = Typ een paginanummer en druk op Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = Rechtsom draaien (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Linksom draaien (Ctrl+Shift+R)
+viewer-dark-pages-tip = Donkere pagina’s
+viewer-light-pages-tip = Pagina’s tonen zoals ze zijn
 viewer-fit-page-tip = Pagina passend maken
 viewer-fit-picture-tip = Passend in venster
 viewer-fit-width-tip = Breedte passend maken
 viewer-real-size-tip = Werkelijke grootte (1:1)
 viewer-page-back-tip = Vorige pagina
 viewer-page-on-tip = Volgende pagina
+viewer-more-tip = Meer
+viewer-zoom-in = Inzoomen
+viewer-zoom-out = Uitzoomen
+viewer-real-size = Werkelijke grootte
+viewer-rotate-anticlockwise = Linksom draaien
+viewer-rotate-clockwise = Rechtsom draaien
 
 ## Marking up a PDF
 
