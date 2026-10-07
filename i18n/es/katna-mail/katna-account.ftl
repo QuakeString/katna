@@ -1,59 +1,6 @@
 # Katna Mail, Spanish (Spain) (Español).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-katna-intro = Una cuenta de Katna activa las funciones en línea de Katna: confirmaciones de lectura, seguimiento de enlaces, Actividad y traducción automática. Tiene su propia contraseña, no la de tu correo, y los datos de acceso de tu correo nunca salen de este ordenador.
-katna-checking = Comprobando…
-katna-email = Correo electrónico
-katna-password = Contraseña
-katna-password-detail = Al cambiarla se cierra la sesión en tus otros ordenadores.
-katna-sign-in = Iniciar sesión
-katna-sign-in-detail = Inicia sesión en cada ordenador donde quieras las funciones en línea.
-katna-create = Crear cuenta
-katna-create-detail = Usa una dirección cuyo correo puedas leer: te enviamos un código para confirmarla.
-katna-have-account = Ya tengo una cuenta
-katna-forgot = ¿Has olvidado la contraseña?
-katna-forgot-detail = Te enviamos un código para elegir una contraseña nueva.
-katna-forgot-code-detail = Escribe el código que te hemos enviado y una contraseña nueva. Se cerrará la sesión en tus otros ordenadores.
-katna-send-code = Enviar código
-katna-back-to-sign-in = Volver a iniciar sesión
-katna-code = Código
-katna-new-password = Contraseña nueva
-katna-current-password = Contraseña actual
-katna-set-password = Establecer contraseña
-katna-save-password = Guardar contraseña
-katna-change-password = Cambiar contraseña
-katna-cancel = Cancelar
-katna-confirm-title = Confirma tu dirección
-katna-confirm-detail = Hemos enviado un código de 6 cifras a { $email }. Sirve durante 30 minutos.
-katna-confirm = Confirmar
-katna-resend = Enviar un código nuevo
-katna-code-resent = Un código nuevo va de camino.
-katna-reset-code-sent = Si esa dirección tiene una cuenta de Katna, un código va de camino.
-katna-password-changed = Contraseña cambiada. Se ha cerrado la sesión en tus otros ordenadores.
-katna-signed-in = Sesión iniciada
-katna-signed-in-detail = Las funciones en línea funcionan en este ordenador.
-katna-sign-out = Cerrar sesión
-katna-devices = Ordenadores
-katna-devices-detail = Los ordenadores con sesión iniciada en esta cuenta. Cierra la sesión en los que no uses.
-katna-device-unnamed = Ordenador sin nombre
-katna-device-this = Este ordenador · sesión iniciada: { $date }
-katna-device-since = Sesión iniciada: { $date }
-katna-delete = Eliminar cuenta
-katna-delete-detail = Elimina la cuenta y todo lo que el servidor guarda de ella, como las confirmaciones de lectura. El correo de este ordenador se queda.
-katna-delete-confirm = Eliminar para siempre
-katna-sign-in-needed = Inicia sesión en una cuenta de Katna para usar esto.
-katna-error-wrong-password = Correo o contraseña incorrectos.
-katna-error-exists = Esta dirección ya tiene una cuenta de Katna. Inicia sesión.
-katna-error-bad-email = Eso no parece una dirección de correo.
-katna-error-short-password = La contraseña necesita al menos 8 caracteres.
-katna-error-long-password = La contraseña es demasiado larga.
-katna-error-wrong-code = Ese código no es correcto.
-katna-error-code-expired = Ese código ha caducado. Pide uno nuevo.
-katna-error-too-many = Demasiados intentos. Espera unos minutos y vuelve a intentarlo.
-katna-error-mail-failed = No se ha podido enviar el correo con el código. Inténtalo más tarde.
-katna-error-signed-out = Se ha cerrado la sesión en este ordenador. Vuelve a iniciar sesión.
-katna-error-offline = No se ha podido conectar con el servidor de Katna. Comprueba tu conexión y vuelve a intentarlo.
-katna-error-server = El servidor de Katna ha tenido un problema. Inténtalo más tarde.
 
 ## Settings > Subscription: the Katna account
 
