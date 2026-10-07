@@ -439,6 +439,8 @@ list-empty-tab = На вкладке «{ $tab }» нет писем.
 list-empty-tab-unknown = На этой вкладке нет писем.
 list-empty-folder = В папке «{ $folder }» нет писем.
 list-empty-folder-unknown = В этой папке нет писем.
+list-empty-waiting = Ответа ничего не ждёт.
+list-empty-reminders = Напоминаний нет. Нажмите H на письме, чтобы добавить.
 list-first-sync = Загружаем вашу почту…
 list-first-sync-detail = Письма будут появляться здесь по мере получения.
 
@@ -458,6 +460,14 @@ row-tracking-clicked = Открыли { $opened } из { $recipients }, пере
 row-pin = Закрепить вверху
 row-unpin = Открепить
 row-snoozed-until = Отложено до { $when }
+row-snoozed-day-time = { $day }, { $time }
+snoozed-group-today = Сегодня
+snoozed-group-tomorrow = Завтра
+snoozed-group-this-week = На этой неделе
+snoozed-group-later = Позже
+row-follow-up-step = Повторное письмо { $step } из { $steps } · { $date }
+row-follow-up-waiting = Повторное письмо ждёт
+row-reminder = Напоминание { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -480,6 +490,7 @@ menu-not-important = Отметить как неважное
 menu-pin = Закрепить вверху
 menu-unpin = Открепить
 menu-snooze = Отложить
+menu-remind = Напомнить
 menu-unsnooze = Вернуть сейчас
 menu-add-to-tasks = Добавить в Задачи
 menu-schedule-meeting = Запланировать встречу
@@ -495,7 +506,30 @@ menu-follow-up = Дальнейшие шаги
 # Pin to top.
 menu-more = Ещё
 menu-move-to-heading = Переместить в:
+menu-move-to-search = Переместить в…
+menu-label-as = Добавить ярлык
+menu-label-as-search = Добавить ярлык…
+menu-no-folder = Нет папки «{ $name }»
+menu-no-label = Нет ярлыка «{ $name }»
+menu-create-folder = Создать «{ $name }»
+menu-always-move = Всегда перемещать сюда письма от { $name }
+toast-always-move-failed = Письмо перемещено, но правило не создано: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } цепочка
+        [few] { $count } цепочки
+        [many] { $count } цепочек
+       *[other] { $count } цепочки
+    }
+   *[message] { $count ->
+        [one] { $count } письмо
+        [few] { $count } письма
+        [many] { $count } писем
+       *[other] { $count } письма
+    }
+}
 menu-find-from = Найти письма от { $name }
+menu-make-rule = Создать правило…
 
 ## Snackbar after an action on mail in the list
 
@@ -541,6 +575,8 @@ toast-moved = { $kind ->
        *[other] { $count } письма перемещены.
     }
 }
+toast-label-added = Ярлык «{ $label }» добавлен.
+toast-label-removed = Ярлык «{ $label }» снят.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] { $count } цепочка помечена.

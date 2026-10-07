@@ -8,6 +8,10 @@ shortcut-group-moving = Перемещение
 shortcut-group-actions = Действия
 shortcut-group-go-to = Переход
 shortcut-group-app = Приложение
+shortcuts-dialog-title = Быстрые клавиши
+shortcuts-dialog-search = Найти сочетание клавиш
+shortcuts-dialog-none = Подходящих сочетаний нет
+shortcuts-dialog-close = Закрыть
 
 ## Settings > Keyboard shortcuts: what each shortcut does
 
@@ -37,6 +41,8 @@ shortcut-mark-read = Отметить как прочитанное
 shortcut-mark-unread = Отметить как непрочитанное
 shortcut-star = Пометить или снять пометку
 shortcut-add-to-tasks = Добавить в Задачи
+shortcut-snooze = Отложить
+shortcut-remind = Напомнить
 shortcut-important = Отметить как важное
 shortcut-not-important = Отметить как неважное
 shortcut-mute = Отключить или включить уведомления цепочки

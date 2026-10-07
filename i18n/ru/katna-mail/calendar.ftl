@@ -55,7 +55,7 @@ calendar-account-signed-in = Вход в { $address } выполнен снов�
 calendar-account-sign-in-refused = { $provider } не впустил Katna. Попробуйте снова и разрешите доступ к календарям.
 calendar-account-refused = Сервер не принял пароль. Для Yahoo, iCloud, Zoho и других нужен пароль приложения.
 calendar-account-change-password = Сменить пароль
-calendar-account-change-password-tooltip = Открыть Настройки > Аккаунты
+calendar-account-change-password-tooltip = Введите новый пароль; Katna проверит его на сервере
 calendar-account-not-enabled = Доступ Katna к календарю ещё не включён.
 calendar-account-failed = Не удалось прочитать календари.
 calendar-account-error = Не удалось прочитать календари: { $reason }
@@ -71,6 +71,7 @@ calendar-account-try-again = Повторить попытку
 calendar-account-try-again-tooltip = Сейчас снова проверить календари этого аккаунта
 calendar-account-fixing = Исправляем…
 calendar-birthdays = Дни рождения
+calendar-tasks = Задачи
 calendar-birthday-of = День рождения: { $name }
 calendar-empty-title = Календарей пока нет
 calendar-empty-text = Katna показывает здесь календари ваших аккаунтов Google и Microsoft после синхронизации, а также календари других серверов с поддержкой CalDAV.
@@ -131,6 +132,7 @@ calendar-event-details = Сведения о мероприятии
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = Новое мероприятие
+calendar-event-window-title = Новое мероприятие
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Открыть день
 calendar-menu-duplicate = Дублировать

@@ -8,6 +8,8 @@ reader-close = Закрыть
 reader-back = Назад
 reader-mark-unread = Отметить как непрочитанное
 reader-move-to = Переместить в
+reader-snooze = Отложить
+reader-remind = Напомнить
 reader-more = Ещё
 reader-original-colors = Показать исходные цвета
 reader-dark-colors = Показать в тёмных цветах
@@ -35,6 +37,7 @@ reader-tick-bounced = Не доставлено: возврат { $when }
 reader-tick-read = Прочитано { $when } (уведомление о прочтении)
 reader-tick-opened = Открыто, последний раз { $when } (отслеживание открытий)
 reader-starred = Помечено
+reader-chip-remove = Убрать { $label }
 reader-not-starred = Без пометки
 reader-too-long = Письмо слишком длинное, чтобы показать его полностью.
 reader-encrypted-images = В зашифрованных письмах изображения из интернета никогда не загружаются.
@@ -52,6 +55,7 @@ reader-details-subject = тема:
 
 reader-downloading = Загрузка письма с сервера…
 reader-download-failed = Не удалось загрузить это письмо.
+reader-download-offline = Этот аккаунт в автономном режиме. Выйдите в сеть, чтобы загрузить это письмо.
 reader-try-again = Повторить попытку
 
 ## Reply row
@@ -112,6 +116,7 @@ tracking-clicked = { $who }: по ссылке перешли { $clicks ->
 tracking-maybe-opened = { $who }: возможно, открыто (Apple Mail загружает изображения ради конфиденциальности)
 tracking-seen-none = Пока никто не открыл письмо и не перешёл по ссылке
 tracking-receipt = Уведомление о прочтении от { $who }
+tracking-receipt-read = { $who } прочитал(а) письмо (уведомление о прочтении), { $when }
 tracking-receipt-displayed = Уведомление о прочтении: ваше письмо открыто получателем { $who }
 tracking-receipt-other = Уведомление о прочтении: ваше письмо удалено или обработано получателем { $who } без открытия
 

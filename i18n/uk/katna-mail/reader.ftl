@@ -8,6 +8,8 @@ reader-close = Закрити
 reader-back = Назад
 reader-mark-unread = Позначити як непрочитане
 reader-move-to = Перемістити в
+reader-snooze = Відкласти
+reader-remind = Нагадати мені
 reader-more = Більше
 reader-original-colors = Показати оригінальні кольори
 reader-dark-colors = Показати в темних кольорах
@@ -35,6 +37,7 @@ reader-tick-bounced = Не доставлено: повернуто { $when }
 reader-tick-read = Прочитано { $when } (сповіщення про прочитання)
 reader-tick-opened = Відкрито, востаннє { $when } (відстеження відкриттів)
 reader-starred = Із зірочкою
+reader-chip-remove = Прибрати { $label }
 reader-not-starred = Без зірочки
 reader-too-long = Лист задовгий, щоб показати його повністю.
 reader-encrypted-images = У зашифрованих листах зображення з інтернету ніколи не завантажуються.
@@ -52,6 +55,7 @@ reader-details-subject = тема:
 
 reader-downloading = Завантаження цього листа із сервера…
 reader-download-failed = Не вдалося завантажити цей лист.
+reader-download-offline = Цей обліковий запис офлайн. Поверніться в онлайн, щоб завантажити цей лист.
 reader-try-again = Повторити спробу
 
 ## Reply row
@@ -112,6 +116,7 @@ tracking-clicked = { $who }: перехід за посиланням { $clicks 
 tracking-maybe-opened = { $who }: лист, можливо, відкрито (Apple Mail завантажує зображення задля приватності)
 tracking-seen-none = Ще ніхто не відкрив лист і не перейшов за посиланням
 tracking-receipt = { $who }: надійшло сповіщення про прочитання
+tracking-receipt-read = { $who } прочитав(-ла) його (сповіщення про прочитання), { $when }
 tracking-receipt-displayed = Сповіщення про прочитання: { $who } — ваш лист відкрито
 tracking-receipt-other = Сповіщення про прочитання: { $who } — ваш лист видалено чи оброблено без відкриття
 

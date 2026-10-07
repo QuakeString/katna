@@ -5,6 +5,7 @@
 ## Side list and search
 
 notes-view-notes = Notlar
+notes-view-reminders = Hatırlatıcılar
 notes-view-archive = Arşiv
 notes-view-trash = Çöp kutusu
 notes-edit-labels = Etiketleri düzenle
@@ -23,12 +24,18 @@ notes-archive-empty = Arşivlenen notlarınız burada görünür
 notes-trash-empty = Çöp kutusunda not yok
 notes-none-found = Eşleşen not yok
 notes-label-empty = Bu etikete sahip not henüz yok
+notes-reminders-empty = Yaklaşan hatırlatıcısı olan notlar burada görünür
 notes-trash-note = Çöp kutusundaki notlar 7 gün sonra silinir.
 notes-empty-trash = Çöp kutusunu boşalt
 notes-ticked = { $count ->
     [one] + { $count } işaretli öğe
    *[other] + { $count } işaretli öğe
 }
+notes-select = Notu seç
+notes-selected = { $count ->
+   *[other] { $count } seçili
+}
+notes-select-clear = Seçimi temizle
 
 ## A note's buttons
 
@@ -43,6 +50,15 @@ notes-color = Arka plan rengi
 notes-checkboxes = Onay kutularını göster veya gizle
 notes-labels = Etiketler
 notes-close = Kapat
+notes-more = Diğer
+notes-make-copy = Kopyasını oluştur
+notes-remind = Bana hatırlat
+notes-add-picture = Resim ekle
+notes-history = Sürüm geçmişi
+notes-ai = Yazmama yardım et
+notes-send-as-mail = Posta olarak gönder
+notes-save-markdown = Markdown olarak kaydet
+notes-save-pdf = PDF olarak kaydet
 
 ## The open note
 
@@ -50,6 +66,44 @@ notes-title = Başlık
 notes-edited = Düzenlenme: { $date }
 notes-on-this-computer = Bu bilgisayarda
 notes-where = Bu notun saklandığı yer
+notes-untitled = Adsız not
+notes-picture-choose = Resim ekle
+notes-picture-remove = Resmi kaldır
+notes-picture-too-big = Bir nota en fazla { $size } boyutunda resimler eklenebilir
+notes-picture-kind = Bu dosya Katna'nın gösterebileceği bir resim değil
+notes-picture-unreadable = { $name } okunamadı: { $error }
+notes-remind-me = Bana hatırlat
+notes-remind-off = Hatırlatıcıyı kaldır
+notes-remind-in-the-past = Henüz geçmemiş bir zaman seçin
+notes-remind-today = Bugün, { $time }
+notes-remind-tomorrow = Yarın, { $time }
+notes-remind-weekday = { $day }, { $time }
+notes-reminder-set = Hatırlatıcı kuruldu: { $when }
+notes-reminder-off = Hatırlatıcı kaldırıldı
+notes-link-note = Not bağla
+notes-link-new = Yeni not "{ $title }"
+notes-linked-from = Şuradan bağlantı verilmiş
+notes-link-gone = O not artık burada değil
+notes-versions = Sürümler
+notes-version-now = Şimdi
+notes-version-here = Siz, bu bilgisayarda
+notes-version-yesterday = Dün, { $time }
+notes-version-changes = { $count ->
+   *[other] { $count } değişiklik
+}
+notes-version-from = { $device } cihazından
+notes-version-elsewhere = Başka bir cihazdan
+notes-version-created = Oluşturuldu
+notes-version-restore = Bu sürümü geri yükle
+notes-version-restored = Sürüm geri yüklendi
+notes-history-none = Henüz önceki sürüm yok
+notes-ai-tidy = Metni düzenle
+notes-ai-checklist = Yapılacaklar listesine dönüştür
+notes-ai-summarise = Özetle
+notes-ai-empty = Önce bir şey yazın
+notes-ai-tidied = Metin düzenlendi. Ctrl+Z eski haline getirir.
+notes-ai-listed = Yapılacaklar listesine dönüştürüldü. Ctrl+Z eski haline getirir.
+notes-ai-summarised = Özet en üste eklendi
 
 ## Labels
 
@@ -88,6 +142,9 @@ notes-format-normal = Normal metin
 notes-format-bold = Kalın
 notes-format-italic = İtalik
 notes-format-underline = Altı çizili
+notes-format-quote = Alıntı
+notes-format-code = Kod
+notes-format-divider = Ayırıcı
 notes-format-clear = Biçimlendirmeyi temizle
 
 ## Tasks
@@ -115,6 +172,39 @@ notes-archived = Not arşivlendi
 notes-unarchived = Not arşivden çıkarıldı
 notes-trashed = Not çöp kutusuna taşındı
 notes-restored = Not geri yüklendi
+notes-saved = Not kaydedildi
+notes-pinned-count = { $count ->
+    [one] Not sabitlendi
+   *[other] { $count } not sabitlendi
+}
+notes-unpinned-count = { $count ->
+    [one] Notun sabitlemesi kaldırıldı
+   *[other] { $count } notun sabitlemesi kaldırıldı
+}
+notes-colored-count = { $count ->
+    [one] Renk değiştirildi
+   *[other] { $count } notun rengi değiştirildi
+}
+notes-archived-count = { $count ->
+    [one] Not arşivlendi
+   *[other] { $count } not arşivlendi
+}
+notes-unarchived-count = { $count ->
+    [one] Not arşivden çıkarıldı
+   *[other] { $count } not arşivden çıkarıldı
+}
+notes-trashed-count = { $count ->
+    [one] Not Çöp Kutusu'na taşındı
+   *[other] { $count } not Çöp Kutusu'na taşındı
+}
+notes-restored-count = { $count ->
+    [one] Not geri yüklendi
+   *[other] { $count } not geri yüklendi
+}
+notes-copied-count = { $count ->
+    [one] Kopya oluşturuldu
+   *[other] { $count } kopya oluşturuldu
+}
 notes-empty-discarded = Boş not atıldı
 notes-mail-gone = Bu e-posta artık burada değil
 notes-deleted-forever = { $count ->

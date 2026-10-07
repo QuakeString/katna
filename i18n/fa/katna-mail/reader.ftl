@@ -8,6 +8,8 @@ reader-close = بستن
 reader-back = برگشت
 reader-mark-unread = علامت‌گذاری به‌عنوان خوانده‌نشده
 reader-move-to = انتقال به
+reader-snooze = به تعویق انداختن
+reader-remind = یادآوری کن
 reader-more = بیشتر
 reader-original-colors = نمایش رنگ‌های اصلی
 reader-dark-colors = نمایش با رنگ‌های تیره
@@ -35,6 +37,7 @@ reader-tick-bounced = تحویل نشد: { $when } برگشت خورد
 reader-tick-read = خوانده شد { $when } (رسید خواندن)
 reader-tick-opened = باز شد، آخرین بار { $when } (ردیابی باز شدن)
 reader-starred = ستاره‌دار
+reader-chip-remove = برداشتن { $label }
 reader-not-starred = بدون ستاره
 reader-too-long = این پیام برای نمایش کامل بیش از حد طولانی است.
 reader-encrypted-images = تصاویر وب هرگز در ایمیل رمزگذاری‌شده بار نمی‌شوند.
@@ -52,6 +55,7 @@ reader-details-subject = موضوع:
 
 reader-downloading = در حال بارگیری این پیام از سرور…
 reader-download-failed = بارگیری این پیام ممکن نشد.
+reader-download-offline = این حساب آفلاین است. برای بارگیری این پیام آنلاین شوید.
 reader-try-again = امتحان مجدد
 
 ## Reply row
@@ -104,6 +108,7 @@ tracking-clicked = { $who } { $clicks ->
 tracking-maybe-opened = شاید { $who } آن را باز کرده باشد (Apple Mail برای حفظ حریم خصوصی تصاویر را بارگیری می‌کند)
 tracking-seen-none = هنوز کسی آن را باز نکرده یا پیوندی را دنبال نکرده است
 tracking-receipt = { $who } رسید خواندن فرستاد
+tracking-receipt-read = { $who } آن را خواند (رسید خواندن)، { $when }
 tracking-receipt-displayed = رسید خواندن: { $who } پیام شما را باز کرد
 tracking-receipt-other = رسید خواندن: { $who } پیام شما را بدون باز کردن حذف کرد یا به آن رسیدگی کرد
 

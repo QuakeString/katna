@@ -20,12 +20,20 @@ viewer-page-count = از { $count }
 viewer-go-to-page-tip = شمارهٔ صفحه را بنویسید و Enter بزنید (Ctrl+G)
 viewer-rotate-clockwise-tip = چرخش ساعتگرد (Ctrl+R)
 viewer-rotate-anticlockwise-tip = چرخش پادساعتگرد (Ctrl+Shift+R)
+viewer-dark-pages-tip = صفحه‌های تیره
+viewer-light-pages-tip = نمایش صفحه‌ها همان‌طور که هستند
 viewer-fit-page-tip = اندازهٔ صفحه
 viewer-fit-picture-tip = اندازهٔ پنجره
 viewer-fit-width-tip = اندازهٔ عرض
 viewer-real-size-tip = اندازهٔ واقعی (1:1)
 viewer-page-back-tip = صفحهٔ قبل
 viewer-page-on-tip = صفحهٔ بعد
+viewer-more-tip = بیشتر
+viewer-zoom-in = بزرگ‌نمایی
+viewer-zoom-out = کوچک‌نمایی
+viewer-real-size = اندازهٔ واقعی
+viewer-rotate-anticlockwise = چرخش پادساعتگرد
+viewer-rotate-clockwise = چرخش ساعتگرد
 
 ## Marking up a PDF
 

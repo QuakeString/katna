@@ -53,3 +53,4 @@ search-options-show = Arama seçeneklerini göster
 settings = Ayarlar
 account-add = Hesap ekle
 account-wheel-hint = Hesabı değiştirmek için kaydırın
+account-menu-all-detail = { $count } hesap bir arada

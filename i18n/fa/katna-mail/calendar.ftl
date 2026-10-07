@@ -53,7 +53,7 @@ calendar-account-signed-in = دوباره به { $address } وارد شدید. �
 calendar-account-sign-in-refused = { $provider } به Katna اجازهٔ ورود نداد. دوباره امتحان کنید و اجازهٔ دسترسی به تقویم‌هایتان را بدهید.
 calendar-account-refused = سرور گذرواژه را نپذیرفت. Yahoo، iCloud، Zoho و دیگران به گذرواژهٔ برنامه نیاز دارند.
 calendar-account-change-password = تغییر گذرواژه
-calendar-account-change-password-tooltip = باز کردن تنظیمات > حساب‌ها
+calendar-account-change-password-tooltip = گذرواژهٔ جدید را تایپ کنید؛ Katna آن را با سرور بررسی می‌کند
 calendar-account-not-enabled = دسترسی Katna به تقویم هنوز روشن نشده است.
 calendar-account-failed = خواندن تقویم‌ها ممکن نشد.
 calendar-account-error = خواندن تقویم‌ها ممکن نشد: { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = امتحان مجدد
 calendar-account-try-again-tooltip = همین حالا تقویم‌های این حساب را دوباره بررسی کنید
 calendar-account-fixing = در حال انجام…
 calendar-birthdays = تولدها
+calendar-tasks = کارها
 calendar-birthday-of = تولد { $name }
 calendar-empty-title = هنوز تقویمی وجود ندارد
 calendar-empty-text = تقویم‌های حساب‌های Google و Microsoft شما پس از همگام‌سازی اینجا نمایش داده می‌شوند، همچنین تقویم‌های سرورهای دیگری که از CalDAV پشتیبانی می‌کنند.
@@ -127,6 +128,7 @@ calendar-event-details = جزئیات رویداد
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = رویداد جدید
+calendar-event-window-title = رویداد جدید
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = باز کردن روز
 calendar-menu-duplicate = تکثیر
