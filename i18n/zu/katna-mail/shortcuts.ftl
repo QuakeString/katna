@@ -9,6 +9,13 @@ shortcut-group-actions = Izenzo
 shortcut-group-go-to = Iya ku-
 shortcut-group-app = Uhlelo lokusebenza
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Izinqamuleli zekhibhodi
+shortcuts-dialog-search = Thola isinqamuleli
+shortcuts-dialog-none = Asikho isinqamuleli esihambisanayo
+shortcuts-dialog-close = Vala
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Ingxoxo elandelayo
@@ -37,6 +44,8 @@ shortcut-mark-read = Maka njengokufundiwe
 shortcut-mark-unread = Maka njengokungafundiwe
 shortcut-star = Faka noma susa inkanyezi
 shortcut-add-to-tasks = Engeza Kumisebenzi
+shortcut-snooze = Libazisa
+shortcut-remind = Ngikhumbuze
 shortcut-important = Maka njengokubalulekile
 shortcut-not-important = Maka njengokungabalulekile
 shortcut-mute = Thulisa noma susa ukuthulisa ingxoxo

@@ -9,6 +9,13 @@ shortcut-group-actions = እርምጃዎች
 shortcut-group-go-to = ሂድ ወደ
 shortcut-group-app = መተግበሪያ
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = የቁልፍ ሰሌዳ አቋራጮች
+shortcuts-dialog-search = አቋራጭ ፈልግ
+shortcuts-dialog-none = የሚዛመድ አቋራጭ የለም
+shortcuts-dialog-close = ዝጋ
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = ቀጣይ ውይይት
@@ -37,6 +44,8 @@ shortcut-mark-read = እንደተነበበ ምልክት አድርግ
 shortcut-mark-unread = እንዳልተነበበ ምልክት አድርግ
 shortcut-star = ኮከብ አክል ወይም አስወግድ
 shortcut-add-to-tasks = ወደ ተግባራት አክል
+shortcut-snooze = አሸልብ
+shortcut-remind = አስታውሰኝ
 shortcut-important = እንደ አስፈላጊ ምልክት አድርግ
 shortcut-not-important = አስፈላጊ እንዳልሆነ ምልክት አድርግ
 shortcut-mute = ውይይቱን ድምጸ-ከል አድርግ ወይም ድምጸ-ከሉን አንሳ
