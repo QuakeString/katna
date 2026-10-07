@@ -33,9 +33,11 @@ plasma-workspace), so it looks and behaves exactly like the clock people
 know, with Katna's additions:
 
 - a Tasks list under the day's events: add a task (due on the day picked
-  in the month, when that isn't today), tick one off;
+  in the month, when that isn't today), tick one off, fold it to its
+  heading;
 - right-click a day in the month to add a task for it, or an event in
-  Katna's Calendar (so does "Add…" beside Events);
+  Katna's small New event window (so does "Add…" beside Events);
+- the time zone beside the date, with the other zones in its menu;
 - Katna's events open Katna's Calendar on their day, and a meeting gets
   a Join button.
 

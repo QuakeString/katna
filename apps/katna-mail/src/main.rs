@@ -264,6 +264,9 @@ fn main() -> ExitCode {
             cx.spawn(async move |_| instance::answer_pings(pings).await)
                 .detach();
             // Before the window opens, which reads the menu bar's address.
+            // Requests the app makes of itself (the New event window's
+            // More options), as another launch would.
+            let own_requests = Some(sender.clone());
             if let Some(connection) = &connection {
                 serve_menu_bar(connection, sender, cx);
             }
@@ -284,6 +287,7 @@ fn main() -> ExitCode {
                 paths.clone(),
                 font.clone(),
                 connection.clone(),
+                own_requests.clone(),
                 cx,
             );
             let window_connection = connection.clone();

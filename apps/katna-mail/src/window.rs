@@ -50,6 +50,7 @@ mod desktop;
 mod detached;
 mod download;
 mod event_edit;
+mod event_window;
 mod feedback_page;
 mod files_page;
 mod folder_pick;
@@ -610,6 +611,11 @@ pub struct MailWindow {
     /// A window of its own showing one conversation (double-click on a
     /// line), not the main mail window.
     detached: bool,
+    /// A small window of its own with only a new event's card (the
+    /// desktop clock's Add…), not the main mail window.
+    event_only: bool,
+    /// That window's event is on its way to the daemon: it closes once in.
+    event_saving: bool,
     /// For a conversation window, the mail window it came from: it shows
     /// the snackbar (and its Undo) when the conversation moves away and
     /// this window closes.
@@ -1031,6 +1037,8 @@ impl MailWindow {
             list_scrolling: None,
             reader: None,
             detached: false,
+            event_only: false,
+            event_saving: false,
             main: None,
             reading: false,
             card_seq: 0,
@@ -3584,6 +3592,9 @@ impl Render for MailWindow {
             let detached = self.render_detached(window, cx);
             self.fetch_pictures(cx);
             return detached;
+        }
+        if self.event_only {
+            return self.render_event_window(window, cx);
         }
         self.tour_new_frame();
         self.measure_pill_text(window);
