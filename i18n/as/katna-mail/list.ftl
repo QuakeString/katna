@@ -339,6 +339,8 @@ list-empty-tab = { $tab }ত কোনো মেইল নাই।
 list-empty-tab-unknown = এই টেবত কোনো মেইল নাই।
 list-empty-folder = { $folder }ত কোনো বাৰ্তা নাই।
 list-empty-folder-unknown = এই ফ'ল্ডাৰত কোনো বাৰ্তা নাই।
+list-empty-waiting = উত্তৰৰ অপেক্ষাত একো নাই।
+list-empty-reminders = কোনো সোঁৱৰণী নাই। এটা যোগ কৰিবলৈ মেইলত H টিপক।
 list-first-sync = আপোনাৰ মেইল অনা হৈছে…
 list-first-sync-detail = মেইল অহাৰ লগে লগে ইয়াত দেখা যাব।
 
@@ -358,6 +360,14 @@ row-tracking-clicked = { $recipients }ৰ ভিতৰত { $opened }-এ খু
 row-pin = ওপৰত পিন কৰক
 row-unpin = আনপিন কৰক
 row-snoozed-until = { $when }লৈ স্নুজ কৰা হৈছে
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = আজি
+snoozed-group-tomorrow = কাইলৈ
+snoozed-group-this-week = এই সপ্তাহ
+snoozed-group-later = পিছত
+row-follow-up-step = { $steps }ৰ { $step } নং ফল'-আপ · { $date }
+row-follow-up-waiting = ফল'-আপ অপেক্ষাত
+row-reminder = সোঁৱৰণী { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +390,7 @@ menu-not-important = গুৰুত্বপূৰ্ণ নহয় বুল
 menu-pin = ওপৰত পিন কৰক
 menu-unpin = আনপিন কৰক
 menu-snooze = স্নুজ কৰক
+menu-remind = মোক সোঁৱৰাওক
 menu-unsnooze = স্নুজ বাতিল কৰক
 menu-add-to-tasks = কাৰ্যত যোগ কৰক
 menu-schedule-meeting = বৈঠক নিৰ্ধাৰণ কৰক
@@ -395,7 +406,26 @@ menu-follow-up = ফ'ল' আপ
 # Pin to top.
 menu-more = অধিক
 menu-move-to-heading = ইয়ালৈ স্থানান্তৰ কৰক:
+menu-move-to-search = ইয়ালৈ স্থানান্তৰ কৰক…
+menu-label-as = লেবেল দিয়ক
+menu-label-as-search = লেবেল দিয়ক…
+menu-no-folder = “{ $name }” নামৰ কোনো ফ'ল্ডাৰ নাই
+menu-no-label = “{ $name }” নামৰ কোনো লেবেল নাই
+menu-create-folder = “{ $name }” সৃষ্টি কৰক
+menu-always-move = { $name }ৰ মেইল সদায় ইয়ালৈ স্থানান্তৰ কৰক
+toast-always-move-failed = মেইল স্থানান্তৰ কৰা হ'ল, কিন্তু নিয়মটো বনোৱা নহ'ল: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count }টা কথোপকথন
+       *[other] { $count }টা কথোপকথন
+    }
+   *[message] { $count ->
+        [one] { $count }টা বাৰ্তা
+       *[other] { $count }টা বাৰ্তা
+    }
+}
 menu-find-from = { $name }ৰ পৰা অহা ইমেইল বিচাৰক
+menu-make-rule = নিয়ম বনাওক…
 
 ## Snackbar after an action on mail in the list
 
@@ -429,6 +459,8 @@ toast-moved = { $kind ->
        *[other] { $count }টা বাৰ্তা স্থানান্তৰ কৰা হ'ল।
     }
 }
+toast-label-added = “{ $label }” লেবেল যোগ কৰা হ'ল।
+toast-label-removed = “{ $label }” লেবেল আঁতৰোৱা হ'ল।
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] কথোপকথনটো তৰাচিহ্নিত কৰা হ'ল।

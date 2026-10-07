@@ -5,6 +5,7 @@
 ## Side list and search
 
 notes-view-notes = ਨੋਟ
+notes-view-reminders = ਰੀਮਾਈਂਡਰ
 notes-view-archive = ਪੁਰਾਲੇਖ
 notes-view-trash = ਰੱਦੀ
 notes-edit-labels = ਲੇਬਲ ਸੰਪਾਦਿਤ ਕਰੋ
@@ -23,12 +24,19 @@ notes-archive-empty = ਤੁਹਾਡੇ ਪੁਰਾਲੇਖਬੱਧ ਨੋ�
 notes-trash-empty = ਰੱਦੀ ਵਿੱਚ ਕੋਈ ਨੋਟ ਨਹੀਂ
 notes-none-found = ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਨੋਟ ਨਹੀਂ
 notes-label-empty = ਇਸ ਲੇਬਲ ਵਾਲਾ ਕੋਈ ਨੋਟ ਅਜੇ ਨਹੀਂ
+notes-reminders-empty = ਆਉਣ ਵਾਲੇ ਰੀਮਾਈਂਡਰਾਂ ਵਾਲੇ ਨੋਟ ਇੱਥੇ ਦਿਸਣਗੇ
 notes-trash-note = ਰੱਦੀ ਵਿਚਲੇ ਨੋਟ 7 ਦਿਨਾਂ ਬਾਅਦ ਮਿਟਾ ਦਿੱਤੇ ਜਾਂਦੇ ਹਨ।
 notes-empty-trash = ਰੱਦੀ ਖਾਲੀ ਕਰੋ
 notes-ticked = { $count ->
     [one] + { $count } ਨਿਸ਼ਾਨਬੱਧ ਆਈਟਮ
    *[other] + { $count } ਨਿਸ਼ਾਨਬੱਧ ਆਈਟਮਾਂ
 }
+notes-select = ਨੋਟ ਚੁਣੋ
+notes-selected = { $count ->
+    [one] { $count } ਚੁਣਿਆ
+   *[other] { $count } ਚੁਣੇ
+}
+notes-select-clear = ਚੋਣ ਸਾਫ਼ ਕਰੋ
 
 ## A note's buttons
 
@@ -43,6 +51,15 @@ notes-color = ਬੈਕਗ੍ਰਾਊਂਡ ਦਾ ਰੰਗ
 notes-checkboxes = ਚੈੱਕਬਾਕਸ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ
 notes-labels = ਲੇਬਲ
 notes-close = ਬੰਦ ਕਰੋ
+notes-more = ਹੋਰ
+notes-make-copy = ਕਾਪੀ ਬਣਾਓ
+notes-remind = ਮੈਨੂੰ ਯਾਦ ਕਰਾਓ
+notes-add-picture = ਤਸਵੀਰ ਜੋੜੋ
+notes-history = ਵਰਜਨ ਇਤਿਹਾਸ
+notes-ai = ਲਿਖਣ ਵਿੱਚ ਮਦਦ ਕਰੋ
+notes-send-as-mail = ਮੇਲ ਵਜੋਂ ਭੇਜੋ
+notes-save-markdown = Markdown ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ
+notes-save-pdf = PDF ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ
 
 ## The open note
 
@@ -50,6 +67,60 @@ notes-title = ਸਿਰਲੇਖ
 notes-edited = ਸੰਪਾਦਿਤ: { $date }
 notes-on-this-computer = ਇਸ ਕੰਪਿਊਟਰ ਉੱਤੇ
 notes-where = ਇਹ ਨੋਟ ਕਿੱਥੇ ਰੱਖਿਆ ਹੈ
+notes-untitled = ਬਿਨਾਂ ਸਿਰਲੇਖ ਨੋਟ
+
+## Pictures
+
+notes-picture-choose = ਤਸਵੀਰਾਂ ਜੋੜੋ
+notes-picture-remove = ਤਸਵੀਰ ਹਟਾਓ
+notes-picture-too-big = ਨੋਟ ਵਿੱਚ { $size } ਤੱਕ ਦੀਆਂ ਤਸਵੀਰਾਂ ਜਾ ਸਕਦੀਆਂ ਹਨ
+notes-picture-kind = ਇਹ ਫ਼ਾਈਲ ਅਜਿਹੀ ਤਸਵੀਰ ਨਹੀਂ ਜੋ Katna ਦਿਖਾ ਸਕੇ
+notes-picture-unreadable = { $name } ਪੜ੍ਹੀ ਨਹੀਂ ਜਾ ਸਕੀ: { $error }
+
+## Reminders
+
+notes-remind-me = ਮੈਨੂੰ ਯਾਦ ਕਰਾਓ
+notes-remind-off = ਰੀਮਾਈਂਡਰ ਹਟਾਓ
+notes-remind-in-the-past = ਅਜਿਹਾ ਸਮਾਂ ਚੁਣੋ ਜੋ ਅਜੇ ਲੰਘਿਆ ਨਾ ਹੋਵੇ
+notes-remind-today = ਅੱਜ, { $time }
+notes-remind-tomorrow = ਕੱਲ੍ਹ, { $time }
+notes-remind-weekday = { $day }, { $time }
+notes-reminder-set = { $when } ਲਈ ਰੀਮਾਈਂਡਰ ਲਗਾਇਆ ਗਿਆ
+notes-reminder-off = ਰੀਮਾਈਂਡਰ ਹਟਾਇਆ ਗਿਆ
+
+## Links between notes
+
+notes-link-note = ਨੋਟ ਲਿੰਕ ਕਰੋ
+notes-link-new = ਨਵਾਂ ਨੋਟ "{ $title }"
+notes-linked-from = ਇੱਥੋਂ ਲਿੰਕ ਕੀਤਾ
+notes-link-gone = ਉਹ ਨੋਟ ਹੁਣ ਇੱਥੇ ਨਹੀਂ ਹੈ
+
+## Version history
+
+notes-versions = ਵਰਜਨ
+notes-version-now = ਹੁਣ
+notes-version-here = ਤੁਸੀਂ, ਇਸ ਕੰਪਿਊਟਰ ’ਤੇ
+notes-version-yesterday = ਬੀਤੇ ਕੱਲ੍ਹ, { $time }
+notes-version-changes = { $count ->
+    [one] { $count } ਬਦਲਾਅ
+   *[other] { $count } ਬਦਲਾਅ
+}
+notes-version-from = { $device } ਤੋਂ
+notes-version-elsewhere = ਕਿਸੇ ਹੋਰ ਡਿਵਾਈਸ ਤੋਂ
+notes-version-created = ਬਣਾਇਆ ਗਿਆ
+notes-version-restore = ਇਹ ਵਰਜਨ ਮੁੜ-ਬਹਾਲ ਕਰੋ
+notes-version-restored = ਵਰਜਨ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ
+notes-history-none = ਅਜੇ ਕੋਈ ਪਹਿਲਾਂ ਵਾਲਾ ਵਰਜਨ ਨਹੀਂ
+
+## AI help
+
+notes-ai-tidy = ਲਿਖਤ ਸਾਫ਼-ਸੁਥਰੀ ਕਰੋ
+notes-ai-checklist = ਇਸਨੂੰ ਚੈੱਕਲਿਸਟ ਬਣਾਓ
+notes-ai-summarise = ਸਾਰ ਬਣਾਓ
+notes-ai-empty = ਪਹਿਲਾਂ ਕੁਝ ਲਿਖੋ
+notes-ai-tidied = ਲਿਖਤ ਸਾਫ਼-ਸੁਥਰੀ ਕੀਤੀ ਗਈ। Ctrl+Z ਇਸਨੂੰ ਵਾਪਸ ਲਿਆਉਂਦਾ ਹੈ।
+notes-ai-listed = ਚੈੱਕਲਿਸਟ ਬਣਾਈ ਗਈ। Ctrl+Z ਇਸਨੂੰ ਵਾਪਸ ਲਿਆਉਂਦਾ ਹੈ।
+notes-ai-summarised = ਸਿਖਰ ’ਤੇ ਸਾਰ ਜੋੜਿਆ ਗਿਆ
 
 ## Labels
 
@@ -88,6 +159,9 @@ notes-format-normal = ਸਧਾਰਨ ਲਿਖਤ
 notes-format-bold = ਗੂੜ੍ਹਾ
 notes-format-italic = ਟੇਢਾ
 notes-format-underline = ਹੇਠਾਂ ਰੇਖਾ
+notes-format-quote = ਹਵਾਲਾ
+notes-format-code = ਕੋਡ
+notes-format-divider = ਵੰਡਣ ਵਾਲੀ ਲਕੀਰ
 notes-format-clear = ਫਾਰਮੈਟਿੰਗ ਹਟਾਓ
 
 ## Tasks
@@ -115,6 +189,39 @@ notes-archived = ਨੋਟ ਪੁਰਾਲੇਖਬੱਧ ਕੀਤਾ ਗਿਆ
 notes-unarchived = ਨੋਟ ਪੁਰਾਲੇਖ ਵਿੱਚੋਂ ਕੱਢਿਆ ਗਿਆ
 notes-trashed = ਨੋਟ ਰੱਦੀ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ
 notes-restored = ਨੋਟ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ
+notes-saved = ਨੋਟ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ
+notes-pinned-count = { $count ->
+    [one] ਨੋਟ ਪਿੰਨ ਕੀਤਾ ਗਿਆ
+   *[other] { $count } ਨੋਟ ਪਿੰਨ ਕੀਤੇ ਗਏ
+}
+notes-unpinned-count = { $count ->
+    [one] ਨੋਟ ਅਣਪਿੰਨ ਕੀਤਾ ਗਿਆ
+   *[other] { $count } ਨੋਟ ਅਣਪਿੰਨ ਕੀਤੇ ਗਏ
+}
+notes-colored-count = { $count ->
+    [one] ਰੰਗ ਬਦਲਿਆ ਗਿਆ
+   *[other] { $count } ਨੋਟਾਂ ਦਾ ਰੰਗ ਬਦਲਿਆ ਗਿਆ
+}
+notes-archived-count = { $count ->
+    [one] ਨੋਟ ਪੁਰਾਲੇਖਬੱਧ ਕੀਤਾ ਗਿਆ
+   *[other] { $count } ਨੋਟ ਪੁਰਾਲੇਖਬੱਧ ਕੀਤੇ ਗਏ
+}
+notes-unarchived-count = { $count ->
+    [one] ਨੋਟ ਪੁਰਾਲੇਖ ਤੋਂ ਵਾਪਸ ਲਿਆਂਦਾ ਗਿਆ
+   *[other] { $count } ਨੋਟ ਪੁਰਾਲੇਖ ਤੋਂ ਵਾਪਸ ਲਿਆਂਦੇ ਗਏ
+}
+notes-trashed-count = { $count ->
+    [one] ਨੋਟ ਰੱਦੀ ਵਿੱਚ ਭੇਜਿਆ ਗਿਆ
+   *[other] { $count } ਨੋਟ ਰੱਦੀ ਵਿੱਚ ਭੇਜੇ ਗਏ
+}
+notes-restored-count = { $count ->
+    [one] ਨੋਟ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ
+   *[other] { $count } ਨੋਟ ਮੁੜ-ਬਹਾਲ ਕੀਤੇ ਗਏ
+}
+notes-copied-count = { $count ->
+    [one] ਕਾਪੀ ਬਣਾਈ ਗਈ
+   *[other] { $count } ਕਾਪੀਆਂ ਬਣਾਈਆਂ ਗਈਆਂ
+}
 notes-empty-discarded = ਖਾਲੀ ਨੋਟ ਛੱਡ ਦਿੱਤਾ ਗਿਆ
 notes-mail-gone = ਉਹ ਮੇਲ ਹੁਣ ਇੱਥੇ ਨਹੀਂ ਹੈ
 notes-deleted-forever = { $count ->

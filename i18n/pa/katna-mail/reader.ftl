@@ -8,6 +8,8 @@ reader-close = ਬੰਦ ਕਰੋ
 reader-back = ਪਿੱਛੇ
 reader-mark-unread = ਅਣਪੜ੍ਹਿਆ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕਰੋ
 reader-move-to = ਇੱਥੇ ਭੇਜੋ
+reader-snooze = ਸਨੂਜ਼ ਕਰੋ
+reader-remind = ਮੈਨੂੰ ਯਾਦ ਕਰਾਓ
 reader-more = ਹੋਰ
 reader-original-colors = ਅਸਲ ਰੰਗ ਦਿਖਾਓ
 reader-dark-colors = ਗੂੜ੍ਹੇ ਰੰਗਾਂ ਵਿੱਚ ਦਿਖਾਓ
@@ -35,6 +37,7 @@ reader-tick-bounced = ਨਹੀਂ ਪਹੁੰਚੀ: ਬਾਊਂਸ ਹੋਈ
 reader-tick-read = ਪੜ੍ਹੀ ਗਈ: { $when } (ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ)
 reader-tick-opened = ਖੋਲ੍ਹੀ ਗਈ, ਆਖਰੀ ਵਾਰ { $when } (ਖੋਲ੍ਹਣਾ ਟ੍ਰੈਕਿੰਗ)
 reader-starred = ਤਾਰਾਬੱਧ
+reader-chip-remove = { $label } ਹਟਾਓ
 reader-not-starred = ਤਾਰਾਬੱਧ ਨਹੀਂ
 reader-too-long = ਸੁਨੇਹਾ ਪੂਰਾ ਦਿਖਾਉਣ ਲਈ ਬਹੁਤ ਲੰਮਾ ਹੈ।
 reader-encrypted-images = ਇਨਕ੍ਰਿਪਟ ਕੀਤੀ ਮੇਲ ਵਿੱਚ ਵੈੱਬ ਤੋਂ ਚਿੱਤਰ ਕਦੇ ਲੋਡ ਨਹੀਂ ਕੀਤੇ ਜਾਂਦੇ।
@@ -52,6 +55,7 @@ reader-details-subject = ਵਿਸ਼ਾ:
 
 reader-downloading = ਇਹ ਸੁਨੇਹਾ ਸਰਵਰ ਤੋਂ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…
 reader-download-failed = ਇਹ ਸੁਨੇਹਾ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।
+reader-download-offline = ਇਹ ਖਾਤਾ ਆਫ਼ਲਾਈਨ ਹੈ। ਇਹ ਸੁਨੇਹਾ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਆਨਲਾਈਨ ਹੋਵੋ।
 reader-try-again = ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ
 
 ## Reply row
@@ -104,6 +108,7 @@ tracking-clicked = { $who } ਨੇ ਲਿੰਕ { $clicks ->
 tracking-maybe-opened = { $who } ਨੇ ਸ਼ਾਇਦ ਇਸਨੂੰ ਖੋਲ੍ਹਿਆ ਹੋਵੇ (Apple Mail ਨਿੱਜਤਾ ਲਈ ਤਸਵੀਰਾਂ ਲੋਡ ਕਰਦਾ ਹੈ)
 tracking-seen-none = ਅਜੇ ਤੱਕ ਕਿਸੇ ਨੇ ਨਾ ਇਸਨੂੰ ਖੋਲ੍ਹਿਆ ਹੈ, ਨਾ ਕੋਈ ਲਿੰਕ ਖੋਲ੍ਹਿਆ ਹੈ
 tracking-receipt = { $who } ਨੇ ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ ਭੇਜੀ
+tracking-receipt-read = { $who } ਨੇ ਇਸਨੂੰ ਪੜ੍ਹਿਆ (ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ), { $when }
 tracking-receipt-displayed = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ: { $who } ਨੇ ਤੁਹਾਡਾ ਸੁਨੇਹਾ ਖੋਲ੍ਹਿਆ
 tracking-receipt-other = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ: { $who } ਨੇ ਤੁਹਾਡਾ ਸੁਨੇਹਾ ਖੋਲ੍ਹੇ ਬਿਨਾਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਂ ਨਿਪਟਾ ਦਿੱਤਾ
 

@@ -53,7 +53,7 @@ calendar-account-signed-in = { $address }ରେ ପୁଣି ସାଇନ ଇନ
 calendar-account-sign-in-refused = { $provider } Katnaକୁ ଭିତରକୁ ଆସିବାକୁ ଦେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ, ଏବଂ ଆପଣଙ୍କ କ୍ୟାଲେଣ୍ଡରକୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ।
 calendar-account-refused = ସର୍ଭର ପାସୱାର୍ଡ ଗ୍ରହଣ କଲା ନାହିଁ। Yahoo, iCloud, Zoho ଓ ଅନ୍ୟମାନଙ୍କୁ ଏକ ଆପ ପାସୱାର୍ଡ ଦରକାର।
 calendar-account-change-password = ପାସୱାର୍ଡ ବଦଳାନ୍ତୁ
-calendar-account-change-password-tooltip = ସେଟିଂସ > ଆକାଉଣ୍ଟ ଖୋଲନ୍ତୁ
+calendar-account-change-password-tooltip = ନୂଆ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ; Katna ଏହାକୁ ସର୍ଭର ସହ ଯାଞ୍ଚ କରେ
 calendar-account-not-enabled = Katna ପାଇଁ କ୍ୟାଲେଣ୍ଡର ଆକ୍ସେସ ଏପର୍ଯ୍ୟନ୍ତ ଚାଲୁ କରାଯାଇନାହିଁ।
 calendar-account-failed = କ୍ୟାଲେଣ୍ଡର ପଢ଼ାଯାଇପାରିଲା ନାହିଁ।
 calendar-account-error = କ୍ୟାଲେଣ୍ଡର ପଢ଼ାଯାଇପାରିଲା ନାହିଁ: { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ
 calendar-account-try-again-tooltip = ଏହି ଖାତାର କ୍ୟାଲେଣ୍ଡର ଏବେ ପୁଣି ଯାଞ୍ଚ କରନ୍ତୁ
 calendar-account-fixing = କାମ ଚାଲିଛି…
 calendar-birthdays = ଜନ୍ମଦିନ
+calendar-tasks = କାର୍ଯ୍ୟ
 calendar-birthday-of = { $name }ଙ୍କ ଜନ୍ମଦିନ
 calendar-empty-title = ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି କ୍ୟାଲେଣ୍ଡର ନାହିଁ
 calendar-empty-text = Katna ଆପଣଙ୍କ Google ଓ Microsoft ଖାତାର କ୍ୟାଲେଣ୍ଡର, ଏବଂ CalDAV ଦେଉଥିବା ଅନ୍ୟ ସର୍ଭରର କ୍ୟାଲେଣ୍ଡର ସିଙ୍କ ହେଲେ ଏଠାରେ ଦେଖାଏ।
@@ -127,6 +128,7 @@ calendar-event-details = ଇଭେଣ୍ଟର ବିବରଣୀ
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = ନୂଆ ଇଭେଣ୍ଟ
+calendar-event-window-title = ନୂଆ ଇଭେଣ୍ଟ
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = ଦିନ ଖୋଲନ୍ତୁ
 calendar-menu-duplicate = ନକଲ କରନ୍ତୁ

@@ -34,7 +34,7 @@ contacts-account-signed-in = { $address } मा फेरि साइन इ�
 contacts-account-sign-in-refused = { $provider } ले Katna लाई भित्र आउन दिएन। फेरि प्रयास गर्नुहोस्, र आफ्ना सम्पर्कहरूमा पहुँच दिनुहोस्।
 contacts-account-password = सर्भरले पासवर्ड स्वीकार गरेन। Yahoo, iCloud, Zoho र अरूलाई एप पासवर्ड चाहिन्छ।
 contacts-account-change-password = पासवर्ड बदल्नुहोस्
-contacts-account-change-password-tooltip = सेटिङहरू > खाताहरू खोल्नुहोस्
+contacts-account-change-password-tooltip = नयाँ पासवर्ड टाइप गर्नुहोस्; Katna ले सर्भरसँग जाँच गर्छ
 contacts-account-failed = सम्पर्कहरू पढ्न सकिएन।
 # $reason is the server's own words, in English.
 contacts-account-error = सम्पर्कहरू पढ्न सकिएन: { $reason }

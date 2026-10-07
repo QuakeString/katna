@@ -5,6 +5,7 @@
 ## Side list and search
 
 notes-view-notes = টোকাসমূহ
+notes-view-reminders = সোঁৱৰণী
 notes-view-archive = আৰ্কাইভ
 notes-view-trash = ট্ৰেশ
 notes-edit-labels = লেবেল সম্পাদনা কৰক
@@ -23,12 +24,19 @@ notes-archive-empty = আপোনাৰ আৰ্কাইভ কৰা টো�
 notes-trash-empty = ট্ৰেশত কোনো টোকা নাই
 notes-none-found = মিল থকা কোনো টোকা নাই
 notes-label-empty = এই লেবেলৰ কোনো টোকা এতিয়াও নাই
+notes-reminders-empty = আগন্তুক সোঁৱৰণী থকা টোকাসমূহ ইয়াত দেখা যায়
 notes-trash-note = ট্ৰেশত থকা টোকাসমূহ 7 দিনৰ পিছত মচি পেলোৱা হয়।
 notes-empty-trash = ট্ৰেশ খালী কৰক
 notes-ticked = { $count ->
     [one] + { $count }টা টিক দিয়া বস্তু
    *[other] + { $count }টা টিক দিয়া বস্তু
 }
+notes-select = টোকা বাছনি কৰক
+notes-selected = { $count ->
+    [one] { $count }টা বাছনি কৰা হৈছে
+   *[other] { $count }টা বাছনি কৰা হৈছে
+}
+notes-select-clear = বাছনি মচক
 
 ## A note's buttons
 
@@ -43,6 +51,15 @@ notes-color = নেপথ্যৰ ৰং
 notes-checkboxes = চেকবাকচ দেখুৱাওক বা লুকুৱাওক
 notes-labels = লেবেল
 notes-close = বন্ধ কৰক
+notes-more = অধিক
+notes-make-copy = কপি বনাওক
+notes-remind = মোক সোঁৱৰাওক
+notes-add-picture = ছবি যোগ কৰক
+notes-history = সংস্কৰণৰ ইতিহাস
+notes-ai = লিখাত সহায় কৰক
+notes-send-as-mail = মেইল হিচাপে পঠিয়াওক
+notes-save-markdown = Markdown হিচাপে ছেভ কৰক
+notes-save-pdf = PDF হিচাপে ছেভ কৰক
 
 ## The open note
 
@@ -50,6 +67,60 @@ notes-title = শিৰোনাম
 notes-edited = সম্পাদনা কৰা হ’ল: { $date }
 notes-on-this-computer = এই কম্পিউটাৰত
 notes-where = এই টোকাটো ক’ত ৰখা হৈছে
+notes-untitled = শিৰোনামবিহীন টোকা
+
+## Pictures
+
+notes-picture-choose = ছবি যোগ কৰক
+notes-picture-remove = ছবি আঁতৰাওক
+notes-picture-too-big = টোকাত সৰ্বাধিক { $size }ৰ ছবি দিব পাৰি
+notes-picture-kind = সেই ফাইলটো Katnaই দেখুৱাব পৰা ছবি নহয়
+notes-picture-unreadable = { $name } পঢ়িব পৰা নগ'ল: { $error }
+
+## Reminders
+
+notes-remind-me = মোক সোঁৱৰাওক
+notes-remind-off = সোঁৱৰণী আঁতৰাওক
+notes-remind-in-the-past = এতিয়াও পাৰ নোহোৱা এটা সময় বাছক
+notes-remind-today = আজি, { $time }
+notes-remind-tomorrow = কাইলৈ, { $time }
+notes-remind-weekday = { $day }, { $time }
+notes-reminder-set = { $when }ৰ বাবে সোঁৱৰণী ছেট কৰা হ'ল
+notes-reminder-off = সোঁৱৰণী আঁতৰোৱা হ'ল
+
+## Links between notes
+
+notes-link-note = এটা টোকা লিংক কৰক
+notes-link-new = নতুন টোকা "{ $title }"
+notes-linked-from = ইয়াৰ পৰা লিংক কৰা
+notes-link-gone = সেই টোকাটো আৰু ইয়াত নাই
+
+## Version history
+
+notes-versions = সংস্কৰণসমূহ
+notes-version-now = এতিয়া
+notes-version-here = আপুনি, এই কম্পিউটাৰত
+notes-version-yesterday = কালি, { $time }
+notes-version-changes = { $count ->
+    [one] { $count }টা সলনি
+   *[other] { $count }টা সলনি
+}
+notes-version-from = { $device }ৰ পৰা
+notes-version-elsewhere = আন এটা ডিভাইচৰ পৰা
+notes-version-created = সৃষ্টি কৰা হ'ল
+notes-version-restore = এই সংস্কৰণ পুনৰুদ্ধাৰ কৰক
+notes-version-restored = সংস্কৰণ পুনৰুদ্ধাৰ কৰা হ'ল
+notes-history-none = এতিয়ালৈকে কোনো পুৰণি সংস্কৰণ নাই
+
+## AI help
+
+notes-ai-tidy = পাঠ সুশৃংখল কৰক
+notes-ai-checklist = চেকলিষ্টলৈ সলনি কৰক
+notes-ai-summarise = সাৰাংশ কৰক
+notes-ai-empty = প্ৰথমে কিবা লিখক
+notes-ai-tidied = পাঠ সুশৃংখল কৰা হ'ল। Ctrl+Zএ আগৰ দৰে কৰে।
+notes-ai-listed = চেকলিষ্ট বনোৱা হ'ল। Ctrl+Zএ আগৰ দৰে কৰে।
+notes-ai-summarised = ওপৰত সাৰাংশ যোগ কৰা হ'ল
 
 ## Labels
 
@@ -88,6 +159,9 @@ notes-format-normal = সাধাৰণ পাঠ
 notes-format-bold = গাঢ়
 notes-format-italic = তিৰ্যক
 notes-format-underline = আণ্ডাৰলাইন
+notes-format-quote = উদ্ধৃতি
+notes-format-code = ক'ড
+notes-format-divider = বিভাজক
 notes-format-clear = ফৰ্মেটিং আঁতৰাওক
 
 ## Tasks
@@ -115,6 +189,39 @@ notes-archived = টোকা আৰ্কাইভ কৰা হ’ল
 notes-unarchived = টোকা আৰ্কাইভৰ পৰা আঁতৰোৱা হ’ল
 notes-trashed = টোকা ট্ৰেশলৈ স্থানান্তৰ কৰা হ’ল
 notes-restored = টোকা পুনৰুদ্ধাৰ কৰা হ’ল
+notes-saved = টোকা ছেভ কৰা হ'ল
+notes-pinned-count = { $count ->
+    [one] টোকা পিন কৰা হ'ল
+   *[other] { $count }টা টোকা পিন কৰা হ'ল
+}
+notes-unpinned-count = { $count ->
+    [one] টোকা আনপিন কৰা হ'ল
+   *[other] { $count }টা টোকা আনপিন কৰা হ'ল
+}
+notes-colored-count = { $count ->
+    [one] ৰং সলনি কৰা হ'ল
+   *[other] { $count }টা টোকাৰ ৰং সলনি কৰা হ'ল
+}
+notes-archived-count = { $count ->
+    [one] টোকা আৰ্কাইভ কৰা হ'ল
+   *[other] { $count }টা টোকা আৰ্কাইভ কৰা হ'ল
+}
+notes-unarchived-count = { $count ->
+    [one] টোকা আৰ্কাইভৰ পৰা উলিওৱা হ'ল
+   *[other] { $count }টা টোকা আৰ্কাইভৰ পৰা উলিওৱা হ'ল
+}
+notes-trashed-count = { $count ->
+    [one] টোকা ট্ৰেশলৈ স্থানান্তৰ কৰা হ'ল
+   *[other] { $count }টা টোকা ট্ৰেশলৈ স্থানান্তৰ কৰা হ'ল
+}
+notes-restored-count = { $count ->
+    [one] টোকা পুনৰুদ্ধাৰ কৰা হ'ল
+   *[other] { $count }টা টোকা পুনৰুদ্ধাৰ কৰা হ'ল
+}
+notes-copied-count = { $count ->
+    [one] কপি বনোৱা হ'ল
+   *[other] { $count }টা কপি বনোৱা হ'ল
+}
 notes-empty-discarded = খালী টোকা বাতিল কৰা হ’ল
 notes-mail-gone = সেই মেইলটো আৰু ইয়াত নাই
 notes-deleted-forever = { $count ->

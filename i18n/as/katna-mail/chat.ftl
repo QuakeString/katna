@@ -40,6 +40,7 @@ chat-reply-only = কেৱল { $name }ক উত্তৰ দিয়ক
 chat-forward = ফৰৱাৰ্ড কৰক
 chat-copy-text = পাঠ কপি কৰক
 chat-show-as-mail = মেইল হিচাপে দেখুৱাওক
+chat-go-down = শেহতীয়া মেইললৈ যাওক
 chat-pin = ওপৰত পিন কৰক
 chat-pin-file = ফাইল ওপৰত পিন কৰক
 chat-unpin = আনপিন কৰক
@@ -59,7 +60,8 @@ chat-pins-cancel = বাতিল কৰক
 chat-undo = আনডু কৰক
 
 chat-reply-to = { $names }ক উত্তৰ দিয়ক
-chat-send = পঠিয়াওক (Ctrl+Enter)
+chat-send = পঠিয়াওক (Ctrl+Enter)। অধিকৰ বাবে ৰাইট-ক্লিক কৰক বা ধৰি ৰাখক
+chat-send-now = এতিয়াই পঠিয়াওক
 chat-attach = সংলগ্ন কৰক
 chat-attach-photo = ফট'
 chat-attach-file = ফাইল

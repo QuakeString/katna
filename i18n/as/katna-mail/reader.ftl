@@ -8,6 +8,8 @@ reader-close = বন্ধ কৰক
 reader-back = উভতি যাওক
 reader-mark-unread = নপঢ়া বুলি চিহ্নিত কৰক
 reader-move-to = ইয়ালৈ স্থানান্তৰ কৰক
+reader-snooze = স্নুজ কৰক
+reader-remind = মোক সোঁৱৰাওক
 reader-more = অধিক
 reader-original-colors = মূল ৰং দেখুৱাওক
 reader-dark-colors = গাঢ় ৰঙত দেখুৱাওক
@@ -35,6 +37,7 @@ reader-tick-bounced = ডেলিভাৰ হোৱা নাই: { $when } �
 reader-tick-read = পঢ়া হৈছে { $when } (পঢ়াৰ ৰচিদ)
 reader-tick-opened = খোলা হৈছে, শেষবাৰ { $when } (ওপেন ট্ৰেকিং)
 reader-starred = তৰাচিহ্নিত
+reader-chip-remove = { $label } আঁতৰাওক
 reader-not-starred = তৰাচিহ্নিত নহয়
 reader-too-long = বাৰ্তাটো সম্পূৰ্ণকৈ দেখুৱাবলৈ অতি দীঘল।
 reader-encrypted-images = এনক্ৰিপ্ট কৰা মেইলত ৱেবৰ পৰা ছবি কেতিয়াও লোড কৰা নহয়।
@@ -52,6 +55,7 @@ reader-details-subject = বিষয়:
 
 reader-downloading = ছাৰ্ভাৰৰ পৰা এই বাৰ্তাটো ডাউনল'ড কৰা হৈছে…
 reader-download-failed = এই বাৰ্তাটো ডাউনল'ড কৰিব পৰা নগ'ল।
+reader-download-offline = এই একাউণ্টটো অফলাইন আছে। এই বাৰ্তাটো ডাউনল'ড কৰিবলৈ অনলাইন হওক।
 reader-try-again = পুনৰ চেষ্টা কৰক
 
 ## Reply row
@@ -104,6 +108,7 @@ tracking-clicked = { $who }-এ { $clicks ->
 tracking-maybe-opened = { $who }-এ হয়তো ইয়াক খুলিছে (গোপনীয়তাৰ বাবে Apple Mail-এ ছবি ল'ড কৰে)
 tracking-seen-none = এতিয়ালৈকে কোনেও ইয়াক খোলা নাই বা কোনো লিংক অনুসৰণ কৰা নাই
 tracking-receipt = { $who }-এ পঢ়াৰ ৰচিদ পঠিয়াইছে
+tracking-receipt-read = { $who }এ পঢ়িলে (পঢ়াৰ ৰচিদ), { $when }
 tracking-receipt-displayed = পঢ়াৰ ৰচিদ: { $who }-এ আপোনাৰ বাৰ্তা খুলিছে
 tracking-receipt-other = পঢ়াৰ ৰচিদ: { $who }-এ আপোনাৰ বাৰ্তা নোখোলাকৈ মচিছে বা ব্যৱস্থা লৈছে
 

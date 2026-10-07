@@ -23,12 +23,20 @@ viewer-page-count = { $count } में से
 viewer-go-to-page-tip = पृष्ठ नंबर लिखें और Enter दबाएँ (Ctrl+G)
 viewer-rotate-clockwise-tip = दक्षिणावर्त घुमाएं (Ctrl+R)
 viewer-rotate-anticlockwise-tip = वामावर्त घुमाएं (Ctrl+Shift+R)
+viewer-dark-pages-tip = गहरे पेज
+viewer-light-pages-tip = पेज जैसे हैं वैसे दिखाएं
 viewer-fit-page-tip = पेज फ़िट करें
 viewer-fit-picture-tip = विंडो में फ़िट करें
 viewer-fit-width-tip = चौड़ाई फ़िट करें
 viewer-real-size-tip = असली साइज़ (1:1)
 viewer-page-back-tip = पिछला पेज
 viewer-page-on-tip = अगला पेज
+viewer-more-tip = ज़्यादा
+viewer-zoom-in = ज़ूम इन करें
+viewer-zoom-out = ज़ूम आउट करें
+viewer-real-size = असली साइज़
+viewer-rotate-anticlockwise = वामावर्त घुमाएं
+viewer-rotate-clockwise = दक्षिणावर्त घुमाएं
 
 ## Marking up a PDF
 
