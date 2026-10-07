@@ -5704,6 +5704,13 @@ Arch is the first, Windows and the others follow the same flow.
   administrator prompt for a Katna installed for everyone), waits, and
   opens Katna Mail again; Setup itself closes the running Katna. A failed
   Setup reopens the old Katna, which offers the update again.
+- **Measured against what is installed** (7 October 2026): a daemon
+  still running the build before an update offered that update again,
+  and pacman refused it. Updates are now measured against the newest of
+  the running build and the installed package (`update::installed`, from
+  pacman's records for Arch); the daemon restarts when pacman says a
+  newer build is installed even if its own file looks unchanged, and
+  Katna Mail shows "up to date" for an offer of what it already runs.
 - **Linux packages from `linux-latest`** (owner's ask, 3 October 2026):
   one portable build goes into the tarball, AppImage, Flatpak, Snap and
   .deb,

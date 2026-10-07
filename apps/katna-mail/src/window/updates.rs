@@ -64,7 +64,10 @@ impl MailWindow {
                 return;
             };
             loop {
-                let status = daemon::update_status(&connection).await.ok();
+                let status = daemon::update_status(&connection)
+                    .await
+                    .ok()
+                    .map(already_installed);
                 let offered = status
                     .as_ref()
                     .filter(|s| !s.version.is_empty())
@@ -1058,9 +1061,60 @@ fn version_tile(tile: Tile, th: &Theme) -> impl IntoElement {
 }
 
 /// How much of the download is done, in whole percent.
+/// `status`, or up to date when what it offers is already installed: a
+/// daemon still running the build before an update would offer that
+/// update again.
+fn already_installed(status: UpdateStatus) -> UpdateStatus {
+    let offers = [
+        state::AVAILABLE,
+        state::DOWNLOADING,
+        state::READY,
+        state::DOWNLOAD_FAILED,
+    ]
+    .contains(&status.state.as_str());
+    let installed = katna_core::update::installed(Package::current());
+    let has_it =
+        status.version == installed || katna_core::update::newer(&status.version, &installed);
+    if offers && has_it {
+        tracing::info!(
+            offered = status.version,
+            installed,
+            "the update offered is installed"
+        );
+        UpdateStatus {
+            state: state::UP_TO_DATE.to_owned(),
+            checked: status.checked,
+            ..UpdateStatus::default()
+        }
+    } else {
+        status
+    }
+}
+
 fn percent(status: &UpdateStatus) -> u64 {
     (status.done * 100)
         .checked_div(status.total)
         .unwrap_or(0)
         .min(100)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn never_offers_the_build_already_running() {
+        let ready = |version: &str| UpdateStatus {
+            state: state::READY.to_owned(),
+            version: version.to_owned(),
+            checked: 7,
+            ..UpdateStatus::default()
+        };
+        let installed = katna_core::update::installed(Package::current());
+        let same = already_installed(ready(&installed));
+        assert_eq!((same.state.as_str(), same.checked), (state::UP_TO_DATE, 7));
+        assert!(same.version.is_empty());
+        let newer = already_installed(ready("999.0.0"));
+        assert_eq!(newer.state, state::READY);
+    }
 }
