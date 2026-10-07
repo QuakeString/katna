@@ -85,6 +85,8 @@ pub struct Words {
     pub weekday_word: &'static [&'static str],
     /// Between weekdays ("every Mon and Thu").
     pub and: &'static [&'static str],
+    /// Before the day something is due, in a mail ("by Friday").
+    pub due: &'static [&'static str],
 }
 
 impl Words {
@@ -139,6 +141,7 @@ impl Words {
         year_units: &["year", "years"],
         weekday_word: &["weekday", "weekdays", "workday", "workdays"],
         and: &["and", "&", "+"],
+        due: &["by", "before", "due", "until"],
     };
 
     /// The table for `language` (a BCP 47 tag, "en-IN"), English when
@@ -543,6 +546,31 @@ pub fn parse(text: &str, today: Date, words: &Words) -> Typed {
     typed
 }
 
+/// The first day `text` (a mail) says something is due by, on or after
+/// `today`: "please send it by Friday", "due on 12 October".
+pub fn due_in(text: &str, today: Date, words: &Words) -> Option<Date> {
+    let original: Vec<&str> = text.split_whitespace().collect();
+    original.iter().enumerate().find_map(|(ix, word)| {
+        let word = word
+            .trim_matches(|c: char| !c.is_alphanumeric())
+            .to_lowercase();
+        if !words.due.contains(&word.as_str()) {
+            return None;
+        }
+        // The few words after it, up to the end of the sentence.
+        let mut phrase = Vec::new();
+        for next in original.iter().skip(ix + 1).take(4) {
+            let end = next.ends_with(['.', '!', '?', ';', ',']);
+            phrase.push(next.trim_end_matches(['.', '!', '?', ';', ',']));
+            if end {
+                break;
+            }
+        }
+        let day = parse(&phrase.join(" "), today, words).day?;
+        (day >= today).then_some(day)
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -656,5 +684,25 @@ mod tests {
         let typed = en("Read a book");
         assert_eq!(typed.title, "Read a book");
         assert!(!typed.found());
+    }
+
+    #[test]
+    fn reads_when_a_mail_says_something_is_due() {
+        let due = |text: &str| due_in(text, today(), &Words::ENGLISH);
+        // Today is Tuesday 29 September.
+        assert_eq!(
+            due("Please send the signed copy by Friday. Thanks!"),
+            Some(date(2026, 10, 2))
+        );
+        assert_eq!(
+            due("The invoice is due on 12 October"),
+            Some(date(2026, 10, 12))
+        );
+        assert_eq!(
+            due("Can you reply before tomorrow?"),
+            Some(date(2026, 9, 30))
+        );
+        assert_eq!(due("Stand by for news. Lunch tomorrow?"), None);
+        assert_eq!(due("No dates here"), None);
     }
 }

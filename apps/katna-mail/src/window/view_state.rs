@@ -26,6 +26,8 @@ impl MailWindow {
             folder: self.folder.map(|folder| folder.0),
             unified: if self.listing == Some(super::Listing::Waiting) {
                 Some(super::waiting::NAV_KEY.to_owned())
+            } else if self.listing == Some(super::Listing::Reminders) {
+                Some(super::remind::NAV_KEY.to_owned())
             } else {
                 self.unified.map(|(view, _)| view.key().to_owned())
             },
@@ -77,6 +79,8 @@ impl MailWindow {
             }
         } else if view.unified.as_deref() == Some(super::waiting::NAV_KEY) {
             self.open_waiting(cx);
+        } else if view.unified.as_deref() == Some(super::remind::NAV_KEY) {
+            self.open_reminders(cx);
         } else if let Some(unified) = unified
             && self.shows_unified()
         {

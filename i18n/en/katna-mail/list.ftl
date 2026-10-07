@@ -369,6 +369,7 @@ list-empty-tab-unknown = No mail in this tab.
 list-empty-folder = No messages in { $folder }.
 list-empty-folder-unknown = No messages in this folder.
 list-empty-waiting = Nothing is waiting for a reply.
+list-empty-reminders = No reminders. Press H on a mail to add one.
 # While the first sync of a new account downloads its mail.
 list-first-sync = Getting your mail…
 list-first-sync-detail = It shows up here as it arrives.
@@ -406,6 +407,8 @@ row-follow-up-step = Follow-up { $step } of { $steps } · { $date }
 # A follow-up that fell due while the computer was off and was not sent
 # late.
 row-follow-up-waiting = Follow-up waiting
+# The chip on a mail with a reminder (Remind me). $date: "Oct 9, 8:00 AM".
+row-reminder = Reminder { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -433,6 +436,7 @@ menu-pin = Pin to top
 menu-unpin = Unpin
 # Opens the snooze times.
 menu-snooze = Snooze
+menu-remind = Remind me
 # In the Snoozed folder: brings the mail back to the inbox now.
 menu-unsnooze = Unsnooze
 # Makes a task from the mail, as Gmail's "Add to Tasks".

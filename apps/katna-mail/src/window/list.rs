@@ -395,6 +395,8 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_unread))
             .on_action(cx.listener(Self::toggle_star))
             .on_action(cx.listener(Self::add_to_tasks))
+            .on_action(cx.listener(Self::snooze_key))
+            .on_action(cx.listener(Self::remind_key))
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
@@ -1286,6 +1288,22 @@ impl MailWindow {
                                 menu_item_icon("more-delete", "trash", &tr!("menu-delete"), th)
                                     .on_click(cx.listener(|this, _, _, cx| {
                                         this.act_on_targets(Act::Delete, cx)
+                                    })),
+                            )
+                        })
+                        .when(squeeze.is_some_and(|s| s.snooze), |d| {
+                            d.child(
+                                menu_item_icon("more-snooze", "snooze", &tr!("menu-snooze"), th)
+                                    .on_click(cx.listener(|this, e: &gpui::ClickEvent, _, cx| {
+                                        let keys = this.target_keys();
+                                        this.open_mail_times(keys, false, e.position(), cx);
+                                    })),
+                            )
+                            .child(
+                                menu_item_icon("more-remind", "bell-plus", &tr!("menu-remind"), th)
+                                    .on_click(cx.listener(|this, e: &gpui::ClickEvent, _, cx| {
+                                        let keys = this.target_keys();
+                                        this.open_mail_times(keys, true, e.position(), cx);
                                     })),
                             )
                         })
@@ -2271,6 +2289,7 @@ impl MailWindow {
                     }
                 }
                 Some(Listing::Waiting) => tr!("list-empty-waiting"),
+                Some(Listing::Reminders) => tr!("list-empty-reminders"),
                 Some(Listing::Folder(_) | Listing::Unified { .. }) => match self.folder_name() {
                     Some(folder) => tr!("list-empty-folder", folder = folder),
                     None => tr!("list-empty-folder-unknown"),

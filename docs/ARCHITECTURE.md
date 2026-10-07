@@ -1360,6 +1360,16 @@ this is local; Katna Server only adds opened/clicked events (§16).
   moves them back at once without marking them unread. Gmail, Outlook.com,
   Zoho and Yahoo do not share their own snooze over IMAP, so a snooze set
   on their websites stays there.
+- **Remind me** (no meta of its own): a task in Tasks made from the mail
+  (its `mail` is the newest message's `Message-ID`), due and with
+  `remind_at` at the time, titled with the optional note or the subject;
+  the task alarms (`alarms.rs`) notify. The mail stays where it is. The
+  app opens Snooze and Remind me as one menu (B and H, and Snooze and
+  Remind me on the open mail's toolbar), offers "Before it's due" when
+  the mail says something is due by a day (`quick_add::due_in`), shows a
+  "Reminder" chip on the line, lists the mail under **Reminders** in the
+  folder pane, and in a chat shows a line at the end with Edit and Done.
+  A second reminder on the same conversation moves its task.
 - **Follow-up** (`outbox`/`follow-up`: `{account, message_id, subject,
   remind_at, after}`): set on an outbox entry right after `QueueSend`,
   `after` seconds from when it is sent (1, 3, 7 days or custom). When due,
