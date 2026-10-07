@@ -3211,7 +3211,7 @@ title = "Välj fönstrets hörn och kant"
 text = """
 Med Katnas egen titelrad har Inställningar > Experimentellt nu ett
 reglage för hörnens rundning, från fyrkantiga till runda, och en
-Kant-brytare med egen opacitet. När Egen oskärpa är på bestämmer
+Kantlinje-brytare med egen opacitet. När Egen oskärpa är på bestämmer
 reglaget Opacitet nu också hur mycket en suddig fönsterbakgrund släpper
 igenom.
 """
@@ -3226,11 +3226,11 @@ högerklickar du på det och väljer Öppna i nytt fönster.
 """
 
 ["2026-10-02-1610-frosted-panes"]
-title = "Frostade fönsterrutor, chatt och sökning"
+title = "Frostade paneler, chatt och sökning"
 text = """
 När Gör fönstrets bakgrund suddig är på släpper nu även e-postlistan,
 det öppna mejlet och personkortet igenom oskärpan, med ett reglage för
-rutornas opacitet. Ytan bakom en chatts bubblor visar lite mer av den,
+Panelernas opacitet. Ytan bakom en chatts bubblor visar lite mer av den,
 och sökrutan förblir frostad medan du skriver. Var och en har sin egen
 brytare i Inställningar > Experimentellt.
 """
@@ -3238,7 +3238,7 @@ brytare i Inställningar > Experimentellt.
 ["2026-10-02-1618-fainter-hints"]
 title = "Svagare tips i tomma rutor"
 text = """
-Den grå ledtråden i en tom ruta, som ”Svara…” under en chatt eller ”Sök
+Den grå ledtråden i en tom ruta, som ”Svara…” under en chatt eller ”Sök i
 e-post”, är nu svagare, så att den aldrig ser ut som text du har skrivit.
 """
 
@@ -3280,9 +3280,9 @@ title = "Byt namn, ta bort och dra till mappar"
 text = """
 Högerklicka på en mapp du har skapat för att byta namn på den eller ta
 bort den; när du tar bort den flyttas dess e-post först till
-papperskorgen. Dra e-post från listan till en mapp för att flytta den
+Papperskorgen. Dra e-post från listan till en mapp för att flytta den
 dit. Flytta till har en sökruta: skriv för att hitta en mapp, eller för
-att skapa en ny och flytta e-posten dit. På Gmail sätter Etikettera
+att skapa en ny och flytta e-posten dit. På Gmail sätter Etikettera som
 etiketter på e-post och tar bort dem, och när du släpper e-post på en
 etikett får den etiketten.
 """
@@ -3319,7 +3319,7 @@ medan namnet tonas ut, och den du öppnar växer medan namnet tonas in.
 ["2026-10-03-0051-read-rows-frosted"]
 title = "Läst e-post är också frostad"
 text = """
-När frostade rutor är på visar e-post du har läst nu frosten bakom
+När frostade paneler är på visar e-post du har läst nu frosten bakom
 listan precis som oläst e-post, bara en nyans annorlunda, i stället för
 ett heltäckande band.
 """
@@ -3641,9 +3641,9 @@ hoppa.
 ["2026-10-03-1523-animation-speed"]
 title = "Välj hur snabbt saker rör sig"
 text = """
-Inställningar > Utseende har en animationshastighet: följ skrivbordets
+Inställningar > Utseende har Animationshastighet: följ skrivbordets
 hastighet, eller välj Katnas egen, från Snabbare till Långsammare.
-Minska rörelser följer också skrivbordet, eller kan vara alltid eller
+Minska rörelse följer också skrivbordet, eller kan vara alltid eller
 aldrig på.
 """
 
@@ -3694,8 +3694,8 @@ tonas ut när de stängs i stället för att försvinna.
 ["2026-10-03-1632-settings-by-app"]
 title = "Inställningar sorterade efter program"
 text = """
-Inställningar har nu en lista med sidor vid sidan: Alla program för det
-som alla program delar, sedan E-post, Kalender och Filer för deras egna
+Inställningar har nu en lista med sidor vid sidan: Alla appar för det
+som alla appar delar, sedan E-post, Kalender och Filer för deras egna
 inställningar, där E-posts sidor fälls ut under den. Inställningar
 öppnas för det program du är i, och Kalender har sina första
 inställningar där.
@@ -3812,11 +3812,11 @@ dag; den behåller sin tid, och Ångra flyttar tillbaka den.
 """
 
 ["2026-10-03-2023-tasks-upcoming-completed-sort-select"]
-title = "Kommande, Klara, sortering och markering i Uppgifter"
+title = "Kommande, Slutförda, sortering och markering i Uppgifter"
 text = """
 Uppgifter har två nya vyer. Kommande visar de närmaste två veckorna dag
 för dag, med försenade uppgifter överst; dra en uppgift till en annan dag
-för att flytta den. Klara visar allt du har bockat av, per dag, och om du
+för att flytta den. Slutförda visar allt du har bockat av, per dag, och om du
 bockar ur en uppgift kommer den tillbaka. Varje listas ⋮-meny kan sortera
 den efter datum, stjärna eller titel. Ctrl+klicka eller Skift+klicka på
 flera uppgifter för att slutföra, flytta, datera, stjärnmärka eller ta
@@ -4068,7 +4068,7 @@ title = "En Utkorg för e-post som inte har skickats"
 text = """
 E-post som inte kunde skickas väntar nu i en Utkorg under Skickat, som
 bara visas när det finns något där. Varje meddelande säger varför med
-enkla ord, med Försök igen, Redigera och Ta bort. E-post du skickar medan
+enkla ord, med Försök igen, Redigera och Radera. E-post du skickar medan
 ett kontos lösenord har ändrats eller dess inloggning har gått ut väntar
 där och skickas så snart du har åtgärdat det, i stället för att
 misslyckas.
@@ -4189,7 +4189,7 @@ förhandsvisning, och din skickade e-post visar bockarna.
 ["2026-10-05-1640-windows-frost"]
 title = "Frostat glas i Windows"
 text = """
-Menyer, popup-rutor, dialogrutor, visarens fält och frostade fönsterrutor
+Menyer, popup-rutor, dialogrutor, visarens fält och frostade paneler
 gör nu det som ligger under dem suddigt även i Windows, med samma
 inställningar för Oskärpestyrka och Opacitet som i Linux. Slå på eller av
 det i Inställningar, Experimentellt, Frostade menyer och dialogrutor.

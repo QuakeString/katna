@@ -3456,7 +3456,7 @@ Regeln sortieren neue E-Mails von selbst: nach Absender, Betreff oder
 Wörtern verschieben sie sie, versehen sie mit einem Label, markieren
 sie mit einem Stern, leiten sie weiter oder schalten sie stumm. Erstellen
 Sie eine unter Einstellungen > Ordner und Regeln oder per Rechtsklick
-auf eine E-Mail mit Regel erstellen…, und sehen Sie vor dem Speichern,
+auf eine E-Mail mit Regel erstellen, und sehen Sie vor dem Speichern,
 auf wie viele neuere E-Mails sie zutrifft. Haken Sie in Verschieben nach
 „E-Mails von … immer hierher verschieben“ an, um die E-Mails eines
 Absenders und alle künftigen mit einem Klick zu verschieben.
@@ -3483,7 +3483,7 @@ geöffnete wächst, während sein Name einblendet.
 ["2026-10-03-0051-read-rows-frosted"]
 title = "Auch gelesene E-Mails sind milchig"
 text = """
-Mit eingeschaltetem Milchglas für Bereiche zeigen gelesene E-Mails jetzt
+Ist Bereiche wie Milchglas eingeschaltet, zeigen gelesene E-Mails jetzt
 wie ungelesene das Milchglas hinter der Liste, nur eine Nuance anders,
 statt eines einfarbigen Streifens.
 """
@@ -3917,10 +3917,10 @@ Katna vorhandenen bleiben ohne Haken.
 """
 
 ["2026-10-03-1750-hover-folders-clean"]
-title = "Saubere Ränder bei Ordnern, die über Verfassen aufgehen"
+title = "Saubere Ränder bei Ordnern, die über Schreiben aufgehen"
 text = """
 In einem Fenster in Tablet-Größe zeigen die Ordner, die sich öffnen,
-wenn der Mauszeiger auf Verfassen ruht, keine dünnen Linien mehr an
+wenn der Mauszeiger auf Schreiben ruht, keine dünnen Linien mehr an
 ihrer Ober- und linken Kante.
 """
 
@@ -4001,9 +4001,9 @@ sie behält ihre Uhrzeit, und Rückgängig setzt sie zurück.
 """
 
 ["2026-10-03-2023-tasks-upcoming-completed-sort-select"]
-title = "Anstehend, Erledigt, Sortieren und Auswählen in Aufgaben"
+title = "Demnächst, Erledigt, Sortieren und Auswählen in Aufgaben"
 text = """
-Aufgaben hat zwei neue Ansichten. Anstehend zeigt die nächsten zwei Wochen
+Aufgaben hat zwei neue Ansichten. Demnächst zeigt die nächsten zwei Wochen
 Tag für Tag, überfällige Aufgaben ganz oben; ziehen Sie eine Aufgabe auf
 einen anderen Tag, um sie zu verschieben. Erledigt zeigt alles, was Sie
 abgehakt haben, nach Tagen, und das Entfernen des Häkchens holt eine
@@ -4130,8 +4130,8 @@ Tastenkombinationen.
 title = "Einen Posteingang aus Alle Konten herausnehmen"
 text = """
 Klicken Sie unter Alle Konten mit der rechten Maustaste auf den
-Posteingang eines Kontos und wählen Sie Aus gemeinsamem Posteingang
-herausnehmen: Seine E-Mails füllen den gemeinsamen Posteingang nicht mehr,
+Posteingang eines Kontos und wählen Sie Aus dem gemeinsamen
+Posteingang herausnehmen: Seine E-Mails füllen den gemeinsamen Posteingang nicht mehr,
 aber die Zeile bleibt und öffnet diesen Posteingang. Ein Klick auf ihr
 Auge holt ihn zurück. Unter Einstellungen > Posteingang können Sie auch
 ein ganzes Konto aus Alle Konten herausnehmen.
@@ -4403,9 +4403,9 @@ title = "Milchglas unter Windows"
 text = """
 Menüs, Popover, Dialoge, Leisten des Betrachters und mattierte Bereiche
 lassen jetzt auch unter Windows verschwimmen, was unter ihnen liegt, mit
-denselben Einstellungen für Unschärfe und Deckkraft wie unter Linux.
-Schalten Sie es unter Einstellungen, Experimentell, Mattierte Menüs und
-Dialoge ein oder aus.
+denselben Einstellungen „Unschärfestärke“ und „Deckkraft“ wie unter Linux.
+Schalten Sie es unter Einstellungen, Experimentell, Menüs und Dialoge
+wie Milchglas ein oder aus.
 """
 
 ["2026-10-06-0156-phone-activity"]
@@ -4453,7 +4453,7 @@ zentriert darunter und behalten eine angenehme Breite.
 ["2026-10-07-0110-follow-up-for-you"]
 title = "Nachfassen, das sich selbst sendet"
 text = """
-Im Menü neben Senden kann „Erinnern, wenn keine Antwort kommt“ jetzt
+Im Menü neben Senden kann „Nachfassen, wenn keine Antwort kommt“ jetzt
 für Sie eine kurze Nachfrage senden, wenn niemand antwortet: einmal
 schreiben, den Zeitpunkt wählen und entscheiden, ob es noch einen zweiten
 Versuch gibt. Sie geht an Werktagen zu Arbeitszeiten hinaus, stoppt,
@@ -4507,10 +4507,10 @@ verschieben, es jetzt zu senden oder es zu stoppen.
 title = "Nachfassen in der Chat-Ansicht"
 text = """
 In der Chat-Ansicht erscheint eine wartende Nachfrage als blasse Blase am
-Ende des Chats, mit Bearbeiten, Jetzt senden und Stoppen. Um eine
+Ende des Chats, mit Bearbeiten, Jetzt senden und Beenden. Um eine
 einzurichten, klicken Sie mit der rechten Maustaste auf Senden oder
-halten Sie es gedrückt und wählen Sie „Erinnern, wenn keine Antwort
-kommt“.
+halten Sie es gedrückt und wählen Sie „Nachfassen, wenn keine
+Antwort kommt“.
 """
 
 ["2026-10-07-0603-remind-me"]
@@ -4555,7 +4555,7 @@ Zurück-Pfeil führt wieder zu den Zeiten.
 title = "Unbeantwortete Fragen kommen zurück"
 text = """
 E-Mails von Ihnen, die etwas gefragt und drei Tage lang keine Antwort
-bekommen haben, kommen mit „Vor 3 Tagen gesendet. Nachfassen?“ wieder
+bekommen haben, kommen mit „Gesendet vor 3 Tagen. Nachfassen?“ wieder
 oben in den Posteingang. Klicken Sie darauf, um nachzufassen, oder auf
 das x, um es wegzulegen. Unter Einstellungen > Posteingang lässt sich das
 ausschalten.

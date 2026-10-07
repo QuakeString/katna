@@ -3257,7 +3257,7 @@ onthoudt je keuze voor het volgende bestand.
 title = "Kies de hoeken en rand van je venster"
 text = """
 Met Katna's eigen titelbalk heeft Instellingen > Experimenteel nu een
-schuifregelaar Hoekafronding, van vierkant tot rond, en een schakelaar
+schuifregelaar Afronding van hoeken, van vierkant tot rond, en een schakelaar
 Rand met een eigen dekking. Met Eigen mate van vervaging aan bepaalt de
 schuifregelaar Dekking nu ook hoeveel een vervaagde vensterachtergrond
 doorlaat.
@@ -3285,8 +3285,8 @@ typt. Elk heeft een eigen schakelaar in Instellingen > Experimenteel.
 ["2026-10-02-1618-fainter-hints"]
 title = "Zwakkere hints in lege vakken"
 text = """
-De grijze hint in een leeg vak, zoals „Beantwoorden…” onder een chat of
-„E-mail zoeken”, is nu zwakker, zodat hij nooit lijkt op tekst die je
+De grijze hint in een leeg vak, zoals „Antwoord aan…” onder een chat of
+„Zoeken in e-mail”, is nu zwakker, zodat hij nooit lijkt op tekst die je
 hebt getypt.
 """
 
@@ -3312,7 +3312,7 @@ title = "Knoppen van de viewer passen in smalle vensters"
 text = """
 In een smal venster blijven de knoppen onderaan de bijlageviewer nu
 binnen de viewer. Knoppen die niet passen, verhuizen naar een menu ⋮ Meer:
-eerst draaien, dan Passend maken, dan Donkere pagina's. Het paginanummer
+eerst draaien, dan Passend maken, dan Donkere pagina’s. Het paginanummer
 en de zoom blijven het langst in beeld.
 """
 
@@ -3332,7 +3332,7 @@ hernoemen of te verwijderen; verwijderen verplaatst de e-mail erin eerst
 naar de Prullenbak. Sleep e-mail uit de lijst naar een map om hem daarheen
 te verplaatsen. Verplaatsen naar heeft een zoekvak: typ om een map te
 vinden, of om een nieuwe te maken en de e-mail erin te verplaatsen. Bij
-Gmail zet Label als labels op e-mail en haalt ze er weer af, en e-mail
+Gmail zet Labelen als labels op e-mail en haalt ze er weer af, en e-mail
 op een label neerzetten voegt dat label toe.
 """
 
@@ -3342,7 +3342,7 @@ text = """
 Regels sorteren nieuwe e-mail vanzelf: op afzender, onderwerp of woorden
 verplaatsen, labelen, markeren met een ster, doorsturen of dempen ze die.
 Maak er een in Instellingen > Mappen en regels, of klik met de
-rechtermuisknop op een e-mail en kies Een regel maken…, en zie hoeveel
+rechtermuisknop op een e-mail en kies Regel maken…, en zie hoeveel
 recente e-mails erbij passen voordat je opslaat. Vink in Verplaatsen naar
 „E-mail van … altijd hierheen verplaatsen” aan om de e-mail van een
 afzender en zijn toekomstige e-mail met één klik te verplaatsen.
@@ -3377,7 +3377,7 @@ van een effen band.
 ["2026-10-03-0101-rounder-corners"]
 title = "Rondere vensterhoeken"
 text = """
-Hoekafronding in Instellingen > Experimenteel gaat nu tot 32 pixels,
+Afronding van hoeken in Instellingen > Experimenteel gaat nu tot 32 pixels,
 twee keer zo rond als eerst, en je kunt het getal typen in het vak naast
 de schuifregelaar.
 """
@@ -3700,7 +3700,7 @@ title = "Kies hoe snel dingen bewegen"
 text = """
 Instellingen > Weergave heeft een Animatiesnelheid: volg de snelheid van
 het bureaublad, of kies die van Katna zelf, van Sneller tot Langzamer.
-Minder beweging volgt ook het bureaublad, of kan altijd of nooit aan
+Beweging beperken volgt ook het bureaublad, of kan altijd of nooit aan
 staan.
 """
 
@@ -3948,9 +3948,9 @@ Notities gebruikt nu dezelfde kaarten, chips en balken als de rest van
 Katna. Kaarten rusten op een zachte schaduw en komen zacht omhoog onder
 de aanwijzer, nieuwe notities verschijnen geleidelijk, verwijderde
 vervagen, en een notitie opent en sluit met een korte zoom. De balk
-waarmee je notities selecteert, heeft dezelfde ronde vorm als „Maak een
-notitie”, zodat alleen de inhoud verandert. Dit alles volgt Minder
-beweging en Animatiesnelheid.
+waarmee je notities selecteert, heeft dezelfde ronde vorm als „Notitie
+maken”, zodat alleen de inhoud verandert. Dit alles volgt Beweging
+beperken en Animatiesnelheid.
 """
 
 ["2026-10-04-0128-header-labels"]
@@ -4317,7 +4317,7 @@ en houden een prettige breedte.
 ["2026-10-07-0110-follow-up-for-you"]
 title = "Opvolgberichten die zichzelf versturen"
 text = """
-In het menu naast Verzenden kan Herinner me als er geen antwoord komt nu
+In het menu naast Verzenden kan Opvolgen als er geen antwoord komt nu
 een kort opvolgbericht voor je versturen als niemand antwoordt: schrijf
 het één keer, kies wanneer, en kies of het nog een keer mag proberen. Het
 gaat op werkdagen tijdens werktijd de deur uit, stopt zodra iemand
@@ -4372,7 +4372,7 @@ text = """
 In de chatweergave verschijnt een opvolgbericht dat nog moet vertrekken
 als een vage bubbel aan het einde van de chat, met Bewerken, Nu versturen
 en Stoppen. Klik met de rechtermuisknop op Verzenden of houd het
-ingedrukt en kies Herinner me als er geen antwoord komt om er een in te
+ingedrukt en kies Opvolgen als er geen antwoord komt om er een in te
 stellen.
 """
 

@@ -3490,7 +3490,7 @@ ou le supprimer ; la suppression déplace d’abord ses messages dans la
 Corbeille. Faites glisser des messages de la liste sur un dossier pour
 les y déplacer. Déplacer vers a un champ de recherche : tapez pour
 trouver un dossier, ou pour en créer un nouveau et y déplacer les
-messages. Sur Gmail, Attribuer le libellé ajoute ou retire des libellés,
+messages. Sur Gmail, Ajouter le libellé ajoute ou retire des libellés,
 et déposer des messages sur un libellé leur attribue ce libellé.
 """
 
@@ -3598,7 +3598,7 @@ title = "Des règles prêtes à l’emploi"
 text = """
 Paramètres > Dossiers et règles propose désormais des règles toutes
 faites, désactivées : promotions en silence, lettres d’information vers
-Lecture, reçus, livraisons, billets de train et d’avion (IRCTC, Air
+À lire, reçus, livraisons, billets de train et d’avion (IRCTC, Air
 India, IndiGo et d’autres), codes à usage unique, alertes de sécurité,
 messages des réseaux sociaux et invitations d’agenda. Activez-en une et
 elle s’applique à tous vos comptes, en créant au besoin des dossiers
@@ -4125,7 +4125,7 @@ reste de Katna. Les cartes reposent sur une ombre douce et se soulèvent
 légèrement sous le pointeur, les nouvelles notes apparaissent en fondu,
 celles qu’on retire disparaissent en fondu, et une note s’ouvre et se
 ferme avec un bref zoom. La barre qui sert à sélectionner des notes a la
-même forme arrondie que « Prendre une note », seul son contenu change.
+même forme arrondie que « Créer une note », seul son contenu change.
 Tout cela suit Réduire les animations et Vitesse des animations.
 """
 
@@ -4134,7 +4134,7 @@ title = "Tous les libellés d’un message ouvert"
 text = """
 Un message ouvert affiche désormais toutes ses pastilles sous l’objet,
 comme Gmail : Boîte de réception, Importants, son onglet de boîte de
-réception, Suivis, et chaque dossier ou libellé où il se trouve. Pointez
+réception, Messages suivis, et chaque dossier ou libellé où il se trouve. Pointez
 l’une d’elles pour la retirer avec son ×, avec Annuler.
 """
 
@@ -4408,7 +4408,7 @@ text = """
 Si le service qui synchronise vos messages et affiche l’icône de la zone
 de notification ne tourne pas, Katna Mail le relance tout seul. Pas
 besoin de terminal. S’il ne démarre toujours pas, une ligne au-dessus de
-vos messages le signale, avec Relancer et les détails à copier pour un
+vos messages le signale, avec Redémarrer et les détails à copier pour un
 rapport.
 """
 
@@ -4504,7 +4504,7 @@ recherche s’ouvrent centrées dessous et gardent une largeur confortable.
 ["2026-10-07-0110-follow-up-for-you"]
 title = "Des relances qui partent toutes seules"
 text = """
-Dans le menu à côté d’Envoyer, Me le rappeler sans réponse peut désormais
+Dans le menu à côté d’Envoyer, Relancer sans réponse peut désormais
 envoyer une courte relance à votre place quand personne ne répond :
 écrivez-la une fois, choisissez quand, et décidez s’il faut réessayer une
 fois de plus. Elle part en semaine aux heures de bureau, s’arrête dès que
@@ -4548,10 +4548,10 @@ jamais de messages.
 ["2026-10-07-0359-waiting-for-reply"]
 title = "Voyez ce qui attend une réponse"
 text = """
-Les messages envoyés avec une relance ou un rappel sont listés sous En
-attente de réponse, sous Messages envoyés. Leurs lignes affichent une
-pastille indiquant ce qui va se passer et quand, dans En attente de
-réponse et aussi dans votre boîte de réception. Ouvrez-en un pour
+Les messages envoyés avec une relance ou un rappel sont listés sous Sans
+réponse, sous Messages envoyés. Leurs lignes affichent une
+pastille indiquant ce qui va se passer et quand, dans Sans réponse
+et aussi dans votre boîte de réception. Ouvrez-en un pour
 déplacer la relance à un autre moment, l’envoyer maintenant ou l’arrêter.
 """
 
@@ -4561,7 +4561,7 @@ text = """
 Dans la vue discussion, une relance en attente d’envoi apparaît comme une
 bulle pâle à la fin de la discussion, avec Modifier, Envoyer maintenant
 et Arrêter. Pour en prévoir une, faites un clic droit ou un appui long
-sur Envoyer et choisissez Me le rappeler sans réponse.
+sur Envoyer et choisissez Relancer sans réponse.
 """
 
 ["2026-10-07-0603-remind-me"]

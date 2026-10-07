@@ -3215,7 +3215,7 @@ ciemnieje tak jak tekst. Katna zapamiętuje twój wybór dla kolejnego pliku.
 title = "Wybierz rogi i obramowanie okna"
 text = """
 Przy własnym pasku tytułu Katna Ustawienia > Eksperymentalne mają teraz
-suwak Zaokrąglenie rogów, od kwadratowych po okrągłe, oraz przełącznik
+suwak Zaokrąglenie narożników, od kwadratowych po okrągłe, oraz przełącznik
 Obramowanie z własnym kryciem. Gdy Własna siła rozmycia jest włączona,
 suwak Krycie ustala też, ile przepuszcza rozmyte tło okna.
 """
@@ -3242,7 +3242,7 @@ Eksperymentalne.
 ["2026-10-02-1618-fainter-hints"]
 title = "Bledsze podpowiedzi w pustych polach"
 text = """
-Szara podpowiedź w pustym polu, taka jak „Odpowiedz…” pod czatem czy
+Szara podpowiedź w pustym polu, taka jak „Odpowiedz: …” pod czatem czy
 „Przeszukaj pocztę”, jest teraz bledsza, więc nigdy nie wygląda jak
 wpisany przez ciebie tekst.
 """
@@ -3287,7 +3287,7 @@ Kliknij prawym przyciskiem utworzony przez siebie folder, aby zmienić jego
 nazwę lub go usunąć; usunięcie najpierw przenosi jego pocztę do Kosza.
 Przeciągnij wiadomości z listy na folder, aby je tam przenieść. Przenieś do
 ma pole wyszukiwania: pisz, aby znaleźć folder albo utworzyć nowy i
-przenieść do niego wiadomości. W Gmailu Oznacz etykietą dodaje etykiety do
+przenieść do niego wiadomości. W Gmailu Dodaj etykietę dodaje etykiety do
 wiadomości i je zdejmuje, a upuszczenie wiadomości na etykietę dodaje tę
 etykietę.
 """
@@ -3298,8 +3298,8 @@ text = """
 Reguły same porządkują nową pocztę: według nadawcy, tematu lub słów
 przenoszą ją, dodają etykietę, gwiazdkę, przekazują dalej lub wyciszają.
 Utwórz regułę w Ustawienia > Foldery i reguły albo kliknij wiadomość prawym
-przyciskiem i wybierz Utwórz regułę…, a przed zapisaniem zobacz, ilu
-ostatnim wiadomościom odpowiada. W Przenieś do zaznacz „Zawsze przenoś tu
+przyciskiem i wybierz Utwórz regułę, a przed zapisaniem zobacz, ilu
+ostatnim wiadomościom odpowiada. W Przenieś do zaznacz „Zawsze przenoś tutaj
 pocztę od …”, aby jednym kliknięciem przenieść obecną i przyszłą pocztę
 nadawcy.
 """
@@ -3332,7 +3332,7 @@ zamiast jednolitego pasa.
 ["2026-10-03-0101-rounder-corners"]
 title = "Bardziej zaokrąglone rogi okna"
 text = """
-Zaokrąglenie rogów w Ustawienia > Eksperymentalne sięga teraz 32 pikseli,
+Zaokrąglenie narożników w Ustawienia > Eksperymentalne sięga teraz 32 pikseli,
 dwa razy więcej niż wcześniej, a liczbę możesz wpisać w polu obok suwaka.
 """
 
@@ -3563,7 +3563,7 @@ przycisku w telefonie.
 title = "Zestawy dźwięków powiadomień"
 text = """
 Ustawienia > Powiadomienia mają teraz zestawy dźwięków: Ptaki, Natura,
-Zwierzęta, Owady, Elektroniczne, Poranek, dzwonki Katna albo dźwięki
+Zwierzęta, Owady, Elektroniczny, Poranek, dzwonki Katna albo dźwięki
 twojego pulpitu. Nowa poczta śpiewa jak rudzik, chyba że wybierzesz inny
 zestaw. Każde zdarzenie może też mieć własny dźwięk lub wybrany przez
 ciebie plik dźwiękowy.
@@ -3901,7 +3901,7 @@ text = """
 Otwarta wiadomość pokazuje teraz pod tematem wszystkie swoje plakietki,
 jak w Gmail: Odebrane, Ważne, swoją kartę skrzynki odbiorczej, Oznaczone
 gwiazdką oraz każdy folder lub etykietę, w których się znajduje. Wskaż
-jedną, aby zdjąć ją jej znakiem ×, z możliwością cofnięcia.
+jedną, aby zdjąć ją jej znakiem ×, z przyciskiem Cofnij.
 """
 
 ["2026-10-04-0150-settings-own-list"]
@@ -3945,8 +3945,8 @@ się w Ustawienia > Skróty.
 title = "Pomiń skrzynkę odbiorczą we Wszystkich kontach"
 text = """
 Kliknij prawym przyciskiem skrzynkę odbiorczą konta pod Wszystkie konta i
-wybierz Pomiń we wspólnej skrzynce odbiorczej: jej poczta przestaje
-trafiać do wspólnej skrzynki, ale wiersz zostaje i otwiera tę skrzynkę.
+wybierz Pomiń we wspólnych Odebranych: jej poczta przestaje
+trafiać do wspólnych Odebranych, ale wiersz zostaje i otwiera tę skrzynkę.
 Kliknij jej oko, aby ją przywrócić. W Ustawienia > Odebrane możesz też
 wyłączyć ze Wszystkich kont całe konto.
 """
@@ -4253,7 +4253,7 @@ wyśrodkowane pod nim i mają wygodną szerokość.
 ["2026-10-07-0110-follow-up-for-you"]
 title = "Przypomnienia, które wysyłają się same"
 text = """
-W menu obok Wyślij opcja Przypomnij, jeśli nikt nie odpowie może teraz
+W menu obok Wyślij opcja Ponów, jeśli nikt nie odpowie może teraz
 sama wysłać krótkie przypomnienie, gdy nikt nie odpisze: napisz je raz,
 wybierz kiedy i zdecyduj, czy spróbować jeszcze raz. Wychodzi w dni
 robocze w godzinach pracy, zatrzymuje się, gdy tylko ktoś odpowie
@@ -4307,7 +4307,7 @@ text = """
 W widoku Czat przypomnienie czekające na wysłanie pokazuje się jako
 blady dymek na końcu czatu, z przyciskami Edytuj, Wyślij teraz i
 Zatrzymaj. Aby je ustawić, kliknij prawym przyciskiem lub przytrzymaj
-Wyślij i wybierz Przypomnij, jeśli nikt nie odpowie.
+Wyślij i wybierz Ponów, jeśli nikt nie odpowie.
 """
 
 ["2026-10-07-0603-remind-me"]
@@ -4351,6 +4351,6 @@ title = "Pytania, na które nikt nie odpowiedział, wracają"
 text = """
 Wysłana przez ciebie wiadomość z pytaniem, na które przez trzy dni nikt
 nie odpowiedział, wraca na górę Odebranych z napisem „Wysłano 3 dni
-temu. Przypomnieć się?”. Kliknij go, aby wysłać przypomnienie, lub x,
+temu. Ponowić?”. Kliknij go, aby wysłać przypomnienie, lub x,
 aby go schować. Wyłączysz to w Ustawienia > Odebrane.
 """
