@@ -11,11 +11,28 @@ notify-unknown-sender = अज्ञात प्रेषक
 notify-snooze-back = स्नुजबाट फर्कियो
 notify-no-reply = अझै जवाफ आएको छैन
 notify-no-reply-to = “{ $subject }” को जवाफ कसैले दिएको छैन।
+notify-follow-up-sent = फलो-अप पठाइयो
+notify-follow-up-sent-to = “{ $subject }” को जवाफ कसैले दिएको थिएन, त्यसैले Katna ले फलो-अप पठायो।
+notify-follow-up-waiting = फलो-अप पठाइएन
+notify-follow-up-waiting-to = यो कम्प्युटर बन्द हुँदा यसको समय भएको थियो। “{ $subject }” तपाईंको इनबक्समा फर्केको छ।
 notify-tracking-opened = { $who } ले { $subject } खोल्नुभयो
 notify-tracking-clicked = { $who } ले { $subject } मा भएको लिङ्कमा क्लिक गर्नुभयो
 notify-update-ready = Katna Mail अपडेट गर्न सकिन्छ
 notify-update-ready-body = संस्करण { $version } डाउनलोड भइसक्यो। अपडेटले यसलाई स्थापना गर्छ र Katna Mail लाई रीस्टार्ट गर्छ।
 notify-update = अपडेट
+
+## Something needs the user, shown once per problem
+
+notify-signed-out = फेरि साइन इन गर्नुहोस्
+notify-signed-out-body = { $provider } ले Katna लाई { $address } बाट साइन आउट गर्‍यो। मेल सिंक हुन रोकियो।
+notify-sign-in = साइन इन गर्नुहोस्
+notify-password-refused = पासवर्ड अस्वीकार गरियो
+notify-password-refused-body = मेल सर्भरले { $address } को पासवर्ड अस्वीकार गर्‍यो। यो बदलिएको हुन सक्छ।
+notify-new-password = नयाँ पासवर्ड
+notify-not-sent = “{ $subject }” पठाइएन
+notify-not-sent-no-subject = एउटा सन्देश पठाइएन
+notify-not-sent-body = यो आउटबक्समा छ, कारण त्यहीँ लेखिएको छ।
+notify-open-outbox = आउटबक्स खोल्नुहोस्
 notify-event-now = अहिले
 notify-event-in-minutes = { $count ->
     [one] { $count } मिनेटमा
@@ -46,6 +63,12 @@ notify-reply-all = सबैलाई जवाफ दिनुहोस्
 notify-mark-read = पढिएको भनी चिन्ह लगाउनुहोस्
 notify-mark-all-read = सबैलाई पढिएको भनी चिन्ह लगाउनुहोस्
 notify-archive = संग्रह गर्नुहोस्
+notify-snooze-hour = 1 घण्टा स्नुज गर्नुहोस्
+notify-snooze-tomorrow = भोलि
+notify-copy-code = { $code } कपी गर्नुहोस्
+notify-link-verify = { $domain } मा प्रमाणित गर्नुहोस्
+notify-link-confirm = { $domain } मा पुष्टि गर्नुहोस्
+notify-link-activate = { $domain } मा सक्रिय गर्नुहोस्
 
 ## After Archive on a notification: a short note in the same place
 
@@ -55,6 +78,11 @@ notify-archived-count = { $count ->
    *[other] { $count } सन्देशहरू इनबक्सबाट सारिए
 }
 notify-undo = पूर्ववत गर्नुहोस्
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = कोड कपी गरियो
+notify-code-not-copied = कोड कपी गर्न सकिएन
 
 ## After a reply typed into a notification: a note in the same place while
 ## it waits for the undo time

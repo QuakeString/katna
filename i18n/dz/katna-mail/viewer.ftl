@@ -23,12 +23,20 @@ viewer-page-count = { $count } ལས་
 viewer-go-to-page-tip = ཤོག་ལེབ་ཨང་བཙུགས་ཏེ་ Enter ཨེབ་ (Ctrl+G)
 viewer-rotate-clockwise-tip = ཆུ་ཚོད་ཀྱི་ཁ་ཕྱོགས་སུ་བསྒྱིར། (Ctrl+R)
 viewer-rotate-anticlockwise-tip = ཆུ་ཚོད་ཀྱི་ཁ་ཕྱོགས་ལྡོག་སྟེ་བསྒྱིར། (Ctrl+Shift+R)
+viewer-dark-pages-tip = ཤོག་ལེབ་མུན་ནག
+viewer-light-pages-tip = ཤོག་ལེབ་ཚུ་ ཡོདཔ་བཟུམ་སྦེ་སྟོན།
 viewer-fit-page-tip = ཤོག་ལེབ་ལུ་འཁྲིལ།
 viewer-fit-picture-tip = སྒོ་སྒྲིག་ལུ་འཁྲིལ།
 viewer-fit-width-tip = རྒྱ་ཚད་ལུ་འཁྲིལ།
 viewer-real-size-tip = ངོ་མའི་ཚད (1:1)
 viewer-page-back-tip = ཧེ་མམ་གྱི་ཤོག་ལེབ
 viewer-page-on-tip = ཤུལ་མམ་གྱི་ཤོག་ལེབ
+viewer-more-tip = གཞན་ཡང་།
+viewer-zoom-in = ཆེ་རུ་བཏང་།
+viewer-zoom-out = ཆུང་རུ་བཏང་།
+viewer-real-size = ངོ་མའི་ཚད
+viewer-rotate-anticlockwise = ཆུ་ཚོད་ཁ་ཕྱོགས་ལྡོག་སྟེ་ བསྐོར།
+viewer-rotate-clockwise = ཆུ་ཚོད་ཁ་ཕྱོགས་ལུ་ བསྐོར།
 
 ## Marking up a PDF
 

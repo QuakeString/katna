@@ -49,7 +49,7 @@ calendar-account-signed-in = { $address } ནང་ ལོག་ནང་བས�
 calendar-account-sign-in-refused = { $provider } གིས་ Katna ནང་ན་ འཛུལ་མ་བཅུག ལོག་འབད་རྩོལ་བསྐྱེད་ཞིནམ་ལས་ ཁྱོད་ཀྱི་ཟླ་ཐོ་ཚུ་ལུ་ འཛུལ་སྤྱོད་ཀྱི་གནང་བ་བྱིན།
 calendar-account-refused = སར་བར་གྱིས་ ཆོག་ཡིག་ངོས་ལེན་མ་འབད། Yahoo དང་ iCloud Zoho དེ་ལས་ གཞན་ཚུ་ལུ་ གློག་རིམ་ཆོག་ཡིག་དགོཔ་ཨིན།
 calendar-account-change-password = ཆོག་ཡིག་བསྒྱུར།
-calendar-account-change-password-tooltip = སྒྲིག་སྟངས་ > རྩིས་ཐོ་ཚུ་ ཁ་ཕྱེ།
+calendar-account-change-password-tooltip = ཆོག་ཡིག་གསརཔ་ཡིག་དཔར་རྐྱབ། Katna གིས་ སར་བར་དང་གཅིག་ཁར་ཞིབ་དཔྱད་འབདཝ་ཨིན
 calendar-account-not-enabled = Katna གི་དོན་ལུ་ ཟླ་ཐོ་འཛུལ་སྤྱོད་ ད་ཚུན་ཚོད་ ཁ་མ་ཕྱེ་བས།
 calendar-account-failed = ཟླ་ཐོ་ཚུ་ལྷག་མ་ཚུགས།
 calendar-account-error = ཟླ་ཐོ་ཚུ་ལྷག་མ་ཚུགས་: { $reason }
@@ -65,6 +65,7 @@ calendar-account-try-again = ལོག་འབད་རྩོལ་བསྐྱ
 calendar-account-try-again-tooltip = རྩིས་ཐོ་འདི་གི་ཟླ་ཐོ་ཚུ་ ད་ལྟོ་ལོག་ཞིབ་དཔྱད་འབད།
 calendar-account-fixing = ལཱ་འབད་དོ…
 calendar-birthdays = སྐྱེས་ཚེས
+calendar-tasks = ལཱ་ཚུ
 calendar-birthday-of = { $name } གི་སྐྱེས་ཚེས
 calendar-empty-title = ད་ལྟོ་ཡང་ ཟླ་ཐོ་མེདཔ
 calendar-empty-text = ཁྱོད་ཀྱི་ Google དང་ Microsoft རྩིས་ཐོ་ཚུ་གི་ཟླ་ཐོ་དང་ CalDAV བྱིན་མི་ ཞབས་ཞུ་གཞན་ཚུ་གི་ཟླ་ཐོ་ཚུ་ མཉམ་བསྡུར་འབད་ཞིན་ཏེ་ Katna གིས་ འདིར་སྟོནམ་ཨིན།
@@ -122,6 +123,7 @@ calendar-event-details = བྱུང་རིམ་གྱི་ཁ་གསལ�
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = བྱུང་རིམ་གསརཔ
+calendar-event-window-title = བྱུང་རིམ་གསརཔ
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = ཉིནམ་ཁ་ཕྱེ
 calendar-menu-duplicate = འདྲ་བཤུས་འབད

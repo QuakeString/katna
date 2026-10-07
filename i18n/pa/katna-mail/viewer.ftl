@@ -23,12 +23,20 @@ viewer-page-count = { $count } ਵਿੱਚੋਂ
 viewer-go-to-page-tip = ਸਫ਼ਾ ਨੰਬਰ ਲਿਖੋ ਅਤੇ Enter ਦਬਾਓ (Ctrl+G)
 viewer-rotate-clockwise-tip = ਘੜੀ ਦੀ ਦਿਸ਼ਾ ਵਿੱਚ ਘੁਮਾਓ (Ctrl+R)
 viewer-rotate-anticlockwise-tip = ਘੜੀ ਦੀ ਉਲਟ ਦਿਸ਼ਾ ਵਿੱਚ ਘੁਮਾਓ (Ctrl+Shift+R)
+viewer-dark-pages-tip = ਗੂੜ੍ਹੇ ਪੰਨੇ
+viewer-light-pages-tip = ਪੰਨੇ ਜਿਵੇਂ ਹਨ ਉਵੇਂ ਦਿਖਾਓ
 viewer-fit-page-tip = ਪੰਨਾ ਫਿੱਟ ਕਰੋ
 viewer-fit-picture-tip = ਵਿੰਡੋ ਵਿੱਚ ਫਿੱਟ ਕਰੋ
 viewer-fit-width-tip = ਚੌੜਾਈ ਫਿੱਟ ਕਰੋ
 viewer-real-size-tip = ਅਸਲ ਆਕਾਰ (1:1)
 viewer-page-back-tip = ਪਿਛਲਾ ਪੰਨਾ
 viewer-page-on-tip = ਅਗਲਾ ਪੰਨਾ
+viewer-more-tip = ਹੋਰ
+viewer-zoom-in = ਜ਼ੂਮ ਇਨ ਕਰੋ
+viewer-zoom-out = ਜ਼ੂਮ ਆਊਟ ਕਰੋ
+viewer-real-size = ਅਸਲ ਆਕਾਰ
+viewer-rotate-anticlockwise = ਘੜੀ ਦੀ ਉਲਟ ਦਿਸ਼ਾ ਵਿੱਚ ਘੁਮਾਓ
+viewer-rotate-clockwise = ਘੜੀ ਦੀ ਦਿਸ਼ਾ ਵਿੱਚ ਘੁਮਾਓ
 
 ## Marking up a PDF
 

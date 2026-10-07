@@ -339,6 +339,8 @@ list-empty-tab = { $tab }-এ কোনো মেল নেই।
 list-empty-tab-unknown = এই ট্যাবে কোনো মেল নেই।
 list-empty-folder = { $folder }-এ কোনো মেসেজ নেই।
 list-empty-folder-unknown = এই ফোল্ডারে কোনো মেসেজ নেই।
+list-empty-waiting = কিছুই উত্তরের অপেক্ষায় নেই।
+list-empty-reminders = কোনো রিমাইন্ডার নেই। যোগ করতে কোনো মেলে H চাপুন।
 list-first-sync = আপনার মেল আনা হচ্ছে…
 list-first-sync-detail = মেল আসার সাথে সাথে এখানে দেখাবে।
 
@@ -358,6 +360,14 @@ row-tracking-clicked = { $recipients } জনের মধ্যে { $opened } 
 row-pin = উপরে পিন করুন
 row-unpin = আনপিন করুন
 row-snoozed-until = { $when } পর্যন্ত স্নুজ করা হয়েছে
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = আজ
+snoozed-group-tomorrow = আগামীকাল
+snoozed-group-this-week = এই সপ্তাহে
+snoozed-group-later = পরে
+row-follow-up-step = ফলো-আপ { $steps }-এর মধ্যে { $step } · { $date }
+row-follow-up-waiting = ফলো-আপ অপেক্ষায়
+row-reminder = রিমাইন্ডার { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +390,7 @@ menu-not-important = গুরুত্বপূর্ণ নয় হিসে
 menu-pin = উপরে পিন করুন
 menu-unpin = আনপিন করুন
 menu-snooze = স্নুজ করুন
+menu-remind = মনে করিয়ে দিন
 menu-unsnooze = স্নুজ বাতিল করুন
 menu-add-to-tasks = টাস্কে যোগ করুন
 menu-schedule-meeting = মিটিং শিডিউল করুন
@@ -395,7 +406,26 @@ menu-follow-up = ফলো আপ
 # Pin to top.
 menu-more = আরও
 menu-move-to-heading = এখানে সরান:
+menu-move-to-search = এখানে সরান…
+menu-label-as = লেবেল দিন
+menu-label-as-search = লেবেল দিন…
+menu-no-folder = “{ $name }” নামে কোনো ফোল্ডার নেই
+menu-no-label = “{ $name }” নামে কোনো লেবেল নেই
+menu-create-folder = “{ $name }” তৈরি করুন
+menu-always-move = { $name }-এর মেল সবসময় এখানে সরান
+toast-always-move-failed = মেল সরানো হয়েছে, কিন্তু নিয়মটি তৈরি হয়নি: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count }টি কথোপকথন
+       *[other] { $count }টি কথোপকথন
+    }
+   *[message] { $count ->
+        [one] { $count }টি মেসেজ
+       *[other] { $count }টি মেসেজ
+    }
+}
 menu-find-from = { $name }-এর পাঠানো ইমেল খুঁজুন
+menu-make-rule = নিয়ম তৈরি করুন…
 
 ## Snackbar after an action on mail in the list
 
@@ -429,6 +459,8 @@ toast-moved = { $kind ->
        *[other] { $count }টি মেসেজ সরানো হয়েছে।
     }
 }
+toast-label-added = “{ $label }” লেবেল যোগ করা হয়েছে।
+toast-label-removed = “{ $label }” লেবেল সরানো হয়েছে।
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] কথোপকথনে তারকাচিহ্ন দেওয়া হয়েছে।
