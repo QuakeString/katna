@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 7 October 2026, through PR #772). Companion to
+> Status: **v0.2** (updated 7 October 2026, through PR #779). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -25,7 +25,9 @@ not name.
   of the UI translated; reading and sending encrypted mail; Phase 6
   except the upstream proposals: Calendar, Tasks, Notes and Contacts pages that sync with each
   account's own service; the Windows build and installer.
-- **Merged since the last refresh (#523–#772):** nudges that bring
+- **Merged since the last refresh (#523–#779):** all 48 languages caught up with main after
+  the translation pause, new and reworded messages and the What's new
+  highlights (L.4, #774, #775, #776, #777, #778, #779); nudges that bring
   unanswered questions you sent back to the top of the Inbox after 3
   days (7.5, #772); snooze that comes back on a reply, typed and your own
   snooze times, Snoozed grouped by day, swipe and notification snooze
@@ -547,7 +549,7 @@ merging `main` first, rather than in one large one.
 | L.1 Framework and picker ✅ #100 | `katna-i18n` crate: language list (`i18n/languages.toml`), system language (`LANGUAGE`, `LC_*`, `plasma-localerc`), `general.language` setting, Fluent bundles with English fallback, `tr!`, override folder, pseudo-locales, id and variable checks; ICU4X dates, numbers and plurals in `format.rs`; top-bar language button and picker popover, Settings > General row, phone drawer row; bundled flags; the top bar and the picker translated into all 48 languages; CLAUDE.md rule that new UI text goes through `tr!` |
 | L.2 GPUI patches | `gpui-pre` vendored with `KATNA.md`: window layout direction with mirrored bounds, start/end text alignment, `.layout_ltr()`, UAX #14 and grapheme-safe line breaking with dictionary breaks for Thai, Lao, Khmer and Burmese, Han forms from Katna's language, bidi-aware carets |
 | L.3 Mirroring | RTL switch in `window/layout.rs` `Shape`; mirrored directional icons; drawer, conversation and menus from the right; arrow keys; checked with `qps-plocm` |
-| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186, #189, #195, #199, #204, #208, #218, #222, #228, #234, #236, #237, #244, #247, #250, #253, #261, #265, #267, #268, #279, #282, #284, #292, #294, #296, #298, #300, #303, #306, #310, #311, #314, #316, #319, #329, #335, #340, #344, #349, #353, #355, #356, #362, #365, #366, #370, #373, #377, #379, #386, #387, #389, #394, #396, #400, #403, #556, #557, #558, #559, #560, #561, #564, #565, #566, #567, #568, #569, #584, #585, #586, #587, #588, #589; onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
+| L.4 Strings, by area ◐ main window #114, Settings #116, dialogs and search options #119, compose #121, notifications and tray #129; What's new #134; account settings, paste and drop and newer text #141, #142, #147, #157, #165, #174, #175, #177, #179, #186, #189, #195, #199, #204, #208, #218, #222, #228, #234, #236, #237, #244, #247, #250, #253, #261, #265, #267, #268, #279, #282, #284, #292, #294, #296, #298, #300, #303, #306, #310, #311, #314, #316, #319, #329, #335, #340, #344, #349, #353, #355, #356, #362, #365, #366, #370, #373, #377, #379, #386, #387, #389, #394, #396, #400, #403, #556, #557, #558, #559, #560, #561, #564, #565, #566, #567, #568, #569, #584, #585, #586, #587, #588, #589; all 48 languages caught up with main after the pause from 2 October (#774, #775, #776, #777, #778, #779); onboarding, About, viewers and `.desktop` names pending | One pull request per area, each with its 48 drafted translations: message list and toolbar; reader and attachments; compose and signatures; search and search options; Settings (each tab); accounts, onboarding, What's new, About, crash notice; viewers; global menu, dock menu, tray, notifications and the daemon; `.desktop` file names and actions |
 | L.5 Mail content | Per-message and per-paragraph direction in the reader and list; compose direction buttons and `dir` in sent HTML; quote and forward headers in the UI language; shortcuts by key position on non-Latin layouts; input method check (Fcitx5, IBus) |
 | L.6 Search in unspaced scripts | Thai, Lao, Khmer and Burmese word splitting in `katna-search` with the shared segmenter |
 | L.7 Corrections | Translation guide (`i18n/README.md`), "Translation correction" issue template, coverage report in CI; later hosted Weblate on the same files (owner applies) |
