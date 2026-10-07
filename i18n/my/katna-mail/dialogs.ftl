@@ -6,6 +6,10 @@
 
 about-tooltip = Katna အကြောင်း
 about-tagline = Linux ဒက်စ်တော့အတွက် မေးလ်နှင့် ပြက္ခဒိန်
+about-copy-version = ဗားရှင်း အသေးစိတ် ကူးရန်
+about-version-copied = ကူးပြီး
+about-version-built = တည်ဆောက်ချိန်- { $date }
+about-version-system = စနစ်- { $system }
 about-whats-new = အသစ်များ
 
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
@@ -21,11 +25,13 @@ about-update-ready = ဗားရှင်း { $version } ထည့်သွင
 about-update-ready-detail = အပ်ဒိတ်ကို ပြီးမြောက်ရန် Katna Mail ပြန်လည်စတင်မည်။
 about-update-confirm = ဗားရှင်း { $version } ကို ထည့်သွင်းမလား?
 about-update-confirm-detail = Katna Mail ပိတ်ပြီး အပ်ဒိတ်ကို ထည့်သွင်းကာ သင်ထားခဲ့သည့်နေရာမှ ပြန်ဖွင့်ပေးမည်။ သင့်ကွန်ပျူတာက စကားဝှက် တောင်းပါမည်။
+about-update-confirm-detail-windows = Katna Mail ပိတ်သွားပြီး အပ်ဒိတ်ကို ထည့်သွင်းကာ ခဏအကြာတွင် ပြန်ပွင့်လာမည်။
 about-update-installing = ဗားရှင်း { $version } ကို ထည့်သွင်းနေသည်…
 about-update-installing-detail = ဖွင့်ထားသော ဝင်းဒိုးတွင် သင့်စကားဝှက်ကို ရိုက်ထည့်ပါ။
+about-update-installing-detail-windows = Katna Mail ယခု ပိတ်သွားပြီး အပ်ဒိတ် ထည့်သွင်းပြီးသည်နှင့် ပြန်ပွင့်လာမည်။
 about-update-cancelled = စကားဝှက် မပေးခဲ့သဖြင့် အပ်ဒိတ်ကို မထည့်သွင်းခဲ့ပါ။
 about-update-failed = အပ်ဒိတ်ကို ထည့်သွင်း၍ မရပါ- { $error }
-about-update-unsupported = ဤ Katna Mail ကို သင့်ပက်ကေ့ချ် မန်နေဂျာက အပ်ဒိတ်လုပ်ပေးသည်။
+about-update-not-self-updating = ဤ Katna Mail သည် ကိုယ်တိုင် အပ်ဒိတ် မလုပ်ပါ။ သင် ထည့်သွင်းခဲ့သည့် နည်းအတိုင်း အပ်ဒိတ်လုပ်ပါ။
 about-update-restart-failed = အပ်ဒိတ်ကို ထည့်သွင်းပြီးပါပြီ၊ သို့သော် Katna Mail ကို ပြန်ဖွင့်၍ မရပါ ({ $error })။ ကိုယ်တိုင် ဖွင့်ပါ။
 about-update-check = အပ်ဒိတ် စစ်ဆေးရန်
 about-update-download = ဒေါင်းလုဒ်
@@ -143,6 +149,7 @@ onboarding-katna-private = ၎င်းတွင် ကိုယ်ပိုင�
 onboarding-ready-title = အားလုံး အဆင်သင့်ပါပြီ
 onboarding-ready-lead = Katna သည် သင့်မေးလ်ကို ရယူနေသည်။ ရောက်လာသည်နှင့် ပေါ်လာပြီး မေးလ်အသစ်များ အလိုအလျောက် ပေါ်လာမည်။
 onboarding-ready-lead-address = Katna သည် { $address } ၏ မေးလ်ကို ရယူနေသည်။ ရောက်လာသည်နှင့် ပေါ်လာပြီး မေးလ်အသစ်များ အလိုအလျောက် ပေါ်လာမည်။
+onboarding-apps = သင် သုံးမည့် အက်ပ်များ
 onboarding-ready-tour = အရာအားလုံး ဘယ်မှာရှိသလဲ သိရန် တစ်မိနစ် လမ်းညွှန်ကို ကြည့်မလား။
 onboarding-skip = ယခု ကျော်ရန်
 onboarding-take-tour = လမ်းညွှန်ကြည့်ရှုရန်

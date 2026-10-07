@@ -6,6 +6,10 @@
 
 about-tooltip = Katna-യെക്കുറിച്ച്
 about-tagline = Linux ഡെസ്‌ക്‌ടോപ്പിനുള്ള മെയിലും കലണ്ടറും
+about-copy-version = പതിപ്പ് വിശദാംശങ്ങൾ പകർത്തുക
+about-version-copied = പകർത്തി
+about-version-built = ബിൽഡ് ചെയ്‌തത്: { $date }
+about-version-system = സിസ്റ്റം: { $system }
 about-whats-new = പുതിയതെന്ത്
 
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
@@ -21,11 +25,13 @@ about-update-ready = പതിപ്പ് { $version } ഇൻസ്റ്റാ
 about-update-ready-detail = അപ്‌ഡേറ്റ് പൂർത്തിയാക്കാൻ Katna Mail റീസ്റ്റാർട്ട് ചെയ്യും.
 about-update-confirm = പതിപ്പ് { $version } ഇൻസ്റ്റാൾ ചെയ്യണോ?
 about-update-confirm-detail = Katna Mail അടഞ്ഞ്, അപ്‌ഡേറ്റ് ഇൻസ്റ്റാൾ ചെയ്ത്, നിങ്ങൾ നിർത്തിയിടത്ത് നിന്ന് വീണ്ടും തുറക്കും. നിങ്ങളുടെ കമ്പ്യൂട്ടർ നിങ്ങളുടെ പാസ്‌വേഡ് ചോദിക്കും.
+about-update-confirm-detail-windows = Katna Mail അടയ്ക്കുകയും അപ്‌ഡേറ്റ് ഇൻസ്റ്റാൾ ചെയ്യുകയും അൽപ്പസമയത്തിനകം വീണ്ടും തുറക്കുകയും ചെയ്യും.
 about-update-installing = പതിപ്പ് { $version } ഇൻസ്റ്റാൾ ചെയ്യുന്നു…
 about-update-installing-detail = തുറന്ന വിൻഡോയിൽ നിങ്ങളുടെ പാസ്‌വേഡ് നൽകുക.
+about-update-installing-detail-windows = Katna Mail ഇപ്പോൾ അടയ്ക്കും, അപ്‌ഡേറ്റ് ഇൻസ്റ്റാൾ ആയാൽ വീണ്ടും തുറക്കും.
 about-update-cancelled = പാസ്‌വേഡ് നൽകാത്തതിനാൽ അപ്‌ഡേറ്റ് ഇൻസ്റ്റാൾ ചെയ്തില്ല.
 about-update-failed = അപ്‌ഡേറ്റ് ഇൻസ്റ്റാൾ ചെയ്യാനായില്ല: { $error }
-about-update-unsupported = Katna Mail-ന്റെ ഈ പകർപ്പ് നിങ്ങളുടെ പാക്കേജ് മാനേജർ അപ്‌ഡേറ്റ് ചെയ്യുന്നു.
+about-update-not-self-updating = Katna Mail-ന്റെ ഈ പകർപ്പ് സ്വയം അപ്‌ഡേറ്റ് ചെയ്യില്ല. നിങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്‌ത അതേ രീതിയിൽ അപ്‌ഡേറ്റ് ചെയ്യുക.
 about-update-restart-failed = അപ്‌ഡേറ്റ് ഇൻസ്റ്റാൾ ചെയ്തു, പക്ഷേ Katna Mail വീണ്ടും തുറക്കാനായില്ല ({ $error }). അത് നിങ്ങൾ തന്നെ തുറക്കുക.
 about-update-check = അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കുക
 about-update-download = ഡൗൺലോഡ്
@@ -146,6 +152,7 @@ onboarding-katna-private = ഇതിന് സ്വന്തം പാസ്‌
 onboarding-ready-title = എല്ലാം തയ്യാർ
 onboarding-ready-lead = Katna നിങ്ങളുടെ മെയിൽ കൊണ്ടുവരുന്നു. അത് എത്തുന്നതനുസരിച്ച് കാണിക്കും, പുതിയ മെയിൽ സ്വയം പ്രത്യക്ഷപ്പെടും.
 onboarding-ready-lead-address = Katna { $address }-ന്റെ മെയിൽ കൊണ്ടുവരുന്നു. അത് എത്തുന്നതനുസരിച്ച് കാണിക്കും, പുതിയ മെയിൽ സ്വയം പ്രത്യക്ഷപ്പെടും.
+onboarding-apps = നിങ്ങൾ ഉപയോഗിക്കുന്ന ആപ്പുകൾ
 onboarding-ready-tour = എല്ലാം എവിടെയാണെന്ന് കാണാൻ ഒരു മിനിറ്റ് ടൂർ നടത്തണോ?
 onboarding-skip = ഇപ്പോൾ ഒഴിവാക്കുക
 onboarding-take-tour = ടൂർ നടത്തുക

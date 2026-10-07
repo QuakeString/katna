@@ -10,6 +10,8 @@ nav-label-new = కొత్త లేబుల్‌ను క్రియే�
 nav-folder-new = కొత్త ఫోల్డర్‌ను క్రియేట్ చేయండి
 nav-menu-check-mail = కొత్త మెయిల్‌ను చెక్ చేయండి
 nav-menu-check-inbox = ఈ ఇన్‌బాక్స్‌ను చెక్ చేయండి
+nav-unified-leave-out = ఏకీకృత ఇన్‌బాక్స్ నుండి మినహాయించండి
+nav-unified-bring-back = ఏకీకృత ఇన్‌బాక్స్‌లోకి తిరిగి తీసుకురండి
 nav-menu-sign-in-again = మళ్లీ సైన్ ఇన్ చేయండి
 nav-menu-new-mail = ఈ ఖాతా నుండి కొత్త మెయిల్
 nav-menu-account-settings = ఖాతా సెట్టింగ్‌లు
@@ -22,6 +24,8 @@ nav-account-password-refused = పాస్‌వర్డ్ తిరస్క
 nav-account-storage = { $total }లో { $used } ఉపయోగించబడింది
 nav-menu-new-subfolder = లోపల కొత్త ఫోల్డర్
 nav-menu-new-sublabel = లోపల కొత్త లేబుల్
+nav-menu-rename = పేరు మార్చండి
+nav-menu-delete = తొలగించండి
 nav-menu-empty-trash = ట్రాష్‌ను ఖాళీ చేయండి
 nav-account-unnamed = ఖాతా { $number }
 nav-all-accounts = అన్ని ఖాతాలు
@@ -44,6 +48,10 @@ folder-spam = స్పామ్
 folder-trash = ట్రాష్
 folder-all-mail = అన్ని మెయిల్స్
 folder-scheduled = షెడ్యూల్ చేసినవి
+folder-waiting = రిప్లయి కోసం వేచి ఉన్నవి
+folder-waiting-short = వేచి ఉన్నవి
+folder-reminders = రిమైండర్‌లు
+folder-outbox = అవుట్‌బాక్స్
 folder-activity = యాక్టివిటీ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,44 @@ label-create = క్రియేట్ చేయండి
 label-creating = క్రియేట్ చేస్తోంది…
 label-created = “{ $name }” లేబుల్ క్రియేట్ చేయబడింది.
 label-folder-created = “{ $name }” ఫోల్డర్ క్రియేట్ చేయబడింది.
+label-rename-title = లేబుల్ పేరు మార్చండి
+label-folder-rename-title = ఫోల్డర్ పేరు మార్చండి
+label-rename = పేరు మార్చండి
+label-renaming = పేరు మారుస్తోంది…
+label-renamed = లేబుల్ పేరు “{ $name }”గా మార్చబడింది.
+label-folder-renamed = ఫోల్డర్ పేరు “{ $name }”గా మార్చబడింది.
+
+## Deleting a folder or label (asked first)
+
+folder-delete-title = “{ $name }”ను తొలగించాలా?
+folder-delete-body = { $count ->
+    [0] ఇందులో మెయిల్ ఏదీ లేదు. ఫోల్డర్ సర్వర్ నుండి తీసివేయబడుతుంది, కాబట్టి వెబ్‌మెయిల్, మీ ఫోన్ నుండి కూడా అది పోతుంది.
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] ఇందులోని { $count } సంభాషణ ట్రాష్‌కు వెళ్తుంది, కాబట్టి దాన్ని మళ్లీ పొందవచ్చు.
+           *[other] ఇందులోని { $count } సంభాషణలు ట్రాష్‌కు వెళ్తాయి, కాబట్టి వాటిని మళ్లీ పొందవచ్చు.
+        }
+       *[message] { $count ->
+            [one] ఇందులోని { $count } మెసేజ్ ట్రాష్‌కు వెళ్తుంది, కాబట్టి దాన్ని మళ్లీ పొందవచ్చు.
+           *[other] ఇందులోని { $count } మెసేజ్‌లు ట్రాష్‌కు వెళ్తాయి, కాబట్టి వాటిని మళ్లీ పొందవచ్చు.
+        }
+    } ఫోల్డర్ సర్వర్ నుండి తీసివేయబడుతుంది, కాబట్టి వెబ్‌మెయిల్, మీ ఫోన్ నుండి కూడా అది పోతుంది.
+}
+folder-delete-forever-body = { $count ->
+    [0] ఇందులో మెయిల్ ఏదీ లేదు. ఫోల్డర్ సర్వర్ నుండి తీసివేయబడుతుంది, కాబట్టి వెబ్‌మెయిల్, మీ ఫోన్ నుండి కూడా అది పోతుంది.
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] ఇందులోని { $count } సంభాషణ శాశ్వతంగా తొలగించబడుతుంది; ఈ ఖాతాకు ట్రాష్ లేదు.
+           *[other] ఇందులోని { $count } సంభాషణలు శాశ్వతంగా తొలగించబడతాయి; ఈ ఖాతాకు ట్రాష్ లేదు.
+        }
+       *[message] { $count ->
+            [one] ఇందులోని { $count } మెసేజ్ శాశ్వతంగా తొలగించబడుతుంది; ఈ ఖాతాకు ట్రాష్ లేదు.
+           *[other] ఇందులోని { $count } మెసేజ్‌లు శాశ్వతంగా తొలగించబడతాయి; ఈ ఖాతాకు ట్రాష్ లేదు.
+        }
+    } ఫోల్డర్ సర్వర్ నుండి తీసివేయబడుతుంది, కాబట్టి వెబ్‌మెయిల్, మీ ఫోన్ నుండి కూడా అది పోతుంది.
+}
+folder-delete-label-body = లేబుల్ తీసివేయబడుతుంది. దాని మెయిల్ అన్ని మెయిల్స్‌లో, దాని ఇతర లేబుల్‌లలో అలాగే ఉంటుంది.
+folder-delete-confirm = ఫోల్డర్‌ను తొలగించండి
+folder-delete-label-confirm = లేబుల్‌ను తొలగించండి
+folder-deleted = “{ $name }” ఫోల్డర్ తొలగించబడింది
+label-deleted = “{ $name }” లేబుల్ తొలగించబడింది

@@ -8,6 +8,8 @@ reader-close = ပိတ်ရန်
 reader-back = နောက်သို့
 reader-mark-unread = မဖတ်ရသေးအဖြစ် မှတ်ရန်
 reader-move-to = သို့ ရွှေ့ရန်
+reader-snooze = ခဏဆိုင်းရန်
+reader-remind = သတိပေးရန်
 reader-more = နောက်ထပ်
 reader-original-colors = မူရင်း အရောင်များကို ပြရန်
 reader-dark-colors = အမှောင် အရောင်များဖြင့် ပြရန်
@@ -35,6 +37,7 @@ reader-tick-bounced = မရောက်ရှိပါ- { $when } တွင် 
 reader-tick-read = { $when } တွင် ဖတ်ခဲ့သည် (ဖတ်ပြီးကြောင်း အသိအမှတ်ပြုချက်)
 reader-tick-opened = ဖွင့်ခဲ့သည်၊ နောက်ဆုံး { $when } (ဖွင့်ခြင်း ခြေရာခံမှု)
 reader-starred = ကြယ်ပွင့်တပ်ထားသည်
+reader-chip-remove = { $label } ကို ဖယ်ရှားရန်
 reader-not-starred = ကြယ်ပွင့်မတပ်ထားပါ
 reader-too-long = မက်ဆေ့ဂျ်သည် အပြည့်အစုံ ပြရန် ရှည်လွန်းသည်။
 reader-encrypted-images = ကုဒ်ဝှက်ထားသော မေးလ်တွင် ဝဘ်မှ ပုံများကို ဘယ်တော့မှ မဖွင့်ပါ။
@@ -52,6 +55,7 @@ reader-details-subject = ခေါင်းစဉ်-
 
 reader-downloading = ဤမက်ဆေ့ဂျ်ကို ဆာဗာမှ ဒေါင်းလုဒ်လုပ်နေသည်…
 reader-download-failed = ဤမက်ဆေ့ဂျ်ကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။
+reader-download-offline = ဤအကောင့် အော့ဖ်လိုင်း ဖြစ်နေသည်။ ဤမက်ဆေ့ဂျ်ကို ဒေါင်းလုဒ်လုပ်ရန် အွန်လိုင်း ပြောင်းပါ။
 reader-try-again = ထပ်စမ်းကြည့်ရန်
 
 ## Reply row
@@ -95,6 +99,7 @@ tracking-clicked = { $who } က လင့်ခ်ကို { $clicks } ကြ�
 tracking-maybe-opened = { $who } က ၎င်းကို ဖွင့်ခဲ့နိုင်သည် (Apple Mail သည် ကိုယ်ရေးကိုယ်တာ ကာကွယ်ရန် ပုံများကို ကြိုတင် ရယူသည်)
 tracking-seen-none = မည်သူမျှ ၎င်းကို မဖွင့်ရသေးသလို လင့်ခ်ကိုလည်း မဖွင့်ရသေးပါ
 tracking-receipt = { $who } က ဖတ်ပြီးကြောင်း အသိအမှတ်ပြုချက် ပို့ခဲ့သည်
+tracking-receipt-read = { $who } ဖတ်ပြီး (ဖတ်ပြီးကြောင်း အသိအမှတ်)၊ { $when }
 tracking-receipt-displayed = ဖတ်ပြီးကြောင်း အသိအမှတ်ပြုချက်- { $who } က သင့်မက်ဆေ့ဂျ်ကို ဖွင့်ခဲ့သည်
 tracking-receipt-other = ဖတ်ပြီးကြောင်း အသိအမှတ်ပြုချက်- { $who } က သင့်မက်ဆေ့ဂျ်ကို မဖွင့်ဘဲ ဖျက်ခဲ့သည် သို့မဟုတ် ကိုင်တွယ်ခဲ့သည်
 

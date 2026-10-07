@@ -339,6 +339,8 @@ list-empty-tab = { $tab }లో మెయిల్ ఏదీ లేదు.
 list-empty-tab-unknown = ఈ ట్యాబ్‌లో మెయిల్ ఏదీ లేదు.
 list-empty-folder = { $folder }లో మెసేజ్‌లు ఏవీ లేవు.
 list-empty-folder-unknown = ఈ ఫోల్డర్‌లో మెసేజ్‌లు ఏవీ లేవు.
+list-empty-waiting = రిప్లయి కోసం ఏదీ వేచి లేదు.
+list-empty-reminders = రిమైండర్‌లు లేవు. జోడించడానికి మెయిల్‌పై H నొక్కండి.
 list-first-sync = మీ మెయిల్‌ను పొందుతోంది…
 list-first-sync-detail = మెయిల్ వచ్చే కొద్దీ ఇక్కడ కనిపిస్తుంది.
 
@@ -358,6 +360,14 @@ row-tracking-clicked = { $recipients } మందిలో { $opened } మంద�
 row-pin = పైన పిన్ చేయండి
 row-unpin = అన్‌పిన్ చేయండి
 row-snoozed-until = { $when } వరకు స్నూజ్ చేయబడింది
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = ఈరోజు
+snoozed-group-tomorrow = రేపు
+snoozed-group-this-week = ఈ వారం
+snoozed-group-later = తర్వాత
+row-follow-up-step = ఫాలో అప్ { $steps }లో { $step } · { $date }
+row-follow-up-waiting = ఫాలో అప్ వేచి ఉంది
+row-reminder = రిమైండర్ { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +390,7 @@ menu-not-important = ముఖ్యమైనది కాదని గుర్
 menu-pin = పైన పిన్ చేయండి
 menu-unpin = అన్‌పిన్ చేయండి
 menu-snooze = స్నూజ్ చేయండి
+menu-remind = నాకు గుర్తు చేయండి
 menu-unsnooze = స్నూజ్ తీసివేయండి
 menu-add-to-tasks = టాస్క్‌లకు జోడించండి
 menu-schedule-meeting = సమావేశాన్ని షెడ్యూల్ చేయండి
@@ -391,7 +402,26 @@ menu-move-to = దీనికి తరలించండి
 menu-follow-up = ఫాలో అప్
 menu-more = మరిన్ని
 menu-move-to-heading = దీనికి తరలించండి:
+menu-move-to-search = దీనికి తరలించండి…
+menu-label-as = లేబుల్ వేయండి
+menu-label-as-search = లేబుల్ వేయండి…
+menu-no-folder = “{ $name }” పేరుతో ఫోల్డర్ లేదు
+menu-no-label = “{ $name }” పేరుతో లేబుల్ లేదు
+menu-create-folder = “{ $name }”ను క్రియేట్ చేయండి
+menu-always-move = { $name } నుండి వచ్చే మెయిల్‌ను ఎల్లప్పుడూ ఇక్కడికి తరలించండి
+toast-always-move-failed = మెయిల్ తరలించబడింది, కానీ నియమం క్రియేట్ కాలేదు: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } సంభాషణ
+       *[other] { $count } సంభాషణలు
+    }
+   *[message] { $count ->
+        [one] { $count } మెసేజ్
+       *[other] { $count } మెసేజ్‌లు
+    }
+}
 menu-find-from = { $name } నుండి వచ్చిన ఈమెయిల్స్‌ను కనుగొనండి
+menu-make-rule = నియమాన్ని క్రియేట్ చేయండి…
 
 ## Snackbar after an action on mail in the list
 
@@ -425,6 +455,8 @@ toast-moved = { $kind ->
        *[other] { $count } మెసేజ్‌లు తరలించబడ్డాయి.
     }
 }
+toast-label-added = “{ $label }” లేబుల్ జోడించబడింది.
+toast-label-removed = “{ $label }” లేబుల్ తీసివేయబడింది.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] సంభాషణకు నక్షత్రం ఉంచబడింది.

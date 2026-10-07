@@ -189,6 +189,8 @@ list-empty-tab = ไม่มีอีเมลใน { $tab }
 list-empty-tab-unknown = ไม่มีอีเมลในแท็บนี้
 list-empty-folder = ไม่มีข้อความใน { $folder }
 list-empty-folder-unknown = ไม่มีข้อความในโฟลเดอร์นี้
+list-empty-waiting = ไม่มีอีเมลที่รอการตอบกลับ
+list-empty-reminders = ไม่มีการช่วยเตือน กด H บนอีเมลเพื่อเพิ่ม
 list-first-sync = กำลังรับอีเมลของคุณ…
 list-first-sync-detail = อีเมลจะแสดงที่นี่เมื่อมาถึง
 
@@ -208,6 +210,14 @@ row-tracking-clicked = เปิดแล้ว { $opened } จาก { $recipie
 row-pin = ปักหมุดไว้ด้านบน
 row-unpin = เลิกปักหมุด
 row-snoozed-until = เลื่อนเวลาไว้จนถึง { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = วันนี้
+snoozed-group-tomorrow = พรุ่งนี้
+snoozed-group-this-week = สัปดาห์นี้
+snoozed-group-later = ภายหลัง
+row-follow-up-step = ติดตามครั้งที่ { $step } จาก { $steps } · { $date }
+row-follow-up-waiting = การติดตามรออยู่
+row-reminder = เตือน { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,6 +240,7 @@ menu-not-important = ทำเครื่องหมายว่าไม่�
 menu-pin = ปักหมุดไว้ด้านบน
 menu-unpin = เลิกปักหมุด
 menu-snooze = เลื่อนเวลา
+menu-remind = เตือนฉัน
 menu-unsnooze = ยกเลิกการเลื่อนเวลา
 menu-add-to-tasks = เพิ่มในงาน
 menu-schedule-meeting = นัดประชุม
@@ -241,7 +252,26 @@ menu-move-to = ย้ายไปที่
 menu-follow-up = ติดตามผล
 menu-more = เพิ่มเติม
 menu-move-to-heading = ย้ายไปที่:
+menu-move-to-search = ย้ายไปที่…
+menu-label-as = ติดป้ายกำกับ
+menu-label-as-search = ติดป้ายกำกับ…
+menu-no-folder = ไม่มีโฟลเดอร์ชื่อ “{ $name }”
+menu-no-label = ไม่มีป้ายกำกับชื่อ “{ $name }”
+menu-create-folder = สร้าง “{ $name }”
+menu-always-move = ย้ายอีเมลจาก { $name } มาที่นี่เสมอ
+toast-always-move-failed = ย้ายอีเมลแล้ว แต่สร้างกฎไม่สำเร็จ: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] การสนทนา { $count } รายการ
+       *[other] การสนทนา { $count } รายการ
+    }
+   *[message] { $count ->
+        [one] ข้อความ { $count } รายการ
+       *[other] ข้อความ { $count } รายการ
+    }
+}
 menu-find-from = ค้นหาอีเมลจาก { $name }
+menu-make-rule = สร้างกฎ…
 
 ## Snackbar after an action on mail in the list
 
@@ -257,6 +287,8 @@ toast-moved = { $kind ->
     [conversation] ย้ายการสนทนา { $count } รายการแล้ว
    *[message] ย้ายข้อความ { $count } รายการแล้ว
 }
+toast-label-added = เพิ่มป้ายกำกับ “{ $label }” แล้ว
+toast-label-removed = นำป้ายกำกับ “{ $label }” ออกแล้ว
 toast-starred = { $kind ->
     [conversation] ติดดาวการสนทนา { $count } รายการแล้ว
    *[message] ติดดาวข้อความ { $count } รายการแล้ว

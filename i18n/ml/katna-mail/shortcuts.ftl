@@ -9,6 +9,13 @@ shortcut-group-actions = പ്രവർത്തനങ്ങൾ
 shortcut-group-go-to = ഇതിലേക്ക് പോകുക
 shortcut-group-app = ആപ്ലിക്കേഷൻ
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = കീബോർഡ് കുറുക്കുവഴികൾ
+shortcuts-dialog-search = കുറുക്കുവഴി കണ്ടെത്തുക
+shortcuts-dialog-none = പൊരുത്തപ്പെടുന്ന കുറുക്കുവഴിയില്ല
+shortcuts-dialog-close = അടയ്ക്കുക
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = അടുത്ത സംഭാഷണം
@@ -37,6 +44,8 @@ shortcut-mark-read = വായിച്ചതായി അടയാളപ്പ�
 shortcut-mark-unread = വായിക്കാത്തതായി അടയാളപ്പെടുത്തുക
 shortcut-star = നക്ഷത്രമിടുക അല്ലെങ്കിൽ നീക്കുക
 shortcut-add-to-tasks = ടാസ്‌ക്കുകളിലേക്ക് ചേർക്കുക
+shortcut-snooze = സ്‌നൂസ് ചെയ്യുക
+shortcut-remind = എന്നെ ഓർമ്മിപ്പിക്കുക
 shortcut-important = പ്രധാനപ്പെട്ടതായി അടയാളപ്പെടുത്തുക
 shortcut-not-important = പ്രധാനപ്പെട്ടതല്ലെന്ന് അടയാളപ്പെടുത്തുക
 shortcut-mute = സംഭാഷണം മ്യൂട്ട് അല്ലെങ്കിൽ അൺമ്യൂട്ട് ചെയ്യുക

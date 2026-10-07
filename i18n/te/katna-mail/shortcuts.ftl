@@ -9,6 +9,13 @@ shortcut-group-actions = చర్యలు
 shortcut-group-go-to = దీనికి వెళ్లండి
 shortcut-group-app = అప్లికేషన్
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = కీబోర్డ్ షార్ట్‌కట్‌లు
+shortcuts-dialog-search = షార్ట్‌కట్‌ను కనుగొనండి
+shortcuts-dialog-none = ఏ షార్ట్‌కట్ సరిపోలలేదు
+shortcuts-dialog-close = మూసివేయండి
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = తర్వాతి సంభాషణ
@@ -37,6 +44,8 @@ shortcut-mark-read = చదివినట్లు గుర్తు పెట
 shortcut-mark-unread = చదవనట్లు గుర్తు పెట్టండి
 shortcut-star = నక్షత్రం ఉంచండి లేదా తీసివేయండి
 shortcut-add-to-tasks = టాస్క్‌లకు జోడించండి
+shortcut-snooze = స్నూజ్ చేయండి
+shortcut-remind = నాకు గుర్తు చేయండి
 shortcut-important = ముఖ్యమైనదిగా గుర్తు పెట్టండి
 shortcut-not-important = ముఖ్యమైనది కాదని గుర్తు పెట్టండి
 shortcut-mute = సంభాషణను మ్యూట్ లేదా అన్‌మ్యూట్ చేయండి

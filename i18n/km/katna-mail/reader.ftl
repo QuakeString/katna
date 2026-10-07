@@ -8,6 +8,8 @@ reader-close = បិទ
 reader-back = ថយក្រោយ
 reader-mark-unread = សម្គាល់ថាមិនទាន់អាន
 reader-move-to = ផ្លាស់ទីទៅ
+reader-snooze = ពន្យារពេល
+reader-remind = រំលឹកខ្ញុំ
 reader-more = ច្រើនទៀត
 reader-original-colors = បង្ហាញពណ៌ដើម
 reader-dark-colors = បង្ហាញជាពណ៌ងងឹត
@@ -35,6 +37,7 @@ reader-tick-bounced = មិនបានបញ្ជូន៖ ត្រឡប់
 reader-tick-read = បានអាន { $when } (បង្កាន់ដៃអាន)
 reader-tick-opened = បានបើក លើកចុងក្រោយ { $when } (ការតាមដានការបើក)
 reader-starred = មានផ្កាយ
+reader-chip-remove = ដក { $label } ចេញ
 reader-not-starred = គ្មានផ្កាយ
 reader-too-long = សារនេះវែងពេក មិនអាចបង្ហាញទាំងស្រុងបានទេ។
 reader-encrypted-images = រូបភាពពីបណ្ដាញមិនដែលត្រូវបានផ្ទុកក្នុងសំបុត្រដែលបានអ៊ិនគ្រីបទេ។
@@ -52,6 +55,7 @@ reader-details-subject = ប្រធានបទ៖
 
 reader-downloading = កំពុងទាញយកសារនេះពីម៉ាស៊ីនមេ…
 reader-download-failed = មិនអាចទាញយកសារនេះបានទេ។
+reader-download-offline = គណនីនេះស្ថិតនៅក្រៅបណ្ដាញ។ សូមចូលលើបណ្ដាញ ដើម្បីទាញយកសារនេះ។
 reader-try-again = ព្យាយាមម្ដងទៀត
 
 ## Reply row
@@ -95,6 +99,7 @@ tracking-clicked = { $who } បានចុចតំណ { $clicks } ដង ល�
 tracking-maybe-opened = { $who } ប្រហែលជាបានបើកវា (Apple Mail ផ្ទុករូបភាពដើម្បីឯកជនភាព)
 tracking-seen-none = មិនទាន់មាននរណាបើកវា ឬចុចតំណនៅឡើយទេ
 tracking-receipt = { $who } បានផ្ញើបង្កាន់ដៃអាន
+tracking-receipt-read = { $who } បានអានវា (បង្កាន់ដៃអាន), { $when }
 tracking-receipt-displayed = បង្កាន់ដៃអាន៖ { $who } បានបើកសាររបស់អ្នក
 tracking-receipt-other = បង្កាន់ដៃអាន៖ { $who } បានលុប ឬដោះស្រាយសាររបស់អ្នក ដោយមិនបានបើកវា
 

@@ -20,12 +20,20 @@ viewer-page-count = នៃ { $count }
 viewer-go-to-page-tip = វាយលេខទំព័រ រួចចុច Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = បង្វិលស្របទ្រនិចនាឡិកា (Ctrl+R)
 viewer-rotate-anticlockwise-tip = បង្វិលច្រាសទ្រនិចនាឡិកា (Ctrl+Shift+R)
+viewer-dark-pages-tip = ទំព័រងងឹត
+viewer-light-pages-tip = បង្ហាញទំព័រដូចដើម
 viewer-fit-page-tip = សមនឹងទំព័រ
 viewer-fit-picture-tip = សមនឹងបង្អួច
 viewer-fit-width-tip = សមនឹងទទឹង
 viewer-real-size-tip = ទំហំពិត (1:1)
 viewer-page-back-tip = ទំព័រមុន
 viewer-page-on-tip = ទំព័របន្ទាប់
+viewer-more-tip = ច្រើនទៀត
+viewer-zoom-in = ពង្រីក
+viewer-zoom-out = បង្រួម
+viewer-real-size = ទំហំពិត
+viewer-rotate-anticlockwise = បង្វិលច្រាសទ្រនិចនាឡិកា
+viewer-rotate-clockwise = បង្វិលតាមទ្រនិចនាឡិកា
 
 ## Marking up a PDF
 
