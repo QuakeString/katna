@@ -24,7 +24,7 @@ use katna_ui::{InputEvent, TextInput};
 use super::super::MailWindow;
 use super::checks::{Passed, SendCheck};
 use super::recipients::Field;
-use super::{Mode, schedule};
+use super::{Mode, follow_up, schedule};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{filled_button, icon, icon_button, icon_button_colored, menu, menu_item, tip};
 
@@ -39,8 +39,10 @@ pub(in crate::window) enum Popup {
     Kind,
     /// Schedule send's suggested times.
     Schedule,
-    /// Schedule send's date and time picker.
+    /// Schedule send's date and time picker, also when to follow up.
     PickTime,
+    /// Follow up if no reply: when, and remind or send.
+    FollowUp,
     Font,
     Size,
     Colors,
@@ -141,6 +143,11 @@ pub(in crate::window) struct Dialog {
     grid: (usize, usize),
     /// The name to save the message under as a template.
     pub(super) template_name: Entity<TextInput>,
+    /// The date and time picker chooses when to follow up, not when to
+    /// send.
+    pub(super) for_follow_up: bool,
+    /// The follow-up popover's list of templates is open.
+    pub(super) follow_up_templates: bool,
     /// Holds the keys while a dialog without a field is open, so Enter
     /// and Esc answer it rather than type into the message.
     focus: FocusHandle,
@@ -171,6 +178,8 @@ impl Dialog {
             day: today,
             grid: (0, 0),
             template_name: input(tr!("compose-tool-template-name"), cx),
+            for_follow_up: false,
+            follow_up_templates: false,
             focus: cx.focus_handle(),
         }
     }
@@ -712,6 +721,19 @@ impl MailWindow {
         let core = if self.ai_allowed() { 3 } else { 2 };
         let room = width - ACTIONS_FIXED - pill;
         let slots = |room: f32| (room / TOOL_WIDTH).floor() as i32;
+        // The follow-up's chip shows what is set; the tools beside it fold
+        // into More to make room, while formatting and writing help fit.
+        let on = compose.follow_up.on();
+        let chip = on && slots(room - follow_up::CHIP_WIDTH) >= core;
+        let chip_icon = on && !chip;
+        let room = room
+            - if chip {
+                follow_up::CHIP_WIDTH
+            } else if chip_icon {
+                follow_up::CHIP_ICON_WIDTH
+            } else {
+                0.0
+            };
         let compact = slots(room) < core;
         let bin_folds = slots(room + SEND_COMPACT_SAVES) < core;
         let fit = slots(
@@ -793,6 +815,9 @@ impl MailWindow {
             })
             .when(open(Popup::Schedule), |d| {
                 d.child(above(self.render_schedule_menu(th, cx)))
+            })
+            .when(open(Popup::FollowUp), |d| {
+                d.child(above(self.render_follow_up(th, cx)))
             });
         let tool = |id: &'static str, name: &'static str, label: String| {
             icon_button(id, name, TRAY_ICON, th)
@@ -950,6 +975,9 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .child(send)
+            .when(chip || chip_icon, |d| {
+                d.child(self.render_follow_up_chip(chip_icon, th, cx))
+            })
             .child(div().w(px(8.0)))
             .child(tray)
             .child(div().flex_1())
@@ -1070,57 +1098,11 @@ impl MailWindow {
                 )
             })
             .child(menu_divider(th))
-            .child(self.render_follow_up_choice(th, cx))
-            .into_any_element()
-    }
-
-    /// "Remind me if no reply" in the send menu: when to bring the
-    /// conversation back if nobody answers (`docs/ARCHITECTURE.md` §10.1).
-    fn render_follow_up_choice(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
-        const DAY: u32 = 24 * 60 * 60;
-        let chosen = self.compose.as_ref().map_or(0, |c| c.follow_up);
-        let choices = [
-            (0, tr!("follow-up-off")),
-            (DAY, tr!("follow-up-days", days = 1)),
-            (3 * DAY, tr!("follow-up-days", days = 3)),
-            (7 * DAY, tr!("follow-up-days", days = 7)),
-        ];
-        div()
             .child(
-                div()
-                    .px(px(16.0))
-                    .py(px(6.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(14.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(icon("reply", th.text_dim, 20.0))
-                    .child(tr!("follow-up-title")),
+                tool_item("compose-follow-up", "history", &tr!("follow-up-menu"), th)
+                    .on_click(cx.listener(|this, _, window, cx| this.open_follow_up(window, cx))),
             )
-            .children(choices.into_iter().map(|(after, label)| {
-                div()
-                    .id(("compose-follow-up", after))
-                    .h(px(32.0))
-                    .pl(px(50.0))
-                    .pr(px(16.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
-                    .child(div().flex_1().child(label))
-                    .when(after == chosen, |d| {
-                        d.child(icon("check", th.text_dim, 18.0))
-                    })
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        if let Some(c) = &mut this.compose {
-                            c.follow_up = after;
-                            c.popup = None;
-                        }
-                        cx.notify();
-                    }))
-            }))
+            .into_any_element()
     }
 
     fn render_schedule_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -1181,24 +1163,42 @@ impl MailWindow {
             .children(items)
             .child(menu_divider(th))
             .child(
-                tool_item("schedule-pick", "calendar", &tr!("schedule-pick"), th)
-                    .on_click(cx.listener(|this, _, window, cx| this.open_time_picker(window, cx))),
+                tool_item("schedule-pick", "calendar", &tr!("schedule-pick"), th).on_click(
+                    cx.listener(|this, _, window, cx| {
+                        if let Some(c) = &mut this.compose {
+                            c.dialog.for_follow_up = false;
+                        }
+                        this.open_time_picker(window, cx)
+                    }),
+                ),
             )
             .into_any_element()
     }
 
-    fn open_time_picker(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+    pub(super) fn open_time_picker(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let now = jiff::Timestamp::now().to_zoned(self.tz.clone());
         let Some(c) = &mut self.compose else {
             return;
         };
-        let tomorrow = now.date().tomorrow().unwrap_or(now.date());
-        c.dialog.day = tomorrow;
-        c.dialog.month = tomorrow;
+        // A follow-up starts three days on, when working hours begin.
+        let (days, hour) = if c.dialog.for_follow_up {
+            (3, 9)
+        } else {
+            (1, 8)
+        };
+        let day = now
+            .date()
+            .checked_add(jiff::Span::new().days(days))
+            .unwrap_or(now.date());
+        c.dialog.day = day;
+        c.dialog.month = day;
         c.popup = Some(Popup::PickTime);
         let time = c.dialog.time.clone();
         time.update(cx, |t, cx| {
-            t.set_text(schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0)), cx);
+            t.set_text(
+                schedule::clock(jiff::civil::Time::constant(hour, 0, 0, 0)),
+                cx,
+            );
             t.select_all_text(cx);
         });
         window.focus(&time.focus_handle(cx), cx);
@@ -1224,6 +1224,10 @@ impl MailWindow {
             self.show_snackbar(tr!("schedule-no-such-time"), None, cx);
             return;
         };
+        if c.dialog.for_follow_up {
+            self.follow_up_picked(at, cx);
+            return;
+        }
         self.send_compose(Some(at), false, Passed::default(), window, cx);
     }
 
@@ -3410,82 +3414,96 @@ impl MailWindow {
                 .child(d)
         });
         let (prev, next) = (cx.listener(step(-1)), cx.listener(step(1)));
-        Self::dialog_card(th, 330.0, tr!("schedule-pick"))
-            .child(
-                div()
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .child(
-                        div()
-                            .flex_1()
-                            .text_size(px(14.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .child(format::month_year(month)),
-                    )
-                    .child(
-                        icon_button("pick-prev", "chevron-left", 20.0, th)
-                            .size(px(32.0))
-                            .on_click(prev),
-                    )
-                    .child(
-                        icon_button("pick-next", "chevron-right", 20.0, th)
-                            .size(px(32.0))
-                            .on_click(next),
-                    ),
-            )
-            .child(
-                div()
-                    .mt(px(8.0))
-                    .w(px(7.0 * 40.0))
-                    .flex()
-                    .flex_row()
-                    .flex_wrap()
-                    .gap_x(px(4.0))
-                    .children(weekdays)
-                    .children(days),
-            )
-            .child(
-                div()
-                    .mt(px(12.0))
-                    .flex()
-                    .flex_row()
-                    .gap(px(12.0))
-                    .child(
-                        div()
-                            .flex_1()
-                            .h(px(40.0))
-                            .px(px(12.0))
-                            .flex()
-                            .items_center()
-                            .rounded(px(6.0))
-                            .border_1()
-                            .border_color(rgba(th.outline))
-                            .text_size(px(14.0))
-                            .child(format::day_month_year(
-                                day.to_datetime(jiff::civil::Time::midnight()),
-                            )),
-                    )
-                    .child(
-                        div()
-                            .w(px(110.0))
-                            .h(px(40.0))
-                            .px(px(12.0))
-                            .flex()
-                            .items_center()
-                            .rounded(px(6.0))
-                            .border_1()
-                            .border_color(rgba(th.accent))
-                            .text_size(px(14.0))
-                            .child(compose.dialog.time.clone()),
-                    ),
-            )
-            .child(
-                self.dialog_buttons(th, tr!("schedule-send"), cx, |this, window, cx| {
-                    this.schedule_picked(window, cx)
-                }),
-            )
-            .into_any_element()
+        let for_follow_up = compose.dialog.for_follow_up;
+        Self::dialog_card(
+            th,
+            330.0,
+            if for_follow_up {
+                tr!("follow-up-pick-title")
+            } else {
+                tr!("schedule-pick")
+            },
+        )
+        .child(
+            div()
+                .flex()
+                .flex_row()
+                .items_center()
+                .child(
+                    div()
+                        .flex_1()
+                        .text_size(px(14.0))
+                        .font_weight(FontWeight::MEDIUM)
+                        .child(format::month_year(month)),
+                )
+                .child(
+                    icon_button("pick-prev", "chevron-left", 20.0, th)
+                        .size(px(32.0))
+                        .on_click(prev),
+                )
+                .child(
+                    icon_button("pick-next", "chevron-right", 20.0, th)
+                        .size(px(32.0))
+                        .on_click(next),
+                ),
+        )
+        .child(
+            div()
+                .mt(px(8.0))
+                .w(px(7.0 * 40.0))
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .gap_x(px(4.0))
+                .children(weekdays)
+                .children(days),
+        )
+        .child(
+            div()
+                .mt(px(12.0))
+                .flex()
+                .flex_row()
+                .gap(px(12.0))
+                .child(
+                    div()
+                        .flex_1()
+                        .h(px(40.0))
+                        .px(px(12.0))
+                        .flex()
+                        .items_center()
+                        .rounded(px(6.0))
+                        .border_1()
+                        .border_color(rgba(th.outline))
+                        .text_size(px(14.0))
+                        .child(format::day_month_year(
+                            day.to_datetime(jiff::civil::Time::midnight()),
+                        )),
+                )
+                .child(
+                    div()
+                        .w(px(110.0))
+                        .h(px(40.0))
+                        .px(px(12.0))
+                        .flex()
+                        .items_center()
+                        .rounded(px(6.0))
+                        .border_1()
+                        .border_color(rgba(th.accent))
+                        .text_size(px(14.0))
+                        .child(compose.dialog.time.clone()),
+                ),
+        )
+        .child(self.dialog_buttons(
+            th,
+            if for_follow_up {
+                tr!("follow-up-done")
+            } else {
+                tr!("schedule-send")
+            },
+            cx,
+            |this, window, cx| this.schedule_picked(window, cx),
+        ))
+        .into_any_element()
     }
 
     // Signature.

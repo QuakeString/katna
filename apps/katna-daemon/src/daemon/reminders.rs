@@ -8,9 +8,12 @@
 //!   remembers where they came from. When the time comes they go back,
 //!   unread, sorted as if they had just arrived, with a notification.
 //! - A follow-up reminder waits on a sent message. When it is due and the
-//!   conversation has nothing newer (no reply, no second message), the
-//!   message is put in the Inbox too (a label on Gmail), unread and on top,
-//!   with a notification.
+//!   conversation has nothing newer (no reply, no second message; an
+//!   auto-reply does not count), the message is put in the Inbox too (a
+//!   label on Gmail), unread and on top, with a notification. Or Katna
+//!   sends the follow-up the user wrote, in working hours, once or twice;
+//!   one that fell due while the computer was off is not sent late but
+//!   waits for the user.
 //!
 //! Both run only while the computer is on; one that fell due while it was
 //! off fires when the daemon starts.
@@ -18,11 +21,13 @@
 use std::collections::{BTreeMap, HashMap};
 use std::sync::Arc;
 
-use katna_core::{AccountId, AccountKind};
+use jiff::tz::TimeZone;
+use katna_core::{AccountId, AccountKind, MailCategory};
 use katna_i18n::tr;
 use katna_meta::{Due, FollowUp, Snooze};
 use katna_store::{
-    FolderId, FolderRole, MessageFlags, MessageId, ParticipantRole, SendState, Store, StoredFolder,
+    FolderId, FolderRole, LaterMessage, MessageFlags, MessageId, ParticipantRole, SendState, Store,
+    StoredFolder,
 };
 use katna_sync::ops::{self, ChangeError};
 
@@ -39,6 +44,35 @@ const MIN_SNOOZE: i64 = 60;
 const RETRY: i64 = 3600;
 /// Lines of a reminder about several conversations.
 const LISTED: usize = 4;
+/// How late a follow-up may still go out on its own: later than this (the
+/// computer was off) it waits for the user.
+const LATE: i64 = 24 * 3600;
+/// Working hours, when follow-ups go out: weekdays from 9:00 to 17:00
+/// local time, as the Calendar's free time has them.
+const WORK_START: i8 = 9;
+const WORK_END: i8 = 17;
+/// Subjects of automatic answers (out of office, vacation, bounces) that
+/// carry no `Auto-Submitted` header, lower case.
+const AUTOMATIC_SUBJECTS: &[&str] = &[
+    "automatic reply",
+    "auto-reply",
+    "auto reply",
+    "autoreply",
+    "auto:",
+    "out of office",
+    "out of the office",
+    "vacation reply",
+    "undeliverable",
+    "delivery status notification",
+    "mail delivery failed",
+    "returned mail",
+    "abwesenheitsnotiz",
+    "réponse automatique",
+    "respuesta automática",
+    "risposta automatica",
+    "automatisch antwoord",
+    "resposta automática",
+];
 
 /// Whether `path` is the Snoozed folder: at the top, or inside the Inbox
 /// on servers that keep every folder there (`INBOX.Snoozed`).
@@ -215,6 +249,49 @@ impl Daemon {
     /// Reminds the user `after` seconds after outbox entry `outbox` is sent
     /// if nobody replied by then; 0 takes the reminder back.
     pub fn set_follow_up(&self, outbox: i64, after: i64) -> Result<(), CommandError> {
+        self.set_follow_up_with(outbox, after, None, 0)
+    }
+
+    /// Sends `mail` (a follow-up threaded under the message, without
+    /// `Date` and `Message-ID`) `after` seconds after outbox entry `outbox`
+    /// is sent if nobody replied by then, in working hours; with `again`,
+    /// a second time that many seconds later. 0 takes it back.
+    pub fn set_follow_up_mail(
+        &self,
+        outbox: i64,
+        after: i64,
+        again: i64,
+        mail: &[u8],
+    ) -> Result<(), CommandError> {
+        let mail = std::str::from_utf8(mail)
+            .map_err(|_| CommandError::InvalidArgs("the follow-up is not UTF-8 text".into()))?;
+        let envelope = katna_sync::outbox::envelope(mail.as_bytes()).map_err(|err| {
+            CommandError::InvalidArgs(format!("the follow-up cannot be sent: {err}"))
+        })?;
+        if envelope.to.is_empty() {
+            return Err(CommandError::InvalidArgs(
+                "the follow-up has no recipients".into(),
+            ));
+        }
+        self.set_follow_up_with(outbox, after, Some(mail.to_owned()), again.max(0))
+    }
+
+    /// Sends a follow-up that waits for the user now, as it is.
+    pub fn send_follow_up_now(&self, outbox: i64) -> Result<(), CommandError> {
+        let follow_up = katna_meta::follow_up_of(&self.store(), outbox)?
+            .filter(FollowUp::sends)
+            .ok_or_else(|| CommandError::InvalidArgs(format!("no follow-up on {outbox}")))?;
+        self.send_follow_up(outbox, &follow_up, unix_now())?;
+        Ok(())
+    }
+
+    fn set_follow_up_with(
+        &self,
+        outbox: i64,
+        after: i64,
+        mail: Option<String>,
+        again: i64,
+    ) -> Result<(), CommandError> {
         let mut store = self.store();
         if after <= 0 {
             katna_meta::clear_follow_up(&mut store, outbox)?;
@@ -241,10 +318,19 @@ impl Daemon {
                 .map_or(entry.send_at, |hold| hold.max(entry.send_at))
                 .saturating_add(after),
             after,
+            mail,
+            again,
+            ..FollowUp::default()
         };
         katna_meta::set_follow_up(&mut store, outbox, &follow_up)?;
         drop(store);
-        tracing::info!(outbox, after, "follow-up reminder set");
+        tracing::info!(
+            outbox,
+            after,
+            again,
+            sends = follow_up.sends(),
+            "follow-up set"
+        );
         self.wake_scheduler();
         Ok(())
     }
@@ -349,24 +435,78 @@ impl Daemon {
             later(&mut store)?;
             return Ok(None);
         }
-        let replied = copies
-            .iter()
-            .map(|&copy| store.has_later_in_thread(copy))
-            .collect::<katna_store::Result<Vec<bool>>>()?
-            .into_iter()
-            .any(|later| later);
-        katna_meta::clear_follow_up(&mut store, outbox)?;
+        let ours = &follow_up.sent;
+        let mut replied = false;
+        for &copy in &copies {
+            replied |= store
+                .later_in_thread(copy)?
+                .iter()
+                .any(|later| counts_as_reply(later, ours));
+        }
         if replied {
+            katna_meta::clear_follow_up(&mut store, outbox)?;
             tracing::info!(outbox, "follow-up not needed: the conversation went on");
             return Ok(None);
         }
-        let inbox = store
+        if follow_up.sends() {
+            let tz = TimeZone::system();
+            if now > working_time(follow_up.remind_at, &tz) + LATE {
+                // Not sent a day or more late: it waits for the user.
+                let mut waiting = follow_up.clone();
+                waiting.waiting = true;
+                katna_meta::set_follow_up(&mut store, outbox, &waiting)?;
+                drop(store);
+                tracing::info!(outbox, "follow-up waits: it fell due while off");
+                let message = self.surface_sent(account, copies.first().copied(), now)?;
+                return Ok(Some(Reminder {
+                    account,
+                    summary: tr!("notify-follow-up-waiting"),
+                    lines: vec![tr!(
+                        "notify-follow-up-waiting-to",
+                        subject = subject_or_none(&follow_up.subject)
+                    )],
+                    messages: message.into_iter().collect(),
+                }));
+            }
+            let at = working_time(now, &tz);
+            if at > now {
+                let mut later = follow_up.clone();
+                later.remind_at = at;
+                katna_meta::set_follow_up(&mut store, outbox, &later)?;
+                return Ok(None);
+            }
+            drop(store);
+            return self.send_follow_up(outbox, follow_up, now).map(Some);
+        }
+        katna_meta::clear_follow_up(&mut store, outbox)?;
+        drop(store);
+        let message = self.surface_sent(account, copies.first().copied(), now)?;
+        tracing::info!(outbox, "follow-up reminder");
+        Ok(Some(Reminder {
+            account,
+            summary: tr!("notify-no-reply"),
+            lines: vec![tr!(
+                "notify-no-reply-to",
+                subject = subject_or_none(&follow_up.subject)
+            )],
+            messages: message.into_iter().collect(),
+        }))
+    }
+
+    /// Puts the sent `message` of `account` in the Inbox too, unread and on
+    /// top. Returns it.
+    fn surface_sent(
+        &self,
+        account: AccountId,
+        message: Option<MessageId>,
+        now: i64,
+    ) -> Result<Option<MessageId>, CommandError> {
+        let inbox = self
+            .store()
             .folders(account)?
             .into_iter()
             .find(|f| f.role == Some(FolderRole::Inbox))
             .map(|f| f.id);
-        drop(store);
-        let message = copies.first().copied();
         if let (Some(message), Some(inbox)) = (message, inbox) {
             self.change(|store| {
                 let mut accounts = ops::copy_messages(store, &[message], inbox)?;
@@ -381,18 +521,47 @@ impl Daemon {
                 Ok(accounts)
             })?;
         }
-        tracing::info!(outbox, "follow-up reminder");
-        let subject = if follow_up.subject.trim().is_empty() {
-            tr!("notify-no-subject")
-        } else {
-            follow_up.subject.clone()
+        Ok(message)
+    }
+
+    /// Sends the follow-up of outbox entry `outbox` now, and sets the
+    /// second one if there is to be one.
+    fn send_follow_up(
+        &self,
+        outbox: i64,
+        follow_up: &FollowUp,
+        now: i64,
+    ) -> Result<Reminder, CommandError> {
+        let account = AccountId(follow_up.account);
+        let mail = follow_up.mail.as_deref().unwrap_or_default();
+        let id = self.queue_send(account, mail.as_bytes(), 0)?;
+        let mut store = self.store();
+        let sent = match store.outbox_entry(id)? {
+            Some(entry) => store.message_id_header(entry.message)?,
+            None => None,
         };
-        Ok(Some(Reminder {
+        let mut next = follow_up.clone();
+        next.sent.extend(sent);
+        next.waiting = false;
+        if follow_up.sends_again() {
+            next.remind_at = now.saturating_add(next.again);
+            katna_meta::set_follow_up(&mut store, outbox, &next)?;
+        } else {
+            katna_meta::clear_follow_up(&mut store, outbox)?;
+        }
+        let messages = store.messages_with_header(account, &follow_up.message_id)?;
+        drop(store);
+        tracing::info!(outbox, id, step = next.sent.len(), "follow-up sent");
+        self.wake_scheduler();
+        Ok(Reminder {
             account,
-            summary: tr!("notify-no-reply"),
-            lines: vec![tr!("notify-no-reply-to", subject = subject)],
-            messages: message.into_iter().collect(),
-        }))
+            summary: tr!("notify-follow-up-sent"),
+            lines: vec![tr!(
+                "notify-follow-up-sent-to",
+                subject = subject_or_none(&follow_up.subject)
+            )],
+            messages,
+        })
     }
 }
 
@@ -507,6 +676,65 @@ fn bring_back(
     ops::move_messages_from(store, &[message], Some(snoozed_in), to)
 }
 
+/// Whether a message later in the conversation is an answer: not one of
+/// the follow-ups Katna sent (`ours`), and not an automatic one.
+fn counts_as_reply(later: &LaterMessage, ours: &[String]) -> bool {
+    if later
+        .message_id
+        .as_ref()
+        .is_some_and(|id| ours.contains(id))
+    {
+        return false;
+    }
+    // Mail with `Auto-Submitted` is sorted into Updates; a person's reply
+    // never is.
+    if later.category == Some(MailCategory::Updates) {
+        return false;
+    }
+    let subject = later.subject.trim_start().to_lowercase();
+    !AUTOMATIC_SUBJECTS.iter().any(|s| subject.starts_with(s))
+}
+
+/// The first moment at or after `at` (Unix seconds) in working hours.
+fn working_time(at: i64, tz: &TimeZone) -> i64 {
+    use jiff::civil::Weekday;
+    let Ok(stamp) = jiff::Timestamp::from_second(at) else {
+        return at;
+    };
+    let second = |day: jiff::civil::Date, hour: i8| {
+        day.at(hour, 0, 0, 0)
+            .to_zoned(tz.clone())
+            .map(|z| z.timestamp().as_second())
+    };
+    let mut day = stamp.to_zoned(tz.clone()).date();
+    for _ in 0..7 {
+        if !matches!(day.weekday(), Weekday::Saturday | Weekday::Sunday) {
+            let (Ok(start), Ok(end)) = (second(day, WORK_START), second(day, WORK_END)) else {
+                return at;
+            };
+            if at < start {
+                return start;
+            }
+            if at < end {
+                return at;
+            }
+        }
+        let Ok(next) = day.tomorrow() else {
+            return at;
+        };
+        day = next;
+    }
+    at
+}
+
+fn subject_or_none(subject: &str) -> String {
+    if subject.trim().is_empty() {
+        tr!("notify-no-subject")
+    } else {
+        subject.to_owned()
+    }
+}
+
 /// "Sender: Subject" for each conversation of `messages`, the first few.
 fn conversation_lines(store: &Store, messages: &[MessageId]) -> Vec<String> {
     let Ok(stored) = store.messages_by_id(messages) else {
@@ -555,5 +783,69 @@ mod tests {
         assert!(!is_snoozed_path("Work/Snoozed"));
         assert!(!is_snoozed_path("Snoozed old"));
         assert!(!is_snoozed_path("INBOX"));
+    }
+
+    #[test]
+    fn follow_ups_go_out_in_working_hours() {
+        let tz = TimeZone::get("Asia/Kolkata").unwrap();
+        let at = |text: &str| {
+            text.parse::<jiff::civil::DateTime>()
+                .unwrap()
+                .to_zoned(tz.clone())
+                .unwrap()
+                .timestamp()
+                .as_second()
+        };
+        // Wednesday 7 Oct 2026.
+        assert_eq!(
+            working_time(at("2026-10-07T10:30"), &tz),
+            at("2026-10-07T10:30")
+        );
+        assert_eq!(
+            working_time(at("2026-10-07T06:00"), &tz),
+            at("2026-10-07T09:00")
+        );
+        assert_eq!(
+            working_time(at("2026-10-07T17:00"), &tz),
+            at("2026-10-08T09:00")
+        );
+        // Friday evening and the weekend wait for Monday.
+        assert_eq!(
+            working_time(at("2026-10-09T18:00"), &tz),
+            at("2026-10-12T09:00")
+        );
+        assert_eq!(
+            working_time(at("2026-10-11T12:00"), &tz),
+            at("2026-10-12T09:00")
+        );
+    }
+
+    #[test]
+    fn auto_replies_and_own_follow_ups_are_not_replies() {
+        let later = |id: &str, subject: &str, category| LaterMessage {
+            message_id: Some(id.to_owned()),
+            subject: subject.to_owned(),
+            category,
+        };
+        let ours = ["f1@katna".to_owned()];
+        let primary = Some(MailCategory::Primary);
+        assert!(counts_as_reply(&later("r@x", "Re: Offer", primary), &ours));
+        assert!(counts_as_reply(&later("r@x", "Re: Offer", None), &ours));
+        assert!(!counts_as_reply(
+            &later("f1@katna", "Re: Offer", primary),
+            &ours
+        ));
+        assert!(!counts_as_reply(
+            &later("a@x", "Automatic reply: Offer", primary),
+            &ours
+        ));
+        assert!(!counts_as_reply(
+            &later("a@x", "Out of Office: Offer", primary),
+            &ours
+        ));
+        assert!(!counts_as_reply(
+            &later("a@x", "Re: Offer", Some(MailCategory::Updates)),
+            &ours
+        ));
     }
 }

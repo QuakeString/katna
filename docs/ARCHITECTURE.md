@@ -1367,6 +1367,22 @@ this is local; Katna Server only adds opened/clicked events (§16).
   newer (a reply, or another message of the user's), it is dropped.
   Otherwise the message is copied into the Inbox too (a label on Gmail),
   marked unread and notified. `UndoSend` drops it.
+- **Follow-up mail** (October 2026, the owner's picks in the follow-up
+  study): the same value with `mail` (the follow-up the app wrote,
+  RFC 5322, `In-Reply-To` and `References` set, no `Date` or
+  `Message-ID`), `again` (seconds to a second follow-up, 0 for once; never
+  more than two), `sent` (their `Message-ID`s) and `waiting`
+  (`SetFollowUpMail(x outbox, x after, x again, ay mail)`). When due and
+  unanswered, it goes out through the outbox in working hours (weekdays
+  9:00 to 17:00 local; later a setting) and is notified. One due more than
+  a day before (the computer was off) is not sent late: it waits, with no
+  expiry, the conversation back in the Inbox, for `SendFollowUpNow(x
+  outbox)` or `SetFollowUp(outbox, 0)`. Not replies: Katna's own
+  follow-ups, mail sorted into Updates (it has `Auto-Submitted`) and
+  subjects of automatic answers (out of office, bounces). Encrypted mail
+  gets reminders only, as a follow-up would quote it in the clear. Kept on
+  this computer; sending from another device of the same Katna account
+  while this one is off is planned, not built.
 - **Surfaced** (`message`/`surfaced`: `{at}`, expires after 14 days): mail
   back from snooze or a reminder is listed as if it arrived at `at`, so it
   sits on top of the Inbox like new mail.
@@ -2265,7 +2281,12 @@ Gemini or confidential mode):
   page's small pictures and drives. An app joins the list once it has
   settings of its own. On a phone the list of the scope's pages
   fills the page until one is picked, and the back arrow comes back to
-  it. MCP server is still to come: it is fainter in the list and shows a
+  it. The MCP server itself is built: `katnactl mcp` (#756) speaks
+  the Model Context Protocol on stdio to AI assistants on the same
+  computer, with tools to list accounts and folders, search and read mail
+  and save plain-text drafts, and never sends, deletes, moves or flags
+  mail. Its Settings page (on or off, allow drafts, copy the client setup)
+  is still to come: until then it is fainter in the list and shows a
   "Coming soon" page saying what it will do. The rule editor
   (`window/rule_editor.rs`), a dialog, also opens from a mail's
   right-click menu (Make a rule…, filled in with its sender). It counts
@@ -3731,7 +3752,8 @@ their body, bytes deleted; see Settings above), `SyncNow(id)` (0 for every accou
 on)` (local only; more than ten pinned conversations is an error),
 `MoveMessages(ax, folder)`,
 `Snooze(ax messages, x until)`, `Unsnooze(ax messages)` and
-`SetFollowUp(x outbox, x after)` (§10.1),
+`SetFollowUp(x outbox, x after)`, `SetFollowUpMail(x outbox, x after, x
+again, ay mail)` and `SendFollowUpNow(x outbox)` (§10.1),
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
 message, u delay) → id`, `UndoSend(id) → b`, `RetrySend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,

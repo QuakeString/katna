@@ -193,7 +193,7 @@ impl MailWindow {
     }
 
     /// The name the open message goes out under, for `{my name}`.
-    fn compose_sender(&self) -> Mailbox {
+    pub(super) fn compose_sender(&self) -> Mailbox {
         let account = self.compose.as_ref().and_then(|c| {
             c.from
                 .and_then(|id| self.accounts.iter().find(|a| a.id == id))

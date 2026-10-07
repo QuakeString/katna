@@ -31,6 +31,16 @@ notify-snooze-back = Back from snooze
 notify-no-reply = No reply yet
 # Under it. $subject: the subject of the sent message.
 notify-no-reply-to = Nobody has replied to “{ $subject }”.
+# The title when Katna sent a follow-up for the user because nobody
+# replied. Under it: notify-follow-up-sent-to.
+notify-follow-up-sent = Follow-up sent
+# $subject: the subject of the sent message.
+notify-follow-up-sent-to = Nobody had replied to “{ $subject }”, so Katna followed up.
+# The title when a follow-up fell due while the computer was off: Katna
+# did not send it late, and the conversation is back in the Inbox.
+notify-follow-up-waiting = Follow-up not sent
+# Under it. $subject: the subject of the sent message.
+notify-follow-up-waiting-to = It was due while this computer was off. “{ $subject }” is back in your Inbox.
 
 ## Open and click tracking (only for mail sent with "Track opens and clicks")
 

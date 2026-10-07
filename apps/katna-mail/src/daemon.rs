@@ -744,6 +744,24 @@ pub async fn set_follow_up(connection: &Connection, id: i64, after: i64) -> Resu
         .map_err(|err| describe(&err))
 }
 
+/// Has the daemon send `mail` for the user `after` seconds after outbox
+/// entry `id` goes out if nobody replied by then, and again `again`
+/// seconds later (0 for once).
+pub async fn set_follow_up_mail(
+    connection: &Connection,
+    id: i64,
+    after: i64,
+    again: i64,
+    mail: &[u8],
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_follow_up_mail(id, after, again, mail)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Schedules an RFC 5322 message from `account` to go out at `at` (Unix
 /// seconds); Undo works for `delay` seconds. Returns its outbox ID.
 pub async fn schedule_send(
