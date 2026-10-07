@@ -695,8 +695,12 @@ impl NewMailNotices {
                                 }
                             }
                         }
-                        // The notification itself: the Calendar page, or
-                        // Tasks for a task, or the note.
+                        // The notification itself: the mail a task was
+                        // made from (Remind me), else the Calendar page,
+                        // or Tasks for a task, or the note.
+                        _ if let Some(message) = alarm.task.and_then(|t| task_mail(&daemon, t)) => {
+                            notices.open(message, false, token).await;
+                        }
                         _ => {
                             let page = match (alarm.task, alarm.note) {
                                 (Some(task), _) => format!("tasks:{task}"),
@@ -1076,6 +1080,16 @@ impl NewMailNotices {
         });
         crate::mail_app::run(&self.connection, action, params, token).await;
     }
+}
+
+/// The mail task `task` was made from, while it is still in a folder.
+fn task_mail(daemon: &Daemon, task: i64) -> Option<MessageId> {
+    let store = daemon.store();
+    let task = store.task(task).ok()??;
+    if task.mail.is_empty() {
+        return None;
+    }
+    store.message_with_header(&task.mail).ok()?
 }
 
 /// `message` as a reply reads it, when its body is downloaded.
