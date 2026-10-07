@@ -9,6 +9,13 @@ shortcut-group-actions = ການກະທຳ
 shortcut-group-go-to = ໄປທີ່
 shortcut-group-app = ແອັບພລິເຄຊັນ
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = ປຸ່ມລັດແປ້ນພິມ
+shortcuts-dialog-search = ຊອກຫາປຸ່ມລັດ
+shortcuts-dialog-none = ບໍ່ມີປຸ່ມລັດທີ່ກົງກັນ
+shortcuts-dialog-close = ປິດ
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = ການສົນທະນາຖັດໄປ
@@ -37,6 +44,8 @@ shortcut-mark-read = ໝາຍວ່າອ່ານແລ້ວ
 shortcut-mark-unread = ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ
 shortcut-star = ເພີ່ມ ຫຼື ລຶບດາວ
 shortcut-add-to-tasks = ເພີ່ມໃສ່ວຽກ
+shortcut-snooze = ເລື່ອນເວລາ
+shortcut-remind = ແຈ້ງເຕືອນຂ້ອຍ
 shortcut-important = ໝາຍວ່າສຳຄັນ
 shortcut-not-important = ໝາຍວ່າບໍ່ສຳຄັນ
 shortcut-mute = ປິດ ຫຼື ເປີດສຽງການສົນທະນາ

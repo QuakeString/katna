@@ -9,6 +9,13 @@ shortcut-group-actions = လုပ်ဆောင်ချက်များ
 shortcut-group-go-to = သို့ သွားရန်
 shortcut-group-app = အက်ပ်
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = ကီးဘုတ် ဖြတ်လမ်းများ
+shortcuts-dialog-search = ဖြတ်လမ်း ရှာရန်
+shortcuts-dialog-none = ကိုက်ညီသော ဖြတ်လမ်း မရှိပါ
+shortcuts-dialog-close = ပိတ်ရန်
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = နောက် စကားဝိုင်း
@@ -37,6 +44,8 @@ shortcut-mark-read = ဖတ်ပြီးအဖြစ် မှတ်ရန်
 shortcut-mark-unread = မဖတ်ရသေးအဖြစ် မှတ်ရန်
 shortcut-star = ကြယ်ပွင့်တပ်ရန် သို့မဟုတ် ဖြုတ်ရန်
 shortcut-add-to-tasks = လုပ်ဆောင်စရာများသို့ ထည့်ရန်
+shortcut-snooze = ခဏဆိုင်းရန်
+shortcut-remind = သတိပေးရန်
 shortcut-important = အရေးကြီးအဖြစ် မှတ်ရန်
 shortcut-not-important = အရေးမကြီးအဖြစ် မှတ်ရန်
 shortcut-mute = စကားဝိုင်းကို အသံပိတ်ရန် သို့မဟုတ် ပြန်ဖွင့်ရန်

@@ -10,6 +10,8 @@ nav-label-new = สร้างป้ายกำกับใหม่
 nav-folder-new = สร้างโฟลเดอร์ใหม่
 nav-menu-check-mail = ตรวจสอบอีเมลใหม่
 nav-menu-check-inbox = ตรวจสอบกล่องจดหมายนี้
+nav-unified-leave-out = ไม่รวมในกล่องจดหมายรวม
+nav-unified-bring-back = นำกลับเข้ากล่องจดหมายรวม
 nav-menu-sign-in-again = ลงชื่อเข้าใช้อีกครั้ง
 nav-menu-new-mail = อีเมลใหม่จากบัญชีนี้
 nav-menu-account-settings = การตั้งค่าบัญชี
@@ -22,6 +24,8 @@ nav-account-password-refused = รหัสผ่านไม่ถูกยอ�
 nav-account-storage = ใช้ไป { $used } จาก { $total }
 nav-menu-new-subfolder = โฟลเดอร์ใหม่ข้างใน
 nav-menu-new-sublabel = ป้ายกำกับใหม่ข้างใน
+nav-menu-rename = เปลี่ยนชื่อ
+nav-menu-delete = ลบ
 nav-menu-empty-trash = ล้างถังขยะ
 nav-account-unnamed = บัญชี { $number }
 nav-all-accounts = ทุกบัญชี
@@ -44,6 +48,10 @@ folder-spam = สแปม
 folder-trash = ถังขยะ
 folder-all-mail = จดหมายทั้งหมด
 folder-scheduled = กำหนดเวลาไว้
+folder-waiting = รอการตอบกลับ
+folder-waiting-short = รอตอบกลับ
+folder-reminders = การช่วยเตือน
+folder-outbox = กล่องขาออก
 folder-activity = กิจกรรม
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,44 @@ label-create = สร้าง
 label-creating = กำลังสร้าง…
 label-created = สร้างป้ายกำกับ “{ $name }” แล้ว
 label-folder-created = สร้างโฟลเดอร์ “{ $name }” แล้ว
+label-rename-title = เปลี่ยนชื่อป้ายกำกับ
+label-folder-rename-title = เปลี่ยนชื่อโฟลเดอร์
+label-rename = เปลี่ยนชื่อ
+label-renaming = กำลังเปลี่ยนชื่อ…
+label-renamed = เปลี่ยนชื่อป้ายกำกับเป็น “{ $name }” แล้ว
+label-folder-renamed = เปลี่ยนชื่อโฟลเดอร์เป็น “{ $name }” แล้ว
+
+## Deleting a folder or label (asked first)
+
+folder-delete-title = ลบ “{ $name }” ไหม
+folder-delete-body = { $count ->
+    [0] ไม่มีอีเมลอยู่ข้างใน โฟลเดอร์จะถูกลบออกจากเซิร์ฟเวอร์ จึงหายไปจากเว็บเมลและโทรศัพท์ของคุณด้วย
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] การสนทนา { $count } รายการในโฟลเดอร์จะย้ายไปที่ถังขยะ คุณจึงยังกู้คืนได้
+           *[other] การสนทนา { $count } รายการในโฟลเดอร์จะย้ายไปที่ถังขยะ คุณจึงยังกู้คืนได้
+        }
+       *[message] { $count ->
+            [one] ข้อความ { $count } รายการในโฟลเดอร์จะย้ายไปที่ถังขยะ คุณจึงยังกู้คืนได้
+           *[other] ข้อความ { $count } รายการในโฟลเดอร์จะย้ายไปที่ถังขยะ คุณจึงยังกู้คืนได้
+        }
+    } โฟลเดอร์จะถูกลบออกจากเซิร์ฟเวอร์ จึงหายไปจากเว็บเมลและโทรศัพท์ของคุณด้วย
+}
+folder-delete-forever-body = { $count ->
+    [0] ไม่มีอีเมลอยู่ข้างใน โฟลเดอร์จะถูกลบออกจากเซิร์ฟเวอร์ จึงหายไปจากเว็บเมลและโทรศัพท์ของคุณด้วย
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] การสนทนา { $count } รายการในโฟลเดอร์จะถูกลบอย่างถาวร เพราะบัญชีนี้ไม่มีถังขยะ
+           *[other] การสนทนา { $count } รายการในโฟลเดอร์จะถูกลบอย่างถาวร เพราะบัญชีนี้ไม่มีถังขยะ
+        }
+       *[message] { $count ->
+            [one] ข้อความ { $count } รายการในโฟลเดอร์จะถูกลบอย่างถาวร เพราะบัญชีนี้ไม่มีถังขยะ
+           *[other] ข้อความ { $count } รายการในโฟลเดอร์จะถูกลบอย่างถาวร เพราะบัญชีนี้ไม่มีถังขยะ
+        }
+    } โฟลเดอร์จะถูกลบออกจากเซิร์ฟเวอร์ จึงหายไปจากเว็บเมลและโทรศัพท์ของคุณด้วย
+}
+folder-delete-label-body = ป้ายกำกับจะถูกลบ ส่วนอีเมลยังคงอยู่ในจดหมายทั้งหมดและในป้ายกำกับอื่นๆ
+folder-delete-confirm = ลบโฟลเดอร์
+folder-delete-label-confirm = ลบป้ายกำกับ
+folder-deleted = ลบโฟลเดอร์ “{ $name }” แล้ว
+label-deleted = ลบป้ายกำกับ “{ $name }” แล้ว

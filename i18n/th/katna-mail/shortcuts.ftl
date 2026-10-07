@@ -9,6 +9,13 @@ shortcut-group-actions = การดำเนินการ
 shortcut-group-go-to = ไปที่
 shortcut-group-app = แอปพลิเคชัน
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = แป้นพิมพ์ลัด
+shortcuts-dialog-search = ค้นหาแป้นพิมพ์ลัด
+shortcuts-dialog-none = ไม่มีแป้นพิมพ์ลัดที่ตรงกัน
+shortcuts-dialog-close = ปิด
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = การสนทนาถัดไป
@@ -37,6 +44,8 @@ shortcut-mark-read = ทำเครื่องหมายว่าอ่า�
 shortcut-mark-unread = ทำเครื่องหมายว่ายังไม่อ่าน
 shortcut-star = ติดดาวหรือนำดาวออก
 shortcut-add-to-tasks = เพิ่มในงาน
+shortcut-snooze = เลื่อนเวลา
+shortcut-remind = เตือนฉัน
 shortcut-important = ทำเครื่องหมายว่าสำคัญ
 shortcut-not-important = ทำเครื่องหมายว่าไม่สำคัญ
 shortcut-mute = ปิดหรือเปิดเสียงการสนทนา

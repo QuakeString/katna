@@ -6,6 +6,10 @@
 
 about-tooltip = Katna ගැන
 about-tagline = Linux ඩෙස්ක්ටොප් සඳහා තැපැල් සහ දින දර්ශනය
+about-copy-version = අනුවාද විස්තර පිටපත් කරන්න
+about-version-copied = පිටපත් කළා
+about-version-built = සාදන ලද්දේ: { $date }
+about-version-system = පද්ධතිය: { $system }
 about-whats-new = අලුත් මොනවාද
 
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
@@ -21,11 +25,13 @@ about-update-ready = අනුවාදය { $version } ස්ථාපනය �
 about-update-ready-detail = යාවත්කාලීන කිරීම නිම කිරීමට Katna Mail යළි ඇරඹේ.
 about-update-confirm = අනුවාදය { $version } ස්ථාපනය කරන්නද?
 about-update-confirm-detail = Katna Mail වැසී, යාවත්කාලීන කිරීම ස්ථාපනය කර, ඔබ නැවතුණු තැනින්ම නැවත විවෘත වේ. ඔබේ පරිගණකය ඔබේ මුරපදය විමසනු ඇත.
+about-update-confirm-detail-windows = Katna Mail වසා, යාවත්කාලීනය ස්ථාපනය කර, මොහොතකින් නැවත විවෘත වේ.
 about-update-installing = අනුවාදය { $version } ස්ථාපනය වෙමින්…
 about-update-installing-detail = විවෘත වූ කවුළුවේ ඔබේ මුරපදය ඇතුළත් කරන්න.
+about-update-installing-detail-windows = Katna Mail දැන් වැසී, යාවත්කාලීනය ස්ථාපනය වූ පසු නැවත විවෘත වේ.
 about-update-cancelled = මුරපදය ලබා නොදුන් නිසා යාවත්කාලීන කිරීම ස්ථාපනය නොවීය.
 about-update-failed = යාවත්කාලීන කිරීම ස්ථාපනය කළ නොහැකි විය: { $error }
-about-update-unsupported = Katna Mail හි මෙම පිටපත ඔබේ පැකේජ කළමනාකරු විසින් යාවත්කාලීන කරනු ලැබේ.
+about-update-not-self-updating = Katna Mail හි මෙම පිටපත ස්වයංක්‍රීයව යාවත්කාලීන නොවේ. ඔබ එය ස්ථාපනය කළ ආකාරයටම යාවත්කාලීන කරන්න.
 about-update-restart-failed = යාවත්කාලීන කිරීම ස්ථාපනය කර ඇත, නමුත් Katna Mail යළි විවෘත කළ නොහැකි විය ({ $error }). එය ඔබම විවෘත කරන්න.
 about-update-check = යාවත්කාලීන කිරීම් සඳහා පරීක්ෂා කරන්න
 about-update-download = බාගත කරන්න
@@ -146,6 +152,7 @@ onboarding-katna-private = එයට වෙනම මුරපදයක් ඇ�
 onboarding-ready-title = සියල්ල සූදානම්
 onboarding-ready-lead = Katna ඔබේ තැපැල් ලබා ගනිමින් සිටී. ඒවා පැමිණෙන විට පෙන්වන අතර, නව තැපැල් ඉබේම දිස් වේ.
 onboarding-ready-lead-address = Katna { $address } හි තැපැල් ලබා ගනිමින් සිටී. ඒවා පැමිණෙන විට පෙන්වන අතර, නව තැපැල් ඉබේම දිස් වේ.
+onboarding-apps = ඔබ භාවිත කරන යෙදුම්
 onboarding-ready-tour = සියල්ල කොතැනදැයි බැලීමට මිනිත්තුවක චාරිකාවක් යමුද?
 onboarding-skip = දැනට මඟ හරින්න
 onboarding-take-tour = චාරිකාව ගන්න

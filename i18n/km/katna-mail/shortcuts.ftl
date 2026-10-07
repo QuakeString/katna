@@ -9,6 +9,13 @@ shortcut-group-actions = សកម្មភាព
 shortcut-group-go-to = ទៅកាន់
 shortcut-group-app = កម្មវិធី
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = ផ្លូវកាត់ក្ដារចុច
+shortcuts-dialog-search = ស្វែងរកផ្លូវកាត់
+shortcuts-dialog-none = គ្មានផ្លូវកាត់ដែលត្រូវគ្នាទេ
+shortcuts-dialog-close = បិទ
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = ការសន្ទនាបន្ទាប់
@@ -37,6 +44,8 @@ shortcut-mark-read = សម្គាល់ថាបានអាន
 shortcut-mark-unread = សម្គាល់ថាមិនទាន់អាន
 shortcut-star = ដាក់ ឬដកផ្កាយ
 shortcut-add-to-tasks = បន្ថែមទៅកិច្ចការ
+shortcut-snooze = ពន្យារពេល
+shortcut-remind = រំលឹកខ្ញុំ
 shortcut-important = សម្គាល់ថាសំខាន់
 shortcut-not-important = សម្គាល់ថាមិនសំខាន់
 shortcut-mute = បិទ ឬបើកសំឡេងការសន្ទនា

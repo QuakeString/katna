@@ -6,6 +6,8 @@
 
 tray-open-inbox = _ಇನ್‌ಬಾಕ್ಸ್ ತೆರೆಯಿರಿ
 tray-new-message = _ಹೊಸ ಸಂದೇಶ
+tray-new-task = ಹೊಸ _ಕಾರ್ಯ
+tray-new-note = ಹೊಸ _ಟಿಪ್ಪಣಿ
 tray-preferences = _ಸೆಟ್ಟಿಂಗ್‌ಗಳು
 tray-quit = _ನಿರ್ಗಮಿಸಿ
 
@@ -15,4 +17,11 @@ tray-unread = { $count ->
     [0] ಓದದ ಮೇಲ್ ಇಲ್ಲ
     [one] { $count } ಓದದ ಸಂದೇಶ
    *[other] { $count } ಓದದ ಸಂದೇಶಗಳು
+}
+tray-password-refused = { $address } ಗೆ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಬೇಕು
+tray-signed-out = { $address } ಗೆ ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಿ
+tray-accounts-need-you = { $count } ಖಾತೆಗಳಿಗೆ ನಿಮ್ಮ ಗಮನ ಬೇಕು
+tray-not-sent = { $count ->
+    [one] { $count } ಸಂದೇಶ ಕಳುಹಿಸಲಾಗಿಲ್ಲ
+   *[other] { $count } ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸಲಾಗಿಲ್ಲ
 }

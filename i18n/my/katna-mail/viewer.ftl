@@ -20,12 +20,20 @@ viewer-page-count = / { $count }
 viewer-go-to-page-tip = စာမျက်နှာနံပါတ် ရိုက်ထည့်ပြီး Enter နှိပ်ပါ (Ctrl+G)
 viewer-rotate-clockwise-tip = နာရီလက်တံအတိုင်း လှည့်ရန် (Ctrl+R)
 viewer-rotate-anticlockwise-tip = နာရီလက်တံ ပြောင်းပြန် လှည့်ရန် (Ctrl+Shift+R)
+viewer-dark-pages-tip = အမှောင် စာမျက်နှာများ
+viewer-light-pages-tip = စာမျက်နှာများကို မူလအတိုင်း ပြရန်
 viewer-fit-page-tip = စာမျက်နှာ အပြည့်
 viewer-fit-picture-tip = ဝင်းဒိုးနှင့် အံကိုက်
 viewer-fit-width-tip = အကျယ် အပြည့်
 viewer-real-size-tip = အမှန် အရွယ်အစား (1:1)
 viewer-page-back-tip = ယခင် စာမျက်နှာ
 viewer-page-on-tip = နောက် စာမျက်နှာ
+viewer-more-tip = နောက်ထပ်
+viewer-zoom-in = ချဲ့ရန်
+viewer-zoom-out = ချုံ့ရန်
+viewer-real-size = အရွယ်အစား အမှန်
+viewer-rotate-anticlockwise = နာရီလက်တံ ပြောင်းပြန် လှည့်ရန်
+viewer-rotate-clockwise = နာရီလက်တံအတိုင်း လှည့်ရန်
 
 ## Marking up a PDF
 

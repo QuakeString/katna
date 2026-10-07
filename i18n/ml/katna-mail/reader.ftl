@@ -8,6 +8,8 @@ reader-close = അടയ്ക്കുക
 reader-back = മടങ്ങുക
 reader-mark-unread = വായിക്കാത്തതായി അടയാളപ്പെടുത്തുക
 reader-move-to = ഇതിലേക്ക് നീക്കുക
+reader-snooze = സ്‌നൂസ് ചെയ്യുക
+reader-remind = എന്നെ ഓർമ്മിപ്പിക്കുക
 reader-more = കൂടുതൽ
 reader-original-colors = യഥാർത്ഥ നിറങ്ങൾ കാണിക്കുക
 reader-dark-colors = ഇരുണ്ട നിറങ്ങളിൽ കാണിക്കുക
@@ -35,6 +37,7 @@ reader-tick-bounced = എത്തിയില്ല: { $when } തിരിച�
 reader-tick-read = വായിച്ചു { $when } (വായിച്ചതിന്റെ രസീത്)
 reader-tick-opened = തുറന്നു, അവസാനം { $when } (ഓപ്പൺ ട്രാക്കിംഗ്)
 reader-starred = നക്ഷത്രമിട്ടത്
+reader-chip-remove = { $label } നീക്കം ചെയ്യുക
 reader-not-starred = നക്ഷത്രമിട്ടിട്ടില്ല
 reader-too-long = സന്ദേശം പൂർണ്ണമായി കാണിക്കാൻ കഴിയാത്തത്ര ദൈർഘ്യമേറിയതാണ്.
 reader-encrypted-images = എൻക്രിപ്റ്റ് ചെയ്‌ത മെയിലിൽ വെബിൽ നിന്നുള്ള ചിത്രങ്ങൾ ഒരിക്കലും ലോഡ് ചെയ്യില്ല.
@@ -52,6 +55,7 @@ reader-details-subject = വിഷയം:
 
 reader-downloading = ഈ സന്ദേശം സെർവറിൽ നിന്ന് ഡൗൺലോഡ് ചെയ്യുന്നു…
 reader-download-failed = ഈ സന്ദേശം ഡൗൺലോഡ് ചെയ്യാനായില്ല.
+reader-download-offline = ഈ അക്കൗണ്ട് ഓഫ്‌ലൈനാണ്. ഈ സന്ദേശം ഡൗൺലോഡ് ചെയ്യാൻ ഓൺലൈനാകുക.
 reader-try-again = വീണ്ടും ശ്രമിക്കുക
 
 ## Reply row
@@ -107,6 +111,7 @@ tracking-clicked = { $who } { $clicks ->
 tracking-maybe-opened = { $who } ഇത് തുറന്നിട്ടുണ്ടാകാം (സ്വകാര്യതയ്ക്കായി Apple Mail ചിത്രങ്ങൾ ലോഡ് ചെയ്യുന്നു)
 tracking-seen-none = ഇതുവരെ ആരും ഇത് തുറക്കുകയോ ലിങ്ക് തുറക്കുകയോ ചെയ്തിട്ടില്ല
 tracking-receipt = { $who } വായിച്ചതിന്റെ രസീത് അയച്ചു
+tracking-receipt-read = { $who } വായിച്ചു (റീഡ് രസീത്), { $when }
 tracking-receipt-displayed = വായിച്ചതിന്റെ രസീത്: { $who } നിങ്ങളുടെ സന്ദേശം തുറന്നു
 tracking-receipt-other = വായിച്ചതിന്റെ രസീത്: { $who } നിങ്ങളുടെ സന്ദേശം തുറക്കാതെ ഇല്ലാതാക്കുകയോ കൈകാര്യം ചെയ്യുകയോ ചെയ്തു
 

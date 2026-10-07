@@ -8,6 +8,8 @@ reader-close = ปิด
 reader-back = กลับ
 reader-mark-unread = ทำเครื่องหมายว่ายังไม่อ่าน
 reader-move-to = ย้ายไปที่
+reader-snooze = เลื่อนเวลา
+reader-remind = เตือนฉัน
 reader-more = เพิ่มเติม
 reader-original-colors = แสดงสีดั้งเดิม
 reader-dark-colors = แสดงด้วยสีเข้ม
@@ -35,6 +37,7 @@ reader-tick-bounced = ส่งไม่ถึง: ตีกลับเมื�
 reader-tick-read = อ่านแล้ว { $when } (ใบตอบรับการอ่าน)
 reader-tick-opened = เปิดแล้ว ล่าสุด { $when } (การติดตามการเปิด)
 reader-starred = ติดดาวแล้ว
+reader-chip-remove = นำ { $label } ออก
 reader-not-starred = ไม่ได้ติดดาว
 reader-too-long = ข้อความยาวเกินกว่าจะแสดงได้ทั้งหมด
 reader-encrypted-images = จะไม่โหลดรูปภาพจากเว็บในอีเมลที่เข้ารหัสเลย
@@ -52,6 +55,7 @@ reader-details-subject = หัวเรื่อง:
 
 reader-downloading = กำลังดาวน์โหลดข้อความนี้จากเซิร์ฟเวอร์…
 reader-download-failed = ดาวน์โหลดข้อความนี้ไม่ได้
+reader-download-offline = บัญชีนี้ออฟไลน์อยู่ ออนไลน์เพื่อดาวน์โหลดข้อความนี้
 reader-try-again = ลองอีกครั้ง
 
 ## Reply row
@@ -95,6 +99,7 @@ tracking-clicked = { $who } คลิกลิงก์ { $clicks } ครั้
 tracking-maybe-opened = { $who } อาจเปิดแล้ว (Apple Mail โหลดรูปภาพเพื่อความเป็นส่วนตัว)
 tracking-seen-none = ยังไม่มีใครเปิดหรือคลิกลิงก์
 tracking-receipt = { $who } ส่งใบตอบรับการอ่านแล้ว
+tracking-receipt-read = { $who } อ่านแล้ว (ใบตอบรับการอ่าน) { $when }
 tracking-receipt-displayed = ใบตอบรับการอ่าน: { $who } เปิดข้อความของคุณแล้ว
 tracking-receipt-other = ใบตอบรับการอ่าน: { $who } ลบหรือจัดการข้อความของคุณโดยไม่ได้เปิด
 

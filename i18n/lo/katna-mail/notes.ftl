@@ -5,6 +5,7 @@
 ## Side list and search
 
 notes-view-notes = ບັນທຶກ
+notes-view-reminders = ການແຈ້ງເຕືອນ
 notes-view-archive = ເກັບຖາວອນ
 notes-view-trash = ຖັງຂີ້ເຫຍື້ອ
 notes-edit-labels = ແກ້ໄຂປ້າຍກຳກັບ
@@ -23,11 +24,17 @@ notes-archive-empty = ບັນທຶກທີ່ເກັບຖາວອນຈ�
 notes-trash-empty = ບໍ່ມີບັນທຶກໃນຖັງຂີ້ເຫຍື້ອ
 notes-none-found = ບໍ່ພົບບັນທຶກທີ່ກົງກັນ
 notes-label-empty = ຍັງບໍ່ມີບັນທຶກທີ່ມີປ້າຍກຳກັບນີ້
+notes-reminders-empty = ບັນທຶກທີ່ມີການແຈ້ງເຕືອນທີ່ຈະມາເຖິງ ຈະສະແດງຢູ່ບ່ອນນີ້
 notes-trash-note = ບັນທຶກໃນຖັງຂີ້ເຫຍື້ອຈະຖືກລຶບຫຼັງຈາກ 7 ວັນ.
 notes-empty-trash = ລ້າງຖັງຂີ້ເຫຍື້ອ
 notes-ticked = { $count ->
    *[other] + ລາຍການທີ່ໝາຍແລ້ວ { $count } ລາຍການ
 }
+notes-select = ເລືອກບັນທຶກ
+notes-selected = { $count ->
+   *[other] ເລືອກແລ້ວ { $count }
+}
+notes-select-clear = ລ້າງການເລືອກ
 
 ## A note's buttons
 
@@ -42,6 +49,15 @@ notes-color = ຕົວເລືອກພື້ນຫຼັງ
 notes-checkboxes = ສະແດງ/ເຊື່ອງຊ່ອງໝາຍ
 notes-labels = ປ້າຍກຳກັບ
 notes-close = ປິດ
+notes-more = ເພີ່ມເຕີມ
+notes-make-copy = ສ້າງສຳເນົາ
+notes-remind = ແຈ້ງເຕືອນຂ້ອຍ
+notes-add-picture = ເພີ່ມຮູບພາບ
+notes-history = ປະຫວັດເວີຊັນ
+notes-ai = ຊ່ວຍຂ້ອຍຂຽນ
+notes-send-as-mail = ສົ່ງເປັນອີເມວ
+notes-save-markdown = ບັນທຶກເປັນ Markdown
+notes-save-pdf = ບັນທຶກເປັນ PDF
 
 ## The open note
 
@@ -49,6 +65,59 @@ notes-title = ຫົວຂໍ້
 notes-edited = ແກ້ໄຂເມື່ອ { $date }
 notes-on-this-computer = ໃນຄອມພິວເຕີເຄື່ອງນີ້
 notes-where = ບ່ອນເກັບບັນທຶກນີ້
+notes-untitled = ບັນທຶກທີ່ບໍ່ມີຊື່
+
+## Pictures
+
+notes-picture-choose = ເພີ່ມຮູບພາບ
+notes-picture-remove = ລຶບຮູບພາບອອກ
+notes-picture-too-big = ຮູບພາບຂະໜາດບໍ່ເກີນ { $size } ໃສ່ໃນບັນທຶກໄດ້
+notes-picture-kind = ໄຟລ໌ນັ້ນບໍ່ແມ່ນຮູບພາບທີ່ Katna ສະແດງໄດ້
+notes-picture-unreadable = ອ່ານ { $name } ບໍ່ໄດ້: { $error }
+
+## Reminders
+
+notes-remind-me = ແຈ້ງເຕືອນຂ້ອຍ
+notes-remind-off = ລຶບການແຈ້ງເຕືອນ
+notes-remind-in-the-past = ເລືອກເວລາທີ່ຍັງບໍ່ທັນຜ່ານໄປ
+notes-remind-today = ມື້ນີ້, { $time }
+notes-remind-tomorrow = ມື້ອື່ນ, { $time }
+notes-remind-weekday = { $day }, { $time }
+notes-reminder-set = ຕັ້ງການແຈ້ງເຕືອນໄວ້ { $when }
+notes-reminder-off = ລຶບການແຈ້ງເຕືອນແລ້ວ
+
+## Links between notes
+
+notes-link-note = ລິ້ງບັນທຶກ
+notes-link-new = ບັນທຶກໃໝ່ “{ $title }”
+notes-linked-from = ລິ້ງມາຈາກ
+notes-link-gone = ບັນທຶກນັ້ນບໍ່ມີຢູ່ແລ້ວ
+
+## Version history
+
+notes-versions = ເວີຊັນ
+notes-version-now = ຕອນນີ້
+notes-version-here = ທ່ານ, ໃນຄອມພິວເຕີເຄື່ອງນີ້
+notes-version-yesterday = ມື້ວານ, { $time }
+notes-version-changes = { $count ->
+   *[other] { $count } ການປ່ຽນແປງ
+}
+notes-version-from = ຈາກ { $device }
+notes-version-elsewhere = ຈາກອຸປະກອນອື່ນ
+notes-version-created = ສ້າງແລ້ວ
+notes-version-restore = ກູ້ຄືນເວີຊັນນີ້
+notes-version-restored = ກູ້ຄືນເວີຊັນແລ້ວ
+notes-history-none = ຍັງບໍ່ມີເວີຊັນກ່ອນໜ້າ
+
+## AI help
+
+notes-ai-tidy = ຈັດຂໍ້ຄວາມໃຫ້ຮຽບຮ້ອຍ
+notes-ai-checklist = ປ່ຽນເປັນລາຍການກວດ
+notes-ai-summarise = ສະຫຼຸບ
+notes-ai-empty = ຂຽນບາງຢ່າງກ່ອນ
+notes-ai-tidied = ຈັດຂໍ້ຄວາມແລ້ວ. Ctrl+Z ເພື່ອເອົາຄືນ.
+notes-ai-listed = ປ່ຽນເປັນລາຍການກວດແລ້ວ. Ctrl+Z ເພື່ອເອົາຄືນ.
+notes-ai-summarised = ເພີ່ມບົດສະຫຼຸບໄວ້ເທິງສຸດແລ້ວ
 
 ## Labels
 
@@ -87,6 +156,9 @@ notes-format-normal = ຂໍ້ຄວາມທຳມະດາ
 notes-format-bold = ຕົວໜາ
 notes-format-italic = ຕົວເອນ
 notes-format-underline = ຂີດກ້ອງ
+notes-format-quote = ຄຳອ້າງອີງ
+notes-format-code = ໂຄ້ດ
+notes-format-divider = ເສັ້ນແບ່ງ
 notes-format-clear = ລ້າງການຈັດຮູບແບບ
 
 ## Tasks
@@ -114,6 +186,31 @@ notes-archived = ເກັບບັນທຶກຖາວອນແລ້ວ
 notes-unarchived = ຍົກເລີກການເກັບບັນທຶກຖາວອນແລ້ວ
 notes-trashed = ຍ້າຍບັນທຶກໄປຖັງຂີ້ເຫຍື້ອແລ້ວ
 notes-restored = ກູ້ຄືນບັນທຶກແລ້ວ
+notes-saved = ບັນທຶກບັນທຶກແລ້ວ
+notes-pinned-count = { $count ->
+   *[other] ປັກໝຸດ { $count } ບັນທຶກແລ້ວ
+}
+notes-unpinned-count = { $count ->
+   *[other] ເອົາໝຸດອອກຈາກ { $count } ບັນທຶກແລ້ວ
+}
+notes-colored-count = { $count ->
+   *[other] ປ່ຽນສີຂອງ { $count } ບັນທຶກແລ້ວ
+}
+notes-archived-count = { $count ->
+   *[other] ເກັບຖາວອນ { $count } ບັນທຶກແລ້ວ
+}
+notes-unarchived-count = { $count ->
+   *[other] ເອົາ { $count } ບັນທຶກອອກຈາກບ່ອນເກັບຖາວອນແລ້ວ
+}
+notes-trashed-count = { $count ->
+   *[other] ຍ້າຍ { $count } ບັນທຶກໄປທີ່ຖັງຂີ້ເຫຍື້ອແລ້ວ
+}
+notes-restored-count = { $count ->
+   *[other] ກູ້ຄືນ { $count } ບັນທຶກແລ້ວ
+}
+notes-copied-count = { $count ->
+   *[other] ສ້າງ { $count } ສຳເນົາແລ້ວ
+}
 notes-empty-discarded = ຖິ້ມບັນທຶກເປົ່າແລ້ວ
 notes-mail-gone = ບໍ່ມີອີເມວນັ້ນອີກແລ້ວ
 notes-deleted-forever = { $count ->

@@ -53,3 +53,4 @@ search-options-show = தேடல் விருப்பங்களைக்
 settings = அமைப்புகள்
 account-add = கணக்கைச் சேர்
 account-wheel-hint = கணக்கை மாற்ற உருட்டுங்கள்
+account-menu-all-detail = { $count } கணக்குகள் ஒன்றாக

@@ -6,6 +6,10 @@
 
 about-tooltip = เกี่ยวกับ Katna
 about-tagline = อีเมลและปฏิทินสำหรับเดสก์ท็อป Linux
+about-copy-version = คัดลอกรายละเอียดเวอร์ชัน
+about-version-copied = คัดลอกแล้ว
+about-version-built = สร้างเมื่อ: { $date }
+about-version-system = ระบบ: { $system }
 about-whats-new = มีอะไรใหม่
 
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
@@ -21,11 +25,13 @@ about-update-ready = เวอร์ชัน { $version } พร้อมติ
 about-update-ready-detail = Katna Mail จะรีสตาร์ทเพื่อติดตั้งการอัปเดตให้เสร็จสมบูรณ์
 about-update-confirm = ติดตั้งเวอร์ชัน { $version } หรือไม่?
 about-update-confirm-detail = Katna Mail จะปิด ติดตั้งการอัปเดต แล้วเปิดขึ้นใหม่ตรงจุดที่คุณค้างไว้ คอมพิวเตอร์ของคุณจะขอรหัสผ่าน
+about-update-confirm-detail-windows = Katna Mail จะปิด ติดตั้งอัปเดต แล้วเปิดขึ้นมาใหม่ในอีกสักครู่
 about-update-installing = กำลังติดตั้งเวอร์ชัน { $version }…
 about-update-installing-detail = ป้อนรหัสผ่านของคุณในหน้าต่างที่เปิดขึ้น
+about-update-installing-detail-windows = Katna Mail จะปิดตอนนี้ และเปิดขึ้นมาใหม่เมื่อติดตั้งอัปเดตเสร็จ
 about-update-cancelled = ไม่ได้ติดตั้งการอัปเดต เพราะไม่ได้ป้อนรหัสผ่าน
 about-update-failed = ติดตั้งการอัปเดตไม่ได้: { $error }
-about-update-unsupported = Katna Mail ชุดนี้อัปเดตโดยตัวจัดการแพ็กเกจของคุณ
+about-update-not-self-updating = Katna Mail ชุดนี้ไม่อัปเดตตัวเอง โปรดอัปเดตด้วยวิธีเดียวกับที่คุณติดตั้ง
 about-update-restart-failed = ติดตั้งการอัปเดตแล้ว แต่ Katna Mail เปิดขึ้นใหม่ไม่ได้ ({ $error }) โปรดเปิดเองด้วยตนเอง
 about-update-check = ตรวจสอบการอัปเดต
 about-update-download = ดาวน์โหลด
@@ -145,6 +151,7 @@ onboarding-katna-private = บัญชีนี้มีรหัสผ่า�
 onboarding-ready-title = พร้อมแล้ว
 onboarding-ready-lead = Katna กำลังรับอีเมลของคุณ อีเมลจะแสดงเมื่อมาถึง และอีเมลใหม่จะปรากฏขึ้นเอง
 onboarding-ready-lead-address = Katna กำลังรับอีเมลของ { $address } อีเมลจะแสดงเมื่อมาถึง และอีเมลใหม่จะปรากฏขึ้นเอง
+onboarding-apps = แอปที่คุณจะใช้
 onboarding-ready-tour = ชมแนะนำการใช้งานหนึ่งนาทีเพื่อดูว่าทุกอย่างอยู่ที่ไหนไหม
 onboarding-skip = ข้ามไปก่อน
 onboarding-take-tour = ชมแนะนำการใช้งาน
