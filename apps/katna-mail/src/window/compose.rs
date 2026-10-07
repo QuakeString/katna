@@ -27,6 +27,7 @@ mod checks;
 mod chips;
 mod drafts;
 mod drive;
+mod follow_up;
 mod outbox;
 mod paste;
 mod popout;
@@ -190,8 +191,8 @@ pub(super) struct Compose {
     format_height: std::rc::Rc<std::cell::Cell<f32>>,
     /// The open menu or dialog, if any.
     popup: Option<Popup>,
-    /// Seconds after sending to remind if nobody replies; 0 for never.
-    follow_up: u32,
+    /// What happens if nobody replies: a reminder, or a follow-up.
+    follow_up: follow_up::FollowUp,
     /// Fields of the link and schedule dialogs and the emoji search.
     dialog: tools::Dialog,
     shown: Spring,
@@ -599,6 +600,11 @@ fn addresses<'a>(list: impl IntoIterator<Item = &'a Address>) -> String {
         .map(address)
         .collect::<Vec<_>>()
         .join(", ")
+}
+
+/// `at` in Unix seconds, or now.
+fn at_or_now(at: Option<jiff::Timestamp>) -> i64 {
+    at.unwrap_or_else(jiff::Timestamp::now).as_second()
 }
 
 /// `subject` with `prefix` ("Re:" or "Fwd:") once.
@@ -1455,6 +1461,16 @@ impl MailWindow {
         window.focus(&focus, cx);
         let dialog = tools::Dialog::new(accent, cx);
         subscriptions.extend(dialog.subscribe(window, cx));
+        let follow_up = follow_up::FollowUp::new(accent, cx);
+        subscriptions.push(cx.subscribe_in(
+            &follow_up.text,
+            window,
+            |this, _, event: &InputEvent, window, cx| {
+                if let InputEvent::Cancel = event {
+                    this.cancel_follow_up(window, cx);
+                }
+            },
+        ));
         // Whether Track can be used: the Katna account, read again.
         self.katna_load(window, cx);
         self.compose = Some(Compose {
@@ -1487,7 +1503,7 @@ impl MailWindow {
             format_slide: Spring::new(motion::SMOOTH, 0.0),
             format_height: Default::default(),
             popup: None,
-            follow_up: 0,
+            follow_up,
             dialog,
             shown: Spring::new(motion::SLIDE, 0.0),
             sheet_width: Rc::default(),
@@ -1792,7 +1808,18 @@ impl MailWindow {
         let attachments = compose.attachments.clone();
         let drive_files = compose.drive.clone();
         let plain = compose.plain(cx);
-        let follow_up = i64::from(compose.follow_up);
+        // When to follow up, and what to send then, if anything.
+        let follow_up_on = compose.follow_up.on();
+        let follow_up_text = (compose.follow_up.send && !sealing.encrypt)
+            .then(|| compose.follow_up.text.read(cx).text().trim().to_owned())
+            .filter(|text| !text.is_empty());
+        let follow_up_again = i64::from(compose.follow_up.again);
+        let follow_up_sent = at_or_now(at);
+        let follow_up = if follow_up_on {
+            compose.follow_up.after_sending(follow_up_sent)
+        } else {
+            0
+        };
         // Tracking needs a Katna account with a confirmed address.
         let track = sealing.track && self.katna_signed_in();
         // Delivery receipts where the mail server sends them (the daemon
@@ -1908,6 +1935,35 @@ impl MailWindow {
         let hidden = emails(&bcc);
         let recipients: Vec<Mailbox> = to.iter().chain(&cc).chain(&bcc).cloned().collect();
         let draft_subject = draft.subject.clone();
+        let follow_up_mail = follow_up_text.map(|text| {
+            let signature = self
+                .config
+                .sending
+                .signature(signature)
+                .map(|s| html::to_plain(&signatures::doc(s)));
+            let said = format!(
+                "On {}, {} wrote:",
+                format::local(follow_up_sent, &self.tz)
+                    .map(format::long_date)
+                    .unwrap_or_default(),
+                match &from.name {
+                    Some(name) => format!("{name} <{}>", from.email),
+                    None => from.email.clone(),
+                },
+            );
+            follow_up::build(&follow_up::Mail {
+                from: &from,
+                to: &to,
+                cc: &cc,
+                bcc: &bcc,
+                subject: &draft.subject,
+                message_id: &message_id,
+                references: &thread.references,
+                text: &text,
+                signature: signature.as_deref(),
+                quote: (&said, &body_text),
+            })
+        });
         let raw = outgoing::build(&Outgoing {
             from: Some(from),
             to,
@@ -2009,10 +2065,23 @@ impl MailWindow {
                         }
                         None => daemon::queue_send(&connection, account, &raw, delay).await?,
                     };
-                    if follow_up > 0
-                        && let Err(err) = daemon::set_follow_up(&connection, id, follow_up).await
-                    {
-                        tracing::warn!(%err, "the reply reminder was not set");
+                    if follow_up > 0 {
+                        let set = match &follow_up_mail {
+                            Some(mail) => {
+                                daemon::set_follow_up_mail(
+                                    &connection,
+                                    id,
+                                    follow_up,
+                                    follow_up_again,
+                                    mail,
+                                )
+                                .await
+                            }
+                            None => daemon::set_follow_up(&connection, id, follow_up).await,
+                        };
+                        if let Err(err) = set {
+                            tracing::warn!(%err, "the follow-up was not set");
+                        }
                     }
                     if let Some((account, message_id)) = saved
                         && let Err(err) =
