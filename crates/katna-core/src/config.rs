@@ -42,6 +42,7 @@ pub struct Config {
     pub contacts: ContactsConfig,
     pub meetings: Meetings,
     pub ai: Ai,
+    pub mcp: Mcp,
     pub tasks: TasksConfig,
     pub hidden_accounts: HiddenAccounts,
     pub offline: OfflineAccounts,
@@ -416,6 +417,47 @@ pub enum AiSource {
     Own,
     /// No writing help.
     Off,
+}
+
+/// Settings > MCP server: what AI assistants on this computer may do
+/// with the mail through `katnactl mcp`. Off until turned on.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Mcp {
+    /// Assistants may search and read mail.
+    pub enabled: bool,
+    /// Assistants may save drafts (never send them).
+    pub drafts: bool,
+    /// Accounts assistants don't see, by lower-case address.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub hidden_accounts: BTreeSet<String>,
+}
+
+impl Default for Mcp {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            drafts: true,
+            hidden_accounts: BTreeSet::new(),
+        }
+    }
+}
+
+impl Mcp {
+    /// Whether assistants see the account at `address`.
+    pub fn shows(&self, address: &str) -> bool {
+        self.hidden_accounts.is_empty() || !self.hidden_accounts.contains(&address.to_lowercase())
+    }
+
+    /// Shows the account at `address` to assistants, or hides it.
+    pub fn set_shown(&mut self, address: &str, shown: bool) {
+        let address = address.to_lowercase();
+        if shown {
+            self.hidden_accounts.remove(&address);
+        } else {
+            self.hidden_accounts.insert(address);
+        }
+    }
 }
 
 /// The frost's blur, in pixels, when nothing else sets it.
@@ -1804,6 +1846,20 @@ mod tests {
         assert!(!text.contains("sent_sound"), "never written back");
         let fresh = Config::parse("").unwrap();
         assert_eq!(fresh.sounds.playing(SoundEvent::Sent), Some(""));
+    }
+
+    #[test]
+    fn assistants_are_off_until_turned_on() {
+        use super::Config;
+        let mut config = Config::parse("").unwrap();
+        assert!(!config.mcp.enabled && config.mcp.drafts);
+        config.mcp.set_shown("A@x.org", false);
+        assert!(!config.mcp.shows("a@X.org") && config.mcp.shows("b@x.org"));
+        let text = toml::to_string(&config).unwrap();
+        let back = Config::parse(&text).unwrap();
+        assert_eq!(back.mcp, config.mcp);
+        config.mcp.set_shown("a@x.org", true);
+        assert!(config.mcp.shows("a@x.org"));
     }
 
     #[test]

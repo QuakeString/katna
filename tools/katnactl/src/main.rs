@@ -999,6 +999,13 @@ fn format_time(unix: i64) -> String {
     )
 }
 
+/// Now, in Unix seconds.
+fn now() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| d.as_secs() as i64)
+}
+
 /// Days since 1970-01-01 as (year, month, day), by Howard Hinnant's
 /// `civil_from_days`.
 fn civil_from_days(days: i64) -> (i64, i64, i64) {

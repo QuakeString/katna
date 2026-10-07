@@ -135,6 +135,12 @@ pub(super) enum Change {
     AppOn(katna_core::config::AppKind, bool),
     /// An account is shown in an app (`true`) or left out of it.
     AppAccount(katna_core::config::AppKind, katna_core::AccountId, bool),
+    /// AI assistants may use the mail through `katnactl mcp`.
+    McpOn(bool),
+    /// Assistants may save drafts.
+    McpDrafts(bool),
+    /// Assistants see an account's mail (`true`) or not.
+    McpAccount(katna_core::AccountId, bool),
     /// An account is connected (`true`) or taken offline until brought
     /// back.
     AccountOnline(katna_core::AccountId, bool),
@@ -769,6 +775,10 @@ impl MailWindow {
             }
             Change::AppAccount(app, id, shown) => {
                 self.set_app_account_shown(app, id, shown, cx);
+                return;
+            }
+            Change::McpOn(_) | Change::McpDrafts(_) | Change::McpAccount(..) => {
+                self.apply_mcp(change, cx);
                 return;
             }
             Change::AccountOnline(id, online) => {

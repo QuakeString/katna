@@ -22,7 +22,6 @@ settings-tab-experimental = Experimental
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = Crea, renombra, mueve y oculta carpetas y etiquetas, y elige cuáles se sincronizan. Las reglas ordenan, etiquetan, reenvían o eliminan el correo nuevo automáticamente, según el remitente, el asunto o las palabras que contenga.
-settings-tab-mcp-server-coming = Permite que los asistentes de IA de este ordenador busquen, lean y redacten borradores de tu correo, con tu permiso.
 
 ## Settings > General
 

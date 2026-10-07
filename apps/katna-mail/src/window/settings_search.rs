@@ -545,14 +545,42 @@ const ENTRIES: &[Entry] = &[
         "chat-view-detail",
         "chat bubbles whatsapp group conversation messenger reading",
     ),
+    entry(
+        Section::McpServer,
+        "mcp-assistants",
+        "mcp-assistants-switch",
+        "mcp ai assistants claude desktop code lm studio chatgpt model context protocol katnactl turn on off allow",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-drafts",
+        "mcp-drafts-switch",
+        "mcp ai assistants drafts write save",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-accounts",
+        "mcp-accounts-detail",
+        "mcp ai assistants accounts hide show which mail",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-connect",
+        "mcp-connect-other",
+        "mcp ai assistants connect set up install config json claude desktop code lm studio katnactl command copy",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-recently",
+        "mcp-recently-detail",
+        "mcp ai assistants recently activity history log what did searched read clear privacy",
+    ),
 ];
 
 /// What a tab that is still to come will do.
-fn coming(section: Section) -> Option<String> {
-    Some(match section {
-        Section::McpServer => tr!("settings-tab-mcp-server-coming"),
-        _ => return None,
-    })
+/// None just now; MCP server was the last.
+fn coming(_section: Section) -> Option<String> {
+    None
 }
 
 /// More words a tab is found by, besides its name and its line (English
@@ -566,6 +594,9 @@ fn tab_words(section: Section) -> &'static str {
         Section::Reading => "reading conversations open mail",
         Section::MailDesktop => "desktop krunner gnome mailto default mail app links",
         Section::Feedback => "crash report feedback privacy anonymous sentry telemetry",
+        Section::McpServer => {
+            "mcp ai assistants claude desktop code lm studio model context protocol"
+        }
         _ => "",
     }
 }
@@ -909,42 +940,6 @@ impl MailWindow {
             .children(rows)
             .into_any_element()
     }
-
-    /// The page of a tab still to come.
-    pub(super) fn coming_soon_section(&self, section: Section, th: &Theme) -> AnyElement {
-        div()
-            .pt(px(40.0))
-            .flex()
-            .flex_col()
-            .items_start()
-            .gap(px(12.0))
-            .child(coming_pill(th))
-            .child(div().text_size(px(20.0)).child(section.label()))
-            .child(
-                div()
-                    .text_size(px(14.0))
-                    .line_height(px(20.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(coming(section).unwrap_or_default()),
-            )
-            .into_any_element()
-    }
-}
-
-/// The "Coming soon" pill.
-pub(super) fn coming_pill(th: &Theme) -> Div {
-    div()
-        .flex_none()
-        .px(px(10.0))
-        .h(px(24.0))
-        .flex()
-        .items_center()
-        .rounded_full()
-        .bg(rgba(th.nav_selected))
-        .text_color(rgba(th.nav_selected_text))
-        .text_size(px(12.0))
-        .font_weight(FontWeight::SEMIBOLD)
-        .child(tr!("app-coming-soon"))
 }
 
 /// Whether `section` is a tab still to come.
@@ -978,14 +973,16 @@ mod tests {
         assert!(titles("sentry").contains(&"User feedback".to_owned()));
         assert!(titles("zzzz").is_empty());
         assert!(titles("  ").is_empty());
-        // The Accounts tab and its Accounts row come once.
+        // The Accounts tab and its Accounts row come once (MCP server
+        // has an Accounts row of its own).
         assert_eq!(
-            titles("accounts")
+            search("accounts")
                 .iter()
-                .filter(|t| t.as_str() == "Accounts")
+                .filter(|f| f.title == "Accounts" && f.section == Section::Accounts)
                 .count(),
             1
         );
+        assert!(titles("claude desktop").contains(&"Connect an assistant".to_owned()));
     }
 
     /// Every row's name and line, and every tab, has an English message.

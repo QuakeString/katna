@@ -22,7 +22,6 @@ settings-tab-experimental = Eksperimental
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = Buat, ganti nama, pindahkan, dan sembunyikan folder dan label, serta pilih mana yang disinkronkan. Aturan menyortir, memberi label, meneruskan, atau menghapus email baru secara otomatis, berdasarkan pengirim, subjek, atau kata.
-settings-tab-mcp-server-coming = Izinkan asisten AI di komputer ini menelusuri, membaca, dan membuat draf email Anda, dengan persetujuan Anda.
 
 ## Settings > General
 

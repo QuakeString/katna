@@ -40,7 +40,6 @@ settings-group-apps = Apps
 
 ## Settings page: tabs still to come
 
-settings-tab-mcp-server-coming = Let AI assistants on this computer search, read and draft your mail, with your say.
 
 ## Settings > General
 # The Language row uses language-setting and language-setting-detail.

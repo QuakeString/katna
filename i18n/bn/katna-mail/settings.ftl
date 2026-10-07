@@ -22,7 +22,6 @@ settings-tab-experimental = পরীক্ষামূলক
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = ফোল্ডার ও লেবেল তৈরি করুন, নাম বদলান, সরান ও লুকান, এবং কোনগুলি সিঙ্ক হবে তা বেছে নিন। নিয়মগুলি প্রেরক, বিষয় বা শব্দ অনুযায়ী নতুন মেল নিজে থেকেই সাজায়, লেবেল দেয়, ফরোয়ার্ড করে বা মুছে দেয়।
-settings-tab-mcp-server-coming = এই কম্পিউটারের AI সহকারীদের আপনার অনুমতি নিয়ে আপনার মেল খুঁজতে, পড়তে ও খসড়া লিখতে দিন।
 
 ## Settings > General
 

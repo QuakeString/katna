@@ -22,7 +22,6 @@ settings-tab-experimental = Okokuhlola
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = Dala, qamba kabusha, hambisa futhi ufihle amafolda namalebula, bese ukhetha ukuthi yimaphi avumelaniswayo. Imithetho ihlela, ifaka amalebula, idlulisela noma isuse imeyili entsha ngokwayo, ngokomthumeli, isihloko noma amagama.
-settings-tab-mcp-server-coming = Vumela abasizi be-AI kule khompyutha ukuthi baseshe, bafunde futhi babhale okusalungiswa kwemeyili yakho, ngemvume yakho.
 
 ## Settings > General
 

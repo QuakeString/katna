@@ -22,7 +22,6 @@ settings-tab-experimental = Experimentell
 ## Settings page: tabs still to come
 
 settings-tab-folders-rules-coming = Ordner und Labels erstellen, umbenennen, verschieben und ausblenden und festlegen, welche synchronisiert werden. Regeln sortieren neue E-Mails automatisch nach Absender, Betreff oder Wörtern, versehen sie mit Labels, leiten sie weiter oder löschen sie.
-settings-tab-mcp-server-coming = KI-Assistenten auf diesem Computer dürfen Ihre E-Mails durchsuchen, lesen und Entwürfe verfassen – mit Ihrer Zustimmung.
 
 ## Settings > General
 

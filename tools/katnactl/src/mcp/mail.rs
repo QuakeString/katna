@@ -3,9 +3,11 @@
 //! The tools of `katnactl mcp`, on the store and the search index (both
 //! read-only) and the daemon.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
-use katna_core::{AccountId, Paths, mime::Mailbox};
+use katna_core::config::{Config, Mcp};
+use katna_core::mcp_activity::{self, Activity, ActivityKind};
+use katna_core::{Account, AccountId, Paths, mime::Mailbox};
 use katna_dbus::PimProxy;
 use katna_search::{Query, SearchIndex, SearchOptions, Sort};
 use katna_store::{
@@ -15,6 +17,19 @@ use serde_json::{Value, json};
 
 use super::Tools;
 use super::draft::{self, Draft};
+
+/// What every tool says while Settings > MCP server is off.
+const TURNED_OFF: &str = "Katna's MCP server is turned off. The person can turn it on in Katna Mail: Settings > MCP server.";
+
+/// The tools, as `tools/list` names them.
+const TOOLS: [&str; 6] = [
+    "list_accounts",
+    "list_folders",
+    "search_mail",
+    "read_message",
+    "read_conversation",
+    "create_draft",
+];
 
 /// The most results one search gives.
 pub const MAX_RESULTS: usize = 50;
@@ -31,28 +46,110 @@ const SNIPPET_CHARS: usize = 200;
 pub struct Mail {
     paths: Paths,
     index: Option<SearchIndex>,
+    /// Settings > MCP server, read again for each call.
+    settings: Mcp,
+    /// The assistant, as it named itself.
+    client: String,
 }
 
 type Outcome = Result<Value, String>;
 
 impl Tools for Mail {
+    fn connected(&mut self, client: &str) {
+        self.client = client_name(client);
+    }
+
     fn call(&mut self, name: &str, arguments: &Value) -> Option<Outcome> {
-        Some(match name {
-            "list_accounts" => self.list_accounts(),
-            "list_folders" => self.list_folders(arguments),
-            "search_mail" => self.search(arguments),
-            "read_message" => self.read_message(arguments),
-            "read_conversation" => self.read_conversation(arguments),
-            "create_draft" => self.create_draft(arguments),
+        // A broken settings file counts as turned off.
+        self.settings = Config::load(&self.paths.config_file())
+            .map(|config| config.mcp)
+            .unwrap_or_else(|_| Mcp {
+                enabled: false,
+                ..Mcp::default()
+            });
+        if !TOOLS.contains(&name) {
+            return None;
+        }
+        if !self.settings.enabled {
+            return Some(Err(TURNED_OFF.to_owned()));
+        }
+        let (outcome, kind) = match name {
+            "list_accounts" => (self.list_accounts(), None),
+            "list_folders" => (self.list_folders(arguments), None),
+            "search_mail" => (self.search(arguments), Some(ActivityKind::Search)),
+            "read_message" => (self.read_message(arguments), Some(ActivityKind::Read)),
+            "read_conversation" => (self.read_conversation(arguments), Some(ActivityKind::Read)),
+            "create_draft" => (self.create_draft(arguments), Some(ActivityKind::Draft)),
             _ => return None,
-        })
+        };
+        if let (Ok(answer), Some(kind)) = (&outcome, kind) {
+            self.record(kind, arguments, answer);
+        }
+        Some(outcome)
     }
 }
 
 impl Mail {
     pub fn open() -> crate::Result<Self> {
         let paths = Paths::from_env().map_err(crate::error)?;
-        Ok(Self { paths, index: None })
+        Ok(Self {
+            paths,
+            index: None,
+            settings: Mcp::default(),
+            client: String::new(),
+        })
+    }
+
+    /// Notes what the assistant just did, for Settings > MCP server >
+    /// Recently.
+    fn record(&self, kind: ActivityKind, arguments: &Value, answer: &Value) {
+        let text = |value: &Value| value.as_str().unwrap_or_default().to_owned();
+        let (detail, subject) = match kind {
+            ActivityKind::Search => (text(&arguments["query"]), String::new()),
+            ActivityKind::Read => (text(&answer["subject"]), String::new()),
+            ActivityKind::Draft => (text(&answer["to"]), text(&answer["subject"])),
+        };
+        let activity = Activity {
+            time: crate::now(),
+            client: self.client.clone(),
+            kind,
+            detail,
+            subject,
+        };
+        // Losing a line of the list is better than failing the call.
+        let _ = mcp_activity::append(&self.paths, &activity);
+    }
+
+    /// The accounts assistants may see: those that carry mail and that
+    /// Settings > MCP server doesn't hide.
+    fn mail_accounts(&self, store: &Store) -> Result<Vec<Account>, String> {
+        Ok(store
+            .accounts()
+            .map_err(read_failed)?
+            .into_iter()
+            .filter(|a| a.kind.is_mail() && self.settings.shows(&a.address))
+            .collect())
+    }
+
+    /// The accounts assistants may see, by number.
+    fn shown(&self, store: &Store) -> Result<HashSet<AccountId>, String> {
+        Ok(self.mail_accounts(store)?.iter().map(|a| a.id).collect())
+    }
+
+    /// Message `id`, if assistants may see its account.
+    fn one_message(&self, store: &Store, id: MessageId) -> Result<StoredMessage, String> {
+        let shown = self.shown(store)?;
+        store
+            .messages_by_id(&[id])
+            .map_err(read_failed)?
+            .pop()
+            .filter(|message| shown.contains(&message.account))
+            .ok_or_else(|| {
+                format!(
+                    "There is no message {}; message numbers come from search_mail.",
+                    id.0
+                )
+            })
     }
 
     fn store(&self) -> Result<Store, String> {
@@ -63,7 +160,8 @@ impl Mail {
 
     fn list_accounts(&self) -> Outcome {
         let store = self.store()?;
-        let accounts: Vec<Value> = mail_accounts(&store)?
+        let accounts: Vec<Value> = self
+            .mail_accounts(&store)?
             .into_iter()
             .map(|a| {
                 json!({
@@ -80,7 +178,7 @@ impl Mail {
     fn list_folders(&self, arguments: &Value) -> Outcome {
         let store = self.store()?;
         let only = optional_integer(arguments, "account")?;
-        let accounts = mail_accounts(&store)?;
+        let accounts = self.mail_accounts(&store)?;
         if let Some(only) = only
             && !accounts.iter().any(|a| a.id.0 == only)
         {
@@ -124,6 +222,7 @@ impl Mail {
         };
         let query = Query::parse(&text).map_err(|err| format!("The query has a mistake: {err}"))?;
         let store = self.store()?;
+        let shown = self.shown(&store)?;
         let index = self.index()?;
         let options = SearchOptions {
             limit,
@@ -135,12 +234,23 @@ impl Mail {
             .search(&query, &options)
             .map_err(|err| format!("Searching failed: {err}"))?;
         let ids: Vec<MessageId> = results.hits.iter().map(|hit| hit.message).collect();
-        let messages = store.messages_by_id(&ids).map_err(read_failed)?;
+        let messages: HashMap<MessageId, StoredMessage> = store
+            .messages_by_id(&ids)
+            .map_err(read_failed)?
+            .into_iter()
+            .filter(|m| shown.contains(&m.account))
+            .map(|m| (m.id, m))
+            .collect();
+        let ids: Vec<MessageId> = ids
+            .into_iter()
+            .filter(|id| messages.contains_key(id))
+            .collect();
         let snippets = index
             .snippets(&store, &query, &ids, SNIPPET_CHARS)
             .map_err(|err| format!("Searching failed: {err}"))?;
-        let found: Vec<Value> = messages
+        let found: Vec<Value> = ids
             .iter()
+            .filter_map(|id| messages.get(id))
             .zip(&snippets)
             .map(|(message, snippet)| {
                 let mut summary = summary(message);
@@ -154,7 +264,11 @@ impl Mail {
             })
             .collect();
         let mut answer = json!({ "messages": found });
-        if let Some(total) = results.total {
+        // A count would include the mail of hidden accounts.
+        if let Some(total) = results
+            .total
+            .filter(|_| self.settings.hidden_accounts.is_empty())
+        {
             answer["total"] = json!(total);
         }
         if results.fuzzy {
@@ -185,7 +299,7 @@ impl Mail {
     fn read_message(&self, arguments: &Value) -> Outcome {
         let id = MessageId(integer(arguments, "id")?);
         let store = self.store()?;
-        let message = one_message(&store, id)?;
+        let message = self.one_message(&store, id)?;
         let raw = self.raw(&[&message])?;
         let mut answer = summary(&message);
         add_text(&mut answer, raw.get(&id).map(Vec::as_slice), MAX_TEXT);
@@ -195,15 +309,19 @@ impl Mail {
     fn read_conversation(&self, arguments: &Value) -> Outcome {
         let id = MessageId(integer(arguments, "id")?);
         let store = self.store()?;
-        let message = one_message(&store, id)?;
+        let message = self.one_message(&store, id)?;
         let ids = match message.thread_id {
             Some(thread) => store.thread_messages(thread).map_err(read_failed)?,
             None => vec![id],
         };
         let left_out = ids.len().saturating_sub(MAX_CONVERSATION);
-        let messages = store
+        let shown = self.shown(&store)?;
+        let messages: Vec<StoredMessage> = store
             .messages_by_id(&ids[left_out..])
-            .map_err(read_failed)?;
+            .map_err(read_failed)?
+            .into_iter()
+            .filter(|m| shown.contains(&m.account))
+            .collect();
         let raw = self.raw(&messages.iter().collect::<Vec<_>>())?;
         let messages: Vec<Value> = messages
             .iter()
@@ -267,6 +385,12 @@ impl Mail {
     }
 
     fn create_draft(&self, arguments: &Value) -> Outcome {
+        if !self.settings.drafts {
+            return Err(
+                "Saving drafts is turned off in Katna Mail: Settings > MCP server > Drafts."
+                    .to_owned(),
+            );
+        }
         let body = optional_string(arguments, "body")?.ok_or("create_draft needs a body")?;
         let field = |name: &str| -> Result<Vec<Mailbox>, String> {
             draft::addresses(&optional_string(arguments, name)?.unwrap_or_default())
@@ -281,10 +405,10 @@ impl Mail {
             ..Draft::default()
         };
         let store = self.store()?;
-        let accounts = mail_accounts(&store)?;
+        let accounts = self.mail_accounts(&store)?;
         let mut account = optional_integer(arguments, "account")?.map(AccountId);
         if let Some(answered) = optional_integer(arguments, "reply_to")? {
-            let message = one_message(&store, MessageId(answered))?;
+            let message = self.one_message(&store, MessageId(answered))?;
             let raw = self.raw(&[&message])?;
             let original = raw
                 .get(&message.id)
@@ -327,6 +451,8 @@ impl Mail {
             "draft": saved,
             "account": id,
             "from": account.address,
+            "to": draft.to.iter().map(Mailbox::text).collect::<Vec<_>>().join(", "),
+            "subject": draft.subject,
             "saved_in": "Drafts",
             "sent": false,
             "note": "Saved as a draft only. The person opens it in Katna Mail's Drafts to check and send it.",
@@ -334,27 +460,14 @@ impl Mail {
     }
 }
 
-/// The accounts that carry mail.
-fn mail_accounts(store: &Store) -> Result<Vec<katna_core::account::Account>, String> {
-    Ok(store
-        .accounts()
-        .map_err(read_failed)?
-        .into_iter()
-        .filter(|a| a.kind.is_mail())
-        .collect())
-}
-
-fn one_message(store: &Store, id: MessageId) -> Result<StoredMessage, String> {
-    store
-        .messages_by_id(&[id])
-        .map_err(read_failed)?
-        .pop()
-        .ok_or_else(|| {
-            format!(
-                "There is no message {}; message numbers come from search_mail.",
-                id.0
-            )
-        })
+/// The name an assistant gives itself, as people know it: some send
+/// their program's name ("claude-ai") and no title.
+fn client_name(name: &str) -> String {
+    match name.trim() {
+        "claude-ai" => "Claude Desktop".to_owned(),
+        "claude-code" => "Claude Code".to_owned(),
+        name => name.to_owned(),
+    }
 }
 
 fn read_failed(err: katna_store::Error) -> String {
