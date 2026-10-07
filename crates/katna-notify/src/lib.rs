@@ -37,6 +37,10 @@ pub mod action {
     pub const REPLY_ALL: &str = "reply-all";
     pub const MARK_READ: &str = "mark-read";
     pub const ARCHIVE: &str = "archive";
+    /// Snooze new mail for an hour.
+    pub const SNOOZE_HOUR: &str = "snooze-hour";
+    /// Snooze new mail until tomorrow morning.
+    pub const SNOOZE_TOMORROW: &str = "snooze-tomorrow";
     /// On the notification that an update is ready: install it.
     pub const UPDATE: &str = "update";
     /// On an event's reminder: open its video call.
@@ -285,20 +289,23 @@ impl Notifier {
         } else {
             (action::REPLY, tr!("notify-reply"))
         };
-        // A code or a link takes Reply all's place in a peek, and Reply's
-        // where Peek offers it: such mail is rarely answered, and four
-        // buttons are as many as fit.
+        // A code or a link takes Reply's place where Peek offers it, and
+        // in the peek: such mail is rarely answered, and four buttons are
+        // as many as fit.
         let shortcut = match mails {
             [mail] => mail.shortcut.as_ref().map(Shortcut::action),
             _ => None,
         };
+        let snooze = [
+            (action::SNOOZE_HOUR, tr!("notify-snooze-hour")),
+            (action::SNOOZE_TOMORROW, tr!("notify-snooze-tomorrow")),
+        ];
         match (mails.len(), view) {
+            // The open peek: a code's or link's button, else Reply, then
+            // Snooze for an hour, until tomorrow, and Archive.
             (1, View::Peek { .. }) => {
-                actions.extend(shortcut);
-                actions.push(reply);
-                if actions.len() < 3 {
-                    actions.push((action::REPLY_ALL, tr!("notify-reply-all")));
-                }
+                actions.push(shortcut.unwrap_or(reply));
+                actions.extend(snooze);
                 actions.push((action::ARCHIVE, tr!("notify-archive")));
             }
             (1, View::Short) => {
@@ -315,6 +322,10 @@ impl Notifier {
                     (action::MARK_READ, tr!("notify-mark-read")),
                     (action::ARCHIVE, tr!("notify-archive")),
                 ]);
+                // A Windows toast has room for five and no peek.
+                if !peek {
+                    actions.extend(snooze.into_iter().take(6 - actions.len().min(6)));
+                }
             }
             _ => actions.extend([
                 (action::MARK_READ, tr!("notify-mark-all-read")),
@@ -846,10 +857,16 @@ mod tests {
         } else {
             Some(action::PEEK)
         };
+        let snooze: &[&str] = if cfg!(windows) {
+            &[action::SNOOZE_HOUR, action::SNOOZE_TOMORROW]
+        } else {
+            &[]
+        };
         let expected: Vec<&str> = [Some(action::OPEN), peek, Some(action::INLINE_REPLY)]
             .into_iter()
             .flatten()
             .chain([action::MARK_READ, action::ARCHIVE])
+            .chain(snooze.iter().copied())
             .collect();
         assert_eq!(short, expected);
         assert_eq!(
@@ -861,7 +878,8 @@ mod tests {
             [
                 action::OPEN,
                 action::REPLY,
-                action::REPLY_ALL,
+                action::SNOOZE_HOUR,
+                action::SNOOZE_TOMORROW,
                 action::ARCHIVE
             ]
         );
@@ -886,6 +904,7 @@ mod tests {
                 action::INLINE_REPLY,
                 action::MARK_READ,
                 action::ARCHIVE,
+                action::SNOOZE_HOUR,
             ]
         } else {
             &[
@@ -907,7 +926,8 @@ mod tests {
             [
                 action::OPEN,
                 action::OPEN_LINK,
-                action::REPLY,
+                action::SNOOZE_HOUR,
+                action::SNOOZE_TOMORROW,
                 action::ARCHIVE
             ]
         );

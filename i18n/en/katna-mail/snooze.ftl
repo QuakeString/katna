@@ -14,6 +14,10 @@ snooze-this-weekend = This weekend
 snooze-next-week = Next week
 # Opens the date and time picker; also its title.
 snooze-pick = Pick date & time
+snooze-type-placeholder = Type a time
+snooze-type-hint = Like “tue 3pm”, “tomorrow” or “in 2 hours”
+snooze-type-hint-unclear = Katna can’t read that as a time
+snooze-type-unclear = “{ $text }” isn't a time Katna knows
 
 ## Snooze and Remind me on mail: one menu, switched at its top (B and H)
 

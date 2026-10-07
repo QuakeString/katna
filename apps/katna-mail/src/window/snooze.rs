@@ -63,7 +63,11 @@ struct Picker {
     month: Date,
     day: Date,
     time: Entity<TextInput>,
-    _events: Subscription,
+    /// "tue 3pm", "in 2 hours": fills the day and the time.
+    typed: Entity<TextInput>,
+    /// Whether what is typed was not understood.
+    unclear: bool,
+    _events: [Subscription; 2],
 }
 
 /// A suggested time: its name and when.
@@ -297,14 +301,60 @@ impl MailWindow {
                 InputEvent::Changed => cx.notify(),
             },
         );
-        window.focus(&time.focus_handle(cx), cx);
+        let typed = cx.new(|cx| {
+            let mut input = TextInput::new(tr!("snooze-type-placeholder"), cx);
+            input.set_accent(accent);
+            input
+        });
+        let typed_events =
+            cx.subscribe_in(
+                &typed,
+                window,
+                |this, _, event: &InputEvent, _, cx| match event {
+                    InputEvent::Submit => this.snooze_picked(cx),
+                    InputEvent::Cancel => {
+                        this.close_snooze_menu(cx);
+                    }
+                    InputEvent::Changed => this.snooze_typed(cx),
+                },
+            );
+        window.focus(&typed.focus_handle(cx), cx);
         if let Some(menu) = &mut self.snooze_menu {
             menu.picker = Some(Picker {
                 month: tomorrow,
                 day: tomorrow,
                 time,
-                _events: events,
+                typed,
+                unclear: false,
+                _events: [events, typed_events],
             });
+        }
+        cx.notify();
+    }
+
+    /// Reads the typed moment into the picker's day and time.
+    fn snooze_typed(&mut self, cx: &mut Context<Self>) {
+        let Some(picker) = self.snooze_menu.as_ref().and_then(|m| m.picker.as_ref()) else {
+            return;
+        };
+        let text = picker.typed.read(cx).text().to_owned();
+        let time_input = picker.time.clone();
+        let now = Timestamp::now().to_zoned(self.tz.clone());
+        let language = katna_i18n::current().language.tag.clone();
+        let words = katna_core::quick_add::Words::for_language(&language);
+        let at =
+            katna_core::quick_add::moment(&text, now.datetime(), Time::constant(8, 0, 0, 0), words);
+        if let Some(at) = at {
+            time_input.update(cx, |input, cx| {
+                input.set_text(schedule::clock(at.time()), cx);
+            });
+        }
+        if let Some(p) = self.snooze_menu.as_mut().and_then(|m| m.picker.as_mut()) {
+            p.unclear = at.is_none() && !text.trim().is_empty();
+            if let Some(at) = at {
+                p.day = at.date();
+                p.month = at.date();
+            }
         }
         cx.notify();
     }
@@ -314,6 +364,11 @@ impl MailWindow {
         let Some(picker) = self.snooze_menu.as_ref().and_then(|m| m.picker.as_ref()) else {
             return;
         };
+        if picker.unclear {
+            let text = picker.typed.read(cx).text().to_owned();
+            self.show_snackbar(tr!("snooze-type-unclear", text = text), None, cx);
+            return;
+        }
         let text = picker.time.read(cx).text().to_owned();
         let Some(time) = schedule::parse_time(&text) else {
             let example = schedule::clock(Time::constant(8, 0, 0, 0));
@@ -766,6 +821,31 @@ impl MailWindow {
                     .child(tr!("snooze-pick")),
             )
             .child(
+                field()
+                    .border_color(rgba(if picker.unclear {
+                        th.warning
+                    } else {
+                        th.accent
+                    }))
+                    .child(picker.typed.clone()),
+            )
+            .child(
+                div()
+                    .mt(px(space::S2))
+                    .mb(px(space::S3))
+                    .text_size(px(text::CAPTION))
+                    .text_color(rgba(if picker.unclear {
+                        th.warning
+                    } else {
+                        th.text_dim
+                    }))
+                    .child(if picker.unclear {
+                        tr!("snooze-type-hint-unclear")
+                    } else {
+                        tr!("snooze-type-hint")
+                    }),
+            )
+            .child(
                 div()
                     .flex()
                     .flex_row()
@@ -814,7 +894,7 @@ impl MailWindow {
                     .child(
                         field()
                             .w(px(110.0))
-                            .border_color(rgba(th.accent))
+                            .border_color(rgba(th.outline))
                             .child(picker.time.clone()),
                     ),
             )

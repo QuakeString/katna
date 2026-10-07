@@ -124,6 +124,9 @@ notify-mark-read = Mark as read
 # On a notification about several messages.
 notify-mark-all-read = Mark all as read
 notify-archive = Archive
+# Snooze buttons on a new mail's notification.
+notify-snooze-hour = Snooze 1 hour
+notify-snooze-tomorrow = Tomorrow
 # Only on a notification about one message with a one-time code (a sign-in
 # or verification code): copies it. $code: the code, such as 482913.
 notify-copy-code = Copy { $code }

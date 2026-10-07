@@ -200,6 +200,18 @@ impl Daemon {
         Ok(())
     }
 
+    /// Snoozes new mail from its notification until `until`, with the
+    /// rest of its conversation in the same folders, as a snooze from the
+    /// app's line would.
+    pub async fn snooze_conversations(
+        &self,
+        messages: &[MessageId],
+        until: i64,
+    ) -> Result<(), CommandError> {
+        let all = with_conversation(&self.store(), messages)?;
+        self.snooze(&all, until).await
+    }
+
     /// Brings snoozed `messages` back where they were, now, as they are
     /// (read stays read). Others are left alone.
     pub fn unsnooze(&self, messages: &[MessageId]) -> Result<(), CommandError> {
@@ -218,6 +230,52 @@ impl Daemon {
         })?;
         self.wake_scheduler();
         Ok(())
+    }
+
+    /// Brings snoozed conversations back early where someone wrote since
+    /// (not an automatic reply): after a sync, before its notifications.
+    /// The new message notifies as usual, so nothing else does.
+    pub(super) fn wake_answered_snoozes(&self) {
+        let answered = || -> katna_store::Result<Vec<(MessageId, Snooze)>> {
+            let store = self.store();
+            let mut answered = Vec::new();
+            for (message, snooze) in katna_meta::snoozed(&store)? {
+                if snooze.newest > 0
+                    && store
+                        .arrived_in_inbox_after(message, MessageId(snooze.newest))?
+                        .iter()
+                        .any(|later| katna_meta::counts_as_reply(later, &[]))
+                {
+                    answered.push((message, snooze));
+                }
+            }
+            Ok(answered)
+        };
+        let answered = match answered() {
+            Ok(answered) if !answered.is_empty() => answered,
+            Ok(_) => return,
+            Err(err) => {
+                tracing::warn!(%err, "looking for answered snoozed mail");
+                return;
+            }
+        };
+        let woke = self.change(|store| {
+            let mut accounts = Vec::new();
+            for (message, snooze) in &answered {
+                accounts.extend(bring_back(store, *message, snooze)?);
+                katna_meta::clear_snooze(store, *message)?;
+            }
+            accounts.sort_by_key(|a| a.0);
+            accounts.dedup();
+            Ok(accounts)
+        });
+        match woke {
+            Ok(()) => {
+                tracing::info!(count = answered.len(), "snoozed mail back early: answered");
+                self.wake_scheduler();
+            }
+            Err(err) => tracing::warn!(%err, "bringing answered snoozed mail back"),
+        }
     }
 
     /// Reminds the user `after` seconds after outbox entry `outbox` is sent
@@ -593,6 +651,7 @@ fn snooze_in_store(
         .into_iter()
         .map(|f| (f.id, f))
         .collect();
+    let newest = store.newest_message()?.0;
     let mut moves: BTreeMap<FolderId, Vec<MessageId>> = BTreeMap::new();
     for &id in ids {
         let locations = store.locations(id)?;
@@ -600,6 +659,7 @@ fn snooze_in_store(
             // Snoozed already: only the time changes.
             if let Some(mut snooze) = katna_meta::snooze_of(store, id)? {
                 snooze.until = until;
+                snooze.newest = newest;
                 katna_meta::set_snooze(store, id, &snooze)?;
             }
             continue;
@@ -614,6 +674,7 @@ fn snooze_in_store(
                 until,
                 back_to: from.0,
                 snoozed_in: snoozed_in.0,
+                newest,
             },
         )?;
         moves.entry(from).or_default().push(id);
@@ -685,6 +746,33 @@ fn bring_back(
         return Ok(Vec::new());
     };
     ops::move_messages_from(store, &[message], Some(snoozed_in), to)
+}
+
+/// `messages` and the other messages of their conversations that share a
+/// folder with them (the Inbox), each once.
+fn with_conversation(store: &Store, messages: &[MessageId]) -> katna_store::Result<Vec<MessageId>> {
+    let mut all: Vec<MessageId> = messages.to_vec();
+    for message in store.messages_by_id(messages)? {
+        let Some(thread) = message.thread_id else {
+            continue;
+        };
+        let folders: Vec<FolderId> = store
+            .locations(message.id)?
+            .iter()
+            .map(|l| l.folder)
+            .collect();
+        for mate in store.thread_messages(thread)? {
+            if !all.contains(&mate)
+                && store
+                    .locations(mate)?
+                    .iter()
+                    .any(|l| folders.contains(&l.folder))
+            {
+                all.push(mate);
+            }
+        }
+    }
+    Ok(all)
 }
 
 fn subject_or_none(subject: &str) -> String {

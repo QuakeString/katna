@@ -842,6 +842,20 @@ impl NewMailNotices {
                             notices.reply_in_app(shown.messages[0], None, token).await;
                             Ok(())
                         }
+                        action::SNOOZE_HOUR | action::SNOOZE_TOMORROW => {
+                            let until = if key == action::SNOOZE_HOUR {
+                                Some(unix_now() + 3600)
+                            } else {
+                                tomorrow_morning()
+                            };
+                            match until {
+                                Some(until) => daemon
+                                    .snooze_conversations(&shown.messages, until)
+                                    .await
+                                    .map_err(|e| e.to_string()),
+                                None => Ok(()),
+                            }
+                        }
                         _ => Ok(()),
                     };
                     if let Err(err) = done {
@@ -1080,6 +1094,20 @@ impl NewMailNotices {
         });
         crate::mail_app::run(&self.connection, action, params, token).await;
     }
+}
+
+/// Tomorrow at 8:00 here, as the app's snooze menu offers it.
+fn tomorrow_morning() -> Option<i64> {
+    let tz = jiff::tz::TimeZone::system();
+    let now = jiff::Timestamp::now().to_zoned(tz.clone());
+    let at = now
+        .date()
+        .tomorrow()
+        .ok()?
+        .at(8, 0, 0, 0)
+        .to_zoned(tz)
+        .ok()?;
+    Some(at.timestamp().as_second())
 }
 
 /// The mail task `task` was made from, while it is still in a folder.
