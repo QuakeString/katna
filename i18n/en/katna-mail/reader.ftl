@@ -9,6 +9,8 @@ reader-close = Close
 reader-back = Back
 reader-mark-unread = Mark as unread
 reader-move-to = Move to
+reader-snooze = Snooze
+reader-remind = Remind me
 # The ⋮ button that opens more actions.
 reader-more = More
 # In a dark theme: shows the open mail in its sender's own colors…

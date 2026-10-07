@@ -34,6 +34,7 @@ icons!(
     "attachment",
     "back",
     "bell-off",
+    "bell-plus",
     "bell",
     "bird",
     "bolt",

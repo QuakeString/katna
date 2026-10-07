@@ -14,11 +14,11 @@ use super::{
     FocusSearch, Forward, GoToAllMail, GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT,
     ListTop, MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NAV_CONTEXT, NextPane,
     OpenContextMenu, OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit,
-    READER_CONTEXT, Reload, RephraseSelection, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT,
-    ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast,
-    SelectNext, SelectNone, SelectPrevious, SendMail, ShowCalendar, ShowContacts, ShowFiles,
-    ShowMail, ShowNotes, ShowShortcuts, ShowTasks, Summarize, ToggleCheck, ToggleMute,
-    ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
+    READER_CONTEXT, Reload, RemindMail, RephraseSelection, Reply, ReplyAll, ReportSpam,
+    SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst,
+    SelectLast, SelectNext, SelectNone, SelectPrevious, SendMail, ShowCalendar, ShowContacts,
+    ShowFiles, ShowMail, ShowNotes, ShowShortcuts, ShowTasks, SnoozeMail, Summarize, ToggleCheck,
+    ToggleMute, ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -97,7 +97,7 @@ impl Shortcut {
         match self.name {
             "page_calendar" => Some(AppKind::Calendar),
             "page_contacts" => Some(AppKind::Contacts),
-            "page_tasks" | "add_to_tasks" => Some(AppKind::Tasks),
+            "page_tasks" | "add_to_tasks" | "remind" => Some(AppKind::Tasks),
             "page_notes" => Some(AppKind::Notes),
             "page_files" => Some(AppKind::Files),
             _ => None,
@@ -178,6 +178,8 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("mark_unread", Actions, Mail, ["shift-u"], MarkUnread),
     shortcut!("star", Actions, Mail, ["s"], ToggleStar),
     shortcut!("add_to_tasks", Actions, Mail, ["shift-t"], AddToTasks),
+    shortcut!("snooze", Actions, Mail, ["b"], SnoozeMail),
+    shortcut!("remind", Actions, Mail, ["h"], RemindMail),
     shortcut!("important", Actions, Mail, ["+", "="], MarkImportant),
     shortcut!("not_important", Actions, Mail, ["-"], MarkNotImportant),
     shortcut!("mute", Actions, Mail, ["m"], ToggleMute),
@@ -277,6 +279,7 @@ const OUTLOOK: Preset = &[
 const THUNDERBIRD: Preset = &[
     ("next", &["f"]),
     ("previous", &["b"]),
+    ("snooze", &[]),
     ("compose", &["ctrl-n", "ctrl-m"]),
     ("reply", &["ctrl-r"]),
     ("reply_all", &["ctrl-shift-r"]),

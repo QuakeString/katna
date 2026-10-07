@@ -15,6 +15,27 @@ snooze-next-week = Next week
 # Opens the date and time picker; also its title.
 snooze-pick = Pick date & time
 
+## Snooze and Remind me on mail: one menu, switched at its top (B and H)
+
+snooze-tab = Snooze
+remind-tab = Remind me
+# Under the switch: what each does.
+snooze-says = Hides it until then
+remind-says = Keeps it where it is and notifies you
+# The first time offered when the mail says something is due by a day.
+remind-before-due = Before it's due
+# The note field: what the reminder (a task in Tasks) says.
+remind-note = Note (optional)
+remind-note-placeholder = The subject, if left empty
+# After a reminder is set. $date: "Thu, Oct 8, 2026, 8:00 AM".
+toast-remind-set = Reminder set for { $date }
+# A reminder at the end of a chat, as a small line.
+# $date: "Oct 9, 8:00 AM"; $title: what the reminder says.
+remind-chat-line = Reminder { $date } · { $title }
+# Ticks the reminder off (its task is done).
+remind-done = Done
+toast-remind-done = Reminder done
+
 ## The date and time picker
 
 snooze-cancel = Cancel

@@ -50,6 +50,8 @@ shortcut-mark-read = Mark as read
 shortcut-mark-unread = Mark as unread
 shortcut-star = Star or unstar
 shortcut-add-to-tasks = Add to Tasks
+shortcut-snooze = Snooze
+shortcut-remind = Remind me
 shortcut-important = Mark as important
 shortcut-not-important = Mark as not important
 # Mutes the conversation, or unmutes it: no notifications or taskbar count.

@@ -237,6 +237,11 @@ impl Body {
 }
 
 impl Conversation {
+    /// The newest message, at the conversation's end.
+    pub(super) fn newest(&self) -> Option<MessageId> {
+        self.parts.last().map(|p| p.id)
+    }
+
     /// The ids of its messages.
     pub(super) fn message_ids(&self) -> HashSet<MessageId> {
         self.parts.iter().map(|p| p.id).collect()
@@ -735,6 +740,8 @@ pub(super) struct Squeeze {
     pub move_to: bool,
     /// The bell that mutes the conversation.
     pub mute: bool,
+    /// Snooze and Remind me.
+    pub snooze: bool,
     pub unread: bool,
     pub spam: bool,
     /// The lines between the groups of buttons.
@@ -764,6 +771,7 @@ impl Squeeze {
         contact: false,
         move_to: false,
         mute: false,
+        snooze: false,
         unread: false,
         spam: false,
         separators: false,
@@ -781,6 +789,7 @@ impl Squeeze {
         contact: true,
         move_to: true,
         mute: true,
+        snooze: true,
         unread: true,
         spam: true,
         separators: true,
@@ -797,7 +806,7 @@ impl Squeeze {
         })
     }
 
-    const DROP_ORDER: [fn(&mut Self); 12] = [
+    const DROP_ORDER: [fn(&mut Self); 13] = [
         |s| s.new_window = true,
         |s| s.print = true,
         |s| s.mute = true,
@@ -806,6 +815,9 @@ impl Squeeze {
         |s| s.move_to = true,
         |s| s.summary = true,
         |s| s.unread = true,
+        // The study put Snooze and Remind me on the toolbar: they stay
+        // longer than Mark as unread.
+        |s| s.snooze = true,
         |s| s.spam = true,
         |s| s.separators = true,
         |s| s.delete = true,
@@ -843,6 +855,7 @@ impl Toolbar {
         add(!squeeze.unread, 1.0);
         add(!squeeze.move_to, 1.0);
         add(!squeeze.mute, 1.0);
+        add(!squeeze.snooze, 2.0);
         add(self.contact && !squeeze.contact, 1.0);
         add(self.colors && !squeeze.colors, 1.0);
         add(self.summary && !squeeze.summary, 1.0);
@@ -1018,6 +1031,8 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_unread))
             .on_action(cx.listener(Self::toggle_star))
             .on_action(cx.listener(Self::add_to_tasks))
+            .on_action(cx.listener(Self::snooze_key))
+            .on_action(cx.listener(Self::remind_key))
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
@@ -1088,6 +1103,7 @@ impl MailWindow {
             new_window: phone,
             move_to: phone,
             mute: phone,
+            snooze: phone,
             ..Squeeze::NONE
         };
         Squeeze::fit(self.reader_width(), &shown, start)
@@ -1186,6 +1202,28 @@ impl MailWindow {
                         );
                     d.child(self.with_menu(label_as, Menu::LabelAs, th, cx))
                 })
+            })
+            .when(!squeeze.snooze, |d| {
+                let key = self.reader.as_ref().map(|r| r.key);
+                d.child(
+                    icon_button("reader-snooze", "snooze", 20.0, th)
+                        .tooltip(tip(tr!("reader-snooze"), th))
+                        .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
+                            this.open_mail_times(
+                                key.into_iter().collect(),
+                                false,
+                                e.position(),
+                                cx,
+                            );
+                        })),
+                )
+                .child(
+                    icon_button("reader-remind", "bell-plus", 20.0, th)
+                        .tooltip(tip(tr!("reader-remind"), th))
+                        .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
+                            this.open_mail_times(key.into_iter().collect(), true, e.position(), cx);
+                        })),
+                )
             })
             .when(!squeeze.mute, |d| d.child(self.reader_mute_button(th, cx)))
             .when(!squeeze.summary && !self.chat_shown(), |d| {

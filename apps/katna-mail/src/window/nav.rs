@@ -1265,12 +1265,15 @@ impl MailWindow {
                 let scheduled = key == compose::SCHEDULED_NAV_KEY;
                 let outbox = key == compose::OUTBOX_NAV_KEY;
                 let waiting = key == super::waiting::NAV_KEY;
+                let reminders = key == super::remind::NAV_KEY;
                 // Special folders show their name in the current language;
                 // the user's own keep theirs.
                 let label = if scheduled {
                     tr!("folder-scheduled")
                 } else if waiting {
                     tr!("folder-waiting-short")
+                } else if reminders {
+                    tr!("folder-reminders")
                 } else if outbox {
                     tr!("folder-outbox")
                 } else {
@@ -1285,6 +1288,8 @@ impl MailWindow {
                             "schedule"
                         } else if waiting {
                             "history"
+                        } else if reminders {
+                            "bell"
                         } else if outbox {
                             "outbox"
                         } else {
@@ -1302,7 +1307,8 @@ impl MailWindow {
                             0
                         },
                         selected: folder.is_some_and(|f| self.listing == Some(Listing::Folder(f)))
-                            || waiting && self.listing == Some(Listing::Waiting),
+                            || waiting && self.listing == Some(Listing::Waiting)
+                            || reminders && self.listing == Some(Listing::Reminders),
                         bold: true,
                         chevron: has_children.then_some(*expanded),
                         // New mail lands in the inbox.
@@ -1708,6 +1714,11 @@ impl MailWindow {
                 self.open_waiting(cx);
                 self.picked_from_nav(window, cx);
             }
+            sidebar::Row::Folder { key, .. } if key == super::remind::NAV_KEY => {
+                self.leave_listing(Listing::Reminders, cx);
+                self.open_reminders(cx);
+                self.picked_from_nav(window, cx);
+            }
             sidebar::Row::Folder { key, .. } if key == compose::OUTBOX_NAV_KEY => {
                 self.leave_settings(window, cx);
                 self.open_outbox(cx);
@@ -2082,6 +2093,9 @@ fn listing_of(row: &sidebar::Row) -> Option<Listing> {
     match row {
         sidebar::Row::Folder { key, .. } if key == super::waiting::NAV_KEY => {
             Some(Listing::Waiting)
+        }
+        sidebar::Row::Folder { key, .. } if key == super::remind::NAV_KEY => {
+            Some(Listing::Reminders)
         }
         sidebar::Row::Folder {
             folder: Some(folder),

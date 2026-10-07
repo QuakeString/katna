@@ -79,6 +79,7 @@ mod print_preview;
 mod problems;
 mod quiet;
 mod reader;
+mod remind;
 mod remote;
 mod reply_row;
 mod rich;
@@ -186,6 +187,8 @@ actions!(
         MarkUnread,
         ToggleStar,
         AddToTasks,
+        SnoozeMail,
+        RemindMail,
         MarkImportant,
         ToggleMute,
         MarkNotImportant,
@@ -377,6 +380,8 @@ enum Listing {
     },
     /// Waiting for reply: sent mail a follow-up waits on.
     Waiting,
+    /// Mail with a reminder (Remind me).
+    Reminders,
     Search {
         query: String,
         total: Option<usize>,
@@ -1505,7 +1510,8 @@ impl MailWindow {
         let scheduled = self.writing.scheduled_count();
         let outbox = self.writing.outbox_count();
         let waiting = self.waiting_count();
-        if scheduled > 0 || outbox > 0 || waiting > 0 {
+        let reminders = self.reminder_count();
+        if scheduled > 0 || outbox > 0 || waiting > 0 || reminders > 0 {
             let after_sent = |ix: usize| {
                 ix + 1
                     + rows[ix + 1..]
@@ -1543,6 +1549,9 @@ impl MailWindow {
             }
             if scheduled > 0 {
                 rows.insert(at, row(compose::SCHEDULED_NAV_KEY, "Scheduled", scheduled));
+            }
+            if reminders > 0 {
+                rows.insert(at, row(remind::NAV_KEY, "Reminders", reminders));
             }
             if waiting > 0 {
                 rows.insert(at, row(waiting::NAV_KEY, "Waiting for reply", waiting));
@@ -2400,7 +2409,12 @@ impl MailWindow {
             .and_then(|ix| self.entries.get(ix))
             .map(|e| e.key);
         match self.listing.clone() {
-            Some(listing @ (Listing::Folder(_) | Listing::Unified { .. } | Listing::Waiting)) => {
+            Some(
+                listing @ (Listing::Folder(_)
+                | Listing::Unified { .. }
+                | Listing::Waiting
+                | Listing::Reminders),
+            ) => {
                 let (entries, unread) = match listing {
                     Listing::Folder(folder) => self.list_entries(folder),
                     Listing::Unified { view, account } => self.unified_entries(view, account),
@@ -2408,6 +2422,7 @@ impl MailWindow {
                         Ok(mail) => (mail.waiting_entries(self.config.mail.conversations), None),
                         Err(_) => (Vec::new(), None),
                     },
+                    Listing::Reminders => (self.reminder_entries(), None),
                     Listing::Search { .. } => (Vec::new(), None),
                 };
                 let open = self.kept_open_line(&listing, &entries);
@@ -2702,6 +2717,7 @@ impl MailWindow {
             Some(Listing::Folder(folder)) => self.tree.node(*folder).map(|n| n.label()),
             Some(Listing::Unified { view, account }) => Some(self.unified_name(*view, *account)),
             Some(Listing::Waiting) => Some(katna_i18n::tr!("folder-waiting")),
+            Some(Listing::Reminders) => Some(katna_i18n::tr!("folder-reminders")),
             _ => None,
         }
     }
@@ -4021,7 +4037,7 @@ impl Render for MailWindow {
             window,
             cx,
         );
-        let snooze_menu = self.render_snooze_menu(&th, cx);
+        let snooze_menu = self.render_snooze_menu(&th, window, cx);
         let quiet_menu = self.render_quiet_menu(&th, cx);
         let snackbar = self.render_snackbar(&th, window, reduce, cx);
         let upload_tray = self.render_upload_tray(&th, window, cx);

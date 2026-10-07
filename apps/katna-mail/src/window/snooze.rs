@@ -15,6 +15,7 @@ use jiff::tz::TimeZone;
 use jiff::{Timestamp, Zoned};
 use katna_i18n::{format, tr};
 use katna_ui::anchored;
+use katna_ui::tokens::{radius, space, text};
 use katna_ui::{InputEvent, TextInput, px};
 
 use super::MenuKey;
@@ -40,6 +41,20 @@ pub(super) struct SnoozeMenu {
     /// Where it opens, in the window.
     at: Point<Pixels>,
     picker: Option<Picker>,
+    /// On mail lines: Remind me beside Snooze, one click (or B and H)
+    /// apart.
+    remind: Option<Remind>,
+}
+
+/// Remind me, the other half of the mail lines' menu: it keeps the mail
+/// where it is and makes a task in Tasks that notifies at the time.
+pub(super) struct Remind {
+    /// Remind me is picked, rather than Snooze.
+    pub on: bool,
+    /// What the task says; the subject when left empty.
+    pub note: Entity<TextInput>,
+    /// The time before the day the mail says something is due, if it says.
+    pub before_due: Option<Zoned>,
 }
 
 /// The date and time picker.
@@ -131,6 +146,23 @@ impl MailWindow {
         if keys.is_empty() {
             return;
         }
+        self.open_mail_times(keys, false, at, cx);
+    }
+
+    /// Opens the menu of times for mail lines `keys` at `at`, with Snooze
+    /// or (`remind`) Remind me picked.
+    pub(super) fn open_mail_times(
+        &mut self,
+        keys: Vec<EntryKey>,
+        remind: bool,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        if keys.is_empty() {
+            return;
+        }
+        let note = cx.new(|cx| TextInput::new(tr!("remind-note-placeholder"), cx));
+        let before_due = self.before_due(&keys);
         self.menu = None;
         self.context_menu = None;
         self.snooze_menu = Some(SnoozeMenu {
@@ -140,8 +172,21 @@ impl MailWindow {
             follow_up: None,
             at,
             picker: None,
+            remind: Some(Remind {
+                on: remind,
+                note,
+                before_due,
+            }),
         });
         cx.notify();
+    }
+
+    /// Switches the mail lines' menu between Snooze and Remind me.
+    fn pick_remind(&mut self, on: bool, cx: &mut Context<Self>) {
+        if let Some(remind) = self.snooze_menu.as_mut().and_then(|m| m.remind.as_mut()) {
+            remind.on = on;
+            cx.notify();
+        }
     }
 
     /// Opens the reminder menu of notes `ids` at `at`; `reminded` offers
@@ -165,6 +210,7 @@ impl MailWindow {
             follow_up: None,
             at,
             picker: None,
+            remind: None,
         });
         cx.notify();
     }
@@ -186,6 +232,7 @@ impl MailWindow {
             follow_up: Some(outbox),
             at,
             picker: None,
+            remind: None,
         });
         cx.notify();
     }
@@ -216,6 +263,11 @@ impl MailWindow {
         }
         if let Some(outbox) = menu.follow_up {
             self.move_follow_up(outbox, until.as_second(), cx);
+            return;
+        }
+        if let Some(remind) = menu.remind.filter(|r| r.on) {
+            let note = remind.note.read(cx).text().trim().to_owned();
+            self.remind_mails(menu.keys, until.as_second(), note, cx);
             return;
         }
         self.act(Act::Snooze(until.as_second()), menu.keys, cx);
@@ -298,6 +350,7 @@ impl MailWindow {
     pub(super) fn render_snooze_menu(
         &self,
         th: &Theme,
+        window: &Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let menu = self.snooze_menu.as_ref()?;
@@ -343,7 +396,11 @@ impl MailWindow {
                 anchored()
                     .position(menu.at)
                     .snap_to_window_with_margin(px(8.0))
-                    .child(div().occlude().child(self.render_snooze_times(th, cx))),
+                    .child(
+                        div()
+                            .occlude()
+                            .child(self.render_snooze_times(th, window, cx)),
+                    ),
             )
             .with_priority(4)
             .into_any_element(),
@@ -360,7 +417,12 @@ impl MailWindow {
         )
     }
 
-    fn render_snooze_times(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn render_snooze_times(
+        &self,
+        th: &Theme,
+        window: &Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let now = Timestamp::now().to_zoned(self.tz.clone());
         let (notes, reminded, follow_up) = self
             .snooze_menu
@@ -368,10 +430,11 @@ impl MailWindow {
             .map_or((false, false, false), |m| {
                 (!m.notes.is_empty(), m.reminded, m.follow_up.is_some())
             });
-        let items = presets(&now).into_iter().enumerate().map(|(ix, preset)| {
-            let at = preset.at.timestamp();
+        let remind = self.snooze_menu.as_ref().and_then(|m| m.remind.as_ref());
+        let item = |id: gpui::ElementId, label: String, at: &Zoned| {
+            let when = at.timestamp();
             div()
-                .id(("snooze-preset", ix))
+                .id(id)
                 .h(px(40.0))
                 .px(px(16.0))
                 .flex()
@@ -381,14 +444,150 @@ impl MailWindow {
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
                 .menu_key(th)
-                .child(div().flex_1().child(preset.label))
+                .child(div().flex_1().min_w_0().truncate().child(label))
                 .child(
                     div()
+                        .flex_none()
                         .text_color(rgba(th.text_dim))
-                        .child(format::day_month_time(preset.at.datetime())),
+                        .child(format::day_month_time(at.datetime())),
                 )
-                .on_click(cx.listener(move |this, _, _, cx| this.snooze_until(at, cx)))
+                .on_click(cx.listener(move |this, _, _, cx| this.snooze_until(when, cx)))
+        };
+        // A day the mail says something is due by comes first.
+        let before_due = remind
+            .filter(|r| r.on)
+            .and_then(|r| r.before_due.as_ref())
+            .map(|at| item("remind-before-due".into(), tr!("remind-before-due"), at));
+        let items = presets(&now)
+            .into_iter()
+            .enumerate()
+            .map(|(ix, preset)| item(("snooze-preset", ix).into(), preset.label, &preset.at));
+        // The keys that open each, as they are set now.
+        let snooze_key = super::keymap::hint("snooze", &self.config.shortcuts);
+        let remind_key = super::keymap::hint("remind", &self.config.shortcuts);
+        let header = match remind {
+            Some(remind) => {
+                let tab = |id: &'static str, name: &'static str, label: String, key, on: bool| {
+                    let (fill, hover) = crate::widgets::tonal_fill(th);
+                    div()
+                        .id(id)
+                        .h(px(32.0))
+                        .px(px(space::S3))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(space::S2))
+                        .rounded(px(radius::SM))
+                        .border_1()
+                        .border_color(rgba(if on { fill } else { th.outline }))
+                        .when(on, |d| d.bg(rgba(fill)).text_color(rgba(th.accent)))
+                        .when(!on, |d| d.hover(move |s| s.bg(rgba(hover))))
+                        .cursor_pointer()
+                        .text_size(px(text::BODY))
+                        .child(icon(name, if on { th.accent } else { th.text_dim }, 16.0))
+                        .child(label)
+                        .when_some(key, |d, key| {
+                            d.child(
+                                div()
+                                    .px(px(space::S2))
+                                    .rounded(px(radius::XS))
+                                    .border_1()
+                                    .border_color(rgba(th.outline))
+                                    .text_size(px(text::CAPTION))
+                                    .text_color(rgba(th.text_dim))
+                                    .child(key),
+                            )
+                        })
+                };
+                div()
+                    .px(px(space::S5))
+                    .pt(px(space::S2))
+                    .pb(px(space::S3))
+                    .flex()
+                    .flex_col()
+                    .gap(px(space::S3))
+                    .child(
+                        div()
+                            .flex()
+                            .flex_row()
+                            .gap(px(space::S3))
+                            .child(
+                                tab(
+                                    "snooze-tab",
+                                    "snooze",
+                                    tr!("snooze-tab"),
+                                    snooze_key.clone(),
+                                    !remind.on,
+                                )
+                                .on_click(
+                                    cx.listener(|this, _, _, cx| this.pick_remind(false, cx)),
+                                ),
+                            )
+                            .child(
+                                tab(
+                                    "remind-tab",
+                                    "bell-plus",
+                                    tr!("remind-tab"),
+                                    remind_key.clone(),
+                                    remind.on,
+                                )
+                                .on_click(cx.listener(|this, _, _, cx| this.pick_remind(true, cx))),
+                            ),
+                    )
+                    .child(
+                        div()
+                            .text_size(px(text::CAPTION))
+                            .text_color(rgba(th.text_dim))
+                            .child(if remind.on {
+                                tr!("remind-says")
+                            } else {
+                                tr!("snooze-says")
+                            }),
+                    )
+                    .into_any_element()
+            }
+            None => div()
+                .px(px(16.0))
+                .pt(px(4.0))
+                .pb(px(8.0))
+                .text_size(px(12.0))
+                .font_weight(FontWeight::MEDIUM)
+                .text_color(rgba(th.text_dim))
+                .child(if notes {
+                    tr!("notes-remind-me")
+                } else if follow_up {
+                    tr!("follow-up-card-edit-title")
+                } else {
+                    tr!("snooze-until")
+                })
+                .into_any_element(),
+        };
+        // The note, for Remind me: what the task will say.
+        let note = remind.filter(|r| r.on).map(|r| {
+            let focus = r.note.focus_handle(cx);
+            div()
+                .px(px(space::S5))
+                .pt(px(space::S3))
+                .pb(px(space::S2))
+                .flex()
+                .flex_col()
+                .gap(px(space::S2))
+                .child(
+                    div()
+                        .text_size(px(text::CAPTION))
+                        .font_weight(FontWeight::MEDIUM)
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("remind-note")),
+                )
+                .child(
+                    crate::widgets::field("remind-note", &focus, th)
+                        .h(px(36.0))
+                        .flex()
+                        .items_center()
+                        .child(r.note.clone()),
+                )
         });
+        let typing = remind.is_some_and(|r| r.note.focus_handle(cx).is_focused(window));
         raised(
             div()
                 .key_context(crate::widgets::MENU_CONTEXT)
@@ -402,22 +601,22 @@ impl MailWindow {
             8.0,
             3.0,
         )
-        .child(
-            div()
-                .px(px(16.0))
-                .pt(px(4.0))
-                .pb(px(8.0))
-                .text_size(px(12.0))
-                .font_weight(FontWeight::MEDIUM)
-                .text_color(rgba(th.text_dim))
-                .child(if notes {
-                    tr!("notes-remind-me")
-                } else if follow_up {
-                    tr!("follow-up-card-edit-title")
-                } else {
-                    tr!("snooze-until")
-                }),
-        )
+        // B and H switch between Snooze and Remind me, as they open them.
+        .when(remind.is_some() && !typing, |d| {
+            d.on_key_down(cx.listener(|this, e: &gpui::KeyDownEvent, _, cx| {
+                if e.keystroke.modifiers.modified() {
+                    return;
+                }
+                match e.keystroke.key.as_str() {
+                    "b" => this.pick_remind(false, cx),
+                    "h" => this.pick_remind(true, cx),
+                    _ => return,
+                }
+                cx.stop_propagation();
+            }))
+        })
+        .child(header)
+        .children(before_due)
         .children(items)
         .child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
         .child(
@@ -457,6 +656,10 @@ impl MailWindow {
                         }
                     })),
             )
+        })
+        .when_some(note, |d, note| {
+            d.child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
+                .child(note)
         })
         .with_animation(
             "snooze-menu",
