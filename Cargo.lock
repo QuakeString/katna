@@ -5975,6 +5975,7 @@ name = "katna-core"
 version = "0.0.0"
 dependencies = [
  "backtrace",
+ "base64 0.22.1",
  "jiff",
  "serde",
  "serde_json",
@@ -6363,8 +6364,11 @@ dependencies = [
  "futures-lite",
  "katna-core",
  "katna-dbus",
+ "katna-search",
  "katna-store",
+ "mail-parser",
  "rpassword",
+ "serde_json",
  "zbus",
 ]
 
