@@ -2342,9 +2342,10 @@ impl MailWindow {
                     .into_any_element();
                 this.fetch_pictures(cx);
                 match this.snoozed_group_at(ix) {
+                    // A plain block, as other lines sit in: a flex column
+                    // lets a long preview push the date off the line.
                     Some(group) => div()
-                        .flex()
-                        .flex_col()
+                        .w_full()
                         .child(snoozed_group_label(group, ix == 0, &th))
                         .child(row)
                         .into_any_element(),

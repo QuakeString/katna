@@ -12,7 +12,7 @@ use katna_i18n::{format, tr};
 use katna_ui::tokens::{space, text};
 use katna_ui::{InputEvent, TextInput, px};
 
-use super::{MailWindow, SAVE_DELAY, chip, control_column};
+use super::{MailWindow, SAVE_DELAY, chip};
 use crate::theme::Theme;
 use crate::widgets::line_field;
 use crate::window::compose::schedule;
@@ -184,7 +184,10 @@ impl MailWindow {
             )),
             (None, false) => Some((tr!("snooze-type-hint-unclear"), th.warning)),
         };
-        let own_control = control_column(240.0)
+        let own_control = div()
+            .w(px(280.0))
+            .max_w_full()
+            .flex_none()
             .flex()
             .flex_col()
             .gap(px(space::S2))
