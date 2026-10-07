@@ -616,6 +616,9 @@ pub struct MailWindow {
     event_only: bool,
     /// That window's event is on its way to the daemon: it closes once in.
     event_saving: bool,
+    /// Where that window's card ends, as last drawn, so the window fits
+    /// the card.
+    event_fit: std::rc::Rc<std::cell::Cell<f32>>,
     /// For a conversation window, the mail window it came from: it shows
     /// the snackbar (and its Undo) when the conversation moves away and
     /// this window closes.
@@ -1039,6 +1042,7 @@ impl MailWindow {
             detached: false,
             event_only: false,
             event_saving: false,
+            event_fit: Default::default(),
             main: None,
             reading: false,
             card_seq: 0,
