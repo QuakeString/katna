@@ -1,6 +1,6 @@
 # Katna PIM — Implementation Plan
 
-> Status: **v0.2** (updated 7 October 2026, through PR #762). Companion to
+> Status: **v0.2** (updated 7 October 2026, through PR #767). Companion to
 > [ARCHITECTURE.md](ARCHITECTURE.md), which defines *what* we build. This
 > document defines *in which order*, *how we know a step is done*, and *how
 > we work*.
@@ -25,13 +25,15 @@ not name.
   of the UI translated; reading and sending encrypted mail; Phase 6
   except the upstream proposals: Calendar, Tasks, Notes and Contacts pages that sync with each
   account's own service; the Windows build and installer.
-- **Merged since the last refresh (#523–#762):** follow-ups Katna sends for you when nobody
+- **Merged since the last refresh (#523–#767):** follow-ups Katna sends for you when nobody
   replies, in working hours, with a Waiting list under Sent, a chip on
-  the lines and Edit, Send now and Stop in the conversation (7.5, #758,
-  #762); an MCP server, `katnactl mcp`, that lets AI
+  the lines and Edit, Send now and Stop in the conversation, and in Chat
+  view as a dashed bubble (7.5, #758, #762, #764); Remind me on any mail
+  beside Snooze (B, H), making a task due at the time, with a Reminders
+  view and a notification that opens the mail (7.6, #766, #767); an MCP server, `katnactl mcp`, that lets AI
   assistants on the same computer search and read mail and save drafts,
   with its Settings page (A.22, #756, #759); Katna's updater never
-  offering the build already installed (U.10, #761); a smaller New event
+  offering the build already installed (U.10, #761, #765); a smaller New event
   window from the Katna Digital Clock (6.6, #755, #760); the Katna logo in the
   phone drawer (A.10, #754); an Activity button in
   the phone search bar beside All Accounts' pictures, a phone Compose
@@ -461,7 +463,7 @@ mail schema stops changing every week.
 | U.7 Upgrade and rollback tests in CI | Container test: previous stable → candidate with the daemon running, against the dev servers; candidate → previous stable |
 | U.8 Release workflow | On a tag: build every format once, run the checks, publish to beta; promotion to stable copies the same files after a required reviewer approves |
 | U.9 Signing ◐ minisign-signed Arch packages and manifest, checked by the app before installing (#270); GPG and AppImage signing pending | GPG-signed pacman packages and repository databases (`SigLevel = Required`); minisign-signed manifests and AppImages; keys only in the release environment |
-| U.10 Update checks ◐ the app checks the signed `arch-latest` manifest hourly and after waking (#270, #555) and downloads a zstd patch from the installed build (#545, #570); the build already installed is never offered again, measured against pacman's records (#761); Windows Setup installs check and update themselves too, with the full Setup (#632); every `linux-latest` package offers updates: AppImage and tarball install them, RPM, Snap, Flatpak and Nix show the command (#634); channels, metered networks, Flatpak and AppImage pending | Daemon reads the signed channel manifest (daily, not on metered networks, can be turned off); Flatpak update monitor; AppImage self-update with staged rollout and the `pulled` flag |
+| U.10 Update checks ◐ the app checks the signed `arch-latest` manifest hourly and after waking (#270, #555) and downloads a zstd patch from the installed build (#545, #570); the build already installed is never offered again, measured against pacman's records (#761, #765); Windows Setup installs check and update themselves too, with the full Setup (#632); every `linux-latest` package offers updates: AppImage and tarball install them, RPM, Snap, Flatpak and Nix show the command (#634); channels, metered networks, Flatpak and AppImage pending | Daemon reads the signed channel manifest (daily, not on metered networks, can be turned off); Flatpak update monitor; AppImage self-update with staged rollout and the `pulled` flag |
 
 **Done when:** a beta built by the release workflow upgrades a running
 install of the previous stable on Arch and Ubuntu without losing a message,
@@ -775,8 +777,8 @@ says so and the owner has decided it.
 | 7.2 Link tracking ✅ #160, #182 | Server + daemon + app | Clicks through `/l/<id>/<n>` redirects stored on the server (never an open redirect); shown per recipient and link | Done |
 | 7.3 Mailbox insights ✅ #184, #187 | App, with 7.1–7.2 events | An Activity view: open and click rates of tracked mail, reply rates and times, busiest senders and hours, subject lines that got replies; counted from the local store, only tracking events come from the server | Done: an Activity button beside search with a feed of opens and clicks, a Details report for the last 7 or 30 days, all time or chosen dates, each recipient's opens and clicks in the reader, and mail sent and received, reply rates and times, top correspondents and a weekday by hour grid from `mail.db` |
 | 7.4 Mail templates ✅ #168 | App (local) | Save mail as a template, start new mail or a reply from one, fields such as the first name; Settings > Compose > Templates; stored in `pim.db`. Sync between devices later with 7.12 | Done |
-| 7.5 Follow-up reminders ✅ #172, #758, #762 | Daemon (local) | "Remind me if nobody replies in N days" in compose; `katna-meta` (task 1.9) with the reply check, a notification and the thread back on top of the Inbox. "Send a follow-up for me" (#758): Off, 1 day, 3 days, 1 week or a picked time, editable text or a template, an optional second follow-up, sent through the outbox in working hours (weekdays 9:00 to 17:00) threaded under the message; one due more than a day ago waits for the user; Katna's own follow-ups, Updates mail and out-of-office replies don't count as replies. Waiting (below Sent) lists mail with a follow-up, its lines in any list show a chip with what happens next, and the open conversation has Edit, Send now and Stop with Undo (#762). Works while the computer is on; 7.10 covers a switched-off computer, and M.10 sending from another of your devices | Done |
-| 7.6 Snooze ✅ #172 | Daemon (local; Gmail, Outlook.com and Zoho offer no snooze over IMAP) | Snooze a conversation until a time; it moves to a "Snoozed" label and comes back unread (ARCHITECTURE.md §10, Phase 5). Same `katna-meta` scheduler as 7.5 | Done |
+| 7.5 Follow-up reminders ✅ #172, #758, #762, #764 | Daemon (local) | "Remind me if nobody replies in N days" in compose; `katna-meta` (task 1.9) with the reply check, a notification and the thread back on top of the Inbox. "Send a follow-up for me" (#758): Off, 1 day, 3 days, 1 week or a picked time, editable text or a template, an optional second follow-up, sent through the outbox in working hours (weekdays 9:00 to 17:00) threaded under the message; one due more than a day ago waits for the user; Katna's own follow-ups, Updates mail and out-of-office replies don't count as replies. Waiting (below Sent) lists mail with a follow-up, its lines in any list show a chip with what happens next, and the open conversation has Edit, Send now and Stop with Undo (#762). In Chat view a waiting follow-up is a faint dashed bubble at the end with the same actions, a reminder a small line, and Send's menu opens on right-click or a long press (#764). Works while the computer is on; 7.10 covers a switched-off computer, and M.10 sending from another of your devices | Done |
+| 7.6 Snooze ✅ #172, #766, #767 | Daemon (local; Gmail, Outlook.com and Zoho offer no snooze over IMAP) | Snooze a conversation until a time; it moves to a "Snoozed" label and comes back unread (ARCHITECTURE.md §10, Phase 5). Same `katna-meta` scheduler as 7.5. Remind me (#766) shares Snooze's menu (switched at its top, or B and H): it keeps the mail where it is and makes a task in Tasks due at the time, with an optional note and "Before it's due" when the mail names a due day; a Reminder chip on the line, a Reminders view in the folder pane and a line at the end of a chat; the reminder's notification opens the mail (#767) | Done |
 | 7.7 Send later ✅ #53, #167 | Mail server, else daemon | Scheduled send exists and sends while the computer is on. Where the account's SMTP server offers FUTURERELEASE (RFC 4865; Stalwart does, Gmail does not) or, later, JMAP's `sendAt`, hand the mail to the server so it goes out on time with the computer off | Done |
 | 7.8 Automatic translation ✅ #176 | Server + daemon + app | Translate a message into the reading language, with the original one click away. LibreTranslate (AGPL-3.0, its own container) on the owner's server, chosen 27 September 2026; the daemon sends only the text of a message the user asks to translate (or of languages the user chose to always translate), over TLS with the install's token; no logs kept | Done |
 | 7.9 Rich contact profiles ◐ #164, #346, #348, #514, #519 | App (local) + decision | A right-hand panel for the sender: picture, all mail exchanged, attachments, first and last contact, signature details (phone, title) read from their mail, and the account's own contacts over CardDAV once Phase 6 syncs them. Outside profiles (LinkedIn, X) need a data source | Local panel done (#164) with open tasks, upcoming meetings and a Company section (#346, #348, #514, #519); saved contacts from Phase 6; outside data to decide |
