@@ -846,7 +846,8 @@ impl NewMailNotices {
                             let until = if key == action::SNOOZE_HOUR {
                                 Some(unix_now() + 3600)
                             } else {
-                                tomorrow_morning()
+                                let config = crate::daemon::settings(daemon.paths());
+                                tomorrow_morning(config.mail.snooze.morning)
                             };
                             match until {
                                 Some(until) => daemon
@@ -1096,15 +1097,17 @@ impl NewMailNotices {
     }
 }
 
-/// Tomorrow at 8:00 here, as the app's snooze menu offers it.
-fn tomorrow_morning() -> Option<i64> {
+/// Tomorrow at `morning` (minutes after midnight) here, as the app's
+/// snooze menu offers it.
+fn tomorrow_morning(morning: u32) -> Option<i64> {
     let tz = jiff::tz::TimeZone::system();
     let now = jiff::Timestamp::now().to_zoned(tz.clone());
+    let morning = morning.min(24 * 60 - 1);
     let at = now
         .date()
         .tomorrow()
         .ok()?
-        .at(8, 0, 0, 0)
+        .at((morning / 60) as i8, (morning % 60) as i8, 0, 0)
         .to_zoned(tz)
         .ok()?;
     Some(at.timestamp().as_second())

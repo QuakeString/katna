@@ -1369,6 +1369,14 @@ this is local; Katna Server only adds opened/clicked events (§16).
     messages in the same folder.
   - **Typed times**: Pick date & time reads "tue 3pm", "tomorrow" or "in 2
     hours" (`quick_add::moment`) into its day and time.
+  - **Own times** (`mail.snooze` in the config): the hour of Later today,
+    the morning hour of Tomorrow, This weekend and Next week (also the
+    notification's Tomorrow), the weekend's and the week's day, and one
+    typed time of the user's own, offered while it is still to come.
+  - **The Snoozed folder** lists the soonest back first, under Today,
+    Tomorrow, This week and Later, each line with its return time. In a
+    chat, a snoozed conversation ends with a line with Change and
+    Unsnooze. On a phone a sideways swipe on a line opens Snooze.
 - **Remind me** (no meta of its own): a task in Tasks made from the mail
   (its `mail` is the newest message's `Message-ID`), due and with
   `remind_at` at the time, titled with the optional note or the subject;

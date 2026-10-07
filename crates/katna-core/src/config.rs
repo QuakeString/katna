@@ -1177,6 +1177,72 @@ pub struct MailView {
     /// empty for all accounts.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub activity_account: String,
+    /// What the snooze menu's suggested times mean.
+    pub snooze: SnoozeTimes,
+}
+
+/// What the snooze menu's suggested times mean (Settings > Inbox >
+/// Snooze times), as in Spark.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SnoozeTimes {
+    /// Later today, in minutes after midnight.
+    pub later_today: u32,
+    /// Tomorrow, This weekend and Next week, in minutes after midnight.
+    pub morning: u32,
+    /// The day This weekend comes back on.
+    pub weekend: SnoozeDay,
+    /// The day Next week comes back on.
+    pub next_week: SnoozeDay,
+    /// One more time of the user's own, as typed ("monday 10:00"),
+    /// offered when it is still to come; empty for none.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub own: String,
+}
+
+impl Default for SnoozeTimes {
+    fn default() -> Self {
+        Self {
+            later_today: 18 * 60,
+            morning: 8 * 60,
+            weekend: SnoozeDay::Saturday,
+            next_week: SnoozeDay::Monday,
+            own: String::new(),
+        }
+    }
+}
+
+/// A day of the week for [`SnoozeTimes`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SnoozeDay {
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday,
+}
+
+impl SnoozeDay {
+    /// The days a weekend can start on.
+    pub const WEEKEND: [Self; 3] = [Self::Friday, Self::Saturday, Self::Sunday];
+    /// The days a week can start on.
+    pub const WEEK: [Self; 3] = [Self::Saturday, Self::Sunday, Self::Monday];
+
+    pub fn weekday(self) -> jiff::civil::Weekday {
+        use jiff::civil::Weekday;
+        match self {
+            Self::Monday => Weekday::Monday,
+            Self::Tuesday => Weekday::Tuesday,
+            Self::Wednesday => Weekday::Wednesday,
+            Self::Thursday => Weekday::Thursday,
+            Self::Friday => Weekday::Friday,
+            Self::Saturday => Weekday::Saturday,
+            Self::Sunday => Weekday::Sunday,
+        }
+    }
 }
 
 /// The Files page (Settings > Default apps): its small pictures (logos
@@ -1336,6 +1402,7 @@ impl Default for MailView {
             activity_cleared: 0,
             activity_removed: Vec::new(),
             activity_account: String::new(),
+            snooze: SnoozeTimes::default(),
         }
     }
 }

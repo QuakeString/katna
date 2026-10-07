@@ -1160,6 +1160,14 @@ impl Mail {
             .copied()
     }
 
+    /// When the line `entry` comes back from snooze, if it is snoozed.
+    pub fn entry_snoozed_until(&self, entry: &Entry) -> Option<i64> {
+        match entry.key {
+            EntryKey::Message(id) => self.reminders.snoozed.get(&id).copied(),
+            key => self.snoozed_until(&self.entry_messages(key)),
+        }
+    }
+
     /// Picks up what the daemon wrote since the last call.
     pub fn refresh(&mut self) {
         self.rows.clear();
@@ -1287,9 +1295,15 @@ impl Mail {
                     row
                 }
             };
+            // A conversation is snoozed when any of its messages is.
+            let snoozed_until = match self.reminders.snoozed.get(&row.id) {
+                Some(until) => Some(*until),
+                None if self.reminders.snoozed.is_empty() => None,
+                None => self.entry_snoozed_until(entry),
+            };
             let row = Row {
                 pinned: self.pins.rank(row.key).is_some(),
-                snoozed_until: self.reminders.snoozed.get(&row.id).copied(),
+                snoozed_until,
                 follow_up: self.reminders.follow_up(row.key, row.id),
                 ..row
             };

@@ -278,6 +278,17 @@ settings-inbox-tabs-focused = Focused and Other
 settings-inbox-tabs-zoho = Inbox, Newsletters and Notifications
 # $tab: the first tab, such as "Primary".
 settings-inbox-tabs-shown = Tabs shown. Mail of a tab you turn off stays in { $tab }.
+# What the snooze menu's suggested times mean.
+settings-snooze-times = Snooze times
+settings-snooze-times-detail = What the times in the snooze menu mean. Remind me uses them too.
+settings-snooze-morning = Mornings
+settings-snooze-morning-detail = Tomorrow, This weekend and Next week
+# One more snooze time, typed by the user.
+settings-snooze-own = Your own
+settings-snooze-own-detail = Shown in the menu while it is still to come
+settings-snooze-own-placeholder = Like “monday 10:00”
+# $date: when the user's own time comes next, such as "Mon, Oct 12, 2026, 10:00 AM".
+settings-snooze-own-next = Next: { $date }
 
 ## Settings > Appearance
 
