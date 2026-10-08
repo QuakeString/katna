@@ -436,6 +436,11 @@ menu-make-rule = Regel maken…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Sleutel geïmporteerd
+toast-key-updated = Je had deze sleutel al; hij is nu bijgewerkt
+toast-key-removed = Sleutel verwijderd
+toast-key-not-removed = Kan de sleutel niet verwijderen
+toast-fingerprint-copied = Vingerafdruk gekopieerd
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] Gesprek gearchiveerd.

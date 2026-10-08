@@ -488,6 +488,11 @@ menu-make-rule = Créer une règle…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Clé importée
+toast-key-updated = Vous aviez déjà cette clé ; elle est maintenant à jour
+toast-key-removed = Clé supprimée
+toast-key-not-removed = La clé n’a pas pu être supprimée
+toast-fingerprint-copied = Empreinte copiée
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] Conversation archivée.

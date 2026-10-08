@@ -4574,3 +4574,35 @@ Druk op Ctrl+Shift+P en typ om een actie of instelling te vinden, en druk
 dan op Enter om hem uit te voeren. Elke actie toont haar sneltoets, en wat
 je het laatst gebruikte staat bovenaan.
 """
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Versleutelde e-mail vindt sleutels"
+text = """
+Met Versleutelen aan wordt een ontvanger zonder sleutel bij het versturen
+opgezocht in de sleutelmap van zijn eigen domein. E-mail die je verstuurt
+bevat je publieke sleutel (Autocrypt) als GnuPG er een voor je adres
+heeft, en sleutels die op dezelfde manier binnenkomen worden gebruikt om
+je antwoorden te versleutelen. Versleutelde OpenPGP-e-mail verbergt nu
+het onderwerp totdat hij wordt geopend.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Zie wie een bericht heeft ondertekend"
+text = """
+Klik op de handtekeningregel van een ondertekend of versleuteld bericht om
+de sleutel van de ondertekenaar te zien: naam, adres, vingerafdruk en
+datums, met Vingerafdruk kopiëren. Een bericht dat is ondertekend met een
+sleutel die je niet hebt, biedt Sleutel opzoeken, en een sleutel die
+iemand bijvoegt opent als Deze sleutel importeren?, met daarna Ongedaan
+maken.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Waarschuwingen bij vervalste e-mail"
+text = """
+Als een bericht niet door de afzendercontroles van je e-mailprovider komt,
+zegt een rode balk dat het mogelijk niet komt van wie het beweert, met
+Details, Lijkt veilig en Naar spam verplaatsen. De afbeeldingen blijven
+verborgen en links vragen het eerst voordat ze openen. Een afzender die
+door niets is bevestigd, krijgt een klein „?” op zijn afbeelding.
+"""

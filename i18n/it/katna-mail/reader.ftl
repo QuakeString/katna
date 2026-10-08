@@ -91,6 +91,89 @@ security-missing-key = Firmato con una chiave che non possiedi, quindi non può 
 security-missing-key-id = Firmato con una chiave che non possiedi ({ $key }), quindi non può essere verificato
 security-signature-unavailable = Firmato; installa { $tool } per verificare la firma
 security-signature-error = Impossibile verificare la firma.
+security-look-up-key = Cerca la chiave
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Firma verificata
+key-card-verified-detail = La firma è valida e consideri attendibile questa chiave.
+key-card-unverified = Firma non verificata
+key-card-unverified-detail = La firma è valida, ma nulla conferma che la chiave sia sua. Confronta l'impronta con questa persona, poi rendi attendibile la chiave in GnuPG (Kleopatra o gpg --edit-key).
+key-card-not-sender = Firmato da un'altra persona
+key-card-not-sender-detail = La firma è valida, ma la chiave non è quella del mittente.
+key-card-untrusted = Chiave non attendibile
+key-card-untrusted-detail = Hai contrassegnato questa chiave come non attendibile in GnuPG.
+key-card-signature-expired = Firma scaduta
+key-card-signature-expired-detail = La firma era valida, ma è scaduta.
+key-card-key-expired = Chiave scaduta
+key-card-key-expired-detail = La firma è valida, ma nel frattempo la chiave è scaduta.
+key-card-key-revoked = Chiave revocata
+key-card-key-revoked-detail = Il proprietario ha revocato questa chiave, quindi la firma non è attendibile.
+key-card-bad = Firma non valida
+key-card-bad-detail = Questo messaggio è stato modificato dopo la firma, oppure la firma è contraffatta.
+key-card-signed-by = Firmato da
+key-card-belongs-to = Appartiene a
+key-card-fingerprint = Impronta
+key-card-signed = Firmato
+key-card-key = Chiave
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Creata
+key-card-expires = Scade
+key-card-never = Mai
+key-card-issued-by = Emesso da
+key-card-found-in = Trovata in
+key-card-keyring = Il tuo portachiavi GnuPG
+key-card-copy = Copia impronta
+key-card-import-title = Importare questa chiave?
+key-card-from-directory = Trovata nella directory delle chiavi di { $domain }.
+key-card-from-attachment = Dall'allegato { $name }.
+key-card-import-note = Katna potrà così verificare le firme di questa persona e inviarle posta crittografata. Per considerare la chiave pienamente attendibile, confronta l'impronta con questa persona.
+key-card-cancel = Annulla
+key-card-import = Importa chiave
+key-card-looking-up = Ricerca della chiave…
+key-card-looking-up-detail = Richiesta alla directory delle chiavi di { $domain }.
+key-card-not-found = Nessuna chiave trovata
+key-card-not-found-detail = { $domain } non pubblica una chiave per questo indirizzo. Chiedi al mittente di inviarti la sua.
+key-card-not-kept = La chiave trovata non può essere usata.
+key-card-failed = Impossibile ottenere la chiave
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Potrebbe non provenire da { $domain }
+sender-failed-body = Non ha superato i controlli sul mittente di { $provider }. Fai attenzione a link, allegati e risposte.
+sender-provider-unknown = il tuo provider di posta
+sender-details = Dettagli
+sender-details-hide = Nascondi dettagli
+sender-looks-safe = Sembra sicuro
+sender-move-to-spam = Sposta nello spam
+sender-checked-by = Controllato da { $provider }
+sender-checked-by-server = Controllato da { $provider } ({ $server })
+sender-dmarc = Dominio del mittente (DMARC)
+sender-dkim = Firma (DKIM)
+sender-spf = Server di invio (SPF)
+sender-result-pass = Superato
+sender-result-fail = Non superato
+sender-result-unsure = Incerto
+sender-result-none = Nessuno
+sender-result-missing = Non controllato
+sender-dmarc-pass = { $domain } conferma questo mittente.
+sender-dmarc-fail = La posta non corrisponde al modo in cui { $domain } dichiara di inviare la propria posta.
+sender-dmarc-none = { $domain } non pubblica regole per la propria posta.
+sender-dkim-pass = Firmato da { $domain }.
+sender-dkim-fail = La firma di { $domain } non corrisponde alla posta.
+sender-dkim-none = Il messaggio non è stato firmato.
+sender-spf-pass = Inviato da un server elencato da { $domain }.
+sender-spf-fail = Inviato da un server non elencato da { $domain }.
+sender-spf-none = { $domain } non elenca i propri server.
+sender-check-unsure = Il controllo non ha dato una risposta chiara.
+sender-unconfirmed = { $provider } non ha potuto confermare che provenga da { $domain }. Chiunque può indicare qualsiasi mittente.
+sender-link-title = Aprire questo link?
+sender-link-body = Questa posta non ha superato i controlli sul mittente. Il link porta a { $host }:
+sender-link-cancel = Annulla
+sender-link-open = Apri
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -125,6 +208,7 @@ tracking-receipt-other = Conferma di lettura: { $who } ha eliminato o gestito il
 
 remote-hidden = Le immagini in questo messaggio sono nascoste.
 remote-hidden-unconfirmed = Immagini nascoste: non è stato possibile confermare il mittente.
+remote-hidden-failed = Immagini nascoste: questa posta non ha superato i controlli sul mittente.
 remote-show = Mostra immagini
 remote-always-show = Mostra sempre da questo mittente
 remote-picture-use = Usa

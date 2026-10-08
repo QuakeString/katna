@@ -4620,3 +4620,34 @@ Pulsa Ctrl+Shift+P y escribe para encontrar cualquier acción o ajuste, y
 luego pulsa Intro para ejecutarlo. Cada acción muestra su combinación de
 teclas, y lo último que usaste aparece arriba.
 """
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "El correo cifrado encuentra las claves"
+text = """
+Con Cifrar activado, al enviar se busca la clave de cada destinatario que
+no la tenga en el directorio de claves de su propio dominio. El correo que
+envías lleva tu clave pública (Autocrypt) cuando GnuPG tiene una para tu
+dirección, y las claves que llegan del mismo modo se usan para cifrar tus
+respuestas. El correo OpenPGP cifrado oculta ahora su asunto hasta que se
+abre.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Mira quién firmó un mensaje"
+text = """
+Haz clic en la línea de la firma de un mensaje firmado o cifrado para ver
+la clave del firmante: nombre, dirección, huella digital y fechas, con
+Copiar huella digital. Un mensaje firmado con una clave que no tienes
+ofrece Buscar la clave, y una clave que alguien adjunta se abre como
+¿Importar esta clave?, con Deshacer después.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Avisos en el correo falsificado"
+text = """
+Cuando un mensaje no supera las comprobaciones de remitente de tu
+proveedor de correo, un aviso rojo indica que puede no venir de quien
+dice, con Detalles, Parece seguro y Mover a spam. Sus imágenes siguen
+ocultas y sus enlaces piden confirmación antes de abrirse. Un remitente
+que nada ha confirmado lleva un pequeño «?» en su foto.
+"""

@@ -4487,3 +4487,33 @@ Tryck Ctrl+Shift+P och skriv för att hitta vilken åtgärd eller inställning
 som helst, och tryck sedan på Retur för att köra den. Varje åtgärd visar
 sitt kortkommando, och det du använde senast ligger överst.
 """
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Krypterad e-post hittar nycklar"
+text = """
+När Kryptera är på slås en mottagare utan nyckel upp i nyckelkatalogen
+för mottagarens egen domän när du skickar. E-post du skickar bär med sig
+din publika nyckel (Autocrypt) när GnuPG har en för din adress, och
+nycklar som kommer på samma sätt används för att kryptera dina svar.
+Krypterad OpenPGP-e-post döljer nu ämnet tills meddelandet öppnas.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Se vem som signerade ett meddelande"
+text = """
+Klicka på signaturraden i ett signerat eller krypterat meddelande för att
+se signerarens nyckel: namn, adress, fingeravtryck och datum, med Kopiera
+fingeravtryck. Ett meddelande som är signerat med en nyckel du inte har
+erbjuder Slå upp nyckeln, och en nyckel som någon bifogar öppnas som
+Importera den här nyckeln? med Ångra efteråt.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Varningar för förfalskad e-post"
+text = """
+När ett meddelande inte klarar din e-postleverantörs avsändarkontroller
+säger en röd banderoll att det kanske inte kommer från den det utger sig
+för att vara, med Detaljer, Ser säkert ut och Flytta till skräppost. Dess
+bilder förblir dolda och dess länkar frågar innan de öppnas. En avsändare
+som inget har bekräftat får ett litet ”?” på sin bild.
+"""

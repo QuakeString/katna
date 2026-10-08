@@ -4775,3 +4775,35 @@ paramètre, puis appuyez sur Entrée pour l’exécuter. Chaque action affiche
 son raccourci clavier, et ce que vous avez utilisé en dernier apparaît en
 haut.
 """
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Les messages chiffrés trouvent les clés"
+text = """
+Quand Chiffrer est activé, la clé d’un destinataire qui n’en a pas est
+recherchée à l’envoi dans l’annuaire de clés de son propre domaine. Les
+messages que vous envoyez portent votre clé publique (Autocrypt) quand
+GnuPG en a une pour votre adresse, et les clés reçues de la même façon
+servent à chiffrer vos réponses. Les messages OpenPGP chiffrés masquent
+désormais leur objet jusqu’à leur ouverture.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Voir qui a signé un message"
+text = """
+Cliquez sur la ligne de signature d’un message signé ou chiffré pour voir
+la clé du signataire : nom, adresse, empreinte et dates, avec Copier
+l’empreinte. Un message signé avec une clé que vous n’avez pas propose
+Rechercher la clé, et une clé jointe par quelqu’un s’ouvre sous Importer
+cette clé ?, avec Annuler ensuite.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Des avertissements sur les messages falsifiés"
+text = """
+Quand un message échoue aux vérifications d’expéditeur de votre
+fournisseur de messagerie, un bandeau rouge indique qu’il ne vient
+peut-être pas de qui il prétend, avec Détails, Semble sûr et Déplacer
+dans les spams. Ses images restent masquées et ses liens demandent
+confirmation avant de s’ouvrir. Un expéditeur que rien n’a confirmé
+reçoit un petit « ? » sur sa photo.
+"""

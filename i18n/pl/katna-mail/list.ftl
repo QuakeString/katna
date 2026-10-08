@@ -540,6 +540,11 @@ menu-make-rule = Utwórz regułę…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Zaimportowano klucz
+toast-key-updated = Ten klucz już masz; teraz jest aktualny
+toast-key-removed = Usunięto klucz
+toast-key-not-removed = Nie udało się usunąć klucza
+toast-fingerprint-copied = Skopiowano odcisk palca
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] Wątek zarchiwizowany.

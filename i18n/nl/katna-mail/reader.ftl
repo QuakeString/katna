@@ -91,6 +91,89 @@ security-missing-key = Ondertekend met een sleutel die je niet hebt, dus kan nie
 security-missing-key-id = Ondertekend met een sleutel die je niet hebt ({ $key }), dus kan niet worden gecontroleerd
 security-signature-unavailable = Ondertekend; installeer { $tool } om de handtekening te controleren
 security-signature-error = De handtekening kan niet worden gecontroleerd.
+security-look-up-key = Sleutel opzoeken
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Geverifieerde handtekening
+key-card-verified-detail = De handtekening is geldig en je vertrouwt deze sleutel.
+key-card-unverified = Handtekening niet geverifieerd
+key-card-unverified-detail = De handtekening is geldig, maar niets bevestigt dat de sleutel van deze persoon is. Vergelijk de vingerafdruk met hem of haar en vertrouw de sleutel daarna in GnuPG (Kleopatra of gpg --edit-key).
+key-card-not-sender = Ondertekend door iemand anders
+key-card-not-sender-detail = De handtekening is geldig, maar de sleutel is niet van de afzender.
+key-card-untrusted = Sleutel niet vertrouwd
+key-card-untrusted-detail = Je hebt deze sleutel in GnuPG als niet vertrouwd gemarkeerd.
+key-card-signature-expired = Handtekening verlopen
+key-card-signature-expired-detail = De handtekening was geldig, maar is verlopen.
+key-card-key-expired = Sleutel verlopen
+key-card-key-expired-detail = De handtekening is geldig, maar de sleutel is inmiddels verlopen.
+key-card-key-revoked = Sleutel ingetrokken
+key-card-key-revoked-detail = De eigenaar heeft deze sleutel ingetrokken, dus de handtekening kan niet worden vertrouwd.
+key-card-bad = Ongeldige handtekening
+key-card-bad-detail = Dit bericht is na ondertekening gewijzigd, of de handtekening is vervalst.
+key-card-signed-by = Ondertekend door
+key-card-belongs-to = Hoort bij
+key-card-fingerprint = Vingerafdruk
+key-card-signed = Ondertekend
+key-card-key = Sleutel
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Gemaakt
+key-card-expires = Verloopt
+key-card-never = Nooit
+key-card-issued-by = Uitgegeven door
+key-card-found-in = Gevonden in
+key-card-keyring = Je GnuPG-sleutelbos
+key-card-copy = Vingerafdruk kopiëren
+key-card-import-title = Deze sleutel importeren?
+key-card-from-directory = Gevonden in de sleutelmap van { $domain }.
+key-card-from-attachment = Uit de bijlage { $name }.
+key-card-import-note = Katna kan dan de handtekeningen van deze persoon controleren en versleutelde e-mail naar hem of haar sturen. Vergelijk de vingerafdruk met deze persoon om de sleutel volledig te vertrouwen.
+key-card-cancel = Annuleren
+key-card-import = Sleutel importeren
+key-card-looking-up = Sleutel opzoeken…
+key-card-looking-up-detail = De sleutelmap van { $domain } wordt gevraagd.
+key-card-not-found = Geen sleutel gevonden
+key-card-not-found-detail = { $domain } publiceert geen sleutel voor dit adres. Vraag de afzender je de zijne te sturen.
+key-card-not-kept = De gevonden sleutel kan niet worden gebruikt.
+key-card-failed = Kan de sleutel niet ophalen
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Dit komt mogelijk niet van { $domain }
+sender-failed-body = Het is niet door de afzendercontroles van { $provider } gekomen. Wees voorzichtig met links, bijlagen en antwoorden.
+sender-provider-unknown = je e-mailprovider
+sender-details = Details
+sender-details-hide = Details verbergen
+sender-looks-safe = Lijkt veilig
+sender-move-to-spam = Naar spam verplaatsen
+sender-checked-by = Gecontroleerd door { $provider }
+sender-checked-by-server = Gecontroleerd door { $provider } ({ $server })
+sender-dmarc = Afzenderdomein (DMARC)
+sender-dkim = Handtekening (DKIM)
+sender-spf = Verzendende server (SPF)
+sender-result-pass = Geslaagd
+sender-result-fail = Mislukt
+sender-result-unsure = Onzeker
+sender-result-none = Geen
+sender-result-missing = Niet gecontroleerd
+sender-dmarc-pass = { $domain } bevestigt deze afzender.
+sender-dmarc-fail = De e-mail komt niet overeen met hoe { $domain } zegt dat zijn e-mail wordt verstuurd.
+sender-dmarc-none = { $domain } publiceert geen regels voor zijn e-mail.
+sender-dkim-pass = Ondertekend door { $domain }.
+sender-dkim-fail = De handtekening van { $domain } komt niet overeen met de e-mail.
+sender-dkim-none = Het bericht was niet ondertekend.
+sender-spf-pass = Verstuurd vanaf een server die { $domain } vermeldt.
+sender-spf-fail = Verstuurd vanaf een server die { $domain } niet vermeldt.
+sender-spf-none = { $domain } vermeldt zijn servers niet.
+sender-check-unsure = De controle gaf geen duidelijk antwoord.
+sender-unconfirmed = { $provider } kon niet bevestigen dat dit van { $domain } komt. Iedereen kan elke afzender invullen.
+sender-link-title = Deze link openen?
+sender-link-body = Deze e-mail is niet door de afzendercontroles gekomen. De link gaat naar { $host }:
+sender-link-cancel = Annuleren
+sender-link-open = Openen
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -121,6 +204,7 @@ tracking-receipt-other = Leesbevestiging: { $who } heeft je bericht verwijderd o
 
 remote-hidden = Afbeeldingen in dit bericht zijn verborgen.
 remote-hidden-unconfirmed = Afbeeldingen verborgen: de afzender kon niet worden bevestigd.
+remote-hidden-failed = Afbeeldingen verborgen: deze e-mail is niet door de afzendercontroles gekomen.
 remote-show = Afbeeldingen tonen
 remote-always-show = Altijd tonen van deze afzender
 remote-picture-use = Gebruiken

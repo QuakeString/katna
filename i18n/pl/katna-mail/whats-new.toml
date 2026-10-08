@@ -4510,3 +4510,34 @@ ustawienie, a potem naciśnij Enter, aby je uruchomić. Każde działanie
 pokazuje swój skrót klawiszowy, a to, czego używałeś ostatnio, jest na
 górze.
 """
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Szyfrowana poczta sama znajduje klucze"
+text = """
+Gdy Zaszyfruj jest włączone, klucz odbiorcy, którego nie masz, jest przy
+wysyłaniu wyszukiwany w katalogu kluczy jego własnej domeny. Wysyłana
+poczta zawiera twój klucz publiczny (Autocrypt), gdy GnuPG ma go dla
+twojego adresu, a klucze, które przychodzą w ten sam sposób, służą do
+szyfrowania twoich odpowiedzi. Zaszyfrowana poczta OpenPGP ukrywa teraz
+temat, dopóki nie zostanie otwarta.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Zobacz, kto podpisał wiadomość"
+text = """
+Kliknij wiersz podpisu w podpisanej lub zaszyfrowanej wiadomości, aby
+zobaczyć klucz podpisującego: nazwę, adres, odcisk palca i daty, z
+przyciskiem Kopiuj odcisk palca. Wiadomość podpisana kluczem, którego nie
+masz, oferuje Wyszukaj klucz, a klucz dołączony przez kogoś otwiera się
+jako Zaimportować ten klucz? z możliwością późniejszego Cofnij.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Ostrzeżenia przed sfałszowaną pocztą"
+text = """
+Gdy wiadomość nie przejdzie kontroli nadawcy u twojego dostawcy poczty,
+czerwony baner mówi, że może nie pochodzić od tego, za kogo się podaje,
+z przyciskami Szczegóły, Wygląda bezpiecznie i Przenieś do spamu. Jej
+obrazy pozostają ukryte, a linki pytają przed otwarciem. Nadawca, którego
+nic nie potwierdziło, dostaje mały znak „?” na swoim zdjęciu.
+"""

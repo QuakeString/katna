@@ -4723,3 +4723,36 @@ Einstellung zu finden, dann drücken Sie die Eingabetaste, um sie
 auszuführen. Jede Aktion zeigt ihre Tastenkombination, und was Sie
 zuletzt genutzt haben, steht oben.
 """
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Verschlüsselte E-Mails finden Schlüssel"
+text = """
+Ist Verschlüsseln an, wird für einen Empfänger ohne Schlüssel beim Senden
+im Schlüsselverzeichnis seiner eigenen Domain gesucht. Ihre gesendeten
+E-Mails enthalten Ihren öffentlichen Schlüssel (Autocrypt), wenn GnuPG
+einen für Ihre Adresse hat, und Schlüssel, die auf diesem Weg ankommen,
+werden zum Verschlüsseln Ihrer Antworten verwendet. Verschlüsselte
+OpenPGP-E-Mails verbergen ihren Betreff jetzt, bis sie geöffnet werden.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Sehen, wer eine Nachricht signiert hat"
+text = """
+Klicken Sie auf die Signaturzeile einer signierten oder verschlüsselten
+Nachricht, um den Schlüssel des Unterzeichners zu sehen: Name, Adresse,
+Fingerabdruck und Daten, mit Fingerabdruck kopieren. Eine Nachricht, die
+mit einem Schlüssel signiert ist, den Sie nicht haben, bietet Schlüssel
+suchen an, und ein angehängter Schlüssel öffnet sich als „Diesen
+Schlüssel importieren?“ mit Rückgängig danach.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Warnungen bei gefälschten E-Mails"
+text = """
+Besteht eine Nachricht die Absenderprüfungen Ihres E-Mail-Anbieters
+nicht, sagt ein rotes Banner, dass sie möglicherweise nicht von dem
+stammt, der sie zu sein vorgibt, mit Details, Sieht sicher aus und In
+Spam verschieben. Ihre Bilder bleiben ausgeblendet, und ihre Links fragen
+vor dem Öffnen nach. Ein Absender, den nichts bestätigt hat, bekommt ein
+kleines „?“ auf seinem Bild.
+"""

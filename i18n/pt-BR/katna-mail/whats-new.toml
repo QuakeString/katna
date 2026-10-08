@@ -4581,3 +4581,34 @@ Pressione Ctrl+Shift+P e digite para encontrar qualquer ação ou
 configuração, depois pressione Enter para executá-la. Cada ação mostra
 seu atalho de teclado, e o que você usou por último fica no topo.
 """
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "E-mails criptografados encontram chaves"
+text = """
+Com Criptografar ativado, a chave de um destinatário que não tem uma é
+procurada no diretório de chaves do próprio domínio dele quando você
+envia. Os e-mails que você envia levam sua chave pública (Autocrypt)
+quando o GnuPG tem uma para o seu endereço, e as chaves que chegam da
+mesma forma são usadas para criptografar suas respostas. E-mails OpenPGP
+criptografados agora ocultam o assunto até serem abertos.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Veja quem assinou uma mensagem"
+text = """
+Clique na linha da assinatura de uma mensagem assinada ou criptografada
+para ver a chave do signatário: nome, endereço, impressão digital e
+datas, com Copiar impressão digital. Uma mensagem assinada com uma chave
+que você não tem oferece Procurar chave, e uma chave anexada por alguém
+abre como Importar esta chave?, com Desfazer depois.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Avisos em e-mails falsificados"
+text = """
+Quando uma mensagem não passa nas verificações de remetente do seu
+provedor de e-mail, uma faixa vermelha avisa que talvez ela não seja de
+quem diz ser, com Detalhes, Parece seguro e Mover para spam. As imagens
+dela ficam ocultas e os links pedem confirmação antes de abrir. Um
+remetente que nada confirmou ganha um pequeno “?” na foto.
+"""

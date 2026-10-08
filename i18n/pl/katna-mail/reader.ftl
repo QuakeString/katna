@@ -91,6 +91,89 @@ security-missing-key = Podpisano kluczem, którego nie masz, więc nie można te
 security-missing-key-id = Podpisano kluczem, którego nie masz ({ $key }), więc nie można tego sprawdzić
 security-signature-unavailable = Podpisano; zainstaluj { $tool }, aby sprawdzić podpis
 security-signature-error = Nie udało się sprawdzić podpisu.
+security-look-up-key = Wyszukaj klucz
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Zweryfikowany podpis
+key-card-verified-detail = Podpis jest prawidłowy i ufasz temu kluczowi.
+key-card-unverified = Podpis niezweryfikowany
+key-card-unverified-detail = Podpis jest prawidłowy, ale nic nie potwierdza, że klucz należy do tej osoby. Porównaj z nią odcisk palca, a potem oznacz klucz jako zaufany w GnuPG (Kleopatra lub gpg --edit-key).
+key-card-not-sender = Podpisane przez kogoś innego
+key-card-not-sender-detail = Podpis jest prawidłowy, ale klucz nie należy do nadawcy.
+key-card-untrusted = Klucz niezaufany
+key-card-untrusted-detail = Oznaczyłeś ten klucz w GnuPG jako niezaufany.
+key-card-signature-expired = Podpis wygasł
+key-card-signature-expired-detail = Podpis był prawidłowy, ale wygasł.
+key-card-key-expired = Klucz wygasł
+key-card-key-expired-detail = Podpis jest prawidłowy, ale klucz od tego czasu wygasł.
+key-card-key-revoked = Klucz unieważniony
+key-card-key-revoked-detail = Właściciel unieważnił ten klucz, więc podpisowi nie można ufać.
+key-card-bad = Nieprawidłowy podpis
+key-card-bad-detail = Ta wiadomość została zmieniona po podpisaniu lub podpis jest sfałszowany.
+key-card-signed-by = Podpisane przez
+key-card-belongs-to = Należy do
+key-card-fingerprint = Odcisk palca
+key-card-signed = Podpisano
+key-card-key = Klucz
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Utworzono
+key-card-expires = Wygasa
+key-card-never = Nigdy
+key-card-issued-by = Wystawca
+key-card-found-in = Znaleziono w
+key-card-keyring = Twoja baza kluczy GnuPG
+key-card-copy = Kopiuj odcisk palca
+key-card-import-title = Zaimportować ten klucz?
+key-card-from-directory = Znaleziono w katalogu kluczy domeny { $domain }.
+key-card-from-attachment = Z załącznika { $name }.
+key-card-import-note = Katna będzie mogła wtedy sprawdzać podpisy tej osoby i szyfrować do niej pocztę. Aby w pełni zaufać kluczowi, porównaj z nią odcisk palca.
+key-card-cancel = Anuluj
+key-card-import = Importuj klucz
+key-card-looking-up = Wyszukiwanie klucza…
+key-card-looking-up-detail = Pytanie katalogu kluczy domeny { $domain }.
+key-card-not-found = Nie znaleziono klucza
+key-card-not-found-detail = Domena { $domain } nie publikuje klucza dla tego adresu. Poproś nadawcę, aby wysłał ci swój.
+key-card-not-kept = Znalezionego klucza nie można użyć.
+key-card-failed = Nie udało się pobrać klucza
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = To może nie pochodzić z { $domain }
+sender-failed-body = Wiadomość nie przeszła kontroli nadawcy w { $provider }. Uważaj na linki, załączniki i odpowiedzi.
+sender-provider-unknown = twoim dostawcy poczty
+sender-details = Szczegóły
+sender-details-hide = Ukryj szczegóły
+sender-looks-safe = Wygląda bezpiecznie
+sender-move-to-spam = Przenieś do spamu
+sender-checked-by = Sprawdzone w { $provider }
+sender-checked-by-server = Sprawdzone w { $provider } ({ $server })
+sender-dmarc = Domena nadawcy (DMARC)
+sender-dkim = Podpis (DKIM)
+sender-spf = Serwer wysyłający (SPF)
+sender-result-pass = Zaliczone
+sender-result-fail = Niezaliczone
+sender-result-unsure = Niepewne
+sender-result-none = Brak
+sender-result-missing = Nie sprawdzono
+sender-dmarc-pass = { $domain } potwierdza tego nadawcę.
+sender-dmarc-fail = Wiadomość nie zgadza się z tym, jak według { $domain } wysyłana jest jej poczta.
+sender-dmarc-none = { $domain } nie publikuje żadnych zasad dla swojej poczty.
+sender-dkim-pass = Podpisane przez { $domain }.
+sender-dkim-fail = Podpis od { $domain } nie pasuje do wiadomości.
+sender-dkim-none = Wiadomość nie była podpisana.
+sender-spf-pass = Wysłane z serwera wymienionego przez { $domain }.
+sender-spf-fail = Wysłane z serwera, którego { $domain } nie wymienia.
+sender-spf-none = { $domain } nie wymienia swoich serwerów.
+sender-check-unsure = Kontrola nie dała jednoznacznej odpowiedzi.
+sender-unconfirmed = W { $provider } nie udało się potwierdzić, że to pochodzi z { $domain }. Każdy może wpisać dowolnego nadawcę.
+sender-link-title = Otworzyć ten link?
+sender-link-body = Ta wiadomość nie przeszła kontroli nadawcy. Link prowadzi do { $host }:
+sender-link-cancel = Anuluj
+sender-link-open = Otwórz
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -129,6 +212,7 @@ tracking-receipt-other = Potwierdzenie przeczytania: Twoja wiadomość została 
 
 remote-hidden = Obrazy w tej wiadomości są ukryte.
 remote-hidden-unconfirmed = Obrazy są ukryte: nie udało się potwierdzić nadawcy.
+remote-hidden-failed = Obrazy są ukryte: ta wiadomość nie przeszła kontroli nadawcy.
 remote-show = Pokaż obrazy
 remote-always-show = Zawsze pokazuj od tego nadawcy
 remote-picture-use = Użyj

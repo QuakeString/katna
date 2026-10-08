@@ -436,6 +436,11 @@ menu-make-rule = Skapa en regel…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Nyckeln har importerats
+toast-key-updated = Du hade redan den här nyckeln; nu är den uppdaterad
+toast-key-removed = Nyckeln har tagits bort
+toast-key-not-removed = Nyckeln kunde inte tas bort
+toast-fingerprint-copied = Fingeravtrycket har kopierats
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] Konversationen har arkiverats.

@@ -4603,3 +4603,34 @@ Premi Ctrl+Shift+P e digita per trovare qualsiasi azione o impostazione,
 poi premi Invio per eseguirla. Ogni azione mostra la sua scorciatoia da
 tastiera, e ciò che hai usato per ultimo è in cima.
 """
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "La posta crittografata trova le chiavi"
+text = """
+Con Crittografa attivo, quando invii, la chiave di un destinatario che non
+hai viene cercata nella directory delle chiavi del suo dominio. La posta
+che invii porta con sé la tua chiave pubblica (Autocrypt) quando GnuPG ne
+ha una per il tuo indirizzo, e le chiavi che arrivano allo stesso modo
+vengono usate per crittografare le tue risposte. La posta OpenPGP
+crittografata ora nasconde l'oggetto finché non viene aperta.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Scopri chi ha firmato un messaggio"
+text = """
+Fai clic sulla riga della firma di un messaggio firmato o crittografato
+per vedere la chiave del firmatario: nome, indirizzo, impronta e date, con
+Copia impronta. Un messaggio firmato con una chiave che non possiedi offre
+Cerca la chiave, e una chiave allegata da qualcuno si apre come Importare
+questa chiave?, con Annulla subito dopo.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Avvisi sulla posta contraffatta"
+text = """
+Quando un messaggio non supera i controlli sul mittente del tuo provider
+di posta, un banner rosso avvisa che potrebbe non provenire da chi dice,
+con Dettagli, Sembra sicuro e Sposta nello spam. Le sue immagini restano
+nascoste e i suoi link chiedono conferma prima di aprirsi. Un mittente
+non confermato da nulla riceve un piccolo «?» sulla sua immagine.
+"""
