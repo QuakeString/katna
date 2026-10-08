@@ -14,6 +14,7 @@ search-without = Ba shi da
 search-date-within = Kwanan wata a cikin
 search-has-attachment = Yana da abin haɗawa
 search-attachment-custom = Na musamman
+search-attachment-image = Hoto
 search-attachment-custom-hint = Rubuta ƙarin sunan fayil, kamar png, sannan danna Space
 search-attachment-remove = Cire
 search-clear-filter = Share matattara

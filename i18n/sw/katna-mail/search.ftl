@@ -14,6 +14,7 @@ search-without = Haina
 search-date-within = Tarehe ndani ya
 search-has-attachment = Ina kiambatisho
 search-attachment-custom = Maalum
+search-attachment-image = Picha
 search-attachment-custom-hint = Andika kiendelezi, kama png, kisha Space
 search-attachment-remove = Ondoa
 search-clear-filter = Futa kichujio

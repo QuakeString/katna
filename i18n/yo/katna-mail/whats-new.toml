@@ -3444,3 +3444,51 @@ title = "Ìbéèrè tí ẹnikẹ́ni kò dáhùn ń padà wá"
 text = """
 Lẹ́tà tí o fi ránṣẹ́ tí ó béèrè nǹkan tí kò sì rí èsì láàrin ọjọ́ mẹ́ta ń padà sí òkè Àpótí-ìwọlé pẹ̀lú "A fi ránṣẹ́ ní ọjọ́ 3 sẹ́yìn. Ṣé kí o tẹ̀lé e?". Tẹ̀ ẹ́ láti tẹ̀lé e, tàbí x láti fi í sẹ́gbẹ̀ẹ́. Ètò > Àpótí-ìwọlé ń pa á.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Ètò ní mẹ́nù tirẹ̀"
+text = """
+Àkójọ àwọn ojú-ewé ní apá òsì Ètò ní àwọ̀ bàìbàì láti òkè dé ìsàlẹ̀, kí ó lè dá yàtọ̀ sí ojú-ewé tí o ń kà.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Ṣètò fífiránṣẹ́ ń yan ọjọ́ níbẹ̀ gan-an"
+text = """
+Yan ọjọ́ àti àkókò nínú Ṣètò fífiránṣẹ́ àti Tẹ̀lé e tí kò bá sí èsì ń yọ̀ wọ inú mẹ́nù tí o ti ṣí i báyìí, bí i Sún síwájú, dípò àpótí kan lórí ìfiránṣẹ́ náà. Ọfà ẹ̀yìn tàbí Esc ń mú ọ padà sí àwọn àkókò.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Àmì-àwòrán àtẹ bá pánẹ́ẹ̀lì rẹ mu láti ìwọlé"
+text = """
+Lórí KDE Plasma, àmì-àwòrán àtẹ àwọ̀ kan máa ń mú àwọ̀ pánẹ́ẹ̀lì rẹ báyìí ní kété lẹ́yìn ìwọlé, á sì tẹ̀lé ìyípadà kọ̀ọ̀kan láàrin ìmọ́lẹ̀ àti òkùnkùn, láìtún Katna bẹ̀rẹ̀.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Wá àwọn àwòrán-ìyàwòrán àti fọ́tò"
+text = """
+Àwọn àṣàyàn àwárí ní irú àfikún tuntun méjì: DWG fún àwọn àwòrán-ìyàwòrán AutoCAD (àti DXF), àti Àwòrán fún fọ́tò àti àwòrán. XLSX ń rí àwọn fáìlì XLS àtijọ́ pẹ̀lú báyìí, PPTX sì ń rí PPT, kí ọ̀kọ̀ọ̀kan lè ní bọ́tìnnì kan.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Àwọn mẹ́nù ń fi ohun tó kàn hàn nìkan"
+text = """
+Mẹ́nù Síi kò tún ń to àwọn méjèèjì nínú àṣàyàn méjì tó jọra mọ́. Lẹ́tà tí a ti kà ń fi Sàmì sí bí àìkà hàn, èyí tó ní ìràwọ̀ ń fi Yọ ìràwọ̀ kúrò hàn, èyí tó ṣe pàtàkì ń fi Sàmì sí bí kò ṣe pàtàkì hàn, èyí tí a gbé sókè ń fi Yọ kúrò ní òkè hàn. Nígbà tí o bá yan ọ̀pọ̀ lẹ́tà tí kò jọra, ìwọ yóò rí iṣẹ́ tí ó máa sọ gbogbo wọn di ọ̀kan náà, níbí àti nínú mẹ́nù títẹ apá ọ̀tún.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Ètò wà lórí káàdì"
+text = """
+Ní àwọn àwọ̀ ìmọ́lẹ̀, ojú-ewé Ètò ní ìlà tín-ínrín àti òjìji rírọ̀ kan náà bí àkójọ lẹ́tà báyìí, kí ó lè dá yàtọ̀ sí fèrèsé tó wà lẹ́yìn rẹ̀.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Àwọn bọ́tìnnì áàpù tó dán mọ́rán jù"
+text = """
+Títẹ áàpù kan nínú ọ̀pá áàpù ní apá òsì, tàbí nínú ọ̀pá ìsàlẹ̀ lórí fóònù, kò tún ń mì mọ́: ìgbì títẹ ń parí, ìkọ́nkọ́ tí a yàn sì ń dàgbà láti àárín nígbà tí bọ́tìnnì náà ń pa ìwọ̀n rẹ̀ mọ́.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Àwọn mẹ́nù ń yọ̀ wọlé nínú káàdì àkáǹtì"
+text = """
+Mẹ́nù ☰ àti àkójọ èdè ń yọ̀ wọlé báyìí nínú káàdì àkáǹtì dípò kí wọ́n fò wọlé, pẹ̀lú bọ́tìnnì Padà ní apá ọ̀tún láti padà.
+"""

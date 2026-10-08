@@ -3915,3 +3915,51 @@ hurudi juu ya Kikasha ikiwa na "Ilitumwa siku 3 zilizopita. Ufuatilie?".
 Ibofye ili kufuatilia, au x ili kuiweka kando. Mipangilio > Kikasha
 huizima.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Mipangilio ina menyu yake"
+text = """
+Orodha ya kurasa upande wa kushoto wa Mipangilio ina rangi hafifu kutoka juu hadi chini, ili ijitofautishe na ukurasa unaosoma.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Ratibu kutuma huchagua tarehe pale pale"
+text = """
+Chagua tarehe na saa katika Ratibu kutuma na Fuatilia kama hakuna jibu sasa huteleza ndani ya menyu uliyoifungua kutoka, kama Ahirisha, badala ya kisanduku juu ya barua. Mshale wa kurudi nyuma au Esc hurudi kwenye nyakati.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Aikoni ya trei inalingana na paneli yako tangu kuingia"
+text = """
+Kwenye KDE Plasma, aikoni ya trei ya rangi moja sasa huchukua rangi ya paneli yako mara tu baada ya kuingia na hufuata kila badiliko kati ya mwanga na giza, bila kuanzisha upya Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Tafuta michoro na picha"
+text = """
+Chaguo za utafutaji zina aina mbili mpya za viambatisho: DWG kwa michoro ya AutoCAD (na DXF), na Picha kwa picha na michoro mingine. XLSX sasa hupata faili za zamani za XLS pia, na PPTX hupata PPT, kwa hivyo kila moja ina kitufe kimoja.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menyu huonyesha kinachohusika tu"
+text = """
+Menyu ya Zaidi haiorodheshi tena pande zote mbili za jozi. Barua iliyosomwa huonyesha Tia alama kuwa haijasomwa, yenye nyota huonyesha Ondoa nyota, muhimu huonyesha Tia alama kuwa si muhimu, na iliyobandikwa huonyesha Bandua. Ukichagua barua kadhaa zinazotofautiana, unapata kitendo kinachozifanya zote ziwe sawa, hapa na katika menyu ya kubofya kulia.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Mipangilio iko juu ya kadi"
+text = """
+Katika rangi angavu, ukurasa wa Mipangilio sasa una ukingo mwembamba na kivuli laini sawa na orodha ya barua, ili ujitofautishe na dirisha lililo nyuma yake.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Vitufe vya programu vilivyo laini zaidi"
+text = """
+Kubofya programu kwenye reli ya kushoto, au kwenye upau ulio chini kwenye simu, hakutikisiki tena: wimbi la kubonyeza hukamilika na kidonge kilichochaguliwa hukua kutoka katikati huku kitufe kikibaki na ukubwa wake.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menyu huteleza ndani ya kadi ya akaunti"
+text = """
+Menyu ya ☰ na orodha ya lugha sasa huteleza ndani ya kadi ya akaunti badala ya kuruka ndani, pamoja na kitufe cha Rudi upande wa kulia ili kurudi.
+"""

@@ -3504,3 +3504,51 @@ title = "Vrae wat niemand beantwoord het nie, kom terug"
 text = """
 E-pos wat jy gestuur het wat iets gevra het en in drie dae geen antwoord gekry het nie, kom terug na die bokant van die Inkassie met "3 dae gelede gestuur. Volg op?". Klik daarop om op te volg, of op die x om dit weg te sit. Instellings > Inkassie skakel dit af.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Instellings het sy eie kieslys"
+text = """
+Die lys bladsye aan die linkerkant van Instellings het 'n dowwe tint van bo na onder, sodat dit uitstaan van die bladsy wat jy lees.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Skeduleer stuur kies 'n datum waar jy is"
+text = """
+Kies datum en tyd in Skeduleer stuur en Volg op as niemand antwoord nie skuif nou in die kieslys in waaruit jy dit oopgemaak het, soos by Sluimer, in plaas van 'n blokkie oor die boodskap. Die terugpyltjie of Esc keer terug na die tye.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Stelselbalkikoon pas by jou paneel vanaf aanmelding"
+text = """
+Op KDE Plasma neem die eenkleurige stelselbalkikoon nou jou paneel se kleur reg ná aanmelding en volg elke wisseling tussen lig en donker, sonder om Katna te herbegin.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Soek na tekeninge en prente"
+text = """
+Soekopsies het twee nuwe aanhegseltipes: DWG vir AutoCAD-tekeninge (en DXF), en Prent vir foto's en prente. XLSX vind nou ook ou XLS-lêers, en PPTX vind PPT, sodat elkeen een knoppie het.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Kieslyste wys net wat van toepassing is"
+text = """
+Die Meer-kieslys lys nie meer albei helftes van 'n paar nie. 'n Gelese e-pos wys Merk as ongelees, 'n gesterde een Verwyder ster, 'n belangrike een Merk as nie belangrik nie, 'n vasgespelde een Ontspeld. Met verskeie gekose e-posse wat verskil, kry jy die aksie wat hulle almal dieselfde maak, hier en in die regsklikkieslys.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Instellings sit op 'n kaart"
+text = """
+In ligte kleure het die Instellings-bladsy nou dieselfde dun rand en sagte skaduwee as die e-poslys, sodat dit uitstaan van die venster daaragter.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Gladder programknoppies"
+text = """
+'n Klik op 'n program in die programbalk links, of in die balk onderaan op 'n foon, skud nie meer nie: die druk-rimpeling speel klaar en die gekose pil groei uit die middel terwyl die knoppie sy grootte behou.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Kieslyste gly in die rekeningkaart"
+text = """
+Die ☰-kieslys en die lys tale gly nou binne-in die rekeningkaart in in plaas daarvan om in te spring, met 'n terugknoppie aan die regterkant om terug te keer.
+"""
