@@ -4512,3 +4512,94 @@ Il menu ☰ e l'elenco delle lingue ora scorrono dentro la scheda
 dell'account invece di comparire di scatto, con un pulsante Indietro a
 destra per tornare.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Ogni app sulla stessa scheda"
+text = """
+Calendario, Contatti, Attività, Note e File ora poggiano su una scheda
+con lo stesso bordo sottile e la stessa ombra morbida di Posta e
+Impostazioni.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Tasti di acquisizione rapida su GNOME"
+text = """
+Meta+Alt+T per un'attività e Meta+Alt+N per una nota ora funzionano anche
+su GNOME. La prima volta GNOME chiede se Katna può usarli, e puoi cambiare
+i tasti nelle sue Impostazioni.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Sposta gli strumenti di annotazione"
+text = """
+Quando annoti un PDF, trascina i puntini all'estremità degli strumenti per
+spostarli ovunque sulla pagina, così non coprono mai ciò che stai
+annotando. Fai doppio clic sui puntini per riportarli a posto.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Funziona con i lettori di schermo"
+text = """
+Orca e altri lettori di schermo ora possono leggere Katna Mail: l'elenco
+della posta, le cartelle, l'email aperta, i pulsanti, i menu, gli
+interruttori e le finestre di dialogo.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Invia feedback"
+text = """
+Aiuto > Invia feedback, presente anche in Impostazioni rapide e in
+Impostazioni > Feedback degli utenti, invia un problema o un'idea
+direttamente a Katna. Cosa viene inviato mostra il testo esatto prima che
+parta, e l'email per una risposta è facoltativa.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Statistiche d'uso anonime, se vuoi"
+text = """
+Impostazioni > Feedback degli utenti ha un nuovo interruttore, disattivato
+finché non lo attivi: una volta a settimana invia quali funzioni hai
+usato, sì o no, così quelle più usate ricevono più cure. La pagina elenca
+tutto ciò che viene contato e mostra il rapporto di questa settimana.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "La ricerca trova la posta più vecchia sul server"
+text = """
+La posta più vecchia non viene scaricata per intero, quindi la ricerca non
+può leggerne le parole qui. Ora, dopo una breve pausa nella digitazione o
+quando premi Invio, Katna chiede anche al tuo server di posta ed elenca
+ciò che trova sotto Altri risultati sul server.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Ricerca in thai, lao, khmer e birmano"
+text = """
+La ricerca trova una parola nella posta in thai, lao, khmer o birmano
+anche dove la frase non ha spazi tra le parole.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Le righe lunghe vanno a capo tra le parole"
+text = """
+Il testo in arabo, hindi e altre scritture indiane, thai, lao, khmer e
+birmano ora va a capo tra le parole invece di spezzare una parola a metà,
+e le righe in cinese e giapponese non iniziano più con un segno di
+chiusura.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "La pressione riempie tutto il pulsante"
+text = """
+Fare clic su un chip o su un pulsante con contorno ora lo riempie fino ai
+suoi bordi e angoli, invece di mostrare una pillola più piccola al suo
+interno.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Tavolozza dei comandi"
+text = """
+Premi Ctrl+Shift+P e digita per trovare qualsiasi azione o impostazione,
+poi premi Invio per eseguirla. Ogni azione mostra la sua scorciatoia da
+tastiera, e ciò che hai usato per ultimo è in cima.
+"""

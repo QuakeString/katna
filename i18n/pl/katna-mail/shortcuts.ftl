@@ -70,6 +70,7 @@ shortcut-navigation = Pokaż lub zwiń menu
 shortcut-quick-settings = Szybkie ustawienia
 shortcut-settings = Wszystkie ustawienia
 shortcut-shortcuts = Skróty klawiszowe
+shortcut-palette = Paleta poleceń
 shortcut-reload = Sprawdź nową pocztę
 shortcut-quit = Zakończ
 

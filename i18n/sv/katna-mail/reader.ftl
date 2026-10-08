@@ -55,6 +55,7 @@ reader-details-subject = ämne:
 
 reader-downloading = Hämtar meddelandet från servern…
 reader-download-failed = Det gick inte att hämta meddelandet.
+reader-download-failed-reason = Det gick inte att hämta det här meddelandet. { $reason }
 reader-download-offline = Det här kontot är offline. Gå online för att hämta meddelandet.
 reader-try-again = Försök igen
 

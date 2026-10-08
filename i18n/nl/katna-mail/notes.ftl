@@ -94,6 +94,7 @@ notes-link-note = Notitie koppelen
 notes-link-new = Nieuwe notitie ‘{ $title }’
 notes-linked-from = Gekoppeld vanuit
 notes-link-gone = Die notitie is er niet meer
+notes-new-note-gone = De nieuwe notitie is verdwenen.
 
 ## Version history
 

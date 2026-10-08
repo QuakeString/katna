@@ -4491,3 +4491,93 @@ O menu ☰ e a lista de idiomas agora deslizam para dentro do cartão da
 conta em vez de aparecerem de repente, com um botão de voltar à direita
 para retornar.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Todos os apps ficam sobre o mesmo cartão"
+text = """
+Agenda, Contatos, Tarefas, Notas e Arquivos agora ficam sobre um cartão
+com a mesma borda fina e sombra suave do E-mail e das Configurações.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Teclas de captura rápida no GNOME"
+text = """
+Meta+Alt+T para uma tarefa e Meta+Alt+N para uma nota agora funcionam
+também no GNOME. Na primeira vez, o GNOME pergunta se o Katna pode
+usá-las, e você pode mudar as teclas nas Configurações dele.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Mova as ferramentas de marcação"
+text = """
+Ao marcar um PDF, arraste os pontos no fim das ferramentas para movê-las
+para qualquer lugar sobre a página, assim elas nunca cobrem o que você
+está marcando. Clique duas vezes nos pontos para recolocá-las no lugar.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Funciona com leitores de tela"
+text = """
+O Orca e outros leitores de tela agora conseguem ler o Katna Mail: a
+lista de e-mails, as pastas, o e-mail aberto, botões, menus, chaves e
+caixas de diálogo.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Enviar feedback"
+text = """
+Ajuda > Enviar feedback, também em Configurações rápidas e em
+Configurações > Feedback, envia um problema ou uma ideia direto para o
+Katna. O que é enviado mostra o texto exato antes de sair, e um e-mail
+para resposta é opcional.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Estatísticas de uso anônimas, se você quiser"
+text = """
+Configurações > Feedback tem uma nova chave, desativada até você ativá-la:
+uma vez por semana, ela envia quais recursos você usou, sim ou não, para
+que os mais usados recebam mais cuidado. A página lista tudo o que é
+contado e mostra o relatório desta semana.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "A pesquisa encontra e-mails antigos no servidor"
+text = """
+E-mails antigos não são baixados por inteiro, então a pesquisa não
+consegue ler as palavras deles aqui. Agora, depois de uma breve pausa na
+digitação ou quando você pressiona Enter, o Katna também consulta seu
+servidor de e-mail e lista o que encontrar em Mais resultados no
+servidor.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Pesquise em tailandês, laosiano, khmer e birmanês"
+text = """
+A pesquisa encontra uma palavra em e-mails em tailandês, laosiano, khmer
+ou birmanês mesmo quando a frase não tem espaços entre as palavras.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Linhas longas quebram entre palavras"
+text = """
+Textos em árabe, hindi e outras escritas indianas, tailandês, laosiano,
+khmer e birmanês agora quebram entre palavras em vez de partir uma
+palavra no meio, e linhas em chinês e japonês não começam mais com um
+sinal de fechamento.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "O clique preenche o botão inteiro"
+text = """
+Clicar em uma etiqueta ou em um botão contornado agora o preenche até as
+próprias bordas e cantos, em vez de mostrar uma pílula menor dentro dele.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Paleta de comandos"
+text = """
+Pressione Ctrl+Shift+P e digite para encontrar qualquer ação ou
+configuração, depois pressione Enter para executá-la. Cada ação mostra
+seu atalho de teclado, e o que você usou por último fica no topo.
+"""

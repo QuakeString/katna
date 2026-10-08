@@ -72,3 +72,6 @@ service-details-title = Por qué no se inicia el servicio
 service-details-body = Copia esto y envíalo con tu informe. No contiene correo ni contraseñas.
 service-details-copy = Copiar
 service-details-close = Cerrar
+service-not-running = El servicio en segundo plano de Katna no se está ejecutando.
+service-no-answer = El servicio en segundo plano de Katna no ha respondido: { $error }
+service-no-session = No hay sesión de D-Bus: { $error }

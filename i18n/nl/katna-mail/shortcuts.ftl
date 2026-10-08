@@ -70,6 +70,7 @@ shortcut-navigation = Menu tonen of inklappen
 shortcut-quick-settings = Snelle instellingen
 shortcut-settings = Alle instellingen
 shortcut-shortcuts = Sneltoetsen
+shortcut-palette = Opdrachtpalet
 shortcut-reload = Nieuwe e-mail ophalen
 shortcut-quit = Afsluiten
 

@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } van ongeveer { $total }
 list-results = Resultaten voor ‘{ $query }’
 list-results-corrected = Resultaten weergegeven voor ‘{ $query }’
 list-search-instead = In plaats daarvan zoeken naar ‘{ $query }’
+list-search-no-index = Zoeken is nog niet klaar: de index is nog niet opgebouwd.
+list-search-not-ready = Zoeken is nog niet klaar: { $error }
 list-files-more = +{ $count }
 list-replied = Je hebt geantwoord
 
@@ -343,9 +345,14 @@ list-empty-waiting = Er wacht niets op antwoord.
 list-empty-reminders = Geen herinneringen. Druk op H bij een e-mail om er een toe te voegen.
 list-first-sync = Je e-mail ophalen…
 list-first-sync-detail = Berichten verschijnen hier zodra ze binnenkomen.
+list-store-unreadable = De e-mailopslag kan niet worden geopend
 
 ## Mail list: lines
 
+row-no-subject = (geen onderwerp)
+row-unknown-sender = (onbekende afzender)
+row-to = Aan:
+row-no-recipients = (geen ontvangers)
 row-removed = Dit bericht is verwijderd.
 row-starred = Met ster
 row-not-starred = Zonder ster

@@ -183,6 +183,7 @@ settings-general-start-at-login = Uruchamiaj Katna po zalogowaniu
 settings-general-start-at-login-detail = Synchronizuje pocztę i pokazuje powiadomienia o nowej poczcie oraz ikonę w zasobniku, bez otwierania okna
 settings-general-login-window = Otwieraj też okno Katna Mail
 settings-general-login-window-detail = Po zalogowaniu otwiera się też okno
+settings-general-login-entry = Uruchamiane po zalogowaniu (Ustawienia > Ogólne > Pulpit)
 settings-general-tray = Pokazuj Katna w zasobniku systemowym
 settings-general-tray-detail = Z liczbą nieprzeczytanych i menu
 settings-general-tray-color = Kolorowa ikona w zasobniku

@@ -66,3 +66,6 @@ service-details-title = Varför tjänsten inte startar
 service-details-body = Kopiera detta och skicka det med din rapport. Det innehåller ingen e-post och inga lösenord.
 service-details-copy = Kopiera
 service-details-close = Stäng
+service-not-running = Katnas bakgrundstjänst körs inte.
+service-no-answer = Katnas bakgrundstjänst svarade inte: { $error }
+service-no-session = Ingen D-Bus-session: { $error }

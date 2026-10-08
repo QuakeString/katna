@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } z około { $total }
 list-results = Wyniki dla „{ $query }”
 list-results-corrected = Wyświetlane są wyniki dla „{ $query }”
 list-search-instead = Zamiast tego szukaj „{ $query }”
+list-search-no-index = Wyszukiwanie nie jest gotowe: indeks nie został jeszcze utworzony.
+list-search-not-ready = Wyszukiwanie nie jest gotowe: { $error }
 list-files-more = +{ $count }
 list-replied = Odpowiedziano
 
@@ -443,9 +445,14 @@ list-empty-waiting = Nic nie czeka na odpowiedź.
 list-empty-reminders = Brak przypomnień. Naciśnij H na wiadomości, aby je dodać.
 list-first-sync = Pobieranie poczty…
 list-first-sync-detail = Wiadomości pojawią się tutaj, gdy tylko dotrą.
+list-store-unreadable = Nie udało się otworzyć magazynu poczty
 
 ## Mail list: lines
 
+row-no-subject = (brak tematu)
+row-unknown-sender = (nieznany nadawca)
+row-to = Do:
+row-no-recipients = (brak odbiorców)
 row-removed = Ta wiadomość została usunięta.
 row-starred = Oznaczone gwiazdką
 row-not-starred = Bez gwiazdki

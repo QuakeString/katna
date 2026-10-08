@@ -66,3 +66,6 @@ service-details-title = Waarom de service niet start
 service-details-body = Kopieer dit en stuur het mee met je melding. Er staat geen e-mail of wachtwoord in.
 service-details-copy = Kopiëren
 service-details-close = Sluiten
+service-not-running = De achtergrondservice van Katna draait niet.
+service-no-answer = De achtergrondservice van Katna antwoordde niet: { $error }
+service-no-session = Geen D-Bus-sessie: { $error }

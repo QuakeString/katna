@@ -55,6 +55,7 @@ reader-details-subject = onderwerp:
 
 reader-downloading = Dit bericht downloaden van de server…
 reader-download-failed = Kan dit bericht niet downloaden.
+reader-download-failed-reason = Kan dit bericht niet downloaden. { $reason }
 reader-download-offline = Dit account is offline. Ga online om dit bericht te downloaden.
 reader-try-again = Opnieuw proberen
 

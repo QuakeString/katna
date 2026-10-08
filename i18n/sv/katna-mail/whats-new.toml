@@ -4400,3 +4400,90 @@ text = """
 Menyn ☰ och språklistan glider nu in inuti kontokortet i stället för att
 hoppa fram, med en bakåtknapp till höger för att gå tillbaka.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Alla appar ligger på samma kort"
+text = """
+Kalender, Kontakter, Uppgifter, Anteckningar och Filer vilar nu på ett
+kort med samma tunna kant och mjuka skugga som E-post och Inställningar.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Snabbtangenter för att fånga upp i GNOME"
+text = """
+Meta+Alt+T för en uppgift och Meta+Alt+N för en anteckning fungerar nu
+även i GNOME. Första gången frågar GNOME om Katna får använda dem, och du
+kan ändra tangenterna i GNOME:s inställningar.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Flytta uppmärkningsverktygen"
+text = """
+När du märker upp en PDF kan du dra i prickarna i slutet av verktygen för
+att flytta dem vart som helst över sidan, så att de aldrig täcker det du
+märker. Dubbelklicka på prickarna för att sätta tillbaka dem.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Fungerar med skärmläsare"
+text = """
+Orca och andra skärmläsare kan nu läsa Katna Mail: e-postlistan, mapparna,
+det öppna mejlet, knappar, menyer, reglage och dialogrutor.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Skicka feedback"
+text = """
+Hjälp > Skicka feedback, som även finns i Snabbinställningar och
+Inställningar > Feedback, skickar ett problem eller en idé direkt till
+Katna. Vad som skickas visar exakt vilken text som går iväg innan den
+skickas, och en e-postadress för svar är valfri.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Anonym användningsstatistik, om du vill"
+text = """
+Inställningar > Feedback har ett nytt reglage, avstängt tills du slår på
+det: en gång i veckan skickar det vilka funktioner du använde, ja eller
+nej, så att de mest använda får mest omsorg. Sidan listar allt som räknas
+och visar veckans rapport.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Sökningen hittar äldre e-post på servern"
+text = """
+Äldre e-post hämtas inte i sin helhet, så sökningen kan inte läsa dess ord
+här. Nu frågar Katna även din e-postserver, efter en kort paus när du
+skriver eller när du trycker på Retur, och listar det den hittar under
+Fler resultat på servern.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Sök på thai, lao, khmer och burmesiska"
+text = """
+Sökningen hittar ett ord i e-post på thai, lao, khmer eller burmesiska
+även där meningen saknar mellanslag mellan orden.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Långa rader bryts mellan ord"
+text = """
+Text på arabiska, hindi och andra indiska skrifter, thai, lao, khmer och
+burmesiska bryts nu mellan ord i stället för mitt i ett ord, och kinesiska
+och japanska rader börjar inte längre med ett avslutande tecken.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Tryck fyller hela knappen"
+text = """
+När du klickar på ett chip eller en konturknapp fylls den nu ända ut till
+sin egen kant och sina hörn, i stället för att visa en mindre pille inuti.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Kommandopalett"
+text = """
+Tryck Ctrl+Shift+P och skriv för att hitta vilken åtgärd eller inställning
+som helst, och tryck sedan på Retur för att köra den. Varje åtgärd visar
+sitt kortkommando, och det du använde senast ligger överst.
+"""

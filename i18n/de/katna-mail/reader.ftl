@@ -55,6 +55,7 @@ reader-details-subject = Betreff:
 
 reader-downloading = Diese Nachricht wird vom Server heruntergeladen…
 reader-download-failed = Diese Nachricht konnte nicht heruntergeladen werden.
+reader-download-failed-reason = Diese Nachricht konnte nicht heruntergeladen werden. { $reason }
 reader-download-offline = Dieses Konto ist offline. Gehen Sie online, um diese Nachricht herunterzuladen.
 reader-try-again = Erneut versuchen
 

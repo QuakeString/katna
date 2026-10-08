@@ -66,3 +66,6 @@ service-details-title = Warum der Dienst nicht startet
 service-details-body = Kopieren Sie dies und senden Sie es mit Ihrem Bericht. Es enthält keine E-Mails oder Passwörter.
 service-details-copy = Kopieren
 service-details-close = Schließen
+service-not-running = Der Hintergrunddienst von Katna läuft nicht.
+service-no-answer = Der Hintergrunddienst von Katna hat nicht geantwortet: { $error }
+service-no-session = Keine D-Bus-Sitzung: { $error }

@@ -55,6 +55,7 @@ reader-details-subject = asunto:
 
 reader-downloading = Descargando este mensaje del servidor…
 reader-download-failed = No se ha podido descargar este mensaje.
+reader-download-failed-reason = No se ha podido descargar este mensaje. { $reason }
 reader-download-offline = Esta cuenta está sin conexión. Conéctala para descargar este mensaje.
 reader-try-again = Reintentar
 

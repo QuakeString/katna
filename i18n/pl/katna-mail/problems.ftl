@@ -78,3 +78,6 @@ service-details-title = Dlaczego usługa się nie uruchamia
 service-details-body = Skopiuj to i wyślij razem ze zgłoszeniem. Nie zawiera poczty ani haseł.
 service-details-copy = Kopiuj
 service-details-close = Zamknij
+service-not-running = Usługa Katna działająca w tle nie jest uruchomiona.
+service-no-answer = Usługa Katna działająca w tle nie odpowiedziała: { $error }
+service-no-session = Brak sesji D-Bus: { $error }
