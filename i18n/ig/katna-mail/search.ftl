@@ -14,6 +14,7 @@ search-without = Enweghị
 search-date-within = Ụbọchị n'ime
 search-has-attachment = Nwere mgbakwunye
 search-attachment-custom = Nke gị
+search-attachment-image = Onyonyo
 search-attachment-custom-hint = Pịnye ndọtị faịlụ, dịka png, wee pịa Space
 search-attachment-remove = Wepụ
 search-clear-filter = Kpochapụ nzacha

@@ -4180,3 +4180,67 @@ kwanaki uku tana dawowa saman Akwatin saƙo da "An aika kwanaki 3 da suka
 wuce. A bibiya?". Ku danna ta don bibiya, ko x don ajiye ta gefe. Saituna >
 Akwatin saƙo yana kashe wannan.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Saituna suna da menu nasu"
+text = """
+Jerin shafuka a gefen hagu na Saituna yana da ɗan launi mara ƙarfi daga sama
+zuwa ƙasa, don ya bambanta da shafin da kuke karantawa.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Tsara lokacin aikawa yana zaɓar kwanan wata a wurin"
+text = """
+Zaɓi kwanan wata da lokaci a Tsara lokacin aikawa da Bibiya idan ba a amsa ba
+yanzu yana zamewa cikin menu ɗin da kuka buɗe shi daga ciki, kamar Jinkirta,
+maimakon akwati a kan saƙon. Kibiyar baya ko Esc tana komawa ga lokutan.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Gunkin tire yana dacewa da panel ɗinku tun daga shiga"
+text = """
+A KDE Plasma, gunkin tire mai launi ɗaya yanzu yana ɗaukar launin panel ɗinku
+nan da nan bayan shiga, kuma yana bin kowane sauyi tsakanin haske da duhu, ba
+tare da sake kunna Katna ba.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Bincika zane-zane da hotuna"
+text = """
+Zaɓuɓɓukan bincike suna da sabbin nau'ikan haɗe-haɗe biyu: DWG don zanen
+AutoCAD (da DXF), da Hoto don hotuna da zane-zane. XLSX yanzu yana samun
+tsofaffin fayilolin XLS ma, kuma PPTX yana samun PPT, don kowanne ya kasance da
+maɓalli ɗaya.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menu suna nuna abin da ya dace kaɗai"
+text = """
+Menu na Ƙari ba ya sake jera duka zaɓuɓɓuka biyu masu gaba da juna. Imel da aka
+karanta yana nuna Yi alama ba a karanta ba, mai tauraro Cire tauraro, mai
+muhimmanci Yi alama ba muhimmi ba, wanda aka maƙala Cire maƙalawa. Idan an zaɓi
+imel da yawa da suka bambanta, za ku sami aikin da zai mai da su duka iri ɗaya,
+a nan da kuma a menu na danna dama.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Saituna suna kan kati"
+text = """
+A launuka masu haske, shafin Saituna yanzu yana da siririn gefe da inuwa mai
+laushi kamar jerin wasiƙu, don ya bambanta da tagar da ke bayansa.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Maɓallan manhaja masu santsi"
+text = """
+Danna manhaja a ginshiƙin hagu, ko a sandar da ke ƙasa a waya, ba ya sake
+girgiza: igiyar latsawa tana kammaluwa, kuma kwayar da aka zaɓa tana girma daga
+tsakiya yayin da maɓallin yake riƙe da girmansa.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menu suna zamewa a cikin katin asusu"
+text = """
+Menu na ☰ da jerin harsuna yanzu suna zamewa a cikin katin asusu maimakon
+tsallakowa, tare da maɓallin baya a dama don komawa.
+"""

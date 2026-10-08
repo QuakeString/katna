@@ -4514,3 +4514,71 @@ ezintathu ibuyela phezulu eBhokisini lokungenayo no-"Kuthunyelwe ezinsukwini
 ezingu-3 ezedlule. Landelela?". Yichofoze ukuze ulandelele, noma u-x ukuze
 uyibeke eceleni. Izilungiselelo > Ibhokisi lokungenayo kuyakuvala.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Izilungiselelo zinemenyu yazo"
+text = """
+Uhlu lwamakhasi ngakwesobunxele ku-Izilungiselelo lunombala ofiphele
+kusukela phezulu kuya phansi, ngakho luhlukile ekhasini olifundayo.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Hlela ukuthumela ukhetha usuku lapho uchofoze khona"
+text = """
+U-Khetha usuku nesikhathi ku-Hlela ukuthumela naku-Landelela uma kungekho
+mpendulo manje ushelela angene kumenyu ovule kuyo, njengo-Libazisa,
+esikhundleni sebhokisi phezu kwemeyili. Umcibisholo wokubuyela emuva noma
+u-Esc ubuyela ezikhathini.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Isithonjana sethreyi sifana nephaneli yakho kusukela ungena"
+text = """
+Ku-KDE Plasma, isithonjana sethreyi esinombala owodwa manje sithatha umbala
+wephaneli yakho ngokushesha ngemuva kokungena, futhi silandela ukushintsha
+ngakunye phakathi kokukhanya nokumnyama, ngaphandle kokuqala kabusha i-Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Sesha imidwebo nezithombe"
+text = """
+U-Okukhethwa kukho kosesho unezinhlobo ezimbili ezintsha zokunamathiselwe:
+i-DWG yemidwebo ye-AutoCAD (ne-DXF), no-Isithombe wezithombe. I-XLSX manje
+ithola namafayela amadala e-XLS, ne-PPTX ithola i-PPT, ngakho ngayinye
+inenkinobho eyodwa.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Amamenyu akhombisa kuphela okusebenzayo"
+text = """
+Imenyu ethi Okuningi ayisabhali zombili izingxenye zombhangqwana. Imeyili
+efundiwe ikhombisa u-Maka njengokungafundiwe, enenkanyezi u-Susa inkanyezi,
+ebalulekile u-Maka njengokungabalulekile, ephiniwe u-Susa ukuphina. Uma
+ukhethe imeyili eziningana ezihlukile, uthola isenzo esizenza zonke
+zifane, lapha nakumenyu yokuchofoza kwesokudla.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Izilungiselelo zihlala ekhadini"
+text = """
+Emibaleni ekhanyayo ikhasi le-Izilungiselelo manje linomphetho omncane
+nesithunzi esithambile njengohlu lwemeyili, ngakho lihlukile ewindini
+elingemuva kwalo.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Izinkinobho zama-app ezishelelayo"
+text = """
+Ukuchofoza i-app kubha eseceleni ngakwesobunxele, noma kubha engezansi
+kufoni, akusanyakazisi: igagasi lokucindezela liyaqhubeka liphele futhi
+iphilisi elikhethiwe likhula kusukela phakathi kuyilapho inkinobho igcina
+usayizi wayo.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Amamenyu ashelela ekhadini le-akhawunti"
+text = """
+Imenyu ethi ☰ nohlu lwezilimi manje kushelela kungene ngaphakathi kwekhadi
+le-akhawunti esikhundleni sokugxuma, nenkinobho yokubuyela emuva
+ngakwesokudla ukuze ubuyele.
+"""

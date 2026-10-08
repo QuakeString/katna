@@ -4127,3 +4127,66 @@ Ozi i zigara jụrụ ihe ma ọ nweghị azịza n'ime ụbọchị atọ na-al
 n'elu Igbe ozi mbata ya na "E zitere ya ụbọchị 3 gara aga. Soro ya?". Pịa ya
 ka ị soro ya, ma ọ bụ x ka i wepụ ya. Ntọala > Igbe ozi mbata na-agbanyụ ya.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Ntọala nwere menu nke ya"
+text = """
+Ndepụta ibe dị n'aka ekpe Ntọala nwere agba dị nro site n'elu ruo n'ala,
+ka o wee pụta iche n'ibe ị na-agụ.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Hazie oge izipu na-ahọrọ ụbọchị n'ebe ahụ"
+text = """
+Họrọ ụbọchị na oge na Hazie oge izipu na Soro ya ma ọ bụrụ na enweghị
+nzaghachi na-abanye ugbu a n'ime menu i si mepee ya, dị ka Yigharịa, kama
+igbe dị n'elu ozi ahụ. Akụ azụ ma ọ bụ Esc na-alaghachi n'oge ndị ahụ.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Akara ngosi tree dabara na panel gị site na mbanye"
+text = """
+Na KDE Plasma, akara ngosi tree nwere otu agba na-ewere agba panel gị ozugbo
+ị banyere, ma na-eso mgbanwe ọ bụla n'etiti ìhè na ọchịchịrị, n'amalitereghị
+Katna ọzọ.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Chọọ eserese na foto"
+text = """
+Nhọrọ ọchụchọ nwere ụdị mgbakwunye ọhụrụ abụọ: DWG maka eserese AutoCAD (na
+DXF), na Onyonyo maka foto na onyonyo. XLSX na-achọtakwa faịlụ XLS ochie
+ugbu a, PPTX na-achọtakwa PPT, ya mere nke ọ bụla nwere otu bọtịnụ.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menu na-egosi naanị ihe metụtara"
+text = """
+Menu Ọzọ anaghịzi edepụta akụkụ abụọ nke otu ụzọ. Ozi a gụrụ na-egosi Kaa
+akara dị ka a gụghị, nke nwere kpakpando Wepụ kpakpando, nke dị mkpa Kaa
+akara dị ka ọ dịghị mkpa, nke a tụdoro n'elu Wepụ n'elu. Mgbe ị họrọ ọtụtụ
+ozi dị iche, ị na-enweta omume na-eme ka ha niile yie otu, ebe a na na menu
+pịa aka nri.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Ntọala na-anọ na kaadị"
+text = """
+Na agba ìhè, ibe Ntọala nwere ugbu a otu nsọtụ dị gịrịgịrị na onyinyo dị
+nro dị ka ndepụta ozi, ka o wee pụta iche na windo dị n'azụ ya.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Bọtịnụ ngwa dị nro karị"
+text = """
+Ịpị ngwa n'ogwe dị n'aka ekpe, ma ọ bụ n'ogwe dị n'okpuru na ekwentị,
+anaghịzi ama jijiji: ebili ịpị ahụ na-agwụcha, akara ahọpụtara na-etokwa
+site n'etiti ebe bọtịnụ ahụ na-edobe nha ya.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menu na-amịfe n'ime kaadị akaụntụ"
+text = """
+Menu ☰ na ndepụta asụsụ na-amịfe ugbu a n'ime kaadị akaụntụ kama ịwụ
+abanye, ya na bọtịnụ azụ n'aka nri iji laghachi.
+"""
