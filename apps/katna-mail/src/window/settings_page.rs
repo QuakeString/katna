@@ -783,57 +783,82 @@ impl MailWindow {
         } else {
             tr!("settings")
         };
+        use katna_ui::tokens::space;
+        let radius = shape.card_radius();
+        let back = icon_button("settings-page-back", "back", 20.0, th)
+            .focus_ring(th)
+            .on_click(cx.listener(|this, _, window, cx| this.settings_back(window, cx)));
+        let title = div().min_w_0().truncate().text_size(px(22.0)).child(title);
+        let top = || {
+            div()
+                .flex_none()
+                .h(px(56.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(space::S3))
+        };
         let card = div()
             .id("settings-page")
             .size_full()
             .flex()
-            .flex_col()
-            .map(|d| crate::widgets::card(d, th, th.pane(), shape.card_radius(), 0.0))
-            .overflow_hidden()
-            .child(
-                div()
-                    .flex_none()
-                    .h(px(56.0))
-                    .pl(px(katna_ui::tokens::space::S3))
-                    .pr(px(katna_ui::tokens::space::S5))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(katna_ui::tokens::space::S3))
-                    .child(
-                        icon_button("settings-page-back", "back", 20.0, th)
-                            .focus_ring(th)
-                            .on_click(
-                                cx.listener(|this, _, window, cx| this.settings_back(window, cx)),
-                            ),
-                    )
-                    .child(div().text_size(px(22.0)).child(title))
-                    .child(div().flex_1())
-                    .child(self.version_button(th, cx)),
-            )
-            .child(
-                div()
-                    .flex_1()
-                    .min_h_0()
-                    .flex()
-                    .flex_row()
-                    // The scope's pages beside the open one.
-                    .when(!phone, |d| {
-                        d.child(
+            .map(|d| crate::widgets::card(d, th, th.pane(), radius, 0.0))
+            .overflow_hidden();
+        let card = if phone {
+            card.flex_col()
+                .child(
+                    top()
+                        .pl(px(space::S3))
+                        .pr(px(space::S5))
+                        .child(back)
+                        .child(title)
+                        .child(div().flex_1())
+                        .child(self.version_button(th, cx)),
+                )
+                .child(div().flex_1().min_h_0().flex().child(page_body))
+        } else {
+            // The list of pages is its own menu: a faint tint from top to
+            // bottom, title included, beside the page. GPUI does not clip
+            // to the card's corners, so the menu rounds its own.
+            card.flex_row()
+                .child(
+                    div()
+                        .flex_none()
+                        .w(px(nav::NAV_WIDTH + space::S3))
+                        .h_full()
+                        .flex()
+                        .flex_col()
+                        .bg(rgba(th.side_menu()))
+                        .rounded_l(px(radius))
+                        .child(top().pl(px(space::S3)).child(back).child(title))
+                        .child(
                             div()
                                 .id("settings-nav")
-                                .flex_none()
-                                .w(px(nav::NAV_WIDTH))
-                                .h_full()
+                                .flex_1()
+                                .min_h_0()
                                 .overflow_y_scroll()
-                                .pl(px(katna_ui::tokens::space::S4))
-                                .pt(px(katna_ui::tokens::space::S3))
-                                .pb(px(katna_ui::tokens::space::S4))
+                                .pl(px(space::S4))
+                                .pr(px(space::S3))
+                                .pt(px(space::S3))
+                                .pb(px(space::S4))
                                 .child(self.settings_nav(section, false, th, cx)),
+                        ),
+                )
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(
+                            top()
+                                .justify_end()
+                                .pr(px(space::S5))
+                                .child(self.version_button(th, cx)),
                         )
-                    })
-                    .child(page_body),
-            );
+                        .child(div().flex_1().min_h_0().flex().child(page_body)),
+                )
+        };
         div()
             .flex_1()
             .min_w_0()

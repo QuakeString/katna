@@ -301,6 +301,13 @@ impl Theme {
         }
     }
 
+    /// The Settings page's list of pages beside the open page: a faint grey
+    /// on the card, so it reads as its own menu. The selected row and the
+    /// hover lay their own grey on top.
+    pub fn side_menu(&self) -> u32 {
+        self.on_pane(fade(self.text, 0.03))
+    }
+
     /// For what is drawn on a raised surface (a dialog, the Compose
     /// window): its cards are [`Theme::raised`], and the fills measured
     /// from the card (fields, chips, switches) are lifted with it. The
