@@ -826,6 +826,8 @@ pub struct MailWindow {
     danger: Option<accounts::Danger>,
     /// The question before deleting several lines, or deleting for good.
     delete_ask: Option<delete_ask::DeleteAsk>,
+    /// Mail that failed its sender checks: what the user said of it.
+    sender_checks: reader::sender::SenderState,
     /// The question before turning an app off (Settings > Apps).
     app_off_ask: Option<apps_off::AppOffAsk>,
     /// The right-click menu of an app in the rail.
@@ -1151,6 +1153,7 @@ impl MailWindow {
             settings_page: None,
             danger: None,
             delete_ask: None,
+            sender_checks: Default::default(),
             app_off_ask: None,
             rail_menu: None,
             delete_confirmed: false,
@@ -4069,6 +4072,7 @@ impl Render for MailWindow {
             self.render_crash_notice(&th, window, reduce, cx)
         };
         let password_card = self.render_password_card(&th, window, cx);
+        let link_ask = self.render_link_ask(&th, window, cx);
         let tour = self.render_tour(&th, window, cx);
         // GPUI does not clip to the frame's rounded corners, so the
         // backdrop rounds its own bottom ones.
@@ -4132,6 +4136,7 @@ impl Render for MailWindow {
             .children(contact_qr)
             .children(crash_notice)
             .children(password_card)
+            .children(link_ask)
             .children(whats_new)
             .children(shortcuts_dialog)
             .children(share_ask)

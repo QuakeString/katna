@@ -68,7 +68,8 @@ pub enum Verdict {
 /// What the user's provider found of a message's sender.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SenderChecks {
-    /// The provider's server that checked (its `authserv-id`, lower case).
+    /// The provider's server that checked (its `authserv-id`, lower case;
+    /// empty when the field names none, as Microsoft's).
     pub server: String,
     /// The `From` domain, lower case.
     pub domain: String,
@@ -119,12 +120,19 @@ fn checks(fields: impl Iterator<Item = String>, domain: String) -> Option<Sender
     let mut spf: Vec<Check> = Vec::new();
     for field in fields {
         let field = uncomment(&field);
-        let mut parts = field.split(';');
-        let id = parts
-            .next()
+        let mut parts = field.split(';').peekable();
+        // Microsoft's start with a result, not the server's name.
+        let id = match parts
+            .peek()
             .and_then(|first| first.split_whitespace().next())
-            .unwrap_or_default()
-            .to_ascii_lowercase();
+        {
+            Some(word) if word.contains('=') => String::new(),
+            Some(word) => {
+                parts.next();
+                word.to_ascii_lowercase()
+            }
+            None => String::new(),
+        };
         match &server {
             None => server = Some(id),
             Some(server) if *server == id => {}
@@ -157,7 +165,7 @@ fn checks(fields: impl Iterator<Item = String>, domain: String) -> Option<Sender
             }
         }
     }
-    let server = server.filter(|server| !server.is_empty())?;
+    let server = server?;
     let ours = |check: &Check| check.domain.as_deref().is_some_and(|d| aligned(d, &domain));
     let passed = dmarc
         .iter()
@@ -422,5 +430,14 @@ mod tests {
         let checks = sender_checks(&message("a@bank.example", &[field])).unwrap();
         assert_eq!(checks.verdict, Verdict::Unconfirmed);
         assert_eq!(checks.dkim.unwrap().domain.as_deref(), Some("esp.example"));
+    }
+
+    #[test]
+    fn a_field_without_the_servers_name() {
+        let field = "spf=fail (sender IP is 203.0.113.7) smtp.mailfrom=bank.example; dkim=none (message not signed) header.d=none;dmarc=fail action=quarantine header.from=bank.example;compauth=fail reason=000";
+        let checks = sender_checks(&message("a@bank.example", &[field])).unwrap();
+        assert_eq!(checks.server, "");
+        assert_eq!(checks.verdict, Verdict::Failed);
+        assert_eq!(checks.spf.unwrap().outcome, Outcome::Fail);
     }
 }

@@ -41,6 +41,7 @@ mod chat;
 pub(in crate::window) use chat::{LONG_PRESS, PRESS_SLOP};
 mod invite;
 mod security;
+pub(super) mod sender;
 mod summary;
 mod ticks;
 mod tracking;
@@ -136,6 +137,9 @@ struct Part {
     body: Option<Body>,
     /// The "to me, Bob ▾" details are open.
     details: bool,
+    /// What each sender check found is shown, under the banner of mail
+    /// that failed them.
+    checks_open: bool,
     /// How tall it was when last drawn, to grow or shrink it smoothly.
     height: Rc<Cell<f32>>,
     /// Its height when it was last opened or folded, and how many times
@@ -168,6 +172,7 @@ impl Part {
             expanded,
             body: None,
             details: false,
+            checks_open: false,
             height: Rc::default(),
             from: 0.0,
             turns: 0,
@@ -206,10 +211,10 @@ struct Body {
     remote: Vec<String>,
     /// The SVG pictures `doc` carries, drawn to bitmaps before they show.
     svgs: Vec<Arc<[u8]>>,
-    /// The mail provider vouched for the `From` address (DMARC or aligned
-    /// DKIM passed), so "Always show images from" this sender holds. Only
-    /// looked at when `doc` has remote images.
-    authenticated: bool,
+    /// What the mail provider found of the sender: whether it vouched for
+    /// the `From` address (DMARC or aligned DKIM passed), so "Always show
+    /// images from" this sender holds, or found it forged.
+    checks: Option<katna_render::SenderChecks>,
     /// Encrypted or signed: what opening it found.
     security: Option<Secured>,
     /// The raw message, until it is handed to GnuPG.
@@ -224,6 +229,21 @@ struct Body {
 }
 
 impl Body {
+    /// The provider vouched for the sender.
+    fn authenticated(&self) -> bool {
+        self.verdict() == Some(katna_render::Verdict::Passed)
+    }
+
+    /// The sender failed the provider's checks: its pictures stay hidden
+    /// and its links ask first.
+    fn failed(&self) -> bool {
+        self.verdict() == Some(katna_render::Verdict::Failed)
+    }
+
+    fn verdict(&self) -> Option<katna_render::Verdict> {
+        self.checks.as_ref().map(|checks| checks.verdict)
+    }
+
     /// Encrypted (being opened, or opened): remote content stays blocked.
     fn encrypted(&self) -> bool {
         match &self.security {
@@ -352,7 +372,8 @@ impl Conversation {
                     view: body.view.clone(),
                     doc: body.doc.clone().filter(|_| !sealed),
                     encrypted: body.encrypted(),
-                    authenticated: body.authenticated,
+                    authenticated: body.authenticated(),
+                    failed: body.failed(),
                     sealed,
                 }
             })
@@ -672,7 +693,8 @@ impl Conversation {
                 Some(RemoteContent {
                     id: p.id,
                     sender,
-                    authenticated: body.authenticated,
+                    authenticated: body.authenticated(),
+                    failed: body.failed(),
                     urls: body.remote.clone(),
                 })
             })
@@ -705,6 +727,8 @@ pub(super) struct RemoteContent {
     pub sender: String,
     /// The provider vouched for `sender` ([`Body::authenticated`]).
     pub authenticated: bool,
+    /// The sender failed the provider's checks ([`Body::failed`]).
+    pub failed: bool,
     pub urls: Vec<String>,
 }
 
@@ -720,6 +744,8 @@ pub(super) struct Printable {
     pub encrypted: bool,
     /// The provider vouched for its sender ([`Body::authenticated`]).
     pub authenticated: bool,
+    /// Its sender failed the provider's checks ([`Body::failed`]).
+    pub failed: bool,
     /// Encrypted or signed, and its text not opened.
     pub sealed: bool,
 }
@@ -1991,9 +2017,11 @@ impl MailWindow {
                 blocks,
                 cut,
                 doc,
-                authenticated,
                 ..
             }) => {
+                let shown_body = part.body.as_ref();
+                let authenticated = shown_body.is_some_and(Body::authenticated);
+                let failed = self.sender_failed(part);
                 let too_long = match doc {
                     Some(doc) => doc.truncated,
                     None => *cut || view.truncated,
@@ -2004,11 +2032,11 @@ impl MailWindow {
                     too_long.then(|| tr!("reader-too-long")),
                     blocked.then(|| tr!("reader-encrypted-images")),
                 ];
-                let allowed = !encrypted && self.remote.allowed(id, &email, *authenticated);
+                let allowed = !encrypted && self.remote.allowed(id, &email, authenticated, failed);
                 let banner = doc
                     .as_ref()
                     .filter(|doc| doc.remote_images > 0 && !allowed && !encrypted)
-                    .map(|_| self.images_banner(ix, id, &email, th, cx));
+                    .map(|_| self.images_banner(ix, id, &email, failed, th, cx));
                 // Images the body shows are not listed again.
                 let listed: Vec<_> = view
                     .attachments
@@ -2075,6 +2103,7 @@ impl MailWindow {
                             window: cx.weak_entity(),
                             conversation: key_number(r.key),
                             part: slot,
+                            careful: failed,
                         });
                         let text = match doc.as_ref().filter(|_| translated.is_none()) {
                             Some(doc) => div().child(
@@ -2159,7 +2188,13 @@ impl MailWindow {
                                 this.show_person(&pick, at, cx);
                             }))
                             .child(self.person_spot(("part-picture", ix)))
-                            .child(self.person_avatar(&name, &email, 40.0))
+                            .child(
+                                div()
+                                    .relative()
+                                    .size(px(40.0))
+                                    .child(self.person_avatar(&name, &email, 40.0))
+                                    .children(self.unconfirmed_badge(ix, part, th)),
+                            )
                     }),
             )
             .child(turn_fade(
@@ -2174,6 +2209,7 @@ impl MailWindow {
                         div()
                             .ml(px(-PICTURE_COLUMN_INSET * self.reader_compact()))
                             .children(details_box)
+                            .children(self.sender_banner(ix, part, th, cx))
                             .children(self.security_banner(part, th, cx))
                             .children(self.tracking_banner(part, th))
                             .child(body),
@@ -2565,7 +2601,7 @@ fn read(mail: &Mail, id: MessageId) -> Body {
             doc: None,
             remote: Vec::new(),
             svgs: Vec::new(),
-            authenticated: false,
+            checks: None,
             security: None,
             sealed: None,
             opened: None,
@@ -2601,7 +2637,7 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
     };
     let remote = doc.as_ref().map(rich::remote_urls).unwrap_or_default();
     let svgs = doc.as_ref().map(rich::carried_svgs).unwrap_or_default();
-    let authenticated = !remote.is_empty() && katna_render::sender_authenticated(raw);
+    let checks = katna_render::sender_checks(raw);
     let invite = invite::invite(raw);
     // An invitation's card has its own Join.
     let calls = if invite.is_some() {
@@ -2617,7 +2653,7 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
         doc,
         remote,
         svgs,
-        authenticated,
+        checks,
         security,
         sealed: None,
         opened: None,

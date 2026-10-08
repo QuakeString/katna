@@ -123,6 +123,7 @@ icons!(
     "google-g-yellow",
     "headphones",
     "heart",
+    "help-circle",
     "highlight",
     "history",
     "home",

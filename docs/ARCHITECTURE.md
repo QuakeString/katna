@@ -1593,6 +1593,22 @@ passing for a domain aligned with it (`katna_render::sender_authenticated`).
 Otherwise the banner says the message may not be from that sender and
 offers "Show images" for it. A provider that adds no such field leaves the
 topmost one to the sender, which is no worse than trusting `From` alone.
+
+The same fields warn about forged mail (`katna_render::sender_checks`,
+`window/reader/sender.rs`). A message *failed* when DMARC failed for its
+`From` domain, or SPF failed for an envelope domain aligned with it and no
+aligned DKIM signature passed; it is *unconfirmed* when the provider
+checked and nothing passed. Failed mail gets a soft red banner above its
+body ("This may not be from bank.example", naming the provider by its
+server, such as `mx.google.com` for Gmail) with Details (what DMARC, DKIM
+and SPF each found), Looks safe (this message only, until the window
+closes; a forged sender can fail again) and Move to spam. Its images stay
+hidden even with "Always show images" on, until "Show images", and a link
+asks first in a popover at the click that names where it really goes.
+An unconfirmed sender gets a small "?" on their picture that says so under
+the pointer; the mail list shows nothing. Mail with no
+`Authentication-Results` shows nothing, as there is nothing to go on.
+
 Images are fetched by the daemon (`FetchImage`, `https` only, `http`
 upgraded, at most 8 MB, checked to be an image by its bytes), at most 200
 different ones per message and 6 at a time; the app never uses the

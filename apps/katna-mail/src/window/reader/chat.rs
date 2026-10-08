@@ -1526,6 +1526,7 @@ impl MailWindow {
             window: cx.weak_entity(),
             conversation: key_number(r.key),
             part: ix,
+            careful: r.parts.get(ix).is_some_and(|part| self.sender_failed(part)),
         });
         rich::linked_piece(
             pieces,

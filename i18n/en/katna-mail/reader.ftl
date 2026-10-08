@@ -116,6 +116,50 @@ security-missing-key-id = Signed with a key you don't have ({ $key }), so it can
 security-signature-unavailable = Signed; install { $tool } to check the signature
 security-signature-error = The signature could not be checked.
 
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+# $domain: the domain in the sender's address, like "bank.example".
+sender-failed-title = This may not be from { $domain }
+# $provider: the user's mail service ("Gmail"), or sender-provider-unknown.
+sender-failed-body = It failed { $provider }'s sender checks. Be careful with links, attachments and replies.
+sender-provider-unknown = your mail provider
+sender-details = Details
+sender-details-hide = Hide details
+# Hides the banner on this message only.
+sender-looks-safe = Looks safe
+sender-move-to-spam = Move to spam
+sender-checked-by = Checked by { $provider }
+# $server: the provider's server that ran the checks, like "mx.google.com".
+sender-checked-by-server = Checked by { $provider } ({ $server })
+sender-dmarc = Sender domain (DMARC)
+sender-dkim = Signature (DKIM)
+sender-spf = Sending server (SPF)
+sender-result-pass = Passed
+sender-result-fail = Failed
+sender-result-unsure = Not sure
+sender-result-none = None
+sender-result-missing = Not checked
+sender-dmarc-pass = { $domain } confirms this sender.
+sender-dmarc-fail = The mail doesn't match how { $domain } says its mail is sent.
+sender-dmarc-none = { $domain } publishes no rules for its mail.
+sender-dkim-pass = Signed by { $domain }.
+sender-dkim-fail = The signature from { $domain } doesn't match the mail.
+sender-dkim-none = The message wasn't signed.
+sender-spf-pass = Sent from a server { $domain } lists.
+sender-spf-fail = Sent from a server { $domain } doesn't list.
+sender-spf-none = { $domain } doesn't list its servers.
+sender-check-unsure = The check couldn't give a clear answer.
+# Under the pointer on the "?" on the sender's picture.
+sender-unconfirmed = { $provider } couldn't confirm this came from { $domain }. Anyone can write any sender.
+# Before a link in mail that failed its sender checks opens.
+sender-link-title = Open this link?
+# $host: where the link goes, like "login.bank.example".
+sender-link-body = This mail failed its sender checks. The link goes to { $host }:
+sender-link-cancel = Cancel
+sender-link-open = Open
+
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
 
@@ -156,6 +200,8 @@ remote-hidden = Images in this message are hidden.
 # For a sender whose images are always shown, when the mail provider could
 # not confirm that the message really comes from that address.
 remote-hidden-unconfirmed = Images are hidden: the sender could not be confirmed.
+# For mail that failed the sender checks of the user's mail provider.
+remote-hidden-failed = Images are hidden: this mail failed its sender checks.
 remote-show = Show images
 remote-always-show = Always show from this sender
 # The button of the file chooser that picks an account's picture.
