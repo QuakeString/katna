@@ -4352,3 +4352,41 @@ tare da Kwafi zanen yatsa. Saƙon da aka sa hannu da maɓallin da ba ku da shi
 yana ba da Nemo maɓalli, kuma maɓallin da wani ya haɗa yana buɗewa a matsayin
 Shigo da wannan maɓalli? tare da Janye daga baya.
 """
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Gargaɗi kan wasiƙun jabu"
+text = """
+Idan saƙo ya kasa binciken mai aikawa na mai ba ku sabis na wasiƙa, wani jan
+tuta yana cewa wataƙila ba daga wanda ya ce shi ne yake ba, tare da Cikakkun
+bayanai, Da alama lafiya da Matsar zuwa saƙonnin banza. Hotunansa suna nan a
+ɓoye kuma hanyoyin haɗinsa suna tambaya kafin su buɗe. Mai aikawa da babu abin
+da ya tabbatar da shi yana samun ƙaramin "?" a kan hotonsa.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Sake kunnawa idan an sabunta Katna"
+text = """
+Idan an sabunta Katna yayin da Katna Mail ke buɗe, sabis na bango yana komawa
+sabuwar siga da kansa da zarar ba ya aika wasiƙa. Sannan ƙaramin kwaya a ƙasan
+jerin wasiƙu yana ba da Sake kunnawa, wanda ke buɗe sabuwar Katna Mail a
+madadinta. × yana ɓoye shi har zuwa sabuntawa ta gaba.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Buɗe wasiƙa ya fi natsuwa"
+text = """
+Danna wasiƙa a cikin jeri ba ya sake tura igiyar ruwa a kansa yayin da wasiƙar
+ke buɗewa. Igiyar tana nan tana bayyana idan kuka danna wasiƙar da ke buɗe
+tuni.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Yanayin tsaro idan sabuntawa ta lalace"
+text = """
+Katna tana kwafin bayananku kafin sabuntawa ta canza su. Idan sabuntawar ta
+hana Katna farawa, tana buɗewa a yanayin tsaro: wasiƙunku suna nan ana iya
+karanta su, kuma wani layi a samansu yana ba ku damar sake gwadawa ko komawa
+kwafin daga kafin sabuntawa. Ana fara ajiye abin da yake nan yanzu a cikin
+wata foldar, don haka babu abin da zai ɓace. Kwafi rahoton matsala, wanda yake
+a Game da ma, yana tattara abin da rahoton matsala ke buƙata.
+"""

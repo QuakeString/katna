@@ -3630,3 +3630,41 @@ title = "Sien wie 'n boodskap onderteken het"
 text = """
 Klik op die handtekeningreël van 'n ondertekende of geënkripteerde boodskap om die ondertekenaar se sleutel te sien: naam, adres, vingerafdruk en datums, met Kopieer vingerafdruk. 'n Boodskap wat onderteken is met 'n sleutel wat jy nie het nie, bied Soek sleutel op, en 'n sleutel wat iemand aanheg, maak oop as Voer hierdie sleutel in? met Ontdoen daarna.
 """
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Waarskuwings oor vervalste e-pos"
+text = """
+Wanneer 'n boodskap jou e-posdiensverskaffer se senderkontroles druip,
+sê 'n rooi banier dat dit dalk nie is van wie dit beweer nie, met
+Besonderhede, Lyk veilig en Skuif na strooipos. Sy prente bly versteek en
+sy skakels vra voordat hulle oopmaak. 'n Sender wat niks bevestig het nie,
+kry 'n klein "?" op hul prent.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Herbegin wanneer Katna opgedateer is"
+text = """
+Wanneer Katna opgedateer word terwyl Katna Mail oop is, skuif die
+agtergronddiens self na die nuwe weergawe sodra dit nie e-pos stuur nie.
+'n Klein pil onderaan die e-poslys bied dan Herbegin aan, wat die nuwe
+Katna Mail in sy plek oopmaak. × versteek dit tot die volgende opdatering.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "'n E-pos oopmaak is kalmer"
+text = """
+As jy op 'n e-pos in die lys klik, stuur dit nie meer 'n rimpeling daaroor
+terwyl die e-pos oopmaak nie. Die rimpeling wys steeds wanneer jy op die
+e-pos klik wat reeds oop is.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Veilige modus as 'n opdatering skeefloop"
+text = """
+Katna kopieer jou data voordat 'n opdatering dit verander. As die
+opdatering Katna nie laat begin nie, maak dit in veilige modus oop: jou
+e-pos bly leesbaar, en 'n reël daarbo laat jou weer probeer of teruggaan
+na die kopie van voor die opdatering. Wat nou daar is, word eers in 'n
+vouer gehou, so niks gaan verlore nie. Kopieer foutsporingsverslag, ook in
+Meer oor Katna, versamel wat 'n foutverslag nodig het.
+"""
