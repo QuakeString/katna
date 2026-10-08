@@ -169,6 +169,8 @@ imap-types = { version = "=2.0.0-alpha.7", default-features = false }
 io-imap = { version = "=0.6.0", default-features = false }
 io-sasl = { version = "=0.1.0", default-features = false }
 io-smtp = { version = "=0.3.0", default-features = false }
+# Dates in IMAP SEARCH: imap-types takes chrono's, which it brings in anyway.
+chrono = { version = "0.4.45", default-features = false }
 
 # GUI: exact pins (docs/ARCHITECTURE.md §20). GPUI is only allowed in the UI
 # crates (deny.toml). The crate is imported as `gpui`.

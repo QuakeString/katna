@@ -67,6 +67,7 @@ mod other_contacts;
 mod reminders;
 mod rules;
 mod rules_server;
+mod server_search;
 
 pub use mutes::MuteOf;
 pub use reminders::{SNOOZED, is_snoozed_path};
@@ -2218,6 +2219,48 @@ impl Daemon {
     fn set_status(&self, id: AccountId, status: Status) {
         self.status.lock().unwrap().insert(id, status);
         let _ = self.notices.try_send(Notice::StatusChanged(id));
+    }
+
+    /// What `Version()` answers: this build's version, the `Pim1` level
+    /// it speaks and the schema version of each database.
+    pub fn version(&self) -> (String, u32, HashMap<String, u32>) {
+        use katna_dbus::schema;
+        use katna_store::DbKind;
+        let schemas = [
+            (schema::MAIL, DbKind::Mail.schema_version()),
+            (schema::PIM, DbKind::Pim.schema_version()),
+            (schema::BLOBS, DbKind::Blobs.schema_version()),
+            (schema::SEARCH, katna_search::SCHEMA_VERSION),
+        ]
+        .into_iter()
+        .map(|(name, version)| (name.to_owned(), version))
+        .collect();
+        (
+            katna_core::update::VERSION.to_owned(),
+            katna_dbus::API_LEVEL,
+            schemas,
+        )
+    }
+
+    /// What a restart after an update waits for, if anything: a message
+    /// being handed to its server, or due to be within the longest undo
+    /// delay. Everything else waiting is kept on disk and picked up again
+    /// (`docs/ARCHITECTURE.md` §21.2, Running while updated).
+    pub fn restart_waits_for(&self) -> Option<&'static str> {
+        let longest_undo = katna_core::config::UNDO_SEND_CHOICES
+            .iter()
+            .max()
+            .copied()
+            .unwrap_or(0);
+        let until = unix_now() + i64::from(longest_undo) + 5;
+        match self.store().sending_before(until) {
+            Ok(true) => Some("a message is being sent"),
+            Ok(false) => None,
+            Err(err) => {
+                tracing::warn!(%err, "checking the outbox before restarting");
+                None
+            }
+        }
     }
 
     pub(crate) fn store(&self) -> MutexGuard<'_, Store> {

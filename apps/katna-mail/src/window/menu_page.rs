@@ -6,6 +6,7 @@
 //! right while it fades in (from the left going back), as the date picker
 //! does in the snooze menu, and the card's height eases to the new page's.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
@@ -20,7 +21,7 @@ use katna_ui::tokens::{duration, space, text};
 
 use super::MailWindow;
 use crate::theme::Theme;
-use crate::widgets::{icon_button, tip};
+use crate::widgets::icon_button;
 
 /// How long a page takes to slide in.
 const SLIDE: Duration = duration::BASE;
@@ -193,7 +194,7 @@ pub(super) fn page_header(
         )
         .child(
             icon_button(id, "back", 22.0, th)
-                .tooltip(tip(tr!("app-menu-back"), th))
+                .tip(tr!("app-menu-back"), th)
                 .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
                 .on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();

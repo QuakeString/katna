@@ -69,6 +69,7 @@ pub mod quick_reply;
 pub mod receipts;
 pub mod rules;
 pub mod rules_remote;
+pub mod server_search;
 pub mod sieve;
 pub mod smtp;
 pub mod tasks;

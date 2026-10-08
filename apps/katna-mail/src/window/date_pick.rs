@@ -7,6 +7,7 @@
 //! slides back to the menu's times. The menu that opens it keeps it and
 //! says what its buttons do ([`PickHooks`]).
 
+use crate::widgets::Tip as _;
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, Hsla,
     Subscription, Window, div, ease_out_quint, prelude::*, rgba,
@@ -20,7 +21,7 @@ use katna_ui::{InputEvent, TextInput, px};
 use super::MailWindow;
 use super::compose::schedule;
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon_button, tip};
+use crate::widgets::{filled_button, icon_button};
 
 /// How long the menu's times and the picker take to slide past each
 /// other.
@@ -253,7 +254,7 @@ impl MailWindow {
                                 icon_button("pick-back", "back", 20.0, th)
                                     .flex_none()
                                     .size(px(32.0))
-                                    .tooltip(tip(tr!("snooze-back"), th))
+                                    .tip(tr!("snooze-back"), th)
                                     .on_click(cx.listener(move |this, _, window, cx| {
                                         (hooks.back)(this, window, cx)
                                     })),
