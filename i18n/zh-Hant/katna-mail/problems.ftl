@@ -59,3 +59,6 @@ service-details-title = 服務無法啟動的原因
 service-details-body = 請複製這段內容並隨回報一起傳送。其中不含任何郵件或密碼。
 service-details-copy = 複製
 service-details-close = 關閉
+service-not-running = Katna 背景服務未執行。
+service-no-answer = Katna 背景服務沒有回應：{ $error }
+service-no-session = 沒有 D-Bus 工作階段：{ $error }

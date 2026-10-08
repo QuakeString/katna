@@ -49,3 +49,13 @@ search-dates-month-back = Bulan sebelumnya
 search-dates-month-on = Bulan berikutnya
 search-dates-year-back = Tahun sebelumnya
 search-dates-year-on = Tahun berikutnya
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Hasil lainnya di server
+search-server-searching = Menelusuri email di server…
+search-server-empty-searching = Belum ada apa-apa. Menelusuri email di server…
+search-server-nothing = Tidak ada hasil lain di server
+search-server-failed = Tidak dapat menelusuri server.
+search-server-again = Coba lagi

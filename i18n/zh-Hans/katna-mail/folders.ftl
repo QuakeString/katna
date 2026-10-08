@@ -53,6 +53,7 @@ folder-waiting-short = 等待中
 folder-reminders = 提醒
 folder-outbox = 发件箱
 folder-activity = 动态
+folder-not-on-account = 此账号没有这个文件夹。
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

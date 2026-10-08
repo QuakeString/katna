@@ -111,6 +111,7 @@ calendar-add-meet = Thêm cuộc họp video trên Google Meet
 calendar-add-teams = Thêm cuộc họp Teams
 calendar-has-call = Đã thêm cuộc gọi video
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Cả ngày
 calendar-more-options = Tùy chọn khác
 calendar-save = Lưu

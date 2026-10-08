@@ -70,6 +70,7 @@ shortcut-navigation = 메뉴 표시/접기
 shortcut-quick-settings = 빠른 설정
 shortcut-settings = 모든 설정
 shortcut-shortcuts = 단축키
+shortcut-palette = 명령 팔레트
 shortcut-reload = 새 메일 확인
 shortcut-quit = 끝내기
 

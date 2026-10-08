@@ -4433,3 +4433,114 @@ text = """
 Menu ☰ dan daftar bahasa kini bergeser masuk di dalam kartu akun alih-alih
 langsung muncul, dengan tombol kembali di kanan untuk kembali.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Setiap aplikasi berada di atas kartu yang sama"
+text = """
+Kalender, Kontak, Tugas, Catatan, dan File kini berada di atas kartu dengan
+tepi tipis dan bayangan lembut yang sama seperti Email dan Setelan.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Tombol catat cepat di GNOME"
+text = """
+Meta+Alt+T untuk tugas dan Meta+Alt+N untuk catatan kini juga berfungsi di
+GNOME. Saat pertama kali, GNOME menanyakan apakah Katna boleh memakainya, dan
+Anda dapat mengubah tombolnya di Setelan GNOME.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Pindahkan alat penanda"
+text = """
+Saat menandai PDF, seret titik-titik di ujung alat untuk memindahkannya ke
+mana saja di atas halaman, sehingga alat tidak pernah menutupi bagian yang
+sedang Anda tandai. Klik dua kali titik-titik itu untuk mengembalikannya.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Berfungsi dengan pembaca layar"
+text = """
+Orca dan pembaca layar lainnya kini dapat membaca Katna Mail: daftar email,
+folder, email yang terbuka, tombol, menu, sakelar, dan dialog.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Kirim masukan"
+text = """
+Bantuan > Kirim Masukan, juga ada di Setelan cepat dan Setelan > Masukan
+pengguna, mengirim masalah atau ide langsung ke Katna. Apa yang dikirim
+menampilkan teks persisnya sebelum dikirim, dan email untuk balasan bersifat
+opsional.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Statistik penggunaan anonim, jika Anda mau"
+text = """
+Setelan > Masukan pengguna punya sakelar baru, nonaktif sampai Anda
+mengaktifkannya: seminggu sekali sakelar ini mengirim fitur mana yang Anda
+gunakan, ya atau tidak, agar fitur yang paling sering dipakai mendapat
+perhatian paling banyak. Halaman ini mencantumkan semua yang dihitung dan
+menampilkan laporan minggu ini.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Penelusuran menemukan email lama di server"
+text = """
+Email lama tidak diunduh seluruhnya, jadi penelusuran tidak dapat membaca
+isinya di sini. Kini, setelah Anda berhenti mengetik sejenak atau menekan
+Enter, Katna juga bertanya ke server email Anda dan mencantumkan temuannya di
+bawah Hasil lainnya di server.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Telusuri dalam bahasa Thai, Laos, Khmer, dan Burma"
+text = """
+Penelusuran menemukan kata dalam email berbahasa Thai, Laos, Khmer, atau Burma
+meskipun kalimatnya tidak memiliki spasi di antara kata-kata.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Baris panjang terpotong di antara kata"
+text = """
+Teks dalam aksara Arab, Hindi dan aksara India lainnya, Thai, Laos, Khmer,
+dan Burma kini berpindah baris di antara kata, bukan memotong kata di
+tengahnya, dan baris dalam bahasa Tionghoa dan Jepang tidak lagi diawali
+tanda penutup.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Tekanan mengisi seluruh tombol"
+text = """
+Mengklik chip atau tombol bergaris tepi kini mengisinya sampai ke tepi dan
+sudutnya sendiri, alih-alih menampilkan bentuk pil yang lebih kecil di
+dalamnya.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Palet perintah"
+text = """
+Tekan Ctrl+Shift+P dan ketik untuk menemukan tindakan atau setelan apa pun,
+lalu tekan Enter untuk menjalankannya. Setiap tindakan menampilkan pintasan
+keyboard-nya, dan yang terakhir Anda gunakan ada di atas.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Email terenkripsi menemukan kunci"
+text = """
+Dengan Enkripsi aktif, penerima yang belum memiliki kunci dicari di
+direktori kunci domain mereka sendiri saat Anda mengirim. Email yang Anda
+kirim membawa kunci publik Anda (Autocrypt) jika GnuPG memiliki kunci untuk
+alamat Anda, dan kunci yang datang dengan cara yang sama digunakan untuk
+mengenkripsi balasan Anda. Email OpenPGP terenkripsi kini menyembunyikan
+subjeknya sampai dibuka.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Lihat siapa yang menandatangani pesan"
+text = """
+Klik baris tanda tangan pada pesan yang ditandatangani atau terenkripsi untuk
+melihat kunci penanda tangan: nama, alamat, sidik jari, dan tanggal, beserta
+Salin sidik jari. Pesan yang ditandatangani dengan kunci yang tidak Anda
+miliki menawarkan Cari kunci, dan kunci yang dilampirkan seseorang terbuka
+sebagai Impor kunci ini? dengan Urungkan sesudahnya.
+"""

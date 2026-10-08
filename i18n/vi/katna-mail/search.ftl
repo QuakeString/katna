@@ -57,3 +57,13 @@ search-dates-month-back = Tháng trước
 search-dates-month-on = Tháng sau
 search-dates-year-back = Năm trước
 search-dates-year-on = Năm sau
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Thêm kết quả trên máy chủ
+search-server-searching = Đang tìm thư trên máy chủ…
+search-server-empty-searching = Chưa có gì ở đây. Đang tìm thư trên máy chủ…
+search-server-nothing = Không còn kết quả nào trên máy chủ
+search-server-failed = Không thể tìm kiếm trên máy chủ.
+search-server-again = Thử lại

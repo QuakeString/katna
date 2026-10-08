@@ -92,6 +92,7 @@ notes-link-note = Tautkan catatan
 notes-link-new = Catatan baru “{ $title }”
 notes-linked-from = Ditautkan dari
 notes-link-gone = Catatan itu sudah tidak ada di sini
+notes-new-note-gone = Catatan baru itu sudah tidak ada.
 
 ## Version history
 

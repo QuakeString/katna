@@ -108,6 +108,7 @@ calendar-add-meet = Tambahkan konferensi video Google Meet
 calendar-add-teams = Tambahkan rapat Teams
 calendar-has-call = Konferensi video ditambahkan
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Sepanjang hari
 calendar-more-options = Opsi lainnya
 calendar-save = Simpan
