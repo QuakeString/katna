@@ -1263,6 +1263,17 @@ impl Mail {
         self.index.clone()
     }
 
+    /// Whether mail of `only` (of any account when `None`) is on a server
+    /// but not downloaded, so a search on the server may find more.
+    pub fn has_mail_not_downloaded(&self, only: Option<AccountId>) -> bool {
+        self.store
+            .has_mail_not_downloaded(only)
+            .unwrap_or_else(|err| {
+                tracing::warn!("looking for mail not downloaded: {err}");
+                false
+            })
+    }
+
     /// Whether the search index is open.
     pub fn has_index(&self) -> bool {
         self.index.is_some()

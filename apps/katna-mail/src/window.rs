@@ -52,6 +52,7 @@ mod detached;
 mod download;
 mod event_edit;
 mod event_window;
+mod feedback_form;
 mod feedback_page;
 mod files_page;
 mod folder_pick;
@@ -95,6 +96,7 @@ mod scheme_editor;
 mod scheme_picker;
 mod search_panel;
 mod select;
+mod server_search;
 mod service;
 mod settings;
 mod settings_page;
@@ -221,6 +223,7 @@ actions!(
         ShowShortcuts,
         ShowWhatsNew,
         CheckForUpdates,
+        SendFeedback,
         ShowAbout,
     ]
 );
@@ -668,6 +671,8 @@ pub struct MailWindow {
     /// Search this text as typed, not corrected ("Search instead for …").
     search_verbatim: Option<String>,
     search_task: Option<Task<()>>,
+    /// "More results on server" for the search shown.
+    server_search: Option<server_search::ServerSearch>,
     search_panel: Option<SearchPanel>,
     search_panel_spring: Spring,
     menu: Option<Menu>,
@@ -753,6 +758,11 @@ pub struct MailWindow {
     service: service::Service,
     /// Settings > User feedback's list of crash reports, as last read.
     saved_reports: Option<feedback_page::SavedReports>,
+    /// Settings > User feedback shows this week's usage report.
+    usage_report_open: bool,
+    /// The week and the features already noted for usage statistics, so
+    /// noting one again reads no file.
+    usage_noted: (i64, std::collections::BTreeSet<katna_core::usage::Feature>),
     /// Settings > Subscription (the Katna account), once shown.
     katna: Option<katna_account::KatnaPage>,
     compose: Option<compose::Compose>,
@@ -767,6 +777,8 @@ pub struct MailWindow {
     shortcuts_dialog: Option<shortcuts_dialog::ShortcutsDialog>,
     /// "Help improve Katna", asked once after an update.
     share_ask: Option<share_ask::ShareAsk>,
+    /// Help > Send feedback, while open.
+    feedback_form: Option<feedback_form::FeedbackForm>,
     /// The print preview, before the desktop's print dialog.
     print_preview: Option<print_preview::PrintPreview>,
     /// Ask it once What's new is closed.
@@ -1075,6 +1087,7 @@ impl MailWindow {
             search_error: None,
             search_verbatim: None,
             search_task: None,
+            server_search: None,
             search_panel: None,
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
             menu: None,
@@ -1119,6 +1132,8 @@ impl MailWindow {
             problems: problems::Problems::default(),
             service: service::Service::default(),
             saved_reports: None,
+            usage_report_open: false,
+            usage_noted: (0, Default::default()),
             katna: None,
             compose: None,
             files: attachments::Files::default(),
@@ -1127,6 +1142,7 @@ impl MailWindow {
             whats_new: None,
             shortcuts_dialog: None,
             share_ask: None,
+            feedback_form: None,
             print_preview: None,
             share_ask_later: false,
             about: None,
@@ -1483,6 +1499,27 @@ impl MailWindow {
             outline * lerp(SHADOW_REST, 1.0, active),
             outline * lerp(EDGE_REST, 1.0, active),
         )
+    }
+
+    /// A page's card beside the rail: the cards' hairline edge and short
+    /// shadow, and the faint line around them, as strong as on Mail's list
+    /// while it has the keys, since the page is the only card on show
+    /// (`docs/DESIGN.md`, Cards). Every app page and Settings draw their
+    /// card here so none misses its edge; on a phone the card runs edge to
+    /// edge with none.
+    fn page_frame(&self, th: &Theme, fill: u32, content: impl IntoElement) -> gpui::Div {
+        let (radius, outline) = (
+            self.layout.shape.card_radius(),
+            self.layout.shape.card_outline(),
+        );
+        let (shadow, edge) = self.card_edges(1.0, outline);
+        div()
+            .relative()
+            .size_full()
+            .overflow_hidden()
+            .map(|d| crate::widgets::card(d, th, fill, radius, shadow))
+            .child(content)
+            .children(crate::widgets::card_outline(th, radius, edge))
     }
 
     /// How far the list (`reader` false) or the conversation beside it has
@@ -2505,6 +2542,7 @@ impl MailWindow {
 
     fn clear_search(&mut self, cx: &mut Context<Self>) {
         self.search_task = None;
+        self.drop_server_search();
         self.search_error = None;
         self.search.update(cx, |search, cx| {
             if !search.text().is_empty() {
@@ -2552,7 +2590,10 @@ impl MailWindow {
                 }
                 self.start_search(text, cx);
             }
-            InputEvent::Submit => self.focus_list(&FocusList, window, cx),
+            InputEvent::Submit => {
+                self.search_server_now(cx);
+                self.focus_list(&FocusList, window, cx);
+            }
             InputEvent::Cancel => {
                 if search.read(cx).text().is_empty() {
                     window.focus(&self.list_focus, cx);
@@ -2568,6 +2609,7 @@ impl MailWindow {
         let keep_open = std::mem::take(&mut self.clear_keeps_open);
         if text.is_empty() {
             self.search_task = None;
+            self.drop_server_search();
             if matches!(self.listing, Some(Listing::Search { .. })) {
                 // Only the X keeps a result open; text deleted away goes back.
                 let opened = (keep_open && self.reading)
@@ -2701,11 +2743,13 @@ impl MailWindow {
                     Ok(mail) => mail.hit_entries(&hits, self.config.mail.conversations, only),
                     Err(_) => Vec::new(),
                 };
+                let searched = query.clone();
                 self.listing = Some(Listing::Search {
                     query,
                     total: results.total,
                     corrected,
                 });
+                self.after_local_results(&searched, cx);
                 if again {
                     self.selected =
                         selected_key.and_then(|key| self.entries.iter().position(|e| e.key == key));
@@ -3121,6 +3165,7 @@ impl MailWindow {
         quiet: bool,
         cx: &mut Context<Self>,
     ) {
+        self.note_command_usage(&command);
         let connection = self.daemon.clone();
         let notes = command.touches_notes();
         let drive = command.drive();
@@ -3654,6 +3699,7 @@ impl Render for MailWindow {
         if self.event_only {
             return self.render_event_window(window, cx);
         }
+        self.note_usage_each_frame(window);
         self.tour_new_frame();
         self.measure_pill_text(window);
         let th = self.theme(window);
@@ -4048,6 +4094,7 @@ impl Render for MailWindow {
             self.render_share_ask(&th, window, reduce, cx)
         };
         let about = self.render_about(&th, window, reduce, cx);
+        let feedback_form = self.render_feedback_form(&th, window, reduce, cx);
         let gallery = self.render_gallery(cx);
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
@@ -4142,6 +4189,7 @@ impl Render for MailWindow {
             .children(shortcuts_dialog)
             .children(share_ask)
             .children(about)
+            .children(feedback_form)
             .children(gallery)
             .children(update_dialog)
             .children(print_preview)
@@ -4281,7 +4329,8 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::show_shortcuts))
             .on_action(cx.listener(Self::show_whats_new_action))
             .on_action(cx.listener(Self::check_for_updates_action))
-            .on_action(cx.listener(Self::show_about));
+            .on_action(cx.listener(Self::show_about))
+            .on_action(cx.listener(Self::send_feedback_action));
         match &self.font {
             Some(font) => frame.font_family(font.clone()).into_any_element(),
             None => frame.into_any_element(),

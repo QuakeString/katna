@@ -256,6 +256,9 @@ impl MailWindow {
         } else if self.contact_qr_open() {
             self.close_contact_qr(cx);
             true
+        } else if self.feedback_form_open() {
+            self.close_feedback_form(cx);
+            true
         } else if self.share_ask_open() {
             self.close_share_ask(window, cx);
             true
@@ -319,6 +322,7 @@ impl MailWindow {
             || self.whats_new.is_some()
             || self.shortcuts_dialog.is_some()
             || self.share_ask.is_some()
+            || self.feedback_form.is_some()
             || self.print_preview.is_some()
             || self.about.is_some()
             || self.tour.is_some()

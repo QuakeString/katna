@@ -22,6 +22,7 @@ use gpui::{
     uniform_list,
 };
 use katna_core::config::AppKind;
+use katna_core::usage::Feature;
 use katna_i18n::tr;
 use katna_store::Person;
 use katna_ui::Ripple;
@@ -376,6 +377,12 @@ impl MailWindow {
         if self.app == app {
             return;
         }
+        match app {
+            App::Calendar => self.note_usage(Feature::Calendar),
+            App::Contacts => self.note_usage(Feature::Contacts),
+            App::Tasks | App::Notes => self.note_usage(Feature::TasksNotes),
+            App::Mail | App::Files => {}
+        }
         // A turned-off app opens from nowhere: its key, a launcher's
         // action, a reminder or a link lands here and says so instead.
         if let Some(kind) = app.kind()
@@ -647,14 +654,7 @@ impl MailWindow {
             .h_full()
             .pr(px(shape.card_margin()))
             .pb(px(shape.card_margin()))
-            .child(
-                div()
-                    .size_full()
-                    .rounded(px(shape.card_radius()))
-                    .overflow_hidden()
-                    .bg(rgba(th.surface))
-                    .child(body),
-            )
+            .child(self.page_frame(th, th.surface, body))
             .into_any_element()
     }
 

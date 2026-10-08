@@ -21,6 +21,7 @@ pub mod quick_add;
 pub mod sentry;
 pub mod subject;
 pub mod update;
+pub mod usage;
 pub mod wildcard;
 pub mod window;
 

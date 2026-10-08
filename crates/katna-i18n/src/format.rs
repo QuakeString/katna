@@ -371,8 +371,11 @@ fn decimal(d: Decimal) -> String {
 /// `text` without the invisible direction marks CLDR puts in Arabic
 /// dates (`٢٧‏/٠٩` has a right-to-left mark after the day). GPUI's text
 /// layout drops the glyphs before such a mark, so a short date showed only
-/// `/٠٩`. The digits keep their order without it. Put the marks back once
-/// the vendored text layout handles them (plan L.2).
+/// `/٠٩`. The digits keep their order without it. The glyphs are lost in
+/// `cosmic-text` 0.19 (`ShapeLine::layout_to_buffer` drops a leading run
+/// of numbers when the first strong character, the mark, makes the line
+/// right to left), not in `gpui-pre`; put the marks back once that is
+/// fixed.
 fn plain(text: String) -> String {
     const MARKS: [char; 3] = ['\u{200e}', '\u{200f}', '\u{061c}'];
     if text.contains(MARKS) {

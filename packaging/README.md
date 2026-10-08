@@ -65,6 +65,8 @@ CI builds the PKGBUILD on every push to `main`
 (`.github/workflows/arch-package.yml`) and puts the package on the
 [`arch-latest`](https://github.com/QuakeString/katna/releases/tag/arch-latest)
 pre-release, which each build replaces. It is x86_64 only and not signed.
+Betas and stable releases are published the same way under their own
+releases (`docs/RELEASING.md`).
 
 Install it once:
 

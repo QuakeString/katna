@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 855 more of their own. Each keeps its own license.
+bring in 856 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -22,6 +22,7 @@ bring in 855 more of their own. Each keeps its own license.
 | [blocking](https://github.com/smol-rs/blocking) 1.7.0 | smol-rs | Apache-2.0 OR MIT | A thread pool for isolating blocking I/O in async programs |
 | [calamine](https://github.com/tafia/calamine) 0.36.1 | Johann Tuffe | MIT | An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust |
 | [cfb](https://github.com/mdsteele/rust-cfb) 0.15.0 | Matthew D. Steele | MIT | Read/write Compound File Binary (structured storage) files |
+| [chrono](https://github.com/chronotope/chrono) 0.4.45 | chronotope | MIT OR Apache-2.0 | Date and time library for Rust |
 | [deadpool-postgres](https://github.com/deadpool-rs/deadpool) 0.14.2 | Michael P. Jung | MIT OR Apache-2.0 | Dead simple async pool for tokio-postgres |
 | [emojis](https://github.com/rossmacarthur/emojis) 0.9.0 | Ross MacArthur | (MIT OR Apache-2.0) AND Unicode-3.0 | ✨ Lookup emoji in *O(1)* time, access metadata and GitHub shortcodes, iterate over all emoji, and more! |
 | [fluent-bundle](https://github.com/projectfluent/fluent-rs) 0.16.0 | Bruce Mitchener <bruce.mitchener@gmail.com, Caleb Maclennan, Staś Małolepszy, Zibi Braniecki | Apache-2.0 OR MIT | A low-level implementation of a collection of localization messages for a single locale for Project Fluent, a localization system designed to unleash the entire expressive power of natural language translations. |
