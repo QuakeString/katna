@@ -504,7 +504,7 @@ impl MailWindow {
                     let below = at.y.as_f32() - super::TOP_BAR_HEIGHT + 16.0;
                     let room = viewport.height.as_f32() - super::TOP_BAR_HEIGHT - 16.0;
                     let top = below.min(room - height).max(4.0);
-                    d.top(px(top)).left(px(left)).w(px(MENU_WIDTH))
+                    d.placed_ltr().top(px(top)).left(px(left)).w(px(MENU_WIDTH))
                 }
             })
             .h(px(height))

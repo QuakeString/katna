@@ -1035,6 +1035,8 @@ impl MailWindow {
         let panel = div()
             .id("password-card")
             .absolute()
+            // Placed on screen, by what it points at.
+            .placed_ltr()
             .left(px(x))
             .top(px(y))
             .w(px(CARD_WIDTH))

@@ -481,6 +481,8 @@ impl MailWindow {
         let popover = div()
             .id("custom-dates")
             .absolute()
+            // Placed on screen, by what it points at.
+            .placed_ltr()
             .left(px(x))
             .top(px(y))
             .w(px(WIDTH))

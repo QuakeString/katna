@@ -3,6 +3,7 @@
 //! Swipe left on a line to snooze it, on a phone (as Gmail's app does): a
 //! sideways swipe pulls the line left over a Snooze strip; let go far
 //! enough and the snooze menu opens for it, else the line springs back.
+//! Right to left it all turns around: swipe right, the strip on the left.
 
 use std::time::Duration;
 
@@ -29,7 +30,8 @@ const QUIET: Duration = Duration::from_millis(180);
 /// The line being swiped.
 #[derive(Default)]
 pub(super) struct RowSwipe {
-    /// Its index and how far it is pulled left.
+    /// Its index and how far it is pulled toward the start (left, or
+    /// right in a right-to-left layout, which mirrors the drawing).
     pulled: Option<(usize, f32)>,
     /// Ends it once the swipe goes quiet.
     end: Option<Task<()>>,
@@ -50,6 +52,7 @@ impl MailWindow {
         }
         let delta = event.delta.pixel_delta(px(20.0));
         let (dx, dy) = (unpx(delta.x), unpx(delta.y));
+        let dx = if self.layout.shape.rtl { -dx } else { dx };
         let pulled = match self.row_swipe.pulled {
             Some((at, pulled)) if at == ix => pulled,
             _ => 0.0,

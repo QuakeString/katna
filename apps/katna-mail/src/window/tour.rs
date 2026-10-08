@@ -250,9 +250,11 @@ impl MailWindow {
         )
         .absolute()
         .size_full();
+        // The ring and the card are placed on screen, by what is lit.
         let ring = lit.map(|[x, y, w, h]| {
             div()
                 .absolute()
+                .placed_ltr()
                 .left(px(x))
                 .top(px(y))
                 .w(px(w))
@@ -364,6 +366,7 @@ impl MailWindow {
                 d.child(
                     div()
                         .absolute()
+                        .placed_ltr()
                         .left(px(cx_))
                         .top(px(cy))
                         .opacity(if stop.is_some() { t.max(0.3) } else { 1.0 })
