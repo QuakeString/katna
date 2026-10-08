@@ -3105,7 +3105,10 @@ desktop's own app stays one click away.
   - **Marking up a PDF.** The pen in the viewer's top bar shows a pill of
     tools: Select, Highlight, Underline, Squiggle, Strike, Pen, Sticky
     note, Text box and Eraser, five colours each, and Undo and Redo
-    (Ctrl+Z, Ctrl+Shift+Z). Text marks are made by selecting text; the
+    (Ctrl+Z, Ctrl+Shift+Z), then drag dots at its end: dragging them
+    moves the pill anywhere over the pages (kept inside the viewer, below
+    the top bar) so it never covers what is being marked, and a double
+    click puts it back. Text marks are made by selecting text; the
     pen draws freehand; a click with the note or text tool places one and
     opens it for typing (Ctrl+Enter, Done or a click elsewhere finishes,
     Escape drops the change), and clicking one opens it again; a note's
