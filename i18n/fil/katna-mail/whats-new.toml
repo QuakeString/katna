@@ -4768,3 +4768,13 @@ at Kanan pakaliwa sa formatting bar (o Ctrl+Shift+X) ang isang talata, at kusang
 bumabaligtad ang linyang sinimulan mo sa Arabic o Hebrew. Ipinapadala ang mensahe
 nang eksakto kung paano mo ito isinulat.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Naka-mirror ang Katna Mail para sa Arabic, Hebrew, Persian at Urdu"
+text = """
+Sa Arabic, Hebrew, Persian at Urdu, bumabaligtad ang buong window: nasa kanan ang
+app rail at mga folder, pakaliwa nagbubukas ang mga menu, at sumusunod ang mga arrow
+at arrow key sa direksyon ng pagbasa ng screen. Nananatili sa sarili nilang
+pagkakasunod ang mga pangalan, address at shortcut na nasa English, at binibilang ang
+mga petsang Persian sa kalendaryong Solar Hijri.
+"""

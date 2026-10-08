@@ -4641,3 +4641,12 @@ dalam bar format (atau Ctrl+Shift+X) menukar arah perenggan, dan baris yang anda
 mulakan dalam bahasa Arab atau Ibrani bertukar arah dengan sendirinya. Mesej dihantar
 tepat seperti yang anda tulis.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail dicerminkan untuk bahasa Arab, Ibrani, Parsi dan Urdu"
+text = """
+Dalam bahasa Arab, Ibrani, Parsi dan Urdu, seluruh tetingkap berpusing arah: rel
+aplikasi dan folder di sebelah kanan, menu terbuka ke kiri, anak panah dan kekunci
+anak panah mengikut arah bacaan skrin. Nama, alamat dan pintasan bahasa Inggeris
+kekal dalam susunan asalnya, dan tarikh Parsi dikira mengikut kalendar Hijrah Suria.
+"""
