@@ -17,8 +17,11 @@ const DIRECTIONAL: &[&str] = &[
     "folders-pane",
     "folders-pane-fill",
     "forward",
+    "important",
+    "important-filled",
     "indent-less",
     "indent-more",
+    "label",
     "list-bulleted",
     "move-to",
     "redo",
@@ -64,10 +67,24 @@ mod tests {
 
     #[test]
     fn arrows_along_the_line_mirror_and_the_rest_stay() {
-        for name in ["back", "reply", "reply-all", "forward", "send", "chevron-right"] {
+        for name in [
+            "back",
+            "reply",
+            "reply-all",
+            "forward",
+            "send",
+            "chevron-right",
+        ] {
             assert!(mirrors(name), "{name}");
         }
-        for name in ["schedule", "play", "check", "arrow-up", "chevron-down", "star"] {
+        for name in [
+            "schedule",
+            "play",
+            "check",
+            "arrow-up",
+            "chevron-down",
+            "star",
+        ] {
             assert!(!mirrors(name), "{name}");
         }
     }
