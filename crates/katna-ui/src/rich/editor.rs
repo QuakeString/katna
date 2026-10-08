@@ -3208,14 +3208,15 @@ impl EntityInputHandler for RichEditor {
         let range = range_from_utf16(text, &range_utf16);
         let (start, height) = layout.caret(range.start, false);
         let (end, _) = layout.caret(range.end, false);
-        let end_x = if end.y == start.y {
-            end.x.max(start.x)
+        // Right-to-left text ends left of where it starts.
+        let (left, right) = if end.y == start.y {
+            (start.x.min(end.x), start.x.max(end.x))
         } else {
-            start.x
+            (start.x, start.x)
         };
         Some(Bounds::from_corners(
-            layout.bounds.origin + start,
-            layout.bounds.origin + point(end_x, start.y + height),
+            layout.bounds.origin + point(left, start.y),
+            layout.bounds.origin + point(right, start.y + height),
         ))
     }
 
