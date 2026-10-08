@@ -55,6 +55,7 @@ reader-details-subject = ခေါင်းစဉ်-
 
 reader-downloading = ဤမက်ဆေ့ဂျ်ကို ဆာဗာမှ ဒေါင်းလုဒ်လုပ်နေသည်…
 reader-download-failed = ဤမက်ဆေ့ဂျ်ကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။
+reader-download-failed-reason = ဤမက်ဆေ့ဂျ်ကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။ { $reason }
 reader-download-offline = ဤအကောင့် အော့ဖ်လိုင်း ဖြစ်နေသည်။ ဤမက်ဆေ့ဂျ်ကို ဒေါင်းလုဒ်လုပ်ရန် အွန်လိုင်း ပြောင်းပါ။
 reader-try-again = ထပ်စမ်းကြည့်ရန်
 

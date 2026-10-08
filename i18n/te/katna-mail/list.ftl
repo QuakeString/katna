@@ -38,6 +38,8 @@ list-range-about = సుమారు { $total }లో { $first }–{ $last }
 list-results = “{ $query }” కోసం ఫలితాలు
 list-results-corrected = “{ $query }” కోసం ఫలితాలను చూపుతోంది
 list-search-instead = దానికి బదులుగా “{ $query }” కోసం వెతకండి
+list-search-no-index = సెర్చ్ సిద్ధంగా లేదు: ఇండెక్స్ ఇంకా నిర్మించబడలేదు.
+list-search-not-ready = సెర్చ్ సిద్ధంగా లేదు: { $error }
 list-files-more = +{ $count }
 list-replied = మీరు రిప్లయి ఇచ్చారు
 
@@ -343,9 +345,14 @@ list-empty-waiting = రిప్లయి కోసం ఏదీ వేచి �
 list-empty-reminders = రిమైండర్‌లు లేవు. జోడించడానికి మెయిల్‌పై H నొక్కండి.
 list-first-sync = మీ మెయిల్‌ను పొందుతోంది…
 list-first-sync-detail = మెయిల్ వచ్చే కొద్దీ ఇక్కడ కనిపిస్తుంది.
+list-store-unreadable = మెయిల్ స్టోర్‌ను తెరవడం సాధ్యం కాలేదు
 
 ## Mail list: lines
 
+row-no-subject = (సబ్జెక్ట్ లేదు)
+row-unknown-sender = (తెలియని పంపినవారు)
+row-to = స్వీకర్త:
+row-no-recipients = (స్వీకర్తలు లేరు)
 row-removed = ఈ మెసేజ్ తీసివేయబడింది.
 row-starred = నక్షత్రం ఉంచబడింది
 row-not-starred = నక్షత్రం ఉంచలేదు

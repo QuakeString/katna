@@ -65,3 +65,6 @@ service-details-title = ಸೇವೆ ಏಕೆ ಆರಂಭವಾಗುತ್ತ
 service-details-body = ಇದನ್ನು ನಕಲಿಸಿ ನಿಮ್ಮ ವರದಿಯೊಂದಿಗೆ ಕಳುಹಿಸಿ. ಇದರಲ್ಲಿ ಯಾವುದೇ ಮೇಲ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಲ್ಲ.
 service-details-copy = ನಕಲಿಸಿ
 service-details-close = ಮುಚ್ಚಿ
+service-not-running = Katna ಹಿನ್ನೆಲೆ ಸೇವೆ ಚಾಲನೆಯಲ್ಲಿಲ್ಲ.
+service-no-answer = Katna ಹಿನ್ನೆಲೆ ಸೇವೆ ಉತ್ತರಿಸಲಿಲ್ಲ: { $error }
+service-no-session = D-Bus ಸೆಷನ್ ಇಲ್ಲ: { $error }

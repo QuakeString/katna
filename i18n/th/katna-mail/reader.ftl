@@ -55,6 +55,7 @@ reader-details-subject = หัวเรื่อง:
 
 reader-downloading = กำลังดาวน์โหลดข้อความนี้จากเซิร์ฟเวอร์…
 reader-download-failed = ดาวน์โหลดข้อความนี้ไม่ได้
+reader-download-failed-reason = ดาวน์โหลดข้อความนี้ไม่ได้ { $reason }
 reader-download-offline = บัญชีนี้ออฟไลน์อยู่ ออนไลน์เพื่อดาวน์โหลดข้อความนี้
 reader-try-again = ลองอีกครั้ง
 

@@ -61,3 +61,12 @@ search-dates-month-back = మునుపటి నెల
 search-dates-month-on = తర్వాతి నెల
 search-dates-year-back = మునుపటి సంవత్సరం
 search-dates-year-on = తర్వాతి సంవత్సరం
+
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = సర్వర్‌లో మరిన్ని ఫలితాలు
+search-server-searching = సర్వర్‌లో మెయిల్‌ను సెర్చ్ చేస్తోంది…
+search-server-empty-searching = ఇక్కడ ఇంకా ఏమీ లేదు. సర్వర్‌లో మెయిల్‌ను సెర్చ్ చేస్తోంది…
+search-server-nothing = సర్వర్‌లో మరిన్ని ఫలితాలు లేవు
+search-server-failed = సర్వర్‌లో సెర్చ్ చేయడం సాధ్యం కాలేదు.
+search-server-again = మళ్లీ ప్రయత్నించండి

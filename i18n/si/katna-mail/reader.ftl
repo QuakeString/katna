@@ -55,6 +55,7 @@ reader-details-subject = විෂය:
 
 reader-downloading = මෙම පණිවිඩය සේවාදායකයෙන් බාගනිමින්…
 reader-download-failed = මෙම පණිවිඩය බාගත කළ නොහැකි විය.
+reader-download-failed-reason = මෙම පණිවිඩය බාගත කළ නොහැකි විය. { $reason }
 reader-download-offline = මෙම ගිණුම නොබැඳියි. මෙම පණිවිඩය බාගත කිරීමට සබැඳි වන්න.
 reader-try-again = නැවත උත්සාහ කරන්න
 

@@ -38,6 +38,8 @@ list-range-about = ခန့်မှန်း { $total } ခုအနက် { $
 list-results = “{ $query }” အတွက် ရလဒ်များ
 list-results-corrected = “{ $query }” အတွက် ရလဒ်များကို ပြနေသည်
 list-search-instead = “{ $query }” ကို အစားထိုး ရှာရန်
+list-search-no-index = ရှာဖွေမှု အသင့်မဖြစ်သေးပါ- အညွှန်းကို မတည်ဆောက်ရသေးပါ။
+list-search-not-ready = ရှာဖွေမှု အသင့်မဖြစ်သေးပါ- { $error }
 list-files-more = +{ $count }
 list-replied = သင် ပြန်စာရေးပြီး
 
@@ -193,9 +195,14 @@ list-empty-waiting = ပြန်စာ စောင့်နေသည့် မ
 list-empty-reminders = သတိပေးချက် မရှိပါ။ ထည့်ရန် မေးလ်ပေါ်တွင် H ကို နှိပ်ပါ။
 list-first-sync = သင့်မေးလ်ကို ရယူနေသည်…
 list-first-sync-detail = ရောက်လာသည်နှင့် ဤနေရာတွင် ပေါ်လာမည်။
+list-store-unreadable = မေးလ် သိုလှောင်ရာကို ဖွင့်၍ မရပါ
 
 ## Mail list: lines
 
+row-no-subject = (ခေါင်းစဉ်မရှိ)
+row-unknown-sender = (မသိသော ပို့သူ)
+row-to = သို့-
+row-no-recipients = (လက်ခံသူ မရှိ)
 row-removed = ဤမက်ဆေ့ဂျ်ကို ဖယ်ရှားလိုက်ပြီ။
 row-starred = ကြယ်ပွင့်တပ်ထားသည်
 row-not-starred = ကြယ်ပွင့်မတပ်ထားပါ

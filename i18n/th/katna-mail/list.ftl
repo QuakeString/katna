@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } จากประมาณ { $total }
 list-results = ผลการค้นหาสำหรับ “{ $query }”
 list-results-corrected = กำลังแสดงผลการค้นหาสำหรับ “{ $query }”
 list-search-instead = ค้นหา “{ $query }” แทน
+list-search-no-index = การค้นหายังไม่พร้อม: ยังไม่ได้สร้างดัชนี
+list-search-not-ready = การค้นหายังไม่พร้อม: { $error }
 list-files-more = +{ $count }
 list-replied = คุณตอบกลับแล้ว
 
@@ -193,9 +195,14 @@ list-empty-waiting = ไม่มีอีเมลที่รอการต�
 list-empty-reminders = ไม่มีการช่วยเตือน กด H บนอีเมลเพื่อเพิ่ม
 list-first-sync = กำลังรับอีเมลของคุณ…
 list-first-sync-detail = อีเมลจะแสดงที่นี่เมื่อมาถึง
+list-store-unreadable = เปิดที่เก็บอีเมลไม่ได้
 
 ## Mail list: lines
 
+row-no-subject = (ไม่มีหัวเรื่อง)
+row-unknown-sender = (ไม่ทราบผู้ส่ง)
+row-to = ถึง:
+row-no-recipients = (ไม่มีผู้รับ)
 row-removed = ข้อความนี้ถูกนำออกแล้ว
 row-starred = ติดดาวแล้ว
 row-not-starred = ไม่ได้ติดดาว

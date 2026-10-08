@@ -38,6 +38,8 @@ list-range-about = ഏകദേശം { $total }-ൽ { $first }–{ $last }
 list-results = “{ $query }” എന്നതിനുള്ള ഫലങ്ങൾ
 list-results-corrected = “{ $query }” എന്നതിനുള്ള ഫലങ്ങൾ കാണിക്കുന്നു
 list-search-instead = പകരം “{ $query }” എന്ന് തിരയുക
+list-search-no-index = തിരയൽ തയ്യാറായിട്ടില്ല: സൂചിക ഇതുവരെ നിർമ്മിച്ചിട്ടില്ല.
+list-search-not-ready = തിരയൽ തയ്യാറായിട്ടില്ല: { $error }
 list-files-more = +{ $count }
 list-replied = നിങ്ങൾ മറുപടി നൽകി
 
@@ -343,9 +345,14 @@ list-empty-waiting = മറുപടിക്കായി ഒന്നും ക
 list-empty-reminders = ഓർമ്മപ്പെടുത്തലുകളൊന്നുമില്ല. ഒരെണ്ണം ചേർക്കാൻ ഒരു മെയിലിൽ H അമർത്തുക.
 list-first-sync = നിങ്ങളുടെ മെയിൽ ലഭ്യമാക്കുന്നു…
 list-first-sync-detail = എത്തുന്നതിനനുസരിച്ച് ഇവിടെ ദൃശ്യമാകും.
+list-store-unreadable = മെയിൽ സ്റ്റോർ തുറക്കാനായില്ല
 
 ## Mail list: lines
 
+row-no-subject = (വിഷയമില്ല)
+row-unknown-sender = (അജ്ഞാത അയച്ചയാൾ)
+row-to = സ്വീകർത്താവ്:
+row-no-recipients = (സ്വീകർത്താക്കളില്ല)
 row-removed = ഈ സന്ദേശം നീക്കം ചെയ്‌തു.
 row-starred = നക്ഷത്രമിട്ടത്
 row-not-starred = നക്ഷത്രമിട്ടിട്ടില്ല

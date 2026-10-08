@@ -55,6 +55,7 @@ reader-details-subject = ប្រធានបទ៖
 
 reader-downloading = កំពុងទាញយកសារនេះពីម៉ាស៊ីនមេ…
 reader-download-failed = មិនអាចទាញយកសារនេះបានទេ។
+reader-download-failed-reason = មិនអាចទាញយកសារនេះបានទេ។ { $reason }
 reader-download-offline = គណនីនេះស្ថិតនៅក្រៅបណ្ដាញ។ សូមចូលលើបណ្ដាញ ដើម្បីទាញយកសារនេះ។
 reader-try-again = ព្យាយាមម្ដងទៀត
 

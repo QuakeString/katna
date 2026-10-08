@@ -55,6 +55,7 @@ reader-details-subject = பொருள்:
 
 reader-downloading = இந்த மெசேஜை சர்வரிலிருந்து பதிவிறக்குகிறது…
 reader-download-failed = இந்த மெசேஜைப் பதிவிறக்க முடியவில்லை.
+reader-download-failed-reason = இந்த மெசேஜைப் பதிவிறக்க முடியவில்லை. { $reason }
 reader-download-offline = இந்தக் கணக்கு ஆஃப்லைனில் உள்ளது. இந்த மெசேஜைப் பதிவிறக்க ஆன்லைனுக்குச் செல்லுங்கள்.
 reader-try-again = மீண்டும் முயல்க
 

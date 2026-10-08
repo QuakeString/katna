@@ -59,3 +59,6 @@ service-details-title = ເປັນຫຍັງບໍລິການຈຶ່�
 service-details-body = ສຳເນົາສິ່ງນີ້ ແລະ ສົ່ງມາພ້ອມກັບລາຍງານຂອງທ່ານ. ມັນບໍ່ມີອີເມວ ຫຼື ລະຫັດຜ່ານຢູ່ໃນນັ້ນ.
 service-details-copy = ສຳເນົາ
 service-details-close = ປິດ
+service-not-running = ບໍລິການເບື້ອງຫຼັງຂອງ Katna ບໍ່ໄດ້ເຮັດວຽກຢູ່.
+service-no-answer = ບໍລິການເບື້ອງຫຼັງຂອງ Katna ບໍ່ໄດ້ຕອບ: { $error }
+service-no-session = ບໍ່ມີເຊດຊັນ D-Bus: { $error }

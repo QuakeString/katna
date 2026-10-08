@@ -55,6 +55,7 @@ reader-details-subject = വിഷയം:
 
 reader-downloading = ഈ സന്ദേശം സെർവറിൽ നിന്ന് ഡൗൺലോഡ് ചെയ്യുന്നു…
 reader-download-failed = ഈ സന്ദേശം ഡൗൺലോഡ് ചെയ്യാനായില്ല.
+reader-download-failed-reason = ഈ സന്ദേശം ഡൗൺലോഡ് ചെയ്യാനായില്ല. { $reason }
 reader-download-offline = ഈ അക്കൗണ്ട് ഓഫ്‌ലൈനാണ്. ഈ സന്ദേശം ഡൗൺലോഡ് ചെയ്യാൻ ഓൺലൈനാകുക.
 reader-try-again = വീണ്ടും ശ്രമിക്കുക
 

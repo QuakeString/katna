@@ -55,6 +55,7 @@ reader-details-subject = ຫົວຂໍ້:
 
 reader-downloading = ກຳລັງດາວໂຫຼດຂໍ້ຄວາມນີ້ຈາກເຊີບເວີ…
 reader-download-failed = ບໍ່ສາມາດດາວໂຫຼດຂໍ້ຄວາມນີ້ໄດ້.
+reader-download-failed-reason = ບໍ່ສາມາດດາວໂຫຼດຂໍ້ຄວາມນີ້ໄດ້. { $reason }
 reader-download-offline = ບັນຊີນີ້ອອບລາຍຢູ່. ອອນລາຍເພື່ອດາວໂຫຼດຂໍ້ຄວາມນີ້.
 reader-try-again = ລອງໃໝ່
 

@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } នៃប្រហែល { $total }
 list-results = លទ្ធផលសម្រាប់ “{ $query }”
 list-results-corrected = កំពុងបង្ហាញលទ្ធផលសម្រាប់ “{ $query }”
 list-search-instead = ស្វែងរក “{ $query }” ជំនួសវិញ
+list-search-no-index = ការស្វែងរកមិនទាន់រួចរាល់៖ លិបិក្រមមិនទាន់ត្រូវបានបង្កើតនៅឡើយ។
+list-search-not-ready = ការស្វែងរកមិនទាន់រួចរាល់៖ { $error }
 list-files-more = +{ $count }
 list-replied = អ្នកបានឆ្លើយតប
 
@@ -193,9 +195,14 @@ list-empty-waiting = គ្មានអ្វីកំពុងរង់ចា�
 list-empty-reminders = គ្មានការរំលឹកទេ។ ចុច H លើសំបុត្រ ដើម្បីបន្ថែម។
 list-first-sync = កំពុងទទួលសំបុត្ររបស់អ្នក…
 list-first-sync-detail = សំបុត្រនឹងបង្ហាញនៅទីនេះ នៅពេលវាមកដល់។
+list-store-unreadable = មិនអាចបើកឃ្លាំងសំបុត្របានទេ
 
 ## Mail list: lines
 
+row-no-subject = (គ្មានប្រធានបទ)
+row-unknown-sender = (មិនស្គាល់អ្នកផ្ញើ)
+row-to = ទៅ៖
+row-no-recipients = (គ្មានអ្នកទទួល)
 row-removed = សារនេះត្រូវបានដកចេញ។
 row-starred = មានផ្កាយ
 row-not-starred = គ្មានផ្កាយ

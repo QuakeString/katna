@@ -70,6 +70,7 @@ shortcut-navigation = మెనూను చూపండి లేదా కు�
 shortcut-quick-settings = త్వరిత సెట్టింగ్‌లు
 shortcut-settings = అన్ని సెట్టింగ్‌లు
 shortcut-shortcuts = కీబోర్డ్ షార్ట్‌కట్‌లు
+shortcut-palette = కమాండ్ పాలెట్
 shortcut-reload = కొత్త మెయిల్ కోసం చెక్ చేయండి
 shortcut-quit = నిష్క్రమించండి
 
