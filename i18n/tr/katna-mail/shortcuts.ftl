@@ -67,6 +67,7 @@ shortcut-navigation = Menüyü göster veya daralt
 shortcut-quick-settings = Hızlı ayarlar
 shortcut-settings = Tüm ayarlar
 shortcut-shortcuts = Klavye kısayolları
+shortcut-palette = Komut paleti
 shortcut-reload = Yeni postaları denetle
 shortcut-quit = Çık
 

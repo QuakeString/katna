@@ -55,6 +55,7 @@ reader-details-subject = الموضوع:
 
 reader-downloading = جارٍ تنزيل هذه الرسالة من الخادم…
 reader-download-failed = تعذّر تنزيل هذه الرسالة.
+reader-download-failed-reason = تعذّر تنزيل هذه الرسالة. { $reason }
 reader-download-offline = هذا الحساب غير متصل. اتصل لتنزيل هذه الرسالة.
 reader-try-again = إعادة المحاولة
 

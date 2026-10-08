@@ -55,6 +55,7 @@ reader-details-subject = konu:
 
 reader-downloading = Bu ileti sunucudan indiriliyor…
 reader-download-failed = Bu ileti indirilemedi.
+reader-download-failed-reason = Bu ileti indirilemedi. { $reason }
 reader-download-offline = Bu hesap çevrimdışı. Bu iletiyi indirmek için çevrimiçi olun.
 reader-try-again = Tekrar dene
 

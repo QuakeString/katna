@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } من حوالي { $total }
 list-results = نتائج «{ $query }»
 list-results-corrected = يتم عرض نتائج «{ $query }»
 list-search-instead = البحث عن «{ $query }» بدلًا من ذلك
+list-search-no-index = البحث غير جاهز: لم يُبنَ الفهرس بعد.
+list-search-not-ready = البحث غير جاهز: { $error }
 list-files-more = +{ $count }
 list-replied = لقد رددت
 
@@ -543,6 +545,11 @@ list-empty-waiting = لا شيء بانتظار الرد.
 list-empty-reminders = لا توجد تذكيرات. اضغط H على رسالة لإضافة تذكير.
 list-first-sync = جارٍ جلب بريدك…
 list-first-sync-detail = يظهر هنا فور وصوله.
+list-store-unreadable = تعذّر فتح مخزن البريد
+row-no-subject = (بلا موضوع)
+row-unknown-sender = (مُرسِل غير معروف)
+row-to = إلى:
+row-no-recipients = (بلا مستلمين)
 
 ## Mail list: lines
 

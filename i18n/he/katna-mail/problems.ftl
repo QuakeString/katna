@@ -71,3 +71,6 @@ service-details-title = למה השירות לא עולה
 service-details-body = אפשר להעתיק את זה ולשלוח עם הדיווח. אין בו דואר או סיסמאות.
 service-details-copy = העתקה
 service-details-close = סגירה
+service-not-running = שירות הרקע של Katna לא פועל.
+service-no-answer = שירות הרקע של Katna לא ענה: { $error }
+service-no-session = אין הפעלת D-Bus: { $error }

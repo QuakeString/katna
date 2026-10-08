@@ -67,6 +67,7 @@ shortcut-navigation = Показать или свернуть меню
 shortcut-quick-settings = Быстрые настройки
 shortcut-settings = Все настройки
 shortcut-shortcuts = Быстрые клавиши
+shortcut-palette = Палитра команд
 shortcut-reload = Проверить почту
 shortcut-quit = Выйти
 

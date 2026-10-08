@@ -55,6 +55,7 @@ reader-details-subject = موضوع:
 
 reader-downloading = در حال بارگیری این پیام از سرور…
 reader-download-failed = بارگیری این پیام ممکن نشد.
+reader-download-failed-reason = بارگیری این پیام ممکن نشد. { $reason }
 reader-download-offline = این حساب آفلاین است. برای بارگیری این پیام آنلاین شوید.
 reader-try-again = امتحان مجدد
 
