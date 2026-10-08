@@ -4759,7 +4759,11 @@ are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
 after the first real install, when the app reached it; then 50 MB, and
 100 MB since the attachment viewers (September 2026), then 150 MB when the
 chat view's company details took it past 100 MB (October 2026), so features are
-not trimmed to fit; light crates are still preferred. Crates that are not hot are built with
+not trimmed to fit; light crates are still preferred. `katnactl` reads the
+search index itself (its MCP mail search), so it carries the same Thai,
+Lao, Khmer and Burmese word dictionaries as the daemon (L.6, about 1.8 MB);
+its budget went from 10 MiB to 15 MiB then (October 2026), the same as
+`katna-search-cli`. Crates that are not hot are built with
 `opt-level = "s"` (root `Cargo.toml`): D-Bus (zbus, zvariant, oo7,
 ashpd), IMAP parsing and regex.
 
