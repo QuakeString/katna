@@ -45,6 +45,7 @@ mod contacts_share;
 mod context_menu;
 mod crash_notice;
 mod dark;
+mod date_pick;
 mod delete_ask;
 mod desktop;
 mod detached;

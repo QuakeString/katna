@@ -241,7 +241,7 @@ impl MailWindow {
             || self.close_app_off_ask(cx)
             || self.close_service_details(cx)
             || self.close_rail_menu(cx)
-            || self.close_snooze_menu(cx)
+            || self.snooze_escape(cx)
             || self.close_note_popovers(cx)
             || self.close_quiet_menu(cx)
             || self.close_danger(cx)

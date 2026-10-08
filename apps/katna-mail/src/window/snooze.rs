@@ -8,8 +8,7 @@
 
 use gpui::{
     Animation, AnimationExt, AnyElement, ClickEvent, Context, Entity, Focusable, FontWeight, Hsla,
-    MouseButton, Pixels, Point, Subscription, Window, deferred, div, ease_out_quint, prelude::*,
-    relative, rgba,
+    MouseButton, Pixels, Point, Window, deferred, div, ease_out_quint, prelude::*, relative, rgba,
 };
 use jiff::civil::{Date, Time};
 use jiff::tz::TimeZone;
@@ -18,21 +17,18 @@ use katna_core::config::SnoozeTimes;
 use katna_i18n::{format, tr};
 use katna_ui::anchored;
 use katna_ui::tokens::{radius, space, text};
-use katna_ui::{InputEvent, TextInput, px};
+use katna_ui::{TextInput, px};
 
 use super::MenuKey;
 use super::compose::schedule;
+use super::date_pick::{DatePick, PickHooks, SLIDE, SLIDE_BY};
 use super::{Act, MailWindow};
 use crate::data::EntryKey;
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon, icon_button, icon_tag, raised, tip};
+use crate::widgets::{icon, icon_tag, raised};
 use katna_store::MessageId;
 
 const MENU_WIDTH: f32 = 300.0;
-/// How long the times and the date picker take to slide past each other.
-const SLIDE: std::time::Duration = katna_ui::tokens::duration::BASE;
-/// How far they slide.
-const SLIDE_BY: f32 = space::S8;
 
 /// The open snooze menu, for the lines `keys`; or the reminder menu of
 /// notes, the same times and picker.
@@ -47,7 +43,7 @@ pub(super) struct SnoozeMenu {
     follow_up: Option<i64>,
     /// Where it opens, in the window.
     at: Point<Pixels>,
-    picker: Option<Picker>,
+    picker: Option<DatePick>,
     /// The times slid back in from the picker, so they slide rather than
     /// drop in.
     back: bool,
@@ -65,19 +61,6 @@ pub(super) struct Remind {
     pub note: Entity<TextInput>,
     /// The time before the day the mail says something is due, if it says.
     pub before_due: Option<Zoned>,
-}
-
-/// The date and time picker.
-struct Picker {
-    /// The month the calendar shows.
-    month: Date,
-    day: Date,
-    time: Entity<TextInput>,
-    /// "tue 3pm", "in 2 hours": fills the day and the time.
-    typed: Entity<TextInput>,
-    /// Whether what is typed was not understood.
-    unclear: bool,
-    _events: [Subscription; 2],
 }
 
 /// A suggested time: its name and when.
@@ -310,6 +293,20 @@ impl MailWindow {
         open
     }
 
+    /// Esc: from the picker back to the times, else the menu closes.
+    /// Returns whether a menu was open.
+    pub(super) fn snooze_escape(&mut self, cx: &mut Context<Self>) -> bool {
+        if self
+            .snooze_menu
+            .as_ref()
+            .is_some_and(|m| m.picker.is_some())
+        {
+            self.close_snooze_picker(cx);
+            return true;
+        }
+        self.close_snooze_menu(cx)
+    }
+
     fn snooze_until(&mut self, until: Timestamp, cx: &mut Context<Self>) {
         let Some(menu) = self.snooze_menu.take() else {
             return;
@@ -334,49 +331,24 @@ impl MailWindow {
         let now = Timestamp::now().to_zoned(self.tz.clone());
         let tomorrow = now.date().tomorrow().unwrap_or(now.date());
         let accent: Hsla = rgba(self.theme(window).accent).into();
-        let morning = schedule::clock(Time::constant(8, 0, 0, 0));
-        let time = cx.new(|cx| {
-            let mut input = TextInput::new(morning.clone(), cx);
-            input.set_accent(accent);
-            input.set_text(morning, cx);
-            input.select_all_text(cx);
-            input.set_stepper(Some(schedule::time_stepper()));
-            input
-        });
-        let events = cx.subscribe_in(
-            &time,
-            window,
-            |this, _, event: &InputEvent, _, cx| match event {
-                InputEvent::Submit => this.snooze_picked(cx),
-                InputEvent::Cancel => this.close_snooze_picker(cx),
-                InputEvent::Changed => cx.notify(),
+        let hooks = PickHooks {
+            find: |this| this.snooze_menu.as_mut().and_then(|m| m.picker.as_mut()),
+            done: |this, _, cx| this.snooze_picked(cx),
+            back: |this, _, cx| this.close_snooze_picker(cx),
+            cancel: |this, _, cx| {
+                this.close_snooze_menu(cx);
             },
+        };
+        let picker = DatePick::new(
+            tomorrow,
+            Time::constant(8, 0, 0, 0),
+            accent,
+            hooks,
+            window,
+            cx,
         );
-        let typed = cx.new(|cx| {
-            let mut input = TextInput::new(tr!("snooze-type-placeholder"), cx);
-            input.set_accent(accent);
-            input
-        });
-        let typed_events =
-            cx.subscribe_in(
-                &typed,
-                window,
-                |this, _, event: &InputEvent, _, cx| match event {
-                    InputEvent::Submit => this.snooze_picked(cx),
-                    InputEvent::Cancel => this.close_snooze_picker(cx),
-                    InputEvent::Changed => this.snooze_typed(cx),
-                },
-            );
-        window.focus(&typed.focus_handle(cx), cx);
         if let Some(menu) = &mut self.snooze_menu {
-            menu.picker = Some(Picker {
-                month: tomorrow,
-                day: tomorrow,
-                time,
-                typed,
-                unclear: false,
-                _events: [events, typed_events],
-            });
+            menu.picker = Some(picker);
         }
         cx.notify();
     }
@@ -391,56 +363,17 @@ impl MailWindow {
         }
     }
 
-    /// Reads the typed moment into the picker's day and time.
-    fn snooze_typed(&mut self, cx: &mut Context<Self>) {
-        let Some(picker) = self.snooze_menu.as_ref().and_then(|m| m.picker.as_ref()) else {
-            return;
-        };
-        let text = picker.typed.read(cx).text().to_owned();
-        let time_input = picker.time.clone();
-        let now = Timestamp::now().to_zoned(self.tz.clone());
-        let language = katna_i18n::current().language.tag.clone();
-        let words = katna_core::quick_add::Words::for_language(&language);
-        let at =
-            katna_core::quick_add::moment(&text, now.datetime(), Time::constant(8, 0, 0, 0), words);
-        if let Some(at) = at {
-            time_input.update(cx, |input, cx| {
-                input.set_text(schedule::clock(at.time()), cx);
-            });
-        }
-        if let Some(p) = self.snooze_menu.as_mut().and_then(|m| m.picker.as_mut()) {
-            p.unclear = at.is_none() && !text.trim().is_empty();
-            if let Some(at) = at {
-                p.day = at.date();
-                p.month = at.date();
-            }
-        }
-        cx.notify();
-    }
-
     /// Snoozes until the picker's date and time.
     fn snooze_picked(&mut self, cx: &mut Context<Self>) {
         let Some(picker) = self.snooze_menu.as_ref().and_then(|m| m.picker.as_ref()) else {
             return;
         };
-        if picker.unclear {
-            let text = picker.typed.read(cx).text().to_owned();
-            self.show_snackbar(tr!("snooze-type-unclear", text = text), None, cx);
-            return;
-        }
-        let text = picker.time.read(cx).text().to_owned();
-        let Some(time) = schedule::parse_time(&text) else {
-            let example = schedule::clock(Time::constant(8, 0, 0, 0));
-            self.show_snackbar(
-                tr!("schedule-not-a-time", text = text, example = example),
-                None,
-                cx,
-            );
-            return;
-        };
-        let Some(at) = schedule::moment(picker.day, time, &self.tz) else {
-            self.show_snackbar(tr!("schedule-no-such-time"), None, cx);
-            return;
+        let at = match picker.moment(&self.tz, cx) {
+            Ok(at) => at,
+            Err(problem) => {
+                self.show_snackbar(problem, None, cx);
+                return;
+            }
         };
         if at.as_second() < Timestamp::now().as_second() + 60 {
             let notes = self
@@ -496,7 +429,13 @@ impl MailWindow {
                         div()
                             .id("snooze-picker")
                             .occlude()
-                            .child(self.render_snooze_picker(picker, th, cx)),
+                            .child(self.render_date_pick(
+                                picker,
+                                tr!("snooze-pick"),
+                                tr!("snooze-save"),
+                                th,
+                                cx,
+                            )),
                     ),
             )
             .with_priority(4)
@@ -806,233 +745,6 @@ impl MailWindow {
             },
         )
         .into_any_element()
-    }
-
-    fn render_snooze_picker(
-        &self,
-        picker: &Picker,
-        th: &Theme,
-        cx: &mut Context<Self>,
-    ) -> AnyElement {
-        let today = Timestamp::now().to_zoned(self.tz.clone()).date();
-        let (month, day) = (picker.month, picker.day);
-        let days = schedule::month_grid(month, format::first_weekday())
-            .into_iter()
-            .enumerate()
-            .map(|(ix, date)| {
-                let past = date < today;
-                let selected = date == day;
-                let other = date.month() != month.month();
-                div()
-                    .id(("snooze-day", ix))
-                    .size(px(36.0))
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .rounded_full()
-                    .text_size(px(13.0))
-                    .when(other, |d| d.text_color(rgba(th.text_faint)))
-                    .when(past, |d| d.opacity(0.38))
-                    .when(date == today && !selected, |d| {
-                        d.border_1().border_color(rgba(th.accent))
-                    })
-                    .when(selected, |d| {
-                        d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
-                    })
-                    .when(!past, |d| {
-                        d.cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
-                            .on_click(cx.listener(move |this, _, _, cx| {
-                                if let Some(p) =
-                                    this.snooze_menu.as_mut().and_then(|m| m.picker.as_mut())
-                                {
-                                    p.day = date;
-                                    p.month = date;
-                                }
-                                cx.notify();
-                            }))
-                    })
-                    .child(format::number(date.day() as u64))
-            })
-            .collect::<Vec<_>>();
-        let step = |months: i32| {
-            move |this: &mut Self, _: &gpui::ClickEvent, _: &mut Window, cx: &mut Context<Self>| {
-                if let Some(p) = this.snooze_menu.as_mut().and_then(|m| m.picker.as_mut())
-                    && let Ok(m) = p
-                        .month
-                        .first_of_month()
-                        .checked_add(jiff::Span::new().months(months))
-                {
-                    p.month = m;
-                }
-                cx.notify();
-            }
-        };
-        let weekdays = format::weekdays_short().into_iter().map(|(_, d)| {
-            div()
-                .size(px(36.0))
-                .flex()
-                .items_center()
-                .justify_center()
-                .text_size(px(12.0))
-                .text_color(rgba(th.text_dim))
-                .child(d)
-        });
-        let field = || {
-            div()
-                .h(px(40.0))
-                .px(px(12.0))
-                .flex()
-                .items_center()
-                .rounded(px(6.0))
-                .border_1()
-                .text_size(px(14.0))
-        };
-        div()
-            .w(px(330.0))
-            .overflow_hidden()
-            .map(|d| crate::widgets::dialog(d, th, th.menu))
-            .text_color(rgba(th.text))
-            .child(
-                div()
-                    .p(px(24.0))
-                    .flex()
-                    .flex_col()
-                    .child(
-                        div()
-                            .mb(px(16.0))
-                            .ml(px(-space::S3))
-                            .flex()
-                            .flex_row()
-                            .items_center()
-                            .gap(px(space::S2))
-                            .text_size(px(20.0))
-                            .child(
-                                icon_button("snooze-back", "back", 20.0, th)
-                                    .size(px(32.0))
-                                    .tooltip(tip(tr!("snooze-back"), th))
-                                    .on_click(
-                                        cx.listener(|this, _, _, cx| this.close_snooze_picker(cx)),
-                                    ),
-                            )
-                            .child(tr!("snooze-pick")),
-                    )
-                    .child(
-                        field()
-                            .border_color(rgba(if picker.unclear {
-                                th.warning
-                            } else {
-                                th.accent
-                            }))
-                            .child(picker.typed.clone()),
-                    )
-                    .child(
-                        div()
-                            .mt(px(space::S2))
-                            .mb(px(space::S3))
-                            .text_size(px(text::CAPTION))
-                            .text_color(rgba(if picker.unclear {
-                                th.warning
-                            } else {
-                                th.text_dim
-                            }))
-                            .child(if picker.unclear {
-                                tr!("snooze-type-hint-unclear")
-                            } else {
-                                tr!("snooze-type-hint")
-                            }),
-                    )
-                    .child(
-                        div()
-                            .flex()
-                            .flex_row()
-                            .items_center()
-                            .child(
-                                div()
-                                    .flex_1()
-                                    .text_size(px(14.0))
-                                    .font_weight(FontWeight::MEDIUM)
-                                    .child(format::month_year(month)),
-                            )
-                            .child(
-                                icon_button("snooze-prev", "chevron-left", 20.0, th)
-                                    .size(px(32.0))
-                                    .on_click(cx.listener(step(-1))),
-                            )
-                            .child(
-                                icon_button("snooze-next", "chevron-right", 20.0, th)
-                                    .size(px(32.0))
-                                    .on_click(cx.listener(step(1))),
-                            ),
-                    )
-                    .child(
-                        div()
-                            .mt(px(8.0))
-                            .w(px(7.0 * 40.0))
-                            .flex()
-                            .flex_row()
-                            .flex_wrap()
-                            .gap_x(px(4.0))
-                            .children(weekdays)
-                            .children(days),
-                    )
-                    .child(
-                        div()
-                            .mt(px(12.0))
-                            .flex()
-                            .flex_row()
-                            .gap(px(12.0))
-                            .child(
-                                field().flex_1().border_color(rgba(th.divider)).child(
-                                    format::day_month_year(day.to_datetime(Time::midnight())),
-                                ),
-                            )
-                            .child(
-                                field()
-                                    .w(px(110.0))
-                                    .border_color(rgba(th.outline))
-                                    .child(picker.time.clone()),
-                            ),
-                    )
-                    .child(
-                        div()
-                            .mt(px(20.0))
-                            .flex()
-                            .flex_row()
-                            .justify_end()
-                            .gap(px(8.0))
-                            .child(
-                                div()
-                                    .id("snooze-cancel")
-                                    .h(px(36.0))
-                                    .px(px(16.0))
-                                    .flex()
-                                    .items_center()
-                                    .rounded_full()
-                                    .text_size(px(14.0))
-                                    .font_weight(FontWeight::MEDIUM)
-                                    .text_color(rgba(th.accent))
-                                    .cursor_pointer()
-                                    .relative()
-                                    .child(crate::widgets::hover_fade("hover-glow", None, th))
-                                    .on_click(cx.listener(|this, _, _, cx| {
-                                        this.close_snooze_menu(cx);
-                                    }))
-                                    .child(tr!("snooze-cancel")),
-                            )
-                            .child(
-                                filled_button("snooze-save", tr!("snooze-save"), th)
-                                    .on_click(cx.listener(|this, _, _, cx| this.snooze_picked(cx))),
-                            ),
-                    )
-                    // It slides in from the right, over where the times were.
-                    .with_animation(
-                        "snooze-picker-in",
-                        Animation::new(katna_ui::motion::time(SLIDE)).with_easing(ease_out_quint()),
-                        |el, t| el.relative().left(px(SLIDE_BY * (1.0 - t))).opacity(t),
-                    ),
-            )
-            .into_any_element()
     }
 }
 
