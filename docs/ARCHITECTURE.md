@@ -4082,8 +4082,10 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   scheme's window text, white on GNOME and other panels, and on Windows
   from `SystemUsesLightTheme`; it is read again on the Settings portal's
   `SettingChanged`, every second (Windows, or `kdeglobals` written after
-  the signal) and with each count, so the icon follows a light/dark switch
-  at once. Left click raises the
+  the signal), so the icon follows a light/dark switch at once. Plasma
+  counts when `XDG_CURRENT_DESKTOP` says KDE or `org.kde.plasmashell` is on
+  the session bus: systemd starts the daemon at login before Plasma sets
+  the variable. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, New task, New
   note, Preferences and Quit; New task and New note open quick capture

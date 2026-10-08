@@ -144,6 +144,8 @@ pub(crate) async fn run(
     smol::spawn(watch_panel(connection.clone(), handle.clone())).detach();
     smol::spawn(serve_shortcuts(connection.clone(), handle.clone())).detach();
     let mut tray: Option<Tray> = None;
+    // The panel's text color as `watch_panel` last read it.
+    let mut panel = colors::panel_text();
     let mut count = None;
     let mut problems: Vec<String> = Vec::new();
     let mut dirty = true;
@@ -152,7 +154,8 @@ pub(crate) async fn run(
     loop {
         // A new tray icon shows no count yet; after a new language, the
         // tooltip is in the old one.
-        let appeared = follow_setting(&connection, &handle, &mut tray, &general, &apps).await;
+        let appeared =
+            follow_setting(&connection, &handle, &mut tray, &general, panel, &apps).await;
         let translated = follow_language(tray.as_ref(), &general, &apps, &mut language).await;
         if appeared || translated {
             count = None;
@@ -167,6 +170,10 @@ pub(crate) async fn run(
                     count = None;
                     continue;
                 }
+                if let Event::PanelText(color) = event {
+                    panel = color;
+                    continue;
+                }
                 let was = apps.clone();
                 if !handle_now(&connection, &mut general, &mut apps, event, &quit).await {
                     return hide(tray).await;
@@ -175,14 +182,14 @@ pub(crate) async fn run(
                     follow_apps(tray.as_ref(), &apps).await;
                 }
             }
-            let appeared = follow_setting(&connection, &handle, &mut tray, &general, &apps).await;
+            let appeared =
+                follow_setting(&connection, &handle, &mut tray, &general, panel, &apps).await;
             let translated = follow_language(tray.as_ref(), &general, &apps, &mut language).await;
             if appeared || translated {
                 count = None;
             }
-            // Again with each count, as the panel's color may have changed.
             if let Some(tray) = &tray
-                && let Err(err) = tray.set_style(tray_style(&general)).await
+                && let Err(err) = tray.set_style(tray_style(&general, panel)).await
             {
                 tracing::warn!(%err, "could not redraw the tray icon");
             }
@@ -229,9 +236,9 @@ pub(crate) async fn run(
                 }
             }
             Event::PanelText(color) => {
+                panel = color;
                 if let Some(tray) = &tray
-                    && general.tray_style == TrayStyle::Monochrome
-                    && let Err(err) = tray.set_style(Style::Mono(color)).await
+                    && let Err(err) = tray.set_style(tray_style(&general, panel)).await
                 {
                     tracing::warn!(%err, "could not redraw the tray icon");
                 }
@@ -252,10 +259,11 @@ async fn follow_setting(
     handle: &Handle,
     tray: &mut Option<Tray>,
     general: &General,
+    panel: u32,
     apps: &AppsOn,
 ) -> bool {
     if general.show_in_tray && tray.is_none() {
-        *tray = show_tray(connection, handle, tray_style(general), apps).await;
+        *tray = show_tray(connection, handle, tray_style(general, panel), apps).await;
         return tray.is_some();
     }
     if !general.show_in_tray
@@ -391,11 +399,12 @@ async fn serve_shortcuts(connection: zbus::Connection, handle: Handle) {
     }
 }
 
-/// How `general` says to draw the tray icon; one color is the panel's.
-fn tray_style(general: &General) -> Style {
+/// How `general` says to draw the tray icon; one color is the `panel`'s
+/// text color.
+fn tray_style(general: &General, panel: u32) -> Style {
     match general.tray_style {
         TrayStyle::Color => Style::Color,
-        TrayStyle::Monochrome => Style::Mono(colors::panel_text()),
+        TrayStyle::Monochrome => Style::Mono(panel),
     }
 }
 
@@ -406,26 +415,30 @@ fn tray_style(general: &General) -> Style {
 async fn watch_panel(connection: zbus::Connection, handle: Handle) {
     let (wake, woken) = async_channel::bounded::<()>(1);
     #[cfg(not(windows))]
-    smol::spawn(async move {
-        use futures_lite::StreamExt;
-        let changes = match colors::setting_changes(&connection).await {
-            Ok(changes) => changes,
-            Err(err) => {
-                tracing::debug!(%err, "not following desktop settings");
-                return;
+    smol::spawn({
+        let connection = connection.clone();
+        async move {
+            use futures_lite::StreamExt;
+            let changes = match colors::setting_changes(&connection).await {
+                Ok(changes) => changes,
+                Err(err) => {
+                    tracing::debug!(%err, "not following desktop settings");
+                    return;
+                }
+            };
+            let mut changes = std::pin::pin!(changes);
+            while changes.next().await.is_some() {
+                let _ = wake.try_send(());
             }
-        };
-        let mut changes = std::pin::pin!(changes);
-        while changes.next().await.is_some() {
-            let _ = wake.try_send(());
         }
     })
     .detach();
     #[cfg(windows)]
-    let _ = (connection, wake);
+    let _ = wake;
     let mut shown = None;
     while !handle.0.is_closed() {
-        let color = smol::unblock(colors::panel_text).await;
+        let plasma = plasma_running(&connection).await;
+        let color = smol::unblock(move || colors::panel_text_for(plasma)).await;
         if shown != Some(color) {
             shown = Some(color);
             let _ = handle.0.try_send(Event::PanelText(color));
@@ -439,6 +452,22 @@ async fn watch_panel(connection: zbus::Connection, handle: Handle) {
             },
         )
         .await;
+    }
+}
+
+/// Whether Plasma's shell is on the session bus. A daemon that systemd
+/// started at login, before Plasma set `XDG_CURRENT_DESKTOP`, has to ask:
+/// without it the panel's color would be taken as white for good.
+async fn plasma_running(connection: &zbus::Connection) -> bool {
+    if cfg!(windows) {
+        return false;
+    }
+    let Ok(bus) = zbus::fdo::DBusProxy::new(connection).await else {
+        return false;
+    };
+    match zbus::names::BusName::try_from("org.kde.plasmashell") {
+        Ok(name) => bus.name_has_owner(name).await.unwrap_or(false),
+        Err(_) => false,
     }
 }
 
