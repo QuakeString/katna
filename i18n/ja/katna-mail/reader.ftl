@@ -138,6 +138,43 @@ key-card-not-found-detail = { $domain } はこのアドレスの鍵を公開し�
 key-card-not-kept = 見つかった鍵は使用できません。
 key-card-failed = 鍵を取得できませんでした
 
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = このメールは { $domain } からのものではない可能性があります
+sender-failed-body = { $provider } の送信者チェックに合格しませんでした。リンク、添付ファイル、返信には注意してください。
+sender-provider-unknown = お使いのメールサービス
+sender-details = 詳細
+sender-details-hide = 詳細を非表示
+sender-looks-safe = 安全そう
+sender-move-to-spam = 迷惑メールに移動
+sender-checked-by = { $provider } が確認
+sender-checked-by-server = { $provider } が確認（{ $server }）
+sender-dmarc = 送信者ドメイン（DMARC）
+sender-dkim = 署名（DKIM）
+sender-spf = 送信サーバー（SPF）
+sender-result-pass = 合格
+sender-result-fail = 不合格
+sender-result-unsure = 不明
+sender-result-none = なし
+sender-result-missing = 未確認
+sender-dmarc-pass = { $domain } がこの送信者を確認しています。
+sender-dmarc-fail = このメールは、{ $domain } が示す送信方法と一致しません。
+sender-dmarc-none = { $domain } はメールに関するルールを公開していません。
+sender-dkim-pass = { $domain } が署名しています。
+sender-dkim-fail = { $domain } の署名がメールと一致しません。
+sender-dkim-none = このメールには署名がありません。
+sender-spf-pass = { $domain } が登録しているサーバーから送信されました。
+sender-spf-fail = { $domain } が登録していないサーバーから送信されました。
+sender-spf-none = { $domain } は送信サーバーを登録していません。
+sender-check-unsure = チェックで明確な結果が得られませんでした。
+sender-unconfirmed = { $provider } は、このメールが { $domain } から送られたことを確認できませんでした。送信者は誰でも自由に書けます。
+sender-link-title = このリンクを開きますか？
+sender-link-body = このメールは送信者チェックに合格しませんでした。リンク先は { $host } です:
+sender-link-cancel = キャンセル
+sender-link-open = 開く
+
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
 
@@ -155,6 +192,7 @@ tracking-receipt-other = 開封確認: { $who } はあなたのメッセージ�
 
 remote-hidden = このメールの画像は表示されていません。
 remote-hidden-unconfirmed = 画像を表示していません。送信者を確認できませんでした。
+remote-hidden-failed = 画像を表示していません。このメールは送信者チェックに合格しませんでした。
 remote-show = 画像を表示
 remote-always-show = この送信者からの画像を常に表示
 remote-picture-use = 使用

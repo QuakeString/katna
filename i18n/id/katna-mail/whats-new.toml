@@ -4544,3 +4544,41 @@ Salin sidik jari. Pesan yang ditandatangani dengan kunci yang tidak Anda
 miliki menawarkan Cari kunci, dan kunci yang dilampirkan seseorang terbuka
 sebagai Impor kunci ini? dengan Urungkan sesudahnya.
 """
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Peringatan untuk email palsu"
+text = """
+Saat sebuah pesan gagal dalam pemeriksaan pengirim penyedia email Anda,
+spanduk merah memberi tahu bahwa pesan itu mungkin bukan dari pengirim yang
+diakuinya, dengan Detail, Tampak aman, dan Pindahkan ke Spam. Gambarnya tetap
+disembunyikan dan tautannya bertanya dulu sebelum dibuka. Pengirim yang tidak
+terkonfirmasi mendapat tanda “?” kecil di fotonya.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Mulai ulang saat Katna diperbarui"
+text = """
+Saat Katna diperbarui ketika Katna Mail sedang terbuka, layanan latar belakang
+pindah sendiri ke versi baru begitu tidak sedang mengirim email. Lalu tombol
+kecil di bagian bawah daftar email menawarkan Mulai ulang, yang membuka Katna
+Mail yang baru sebagai gantinya. × menyembunyikannya sampai pembaruan
+berikutnya.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Membuka email jadi lebih tenang"
+text = """
+Mengeklik email di daftar tidak lagi memunculkan riak di seluruh daftar saat
+email terbuka. Riak tetap muncul saat Anda mengeklik email yang sudah terbuka.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Mode aman jika pembaruan bermasalah"
+text = """
+Katna menyalin data Anda sebelum pembaruan mengubahnya. Jika pembaruan membuat
+Katna tidak bisa berjalan, Katna terbuka dalam mode aman: email Anda tetap bisa
+dibaca, dan sebuah baris di atasnya memungkinkan Anda mencoba lagi atau kembali
+ke salinan dari sebelum pembaruan. Isi yang ada sekarang disimpan dulu di
+sebuah folder, jadi tidak ada yang hilang. Salin laporan debug, juga ada di
+Tentang Katna, mengumpulkan apa yang dibutuhkan laporan bug.
+"""

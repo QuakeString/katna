@@ -138,6 +138,43 @@ key-card-not-found-detail = { $domain } tidak memublikasikan kunci untuk alamat 
 key-card-not-kept = Kunci yang ditemukan tidak dapat digunakan.
 key-card-failed = Tidak dapat mengambil kunci
 
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Ini mungkin bukan dari { $domain }
+sender-failed-body = Email ini gagal dalam pemeriksaan pengirim { $provider }. Berhati-hatilah dengan tautan, lampiran, dan balasan.
+sender-provider-unknown = penyedia email Anda
+sender-details = Detail
+sender-details-hide = Sembunyikan detail
+sender-looks-safe = Tampak aman
+sender-move-to-spam = Pindahkan ke Spam
+sender-checked-by = Diperiksa oleh { $provider }
+sender-checked-by-server = Diperiksa oleh { $provider } ({ $server })
+sender-dmarc = Domain pengirim (DMARC)
+sender-dkim = Tanda tangan (DKIM)
+sender-spf = Server pengirim (SPF)
+sender-result-pass = Lolos
+sender-result-fail = Gagal
+sender-result-unsure = Tidak pasti
+sender-result-none = Tidak ada
+sender-result-missing = Tidak diperiksa
+sender-dmarc-pass = { $domain } mengonfirmasi pengirim ini.
+sender-dmarc-fail = Email ini tidak cocok dengan cara pengiriman email yang dinyatakan { $domain }.
+sender-dmarc-none = { $domain } tidak menerbitkan aturan untuk emailnya.
+sender-dkim-pass = Ditandatangani oleh { $domain }.
+sender-dkim-fail = Tanda tangan dari { $domain } tidak cocok dengan email ini.
+sender-dkim-none = Pesan ini tidak ditandatangani.
+sender-spf-pass = Dikirim dari server yang terdaftar oleh { $domain }.
+sender-spf-fail = Dikirim dari server yang tidak terdaftar oleh { $domain }.
+sender-spf-none = { $domain } tidak mendaftarkan servernya.
+sender-check-unsure = Pemeriksaan tidak dapat memberikan jawaban yang jelas.
+sender-unconfirmed = { $provider } tidak dapat memastikan email ini berasal dari { $domain }. Siapa pun bisa menulis pengirim apa saja.
+sender-link-title = Buka tautan ini?
+sender-link-body = Email ini gagal dalam pemeriksaan pengirim. Tautan ini menuju ke { $host }:
+sender-link-cancel = Batal
+sender-link-open = Buka
+
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
 
@@ -155,6 +192,7 @@ tracking-receipt-other = Tanda terima baca: { $who } menghapus atau menangani pe
 
 remote-hidden = Gambar dalam pesan ini disembunyikan.
 remote-hidden-unconfirmed = Gambar disembunyikan: pengirim tidak dapat dikonfirmasi.
+remote-hidden-failed = Gambar disembunyikan: email ini gagal dalam pemeriksaan pengirim.
 remote-show = Tampilkan gambar
 remote-always-show = Selalu tampilkan dari pengirim ini
 remote-picture-use = Gunakan

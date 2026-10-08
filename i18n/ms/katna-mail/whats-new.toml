@@ -4591,3 +4591,42 @@ cap jari. Mesej yang ditandatangani dengan kunci yang anda tidak miliki
 menawarkan Cari kunci, dan kunci yang dilampirkan oleh seseorang dibuka sebagai
 Import kunci ini? dengan Buat asal selepas itu.
 """
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Amaran tentang mel palsu"
+text = """
+Apabila mesej gagal dalam semakan pengirim penyedia mel anda, sepanduk merah
+memberitahu bahawa ia mungkin bukan daripada orang yang didakwanya, dengan
+Butiran, Nampak selamat dan Alih ke spam. Imejnya kekal disembunyikan dan
+pautannya bertanya dahulu sebelum dibuka. Pengirim yang tidak disahkan oleh
+apa-apa mendapat tanda “?” kecil pada gambarnya.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Mulakan semula apabila Katna dikemas kini"
+text = """
+Apabila Katna dikemas kini semasa Katna Mail dibuka, perkhidmatan latar
+belakang beralih ke versi baharu dengan sendirinya sebaik sahaja ia tidak
+menghantar mel. Pil kecil di bahagian bawah senarai mel kemudian menawarkan
+Mulakan semula, yang membuka Katna Mail yang baharu di tempatnya. × menyembunyikannya
+sehingga kemas kini seterusnya.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Membuka mel lebih tenang"
+text = """
+Mengklik mel dalam senarai tidak lagi menghantar riak merentasinya semasa
+mel itu dibuka. Riak masih ditunjukkan apabila anda mengklik mel yang sudah
+terbuka.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Mod selamat jika kemas kini bermasalah"
+text = """
+Katna menyalin data anda sebelum kemas kini mengubahnya. Jika kemas kini
+menyebabkan Katna tidak dapat dimulakan, ia dibuka dalam mod selamat: mel anda
+kekal boleh dibaca, dan satu baris di atasnya membolehkan anda cuba lagi atau
+kembali kepada salinan dari sebelum kemas kini. Apa yang ada sekarang disimpan
+dalam folder dahulu, jadi tiada apa yang hilang. Salin laporan nyahpepijat,
+juga dalam Perihal Katna, mengumpulkan apa yang diperlukan oleh laporan pepijat.
+"""
