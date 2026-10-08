@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 856 more of their own. Each keeps its own license.
+bring in 855 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -85,6 +85,7 @@ bring in 856 more of their own. Each keeps its own license.
 | [tracing](https://github.com/tokio-rs/tracing) 0.1.44 | Eliza Weisman, Tokio Contributors | MIT | Application-level tracing for Rust. |
 | [tracing-subscriber](https://github.com/tokio-rs/tracing) 0.3.23 | David Barsky, Eliza Weisman, Tokio Contributors | MIT | Utilities for implementing and composing `tracing` subscribers. |
 | [unic-langid](https://github.com/zbraniecki/unic-locale) 0.9.6 | Zibi Braniecki | MIT OR Apache-2.0 | API for managing Unicode Language Identifiers |
+| [unicode-bidi](https://github.com/servo/unicode-bidi) 0.3.18 | The Servo Project Developers | MIT OR Apache-2.0 | Implementation of the Unicode Bidirectional Algorithm |
 | [unicode-segmentation](https://github.com/unicode-rs/unicode-segmentation) 1.13.3 | Manish Goregaokar, kwantam | MIT OR Apache-2.0 | This crate provides Grapheme Cluster, Word and Sentence boundaries according to Unicode Standard Annex #29 rules. |
 | [url](https://github.com/servo/rust-url) 2.5.8 | The rust-url developers | MIT OR Apache-2.0 | URL library for Rust, based on the WHATWG URL Standard |
 | [webpki-roots](https://github.com/rustls/webpki-roots) 1.0.9 | rustls | CDLA-Permissive-2.0 | Mozilla's CA root certificates for use with webpki |
