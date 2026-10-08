@@ -4556,3 +4556,12 @@ och Höger till vänster i formateringsfältet (eller Ctrl+Shift+X) på ett
 stycke, och en rad du börjar på arabiska eller hebreiska vänder sig själv.
 Meddelandet skickas så som du skrev det.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail speglas för arabiska, hebreiska, persiska och urdu"
+text = """
+På arabiska, hebreiska, persiska och urdu vänds hela fönstret: appfältet
+och mapparna till höger, menyer som öppnas åt vänster, pilar och piltangenter
+åt det håll texten läses. Engelska namn, adresser och kortkommandon behåller
+sin egen ordning, och persiska datum räknas i den iranska solkalendern.
+"""

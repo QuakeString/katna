@@ -4849,3 +4849,13 @@ mise en forme (ou Ctrl+Shift+X) retournent un paragraphe, et une ligne que
 vous commencez en arabe ou en hébreu se retourne d’elle-même. Le message part
 tel que vous l’avez écrit.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail en miroir pour l’arabe, l’hébreu, le persan et l’ourdou"
+text = """
+En arabe, en hébreu, en persan et en ourdou, toute la fenêtre se retourne :
+la barre des applications et les dossiers à droite, les menus qui s’ouvrent
+vers la gauche, les flèches et les touches fléchées dans le sens de la
+lecture. Les noms, adresses et raccourcis en anglais gardent leur ordre, et
+les dates en persan suivent le calendrier hégirien solaire.
+"""

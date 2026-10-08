@@ -4646,3 +4646,13 @@ rechts en Rechts naar links in de opmaakbalk (of Ctrl+Shift+X) een alinea om,
 en een regel die je in het Arabisch of Hebreeuws begint, draait vanzelf. Het
 bericht gaat de deur uit zoals je het schreef.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail spiegelt voor Arabisch, Hebreeuws, Perzisch en Urdu"
+text = """
+In het Arabisch, Hebreeuws, Perzisch en Urdu draait het hele venster om:
+de app-balk en mappen rechts, menu’s die naar links openen, pijlen en
+pijltoetsen in de leesrichting. Engelse namen, adressen en sneltoetsen
+houden hun eigen volgorde, en Perzische datums volgen de
+zonne-Hidjrikalender.
+"""

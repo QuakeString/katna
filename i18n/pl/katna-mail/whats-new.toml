@@ -4580,3 +4580,13 @@ do lewej na pasku formatowania (lub Ctrl+Shift+X) odwracają akapit, a
 wiersz zaczęty po arabsku lub hebrajsku odwraca się sam. Wiadomość wychodzi
 tak, jak ją napisano.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail w lustrzanym układzie dla arabskiego, hebrajskiego, perskiego i urdu"
+text = """
+Po arabsku, hebrajsku, persku i w urdu całe okno się odwraca: pasek
+aplikacji i foldery po prawej, menu otwierające się w lewo, strzałki i
+klawisze strzałek zgodnie z kierunkiem czytania. Angielskie nazwy, adresy
+i skróty zachowują własną kolejność, a perskie daty liczone są według
+irańskiego kalendarza słonecznego.
+"""

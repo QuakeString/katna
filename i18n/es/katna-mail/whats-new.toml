@@ -4692,3 +4692,13 @@ derecha y De derecha a izquierda de la barra de formato (o Ctrl+Shift+X) dan
 la vuelta a un párrafo, y una línea que empiezas en árabe o hebreo se da la
 vuelta sola. El mensaje sale tal como lo escribiste.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail se refleja para árabe, hebreo, persa y urdu"
+text = """
+En árabe, hebreo, persa y urdu toda la ventana se da la vuelta: la barra
+de aplicaciones y las carpetas a la derecha, los menús se abren hacia la
+izquierda, y las flechas y las teclas de flecha siguen el sentido de la
+lectura. Los nombres, direcciones y atajos en inglés conservan su orden, y
+las fechas en persa siguen el calendario hégira solar.
+"""
