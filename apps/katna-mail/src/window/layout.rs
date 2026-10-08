@@ -548,47 +548,7 @@ impl MailWindow {
                         this.close_drawer(cx);
                         this.show_page(app, window, cx)
                     }))
-                    .child(
-                        div()
-                            .relative()
-                            .overflow_hidden()
-                            .w(px(56.0))
-                            .h(px(32.0))
-                            .flex()
-                            .items_center()
-                            .justify_center()
-                            .rounded_full()
-                            .group_hover("bottom-app", |s| s.bg(rgba(th.hover)))
-                            .child(
-                                Ripple::new(("bottom-ripple", app as usize), rgba(th.ripple))
-                                    .centered(),
-                            )
-                            .child(icon(
-                                app.icon(),
-                                if on {
-                                    th.nav_selected_text
-                                } else {
-                                    th.text_dim
-                                },
-                                22.0,
-                            ))
-                            .with_spring(
-                                ("bottom-pill", app as usize),
-                                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
-                                    .to(if on { 1.0 } else { 0.0 }),
-                                {
-                                    let bg = th.nav_selected;
-                                    move |el, s: f32| {
-                                        let s = s.clamp(0.0, 1.0);
-                                        if s > 0.001 {
-                                            el.bg(rgba(fade(bg, s))).w(px(32.0 + 24.0 * s))
-                                        } else {
-                                            el
-                                        }
-                                    }
-                                },
-                            ),
-                    )
+                    .child(super::apps::app_face(app, on, true, th))
                     .child(
                         div()
                             .max_w_full()

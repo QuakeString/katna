@@ -517,51 +517,7 @@ impl MailWindow {
                         this.open_rail_menu(app, event.position, cx);
                     }),
                 )
-                .child(
-                    div()
-                        .relative()
-                        .overflow_hidden()
-                        .w(px(56.0))
-                        .h(px(32.0))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .rounded_full()
-                        .child(crate::widgets::hover_fade(
-                            ("app-glow", app as usize),
-                            None,
-                            th,
-                        ))
-                        .child(
-                            Ripple::new(("app-ripple", app as usize), rgba(th.ripple)).centered(),
-                        )
-                        .child(icon(
-                            app.icon(),
-                            if on {
-                                th.nav_selected_text
-                            } else {
-                                th.text_dim
-                            },
-                            22.0,
-                        ))
-                        .with_spring(
-                            ("app-pill", app as usize),
-                            SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
-                                .to(if on { 1.0 } else { 0.0 }),
-                            {
-                                let bg = th.nav_selected;
-                                move |el, s: f32| {
-                                    let s = s.clamp(0.0, 1.0);
-                                    if s > 0.001 {
-                                        // The pill grows out from the middle.
-                                        el.bg(rgba(fade(bg, s))).w(px(32.0 + 24.0 * s))
-                                    } else {
-                                        el
-                                    }
-                                }
-                            },
-                        ),
-                )
+                .child(app_face(app, on, false, th))
                 .when(!labels, |d| d.tooltip(tip(app.label(), th)))
                 // The name folds away when the settings hide it.
                 .child(
@@ -889,4 +845,54 @@ fn render_person(
                 .child(last),
         )
         .into_any_element()
+}
+
+/// An app's button in the rail and in the phone's bottom bar: its icon on a
+/// round button. A press sends a wave from the middle, and the selected pill
+/// grows from the middle inside the button, which keeps its size, so the
+/// wave is never cut short and nothing jumps under the pointer.
+pub(super) fn app_face(app: App, on: bool, bottom: bool, th: &Theme) -> gpui::Div {
+    let ix = app as usize;
+    let (pill, glow, ripple) = if bottom {
+        ("bottom-pill", "bottom-glow", "bottom-ripple")
+    } else {
+        ("app-pill", "app-glow", "app-ripple")
+    };
+    div()
+        .relative()
+        .overflow_hidden()
+        .w(px(56.0))
+        .h(px(32.0))
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded_full()
+        .child(div().absolute().inset_0().flex().justify_center().child(
+            div().h_full().rounded_full().with_spring(
+                (pill, ix),
+                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                    1.0
+                } else {
+                    0.0
+                }),
+                {
+                    let bg = th.nav_selected;
+                    move |el, s: f32| {
+                        let s = s.clamp(0.0, 1.0);
+                        el.bg(rgba(fade(bg, s))).w(px(32.0 + 24.0 * s))
+                    }
+                },
+            ),
+        ))
+        .child(crate::widgets::hover_fade((glow, ix), None, th))
+        .child(Ripple::new((ripple, ix), rgba(th.ripple)).centered())
+        .child(icon(
+            app.icon(),
+            if on {
+                th.nav_selected_text
+            } else {
+                th.text_dim
+            },
+            22.0,
+        ))
 }
