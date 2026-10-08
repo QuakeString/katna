@@ -820,6 +820,11 @@ rank above loose matches. Highlighted snippets via `SnippetGenerator`.
 
 - Parse (`mail-parser`) → HTML to text → language detection → per-language
   tokenizer/stemmer → attachment text extraction → index writer.
+- Words are runs of letters and digits; Thai, Lao, Khmer and Burmese,
+  which put no spaces between words, are split with `icu_segmenter`'s
+  dictionaries for those four scripts only (about 1.8 MB, `words.rs`), at
+  index and query time, so a word is found inside an unspaced sentence and
+  a typed run of words matches as a phrase.
 - Parallel workers with a memory budget; commit in batches; tantivy commits
   are atomic, so a crash never corrupts the index.
 - Search works on the already-indexed part while initial indexing runs.

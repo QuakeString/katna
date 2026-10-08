@@ -472,3 +472,54 @@ fn forgives_typos_and_short_prefixes() {
     assert!(!fuzzy("haskina banu"));
     assert!(!fuzzy("school fees"));
 }
+
+/// Mail in Thai, Lao, Khmer and Burmese, which put no spaces between words.
+fn unspaced_corpus() -> Vec<Mail> {
+    let utf8 = |subject: &str, body: &str| {
+        mail(
+            "inbox",
+            &format!(
+                "From: friend@example.com\nTo: me@example.com\nSubject: {subject}\n\
+                 Date: Mon, 14 May 2001 16:39:00 +0000\nMIME-Version: 1.0\n\
+                 Content-Type: text/plain; charset=utf-8\nContent-Transfer-Encoding: 8bit"
+            ),
+            body,
+        )
+    };
+    vec![
+        // "I like to eat Thai food very much."
+        utf8("Thai", "ฉันชอบกินอาหารไทยมาก"),
+        // "Tomorrow I am going to the market."
+        utf8("Lao", "ມື້ອື່ນຂ້ອຍຈະໄປຕະຫຼາດ"),
+        // "I like to eat rice every day."
+        utf8("Khmer", "ខ្ញុំចូលចិត្តញ៉ាំបាយរាល់ថ្ងៃ។"),
+        // "I go to school every day."
+        utf8("Burmese", "ကျွန်တော်နေ့တိုင်းကျောင်းသွားသည်"),
+        utf8("English", "The budget meeting is on Monday."),
+    ]
+}
+
+#[test]
+fn finds_words_inside_unspaced_sentences() {
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    import(&mut store, &unspaced_corpus());
+    let index = SearchIndex::open(&paths.index_dir()).unwrap();
+    index.update(&store, &small_options(), |_| {}).unwrap();
+    let q = |query: &str| subjects(&index, &store, query);
+
+    // A word in the middle of each sentence.
+    assert_eq!(q("อาหาร"), ["Thai"]);
+    assert_eq!(q("ຕະຫຼາດ"), ["Lao"]);
+    assert_eq!(q("ចូលចិត្ត"), ["Khmer"]);
+    assert_eq!(q("ကျောင်း"), ["Burmese"]);
+    // Two words typed together, as people write them.
+    assert_eq!(q("อาหารไทย"), ["Thai"]);
+    // Letters across two words are not a word of the mail.
+    assert!(q("หารไท").is_empty());
+    assert!(q("ຫຼາດມື້").is_empty());
+    // Other languages are unchanged.
+    assert_eq!(q("budget"), ["English"]);
+    assert_eq!(q("meetings"), ["English"]);
+}
