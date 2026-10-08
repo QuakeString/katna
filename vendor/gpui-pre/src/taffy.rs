@@ -1,6 +1,6 @@
 use crate::{
-    AbsoluteLength, App, Bounds, DefiniteLength, Edges, GridTemplate, Length, Pixels, Point, Size,
-    Style, Window, size,
+    AbsoluteLength, App, Bounds, DefiniteLength, Edges, GridTemplate, LayoutDirection, Length,
+    Pixels, Point, Size, Style, Window, size,
     util::{
         ceil_to_device_pixel, round_half_toward_zero, round_stroke_to_device_pixel,
         round_to_device_pixel,
@@ -35,6 +35,9 @@ pub struct TaffyLayoutEngine {
     absolute_outer_origins: FxHashMap<LayoutId, Point<f32>>,
     computed_layouts: FxHashSet<LayoutId>,
     layout_bounds_scratch_space: Vec<LayoutId>,
+    /// Katna: nodes laid out right to left, whose children's bounds are
+    /// mirrored (see `LayoutDirection`).
+    rtl_nodes: FxHashSet<LayoutId>,
 }
 
 const EXPECT_MESSAGE: &str = "we should avoid taffy layout errors by construction if possible";
@@ -49,6 +52,7 @@ impl TaffyLayoutEngine {
             absolute_outer_origins: FxHashMap::default(),
             computed_layouts: FxHashSet::default(),
             layout_bounds_scratch_space: Vec::new(),
+            rtl_nodes: FxHashSet::default(),
         }
     }
 
@@ -57,6 +61,7 @@ impl TaffyLayoutEngine {
         self.absolute_layout_bounds.clear();
         self.absolute_outer_origins.clear();
         self.computed_layouts.clear();
+        self.rtl_nodes.clear();
     }
 
     pub fn request_layout(
@@ -65,10 +70,11 @@ impl TaffyLayoutEngine {
         rem_size: Pixels,
         scale_factor: f32,
         children: &[LayoutId],
+        direction: LayoutDirection,
     ) -> LayoutId {
         let taffy_style = style.to_taffy(rem_size, scale_factor);
 
-        if children.is_empty() {
+        let id: LayoutId = if children.is_empty() {
             self.taffy
                 .new_leaf(taffy_style)
                 .expect(EXPECT_MESSAGE)
@@ -79,7 +85,11 @@ impl TaffyLayoutEngine {
                 .new_with_children(taffy_style, LayoutId::to_taffy_slice(children))
                 .expect(EXPECT_MESSAGE)
                 .into()
+        };
+        if direction.is_rtl() {
+            self.rtl_nodes.insert(id);
         }
+        id
     }
 
     pub fn request_measured_layout(
@@ -348,7 +358,7 @@ impl TaffyLayoutEngine {
         }
 
         let layout = self.taffy.layout(id.into()).expect(EXPECT_MESSAGE);
-        let layout_location = layout.location;
+        let mut layout_location = layout.location;
         let layout_size = layout.size;
         let parent = self.taffy.parent(id.0);
 
@@ -356,6 +366,19 @@ impl TaffyLayoutEngine {
             Some(parent_id) => {
                 let parent_id = LayoutId::from(parent_id);
                 self.layout_bounds(parent_id, scale_factor);
+                // Katna: in a right-to-left parent, mirror the child's x
+                // inside the parent's border box, so rows run from the
+                // right and left padding, margins and insets act on the
+                // right.
+                if self.rtl_nodes.contains(&parent_id) {
+                    let parent_width = self
+                        .taffy
+                        .layout(parent_id.into())
+                        .expect(EXPECT_MESSAGE)
+                        .size
+                        .width;
+                    layout_location.x = parent_width - layout_location.x - layout_size.width;
+                }
                 let parent_origin = *self
                     .absolute_outer_origins
                     .get(&parent_id)
@@ -772,5 +795,136 @@ mod tests {
             taffy_border.left,
             taffy::style::LengthPercentage::length(2.0)
         );
+    }
+}
+
+/// Katna: right-to-left layout (`LayoutDirection`).
+#[cfg(test)]
+mod direction_tests {
+    use crate::{
+        AnyElement, Bounds, Corners, Edges, IntoElement as _, LayoutDirection, ParentElement as _,
+        Pixels, Style, Styled as _, TestAppContext, TextAlign, canvas, div, point, px, size,
+    };
+    use std::{cell::Cell, rc::Rc};
+
+    type Probe = Rc<Cell<Bounds<Pixels>>>;
+
+    /// A box of the given width that records its bounds.
+    fn probe(width: f32, probe: &Probe) -> AnyElement {
+        let probe = probe.clone();
+        canvas(move |bounds, _, _| probe.set(bounds), |_, _, _, _| {})
+            .w(px(width))
+            .h(px(10.))
+            .into_any_element()
+    }
+
+    fn x_range(probe: &Probe) -> (f32, f32) {
+        let bounds = probe.get();
+        (bounds.left().into(), bounds.right().into())
+    }
+
+    /// Draws a 100 px wide flex row: `first` (30 px), `second` (20 px) and
+    /// a 40 px left-to-right row of `inner_a` and `inner_b` (10 px each),
+    /// with 4 px of left padding.
+    fn draw_row(
+        cx: &mut TestAppContext,
+        window_direction: LayoutDirection,
+        root: impl FnOnce(crate::Div) -> crate::Div,
+    ) -> [Probe; 4] {
+        let probes: [Probe; 4] = Default::default();
+        let cx = cx.add_empty_window();
+        cx.update(|window, _| window.set_layout_direction(window_direction));
+        let [first, second, inner_a, inner_b] = probes.clone();
+        cx.draw(
+            point(px(0.), px(0.)),
+            size(px(100.), px(10.)),
+            move |_, _| {
+                root(div().w(px(100.)).h(px(10.)).flex().flex_row().pl(px(4.)))
+                    .child(probe(30., &first))
+                    .child(probe(20., &second))
+                    .child(
+                        div()
+                            .layout_ltr()
+                            .w(px(40.))
+                            .flex()
+                            .flex_row()
+                            .child(probe(10., &inner_a))
+                            .child(probe(10., &inner_b)),
+                    )
+            },
+        );
+        probes
+    }
+
+    #[gpui::test]
+    fn left_to_right_is_unchanged(cx: &mut TestAppContext) {
+        let [first, second, inner_a, inner_b] = draw_row(cx, LayoutDirection::Ltr, |root| root);
+        assert_eq!(x_range(&first), (4., 34.));
+        assert_eq!(x_range(&second), (34., 54.));
+        assert_eq!(x_range(&inner_a), (54., 64.));
+        assert_eq!(x_range(&inner_b), (64., 74.));
+    }
+
+    #[gpui::test]
+    fn right_to_left_root_mirrors_children(cx: &mut TestAppContext) {
+        let [first, second, inner_a, inner_b] =
+            draw_row(cx, LayoutDirection::Ltr, |root| root.layout_rtl());
+        // The row starts on the right, and the left padding is on the right.
+        assert_eq!(x_range(&first), (66., 96.));
+        assert_eq!(x_range(&second), (46., 66.));
+        // The left-to-right row is placed from the right (6..46) but runs
+        // left to right inside.
+        assert_eq!(x_range(&inner_a), (6., 16.));
+        assert_eq!(x_range(&inner_b), (16., 26.));
+    }
+
+    #[gpui::test]
+    fn right_to_left_window_mirrors_children(cx: &mut TestAppContext) {
+        let [first, second, inner_a, inner_b] = draw_row(cx, LayoutDirection::Rtl, |root| root);
+        assert_eq!(x_range(&first), (66., 96.));
+        assert_eq!(x_range(&second), (46., 66.));
+        assert_eq!(x_range(&inner_a), (6., 16.));
+        assert_eq!(x_range(&inner_b), (16., 26.));
+    }
+
+    #[gpui::test]
+    fn layout_ltr_restores_left_to_right(cx: &mut TestAppContext) {
+        let [first, second, inner_a, inner_b] =
+            draw_row(cx, LayoutDirection::Rtl, |root| root.layout_ltr());
+        assert_eq!(x_range(&first), (4., 34.));
+        assert_eq!(x_range(&second), (34., 54.));
+        assert_eq!(x_range(&inner_a), (54., 64.));
+        assert_eq!(x_range(&inner_b), (64., 74.));
+    }
+
+    #[test]
+    fn text_align_follows_direction() {
+        use LayoutDirection::{Ltr, Rtl};
+        assert_eq!(TextAlign::Left.resolve(Ltr), TextAlign::Left);
+        assert_eq!(TextAlign::Right.resolve(Ltr), TextAlign::Right);
+        assert_eq!(TextAlign::Left.resolve(Rtl), TextAlign::Right);
+        assert_eq!(TextAlign::Right.resolve(Rtl), TextAlign::Left);
+        assert_eq!(TextAlign::Center.resolve(Rtl), TextAlign::Center);
+    }
+
+    #[test]
+    fn mirrored_style_swaps_borders_and_corners() {
+        let mut style = Style::default();
+        style.border_widths = Edges {
+            left: px(1.).into(),
+            right: px(2.).into(),
+            ..Edges::default()
+        };
+        style.corner_radii = Corners {
+            top_left: px(3.).into(),
+            bottom_left: px(4.).into(),
+            ..Corners::default()
+        };
+        let mirrored = style.mirrored();
+        assert_eq!(mirrored.border_widths.left, px(2.).into());
+        assert_eq!(mirrored.border_widths.right, px(1.).into());
+        assert_eq!(mirrored.corner_radii.top_right, px(3.).into());
+        assert_eq!(mirrored.corner_radii.bottom_right, px(4.).into());
+        assert_eq!(mirrored.corner_radii.top_left, px(0.).into());
     }
 }

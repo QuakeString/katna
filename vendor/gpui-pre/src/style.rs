@@ -301,6 +301,10 @@ pub struct Style {
     /// The opacity of this element
     pub opacity: Option<f32>,
 
+    /// Katna: the layout direction of this element's subtree; `None`
+    /// inherits the parent's (see [`LayoutDirection`]).
+    pub layout_direction: Option<LayoutDirection>,
+
     /// The grid columns of this element
     /// Roughly equivalent to the Tailwind `grid-cols-<number>`
     pub grid_cols: Option<GridTemplate>,
@@ -421,15 +425,52 @@ pub enum TextOverflow {
 /// How to align text within the element
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub enum TextAlign {
-    /// Align the text to the left of the element
+    /// Align the text to the left of the element (Katna: to the right in a
+    /// right-to-left layout, see [`TextAlign::resolve`])
     #[default]
     Left,
 
     /// Center the text within the element
     Center,
 
-    /// Align the text to the right of the element
+    /// Align the text to the right of the element (Katna: to the left in a
+    /// right-to-left layout)
     Right,
+}
+
+impl TextAlign {
+    /// Katna: where the text goes on screen in a layout with the given
+    /// direction. Left and right mean start and end, as `pl` and `pr` do:
+    /// they swap in a right-to-left layout.
+    pub fn resolve(self, direction: LayoutDirection) -> Self {
+        match (self, direction) {
+            (Self::Left, LayoutDirection::Rtl) => Self::Right,
+            (Self::Right, LayoutDirection::Rtl) => Self::Left,
+            (align, _) => align,
+        }
+    }
+}
+
+/// Katna: the direction a layout runs in. In a right-to-left layout, flex
+/// rows, padding, margins, borders, corners, absolute insets and text
+/// alignment start on the right: an element's bounds are mirrored inside
+/// its parent's. A window's layout is left-to-right unless
+/// `Window::set_layout_direction` says otherwise; `Styled::layout_ltr` and
+/// `Styled::layout_rtl` set it for an element's subtree.
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize, JsonSchema)]
+pub enum LayoutDirection {
+    /// Left to right.
+    #[default]
+    Ltr,
+    /// Right to left.
+    Rtl,
+}
+
+impl LayoutDirection {
+    /// Whether this is right to left.
+    pub fn is_rtl(self) -> bool {
+        self == Self::Rtl
+    }
 }
 
 /// The properties that can be used to style text in GPUI
@@ -761,6 +802,21 @@ impl Style {
         }
     }
 
+    /// Katna: this style with its left and right swapped (borders and
+    /// corners), for an element in a right-to-left layout. Padding,
+    /// margins and insets need no swap: the layout engine mirrors bounds.
+    pub(crate) fn mirrored(&self) -> Self {
+        let mut style = self.clone();
+        std::mem::swap(
+            &mut style.border_widths.left,
+            &mut style.border_widths.right,
+        );
+        let radii = &mut style.corner_radii;
+        std::mem::swap(&mut radii.top_left, &mut radii.top_right);
+        std::mem::swap(&mut radii.bottom_left, &mut radii.bottom_right);
+        style
+    }
+
     fn is_border_visible(&self) -> bool {
         self.border_color
             .is_some_and(|color| !color.is_transparent())
@@ -809,6 +865,7 @@ impl Default for Style {
             text: TextStyleRefinement::default(),
             mouse_cursor: None,
             opacity: None,
+            layout_direction: None,
             grid_rows: None,
             grid_cols: None,
             grid_location: None,

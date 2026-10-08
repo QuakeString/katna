@@ -34,3 +34,37 @@ scripts were split mid-word, even inside a letter and its marks.
 Run the crate's tests with
 `cargo test --manifest-path vendor/gpui-pre/Cargo.toml --lib --features test-support`
 (it is outside the workspace; the `Cargo.lock` that writes is ignored).
+
+## Layout direction (right to left)
+
+GPUI had no layout direction. Now a window, or any element's subtree, can
+be laid out right to left, as Arabic, Hebrew, Persian and Urdu need:
+
+- `LayoutDirection` (`Ltr`, `Rtl`; `style.rs`) and `Style::layout_direction`
+  (`None` inherits). `Window::set_layout_direction` sets the window's
+  (left to right unless set); `Styled::layout_rtl()` and
+  `Styled::layout_ltr()` set a subtree's, the latter for content that keeps
+  its direction in a right-to-left window (phone numbers, code, media
+  controls). `Window::layout_direction()` is the current one while drawing.
+- `Window::with_layout_direction` keeps a stack, like `with_text_style`;
+  `Interactivity::request_layout`, `prepaint` and `paint` (`div.rs`, so
+  divs, images, SVGs and uniform lists) push their style's direction.
+  Deferred draws keep the direction where they were deferred.
+- `TaffyLayoutEngine` (`taffy.rs`) marks nodes requested in a right-to-left
+  direction and, in `layout_bounds`, mirrors each child's x inside such a
+  parent's border box. Flex rows, grid columns, padding, margins, gaps and
+  absolute insets therefore start on the right, without changing taffy.
+- A right-to-left div paints its left border and corners on the right
+  (`Style::mirrored`), so `border_l` and `rounded_l` are "start" there, like
+  `pl` and `ml`.
+- Text alignment reads as start and end, like padding: in a right-to-left
+  layout `TextAlign::Left` (the default, `text_left`) puts text on the
+  right and `Right` on the left (`TextAlign::resolve`, applied by the text
+  element). Code that paints a `ShapedLine` itself passes the alignment
+  as given, so it resolves it first.
+
+Not mirrored yet: horizontal scroll offsets (content scrolls from the
+left), `uniform_list` and `list` item origins (placed from the left
+padding), `anchored` positions and box shadow offsets.
+
+Tests: `taffy::direction_tests`.

@@ -802,7 +802,9 @@ impl TextLayout {
 
         let line_height = element_state.line_height;
         let mut line_origin = bounds.origin;
-        let text_style = window.text_style();
+        let mut text_style = window.text_style();
+        // Katna: left and right swap in a right-to-left layout.
+        text_style.text_align = text_style.text_align.resolve(window.layout_direction());
         for line in &element_state.lines {
             line.paint_background(
                 line_origin,

@@ -1,9 +1,9 @@
 use crate::{
     self as gpui, AbsoluteLength, AlignContent, AlignItems, AlignSelf, BorderStyle, CursorStyle,
     DefiniteLength, Display, Fill, FlexDirection, FlexWrap, Font, FontFeatures, FontStyle,
-    FontWeight, GridPlacement, GridTemplate, GridTemplateMinSize, Hsla, JustifyContent, Length,
-    SharedString, StrikethroughStyle, StyleRefinement, TextAlign, TextOverflow,
-    TextStyleRefinement, UnderlineStyle, WhiteSpace, px, relative, rems,
+    FontWeight, GridPlacement, GridTemplate, GridTemplateMinSize, Hsla, JustifyContent,
+    LayoutDirection, Length, SharedString, StrikethroughStyle, StyleRefinement, TextAlign,
+    TextOverflow, TextStyleRefinement, UnderlineStyle, WhiteSpace, px, relative, rems,
 };
 pub use gpui_macros::{
     border_style_methods, box_shadow_style_methods, cursor_style_methods, margin_style_methods,
@@ -132,6 +132,20 @@ pub trait Styled: Sized {
     /// Sets the text alignment to right
     fn text_right(mut self) -> Self {
         self.text_align(TextAlign::Right)
+    }
+
+    /// Katna: lays this element's subtree out left to right even in a
+    /// right-to-left window, for content that keeps its direction (phone
+    /// numbers, code, media controls).
+    fn layout_ltr(mut self) -> Self {
+        self.style().layout_direction = Some(LayoutDirection::Ltr);
+        self
+    }
+
+    /// Katna: lays this element's subtree out right to left.
+    fn layout_rtl(mut self) -> Self {
+        self.style().layout_direction = Some(LayoutDirection::Rtl);
+        self
     }
 
     /// Sets the truncate to prevent text from wrapping and truncate overflowing text with an ellipsis (…) if needed.
