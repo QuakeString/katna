@@ -4244,3 +4244,149 @@ text = """
 Menu na ☰ da jerin harsuna yanzu suna zamewa a cikin katin asusu maimakon
 tsallakowa, tare da maɓallin baya a dama don komawa.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Kowace manhaja tana kan kati iri ɗaya"
+text = """
+Kalanda, Lambobin sadarwa, Ayyuka, Bayanai da Fayiloli yanzu suna kan kati
+mai siririn gefe da inuwa mai taushi iri ɗaya da Wasiƙu da Saituna.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Maɓallan kamawa da sauri a GNOME"
+text = """
+Meta+Alt+T don aiki da Meta+Alt+N don bayani yanzu suna aiki a GNOME ma. A
+karon farko, GNOME yana tambaya ko Katna za ta iya amfani da su, kuma kuna
+iya canza maɓallan a Saitunansa.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Matsar da kayan yin alama"
+text = """
+Yayin yin alama a PDF, ku ja ɗigogin da ke ƙarshen kayan aikin don matsar
+da su ko'ina a kan shafin, don kada su taɓa rufe abin da kuke yi wa alama.
+Ku danna ɗigogin sau biyu don mayar da su.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Yana aiki da masu karanta allo"
+text = """
+Orca da sauran masu karanta allo yanzu za su iya karanta Katna Mail: jerin
+wasiƙu, folda, wasiƙar da ke buɗe, maɓallai, menu, makunnai da akwatunan
+magana.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Aika ra'ayi"
+text = """
+Taimako > Aika ra'ayi, wanda kuma yake a Saituna masu sauri da Saituna >
+Ra'ayin mai amfani, yana aika matsala ko shawara kai tsaye zuwa Katna.
+Abin da ake aikawa yana nuna ainihin rubutun kafin ya tafi, kuma imel don
+amsa na zaɓi ne.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Ƙididdigar amfani ba tare da suna ba, idan kuna so"
+text = """
+Saituna > Ra'ayin mai amfani yana da sabon makunni, a kashe sai idan kun
+kunna shi: sau ɗaya a mako yana aika waɗanne fasaloli kuka yi amfani da su,
+e ko a'a, don waɗanda aka fi amfani da su su sami mafi yawan kulawa. Shafin
+yana lissafa duk abin da ake ƙidaya kuma yana nuna rahoton wannan mako.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Bincike yana samo tsofaffin wasiƙu a sabar"
+text = """
+Ba a sauke tsofaffin wasiƙu gaba ɗaya ba, don haka bincike ba zai iya karanta
+kalmominsu a nan ba. Yanzu, bayan ɗan dakatawa a rubutu ko idan kuka danna
+Enter, Katna kuma tana tambayar sabar wasiƙarku kuma tana lissafa abin da ta
+samo a ƙarƙashin Ƙarin sakamako a sabar.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Bincike a Thai, Lao, Khmer da Burmese"
+text = """
+Bincike yana samo kalma a wasiƙar Thai, Lao, Khmer ko Burmese ko da inda
+jumla ba ta da tazara tsakanin kalmomi.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Dogayen layuka suna naɗewa tsakanin kalmomi"
+text = """
+Rubutu a Larabci, Hindi da sauran rubuce-rubucen Indiya, Thai, Lao, Khmer da
+Burmese yanzu yana naɗewa tsakanin kalmomi maimakon karya kalma a tsakiya,
+kuma layukan Sinanci da Japananci ba sa farawa da alamar rufewa yanzu.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Dannawa yana cika dukan maɓallin"
+text = """
+Danna ƙaramin kati ko maɓalli mai iyaka yanzu yana cika shi har zuwa gefensa
+da kusurwoyinsa, maimakon nuna ƙaramin kwaya a cikinsa.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Akwatin umarni"
+text = """
+Ku danna Ctrl+Shift+P kuma ku rubuta don nemo kowane aiki ko saiti, sannan
+ku danna Enter don gudanar da shi. Kowane aiki yana nuna gajeriyar hanyar
+madannansa, kuma abin da kuka yi amfani da shi na ƙarshe yana sama.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Wasiƙar da aka ɓoye tana nemo maɓallai"
+text = """
+Idan Ɓoye na kunne, ana neman mai karɓa da ba shi da maɓalli a cikin kundin
+maɓallan yankinsa yayin da kuke aikawa. Wasiƙar da kuke aikawa tana ɗauke da
+maɓallinku na jama'a (Autocrypt) idan GnuPG na da ɗaya don adireshinku, kuma
+ana amfani da maɓallan da suka iso ta wannan hanya don ɓoye amsoshinku.
+Wasiƙar OpenPGP da aka ɓoye yanzu tana ɓoye jigonta har sai an buɗe ta.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Duba wanda ya sa hannu a saƙo"
+text = """
+Ku danna layin sa hannu a kan saƙon da aka sa hannu ko aka ɓoye don ganin
+maɓallin wanda ya sa hannu: suna, adireshi, zanen yatsa da kwanakin wata,
+tare da Kwafi zanen yatsa. Saƙon da aka sa hannu da maɓallin da ba ku da shi
+yana ba da Nemo maɓalli, kuma maɓallin da wani ya haɗa yana buɗewa a matsayin
+Shigo da wannan maɓalli? tare da Janye daga baya.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Gargaɗi kan wasiƙun jabu"
+text = """
+Idan saƙo ya kasa binciken mai aikawa na mai ba ku sabis na wasiƙa, wani jan
+tuta yana cewa wataƙila ba daga wanda ya ce shi ne yake ba, tare da Cikakkun
+bayanai, Da alama lafiya da Matsar zuwa saƙonnin banza. Hotunansa suna nan a
+ɓoye kuma hanyoyin haɗinsa suna tambaya kafin su buɗe. Mai aikawa da babu abin
+da ya tabbatar da shi yana samun ƙaramin "?" a kan hotonsa.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Sake kunnawa idan an sabunta Katna"
+text = """
+Idan an sabunta Katna yayin da Katna Mail ke buɗe, sabis na bango yana komawa
+sabuwar siga da kansa da zarar ba ya aika wasiƙa. Sannan ƙaramin kwaya a ƙasan
+jerin wasiƙu yana ba da Sake kunnawa, wanda ke buɗe sabuwar Katna Mail a
+madadinta. × yana ɓoye shi har zuwa sabuntawa ta gaba.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Buɗe wasiƙa ya fi natsuwa"
+text = """
+Danna wasiƙa a cikin jeri ba ya sake tura igiyar ruwa a kansa yayin da wasiƙar
+ke buɗewa. Igiyar tana nan tana bayyana idan kuka danna wasiƙar da ke buɗe
+tuni.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Yanayin tsaro idan sabuntawa ta lalace"
+text = """
+Katna tana kwafin bayananku kafin sabuntawa ta canza su. Idan sabuntawar ta
+hana Katna farawa, tana buɗewa a yanayin tsaro: wasiƙunku suna nan ana iya
+karanta su, kuma wani layi a samansu yana ba ku damar sake gwadawa ko komawa
+kwafin daga kafin sabuntawa. Ana fara ajiye abin da yake nan yanzu a cikin
+wata foldar, don haka babu abin da zai ɓace. Kwafi rahoton matsala, wanda yake
+a Game da ma, yana tattara abin da rahoton matsala ke buƙata.
+"""

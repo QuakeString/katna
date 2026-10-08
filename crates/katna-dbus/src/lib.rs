@@ -792,6 +792,11 @@ macro_rules! pim_proxy {
             /// the next call starts a new one with nothing stored.
             fn delete_all_data(&self) -> zbus::Result<()>;
 
+            /// Stops the daemon once it answers, so the next start runs
+            /// what Katna Mail asked of safe mode in
+            /// `safe-mode-request.toml` (`docs/ARCHITECTURE.md` §21.2).
+            fn restart(&self) -> zbus::Result<()>;
+
             /// Deletes what was downloaded and can be downloaded again: the
             /// bodies and attachments of mail still on its IMAP server, the
             /// search index (rebuilt at once), sender pictures and
@@ -1304,6 +1309,17 @@ macro_rules! pim_proxy {
             /// mail from the address's domain was authenticated by the
             /// user's provider (DMARC or aligned DKIM).
             fn sender_picture(&self, address: &str) -> zbus::Result<Vec<u8>>;
+
+            /// Keeps the Autocrypt key of a message the user opened, to
+            /// encrypt to its sender later; only when the user's provider
+            /// authenticated the message's `From`. Kept apart from the
+            /// user's GnuPG keyring (`Paths::peer_keys_dir`).
+            fn learn_key(&self, message: i64) -> zbus::Result<()>;
+
+            /// Looks up a public key for `address` in its own domain's Web
+            /// Key Directory and keeps it like [`Self::learn_key`]. Returns
+            /// its fingerprint, or empty when there is none.
+            fn look_up_key(&self, address: &str) -> zbus::Result<String>;
 
             /// The company of the person at `address`, as JSON
             /// (`katna_sync::pictures::Company`): the one at `website` (the

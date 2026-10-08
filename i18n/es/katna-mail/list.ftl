@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } de unos { $total }
 list-results = Resultados de «{ $query }»
 list-results-corrected = Mostrando resultados de «{ $query }»
 list-search-instead = Buscar «{ $query }» en su lugar
+list-search-no-index = La búsqueda no está lista: el índice aún no se ha creado.
+list-search-not-ready = La búsqueda no está lista: { $error }
 list-files-more = +{ $count }
 list-replied = Respondiste
 
@@ -393,9 +395,14 @@ list-empty-waiting = Nada espera respuesta.
 list-empty-reminders = No hay recordatorios. Pulsa H en un correo para añadir uno.
 list-first-sync = Obteniendo tu correo…
 list-first-sync-detail = Aparecerá aquí a medida que llegue.
+list-store-unreadable = No se ha podido abrir el almacén de correo
 
 ## Mail list: lines
 
+row-no-subject = (sin asunto)
+row-unknown-sender = (remitente desconocido)
+row-to = Para:
+row-no-recipients = (sin destinatarios)
 row-removed = Este mensaje se ha eliminado.
 row-starred = Destacado
 row-not-starred = No destacado
@@ -481,6 +488,11 @@ menu-make-rule = Crear una regla…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Clave importada
+toast-key-updated = Ya tenías esta clave; ahora está actualizada
+toast-key-removed = Clave eliminada
+toast-key-not-removed = No se ha podido eliminar la clave
+toast-fingerprint-copied = Huella digital copiada
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] Se ha archivado la conversación.

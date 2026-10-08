@@ -49,3 +49,12 @@ search-dates-month-back = ယခင်လ
 search-dates-month-on = နောက်လ
 search-dates-year-back = ယခင်နှစ်
 search-dates-year-on = နောက်နှစ်
+
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = ဆာဗာပေါ်ရှိ နောက်ထပ် ရလဒ်များ
+search-server-searching = ဆာဗာပေါ်ရှိ မေးလ်ကို ရှာနေသည်…
+search-server-empty-searching = ဘာမျှ မရှိသေးပါ။ ဆာဗာပေါ်ရှိ မေးလ်ကို ရှာနေသည်…
+search-server-nothing = ဆာဗာပေါ်တွင် နောက်ထပ် ရလဒ် မရှိပါ
+search-server-failed = ဆာဗာကို ရှာ၍ မရပါ။
+search-server-again = ထပ်ကြိုးစားရန်

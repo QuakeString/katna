@@ -6,6 +6,7 @@
 
 about-tooltip = Mayelana ne-Katna
 about-tagline = Imeyili nekhalenda yedeskithophu ye-Linux
+about-version = Katna Mail { $version }
 about-copy-version = Kopisha imininingwane yenguqulo
 about-version-copied = Kukopishiwe
 about-version-built = Yakhiwe: { $date }
@@ -42,6 +43,8 @@ about-update-restart = Buyekeza uphinde uqale kabusha
 about-update-cancel = Hhayi manje
 about-changelog = Uhlu lwezinguquko
 about-source = Ikhodi yomthombo
+about-debug-report = Kopisha umbiko wokulungisa amaphutha
+about-debug-report-tip = Izinguqulo, ukuhlola ngemva kwezibuyekezo nemigqa yakamuva yelogi, yombiko wephutha. Akukho meyili noma amaphasiwedi.
 about-coffee = Ngithengele ikhofi
 about-coffee-coffee = Ikhofi?
 about-coffee-tea = Itiye?

@@ -61,3 +61,13 @@ search-dates-month-back = ያለፈው ወር
 search-dates-month-on = ቀጣዩ ወር
 search-dates-year-back = ያለፈው ዓመት
 search-dates-year-on = ቀጣዩ ዓመት
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = በአገልጋዩ ላይ ተጨማሪ ውጤቶች
+search-server-searching = በአገልጋዩ ላይ ደብዳቤ በመፈለግ ላይ…
+search-server-empty-searching = እስካሁን እዚህ ምንም የለም። በአገልጋዩ ላይ ደብዳቤ በመፈለግ ላይ…
+search-server-nothing = በአገልጋዩ ላይ ተጨማሪ ውጤቶች የሉም
+search-server-failed = አገልጋዩን መፈለግ አልተቻለም።
+search-server-again = እንደገና ሞክር

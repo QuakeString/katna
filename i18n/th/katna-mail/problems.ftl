@@ -59,3 +59,28 @@ service-details-title = สาเหตุที่บริการเริ�
 service-details-body = คัดลอกข้อความนี้แล้วส่งไปพร้อมรายงานของคุณ ไม่มีอีเมลหรือรหัสผ่านอยู่ในนี้
 service-details-copy = คัดลอก
 service-details-close = ปิด
+service-not-running = บริการเบื้องหลังของ Katna ไม่ได้ทำงานอยู่
+service-no-answer = บริการเบื้องหลังของ Katna ไม่ตอบสนอง: { $error }
+service-no-session = ไม่มีเซสชัน D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna อยู่ในโหมดปลอดภัยหลังเกิดปัญหากับการอัปเดต อีเมลจึงไม่ซิงค์
+safe-try-again = ลองอีกครั้ง
+safe-restore = กู้คืน
+safe-restoring = กำลังกู้คืนข้อมูลของคุณจาก { $when }…
+safe-restored = กู้คืนข้อมูลของคุณจาก { $when } แล้ว ข้อมูลที่มีอยู่ก่อนหน้าเก็บไว้ในโฟลเดอร์
+safe-show-folder = แสดงโฟลเดอร์
+safe-restore-failed = กู้คืนข้อมูลของคุณไม่ได้: { $error }
+safe-restore-title = กู้คืนข้อมูลของคุณจากก่อนการอัปเดตหรือไม่?
+safe-restore-body = Katna จะกลับไปใช้สำเนาที่คุณเลือก อีเมลที่เข้ามาหลังจากนั้นจะดาวน์โหลดใหม่จากบัญชีของคุณ
+safe-restore-none = ยังไม่มีสำเนา Katna จะทำสำเนาไว้ก่อนการอัปเดตแต่ละครั้งเปลี่ยนแปลงข้อมูลของคุณ
+safe-restore-keep = ข้อมูลที่มีอยู่ตอนนี้ รวมถึงอีเมลที่ยังไม่ได้ส่ง ฉบับร่าง และการเปลี่ยนแปลงที่ยังไม่ซิงค์ จะเก็บไว้ในโฟลเดอร์ก่อน จึงไม่มีอะไรหายไป
+safe-restore-cancel = ยกเลิก
+safe-restore-mail = อีเมล
+safe-restore-pim = บัญชีและรายชื่อติดต่อ
+safe-restore-blobs = ไฟล์แนบ
+safe-report-title = รายงานดีบัก
+safe-report-body = คัดลอกข้อความนี้แล้วแนบไปกับรายงานบั๊กของคุณ ไม่มีอีเมล ที่อยู่ หรือรหัสผ่านอยู่ในนี้
+safe-report-restore = กู้คืน…
+safe-report-copied = คัดลอกรายงานดีบักแล้ว

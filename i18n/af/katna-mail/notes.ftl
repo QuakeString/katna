@@ -94,6 +94,7 @@ notes-link-note = Skakel 'n nota
 notes-link-new = Nuwe nota "{ $title }"
 notes-linked-from = Geskakel vanaf
 notes-link-gone = Daardie nota is nie meer hier nie
+notes-new-note-gone = Die nuwe nota is weg.
 
 ## Version history
 

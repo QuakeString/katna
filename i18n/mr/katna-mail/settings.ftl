@@ -181,6 +181,7 @@ settings-general-start-at-login = लॉग इन केल्यावर Katn
 settings-general-start-at-login-detail = विंडो न उघडता मेल सिंक करते आणि नवीन मेलच्या सूचना व ट्रे आयकन दाखवते
 settings-general-login-window = Katna Mail ची विंडोही उघडा
 settings-general-login-window-detail = लॉग इन केल्यावर विंडोही उघडते
+settings-general-login-entry = लॉग इन केल्यावर सुरू झाले (सेटिंग्ज > सामान्य > डेस्कटॉप)
 settings-general-tray = सिस्टम ट्रेमध्ये Katna दाखवा
 settings-general-tray-detail = न वाचलेल्यांची संख्या आणि एका मेनूसह
 settings-general-tray-color = रंगीत ट्रे आयकन

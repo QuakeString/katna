@@ -190,9 +190,12 @@ impl MailWindow {
         };
         let sender = view.from.first().map(|a| a.email.as_str()).unwrap_or("");
         let shown = !message.encrypted
-            && self
-                .remote
-                .allowed(message.id, sender, message.authenticated);
+            && self.remote.allowed(
+                message.id,
+                sender,
+                message.authenticated,
+                message.failed && !self.looks_safe(message.id),
+            );
         let images = message
             .doc
             .as_ref()

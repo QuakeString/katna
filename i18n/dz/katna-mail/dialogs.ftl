@@ -6,6 +6,7 @@
 
 about-tooltip = Katna གི་སྐོར་ལས
 about-tagline = Linux ཌེཀསི་ཊོཔ་གི་དོན་ལུ་ གློག་འཕྲིན་དང་ཟླ་ཐོ
+about-version = Katna Mail { $version }
 about-copy-version = ཐོན་རིམ་གྱི་ཁ་གསལ་འདྲ་བཤུས་རྐྱབས།
 about-version-copied = འདྲ་བཤུས་རྐྱབ་ཡི
 about-version-built = བཟོ་ཡོདཔ: { $date }
@@ -42,6 +43,8 @@ about-update-restart = དུས་མཐུན་བཟོ་སྟེ་ལོ
 about-update-cancel = ད་ལྟོ་མེན།
 about-changelog = བསྒྱུར་བཅོས་ཐོ་ཡིག
 about-source = འབྱུང་ཁུངས་ཨང་རྟགས
+about-debug-report = སྐྱོན་སེལ་སྙན་ཞུ་འདྲ་བཤུས་རྐྱབས།
+about-debug-report-tip = ཐོན་རིམ་ཚུ་ དུས་མཐུན་བཟོ་བའི་ཤུལ་གྱི་ཞིབ་དཔྱད་ དེ་ལས་ ཉེ་མའི་དྲན་ཐོ་གི་གྲལ་ཐིག་ཚུ་ སྐྱོན་གྱི་སྙན་ཞུའི་དོན་ལུ། གློག་འཕྲིན་ ཡང་ན་ ཆོག་ཡིག་མེད།
 about-coffee = ང་ལུ་ ཀོ་ཕི་ཅིག་ཉོ་བྱིན།
 about-coffee-coffee = ཀོ་ཕི་?
 about-coffee-tea = ཇ་?

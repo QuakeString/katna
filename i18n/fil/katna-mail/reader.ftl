@@ -55,6 +55,7 @@ reader-details-subject = subject:
 
 reader-downloading = Dina-download ang mensaheng ito mula sa server…
 reader-download-failed = Hindi ma-download ang mensaheng ito.
+reader-download-failed-reason = Hindi ma-download ang mensaheng ito. { $reason }
 reader-download-offline = Offline ang account na ito. Mag-online para i-download ang mensaheng ito.
 reader-try-again = Subukang muli
 
@@ -90,6 +91,89 @@ security-missing-key = Nilagdaan gamit ang key na wala sa iyo, kaya hindi ito ma
 security-missing-key-id = Nilagdaan gamit ang key na wala sa iyo ({ $key }), kaya hindi ito masuri
 security-signature-unavailable = May lagda; i-install ang { $tool } para masuri ang lagda
 security-signature-error = Hindi masuri ang lagda.
+security-look-up-key = Hanapin ang key
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Na-verify na lagda
+key-card-verified-detail = Wasto ang lagda at pinagkakatiwalaan mo ang key na ito.
+key-card-unverified = Hindi na-verify ang lagda
+key-card-unverified-detail = Wasto ang lagda, pero walang nagpapatunay na sa kanila ang key. Ikumpara ang fingerprint sa kanila, tapos pagkatiwalaan ang key sa GnuPG (Kleopatra o gpg --edit-key).
+key-card-not-sender = Nilagdaan ng ibang tao
+key-card-not-sender-detail = Wasto ang lagda, pero hindi sa nagpadala ang key.
+key-card-untrusted = Hindi pinagkakatiwalaan ang key
+key-card-untrusted-detail = Minarkahan mo ang key na ito bilang hindi pinagkakatiwalaan sa GnuPG.
+key-card-signature-expired = Nag-expire na ang lagda
+key-card-signature-expired-detail = Wasto ang lagda noon, pero nag-expire na ito.
+key-card-key-expired = Nag-expire na ang key
+key-card-key-expired-detail = Wasto ang lagda, pero nag-expire na ang key mula noon.
+key-card-key-revoked = Binawi ang key
+key-card-key-revoked-detail = Binawi ng may-ari nito ang key na ito, kaya hindi mapagkakatiwalaan ang lagda.
+key-card-bad = Hindi wastong lagda
+key-card-bad-detail = Binago ang mensaheng ito matapos itong lagdaan, o peke ang lagda.
+key-card-signed-by = Nilagdaan ni
+key-card-belongs-to = Pag-aari ni
+key-card-fingerprint = Fingerprint
+key-card-signed = Nilagdaan
+key-card-key = Key
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Ginawa
+key-card-expires = Mag-e-expire
+key-card-never = Hindi kailanman
+key-card-issued-by = Inisyu ng
+key-card-found-in = Nakita sa
+key-card-keyring = Ang iyong GnuPG keyring
+key-card-copy = Kopyahin ang fingerprint
+key-card-import-title = I-import ang key na ito?
+key-card-from-directory = Nakita sa key directory ng { $domain }.
+key-card-from-attachment = Mula sa attachment na { $name }.
+key-card-import-note = Masusuri na ng Katna ang mga lagda ng taong ito at makakapag-encrypt ng mail para sa kanila. Para lubos na pagkatiwalaan ang key, ikumpara ang fingerprint sa kanila.
+key-card-cancel = Kanselahin
+key-card-import = I-import ang key
+key-card-looking-up = Hinahanap ang key…
+key-card-looking-up-detail = Nagtatanong sa key directory ng { $domain }.
+key-card-not-found = Walang nakitang key
+key-card-not-found-detail = Hindi nagpa-publish ang { $domain } ng key para sa address na ito. Hilingin sa nagpadala na ipadala sa iyo ang key nila.
+key-card-not-kept = Hindi magagamit ang nakitang key.
+key-card-failed = Hindi makuha ang key
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Maaaring hindi ito galing sa { $domain }
+sender-failed-body = Hindi ito pumasa sa mga pagsusuri ng { $provider } sa nagpadala. Mag-ingat sa mga link, attachment at pagsagot.
+sender-provider-unknown = ang iyong mail provider
+sender-details = Mga detalye
+sender-details-hide = Itago ang mga detalye
+sender-looks-safe = Mukhang ligtas
+sender-move-to-spam = Ilipat sa spam
+sender-checked-by = Sinuri ng { $provider }
+sender-checked-by-server = Sinuri ng { $provider } ({ $server })
+sender-dmarc = Domain ng nagpadala (DMARC)
+sender-dkim = Lagda (DKIM)
+sender-spf = Server na nagpadala (SPF)
+sender-result-pass = Pumasa
+sender-result-fail = Bumagsak
+sender-result-unsure = Hindi tiyak
+sender-result-none = Wala
+sender-result-missing = Hindi nasuri
+sender-dmarc-pass = Kinukumpirma ng { $domain } ang nagpadalang ito.
+sender-dmarc-fail = Hindi tugma ang mail sa sinasabi ng { $domain } kung paano ipinapadala ang mail nito.
+sender-dmarc-none = Walang inilalathalang patakaran ang { $domain } para sa mail nito.
+sender-dkim-pass = Nilagdaan ng { $domain }.
+sender-dkim-fail = Hindi tugma sa mail ang lagda mula sa { $domain }.
+sender-dkim-none = Walang lagda ang mensahe.
+sender-spf-pass = Ipinadala mula sa server na nakalista sa { $domain }.
+sender-spf-fail = Ipinadala mula sa server na hindi nakalista sa { $domain }.
+sender-spf-none = Hindi inililista ng { $domain } ang mga server nito.
+sender-check-unsure = Hindi makapagbigay ng malinaw na sagot ang pagsusuri.
+sender-unconfirmed = Hindi makumpirma ng { $provider } na galing ito sa { $domain }. Kahit sino ay puwedeng maglagay ng anumang nagpadala.
+sender-link-title = Buksan ang link na ito?
+sender-link-body = Hindi pumasa ang mail na ito sa mga pagsusuri sa nagpadala. Papunta ang link sa { $host }:
+sender-link-cancel = Kanselahin
+sender-link-open = Buksan
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -120,6 +204,7 @@ tracking-receipt-other = Read receipt: dinelete o inasikaso ni { $who } ang mens
 
 remote-hidden = Nakatago ang mga larawan sa mensaheng ito.
 remote-hidden-unconfirmed = Nakatago ang mga larawan: hindi makumpirma ang nagpadala.
+remote-hidden-failed = Nakatago ang mga larawan: hindi pumasa ang mail na ito sa mga pagsusuri sa nagpadala.
 remote-show = Ipakita ang mga larawan
 remote-always-show = Palaging ipakita mula sa nagpadalang ito
 remote-picture-use = Gamitin

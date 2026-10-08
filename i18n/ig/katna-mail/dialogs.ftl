@@ -6,6 +6,7 @@
 
 about-tooltip = Maka Katna
 about-tagline = Ozi na kalịnda maka desktọpụ Linux
+about-version = Katna Mail { $version }
 about-copy-version = Detuo nkọwa ụdị
 about-version-copied = Edetuola
 about-version-built = E wuru: { $date }
@@ -42,6 +43,8 @@ about-update-restart = Melite ma malitegharịa
 about-update-cancel = Ọ bụghị ugbu a
 about-changelog = Ndepụta mgbanwe
 about-source = Koodu isi mmalite
+about-debug-report = Detuo akụkọ nchọpụta nsogbu
+about-debug-report-tip = Ụdị, nlele mgbe imelite gasịrị na ahịrị ndekọ ọhụrụ, maka akụkọ nsogbu. Ọ dịghị ozi ma ọ bụ okwuntughe.
 about-coffee = Zụtara m kọfị
 about-coffee-coffee = Kọfị?
 about-coffee-tea = Tii?

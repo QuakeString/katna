@@ -59,3 +59,28 @@ service-details-title = サービスが起動しない理由
 service-details-body = これをコピーして、レポートと一緒に送ってください。メールやパスワードは含まれていません。
 service-details-copy = コピー
 service-details-close = 閉じる
+service-not-running = Katna のバックグラウンド サービスが実行されていません。
+service-no-answer = Katna のバックグラウンド サービスが応答しませんでした: { $error }
+service-no-session = D-Bus セッションがありません: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = 更新で問題が起きたため Katna はセーフモードで動作しており、メールは同期されていません。
+safe-try-again = 再試行
+safe-restore = 復元
+safe-restoring = { $when } のデータを復元しています…
+safe-restored = { $when } のデータを復元しました。それまでのデータはフォルダに保管されています。
+safe-show-folder = フォルダを表示
+safe-restore-failed = データを復元できませんでした: { $error }
+safe-restore-title = 更新前のデータを復元しますか？
+safe-restore-body = Katna は選んだコピーの状態に戻ります。それ以降に届いたメールは、アカウントから再びダウンロードされます。
+safe-restore-none = コピーはまだありません。Katna は、更新でデータが変更される前に毎回コピーを作成します。
+safe-restore-keep = 未送信のメール、下書き、まだ同期されていない変更を含む現在のデータは、先にフォルダに保管されるため、何も失われません。
+safe-restore-cancel = キャンセル
+safe-restore-mail = メール
+safe-restore-pim = アカウントと連絡先
+safe-restore-blobs = 添付ファイル
+safe-report-title = デバッグ レポート
+safe-report-body = これをコピーしてバグ報告に添付してください。メール、アドレス、パスワードは含まれていません。
+safe-report-restore = 復元…
+safe-report-copied = デバッグ レポートをコピーしました

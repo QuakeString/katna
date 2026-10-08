@@ -110,6 +110,7 @@ calendar-add-meet = เพิ่มการประชุมทางวิด
 calendar-add-teams = เพิ่มการประชุม Teams
 calendar-has-call = เพิ่มการโทรวิดีโอแล้ว
 calendar-weekday-day = { $weekday } { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = ตลอดวัน
 calendar-more-options = ตัวเลือกเพิ่มเติม
 calendar-save = บันทึก

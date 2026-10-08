@@ -55,6 +55,7 @@ reader-details-subject = 제목:
 
 reader-downloading = 서버에서 이 메일을 다운로드하는 중…
 reader-download-failed = 이 메일을 다운로드할 수 없습니다.
+reader-download-failed-reason = 이 메일을 다운로드할 수 없습니다. { $reason }
 reader-download-offline = 이 계정은 오프라인 상태입니다. 이 메일을 다운로드하려면 온라인으로 전환하세요.
 reader-try-again = 다시 시도
 
@@ -90,6 +91,89 @@ security-missing-key = 내게 없는 키로 서명되어 확인할 수 없음
 security-missing-key-id = 내게 없는 키({ $key })로 서명되어 확인할 수 없음
 security-signature-unavailable = 서명됨. 서명을 확인하려면 { $tool }을(를) 설치하세요
 security-signature-error = 서명을 확인할 수 없습니다.
+security-look-up-key = 키 찾기
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = 확인된 서명
+key-card-verified-detail = 서명이 올바르며 이 키를 신뢰합니다.
+key-card-unverified = 확인되지 않은 서명
+key-card-unverified-detail = 서명은 올바르지만 이 키가 상대방의 것인지 확인되지 않았습니다. 상대방과 지문을 비교한 다음 GnuPG(Kleopatra 또는 gpg --edit-key)에서 키를 신뢰하세요.
+key-card-not-sender = 다른 사람이 서명함
+key-card-not-sender-detail = 서명은 올바르지만 보낸사람의 키가 아닙니다.
+key-card-untrusted = 신뢰하지 않는 키
+key-card-untrusted-detail = GnuPG에서 이 키를 신뢰하지 않음으로 표시했습니다.
+key-card-signature-expired = 서명 만료됨
+key-card-signature-expired-detail = 서명은 올바르지만 만료되었습니다.
+key-card-key-expired = 키 만료됨
+key-card-key-expired-detail = 서명은 올바르지만 이후 키가 만료되었습니다.
+key-card-key-revoked = 폐기된 키
+key-card-key-revoked-detail = 소유자가 이 키를 폐기했으므로 서명을 신뢰할 수 없습니다.
+key-card-bad = 잘못된 서명
+key-card-bad-detail = 서명 후 이 메일이 변경되었거나 서명이 위조되었습니다.
+key-card-signed-by = 서명자
+key-card-belongs-to = 소유자
+key-card-fingerprint = 지문
+key-card-signed = 서명 일시
+key-card-key = 키
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = 생성일
+key-card-expires = 만료일
+key-card-never = 없음
+key-card-issued-by = 발급자
+key-card-found-in = 찾은 위치
+key-card-keyring = 내 GnuPG 키링
+key-card-copy = 지문 복사
+key-card-import-title = 이 키를 가져올까요?
+key-card-from-directory = { $domain }의 키 디렉터리에서 찾았습니다.
+key-card-from-attachment = 첨부파일 { $name }에서 가져옴
+key-card-import-note = 가져오면 Katna에서 이 사람의 서명을 확인하고 이 사람에게 암호화된 메일을 보낼 수 있습니다. 키를 완전히 신뢰하려면 상대방과 지문을 비교하세요.
+key-card-cancel = 취소
+key-card-import = 키 가져오기
+key-card-looking-up = 키를 찾는 중…
+key-card-looking-up-detail = { $domain }의 키 디렉터리에 요청하는 중입니다.
+key-card-not-found = 키를 찾을 수 없음
+key-card-not-found-detail = { $domain }에서 이 주소의 키를 공개하지 않습니다. 보낸사람에게 키를 보내 달라고 요청하세요.
+key-card-not-kept = 찾은 키를 사용할 수 없습니다.
+key-card-failed = 키를 가져올 수 없음
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = { $domain }에서 보낸 메일이 아닐 수 있습니다
+sender-failed-body = { $provider }의 보낸사람 확인을 통과하지 못했습니다. 링크, 첨부파일, 답장에 주의하세요.
+sender-provider-unknown = 사용 중인 메일 서비스
+sender-details = 세부정보
+sender-details-hide = 세부정보 숨기기
+sender-looks-safe = 안전해 보임
+sender-move-to-spam = 스팸함으로 이동
+sender-checked-by = { $provider }에서 확인
+sender-checked-by-server = { $provider }에서 확인 ({ $server })
+sender-dmarc = 보낸사람 도메인 (DMARC)
+sender-dkim = 서명 (DKIM)
+sender-spf = 발송 서버 (SPF)
+sender-result-pass = 통과
+sender-result-fail = 실패
+sender-result-unsure = 불확실
+sender-result-none = 없음
+sender-result-missing = 확인 안 됨
+sender-dmarc-pass = { $domain }에서 이 보낸사람을 확인합니다.
+sender-dmarc-fail = 이 메일은 { $domain }에서 밝힌 메일 발송 방식과 일치하지 않습니다.
+sender-dmarc-none = { $domain }은(는) 메일에 대한 규칙을 공개하지 않습니다.
+sender-dkim-pass = { $domain }에서 서명했습니다.
+sender-dkim-fail = { $domain }의 서명이 메일과 일치하지 않습니다.
+sender-dkim-none = 이 메일은 서명되지 않았습니다.
+sender-spf-pass = { $domain }에 등록된 서버에서 보냈습니다.
+sender-spf-fail = { $domain }에 등록되지 않은 서버에서 보냈습니다.
+sender-spf-none = { $domain }은(는) 발송 서버를 등록하지 않았습니다.
+sender-check-unsure = 확인 결과가 명확하지 않습니다.
+sender-unconfirmed = { $provider }에서 이 메일이 { $domain }에서 왔는지 확인할 수 없습니다. 보낸사람은 누구나 마음대로 적을 수 있습니다.
+sender-link-title = 이 링크를 열까요?
+sender-link-body = 이 메일은 보낸사람 확인을 통과하지 못했습니다. 링크가 이동하는 곳은 { $host }입니다:
+sender-link-cancel = 취소
+sender-link-open = 열기
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -108,6 +192,7 @@ tracking-receipt-other = 읽음 확인: { $who }님이 메일을 열지 않고 �
 
 remote-hidden = 이 메일의 이미지가 숨겨져 있습니다.
 remote-hidden-unconfirmed = 이미지가 숨겨져 있습니다. 보낸사람을 확인할 수 없습니다.
+remote-hidden-failed = 이미지가 숨겨져 있습니다. 이 메일은 보낸사람 확인을 통과하지 못했습니다.
 remote-show = 이미지 표시
 remote-always-show = 이 보낸사람의 이미지 항상 표시
 remote-picture-use = 사용

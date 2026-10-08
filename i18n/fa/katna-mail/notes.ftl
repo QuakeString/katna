@@ -85,6 +85,7 @@ notes-link-note = پیوند به یادداشت
 notes-link-new = یادداشت جدید «{ $title }»
 notes-linked-from = پیوندشده از
 notes-link-gone = آن یادداشت دیگر اینجا نیست
+notes-new-note-gone = یادداشت جدید دیگر وجود ندارد.
 notes-versions = نسخه‌ها
 notes-version-now = اکنون
 notes-version-here = شما، روی این رایانه

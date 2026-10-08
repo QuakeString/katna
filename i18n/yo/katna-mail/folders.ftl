@@ -53,6 +53,7 @@ folder-waiting-short = Ń dúró
 folder-reminders = Ìránnilétí
 folder-outbox = Àpótí-ìjáde
 folder-activity = Ìgbòkègbodò
+folder-not-on-account = Àkáǹtì yìí kò ní fódà bẹ́ẹ̀.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

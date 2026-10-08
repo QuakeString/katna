@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } ከ{ $total } ገደማ
 list-results = የ«{ $query }» ውጤቶች
 list-results-corrected = የ«{ $query }» ውጤቶችን በማሳየት ላይ
 list-search-instead = በምትኩ «{ $query }»ን ፈልግ
+list-search-no-index = ፍለጋ ዝግጁ አይደለም፦ ማውጫው እስካሁን አልተገነባም።
+list-search-not-ready = ፍለጋ ዝግጁ አይደለም፦ { $error }
 list-files-more = +{ $count }
 list-replied = መልሰዋል
 
@@ -343,6 +345,11 @@ list-empty-waiting = ምላሽ የሚጠብቅ ምንም ነገር የለም።
 list-empty-reminders = ምንም አስታዋሽ የለም። አንድ ለማከል በደብዳቤ ላይ H ይጫኑ።
 list-first-sync = ደብዳቤዎን በማምጣት ላይ…
 list-first-sync-detail = ሲደርስ እዚህ ይታያል።
+list-store-unreadable = የደብዳቤ ማከማቻውን መክፈት አልተቻለም
+row-no-subject = (ርዕሰ ጉዳይ የለም)
+row-unknown-sender = (ያልታወቀ ላኪ)
+row-to = ለ፦
+row-no-recipients = (ተቀባዮች የሉም)
 
 ## Mail list: lines
 
@@ -426,6 +433,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = ከ{ $name } የመጡ ኢሜይሎችን ፈልግ
 menu-make-rule = ደንብ ፍጠር…
+toast-key-imported = ቁልፉ ገብቷል
+toast-key-updated = ይህ ቁልፍ አስቀድሞ ነበረዎት፤ አሁን የተዘመነ ነው
+toast-key-removed = ቁልፉ ተወግዷል
+toast-key-not-removed = ቁልፉን ማስወገድ አልተቻለም
+toast-fingerprint-copied = የጣት አሻራው ተቀድቷል
 
 ## Snackbar after an action on mail in the list
 

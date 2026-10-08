@@ -3492,3 +3492,105 @@ title = "Àwọn mẹ́nù ń yọ̀ wọlé nínú káàdì àkáǹtì"
 text = """
 Mẹ́nù ☰ àti àkójọ èdè ń yọ̀ wọlé báyìí nínú káàdì àkáǹtì dípò kí wọ́n fò wọlé, pẹ̀lú bọ́tìnnì Padà ní apá ọ̀tún láti padà.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Gbogbo áàpù wà lórí káàdì kan náà"
+text = """
+Kàlẹ́ńdà, Olùbásọ̀rọ̀, Iṣẹ́, Àkọsílẹ̀ àti Fáìlì wà lórí káàdì báyìí, pẹ̀lú ìlà tín-ínrín àti òjìji rírọ̀ kan náà bí Lẹ́tà àti Ètò.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Àwọn bọ́tìnnì ìkọsílẹ̀ kíákíá lórí GNOME"
+text = """
+Meta+Alt+T fún iṣẹ́ àti Meta+Alt+N fún àkọsílẹ̀ ń ṣiṣẹ́ lórí GNOME báyìí pẹ̀lú. Ní ìgbà àkọ́kọ́, GNOME yóò béèrè bóyá Katna lè lò wọ́n, o sì lè yí àwọn bọ́tìnnì náà padà nínú Ètò rẹ̀.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Gbé àwọn irinṣẹ́ àmì"
+text = """
+Nígbà tí o bá ń sàmì sí PDF, fa àwọn àmì kéékèèké ní ìpẹ̀kun àwọn irinṣẹ́ láti gbé wọn sí ibikíbi lórí ojú-ìwé, kí wọ́n má baà bo ohun tí o ń sàmì sí. Tẹ àwọn àmì náà lẹ́ẹ̀mejì láti dá wọn padà.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Ó ń ṣiṣẹ́ pẹ̀lú àwọn olùka ojú-ìbojú"
+text = """
+Orca àti àwọn olùka ojú-ìbojú mìíràn lè ka Katna Mail báyìí: àkójọ lẹ́tà, àwọn fódà, lẹ́tà tí ó ṣí, àwọn bọ́tìnnì, mẹ́nù, àwọn ìyípadà àti àwọn fèrèsé ìbánisọ̀rọ̀.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Fi èsì ránṣẹ́"
+text = """
+Ìrànlọ́wọ́ > Fi èsì ránṣẹ́, tó tún wà nínú Ètò kíákíá àti Ètò > Èsì oníṣe, ń fi ìṣòro tàbí èrò kan ránṣẹ́ tààrà sí Katna. Ohun tí a ń fi ránṣẹ́ ń fi ọ̀rọ̀ náà gan-an hàn kí ó tó lọ, ímeèlì fún èsì kò sì pọn dandan.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Àkójọ ìlò aláìlórúkọ, tí o bá fẹ́"
+text = """
+Ètò > Èsì oníṣe ní ìyípadà tuntun, Fi àkójọ ìlò aláìlórúkọ ránṣẹ́, tí ó wà ní pípa títí tí o fi tàn án: lẹ́ẹ̀kan lọ́sẹ̀ ó ń fi àwọn ẹ̀yà tí o lò ránṣẹ́, bẹ́ẹ̀ ni tàbí bẹ́ẹ̀ kọ́, kí àwọn tí a ń lò jù lè gba àbójútó jù. Ojú-ìwé náà ń to gbogbo ohun tí a ń kà, ó sì ń fi ìjábọ̀ ọ̀sẹ̀ yìí hàn.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Àwárí ń rí lẹ́tà àtijọ́ lórí sáfà"
+text = """
+A kì í gba gbogbo lẹ́tà àtijọ́ sílẹ̀ pátápátá, nítorí náà àwárí kò lè ka àwọn ọ̀rọ̀ rẹ̀ níbí. Báyìí, lẹ́yìn ìdádúró kúkúrú nínú títẹ tàbí nígbà tí o bá tẹ Enter, Katna tún ń béèrè lọ́wọ́ sáfà lẹ́tà rẹ, ó sì ń to ohun tí ó rí sábẹ́ Àbájáde míì lórí sáfà.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Àwárí ní èdè Thai, Lao, Khmer àti Burmese"
+text = """
+Àwárí ń rí ọ̀rọ̀ kan nínú lẹ́tà Thai, Lao, Khmer tàbí Burmese, kódà níbi tí gbólóhùn kò ti ní àlàfo láàrin àwọn ọ̀rọ̀.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Àwọn ìlà gígùn ń ká láàrin àwọn ọ̀rọ̀"
+text = """
+Ọ̀rọ̀ ní Lárúbáwá, Hindi àti àwọn ìkọ̀wé India mìíràn, Thai, Lao, Khmer àti Burmese ń ká láàrin àwọn ọ̀rọ̀ báyìí dípò kí ó gé ọ̀rọ̀ kan ní àárín, àwọn ìlà Ṣáínà àti Jàpáànù kò sì tún ń bẹ̀rẹ̀ pẹ̀lú àmì ìparí mọ́.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Títẹ ń kún gbogbo bọ́tìnnì"
+text = """
+Títẹ chip kan tàbí bọ́tìnnì oní-ìlà-ìta ń kún un báyìí dé etí àti igun rẹ̀ gan-an, dípò kí ó fi ìkọ́nkọ́ kékeré kan hàn nínú rẹ̀.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Àpótí àṣẹ"
+text = """
+Tẹ Ctrl+Shift+P kí o sì tẹ ọ̀rọ̀ láti rí iṣẹ́ tàbí ètò èyíkéyìí, lẹ́yìn náà tẹ Enter láti ṣe é. Iṣẹ́ kọ̀ọ̀kan ń fi ọ̀nà àbùjá kíbọ́ọ̀dù rẹ̀ hàn, ohun tí o lò kẹ́yìn sì wà lókè.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Lẹ́tà tí a pa lároko ń wá àwọn kọ́kọ́rọ́"
+text = """
+Nígbà tí Pa á lároko bá wà ní títàn, a ó wá kọ́kọ́rọ́ olùgbà tí kò ní kọ́kọ́rọ́ nínú àkọsílẹ̀ kọ́kọ́rọ́ ti domain tirẹ̀ nígbà tí o bá fi ránṣẹ́. Lẹ́tà tí o fi ránṣẹ́ ń gbé kọ́kọ́rọ́ gbangba rẹ (Autocrypt) nígbà tí GnuPG bá ní ọ̀kan fún àdírẹ́sì rẹ, a sì ń lo àwọn kọ́kọ́rọ́ tí ó dé lọ́nà kan náà láti pa àwọn èsì rẹ lároko. Lẹ́tà OpenPGP tí a pa lároko ń fi àkọlé rẹ̀ pamọ́ báyìí títí a ó fi ṣí i.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Wo ẹni tó buwọ́ lu ìfiránṣẹ́ kan"
+text = """
+Tẹ ìlà ìbuwọ́lù lórí ìfiránṣẹ́ tí a buwọ́ lù tàbí tí a pa lároko láti rí kọ́kọ́rọ́ ẹni tó buwọ́ lù ú: orúkọ, àdírẹ́sì, ìtẹ̀ka àti àwọn ọjọ́, pẹ̀lú Ṣẹ̀dà ìtẹ̀ka. Ìfiránṣẹ́ tí a fi kọ́kọ́rọ́ tí o kò ní buwọ́ lù ń fún ọ ní Wá kọ́kọ́rọ́, kọ́kọ́rọ́ tí ẹnìkan bá sì so mọ́ ọn ń ṣí bí Ṣé kí a gbé kọ́kọ́rọ́ yìí wọlé? pẹ̀lú Dá padà lẹ́yìn náà.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Ìkìlọ̀ lórí lẹ́tà ayédèrú"
+text = """
+Nígbà tí ìfiránṣẹ́ kan kò bá yege nínú àyẹ̀wò olùfiránṣẹ́ olùpèsè lẹ́tà rẹ, ọ̀págun pupa kan ń sọ pé ó lè máà jẹ́ láti ọ̀dọ̀ ẹni tó pe ara rẹ̀, pẹ̀lú Àlàyé, Ó dàbí ẹni pé kò léwu àti Gbé lọ sí Àwúrúju. Àwọn àwòrán rẹ̀ ń wà ní pípamọ́, àwọn ìjápọ̀ rẹ̀ sì ń béèrè kí wọ́n tó ṣí. Olùfiránṣẹ́ tí kò sí ohun tó jẹ́rìí sí ń gba "?" kékeré lórí àwòrán rẹ̀.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Tún bẹ̀rẹ̀ nígbà tí a bá ṣe ìmúdójúìwọ̀n Katna"
+text = """
+Nígbà tí a bá ṣe ìmúdójúìwọ̀n Katna nígbà tí Katna Mail ṣí sílẹ̀, iṣẹ́ ẹ̀yìn ń bọ́ sí ẹ̀yà tuntun fúnra rẹ̀ ní kété tí kò bá ń fi lẹ́tà ránṣẹ́. Lẹ́yìn náà, ìkọ́nkọ́ kékeré kan nísàlẹ̀ àkójọ lẹ́tà ń fún ọ ní Tún bẹ̀rẹ̀, èyí tí ń ṣí Katna Mail tuntun ní ipò rẹ̀. × ń fi í pamọ́ títí di ìmúdójúìwọ̀n tó kàn.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Ṣíṣí lẹ́tà ti rọlẹ̀"
+text = """
+Títẹ lẹ́tà kan nínú àkójọ kò tún ń rán ìgbì kọjá lórí rẹ̀ mọ́ nígbà tí lẹ́tà náà ń ṣí. Ìgbì náà ṣì ń hàn nígbà tí o bá tẹ lẹ́tà tó ti ṣí tẹ́lẹ̀.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Ipò ààbò bí ìmúdójúìwọ̀n kan bá bàjẹ́"
+text = """
+Katna ń ṣẹ̀dà dátà rẹ kí ìmúdójúìwọ̀n tó yí i padà. Bí ìmúdójúìwọ̀n náà bá jẹ́ kí Katna má lè bẹ̀rẹ̀, ó ń ṣí ní ipò ààbò: lẹ́tà rẹ ṣì ṣeé kà, ìlà kan lókè rẹ̀ sì jẹ́ kí o gbìyànjú lẹ́ẹ̀kan sí i tàbí padà sí ẹ̀dà tí a ṣe ṣáájú ìmúdójúìwọ̀n. A ó kọ́kọ́ fi ohun tó wà níbẹ̀ báyìí pamọ́ sínú fódà kan, nítorí náà kò sí ohun tó máa sọnù. Ṣẹ̀dà ìròyìn àṣìṣe, tí ó tún wà nínú Nípa Katna, ń kó ohun tí ìròyìn àṣìṣe nílò jọ.
+"""

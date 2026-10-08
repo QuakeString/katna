@@ -55,6 +55,7 @@ reader-details-subject = 主旨：
 
 reader-downloading = 正在從伺服器下載這封郵件…
 reader-download-failed = 無法下載這封郵件。
+reader-download-failed-reason = 無法下載這封郵件。{ $reason }
 reader-download-offline = 此帳戶目前離線。請連上網路以下載這封郵件。
 reader-try-again = 再試一次
 
@@ -90,6 +91,89 @@ security-missing-key = 使用你沒有的金鑰簽署，因此無法檢查
 security-missing-key-id = 使用你沒有的金鑰（{ $key }）簽署，因此無法檢查
 security-signature-unavailable = 已簽署；請安裝 { $tool } 以檢查簽章
 security-signature-error = 無法檢查簽章。
+security-look-up-key = 查詢金鑰
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = 簽章已驗證
+key-card-verified-detail = 簽章有效，而且你信任這把金鑰。
+key-card-unverified = 簽章未經驗證
+key-card-unverified-detail = 簽章有效，但無法確認這把金鑰屬於對方。請與對方核對指紋，再到 GnuPG 中信任這把金鑰（使用 Kleopatra 或 gpg --edit-key）。
+key-card-not-sender = 由他人簽署
+key-card-not-sender-detail = 簽章有效，但這把金鑰不屬於寄件者。
+key-card-untrusted = 金鑰不受信任
+key-card-untrusted-detail = 你已在 GnuPG 中將這把金鑰標示為不信任。
+key-card-signature-expired = 簽章已過期
+key-card-signature-expired-detail = 簽章原本有效，但已經過期。
+key-card-key-expired = 金鑰已過期
+key-card-key-expired-detail = 簽章有效，但金鑰之後已過期。
+key-card-key-revoked = 金鑰已撤銷
+key-card-key-revoked-detail = 這把金鑰已被擁有者撤銷，因此無法信任這個簽章。
+key-card-bad = 簽章無效
+key-card-bad-detail = 這封郵件在簽署後遭到變更，或簽章是偽造的。
+key-card-signed-by = 簽署者
+key-card-belongs-to = 屬於
+key-card-fingerprint = 指紋
+key-card-signed = 簽署時間
+key-card-key = 金鑰
+key-card-kind = { $standard }，{ $algorithm }
+key-card-created = 建立時間
+key-card-expires = 到期時間
+key-card-never = 永不
+key-card-issued-by = 簽發者
+key-card-found-in = 來源
+key-card-keyring = 你的 GnuPG 金鑰圈
+key-card-copy = 複製指紋
+key-card-import-title = 要匯入這把金鑰嗎？
+key-card-from-directory = 在 { $domain } 的金鑰目錄中找到。
+key-card-from-attachment = 來自附件 { $name }。
+key-card-import-note = 匯入後，Katna 就能檢查這個人的簽章，並寄送加密郵件給對方。若要完全信任這把金鑰，請與對方核對指紋。
+key-card-cancel = 取消
+key-card-import = 匯入金鑰
+key-card-looking-up = 正在查詢金鑰…
+key-card-looking-up-detail = 正在向 { $domain } 的金鑰目錄查詢。
+key-card-not-found = 找不到金鑰
+key-card-not-found-detail = { $domain } 沒有為這個地址發布金鑰。請寄件者把他們的金鑰寄給你。
+key-card-not-kept = 找到的金鑰無法使用。
+key-card-failed = 無法取得金鑰
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = 這封郵件可能不是來自 { $domain }
+sender-failed-body = 它未通過 { $provider } 的寄件者檢查。請小心處理其中的連結、附件和回覆。
+sender-provider-unknown = 你的郵件服務供應商
+sender-details = 詳細資料
+sender-details-hide = 隱藏詳細資料
+sender-looks-safe = 看起來安全
+sender-move-to-spam = 移至垃圾郵件
+sender-checked-by = 由 { $provider } 檢查
+sender-checked-by-server = 由 { $provider }（{ $server }）檢查
+sender-dmarc = 寄件者網域（DMARC）
+sender-dkim = 簽章（DKIM）
+sender-spf = 寄送伺服器（SPF）
+sender-result-pass = 通過
+sender-result-fail = 未通過
+sender-result-unsure = 不確定
+sender-result-none = 無
+sender-result-missing = 未檢查
+sender-dmarc-pass = { $domain } 確認了這位寄件者。
+sender-dmarc-fail = 這封郵件與 { $domain } 宣告的郵件寄送方式不符。
+sender-dmarc-none = { $domain } 未公布其郵件的規則。
+sender-dkim-pass = 由 { $domain } 簽署。
+sender-dkim-fail = 來自 { $domain } 的簽章與這封郵件不符。
+sender-dkim-none = 這封郵件未經簽署。
+sender-spf-pass = 從 { $domain } 列出的伺服器寄出。
+sender-spf-fail = 從 { $domain } 未列出的伺服器寄出。
+sender-spf-none = { $domain } 未列出其伺服器。
+sender-check-unsure = 檢查未能得出明確結果。
+sender-unconfirmed = { $provider } 無法確認這封郵件來自 { $domain }。任何人都能隨意填寫寄件者。
+sender-link-title = 要開啟這個連結嗎？
+sender-link-body = 這封郵件未通過寄件者檢查。此連結會前往 { $host }：
+sender-link-cancel = 取消
+sender-link-open = 開啟
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -108,6 +192,7 @@ tracking-receipt-other = 已讀回條：{ $who } 未開啟就刪除或處理了�
 
 remote-hidden = 這封郵件中的圖片已隱藏。
 remote-hidden-unconfirmed = 圖片已隱藏：無法確認寄件者。
+remote-hidden-failed = 圖片已隱藏：這封郵件未通過寄件者檢查。
 remote-show = 顯示圖片
 remote-always-show = 一律顯示這位寄件者的圖片
 remote-picture-use = 使用

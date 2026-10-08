@@ -38,6 +38,8 @@ list-range-about = આશરે { $total } માંથી { $first }–{ $last 
 list-results = “{ $query }” માટેનાં પરિણામો
 list-results-corrected = “{ $query }” માટેનાં પરિણામો બતાવી રહ્યાં છીએ
 list-search-instead = તેના બદલે “{ $query }” શોધો
+list-search-no-index = શોધ હજી તૈયાર નથી: ઇન્ડેક્સ હજી બન્યો નથી.
+list-search-not-ready = શોધ હજી તૈયાર નથી: { $error }
 list-files-more = +{ $count }
 list-replied = તમે જવાબ આપ્યો
 
@@ -343,6 +345,14 @@ list-empty-waiting = કંઈ પણ જવાબની રાહમાં ન�
 list-empty-reminders = કોઈ રિમાઇન્ડર નથી. ઉમેરવા માટે મેઇલ પર H દબાવો.
 list-first-sync = તમારા મેઇલ મેળવી રહ્યાં છીએ…
 list-first-sync-detail = મેઇલ આવશે તેમ અહીં દેખાશે.
+list-store-unreadable = મેઇલ સ્ટોર ખોલી શકાયો નહીં
+
+## Mail list: lines
+
+row-no-subject = (વિષય નથી)
+row-unknown-sender = (અજાણ્યો મોકલનાર)
+row-to = પ્રતિ:
+row-no-recipients = (કોઈ પ્રાપ્તકર્તા નથી)
 
 ## Mail list: lines
 
@@ -426,6 +436,14 @@ drag-mail = { $kind ->
 }
 menu-find-from = { $name } તરફથી આવેલા ઇમેઇલ શોધો
 menu-make-rule = નિયમ બનાવો…
+
+## Snackbar after an action on mail in the list
+
+toast-key-imported = કી આયાત કરી
+toast-key-updated = આ કી તમારી પાસે પહેલેથી હતી; હવે તે અદ્યતન છે
+toast-key-removed = કી દૂર કરી
+toast-key-not-removed = કી દૂર કરી શકાઈ નહીં
+toast-fingerprint-copied = ફિંગરપ્રિન્ટ કૉપિ કરી
 
 ## Snackbar after an action on mail in the list
 

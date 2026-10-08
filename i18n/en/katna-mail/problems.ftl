@@ -99,3 +99,37 @@ service-not-running = The Katna background service is not running.
 service-no-answer = The Katna background service did not answer: { $error }
 # There is no desktop session bus (D-Bus) to reach the service over.
 service-no-session = No D-Bus session: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+# An amber line at the top of the list. Stored mail stays readable, but
+# nothing syncs; mail already in the outbox still goes out.
+safe-line = Katna is in safe mode after a problem with the update, so mail isn't syncing.
+# The line's button: starts the service normally again.
+safe-try-again = Try again
+# The line's and the dialog's button: goes back to the copy of the data
+# made before an update.
+safe-restore = Restore
+# A grey line while that runs. { $when } is a day and time, such as
+# "6 Oct, 21:14".
+safe-restoring = Restoring your data from { $when }…
+# A note once it is done; its button opens the folder that keeps the data
+# as it was before.
+safe-restored = Restored your data from { $when }. What was there before is kept in a folder.
+safe-show-folder = Show folder
+safe-restore-failed = Couldn't restore your data: { $error }
+# The Restore dialog.
+safe-restore-title = Restore your data from before an update?
+safe-restore-body = Katna goes back to the copy you pick. Mail that arrived after it downloads again from your accounts.
+safe-restore-none = There are no copies yet. Katna makes one before each update changes your data.
+safe-restore-keep = What's there now, including unsent mail, drafts and changes not yet synced, is kept in a folder first, so nothing is lost.
+safe-restore-cancel = Cancel
+# What a copy holds, under its day and time.
+safe-restore-mail = Mail
+safe-restore-pim = Accounts and contacts
+safe-restore-blobs = Attachments
+# Details: the debug report.
+safe-report-title = Debug report
+safe-report-body = Copy this and attach it to your bug report. It has no mail, addresses or passwords in it.
+safe-report-restore = Restore…
+safe-report-copied = Debug report copied

@@ -66,3 +66,28 @@ service-details-title = ସେବା କାହିଁକି ଆରମ୍ଭ ହ�
 service-details-body = ଏହାକୁ କପି କରି ଆପଣଙ୍କ ରିପୋର୍ଟ ସହ ପଠାନ୍ତୁ। ଏଥିରେ କୌଣସି ମେଲ କିମ୍ବା ପାସୱାର୍ଡ ନାହିଁ।
 service-details-copy = କପି କରନ୍ତୁ
 service-details-close = ବନ୍ଦ କରନ୍ତୁ
+service-not-running = Katnaର ବ୍ୟାକଗ୍ରାଉଣ୍ଡ ସେବା ଚାଲୁନାହିଁ।
+service-no-answer = Katnaର ବ୍ୟାକଗ୍ରାଉଣ୍ଡ ସେବା ଉତ୍ତର ଦେଲା ନାହିଁ: { $error }
+service-no-session = କୌଣସି D-Bus ସେସନ ନାହିଁ: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = ଅପଡେଟରେ ଏକ ସମସ୍ୟା ପରେ Katna ସୁରକ୍ଷିତ ମୋଡରେ ଅଛି, ତେଣୁ ମେଲ ସିଙ୍କ ହେଉନାହିଁ।
+safe-try-again = ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ
+safe-restore = ପୁନଃସ୍ଥାପନ କରନ୍ତୁ
+safe-restoring = { $when }ରୁ ଆପଣଙ୍କ ଡାଟା ପୁନଃସ୍ଥାପନ କରାଯାଉଛି…
+safe-restored = { $when }ରୁ ଆପଣଙ୍କ ଡାଟା ପୁନଃସ୍ଥାପନ ହେଲା। ପୂର୍ବରୁ ଯାହା ଥିଲା ତାହା ଏକ ଫୋଲ୍ଡରରେ ରଖାଯାଇଛି।
+safe-show-folder = ଫୋଲ୍ଡର ଦେଖାନ୍ତୁ
+safe-restore-failed = ଆପଣଙ୍କ ଡାଟା ପୁନଃସ୍ଥାପନ କରିହେଲା ନାହିଁ: { $error }
+safe-restore-title = ଅପଡେଟ ପୂର୍ବରୁ ଥିବା ଆପଣଙ୍କ ଡାଟା ପୁନଃସ୍ଥାପନ କରିବେ?
+safe-restore-body = ଆପଣ ବାଛିଥିବା କପିକୁ Katna ଫେରିଯାଏ। ତା' ପରେ ଆସିଥିବା ମେଲ ଆପଣଙ୍କ ଆକାଉଣ୍ଟରୁ ପୁଣି ଡାଉନଲୋଡ ହୁଏ।
+safe-restore-none = ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି କପି ନାହିଁ। ପ୍ରତ୍ୟେକ ଅପଡେଟ ଆପଣଙ୍କ ଡାଟା ବଦଳାଇବା ପୂର୍ବରୁ Katna ଗୋଟିଏ କପି ତିଆରି କରେ।
+safe-restore-keep = ବର୍ତ୍ତମାନ ଯାହା ଅଛି, ନପଠାଯାଇଥିବା ମେଲ, ଡ୍ରାଫ୍ଟ ଓ ସିଙ୍କ ହୋଇନଥିବା ପରିବର୍ତ୍ତନ ସହିତ, ପ୍ରଥମେ ଏକ ଫୋଲ୍ଡରରେ ରଖାଯାଏ, ତେଣୁ କିଛି ହଜେ ନାହିଁ।
+safe-restore-cancel = ବାତିଲ କରନ୍ତୁ
+safe-restore-mail = ମେଲ
+safe-restore-pim = ଆକାଉଣ୍ଟ ଓ ଯୋଗାଯୋଗ
+safe-restore-blobs = ସଂଲଗ୍ନକ
+safe-report-title = ଡିବଗ ରିପୋର୍ଟ
+safe-report-body = ଏହାକୁ କପି କରି ଆପଣଙ୍କ ବଗ ରିପୋର୍ଟରେ ସଂଲଗ୍ନ କରନ୍ତୁ। ଏଥିରେ କୌଣସି ମେଲ, ଠିକଣା କିମ୍ବା ପାସୱାର୍ଡ ନାହିଁ।
+safe-report-restore = ପୁନଃସ୍ଥାପନ କରନ୍ତୁ…
+safe-report-copied = ଡିବଗ ରିପୋର୍ଟ କପି ହେଲା

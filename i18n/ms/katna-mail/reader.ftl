@@ -55,6 +55,7 @@ reader-details-subject = subjek:
 
 reader-downloading = Memuat turun mesej ini daripada pelayan…
 reader-download-failed = Tidak dapat memuat turun mesej ini.
+reader-download-failed-reason = Tidak dapat memuat turun mesej ini. { $reason }
 reader-download-offline = Akaun ini di luar talian. Pergi ke dalam talian untuk memuat turun mesej ini.
 reader-try-again = Cuba lagi
 
@@ -90,6 +91,89 @@ security-missing-key = Ditandatangani dengan kunci yang anda tidak miliki, jadi 
 security-missing-key-id = Ditandatangani dengan kunci yang anda tidak miliki ({ $key }), jadi tidak dapat disemak
 security-signature-unavailable = Ditandatangani; pasang { $tool } untuk menyemak tandatangan
 security-signature-error = Tandatangan tidak dapat disemak.
+security-look-up-key = Cari kunci
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Tandatangan disahkan
+key-card-verified-detail = Tandatangan ini sah dan anda mempercayai kunci ini.
+key-card-unverified = Tandatangan belum disahkan
+key-card-unverified-detail = Tandatangan ini sah, tetapi tiada apa yang mengesahkan bahawa kunci ini milik mereka. Bandingkan cap jari dengan mereka, kemudian percayai kunci itu dalam GnuPG (Kleopatra atau gpg --edit-key).
+key-card-not-sender = Ditandatangani oleh orang lain
+key-card-not-sender-detail = Tandatangan ini sah, tetapi kunci itu bukan milik pengirim.
+key-card-untrusted = Kunci tidak dipercayai
+key-card-untrusted-detail = Anda telah menandai kunci ini sebagai tidak dipercayai dalam GnuPG.
+key-card-signature-expired = Tandatangan telah tamat tempoh
+key-card-signature-expired-detail = Tandatangan ini pernah sah, tetapi kini telah tamat tempoh.
+key-card-key-expired = Kunci telah tamat tempoh
+key-card-key-expired-detail = Tandatangan ini sah, tetapi kunci itu telah tamat tempoh sejak itu.
+key-card-key-revoked = Kunci telah dibatalkan
+key-card-key-revoked-detail = Pemiliknya telah membatalkan kunci ini, jadi tandatangan ini tidak boleh dipercayai.
+key-card-bad = Tandatangan tidak sah
+key-card-bad-detail = Mesej ini telah diubah selepas ditandatangani, atau tandatangannya dipalsukan.
+key-card-signed-by = Ditandatangani oleh
+key-card-belongs-to = Milik
+key-card-fingerprint = Cap jari
+key-card-signed = Ditandatangani
+key-card-key = Kunci
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Dicipta
+key-card-expires = Tamat tempoh
+key-card-never = Tidak pernah
+key-card-issued-by = Dikeluarkan oleh
+key-card-found-in = Ditemui dalam
+key-card-keyring = Gugusan kunci GnuPG anda
+key-card-copy = Salin cap jari
+key-card-import-title = Import kunci ini?
+key-card-from-directory = Ditemui dalam direktori kunci { $domain }.
+key-card-from-attachment = Daripada lampiran { $name }.
+key-card-import-note = Katna kemudian boleh menyemak tandatangan orang ini dan menyulitkan mel kepadanya. Untuk mempercayai kunci ini sepenuhnya, bandingkan cap jari dengannya.
+key-card-cancel = Batal
+key-card-import = Import kunci
+key-card-looking-up = Mencari kunci…
+key-card-looking-up-detail = Bertanya kepada direktori kunci { $domain }.
+key-card-not-found = Tiada kunci ditemui
+key-card-not-found-detail = { $domain } tidak menerbitkan kunci untuk alamat ini. Minta pengirim menghantar kuncinya kepada anda.
+key-card-not-kept = Kunci yang ditemui tidak boleh digunakan.
+key-card-failed = Tidak dapat mendapatkan kunci
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Ini mungkin bukan daripada { $domain }
+sender-failed-body = Mel ini gagal dalam semakan pengirim { $provider }. Berhati-hati dengan pautan, lampiran dan balasan.
+sender-provider-unknown = penyedia mel anda
+sender-details = Butiran
+sender-details-hide = Sembunyikan butiran
+sender-looks-safe = Nampak selamat
+sender-move-to-spam = Alih ke spam
+sender-checked-by = Disemak oleh { $provider }
+sender-checked-by-server = Disemak oleh { $provider } ({ $server })
+sender-dmarc = Domain pengirim (DMARC)
+sender-dkim = Tandatangan (DKIM)
+sender-spf = Pelayan penghantar (SPF)
+sender-result-pass = Lulus
+sender-result-fail = Gagal
+sender-result-unsure = Tidak pasti
+sender-result-none = Tiada
+sender-result-missing = Tidak disemak
+sender-dmarc-pass = { $domain } mengesahkan pengirim ini.
+sender-dmarc-fail = Mel ini tidak sepadan dengan cara { $domain } menyatakan melnya dihantar.
+sender-dmarc-none = { $domain } tidak menerbitkan sebarang peraturan untuk melnya.
+sender-dkim-pass = Ditandatangani oleh { $domain }.
+sender-dkim-fail = Tandatangan daripada { $domain } tidak sepadan dengan mel ini.
+sender-dkim-none = Mesej ini tidak ditandatangani.
+sender-spf-pass = Dihantar dari pelayan yang disenaraikan oleh { $domain }.
+sender-spf-fail = Dihantar dari pelayan yang tidak disenaraikan oleh { $domain }.
+sender-spf-none = { $domain } tidak menyenaraikan pelayannya.
+sender-check-unsure = Semakan tidak dapat memberikan jawapan yang jelas.
+sender-unconfirmed = { $provider } tidak dapat mengesahkan bahawa mel ini datang daripada { $domain }. Sesiapa sahaja boleh menulis apa-apa nama pengirim.
+sender-link-title = Buka pautan ini?
+sender-link-body = Mel ini gagal dalam semakan pengirimnya. Pautan ini pergi ke { $host }:
+sender-link-cancel = Batal
+sender-link-open = Buka
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -108,6 +192,7 @@ tracking-receipt-other = Resit baca: { $who } memadamkan atau menguruskan mesej 
 
 remote-hidden = Imej dalam mesej ini disembunyikan.
 remote-hidden-unconfirmed = Imej disembunyikan: pengirim tidak dapat disahkan.
+remote-hidden-failed = Imej disembunyikan: mel ini gagal dalam semakan pengirimnya.
 remote-show = Tunjukkan imej
 remote-always-show = Sentiasa tunjukkan daripada pengirim ini
 remote-picture-use = Gunakan

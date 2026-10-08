@@ -4190,3 +4190,126 @@ text = """
 Menu ☰ na ndepụta asụsụ na-amịfe ugbu a n'ime kaadị akaụntụ kama ịwụ
 abanye, ya na bọtịnụ azụ n'aka nri iji laghachi.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Ngwa ọ bụla na-anọ n'otu kaadị"
+text = """
+Kalịnda, Kọntaktị, Ọrụ, Ndetu na Faịlụ na-anọ ugbu a n'elu kaadị nwere otu
+ọnụ dị gịrịgịrị na onyinyo dị nro dịka Ozi na Ntọala.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Igodo njide ngwa ngwa na GNOME"
+text = """
+Meta+Alt+T maka ọrụ na Meta+Alt+N maka ndetu na-arụkwa ọrụ na GNOME ugbu a.
+Na nke mbụ, GNOME na-ajụ ma Katna nwere ike inweta ha, ị nwekwara ike
+ịgbanwe igodo ndị ahụ na Ntọala ya.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Bugharịa ngwaọrụ itinye akara"
+text = """
+Mgbe ị na-etinye akara na PDF, dọrọ ntụpọ ndị dị na njedebe ngwaọrụ ndị ahụ
+ka ị bugharịa ha ebe ọ bụla n'elu peeji ahụ, ka ha ghara ikpuchi ihe ị na-aka
+akara. Pịa ntụpọ ndị ahụ ugboro abụọ ka ị weghachi ha.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Na-arụ ọrụ na ihe ọgụgụ ihuenyo"
+text = """
+Orca na ihe ọgụgụ ihuenyo ndị ọzọ nwere ike ịgụ Katna Mail ugbu a: ndepụta
+ozi, folda, ozi meghere emeghe, bọtịnụ, menu, mgba ọkụ na igbe mkparịta ụka.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Zipu nzaghachi"
+text = """
+Enyemaka > Zipu nzaghachi, nke dịkwa na Ntọala ngwa ngwa na Ntọala >
+Nzaghachi onye ọrụ, na-eziga nsogbu ma ọ bụ echiche ozugbo na Katna. Ihe a
+na-ezipụ na-egosi kpọmkwem ederede ahụ tupu ọ pụọ, ozi-e maka ọzịza bụkwa
+nhọrọ.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Ọnụ ọgụgụ ojiji na-enweghị aha, ma ọ bụrụ na ị chọrọ"
+text = """
+Ntọala > Nzaghachi onye ọrụ nwere mgba ọkụ ọhụrụ, nke gbanyụrụ ruo mgbe i
+gbanyere ya: otu ugboro n'izu ọ na-ezipụ atụmatụ ndị i jiri, ee ma ọ bụ mba,
+ka ndị a kacha eji nweta nlekọta kacha. Peeji ahụ na-edepụta ihe niile a
+na-agụ ma na-egosi akụkọ izu a.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Ọchụchọ na-achọta ozi ochie na sava"
+text = """
+A naghị ebudata ozi ochie n'ozuzu ya, ya mere ọchụchọ enweghị ike ịgụ okwu
+ya ebe a. Ugbu a, mgbe ị kwụsịtụrụ ide ma ọ bụ mgbe ị pịara Enter, Katna
+na-ajụkwa sava ozi gị ma depụta ihe ọ chọtara n'okpuru Nsonaazụ ndị ọzọ na
+sava.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Ọchụchọ na Thai, Lao, Khmer na Burmese"
+text = """
+Ọchụchọ na-achọta okwu n'ozi Thai, Lao, Khmer ma ọ bụ Burmese ọbụna ebe
+ahịrịokwu enweghị oghere n'etiti okwu.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Ahịrị ogologo na-agbaji n'etiti okwu"
+text = """
+Ederede na Arabic, Hindi na mkpụrụedemede India ndị ọzọ, Thai, Lao, Khmer na
+Burmese na-agbaji ugbu a n'etiti okwu kama ịkụji okwu n'etiti, ahịrị Chinese
+na Japanese anaghịkwa amalite site na akara mmechi.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Ịpị na-ejupụta bọtịnụ niile"
+text = """
+Ịpị chip ma ọ bụ bọtịnụ nwere akara gburugburu na-ejupụta ya ugbu a ruo
+n'ọnụ na akuku ya, kama igosi obere pill n'ime ya.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Ogwe iwu"
+text = """
+Pịa Ctrl+Shift+P ma pịnye ka ị chọta ihe omume ma ọ bụ ntọala ọ bụla, wee
+pịa Enter ka ị gbaa ya. Ihe omume ọ bụla na-egosi ụzọ mkpirisi kiibọọdụ ya,
+ihe i jiri na nke ikpeazụ dịkwa n'elu.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Ozi ezoro ezo na-achọta igodo"
+text = """
+Mgbe Zoo ya gbanyere, a na-achọ igodo onye nnata na-enweghị igodo na ndekọ igodo nke ngalaba ya mgbe ị na-ezipu. Ozi ị na-ezipu na-ebu igodo ọha gị (Autocrypt) mgbe GnuPG nwere otu maka adreesị gị, a na-ejikwa igodo ndị bịarutere n'otu ụzọ ahụ zoo azịza gị. Ozi OpenPGP ezoro ezo na-ezokwa isiokwu ya ugbu a ruo mgbe e mepere ya.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Hụ onye binyere aka n'ozi"
+text = """
+Pịa ahịrị mbinye aka n'ozi a binyere aka ma ọ bụ nke ezoro ezo ka ị hụ igodo onye binyere aka: aha, adreesị, fingerprint na ụbọchị, ya na Detuo fingerprint. Ozi e ji igodo ị na-enweghị binye aka na-enye Chọọ igodo, igodo mmadụ tinyere dị ka mgbakwunye na-emepekwa dị ka Bubata igodo a? ya na Megharịa mgbe e mesịrị.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Ịdọ aka na ntị maka ozi adịgboroja"
+text = """
+Mgbe ozi adabaghị na nlele onye zitere nke onye na-enye gị ozi, banner uhie na-ekwu na o nwere ike ọ bụghị site n'aka onye ọ na-ekwu, ya na Nkọwa, O yiri ihe dị mma na Bugharịa gaa Spam. A na-ezochi foto ya, njikọ ya na-ajụkwa tupu ha emepe. Onye zitere nke ọ dịghị ihe kwadoro na-enweta obere "?" na foto ya.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Malitegharịa mgbe emelitere Katna"
+text = """
+Mgbe e melitere Katna ka Katna Mail mepere emepe, ọrụ azụ Katna na-akwaga n'ụdị ọhụrụ n'onwe ya ozugbo ọ naghị ezipụ ozi. Obere pill dị n'ala ndepụta ozi na-enye Malitegharịa, nke na-emepe Katna Mail ọhụrụ n'ọnọdụ ya. × na-ezochi ya ruo imelite ọzọ.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Imepe ozi dị jụụ karịa"
+text = """
+Ịpị ozi na ndepụta anaghịzi ezipụ ebili mmiri n'ofe ya ka ozi ahụ na-emepe. Ebili mmiri ahụ ka na-apụta mgbe ị pịrị ozi mepere emepe.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Ọnọdụ nchekwa ma imelite ọ gaghị nke ọma"
+text = """
+Katna na-edetu data gị tupu imelite agbanwee ya. Ọ bụrụ na imelite ahụ emee ka Katna ghara ịmalite, ọ na-emepe na ọnọdụ nchekwa: ozi gị ka na-agụ, ahịrị dị n'elu ya na-ekwekwa ka ị nwaa ọzọ ma ọ bụ laghachi na mbipụta e mere tupu imelite ahụ. A na-ebu ụzọ debe ihe dị ugbu a na folda, ya mere ọ dịghị ihe na-efu. Detuo akụkọ nchọpụta nsogbu, dịkwa na Maka Katna, na-achịkọta ihe akụkọ nsogbu chọrọ.
+"""

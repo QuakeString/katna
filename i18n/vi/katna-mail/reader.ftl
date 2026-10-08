@@ -55,6 +55,7 @@ reader-details-subject = tiêu đề:
 
 reader-downloading = Đang tải thư này xuống từ máy chủ…
 reader-download-failed = Không thể tải thư này xuống.
+reader-download-failed-reason = Không thể tải xuống thư này. { $reason }
 reader-download-offline = Tài khoản này đang ngoại tuyến. Hãy kết nối mạng để tải thư này xuống.
 reader-try-again = Thử lại
 
@@ -90,6 +91,89 @@ security-missing-key = Được ký bằng khóa mà bạn không có, nên khô
 security-missing-key-id = Được ký bằng khóa mà bạn không có ({ $key }), nên không thể kiểm tra
 security-signature-unavailable = Đã ký; hãy cài đặt { $tool } để kiểm tra chữ ký
 security-signature-error = Không thể kiểm tra chữ ký.
+security-look-up-key = Tra cứu khóa
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Chữ ký đã xác minh
+key-card-verified-detail = Chữ ký hợp lệ và bạn tin cậy khóa này.
+key-card-unverified = Chữ ký chưa được xác minh
+key-card-unverified-detail = Chữ ký hợp lệ, nhưng không có gì xác nhận khóa này là của họ. Hãy so dấu vân tay với họ, rồi tin cậy khóa trong GnuPG (Kleopatra hoặc gpg --edit-key).
+key-card-not-sender = Được ký bởi người khác
+key-card-not-sender-detail = Chữ ký hợp lệ, nhưng khóa không phải của người gửi.
+key-card-untrusted = Khóa không tin cậy
+key-card-untrusted-detail = Bạn đã đánh dấu khóa này là không tin cậy trong GnuPG.
+key-card-signature-expired = Chữ ký đã hết hạn
+key-card-signature-expired-detail = Chữ ký từng hợp lệ, nhưng đã hết hạn.
+key-card-key-expired = Khóa đã hết hạn
+key-card-key-expired-detail = Chữ ký hợp lệ, nhưng khóa đã hết hạn từ đó.
+key-card-key-revoked = Khóa đã bị thu hồi
+key-card-key-revoked-detail = Chủ sở hữu đã thu hồi khóa này, nên không thể tin cậy chữ ký.
+key-card-bad = Chữ ký không hợp lệ
+key-card-bad-detail = Thư này đã bị thay đổi sau khi ký, hoặc chữ ký là giả mạo.
+key-card-signed-by = Được ký bởi
+key-card-belongs-to = Thuộc về
+key-card-fingerprint = Dấu vân tay
+key-card-signed = Đã ký
+key-card-key = Khóa
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Ngày tạo
+key-card-expires = Hết hạn
+key-card-never = Không bao giờ
+key-card-issued-by = Cấp bởi
+key-card-found-in = Tìm thấy trong
+key-card-keyring = Chùm khóa GnuPG của bạn
+key-card-copy = Sao chép dấu vân tay
+key-card-import-title = Nhập khóa này?
+key-card-from-directory = Tìm thấy trong thư mục khóa của { $domain }.
+key-card-from-attachment = Từ tệp đính kèm { $name }.
+key-card-import-note = Sau đó Katna có thể kiểm tra chữ ký của người này và mã hóa thư gửi cho họ. Để tin cậy hoàn toàn khóa này, hãy so dấu vân tay với họ.
+key-card-cancel = Hủy
+key-card-import = Nhập khóa
+key-card-looking-up = Đang tra cứu khóa…
+key-card-looking-up-detail = Đang hỏi thư mục khóa của { $domain }.
+key-card-not-found = Không tìm thấy khóa
+key-card-not-found-detail = { $domain } không công bố khóa cho địa chỉ này. Hãy đề nghị người gửi gửi khóa của họ cho bạn.
+key-card-not-kept = Không thể dùng khóa đã tìm thấy.
+key-card-failed = Không thể lấy khóa
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Thư này có thể không phải từ { $domain }
+sender-failed-body = Thư không vượt qua kiểm tra người gửi của { $provider }. Hãy cẩn thận với liên kết, tệp đính kèm và khi trả lời.
+sender-provider-unknown = nhà cung cấp thư của bạn
+sender-details = Chi tiết
+sender-details-hide = Ẩn chi tiết
+sender-looks-safe = Có vẻ an toàn
+sender-move-to-spam = Chuyển vào thư rác
+sender-checked-by = Được kiểm tra bởi { $provider }
+sender-checked-by-server = Được kiểm tra bởi { $provider } ({ $server })
+sender-dmarc = Tên miền người gửi (DMARC)
+sender-dkim = Chữ ký (DKIM)
+sender-spf = Máy chủ gửi (SPF)
+sender-result-pass = Đạt
+sender-result-fail = Không đạt
+sender-result-unsure = Không chắc chắn
+sender-result-none = Không có
+sender-result-missing = Chưa kiểm tra
+sender-dmarc-pass = { $domain } xác nhận người gửi này.
+sender-dmarc-fail = Thư không khớp với cách { $domain } cho biết thư của họ được gửi.
+sender-dmarc-none = { $domain } không công bố quy tắc nào cho thư của họ.
+sender-dkim-pass = Được ký bởi { $domain }.
+sender-dkim-fail = Chữ ký từ { $domain } không khớp với thư.
+sender-dkim-none = Thư không được ký.
+sender-spf-pass = Được gửi từ một máy chủ mà { $domain } liệt kê.
+sender-spf-fail = Được gửi từ một máy chủ mà { $domain } không liệt kê.
+sender-spf-none = { $domain } không liệt kê các máy chủ của họ.
+sender-check-unsure = Việc kiểm tra không đưa ra được câu trả lời rõ ràng.
+sender-unconfirmed = { $provider } không thể xác nhận thư này đến từ { $domain }. Ai cũng có thể ghi bất kỳ người gửi nào.
+sender-link-title = Mở liên kết này?
+sender-link-body = Thư này không vượt qua kiểm tra người gửi. Liên kết dẫn tới { $host }:
+sender-link-cancel = Hủy
+sender-link-open = Mở
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -108,6 +192,7 @@ tracking-receipt-other = Xác nhận đã đọc: { $who } đã xóa hoặc xử
 
 remote-hidden = Hình ảnh trong thư này đang bị ẩn.
 remote-hidden-unconfirmed = Hình ảnh đang bị ẩn: không thể xác nhận người gửi.
+remote-hidden-failed = Hình ảnh đã bị ẩn: thư này không vượt qua kiểm tra người gửi.
 remote-show = Hiển thị hình ảnh
 remote-always-show = Luôn hiển thị hình ảnh từ người gửi này
 remote-picture-use = Dùng

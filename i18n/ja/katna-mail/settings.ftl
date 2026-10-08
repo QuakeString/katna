@@ -173,6 +173,7 @@ settings-general-start-at-login = ログイン時に Katna を起動
 settings-general-start-at-login-detail = ウィンドウを開かずに、メールを同期し、新着メールの通知とトレイアイコンを表示します
 settings-general-login-window = Katna Mail のウィンドウも開く
 settings-general-login-window-detail = ログイン時にウィンドウも開きます
+settings-general-login-entry = ログイン時に起動（設定 > 全般 > デスクトップ）
 settings-general-tray = システムトレイに Katna を表示
 settings-general-tray-detail = 未読数とメニュー付き
 settings-general-tray-color = トレイアイコンをカラーで表示

@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } из примерно { $total }
 list-results = Результаты по запросу «{ $query }»
 list-results-corrected = Показаны результаты по запросу «{ $query }»
 list-search-instead = Искать вместо этого «{ $query }»
+list-search-no-index = Поиск не готов: индекс ещё не построен.
+list-search-not-ready = Поиск не готов: { $error }
 list-files-more = +{ $count }
 list-replied = Вы ответили
 
@@ -443,6 +445,11 @@ list-empty-waiting = Ответа ничего не ждёт.
 list-empty-reminders = Напоминаний нет. Нажмите H на письме, чтобы добавить.
 list-first-sync = Загружаем вашу почту…
 list-first-sync-detail = Письма будут появляться здесь по мере получения.
+list-store-unreadable = Не удалось открыть хранилище почты
+row-no-subject = (без темы)
+row-unknown-sender = (неизвестный отправитель)
+row-to = Кому:
+row-no-recipients = (нет получателей)
 
 ## Mail list: lines
 
@@ -530,6 +537,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = Найти письма от { $name }
 menu-make-rule = Создать правило…
+toast-key-imported = Ключ импортирован
+toast-key-updated = Этот ключ у вас уже был; теперь он обновлён
+toast-key-removed = Ключ удалён
+toast-key-not-removed = Не удалось удалить ключ
+toast-fingerprint-copied = Отпечаток скопирован
 
 ## Snackbar after an action on mail in the list
 

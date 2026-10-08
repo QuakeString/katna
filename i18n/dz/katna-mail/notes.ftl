@@ -92,6 +92,7 @@ notes-link-note = དྲན་ཐོ་ཅིག་འབྲེལ་མཐུ�
 notes-link-new = དྲན་ཐོ་གསརཔ “{ $title }”
 notes-linked-from = འདི་ལས་འབྲེལ་མཐུད་འབད་ཡོདཔ
 notes-link-gone = དྲན་ཐོ་དེ་ ད་ནཱ་ལུ་མིན་འདུག
+notes-new-note-gone = དྲན་ཐོ་གསརཔ་དེ་ མེདཔ་ཐལ་ཡི།
 
 ## Version history
 

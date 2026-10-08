@@ -55,6 +55,7 @@ reader-details-subject = isihloko:
 
 reader-downloading = Ilanda lo mlayezo kuseva…
 reader-download-failed = Ayikwazanga ukulanda lo mlayezo.
+reader-download-failed-reason = Ayikwazanga ukulanda lo mlayezo. { $reason }
 reader-download-offline = Le akhawunti ayixhunyiwe. Xhuma futhi ukuze ulande lo mlayezo.
 reader-try-again = Zama futhi
 
@@ -90,6 +91,89 @@ security-missing-key = Kusayinwe ngokhiye ongenawo, ngakho akukwazi ukuhlolwa
 security-missing-key-id = Kusayinwe ngokhiye ongenawo ({ $key }), ngakho akukwazi ukuhlolwa
 security-signature-unavailable = Kusayiniwe; faka i-{ $tool } ukuze uhlole isiginesha
 security-signature-error = Isiginesha ayikwazanga ukuhlolwa.
+security-look-up-key = Bheka ukhiye
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Isiginesha eqinisekisiwe
+key-card-verified-detail = Isiginesha ilungile futhi uyamethemba lo khiye.
+key-card-unverified = Isiginesha ayiqinisekisiwe
+key-card-unverified-detail = Isiginesha ilungile, kodwa akukho okuqinisekisa ukuthi ukhiye ngowabo. Qhathanisa i-fingerprint nabo, bese uthemba ukhiye ku-GnuPG (Kleopatra noma gpg --edit-key).
+key-card-not-sender = Kusayinwe ngomunye umuntu
+key-card-not-sender-detail = Isiginesha ilungile, kodwa ukhiye akusiwo owomthumeli.
+key-card-untrusted = Ukhiye awuthenjwa
+key-card-untrusted-detail = Ulimake lo khiye njengongathembekile ku-GnuPG.
+key-card-signature-expired = Isiginesha iphelelwe yisikhathi
+key-card-signature-expired-detail = Isiginesha ibilungile, kodwa isiphelelwe yisikhathi.
+key-card-key-expired = Ukhiye uphelelwe yisikhathi
+key-card-key-expired-detail = Isiginesha ilungile, kodwa ukhiye usuphelelwe yisikhathi kusukela lapho.
+key-card-key-revoked = Ukhiye uhoxisiwe
+key-card-key-revoked-detail = Umnikazi wawo uhoxise lo khiye, ngakho isiginesha ayikwazi ukuthenjwa.
+key-card-bad = Isiginesha embi
+key-card-bad-detail = Lo mlayezo ushintshwe ngemva kokusayinwa, noma isiginesha ingumgunyathi.
+key-card-signed-by = Kusayinwe ngu
+key-card-belongs-to = Ungowaka
+key-card-fingerprint = I-fingerprint
+key-card-signed = Kusayinwe
+key-card-key = Ukhiye
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Wenziwe
+key-card-expires = Uphelelwa yisikhathi
+key-card-never = Neze
+key-card-issued-by = Ikhishwe ngu
+key-card-found-in = Utholakale ku
+key-card-keyring = I-keyring yakho ye-GnuPG
+key-card-copy = Kopisha i-fingerprint
+key-card-import-title = Ngenisa lo khiye?
+key-card-from-directory = Utholakale kuhla lukakhiye lwe-{ $domain }.
+key-card-from-attachment = Kusuka kokunamathiselwe { $name }.
+key-card-import-note = I-Katna ingabe isihlola amasiginesha alo muntu futhi ibethele imeyili eya kuye. Ukuze uthembe ukhiye ngokugcwele, qhathanisa i-fingerprint naye.
+key-card-cancel = Khansela
+key-card-import = Ngenisa ukhiye
+key-card-looking-up = Kubhekwa ukhiye…
+key-card-looking-up-detail = Kubuzwa uhla lukakhiye lwe-{ $domain }.
+key-card-not-found = Akukho khiye otholakele
+key-card-not-found-detail = I-{ $domain } ayishicileli ukhiye waleli kheli. Cela umthumeli akuthumelele owakhe.
+key-card-not-kept = Ukhiye otholakele awukwazi ukusetshenziswa.
+key-card-failed = Ayikwazanga ukuthola ukhiye
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Lokhu kungase kungaveli ku-{ $domain }
+sender-failed-body = Kuhlulekile ekuhloleni umthumeli kwe-{ $provider }. Qaphela ngezixhumanisi, okunamathiselwe nezimpendulo.
+sender-provider-unknown = umhlinzeki wakho we-imeyili
+sender-details = Imininingwane
+sender-details-hide = Fihla imininingwane
+sender-looks-safe = Kubukeka kuphephile
+sender-move-to-spam = Hambisa ku-Ugaxekile
+sender-checked-by = Kuhlolwe yi-{ $provider }
+sender-checked-by-server = Kuhlolwe yi-{ $provider } ({ $server })
+sender-dmarc = Isizinda somthumeli (DMARC)
+sender-dkim = Isiginesha (DKIM)
+sender-spf = Iseva ethumelayo (SPF)
+sender-result-pass = Kuphumelele
+sender-result-fail = Kuhlulekile
+sender-result-unsure = Akuqinisekile
+sender-result-none = Lutho
+sender-result-missing = Akuhlolwanga
+sender-dmarc-pass = I-{ $domain } iyaqinisekisa lo mthumeli.
+sender-dmarc-fail = Imeyili ayihambisani nendlela i-{ $domain } ethi imeyili yayo ithunyelwa ngayo.
+sender-dmarc-none = I-{ $domain } ayishicileli mithetho yemeyili yayo.
+sender-dkim-pass = Isayinwe yi-{ $domain }.
+sender-dkim-fail = Isiginesha evela ku-{ $domain } ayihambisani nemeyili.
+sender-dkim-none = Umlayezo awuzange usayinwe.
+sender-spf-pass = Ithunyelwe kusuka kuseva i-{ $domain } eyibalayo.
+sender-spf-fail = Ithunyelwe kusuka kuseva i-{ $domain } engayibali.
+sender-spf-none = I-{ $domain } ayiwabali amaseva ayo.
+sender-check-unsure = Ukuhlola akukwazanga ukunikeza impendulo ecacile.
+sender-unconfirmed = I-{ $provider } ayikwazanga ukuqinisekisa ukuthi lokhu kuvela ku-{ $domain }. Noma ubani angabhala noma yimuphi umthumeli.
+sender-link-title = Vula lesi sixhumanisi?
+sender-link-body = Le meyili ihlulekile ekuhloleni umthumeli. Isixhumanisi siya ku-{ $host }:
+sender-link-cancel = Khansela
+sender-link-open = Vula
 tracking-opened = U-{ $who } uwuvule { $count ->
     [one] kanye
    *[other] izikhathi ezingu-{ $count }
@@ -116,6 +200,7 @@ tracking-receipt-other = Isaziso sokufunda: u-{ $who } ususile noma uphathe umla
 
 remote-hidden = Izithombe kulo mlayezo zifihliwe.
 remote-hidden-unconfirmed = Izithombe zifihliwe: umthumeli akakwazanga ukuqinisekiswa.
+remote-hidden-failed = Izithombe zifihliwe: le meyili ihlulekile ekuhloleni umthumeli.
 remote-show = Bonisa izithombe
 remote-always-show = Bonisa njalo kusuka kulo mthumeli
 remote-picture-use = Sebenzisa

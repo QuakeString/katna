@@ -66,3 +66,28 @@ service-details-title = Hoekom die diens nie wil begin nie
 service-details-body = Kopieer dit en stuur dit saam met jou verslag. Daar is geen e-pos of wagwoorde in nie.
 service-details-copy = Kopieer
 service-details-close = Maak toe
+service-not-running = Die Katna-agtergronddiens loop nie.
+service-no-answer = Die Katna-agtergronddiens het nie geantwoord nie: { $error }
+service-no-session = Geen D-Bus-sessie nie: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna is in veilige modus ná 'n probleem met die opdatering, so e-pos sinkroniseer nie.
+safe-try-again = Probeer weer
+safe-restore = Herstel
+safe-restoring = Herstel tans jou data van { $when }…
+safe-restored = Jou data van { $when } is herstel. Wat voorheen daar was, word in 'n vouer gehou.
+safe-show-folder = Wys vouer
+safe-restore-failed = Kon nie jou data herstel nie: { $error }
+safe-restore-title = Herstel jou data van voor 'n opdatering?
+safe-restore-body = Katna gaan terug na die kopie wat jy kies. E-pos wat daarna aangekom het, word weer van jou rekeninge afgelaai.
+safe-restore-none = Daar is nog geen kopieë nie. Katna maak een voordat elke opdatering jou data verander.
+safe-restore-keep = Wat nou daar is, insluitend ongestuurde e-pos, konsepte en veranderinge wat nog nie gesinkroniseer is nie, word eers in 'n vouer gehou, so niks gaan verlore nie.
+safe-restore-cancel = Kanselleer
+safe-restore-mail = E-pos
+safe-restore-pim = Rekeninge en kontakte
+safe-restore-blobs = Aanhegsels
+safe-report-title = Foutsporingsverslag
+safe-report-body = Kopieer dit en heg dit aan jou foutverslag. Daar is geen e-pos, adresse of wagwoorde in nie.
+safe-report-restore = Herstel…
+safe-report-copied = Foutsporingsverslag gekopieer

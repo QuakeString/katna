@@ -179,6 +179,7 @@ settings-general-start-at-login = లాగిన్ అయినప్పుడ
 settings-general-start-at-login-detail = విండోను తెరవకుండానే మెయిల్‌ను సింక్ చేసి, కొత్త మెయిల్ నోటిఫికేషన్‌లను, ట్రే ఐకాన్‌ను చూపిస్తుంది
 settings-general-login-window = Katna Mail విండోను కూడా తెరవండి
 settings-general-login-window-detail = లాగిన్ అయినప్పుడు విండో కూడా తెరుచుకుంటుంది
+settings-general-login-entry = లాగిన్ అయినప్పుడు ప్రారంభించబడింది (సెట్టింగ్‌లు > సాధారణం > డెస్క్‌టాప్)
 settings-general-tray = సిస్టమ్ ట్రేలో Katnaను చూపండి
 settings-general-tray-detail = చదవని వాటి సంఖ్య, ఒక మెనూతో
 settings-general-tray-color = రంగులో ట్రే ఐకాన్

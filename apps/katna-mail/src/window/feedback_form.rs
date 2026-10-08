@@ -311,9 +311,8 @@ impl MailWindow {
             .py(px(space::S3))
             .text_size(px(text::BODY))
             .child(form.message.clone());
-        let reply_to = line_field("send-feedback-reply", &form.reply_to, th, cx)
-            .text_size(px(text::BODY))
-            .child(div().flex_1().child(form.reply_to.clone()));
+        let reply_to =
+            line_field("send-feedback-reply", &form.reply_to, th, cx).text_size(px(text::BODY));
         let system_on = form.system;
         let system_row = div()
             .id("send-feedback-system")

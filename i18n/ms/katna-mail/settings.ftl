@@ -173,6 +173,7 @@ settings-general-start-at-login = Mulakan Katna semasa log masuk
 settings-general-start-at-login-detail = Menyegerakkan mel dan menunjukkan pemberitahuan mel baharu serta ikon dulang, tanpa membuka tetingkap
 settings-general-login-window = Buka tetingkap Katna Mail juga
 settings-general-login-window-detail = Tetingkap turut dibuka semasa log masuk
+settings-general-login-entry = Dimulakan semasa log masuk (Tetapan > Umum > Desktop)
 settings-general-tray = Tunjukkan Katna dalam dulang sistem
 settings-general-tray-detail = Dengan kiraan belum dibaca dan menu
 settings-general-tray-color = Ikon dulang berwarna

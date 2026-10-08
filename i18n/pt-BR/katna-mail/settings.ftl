@@ -181,6 +181,7 @@ settings-general-start-at-login = Iniciar o Katna ao fazer login
 settings-general-start-at-login-detail = Sincroniza os e-mails e mostra as notificações de novos e-mails e o ícone da bandeja, sem abrir a janela
 settings-general-login-window = Abrir também a janela do Katna Mail
 settings-general-login-window-detail = A janela também abre ao fazer login
+settings-general-login-entry = Iniciado no login (Configurações > Geral > Área de trabalho)
 settings-general-tray = Mostrar o Katna na bandeja do sistema
 settings-general-tray-detail = Com a contagem de não lidas e um menu
 settings-general-tray-color = Ícone da bandeja colorido

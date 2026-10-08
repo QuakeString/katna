@@ -116,6 +116,7 @@ calendar-add-meet = Google Meet ଭିଡିଓ କଲ୍ ଯୋଡ଼ନ୍ତ�
 calendar-add-teams = Teams ମିଟିଂ ଯୋଡ଼ନ୍ତୁ
 calendar-has-call = ଭିଡିଓ କଲ୍ ଯୋଡ଼ାଗଲା
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = ସାରା ଦିନ
 calendar-more-options = ଅଧିକ ବିକଳ୍ପ
 calendar-save = ସେଭ କରନ୍ତୁ

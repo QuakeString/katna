@@ -47,4 +47,5 @@ quick-help = Hjälp
 quick-tour = Gå igenom rundturen
 quick-whats-new = Nyheter
 quick-check-updates = Sök efter uppdateringar
+quick-send-feedback = Skicka feedback
 quick-about = Om Katna

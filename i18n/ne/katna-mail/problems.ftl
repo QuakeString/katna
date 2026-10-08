@@ -66,3 +66,28 @@ service-details-title = सेवा किन सुरु हुँदैन
 service-details-body = यसलाई कपी गरेर आफ्नो रिपोर्टसँग पठाउनुहोस्। यसमा कुनै मेल वा पासवर्ड छैन।
 service-details-copy = कपी गर्नुहोस्
 service-details-close = बन्द गर्नुहोस्
+service-not-running = Katna को पृष्ठभूमि सेवा चलिरहेको छैन।
+service-no-answer = Katna को पृष्ठभूमि सेवाले जवाफ दिएन: { $error }
+service-no-session = D-Bus सत्र छैन: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = अपडेटमा समस्या आएकाले Katna सुरक्षित मोडमा छ, त्यसैले मेल सिंक भइरहेको छैन।
+safe-try-again = फेरि प्रयास गर्नुहोस्
+safe-restore = पुनर्स्थापना गर्नुहोस्
+safe-restoring = { $when } को तपाईंको डेटा पुनर्स्थापना गर्दै…
+safe-restored = { $when } को तपाईंको डेटा पुनर्स्थापना गरियो। पहिले भएको कुरा एउटा फोल्डरमा राखिएको छ।
+safe-show-folder = फोल्डर देखाउनुहोस्
+safe-restore-failed = तपाईंको डेटा पुनर्स्थापना गर्न सकिएन: { $error }
+safe-restore-title = अपडेटअघिको तपाईंको डेटा पुनर्स्थापना गर्ने?
+safe-restore-body = Katna तपाईंले छान्नुभएको प्रतिमा फर्कन्छ। त्यसपछि आएका मेलहरू तपाईंका खाताहरूबाट फेरि डाउनलोड हुन्छन्।
+safe-restore-none = अझै कुनै प्रति छैन। हरेक अपडेटले तपाईंको डेटा बदल्नुअघि Katna एउटा प्रति बनाउँछ।
+safe-restore-keep = अहिले भएको कुरा, नपठाइएका मेल, ड्राफ्ट र अझै सिंक नभएका परिवर्तनहरूसहित, पहिले एउटा फोल्डरमा राखिन्छ, त्यसैले केही पनि हराउँदैन।
+safe-restore-cancel = रद्द गर्नुहोस्
+safe-restore-mail = मेल
+safe-restore-pim = खाता र सम्पर्कहरू
+safe-restore-blobs = संलग्नकहरू
+safe-report-title = डिबग रिपोर्ट
+safe-report-body = यसलाई कपी गरेर आफ्नो बग रिपोर्टमा संलग्न गर्नुहोस्। यसमा कुनै मेल, ठेगाना वा पासवर्ड छैन।
+safe-report-restore = पुनर्स्थापना गर्नुहोस्…
+safe-report-copied = डिबग रिपोर्ट कपी गरियो

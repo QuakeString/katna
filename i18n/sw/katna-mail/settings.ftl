@@ -179,6 +179,7 @@ settings-general-start-at-login = Anzisha Katna wakati wa kuingia
 settings-general-start-at-login-detail = Husawazisha barua na kuonyesha arifa za barua mpya na aikoni ya trei, bila kufungua dirisha
 settings-general-login-window = Fungua pia dirisha la Katna Mail
 settings-general-login-window-detail = Dirisha pia hufunguka wakati wa kuingia
+settings-general-login-entry = Huanzishwa wakati wa kuingia (Mipangilio > Jumla > Kompyuta ya mezani)
 settings-general-tray = Onyesha Katna kwenye trei ya mfumo
 settings-general-tray-detail = Pamoja na idadi ya ambazo hazijasomwa na menyu
 settings-general-tray-color = Aikoni ya trei yenye rangi

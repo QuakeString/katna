@@ -181,6 +181,7 @@ settings-general-start-at-login = Démarrer Katna à la connexion
 settings-general-start-at-login-detail = Synchronise les messages et affiche les notifications de nouveaux messages et l’icône de la zone de notification, sans ouvrir la fenêtre
 settings-general-login-window = Ouvrir aussi la fenêtre de Katna Mail
 settings-general-login-window-detail = La fenêtre s’ouvre également à la connexion
+settings-general-login-entry = Démarré à la connexion (Paramètres > Général > Bureau)
 settings-general-tray = Afficher Katna dans la zone de notification
 settings-general-tray-detail = Avec le nombre de messages non lus et un menu
 settings-general-tray-color = Icône de la zone de notification en couleur

@@ -55,6 +55,7 @@ reader-details-subject = onderwerp:
 
 reader-downloading = Laai tans hierdie boodskap van die bediener af…
 reader-download-failed = Kon nie hierdie boodskap aflaai nie.
+reader-download-failed-reason = Kon nie hierdie boodskap aflaai nie. { $reason }
 reader-download-offline = Hierdie rekening is vanlyn. Gaan aanlyn om hierdie boodskap af te laai.
 reader-try-again = Probeer weer
 
@@ -90,6 +91,89 @@ security-missing-key = Onderteken met 'n sleutel wat jy nie het nie, dus kan dit
 security-missing-key-id = Onderteken met 'n sleutel wat jy nie het nie ({ $key }), dus kan dit nie gekontroleer word nie
 security-signature-unavailable = Onderteken; installeer { $tool } om die handtekening te kontroleer
 security-signature-error = Die handtekening kon nie gekontroleer word nie.
+security-look-up-key = Soek sleutel op
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Geverifieerde handtekening
+key-card-verified-detail = Die handtekening is geldig en jy vertrou hierdie sleutel.
+key-card-unverified = Handtekening nie geverifieer nie
+key-card-unverified-detail = Die handtekening is geldig, maar niks bevestig dat die sleutel hulle s'n is nie. Vergelyk die vingerafdruk met hulle en vertrou dan die sleutel in GnuPG (Kleopatra of gpg --edit-key).
+key-card-not-sender = Deur iemand anders onderteken
+key-card-not-sender-detail = Die handtekening is geldig, maar die sleutel is nie die sender s'n nie.
+key-card-untrusted = Sleutel nie vertrou nie
+key-card-untrusted-detail = Jy het hierdie sleutel in GnuPG as onbetroubaar gemerk.
+key-card-signature-expired = Handtekening het verval
+key-card-signature-expired-detail = Die handtekening was geldig, maar dit het verval.
+key-card-key-expired = Sleutel het verval
+key-card-key-expired-detail = Die handtekening is geldig, maar die sleutel het sedertdien verval.
+key-card-key-revoked = Sleutel herroep
+key-card-key-revoked-detail = Die eienaar het hierdie sleutel herroep, dus kan die handtekening nie vertrou word nie.
+key-card-bad = Ongeldige handtekening
+key-card-bad-detail = Hierdie boodskap is verander nadat dit onderteken is, of die handtekening is vervals.
+key-card-signed-by = Onderteken deur
+key-card-belongs-to = Behoort aan
+key-card-fingerprint = Vingerafdruk
+key-card-signed = Onderteken
+key-card-key = Sleutel
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Geskep
+key-card-expires = Verval
+key-card-never = Nooit
+key-card-issued-by = Uitgereik deur
+key-card-found-in = Gevind in
+key-card-keyring = Jou GnuPG-sleutelring
+key-card-copy = Kopieer vingerafdruk
+key-card-import-title = Voer hierdie sleutel in?
+key-card-from-directory = Gevind in { $domain } se sleutelgids.
+key-card-from-attachment = Uit die aanhegsel { $name }.
+key-card-import-note = Katna kan dan hierdie persoon se handtekeninge kontroleer en e-pos aan hulle enkripteer. Om die sleutel ten volle te vertrou, vergelyk die vingerafdruk met hulle.
+key-card-cancel = Kanselleer
+key-card-import = Voer sleutel in
+key-card-looking-up = Soek tans die sleutel op…
+key-card-looking-up-detail = Vra tans { $domain } se sleutelgids.
+key-card-not-found = Geen sleutel gevind nie
+key-card-not-found-detail = { $domain } publiseer nie 'n sleutel vir hierdie adres nie. Vra die sender om vir jou hulle s'n te stuur.
+key-card-not-kept = Die sleutel wat gevind is, kan nie gebruik word nie.
+key-card-failed = Kon nie die sleutel kry nie
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Dit is dalk nie van { $domain } nie
+sender-failed-body = Dit het { $provider } se senderkontroles gedruip. Wees versigtig met skakels, aanhegsels en antwoorde.
+sender-provider-unknown = jou e-posdiensverskaffer
+sender-details = Besonderhede
+sender-details-hide = Versteek besonderhede
+sender-looks-safe = Lyk veilig
+sender-move-to-spam = Skuif na strooipos
+sender-checked-by = Nagegaan deur { $provider }
+sender-checked-by-server = Nagegaan deur { $provider } ({ $server })
+sender-dmarc = Senderdomein (DMARC)
+sender-dkim = Handtekening (DKIM)
+sender-spf = Stuurbediener (SPF)
+sender-result-pass = Geslaag
+sender-result-fail = Gedruip
+sender-result-unsure = Nie seker nie
+sender-result-none = Geen
+sender-result-missing = Nie nagegaan nie
+sender-dmarc-pass = { $domain } bevestig hierdie sender.
+sender-dmarc-fail = Die e-pos stem nie ooreen met hoe { $domain } sê sy e-pos gestuur word nie.
+sender-dmarc-none = { $domain } publiseer geen reëls vir sy e-pos nie.
+sender-dkim-pass = Onderteken deur { $domain }.
+sender-dkim-fail = Die handtekening van { $domain } stem nie met die e-pos ooreen nie.
+sender-dkim-none = Die boodskap is nie onderteken nie.
+sender-spf-pass = Gestuur van 'n bediener wat { $domain } lys.
+sender-spf-fail = Gestuur van 'n bediener wat { $domain } nie lys nie.
+sender-spf-none = { $domain } lys nie sy bedieners nie.
+sender-check-unsure = Die kontrole kon nie 'n duidelike antwoord gee nie.
+sender-unconfirmed = { $provider } kon nie bevestig dat dit van { $domain } af kom nie. Enigiemand kan enige sender skryf.
+sender-link-title = Maak hierdie skakel oop?
+sender-link-body = Hierdie e-pos het sy senderkontroles gedruip. Die skakel gaan na { $host }:
+sender-link-cancel = Kanselleer
+sender-link-open = Maak oop
 tracking-opened = { $who } het dit { $count ->
     [one] een keer
    *[other] { $count } keer
@@ -116,6 +200,7 @@ tracking-receipt-other = Leesbewys: { $who } het jou boodskap uitgevee of hantee
 
 remote-hidden = Prente in hierdie boodskap is versteek.
 remote-hidden-unconfirmed = Prente is versteek: die sender kon nie bevestig word nie.
+remote-hidden-failed = Prente is versteek: hierdie e-pos het sy senderkontroles gedruip.
 remote-show = Wys prente
 remote-always-show = Wys altyd van hierdie sender
 remote-picture-use = Gebruik

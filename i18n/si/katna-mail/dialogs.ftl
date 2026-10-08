@@ -6,6 +6,7 @@
 
 about-tooltip = Katna ගැන
 about-tagline = Linux ඩෙස්ක්ටොප් සඳහා තැපැල් සහ දින දර්ශනය
+about-version = Katna Mail { $version }
 about-copy-version = අනුවාද විස්තර පිටපත් කරන්න
 about-version-copied = පිටපත් කළා
 about-version-built = සාදන ලද්දේ: { $date }
@@ -41,6 +42,8 @@ about-update-restart = යාවත්කාලීන කර යළි අරඹ
 about-update-cancel = දැන් නොවේ
 about-changelog = වෙනස්කම් ලැයිස්තුව
 about-source = මූලාශ්‍ර කේතය
+about-debug-report = නිදොස් වාර්තාව පිටපත් කරන්න
+about-debug-report-tip = දෝෂ වාර්තාවක් සඳහා අනුවාද, යාවත්කාලීන කිරීම්වලින් පසු පරීක්ෂාව සහ මෑත ලොග් පේළි. තැපැල් හෝ මුරපද නැත.
 about-coffee = මට කෝපියක් ගෙන දෙන්න
 about-coffee-coffee = කෝපි?
 about-coffee-tea = තේ?

@@ -4306,3 +4306,146 @@ text = """
 Menu ☰ và danh sách ngôn ngữ giờ trượt vào bên trong thẻ tài khoản thay vì
 bật ra đột ngột, với nút quay lại ở bên phải để trở về.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Mọi ứng dụng nằm trên cùng một thẻ"
+text = """
+Lịch, Danh bạ, Việc cần làm, Ghi chú và Tệp giờ nằm trên một thẻ với cùng
+đường viền mảnh và bóng đổ nhẹ như Thư và Cài đặt.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Phím ghi nhanh trên GNOME"
+text = """
+Meta+Alt+T để thêm việc cần làm và Meta+Alt+N để thêm ghi chú giờ cũng dùng
+được trên GNOME. Lần đầu tiên, GNOME sẽ hỏi có cho Katna dùng các phím này
+không, và bạn có thể đổi phím trong phần Cài đặt của GNOME.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Di chuyển công cụ đánh dấu"
+text = """
+Khi đánh dấu một PDF, hãy kéo các dấu chấm ở cuối thanh công cụ để di chuyển
+nó tới bất kỳ đâu trên trang, để nó không bao giờ che phần bạn đang đánh dấu.
+Nhấp đúp vào các dấu chấm để đưa nó về chỗ cũ.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Hoạt động với trình đọc màn hình"
+text = """
+Orca và các trình đọc màn hình khác giờ có thể đọc Katna Mail: danh sách
+thư, các thư mục, thư đang mở, các nút, menu, công tắc và hộp thoại.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Gửi ý kiến phản hồi"
+text = """
+Trợ giúp > Gửi ý kiến phản hồi, cũng có trong Cài đặt nhanh và Cài đặt > Ý
+kiến phản hồi, gửi một vấn đề hay một ý tưởng thẳng tới Katna. Mục Những gì
+được gửi hiện chính xác nội dung trước khi gửi đi, và email để nhận trả lời
+là không bắt buộc.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Thống kê sử dụng ẩn danh, nếu bạn muốn"
+text = """
+Cài đặt > Ý kiến phản hồi có một công tắc mới, tắt cho tới khi bạn bật: mỗi
+tuần một lần, nó gửi những tính năng bạn đã dùng, có hoặc không, để các tính
+năng được dùng nhiều nhất được chăm chút nhiều nhất. Trang này liệt kê mọi
+thứ được thống kê và hiện báo cáo của tuần này.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Tìm kiếm thấy thư cũ hơn trên máy chủ"
+text = """
+Thư cũ hơn không được tải xuống đầy đủ, nên tìm kiếm không đọc được nội dung
+của chúng trên máy này. Giờ đây, sau khi bạn ngừng gõ một chút hoặc khi bạn
+nhấn Enter, Katna cũng hỏi máy chủ thư của bạn và liệt kê những gì tìm thấy
+dưới mục Thêm kết quả trên máy chủ.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Tìm kiếm bằng tiếng Thái, Lào, Khmer và Miến Điện"
+text = """
+Tìm kiếm thấy một từ trong thư tiếng Thái, Lào, Khmer hoặc Miến Điện ngay cả
+khi câu không có khoảng trắng giữa các từ.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Dòng dài xuống dòng giữa các từ"
+text = """
+Văn bản tiếng Ả Rập, tiếng Hindi và các chữ viết Ấn Độ khác, tiếng Thái,
+Lào, Khmer và Miến Điện giờ xuống dòng giữa các từ thay vì ngắt đôi một từ,
+và dòng tiếng Trung, tiếng Nhật không còn bắt đầu bằng một dấu đóng.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Nhấn sẽ tô kín cả nút"
+text = """
+Nhấp vào một chip hoặc một nút có viền giờ tô kín tới tận mép và góc của
+nút, thay vì hiện một viên nhỏ hơn bên trong.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Bảng lệnh"
+text = """
+Nhấn Ctrl+Shift+P rồi gõ để tìm bất kỳ thao tác hay cài đặt nào, sau đó nhấn
+Enter để chạy. Mỗi thao tác hiện phím tắt của nó, và những gì bạn dùng gần
+đây nhất nằm ở trên cùng.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Thư mã hóa tự tìm khóa"
+text = """
+Khi bật Mã hóa, người nhận chưa có khóa sẽ được tra cứu trong thư mục khóa
+của chính tên miền của họ lúc bạn gửi. Thư bạn gửi mang theo khóa công khai
+của bạn (Autocrypt) khi GnuPG có khóa cho địa chỉ của bạn, và các khóa đến
+theo cách này được dùng để mã hóa thư trả lời của bạn. Thư OpenPGP đã mã hóa
+giờ ẩn tiêu đề cho đến khi được mở.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Xem ai đã ký một thư"
+text = """
+Nhấp vào dòng chữ ký trên một thư đã ký hoặc đã mã hóa để xem khóa của người
+ký: tên, địa chỉ, dấu vân tay và các ngày, kèm nút Sao chép dấu vân tay. Thư
+được ký bằng khóa mà bạn không có sẽ hiện Tra cứu khóa, và khóa ai đó đính
+kèm sẽ mở dưới dạng Nhập khóa này? và có thể Hoàn tác sau đó.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Cảnh báo thư giả mạo"
+text = """
+Khi một thư không vượt qua kiểm tra người gửi của nhà cung cấp thư của bạn,
+một biểu ngữ màu đỏ cho biết thư có thể không phải từ người mà nó tự nhận,
+kèm Chi tiết, Có vẻ an toàn và Chuyển vào thư rác. Hình ảnh trong thư vẫn bị
+ẩn và các liên kết sẽ hỏi trước khi mở. Người gửi không được xác nhận sẽ có
+một dấu “?” nhỏ trên ảnh của họ.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Khởi động lại khi Katna đã được cập nhật"
+text = """
+Khi Katna được cập nhật trong lúc Katna Mail đang mở, dịch vụ nền sẽ tự
+chuyển sang phiên bản mới khi không còn gửi thư. Sau đó một nút nhỏ ở cuối
+danh sách thư sẽ đề xuất Khởi động lại, để mở Katna Mail mới thay thế. ×
+ẩn nút này cho đến lần cập nhật tiếp theo.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Mở thư nhẹ nhàng hơn"
+text = """
+Nhấp vào một thư trong danh sách không còn tạo gợn sóng lan khắp danh sách
+trong lúc thư đang mở. Gợn sóng vẫn hiện khi bạn nhấp vào thư đang được mở.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Chế độ an toàn khi cập nhật gặp sự cố"
+text = """
+Katna sao chép dữ liệu của bạn trước khi một bản cập nhật thay đổi nó. Nếu
+bản cập nhật khiến Katna không khởi động được, Katna sẽ mở ở chế độ an toàn:
+thư của bạn vẫn đọc được, và một dòng phía trên cho phép bạn thử lại hoặc quay
+về bản sao từ trước khi cập nhật. Những gì đang có sẽ được giữ lại trong một
+thư mục trước, nên không mất gì cả. Sao chép báo cáo gỡ lỗi, cũng có trong
+Giới thiệu về Katna, thu thập những gì một báo cáo lỗi cần.
+"""

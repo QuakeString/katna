@@ -72,6 +72,12 @@ pub enum Command {
     /// Opens the outbox: the button of "… wasn't sent". The app does this
     /// itself.
     OpenOutbox,
+    /// Takes the keys just imported (by fingerprint) out of the user's
+    /// GnuPG keyring again. The app does this itself.
+    RemoveKeys(Vec<String>),
+    /// Opens a folder in the file manager: the button of "Restored your
+    /// data". The app does this itself.
+    RevealPath(String),
     /// Shows a server's own words in the note: the button of a note that
     /// said what went wrong in plain ones. The app does this itself.
     ShowDetails(String),
@@ -260,6 +266,8 @@ impl Command {
             | Self::RestoreScheme(..)
             | Self::TurnAppOn(_)
             | Self::OpenOutbox
+            | Self::RemoveKeys(_)
+            | Self::RevealPath(_)
             | Self::ShowDetails(_)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
@@ -483,6 +491,8 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         | Command::RestoreScheme(..)
         | Command::TurnAppOn(_)
         | Command::OpenOutbox
+        | Command::RemoveKeys(_)
+        | Command::RevealPath(_)
         | Command::ShowDetails(_) => {
             return Ok(());
         }
@@ -1272,6 +1282,23 @@ pub async fn fetch_image(connection: &Connection, url: &str) -> Result<Vec<u8>, 
     pim.fetch_image(url).await.map_err(|err| describe(&err))
 }
 
+/// Asks the daemon to keep the Autocrypt key of message `id`, just opened.
+pub async fn learn_key(connection: &Connection, id: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.learn_key(id).await.map_err(|err| describe(&err))
+}
+
+/// Asks the daemon to look up a key for `address` in its Web Key
+/// Directory: its fingerprint, or empty when there is none.
+pub async fn look_up_key(connection: &Connection, address: &str) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.look_up_key(address).await.map_err(|err| describe(&err))
+}
+
 /// Asks the daemon for the picture of the sender `address` (empty: none).
 pub async fn sender_picture(connection: &Connection, address: &str) -> Result<Vec<u8>, String> {
     let pim = PimProxy::new(connection)
@@ -1394,6 +1421,14 @@ pub async fn delete_folder(connection: &Connection, folder: i64) -> Result<u32, 
     pim.delete_folder(folder)
         .await
         .map_err(|err| describe(&err))
+}
+
+/// Stops the daemon so its next start runs a safe mode request.
+pub async fn restart_daemon(connection: &Connection) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.restart().await.map_err(|err| describe(&err))
 }
 
 /// Has the daemon delete everything Katna keeps on this computer. It exits

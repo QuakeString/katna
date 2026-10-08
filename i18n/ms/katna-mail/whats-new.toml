@@ -4481,3 +4481,152 @@ Menu ☰ dan senarai bahasa kini menggelongsor masuk di dalam kad akaun dan
 bukan lagi melompat masuk, dengan butang kembali di sebelah kanan untuk
 kembali.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Setiap apl terletak pada kad yang sama"
+text = """
+Kalendar, Kenalan, Tugas, Nota dan Fail kini terletak pada kad dengan garis
+tepi nipis dan bayang lembut yang sama seperti Mel dan Tetapan.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Kekunci Tangkapan pantas pada GNOME"
+text = """
+Meta+Alt+T untuk tugasan dan Meta+Alt+N untuk nota kini berfungsi pada GNOME
+juga. Kali pertama, GNOME bertanya sama ada Katna boleh menggunakannya, dan
+anda boleh menukar kekunci itu dalam Tetapan GNOME.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Alihkan alat penandaan"
+text = """
+Semasa menanda PDF, seret titik di hujung alat untuk mengalihkannya ke mana-mana
+di atas halaman, supaya ia tidak sekali-kali menutup apa yang anda tandakan.
+Klik dua kali pada titik itu untuk mengembalikannya.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Berfungsi dengan pembaca skrin"
+text = """
+Orca dan pembaca skrin lain kini boleh membaca Katna Mail: senarai mel,
+folder, mel yang dibuka, butang, menu, suis dan dialog.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Hantar maklum balas"
+text = """
+Bantuan > Hantar Maklum Balas, juga dalam Tetapan pantas dan Tetapan >
+Maklum balas pengguna, menghantar masalah atau idea terus kepada Katna. Apa
+yang dihantar menunjukkan teks tepat sebelum ia dihantar, dan e-mel untuk
+balasan adalah pilihan.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Statistik penggunaan tanpa nama, jika anda mahu"
+text = """
+Tetapan > Maklum balas pengguna mempunyai suis baharu, dimatikan sehingga anda
+menghidupkannya: seminggu sekali ia menghantar ciri yang anda gunakan, ya atau
+tidak, supaya ciri yang paling banyak digunakan mendapat perhatian paling
+banyak. Halaman itu menyenaraikan semua yang dikira dan menunjukkan laporan
+minggu ini.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Carian menemui mel lama pada pelayan"
+text = """
+Mel yang lebih lama tidak dimuat turun sepenuhnya, jadi carian tidak dapat
+membaca perkataannya di sini. Kini, selepas jeda seketika semasa menaip atau
+apabila anda menekan Enter, Katna turut bertanya kepada pelayan mel anda dan
+menyenaraikan apa yang ditemuinya di bawah Lebih banyak hasil pada pelayan.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Cari dalam bahasa Thai, Lao, Khmer dan Burma"
+text = """
+Carian menemui perkataan dalam mel berbahasa Thai, Lao, Khmer atau Burma
+walaupun ayatnya tiada jarak antara perkataan.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Baris panjang dibalut antara perkataan"
+text = """
+Teks dalam tulisan Arab, Hindi dan tulisan India lain, Thai, Lao, Khmer dan
+Burma kini dibalut antara perkataan dan bukannya memecahkan perkataan di
+tengah-tengah, dan baris Cina serta Jepun tidak lagi bermula dengan tanda
+penutup.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Tekanan memenuhi seluruh butang"
+text = """
+Mengklik cip atau butang bergaris kini memenuhinya hingga ke tepi dan
+sudutnya sendiri, dan bukan lagi menunjukkan pil yang lebih kecil di dalamnya.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Palet arahan"
+text = """
+Tekan Ctrl+Shift+P dan taip untuk mencari sebarang tindakan atau tetapan,
+kemudian tekan Enter untuk menjalankannya. Setiap tindakan menunjukkan pintasan
+papan kekuncinya, dan apa yang anda gunakan terakhir berada di atas.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Mel disulitkan mencari kunci"
+text = """
+Apabila Sulitkan dihidupkan, kunci penerima yang tiada akan dicari dalam
+direktori kunci domain mereka sendiri semasa anda menghantar. Mel yang anda
+hantar membawa kunci awam anda (Autocrypt) apabila GnuPG mempunyai kunci untuk
+alamat anda, dan kunci yang tiba dengan cara yang sama digunakan untuk
+menyulitkan balasan anda. Mel OpenPGP yang disulitkan kini menyembunyikan
+subjeknya sehingga ia dibuka.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Lihat siapa yang menandatangani mesej"
+text = """
+Klik baris tandatangan pada mesej yang ditandatangani atau disulitkan untuk
+melihat kunci penandatangan: nama, alamat, cap jari dan tarikh, dengan Salin
+cap jari. Mesej yang ditandatangani dengan kunci yang anda tidak miliki
+menawarkan Cari kunci, dan kunci yang dilampirkan oleh seseorang dibuka sebagai
+Import kunci ini? dengan Buat asal selepas itu.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Amaran tentang mel palsu"
+text = """
+Apabila mesej gagal dalam semakan pengirim penyedia mel anda, sepanduk merah
+memberitahu bahawa ia mungkin bukan daripada orang yang didakwanya, dengan
+Butiran, Nampak selamat dan Alih ke spam. Imejnya kekal disembunyikan dan
+pautannya bertanya dahulu sebelum dibuka. Pengirim yang tidak disahkan oleh
+apa-apa mendapat tanda “?” kecil pada gambarnya.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Mulakan semula apabila Katna dikemas kini"
+text = """
+Apabila Katna dikemas kini semasa Katna Mail dibuka, perkhidmatan latar
+belakang beralih ke versi baharu dengan sendirinya sebaik sahaja ia tidak
+menghantar mel. Pil kecil di bahagian bawah senarai mel kemudian menawarkan
+Mulakan semula, yang membuka Katna Mail yang baharu di tempatnya. × menyembunyikannya
+sehingga kemas kini seterusnya.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Membuka mel lebih tenang"
+text = """
+Mengklik mel dalam senarai tidak lagi menghantar riak merentasinya semasa
+mel itu dibuka. Riak masih ditunjukkan apabila anda mengklik mel yang sudah
+terbuka.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Mod selamat jika kemas kini bermasalah"
+text = """
+Katna menyalin data anda sebelum kemas kini mengubahnya. Jika kemas kini
+menyebabkan Katna tidak dapat dimulakan, ia dibuka dalam mod selamat: mel anda
+kekal boleh dibaca, dan satu baris di atasnya membolehkan anda cuba lagi atau
+kembali kepada salinan dari sebelum kemas kini. Apa yang ada sekarang disimpan
+dalam folder dahulu, jadi tiada apa yang hilang. Salin laporan nyahpepijat,
+juga dalam Perihal Katna, mengumpulkan apa yang diperlukan oleh laporan pepijat.
+"""

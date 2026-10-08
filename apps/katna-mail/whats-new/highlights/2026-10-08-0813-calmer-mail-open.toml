@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Opening a mail is calmer"
+text = """
+Clicking a mail in the list no longer sends a ripple across it while the
+mail opens. The ripple still shows when you click the mail that's already
+open.
+"""

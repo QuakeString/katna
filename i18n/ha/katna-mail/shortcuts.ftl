@@ -70,6 +70,7 @@ shortcut-navigation = Nuna ko naɗe menu
 shortcut-quick-settings = Saituna masu sauri
 shortcut-settings = Duk saituna
 shortcut-shortcuts = Gajerun hanyoyin madannai
+shortcut-palette = Akwatin umarni
 shortcut-reload = Duba sababbin wasiƙu
 shortcut-quit = Fita
 

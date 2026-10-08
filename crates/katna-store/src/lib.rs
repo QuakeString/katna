@@ -36,6 +36,7 @@ pub mod pop3;
 mod quota;
 mod receipts;
 pub mod remote;
+pub mod restore;
 pub mod rules;
 mod sender_auth;
 mod summaries;
@@ -58,7 +59,7 @@ pub use contacts::{
     AddressBook, BookSource, BookState, BookSync, ContactLabel, ContactRef, SavedContact,
     StoredCard, SyncedContact, SyncedGroup,
 };
-pub use db::{DbKind, Mode};
+pub use db::{Backup, DbKind, Mode};
 pub use error::{Error, Result};
 pub use gmail_merge::Adopted;
 pub use insights::{Insights, Partner, Replies};
@@ -133,6 +134,30 @@ impl Store {
     /// Whether this store may be written.
     pub fn mode(&self) -> Mode {
         self.mode
+    }
+
+    /// Runs SQLite's `quick_check` on each database: its file name and
+    /// `Ok`, or what is wrong with it.
+    pub fn quick_check(&self) -> Vec<(&'static str, Result<(), String>)> {
+        let check = |conn: &Connection| -> Result<(), String> {
+            let mut stmt = conn
+                .prepare("PRAGMA quick_check")
+                .map_err(|e| e.to_string())?;
+            let found: Vec<String> = stmt
+                .query_map([], |row| row.get(0))
+                .and_then(Iterator::collect)
+                .map_err(|e| e.to_string())?;
+            if found == ["ok"] {
+                Ok(())
+            } else {
+                Err(found.join("; "))
+            }
+        };
+        vec![
+            ("mail.db", check(&self.mail)),
+            ("pim.db", check(&self.pim)),
+            ("blobs.db", check(self.blobs.conn())),
+        ]
     }
 
     /// The content-addressed blob store.

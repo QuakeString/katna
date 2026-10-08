@@ -103,6 +103,9 @@ pub(super) struct Links {
     /// the message in it.
     pub conversation: usize,
     pub part: usize,
+    /// Its sender failed the provider's checks: a link asks before it
+    /// opens.
+    pub careful: bool,
 }
 
 /// The link under the pointer in the reading pane.
@@ -121,6 +124,18 @@ impl HoveredLink {
 }
 
 impl Links {
+    /// Opens `url`, clicked at `at`, or asks first in careful mail.
+    fn open(&self, url: &str, at: gpui::Point<gpui::Pixels>, cx: &mut App) {
+        if !self.careful {
+            cx.open_url(url);
+            return;
+        }
+        let url = url.to_owned();
+        self.window
+            .update(cx, |this, cx| this.ask_link(url, at, cx))
+            .ok();
+    }
+
     /// The pointer is on link `element` (to `url`), or left it (`None`).
     fn hover(&self, element: usize, url: Option<String>, cx: &mut App) {
         let owner = (self.conversation, self.part, element);
@@ -607,7 +622,13 @@ impl<'a> Painter<'a> {
                     .id(("rich-image", id))
                     .max_w_full()
                     .cursor_pointer()
-                    .on_click(move |_, _, cx| cx.open_url(&link))
+                    .on_click({
+                        let hover = hover.clone();
+                        move |event, _, cx| match &hover {
+                            Some(links) => links.open(&link, event.position(), cx),
+                            None => cx.open_url(&link),
+                        }
+                    })
                     .when_some(hover, |d, hover| {
                         d.on_hover(move |hovered, _, cx| {
                             hover.hover(id, hovered.then(|| shown.clone()), cx);
@@ -784,11 +805,15 @@ pub(super) fn linked_text(
     let (ranges, urls): (Vec<_>, Vec<_>) = links.into_iter().unzip();
     let urls = Arc::new(urls);
     let clicked = urls.clone();
+    let opener = hover.clone();
     let mut body = InteractiveText::new(("rich-text", id), styled).on_click(
         ranges.clone(),
-        move |ix, _, cx: &mut App| {
+        move |ix, window, cx: &mut App| {
             if let Some(url) = clicked.get(ix) {
-                cx.open_url(url);
+                match &opener {
+                    Some(links) => links.open(url, window.mouse_position(), cx),
+                    None => cx.open_url(url),
+                }
             }
         },
     );

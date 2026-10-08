@@ -6,6 +6,7 @@
 
 about-tooltip = Meer oor Katna
 about-tagline = E-pos en kalender vir die Linux-werkskerm
+about-version = Katna Mail { $version }
 about-copy-version = Kopieer weergawebesonderhede
 about-version-copied = Gekopieer
 about-version-built = Gebou: { $date }
@@ -38,6 +39,8 @@ about-update-restart = Opdateer en herbegin
 about-update-cancel = Nie nou nie
 about-changelog = Veranderingslog
 about-source = Bronkode
+about-debug-report = Kopieer foutsporingsverslag
+about-debug-report-tip = Weergawes, die kontrole ná opdaterings en onlangse logreëls, vir 'n foutverslag. Geen e-pos of wagwoorde nie.
 about-coffee = Koop vir my 'n koffie
 about-coffee-coffee = Koffie?
 about-coffee-tea = Tee?

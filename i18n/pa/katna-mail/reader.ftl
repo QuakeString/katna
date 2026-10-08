@@ -55,6 +55,7 @@ reader-details-subject = ਵਿਸ਼ਾ:
 
 reader-downloading = ਇਹ ਸੁਨੇਹਾ ਸਰਵਰ ਤੋਂ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…
 reader-download-failed = ਇਹ ਸੁਨੇਹਾ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।
+reader-download-failed-reason = ਇਹ ਸੁਨੇਹਾ ਡਾਊਨਲੋਡ ਨਹੀਂ ਹੋ ਸਕਿਆ। { $reason }
 reader-download-offline = ਇਹ ਖਾਤਾ ਆਫ਼ਲਾਈਨ ਹੈ। ਇਹ ਸੁਨੇਹਾ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਆਨਲਾਈਨ ਹੋਵੋ।
 reader-try-again = ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ
 
@@ -90,6 +91,89 @@ security-missing-key = ਅਜਿਹੀ ਕੁੰਜੀ ਨਾਲ ਦਸਤਖ਼
 security-missing-key-id = ਅਜਿਹੀ ਕੁੰਜੀ ({ $key }) ਨਾਲ ਦਸਤਖ਼ਤ ਕੀਤਾ ਜੋ ਤੁਹਾਡੇ ਕੋਲ ਨਹੀਂ ਹੈ, ਇਸ ਲਈ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ
 security-signature-unavailable = ਦਸਤਖ਼ਤ ਕੀਤਾ; ਦਸਤਖ਼ਤ ਦੀ ਜਾਂਚ ਲਈ { $tool } ਸਥਾਪਤ ਕਰੋ
 security-signature-error = ਦਸਤਖ਼ਤ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।
+security-look-up-key = ਕੁੰਜੀ ਲੱਭੋ
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = ਪੁਸ਼ਟੀ ਹੋਏ ਦਸਤਖ਼ਤ
+key-card-verified-detail = ਦਸਤਖ਼ਤ ਠੀਕ ਹਨ ਅਤੇ ਤੁਸੀਂ ਇਸ ਕੁੰਜੀ ’ਤੇ ਭਰੋਸਾ ਕਰਦੇ ਹੋ।
+key-card-unverified = ਦਸਤਖ਼ਤ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਹੋਈ
+key-card-unverified-detail = ਦਸਤਖ਼ਤ ਠੀਕ ਹਨ, ਪਰ ਕੁਝ ਵੀ ਇਹ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕਰਦਾ ਕਿ ਕੁੰਜੀ ਉਨ੍ਹਾਂ ਦੀ ਹੈ। ਉਨ੍ਹਾਂ ਨਾਲ ਫ਼ਿੰਗਰਪ੍ਰਿੰਟ ਮਿਲਾਓ, ਫਿਰ GnuPG ਵਿੱਚ ਕੁੰਜੀ ’ਤੇ ਭਰੋਸਾ ਕਰੋ (Kleopatra ਜਾਂ gpg --edit-key)।
+key-card-not-sender = ਕਿਸੇ ਹੋਰ ਵੱਲੋਂ ਦਸਤਖ਼ਤ ਕੀਤਾ
+key-card-not-sender-detail = ਦਸਤਖ਼ਤ ਠੀਕ ਹਨ, ਪਰ ਕੁੰਜੀ ਭੇਜਣ ਵਾਲੇ ਦੀ ਨਹੀਂ ਹੈ।
+key-card-untrusted = ਕੁੰਜੀ ਭਰੋਸੇਯੋਗ ਨਹੀਂ
+key-card-untrusted-detail = ਤੁਸੀਂ GnuPG ਵਿੱਚ ਇਸ ਕੁੰਜੀ ਨੂੰ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹ ਕੀਤਾ ਸੀ।
+key-card-signature-expired = ਦਸਤਖ਼ਤ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ
+key-card-signature-expired-detail = ਦਸਤਖ਼ਤ ਠੀਕ ਸਨ, ਪਰ ਉਨ੍ਹਾਂ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ।
+key-card-key-expired = ਕੁੰਜੀ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ
+key-card-key-expired-detail = ਦਸਤਖ਼ਤ ਠੀਕ ਹਨ, ਪਰ ਉਸ ਤੋਂ ਬਾਅਦ ਕੁੰਜੀ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ।
+key-card-key-revoked = ਕੁੰਜੀ ਰੱਦ ਕੀਤੀ ਗਈ
+key-card-key-revoked-detail = ਇਸਦੇ ਮਾਲਕ ਨੇ ਇਹ ਕੁੰਜੀ ਰੱਦ ਕਰ ਦਿੱਤੀ, ਇਸ ਲਈ ਦਸਤਖ਼ਤ ’ਤੇ ਭਰੋਸਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।
+key-card-bad = ਗਲਤ ਦਸਤਖ਼ਤ
+key-card-bad-detail = ਇਹ ਸੁਨੇਹਾ ਦਸਤਖ਼ਤ ਕਰਨ ਤੋਂ ਬਾਅਦ ਬਦਲਿਆ ਗਿਆ ਸੀ, ਜਾਂ ਦਸਤਖ਼ਤ ਜਾਅਲੀ ਹਨ।
+key-card-signed-by = ਦਸਤਖ਼ਤ ਕਰਨ ਵਾਲਾ
+key-card-belongs-to = ਮਾਲਕ
+key-card-fingerprint = ਫ਼ਿੰਗਰਪ੍ਰਿੰਟ
+key-card-signed = ਦਸਤਖ਼ਤ ਕੀਤੇ
+key-card-key = ਕੁੰਜੀ
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = ਬਣਾਈ ਗਈ
+key-card-expires = ਮਿਆਦ ਪੁੱਗਦੀ ਹੈ
+key-card-never = ਕਦੇ ਨਹੀਂ
+key-card-issued-by = ਜਾਰੀ ਕਰਨ ਵਾਲਾ
+key-card-found-in = ਕਿੱਥੇ ਮਿਲੀ
+key-card-keyring = ਤੁਹਾਡੀ GnuPG ਕੀਰਿੰਗ
+key-card-copy = ਫ਼ਿੰਗਰਪ੍ਰਿੰਟ ਕਾਪੀ ਕਰੋ
+key-card-import-title = ਕੀ ਇਹ ਕੁੰਜੀ ਆਯਾਤ ਕਰਨੀ ਹੈ?
+key-card-from-directory = { $domain } ਦੀ ਕੁੰਜੀ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਮਿਲੀ।
+key-card-from-attachment = ਨੱਥੀ { $name } ਤੋਂ।
+key-card-import-note = ਫਿਰ Katna ਇਸ ਵਿਅਕਤੀ ਦੇ ਦਸਤਖ਼ਤਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਕੀਤੀ ਮੇਲ ਭੇਜ ਸਕਦਾ ਹੈ। ਕੁੰਜੀ ’ਤੇ ਪੂਰਾ ਭਰੋਸਾ ਕਰਨ ਲਈ, ਉਨ੍ਹਾਂ ਨਾਲ ਫ਼ਿੰਗਰਪ੍ਰਿੰਟ ਮਿਲਾਓ।
+key-card-cancel = ਰੱਦ ਕਰੋ
+key-card-import = ਕੁੰਜੀ ਆਯਾਤ ਕਰੋ
+key-card-looking-up = ਕੁੰਜੀ ਲੱਭੀ ਜਾ ਰਹੀ ਹੈ…
+key-card-looking-up-detail = { $domain } ਦੀ ਕੁੰਜੀ ਡਾਇਰੈਕਟਰੀ ਤੋਂ ਪੁੱਛਿਆ ਜਾ ਰਿਹਾ ਹੈ।
+key-card-not-found = ਕੋਈ ਕੁੰਜੀ ਨਹੀਂ ਮਿਲੀ
+key-card-not-found-detail = { $domain } ਇਸ ਪਤੇ ਲਈ ਕੋਈ ਕੁੰਜੀ ਪ੍ਰਕਾਸ਼ਿਤ ਨਹੀਂ ਕਰਦਾ। ਭੇਜਣ ਵਾਲੇ ਨੂੰ ਆਪਣੀ ਕੁੰਜੀ ਭੇਜਣ ਲਈ ਕਹੋ।
+key-card-not-kept = ਜੋ ਕੁੰਜੀ ਮਿਲੀ ਉਹ ਵਰਤੀ ਨਹੀਂ ਜਾ ਸਕਦੀ।
+key-card-failed = ਕੁੰਜੀ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋ ਸਕੀ
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = ਹੋ ਸਕਦਾ ਹੈ ਇਹ { $domain } ਵੱਲੋਂ ਨਾ ਹੋਵੇ
+sender-failed-body = ਇਹ { $provider } ਦੀਆਂ ਭੇਜਣ ਵਾਲੇ ਦੀਆਂ ਜਾਂਚਾਂ ਵਿੱਚ ਫ਼ੇਲ੍ਹ ਹੋ ਗਈ। ਲਿੰਕਾਂ, ਨੱਥੀਆਂ ਅਤੇ ਜਵਾਬਾਂ ਨਾਲ ਸਾਵਧਾਨ ਰਹੋ।
+sender-provider-unknown = ਤੁਹਾਡਾ ਮੇਲ ਪ੍ਰਦਾਤਾ
+sender-details = ਵੇਰਵੇ
+sender-details-hide = ਵੇਰਵੇ ਲੁਕਾਓ
+sender-looks-safe = ਸੁਰੱਖਿਅਤ ਲੱਗਦੀ ਹੈ
+sender-move-to-spam = ਸਪੈਮ ਵਿੱਚ ਭੇਜੋ
+sender-checked-by = { $provider } ਵੱਲੋਂ ਜਾਂਚ ਕੀਤੀ
+sender-checked-by-server = { $provider } ({ $server }) ਵੱਲੋਂ ਜਾਂਚ ਕੀਤੀ
+sender-dmarc = ਭੇਜਣ ਵਾਲੇ ਦਾ ਡੋਮੇਨ (DMARC)
+sender-dkim = ਦਸਤਖ਼ਤ (DKIM)
+sender-spf = ਭੇਜਣ ਵਾਲਾ ਸਰਵਰ (SPF)
+sender-result-pass = ਪਾਸ
+sender-result-fail = ਫ਼ੇਲ੍ਹ
+sender-result-unsure = ਪੱਕਾ ਨਹੀਂ
+sender-result-none = ਕੋਈ ਨਹੀਂ
+sender-result-missing = ਜਾਂਚ ਨਹੀਂ ਹੋਈ
+sender-dmarc-pass = { $domain } ਇਸ ਭੇਜਣ ਵਾਲੇ ਦੀ ਪੁਸ਼ਟੀ ਕਰਦਾ ਹੈ।
+sender-dmarc-fail = ਇਹ ਮੇਲ ਉਸ ਤਰੀਕੇ ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀ ਜਿਵੇਂ { $domain } ਕਹਿੰਦਾ ਹੈ ਕਿ ਉਸਦੀ ਮੇਲ ਭੇਜੀ ਜਾਂਦੀ ਹੈ।
+sender-dmarc-none = { $domain } ਆਪਣੀ ਮੇਲ ਲਈ ਕੋਈ ਨਿਯਮ ਪ੍ਰਕਾਸ਼ਿਤ ਨਹੀਂ ਕਰਦਾ।
+sender-dkim-pass = { $domain } ਵੱਲੋਂ ਦਸਤਖ਼ਤ ਕੀਤਾ।
+sender-dkim-fail = { $domain } ਦੇ ਦਸਤਖ਼ਤ ਮੇਲ ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ।
+sender-dkim-none = ਸੁਨੇਹੇ ’ਤੇ ਦਸਤਖ਼ਤ ਨਹੀਂ ਕੀਤੇ ਗਏ ਸਨ।
+sender-spf-pass = ਅਜਿਹੇ ਸਰਵਰ ਤੋਂ ਭੇਜੀ ਗਈ ਜੋ { $domain } ਦੀ ਸੂਚੀ ਵਿੱਚ ਹੈ।
+sender-spf-fail = ਅਜਿਹੇ ਸਰਵਰ ਤੋਂ ਭੇਜੀ ਗਈ ਜੋ { $domain } ਦੀ ਸੂਚੀ ਵਿੱਚ ਨਹੀਂ ਹੈ।
+sender-spf-none = { $domain } ਆਪਣੇ ਸਰਵਰਾਂ ਦੀ ਸੂਚੀ ਨਹੀਂ ਦਿੰਦਾ।
+sender-check-unsure = ਜਾਂਚ ਕੋਈ ਸਾਫ਼ ਜਵਾਬ ਨਹੀਂ ਦੇ ਸਕੀ।
+sender-unconfirmed = { $provider } ਪੁਸ਼ਟੀ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ { $domain } ਤੋਂ ਆਈ ਹੈ। ਕੋਈ ਵੀ ਕਿਸੇ ਵੀ ਭੇਜਣ ਵਾਲੇ ਦਾ ਨਾਮ ਲਿਖ ਸਕਦਾ ਹੈ।
+sender-link-title = ਕੀ ਇਹ ਲਿੰਕ ਖੋਲ੍ਹਣਾ ਹੈ?
+sender-link-body = ਇਹ ਮੇਲ ਭੇਜਣ ਵਾਲੇ ਦੀਆਂ ਜਾਂਚਾਂ ਵਿੱਚ ਫ਼ੇਲ੍ਹ ਹੋ ਗਈ। ਲਿੰਕ { $host } ’ਤੇ ਜਾਂਦਾ ਹੈ:
+sender-link-cancel = ਰੱਦ ਕਰੋ
+sender-link-open = ਖੋਲ੍ਹੋ
 tracking-opened = { $who } ਨੇ ਇਸਨੂੰ { $count ->
     [one] ਇੱਕ ਵਾਰ
    *[other] { $count } ਵਾਰ
@@ -116,6 +200,7 @@ tracking-receipt-other = ਪੜ੍ਹਨ ਦੀ ਰਸੀਦ: { $who } ਨੇ �
 
 remote-hidden = ਇਸ ਸੁਨੇਹੇ ਵਿਚਲੇ ਚਿੱਤਰ ਲੁਕੇ ਹੋਏ ਹਨ।
 remote-hidden-unconfirmed = ਚਿੱਤਰ ਲੁਕੇ ਹੋਏ ਹਨ: ਭੇਜਣ ਵਾਲੇ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਹੋ ਸਕੀ।
+remote-hidden-failed = ਚਿੱਤਰ ਲੁਕਾਏ ਗਏ ਹਨ: ਇਹ ਮੇਲ ਭੇਜਣ ਵਾਲੇ ਦੀਆਂ ਜਾਂਚਾਂ ਵਿੱਚ ਫ਼ੇਲ੍ਹ ਹੋ ਗਈ।
 remote-show = ਚਿੱਤਰ ਦਿਖਾਓ
 remote-always-show = ਇਸ ਭੇਜਣ ਵਾਲੇ ਤੋਂ ਹਮੇਸ਼ਾ ਦਿਖਾਓ
 remote-picture-use = ਵਰਤੋ

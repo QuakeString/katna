@@ -242,12 +242,14 @@ impl MailWindow {
             || self.close_delete_ask(cx)
             || self.close_app_off_ask(cx)
             || self.close_service_details(cx)
+            || self.close_restore(cx)
             || self.close_rail_menu(cx)
             || self.snooze_escape(cx)
             || self.close_note_popovers(cx)
             || self.close_quiet_menu(cx)
             || self.close_danger(cx)
             || self.close_password_card(cx)
+            || self.close_link_ask(cx)
         {
             true
         } else if self.print_preview_open() {
@@ -280,6 +282,7 @@ impl MailWindow {
         } else if self.close_gallery(cx)
             || self.dismiss_activity(cx)
             || self.close_seen(cx)
+            || self.close_key_card(cx)
             || self.menu.take().is_some()
             || self.contacts.label_menu.take().is_some()
             || self.files_menu.take().is_some()

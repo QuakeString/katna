@@ -179,6 +179,7 @@ settings-general-start-at-login = Simulan ang Katna sa pag-log in
 settings-general-start-at-login-detail = Nagsi-sync ng mail at nagpapakita ng mga notification ng bagong mail at ng icon sa system tray, nang hindi binubuksan ang window
 settings-general-login-window = Buksan din ang window ng Katna Mail
 settings-general-login-window-detail = Bubukas din ang window sa pag-log in
+settings-general-login-entry = Sinimulan sa pag-log in (Mga setting > Pangkalahatan > Desktop)
 settings-general-tray = Ipakita ang Katna sa system tray
 settings-general-tray-detail = May bilang ng hindi pa nabasa at isang menu
 settings-general-tray-color = May kulay na icon sa tray

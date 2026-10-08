@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Restart when Katna was updated"
+text = """
+When Katna is updated while Katna Mail is open, the background service moves
+to the new version by itself once it isn't sending mail. A small pill at the
+bottom of the mail list then offers Restart, which opens the new Katna Mail
+in its place. × hides it until the next update.
+"""

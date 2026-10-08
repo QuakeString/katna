@@ -156,6 +156,11 @@ macro_rules! pim_interface {
                 Ok(self.daemon.delete_all_data().await?)
             }
 
+            async fn restart(&self) -> fdo::Result<()> {
+                self.daemon.restart();
+                Ok(())
+            }
+
             async fn reset_cache(&self) -> fdo::Result<(u64, u64)> {
                 let forgotten = self.daemon.reset_cache().await?;
                 Ok((forgotten.messages as u64, forgotten.bytes))
@@ -743,6 +748,14 @@ macro_rules! pim_interface {
 
             async fn sender_picture(&self, address: String) -> fdo::Result<Vec<u8>> {
                 Ok(self.daemon.sender_picture(&address).await?)
+            }
+
+            async fn learn_key(&self, message: i64) -> fdo::Result<()> {
+                Ok(self.daemon.learn_key(MessageId(message)).await?)
+            }
+
+            async fn look_up_key(&self, address: String) -> fdo::Result<String> {
+                Ok(self.daemon.look_up_key(&address).await?)
             }
 
             async fn company_of(&self, address: String, website: String) -> fdo::Result<String> {

@@ -55,6 +55,7 @@ reader-details-subject = isiokwu:
 
 reader-downloading = Na-ebudata ozi a site na sava…
 reader-download-failed = Enweghị ike ibudata ozi a.
+reader-download-failed-reason = Enweghị ike ibudata ozi a. { $reason }
 reader-download-offline = Akaụntụ a anọghị n'ịntanetị. Laghachi n'ịntanetị iji budata ozi a.
 reader-try-again = Nwaa ọzọ
 
@@ -90,6 +91,89 @@ security-missing-key = E ji igodo ị na-enweghị binye aka, ya mere a pụgh�
 security-missing-key-id = E ji igodo ị na-enweghị ({ $key }) binye aka, ya mere a pụghị inyocha ya
 security-signature-unavailable = Abinyere aka; wụnye { $tool } ka ị nyochaa mbinye aka ahụ
 security-signature-error = Enweghị ike inyocha mbinye aka ahụ.
+security-look-up-key = Chọọ igodo
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Mbinye aka akwadoro
+key-card-verified-detail = Mbinye aka ahụ dị mma, ị tụkwasịkwara igodo a obi.
+key-card-unverified = A kwadobeghị mbinye aka
+key-card-unverified-detail = Mbinye aka ahụ dị mma, mana ọ dịghị ihe na-egosi na igodo ahụ bụ nke ha. Jiri fingerprint ahụ tụnyere nke ha, wee tụkwasị igodo ahụ obi na GnuPG (Kleopatra ma ọ bụ gpg --edit-key).
+key-card-not-sender = Onye ọzọ binyere aka
+key-card-not-sender-detail = Mbinye aka ahụ dị mma, mana igodo ahụ abụghị nke onye zitere ya.
+key-card-untrusted = A tụkwasịghị igodo obi
+key-card-untrusted-detail = I kara igodo a akara dị ka nke a na-apụghị ịtụkwasị obi na GnuPG.
+key-card-signature-expired = Mbinye aka agafeela oge ya
+key-card-signature-expired-detail = Mbinye aka ahụ dị mma, mana o agafeela oge ya.
+key-card-key-expired = Igodo agafeela oge ya
+key-card-key-expired-detail = Mbinye aka ahụ dị mma, mana igodo ahụ agafeela oge ya kemgbe ahụ.
+key-card-key-revoked = A kagburu igodo
+key-card-key-revoked-detail = Onye nwe igodo a kagburu ya, ya mere a pụghị ịtụkwasị mbinye aka ahụ obi.
+key-card-bad = Mbinye aka ọjọọ
+key-card-bad-detail = A gbanwere ozi a mgbe a binyechara ya aka, ma ọ bụ mbinye aka ahụ bụ adịgboroja.
+key-card-signed-by = Onye binyere aka
+key-card-belongs-to = Nke
+key-card-fingerprint = Fingerprint
+key-card-signed = Abinyere aka
+key-card-key = Igodo
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = E mepụtara
+key-card-expires = Ọ ga-agwụ
+key-card-never = Ọ dịghị mgbe
+key-card-issued-by = Onye nyere ya
+key-card-found-in = Achọtara na
+key-card-keyring = Igbe igodo GnuPG gị
+key-card-copy = Detuo fingerprint
+key-card-import-title = Bubata igodo a?
+key-card-from-directory = Achọtara ya na ndekọ igodo { $domain }.
+key-card-from-attachment = Site na mgbakwunye { $name }.
+key-card-import-note = Mgbe ahụ Katna nwere ike inyocha mbinye aka onye a ma zoo ozi ọ na-ezigara ya. Ka ị tụkwasị igodo ahụ obi kpamkpam, jiri fingerprint ahụ tụnyere nke ha.
+key-card-cancel = Kagbuo
+key-card-import = Bubata igodo
+key-card-looking-up = Na-achọ igodo ahụ…
+key-card-looking-up-detail = Na-ajụ ndekọ igodo { $domain }.
+key-card-not-found = Achọtaghị igodo
+key-card-not-found-detail = { $domain } anaghị ebipụta igodo maka adreesị a. Rịọ onye zitere ya ka o zitere gị nke ya.
+key-card-not-kept = Enweghị ike iji igodo achọtara.
+key-card-failed = Enweghị ike ịnweta igodo ahụ
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Nke a nwere ike ọ bụghị site na { $domain }
+sender-failed-body = O dabaghị na nlele onye zitere nke { $provider }. Kpachara anya na njikọ, mgbakwunye na azịza.
+sender-provider-unknown = onye na-enye gị ozi
+sender-details = Nkọwa
+sender-details-hide = Zoo nkọwa
+sender-looks-safe = O yiri ihe dị mma
+sender-move-to-spam = Bugharịa gaa Spam
+sender-checked-by = { $provider } nyochara ya
+sender-checked-by-server = { $provider } nyochara ya ({ $server })
+sender-dmarc = Ngalaba onye zitere (DMARC)
+sender-dkim = Mbinye aka (DKIM)
+sender-spf = Sava na-ezipụ (SPF)
+sender-result-pass = Ọ gafere
+sender-result-fail = Ọ dabaghị
+sender-result-unsure = Ejighị n'aka
+sender-result-none = Ọ dịghị
+sender-result-missing = Enyochabeghị
+sender-dmarc-pass = { $domain } kwadoro onye zitere nke a.
+sender-dmarc-fail = Ozi a adabaghị n'otú { $domain } si kwuo na a na-ezipụ ozi ya.
+sender-dmarc-none = { $domain } anaghị ebipụta iwu ọ bụla maka ozi ya.
+sender-dkim-pass = { $domain } bịanyere aka na ya.
+sender-dkim-fail = Mbinye aka si na { $domain } adabaghị n'ozi ahụ.
+sender-dkim-none = E bịanyeghị aka n'ozi a.
+sender-spf-pass = E zitere ya site na sava { $domain } depụtara.
+sender-spf-fail = E zitere ya site na sava { $domain } edepụtaghị.
+sender-spf-none = { $domain } anaghị edepụta sava ya.
+sender-check-unsure = Nlele ahụ enweghị ike inye azịza doro anya.
+sender-unconfirmed = { $provider } enweghị ike ịkwado na nke a si na { $domain }. Onye ọ bụla nwere ike ide onye zitere ọ bụla.
+sender-link-title = Mepee njikọ a?
+sender-link-body = Ozi a adabaghị na nlele onye zitere ya. Njikọ ahụ na-aga { $host }:
+sender-link-cancel = Kagbuo
+sender-link-open = Mepee
 tracking-opened = { $who } mepere ya ugboro { $count }, nke ikpeazụ { $when }
 tracking-opens-clicks = { $who } mepere ya ugboro { $opens } ma soro njikọ ugboro { $clicks }, nke ikpeazụ { $when }
 tracking-clicked = { $who } soro njikọ ugboro { $clicks }, nke ikpeazụ { $when }
@@ -104,6 +188,7 @@ tracking-receipt-other = Akara na-egosi na a gụrụ ozi: { $who } hichapụr�
 
 remote-hidden = Ezochiri foto ndị dị n'ozi a.
 remote-hidden-unconfirmed = Ezochiri foto: enweghị ike ịkwado onye zitere ya.
+remote-hidden-failed = Ezochiri foto: ozi a adabaghị na nlele onye zitere ya.
 remote-show = Gosi foto
 remote-always-show = Na-egosi mgbe niile site n'aka onye zitere a
 remote-picture-use = Jiri

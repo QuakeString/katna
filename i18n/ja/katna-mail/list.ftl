@@ -38,6 +38,8 @@ list-range-about = 約 { $total } 件中 { $first }–{ $last } 件
 list-results = 「{ $query }」の検索結果
 list-results-corrected = 「{ $query }」の検索結果を表示しています
 list-search-instead = 「{ $query }」で検索する
+list-search-no-index = 検索の準備ができていません。インデックスがまだ作成されていません。
+list-search-not-ready = 検索の準備ができていません: { $error }
 list-files-more = +{ $count }
 list-replied = 返信済み
 
@@ -193,9 +195,14 @@ list-empty-waiting = 返信待ちのメールはありません。
 list-empty-reminders = リマインダーはありません。メールで H を押すと追加できます。
 list-first-sync = メールを取得しています…
 list-first-sync-detail = 届いたメールから順にここに表示されます。
+list-store-unreadable = メールストアを開けませんでした
 
 ## Mail list: lines
 
+row-no-subject = （件名なし）
+row-unknown-sender = （差出人不明）
+row-to = 宛先:
+row-no-recipients = （宛先なし）
 row-removed = このメールは削除されました。
 row-starred = スター付き
 row-not-starred = スターなし
@@ -273,6 +280,11 @@ menu-make-rule = ルールを作成…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = 鍵をインポートしました。
+toast-key-updated = この鍵はすでにあります。最新の状態に更新しました。
+toast-key-removed = 鍵を削除しました。
+toast-key-not-removed = 鍵を削除できませんでした。
+toast-fingerprint-copied = フィンガープリントをコピーしました。
 toast-archived = { $kind ->
     [conversation] { $count } 件のスレッドをアーカイブしました。
    *[message] { $count } 件のメールをアーカイブしました。

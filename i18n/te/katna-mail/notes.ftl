@@ -94,6 +94,7 @@ notes-link-note = గమనికను లింక్ చేయండి
 notes-link-new = కొత్త గమనిక “{ $title }”
 notes-linked-from = వీటి నుండి లింక్ చేయబడింది
 notes-link-gone = ఆ గమనిక ఇప్పుడు ఇక్కడ లేదు
+notes-new-note-gone = కొత్త నోట్ కనిపించడం లేదు.
 
 ## Version history
 

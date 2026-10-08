@@ -6,6 +6,7 @@
 
 about-tooltip = על Katna
 about-tagline = דואר ויומן לשולחן העבודה של Linux
+about-version = Katna Mail { $version }
 about-copy-version = העתקת פרטי הגרסה
 about-version-copied = הועתק
 about-version-built = נבנתה: { $date }
@@ -38,6 +39,8 @@ about-update-restart = עדכון והפעלה מחדש
 about-update-cancel = לא עכשיו
 about-changelog = יומן שינויים
 about-source = קוד מקור
+about-debug-report = העתקת דוח ניפוי באגים
+about-debug-report-tip = הגרסאות, הבדיקה אחרי עדכונים ושורות אחרונות מהיומן, לדיווח על באג. בלי דואר ובלי סיסמאות.
 about-coffee = קנו לי קפה
 about-coffee-coffee = קפה?
 about-coffee-tea = תה?

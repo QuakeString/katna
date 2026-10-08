@@ -4419,3 +4419,153 @@ text = """
 Menu ☰ i lista języków wsuwają się teraz płynnie wewnątrz karty konta,
 zamiast pojawiać się nagle, a przycisk wstecz po prawej pozwala wrócić.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Każda aplikacja leży na takiej samej karcie"
+text = """
+Kalendarz, Kontakty, Zadania, Notatki i Pliki leżą teraz na karcie z tą
+samą cienką krawędzią i miękkim cieniem co Poczta i Ustawienia.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Klawisze szybkiego dodawania w GNOME"
+text = """
+Meta+Alt+T dla zadania i Meta+Alt+N dla notatki działają teraz także w
+GNOME. Za pierwszym razem GNOME pyta, czy Katna może ich używać, a
+klawisze możesz zmienić w jego Ustawieniach.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Przesuwaj narzędzia adnotacji"
+text = """
+Podczas dodawania adnotacji do pliku PDF przeciągnij kropki na końcu
+narzędzi, aby przesunąć je w dowolne miejsce nad stroną, tak by nigdy nie
+zasłaniały tego, co oznaczasz. Kliknij kropki dwukrotnie, aby je
+przywrócić.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Działa z czytnikami ekranu"
+text = """
+Orca i inne czytniki ekranu mogą teraz czytać Katna Mail: listę poczty,
+foldery, otwartą wiadomość, przyciski, menu, przełączniki i okna
+dialogowe.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Wyślij opinię"
+text = """
+Pomoc > Wyślij opinię, dostępne też w Szybkich ustawieniach i w
+Ustawienia > Opinie, wysyła problem lub pomysł prosto do Katna. Co jest
+wysyłane pokazuje dokładny tekst, zanim zostanie wysłany, a e-mail do
+odpowiedzi jest opcjonalny.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Anonimowe statystyki użycia, jeśli chcesz"
+text = """
+Ustawienia > Opinie mają nowy przełącznik, wyłączony, dopóki go nie
+włączysz: raz w tygodniu wysyła, z których funkcji korzystałeś, tak lub
+nie, aby najczęściej używane dostawały najwięcej uwagi. Strona wymienia
+wszystko, co jest liczone, i pokazuje raport z tego tygodnia.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Wyszukiwanie znajduje starszą pocztę na serwerze"
+text = """
+Starsza poczta nie jest pobierana w całości, więc wyszukiwanie nie może
+tu przeczytać jej słów. Teraz po krótkiej przerwie w pisaniu lub po
+naciśnięciu Enter Katna pyta też twój serwer poczty i wymienia to, co
+znajdzie, pod Więcej wyników na serwerze.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Wyszukiwanie po tajsku, laotańsku, khmersku i birmańsku"
+text = """
+Wyszukiwanie znajduje słowo w poczcie po tajsku, laotańsku, khmersku lub
+birmańsku, nawet gdy zdanie nie ma spacji między słowami.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Długie wiersze łamią się między słowami"
+text = """
+Tekst po arabsku, w hindi i innych pismach indyjskich, po tajsku,
+laotańsku, khmersku i birmańsku łamie się teraz między słowami, zamiast
+dzielić słowo w środku, a wiersze chińskie i japońskie nie zaczynają się
+już od znaku zamykającego.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Naciśnięcie wypełnia cały przycisk"
+text = """
+Kliknięcie plakietki lub przycisku z obrysem wypełnia go teraz aż do
+jego krawędzi i narożników, zamiast pokazywać w środku mniejszą pigułkę.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Paleta poleceń"
+text = """
+Naciśnij Ctrl+Shift+P i pisz, aby znaleźć dowolne działanie lub
+ustawienie, a potem naciśnij Enter, aby je uruchomić. Każde działanie
+pokazuje swój skrót klawiszowy, a to, czego używałeś ostatnio, jest na
+górze.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Szyfrowana poczta sama znajduje klucze"
+text = """
+Gdy Zaszyfruj jest włączone, klucz odbiorcy, którego nie masz, jest przy
+wysyłaniu wyszukiwany w katalogu kluczy jego własnej domeny. Wysyłana
+poczta zawiera twój klucz publiczny (Autocrypt), gdy GnuPG ma go dla
+twojego adresu, a klucze, które przychodzą w ten sam sposób, służą do
+szyfrowania twoich odpowiedzi. Zaszyfrowana poczta OpenPGP ukrywa teraz
+temat, dopóki nie zostanie otwarta.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Zobacz, kto podpisał wiadomość"
+text = """
+Kliknij wiersz podpisu w podpisanej lub zaszyfrowanej wiadomości, aby
+zobaczyć klucz podpisującego: nazwę, adres, odcisk palca i daty, z
+przyciskiem Kopiuj odcisk palca. Wiadomość podpisana kluczem, którego nie
+masz, oferuje Wyszukaj klucz, a klucz dołączony przez kogoś otwiera się
+jako Zaimportować ten klucz? z możliwością późniejszego Cofnij.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Ostrzeżenia przed sfałszowaną pocztą"
+text = """
+Gdy wiadomość nie przejdzie kontroli nadawcy u twojego dostawcy poczty,
+czerwony baner mówi, że może nie pochodzić od tego, za kogo się podaje,
+z przyciskami Szczegóły, Wygląda bezpiecznie i Przenieś do spamu. Jej
+obrazy pozostają ukryte, a linki pytają przed otwarciem. Nadawca, którego
+nic nie potwierdziło, dostaje mały znak „?” na swoim zdjęciu.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Ponowne uruchomienie po aktualizacji Katna"
+text = """
+Gdy Katna zostanie zaktualizowana przy otwartej Katna Mail, usługa w tle
+sama przechodzi na nową wersję, gdy tylko nie wysyła poczty. Mała pigułka
+na dole listy wiadomości proponuje wtedy Uruchom ponownie, co otwiera nową
+wersję Katna Mail w miejsce starej. × ukrywa ją do następnej aktualizacji.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Otwieranie wiadomości jest spokojniejsze"
+text = """
+Kliknięcie wiadomości na liście nie wywołuje już fali podczas jej
+otwierania. Fala nadal pojawia się, gdy klikniesz wiadomość, która jest
+już otwarta.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Tryb awaryjny, gdy aktualizacja się nie powiedzie"
+text = """
+Katna kopiuje twoje dane, zanim aktualizacja je zmieni. Jeśli po
+aktualizacji Katna nie może się uruchomić, otwiera się w trybie awaryjnym:
+poczta pozostaje czytelna, a wiersz nad nią pozwala spróbować ponownie lub
+wrócić do kopii sprzed aktualizacji. To, co jest teraz, najpierw zostaje
+zachowane w folderze, więc nic nie zginie. Kopiuj raport debugowania,
+dostępne też w oknie O Katna, zbiera to, czego potrzeba do zgłoszenia błędu.
+"""

@@ -179,6 +179,7 @@ settings-general-start-at-login = Katna starten bij inloggen
 settings-general-start-at-login-detail = Synchroniseert e-mail en toont meldingen voor nieuwe e-mail en het pictogram in het systeemvak, zonder het venster te openen
 settings-general-login-window = Ook het venster van Katna Mail openen
 settings-general-login-window-detail = Het venster opent ook bij inloggen
+settings-general-login-entry = Gestart bij het inloggen (Instellingen > Algemeen > Desktop)
 settings-general-tray = Katna tonen in het systeemvak
 settings-general-tray-detail = Met het aantal ongelezen berichten en een menu
 settings-general-tray-color = Systeemvakpictogram in kleur

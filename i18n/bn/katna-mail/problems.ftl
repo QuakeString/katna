@@ -66,3 +66,28 @@ service-details-title = সার্ভিসটি কেন চালু হ�
 service-details-body = এটি কপি করে আপনার রিপোর্টের সাথে পাঠান। এতে কোনো মেল বা পাসওয়ার্ড নেই।
 service-details-copy = কপি করুন
 service-details-close = বন্ধ করুন
+service-not-running = Katna-র ব্যাকগ্রাউন্ড সার্ভিস চলছে না।
+service-no-answer = Katna-র ব্যাকগ্রাউন্ড সার্ভিস সাড়া দেয়নি: { $error }
+service-no-session = কোনো D-Bus সেশন নেই: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = আপডেটে সমস্যার পরে Katna নিরাপদ মোডে আছে, তাই মেল সিঙ্ক হচ্ছে না।
+safe-try-again = আবার চেষ্টা করুন
+safe-restore = পুনরুদ্ধার করুন
+safe-restoring = { $when }-এর আপনার ডেটা পুনরুদ্ধার করা হচ্ছে…
+safe-restored = { $when }-এর আপনার ডেটা পুনরুদ্ধার করা হয়েছে। আগে যা ছিল তা একটি ফোল্ডারে রাখা আছে।
+safe-show-folder = ফোল্ডার দেখান
+safe-restore-failed = আপনার ডেটা পুনরুদ্ধার করা যায়নি: { $error }
+safe-restore-title = আপডেটের আগের ডেটা পুনরুদ্ধার করবেন?
+safe-restore-body = আপনি যে কপি বেছে নেবেন, Katna সেটিতে ফিরে যাবে। তার পরে আসা মেল আপনার অ্যাকাউন্ট থেকে আবার ডাউনলোড হবে।
+safe-restore-none = এখনও কোনো কপি নেই। প্রতিটি আপডেট আপনার ডেটা বদলানোর আগে Katna একটি কপি তৈরি করে।
+safe-restore-keep = এখন যা আছে, না-পাঠানো মেল, খসড়া ও এখনও সিঙ্ক না-হওয়া পরিবর্তন সহ, আগে একটি ফোল্ডারে রাখা হয়, তাই কিছুই হারায় না।
+safe-restore-cancel = বাতিল করুন
+safe-restore-mail = মেল
+safe-restore-pim = অ্যাকাউন্ট ও পরিচিতি
+safe-restore-blobs = সংযুক্তি
+safe-report-title = ডিবাগ রিপোর্ট
+safe-report-body = এটি কপি করে আপনার বাগ রিপোর্টে সংযুক্ত করুন। এতে কোনো মেল, ঠিকানা বা পাসওয়ার্ড নেই।
+safe-report-restore = পুনরুদ্ধার করুন…
+safe-report-copied = ডিবাগ রিপোর্ট কপি করা হয়েছে

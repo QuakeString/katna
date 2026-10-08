@@ -92,6 +92,7 @@ notes-link-note = 連結記事
 notes-link-new = 新增記事「{ $title }」
 notes-linked-from = 連結來源
 notes-link-gone = 該記事已不存在
+notes-new-note-gone = 新記事已不存在。
 
 ## Version history
 

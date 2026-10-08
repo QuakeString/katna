@@ -59,3 +59,28 @@ service-details-title = ເປັນຫຍັງບໍລິການຈຶ່�
 service-details-body = ສຳເນົາສິ່ງນີ້ ແລະ ສົ່ງມາພ້ອມກັບລາຍງານຂອງທ່ານ. ມັນບໍ່ມີອີເມວ ຫຼື ລະຫັດຜ່ານຢູ່ໃນນັ້ນ.
 service-details-copy = ສຳເນົາ
 service-details-close = ປິດ
+service-not-running = ບໍລິການເບື້ອງຫຼັງຂອງ Katna ບໍ່ໄດ້ເຮັດວຽກຢູ່.
+service-no-answer = ບໍລິການເບື້ອງຫຼັງຂອງ Katna ບໍ່ໄດ້ຕອບ: { $error }
+service-no-session = ບໍ່ມີເຊດຊັນ D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna ຢູ່ໃນໂໝດປອດໄພ ຫຼັງຈາກມີບັນຫາກັບການອັບເດດ, ສະນັ້ນອີເມວຈຶ່ງບໍ່ຊິງຄ໌.
+safe-try-again = ລອງໃໝ່
+safe-restore = ກູ້ຄືນ
+safe-restoring = ກຳລັງກູ້ຄືນຂໍ້ມູນຂອງທ່ານຈາກ { $when }…
+safe-restored = ກູ້ຄືນຂໍ້ມູນຂອງທ່ານຈາກ { $when } ແລ້ວ. ສິ່ງທີ່ມີຢູ່ກ່ອນໜ້ານັ້ນຖືກເກັບໄວ້ໃນໂຟນເດີ.
+safe-show-folder = ສະແດງໂຟນເດີ
+safe-restore-failed = ກູ້ຄືນຂໍ້ມູນຂອງທ່ານບໍ່ໄດ້: { $error }
+safe-restore-title = ກູ້ຄືນຂໍ້ມູນຂອງທ່ານຈາກກ່ອນການອັບເດດບໍ?
+safe-restore-body = Katna ຈະກັບໄປໃຊ້ສຳເນົາທີ່ທ່ານເລືອກ. ອີເມວທີ່ມາຮອດຫຼັງຈາກນັ້ນຈະດາວໂຫຼດຄືນຈາກບັນຊີຂອງທ່ານ.
+safe-restore-none = ຍັງບໍ່ມີສຳເນົາເທື່ອ. Katna ຈະສ້າງສຳເນົາກ່ອນທີ່ການອັບເດດແຕ່ລະຄັ້ງຈະປ່ຽນຂໍ້ມູນຂອງທ່ານ.
+safe-restore-keep = ສິ່ງທີ່ມີຢູ່ຕອນນີ້, ລວມທັງອີເມວທີ່ຍັງບໍ່ໄດ້ສົ່ງ, ສະບັບຮ່າງ ແລະ ການປ່ຽນແປງທີ່ຍັງບໍ່ໄດ້ຊິງຄ໌, ຈະຖືກເກັບໄວ້ໃນໂຟນເດີກ່ອນ, ສະນັ້ນບໍ່ມີຫຍັງເສຍ.
+safe-restore-cancel = ຍົກເລີກ
+safe-restore-mail = ອີເມວ
+safe-restore-pim = ບັນຊີ ແລະ ລາຍຊື່ຜູ້ຕິດຕໍ່
+safe-restore-blobs = ໄຟລ໌ແນບ
+safe-report-title = ລາຍງານດີບັກ
+safe-report-body = ສຳເນົາອັນນີ້ ແລ້ວແນບໃສ່ລາຍງານບັກຂອງທ່ານ. ມັນບໍ່ມີອີເມວ, ທີ່ຢູ່ ຫຼື ລະຫັດຜ່ານຢູ່ໃນນັ້ນ.
+safe-report-restore = ກູ້ຄືນ…
+safe-report-copied = ສຳເນົາລາຍງານດີບັກແລ້ວ

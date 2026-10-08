@@ -55,6 +55,7 @@ reader-details-subject = ခေါင်းစဉ်-
 
 reader-downloading = ဤမက်ဆေ့ဂျ်ကို ဆာဗာမှ ဒေါင်းလုဒ်လုပ်နေသည်…
 reader-download-failed = ဤမက်ဆေ့ဂျ်ကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။
+reader-download-failed-reason = ဤမက်ဆေ့ဂျ်ကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။ { $reason }
 reader-download-offline = ဤအကောင့် အော့ဖ်လိုင်း ဖြစ်နေသည်။ ဤမက်ဆေ့ဂျ်ကို ဒေါင်းလုဒ်လုပ်ရန် အွန်လိုင်း ပြောင်းပါ။
 reader-try-again = ထပ်စမ်းကြည့်ရန်
 
@@ -90,6 +91,86 @@ security-missing-key = သင့်တွင် မရှိသော ကီး�
 security-missing-key-id = သင့်တွင် မရှိသော ကီး ({ $key }) ဖြင့် လက်မှတ်ထိုးထားသဖြင့် စစ်ဆေး၍ မရပါ
 security-signature-unavailable = လက်မှတ်ထိုးထားသည်။ လက်မှတ်ကို စစ်ဆေးရန် { $tool } ကို ထည့်သွင်းပါ
 security-signature-error = လက်မှတ်ကို စစ်ဆေး၍ မရပါ။
+security-look-up-key = ကီး ရှာရန်
+
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = အတည်ပြုထားသော လက်မှတ်
+key-card-verified-detail = လက်မှတ် မှန်ကန်ပြီး သင်သည် ဤကီးကို ယုံကြည်ပါသည်။
+key-card-unverified = လက်မှတ်ကို အတည်မပြုရသေးပါ
+key-card-unverified-detail = လက်မှတ် မှန်ကန်သော်လည်း ကီးသည် ၎င်းတို့၏ ကီးဖြစ်ကြောင်း ဘာမှ အတည်မပြုပါ။ လက်ဗွေကို ၎င်းတို့နှင့် နှိုင်းယှဉ်ပြီး GnuPG (Kleopatra သို့မဟုတ် gpg --edit-key) တွင် ကီးကို ယုံကြည်ပါ။
+key-card-not-sender = အခြားသူက လက်မှတ်ထိုးထားသည်
+key-card-not-sender-detail = လက်မှတ် မှန်ကန်သော်လည်း ကီးသည် ပို့သူ၏ ကီး မဟုတ်ပါ။
+key-card-untrusted = ကီးကို မယုံကြည်ပါ
+key-card-untrusted-detail = သင်သည် GnuPG တွင် ဤကီးကို မယုံကြည်ရအဖြစ် မှတ်ထားသည်။
+key-card-signature-expired = လက်မှတ် သက်တမ်းကုန်ပြီ
+key-card-signature-expired-detail = လက်မှတ်သည် မှန်ကန်ခဲ့သော်လည်း သက်တမ်းကုန်သွားပြီ။
+key-card-key-expired = ကီး သက်တမ်းကုန်ပြီ
+key-card-key-expired-detail = လက်မှတ် မှန်ကန်သော်လည်း ထို့နောက် ကီး သက်တမ်းကုန်သွားပြီ။
+key-card-key-revoked = ကီးကို ရုပ်သိမ်းထားသည်
+key-card-key-revoked-detail = ပိုင်ရှင်က ဤကီးကို ရုပ်သိမ်းထားသဖြင့် လက်မှတ်ကို ယုံကြည်၍ မရပါ။
+key-card-bad = လက်မှတ် မမှန်ပါ
+key-card-bad-detail = ဤမက်ဆေ့ဂျ်ကို လက်မှတ်ထိုးပြီးနောက် ပြောင်းလဲထားသည် သို့မဟုတ် လက်မှတ်သည် အတုဖြစ်သည်။
+key-card-signed-by = လက်မှတ်ထိုးသူ
+key-card-belongs-to = ပိုင်ရှင်
+key-card-fingerprint = လက်ဗွေ
+key-card-signed = လက်မှတ်ထိုးချိန်
+key-card-key = ကီး
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = ဖန်တီးချိန်
+key-card-expires = သက်တမ်းကုန်ချိန်
+key-card-never = ဘယ်တော့မှ
+key-card-issued-by = ထုတ်ပေးသူ
+key-card-found-in = တွေ့ရှိရာ
+key-card-keyring = သင်၏ GnuPG ကီးကွင်း
+key-card-copy = လက်ဗွေ ကူးယူရန်
+key-card-import-title = ဤကီးကို ထည့်သွင်းမလား။
+key-card-from-directory = { $domain } ၏ ကီးလမ်းညွှန်တွင် တွေ့ရှိသည်။
+key-card-from-attachment = ပူးတွဲဖိုင် { $name } မှ။
+key-card-import-note = ထို့နောက် Katna သည် ဤသူ၏ လက်မှတ်များကို စစ်ဆေးနိုင်ပြီး ၎င်းတို့ထံ မေးလ်ကို ကုဒ်ဝှက်နိုင်ပါမည်။ ကီးကို အပြည့်အဝ ယုံကြည်ရန် လက်ဗွေကို ၎င်းတို့နှင့် နှိုင်းယှဉ်ပါ။
+key-card-cancel = မလုပ်တော့ပါ
+key-card-import = ကီး ထည့်သွင်းရန်
+key-card-looking-up = ကီးကို ရှာနေသည်…
+key-card-looking-up-detail = { $domain } ၏ ကီးလမ်းညွှန်ကို မေးနေသည်။
+key-card-not-found = ကီး မတွေ့ပါ
+key-card-not-found-detail = { $domain } သည် ဤလိပ်စာအတွက် ကီး မထုတ်ပြန်ပါ။ ပို့သူကို ၎င်းတို့၏ ကီး ပို့ပေးရန် တောင်းဆိုပါ။
+key-card-not-kept = တွေ့ရှိသော ကီးကို အသုံးပြု၍ မရပါ။
+key-card-failed = ကီးကို ရယူ၍ မရပါ
+
+## of a sender nothing confirmed
+
+sender-failed-title = ဤမေးလ်သည် { $domain } မှ မဟုတ်နိုင်ပါ
+sender-failed-body = ၎င်းသည် { $provider } ၏ ပို့သူ စစ်ဆေးမှုများ မအောင်ပါ။ လင့်ခ်များ၊ ပူးတွဲဖိုင်များနှင့် စာပြန်ခြင်းများကို သတိထားပါ။
+sender-provider-unknown = သင်၏ မေးလ် ဝန်ဆောင်မှုပေးသူ
+sender-details = အသေးစိတ်
+sender-details-hide = အသေးစိတ် ဖျောက်ရန်
+sender-looks-safe = လုံခြုံပုံရသည်
+sender-move-to-spam = စပမ်းသို့ ရွှေ့ရန်
+sender-checked-by = { $provider } က စစ်ဆေးထားသည်
+sender-checked-by-server = { $provider } ({ $server }) က စစ်ဆေးထားသည်
+sender-dmarc = ပို့သူ ဒိုမိန်း (DMARC)
+sender-dkim = လက်မှတ် (DKIM)
+sender-spf = ပို့သော ဆာဗာ (SPF)
+sender-result-pass = အောင်သည်
+sender-result-fail = မအောင်ပါ
+sender-result-unsure = မသေချာပါ
+sender-result-none = မရှိပါ
+sender-result-missing = မစစ်ဆေးရသေးပါ
+sender-dmarc-pass = { $domain } က ဤပို့သူကို အတည်ပြုသည်။
+sender-dmarc-fail = ဤမေးလ်သည် { $domain } က ၎င်း၏ မေးလ်ကို ပို့သည်ဟု ဆိုသည့် ပုံစံနှင့် မကိုက်ညီပါ။
+sender-dmarc-none = { $domain } သည် ၎င်း၏ မေးလ်အတွက် စည်းမျဉ်း မထုတ်ပြန်ပါ။
+sender-dkim-pass = { $domain } က လက်မှတ်ထိုးထားသည်။
+sender-dkim-fail = { $domain } ၏ လက်မှတ်သည် မေးလ်နှင့် မကိုက်ညီပါ။
+sender-dkim-none = ဤမက်ဆေ့ဂျ်ကို လက်မှတ်ထိုးမထားပါ။
+sender-spf-pass = { $domain } စာရင်းသွင်းထားသော ဆာဗာမှ ပို့ထားသည်။
+sender-spf-fail = { $domain } စာရင်းမသွင်းထားသော ဆာဗာမှ ပို့ထားသည်။
+sender-spf-none = { $domain } သည် ၎င်း၏ ဆာဗာများကို စာရင်းမသွင်းထားပါ။
+sender-check-unsure = စစ်ဆေးမှုက ရှင်းလင်းသော အဖြေ မပေးနိုင်ပါ။
+sender-unconfirmed = ဤမေးလ်သည် { $domain } မှ လာကြောင်း { $provider } က အတည်မပြုနိုင်ပါ။ မည်သူမဆို ပို့သူကို ကြိုက်သလို ရေးနိုင်သည်။
+sender-link-title = ဤလင့်ခ်ကို ဖွင့်မလား။
+sender-link-body = ဤမေးလ်သည် ပို့သူ စစ်ဆေးမှုများ မအောင်ပါ။ လင့်ခ်သည် { $host } သို့ သွားသည်-
+sender-link-cancel = မလုပ်တော့ပါ
+sender-link-open = ဖွင့်ရန်
 
 ## sent message's star, and the line above a read receipt)
 
@@ -107,6 +188,7 @@ tracking-receipt-other = ဖတ်ပြီးကြောင်း အသိအ
 
 remote-hidden = ဤမက်ဆေ့ဂျ်ရှိ ပုံများကို ဖျောက်ထားသည်။
 remote-hidden-unconfirmed = ပုံများကို ဖျောက်ထားသည်။ ပို့သူကို အတည်မပြုနိုင်ခဲ့ပါ။
+remote-hidden-failed = ပုံများကို ဖျောက်ထားသည်။ ဤမေးလ်သည် ပို့သူ စစ်ဆေးမှုများ မအောင်ပါ။
 remote-show = ပုံများ ပြရန်
 remote-always-show = ဤပို့သူထံမှ အမြဲပြရန်
 remote-picture-use = အသုံးပြုရန်

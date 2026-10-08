@@ -70,6 +70,7 @@ shortcut-navigation = ምናሌውን አሳይ ወይም አጣጥፍ
 shortcut-quick-settings = ፈጣን ቅንብሮች
 shortcut-settings = ሁሉም ቅንብሮች
 shortcut-shortcuts = የቁልፍ ሰሌዳ አቋራጮች
+shortcut-palette = የትዕዛዝ ሳጥን
 shortcut-reload = አዲስ ደብዳቤ ፈትሽ
 shortcut-quit = ውጣ
 

@@ -181,6 +181,7 @@ settings-general-start-at-login = اجرای Katna هنگام ورود
 settings-general-start-at-login-detail = ایمیل را همگام می‌کند و اعلان‌های ایمیل جدید و نماد سینی سیستم را نشان می‌دهد، بی‌آنکه پنجره باز شود
 settings-general-login-window = باز کردن پنجرهٔ Katna Mail نیز
 settings-general-login-window-detail = پنجره هم هنگام ورود باز می‌شود
+settings-general-login-entry = اجراشده هنگام ورود (تنظیمات > عمومی > میزکار)
 settings-general-tray = نمایش Katna در سینی سیستم
 settings-general-tray-detail = با تعداد خوانده‌نشده‌ها و یک منو
 settings-general-tray-color = نماد سینی رنگی

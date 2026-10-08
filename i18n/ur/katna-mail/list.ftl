@@ -38,6 +38,8 @@ list-range-about = تقریباً { $total } میں سے { $first }–{ $last }
 list-results = ”{ $query }“ کے نتائج
 list-results-corrected = ”{ $query }“ کے نتائج دکھائے جا رہے ہیں
 list-search-instead = اس کے بجائے ”{ $query }“ تلاش کریں
+list-search-no-index = تلاش تیار نہیں: انڈیکس ابھی نہیں بنا۔
+list-search-not-ready = تلاش تیار نہیں: { $error }
 list-files-more = +{ $count }
 list-replied = آپ نے جواب دیا
 
@@ -343,6 +345,11 @@ list-empty-waiting = کسی چیز کو جواب کا انتظار نہیں۔
 list-empty-reminders = کوئی یاد دہانی نہیں۔ یاد دہانی شامل کرنے کے لیے کسی میل پر H دبائیں۔
 list-first-sync = آپ کی میل حاصل کی جا رہی ہے…
 list-first-sync-detail = جیسے جیسے یہ آئے گی، یہاں نظر آئے گی۔
+list-store-unreadable = میل کا ذخیرہ نہیں کھل سکا
+row-no-subject = (کوئی موضوع نہیں)
+row-unknown-sender = (نامعلوم مرسل)
+row-to = بنام:
+row-no-recipients = (کوئی وصول کنندہ نہیں)
 
 ## Mail list: lines
 
@@ -426,6 +433,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = { $name } کی ای میلز تلاش کریں
 menu-make-rule = اصول بنائیں…
+toast-key-imported = کلید امپورٹ ہو گئی
+toast-key-updated = یہ کلید آپ کے پاس پہلے سے تھی؛ اب یہ تازہ ترین ہے
+toast-key-removed = کلید ہٹا دی گئی
+toast-key-not-removed = کلید ہٹائی نہیں جا سکی
+toast-fingerprint-copied = فنگر پرنٹ کاپی ہو گیا
 
 ## Snackbar after an action on mail in the list
 

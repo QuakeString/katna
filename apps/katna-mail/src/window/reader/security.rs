@@ -5,7 +5,7 @@
 //! banner above the body says what protected it and whether that held.
 //! Decrypted text stays in memory only; it is never stored or indexed.
 
-use gpui::{AnyElement, Context, FontWeight, div, prelude::*, rgba};
+use gpui::{AnyElement, ClickEvent, Context, ElementId, FontWeight, div, prelude::*, rgba};
 use katna_crypto::{
     Decryption, Failure, Gnupg, Opened, Protection, Security, Signature, SignatureState, Standard,
     Validity,
@@ -14,8 +14,10 @@ use katna_i18n::tr;
 use katna_render::MessageView;
 use katna_store::MessageId;
 use katna_ui::px;
+use katna_ui::tokens::{radius, space};
 
 use super::{Body, Part, shown};
+use crate::daemon;
 use crate::theme::{Theme, fade};
 use crate::widgets::icon;
 use crate::window::MailWindow;
@@ -37,7 +39,7 @@ pub(super) fn sealed(raw: Vec<u8>, protection: Protection) -> Body {
         doc: None,
         remote: Vec::new(),
         svgs: Vec::new(),
-        authenticated: false,
+        checks: None,
         security: Some(Secured::Opening(protection)),
         sealed: Some(raw),
         opened: None,
@@ -69,7 +71,7 @@ fn opened_body(raw: &[u8], opened: Option<Opened>) -> Body {
                 doc: None,
                 remote: Vec::new(),
                 svgs: Vec::new(),
-                authenticated: false,
+                checks: None,
                 security: Some(Secured::Opened(security)),
                 sealed: None,
                 opened: None,
@@ -166,9 +168,55 @@ impl MailWindow {
         }
     }
 
+    /// Hands each open message with an `Autocrypt` header to the daemon,
+    /// once, which keeps its sender's key for encrypting replies when the
+    /// user's provider authenticated the sender.
+    pub(super) fn learn_keys(&mut self, cx: &mut Context<Self>) {
+        let (Some(reader), Ok(mail)) = (&self.reader, &self.mail) else {
+            return;
+        };
+        let opened: Vec<MessageId> = reader
+            .parts
+            .iter()
+            .filter(|p| p.body.as_ref().is_some_and(|b| b.view.is_some()))
+            .map(|p| p.id)
+            .filter(|id| !self.learned_keys.contains(id))
+            .collect();
+        let mut learn = Vec::new();
+        for id in opened {
+            self.learned_keys.insert(id);
+            if mail
+                .raw(id)
+                .is_some_and(|raw| katna_crypto::autocrypt::has_header(&raw))
+            {
+                learn.push(id);
+            }
+        }
+        if learn.is_empty() {
+            return;
+        }
+        let connection = self.daemon.clone();
+        cx.background_executor()
+            .spawn(async move {
+                let connection = match connection {
+                    Some(connection) => connection,
+                    None => match daemon::connect().await {
+                        Ok(connection) => connection,
+                        Err(err) => return tracing::debug!(%err, "Autocrypt keys not kept"),
+                    },
+                };
+                for id in learn {
+                    if let Err(err) = daemon::learn_key(&connection, id.0).await {
+                        tracing::debug!(%err, "Autocrypt key not kept");
+                    }
+                }
+            })
+            .detach();
+    }
+
     /// Reads message `id` again and hands it to GnuPG, after the
     /// passphrase prompt was closed or something else went wrong.
-    fn retry_sealed(&mut self, id: MessageId, cx: &mut Context<Self>) {
+    pub(super) fn retry_sealed(&mut self, id: MessageId, cx: &mut Context<Self>) {
         let (Some(reader), Ok(mail)) = (&mut self.reader, &self.mail) else {
             return;
         };
@@ -186,19 +234,24 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let secured = part.body.as_ref()?.security.as_ref()?;
-        let green = if th.dark { 0x81c995ff } else { 0x188038ff };
+        let green = green(th);
         let mut lines: Vec<Line> = Vec::new();
         let mut retry = false;
+        // A key missing for an OpenPGP signature can be looked up in the
+        // sender's Web Key Directory, on a click.
+        let mut look_up = false;
         match secured {
             Secured::Opening(Protection::Encrypted(_)) => lines.push(Line {
                 icon: "lock",
                 color: th.text_faint,
                 text: tr!("security-decrypting"),
+                details: None,
             }),
             Secured::Opening(Protection::Signed(_)) => lines.push(Line {
                 icon: "shield",
                 color: th.text_faint,
                 text: tr!("security-checking"),
+                details: None,
             }),
             Secured::Opened(security) => {
                 if let Some(decryption) = &security.decryption {
@@ -211,10 +264,17 @@ impl MailWindow {
                         icon: "lock",
                         color,
                         text,
+                        details: None,
                     });
                 }
-                for signature in &security.signatures {
-                    lines.push(signature_line(signature, security.standard, green, th));
+                for (ix, signature) in security.signatures.iter().enumerate() {
+                    let mut line = signature_line(signature, security.standard, green, th);
+                    if signature.details.is_some() {
+                        line.details = Some(ix);
+                    }
+                    look_up |= signature.state == SignatureState::MissingKey
+                        && security.standard == Standard::OpenPgp;
+                    lines.push(line);
                 }
                 if !security.whole {
                     lines.push(Line {
@@ -225,6 +285,7 @@ impl MailWindow {
                         } else {
                             tr!("security-partly-signed")
                         },
+                        details: None,
                     });
                 }
             }
@@ -244,11 +305,11 @@ impl MailWindow {
                 .text_size(px(13.0))
                 .line_height(px(18.0))
                 .children(lines.into_iter().map(|line| {
-                    div()
+                    let row = div()
                         .flex()
                         .flex_row()
                         .items_start()
-                        .gap(px(8.0))
+                        .gap(px(space::S3))
                         .child(icon(line.icon, line.color, 18.0))
                         .child(
                             div()
@@ -260,8 +321,50 @@ impl MailWindow {
                                     line.color
                                 }))
                                 .child(line.text),
-                        )
+                        );
+                    let Some(ix) = line.details else {
+                        return row.into_any_element();
+                    };
+                    // Opens the key's details: a soft row the width of the
+                    // banner, with a chevron at its end.
+                    let spot: ElementId = ("security-key", (id.0 as usize) << 4 | ix).into();
+                    let open = spot.clone();
+                    row.id(spot.clone())
+                        .relative()
+                        .mx(px(-space::S3))
+                        .px(px(space::S3))
+                        .py(px(space::S1))
+                        .my(px(-space::S1))
+                        .rounded(px(radius::SM))
+                        .cursor_pointer()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .child(self.person_spot(spot))
+                        .child(icon("chevron-right", th.text_faint, 18.0))
+                        .on_click(cx.listener(move |this, e: &ClickEvent, _, cx| {
+                            this.open_key_details(id, ix, open.clone(), e.position(), cx)
+                        }))
+                        .into_any_element()
                 }))
+                .when(look_up, |d| {
+                    let spot: ElementId = ("security-look-up", id.0 as usize).into();
+                    let open = spot.clone();
+                    d.child(
+                        div().pl(px(26.0)).flex().flex_row().child(
+                            div()
+                                .id(spot.clone())
+                                .relative()
+                                .cursor_pointer()
+                                .font_weight(FontWeight::MEDIUM)
+                                .text_color(rgba(th.accent))
+                                .hover(|s| s.text_color(rgba(fade(th.accent, 0.8))))
+                                .child(self.person_spot(spot))
+                                .on_click(cx.listener(move |this, e: &ClickEvent, _, cx| {
+                                    this.look_up_sender_key(id, open.clone(), e.position(), cx)
+                                }))
+                                .child(tr!("security-look-up-key")),
+                        ),
+                    )
+                })
                 .when(retry, |d| {
                     d.child(
                         div()
@@ -280,10 +383,17 @@ impl MailWindow {
     }
 }
 
+/// The green of a verified signature.
+pub(super) fn green(th: &Theme) -> u32 {
+    if th.dark { 0x81c995ff } else { 0x188038ff }
+}
+
 struct Line {
     icon: &'static str,
     color: u32,
     text: String,
+    /// The line opens the details of this signature (by its place).
+    details: Option<usize>,
 }
 
 fn tool(standard: Standard) -> &'static str {
@@ -372,7 +482,12 @@ fn signature_line(signature: &Signature, standard: Standard, green: u32, th: &Th
         ),
         SignatureState::Error => ("shield-alert", th.error, tr!("security-signature-error")),
     };
-    Line { icon, color, text }
+    Line {
+        icon,
+        color,
+        text,
+        details: None,
+    }
 }
 
 /// The last 16 hex digits of a fingerprint, in groups of four.

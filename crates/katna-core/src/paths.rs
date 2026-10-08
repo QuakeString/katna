@@ -158,6 +158,18 @@ impl Paths {
         self.state_dir.join("mail-window.toml")
     }
 
+    /// The daemon's start record and self-check:
+    /// `$XDG_STATE_HOME/katna/health.toml` (`docs/ARCHITECTURE.md` §21.2).
+    pub fn health_file(&self) -> PathBuf {
+        self.state_dir.join("health.toml")
+    }
+
+    /// What Katna Mail asks of the next daemon start in safe mode:
+    /// `$XDG_STATE_HOME/katna/safe-mode-request.toml`.
+    pub fn safe_mode_request_file(&self) -> PathBuf {
+        self.state_dir.join("safe-mode-request.toml")
+    }
+
     /// Crash reports, one text file per crash:
     /// `$XDG_STATE_HOME/katna/crashes/` (`docs/ARCHITECTURE.md` §19.2).
     pub fn crash_dir(&self) -> PathBuf {
@@ -179,6 +191,13 @@ impl Paths {
     /// account ID: `$XDG_DATA_HOME/katna/account-pictures/`.
     pub fn account_pictures_dir(&self) -> PathBuf {
         self.data_dir.join("account-pictures")
+    }
+
+    /// Public keys Katna found for people (Autocrypt, the Web Key
+    /// Directory), apart from the user's GnuPG keyring:
+    /// `$XDG_DATA_HOME/katna/keys/`.
+    pub fn peer_keys_dir(&self) -> PathBuf {
+        self.data_dir.join("keys")
     }
 
     /// Mail database: `$XDG_DATA_HOME/katna/mail.db`.

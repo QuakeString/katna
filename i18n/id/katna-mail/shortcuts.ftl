@@ -70,6 +70,7 @@ shortcut-navigation = Tampilkan atau ciutkan menu
 shortcut-quick-settings = Setelan cepat
 shortcut-settings = Semua setelan
 shortcut-shortcuts = Pintasan keyboard
+shortcut-palette = Palet perintah
 shortcut-reload = Periksa email baru
 shortcut-quit = Keluar
 

@@ -7,6 +7,8 @@ use std::io::{self, Write};
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
+use crate::keys::parse_listing;
+use crate::peers::PeerKeys;
 use crate::status::{RawSignature, Status};
 use crate::{Decryption, Failure, Signature, SignatureState, Standard};
 
@@ -17,6 +19,9 @@ pub struct Gnupg {
     gpgsm: PathBuf,
     /// `GNUPGHOME`; `None` uses the user's own (`~/.gnupg`).
     home: Option<PathBuf>,
+    /// Keys Katna found for people ([`PeerKeys`]), used to encrypt to
+    /// addresses the keyring has no key for.
+    peers: Option<PathBuf>,
 }
 
 impl Default for Gnupg {
@@ -25,6 +30,7 @@ impl Default for Gnupg {
             gpg: "gpg".into(),
             gpgsm: "gpgsm".into(),
             home: None,
+            peers: None,
         }
     }
 }
@@ -61,6 +67,17 @@ impl Gnupg {
     pub fn with_home(mut self, home: impl Into<PathBuf>) -> Self {
         self.home = Some(home.into());
         self
+    }
+
+    /// Also encrypts with the keys Katna found for people (Autocrypt, the
+    /// Web Key Directory), kept in `dir` apart from the user's keyring.
+    pub fn with_peer_keys(mut self, dir: impl Into<PathBuf>) -> Self {
+        self.peers = Some(dir.into());
+        self
+    }
+
+    pub(crate) fn peer_keys(&self) -> Option<PeerKeys> {
+        self.peers.as_ref().map(PeerKeys::new)
     }
 
     /// Decrypts `input`, and checks the signatures inside it. With
@@ -237,11 +254,19 @@ impl Gnupg {
 
     fn signature(&self, standard: Standard, raw: &RawSignature, sender: Option<&str>) -> Signature {
         let state = raw.state.unwrap_or(SignatureState::Error);
-        let key_uids = match (&raw.key, state) {
-            (_, SignatureState::MissingKey | SignatureState::Error) => Vec::new(),
-            (Some(key), _) => self.key_uids(standard, key),
-            (None, _) => Vec::new(),
+        let listing = match (&raw.key, state) {
+            (_, SignatureState::MissingKey | SignatureState::Error) => String::new(),
+            (Some(key), _) => self.key_listing(standard, key),
+            (None, _) => String::new(),
         };
+        let key_uids = uids(&listing);
+        let details = raw.key.as_deref().and_then(|key| {
+            let key = key.to_ascii_uppercase();
+            parse_listing(&listing, standard)
+                .into_iter()
+                .map(|listed| listed.info)
+                .find(|info| info.fingerprint.ends_with(&key))
+        });
         let mut emails: Vec<String> = key_uids
             .iter()
             .chain(raw.uid.as_ref())
@@ -273,31 +298,37 @@ impl Gnupg {
             key: raw.key.clone(),
             created: raw.created,
             validity: raw.validity,
+            details,
         }
     }
 
-    /// The user IDs of `key`, from a colon listing.
-    fn key_uids(&self, standard: Standard, key: &str) -> Vec<String> {
+    /// The colon listing of `key`, or nothing.
+    fn key_listing(&self, standard: Standard, key: &str) -> String {
         // Only a hex fingerprint or key ID goes on the command line.
         if key.is_empty() || !key.bytes().all(|b| b.is_ascii_hexdigit()) {
-            return Vec::new();
+            return String::new();
         }
         let args = [
             OsStr::new("--with-colons"),
             OsStr::new("--list-keys"),
             OsStr::new(key),
         ];
-        let Ok(run) = self.run(standard, &args, b"") else {
-            return Vec::new();
-        };
-        String::from_utf8_lossy(&run.stdout)
-            .lines()
-            .filter(|line| line.starts_with("uid:"))
-            .filter_map(|line| line.split(':').nth(9))
-            .map(unescape_colons)
-            .filter(|uid| !uid.is_empty())
-            .collect()
+        match self.run(standard, &args, b"") {
+            Ok(run) => String::from_utf8_lossy(&run.stdout).into_owned(),
+            Err(_) => String::new(),
+        }
     }
+}
+
+/// The user IDs in a colon listing.
+fn uids(listing: &str) -> Vec<String> {
+    listing
+        .lines()
+        .filter(|line| line.starts_with("uid:"))
+        .filter_map(|line| line.split(':').nth(9))
+        .map(unescape_colons)
+        .filter(|uid| !uid.is_empty())
+        .collect()
 }
 
 /// Options that stop `gpg` fetching a signer's key from the network while
@@ -321,6 +352,7 @@ fn unchecked(state: SignatureState) -> Signature {
         created: None,
         validity: Default::default(),
         from_sender: false,
+        details: None,
     }
 }
 
@@ -355,7 +387,7 @@ fn temp_file() -> io::Result<tempfile::NamedTempFile> {
 }
 
 /// The address in a user ID: `Name <a@b>`, `<a@b>` or a bare `a@b`.
-fn email_of(uid: &str) -> Option<String> {
+pub(crate) fn email_of(uid: &str) -> Option<String> {
     let email = match (uid.rfind('<'), uid.rfind('>')) {
         (Some(open), Some(close)) if open < close => &uid[open + 1..close],
         _ => uid,
@@ -366,7 +398,7 @@ fn email_of(uid: &str) -> Option<String> {
 
 /// The `CN` of a distinguished name, in RFC 4514 (`O=x,CN=y`) or gpgsm's
 /// status form (`/CN=y/O=x`).
-fn common_name(dn: &str) -> Option<String> {
+pub(crate) fn common_name(dn: &str) -> Option<String> {
     let separator = if dn.starts_with('/') { '/' } else { ',' };
     dn.split(separator)
         .filter_map(|rdn| rdn.trim().split_once('='))
@@ -376,7 +408,7 @@ fn common_name(dn: &str) -> Option<String> {
 }
 
 /// Undoes the `\xHH` escaping of colon listings.
-fn unescape_colons(field: &str) -> String {
+pub(crate) fn unescape_colons(field: &str) -> String {
     let bytes = field.as_bytes();
     let mut out = Vec::with_capacity(bytes.len());
     let mut i = 0;

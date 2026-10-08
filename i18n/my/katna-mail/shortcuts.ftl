@@ -70,6 +70,7 @@ shortcut-navigation = မီနူးကို ပြရန် သို့မ�
 shortcut-quick-settings = အမြန် ဆက်တင်များ
 shortcut-settings = ဆက်တင်အားလုံး
 shortcut-shortcuts = ကီးဘုတ် ဖြတ်လမ်းများ
+shortcut-palette = အမိန့်ပေးကွက်
 shortcut-reload = မေးလ်အသစ် စစ်ဆေးရန်
 shortcut-quit = ထွက်ရန်
 

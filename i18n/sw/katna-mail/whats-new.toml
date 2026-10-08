@@ -3963,3 +3963,118 @@ title = "Menyu huteleza ndani ya kadi ya akaunti"
 text = """
 Menyu ya ☰ na orodha ya lugha sasa huteleza ndani ya kadi ya akaunti badala ya kuruka ndani, pamoja na kitufe cha Rudi upande wa kulia ili kurudi.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Kila programu iko juu ya kadi ileile"
+text = """
+Kalenda, Anwani, Majukumu, Madokezo na Faili sasa zimekaa juu ya kadi yenye ukingo mwembamba na kivuli laini sawa na Barua na Mipangilio.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Vitufe vya Nasa haraka kwenye GNOME"
+text = """
+Meta+Alt+T kwa jukumu na Meta+Alt+N kwa dokezo sasa hufanya kazi kwenye GNOME pia. Mara ya kwanza, GNOME huuliza kama Katna inaweza kuvitumia, na unaweza kubadilisha vitufe hivyo katika Mipangilio yake.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Sogeza zana za kuweka alama"
+text = """
+Unapoweka alama kwenye PDF, buruta vitone vilivyo mwishoni mwa zana ili kuzisogeza popote juu ya ukurasa, ili zisifunike kamwe unachowekea alama. Bofya vitone mara mbili ili kuzirudisha.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Hufanya kazi na visoma skrini"
+text = """
+Orca na visoma skrini vingine sasa vinaweza kusoma Katna Mail: orodha ya barua, folda, barua iliyofunguliwa, vitufe, menyu, swichi na vidirisha.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Tuma maoni"
+text = """
+Usaidizi > Tuma maoni, inayopatikana pia kwenye Mipangilio ya haraka na Mipangilio > Maoni ya mtumiaji, hutuma tatizo au wazo moja kwa moja kwa Katna. Kinachotumwa huonyesha maandishi kamili kabla hayajatumwa, na barua pepe ya kujibiwa si lazima.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Takwimu za matumizi bila kujulikana, ukipenda"
+text = """
+Mipangilio > Maoni ya mtumiaji ina swichi mpya, iliyozimwa hadi uiwashe: mara moja kwa wiki hutuma vipengele ulivyotumia, ndiyo au hapana, ili vile vinavyotumika zaidi vipate uangalizi zaidi. Ukurasa huorodhesha kila kinachohesabiwa na huonyesha ripoti ya wiki hii.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Utafutaji hupata barua za zamani kwenye seva"
+text = """
+Barua za zamani hazipakuliwi zote, kwa hivyo utafutaji hauwezi kusoma maneno yake hapa. Sasa, baada ya kusita kidogo unapoandika au unapobonyeza Enter, Katna pia huiuliza seva yako ya barua na kuorodhesha inachopata chini ya Matokeo zaidi kwenye seva.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Tafuta kwa Kithai, Kilao, Kikhmer na Kiburma"
+text = """
+Utafutaji hupata neno katika barua za Kithai, Kilao, Kikhmer au Kiburma hata pale ambapo sentensi haina nafasi kati ya maneno.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Mistari mirefu hukatika kati ya maneno"
+text = """
+Maandishi ya Kiarabu, Kihindi na hati nyingine za India, Kithai, Kilao, Kikhmer na Kiburma sasa hukatika kati ya maneno badala ya kuvunja neno katikati, na mistari ya Kichina na Kijapani haianzi tena kwa alama ya kufunga.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Kubonyeza hujaza kitufe kizima"
+text = """
+Kubofya kipande au kitufe chenye mstari wa nje sasa hukijaza hadi ukingo na pembe zake, badala ya kuonyesha kidonge kidogo ndani yake.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Paleti ya amri"
+text = """
+Bonyeza Ctrl+Shift+P kisha uandike ili kupata kitendo au mpangilio wowote, kisha bonyeza Enter ili kukiendesha. Kila kitendo huonyesha njia yake ya mkato ya kibodi, na ulichotumia mwisho kiko juu.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Barua zilizosimbwa hupata funguo"
+text = """
+Simba ikiwa imewashwa, ufunguo wa mpokeaji usiye nao hutafutwa katika saraka ya funguo ya kikoa chake mwenyewe unapotuma. Barua unazotuma hubeba ufunguo wako wa umma (Autocrypt) GnuPG inapokuwa na mmoja wa anwani yako, na funguo zinazofika kwa njia hiyo hiyo hutumika kusimba majibu yako. Barua za OpenPGP zilizosimbwa sasa huficha mada yake hadi zifunguliwe.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Ona aliyetia sahihi ujumbe"
+text = """
+Bofya mstari wa sahihi kwenye ujumbe uliotiwa sahihi au uliosimbwa ili uone ufunguo wa mtia sahihi: jina, anwani, alama ya kidole na tarehe, pamoja na Nakili alama ya kidole. Ujumbe uliotiwa sahihi kwa ufunguo usio nao hutoa Tafuta ufunguo, na ufunguo ambao mtu ameambatisha hufunguka kama Uulete ufunguo huu? pamoja na Tendua baadaye.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Maonyo kuhusu barua za kughushi"
+text = """
+Ujumbe unaposhindwa ukaguzi wa mtumaji wa huduma yako ya barua, bango jekundu
+husema huenda hautoki kwa anayedai, likiwa na Maelezo, Inaonekana salama na
+Hamishia kwenye taka. Picha zake hubaki zimefichwa na viungo vyake huuliza
+kabla ya kufunguka. Mtumaji ambaye hakuthibitishwa na chochote hupata "?" ndogo
+kwenye picha yake.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Anzisha upya Katna ikisasishwa"
+text = """
+Katna inaposasishwa wakati Katna Mail iko wazi, huduma ya chinichini huhamia
+toleo jipya yenyewe pindi isipokuwa inatuma barua. Kisha kidonge kidogo chini
+ya orodha ya barua hutoa Anzisha upya, kinachofungua Katna Mail mpya mahali
+pake. × hukificha hadi sasisho lijalo.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Kufungua barua ni kutulivu zaidi"
+text = """
+Kubofya barua kwenye orodha hakupitishi tena viwimbi juu yake wakati barua
+inafunguka. Viwimbi bado huonekana unapobofya barua ambayo tayari iko wazi.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Hali salama sasisho likienda kombo"
+text = """
+Katna hunakili data yako kabla sasisho halijaibadilisha. Sasisho likiifanya
+Katna ishindwe kuanza, hufunguka katika hali salama: barua zako husomeka, na
+mstari ulio juu yake hukuruhusu Jaribu tena au kurudi kwenye nakala ya kabla
+ya sasisho. Kilichopo sasa huhifadhiwa kwanza kwenye folda, kwa hivyo hakuna
+kinachopotea. Nakili ripoti ya hitilafu, pia katika Kuhusu, hukusanya kile
+ambacho ripoti ya hitilafu inahitaji.
+"""

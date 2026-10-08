@@ -531,6 +531,11 @@ menu-make-rule = Make a rule…
 # $kind: "conversation" or "message", as the list groups mail.
 # $count: how many were acted on.
 
+toast-key-imported = Key imported
+toast-key-updated = You had this key already; it's up to date now
+toast-key-removed = Key removed
+toast-key-not-removed = The key couldn't be removed
+toast-fingerprint-copied = Fingerprint copied
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] Conversation archived.

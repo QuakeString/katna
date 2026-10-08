@@ -111,6 +111,7 @@ calendar-add-meet = Google Meet のビデオ会議を追加
 calendar-add-teams = Teams 会議を追加
 calendar-has-call = ビデオ通話を追加済み
 calendar-weekday-day = { $weekday }、{ $day }
+calendar-schedule-day = { $month }（{ $weekday }）
 calendar-all-day-box = 終日
 calendar-more-options = その他のオプション
 calendar-save = 保存

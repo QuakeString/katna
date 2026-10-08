@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } / yaklaşık { $total }
 list-results = “{ $query }” için sonuçlar
 list-results-corrected = “{ $query }” için sonuçlar gösteriliyor
 list-search-instead = Bunun yerine “{ $query }” için ara
+list-search-no-index = Arama hazır değil: dizin henüz oluşturulmadı.
+list-search-not-ready = Arama hazır değil: { $error }
 list-files-more = +{ $count }
 list-replied = Yanıtladınız
 
@@ -343,6 +345,11 @@ list-empty-waiting = Yanıt bekleyen bir şey yok.
 list-empty-reminders = Hatırlatıcı yok. Eklemek için bir postada H tuşuna basın.
 list-first-sync = Postalarınız alınıyor…
 list-first-sync-detail = Geldikçe burada görünecekler.
+list-store-unreadable = Posta deposu açılamadı
+row-no-subject = (konu yok)
+row-unknown-sender = (bilinmeyen gönderen)
+row-to = Alıcı:
+row-no-recipients = (alıcı yok)
 
 ## Mail list: lines
 
@@ -424,6 +431,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = { $name } tarafından gönderilen e-postaları bul
 menu-make-rule = Kural oluştur…
+toast-key-imported = Anahtar içe aktarıldı
+toast-key-updated = Bu anahtar sizde zaten vardı; artık güncel
+toast-key-removed = Anahtar kaldırıldı
+toast-key-not-removed = Anahtar kaldırılamadı
+toast-fingerprint-copied = Parmak izi kopyalandı
 
 ## Snackbar after an action on mail in the list
 

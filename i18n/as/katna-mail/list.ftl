@@ -38,6 +38,8 @@ list-range-about = প্ৰায় { $total }ৰ { $first }–{ $last }
 list-results = “{ $query }”ৰ ফলাফল
 list-results-corrected = “{ $query }”ৰ ফলাফল দেখুওৱা হৈছে
 list-search-instead = ইয়াৰ সলনি “{ $query }” সন্ধান কৰক
+list-search-no-index = সন্ধান সাজু নহয়: সূচী এতিয়াও নিৰ্মাণ কৰা হোৱা নাই।
+list-search-not-ready = সন্ধান সাজু নহয়: { $error }
 list-files-more = +{ $count }
 list-replied = আপুনি উত্তৰ দিছে
 
@@ -343,6 +345,14 @@ list-empty-waiting = উত্তৰৰ অপেক্ষাত একো ন�
 list-empty-reminders = কোনো সোঁৱৰণী নাই। এটা যোগ কৰিবলৈ মেইলত H টিপক।
 list-first-sync = আপোনাৰ মেইল অনা হৈছে…
 list-first-sync-detail = মেইল অহাৰ লগে লগে ইয়াত দেখা যাব।
+list-store-unreadable = মেইল ষ্ট'ৰ খুলিব পৰা নগ'ল
+
+## Mail list: lines
+
+row-no-subject = (কোনো বিষয় নাই)
+row-unknown-sender = (অজ্ঞাত প্ৰেৰক)
+row-to = প্ৰাপক:
+row-no-recipients = (কোনো প্ৰাপক নাই)
 
 ## Mail list: lines
 
@@ -426,6 +436,14 @@ drag-mail = { $kind ->
 }
 menu-find-from = { $name }ৰ পৰা অহা ইমেইল বিচাৰক
 menu-make-rule = নিয়ম বনাওক…
+
+## Snackbar after an action on mail in the list
+
+toast-key-imported = কী ইমপৰ্ট কৰা হ'ল
+toast-key-updated = এই কীটো আপোনাৰ ওচৰত আগৰে পৰা আছিল; এতিয়া ই শেহতীয়া
+toast-key-removed = কী আঁতৰোৱা হ'ল
+toast-key-not-removed = কীটো আঁতৰাব পৰা নগ'ল
+toast-fingerprint-copied = ফিংগাৰপ্ৰিণ্ট কপি কৰা হ'ল
 
 ## Snackbar after an action on mail in the list
 

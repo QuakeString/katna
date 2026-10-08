@@ -173,6 +173,7 @@ settings-general-start-at-login = Mulai Katna saat login
 settings-general-start-at-login-detail = Menyinkronkan email serta menampilkan notifikasi email baru dan ikon baki, tanpa membuka jendela
 settings-general-login-window = Buka juga jendela Katna Mail
 settings-general-login-window-detail = Jendela juga terbuka saat login
+settings-general-login-entry = Dimulai saat login (Setelan > Umum > Desktop)
 settings-general-tray = Tampilkan Katna di baki sistem
 settings-general-tray-detail = Dengan jumlah belum dibaca dan menu
 settings-general-tray-color = Ikon baki berwarna

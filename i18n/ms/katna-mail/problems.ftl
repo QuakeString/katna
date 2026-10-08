@@ -59,3 +59,28 @@ service-details-title = Mengapa perkhidmatan tidak dapat dimulakan
 service-details-body = Salin ini dan hantarkannya bersama laporan anda. Tiada mel atau kata laluan di dalamnya.
 service-details-copy = Salin
 service-details-close = Tutup
+service-not-running = Perkhidmatan latar belakang Katna tidak berjalan.
+service-no-answer = Perkhidmatan latar belakang Katna tidak menjawab: { $error }
+service-no-session = Tiada sesi D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna berada dalam mod selamat selepas masalah dengan kemas kini, jadi mel tidak disegerakkan.
+safe-try-again = Cuba lagi
+safe-restore = Pulihkan
+safe-restoring = Memulihkan data anda daripada { $when }…
+safe-restored = Data anda telah dipulihkan daripada { $when }. Apa yang ada sebelum ini disimpan dalam folder.
+safe-show-folder = Tunjukkan folder
+safe-restore-failed = Tidak dapat memulihkan data anda: { $error }
+safe-restore-title = Pulihkan data anda daripada sebelum kemas kini?
+safe-restore-body = Katna kembali kepada salinan yang anda pilih. Mel yang tiba selepasnya dimuat turun semula daripada akaun anda.
+safe-restore-none = Belum ada salinan lagi. Katna membuat satu salinan sebelum setiap kemas kini mengubah data anda.
+safe-restore-keep = Apa yang ada sekarang, termasuk mel yang belum dihantar, draf dan perubahan yang belum disegerakkan, disimpan dalam folder dahulu, jadi tiada apa yang hilang.
+safe-restore-cancel = Batal
+safe-restore-mail = Mel
+safe-restore-pim = Akaun dan kenalan
+safe-restore-blobs = Lampiran
+safe-report-title = Laporan nyahpepijat
+safe-report-body = Salin ini dan lampirkannya pada laporan pepijat anda. Tiada mel, alamat atau kata laluan di dalamnya.
+safe-report-restore = Pulihkan…
+safe-report-copied = Laporan nyahpepijat disalin

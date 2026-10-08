@@ -179,6 +179,7 @@ settings-general-start-at-login = Katna bei der Anmeldung starten
 settings-general-start-at-login-detail = Synchronisiert E-Mails und zeigt Benachrichtigungen über neue E-Mails und das Symbol im Systemabschnitt, ohne das Fenster zu öffnen
 settings-general-login-window = Auch das Fenster von Katna Mail öffnen
 settings-general-login-window-detail = Das Fenster öffnet sich ebenfalls bei der Anmeldung
+settings-general-login-entry = Bei der Anmeldung gestartet (Einstellungen > Allgemein > Arbeitsumgebung)
 settings-general-tray = Katna im Systemabschnitt anzeigen
 settings-general-tray-detail = Mit der Anzahl ungelesener Nachrichten und einem Menü
 settings-general-tray-color = Farbiges Symbol im Systemabschnitt

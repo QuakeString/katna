@@ -1598,6 +1598,22 @@ passing for a domain aligned with it (`katna_render::sender_authenticated`).
 Otherwise the banner says the message may not be from that sender and
 offers "Show images" for it. A provider that adds no such field leaves the
 topmost one to the sender, which is no worse than trusting `From` alone.
+
+The same fields warn about forged mail (`katna_render::sender_checks`,
+`window/reader/sender.rs`). A message *failed* when DMARC failed for its
+`From` domain, or SPF failed for an envelope domain aligned with it and no
+aligned DKIM signature passed; it is *unconfirmed* when the provider
+checked and nothing passed. Failed mail gets a soft red banner above its
+body ("This may not be from bank.example", naming the provider by its
+server, such as `mx.google.com` for Gmail) with Details (what DMARC, DKIM
+and SPF each found), Looks safe (this message only, until the window
+closes; a forged sender can fail again) and Move to spam. Its images stay
+hidden even with "Always show images" on, until "Show images", and a link
+asks first in a popover at the click that names where it really goes.
+An unconfirmed sender gets a small "?" on their picture that says so under
+the pointer; the mail list shows nothing. Mail with no
+`Authentication-Results` shows nothing, as there is nothing to go on.
+
 Images are fetched by the daemon (`FetchImage`, `https` only, `http`
 upgraded, at most 8 MB, checked to be an image by its bytes), at most 200
 different ones per message and 6 at a time; the app never uses the
@@ -5459,18 +5475,47 @@ queued, so the outbox and Sent hold only what was sent. Details:
 
 - Keys are chosen by exact address in the local keyring
   (`katna_crypto::encryption_keys`: usable for encryption, a verified key
-  before an unverified one) and passed to GnuPG by fingerprint, so GnuPG
-  never looks a recipient up on the network (WKD) while sending. A key the
-  user has not certified is still used (`--trust-model always`); a
-  recipient without any key stops the send with "no key for …" and the
-  message comes back.
+  before an unverified one), else among the keys Katna found (below), and
+  passed to GnuPG by fingerprint or file, so GnuPG itself never looks a
+  recipient up. A key the user has not certified is still used
+  (`--trust-model always`); a recipient without any key stops the send
+  with "no key for …" and the message comes back.
 - The sender is always a recipient too, so Sent stays readable. Bcc
   recipients are hidden recipients in OpenPGP (`--hidden-recipient`); CMS
   has no such thing.
 - OpenPGP by default; S/MIME when answering S/MIME mail or when the sender
   only has an S/MIME certificate.
-- Routing headers (From, To, Subject) stay outside the protection; hiding
-  the subject (protected headers) and Autocrypt headers come later (E.3).
+- Routing headers (From, To, Cc, Date) stay outside the protection.
+  Encrypted OpenPGP mail hides its subject: the outside says `...`, and
+  the real Subject (with copies of the routing headers) goes inside, with
+  `protected-headers="v1"` on the inner Content-Type, as Thunderbird and
+  KMail send and read it. S/MIME mail keeps its subject outside.
+
+**Keys from Autocrypt and the Web Key Directory (E.3).** Keys Katna finds
+for people are kept apart from the user's GnuPG keyring, which stays the
+user's own, in `$XDG_DATA_HOME/katna/keys/` (`katna_crypto::PeerKeys`: a
+binary key and a small text file per address, written only by the daemon),
+and used only to encrypt to the address they were found for, through
+`--recipient-file`. A key is kept only when GnuPG lists exactly one key in
+it, with a user ID of exactly that address, able to encrypt, neither
+revoked nor expired.
+
+- **Autocrypt (Level 1).** Mail Katna sends carries an `Autocrypt:
+  addr=…; keydata=…` header when GnuPG has a secret key for the sender:
+  the newest usable one, exported minimal with only that address's user
+  ID and the encryption subkey. No `prefer-encrypt` is stated. When the
+  user opens a message with an Autocrypt header, the app asks the daemon
+  (`LearnKey`) to keep the key, which it does only when the user's
+  provider authenticated the message's `From` (aligned DMARC or DKIM in
+  `Authentication-Results`, §12) and `addr` is that `From`; a key from
+  older mail never replaces one from newer mail.
+- **Web Key Directory.** When Encrypt is on and a recipient has no key,
+  the app asks the daemon (`LookUpKey`) before sealing: it fetches
+  `https://openpgpkey.<domain>/.well-known/openpgpkey/<domain>/hu/<hash>`,
+  then the direct `https://<domain>/.well-known/openpgpkey/hu/<hash>`
+  (public addresses only, 256 KiB at most), so only the recipient's own
+  domain learns who is written to. Nothing is looked up while reading:
+  that would tell the sender the mail was opened.
 
 
 ### 19.2 Crash reports and feedback
@@ -6025,7 +6070,9 @@ old and new daemon and app must keep working:
   daemon asks it to restart; an old app that meets a new daemon keeps working
   on `Pim1` and shows a "Katna was updated, restart" pill.
 - An app that opens a store and gets `SchemaTooNew` shows the same restart
-  pill instead of an error.
+  pill instead of an error. Katna Mail floats it at the bottom centre of the
+  mail list; Restart starts the installed build with `--after-update` and
+  quits, and × hides it until a later build.
 - Search index versions already rebuild in the background when they differ
   (`katna-search` deletes an index built with another `SCHEMA_VERSION`);
   search falls back to the store's plain lookups while that runs.
@@ -6033,19 +6080,22 @@ old and new daemon and app must keep working:
 #### Protecting local data
 
 - **Backup before migrating.** When the daemon is about to raise a
-  database's `user_version`, it first copies each database it will change
-  with SQLite's online backup into
-  `$XDG_DATA_HOME/katna/backup/<old version>/`, after checking there is room
-  for it. No room, no migration: the daemon stays on read-only duty and
-  says why. The last two backups are kept.
+  database's `user_version`, it first copies that database with
+  `VACUUM INTO` to `$XDG_DATA_HOME/katna/backup/<name>-v<old version>-<unix
+  time>.db`, after checking there is room for it plus 64 MiB. No room, no
+  migration: opening the store fails with `NoRoomForBackup`, which says why.
+  The last two backups of each database are kept.
 - **Expand, then contract.** A minor release's migrations only add tables,
   columns and indexes, so the previous stable release can still read the
   database. Removing or renaming happens one release later, once nothing
   reads the old shape. A migration that cannot follow this rule is only
   allowed in a major release.
-- Each database records the oldest Katna version that can open it
-  (`min_reader_version` in a small `schema_meta` table), so an older version
-  can tell "newer but still readable" from "too new".
+- Each database records the oldest schema version whose Katna can open it
+  (`min_reader_version` in a small `schema_meta` table, from mail.db v15,
+  pim.db v18 and blobs.db v2), so an older version can tell "newer but
+  still readable" from "too new". It then opens the database as it is,
+  without migrating. A migration that only adds leaves the value alone; one
+  that removes or reshapes raises it to its own version.
 - Settings: `config.toml` keys are only added; unknown keys written by a
   newer version are kept, not dropped, when an older version saves.
 - Secrets in the Secret Service keep their attributes (§9.2.1) across
@@ -6058,10 +6108,19 @@ old and new daemon and app must keep working:
   a rebuild, the Secret Service answers, D-Bus names are owned. The result
   and the version are written to `$XDG_STATE_HOME/katna/health.toml`.
 - If the daemon fails to reach "healthy" three times within ten minutes, it
-  starts in **safe mode**: no sync and no writes except the outbox, and a
-  notification with "Restore previous data" (from the backup above) and
-  "Copy debug report". Local-only data (outbox, `op_queue`, organizations,
-  metadata) is exported to a file before any restore.
+  starts in **safe mode**: no account, calendar, contacts, tasks, notes or
+  rules sync; the outbox still sends mail the user already sent, and updates
+  still arrive. Katna Mail reads `health.toml` (so it knows even when the
+  daemon can't start) and shows an amber line above the mail with Try
+  again, Restore and Details (the debug report). Only the daemon writes the
+  databases, so Try again and Restore leave
+  `$XDG_STATE_HOME/katna/safe-mode-request.toml` and restart the daemon
+  (D-Bus `Restart`), which runs the request before opening anything.
+  Restore offers the copies of the last two updates (copies made within ten
+  minutes of each other form one point); it first moves the databases as
+  they are, local-only data included, into
+  `before-restore-<unix time>/` beside them, so nothing is lost, and a note
+  offers Show folder. Copy debug report is also in About.
 - A **downgrade** (the user installs an older package after a bad update)
   meets `SchemaTooNew` only if the newer release broke the expand-then-contract
   rule; the older daemon then offers the same restore.

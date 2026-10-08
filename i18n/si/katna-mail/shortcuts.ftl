@@ -70,6 +70,7 @@ shortcut-navigation = මෙනුව පෙන්වන්න හෝ හකු�
 shortcut-quick-settings = ඉක්මන් සැකසීම්
 shortcut-settings = සියලු සැකසීම්
 shortcut-shortcuts = යතුරුපුවරු කෙටිමං
+shortcut-palette = විධාන පුවරුව
 shortcut-reload = නව තැපැල් සඳහා පරීක්ෂා කරන්න
 shortcut-quit = ඉවත් වන්න
 

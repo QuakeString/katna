@@ -38,6 +38,8 @@ list-range-about = ཧ་ལམ་ { $total } ལས་ { $first }–{ $last }
 list-results = “{ $query }” གི་གྲུབ་འབྲས་ཚུ
 list-results-corrected = “{ $query }” གི་གྲུབ་འབྲས་ཚུ་སྟོན་དོ
 list-search-instead = དེ་གི་ཚབ་ལུ་ “{ $query }” འཚོལ།
+list-search-no-index = འཚོལ་ཞིབ་གྲ་སྒྲིག་མེད: ཟུར་ཐོ་ ད་ལྟོ་ཚུན་ བཟོ་མ་ཚར་བས།
+list-search-not-ready = འཚོལ་ཞིབ་གྲ་སྒྲིག་མེད: { $error }
 list-files-more = +{ $count }
 list-replied = ཁྱོད་ཀྱིས་ལན་བཏང་ཡི
 
@@ -273,6 +275,14 @@ list-empty-waiting = ལན་ལུ་སྒུག་དོ་མི་ ག་�
 list-empty-reminders = དྲན་སྐུལ་མེད། གློག་འཕྲིན་ཅིག་གུ་ H ཨེབ་སྟེ་ ཁ་སྐོང་འབད།
 list-first-sync = ཁྱོད་ཀྱི་གློག་འཕྲིན་ལེན་དོ…
 list-first-sync-detail = གློག་འཕྲིན་འབྱོར་བའི་བསྒང་ ནཱ་ལུ་སྟོནམ་ཨིན།
+list-store-unreadable = གློག་འཕྲིན་མཛོད་ ཁ་ཕྱེ་མ་ཚུགས།
+
+## Mail list: lines
+
+row-no-subject = (དོན་ཚན་མེད)
+row-unknown-sender = (གཏང་མི་མ་ཤེས)
+row-to = ལུ:
+row-no-recipients = (འབྱོར་མི་མེད)
 
 ## Mail list: lines
 
@@ -354,6 +364,14 @@ drag-mail = { $kind ->
 }
 menu-find-from = { $name } ལས་འོང་མི་གློག་འཕྲིན་ཚུ་འཚོལ།
 menu-make-rule = ལམ་ལུགས་ཅིག་བཟོ…
+
+## Snackbar after an action on mail in the list
+
+toast-key-imported = ལྡེ་མིག་ནང་འདྲེན་འབད་ཡི།
+toast-key-updated = ལྡེ་མིག་འདི་ ཧེ་མ་ལས་ར་ཡོདཔ་ཨིན། ད་ དུས་མཐུན་ཨིན།
+toast-key-removed = ལྡེ་མིག་ཕྱིར་བཏོན་ཡི།
+toast-key-not-removed = ལྡེ་མིག་ཕྱིར་བཏོན་མ་ཚུགས།
+toast-fingerprint-copied = མཛུབ་རིས་འདྲ་བཤུས་རྐྱབ་ཡི།
 
 ## Snackbar after an action on mail in the list
 

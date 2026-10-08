@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } ng humigit-kumulang { $total }
 list-results = Mga resulta para sa “{ $query }”
 list-results-corrected = Ipinapakita ang mga resulta para sa “{ $query }”
 list-search-instead = Hanapin na lang ang “{ $query }”
+list-search-no-index = Hindi pa handa ang paghahanap: hindi pa nabubuo ang index.
+list-search-not-ready = Hindi pa handa ang paghahanap: { $error }
 list-files-more = +{ $count }
 list-replied = Sumagot ka na
 
@@ -343,9 +345,14 @@ list-empty-waiting = Walang naghihintay ng sagot.
 list-empty-reminders = Walang paalala. Pindutin ang H sa isang mail para magdagdag.
 list-first-sync = Kinukuha ang iyong mail…
 list-first-sync-detail = Lalabas ito dito habang dumarating.
+list-store-unreadable = Hindi mabuksan ang imbakan ng mail
 
 ## Mail list: lines
 
+row-no-subject = (walang subject)
+row-unknown-sender = (hindi kilalang nagpadala)
+row-to = Para kay:
+row-no-recipients = (walang tatanggap)
 row-removed = Inalis ang mensaheng ito.
 row-starred = Naka-star
 row-not-starred = Walang star
@@ -425,6 +432,11 @@ menu-make-rule = Gumawa ng panuntunan…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Na-import ang key
+toast-key-updated = Mayroon ka na ng key na ito; updated na ito ngayon
+toast-key-removed = Inalis ang key
+toast-key-not-removed = Hindi maalis ang key
+toast-fingerprint-copied = Nakopya ang fingerprint
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] Na-archive ang { $count } pag-uusap.

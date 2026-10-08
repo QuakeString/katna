@@ -6,6 +6,7 @@
 
 about-tooltip = Nípa Katna
 about-tagline = Lẹ́tà àti kàlẹ́ńdà fún déskítọ́ọ̀pù Linux
+about-version = Katna Mail { $version }
 about-copy-version = Ṣẹ̀dà àlàyé ẹ̀yà
 about-version-copied = A ti ṣẹ̀dà rẹ̀
 about-version-built = Ọjọ́ tí a kọ́ ọ: { $date }
@@ -38,6 +39,8 @@ about-update-restart = Ṣe ìmúdójúìwọ̀n kí o sì tún bẹ̀rẹ̀
 about-update-cancel = Kì í ṣe báyìí
 about-changelog = Àkọsílẹ̀ àwọn àyípadà
 about-source = Kóòdù orísun
+about-debug-report = Ṣẹ̀dà ìròyìn àṣìṣe
+about-debug-report-tip = Àwọn ẹ̀yà, àyẹ̀wò lẹ́yìn ìmúdójúìwọ̀n àti àwọn ìlà àkọsílẹ̀ àìpẹ́, fún ìròyìn àṣìṣe. Kò sí lẹ́tà tàbí ọ̀rọ̀ aṣínà.
 about-coffee = Ra kọfí kan fún mi
 about-coffee-coffee = Kọfí?
 about-coffee-tea = Tii?

@@ -4397,3 +4397,151 @@ text = """
 ☰ menüsü ve dil listesi artık hesap kartının içinde birden belirmek yerine
 kayarak gelir; geri dönmek için sağda bir Geri düğmesi bulunur.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Her uygulama aynı kartın üzerinde"
+text = """
+Takvim, Kişiler, Görevler, Notlar ve Dosyalar artık Posta ve Ayarlar ile
+aynı ince kenarlığa ve yumuşak gölgeye sahip bir kartın üzerinde duruyor.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "GNOME'da hızlı ekleme tuşları"
+text = """
+Görev için Meta+Alt+T ve not için Meta+Alt+N artık GNOME'da da çalışıyor.
+İlk seferde GNOME, Katna'nın bu tuşları kullanıp kullanamayacağını sorar;
+tuşları GNOME'un Ayarlar'ından değiştirebilirsiniz.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "İşaretleme araçlarını taşıyın"
+text = """
+Bir PDF'i işaretlerken araçların sonundaki noktaları sürükleyerek onları
+sayfanın üzerinde istediğiniz yere taşıyın; böylece işaretlediğiniz yeri
+hiç kapatmazlar. Yerine koymak için noktalara çift tıklayın.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Ekran okuyucularla çalışır"
+text = """
+Orca ve diğer ekran okuyucular artık Katna Mail'i okuyabiliyor: posta
+listesini, klasörleri, açık postayı, düğmeleri, menüleri, anahtarları ve
+iletişim kutularını.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Geri bildirim gönder"
+text = """
+Hızlı ayarlar'da ve Ayarlar > Kullanıcı geri bildirimi'nde de bulunan
+Yardım > Geri bildirim gönder, bir sorunu ya da fikri doğrudan Katna'ya
+gönderir. Neler gönderilir, gitmeden önce tam metni gösterir; yanıt için
+e-posta isteğe bağlıdır.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "İsterseniz anonim kullanım istatistikleri"
+text = """
+Ayarlar > Kullanıcı geri bildirimi'nde, siz açana kadar kapalı kalan yeni
+bir anahtar var: haftada bir, hangi özellikleri kullandığınızı evet ya da
+hayır olarak gönderir; böylece en çok kullanılanlar en çok özeni görür.
+Sayfa, sayılan her şeyi listeler ve bu haftanın raporunu gösterir.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Arama, sunucudaki eski postaları bulur"
+text = """
+Eski postalar tamamen indirilmediği için arama, sözcüklerini burada
+okuyamaz. Artık yazmaya kısa bir ara verdiğinizde ya da Enter'a
+bastığınızda Katna posta sunucunuza da sorar ve bulduklarını Sunucuda daha
+fazla sonuç altında listeler.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Tayca, Laoca, Khmerce ve Birmanca arama"
+text = """
+Arama, cümlede sözcükler arasında boşluk olmasa bile Tayca, Laoca, Khmerce
+veya Birmanca postalardaki bir sözcüğü bulur.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Uzun satırlar sözcükler arasında kayar"
+text = """
+Arapça, Hintçe ve diğer Hint yazılarındaki, Tayca, Laoca, Khmerce ve
+Birmancadaki metinler artık bir sözcüğü ortasından bölmek yerine sözcükler
+arasında alt satıra geçiyor; Çince ve Japonca satırlar da artık bir kapanış
+işaretiyle başlamıyor.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Basınca düğmenin tamamı dolar"
+text = """
+Bir çipe ya da çerçeveli bir düğmeye tıklamak, içinde daha küçük bir hap
+göstermek yerine artık onu kendi kenarlarına ve köşelerine kadar doldurur.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Komut paleti"
+text = """
+Ctrl+Shift+P'ye basın ve herhangi bir işlemi ya da ayarı bulmak için
+yazın, ardından çalıştırmak için Enter'a basın. Her işlem klavye
+kısayolunu gösterir ve en son kullandıklarınız en üstte yer alır.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Şifreli posta anahtarları kendisi bulur"
+text = """
+Şifrele açıkken, anahtarı olmayan bir alıcının anahtarı gönderdiğinizde
+kendi alan adının anahtar dizininde aranır. GnuPG'de adresiniz için bir
+anahtar varsa gönderdiğiniz postalar ortak anahtarınızı (Autocrypt) taşır
+ve aynı yolla gelen anahtarlar yanıtlarınızı şifrelemek için kullanılır.
+Şifreli OpenPGP postaları artık açılana kadar konularını gizliyor.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Bir iletiyi kimin imzaladığını görün"
+text = """
+İmzalı ya da şifreli bir iletideki imza satırına tıklayarak imzalayanın
+anahtarını görün: ad, adres, parmak izi ve tarihler, yanında Parmak izini
+kopyala ile. Sizde olmayan bir anahtarla imzalanmış bir ileti Anahtarı ara
+seçeneğini sunar; birinin eklediği bir anahtar ise Bu anahtar içe aktarılsın
+mı? olarak açılır ve ardından Geri al ile geri alınabilir.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Sahte postalarda uyarılar"
+text = """
+Bir ileti posta sağlayıcınızın gönderen denetimlerinden geçemediğinde,
+kırmızı bir şerit iletinin iddia ettiği kişiden gelmemiş olabileceğini
+söyler ve Ayrıntılar, Güvenli görünüyor ve Spam'e taşı seçeneklerini sunar.
+Resimleri gizli kalır ve bağlantıları açılmadan önce sorar. Hiçbir şeyin
+doğrulamadığı bir gönderenin resminde küçük bir \"?\" görünür.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Katna güncellenince yeniden başlatın"
+text = """
+Katna Mail açıkken Katna güncellendiğinde, arka plan hizmeti posta
+göndermediği bir anda kendiliğinden yeni sürüme geçer. Ardından posta
+listesinin altındaki küçük bir hap Yeniden başlat seçeneğini sunar; bu,
+yeni Katna Mail'i eskisinin yerine açar. × onu bir sonraki güncellemeye
+kadar gizler.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Posta açmak daha sakin"
+text = """
+Listede bir postaya tıklamak, posta açılırken artık listede bir dalga
+yaymıyor. Zaten açık olan postaya tıkladığınızda dalga yine görünür.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Bir güncelleme ters giderse güvenli mod"
+text = """
+Katna, bir güncelleme verilerinizi değiştirmeden önce onların bir kopyasını
+alır. Güncelleme Katna'nın başlamasını engellerse Katna güvenli modda açılır:
+postalarınız okunabilir kalır ve üstündeki bir satır yeniden denemenizi ya
+da güncellemeden önceki kopyaya geri dönmenizi sağlar. Şu anda olanlar önce
+bir klasörde saklanır, böylece hiçbir şey kaybolmaz. Hakkında bölümünde de
+bulunan Hata ayıklama raporunu kopyala, bir hata raporunun ihtiyaç duyduğu
+her şeyi toplar.
+"""

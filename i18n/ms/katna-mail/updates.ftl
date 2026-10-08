@@ -33,3 +33,7 @@ update-dialog-compare = Bandingkan di GitHub
 update-dialog-no-service = Perkhidmatan latar belakang Katna tidak berjalan.
 update-dialog-later = Nanti
 update-dialog-close = Tutup
+restart-updated = Katna telah dikemas kini
+restart-button = Mulakan semula
+restart-close = Bukan sekarang
+restart-failed = Tidak dapat memulakan Katna Mail yang baharu: { $error }
