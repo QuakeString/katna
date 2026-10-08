@@ -283,6 +283,8 @@ row-no-subject = (དོན་ཚན་མེད)
 row-unknown-sender = (གཏང་མི་མ་ཤེས)
 row-to = ལུ:
 row-no-recipients = (འབྱོར་མི་མེད)
+row-names-separator = {", "}
+row-me = ང
 
 ## Mail list: lines
 

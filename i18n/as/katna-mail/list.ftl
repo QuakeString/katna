@@ -353,6 +353,8 @@ row-no-subject = (কোনো বিষয় নাই)
 row-unknown-sender = (অজ্ঞাত প্ৰেৰক)
 row-to = প্ৰাপক:
 row-no-recipients = (কোনো প্ৰাপক নাই)
+row-names-separator = {", "}
+row-me = মই
 
 ## Mail list: lines
 

@@ -353,6 +353,8 @@ row-no-subject = (ਕੋਈ ਵਿਸ਼ਾ ਨਹੀਂ)
 row-unknown-sender = (ਅਣਜਾਣ ਭੇਜਣ ਵਾਲਾ)
 row-to = ਨੂੰ:
 row-no-recipients = (ਕੋਈ ਪ੍ਰਾਪਤਕਰਤਾ ਨਹੀਂ)
+row-names-separator = {", "}
+row-me = ਮੈਂ
 
 ## Mail list: lines
 
