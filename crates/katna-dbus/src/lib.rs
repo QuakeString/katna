@@ -1369,6 +1369,13 @@ macro_rules! pim_proxy {
             /// the daemon uses (`sync.metered`).
             fn reload_config(&self) -> zbus::Result<()>;
 
+            /// Sends feedback from the Send feedback form: `text` exactly
+            /// as the form showed it, `kind` (`problem`, `idea` or
+            /// `other`) and an optional reply address. Returns why it
+            /// could not be sent, or an empty string once sent.
+            fn send_feedback(&self, text: &str, kind: &str, reply_to: &str)
+            -> zbus::Result<String>;
+
             /// Deletes what app `app` (`calendar`, `contacts`, `tasks`,
             /// `notes` or `files`), turned off, downloaded from the
             /// accounts; its next sync downloads it again. Whatever is on

@@ -345,6 +345,9 @@ pub struct Feedback {
     /// ([`crate::ids::SENTRY_DSN`]): a self-hosted Sentry or GlitchTip.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dsn: Option<String>,
+    /// Send anonymous usage statistics once a week (`katna_core::usage`).
+    /// Off until the user turns it on; nothing is recorded while off.
+    pub send_usage_statistics: bool,
 }
 
 impl Feedback {
@@ -365,6 +368,7 @@ impl Default for Feedback {
             save_crash_reports: true,
             send_crash_reports: None,
             dsn: None,
+            send_usage_statistics: false,
         }
     }
 }

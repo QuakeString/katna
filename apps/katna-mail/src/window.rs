@@ -52,6 +52,7 @@ mod detached;
 mod download;
 mod event_edit;
 mod event_window;
+mod feedback_form;
 mod feedback_page;
 mod files_page;
 mod folder_pick;
@@ -220,6 +221,7 @@ actions!(
         ShowShortcuts,
         ShowWhatsNew,
         CheckForUpdates,
+        SendFeedback,
         ShowAbout,
     ]
 );
@@ -752,6 +754,11 @@ pub struct MailWindow {
     service: service::Service,
     /// Settings > User feedback's list of crash reports, as last read.
     saved_reports: Option<feedback_page::SavedReports>,
+    /// Settings > User feedback shows this week's usage report.
+    usage_report_open: bool,
+    /// The week and the features already noted for usage statistics, so
+    /// noting one again reads no file.
+    usage_noted: (i64, std::collections::BTreeSet<katna_core::usage::Feature>),
     /// Settings > Subscription (the Katna account), once shown.
     katna: Option<katna_account::KatnaPage>,
     compose: Option<compose::Compose>,
@@ -766,6 +773,8 @@ pub struct MailWindow {
     shortcuts_dialog: Option<shortcuts_dialog::ShortcutsDialog>,
     /// "Help improve Katna", asked once after an update.
     share_ask: Option<share_ask::ShareAsk>,
+    /// Help > Send feedback, while open.
+    feedback_form: Option<feedback_form::FeedbackForm>,
     /// The print preview, before the desktop's print dialog.
     print_preview: Option<print_preview::PrintPreview>,
     /// Ask it once What's new is closed.
@@ -1115,6 +1124,8 @@ impl MailWindow {
             problems: problems::Problems::default(),
             service: service::Service::default(),
             saved_reports: None,
+            usage_report_open: false,
+            usage_noted: (0, Default::default()),
             katna: None,
             compose: None,
             files: attachments::Files::default(),
@@ -1123,6 +1134,7 @@ impl MailWindow {
             whats_new: None,
             shortcuts_dialog: None,
             share_ask: None,
+            feedback_form: None,
             print_preview: None,
             share_ask_later: false,
             about: None,
@@ -3116,6 +3128,7 @@ impl MailWindow {
         quiet: bool,
         cx: &mut Context<Self>,
     ) {
+        self.note_command_usage(&command);
         let connection = self.daemon.clone();
         let notes = command.touches_notes();
         let drive = command.drive();
@@ -3649,6 +3662,7 @@ impl Render for MailWindow {
         if self.event_only {
             return self.render_event_window(window, cx);
         }
+        self.note_usage_each_frame(window);
         self.tour_new_frame();
         self.measure_pill_text(window);
         let th = self.theme(window);
@@ -4042,6 +4056,7 @@ impl Render for MailWindow {
             self.render_share_ask(&th, window, reduce, cx)
         };
         let about = self.render_about(&th, window, reduce, cx);
+        let feedback_form = self.render_feedback_form(&th, window, reduce, cx);
         let gallery = self.render_gallery(cx);
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
@@ -4136,6 +4151,7 @@ impl Render for MailWindow {
             .children(shortcuts_dialog)
             .children(share_ask)
             .children(about)
+            .children(feedback_form)
             .children(gallery)
             .children(update_dialog)
             .children(print_preview)
@@ -4275,7 +4291,8 @@ impl Render for MailWindow {
             .on_action(cx.listener(Self::show_shortcuts))
             .on_action(cx.listener(Self::show_whats_new_action))
             .on_action(cx.listener(Self::check_for_updates_action))
-            .on_action(cx.listener(Self::show_about));
+            .on_action(cx.listener(Self::show_about))
+            .on_action(cx.listener(Self::send_feedback_action));
         match &self.font {
             Some(font) => frame.font_family(font.clone()).into_any_element(),
             None => frame.into_any_element(),

@@ -2038,6 +2038,12 @@ impl MailWindow {
                 cx,
             );
         }
+        if at.is_some() {
+            self.note_usage(katna_core::usage::Feature::ScheduledSend);
+        }
+        if sealing.encrypt {
+            self.note_usage(katna_core::usage::Feature::Encrypted);
+        }
         let connection = self.daemon.clone();
         let when = at.map(|at| schedule::describe(at, &self.tz));
         let undo = self.config.sending.undo_send_seconds;

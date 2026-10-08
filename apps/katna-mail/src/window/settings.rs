@@ -117,6 +117,8 @@ pub(super) enum Change {
     SaveCrashReports(bool),
     /// Crash reports sent to Katna's crash tracker: "Help improve Katna".
     SendCrashReports(bool),
+    /// Anonymous usage statistics sent once a week.
+    SendUsageStatistics(bool),
     /// The interface scale, in percent.
     Scale(u16),
     /// Katna's own animation speed, as a percentage of normal length, or
@@ -417,6 +419,12 @@ impl MailWindow {
                                         )
                                     },
                                 )),
+                            )
+                            .child(
+                                help_row("send-feedback", "chat", tr!("quick-send-feedback"), th)
+                                    .on_click(cx.listener(|this, _, window, cx| {
+                                        this.open_feedback_form(window, cx)
+                                    })),
                             )
                             .child(help_row("about", "info", tr!("quick-about"), th).on_click(
                                 cx.listener(|this, _, window, cx| this.open_about(window, cx)),
@@ -757,6 +765,20 @@ impl MailWindow {
             }
             Change::AutoDownloadUpdates(on) => {
                 self.config.updates.auto_download = on;
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
+            Change::SendUsageStatistics(on) => {
+                self.config.feedback.send_usage_statistics = on;
+                // The week's facts are noted on the next frame.
+                self.usage_noted = (0, Default::default());
+                if !on {
+                    // Nothing recorded is kept once it is off.
+                    katna_core::usage::forget(&self.paths);
+                    self.usage_report_open = false;
+                }
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();
