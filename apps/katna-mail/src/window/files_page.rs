@@ -2844,7 +2844,7 @@ impl MailWindow {
                                         this.pick_days(Time::between(from, day), cx);
                                     }
                                 }))
-                                .child(katna_i18n::format::number(day.day() as u64)),
+                                .child(katna_i18n::format::day_number(day)),
                         )
                         .into_any_element()
                     }))

@@ -195,7 +195,7 @@ impl MailWindow {
                                 cx.notify();
                             }))
                     })
-                    .child(format::number(date.day() as u64))
+                    .child(format::day_number(date))
             })
             .collect::<Vec<_>>();
         let step = move |months: i32| {

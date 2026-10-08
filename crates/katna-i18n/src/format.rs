@@ -6,13 +6,13 @@
 //! years in Thai, Solar Hijri in Persian).
 
 use fluent_bundle::FluentValue;
-use icu_calendar::Date;
 use icu_calendar::cal::Gregorian;
 use icu_calendar::types::Weekday;
 use icu_calendar::week::WeekInformation;
+use icu_calendar::{AnyCalendar, Date, Iso, Ref};
 use icu_datetime::fieldsets::{E, M, MD, MDE, MDT, T, YM, YMD, YMDE, YMDET};
 use icu_datetime::pattern::{DateTimePattern, FixedCalendarDateTimeNames};
-use icu_datetime::{DateTimeFormatter, FixedCalendarDateTimeFormatter, NoCalendarFormatter};
+use icu_datetime::{DateTimeFormatter, NoCalendarFormatter};
 use icu_decimal::DecimalFormatter;
 use icu_decimal::input::Decimal;
 use icu_decimal::options::GroupingStrategy;
@@ -76,12 +76,13 @@ pub(crate) struct Formats {
     date: Option<DateTimeFormatter<YMD>>,
     long: Option<DateTimeFormatter<YMDET>>,
     decimal: Option<DecimalFormatter>,
-    /// For a date picker: month names (always Gregorian, as its days
-    /// are), the shortest weekday names, the first day of the week and
-    /// years without grouping.
+    /// For a calendar or a date picker: month names and years in the
+    /// language's calendar (a Gregorian month is Shahrivar–Mehr in
+    /// Persian), the shortest weekday names, the first day of the week
+    /// and years without grouping.
     medium_date: Option<DateTimeFormatter<YMD>>,
-    month: Option<FixedCalendarDateTimeFormatter<Gregorian, M>>,
-    month_year: Option<FixedCalendarDateTimeFormatter<Gregorian, YM>>,
+    month: Option<DateTimeFormatter<M>>,
+    month_year: Option<DateTimeFormatter<YM>>,
     /// CLDR's short weekday names (`Su`), which no field set gives.
     weekday_short: Option<(FixedCalendarDateTimeNames<Gregorian>, DateTimePattern)>,
     first_weekday: Option<Weekday>,
@@ -109,8 +110,8 @@ impl Formats {
             long: DateTimeFormatter::try_new(prefs(), YMDE::medium().with_time_hm()).ok(),
             decimal: DecimalFormatter::try_new((&locale).into(), Default::default()).ok(),
             medium_date: DateTimeFormatter::try_new(prefs(), YMD::medium()).ok(),
-            month: FixedCalendarDateTimeFormatter::try_new(prefs(), M::long()).ok(),
-            month_year: FixedCalendarDateTimeFormatter::try_new(prefs(), YM::long()).ok(),
+            month: DateTimeFormatter::try_new(prefs(), M::long()).ok(),
+            month_year: DateTimeFormatter::try_new(prefs(), YM::long()).ok(),
             weekday_short: "cccccc".parse().ok().and_then(|pattern: DateTimePattern| {
                 let mut names = FixedCalendarDateTimeNames::try_new(prefs()).ok()?;
                 names.include_for_pattern(&pattern).ok()?;
@@ -274,34 +275,108 @@ pub fn day_month_year(date: jiff::civil::DateTime) -> String {
     .unwrap_or_else(fallback)
 }
 
-/// A month's name on its own, for month 1 to 12 of the Gregorian
-/// calendar: `September`, `সেপ্টেম্বর`.
+/// Between the two ends of a span of months or years (CLDR's
+/// interval fallback pattern, `{0} – {1}`).
+const SPAN: &str = " – ";
+
+/// `date` in the language's calendar (Solar Hijri in Persian).
+fn local(f: &Formats, date: Date<Iso>) -> Option<Date<Ref<'_, AnyCalendar>>> {
+    Some(date.to_calendar(f.month.as_ref()?.calendar()))
+}
+
+fn iso(date: jiff::civil::Date) -> Option<Date<Iso>> {
+    Date::try_new_iso(date.year().into(), date.month() as u8, date.day() as u8).ok()
+}
+
+/// The months the days from `first` to `last` fall in, in the language's
+/// calendar, for a calendar's title: `(None, "September 2026")`, or the
+/// start and the end of a span, `(Some("September"), "October 2026")`,
+/// `(Some("شهریور ۱۴۰۴"), "مهر ۱۴۰۵")`. The caller joins the two.
+pub fn months(first: jiff::civil::Date, last: jiff::civil::Date) -> (Option<String>, String) {
+    let fallback = || {
+        if (first.year(), first.month()) == (last.year(), last.month()) {
+            (None, first.strftime("%B %Y").to_string())
+        } else if first.year() == last.year() {
+            (
+                Some(first.strftime("%B").to_string()),
+                last.strftime("%B %Y").to_string(),
+            )
+        } else {
+            (
+                Some(first.strftime("%B %Y").to_string()),
+                last.strftime("%B %Y").to_string(),
+            )
+        }
+    };
+    let (Some(start), Some(end)) = (iso(first), iso(last)) else {
+        return fallback();
+    };
+    crate::catalog::with_formats(|f| {
+        let (a, b) = (local(f, start)?, local(f, end)?);
+        let month = f.month.as_ref()?;
+        let month_year = f.month_year.as_ref()?;
+        let written = |m: &DateTimeFormatter<YM>, d: &Date<Iso>| plain(m.format(d).to_string());
+        Some(if a.year().extended_year() != b.year().extended_year() {
+            (Some(written(month_year, &start)), written(month_year, &end))
+        } else if a.month().ordinal != b.month().ordinal {
+            (
+                Some(plain(month.format(&start).to_string())),
+                written(month_year, &end),
+            )
+        } else {
+            (None, written(month_year, &start))
+        })
+    })
+    .unwrap_or_else(fallback)
+}
+
+/// The days of Gregorian `month` (1 to 12) as month names in the
+/// language's calendar, for a date picker: `September`, `সেপ্টেম্বর`,
+/// `شهریور – مهر`.
 pub fn month_name(month: i8) -> String {
+    let month = month.clamp(1, 12);
     let fallback = || {
         jiff::civil::Date::new(2026, month, 1)
             .map(|d| d.strftime("%B").to_string())
             .unwrap_or_default()
     };
-    let Ok(date) = Date::try_new_gregorian(2026, month.clamp(1, 12) as u8, 1) else {
+    let Ok(first) = jiff::civil::Date::new(2026, month, 1) else {
         return fallback();
     };
-    crate::catalog::with_formats(|f| f.month.as_ref().map(|m| plain(m.format(&date).to_string())))
-        .unwrap_or_else(fallback)
-}
-
-/// A month of the Gregorian calendar with its year, for a calendar's
-/// title: `September 2026`, `2026年9月`.
-pub fn month_year(date: jiff::civil::Date) -> String {
-    let fallback = || date.strftime("%B %Y").to_string();
-    let Ok(input) = Date::try_new_gregorian(i32::from(date.year()), date.month() as u8, 1) else {
+    let (Some(start), Some(end)) = (iso(first), iso(first.last_of_month())) else {
         return fallback();
     };
     crate::catalog::with_formats(|f| {
-        f.month_year
-            .as_ref()
-            .map(|m| plain(m.format(&input).to_string()))
+        let m = f.month.as_ref()?;
+        let (a, b) = (m.format(&start).to_string(), m.format(&end).to_string());
+        Some(if a == b {
+            plain(a)
+        } else {
+            plain(a + SPAN + &b)
+        })
     })
     .unwrap_or_else(fallback)
+}
+
+/// The Gregorian month `date` is in, with its year, in the language's
+/// calendar, for a calendar's title: `September 2026`, `2026年9月`,
+/// `شهریور – مهر ۱۴۰۵`.
+pub fn month_year(date: jiff::civil::Date) -> String {
+    match months(date.first_of_month(), date.last_of_month()) {
+        (None, one) => one,
+        (Some(first), last) => first + SPAN + &last,
+    }
+}
+
+/// The day of the month `date` is, in the language's calendar and
+/// digits, for a calendar's day cells: `27`, `২৭`, `۵` (5 Mehr).
+pub fn day_number(date: jiff::civil::Date) -> String {
+    let Some(day) = iso(date) else {
+        return date.day().to_string();
+    };
+    let day = crate::catalog::with_formats(|f| Some(local(f, day)?.day_of_month().0))
+        .unwrap_or(date.day() as u8);
+    number(day.into())
 }
 
 /// The first day of the week: Sunday in the US, Monday in most of
@@ -339,11 +414,34 @@ fn short_weekday(f: &Formats, date: Date<Gregorian>) -> Option<String> {
     Some(plain(text.try_write_to_string().ok()?.into_owned()))
 }
 
-/// A year with the language's digits and no grouping: `2026`, `২০২৬`.
+/// Gregorian `year` in the language's calendar and digits, with no
+/// grouping: `2026`, `২০২৬`, `2569` (Thai), `۱۴۰۴ – ۱۴۰۵` (Persian).
 pub fn year(year: i16) -> String {
-    let d = Decimal::from(i64::from(year));
-    crate::catalog::with_formats(|f| f.year.as_ref().map(|x| x.format(&d).to_string()))
-        .unwrap_or_else(|| year.to_string())
+    let fallback = || year.to_string();
+    let (Ok(start), Ok(end)) = (
+        Date::try_new_iso(year.into(), 1, 1),
+        Date::try_new_iso(year.into(), 12, 31),
+    ) else {
+        return fallback();
+    };
+    crate::catalog::with_formats(|f| years(f, start, end)).unwrap_or_else(fallback)
+}
+
+fn years(f: &Formats, start: Date<Iso>, end: Date<Iso>) -> Option<String> {
+    let written = |y: i32| {
+        f.year
+            .as_ref()
+            .map(|x| x.format(&Decimal::from(y)).to_string())
+    };
+    let (a, b) = (
+        local(f, start)?.year().extended_year(),
+        local(f, end)?.year().extended_year(),
+    );
+    Some(if a == b {
+        written(a)?
+    } else {
+        written(a)? + SPAN + &written(b)?
+    })
 }
 
 /// A whole number with the language's digits and grouping: `1,234,567`,
@@ -563,6 +661,7 @@ mod tests {
         };
         assert_eq!(year("en-US"), "2026");
         assert_eq!(year("bn-BD"), "২০২৬");
+        assert_eq!(year("fa"), "۲۰۲۶");
         // What the functions give before a language is applied.
         assert_eq!(super::first_weekday(), jiff::civil::Weekday::Sunday);
         let days = super::weekdays_short();
@@ -584,7 +683,31 @@ mod tests {
         });
         assert_eq!(n, "১২,৩৪,৫৬৭");
     }
+
+    #[test]
+    fn persian_titles_count_in_solar_hijri() {
+        let f = Formats::new("fa", Clock::Language);
+        // 2026-09-27 is 5 Mehr 1405; 2026-01-01 is 11 Dey 1404.
+        let d = |y, m, day| local(&f, Date::try_new_iso(y, m, day).unwrap()).unwrap();
+        assert_eq!(d(2026, 9, 27).year().extended_year(), 1405);
+        assert_eq!(d(2026, 9, 27).day_of_month().0, 5);
+        assert_eq!(d(2026, 1, 1).year().extended_year(), 1404);
+        let month = f.month.as_ref().unwrap();
+        let mehr = month
+            .format(&Date::try_new_iso(2026, 9, 27).unwrap())
+            .to_string();
+        assert_eq!(super::plain(mehr), "مهر");
+        let year = |tag, y| {
+            let start = Date::try_new_iso(y, 1, 1).unwrap();
+            let end = Date::try_new_iso(y, 12, 31).unwrap();
+            years(&Formats::new(tag, Clock::Language), start, end).unwrap()
+        };
+        assert_eq!(year("fa", 2026), "۱۴۰۴ – ۱۴۰۵");
+        assert_eq!(year("th", 2026), "2569");
+        assert_eq!(year("en-US", 2026), "2026");
+    }
 }
+
 #[cfg(test)]
 mod show {
     #[test]

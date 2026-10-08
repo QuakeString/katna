@@ -1114,20 +1114,9 @@ impl MailWindow {
             CalView::Month => format::month_year(page.day),
             CalView::Year => format::year(page.day.year()),
             CalView::Week | CalView::Schedule | CalView::Days => {
-                if first.year() == last.year() && first.month() == last.month() {
-                    format::month_year(first)
-                } else if first.year() == last.year() {
-                    tr!(
-                        "calendar-title-months",
-                        first = format::month_name(first.month()),
-                        last = format::month_year(last)
-                    )
-                } else {
-                    tr!(
-                        "calendar-title-months",
-                        first = format::month_year(first),
-                        last = format::month_year(last)
-                    )
+                match format::months(first, last) {
+                    (None, month) => month,
+                    (Some(first), last) => tr!("calendar-title-months", first = first, last = last),
                 }
             }
         };
@@ -1374,7 +1363,7 @@ impl MailWindow {
                                 d.text_color(rgba(if in_month { th.text } else { th.text_faint }))
                                     .hover(|s| s.bg(rgba(th.hover)))
                             })
-                            .child(format::number(day.day() as u64)),
+                            .child(format::day_number(day)),
                     )
                     .on_click(
                         cx.listener(move |this, _, _, cx| this.open_calendar_day(day, None, cx)),
@@ -1688,7 +1677,7 @@ impl MailWindow {
                                 d.text_color(rgba(if past { th.text_dim } else { th.text }))
                                     .hover(|s| s.bg(rgba(th.hover)))
                             })
-                            .child(format::number(day.day() as u64)),
+                            .child(format::day_number(day)),
                     )
             })
             .collect::<Vec<_>>();
@@ -2379,7 +2368,7 @@ impl MailWindow {
                                     .when(!is_today, |d| {
                                         d.text_color(rgba(th.text)).hover(|s| s.bg(rgba(th.hover)))
                                     })
-                                    .child(format::number(day.day() as u64)),
+                                    .child(format::day_number(day)),
                             )
                             .when_some(dot.filter(|_| !is_today), |d, color| {
                                 d.child(
@@ -2592,7 +2581,7 @@ impl MailWindow {
                                 .child(if day.day() == 1 {
                                     format::day_month(day.to_datetime(Time::midnight()))
                                 } else {
-                                    format::number(day.day() as u64)
+                                    format::day_number(day)
                                 }),
                         ),
                     )
@@ -3378,7 +3367,7 @@ pub(super) fn schedule_day(day: Date, is_today: bool, year: bool, th: &Theme) ->
                             d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
                         })
                         .when(!is_today, |d| d.text_color(rgba(th.text)))
-                        .child(format::number(day.day() as u64)),
+                        .child(format::day_number(day)),
                 )
                 .child(
                     div()

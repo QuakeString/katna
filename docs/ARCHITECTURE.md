@@ -3497,11 +3497,13 @@ length, so month and day names, the order (`27/09/2026`, `9/27/2026`,
 - English (India) groups numbers in lakhs (`12,34,567`), UK and US by
   thousands; India and UK write day before month, the US month first.
 - Digits follow CLDR's default for the locale (Bengali digits for Bengali,
-  Arabic-Indic for Arabic, Extended Arabic-Indic for Persian and Urdu,
-  Latin elsewhere).
+  Arabic-Indic for Arabic, Extended Arabic-Indic for Persian, Latin for
+  Urdu and elsewhere).
 - The calendar follows the locale's CLDR default: Buddhist years for Thai,
-  Solar Hijri for Persian, Gregorian elsewhere. A setting to always use
-  Gregorian comes with the date format settings later.
+  Solar Hijri for Persian, Gregorian elsewhere. Month grids stay Gregorian,
+  but their titles, years and day numbers count in that calendar (a
+  Gregorian September is "شهریور – مهر ۱۴۰۵" in Persian). A setting to
+  always use Gregorian comes with the date format settings later.
 - The first day of the week (search's date picker) follows the locale.
 - Relative times ("2 hours ago") and sizes ("12 KB") are Fluent messages
   with plural forms and a formatted number.
