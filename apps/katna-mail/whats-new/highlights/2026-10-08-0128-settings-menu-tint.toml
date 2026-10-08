@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Settings has its own menu"
+text = """
+The list of pages on the left of Settings has a faint tint from top to
+bottom, so it stands apart from the page you are reading.
+"""
