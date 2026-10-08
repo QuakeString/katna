@@ -213,7 +213,11 @@ fn main() -> ExitCode {
     // A private data directory gets a window of its own.
     let single = data_dir.is_none();
     let paths = match data_dir {
-        Some(dir) => Paths::with_root(dir),
+        Some(dir) => {
+            // The daemon it starts uses the same folders.
+            katna_dbus::use_data_dir(dir.clone());
+            Paths::with_root(dir)
+        }
         None => match Paths::from_env() {
             Ok(paths) => paths,
             Err(err) => {

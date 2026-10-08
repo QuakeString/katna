@@ -19,7 +19,7 @@ pub mod agenda;
 mod session;
 pub use session::session;
 mod start;
-pub use start::{daemon_running, ensure_daemon, start_daemon};
+pub use start::{daemon_running, ensure_daemon, start_daemon, use_data_dir};
 mod version;
 pub use version::{DaemonVersion, daemon_version};
 

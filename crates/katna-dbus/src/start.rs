@@ -9,6 +9,7 @@
 //! programs start the daemon installed beside them themselves.
 
 use std::path::{Path, PathBuf};
+use std::sync::OnceLock;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
@@ -24,6 +25,16 @@ const STARTED_WAIT: Duration = Duration::from_secs(5);
 /// with many accounts it opens a while before it takes it.
 #[cfg(not(windows))]
 const UNIT_WAIT: Duration = Duration::from_secs(15);
+
+/// The data directory this program was given (`--data-dir`), if any.
+static DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
+
+/// Has the daemons this program starts use `dir`, as `--data-dir` does:
+/// they are then always the `katna-daemon` beside this program, since
+/// systemd and D-Bus activation start one with the default folders.
+pub fn use_data_dir(dir: PathBuf) {
+    let _ = DATA_DIR.set(dir);
+}
 
 /// Makes sure `katna-daemon` runs or can be started by D-Bus: when its bus
 /// name has no owner and no activation file, starts the `katna-daemon`
@@ -44,7 +55,7 @@ pub async fn ensure_daemon(connection: &zbus::Connection) {
     if dbus.name_has_owner(name.clone()).await.unwrap_or(true) {
         return;
     }
-    if activatable(&dbus).await {
+    if DATA_DIR.get().is_none() && activatable(&dbus).await {
         return;
     }
     if let Err(err) = start_beside(&dbus, WAIT).await {
@@ -81,6 +92,9 @@ pub async fn start_daemon(connection: &zbus::Connection) -> Result<(), String> {
         .map_err(|err| format!("D-Bus: {err}"))?;
     if dbus.name_has_owner(name.clone()).await.unwrap_or(false) {
         return Ok(());
+    }
+    if DATA_DIR.get().is_some() {
+        return start_beside(&dbus, WAIT).await;
     }
     #[cfg(not(windows))]
     if let Some(started) = start_unit(connection).await {
@@ -170,7 +184,11 @@ async fn start_beside(dbus: &zbus::fdo::DBusProxy<'_>, wait: Duration) -> Result
         .as_deref()
         .and_then(beside)
         .ok_or_else(|| "no katna-daemon beside this program".to_owned())?;
-    let child = std::process::Command::new(&program)
+    let mut command = std::process::Command::new(&program);
+    if let Some(dir) = DATA_DIR.get() {
+        command.arg("--data-dir").arg(dir);
+    }
+    let child = command
         .stdin(std::process::Stdio::null())
         .stdout(std::process::Stdio::null())
         .spawn();

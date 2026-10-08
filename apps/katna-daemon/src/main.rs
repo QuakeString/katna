@@ -14,11 +14,13 @@ use katna_daemon::{Ended, Instance, install, secrets::Secrets, update};
 use katna_sync::worker::WorkerConfig;
 
 const USAGE: &str = "\
-usage: katna-daemon
+usage: katna-daemon [--data-dir DIR]
        katna-daemon install-user-service
 
 Without arguments, runs the Katna background service on the session bus.
 Normally systemd or D-Bus activation starts it; `katnactl` talks to it.
+--data-dir DIR uses DIR/data, DIR/config and DIR/cache instead of the XDG
+directories, as `katna-mail --data-dir` does (which starts it so).
 
 install-user-service: Writes a systemd user unit and a D-Bus activation
 file for this binary under ~/.config and ~/.local/share. Then:
@@ -33,7 +35,8 @@ const TRANSLATIONS: katna_i18n::Sources = include!(concat!(env!("OUT_DIR"), "/tr
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     match args.iter().map(String::as_str).collect::<Vec<_>>()[..] {
-        [] => run(),
+        [] => run(None),
+        ["--data-dir", dir] => run(Some(dir.into())),
         ["install-user-service"] => install_user_service(),
         ["--version"] => {
             println!("katna-daemon {}", env!("CARGO_PKG_VERSION"));
@@ -50,8 +53,8 @@ fn main() -> ExitCode {
     }
 }
 
-fn run() -> ExitCode {
-    let paths = match Paths::from_env() {
+fn run(data_dir: Option<std::path::PathBuf>) -> ExitCode {
+    let paths = match data_dir.map_or_else(Paths::from_env, |dir| Ok(Paths::with_root(dir))) {
         Ok(paths) => paths,
         Err(err) => return fail(err),
     };
