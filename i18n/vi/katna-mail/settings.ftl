@@ -173,6 +173,7 @@ settings-general-start-at-login = Khởi động Katna khi đăng nhập
 settings-general-start-at-login-detail = Đồng bộ thư, hiện thông báo thư mới và biểu tượng ở khay mà không mở cửa sổ
 settings-general-login-window = Mở cả cửa sổ Katna Mail
 settings-general-login-window-detail = Cửa sổ cũng mở khi đăng nhập
+settings-general-login-entry = Khởi động khi đăng nhập (Cài đặt > Chung > Môi trường máy tính)
 settings-general-tray = Hiện Katna trong khay hệ thống
 settings-general-tray-detail = Kèm số thư chưa đọc và một menu
 settings-general-tray-color = Biểu tượng khay có màu

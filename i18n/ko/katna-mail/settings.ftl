@@ -173,6 +173,7 @@ settings-general-start-at-login = 로그인할 때 Katna 시작
 settings-general-start-at-login-detail = 창을 열지 않고 메일을 동기화하며 새 메일 알림과 트레이 아이콘을 표시합니다
 settings-general-login-window = Katna Mail 창도 열기
 settings-general-login-window-detail = 로그인할 때 창도 함께 열립니다
+settings-general-login-entry = 로그인할 때 시작됨(설정 > 기본설정 > 데스크톱)
 settings-general-tray = 시스템 트레이에 Katna 표시
 settings-general-tray-detail = 읽지 않은 메일 수와 메뉴 포함
 settings-general-tray-color = 트레이 아이콘 컬러로 표시

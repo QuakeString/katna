@@ -28,3 +28,58 @@ feedback-deleted-all = Laporan error dihapus.
 feedback-read-failed = Tidak dapat membaca laporan error: { $error }
 feedback-delete-failed = Tidak dapat menghapus laporan error: { $error }
 feedback-delete-all-failed = Tidak dapat menghapus laporan error: { $error }
+
+## Settings > User feedback (usage statistics)
+
+feedback-usage = Kirim statistik penggunaan anonim
+feedback-usage-detail = Seminggu sekali: fitur mana yang Anda gunakan, ya atau tidak. Tidak pernah jumlah, alamat, nama, atau kata penelusuran
+feedback-intro-sending-usage = Laporan error dan statistik penggunaan mingguan dikirim. Tidak ada hal lain yang keluar dari komputer ini.
+feedback-intro-usage-only = Statistik penggunaan mingguan dikirim. Laporan error tetap di komputer ini.
+feedback-counted = Apa yang dihitung
+feedback-counted-detail = Masing-masing ya atau tidak untuk minggu itu.
+feedback-counted-also = Juga: versi Katna, keluarga Linux, desktop, skala layar, dan jumlah akun (1, 2–3, 4+)
+feedback-see-report = Lihat laporan minggu ini
+feedback-hide-report = Sembunyikan laporan minggu ini
+feedback-report-goes = Dikirim setelah minggu ini berakhir, pada { $date }, jika statistik penggunaan masih aktif.
+feedback-install-id = ID instalasi { $id }
+feedback-install-id-tooltip = Acak, agar satu komputer tidak dihitung dua kali dalam seminggu. Berubah setiap 90 hari dan tidak pernah dikirim bersama laporan error atau masukan
+feedback-install-id-reset = Atur ulang
+feedback-install-id-new = ID instalasi baru dibuat.
+feedback-report-copied = Laporan disalin.
+feedback-send-feedback = Masukan
+feedback-send-feedback-detail = Masalah, ide, apa saja.
+feedback-send-feedback-button = Kirim masukan…
+usage-feature-search-options = Opsi penelusuran
+usage-feature-pins = Email yang disematkan
+usage-feature-labels = Label
+usage-feature-scheduled-send = Kirim terjadwal
+usage-feature-snooze = Tunda dan pengingat
+usage-feature-encrypted = Email terenkripsi
+usage-feature-viewers = Penampil bawaan
+usage-feature-calendar = Kalender
+usage-feature-contacts = Kontak
+usage-feature-tasks-notes = Tugas dan Catatan
+usage-feature-phone-layout = Tata letak selebar ponsel
+usage-feature-own-frame = Bingkai jendela milik Katna
+
+## Help > Send feedback
+
+send-feedback-title = Kirim masukan
+send-feedback-about = Tentang
+send-feedback-problem = Masalah
+send-feedback-idea = Ide
+send-feedback-other = Lainnya
+send-feedback-message = Pesan Anda
+send-feedback-message-placeholder = Apa yang terjadi, atau apa yang Anda inginkan?
+send-feedback-reply = Email untuk balasan (opsional)
+send-feedback-reply-placeholder = anda@example.org
+send-feedback-system = Sertakan versi Katna dan sistem Anda
+send-feedback-what-is-sent = Apa yang dikirim
+send-feedback-show = Tampilkan
+send-feedback-hide = Sembunyikan
+send-feedback-where = Dikirim ke kotak masuk masukan Katna di Sentry (UE). Tanpa alamat IP, akun, pesan, atau ID instalasi.
+send-feedback-cancel = Batal
+send-feedback-send = Kirim
+send-feedback-sending = Mengirim…
+send-feedback-sent = Masukan terkirim. Terima kasih
+send-feedback-failed = Tidak dapat mengirim masukan: { $error }

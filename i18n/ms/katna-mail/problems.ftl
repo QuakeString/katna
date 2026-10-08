@@ -59,3 +59,6 @@ service-details-title = Mengapa perkhidmatan tidak dapat dimulakan
 service-details-body = Salin ini dan hantarkannya bersama laporan anda. Tiada mel atau kata laluan di dalamnya.
 service-details-copy = Salin
 service-details-close = Tutup
+service-not-running = Perkhidmatan latar belakang Katna tidak berjalan.
+service-no-answer = Perkhidmatan latar belakang Katna tidak menjawab: { $error }
+service-no-session = Tiada sesi D-Bus: { $error }

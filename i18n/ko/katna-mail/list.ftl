@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } / 약 { $total }
 list-results = “{ $query }” 검색결과
 list-results-corrected = “{ $query }” 검색결과를 표시합니다
 list-search-instead = 대신 “{ $query }”(으)로 검색
+list-search-no-index = 검색을 사용할 수 없습니다. 아직 검색 색인이 만들어지지 않았습니다.
+list-search-not-ready = 검색을 사용할 수 없습니다: { $error }
 list-files-more = +{ $count }
 list-replied = 답장함
 
@@ -193,9 +195,14 @@ list-empty-waiting = 답장을 기다리는 메일이 없습니다.
 list-empty-reminders = 알림이 없습니다. 메일에서 H를 눌러 추가하세요.
 list-first-sync = 메일을 가져오는 중…
 list-first-sync-detail = 메일이 도착하는 대로 여기에 표시됩니다.
+list-store-unreadable = 메일 저장소를 열 수 없습니다
 
 ## Mail list: lines
 
+row-no-subject = (제목 없음)
+row-unknown-sender = (알 수 없는 보낸사람)
+row-to = 받는사람:
+row-no-recipients = (받는사람 없음)
 row-removed = 이 메일은 삭제되었습니다.
 row-starred = 별표 있음
 row-not-starred = 별표 없음
@@ -269,6 +276,11 @@ menu-make-rule = 규칙 만들기…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = 키를 가져왔습니다.
+toast-key-updated = 이미 있는 키입니다. 최신 상태로 업데이트했습니다.
+toast-key-removed = 키를 삭제했습니다.
+toast-key-not-removed = 키를 삭제할 수 없습니다.
+toast-fingerprint-copied = 지문을 복사했습니다.
 toast-archived = { $kind ->
     [conversation] 대화 { $count }개가 보관처리되었습니다.
    *[message] 메일 { $count }개가 보관처리되었습니다.

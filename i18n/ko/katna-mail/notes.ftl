@@ -92,6 +92,7 @@ notes-link-note = 메모 연결
 notes-link-new = 새 메모 “{ $title }”
 notes-linked-from = 이 메모를 연결한 메모
 notes-link-gone = 해당 메모가 더 이상 없습니다
+notes-new-note-gone = 새 메모가 사라졌습니다.
 
 ## Version history
 

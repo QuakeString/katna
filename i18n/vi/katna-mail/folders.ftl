@@ -53,6 +53,7 @@ folder-waiting-short = Đang chờ
 folder-reminders = Lời nhắc
 folder-outbox = Hộp thư đi
 folder-activity = Hoạt động
+folder-not-on-account = Tài khoản này không có thư mục đó.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

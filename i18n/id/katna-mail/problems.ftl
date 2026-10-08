@@ -64,3 +64,6 @@ service-details-title = Mengapa layanan tidak mau berjalan
 service-details-body = Salin ini dan kirimkan bersama laporan Anda. Isinya tidak memuat email atau sandi.
 service-details-copy = Salin
 service-details-close = Tutup
+service-not-running = Layanan latar belakang Katna tidak berjalan.
+service-no-answer = Layanan latar belakang Katna tidak menjawab: { $error }
+service-no-session = Tidak ada sesi D-Bus: { $error }

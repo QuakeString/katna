@@ -55,6 +55,7 @@ reader-details-subject = 件名:
 
 reader-downloading = このメールをサーバーからダウンロードしています…
 reader-download-failed = このメールをダウンロードできませんでした。
+reader-download-failed-reason = このメールをダウンロードできませんでした。{ $reason }
 reader-download-offline = このアカウントはオフラインです。このメールをダウンロードするにはオンラインにしてください。
 reader-try-again = 再試行
 
@@ -90,6 +91,52 @@ security-missing-key = お持ちでない鍵で署名されているため、確
 security-missing-key-id = お持ちでない鍵（{ $key }）で署名されているため、確認できません
 security-signature-unavailable = 署名付き。署名を確認するには { $tool } をインストールしてください
 security-signature-error = 署名を確認できませんでした。
+security-look-up-key = 鍵を検索
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = 検証済みの署名
+key-card-verified-detail = 署名は正しく、この鍵は信頼済みです。
+key-card-unverified = 未検証の署名
+key-card-unverified-detail = 署名は正しいものの、この鍵が本人のものであることは確認されていません。相手とフィンガープリントを照合してから、GnuPG（Kleopatra または gpg --edit-key）でこの鍵を信頼してください。
+key-card-not-sender = 別の人による署名
+key-card-not-sender-detail = 署名は正しいものの、送信者の鍵ではありません。
+key-card-untrusted = 信頼していない鍵
+key-card-untrusted-detail = この鍵は GnuPG で信頼しないとマークされています。
+key-card-signature-expired = 署名の有効期限切れ
+key-card-signature-expired-detail = 署名は正しかったものの、有効期限が切れています。
+key-card-key-expired = 鍵の有効期限切れ
+key-card-key-expired-detail = 署名は正しいものの、その後、鍵の有効期限が切れています。
+key-card-key-revoked = 失効した鍵
+key-card-key-revoked-detail = 所有者がこの鍵を失効させたため、署名は信頼できません。
+key-card-bad = 不正な署名
+key-card-bad-detail = このメールは署名後に変更されたか、署名が偽造されています。
+key-card-signed-by = 署名者
+key-card-belongs-to = 所有者
+key-card-fingerprint = フィンガープリント
+key-card-signed = 署名日時
+key-card-key = 鍵
+key-card-kind = { $standard }、{ $algorithm }
+key-card-created = 作成日
+key-card-expires = 有効期限
+key-card-never = なし
+key-card-issued-by = 発行者
+key-card-found-in = 入手元
+key-card-keyring = GnuPG キーリング
+key-card-copy = フィンガープリントをコピー
+key-card-import-title = この鍵をインポートしますか？
+key-card-from-directory = { $domain } の鍵ディレクトリで見つかりました。
+key-card-from-attachment = 添付ファイル { $name } から。
+key-card-import-note = インポートすると、Katna でこの人の署名を確認したり、この人宛てのメールを暗号化したりできます。鍵を完全に信頼するには、相手とフィンガープリントを照合してください。
+key-card-cancel = キャンセル
+key-card-import = 鍵をインポート
+key-card-looking-up = 鍵を検索しています…
+key-card-looking-up-detail = { $domain } の鍵ディレクトリに問い合わせています。
+key-card-not-found = 鍵が見つかりません
+key-card-not-found-detail = { $domain } はこのアドレスの鍵を公開していません。送信者に鍵を送ってもらうよう依頼してください。
+key-card-not-kept = 見つかった鍵は使用できません。
+key-card-failed = 鍵を取得できませんでした
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)

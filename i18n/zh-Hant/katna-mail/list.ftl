@@ -38,6 +38,8 @@ list-range-about = 第 { $first }–{ $last } 列，共約 { $total } 列
 list-results = 「{ $query }」的搜尋結果
 list-results-corrected = 目前顯示的是「{ $query }」的搜尋結果
 list-search-instead = 改為搜尋「{ $query }」
+list-search-no-index = 搜尋尚未就緒：索引還沒建立。
+list-search-not-ready = 搜尋尚未就緒：{ $error }
 list-files-more = +{ $count }
 list-replied = 你已回覆
 
@@ -193,9 +195,14 @@ list-empty-waiting = 沒有等候回覆的郵件。
 list-empty-reminders = 沒有提醒。在郵件上按 H 即可新增。
 list-first-sync = 正在取得你的郵件…
 list-first-sync-detail = 郵件送達後會顯示在這裡。
+list-store-unreadable = 無法開啟郵件儲存區
 
 ## Mail list: lines
 
+row-no-subject = （無主旨）
+row-unknown-sender = （不明寄件者）
+row-to = 收件者：
+row-no-recipients = （無收件者）
 row-removed = 這封郵件已遭移除。
 row-starred = 已加星號
 row-not-starred = 未加星號
@@ -269,6 +276,11 @@ menu-make-rule = 建立規則…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = 已匯入金鑰
+toast-key-updated = 你已經有這把金鑰；現在已更新為最新版本
+toast-key-removed = 已移除金鑰
+toast-key-not-removed = 無法移除金鑰
+toast-fingerprint-copied = 已複製指紋
 toast-archived = { $kind ->
     [conversation] 已封存 { $count } 個會話群組。
    *[message] 已封存 { $count } 封郵件。
