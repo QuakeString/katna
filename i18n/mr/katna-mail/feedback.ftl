@@ -31,3 +31,58 @@ feedback-deleted-all = क्रॅश अहवाल हटवले.
 feedback-read-failed = क्रॅश अहवाल वाचता आला नाही: { $error }
 feedback-delete-failed = क्रॅश अहवाल हटवता आला नाही: { $error }
 feedback-delete-all-failed = क्रॅश अहवाल हटवता आले नाहीत: { $error }
+
+## Settings > User feedback (usage statistics)
+
+feedback-usage = अनामिक वापर आकडेवारी पाठवा
+feedback-usage-detail = आठवड्यातून एकदा: तुम्ही कोणती वैशिष्ट्ये वापरली, हो किंवा नाही. संख्या, पत्ते, नावे किंवा शोध शब्द कधीही नाहीत
+feedback-intro-sending-usage = क्रॅश अहवाल आणि साप्ताहिक वापर आकडेवारी पाठवली जाते. इतर काहीही या कॉम्प्युटरबाहेर जात नाही.
+feedback-intro-usage-only = साप्ताहिक वापर आकडेवारी पाठवली जाते. क्रॅश अहवाल या कॉम्प्युटरवरच राहतात.
+feedback-counted = काय मोजले जाते
+feedback-counted-detail = आठवड्यासाठी प्रत्येक गोष्ट हो किंवा नाही असते.
+feedback-counted-also = तसेच: Katna ची आवृत्ती, Linux कुटुंब, डेस्कटॉप, स्क्रीन स्केल आणि किती खाती (1, 2–3, 4+)
+feedback-see-report = या आठवड्याचा अहवाल पाहा
+feedback-hide-report = या आठवड्याचा अहवाल लपवा
+feedback-report-goes = आठवडा संपल्यावर, { $date } रोजी पाठवला जातो, वापर आकडेवारी तेव्हाही चालू असल्यास.
+feedback-install-id = इंस्टॉल ID { $id }
+feedback-install-id-tooltip = यादृच्छिक, जेणेकरून एकाच आठवड्यात एक कॉम्प्युटर दोनदा मोजला जाऊ नये. तो दर 90 दिवसांनी बदलतो आणि क्रॅश अहवाल किंवा अभिप्रायासोबत कधीही पाठवला जात नाही
+feedback-install-id-reset = रीसेट करा
+feedback-install-id-new = नवीन इंस्टॉल ID बनवला.
+feedback-report-copied = अहवाल कॉपी केला.
+feedback-send-feedback = अभिप्राय
+feedback-send-feedback-detail = एखादी समस्या, कल्पना, काहीही.
+feedback-send-feedback-button = अभिप्राय पाठवा…
+usage-feature-search-options = शोध पर्याय
+usage-feature-pins = पिन केलेले मेल
+usage-feature-labels = लेबल
+usage-feature-scheduled-send = शेड्यूल केलेले पाठवणे
+usage-feature-snooze = स्नूझ आणि रिमाइंडर
+usage-feature-encrypted = एन्क्रिप्टेड मेल
+usage-feature-viewers = अंगभूत दर्शक
+usage-feature-calendar = कॅलेंडर
+usage-feature-contacts = संपर्क
+usage-feature-tasks-notes = कार्ये आणि नोट्स
+usage-feature-phone-layout = फोन-रुंदीची मांडणी
+usage-feature-own-frame = Katna ची स्वतःची विंडो फ्रेम
+
+## Help > Send feedback
+
+send-feedback-title = अभिप्राय पाठवा
+send-feedback-about = विषय
+send-feedback-problem = समस्या
+send-feedback-idea = कल्पना
+send-feedback-other = इतर काही
+send-feedback-message = तुमचा मेसेज
+send-feedback-message-placeholder = काय झाले, किंवा तुम्हाला काय हवे आहे?
+send-feedback-reply = उत्तरासाठी ईमेल (ऐच्छिक)
+send-feedback-reply-placeholder = you@example.org
+send-feedback-system = Katna ची आवृत्ती आणि तुमची सिस्टम समाविष्ट करा
+send-feedback-what-is-sent = काय पाठवले जाते
+send-feedback-show = दाखवा
+send-feedback-hide = लपवा
+send-feedback-where = Sentry (EU) वरील Katna च्या अभिप्राय इनबॉक्सला पाठवले जाते. कोणताही IP पत्ता, खाती, मेसेज किंवा इंस्टॉल ID नाही.
+send-feedback-cancel = रद्द करा
+send-feedback-send = पाठवा
+send-feedback-sending = पाठवत आहे…
+send-feedback-sent = अभिप्राय पाठवला. धन्यवाद
+send-feedback-failed = अभिप्राय पाठवता आला नाही: { $error }

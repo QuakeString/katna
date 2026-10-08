@@ -60,3 +60,6 @@ service-details-title = ཞབས་ཏོག་ ག་ཅི་སྦེ་འ�
 service-details-body = འདི་འདྲ་བཤུས་རྐྱབ་སྟེ་ ཁྱོད་ཀྱི་སྙན་ཞུ་དང་གཅིག་ཁར་གཏང་། འདི་ནང་ གློག་འཕྲིན་ ཡང་ན་ ཆོག་ཡིག་ག་ནི་ཡང་མེད།
 service-details-copy = འདྲ་བཤུས་རྐྱབ།
 service-details-close = ཁ་བསྡམས།
+service-not-running = Katna གི་རྒྱབ་ཐག་ཞབས་ཏོག་ གཡོག་བཀོལ་མི་འདུག
+service-no-answer = Katna གི་རྒྱབ་ཐག་ཞབས་ཏོག་གིས་ ལན་མ་བྱིན: { $error }
+service-no-session = D-Bus ལཱ་ཡུན་མེད: { $error }

@@ -47,4 +47,5 @@ quick-help = সহায়তা
 quick-tour = ঘুরে দেখুন
 quick-whats-new = নতুন কী আছে
 quick-check-updates = আপডেট যাচাই করুন
+quick-send-feedback = মতামত পাঠান
 quick-about = Katna সম্পর্কে

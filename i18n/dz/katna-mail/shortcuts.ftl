@@ -70,6 +70,7 @@ shortcut-navigation = དཀར་ཆག་སྟོན་ ཡང་ན་བས
 shortcut-quick-settings = མགྱོགས་སྒྲིག
 shortcut-settings = སྒྲིག་སྟངས་ཆ་མཉམ
 shortcut-shortcuts = ལྡེ་སྒྲོམ་མགྱོགས་ཐབས་ཚུ
+shortcut-palette = བརྡ་བཀོད་ཀྱི་པེ་ལེཊ
 shortcut-reload = གློག་འཕྲིན་གསརཔ་ཞིབ་དཔྱད
 shortcut-quit = སྤང
 

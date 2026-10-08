@@ -47,4 +47,5 @@ quick-help = मद्दत
 quick-tour = एपको भ्रमण गर्नुहोस्
 quick-whats-new = नयाँ के छ
 quick-check-updates = अपडेट जाँच गर्नुहोस्
+quick-send-feedback = प्रतिक्रिया पठाउनुहोस्
 quick-about = Katna को बारेमा

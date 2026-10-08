@@ -38,6 +38,8 @@ list-range-about = প্রায় { $total }টির মধ্যে { $fir
 list-results = “{ $query }”-এর ফলাফল
 list-results-corrected = “{ $query }”-এর ফলাফল দেখানো হচ্ছে
 list-search-instead = এর বদলে “{ $query }” খুঁজুন
+list-search-no-index = সার্চ এখনও প্রস্তুত নয়: ইনডেক্স এখনও তৈরি হয়নি।
+list-search-not-ready = সার্চ এখনও প্রস্তুত নয়: { $error }
 list-files-more = +{ $count }
 list-replied = আপনি উত্তর দিয়েছেন
 
@@ -343,6 +345,14 @@ list-empty-waiting = কিছুই উত্তরের অপেক্ষা
 list-empty-reminders = কোনো রিমাইন্ডার নেই। যোগ করতে কোনো মেলে H চাপুন।
 list-first-sync = আপনার মেল আনা হচ্ছে…
 list-first-sync-detail = মেল আসার সাথে সাথে এখানে দেখাবে।
+list-store-unreadable = মেল স্টোর খোলা যায়নি
+
+## Mail list: lines
+
+row-no-subject = (কোনো বিষয় নেই)
+row-unknown-sender = (অজানা প্রেরক)
+row-to = প্রাপক:
+row-no-recipients = (কোনো প্রাপক নেই)
 
 ## Mail list: lines
 

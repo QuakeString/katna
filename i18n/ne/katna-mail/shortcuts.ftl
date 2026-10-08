@@ -70,6 +70,7 @@ shortcut-navigation = मेनु देखाउनुहोस् वा ल�
 shortcut-quick-settings = द्रुत सेटिङहरू
 shortcut-settings = सबै सेटिङहरू
 shortcut-shortcuts = किबोर्ड सर्टकटहरू
+shortcut-palette = आदेश प्यालेट
 shortcut-reload = नयाँ मेल जाँच गर्नुहोस्
 shortcut-quit = बाहिरिनुहोस्
 

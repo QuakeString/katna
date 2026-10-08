@@ -55,6 +55,7 @@ reader-details-subject = དོན་ཚན:
 
 reader-downloading = འཕྲིན་དོན་འདི་ སར་བར་ལས་ཕབ་ལེན་འབད་དོ…
 reader-download-failed = འཕྲིན་དོན་འདི་ཕབ་ལེན་འབད་མ་ཚུགས།
+reader-download-failed-reason = འཕྲིན་དོན་འདི་ ཕབ་ལེན་འབད་མ་ཚུགས། { $reason }
 reader-download-offline = རྩིས་ཐོ་འདི་ ཡོངས་འབྲེལ་མེད། འཕྲིན་དོན་འདི་ཕབ་ལེན་འབད་ནིའི་དོན་ལུ་ ཡོངས་འབྲེལ་ལུ་མཐུད།
 reader-try-again = ལོག་འབད་རྩོལ་བསྐྱེད།
 

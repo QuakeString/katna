@@ -66,3 +66,6 @@ service-details-title = ਸੇਵਾ ਸ਼ੁਰੂ ਕਿਉਂ ਨਹੀਂ �
 service-details-body = ਇਸਨੂੰ ਕਾਪੀ ਕਰੋ ਅਤੇ ਆਪਣੀ ਰਿਪੋਰਟ ਨਾਲ ਭੇਜੋ। ਇਸ ਵਿੱਚ ਕੋਈ ਮੇਲ ਜਾਂ ਪਾਸਵਰਡ ਨਹੀਂ ਹੈ।
 service-details-copy = ਕਾਪੀ ਕਰੋ
 service-details-close = ਬੰਦ ਕਰੋ
+service-not-running = Katna ਦੀ ਬੈਕਗ੍ਰਾਊਂਡ ਸੇਵਾ ਨਹੀਂ ਚੱਲ ਰਹੀ।
+service-no-answer = Katna ਦੀ ਬੈਕਗ੍ਰਾਊਂਡ ਸੇਵਾ ਨੇ ਜਵਾਬ ਨਹੀਂ ਦਿੱਤਾ: { $error }
+service-no-session = ਕੋਈ D-Bus ਸੈਸ਼ਨ ਨਹੀਂ: { $error }

@@ -70,6 +70,7 @@ shortcut-navigation = মেনু দেখুৱাওক বা সংকু�
 shortcut-quick-settings = দ্ৰুত ছেটিংছ
 shortcut-settings = সকলো ছেটিংছ
 shortcut-shortcuts = কীব'ৰ্ড শ্বৰ্টকাট
+shortcut-palette = কমাণ্ড পেলেট
 shortcut-reload = নতুন মেইলৰ বাবে পৰীক্ষা কৰক
 shortcut-quit = প্ৰস্থান কৰক
 

@@ -55,6 +55,7 @@ reader-details-subject = বিষয়:
 
 reader-downloading = ছাৰ্ভাৰৰ পৰা এই বাৰ্তাটো ডাউনল'ড কৰা হৈছে…
 reader-download-failed = এই বাৰ্তাটো ডাউনল'ড কৰিব পৰা নগ'ল।
+reader-download-failed-reason = এই বাৰ্তাটো ডাউনল'ড কৰিব পৰা নগ'ল। { $reason }
 reader-download-offline = এই একাউণ্টটো অফলাইন আছে। এই বাৰ্তাটো ডাউনল'ড কৰিবলৈ অনলাইন হওক।
 reader-try-again = পুনৰ চেষ্টা কৰক
 

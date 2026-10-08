@@ -70,6 +70,7 @@ shortcut-navigation = मेन्यू दिखाएं या छिपा�
 shortcut-quick-settings = क्विक सेटिंग
 shortcut-settings = सभी सेटिंग
 shortcut-shortcuts = कीबोर्ड शॉर्टकट
+shortcut-palette = कमांड पैलेट
 shortcut-reload = नए मेल देखें
 shortcut-quit = बाहर निकलें
 
