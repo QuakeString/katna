@@ -68,3 +68,25 @@ service-details-close = ಮುಚ್ಚಿ
 service-not-running = Katna ಹಿನ್ನೆಲೆ ಸೇವೆ ಚಾಲನೆಯಲ್ಲಿಲ್ಲ.
 service-no-answer = Katna ಹಿನ್ನೆಲೆ ಸೇವೆ ಉತ್ತರಿಸಲಿಲ್ಲ: { $error }
 service-no-session = D-Bus ಸೆಷನ್ ಇಲ್ಲ: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = ಅಪ್‌ಡೇಟ್‌ನಲ್ಲಿನ ಸಮಸ್ಯೆಯಿಂದಾಗಿ Katna ಸುರಕ್ಷಿತ ಮೋಡ್‌ನಲ್ಲಿದೆ, ಹಾಗಾಗಿ ಮೇಲ್ ಸಿಂಕ್ ಆಗುತ್ತಿಲ್ಲ.
+safe-try-again = ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ
+safe-restore = ಮರುಸ್ಥಾಪಿಸಿ
+safe-restoring = { $when } ರ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ…
+safe-restored = { $when } ರ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ. ಮೊದಲು ಇದ್ದುದನ್ನು ಒಂದು ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಇರಿಸಲಾಗಿದೆ.
+safe-show-folder = ಫೋಲ್ಡರ್ ತೋರಿಸಿ
+safe-restore-failed = ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: { $error }
+safe-restore-title = ಅಪ್‌ಡೇಟ್‌ಗೆ ಮೊದಲಿನ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಮರುಸ್ಥಾಪಿಸುವುದೇ?
+safe-restore-body = ನೀವು ಆಯ್ಕೆಮಾಡುವ ನಕಲಿಗೆ Katna ಮರಳುತ್ತದೆ. ಅದರ ನಂತರ ಬಂದ ಮೇಲ್ ನಿಮ್ಮ ಖಾತೆಗಳಿಂದ ಮತ್ತೆ ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತದೆ.
+safe-restore-none = ಇನ್ನೂ ಯಾವುದೇ ನಕಲುಗಳಿಲ್ಲ. ಪ್ರತಿ ಅಪ್‌ಡೇಟ್ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಬದಲಾಯಿಸುವ ಮೊದಲು Katna ಒಂದು ನಕಲನ್ನು ಮಾಡುತ್ತದೆ.
+safe-restore-keep = ಕಳುಹಿಸದ ಮೇಲ್, ಡ್ರಾಫ್ಟ್‌ಗಳು ಮತ್ತು ಇನ್ನೂ ಸಿಂಕ್ ಆಗದ ಬದಲಾವಣೆಗಳು ಸೇರಿದಂತೆ ಈಗ ಇರುವುದನ್ನು ಮೊದಲು ಒಂದು ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಇರಿಸಲಾಗುತ್ತದೆ, ಹಾಗಾಗಿ ಏನೂ ಕಳೆದುಹೋಗುವುದಿಲ್ಲ.
+safe-restore-cancel = ರದ್ದುಮಾಡಿ
+safe-restore-mail = ಮೇಲ್
+safe-restore-pim = ಖಾತೆಗಳು ಮತ್ತು ಸಂಪರ್ಕಗಳು
+safe-restore-blobs = ಲಗತ್ತುಗಳು
+safe-report-title = ಡೀಬಗ್ ವರದಿ
+safe-report-body = ಇದನ್ನು ನಕಲಿಸಿ ನಿಮ್ಮ ಬಗ್ ವರದಿಗೆ ಲಗತ್ತಿಸಿ. ಇದರಲ್ಲಿ ಮೇಲ್, ವಿಳಾಸಗಳು ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಲ್ಲ.
+safe-report-restore = ಮರುಸ್ಥಾಪಿಸಿ…
+safe-report-copied = ಡೀಬಗ್ ವರದಿಯನ್ನು ನಕಲಿಸಲಾಗಿದೆ

@@ -68,3 +68,25 @@ service-details-close = වසන්න
 service-not-running = Katna පසුබිම් සේවාව ක්‍රියාත්මක නොවේ.
 service-no-answer = Katna පසුබිම් සේවාව පිළිතුරු දුන්නේ නැත: { $error }
 service-no-session = D-Bus සැසියක් නැත: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = යාවත්කාලීන කිරීමේ ගැටලුවකින් පසු Katna ආරක්ෂිත ප්‍රකාරයේ ඇත, එබැවින් තැපැල් සමමුහුර්ත නොවේ.
+safe-try-again = නැවත උත්සාහ කරන්න
+safe-restore = ප්‍රතිසාධනය කරන්න
+safe-restoring = { $when } දින ඔබේ දත්ත ප්‍රතිසාධනය කරමින්…
+safe-restored = { $when } දින ඔබේ දත්ත ප්‍රතිසාධනය කළා. පෙර තිබූ දේ ෆෝල්ඩරයක තබා ඇත.
+safe-show-folder = ෆෝල්ඩරය පෙන්වන්න
+safe-restore-failed = ඔබේ දත්ත ප්‍රතිසාධනය කළ නොහැකි විය: { $error }
+safe-restore-title = යාවත්කාලීන කිරීමකට පෙර තිබූ ඔබේ දත්ත ප්‍රතිසාධනය කරන්නද?
+safe-restore-body = Katna ඔබ තෝරන පිටපතට ආපසු යයි. ඉන් පසු ආ තැපැල් ඔබේ ගිණුම්වලින් නැවත බාගත වේ.
+safe-restore-none = තවම පිටපත් නැත. සෑම යාවත්කාලීන කිරීමක්ම ඔබේ දත්ත වෙනස් කිරීමට පෙර Katna පිටපතක් සාදයි.
+safe-restore-keep = නොයැවූ තැපැල්, කෙටුම්පත් සහ තවම සමමුහුර්ත නොවූ වෙනස්කම් ඇතුළුව දැන් ඇති දේ පළමුව ෆෝල්ඩරයක තබයි, එබැවින් කිසිවක් නැති නොවේ.
+safe-restore-cancel = අවලංගු කරන්න
+safe-restore-mail = තැපැල්
+safe-restore-pim = ගිණුම් සහ සම්බන්ධතා
+safe-restore-blobs = ඇමුණුම්
+safe-report-title = නිදොස් වාර්තාව
+safe-report-body = මෙය පිටපත් කර ඔබේ දෝෂ වාර්තාවට අමුණන්න. එහි තැපැල්, ලිපින හෝ මුරපද නැත.
+safe-report-restore = ප්‍රතිසාධනය කරන්න…
+safe-report-copied = නිදොස් වාර්තාව පිටපත් කළා

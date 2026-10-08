@@ -62,3 +62,25 @@ service-details-close = ပိတ်ရန်
 service-not-running = Katna နောက်ခံဝန်ဆောင်မှု လည်ပတ်မနေပါ။
 service-no-answer = Katna နောက်ခံဝန်ဆောင်မှု မဖြေကြားပါ- { $error }
 service-no-session = D-Bus ဆက်ရှင် မရှိပါ- { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = အပ်ဒိတ်တွင် ပြဿနာရှိခဲ့သဖြင့် Katna သည် လုံခြုံရေးမုဒ်တွင် ရှိနေပြီး မေးလ် စင့်ခ်မလုပ်ပါ။
+safe-try-again = ထပ်ကြိုးစားရန်
+safe-restore = ပြန်ယူရန်
+safe-restoring = { $when } မှ သင့်ဒေတာကို ပြန်ယူနေသည်…
+safe-restored = { $when } မှ သင့်ဒေတာကို ပြန်ယူပြီးပါပြီ။ ယခင်ရှိခဲ့သည်များကို ဖိုင်တွဲတစ်ခုတွင် သိမ်းထားသည်။
+safe-show-folder = ဖိုင်တွဲ ပြရန်
+safe-restore-failed = သင့်ဒေတာကို ပြန်ယူ၍ မရပါ- { $error }
+safe-restore-title = အပ်ဒိတ်မတိုင်မီက သင့်ဒေတာကို ပြန်ယူမလား?
+safe-restore-body = Katna သည် သင်ရွေးသော မိတ္တူသို့ ပြန်သွားမည်။ ၎င်းနောက်မှ ရောက်လာသော မေးလ်များကို သင့်အကောင့်များမှ ပြန်ဒေါင်းလုဒ်လုပ်မည်။
+safe-restore-none = မိတ္တူ မရှိသေးပါ။ အပ်ဒိတ်တစ်ခုစီက သင့်ဒေတာကို မပြောင်းမီ Katna က မိတ္တူတစ်ခု ပြုလုပ်ထားသည်။
+safe-restore-keep = မပို့ရသေးသော မေးလ်၊ မူကြမ်းများနှင့် စင့်ခ်မလုပ်ရသေးသော အပြောင်းအလဲများ အပါအဝင် ယခုရှိနေသည်များကို ဖိုင်တွဲတစ်ခုတွင် အရင်သိမ်းထားသဖြင့် ဘာမျှ မပျောက်ပါ။
+safe-restore-cancel = မလုပ်တော့ပါ
+safe-restore-mail = မေးလ်
+safe-restore-pim = အကောင့်များနှင့် အဆက်အသွယ်များ
+safe-restore-blobs = ပူးတွဲဖိုင်များ
+safe-report-title = ဒီဘတ် အစီရင်ခံစာ
+safe-report-body = ၎င်းကို ကူးပြီး သင့်ချို့ယွင်းချက် အစီရင်ခံစာတွင် ပူးတွဲပါ။ ၎င်းတွင် မေးလ်၊ လိပ်စာ သို့မဟုတ် စကားဝှက် မပါပါ။
+safe-report-restore = ပြန်ယူရန်…
+safe-report-copied = ဒီဘတ် အစီရင်ခံစာ ကူးပြီး
