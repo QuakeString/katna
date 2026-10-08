@@ -4786,3 +4786,15 @@ Stand wird zuerst in einem Ordner aufbewahrt, sodass nichts verloren
 geht. Debug-Bericht kopieren, auch unter Über Katna, sammelt, was ein
 Fehlerbericht braucht.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Mails auf Arabisch und Hebräisch lesen sich in ihrer eigenen Richtung"
+text = """
+Jeder Absatz einer Nachricht läuft jetzt in seiner eigenen Richtung:
+Arabisch, Hebräisch, Persisch und Urdu von rechts, Deutsch von links, in
+derselben Mail und in jedem Fenster. Beim Schreiben drehen die Schaltflächen
+Links nach rechts und Rechts nach links in der Formatierungsleiste (oder
+Strg+Umschalt+X) einen Absatz um, und eine Zeile, die Sie auf Arabisch oder
+Hebräisch beginnen, dreht sich von selbst. Die Nachricht geht so hinaus, wie
+Sie sie geschrieben haben.
+"""

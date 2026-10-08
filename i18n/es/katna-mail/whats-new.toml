@@ -4681,3 +4681,14 @@ antes en una carpeta, así que no se pierde nada. Copiar informe de
 depuración, también en Acerca de, reúne lo que necesita un informe de
 errores.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "El correo en árabe y hebreo se lee en su propio sentido"
+text = """
+Cada párrafo de un mensaje se lee ahora en su propio sentido: árabe,
+hebreo, persa y urdu desde la derecha, español desde la izquierda, en el
+mismo correo y en cualquier ventana. Al escribir, los botones De izquierda a
+derecha y De derecha a izquierda de la barra de formato (o Ctrl+Shift+X) dan
+la vuelta a un párrafo, y una línea que empiezas en árabe o hebreo se da la
+vuelta sola. El mensaje sale tal como lo escribiste.
+"""

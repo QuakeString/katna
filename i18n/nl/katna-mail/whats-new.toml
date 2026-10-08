@@ -4635,3 +4635,14 @@ naar de kopie van vóór de update. Wat er nu staat, wordt eerst in een map
 bewaard, dus er gaat niets verloren. Foutopsporingsrapport kopiëren, ook
 in Over Katna, verzamelt wat een foutmelding nodig heeft.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Mail in het Arabisch en Hebreeuws leest in zijn eigen richting"
+text = """
+Elke alinea van een bericht leest nu in zijn eigen richting: Arabisch,
+Hebreeuws, Perzisch en Urdu van rechts, Nederlands van links, in dezelfde
+mail en in elk venster. Tijdens het schrijven draaien de knoppen Links naar
+rechts en Rechts naar links in de opmaakbalk (of Ctrl+Shift+X) een alinea om,
+en een regel die je in het Arabisch of Hebreeuws begint, draait vanzelf. Het
+bericht gaat de deur uit zoals je het schreef.
+"""

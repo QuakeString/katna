@@ -4837,3 +4837,15 @@ trouve maintenant est d’abord conservé dans un dossier : rien n’est perdu.
 Copier le rapport de débogage, aussi dans À propos, rassemble ce dont un
 signalement de bug a besoin.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Les courriels en arabe et en hébreu se lisent dans leur sens"
+text = """
+Chaque paragraphe d’un message se lit désormais dans son propre sens :
+l’arabe, l’hébreu, le persan et l’ourdou depuis la droite, le français depuis
+la gauche, dans le même courriel et dans n’importe quelle fenêtre. En
+rédigeant, les boutons De gauche à droite et De droite à gauche de la barre de
+mise en forme (ou Ctrl+Shift+X) retournent un paragraphe, et une ligne que
+vous commencez en arabe ou en hébreu se retourne d’elle-même. Le message part
+tel que vous l’avez écrit.
+"""
