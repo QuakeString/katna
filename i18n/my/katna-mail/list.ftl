@@ -282,6 +282,11 @@ menu-make-rule = စည်းမျဉ်း ပြုလုပ်ရန်…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = ကီး ထည့်သွင်းပြီး
+toast-key-updated = ဤကီး သင့်တွင် ရှိပြီးသားဖြစ်ပြီး ယခု နောက်ဆုံးအခြေအနေ ဖြစ်သွားပါပြီ
+toast-key-removed = ကီး ဖယ်ရှားပြီး
+toast-key-not-removed = ကီးကို ဖယ်ရှား၍ မရပါ
+toast-fingerprint-copied = လက်ဗွေ ကူးယူပြီး
 toast-archived = { $kind ->
     [conversation] စကားဝိုင်း { $count } ခုကို မှတ်တမ်းသိမ်းလိုက်ပြီ။
    *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို မှတ်တမ်းသိမ်းလိုက်ပြီ။

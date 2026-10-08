@@ -282,6 +282,11 @@ menu-make-rule = បង្កើតច្បាប់…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = បាននាំចូលសោ
+toast-key-updated = អ្នកមានសោនេះរួចហើយ ឥឡូវវាទាន់សម័យហើយ
+toast-key-removed = បានលុបសោ
+toast-key-not-removed = មិនអាចលុបសោបានទេ
+toast-fingerprint-copied = បានចម្លងស្នាមម្រាមដៃ
 toast-archived = { $kind ->
     [conversation] បានទុកការសន្ទនា { $count } ក្នុងបណ្ណសារ។
    *[message] បានទុកសារ { $count } ក្នុងបណ្ណសារ។

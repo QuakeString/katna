@@ -91,6 +91,86 @@ security-missing-key = మీ వద్ద లేని కీతో సంత�
 security-missing-key-id = మీ వద్ద లేని కీతో ({ $key }) సంతకం చేయబడింది, కాబట్టి చెక్ చేయడం సాధ్యం కాదు
 security-signature-unavailable = సంతకం చేయబడింది; సంతకాన్ని చెక్ చేయడానికి { $tool }ను ఇన్‌స్టాల్ చేయండి
 security-signature-error = సంతకాన్ని చెక్ చేయడం సాధ్యం కాలేదు.
+security-look-up-key = కీ కోసం వెతకండి
+
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = ధృవీకరించబడిన సంతకం
+key-card-verified-detail = సంతకం సరైనది, మరియు మీరు ఈ కీని విశ్వసిస్తున్నారు.
+key-card-unverified = సంతకం ధృవీకరించబడలేదు
+key-card-unverified-detail = సంతకం సరైనది, కానీ ఈ కీ వారిదేనని ఏదీ నిర్ధారించడం లేదు. ఫింగర్‌ప్రింట్‌ను వారితో పోల్చి చూసి, ఆపై GnuPGలో కీని విశ్వసించండి (Kleopatra లేదా gpg --edit-key).
+key-card-not-sender = వేరొకరు సంతకం చేశారు
+key-card-not-sender-detail = సంతకం సరైనది, కానీ కీ పంపినవారిది కాదు.
+key-card-untrusted = కీ విశ్వసనీయం కాదు
+key-card-untrusted-detail = GnuPGలో మీరు ఈ కీని విశ్వసనీయం కాదని గుర్తు పెట్టారు.
+key-card-signature-expired = సంతకం గడువు ముగిసింది
+key-card-signature-expired-detail = సంతకం సరైనదే, కానీ దాని గడువు ముగిసింది.
+key-card-key-expired = కీ గడువు ముగిసింది
+key-card-key-expired-detail = సంతకం సరైనది, కానీ అప్పటి నుండి కీ గడువు ముగిసింది.
+key-card-key-revoked = కీ ఉపసంహరించబడింది
+key-card-key-revoked-detail = దీని యజమాని ఈ కీని ఉపసంహరించారు, కాబట్టి సంతకాన్ని విశ్వసించలేము.
+key-card-bad = చెడ్డ సంతకం
+key-card-bad-detail = సంతకం చేసిన తర్వాత ఈ మెసేజ్ మార్చబడింది, లేదా సంతకం నకిలీది.
+key-card-signed-by = సంతకం చేసినవారు
+key-card-belongs-to = ఎవరిది
+key-card-fingerprint = ఫింగర్‌ప్రింట్
+key-card-signed = సంతకం చేసిన సమయం
+key-card-key = కీ
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = సృష్టించబడింది
+key-card-expires = గడువు ముగిసేది
+key-card-never = ఎప్పటికీ లేదు
+key-card-issued-by = జారీ చేసినవారు
+key-card-found-in = ఎక్కడ దొరికింది
+key-card-keyring = మీ GnuPG కీరింగ్
+key-card-copy = ఫింగర్‌ప్రింట్‌ను కాపీ చేయండి
+key-card-import-title = ఈ కీని ఇంపోర్ట్ చేయాలా?
+key-card-from-directory = { $domain } కీ డైరెక్టరీలో దొరికింది.
+key-card-from-attachment = { $name } అటాచ్‌మెంట్ నుండి.
+key-card-import-note = ఆ తర్వాత Katna ఈ వ్యక్తి సంతకాలను చెక్ చేయగలదు, వారికి మెయిల్‌ను ఎన్‌క్రిప్ట్ చేయగలదు. కీని పూర్తిగా విశ్వసించడానికి, ఫింగర్‌ప్రింట్‌ను వారితో పోల్చి చూడండి.
+key-card-cancel = రద్దు చేయండి
+key-card-import = కీని ఇంపోర్ట్ చేయండి
+key-card-looking-up = కీ కోసం వెతుకుతోంది…
+key-card-looking-up-detail = { $domain } కీ డైరెక్టరీని అడుగుతోంది.
+key-card-not-found = కీ ఏదీ దొరకలేదు
+key-card-not-found-detail = { $domain } ఈ చిరునామాకు కీని ప్రచురించదు. పంపినవారిని వారి కీని మీకు పంపమని అడగండి.
+key-card-not-kept = దొరికిన కీని ఉపయోగించడం సాధ్యం కాదు.
+key-card-failed = కీని పొందడం సాధ్యం కాలేదు
+
+## of a sender nothing confirmed
+
+sender-failed-title = ఇది { $domain } నుండి రాకపోవచ్చు
+sender-failed-body = ఇది { $provider } పంపినవారి తనిఖీలలో విఫలమైంది. లింక్‌లు, అటాచ్‌మెంట్‌లు, ప్రత్యుత్తరాల విషయంలో జాగ్రత్తగా ఉండండి.
+sender-provider-unknown = మీ మెయిల్ ప్రొవైడర్
+sender-details = వివరాలు
+sender-details-hide = వివరాలను దాచండి
+sender-looks-safe = సురక్షితంగానే ఉంది
+sender-move-to-spam = స్పామ్‌కు తరలించండి
+sender-checked-by = { $provider } తనిఖీ చేసింది
+sender-checked-by-server = { $provider } ({ $server }) తనిఖీ చేసింది
+sender-dmarc = పంపినవారి డొమైన్ (DMARC)
+sender-dkim = సంతకం (DKIM)
+sender-spf = పంపే సర్వర్ (SPF)
+sender-result-pass = పాస్ అయింది
+sender-result-fail = విఫలమైంది
+sender-result-unsure = ఖచ్చితంగా తెలియదు
+sender-result-none = ఏదీ లేదు
+sender-result-missing = తనిఖీ చేయలేదు
+sender-dmarc-pass = { $domain } ఈ పంపినవారిని నిర్ధారిస్తుంది.
+sender-dmarc-fail = తన మెయిల్ ఎలా పంపబడుతుందని { $domain } చెబుతుందో దానితో ఈ మెయిల్ సరిపోలడం లేదు.
+sender-dmarc-none = { $domain } తన మెయిల్ కోసం ఎలాంటి నియమాలనూ ప్రచురించదు.
+sender-dkim-pass = { $domain } సంతకం చేసింది.
+sender-dkim-fail = { $domain } నుండి వచ్చిన సంతకం ఈ మెయిల్‌తో సరిపోలడం లేదు.
+sender-dkim-none = ఈ మెసేజ్‌పై సంతకం లేదు.
+sender-spf-pass = { $domain } జాబితాలో ఉన్న సర్వర్ నుండి పంపబడింది.
+sender-spf-fail = { $domain } జాబితాలో లేని సర్వర్ నుండి పంపబడింది.
+sender-spf-none = { $domain } తన సర్వర్‌ల జాబితాను ఇవ్వదు.
+sender-check-unsure = ఈ తనిఖీ స్పష్టమైన సమాధానం ఇవ్వలేకపోయింది.
+sender-unconfirmed = ఇది { $domain } నుండి వచ్చిందని { $provider } నిర్ధారించలేకపోయింది. పంపినవారి పేరును ఎవరైనా ఏదైనా రాయవచ్చు.
+sender-link-title = ఈ లింక్‌ను తెరవాలా?
+sender-link-body = ఈ మెయిల్ పంపినవారి తనిఖీలలో విఫలమైంది. లింక్ ఇక్కడికి వెళ్తుంది: { $host }
+sender-link-cancel = రద్దు చేయండి
+sender-link-open = తెరవండి
 
 ## sent message's star, and the line above a read receipt)
 
@@ -120,6 +200,7 @@ tracking-receipt-other = రీడ్ రసీదు: { $who } మీ మెస
 
 remote-hidden = ఈ మెసేజ్‌లోని ఇమేజ్‌లు దాచబడ్డాయి.
 remote-hidden-unconfirmed = ఇమేజ్‌లు దాచబడ్డాయి: పంపినవారిని నిర్ధారించడం సాధ్యం కాలేదు.
+remote-hidden-failed = ఇమేజ్‌లు దాచబడ్డాయి: ఈ మెయిల్ పంపినవారి తనిఖీలలో విఫలమైంది.
 remote-show = ఇమేజ్‌లను చూపండి
 remote-always-show = ఈ పంపినవారి నుండి ఎల్లప్పుడూ చూపండి
 remote-picture-use = ఉపయోగించండి

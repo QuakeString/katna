@@ -282,6 +282,11 @@ menu-make-rule = สร้างกฎ…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = นำเข้าคีย์แล้ว
+toast-key-updated = คุณมีคีย์นี้อยู่แล้ว ตอนนี้คีย์เป็นปัจจุบันแล้ว
+toast-key-removed = นำคีย์ออกแล้ว
+toast-key-not-removed = นำคีย์ออกไม่ได้
+toast-fingerprint-copied = คัดลอกลายนิ้วมือแล้ว
 toast-archived = { $kind ->
     [conversation] เก็บถาวรการสนทนา { $count } รายการแล้ว
    *[message] เก็บถาวรข้อความ { $count } รายการแล้ว

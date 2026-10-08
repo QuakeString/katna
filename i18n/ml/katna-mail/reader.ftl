@@ -91,6 +91,86 @@ security-missing-key = നിങ്ങളുടെ പക്കൽ ഇല്ല�
 security-missing-key-id = നിങ്ങളുടെ പക്കൽ ഇല്ലാത്ത ഒരു കീ ({ $key }) ഉപയോഗിച്ച് ഒപ്പിട്ടതിനാൽ പരിശോധിക്കാനാകില്ല
 security-signature-unavailable = ഒപ്പിട്ടത്; ഒപ്പ് പരിശോധിക്കാൻ { $tool } ഇൻസ്റ്റാൾ ചെയ്യുക
 security-signature-error = ഒപ്പ് പരിശോധിക്കാനായില്ല.
+security-look-up-key = കീ തിരയുക
+
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = പരിശോധിച്ചുറപ്പിച്ച ഒപ്പ്
+key-card-verified-detail = ഒപ്പ് ശരിയാണ്, നിങ്ങൾ ഈ കീ വിശ്വസിക്കുന്നു.
+key-card-unverified = ഒപ്പ് പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ല
+key-card-unverified-detail = ഒപ്പ് ശരിയാണ്, പക്ഷേ കീ അവരുടേതാണെന്ന് ഒന്നും സ്ഥിരീകരിക്കുന്നില്ല. ഫിംഗർപ്രിന്റ് അവരുമായി ഒത്തുനോക്കുക, തുടർന്ന് GnuPG-യിൽ (Kleopatra അല്ലെങ്കിൽ gpg --edit-key) കീ വിശ്വസനീയമാക്കുക.
+key-card-not-sender = മറ്റൊരാൾ ഒപ്പിട്ടത്
+key-card-not-sender-detail = ഒപ്പ് ശരിയാണ്, പക്ഷേ കീ അയച്ചയാളുടേതല്ല.
+key-card-untrusted = കീ വിശ്വസനീയമല്ല
+key-card-untrusted-detail = GnuPG-യിൽ ഈ കീ വിശ്വസനീയമല്ലെന്ന് നിങ്ങൾ അടയാളപ്പെടുത്തി.
+key-card-signature-expired = ഒപ്പിന്റെ കാലാവധി കഴിഞ്ഞു
+key-card-signature-expired-detail = ഒപ്പ് ശരിയായിരുന്നു, പക്ഷേ അതിന്റെ കാലാവധി കഴിഞ്ഞു.
+key-card-key-expired = കീയുടെ കാലാവധി കഴിഞ്ഞു
+key-card-key-expired-detail = ഒപ്പ് ശരിയാണ്, പക്ഷേ അതിനുശേഷം കീയുടെ കാലാവധി കഴിഞ്ഞു.
+key-card-key-revoked = കീ അസാധുവാക്കി
+key-card-key-revoked-detail = ഇതിന്റെ ഉടമ ഈ കീ അസാധുവാക്കി, അതിനാൽ ഒപ്പ് വിശ്വസിക്കാനാകില്ല.
+key-card-bad = തെറ്റായ ഒപ്പ്
+key-card-bad-detail = ഒപ്പിട്ട ശേഷം ഈ സന്ദേശത്തിൽ മാറ്റം വരുത്തി, അല്ലെങ്കിൽ ഒപ്പ് വ്യാജമാണ്.
+key-card-signed-by = ഒപ്പിട്ടത്
+key-card-belongs-to = ഉടമ
+key-card-fingerprint = ഫിംഗർപ്രിന്റ്
+key-card-signed = ഒപ്പിട്ട സമയം
+key-card-key = കീ
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = സൃഷ്‌ടിച്ചത്
+key-card-expires = കാലാവധി തീരുന്നത്
+key-card-never = ഒരിക്കലുമില്ല
+key-card-issued-by = നൽകിയത്
+key-card-found-in = കണ്ടെത്തിയത്
+key-card-keyring = നിങ്ങളുടെ GnuPG കീറിംഗ്
+key-card-copy = ഫിംഗർപ്രിന്റ് പകർത്തുക
+key-card-import-title = ഈ കീ ഇമ്പോർട്ട് ചെയ്യണോ?
+key-card-from-directory = { $domain }-ന്റെ കീ ഡയറക്ടറിയിൽ കണ്ടെത്തി.
+key-card-from-attachment = { $name } എന്ന അറ്റാച്ച്മെന്റിൽ നിന്ന്.
+key-card-import-note = അതിനുശേഷം Katna-യ്ക്ക് ഈ വ്യക്തിയുടെ ഒപ്പുകൾ പരിശോധിക്കാനും അവർക്കുള്ള മെയിൽ എൻക്രിപ്റ്റ് ചെയ്യാനും കഴിയും. കീ പൂർണ്ണമായി വിശ്വസിക്കാൻ, ഫിംഗർപ്രിന്റ് അവരുമായി ഒത്തുനോക്കുക.
+key-card-cancel = റദ്ദാക്കുക
+key-card-import = കീ ഇമ്പോർട്ട് ചെയ്യുക
+key-card-looking-up = കീ തിരയുന്നു…
+key-card-looking-up-detail = { $domain }-ന്റെ കീ ഡയറക്ടറിയിൽ ചോദിക്കുന്നു.
+key-card-not-found = കീ കണ്ടെത്തിയില്ല
+key-card-not-found-detail = { $domain } ഈ വിലാസത്തിന് കീ പ്രസിദ്ധീകരിക്കുന്നില്ല. അവരുടെ കീ അയച്ചുതരാൻ അയച്ചയാളോട് ആവശ്യപ്പെടുക.
+key-card-not-kept = കണ്ടെത്തിയ കീ ഉപയോഗിക്കാനാകില്ല.
+key-card-failed = കീ ലഭിച്ചില്ല
+
+## of a sender nothing confirmed
+
+sender-failed-title = ഇത് { $domain }-ൽ നിന്നായിരിക്കില്ല
+sender-failed-body = ഇത് { $provider }-ന്റെ അയച്ചയാൾ പരിശോധനകളിൽ പരാജയപ്പെട്ടു. ലിങ്കുകൾ, അറ്റാച്ച്മെന്റുകൾ, മറുപടികൾ എന്നിവയിൽ ശ്രദ്ധിക്കുക.
+sender-provider-unknown = നിങ്ങളുടെ മെയിൽ ദാതാവ്
+sender-details = വിശദാംശങ്ങൾ
+sender-details-hide = വിശദാംശങ്ങൾ മറയ്ക്കുക
+sender-looks-safe = സുരക്ഷിതമാണെന്ന് തോന്നുന്നു
+sender-move-to-spam = സ്‌പാമിലേക്ക് നീക്കുക
+sender-checked-by = { $provider } പരിശോധിച്ചത്
+sender-checked-by-server = { $provider } പരിശോധിച്ചത് ({ $server })
+sender-dmarc = അയച്ചയാളുടെ ഡൊമെയ്ൻ (DMARC)
+sender-dkim = ഒപ്പ് (DKIM)
+sender-spf = അയയ്ക്കുന്ന സെർവർ (SPF)
+sender-result-pass = വിജയിച്ചു
+sender-result-fail = പരാജയപ്പെട്ടു
+sender-result-unsure = ഉറപ്പില്ല
+sender-result-none = ഒന്നുമില്ല
+sender-result-missing = പരിശോധിച്ചിട്ടില്ല
+sender-dmarc-pass = { $domain } ഈ അയച്ചയാളെ സ്ഥിരീകരിക്കുന്നു.
+sender-dmarc-fail = { $domain } തങ്ങളുടെ മെയിൽ അയയ്ക്കുന്നതായി പറയുന്ന രീതിയുമായി ഈ മെയിൽ പൊരുത്തപ്പെടുന്നില്ല.
+sender-dmarc-none = { $domain } അതിന്റെ മെയിലിന് നിയമങ്ങളൊന്നും പ്രസിദ്ധീകരിക്കുന്നില്ല.
+sender-dkim-pass = { $domain } ഒപ്പിട്ടത്.
+sender-dkim-fail = { $domain }-ൽ നിന്നുള്ള ഒപ്പ് മെയിലുമായി പൊരുത്തപ്പെടുന്നില്ല.
+sender-dkim-none = സന്ദേശത്തിൽ ഒപ്പിട്ടിട്ടില്ല.
+sender-spf-pass = { $domain } പട്ടികപ്പെടുത്തിയ ഒരു സെർവറിൽ നിന്ന് അയച്ചത്.
+sender-spf-fail = { $domain } പട്ടികപ്പെടുത്താത്ത ഒരു സെർവറിൽ നിന്ന് അയച്ചത്.
+sender-spf-none = { $domain } അതിന്റെ സെർവറുകൾ പട്ടികപ്പെടുത്തുന്നില്ല.
+sender-check-unsure = പരിശോധനയ്ക്ക് വ്യക്തമായ ഉത്തരം നൽകാനായില്ല.
+sender-unconfirmed = ഇത് { $domain }-ൽ നിന്നാണ് വന്നതെന്ന് { $provider }-ന് സ്ഥിരീകരിക്കാനായില്ല. ആർക്കും ഏത് അയച്ചയാളെയും എഴുതാം.
+sender-link-title = ഈ ലിങ്ക് തുറക്കണോ?
+sender-link-body = ഈ മെയിൽ അതിന്റെ അയച്ചയാൾ പരിശോധനകളിൽ പരാജയപ്പെട്ടു. ലിങ്ക് പോകുന്നത് { $host }-ലേക്കാണ്:
+sender-link-cancel = റദ്ദാക്കുക
+sender-link-open = തുറക്കുക
 
 ## sent message's star, and the line above a read receipt)
 
@@ -120,6 +200,7 @@ tracking-receipt-other = വായിച്ചതിന്റെ രസീത്
 
 remote-hidden = ഈ സന്ദേശത്തിലെ ചിത്രങ്ങൾ മറച്ചിരിക്കുന്നു.
 remote-hidden-unconfirmed = ചിത്രങ്ങൾ മറച്ചിരിക്കുന്നു: അയച്ചയാളെ സ്ഥിരീകരിക്കാനായില്ല.
+remote-hidden-failed = ചിത്രങ്ങൾ മറച്ചിരിക്കുന്നു: ഈ മെയിൽ അതിന്റെ അയച്ചയാൾ പരിശോധനകളിൽ പരാജയപ്പെട്ടു.
 remote-show = ചിത്രങ്ങൾ കാണിക്കുക
 remote-always-show = ഈ അയച്ചയാളിൽ നിന്നുള്ളവ എപ്പോഴും കാണിക്കുക
 remote-picture-use = ഉപയോഗിക്കുക

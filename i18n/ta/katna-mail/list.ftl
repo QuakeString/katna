@@ -432,6 +432,11 @@ menu-make-rule = விதியை உருவாக்கு…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = கீ இறக்குமதி செய்யப்பட்டது
+toast-key-updated = இந்தக் கீ ஏற்கனவே உங்களிடம் இருந்தது; இப்போது அது புதுப்பிக்கப்பட்டுள்ளது
+toast-key-removed = கீ அகற்றப்பட்டது
+toast-key-not-removed = கீயை அகற்ற முடியவில்லை
+toast-fingerprint-copied = ஃபிங்கர்பிரிண்ட் நகலெடுக்கப்பட்டது
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] உரையாடல் காப்பகப்படுத்தப்பட்டது.

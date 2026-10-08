@@ -432,6 +432,11 @@ menu-make-rule = నియమాన్ని క్రియేట్ చేయ�
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = కీ ఇంపోర్ట్ చేయబడింది
+toast-key-updated = ఈ కీ మీ వద్ద ఇప్పటికే ఉంది; ఇప్పుడు అది అప్‌డేట్ అయింది
+toast-key-removed = కీ తీసివేయబడింది
+toast-key-not-removed = కీని తీసివేయడం సాధ్యం కాలేదు
+toast-fingerprint-copied = ఫింగర్‌ప్రింట్ కాపీ చేయబడింది
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] సంభాషణ ఆర్కైవ్ చేయబడింది.

@@ -282,6 +282,11 @@ menu-make-rule = ສ້າງກົດ…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = ນຳເຂົ້າກະແຈແລ້ວ
+toast-key-updated = ທ່ານມີກະແຈນີ້ຢູ່ແລ້ວ; ຕອນນີ້ມັນເປັນປັດຈຸບັນແລ້ວ
+toast-key-removed = ລຶບກະແຈແລ້ວ
+toast-key-not-removed = ບໍ່ສາມາດລຶບກະແຈໄດ້
+toast-fingerprint-copied = ສຳເນົາລາຍນິ້ວມືແລ້ວ
 toast-archived = { $kind ->
     [conversation] ຈັດເກັບການສົນທະນາ { $count } ລາຍການແລ້ວ.
    *[message] ຈັດເກັບຂໍ້ຄວາມ { $count } ລາຍການແລ້ວ.
