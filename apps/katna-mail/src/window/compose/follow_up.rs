@@ -17,6 +17,7 @@ use katna_ui::px;
 use katna_ui::tokens::{elevation, radius, space, text};
 
 use super::super::MailWindow;
+use super::super::date_pick::slide_back;
 use super::recipients::Field;
 use super::schedule;
 use super::tools::{Popup, menu_divider};
@@ -151,6 +152,8 @@ impl MailWindow {
             let end = start.len();
             f.text.update(cx, |t, cx| t.set_text(start, end, cx));
         }
+        c.dialog.pick = None;
+        c.dialog.back = false;
         c.popup = Some(Popup::FollowUp);
         if c.follow_up.send {
             window.focus(&c.follow_up.text.focus_handle(cx), cx);
@@ -182,6 +185,8 @@ impl MailWindow {
             c.follow_up.picked = Some(at);
             c.follow_up.after = 0;
             c.dialog.for_follow_up = false;
+            c.dialog.pick = None;
+            c.dialog.back = true;
             c.popup = Some(Popup::FollowUp);
         }
         cx.notify();
@@ -298,6 +303,10 @@ impl MailWindow {
         let Some(c) = &self.compose else {
             return div().into_any_element();
         };
+        if let Some(picker) = self.render_time_picker(th, cx) {
+            return picker;
+        }
+        let back = c.dialog.back;
         let f = &c.follow_up;
         // An encrypted message's follow-up would quote it in the clear.
         let can_send = !c.sealing.encrypt;
@@ -560,88 +569,96 @@ impl MailWindow {
             radius::LG,
             elevation::POPOVER,
         )
-        .child(
+        .when(back, |d| d.overflow_hidden())
+        .child(slide_back(
+            "follow-up-back",
+            back,
             div()
-                .px(px(space::S5))
-                .pt(px(space::S5))
-                .pb(px(space::S4))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(space::S4))
-                .child(icon("history", th.text, 20.0))
-                .child(
-                    div()
-                        .text_size(px(text::SUBTITLE))
-                        .font_weight(FontWeight::MEDIUM)
-                        .child(tr!("follow-up-title")),
-                ),
-        )
-        .child(
-            div()
-                .px(px(space::S5))
-                .pb(px(space::S4))
-                .flex()
-                .flex_row()
-                .flex_wrap()
-                .gap(px(space::S3))
-                .children(chips),
-        )
-        .child(menu_divider(th).my_0())
-        .child(
-            div()
-                .px(px(space::S5))
-                .py(px(space::S3))
                 .flex()
                 .flex_col()
                 .child(
-                    choice(
-                        "follow-up-remind",
-                        !send,
-                        true,
-                        tr!("follow-up-remind"),
-                        tr!("follow-up-remind-note"),
-                    )
-                    .on_click(pick_mode(false)),
+                    div()
+                        .px(px(space::S5))
+                        .pt(px(space::S5))
+                        .pb(px(space::S4))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(space::S4))
+                        .child(icon("history", th.text, 20.0))
+                        .child(
+                            div()
+                                .text_size(px(text::SUBTITLE))
+                                .font_weight(FontWeight::MEDIUM)
+                                .child(tr!("follow-up-title")),
+                        ),
                 )
                 .child(
-                    choice(
-                        "follow-up-send",
-                        send,
-                        can_send,
-                        tr!("follow-up-send"),
-                        if can_send {
-                            tr!("follow-up-send-note")
-                        } else {
-                            tr!("follow-up-send-encrypted")
-                        },
-                    )
-                    .when(can_send, |d| d.on_click(pick_mode(true))),
+                    div()
+                        .px(px(space::S5))
+                        .pb(px(space::S4))
+                        .flex()
+                        .flex_row()
+                        .flex_wrap()
+                        .gap(px(space::S3))
+                        .children(chips),
                 )
-                .when(send, |d| d.child(write)),
-        )
-        .child(
-            div()
-                .px(px(space::S5))
-                .pt(px(space::S3))
-                .flex()
-                .flex_row()
-                .items_start()
-                .gap(px(space::S3))
-                .text_size(px(text::CAPTION))
-                .text_color(rgba(th.text_dim))
-                .child(icon("info", th.text_dim, 16.0))
-                .child(div().flex_1().min_w_0().child(if send {
-                    tr!(
-                        "follow-up-note-send",
-                        start = schedule::clock(jiff::civil::Time::constant(9, 0, 0, 0)),
-                        end = schedule::clock(jiff::civil::Time::constant(17, 0, 0, 0))
-                    )
-                } else {
-                    tr!("follow-up-note")
-                })),
-        )
-        .child(div().p(px(space::S5)).child(actions))
+                .child(menu_divider(th).my_0())
+                .child(
+                    div()
+                        .px(px(space::S5))
+                        .py(px(space::S3))
+                        .flex()
+                        .flex_col()
+                        .child(
+                            choice(
+                                "follow-up-remind",
+                                !send,
+                                true,
+                                tr!("follow-up-remind"),
+                                tr!("follow-up-remind-note"),
+                            )
+                            .on_click(pick_mode(false)),
+                        )
+                        .child(
+                            choice(
+                                "follow-up-send",
+                                send,
+                                can_send,
+                                tr!("follow-up-send"),
+                                if can_send {
+                                    tr!("follow-up-send-note")
+                                } else {
+                                    tr!("follow-up-send-encrypted")
+                                },
+                            )
+                            .when(can_send, |d| d.on_click(pick_mode(true))),
+                        )
+                        .when(send, |d| d.child(write)),
+                )
+                .child(
+                    div()
+                        .px(px(space::S5))
+                        .pt(px(space::S3))
+                        .flex()
+                        .flex_row()
+                        .items_start()
+                        .gap(px(space::S3))
+                        .text_size(px(text::CAPTION))
+                        .text_color(rgba(th.text_dim))
+                        .child(icon("info", th.text_dim, 16.0))
+                        .child(div().flex_1().min_w_0().child(if send {
+                            tr!(
+                                "follow-up-note-send",
+                                start = schedule::clock(jiff::civil::Time::constant(9, 0, 0, 0)),
+                                end = schedule::clock(jiff::civil::Time::constant(17, 0, 0, 0))
+                            )
+                        } else {
+                            tr!("follow-up-note")
+                        })),
+                )
+                .child(div().p(px(space::S5)).child(actions)),
+        ))
         .into_any_element()
     }
 }
