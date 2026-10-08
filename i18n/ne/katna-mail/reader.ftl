@@ -91,6 +91,89 @@ security-missing-key = तपाईंसँग नभएको कुञ्ज�
 security-missing-key-id = तपाईंसँग नभएको कुञ्जी ({ $key }) द्वारा हस्ताक्षर गरिएकाले जाँच गर्न सकिँदैन
 security-signature-unavailable = हस्ताक्षरित; हस्ताक्षर जाँच गर्न { $tool } स्थापना गर्नुहोस्
 security-signature-error = हस्ताक्षर जाँच गर्न सकिएन।
+security-look-up-key = कुञ्जी खोज्नुहोस्
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = प्रमाणित हस्ताक्षर
+key-card-verified-detail = हस्ताक्षर ठीक छ र तपाईं यो कुञ्जीमा विश्वास गर्नुहुन्छ।
+key-card-unverified = हस्ताक्षर प्रमाणित छैन
+key-card-unverified-detail = हस्ताक्षर ठीक छ, तर कुञ्जी उहाँकै हो भनी कुनै कुराले पुष्टि गर्दैन। उहाँसँग फिंगरप्रिन्ट मिलाउनुहोस्, त्यसपछि GnuPG मा कुञ्जीमा विश्वास गर्नुहोस् (Kleopatra वा gpg --edit-key)।
+key-card-not-sender = अरू कसैले हस्ताक्षर गरेको
+key-card-not-sender-detail = हस्ताक्षर ठीक छ, तर कुञ्जी प्रेषकको होइन।
+key-card-untrusted = कुञ्जी विश्वसनीय छैन
+key-card-untrusted-detail = तपाईंले GnuPG मा यो कुञ्जीलाई अविश्वसनीय भनी चिन्ह लगाउनुभएको छ।
+key-card-signature-expired = हस्ताक्षरको म्याद सकियो
+key-card-signature-expired-detail = हस्ताक्षर ठीक थियो, तर यसको म्याद सकिएको छ।
+key-card-key-expired = कुञ्जीको म्याद सकियो
+key-card-key-expired-detail = हस्ताक्षर ठीक छ, तर त्यसपछि कुञ्जीको म्याद सकिएको छ।
+key-card-key-revoked = कुञ्जी रद्द गरिएको
+key-card-key-revoked-detail = यसको मालिकले यो कुञ्जी रद्द गर्नुभएको छ, त्यसैले हस्ताक्षरमा विश्वास गर्न सकिँदैन।
+key-card-bad = गलत हस्ताक्षर
+key-card-bad-detail = यो सन्देश हस्ताक्षरपछि परिवर्तन गरिएको छ, वा हस्ताक्षर नक्कली हो।
+key-card-signed-by = हस्ताक्षरकर्ता
+key-card-belongs-to = मालिक
+key-card-fingerprint = फिंगरप्रिन्ट
+key-card-signed = हस्ताक्षर गरिएको
+key-card-key = कुञ्जी
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = बनाइएको
+key-card-expires = म्याद सकिने
+key-card-never = कहिल्यै होइन
+key-card-issued-by = जारीकर्ता
+key-card-found-in = भेटिएको ठाउँ
+key-card-keyring = तपाईंको GnuPG कुञ्जीसङ्ग्रह
+key-card-copy = फिंगरप्रिन्ट कपी गर्नुहोस्
+key-card-import-title = यो कुञ्जी आयात गर्ने?
+key-card-from-directory = { $domain } को कुञ्जी निर्देशिकामा भेटियो।
+key-card-from-attachment = संलग्नक { $name } बाट।
+key-card-import-note = त्यसपछि Katna ले यो व्यक्तिका हस्ताक्षरहरू जाँच्न र उहाँलाई इन्क्रिप्ट गरिएको मेल पठाउन सक्छ। कुञ्जीमा पूर्ण विश्वास गर्न, उहाँसँग फिंगरप्रिन्ट मिलाउनुहोस्।
+key-card-cancel = रद्द गर्नुहोस्
+key-card-import = कुञ्जी आयात गर्नुहोस्
+key-card-looking-up = कुञ्जी खोज्दै…
+key-card-looking-up-detail = { $domain } को कुञ्जी निर्देशिकालाई सोध्दै।
+key-card-not-found = कुनै कुञ्जी भेटिएन
+key-card-not-found-detail = { $domain } ले यो ठेगानाका लागि कुञ्जी प्रकाशित गर्दैन। प्रेषकलाई आफ्नो कुञ्जी पठाउन भन्नुहोस्।
+key-card-not-kept = भेटिएको कुञ्जी प्रयोग गर्न सकिँदैन।
+key-card-failed = कुञ्जी ल्याउन सकिएन
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = यो { $domain } बाट नआएको हुन सक्छ
+sender-failed-body = यो { $provider } को प्रेषक जाँचमा असफल भयो। लिङ्क, संलग्नक र जवाफहरूमा होसियार हुनुहोस्।
+sender-provider-unknown = तपाईंको मेल प्रदायक
+sender-details = विवरण
+sender-details-hide = विवरण लुकाउनुहोस्
+sender-looks-safe = सुरक्षित देखिन्छ
+sender-move-to-spam = स्प्याममा सार्नुहोस्
+sender-checked-by = { $provider } द्वारा जाँच गरिएको
+sender-checked-by-server = { $provider } ({ $server }) द्वारा जाँच गरिएको
+sender-dmarc = प्रेषकको डोमेन (DMARC)
+sender-dkim = हस्ताक्षर (DKIM)
+sender-spf = पठाउने सर्भर (SPF)
+sender-result-pass = पास भयो
+sender-result-fail = असफल
+sender-result-unsure = निश्चित छैन
+sender-result-none = छैन
+sender-result-missing = जाँच गरिएन
+sender-dmarc-pass = { $domain } ले यो प्रेषकलाई पुष्टि गर्छ।
+sender-dmarc-fail = { $domain } ले आफ्नो मेल जसरी पठाइन्छ भन्छ, यो मेल त्यससँग मेल खाँदैन।
+sender-dmarc-none = { $domain } ले आफ्नो मेलका लागि कुनै नियम प्रकाशित गर्दैन।
+sender-dkim-pass = { $domain } द्वारा हस्ताक्षरित।
+sender-dkim-fail = { $domain } को हस्ताक्षर मेलसँग मेल खाँदैन।
+sender-dkim-none = सन्देशमा हस्ताक्षर गरिएको थिएन।
+sender-spf-pass = { $domain } ले सूचीमा राखेको सर्भरबाट पठाइएको।
+sender-spf-fail = { $domain } ले सूचीमा नराखेको सर्भरबाट पठाइएको।
+sender-spf-none = { $domain } ले आफ्ना सर्भरहरूको सूची दिँदैन।
+sender-check-unsure = जाँचले स्पष्ट उत्तर दिन सकेन।
+sender-unconfirmed = यो { $domain } बाट आएको हो भनी { $provider } ले पुष्टि गर्न सकेन। जोसुकैले जुनसुकै प्रेषक लेख्न सक्छ।
+sender-link-title = यो लिङ्क खोल्ने?
+sender-link-body = यो मेल आफ्नो प्रेषक जाँचमा असफल भयो। लिङ्क { $host } मा जान्छ:
+sender-link-cancel = रद्द गर्नुहोस्
+sender-link-open = खोल्नुहोस्
 tracking-opened = { $who } ले यो { $count ->
     [one] एक पटक
    *[other] { $count } पटक
@@ -117,6 +200,7 @@ tracking-receipt-other = पढेको रसिद: { $who } ले तपा
 
 remote-hidden = यो सन्देशका तस्बिरहरू लुकाइएका छन्।
 remote-hidden-unconfirmed = तस्बिरहरू लुकाइएका छन्: प्रेषकको पुष्टि गर्न सकिएन।
+remote-hidden-failed = तस्बिरहरू लुकाइएका छन्: यो मेल आफ्नो प्रेषक जाँचमा असफल भयो।
 remote-show = तस्बिरहरू देखाउनुहोस्
 remote-always-show = यो प्रेषकबाट सधैँ देखाउनुहोस्
 remote-picture-use = प्रयोग गर्नुहोस्

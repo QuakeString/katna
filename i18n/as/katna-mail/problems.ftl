@@ -69,3 +69,25 @@ service-details-close = বন্ধ কৰক
 service-not-running = Katnaৰ নেপথ্য সেৱা চলি থকা নাই।
 service-no-answer = Katnaৰ নেপথ্য সেৱাই উত্তৰ নিদিলে: { $error }
 service-no-session = কোনো D-Bus ছেছন নাই: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = আপডেটত সমস্যা হোৱাৰ পিছত Katna ছেফ মোডত আছে, সেয়ে মেইল ছিংক হোৱা নাই।
+safe-try-again = পুনৰ চেষ্টা কৰক
+safe-restore = পুনৰুদ্ধাৰ কৰক
+safe-restoring = { $when }ৰ পৰা আপোনাৰ ডেটা পুনৰুদ্ধাৰ কৰি আছে…
+safe-restored = { $when }ৰ পৰা আপোনাৰ ডেটা পুনৰুদ্ধাৰ কৰা হ'ল। আগতে যি আছিল সেয়া এটা ফ'ল্ডাৰত ৰখা হৈছে।
+safe-show-folder = ফ'ল্ডাৰ দেখুৱাওক
+safe-restore-failed = আপোনাৰ ডেটা পুনৰুদ্ধাৰ কৰিব পৰা নগ'ল: { $error }
+safe-restore-title = আপডেটৰ আগৰ আপোনাৰ ডেটা পুনৰুদ্ধাৰ কৰিবনে?
+safe-restore-body = আপুনি বাছনি কৰা কপিলৈ Katna উভতি যায়। তাৰ পিছত অহা মেইল আপোনাৰ একাউণ্টৰ পৰা পুনৰ ডাউনল'ড হয়।
+safe-restore-none = এতিয়াও কোনো কপি নাই। প্ৰতিটো আপডেটে আপোনাৰ ডেটা সলনি কৰাৰ আগতে Katna-ই এটা কপি বনায়।
+safe-restore-keep = এতিয়া যি আছে, নপঠোৱা মেইল, ড্ৰাফট আৰু এতিয়াও ছিংক নোহোৱা সলনিকে ধৰি, প্ৰথমে এটা ফ'ল্ডাৰত ৰখা হয়, সেয়ে একো হেৰুৱা নাযায়।
+safe-restore-cancel = বাতিল কৰক
+safe-restore-mail = মেইল
+safe-restore-pim = একাউণ্ট আৰু যোগাযোগ
+safe-restore-blobs = এটাচমেণ্ট
+safe-report-title = ডিবাগ ৰিপৰ্ট
+safe-report-body = ইয়াক কপি কৰি আপোনাৰ বাগ ৰিপৰ্টত সংলগ্ন কৰক। ইয়াত কোনো মেইল, ঠিকনা বা পাছৱৰ্ড নাই।
+safe-report-restore = পুনৰুদ্ধাৰ কৰক…
+safe-report-copied = ডিবাগ ৰিপৰ্ট কপি কৰা হ'ল

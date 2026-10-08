@@ -439,6 +439,14 @@ menu-make-rule = नियम तयार करा…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = की इम्पोर्ट केली
+toast-key-updated = ही की तुमच्याकडे आधीच होती; ती आता अद्ययावत आहे
+toast-key-removed = की काढली
+toast-key-not-removed = की काढता आली नाही
+toast-fingerprint-copied = फिंगरप्रिंट कॉपी केले
+
+## Snackbar after an action on mail in the list
+
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] संभाषण संग्रहित केले.
