@@ -187,6 +187,13 @@ impl Paths {
         self.data_dir.join("account-pictures")
     }
 
+    /// Public keys Katna found for people (Autocrypt, the Web Key
+    /// Directory), apart from the user's GnuPG keyring:
+    /// `$XDG_DATA_HOME/katna/keys/`.
+    pub fn peer_keys_dir(&self) -> PathBuf {
+        self.data_dir.join("keys")
+    }
+
     /// Mail database: `$XDG_DATA_HOME/katna/mail.db`.
     pub fn mail_db(&self) -> PathBuf {
         self.data_dir.join("mail.db")

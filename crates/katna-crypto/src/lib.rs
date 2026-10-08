@@ -22,17 +22,24 @@
 //! encrypted) are opened in turn.
 
 mod armor;
+pub mod autocrypt;
 mod gnupg;
 mod keys;
 mod mime;
+mod peers;
 mod protect;
 mod status;
+pub mod wkd;
 
 use mail_parser::MessageParser;
 
 pub use armor::without_armor;
 pub use gnupg::Gnupg;
-pub use keys::{Key, encryption_keys, has_secret_key, sending_standard};
+pub use keys::{
+    Imported, Key, KeyInfo, delete_key, encryption_keys, has_secret_key, import_keys, key_info,
+    sending_standard, show_keys,
+};
+pub use peers::{KeySource, MAX_KEY, PeerKey, PeerKeys};
 pub use protect::{Protect, ProtectError, Recipients, protect};
 
 /// At most this many protection layers are opened, so a crafted message
@@ -128,6 +135,8 @@ pub struct Signature {
     /// The `From` address is one of [`Self::emails`]. A good signature from
     /// someone else is not a signature by the sender.
     pub from_sender: bool,
+    /// The signing key as the keyring lists it; `None` when it is missing.
+    pub details: Option<KeyInfo>,
 }
 
 impl Signature {

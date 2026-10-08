@@ -380,6 +380,16 @@
       "repository": "https://github.com/unicode-org/icu4x"
     },
     {
+      "name": "icu_segmenter",
+      "version": "2.3.0",
+      "description": "Unicode line breaking and text segmentation algorithms for text boundaries analysis",
+      "license": "Unicode-3.0",
+      "authors": [
+        "The ICU4X Project Developers"
+      ],
+      "repository": "https://github.com/unicode-org/icu4x"
+    },
+    {
       "name": "icu_time",
       "version": "2.3.0",
       "description": "Processing of dates, times, and time zones with a focus on i18n and interop",

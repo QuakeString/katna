@@ -804,7 +804,9 @@ impl MailWindow {
         main.rule(th);
         let sender = row.sender.clone();
         if !sender.is_empty() {
-            let name = if row.correspondent.is_empty() || row.correspondent.starts_with("To: ") {
+            let name = if row.correspondent.is_empty()
+                || row.correspondent.starts_with(&crate::data::to_prefix())
+            {
                 sender.clone()
             } else {
                 row.correspondent.clone()

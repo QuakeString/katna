@@ -140,6 +140,9 @@ calendar-add-meet = Add Google Meet video call
 calendar-add-teams = Add Teams meeting
 calendar-has-call = Video call added
 calendar-weekday-day = { $weekday }, { $day }
+# Beside the day number in the Schedule view: "Wed, October", or with the
+# year, "Wed, October 2027", for a day in another year.
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = All day
 calendar-more-options = More options
 calendar-save = Save

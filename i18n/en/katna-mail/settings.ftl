@@ -217,6 +217,9 @@ settings-general-start-at-login-detail = Syncs mail and shows new-mail notificat
 # Under "Start Katna at login", while it is on.
 settings-general-login-window = Open the Katna Mail window too
 settings-general-login-window-detail = The window opens at login as well
+# The comment of the login entry this setting writes, which the desktop's
+# own list of programs started at login shows.
+settings-general-login-entry = Started at login (Settings > General > Desktop)
 settings-general-tray = Show Katna in the system tray
 settings-general-tray-detail = With the unread count and a menu
 # Under "Show Katna in the system tray", while it is on.
