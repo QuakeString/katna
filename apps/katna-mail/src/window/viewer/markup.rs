@@ -16,6 +16,7 @@
 //! the viewer or moving to another attachment with unsaved marks asks
 //! first. Encrypted and certified PDFs are not marked up.
 
+use crate::widgets::Tip as _;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -40,7 +41,7 @@ use super::{
     glassy,
 };
 use crate::theme::Theme;
-use crate::widgets::{ScaledEdge, icon, tip};
+use crate::widgets::{ScaledEdge, icon};
 
 /// Highlighter colours: light, as they lie under the text.
 const MARKERS: [(&str, u32); 5] = [
@@ -661,7 +662,7 @@ impl Viewer {
             let element = match &mark.shape {
                 Shape::Note { at, text } => note_icon(*at, z, color)
                     .id(("viewer-note", ix))
-                    .tooltip(tip(text.clone(), &self.th)),
+                    .tip(text.clone(), &self.th),
                 Shape::Box {
                     at,
                     width,
@@ -1106,7 +1107,7 @@ impl Viewer {
                                     .when(live, |d| {
                                         d.cursor_pointer()
                                             .hover(|s| s.bg(rgba(HOVER)))
-                                            .tooltip(tip(tr!(*label), th))
+                                            .tip(tr!(*label), th)
                                             .on_click(cx.listener(move |this, _, _, cx| {
                                                 this.set_color(ix, cx)
                                             }))
@@ -1305,7 +1306,7 @@ fn pill_button(
             if enabled { INK } else { 0xffffff61 },
             size * 0.55,
         ))
-        .tooltip(tip(label.into(), th))
+        .tip(label.into(), th)
 }
 
 /// The name of the marked copy of `name`: "Report (marked).pdf".

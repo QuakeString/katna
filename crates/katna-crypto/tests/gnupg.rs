@@ -838,7 +838,10 @@ fn show_import_and_delete_keys() {
     assert!(key_info(&gnupg, Standard::OpenPgp, &key.fingerprint).is_none());
 
     let imported = import_keys(&gnupg, &public).expect("imported");
-    assert_eq!(imported.fingerprints, std::slice::from_ref(&key.fingerprint));
+    assert_eq!(
+        imported.fingerprints,
+        std::slice::from_ref(&key.fingerprint)
+    );
     assert_eq!(imported.new, std::slice::from_ref(&key.fingerprint));
     let info = key_info(&gnupg, Standard::OpenPgp, &key.fingerprint).expect("in the keyring");
     assert_eq!(info.emails, ["dave@example.net"]);

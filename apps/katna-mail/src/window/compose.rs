@@ -44,6 +44,7 @@ mod templates;
 mod tools;
 mod tracking;
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -78,7 +79,7 @@ use crate::signatures;
 use crate::spell::{self, Speller};
 use crate::suggest::{Phrases, Suggester};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, menu, menu_item, tip};
+use crate::widgets::{elevation, icon, menu, menu_item};
 
 pub(super) use attach::Attachment;
 use checks::Passed;
@@ -2388,14 +2389,14 @@ impl MailWindow {
                     },
                     th,
                 )
-                .tooltip(tip(
+                .tip(
                     if mode == Mode::Minimized {
                         tr!("compose-restore")
                     } else {
                         tr!("compose-minimize")
                     },
                     th,
-                ))
+                )
                 .on_click(cx.listener(|this, _, _, cx| {
                     cx.stop_propagation();
                     this.compose_mode(Mode::Minimized, cx)
@@ -2404,7 +2405,7 @@ impl MailWindow {
             .when(mode == Mode::Full, |d| {
                 d.child(
                     small_button("compose-full", "close-full", th)
-                        .tooltip(tip(tr!("compose-exit-full-screen"), th))
+                        .tip(tr!("compose-exit-full-screen"), th)
                         .on_click(cx.listener(|this, _, _, cx| {
                             cx.stop_propagation();
                             this.compose_mode(Mode::Full, cx)
@@ -2414,7 +2415,7 @@ impl MailWindow {
             .child(
                 // Gmail's expand button, in a window of its own here.
                 small_button("compose-pop-out", "open-full", th)
-                    .tooltip(tip(tr!("compose-open-window"), th))
+                    .tip(tr!("compose-open-window"), th)
                     .on_click(cx.listener(|this, _, window, cx| {
                         cx.stop_propagation();
                         this.pop_out_compose(window, cx)
@@ -2422,7 +2423,7 @@ impl MailWindow {
             )
             .child(
                 small_button("compose-close", "close", th)
-                    .tooltip(tip(tr!("compose-save-close"), th))
+                    .tip(tr!("compose-save-close"), th)
                     .on_click(cx.listener(|this, _, _, cx| {
                         cx.stop_propagation();
                         this.close_compose_saving(cx)
@@ -2591,7 +2592,7 @@ impl MailWindow {
                 self.person_avatar(&name, &a.address, 40.0)
             });
         let pop_out = small_button("inline-pop-out", "open-full", th)
-            .tooltip(tip(tr!("compose-pop-out-reply"), th))
+            .tip(tr!("compose-pop-out-reply"), th)
             // Straight into a window of its own; docking it brings it back
             // here.
             .on_click(cx.listener(|this, _, window, cx| this.pop_out_compose(window, cx)));
@@ -3036,7 +3037,7 @@ impl MailWindow {
             .when(several, |d| {
                 d.cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
-                    .when(!open, |d| d.tooltip(tip(tr!("compose-from-choose"), th)))
+                    .when(!open, |d| d.tip(tr!("compose-from-choose"), th))
                     .child(icon("chevron-down", th.text_dim, 16.0))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::From, cx)))
             })

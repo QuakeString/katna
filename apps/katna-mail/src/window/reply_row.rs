@@ -7,6 +7,7 @@
 //! their icons (with the word as a tooltip). On a phone the three share
 //! the width equally, as in Gmail's app, and fold together.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, Context, FontWeight, SharedString, TextRun, Window, black, div, prelude::*,
 };
@@ -19,7 +20,7 @@ use super::MailWindow;
 use super::compose::Kind;
 use crate::data::EntryKey;
 use crate::theme::Theme;
-use crate::widgets::{pill_button, tip};
+use crate::widgets::pill_button;
 
 /// A button's word, in the current language.
 type Word = fn() -> String;
@@ -220,7 +221,7 @@ impl MailWindow {
                                     .pl(px(8.0))
                                     .pr(px(8.0))
                             })
-                            .when(shown < 0.5, |d| d.tooltip(tip(word, th)))
+                            .when(shown < 0.5, |d| d.tip(word, th))
                             .on_click(cx.listener(move |this, _, window, cx| {
                                 this.open_compose(kind, None, window, cx)
                             }))

@@ -6,6 +6,7 @@
 //! call about to start. Clicking an event opens the Calendar page on its
 //! day. Desktop windows only, as the contact panel; the two take turns.
 
+use crate::widgets::Tip as _;
 use std::rc::Rc;
 
 use gpui::{AnyElement, Context, FontWeight, SharedString, Task, Window, div, prelude::*, rgba};
@@ -21,7 +22,7 @@ use super::MailWindow;
 use super::apps::App as RailApp;
 use super::calendar::{civil, event_color, midnight, read};
 use crate::theme::{Theme, fade};
-use crate::widgets::{card_outline, filled_button, icon, icon_button_colored, tip};
+use crate::widgets::{card_outline, filled_button, icon, icon_button_colored};
 
 /// The card's width.
 const AGENDA_WIDTH: f32 = 300.0;
@@ -163,14 +164,14 @@ impl MailWindow {
             th,
         )
         .when(on, |d| d.bg(rgba(th.nav_selected)))
-        .tooltip(tip(
+        .tip(
             if on {
                 tr!("agenda-hide")
             } else {
                 tr!("agenda-show")
             },
             th,
-        ))
+        )
         .on_click(cx.listener(|this, _, _, cx| this.toggle_agenda(cx)))
         .into_any_element()
     }
@@ -375,12 +376,12 @@ impl MailWindow {
                     )
                     .child(
                         icon_button_colored("agenda-back", "chevron-left", 20.0, th.text_dim, th)
-                            .tooltip(tip(tr!("calendar-previous-day"), th))
+                            .tip(tr!("calendar-previous-day"), th)
                             .on_click(cx.listener(|this, _, _, cx| this.turn_agenda(-1, cx))),
                     )
                     .child(
                         icon_button_colored("agenda-on", "chevron-right", 20.0, th.text_dim, th)
-                            .tooltip(tip(tr!("calendar-next-day"), th))
+                            .tip(tr!("calendar-next-day"), th)
                             .on_click(cx.listener(|this, _, _, cx| this.turn_agenda(1, cx))),
                     ),
             )
