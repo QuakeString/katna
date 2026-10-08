@@ -1109,7 +1109,8 @@ impl MailWindow {
         let Some(dialog) = &self.add_account else {
             return;
         };
-        let key = event.keystroke.key.as_str();
+        let key =
+            katna_ui::direction::arrow(&event.keystroke.key, katna_ui::direction::is_rtl(window));
         let modified = event.keystroke.modifiers.modified();
         match (key, dialog.step) {
             ("escape", _) if !modified => {

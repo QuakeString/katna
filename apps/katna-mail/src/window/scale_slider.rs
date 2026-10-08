@@ -37,9 +37,9 @@ pub(super) struct ScaleDrag {
 }
 
 /// The value at `x` on `track`.
-fn value_at(track: Bounds<Pixels>, x: Pixels) -> u16 {
+fn value_at(track: Bounds<Pixels>, x: Pixels, rtl: bool) -> u16 {
     let t = if track.size.width > px(0.0) {
-        ((x - track.left()) / track.size.width).clamp(0.0, 1.0)
+        (katna_ui::direction::from_start(x, track, rtl) / track.size.width).clamp(0.0, 1.0)
     } else {
         0.0
     };
@@ -72,9 +72,12 @@ impl MailWindow {
             .px(px(KNOB / 2.0 + 4.0))
             .rounded(px(8.0))
             .cursor_pointer()
-            .on_key_down(cx.listener(|this, event: &KeyDownEvent, _, cx| {
+            .on_key_down(cx.listener(|this, event: &KeyDownEvent, window, cx| {
                 let now = this.config.mail.scale.clamp(MIN, MAX);
-                let next = match event.keystroke.key.as_str() {
+                let next = match katna_ui::direction::arrow(
+                    &event.keystroke.key,
+                    katna_ui::direction::is_rtl(window),
+                ) {
                     "left" | "down" => now.saturating_sub(STEP),
                     "right" | "up" => now + STEP,
                     "home" => MIN,
@@ -86,12 +89,16 @@ impl MailWindow {
             }))
             .on_mouse_down(
                 MouseButton::Left,
-                cx.listener(move |this, event: &MouseDownEvent, _, cx| {
+                cx.listener(move |this, event: &MouseDownEvent, window, cx| {
                     let Some(track) = down_track.get() else {
                         return;
                     };
                     if let Some(page) = this.settings_page.as_mut() {
-                        page.scale.value = Some(value_at(track, event.position.x));
+                        page.scale.value = Some(value_at(
+                            track,
+                            event.position.x,
+                            katna_ui::direction::is_rtl(window),
+                        ));
                         cx.notify();
                     }
                 }),
@@ -155,14 +162,18 @@ impl MailWindow {
                                 let (moved, released) = (entity.clone(), entity.clone());
                                 let track = paint_track.clone();
                                 window.on_mouse_event(
-                                    move |event: &MouseMoveEvent, phase, _, cx| {
+                                    move |event: &MouseMoveEvent, phase, window, cx| {
                                         let Some(bounds) = track.get() else {
                                             return;
                                         };
                                         if phase != DispatchPhase::Bubble {
                                             return;
                                         }
-                                        let value = value_at(bounds, event.position.x);
+                                        let value = value_at(
+                                            bounds,
+                                            event.position.x,
+                                            katna_ui::direction::is_rtl(window),
+                                        );
                                         moved
                                             .update(cx, |this, cx| {
                                                 let Some(page) = this.settings_page.as_mut() else {
@@ -265,9 +276,18 @@ mod tests {
     #[test]
     fn values_snap_to_steps_inside_the_range() {
         let track = Bounds::new(point(px(100.0), px(0.0)), size(px(250.0), px(10.0)));
-        assert_eq!(value_at(track, px(0.0)), MIN);
-        assert_eq!(value_at(track, px(400.0)), MAX);
-        assert_eq!(value_at(track, px(100.0 + 250.0 * fraction(100))), 100);
-        assert_eq!(value_at(track, px(100.0 + 250.0 * fraction(152))), 150);
+        assert_eq!(value_at(track, px(0.0), false), MIN);
+        assert_eq!(value_at(track, px(400.0), false), MAX);
+        assert_eq!(
+            value_at(track, px(100.0 + 250.0 * fraction(100)), false),
+            100
+        );
+        assert_eq!(
+            value_at(track, px(100.0 + 250.0 * fraction(152)), false),
+            150
+        );
+        // Right to left, the track starts at its right end.
+        assert_eq!(value_at(track, px(400.0), true), MIN);
+        assert_eq!(value_at(track, px(0.0), true), MAX);
     }
 }

@@ -244,6 +244,7 @@ impl Focusable for ComposeWindow {
 
 impl Render for ComposeWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        crate::widgets::follow_direction(window);
         // Text without a size of its own follows Settings > Appearance > Scaling.
         window.set_rem_size(px(16.0));
         self.chrome.sync_look(window, cx);

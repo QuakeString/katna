@@ -702,6 +702,8 @@ impl Viewer {
                 } => div()
                     .id(("viewer-text-box", ix))
                     .absolute()
+                    // On the picture, which does not turn around.
+                    .placed_ltr()
                     .left(px(at.0 * z))
                     .top(px(at.1 * z))
                     .w(px(width * z))
@@ -794,6 +796,8 @@ impl Viewer {
                     div()
                         .id("viewer-text-typing")
                         .absolute()
+                        // On the picture, which does not turn around.
+                        .placed_ltr()
                         .left(px(typing.at.0 * z - 3.0))
                         .top(px(typing.at.1 * z - 3.0))
                         .w(px(typing.width * z + 6.0))
@@ -1452,6 +1456,8 @@ fn note_icon(at: (f32, f32), z: f32, color: Rgba) -> gpui::Div {
     let size = NOTE_SIZE * z;
     div()
         .absolute()
+        // On the picture, which does not turn around.
+        .placed_ltr()
         .left(px(at.0 * z))
         .top(px(at.1 * z))
         .size(px(size))

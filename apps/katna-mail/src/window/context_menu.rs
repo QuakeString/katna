@@ -429,7 +429,12 @@ impl MailWindow {
             }
         };
         let at = (unpx(menu.at.x), unpx(menu.at.y));
-        let x = place(at.0, MENU_WIDTH, vw);
+        // Right to left the menu opens toward the left of the pointer and
+        // its submenus on its left: worked out as if mirrored, then
+        // mirrored back.
+        let rtl = self.layout.shape.rtl;
+        let mirror = |x: f32, width: f32| if rtl { vw - x - width } else { x };
+        let x = mirror(place(mirror(at.0, 0.0), MENU_WIDTH, vw), MENU_WIDTH);
         let y = place(at.1, fits(main.height()), vh);
 
         let open = menu.open.map(|sub| {
@@ -468,11 +473,13 @@ impl MailWindow {
                     .iter()
                     .find(|(s, _)| *s == sub)
                     .map_or(0.0, |(_, top)| *top);
-                let sub_x = if x + MENU_WIDTH - 4.0 + SUB_WIDTH <= vw - MARGIN {
-                    x + MENU_WIDTH - 4.0
+                let start = mirror(x, MENU_WIDTH);
+                let sub_x = if start + MENU_WIDTH - 4.0 + SUB_WIDTH <= vw - MARGIN {
+                    start + MENU_WIDTH - 4.0
                 } else {
-                    (x - SUB_WIDTH + 4.0).max(MARGIN)
+                    (start - SUB_WIDTH + 4.0).max(MARGIN)
                 };
+                let sub_x = mirror(sub_x, SUB_WIDTH);
                 let h = fits(rows.height());
                 let sub_y = (y + top - PADDING).min(vh - MARGIN - h).max(MARGIN);
                 (main, y, Some((sub, rows, sub_x, sub_y)))
@@ -485,6 +492,7 @@ impl MailWindow {
             deferred(
                 anchored()
                     .position(point(px(x), px(y)))
+                    .screen_corner()
                     .snap_to_window_with_margin(px(MARGIN))
                     .child(
                         div().occlude().child(
@@ -504,7 +512,10 @@ impl MailWindow {
                                 .on_key_down(cx.listener(
                                     |this, event: &KeyDownEvent, window, cx| {
                                         if !event.keystroke.modifiers.modified()
-                                            && event.keystroke.key == "left"
+                                            && katna_ui::direction::arrow(
+                                                &event.keystroke.key,
+                                                katna_ui::direction::is_rtl(window),
+                                            ) == "left"
                                             && !this.folder_pick_typing(window, cx)
                                             && this.context_menu_back(cx)
                                         {
@@ -889,8 +900,13 @@ impl MailWindow {
                     .is_some_and(|m| m.open != Some(sub));
                 this.open_context_sub(on.then_some(sub), cx);
             }))
-            .on_key_down(cx.listener(move |this, event: &KeyDownEvent, _, cx| {
-                if !event.keystroke.modifiers.modified() && event.keystroke.key == "right" {
+            .on_key_down(cx.listener(move |this, event: &KeyDownEvent, window, cx| {
+                if !event.keystroke.modifiers.modified()
+                    && katna_ui::direction::arrow(
+                        &event.keystroke.key,
+                        katna_ui::direction::is_rtl(window),
+                    ) == "right"
+                {
                     this.open_context_sub(Some(sub), cx);
                     cx.stop_propagation();
                 }

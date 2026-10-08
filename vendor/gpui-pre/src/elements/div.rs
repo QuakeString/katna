@@ -2483,7 +2483,14 @@ impl Interactivity {
             // were removed or the bounds became larger).
             let mut scroll_offset = scroll_offset.borrow_mut();
 
-            scroll_offset.x = scroll_offset.x.clamp(-scroll_max.x, px(0.));
+            // Katna: in a right-to-left layout the content starts at the
+            // right and runs out past the left edge, so it scrolls toward
+            // the right (positive offsets).
+            scroll_offset.x = if window.layout_direction().is_rtl() {
+                scroll_offset.x.clamp(px(0.), scroll_max.x)
+            } else {
+                scroll_offset.x.clamp(-scroll_max.x, px(0.))
+            };
             if scroll_to_bottom {
                 scroll_offset.y = -scroll_max.y;
             } else {
@@ -3356,6 +3363,9 @@ impl Interactivity {
             let line_height = window.line_height();
             let hitbox = hitbox.clone();
             let current_view = window.current_view();
+            // Katna: a vertical wheel moving a right-to-left row on goes
+            // toward its end, on the left.
+            let rtl = window.layout_direction().is_rtl();
             window.on_mouse_event(move |event: &ScrollWheelEvent, phase, window, cx| {
                 if phase == DispatchPhase::Bubble && hitbox.should_handle_scroll(window) {
                     let mut scroll_offset = scroll_offset.borrow_mut();
@@ -3376,7 +3386,7 @@ impl Interactivity {
                         Overflow::Scroll
                             if !restrict_scroll_to_axis && overflow.y != Overflow::Scroll =>
                         {
-                            delta.y
+                            if rtl { -delta.y } else { delta.y }
                         }
                         _ => Pixels::ZERO,
                     };

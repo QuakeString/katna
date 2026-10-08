@@ -1281,7 +1281,13 @@ impl StateInner {
             if bounds.size.height > padding.top + padding.bottom {
                 let mut item_origin = bounds.origin + Point::new(px(0.), padding.top);
                 item_origin.y -= layout_response.scroll_top.offset_in_item;
+                // Katna: in a right-to-left layout an item narrower than
+                // the list sits against its right edge.
+                let rtl = window.layout_direction().is_rtl();
                 for item in &mut layout_response.item_layouts {
+                    if rtl {
+                        item_origin.x = bounds.right() - item.size.width;
+                    }
                     window.with_content_mask(Some(ContentMask { bounds }), |window| {
                         item.element.prepaint_at(item_origin, window, cx);
                     });
@@ -1560,7 +1566,9 @@ impl Element for List {
         let padding = style
             .padding
             .to_pixels(bounds.size.into(), window.rem_size());
-        let layout =
+        // Katna: the items take the list's own layout direction, if it
+        // sets one.
+        let layout = window.with_layout_direction(style.layout_direction, |window| {
             match state.prepaint_items(bounds, padding, true, &mut self.render_item, window, cx) {
                 Ok(layout) => layout,
                 Err(autoscroll_request) => {
@@ -1569,7 +1577,8 @@ impl Element for List {
                         .prepaint_items(bounds, padding, false, &mut self.render_item, window, cx)
                         .unwrap()
                 }
-            };
+            }
+        });
 
         state.last_layout_bounds = Some(bounds);
         state.last_padding = Some(padding);
@@ -1613,10 +1622,13 @@ impl Element for List {
             }
         });
 
-        window.with_content_mask(Some(ContentMask { bounds }), |window| {
-            for item in &mut prepaint.layout.item_layouts {
-                item.element.paint(window, cx);
-            }
+        let direction = self.style.layout_direction;
+        window.with_layout_direction(direction, |window| {
+            window.with_content_mask(Some(ContentMask { bounds }), |window| {
+                for item in &mut prepaint.layout.item_layouts {
+                    item.element.paint(window, cx);
+                }
+            });
         });
     }
 }

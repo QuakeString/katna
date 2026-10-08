@@ -645,6 +645,8 @@ impl Setup {
 
 impl Render for Setup {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        // Right to left in Arabic, Hebrew, Persian and Urdu.
+        katna_ui::direction::follow(window, katna_i18n::rtl());
         let dark = self.look.dark(matches!(
             window.appearance(),
             WindowAppearance::Dark | WindowAppearance::VibrantDark

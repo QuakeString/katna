@@ -596,9 +596,11 @@ impl MailWindow {
     }
 }
 
-/// The keys pressed together, a cap each.
+/// The keys pressed together, a cap each, Ctrl first in every language
+/// (shortcuts do not turn around).
 fn caps(keys: &[String], th: &Theme) -> AnyElement {
     div()
+        .layout_ltr()
         .flex_none()
         .flex()
         .flex_row()

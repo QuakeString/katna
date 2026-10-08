@@ -1110,6 +1110,8 @@ impl MailWindow {
             .id("files-share-dropdown")
             .occlude()
             .absolute()
+            // Placed on screen, by what it points at.
+            .placed_ltr()
             .left(px(x))
             .top(px(y))
             .w(px(w))

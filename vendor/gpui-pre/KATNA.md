@@ -31,6 +31,20 @@ scripts were split mid-word, even inside a letter and its marks.
 - The `svg_renderer` tests are off: they read fonts from Zed's repository,
   which the published crate does not carry.
 
+Right-to-left text wraps line by line in reading order
+(`LineLayoutCache::wrap_bidi`, `line_layout.rs`). A shaped line is in the
+order it shows, so a right-to-left paragraph's glyph positions fall as
+their index grows, and breaks found along them cut it apart (the first
+line held one letter, the rest ran out of the box). For a line holding
+right-to-left letters the breaks are found on its glyphs put back in
+reading order, each character as wide as it was shaped; then each wrapped
+line is shaped on its own, so bidi orders it as a line, its glyphs are put
+in the order they show, and the lines follow one another as a
+left-to-right line's parts do. Not yet: a wrapped right-to-left line's
+glyphs are in visual order, so a style run (a link's colour, an
+underline) is matched to glyphs in that order and can spill into the
+neighbouring text of the same line.
+
 Run the crate's tests with
 `cargo test --manifest-path vendor/gpui-pre/Cargo.toml --lib --features test-support`
 (it is outside the workspace; the `Cargo.lock` that writes is ignored).
@@ -54,6 +68,10 @@ be laid out right to left, as Arabic, Hebrew, Persian and Urdu need:
   direction and, in `layout_bounds`, mirrors each child's x inside such a
   parent's border box. Flex rows, grid columns, padding, margins, gaps and
   absolute insets therefore start on the right, without changing taffy.
+- `Styled::placed_ltr()` (`Style::placed_ltr`) leaves one element's own x
+  unmirrored, for a layer put at a point on screen in window coordinates
+  (the pointer, another element's bounds: a popover, a tour's ring); its
+  content still runs right to left.
 - A right-to-left div paints its left border and corners on the right
   (`Style::mirrored`), so `border_l` and `rounded_l` are "start" there, like
   `pl` and `ml`.
@@ -63,8 +81,31 @@ be laid out right to left, as Arabic, Hebrew, Persian and Urdu need:
   element). Code that paints a `ShapedLine` itself passes the alignment
   as given, so it resolves it first.
 
-Not mirrored yet: horizontal scroll offsets (content scrolls from the
-left), `uniform_list` and `list` item origins (placed from the left
-padding), `anchored` positions and box shadow offsets.
+- Box shadows fall the other way: `Style::mirrored` turns their x
+  offsets around.
+- Horizontal scrolling (`div.rs`): a right-to-left row starts at the right
+  and runs out past the left edge, so its scroll offset goes from 0 up to
+  the most it can scroll (positive, the content moving right) instead of
+  down from 0, and a vertical wheel on a row that scrolls only sideways
+  moves it toward its end, on the left. `ScrollHandle::scroll_to_item`
+  works as before, on screen positions.
+- `uniform_list` puts its items against the right padding and border, and
+  `list` an item narrower than itself against its right edge; `list`
+  also gives its items its own `layout_ltr`/`layout_rtl`.
+- `anchored` reads its anchor's left and right as start and end: anchored
+  by the top left corner (the default) it opens toward the left of its
+  point, horizontal offsets turn around, without a position it hangs from
+  the right of where it was laid out, local positions count from there
+  toward the left, and one wider than the window keeps its right edge.
+  Positions given in window coordinates are where they are on screen (a
+  pointer's position), so a menu opens toward the left of the pointer.
+- `Svg::mirror_rtl()` draws an icon flipped left to right in a
+  right-to-left layout, after its own transformation (so a chevron that
+  turns clockwise to point down turns the other way), for icons that
+  point along the line; Katna picks which in `katna_ui::icons`.
+- Scrollbars: GPUI draws none itself. Space taffy reserves for one
+  (`scrollbar_width`) is mirrored with the rest, to the left; Katna's own
+  scrollbar (`katna-ui`) sits on the left in a right-to-left layout.
 
-Tests: `taffy::direction_tests`.
+Tests: `taffy::direction_tests`, `elements::anchored::tests` for menus and
+`elements::svg::mirror_tests`.

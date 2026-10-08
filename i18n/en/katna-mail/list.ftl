@@ -391,6 +391,11 @@ row-unknown-sender = (unknown sender)
 # before their names (a space follows it), or this when there are none.
 row-to = To:
 row-no-recipients = (no recipients)
+# Between the names on a line ("Ravi Kumar, me"; Arabic "Ravi Kumar، أنا"):
+# keep the quotes, they hold the space after the comma.
+row-names-separator = {", "}
+# You, among the senders of a conversation ("Ravi, me").
+row-me = me
 # A line whose message was deleted elsewhere while the list showed it.
 row-removed = This message was removed.
 # Tooltips of a line's star.

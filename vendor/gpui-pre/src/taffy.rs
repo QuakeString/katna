@@ -38,6 +38,9 @@ pub struct TaffyLayoutEngine {
     /// Katna: nodes laid out right to left, whose children's bounds are
     /// mirrored (see `LayoutDirection`).
     rtl_nodes: FxHashSet<LayoutId>,
+    /// Katna: nodes placed in left-to-right coordinates whatever their
+    /// parent's direction (`Styled::placed_ltr`), so never mirrored.
+    placed_ltr_nodes: FxHashSet<LayoutId>,
 }
 
 const EXPECT_MESSAGE: &str = "we should avoid taffy layout errors by construction if possible";
@@ -53,6 +56,7 @@ impl TaffyLayoutEngine {
             computed_layouts: FxHashSet::default(),
             layout_bounds_scratch_space: Vec::new(),
             rtl_nodes: FxHashSet::default(),
+            placed_ltr_nodes: FxHashSet::default(),
         }
     }
 
@@ -62,6 +66,7 @@ impl TaffyLayoutEngine {
         self.absolute_outer_origins.clear();
         self.computed_layouts.clear();
         self.rtl_nodes.clear();
+        self.placed_ltr_nodes.clear();
     }
 
     pub fn request_layout(
@@ -73,6 +78,7 @@ impl TaffyLayoutEngine {
         direction: LayoutDirection,
     ) -> LayoutId {
         let taffy_style = style.to_taffy(rem_size, scale_factor);
+        let placed_ltr = style.placed_ltr;
 
         let id: LayoutId = if children.is_empty() {
             self.taffy
@@ -88,6 +94,9 @@ impl TaffyLayoutEngine {
         };
         if direction.is_rtl() {
             self.rtl_nodes.insert(id);
+        }
+        if placed_ltr {
+            self.placed_ltr_nodes.insert(id);
         }
         id
     }
@@ -370,7 +379,7 @@ impl TaffyLayoutEngine {
                 // inside the parent's border box, so rows run from the
                 // right and left padding, margins and insets act on the
                 // right.
-                if self.rtl_nodes.contains(&parent_id) {
+                if self.rtl_nodes.contains(&parent_id) && !self.placed_ltr_nodes.contains(&id) {
                     let parent_width = self
                         .taffy
                         .layout(parent_id.into())
@@ -897,6 +906,30 @@ mod direction_tests {
         assert_eq!(x_range(&inner_b), (64., 74.));
     }
 
+    #[gpui::test]
+    fn placed_ltr_keeps_its_own_inset_only(cx: &mut TestAppContext) {
+        let probes: [Probe; 2] = Default::default();
+        let cx = cx.add_empty_window();
+        cx.update(|window, _| window.set_layout_direction(LayoutDirection::Rtl));
+        let [first, second] = probes.clone();
+        cx.draw(point(px(0.), px(0.)), size(px(100.), px(10.)), move |_, _| {
+            div().relative().w(px(100.)).h(px(10.)).child(
+                div()
+                    .absolute()
+                    .placed_ltr()
+                    .left(px(10.))
+                    .w(px(30.))
+                    .flex()
+                    .flex_row()
+                    .child(probe(10., &first))
+                    .child(probe(10., &second)),
+            )
+        });
+        // At 10 px from the left, its row still running from the right.
+        assert_eq!(x_range(&probes[0]), (30., 40.));
+        assert_eq!(x_range(&probes[1]), (20., 30.));
+    }
+
     #[test]
     fn text_align_follows_direction() {
         use LayoutDirection::{Ltr, Rtl};
@@ -920,11 +953,142 @@ mod direction_tests {
             bottom_left: px(4.).into(),
             ..Corners::default()
         };
+        style.box_shadow = vec![crate::BoxShadow {
+            color: crate::black(),
+            offset: point(px(3.), px(5.)),
+            blur_radius: px(2.),
+            spread_radius: px(0.),
+            inset: false,
+        }];
         let mirrored = style.mirrored();
+        assert_eq!(mirrored.box_shadow[0].offset, point(px(-3.), px(5.)));
         assert_eq!(mirrored.border_widths.left, px(2.).into());
         assert_eq!(mirrored.border_widths.right, px(1.).into());
         assert_eq!(mirrored.corner_radii.top_right, px(3.).into());
         assert_eq!(mirrored.corner_radii.bottom_right, px(4.).into());
         assert_eq!(mirrored.corner_radii.top_left, px(0.).into());
+    }
+
+    /// A right-to-left window that draws what its function makes.
+    struct RtlView(Box<dyn Fn() -> AnyElement>);
+
+    impl crate::Render for RtlView {
+        fn render(
+            &mut self,
+            window: &mut crate::Window,
+            _: &mut crate::Context<Self>,
+        ) -> impl crate::IntoElement {
+            window.set_layout_direction(LayoutDirection::Rtl);
+            (self.0)()
+        }
+    }
+
+    /// Opens a right-to-left window drawing `element`.
+    fn draw_rtl(
+        cx: &mut TestAppContext,
+        element: impl Fn() -> AnyElement + 'static,
+    ) -> &mut crate::VisualTestContext {
+        let (_, cx) = cx.add_window_view(|_, _| RtlView(Box::new(element)));
+        cx.run_until_parked();
+        cx
+    }
+
+    fn redraw(cx: &mut crate::VisualTestContext) {
+        cx.update(|window, _| window.refresh());
+        cx.run_until_parked();
+    }
+
+    #[gpui::test]
+    fn right_to_left_row_scrolls_toward_the_right(cx: &mut TestAppContext) {
+        use crate::{InteractiveElement as _, StatefulInteractiveElement as _};
+        let handle = crate::ScrollHandle::new();
+        let content: Probe = Default::default();
+        let (row, probe_content) = (handle.clone(), content.clone());
+        let cx = draw_rtl(cx, move || {
+            div()
+                .id("row")
+                .w(px(100.))
+                .h(px(10.))
+                .flex()
+                .overflow_x_scroll()
+                .track_scroll(&row)
+                .child(div().flex_none().child(probe(300., &probe_content)))
+                .into_any_element()
+        });
+        // The row starts at the right edge and runs out past the left.
+        assert_eq!(x_range(&content), (-200., 100.));
+        assert_eq!(handle.max_offset().x, px(200.));
+        // Scrolling on moves it right, up to the most it can.
+        handle.set_offset(point(px(50.), px(0.)));
+        redraw(cx);
+        assert_eq!(x_range(&content), (-150., 150.));
+        handle.set_offset(point(px(500.), px(0.)));
+        redraw(cx);
+        assert_eq!(handle.offset().x, px(200.));
+        // Past its start it cannot go.
+        handle.set_offset(point(px(-50.), px(0.)));
+        redraw(cx);
+        assert_eq!(handle.offset().x, px(0.));
+        assert_eq!(x_range(&content), (-200., 100.));
+    }
+
+    #[gpui::test]
+    fn right_to_left_uniform_list_starts_at_the_right(cx: &mut TestAppContext) {
+        let item: Probe = Default::default();
+        let probe_item = item.clone();
+        draw_rtl(cx, move || {
+            let probe_item = probe_item.clone();
+            div()
+                .w(px(100.))
+                .h(px(40.))
+                .child(
+                    crate::uniform_list("list", 3, move |range, _, _| {
+                        range
+                            .map(|ix| {
+                                if ix == 0 {
+                                    probe(30., &probe_item)
+                                } else {
+                                    div().w(px(30.)).h(px(10.)).into_any_element()
+                                }
+                            })
+                            .collect::<Vec<_>>()
+                    })
+                    .with_horizontal_sizing_behavior(
+                        crate::ListHorizontalSizingBehavior::Unconstrained,
+                    )
+                    .pl(px(4.))
+                    .size_full(),
+                )
+                .into_any_element()
+        });
+        // Against the right edge, inside the start padding.
+        assert_eq!(x_range(&item), (66., 96.));
+    }
+
+    #[gpui::test]
+    fn right_to_left_list_starts_at_the_right(cx: &mut TestAppContext) {
+        let item: Probe = Default::default();
+        let state = crate::ListState::new(2, crate::ListAlignment::Top, px(100.));
+        let probe_item = item.clone();
+        draw_rtl(cx, move || {
+            let probe_item = probe_item.clone();
+            div()
+                .w(px(100.))
+                .h(px(40.))
+                .child(
+                    crate::list(state.clone(), move |ix, _, _| {
+                        let row = div().flex().h(px(10.));
+                        if ix == 0 {
+                            row.child(probe(30., &probe_item)).into_any_element()
+                        } else {
+                            row.into_any_element()
+                        }
+                    })
+                    .size_full(),
+                )
+                .into_any_element()
+        });
+        // A full-width row, whose first box is at its right.
+        assert_eq!(x_range(&item), (70., 100.));
     }
 }

@@ -1127,7 +1127,7 @@ impl Viewer {
             _ => self.scroll.bounds(),
         };
         let page = (unpx(view.size.height) - LINE_SCROLL).max(LINE_SCROLL);
-        match keystroke.key.as_str() {
+        match katna_ui::direction::arrow(&keystroke.key, katna_ui::direction::is_rtl(window)) {
             "escape" if self.more_at.is_some() => {
                 self.more_at = None;
                 cx.notify();

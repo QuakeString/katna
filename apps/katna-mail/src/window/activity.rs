@@ -791,9 +791,14 @@ impl MailWindow {
         let (x0, y0) = (unpx(room.origin.x), unpx(room.origin.y));
         let (vw, vh) = (unpx(room.size.width), unpx(room.size.height));
         let width = MENU_WIDTH.min(vw - 16.0);
-        // Under the button, its right edge on the button's.
-        let right = unpx(button.origin.x + button.size.width);
-        let left = (right - width).clamp(x0 + 8.0, (x0 + vw - width - 8.0).max(x0 + 8.0));
+        // Under the button, its end edge on the button's (the right, or
+        // the left in a right-to-left layout).
+        let left = if katna_ui::direction::is_rtl(window) {
+            unpx(button.origin.x)
+        } else {
+            unpx(button.origin.x + button.size.width) - width
+        };
+        let left = left.clamp(x0 + 8.0, (x0 + vw - width - 8.0).max(x0 + 8.0));
         let top = unpx(button.origin.y + button.size.height) + 6.0;
         let height = (y0 + vh - top - 16.0).clamp(160.0, 560.0);
         let items: Vec<AnyElement> = menu
@@ -828,7 +833,8 @@ impl MailWindow {
             .id("activity-menu")
             .occlude()
             .absolute()
-            // In the layer, which covers the content.
+            // In the layer, which covers the content, placed on screen.
+            .placed_ltr()
             .left(px(left - x0))
             .top(px(top - y0))
             .w(px(width))

@@ -541,7 +541,7 @@ impl MailWindow {
                         let ids: Vec<i64> = this.tasks.selected.iter().copied().collect();
                         this.tasks_set_due(&ids, Some(date), cx)
                     }))
-                    .child(format::number(date.day() as u64))
+                    .child(format::day_number(date))
             });
         let weekdays = format::weekdays_short().into_iter().map(|(_, d)| {
             div()

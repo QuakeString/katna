@@ -152,7 +152,8 @@ impl MailWindow {
 
     fn tour_key(&mut self, event: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
         let intro = self.tour.as_ref().is_some_and(|t| t.stop.is_none());
-        match event.keystroke.key.as_str() {
+        match katna_ui::direction::arrow(&event.keystroke.key, katna_ui::direction::is_rtl(window))
+        {
             "escape" => self.end_tour(cx),
             "right" | "enter" | "space" => self.tour_step(1, cx),
             "left" if !intro => self.tour_step(-1, cx),
@@ -249,9 +250,11 @@ impl MailWindow {
         )
         .absolute()
         .size_full();
+        // The ring and the card are placed on screen, by what is lit.
         let ring = lit.map(|[x, y, w, h]| {
             div()
                 .absolute()
+                .placed_ltr()
                 .left(px(x))
                 .top(px(y))
                 .w(px(w))
@@ -363,6 +366,7 @@ impl MailWindow {
                 d.child(
                     div()
                         .absolute()
+                        .placed_ltr()
                         .left(px(cx_))
                         .top(px(cy))
                         .opacity(if stop.is_some() { t.max(0.3) } else { 1.0 })

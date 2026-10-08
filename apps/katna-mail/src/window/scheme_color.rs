@@ -445,8 +445,10 @@ impl MailWindow {
             .left_0()
             .size_full()
         };
+        // Saturation from the left, as the gradients are painted.
         let square = div()
             .id("picker-square")
+            .layout_ltr()
             .relative()
             .h(px(SQUARE))
             .rounded(px(10.0))
@@ -507,8 +509,11 @@ impl MailWindow {
                     )),
             );
         }
+        // A colour strip, not a direction: red at the left in every
+        // language, as the pointer reads it.
         let hue = div()
             .id("picker-hue")
+            .layout_ltr()
             .relative()
             .flex_1()
             .h(px(14.0))
@@ -627,6 +632,8 @@ impl MailWindow {
         let popover = div()
             .id("color-picker")
             .absolute()
+            // Placed on screen, by what it points at.
+            .placed_ltr()
             .left(px(x))
             .top(px(y))
             .w(px(WIDTH))

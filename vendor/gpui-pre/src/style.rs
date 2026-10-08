@@ -305,6 +305,12 @@ pub struct Style {
     /// inherits the parent's (see [`LayoutDirection`]).
     pub layout_direction: Option<LayoutDirection>,
 
+    /// Katna: this element's own place is in left-to-right coordinates
+    /// even inside a right-to-left parent, for a layer put at a point on
+    /// screen (the pointer, another element's bounds). What is inside it
+    /// still follows the direction.
+    pub placed_ltr: bool,
+
     /// The grid columns of this element
     /// Roughly equivalent to the Tailwind `grid-cols-<number>`
     pub grid_cols: Option<GridTemplate>,
@@ -802,8 +808,8 @@ impl Style {
         }
     }
 
-    /// Katna: this style with its left and right swapped (borders and
-    /// corners), for an element in a right-to-left layout. Padding,
+    /// Katna: this style with its left and right swapped (borders,
+    /// corners and box shadow offsets), for an element in a right-to-left layout. Padding,
     /// margins and insets need no swap: the layout engine mirrors bounds.
     pub(crate) fn mirrored(&self) -> Self {
         let mut style = self.clone();
@@ -814,6 +820,10 @@ impl Style {
         let radii = &mut style.corner_radii;
         std::mem::swap(&mut radii.top_left, &mut radii.top_right);
         std::mem::swap(&mut radii.bottom_left, &mut radii.bottom_right);
+        // A shadow cast toward the end falls on the other side.
+        for shadow in &mut style.box_shadow {
+            shadow.offset.x = -shadow.offset.x;
+        }
         style
     }
 
@@ -866,6 +876,7 @@ impl Default for Style {
             mouse_cursor: None,
             opacity: None,
             layout_direction: None,
+            placed_ltr: false,
             grid_rows: None,
             grid_cols: None,
             grid_location: None,

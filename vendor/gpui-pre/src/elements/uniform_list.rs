@@ -345,10 +345,20 @@ impl Element for UniformList {
             .padding
             .to_pixels(bounds.size.into(), window.rem_size());
 
+        // Katna: in a right-to-left layout the left padding and border
+        // (the start) are on the right, and items sit against them.
+        let rtl = style
+            .layout_direction
+            .unwrap_or_else(|| window.layout_direction())
+            .is_rtl();
+        let (start, end) = if rtl {
+            (border.right + padding.right, border.left + padding.left)
+        } else {
+            (border.left + padding.left, border.right + padding.right)
+        };
         let padded_bounds = Bounds::from_corners(
-            bounds.origin + point(border.left + padding.left, border.top + padding.top),
-            bounds.bottom_right()
-                - point(border.right + padding.right, border.bottom + padding.bottom),
+            bounds.origin + point(start, border.top + padding.top),
+            bounds.bottom_right() - point(end, border.bottom + padding.bottom),
         );
 
         let can_scroll_horizontally = matches!(
@@ -505,7 +515,12 @@ impl Element for UniformList {
                                 AvailableSpace::Definite(available_width),
                                 AvailableSpace::Definite(item_height),
                             );
-                            item.layout_as_root(available_space, window, cx);
+                            let item_size = item.layout_as_root(available_space, window, cx);
+                            let mut item_origin = item_origin;
+                            if rtl {
+                                item_origin.x =
+                                    padded_bounds.right() + scroll_offset.x - item_size.width;
+                            }
                             item.prepaint_at(item_origin, window, cx);
                             frame_state.items.push(item);
                         }
