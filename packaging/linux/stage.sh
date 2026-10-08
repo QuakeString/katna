@@ -44,6 +44,8 @@ done
 chmod 644 "$out"/lib/systemd/user/* "$out"/share/dbus-1/services/*
 
 put 644 "$out/share/applications" "$root"/packaging/desktop/*.desktop
+# Katna Mail's entry in Discover and GNOME Software.
+put 644 "$out/share/metainfo" "$root"/packaging/metainfo/*.metainfo.xml
 put 644 "$out/share/krunner/dbusplugins" "$root"/packaging/krunner/*.desktop
 put 644 "$out/share/gnome-shell/search-providers" "$root"/packaging/gnome-shell/*.ini
 # "Send with Katna Mail" in Dolphin and GNOME Files.

@@ -115,6 +115,8 @@ package() {
   install -Dm644 -t "$pkgdir/usr/lib/systemd/user" packaging/systemd/*.service
   install -Dm644 -t "$pkgdir/usr/share/dbus-1/services" packaging/dbus/*.service
   install -Dm644 -t "$pkgdir/usr/share/applications" packaging/desktop/*.desktop
+  # Katna Mail's entry in Discover and GNOME Software.
+  install -Dm644 -t "$pkgdir/usr/share/metainfo" packaging/metainfo/*.metainfo.xml
   install -Dm644 -t "$pkgdir/usr/share/krunner/dbusplugins" packaging/krunner/*.desktop
   install -Dm644 -t "$pkgdir/usr/share/gnome-shell/search-providers" packaging/gnome-shell/*.ini
   # "Send with Katna Mail" on files and folders in Dolphin and GNOME Files.

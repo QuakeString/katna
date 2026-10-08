@@ -263,6 +263,36 @@ fn snap_names_match_ids() {
     }
 }
 
+/// Katna Mail's AppStream entry (Discover, GNOME Software) is named after
+/// its app ID and points at its desktop entry, icon and service. It is
+/// CC0, as AppStream asks of metadata, not GPL like the other files.
+#[test]
+fn metainfo_matches_app_id() {
+    let dir = packaging().join("metainfo");
+    let names: Vec<String> = fs::read_dir(&dir)
+        .unwrap()
+        .map(|entry| entry.unwrap().path())
+        .filter(|path| path.is_file())
+        .map(|path| path.file_name().unwrap().to_string_lossy().into_owned())
+        .collect();
+    let name = format!("{MAIL_APP_ID}.metainfo.xml");
+    assert_eq!(names, [name.clone()], "files in {}", dir.display());
+    let text = fs::read_to_string(dir.join(&name)).unwrap();
+    assert!(text.contains("SPDX-License-Identifier: CC0-1.0"), "{name}");
+    for line in [
+        format!("<id>{MAIL_APP_ID}</id>"),
+        "<metadata_license>CC0-1.0</metadata_license>".to_owned(),
+        "<project_license>GPL-3.0-or-later</project_license>".to_owned(),
+        format!("<launchable type=\"desktop-id\">{MAIL_APP_ID}.desktop</launchable>"),
+        format!("<icon type=\"stock\">{MAIL_APP_ID}</icon>"),
+        format!("<dbus type=\"user\">{DAEMON_BUS_NAME}</dbus>"),
+    ] {
+        assert!(text.contains(&line), "{name} has no {line:?}");
+    }
+    // The Flatpak renames the entry's one <id> to its own app ID.
+    assert_eq!(text.matches("<id>").count(), 1, "{name}");
+}
+
 /// Other packaging files (`packaging/*/*`) use the IDs only through file
 /// names (the PKGBUILD installs with globs), so they never need changing.
 /// Subdirectories are makepkg output and are not checked.
@@ -279,6 +309,7 @@ fn prefix_only_in_checked_files() {
         format!("kio/{MAIL_APP_ID}.SendFiles.desktop"),
         format!("flatpak/{PREFIX}.yml"),
         "snap/snapcraft.yaml".to_owned(),
+        format!("metainfo/{MAIL_APP_ID}.metainfo.xml"),
     ];
     for dir in fs::read_dir(packaging()).unwrap() {
         let dir = dir.unwrap().path();

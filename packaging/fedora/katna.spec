@@ -95,6 +95,7 @@ test "$(%{buildroot}%{_bindir}/katna-mail --version)" = "katna-mail %{version}"
 %{_prefix}/lib/systemd/user/*.service
 %{_datadir}/dbus-1/services/*.service
 %{_datadir}/applications/*.desktop
+%{_metainfodir}/*.metainfo.xml
 %{_datadir}/krunner/dbusplugins/*.desktop
 %{_datadir}/gnome-shell/search-providers/*.ini
 %{_datadir}/gnome-shell/extensions/*/
