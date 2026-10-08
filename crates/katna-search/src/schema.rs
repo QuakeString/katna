@@ -10,13 +10,16 @@ use tantivy::schema::{
     FAST, Field, INDEXED, IndexRecordOption, STRING, Schema, TextFieldIndexing, TextOptions,
 };
 use tantivy::tokenizer::{
-    AsciiFoldingFilter, Language, LowerCaser, RemoveLongFilter, SimpleTokenizer, Stemmer,
-    TextAnalyzer, TokenizerManager,
+    AsciiFoldingFilter, Language, LowerCaser, RemoveLongFilter, Stemmer, TextAnalyzer,
+    TokenizerManager,
 };
+
+use crate::words::WordTokenizer;
 
 /// Version of the schema and of what the indexer puts into it. Raise it when
 /// either changes; an index with another version must be rebuilt.
-pub const SCHEMA_VERSION: u32 = 2;
+/// 3: Thai, Lao, Khmer and Burmese split into words.
+pub const SCHEMA_VERSION: u32 = 3;
 
 /// Name of the tokenizer of the text fields that match words as written.
 pub const TOKENIZER: &str = "katna";
@@ -154,10 +157,11 @@ pub fn build_schema() -> Schema {
     builder.build()
 }
 
-/// The analyzer of the text fields as written: Unicode words, lower-cased
-/// and folded to ASCII (`café` finds `cafe`).
+/// The analyzer of the text fields as written: Unicode words (Thai, Lao,
+/// Khmer and Burmese split with dictionaries), lower-cased and folded to
+/// ASCII (`café` finds `cafe`).
 pub fn analyzer() -> TextAnalyzer {
-    TextAnalyzer::builder(SimpleTokenizer::default())
+    TextAnalyzer::builder(WordTokenizer::default())
         .filter(RemoveLongFilter::limit(MAX_TOKEN_BYTES))
         .filter(LowerCaser)
         .filter(AsciiFoldingFilter)
@@ -168,7 +172,7 @@ pub fn analyzer() -> TextAnalyzer {
 /// stemmed as English until we detect languages; on other languages it
 /// mostly leaves words alone or merges a few forms.
 pub fn stem_analyzer() -> TextAnalyzer {
-    TextAnalyzer::builder(SimpleTokenizer::default())
+    TextAnalyzer::builder(WordTokenizer::default())
         .filter(RemoveLongFilter::limit(MAX_TOKEN_BYTES))
         .filter(LowerCaser)
         .filter(AsciiFoldingFilter)

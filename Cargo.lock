@@ -6233,6 +6233,8 @@ dependencies = [
 name = "katna-search"
 version = "0.0.0"
 dependencies = [
+ "icu_provider",
+ "icu_segmenter",
  "katna-core",
  "katna-crypto",
  "katna-import",

@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 856 more of their own. Each keeps its own license.
+bring in 855 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -45,6 +45,7 @@ bring in 856 more of their own. Each keeps its own license.
 | [icu_decimal](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | API for formatting basic decimal numbers in a locale-sensitive way |
 | [icu_locale_core](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | API for managing Unicode Language and Locale Identifiers |
 | [icu_provider](https://github.com/unicode-org/icu4x) 2.3.1 | The ICU4X Project Developers | Unicode-3.0 | Trait and struct definitions for the ICU data provider |
+| [icu_segmenter](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Unicode line breaking and text segmentation algorithms for text boundaries analysis |
 | [icu_time](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Processing of dates, times, and time zones with a focus on i18n and interop |
 | [image](https://github.com/image-rs/image) 0.25.10 | The image-rs Developers | MIT OR Apache-2.0 | Imaging library. Provides basic image processing and encoders/decoders for common image formats. |
 | [imap-codec](https://github.com/duesee/imap-codec) 2.0.0-alpha.9 | Damian Poddebniak | MIT OR Apache-2.0 | Rock-solid and complete codec for IMAP |
