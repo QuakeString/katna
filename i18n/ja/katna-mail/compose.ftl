@@ -21,6 +21,16 @@ compose-hide-trimmed = 省略されたコンテンツを非表示
 compose-remove-trimmed = 引用テキストを削除
 compose-trimmed-removed = 引用テキストを削除しました
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date }、{ $from } が書きました:
+compose-forward-header = ---------- 転送されたメッセージ ---------
+compose-forward-from = 差出人: { $from }
+compose-forward-date = 日付: { $date }
+compose-forward-subject = 件名: { $subject }
+compose-forward-to = 宛先: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = To

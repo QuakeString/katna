@@ -4582,3 +4582,14 @@ ke salinan dari sebelum pembaruan. Isi yang ada sekarang disimpan dulu di
 sebuah folder, jadi tidak ada yang hilang. Salin laporan debug, juga ada di
 Tentang Katna, mengumpulkan apa yang dibutuhkan laporan bug.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Email berbahasa Arab dan Ibrani terbaca sesuai arahnya"
+text = """
+Setiap paragraf dalam pesan kini terbaca sesuai arahnya sendiri: bahasa Arab,
+Ibrani, Persia, dan Urdu dari kanan, bahasa Inggris dari kiri, dalam email yang sama
+dan di jendela mana pun. Saat menulis, tombol Kiri ke kanan dan Kanan ke kiri di
+bilah format (atau Ctrl+Shift+X) membalik arah paragraf, dan baris yang Anda mulai
+dalam bahasa Arab atau Ibrani berbalik dengan sendirinya. Pesan terkirim persis
+seperti yang Anda tulis.
+"""
