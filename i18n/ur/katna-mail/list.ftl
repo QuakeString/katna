@@ -350,6 +350,8 @@ row-no-subject = (کوئی موضوع نہیں)
 row-unknown-sender = (نامعلوم مرسل)
 row-to = بنام:
 row-no-recipients = (کوئی وصول کنندہ نہیں)
+row-names-separator = {"، "}
+row-me = میں
 
 ## Mail list: lines
 

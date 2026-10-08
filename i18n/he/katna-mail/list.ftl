@@ -400,6 +400,8 @@ row-no-subject = (ללא נושא)
 row-unknown-sender = (שולח לא ידוע)
 row-to = אל:
 row-no-recipients = (ללא נמענים)
+row-names-separator = {", "}
+row-me = אני
 
 ## Mail list: lines
 

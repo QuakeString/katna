@@ -450,6 +450,8 @@ row-no-subject = (без темы)
 row-unknown-sender = (неизвестный отправитель)
 row-to = Кому:
 row-no-recipients = (нет получателей)
+row-names-separator = {", "}
+row-me = я
 
 ## Mail list: lines
 
