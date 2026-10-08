@@ -1,3 +1,4 @@
+use super::line_breaks::Breaks;
 use crate::{FontId, Pixels, SharedString, TextRun, TextSystem, px};
 use collections::HashMap;
 use std::{borrow::Cow, iter, sync::Arc};
@@ -42,14 +43,38 @@ impl LineWrapper {
         fragments: &'a [LineFragment],
         wrap_width: Pixels,
     ) -> impl Iterator<Item = Boundary> + 'a {
+        // Katna: wrap where UAX #14 allows (`line_breaks.rs`), not after
+        // spaces and before "non-word" characters, which split Indic,
+        // Arabic and Thai words mid-word. Elements count as U+FFFC.
+        let mut text = String::new();
+        let mut text_ixs = Vec::new();
+        for fragment in fragments {
+            match fragment {
+                LineFragment::Text { text: fragment } => {
+                    for c in fragment.chars() {
+                        text_ixs.push(text.len());
+                        text.push(c);
+                    }
+                }
+                LineFragment::Element { .. } => {
+                    text_ixs.push(text.len());
+                    text.push('\u{FFFC}');
+                }
+            }
+        }
+        text_ixs.push(text.len());
+        let breaks = Breaks::new(&text);
+
         let mut width = px(0.);
         let mut first_non_whitespace_ix = None;
         let mut indent = None;
         let mut last_candidate_ix = 0;
         let mut last_candidate_width = px(0.);
+        let mut last_grapheme_ix = 0;
+        let mut last_grapheme_width = px(0.);
         let mut last_wrap_ix = 0;
-        let mut prev_c = '\0';
         let mut index = 0;
+        let mut candidate_ix = 0;
         let mut candidates = fragments
             .iter()
             .flat_map(move |fragment| fragment.wrap_boundary_candidates())
@@ -58,47 +83,36 @@ impl LineWrapper {
             for candidate in candidates.by_ref() {
                 let ix = index;
                 index += candidate.len_utf8();
-                let mut new_prev_c = prev_c;
+                let text_ix = text_ixs[candidate_ix];
+                candidate_ix += 1;
+                let is_grapheme = breaks.grapheme_at(text_ix);
+                if let WrapBoundaryCandidate::Char { character: '\n' } = candidate {
+                    continue;
+                }
+                if first_non_whitespace_ix.is_some() {
+                    if breaks.line_break_at(text_ix) {
+                        last_candidate_ix = ix;
+                        last_candidate_width = width;
+                    }
+                    if is_grapheme {
+                        last_grapheme_ix = ix;
+                        last_grapheme_width = width;
+                    }
+                }
                 let item_width = match candidate {
                     WrapBoundaryCandidate::Char { character: c } => {
-                        if c == '\n' {
-                            continue;
-                        }
-
-                        if Self::is_word_char(c) {
-                            if prev_c == ' ' && c != ' ' && first_non_whitespace_ix.is_some() {
-                                last_candidate_ix = ix;
-                                last_candidate_width = width;
-                            }
-                        } else {
-                            // CJK may not be space separated, e.g.: `Hello world你好世界`
-                            if c != ' ' && first_non_whitespace_ix.is_some() {
-                                last_candidate_ix = ix;
-                                last_candidate_width = width;
-                            }
-                        }
-
                         if c != ' ' && first_non_whitespace_ix.is_none() {
                             first_non_whitespace_ix = Some(ix);
                         }
-
-                        new_prev_c = c;
-
                         self.width_for_char(c)
                     }
                     WrapBoundaryCandidate::Element {
                         width: element_width,
                         ..
                     } => {
-                        if prev_c == ' ' && first_non_whitespace_ix.is_some() {
-                            last_candidate_ix = ix;
-                            last_candidate_width = width;
-                        }
-
                         if first_non_whitespace_ix.is_none() {
                             first_non_whitespace_ix = Some(ix);
                         }
-
                         element_width
                     }
                 };
@@ -112,23 +126,35 @@ impl LineWrapper {
                         );
                     }
 
-                    if last_candidate_ix > 0 {
+                    // The width before the new line's first character.
+                    let line_start_width = if last_candidate_ix > last_wrap_ix {
                         last_wrap_ix = last_candidate_ix;
-                        width -= last_candidate_width;
-                        last_candidate_ix = 0;
-                    } else {
+                        last_candidate_width
+                    } else if is_grapheme {
+                        // No break opportunity on this line: split the
+                        // word, but only between grapheme clusters.
                         last_wrap_ix = ix;
-                        width = item_width;
-                    }
-
-                    if let Some(indent) = indent {
-                        width += self.width_for_char(' ') * indent as f32;
+                        width - item_width
+                    } else if last_grapheme_ix > last_wrap_ix {
+                        last_wrap_ix = last_grapheme_ix;
+                        last_grapheme_width
+                    } else {
+                        // A single cluster wider than the line: let it
+                        // overflow rather than split it.
+                        continue;
+                    };
+                    let indent_width =
+                        indent.map_or(px(0.), |indent| self.width_for_char(' ') * indent as f32);
+                    width = width - line_start_width + indent_width;
+                    last_candidate_ix = 0;
+                    if last_grapheme_ix > last_wrap_ix {
+                        last_grapheme_width = last_grapheme_width - line_start_width + indent_width;
+                    } else {
+                        last_grapheme_ix = 0;
                     }
 
                     return Some(Boundary::new(last_wrap_ix, indent.unwrap_or(0)));
                 }
-
-                prev_c = new_prev_c;
             }
 
             None
@@ -340,9 +366,9 @@ impl LineWrapper {
         let mut last_candidate_ix = 0usize;
         let mut last_candidate_width = px(0.);
         let mut last_wrap_ix = 0usize;
-        let mut prev_c = '\0';
         let mut indent: Option<u32> = None;
         let mut truncate_ix = 0usize;
+        let breaks = Breaks::new(&text);
 
         for (ix, c) in text.char_indices() {
             if c == '\n' {
@@ -369,7 +395,6 @@ impl LineWrapper {
                 last_candidate_ix = 0;
                 last_candidate_width = px(0.);
                 last_wrap_ix = ix + 1;
-                prev_c = '\0';
                 indent = None;
                 truncate_ix = ix + 1;
                 continue;
@@ -377,12 +402,8 @@ impl LineWrapper {
 
             let char_width = self.width_for_char(c);
 
-            if Self::is_word_char(c) {
-                if prev_c == ' ' && first_non_whitespace_ix.is_some() {
-                    last_candidate_ix = ix;
-                    last_candidate_width = width;
-                }
-            } else if c != ' ' && first_non_whitespace_ix.is_some() {
+            // Katna: the same break opportunities as `wrap_line`.
+            if first_non_whitespace_ix.is_some() && breaks.line_break_at(ix) {
                 last_candidate_ix = ix;
                 last_candidate_width = width;
             }
@@ -419,7 +440,8 @@ impl LineWrapper {
             } else {
                 // On the last line: track the furthest point where the affix
                 // still fits, and stop as soon as the line overflows.
-                if width + affix_width <= wrap_width {
+                // Katna: never cut a grapheme cluster in two.
+                if width + affix_width <= wrap_width && breaks.grapheme_at(ix + c.len_utf8()) {
                     truncate_ix = ix + c.len_utf8();
                 }
 
@@ -437,56 +459,10 @@ impl LineWrapper {
                     return (result, Cow::Owned(runs));
                 }
             }
-
-            prev_c = c;
         }
 
         // Text fits within max_lines without truncation.
         (text, Cow::Borrowed(runs))
-    }
-
-    /// Any character in this list should be treated as a word character,
-    /// meaning it can be part of a word that should not be wrapped.
-    pub(crate) fn is_word_char(c: char) -> bool {
-        // ASCII alphanumeric characters, for English, numbers: `Hello123`, etc.
-        c.is_ascii_alphanumeric() ||
-        // Latin script in Unicode for French, German, Spanish, etc.
-        // Latin-1 Supplement
-        // https://en.wikipedia.org/wiki/Latin-1_Supplement
-        matches!(c, '\u{00C0}'..='\u{00FF}') ||
-        // Latin Extended-A
-        // https://en.wikipedia.org/wiki/Latin_Extended-A
-        matches!(c, '\u{0100}'..='\u{017F}') ||
-        // Latin Extended-B
-        // https://en.wikipedia.org/wiki/Latin_Extended-B
-        matches!(c, '\u{0180}'..='\u{024F}') ||
-        // Cyrillic for Russian, Ukrainian, etc.
-        // https://en.wikipedia.org/wiki/Cyrillic_script_in_Unicode
-        matches!(c, '\u{0400}'..='\u{04FF}') ||
-
-        // Vietnamese (https://vietunicode.sourceforge.net/charset/)
-        matches!(c, '\u{1E00}'..='\u{1EFF}') || // Latin Extended Additional
-        matches!(c, '\u{0300}'..='\u{036F}') || // Combining Diacritical Marks
-
-        // Bengali (https://en.wikipedia.org/wiki/Bengali_(Unicode_block))
-        matches!(c, '\u{0980}'..='\u{09FF}') ||
-
-        // Some other known special characters that should be treated as word characters,
-        // e.g. `a-b`, `var_name`, `I'm`/`won’t`, '@mention`, `#hashtag`, `100%`, `3.1415`,
-        // `2^3`, `a~b`, `a=1`, `Self::new`, etc. Trailing punctuation like `,`, `.`, `:`, `;`
-        // is included so it stays attached to the preceding word when wrapping.
-        matches!(c, '-' | '_' | '.' | '\'' | '’' | '‘' | '$' | '%' | '@' | '#' | '^' | '~' | ',' | '=' | ':' | ';') ||
-        // Closing punctuation never starts a line (UAX #14 LB13: no break
-        // before `!`, `)`, `]`, `}`, closing quotes or an ellipsis) — `plz!`,
-        // `see)`, `quoted”` wrap as one word instead of orphaning the mark on
-        // the next line. `/` and `?` stay break opportunities so long paths
-        // and URLs (`a/b`, `foo?b=2`) can wrap.
-        matches!(c, '!' | ')' | ']' | '}' | '"' | '”' | '»' | '…') ||
-        // `⋯` character is special used in Zed, to keep this at the end of the line.
-        matches!(c, '⋯') ||
-
-        // Non-breaking glue characters
-        matches!(c, '\u{202F}' | '\u{00A0}' | '\u{2011}')
     }
 
     #[inline(always)]
@@ -1121,28 +1097,116 @@ mod tests {
         perform_test("abcdefgh…", &[4, 4, 4], &[4, 4, 3]);
     }
 
+    /// Katna: wraps `text` to `chars` test-font characters (9.6 px each)
+    /// and returns the lines.
+    fn wrap_lines(text: &str, chars: f32) -> Vec<String> {
+        let mut wrapper = build_wrapper();
+        let mut lines = Vec::new();
+        let mut start = 0;
+        for boundary in wrapper.wrap_line(&[LineFragment::text(text)], px(9.6 * chars)) {
+            lines.push(text[start..boundary.ix].to_string());
+            start = boundary.ix;
+        }
+        lines.push(text[start..].to_string());
+        lines
+    }
+
     #[test]
-    fn test_is_word_char() {
+    fn test_wrap_english_between_words() {
+        assert_eq!(
+            wrap_lines("The quick (brown) fox jumps!", 12.),
+            ["The quick ", "(brown) fox ", "jumps!"]
+        );
+    }
+
+    #[test]
+    fn test_wrap_arabic_between_words() {
+        // Upstream split Arabic words anywhere, as its letters were not
+        // "word characters".
+        assert_eq!(
+            wrap_lines("مرحبا بالعالم الجميل", 10.),
+            ["مرحبا ", "بالعالم ", "الجميل"]
+        );
+    }
+
+    #[test]
+    fn test_wrap_hindi_between_words() {
+        assert_eq!(
+            wrap_lines("नमस्ते दुनिया नमस्ते", 8.),
+            ["नमस्ते ", "दुनिया ", "नमस्ते"]
+        );
+    }
+
+    #[test]
+    fn test_wrap_long_hindi_word_between_clusters() {
+        // A word wider than the line splits between grapheme clusters, never
+        // between a consonant and its vowel sign or virama.
+        let text = "क्षत्रियों";
+        let breaks = Breaks::new(text);
+        let lines = wrap_lines(text, 3.);
+        assert!(lines.len() > 1, "{lines:?}");
+        let mut ix = 0;
+        for line in &lines {
+            assert!(breaks.grapheme_at(ix), "{lines:?} splits a cluster at {ix}");
+            ix += line.len();
+        }
+    }
+
+    #[test]
+    fn test_wrap_thai_between_dictionary_words() {
+        // Thai has no spaces between words; upstream split it anywhere.
+        let text = "สวัสดีครับคุณสบายดีไหม";
+        let breaks = Breaks::new(text);
+        let lines = wrap_lines(text, 8.);
+        assert!(lines.len() > 1, "{lines:?}");
+        assert_eq!(lines[0], "สวัสดี");
+        let mut ix = 0;
+        for line in &lines[..lines.len() - 1] {
+            ix += line.len();
+            assert!(breaks.line_break_at(ix), "{lines:?} splits a word at {ix}");
+        }
+    }
+
+    #[test]
+    fn test_wrap_japanese_keeps_closing_marks() {
+        // Japanese may break between characters, but a line never starts
+        // with 。 or 」.
+        let lines = wrap_lines("「日本語」のテキスト。", 5.);
+        assert!(lines.len() > 1, "{lines:?}");
+        for line in &lines {
+            assert!(!line.starts_with(['。', '」']), "{lines:?}");
+        }
+        assert!(
+            lines.iter().all(|line| line.chars().count() <= 5),
+            "{lines:?}"
+        );
+    }
+
+    #[test]
+    fn test_no_break_inside_words() {
+        // Katna: the upstream `is_word_char` test, now checking UAX #14
+        // break opportunities (`line_breaks.rs`) inside each word.
         #[track_caller]
         fn assert_word(word: &str) {
-            for c in word.chars() {
+            let breaks = Breaks::new(word);
+            for (ix, _) in word.char_indices() {
                 assert!(
-                    LineWrapper::is_word_char(c),
-                    "assertion failed for '{}' (unicode 0x{:x})",
-                    c,
-                    c as u32
+                    !breaks.line_break_at(ix),
+                    "unexpected break in '{word}' at byte {ix}"
                 );
             }
         }
 
         #[track_caller]
         fn assert_not_word(word: &str) {
-            let found = word.chars().any(|c| !LineWrapper::is_word_char(c));
-            assert!(found, "assertion failed for '{}'", word);
+            let breaks = Breaks::new(word);
+            let found = word.char_indices().any(|(ix, _)| breaks.line_break_at(ix));
+            assert!(found, "no break in '{}'", word);
         }
 
         assert_word("Hello123");
-        assert_word("non-English");
+        // UAX #14 (and browsers) may break after a hyphen.
+        assert_not_word("non-English");
         assert_word("var_name");
         assert_word("123456");
         assert_word("3.1415");
@@ -1154,6 +1218,7 @@ mod tests {
         assert_word("$variable");
         assert_word("a=1");
         assert_word("Self::is_word_char");
+        assert_word("a=1&b=2");
         assert_word("on;");
         assert_word("more⋯");
         assert_word("won’t");
@@ -1170,7 +1235,6 @@ mod tests {
         assert_word("github.com");
         assert_not_word("zed-industries/zed");
         assert_not_word("zed-industries\\zed");
-        assert_not_word("a=1&b=2");
         assert_not_word("foo?b=2");
 
         // Latin-1 Supplement

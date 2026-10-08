@@ -353,7 +353,9 @@ fn fix_generic_font_families(db: &mut usvg::fontdb::Database) {
     }
 }
 
-#[cfg(test)]
+// Katna: these tests read fonts from Zed's repository, which the published
+// crate does not carry.
+#[cfg(any())]
 mod tests {
     use super::*;
     use usvg::fontdb::{Database, Family, Query};
