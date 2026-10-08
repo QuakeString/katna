@@ -843,6 +843,8 @@ pub struct MailWindow {
     danger: Option<accounts::Danger>,
     /// The question before deleting several lines, or deleting for good.
     delete_ask: Option<delete_ask::DeleteAsk>,
+    /// Mail that failed its sender checks: what the user said of it.
+    sender_checks: reader::sender::SenderState,
     /// The question before turning an app off (Settings > Apps).
     app_off_ask: Option<apps_off::AppOffAsk>,
     /// The right-click menu of an app in the rail.
@@ -860,6 +862,11 @@ pub struct MailWindow {
     /// Bodies being downloaded because their message or an attachment
     /// chip of it was opened.
     downloads: HashMap<MessageId, download::Download>,
+    /// Open messages already handed to the daemon for their Autocrypt key
+    /// (`reader/security.rs`).
+    learned_keys: std::collections::HashSet<MessageId>,
+    /// The popover with a signature's key, or a key to import.
+    key_card: Option<reader::keys::KeyCard>,
     /// The attachment chip waiting for its message to download.
     chip_download: Option<download::ChipDownload>,
     /// Navigation openness at this frame, for the folder rows.
@@ -1176,6 +1183,7 @@ impl MailWindow {
             settings_page: None,
             danger: None,
             delete_ask: None,
+            sender_checks: Default::default(),
             app_off_ask: None,
             rail_menu: None,
             delete_confirmed: false,
@@ -1184,6 +1192,8 @@ impl MailWindow {
             folder_pick: None,
             mail_dragging: Vec::new(),
             downloads: HashMap::new(),
+            learned_keys: Default::default(),
+            key_card: None,
             chip_download: None,
             nav_t: 1.0,
             daemon: None,
@@ -3310,6 +3320,10 @@ impl MailWindow {
             self.set_app_on(app, true, cx);
             return;
         }
+        if let Command::RemoveKeys(fingerprints) = undo {
+            self.remove_imported_keys(fingerprints, cx);
+            return;
+        }
         if let Command::ShowDetails(details) = undo {
             self.show_snackbar_for(details, None, FAILURE_TIME, cx);
             return;
@@ -4136,6 +4150,7 @@ impl Render for MailWindow {
         let summary_peek = self.render_summary_peek(&th, window, cx);
         let contact_sheet = self.render_contact_sheet(&th, window, cx);
         let contact_peek = self.render_contact_peek(&th, window, cx);
+        let key_card = self.render_key_card(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
         // An account's own color, from Settings > Accounts or its
         // right-click menu.
@@ -4156,6 +4171,7 @@ impl Render for MailWindow {
             self.render_crash_notice(&th, window, reduce, cx)
         };
         let password_card = self.render_password_card(&th, window, cx);
+        let link_ask = self.render_link_ask(&th, window, cx);
         let tour = self.render_tour(&th, window, cx);
         // GPUI does not clip to the frame's rounded corners, so the
         // backdrop rounds its own bottom ones.
@@ -4203,6 +4219,7 @@ impl Render for MailWindow {
             .children(context_menu)
             .children(contact_sheet)
             .children(contact_peek)
+            .children(key_card)
             .children(nav_menu)
             .children(rail_menu)
             .children(snooze_menu)
@@ -4219,6 +4236,7 @@ impl Render for MailWindow {
             .children(contact_qr)
             .children(crash_notice)
             .children(password_card)
+            .children(link_ask)
             .children(whats_new)
             .children(shortcuts_dialog)
             .children(palette)

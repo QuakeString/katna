@@ -745,6 +745,14 @@ macro_rules! pim_interface {
                 Ok(self.daemon.sender_picture(&address).await?)
             }
 
+            async fn learn_key(&self, message: i64) -> fdo::Result<()> {
+                Ok(self.daemon.learn_key(MessageId(message)).await?)
+            }
+
+            async fn look_up_key(&self, address: String) -> fdo::Result<String> {
+                Ok(self.daemon.look_up_key(&address).await?)
+            }
+
             async fn company_of(&self, address: String, website: String) -> fdo::Result<String> {
                 Ok(self.daemon.company_of(&address, &website).await?)
             }

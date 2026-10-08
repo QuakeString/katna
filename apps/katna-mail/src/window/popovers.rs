@@ -248,6 +248,7 @@ impl MailWindow {
             || self.close_quiet_menu(cx)
             || self.close_danger(cx)
             || self.close_password_card(cx)
+            || self.close_link_ask(cx)
         {
             true
         } else if self.print_preview_open() {
@@ -280,6 +281,7 @@ impl MailWindow {
         } else if self.close_gallery(cx)
             || self.dismiss_activity(cx)
             || self.close_seen(cx)
+            || self.close_key_card(cx)
             || self.menu.take().is_some()
             || self.contacts.label_menu.take().is_some()
             || self.files_menu.take().is_some()

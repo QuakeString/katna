@@ -6011,8 +6011,10 @@ dependencies = [
 name = "katna-crypto"
 version = "0.0.0"
 dependencies = [
+ "base64 0.22.1",
  "jiff",
  "mail-parser",
+ "ring",
  "tempfile",
  "tracing",
 ]
@@ -6028,6 +6030,7 @@ dependencies = [
  "jiff",
  "katna-ai",
  "katna-core",
+ "katna-crypto",
  "katna-dav",
  "katna-dbus",
  "katna-i18n",
