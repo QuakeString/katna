@@ -114,6 +114,7 @@ calendar-add-meet = Tinye ọkpụkpọ vidiyo Google Meet
 calendar-add-teams = Tinye nzukọ Teams
 calendar-has-call = Etinyela ọkpụkpọ vidiyo
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Ogologo ụbọchị
 calendar-more-options = Nhọrọ ndị ọzọ
 calendar-save = Chekwaa

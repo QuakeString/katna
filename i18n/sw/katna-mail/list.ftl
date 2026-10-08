@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } kati ya takriban { $total }
 list-results = Matokeo ya “{ $query }”
 list-results-corrected = Inaonyesha matokeo ya “{ $query }”
 list-search-instead = Badala yake tafuta “{ $query }”
+list-search-no-index = Utafutaji hauko tayari: faharasa bado haijajengwa.
+list-search-not-ready = Utafutaji hauko tayari: { $error }
 list-files-more = +{ $count }
 list-replied = Ulijibu
 
@@ -343,6 +345,11 @@ list-empty-waiting = Hakuna kinachosubiri jibu.
 list-empty-reminders = Hakuna vikumbusho. Bonyeza H kwenye barua ili kuongeza.
 list-first-sync = Inaleta barua zako…
 list-first-sync-detail = Zitaonekana hapa zinapowasili.
+list-store-unreadable = Hifadhi ya barua haikuweza kufunguliwa
+row-no-subject = (hakuna mada)
+row-unknown-sender = (mtumaji asiyejulikana)
+row-to = Kwa:
+row-no-recipients = (hakuna wapokeaji)
 
 ## Mail list: lines
 
@@ -426,6 +433,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = Tafuta barua pepe kutoka kwa { $name }
 menu-make-rule = Unda sheria…
+toast-key-imported = Ufunguo umeletwa
+toast-key-updated = Tayari ulikuwa na ufunguo huu; sasa umesasishwa
+toast-key-removed = Ufunguo umeondolewa
+toast-key-not-removed = Ufunguo haukuweza kuondolewa
+toast-fingerprint-copied = Alama ya kidole imenakiliwa
 
 ## Snackbar after an action on mail in the list
 

@@ -55,6 +55,7 @@ reader-details-subject = mada:
 
 reader-downloading = Inapakua ujumbe huu kutoka kwenye seva…
 reader-download-failed = Imeshindwa kupakua ujumbe huu.
+reader-download-failed-reason = Imeshindwa kupakua ujumbe huu. { $reason }
 reader-download-offline = Akaunti hii iko nje ya mtandao. Rudi mtandaoni ili kupakua ujumbe huu.
 reader-try-again = Jaribu tena
 
@@ -90,6 +91,52 @@ security-missing-key = Imetiwa sahihi kwa ufunguo usio nao, kwa hivyo haiwezi ku
 security-missing-key-id = Imetiwa sahihi kwa ufunguo usio nao ({ $key }), kwa hivyo haiwezi kukaguliwa
 security-signature-unavailable = Imetiwa sahihi; sakinisha { $tool } ili kukagua sahihi
 security-signature-error = Sahihi haikuweza kukaguliwa.
+security-look-up-key = Tafuta ufunguo
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Sahihi imethibitishwa
+key-card-verified-detail = Sahihi ni nzuri na unauamini ufunguo huu.
+key-card-unverified = Sahihi haijathibitishwa
+key-card-unverified-detail = Sahihi ni nzuri, lakini hakuna kinachothibitisha kuwa ufunguo ni wake. Linganisha alama ya kidole naye, kisha uamini ufunguo katika GnuPG (Kleopatra au gpg --edit-key).
+key-card-not-sender = Imetiwa sahihi na mtu mwingine
+key-card-not-sender-detail = Sahihi ni nzuri, lakini ufunguo si wa mtumaji.
+key-card-untrusted = Ufunguo hauaminiki
+key-card-untrusted-detail = Uliutia alama ufunguo huu kuwa hauaminiki katika GnuPG.
+key-card-signature-expired = Muda wa sahihi umeisha
+key-card-signature-expired-detail = Sahihi ilikuwa nzuri, lakini muda wake umeisha.
+key-card-key-expired = Muda wa ufunguo umeisha
+key-card-key-expired-detail = Sahihi ni nzuri, lakini muda wa ufunguo umeisha tangu hapo.
+key-card-key-revoked = Ufunguo umebatilishwa
+key-card-key-revoked-detail = Mmiliki wake aliubatilisha ufunguo huu, kwa hivyo sahihi haiwezi kuaminiwa.
+key-card-bad = Sahihi mbaya
+key-card-bad-detail = Ujumbe huu ulibadilishwa baada ya kutiwa sahihi, au sahihi ni ya kughushi.
+key-card-signed-by = Imetiwa sahihi na
+key-card-belongs-to = Ni wa
+key-card-fingerprint = Alama ya kidole
+key-card-signed = Imetiwa sahihi
+key-card-key = Ufunguo
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Uliundwa
+key-card-expires = Muda unaisha
+key-card-never = Kamwe
+key-card-issued-by = Umetolewa na
+key-card-found-in = Umepatikana katika
+key-card-keyring = Keyring yako ya GnuPG
+key-card-copy = Nakili alama ya kidole
+key-card-import-title = Uulete ufunguo huu?
+key-card-from-directory = Umepatikana katika saraka ya funguo ya { $domain }.
+key-card-from-attachment = Kutoka kwenye kiambatisho { $name }.
+key-card-import-note = Kisha Katna inaweza kukagua sahihi za mtu huyu na kusimba barua kwake. Ili kuuamini ufunguo kikamilifu, linganisha alama ya kidole naye.
+key-card-cancel = Ghairi
+key-card-import = Leta ufunguo
+key-card-looking-up = Inatafuta ufunguo…
+key-card-looking-up-detail = Inauliza saraka ya funguo ya { $domain }.
+key-card-not-found = Hakuna ufunguo uliopatikana
+key-card-not-found-detail = { $domain } haichapishi ufunguo wa anwani hii. Mwombe mtumaji akutumie wake.
+key-card-not-kept = Ufunguo uliopatikana hauwezi kutumika.
+key-card-failed = Haikuweza kupata ufunguo
 tracking-opened = { $who } ameufungua { $count ->
     [one] mara moja
    *[other] mara { $count }

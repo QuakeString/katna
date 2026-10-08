@@ -61,3 +61,13 @@ search-dates-month-back = Vorige maand
 search-dates-month-on = Volgende maand
 search-dates-year-back = Vorige jaar
 search-dates-year-on = Volgende jaar
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Meer resultate op bediener
+search-server-searching = Soek tans e-pos op die bediener…
+search-server-empty-searching = Nog niks hier nie. Soek tans e-pos op die bediener…
+search-server-nothing = Geen verdere resultate op die bediener nie
+search-server-failed = Kon nie die bediener deursoek nie.
+search-server-again = Probeer weer

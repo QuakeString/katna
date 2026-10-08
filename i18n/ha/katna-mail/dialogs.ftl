@@ -6,6 +6,7 @@
 
 about-tooltip = Game da Katna
 about-tagline = Wasiƙu da kalanda don teburin Linux
+about-version = Katna Mail { $version }
 about-copy-version = Kwafi bayanan siga
 about-version-copied = An kwafa
 about-version-built = An gina: { $date }

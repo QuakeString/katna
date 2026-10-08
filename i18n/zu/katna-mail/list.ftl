@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } kokucishe kube ngu-{ $total }
 list-results = Imiphumela ye-“{ $query }”
 list-results-corrected = Kuboniswa imiphumela ye-“{ $query }”
 list-search-instead = Esikhundleni salokho sesha u-“{ $query }”
+list-search-no-index = Usesho alukakulungeli: inkomba ayikakhiwa.
+list-search-not-ready = Usesho alukakulungeli: { $error }
 list-files-more = +{ $count }
 list-replied = Uphendulile
 
@@ -343,6 +345,11 @@ list-empty-waiting = Akukho okulinde impendulo.
 list-empty-reminders = Azikho izikhumbuzo. Cindezela u-H kumeyili ukuze wengeze esisodwa.
 list-first-sync = Kulandwa imeyili yakho…
 list-first-sync-detail = Izovela lapha njengoba ifika.
+list-store-unreadable = Isitolo semeyili asikwazanga ukuvulwa
+row-no-subject = (asikho isihloko)
+row-unknown-sender = (umthumeli ongaziwa)
+row-to = Kuya ku:
+row-no-recipients = (abekho abamukeli)
 
 ## Mail list: lines
 
@@ -426,6 +433,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = Thola ama-imeyili avela ku-{ $name }
 menu-make-rule = Yenza umthetho…
+toast-key-imported = Ukhiye ungenisiwe
+toast-key-updated = Ubusunawo lo khiye; manje usubuyekeziwe
+toast-key-removed = Ukhiye ususiwe
+toast-key-not-removed = Ukhiye awukwazanga ukususwa
+toast-fingerprint-copied = I-fingerprint ikopishiwe
 
 ## Snackbar after an action on mail in the list
 

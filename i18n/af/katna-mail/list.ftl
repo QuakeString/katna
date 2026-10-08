@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } van ongeveer { $total }
 list-results = Resultate vir “{ $query }”
 list-results-corrected = Wys resultate vir “{ $query }”
 list-search-instead = Soek eerder vir “{ $query }”
+list-search-no-index = Soek is nie gereed nie: die indeks is nog nie gebou nie.
+list-search-not-ready = Soek is nie gereed nie: { $error }
 list-files-more = +{ $count }
 list-replied = Jy het geantwoord
 
@@ -343,6 +345,11 @@ list-empty-waiting = Niks wag vir 'n antwoord nie.
 list-empty-reminders = Geen herinneringe nie. Druk H op 'n e-pos om een by te voeg.
 list-first-sync = Kry tans jou e-pos…
 list-first-sync-detail = Dit verskyn hier soos dit aankom.
+list-store-unreadable = Die e-posstoor kon nie oopgemaak word nie
+row-no-subject = (geen onderwerp)
+row-unknown-sender = (onbekende sender)
+row-to = Aan:
+row-no-recipients = (geen ontvangers)
 
 ## Mail list: lines
 
@@ -426,6 +433,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = Vind e-posse van { $name }
 menu-make-rule = Maak 'n reël…
+toast-key-imported = Sleutel ingevoer
+toast-key-updated = Jy het hierdie sleutel reeds gehad; dit is nou op datum
+toast-key-removed = Sleutel verwyder
+toast-key-not-removed = Die sleutel kon nie verwyder word nie
+toast-fingerprint-copied = Vingerafdruk gekopieer
 
 ## Snackbar after an action on mail in the list
 

@@ -116,6 +116,7 @@ calendar-add-meet = Ongeza mkutano wa video wa Google Meet
 calendar-add-teams = Ongeza mkutano wa Teams
 calendar-has-call = Simu ya video imeongezwa
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Siku nzima
 calendar-more-options = Chaguo zaidi
 calendar-save = Hifadhi

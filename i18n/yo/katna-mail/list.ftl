@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } nínú bí { $total }
 list-results = Àbájáde fún “{ $query }”
 list-results-corrected = Ó ń fi àbájáde hàn fún “{ $query }”
 list-search-instead = Ṣàwárí “{ $query }” dípò
+list-search-no-index = Àwárí kò tíì ṣetán: a kò tíì kọ́ atọ́ka rẹ̀.
+list-search-not-ready = Àwárí kò tíì ṣetán: { $error }
 list-files-more = +{ $count }
 list-replied = O ti fèsì
 
@@ -193,6 +195,11 @@ list-empty-waiting = Kò sí ohun tó ń dúró de èsì.
 list-empty-reminders = Kò sí ìránnilétí. Tẹ H lórí lẹ́tà kan láti fi ọ̀kan kún un.
 list-first-sync = À ń gba lẹ́tà rẹ…
 list-first-sync-detail = Wọn yóò hàn níbí bí wọ́n ṣe ń dé.
+list-store-unreadable = A kò lè ṣí ibi ìpamọ́ lẹ́tà
+row-no-subject = (kò sí àkọlé)
+row-unknown-sender = (olùfiránṣẹ́ àìmọ̀)
+row-to = Sí:
+row-no-recipients = (kò sí olùgbà)
 
 ## Mail list: lines
 
@@ -270,6 +277,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = Wá àwọn ímeèlì láti ọ̀dọ̀ { $name }
 menu-make-rule = Ṣe òfin kan…
+toast-key-imported = A ti gbé kọ́kọ́rọ́ náà wọlé
+toast-key-updated = O ti ní kọ́kọ́rọ́ yìí tẹ́lẹ̀; ó ti dé ìwọ̀n tuntun báyìí
+toast-key-removed = A ti yọ kọ́kọ́rọ́ náà kúrò
+toast-key-not-removed = A kò lè yọ kọ́kọ́rọ́ náà kúrò
+toast-fingerprint-copied = A ti ṣẹ̀dà ìtẹ̀ka náà
 
 ## Snackbar after an action on mail in the list
 

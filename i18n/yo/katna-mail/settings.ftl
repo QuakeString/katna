@@ -173,6 +173,7 @@ settings-general-start-at-login = Bẹ̀rẹ̀ Katna nígbà ìwọlé
 settings-general-start-at-login-detail = Ó ń mú lẹ́tà dọ́gba, ó sì ń fi ìfitónilétí lẹ́tà tuntun àti àmì-àwòrán àtẹ hàn, láìṣí fèrèsé
 settings-general-login-window = Ṣí fèrèsé Katna Mail pẹ̀lú
 settings-general-login-window-detail = Fèrèsé náà yóò ṣí pẹ̀lú nígbà ìwọlé
+settings-general-login-entry = Ó ń bẹ̀rẹ̀ nígbà ìwọlé (Ètò > Gbogbogbò > Déskítọ́ọ̀pù)
 settings-general-tray = Fi Katna hàn nínú àtẹ ètò
 settings-general-tray-detail = Pẹ̀lú iye àìkà àti mẹ́nù kan
 settings-general-tray-color = Àmì-àwòrán àtẹ ní àwọ̀

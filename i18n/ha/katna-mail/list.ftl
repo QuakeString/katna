@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } cikin kusan { $total }
 list-results = Sakamakon “{ $query }”
 list-results-corrected = Ana nuna sakamakon “{ $query }”
 list-search-instead = Maimakon haka bincika “{ $query }”
+list-search-no-index = Bincike bai shirya ba: ba a gina fihirisar ba tukuna.
+list-search-not-ready = Bincike bai shirya ba: { $error }
 list-files-more = +{ $count }
 list-replied = Kun amsa
 
@@ -343,6 +345,11 @@ list-empty-waiting = Babu abin da ke jiran amsa.
 list-empty-reminders = Babu tunatarwa. Danna H a kan wasiƙa don ƙara ɗaya.
 list-first-sync = Ana samo wasiƙunku…
 list-first-sync-detail = Za su bayyana a nan yayin da suke isowa.
+list-store-unreadable = Ba a iya buɗe ma'ajiyar wasiƙu ba
+row-no-subject = (babu jigo)
+row-unknown-sender = (mai aikawa da ba a sani ba)
+row-to = Zuwa:
+row-no-recipients = (babu masu karɓa)
 
 ## Mail list: lines
 
@@ -426,6 +433,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = Nemo imel daga { $name }
 menu-make-rule = Yi ƙa'ida…
+toast-key-imported = An shigo da maɓalli
+toast-key-updated = Kuna da wannan maɓalli tun da farko; yanzu an sabunta shi
+toast-key-removed = An cire maɓalli
+toast-key-not-removed = Ba a iya cire maɓallin ba
+toast-fingerprint-copied = An kwafi zanen yatsa
 
 ## Snackbar after an action on mail in the list
 

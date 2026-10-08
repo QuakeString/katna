@@ -3552,3 +3552,81 @@ title = "Kieslyste gly in die rekeningkaart"
 text = """
 Die ☰-kieslys en die lys tale gly nou binne-in die rekeningkaart in in plaas daarvan om in te spring, met 'n terugknoppie aan die regterkant om terug te keer.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Elke program sit op dieselfde kaart"
+text = """
+Kalender, Kontakte, Take, Notas en Lêers rus nou op ’n kaart met dieselfde dun rand en sagte skaduwee as E-pos en Instellings.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Vinnige vaslegging-sleutels op GNOME"
+text = """
+Meta+Alt+T vir ’n taak en Meta+Alt+N vir ’n nota werk nou ook op GNOME. Die eerste keer vra GNOME of Katna dit mag hê, en jy kan die sleutels in sy Instellings verander.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Skuif die merkgereedskap"
+text = """
+Wanneer jy ’n PDF merk, sleep die kolletjies aan die einde van die gereedskap om dit enige plek oor die bladsy te skuif, sodat dit nooit bedek wat jy merk nie. Dubbelklik op die kolletjies om dit terug te sit.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Werk met skermlesers"
+text = """
+Orca en ander skermlesers kan nou Katna Mail lees: die e-poslys, die vouers, die oop e-pos, knoppies, kieslyste, skakelaars en dialoë.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Stuur terugvoer"
+text = """
+Hulp > Stuur terugvoer, ook in Vinnige instellings en Instellings > Gebruikersterugvoer, stuur ’n probleem of ’n idee reguit na Katna. Wat gestuur word wys die presiese teks voordat dit gaan, en ’n e-pos vir ’n antwoord is opsioneel.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Anonieme gebruikstatistieke, as jy wil"
+text = """
+Instellings > Gebruikersterugvoer het ’n nuwe skakelaar, af totdat jy dit aanskakel: een keer per week stuur dit watter funksies jy gebruik het, ja of nee, sodat die meeste gebruikte funksies die meeste aandag kry. Die bladsy lys alles wat getel word en wys hierdie week se verslag.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Soek vind ouer e-pos op die bediener"
+text = """
+Ouer e-pos word nie heeltemal afgelaai nie, so soek kan nie sy woorde hier lees nie. Nou, ná ’n kort ruskans in jou tik of wanneer jy Enter druk, vra Katna ook jou e-posbediener en lys wat dit vind onder Meer resultate op bediener.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Soek in Thai, Lao, Khmer en Birmaans"
+text = """
+Soek vind ’n woord in Thai, Lao, Khmer of Birmaanse e-pos selfs waar die sin geen spasies tussen woorde het nie.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Lang reëls breek tussen woorde"
+text = """
+Teks in Arabies, Hindi en ander Indiese skrifte, Thai, Lao, Khmer en Birmaans breek nou tussen woorde in plaas daarvan om ’n woord in die middel te breek, en Chinese en Japannese reëls begin nie meer met ’n sluitteken nie.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "’n Druk vul die hele knoppie"
+text = """
+Wanneer jy op ’n skyfie of ’n omlynde knoppie klik, vul dit dit nou tot by sy eie rand en hoeke, in plaas daarvan om ’n kleiner pil daarin te wys.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Opdragpalet"
+text = """
+Druk Ctrl+Shift+P en tik om enige aksie of instelling te vind, druk dan Enter om dit uit te voer. Elke aksie wys sy kortpadsleutel, en wat jy laaste gebruik het, is bo.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Geënkripteerde e-pos vind sleutels"
+text = """
+Met Enkripteer aan word 'n ontvanger sonder 'n sleutel opgesoek in die sleutelgids van hul eie domein wanneer jy stuur. E-pos wat jy stuur, dra jou publieke sleutel (Autocrypt) wanneer GnuPG een vir jou adres het, en sleutels wat op dieselfde manier aankom, word gebruik om jou antwoorde te enkripteer. Geënkripteerde OpenPGP-e-pos versteek nou sy onderwerp totdat dit oopgemaak word.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Sien wie 'n boodskap onderteken het"
+text = """
+Klik op die handtekeningreël van 'n ondertekende of geënkripteerde boodskap om die ondertekenaar se sleutel te sien: naam, adres, vingerafdruk en datums, met Kopieer vingerafdruk. 'n Boodskap wat onderteken is met 'n sleutel wat jy nie het nie, bied Soek sleutel op, en 'n sleutel wat iemand aanheg, maak oop as Voer hierdie sleutel in? met Ontdoen daarna.
+"""
