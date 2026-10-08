@@ -350,6 +350,8 @@ row-no-subject = (geen onderwerp)
 row-unknown-sender = (onbekende sender)
 row-to = Aan:
 row-no-recipients = (geen ontvangers)
+row-names-separator = {", "}
+row-me = ek
 
 ## Mail list: lines
 

@@ -3679,3 +3679,9 @@ Regs na links in die formateringsbalk (of Ctrl+Shift+X) 'n paragraaf om,
 en 'n reël wat jy in Arabies of Hebreeus begin, draai vanself. Die
 boodskap gaan uit soos jy dit geskryf het.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail spieël vir Arabies, Hebreeus, Persies en Urdu"
+text = """
+In Arabies, Hebreeus, Persies en Urdu draai die hele venster om: die toepassingsbalk en vouers aan die regterkant, kieslyste wat na links oopmaak, pyle en pyltjiesleutels soos die skerm lees. Engelse name, adresse en kortpaaie hou hul eie volgorde, en Persiese datums tel volgens die Sonne-Hijri-kalender.
+"""

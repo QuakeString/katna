@@ -4324,3 +4324,9 @@ nri gaa n'aka ekpe dị n'ogwe nhazi (ma ọ bụ Ctrl+Shift+X) na-atụgharị
 paragraf, ahịrị i bidoro n'Arabic ma ọ bụ Hebrew na-atụgharịkwa n'onwe ya.
 Ozi ahụ na-apụ otú i si dee ya.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail na-atụgharị maka Arabic, Hebrew, Persian na Urdu"
+text = """
+N'Arabic, Hebrew, Persian na Urdu windo niile na-atụgharị: ogwe ngwa na nchekwa ndị dị n'aka nri, menu na-emeghe n'aka ekpe, akụ na mkpịsị akụ na-eso otú e si agụ ihuenyo. Aha, adreesị na ụzọ mkpirisi Bekee na-anọgide n'usoro nke ha, a na-agụkwa ụbọchị Persian na kalenda Hijri nke Anyanwụ.
+"""

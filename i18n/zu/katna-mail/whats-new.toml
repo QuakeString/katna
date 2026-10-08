@@ -4724,3 +4724,9 @@ title = "Imeyili ngesi-Arabhu nesiHebheru ifundeka ngendlela yayo"
 text = """
 Isigaba ngasinye somlayezo manje sifundeka ngendlela yaso: isi-Arabhu, isiHebheru, isiPheshiya nesi-Urdu kusuka kwesokudla, isiNgisi kusuka kwesobunxele, emeyilini efanayo nakunoma yiliphi iwindi. Lapho ubhala, izinkinobho ezithi Kusuka kwesobunxele kuya kwesokudla nethi Kusuka kwesokudla kuya kwesobunxele kwebha yokufometha (noma u-Ctrl+Shift+X) ziphendula isigaba, futhi umugqa owuqala ngesi-Arabhu noma ngesiHebheru uziphendulela ngokwawo. Umlayezo uphuma ngendlela owubhale ngayo.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "I-Katna Mail iyaphenduka ngesi-Arabhu, isiHebheru, isiPheshiya nesi-Urdu"
+text = """
+Ngesi-Arabhu, isiHebheru, isiPheshiya nesi-Urdu iwindi lonke liyaphenduka: ibha yezinhlelo namafolda kwesokudla, amamenyu avuleka ngakwesobunxele, imicibisholo nezinkinobho zemicibisholo zilandela indlela isikrini esifundwa ngayo. Amagama, amakheli nezinqamuleli zesiNgisi zigcina ukuhleleka kwazo, futhi izinsuku zesiPheshiya zibalwa ngekhalenda yeHijri yeLanga.
+"""

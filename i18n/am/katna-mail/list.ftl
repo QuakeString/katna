@@ -350,6 +350,8 @@ row-no-subject = (ርዕሰ ጉዳይ የለም)
 row-unknown-sender = (ያልታወቀ ላኪ)
 row-to = ለ፦
 row-no-recipients = (ተቀባዮች የሉም)
+row-names-separator = {"፣ "}
+row-me = እኔ
 
 ## Mail list: lines
 

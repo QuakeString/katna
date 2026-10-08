@@ -350,6 +350,8 @@ row-no-subject = (babu jigo)
 row-unknown-sender = (mai aikawa da ba a sani ba)
 row-to = Zuwa:
 row-no-recipients = (babu masu karɓa)
+row-names-separator = {", "}
+row-me = ni
 
 ## Mail list: lines
 

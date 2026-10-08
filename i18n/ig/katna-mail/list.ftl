@@ -200,6 +200,8 @@ row-no-subject = (enweghị isiokwu)
 row-unknown-sender = (onye zitere amaghị)
 row-to = Gaa:
 row-no-recipients = (enweghị ndị nnata)
+row-names-separator = {", "}
+row-me = mụ
 
 ## Mail list: lines
 
