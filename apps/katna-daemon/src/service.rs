@@ -174,6 +174,12 @@ macro_rules! pim_interface {
                 Ok(self.daemon.fetch_body(MessageId(message)).await?)
             }
 
+            async fn search_server(&self, query: &str, account: i64) -> fdo::Result<Vec<i64>> {
+                let account = (account != 0).then_some(AccountId(account));
+                let found = self.daemon.search_server(query, account).await?;
+                Ok(found.into_iter().map(|id| id.0).collect())
+            }
+
             async fn set_flags(
                 &self,
                 messages: Vec<i64>,

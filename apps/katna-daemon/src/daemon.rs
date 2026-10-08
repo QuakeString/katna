@@ -67,6 +67,7 @@ mod other_contacts;
 mod reminders;
 mod rules;
 mod rules_server;
+mod server_search;
 
 pub use mutes::MuteOf;
 pub use reminders::{SNOOZED, is_snoozed_path};
