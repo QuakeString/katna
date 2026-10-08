@@ -5992,7 +5992,7 @@ request that touches a migration, not only at release time.
 | Check | What it proves |
 |---|---|
 | Pull-request CI on the tagged commit | `fmt`, `clippy`, tests on Arch and Ubuntu 26.04, `cargo deny`, size budgets |
-| Migration fixtures | A committed `mail.db`, `pim.db` and `blobs.db` of every released schema version migrates to the new one; row counts, threads, categories and a fixed set of queries give the same answers |
+| Migration fixtures | A committed `mail.db`, `pim.db` and `blobs.db` of every released schema version (`crates/katna-store/fixtures/`, written once when a migration is added) migrates to the new one; row counts, integrity, foreign keys, the schema and a fixed set of store reads (`answers.txt`) give the same answers |
 | Upgrade test | In a container: install the previous stable (and the one before it), add an account on the dev servers (Stalwart, Dovecot), sync, queue a send, create organizations and settings; upgrade to the candidate while the daemon runs; check the daemon restarts itself, migrations apply, nothing is re-downloaded or lost, the queued send goes out once, passwords still work |
 | Rollback test | Install the candidate, then the previous stable: it opens the data (expand-then-contract), or restores the backup cleanly |
 | Mixed versions | Old app against new daemon and new app against old daemon over D-Bus |
