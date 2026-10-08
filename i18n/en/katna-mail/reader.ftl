@@ -74,6 +74,9 @@ reader-details-subject = subject:
 
 reader-downloading = Downloading this message from the server…
 reader-download-failed = Could not download this message.
+# A note at the bottom of the window when opening a message failed.
+# $reason: what went wrong, a sentence from the mail server or the service.
+reader-download-failed-reason = Could not download this message. { $reason }
 reader-download-offline = This account is offline. Go online to download this message.
 reader-try-again = Try again
 

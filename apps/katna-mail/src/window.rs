@@ -1606,16 +1606,44 @@ impl MailWindow {
                 expanded: false,
             };
             if outbox > 0 {
-                rows.insert(at, row(compose::OUTBOX_NAV_KEY, "Outbox", outbox));
+                rows.insert(
+                    at,
+                    row(
+                        compose::OUTBOX_NAV_KEY,
+                        &katna_i18n::tr!("folder-outbox"),
+                        outbox,
+                    ),
+                );
             }
             if scheduled > 0 {
-                rows.insert(at, row(compose::SCHEDULED_NAV_KEY, "Scheduled", scheduled));
+                rows.insert(
+                    at,
+                    row(
+                        compose::SCHEDULED_NAV_KEY,
+                        &katna_i18n::tr!("folder-scheduled"),
+                        scheduled,
+                    ),
+                );
             }
             if reminders > 0 {
-                rows.insert(at, row(remind::NAV_KEY, "Reminders", reminders));
+                rows.insert(
+                    at,
+                    row(
+                        remind::NAV_KEY,
+                        &katna_i18n::tr!("folder-reminders"),
+                        reminders,
+                    ),
+                );
             }
             if waiting > 0 {
-                rows.insert(at, row(waiting::NAV_KEY, "Waiting for reply", waiting));
+                rows.insert(
+                    at,
+                    row(
+                        waiting::NAV_KEY,
+                        &katna_i18n::tr!("folder-waiting"),
+                        waiting,
+                    ),
+                );
             }
         }
         rows
@@ -2205,7 +2233,7 @@ impl MailWindow {
             .account()
             .and_then(|account| self.tree.role_folder(account, role))
         else {
-            self.show_snackbar("This account has no such folder.", None, cx);
+            self.show_snackbar(katna_i18n::tr!("folder-not-on-account"), None, cx);
             return;
         };
         self.settings_page = None;
@@ -3549,7 +3577,7 @@ impl MailWindow {
                 div()
                     .text_size(px(22.0))
                     .text_color(rgba(th.text))
-                    .child("The mail store could not be opened"),
+                    .child(katna_i18n::tr!("list-store-unreadable")),
             )
             .child(
                 div()

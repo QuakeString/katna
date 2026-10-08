@@ -874,7 +874,7 @@ impl MailWindow {
                         }
                         this.after_discovery(window, cx);
                     }
-                    Err(err) if err == daemon::NOT_RUNNING => this.add_account_error(err, cx),
+                    Err(err) if err == daemon::not_running() => this.add_account_error(err, cx),
                     Err(err) => {
                         tracing::info!(%err, "no servers found");
                         this.fill_servers(&guess(&address), None, None, cx);

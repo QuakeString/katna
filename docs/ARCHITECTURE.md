@@ -3418,6 +3418,15 @@ A file in `$XDG_DATA_HOME/katna/i18n/<tag>/` is loaded over the built-in
 one message by message, so a reviewer can try a correction without
 building Katna.
 
+The `.desktop` files' names (`Name`, `GenericName`, `Comment`,
+`Keywords` and the actions' `Name`) are messages too, in
+`i18n/<tag>/desktop.ftl`. The checked-in files hold only English and a
+`# i18n: <prefix>` line naming their ids; `packaging/linux/
+localize-desktop.sh` adds a `Name[de]=` line and so on for every
+translated message as `stage.sh` and the PKGBUILD install them, so a
+translator edits only `desktop.ftl` and nobody regenerates files. A test
+in `katna-i18n` fails when a file's English and `desktop.ftl` disagree.
+
 **Choosing the language.**
 
 - **System default** (the default) follows the desktop: the first
