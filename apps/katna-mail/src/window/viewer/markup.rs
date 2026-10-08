@@ -1414,7 +1414,7 @@ fn grip(th: &Theme, cx: &mut Context<Viewer>) -> Stateful<gpui::Div> {
         .flex()
         .items_center()
         .justify_center()
-        .rounded(px(13.0))
+        .rounded_full()
         .cursor_grab()
         .hover(|s| s.bg(rgba(HOVER)))
         .child(icon("drag-handle", INK_DIM, 18.0))
