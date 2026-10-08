@@ -11,6 +11,7 @@ use gpui::{AnyElement, Context, FontWeight, KeyDownEvent, MouseButton, div, prel
 use katna_i18n::tr;
 use katna_platform::dbusmenu::MenuItem;
 use katna_ui::px;
+use katna_ui::tokens::space;
 
 use super::MailWindow;
 use super::MenuKey;
@@ -135,8 +136,8 @@ impl MailWindow {
         let rule = || {
             div()
                 .flex_none()
-                .mx(px(8.0))
-                .my(px(4.0))
+                .mx(px(space::S3))
+                .my(px(space::S2))
                 .h(px(1.0))
                 .bg(rgba(th.divider))
         };

@@ -15,6 +15,7 @@ use gpui::{
     deferred, div, img, prelude::*, rgba,
 };
 use katna_i18n::{Language, Status, tr};
+use katna_ui::tokens::space;
 use katna_ui::{InputEvent, TextInput, px};
 
 use super::settings::Change;
@@ -550,7 +551,7 @@ impl MailWindow {
                 .min_h_0()
                 .flex()
                 .flex_col()
-                .child(div().flex_none().mx(px(8.0)).child(header))
+                .child(div().flex_none().mx(px(space::S3)).child(header))
                 .child(search)
                 .child(list)
                 .children(machine);
