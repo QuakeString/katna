@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Choose your updates"
+text = """
+Settings › General › Updates lets you pick Stable, Beta or Nightly, and says
+what each one means. Moving to a steadier choice never installs an older
+version; you stay where you are until it catches up. A new switch turns off
+the hourly check; Check for Updates still works whenever you press it.
+"""

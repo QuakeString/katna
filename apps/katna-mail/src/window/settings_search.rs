@@ -140,7 +140,7 @@ const ENTRIES: &[Entry] = &[
         Section::General,
         "settings-general-updates",
         "settings-general-updates-summary",
-        "update upgrade new version download install automatic",
+        "update upgrade new version download install automatic channel stable beta nightly check",
     ),
     entry(
         Section::General,
