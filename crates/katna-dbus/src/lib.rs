@@ -792,6 +792,11 @@ macro_rules! pim_proxy {
             /// the next call starts a new one with nothing stored.
             fn delete_all_data(&self) -> zbus::Result<()>;
 
+            /// Stops the daemon once it answers, so the next start runs
+            /// what Katna Mail asked of safe mode in
+            /// `safe-mode-request.toml` (`docs/ARCHITECTURE.md` §21.2).
+            fn restart(&self) -> zbus::Result<()>;
+
             /// Deletes what was downloaded and can be downloaded again: the
             /// bodies and attachments of mail still on its IMAP server, the
             /// search index (rebuilt at once), sender pictures and

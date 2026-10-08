@@ -156,6 +156,11 @@ macro_rules! pim_interface {
                 Ok(self.daemon.delete_all_data().await?)
             }
 
+            async fn restart(&self) -> fdo::Result<()> {
+                self.daemon.restart();
+                Ok(())
+            }
+
             async fn reset_cache(&self) -> fdo::Result<(u64, u64)> {
                 let forgotten = self.daemon.reset_cache().await?;
                 Ok((forgotten.messages as u64, forgotten.bytes))

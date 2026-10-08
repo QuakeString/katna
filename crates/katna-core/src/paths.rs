@@ -164,6 +164,12 @@ impl Paths {
         self.state_dir.join("health.toml")
     }
 
+    /// What Katna Mail asks of the next daemon start in safe mode:
+    /// `$XDG_STATE_HOME/katna/safe-mode-request.toml`.
+    pub fn safe_mode_request_file(&self) -> PathBuf {
+        self.state_dir.join("safe-mode-request.toml")
+    }
+
     /// Crash reports, one text file per crash:
     /// `$XDG_STATE_HOME/katna/crashes/` (`docs/ARCHITECTURE.md` §19.2).
     pub fn crash_dir(&self) -> PathBuf {

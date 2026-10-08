@@ -50,6 +50,10 @@ pub enum Error {
         available: u64,
     },
 
+    /// No backups were made at this time (Unix seconds).
+    #[error("no backup made at {0}")]
+    NoSuchBackup(i64),
+
     /// A read-only database has an older schema; the daemon must migrate it
     /// first.
     #[error("{path}: schema version {found} needs migration to {expected} by katna-daemon")]

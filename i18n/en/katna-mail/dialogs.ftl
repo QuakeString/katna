@@ -66,6 +66,10 @@ about-update-cancel = Not now
 about-changelog = Changelog
 # Opens Katna's source code on the web.
 about-source = Source code
+# Copies a report about Katna's state for a bug report: versions, the
+# check after updates, backups and recent log lines.
+about-debug-report = Copy debug report
+about-debug-report-tip = Versions, the check after updates and recent log lines, for a bug report. No mail or passwords.
 # A button to support the author with a small donation.
 about-coffee = Buy me a coffee
 # A little play inside "Buy me a coffee" when the pointer rests on it: it

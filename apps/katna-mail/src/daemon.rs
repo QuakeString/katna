@@ -75,6 +75,9 @@ pub enum Command {
     /// Takes the keys just imported (by fingerprint) out of the user's
     /// GnuPG keyring again. The app does this itself.
     RemoveKeys(Vec<String>),
+    /// Opens a folder in the file manager: the button of "Restored your
+    /// data". The app does this itself.
+    RevealPath(String),
     /// Shows a server's own words in the note: the button of a note that
     /// said what went wrong in plain ones. The app does this itself.
     ShowDetails(String),
@@ -264,6 +267,7 @@ impl Command {
             | Self::TurnAppOn(_)
             | Self::OpenOutbox
             | Self::RemoveKeys(_)
+            | Self::RevealPath(_)
             | Self::ShowDetails(_)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
@@ -488,6 +492,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         | Command::TurnAppOn(_)
         | Command::OpenOutbox
         | Command::RemoveKeys(_)
+        | Command::RevealPath(_)
         | Command::ShowDetails(_) => {
             return Ok(());
         }
@@ -1416,6 +1421,14 @@ pub async fn delete_folder(connection: &Connection, folder: i64) -> Result<u32, 
     pim.delete_folder(folder)
         .await
         .map_err(|err| describe(&err))
+}
+
+/// Stops the daemon so its next start runs a safe mode request.
+pub async fn restart_daemon(connection: &Connection) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.restart().await.map_err(|err| describe(&err))
 }
 
 /// Has the daemon delete everything Katna keeps on this computer. It exits
