@@ -41,7 +41,7 @@ const MORE_SIZE: f32 = 30.0;
 const TO_TOP_SIZE: f32 = 40.0;
 
 use super::apps::App;
-use super::attachments::kind_badge;
+use super::attachments::file_badge;
 use super::folder_pick::{PickFrom, PickMode};
 use super::layout::FAB_SIZE;
 use super::mail_drag::MailDrag;
@@ -3072,7 +3072,6 @@ impl MailWindow {
         let shown = shown.clamp(1, 3).min(files.len());
         let rest: Vec<RowFile> = files[shown..].to_vec();
         let chip = |n: usize, file: &RowFile| {
-            let kind = katna_preview::kind(&file.mime, &file.name);
             let open = file.clone();
             let downloading = self.chip_downloading(file);
             div()
@@ -3101,7 +3100,7 @@ impl MailWindow {
                     this.open_row_file(&open, window, cx);
                 }))
                 .children(self.chip_fill(file, true, th))
-                .child(kind_badge(kind, 18.0))
+                .child(file_badge(&file.name, &file.mime, 18.0))
                 .child(
                     div()
                         .min_w_0()
@@ -3202,7 +3201,6 @@ impl MailWindow {
         .with_priority(1)
         .into_any_element();
         let items = files.iter().enumerate().map(|(n, file)| {
-            let kind = katna_preview::kind(&file.mime, &file.name);
             let open = file.clone();
             let downloading = self.chip_downloading(file);
             div()
@@ -3221,7 +3219,7 @@ impl MailWindow {
                     this.open_row_file(&open, window, cx);
                 }))
                 .children(self.chip_fill(file, false, th))
-                .child(kind_badge(kind, 20.0))
+                .child(file_badge(&file.name, &file.mime, 20.0))
                 .child(
                     div()
                         .flex_1()

@@ -703,6 +703,17 @@ fn send_signed_and_encrypted_openpgp() {
         "{:?}",
         opened.security
     );
+    let details = opened.security.signatures[0]
+        .details
+        .as_ref()
+        .expect("the key's details");
+    assert_eq!(details.name.as_deref(), Some("Ada Lovelace"));
+    assert_eq!(details.emails, [ADA]);
+    assert!(
+        details
+            .fingerprint
+            .ends_with(opened.security.signatures[0].key.as_deref().unwrap())
+    );
     assert_eq!(
         text_of(&opened.raw).trim(),
         "Grüße,\r\nthis went both ways."
@@ -811,6 +822,13 @@ fn send_smime() {
             "{:?}",
             opened.security
         );
+        let details = opened.security.signatures[0]
+            .details
+            .as_ref()
+            .expect("details");
+        assert_eq!(details.fingerprint, SMIME_FINGERPRINT);
+        assert_eq!(details.name.as_deref(), Some("Bob Tester"));
+        assert!(details.issuer.is_some());
         assert_eq!(
             text_of(&opened.raw).trim(),
             "Grüße,\r\nthis went both ways."
@@ -838,7 +856,10 @@ fn show_import_and_delete_keys() {
     assert!(key_info(&gnupg, Standard::OpenPgp, &key.fingerprint).is_none());
 
     let imported = import_keys(&gnupg, &public).expect("imported");
-    assert_eq!(imported.fingerprints, std::slice::from_ref(&key.fingerprint));
+    assert_eq!(
+        imported.fingerprints,
+        std::slice::from_ref(&key.fingerprint)
+    );
     assert_eq!(imported.new, std::slice::from_ref(&key.fingerprint));
     let info = key_info(&gnupg, Standard::OpenPgp, &key.fingerprint).expect("in the keyring");
     assert_eq!(info.emails, ["dave@example.net"]);

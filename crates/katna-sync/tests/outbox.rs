@@ -703,7 +703,11 @@ fn signed_and_encrypted_mail_is_tracked_per_copy() {
         );
         // Nothing readable on the wire.
         assert!(!copy.message.contains("example.com/p"), "{}", copy.message);
-        assert!(copy.message.contains("Subject: ...\r\n"), "{}", copy.message);
+        assert!(
+            copy.message.contains("Subject: ...\r\n"),
+            "{}",
+            copy.message
+        );
         let raw = copy.message.as_bytes();
         assert_eq!(
             katna_crypto::protection(raw),

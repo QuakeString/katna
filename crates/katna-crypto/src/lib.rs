@@ -135,6 +135,8 @@ pub struct Signature {
     /// The `From` address is one of [`Self::emails`]. A good signature from
     /// someone else is not a signature by the sender.
     pub from_sender: bool,
+    /// The signing key as the keyring lists it; `None` when it is missing.
+    pub details: Option<KeyInfo>,
 }
 
 impl Signature {

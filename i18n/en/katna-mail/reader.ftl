@@ -115,6 +115,59 @@ security-missing-key-id = Signed with a key you don't have ({ $key }), so it can
 # $tool: the program to install, such as "GnuPG (gpg)".
 security-signature-unavailable = Signed; install { $tool } to check the signature
 security-signature-error = The signature could not be checked.
+# A link under "Signed with a key you don't have": asks the sender's own
+# mail domain (its Web Key Directory) for their key.
+security-look-up-key = Look up key
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Verified signature
+key-card-verified-detail = The signature is good and you trust this key.
+key-card-unverified = Signature not verified
+key-card-unverified-detail = The signature is good, but nothing confirms the key is theirs. Compare the fingerprint with them, then trust the key in GnuPG (Kleopatra or gpg --edit-key).
+key-card-not-sender = Signed by someone else
+key-card-not-sender-detail = The signature is good, but the key isn't the sender's.
+key-card-untrusted = Key not trusted
+key-card-untrusted-detail = You marked this key as not trusted in GnuPG.
+key-card-signature-expired = Signature expired
+key-card-signature-expired-detail = The signature was good, but it has expired.
+key-card-key-expired = Key expired
+key-card-key-expired-detail = The signature is good, but the key has expired since.
+key-card-key-revoked = Key revoked
+key-card-key-revoked-detail = Its owner revoked this key, so the signature can't be trusted.
+key-card-bad = Bad signature
+key-card-bad-detail = This message was changed after it was signed, or the signature is forged.
+key-card-signed-by = Signed by
+key-card-belongs-to = Belongs to
+key-card-fingerprint = Fingerprint
+# When the message was signed.
+key-card-signed = Signed
+# The kind of key: "OpenPGP, Ed25519". $standard and $algorithm are names.
+key-card-key = Key
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Created
+key-card-expires = Expires
+key-card-never = Never
+# Who issued an S/MIME certificate.
+key-card-issued-by = Issued by
+key-card-found-in = Found in
+key-card-keyring = Your GnuPG keyring
+key-card-copy = Copy fingerprint
+key-card-import-title = Import this key?
+# $domain: the sender's mail domain, such as "example.org".
+key-card-from-directory = Found in { $domain }'s key directory.
+# $name: the attachment's file name.
+key-card-from-attachment = From the attachment { $name }.
+key-card-import-note = Katna can then check this person's signatures and encrypt mail to them. To trust the key fully, compare the fingerprint with them.
+key-card-cancel = Cancel
+key-card-import = Import key
+key-card-looking-up = Looking up the key…
+key-card-looking-up-detail = Asking { $domain }'s key directory.
+key-card-not-found = No key found
+key-card-not-found-detail = { $domain } doesn't publish a key for this address. Ask the sender to send you theirs.
+key-card-not-kept = The key that was found can't be used.
+key-card-failed = Couldn't get the key
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)

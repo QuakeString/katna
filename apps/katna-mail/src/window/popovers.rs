@@ -272,6 +272,7 @@ impl MailWindow {
         } else if self.close_gallery(cx)
             || self.dismiss_activity(cx)
             || self.close_seen(cx)
+            || self.close_key_card(cx)
             || self.menu.take().is_some()
             || self.contacts.label_menu.take().is_some()
             || self.files_menu.take().is_some()

@@ -72,6 +72,9 @@ pub enum Command {
     /// Opens the outbox: the button of "… wasn't sent". The app does this
     /// itself.
     OpenOutbox,
+    /// Takes the keys just imported (by fingerprint) out of the user's
+    /// GnuPG keyring again. The app does this itself.
+    RemoveKeys(Vec<String>),
     /// Shows a server's own words in the note: the button of a note that
     /// said what went wrong in plain ones. The app does this itself.
     ShowDetails(String),
@@ -260,6 +263,7 @@ impl Command {
             | Self::RestoreScheme(..)
             | Self::TurnAppOn(_)
             | Self::OpenOutbox
+            | Self::RemoveKeys(_)
             | Self::ShowDetails(_)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
@@ -481,6 +485,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         | Command::RestoreScheme(..)
         | Command::TurnAppOn(_)
         | Command::OpenOutbox
+        | Command::RemoveKeys(_)
         | Command::ShowDetails(_) => {
             return Ok(());
         }

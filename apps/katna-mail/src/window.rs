@@ -846,6 +846,8 @@ pub struct MailWindow {
     /// Open messages already handed to the daemon for their Autocrypt key
     /// (`reader/security.rs`).
     learned_keys: std::collections::HashSet<MessageId>,
+    /// The popover with a signature's key, or a key to import.
+    key_card: Option<reader::keys::KeyCard>,
     /// The attachment chip waiting for its message to download.
     chip_download: Option<download::ChipDownload>,
     /// Navigation openness at this frame, for the folder rows.
@@ -1163,6 +1165,7 @@ impl MailWindow {
             mail_dragging: Vec::new(),
             downloads: HashMap::new(),
             learned_keys: Default::default(),
+            key_card: None,
             chip_download: None,
             nav_t: 1.0,
             daemon: None,
@@ -3231,6 +3234,10 @@ impl MailWindow {
             self.set_app_on(app, true, cx);
             return;
         }
+        if let Command::RemoveKeys(fingerprints) = undo {
+            self.remove_imported_keys(fingerprints, cx);
+            return;
+        }
         if let Command::ShowDetails(details) = undo {
             self.show_snackbar_for(details, None, FAILURE_TIME, cx);
             return;
@@ -4053,6 +4060,7 @@ impl Render for MailWindow {
         let summary_peek = self.render_summary_peek(&th, window, cx);
         let contact_sheet = self.render_contact_sheet(&th, window, cx);
         let contact_peek = self.render_contact_peek(&th, window, cx);
+        let key_card = self.render_key_card(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
         // An account's own color, from Settings > Accounts or its
         // right-click menu.
@@ -4120,6 +4128,7 @@ impl Render for MailWindow {
             .children(context_menu)
             .children(contact_sheet)
             .children(contact_peek)
+            .children(key_card)
             .children(nav_menu)
             .children(rail_menu)
             .children(snooze_menu)

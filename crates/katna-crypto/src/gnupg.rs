@@ -7,6 +7,7 @@ use std::io::{self, Write};
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
+use crate::keys::parse_listing;
 use crate::peers::PeerKeys;
 use crate::status::{RawSignature, Status};
 use crate::{Decryption, Failure, Signature, SignatureState, Standard};
@@ -253,11 +254,19 @@ impl Gnupg {
 
     fn signature(&self, standard: Standard, raw: &RawSignature, sender: Option<&str>) -> Signature {
         let state = raw.state.unwrap_or(SignatureState::Error);
-        let key_uids = match (&raw.key, state) {
-            (_, SignatureState::MissingKey | SignatureState::Error) => Vec::new(),
-            (Some(key), _) => self.key_uids(standard, key),
-            (None, _) => Vec::new(),
+        let listing = match (&raw.key, state) {
+            (_, SignatureState::MissingKey | SignatureState::Error) => String::new(),
+            (Some(key), _) => self.key_listing(standard, key),
+            (None, _) => String::new(),
         };
+        let key_uids = uids(&listing);
+        let details = raw.key.as_deref().and_then(|key| {
+            let key = key.to_ascii_uppercase();
+            parse_listing(&listing, standard)
+                .into_iter()
+                .map(|listed| listed.info)
+                .find(|info| info.fingerprint.ends_with(&key))
+        });
         let mut emails: Vec<String> = key_uids
             .iter()
             .chain(raw.uid.as_ref())
@@ -289,31 +298,37 @@ impl Gnupg {
             key: raw.key.clone(),
             created: raw.created,
             validity: raw.validity,
+            details,
         }
     }
 
-    /// The user IDs of `key`, from a colon listing.
-    fn key_uids(&self, standard: Standard, key: &str) -> Vec<String> {
+    /// The colon listing of `key`, or nothing.
+    fn key_listing(&self, standard: Standard, key: &str) -> String {
         // Only a hex fingerprint or key ID goes on the command line.
         if key.is_empty() || !key.bytes().all(|b| b.is_ascii_hexdigit()) {
-            return Vec::new();
+            return String::new();
         }
         let args = [
             OsStr::new("--with-colons"),
             OsStr::new("--list-keys"),
             OsStr::new(key),
         ];
-        let Ok(run) = self.run(standard, &args, b"") else {
-            return Vec::new();
-        };
-        String::from_utf8_lossy(&run.stdout)
-            .lines()
-            .filter(|line| line.starts_with("uid:"))
-            .filter_map(|line| line.split(':').nth(9))
-            .map(unescape_colons)
-            .filter(|uid| !uid.is_empty())
-            .collect()
+        match self.run(standard, &args, b"") {
+            Ok(run) => String::from_utf8_lossy(&run.stdout).into_owned(),
+            Err(_) => String::new(),
+        }
     }
+}
+
+/// The user IDs in a colon listing.
+fn uids(listing: &str) -> Vec<String> {
+    listing
+        .lines()
+        .filter(|line| line.starts_with("uid:"))
+        .filter_map(|line| line.split(':').nth(9))
+        .map(unescape_colons)
+        .filter(|uid| !uid.is_empty())
+        .collect()
 }
 
 /// Options that stop `gpg` fetching a signer's key from the network while
@@ -337,6 +352,7 @@ fn unchecked(state: SignatureState) -> Signature {
         created: None,
         validity: Default::default(),
         from_sender: false,
+        details: None,
     }
 }
 
