@@ -1480,17 +1480,18 @@ impl MailWindow {
         )
     }
 
-    /// A page's card as it rests beside the rail: the cards' hairline edge
-    /// and short shadow, and the faint line around them, as Mail's list
-    /// and agenda have (`docs/DESIGN.md`, Cards). Every app page and
-    /// Settings draw their card here so none misses its edge; on a phone
-    /// the card runs edge to edge with none.
+    /// A page's card beside the rail: the cards' hairline edge and short
+    /// shadow, and the faint line around them, as strong as on Mail's list
+    /// while it has the keys, since the page is the only card on show
+    /// (`docs/DESIGN.md`, Cards). Every app page and Settings draw their
+    /// card here so none misses its edge; on a phone the card runs edge to
+    /// edge with none.
     fn page_frame(&self, th: &Theme, fill: u32, content: impl IntoElement) -> gpui::Div {
         let (radius, outline) = (
             self.layout.shape.card_radius(),
             self.layout.shape.card_outline(),
         );
-        let (shadow, edge) = self.card_edges(0.0, outline);
+        let (shadow, edge) = self.card_edges(1.0, outline);
         div()
             .relative()
             .size_full()
