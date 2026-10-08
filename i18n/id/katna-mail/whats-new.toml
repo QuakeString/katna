@@ -4593,3 +4593,12 @@ bilah format (atau Ctrl+Shift+X) membalik arah paragraf, dan baris yang Anda mul
 dalam bahasa Arab atau Ibrani berbalik dengan sendirinya. Pesan terkirim persis
 seperti yang Anda tulis.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail dicerminkan untuk bahasa Arab, Ibrani, Persia, dan Urdu"
+text = """
+Dalam bahasa Arab, Ibrani, Persia, dan Urdu, seluruh jendela berbalik arah: rel
+aplikasi dan folder di kanan, menu terbuka ke kiri, panah dan tombol panah mengikuti
+arah baca layar. Nama, alamat, dan pintasan berbahasa Inggris tetap dalam urutannya
+sendiri, dan tanggal Persia dihitung dengan kalender Hijriah Matahari.
+"""

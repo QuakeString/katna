@@ -4459,3 +4459,12 @@ cùng một thư và ở mọi cửa sổ. Khi soạn thư, các nút Trái sang
 trên thanh định dạng (hoặc Ctrl+Shift+X) sẽ đổi chiều một đoạn, và dòng bạn bắt đầu
 bằng tiếng Ả Rập hay tiếng Do Thái sẽ tự đổi chiều. Thư được gửi đi đúng như bạn viết.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail lật chiều cho tiếng Ả Rập, Do Thái, Ba Tư và Urdu"
+text = """
+Với tiếng Ả Rập, tiếng Do Thái, tiếng Ba Tư và tiếng Urdu, cả cửa sổ được lật lại:
+thanh ứng dụng và thư mục nằm bên phải, menu mở sang trái, mũi tên và phím mũi tên
+đi theo chiều đọc của màn hình. Tên, địa chỉ và phím tắt tiếng Anh vẫn giữ thứ tự
+của chúng, còn ngày tháng tiếng Ba Tư tính theo lịch Hijri Mặt Trời.
+"""
