@@ -42,6 +42,54 @@ pub struct Health {
     pub starts: Vec<i64>,
     /// Whether the start running now is in safe mode.
     pub safe_mode: bool,
+    /// How many failed starts put it there.
+    pub failed_starts: usize,
+    /// The last restore from a backup, for the note that says so.
+    pub restored: Option<Restored>,
+}
+
+/// A restore from the backups made before an update.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Restored {
+    /// When it was done, in Unix seconds.
+    pub at: i64,
+    /// When the restored copies were made, in Unix seconds.
+    pub from: i64,
+    /// The folder that keeps the data as it was before the restore.
+    pub saved: String,
+    /// What went wrong, if it didn't finish.
+    pub error: Option<String>,
+}
+
+/// What Katna Mail asks of the next daemon start in safe mode, through
+/// `$XDG_STATE_HOME/katna/safe-mode-request.toml`: only the daemon writes
+/// the databases, so the app leaves this and restarts the daemon.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "action", rename_all = "kebab-case")]
+pub enum Request {
+    /// Start normally again: forget the failed starts.
+    TryAgain,
+    /// Restore the databases from the backups made at `from`.
+    Restore { from: i64 },
+}
+
+impl Request {
+    /// Leaves the request for the next start.
+    pub fn write(self, path: &Path) -> Result<()> {
+        let text = toml::to_string(&self)?;
+        if let Some(dir) = path.parent() {
+            fs::create_dir_all(dir).map_err(|err| Error::io(dir, err))?;
+        }
+        fs::write(path, text).map_err(|err| Error::io(path, err))
+    }
+
+    /// Takes the waiting request, if any: it is removed, so it runs once.
+    pub fn take(path: &Path) -> Option<Self> {
+        let text = fs::read_to_string(path).ok()?;
+        let _ = fs::remove_file(path);
+        toml::from_str(&text).ok()
+    }
 }
 
 impl Health {
@@ -82,6 +130,7 @@ impl Health {
         self.starts
             .retain(|&at| now - at < START_WINDOW && at <= now);
         self.safe_mode = self.starts.len() >= FAILED_STARTS;
+        self.failed_starts = if self.safe_mode { self.starts.len() } else { 0 };
         self.starts.push(now);
         self.safe_mode
     }
@@ -147,6 +196,18 @@ mod tests {
         health.checked("r2", 6, bad);
         assert!(!health.healthy);
         assert!(health.needs_check("r2"));
+    }
+
+    #[test]
+    fn a_request_runs_once() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("state/safe-mode-request.toml");
+        assert_eq!(Request::take(&path), None);
+        Request::Restore { from: 42 }.write(&path).unwrap();
+        assert_eq!(Request::take(&path), Some(Request::Restore { from: 42 }));
+        assert_eq!(Request::take(&path), None);
+        Request::TryAgain.write(&path).unwrap();
+        assert_eq!(Request::take(&path), Some(Request::TryAgain));
     }
 
     #[test]
