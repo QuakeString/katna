@@ -14,14 +14,14 @@ use gpui::{
     FontWeight, Hsla, MouseButton, MouseMoveEvent, Pixels, Point, SharedString, Stateful,
     Subscription, Window, canvas, deferred, div, point, prelude::*, rgba,
 };
-use jiff::civil::Date;
-use katna_i18n::{format, tr};
+use katna_i18n::tr;
 use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::rich::{Align, Font, GrammarIssue, List, Pos, RichEditor, Size, TableEdit, html};
 use katna_ui::{InputEvent, TextInput};
 
 use super::super::MailWindow;
+use super::super::date_pick::{DatePick, PickHooks, slide_back};
 use super::checks::{Passed, SendCheck};
 use super::recipients::Field;
 use super::{Mode, follow_up, schedule};
@@ -39,8 +39,6 @@ pub(in crate::window) enum Popup {
     Kind,
     /// Schedule send's suggested times.
     Schedule,
-    /// Schedule send's date and time picker, also when to follow up.
-    PickTime,
     /// Follow up if no reply: when, and remind or send.
     FollowUp,
     Font,
@@ -135,10 +133,11 @@ pub(in crate::window) struct Dialog {
     editing_link: bool,
     pub(super) emoji_search: Entity<TextInput>,
     emoji_group: usize,
-    time: Entity<TextInput>,
-    /// The month the date picker shows.
-    month: Date,
-    day: Date,
+    /// Pick date & time, open in the Schedule send menu or the follow-up
+    /// popover (by `for_follow_up`), in their place.
+    pub(super) pick: Option<DatePick>,
+    /// The menu's times slid back in from the picker.
+    pub(super) back: bool,
     /// The table size under the pointer in the grid.
     grid: (usize, usize),
     /// The name to save the message under as a template.
@@ -162,20 +161,14 @@ impl Dialog {
                 input
             })
         };
-        let today = jiff::Zoned::now().date();
         Dialog {
             link_text: input(String::new(), cx),
             link_url: input("https://".to_owned(), cx),
             editing_link: false,
             emoji_search: input(tr!("compose-tool-emoji-search"), cx),
             emoji_group: 0,
-            time: {
-                let time = input(schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0)), cx);
-                time.update(cx, |t, _| t.set_stepper(Some(schedule::time_stepper())));
-                time
-            },
-            month: today,
-            day: today,
+            pick: None,
+            back: false,
             grid: (0, 0),
             template_name: input(tr!("compose-tool-template-name"), cx),
             for_follow_up: false,
@@ -194,7 +187,6 @@ impl Dialog {
         for (field, submit) in [
             (&self.link_text, Submit::Link),
             (&self.link_url, Submit::Link),
-            (&self.time, Submit::Time),
             (&self.emoji_search, Submit::Emoji),
             (&self.template_name, Submit::Template),
         ] {
@@ -204,7 +196,6 @@ impl Dialog {
                 move |this, _, event: &InputEvent, window, cx| match event {
                     InputEvent::Submit => match submit {
                         Submit::Link => this.apply_link(window, cx),
-                        Submit::Time => this.schedule_picked(window, cx),
                         Submit::Emoji => this.insert_first_emoji(window, cx),
                         Submit::Template => this.save_template(window, cx),
                     },
@@ -224,13 +215,12 @@ const DIALOG_RADIUS: f32 = 16.0;
 
 /// Whether `popup` is a dialog with a text field, which has the keys.
 fn has_field(popup: &Popup) -> bool {
-    matches!(popup, Popup::Link | Popup::PickTime | Popup::SaveTemplate)
+    matches!(popup, Popup::Link | Popup::SaveTemplate)
 }
 
 #[derive(Clone, Copy)]
 enum Submit {
     Link,
-    Time,
     Emoji,
     Template,
 }
@@ -661,6 +651,8 @@ fn shortcut(text: &'static str, th: &Theme) -> gpui::Div {
 impl MailWindow {
     pub(super) fn toggle_popup(&mut self, popup: Popup, cx: &mut Context<Self>) {
         if let Some(c) = &mut self.compose {
+            c.dialog.pick = None;
+            c.dialog.back = false;
             c.popup = if c.popup.as_ref() == Some(&popup) {
                 None
             } else {
@@ -674,6 +666,8 @@ impl MailWindow {
         if let Some(c) = &mut self.compose
             && c.popup.take().is_some()
         {
+            c.dialog.pick = None;
+            c.dialog.back = false;
             window.focus(&c.body.focus_handle(cx), cx);
         }
         cx.notify();
@@ -1033,7 +1027,6 @@ impl MailWindow {
             || matches!(
                 popup,
                 Popup::Link
-                    | Popup::PickTime
                     | Popup::PlainText
                     | Popup::SendCheck { .. }
                     | Popup::DriveShare { .. }
@@ -1141,6 +1134,10 @@ impl MailWindow {
     }
 
     pub(super) fn render_schedule_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        if let Some(picker) = self.render_time_picker(th, cx) {
+            return picker;
+        }
+        let back = self.compose.as_ref().is_some_and(|c| c.dialog.back);
         let now = jiff::Timestamp::now().to_zoned(self.tz.clone());
         let presets = schedule::presets(&now);
         let items = presets.into_iter().enumerate().map(|(ix, preset)| {
@@ -1167,76 +1164,106 @@ impl MailWindow {
         });
         menu(th)
             .w(px(340.0))
-            .child(
+            .when(back, |d| d.overflow_hidden())
+            .child(slide_back(
+                "schedule-menu-back",
+                back,
                 div()
-                    .px(px(24.0))
-                    .pt(px(8.0))
-                    .pb(px(8.0))
-                    .text_size(px(16.0))
-                    .child(tr!("schedule-title")),
-            )
-            .child(
-                div()
-                    .px(px(24.0))
-                    .pb(px(8.0))
-                    .text_size(px(12.0))
-                    .text_color(rgba(th.text_dim))
-                    .child({
-                        let zone = self
-                            .tz
-                            .iana_name()
-                            .map(str::to_owned)
-                            .unwrap_or_else(|| tr!("schedule-local-time"));
-                        // Who sends it: the mail server, or Katna here.
-                        match self.server_holds_mail() {
-                            Some(true) => tr!("schedule-zone-note-server", zone = zone),
-                            Some(false) => tr!("schedule-zone-note-local", zone = zone),
-                            None => tr!("schedule-zone-note", zone = zone),
-                        }
-                    }),
-            )
-            .children(items)
-            .child(menu_divider(th))
-            .child(
-                tool_item("schedule-pick", "calendar", &tr!("schedule-pick"), th).on_click(
-                    cx.listener(|this, _, window, cx| {
-                        if let Some(c) = &mut this.compose {
-                            c.dialog.for_follow_up = false;
-                        }
-                        this.open_time_picker(window, cx)
-                    }),
-                ),
-            )
+                    .flex()
+                    .flex_col()
+                    .child(
+                        div()
+                            .px(px(24.0))
+                            .pt(px(8.0))
+                            .pb(px(8.0))
+                            .text_size(px(16.0))
+                            .child(tr!("schedule-title")),
+                    )
+                    .child(
+                        div()
+                            .px(px(24.0))
+                            .pb(px(8.0))
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_dim))
+                            .child({
+                                let zone = self
+                                    .tz
+                                    .iana_name()
+                                    .map(str::to_owned)
+                                    .unwrap_or_else(|| tr!("schedule-local-time"));
+                                // Who sends it: the mail server, or Katna here.
+                                match self.server_holds_mail() {
+                                    Some(true) => tr!("schedule-zone-note-server", zone = zone),
+                                    Some(false) => tr!("schedule-zone-note-local", zone = zone),
+                                    None => tr!("schedule-zone-note", zone = zone),
+                                }
+                            }),
+                    )
+                    .children(items)
+                    .child(menu_divider(th))
+                    .child(
+                        tool_item("schedule-pick", "calendar", &tr!("schedule-pick"), th).on_click(
+                            cx.listener(|this, _, window, cx| {
+                                if let Some(c) = &mut this.compose {
+                                    c.dialog.for_follow_up = false;
+                                }
+                                this.open_time_picker(window, cx)
+                            }),
+                        ),
+                    ),
+            ))
             .into_any_element()
     }
 
+    /// Opens Pick date & time in place of the Schedule send menu, or of
+    /// the follow-up popover when `for_follow_up`.
     pub(super) fn open_time_picker(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let now = jiff::Timestamp::now().to_zoned(self.tz.clone());
-        let Some(c) = &mut self.compose else {
+        let accent: Hsla = rgba(self.theme(window).accent).into();
+        let Some(c) = &self.compose else {
             return;
         };
-        // A follow-up starts three days on, when working hours begin.
+        // A follow-up starts three days on, when working hours begin, or
+        // at the time picked before.
         let (days, hour) = if c.dialog.for_follow_up {
             (3, 9)
         } else {
             (1, 8)
         };
-        let day = now
-            .date()
-            .checked_add(jiff::Span::new().days(days))
-            .unwrap_or(now.date());
-        c.dialog.day = day;
-        c.dialog.month = day;
-        c.popup = Some(Popup::PickTime);
-        let time = c.dialog.time.clone();
-        time.update(cx, |t, cx| {
-            t.set_text(
-                schedule::clock(jiff::civil::Time::constant(hour, 0, 0, 0)),
-                cx,
-            );
-            t.select_all_text(cx);
-        });
-        window.focus(&time.focus_handle(cx), cx);
+        let (day, time) = match c.follow_up.picked.filter(|_| c.dialog.for_follow_up) {
+            Some(at) => {
+                let at = at.to_zoned(self.tz.clone());
+                (at.date(), at.time())
+            }
+            None => (
+                now.date()
+                    .checked_add(jiff::Span::new().days(days))
+                    .unwrap_or(now.date()),
+                jiff::civil::Time::constant(hour, 0, 0, 0),
+            ),
+        };
+        let hooks = PickHooks {
+            find: |this| this.compose.as_mut().and_then(|c| c.dialog.pick.as_mut()),
+            done: |this, window, cx| this.schedule_picked(window, cx),
+            back: |this, window, cx| this.close_time_picker(window, cx),
+            cancel: |this, window, cx| this.close_popup(window, cx),
+        };
+        let pick = DatePick::new(day, time, accent, hooks, window, cx);
+        if let Some(c) = &mut self.compose {
+            c.dialog.pick = Some(pick);
+            c.dialog.back = false;
+        }
+        cx.notify();
+    }
+
+    /// Slides back from the picker to the menu it opened from.
+    pub(super) fn close_time_picker(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(c) = &mut self.compose
+            && c.dialog.pick.take().is_some()
+        {
+            c.dialog.back = true;
+            window.focus(&c.body.focus_handle(cx), cx);
+        }
         cx.notify();
     }
 
@@ -1245,19 +1272,15 @@ impl MailWindow {
         let Some(c) = &self.compose else {
             return;
         };
-        let text = c.dialog.time.read(cx).text().to_owned();
-        let Some(time) = schedule::parse_time(&text) else {
-            let example = schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0));
-            self.show_snackbar(
-                tr!("schedule-not-a-time", text = text, example = example),
-                None,
-                cx,
-            );
+        let Some(pick) = &c.dialog.pick else {
             return;
         };
-        let Some(at) = schedule::moment(c.dialog.day, time, &self.tz) else {
-            self.show_snackbar(tr!("schedule-no-such-time"), None, cx);
-            return;
+        let at = match pick.moment(&self.tz, cx) {
+            Ok(at) => at,
+            Err(problem) => {
+                self.show_snackbar(problem, None, cx);
+                return;
+            }
         };
         if c.dialog.for_follow_up {
             self.follow_up_picked(at, cx);
@@ -3071,7 +3094,6 @@ impl MailWindow {
         let popup = compose.popup.as_ref()?;
         let card = match popup {
             Popup::Link => self.render_link_dialog(th, cx),
-            Popup::PickTime => self.render_time_picker(th, cx),
             Popup::PlainText => self.render_plain_dialog(th, cx),
             Popup::SaveTemplate => self.render_save_template_dialog(th, cx),
             Popup::SendCheck {
@@ -3381,164 +3403,20 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn render_time_picker(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let Some(compose) = &self.compose else {
-            return div().into_any_element();
+    /// Pick date & time, in place of the menu it was opened from.
+    pub(super) fn render_time_picker(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let c = self.compose.as_ref()?;
+        let pick = c.dialog.pick.as_ref()?;
+        let (title, done) = if c.dialog.for_follow_up {
+            (tr!("follow-up-pick-title"), tr!("follow-up-done"))
+        } else {
+            (tr!("schedule-pick"), tr!("schedule-send"))
         };
-        let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
-        let (month, day) = (compose.dialog.month, compose.dialog.day);
-        let days = schedule::month_grid(month, format::first_weekday())
-            .into_iter()
-            .enumerate()
-            .map(|(ix, date)| {
-                let past = date < today;
-                let selected = date == day;
-                let other = date.month() != month.month();
-                div()
-                    .id(("pick-day", ix))
-                    .size(px(36.0))
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .rounded_full()
-                    .text_size(px(13.0))
-                    .when(other, |d| d.text_color(rgba(th.text_faint)))
-                    .when(past, |d| d.opacity(0.38))
-                    .when(date == today && !selected, |d| {
-                        d.border_1().border_color(rgba(th.accent))
-                    })
-                    .when(selected, |d| {
-                        d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
-                    })
-                    .when(!past, |d| {
-                        d.cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
-                            .on_click(cx.listener(move |this, _, _, cx| {
-                                if let Some(c) = &mut this.compose {
-                                    c.dialog.day = date;
-                                    c.dialog.month = date;
-                                }
-                                cx.notify();
-                            }))
-                    })
-                    .child(format::number(date.day() as u64))
-            })
-            .collect::<Vec<_>>();
-        let step = |months: i32| {
-            move |this: &mut Self, _: &gpui::ClickEvent, _: &mut Window, cx: &mut Context<Self>| {
-                if let Some(c) = &mut this.compose
-                    && let Ok(m) = c
-                        .dialog
-                        .month
-                        .first_of_month()
-                        .checked_add(jiff::Span::new().months(months))
-                {
-                    c.dialog.month = m;
-                }
-                cx.notify();
-            }
-        };
-        let weekdays = format::weekdays_short().into_iter().map(|(_, d)| {
-            div()
-                .size(px(36.0))
-                .flex()
-                .items_center()
-                .justify_center()
-                .text_size(px(12.0))
-                .text_color(rgba(th.text_dim))
-                .child(d)
-        });
-        let (prev, next) = (cx.listener(step(-1)), cx.listener(step(1)));
-        let for_follow_up = compose.dialog.for_follow_up;
-        Self::dialog_card(
-            th,
-            330.0,
-            if for_follow_up {
-                tr!("follow-up-pick-title")
-            } else {
-                tr!("schedule-pick")
-            },
-        )
-        .child(
-            div()
-                .flex()
-                .flex_row()
-                .items_center()
-                .child(
-                    div()
-                        .flex_1()
-                        .text_size(px(14.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .child(format::month_year(month)),
-                )
-                .child(
-                    icon_button("pick-prev", "chevron-left", 20.0, th)
-                        .size(px(32.0))
-                        .on_click(prev),
-                )
-                .child(
-                    icon_button("pick-next", "chevron-right", 20.0, th)
-                        .size(px(32.0))
-                        .on_click(next),
-                ),
-        )
-        .child(
-            div()
-                .mt(px(8.0))
-                .w(px(7.0 * 40.0))
-                .flex()
-                .flex_row()
-                .flex_wrap()
-                .gap_x(px(4.0))
-                .children(weekdays)
-                .children(days),
-        )
-        .child(
-            div()
-                .mt(px(12.0))
-                .flex()
-                .flex_row()
-                .gap(px(12.0))
-                .child(
-                    div()
-                        .flex_1()
-                        .h(px(40.0))
-                        .px(px(12.0))
-                        .flex()
-                        .items_center()
-                        .rounded(px(6.0))
-                        .border_1()
-                        .border_color(rgba(th.outline))
-                        .text_size(px(14.0))
-                        .child(format::day_month_year(
-                            day.to_datetime(jiff::civil::Time::midnight()),
-                        )),
-                )
-                .child(
-                    div()
-                        .w(px(110.0))
-                        .h(px(40.0))
-                        .px(px(12.0))
-                        .flex()
-                        .items_center()
-                        .rounded(px(6.0))
-                        .border_1()
-                        .border_color(rgba(th.accent))
-                        .text_size(px(14.0))
-                        .child(compose.dialog.time.clone()),
-                ),
-        )
-        .child(self.dialog_buttons(
-            th,
-            if for_follow_up {
-                tr!("follow-up-done")
-            } else {
-                tr!("schedule-send")
-            },
-            cx,
-            |this, window, cx| this.schedule_picked(window, cx),
-        ))
-        .into_any_element()
+        Some(self.render_date_pick(pick, title, done, th, cx))
     }
 
     // Signature.

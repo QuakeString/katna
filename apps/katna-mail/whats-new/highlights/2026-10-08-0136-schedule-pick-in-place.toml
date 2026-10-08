@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Schedule send picks a date in place"
+text = """
+Pick date & time in Schedule send and Follow up if no reply now slides
+into the menu you opened it from, like Snooze, instead of a box over the
+message. The back arrow or Esc returns to the times.
+"""

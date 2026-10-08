@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Menus show only what applies"
+text = """
+The More menu no longer lists both halves of a pair. A read mail shows Mark as
+unread, a starred one Remove star, an important one Mark as not important, a
+pinned one Unpin. With several mails selected that differ, you get the action
+that makes them all the same, here and in the right-click menu.
+"""
