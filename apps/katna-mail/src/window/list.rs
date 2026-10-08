@@ -2549,7 +2549,11 @@ impl MailWindow {
                 this.mail_drag_moved(event, cx)
             }))
             .when(self.mail_dragged(key, cx), |d| d.opacity(0.45))
-            .child(Ripple::new(("row-ripple", ix), rgba(th.ripple)).rounded(0.0))
+            // Opening a mail already moves the tint, the cursor and the
+            // conversation, so only a click on the open mail ripples.
+            .when(open, |d| {
+                d.child(Ripple::new(("row-ripple", ix), rgba(th.ripple)).rounded(0.0))
+            })
             // The keyboard cursor: a bar that grows from the middle.
             .child(
                 div()
