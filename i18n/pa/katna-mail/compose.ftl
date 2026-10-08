@@ -21,6 +21,16 @@ compose-hide-trimmed = ਕੱਟੀ ਗਈ ਸਮੱਗਰੀ ਲੁਕਾਓ
 compose-remove-trimmed = ਹਵਾਲੇ ਵਾਲਾ ਟੈਕਸਟ ਹਟਾਓ
 compose-trimmed-removed = ਹਵਾਲੇ ਵਾਲਾ ਟੈਕਸਟ ਹਟਾਇਆ ਗਿਆ
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date } ਨੂੰ { $from } ਨੇ ਲਿਖਿਆ:
+compose-forward-header = ---------- ਅੱਗੇ ਭੇਜਿਆ ਸੁਨੇਹਾ ---------
+compose-forward-from = ਵੱਲੋਂ: { $from }
+compose-forward-date = ਮਿਤੀ: { $date }
+compose-forward-subject = ਵਿਸ਼ਾ: { $subject }
+compose-forward-to = ਨੂੰ: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = ਨੂੰ

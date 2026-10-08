@@ -143,14 +143,14 @@ key-card-failed = की मिळवता आली नाही
 ## of a sender nothing confirmed
 
 sender-failed-title = हा कदाचित { $domain } कडून आलेला नाही
-sender-failed-body = हा { $provider } च्या प्रेषक तपासणीत अयशस्वी झाला. लिंक, संलग्नके आणि उत्तरे यांबाबत सावध राहा.
+sender-failed-body = हा प्रेषक तपासणीत अयशस्वी झाला; ही तपासणी { $provider } करतो. लिंक, संलग्नके आणि उत्तरे यांबाबत सावध राहा.
 sender-provider-unknown = तुमचा मेल प्रदाता
 sender-details = तपशील
 sender-details-hide = तपशील लपवा
 sender-looks-safe = सुरक्षित दिसतो
 sender-move-to-spam = स्पॅममध्ये हलवा
-sender-checked-by = { $provider } ने तपासले
-sender-checked-by-server = { $provider } ने तपासले ({ $server })
+sender-checked-by = तपासणारा: { $provider }
+sender-checked-by-server = तपासणारा: { $provider } ({ $server })
 sender-dmarc = प्रेषकाचे डोमेन (DMARC)
 sender-dkim = स्वाक्षरी (DKIM)
 sender-spf = पाठवणारा सर्व्हर (SPF)
@@ -169,7 +169,7 @@ sender-spf-pass = { $domain } ने सूचीबद्ध केलेल्
 sender-spf-fail = { $domain } ने सूचीबद्ध न केलेल्या सर्व्हरवरून पाठवला.
 sender-spf-none = { $domain } आपले सर्व्हर सूचीबद्ध करत नाही.
 sender-check-unsure = तपासणीतून स्पष्ट उत्तर मिळाले नाही.
-sender-unconfirmed = हा { $domain } कडून आला याची { $provider } खात्री करू शकले नाही. कोणीही कोणताही प्रेषक लिहू शकतो.
+sender-unconfirmed = हा { $domain } कडून आला याची { $provider } खात्री करू शकला नाही. कोणीही कोणताही प्रेषक लिहू शकतो.
 sender-link-title = ही लिंक उघडायची?
 sender-link-body = हा मेल प्रेषक तपासणीत अयशस्वी झाला. ही लिंक { $host } येथे जाते:
 sender-link-cancel = रद्द करा
