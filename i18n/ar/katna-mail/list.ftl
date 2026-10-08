@@ -641,6 +641,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = البحث عن رسائل من { $name }
 menu-make-rule = إنشاء قاعدة…
+toast-key-imported = تم استيراد المفتاح
+toast-key-updated = هذا المفتاح لديك بالفعل، وقد صار محدَّثًا الآن
+toast-key-removed = تمت إزالة المفتاح
+toast-key-not-removed = تعذّرت إزالة المفتاح
+toast-fingerprint-copied = تم نسخ البصمة
 
 ## Snackbar after an action on mail in the list
 

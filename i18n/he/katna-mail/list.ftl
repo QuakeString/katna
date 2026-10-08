@@ -485,6 +485,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = חיפוש הודעות מאת { $name }
 menu-make-rule = יצירת כלל…
+toast-key-imported = המפתח יובא
+toast-key-updated = המפתח הזה כבר היה אצלך; עכשיו הוא מעודכן
+toast-key-removed = המפתח הוסר
+toast-key-not-removed = לא ניתן היה להסיר את המפתח
+toast-fingerprint-copied = טביעת האצבע הועתקה
 
 ## Snackbar after an action on mail in the list
 
