@@ -36,3 +36,7 @@ update-dialog-compare = Сравнить на GitHub
 update-dialog-no-service = Фоновая служба Katna не запущена.
 update-dialog-later = Позже
 update-dialog-close = Закрыть
+restart-updated = Katna обновлена
+restart-button = Перезапустить
+restart-close = Не сейчас
+restart-failed = Не удалось запустить новую Katna Mail: { $error }

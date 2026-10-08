@@ -34,3 +34,7 @@ update-dialog-compare = GitHub'da karşılaştır
 update-dialog-no-service = Katna arka plan hizmeti çalışmıyor.
 update-dialog-later = Sonra
 update-dialog-close = Kapat
+restart-updated = Katna güncellendi
+restart-button = Yeniden başlat
+restart-close = Şimdi değil
+restart-failed = Yeni Katna Mail başlatılamadı: { $error }

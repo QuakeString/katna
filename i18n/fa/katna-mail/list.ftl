@@ -433,6 +433,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = یافتن ایمیل‌های { $name }
 menu-make-rule = ساختن قانون…
+toast-key-imported = کلید وارد شد
+toast-key-updated = این کلید را از قبل داشتید؛ اکنون به‌روز است
+toast-key-removed = کلید حذف شد
+toast-key-not-removed = حذف کلید ممکن نشد
+toast-fingerprint-copied = اثر انگشت کپی شد
 
 ## Snackbar after an action on mail in the list
 
