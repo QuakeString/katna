@@ -2617,6 +2617,27 @@ impl MailWindow {
         }
     }
 
+    /// Duplicate: a copy of signature `id` with everything in it (text,
+    /// HTML, layout, pictures, colour) right after it, opened to edit.
+    fn duplicate_signature(&mut self, id: u32, window: &mut Window, cx: &mut Context<Self>) {
+        let sending = &mut self.config.sending;
+        let Some(at) = sending.signatures.iter().position(|s| s.id == id) else {
+            return;
+        };
+        let mut copy = sending.signatures[at].clone();
+        copy.id = sending.signatures.iter().map(|s| s.id).max().unwrap_or(0) + 1;
+        let name = if copy.name.trim().is_empty() {
+            tr!("settings-compose-untitled")
+        } else {
+            copy.name.trim().to_owned()
+        };
+        copy.name = tr!("settings-compose-signature-copy-name", name = name);
+        let new = copy.id;
+        sending.signatures.insert(at + 1, copy);
+        self.save_config();
+        self.edit_signature(Some(new), window, cx);
+    }
+
     fn delete_signature(&mut self, id: u32, window: &mut Window, cx: &mut Context<Self>) {
         self.config.sending.remove_signature(id);
         self.save_config();
@@ -2889,6 +2910,17 @@ impl MailWindow {
                                 )),
                             )
                         })
+                        .child(
+                            outlined_button(
+                                "page-signature-duplicate",
+                                tr!("settings-compose-signature-duplicate"),
+                                th,
+                            )
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(cx.listener(
+                                move |this, _, window, cx| this.duplicate_signature(id, window, cx),
+                            )),
+                        )
                         .child(
                             outlined_button(
                                 "page-signature-delete",
