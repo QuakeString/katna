@@ -55,6 +55,7 @@ reader-details-subject = ವಿಷಯ:
 
 reader-downloading = ಈ ಸಂದೇಶವನ್ನು ಸರ್ವರ್‌ನಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…
 reader-download-failed = ಈ ಸಂದೇಶವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
+reader-download-failed-reason = ಈ ಸಂದೇಶವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. { $reason }
 reader-download-offline = ಈ ಖಾತೆ ಆಫ್‌ಲೈನ್ ಆಗಿದೆ. ಈ ಸಂದೇಶವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಆನ್‌ಲೈನ್‌ಗೆ ಹೋಗಿ.
 reader-try-again = ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ
 
@@ -90,6 +91,86 @@ security-missing-key = ನಿಮ್ಮ ಬಳಿ ಇಲ್ಲದ ಕೀಯೊಂ
 security-missing-key-id = ನಿಮ್ಮ ಬಳಿ ಇಲ್ಲದ ಕೀಯೊಂದಿಗೆ ({ $key }) ಸಹಿ ಮಾಡಲಾಗಿದೆ, ಆದ್ದರಿಂದ ಅದನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ
 security-signature-unavailable = ಸಹಿ ಮಾಡಲಾಗಿದೆ; ಸಹಿಯನ್ನು ಪರಿಶೀಲಿಸಲು { $tool } ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ
 security-signature-error = ಸಹಿಯನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
+security-look-up-key = ಕೀಯನ್ನು ಹುಡುಕಿ
+
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = ಪರಿಶೀಲಿಸಿದ ಸಹಿ
+key-card-verified-detail = ಸಹಿ ಸರಿಯಾಗಿದೆ ಮತ್ತು ನೀವು ಈ ಕೀಯನ್ನು ನಂಬುತ್ತೀರಿ.
+key-card-unverified = ಸಹಿಯನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿಲ್ಲ
+key-card-unverified-detail = ಸಹಿ ಸರಿಯಾಗಿದೆ, ಆದರೆ ಈ ಕೀ ಅವರದ್ದೇ ಎಂದು ಯಾವುದೂ ದೃಢೀಕರಿಸುವುದಿಲ್ಲ. ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಅವರೊಂದಿಗೆ ಹೋಲಿಸಿ ನೋಡಿ, ನಂತರ GnuPG ಯಲ್ಲಿ ಕೀಯನ್ನು ನಂಬಿ (Kleopatra ಅಥವಾ gpg --edit-key).
+key-card-not-sender = ಬೇರೊಬ್ಬರು ಸಹಿ ಮಾಡಿದ್ದಾರೆ
+key-card-not-sender-detail = ಸಹಿ ಸರಿಯಾಗಿದೆ, ಆದರೆ ಕೀ ಕಳುಹಿಸುವವರದ್ದಲ್ಲ.
+key-card-untrusted = ಕೀ ವಿಶ್ವಾಸಾರ್ಹವಲ್ಲ
+key-card-untrusted-detail = GnuPG ಯಲ್ಲಿ ನೀವು ಈ ಕೀಯನ್ನು ವಿಶ್ವಾಸಾರ್ಹವಲ್ಲ ಎಂದು ಗುರುತಿಸಿದ್ದೀರಿ.
+key-card-signature-expired = ಸಹಿಯ ಅವಧಿ ಮುಗಿದಿದೆ
+key-card-signature-expired-detail = ಸಹಿ ಸರಿಯಾಗಿತ್ತು, ಆದರೆ ಅದರ ಅವಧಿ ಮುಗಿದಿದೆ.
+key-card-key-expired = ಕೀಯ ಅವಧಿ ಮುಗಿದಿದೆ
+key-card-key-expired-detail = ಸಹಿ ಸರಿಯಾಗಿದೆ, ಆದರೆ ಅಂದಿನಿಂದ ಕೀಯ ಅವಧಿ ಮುಗಿದಿದೆ.
+key-card-key-revoked = ಕೀಯನ್ನು ಹಿಂಪಡೆಯಲಾಗಿದೆ
+key-card-key-revoked-detail = ಇದರ ಮಾಲೀಕರು ಈ ಕೀಯನ್ನು ಹಿಂಪಡೆದಿದ್ದಾರೆ, ಆದ್ದರಿಂದ ಸಹಿಯನ್ನು ನಂಬಲು ಸಾಧ್ಯವಿಲ್ಲ.
+key-card-bad = ತಪ್ಪಾದ ಸಹಿ
+key-card-bad-detail = ಈ ಸಂದೇಶಕ್ಕೆ ಸಹಿ ಮಾಡಿದ ನಂತರ ಅದನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ, ಅಥವಾ ಸಹಿ ನಕಲಿಯಾಗಿದೆ.
+key-card-signed-by = ಸಹಿ ಮಾಡಿದವರು
+key-card-belongs-to = ಯಾರಿಗೆ ಸೇರಿದೆ
+key-card-fingerprint = ಫಿಂಗರ್‌ಪ್ರಿಂಟ್
+key-card-signed = ಸಹಿ ಮಾಡಿದ ಸಮಯ
+key-card-key = ಕೀ
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = ರಚಿಸಲಾಗಿದೆ
+key-card-expires = ಅವಧಿ ಮುಗಿಯುವುದು
+key-card-never = ಎಂದಿಗೂ ಇಲ್ಲ
+key-card-issued-by = ನೀಡಿದವರು
+key-card-found-in = ಸಿಕ್ಕಿದ್ದು ಎಲ್ಲಿ
+key-card-keyring = ನಿಮ್ಮ GnuPG ಕೀರಿಂಗ್
+key-card-copy = ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ನಕಲಿಸಿ
+key-card-import-title = ಈ ಕೀಯನ್ನು ಆಮದು ಮಾಡಬೇಕೇ?
+key-card-from-directory = { $domain } ನ ಕೀ ಡೈರೆಕ್ಟರಿಯಲ್ಲಿ ಸಿಕ್ಕಿದೆ.
+key-card-from-attachment = { $name } ಲಗತ್ತಿನಿಂದ.
+key-card-import-note = ನಂತರ Katna ಈ ವ್ಯಕ್ತಿಯ ಸಹಿಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು ಮತ್ತು ಅವರಿಗೆ ಮೇಲ್ ಅನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಬಹುದು. ಕೀಯನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ನಂಬಲು, ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಅವರೊಂದಿಗೆ ಹೋಲಿಸಿ ನೋಡಿ.
+key-card-cancel = ರದ್ದುಮಾಡಿ
+key-card-import = ಕೀಯನ್ನು ಆಮದು ಮಾಡಿ
+key-card-looking-up = ಕೀಯನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ…
+key-card-looking-up-detail = { $domain } ನ ಕೀ ಡೈರೆಕ್ಟರಿಯನ್ನು ಕೇಳಲಾಗುತ್ತಿದೆ.
+key-card-not-found = ಯಾವುದೇ ಕೀ ಸಿಗಲಿಲ್ಲ
+key-card-not-found-detail = ಈ ವಿಳಾಸಕ್ಕೆ { $domain } ಯಾವುದೇ ಕೀಯನ್ನು ಪ್ರಕಟಿಸುವುದಿಲ್ಲ. ಕಳುಹಿಸುವವರಿಗೆ ಅವರ ಕೀಯನ್ನು ನಿಮಗೆ ಕಳುಹಿಸಲು ಕೇಳಿ.
+key-card-not-kept = ಸಿಕ್ಕಿದ ಕೀಯನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ.
+key-card-failed = ಕೀಯನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ
+
+## of a sender nothing confirmed
+
+sender-failed-title = ಇದು { $domain } ನಿಂದ ಬಂದಿರದೇ ಇರಬಹುದು
+sender-failed-body = ಇದು { $provider } ನ ಕಳುಹಿಸುವವರ ಪರಿಶೀಲನೆಗಳಲ್ಲಿ ವಿಫಲವಾಗಿದೆ. ಲಿಂಕ್‌ಗಳು, ಲಗತ್ತುಗಳು ಮತ್ತು ಉತ್ತರಗಳ ಬಗ್ಗೆ ಎಚ್ಚರವಾಗಿರಿ.
+sender-provider-unknown = ನಿಮ್ಮ ಮೇಲ್ ಪೂರೈಕೆದಾರರು
+sender-details = ವಿವರಗಳು
+sender-details-hide = ವಿವರಗಳನ್ನು ಮರೆಮಾಡಿ
+sender-looks-safe = ಸುರಕ್ಷಿತವಾಗಿ ಕಾಣುತ್ತದೆ
+sender-move-to-spam = ಸ್ಪ್ಯಾಮ್‌ಗೆ ಸರಿಸಿ
+sender-checked-by = { $provider } ಪರಿಶೀಲಿಸಿದೆ
+sender-checked-by-server = { $provider } ({ $server }) ಪರಿಶೀಲಿಸಿದೆ
+sender-dmarc = ಕಳುಹಿಸುವವರ ಡೊಮೇನ್ (DMARC)
+sender-dkim = ಸಹಿ (DKIM)
+sender-spf = ಕಳುಹಿಸುವ ಸರ್ವರ್ (SPF)
+sender-result-pass = ಉತ್ತೀರ್ಣ
+sender-result-fail = ವಿಫಲ
+sender-result-unsure = ಖಚಿತವಿಲ್ಲ
+sender-result-none = ಯಾವುದೂ ಇಲ್ಲ
+sender-result-missing = ಪರಿಶೀಲಿಸಿಲ್ಲ
+sender-dmarc-pass = { $domain } ಈ ಕಳುಹಿಸುವವರನ್ನು ದೃಢೀಕರಿಸುತ್ತದೆ.
+sender-dmarc-fail = ತನ್ನ ಮೇಲ್ ಹೇಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಎಂದು { $domain } ಹೇಳುವುದಕ್ಕೆ ಈ ಮೇಲ್ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.
+sender-dmarc-none = { $domain } ತನ್ನ ಮೇಲ್‌ಗೆ ಯಾವುದೇ ನಿಯಮಗಳನ್ನು ಪ್ರಕಟಿಸುವುದಿಲ್ಲ.
+sender-dkim-pass = { $domain } ಸಹಿ ಮಾಡಿದೆ.
+sender-dkim-fail = { $domain } ನ ಸಹಿ ಈ ಮೇಲ್‌ಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.
+sender-dkim-none = ಈ ಸಂದೇಶಕ್ಕೆ ಸಹಿ ಮಾಡಲಾಗಿಲ್ಲ.
+sender-spf-pass = { $domain } ಪಟ್ಟಿ ಮಾಡಿರುವ ಸರ್ವರ್‌ನಿಂದ ಕಳುಹಿಸಲಾಗಿದೆ.
+sender-spf-fail = { $domain } ಪಟ್ಟಿ ಮಾಡದ ಸರ್ವರ್‌ನಿಂದ ಕಳುಹಿಸಲಾಗಿದೆ.
+sender-spf-none = { $domain } ತನ್ನ ಸರ್ವರ್‌ಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವುದಿಲ್ಲ.
+sender-check-unsure = ಈ ಪರಿಶೀಲನೆಗೆ ಸ್ಪಷ್ಟ ಉತ್ತರ ನೀಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
+sender-unconfirmed = ಇದು { $domain } ನಿಂದ ಬಂದಿದೆ ಎಂದು { $provider } ದೃಢೀಕರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಕಳುಹಿಸುವವರ ಹೆಸರನ್ನು ಯಾರು ಬೇಕಾದರೂ ಏನು ಬೇಕಾದರೂ ಬರೆಯಬಹುದು.
+sender-link-title = ಈ ಲಿಂಕ್ ತೆರೆಯಬೇಕೇ?
+sender-link-body = ಈ ಮೇಲ್ ಕಳುಹಿಸುವವರ ಪರಿಶೀಲನೆಗಳಲ್ಲಿ ವಿಫಲವಾಗಿದೆ. ಲಿಂಕ್ ಇಲ್ಲಿಗೆ ಹೋಗುತ್ತದೆ: { $host }
+sender-link-cancel = ರದ್ದುಮಾಡಿ
+sender-link-open = ತೆರೆಯಿರಿ
 
 ## sent message's star, and the line above a read receipt)
 
@@ -119,6 +200,7 @@ tracking-receipt-other = ಓದಿದ ರಸೀದಿ: { $who } ಅವರು ನ
 
 remote-hidden = ಈ ಸಂದೇಶದಲ್ಲಿನ ಚಿತ್ರಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ.
 remote-hidden-unconfirmed = ಚಿತ್ರಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ: ಕಳುಹಿಸುವವರನ್ನು ದೃಢೀಕರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
+remote-hidden-failed = ಚಿತ್ರಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ: ಈ ಮೇಲ್ ಕಳುಹಿಸುವವರ ಪರಿಶೀಲನೆಗಳಲ್ಲಿ ವಿಫಲವಾಗಿದೆ.
 remote-show = ಚಿತ್ರಗಳನ್ನು ತೋರಿಸಿ
 remote-always-show = ಈ ಕಳುಹಿಸುವವರಿಂದ ಯಾವಾಗಲೂ ತೋರಿಸಿ
 remote-picture-use = ಬಳಸಿ

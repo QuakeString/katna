@@ -179,6 +179,7 @@ settings-general-start-at-login = ಲಾಗಿನ್ ಆದಾಗ Katna ಆರ�
 settings-general-start-at-login-detail = ವಿಂಡೋ ತೆರೆಯದೆಯೇ ಮೇಲ್ ಸಿಂಕ್ ಮಾಡುತ್ತದೆ ಮತ್ತು ಹೊಸ ಮೇಲ್ ಅಧಿಸೂಚನೆಗಳು ಹಾಗೂ ಟ್ರೇ ಐಕಾನ್ ತೋರಿಸುತ್ತದೆ
 settings-general-login-window = Katna Mail ವಿಂಡೋವನ್ನೂ ತೆರೆಯಿರಿ
 settings-general-login-window-detail = ಲಾಗಿನ್ ಆದಾಗ ವಿಂಡೋ ಕೂಡ ತೆರೆಯುತ್ತದೆ
+settings-general-login-entry = ಲಾಗಿನ್ ಆದಾಗ ಆರಂಭಿಸಲಾಗಿದೆ (ಸೆಟ್ಟಿಂಗ್‌ಗಳು > ಸಾಮಾನ್ಯ > ಡೆಸ್ಕ್‌ಟಾಪ್)
 settings-general-tray = ಸಿಸ್ಟಂ ಟ್ರೇಯಲ್ಲಿ Katna ತೋರಿಸಿ
 settings-general-tray-detail = ಓದದಿರುವವುಗಳ ಸಂಖ್ಯೆ ಮತ್ತು ಒಂದು ಮೆನುವಿನೊಂದಿಗೆ
 settings-general-tray-color = ಬಣ್ಣದ ಟ್ರೇ ಐಕಾನ್

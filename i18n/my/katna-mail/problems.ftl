@@ -59,3 +59,6 @@ service-details-title = ဝန်ဆောင်မှု မစတင်နိ�
 service-details-body = ဤအရာကို ကူးပြီး သင့်အစီရင်ခံစာနှင့်အတူ ပို့ပါ။ ၎င်းတွင် မေးလ် သို့မဟုတ် စကားဝှက် မပါပါ။
 service-details-copy = ကူးရန်
 service-details-close = ပိတ်ရန်
+service-not-running = Katna နောက်ခံဝန်ဆောင်မှု လည်ပတ်မနေပါ။
+service-no-answer = Katna နောက်ခံဝန်ဆောင်မှု မဖြေကြားပါ- { $error }
+service-no-session = D-Bus ဆက်ရှင် မရှိပါ- { $error }

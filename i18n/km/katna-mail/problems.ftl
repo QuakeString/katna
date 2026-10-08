@@ -59,3 +59,6 @@ service-details-title = មូលហេតុដែលសេវាមិនព�
 service-details-body = ចម្លងវា ហើយផ្ញើជាមួយរបាយការណ៍របស់អ្នក។ វាគ្មានសំបុត្រ ឬពាក្យសម្ងាត់ក្នុងនោះទេ។
 service-details-copy = ចម្លង
 service-details-close = បិទ
+service-not-running = សេវាផ្ទៃខាងក្រោយរបស់ Katna មិនកំពុងដំណើរការទេ។
+service-no-answer = សេវាផ្ទៃខាងក្រោយរបស់ Katna មិនបានឆ្លើយតប៖ { $error }
+service-no-session = គ្មានវគ្គ D-Bus ទេ៖ { $error }

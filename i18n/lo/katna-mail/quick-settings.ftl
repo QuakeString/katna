@@ -41,4 +41,5 @@ quick-help = ຊ່ວຍເຫຼືອ
 quick-tour = ເບິ່ງການແນະນຳ
 quick-whats-new = ມີຫຍັງໃໝ່
 quick-check-updates = ກວດຫາການອັບເດດ
+quick-send-feedback = ສົ່ງຄຳຕິຊົມ
 quick-about = ກ່ຽວກັບ Katna

@@ -65,3 +65,6 @@ service-details-title = സേവനം ആരംഭിക്കാത്തത�
 service-details-body = ഇത് പകർത്തി നിങ്ങളുടെ റിപ്പോർട്ടിനൊപ്പം അയയ്ക്കുക. ഇതിൽ മെയിലോ പാസ്‌വേഡുകളോ ഇല്ല.
 service-details-copy = പകർത്തുക
 service-details-close = അടയ്ക്കുക
+service-not-running = Katna പശ്ചാത്തല സേവനം പ്രവർത്തിക്കുന്നില്ല.
+service-no-answer = Katna പശ്ചാത്തല സേവനം പ്രതികരിച്ചില്ല: { $error }
+service-no-session = D-Bus സെഷൻ ഇല്ല: { $error }

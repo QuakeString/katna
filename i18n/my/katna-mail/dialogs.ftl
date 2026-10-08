@@ -6,6 +6,7 @@
 
 about-tooltip = Katna အကြောင်း
 about-tagline = Linux ဒက်စ်တော့အတွက် မေးလ်နှင့် ပြက္ခဒိန်
+about-version = Katna Mail { $version }
 about-copy-version = ဗားရှင်း အသေးစိတ် ကူးရန်
 about-version-copied = ကူးပြီး
 about-version-built = တည်ဆောက်ချိန်- { $date }

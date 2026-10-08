@@ -179,6 +179,7 @@ settings-general-start-at-login = ലോഗിൻ ചെയ്യുമ്പോ
 settings-general-start-at-login-detail = വിൻഡോ തുറക്കാതെ തന്നെ മെയിൽ സിങ്ക് ചെയ്യുകയും പുതിയ മെയിൽ അറിയിപ്പുകളും ട്രേ ഐക്കണും കാണിക്കുകയും ചെയ്യുന്നു
 settings-general-login-window = Katna Mail വിൻഡോയും തുറക്കുക
 settings-general-login-window-detail = ലോഗിൻ ചെയ്യുമ്പോൾ വിൻഡോയും തുറക്കും
+settings-general-login-entry = ലോഗിൻ ചെയ്യുമ്പോൾ ആരംഭിച്ചു (ക്രമീകരണം > പൊതുവായത് > ഡെസ്‌ക്‌ടോപ്പ്)
 settings-general-tray = സിസ്റ്റം ട്രേയിൽ Katna കാണിക്കുക
 settings-general-tray-detail = വായിക്കാത്തവയുടെ എണ്ണവും ഒരു മെനുവും സഹിതം
 settings-general-tray-color = ട്രേ ഐക്കൺ നിറത്തിൽ

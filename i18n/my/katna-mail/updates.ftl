@@ -32,3 +32,7 @@ update-dialog-compare = GitHub တွင် နှိုင်းယှဉ်ရ
 update-dialog-no-service = Katna နောက်ခံဝန်ဆောင်မှု မလုပ်ဆောင်နေပါ။
 update-dialog-later = နောက်မှ
 update-dialog-close = ပိတ်ရန်
+restart-updated = Katna ကို အပ်ဒိတ်လုပ်ပြီးပါပြီ
+restart-button = ပြန်စတင်ရန်
+restart-close = ယခု မဟုတ်ပါ
+restart-failed = Katna Mail အသစ်ကို စတင်၍ မရပါ- { $error }

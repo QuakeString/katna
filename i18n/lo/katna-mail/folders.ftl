@@ -53,6 +53,7 @@ folder-waiting-short = ລໍຖ້າ
 folder-reminders = ການແຈ້ງເຕືອນ
 folder-outbox = ກ່ອງຈົດໝາຍອອກ
 folder-activity = ກິດຈະກຳ
+folder-not-on-account = ບັນຊີນີ້ບໍ່ມີໂຟນເດີດັ່ງກ່າວ.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

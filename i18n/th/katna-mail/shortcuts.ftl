@@ -70,6 +70,7 @@ shortcut-navigation = แสดงหรือพับเมนู
 shortcut-quick-settings = การตั้งค่าด่วน
 shortcut-settings = การตั้งค่าทั้งหมด
 shortcut-shortcuts = แป้นพิมพ์ลัด
+shortcut-palette = พาเลตต์คำสั่ง
 shortcut-reload = ตรวจหาอีเมลใหม่
 shortcut-quit = ออก
 

@@ -38,6 +38,8 @@ list-range-about = ಸುಮಾರು { $total } ರಲ್ಲಿ { $first }–{ 
 list-results = “{ $query }” ಗಾಗಿ ಫಲಿತಾಂಶಗಳು
 list-results-corrected = “{ $query }” ಗಾಗಿ ಫಲಿತಾಂಶಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ
 list-search-instead = ಬದಲಿಗೆ “{ $query }” ಗಾಗಿ ಹುಡುಕಿ
+list-search-no-index = ಹುಡುಕಾಟ ಸಿದ್ಧವಾಗಿಲ್ಲ: ಸೂಚ್ಯಂಕವನ್ನು ಇನ್ನೂ ನಿರ್ಮಿಸಲಾಗಿಲ್ಲ.
+list-search-not-ready = ಹುಡುಕಾಟ ಸಿದ್ಧವಾಗಿಲ್ಲ: { $error }
 list-files-more = +{ $count }
 list-replied = ನೀವು ಪ್ರತ್ಯುತ್ತರಿಸಿದ್ದೀರಿ
 
@@ -343,9 +345,14 @@ list-empty-waiting = ಉತ್ತರಕ್ಕಾಗಿ ಯಾವುದೂ ಕಾ
 list-empty-reminders = ಯಾವುದೇ ಜ್ಞಾಪನೆಗಳಿಲ್ಲ. ಒಂದನ್ನು ಸೇರಿಸಲು ಮೇಲ್‌ನಲ್ಲಿ H ಒತ್ತಿ.
 list-first-sync = ನಿಮ್ಮ ಮೇಲ್ ಪಡೆಯಲಾಗುತ್ತಿದೆ…
 list-first-sync-detail = ಮೇಲ್ ಬಂದಂತೆ ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ.
+list-store-unreadable = ಮೇಲ್ ಸಂಗ್ರಹವನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ
 
 ## Mail list: lines
 
+row-no-subject = (ವಿಷಯವಿಲ್ಲ)
+row-unknown-sender = (ಅಪರಿಚಿತ ಕಳುಹಿಸುವವರು)
+row-to = ಇವರಿಗೆ:
+row-no-recipients = (ಸ್ವೀಕರಿಸುವವರಿಲ್ಲ)
 row-removed = ಈ ಸಂದೇಶವನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ.
 row-starred = ನಕ್ಷತ್ರ ಹಾಕಲಾಗಿದೆ
 row-not-starred = ನಕ್ಷತ್ರ ಹಾಕಿಲ್ಲ
@@ -425,6 +432,11 @@ menu-make-rule = ನಿಯಮ ರಚಿಸಿ…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = ಕೀಯನ್ನು ಆಮದು ಮಾಡಲಾಗಿದೆ
+toast-key-updated = ಈ ಕೀ ಈಗಾಗಲೇ ನಿಮ್ಮ ಬಳಿ ಇತ್ತು; ಈಗ ಅದು ಅಪ್‌ಡೇಟ್ ಆಗಿದೆ
+toast-key-removed = ಕೀಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ
+toast-key-not-removed = ಕೀಯನ್ನು ತೆಗೆದುಹಾಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ
+toast-fingerprint-copied = ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ನಕಲಿಸಲಾಗಿದೆ
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] ಸಂವಾದವನ್ನು ಆರ್ಕೈವ್ ಮಾಡಲಾಗಿದೆ.

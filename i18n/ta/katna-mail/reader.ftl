@@ -55,6 +55,7 @@ reader-details-subject = பொருள்:
 
 reader-downloading = இந்த மெசேஜை சர்வரிலிருந்து பதிவிறக்குகிறது…
 reader-download-failed = இந்த மெசேஜைப் பதிவிறக்க முடியவில்லை.
+reader-download-failed-reason = இந்த மெசேஜைப் பதிவிறக்க முடியவில்லை. { $reason }
 reader-download-offline = இந்தக் கணக்கு ஆஃப்லைனில் உள்ளது. இந்த மெசேஜைப் பதிவிறக்க ஆன்லைனுக்குச் செல்லுங்கள்.
 reader-try-again = மீண்டும் முயல்க
 
@@ -90,6 +91,86 @@ security-missing-key = உங்களிடம் இல்லாத கீய�
 security-missing-key-id = உங்களிடம் இல்லாத கீயைக் ({ $key }) கொண்டு கையொப்பமிடப்பட்டுள்ளது, எனவே சரிபார்க்க முடியாது
 security-signature-unavailable = கையொப்பமிடப்பட்டது; கையொப்பத்தைச் சரிபார்க்க { $tool } ஐ நிறுவவும்
 security-signature-error = கையொப்பத்தைச் சரிபார்க்க முடியவில்லை.
+security-look-up-key = கீயைத் தேடு
+
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = சரிபார்க்கப்பட்ட கையொப்பம்
+key-card-verified-detail = கையொப்பம் சரியானது, இந்தக் கீயை நீங்கள் நம்புகிறீர்கள்.
+key-card-unverified = கையொப்பம் சரிபார்க்கப்படவில்லை
+key-card-unverified-detail = கையொப்பம் சரியானது, ஆனால் இந்தக் கீ அவருடையது என்பதை எதுவும் உறுதிசெய்யவில்லை. ஃபிங்கர்பிரிண்டை அவருடன் ஒப்பிட்டுப் பார்த்து, பிறகு GnuPG இல் கீயை நம்பகமானதாக அமைக்கவும் (Kleopatra அல்லது gpg --edit-key).
+key-card-not-sender = வேறொருவர் கையொப்பமிட்டது
+key-card-not-sender-detail = கையொப்பம் சரியானது, ஆனால் கீ அனுப்புநருடையது அல்ல.
+key-card-untrusted = கீ நம்பகமானதல்ல
+key-card-untrusted-detail = GnuPG இல் இந்தக் கீயை நம்பகமற்றது என நீங்கள் குறித்துள்ளீர்கள்.
+key-card-signature-expired = கையொப்பம் காலாவதியானது
+key-card-signature-expired-detail = கையொப்பம் சரியாக இருந்தது, ஆனால் அது காலாவதியாகிவிட்டது.
+key-card-key-expired = கீ காலாவதியானது
+key-card-key-expired-detail = கையொப்பம் சரியானது, ஆனால் அதன் பிறகு கீ காலாவதியாகிவிட்டது.
+key-card-key-revoked = கீ திரும்பப்பெறப்பட்டது
+key-card-key-revoked-detail = இந்தக் கீயை அதன் உரிமையாளர் திரும்பப்பெற்றுவிட்டார், எனவே கையொப்பத்தை நம்ப முடியாது.
+key-card-bad = தவறான கையொப்பம்
+key-card-bad-detail = கையொப்பமிட்ட பிறகு இந்த மெசேஜ் மாற்றப்பட்டுள்ளது, அல்லது கையொப்பம் போலியானது.
+key-card-signed-by = கையொப்பமிட்டவர்
+key-card-belongs-to = உரிமையாளர்
+key-card-fingerprint = ஃபிங்கர்பிரிண்ட்
+key-card-signed = கையொப்பமிட்டது
+key-card-key = கீ
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = உருவாக்கப்பட்டது
+key-card-expires = காலாவதியாகும்
+key-card-never = ஒருபோதும் இல்லை
+key-card-issued-by = வழங்கியவர்
+key-card-found-in = கிடைத்த இடம்
+key-card-keyring = உங்கள் GnuPG கீரிங்
+key-card-copy = ஃபிங்கர்பிரிண்டை நகலெடு
+key-card-import-title = இந்தக் கீயை இறக்குமதி செய்யவா?
+key-card-from-directory = { $domain } இன் கீ டைரக்டரியில் கிடைத்தது.
+key-card-from-attachment = { $name } என்ற இணைப்பிலிருந்து.
+key-card-import-note = அதன் பிறகு இவரின் கையொப்பங்களை Katna சரிபார்க்கவும், இவருக்கு அனுப்பும் அஞ்சலை என்க்ரிப்ட் செய்யவும் முடியும். கீயை முழுமையாக நம்ப, ஃபிங்கர்பிரிண்டை அவருடன் ஒப்பிட்டுப் பாருங்கள்.
+key-card-cancel = ரத்துசெய்
+key-card-import = கீயை இறக்குமதி செய்
+key-card-looking-up = கீ தேடப்படுகிறது…
+key-card-looking-up-detail = { $domain } இன் கீ டைரக்டரியிடம் கேட்கப்படுகிறது.
+key-card-not-found = கீ எதுவும் கிடைக்கவில்லை
+key-card-not-found-detail = இந்த முகவரிக்கான கீயை { $domain } வெளியிடவில்லை. அனுப்புநரிடம் அவருடைய கீயை அனுப்பச் சொல்லுங்கள்.
+key-card-not-kept = கிடைத்த கீயைப் பயன்படுத்த முடியாது.
+key-card-failed = கீயைப் பெற முடியவில்லை
+
+## of a sender nothing confirmed
+
+sender-failed-title = இது { $domain } இலிருந்து வராமல் இருக்கலாம்
+sender-failed-body = இது { $provider } இன் அனுப்புநர் சரிபார்ப்புகளில் தோல்வியடைந்தது. லிங்க்குகள், இணைப்புகள், பதில்கள் ஆகியவற்றில் கவனமாக இருங்கள்.
+sender-provider-unknown = உங்கள் அஞ்சல் சேவை வழங்குநர்
+sender-details = விவரங்கள்
+sender-details-hide = விவரங்களை மறை
+sender-looks-safe = பாதுகாப்பாகத் தெரிகிறது
+sender-move-to-spam = ஸ்பேமுக்கு நகர்த்து
+sender-checked-by = { $provider } சரிபார்த்தது
+sender-checked-by-server = { $provider } ({ $server }) சரிபார்த்தது
+sender-dmarc = அனுப்புநர் டொமைன் (DMARC)
+sender-dkim = கையொப்பம் (DKIM)
+sender-spf = அனுப்பும் சர்வர் (SPF)
+sender-result-pass = தேர்ச்சி
+sender-result-fail = தோல்வி
+sender-result-unsure = உறுதியில்லை
+sender-result-none = எதுவுமில்லை
+sender-result-missing = சரிபார்க்கப்படவில்லை
+sender-dmarc-pass = இந்த அனுப்புநரை { $domain } உறுதிசெய்கிறது.
+sender-dmarc-fail = { $domain } தன் அஞ்சல் அனுப்பப்படுவதாகச் சொல்லும் முறையுடன் இந்த அஞ்சல் பொருந்தவில்லை.
+sender-dmarc-none = { $domain } தன் அஞ்சலுக்கு எந்த விதிகளையும் வெளியிடவில்லை.
+sender-dkim-pass = { $domain } கையொப்பமிட்டது.
+sender-dkim-fail = { $domain } இன் கையொப்பம் இந்த அஞ்சலுடன் பொருந்தவில்லை.
+sender-dkim-none = இந்த மெசேஜ் கையொப்பமிடப்படவில்லை.
+sender-spf-pass = { $domain } பட்டியலிடும் சர்வரிலிருந்து அனுப்பப்பட்டது.
+sender-spf-fail = { $domain } பட்டியலிடாத சர்வரிலிருந்து அனுப்பப்பட்டது.
+sender-spf-none = { $domain } தன் சர்வர்களைப் பட்டியலிடவில்லை.
+sender-check-unsure = இந்தச் சரிபார்ப்பால் தெளிவான பதிலைத் தர முடியவில்லை.
+sender-unconfirmed = இது { $domain } இலிருந்து வந்தது என்பதை { $provider } ஆல் உறுதிசெய்ய முடியவில்லை. அனுப்புநர் பெயரை யார் வேண்டுமானாலும் எதுவாகவும் எழுதலாம்.
+sender-link-title = இந்த லிங்க்கைத் திறக்கவா?
+sender-link-body = இந்த அஞ்சல் அனுப்புநர் சரிபார்ப்புகளில் தோல்வியடைந்தது. லிங்க் இங்கே செல்கிறது: { $host }
+sender-link-cancel = ரத்துசெய்
+sender-link-open = திற
 
 ## sent message's star, and the line above a read receipt)
 
@@ -119,6 +200,7 @@ tracking-receipt-other = படித்த ரசீது: { $who } உங்�
 
 remote-hidden = இந்த மெசேஜில் உள்ள படங்கள் மறைக்கப்பட்டுள்ளன.
 remote-hidden-unconfirmed = படங்கள் மறைக்கப்பட்டுள்ளன: அனுப்புநரை உறுதிசெய்ய முடியவில்லை.
+remote-hidden-failed = படங்கள் மறைக்கப்பட்டுள்ளன: இந்த அஞ்சல் அனுப்புநர் சரிபார்ப்புகளில் தோல்வியடைந்தது.
 remote-show = படங்களைக் காட்டு
 remote-always-show = இந்த அனுப்புநரிடமிருந்து எப்போதும் காட்டு
 remote-picture-use = பயன்படுத்து

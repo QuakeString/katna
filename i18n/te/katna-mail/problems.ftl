@@ -65,3 +65,6 @@ service-details-title = సర్వీస్ ఎందుకు ప్రార
 service-details-body = దీన్ని కాపీ చేసి మీ రిపోర్ట్‌తో పంపండి. ఇందులో మెయిల్ గానీ పాస్‌వర్డ్‌లు గానీ ఉండవు.
 service-details-copy = కాపీ చేయండి
 service-details-close = మూసివేయండి
+service-not-running = Katna బ్యాక్‌గ్రౌండ్ సర్వీస్ నడవడం లేదు.
+service-no-answer = Katna బ్యాక్‌గ్రౌండ్ సర్వీస్ స్పందించలేదు: { $error }
+service-no-session = D-Bus సెషన్ లేదు: { $error }
