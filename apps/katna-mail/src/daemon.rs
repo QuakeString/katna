@@ -72,6 +72,9 @@ pub enum Command {
     /// Opens the outbox: the button of "… wasn't sent". The app does this
     /// itself.
     OpenOutbox,
+    /// Takes the keys just imported (by fingerprint) out of the user's
+    /// GnuPG keyring again. The app does this itself.
+    RemoveKeys(Vec<String>),
     /// Shows a server's own words in the note: the button of a note that
     /// said what went wrong in plain ones. The app does this itself.
     ShowDetails(String),
@@ -260,6 +263,7 @@ impl Command {
             | Self::RestoreScheme(..)
             | Self::TurnAppOn(_)
             | Self::OpenOutbox
+            | Self::RemoveKeys(_)
             | Self::ShowDetails(_)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
@@ -293,19 +297,21 @@ impl Command {
 }
 
 /// What [`describe`] says when the daemon is not running.
-pub const NOT_RUNNING: &str = "The Katna background service is not running.";
+pub fn not_running() -> String {
+    katna_i18n::tr!("service-not-running")
+}
 
 /// Why a change could not be sent.
 pub fn describe(err: &katna_dbus::zbus::Error) -> String {
     match err {
         katna_dbus::zbus::Error::MethodError(name, detail, _) => {
             if name.as_str() == "org.freedesktop.DBus.Error.ServiceUnknown" {
-                NOT_RUNNING.to_owned()
+                not_running()
             } else {
                 detail.clone().unwrap_or_else(|| name.to_string())
             }
         }
-        err => format!("The Katna background service did not answer: {err}"),
+        err => katna_i18n::tr!("service-no-answer", error = err.to_string()),
     }
 }
 
@@ -355,7 +361,7 @@ impl AccountState {
 pub async fn connect() -> Result<Connection, String> {
     let connection = katna_dbus::session()
         .await
-        .map_err(|err| format!("No D-Bus session: {err}"))?;
+        .map_err(|err| katna_i18n::tr!("service-no-session", error = err.to_string()))?;
     katna_dbus::ensure_daemon(&connection).await;
     Ok(connection)
 }
@@ -481,6 +487,7 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         | Command::RestoreScheme(..)
         | Command::TurnAppOn(_)
         | Command::OpenOutbox
+        | Command::RemoveKeys(_)
         | Command::ShowDetails(_) => {
             return Ok(());
         }
@@ -1041,6 +1048,28 @@ pub async fn ai_key_saved(connection: &Connection) -> Result<bool, String> {
     pim.ai_key_saved().await.map_err(|err| describe(&err))
 }
 
+/// Has the daemon send feedback from the Send feedback form: `text`
+/// exactly as the form showed it. Returns why it could not be sent.
+pub async fn send_feedback(
+    connection: &Connection,
+    text: &str,
+    kind: &str,
+    reply_to: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let problem = pim
+        .send_feedback(text, kind, reply_to)
+        .await
+        .map_err(|err| describe(&err))?;
+    if problem.is_empty() {
+        Ok(())
+    } else {
+        Err(problem)
+    }
+}
+
 /// The models the user's own AI service `provider` offers to the saved
 /// key, or a `katna_ai::wire::problem`.
 pub async fn ai_models(
@@ -1246,6 +1275,23 @@ pub async fn fetch_image(connection: &Connection, url: &str) -> Result<Vec<u8>, 
         .await
         .map_err(|err| describe(&err))?;
     pim.fetch_image(url).await.map_err(|err| describe(&err))
+}
+
+/// Asks the daemon to keep the Autocrypt key of message `id`, just opened.
+pub async fn learn_key(connection: &Connection, id: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.learn_key(id).await.map_err(|err| describe(&err))
+}
+
+/// Asks the daemon to look up a key for `address` in its Web Key
+/// Directory: its fingerprint, or empty when there is none.
+pub async fn look_up_key(connection: &Connection, address: &str) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.look_up_key(address).await.map_err(|err| describe(&err))
 }
 
 /// Asks the daemon for the picture of the sender `address` (empty: none).

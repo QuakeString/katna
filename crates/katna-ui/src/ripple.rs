@@ -3,7 +3,9 @@
 //! An ink ripple: on press, a circle grows from the pointer and fades, as in
 //! Material Design. Put [`Ripple`] first among the children of a
 //! `relative()` element, and give it the element's corner radius with
-//! [`Ripple::rounded`] (pills and round buttons need nothing).
+//! [`Ripple::rounded`] (pills and round buttons need nothing) and, when
+//! the element has an edge, its width with [`Ripple::border`], so the
+//! wave fills the whole control rather than stopping inside its edge.
 //!
 //! GPUI clips children to a rectangle, not to rounded corners, so the wave
 //! never draws outside the element: it is the circle cut to the element's
@@ -40,6 +42,7 @@ pub struct Ripple {
     color: Hsla,
     centered: bool,
     corners: Corners,
+    border: f32,
 }
 
 impl Ripple {
@@ -50,6 +53,7 @@ impl Ripple {
             color: color.into(),
             centered: false,
             corners: [f32::INFINITY; 4],
+            border: 0.0,
         }
     }
 
@@ -68,6 +72,13 @@ impl Ripple {
     /// The element's corner radii, when they differ.
     pub fn corners(mut self, corners: Corners) -> Self {
         self.corners = corners;
+        self
+    }
+
+    /// The width of the element's edge: the wave reaches out under it to
+    /// the element's outer corners, which [`Ripple::rounded`] gives.
+    pub fn border(mut self, width: f32) -> Self {
+        self.border = width;
         self
     }
 }
@@ -162,10 +173,16 @@ impl RenderOnce for Ripple {
         });
 
         let store = bounds.clone();
+        // Absolute children sit inside the element's edge; step out over
+        // it so the wave covers the control to its outer corners.
+        let out = px(-self.border);
         div()
             .id(self.id)
             .absolute()
-            .inset_0()
+            .top(out)
+            .left(out)
+            .right(out)
+            .bottom(out)
             .child(
                 canvas(move |b, _, _| store.set(b), |_, _, _, _| {})
                     .absolute()

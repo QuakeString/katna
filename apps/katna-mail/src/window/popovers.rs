@@ -248,6 +248,7 @@ impl MailWindow {
             || self.close_quiet_menu(cx)
             || self.close_danger(cx)
             || self.close_password_card(cx)
+            || self.close_link_ask(cx)
         {
             true
         } else if self.print_preview_open() {
@@ -255,6 +256,9 @@ impl MailWindow {
             true
         } else if self.contact_qr_open() {
             self.close_contact_qr(cx);
+            true
+        } else if self.feedback_form_open() {
+            self.close_feedback_form(cx);
             true
         } else if self.share_ask_open() {
             self.close_share_ask(window, cx);
@@ -265,6 +269,9 @@ impl MailWindow {
         } else if self.shortcuts_dialog_open() {
             self.close_shortcuts_dialog(window, cx);
             true
+        } else if self.palette_open() {
+            self.close_palette(window, cx);
+            true
         } else if self.update_dialog_open() {
             self.close_update_dialog(window, cx);
             true
@@ -274,6 +281,7 @@ impl MailWindow {
         } else if self.close_gallery(cx)
             || self.dismiss_activity(cx)
             || self.close_seen(cx)
+            || self.close_key_card(cx)
             || self.menu.take().is_some()
             || self.contacts.label_menu.take().is_some()
             || self.files_menu.take().is_some()
@@ -318,7 +326,9 @@ impl MailWindow {
             || self.contacts.qr.is_some()
             || self.whats_new.is_some()
             || self.shortcuts_dialog.is_some()
+            || self.palette.is_some()
             || self.share_ask.is_some()
+            || self.feedback_form.is_some()
             || self.print_preview.is_some()
             || self.about.is_some()
             || self.tour.is_some()

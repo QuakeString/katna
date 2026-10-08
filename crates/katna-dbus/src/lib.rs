@@ -1305,6 +1305,17 @@ macro_rules! pim_proxy {
             /// user's provider (DMARC or aligned DKIM).
             fn sender_picture(&self, address: &str) -> zbus::Result<Vec<u8>>;
 
+            /// Keeps the Autocrypt key of a message the user opened, to
+            /// encrypt to its sender later; only when the user's provider
+            /// authenticated the message's `From`. Kept apart from the
+            /// user's GnuPG keyring (`Paths::peer_keys_dir`).
+            fn learn_key(&self, message: i64) -> zbus::Result<()>;
+
+            /// Looks up a public key for `address` in its own domain's Web
+            /// Key Directory and keeps it like [`Self::learn_key`]. Returns
+            /// its fingerprint, or empty when there is none.
+            fn look_up_key(&self, address: &str) -> zbus::Result<String>;
+
             /// The company of the person at `address`, as JSON
             /// (`katna_sync::pictures::Company`): the one at `website` (the
             /// site their signature names; may be empty), else the one
@@ -1404,6 +1415,13 @@ macro_rules! pim_proxy {
             /// Reads the settings file again; call after saving settings
             /// the daemon uses (`sync.metered`).
             fn reload_config(&self) -> zbus::Result<()>;
+
+            /// Sends feedback from the Send feedback form: `text` exactly
+            /// as the form showed it, `kind` (`problem`, `idea` or
+            /// `other`) and an optional reply address. Returns why it
+            /// could not be sent, or an empty string once sent.
+            fn send_feedback(&self, text: &str, kind: &str, reply_to: &str)
+            -> zbus::Result<String>;
 
             /// Deletes what app `app` (`calendar`, `contacts`, `tasks`,
             /// `notes` or `files`), turned off, downloaded from the

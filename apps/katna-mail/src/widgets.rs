@@ -545,7 +545,7 @@ pub fn pill_button(
         .cursor_pointer()
         .keeps_press()
         .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
-        .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
+        .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)).border(1.0))
         .child(icon(name, th.text_dim, 20.0))
         .child(
             div()
@@ -673,7 +673,7 @@ pub fn button(id: impl Into<gpui::ElementId>, style: ButtonStyle, th: &Theme) ->
             .border_color(rgba(fade(th.text_faint, 0.7)))
             .text_color(rgba(th.accent))
             .child(Glow::new(("glow", ripple), rgba(th.hover)).fade())
-            .child(Ripple::new(("ripple", ripple), rgba(th.ripple))),
+            .child(Ripple::new(("ripple", ripple), rgba(th.ripple)).border(1.0)),
         ButtonStyle::Text => base
             .px(px(space::S4))
             .gap(px(6.0))
@@ -813,7 +813,11 @@ pub fn choice_chip(
         .cursor_pointer()
         .text_size(px(text::SMALL))
         .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-        .child(Ripple::new(("ripple", ripple), rgba(th.ripple)))
+        .child(
+            Ripple::new(("ripple", ripple), rgba(th.ripple))
+                .rounded(radius::SM)
+                .border(1.0),
+        )
         .when(on, |d| d.child(icon("check", th.nav_selected_text, 16.0)))
         // A long address or name is cut short with "…" rather than
         // running past the row.

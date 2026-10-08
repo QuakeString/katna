@@ -318,7 +318,7 @@ impl MailWindow {
             .child(
                 div()
                     .truncate()
-                    .child(format!("Katna Mail {}", whats_new::VERSION)),
+                    .child(tr!("about-version", version = whats_new::VERSION)),
             )
             .child(self.copy_version_button("settings-version-copy", 24.0, th, cx))
             .into_any_element()
@@ -973,7 +973,7 @@ const COPIED_FOR: Duration = Duration::from_millis(1500);
 /// The version details a bug report wants: Katna Mail's version, when
 /// this build was made and the system it runs on.
 pub(super) fn version_details() -> String {
-    let mut lines = vec![format!("Katna Mail {}", whats_new::VERSION)];
+    let mut lines = vec![tr!("about-version", version = whats_new::VERSION)];
     if let Some(date) =
         whats_new::built().and_then(|unix| format::local(unix, &jiff::tz::TimeZone::system()))
     {
@@ -1107,7 +1107,7 @@ fn header(
                         .child(div().flex_none().w(px((chip_h + space::S1) * (1.0 - t))))
                         .child(
                             pieces
-                                .words(format!("Katna Mail {}", whats_new::VERSION))
+                                .words(tr!("about-version", version = whats_new::VERSION))
                                 .min_w_0()
                                 .truncate()
                                 .px(px(chip_x))

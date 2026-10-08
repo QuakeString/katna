@@ -22,10 +22,12 @@ i18n/
       reader.ftl            the reading pane
       settings.ftl          the Settings page
       …
-    katna-ui.ftl          shared widgets (no messages yet)
+    katna-ui.ftl          shared widgets (the editor's font and picture menus)
     katna-daemon/         the background service: notifications, the
                           tray icon, the file manager's menus
     katna-setup/          Katna Setup, the Windows installer
+    desktop.ftl           names in the app menu, launcher and file manager
+                          (the .desktop files in packaging/)
   bn/                     Bengali: the same folders and files
     katna-mail/whats-new.toml
                           Katna Mail's What's new highlights in Bengali
@@ -53,6 +55,13 @@ language translates them in `<folder>/katna-mail/whats-new.toml`, a table
 per highlight named by its file (`["2026-09-27-0444-about-katna"]`) with
 a `title` and a `text`; one without a table shows in English. See
 `apps/katna-mail/whats-new/README.md`.
+
+The app menu's names (Katna Mail's description, its right-click
+actions such as "New Message", "Send with Katna Mail" in Dolphin) are in
+`<folder>/desktop.ftl`. Each message is one line with no `{ $variable }`;
+`desktop-mail-keywords` is a list of search words, each ending with `;`.
+They are written into the `.desktop` files when Katna is packaged, so
+they show after the next update.
 
 The clock on the desktop panel (Katna Digital Clock for Plasma and the
 GNOME Shell extension, in `integrations/`) uses gettext instead:
@@ -220,6 +229,12 @@ tells translators what each variable holds. A new area gets a new file
 (`compose.ftl`); the build picks up every `.ftl` file in the folder. A
 message's id must be unique across the binary's files. The other
 languages are drafted in a follow-up; until then they show the English
-text. `cargo test -p katna-i18n` checks that every id in the code has an
+text. A `.desktop` file's `Name=`, `GenericName=`, `Comment=` and
+`Keywords=` (and each `[Desktop Action]`'s `Name=`) are messages in
+`i18n/en/desktop.ftl`, named by the file's `# i18n: <prefix>` line:
+`<prefix>-name`, `<prefix>-generic-name`, `<prefix>-comment`,
+`<prefix>-keywords`, `<prefix>-action-<action>`. Change both together;
+`packaging/linux/localize-desktop.sh` adds the other languages' lines
+when packaging, so never write `Name[de]=` by hand. `cargo test -p katna-i18n` checks that every id in the code has an
 English message and that English ids are unique. Dates and numbers go
 through `katna_i18n::format`, never `strftime` or `{}`.

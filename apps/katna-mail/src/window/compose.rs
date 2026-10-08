@@ -2039,7 +2039,14 @@ impl MailWindow {
                 cx,
             );
         }
+        if at.is_some() {
+            self.note_usage(katna_core::usage::Feature::ScheduledSend);
+        }
+        if sealing.encrypt {
+            self.note_usage(katna_core::usage::Feature::Encrypted);
+        }
         let connection = self.daemon.clone();
+        let peers = self.paths.peer_keys_dir();
         let when = at.map(|at| schedule::describe(at, &self.tz));
         let undo = self.config.sending.undo_send_seconds;
         let at = at.map(|at| at.as_second());
@@ -2047,8 +2054,16 @@ impl MailWindow {
             let result = cx
                 .background_executor()
                 .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
                     // Signed and encrypted before the outbox sees it.
-                    let raw = security::seal(raw, sealing, sender.clone(), visible, hidden)?;
+                    let recipients: Vec<String> = visible.iter().chain(&hidden).cloned().collect();
+                    security::look_up_keys(&connection, sealing, &sender, &recipients, &peers)
+                        .await;
+                    let raw =
+                        security::seal(raw, sealing, sender.clone(), visible, hidden, &peers)?;
                     let raw = if sealing.receipt {
                         tracking::with_receipt(raw, &sender)
                     } else {
@@ -2058,10 +2073,6 @@ impl MailWindow {
                         tracking::with_delivery_receipt(raw)
                     } else {
                         raw
-                    };
-                    let connection = match connection {
-                        Some(connection) => connection,
-                        None => daemon::connect().await?,
                     };
                     let id = match at {
                         // Undo works for the undo delay; then it may go

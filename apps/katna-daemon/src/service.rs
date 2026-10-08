@@ -518,6 +518,17 @@ macro_rules! pim_interface {
                 Ok(self.daemon.reload_config()?)
             }
 
+            /// Sends feedback from Katna Mail's form; returns why it could
+            /// not be sent, or an empty string.
+            async fn send_feedback(&self, text: String, kind: String, reply_to: String) -> String {
+                match crate::crash_upload::send_feedback(&self.daemon, &text, &kind, &reply_to)
+                    .await
+                {
+                    Ok(()) => String::new(),
+                    Err(why) => why,
+                }
+            }
+
             /// Deletes the local copy of an app turned off.
             async fn forget_app(&self, app: String) -> fdo::Result<()> {
                 Ok(self.daemon.forget_app(&app)?)
@@ -732,6 +743,14 @@ macro_rules! pim_interface {
 
             async fn sender_picture(&self, address: String) -> fdo::Result<Vec<u8>> {
                 Ok(self.daemon.sender_picture(&address).await?)
+            }
+
+            async fn learn_key(&self, message: i64) -> fdo::Result<()> {
+                Ok(self.daemon.learn_key(MessageId(message)).await?)
+            }
+
+            async fn look_up_key(&self, address: String) -> fdo::Result<String> {
+                Ok(self.daemon.look_up_key(&address).await?)
             }
 
             async fn company_of(&self, address: String, website: String) -> fdo::Result<String> {

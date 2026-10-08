@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Encrypted mail finds keys"
+text = """
+With Encrypt on, a recipient without a key is looked up in their own
+domain's key directory when you send. Mail you send carries your public
+key (Autocrypt) when GnuPG has one for your address, and keys that arrive
+the same way are used to encrypt your replies. Encrypted OpenPGP mail now
+hides its subject until it is opened.
+"""

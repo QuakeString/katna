@@ -93,3 +93,9 @@ service-details-title = Why the service won't start
 service-details-body = Copy this and send it with your report. It has no mail or passwords in it.
 service-details-copy = Copy
 service-details-close = Close
+# Why a change could not be made, when Katna's service is not running or
+# did not answer. $error: what went wrong, usually in English.
+service-not-running = The Katna background service is not running.
+service-no-answer = The Katna background service did not answer: { $error }
+# There is no desktop session bus (D-Bus) to reach the service over.
+service-no-session = No D-Bus session: { $error }

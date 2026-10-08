@@ -18,7 +18,7 @@ Files that distribution packages install, and the Arch Linux package.
 | `icons/hicolor/<N>x<N>/apps/<mail app ID>.png` | `/usr/share/icons/hicolor/<N>x<N>/apps/` |
 | `arch/PKGBUILD` | Arch Linux package `katna-git` |
 | `windows/` | Katna Setup for Windows (`windows/README.md`) |
-| `linux/` | `stage.sh` (the files above under a prefix, for every package below), the plain tarball and its `install.sh` |
+| `linux/` | `stage.sh` (the files above under a prefix, for every package below), `localize-desktop.sh` (adds the `.desktop` files' names in every language from `i18n/<language>/desktop.ftl` as they are installed), the plain tarball and its `install.sh` |
 | `fedora/katna.spec` | Fedora RPM `katna` |
 | `deb/` | Ubuntu and Debian package `katna` (`katna_amd64.deb`) |
 | `nix/package.nix` | Nix package (`flake.nix` at the top builds it) |

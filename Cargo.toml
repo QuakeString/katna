@@ -141,6 +141,8 @@ icu_time = "2.3"
 writeable = "0.6"
 # Formatters shared between threads (the daemon and GPUI both use them).
 icu_provider = { version = "2.3", features = ["sync"] }
+# Word breaks in Thai, Lao, Khmer and Burmese (dictionaries), for search.
+icu_segmenter = { version = "2.3", default-features = false, features = ["compiled_data"] }
 
 # Katna Server (server/katna-server) only: HTTP, its runtime and PostgreSQL.
 # None of these may reach the daemon or the apps.

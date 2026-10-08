@@ -81,6 +81,9 @@ through `motion::time`, so Settings > Appearance > Animation speed
 50-200%) stretches them all. Reduce motion (the desktop's, or always or
 never in Settings) sets GPUI's `reduce_motion`: `with_animation`,
 `with_spring` and `Spring::tick` then jump to the end.
+A press ripple (`katna_ui::Ripple`) fills the whole control: it takes
+the control's own corners (`rounded`, `corners`) and, on a control with an
+edge, reaches out under it (`border`).
 A menu fades out in `FAST` when it closes, out of reach while it fades
 (the right-click menu keeps itself, marked closing, until the fade ends;
 a toolbar menu is noted as it closes, by `track_menu_fade`, and

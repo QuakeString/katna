@@ -345,6 +345,9 @@ pub struct Feedback {
     /// ([`crate::ids::SENTRY_DSN`]): a self-hosted Sentry or GlitchTip.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dsn: Option<String>,
+    /// Send anonymous usage statistics once a week (`katna_core::usage`).
+    /// Off until the user turns it on; nothing is recorded while off.
+    pub send_usage_statistics: bool,
 }
 
 impl Feedback {
@@ -365,6 +368,7 @@ impl Default for Feedback {
             save_crash_reports: true,
             send_crash_reports: None,
             dsn: None,
+            send_usage_statistics: false,
         }
     }
 }
@@ -1644,6 +1648,10 @@ pub struct Shortcuts {
     /// `reply`, ...): each a list of keystrokes such as `ctrl-shift-a` or
     /// `g i`. An empty list turns the shortcut off.
     pub keys: BTreeMap<String, Vec<String>>,
+    /// What was last run from the command palette, the latest first: a
+    /// shortcut's name or a setting's key.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub recent: Vec<String>,
 }
 
 impl Default for Shortcuts {
@@ -1652,6 +1660,7 @@ impl Default for Shortcuts {
             single_keys: true,
             set: ShortcutSet::Katna,
             keys: BTreeMap::new(),
+            recent: Vec::new(),
         }
     }
 }

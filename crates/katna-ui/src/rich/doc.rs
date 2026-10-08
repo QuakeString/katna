@@ -13,6 +13,7 @@ use std::ops::Range;
 use std::sync::Arc;
 
 use katna_core::bidi::{Direction, first_strong};
+use katna_i18n::tr;
 use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
 
 /// The typefaces offered in the font menu. The HTML names them by family;
@@ -48,19 +49,21 @@ impl Font {
         Font::Verdana,
     ];
 
-    pub fn label(self) -> &'static str {
+    /// The name in the font menu: the generic ones in the user's
+    /// language, the typefaces by their own names.
+    pub fn label(self) -> String {
         match self {
-            Font::Sans => "Sans Serif",
-            Font::Serif => "Serif",
-            Font::Fixed => "Fixed Width",
-            Font::Wide => "Wide",
-            Font::Narrow => "Narrow",
-            Font::ComicSans => "Comic Sans MS",
-            Font::Garamond => "Garamond",
-            Font::Georgia => "Georgia",
-            Font::Tahoma => "Tahoma",
-            Font::Trebuchet => "Trebuchet MS",
-            Font::Verdana => "Verdana",
+            Font::Sans => tr!("rich-font-sans"),
+            Font::Serif => tr!("rich-font-serif"),
+            Font::Fixed => tr!("rich-font-fixed"),
+            Font::Wide => tr!("rich-font-wide"),
+            Font::Narrow => tr!("rich-font-narrow"),
+            Font::ComicSans => "Comic Sans MS".to_owned(),
+            Font::Garamond => "Garamond".to_owned(),
+            Font::Georgia => "Georgia".to_owned(),
+            Font::Tahoma => "Tahoma".to_owned(),
+            Font::Trebuchet => "Trebuchet MS".to_owned(),
+            Font::Verdana => "Verdana".to_owned(),
         }
     }
 
@@ -130,12 +133,12 @@ pub enum Size {
 impl Size {
     pub const ALL: [Size; 4] = [Size::Small, Size::Normal, Size::Large, Size::Huge];
 
-    pub fn label(self) -> &'static str {
+    pub fn label(self) -> String {
         match self {
-            Size::Small => "Small",
-            Size::Normal => "Normal",
-            Size::Large => "Large",
-            Size::Huge => "Huge",
+            Size::Small => tr!("rich-size-small"),
+            Size::Normal => tr!("rich-size-normal"),
+            Size::Large => tr!("rich-size-large"),
+            Size::Huge => tr!("rich-size-huge"),
         }
     }
 

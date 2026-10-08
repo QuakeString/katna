@@ -3,6 +3,9 @@
 # hidden from menus. No launch feedback: KWin bounces an app's icon for a
 # notification button as if the app were starting, though most buttons
 # (Peek, Mark as read, Archive) open no window.
+# Names and comments: i18n/en/desktop.ftl (desktop-notifications-*); other languages are
+# added when packaging (packaging/linux/localize-desktop.sh).
+# i18n: desktop-notifications
 [Desktop Entry]
 Type=Application
 Name=Katna Mail

@@ -820,6 +820,11 @@ rank above loose matches. Highlighted snippets via `SnippetGenerator`.
 
 - Parse (`mail-parser`) → HTML to text → language detection → per-language
   tokenizer/stemmer → attachment text extraction → index writer.
+- Words are runs of letters and digits; Thai, Lao, Khmer and Burmese,
+  which put no spaces between words, are split with `icu_segmenter`'s
+  dictionaries for those four scripts only (about 1.8 MB, `words.rs`), at
+  index and query time, so a word is found inside an unspaced sentence and
+  a typed run of words matches as a phrase.
 - Parallel workers with a memory budget; commit in batches; tantivy commits
   are atomic, so a crash never corrupts the index.
 - Search works on the already-indexed part while initial indexing runs.
@@ -1593,6 +1598,22 @@ passing for a domain aligned with it (`katna_render::sender_authenticated`).
 Otherwise the banner says the message may not be from that sender and
 offers "Show images" for it. A provider that adds no such field leaves the
 topmost one to the sender, which is no worse than trusting `From` alone.
+
+The same fields warn about forged mail (`katna_render::sender_checks`,
+`window/reader/sender.rs`). A message *failed* when DMARC failed for its
+`From` domain, or SPF failed for an envelope domain aligned with it and no
+aligned DKIM signature passed; it is *unconfirmed* when the provider
+checked and nothing passed. Failed mail gets a soft red banner above its
+body ("This may not be from bank.example", naming the provider by its
+server, such as `mx.google.com` for Gmail) with Details (what DMARC, DKIM
+and SPF each found), Looks safe (this message only, until the window
+closes; a forged sender can fail again) and Move to spam. Its images stay
+hidden even with "Always show images" on, until "Show images", and a link
+asks first in a popover at the click that names where it really goes.
+An unconfirmed sender gets a small "?" on their picture that says so under
+the pointer; the mail list shows nothing. Mail with no
+`Authentication-Results` shows nothing, as there is nothing to go on.
+
 Images are fetched by the daemon (`FetchImage`, `https` only, `http`
 upgraded, at most 8 MB, checked to be an image by its bytes), at most 200
 different ones per message and 6 at a time; the app never uses the
@@ -2445,6 +2466,20 @@ Gemini or confidential mode):
   letters still work there. Whenever
   the keys lose their place (a message sent, a menu or dialog gone) they
   come back to the list, or to the Settings page while it is open.
+- **Command palette.** Ctrl+Shift+P (as in VS Code and Zed; Ctrl+Alt+I,
+  KDE's Find Action, too) or Help → Command Palette opens one box under
+  the top bar that finds any action or setting by name
+  (`window/palette.rs`). Actions come from the shortcut list
+  (`keymap::SHORTCUTS`, less the keys for moving about), each with the
+  keys it has now, so the palette teaches them; settings come from the
+  Settings search's rows and tabs (`settings_search::candidates`) and open
+  their row as a Settings search result does. The whole query at a word's
+  start ranks first, then anywhere in a name, then every word, then the
+  letters in order ("mku" finds Mark as unread). Up, Down, Enter and Esc
+  work as in any picker. An action runs where the keys were before the
+  palette opened. With nothing typed it lists Recent (the last five run,
+  kept in `[shortcuts] recent`), then every action. No veil, as for the
+  other dialogs.
 - **Screen readers.** GPUI hands an AccessKit tree to AT-SPI (Orca) and
   UI Automation (NVDA, Narrator). Only elements with an id and a role
   show up, so the shared widgets set both: `widgets::Tip::tip` labels an
@@ -3119,7 +3154,10 @@ desktop's own app stays one click away.
   - **Marking up a PDF.** The pen in the viewer's top bar shows a pill of
     tools: Select, Highlight, Underline, Squiggle, Strike, Pen, Sticky
     note, Text box and Eraser, five colours each, and Undo and Redo
-    (Ctrl+Z, Ctrl+Shift+Z). Text marks are made by selecting text; the
+    (Ctrl+Z, Ctrl+Shift+Z), then drag dots at its end: dragging them
+    moves the pill anywhere over the pages (kept inside the viewer, below
+    the top bar) so it never covers what is being marked, and a double
+    click puts it back. Text marks are made by selecting text; the
     pen draws freehand; a click with the note or text tool places one and
     opens it for typing (Ctrl+Enter, Done or a click elsewhere finishes,
     Escape drops the change), and clicking one opens it again; a note's
@@ -3395,6 +3433,15 @@ compressed with `zstd` (already a dependency) and unpacked on first use.
 A file in `$XDG_DATA_HOME/katna/i18n/<tag>/` is loaded over the built-in
 one message by message, so a reviewer can try a correction without
 building Katna.
+
+The `.desktop` files' names (`Name`, `GenericName`, `Comment`,
+`Keywords` and the actions' `Name`) are messages too, in
+`i18n/<tag>/desktop.ftl`. The checked-in files hold only English and a
+`# i18n: <prefix>` line naming their ids; `packaging/linux/
+localize-desktop.sh` adds a `Name[de]=` line and so on for every
+translated message as `stage.sh` and the PKGBUILD install them, so a
+translator edits only `desktop.ftl` and nobody regenerates files. A test
+in `katna-i18n` fails when a file's English and `desktop.ftl` disagree.
 
 **Choosing the language.**
 
@@ -4768,7 +4815,11 @@ are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
 after the first real install, when the app reached it; then 50 MB, and
 100 MB since the attachment viewers (September 2026), then 150 MB when the
 chat view's company details took it past 100 MB (October 2026), so features are
-not trimmed to fit; light crates are still preferred. Crates that are not hot are built with
+not trimmed to fit; light crates are still preferred. `katnactl` reads the
+search index itself (its MCP mail search), so it carries the same Thai,
+Lao, Khmer and Burmese word dictionaries as the daemon (L.6, about 1.8 MB);
+its budget went from 10 MiB to 15 MiB then (October 2026), the same as
+`katna-search-cli`. Crates that are not hot are built with
 `opt-level = "s"` (root `Cargo.toml`): D-Bus (zbus, zvariant, oo7,
 ashpd), IMAP parsing and regex.
 
@@ -5422,18 +5473,47 @@ queued, so the outbox and Sent hold only what was sent. Details:
 
 - Keys are chosen by exact address in the local keyring
   (`katna_crypto::encryption_keys`: usable for encryption, a verified key
-  before an unverified one) and passed to GnuPG by fingerprint, so GnuPG
-  never looks a recipient up on the network (WKD) while sending. A key the
-  user has not certified is still used (`--trust-model always`); a
-  recipient without any key stops the send with "no key for …" and the
-  message comes back.
+  before an unverified one), else among the keys Katna found (below), and
+  passed to GnuPG by fingerprint or file, so GnuPG itself never looks a
+  recipient up. A key the user has not certified is still used
+  (`--trust-model always`); a recipient without any key stops the send
+  with "no key for …" and the message comes back.
 - The sender is always a recipient too, so Sent stays readable. Bcc
   recipients are hidden recipients in OpenPGP (`--hidden-recipient`); CMS
   has no such thing.
 - OpenPGP by default; S/MIME when answering S/MIME mail or when the sender
   only has an S/MIME certificate.
-- Routing headers (From, To, Subject) stay outside the protection; hiding
-  the subject (protected headers) and Autocrypt headers come later (E.3).
+- Routing headers (From, To, Cc, Date) stay outside the protection.
+  Encrypted OpenPGP mail hides its subject: the outside says `...`, and
+  the real Subject (with copies of the routing headers) goes inside, with
+  `protected-headers="v1"` on the inner Content-Type, as Thunderbird and
+  KMail send and read it. S/MIME mail keeps its subject outside.
+
+**Keys from Autocrypt and the Web Key Directory (E.3).** Keys Katna finds
+for people are kept apart from the user's GnuPG keyring, which stays the
+user's own, in `$XDG_DATA_HOME/katna/keys/` (`katna_crypto::PeerKeys`: a
+binary key and a small text file per address, written only by the daemon),
+and used only to encrypt to the address they were found for, through
+`--recipient-file`. A key is kept only when GnuPG lists exactly one key in
+it, with a user ID of exactly that address, able to encrypt, neither
+revoked nor expired.
+
+- **Autocrypt (Level 1).** Mail Katna sends carries an `Autocrypt:
+  addr=…; keydata=…` header when GnuPG has a secret key for the sender:
+  the newest usable one, exported minimal with only that address's user
+  ID and the encryption subkey. No `prefer-encrypt` is stated. When the
+  user opens a message with an Autocrypt header, the app asks the daemon
+  (`LearnKey`) to keep the key, which it does only when the user's
+  provider authenticated the message's `From` (aligned DMARC or DKIM in
+  `Authentication-Results`, §12) and `addr` is that `From`; a key from
+  older mail never replaces one from newer mail.
+- **Web Key Directory.** When Encrypt is on and a recipient has no key,
+  the app asks the daemon (`LookUpKey`) before sealing: it fetches
+  `https://openpgpkey.<domain>/.well-known/openpgpkey/<domain>/hu/<hash>`,
+  then the direct `https://<domain>/.well-known/openpgpkey/hu/<hash>`
+  (public addresses only, 256 KiB at most), so only the recipient's own
+  domain learns who is written to. Nothing is looked up while reading:
+  that would tell the sender the mail was opened.
 
 
 ### 19.2 Crash reports and feedback
@@ -5516,12 +5596,14 @@ consent.
   takes effect at once; off means the panic hook and the core-dump check
   write nothing), and the list of saved reports with
   **View**, **Copy** and **Delete** (and Delete all), each marked "Sent"
-  once it went to the crash tracker. Part 2 adds "Send crash reports"
-  (built) and later the usage statistics switch and **Send feedback**.
+  once it went to the crash tracker. Part 2 adds "Send crash reports",
+  "Send anonymous usage statistics" with the full list of what is counted,
+  and **Send feedback** (all built).
 
 **Part 2: sending, only with consent.** Reports go to a Sentry cloud
 project (decided by the owner on 27 September 2026, §25). Sending crash
-reports is built; usage statistics and the feedback form come later.
+reports, usage statistics and the feedback form are built (C.5–C.7);
+release-health sessions are not.
 
 - **Asking.** The first-run screen (onboarding) has a step, "Help improve
   Katna", between the look and the tour: what is sent, what is never sent
@@ -5554,6 +5636,22 @@ reports is built; usage statistics and the feedback form come later.
   and so on. The exact list lives in one Rust enum; each entry is described
   in Settings > User feedback so users can see what is counted. No message counts, no
   addresses, no domains, no search terms, no timestamps finer than a week.
+  Built (C.6): the switch "Send anonymous usage statistics" (config key
+  `feedback.send_usage_statistics`, off until the user turns it on, never
+  asked for in onboarding) sits under "Send crash reports"; "What is
+  counted" lists every entry of `katna_core::usage::Feature` (search
+  options, pinned mail, labels, scheduled send, snooze and reminders,
+  encrypted mail, built-in viewers, Calendar, Contacts, Tasks and Notes,
+  the phone-width layout, Katna's own window frame) and the other facts.
+  While it is on, Katna Mail notes each feature the first time it is used
+  in a week in `$XDG_STATE_HOME/katna/usage/week-N` (Monday to Sunday,
+  UTC), with the screen scale, desktop and session, which only it sees;
+  "See this week's report" shows the exact text and Copy. The daemon sends
+  a finished week once (never on a metered connection), adding the
+  version, the `ID` of `/etc/os-release` and the number of accounts in
+  bands, then deletes that week's file. Turning the switch off deletes
+  everything recorded and the install ID. Nothing is recorded while it is
+  off.
 - **Identity.** No user ID and no account ID. Each upload carries a random
   **install ID** only so that one machine's weekly reports are not counted
   twice; it is regenerated every 90 days and by "Reset" in Settings > User feedback, and it
@@ -5564,6 +5662,14 @@ reports is built; usage statistics and the feedback form come later.
   reply (clearly optional, never filled in from the account). It shows
   exactly what will be sent before sending. This is independent of the
   switches: sending feedback is itself the consent for that one message.
+  Built (C.7): chips for what it is about (Problem, Idea, Something
+  else), the message, the optional reply address and "Include Katna's
+  version and your system" (ticked; its line shown under it). "What is
+  sent" unfolds the exact text, whose field names stay English like a
+  crash report's; Katna Mail hands that text to the daemon
+  (`SendFeedback` on the Pim interface), which posts it as a User
+  Feedback item and nothing more. A dialog on wider windows; at phone
+  width it fills the window with Send in its top bar. Ctrl+Enter sends.
 - **Protocol, no SDK.** Everything uses Sentry's envelope format
   (`POST /api/<project>/envelope/`), written by hand in
   `katna_core::sentry` and posted with Katna's own small HTTPS client
@@ -5584,10 +5690,13 @@ reports is built; usage statistics and the feedback form come later.
   `contexts.os.raw_description`. Checked on 27 September 2026: Sentry
   answered 200 to a test envelope. Sentry's minidump handler
   (`sentry-rust-minidump`, an extra process) is not used unless the stacks
-  from core dumps turn out not to be enough. Later, feedback uses Sentry's
-  User Feedback item; usage statistics are one `info` event per week whose
-  tags are the feature flags above, plus release-health sessions for
-  crash-free rates.
+  from core dumps turn out not to be enough. Feedback is Sentry's User
+  Feedback item (`feedback`, the text in `contexts.feedback.message`, the
+  reply address as `contact_email` only when given;
+  `sentry::feedback_envelope`); usage statistics are one `info` event per
+  week (`sentry::usage_envelope`) whose message is the week's report text
+  and whose tags are the facts, the install ID and `f.<feature>` =
+  `yes`/`no`. Release-health sessions for crash-free rates come later.
 - **Client settings.** Nothing like the SDK's `send_default_pii`: no user
   object, no IP (the project is also set to not store IP addresses and to
   scrub data server-side), no `server_name`, no device ID; the recent log
@@ -5959,7 +6068,9 @@ old and new daemon and app must keep working:
   daemon asks it to restart; an old app that meets a new daemon keeps working
   on `Pim1` and shows a "Katna was updated, restart" pill.
 - An app that opens a store and gets `SchemaTooNew` shows the same restart
-  pill instead of an error.
+  pill instead of an error. Katna Mail floats it at the bottom centre of the
+  mail list; Restart starts the installed build with `--after-update` and
+  quits, and × hides it until a later build.
 - Search index versions already rebuild in the background when they differ
   (`katna-search` deletes an index built with another `SCHEMA_VERSION`);
   search falls back to the store's plain lookups while that runs.

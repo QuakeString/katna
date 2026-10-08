@@ -74,6 +74,9 @@ reader-details-subject = subject:
 
 reader-downloading = Downloading this message from the server…
 reader-download-failed = Could not download this message.
+# A note at the bottom of the window when opening a message failed.
+# $reason: what went wrong, a sentence from the mail server or the service.
+reader-download-failed-reason = Could not download this message. { $reason }
 reader-download-offline = This account is offline. Go online to download this message.
 reader-try-again = Try again
 
@@ -115,6 +118,103 @@ security-missing-key-id = Signed with a key you don't have ({ $key }), so it can
 # $tool: the program to install, such as "GnuPG (gpg)".
 security-signature-unavailable = Signed; install { $tool } to check the signature
 security-signature-error = The signature could not be checked.
+# A link under "Signed with a key you don't have": asks the sender's own
+# mail domain (its Web Key Directory) for their key.
+security-look-up-key = Look up key
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Verified signature
+key-card-verified-detail = The signature is good and you trust this key.
+key-card-unverified = Signature not verified
+key-card-unverified-detail = The signature is good, but nothing confirms the key is theirs. Compare the fingerprint with them, then trust the key in GnuPG (Kleopatra or gpg --edit-key).
+key-card-not-sender = Signed by someone else
+key-card-not-sender-detail = The signature is good, but the key isn't the sender's.
+key-card-untrusted = Key not trusted
+key-card-untrusted-detail = You marked this key as not trusted in GnuPG.
+key-card-signature-expired = Signature expired
+key-card-signature-expired-detail = The signature was good, but it has expired.
+key-card-key-expired = Key expired
+key-card-key-expired-detail = The signature is good, but the key has expired since.
+key-card-key-revoked = Key revoked
+key-card-key-revoked-detail = Its owner revoked this key, so the signature can't be trusted.
+key-card-bad = Bad signature
+key-card-bad-detail = This message was changed after it was signed, or the signature is forged.
+key-card-signed-by = Signed by
+key-card-belongs-to = Belongs to
+key-card-fingerprint = Fingerprint
+# When the message was signed.
+key-card-signed = Signed
+# The kind of key: "OpenPGP, Ed25519". $standard and $algorithm are names.
+key-card-key = Key
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Created
+key-card-expires = Expires
+key-card-never = Never
+# Who issued an S/MIME certificate.
+key-card-issued-by = Issued by
+key-card-found-in = Found in
+key-card-keyring = Your GnuPG keyring
+key-card-copy = Copy fingerprint
+key-card-import-title = Import this key?
+# $domain: the sender's mail domain, such as "example.org".
+key-card-from-directory = Found in { $domain }'s key directory.
+# $name: the attachment's file name.
+key-card-from-attachment = From the attachment { $name }.
+key-card-import-note = Katna can then check this person's signatures and encrypt mail to them. To trust the key fully, compare the fingerprint with them.
+key-card-cancel = Cancel
+key-card-import = Import key
+key-card-looking-up = Looking up the key…
+key-card-looking-up-detail = Asking { $domain }'s key directory.
+key-card-not-found = No key found
+key-card-not-found-detail = { $domain } doesn't publish a key for this address. Ask the sender to send you theirs.
+key-card-not-kept = The key that was found can't be used.
+key-card-failed = Couldn't get the key
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+# $domain: the domain in the sender's address, like "bank.example".
+sender-failed-title = This may not be from { $domain }
+# $provider: the user's mail service ("Gmail"), or sender-provider-unknown.
+sender-failed-body = It failed { $provider }'s sender checks. Be careful with links, attachments and replies.
+sender-provider-unknown = your mail provider
+sender-details = Details
+sender-details-hide = Hide details
+# Hides the banner on this message only.
+sender-looks-safe = Looks safe
+sender-move-to-spam = Move to spam
+sender-checked-by = Checked by { $provider }
+# $server: the provider's server that ran the checks, like "mx.google.com".
+sender-checked-by-server = Checked by { $provider } ({ $server })
+sender-dmarc = Sender domain (DMARC)
+sender-dkim = Signature (DKIM)
+sender-spf = Sending server (SPF)
+sender-result-pass = Passed
+sender-result-fail = Failed
+sender-result-unsure = Not sure
+sender-result-none = None
+sender-result-missing = Not checked
+sender-dmarc-pass = { $domain } confirms this sender.
+sender-dmarc-fail = The mail doesn't match how { $domain } says its mail is sent.
+sender-dmarc-none = { $domain } publishes no rules for its mail.
+sender-dkim-pass = Signed by { $domain }.
+sender-dkim-fail = The signature from { $domain } doesn't match the mail.
+sender-dkim-none = The message wasn't signed.
+sender-spf-pass = Sent from a server { $domain } lists.
+sender-spf-fail = Sent from a server { $domain } doesn't list.
+sender-spf-none = { $domain } doesn't list its servers.
+sender-check-unsure = The check couldn't give a clear answer.
+# Under the pointer on the "?" on the sender's picture.
+sender-unconfirmed = { $provider } couldn't confirm this came from { $domain }. Anyone can write any sender.
+# Before a link in mail that failed its sender checks opens.
+sender-link-title = Open this link?
+# $host: where the link goes, like "login.bank.example".
+sender-link-body = This mail failed its sender checks. The link goes to { $host }:
+sender-link-cancel = Cancel
+sender-link-open = Open
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -156,6 +256,8 @@ remote-hidden = Images in this message are hidden.
 # For a sender whose images are always shown, when the mail provider could
 # not confirm that the message really comes from that address.
 remote-hidden-unconfirmed = Images are hidden: the sender could not be confirmed.
+# For mail that failed the sender checks of the user's mail provider.
+remote-hidden-failed = Images are hidden: this mail failed its sender checks.
 remote-show = Show images
 remote-always-show = Always show from this sender
 # The button of the file chooser that picks an account's picture.

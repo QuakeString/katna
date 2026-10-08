@@ -22,6 +22,7 @@ use gpui::{
     uniform_list,
 };
 use katna_core::config::AppKind;
+use katna_core::usage::Feature;
 use katna_i18n::tr;
 use katna_store::Person;
 use katna_ui::Ripple;
@@ -375,6 +376,12 @@ impl MailWindow {
     pub(super) fn open_app(&mut self, app: App, cx: &mut Context<Self>) {
         if self.app == app {
             return;
+        }
+        match app {
+            App::Calendar => self.note_usage(Feature::Calendar),
+            App::Contacts => self.note_usage(Feature::Contacts),
+            App::Tasks | App::Notes => self.note_usage(Feature::TasksNotes),
+            App::Mail | App::Files => {}
         }
         // A turned-off app opens from nowhere: its key, a launcher's
         // action, a reminder or a link lands here and says so instead.
