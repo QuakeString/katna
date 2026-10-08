@@ -439,6 +439,14 @@ menu-make-rule = ଏକ ନିୟମ ତିଆରି କରନ୍ତୁ…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = କି' ଇମ୍ପୋର୍ଟ ହେଲା
+toast-key-updated = ଏହି କି' ଆପଣଙ୍କ ପାଖରେ ପୂର୍ବରୁ ଥିଲା; ଏବେ ଏହା ଅପଡେଟ ହୋଇଛି
+toast-key-removed = କି' କାଢ଼ାଗଲା
+toast-key-not-removed = କି'ଟି କାଢ଼ିହେଲା ନାହିଁ
+toast-fingerprint-copied = ଫିଙ୍ଗରପ୍ରିଣ୍ଟ କପି ହେଲା
+
+## Snackbar after an action on mail in the list
+
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] ବାର୍ତ୍ତାଳାପ ଆର୍କାଇଭ କରାଗଲା।

@@ -91,6 +91,89 @@ security-missing-key = ଆପଣଙ୍କ ପାଖରେ ନଥିବା ଏକ
 security-missing-key-id = ଆପଣଙ୍କ ପାଖରେ ନଥିବା ଏକ କି' ({ $key }) ସହ ଦସ୍ତଖତ, ତେଣୁ ଯାଞ୍ଚ କରିହେବ ନାହିଁ
 security-signature-unavailable = ଦସ୍ତଖତ ଅଛି; ଦସ୍ତଖତ ଯାଞ୍ଚ କରିବା ପାଇଁ { $tool } ଇନଷ୍ଟଲ କରନ୍ତୁ
 security-signature-error = ଦସ୍ତଖତ ଯାଞ୍ଚ କରିହେଲା ନାହିଁ।
+security-look-up-key = କି' ଖୋଜନ୍ତୁ
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = ଯାଞ୍ଚ ହୋଇଥିବା ଦସ୍ତଖତ
+key-card-verified-detail = ଦସ୍ତଖତଟି ଠିକ୍ ଅଛି ଏବଂ ଆପଣ ଏହି କି'କୁ ବିଶ୍ୱାସ କରନ୍ତି।
+key-card-unverified = ଦସ୍ତଖତ ଯାଞ୍ଚ ହୋଇନାହିଁ
+key-card-unverified-detail = ଦସ୍ତଖତଟି ଠିକ୍ ଅଛି, କିନ୍ତୁ କି'ଟି ତାଙ୍କର ବୋଲି କିଛି ନିଶ୍ଚିତ କରୁନାହିଁ। ତାଙ୍କ ସହ ଫିଙ୍ଗରପ୍ରିଣ୍ଟ ମିଳାନ୍ତୁ, ତା'ପରେ GnuPGରେ କି'କୁ ବିଶ୍ୱାସ କରନ୍ତୁ (Kleopatra କିମ୍ବା gpg --edit-key)।
+key-card-not-sender = ଅନ୍ୟ କେହି ଦସ୍ତଖତ କରିଛନ୍ତି
+key-card-not-sender-detail = ଦସ୍ତଖତଟି ଠିକ୍ ଅଛି, କିନ୍ତୁ କି'ଟି ପ୍ରେରକଙ୍କର ନୁହେଁ।
+key-card-untrusted = କି' ବିଶ୍ୱସ୍ତ ନୁହେଁ
+key-card-untrusted-detail = ଆପଣ GnuPGରେ ଏହି କି'କୁ ଅବିଶ୍ୱସ୍ତ ଭାବେ ଚିହ୍ନିତ କରିଛନ୍ତି।
+key-card-signature-expired = ଦସ୍ତଖତର ମିଆଦ ସରିଛି
+key-card-signature-expired-detail = ଦସ୍ତଖତଟି ଠିକ୍ ଥିଲା, କିନ୍ତୁ ଏହାର ମିଆଦ ସରିଯାଇଛି।
+key-card-key-expired = କି'ର ମିଆଦ ସରିଛି
+key-card-key-expired-detail = ଦସ୍ତଖତଟି ଠିକ୍ ଅଛି, କିନ୍ତୁ ସେବେଠାରୁ କି'ର ମିଆଦ ସରିଯାଇଛି।
+key-card-key-revoked = କି' ପ୍ରତ୍ୟାହାର ହୋଇଛି
+key-card-key-revoked-detail = ଏହାର ମାଲିକ ଏହି କି'କୁ ପ୍ରତ୍ୟାହାର କରିଛନ୍ତି, ତେଣୁ ଦସ୍ତଖତକୁ ବିଶ୍ୱାସ କରିହେବ ନାହିଁ।
+key-card-bad = ଖରାପ ଦସ୍ତଖତ
+key-card-bad-detail = ଦସ୍ତଖତ ପରେ ଏହି ମେସେଜ ବଦଳାଯାଇଛି, କିମ୍ବା ଦସ୍ତଖତଟି ଜାଲ।
+key-card-signed-by = ଦସ୍ତଖତକାରୀ
+key-card-belongs-to = ମାଲିକ
+key-card-fingerprint = ଫିଙ୍ଗରପ୍ରିଣ୍ଟ
+key-card-signed = ଦସ୍ତଖତ ସମୟ
+key-card-key = କି'
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = ତିଆରି ହୋଇଥିଲା
+key-card-expires = ମିଆଦ ସରିବ
+key-card-never = କେବେ ନୁହେଁ
+key-card-issued-by = ଜାରିକର୍ତ୍ତା
+key-card-found-in = ମିଳିଲା
+key-card-keyring = ଆପଣଙ୍କ GnuPG କି'ରିଙ୍ଗ
+key-card-copy = ଫିଙ୍ଗରପ୍ରିଣ୍ଟ କପି କରନ୍ତୁ
+key-card-import-title = ଏହି କି' ଇମ୍ପୋର୍ଟ କରିବେ?
+key-card-from-directory = { $domain }ର କି' ଡିରେକ୍ଟୋରିରେ ମିଳିଲା।
+key-card-from-attachment = ସଂଲଗ୍ନକ { $name }ରୁ।
+key-card-import-note = ତା'ପରେ Katna ଏହି ବ୍ୟକ୍ତିଙ୍କ ଦସ୍ତଖତ ଯାଞ୍ଚ କରିପାରିବ ଏବଂ ତାଙ୍କୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ମେଲ ପଠାଇପାରିବ। କି'କୁ ସମ୍ପୂର୍ଣ୍ଣ ବିଶ୍ୱାସ କରିବାକୁ, ତାଙ୍କ ସହ ଫିଙ୍ଗରପ୍ରିଣ୍ଟ ମିଳାନ୍ତୁ।
+key-card-cancel = ବାତିଲ କରନ୍ତୁ
+key-card-import = କି' ଇମ୍ପୋର୍ଟ କରନ୍ତୁ
+key-card-looking-up = କି' ଖୋଜାଯାଉଛି…
+key-card-looking-up-detail = { $domain }ର କି' ଡିରେକ୍ଟୋରିକୁ ପଚରାଯାଉଛି।
+key-card-not-found = କୌଣସି କି' ମିଳିଲା ନାହିଁ
+key-card-not-found-detail = { $domain } ଏହି ଠିକଣା ପାଇଁ କୌଣସି କି' ପ୍ରକାଶ କରେ ନାହିଁ। ପ୍ରେରକଙ୍କୁ ତାଙ୍କ କି' ପଠାଇବାକୁ କୁହନ୍ତୁ।
+key-card-not-kept = ମିଳିଥିବା କି'ଟି ବ୍ୟବହାର କରିହେବ ନାହିଁ।
+key-card-failed = କି'ଟି ଆଣିହେଲା ନାହିଁ
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = ଏହା ହୁଏତ { $domain }ରୁ ଆସିନାହିଁ
+sender-failed-body = ଏହା { $provider }ର ପ୍ରେରକ ଯାଞ୍ଚରେ ବିଫଳ ହେଲା। ଲିଙ୍କ, ସଂଲଗ୍ନକ ଓ ଉତ୍ତର ସହ ସାବଧାନ ରହନ୍ତୁ।
+sender-provider-unknown = ଆପଣଙ୍କ ମେଲ ପ୍ରଦାତା
+sender-details = ବିବରଣୀ
+sender-details-hide = ବିବରଣୀ ଲୁଚାନ୍ତୁ
+sender-looks-safe = ସୁରକ୍ଷିତ ଲାଗୁଛି
+sender-move-to-spam = ସ୍ପାମକୁ ଘୁଞ୍ଚାନ୍ତୁ
+sender-checked-by = { $provider } ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯାଇଛି
+sender-checked-by-server = { $provider } ({ $server }) ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯାଇଛି
+sender-dmarc = ପ୍ରେରକ ଡୋମେନ (DMARC)
+sender-dkim = ଦସ୍ତଖତ (DKIM)
+sender-spf = ପଠାଉଥିବା ସର୍ଭର (SPF)
+sender-result-pass = ପାସ ହେଲା
+sender-result-fail = ବିଫଳ
+sender-result-unsure = ନିଶ୍ଚିତ ନୁହେଁ
+sender-result-none = କିଛି ନାହିଁ
+sender-result-missing = ଯାଞ୍ଚ ହୋଇନାହିଁ
+sender-dmarc-pass = { $domain } ଏହି ପ୍ରେରକଙ୍କୁ ନିଶ୍ଚିତ କରେ।
+sender-dmarc-fail = { $domain } ନିଜ ମେଲ ଯେପରି ପଠାଯାଏ ବୋଲି କହେ, ଏହି ମେଲ ତା' ସହ ମେଳ ଖାଉନାହିଁ।
+sender-dmarc-none = { $domain } ନିଜ ମେଲ ପାଇଁ କୌଣସି ନିୟମ ପ୍ରକାଶ କରେ ନାହିଁ।
+sender-dkim-pass = { $domain } ଦ୍ୱାରା ଦସ୍ତଖତ।
+sender-dkim-fail = { $domain }ର ଦସ୍ତଖତ ମେଲ ସହ ମେଳ ଖାଉନାହିଁ।
+sender-dkim-none = ମେସେଜଟିରେ ଦସ୍ତଖତ ନଥିଲା।
+sender-spf-pass = { $domain } ତାଲିକାରେ ରଖିଥିବା ଏକ ସର୍ଭରରୁ ପଠାଯାଇଛି।
+sender-spf-fail = { $domain } ତାଲିକାରେ ରଖିନଥିବା ଏକ ସର୍ଭରରୁ ପଠାଯାଇଛି।
+sender-spf-none = { $domain } ନିଜ ସର୍ଭରର ତାଲିକା ଦିଏ ନାହିଁ।
+sender-check-unsure = ଯାଞ୍ଚଟି ସ୍ପଷ୍ଟ ଉତ୍ତର ଦେଇପାରିଲା ନାହିଁ।
+sender-unconfirmed = ଏହା { $domain }ରୁ ଆସିଛି ବୋଲି { $provider } ନିଶ୍ଚିତ କରିପାରିଲା ନାହିଁ। ଯେ କେହି ଯେକୌଣସି ପ୍ରେରକ ଲେଖିପାରନ୍ତି।
+sender-link-title = ଏହି ଲିଙ୍କ ଖୋଲିବେ?
+sender-link-body = ଏହି ମେଲ ନିଜ ପ୍ରେରକ ଯାଞ୍ଚରେ ବିଫଳ ହେଲା। ଲିଙ୍କଟି { $host }କୁ ଯାଏ:
+sender-link-cancel = ବାତିଲ କରନ୍ତୁ
+sender-link-open = ଖୋଲନ୍ତୁ
 tracking-opened = { $who } ଏହାକୁ { $count ->
     [one] ଥରେ
    *[other] { $count } ଥର
@@ -117,6 +200,7 @@ tracking-receipt-other = ପଢ଼ିବା ରସିଦ: { $who } ଆପଣଙ�
 
 remote-hidden = ଏହି ମେସେଜର ଛବିଗୁଡ଼ିକ ଲୁଚାଯାଇଛି।
 remote-hidden-unconfirmed = ଛବିଗୁଡ଼ିକ ଲୁଚାଯାଇଛି: ପ୍ରେରକଙ୍କୁ ନିଶ୍ଚିତ କରାଯାଇପାରିଲା ନାହିଁ।
+remote-hidden-failed = ଛବିଗୁଡ଼ିକ ଲୁଚାଯାଇଛି: ଏହି ମେଲ ନିଜ ପ୍ରେରକ ଯାଞ୍ଚରେ ବିଫଳ ହେଲା।
 remote-show = ଛବି ଦେଖାନ୍ତୁ
 remote-always-show = ଏହି ପ୍ରେରକଙ୍କଠାରୁ ସର୍ବଦା ଦେଖାନ୍ତୁ
 remote-picture-use = ବ୍ୟବହାର କରନ୍ତୁ

@@ -69,3 +69,25 @@ service-details-close = બંધ કરો
 service-not-running = Katna ની બૅકગ્રાઉન્ડ સેવા ચાલી રહી નથી.
 service-no-answer = Katna ની બૅકગ્રાઉન્ડ સેવાએ જવાબ આપ્યો નહીં: { $error }
 service-no-session = કોઈ D-Bus સેશન નથી: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = અપડેટમાં સમસ્યા આવ્યા પછી Katna સેફ મોડમાં છે, તેથી મેઇલ સિંક થતા નથી.
+safe-try-again = ફરી પ્રયાસ કરો
+safe-restore = પાછું લાવો
+safe-restoring = { $when } નો તમારો ડેટા પાછો લાવી રહ્યાં છીએ…
+safe-restored = { $when } નો તમારો ડેટા પાછો લાવ્યા. પહેલાં જે હતું તે એક ફોલ્ડરમાં રાખ્યું છે.
+safe-show-folder = ફોલ્ડર બતાવો
+safe-restore-failed = તમારો ડેટા પાછો લાવી શકાયો નહીં: { $error }
+safe-restore-title = અપડેટ પહેલાંનો તમારો ડેટા પાછો લાવવો છે?
+safe-restore-body = Katna તમે પસંદ કરો તે નકલ પર પાછું જાય છે. તેના પછી આવેલા મેઇલ તમારા એકાઉન્ટમાંથી ફરી ડાઉનલોડ થાય છે.
+safe-restore-none = હજી કોઈ નકલ નથી. દરેક અપડેટ તમારો ડેટા બદલે તે પહેલાં Katna એક નકલ બનાવે છે.
+safe-restore-keep = હાલમાં જે છે, ન મોકલેલા મેઇલ, ડ્રાફ્ટ અને હજી સિંક ન થયેલા ફેરફારો સહિત, તે પહેલાં એક ફોલ્ડરમાં રાખવામાં આવે છે, તેથી કંઈ ગુમાવાતું નથી.
+safe-restore-cancel = રદ કરો
+safe-restore-mail = મેઇલ
+safe-restore-pim = એકાઉન્ટ અને સંપર્કો
+safe-restore-blobs = જોડાણો
+safe-report-title = ડિબગ રિપોર્ટ
+safe-report-body = આ કૉપિ કરો અને તમારા બગ રિપોર્ટ સાથે જોડો. તેમાં કોઈ મેઇલ, સરનામાં કે પાસવર્ડ નથી.
+safe-report-restore = પાછું લાવો…
+safe-report-copied = ડિબગ રિપોર્ટ કૉપિ કર્યો

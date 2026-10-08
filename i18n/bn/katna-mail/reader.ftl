@@ -91,6 +91,89 @@ security-missing-key = এমন একটি কী দিয়ে স্ব�
 security-missing-key-id = এমন একটি কী ({ $key }) দিয়ে স্বাক্ষর করা যা আপনার কাছে নেই, তাই যাচাই করা যাচ্ছে না
 security-signature-unavailable = স্বাক্ষরিত; স্বাক্ষর যাচাই করতে { $tool } ইনস্টল করুন
 security-signature-error = স্বাক্ষর যাচাই করা যায়নি।
+security-look-up-key = কী খুঁজুন
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = যাচাই করা স্বাক্ষর
+key-card-verified-detail = স্বাক্ষরটি ঠিক আছে এবং আপনি এই কী বিশ্বাস করেন।
+key-card-unverified = স্বাক্ষর যাচাই করা নেই
+key-card-unverified-detail = স্বাক্ষরটি ঠিক আছে, কিন্তু কী-টি যে তাঁরই, তা কিছুই নিশ্চিত করে না। তাঁর সাথে ফিঙ্গারপ্রিন্ট মিলিয়ে নিন, তারপর GnuPG-তে কী-টি বিশ্বাস করুন (Kleopatra বা gpg --edit-key)।
+key-card-not-sender = অন্য কেউ স্বাক্ষর করেছেন
+key-card-not-sender-detail = স্বাক্ষরটি ঠিক আছে, কিন্তু কী-টি প্রেরকের নয়।
+key-card-untrusted = কী বিশ্বস্ত নয়
+key-card-untrusted-detail = আপনি GnuPG-তে এই কী অবিশ্বস্ত হিসেবে চিহ্নিত করেছেন।
+key-card-signature-expired = স্বাক্ষরের মেয়াদ শেষ
+key-card-signature-expired-detail = স্বাক্ষরটি ঠিক ছিল, কিন্তু এর মেয়াদ শেষ হয়ে গেছে।
+key-card-key-expired = কী-এর মেয়াদ শেষ
+key-card-key-expired-detail = স্বাক্ষরটি ঠিক আছে, কিন্তু এরপর কী-এর মেয়াদ শেষ হয়ে গেছে।
+key-card-key-revoked = কী প্রত্যাহার করা হয়েছে
+key-card-key-revoked-detail = এর মালিক এই কী প্রত্যাহার করেছেন, তাই স্বাক্ষরটি বিশ্বাস করা যায় না।
+key-card-bad = ভুল স্বাক্ষর
+key-card-bad-detail = স্বাক্ষরের পরে এই মেসেজ বদলানো হয়েছে, অথবা স্বাক্ষরটি জাল।
+key-card-signed-by = স্বাক্ষরকারী
+key-card-belongs-to = মালিক
+key-card-fingerprint = ফিঙ্গারপ্রিন্ট
+key-card-signed = স্বাক্ষরের সময়
+key-card-key = কী
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = তৈরি
+key-card-expires = মেয়াদ শেষ
+key-card-never = কখনো না
+key-card-issued-by = ইস্যুকারী
+key-card-found-in = যেখানে পাওয়া গেছে
+key-card-keyring = আপনার GnuPG কী-রিং
+key-card-copy = ফিঙ্গারপ্রিন্ট কপি করুন
+key-card-import-title = এই কী ইমপোর্ট করবেন?
+key-card-from-directory = { $domain }-এর কী ডিরেক্টরিতে পাওয়া গেছে।
+key-card-from-attachment = { $name } সংযুক্তি থেকে।
+key-card-import-note = এরপর Katna এই ব্যক্তির স্বাক্ষর যাচাই করতে এবং তাঁকে এনক্রিপ্ট করা মেল পাঠাতে পারবে। কী-টি পুরোপুরি বিশ্বাস করতে তাঁর সাথে ফিঙ্গারপ্রিন্ট মিলিয়ে নিন।
+key-card-cancel = বাতিল করুন
+key-card-import = কী ইমপোর্ট করুন
+key-card-looking-up = কী খোঁজা হচ্ছে…
+key-card-looking-up-detail = { $domain }-এর কী ডিরেক্টরিতে জিজ্ঞেস করা হচ্ছে।
+key-card-not-found = কোনো কী পাওয়া যায়নি
+key-card-not-found-detail = { $domain } এই ঠিকানার জন্য কোনো কী প্রকাশ করে না। প্রেরককে তাঁর কী পাঠাতে বলুন।
+key-card-not-kept = যে কী পাওয়া গেছে সেটি ব্যবহার করা যাবে না।
+key-card-failed = কী পাওয়া যায়নি
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = এটি হয়তো { $domain } থেকে আসেনি
+sender-failed-body = এটি { $provider }-এর প্রেরক যাচাইয়ে উত্তীর্ণ হয়নি। লিঙ্ক, সংযুক্তি ও উত্তরের ব্যাপারে সাবধান থাকুন।
+sender-provider-unknown = আপনার মেল পরিষেবা
+sender-details = বিস্তারিত
+sender-details-hide = বিস্তারিত লুকান
+sender-looks-safe = নিরাপদ মনে হচ্ছে
+sender-move-to-spam = স্প্যামে সরান
+sender-checked-by = যাচাই করেছে { $provider }
+sender-checked-by-server = যাচাই করেছে { $provider } ({ $server })
+sender-dmarc = প্রেরকের ডোমেন (DMARC)
+sender-dkim = স্বাক্ষর (DKIM)
+sender-spf = পাঠানোর সার্ভার (SPF)
+sender-result-pass = উত্তীর্ণ
+sender-result-fail = ব্যর্থ
+sender-result-unsure = নিশ্চিত নয়
+sender-result-none = নেই
+sender-result-missing = যাচাই করা হয়নি
+sender-dmarc-pass = { $domain } এই প্রেরককে নিশ্চিত করে।
+sender-dmarc-fail = { $domain } তার মেল যেভাবে পাঠানো হয় বলে জানায়, এই মেল তার সাথে মেলে না।
+sender-dmarc-none = { $domain } তার মেলের জন্য কোনো নিয়ম প্রকাশ করে না।
+sender-dkim-pass = { $domain } স্বাক্ষর করেছে।
+sender-dkim-fail = { $domain }-এর স্বাক্ষর এই মেলের সাথে মেলে না।
+sender-dkim-none = মেসেজটিতে স্বাক্ষর করা হয়নি।
+sender-spf-pass = { $domain }-এর তালিকাভুক্ত একটি সার্ভার থেকে পাঠানো।
+sender-spf-fail = এমন একটি সার্ভার থেকে পাঠানো যা { $domain }-এর তালিকায় নেই।
+sender-spf-none = { $domain } তার সার্ভারের তালিকা দেয় না।
+sender-check-unsure = যাচাই থেকে স্পষ্ট উত্তর পাওয়া যায়নি।
+sender-unconfirmed = { $provider } নিশ্চিত করতে পারেনি যে এটি { $domain } থেকে এসেছে। যে কেউ যেকোনো প্রেরকের নাম লিখতে পারে।
+sender-link-title = এই লিঙ্ক খুলবেন?
+sender-link-body = এই মেল প্রেরক যাচাইয়ে উত্তীর্ণ হয়নি। লিঙ্কটি যাচ্ছে { $host }-এ:
+sender-link-cancel = বাতিল করুন
+sender-link-open = খুলুন
 tracking-opened = { $who } এটি { $count ->
     [one] একবার
    *[other] { $count } বার
@@ -117,6 +200,7 @@ tracking-receipt-other = পঠিত রসিদ: { $who } আপনার ম
 
 remote-hidden = এই মেসেজের ছবিগুলি লুকানো আছে।
 remote-hidden-unconfirmed = ছবি লুকানো আছে: প্রেরককে নিশ্চিত করা যায়নি।
+remote-hidden-failed = ছবি লুকানো আছে: এই মেল প্রেরক যাচাইয়ে উত্তীর্ণ হয়নি।
 remote-show = ছবি দেখান
 remote-always-show = এই প্রেরকের ছবি সবসময় দেখান
 remote-picture-use = ব্যবহার করুন
