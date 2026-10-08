@@ -21,6 +21,13 @@ on:
       - "ci/linux-package-test.sh"
       - ".github/workflows/linux-packages.yml"
   workflow_dispatch:
+  # The release workflow (release.yml) builds a tag with it; only main
+  # publishes here.
+  workflow_call:
+    outputs:
+      version:
+        description: "The version the packages carry (packaging/linux/version.sh)"
+        value: ${{ jobs.portable.outputs.version }}
 
 # As for the Arch package: on main a running build finishes and only the
 # newest push waits; a newer push to a pull request cancels its older run.
@@ -356,10 +363,14 @@ jobs:
           rpmdev-setuptree
           git archive --prefix=katna/ -o ~/rpmbuild/SOURCES/katna.tar.gz HEAD
           KATNA_TITLE="$(git log -1 --format=%s)" rpmbuild -bb packaging/fedora/katna.spec \
-            --define "katna_version $(packaging/linux/version.sh)" \
+            --define "katna_version $(packaging/linux/version.sh | sed 's/beta/~beta/')" \
             --define "katna_built $(git log -1 --format=%ct)"
           mkdir out
-          cp ~/rpmbuild/RPMS/*/katna-*.rpm out/
+          # Without a beta's `~`, which release file names cannot keep.
+          for rpm in ~/rpmbuild/RPMS/*/katna-*.rpm; do
+            name=$(basename "$rpm")
+            cp "$rpm" "out/${name//\~/}"
+          done
           cp out/katna-*.rpm out/katna-x86_64.rpm
           ls -l out
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -590,34 +601,11 @@ jobs:
       # package's own file, which Katna picks by the package it runs from.
       - name: Write the update manifest
         run: |
-          entry() {
-            jq -n --arg file "$1" --arg sha256 "$(sha256sum "out/$1" | cut -d' ' -f1)" \
-              --argjson size "$(stat -c %s "out/$1")" '{$file, $sha256, $size}'
-          }
-          files=$(jq -n \
-            --argjson tarball "$(entry katna-linux-x86_64.tar.gz)" \
-            --argjson appimage "$(entry Katna-x86_64.AppImage)" \
-            --argjson rpm "$(entry katna-x86_64.rpm)" \
-            --argjson deb "$(entry katna_amd64.deb)" \
-            --argjson snap "$(entry katna_amd64.snap)" \
-            --argjson flatpak "$(entry katna-x86_64.flatpak)" \
-            '{$tarball, $appimage, $rpm, $deb, $snap, $flatpak}')
-          git -C src log -200 --format='%h%x09%s' HEAD |
-            jq -R 'split("\t") | {commit: .[0], title: (.[1:] | join("\t"))}' |
-            jq -s . > changes.json
-          highlights=$(jq -c '.[:50]' artifacts/linux-update-info/highlights.json)
-          jq -n \
-            --arg version "${{ needs.portable.outputs.version }}" \
-            --argjson built "$(git -C src log -1 --format=%ct HEAD)" \
-            --arg commit "$(git -C src rev-parse HEAD)" \
-            --argjson highlights "$highlights" \
-            --slurpfile changes changes.json \
-            --argjson files "$files" \
-            '$files.tarball + {$version, $built, $commit, $highlights,
-              changes: $changes[0], $files}' > out/katna-update.json
-          jq '{version, file, files: (.files | map_values(.size)),
-               highlights: (.highlights | length), changes: (.changes | length)}' \
-            out/katna-update.json
+          bash src/ci/update-manifest.sh src out "${{ needs.portable.outputs.version }}" \
+            artifacts/linux-update-info/highlights.json katna-linux-x86_64.tar.gz \
+            tarball=katna-linux-x86_64.tar.gz appimage=Katna-x86_64.AppImage \
+            rpm=katna-x86_64.rpm deb=katna_amd64.deb snap=katna_amd64.snap \
+            flatpak=katna-x86_64.flatpak
       - name: Update the linux-latest pre-release
         env:
           GH_TOKEN: ${{ github.token }}
