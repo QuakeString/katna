@@ -450,6 +450,8 @@ impl MailWindow {
                     }))
                 })
                 .when(dock < 0.5, |d| d.tip(label.clone(), th))
+                .role(gpui::Role::Button)
+                .aria_label(label.clone())
                 .on_click(cx.listener(|this, _, window, cx| this.primary_action(window, cx)))
                 // Split, each half has its own hover.
                 .when(arrow > 0.5, |d| {
@@ -1366,6 +1368,12 @@ impl MailWindow {
                     th,
                 )
             })
+            // Screen readers hear the account's name, not the tooltip.
+            .role(gpui::Role::TreeItem)
+            .aria_label(name.clone())
+            .aria_expanded(expanded)
+            .aria_level(1)
+            .when(self.nav_cursor_on(ix), |d| d.aria_active_descendant())
             .on_click(cx.listener(move |this, _, _, cx| this.toggle_nav_row(ix, cx)))
             .on_mouse_down(
                 MouseButton::Right,
@@ -1483,6 +1491,7 @@ impl MailWindow {
         // line, as the list's stars do; an open line keeps its arrow, and
         // so do the keys' line and a phone, which has no pointer.
         let arrow_rests = !self.nav_cursor_on(ix) && !self.layout.shape.is_phone();
+        let chevron_open = chevron;
         let chevron = chevron.map(|expanded| {
             div()
                 .id(("nav-chevron", ix))
@@ -1508,8 +1517,19 @@ impl MailWindow {
         });
         // A full pill, inset from the pane's edge; the icon and
         // label stay where they were.
+        let spoken = if unread > 0 {
+            tr!("a11y-folder-unread", name = label.clone(), count = unread)
+        } else {
+            label.clone()
+        };
         let row = div()
             .id(("nav-row", ix))
+            .role(gpui::Role::TreeItem)
+            .aria_label(spoken)
+            .aria_selected(selected)
+            .aria_level(depth + 2)
+            .when_some(chevron_open, |d, open| d.aria_expanded(open))
+            .when(self.nav_cursor_on(ix), |d| d.aria_active_descendant())
             .group(NAV_PILL)
             .relative()
             .h(px(NAV_ROW_HEIGHT))
@@ -2137,6 +2157,8 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> gpui::Stateful<gpui::Div> {
         panel
+            .role(gpui::Role::Tree)
+            .aria_label(tr!("a11y-folders"))
             .key_context(super::NAV_CONTEXT)
             .track_focus(&self.nav_focus)
             .on_key_down(cx.listener(Self::nav_key))

@@ -11,8 +11,8 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, FontWeight, HighlightStyle, ListOffset,
-    SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, deferred, div,
-    ease_out_quint, list, point, prelude::*, relative, rgba,
+    Role as A11yRole, SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, deferred,
+    div, ease_out_quint, list, point, prelude::*, relative, rgba,
 };
 use katna_core::config::Density;
 use katna_i18n::tr;
@@ -344,6 +344,13 @@ impl MailWindow {
                 LIST_CONTEXT
             })
             .track_focus(&self.list_focus)
+            .map(|d| {
+                if reading_context {
+                    self.spoken_reader(d)
+                } else {
+                    d.role(A11yRole::List).aria_label(tr!("a11y-mail-list"))
+                }
+            })
             .size_full()
             .flex()
             .flex_col()
@@ -2574,6 +2581,24 @@ impl MailWindow {
                 .map(|(d, now)| format::list_date(d, now))
                 .unwrap_or_default(),
         };
+        // What a screen reader says on the line: unread first, as the
+        // bold shows, then who, what and when.
+        let spoken = [
+            row.unread.then(|| tr!("a11y-unread").to_string()),
+            Some(row.correspondent.clone()),
+            Some(row.subject.clone()),
+            (!date.is_empty()).then(|| date.to_string()),
+        ]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>()
+        .join(", ");
+        let base = base
+            .role(A11yRole::ListItem)
+            .aria_label(spoken)
+            .aria_selected(cursor || checked)
+            .aria_position_in_set(ix + 1)
+            .when(cursor, |d| d.aria_active_descendant());
         let weight = if row.unread {
             FontWeight::BOLD
         } else {

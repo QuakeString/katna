@@ -861,6 +861,9 @@ pub struct MailWindow {
     /// Whether the conversation beside the list has the keys, as of this
     /// frame: the list's cursor dims and the pane's outline lights.
     reader_keys: bool,
+    /// A screen reader is listening, so the open mail's text is handed to
+    /// it (read each frame only then).
+    a11y_on: bool,
     /// A dialog without fields of its own to focus (the delete question),
     /// and any dialog's frame that keeps Tab inside it.
     dialog_focus: FocusHandle,
@@ -1171,6 +1174,7 @@ impl MailWindow {
             list_focus: cx.focus_handle(),
             reader_focus: cx.focus_handle(),
             reader_keys: false,
+            a11y_on: false,
             dialog_focus: cx.focus_handle(),
             scheme_editor: None,
             color_picker: None,
@@ -3709,6 +3713,7 @@ impl Render for MailWindow {
         let pane_open = self.pane_open();
         self.pane_spring.set(if pane_open { 1.0 } else { 0.0 });
         self.reader_keys = pane_open && self.reader_focus.contains_focused(window, cx);
+        self.a11y_on = window.is_a11y_active();
         self.keys_spring
             .set(if self.reader_keys { 1.0 } else { 0.0 });
         self.nav_keys_shown = self.nav_focus.is_focused(window);

@@ -1079,29 +1079,35 @@ pub trait FocusRing: Sized {
 
 impl FocusRing for Stateful<Div> {
     fn focus_ring(self, th: &Theme) -> Self {
-        self.tab_index(0).focus_visible(ring_style(th))
+        // A Tab stop is a button to screen readers unless it says otherwise
+        // (a later `.role()` wins).
+        self.role(Role::Button)
+            .tab_index(0)
+            .focus_visible(ring_style(th))
     }
 
     fn focus_ring_filled(self, th: &Theme) -> Self {
         let (gap, ring) = (rgba(th.surface), rgba(th.accent));
-        self.tab_index(0).focus_visible(move |s| {
-            s.shadow(vec![
-                BoxShadow {
-                    color: gap.into(),
-                    offset: point(px(0.0), px(0.0)),
-                    blur_radius: px(0.0),
-                    spread_radius: px(2.0),
-                    inset: false,
-                },
-                BoxShadow {
-                    color: ring.into(),
-                    offset: point(px(0.0), px(0.0)),
-                    blur_radius: px(0.0),
-                    spread_radius: px(4.0),
-                    inset: false,
-                },
-            ])
-        })
+        self.role(Role::Button)
+            .tab_index(0)
+            .focus_visible(move |s| {
+                s.shadow(vec![
+                    BoxShadow {
+                        color: gap.into(),
+                        offset: point(px(0.0), px(0.0)),
+                        blur_radius: px(0.0),
+                        spread_radius: px(2.0),
+                        inset: false,
+                    },
+                    BoxShadow {
+                        color: ring.into(),
+                        offset: point(px(0.0), px(0.0)),
+                        blur_radius: px(0.0),
+                        spread_radius: px(4.0),
+                        inset: false,
+                    },
+                ])
+            })
     }
 
     fn focus_ring_in(mut self, stops: &TabStops, th: &Theme, cx: &App) -> Self {

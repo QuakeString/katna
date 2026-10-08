@@ -1013,11 +1013,19 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         // A long label wraps onto a second line in a narrow window.
+        let label = label.into();
         self.page_control(crate::widgets::row(id, false, th), th, cx)
+            .role(gpui::Role::RadioButton)
+            .aria_label(label.clone())
+            .aria_toggled(if on {
+                gpui::Toggled::True
+            } else {
+                gpui::Toggled::False
+            })
             .gap(px(14.0))
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
             .child(animated_radio((id, 2_usize), on, th))
-            .child(div().flex_1().min_w_0().child(label.into()))
+            .child(div().flex_1().min_w_0().child(label))
             .into_any_element()
     }
 
@@ -1031,7 +1039,11 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
+        let label = label.into();
         self.page_control(crate::widgets::row(id, false, th), th, cx)
+            .role(gpui::Role::Link)
+            .aria_label(label.clone())
+            .aria_description(detail.clone())
             .on_click(
                 cx.listener(move |this, _, window, cx| {
                     this.open_settings_page(section, window, cx)
@@ -1043,7 +1055,7 @@ impl MailWindow {
                     .min_w_0()
                     .flex()
                     .flex_col()
-                    .child(div().text_size(px(14.0)).child(label.into()))
+                    .child(div().text_size(px(14.0)).child(label))
                     .child(
                         div()
                             .text_size(px(12.0))
@@ -1108,7 +1120,16 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let id: gpui::ElementId = id.into();
+        let (label, detail) = (label.into(), detail.into());
         self.page_control(crate::widgets::row(id.clone(), false, th), th, cx)
+            .role(gpui::Role::Switch)
+            .aria_label(label.clone())
+            .aria_description(detail.clone())
+            .aria_toggled(if on {
+                gpui::Toggled::True
+            } else {
+                gpui::Toggled::False
+            })
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
             .child(
                 div()
@@ -1116,12 +1137,12 @@ impl MailWindow {
                     .min_w_0()
                     .flex()
                     .flex_col()
-                    .child(div().text_size(px(14.0)).child(label.into()))
+                    .child(div().text_size(px(14.0)).child(label))
                     .child(
                         div()
                             .text_size(px(12.0))
                             .text_color(rgba(th.text_faint))
-                            .child(detail.into()),
+                            .child(detail),
                     ),
             )
             .children(extra)

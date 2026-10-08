@@ -520,6 +520,9 @@ impl MailWindow {
                 )
                 .child(app_face(app, on, false, th))
                 .when(!labels, |d| d.tip(app.label(), th))
+                .role(gpui::Role::Tab)
+                .aria_label(app.label())
+                .aria_selected(on)
                 // The name folds away when the settings hide it.
                 .child(
                     div()

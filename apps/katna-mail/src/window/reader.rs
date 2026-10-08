@@ -889,6 +889,25 @@ impl MailWindow {
         self.reader.as_ref()?.parts.get(ix).map(|p| p.id)
     }
 
+    /// What a screen reader hears of the open conversation: its subject as
+    /// the name and, while one listens, its newest message's text.
+    pub(super) fn spoken_reader<E: StatefulInteractiveElement>(&self, el: E) -> E {
+        let Some(reader) = self.reader.as_ref() else {
+            return el;
+        };
+        let text = self
+            .a11y_on
+            .then(|| reader.parts.last().and_then(|p| self.plain_text_of(p.id)))
+            .flatten();
+        let el = el
+            .role(gpui::Role::Document)
+            .aria_label(reader.subject.clone());
+        match text {
+            Some(text) => el.aria_description(text),
+            None => el,
+        }
+    }
+
     /// The plain text of message `id` in the open conversation, unless it
     /// is encrypted or empty.
     pub(super) fn plain_text_of(&self, id: MessageId) -> Option<String> {
@@ -1004,6 +1023,7 @@ impl MailWindow {
             .id("reader-card")
             .key_context(READER_CONTEXT)
             .track_focus(&self.reader_focus)
+            .map(|d| self.spoken_reader(d))
             .size_full()
             .flex()
             .flex_col()

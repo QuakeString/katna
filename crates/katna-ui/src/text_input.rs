@@ -1092,6 +1092,16 @@ impl Render for TextInput {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         self.request_grammar(cx);
         div()
+            // Screen readers hear the field: its hint names it, and what is
+            // typed is its value (never a password's).
+            .id(("text-input", cx.entity_id().as_u64()))
+            .role(if self.masked {
+                gpui::Role::PasswordInput
+            } else {
+                gpui::Role::TextInput
+            })
+            .aria_label(self.placeholder.clone())
+            .when(!self.masked, |d| d.aria_value(self.content.clone()))
             .flex()
             .flex_1()
             .min_w_0()
