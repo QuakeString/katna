@@ -1233,6 +1233,23 @@ pub async fn fetch_image(connection: &Connection, url: &str) -> Result<Vec<u8>, 
     pim.fetch_image(url).await.map_err(|err| describe(&err))
 }
 
+/// Asks the daemon to keep the Autocrypt key of message `id`, just opened.
+pub async fn learn_key(connection: &Connection, id: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.learn_key(id).await.map_err(|err| describe(&err))
+}
+
+/// Asks the daemon to look up a key for `address` in its Web Key
+/// Directory: its fingerprint, or empty when there is none.
+pub async fn look_up_key(connection: &Connection, address: &str) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.look_up_key(address).await.map_err(|err| describe(&err))
+}
+
 /// Asks the daemon for the picture of the sender `address` (empty: none).
 pub async fn sender_picture(connection: &Connection, address: &str) -> Result<Vec<u8>, String> {
     let pim = PimProxy::new(connection)

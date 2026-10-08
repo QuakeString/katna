@@ -843,6 +843,9 @@ pub struct MailWindow {
     /// Bodies being downloaded because their message or an attachment
     /// chip of it was opened.
     downloads: HashMap<MessageId, download::Download>,
+    /// Open messages already handed to the daemon for their Autocrypt key
+    /// (`reader/security.rs`).
+    learned_keys: std::collections::HashSet<MessageId>,
     /// The attachment chip waiting for its message to download.
     chip_download: Option<download::ChipDownload>,
     /// Navigation openness at this frame, for the folder rows.
@@ -1159,6 +1162,7 @@ impl MailWindow {
             folder_pick: None,
             mail_dragging: Vec::new(),
             downloads: HashMap::new(),
+            learned_keys: Default::default(),
             chip_download: None,
             nav_t: 1.0,
             daemon: None,

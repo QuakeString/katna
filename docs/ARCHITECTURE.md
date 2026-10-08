@@ -5402,18 +5402,47 @@ queued, so the outbox and Sent hold only what was sent. Details:
 
 - Keys are chosen by exact address in the local keyring
   (`katna_crypto::encryption_keys`: usable for encryption, a verified key
-  before an unverified one) and passed to GnuPG by fingerprint, so GnuPG
-  never looks a recipient up on the network (WKD) while sending. A key the
-  user has not certified is still used (`--trust-model always`); a
-  recipient without any key stops the send with "no key for …" and the
-  message comes back.
+  before an unverified one), else among the keys Katna found (below), and
+  passed to GnuPG by fingerprint or file, so GnuPG itself never looks a
+  recipient up. A key the user has not certified is still used
+  (`--trust-model always`); a recipient without any key stops the send
+  with "no key for …" and the message comes back.
 - The sender is always a recipient too, so Sent stays readable. Bcc
   recipients are hidden recipients in OpenPGP (`--hidden-recipient`); CMS
   has no such thing.
 - OpenPGP by default; S/MIME when answering S/MIME mail or when the sender
   only has an S/MIME certificate.
-- Routing headers (From, To, Subject) stay outside the protection; hiding
-  the subject (protected headers) and Autocrypt headers come later (E.3).
+- Routing headers (From, To, Cc, Date) stay outside the protection.
+  Encrypted OpenPGP mail hides its subject: the outside says `...`, and
+  the real Subject (with copies of the routing headers) goes inside, with
+  `protected-headers="v1"` on the inner Content-Type, as Thunderbird and
+  KMail send and read it. S/MIME mail keeps its subject outside.
+
+**Keys from Autocrypt and the Web Key Directory (E.3).** Keys Katna finds
+for people are kept apart from the user's GnuPG keyring, which stays the
+user's own, in `$XDG_DATA_HOME/katna/keys/` (`katna_crypto::PeerKeys`: a
+binary key and a small text file per address, written only by the daemon),
+and used only to encrypt to the address they were found for, through
+`--recipient-file`. A key is kept only when GnuPG lists exactly one key in
+it, with a user ID of exactly that address, able to encrypt, neither
+revoked nor expired.
+
+- **Autocrypt (Level 1).** Mail Katna sends carries an `Autocrypt:
+  addr=…; keydata=…` header when GnuPG has a secret key for the sender:
+  the newest usable one, exported minimal with only that address's user
+  ID and the encryption subkey. No `prefer-encrypt` is stated. When the
+  user opens a message with an Autocrypt header, the app asks the daemon
+  (`LearnKey`) to keep the key, which it does only when the user's
+  provider authenticated the message's `From` (aligned DMARC or DKIM in
+  `Authentication-Results`, §12) and `addr` is that `From`; a key from
+  older mail never replaces one from newer mail.
+- **Web Key Directory.** When Encrypt is on and a recipient has no key,
+  the app asks the daemon (`LookUpKey`) before sealing: it fetches
+  `https://openpgpkey.<domain>/.well-known/openpgpkey/<domain>/hu/<hash>`,
+  then the direct `https://<domain>/.well-known/openpgpkey/hu/<hash>`
+  (public addresses only, 256 KiB at most), so only the recipient's own
+  domain learns who is written to. Nothing is looked up while reading:
+  that would tell the sender the mail was opened.
 
 
 ### 19.2 Crash reports and feedback

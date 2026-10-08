@@ -16,6 +16,7 @@ use katna_store::MessageId;
 use katna_ui::px;
 
 use super::{Body, Part, shown};
+use crate::daemon;
 use crate::theme::{Theme, fade};
 use crate::widgets::icon;
 use crate::window::MailWindow;
@@ -164,6 +165,52 @@ impl MailWindow {
             })
             .detach();
         }
+    }
+
+    /// Hands each open message with an `Autocrypt` header to the daemon,
+    /// once, which keeps its sender's key for encrypting replies when the
+    /// user's provider authenticated the sender.
+    pub(super) fn learn_keys(&mut self, cx: &mut Context<Self>) {
+        let (Some(reader), Ok(mail)) = (&self.reader, &self.mail) else {
+            return;
+        };
+        let opened: Vec<MessageId> = reader
+            .parts
+            .iter()
+            .filter(|p| p.body.as_ref().is_some_and(|b| b.view.is_some()))
+            .map(|p| p.id)
+            .filter(|id| !self.learned_keys.contains(id))
+            .collect();
+        let mut learn = Vec::new();
+        for id in opened {
+            self.learned_keys.insert(id);
+            if mail
+                .raw(id)
+                .is_some_and(|raw| katna_crypto::autocrypt::has_header(&raw))
+            {
+                learn.push(id);
+            }
+        }
+        if learn.is_empty() {
+            return;
+        }
+        let connection = self.daemon.clone();
+        cx.background_executor()
+            .spawn(async move {
+                let connection = match connection {
+                    Some(connection) => connection,
+                    None => match daemon::connect().await {
+                        Ok(connection) => connection,
+                        Err(err) => return tracing::debug!(%err, "Autocrypt keys not kept"),
+                    },
+                };
+                for id in learn {
+                    if let Err(err) = daemon::learn_key(&connection, id.0).await {
+                        tracing::debug!(%err, "Autocrypt key not kept");
+                    }
+                }
+            })
+            .detach();
     }
 
     /// Reads message `id` again and hands it to GnuPG, after the

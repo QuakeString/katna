@@ -1313,6 +1313,7 @@ impl MailWindow {
 
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         self.open_sealed(cx);
+        self.learn_keys(cx);
         self.fetch_remote(cx);
         self.download_bodies(cx);
         self.prepare_chat();

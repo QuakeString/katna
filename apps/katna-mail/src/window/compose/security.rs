@@ -5,11 +5,14 @@
 //! and GnuPG run on the finished message before it goes to the outbox, so
 //! the outbox and Sent hold only what was sent.
 
+use std::path::Path;
+
 use gpui::{AnyElement, Context, div, prelude::*, rgba};
 use katna_crypto::{Gnupg, Protect, Recipients, Security, Standard};
 use katna_i18n::tr;
 use katna_ui::px;
 
+use crate::daemon;
 use crate::theme::Theme;
 use crate::widgets::{icon_button_colored, tip};
 use crate::window::MailWindow;
@@ -64,8 +67,56 @@ impl Sealing {
     }
 }
 
+/// The user's GnuPG, with the keys Katna found for people (`peers`, the
+/// daemon's [`katna_core::Paths::peer_keys_dir`]).
+pub(in crate::window) fn gnupg(peers: &Path) -> Gnupg {
+    Gnupg::new().with_peer_keys(peers)
+}
+
+/// The standard `sealing` signs and encrypts with for `sender`.
+fn standard(gnupg: &Gnupg, sealing: Sealing, sender: &str) -> Standard {
+    let preferred = if sealing.smime {
+        Standard::Smime
+    } else {
+        Standard::OpenPgp
+    };
+    katna_crypto::sending_standard(gnupg, sender, preferred)
+}
+
+/// Before encrypting with OpenPGP, looks up a key for each recipient
+/// without one in their domain's Web Key Directory, through the daemon.
+/// What it finds, [`seal`] then uses; an address with no key still makes
+/// [`seal`] fail, naming it. Blocks on GnuPG briefly, like [`seal`].
+pub(in crate::window) async fn look_up_keys(
+    connection: &zbus::Connection,
+    sealing: Sealing,
+    sender: &str,
+    recipients: &[String],
+    peers: &Path,
+) {
+    if !sealing.encrypt {
+        return;
+    }
+    let gnupg = gnupg(peers);
+    if standard(&gnupg, sealing, sender) != Standard::OpenPgp {
+        return;
+    }
+    let keys = katna_crypto::encryption_keys(&gnupg, Standard::OpenPgp, recipients);
+    let missing = recipients
+        .iter()
+        .zip(keys)
+        .filter(|(_, key)| key.is_none())
+        .map(|(address, _)| address);
+    for address in missing {
+        if let Err(err) = daemon::look_up_key(connection, address).await {
+            tracing::debug!(%err, "Web Key Directory lookup");
+        }
+    }
+}
+
 /// Signs and/or encrypts `raw` as `sealing` asks, from `sender` to the
-/// given addresses. Blocks on GnuPG (and pinentry): run it off the UI
+/// given addresses, and adds the sender's Autocrypt header when GnuPG has
+/// a key for them. Blocks on GnuPG (and pinentry): run it off the UI
 /// thread.
 pub(in crate::window) fn seal(
     raw: Vec<u8>,
@@ -73,19 +124,15 @@ pub(in crate::window) fn seal(
     sender: String,
     visible: Vec<String>,
     hidden: Vec<String>,
+    peers: &Path,
 ) -> Result<Vec<u8>, String> {
+    let gnupg = gnupg(peers);
+    let raw = katna_crypto::autocrypt::with_header(&raw, &gnupg, &sender);
     if !sealing.any() {
         return Ok(raw);
     }
-    let gnupg = Gnupg::new();
-    let preferred = if sealing.smime {
-        Standard::Smime
-    } else {
-        Standard::OpenPgp
-    };
-    let standard = katna_crypto::sending_standard(&gnupg, &sender, preferred);
     let how = Protect {
-        standard,
+        standard: standard(&gnupg, sealing, &sender),
         sign: sealing.sign,
         encrypt: sealing.encrypt,
     };
@@ -238,6 +285,7 @@ mod tests {
             "a@example.org".into(),
             vec![],
             vec![],
+            std::path::Path::new("/nonexistent/keys"),
         );
         assert_eq!(sealed, Ok(raw));
     }

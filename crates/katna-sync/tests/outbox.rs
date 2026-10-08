@@ -703,6 +703,7 @@ fn signed_and_encrypted_mail_is_tracked_per_copy() {
         );
         // Nothing readable on the wire.
         assert!(!copy.message.contains("example.com/p"), "{}", copy.message);
+        assert!(copy.message.contains("Subject: ...\r\n"), "{}", copy.message);
         let raw = copy.message.as_bytes();
         assert_eq!(
             katna_crypto::protection(raw),
@@ -714,6 +715,7 @@ fn signed_and_encrypted_mail_is_tracked_per_copy() {
         assert!(opened.security.decrypted());
         assert!(!opened.security.signatures.is_empty());
         let html = String::from_utf8_lossy(&opened.raw).replace("=\r\n", "");
+        assert_eq!(html.matches("protected-headers").count(), 1, "{html}");
         assert!(
             html.contains(&format!("{TEST_SERVER}/o/{tracking_id}.png")),
             "{html}"
