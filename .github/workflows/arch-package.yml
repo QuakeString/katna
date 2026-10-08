@@ -219,7 +219,9 @@ jobs:
       - name: Upgrade and roll back
         if: steps.previous.outputs.found == 'true'
         run: |
-          docker run --rm --network host -v "$PWD:/work" -w /work archlinux:latest \
+          # gnome-keyring-daemon drops capabilities as root, which Docker
+          # forbids without --privileged.
+          docker run --rm --privileged --network host -v "$PWD:/work" -w /work archlinux:latest \
             ci/upgrade-test.sh previous/katna-git-x86_64.pkg.tar.zst \
               candidate/katna-git-x86_64.pkg.tar.zst
 
