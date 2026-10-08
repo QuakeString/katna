@@ -31,6 +31,20 @@ scripts were split mid-word, even inside a letter and its marks.
 - The `svg_renderer` tests are off: they read fonts from Zed's repository,
   which the published crate does not carry.
 
+Right-to-left text wraps line by line in reading order
+(`LineLayoutCache::wrap_bidi`, `line_layout.rs`). A shaped line is in the
+order it shows, so a right-to-left paragraph's glyph positions fall as
+their index grows, and breaks found along them cut it apart (the first
+line held one letter, the rest ran out of the box). For a line holding
+right-to-left letters the breaks are found on its glyphs put back in
+reading order, each character as wide as it was shaped; then each wrapped
+line is shaped on its own, so bidi orders it as a line, its glyphs are put
+in the order they show, and the lines follow one another as a
+left-to-right line's parts do. Not yet: a wrapped right-to-left line's
+glyphs are in visual order, so a style run (a link's colour, an
+underline) is matched to glyphs in that order and can spill into the
+neighbouring text of the same line.
+
 Run the crate's tests with
 `cargo test --manifest-path vendor/gpui-pre/Cargo.toml --lib --features test-support`
 (it is outside the workspace; the `Cargo.lock` that writes is ignored).

@@ -64,6 +64,7 @@ pub fn anchored() -> Anchored {
         position: None,
         local: false,
         offset: None,
+        screen_corner: false,
     }
 }
 
@@ -75,6 +76,8 @@ pub struct Anchored {
     /// `position` counts from the parent rather than the window.
     local: bool,
     offset: Option<Point<Pixels>>,
+    /// The anchor is a corner on screen in a right-to-left layout too.
+    screen_corner: bool,
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -102,6 +105,14 @@ impl Anchored {
     /// Moves the element this far from its point.
     pub fn offset(mut self, offset: Point<Pixels>) -> Self {
         self.offset = Some(offset);
+        self
+    }
+
+    /// The anchor and offset are on screen whatever the layout direction:
+    /// for a place worked out by hand, such as a menu that already chose
+    /// which side of the pointer it opens on.
+    pub fn screen_corner(mut self) -> Self {
+        self.screen_corner = true;
         self
     }
 
@@ -195,7 +206,7 @@ impl Element for Anchored {
         // top left corner it opens toward the left of its point, offsets
         // turn around, and without a position it hangs from the right of
         // where it was laid out. Window positions stay where they are.
-        let rtl = window.layout_direction().is_rtl();
+        let rtl = window.layout_direction().is_rtl() && !self.screen_corner;
         let (anchor, offset, start) = if rtl {
             let offset = self.offset.unwrap_or_default();
             (

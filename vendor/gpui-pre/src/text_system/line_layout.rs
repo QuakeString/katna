@@ -647,12 +647,29 @@ impl LineLayoutCache {
         } else {
             drop(current_frame);
             let text = SharedString::from(text);
-            let unwrapped_layout = self.layout_line::<&SharedString>(&text, font_size, runs, None);
-            let wrap_boundaries = if let Some(wrap_width) = wrap_width {
-                unwrapped_layout.compute_wrap_boundaries(text.as_ref(), wrap_width, max_lines)
+            let mut unwrapped_layout =
+                self.layout_line::<&SharedString>(&text, font_size, runs, None);
+            let mut wrap_boundaries = if let Some(wrap_width) = wrap_width {
+                if has_rtl(&text) {
+                    // Katna: right-to-left text wraps line by line in the
+                    // order it is read (see `wrap_bidi`).
+                    let (layout, boundaries) = self.wrap_bidi(
+                        &text,
+                        font_size,
+                        runs,
+                        &unwrapped_layout,
+                        wrap_width,
+                        max_lines,
+                    );
+                    unwrapped_layout = layout;
+                    boundaries
+                } else {
+                    unwrapped_layout.compute_wrap_boundaries(text.as_ref(), wrap_width, max_lines)
+                }
             } else {
                 SmallVec::new()
             };
+            wrap_boundaries.shrink_to_fit();
             let layout = Arc::new(WrappedLineLayout {
                 unwrapped_layout,
                 wrap_boundaries,
@@ -674,6 +691,90 @@ impl LineLayoutCache {
 
             layout
         }
+    }
+
+    /// Katna: wraps a line holding right-to-left text. The shaped line
+    /// is in the order it shows, right to left, so its glyphs' positions
+    /// do not grow with their index and the breaks found along them cut
+    /// it in the wrong places. The breaks are found on the glyphs put back
+    /// in reading order (each character as wide as it was shaped), then
+    /// each line is shaped on its own, so it shows in its own visual order
+    /// (as bidi reorders each line), and the lines are placed one after
+    /// another, as a left-to-right line's wrapped parts are.
+    fn wrap_bidi(
+        &self,
+        text: &SharedString,
+        font_size: Pixels,
+        runs: &[FontRun],
+        shaped: &Arc<LineLayout>,
+        wrap_width: Pixels,
+        max_lines: Option<usize>,
+    ) -> (Arc<LineLayout>, SmallVec<[WrapBoundary; 1]>) {
+        let logical = in_reading_order(shaped);
+        let breaks = logical.compute_wrap_boundaries(text.as_ref(), wrap_width, max_lines);
+        if breaks.is_empty() {
+            return (shaped.clone(), breaks);
+        }
+        let mut starts = vec![0];
+        starts.extend(
+            breaks
+                .iter()
+                .map(|b| logical.runs[b.run_ix].glyphs[b.glyph_ix].index),
+        );
+        starts.push(text.len());
+        let mut layout = LineLayout {
+            font_size,
+            width: px(0.),
+            ascent: shaped.ascent,
+            descent: shaped.descent,
+            runs: Vec::new(),
+            len: text.len(),
+        };
+        let mut boundaries = SmallVec::new();
+        for (line_ix, range) in starts.windows(2).map(|w| w[0]..w[1]).enumerate() {
+            if range.is_empty() {
+                continue;
+            }
+            let line_runs = runs_in(runs, range.clone());
+            let line = self.layout_line(&text[range.clone()], font_size, &line_runs, None);
+            // The glyphs come in reading order; the line's are put in the
+            // order they show, so it starts at its left end, where the
+            // wrapped line before it ends.
+            let mut glyphs: Vec<(FontId, &ShapedGlyph)> = line
+                .runs
+                .iter()
+                .flat_map(|run| run.glyphs.iter().map(move |glyph| (run.font_id, glyph)))
+                .collect();
+            glyphs.sort_by(|a, b| a.1.position.x.0.total_cmp(&b.1.position.x.0));
+            let mut first = true;
+            for (font_id, glyph) in glyphs {
+                let glyph = ShapedGlyph {
+                    index: glyph.index + range.start,
+                    position: point(glyph.position.x + layout.width, glyph.position.y),
+                    ..glyph.clone()
+                };
+                match layout.runs.last_mut() {
+                    Some(last) if last.font_id == font_id && !(first && line_ix > 0) => {
+                        last.glyphs.push(glyph)
+                    }
+                    _ => layout.runs.push(ShapedRun {
+                        font_id,
+                        glyphs: vec![glyph],
+                    }),
+                }
+                if first && line_ix > 0 {
+                    boundaries.push(WrapBoundary {
+                        run_ix: layout.runs.len() - 1,
+                        glyph_ix: layout.runs.last().map_or(0, |r| r.glyphs.len() - 1),
+                    });
+                }
+                first = false;
+            }
+            layout.width += line.width;
+            layout.ascent = layout.ascent.max(line.ascent);
+            layout.descent = layout.descent.max(line.descent);
+        }
+        (Arc::new(layout), boundaries)
     }
 
     pub fn layout_line<Text>(
@@ -907,6 +1008,89 @@ impl LineLayoutCache {
 // loop must not advance the cell counter for these zero-advance glyphs,
 // otherwise they get displaced into the next cell. We detect them by checking
 // whether shaped x has advanced by at least half a cell beyond the last base.
+/// Katna: whether `text` holds right-to-left letters (Hebrew, Arabic,
+/// Syriac, Thaana, N'Ko and their presentation forms, and the historic
+/// right-to-left scripts).
+fn has_rtl(text: &str) -> bool {
+    text.chars().any(|c| {
+        let c = c as u32;
+        matches!(c,
+            0x0590..=0x08FF | 0xFB1D..=0xFDFF | 0xFE70..=0xFEFF | 0x10800..=0x10FFF | 0x1E800..=0x1EFFF)
+            // Arabic-Indic digits have no direction of their own.
+            && !matches!(c, 0x0660..=0x0669 | 0x06F0..=0x06F9)
+    })
+}
+
+/// Katna: `shaped` with its glyphs in the order of the text, each
+/// character (all its glyphs) as wide as it was shaped, side by side
+/// from the left: what to find line breaks on.
+fn in_reading_order(shaped: &LineLayout) -> LineLayout {
+    // In the order shown, with how far each glyph is from the next.
+    let mut shown: Vec<(FontId, &ShapedGlyph)> = shaped
+        .runs
+        .iter()
+        .flat_map(|run| run.glyphs.iter().map(move |glyph| (run.font_id, glyph)))
+        .collect();
+    shown.sort_by(|a, b| a.1.position.x.0.total_cmp(&b.1.position.x.0));
+    let mut advance: FxHashMap<usize, Pixels> = FxHashMap::default();
+    for (ix, (_, glyph)) in shown.iter().enumerate() {
+        let next = shown
+            .get(ix + 1)
+            .map_or(shaped.width, |(_, g)| g.position.x);
+        *advance.entry(glyph.index).or_default() += next - glyph.position.x;
+    }
+    let mut glyphs = shown;
+    glyphs.sort_by_key(|(_, glyph)| glyph.index);
+    let mut runs: Vec<ShapedRun> = Vec::new();
+    let mut x = px(0.);
+    let mut prev_index = None;
+    for (font_id, glyph) in glyphs {
+        if prev_index != Some(glyph.index) {
+            if let Some(prev) = prev_index {
+                x += advance.get(&prev).copied().unwrap_or_default();
+            }
+            prev_index = Some(glyph.index);
+        }
+        let glyph = ShapedGlyph {
+            position: point(x, glyph.position.y),
+            ..glyph.clone()
+        };
+        match runs.last_mut() {
+            Some(run) if run.font_id == font_id => run.glyphs.push(glyph),
+            _ => runs.push(ShapedRun {
+                font_id,
+                glyphs: vec![glyph],
+            }),
+        }
+    }
+    LineLayout {
+        font_size: shaped.font_size,
+        width: shaped.width,
+        ascent: shaped.ascent,
+        descent: shaped.descent,
+        runs,
+        len: shaped.len,
+    }
+}
+
+/// Katna: the parts of `runs` (over a whole line) that cover `range`.
+fn runs_in(runs: &[FontRun], range: Range<usize>) -> SmallVec<[FontRun; 2]> {
+    let mut out = SmallVec::new();
+    let mut start = 0;
+    for run in runs {
+        let end = start + run.len;
+        let (a, b) = (start.max(range.start), end.min(range.end));
+        if a < b {
+            out.push(FontRun {
+                len: b - a,
+                font_id: run.font_id,
+            });
+        }
+        start = end;
+    }
+    out
+}
+
 fn apply_force_width_to_layout(layout: &mut LineLayout, force_width: Pixels) {
     let mut glyph_pos: usize = 0;
     // NEG_INFINITY ensures the first glyph is always classified as a base.
@@ -1197,5 +1381,61 @@ mod tests {
 
         let positions = glyph_x_positions(&layout);
         assert_eq!(positions, vec![0.5, 0.5]);
+    }
+
+    /// Katna: a right-to-left line as shaped, its first character at the
+    /// right: "abc" with a 10 px wide `a`, 20 px `b` and 30 px `c`.
+    fn shaped_rtl() -> LineLayout {
+        let mut layout = make_layout(vec![glyph_at(0., 2), glyph_at(30., 1), glyph_at(50., 0)]);
+        layout.width = px(60.);
+        layout.len = 3;
+        layout
+    }
+
+    #[test]
+    fn right_to_left_glyphs_are_put_back_in_reading_order() {
+        let logical = in_reading_order(&shaped_rtl());
+        let glyphs = &logical.runs[0].glyphs;
+        assert_eq!(
+            glyphs.iter().map(|g| g.index).collect::<Vec<_>>(),
+            [0, 1, 2]
+        );
+        assert_eq!(glyph_x_positions(&logical), [0., 10., 30.]);
+        assert_eq!(logical.width, px(60.));
+    }
+
+    #[test]
+    fn right_to_left_letters_are_found() {
+        assert!(has_rtl("مرحبا"));
+        assert!(has_rtl("Shalom שלום"));
+        assert!(!has_rtl("Hello, ١٢٣ 🙂"));
+    }
+
+    #[test]
+    fn font_runs_are_cut_to_a_line() {
+        let runs = [
+            FontRun {
+                len: 4,
+                font_id: FontId(1),
+            },
+            FontRun {
+                len: 6,
+                font_id: FontId(2),
+            },
+        ];
+        let cut = runs_in(&runs, 2..7);
+        assert_eq!(
+            cut.as_slice(),
+            &[
+                FontRun {
+                    len: 2,
+                    font_id: FontId(1)
+                },
+                FontRun {
+                    len: 3,
+                    font_id: FontId(2)
+                }
+            ]
+        );
     }
 }
