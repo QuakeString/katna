@@ -140,7 +140,7 @@ key-card-failed = కీని పొందడం సాధ్యం కాల�
 ## of a sender nothing confirmed
 
 sender-failed-title = ఇది { $domain } నుండి రాకపోవచ్చు
-sender-failed-body = ఇది { $provider } పంపినవారి తనిఖీలలో విఫలమైంది. లింక్‌లు, అటాచ్‌మెంట్‌లు, ప్రత్యుత్తరాల విషయంలో జాగ్రత్తగా ఉండండి.
+sender-failed-body = ఇది { $provider } చేసిన పంపినవారి తనిఖీలలో విఫలమైంది. లింక్‌లు, అటాచ్‌మెంట్‌లు, ప్రత్యుత్తరాల విషయంలో జాగ్రత్తగా ఉండండి.
 sender-provider-unknown = మీ మెయిల్ ప్రొవైడర్
 sender-details = వివరాలు
 sender-details-hide = వివరాలను దాచండి
