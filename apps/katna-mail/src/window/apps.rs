@@ -647,14 +647,7 @@ impl MailWindow {
             .h_full()
             .pr(px(shape.card_margin()))
             .pb(px(shape.card_margin()))
-            .child(
-                div()
-                    .size_full()
-                    .rounded(px(shape.card_radius()))
-                    .overflow_hidden()
-                    .bg(rgba(th.surface))
-                    .child(body),
-            )
+            .child(self.page_frame(th, th.surface, body))
             .into_any_element()
     }
 

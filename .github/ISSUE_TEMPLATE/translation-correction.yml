@@ -1,0 +1,106 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# A correction to Katna's text in one language (i18n/README.md).
+name: Translation correction
+description: A word or sentence in your language that is wrong, awkward or still in English.
+title: "Translation: "
+labels: ["translation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping. Every language except English was first
+        drafted by AI, so even a single word is worth fixing. If you would
+        rather change the file yourself, `i18n/README.md` says how.
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      description: The language Katna is showing the text in.
+      options:
+        # Begin languages: made from i18n/languages.toml by
+        # `KATNA_I18N_WRITE_TEMPLATE=1 cargo test -p katna-i18n issue_template`.
+        - "English (India)"
+        - "English (UK)"
+        - "English (US)"
+        - "हिन्दी (Hindi)"
+        - "বাংলা (Bengali)"
+        - "தமிழ் (Tamil)"
+        - "తెలుగు (Telugu)"
+        - "मराठी (Marathi)"
+        - "ગુજરાતી (Gujarati)"
+        - "ಕನ್ನಡ (Kannada)"
+        - "മലയാളം (Malayalam)"
+        - "ਪੰਜਾਬੀ (Punjabi)"
+        - "ଓଡ଼ିଆ (Odia)"
+        - "অসমীয়া (Assamese)"
+        - "اردو (Urdu)"
+        - "नेपाली (Nepali)"
+        - "සිංහල (Sinhala)"
+        - "རྫོང་ཁ (Dzongkha)"
+        - "简体中文 (Chinese (Simplified))"
+        - "繁體中文 (Chinese (Traditional))"
+        - "日本語 (Japanese)"
+        - "한국어 (Korean)"
+        - "ไทย (Thai)"
+        - "Tiếng Việt (Vietnamese)"
+        - "Bahasa Indonesia (Indonesian)"
+        - "Bahasa Melayu (Malay)"
+        - "Filipino"
+        - "ខ្មែរ (Khmer)"
+        - "မြန်မာ (Burmese)"
+        - "ລາວ (Lao)"
+        - "العربية (Arabic)"
+        - "فارسی (Persian)"
+        - "עברית (Hebrew)"
+        - "Türkçe (Turkish)"
+        - "Русский (Russian)"
+        - "Українська (Ukrainian)"
+        - "Deutsch (German)"
+        - "Français (French)"
+        - "Español (Spanish)"
+        - "Português (Brasil) (Portuguese)"
+        - "Italiano (Italian)"
+        - "Nederlands (Dutch)"
+        - "Polski (Polish)"
+        - "Svenska (Swedish)"
+        - "Kiswahili (Swahili)"
+        - "አማርኛ (Amharic)"
+        - "Hausa"
+        - "Yorùbá (Yoruba)"
+        - "Igbo"
+        - "isiZulu (Zulu)"
+        - "Afrikaans"
+        # End languages.
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where in Katna
+      description: The app and the place the text is shown.
+      placeholder: "Katna Mail, Settings > General, the Language row"
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: What it says now
+      description: Copy the text as it is shown.
+    validations:
+      required: true
+  - type: textarea
+    id: suggested
+    attributes:
+      label: What it should say
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Optional. Drag an image here.
+  - type: textarea
+    id: note
+    attributes:
+      label: Anything else
+      description: Optional. Why the change reads better, or whether you speak the language natively.
