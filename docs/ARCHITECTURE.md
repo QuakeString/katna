@@ -5959,7 +5959,9 @@ old and new daemon and app must keep working:
   daemon asks it to restart; an old app that meets a new daemon keeps working
   on `Pim1` and shows a "Katna was updated, restart" pill.
 - An app that opens a store and gets `SchemaTooNew` shows the same restart
-  pill instead of an error.
+  pill instead of an error. Katna Mail floats it at the bottom centre of the
+  mail list; Restart starts the installed build with `--after-update` and
+  quits, and × hides it until a later build.
 - Search index versions already rebuild in the background when they differ
   (`katna-search` deletes an index built with another `SCHEMA_VERSION`);
   search falls back to the store's plain lookups while that runs.

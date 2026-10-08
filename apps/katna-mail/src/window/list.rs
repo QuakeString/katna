@@ -490,6 +490,7 @@ impl MailWindow {
                 .relative()
                 .child(list)
                 .children(self.render_list_top(th, cx))
+                .children(self.render_restart(th, cx))
                 .child(self.tour_mark(super::tour::Spot::List))
                 .into_any_element(),
         )
@@ -508,7 +509,7 @@ impl MailWindow {
             .snackbar
             .as_ref()
             .map_or(0.0, |s| s.shown.value().clamp(0.0, 1.0));
-        let above = 16.0 + shape.phone * (FAB_SIZE + 16.0) + 64.0 * snackbar;
+        let above = 16.0 + shape.phone * (FAB_SIZE + 16.0) + 64.0 * snackbar + self.restart_lift();
         // On a phone it stands centred over the Compose button.
         let right = 16.0 + shape.phone * (FAB_SIZE - TO_TOP_SIZE) / 2.0;
         Some(

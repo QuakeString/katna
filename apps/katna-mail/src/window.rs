@@ -85,6 +85,7 @@ mod reader;
 mod remind;
 mod remote;
 mod reply_row;
+mod restart;
 mod rich;
 mod row_reorder;
 mod row_swipe;
@@ -754,6 +755,7 @@ pub struct MailWindow {
     problems: problems::Problems,
     /// Katna's background service, started again when it isn't running.
     service: service::Service,
+    restart: restart::Restart,
     /// Settings > User feedback's list of crash reports, as last read.
     saved_reports: Option<feedback_page::SavedReports>,
     /// Settings > Subscription (the Katna account), once shown.
@@ -1122,6 +1124,7 @@ impl MailWindow {
             crash_notice: None,
             problems: problems::Problems::default(),
             service: service::Service::default(),
+            restart: restart::Restart::default(),
             saved_reports: None,
             katna: None,
             compose: None,
@@ -1288,7 +1291,7 @@ impl MailWindow {
     fn needs_account(&self) -> bool {
         match &self.mail {
             Err(OpenError::NoStore { .. }) => true,
-            Err(OpenError::Migrating(_) | OpenError::Other(_)) => false,
+            Err(OpenError::Migrating(_) | OpenError::TooNew(_) | OpenError::Other(_)) => false,
             Ok(_) => self.accounts.is_empty(),
         }
     }
@@ -3523,6 +3526,16 @@ impl MailWindow {
             OpenError::Migrating(_) if !self.migration_overdue() => {
                 return self.render_skeleton(th, cx);
             }
+            // A newer Katna moved the store on while this one ran: the
+            // restart pill offers the new one.
+            OpenError::TooNew(_) => {
+                return div()
+                    .size_full()
+                    .relative()
+                    .child(self.render_skeleton(th, cx))
+                    .children(self.render_restart(th, cx))
+                    .into_any_element();
+            }
             OpenError::Migrating(err) | OpenError::Other(err) => err.clone(),
         };
         let card = page_card(th)
@@ -3852,6 +3865,7 @@ impl Render for MailWindow {
         self.compose_dock
             .set(if self.nav_docked() { 1.0 } else { 0.0 });
         self.compose_dock.tick(window, reduce);
+        self.tick_restart(window, reduce);
         self.reader_bar.tick(&self.reader_scroll, window, cx);
         self.title_roll.tick(window, reduce);
         let (primary_icon, primary_label) = self.primary_button();
