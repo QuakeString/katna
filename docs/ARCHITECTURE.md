@@ -2561,7 +2561,10 @@ Gemini or confidential mode):
   (`katna_preview::signature`: a logo at most 256 × 128 px, a dark logo on
   nothing put on a soft white card, a photo cut round, 136 px), and the
   page marks (Simple Icons), monogram and underline bar are drawn as PNGs
-  in the layout's colour, so they look the same in every reader. The page
+  in the layout's colour, so they look the same in every reader. The
+  colour is one of six or any other from the shared colour wheel and
+  picker (as an account's), and the address keeps the lines it is typed
+  on (`<br>` in the HTML). The page
   shows the result in a light or dark reader or as plain text. Picking a
   layout for a signature written by hand fills the fields in from it (as
   the person card reads it, and its first picture as the logo); Edit by

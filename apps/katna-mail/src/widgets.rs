@@ -1036,6 +1036,23 @@ pub fn line_field(
         .child(div().flex_1().min_w_0().child(input.clone()))
 }
 
+/// A [`field`] holding `area`, for text of more than one line: as tall
+/// as a [`line_field`] for one line, and taller with each line added.
+pub fn area_field(
+    id: impl Into<gpui::ElementId>,
+    area: &gpui::Entity<katna_ui::TextArea>,
+    th: &Theme,
+    cx: &App,
+) -> Stateful<Div> {
+    field(id, &gpui::Focusable::focus_handle(area.read(cx), cx), th)
+        .min_h(px(FIELD_HEIGHT))
+        .py(px(space::S3))
+        .flex()
+        .items_center()
+        .line_height(px(20.0))
+        .child(div().flex_1().min_w_0().child(area.clone()))
+}
+
 /// A row of buttons over a card; its empty space moves the window.
 pub fn toolbar(th: &Theme) -> Div {
     div()

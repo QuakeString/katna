@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The color picker of the scheme editor and of Settings > Appearance >
-//! Accent's color wheel: a popover beside the clicked swatch, its notch
+//! The color picker of the scheme editor and of the color wheels after
+//! the accent's, an account's and a layout signature's colors: a popover beside the clicked swatch, its notch
 //! pointing at it, with a saturation and brightness square, a hue bar, a
 //! hex field, the scheme's other colors (in the editor) and the ones
 //! picked lately. On Linux a dropper takes a color from anywhere on the
@@ -53,6 +53,9 @@ pub(super) enum Target {
     Accent,
     /// An account's own color, from the wheel after its colors.
     Account(AccountId),
+    /// The colour of the layout signature with this id, from the wheel
+    /// after its colours in Settings > Compose > Signatures.
+    Signature(u32),
 }
 
 /// Where each swatch that opens the picker was drawn.
@@ -120,6 +123,10 @@ impl MailWindow {
             },
             Target::Account(id) => match self.account_address(id) {
                 Some(address) => self.account_light(&address),
+                None => return,
+            },
+            Target::Signature(id) => match self.layout_colour(id) {
+                Some(colour) => colour << 8 | 0xff,
                 None => return,
             },
         };
@@ -223,6 +230,7 @@ impl MailWindow {
                     self.set_account_custom(&address, color, cx);
                 }
             }
+            Target::Signature(id) => self.set_layout_colour(id, color >> 8, cx),
         }
     }
 

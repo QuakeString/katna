@@ -58,6 +58,23 @@ fn the_text_twin_is_what_the_card_reads() {
 }
 
 #[test]
+fn the_address_keeps_its_lines() {
+    let l = SignatureLayout {
+        address: "53/1 Example Road,\n\n  Howrah 711101 <West Bengal>\r\n".to_owned(),
+        ..demo(LayoutStyle::Classic)
+    };
+    let (text, html) = write(&l);
+    assert!(
+        text.ends_with("\n53/1 Example Road,\nHowrah 711101 <West Bengal>"),
+        "{text}"
+    );
+    assert!(
+        html.contains("53/1 Example Road,<br>Howrah 711101 &lt;West Bengal&gt;</div>"),
+        "{html}"
+    );
+}
+
+#[test]
 fn every_layout_is_written_and_escaped() {
     for style in LayoutStyle::ALL {
         let (text, html) = write(&demo(style));

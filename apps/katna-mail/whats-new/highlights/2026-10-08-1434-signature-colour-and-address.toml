@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Any colour for a signature, and an address on more lines"
+text = """
+In Settings > Compose > Signatures, the rainbow wheel after a layout's
+colours opens the colour picker for one of your own, as for an account's
+colour. Enter in the Address field starts a new line, and the address is
+sent on those lines.
+"""

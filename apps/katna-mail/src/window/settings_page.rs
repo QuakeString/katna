@@ -734,7 +734,7 @@ impl MailWindow {
             Section::Accounts => self.accounts_section(th, cx),
             Section::Subscriptions => self.katna_section(th, window, cx),
             Section::Appearance => self.appearance_section(th, window, cx),
-            Section::Signatures => self.signatures_section(th, cx),
+            Section::Signatures => self.signatures_section(th, window, cx),
             Section::DefaultApps => self.default_apps_section(th, cx),
             Section::Shortcuts => self.shortcuts_section(th, cx),
             Section::Experimental => self.experimental_section(th, cx),
@@ -2759,7 +2759,12 @@ impl MailWindow {
         ]
     }
 
-    fn signatures_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn signatures_section(
+        &self,
+        th: &Theme,
+        window: &Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let sending_rows = self.sending_rows(th, cx);
         let reply_row = self.row(
             tr!("settings-general-reply-button"),
@@ -2799,7 +2804,7 @@ impl MailWindow {
         let layout_tiles = editing_id
             .filter(|_| !pasting_open)
             .map(|id| self.layout_tiles(id, th, cx));
-        let layout_form = self.layout_form(th, cx);
+        let layout_form = self.layout_form(th, window, cx);
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
         let list = sending.signatures.iter().map(|s| {
