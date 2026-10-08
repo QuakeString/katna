@@ -1480,6 +1480,26 @@ impl MailWindow {
         )
     }
 
+    /// A page's card as it rests beside the rail: the cards' hairline edge
+    /// and short shadow, and the faint line around them, as Mail's list
+    /// and agenda have (`docs/DESIGN.md`, Cards). Every app page and
+    /// Settings draw their card here so none misses its edge; on a phone
+    /// the card runs edge to edge with none.
+    fn page_frame(&self, th: &Theme, fill: u32, content: impl IntoElement) -> gpui::Div {
+        let (radius, outline) = (
+            self.layout.shape.card_radius(),
+            self.layout.shape.card_outline(),
+        );
+        let (shadow, edge) = self.card_edges(0.0, outline);
+        div()
+            .relative()
+            .size_full()
+            .overflow_hidden()
+            .map(|d| crate::widgets::card(d, th, fill, radius, shadow))
+            .child(content)
+            .children(crate::widgets::card_outline(th, radius, edge))
+    }
+
     /// How far the list (`reader` false) or the conversation beside it has
     /// the keys, following them as they move.
     fn card_keys(&self, reader: bool) -> f32 {

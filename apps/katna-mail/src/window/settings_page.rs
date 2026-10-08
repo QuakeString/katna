@@ -798,12 +798,7 @@ impl MailWindow {
                 .items_center()
                 .gap(px(space::S3))
         };
-        let card = div()
-            .id("settings-page")
-            .size_full()
-            .flex()
-            .map(|d| crate::widgets::card(d, th, th.pane(), radius, super::SHADOW_REST))
-            .overflow_hidden();
+        let card = div().id("settings-page").size_full().flex();
         let card = if phone {
             card.flex_col()
                 .child(
@@ -865,7 +860,7 @@ impl MailWindow {
             .h_full()
             .pr(px(margin))
             .pb(px(margin))
-            .child(card)
+            .child(self.page_frame(th, th.pane(), card))
             .into_any_element()
     }
 
