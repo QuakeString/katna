@@ -5885,6 +5885,21 @@ it gets the most care.
 - Moving to a safer channel (nightly → beta → stable) never downgrades. The
   installed version stays until the new channel catches up, because an older
   version may not read the newer database (§5.3, `SchemaTooNew`).
+- **Built** (U.10, 8 October 2026): `update::Channel` picks the release an
+  install's in-app updates read: nightly from each package's `*-latest`
+  pre-release with `katna-update.json`, beta and stable from `beta-latest`
+  and `stable-latest` with `katna-update-<arch|windows|linux>.json`.
+  Because beta and stable share files, a build cannot know which one it
+  came from: until the user picks (`updates.channel`), a build between
+  tags (`rN`, N above 0) stays nightly and a beta's or release's files
+  (`r0`) take stable; Nix is always nightly. A new pick is checked at once.
+  `updates.check` turns the hourly check off (Check for updates still
+  works). Manifests carry `rollout` (percent) and `pulled`, set by
+  `rollout.yml`; each install's slot is a number 0 to 99 kept in its
+  state folder. The Flatpak bundle has no remote, so the portal's update
+  monitor has nothing to watch: Flatpak keeps the channel's bundle and
+  the `flatpak install` command until a Flatpak repository is hosted. The
+  AppImage takes the channel's image the same way.
 
 #### In-app updates (built for the Arch package and Windows)
 

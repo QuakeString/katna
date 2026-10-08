@@ -41,6 +41,52 @@ const ARCH_PACKAGE: &str = "katna-git";
 /// dpkg's list of the Debian package's files, there once it is installed.
 const DEB_FILES: &str = "/var/lib/dpkg/info/katna.list";
 
+/// Which builds an install takes (`docs/ARCHITECTURE.md` §21.2, plan
+/// U.10): every build of `main`, the betas, or the releases. Beta and
+/// stable carry the same files, so a build cannot tell them apart; it
+/// takes the channel from the settings, else [`Channel::default_for`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Channel {
+    Stable,
+    Beta,
+    Nightly,
+}
+
+impl Channel {
+    /// The channel of an install that has not picked one: a build of
+    /// `main` between tags (`….rN.g…` with N above 0) stays on nightly;
+    /// a beta's or release's files (`r0`, or a plain `X.Y.Z`) take
+    /// stable, the safe default. Nix builds `main` itself and has no
+    /// commit count, so it is always nightly.
+    pub fn default_for(package: Package, version: &str) -> Self {
+        match parse_version(version) {
+            _ if package == Package::Nix => Self::Nightly,
+            Some((_, _, commits)) if commits > 0 => Self::Nightly,
+            _ => Self::Stable,
+        }
+    }
+
+    /// The channel `package` running `version` takes: `picked` in the
+    /// settings, else [`Channel::default_for`]. Moving to a safer channel
+    /// never goes back to an older build ([`newer`]): the installed one
+    /// stays until the new channel passes it.
+    pub fn of(package: Package, version: &str, picked: Option<Self>) -> Self {
+        picked.unwrap_or_else(|| Self::default_for(package, version))
+    }
+
+    /// The rolling release holding this channel's newest betas or
+    /// releases (`.github/workflows/release.yml`, `promote.yml`); nightly
+    /// builds are in each package's own release instead.
+    fn rolling(self) -> Option<&'static str> {
+        match self {
+            Self::Stable => Some("stable-latest"),
+            Self::Beta => Some("beta-latest"),
+            Self::Nightly => None,
+        }
+    }
+}
+
 /// The kind of package this build came in, from `$KATNA_PACKAGE` at build
 /// time (`packaging/arch/PKGBUILD` sets `arch`, `ci/windows-package.ps1`
 /// `windows`, the Fedora spec `rpm`, the Nix package `nix`, and the
@@ -172,9 +218,9 @@ impl Package {
         )
     }
 
-    /// The release this package's newest build is published in, if it
-    /// updates itself.
-    pub fn release(self) -> Option<&'static str> {
+    /// The release this package's newest nightly build is published in,
+    /// if it updates itself.
+    fn release(self) -> Option<&'static str> {
         match self {
             Self::Arch => Some("arch-latest"),
             Self::Windows => Some("windows-latest"),
@@ -199,10 +245,30 @@ impl Package {
         }
     }
 
-    /// The URL of the [`Manifest`] of this package's newest build.
-    pub fn manifest_url(self) -> Option<String> {
-        self.release()
-            .map(|release| format!("{RELEASES}/{release}/{MANIFEST_FILE}"))
+    /// Whether this package checks for updates at all.
+    pub fn updates(self) -> bool {
+        self.release().is_some()
+    }
+
+    /// The release `channel`'s newest build of this package is in, and
+    /// its manifest's name there: a beta or release names each format's
+    /// manifest (`katna-update-arch.json`), nightly releases have one.
+    fn published(self, channel: Channel) -> Option<(&'static str, String)> {
+        let nightly = self.release()?;
+        Some(match channel.rolling() {
+            None => (nightly, MANIFEST_FILE.to_owned()),
+            Some(rolling) => {
+                let format = nightly.strip_suffix("-latest").unwrap_or(nightly);
+                (rolling, format!("katna-update-{format}.json"))
+            }
+        })
+    }
+
+    /// The URL of the [`Manifest`] of this package's newest build on
+    /// `channel`.
+    pub fn manifest_url(self, channel: Channel) -> Option<String> {
+        self.published(channel)
+            .map(|(release, manifest)| format!("{RELEASES}/{release}/{manifest}"))
     }
 
     /// The folders, writable only by root, that may hold the installed
@@ -215,10 +281,11 @@ impl Package {
         }
     }
 
-    /// The URL of `file`, a file of this package's newest build.
-    pub fn file_url(self, file: &str) -> Option<String> {
-        self.release()
-            .map(|release| format!("{RELEASES}/{release}/{file}"))
+    /// The URL of `file`, a file of this package's newest build on
+    /// `channel`.
+    pub fn file_url(self, channel: Channel, file: &str) -> Option<String> {
+        self.published(channel)
+            .map(|(release, _)| format!("{RELEASES}/{release}/{file}"))
     }
 }
 
@@ -347,6 +414,14 @@ pub struct Manifest {
     /// `flatpak`); [`Manifest::for_package`] picks one.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub files: BTreeMap<String, Download>,
+    /// A staged rollout: the percentage of installs offered this build
+    /// so far ([`Manifest::reaches`]); `None` offers it to all.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rollout: Option<u8>,
+    /// The build was pulled after a problem: nobody is offered it, and a
+    /// download waiting to be installed is dropped.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub pulled: bool,
 }
 
 /// A file of a build: name, SHA-256 and size.
@@ -557,6 +632,13 @@ impl Manifest {
             .strip_suffix(".zst")
             .unwrap_or(&self.file)
             .to_owned()
+    }
+
+    /// Whether a staged rollout reaches the install that drew `slot`
+    /// (0 to 99, kept on the computer and never sent). Someone who asks
+    /// to check is offered the build at once.
+    pub fn reaches(&self, slot: u8, asked: bool) -> bool {
+        asked || self.rollout.is_none_or(|rollout| slot < rollout)
     }
 
     /// Whether this build is newer than `installed`.
@@ -852,6 +934,8 @@ mod tests {
                 hop(4, 5, 1),
             ],
             files: BTreeMap::new(),
+            rollout: None,
+            pulled: false,
         };
         let json = serde_json::to_vec(&manifest).unwrap();
         let manifest = Manifest::parse(&json).unwrap();
@@ -949,7 +1033,7 @@ mod tests {
         assert_eq!(Package::parse("rpm"), Package::Rpm);
         assert_eq!(Package::parse("nix"), Package::Nix);
         assert_eq!(
-            Package::Snap.manifest_url().unwrap(),
+            Package::Snap.manifest_url(Channel::Nightly).unwrap(),
             format!("{RELEASES}/linux-latest/{MANIFEST_FILE}")
         );
         assert!(!Package::Nix.downloads() && Package::Rpm.downloads());
@@ -1008,16 +1092,88 @@ mod tests {
         assert_eq!(Package::parse("arch"), Package::Arch);
         assert_eq!(Package::parse("windows"), Package::Windows);
         assert_eq!(
-            Package::Windows.manifest_url().unwrap(),
+            Package::Windows.manifest_url(Channel::Nightly).unwrap(),
             format!("{RELEASES}/windows-latest/{MANIFEST_FILE}")
         );
         assert_eq!(Package::parse(""), Package::Other);
-        assert_eq!(Package::Other.manifest_url(), None);
-        let url = Package::Arch.manifest_url().unwrap();
+        assert_eq!(Package::Other.manifest_url(Channel::Stable), None);
+        let url = Package::Arch.manifest_url(Channel::Nightly).unwrap();
         assert!(url.starts_with("https://github.com/"), "{url}");
         assert!(
             url.ends_with("/releases/download/arch-latest/katna-update.json"),
             "{url}"
         );
+    }
+
+    #[test]
+    fn each_channel_has_its_own_manifest() {
+        assert_eq!(
+            Package::Arch.manifest_url(Channel::Stable).unwrap(),
+            format!("{RELEASES}/stable-latest/katna-update-arch.json")
+        );
+        assert_eq!(
+            Package::Windows.manifest_url(Channel::Beta).unwrap(),
+            format!("{RELEASES}/beta-latest/katna-update-windows.json")
+        );
+        assert_eq!(
+            Package::AppImage.manifest_url(Channel::Stable).unwrap(),
+            format!("{RELEASES}/stable-latest/katna-update-linux.json")
+        );
+        assert_eq!(
+            Package::Flatpak
+                .file_url(Channel::Beta, "katna-x86_64.flatpak")
+                .unwrap(),
+            format!("{RELEASES}/beta-latest/katna-x86_64.flatpak")
+        );
+        assert_eq!(
+            Package::Tarball
+                .file_url(Channel::Nightly, "k.tar.gz")
+                .unwrap(),
+            format!("{RELEASES}/linux-latest/k.tar.gz")
+        );
+        assert!(!Package::MsStore.updates() && Package::Rpm.updates());
+    }
+
+    #[test]
+    fn an_install_keeps_its_channel_until_it_picks_one() {
+        let default = |package, version| Channel::of(package, version, None);
+        assert_eq!(
+            default(Package::Arch, "0.0.0.r1025.gabcdef1"),
+            Channel::Nightly
+        );
+        assert_eq!(
+            default(Package::Arch, "0.1.0beta1.r4.gabcdef1"),
+            Channel::Nightly
+        );
+        assert_eq!(
+            default(Package::Arch, "0.1.0beta1.r0.gabcdef1"),
+            Channel::Stable
+        );
+        assert_eq!(default(Package::Windows, "0.1.0"), Channel::Stable);
+        assert_eq!(default(Package::Nix, "0.1.0.r0.gabcdef1"), Channel::Nightly);
+        assert_eq!(
+            Channel::of(Package::Arch, "0.1.0beta1.r0.gabcdef1", Some(Channel::Beta)),
+            Channel::Beta
+        );
+        // A nightly that moves to stable keeps its newer build.
+        assert!(!newer("0.1.0beta1.r9.gaaaaaaa", "0.1.0beta1.r0.gbbbbbbb"));
+    }
+
+    #[test]
+    fn a_staged_or_pulled_build() {
+        let sha = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
+        let json = format!(
+            r#"{{"version":"0.1.0beta1.r0.g1234567","file":"k.tar.gz","sha256":"{sha}","size":10,"rollout":20}}"#
+        );
+        let manifest = Manifest::parse(json.as_bytes()).unwrap();
+        assert!(manifest.reaches(19, false) && !manifest.reaches(20, false));
+        assert!(manifest.reaches(99, true), "asked: offered at once");
+        assert!(!manifest.pulled);
+        let pulled = format!(
+            r#"{{"version":"0.1.0beta1.r0.g1234567","file":"k.tar.gz","sha256":"{sha}","size":10,"pulled":true}}"#
+        );
+        let pulled = Manifest::parse(pulled.as_bytes()).unwrap();
+        assert!(pulled.pulled && pulled.reaches(99, false));
+        assert!(!serde_json::to_string(&manifest).unwrap().contains("pulled"));
     }
 }

@@ -71,10 +71,13 @@ What each format uses today, and what §21.2 plans:
 | .deb, .rpm | the files from the release | apt and dnf repositories with `stable`, `beta` and `nightly` components |
 | AppImage, Flatpak, Snap | the files from the release | per-channel update feeds; Flathub and Flathub beta |
 
-Katna's in-app updates still read the nightly releases, so a beta or
-stable build still offers the newest nightly in About until U.10 points
-them at the channel's manifest (Settings › About › Updates). Until then,
-betas are for testers who know that.
+Katna's in-app updates read the manifest of the install's channel
+(`update::Channel`, U.10): a nightly build (`….rN.g…`, N above 0) stays
+on nightly, and a beta's or release's files (`r0`) take stable, the
+default, because both carry the same files. Beta testers pick Beta in
+the settings (`updates.channel` in `config.toml`). Moving to a safer
+channel never installs an older build: the installed one stays until the
+channel passes it.
 
 ## Cutting a beta
 
@@ -113,6 +116,22 @@ betas are for testers who know that.
    deployments). It then downloads the beta's files, checks them against
    `SHA256SUMS` (and its signature), tags `vX.Y.Z` on the beta's commit and
    publishes the release `vX.Y.Z` and `stable-latest` with the same files.
+
+## Staging or pulling an update
+
+Installs that update themselves can take a new beta or release a few at
+a time. Each install draws a number from 0 to 99 once and keeps it in its
+state folder (`update-slot`; nothing is sent), and takes the build once
+the manifest's `rollout` passes it. A build with `pulled` is offered to
+nobody, and a download of it waiting to be installed is dropped. Checking
+for updates by hand skips the rollout, never a pull.
+
+Actions › **Stage or pull an update** › Run workflow, with the channel,
+the percent (100 offers it to all) and Pulled; it waits in the `stable`
+environment for a reviewer, then rewrites only that channel's manifests
+(`.github/workflows/rollout.yml`). Package managers cannot stage, so the
+beta soak is their safety net. A pulled build is followed by a new beta,
+or by promoting a fixed one.
 
 ## One-time setup (owner)
 
