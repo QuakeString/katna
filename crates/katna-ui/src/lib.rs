@@ -26,6 +26,7 @@ pub mod window_drag;
 pub const PLACEHOLDER_OPACITY: f32 = 0.42;
 
 pub use anchored::anchored;
+pub use direction::{Direction, directed};
 pub use glow::Glow;
 pub use icons::icon_svg;
 pub use motion::Spring;

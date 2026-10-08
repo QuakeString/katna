@@ -3601,14 +3601,22 @@ window-wide layout direction:
   the same per line, aligned to the UI's start edge, so Arabic mail reads
   right to left in an English UI and English mail left to right in an
   Arabic one.
-- Compose: each paragraph's direction follows what is typed (first strong
-  letter); the format bar has "Right to left" and "Left to right" buttons
-  when an RTL language is the UI or keyboard layout, and sent HTML carries
-  `dir`. The quote header ("On 27 Sep 2026, Rahim wrote:") and the
-  forwarded-message header are written in the UI language with its date
-  format; `Re:` and `Fwd:` stay as they are (they are protocol, and
+- Compose: a new paragraph starts in the UI's direction and turns right
+  to left when its first strong letter is RTL; the format bar's
+  "Left to right" and "Right to left" buttons (never mirrored; in left-to-right
+  UIs they are among the first to fold into the overflow menu) and Ctrl+Shift+X set it by hand.
+  Direction is stored per paragraph in the editor's document
+  (`katna_ui::rich::doc`), and sent HTML carries `dir` on the wrapper and
+  on each block that differs from it, so drafts keep it; the plain-text
+  part is unchanged. The quote header ("On 27 Sep 2026, Rahim wrote:") and
+  the forwarded-message header are written in the UI language
+  (`compose.ftl`, `katna-mail/src/quoting.rs`) with its date format, and
+  names in the other direction are isolated (FSI … PDI); the daemon's
+  quick reply uses the same wording with a numeric date, since it carries
+  no ICU data. `Re:` and `Fwd:` stay as they are (they are protocol, and
   localized prefixes are already recognised for threading,
-  `katna_core::subject`).
+  `katna_core::subject`). The shared first-strong-letter rule is
+  `katna_core::bidi`.
 - Input methods: typing Chinese, Japanese, Korean and Indic scripts goes
   through the desktop's input method (IBus or Fcitx5) via GPUI's
   `text-input-v3` (Wayland) and XIM (X11) support; every Katna text box

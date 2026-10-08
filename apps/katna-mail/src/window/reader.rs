@@ -23,9 +23,9 @@ use katna_render::MessageView;
 use katna_render::html::Document;
 use katna_store::{FolderId, MessageFlags, MessageId};
 use katna_ui::motion::lerp;
-use katna_ui::px;
 use katna_ui::tokens::{radius, space};
 use katna_ui::unpx;
+use katna_ui::{Direction, directed, px};
 
 use super::compose::{Kind, SentCard};
 use super::list::separator;
@@ -2147,12 +2147,14 @@ impl MailWindow {
                             // links do.
                             None => div().children(blocks.iter().enumerate().map(
                                 |(n, (quoted, text))| {
+                                    // Each paragraph reads its own way.
+                                    let dir = katna_core::bidi::first_strong(text);
                                     rich::linked_piece(
                                         &mut pieces,
                                         text.clone(),
                                         &[],
                                         |d| {
-                                            d.when(*quoted, |d| {
+                                            directed(d, dir).when(*quoted, |d| {
                                                 d.pl(px(12.0))
                                                     .border_l_2()
                                                     .border_color(rgba(th.outline))
@@ -2684,25 +2686,41 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
 
 /// Splits a body into runs of quoted (`>`) and unquoted lines, at most
 /// `max_lines` lines in all. Returns whether lines were left out.
+///
+/// A paragraph that reads the other way from the one before it (its first
+/// strong character, `katna_core::bidi`) starts a run of its own, so each
+/// is drawn in its own direction; the blank line between them stays at
+/// the end of the first.
 pub(super) fn body_blocks(body: &str, max_lines: usize) -> (Vec<(bool, SharedString)>, bool) {
-    let mut blocks: Vec<(bool, String)> = Vec::new();
+    let mut blocks: Vec<(bool, Option<Direction>, String)> = Vec::new();
     let mut lines = body.lines();
+    let mut paragraph_start = true;
     for line in lines.by_ref().take(max_lines) {
         let line = line.trim_end();
         let quoted = line.starts_with('>');
+        let words = line.trim_start_matches(['>', ' ']);
+        let dir = katna_core::bidi::first_strong(words);
         match blocks.last_mut() {
-            Some((q, text)) if *q == quoted => {
+            Some((q, block_dir, text))
+                if *q == quoted
+                    && !(paragraph_start
+                        && dir.is_some()
+                        && block_dir.is_some()
+                        && dir != *block_dir) =>
+            {
                 text.push('\n');
                 text.push_str(line);
+                *block_dir = block_dir.or(dir);
             }
-            _ => blocks.push((quoted, line.to_owned())),
+            _ => blocks.push((quoted, dir, line.to_owned())),
         }
+        paragraph_start = words.is_empty();
     }
     let cut = lines.next().is_some();
     (
         blocks
             .into_iter()
-            .map(|(quoted, text)| (quoted, text.into()))
+            .map(|(quoted, _, text)| (quoted, text.into()))
             .collect(),
         cut,
     )
@@ -2765,6 +2783,25 @@ mod tests {
         let (blocks, cut) = body_blocks(body, 2);
         assert_eq!(blocks.len(), 1);
         assert!(cut);
+    }
+
+    #[test]
+    fn paragraphs_turning_the_other_way_start_blocks() {
+        let body = "Hi Ravi,\nthanks.\n\nشكرًا\nRavi معك\n\n123\n\nBye\n> نعم\n>\n> Yes";
+        let (blocks, _) = body_blocks(body, 100);
+        let blocks: Vec<(bool, &str)> = blocks.iter().map(|(q, t)| (*q, t.as_ref())).collect();
+        assert_eq!(
+            blocks,
+            [
+                (false, "Hi Ravi,\nthanks.\n"),
+                // Its second line starts in English, but the paragraph
+                // reads as its first line does.
+                (false, "شكرًا\nRavi معك\n\n123\n"),
+                (false, "Bye"),
+                (true, "> نعم\n>"),
+                (true, "> Yes"),
+            ]
+        );
     }
 
     #[test]

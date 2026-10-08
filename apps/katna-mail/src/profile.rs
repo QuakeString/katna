@@ -225,6 +225,8 @@ fn own_lines(body: &str) -> Vec<&str> {
         let lower = t.to_lowercase();
         if t.starts_with('>')
             || (lower.starts_with("on ") && lower.ends_with("wrote:"))
+            || crate::quoting::is_reply_header(t)
+            || crate::quoting::is_forward_header(t)
             || lower.contains("original message")
             || lower.contains("forwarded message")
             || (t.len() >= 20 && t.chars().all(|c| c == '_'))

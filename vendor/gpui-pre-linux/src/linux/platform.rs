@@ -1028,6 +1028,21 @@ pub(super) fn log_cursor_icon_warning(message: impl std::fmt::Display) {
 #[cfg(any(feature = "wayland", feature = "x11"))]
 fn guess_ascii(keycode: Keycode, shift: bool) -> Option<char> {
     let c = match (keycode.raw(), shift) {
+        // Katna: the digit row with Shift, as a US keyboard has it, for
+        // layouts whose shifted digits are not ASCII (Russian's Shift+3 is
+        // "№"), so a shortcut on "#" still works there.
+        (10, true) => '!',
+        (11, true) => '@',
+        (12, true) => '#',
+        (13, true) => '$',
+        (14, true) => '%',
+        (15, true) => '^',
+        (16, true) => '&',
+        (17, true) => '*',
+        (18, true) => '(',
+        (19, true) => ')',
+        (20, true) => '_',
+        (21, true) => '+',
         (24, _) => 'q',
         (25, _) => 'w',
         (26, _) => 'e',

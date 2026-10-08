@@ -106,6 +106,14 @@ stretched to the new size for a frame, so the content shook. Now, while a
 new size waits for its buffer (`size_pending`), the region rides on that
 buffer's commit.
 
+## Shortcuts on non-Latin layouts
+
+Upstream already names a letter key by its place on a US keyboard when the
+layout types a letter outside ASCII (Arabic, Hebrew, Russian, Greek), so a
+binding on `j` works there (`guess_ascii` in `src/linux/platform.rs`).
+Katna adds the shifted digit row to it: Russian's Shift+3 types "№", and
+a binding on `#` now works there too.
+
 The first commit that added this directory holds the crate unchanged, so
 `git diff` against it shows the whole patch. When GPUI is upgraded, copy the
 new version here and apply the same change, or drop the patch once upstream

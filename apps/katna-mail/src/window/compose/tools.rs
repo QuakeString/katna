@@ -16,6 +16,7 @@ use gpui::{
     Subscription, Window, canvas, deferred, div, point, prelude::*, rgba,
 };
 use katna_i18n::tr;
+use katna_ui::Direction;
 use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::rich::{Align, Font, GrammarIssue, List, Pos, RichEditor, Size, TableEdit, html};
@@ -1359,6 +1360,7 @@ impl MailWindow {
         }
         let style = editor.current_style();
         let para = editor.para_style();
+        let reads = editor.direction();
         let (can_undo, can_redo, in_table) =
             (editor.can_undo(), editor.can_redo(), editor.in_table());
         let popup = compose.popup.clone();
@@ -1404,6 +1406,9 @@ impl MailWindow {
         // into ⋮ More on a bar too narrow for all of them: the least used
         // first (0 never folds). `None` is a line between groups.
         let tool = |el: AnyElement, width: f32, fold: u8| Some((el, width, fold));
+        // Mostly used where the interface reads right to left, where they
+        // fold late; elsewhere early.
+        let fold_direction = if katna_i18n::rtl() { FOLD_ALIGN } else { 2 };
         let tools: Vec<Option<(AnyElement, f32, u8)>> = vec![
             tool(
                 format_button("format-undo", "undo", false, th)
@@ -1497,6 +1502,29 @@ impl MailWindow {
                 FORMAT_TOOL,
                 6,
             ),
+            None,
+            // Which way the paragraph reads. The buttons keep their
+            // drawing in a right-to-left window: an arrow to the right is
+            // left to right there too.
+            tool(
+                format_button("format-ltr", "text-ltr", reads == Direction::Ltr, th)
+                    .layout_ltr()
+                    .tip(tr!("compose-tool-ltr"), th)
+                    .on_click(self.on_body(cx, |e, cx| e.set_direction(Direction::Ltr, cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                fold_direction,
+            ),
+            tool(
+                format_button("format-rtl", "text-rtl", reads == Direction::Rtl, th)
+                    .layout_ltr()
+                    .tip(tr!("compose-tool-rtl"), th)
+                    .on_click(self.on_body(cx, |e, cx| e.set_direction(Direction::Rtl, cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                fold_direction,
+            ),
+            None,
             tool(
                 format_button("format-quote", "quote", para.quote > 0, th)
                     .tip(tr!("compose-tool-quote"), th)

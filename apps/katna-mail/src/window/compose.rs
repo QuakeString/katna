@@ -75,6 +75,7 @@ use crate::data::EntryKey;
 use crate::format;
 use crate::grammar;
 use crate::outgoing::{self, Mailbox, Outgoing, Part};
+use crate::quoting;
 use crate::signatures;
 use crate::spell::{self, Speller};
 use crate::suggest::{Phrases, Suggester};
@@ -648,7 +649,7 @@ fn thread_text(doc: &Doc) -> String {
             Block::Para(p) => Some(p),
             _ => None,
         })
-        .skip_while(|p| p.style.quote == 0 && !p.text.trim_end().ends_with("wrote:"))
+        .skip_while(|p| p.style.quote == 0 && !quoting::is_reply_header(&p.text))
         .filter(|p| !p.style.signature)
         .map(|p| p.text.as_str())
         .collect();
@@ -665,7 +666,7 @@ fn trim_quote(doc: &mut Doc) -> Option<Vec<Block>> {
         }
     }
     let at = doc.blocks.iter().rposition(|b| {
-        para(b).is_some_and(|p| p.style.quote == 0 && p.text.trim_end().ends_with("wrote:"))
+        para(b).is_some_and(|p| p.style.quote == 0 && quoting::is_reply_header(&p.text))
     })?;
     let quote = &doc.blocks[at + 1..];
     if quote.is_empty()
@@ -731,7 +732,7 @@ fn draft(
             cc.retain(|a| !to_emails.contains(&a.email.to_lowercase()));
             body.blocks.push(para(""));
             body.blocks
-                .push(para(format!("On {date}, {from_text} wrote:")));
+                .push(para(quoting::reply_header(date, &from_text)));
             body.blocks.extend(quoted(&view.body));
             Draft {
                 to: addresses(to),
@@ -743,16 +744,25 @@ fn draft(
         }
         Kind::Forward => {
             body.blocks.push(para(""));
+            let iso = |text: &str| quoting::isolated(text);
+            body.blocks.push(para(quoting::forward_header()));
             body.blocks
-                .push(para("---------- Forwarded message ---------"));
-            body.blocks.push(para(format!("From: {from_text}")));
-            body.blocks.push(para(format!("Date: {date}")));
-            body.blocks.push(para(format!("Subject: {}", view.subject)));
+                .push(para(tr!("compose-forward-from", from = iso(&from_text))));
             body.blocks
-                .push(para(format!("To: {}", addresses(&view.to))));
+                .push(para(tr!("compose-forward-date", date = iso(date))));
+            body.blocks.push(para(tr!(
+                "compose-forward-subject",
+                subject = iso(&view.subject)
+            )));
+            body.blocks.push(para(tr!(
+                "compose-forward-to",
+                to = iso(&addresses(&view.to))
+            )));
             if !view.cc.is_empty() {
-                body.blocks
-                    .push(para(format!("Cc: {}", addresses(&view.cc))));
+                body.blocks.push(para(tr!(
+                    "compose-forward-cc",
+                    cc = iso(&addresses(&view.cc))
+                )));
             }
             body.blocks.push(para(""));
             body.blocks
@@ -1951,12 +1961,11 @@ impl MailWindow {
                 .sending
                 .signature(signature)
                 .map(|s| html::to_plain(&signatures::doc(s)));
-            let said = format!(
-                "On {}, {} wrote:",
-                format::local(follow_up_sent, &self.tz)
+            let said = quoting::reply_header(
+                &format::local(follow_up_sent, &self.tz)
                     .map(format::long_date)
                     .unwrap_or_default(),
-                match &from.name {
+                &match &from.name {
                     Some(name) => format!("{name} <{}>", from.email),
                     None => from.email.clone(),
                 },

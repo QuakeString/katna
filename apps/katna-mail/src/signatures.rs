@@ -30,7 +30,7 @@ pub fn used_in(body: &str, signatures: &[Signature]) -> Option<u32> {
     let signed: Vec<&str> = lines
         .take_while(|l| {
             let t = l.trim();
-            !t.starts_with('>') && !(t.starts_with("On ") && t.ends_with("wrote:"))
+            !t.starts_with('>') && !crate::quoting::is_reply_header(t)
         })
         .collect();
     let signed = normalize(signed.into_iter());

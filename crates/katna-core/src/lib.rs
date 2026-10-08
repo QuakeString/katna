@@ -5,6 +5,7 @@
 
 pub mod account;
 pub mod api_off;
+pub mod bidi;
 pub mod category;
 pub mod config;
 pub mod contact;

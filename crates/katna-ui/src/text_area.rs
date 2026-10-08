@@ -232,8 +232,7 @@ impl TextArea {
         let end = self.content[at..]
             .find('\n')
             .map_or(self.content.len(), |ix| at + ix);
-        crate::direction::text_rtl(&self.content[start..end])
-            .unwrap_or(crate::direction::is_rtl(window))
+        crate::direction::left_goes_on(&self.content[start..end], window)
     }
 
     fn left(&mut self, _: &Left, window: &mut Window, cx: &mut Context<Self>) {

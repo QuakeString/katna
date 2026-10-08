@@ -449,7 +449,7 @@ impl TextInput {
     /// Whether Left goes forward: the text, or else the window, reads
     /// right to left.
     fn left_goes_on(&self, window: &Window) -> bool {
-        crate::direction::text_rtl(&self.content).unwrap_or(crate::direction::is_rtl(window))
+        crate::direction::left_goes_on(&self.content, window)
     }
 
     fn left(&mut self, _: &Left, window: &mut Window, cx: &mut Context<Self>) {

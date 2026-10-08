@@ -118,6 +118,12 @@ notify-reply = Reply
 notify-reply-placeholder = Reply to { $name }…
 # The reply field's button.
 notify-send = Send
+# The line over the quoted message in a reply sent from the reply field,
+# as Katna Mail's own replies have it. $date: when the message was sent;
+# $from: its sender, such as "Ravi Kumar <ravi@invenia.in>".
+notify-reply-quote-header = On { $date }, { $from } wrote:
+# The same when the message has no date.
+notify-reply-quote-header-no-date = { $from } wrote:
 # Only on a notification about one message.
 notify-reply-all = Reply all
 notify-mark-read = Mark as read

@@ -4,9 +4,10 @@
 //! flex rows, padding, margins, insets, borders and text alignment by
 //! itself (`vendor/gpui-pre/KATNA.md`). These help code that places or
 //! reads positions by hand: painted lines, drags, sliders, swipes,
-//! arrow keys.
+//! arrow keys; and laying out mail in its own direction.
 
-use gpui::{Bounds, LayoutDirection, Pixels, Window};
+use gpui::{Bounds, LayoutDirection, Pixels, Styled, Window};
+pub use katna_core::bidi::Direction;
 
 /// Sets `window`'s layout direction: right to left when `rtl`. Call it
 /// every frame (it costs nothing when nothing changes), so a change of
@@ -60,24 +61,23 @@ pub fn arrow(key: &str, rtl: bool) -> &str {
     }
 }
 
-/// Whether `text` reads right to left, by its first letter of a strong
-/// direction (Unicode's rule for a paragraph); `None` if it has none, as
-/// with digits, spaces or nothing. Arrow keys move the caret the way the
-/// text is drawn: in Arabic text Left goes forward.
-pub fn text_rtl(text: &str) -> Option<bool> {
-    text.chars().find_map(|c| {
-        let rtl = matches!(
-            c as u32,
-            0x0590..=0x08FF | 0xFB1D..=0xFDFF | 0xFE70..=0xFEFF | 0x10800..=0x10FFF | 0x1E800..=0x1EFFF
-        ) && !c.is_numeric();
-        if rtl {
-            Some(true)
-        } else if c.is_alphabetic() {
-            Some(false)
-        } else {
-            None
-        }
-    })
+/// `element` laid out in `dir` (its text aligned to that direction's
+/// start, its rows from that side); `None` leaves it as what holds it.
+/// Mail and its paragraphs read their own way whatever the window's
+/// (`katna_core::bidi`).
+pub fn directed<E: Styled>(element: E, dir: Option<Direction>) -> E {
+    match dir {
+        Some(Direction::Ltr) => element.layout_ltr(),
+        Some(Direction::Rtl) => element.layout_rtl(),
+        None => element,
+    }
+}
+
+/// Whether Left moves the caret forward in `text`: it reads right to
+/// left by its first strong letter (`katna_core::bidi::first_strong`),
+/// or, with none (digits, nothing), the window does.
+pub fn left_goes_on(text: &str, window: &Window) -> bool {
+    katna_core::bidi::first_strong(text).map_or_else(|| is_rtl(window), Direction::is_rtl)
 }
 
 #[cfg(test)]
@@ -101,8 +101,5 @@ mod tests {
         assert_eq!(arrow("right", true), "left");
         assert_eq!(arrow("left", false), "left");
         assert_eq!(arrow("up", true), "up");
-        assert_eq!(text_rtl("١٢ مرحبا"), Some(true));
-        assert_eq!(text_rtl("12 hello مرحبا"), Some(false));
-        assert_eq!(text_rtl("12 - "), None);
     }
 }
