@@ -60,7 +60,7 @@ keeps one 0,1 / blur 3 shadow at 30%.
 | Level | Used for | Dark (#448) | Light |
 | --- | --- | --- | --- |
 | 0 Page | the page | page colour | page colour |
-| 1 Card | list, open mail, contact card, agenda | surface, one soft shadow | white, `card_edge` ring + short shadow |
+| 1 Card | list, open mail, contact card, agenda, every app page, Settings | surface, one soft shadow | white, `card_edge` ring + short shadow |
 | 2 Float | floating buttons, dragging | `raised` + rim | white, edge + short shadow |
 | 3 Menu | menus, dialogs (`widgets::dialog`) | `menu` + rim | white, edge + shadow |
 | 4 Popover | notched popovers (`notched::popover`), the tour | `menu` + rim | white, edge + deeper shadow |
@@ -112,7 +112,9 @@ checkbox, radio, colour swatch and wheel, avatar, tooltip, snackbar, scroll
 bar, skeleton, `notched::popover` (opens at the click, notch, level 4,
 `LG`), `widgets::dialog` (level 3, `LG`, frosted), `widgets::card` (level
 1: rounds, fills through `pane` and adds `card_shadow`; the mail list, open
-mail, person card, agenda and Settings), `widgets::tile` (level 1 at full
+mail, person card, agenda; the card of every other app's page and of
+Settings comes from `MailWindow::page_frame`, which adds the faint line
+as Mail's cards have), `widgets::tile` (level 1 at full
 strength, `MD`, `th.surface`: a file, folder, attachment, invitation,
 summary, inline reply or mail service to pick; a clickable one adds
 `tile_hover` first). A card or tile never draws its own outline

@@ -29,6 +29,7 @@ use async_channel::{Receiver, Sender};
 
 use futures_lite::FutureExt;
 
+use crate::server_search::Criterion;
 use crate::{
     Envelope, Error, FlagChanges, Flags, Folder, FolderChange, FolderStatus, MailBackend,
     MessageHeaders, Quota, Result, Wait,
@@ -56,6 +57,7 @@ enum Request {
     Append(String, Vec<u8>, Flags, Reply<()>),
     PollChanges(Reply<Vec<FolderChange>>),
     GmailSearch(u32, String, Reply<Option<Vec<u32>>>),
+    Search(Criterion, Reply<Option<Vec<u32>>>),
     GmailMessageIds(Vec<u32>, Reply<Option<HashMap<u32, u64>>>),
     Quota(Reply<Option<Quota>>),
     WaitForChanges(Duration, Reply<Vec<FolderChange>>),
@@ -202,6 +204,11 @@ impl Connection {
             .await
     }
 
+    pub async fn search(&self, criterion: &Criterion) -> Result<Option<Vec<u32>>> {
+        let criterion = criterion.clone();
+        self.call(|reply| Request::Search(criterion, reply)).await
+    }
+
     pub async fn gmail_message_ids(&self, uids: &[u32]) -> Result<Option<HashMap<u32, u64>>> {
         let uids = uids.to_vec();
         self.call(|reply| Request::GmailMessageIds(uids, reply))
@@ -335,6 +342,10 @@ impl MailBackend for Connection {
         Connection::gmail_search(self, first, query).await
     }
 
+    async fn search(&mut self, criterion: &Criterion) -> Result<Option<Vec<u32>>> {
+        Connection::search(self, criterion).await
+    }
+
     async fn gmail_message_ids(&mut self, uids: &[u32]) -> Result<Option<HashMap<u32, u64>>> {
         Connection::gmail_message_ids(self, uids).await
     }
@@ -433,6 +444,7 @@ async fn run<B: MailBackend>(mut backend: B, inbox: Receiver<Request>) {
                 backend.append_with_flags(&folder, message, &flags).await,
             ),
             Request::PollChanges(reply) => answer(&reply, backend.poll_changes().await),
+            Request::Search(criterion, reply) => answer(&reply, backend.search(&criterion).await),
             Request::GmailSearch(first, query, reply) => {
                 answer(&reply, backend.gmail_search(first, &query).await)
             }

@@ -5971,12 +5971,19 @@ A package manager replaces binaries while Katna runs. Every combination of
 old and new daemon and app must keep working:
 
 - The daemon notices its own binary was replaced (`/proc/self/exe` ends in
-  ` (deleted)`, checked on a timer and on each D-Bus call). It restarts
-  itself only when it is idle: no send inside the undo delay, no migration
-  or index write running, the op queue flushed. With systemd it asks the
-  user manager to restart its unit; without systemd it re-executes itself.
+  ` (deleted)`, or pacman records a newer build), checked every 30 seconds
+  and whenever a program asks `Version()`. It restarts itself only when no
+  message is being handed to a server or due to be within the longest undo
+  delay; it waits for that at most 15 minutes. Everything else that waits
+  (queued changes, the index, migrations) is kept on disk or finished by
+  its shutdown. With systemd it asks the user manager to restart its unit;
+  without systemd it re-executes itself.
 - A new `Version() → (version, api, schemas)` D-Bus method lets the app and
-  the daemon find out what the other side speaks. `Pim1` only ever gains
+  the daemon find out what the other side speaks: the build, the `Pim1`
+  level (`katna_dbus::API_LEVEL`, one more each time `Pim1` gains a
+  member) and each database's schema version. Katna Mail asks it when it
+  connects and whenever the daemon comes back; a daemon older than
+  `Version()` answers `UnknownMethod` and restarts by its own timer. `Pim1` only ever gains
   members; anything else becomes `Pim2` (§14.1). A new app that meets an old
   daemon asks it to restart; an old app that meets a new daemon keeps working
   on `Pim1` and shows a "Katna was updated, restart" pill.

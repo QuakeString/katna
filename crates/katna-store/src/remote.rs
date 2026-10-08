@@ -362,6 +362,69 @@ impl Store {
         Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
 
+    /// Whether mail of `account` (of any account when `None`) is on a
+    /// server but not downloaded: what only a search on the server finds
+    /// by its text (`docs/ARCHITECTURE.md` §7.3).
+    pub fn has_mail_not_downloaded(&self, account: Option<AccountId>) -> Result<bool> {
+        Ok(self
+            .mail
+            .prepare_cached(
+                "SELECT EXISTS (SELECT 1 FROM message m
+                 WHERE m.blob_hash IS NULL AND (?1 IS NULL OR m.account_id = ?1)
+                   AND EXISTS (SELECT 1 FROM message_location l
+                               WHERE l.message_id = m.id AND l.uid IS NOT NULL))",
+            )?
+            .query_row([account.map(|a| a.0)], |row| row.get(0))?)
+    }
+
+    /// The folders of `account` holding mail not downloaded, with how much
+    /// of it, most first.
+    pub fn folders_not_downloaded(&self, account: AccountId) -> Result<Vec<(FolderId, u64)>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT l.folder_id, count(*) AS n FROM message_location l
+             JOIN message m ON m.id = l.message_id
+             WHERE m.account_id = ?1 AND m.blob_hash IS NULL AND l.uid IS NOT NULL
+             GROUP BY l.folder_id ORDER BY n DESC, l.folder_id",
+        )?;
+        let rows = stmt.query_map([account.0], |row| {
+            Ok((FolderId(row.get(0)?), row.get::<_, i64>(1)? as u64))
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// Of the messages at `uids` in `folder`, the ones not downloaded, with
+    /// their dates.
+    pub fn not_downloaded_at(
+        &self,
+        folder: FolderId,
+        uids: &[u32],
+    ) -> Result<Vec<(MessageId, Option<i64>)>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT m.id, m.date FROM message_location l
+             JOIN message m ON m.id = l.message_id
+             WHERE l.folder_id = ?1 AND m.blob_hash IS NULL
+               AND l.uid IN (SELECT value FROM json_each(?2))",
+        )?;
+        let mut found = Vec::new();
+        for chunk in uids.chunks(1_000) {
+            let list = format!(
+                "[{}]",
+                chunk
+                    .iter()
+                    .map(u32::to_string)
+                    .collect::<Vec<_>>()
+                    .join(",")
+            );
+            let rows = stmt.query_map(params![folder.0, list], |row| {
+                Ok((MessageId(row.get(0)?), row.get(1)?))
+            })?;
+            for row in rows {
+                found.push(row?);
+            }
+        }
+        Ok(found)
+    }
+
     /// The account `folder` belongs to, if it exists.
     pub fn folder_account(&self, folder: FolderId) -> Result<Option<AccountId>> {
         Ok(self
@@ -858,6 +921,40 @@ mod tests {
         );
         // Insert, insert, role update.
         assert_eq!(store.latest_change(DbKind::Mail).unwrap(), 3);
+    }
+
+    #[test]
+    fn finds_mail_not_downloaded() {
+        let (_tmp, mut store, account) = open();
+        assert!(!store.has_mail_not_downloaded(None).unwrap());
+        let mut batch = store.mail_batch().unwrap();
+        let inbox = batch
+            .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
+            .unwrap();
+        let mut ids = Vec::new();
+        for uid in [1, 2, 3] {
+            let Added::Message(id) = batch
+                .add_remote_message(account, inbox, &remote(uid, &[]))
+                .unwrap()
+            else {
+                panic!("expected a new message");
+            };
+            ids.push(id);
+        }
+        batch
+            .set_message_body(ids[1], b"Subject: x\r\n\r\nbody", None, false)
+            .unwrap();
+        batch.commit().unwrap();
+        assert!(store.has_mail_not_downloaded(Some(account)).unwrap());
+        assert!(!store.has_mail_not_downloaded(Some(AccountId(99))).unwrap());
+        assert_eq!(store.folders_not_downloaded(account).unwrap(), [(inbox, 2)]);
+        let found: Vec<MessageId> = store
+            .not_downloaded_at(inbox, &[1, 2, 3, 7])
+            .unwrap()
+            .into_iter()
+            .map(|(id, _)| id)
+            .collect();
+        assert_eq!(found, [ids[0], ids[2]]);
     }
 
     #[test]
