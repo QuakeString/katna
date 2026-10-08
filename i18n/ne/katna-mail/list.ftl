@@ -353,6 +353,8 @@ row-no-subject = (विषय छैन)
 row-unknown-sender = (अज्ञात प्रेषक)
 row-to = प्रापक:
 row-no-recipients = (प्रापक छैनन्)
+row-names-separator = {", "}
+row-me = म
 
 ## Mail list: lines
 
