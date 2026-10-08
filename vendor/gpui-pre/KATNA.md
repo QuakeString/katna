@@ -63,8 +63,26 @@ be laid out right to left, as Arabic, Hebrew, Persian and Urdu need:
   element). Code that paints a `ShapedLine` itself passes the alignment
   as given, so it resolves it first.
 
-Not mirrored yet: horizontal scroll offsets (content scrolls from the
-left), `uniform_list` and `list` item origins (placed from the left
-padding), `anchored` positions and box shadow offsets.
+- Box shadows fall the other way: `Style::mirrored` turns their x
+  offsets around.
+- Horizontal scrolling (`div.rs`): a right-to-left row starts at the right
+  and runs out past the left edge, so its scroll offset goes from 0 up to
+  the most it can scroll (positive, the content moving right) instead of
+  down from 0, and a vertical wheel on a row that scrolls only sideways
+  moves it toward its end, on the left. `ScrollHandle::scroll_to_item`
+  works as before, on screen positions.
+- `uniform_list` puts its items against the right padding and border, and
+  `list` an item narrower than itself against its right edge; `list`
+  also gives its items its own `layout_ltr`/`layout_rtl`.
+- `anchored` reads its anchor's left and right as start and end: anchored
+  by the top left corner (the default) it opens toward the left of its
+  point, horizontal offsets turn around, without a position it hangs from
+  the right of where it was laid out, local positions count from there
+  toward the left, and one wider than the window keeps its right edge.
+  Positions given in window coordinates are where they are on screen (a
+  pointer's position), so a menu opens toward the left of the pointer.
+- Scrollbars: GPUI draws none itself. Space taffy reserves for one
+  (`scrollbar_width`) is mirrored with the rest, to the left; Katna's own
+  scrollbar (`katna-ui`) sits on the left in a right-to-left layout.
 
-Tests: `taffy::direction_tests`.
+Tests: `taffy::direction_tests`, and `elements::anchored::tests` for menus.

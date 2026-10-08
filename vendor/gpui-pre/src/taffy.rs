@@ -920,11 +920,142 @@ mod direction_tests {
             bottom_left: px(4.).into(),
             ..Corners::default()
         };
+        style.box_shadow = vec![crate::BoxShadow {
+            color: crate::black(),
+            offset: point(px(3.), px(5.)),
+            blur_radius: px(2.),
+            spread_radius: px(0.),
+            inset: false,
+        }];
         let mirrored = style.mirrored();
+        assert_eq!(mirrored.box_shadow[0].offset, point(px(-3.), px(5.)));
         assert_eq!(mirrored.border_widths.left, px(2.).into());
         assert_eq!(mirrored.border_widths.right, px(1.).into());
         assert_eq!(mirrored.corner_radii.top_right, px(3.).into());
         assert_eq!(mirrored.corner_radii.bottom_right, px(4.).into());
         assert_eq!(mirrored.corner_radii.top_left, px(0.).into());
+    }
+
+    /// A right-to-left window that draws what its function makes.
+    struct RtlView(Box<dyn Fn() -> AnyElement>);
+
+    impl crate::Render for RtlView {
+        fn render(
+            &mut self,
+            window: &mut crate::Window,
+            _: &mut crate::Context<Self>,
+        ) -> impl crate::IntoElement {
+            window.set_layout_direction(LayoutDirection::Rtl);
+            (self.0)()
+        }
+    }
+
+    /// Opens a right-to-left window drawing `element`.
+    fn draw_rtl(
+        cx: &mut TestAppContext,
+        element: impl Fn() -> AnyElement + 'static,
+    ) -> &mut crate::VisualTestContext {
+        let (_, cx) = cx.add_window_view(|_, _| RtlView(Box::new(element)));
+        cx.run_until_parked();
+        cx
+    }
+
+    fn redraw(cx: &mut crate::VisualTestContext) {
+        cx.update(|window, _| window.refresh());
+        cx.run_until_parked();
+    }
+
+    #[gpui::test]
+    fn right_to_left_row_scrolls_toward_the_right(cx: &mut TestAppContext) {
+        use crate::{InteractiveElement as _, StatefulInteractiveElement as _};
+        let handle = crate::ScrollHandle::new();
+        let content: Probe = Default::default();
+        let (row, probe_content) = (handle.clone(), content.clone());
+        let cx = draw_rtl(cx, move || {
+            div()
+                .id("row")
+                .w(px(100.))
+                .h(px(10.))
+                .flex()
+                .overflow_x_scroll()
+                .track_scroll(&row)
+                .child(div().flex_none().child(probe(300., &probe_content)))
+                .into_any_element()
+        });
+        // The row starts at the right edge and runs out past the left.
+        assert_eq!(x_range(&content), (-200., 100.));
+        assert_eq!(handle.max_offset().x, px(200.));
+        // Scrolling on moves it right, up to the most it can.
+        handle.set_offset(point(px(50.), px(0.)));
+        redraw(cx);
+        assert_eq!(x_range(&content), (-150., 150.));
+        handle.set_offset(point(px(500.), px(0.)));
+        redraw(cx);
+        assert_eq!(handle.offset().x, px(200.));
+        // Past its start it cannot go.
+        handle.set_offset(point(px(-50.), px(0.)));
+        redraw(cx);
+        assert_eq!(handle.offset().x, px(0.));
+        assert_eq!(x_range(&content), (-200., 100.));
+    }
+
+    #[gpui::test]
+    fn right_to_left_uniform_list_starts_at_the_right(cx: &mut TestAppContext) {
+        let item: Probe = Default::default();
+        let probe_item = item.clone();
+        draw_rtl(cx, move || {
+            let probe_item = probe_item.clone();
+            div()
+                .w(px(100.))
+                .h(px(40.))
+                .child(
+                    crate::uniform_list("list", 3, move |range, _, _| {
+                        range
+                            .map(|ix| {
+                                if ix == 0 {
+                                    probe(30., &probe_item)
+                                } else {
+                                    div().w(px(30.)).h(px(10.)).into_any_element()
+                                }
+                            })
+                            .collect::<Vec<_>>()
+                    })
+                    .with_horizontal_sizing_behavior(
+                        crate::ListHorizontalSizingBehavior::Unconstrained,
+                    )
+                    .pl(px(4.))
+                    .size_full(),
+                )
+                .into_any_element()
+        });
+        // Against the right edge, inside the start padding.
+        assert_eq!(x_range(&item), (66., 96.));
+    }
+
+    #[gpui::test]
+    fn right_to_left_list_starts_at_the_right(cx: &mut TestAppContext) {
+        let item: Probe = Default::default();
+        let state = crate::ListState::new(2, crate::ListAlignment::Top, px(100.));
+        let probe_item = item.clone();
+        draw_rtl(cx, move || {
+            let probe_item = probe_item.clone();
+            div()
+                .w(px(100.))
+                .h(px(40.))
+                .child(
+                    crate::list(state.clone(), move |ix, _, _| {
+                        let row = div().flex().h(px(10.));
+                        if ix == 0 {
+                            row.child(probe(30., &probe_item)).into_any_element()
+                        } else {
+                            row.into_any_element()
+                        }
+                    })
+                    .size_full(),
+                )
+                .into_any_element()
+        });
+        // A full-width row, whose first box is at its right.
+        assert_eq!(x_range(&item), (70., 100.));
     }
 }

@@ -802,8 +802,8 @@ impl Style {
         }
     }
 
-    /// Katna: this style with its left and right swapped (borders and
-    /// corners), for an element in a right-to-left layout. Padding,
+    /// Katna: this style with its left and right swapped (borders,
+    /// corners and box shadow offsets), for an element in a right-to-left layout. Padding,
     /// margins and insets need no swap: the layout engine mirrors bounds.
     pub(crate) fn mirrored(&self) -> Self {
         let mut style = self.clone();
@@ -814,6 +814,10 @@ impl Style {
         let radii = &mut style.corner_radii;
         std::mem::swap(&mut radii.top_left, &mut radii.top_right);
         std::mem::swap(&mut radii.bottom_left, &mut radii.bottom_right);
+        // A shadow cast toward the end falls on the other side.
+        for shadow in &mut style.box_shadow {
+            shadow.offset.x = -shadow.offset.x;
+        }
         style
     }
 

@@ -139,12 +139,31 @@ impl Element for Anchored {
             .reduce(|acc, bounds| acc.union(&bounds))
             .unwrap();
 
+        // Katna: in a right-to-left layout the anchor's left and right are
+        // start and end: an element anchored by its top left corner opens
+        // toward the left of its point, horizontal offsets turn around, and
+        // without a position it hangs from the right of where it was laid
+        // out. Positions themselves are where they are on screen.
+        let rtl = window.layout_direction().is_rtl();
+        let anchor = if rtl {
+            self.anchor.other_side_along(Axis::Horizontal)
+        } else {
+            self.anchor
+        };
+        let offset = self.offset.map(|offset| {
+            if rtl {
+                point(-offset.x, offset.y)
+            } else {
+                offset
+            }
+        });
         let (origin, mut desired) = self.position_mode.get_position_and_bounds(
             self.anchor_position,
-            self.anchor,
+            anchor,
             children_bounds.size,
             bounds,
-            self.offset,
+            offset,
+            rtl,
         );
 
         let limits = Bounds {
@@ -153,7 +172,7 @@ impl Element for Anchored {
         };
 
         if self.fit_mode == AnchoredFitMode::SwitchAnchor {
-            let mut anchor = self.anchor;
+            let mut anchor = anchor;
 
             if desired.left() < limits.left() || desired.right() > limits.right() {
                 let switched = Bounds::from_anchor_and_size(
@@ -188,11 +207,22 @@ impl Element for Anchored {
 
         // Snap the horizontal edges of the anchored element to the horizontal edges of the window if
         // its horizontal bounds overflow, aligning to the left if it is wider than the limits.
-        if desired.right() > limits.right() {
-            desired.origin.x -= desired.right() - limits.right() + edges.right;
-        }
-        if desired.left() < limits.left() {
-            desired.origin.x = limits.origin.x + edges.left;
+        // Katna: in a right-to-left layout, one wider than the window
+        // keeps its start, on the right.
+        if rtl {
+            if desired.left() < limits.left() {
+                desired.origin.x = limits.origin.x + edges.left;
+            }
+            if desired.right() > limits.right() {
+                desired.origin.x -= desired.right() - limits.right() + edges.right;
+            }
+        } else {
+            if desired.right() > limits.right() {
+                desired.origin.x -= desired.right() - limits.right() + edges.right;
+            }
+            if desired.left() < limits.left() {
+                desired.origin.x = limits.origin.x + edges.left;
+            }
         }
 
         // Snap the vertical edges of the anchored element to the vertical edges of the window if
@@ -266,22 +296,32 @@ impl AnchoredPositionMode {
         size: Size<Pixels>,
         bounds: Bounds<Pixels>,
         offset: Option<Point<Pixels>>,
+        rtl: bool,
     ) -> (Point<Pixels>, Bounds<Pixels>) {
         let offset = offset.unwrap_or_default();
+        // Katna: where it was laid out starts at the right in a
+        // right-to-left layout.
+        let start = if rtl {
+            bounds.top_right()
+        } else {
+            bounds.origin
+        };
 
         match self {
             AnchoredPositionMode::Window => {
-                let anchor_position = anchor_position.unwrap_or(bounds.origin);
+                let anchor_position = anchor_position.unwrap_or(start);
                 let bounds = Bounds::from_anchor_and_size(anchor, anchor_position + offset, size);
                 (anchor_position, bounds)
             }
             AnchoredPositionMode::Local => {
                 let anchor_position = anchor_position.unwrap_or_default();
-                let bounds = Bounds::from_anchor_and_size(
-                    anchor,
-                    bounds.origin + anchor_position + offset,
-                    size,
-                );
+                // Katna: counted from the start, toward the end.
+                let local = if rtl {
+                    point(-anchor_position.x, anchor_position.y)
+                } else {
+                    anchor_position
+                };
+                let bounds = Bounds::from_anchor_and_size(anchor, start + local + offset, size);
                 (anchor_position, bounds)
             }
         }
@@ -394,5 +434,74 @@ mod tests {
 
         assert_eq!(menu_bounds.origin, point(px(100.), px(300.)));
         assert_eq!(menu_bounds.size, size(px(200.), px(300.)));
+    }
+
+    /// Katna: a menu in a right-to-left window.
+    struct RtlMenu {
+        position: Option<Point<Pixels>>,
+        offset: Point<Pixels>,
+    }
+
+    impl Render for RtlMenu {
+        fn render(&mut self, window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
+            window.set_layout_direction(crate::LayoutDirection::Rtl);
+            let mut menu = super::anchored().offset(self.offset);
+            if let Some(position) = self.position {
+                menu = menu.position(position);
+            }
+            div().size_full().child(
+                div().w(px(300.)).h(px(20.)).child(
+                    deferred(
+                        menu.child(
+                            div()
+                                .id("menu")
+                                .debug_selector(|| "MENU".into())
+                                .w(px(200.))
+                                .h(px(100.)),
+                        ),
+                    )
+                    .with_priority(1),
+                ),
+            )
+        }
+    }
+
+    fn rtl_menu_bounds(
+        cx: &mut TestAppContext,
+        position: Option<Point<Pixels>>,
+        offset: Point<Pixels>,
+    ) -> crate::Bounds<Pixels> {
+        let window = cx.open_window(size(px(800.), px(600.)), move |_, _| RtlMenu {
+            position,
+            offset,
+        });
+        cx.run_until_parked();
+        window
+            .update(cx, |_, window, _| {
+                window.rendered_frame.debug_bounds.get("MENU").copied()
+            })
+            .unwrap()
+            .expect("MENU debug bounds not found")
+    }
+
+    #[gpui::test]
+    fn right_to_left_menu_opens_toward_the_left(cx: &mut TestAppContext) {
+        let bounds = rtl_menu_bounds(cx, Some(point(px(500.), px(100.))), point(px(4.), px(6.)));
+        // Its top right corner at the point, the offset turned around.
+        assert_eq!(bounds.origin, point(px(296.), px(106.)));
+    }
+
+    #[gpui::test]
+    fn right_to_left_menu_hangs_from_the_right(cx: &mut TestAppContext) {
+        // Laid out in a 300 px box at the right of the 800 px window.
+        let bounds = rtl_menu_bounds(cx, None, point(px(0.), px(0.)));
+        assert_eq!(bounds.origin, point(px(600.), px(0.)));
+    }
+
+    #[gpui::test]
+    fn right_to_left_menu_turns_back_at_the_edge(cx: &mut TestAppContext) {
+        // No room on the left of the point: it opens toward the right.
+        let bounds = rtl_menu_bounds(cx, Some(point(px(50.), px(100.))), point(px(0.), px(0.)));
+        assert_eq!(bounds.origin, point(px(50.), px(100.)));
     }
 }
