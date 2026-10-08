@@ -135,6 +135,7 @@ icons!(
     "info",
     "insert-below",
     "junk",
+    "key",
     "label",
     "language",
     "link",

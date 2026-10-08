@@ -823,6 +823,103 @@ impl Daemon {
         Ok(pictures.sender(address).await)
     }
 
+    /// Keeps the Autocrypt key in `message`, which the user opened, for
+    /// encrypting to its sender later: only when the user's provider
+    /// authenticated the message's `From`, which must be the key's
+    /// address. The key goes to Katna's own directory, never the user's
+    /// GnuPG keyring.
+    pub async fn learn_key(&self, message: MessageId) -> Result<(), CommandError> {
+        let raw = {
+            let store = self.store();
+            if !store.message_authenticated(message)? {
+                return Ok(());
+            }
+            let stored = store
+                .messages_by_id(&[message])?
+                .into_iter()
+                .next()
+                .ok_or(CommandError::UnknownMessage(message.0))?;
+            match &stored.blob_hash {
+                Some(hash) => store.blobs().get(hash)?,
+                None => None,
+            }
+        };
+        let Some(raw) = raw else {
+            return Ok(());
+        };
+        let peers = katna_crypto::PeerKeys::new(self.paths.peer_keys_dir());
+        smol::unblock(move || {
+            let Some(found) = katna_crypto::autocrypt::in_message(&raw) else {
+                return;
+            };
+            // A date in the future would win over every later mail.
+            let seen = found.date.min(jiff::Timestamp::now().as_second());
+            let gnupg = katna_crypto::Gnupg::new();
+            let kept = peers.remember(
+                &gnupg,
+                &found.address,
+                &found.key,
+                katna_crypto::KeySource::Autocrypt,
+                seen,
+            );
+            if let Err(err) = kept {
+                tracing::debug!(%err, "Autocrypt key not kept");
+            }
+        })
+        .await;
+        Ok(())
+    }
+
+    /// Looks up a public key for `address` in its domain's Web Key
+    /// Directory and keeps it ([`Self::learn_key`]'s directory). Returns
+    /// its fingerprint, or empty when the domain has none. Only the
+    /// address's own domain is asked.
+    pub async fn look_up_key(&self, address: &str) -> Result<String, CommandError> {
+        let address = address.trim().to_lowercase();
+        let Some(urls) = katna_crypto::wkd::urls(&address) else {
+            return Err(CommandError::Failed(format!(
+                "{address:?} is not an address"
+            )));
+        };
+        let tls = Tls::system().map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
+        let mut why = String::from("no key published");
+        for url in urls {
+            let key = katna_sync::autoconfig::http::get_public(
+                &url,
+                &tls,
+                std::time::Duration::from_secs(15),
+                katna_crypto::MAX_KEY,
+            )
+            .await;
+            let key = match key {
+                Ok(Some(key)) if !key.is_empty() => key,
+                Ok(_) => continue,
+                Err(err) => {
+                    tracing::debug!(%err, %url, "Web Key Directory");
+                    continue;
+                }
+            };
+            let peers = katna_crypto::PeerKeys::new(self.paths.peer_keys_dir());
+            let address = address.clone();
+            let kept = smol::unblock(move || {
+                peers.remember(
+                    &katna_crypto::Gnupg::new(),
+                    &address,
+                    &key,
+                    katna_crypto::KeySource::Wkd,
+                    jiff::Timestamp::now().as_second(),
+                )
+            })
+            .await;
+            match kept {
+                Ok(peer) => return Ok(peer.fingerprint),
+                Err(err) => why = err,
+            }
+        }
+        tracing::debug!(%address, %why, "no key in the Web Key Directory");
+        Ok(String::new())
+    }
+
     /// The company of the person at `address`, as JSON, or empty; under
     /// the same rule as [`Self::sender_picture`].
     pub async fn company_of(&self, address: &str, website: &str) -> Result<String, CommandError> {
@@ -2433,6 +2530,14 @@ impl Outgoing for SmtpAccounts {
 
     fn tracking(&self) -> Option<tracking::Client> {
         self.0.upgrade()?.tracking_client()
+    }
+
+    fn gnupg(&self) -> katna_crypto::Gnupg {
+        let gnupg = katna_crypto::Gnupg::new();
+        match self.0.upgrade() {
+            Some(daemon) => gnupg.with_peer_keys(daemon.paths.peer_keys_dir()),
+            None => gnupg,
+        }
     }
 
     async fn tracking_token(&self) -> katna_sync::Result<String> {

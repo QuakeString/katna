@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 katna-core.workspace = true
+katna-crypto.workspace = true
 katna-store.workspace = true
 katna-meta.workspace = true
 katna-sync.workspace = true
