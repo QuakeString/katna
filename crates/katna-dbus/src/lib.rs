@@ -20,6 +20,8 @@ mod session;
 pub use session::session;
 mod start;
 pub use start::{daemon_running, ensure_daemon, start_daemon};
+mod version;
+pub use version::{DaemonVersion, daemon_version};
 
 /// One server of a new account. An empty `host` means "none".
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -686,11 +688,38 @@ pub mod mute {
     pub const SENDER: &str = "sender";
 }
 
+/// The level of `Pim1` this build speaks, the second field of
+/// `Version()`. It goes up by one whenever `Pim1` gains a member, which is
+/// the only change `Pim1` takes; anything else becomes `Pim2`
+/// (`docs/ARCHITECTURE.md` §14.1, §21.2).
+pub const API_LEVEL: u32 = 1;
+
+/// The names in `Version()`'s schema versions.
+pub mod schema {
+    /// `mail.db`
+    pub const MAIL: &str = "mail";
+    /// `pim.db`
+    pub const PIM: &str = "pim";
+    /// `blobs.db`
+    pub const BLOBS: &str = "blobs";
+    /// The search index.
+    pub const SEARCH: &str = "search";
+}
+
 macro_rules! pim_proxy {
     ($interface:tt, $bus_name:tt, $path:tt) => {
         /// Client side of `in.invenia.katna.Pim1`.
         #[zbus::proxy(interface = $interface, default_service = $bus_name, default_path = $path)]
         pub trait Pim {
+            /// The daemon's version (`0.0.0.r765.g3928dee`), its
+            /// [`API_LEVEL`], and the schema version of each database by
+            /// [`schema`] name. Daemons before it answer `UnknownMethod`.
+            /// Asking also has the daemon check whether an update replaced
+            /// it, and restart once idle if so.
+            fn version(
+                &self,
+            ) -> zbus::Result<(String, u32, std::collections::HashMap<String, u32>)>;
+
             /// All accounts with their sync state.
             fn accounts(&self) -> zbus::Result<Vec<AccountStatus>>;
 
