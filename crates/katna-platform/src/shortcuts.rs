@@ -11,8 +11,11 @@
 //!   again whenever the service starts (KWin restarting).
 //! - **Windows:** `RegisterHotKey`, through the `global-hotkey` crate, on
 //!   the tray icon's thread, whose message loop receives the presses.
-//! - **GNOME and other desktops:** nothing yet. Their way is the
-//!   GlobalShortcuts portal, which Katna does not use so far.
+//! - **GNOME and other desktops:** the GlobalShortcuts portal
+//!   (`org.freedesktop.portal.GlobalShortcuts`). The first time, the
+//!   desktop asks whether to allow them, and its settings can change the
+//!   keys (GNOME: Settings > Apps > Katna Mail). A desktop without the
+//!   portal gets none.
 
 use std::sync::Arc;
 
@@ -61,6 +64,24 @@ impl Keys {
         }
         code
     }
+
+    /// The key as the XDG shortcuts spec writes it (`LOGO+ALT+t`): what
+    /// the GlobalShortcuts portal takes as a preferred trigger.
+    pub fn xdg(self) -> String {
+        let mut parts: Vec<String> = [
+            (self.ctrl, "CTRL"),
+            (self.alt, "ALT"),
+            (self.shift, "SHIFT"),
+            (self.meta, "LOGO"),
+        ]
+        .into_iter()
+        .filter(|(on, _)| *on)
+        .map(|(_, name)| name.to_owned())
+        .collect();
+        // Keysym names of letters are lower case; of digits, the digit.
+        parts.push(self.key.to_ascii_lowercase().to_string());
+        parts.join("+")
+    }
 }
 
 /// One global shortcut.
@@ -78,8 +99,234 @@ pub struct Shortcut {
 /// Called with a [`Shortcut::action`] when its key is pressed.
 pub type Handler = Arc<dyn Fn(&str) + Send + Sync>;
 
+/// Registers `shortcuts` with the desktop for as long as `connection`
+/// lasts, and calls `handler` when one is pressed: KDE's global shortcuts
+/// service on Plasma, the GlobalShortcuts portal elsewhere. `component` is
+/// the app's ID; `component_name` its name in Plasma's settings.
 #[cfg(not(windows))]
-pub use kde::serve;
+pub async fn serve(
+    connection: &zbus::Connection,
+    component: &str,
+    component_name: &str,
+    shortcuts: Vec<Shortcut>,
+    handler: Handler,
+) -> zbus::Result<()> {
+    if on_plasma() {
+        return kde::serve(connection, component, component_name, shortcuts, handler).await;
+    }
+    // A connection of its own: the portal learns the app's ID from the
+    // connection, which has to say it before any other portal call.
+    let own = zbus::connection::Builder::session()?.build().await?;
+    portal::serve(&own, component, shortcuts, handler).await
+}
+
+/// Whether this is a Plasma session, whose shortcuts are KDE's service's
+/// (other desktops may start that service too, as part of KDE apps, but
+/// cannot take keys through it).
+#[cfg(not(windows))]
+fn on_plasma() -> bool {
+    std::env::var("XDG_CURRENT_DESKTOP").is_ok_and(|desktops| {
+        desktops
+            .split(':')
+            .any(|desktop| desktop.eq_ignore_ascii_case("KDE"))
+    })
+}
+
+#[cfg(not(windows))]
+pub mod portal {
+    //! The GlobalShortcuts portal: a session holds the shortcuts, bound
+    //! once (the desktop asks the user the first time) and reported by
+    //! `Activated` while the session lasts.
+
+    use std::collections::HashMap;
+    use std::sync::atomic::{AtomicU32, Ordering};
+
+    use futures_lite::StreamExt;
+    use zbus::message::Type;
+    use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue, Value};
+    use zbus::{Connection, MatchRule, MessageStream};
+
+    use super::{Handler, Shortcut};
+
+    const SERVICE: &str = "org.freedesktop.portal.Desktop";
+    const PATH: &str = "/org/freedesktop/portal/desktop";
+    const INTERFACE: &str = "org.freedesktop.portal.GlobalShortcuts";
+    const REQUEST: &str = "org.freedesktop.portal.Request";
+    const REGISTRY: &str = "org.freedesktop.host.portal.Registry";
+
+    /// What a portal call answers in its request's `Response`.
+    type Results = HashMap<String, OwnedValue>;
+
+    /// Binds `shortcuts` for the app `app_id` through the portal and calls
+    /// `handler` when one is pressed. `connection` is used for nothing
+    /// else before this. Returns at once when the desktop has no such
+    /// portal or refuses, otherwise when the connection closes.
+    pub async fn serve(
+        connection: &Connection,
+        app_id: &str,
+        shortcuts: Vec<Shortcut>,
+        handler: Handler,
+    ) -> zbus::Result<()> {
+        // An app outside Flatpak names itself, so the desktop knows whose
+        // shortcuts these are; an older portal has no registry.
+        let registered = connection
+            .call_method(
+                Some(SERVICE),
+                PATH,
+                Some(REGISTRY),
+                "Register",
+                &(app_id, HashMap::<&str, Value<'_>>::new()),
+            )
+            .await;
+        if let Err(err) = registered {
+            tracing::debug!(%err, "portal registry");
+        }
+        let version: zbus::Result<OwnedValue> = connection
+            .call_method(
+                Some(SERVICE),
+                PATH,
+                Some("org.freedesktop.DBus.Properties"),
+                "Get",
+                &(INTERFACE, "version"),
+            )
+            .await
+            .and_then(|reply| reply.body().deserialize());
+        if let Err(err) = version {
+            tracing::info!(%err, "no GlobalShortcuts portal: no global shortcuts");
+            return Ok(());
+        }
+        // Listened for first, so a press right after binding is not lost.
+        let rule = MatchRule::builder()
+            .msg_type(Type::Signal)
+            .interface(INTERFACE)?
+            .member("Activated")?
+            .build();
+        let mut presses = MessageStream::for_match_rule(rule, connection, None).await?;
+
+        let token = next_token();
+        let session_token = next_token();
+        let options: HashMap<&str, Value<'_>> = HashMap::from([
+            ("handle_token", Value::from(token.as_str())),
+            ("session_handle_token", Value::from(session_token.as_str())),
+        ]);
+        let created = request(connection, &token, "CreateSession", &(options,)).await?;
+        let Some(session) = created.and_then(|results| session_handle(&results)) else {
+            tracing::warn!("the GlobalShortcuts portal made no session");
+            return Ok(());
+        };
+
+        let list: Vec<(String, HashMap<String, Value<'static>>)> = shortcuts
+            .iter()
+            .map(|shortcut| {
+                (
+                    shortcut.action.clone(),
+                    HashMap::from([
+                        ("description".to_owned(), Value::from(shortcut.name.clone())),
+                        (
+                            "preferred_trigger".to_owned(),
+                            Value::from(shortcut.keys.xdg()),
+                        ),
+                    ]),
+                )
+            })
+            .collect();
+        let bind_token = next_token();
+        let options: HashMap<&str, Value<'_>> =
+            HashMap::from([("handle_token", Value::from(bind_token.as_str()))]);
+        let bound = request(
+            connection,
+            &bind_token,
+            "BindShortcuts",
+            &(&session, list, "", options),
+        )
+        .await?;
+        if bound.is_none() {
+            tracing::info!("global shortcuts not allowed");
+            return Ok(());
+        }
+        tracing::debug!(%session, "global shortcuts bound");
+
+        while let Some(message) = presses.next().await {
+            let Ok(message) = message else { continue };
+            let activated =
+                message
+                    .body()
+                    .deserialize::<(OwnedObjectPath, String, u64, HashMap<String, OwnedValue>)>();
+            if let Ok((by, action, _, _)) = activated
+                && by == session
+                && shortcuts.iter().any(|s| s.action == action)
+            {
+                tracing::info!(action, "global shortcut");
+                handler(&action);
+            }
+        }
+        Ok(())
+    }
+
+    /// Calls `method` with `args`, whose options carry `token`, and waits
+    /// for its request's `Response`: the results when it went through,
+    /// `None` when the user or the desktop said no.
+    async fn request<A>(
+        connection: &Connection,
+        token: &str,
+        method: &str,
+        args: &A,
+    ) -> zbus::Result<Option<Results>>
+    where
+        A: serde::Serialize + zbus::zvariant::DynamicType,
+    {
+        let path = request_path(connection, token)?;
+        // Subscribed before the call: the answer can come before the call
+        // returns.
+        let rule = MatchRule::builder()
+            .msg_type(Type::Signal)
+            .interface(REQUEST)?
+            .member("Response")?
+            .path(path.clone())?
+            .build();
+        let mut responses = MessageStream::for_match_rule(rule, connection, None).await?;
+        connection
+            .call_method(Some(SERVICE), PATH, Some(INTERFACE), method, args)
+            .await?;
+        while let Some(message) = responses.next().await {
+            let Ok(message) = message else { continue };
+            let (response, results) = message.body().deserialize::<(u32, Results)>()?;
+            return Ok((response == 0).then_some(results));
+        }
+        Ok(None)
+    }
+
+    /// Where the portal makes the request for `token` on this connection.
+    fn request_path(connection: &Connection, token: &str) -> zbus::Result<OwnedObjectPath> {
+        let sender = connection
+            .unique_name()
+            .map(|name| name.trim_start_matches(':').replace('.', "_"))
+            .unwrap_or_default();
+        let path = format!("{PATH}/request/{sender}/{token}");
+        Ok(ObjectPath::try_from(path)?.into())
+    }
+
+    /// The session a `CreateSession` made: a string in the spec, an
+    /// object path from some portals.
+    fn session_handle(results: &Results) -> Option<OwnedObjectPath> {
+        let value = results.get("session_handle")?;
+        if let Ok(path) = OwnedObjectPath::try_from(value.try_clone().ok()?) {
+            return Some(path);
+        }
+        let text = String::try_from(value.try_clone().ok()?).ok()?;
+        ObjectPath::try_from(text).ok().map(Into::into)
+    }
+
+    /// A handle token unique to this process.
+    fn next_token() -> String {
+        static NEXT: AtomicU32 = AtomicU32::new(0);
+        format!(
+            "katna_{}_{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        )
+    }
+}
 
 #[cfg(not(windows))]
 mod kde {
@@ -270,5 +517,18 @@ mod tests {
             key: '1',
         };
         assert_eq!(ctrl_shift_1.qt(), 0x0600_0031);
+    }
+
+    #[test]
+    fn keys_read_as_the_xdg_spec_writes_them() {
+        assert_eq!(Keys::meta_alt('T').xdg(), "ALT+LOGO+t");
+        let ctrl_shift_1 = Keys {
+            meta: false,
+            ctrl: true,
+            alt: false,
+            shift: true,
+            key: '1',
+        };
+        assert_eq!(ctrl_shift_1.xdg(), "CTRL+SHIFT+1");
     }
 }
