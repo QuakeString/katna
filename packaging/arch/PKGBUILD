@@ -66,13 +66,9 @@ _bins=(katna-mail katna-daemon katnactl)
 
 pkgver() {
   cd katna
-  local version
-  # Only version tags: the arch-latest release tag is not a version.
-  if version=$(git describe --long --tags --abbrev=7 --match 'v[0-9]*' 2>/dev/null); then
-    printf '%s' "${version#v}" | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-  else
-    printf '0.0.0.r%s.g%s' "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
-  fi
+  # From the version tags (docs/RELEASING.md); the arch-latest release tag
+  # is not a version.
+  sh packaging/linux/version.sh
 }
 
 prepare() {
