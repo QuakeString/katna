@@ -6,6 +6,7 @@
 //! in working hours, once or twice (`docs/ARCHITECTURE.md` §10.1). It
 //! stops as soon as anyone replies; auto-replies don't count.
 
+use crate::widgets::Tip as _;
 use gpui::{
     Anchor, AnyElement, Context, Entity, Focusable, FontWeight, Window, deferred, div, point,
     prelude::*, rgba,
@@ -25,7 +26,7 @@ use crate::outgoing::{self, Mailbox, Outgoing};
 use crate::theme::Theme;
 use crate::widgets::{
     ButtonStyle, button, choice_chip, field, filled_button, icon, menu, menu_item, radio, raised,
-    switch, text_button, tip,
+    switch, text_button,
 };
 
 const DAY: u32 = 24 * 60 * 60;
@@ -280,7 +281,7 @@ impl MailWindow {
             .text_size(px(text::SMALL))
             .text_color(rgba(th.accent))
             .child(icon("history", th.accent, 16.0))
-            .when(compact, |d| d.tooltip(tip(label.clone(), th)))
+            .when(compact, |d| d.tip(label.clone(), th))
             .when(!compact, |d| {
                 d.child(div().min_w_0().truncate().child(label))
             })

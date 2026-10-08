@@ -2461,6 +2461,20 @@ Gemini or confidential mode):
   letters still work there. Whenever
   the keys lose their place (a message sent, a menu or dialog gone) they
   come back to the list, or to the Settings page while it is open.
+- **Screen readers.** GPUI hands an AccessKit tree to AT-SPI (Orca) and
+  UI Automation (NVDA, Narrator). Only elements with an id and a role
+  show up, so the shared widgets set both: `widgets::Tip::tip` labels an
+  icon button with its tooltip text, text buttons and chips carry their
+  label, menu items are `MenuItem`, `FocusRing` controls are buttons,
+  Settings rows are switches, radio buttons and links, and
+  `keep_tab_inside` makes a dialog a `Dialog`. The mail list is a `List`
+  whose rows read "Unread, sender, subject, date"; the folder pane is a
+  `Tree` with levels, unread counts and fold state; the open mail is a
+  `Document` named by its subject, with its plain text as the
+  description only while a screen reader is listening
+  (`window.is_a11y_active()`). Text fields expose their placeholder and
+  value (never a password's). Spoken words not shown on screen live in
+  `i18n/en/katna-mail/a11y.ftl`.
 - **Removing an account, deleting all data.** Settings → Accounts
   (`window/accounts.rs`) lists
   the accounts, each with Remove, and has "Delete all Katna data". Both
@@ -4333,8 +4347,14 @@ knows it; after that turning it off is the user's choice.
   named Katna Mail, so they can be changed in System Settings >
   Shortcuts; registered again whenever the service restarts. On Windows
   the `global-hotkey` crate (`RegisterHotKey`, no unsafe code of ours) on
-  the tray's thread. GNOME has none yet: that needs the GlobalShortcuts
-  portal (and "Compose new email" could join it then). On Wayland a
+  the tray's thread. Elsewhere (GNOME, any session whose
+  `XDG_CURRENT_DESKTOP` is not KDE) the GlobalShortcuts portal, on a
+  connection of its own that first names the app
+  (`org.freedesktop.host.portal.Registry.Register`), then
+  `CreateSession` and `BindShortcuts` with the keys as preferred
+  triggers (`ALT+LOGO+t`); the desktop asks the user the first time,
+  its settings can change the keys, and presses arrive as `Activated`.
+  A desktop without the portal gets none. On Wayland a
   press carries no activation token, so the compositor may not give the
   card focus.
 - Dolphin service menu "Send as email attachment with Katna"
@@ -5512,12 +5532,14 @@ consent.
   takes effect at once; off means the panic hook and the core-dump check
   write nothing), and the list of saved reports with
   **View**, **Copy** and **Delete** (and Delete all), each marked "Sent"
-  once it went to the crash tracker. Part 2 adds "Send crash reports"
-  (built) and later the usage statistics switch and **Send feedback**.
+  once it went to the crash tracker. Part 2 adds "Send crash reports",
+  "Send anonymous usage statistics" with the full list of what is counted,
+  and **Send feedback** (all built).
 
 **Part 2: sending, only with consent.** Reports go to a Sentry cloud
 project (decided by the owner on 27 September 2026, §25). Sending crash
-reports is built; usage statistics and the feedback form come later.
+reports, usage statistics and the feedback form are built (C.5–C.7);
+release-health sessions are not.
 
 - **Asking.** The first-run screen (onboarding) has a step, "Help improve
   Katna", between the look and the tour: what is sent, what is never sent
@@ -5550,6 +5572,22 @@ reports is built; usage statistics and the feedback form come later.
   and so on. The exact list lives in one Rust enum; each entry is described
   in Settings > User feedback so users can see what is counted. No message counts, no
   addresses, no domains, no search terms, no timestamps finer than a week.
+  Built (C.6): the switch "Send anonymous usage statistics" (config key
+  `feedback.send_usage_statistics`, off until the user turns it on, never
+  asked for in onboarding) sits under "Send crash reports"; "What is
+  counted" lists every entry of `katna_core::usage::Feature` (search
+  options, pinned mail, labels, scheduled send, snooze and reminders,
+  encrypted mail, built-in viewers, Calendar, Contacts, Tasks and Notes,
+  the phone-width layout, Katna's own window frame) and the other facts.
+  While it is on, Katna Mail notes each feature the first time it is used
+  in a week in `$XDG_STATE_HOME/katna/usage/week-N` (Monday to Sunday,
+  UTC), with the screen scale, desktop and session, which only it sees;
+  "See this week's report" shows the exact text and Copy. The daemon sends
+  a finished week once (never on a metered connection), adding the
+  version, the `ID` of `/etc/os-release` and the number of accounts in
+  bands, then deletes that week's file. Turning the switch off deletes
+  everything recorded and the install ID. Nothing is recorded while it is
+  off.
 - **Identity.** No user ID and no account ID. Each upload carries a random
   **install ID** only so that one machine's weekly reports are not counted
   twice; it is regenerated every 90 days and by "Reset" in Settings > User feedback, and it
@@ -5560,6 +5598,14 @@ reports is built; usage statistics and the feedback form come later.
   reply (clearly optional, never filled in from the account). It shows
   exactly what will be sent before sending. This is independent of the
   switches: sending feedback is itself the consent for that one message.
+  Built (C.7): chips for what it is about (Problem, Idea, Something
+  else), the message, the optional reply address and "Include Katna's
+  version and your system" (ticked; its line shown under it). "What is
+  sent" unfolds the exact text, whose field names stay English like a
+  crash report's; Katna Mail hands that text to the daemon
+  (`SendFeedback` on the Pim interface), which posts it as a User
+  Feedback item and nothing more. A dialog on wider windows; at phone
+  width it fills the window with Send in its top bar. Ctrl+Enter sends.
 - **Protocol, no SDK.** Everything uses Sentry's envelope format
   (`POST /api/<project>/envelope/`), written by hand in
   `katna_core::sentry` and posted with Katna's own small HTTPS client
@@ -5580,10 +5626,13 @@ reports is built; usage statistics and the feedback form come later.
   `contexts.os.raw_description`. Checked on 27 September 2026: Sentry
   answered 200 to a test envelope. Sentry's minidump handler
   (`sentry-rust-minidump`, an extra process) is not used unless the stacks
-  from core dumps turn out not to be enough. Later, feedback uses Sentry's
-  User Feedback item; usage statistics are one `info` event per week whose
-  tags are the feature flags above, plus release-health sessions for
-  crash-free rates.
+  from core dumps turn out not to be enough. Feedback is Sentry's User
+  Feedback item (`feedback`, the text in `contexts.feedback.message`, the
+  reply address as `contact_email` only when given;
+  `sentry::feedback_envelope`); usage statistics are one `info` event per
+  week (`sentry::usage_envelope`) whose message is the week's report text
+  and whose tags are the facts, the install ID and `f.<feature>` =
+  `yes`/`no`. Release-health sessions for crash-free rates come later.
 - **Client settings.** Nothing like the SDK's `send_default_pii`: no user
   object, no IP (the project is also set to not store IP addresses and to
   scrub data server-side), no `server_name`, no device ID; the recent log
@@ -5938,12 +5987,19 @@ A package manager replaces binaries while Katna runs. Every combination of
 old and new daemon and app must keep working:
 
 - The daemon notices its own binary was replaced (`/proc/self/exe` ends in
-  ` (deleted)`, checked on a timer and on each D-Bus call). It restarts
-  itself only when it is idle: no send inside the undo delay, no migration
-  or index write running, the op queue flushed. With systemd it asks the
-  user manager to restart its unit; without systemd it re-executes itself.
+  ` (deleted)`, or pacman records a newer build), checked every 30 seconds
+  and whenever a program asks `Version()`. It restarts itself only when no
+  message is being handed to a server or due to be within the longest undo
+  delay; it waits for that at most 15 minutes. Everything else that waits
+  (queued changes, the index, migrations) is kept on disk or finished by
+  its shutdown. With systemd it asks the user manager to restart its unit;
+  without systemd it re-executes itself.
 - A new `Version() → (version, api, schemas)` D-Bus method lets the app and
-  the daemon find out what the other side speaks. `Pim1` only ever gains
+  the daemon find out what the other side speaks: the build, the `Pim1`
+  level (`katna_dbus::API_LEVEL`, one more each time `Pim1` gains a
+  member) and each database's schema version. Katna Mail asks it when it
+  connects and whenever the daemon comes back; a daemon older than
+  `Version()` answers `UnknownMethod` and restarts by its own timer. `Pim1` only ever gains
   members; anything else becomes `Pim2` (§14.1). A new app that meets an old
   daemon asks it to restart; an old app that meets a new daemon keeps working
   on `Pim1` and shows a "Katna was updated, restart" pill.
@@ -6002,7 +6058,7 @@ request that touches a migration, not only at release time.
 | Check | What it proves |
 |---|---|
 | Pull-request CI on the tagged commit | `fmt`, `clippy`, tests on Arch and Ubuntu 26.04, `cargo deny`, size budgets |
-| Migration fixtures | A committed `mail.db`, `pim.db` and `blobs.db` of every released schema version migrates to the new one; row counts, threads, categories and a fixed set of queries give the same answers |
+| Migration fixtures | A committed `mail.db`, `pim.db` and `blobs.db` of every released schema version (`crates/katna-store/fixtures/`, written once when a migration is added) migrates to the new one; row counts, integrity, foreign keys, the schema and a fixed set of store reads (`answers.txt`) give the same answers |
 | Upgrade test | In a container: install the previous stable (and the one before it), add an account on the dev servers (Stalwart, Dovecot), sync, queue a send, create organizations and settings; upgrade to the candidate while the daemon runs; check the daemon restarts itself, migrations apply, nothing is re-downloaded or lost, the queued send goes out once, passwords still work |
 | Rollback test | Install the candidate, then the previous stable: it opens the data (expand-then-contract), or restores the backup cleanly |
 | Mixed versions | Old app against new daemon and new app against old daemon over D-Bus |

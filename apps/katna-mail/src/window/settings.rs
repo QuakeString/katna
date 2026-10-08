@@ -5,6 +5,7 @@
 //! send, the signature, conversation view, the tour, What's new and About.
 //! Changes apply at once and are saved to `config.toml`.
 
+use crate::widgets::Tip as _;
 use std::time::Duration;
 
 use gpui::{
@@ -26,7 +27,7 @@ use crate::schemes;
 use crate::theme::{Accent, Theme, mix};
 use crate::widgets::FocusRing;
 use crate::widgets::{
-    CARD_SHADOW_ROOM, ScaledEdge, card_outline, icon, icon_button, radio, switch, tip,
+    CARD_SHADOW_ROOM, ScaledEdge, card_outline, icon, icon_button, radio, switch,
 };
 
 /// One loop of the reading-pane demo.
@@ -117,6 +118,8 @@ pub(super) enum Change {
     SaveCrashReports(bool),
     /// Crash reports sent to Katna's crash tracker: "Help improve Katna".
     SendCrashReports(bool),
+    /// Anonymous usage statistics sent once a week.
+    SendUsageStatistics(bool),
     /// The interface scale, in percent.
     Scale(u16),
     /// Katna's own animation speed, as a percentage of normal length, or
@@ -235,7 +238,7 @@ impl MailWindow {
                     )
                     .child(
                         icon_button("settings-close", "close", 20.0, th)
-                            .tooltip(tip(tr!("reader-close"), th))
+                            .tip(tr!("reader-close"), th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.toggle_settings(&super::ToggleSettings, window, cx)
                             })),
@@ -417,6 +420,12 @@ impl MailWindow {
                                         )
                                     },
                                 )),
+                            )
+                            .child(
+                                help_row("send-feedback", "chat", tr!("quick-send-feedback"), th)
+                                    .on_click(cx.listener(|this, _, window, cx| {
+                                        this.open_feedback_form(window, cx)
+                                    })),
                             )
                             .child(help_row("about", "info", tr!("quick-about"), th).on_click(
                                 cx.listener(|this, _, window, cx| this.open_about(window, cx)),
@@ -762,6 +771,20 @@ impl MailWindow {
                 cx.notify();
                 return;
             }
+            Change::SendUsageStatistics(on) => {
+                self.config.feedback.send_usage_statistics = on;
+                // The week's facts are noted on the next frame.
+                self.usage_noted = (0, Default::default());
+                if !on {
+                    // Nothing recorded is kept once it is off.
+                    katna_core::usage::forget(&self.paths);
+                    self.usage_report_open = false;
+                }
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
             Change::SendCrashReports(on) => {
                 self.config.feedback.send_crash_reports = Some(on);
                 self.save_config();
@@ -1012,11 +1035,19 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         // A long label wraps onto a second line in a narrow window.
+        let label = label.into();
         self.page_control(crate::widgets::row(id, false, th), th, cx)
+            .role(gpui::Role::RadioButton)
+            .aria_label(label.clone())
+            .aria_toggled(if on {
+                gpui::Toggled::True
+            } else {
+                gpui::Toggled::False
+            })
             .gap(px(14.0))
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
             .child(animated_radio((id, 2_usize), on, th))
-            .child(div().flex_1().min_w_0().child(label.into()))
+            .child(div().flex_1().min_w_0().child(label))
             .into_any_element()
     }
 
@@ -1030,7 +1061,11 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
+        let label = label.into();
         self.page_control(crate::widgets::row(id, false, th), th, cx)
+            .role(gpui::Role::Link)
+            .aria_label(label.clone())
+            .aria_description(detail.clone())
             .on_click(
                 cx.listener(move |this, _, window, cx| {
                     this.open_settings_page(section, window, cx)
@@ -1042,7 +1077,7 @@ impl MailWindow {
                     .min_w_0()
                     .flex()
                     .flex_col()
-                    .child(div().text_size(px(14.0)).child(label.into()))
+                    .child(div().text_size(px(14.0)).child(label))
                     .child(
                         div()
                             .text_size(px(12.0))
@@ -1107,7 +1142,16 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let id: gpui::ElementId = id.into();
+        let (label, detail) = (label.into(), detail.into());
         self.page_control(crate::widgets::row(id.clone(), false, th), th, cx)
+            .role(gpui::Role::Switch)
+            .aria_label(label.clone())
+            .aria_description(detail.clone())
+            .aria_toggled(if on {
+                gpui::Toggled::True
+            } else {
+                gpui::Toggled::False
+            })
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
             .child(
                 div()
@@ -1115,12 +1159,12 @@ impl MailWindow {
                     .min_w_0()
                     .flex()
                     .flex_col()
-                    .child(div().text_size(px(14.0)).child(label.into()))
+                    .child(div().text_size(px(14.0)).child(label))
                     .child(
                         div()
                             .text_size(px(12.0))
                             .text_color(rgba(th.text_faint))
-                            .child(detail.into()),
+                            .child(detail),
                     ),
             )
             .children(extra)

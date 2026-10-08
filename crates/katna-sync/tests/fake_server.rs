@@ -594,3 +594,65 @@ fn cancelled_read_keeps_partial_line() {
     });
     server.join().unwrap();
 }
+
+/// "More results on server": a search box query as IMAP `SEARCH`, words
+/// that are not ASCII as UTF-8 literals; on Gmail as `X-GM-RAW`.
+#[test]
+fn server_search_commands() {
+    use katna_sync::server_search::{Criterion, Field};
+    let query = Criterion::And(vec![
+        Criterion::Text(Field::Any, "budget".into()),
+        Criterion::Text(Field::From, "ada@example.org".into()),
+        Criterion::After(1_704_067_200),
+    ]);
+    let (endpoint, server) = serve(CAPS, |s| {
+        let (tag, rest) = s.command();
+        assert_eq!(
+            rest,
+            "UID SEARCH TEXT budget FROM ada@example.org SENTSINCE \"01-Jan-2024\""
+        );
+        s.send(&format!("* SEARCH 7 3\r\n{tag} OK done\r\n"));
+
+        let (tag, rest) = s.command();
+        assert_eq!(rest, "UID SEARCH CHARSET UTF-8 TEXT {5}");
+        s.send("+ go\r\n");
+        let mut literal = vec![0; 5];
+        s.reader.read_exact(&mut literal).unwrap();
+        assert_eq!(literal, "café".as_bytes());
+        assert_eq!(s.line(), "");
+        s.send(&format!("* SEARCH\r\n{tag} OK done\r\n"));
+        s.quiet_noop();
+    });
+    smol::block_on(async {
+        let mut imap = connect(&endpoint).await;
+        assert_eq!(imap.search(&query).await.unwrap(), Some(vec![3, 7]));
+        let cafe = Criterion::Text(Field::Any, "café".into());
+        assert_eq!(imap.search(&cafe).await.unwrap(), Some(vec![]));
+        // Attachments have no IMAP form.
+        assert_eq!(imap.search(&Criterion::HasAttachment).await.unwrap(), None);
+        imap.poll_changes().await.unwrap();
+    });
+    server.join().unwrap();
+
+    let (endpoint, server) = serve("IMAP4rev1 AUTH=PLAIN SASL-IR IDLE X-GM-EXT-1", |s| {
+        let (tag, rest) = s.command();
+        assert_eq!(
+            rest,
+            "UID SEARCH X-GM-RAW \"(\\\"q3 plan\\\" has:attachment)\""
+        );
+        s.send(&format!(
+            "* SEARCH 4\r\n{tag} OK SEARCH completed (Success)\r\n"
+        ));
+        s.quiet_noop();
+    });
+    smol::block_on(async {
+        let mut imap = connect(&endpoint).await;
+        let query = Criterion::And(vec![
+            Criterion::Text(Field::Any, "q3 plan".into()),
+            Criterion::HasAttachment,
+        ]);
+        assert_eq!(imap.search(&query).await.unwrap(), Some(vec![4]));
+        imap.poll_changes().await.unwrap();
+    });
+    server.join().unwrap();
+}

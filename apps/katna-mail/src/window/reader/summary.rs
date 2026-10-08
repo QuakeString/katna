@@ -11,6 +11,7 @@
 //! after it is added only when asked. None of it shows while writing
 //! help is off.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
@@ -38,7 +39,7 @@ use crate::data::EntryKey;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     Fold, filled_button, fold_arrow, fold_box, icon, icon_button_colored, icon_button_with,
-    outlined_button, raised, tip,
+    outlined_button, raised,
 };
 
 mod peek_reply;
@@ -713,14 +714,14 @@ impl MailWindow {
                 th,
             )
             .when(on, |d| d.bg(rgba(fade(th.accent, 0.14))))
-            .tooltip(tip(
+            .tip(
                 if on {
                     tr!("summary-hide")
                 } else {
                     tr!("summary-summarize")
                 },
                 th,
-            ))
+            )
             .on_click(cx.listener(|this, _, _, cx| {
                 cx.stop_propagation();
                 this.toggle_summary(cx);
@@ -763,14 +764,14 @@ impl MailWindow {
                             if on { th.accent } else { th.text_dim },
                             16.0,
                         ))
-                        .tooltip(tip(
+                        .tip(
                             if on {
                                 tr!("summary-hide")
                             } else {
                                 tr!("summary-summarize")
                             },
                             th,
-                        ))
+                        )
                         .on_click(cx.listener(|this, _, _, cx| {
                             cx.stop_propagation();
                             this.toggle_summary(cx);
@@ -1051,7 +1052,7 @@ impl MailWindow {
         let small_button = |name: &str, icon_name: &'static str, label: String| {
             icon_button_colored(id(name), icon_name, 17.0, th.text_dim, th)
                 .size(px(30.0))
-                .tooltip(tip(label, th))
+                .tip(label, th)
         };
 
         // The header: what it sums up, and its buttons.
@@ -1163,7 +1164,7 @@ impl MailWindow {
                             th,
                         )
                         .size(px(30.0))
-                        .tooltip(tip(tr!("summary-fold"), th))
+                        .tip(tr!("summary-fold"), th)
                         .on_click(cx.listener(move |this, _, _, cx| {
                             if let Some(sum) = this.summaries.by_key.get_mut(&key) {
                                 sum.folded = true;
@@ -1373,7 +1374,7 @@ impl MailWindow {
                                 this.go_to_summed(message, cx);
                             }))
                     })
-                    .tooltip(tip(
+                    .tip(
                         match sent
                             .date
                             .and_then(|d| crate::format::local(d, &jiff::tz::TimeZone::system()))
@@ -1386,7 +1387,7 @@ impl MailWindow {
                             None => sent.name.clone(),
                         },
                         th,
-                    ))
+                    )
                     .child(self.person_avatar(&sent.name, &sent.email, 16.0))
                     .child(first_name(&sent.name).to_owned())
                     .into_any_element(),
@@ -1524,14 +1525,14 @@ impl MailWindow {
             .child(
                 icon_button_colored(id("copy".into()), "copy", 17.0, th.text_dim, th)
                     .size(px(30.0))
-                    .tooltip(tip(tr!("summary-copy"), th))
+                    .tip(tr!("summary-copy"), th)
                     .on_click(cx.listener(move |this, _, _, cx| this.copy_summary(key, cx))),
             )
             .when(!peek, |d| {
                 d.child(
                     icon_button_colored(id("again".into()), "refresh", 17.0, th.text_dim, th)
                         .size(px(30.0))
-                        .tooltip(tip(tr!("summary-again"), th))
+                        .tip(tr!("summary-again"), th)
                         .on_click(cx.listener(move |this, _, _, cx| {
                             let catch_up = matches!(
                                 this.summaries.by_key.get(&key).map(|s| &s.state),
@@ -1573,7 +1574,7 @@ impl MailWindow {
                 d.child(
                     pill("open", "open-external", tr!("summary-open"), false)
                         .ml(px(4.0))
-                        .tooltip(tip(tr!("summary-open-tip"), th))
+                        .tip(tr!("summary-open-tip"), th)
                         .on_click(cx.listener(move |this, _, window, cx| {
                             this.close_summary_peek(cx);
                             if let Some(ix) = this.entries.iter().position(|e| e.key == open_key) {
@@ -1583,7 +1584,7 @@ impl MailWindow {
                 )
                 .child(
                     pill("reply", "pen-sparkle", tr!("summary-reply"), true)
-                        .tooltip(tip(tr!("summary-reply-tip"), th))
+                        .tip(tr!("summary-reply-tip"), th)
                         .on_click(
                             cx.listener(|this, _, window, cx| this.start_peek_reply(window, cx)),
                         ),

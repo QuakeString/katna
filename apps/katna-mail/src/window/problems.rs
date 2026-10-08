@@ -15,6 +15,7 @@
 //! - "New password": a card where it was clicked that checks the
 //!   password with the server before keeping it (`SetPassword`).
 
+use crate::widgets::Tip as _;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -36,7 +37,7 @@ use super::notched::{self, RADIUS};
 use super::{MailWindow, TOP_BAR_HEIGHT};
 use crate::daemon::{self, AddError};
 use crate::theme::Theme;
-use crate::widgets::{ButtonStyle, button, filled_button, icon, icon_button, line_field, tip};
+use crate::widgets::{ButtonStyle, button, filled_button, icon, icon_button, line_field};
 
 /// How long every mail account must be unreachable before the list says
 /// the computer is offline (a short drop says nothing).
@@ -415,7 +416,7 @@ impl MailWindow {
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .child(icon(problem.icon(), problem.color(th), size * 0.7))
-            .tooltip(tip(tooltip, th))
+            .tip(tooltip, th)
             .on_click(cx.listener(move |this, event: &ClickEvent, window, cx| {
                 cx.stop_propagation();
                 this.fix_problem(problem.clone(), event.position(), window, cx);
@@ -962,7 +963,7 @@ impl MailWindow {
             th,
         )
         .size(px(32.0))
-        .tooltip(tip(masked_label, th))
+        .tip(masked_label, th)
         .on_click(cx.listener(|this, _, _, cx| {
             if let Some(card) = &mut this.problems.password {
                 card.shown = !card.shown;

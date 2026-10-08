@@ -7,6 +7,7 @@
 
 mod dates;
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, Context, Div, Entity, Focusable, FontWeight, Subscription, Window, canvas, div,
     prelude::*, rgba,
@@ -20,7 +21,7 @@ use katna_ui::{InputEvent, TextInput};
 use super::compose::address_suggestions;
 use super::{FocusNext, MailWindow};
 use crate::theme::Theme;
-use crate::widgets::{CHIP_HEIGHT, choice_chip, filled_button, icon, icon_button, raised, tip};
+use crate::widgets::{CHIP_HEIGHT, choice_chip, filled_button, icon, icon_button, raised};
 use dates::{CustomDates, DateError};
 
 /// Width of a field's label.
@@ -355,6 +356,7 @@ impl MailWindow {
             )
         }));
         window.focus(&from.focus_handle(cx), cx);
+        self.note_usage(katna_core::usage::Feature::SearchOptions);
         self.search_panel = Some(SearchPanel {
             from,
             to,
@@ -639,7 +641,7 @@ impl MailWindow {
                             .cursor_pointer()
                             .relative()
                             .child(crate::widgets::hover_fade("hover-glow", None, th))
-                            .tooltip(tip(tr!("search-attachment-remove"), th))
+                            .tip(tr!("search-attachment-remove"), th)
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 if let Some(panel) = &mut this.search_panel
                                     && ix < panel.types.typed.len()
@@ -831,7 +833,7 @@ impl MailWindow {
                         // far from the right edge as from the top.
                         icon_button("search-panel-close", "close", 20.0, th)
                             .mr(px(-12.0))
-                            .tooltip(tip(tr!("search-options-close"), th))
+                            .tip(tr!("search-options-close"), th)
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.search_panel = None;
                                 cx.notify();

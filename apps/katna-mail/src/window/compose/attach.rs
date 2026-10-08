@@ -3,6 +3,7 @@
 //! Files and pictures in the message: the attach and insert-photo pickers,
 //! files dropped on the window, and the attachment chips above the bar.
 
+use crate::widgets::Tip as _;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -18,7 +19,7 @@ use super::{Kind, Mode};
 use crate::format;
 use crate::outgoing::Part;
 use crate::theme::Theme;
-use crate::widgets::{ScaledEdge, icon, tip};
+use crate::widgets::{ScaledEdge, icon};
 use katna_core::config::OpenIn;
 
 /// What mail servers take in one message (Gmail's limit), counting the
@@ -432,7 +433,7 @@ impl MailWindow {
                 .bg(rgba(th.chip))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.chip_hover())))
-                .tooltip(tip(tr!("compose-attachment-open-tip"), th))
+                .tip(tr!("compose-attachment-open-tip"), th)
                 .on_click(
                     cx.listener(move |this, _, window, cx| this.open_attached(ix, window, cx)),
                 )
@@ -462,7 +463,7 @@ impl MailWindow {
                         .cursor_pointer()
                         .relative()
                         .child(crate::widgets::hover_fade("hover-glow", None, th))
-                        .tooltip(tip(tr!("compose-remove-attachment"), th))
+                        .tip(tr!("compose-remove-attachment"), th)
                         .on_click(cx.listener(move |this, _, _, cx| {
                             cx.stop_propagation();
                             this.remove_attachment(ix, cx)

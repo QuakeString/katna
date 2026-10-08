@@ -84,6 +84,22 @@ pub(super) struct Service {
     _timer: Option<Task<()>>,
 }
 
+/// Asks the service which build it is, which also has a service older
+/// than this window restart once idle if an update replaced it
+/// (`docs/ARCHITECTURE.md` §21.2, Running while updated).
+async fn ask_version(connection: &Connection) {
+    match katna_dbus::daemon_version(connection).await {
+        Ok(Some(daemon)) => tracing::info!(
+            version = daemon.version,
+            api = daemon.api,
+            newer = daemon.newer_than_this(),
+            "the Katna service"
+        ),
+        Ok(None) => tracing::info!("the Katna service is older than Version()"),
+        Err(err) => tracing::info!(%err, "asking the Katna service its version"),
+    }
+}
+
 impl MailWindow {
     /// Follows the service on `connection`: starts it now if it isn't
     /// running, and again whenever it goes away.
@@ -92,6 +108,8 @@ impl MailWindow {
             if !katna_dbus::daemon_running(&connection).await {
                 this.update(cx, |this, cx| this.start_service(false, cx))
                     .ok();
+            } else {
+                ask_version(&connection).await;
             }
             let owners = async {
                 let dbus = katna_dbus::zbus::fdo::DBusProxy::new(&connection).await?;
@@ -123,6 +141,7 @@ impl MailWindow {
                     })
                 } else {
                     // Back: started by the window, a terminal or systemd.
+                    ask_version(&connection).await;
                     this.update(cx, |this, cx| this.service_back(cx))
                 };
                 if followed.is_err() {

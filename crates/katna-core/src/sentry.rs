@@ -16,6 +16,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use serde_json::{Map, Value, json};
 
 use crate::crash::{Report, VERSION, rfc3339};
+use crate::usage::{Feature, WeeklyReport};
 
 /// Where and how to post envelopes, from a DSN such as
 /// `https://<key>@o1.ingest.de.sentry.io/<project>`.
@@ -461,6 +462,108 @@ fn event(id: &str, report: &Report, text: &str) -> Value {
     event
 }
 
+/// A random-looking event ID for `parts`, from a hash; the same parts give
+/// the same ID, so a message sent twice is kept once.
+fn id_of(parts: &[&str]) -> String {
+    let half = |salt: u8| {
+        let mut hasher = DefaultHasher::new();
+        salt.hash(&mut hasher);
+        parts.hash(&mut hasher);
+        hasher.finish()
+    };
+    format!("{:016x}{:016x}", half(3), half(4))
+}
+
+/// An envelope of one item of `kind` holding `payload`.
+fn single(dsn: &Dsn, id: &str, kind: &str, payload: &Value, now: SystemTime) -> Vec<u8> {
+    let header = json!({
+        "event_id": id,
+        "dsn": dsn.dsn,
+        "sent_at": rfc3339(now),
+        "sdk": { "name": "katna", "version": VERSION },
+    });
+    let payload = payload.to_string();
+    let mut out = String::new();
+    let _ = writeln!(out, "{header}");
+    let _ = writeln!(
+        out,
+        "{}",
+        json!({ "type": kind, "length": payload.len(), "content_type": "application/json" })
+    );
+    let _ = writeln!(out, "{payload}");
+    out.into_bytes()
+}
+
+/// The envelope for feedback written in Katna Mail's Send feedback form:
+/// a User Feedback item whose message is `text`, the exact text the form
+/// showed, and `reply_to` as its contact address when one was given.
+/// `kind` (`problem`, `idea` or `other`) becomes a tag.
+pub fn feedback_envelope(
+    dsn: &Dsn,
+    text: &str,
+    kind: &str,
+    reply_to: &str,
+    now: SystemTime,
+) -> Vec<u8> {
+    let id = id_of(&["feedback", text, reply_to]);
+    let mut feedback = json!({ "message": text, "source": "katna-mail" });
+    if !reply_to.trim().is_empty() {
+        feedback["contact_email"] = reply_to.trim().into();
+    }
+    let event = json!({
+        "event_id": id,
+        "timestamp": rfc3339(now),
+        "platform": "other",
+        "level": "info",
+        "release": format!("katna@{VERSION}"),
+        "tags": { "app": "katna-mail", "kind": kind },
+        "contexts": { "feedback": feedback },
+    });
+    single(dsn, &id, "feedback", &event, now)
+}
+
+/// The envelope for a week of usage statistics: an `info` event whose
+/// message is [`WeeklyReport::text`] and whose tags are the facts and,
+/// for each feature, `yes` or `no`.
+pub fn usage_envelope(dsn: &Dsn, report: &WeeklyReport, now: SystemTime) -> Vec<u8> {
+    let text = report.text();
+    let id = id_of(&["usage", &report.install_id, &report.week.to_string()]);
+    let mut tags = Map::new();
+    let dash = |s: &str| {
+        if s.is_empty() {
+            "-".to_owned()
+        } else {
+            s.to_owned()
+        }
+    };
+    tags.insert("os".into(), report.os.clone().into());
+    tags.insert("desktop".into(), dash(&report.desktop).into());
+    tags.insert("session".into(), dash(&report.session).into());
+    tags.insert("scale".into(), dash(&report.scale).into());
+    tags.insert("accounts".into(), report.accounts.clone().into());
+    tags.insert("install".into(), report.install_id.clone().into());
+    for feature in Feature::ALL {
+        let used = if report.used.contains(&feature) {
+            "yes"
+        } else {
+            "no"
+        };
+        tags.insert(format!("f.{}", feature.key()), used.into());
+    }
+    let event = json!({
+        "event_id": id,
+        "timestamp": rfc3339(now),
+        "platform": "other",
+        "level": "info",
+        "logger": "usage",
+        "release": format!("katna@{}", report.version),
+        "message": { "formatted": format!("Weekly usage statistics\n\n{text}") },
+        "fingerprint": ["katna-usage"],
+        "tags": tags,
+    });
+    single(dsn, &id, "event", &event, now)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -691,5 +794,51 @@ Stack trace of thread 4243:
         assert_eq!(attachment, format!("{PANIC}\n"));
         // The same report gets the same ID.
         assert_eq!(bytes, envelope(&dsn, &report, PANIC, now));
+    }
+
+    #[test]
+    fn feedback_is_one_item_with_the_text() {
+        let dsn = Dsn::parse("https://key@o1.ingest.de.sentry.io/42").unwrap();
+        let body = feedback_envelope(&dsn, "Kind: Idea\nMessage: hi", "idea", "", UNIX_EPOCH);
+        let body = String::from_utf8(body).unwrap();
+        let lines: Vec<&str> = body.lines().collect();
+        assert_eq!(lines.len(), 3);
+        let item: Value = serde_json::from_str(lines[1]).unwrap();
+        assert_eq!(item["type"], "feedback");
+        let event: Value = serde_json::from_str(lines[2]).unwrap();
+        assert_eq!(item["length"], lines[2].len());
+        assert_eq!(
+            event["contexts"]["feedback"]["message"],
+            "Kind: Idea\nMessage: hi"
+        );
+        assert!(event["contexts"]["feedback"].get("contact_email").is_none());
+        assert!(event.get("user").is_none());
+    }
+
+    #[test]
+    fn usage_tags_every_feature() {
+        let dsn = Dsn::parse("https://key@o1.ingest.de.sentry.io/42").unwrap();
+        let report = WeeklyReport {
+            week: 1,
+            version: "0.0.0".into(),
+            os: "arch".into(),
+            desktop: "KDE".into(),
+            session: "wayland".into(),
+            scale: "1".into(),
+            accounts: "1".into(),
+            used: [Feature::Labels].into(),
+            install_id: "ab".repeat(16),
+        };
+        let body = String::from_utf8(usage_envelope(&dsn, &report, UNIX_EPOCH)).unwrap();
+        let event: Value = serde_json::from_str(body.lines().nth(2).unwrap()).unwrap();
+        assert_eq!(event["tags"]["f.labels"], "yes");
+        assert_eq!(event["tags"]["f.pins"], "no");
+        assert_eq!(event["level"], "info");
+        assert!(
+            event["message"]["formatted"]
+                .as_str()
+                .unwrap()
+                .contains(&report.text())
+        );
     }
 }

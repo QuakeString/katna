@@ -817,6 +817,21 @@ pub async fn server_hold_limit(connection: &Connection, account: i64) -> Result<
         .map_err(|err| describe(&err))
 }
 
+/// Searches the mail servers of `account` (every account when 0) for
+/// `query`, for mail not downloaded ("More results on server").
+pub async fn search_server(
+    connection: &Connection,
+    query: &str,
+    account: i64,
+) -> Result<Vec<i64>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.search_server(query, account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Whether the SMTP server of `account` sends delivery receipts.
 pub async fn server_delivery_receipts(
     connection: &Connection,
@@ -1024,6 +1039,28 @@ pub async fn ai_key_saved(connection: &Connection) -> Result<bool, String> {
         .await
         .map_err(|err| describe(&err))?;
     pim.ai_key_saved().await.map_err(|err| describe(&err))
+}
+
+/// Has the daemon send feedback from the Send feedback form: `text`
+/// exactly as the form showed it. Returns why it could not be sent.
+pub async fn send_feedback(
+    connection: &Connection,
+    text: &str,
+    kind: &str,
+    reply_to: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let problem = pim
+        .send_feedback(text, kind, reply_to)
+        .await
+        .map_err(|err| describe(&err))?;
+    if problem.is_empty() {
+        Ok(())
+    } else {
+        Err(problem)
+    }
 }
 
 /// The models the user's own AI service `provider` offers to the saved

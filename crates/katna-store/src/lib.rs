@@ -16,6 +16,8 @@ mod contact;
 pub mod contacts;
 mod db;
 pub mod error;
+#[cfg(test)]
+mod fixtures;
 mod forget;
 mod gmail_merge;
 pub mod insights;

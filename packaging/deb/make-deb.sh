@@ -14,6 +14,9 @@ set -eu
 tarball=$1
 version=$2
 outdir=$3
+# Debian sorts `~` before anything, so a beta comes before its release
+# (docs/RELEASING.md).
+debversion=$(printf '%s' "$version" | sed 's/beta/~beta/')
 here=$(cd "$(dirname "$0")" && pwd)
 work=$(mktemp -d)
 root=$work/root
@@ -30,7 +33,7 @@ rm -r "$root/usr/share/licenses"
 
 mkdir -p "$root/DEBIAN"
 size=$(du -sk "$root/usr" | cut -f1)
-sed -e "s/@VERSION@/$version-1/" -e "s/@SIZE@/$size/" "$here/control" > "$root/DEBIAN/control"
+sed -e "s/@VERSION@/$debversion-1/" -e "s/@SIZE@/$size/" "$here/control" > "$root/DEBIAN/control"
 (cd "$root" && find usr -type f -exec md5sum {} + | sort -k2) > "$root/DEBIAN/md5sums"
 
 mkdir -p "$outdir"

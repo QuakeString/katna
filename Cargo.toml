@@ -169,6 +169,8 @@ imap-types = { version = "=2.0.0-alpha.7", default-features = false }
 io-imap = { version = "=0.6.0", default-features = false }
 io-sasl = { version = "=0.1.0", default-features = false }
 io-smtp = { version = "=0.3.0", default-features = false }
+# Dates in IMAP SEARCH: imap-types takes chrono's, which it brings in anyway.
+chrono = { version = "0.4.45", default-features = false }
 
 # GUI: exact pins (docs/ARCHITECTURE.md §20). GPUI is only allowed in the UI
 # crates (deny.toml). The crate is imported as `gpui`.
@@ -241,9 +243,11 @@ opt-level = "s"
 
 # GPUI's Linux backend with KDE global menu support (the window carries the
 # app's dbusmenu address) and compositor blur, and GPUI's renderer and its
-# Windows backend with a backdrop blur for frosted menus and popovers. vendor/*/KATNA.md lists the
+# Windows backend with a backdrop blur for frosted menus and popovers, and
+# GPUI itself with line breaking by UAX #14 and right-to-left layout. vendor/*/KATNA.md lists the
 # changes; drop these when upstream GPUI has an equivalent.
 [patch.crates-io]
+gpui-pre = { path = "vendor/gpui-pre" }
 gpui-pre-linux = { path = "vendor/gpui-pre-linux" }
 gpui-pre-wgpu = { path = "vendor/gpui-pre-wgpu" }
 gpui-pre-windows = { path = "vendor/gpui-pre-windows" }
