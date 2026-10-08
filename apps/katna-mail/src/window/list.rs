@@ -2311,6 +2311,28 @@ impl MailWindow {
 
     fn render_list(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         if self.entries.is_empty() {
+            if matches!(self.listing, Some(Listing::Search { .. })) {
+                if let Some(text) = self.server_empty_text() {
+                    return self.placeholder(text, th);
+                }
+                if let Some(status) = self.server_status(th, cx) {
+                    return div()
+                        .size_full()
+                        .flex()
+                        .flex_col()
+                        .child(self.placeholder(tr!("list-empty-search"), th))
+                        .child(
+                            div()
+                                .absolute()
+                                .bottom_0()
+                                .w_full()
+                                .flex()
+                                .justify_center()
+                                .child(status),
+                        )
+                        .into_any_element();
+                }
+            }
             let text = match &self.listing {
                 Some(Listing::Search { .. }) => tr!("list-empty-search"),
                 Some(Listing::Folder(_)) if self.first_sync => {
@@ -2374,6 +2396,18 @@ impl MailWindow {
                     .child(this.swiped_row(ix, row, &th))
                     .into_any_element();
                 this.fetch_pictures(cx);
+                let heading = this.server_heading_at(ix, &th);
+                let status = this.server_status_after(ix, &th, cx);
+                let row = if heading.is_some() || status.is_some() {
+                    div()
+                        .w_full()
+                        .children(heading)
+                        .child(row)
+                        .children(status)
+                        .into_any_element()
+                } else {
+                    row
+                };
                 match this.snoozed_group_at(ix) {
                     // A plain block, as other lines sit in: a flex column
                     // lets a long preview push the date off the line.

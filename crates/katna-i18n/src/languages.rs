@@ -179,6 +179,43 @@ mod tests {
         assert!(find("de").unwrap().matches(" "));
     }
 
+    /// The "Translation correction" issue form lists every language of the
+    /// picker, in its order. `KATNA_I18N_WRITE_TEMPLATE=1` writes the list.
+    #[test]
+    fn issue_template_lists_every_language() {
+        const BEGIN: &str = "        # Begin languages";
+        const END: &str = "        # End languages.";
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../.github/ISSUE_TEMPLATE/translation-correction.yml");
+        let text = std::fs::read_to_string(&path).unwrap();
+        let start = text.find(BEGIN).expect("begin marker");
+        let start = start + text[start..].find("\n        - ").expect("options") + 1;
+        let end = text.find(END).expect("end marker");
+        let options: String = picker()
+            .map(|l| {
+                let label = if l.name == l.english {
+                    l.name.clone()
+                } else {
+                    format!("{} ({})", l.name, l.english)
+                };
+                format!("        - \"{label}\"\n")
+            })
+            .collect();
+        if text[start..end] == options {
+            return;
+        }
+        if std::env::var_os("KATNA_I18N_WRITE_TEMPLATE").is_some() {
+            let updated = format!("{}{options}{}", &text[..start], &text[end..]);
+            std::fs::write(&path, updated).unwrap();
+            return;
+        }
+        panic!(
+            "{} is behind i18n/languages.toml; run \
+             `KATNA_I18N_WRITE_TEMPLATE=1 cargo test -p katna-i18n issue_template`",
+            path.display()
+        );
+    }
+
     #[test]
     fn finds_by_tag() {
         assert_eq!(find("en_in").unwrap().english, "English (India)");

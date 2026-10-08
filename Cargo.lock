@@ -6312,6 +6312,7 @@ dependencies = [
  "async-net",
  "base64 0.22.1",
  "blocking",
+ "chrono",
  "futures-lite",
  "futures-rustls",
  "imap-codec",
