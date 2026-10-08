@@ -6,6 +6,7 @@
 
 about-tooltip = Perihal Katna
 about-tagline = Mel dan kalendar untuk desktop Linux
+about-version = Katna Mail { $version }
 about-copy-version = Salin butiran versi
 about-version-copied = Disalin
 about-version-built = Dibina: { $date }

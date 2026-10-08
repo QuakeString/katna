@@ -27,6 +27,17 @@ put() { # MODE DIR FILE...
   done
 }
 
+# .desktop files, with their names in every language (localize-desktop.sh).
+put_desktop() { # DIR FILE...
+  dir=$1
+  shift
+  mkdir -p "$dir"
+  for file in "$@"; do
+    sh "$root/packaging/linux/localize-desktop.sh" "$file" "$dir/$(basename "$file")"
+    chmod 644 "$dir/$(basename "$file")"
+  done
+}
+
 for bin in katna-mail katna-daemon katnactl; do
   put 755 "$out/bin" "$bindir/$bin"
 done
@@ -43,13 +54,13 @@ for file in "$root"/packaging/dbus/*.service; do
 done
 chmod 644 "$out"/lib/systemd/user/* "$out"/share/dbus-1/services/*
 
-put 644 "$out/share/applications" "$root"/packaging/desktop/*.desktop
+put_desktop "$out/share/applications" "$root"/packaging/desktop/*.desktop
 # Katna Mail's entry in Discover and GNOME Software.
 put 644 "$out/share/metainfo" "$root"/packaging/metainfo/*.metainfo.xml
-put 644 "$out/share/krunner/dbusplugins" "$root"/packaging/krunner/*.desktop
+put_desktop "$out/share/krunner/dbusplugins" "$root"/packaging/krunner/*.desktop
 put 644 "$out/share/gnome-shell/search-providers" "$root"/packaging/gnome-shell/*.ini
 # "Send with Katna Mail" in Dolphin and GNOME Files.
-put 644 "$out/share/kio/servicemenus" "$root"/packaging/kio/*.desktop
+put_desktop "$out/share/kio/servicemenus" "$root"/packaging/kio/*.desktop
 put 644 "$out/share/nautilus-python/extensions" "$root"/packaging/nautilus/*.py
 put 644 "$out/share/icons/hicolor/scalable/apps" "$root"/packaging/icons/*.svg
 for dir in "$root"/packaging/icons/hicolor/*/apps; do

@@ -23,6 +23,7 @@ use gpui::{
     Point, SharedString, StrikethroughStyle, UnderlineStyle, UniformListScrollHandle, canvas, div,
     list, prelude::*, rgba, uniform_list,
 };
+use katna_i18n::tr;
 use katna_preview::document::{Align, Block, Document, Paragraph, Style};
 use katna_preview::sheet::{self, MAX_ROWS, Sheet, Workbook};
 use katna_ui::px;
@@ -557,10 +558,10 @@ impl Viewer {
                             .flex_none()
                             .px(px(8.0))
                             .text_color(ink(INK_DIM, dark))
-                            .child(format!(
-                                "Only the first {} rows and {} columns are shown",
-                                sheet.rows.len().min(MAX_ROWS),
-                                sheet.columns
+                            .child(tr!(
+                                "viewer-sheet-cut",
+                                rows = sheet.rows.len().min(MAX_ROWS),
+                                columns = sheet.columns
                             )),
                     )
                 })
@@ -627,7 +628,10 @@ impl Viewer {
                                     .pb(px(8.0 * zoom))
                                     .text_size(px(13.0 * zoom))
                                     .text_color(rgba(SLIDE_LABEL))
-                                    .child(SharedString::from(katna_i18n::tr!("viewer-slide", number = n))),
+                                    .child(SharedString::from(katna_i18n::tr!(
+                                        "viewer-slide",
+                                        number = n
+                                    ))),
                             )
                             .into_any_element();
                     }
@@ -638,14 +642,16 @@ impl Viewer {
                     let top = ix == 0 || slide_edge(ix.checked_sub(1));
                     let end = ix == count || slide_edge(Some(ix + 1));
                     let content: AnyElement = match doc.blocks.get(ix) {
-                        Some(Block::Paragraph(p)) => paragraph(p, zoom, false, &marker, Key::new(ix, 0), dark),
+                        Some(Block::Paragraph(p)) => {
+                            paragraph(p, zoom, false, &marker, Key::new(ix, 0), dark)
+                        }
                         Some(Block::Table(rows)) => table(rows, zoom, &marker, ix, dark),
                         Some(Block::Slide(_)) => div().into_any_element(),
                         None if doc.cut => div()
                             .pt(px(16.0 * zoom))
                             .text_size(px(13.0 * zoom))
                             .text_color(ink(INK_DIM, dark))
-                            .child("The rest of this document is not shown. Open it in another app to read it all.")
+                            .child(tr!("viewer-document-cut"))
                             .into_any_element(),
                         None => div().into_any_element(),
                     };

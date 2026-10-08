@@ -173,6 +173,7 @@ settings-general-start-at-login = Malite Katna mgbe ị banyere
 settings-general-start-at-login-detail = Na-emekọrịta ozi ma na-egosi ọkwa ozi ọhụrụ na akara ngosi tree, na-emepeghị windo
 settings-general-login-window = Mepekwa windo Katna Mail
 settings-general-login-window-detail = Windo na-emepekwa mgbe ị banyere
+settings-general-login-entry = Na-amalite mgbe ị banyere (Ntọala > Izugbe > Desktọpụ)
 settings-general-tray = Gosi Katna na tree sistemụ
 settings-general-tray-detail = Ya na ọnụọgụ ndị a gụghị na menu
 settings-general-tray-color = Akara ngosi tree n'agba

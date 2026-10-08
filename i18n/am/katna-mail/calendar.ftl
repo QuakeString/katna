@@ -116,6 +116,7 @@ calendar-add-meet = የGoogle Meet የቪዲዮ ኮንፈረንስ ያክሉ
 calendar-add-teams = የTeams ስብሰባ ያክሉ
 calendar-has-call = የቪዲዮ ጥሪ ተጨምሯል
 calendar-weekday-day = { $weekday }፣ { $day }
+calendar-schedule-day = { $weekday }፣ { $month }
 calendar-all-day-box = ቀኑን ሙሉ
 calendar-more-options = ተጨማሪ አማራጮች
 calendar-save = አስቀምጥ

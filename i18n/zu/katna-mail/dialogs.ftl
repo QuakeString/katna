@@ -6,6 +6,7 @@
 
 about-tooltip = Mayelana ne-Katna
 about-tagline = Imeyili nekhalenda yedeskithophu ye-Linux
+about-version = Katna Mail { $version }
 about-copy-version = Kopisha imininingwane yenguqulo
 about-version-copied = Kukopishiwe
 about-version-built = Yakhiwe: { $date }

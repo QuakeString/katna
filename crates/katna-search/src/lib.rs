@@ -24,6 +24,7 @@ mod indexer;
 pub mod query;
 pub mod schema;
 mod suggest;
+mod words;
 
 pub use error::{Error, Result};
 pub use index::{

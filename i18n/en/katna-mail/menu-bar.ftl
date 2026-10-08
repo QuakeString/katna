@@ -56,6 +56,8 @@ desktop-menu-quick-settings = _Quick Settings
 # Opens the full Settings page.
 desktop-menu-configure = _Configure Katna Mail…
 desktop-menu-help = _Help
+# Opens the command palette: one box to find any action or setting.
+desktop-menu-palette = _Command Palette…
 desktop-menu-shortcuts = _Keyboard Shortcuts
 desktop-menu-whats-new = _What's New
 # Opens the Send feedback form.

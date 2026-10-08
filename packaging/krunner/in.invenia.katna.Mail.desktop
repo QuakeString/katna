@@ -2,6 +2,9 @@
 # KRunner plugin: Katna's mail and contacts in KRunner, served by
 # katna-daemon over D-Bus (docs/ARCHITECTURE.md §15.3). Installed in
 # /usr/share/krunner/dbusplugins/.
+# Names and comments: i18n/en/desktop.ftl (desktop-krunner-*); other languages are
+# added when packaging (packaging/linux/localize-desktop.sh).
+# i18n: desktop-krunner
 [Desktop Entry]
 Type=Service
 Name=Katna Mail

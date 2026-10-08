@@ -55,6 +55,7 @@ reader-details-subject = ርዕሰ ጉዳይ፦
 
 reader-downloading = ይህን መልዕክት ከአገልጋዩ በማውረድ ላይ…
 reader-download-failed = ይህን መልዕክት ማውረድ አልተቻለም።
+reader-download-failed-reason = ይህን መልዕክት ማውረድ አልተቻለም። { $reason }
 reader-download-offline = ይህ መለያ ከመስመር ውጭ ነው። ይህን መልዕክት ለማውረድ መስመር ላይ ይሁኑ።
 reader-try-again = እንደገና ሞክር
 
@@ -90,6 +91,52 @@ security-missing-key = በሌለዎት ቁልፍ የተፈረመ ስለሆነ �
 security-missing-key-id = በሌለዎት ቁልፍ ({ $key }) የተፈረመ ስለሆነ ሊረጋገጥ አይችልም
 security-signature-unavailable = የተፈረመ፤ ፊርማውን ለማረጋገጥ { $tool }ን ይጫኑ
 security-signature-error = ፊርማው ሊረጋገጥ አልቻለም።
+security-look-up-key = ቁልፉን ፈልግ
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = የተረጋገጠ ፊርማ
+key-card-verified-detail = ፊርማው ትክክል ነው፣ ይህን ቁልፍም ያምኑታል።
+key-card-unverified = ፊርማው አልተረጋገጠም
+key-card-unverified-detail = ፊርማው ትክክል ነው፣ ነገር ግን ቁልፉ የእነሱ መሆኑን የሚያረጋግጥ ነገር የለም። የጣት አሻራውን ከእነሱ ጋር ያወዳድሩ፣ ከዚያም ቁልፉን በGnuPG ውስጥ ይመኑት (Kleopatra ወይም gpg --edit-key)።
+key-card-not-sender = በሌላ ሰው የተፈረመ
+key-card-not-sender-detail = ፊርማው ትክክል ነው፣ ነገር ግን ቁልፉ የላኪው አይደለም።
+key-card-untrusted = ቁልፉ የሚታመን አይደለም
+key-card-untrusted-detail = ይህን ቁልፍ በGnuPG ውስጥ እምነት የማይጣልበት ብለው ምልክት አድርገውበታል።
+key-card-signature-expired = የፊርማው ጊዜ አልፏል
+key-card-signature-expired-detail = ፊርማው ትክክል ነበር፣ ነገር ግን ጊዜው አልፏል።
+key-card-key-expired = የቁልፉ ጊዜ አልፏል
+key-card-key-expired-detail = ፊርማው ትክክል ነው፣ ነገር ግን የቁልፉ ጊዜ ከዚያ ወዲህ አልፏል።
+key-card-key-revoked = ቁልፉ ተሽሯል
+key-card-key-revoked-detail = ባለቤቱ ይህን ቁልፍ ስለሻረው ፊርማው ሊታመን አይችልም።
+key-card-bad = መጥፎ ፊርማ
+key-card-bad-detail = ይህ መልዕክት ከተፈረመ በኋላ ተቀይሯል፣ ወይም ፊርማው የተጭበረበረ ነው።
+key-card-signed-by = የፈረመው
+key-card-belongs-to = ባለቤቱ
+key-card-fingerprint = የጣት አሻራ
+key-card-signed = የተፈረመበት
+key-card-key = ቁልፍ
+key-card-kind = { $standard }፣ { $algorithm }
+key-card-created = የተፈጠረበት
+key-card-expires = የሚያበቃበት
+key-card-never = በጭራሽ
+key-card-issued-by = የሰጠው
+key-card-found-in = የተገኘበት
+key-card-keyring = የእርስዎ GnuPG የቁልፍ ቀለበት
+key-card-copy = የጣት አሻራውን ቅዳ
+key-card-import-title = ይህን ቁልፍ ላስገባ?
+key-card-from-directory = በ{ $domain } የቁልፍ ማውጫ ውስጥ ተገኝቷል።
+key-card-from-attachment = ከአባሪው { $name }።
+key-card-import-note = ከዚያ Katna የዚህን ሰው ፊርማዎች ማረጋገጥ እና ወደ እነሱ የሚላክ ደብዳቤ ማመስጠር ይችላል። ቁልፉን ሙሉ በሙሉ ለማመን የጣት አሻራውን ከእነሱ ጋር ያወዳድሩ።
+key-card-cancel = ይቅር
+key-card-import = ቁልፉን አስገባ
+key-card-looking-up = ቁልፉን በመፈለግ ላይ…
+key-card-looking-up-detail = የ{ $domain } የቁልፍ ማውጫን በመጠየቅ ላይ።
+key-card-not-found = ምንም ቁልፍ አልተገኘም
+key-card-not-found-detail = { $domain } ለዚህ አድራሻ ቁልፍ አያትምም። ላኪው የራሱን እንዲልክልዎ ይጠይቁ።
+key-card-not-kept = የተገኘው ቁልፍ ጥቅም ላይ ሊውል አይችልም።
+key-card-failed = ቁልፉን ማግኘት አልተቻለም
 tracking-opened = { $who } { $count ->
     [one] አንድ ጊዜ
    *[other] { $count } ጊዜ

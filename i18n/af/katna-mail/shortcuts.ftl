@@ -70,6 +70,7 @@ shortcut-navigation = Wys of vou die kieslys
 shortcut-quick-settings = Vinnige instellings
 shortcut-settings = Alle instellings
 shortcut-shortcuts = Kortpadsleutels
+shortcut-palette = Opdragpalet
 shortcut-reload = Kyk vir nuwe e-pos
 shortcut-quit = Verlaat
 

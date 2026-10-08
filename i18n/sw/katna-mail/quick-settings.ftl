@@ -47,4 +47,5 @@ quick-help = Usaidizi
 quick-tour = Anza ziara
 quick-whats-new = Kilicho kipya
 quick-check-updates = Kagua masasisho
+quick-send-feedback = Tuma maoni
 quick-about = Kuhusu Katna

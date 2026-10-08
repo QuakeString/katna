@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 856 more of their own. Each keeps its own license.
+bring in 854 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -27,6 +27,7 @@ bring in 856 more of their own. Each keeps its own license.
 | [emojis](https://github.com/rossmacarthur/emojis) 0.9.0 | Ross MacArthur | (MIT OR Apache-2.0) AND Unicode-3.0 | ✨ Lookup emoji in *O(1)* time, access metadata and GitHub shortcodes, iterate over all emoji, and more! |
 | [fluent-bundle](https://github.com/projectfluent/fluent-rs) 0.16.0 | Bruce Mitchener <bruce.mitchener@gmail.com, Caleb Maclennan, Staś Małolepszy, Zibi Braniecki | Apache-2.0 OR MIT | A low-level implementation of a collection of localization messages for a single locale for Project Fluent, a localization system designed to unleash the entire expressive power of natural language translations. |
 | [fontdb](https://github.com/RazrFalcon/fontdb) 0.23.0 | Yevhenii Reizner | MIT | A simple, in-memory font database with CSS-like queries. |
+| [fs4](https://github.com/al8n/fs4-rs) 0.13.1 | Al Liu, Dan Burkert | MIT OR Apache-2.0 | No libc, pure Rust cross-platform file locks. Original fs2, now supports async and replace libc by rustix. |
 | [futures-lite](https://github.com/smol-rs/futures-lite) 2.6.1 | Contributors to futures-rs, Stjepan Glavina | Apache-2.0 OR MIT | Futures, streams, and async I/O combinators |
 | [futures-rustls](https://github.com/quininer/futures-rustls) 0.26.0 | quininer kel | MIT/Apache-2.0 | Asynchronous TLS/SSL streams for futures using Rustls. |
 | [getrandom](https://github.com/rust-random/getrandom) 0.3.4 | The Rand Project Developers | MIT OR Apache-2.0 | A small cross-platform library for retrieving random data from system source |
@@ -45,6 +46,7 @@ bring in 856 more of their own. Each keeps its own license.
 | [icu_decimal](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | API for formatting basic decimal numbers in a locale-sensitive way |
 | [icu_locale_core](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | API for managing Unicode Language and Locale Identifiers |
 | [icu_provider](https://github.com/unicode-org/icu4x) 2.3.1 | The ICU4X Project Developers | Unicode-3.0 | Trait and struct definitions for the ICU data provider |
+| [icu_segmenter](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Unicode line breaking and text segmentation algorithms for text boundaries analysis |
 | [icu_time](https://github.com/unicode-org/icu4x) 2.3.0 | The ICU4X Project Developers | Unicode-3.0 | Processing of dates, times, and time zones with a focus on i18n and interop |
 | [image](https://github.com/image-rs/image) 0.25.10 | The image-rs Developers | MIT OR Apache-2.0 | Imaging library. Provides basic image processing and encoders/decoders for common image formats. |
 | [imap-codec](https://github.com/duesee/imap-codec) 2.0.0-alpha.9 | Damian Poddebniak | MIT OR Apache-2.0 | Rock-solid and complete codec for IMAP |
@@ -70,6 +72,7 @@ bring in 856 more of their own. Each keeps its own license.
 | [rustls-platform-verifier](https://github.com/rustls/rustls-platform-verifier) 0.7.1 | rustls | MIT OR Apache-2.0 | rustls-platform-verifier supports verifying TLS certificates in rustls with the operating system verifier |
 | [rustybuzz](https://github.com/harfbuzz/rustybuzz) 0.20.1 | Caleb Maclennan, Laurenz Stampfl, Yevhenii Reizner, خالد حسني (Khaled Hosny) | MIT | A complete harfbuzz shaping algorithm port to Rust. |
 | [serde](https://github.com/serde-rs/serde) 1.0.229 | David Tolnay, Erick Tryzelaar | MIT OR Apache-2.0 | A generic serialization/deserialization framework |
+| [serde_ignored](https://github.com/dtolnay/serde-ignored) 0.1.14 | David Tolnay | MIT OR Apache-2.0 | Find out about keys that are ignored when deserializing data |
 | [serde_json](https://github.com/serde-rs/json) 1.0.151 | David Tolnay, Erick Tryzelaar | MIT OR Apache-2.0 | A JSON serialization file format |
 | [sha2](https://github.com/RustCrypto/hashes) 0.10.9 | RustCrypto Developers | MIT OR Apache-2.0 | Pure Rust implementation of the SHA-2 hash function family including SHA-224, SHA-256, SHA-384, and SHA-512. |
 | [smol](https://github.com/smol-rs/smol) 2.0.2 | Stjepan Glavina | Apache-2.0 OR MIT | A small and fast async runtime |

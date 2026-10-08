@@ -66,3 +66,6 @@ service-details-title = Hoekom die diens nie wil begin nie
 service-details-body = Kopieer dit en stuur dit saam met jou verslag. Daar is geen e-pos of wagwoorde in nie.
 service-details-copy = Kopieer
 service-details-close = Maak toe
+service-not-running = Die Katna-agtergronddiens loop nie.
+service-no-answer = Die Katna-agtergronddiens het nie geantwoord nie: { $error }
+service-no-session = Geen D-Bus-sessie nie: { $error }

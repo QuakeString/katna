@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 katna-core.workspace = true
 blake3.workspace = true
+fs4.workspace = true
 regex.workspace = true
 rusqlite.workspace = true
 serde.workspace = true

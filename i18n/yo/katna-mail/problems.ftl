@@ -60,3 +60,6 @@ service-details-title = Ìdí tí iṣẹ́ náà kò fi bẹ̀rẹ̀
 service-details-body = Ṣẹ̀dà èyí kí o sì fi ránṣẹ́ pẹ̀lú ìròyìn rẹ. Kò sí lẹ́tà tàbí ọ̀rọ̀ aṣínà kankan nínú rẹ̀.
 service-details-copy = Ṣẹ̀dà
 service-details-close = Pa á dé
+service-not-running = Iṣẹ́ ẹ̀yìn Katna kò ṣiṣẹ́.
+service-no-answer = Iṣẹ́ ẹ̀yìn Katna kò dáhùn: { $error }
+service-no-session = Kò sí ìgbà D-Bus: { $error }

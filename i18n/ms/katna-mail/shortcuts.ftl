@@ -70,6 +70,7 @@ shortcut-navigation = Tunjukkan atau lipat menu
 shortcut-quick-settings = Tetapan pantas
 shortcut-settings = Semua tetapan
 shortcut-shortcuts = Pintasan papan kekunci
+shortcut-palette = Palet arahan
 shortcut-reload = Semak mel baharu
 shortcut-quit = Keluar
 

@@ -52,3 +52,14 @@ update-dialog-compare = Compare on GitHub
 update-dialog-no-service = The Katna background service is not running.
 update-dialog-later = Later
 update-dialog-close = Close
+
+# The pill at the bottom of the mail list when Katna was updated while
+# Katna Mail was open: the background service or the mail store is now a
+# newer version than this window.
+restart-updated = Katna was updated
+# Closes Katna Mail and opens the new version in its place.
+restart-button = Restart
+# Its × button: hides it until the next update.
+restart-close = Not now
+# When the new version could not be started; $error says why.
+restart-failed = Couldn’t start the new Katna Mail: { $error }

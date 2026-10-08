@@ -66,3 +66,6 @@ service-details-title = Kwa nini huduma haianzi
 service-details-body = Nakili hiki na ukitume pamoja na ripoti yako. Hakina barua wala manenosiri.
 service-details-copy = Nakili
 service-details-close = Funga
+service-not-running = Huduma ya chinichini ya Katna haiendeshwi.
+service-no-answer = Huduma ya chinichini ya Katna haikujibu: { $error }
+service-no-session = Hakuna kipindi cha D-Bus: { $error }

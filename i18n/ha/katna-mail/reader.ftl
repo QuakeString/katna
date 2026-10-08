@@ -55,6 +55,7 @@ reader-details-subject = jigo:
 
 reader-downloading = Ana sauke wannan saƙo daga sabar…
 reader-download-failed = Ba a iya sauke wannan saƙo ba.
+reader-download-failed-reason = Ba a iya sauke wannan saƙon ba. { $reason }
 reader-download-offline = Wannan asusun ba a haɗe yake ba. Ku sake haɗawa don sauke wannan saƙo.
 reader-try-again = Sake gwadawa
 
@@ -90,6 +91,52 @@ security-missing-key = An sa hannu da maɓallin da ba ku da shi, don haka ba za 
 security-missing-key-id = An sa hannu da maɓallin da ba ku da shi ({ $key }), don haka ba za a iya duba shi ba
 security-signature-unavailable = An sa hannu; shigar da { $tool } don duba sa hannun
 security-signature-error = Ba a iya duba sa hannun ba.
+security-look-up-key = Nemo maɓalli
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Sa hannu da aka tabbatar
+key-card-verified-detail = Sa hannun yana da kyau kuma kun amince da wannan maɓalli.
+key-card-unverified = Ba a tabbatar da sa hannu ba
+key-card-unverified-detail = Sa hannun yana da kyau, amma babu abin da ya tabbatar maɓallin nasu ne. Ku kwatanta zanen yatsa da su, sannan ku amince da maɓallin a GnuPG (Kleopatra ko gpg --edit-key).
+key-card-not-sender = Wani ne daban ya sa hannu
+key-card-not-sender-detail = Sa hannun yana da kyau, amma maɓallin ba na mai aikawa ba ne.
+key-card-untrusted = Maɓalli ba amintacce ba
+key-card-untrusted-detail = Kun yi wa wannan maɓalli alama ba amintacce ba a GnuPG.
+key-card-signature-expired = Wa'adin sa hannu ya ƙare
+key-card-signature-expired-detail = Sa hannun yana da kyau, amma wa'adinsa ya ƙare.
+key-card-key-expired = Wa'adin maɓalli ya ƙare
+key-card-key-expired-detail = Sa hannun yana da kyau, amma wa'adin maɓallin ya ƙare tun daga lokacin.
+key-card-key-revoked = An soke maɓalli
+key-card-key-revoked-detail = Mai shi ya soke wannan maɓalli, don haka ba za a iya amincewa da sa hannun ba.
+key-card-bad = Sa hannu mara kyau
+key-card-bad-detail = An canza wannan saƙo bayan an sa masa hannu, ko sa hannun na jabu ne.
+key-card-signed-by = Wanda ya sa hannu
+key-card-belongs-to = Na wane ne
+key-card-fingerprint = Zanen yatsa
+key-card-signed = An sa hannu
+key-card-key = Maɓalli
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = An ƙirƙira
+key-card-expires = Wa'adi zai ƙare
+key-card-never = Ba zai ƙare ba
+key-card-issued-by = Wanda ya bayar
+key-card-found-in = An samo a
+key-card-keyring = Ma'ajiyar maɓallan GnuPG ɗinku
+key-card-copy = Kwafi zanen yatsa
+key-card-import-title = Shigo da wannan maɓalli?
+key-card-from-directory = An samo a cikin kundin maɓallan { $domain }.
+key-card-from-attachment = Daga abin da aka haɗa { $name }.
+key-card-import-note = Daga nan Katna za ta iya duba sa hannun wannan mutum kuma ta ɓoye masa wasiƙa. Don cikakken amincewa da maɓallin, ku kwatanta zanen yatsa da shi.
+key-card-cancel = Soke
+key-card-import = Shigo da maɓalli
+key-card-looking-up = Ana neman maɓallin…
+key-card-looking-up-detail = Ana tambayar kundin maɓallan { $domain }.
+key-card-not-found = Ba a sami maɓalli ba
+key-card-not-found-detail = { $domain } ba ta wallafa maɓalli don wannan adireshi ba. Ku roƙi mai aikawa ya aiko muku da nasa.
+key-card-not-kept = Ba za a iya amfani da maɓallin da aka samo ba.
+key-card-failed = Ba a iya samo maɓallin ba
 tracking-opened = { $who } ya buɗe shi { $count ->
     [one] sau ɗaya
    *[other] sau { $count }

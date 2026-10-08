@@ -70,6 +70,7 @@ shortcut-navigation = Gosi ma ọ bụ pịachie menu
 shortcut-quick-settings = Ntọala ngwa ngwa
 shortcut-settings = Ntọala niile
 shortcut-shortcuts = Ụzọ mkpirisi kiibọọdụ
+shortcut-palette = Ogwe iwu
 shortcut-reload = Lelee maka ozi ọhụrụ
 shortcut-quit = Pụọ
 

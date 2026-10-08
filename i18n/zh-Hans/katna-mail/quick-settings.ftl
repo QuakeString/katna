@@ -41,4 +41,5 @@ quick-help = 帮助
 quick-tour = 参观导览
 quick-whats-new = 新功能
 quick-check-updates = 检查更新
+quick-send-feedback = 发送反馈
 quick-about = 关于 Katna

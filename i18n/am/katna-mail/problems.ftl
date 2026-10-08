@@ -66,3 +66,6 @@ service-details-title = አገልግሎቱ ለምን እንደማይጀምር
 service-details-body = ይህን ይቅዱ እና ከሪፖርትዎ ጋር ይላኩት። ምንም ደብዳቤ ወይም የይለፍ ቃል አልያዘም።
 service-details-copy = ቅዳ
 service-details-close = ዝጋ
+service-not-running = የKatna የጀርባ አገልግሎት እየሠራ አይደለም።
+service-no-answer = የKatna የጀርባ አገልግሎት አልመለሰም፦ { $error }
+service-no-session = የD-Bus ክፍለ ጊዜ የለም፦ { $error }

@@ -6,6 +6,7 @@
 
 about-tooltip = Giới thiệu về Katna
 about-tagline = Thư và lịch cho máy tính Linux
+about-version = Katna Mail { $version }
 about-copy-version = Sao chép thông tin phiên bản
 about-version-copied = Đã sao chép
 about-version-built = Ngày dựng: { $date }

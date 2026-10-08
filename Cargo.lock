@@ -5999,6 +5999,7 @@ dependencies = [
  "base64 0.22.1",
  "jiff",
  "serde",
+ "serde_ignored",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
@@ -6011,8 +6012,10 @@ dependencies = [
 name = "katna-crypto"
 version = "0.0.0"
 dependencies = [
+ "base64 0.22.1",
  "jiff",
  "mail-parser",
+ "ring",
  "tempfile",
  "tracing",
 ]
@@ -6028,6 +6031,7 @@ dependencies = [
  "jiff",
  "katna-ai",
  "katna-core",
+ "katna-crypto",
  "katna-dav",
  "katna-dbus",
  "katna-i18n",
@@ -6233,6 +6237,8 @@ dependencies = [
 name = "katna-search"
 version = "0.0.0"
 dependencies = [
+ "icu_provider",
+ "icu_segmenter",
  "katna-core",
  "katna-crypto",
  "katna-import",
@@ -6310,6 +6316,7 @@ name = "katna-store"
 version = "0.0.0"
 dependencies = [
  "blake3",
+ "fs4",
  "katna-core",
  "regex",
  "rusqlite",
@@ -6377,6 +6384,7 @@ dependencies = [
  "gpui-pre-wgpu",
  "gpui-pre-windows",
  "katna-core",
+ "katna-i18n",
  "unicode-segmentation",
 ]
 
@@ -9608,6 +9616,16 @@ version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e497af288b3b95d067a23a4f749f2861121ffcb2f6d8379310dcda040c345ed"
 dependencies = [
+ "serde_core",
+]
+
+[[package]]
+name = "serde_ignored"
+version = "0.1.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "115dffd5f3853e06e746965a20dcbae6ee747ae30b543d91b0e089668bb07798"
+dependencies = [
+ "serde",
  "serde_core",
 ]
 

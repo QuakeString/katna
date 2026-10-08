@@ -38,6 +38,8 @@ list-range-about = 第 { $first }–{ $last } 行，共约 { $total } 行
 list-results = “{ $query }”的搜索结果
 list-results-corrected = 显示的是“{ $query }”的搜索结果
 list-search-instead = 仍然搜索“{ $query }”
+list-search-no-index = 搜索尚未就绪：索引尚未建立。
+list-search-not-ready = 搜索尚未就绪：{ $error }
 list-files-more = +{ $count }
 list-replied = 你已回复
 
@@ -193,9 +195,14 @@ list-empty-waiting = 没有等待回复的邮件。
 list-empty-reminders = 没有提醒。在邮件上按 H 可添加提醒。
 list-first-sync = 正在获取您的邮件…
 list-first-sync-detail = 邮件到达后会显示在这里。
+list-store-unreadable = 无法打开邮件存储
 
 ## Mail list: lines
 
+row-no-subject = （无主题）
+row-unknown-sender = （未知发件人）
+row-to = 收件人：
+row-no-recipients = （无收件人）
 row-removed = 此邮件已被移除。
 row-starred = 已加星标
 row-not-starred = 未加星标
@@ -273,6 +280,11 @@ menu-make-rule = 创建规则…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = 已导入密钥
+toast-key-updated = 您已有此密钥；现已更新为最新
+toast-key-removed = 已移除密钥
+toast-key-not-removed = 无法移除密钥
+toast-fingerprint-copied = 已复制指纹
 toast-archived = { $kind ->
     [conversation] 已归档 { $count } 个会话。
    *[message] 已归档 { $count } 封邮件。

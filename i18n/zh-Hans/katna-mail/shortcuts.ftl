@@ -70,6 +70,7 @@ shortcut-navigation = 显示或收起菜单
 shortcut-quick-settings = 快速设置
 shortcut-settings = 所有设置
 shortcut-shortcuts = 键盘快捷键
+shortcut-palette = 命令面板
 shortcut-reload = 检查新邮件
 shortcut-quit = 退出
 

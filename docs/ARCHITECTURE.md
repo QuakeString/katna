@@ -820,6 +820,11 @@ rank above loose matches. Highlighted snippets via `SnippetGenerator`.
 
 - Parse (`mail-parser`) → HTML to text → language detection → per-language
   tokenizer/stemmer → attachment text extraction → index writer.
+- Words are runs of letters and digits; Thai, Lao, Khmer and Burmese,
+  which put no spaces between words, are split with `icu_segmenter`'s
+  dictionaries for those four scripts only (about 1.8 MB, `words.rs`), at
+  index and query time, so a word is found inside an unspaced sentence and
+  a typed run of words matches as a phrase.
 - Parallel workers with a memory budget; commit in batches; tantivy commits
   are atomic, so a crash never corrupts the index.
 - Search works on the already-indexed part while initial indexing runs.
@@ -1593,6 +1598,22 @@ passing for a domain aligned with it (`katna_render::sender_authenticated`).
 Otherwise the banner says the message may not be from that sender and
 offers "Show images" for it. A provider that adds no such field leaves the
 topmost one to the sender, which is no worse than trusting `From` alone.
+
+The same fields warn about forged mail (`katna_render::sender_checks`,
+`window/reader/sender.rs`). A message *failed* when DMARC failed for its
+`From` domain, or SPF failed for an envelope domain aligned with it and no
+aligned DKIM signature passed; it is *unconfirmed* when the provider
+checked and nothing passed. Failed mail gets a soft red banner above its
+body ("This may not be from bank.example", naming the provider by its
+server, such as `mx.google.com` for Gmail) with Details (what DMARC, DKIM
+and SPF each found), Looks safe (this message only, until the window
+closes; a forged sender can fail again) and Move to spam. Its images stay
+hidden even with "Always show images" on, until "Show images", and a link
+asks first in a popover at the click that names where it really goes.
+An unconfirmed sender gets a small "?" on their picture that says so under
+the pointer; the mail list shows nothing. Mail with no
+`Authentication-Results` shows nothing, as there is nothing to go on.
+
 Images are fetched by the daemon (`FetchImage`, `https` only, `http`
 upgraded, at most 8 MB, checked to be an image by its bytes), at most 200
 different ones per message and 6 at a time; the app never uses the
@@ -2445,6 +2466,20 @@ Gemini or confidential mode):
   letters still work there. Whenever
   the keys lose their place (a message sent, a menu or dialog gone) they
   come back to the list, or to the Settings page while it is open.
+- **Command palette.** Ctrl+Shift+P (as in VS Code and Zed; Ctrl+Alt+I,
+  KDE's Find Action, too) or Help → Command Palette opens one box under
+  the top bar that finds any action or setting by name
+  (`window/palette.rs`). Actions come from the shortcut list
+  (`keymap::SHORTCUTS`, less the keys for moving about), each with the
+  keys it has now, so the palette teaches them; settings come from the
+  Settings search's rows and tabs (`settings_search::candidates`) and open
+  their row as a Settings search result does. The whole query at a word's
+  start ranks first, then anywhere in a name, then every word, then the
+  letters in order ("mku" finds Mark as unread). Up, Down, Enter and Esc
+  work as in any picker. An action runs where the keys were before the
+  palette opened. With nothing typed it lists Recent (the last five run,
+  kept in `[shortcuts] recent`), then every action. No veil, as for the
+  other dialogs.
 - **Screen readers.** GPUI hands an AccessKit tree to AT-SPI (Orca) and
   UI Automation (NVDA, Narrator). Only elements with an id and a role
   show up, so the shared widgets set both: `widgets::Tip::tip` labels an
@@ -3119,7 +3154,10 @@ desktop's own app stays one click away.
   - **Marking up a PDF.** The pen in the viewer's top bar shows a pill of
     tools: Select, Highlight, Underline, Squiggle, Strike, Pen, Sticky
     note, Text box and Eraser, five colours each, and Undo and Redo
-    (Ctrl+Z, Ctrl+Shift+Z). Text marks are made by selecting text; the
+    (Ctrl+Z, Ctrl+Shift+Z), then drag dots at its end: dragging them
+    moves the pill anywhere over the pages (kept inside the viewer, below
+    the top bar) so it never covers what is being marked, and a double
+    click puts it back. Text marks are made by selecting text; the
     pen draws freehand; a click with the note or text tool places one and
     opens it for typing (Ctrl+Enter, Done or a click elsewhere finishes,
     Escape drops the change), and clicking one opens it again; a note's
@@ -3395,6 +3433,15 @@ compressed with `zstd` (already a dependency) and unpacked on first use.
 A file in `$XDG_DATA_HOME/katna/i18n/<tag>/` is loaded over the built-in
 one message by message, so a reviewer can try a correction without
 building Katna.
+
+The `.desktop` files' names (`Name`, `GenericName`, `Comment`,
+`Keywords` and the actions' `Name`) are messages too, in
+`i18n/<tag>/desktop.ftl`. The checked-in files hold only English and a
+`# i18n: <prefix>` line naming their ids; `packaging/linux/
+localize-desktop.sh` adds a `Name[de]=` line and so on for every
+translated message as `stage.sh` and the PKGBUILD install them, so a
+translator edits only `desktop.ftl` and nobody regenerates files. A test
+in `katna-i18n` fails when a file's English and `desktop.ftl` disagree.
 
 **Choosing the language.**
 
@@ -4768,7 +4815,11 @@ are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
 after the first real install, when the app reached it; then 50 MB, and
 100 MB since the attachment viewers (September 2026), then 150 MB when the
 chat view's company details took it past 100 MB (October 2026), so features are
-not trimmed to fit; light crates are still preferred. Crates that are not hot are built with
+not trimmed to fit; light crates are still preferred. `katnactl` reads the
+search index itself (its MCP mail search), so it carries the same Thai,
+Lao, Khmer and Burmese word dictionaries as the daemon (L.6, about 1.8 MB);
+its budget went from 10 MiB to 15 MiB then (October 2026), the same as
+`katna-search-cli`. Crates that are not hot are built with
 `opt-level = "s"` (root `Cargo.toml`): D-Bus (zbus, zvariant, oo7,
 ashpd), IMAP parsing and regex.
 
@@ -5422,18 +5473,47 @@ queued, so the outbox and Sent hold only what was sent. Details:
 
 - Keys are chosen by exact address in the local keyring
   (`katna_crypto::encryption_keys`: usable for encryption, a verified key
-  before an unverified one) and passed to GnuPG by fingerprint, so GnuPG
-  never looks a recipient up on the network (WKD) while sending. A key the
-  user has not certified is still used (`--trust-model always`); a
-  recipient without any key stops the send with "no key for …" and the
-  message comes back.
+  before an unverified one), else among the keys Katna found (below), and
+  passed to GnuPG by fingerprint or file, so GnuPG itself never looks a
+  recipient up. A key the user has not certified is still used
+  (`--trust-model always`); a recipient without any key stops the send
+  with "no key for …" and the message comes back.
 - The sender is always a recipient too, so Sent stays readable. Bcc
   recipients are hidden recipients in OpenPGP (`--hidden-recipient`); CMS
   has no such thing.
 - OpenPGP by default; S/MIME when answering S/MIME mail or when the sender
   only has an S/MIME certificate.
-- Routing headers (From, To, Subject) stay outside the protection; hiding
-  the subject (protected headers) and Autocrypt headers come later (E.3).
+- Routing headers (From, To, Cc, Date) stay outside the protection.
+  Encrypted OpenPGP mail hides its subject: the outside says `...`, and
+  the real Subject (with copies of the routing headers) goes inside, with
+  `protected-headers="v1"` on the inner Content-Type, as Thunderbird and
+  KMail send and read it. S/MIME mail keeps its subject outside.
+
+**Keys from Autocrypt and the Web Key Directory (E.3).** Keys Katna finds
+for people are kept apart from the user's GnuPG keyring, which stays the
+user's own, in `$XDG_DATA_HOME/katna/keys/` (`katna_crypto::PeerKeys`: a
+binary key and a small text file per address, written only by the daemon),
+and used only to encrypt to the address they were found for, through
+`--recipient-file`. A key is kept only when GnuPG lists exactly one key in
+it, with a user ID of exactly that address, able to encrypt, neither
+revoked nor expired.
+
+- **Autocrypt (Level 1).** Mail Katna sends carries an `Autocrypt:
+  addr=…; keydata=…` header when GnuPG has a secret key for the sender:
+  the newest usable one, exported minimal with only that address's user
+  ID and the encryption subkey. No `prefer-encrypt` is stated. When the
+  user opens a message with an Autocrypt header, the app asks the daemon
+  (`LearnKey`) to keep the key, which it does only when the user's
+  provider authenticated the message's `From` (aligned DMARC or DKIM in
+  `Authentication-Results`, §12) and `addr` is that `From`; a key from
+  older mail never replaces one from newer mail.
+- **Web Key Directory.** When Encrypt is on and a recipient has no key,
+  the app asks the daemon (`LookUpKey`) before sealing: it fetches
+  `https://openpgpkey.<domain>/.well-known/openpgpkey/<domain>/hu/<hash>`,
+  then the direct `https://<domain>/.well-known/openpgpkey/hu/<hash>`
+  (public addresses only, 256 KiB at most), so only the recipient's own
+  domain learns who is written to. Nothing is looked up while reading:
+  that would tell the sender the mail was opened.
 
 
 ### 19.2 Crash reports and feedback
@@ -5988,7 +6068,9 @@ old and new daemon and app must keep working:
   daemon asks it to restart; an old app that meets a new daemon keeps working
   on `Pim1` and shows a "Katna was updated, restart" pill.
 - An app that opens a store and gets `SchemaTooNew` shows the same restart
-  pill instead of an error.
+  pill instead of an error. Katna Mail floats it at the bottom centre of the
+  mail list; Restart starts the installed build with `--after-update` and
+  quits, and × hides it until a later build.
 - Search index versions already rebuild in the background when they differ
   (`katna-search` deletes an index built with another `SCHEMA_VERSION`);
   search falls back to the store's plain lookups while that runs.
@@ -5996,19 +6078,22 @@ old and new daemon and app must keep working:
 #### Protecting local data
 
 - **Backup before migrating.** When the daemon is about to raise a
-  database's `user_version`, it first copies each database it will change
-  with SQLite's online backup into
-  `$XDG_DATA_HOME/katna/backup/<old version>/`, after checking there is room
-  for it. No room, no migration: the daemon stays on read-only duty and
-  says why. The last two backups are kept.
+  database's `user_version`, it first copies that database with
+  `VACUUM INTO` to `$XDG_DATA_HOME/katna/backup/<name>-v<old version>-<unix
+  time>.db`, after checking there is room for it plus 64 MiB. No room, no
+  migration: opening the store fails with `NoRoomForBackup`, which says why.
+  The last two backups of each database are kept.
 - **Expand, then contract.** A minor release's migrations only add tables,
   columns and indexes, so the previous stable release can still read the
   database. Removing or renaming happens one release later, once nothing
   reads the old shape. A migration that cannot follow this rule is only
   allowed in a major release.
-- Each database records the oldest Katna version that can open it
-  (`min_reader_version` in a small `schema_meta` table), so an older version
-  can tell "newer but still readable" from "too new".
+- Each database records the oldest schema version whose Katna can open it
+  (`min_reader_version` in a small `schema_meta` table, from mail.db v15,
+  pim.db v18 and blobs.db v2), so an older version can tell "newer but
+  still readable" from "too new". It then opens the database as it is,
+  without migrating. A migration that only adds leaves the value alone; one
+  that removes or reshapes raises it to its own version.
 - Settings: `config.toml` keys are only added; unknown keys written by a
   newer version are kept, not dropped, when an older version saves.
 - Secrets in the Secret Service keep their attributes (§9.2.1) across

@@ -59,3 +59,6 @@ service-details-title = 服务无法启动的原因
 service-details-body = 复制以下内容并随报告一起发送。其中不含任何邮件或密码。
 service-details-copy = 复制
 service-details-close = 关闭
+service-not-running = Katna 后台服务未在运行。
+service-no-answer = Katna 后台服务没有响应：{ $error }
+service-no-session = 没有 D-Bus 会话：{ $error }

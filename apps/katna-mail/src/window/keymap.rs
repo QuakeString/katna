@@ -17,8 +17,8 @@ use super::{
     READER_CONTEXT, Reload, RemindMail, RephraseSelection, Reply, ReplyAll, ReportSpam,
     SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst,
     SelectLast, SelectNext, SelectNone, SelectPrevious, SendMail, ShowCalendar, ShowContacts,
-    ShowFiles, ShowMail, ShowNotes, ShowShortcuts, ShowTasks, SnoozeMail, Summarize, ToggleCheck,
-    ToggleMute, ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
+    ShowFiles, ShowMail, ShowNotes, ShowPalette, ShowShortcuts, ShowTasks, SnoozeMail, Summarize,
+    ToggleCheck, ToggleMute, ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -115,6 +115,11 @@ impl Shortcut {
         katna_i18n::english(&self.message())
     }
 
+    /// The action it runs.
+    pub(super) fn action(&self) -> Box<dyn Action> {
+        (self.action)()
+    }
+
     fn message(&self) -> String {
         format!("shortcut-{}", self.name.replace('_', "-"))
     }
@@ -205,6 +210,14 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("quick_settings", App, Anywhere, ["ctrl-,"], ToggleSettings),
     shortcut!("settings", App, Anywhere, [], OpenSettings),
     shortcut!("shortcuts", App, Anywhere, ["?"], ShowShortcuts),
+    // VS Code's and Zed's keys, and KDE's Find Action.
+    shortcut!(
+        "palette",
+        App,
+        Anywhere,
+        ["ctrl-shift-p", "ctrl-alt-i"],
+        ShowPalette
+    ),
     shortcut!("reload", App, Anywhere, ["f5", "ctrl-r"], Reload),
     shortcut!("quit", App, Anywhere, ["ctrl-q"], Quit),
 ];
@@ -522,8 +535,14 @@ pub(super) fn label(keys: &str) -> String {
 }
 
 fn stroke_label(stroke: &str) -> String {
+    stroke_parts(stroke).join("+")
+}
+
+/// The keys pressed together for one keystroke, as they read on key caps:
+/// `ctrl-shift-a` is "Ctrl", "Shift", "A".
+pub(super) fn stroke_parts(stroke: &str) -> Vec<String> {
     let Ok(stroke) = Keystroke::parse(stroke) else {
-        return stroke.to_owned();
+        return vec![stroke.to_owned()];
     };
     let m = stroke.modifiers;
     let mut parts: Vec<String> = Vec::new();
@@ -566,7 +585,7 @@ fn stroke_label(stroke: &str) -> String {
         }
     };
     parts.push(key);
-    parts.join("+")
+    parts
 }
 
 /// Keys as GPUI writes them, from a pressed keystroke; `None` for a
