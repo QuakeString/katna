@@ -64,6 +64,11 @@ macro_rules! pim_interface {
     ($interface:tt, $bus_name:tt, $path:tt) => {
         #[zbus::interface(name = $interface)]
         impl PimService {
+            async fn version(&self) -> (String, u32, std::collections::HashMap<String, u32>) {
+                crate::update::check_now();
+                self.daemon.version()
+            }
+
             async fn accounts(&self) -> fdo::Result<Vec<AccountStatus>> {
                 Ok(self.daemon.accounts()?)
             }

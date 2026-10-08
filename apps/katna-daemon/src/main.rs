@@ -101,6 +101,7 @@ fn run() -> ExitCode {
             Err(err) => tracing::warn!(%err, "no system bus; not watching suspend and network"),
         }
         tracing::info!("katna-daemon running");
+        let daemon = instance.daemon.clone();
         // Set when a package update replaced this binary.
         let updated = std::cell::OnceCell::new();
         let stop = async {
@@ -109,6 +110,7 @@ fn run() -> ExitCode {
         }
         .or(async {
             let binary = update::replaced().await;
+            update::until_idle(&daemon).await;
             if update::restart_by_systemd(&bus).await {
                 // Its SIGTERM stops this one above.
                 std::future::pending::<()>().await;

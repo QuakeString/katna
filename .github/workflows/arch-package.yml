@@ -17,6 +17,7 @@ on:
   pull_request:
     paths:
       - "packaging/**"
+      - "ci/upgrade-test.sh"
       - ".github/workflows/arch-package.yml"
   workflow_dispatch:
 
@@ -175,8 +176,55 @@ jobs:
           path: out/
           if-no-files-found: error
 
-  publish:
+  # Upgrade and rollback (docs/IMPLEMENTATION_PLAN.md U.7): the build on
+  # arch-latest syncs an account on the dev Dovecot, this build replaces
+  # it while its daemon runs, then the earlier build comes back. A build
+  # that loses mail or does not take over from the running daemon is not
+  # published.
+  upgrade:
     needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          sparse-checkout: |
+            ci
+            dev
+          persist-credentials: false
+      - name: Start the dev Dovecot
+        run: |
+          docker compose -f dev/compose.yaml up -d dovecot
+          for _ in $(seq 60); do
+            (exec 3<>/dev/tcp/127.0.0.1/20993) 2>/dev/null && exit 0
+            sleep 1
+          done
+          docker compose -f dev/compose.yaml logs dovecot
+          exit 1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: arch-package
+          path: candidate
+      - name: Download the build on arch-latest
+        id: previous
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if gh release download arch-latest -p katna-git-x86_64.pkg.tar.zst -D previous; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No build on arch-latest yet; nothing to upgrade from"
+          fi
+      - name: Upgrade and roll back
+        if: steps.previous.outputs.found == 'true'
+        run: |
+          docker run --rm --network host -v "$PWD:/work" -w /work archlinux:latest \
+            ci/upgrade-test.sh previous/katna-git-x86_64.pkg.tar.zst \
+              candidate/katna-git-x86_64.pkg.tar.zst
+
+  publish:
+    needs: [build, upgrade]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
