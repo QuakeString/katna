@@ -116,6 +116,7 @@ calendar-add-meet = Lägg till videomöte i Google Meet
 calendar-add-teams = Lägg till Teams-möte
 calendar-has-call = Videomöte har lagts till
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Heldag
 calendar-more-options = Fler alternativ
 calendar-save = Spara

@@ -4679,3 +4679,161 @@ Le menu ☰ et la liste des langues glissent désormais à l’intérieur de la
 carte du compte au lieu d’apparaître d’un coup, avec un bouton de retour
 à droite pour revenir.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Toutes les applications sur la même carte"
+text = """
+Calendrier, Contacts, Tâches, Notes et Fichiers reposent désormais sur
+une carte avec le même bord fin et la même ombre douce que Courrier et
+Paramètres.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Les raccourcis de saisie rapide sous GNOME"
+text = """
+Meta+Alt+T pour une tâche et Meta+Alt+N pour une note fonctionnent
+désormais aussi sous GNOME. La première fois, GNOME vous demande si Katna
+peut les utiliser, et vous pouvez changer les touches dans ses
+Paramètres.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Déplacez les outils d’annotation"
+text = """
+Quand vous annotez un PDF, faites glisser les points au bout des outils
+pour les déplacer n’importe où sur la page, afin qu’ils ne cachent jamais
+ce que vous annotez. Double-cliquez sur les points pour les remettre en
+place.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Compatible avec les lecteurs d’écran"
+text = """
+Orca et les autres lecteurs d’écran peuvent désormais lire Katna Mail :
+la liste des messages, les dossiers, le message ouvert, les boutons, les
+menus, les interrupteurs et les boîtes de dialogue.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Envoyer un retour"
+text = """
+Aide > Envoyer un retour, également dans Paramètres rapides et dans
+Paramètres > Retours des utilisateurs, envoie un problème ou une idée
+directement à Katna. Ce qui est envoyé affiche le texte exact avant
+l’envoi, et un e-mail pour une réponse est facultatif.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Des statistiques d’utilisation anonymes, si vous le souhaitez"
+text = """
+Paramètres > Retours des utilisateurs propose un nouvel interrupteur,
+désactivé tant que vous ne l’activez pas : une fois par semaine, il
+envoie les fonctions que vous avez utilisées, oui ou non, pour que les
+plus utilisées reçoivent le plus de soin. La page liste tout ce qui est
+compté et affiche le rapport de cette semaine.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "La recherche trouve les anciens messages sur le serveur"
+text = """
+Les anciens messages ne sont pas téléchargés en entier, la recherche ne
+peut donc pas lire leurs mots ici. Désormais, après une courte pause dans
+la saisie ou quand vous appuyez sur Entrée, Katna interroge aussi votre
+serveur de messagerie et liste ce qu’il trouve sous Plus de résultats sur
+le serveur.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Recherche en thaï, lao, khmer et birman"
+text = """
+La recherche trouve un mot dans un message en thaï, lao, khmer ou birman
+même quand la phrase n’a pas d’espaces entre les mots.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Les longues lignes se coupent entre les mots"
+text = """
+Le texte en arabe, en hindi et dans les autres écritures indiennes, en
+thaï, lao, khmer et birman passe désormais à la ligne entre les mots au
+lieu de couper un mot en son milieu, et les lignes en chinois et en
+japonais ne commencent plus par un signe fermant.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "L’appui remplit tout le bouton"
+text = """
+Cliquer sur une puce ou un bouton à contour le remplit désormais jusqu’à
+ses propres bords et coins, au lieu d’afficher une pilule plus petite à
+l’intérieur.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Palette de commandes"
+text = """
+Appuyez sur Ctrl+Shift+P et tapez pour trouver n’importe quelle action ou
+paramètre, puis appuyez sur Entrée pour l’exécuter. Chaque action affiche
+son raccourci clavier, et ce que vous avez utilisé en dernier apparaît en
+haut.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Les messages chiffrés trouvent les clés"
+text = """
+Quand Chiffrer est activé, la clé d’un destinataire qui n’en a pas est
+recherchée à l’envoi dans l’annuaire de clés de son propre domaine. Les
+messages que vous envoyez portent votre clé publique (Autocrypt) quand
+GnuPG en a une pour votre adresse, et les clés reçues de la même façon
+servent à chiffrer vos réponses. Les messages OpenPGP chiffrés masquent
+désormais leur objet jusqu’à leur ouverture.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Voir qui a signé un message"
+text = """
+Cliquez sur la ligne de signature d’un message signé ou chiffré pour voir
+la clé du signataire : nom, adresse, empreinte et dates, avec Copier
+l’empreinte. Un message signé avec une clé que vous n’avez pas propose
+Rechercher la clé, et une clé jointe par quelqu’un s’ouvre sous Importer
+cette clé ?, avec Annuler ensuite.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Des avertissements sur les messages falsifiés"
+text = """
+Quand un message échoue aux vérifications d’expéditeur de votre
+fournisseur de messagerie, un bandeau rouge indique qu’il ne vient
+peut-être pas de qui il prétend, avec Détails, Semble sûr et Déplacer
+dans les spams. Ses images restent masquées et ses liens demandent
+confirmation avant de s’ouvrir. Un expéditeur que rien n’a confirmé
+reçoit un petit « ? » sur sa photo.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Redémarrer après une mise à jour de Katna"
+text = """
+Quand Katna est mis à jour pendant que Katna Mail est ouvert, le service
+en arrière-plan passe de lui-même à la nouvelle version dès qu’il n’envoie
+plus de courriel. Une petite pastille en bas de la liste propose alors
+Redémarrer, qui ouvre la nouvelle version de Katna Mail à sa place.
+× la masque jusqu’à la prochaine mise à jour.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Ouvrir un courriel est plus calme"
+text = """
+Cliquer sur un courriel dans la liste n’y fait plus passer d’onde pendant
+qu’il s’ouvre. L’onde apparaît toujours quand vous cliquez sur le courriel
+déjà ouvert.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Un mode sans échec si une mise à jour tourne mal"
+text = """
+Katna copie vos données avant qu’une mise à jour ne les modifie. Si la
+mise à jour empêche Katna de démarrer, il s’ouvre en mode sans échec :
+votre courrier reste lisible, et une ligne au-dessus vous permet de
+Réessayer ou de revenir à la copie d’avant la mise à jour. Ce qui s’y
+trouve maintenant est d’abord conservé dans un dossier : rien n’est perdu.
+Copier le rapport de débogage, aussi dans À propos, rassemble ce dont un
+signalement de bug a besoin.
+"""

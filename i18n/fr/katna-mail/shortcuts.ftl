@@ -70,6 +70,7 @@ shortcut-navigation = Afficher ou réduire le menu
 shortcut-quick-settings = Paramètres rapides
 shortcut-settings = Tous les paramètres
 shortcut-shortcuts = Raccourcis clavier
+shortcut-palette = Palette de commandes
 shortcut-reload = Vérifier les nouveaux messages
 shortcut-quit = Quitter
 

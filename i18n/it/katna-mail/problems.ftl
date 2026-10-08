@@ -72,3 +72,28 @@ service-details-title = Perché il servizio non si avvia
 service-details-body = Copia questo testo e invialo con la tua segnalazione. Non contiene posta né password.
 service-details-copy = Copia
 service-details-close = Chiudi
+service-not-running = Il servizio in background di Katna non è in esecuzione.
+service-no-answer = Il servizio in background di Katna non ha risposto: { $error }
+service-no-session = Nessuna sessione D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna è in modalità provvisoria dopo un problema con l’aggiornamento, quindi la posta non si sincronizza.
+safe-try-again = Riprova
+safe-restore = Ripristina
+safe-restoring = Ripristino dei tuoi dati del { $when }…
+safe-restored = Dati del { $when } ripristinati. Ciò che c’era prima è conservato in una cartella.
+safe-show-folder = Mostra cartella
+safe-restore-failed = Impossibile ripristinare i tuoi dati: { $error }
+safe-restore-title = Ripristinare i tuoi dati da prima di un aggiornamento?
+safe-restore-body = Katna torna alla copia che scegli. La posta arrivata dopo viene scaricata di nuovo dai tuoi account.
+safe-restore-none = Non ci sono ancora copie. Katna ne crea una prima che ogni aggiornamento modifichi i tuoi dati.
+safe-restore-keep = Ciò che c’è ora, compresi posta non inviata, bozze e modifiche non ancora sincronizzate, viene prima conservato in una cartella, così non si perde nulla.
+safe-restore-cancel = Annulla
+safe-restore-mail = Posta
+safe-restore-pim = Account e contatti
+safe-restore-blobs = Allegati
+safe-report-title = Rapporto di debug
+safe-report-body = Copialo e allegalo alla tua segnalazione di bug. Non contiene posta, indirizzi né password.
+safe-report-restore = Ripristina…
+safe-report-copied = Rapporto di debug copiato

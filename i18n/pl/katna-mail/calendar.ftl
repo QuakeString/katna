@@ -120,6 +120,7 @@ calendar-add-meet = Dodaj wideokonferencję Google Meet
 calendar-add-teams = Dodaj spotkanie w Teams
 calendar-has-call = Dodano połączenie wideo
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Cały dzień
 calendar-more-options = Więcej opcji
 calendar-save = Zapisz

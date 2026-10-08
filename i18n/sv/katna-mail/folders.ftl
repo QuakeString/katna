@@ -53,6 +53,7 @@ folder-waiting-short = Väntar
 folder-reminders = Påminnelser
 folder-outbox = Utkorgen
 folder-activity = Aktivitet
+folder-not-on-account = Det här kontot har ingen sådan mapp.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

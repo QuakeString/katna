@@ -179,6 +179,7 @@ settings-general-start-at-login = Starta Katna vid inloggning
 settings-general-start-at-login-detail = Synkroniserar e-post och visar aviseringar om ny e-post och ikonen i systemfältet, utan att öppna fönstret
 settings-general-login-window = Öppna även fönstret för Katna Mail
 settings-general-login-window-detail = Fönstret öppnas också vid inloggning
+settings-general-login-entry = Startas vid inloggning (Inställningar > Allmänt > Skrivbord)
 settings-general-tray = Visa Katna i systemfältet
 settings-general-tray-detail = Med antalet olästa och en meny
 settings-general-tray-color = Systemfältsikon i färg
