@@ -10,6 +10,7 @@
 //! `CloudThumbnail`); nothing is synced. Listings are kept for a few
 //! minutes, so going back through folders is instant.
 
+use crate::widgets::Tip as _;
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
 use std::rc::Rc;
@@ -39,7 +40,7 @@ use super::{
 };
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon, icon_button, outlined_button, placeholder, tip};
+use crate::widgets::{filled_button, icon, icon_button, outlined_button, placeholder};
 use katna_core::config::OpenIn;
 
 mod manage;
@@ -2092,7 +2093,7 @@ impl MailWindow {
             )
             .child(
                 icon_button(("files-drive-row-more", place), "more", 20.0, th)
-                    .tooltip(tip(tr!("files-drive-more"), th))
+                    .tip(tr!("files-drive-more"), th)
                     .on_mouse_down(
                         MouseButton::Left,
                         cx.listener(move |this, e: &MouseDownEvent, _, cx| {

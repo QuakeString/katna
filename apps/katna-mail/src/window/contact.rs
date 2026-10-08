@@ -12,6 +12,7 @@
 //! opens the card's summary as a popover ([`peek`]), or a sheet on a
 //! phone.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -43,9 +44,7 @@ use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
 use crate::profile::{self, Profile};
 use crate::theme::{Theme, mix};
-use crate::widgets::{
-    card_outline, icon, icon_button, icon_button_colored, tip, tonal_icon_button,
-};
+use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, tonal_icon_button};
 
 /// The card's width.
 pub(super) const CONTACT_WIDTH: f32 = 300.0;
@@ -358,14 +357,14 @@ impl MailWindow {
                 if on { th.accent } else { th.text_dim },
                 th,
             )
-            .tooltip(tip(
+            .tip(
                 if on {
                     tr!("contact-panel-hide")
                 } else {
                     tr!("contact-panel-show")
                 },
                 th,
-            ))
+            )
             .on_click(cx.listener(|this, _, _, cx| this.toggle_contact_panel(cx)))
             .into_any_element(),
         )
@@ -639,7 +638,7 @@ impl MailWindow {
             .child(
                 div().absolute().top(px(6.0)).right(px(6.0)).child(
                     icon_button("contact-close", "close", 20.0, th)
-                        .tooltip(tip(tr!("contact-panel-hide"), th))
+                        .tip(tr!("contact-panel-hide"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_contact_panel(cx))),
                 ),
             )
@@ -1048,7 +1047,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> gpui::Div {
         let button = |id: &'static str, name: &str, label: String| {
-            tonal_icon_button(id, name, size, false, true, th).tooltip(tip(label, th))
+            tonal_icon_button(id, name, size, false, true, th).tip(label, th)
         };
         let to = email.to_owned();
         let query = format!("from:{email} OR to:{email}");
@@ -1063,7 +1062,7 @@ impl MailWindow {
                     tr!("quiet-mute-sender")
                 };
                 tonal_icon_button("contact-mute", "bell-off", size, muted, true, th)
-                    .tooltip(tip(label, th))
+                    .tip(label, th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.mute_sender(address.clone(), !muted, cx)
                     }))
@@ -1116,7 +1115,7 @@ impl MailWindow {
         };
         let email = email.to_owned();
         tonal_icon_button("contact-save", glyph, size, false, !adding, th)
-            .tooltip(tip(label, th))
+            .tip(label, th)
             .when(!adding, |d| {
                 d.on_click(cx.listener(move |this, _, window, cx| {
                     if this.is_saved_contact(&email) {
@@ -1472,7 +1471,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .text_color(rgba(th.accent))
                     .hover(|s| s.underline())
-                    .tooltip(tip(tr!("contact-call"), th))
+                    .tip(tr!("contact-call"), th)
                     .on_click(move |_, _, cx| cx.open_url(&dial))
                     .child(number),
             )
@@ -1498,7 +1497,7 @@ impl MailWindow {
                     .opacity(0.0)
                     .group_hover(group, |s| s.opacity(1.0))
                     .hover(|s| s.bg(rgba(th.hover)))
-                    .tooltip(tip(tr!("contact-copy-number"), th))
+                    .tip(tr!("contact-copy-number"), th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         cx.write_to_clipboard(ClipboardItem::new_string(copied.clone()));
                         this.show_snackbar(tr!("contact-number-copied"), None, cx);
@@ -1715,14 +1714,14 @@ impl MailWindow {
                             .id(("contact-task-tick", id as usize))
                             .flex_none()
                             .rounded_full()
-                            .tooltip(tip(
+                            .tip(
                                 if done {
                                     tr!("tasks-mark-open")
                                 } else {
                                     tr!("tasks-mark-done")
                                 },
                                 th,
-                            ))
+                            )
                             .child(super::tasks_page::round_tick(done, true, th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 cx.stop_propagation();
@@ -2011,7 +2010,7 @@ fn page_chips(id: &'static str, pages: &[signature::Link], th: &Theme) -> AnyEle
                 .cursor_pointer()
                 .relative()
                 .child(crate::widgets::hover_fade("hover-glow", None, th))
-                .tooltip(tip(link.url.clone(), th))
+                .tip(link.url.clone(), th)
                 .on_click(move |_, _, cx| cx.open_url(&url));
             match brand_icon(link.site) {
                 Some(name) => chip.w(px(24.0)).child(icon(name, th.text_dim, 14.0)),

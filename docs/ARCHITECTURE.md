@@ -2450,6 +2450,20 @@ Gemini or confidential mode):
   letters still work there. Whenever
   the keys lose their place (a message sent, a menu or dialog gone) they
   come back to the list, or to the Settings page while it is open.
+- **Screen readers.** GPUI hands an AccessKit tree to AT-SPI (Orca) and
+  UI Automation (NVDA, Narrator). Only elements with an id and a role
+  show up, so the shared widgets set both: `widgets::Tip::tip` labels an
+  icon button with its tooltip text, text buttons and chips carry their
+  label, menu items are `MenuItem`, `FocusRing` controls are buttons,
+  Settings rows are switches, radio buttons and links, and
+  `keep_tab_inside` makes a dialog a `Dialog`. The mail list is a `List`
+  whose rows read "Unread, sender, subject, date"; the folder pane is a
+  `Tree` with levels, unread counts and fold state; the open mail is a
+  `Document` named by its subject, with its plain text as the
+  description only while a screen reader is listening
+  (`window.is_a11y_active()`). Text fields expose their placeholder and
+  value (never a password's). Spoken words not shown on screen live in
+  `i18n/en/katna-mail/a11y.ftl`.
 - **Removing an account, deleting all data.** Settings → Accounts
   (`window/accounts.rs`) lists
   the accounts, each with Remove, and has "Delete all Katna data". Both
@@ -5937,12 +5951,19 @@ A package manager replaces binaries while Katna runs. Every combination of
 old and new daemon and app must keep working:
 
 - The daemon notices its own binary was replaced (`/proc/self/exe` ends in
-  ` (deleted)`, checked on a timer and on each D-Bus call). It restarts
-  itself only when it is idle: no send inside the undo delay, no migration
-  or index write running, the op queue flushed. With systemd it asks the
-  user manager to restart its unit; without systemd it re-executes itself.
+  ` (deleted)`, or pacman records a newer build), checked every 30 seconds
+  and whenever a program asks `Version()`. It restarts itself only when no
+  message is being handed to a server or due to be within the longest undo
+  delay; it waits for that at most 15 minutes. Everything else that waits
+  (queued changes, the index, migrations) is kept on disk or finished by
+  its shutdown. With systemd it asks the user manager to restart its unit;
+  without systemd it re-executes itself.
 - A new `Version() → (version, api, schemas)` D-Bus method lets the app and
-  the daemon find out what the other side speaks. `Pim1` only ever gains
+  the daemon find out what the other side speaks: the build, the `Pim1`
+  level (`katna_dbus::API_LEVEL`, one more each time `Pim1` gains a
+  member) and each database's schema version. Katna Mail asks it when it
+  connects and whenever the daemon comes back; a daemon older than
+  `Version()` answers `UnknownMethod` and restarts by its own timer. `Pim1` only ever gains
   members; anything else becomes `Pim2` (§14.1). A new app that meets an old
   daemon asks it to restart; an old app that meets a new daemon keeps working
   on `Pim1` and shows a "Katna was updated, restart" pill.
@@ -6001,7 +6022,7 @@ request that touches a migration, not only at release time.
 | Check | What it proves |
 |---|---|
 | Pull-request CI on the tagged commit | `fmt`, `clippy`, tests on Arch and Ubuntu 26.04, `cargo deny`, size budgets |
-| Migration fixtures | A committed `mail.db`, `pim.db` and `blobs.db` of every released schema version migrates to the new one; row counts, threads, categories and a fixed set of queries give the same answers |
+| Migration fixtures | A committed `mail.db`, `pim.db` and `blobs.db` of every released schema version (`crates/katna-store/fixtures/`, written once when a migration is added) migrates to the new one; row counts, integrity, foreign keys, the schema and a fixed set of store reads (`answers.txt`) give the same answers |
 | Upgrade test | In a container: install the previous stable (and the one before it), add an account on the dev servers (Stalwart, Dovecot), sync, queue a send, create organizations and settings; upgrade to the candidate while the daemon runs; check the daemon restarts itself, migrations apply, nothing is re-downloaded or lost, the queued send goes out once, passwords still work |
 | Rollback test | Install the candidate, then the previous stable: it opens the data (expand-then-contract), or restores the backup cleanly |
 | Mixed versions | Old app against new daemon and new app against old daemon over D-Bus |

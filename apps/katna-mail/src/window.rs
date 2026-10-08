@@ -95,6 +95,7 @@ mod scheme_editor;
 mod scheme_picker;
 mod search_panel;
 mod select;
+mod server_search;
 mod service;
 mod settings;
 mod settings_page;
@@ -116,6 +117,7 @@ mod viewer;
 mod waiting;
 mod whats_new;
 
+use crate::widgets::Tip as _;
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
 use std::path::PathBuf;
@@ -144,7 +146,7 @@ use crate::data::{self, Entry, EntryKey, Mail, OpenError};
 use crate::sidebar::{self, Role, Tree};
 use crate::tabs::{self, Provider, Tab};
 use crate::theme::{Accent, Theme};
-use crate::widgets::{elevation, icon, tip};
+use crate::widgets::{elevation, icon};
 
 use apps::{App as RailApp, People};
 use reader::Conversation;
@@ -667,6 +669,8 @@ pub struct MailWindow {
     /// Search this text as typed, not corrected ("Search instead for …").
     search_verbatim: Option<String>,
     search_task: Option<Task<()>>,
+    /// "More results on server" for the search shown.
+    server_search: Option<server_search::ServerSearch>,
     search_panel: Option<SearchPanel>,
     search_panel_spring: Spring,
     menu: Option<Menu>,
@@ -860,6 +864,9 @@ pub struct MailWindow {
     /// Whether the conversation beside the list has the keys, as of this
     /// frame: the list's cursor dims and the pane's outline lights.
     reader_keys: bool,
+    /// A screen reader is listening, so the open mail's text is handed to
+    /// it (read each frame only then).
+    a11y_on: bool,
     /// A dialog without fields of its own to focus (the delete question),
     /// and any dialog's frame that keeps Tab inside it.
     dialog_focus: FocusHandle,
@@ -1071,6 +1078,7 @@ impl MailWindow {
             search_error: None,
             search_verbatim: None,
             search_task: None,
+            server_search: None,
             search_panel: None,
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
             menu: None,
@@ -1170,6 +1178,7 @@ impl MailWindow {
             list_focus: cx.focus_handle(),
             reader_focus: cx.focus_handle(),
             reader_keys: false,
+            a11y_on: false,
             dialog_focus: cx.focus_handle(),
             scheme_editor: None,
             color_picker: None,
@@ -1478,6 +1487,27 @@ impl MailWindow {
             outline * lerp(SHADOW_REST, 1.0, active),
             outline * lerp(EDGE_REST, 1.0, active),
         )
+    }
+
+    /// A page's card beside the rail: the cards' hairline edge and short
+    /// shadow, and the faint line around them, as strong as on Mail's list
+    /// while it has the keys, since the page is the only card on show
+    /// (`docs/DESIGN.md`, Cards). Every app page and Settings draw their
+    /// card here so none misses its edge; on a phone the card runs edge to
+    /// edge with none.
+    fn page_frame(&self, th: &Theme, fill: u32, content: impl IntoElement) -> gpui::Div {
+        let (radius, outline) = (
+            self.layout.shape.card_radius(),
+            self.layout.shape.card_outline(),
+        );
+        let (shadow, edge) = self.card_edges(1.0, outline);
+        div()
+            .relative()
+            .size_full()
+            .overflow_hidden()
+            .map(|d| crate::widgets::card(d, th, fill, radius, shadow))
+            .child(content)
+            .children(crate::widgets::card_outline(th, radius, edge))
     }
 
     /// How far the list (`reader` false) or the conversation beside it has
@@ -2500,6 +2530,7 @@ impl MailWindow {
 
     fn clear_search(&mut self, cx: &mut Context<Self>) {
         self.search_task = None;
+        self.drop_server_search();
         self.search_error = None;
         self.search.update(cx, |search, cx| {
             if !search.text().is_empty() {
@@ -2547,7 +2578,10 @@ impl MailWindow {
                 }
                 self.start_search(text, cx);
             }
-            InputEvent::Submit => self.focus_list(&FocusList, window, cx),
+            InputEvent::Submit => {
+                self.search_server_now(cx);
+                self.focus_list(&FocusList, window, cx);
+            }
             InputEvent::Cancel => {
                 if search.read(cx).text().is_empty() {
                     window.focus(&self.list_focus, cx);
@@ -2563,6 +2597,7 @@ impl MailWindow {
         let keep_open = std::mem::take(&mut self.clear_keeps_open);
         if text.is_empty() {
             self.search_task = None;
+            self.drop_server_search();
             if matches!(self.listing, Some(Listing::Search { .. })) {
                 // Only the X keeps a result open; text deleted away goes back.
                 let opened = (keep_open && self.reading)
@@ -2696,11 +2731,13 @@ impl MailWindow {
                     Ok(mail) => mail.hit_entries(&hits, self.config.mail.conversations, only),
                     Err(_) => Vec::new(),
                 };
+                let searched = query.clone();
                 self.listing = Some(Listing::Search {
                     query,
                     total: results.total,
                     corrected,
                 });
+                self.after_local_results(&searched, cx);
                 if again {
                     self.selected =
                         selected_key.and_then(|key| self.entries.iter().position(|e| e.key == key));
@@ -3461,7 +3498,7 @@ impl MailWindow {
                         .rounded_full()
                         .cursor_pointer()
                         .hover(|s| s.bg(rgba(0xffffff1f)))
-                        .tooltip(tip(katna_i18n::tr!("toast-close"), th))
+                        .tip(katna_i18n::tr!("toast-close"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.hide_snackbar(cx)))
                         .child(icon("close", th.snackbar_text, 18.0)),
                 )
@@ -3708,6 +3745,7 @@ impl Render for MailWindow {
         let pane_open = self.pane_open();
         self.pane_spring.set(if pane_open { 1.0 } else { 0.0 });
         self.reader_keys = pane_open && self.reader_focus.contains_focused(window, cx);
+        self.a11y_on = window.is_a11y_active();
         self.keys_spring
             .set(if self.reader_keys { 1.0 } else { 0.0 });
         self.nav_keys_shown = self.nav_focus.is_focused(window);

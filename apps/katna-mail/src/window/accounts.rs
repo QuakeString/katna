@@ -7,6 +7,7 @@
 //! General) asks in the same dialog, saying what is downloaded again and
 //! what is kept.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, ClickEvent, Context, Div, DragMoveEvent, ElementId, Entity, Focusable, FontWeight,
     MouseButton, MouseDownEvent, SharedString, Stateful, Subscription, Window, deferred, div,
@@ -351,14 +352,14 @@ impl MailWindow {
                     18.0,
                     th,
                 )
-                .tooltip(crate::widgets::tip(
+                .tip(
                     if dir == "pop3-days-less" {
                         tr!("accounts-pop3-days-less")
                     } else {
                         tr!("accounts-pop3-days-more")
                     },
                     th,
-                ));
+                );
                 match to.filter(|_| now == Pop3Choice::AfterDays) {
                     Some(to) => button
                         .map(|d| self.page_control(d, th, cx))
@@ -650,7 +651,7 @@ impl MailWindow {
                 20.0,
                 th,
             )
-            .tooltip(crate::widgets::tip(label, th));
+            .tip(label, th);
             match to {
                 Some(to) => button
                     .map(|d| self.page_control(d, th, cx))
@@ -678,7 +679,7 @@ impl MailWindow {
             .cursor_grab()
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", None, th))
-            .tooltip(crate::widgets::tip(tr!("accounts-drag"), th))
+            .tip(tr!("accounts-drag"), th)
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(move |this, event: &MouseDownEvent, _, _| {

@@ -817,6 +817,21 @@ pub async fn server_hold_limit(connection: &Connection, account: i64) -> Result<
         .map_err(|err| describe(&err))
 }
 
+/// Searches the mail servers of `account` (every account when 0) for
+/// `query`, for mail not downloaded ("More results on server").
+pub async fn search_server(
+    connection: &Connection,
+    query: &str,
+    account: i64,
+) -> Result<Vec<i64>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.search_server(query, account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Whether the SMTP server of `account` sends delivery receipts.
 pub async fn server_delivery_receipts(
     connection: &Connection,
