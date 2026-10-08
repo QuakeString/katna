@@ -210,6 +210,8 @@ icons!(
     "tasks",
     "template",
     "text-color",
+    "text-ltr",
+    "text-rtl",
     "text-size",
     "today",
     "tour",

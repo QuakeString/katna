@@ -29,8 +29,6 @@ use crate::format;
 use crate::theme::Theme;
 use crate::widgets::{icon, menu, menu_item_icon};
 
-/// The line a forward starts its copy of the message with.
-const FORWARDED: &str = "---------- Forwarded message ---------";
 /// The height of the notch on the kind menu, pointing at its button.
 const NOTCH: f32 = 8.0;
 
@@ -102,10 +100,9 @@ fn trim_forward(blocks: &mut Vec<Block>) {
             _ => None,
         }
     }
-    let Some(at) = blocks
-        .iter()
-        .rposition(|b| para(b).is_some_and(|p| p.style.quote == 0 && p.text.trim() == FORWARDED))
-    else {
+    let Some(at) = blocks.iter().rposition(|b| {
+        para(b).is_some_and(|p| p.style.quote == 0 && crate::quoting::is_forward_header(&p.text))
+    }) else {
         return;
     };
     let blank = at > 1

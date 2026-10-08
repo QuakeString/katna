@@ -1034,27 +1034,36 @@ impl NewMailNotices {
             .and_then(|id| sending.signatures.iter().find(|s| s.id == id))
             .map(|s| s.text.as_str())
             .unwrap_or_default();
-        // The quote's first line, in English as Katna Mail's own replies
-        // have it: it is part of the mail, for whoever reads it. The date
-        // is the mail's, as headers write it; the daemon formats no dates
-        // for people (it leaves ICU out).
+        // The quote's first line, in the interface's language as Katna
+        // Mail's own replies have it: it is part of the mail, for whoever
+        // reads it. A name in the other direction from the sentence keeps
+        // its own between isolation marks (Fluent sets them in a
+        // right-to-left language). The date is the mail's in numbers, which
+        // read in any language: the daemon formats no dates in words (it
+        // leaves ICU out to stay small).
         let sender = original
             .from
             .as_ref()
             .map(Mailbox::text)
             .unwrap_or_default();
+        let sender = if !katna_i18n::rtl() && katna_core::bidi::has_rtl(&sender) {
+            katna_core::bidi::isolate(&sender)
+        } else {
+            sender
+        };
         let intro = match original
             .date
             .and_then(|d| jiff::Timestamp::from_second(d).ok())
         {
             Some(date) => {
-                let date = date.to_zoned(jiff::tz::TimeZone::system());
-                format!(
-                    "On {}, {sender} wrote:",
-                    date.strftime("%a, %-d %b %Y, %H:%M")
+                let date = date.to_zoned(jiff::tz::TimeZone::system()).datetime();
+                tr!(
+                    "notify-reply-quote-header",
+                    date = numeric_date(date),
+                    from = sender
                 )
             }
-            None => format!("{sender} wrote:"),
+            None => tr!("notify-reply-quote-header-no-date", from = sender),
         };
         let raw = quick_reply::build(&original, &from, text, signature, &intro)
             .ok_or("it has no sender")?;
@@ -1095,6 +1104,19 @@ impl NewMailNotices {
         });
         crate::mail_app::run(&self.connection, action, params, token).await;
     }
+}
+
+/// `date` as numbers, year first ("2026-10-07 14:05"): the same in every
+/// language, without ICU.
+fn numeric_date(date: jiff::civil::DateTime) -> String {
+    format!(
+        "{:04}-{:02}-{:02} {:02}:{:02}",
+        date.year(),
+        date.month(),
+        date.day(),
+        date.hour(),
+        date.minute()
+    )
 }
 
 /// Tomorrow at `morning` (minutes after midnight) here, as the app's
