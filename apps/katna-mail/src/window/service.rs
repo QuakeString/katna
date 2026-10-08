@@ -67,6 +67,8 @@ enum State {
 
 /// The Details dialog.
 struct DetailsDialog {
+    /// The debug report, in safe mode; else why the service won't start.
+    report: Option<String>,
     shown: Spring,
     closing: bool,
     focused: bool,
@@ -115,6 +117,7 @@ impl MailWindow {
     /// Follows the service on `connection`: starts it now if it isn't
     /// running, and again whenever it goes away.
     pub(super) fn watch_service(&mut self, connection: Connection, cx: &mut Context<Self>) {
+        self.load_health(cx);
         self.service._watch = Some(cx.spawn(async move |this, cx| {
             if !katna_dbus::daemon_running(&connection).await {
                 this.update(cx, |this, cx| this.start_service(false, cx))
@@ -169,7 +172,7 @@ impl MailWindow {
 
     /// Starts the service, trying again until [`GIVE_UP_AFTER`]. `note`:
     /// it went away while the window was in use, so say once it's back.
-    fn start_service(&mut self, note: bool, cx: &mut Context<Self>) {
+    pub(super) fn start_service(&mut self, note: bool, cx: &mut Context<Self>) {
         let since = Instant::now();
         self.service.state = State::Starting { since, note };
         self.service._timer = Some(cx.spawn(async move |this, cx| {
@@ -217,6 +220,8 @@ impl MailWindow {
                 if matches!(this.service.state, State::Starting { .. }) {
                     this.service.state = State::Failed { details };
                     this.service._timer = None;
+                    // In safe mode the daemon may not start at all.
+                    this.load_health(cx);
                     cx.notify();
                 }
             })
@@ -238,6 +243,7 @@ impl MailWindow {
         self.service._start = None;
         self.service._timer = None;
         self.close_service_details(cx);
+        self.load_health(cx);
         if note {
             self.show_snackbar(tr!("service-started-again"), None, cx);
         }
@@ -253,6 +259,11 @@ impl MailWindow {
         self.start_service(false, cx);
     }
 
+    /// Whether the window is starting the service now.
+    pub(super) fn service_starting(&self) -> bool {
+        matches!(self.service.state, State::Starting { .. })
+    }
+
     /// The line at the top of the list while the service isn't running:
     /// grey while it starts (after [`WAITING_AFTER`]), amber once it
     /// didn't.
@@ -261,6 +272,9 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        if let Some(line) = self.render_safe_line(th, cx) {
+            return Some(line);
+        }
         match &self.service.state {
             State::Running => None,
             State::Starting { since, .. } => {
@@ -305,9 +319,19 @@ impl MailWindow {
     }
 
     fn open_service_details(&mut self, cx: &mut Context<Self>) {
+        self.open_details(None, cx);
+    }
+
+    /// Details in safe mode: the debug report.
+    pub(super) fn open_report_details(&mut self, report: String, cx: &mut Context<Self>) {
+        self.open_details(Some(report), cx);
+    }
+
+    fn open_details(&mut self, report: Option<String>, cx: &mut Context<Self>) {
         let mut shown = Spring::new(motion::SMOOTH, 0.0);
         shown.set(1.0);
         self.service.details = Some(DetailsDialog {
+            report,
             shown,
             closing: false,
             focused: false,
@@ -329,10 +353,18 @@ impl MailWindow {
     }
 
     fn copy_service_details(&mut self, cx: &mut Context<Self>) {
-        let State::Failed { details } = &self.service.state else {
-            return;
+        let text = match (&self.service.details, &self.service.state) {
+            (
+                Some(DetailsDialog {
+                    report: Some(report),
+                    ..
+                }),
+                _,
+            ) => report.clone(),
+            (_, State::Failed { details }) => details.clone(),
+            _ => return,
         };
-        cx.write_to_clipboard(ClipboardItem::new_string(details.clone()));
+        cx.write_to_clipboard(ClipboardItem::new_string(text));
         self.show_snackbar(tr!("feedback-copied"), None, cx);
     }
 
@@ -352,11 +384,13 @@ impl MailWindow {
     ) -> Option<AnyElement> {
         // It floats: its surface is a step lighter in dark colors.
         let th = &th.lifted();
-        let details = match &self.service.state {
-            State::Failed { details } => details.clone(),
+        let dialog = self.service.details.as_mut()?;
+        let debug = dialog.report.is_some();
+        let details = match (&dialog.report, &self.service.state) {
+            (Some(report), _) => report.clone(),
+            (None, State::Failed { details }) => details.clone(),
             _ => String::new(),
         };
-        let dialog = self.service.details.as_mut()?;
         let t = dialog.shown.tick(window, reduce);
         if dialog.closing && dialog.shown.settled() {
             self.service.details = None;
@@ -376,16 +410,27 @@ impl MailWindow {
             .px(px(space::S6))
             .pt(px(space::S6))
             .child(
-                self.copyable(tr!("service-details-title"), th)
-                    .text_size(px(text::TITLE))
-                    .line_height(px(28.0)),
+                self.copyable(
+                    if debug {
+                        tr!("safe-report-title")
+                    } else {
+                        tr!("service-details-title")
+                    },
+                    th,
+                )
+                .text_size(px(text::TITLE))
+                .line_height(px(28.0)),
             )
             .child(
                 div()
                     .mt(px(space::S3))
                     .text_size(px(text::BODY))
                     .text_color(rgba(th.text_dim))
-                    .child(tr!("service-details-body")),
+                    .child(if debug {
+                        tr!("safe-report-body")
+                    } else {
+                        tr!("service-details-body")
+                    }),
             );
         // However long the report, it scrolls in here: the title and the
         // buttons always stay in the window.
@@ -446,18 +491,34 @@ impl MailWindow {
                     }))
                     .child(tr!("service-details-close")),
             )
-            .child(
-                button("service-details-copy", ButtonStyle::Outlined, th)
-                    .focus_ring(th)
-                    .on_click(cx.listener(|this, _, _, cx| this.copy_service_details(cx)))
-                    .child(tr!("service-details-copy")),
-            )
-            .child(
-                button("service-details-again", ButtonStyle::Filled, th)
-                    .focus_ring_filled(th)
-                    .on_click(cx.listener(|this, _, _, cx| this.start_service_again(cx)))
-                    .child(tr!("service-start-again")),
-            );
+            .when(debug, |d| {
+                d.child(
+                    button("service-details-restore", ButtonStyle::Outlined, th)
+                        .focus_ring(th)
+                        .on_click(cx.listener(|this, _, _, cx| this.report_restore(cx)))
+                        .child(tr!("safe-report-restore")),
+                )
+                .child(
+                    button("service-details-copy", ButtonStyle::Filled, th)
+                        .focus_ring_filled(th)
+                        .on_click(cx.listener(|this, _, _, cx| this.copy_service_details(cx)))
+                        .child(tr!("service-details-copy")),
+                )
+            })
+            .when(!debug, |d| {
+                d.child(
+                    button("service-details-copy", ButtonStyle::Outlined, th)
+                        .focus_ring(th)
+                        .on_click(cx.listener(|this, _, _, cx| this.copy_service_details(cx)))
+                        .child(tr!("service-details-copy")),
+                )
+                .child(
+                    button("service-details-again", ButtonStyle::Filled, th)
+                        .focus_ring_filled(th)
+                        .on_click(cx.listener(|this, _, _, cx| this.start_service_again(cx)))
+                        .child(tr!("service-start-again")),
+                )
+            });
         let focus = self.dialog_focus.clone();
         let card = div()
             .id("service-details")
@@ -468,7 +529,11 @@ impl MailWindow {
                 if stroke.key == "enter" && !stroke.modifiers.modified() && focus.is_focused(window)
                 {
                     cx.stop_propagation();
-                    this.start_service_again(cx);
+                    if debug {
+                        this.copy_service_details(cx);
+                    } else {
+                        this.start_service_again(cx);
+                    }
                 }
             }))
             .occlude()
@@ -561,7 +626,7 @@ fn report(errors: &[String], tries: u32) -> String {
 
 /// The end of the service's log in the systemd journal, if there is one.
 #[cfg(not(windows))]
-fn log_tail() -> Option<String> {
+pub(super) fn log_tail() -> Option<String> {
     let output = std::process::Command::new("journalctl")
         .args([
             "--user",
@@ -586,7 +651,7 @@ fn log_tail() -> Option<String> {
 }
 
 #[cfg(windows)]
-fn log_tail() -> Option<String> {
+pub(super) fn log_tail() -> Option<String> {
     let _ = LOG_LINES;
     None
 }

@@ -339,6 +339,10 @@ impl Instance {
             let _ = quit.recv().await;
             tracing::info!("quit from the tray");
         });
+        let restart = self.daemon.restart_requests();
+        let stop = stop.or(async move {
+            let _ = restart.recv().await;
+        });
         let requests = self.daemon.delete_requests();
         let delete = async {
             match requests.recv().await {

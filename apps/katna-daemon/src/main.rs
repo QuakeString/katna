@@ -8,7 +8,7 @@
 use std::process::ExitCode;
 
 use futures_lite::{FutureExt, StreamExt};
-use katna_core::health::Health;
+use katna_core::health::{Health, Request, Restored};
 use katna_core::{Config, Paths};
 use katna_daemon::{Ended, Instance, install, secrets::Secrets, update};
 use katna_sync::worker::WorkerConfig;
@@ -89,6 +89,7 @@ fn run() -> ExitCode {
         let health_file = paths.health_file();
         let started_at = unix_now();
         let mut health = Health::load(&health_file);
+        run_request(&paths, &mut health, started_at);
         if health.begin_start(started_at) {
             tracing::warn!(
                 starts = health.starts.len() - 1,
@@ -157,6 +158,34 @@ fn run() -> ExitCode {
         }
         ExitCode::SUCCESS
     })
+}
+
+/// Runs what Katna Mail asked of this start in safe mode, if anything:
+/// Try again forgets the failed starts; Restore puts back the copies made
+/// before an update, before anything opens the databases.
+fn run_request(paths: &Paths, health: &mut Health, now: i64) {
+    let Some(request) = Request::take(&paths.safe_mode_request_file()) else {
+        return;
+    };
+    tracing::info!(?request, "safe mode request");
+    // Either way, this start gets a fresh count.
+    health.reached_healthy();
+    health.safe_mode = false;
+    if let Request::Restore { from } = request {
+        let restored = katna_store::restore::restore(paths, from, now);
+        if let Err(err) = &restored {
+            tracing::error!(%err, "could not restore");
+        }
+        health.restored = Some(Restored {
+            at: now,
+            from,
+            saved: restored
+                .as_ref()
+                .map(|dir| dir.display().to_string())
+                .unwrap_or_default(),
+            error: restored.err().map(|err| err.to_string()),
+        });
+    }
 }
 
 /// Writes the health file; a failure is logged, never fatal.

@@ -452,7 +452,13 @@ impl MailWindow {
                 tr!("about-source"),
                 SOURCE_URL.to_owned(),
                 th,
-            ));
+            ))
+            .child(
+                outlined_button("about-debug-report", tr!("about-debug-report"), th)
+                    .focus_ring(th)
+                    .tip(tr!("about-debug-report-tip"), th)
+                    .on_click(cx.listener(|this, _, _, cx| this.copy_debug_report(cx))),
+            );
 
         // Buy Me a Coffee's yellow, softer, with the theme's text on it.
         let alpha = |(light, dark): (u32, u32)| COFFEE_YELLOW | if th.dark { dark } else { light };
