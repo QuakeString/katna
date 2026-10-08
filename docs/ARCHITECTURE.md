@@ -4320,8 +4320,14 @@ knows it; after that turning it off is the user's choice.
   named Katna Mail, so they can be changed in System Settings >
   Shortcuts; registered again whenever the service restarts. On Windows
   the `global-hotkey` crate (`RegisterHotKey`, no unsafe code of ours) on
-  the tray's thread. GNOME has none yet: that needs the GlobalShortcuts
-  portal (and "Compose new email" could join it then). On Wayland a
+  the tray's thread. Elsewhere (GNOME, any session whose
+  `XDG_CURRENT_DESKTOP` is not KDE) the GlobalShortcuts portal, on a
+  connection of its own that first names the app
+  (`org.freedesktop.host.portal.Registry.Register`), then
+  `CreateSession` and `BindShortcuts` with the keys as preferred
+  triggers (`ALT+LOGO+t`); the desktop asks the user the first time,
+  its settings can change the keys, and presses arrive as `Activated`.
+  A desktop without the portal gets none. On Wayland a
   press carries no activation token, so the compositor may not give the
   card focus.
 - Dolphin service menu "Send as email attachment with Katna"
