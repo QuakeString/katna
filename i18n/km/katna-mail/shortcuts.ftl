@@ -70,6 +70,7 @@ shortcut-navigation = បង្ហាញ ឬបត់ម៉ឺនុយ
 shortcut-quick-settings = ការកំណត់រហ័ស
 shortcut-settings = ការកំណត់ទាំងអស់
 shortcut-shortcuts = ផ្លូវកាត់ក្ដារចុច
+shortcut-palette = បន្ទះពាក្យបញ្ជា
 shortcut-reload = ពិនិត្យរកសំបុត្រថ្មី
 shortcut-quit = ចាកចេញ
 

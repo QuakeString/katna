@@ -41,4 +41,5 @@ quick-help = အကူအညီ
 quick-tour = လမ်းညွှန်ကြည့်ရှုရန်
 quick-whats-new = အသစ်များ
 quick-check-updates = အပ်ဒိတ် စစ်ဆေးရန်
+quick-send-feedback = အကြံပြုချက် ပို့ရန်
 quick-about = Katna အကြောင်း

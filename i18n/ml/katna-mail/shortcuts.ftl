@@ -70,6 +70,7 @@ shortcut-navigation = മെനു കാണിക്കുക അല്ലെ�
 shortcut-quick-settings = ദ്രുത ക്രമീകരണം
 shortcut-settings = എല്ലാ ക്രമീകരണങ്ങളും
 shortcut-shortcuts = കീബോർഡ് കുറുക്കുവഴികൾ
+shortcut-palette = കമാൻഡ് പാലറ്റ്
 shortcut-reload = പുതിയ മെയിൽ പരിശോധിക്കുക
 shortcut-quit = പുറത്തുകടക്കുക
 

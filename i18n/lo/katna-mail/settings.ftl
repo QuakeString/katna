@@ -173,6 +173,7 @@ settings-general-start-at-login = ເລີ່ມ Katna ເມື່ອເຂົ
 settings-general-start-at-login-detail = ຊິງຄ໌ອີເມວ ແລະ ສະແດງການແຈ້ງເຕືອນອີເມວໃໝ່ ແລະ ໄອຄອນໃນຖາດ ໂດຍບໍ່ເປີດໜ້າຕ່າງ
 settings-general-login-window = ເປີດໜ້າຕ່າງ Katna Mail ນຳ
 settings-general-login-window-detail = ໜ້າຕ່າງກໍເປີດເມື່ອເຂົ້າສູ່ລະບົບເຊັ່ນກັນ
+settings-general-login-entry = ເລີ່ມເມື່ອເຂົ້າສູ່ລະບົບ (ການຕັ້ງຄ່າ > ທົ່ວໄປ > ເດັສທັອບ)
 settings-general-tray = ສະແດງ Katna ໃນຖາດລະບົບ
 settings-general-tray-detail = ພ້ອມຈຳນວນທີ່ຍັງບໍ່ໄດ້ອ່ານ ແລະ ເມນູ
 settings-general-tray-color = ໄອຄອນຖາດເປັນສີ

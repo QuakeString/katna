@@ -65,3 +65,6 @@ service-details-title = සේවාව ආරම්භ නොවන්නේ �
 service-details-body = මෙය පිටපත් කර ඔබේ වාර්තාව සමඟ යවන්න. එහි තැපැල් හෝ මුරපද නැත.
 service-details-copy = පිටපත් කරන්න
 service-details-close = වසන්න
+service-not-running = Katna පසුබිම් සේවාව ක්‍රියාත්මක නොවේ.
+service-no-answer = Katna පසුබිම් සේවාව පිළිතුරු දුන්නේ නැත: { $error }
+service-no-session = D-Bus සැසියක් නැත: { $error }

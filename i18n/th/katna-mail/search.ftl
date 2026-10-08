@@ -57,3 +57,12 @@ search-dates-month-back = เดือนก่อนหน้า
 search-dates-month-on = เดือนถัดไป
 search-dates-year-back = ปีก่อนหน้า
 search-dates-year-on = ปีถัดไป
+
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = ผลลัพธ์เพิ่มเติมบนเซิร์ฟเวอร์
+search-server-searching = กำลังค้นหาอีเมลบนเซิร์ฟเวอร์…
+search-server-empty-searching = ยังไม่มีอะไรที่นี่ กำลังค้นหาอีเมลบนเซิร์ฟเวอร์…
+search-server-nothing = ไม่มีผลลัพธ์เพิ่มเติมบนเซิร์ฟเวอร์
+search-server-failed = ค้นหาบนเซิร์ฟเวอร์ไม่ได้
+search-server-again = ลองอีกครั้ง
