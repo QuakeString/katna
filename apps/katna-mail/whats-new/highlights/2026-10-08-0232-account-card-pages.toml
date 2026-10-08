@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Menus slide in the account card"
+text = """
+The ☰ menu and the language list now slide in inside the account card
+instead of jumping in, with a back button on the right to return.
+"""

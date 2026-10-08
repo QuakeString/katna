@@ -2058,7 +2058,12 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   one after another. The account card switches the shown account (it marks
   it and gives each account's unread count, under an icon row of
   Settings (the General page), the language button and the ☰ application
-  menu, with "Add another account" as the last row); the choice is kept in
+  menu, with "Add another account" as the last row). The ☰ menu and the
+  language list open as pages of the card: the new page slides in 48 px
+  from the right while it fades in (from the left going back, as Snooze's
+  date picker does), the card's height eases to the page's, and each page
+  has its name on the left and a back button on the right where ☰ sits
+  (Escape goes back too); the choice is kept in
   `mail.current_account`. The list, search results, Go to, compose's From
   and the top-bar picture follow the shown account, and opening a message
   of another account (from a notification) switches to it. The taskbar
@@ -3276,7 +3281,8 @@ the address under it when the list is narrower than 640 px; Notes lays two
 narrower cards across a phone; Tasks' cards and Calendar's event cards
 never grow wider than the window. The ☰ application menu opens each menu
 to the left of its card where the window has room, and otherwise (a
-phone) in the card itself under a Back row (Left or Escape goes back).
+phone) as a page of its own under the menu's name and a back button on
+the right (Left or Escape goes back).
 
 Settings rows put the name beside the controls and wrap on width alone,
 not on the layout: where the controls would get less than 300 px beside
@@ -3407,7 +3413,8 @@ building Katna.
   the owner asked, which keeps the top bar to Settings and the picture. It
   shows the current language's flag and a small chevron; its tooltip names
   the language ("Language: বাংলা, following the system" with System
-  default). The popover opens under the account picture.
+  default). The list opens as a page of the account card, in its place
+  (Escape or the back button returns to the card).
 - **Settings > General > Language**, a row with the same choices.
 
 The button opens a popover (the popover rules of §13.6: closes on Esc and

@@ -15,6 +15,7 @@ use gpui::{
     deferred, div, img, prelude::*, rgba,
 };
 use katna_i18n::{Language, Status, tr};
+use katna_ui::tokens::space;
 use katna_ui::{InputEvent, TextInput, px};
 
 use super::settings::Change;
@@ -44,6 +45,9 @@ pub(super) struct LanguagePicker {
     /// interface's; its first row is "Same as Katna".
     reading: bool,
     scroll: ScrollHandle,
+    /// Opened from the account card's flag: a page of the card, which
+    /// goes back to it.
+    from_account: bool,
     _subscription: Subscription,
 }
 
@@ -190,8 +194,10 @@ impl MailWindow {
                     }
                 }
                 InputEvent::Cancel => {
-                    this.language_picker = None;
-                    cx.notify();
+                    if !this.language_page_back(cx) {
+                        this.language_picker = None;
+                        cx.notify();
+                    }
                 }
             },
         );
@@ -208,9 +214,36 @@ impl MailWindow {
             at,
             reading: false,
             scroll,
+            from_account: false,
             _subscription: subscription,
         });
         cx.notify();
+    }
+
+    /// Opens the language list as a page of the account card.
+    fn open_language_page(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        self.language_picker = None;
+        self.toggle_language_picker(None, window, cx);
+        if let Some(picker) = &mut self.language_picker {
+            picker.from_account = true;
+        }
+        self.turn_menu_page(false, cx);
+    }
+
+    /// Back from the language list to the account card it was opened
+    /// from. Returns whether it went back.
+    pub(super) fn language_page_back(&mut self, cx: &mut Context<Self>) -> bool {
+        if !self
+            .language_picker
+            .as_ref()
+            .is_some_and(|p| p.from_account)
+        {
+            return false;
+        }
+        self.language_picker = None;
+        self.account_menu = true;
+        self.turn_menu_page(true, cx);
+        true
     }
 
     fn pick_language(&mut self, tag: &'static str, _window: &mut Window, cx: &mut Context<Self>) {
@@ -266,9 +299,7 @@ impl MailWindow {
             .when(open, |d| d.bg(rgba(th.hover)))
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .when(!open, |d| d.tooltip(tip(tooltip, th)))
-            .on_click(
-                cx.listener(|this, _, window, cx| this.toggle_language_picker(None, window, cx)),
-            )
+            .on_click(cx.listener(|this, _, window, cx| this.open_language_page(window, cx)))
             .child(flag(&language.flag, th))
             .child(icon(
                 "chevron-down",
@@ -447,11 +478,18 @@ impl MailWindow {
         } else {
             height.min(440.0)
         };
+        let from_account = picker.from_account;
+        let height = height.max(200.0);
         let card = div()
             .id("language-menu")
             .occlude()
             .absolute()
             .map(|d| match (phone, picker.at) {
+                // A page of the account card, in its place.
+                _ if from_account => d
+                    .top(px(4.0))
+                    .right(px(16.0))
+                    .w(px(MENU_WIDTH.min(self.room_width() - 32.0))),
                 (true, _) => d.top(px(4.0)).left(px(8.0)).right(px(8.0)),
                 (false, None) => d
                     .top(px(4.0))
@@ -468,7 +506,7 @@ impl MailWindow {
                     d.top(px(top)).left(px(left)).w(px(MENU_WIDTH))
                 }
             })
-            .h(px(height.max(200.0)))
+            .h(px(height))
             .pt(px(8.0))
             .pb(px(8.0))
             .flex()
@@ -484,29 +522,53 @@ impl MailWindow {
                     _ => return,
                 }
                 cx.stop_propagation();
-            }))
-            .child(search)
-            .child(
-                div()
-                    .id("language-list")
-                    .flex_1()
-                    .min_h_0()
-                    .overflow_y_scroll()
-                    .track_scroll(&picker.scroll)
-                    .px(px(8.0))
-                    .flex()
-                    .flex_col()
-                    .gap(px(2.0))
-                    .children(rows)
-                    .children(empty),
-            )
-            .children(machine)
-            .with_animation(
-                "language-menu",
-                Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
-                    .with_easing(gpui::ease_out_quint()),
-                |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
+            }));
+        let list = div()
+            .id("language-list")
+            .flex_1()
+            .min_h_0()
+            .overflow_y_scroll()
+            .track_scroll(&picker.scroll)
+            .px(px(8.0))
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .children(rows)
+            .children(empty);
+        let card = if from_account {
+            // Its name and a button back, where the card's ☰ was.
+            let header = super::menu_page::page_header(
+                "language-back",
+                tr!("language-setting"),
+                th,
+                |this, cx| {
+                    this.language_page_back(cx);
+                },
+                cx,
             );
+            let page = div()
+                .flex_1()
+                .min_h_0()
+                .flex()
+                .flex_col()
+                .child(div().flex_none().mx(px(space::S3)).child(header))
+                .child(search)
+                .child(list)
+                .children(machine);
+            let motion = self.page_motion(cx);
+            self.menu_page_card("language-page", card, page, Some(height), 8.0, motion)
+        } else {
+            card.child(search)
+                .child(list)
+                .children(machine)
+                .with_animation(
+                    "language-menu",
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                        .with_easing(gpui::ease_out_quint()),
+                    |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
+                )
+                .into_any_element()
+        };
         let close = || {
             cx.listener(|this: &mut Self, _: &MouseDownEvent, _, cx| {
                 this.language_picker = None;
