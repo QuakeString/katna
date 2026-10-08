@@ -4,6 +4,7 @@
 //! navigation with the folders, which folds away, and Compose, which sits
 //! over the folders and moves into the app rail when they fold.
 
+use crate::widgets::Tip as _;
 use katna_ui::WindowDrag;
 use std::f32::consts::FRAC_PI_2;
 
@@ -28,9 +29,7 @@ use katna_i18n::tr;
 
 use crate::sidebar::{self, Role, Unified};
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::{
-    elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
-};
+use crate::widgets::{elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring};
 use katna_platform::colors::over;
 
 /// The crossed cloud of an offline account's line, and of its heading.
@@ -249,7 +248,7 @@ impl MailWindow {
             .cursor_pointer()
             .keeps_press()
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
-            .tooltip(tip(
+            .tip(
                 match (page, open > 0.5) {
                     (false, true) => tr!("folders-hide"),
                     (false, false) => tr!("folders-show"),
@@ -257,7 +256,7 @@ impl MailWindow {
                     (true, false) => tr!("side-pane-show"),
                 },
                 th,
-            ))
+            )
             .on_click(cx.listener(|this, _, window, cx| {
                 this.toggle_navigation(&ToggleNavigation, window, cx)
             }))
@@ -450,7 +449,9 @@ impl MailWindow {
                         this.hover_navigation(Hover::Compose, *hovered, cx)
                     }))
                 })
-                .when(dock < 0.5, |d| d.tooltip(tip(label.clone(), th)))
+                .when(dock < 0.5, |d| d.tip(label.clone(), th))
+                .role(gpui::Role::Button)
+                .aria_label(label.clone())
                 .on_click(cx.listener(|this, _, window, cx| this.primary_action(window, cx)))
                 // Split, each half has its own hover.
                 .when(arrow > 0.5, |d| {
@@ -658,7 +659,7 @@ impl MailWindow {
                                 mix(th.text_dim, th.accent, t),
                                 th,
                             )
-                            .tooltip(tip(tr!("search"), th))
+                            .tip(tr!("search"), th)
                             .on_click(cx.listener(
                                 |this, _, window, cx| {
                                     let text = this.search.read(cx).text().trim().to_owned();
@@ -705,7 +706,7 @@ impl MailWindow {
                 d.child(
                     icon_button("search-clear", "close", 22.0, th)
                         .when(phone > 0.5, |d| d.size(px(PILL_END_CIRCLE)))
-                        .tooltip(tip(tr!("search-clear"), th))
+                        .tip(tr!("search-clear"), th)
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.clear_keeps_open = true;
                             this.clear_search(cx);
@@ -724,7 +725,7 @@ impl MailWindow {
                     )
                     // As wide as the circles in the pill's ends, on a phone.
                     .when(phone > 0.5, |d| d.size(px(PILL_END_CIRCLE)))
-                    .tooltip(tip(tr!("search-options-show"), th))
+                    .tip(tr!("search-options-show"), th)
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.toggle_search_panel(window, cx);
                     })),
@@ -760,7 +761,7 @@ impl MailWindow {
             },
             th,
         )
-        .tooltip(tip(tr!("settings"), th))
+        .tip(tr!("settings"), th)
         .on_click(
             cx.listener(|this, _, window, cx| this.toggle_settings(&ToggleSettings, window, cx)),
         )
@@ -815,7 +816,7 @@ impl MailWindow {
                     .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .when(self.account_menu, |d| d.bg(rgba(th.hover)))
                     .on_mouse_move(|_, _, cx| cx.stop_propagation())
-                    .tooltip(tip(
+                    .tip(
                         {
                             let mut text = if let Some(accounts) = &stacked {
                                 let mut text = tr!("nav-all-accounts");
@@ -857,7 +858,7 @@ impl MailWindow {
                             text
                         },
                         th,
-                    ))
+                    )
                     .on_scroll_wheel(cx.listener(|this, event, _, cx| {
                         cx.stop_propagation();
                         this.wheel_accounts(event, cx);
@@ -886,7 +887,7 @@ impl MailWindow {
                     .into_any_element()
             }
             None => icon_button_colored("top-account", "person-add", 22.0, th.text_dim, th)
-                .tooltip(tip(tr!("account-add"), th))
+                .tip(tr!("account-add"), th)
                 .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)))
                 .into_any_element(),
         };
@@ -1159,14 +1160,14 @@ impl MailWindow {
                         d.child(
                             icon_button(("nav-new-label", ix), "add", 20.0, th)
                                 .size(px(32.0))
-                                .tooltip(tip(
+                                .tip(
                                     if gmail {
                                         tr!("nav-label-new")
                                     } else {
                                         tr!("nav-folder-new")
                                     },
                                     th,
-                                ))
+                                )
                                 .on_click(cx.listener(move |this, _, window, cx| {
                                     cx.stop_propagation();
                                     this.open_new_label(account, window, cx);
@@ -1358,15 +1359,21 @@ impl MailWindow {
             .when(self.nav_cursor_on(ix), |d| d.shadow(keys_ring(th)))
             // Not over its own right-click menu.
             .when(self.nav_menu.is_none(), |d| {
-                d.tooltip(tip(
+                d.tip(
                     if expanded {
                         tr!("nav-collapse")
                     } else {
                         tr!("nav-expand")
                     },
                     th,
-                ))
+                )
             })
+            // Screen readers hear the account's name, not the tooltip.
+            .role(gpui::Role::TreeItem)
+            .aria_label(name.clone())
+            .aria_expanded(expanded)
+            .aria_level(1)
+            .when(self.nav_cursor_on(ix), |d| d.aria_active_descendant())
             .on_click(cx.listener(move |this, _, _, cx| this.toggle_nav_row(ix, cx)))
             .on_mouse_down(
                 MouseButton::Right,
@@ -1484,6 +1491,7 @@ impl MailWindow {
         // line, as the list's stars do; an open line keeps its arrow, and
         // so do the keys' line and a phone, which has no pointer.
         let arrow_rests = !self.nav_cursor_on(ix) && !self.layout.shape.is_phone();
+        let chevron_open = chevron;
         let chevron = chevron.map(|expanded| {
             div()
                 .id(("nav-chevron", ix))
@@ -1509,8 +1517,19 @@ impl MailWindow {
         });
         // A full pill, inset from the pane's edge; the icon and
         // label stay where they were.
+        let spoken = if unread > 0 {
+            tr!("a11y-folder-unread", name = label.clone(), count = unread)
+        } else {
+            label.clone()
+        };
         let row = div()
             .id(("nav-row", ix))
+            .role(gpui::Role::TreeItem)
+            .aria_label(spoken)
+            .aria_selected(selected)
+            .aria_level(depth + 2)
+            .when_some(chevron_open, |d, open| d.aria_expanded(open))
+            .when(self.nav_cursor_on(ix), |d| d.aria_active_descendant())
             .group(NAV_PILL)
             .relative()
             .h(px(NAV_ROW_HEIGHT))
@@ -1621,7 +1640,7 @@ impl MailWindow {
                         .rounded_full()
                         .hover(|s| s.bg(rgba(th.hover)))
                         .child(icon("eye-off", th.text_dim, 18.0))
-                        .tooltip(tip(tr!("nav-unified-bring-back"), th))
+                        .tip(tr!("nav-unified-bring-back"), th)
                         .on_click(cx.listener(move |this, _, _, cx| {
                             cx.stop_propagation();
                             this.set_inbox_left_out(account, false, cx);
@@ -2138,6 +2157,8 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> gpui::Stateful<gpui::Div> {
         panel
+            .role(gpui::Role::Tree)
+            .aria_label(tr!("a11y-folders"))
             .key_context(super::NAV_CONTEXT)
             .track_focus(&self.nav_focus)
             .on_key_down(cx.listener(Self::nav_key))

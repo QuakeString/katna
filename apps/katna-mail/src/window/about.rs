@@ -9,6 +9,7 @@
 
 mod coffee;
 
+use crate::widgets::Tip as _;
 use std::sync::LazyLock;
 use std::time::{Duration, Instant};
 
@@ -26,7 +27,7 @@ use super::select::{ABOUT_SLOT, Pieces, selectable};
 use super::{MailWindow, PANEL_RADIUS, ShowAbout, ShowWhatsNew};
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    FocusRing, elevation, filled_button, icon, icon_button_with, outlined_button, ring_style, tip,
+    FocusRing, elevation, filled_button, icon, icon_button_with, outlined_button, ring_style,
 };
 use crate::{format, whats_new};
 
@@ -310,7 +311,7 @@ impl MailWindow {
             .cursor_pointer()
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", None, th))
-            .tooltip(tip(tr!("about-tooltip"), th))
+            .tip(tr!("about-tooltip"), th)
             .on_click(cx.listener(|this, _, window, cx| this.open_about(window, cx)))
             .group(VERSION_GROUP)
             .child(icon("info", th.text_dim, 18.0))
@@ -350,14 +351,14 @@ impl MailWindow {
             .group_hover(VERSION_GROUP, |s| s.opacity(1.0))
             .tab_index(0)
             .focus_visible(move |s| ring(s).opacity(1.0))
-            .tooltip(tip(
+            .tip(
                 if copied {
                     tr!("about-version-copied")
                 } else {
                     tr!("about-copy-version")
                 },
                 th,
-            ))
+            )
             // A click here is not one on the pill around it.
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(|this, _, _, cx| {
@@ -491,9 +492,7 @@ impl MailWindow {
                 .hover(move |s| s.bg(rgba(hover)))
                 .active(move |s| s.bg(rgba(hover)))
                 .on_click(move |_, _, cx| cx.open_url(url)),
-            None => button
-                .opacity(0.55)
-                .tooltip(tip(tr!("about-coming-soon"), th)),
+            None => button.opacity(0.55).tip(tr!("about-coming-soon"), th),
         };
         // One wide button across the content, like the box below it.
         let coffee = div()
@@ -801,7 +800,7 @@ impl MailWindow {
                         .cursor_pointer()
                         .relative()
                         .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
-                        .tooltip(tip(lib.repository.clone(), th))
+                        .tip(lib.repository.clone(), th)
                         .on_click(move |_, _, cx| cx.open_url(&url))
                         .child(
                             div()

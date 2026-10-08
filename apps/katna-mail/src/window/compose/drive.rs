@@ -9,6 +9,7 @@
 //! Send asks only when a recipient cannot be given access
 //! (`docs/ARCHITECTURE.md` §6.6).
 
+use crate::widgets::Tip as _;
 use std::path::PathBuf;
 
 use gpui::{AnyElement, Context, FontWeight, Window, div, prelude::*, relative, rgba};
@@ -24,7 +25,7 @@ use super::tools::Popup;
 use crate::daemon;
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon, tip};
+use crate::widgets::{filled_button, icon};
 
 /// A file on its way to, or in, Google Drive or OneDrive.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -709,7 +710,7 @@ impl MailWindow {
                     (tr!("compose-drive-allow"), tr!("compose-drive-allow-tip"))
                 };
                 action("drive-allow", label)
-                    .tooltip(tip(why, th))
+                    .tip(why, th)
                     .on_click(cx.listener(move |this, _, _, cx| this.allow_drive(ix, cx)))
                     .into_any_element()
             }
@@ -725,7 +726,7 @@ impl MailWindow {
                 };
                 let retry =
                     action("drive-retry", tr!("compose-drive-retry"))
-                        .tooltip(tip(why, th))
+                        .tip(why, th)
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.start_drive_upload(path.clone(), cx)
                         }));
@@ -738,7 +739,7 @@ impl MailWindow {
                             .flex_row()
                             .child(
                                 action("drive-turn-on", tr!("google-api-turn-on"))
-                                    .tooltip(tip(tr!("google-api-turn-on-tooltip", api = api), th))
+                                    .tip(tr!("google-api-turn-on-tooltip", api = api), th)
                                     .on_click(move |_, _, cx| cx.open_url(&url)),
                             )
                             .child(retry)
@@ -777,7 +778,7 @@ impl MailWindow {
                 };
                 // A click opens the file on the drive, to check it is the
                 // right one.
-                d.tooltip(tip(text, th))
+                d.tip(text, th)
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(th.chip_hover())))
                     .on_click(move |_, _, cx| cx.open_url(&link))
@@ -804,7 +805,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .relative()
                     .child(crate::widgets::hover_fade("hover-glow", None, th))
-                    .tooltip(tip(tr!("compose-remove-attachment"), th))
+                    .tip(tr!("compose-remove-attachment"), th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         cx.stop_propagation();
                         this.remove_drive_file(ix, cx)

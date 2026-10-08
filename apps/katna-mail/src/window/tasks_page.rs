@@ -10,6 +10,7 @@
 //! The page reads the store and sends changes to the daemon, which sends
 //! them on to Google Tasks or To Do; Undo and Ctrl+Z take them back.
 
+use crate::widgets::Tip as _;
 use std::collections::{HashMap, HashSet};
 
 use gpui::{
@@ -42,7 +43,7 @@ use crate::tasks::{Board, Column, TaskCommand, TaskEdit};
 use crate::theme::{Theme, fade};
 use crate::widgets::{
     CARD_REST, FIELD_HEIGHT, ScaledEdge, card, count_pill, elevation, field, icon, icon_button,
-    icon_button_colored, line_field, raised, row, tag, ticked_row, tip,
+    icon_button_colored, line_field, raised, row, tag, ticked_row,
 };
 use katna_ui::tokens::{elevation as level, radius, space, text};
 
@@ -845,7 +846,7 @@ impl MailWindow {
                 th,
             )
             .cursor_pointer()
-            .tooltip(tip(tr!("row-task-open", title = task.title.clone()), th))
+            .tip(tr!("row-task-open", title = task.title.clone()), th)
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(move |this, _, window, cx| {
                 cx.stop_propagation();
@@ -2431,7 +2432,7 @@ impl MailWindow {
                 .size(px(32.0))
                 // Not over its own menu.
                 .when(page.menu.is_none(), |d| {
-                    d.tooltip(tip(tr!("tasks-list-options"), th))
+                    d.tip(tr!("tasks-list-options"), th)
                 })
                 .on_mouse_down(
                     MouseButton::Left,
@@ -2744,7 +2745,7 @@ impl MailWindow {
                             katna_ui::Glow::new(("task-note-glow", id as usize), rgba(th.hover))
                                 .fade(),
                         )
-                        .tooltip(tip(tr!("tasks-open-note"), th))
+                        .tip(tr!("tasks-open-note"), th)
                         .on_click(cx.listener(move |this, _, window, cx| {
                             cx.stop_propagation();
                             this.open_task_note(note, window, cx)
@@ -2774,7 +2775,7 @@ impl MailWindow {
                             katna_ui::Glow::new(("task-mail-glow", id as usize), rgba(th.hover))
                                 .fade(),
                         )
-                        .tooltip(tip(tr!("tasks-open-mail"), th))
+                        .tip(tr!("tasks-open-mail"), th)
                         .on_click(cx.listener(move |this, _, window, cx| {
                             cx.stop_propagation();
                             this.open_task_mail(&header, window, cx)
@@ -2814,14 +2815,14 @@ impl MailWindow {
             th,
         )
         .size(px(32.0))
-        .tooltip(tip(
+        .tip(
             if starred {
                 tr!("tasks-unstar")
             } else {
                 tr!("tasks-star")
             },
             th,
-        ))
+        )
         .when(!starred && !look.star_shown, |d| {
             d.invisible().group_hover("task-row", |s| s.visible())
         })
@@ -2840,14 +2841,14 @@ impl MailWindow {
             .justify_center()
             .rounded_full()
             .cursor_pointer()
-            .tooltip(tip(
+            .tip(
                 if ticked {
                     tr!("tasks-mark-open")
                 } else {
                     tr!("tasks-mark-done")
                 },
                 th,
-            ))
+            )
             .child(tick_mark(ticked, true, TICK, ticking.map(|_| id), th))
             .on_click(cx.listener(move |this, _, _, cx| {
                 cx.stop_propagation();

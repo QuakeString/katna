@@ -4,6 +4,7 @@
 //! reports are saved on this computer and whether they are sent to help
 //! fix them, and the saved ones to view, copy or delete.
 
+use crate::widgets::Tip as _;
 use std::time::{Duration, Instant};
 
 use gpui::{AnyElement, ClipboardItem, Context, FontWeight, div, prelude::*, rgba};
@@ -15,7 +16,7 @@ use super::MailWindow;
 use super::settings::Change;
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{outlined_button, tip};
+use crate::widgets::outlined_button;
 
 /// The list is read from disk again when it is older than this, so a
 /// crash of the daemon shows up while the page is open.
@@ -199,13 +200,13 @@ impl MailWindow {
             )
             .child(
                 link("feedback-view")
-                    .tooltip(tip(tr!("feedback-view-tooltip"), th))
+                    .tip(tr!("feedback-view-tooltip"), th)
                     .on_click(cx.listener(move |_, _, _, cx| cx.open_with_system(&view.path)))
                     .child(tr!("feedback-view")),
             )
             .child(
                 link("feedback-copy")
-                    .tooltip(tip(tr!("feedback-copy-tooltip"), th))
+                    .tip(tr!("feedback-copy-tooltip"), th)
                     .on_click(cx.listener(move |this, _, _, cx| match copy.read() {
                         Ok(text) => {
                             cx.write_to_clipboard(ClipboardItem::new_string(text));

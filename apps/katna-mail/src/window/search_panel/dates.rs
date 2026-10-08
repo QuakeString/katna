@@ -5,6 +5,7 @@
 //! between two, typed or from a calendar. The dates become `after:`/
 //! `before:` at local midnight.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::rc::Rc;
 use std::time::Instant;
@@ -24,7 +25,7 @@ use katna_ui::unpx;
 use super::super::notched::{self, Side, notch};
 use super::MailWindow;
 use crate::theme::Theme;
-use crate::widgets::{choice_chip, filled_button, icon_button, tip};
+use crate::widgets::{choice_chip, filled_button, icon_button};
 
 /// What a custom date filter finds.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -550,7 +551,7 @@ impl MailWindow {
         };
         let turn = |id: &'static str, name: &'static str, months: i32, label: String| {
             icon_button(id, name, 18.0, th)
-                .tooltip(tip(label, th))
+                .tip(label, th)
                 .on_click(cx.listener(move |this, _, _, cx| this.turn_calendar(months, cx)))
         };
         // 4 × 40 px arrows + 90 + 44 = 294 px, the width of the days.

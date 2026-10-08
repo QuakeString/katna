@@ -8,6 +8,7 @@
 //! expanded by `katna_dav`. Google Calendar's keys work: T today, J or N
 //! next, K or P back, D W M A (or 1 2 3 4) for the views.
 
+use crate::widgets::Tip as _;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
@@ -47,7 +48,7 @@ mod tasks;
 mod year_peek;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    FocusRing, icon, icon_button, menu, menu_item, menu_item_icon, outlined_button, raised, tip,
+    FocusRing, icon, icon_button, menu, menu_item, menu_item_icon, outlined_button, raised,
 };
 
 gpui::actions!(
@@ -1181,7 +1182,7 @@ impl MailWindow {
             .child(
                 outlined_button("calendar-today", tr!("calendar-today"), th)
                     .focus_ring(th)
-                    .tooltip(tip(tr!("calendar-today-tip"), th))
+                    .tip(tr!("calendar-today-tip"), th)
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.calendar_today(&CalendarToday, window, cx)
                     })),
@@ -1193,7 +1194,7 @@ impl MailWindow {
                     .child(
                         icon_button("calendar-previous", "chevron-left", 22.0, th)
                             .focus_ring(th)
-                            .tooltip(tip(tr!(previous), th))
+                            .tip(tr!(previous), th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.calendar_previous(&CalendarPrevious, window, cx)
                             })),
@@ -1201,7 +1202,7 @@ impl MailWindow {
                     .child(
                         icon_button("calendar-next", "chevron-right", 22.0, th)
                             .focus_ring(th)
-                            .tooltip(tip(tr!(next), th))
+                            .tip(tr!(next), th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.calendar_next(&CalendarNext, window, cx)
                             })),
@@ -1275,9 +1276,7 @@ impl MailWindow {
                 self.with_menu(
                     icon_button("calendar-options", "tune", 22.0, th)
                         .focus_ring(th)
-                        .when(self.menu.is_none(), |d| {
-                            d.tooltip(tip(tr!("calendar-options"), th))
-                        })
+                        .when(self.menu.is_none(), |d| d.tip(tr!("calendar-options"), th))
                         .on_click(cx.listener(|this, _, _, cx| {
                             this.toggle_menu(Menu::CalendarOptions, cx)
                         })),
@@ -2945,21 +2944,21 @@ impl MailWindow {
                 .when(editable, |d| {
                     d.child(
                         icon_button("event-edit", "compose", 20.0, th)
-                            .tooltip(tip(tr!("calendar-edit"), th))
+                            .tip(tr!("calendar-edit"), th)
                             .on_click(
                                 cx.listener(|this, _, window, cx| this.edit_open_event(window, cx)),
                             ),
                     )
                     .child(
                         icon_button("event-delete", "trash", 20.0, th)
-                            .tooltip(tip(tr!("calendar-delete"), th))
+                            .tip(tr!("calendar-delete"), th)
                             .on_click(cx.listener(|this, _, _, cx| this.delete_open_event(cx))),
                     )
                 })
                 .when(emails, |d| {
                     d.child(
                         icon_button("event-email", "mail", 20.0, th)
-                            .tooltip(tip(tr!("calendar-email-guests"), th))
+                            .tip(tr!("calendar-email-guests"), th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.email_guests(false, window, cx)
                             })),
@@ -2968,7 +2967,7 @@ impl MailWindow {
                 .when(birthday_of.is_some(), |d| {
                     d.child(
                         icon_button("event-contact", "contacts", 20.0, th)
-                            .tooltip(tip(tr!("calendar-open-contact"), th))
+                            .tip(tr!("calendar-open-contact"), th)
                             .on_click(cx.listener(move |this, _, window, cx| {
                                 if let Some(card) = birthday_of {
                                     this.open_birthday_contact(card, window, cx);
@@ -2979,7 +2978,7 @@ impl MailWindow {
                 .when_some(gmail, |d, (link, occurrence)| {
                     d.child(
                         icon_button("event-mail", "inbox", 20.0, th)
-                            .tooltip(tip(tr!("calendar-open-mail"), th))
+                            .tip(tr!("calendar-open-mail"), th)
                             .on_click(cx.listener(move |this, _, window, cx| {
                                 this.open_event_mail(&occurrence, link.clone(), window, cx)
                             })),
@@ -2988,13 +2987,13 @@ impl MailWindow {
                 .when(!web.is_empty(), |d| {
                     d.child(
                         icon_button("event-web", "open-external", 20.0, th)
-                            .tooltip(tip(tr!("calendar-open-web"), th))
+                            .tip(tr!("calendar-open-web"), th)
                             .on_click(move |_, _, cx| cx.open_url(&web)),
                     )
                 })
                 .child(
                     icon_button("event-close", "close", 20.0, th)
-                        .tooltip(tip(tr!("calendar-close"), th))
+                        .tip(tr!("calendar-close"), th)
                         .on_click(cx.listener(|this, _, _, cx| {
                             this.calendar.open = None;
                             cx.notify();

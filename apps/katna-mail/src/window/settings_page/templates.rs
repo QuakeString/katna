@@ -5,6 +5,7 @@
 //! are saved in compose (Templates > Save as template) or with New here;
 //! the daemon writes them to `pim.db`.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, Context, Div, Entity, Focusable, Subscription, Window, div, prelude::*, rgba,
 };
@@ -20,7 +21,7 @@ use crate::daemon;
 use crate::data;
 use crate::theme::Theme;
 use crate::widgets::{field, line_field};
-use crate::widgets::{filled_button, icon, icon_button, outlined_button, tip};
+use crate::widgets::{filled_button, icon, icon_button, outlined_button};
 
 /// The template open in the editor.
 pub(super) struct TemplateEditor {
@@ -363,7 +364,7 @@ impl MailWindow {
                 .child(div().max_w(px(200.0)).truncate().child(f.name.clone()))
                 .child(
                     icon_button(("page-template-file-remove", ix), "close", 16.0, th)
-                        .tooltip(tip(tr!("settings-compose-template-remove-file"), th))
+                        .tip(tr!("settings-compose-template-remove-file"), th)
                         .on_click(
                             cx.listener(move |this, _, _, cx| this.remove_template_file(ix, cx)),
                         ),

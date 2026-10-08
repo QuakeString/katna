@@ -20,6 +20,7 @@
 //! when this build has the provider's client ID. Also the account menu of
 //! the app rail, which leads here.
 
+use crate::widgets::Tip as _;
 use std::collections::HashMap;
 use std::time::Duration;
 
@@ -42,7 +43,7 @@ use super::mail_providers::{MailProvider, PasswordHelp};
 use crate::daemon::{self, AddError};
 use crate::outgoing;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, ScaledEdge, filled_button, icon, icon_button, raised, tip};
+use crate::widgets::{FocusRing, ScaledEdge, filled_button, icon, icon_button, raised};
 
 /// The dialog's width with the provider tiles, and on the other steps.
 const WIDE: f32 = 640.0;
@@ -2169,7 +2170,7 @@ impl MailWindow {
             .gap(px(4.0))
             .child(
                 icon_button("account-settings", "settings", 22.0, th)
-                    .tooltip(tip(tr!("settings"), th))
+                    .tip(tr!("settings"), th)
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.account_menu = false;
                         this.open_settings_here(window, cx);
