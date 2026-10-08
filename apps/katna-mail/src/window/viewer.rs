@@ -1487,16 +1487,16 @@ fn round_button(
         .tooltip(tip(tooltip, th))
 }
 
-fn tooltip_for(id: &str) -> &'static str {
+fn tooltip_for(id: &str) -> String {
     match id {
-        "viewer-close" => "Close (Esc)",
-        "viewer-save" => "Save (Ctrl+S)",
-        "viewer-open" => "Open with another app",
-        "viewer-prev" => "Previous attachment",
-        "viewer-next" => "Next attachment",
-        "viewer-zoom-in" => "Zoom in (+)",
-        "viewer-zoom-out" => "Zoom out (-)",
-        _ => "",
+        "viewer-close" => tr!("viewer-close-tip"),
+        "viewer-save" => tr!("viewer-save-tip"),
+        "viewer-open" => tr!("viewer-open-tip"),
+        "viewer-prev" => tr!("viewer-prev-tip"),
+        "viewer-next" => tr!("viewer-next-tip"),
+        "viewer-zoom-in" => tr!("viewer-zoom-in-tip"),
+        "viewer-zoom-out" => tr!("viewer-zoom-out-tip"),
+        _ => String::new(),
     }
 }
 
@@ -1672,8 +1672,7 @@ impl Render for Viewer {
                                                     );
                                                     row.child(holder.child(styled))
                                                 }
-                                                None => row
-                                                    .child("… (the rest of the file is not shown)"),
+                                                None => row.child(tr!("viewer-text-cut")),
                                             }
                                         })
                                         .collect()
@@ -1881,11 +1880,11 @@ impl Render for Viewer {
                                         .text_size(px(12.0))
                                         .text_color(rgba(INK_DIM))
                                         .child(if many {
-                                            format!(
-                                                "{} · {} of {}",
-                                                format::size(item.size),
-                                                place + 1,
-                                                count
+                                            tr!(
+                                                "viewer-size-place",
+                                                size = format::size(item.size),
+                                                place = place + 1,
+                                                count = count
                                             )
                                         } else {
                                             format::size(item.size)
@@ -2219,9 +2218,12 @@ impl Viewer {
                     .flex()
                     .justify_center()
                     .cursor_pointer()
-                    .tooltip(tip("Fit to window (0)", &th))
+                    .tooltip(tip(tr!("viewer-fit-window-tip"), &th))
                     .on_click(cx.listener(|this, _, _, cx| this.set_zoom(fit_step(), cx)))
-                    .child(format!("{:.0}%", zoom * 100.0)),
+                    .child(tr!(
+                        "viewer-zoom-level",
+                        percent = format::thousands((zoom * 100.0).round() as u64)
+                    )),
             )
             .when(!folded.zoom, |d| {
                 d.child(

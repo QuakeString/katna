@@ -2,6 +2,9 @@
 # "Send with Katna Mail" in Dolphin's right-click menu on files and folders.
 # With several mail accounts, katna-daemon writes the user's own copy of this
 # file (~/.local/share/kio/servicemenus) with a submenu of the accounts.
+# Names and comments: i18n/en/desktop.ftl (desktop-send-files-*); other languages are
+# added when packaging (packaging/linux/localize-desktop.sh).
+# i18n: desktop-send-files
 [Desktop Entry]
 Type=Service
 MimeType=all/all;

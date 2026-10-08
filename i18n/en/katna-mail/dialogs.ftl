@@ -9,6 +9,9 @@
 about-tooltip = About Katna
 # Under the app's name.
 about-tagline = Mail and calendar for the Linux desktop
+# The version chip under it, and beside the About button in Settings.
+# $version: such as "0.9.2". Katna Mail is the app's name; keep it as is.
+about-version = Katna Mail { $version }
 # The small button beside the version (About, What’s new, Settings): it
 # copies the version, build date and system for a bug report.
 about-copy-version = Copy version details

@@ -286,7 +286,7 @@ impl MailWindow {
                     .into_iter()
                     .enumerate()
                     .map(|(ix, font)| {
-                        menu_item(("sig-font-item", ix), font.label(), th)
+                        menu_item(("sig-font-item", ix), &font.label(), th)
                             .on_click(self.on_signature(cx, move |e, cx| e.set_font(font, cx)))
                     })
                     .collect::<Vec<_>>();
@@ -308,7 +308,7 @@ impl MailWindow {
                     .into_iter()
                     .enumerate()
                     .map(|(ix, size)| {
-                        menu_item(("sig-size-item", ix), size.label(), th)
+                        menu_item(("sig-size-item", ix), &size.label(), th)
                             .text_size(px(14.0 * size.scale()))
                             .on_click(self.on_signature(cx, move |e, cx| e.set_size(size, cx)))
                     })

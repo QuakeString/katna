@@ -114,11 +114,20 @@ package() {
   # of this file (crates/katna-core/tests/packaging.rs checks them).
   install -Dm644 -t "$pkgdir/usr/lib/systemd/user" packaging/systemd/*.service
   install -Dm644 -t "$pkgdir/usr/share/dbus-1/services" packaging/dbus/*.service
-  install -Dm644 -t "$pkgdir/usr/share/applications" packaging/desktop/*.desktop
-  install -Dm644 -t "$pkgdir/usr/share/krunner/dbusplugins" packaging/krunner/*.desktop
+  # .desktop files get their names in every language on the way.
+  local file dir
+  for file in packaging/desktop/*.desktop packaging/krunner/*.desktop packaging/kio/*.desktop; do
+    case $file in
+      packaging/desktop/*) dir=applications ;;
+      packaging/krunner/*) dir=krunner/dbusplugins ;;
+      packaging/kio/*) dir=kio/servicemenus ;;
+    esac
+    install -dm755 "$pkgdir/usr/share/$dir"
+    sh packaging/linux/localize-desktop.sh "$file" "$pkgdir/usr/share/$dir/${file##*/}"
+    chmod 644 "$pkgdir/usr/share/$dir/${file##*/}"
+  done
   install -Dm644 -t "$pkgdir/usr/share/gnome-shell/search-providers" packaging/gnome-shell/*.ini
-  # "Send with Katna Mail" on files and folders in Dolphin and GNOME Files.
-  install -Dm644 -t "$pkgdir/usr/share/kio/servicemenus" packaging/kio/*.desktop
+  # "Send with Katna Mail" on files and folders in Dolphin (above) and GNOME Files.
   install -Dm644 -t "$pkgdir/usr/share/nautilus-python/extensions" packaging/nautilus/*.py
   install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps" packaging/icons/*.svg
   for dir in packaging/icons/hicolor/*/apps; do

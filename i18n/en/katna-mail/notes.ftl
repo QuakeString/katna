@@ -119,6 +119,9 @@ notes-link-new = New note "{ $title }"
 # At the foot of a note: the notes that link to it.
 notes-linked-from = Linked from
 notes-link-gone = That note is no longer here
+# A note at the bottom when a note made from the [[ suggestions vanished
+# before it could be linked.
+notes-new-note-gone = The new note is gone.
 
 ## Version history
 

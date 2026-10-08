@@ -11,6 +11,7 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use katna_core::{Account, AccountId, MailCategory, Paths};
+use katna_i18n::tr;
 use katna_search::{Query, SearchIndex, SearchOptions, SearchResults};
 pub use katna_store::Marks;
 use katna_store::{
@@ -233,6 +234,12 @@ fn row_files(
     files
 }
 
+/// What starts the line of a message in a sent or drafts folder, before
+/// its recipients: "To: ". [`Row::correspondent`] starts with it there.
+pub fn to_prefix() -> String {
+    format!("{} ", tr!("row-to"))
+}
+
 impl Row {
     pub fn new(message: &StoredMessage, show_recipients: bool) -> Self {
         let name = |p: &katna_store::StoredParticipant| {
@@ -251,9 +258,9 @@ impl Row {
                 .map(|p| (name(p), Some(p.email_norm.clone())))
                 .collect();
             if to.is_empty() {
-                vec![("(no recipients)".to_owned(), None)]
+                vec![(tr!("row-no-recipients"), None)]
             } else {
-                std::iter::once(("To: ".to_owned(), None))
+                std::iter::once((to_prefix(), None))
                     .chain(between(to, ", "))
                     .collect()
             }
@@ -263,7 +270,7 @@ impl Row {
                 .or_else(|| message.first(ParticipantRole::Sender))
             {
                 Some(p) => (name(p), Some(p.email_norm.clone())),
-                None => ("(unknown sender)".to_owned(), None),
+                None => (tr!("row-unknown-sender"), None),
             }]
         };
         let correspondent = joined(&people);
@@ -282,7 +289,7 @@ impl Row {
             people,
             sender,
             subject: if subject.is_empty() {
-                "(no subject)".to_owned()
+                tr!("row-no-subject")
             } else {
                 subject.to_owned()
             },
@@ -1698,11 +1705,11 @@ impl Mail {
 fn open_index(dir: &std::path::Path) -> (Option<Arc<SearchIndex>>, Option<String>) {
     match SearchIndex::open_read_only(dir) {
         Ok(index) => (Some(Arc::new(index)), None),
-        Err(katna_search::Error::NotFound(_)) => (
+        Err(katna_search::Error::NotFound(_)) => (None, Some(tr!("list-search-no-index"))),
+        Err(err) => (
             None,
-            Some("Search is not ready: the index has not been built yet.".to_owned()),
+            Some(tr!("list-search-not-ready", error = err.to_string())),
         ),
-        Err(err) => (None, Some(format!("Search is not ready: {err}"))),
     }
 }
 
@@ -1813,7 +1820,7 @@ pub fn insights(
     };
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.mailbox_insights(account, me, since, until, local))
-        .map_err(|err| format!("Counting mail failed: {err}"))
+        .map_err(|err| tr!("store-count-mail-failed", error = err.to_string()))
 }
 
 /// The people in the mail, most written with first. Opens its own
@@ -1821,7 +1828,7 @@ pub fn insights(
 pub fn people(paths: &Paths) -> Result<Vec<katna_store::Person>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.people(PEOPLE_LIMIT))
-        .map_err(|err| format!("Reading people from the mail failed: {err}"))
+        .map_err(|err| tr!("store-people-failed", error = err.to_string()))
 }
 
 /// The files of the Files page, newest first; see
@@ -1856,14 +1863,14 @@ pub fn raw_messages(paths: &Paths, ids: &[MessageId]) -> HashMap<MessageId, Vec<
 pub fn notes(paths: &Paths) -> Result<Vec<katna_store::Note>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.notes())
-        .map_err(|err| format!("Reading notes failed: {err}"))
+        .map_err(|err| tr!("store-notes-failed", error = err.to_string()))
 }
 
 /// Note `id`'s pictures. Opens its own connection.
 pub fn note_pictures(paths: &Paths, id: i64) -> Result<Vec<katna_store::NotePicture>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.note_pictures(id))
-        .map_err(|err| format!("Reading a note's pictures failed: {err}"))
+        .map_err(|err| tr!("store-note-pictures-failed", error = err.to_string()))
 }
 
 /// The first picture of each note that has one, for the cards. Opens its
@@ -1873,14 +1880,14 @@ pub fn note_covers(
 ) -> Result<std::collections::HashMap<i64, katna_store::NotePicture>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.note_covers())
-        .map_err(|err| format!("Reading notes' pictures failed: {err}"))
+        .map_err(|err| tr!("store-note-covers-failed", error = err.to_string()))
 }
 
 /// Note `id`'s earlier versions, newest first. Opens its own connection.
 pub fn note_versions(paths: &Paths, id: i64) -> Result<Vec<katna_store::NoteVersion>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.note_versions(id))
-        .map_err(|err| format!("Reading a note's history failed: {err}"))
+        .map_err(|err| tr!("store-note-history-failed", error = err.to_string()))
 }
 
 /// The saved contacts with their labels and address books, for the
@@ -1896,7 +1903,7 @@ pub fn saved_contacts(paths: &Paths) -> Result<SavedBook, String> {
                 others_blocked: store.other_contacts_blocked()?,
             })
         })
-        .map_err(|err| format!("Reading contacts failed: {err}"))
+        .map_err(|err| tr!("store-contacts-failed", error = err.to_string()))
 }
 
 impl SavedBook {
@@ -1929,21 +1936,21 @@ pub struct SavedBook {
 pub fn people_with_photos(paths: &Paths) -> Result<std::collections::HashSet<i64>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.contacts_with_photos())
-        .map_err(|err| format!("Reading contact pictures failed: {err}"))
+        .map_err(|err| tr!("store-contact-pictures-failed", error = err.to_string()))
 }
 
 /// The saved cards `ids` of one person.
 pub fn saved_cards(paths: &Paths, ids: &[i64]) -> Result<Vec<katna_store::StoredCard>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.saved_cards(ids))
-        .map_err(|err| format!("Reading a contact failed: {err}"))
+        .map_err(|err| tr!("store-contact-failed", error = err.to_string()))
 }
 
 /// The picture of the first of `ids` that has one.
 pub fn contact_photo(paths: &Paths, ids: &[i64]) -> Result<Option<Vec<u8>>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.contact_photo(ids))
-        .map_err(|err| format!("Reading a contact picture failed: {err}"))
+        .map_err(|err| tr!("store-contact-picture-failed", error = err.to_string()))
 }
 
 /// The mail templates, by name. Opens its own connection, for a
@@ -1951,21 +1958,21 @@ pub fn contact_photo(paths: &Paths, ids: &[i64]) -> Result<Option<Vec<u8>>, Stri
 pub fn templates(paths: &Paths) -> Result<Vec<katna_store::TemplateSummary>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.templates())
-        .map_err(|err| format!("Reading templates failed: {err}"))
+        .map_err(|err| tr!("store-templates-failed", error = err.to_string()))
 }
 
 /// Template `id` with its body and attachments.
 pub fn template(paths: &Paths, id: i64) -> Result<Option<katna_store::Template>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.template(id))
-        .map_err(|err| format!("Reading a template failed: {err}"))
+        .map_err(|err| tr!("store-template-failed", error = err.to_string()))
 }
 
 /// The mail rules, in the order they run (Settings > Folders & rules).
 pub fn rules(paths: &Paths) -> Result<Vec<katna_store::rules::Rule>, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.rules())
-        .map_err(|err| format!("Reading the mail rules failed: {err}"))
+        .map_err(|err| tr!("store-rules-failed", error = err.to_string()))
 }
 
 /// How many messages in the inboxes of `rule`'s accounts from the last
@@ -1985,7 +1992,7 @@ pub fn rule_preview(
             let raw = blobs.get(hash).ok()??;
             Some(katna_search::document::message_text(&raw).body)
         })
-        .map_err(|err| format!("Counting the rule's mail failed: {err}"))
+        .map_err(|err| tr!("store-rule-count-failed", error = err.to_string()))
 }
 
 /// The address book for recipient suggestions, read from the store (a
@@ -2007,7 +2014,7 @@ pub fn address_book(
             };
             Ok(katna_search::contacts::ContactBook::with_saved(rows, saved))
         })
-        .map_err(|err| format!("Reading addresses from the mail failed: {err}"))
+        .map_err(|err| tr!("store-addresses-failed", error = err.to_string()))
 }
 
 /// Where the pixel sizes of attached pictures are kept, so the Files page

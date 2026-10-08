@@ -201,7 +201,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         let Some(connection) = self.daemon.clone() else {
-            self.show_snackbar(daemon::NOT_RUNNING.to_owned(), None, cx);
+            self.show_snackbar(daemon::not_running(), None, cx);
             return;
         };
         let onedrive = drive_provider(self, account) == Some(OAuthProvider::Microsoft);
@@ -254,7 +254,7 @@ impl MailWindow {
     /// failure or a sign-in.
     fn start_drive_upload(&mut self, path: PathBuf, cx: &mut Context<Self>) {
         let Some(connection) = self.daemon.clone() else {
-            self.set_drive_state(&path, DriveState::Failed(daemon::NOT_RUNNING.into()), cx);
+            self.set_drive_state(&path, DriveState::Failed(daemon::not_running()), cx);
             return;
         };
         let Some(file) = self

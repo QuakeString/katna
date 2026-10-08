@@ -1598,7 +1598,7 @@ impl MailWindow {
             )
             .when(open(Popup::Font), |d| {
                 let items = Font::ALL.into_iter().enumerate().map(|(ix, font)| {
-                    menu_item(("font", ix), font.label(), th)
+                    menu_item(("font", ix), &font.label(), th)
                         .when(font == current, |d| {
                             d.child(div().flex_1())
                                 .child(icon("check", th.text_dim, 18.0))

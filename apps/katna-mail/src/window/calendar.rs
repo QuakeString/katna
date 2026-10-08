@@ -3345,7 +3345,11 @@ pub(super) fn schedule_day(day: Date, is_today: bool, year: bool, th: &Theme) ->
     } else {
         format::month_name(day.month())
     };
-    let label = format!("{}, {month}", format::weekday(date));
+    let label = tr!(
+        "calendar-schedule-day",
+        weekday = format::weekday(date),
+        month = month
+    );
     div()
         .flex()
         .flex_row()

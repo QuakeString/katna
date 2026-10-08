@@ -23,6 +23,7 @@ use gpui::{
     MouseDownEvent, MouseMoveEvent, MouseUpEvent, ObjectFit, Pixels, Point, Position, SharedString,
     Style, UTF16Selection, Window, actions, div, img, point, prelude::*, relative, size,
 };
+use katna_i18n::tr;
 
 use super::doc::{
     self, Align, Block, CharStyle, Doc, Font, Image, ImageSize, List, MAX_INDENT, Para, ParaStyle,
@@ -2717,7 +2718,7 @@ impl RichEditor {
                 .into_any_element(),
             None => div().w(px(width)).h(px(height)).into_any_element(),
         };
-        let button = |id: &'static str, label: &'static str, on: bool| {
+        let button = |id: &'static str, label: String, on: bool| {
             div()
                 .id(id)
                 .px(px(8.0))
@@ -2764,19 +2765,23 @@ impl RichEditor {
                         .bg(palette.surface)
                         .shadow_md()
                         .child(
-                            button("rich-image-small", "Small", image.size == ImageSize::Small)
-                                .on_mouse_down(
-                                    MouseButton::Left,
-                                    cx.listener(|this, _, _, cx| {
-                                        cx.stop_propagation();
-                                        this.set_image_size(ImageSize::Small, cx)
-                                    }),
-                                ),
+                            button(
+                                "rich-image-small",
+                                tr!("rich-image-small"),
+                                image.size == ImageSize::Small,
+                            )
+                            .on_mouse_down(
+                                MouseButton::Left,
+                                cx.listener(|this, _, _, cx| {
+                                    cx.stop_propagation();
+                                    this.set_image_size(ImageSize::Small, cx)
+                                }),
+                            ),
                         )
                         .child(
                             button(
                                 "rich-image-fit",
-                                "Best fit",
+                                tr!("rich-image-fit"),
                                 image.size == ImageSize::BestFit,
                             )
                             .on_mouse_down(
@@ -2790,7 +2795,7 @@ impl RichEditor {
                         .child(
                             button(
                                 "rich-image-original",
-                                "Original size",
+                                tr!("rich-image-original"),
                                 image.size == ImageSize::Original,
                             )
                             .on_mouse_down(
@@ -2801,13 +2806,16 @@ impl RichEditor {
                                 }),
                             ),
                         )
-                        .child(button("rich-image-remove", "Remove", false).on_mouse_down(
-                            MouseButton::Left,
-                            cx.listener(|this, _, _, cx| {
-                                cx.stop_propagation();
-                                this.remove_selected_image(cx)
-                            }),
-                        )),
+                        .child(
+                            button("rich-image-remove", tr!("rich-image-remove"), false)
+                                .on_mouse_down(
+                                    MouseButton::Left,
+                                    cx.listener(|this, _, _, cx| {
+                                        cx.stop_propagation();
+                                        this.remove_selected_image(cx)
+                                    }),
+                                ),
+                        ),
                 )
             })
             .into_any_element()

@@ -23,6 +23,8 @@ i18n/
   en/katna-daemon/        the background service: notifications, the
                           tray icon
   en/katna-setup/         Katna Setup, the Windows installer
+  en/desktop.ftl          names in the app menu, launcher and file manager
+                          (the .desktop files in packaging/)
   bn/katna-mail/          Bengali, the same files
   bn/katna-mail/whats-new.toml
                           Katna Mail's What's new highlights in Bengali
@@ -54,6 +56,13 @@ ago-hours = { $count ->
   your language's digits.
 - A message missing from your file shows in English, so a partial file is
   fine.
+
+The app menu's names (Katna Mail's description, its right-click
+actions such as "New Message", "Send with Katna Mail" in Dolphin) are in
+`<folder>/desktop.ftl`. Each message is one line with no `{ $variable }`;
+`desktop-mail-keywords` is a list of search words, each ending with `;`.
+They are written into the `.desktop` files when Katna is packaged, so
+they show after the next update.
 
 What's new, shown after an update, is written in English in
 `apps/katna-mail/whats-new/highlights/`, one file per highlight. Each
@@ -109,6 +118,12 @@ to the messages it belongs with rather than at the end of the file, so
 changes made side by side rarely touch the same lines. A new area gets a
 new file (`compose.ftl`); the build picks up every `.ftl` file in the
 folder. A message's id must be unique across the binary's files. The other languages are drafted in a follow-up; until then they
-show the English text. `cargo test -p katna-i18n` checks that every id in
+show the English text. A `.desktop` file's `Name=`, `GenericName=`, `Comment=` and
+`Keywords=` (and each `[Desktop Action]`'s `Name=`) are messages in
+`i18n/en/desktop.ftl`, named by the file's `# i18n: <prefix>` line:
+`<prefix>-name`, `<prefix>-generic-name`, `<prefix>-comment`,
+`<prefix>-keywords`, `<prefix>-action-<action>`. Change both together;
+`packaging/linux/localize-desktop.sh` adds the other languages' lines
+when packaging, so never write `Name[de]=` by hand. `cargo test -p katna-i18n` checks that every id in
 the code has an English message and that each translation's variables
 match English.
