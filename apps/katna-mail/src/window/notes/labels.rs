@@ -5,6 +5,7 @@
 //! dialog that renames and deletes them. A label lives only on its
 //! notes, so one with no notes left is gone.
 
+use crate::widgets::Tip as _;
 use std::rc::Rc;
 
 use gpui::{
@@ -18,7 +19,7 @@ use katna_ui::{InputEvent, TextInput, px};
 use super::{MailWindow, NotesView};
 use crate::daemon::Command;
 use crate::theme::{Theme, fade};
-use crate::widgets::{Check, filled_button, icon, icon_button, tip};
+use crate::widgets::{Check, filled_button, icon, icon_button};
 
 /// The longest label, in characters (the daemon's limit too).
 const MAX_LABEL: usize = 50;
@@ -382,7 +383,7 @@ impl MailWindow {
                                 .opacity(0.0)
                                 .group_hover(group, |s| s.opacity(1.0))
                                 .cursor_pointer()
-                                .tooltip(tip(tr!("notes-label-remove"), th))
+                                .tip(tr!("notes-label-remove"), th)
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     this.toggle_note_label(off.clone(), cx)
                                 }))
@@ -568,7 +569,7 @@ impl MailWindow {
                 )
                 .child(
                     icon_button(("notes-label-delete", ix), "trash", 18.0, th)
-                        .tooltip(tip(tr!("notes-label-delete"), th))
+                        .tip(tr!("notes-label-delete"), th)
                         .on_click(
                             cx.listener(move |this, _, _, cx| this.delete_label(gone.clone(), cx)),
                         ),

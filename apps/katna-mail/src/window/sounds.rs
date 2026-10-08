@@ -7,6 +7,7 @@
 //! sounds Katna Mail plays itself (mail sent, mail not sent). The daemon
 //! plays the others with its notifications.
 
+use crate::widgets::Tip as _;
 use std::path::{Path, PathBuf};
 
 use gpui::{
@@ -21,7 +22,7 @@ use super::MailWindow;
 use super::context_menu::{Rows, menu_row, menu_row_with};
 use super::settings::Change;
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button, tip};
+use crate::widgets::{icon, icon_button};
 
 /// The kinds of file a sound of the user's own can be.
 const FILE_KINDS: [&str; 6] = ["wav", "ogg", "oga", "opus", "flac", "mp3"];
@@ -207,7 +208,7 @@ impl MailWindow {
                 let play = icon_button(("sound-set-play", ix), "play", 16.0, th)
                     .size(px(30.0))
                     .flex_none()
-                    .tooltip(tip(tr!("sounds-play"), th))
+                    .tip(tr!("sounds-play"), th)
                     .on_click(cx.listener(move |_, _, _, cx| {
                         cx.stop_propagation();
                         sound::play(first);
@@ -323,7 +324,7 @@ impl MailWindow {
             .child(icon("chevron-down", th.text_dim, 16.0));
         let play = icon_button(("sound-play", ix), "play", 16.0, th)
             .size(px(32.0))
-            .tooltip(tip(tr!("sounds-play"), th))
+            .tip(tr!("sounds-play"), th)
             .on_click(cx.listener(move |_, _, _, cx| {
                 cx.stop_propagation();
                 sound::play(&current);

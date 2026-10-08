@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Quick capture keys on GNOME"
+text = """
+Meta+Alt+T for a task and Meta+Alt+N for a note now work on GNOME too.
+The first time, GNOME asks whether Katna may have them, and you can change
+the keys in its Settings.
+"""

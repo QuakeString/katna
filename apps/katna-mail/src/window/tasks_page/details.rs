@@ -5,6 +5,7 @@
 //! when it reminds, its labels and its files.
 //! Save sends only what changed; Ctrl+Z puts the task back as it was.
 
+use crate::widgets::Tip as _;
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, FocusHandle, Focusable, FontWeight,
     Pixels, Size, Subscription, Window, deferred, div, ease_out_quint, point, prelude::*, rgba,
@@ -24,7 +25,7 @@ use crate::tasks::{TaskCommand, TaskEdit};
 use crate::theme::Theme;
 use crate::widgets::{
     ButtonStyle, FIELD_HEIGHT, FocusRing, button, choice_chip, dialog, field, filled_button, icon,
-    icon_button, tip,
+    icon_button,
 };
 
 /// The widest the dialog gets.
@@ -631,7 +632,7 @@ impl MailWindow {
                 d.pr(px(space::S2)).child(
                     icon_button("task-details-no-day", "close", 18.0, th)
                         .size(px(28.0))
-                        .tooltip(tip(tr!("tasks-no-date"), th))
+                        .tip(tr!("tasks-no-date"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.task_details_pick(None, cx))),
                 )
             });
@@ -733,12 +734,12 @@ impl MailWindow {
             .on_click(cx.listener(|this, _, window, cx| this.task_save_details(window, cx)));
         let delete = icon_button("task-details-delete", "trash", 20.0, th)
             .size(px(36.0))
-            .tooltip(tip(tr!("tasks-delete"), th))
+            .tip(tr!("tasks-delete"), th)
             .on_click(cx.listener(|this, _, window, cx| this.task_details_delete(window, cx)));
         // A task made from a mail opens it, as its line on the board does.
         let attach = icon_button("task-details-attach", "attachment", 20.0, th)
             .size(px(36.0))
-            .tooltip(tip(tr!("tasks-files-attach"), th))
+            .tip(tr!("tasks-files-attach"), th)
             .on_click(cx.listener(|this, _, _, cx| {
                 if let Some(id) = this.tasks.details.as_ref().map(|d| d.id) {
                     this.task_pick_files(id, cx);
@@ -756,7 +757,7 @@ impl MailWindow {
             .map(|header| {
                 icon_button("task-details-mail", "mail", 20.0, th)
                     .size(px(36.0))
-                    .tooltip(tip(tr!("tasks-open-mail"), th))
+                    .tip(tr!("tasks-open-mail"), th)
                     .on_click(cx.listener(move |this, _, window, cx| {
                         this.task_close_details(window, cx);
                         this.open_task_mail(&header, window, cx);
