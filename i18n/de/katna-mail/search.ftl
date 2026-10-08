@@ -14,6 +14,7 @@ search-without = Enthält nicht
 search-date-within = Zeitraum
 search-has-attachment = Mit Anhang
 search-attachment-custom = Benutzerdefiniert
+search-attachment-image = Bild
 search-attachment-custom-hint = Endung eingeben, etwa png, dann Leertaste
 search-attachment-remove = Entfernen
 search-clear-filter = Filter löschen

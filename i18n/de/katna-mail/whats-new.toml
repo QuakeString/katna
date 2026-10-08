@@ -4560,3 +4560,72 @@ oben in den Posteingang. Klicken Sie darauf, um nachzufassen, oder auf
 das x, um es wegzulegen. Unter Einstellungen > Posteingang lässt sich das
 ausschalten.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Einstellungen hat ein eigenes Menü"
+text = """
+Die Liste der Seiten links in den Einstellungen hat von oben nach unten
+einen zarten Farbton, sodass sie sich von der Seite abhebt, die Sie
+gerade lesen.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Senden planen wählt das Datum direkt im Menü"
+text = """
+Datum und Uhrzeit wählen in Senden planen und Nachfassen, wenn keine
+Antwort kommt gleitet jetzt wie bei Zurückstellen in das Menü, aus dem
+Sie es geöffnet haben, statt in einem Feld über der E-Mail zu erscheinen.
+Der Zurück-Pfeil oder Esc führt wieder zu den Zeiten.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Symbol im Systemabschnitt passt ab der Anmeldung zur Leiste"
+text = """
+Unter KDE Plasma übernimmt das einfarbige Symbol im Systemabschnitt die
+Farbe Ihrer Leiste jetzt direkt nach der Anmeldung und folgt jedem
+Wechsel zwischen hell und dunkel, ohne dass Katna neu gestartet werden
+muss.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Nach Zeichnungen und Bildern suchen"
+text = """
+Suchoptionen hat zwei neue Anhangtypen: DWG für AutoCAD-Zeichnungen (und
+DXF) und Bild für Fotos und Grafiken. XLSX findet jetzt auch alte
+XLS-Dateien und PPTX auch PPT, sodass es für jedes nur einen Knopf gibt.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menüs zeigen nur, was zutrifft"
+text = """
+Das Menü Mehr listet nicht mehr beide Hälften eines Paares. Eine gelesene
+E-Mail zeigt Als ungelesen markieren, eine markierte Markierung entfernen,
+eine wichtige Als nicht wichtig markieren, eine angeheftete Nicht mehr
+anheften. Sind mehrere unterschiedliche E-Mails ausgewählt, erhalten Sie
+die Aktion, die sie alle gleich macht, hier und im Rechtsklickmenü.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Einstellungen liegt auf einer Karte"
+text = """
+In hellen Farben hat die Seite Einstellungen jetzt denselben feinen Rand
+und weichen Schatten wie die E-Mail-Liste, sodass sie sich vom Fenster
+dahinter abhebt.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Ruhigere App-Knöpfe"
+text = """
+Ein Klick auf eine App in der App-Leiste links oder, auf einem Telefon, in
+der Leiste unten wackelt nicht mehr: Die Klickwelle läuft vollständig ab,
+und die Auswahlpille wächst aus der Mitte, während der Knopf seine Größe
+behält.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menüs gleiten in der Kontokarte"
+text = """
+Das ☰-Menü und die Sprachliste gleiten jetzt innerhalb der Kontokarte
+herein, statt aufzuspringen, mit einem Zurück-Knopf rechts, um
+zurückzukehren.
+"""

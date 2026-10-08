@@ -4419,3 +4419,69 @@ antwoord kwam, komt terug bovenaan de Inbox met „3 dagen geleden
 verstuurd. Opvolgen?”. Klik erop om op te volgen, of op de x om hem weg
 te leggen. In Instellingen > Inbox zet je het uit.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Instellingen heeft een eigen menu"
+text = """
+De lijst met pagina's links in Instellingen heeft een vage tint van boven
+naar beneden, zodat hij loskomt van de pagina die je leest.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Verzending plannen kiest een datum ter plekke"
+text = """
+Datum en tijd kiezen in Verzending plannen en Opvolgen als er geen
+antwoord komt schuift nu in het menu waaruit je het opende, net als bij
+Snoozen, in plaats van een vak boven de e-mail. De pijl terug of Esc
+brengt je terug naar de tijden.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Systeemvakpictogram past vanaf het inloggen bij je paneel"
+text = """
+Op KDE Plasma neemt het eenkleurige systeemvakpictogram nu meteen na het
+inloggen de kleur van je paneel aan en volgt het elke wissel tussen licht
+en donker, zonder Katna opnieuw te starten.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Zoek naar tekeningen en afbeeldingen"
+text = """
+Zoekopties heeft twee nieuwe bijlagetypen: DWG voor AutoCAD-tekeningen (en
+DXF), en Afbeelding voor foto's en plaatjes. XLSX vindt nu ook oude
+XLS-bestanden en PPTX vindt PPT, zodat elk één knop heeft.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menu's tonen alleen wat van toepassing is"
+text = """
+Het menu Meer toont niet langer beide helften van een paar. Een gelezen
+e-mail toont Markeren als ongelezen, een e-mail met ster Ster verwijderen,
+een belangrijke Markeren als niet belangrijk, een vastgezette Losmaken.
+Als je meerdere e-mails selecteert die verschillen, krijg je de actie die
+ze allemaal gelijk maakt, hier en in het rechtermuisknopmenu.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Instellingen staat op een kaart"
+text = """
+In lichte kleuren heeft de pagina Instellingen nu dezelfde dunne rand en
+zachte schaduw als de e-maillijst, zodat hij loskomt van het venster
+erachter.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Soepelere appknoppen"
+text = """
+Klikken op een app in de appbalk links, of in de balk onderaan op een
+telefoon, schudt niet meer: de drukgolf speelt uit en de geselecteerde
+pil groeit vanuit het midden terwijl de knop zijn grootte houdt.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menu's schuiven in de accountkaart"
+text = """
+Het ☰-menu en de taallijst schuiven nu binnen de accountkaart in in
+plaats van ineens te verschijnen, met rechts een knop terug om terug te
+gaan.
+"""

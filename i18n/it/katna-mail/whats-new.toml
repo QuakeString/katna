@@ -4446,3 +4446,69 @@ ricevuto risposta torna in cima alla Posta in arrivo con «Inviata 3 giorni
 fa. Vuoi sollecitare?». Fai clic per sollecitare, o sulla x per metterla via.
 Si disattiva in Impostazioni > Posta in arrivo.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Impostazioni ha un menu tutto suo"
+text = """
+L'elenco delle pagine a sinistra in Impostazioni ha una tinta tenue
+dall'alto verso il basso, così si stacca dalla pagina che stai leggendo.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Programma invio sceglie una data sul posto"
+text = """
+Scegli data e ora in Programma invio e in Sollecita se nessuno risponde ora
+scorre dentro il menu da cui l'hai aperto, come in Posticipa, invece di
+una casella sopra il messaggio. La freccia indietro o Esc torna agli orari.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "L'icona nell'area di notifica segue il pannello dall'accesso"
+text = """
+Su KDE Plasma, l'icona monocromatica nell'area di notifica prende ora il
+colore del tuo pannello subito dopo l'accesso e segue ogni passaggio tra
+chiaro e scuro, senza riavviare Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Cerca disegni e immagini"
+text = """
+Opzioni di ricerca ha due nuovi tipi di allegato: DWG per i disegni
+AutoCAD (e DXF), e Immagine per foto e immagini. XLSX ora trova anche i
+vecchi file XLS, e PPTX trova i PPT, così ognuno ha un solo pulsante.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "I menu mostrano solo ciò che serve"
+text = """
+Il menu Altro non elenca più entrambe le metà di una coppia. Un'email letta
+mostra Segna come da leggere, una speciale Rimuovi da Speciali, una
+importante Contrassegna come non importante, una fissata Sblocca. Con più
+email selezionate e diverse tra loro, ottieni l'azione che le rende tutte
+uguali, qui e nel menu del clic destro.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Impostazioni su una scheda"
+text = """
+Con i colori chiari la pagina Impostazioni ha ora lo stesso bordo sottile
+e la stessa ombra morbida dell'elenco della posta, così si stacca dalla
+finestra dietro.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Pulsanti delle app più fluidi"
+text = """
+Fare clic su un'app nella barra a sinistra, o nella barra in basso su un
+telefono, non fa più tremare nulla: l'onda della pressione si completa e
+la pillola selezionata cresce dal centro mentre il pulsante mantiene la
+sua dimensione.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "I menu scorrono nella scheda dell'account"
+text = """
+Il menu ☰ e l'elenco delle lingue ora scorrono dentro la scheda
+dell'account invece di comparire di scatto, con un pulsante Indietro a
+destra per tornare.
+"""

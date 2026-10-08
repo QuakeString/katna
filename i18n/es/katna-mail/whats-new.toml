@@ -4461,3 +4461,71 @@ días vuelve arriba en Recibidos con «Enviado hace 3 días. ¿Hacer un
 seguimiento?». Haz clic para hacer el seguimiento, o en la x para
 quitarlo. Ajustes > Recibidos lo desactiva.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Ajustes tiene su propio menú"
+text = """
+La lista de páginas a la izquierda de Ajustes tiene un tinte tenue de
+arriba abajo, para que se distinga de la página que estás leyendo.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Programar envío elige la fecha en el mismo menú"
+text = """
+Elegir fecha y hora en Programar envío y en Hacer seguimiento si no
+responden se desliza ahora dentro del menú desde el que lo abriste, como
+en Posponer, en lugar de un cuadro sobre el mensaje. La flecha atrás o
+Esc vuelve a las horas.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "El icono de la bandeja combina con tu panel desde el inicio"
+text = """
+En KDE Plasma, el icono monocromo de la bandeja del sistema toma ahora el
+color de tu panel justo después de iniciar sesión y sigue cada cambio
+entre claro y oscuro, sin reiniciar Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Busca planos e imágenes"
+text = """
+Opciones de búsqueda tiene dos tipos de adjunto nuevos: DWG para planos de
+AutoCAD (y DXF), e Imagen para fotos e imágenes. XLSX encuentra ahora
+también los archivos XLS antiguos, y PPTX los PPT, así que cada uno tiene
+un solo botón.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Los menús muestran solo lo que corresponde"
+text = """
+El menú Más ya no muestra las dos mitades de un par. Un correo leído
+muestra Marcar como no leído; uno destacado, Quitar estrella; uno
+importante, Marcar como no importante; uno fijado, No fijar. Con varios
+correos seleccionados que difieren, aparece la acción que los deja todos
+iguales, aquí y en el menú del clic derecho.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Ajustes va sobre una tarjeta"
+text = """
+Con colores claros, la página de Ajustes tiene ahora el mismo borde fino
+y la misma sombra suave que la lista de correo, para que se distinga de
+la ventana que hay detrás.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Botones de aplicaciones más fluidos"
+text = """
+Hacer clic en una aplicación de la barra de la izquierda, o de la barra
+inferior en un teléfono, ya no la hace temblar: la onda del clic se
+completa y la píldora de selección crece desde el centro mientras el
+botón conserva su tamaño.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Los menús se deslizan en la tarjeta de la cuenta"
+text = """
+El menú ☰ y la lista de idiomas se deslizan ahora dentro de la tarjeta de
+la cuenta en lugar de aparecer de golpe, con un botón atrás a la derecha
+para volver.
+"""

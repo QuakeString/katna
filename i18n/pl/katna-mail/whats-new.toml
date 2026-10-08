@@ -4354,3 +4354,68 @@ nie odpowiedział, wraca na górę Odebranych z napisem „Wysłano 3 dni
 temu. Ponowić?”. Kliknij go, aby wysłać przypomnienie, lub x,
 aby go schować. Wyłączysz to w Ustawienia > Odebrane.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Ustawienia mają własne menu"
+text = """
+Lista stron po lewej stronie Ustawień ma delikatny odcień od góry do
+dołu, więc odróżnia się od strony, którą czytasz.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Zaplanuj wysłanie wybiera datę na miejscu"
+text = """
+Wybierz datę i godzinę w Zaplanuj wysłanie i Ponów, jeśli nikt nie
+odpowie wsuwa się teraz w menu, z którego je otwarto, tak jak w Odłóż,
+zamiast okienka nad wiadomością. Strzałka wstecz lub Esc wraca do listy
+godzin.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Ikona w zasobniku pasuje do panelu od zalogowania"
+text = """
+W KDE Plasma jednokolorowa ikona w zasobniku przyjmuje teraz kolor panelu
+zaraz po zalogowaniu i podąża za każdym przełączeniem między trybem
+jasnym i ciemnym, bez ponownego uruchamiania Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Szukaj rysunków i zdjęć"
+text = """
+Opcje wyszukiwania mają dwa nowe typy załączników: DWG dla rysunków
+AutoCAD (oraz DXF) i Obraz dla zdjęć i obrazków. XLSX znajduje teraz też
+stare pliki XLS, a PPTX pliki PPT, więc każdy ma jeden przycisk.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menu pokazują tylko to, co pasuje"
+text = """
+Menu Więcej nie wymienia już obu połówek pary. Przeczytana wiadomość
+pokazuje Oznacz jako nieprzeczytane, oznaczona gwiazdką Usuń gwiazdkę,
+ważna Oznacz jako nieważne, a przypięta Odepnij. Gdy zaznaczysz kilka
+różniących się wiadomości, dostaniesz działanie, które ujednolica je
+wszystkie, tutaj i w menu pod prawym przyciskiem.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Ustawienia leżą na karcie"
+text = """
+W jasnych kolorach strona Ustawień ma teraz tę samą cienką krawędź i
+miękki cień co lista wiadomości, więc odróżnia się od okna pod spodem.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Płynniejsze przyciski aplikacji"
+text = """
+Kliknięcie aplikacji na lewym pasku lub na pasku na dole ekranu telefonu
+już nie powoduje drgania: fala naciśnięcia rozchodzi się do końca, a
+pigułka zaznaczenia rośnie od środka, podczas gdy przycisk zachowuje
+swój rozmiar.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menu wsuwają się w karcie konta"
+text = """
+Menu ☰ i lista języków wsuwają się teraz płynnie wewnątrz karty konta,
+zamiast pojawiać się nagle, a przycisk wstecz po prawej pozwala wrócić.
+"""
