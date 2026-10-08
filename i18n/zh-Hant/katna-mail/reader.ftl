@@ -8,6 +8,8 @@ reader-close = 關閉
 reader-back = 返回
 reader-mark-unread = 標示為未讀取
 reader-move-to = 移至
+reader-snooze = 延後
+reader-remind = 提醒我
 reader-more = 更多
 reader-original-colors = 顯示原始色彩
 reader-dark-colors = 以深色顯示
@@ -35,6 +37,7 @@ reader-tick-bounced = 未送達：{ $when } 退信
 reader-tick-read = 已讀 { $when }（已讀回條）
 reader-tick-opened = 已開啟，最近一次在 { $when }（開信追蹤）
 reader-starred = 已加星號
+reader-chip-remove = 移除 { $label }
 reader-not-starred = 未加星號
 reader-too-long = 郵件過長，無法完整顯示。
 reader-encrypted-images = 加密郵件一律不會載入網路上的圖片。
@@ -52,6 +55,7 @@ reader-details-subject = 主旨：
 
 reader-downloading = 正在從伺服器下載這封郵件…
 reader-download-failed = 無法下載這封郵件。
+reader-download-offline = 此帳戶目前離線。請連上網路以下載這封郵件。
 reader-try-again = 再試一次
 
 ## Reply row
@@ -96,6 +100,7 @@ tracking-clicked = { $who } 點開連結 { $clicks } 次，最近一次在 { $wh
 tracking-maybe-opened = { $who } 可能已開啟（Apple Mail 為保護隱私會載入圖片）
 tracking-seen-none = 還沒有人開啟或點開連結
 tracking-receipt = { $who } 傳回了已讀回條
+tracking-receipt-read = { $who } 已閱讀（已讀回條），{ $when }
 tracking-receipt-displayed = 已讀回條：{ $who } 開啟了你的郵件
 tracking-receipt-other = 已讀回條：{ $who } 未開啟就刪除或處理了你的郵件
 

@@ -10,6 +10,8 @@ nav-label-new = ཁ་ཡིག་གསརཔ་གསར་བསྐྲུན�
 nav-folder-new = སྣོད་འཛིན་གསརཔ་གསར་བསྐྲུན་འབད།
 nav-menu-check-mail = གློག་འཕྲིན་གསརཔ་ཞིབ་དཔྱད་འབད།
 nav-menu-check-inbox = ནང་འབྱོར་སྒྲོམ་འདི་ཞིབ་དཔྱད་འབད།
+nav-unified-leave-out = མཉམ་འབྱུང་ནང་འབྱོར་སྒྲོམ་ལས་ ཕྱིར་བཞག
+nav-unified-bring-back = མཉམ་འབྱུང་ནང་འབྱོར་སྒྲོམ་ནང་ ལོག་བཙུགས།
 nav-menu-sign-in-again = ལོག་ནང་བསྐྱོད་འབད།
 nav-menu-new-mail = རྩིས་ཐོ་འདི་ལས་ གློག་འཕྲིན་གསརཔ
 nav-menu-account-settings = རྩིས་ཐོའི་སྒྲིག་སྟངས
@@ -22,6 +24,8 @@ nav-account-password-refused = ཆོག་ཡིག་ངོས་ལེན་�
 nav-account-storage = { $total } ལས་ { $used } ལག་ལེན་འཐབ་ཡོད
 nav-menu-new-subfolder = ནང་ལུ་ སྣོད་འཛིན་གསརཔ།
 nav-menu-new-sublabel = ནང་ལུ་ ཁ་ཡིག་གསརཔ།
+nav-menu-rename = མིང་བསྒྱུར།
+nav-menu-delete = བཏོན་གཏང་།
 nav-menu-empty-trash = གད་སྙིགས་སྟོངམ་བཟོ།
 nav-account-unnamed = རྩིས་ཐོ་ { $number }
 nav-all-accounts = རྩིས་ཐོ་ཆ་མཉམ
@@ -44,6 +48,10 @@ folder-spam = སྤེམ
 folder-trash = གད་སྙིགས
 folder-all-mail = གློག་འཕྲིན་ཆ་མཉམ
 folder-scheduled = དུས་ཚོད་བཀོད་ཡོདཔ
+folder-waiting = ལན་ལུ་སྒུག་དོ
+folder-waiting-short = སྒུག་དོ
+folder-reminders = དྲན་སྐུལ་ཚུ
+folder-outbox = ཕྱིར་གཏང་སྒྲོམ
 folder-activity = ལཱ་གི་རྣམ་པ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,40 @@ label-create = གསར་བསྐྲུན་འབད།
 label-creating = གསར་བསྐྲུན་འབད་དོ…
 label-created = ཁ་ཡིག་ “{ $name }” གསར་བསྐྲུན་འབད་ཡི།
 label-folder-created = སྣོད་འཛིན་ “{ $name }” གསར་བསྐྲུན་འབད་ཡི།
+label-rename-title = ཁ་ཡིག་གི་མིང་བསྒྱུར།
+label-folder-rename-title = སྣོད་འཛིན་གྱི་མིང་བསྒྱུར།
+label-rename = མིང་བསྒྱུར།
+label-renaming = མིང་བསྒྱུར་དོ…
+label-renamed = ཁ་ཡིག་གི་མིང་ “{ $name }” ལུ་བསྒྱུར་ཡི།
+label-folder-renamed = སྣོད་འཛིན་གྱི་མིང་ “{ $name }” ལུ་བསྒྱུར་ཡི།
+
+## Deleting a folder or label (asked first)
+
+folder-delete-title = “{ $name }” བཏོན་གཏང་ནི་ཨིན་ན?
+folder-delete-body = { $count ->
+    [0] འདི་ནང་ གློག་འཕྲིན་མེད། སྣོད་འཛིན་འདི་ སར་བར་ལས་རྩ་བསྐྲད་གཏངམ་ལས་ ཝེབ་གློག་འཕྲིན་དང་ ཁྱོད་ཀྱི་ཁ་པར་ལས་ཡང་ མེདཔ་འགྱོཝ་ཨིན།
+   *[other] { $kind ->
+        [conversation] { $count ->
+           *[other] དེ་ནང་གི་གླེང་མོལ་ { $count } གད་སྙིགས་ནང་འགྱོཝ་ལས་ ད་ལྟོ་ཡང་ ལོག་ལེན་ཚུགས།
+        }
+       *[message] { $count ->
+           *[other] དེ་ནང་གི་འཕྲིན་དོན་ { $count } གད་སྙིགས་ནང་འགྱོཝ་ལས་ ད་ལྟོ་ཡང་ ལོག་ལེན་ཚུགས།
+        }
+    } སྣོད་འཛིན་འདི་ སར་བར་ལས་རྩ་བསྐྲད་གཏངམ་ལས་ ཝེབ་གློག་འཕྲིན་དང་ ཁྱོད་ཀྱི་ཁ་པར་ལས་ཡང་ མེདཔ་འགྱོཝ་ཨིན།
+}
+folder-delete-forever-body = { $count ->
+    [0] འདི་ནང་ གློག་འཕྲིན་མེད། སྣོད་འཛིན་འདི་ སར་བར་ལས་རྩ་བསྐྲད་གཏངམ་ལས་ ཝེབ་གློག་འཕྲིན་དང་ ཁྱོད་ཀྱི་ཁ་པར་ལས་ཡང་ མེདཔ་འགྱོཝ་ཨིན།
+   *[other] { $kind ->
+        [conversation] { $count ->
+           *[other] དེ་ནང་གི་གླེང་མོལ་ { $count } ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏངམ་ཨིན། རྩིས་ཐོ་འདི་ལུ་ གད་སྙིགས་མེད།
+        }
+       *[message] { $count ->
+           *[other] དེ་ནང་གི་འཕྲིན་དོན་ { $count } ཨ་རྟག་གི་དོན་ལུ་བཏོན་གཏངམ་ཨིན། རྩིས་ཐོ་འདི་ལུ་ གད་སྙིགས་མེད།
+        }
+    } སྣོད་འཛིན་འདི་ སར་བར་ལས་རྩ་བསྐྲད་གཏངམ་ལས་ ཝེབ་གློག་འཕྲིན་དང་ ཁྱོད་ཀྱི་ཁ་པར་ལས་ཡང་ མེདཔ་འགྱོཝ་ཨིན།
+}
+folder-delete-label-body = ཁ་ཡིག་འདི་ རྩ་བསྐྲད་གཏངམ་ཨིན། དེ་གི་གློག་འཕྲིན་ཚུ་ གློག་འཕྲིན་ཆ་མཉམ་དང་ དེ་གི་ཁ་ཡིག་གཞན་ཚུ་ནང་ སྡོདཔ་ཨིན།
+folder-delete-confirm = སྣོད་འཛིན་བཏོན་གཏང་།
+folder-delete-label-confirm = ཁ་ཡིག་བཏོན་གཏང་།
+folder-deleted = སྣོད་འཛིན་ “{ $name }” བཏོན་གཏང་ཡི
+label-deleted = ཁ་ཡིག་ “{ $name }” བཏོན་གཏང་ཡི

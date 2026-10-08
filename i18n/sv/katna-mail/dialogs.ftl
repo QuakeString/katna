@@ -6,6 +6,10 @@
 
 about-tooltip = Om Katna
 about-tagline = E-post och kalender för Linux-skrivbordet
+about-copy-version = Kopiera versionsinformation
+about-version-copied = Kopierat
+about-version-built = Byggd: { $date }
+about-version-system = System: { $system }
 about-whats-new = Nyheter
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = Version { $version } är redo att installeras
 about-update-ready-detail = Katna Mail startar om för att slutföra uppdateringen.
 about-update-confirm = Installera version { $version }?
 about-update-confirm-detail = Katna Mail stängs, installerar uppdateringen och öppnas igen där du var. Datorn frågar efter ditt lösenord.
+about-update-confirm-detail-windows = Katna Mail stängs, installerar uppdateringen och öppnas igen om en stund.
 about-update-installing = Installerar version { $version }…
 about-update-installing-detail = Ange ditt lösenord i fönstret som öppnades.
+about-update-installing-detail-windows = Katna Mail stängs nu och öppnas igen när uppdateringen är installerad.
 about-update-cancelled = Uppdateringen installerades inte, eftersom lösenordet inte angavs.
 about-update-failed = Uppdateringen kunde inte installeras: { $error }
-about-update-unsupported = Den här kopian av Katna Mail uppdateras av din pakethanterare.
+about-update-not-self-updating = Den här kopian av Katna Mail uppdaterar inte sig själv. Uppdatera den på samma sätt som du installerade den.
 about-update-restart-failed = Uppdateringen är installerad, men Katna Mail kunde inte öppnas igen ({ $error }). Öppna det själv.
 about-update-check = Sök efter uppdateringar
 about-update-download = Hämta
@@ -148,6 +154,7 @@ onboarding-katna-private = Det har ett eget lösenord. Dina e-postinloggningar l
 onboarding-ready-title = Allt är klart
 onboarding-ready-lead = Katna hämtar din e-post. Den dyker upp allteftersom den kommer, och ny e-post visas av sig själv.
 onboarding-ready-lead-address = Katna hämtar e-posten för { $address }. Den dyker upp allteftersom den kommer, och ny e-post visas av sig själv.
+onboarding-apps = Appar du kommer att använda
 onboarding-ready-tour = Vill du ta en rundtur på en minut för att se var allt finns?
 onboarding-skip = Hoppa över nu
 onboarding-take-tour = Ta rundturen
@@ -216,11 +223,9 @@ crash-close = Stäng
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } ber dig logga in på { $address } igen.
 sign-in-again-button = Logga in
 sign-in-again-tooltip = Öppna inloggningssidan för { $provider } i webbläsaren
 sign-in-again-waiting = Väntar på webbläsaren…
-sign-in-again-close = Stäng
 google-api-off = { $api } är avstängt i Katnas Google Cloud-projekt.
 google-api-turn-on = Slå på
 google-api-turn-on-tooltip = Öppna Google Cloud för att slå på { $api } och tryck sedan på Försök igen

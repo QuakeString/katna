@@ -229,6 +229,8 @@ impl Daemon {
                     .insert(account.id, Arc::new(tokens));
                 tracing::info!(account = %account.id, %provider, "signed in again");
                 self.start_account(&account).await;
+                // Mail held while it was signed out goes now.
+                self.send_waiting_mail(account.id);
                 // The new sign-in may reach what the old one could not.
                 for data in [
                     katna_sync::methods::Data::Calendar,
@@ -265,6 +267,9 @@ impl Daemon {
         hint: &str,
     ) -> Result<Grant, CommandError> {
         let provider = config.kind;
+        // Only what the apps turned on use (Settings › Apps); turning one
+        // on later asks to sign in again where its permission is missing.
+        let config = &config.clone().only_for(&self.apps());
         let flow = SignIn::start(config, hint).await.map_err(|err| {
             CommandError::Failed(format!("cannot wait for the browser's answer: {err}"))
         })?;

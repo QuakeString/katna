@@ -8,6 +8,8 @@ reader-close = ཁ་བསྡམས།
 reader-back = ལོག
 reader-mark-unread = མ་ལྷག་པ་སྦེ་རྟགས་བཀལ།
 reader-move-to = ལུ་སྤོ།
+reader-snooze = ཤུལ་མར་བཞག།
+reader-remind = ང་ལུ་དྲན་སྐུལ་འབད།
 reader-more = གཞན་ཡང་།
 reader-original-colors = ངོ་མའི་ཚོས་གཞི་སྟོན།
 reader-dark-colors = ཚོས་གཞི་ནགཔོ་ནང་སྟོན།
@@ -35,6 +37,7 @@ reader-tick-bounced = མ་ལྷོདཔ: { $when } ཕྱིར་ལོག�
 reader-tick-read = ལྷག་ཡོདཔ་ { $when } (ལྷག་ཡོདཔ་ཨིན་པའི་ཁ་བྱང་)
 reader-tick-opened = ཁ་ཕྱེ་ཡོདཔ་ མཇུག་མཐའ་ { $when } (ཁ་ཕྱེ་མི་རྗེས་འཚོལ)
 reader-starred = སྐར་མ་བཀལ་ཡོདཔ
+reader-chip-remove = { $label } རྩ་བསྐྲད་གཏང་།
 reader-not-starred = སྐར་མ་མ་བཀལ་བ
 reader-too-long = འཕྲིན་དོན་འདི་ ཆ་ཚང་སྟོན་ནི་ལུ་རིངམ་དྲགས་པས།
 reader-encrypted-images = གསང་བཟོ་འབད་ཡོད་པའི་གློག་འཕྲིན་ནང་ ཝེབ་ལས་པར་ཚུ་ ནམ་ཡང་མངོན་གསལ་མི་འབད།
@@ -52,6 +55,7 @@ reader-details-subject = དོན་ཚན:
 
 reader-downloading = འཕྲིན་དོན་འདི་ སར་བར་ལས་ཕབ་ལེན་འབད་དོ…
 reader-download-failed = འཕྲིན་དོན་འདི་ཕབ་ལེན་འབད་མ་ཚུགས།
+reader-download-offline = རྩིས་ཐོ་འདི་ ཡོངས་འབྲེལ་མེད། འཕྲིན་དོན་འདི་ཕབ་ལེན་འབད་ནིའི་དོན་ལུ་ ཡོངས་འབྲེལ་ལུ་མཐུད།
 reader-try-again = ལོག་འབད་རྩོལ་བསྐྱེད།
 
 ## Reply row
@@ -100,6 +104,7 @@ tracking-clicked = { $who } གིས་ འབྲེལ་མཐུད་ཅི
 tracking-maybe-opened = { $who } གིས་ འདི་ཁ་ཕྱེ་ཡོདཔ་འོང་ (Apple Mail གིས་ སྒེར་དོན་གྱི་དོན་ལུ་ པར་ཚུ་མངོན་གསལ་འབདཝ་ཨིན)
 tracking-seen-none = ད་ཚུན་ཚོད་ མི་ཅིག་གིས་ཡང་ འདི་ཡང་ འབྲེལ་མཐུད་ཡང་ ཁ་མ་ཕྱེ་བས
 tracking-receipt = { $who } གིས་ ལྷག་ཡོདཔ་ཨིན་པའི་ཁ་བྱང་ གཏང་ཡི
+tracking-receipt-read = { $who } གིས་ { $when } ལྷག་ཡི (ལྷག་ཡོདཔ་ཀྱི་བདེན་ཁུངས)
 tracking-receipt-displayed = ལྷག་ཡོདཔ་ཨིན་པའི་ཁ་བྱང་: { $who } གིས་ ཁྱོད་ཀྱི་འཕྲིན་དོན་ ཁ་ཕྱེ་ཡི
 tracking-receipt-other = ལྷག་ཡོདཔ་ཨིན་པའི་ཁ་བྱང་: { $who } གིས་ ཁྱོད་ཀྱི་འཕྲིན་དོན་ ཁ་མ་ཕྱེ་བར་ བཏོན་གཏང་ཡི་ ཡང་ན་ ལཱ་འབད་ཡི
 

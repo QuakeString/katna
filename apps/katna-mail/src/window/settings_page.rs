@@ -22,8 +22,8 @@ use gpui::{
     div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountTabs, AutoAdvance, CalendarDensity, Clock, Density, FileGroup, FilesPage, MarkRead,
-    OpenIn, ReadingPane, ReduceMotion, SEND_FROM_CURRENT, ShortcutSet, TabStyle,
+    AccountTabs, AppKind, AutoAdvance, CalendarDensity, Clock, Density, FileGroup, FilesPage,
+    MarkRead, OpenIn, ReadingPane, ReduceMotion, SEND_FROM_CURRENT, ShortcutSet, TabStyle,
     Theme as ThemeChoice, TrayStyle,
 };
 use katna_i18n::tr;
@@ -36,7 +36,7 @@ use katna_ui::{InputEvent, RichEditor, TextInput};
 use super::apps::App as RailApp;
 use super::keymap::{self, Group, SHORTCUTS};
 use super::settings::{Change, heading};
-use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts};
+use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings};
 use crate::autostart::Start;
 use crate::tabs::{self, Provider};
 use crate::theme::Theme;
@@ -46,12 +46,15 @@ use crate::widgets::{
 };
 
 mod ai;
+mod app_accounts;
+mod mcp;
 mod nav;
 mod notifications;
 mod rules;
 mod signature_html;
 mod signature_import;
 mod signature_layout;
+mod snooze_times;
 mod starter_rules;
 mod templates;
 
@@ -92,6 +95,8 @@ pub(super) enum Section {
     McpServer,
     Feedback,
     Experimental,
+    /// Apps: which apps beside Mail are on.
+    Apps,
     /// Mail > Reading: conversations, marking read, the reading pane.
     Reading,
     Inbox,
@@ -102,12 +107,18 @@ pub(super) enum Section {
     /// Mail > Desktop: email links and the desktop's search.
     MailDesktop,
     Calendar,
+    /// Contacts: the accounts it shows.
+    Contacts,
+    /// Tasks: the accounts it shows.
+    Tasks,
+    /// Notes: the accounts it shows.
+    Notes,
     /// Files: the Files page's small pictures and drives.
     Files,
 }
 
 impl Section {
-    pub(super) const ALL: [Self; 18] = [
+    pub(super) const ALL: [Self; 22] = [
         Self::General,
         Self::Appearance,
         Self::Accounts,
@@ -119,12 +130,16 @@ impl Section {
         Self::McpServer,
         Self::Feedback,
         Self::Experimental,
+        Self::Apps,
         Self::Reading,
         Self::Inbox,
         Self::Signatures,
         Self::MailRules,
         Self::MailDesktop,
         Self::Calendar,
+        Self::Contacts,
+        Self::Tasks,
+        Self::Notes,
         Self::Files,
     ];
 
@@ -141,12 +156,16 @@ impl Section {
             Self::McpServer => tr!("settings-tab-mcp-server"),
             Self::Feedback => tr!("settings-tab-feedback"),
             Self::Experimental => tr!("settings-tab-experimental"),
+            Self::Apps => tr!("settings-tab-apps"),
             Self::Reading => tr!("settings-tab-reading"),
             Self::Inbox => tr!("settings-tab-inbox"),
             Self::Signatures => tr!("settings-tab-compose"),
             Self::MailRules => tr!("settings-tab-folders-rules"),
             Self::MailDesktop => tr!("settings-tab-desktop"),
             Self::Calendar => tr!("settings-tab-calendar"),
+            Self::Contacts => tr!("rail-contacts"),
+            Self::Tasks => tr!("rail-tasks"),
+            Self::Notes => tr!("rail-notes"),
             Self::Files => tr!("settings-tab-files"),
         }
     }
@@ -165,12 +184,16 @@ impl Section {
             Self::McpServer => "chip",
             Self::Feedback => "chat",
             Self::Experimental => "pulse",
+            Self::Apps => "apps",
             Self::Reading => "eye",
             Self::Inbox => "inbox",
             Self::Signatures => "pen",
             Self::MailRules => "filter",
             Self::MailDesktop => "home",
             Self::Calendar => "calendar",
+            Self::Contacts => "contacts",
+            Self::Tasks => "tasks",
+            Self::Notes => "notes",
             Self::Files => "attachment",
         }
     }
@@ -184,7 +207,11 @@ impl Section {
             | Self::MailRules
             | Self::MailDesktop => Scope::Mail,
             Self::Calendar => Scope::Calendar,
+            Self::Contacts => Scope::Contacts,
+            Self::Tasks => Scope::Tasks,
+            Self::Notes => Scope::Notes,
             Self::Files => Scope::Files,
+            Self::Apps => Scope::Apps,
             _ => Scope::Katna,
         }
     }
@@ -201,8 +228,13 @@ impl Section {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Scope {
     Katna,
+    /// The Apps page heading the apps' own pages.
+    Apps,
     Mail,
     Calendar,
+    Contacts,
+    Tasks,
+    Notes,
     Files,
 }
 
@@ -210,8 +242,12 @@ impl Scope {
     pub(super) fn label(self) -> String {
         match self {
             Self::Katna => tr!("settings-group-all-apps"),
+            Self::Apps => tr!("settings-tab-apps"),
             Self::Mail => tr!("rail-mail"),
             Self::Calendar => tr!("rail-calendar"),
+            Self::Contacts => tr!("rail-contacts"),
+            Self::Tasks => tr!("rail-tasks"),
+            Self::Notes => tr!("rail-notes"),
             Self::Files => tr!("rail-files"),
         }
     }
@@ -219,9 +255,25 @@ impl Scope {
     pub(super) fn icon(self) -> &'static str {
         match self {
             Self::Katna => "settings",
+            Self::Apps => "apps",
             Self::Mail => "mail",
             Self::Calendar => "calendar",
+            Self::Contacts => "contacts",
+            Self::Tasks => "tasks",
+            Self::Notes => "notes",
             Self::Files => "attachment",
+        }
+    }
+
+    /// The app whose pages these are, when it can be turned off.
+    pub(super) fn app(self) -> Option<AppKind> {
+        match self {
+            Self::Katna | Self::Apps | Self::Mail => None,
+            Self::Calendar => Some(AppKind::Calendar),
+            Self::Contacts => Some(AppKind::Contacts),
+            Self::Tasks => Some(AppKind::Tasks),
+            Self::Notes => Some(AppKind::Notes),
+            Self::Files => Some(AppKind::Files),
         }
     }
 
@@ -310,6 +362,10 @@ pub(super) struct SettingsPage {
     ai: ai::AiFields,
     /// Settings > Folders & rules: the mail rules and their filter.
     rules: rules::RulesList,
+    /// Settings > MCP server.
+    mcp: mcp::McpPage,
+    /// Settings > Inbox > Snooze times.
+    snooze: snooze_times::SnoozeFields,
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -368,6 +424,9 @@ impl MailWindow {
     ) {
         self.settings_open = false;
         self.menu = None;
+        // Settings' own list of pages takes the folders' place.
+        self.nav_peek = false;
+        self.peek_task = None;
         let fresh = self.settings_page.is_none();
         let scroll = ScrollHandle::new();
         let accent = rgba(self.theme(window).accent).into();
@@ -375,6 +434,7 @@ impl MailWindow {
         let server = self.config.meetings.jitsi_server.clone();
         let this_files = self.config.mail.files.clone();
         let ai_config = self.config.ai.clone();
+        let snooze_times = self.config.mail.snooze.clone();
         let radius_now = self.window_radius_now();
         let page = self.settings_page.get_or_insert_with(|| {
             let triggers = cx.new(|cx| {
@@ -419,6 +479,7 @@ impl MailWindow {
                 }),
             ];
             let ai = ai::AiFields::new(&ai_config, accent, cx);
+            let snooze = snooze_times::SnoozeFields::new(&snooze_times, accent, cx);
             let radius = number_input(
                 u32::from(radius_now),
                 super::frost_sliders::RADIUS_RANGE,
@@ -471,6 +532,8 @@ impl MailWindow {
                 drives: Vec::new(),
                 ai,
                 rules: Default::default(),
+                mcp: Default::default(),
+                snooze,
             }
         });
         page.mail_app = opens_mail_links();
@@ -502,6 +565,9 @@ impl MailWindow {
         if section == Section::Ai {
             self.load_ai_key_saved(cx);
             self.load_ai_models(cx);
+        }
+        if section == Section::McpServer {
+            self.load_mcp_activity();
         }
         if section == Section::MailRules {
             self.load_rules(cx);
@@ -583,7 +649,9 @@ impl MailWindow {
             RailApp::Mail => Scope::Mail,
             RailApp::Calendar => Scope::Calendar,
             RailApp::Files => Scope::Files,
-            RailApp::Contacts | RailApp::Tasks | RailApp::Notes => Scope::Katna,
+            RailApp::Contacts => Scope::Contacts,
+            RailApp::Tasks => Scope::Tasks,
+            RailApp::Notes => Scope::Notes,
         };
         self.open_settings_page(scope.first(), window, cx);
         if self.layout.shape.is_phone()
@@ -591,15 +659,6 @@ impl MailWindow {
         {
             page.list = true;
         }
-    }
-
-    pub(super) fn show_shortcuts(
-        &mut self,
-        _: &ShowShortcuts,
-        window: &mut Window,
-        cx: &mut Context<Self>,
-    ) {
-        self.open_settings_page(Section::Shortcuts, window, cx);
     }
 
     fn page_section(&mut self, section: Section, window: &mut Window, cx: &mut Context<Self>) {
@@ -649,8 +708,28 @@ impl MailWindow {
             Section::Reading => self.reading_section(th, cx),
             Section::MailDesktop => self.mail_desktop_section(th, cx),
             Section::Ai => self.ai_section(th, cx),
-            Section::Calendar => self.calendar_section(th, cx),
-            Section::Files => self.files_section(th, cx),
+            Section::Apps => self.apps_section(th, cx),
+            // Each app's page starts with its switch from Settings > Apps.
+            Section::Calendar => {
+                let rows = self.calendar_section(th, cx);
+                self.with_app_switch(AppKind::Calendar, rows, th, cx)
+            }
+            Section::Contacts => {
+                let rows = self.app_accounts_rows(AppKind::Contacts, th, cx);
+                self.with_app_switch(AppKind::Contacts, rows, th, cx)
+            }
+            Section::Tasks => {
+                let rows = self.app_accounts_rows(AppKind::Tasks, th, cx);
+                self.with_app_switch(AppKind::Tasks, rows, th, cx)
+            }
+            Section::Notes => {
+                let rows = self.app_accounts_rows(AppKind::Notes, th, cx);
+                self.with_app_switch(AppKind::Notes, rows, th, cx)
+            }
+            Section::Files => {
+                let rows = self.files_section(th, cx);
+                self.with_app_switch(AppKind::Files, rows, th, cx)
+            }
             Section::Accounts => self.accounts_section(th, cx),
             Section::Subscriptions => self.katna_section(th, window, cx),
             Section::Appearance => self.appearance_section(th, window, cx),
@@ -660,7 +739,7 @@ impl MailWindow {
             Section::Experimental => self.experimental_section(th, cx),
             Section::Feedback => self.feedback_section(th, cx),
             Section::MailRules => self.rules_section(th, cx),
-            Section::McpServer => self.coming_soon_section(section, th),
+            Section::McpServer => self.mcp_section(th, cx),
         };
         // On a phone the page fills the window below the top bar, like the
         // list, its sides come in closer, and the list of pages takes the
@@ -704,57 +783,82 @@ impl MailWindow {
         } else {
             tr!("settings")
         };
+        use katna_ui::tokens::space;
+        let radius = shape.card_radius();
+        let back = icon_button("settings-page-back", "back", 20.0, th)
+            .focus_ring(th)
+            .on_click(cx.listener(|this, _, window, cx| this.settings_back(window, cx)));
+        let title = div().min_w_0().truncate().text_size(px(22.0)).child(title);
+        let top = || {
+            div()
+                .flex_none()
+                .h(px(56.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(space::S3))
+        };
         let card = div()
             .id("settings-page")
             .size_full()
             .flex()
-            .flex_col()
-            .map(|d| crate::widgets::card(d, th, th.pane(), shape.card_radius(), 0.0))
-            .overflow_hidden()
-            .child(
-                div()
-                    .flex_none()
-                    .h(px(56.0))
-                    .pl(px(katna_ui::tokens::space::S3))
-                    .pr(px(katna_ui::tokens::space::S5))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(katna_ui::tokens::space::S3))
-                    .child(
-                        icon_button("settings-page-back", "back", 20.0, th)
-                            .focus_ring(th)
-                            .on_click(
-                                cx.listener(|this, _, window, cx| this.settings_back(window, cx)),
-                            ),
-                    )
-                    .child(div().text_size(px(22.0)).child(title))
-                    .child(div().flex_1())
-                    .child(self.version_button(th, cx)),
-            )
-            .child(
-                div()
-                    .flex_1()
-                    .min_h_0()
-                    .flex()
-                    .flex_row()
-                    // The scope's pages beside the open one.
-                    .when(!phone, |d| {
-                        d.child(
+            .map(|d| crate::widgets::card(d, th, th.pane(), radius, super::SHADOW_REST))
+            .overflow_hidden();
+        let card = if phone {
+            card.flex_col()
+                .child(
+                    top()
+                        .pl(px(space::S3))
+                        .pr(px(space::S5))
+                        .child(back)
+                        .child(title)
+                        .child(div().flex_1())
+                        .child(self.version_button(th, cx)),
+                )
+                .child(div().flex_1().min_h_0().flex().child(page_body))
+        } else {
+            // The list of pages is its own menu: a faint tint from top to
+            // bottom, title included, beside the page. GPUI does not clip
+            // to the card's corners, so the menu rounds its own.
+            card.flex_row()
+                .child(
+                    div()
+                        .flex_none()
+                        .w(px(nav::NAV_WIDTH + space::S3))
+                        .h_full()
+                        .flex()
+                        .flex_col()
+                        .bg(rgba(th.side_menu()))
+                        .rounded_l(px(radius))
+                        .child(top().pl(px(space::S3)).child(back).child(title))
+                        .child(
                             div()
                                 .id("settings-nav")
-                                .flex_none()
-                                .w(px(nav::NAV_WIDTH))
-                                .h_full()
+                                .flex_1()
+                                .min_h_0()
                                 .overflow_y_scroll()
-                                .pl(px(katna_ui::tokens::space::S4))
-                                .pt(px(katna_ui::tokens::space::S3))
-                                .pb(px(katna_ui::tokens::space::S4))
+                                .pl(px(space::S4))
+                                .pr(px(space::S3))
+                                .pt(px(space::S3))
+                                .pb(px(space::S4))
                                 .child(self.settings_nav(section, false, th, cx)),
+                        ),
+                )
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(
+                            top()
+                                .justify_end()
+                                .pr(px(space::S5))
+                                .child(self.version_button(th, cx)),
                         )
-                    })
-                    .child(page_body),
-            );
+                        .child(div().flex_1().min_h_0().flex().child(page_body)),
+                )
+        };
         div()
             .flex_1()
             .min_w_0()
@@ -834,6 +938,7 @@ impl MailWindow {
     // Calendar
 
     fn calendar_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let accounts = self.app_accounts_rows(AppKind::Calendar, th, cx);
         let calendar = &self.config.calendar;
         let density = [
             (
@@ -885,6 +990,7 @@ impl MailWindow {
         div()
             .flex()
             .flex_col()
+            .child(accounts)
             .child(self.row(
                 tr!("settings-calendar-density"),
                 Some(&tr!("settings-calendar-density-detail")),
@@ -921,6 +1027,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(self.files_page_row(th, cx))
+            .child(self.app_accounts_rows(AppKind::Files, th, cx))
             .into_any_element()
     }
 
@@ -2133,6 +2240,9 @@ impl MailWindow {
                     th,
                 ))
             })
+            .when(self.shows_unified(), |d| {
+                d.child(self.unified_accounts_rows(&accounts, th, cx))
+            })
             .when(on, |d| {
                 d.children(accounts.iter().enumerate().map(|(ix, account)| {
                     let provider = self.provider(account);
@@ -2155,6 +2265,26 @@ impl MailWindow {
             .when(accounts.is_empty() && on, |d| {
                 d.child(self.quiet_note(tr!("settings-inbox-no-accounts"), th))
             })
+            .child(self.row(
+                tr!("settings-snooze-times"),
+                Some(&tr!("settings-snooze-times-detail")),
+                self.snooze_times_rows(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-nudges"),
+                None,
+                self.switch_row(
+                    "page-nudges",
+                    tr!("settings-nudges-on"),
+                    tr!("settings-nudges-on-detail"),
+                    self.config.mail.nudges,
+                    Change::Nudges(!self.config.mail.nudges),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
             .into_any_element()
     }
 
@@ -2945,6 +3075,7 @@ impl MailWindow {
                     .iter()
                     .enumerate()
                     .filter(|(_, s)| s.group == group)
+                    .filter(|(_, s)| s.app().is_none_or(|app| self.config.app_on(app)))
                     .map(|(n, s)| {
                         let keys = keymap::keys(s, config);
                         let custom = config.keys.contains_key(s.name);
@@ -3631,12 +3762,20 @@ fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> 
 
 /// A key as a keycap; `off` when single keys are turned off.
 fn key_chip(id: impl Into<gpui::ElementId>, label: String, off: bool, th: &Theme) -> Stateful<Div> {
-    div()
+    key_cap(label, off, th)
         .id(id)
         .group("key-chip")
-        .h(px(28.0))
-        .pl(px(10.0))
         .pr(px(6.0))
+        .cursor_pointer()
+        .hover(|s| s.border_color(rgba(th.text_faint)))
+}
+
+/// A key as Settings > Shortcuts and Help > Keyboard shortcuts show it:
+/// struck through while single keys are `off`.
+pub(super) fn key_cap(label: String, off: bool, th: &Theme) -> Div {
+    div()
+        .h(px(28.0))
+        .px(px(10.0))
         .flex()
         .flex_row()
         .items_center()
@@ -3648,8 +3787,6 @@ fn key_chip(id: impl Into<gpui::ElementId>, label: String, off: bool, th: &Theme
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(if off { th.text_faint } else { th.text }))
         .when(off, |d| d.line_through())
-        .cursor_pointer()
-        .hover(|s| s.border_color(rgba(th.text_faint)))
         .child(label)
 }
 

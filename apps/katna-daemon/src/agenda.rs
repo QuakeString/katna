@@ -14,6 +14,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use jiff::tz::TimeZone;
+use katna_core::config::AppKind;
 use katna_core::{Paths, ids};
 use katna_dbus::agenda::{Item, edit, event, task};
 use katna_dbus::app_action;
@@ -286,7 +287,7 @@ pub(crate) async fn changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()> {
 impl AgendaService {
     /// The occurrences of events overlapping `from..to`.
     fn event_list(&self, from: i64, to: i64) -> Result<Vec<Item>, CommandError> {
-        if to <= from {
+        if to <= from || !self.daemon.app_on(AppKind::Calendar) {
             return Ok(Vec::new());
         }
         let to = to.min(from.saturating_add(MAX_EVENTS_RANGE));
@@ -345,6 +346,9 @@ impl AgendaService {
     }
 
     fn task_list(&self) -> Result<Vec<Item>, CommandError> {
+        if !self.daemon.app_on(AppKind::Tasks) {
+            return Ok(Vec::new());
+        }
         let store = self.daemon.store();
         let lists: HashMap<i64, String> = store
             .task_lists()?
@@ -669,10 +673,11 @@ macro_rules! agenda_interface {
                     );
                 }
                 let day = self::due(&day)?;
+                // A small New event window, not the whole app.
                 crate::mail_app::run(
                     connection,
-                    Some(app_action::OPEN_PAGE),
-                    vec![Value::from(app_action::calendar_page(day, true))],
+                    Some(app_action::CAPTURE),
+                    vec![Value::from(app_action::capture_event(day))],
                     None,
                 )
                 .await;

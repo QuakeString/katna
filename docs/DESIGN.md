@@ -36,6 +36,13 @@ medium, semibold, bold.
 7%, pressed 14%, selected 10% (12% dark), dragged 16%, disabled 38%.
 Separating lines are a quarter of an edge's strength.
 
+**Status colours:** `Theme::error` (red) is for errors and destructive
+actions. `Theme::warning` (amber: light `#A05A00`, dark `#FDD663`) means
+"needs you": a problem only the user can fix, such as an account Google
+signed out or mail that can't go. With Colours = System it follows the
+desktop's warning colour (KDE's `ForegroundNeutral`, libadwaita's
+`warning_color`) as error follows its negative one.
+
 **Lines:** `faint` (today's `th.divider`, `th.faint_line`) separates;
 `edge` (today's `th.outline`) outlines what can be clicked or typed in:
 fields and chips; outlined and pill buttons keep their stronger edge
@@ -57,6 +64,11 @@ keeps one 0,1 / blur 3 shadow at 30%.
 | 2 Float | floating buttons, dragging | `raised` + rim | white, edge + short shadow |
 | 3 Menu | menus, dialogs (`widgets::dialog`) | `menu` + rim | white, edge + shadow |
 | 4 Popover | notched popovers (`notched::popover`), the tour | `menu` + rim | white, edge + deeper shadow |
+
+A tile (`widgets::tile`) rests at level 1 at full strength; a file card
+rises to level 2 under the pointer in `FAST` (`widgets::tile_lift`), and
+the buttons on its corners are level 2 on frosted glass
+(`attachments::Lifted`).
 
 **Motion:** a hover never switches on at once: round and pill
 buttons carry `katna_ui::Glow`, and any other box that tints on hover

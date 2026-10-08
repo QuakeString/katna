@@ -238,10 +238,14 @@ impl MailWindow {
             || self.close_rules_menu(cx)
             || self.close_summary_peek(cx)
             || self.close_delete_ask(cx)
-            || self.close_snooze_menu(cx)
+            || self.close_app_off_ask(cx)
+            || self.close_service_details(cx)
+            || self.close_rail_menu(cx)
+            || self.snooze_escape(cx)
             || self.close_note_popovers(cx)
             || self.close_quiet_menu(cx)
             || self.close_danger(cx)
+            || self.close_password_card(cx)
         {
             true
         } else if self.print_preview_open() {
@@ -256,6 +260,9 @@ impl MailWindow {
         } else if self.whats_new_open() {
             self.close_whats_new(window, cx);
             true
+        } else if self.shortcuts_dialog_open() {
+            self.close_shortcuts_dialog(window, cx);
+            true
         } else if self.update_dialog_open() {
             self.close_update_dialog(window, cx);
             true
@@ -269,10 +276,12 @@ impl MailWindow {
             || self.contacts.label_menu.take().is_some()
             || self.files_menu.take().is_some()
             || self.app_menu_back(cx)
+            || self.menu_page_back(cx)
             || (std::mem::take(&mut self.account_menu) && {
                 self.app_menu = None;
                 true
             })
+            || self.language_page_back(cx)
             || self.language_picker.take().is_some()
             || self.dismiss_search_panel(window, cx)
         {
@@ -306,6 +315,7 @@ impl MailWindow {
             || self.contacts.label_dialog.is_some()
             || self.contacts.qr.is_some()
             || self.whats_new.is_some()
+            || self.shortcuts_dialog.is_some()
             || self.share_ask.is_some()
             || self.print_preview.is_some()
             || self.about.is_some()

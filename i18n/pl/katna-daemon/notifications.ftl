@@ -19,6 +19,10 @@ notify-unknown-sender = Nieznany nadawca
 notify-snooze-back = Odłożona poczta wróciła
 notify-no-reply = Jeszcze bez odpowiedzi
 notify-no-reply-to = Nikt nie odpowiedział na „{ $subject }”.
+notify-follow-up-sent = Wysłano ponaglenie
+notify-follow-up-sent-to = Nikt nie odpowiedział na „{ $subject }”, więc Katna wysłała ponaglenie.
+notify-follow-up-waiting = Nie wysłano ponaglenia
+notify-follow-up-waiting-to = Termin minął, gdy komputer był wyłączony. „{ $subject }” wróciło do Odebranych.
 
 ## Open and click tracking (only for mail sent with "Track opens and clicks")
 
@@ -30,6 +34,19 @@ notify-tracking-clicked = Link kliknięty przez { $who }: { $subject }
 notify-update-ready = Katna Mail można zaktualizować
 notify-update-ready-body = Wersja { $version } jest pobrana. Aktualizacja instaluje ją i uruchamia ponownie Katna Mail.
 notify-update = Aktualizuj
+
+## Something needs the user, shown once per problem
+
+notify-signed-out = Zaloguj się ponownie
+notify-signed-out-body = { $provider } wylogował Katna z konta { $address }. Poczta przestała się synchronizować.
+notify-sign-in = Zaloguj się
+notify-password-refused = Hasło odrzucone
+notify-password-refused-body = Serwer poczty odrzucił hasło do konta { $address }. Mogło zostać zmienione.
+notify-new-password = Nowe hasło
+notify-not-sent = Nie wysłano „{ $subject }”
+notify-not-sent-no-subject = Nie wysłano wiadomości
+notify-not-sent-body = Jest w skrzynce nadawczej, która wyjaśnia dlaczego.
+notify-open-outbox = Otwórz skrzynkę nadawczą
 
 ## Reminders of calendar events
 
@@ -69,6 +86,12 @@ notify-reply-all = Odpowiedz wszystkim
 notify-mark-read = Oznacz jako przeczytane
 notify-mark-all-read = Oznacz wszystkie jako przeczytane
 notify-archive = Archiwizuj
+notify-snooze-hour = Odłóż na 1 godzinę
+notify-snooze-tomorrow = Jutro
+notify-copy-code = Kopiuj { $code }
+notify-link-verify = Zweryfikuj na { $domain }
+notify-link-confirm = Potwierdź na { $domain }
+notify-link-activate = Aktywuj na { $domain }
 
 ## After Archive on a notification: a short note in the same place
 
@@ -80,6 +103,11 @@ notify-archived-count = { $count ->
    *[other] { $count } wiadomości przeniesionej z Odebranych
 }
 notify-undo = Cofnij
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = Skopiowano kod
+notify-code-not-copied = Nie udało się skopiować kodu
 
 ## After a reply typed into a notification: a note in the same place while
 ## it waits for the undo time

@@ -98,7 +98,7 @@ impl Invite {
         let event = &self.event;
         let (from, to) = (event.start - AROUND, event.end.max(event.start) + AROUND);
         // Birthdays take no time.
-        let look = match read(paths, from, to, tz, false) {
+        let look = match read(paths, from, to, tz, Some(false), &[]) {
             Ok((calendars, occurrences)) => {
                 let (found, others): (Vec<_>, Vec<_>) = occurrences
                     .into_iter()
@@ -503,7 +503,10 @@ impl MailWindow {
 
         let join = (!event.join_url.is_empty() && event.status != EventStatus::Cancelled)
             .then(|| event.join_url.clone());
-        let day = found.map(|o| civil(o.start, tz).date());
+        // With the Calendar off, the card still answers by mail.
+        let day = found
+            .filter(|_| self.app_on(super::super::apps::App::Calendar))
+            .map(|o| civil(o.start, tz).date());
         let actions = div()
             .flex()
             .flex_row()

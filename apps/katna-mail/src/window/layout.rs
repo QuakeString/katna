@@ -117,6 +117,12 @@ pub(super) struct Shape {
     pub page: f32,
     /// The room the window buttons take at the two ends of the top bar.
     pub room: (f32, f32),
+    /// How far the rail has gone because only Mail is on and its folders
+    /// sit beside the list: nothing to switch to, and Compose heads the
+    /// folders. 1 = gone.
+    pub rail_gone: f32,
+    /// How far the phone's bottom bar has gone because only Mail is on.
+    pub solo: f32,
     /// How much of a phone's search row and list toolbar shows: they slide
     /// away as the list moves on. 1 = all of them.
     pub rows: f32,
@@ -146,12 +152,12 @@ impl Shape {
     /// The height the bottom bar takes. It sinks away while a
     /// conversation is open over the list.
     pub(super) fn bottom_bar(&self) -> f32 {
-        BOTTOM_BAR_HEIGHT * self.phone * (1.0 - self.page.clamp(0.0, 1.0))
+        BOTTOM_BAR_HEIGHT * self.phone * (1.0 - self.page.clamp(0.0, 1.0)) * (1.0 - self.solo)
     }
 
     /// The width the app rail takes.
     pub(super) fn rail(&self) -> f32 {
-        APP_RAIL_WIDTH * (1.0 - self.phone)
+        APP_RAIL_WIDTH * (1.0 - self.phone) * (1.0 - self.rail_gone)
     }
 
     /// The margin around the cards, which a phone does without.
@@ -185,6 +191,10 @@ pub(super) struct Layout {
     page: Spring,
     /// 0 = no drawer, 1 = the drawer is open over the dimmed window.
     scrim: Spring,
+    /// The rail going when only Mail is on ([`Shape::rail_gone`]).
+    rail_gone: Spring,
+    /// The bottom bar going when only Mail is on ([`Shape::solo`]).
+    solo: Spring,
     /// The navigation drawer of a phone or tablet is open.
     pub drawer: bool,
     /// How much of the word "Compose" a phone's Compose button shows.
@@ -211,6 +221,8 @@ impl Layout {
             label: Spring::new(motion::SMOOTH, 1.0),
             page: Spring::new(motion::SLIDE, 0.0),
             scrim: Spring::new(motion::SMOOTH, 0.0),
+            rail_gone: Spring::new(motion::SLIDE, 0.0),
+            solo: Spring::new(motion::SLIDE, 0.0),
             drawer: false,
             fab_label: Spring::new(motion::SMOOTH, 1.0),
             rows: Spring::new(motion::SMOOTH, 1.0),
@@ -225,6 +237,8 @@ impl Layout {
                 label: 1.0,
                 page: 0.0,
                 room: (0.0, 0.0),
+                rail_gone: 0.0,
+                solo: 0.0,
                 rows: 1.0,
                 top_bar_slides: false,
             },
@@ -323,6 +337,18 @@ impl MailWindow {
         }
         let label = layout.label.tick(window, reduce).clamp(0.0, 1.0);
         let phone = layout.phone.tick(window, reduce).clamp(0.0, 1.0);
+        let solo = self.mail_only();
+        let rail_gone =
+            solo && self.nav_open && size == Size::Desktop && self.settings_page.is_none();
+        let layout = &mut self.layout;
+        layout.rail_gone.set(if rail_gone { 1.0 } else { 0.0 });
+        layout.solo.set(if solo { 1.0 } else { 0.0 });
+        if first {
+            layout.rail_gone.snap(layout.rail_gone.target());
+            layout.solo.snap(layout.solo.target());
+        }
+        let rail_gone = layout.rail_gone.tick(window, reduce).clamp(0.0, 1.0);
+        let solo = layout.solo.tick(window, reduce).clamp(0.0, 1.0);
         // The shape's size decides `split` below, so it goes in first.
         layout.shape = Shape {
             size,
@@ -331,6 +357,8 @@ impl MailWindow {
             label,
             page: layout.shape.page,
             room,
+            rail_gone,
+            solo,
             rows: layout.shape.rows,
             top_bar_slides: layout.shape.top_bar_slides,
         };
@@ -433,6 +461,18 @@ impl MailWindow {
         }
     }
 
+    /// How wide the window's content is, for a dialog to fit inside it:
+    /// less Katna's frame, its shadow and resize border, which the
+    /// window's own size counts.
+    pub(super) fn room_width(&self) -> f32 {
+        self.layout.shape.width
+    }
+
+    /// How tall the window's content is, as [`Self::room_width`] the width.
+    pub(super) fn room_height(&self, window: &Window) -> f32 {
+        self.chrome.inner_height(window)
+    }
+
     pub(super) fn slides(&self) -> bool {
         !self.layout.shape.is_desktop() && !self.split()
     }
@@ -442,9 +482,10 @@ impl MailWindow {
         self.layout.page.target() == 0.0 && self.layout.page.settled()
     }
 
-    /// The folders stay open beside the list: only on a desktop.
+    /// The folders stay open beside the list: only on a desktop, and not
+    /// while Settings is open, whose own list of pages takes their place.
     pub(super) fn nav_docked(&self) -> bool {
-        self.nav_open && self.layout.shape.is_desktop()
+        self.nav_open && self.layout.shape.is_desktop() && self.settings_page.is_none()
     }
 
     pub(super) fn close_drawer(&mut self, cx: &mut Context<Self>) {
@@ -455,7 +496,7 @@ impl MailWindow {
     }
 
     /// The app rail, sliding out to the left as the window turns into a
-    /// phone.
+    /// phone, or when only Mail is on and its folders are open.
     pub(super) fn render_rail_slot(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let shape = self.layout.shape;
         div()
@@ -467,8 +508,8 @@ impl MailWindow {
                 div()
                     .w(px(APP_RAIL_WIDTH))
                     .h_full()
-                    .ml(px(-APP_RAIL_WIDTH * shape.phone))
-                    .opacity(1.0 - shape.phone)
+                    .ml(px(shape.rail() - APP_RAIL_WIDTH))
+                    .opacity((1.0 - shape.phone) * (1.0 - shape.rail_gone))
                     .child(self.render_app_rail(th, cx)),
             )
             .into_any_element()
@@ -487,8 +528,9 @@ impl MailWindow {
         // The names under the icons follow the setting the rail's follow;
         // without them the icons sit in the middle of the bar.
         let labels = self.config.mail.app_labels;
+        let apps: Vec<RailApp> = self.apps().collect();
         let items =
-            RailApp::ALL.into_iter().map(|app| {
+            apps.into_iter().map(|app| {
                 let on = self.app == app;
                 div()
                     .id(("bottom-app", app as usize))
@@ -506,47 +548,7 @@ impl MailWindow {
                         this.close_drawer(cx);
                         this.show_page(app, window, cx)
                     }))
-                    .child(
-                        div()
-                            .relative()
-                            .overflow_hidden()
-                            .w(px(56.0))
-                            .h(px(32.0))
-                            .flex()
-                            .items_center()
-                            .justify_center()
-                            .rounded_full()
-                            .group_hover("bottom-app", |s| s.bg(rgba(th.hover)))
-                            .child(
-                                Ripple::new(("bottom-ripple", app as usize), rgba(th.ripple))
-                                    .centered(),
-                            )
-                            .child(icon(
-                                app.icon(),
-                                if on {
-                                    th.nav_selected_text
-                                } else {
-                                    th.text_dim
-                                },
-                                22.0,
-                            ))
-                            .with_spring(
-                                ("bottom-pill", app as usize),
-                                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
-                                    .to(if on { 1.0 } else { 0.0 }),
-                                {
-                                    let bg = th.nav_selected;
-                                    move |el, s: f32| {
-                                        let s = s.clamp(0.0, 1.0);
-                                        if s > 0.001 {
-                                            el.bg(rgba(fade(bg, s))).w(px(32.0 + 24.0 * s))
-                                        } else {
-                                            el
-                                        }
-                                    }
-                                },
-                            ),
-                    )
+                    .child(super::apps::app_face(app, on, true, th))
                     .child(
                         div()
                             .max_w_full()
@@ -589,6 +591,9 @@ impl MailWindow {
                 .h(px(shape.bottom_bar()))
                 .overflow_hidden()
                 .bg(rgba(th.backdrop))
+                // Along the window's bottom edge, so round with its corners.
+                .rounded_bl(px(self.bottom_corners.0))
+                .rounded_br(px(self.bottom_corners.1))
                 .child(
                     div()
                         .h(px(BOTTOM_BAR_HEIGHT))
@@ -708,10 +713,11 @@ impl MailWindow {
         .max(NAV_WIDTH)
     }
 
-    /// The top of the drawer of a phone or tablet: the app's name.
+    /// The top of a phone's drawer: the app's name. A tablet's top bar
+    /// already shows it beside the drawer.
     pub(super) fn render_drawer_head(&self, th: &Theme) -> Option<AnyElement> {
         let shape = self.layout.shape;
-        if shape.is_desktop() || !self.layout.drawer {
+        if !shape.is_phone() || !self.layout.drawer {
             return None;
         }
         Some(
@@ -722,14 +728,16 @@ impl MailWindow {
                 .child(
                     div()
                         .h(px(48.0))
-                        .pl(px(26.0))
+                        // The logo centred on the folder icons below.
+                        .pl(px(26.0 + 12.0 - super::TITLE_MARK / 2.0))
                         .flex()
                         .flex_row()
                         .items_center()
-                        .gap(px(12.0))
+                        .gap(px(super::TITLE_MARK_GAP))
                         .text_size(px(20.0))
                         .text_color(rgba(th.text))
-                        .child(icon("mail", th.accent, 24.0))
+                        // The same logo as the top bar's on a desktop.
+                        .child(crate::widgets::katna_mark(super::TITLE_MARK, th))
                         .child("Katna Mail"),
                 )
                 .into_any_element(),
@@ -858,6 +866,8 @@ fn fab_button(id: &'static str, th: &Theme) -> gpui::Stateful<gpui::Div> {
         .text_color(rgba(th.compose_text))
         .cursor_pointer()
         .keeps_press()
+        // The line under it neither lights up nor takes the click.
+        .occlude()
         .shadow(elevation(th, 1.0))
         .hover(|s| s.shadow(elevation(th, 2.0)))
         .on_mouse_move(|_, _, cx| cx.stop_propagation())

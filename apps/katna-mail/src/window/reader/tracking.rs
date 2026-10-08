@@ -10,11 +10,11 @@ use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyElement, Bounds, Context, Pixels, Size, Task, anchored, canvas, deferred, div, point,
-    prelude::*, rgba,
+    AnyElement, Bounds, Context, Pixels, Size, Task, canvas, deferred, div, point, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_store::RecipientActivity;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::unpx;
 
@@ -55,30 +55,77 @@ const MARGIN: f32 = 8.0;
 const LINGER: Duration = Duration::from_millis(250);
 
 impl MailWindow {
-    /// The line above a read receipt: who read which message.
+    /// The line above a read receipt that answers no message here (who
+    /// read which message), or above the user's message one answers (who
+    /// read it, and when).
     pub(super) fn tracking_banner(&self, part: &Part, th: &Theme) -> Option<AnyElement> {
-        let Some(Some(receipt)) = &part.receipt else {
+        let lines: Vec<(&'static str, u32, String)> = match &part.receipt {
+            Some(Some(receipt)) => {
+                let who = receipt.who();
+                vec![if receipt.displayed {
+                    (
+                        "read-receipt",
+                        green(th),
+                        tr!("tracking-receipt-displayed", who = who),
+                    )
+                } else {
+                    (
+                        "read-receipt",
+                        th.text_faint,
+                        tr!("tracking-receipt-other", who = who),
+                    )
+                }]
+            }
+            _ => self.receipt_lines(part, th),
+        };
+        if lines.is_empty() {
             return None;
-        };
-        let who = receipt.who();
-        let (color, text) = if receipt.displayed {
-            (green(th), tr!("tracking-receipt-displayed", who = who))
-        } else {
-            (th.text_faint, tr!("tracking-receipt-other", who = who))
-        };
+        }
         Some(
             div()
                 .mt(px(12.0))
                 .px(px(12.0))
                 .py(px(8.0))
+                .flex()
+                .flex_col()
+                .gap(px(katna_ui::tokens::space::S2))
                 .rounded(px(8.0))
                 .border_1()
                 .border_color(rgba(th.outline))
                 .text_size(px(13.0))
                 .line_height(px(LINE))
-                .child(line("read-receipt", color, text, th))
+                .children(
+                    lines
+                        .into_iter()
+                        .map(|(name, color, text)| line(name, color, text, th)),
+                )
                 .into_any_element(),
         )
+    }
+
+    /// Who read the user's message `part`, and when, by the read receipts
+    /// that came back for it.
+    fn receipt_lines(&self, part: &Part, th: &Theme) -> Vec<(&'static str, u32, String)> {
+        let Some(reader) = self.reader.as_ref() else {
+            return Vec::new();
+        };
+        let now = jiff::Timestamp::now().as_second();
+        reader
+            .receipts_for(part)
+            .into_iter()
+            .filter(|(r, _)| r.displayed)
+            .map(|(receipt, at)| {
+                let when = at
+                    .and_then(|at| format::local(at, &self.tz))
+                    .zip(format::local(now, &self.tz))
+                    .map(|(at, now)| format::list_date(at, now));
+                let text = match when {
+                    Some(when) => tr!("tracking-receipt-read", who = receipt.who(), when = when),
+                    None => tr!("tracking-receipt", who = receipt.who()),
+                };
+                ("read-receipt", green(th), text)
+            })
+            .collect()
     }
 
     /// The eye beside the star of a message sent with tracking, or one a
@@ -102,7 +149,7 @@ impl MailWindow {
     /// opened it, followed a link or read it.
     pub(super) fn seen_state(&self, part: &Part) -> Option<bool> {
         let reader = self.reader.as_ref()?;
-        let receipts = reader.receipts_for(part).iter().any(|r| r.displayed);
+        let receipts = reader.receipts_for(part).iter().any(|(r, _)| r.displayed);
         if part.activity.is_none() && !receipts {
             return None;
         }
@@ -126,7 +173,7 @@ impl MailWindow {
             reader
                 .receipts_for(part)
                 .iter()
-                .filter(|r| r.displayed)
+                .filter(|(r, _)| r.displayed)
                 .count() as u32
         });
         (opens + receipts, clicks)
@@ -275,17 +322,7 @@ impl MailWindow {
             .flat_map(|a| &a.recipients)
             .filter_map(|r| self.recipient_line(r, th))
             .collect();
-        for receipt in reader
-            .receipts_for(part)
-            .into_iter()
-            .filter(|r| r.displayed)
-        {
-            lines.push((
-                "read-receipt",
-                green(th),
-                tr!("tracking-receipt", who = receipt.who()),
-            ));
-        }
+        lines.extend(self.receipt_lines(part, th));
         if lines.is_empty() {
             lines.push(("eye", th.text_faint, tr!("tracking-seen-none")));
         }

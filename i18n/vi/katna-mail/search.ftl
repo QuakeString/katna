@@ -14,6 +14,7 @@ search-without = Không có
 search-date-within = Ngày trong vòng
 search-has-attachment = Có tệp đính kèm
 search-attachment-custom = Tùy chỉnh
+search-attachment-image = Hình ảnh
 search-attachment-custom-hint = Nhập đuôi tệp, như png, rồi nhấn phím cách
 search-attachment-remove = Xóa
 search-clear-filter = Xóa bộ lọc

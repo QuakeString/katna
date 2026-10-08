@@ -8,6 +8,8 @@ reader-close = Stäng
 reader-back = Tillbaka
 reader-mark-unread = Markera som oläst
 reader-move-to = Flytta till
+reader-snooze = Snooza
+reader-remind = Påminn mig
 reader-more = Mer
 reader-original-colors = Visa originalfärger
 reader-dark-colors = Visa i mörka färger
@@ -35,6 +37,7 @@ reader-tick-bounced = Inte levererat: studsade { $when }
 reader-tick-read = Läst { $when } (läskvitto)
 reader-tick-opened = Öppnat, senast { $when } (spårning av öppningar)
 reader-starred = Stjärnmärkt
+reader-chip-remove = Ta bort { $label }
 reader-not-starred = Inte stjärnmärkt
 reader-too-long = Meddelandet är för långt för att visas i sin helhet.
 reader-encrypted-images = Bilder från webben läses aldrig in i krypterad e-post.
@@ -52,6 +55,7 @@ reader-details-subject = ämne:
 
 reader-downloading = Hämtar meddelandet från servern…
 reader-download-failed = Det gick inte att hämta meddelandet.
+reader-download-offline = Det här kontot är offline. Gå online för att hämta meddelandet.
 reader-try-again = Försök igen
 
 ## Reply row
@@ -108,6 +112,7 @@ tracking-clicked = { $who } följde en länk { $clicks ->
 tracking-maybe-opened = { $who } kan ha öppnat det (Apple Mail laddar bilder för att skydda integriteten)
 tracking-seen-none = Ingen har öppnat det eller följt en länk än
 tracking-receipt = { $who } skickade ett läskvitto
+tracking-receipt-read = { $who } läste det (läskvitto), { $when }
 tracking-receipt-displayed = Läskvitto: { $who } öppnade ditt meddelande
 tracking-receipt-other = Läskvitto: { $who } raderade eller hanterade ditt meddelande utan att öppna det
 

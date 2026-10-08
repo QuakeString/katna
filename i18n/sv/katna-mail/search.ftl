@@ -14,6 +14,7 @@ search-without = Innehåller inte
 search-date-within = Datum inom
 search-has-attachment = Har bilaga
 search-attachment-custom = Anpassat
+search-attachment-image = Bild
 search-attachment-custom-hint = Skriv ett filtillägg, till exempel png, och sedan Blanksteg
 search-attachment-remove = Ta bort
 search-clear-filter = Rensa filter

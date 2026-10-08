@@ -265,8 +265,11 @@ async fn check(daemon: &Daemon, package: Package, asked: bool) {
         Err(err) => {
             tracing::info!(%err, "no update check");
             updates.set(daemon, |s| {
-                // A downloaded update stays ready.
-                if before.state == state::READY {
+                // A downloaded update stays ready, unless it is what is
+                // installed now.
+                if before.state == state::READY
+                    && update::newer(&update::installed(package), &before.version)
+                {
                     *s = before.clone();
                 } else {
                     s.state = state::FAILED.to_owned();
@@ -277,9 +280,10 @@ async fn check(daemon: &Daemon, package: Package, asked: bool) {
         }
     };
     let checked = unix_now();
-    if !manifest.newer_than(update::VERSION) {
+    let installed = update::installed(package);
+    if !manifest.newer_than(&installed) {
         tracing::info!(
-            installed = update::VERSION,
+            installed = installed.as_str(),
             newest = manifest.version,
             "up to date"
         );
@@ -388,7 +392,7 @@ async fn download(daemon: &Daemon, package: Package) {
         try_number += 1;
         // The release may have changed under the download.
         match fetch_manifest(package).await {
-            Ok(newest) if newest.newer_than(update::VERSION) => {
+            Ok(newest) if newest.newer_than(&update::installed(package)) => {
                 *updates.offered.lock().unwrap() = Some(newest.clone());
                 manifest = newest;
             }
@@ -451,11 +455,12 @@ impl Fetched {
 /// The patches from the installed build to the one `manifest` names, and
 /// the copy of the installed build the root helper kept, when both exist.
 fn route_and_base(package: Package, manifest: &Manifest) -> Option<(Vec<update::Hop>, PathBuf)> {
-    let hops = manifest.route(update::VERSION)?;
+    let installed = update::installed(package);
+    let hops = manifest.route(&installed)?;
     let base = package
         .installed_dirs()
         .iter()
-        .find_map(|dir| installed_copy(Path::new(dir), update::VERSION))?;
+        .find_map(|dir| installed_copy(Path::new(dir), &installed))?;
     Some((hops, base))
 }
 
@@ -492,7 +497,7 @@ async fn download_once(
         match download_patches(daemon, package, dir, manifest, &hops, &base).await {
             Ok(fetched) => return Ok(fetched),
             Err(err) => {
-                tracing::warn!(%err, from = update::VERSION, "the update patches did not work; downloading the full package");
+                tracing::warn!(%err, from = update::installed(Package::current()).as_str(), "the update patches did not work; downloading the full package");
             }
         }
     }
@@ -584,7 +589,7 @@ async fn download_patches(
     }
     let _ = std::fs::remove_dir_all(&steps);
     tracing::info!(
-        from = update::VERSION,
+        from = update::installed(Package::current()).as_str(),
         hops = hops.len(),
         size = total,
         ok = made.is_ok(),
@@ -770,7 +775,7 @@ async fn ready(daemon: &Daemon, manifest: &Manifest, fetched: &Fetched, checked:
         manifest.size
     } else {
         manifest
-            .route(update::VERSION)
+            .route(&update::installed(Package::current()))
             .map_or(fetched.size, |hops| route_size(&hops))
     };
     let updates = daemon.updates();

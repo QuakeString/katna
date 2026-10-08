@@ -53,7 +53,7 @@ calendar-account-signed-in = An sake shiga { $address }. Ana samo kalandojinku�
 calendar-account-sign-in-refused = { $provider } bai bar Katna ya shiga ba. Ku sake gwadawa, kuma ku ba da izinin shiga kalandojinku.
 calendar-account-refused = Sabar ba ta karɓi kalmar sirrin ba. Yahoo, iCloud, Zoho da wasu suna buƙatar kalmar sirrin manhaja.
 calendar-account-change-password = Canza kalmar sirri
-calendar-account-change-password-tooltip = Buɗe Saituna > Asusu
+calendar-account-change-password-tooltip = Rubuta sabuwar kalmar sirri; Katna za ta duba ta da sabar
 calendar-account-not-enabled = Ba a kunna damar shiga kalanda don Katna ba tukuna.
 calendar-account-failed = Ba a iya karanta kalandojin ba.
 calendar-account-error = Ba a iya karanta kalandojin ba: { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = Sake gwadawa
 calendar-account-try-again-tooltip = Sake duba kalandojin wannan asusun yanzu
 calendar-account-fixing = Ana aiki a kai…
 calendar-birthdays = Ranakun haihuwa
+calendar-tasks = Ayyuka
 calendar-birthday-of = Ranar haihuwar { $name }
 calendar-empty-title = Babu kalanda tukuna
 calendar-empty-text = Katna yana nuna kalandar asusun Google da Microsoft naka a nan da zarar an daidaita su, tare da na sauran sabar da ke goyon bayan CalDAV.
@@ -127,6 +128,7 @@ calendar-event-details = Bayanan taron
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = Sabon taro
+calendar-event-window-title = Sabon taro
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Buɗe ranar
 calendar-menu-duplicate = Kwafi

@@ -53,6 +53,12 @@ const fn entry(
 /// result can find its row.
 const ENTRIES: &[Entry] = &[
     entry(
+        Section::Apps,
+        "settings-apps",
+        "settings-apps-summary",
+        "apps turn off disable remove hide calendar contacts tasks notes files mail only just mail",
+    ),
+    entry(
         Section::General,
         "language-setting",
         "settings-general-language-summary",
@@ -197,6 +203,24 @@ const ENTRIES: &[Entry] = &[
         "unified all accounts tabs shared combined categories",
     ),
     entry(
+        Section::Inbox,
+        "settings-snooze-times",
+        "settings-snooze-times-detail",
+        "snooze later today tomorrow weekend next week morning hour time own custom",
+    ),
+    entry(
+        Section::Inbox,
+        "settings-nudges",
+        "settings-nudges-on-detail",
+        "nudge nudges follow up reply question unanswered sent remind",
+    ),
+    entry(
+        Section::Inbox,
+        "settings-unified-accounts",
+        "settings-unified-accounts-detail",
+        "unified all accounts hide leave out exclude account",
+    ),
+    entry(
         Section::Accounts,
         "accounts-folder-pane",
         "accounts-folder-pane-detail",
@@ -213,6 +237,12 @@ const ENTRIES: &[Entry] = &[
         "accounts-row",
         "settings-accounts-accounts-summary",
         "add remove delete account picture photo avatar",
+    ),
+    entry(
+        Section::Accounts,
+        "offline-settings-row",
+        "offline-settings-detail",
+        "offline work offline disconnect pause connection sync stop online",
     ),
     entry(
         Section::Accounts,
@@ -359,6 +389,36 @@ const ENTRIES: &[Entry] = &[
         "save download folder file manager reveal show dolphin",
     ),
     entry(
+        Section::Calendar,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts calendar calendars events reminders show hide leave out exclude account",
+    ),
+    entry(
+        Section::Contacts,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts contacts people address book show hide leave out exclude account",
+    ),
+    entry(
+        Section::Tasks,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts tasks lists to do show hide leave out exclude account",
+    ),
+    entry(
+        Section::Notes,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts notes show hide leave out exclude account",
+    ),
+    entry(
+        Section::Files,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts files attachments drives show hide leave out exclude account",
+    ),
+    entry(
         Section::Files,
         "settings-files-page",
         "settings-files-page-summary",
@@ -497,14 +557,42 @@ const ENTRIES: &[Entry] = &[
         "chat-view-detail",
         "chat bubbles whatsapp group conversation messenger reading",
     ),
+    entry(
+        Section::McpServer,
+        "mcp-assistants",
+        "mcp-assistants-switch",
+        "mcp ai assistants claude desktop code lm studio chatgpt model context protocol katnactl turn on off allow",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-drafts",
+        "mcp-drafts-switch",
+        "mcp ai assistants drafts write save",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-accounts",
+        "mcp-accounts-detail",
+        "mcp ai assistants accounts hide show which mail",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-connect",
+        "mcp-connect-other",
+        "mcp ai assistants connect set up install config json claude desktop code lm studio katnactl command copy",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-recently",
+        "mcp-recently-detail",
+        "mcp ai assistants recently activity history log what did searched read clear privacy",
+    ),
 ];
 
 /// What a tab that is still to come will do.
-fn coming(section: Section) -> Option<String> {
-    Some(match section {
-        Section::McpServer => tr!("settings-tab-mcp-server-coming"),
-        _ => return None,
-    })
+/// None just now; MCP server was the last.
+fn coming(_section: Section) -> Option<String> {
+    None
 }
 
 /// More words a tab is found by, besides its name and its line (English
@@ -518,6 +606,9 @@ fn tab_words(section: Section) -> &'static str {
         Section::Reading => "reading conversations open mail",
         Section::MailDesktop => "desktop krunner gnome mailto default mail app links",
         Section::Feedback => "crash report feedback privacy anonymous sentry telemetry",
+        Section::McpServer => {
+            "mcp ai assistants claude desktop code lm studio model context protocol"
+        }
         _ => "",
     }
 }
@@ -798,7 +889,16 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let found = search(query);
+        // Nothing from an app turned off, which is no longer listed.
+        let found: Vec<_> = search(query)
+            .into_iter()
+            .filter(|f| {
+                f.section
+                    .scope()
+                    .app()
+                    .is_none_or(|app| self.config.app_on(app))
+            })
+            .collect();
         let empty = found.is_empty();
         let rows = found.into_iter().enumerate().map(|(ix, found)| {
             let title = found.title.clone();
@@ -852,42 +952,6 @@ impl MailWindow {
             .children(rows)
             .into_any_element()
     }
-
-    /// The page of a tab still to come.
-    pub(super) fn coming_soon_section(&self, section: Section, th: &Theme) -> AnyElement {
-        div()
-            .pt(px(40.0))
-            .flex()
-            .flex_col()
-            .items_start()
-            .gap(px(12.0))
-            .child(coming_pill(th))
-            .child(div().text_size(px(20.0)).child(section.label()))
-            .child(
-                div()
-                    .text_size(px(14.0))
-                    .line_height(px(20.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(coming(section).unwrap_or_default()),
-            )
-            .into_any_element()
-    }
-}
-
-/// The "Coming soon" pill.
-pub(super) fn coming_pill(th: &Theme) -> Div {
-    div()
-        .flex_none()
-        .px(px(10.0))
-        .h(px(24.0))
-        .flex()
-        .items_center()
-        .rounded_full()
-        .bg(rgba(th.nav_selected))
-        .text_color(rgba(th.nav_selected_text))
-        .text_size(px(12.0))
-        .font_weight(FontWeight::SEMIBOLD)
-        .child(tr!("app-coming-soon"))
 }
 
 /// Whether `section` is a tab still to come.
@@ -921,14 +985,16 @@ mod tests {
         assert!(titles("sentry").contains(&"User feedback".to_owned()));
         assert!(titles("zzzz").is_empty());
         assert!(titles("  ").is_empty());
-        // The Accounts tab and its Accounts row come once.
+        // The Accounts tab and its Accounts row come once (MCP server
+        // has an Accounts row of its own).
         assert_eq!(
-            titles("accounts")
+            search("accounts")
                 .iter()
-                .filter(|t| t.as_str() == "Accounts")
+                .filter(|f| f.title == "Accounts" && f.section == Section::Accounts)
                 .count(),
             1
         );
+        assert!(titles("claude desktop").contains(&"Connect an assistant".to_owned()));
     }
 
     /// Every row's name and line, and every tab, has an English message.

@@ -18,7 +18,7 @@ use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, Pixels, Point,
+    Animation, AnimationExt, AnyElement, Bounds, ClipboardItem, Context, FontWeight, Pixels,
     ScrollHandle, SharedString, Window, canvas, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_dav::Occurrence;
@@ -26,6 +26,7 @@ use katna_i18n::tr;
 use katna_render::signature;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
+use katna_ui::tokens::space;
 use katna_ui::{px, unpx};
 
 mod peek;
@@ -125,6 +126,12 @@ pub(super) struct ContactPanel {
     /// Where the panel has no room, a summary of the card pops over
     /// where the name or picture was clicked.
     peek: Option<ContactPeek>,
+    /// Where the names and pictures that open the card were drawn.
+    spots: peek::Spots,
+    /// Who the popover was last showing, what it pointed at and when it
+    /// closed: a press on that same name or picture closes it first, and
+    /// the click that follows must not open it again.
+    peek_shut: Option<(String, Bounds<Pixels>, Instant)>,
 }
 
 impl ContactPanel {
@@ -144,6 +151,8 @@ impl ContactPanel {
             nav_hold: false,
             sheet: Sheet::new(),
             peek: None,
+            spots: Default::default(),
+            peek_shut: None,
         }
     }
 
@@ -256,24 +265,25 @@ impl MailWindow {
     }
 
     /// Shows `email` (lower case) in the panel, opening it if it was put
-    /// away: an address clicked at `at` in the open mail's details.
-    /// A second click on the person whose card shows puts the panel away.
-    pub(super) fn show_person(&mut self, email: &str, at: Point<Pixels>, cx: &mut Context<Self>) {
+    /// away: an address clicked in the open mail's details (`at`, see
+    /// [`MailWindow::person_at`]). A second click on the person whose
+    /// card shows puts the panel away.
+    pub(super) fn show_person(&mut self, email: &str, at: Bounds<Pixels>, cx: &mut Context<Self>) {
         if let Some(key) = self.reader.as_ref().map(|r| r.key) {
             self.show_contact_of(key, email, at, cx);
         }
     }
 
     /// Shows `email`'s card for conversation `key`, opening the panel if
-    /// it is hidden: a click at `at` on a name or picture in the chat
-    /// view. A second click on the person whose card shows puts the panel
-    /// away. Where the panel has no room, the card's summary pops over
-    /// at `at` instead.
+    /// it is hidden: a click on a name or picture in the chat view, drawn
+    /// at `at`. A second click on the person whose card shows puts the
+    /// panel away. Where the panel has no room, the card's summary pops
+    /// over, pointing at `at`, instead.
     pub(super) fn show_contact_of(
         &mut self,
         key: EntryKey,
         email: &str,
-        at: Point<Pixels>,
+        at: Bounds<Pixels>,
         cx: &mut Context<Self>,
     ) {
         let email = email.to_lowercase();
@@ -285,6 +295,15 @@ impl MailWindow {
             return;
         }
         if !self.contact_offered() {
+            // A second click on what the popover points at closes it: the
+            // press already did, so the click leaves it shut.
+            if let Some((who, was, when)) = self.contact.peek_shut.take()
+                && who == email
+                && was.dilate(px(2.0)).contains(&at.center())
+                && when.elapsed() < Duration::from_secs(1)
+            {
+                return;
+            }
             self.contact.picked = Some((key, email));
             self.contact.peek = Some(ContactPeek::new(key, at));
             cx.notify();
@@ -382,6 +401,11 @@ impl MailWindow {
 
     /// The profile of `email`, read in the background when not known or
     /// stale; the old one shows meanwhile.
+    /// `email`'s details are being read for the first time.
+    fn contact_reading(&self, email: &str) -> bool {
+        matches!(self.contact.profiles.get(email), Some((_, None)))
+    }
+
     fn contact_profile(&mut self, email: &str, cx: &mut Context<Self>) -> Option<Rc<Profile>> {
         let known = self.contact.profiles.get(email).cloned();
         // Being read for the first time, or read a while ago.
@@ -404,7 +428,10 @@ impl MailWindow {
                     .background_executor()
                     .spawn({
                         let address = address.clone();
-                        async move { profile::read(&paths, &address, &task_mails) }
+                        async move {
+                            std::thread::sleep(std::time::Duration::from_millis(1500));
+                            profile::read(&paths, &address, &task_mails)
+                        }
                     })
                     .await;
                 this.update(cx, |this, cx| {
@@ -423,6 +450,12 @@ impl MailWindow {
             .detach();
         }
         known.and_then(|(_, p)| p)
+    }
+
+    /// The pointer is on a name or picture that opens `email`'s card:
+    /// its profile is read now, so the card opens with it.
+    pub(in crate::window) fn read_person_ahead(&mut self, email: &str, cx: &mut Context<Self>) {
+        self.contact_profile(&email.to_lowercase(), cx);
     }
 
     /// Asks the daemon once for the company of the person at `email`:
@@ -779,7 +812,10 @@ impl MailWindow {
         let size = ACTION.0 + (ACTION_STUCK.0 - ACTION.0) * stuck;
         let mut actions = self.contact_actions(email, phone, size, th, cx);
         // Their address book entry: open it, or save them in one click.
-        if !own && self.contacts.book.as_ref().is_some_and(|b| b.is_ok()) {
+        if !own
+            && self.app_on(super::apps::App::Contacts)
+            && self.contacts.book.as_ref().is_some_and(|b| b.is_ok())
+        {
             actions = actions.child(self.contact_save_button(
                 email,
                 name.clone(),
@@ -813,6 +849,11 @@ impl MailWindow {
                 self.contact_details(profile, card, details.as_ref(), &mut pieces, th, cx)
         {
             sections.push(details);
+        }
+        // The popover while their details are still being read: faint
+        // lines where they will go, so it opens at about its full height.
+        if summary && !own && profile.is_none() && self.contact_reading(email) {
+            sections.push(contact_placeholder(th, cx.reduce_motion()));
         }
         // The company as its home page describes it, else as the
         // signature does.
@@ -1657,7 +1698,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let tasks = self.tasks_of_mails(mails);
-        if tasks.is_empty() {
+        if tasks.is_empty() || !self.app_on(super::apps::App::Tasks) {
             return None;
         }
         let today = super::tasks_page::today();
@@ -2096,4 +2137,34 @@ fn snap(offset: f32, device: f32) -> f32 {
     }
     let dev = offset * device;
     (dev.abs() - 0.5).ceil().copysign(dev) / device
+}
+
+/// Widths of the placeholder lines, as parts of the row.
+const PLACEHOLDER_LINES: [f32; 3] = [0.7, 0.55, 0.8];
+
+/// Faint lines in the shape of the details' rows: an icon and a line of
+/// text each, breathing gently until the details come.
+fn contact_placeholder(th: &Theme, reduce: bool) -> AnyElement {
+    let rows = div()
+        .flex()
+        .flex_col()
+        // As far apart as the details' rows.
+        .gap(px(space::S3 + space::S1))
+        .children(PLACEHOLDER_LINES.iter().map(|width| {
+            div()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(space::S4))
+                .h(px(20.0))
+                .child(super::skeleton::bone(th).size(px(18.0)))
+                .child(
+                    div().flex_1().child(
+                        super::skeleton::bone(th)
+                            .h(px(10.0))
+                            .w(gpui::relative(*width)),
+                    ),
+                )
+        }));
+    super::skeleton::breathing("contact-placeholder", rows, reduce)
 }

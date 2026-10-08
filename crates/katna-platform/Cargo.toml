@@ -16,7 +16,8 @@ tracing.workspace = true
 zbus.workspace = true
 
 # Windows: the notification-area icon, global shortcuts, toasts, the
-# Credential Manager, the registry and playing sounds.
+# Credential Manager, the registry, playing sounds and the Store package's
+# startup task.
 [target.'cfg(windows)'.dependencies]
 async-channel.workspace = true
 global-hotkey.workspace = true
@@ -26,6 +27,8 @@ windows-native-keyring-store.workspace = true
 winreg.workspace = true
 winit.workspace = true
 windows = { workspace = true, features = [
+    "ApplicationModel",
+    "ApplicationModel_Activation",
     "Data_Xml_Dom",
     "Foundation",
     "Foundation_Collections",

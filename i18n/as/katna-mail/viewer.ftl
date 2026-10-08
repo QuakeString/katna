@@ -23,12 +23,20 @@ viewer-page-count = { $count }ৰ ভিতৰত
 viewer-go-to-page-tip = পৃষ্ঠাৰ নম্বৰ লিখি Enter টিপক (Ctrl+G)
 viewer-rotate-clockwise-tip = ঘড়ীৰ কাঁটাৰ দিশত ঘূৰাওক (Ctrl+R)
 viewer-rotate-anticlockwise-tip = ঘড়ীৰ কাঁটাৰ বিপৰীত দিশত ঘূৰাওক (Ctrl+Shift+R)
+viewer-dark-pages-tip = গাঢ় পৃষ্ঠা
+viewer-light-pages-tip = পৃষ্ঠাবোৰ যিদৰে আছে সেইদৰে দেখুৱাওক
 viewer-fit-page-tip = পৃষ্ঠা খাপ খুৱাওক
 viewer-fit-picture-tip = ৱিণ্ড'ত খাপ খুৱাওক
 viewer-fit-width-tip = প্ৰস্থ খাপ খুৱাওক
 viewer-real-size-tip = প্ৰকৃত আকাৰ (1:1)
 viewer-page-back-tip = পূৰ্বৱৰ্তী পৃষ্ঠা
 viewer-page-on-tip = পৰৱৰ্তী পৃষ্ঠা
+viewer-more-tip = অধিক
+viewer-zoom-in = জুম ইন কৰক
+viewer-zoom-out = জুম আউট কৰক
+viewer-real-size = প্ৰকৃত আকাৰ
+viewer-rotate-anticlockwise = ঘড়ীৰ কাঁটাৰ বিপৰীতে ঘূৰাওক
+viewer-rotate-clockwise = ঘড়ীৰ কাঁটাৰ দিশত ঘূৰাওক
 
 ## Marking up a PDF
 

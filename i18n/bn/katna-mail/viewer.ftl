@@ -23,12 +23,20 @@ viewer-page-count = { $count }-এর মধ্যে
 viewer-go-to-page-tip = পৃষ্ঠার নম্বর লিখে Enter চাপুন (Ctrl+G)
 viewer-rotate-clockwise-tip = ঘড়ির কাঁটার দিকে ঘোরান (Ctrl+R)
 viewer-rotate-anticlockwise-tip = ঘড়ির কাঁটার উল্টো দিকে ঘোরান (Ctrl+Shift+R)
+viewer-dark-pages-tip = ডার্ক পৃষ্ঠা
+viewer-light-pages-tip = পৃষ্ঠাগুলি যেমন আছে তেমন দেখান
 viewer-fit-page-tip = পৃষ্ঠা মানানসই করুন
 viewer-fit-picture-tip = উইন্ডোর মাপে
 viewer-fit-width-tip = প্রস্থ মানানসই করুন
 viewer-real-size-tip = আসল আকার (1:1)
 viewer-page-back-tip = আগের পৃষ্ঠা
 viewer-page-on-tip = পরের পৃষ্ঠা
+viewer-more-tip = আরও
+viewer-zoom-in = জুম ইন
+viewer-zoom-out = জুম আউট
+viewer-real-size = আসল আকার
+viewer-rotate-anticlockwise = ঘড়ির কাঁটার বিপরীতে ঘোরান
+viewer-rotate-clockwise = ঘড়ির কাঁটার দিকে ঘোরান
 
 ## Marking up a PDF
 

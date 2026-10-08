@@ -8,6 +8,8 @@ reader-close = Đóng
 reader-back = Quay lại
 reader-mark-unread = Đánh dấu là chưa đọc
 reader-move-to = Di chuyển tới
+reader-snooze = Tạm ẩn
+reader-remind = Nhắc tôi
 reader-more = Thêm
 reader-original-colors = Hiện màu gốc
 reader-dark-colors = Hiện bằng màu tối
@@ -35,6 +37,7 @@ reader-tick-bounced = Không chuyển phát được: bị trả về { $when }
 reader-tick-read = Đã đọc { $when } (xác nhận đã đọc)
 reader-tick-opened = Đã mở, lần cuối { $when } (theo dõi lượt mở)
 reader-starred = Có gắn dấu sao
+reader-chip-remove = Xóa { $label }
 reader-not-starred = Không có dấu sao
 reader-too-long = Thư quá dài nên không thể hiển thị đầy đủ.
 reader-encrypted-images = Hình ảnh từ web không bao giờ được tải trong thư đã mã hóa.
@@ -52,6 +55,7 @@ reader-details-subject = tiêu đề:
 
 reader-downloading = Đang tải thư này xuống từ máy chủ…
 reader-download-failed = Không thể tải thư này xuống.
+reader-download-offline = Tài khoản này đang ngoại tuyến. Hãy kết nối mạng để tải thư này xuống.
 reader-try-again = Thử lại
 
 ## Reply row
@@ -96,6 +100,7 @@ tracking-clicked = { $who } đã mở liên kết { $clicks } lần, lần cuố
 tracking-maybe-opened = { $who } có thể đã mở thư (Apple Mail tải hình ảnh để bảo vệ quyền riêng tư)
 tracking-seen-none = Chưa có ai mở thư hoặc mở liên kết
 tracking-receipt = { $who } đã gửi xác nhận đã đọc
+tracking-receipt-read = { $who } đã đọc (xác nhận đã đọc), { $when }
 tracking-receipt-displayed = Xác nhận đã đọc: { $who } đã mở thư của bạn
 tracking-receipt-other = Xác nhận đã đọc: { $who } đã xóa hoặc xử lý thư của bạn mà không mở
 

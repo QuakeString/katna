@@ -19,6 +19,7 @@ use std::sync::{Arc, Mutex, MutexGuard, Weak};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use jiff::tz::TimeZone;
+use katna_core::config::AppKind;
 use katna_core::{Paths, ids};
 use katna_dbus::app_action;
 use katna_i18n::tr;
@@ -140,6 +141,11 @@ impl Finder {
         *lock(&self.daemon) = Arc::downgrade(daemon);
     }
 
+    /// Whether `app` is on; true until the daemon is known.
+    fn app_on(&self, app: AppKind) -> bool {
+        lock(&self.daemon).upgrade().is_none_or(|d| d.app_on(app))
+    }
+
     /// Reads the address book ahead of the first search, so the first
     /// letters typed find people already.
     pub(crate) fn warm_up(self: &Arc<Self>) {
@@ -167,7 +173,8 @@ impl Finder {
         let started = Instant::now();
         let text = text.trim();
         let mut found = Vec::new();
-        if let Some(capture) = capture::typed(text) {
+        let capture = capture::typed(text).filter(|c| self.capture_on(c));
+        if let Some(capture) = capture {
             found.push(self.capture_result(&capture));
         } else if let Some(rest) = self.strip_trigger(text) {
             if rest.chars().count() >= MIN_CHARS {
@@ -208,7 +215,9 @@ impl Finder {
         match parse_id(id)? {
             Target::Mail(message) => self.messages(&[message], None).pop(),
             Target::Task(task) => self.tasks("", Some(task)).pop(),
-            Target::Capture(capture) => Some(self.capture_result(&capture)),
+            Target::Capture(capture) => self
+                .capture_on(&capture)
+                .then(|| self.capture_result(&capture)),
             Target::Event(event, start) => self.events("", Some((event, start))).pop(),
             Target::Contact(email) => {
                 let book = lock(&self.book).book.clone()?;
@@ -221,6 +230,15 @@ impl Finder {
                 ))
             }
         }
+    }
+
+    /// Whether the app a capture adds to is on.
+    fn capture_on(&self, capture: &Capture) -> bool {
+        self.app_on(if capture.note {
+            AppKind::Notes
+        } else {
+            AppKind::Tasks
+        })
     }
 
     /// The one result for `task: …` or `note: …`.
@@ -253,7 +271,7 @@ impl Finder {
     /// Open tasks with each word of `text` starting a word of their title
     /// or details, those due first first; or only task `only`.
     fn tasks(&self, text: &str, only: Option<i64>) -> Vec<Found> {
-        if only.is_none() && text.contains(':') {
+        if (only.is_none() && text.contains(':')) || !self.app_on(AppKind::Tasks) {
             return Vec::new();
         }
         let words: Vec<String> = text.split_whitespace().map(str::to_lowercase).collect();
@@ -333,6 +351,9 @@ impl Finder {
     /// of `text` starting a word of their title, place or details, soonest
     /// first, one for each event; or only the occurrence `only`.
     fn events(&self, text: &str, only: Option<(i64, i64)>) -> Vec<Found> {
+        if !self.app_on(AppKind::Calendar) {
+            return Vec::new();
+        }
         if only.is_none() && text.contains(':') {
             return Vec::new();
         }
@@ -637,7 +658,7 @@ impl Finder {
                 let page = vec![Value::from(app_action::calendar_page(&day, false))];
                 mail_app::run(connection, Some(app_action::OPEN_PAGE), page, token).await;
             }
-            (Some(Target::Capture(capture)), "" | capture::EDIT) => {
+            (Some(Target::Capture(capture)), "" | capture::EDIT) if self.capture_on(&capture) => {
                 let daemon = lock(&self.daemon).upgrade();
                 capture
                     .run(connection, daemon.as_deref(), !action.is_empty(), token)

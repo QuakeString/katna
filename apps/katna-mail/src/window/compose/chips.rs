@@ -15,10 +15,11 @@
 use std::cell::RefCell;
 
 use gpui::{
-    AnyElement, ClickEvent, Context, Focusable, FontWeight, SharedString, Window, anchored, canvas,
-    deferred, div, point, prelude::*, rgba,
+    AnyElement, ClickEvent, Context, Focusable, FontWeight, SharedString, Window, canvas, deferred,
+    div, point, prelude::*, rgba,
 };
 use katna_i18n::tr;
+use katna_ui::anchored;
 use katna_ui::{TextInput, px, unpx};
 
 use super::MailWindow;

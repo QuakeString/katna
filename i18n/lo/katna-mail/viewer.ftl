@@ -20,12 +20,20 @@ viewer-page-count = ຈາກ { $count }
 viewer-go-to-page-tip = ພິມເລກໜ້າແລ້ວກົດ Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = ໝຸນຕາມເຂັມໂມງ (Ctrl+R)
 viewer-rotate-anticlockwise-tip = ໝຸນທວນເຂັມໂມງ (Ctrl+Shift+R)
+viewer-dark-pages-tip = ໜ້າມືດ
+viewer-light-pages-tip = ສະແດງໜ້າຕາມຕົ້ນສະບັບ
 viewer-fit-page-tip = ພໍດີໜ້າ
 viewer-fit-picture-tip = ພໍດີໜ້າຕ່າງ
 viewer-fit-width-tip = ພໍດີຄວາມກວ້າງ
 viewer-real-size-tip = ຂະໜາດຈິງ (1:1)
 viewer-page-back-tip = ໜ້າກ່ອນ
 viewer-page-on-tip = ໜ້າຖັດໄປ
+viewer-more-tip = ເພີ່ມເຕີມ
+viewer-zoom-in = ຂະຫຍາຍ
+viewer-zoom-out = ຫຍໍ້
+viewer-real-size = ຂະໜາດຈິງ
+viewer-rotate-anticlockwise = ໝຸນທວນເຂັມໂມງ
+viewer-rotate-clockwise = ໝຸນຕາມເຂັມໂມງ
 
 ## Marking up a PDF
 

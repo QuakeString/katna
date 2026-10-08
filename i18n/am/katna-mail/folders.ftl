@@ -10,6 +10,8 @@ nav-label-new = አዲስ መሰየሚያ ፍጠር
 nav-folder-new = አዲስ አቃፊ ፍጠር
 nav-menu-check-mail = አዲስ ደብዳቤ ይፈትሹ
 nav-menu-check-inbox = ይህን ገቢ መልዕክት ሳጥን ፈትሽ
+nav-unified-leave-out = ከተዋሃደው ገቢ መልዕክት ሳጥን ውጭ አድርግ
+nav-unified-bring-back = ወደ ተዋሃደው ገቢ መልዕክት ሳጥን መልስ
 nav-menu-sign-in-again = እንደገና ግባ
 nav-menu-new-mail = ከዚህ መለያ አዲስ ደብዳቤ
 nav-menu-account-settings = የመለያ ቅንብሮች
@@ -22,6 +24,8 @@ nav-account-password-refused = የይለፍ ቃሉ ተቀባይነት አላገ�
 nav-account-storage = ከ{ $total } { $used } ጥቅም ላይ ውሏል
 nav-menu-new-subfolder = በውስጡ አዲስ አቃፊ
 nav-menu-new-sublabel = በውስጡ አዲስ መሰየሚያ
+nav-menu-rename = እንደገና ሰይም
+nav-menu-delete = ሰርዝ
 nav-menu-empty-trash = መጣያውን ባዶ አድርግ
 nav-account-unnamed = መለያ { $number }
 nav-all-accounts = ሁሉም መለያዎች
@@ -44,6 +48,10 @@ folder-spam = አይፈለጌ መልዕክት
 folder-trash = መጣያ
 folder-all-mail = ሁሉም ደብዳቤ
 folder-scheduled = መርሐግብር የተያዘላቸው
+folder-waiting = ምላሽ በመጠበቅ ላይ
+folder-waiting-short = በመጠበቅ ላይ
+folder-reminders = አስታዋሾች
+folder-outbox = የወጪ መልዕክት ሳጥን
 folder-activity = እንቅስቃሴ
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,44 @@ label-create = ፍጠር
 label-creating = በመፍጠር ላይ…
 label-created = መሰየሚያ «{ $name }» ተፈጥሯል።
 label-folder-created = አቃፊ «{ $name }» ተፈጥሯል።
+label-rename-title = መሰየሚያውን እንደገና ሰይም
+label-folder-rename-title = አቃፊውን እንደገና ሰይም
+label-rename = እንደገና ሰይም
+label-renaming = እንደገና በመሰየም ላይ…
+label-renamed = መሰየሚያው ወደ «{ $name }» ተቀይሯል።
+label-folder-renamed = አቃፊው ወደ «{ $name }» ተቀይሯል።
+
+## Deleting a folder or label (asked first)
+
+folder-delete-title = «{ $name }» ይሰረዝ?
+folder-delete-body = { $count ->
+    [0] ምንም ደብዳቤ የለውም። አቃፊው ከአገልጋዩ ይወገዳል፣ ስለዚህ ከዌብሜይል እና ከስልክዎም ይጠፋል።
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ውይይቱ ወደ መጣያ ይሄዳል፣ ስለዚህ አሁንም መልሰው ማግኘት ይችላሉ።
+           *[other] { $count } ውይይቶቹ ወደ መጣያ ይሄዳሉ፣ ስለዚህ አሁንም መልሰው ማግኘት ይችላሉ።
+        }
+       *[message] { $count ->
+            [one] { $count } መልዕክቱ ወደ መጣያ ይሄዳል፣ ስለዚህ አሁንም መልሰው ማግኘት ይችላሉ።
+           *[other] { $count } መልዕክቶቹ ወደ መጣያ ይሄዳሉ፣ ስለዚህ አሁንም መልሰው ማግኘት ይችላሉ።
+        }
+    } አቃፊው ከአገልጋዩ ይወገዳል፣ ስለዚህ ከዌብሜይል እና ከስልክዎም ይጠፋል።
+}
+folder-delete-forever-body = { $count ->
+    [0] ምንም ደብዳቤ የለውም። አቃፊው ከአገልጋዩ ይወገዳል፣ ስለዚህ ከዌብሜይል እና ከስልክዎም ይጠፋል።
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] { $count } ውይይቱ እስከመጨረሻው ይሰረዛል፤ ይህ መለያ መጣያ የለውም።
+           *[other] { $count } ውይይቶቹ እስከመጨረሻው ይሰረዛሉ፤ ይህ መለያ መጣያ የለውም።
+        }
+       *[message] { $count ->
+            [one] { $count } መልዕክቱ እስከመጨረሻው ይሰረዛል፤ ይህ መለያ መጣያ የለውም።
+           *[other] { $count } መልዕክቶቹ እስከመጨረሻው ይሰረዛሉ፤ ይህ መለያ መጣያ የለውም።
+        }
+    } አቃፊው ከአገልጋዩ ይወገዳል፣ ስለዚህ ከዌብሜይል እና ከስልክዎም ይጠፋል።
+}
+folder-delete-label-body = መሰየሚያው ይወገዳል። ደብዳቤዎቹ በሁሉም ደብዳቤ እና በሌሎች መሰየሚያዎቻቸው ውስጥ ይቆያሉ።
+folder-delete-confirm = አቃፊውን ሰርዝ
+folder-delete-label-confirm = መሰየሚያውን ሰርዝ
+folder-deleted = አቃፊ «{ $name }» ተሰርዟል
+label-deleted = መሰየሚያ «{ $name }» ተሰርዟል

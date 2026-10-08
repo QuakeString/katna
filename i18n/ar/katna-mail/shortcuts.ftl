@@ -8,6 +8,10 @@ shortcut-group-moving = التنقل
 shortcut-group-actions = الإجراءات
 shortcut-group-go-to = الانتقال إلى
 shortcut-group-app = التطبيق
+shortcuts-dialog-title = اختصارات لوحة المفاتيح
+shortcuts-dialog-search = البحث عن اختصار
+shortcuts-dialog-none = لا يوجد اختصار مطابق
+shortcuts-dialog-close = إغلاق
 
 ## Settings > Keyboard shortcuts: what each shortcut does
 
@@ -37,6 +41,8 @@ shortcut-mark-read = وضع علامة «مقروءة»
 shortcut-mark-unread = وضع علامة «غير مقروءة»
 shortcut-star = إضافة نجمة أو إزالتها
 shortcut-add-to-tasks = إضافة إلى المهام
+shortcut-snooze = تأجيل
+shortcut-remind = ذكّرني
 shortcut-important = وضع علامة «مهمة»
 shortcut-not-important = وضع علامة «غير مهمة»
 shortcut-mute = كتم المحادثة أو إلغاء كتمها

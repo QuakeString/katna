@@ -14,6 +14,7 @@ search-without = এইবোৰ নাই
 search-date-within = তাৰিখৰ সময়সীমা
 search-has-attachment = সংলগ্নক আছে
 search-attachment-custom = নিজে বাছক
+search-attachment-image = ছবি
 search-attachment-custom-hint = এটা এক্সটেনশ্যন টাইপ কৰক, যেনে png, তাৰ পাছত Space টিপক
 search-attachment-remove = আঁতৰাওক
 search-clear-filter = ফিল্টাৰ মচক

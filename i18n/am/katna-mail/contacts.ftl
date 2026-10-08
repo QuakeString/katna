@@ -34,7 +34,7 @@ contacts-account-signed-in = እንደገና ወደ { $address } ገብተዋል
 contacts-account-sign-in-refused = { $provider } Katnaን አላስገባም። እንደገና ይሞክሩ፣ እና እውቂያዎችዎን እንዲደርስባቸው ይፍቀዱ።
 contacts-account-password = አገልጋዩ የይለፍ ቃሉን አልተቀበለም። Yahoo፣ iCloud፣ Zoho እና ሌሎችም የመተግበሪያ የይለፍ ቃል ያስፈልጋቸዋል።
 contacts-account-change-password = የይለፍ ቃል ቀይር
-contacts-account-change-password-tooltip = ቅንብሮች > መለያዎች ክፈት
+contacts-account-change-password-tooltip = አዲሱን የይለፍ ቃል ይተይቡ፤ Katna ከአገልጋዩ ጋር ያረጋግጠዋል
 contacts-account-failed = እውቂያዎቹን ማንበብ አልተቻለም።
 # $reason is the server's own words, in English.
 contacts-account-error = እውቂያዎቹን ማንበብ አልተቻለም፦ { $reason }

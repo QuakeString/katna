@@ -18,6 +18,11 @@ nav-folder-new = Create new folder
 nav-menu-check-mail = Check for new mail
 # The same, on an account's inbox under All Accounts.
 nav-menu-check-inbox = Check this inbox
+# On an account's inbox under All Accounts: its mail stops showing in the
+# unified Inbox; the row stays, dimmed, and still opens that inbox.
+nav-unified-leave-out = Leave out of unified Inbox
+# On such a left-out inbox, in the same menu and on its eye: undoes it.
+nav-unified-bring-back = Bring back into unified Inbox
 # On an account's heading or its row under All Accounts: shown when the
 # account's sign-in stopped working; opens the provider's sign-in page.
 nav-menu-sign-in-again = Sign in again
@@ -84,6 +89,15 @@ folder-trash = Trash
 folder-all-mail = All mail
 # Messages scheduled to be sent later.
 folder-scheduled = Scheduled
+# Mail the user sent that a follow-up or "remind me if no reply" waits on.
+folder-waiting = Waiting for reply
+# Its short name in the folder pane.
+folder-waiting-short = Waiting
+# Mail with a reminder (Remind me).
+folder-reminders = Reminders
+# Mail that has not gone out yet: waiting for a connection or a sign-in,
+# or refused by the mail server. Shows only while there is some.
+folder-outbox = Outbox
 # How mail sent with open and click tracking did.
 folder-activity = Activity
 

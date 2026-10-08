@@ -34,7 +34,7 @@ contacts-account-signed-in = Wieder bei { $address } angemeldet. Ihre Kontakte w
 contacts-account-sign-in-refused = { $provider } hat Katna keinen Zugang gewährt. Versuchen Sie es erneut und erlauben Sie den Zugriff auf Ihre Kontakte.
 contacts-account-password = Der Server hat das Passwort nicht akzeptiert. Yahoo, iCloud, Zoho und andere brauchen ein App-Passwort.
 contacts-account-change-password = Passwort ändern
-contacts-account-change-password-tooltip = Einstellungen > Konten öffnen
+contacts-account-change-password-tooltip = Geben Sie das neue Passwort ein; Katna prüft es beim Server
 contacts-account-failed = Die Kontakte konnten nicht gelesen werden.
 # $reason is the server's own words, in English.
 contacts-account-error = Die Kontakte konnten nicht gelesen werden: { $reason }

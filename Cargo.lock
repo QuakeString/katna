@@ -4680,8 +4680,6 @@ dependencies = [
 [[package]]
 name = "gpui-pre-windows"
 version = "0.3.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27662e65bfcf4445d2cccfad91f1570ec07f4b1b5de98400a9f207fd19c464cf"
 dependencies = [
  "accesskit",
  "accesskit_windows",
@@ -5977,6 +5975,7 @@ name = "katna-core"
 version = "0.0.0"
 dependencies = [
  "backtrace",
+ "base64 0.22.1",
  "jiff",
  "serde",
  "serde_json",
@@ -6139,6 +6138,7 @@ dependencies = [
  "async-channel",
  "async-io",
  "futures-lite",
+ "jiff",
  "katna-core",
  "katna-store",
  "serde",
@@ -6353,6 +6353,7 @@ dependencies = [
  "gpui-pre",
  "gpui-pre-linux",
  "gpui-pre-wgpu",
+ "gpui-pre-windows",
  "katna-core",
  "unicode-segmentation",
 ]
@@ -6364,8 +6365,11 @@ dependencies = [
  "futures-lite",
  "katna-core",
  "katna-dbus",
+ "katna-search",
  "katna-store",
+ "mail-parser",
  "rpassword",
+ "serde_json",
  "zbus",
 ]
 

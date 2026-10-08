@@ -90,6 +90,10 @@ pub struct Row {
     /// Snoozed: when it comes back (Unix seconds), shown in place of the
     /// date.
     pub snoozed_until: Option<i64>,
+    /// A follow-up waits on the user's message in it: its chip.
+    pub follow_up: Option<LineFollowUp>,
+    /// A nudge: the user asked something in it and nobody answered.
+    pub nudge: Option<LineNudge>,
     pub attachments: bool,
     /// The named attachments, in conversation order, for the chips under
     /// the line. Empty when only `attachments` is known (mail synced
@@ -102,6 +106,53 @@ pub struct Row {
     /// the newest mail they got is marked answered (a reply whose sent
     /// copy is not here). Never set in sent and draft folders.
     pub replied: bool,
+}
+
+/// A question the user sent that nobody answered in three days (a nudge),
+/// for the chip on its line and the card on the open conversation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct LineNudge {
+    /// The question.
+    pub message: MessageId,
+    /// When it was sent (Unix seconds).
+    pub sent: i64,
+}
+
+/// A follow-up or "remind me if no reply" on mail the user sent, for the
+/// chip on its line and the card on the open conversation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct LineFollowUp {
+    /// The sent message's outbox entry, which the daemon keys it on.
+    pub outbox: i64,
+    /// When it is due (Unix seconds): for one Katna sends, the working
+    /// time it goes out.
+    pub at: i64,
+    /// Katna sends a follow-up, rather than remind.
+    pub sends: bool,
+    /// The follow-up due next (1 or 2) of how many.
+    pub step: usize,
+    pub steps: usize,
+    /// It fell due while the computer was off and waits for the user.
+    pub waiting: bool,
+}
+
+impl LineFollowUp {
+    fn of(outbox: i64, follow_up: &katna_meta::FollowUp, tz: &jiff::tz::TimeZone) -> Self {
+        let sends = follow_up.sends();
+        let at = if sends && !follow_up.waiting {
+            katna_meta::working_time(follow_up.remind_at, tz)
+        } else {
+            follow_up.remind_at
+        };
+        Self {
+            outbox,
+            at,
+            sends,
+            step: follow_up.sent.len() + 1,
+            steps: if sends && follow_up.again > 0 { 2 } else { 1 },
+            waiting: follow_up.waiting,
+        }
+    }
 }
 
 /// What the recipients of a tracked message did, for its line.
@@ -241,6 +292,8 @@ impl Row {
             important: message.flags.contains(MessageFlags::IMPORTANT),
             pinned: false,
             snoozed_until: None,
+            follow_up: None,
+            nudge: None,
             attachments: message.has_attachments,
             files: Vec::new(),
             tracking: None,
@@ -386,6 +439,8 @@ pub struct Mail {
     last_list: RefCell<Option<ListRead>>,
     /// Whether a list was read in another way, which is not read early.
     other_list: Cell<bool>,
+    /// Settings > Inbox > Nudges.
+    nudges_on: bool,
 }
 
 /// Snoozed mail, and mail back from snooze or a follow-up reminder
@@ -398,6 +453,24 @@ struct Reminders {
     /// arrived then.
     surfaced_messages: HashMap<MessageId, i64>,
     surfaced_threads: HashMap<ThreadId, i64>,
+    /// Follow-ups nobody answered yet, by the sent message (every copy)
+    /// and its conversation; the messages oldest follow-up first.
+    follow_ups: HashMap<MessageId, LineFollowUp>,
+    follow_up_threads: HashMap<ThreadId, LineFollowUp>,
+    waiting: Vec<MessageId>,
+    /// Questions the user sent that nobody answered (nudges), newest
+    /// first, and when each was sent by message and conversation.
+    nudges: Vec<Nudged>,
+    nudge_messages: HashMap<MessageId, LineNudge>,
+    nudge_threads: HashMap<ThreadId, LineNudge>,
+}
+
+/// A question the user sent that nobody answered in three days.
+#[derive(Debug, Clone, Copy)]
+struct Nudged {
+    message: MessageId,
+    thread: Option<ThreadId>,
+    account: AccountId,
 }
 
 impl Reminders {
@@ -409,6 +482,8 @@ impl Reminders {
             }
             Err(err) => tracing::warn!("reading snoozed mail: {err}"),
         }
+        reminders.read_follow_ups(store);
+        reminders.read_nudges(store);
         let surfaced = katna_meta::surfaced(store).unwrap_or_else(|err| {
             tracing::warn!("reading mail back from snooze: {err}");
             Vec::new()
@@ -431,6 +506,93 @@ impl Reminders {
             }
         }
         reminders
+    }
+
+    /// The follow-ups the daemon still watches whose conversation got no
+    /// answer yet (the daemon drops the answered ones when they fall due).
+    fn read_follow_ups(&mut self, store: &Store) {
+        let list = katna_meta::follow_ups(store).unwrap_or_else(|err| {
+            tracing::warn!("reading follow-ups: {err}");
+            Vec::new()
+        });
+        let tz = jiff::tz::TimeZone::system();
+        for (outbox, follow_up) in list {
+            if katna_meta::replied(store, &follow_up).unwrap_or(false) {
+                continue;
+            }
+            let copies = store
+                .messages_with_header(AccountId(follow_up.account), &follow_up.message_id)
+                .unwrap_or_default();
+            let Some(&first) = copies.first() else {
+                continue;
+            };
+            let line = LineFollowUp::of(outbox, &follow_up, &tz);
+            self.waiting.push(first);
+            for message in store.messages_by_id(&copies).unwrap_or_default() {
+                self.follow_ups.insert(message.id, line);
+                if let Some(thread) = message.thread_id {
+                    self.follow_up_threads.insert(thread, line);
+                }
+            }
+        }
+    }
+
+    /// The questions the user sent that nobody answered (`katna-meta`'s
+    /// nudges).
+    fn read_nudges(&mut self, store: &Store) {
+        let now = jiff::Timestamp::now().as_second();
+        let list = katna_meta::waiting_nudges(store, now).unwrap_or_else(|err| {
+            tracing::warn!("reading nudges: {err}");
+            Vec::new()
+        });
+        if list.is_empty() {
+            return;
+        }
+        let ids: Vec<MessageId> = list.iter().map(|(id, _)| *id).collect();
+        let messages: HashMap<MessageId, StoredMessage> = store
+            .messages_by_id(&ids)
+            .unwrap_or_default()
+            .into_iter()
+            .map(|m| (m.id, m))
+            .collect();
+        for (id, nudge) in list {
+            let Some(message) = messages.get(&id) else {
+                continue;
+            };
+            let line = LineNudge {
+                message: id,
+                sent: nudge.sent,
+            };
+            self.nudge_messages.insert(id, line);
+            if let Some(thread) = message.thread_id {
+                self.nudge_threads.entry(thread).or_insert(line);
+            }
+            self.nudges.push(Nudged {
+                message: id,
+                thread: message.thread_id,
+                account: message.account,
+            });
+        }
+    }
+
+    /// The question a line waits on, if it is a nudge.
+    fn nudge(&self, key: EntryKey, latest: MessageId) -> Option<LineNudge> {
+        match key {
+            EntryKey::Thread(thread) => self.nudge_threads.get(&thread),
+            EntryKey::Message(id) => self.nudge_messages.get(&id),
+        }
+        .or_else(|| self.nudge_messages.get(&latest))
+        .copied()
+    }
+
+    /// The follow-up waiting on a line, if one does.
+    fn follow_up(&self, key: EntryKey, latest: MessageId) -> Option<LineFollowUp> {
+        match key {
+            EntryKey::Thread(thread) => self.follow_up_threads.get(&thread),
+            EntryKey::Message(id) => self.follow_ups.get(&id),
+        }
+        .or_else(|| self.follow_ups.get(&latest))
+        .copied()
     }
 
     /// When a line came back to the Inbox, if it did.
@@ -575,6 +737,7 @@ impl Mail {
             preloaded: RefCell::default(),
             last_list: RefCell::default(),
             other_list: Cell::new(false),
+            nudges_on: true,
         })
     }
 
@@ -625,6 +788,12 @@ impl Mail {
             .iter()
             .filter_map(|a| Some((a.id, self.store.quota(a.id).ok()??)))
             .collect()
+    }
+
+    /// How many changes and messages wait to go to each account's
+    /// servers, for an account taken offline.
+    pub fn waiting(&self) -> HashMap<katna_core::AccountId, u64> {
+        self.store.waiting().unwrap_or_default()
     }
 
     /// The IMAP server of an account, to tell its provider.
@@ -700,9 +869,14 @@ impl Mail {
         categories: Option<&[MailCategory]>,
         conversations: bool,
     ) -> (Vec<Entry>, HashMap<MailCategory, u64>) {
+        let account = self.store.folder_account(folder).ok().flatten();
+        let nudged = |entries: Vec<Entry>| match account {
+            Some(account) => self.nudged_first(entries, &[account], categories, conversations),
+            None => entries,
+        };
         if !conversations {
             return (
-                self.entries(folder, categories, false),
+                nudged(self.entries(folder, categories, false)),
                 self.category_unread(folder),
             );
         }
@@ -712,11 +886,78 @@ impl Mail {
         };
         match self.list_read(read) {
             Ok((threads, unread)) => (
-                self.folder_lines(folder, Ok(thread_entries(threads))),
+                nudged(self.folder_lines(folder, Ok(thread_entries(threads)))),
                 unread.into_iter().collect(),
             ),
             Err(err) => (self.folder_lines(folder, Err(err)), HashMap::new()),
         }
+    }
+
+    /// The store with nudges on or off, as [`Mail::set_nudges`].
+    pub fn with_nudges(mut self, on: bool) -> Self {
+        self.set_nudges(on);
+        self
+    }
+
+    /// Turns nudges on or off (Settings > Inbox > Nudges).
+    pub fn set_nudges(&mut self, on: bool) {
+        if self.nudges_on != on {
+            self.nudges_on = on;
+            self.rows.clear();
+        }
+    }
+
+    /// Puts the questions the user sent from `accounts` that nobody
+    /// answered at the top of an inbox's lines (below pinned ones, which
+    /// go first after this), newest first, as Gmail's nudges do. Only in
+    /// the Primary tab (`categories` lists it, or there are no tabs).
+    fn nudged_first(
+        &self,
+        entries: Vec<Entry>,
+        accounts: &[AccountId],
+        categories: Option<&[MailCategory]>,
+        conversations: bool,
+    ) -> Vec<Entry> {
+        if !self.nudges_on
+            || self.reminders.nudges.is_empty()
+            || categories.is_some_and(|c| !c.contains(&MailCategory::Primary))
+        {
+            return entries;
+        }
+        let mut top: Vec<Entry> = Vec::new();
+        for nudge in &self.reminders.nudges {
+            if !accounts.contains(&nudge.account) {
+                continue;
+            }
+            let key = match nudge.thread {
+                Some(thread) if conversations => EntryKey::Thread(thread),
+                _ => EntryKey::Message(nudge.message),
+            };
+            if top.iter().any(|e| e.key == key) {
+                continue;
+            }
+            top.push(Entry {
+                key,
+                latest: nudge.message,
+            });
+        }
+        if top.is_empty() {
+            return entries;
+        }
+        let keys: HashSet<EntryKey> = top.iter().map(|e| e.key).collect();
+        top.extend(entries.into_iter().filter(|e| !keys.contains(&e.key)));
+        top
+    }
+
+    /// The nudge on an open conversation of `ids`: the question and when
+    /// it was sent.
+    pub fn nudge_in(&self, ids: &[MessageId]) -> Option<LineNudge> {
+        if !self.nudges_on {
+            return None;
+        }
+        ids.iter()
+            .find_map(|id| self.reminders.nudge_messages.get(id))
+            .copied()
     }
 
     /// `folder`'s lines as read, with mail back from snooze in place and
@@ -798,6 +1039,16 @@ impl Mail {
             Vec::new()
         });
         let entries = surfaced_in_place(entries, &self.reminders, |e| self.date_of(e.latest));
+        let accounts: Vec<AccountId> = folders
+            .iter()
+            .filter_map(|f| self.store.folder_account(*f).ok().flatten())
+            .collect();
+        let primary = match &tabs.categories {
+            None => None,
+            Some(list) if list.contains(&MailCategory::Primary) => None,
+            Some(list) => Some(list.as_slice()),
+        };
+        let entries = self.nudged_first(entries, &accounts, primary, conversations);
         (
             pinned_first(entries, &self.pins),
             unread.into_iter().collect(),
@@ -1031,6 +1282,35 @@ impl Mail {
             .and_then(|m| m.date)
     }
 
+    /// Lines of the sent mail a follow-up waits on, for Waiting for
+    /// reply: newest first, as conversations when `conversations`.
+    pub fn waiting_entries(&self, conversations: bool) -> Vec<Entry> {
+        let mut ids = self.reminders.waiting.clone();
+        ids.sort_by_key(|id| std::cmp::Reverse(self.date_of(*id)));
+        self.hit_entries(&ids, conversations, None)
+    }
+
+    /// The follow-up of outbox entry `outbox` as the daemon keeps it, for
+    /// an Undo that sets it again.
+    pub fn follow_up_value(&self, outbox: i64) -> Option<katna_meta::FollowUp> {
+        katna_meta::follow_up_of(&self.store, outbox).ok().flatten()
+    }
+
+    /// How many follow-ups wait, for the folder list.
+    pub fn waiting_count(&self) -> usize {
+        self.reminders.waiting.len()
+    }
+
+    /// The follow-up waiting on one of `messages` (a conversation), if
+    /// any: the soonest due.
+    pub fn follow_up_in(&self, messages: &[MessageId]) -> Option<LineFollowUp> {
+        messages
+            .iter()
+            .filter_map(|id| self.reminders.follow_ups.get(id))
+            .min_by_key(|f| f.at)
+            .copied()
+    }
+
     /// When snoozed `messages` come back: the soonest, if any is snoozed.
     pub fn snoozed_until(&self, messages: &[MessageId]) -> Option<i64> {
         messages
@@ -1038,6 +1318,14 @@ impl Mail {
             .filter_map(|id| self.reminders.snoozed.get(id))
             .min()
             .copied()
+    }
+
+    /// When the line `entry` comes back from snooze, if it is snoozed.
+    pub fn entry_snoozed_until(&self, entry: &Entry) -> Option<i64> {
+        match entry.key {
+            EntryKey::Message(id) => self.reminders.snoozed.get(&id).copied(),
+            key => self.snoozed_until(&self.entry_messages(key)),
+        }
     }
 
     /// Picks up what the daemon wrote since the last call.
@@ -1148,6 +1436,13 @@ impl Mail {
             let Some(message) = messages.get(&entry.latest) else {
                 continue;
             };
+            // A nudge is the user's own question: its line says who it
+            // went to, as in Sent.
+            let nudge = self
+                .reminders
+                .nudge(entry.key, entry.latest)
+                .filter(|_| self.nudges_on);
+            let show_recipients = show_recipients || nudge.is_some();
             let mut row = Row::new(message, show_recipients);
             row.tracking = activity.get(&entry.latest).map(Tracked::from);
             if let Some(ids) = attached.get(&entry.key) {
@@ -1167,9 +1462,17 @@ impl Mail {
                     row
                 }
             };
+            // A conversation is snoozed when any of its messages is.
+            let snoozed_until = match self.reminders.snoozed.get(&row.id) {
+                Some(until) => Some(*until),
+                None if self.reminders.snoozed.is_empty() => None,
+                None => self.entry_snoozed_until(entry),
+            };
             let row = Row {
                 pinned: self.pins.rank(row.key).is_some(),
-                snoozed_until: self.reminders.snoozed.get(&row.id).copied(),
+                snoozed_until,
+                follow_up: self.reminders.follow_up(row.key, row.id),
+                nudge,
                 ..row
             };
             self.rows.insert(row.key, Rc::new(row));
@@ -1254,6 +1557,11 @@ impl Mail {
             tracing::warn!("reading receipts: {err}");
             Vec::new()
         })
+    }
+
+    /// The inbox tab message `id` was sorted into, if it was.
+    pub fn message_category(&self, id: MessageId) -> Option<MailCategory> {
+        self.store.message_category(id).ok().flatten()
     }
 
     /// The `Message-ID` of message `id`, without angle brackets.
@@ -1591,6 +1899,21 @@ pub fn saved_contacts(paths: &Paths) -> Result<SavedBook, String> {
         .map_err(|err| format!("Reading contacts failed: {err}"))
 }
 
+impl SavedBook {
+    /// Leaves out the `hidden` accounts' address books and other
+    /// contacts, and the people saved only in them.
+    pub fn leave_out(&mut self, hidden: &HashSet<AccountId>) {
+        if hidden.is_empty() {
+            return;
+        }
+        let shown = |account: &Option<AccountId>| account.is_none_or(|a| !hidden.contains(&a));
+        self.people
+            .retain(|p| p.accounts.is_empty() || p.accounts.iter().any(shown));
+        self.books.retain(|b| shown(&b.account));
+        self.others.retain(|o| !hidden.contains(&o.account));
+    }
+}
+
 /// Everyone saved, one entry per person, with the labels and books.
 #[derive(Debug, Default)]
 pub struct SavedBook {
@@ -1666,14 +1989,22 @@ pub fn rule_preview(
 }
 
 /// The address book for recipient suggestions, read from the store (a
-/// few seconds on a big mailbox). Opens its own connection, for a
+/// few seconds on a big mailbox): the people mailed, and with `saved` the
+/// saved contacts too (Contacts is on). Opens its own connection, for a
 /// background thread.
-pub fn address_book(paths: &Paths) -> Result<katna_search::contacts::ContactBook, String> {
+pub fn address_book(
+    paths: &Paths,
+    saved: bool,
+) -> Result<katna_search::contacts::ContactBook, String> {
     Store::open(paths, Mode::ReadOnly)
         .and_then(|store| {
             let rows = store.correspondents()?;
             // An older store without saved contacts still suggests.
-            let saved = store.saved_names().unwrap_or_default();
+            let saved = if saved {
+                store.saved_names().unwrap_or_default()
+            } else {
+                Vec::new()
+            };
             Ok(katna_search::contacts::ContactBook::with_saved(rows, saved))
         })
         .map_err(|err| format!("Reading addresses from the mail failed: {err}"))
@@ -1726,13 +2057,22 @@ pub fn save_picture_sizes(paths: &Paths, sizes: &PictureSizes) {
 
 /// Where the address book is kept between runs, so suggestions work at
 /// once while it is read again.
-fn address_book_file(paths: &Paths) -> PathBuf {
-    paths.cache_dir().join("addresses.json")
+/// The saved copy of the address book, one with the saved contacts and
+/// one of the people mailed only.
+fn address_book_file(paths: &Paths, saved: bool) -> PathBuf {
+    paths.cache_dir().join(if saved {
+        "addresses.json"
+    } else {
+        "addresses-mailed.json"
+    })
 }
 
 /// The address book saved by [`save_address_book`], if any.
-pub fn cached_address_book(paths: &Paths) -> Option<katna_search::contacts::ContactBook> {
-    let bytes = std::fs::read(address_book_file(paths)).ok()?;
+pub fn cached_address_book(
+    paths: &Paths,
+    saved: bool,
+) -> Option<katna_search::contacts::ContactBook> {
+    let bytes = std::fs::read(address_book_file(paths, saved)).ok()?;
     let contacts = serde_json::from_slice(&bytes)
         .inspect_err(|err| tracing::warn!("reading the saved address book: {err}"))
         .ok()?;
@@ -1740,11 +2080,11 @@ pub fn cached_address_book(paths: &Paths) -> Option<katna_search::contacts::Cont
 }
 
 /// Saves the address book for the next run, readable only by the user.
-pub fn save_address_book(paths: &Paths, book: &katna_search::contacts::ContactBook) {
+pub fn save_address_book(paths: &Paths, book: &katna_search::contacts::ContactBook, saved: bool) {
     use std::io::Write;
     #[cfg(unix)]
     use std::os::unix::fs::OpenOptionsExt;
-    let file = address_book_file(paths);
+    let file = address_book_file(paths, saved);
     let partial = file.with_extension("json.part");
     let saved = serde_json::to_vec(book.contacts())
         .map_err(std::io::Error::other)
@@ -1861,6 +2201,31 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
     }
 
     #[test]
+    fn follow_up_chips_say_which_follow_up_is_next_and_when() {
+        let tz = jiff::tz::TimeZone::get("Asia/Kolkata").unwrap();
+        // Saturday 10 Oct 2026, 11:00 in Kolkata: sent on Monday.
+        let saturday = 1_791_610_200;
+        let monday_nine = saturday + 2 * 86_400 - 2 * 3600;
+        let mut f = katna_meta::FollowUp {
+            remind_at: saturday,
+            mail: Some("To: b@x\r\n\r\nHi".into()),
+            again: 7 * 86_400,
+            ..Default::default()
+        };
+        let line = LineFollowUp::of(4, &f, &tz);
+        assert_eq!((line.at, line.step, line.steps), (monday_nine, 1, 2));
+        f.sent.push("f1@katna".into());
+        let line = LineFollowUp::of(4, &f, &tz);
+        assert_eq!((line.step, line.steps), (2, 2));
+        // A reminder keeps its time; a waiting one says so.
+        f.mail = None;
+        let line = LineFollowUp::of(4, &f, &tz);
+        assert_eq!((line.at, line.sends, line.steps), (saturday, false, 1));
+        f.waiting = true;
+        assert!(LineFollowUp::of(4, &f, &tz).waiting);
+    }
+
+    #[test]
     fn mail_back_from_snooze_sorts_by_when_it_came_back() {
         let line = |n| Entry::message(MessageId(n));
         // Dates: 5 newest, then 4, 3, 2, 1; 1 and 2 came back at 450 and
@@ -1874,6 +2239,7 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
             snoozed: HashMap::new(),
             surfaced_messages: HashMap::from([(MessageId(1), 450), (MessageId(2), 350)]),
             surfaced_threads: HashMap::from([(ThreadId(7), 999)]),
+            ..Reminders::default()
         };
         let entries = vec![line(5), line(4), line(3), line(2), line(1), thread];
         assert_eq!(
@@ -2036,6 +2402,8 @@ Subject: Budget\r\nDate: Mon, 14 May 2001 16:39:00 +0000\r\n\r\nThe budget is fi
                 important: false,
                 pinned: false,
                 snoozed_until: None,
+                follow_up: None,
+                nudge: None,
                 attachments: false,
                 files: Vec::new(),
                 snippet: "The budget is final.".into(),

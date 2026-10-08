@@ -20,7 +20,7 @@ use katna_dbus::zbus::Connection;
 use katna_dbus::{UpdateStatus, update_state as state};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{px, unpx};
+use katna_ui::px;
 
 use super::{CheckForUpdates, MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
@@ -64,7 +64,10 @@ impl MailWindow {
                 return;
             };
             loop {
-                let status = daemon::update_status(&connection).await.ok();
+                let status = daemon::update_status(&connection)
+                    .await
+                    .ok()
+                    .map(already_installed);
                 let offered = status
                     .as_ref()
                     .filter(|s| !s.version.is_empty())
@@ -284,7 +287,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let dialog = self.updates.dialog.as_ref()?;
         let phone = self.layout.shape.is_phone();
-        let vw = unpx(window.viewport_size().width);
+        let vw = self.room_width();
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
 
         let status = self.updates.status.clone().unwrap_or_else(|| UpdateStatus {
@@ -903,10 +906,11 @@ fn source() -> Option<String> {
         katna_core::update::Package::AppImage => Some(tr!("update-dialog-source-appimage")),
         katna_core::update::Package::Tarball => Some(tr!("update-dialog-source-tarball")),
         katna_core::update::Package::Rpm => Some(tr!("update-dialog-source-rpm")),
+        katna_core::update::Package::Deb => Some(tr!("update-dialog-source-deb")),
         katna_core::update::Package::Snap => Some(tr!("update-dialog-source-snap")),
         katna_core::update::Package::Flatpak => Some(tr!("update-dialog-source-flatpak")),
         katna_core::update::Package::Nix => Some(tr!("update-dialog-source-nix")),
-        katna_core::update::Package::Other => None,
+        katna_core::update::Package::MsStore | katna_core::update::Package::Other => None,
     }
 }
 
@@ -1057,9 +1061,60 @@ fn version_tile(tile: Tile, th: &Theme) -> impl IntoElement {
 }
 
 /// How much of the download is done, in whole percent.
+/// `status`, or up to date when what it offers is already installed: a
+/// daemon still running the build before an update would offer that
+/// update again.
+fn already_installed(status: UpdateStatus) -> UpdateStatus {
+    let offers = [
+        state::AVAILABLE,
+        state::DOWNLOADING,
+        state::READY,
+        state::DOWNLOAD_FAILED,
+    ]
+    .contains(&status.state.as_str());
+    let installed = katna_core::update::installed(Package::current());
+    let has_it =
+        status.version == installed || katna_core::update::newer(&status.version, &installed);
+    if offers && has_it {
+        tracing::info!(
+            offered = status.version,
+            installed,
+            "the update offered is installed"
+        );
+        UpdateStatus {
+            state: state::UP_TO_DATE.to_owned(),
+            checked: status.checked,
+            ..UpdateStatus::default()
+        }
+    } else {
+        status
+    }
+}
+
 fn percent(status: &UpdateStatus) -> u64 {
     (status.done * 100)
         .checked_div(status.total)
         .unwrap_or(0)
         .min(100)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn never_offers_the_build_already_running() {
+        let ready = |version: &str| UpdateStatus {
+            state: state::READY.to_owned(),
+            version: version.to_owned(),
+            checked: 7,
+            ..UpdateStatus::default()
+        };
+        let installed = katna_core::update::installed(Package::current());
+        let same = already_installed(ready(&installed));
+        assert_eq!((same.state.as_str(), same.checked), (state::UP_TO_DATE, 7));
+        assert!(same.version.is_empty());
+        let newer = already_installed(ready("999.0.0"));
+        assert_eq!(newer.state, state::READY);
+    }
 }

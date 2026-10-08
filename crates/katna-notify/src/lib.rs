@@ -10,7 +10,8 @@
 //! code or opens a verify link (§15.1.3), the note that a reply typed there
 //! is on its way, with Undo, reminders (snooze,
 //! follow-up) with Open, Mark as read and Archive, and event reminders
-//! with Join and Snooze, and a note with Undo after Archive.
+//! with Join and Snooze, a note with Undo after Archive, and a note when
+//! something needs the user, with its fix.
 
 use std::collections::HashMap;
 
@@ -36,6 +37,10 @@ pub mod action {
     pub const REPLY_ALL: &str = "reply-all";
     pub const MARK_READ: &str = "mark-read";
     pub const ARCHIVE: &str = "archive";
+    /// Snooze new mail for an hour.
+    pub const SNOOZE_HOUR: &str = "snooze-hour";
+    /// Snooze new mail until tomorrow morning.
+    pub const SNOOZE_TOMORROW: &str = "snooze-tomorrow";
     /// On the notification that an update is ready: install it.
     pub const UPDATE: &str = "update";
     /// On an event's reminder: open its video call.
@@ -57,6 +62,9 @@ pub mod action {
     /// Only on a notification about one message with a verify, confirm
     /// or activate link: open it in the browser.
     pub const OPEN_LINK: &str = "open-link";
+    /// On a notification that something needs the user (a password
+    /// refused, a sign-in ended, mail not sent): its fix in Katna Mail.
+    pub const FIX: &str = "fix";
 }
 
 /// At most this many messages are listed in a grouped notification.
@@ -281,20 +289,23 @@ impl Notifier {
         } else {
             (action::REPLY, tr!("notify-reply"))
         };
-        // A code or a link takes Reply all's place in a peek, and Reply's
-        // where Peek offers it: such mail is rarely answered, and four
-        // buttons are as many as fit.
+        // A code or a link takes Reply's place where Peek offers it, and
+        // in the peek: such mail is rarely answered, and four buttons are
+        // as many as fit.
         let shortcut = match mails {
             [mail] => mail.shortcut.as_ref().map(Shortcut::action),
             _ => None,
         };
+        let snooze = [
+            (action::SNOOZE_HOUR, tr!("notify-snooze-hour")),
+            (action::SNOOZE_TOMORROW, tr!("notify-snooze-tomorrow")),
+        ];
         match (mails.len(), view) {
+            // The open peek: a code's or link's button, else Reply, then
+            // Snooze for an hour, until tomorrow, and Archive.
             (1, View::Peek { .. }) => {
-                actions.extend(shortcut);
-                actions.push(reply);
-                if actions.len() < 3 {
-                    actions.push((action::REPLY_ALL, tr!("notify-reply-all")));
-                }
+                actions.push(shortcut.unwrap_or(reply));
+                actions.extend(snooze);
                 actions.push((action::ARCHIVE, tr!("notify-archive")));
             }
             (1, View::Short) => {
@@ -311,6 +322,10 @@ impl Notifier {
                     (action::MARK_READ, tr!("notify-mark-read")),
                     (action::ARCHIVE, tr!("notify-archive")),
                 ]);
+                // A Windows toast has room for five and no peek.
+                if !peek {
+                    actions.extend(snooze.into_iter().take(6 - actions.len().min(6)));
+                }
             }
             _ => actions.extend([
                 (action::MARK_READ, tr!("notify-mark-all-read")),
@@ -750,6 +765,31 @@ impl Notifier {
             .await
     }
 
+    /// Says that something needs the user, with `fix` as the button that
+    /// opens its fix in Katna Mail. It stays until clicked or closed, and
+    /// makes no sound. Returns its ID.
+    pub async fn needs_you(&self, summary: &str, body: &str, fix: &str) -> zbus::Result<u32> {
+        let actions = [action::OPEN, fix, action::FIX, fix];
+        let hints = HashMap::from([
+            ("desktop-entry", Value::from(ids::NOTIFICATIONS_DESKTOP_ID)),
+            ("category", Value::from("x-katna.problem")),
+            ("urgency", Value::U8(1)),
+            ("suppress-sound", Value::Bool(true)),
+        ]);
+        self.proxy
+            .notify(
+                "Katna Mail",
+                0,
+                ids::MAIL_APP_ID,
+                summary,
+                &escape(body),
+                &actions,
+                hints,
+                0,
+            )
+            .await
+    }
+
     pub async fn close(&self, id: u32) -> zbus::Result<()> {
         self.proxy.close_notification(id).await
     }
@@ -817,10 +857,16 @@ mod tests {
         } else {
             Some(action::PEEK)
         };
+        let snooze: &[&str] = if cfg!(windows) {
+            &[action::SNOOZE_HOUR, action::SNOOZE_TOMORROW]
+        } else {
+            &[]
+        };
         let expected: Vec<&str> = [Some(action::OPEN), peek, Some(action::INLINE_REPLY)]
             .into_iter()
             .flatten()
             .chain([action::MARK_READ, action::ARCHIVE])
+            .chain(snooze.iter().copied())
             .collect();
         assert_eq!(short, expected);
         assert_eq!(
@@ -832,7 +878,8 @@ mod tests {
             [
                 action::OPEN,
                 action::REPLY,
-                action::REPLY_ALL,
+                action::SNOOZE_HOUR,
+                action::SNOOZE_TOMORROW,
                 action::ARCHIVE
             ]
         );
@@ -857,6 +904,7 @@ mod tests {
                 action::INLINE_REPLY,
                 action::MARK_READ,
                 action::ARCHIVE,
+                action::SNOOZE_HOUR,
             ]
         } else {
             &[
@@ -878,7 +926,8 @@ mod tests {
             [
                 action::OPEN,
                 action::OPEN_LINK,
-                action::REPLY,
+                action::SNOOZE_HOUR,
+                action::SNOOZE_TOMORROW,
                 action::ARCHIVE
             ]
         );

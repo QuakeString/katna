@@ -916,7 +916,6 @@ sa pagitan ng Sumagot, Sumagot sa lahat at Ipasa, nang hindi nawawala ang
 naisulat mo.
 """
 
-
 ["2026-09-28-1110-search-options-narrow"]
 title = "Kasya na ang Mga opsyon sa paghahanap sa makikitid na window"
 text = """
@@ -3240,4 +3239,1366 @@ text = """
 May parehong manipis na scroll bar na ngayon ang bawat tab ng Mga setting
 gaya ng sa bukas na mail at sa Mga File: lumalabas ito habang nag-i-scroll
 ka o itinatapat ang pointer sa pahina, at puwede mo itong i-drag.
+"""
+
+["2026-10-02-1248-account-colors"]
+title = "Sariling kulay para sa bawat account"
+text = """
+Pumili ng kulay para sa bawat account sa Mga setting > Mga Account, o
+i-right-click ang account sa pane ng folder: isa sa pito, o kahit anong
+kulay mula sa gulong ng bahaghari na kasunod nila. Iyon ang magiging kulay
+ng tuldok sa tabi ng bawat sender sa pinag-isang inbox at ng singsing sa
+paligid ng larawan ng account, at kapag itinapat ang pointer sa tuldok,
+lumalabas ang pangalan ng account. May sariling kulay ang bawat account
+mula sa simula, hindi kailanman kapareho ng sa isang tab ng inbox.
+"""
+
+["2026-10-02-1340-colors-button-mail-only"]
+title = "Ang button ng orihinal na kulay, kung saan lang ito may silbi"
+text = """
+Sa madilim na tema, dumudulas na ngayon palayo ang button na Ipakita ang
+orihinal na mga kulay habang chat ang anyo ng pag-uusap, at dumudulas itong
+pabalik sa Mail.
+"""
+
+["2026-10-02-1340-logo-and-custom-accent"]
+title = "Kulay mo na ang logo, at kahit anong accent na gusto mo"
+text = """
+Suot na ngayon ng logo ng Katna sa window ang iyong kulay ng accent, sa
+maliwanag man o madilim. At may gulong ng kulay na sa dulo ng Mga setting
+> Hitsura > Accent: i-click ito para pumili ng kahit anong accent na gusto
+mo.
+"""
+
+["2026-10-02-1358-empty-reply-no-draft"]
+title = "Walang draft ang mga sagot na walang laman"
+text = """
+Ang sagot na kinlik mo pero hindi mo sinulatan, sa chat box man o sa ilalim
+ng isang mail, ay basta nang nagsasara kapag iniwan mo ito. Hindi na ito
+nagtatabi ng draft at hindi na bumabalik kapag lumipat ka sa pagitan ng
+Chat at Mail.
+"""
+
+["2026-10-02-1400-folder-right-click-selects"]
+title = "Binubuksan ng right-click ang folder"
+text = """
+Kapag ni-right-click ang isang folder sa pane ng folder, pinipili at
+binubuksan na muna ito bago lumabas ang menu nito, kaya malinaw na sa
+folder na nakikita mo gumagana ang menu.
+"""
+
+["2026-10-02-1405-viewer-arrows-hover"]
+title = "Nananatiling kita ang mga arrow ng viewer"
+text = """
+Hindi na halos pumuputi ang mga arrow sa gilid ng viewer ng attachment
+kapag itinapat mo ang pointer sa mga ito. Sa halip, nagiging mas mapusyaw
+na abo ang mga ito nang kaunti, kaya madali pa rin silang makita sa ibabaw
+ng puting pahina.
+"""
+
+["2026-10-02-1432-account-colour-button"]
+title = "Iisang button ng kulay sa bawat account"
+text = """
+Sariling kulay na lang nito ang ipinapakita ng bawat account, sa button na
+Kulay sa Mga setting > Mga Account at sa right-click menu ng account.
+I-click ito para pumili ng isa sa walong kulay o ng sarili mong kulay,
+mismo kung saan ka nag-click.
+"""
+
+["2026-10-02-1443-reply-at-the-end"]
+title = "Nasa dulo ang iyong sagot"
+text = """
+Laging nasa dulo ng pag-uusap ang sagot ngayon, kahit pinakabagong mail ang
+unang ipinapakita. Kapag lumipat mula sa Chat papuntang Mail, nag-i-scroll
+pababa rito, nasa iniwan mong puwesto ang cursor.
+"""
+
+["2026-10-02-1451-card-shows-signer"]
+title = "Ipinapakita ng card kung sino ang pumirma sa bukas na mail"
+text = """
+Binabasa na ngayon ng card ng contact ang lagda ng mail na bukas mo, hindi
+lang ng pinakabago. Kapag pumirma ang isang katrabaho sa mail mula sa
+pinagsasaluhang address gaya ng accounts@, ipinapakita ng card ang kanyang
+pangalan, tungkulin, telepono at ang address ng kumpanya mula sa mail na
+iyon.
+"""
+
+["2026-10-02-1510-search-click-away"]
+title = "Mag-click kahit saan para umalis sa search box"
+text = """
+Kapag kinlik ang bakanteng espasyo sa itaas na bar, sa tabi ng search box,
+lalabas ka na ngayon sa box, gaya ng pag-click sa listahan ng mail.
+Nananatili ang iyong paghahanap.
+"""
+
+["2026-10-02-1515-empty-message-no-draft"]
+title = "Wala nang draft na walang laman"
+text = """
+Ang bagong mensaheng binura mo ulit ang laman bago isinara ay hindi na
+naiiwan sa Mga Draft, gaya ng sagot na walang laman sa isang pag-uusap.
+"""
+
+["2026-10-02-1513-dark-pages"]
+title = "Madidilim na pahina sa viewer"
+text = """
+Sa madilim na mode, may button na hugis-kalahating buwan ang viewer ng
+attachment na nagpapakitang madilim sa maliliwanag na PDF, dokumento,
+slide, sheet at text file. Nananatili ang kulay ng mga kulay, pinalalabo
+lang ang mga larawan sa loob ng pahina sa halip na gawing negatibo, at
+dumidilim ang na-scan na papel gaya ng text. Tinatandaan ng Katna ang
+pinili mo para sa susunod na file.
+"""
+
+["2026-10-02-1522-window-corners"]
+title = "Piliin ang mga sulok at border ng iyong window"
+text = """
+Kapag sariling title bar ng Katna ang gamit, may slider na ngayon ang Mga
+setting > Pang-eksperimento na Pagkabilog ng sulok, mula parisukat hanggang
+bilog, at switch na Border na may sariling opacity. Kapag naka-on
+ang Sariling dami ng blur, itinatakda na rin ng slider na Opacity kung gaano
+karami ang tumatagos sa malabong background ng window.
+"""
+
+["2026-10-02-1535-ctrl-shift-click-select"]
+title = "Pumili ng mga mail gamit ang Ctrl at Shift"
+text = """
+Mag-Ctrl+click sa isang mail sa listahan para piliin ito, at mag-Ctrl+click
+pa sa iba para idagdag ang mga ito. Pinipili ng Shift+click ang bawat mail
+mula sa huling kinlik mo. Para buksan ang mail sa sarili nitong window,
+i-right-click ito at piliin ang Buksan sa bagong window.
+"""
+
+["2026-10-02-1610-frosted-panes"]
+title = "Mga frosted na pane, chat at paghahanap"
+text = """
+Kapag naka-on ang Palabuin ang background ng window, tumatagos na rin ang
+blur sa listahan ng mail, sa bukas na mail at sa card ng tao, may slider pa
+na Opacity ng pane. Mas kita na ito nang kaunti sa likod ng mga bubble
+ng chat, at nananatiling frosted ang search box habang nagta-type ka. May
+sariling switch ang bawat isa sa Mga setting > Pang-eksperimento.
+"""
+
+["2026-10-02-1618-fainter-hints"]
+title = "Mas malabong pahiwatig sa mga walang lamang box"
+text = """
+Mas malabo na ngayon ang abong pahiwatig sa walang lamang box, gaya ng
+“Sumagot kay…” sa ilalim ng chat o “Maghanap sa mail”, kaya hindi na ito
+napagkakamalang text na tinype mo.
+"""
+
+["2026-10-02-1642-drag-from-empty-space"]
+title = "Ilipat ang window mula sa bakanteng espasyo"
+text = """
+Sa Linux, puwede mo nang ilipat ang window sa pag-drag ng kahit anong
+bakanteng espasyo sa kaliwang bar, sa mga folder o sa bar sa itaas ng iyong
+mail, hindi lang sa itaas na bar.
+"""
+
+["2026-10-02-1643-space-folds-folders"]
+title = "Tinitiklop ng Space ang mga folder"
+text = """
+I-click ang folder na may mga folder sa loob, saka pindutin ang Space para
+buksan o itiklop ito, gaya ng pag-click sa arrow nito. Pagkatapos ng isang
+click, gumagalaw na rin sa pane ng folder ang mga arrow key, at lumilipat
+ang Tab sa listahan ng mail.
+"""
+
+["2026-10-02-1646-viewer-more-menu"]
+title = "Kasya ang mga kontrol ng viewer sa makitid na window"
+text = """
+Sa makitid na window, nananatili na sa loob ng viewer ng attachment ang mga
+kontrol sa ibaba nito. Lumilipat sa menu na ⋮ Higit pa ang mga button na
+hindi kasya: una ang pag-ikot, saka ang Ikasya, saka ang Madidilim na
+pahina. Ang numero ng pahina at ang zoom ang pinakamatagal na nakikita.
+"""
+
+["2026-10-02-1743-activity-report-fits"]
+title = "Kasya sa window ang ulat ng Aktibidad"
+text = """
+Nananatili na ngayon sa loob ng window ang ulat ng Aktibidad na may pantay
+na margin, at nag-i-scroll ito kapag maikli ang window, kaya hindi na
+napuputol ang mga huling hilera nito.
+"""
+
+["2026-10-02-1846-folders-and-labels"]
+title = "Palitan ang pangalan, burahin at i-drag sa mga folder"
+text = """
+I-right-click ang folder na ginawa mo para palitan ang pangalan nito o
+burahin ito; inililipat muna sa Basurahan ang mail nito kapag binura. I-drag
+ang mail mula sa listahan papunta sa isang folder para ilipat ito roon. May
+search box na ang Ilipat sa: mag-type para maghanap ng folder, o para
+gumawa ng bago at ilipat doon ang mail. Sa Gmail, naglalagay at nag-aalis ng
+label sa mail ang Lagyan ng label, at nagdaragdag ng label ang pag-drop ng
+mail dito.
+"""
+
+["2026-10-02-1928-mail-rules"]
+title = "Mga panuntunan sa mail"
+text = """
+Kusang inaayos ng mga panuntunan ang bagong mail: ayon sa sender, subject o
+mga salita, inililipat, nilalagyan ng label, ini-star, ipinapasa o
+pinatatahimik nila ito. Gumawa ng isa sa Mga setting > Mga folder at
+panuntunan, o i-right-click ang isang mail at piliin ang Gumawa ng
+panuntunan…, at tingnan kung ilang kamakailang mail ang tumutugma bago mo
+i-save. Sa Ilipat sa, i-tik ang “Palaging ilipat dito ang mail mula kay …”
+para ilipat sa isang click ang mail ng isang sender at ang mga susunod pa
+niyang mail.
+"""
+
+["2026-10-02-2017-rules-on-the-server"]
+title = "Mga panuntunang gumagana kahit patay ang computer"
+text = """
+Gumagana na ngayon ang mga panuntunan sa mail sa Gmail, o sa iyong mail
+server kapag tumatanggap ito ng mga panuntunang Sieve, kaya naaayos din ang
+mail sa iyong phone at habang patay ang computer na ito. Ipinapakita ng Mga
+setting > Mga folder at panuntunan kung saan gumagana ang bawat panuntunan,
+at kung bakit nananatili ang isa sa Katna.
+"""
+
+["2026-10-03-0046-smooth-folded-tabs"]
+title = "Maayos na lumilipat ang mga nakatiklop na tab"
+text = """
+Kapag itinitiklop ng makitid na window ang mga tab ng inbox bilang mga icon,
+hindi na biglang lumilipat ang mga tab: lumiliit pabalik sa icon nito ang
+tab na iniwan mo habang naglalaho ang pangalan nito, at lumalaki ang
+binuksan mo habang lumilitaw ang pangalan nito.
+"""
+
+["2026-10-03-0051-read-rows-frosted"]
+title = "Frosted na rin ang nabasang mail"
+text = """
+Kapag naka-on ang mga frosted na pane, ipinapakita na rin ng mail na nabasa
+mo ang frost sa likod ng listahan gaya ng hindi pa nabasang mail, iba lang
+nang kaunti ang kulay, sa halip na buong guhit.
+"""
+
+["2026-10-03-0101-rounder-corners"]
+title = "Mas bilog na sulok ng window"
+text = """
+Umaabot na ngayon sa 32 pixel ang Pagkabilog ng sulok sa Mga setting >
+Pang-eksperimento, dalawang beses na mas bilog kaysa dati, at puwede mong
+i-type ang numero sa box sa tabi ng slider.
+"""
+
+["2026-10-03-0113-viewer-round-corners"]
+title = "Sumusunod ang viewer sa bilog na sulok ng window"
+text = """
+Kapag sariling title bar ng Katna at bilog na sulok ang gamit, binibilog na
+ngayon ng viewer ng attachment ang mga sulok sa ibaba nito para tumugma sa
+window, sa halip na magpakita ng parisukat na abong sulok lampas sa gilid ng
+window.
+"""
+
+["2026-10-03-0147-chat-go-down"]
+title = "Bumalik sa pinakabagong mail"
+text = """
+Kapag malayo na ang na-scroll mo pataas sa isang chat, may bilog na button
+na lumilitaw sa kanang ibaba. Dinadala ka nito pabalik sa pinakabagong mail
+at binibilang nito ang mga dumating habang wala ka roon.
+"""
+
+["2026-10-03-0147-chat-long-mails"]
+title = "Mahahabang mail sa mga chat"
+text = """
+Sa mahabang bubble, nananatili ang larawan ng sender sa ibaba ng nakikita
+mo, at nananatili ang mga button ng sagot, pin at higit pa sa bahaging
+nakikita. I-right-click ang text para maabot ang lahat ng ito.
+"""
+
+["2026-10-03-0147-chat-scroll-bar"]
+title = "Scroll bar sa mga chat"
+text = """
+May parehong tahimik na scroll bar na ang mga chat gaya ng bukas na mail, na
+lumalabas habang nakatapat ang pointer sa mga ito.
+"""
+
+["2026-10-03-0147-chat-translate"]
+title = "Pagsasalin sa mga chat"
+text = """
+Inaalok na rin sa chat ang salin ng mail na nasa ibang wika, gaya sa Mail.
+I-right-click ang kahit anong bubble at piliin ang Isalin para ikaw mismo
+ang magsalin, at muli para ipakita ang orihinal.
+"""
+
+["2026-10-03-0150-search-pill-hovers"]
+title = "Pantay na hover sa search bar ng phone"
+text = """
+Sa phone, nasa gitna na ngayon ng mga bilog na dulo ng search bar ang button
+ng mga folder at ang larawan ng iyong account, at pare-parehong bilog na
+hover ang bawat button sa bar, pantay ang layo mula sa gilid nito.
+"""
+
+["2026-10-03-0159-starter-rules"]
+title = "Mga panimulang panuntunan"
+text = """
+Nag-aalok na ngayon ang Mga setting > Mga folder at panuntunan ng mga
+handang panuntunan, na naka-off: tahimik na promosyon, mga newsletter sa
+Babasahin, mga resibo, mga delivery, ticket ng tren at eroplano (IRCTC, Air
+India, IndiGo at iba pa), mga one-time code, mga security alert, social na
+mail at mga imbitasyon sa kalendaryo. I-on ang isa at gagana ito sa lahat
+ng iyong account, at gagawa ito ng mga folder gaya ng Biyahe kapag
+kailangan. Kaya rin ng mga panuntunan na tingnan ang tab ng inbox at kung
+galing sa mailing list ang mail.
+"""
+
+["2026-10-03-0200-chat-file-hover"]
+title = "Mas malambot na card ng file sa mga chat"
+text = """
+Hindi na dumidilim ang file sa bubble ng chat kapag itinapat ang pointer.
+Bahagya itong umaangat na may mahinang kulay, at madali pa ring basahin ang
+pangalan nito.
+"""
+
+["2026-10-03-0210-opened-mail-stays-in-view"]
+title = "Nananatiling kita ang mail na binuksan mo"
+text = """
+Kapag nasa tabi ng listahan ang pane ng pagbabasa, nananatili sa dati
+nitong puwesto sa listahan ang mail na kinlik mo habang bumubukas ang pane,
+o nag-i-scroll ang listahan nang sapat lang para makita ito nang buo. Hindi
+na ito nawawala sa paningin, mula man sa listahan o sa mga resulta ng
+paghahanap mo ito binuksan.
+"""
+
+["2026-10-03-0212-about-header-stays"]
+title = "Nananatiling kita ang header ng Tungkol"
+text = """
+Kapag nag-scroll sa Tungkol, lumiliit na ngayon ang malaking logo at
+nagiging maliit sa kaliwang itaas, katabi ang Katna, ang tagline nito at
+ang bersyon, at nananatili sa puwesto ang header na iyon habang nag-i-scroll
+sa ilalim nito ang iba pa.
+"""
+
+["2026-10-03-0221-folded-tab-icon-settles"]
+title = "Hindi na umuusog ang mga nakatiklop na tab"
+text = """
+Kapag lumipat ka sa pagitan ng mga nakatiklop na tab ng inbox, humihinto na
+ngayon ang tab na iniwan mo mismo sa laking kinaliitan nito, nang hindi
+umuusog ng isa o dalawang pixel ang icon nito pagkatapos ng galaw.
+"""
+
+["2026-10-03-0228-right-click-another-mail"]
+title = "Sapat na ang isang right-click"
+text = """
+Kapag bukas ang menu ng isang mail o folder, ang pag-right-click sa ibang
+mail o folder ay nagsasara na ngayon sa bukas na menu at agad na nagbubukas
+ng bago, sa halip na kailanganin ang pangalawang right-click.
+"""
+
+["2026-10-03-0235-rule-editor-fits"]
+title = "Kasya ang editor ng panuntunan"
+text = """
+Sa editor ng panuntunan, bumababa na sa mas maraming linya ang mahahabang
+salita o listahan ng address sa halip na maputol, buong nakikita ang
+“tumutugma sa pattern”, at nananatili ang editor sa loob ng window, na
+nag-i-scroll kapag marami itong kondisyon.
+"""
+
+["2026-10-03-0235-soft-button-hover"]
+title = "Mas malambot na hover sa mga button"
+text = """
+Kapag itinapat ang pointer sa isang bilog na button, marahan na ngayong
+lumalaki ang bilog nito mula sa dalawang-katlo ng laki nito habang
+lumilitaw, at medyo mas mabagal lumitaw ang mga pill button gaya ng
+Sumagot. Kapag inalis ang pointer, bahagyang lumiliit pabalik ang bilog
+habang naglalaho.
+"""
+
+["2026-10-03-0249-account-ring"]
+title = "Mas malinaw na singsing ng account"
+text = """
+Mas makapal na ang may-kulay na singsing sa paligid ng larawan ng bawat
+account, at mas may puwang na nang kaunti sa pagitan nito at ng larawan, sa
+itaas na bar, sa menu ng account at sa Mga setting.
+"""
+
+["2026-10-03-0335-chat-picture-steady"]
+title = "Hindi na tumatalon ang mga larawan sa chat"
+text = """
+Ang pag-scroll lampas sa dulo ng chat, o sa chat na walang ma-scroll, ay
+hindi na nagpapatalon sa larawan ng sender at sa mga button ng bubble.
+"""
+
+["2026-10-03-0355-no-hover-while-scrolling"]
+title = "Mas kalmadong pag-scroll sa listahan ng mail"
+text = """
+Habang nag-i-scroll ka sa listahan ng mail, hindi na umiilaw at hindi na
+nagpapakita ng mga button ang mga mail na dumaraan sa ilalim ng pointer.
+Gaya sa Gmail, umiilaw ang mail sa ilalim ng pointer kapag huminto na ang
+pag-scroll.
+"""
+
+["2026-10-03-0541-rule-rows-drag"]
+title = "Nadi-drag ang mga panuntunan gaya ng mga account"
+text = """
+Sa Mga setting > Mga folder at panuntunan, inaangat na ngayon ng pag-drag
+sa panuntunan ang buong hilera nito, umuusog ang ibang panuntunan para
+bigyan ito ng daan, at pumupuwesto ito kung saan mo ito binitawan, gaya ng
+pag-aayos ng pagkakasunod-sunod ng mga account.
+"""
+
+["2026-10-03-0545-chat-go-down-aligned"]
+title = "Nakahanay na ang button pababa"
+text = """
+Sa mga chat, ang bilog na button na nagdadala sa iyo sa pinakabagong mail
+ay nasa mismong itaas na ng button ng pagpapadala, sa iisang linya.
+"""
+
+["2026-10-03-0555-bottom-corners-round"]
+title = "Nananatiling bilog ang mga sulok sa ibaba"
+text = """
+Kapag sariling title bar ng Katna at bilog na sulok ang gamit, hindi na
+nagpapakita ang mga sulok sa ibaba ng window ng parisukat ng background
+nito lampas sa bilog na border.
+"""
+
+["2026-10-03-0606-account-dot-only"]
+title = "Mas tahimik na listahan ng mail"
+text = """
+Ang mga linya sa pinag-isang inbox ay nagpapakita na lang ng may-kulay na
+tuldok ng account sa tabi ng sender. Itapat ang pointer sa tuldok para
+makita kung saang account galing ang mail.
+"""
+
+["2026-10-03-0623-windows-updates"]
+title = "Mga update sa Windows"
+text = """
+Kusa nang nag-a-update ang Katna sa Windows. Tumitingin ito ng bagong
+bersyon kada oras, dina-download ang mga ito sa background at ini-install
+kapag pinindot mo ang I-update, saka muling bumubukas.
+"""
+
+["2026-10-03-0643-files-wildcard-search"]
+title = "Mga wildcard sa paghahanap sa Mga File"
+text = """
+Sa Mga File, nahahanap na ngayon ng paghahanap sa *.pdf ang bawat PDF, at
+gumagana ang * at ? saanman sa pangalan: nahahanap ng invoice*2026* ang
+bawat invoice ng 2026. Gumagana ito sa mga file ng iyong mail at sa Google
+Drive at OneDrive.
+"""
+
+["2026-10-03-0643-linux-package-updates"]
+title = "Mga update para sa bawat Linux package"
+text = """
+Kusa nang nag-a-update ang AppImage at ang Linux tarball gaya ng Arch
+package. Sa Fedora package, Snap, Flatpak o Nix, sinasabi sa iyo ng Katna
+kapag may bagong bersyon at ipinapakita ang iisang command na mag-i-install
+nito, handang kopyahin.
+"""
+
+["2026-10-03-0708-copy-codes"]
+title = "Kopyahin ang mga code mula sa notification"
+text = """
+May button na Kopyahin na ngayon ang notification ng bagong mail na may
+code para sa pag-sign in o beripikasyon, at ang may link para i-verify o
+kumpirmahin ang iyong address ay may button na nagsasabi ng site na
+bubuksan nito. Hindi na nagpapasunod sa mouse pointer ng tumatalbog na icon
+ng Katna ang mga button sa notification.
+"""
+
+["2026-10-03-0730-contact-card-popover"]
+title = "Card ng contact sa makitid na window"
+text = """
+Kapag walang puwang sa window para sa pane ng contact, ang pag-click sa
+pangalan o larawan ng isang tao ay nagbubukas ng maikling card sa ibabaw ng
+mail, nakaturo sa kung saan ka nag-click. Palaparin ang window at ang buong
+pane ang papalit dito.
+"""
+
+["2026-10-03-0733-compose-icon-turns"]
+title = "Umiikot ang icon ng malaking button habang lumilipat ka ng pahina"
+text = """
+Ang paglipat sa pagitan ng Mail, Kalendaryo, Mga Contact, Mga Gawain at Mga
+Tala ay hindi na biglang nagpapalit ng icon sa malaking button sa itaas ng
+kaliwang bar. Umiikot palayo at lumiliit ang lumang icon habang umiikot
+papasok ang bago, pati sa button ng phone.
+"""
+
+["2026-10-03-0746-sound-sets"]
+title = "Mga set ng tunog ng notification"
+text = """
+May mga set na ng tunog ang Mga setting > Mga Notification: Mga Ibon,
+Kalikasan, Mga Hayop, Mga Insekto, Elektroniko, Umaga, mga kampana ng Katna,
+o ang sarili ng iyong desktop. Umaawit na parang robin ang bagong mail
+maliban kung pumili ka ng ibang set. Puwede ring magkaroon ng sariling tunog
+ang kahit anong event, o ng sound file na pipiliin mo.
+"""
+
+["2026-10-03-0750-chat-seen-ticks"]
+title = "Sino ang nakakita ng iyong mail, sa mga chat"
+text = """
+Sa chat view, nagkakakulay ang mga tsek sa mail na ipinadala mo nang may
+tracking kapag may nagbukas nito. Sa tabi ng mga ito, binibilang ng maliit
+na mata ang mga pagbukas at ng link ang mga link na sinundan. Ipatong ang
+pointer sa mga ito para makita kung sino ang nagbukas o sumunod sa link,
+gaya ng ipinapakita ng mata sa mail view.
+"""
+
+["2026-10-03-0834-drawer-edge-clean"]
+title = "Walang linya sa tabi ng dumudulas na mga folder"
+text = """
+Sa phone o tablet, humihinto na ngayon sa gilid ang mga folder na dumudulas
+mula sa menu nang walang manipis na linyang kumikislap sa tabi nila habang
+pumupuwesto.
+"""
+
+["2026-10-03-0845-chat-summary-button-hides"]
+title = "Itinatago na ulit ito ng button ng buod"
+text = """
+Sa chat view, itinatago na ngayon ng kislap sa itaas ang buod kapag
+nakikita ito, at ipinapakita ulit sa susunod na click, gaya sa mail view.
+"""
+
+["2026-10-03-0915-big-button-glides"]
+title = "Dumudulas ang malaking button sa pagitan ng mga pahina"
+text = """
+Kapag bukas ang mga folder, hindi na biglang nag-iiba ang lapad ng malaking
+button sa itaas o ang salita nito kapag lumipat ng pahina. Marahang
+lumilipat ang button sa bago nitong lapad habang pataas na naglalaho ang
+lumang salita at umaangat papasok ang bago, kasabay ng umiikot na icon.
+"""
+
+["2026-10-03-0945-flat-row-hover"]
+title = "Mas malinaw na hover sa listahan ng mail"
+text = """
+Hindi na umaangat na may malambot na anino ang linya sa ilalim ng pointer.
+Sa halip, nagkakaroon ito ng patag at medyo mas matingkad na kulay, kaya
+nananatiling matalas ang mga gilid nito sa maliwanag at madilim.
+"""
+
+["2026-10-03-0959-drawer-bounce-back"]
+title = "Dumudulas ang mga folder na may talbog, malinis ang gilid"
+text = """
+Sa phone o tablet, bumalik na ang maliit na talbog ng mga folder na
+dumudulas mula sa menu, at wala nang anino sa gilid nila sa tabi ng rail.
+"""
+
+["2026-10-03-1030-crisp-card-edges"]
+title = "Mas matalas na gilid ng card sa maliwanag na kulay"
+text = """
+Sa maliwanag na kulay, may pino at matalas na gilid na ngayon at napakaikling
+anino ang listahan ng mail, ang bukas na mail at ang iba pang card sa halip
+na malambot na blur, kaya kasinglinaw na silang namumukod sa pahina gaya sa
+madilim na kulay.
+"""
+
+["2026-10-03-1206-matching-choice-chips"]
+title = "Magkakatugmang chip ng pagpipilian"
+text = """
+Iisang chip na ngayon ang mga pagpipilian sa Mga opsyon sa paghahanap,
+Aktibidad, pagsusulat gamit ang AI at mga address book ng isang contact:
+pare-pareho ang laki saanman, may tsek sa napili.
+"""
+
+["2026-10-03-1453-summary-folds-smoothly"]
+title = "Buod na maayos na tumitiklop"
+text = """
+Ang pagtiklop o pagbukas ng buod ng isang pag-uusap ay marahan nang
+dumudulas sa bago nitong taas, at umiikot kasabay nito ang arrow sa halip
+na tumalon.
+"""
+
+["2026-10-03-1523-animation-speed"]
+title = "Piliin kung gaano kabilis gumalaw ang mga bagay"
+text = """
+May Bilis ng animation na ang Mga setting > Hitsura: sundin ang bilis ng
+desktop, o pumili ng sariling bilis ng Katna, mula Mas mabilis hanggang Mas
+mabagal. Sumusunod din sa desktop ang Bawasan ang galaw, o puwede itong
+laging naka-on o laging naka-off.
+"""
+
+["2026-10-03-1536-paste-signature-html"]
+title = "I-paste ang HTML ng isang lagda"
+text = """
+May I-paste ang HTML na ang Mga setting > Mag-compose > Mga lagda, para sa
+lagdang dinisenyo sa isang website ng lagda o sa ibang mail app. Nililinis
+ito, dina-download ang mga larawan nito at isinasama sa loob ng mail, at
+ipinapakita ito ng window ng pag-compose nang eksakto kung paano ito
+ipapadala.
+"""
+
+["2026-10-03-1546-whats-new-header-stays"]
+title = "Nananatili ang heading ng Ano’ng bago"
+text = """
+Kapag nag-scroll sa Ano’ng bago, ang mga highlight na lang ang gumagalaw:
+nananatili sa itaas ang heading at sa ibaba ang Sige.
+"""
+
+["2026-10-03-1611-menus-fade-out"]
+title = "Naglalaho ang mga menu"
+text = """
+Naglalaho na ngayon ang right-click menu kapag nagsasara ito, sa halip na
+biglang mawala.
+"""
+
+["2026-10-03-1625-list-stays-put"]
+title = "Hindi gumagalaw ang listahan ng mail kapag nagbukas ka ng mail"
+text = """
+Hindi na naitutulak pababa nang isang linya ang listahan kapag nagbukas ng
+mail sa mga folder kung saan may mga mail na nagpapakita ng attachment.
+Nananatili ang listahan mismo kung saan mo ito na-scroll.
+"""
+
+["2026-10-03-1628-drawer-top-clean"]
+title = "Walang linya ng anino sa itaas ng dumudulas na mga folder"
+text = """
+Sa phone o tablet, wala nang manipis na linya ng anino sa itaas ng mga
+folder na dumudulas mula sa menu, sa ilalim ng search bar.
+"""
+
+["2026-10-03-1631-toolbar-menus-fade-out"]
+title = "Naglalaho na rin ang mga menu ng toolbar"
+text = """
+Ang mga menu sa ilalim ng mga button ng toolbar, gaya ng Higit pa at ng box
+ng pagpili, ay naglalaho na kapag nagsasara sa halip na biglang mawala.
+"""
+
+["2026-10-03-1632-settings-by-app"]
+title = "Mga setting na nakaayos ayon sa app"
+text = """
+May listahan na ng mga pahina sa gilid ang Mga setting: Lahat ng app para
+sa pinagsasaluhan ng bawat app, saka Mail, Kalendaryo at Mga File para sa
+sarili nilang setting, at bumubukas sa ilalim ng Mail ang mga pahina nito.
+Bumubukas ang Mga setting sa app na kinaroroonan mo, at nandoon na ang mga
+unang setting ng Kalendaryo.
+"""
+
+["2026-10-03-1650-popovers-fade-out"]
+title = "Naglalaho ang mga popover"
+text = """
+Ang maliliit na card na nakaturo sa pinagmulan nila, gaya ng card ng
+contact, kung sino ang nakakita ng mail, isang araw sa view na Taon, mga
+sariling petsa sa paghahanap at ang pamili ng kulay, ay naglalaho na kapag
+nagsasara sa halip na biglang mawala.
+"""
+
+["2026-10-03-1711-ring-centred"]
+title = "Pantay ang mga singsing ng account"
+text = """
+Pare-pareho na ngayon ang puwang sa bawat gilid ng may-kulay na singsing sa
+paligid ng larawan ng iyong account, sa kahit anong scaling, sa halip na
+magmukhang isang pixel na mas makapal ang isang gilid.
+"""
+
+["2026-10-03-1717-signature-pictures"]
+title = "Lumalabas na ulit ang mga larawan sa lagda"
+text = """
+Lumalabas na ngayon ang mga larawan mula sa web, gaya ng mga logo sa mga
+lagda ng Gmail, sa mga network na maagang pumuputol sa koneksyon sa Google,
+sa halip na manatiling walang lamang box.
+"""
+
+["2026-10-03-1723-import-signatures"]
+title = "Dalhin ang iyong mga lagda"
+text = """
+Hinahanap ng Mga setting > Mag-compose > Mga lagda > Mag-import ang mga
+lagda sa Gmail, at sa Thunderbird, Evolution at KMail sa computer na ito, kasama
+ang mga logo nila. I-tik ang mga gusto mo; hindi naka-tik ang mga nasa
+Katna na.
+"""
+
+["2026-10-03-1750-hover-folders-clean"]
+title = "Malinis na gilid ng mga folder na binuksan mula sa Mag-compose"
+text = """
+Sa window na kasinlaki ng tablet, wala nang manipis na linya sa itaas at
+kaliwang gilid ng mga folder na bumubukas kapag ipinatong mo ang pointer sa
+Mag-compose.
+"""
+
+["2026-10-03-1757-chat-links"]
+title = "Nabubuksan ang mga link mula sa chat"
+text = """
+Sa chat view, nabubuksan na sa isang click ang mga link ng mail, gaya sa
+mail view: ang sarili nitong mga link, at mga web at mail address na
+nakasulat sa text. Ipatong ang pointer sa isa para makita kung saan ito
+papunta. Nabubuksan na rin ang mga nakasulat na address sa plain-text na
+mail sa mail view.
+"""
+
+["2026-10-03-1811-folds-glide"]
+title = "Maayos na tumitiklop ang mga grupo ng kalendaryo"
+text = """
+Marahan nang bumubukas at sumasara ang mga kalendaryo ng isang account sa
+gilid na column ng Kalendaryo, at umiikot na sa halip na bumaligtad ang
+maliliit na arrow sa mga natitiklop (ang Higit pa sa card ng contact, ang
+mga tao sa chat, ang mga account sa Aktibidad, ang diwa ng sagot ng AI).
+"""
+
+["2026-10-03-1844-signature-layouts"]
+title = "Mga lagda mula sa labindalawang layout"
+text = """
+May labindalawang handang layout na ang Mga setting > Mag-compose > Mga
+lagda. Punan nang isang beses ang iyong pangalan, mga numero, logo, larawan
+at mga pahina, pumili ng layout at kulay, at tingnan ito gaya ng makikita
+ng babasa, maliwanag, madilim o bilang plain text. Kasama sa loob ng mail
+ang mga larawan, kaya lumalabas ang mga ito saanman.
+"""
+
+["2026-10-03-1850-copy-about-whats-new"]
+title = "Kumopya mula sa Tungkol at Ano’ng bago"
+text = """
+Napipili at nakokopya na ang mga salita sa Tungkol sa Katna at Ano’ng bago,
+gaya sa browser: i-drag sa ibabaw ng mga ito, i-double-click ang isang
+salita o i-triple-click ang isang talata, saka Ctrl+C o i-right-click >
+Kopyahin. Madaling i-paste ang bersyon sa ulat ng bug.
+"""
+
+["2026-10-03-1904-copy-version"]
+title = "Kopyahin ang bersyon sa isang click"
+text = """
+Ipatong ang pointer sa bersyon sa Tungkol, Ano’ng bago o Mga setting at
+lalabas sa tabi nito ang maliit na button ng pagkopya. Kinokopya nito ang
+bersyon, kung kailan ito binuo at ang iyong system, handang i-paste sa ulat
+ng bug.
+"""
+
+["2026-10-03-1924-settings-in-window"]
+title = "Nasa tabi na ulit ng iyong mail ang Mga setting"
+text = """
+Bumubukas na ulit ang Mga setting sa loob ng pangunahing window, kapalit ng
+pahinang kinaroroonan mo, na nakagrupo ang listahan ng mga pahina nito sa
+Lahat ng app at sa bawat app.
+"""
+
+["2026-10-03-1934-copy-any-text"]
+title = "Kumopya ng text kahit saan"
+text = """
+Napipili at nakokopya na ngayon sa buong Katna ang text na may sinasabi sa
+iyo: mga pangalan at paglalarawan ng setting, mga detalye ng contact at
+event, status ng account, mga mensahe ng error, mga tala sa walang lamang
+pahina at mga dialog. I-drag sa ibabaw nito o i-double-click ang isang
+salita, saka Ctrl+C o i-right-click > Kopyahin. Walang nagbago sa mga
+button at hilera na kinikilik mo.
+"""
+
+["2026-10-03-2011-calendar-tasks-switch-month-drag"]
+title = "Mga gawain sa Kalendaryo: ipakita o itago, i-drag sa Buwan"
+text = """
+May box na Mga Gawain na ang listahan sa gilid ng Kalendaryo, sa ilalim ng
+iyong mga kalendaryo: alisin ang tsek nito at mawawala ang mga gawain sa
+Araw, Linggo, Buwan at Iskedyul hanggang i-tik mo ulit. Sa view na Buwan,
+puwede mo nang i-drag ang isang gawain sa ibang araw; nananatili ang oras
+nito, at ibinabalik ito ng I-undo.
+"""
+
+["2026-10-03-2023-tasks-upcoming-completed-sort-select"]
+title = "Paparating, Tapos na, pag-aayos at pagpili sa Mga Gawain"
+text = """
+May dalawang bagong view ang Mga Gawain. Ipinapakita ng Paparating ang
+susunod na dalawang linggo, araw-araw, na nasa itaas ang mga lampas na sa
+takdang araw; i-drag ang isang gawain sa ibang araw para ilipat ito.
+Ipinapakita ng Tapos na ang lahat ng tinsek mo, ayon sa araw, at
+naibabalik ang gawain kapag inalis ang tsek nito. Kayang ayusin ng menu na
+⋮ ng bawat listahan ang mga ito ayon sa petsa, star o pamagat.
+Mag-Ctrl+click o Shift+click sa ilang gawain para tapusin, ilipat,
+lagyan ng petsa, i-star o i-delete ang lahat nang sabay-sabay.
+"""
+
+["2026-10-03-2040-task-labels-and-files"]
+title = "Mga label at file sa mga gawain"
+text = """
+Tumatanggap ang mga gawain ng parehong mga label gaya ng iyong mga tala:
+idagdag ang mga ito sa detalye ng gawain o i-type ang #home sa bagong
+gawain, at pumili ng label sa kaliwa para makita ang bawat gawaing may
+ganito. Mag-drop ng file sa isang gawain para ilakip ito, at pinananatili
+ng Idagdag sa Mga Gawain ang mga attachment ng mail. Napupunta ang star,
+mga label at mga file sa Microsoft To Do at sa iyong CalDAV server, at ang
+star sa Zoho.
+"""
+
+["2026-10-03-2102-notes-pictures-reminders-history"]
+title = "Mga Tala: mga larawan, paalala at kasaysayan"
+text = """
+Tumatanggap ng larawan ang mga tala, nagpapaalala sa oras na pipiliin mo,
+at nag-iingat ng 30 araw ng kasaysayang puwede mong ibalik. Mag-Ctrl+click
+sa ilang tala para sabay-sabay na i-pin, kulayan, lagyan ng label o
+i-archive ang mga ito, i-type ang [[ para i-link ang isang tala sa iba, at
+magdagdag ng mga sipi, code at divider. Ipadala ang tala bilang mail o
+i-save ito bilang Markdown o PDF, at kapag naka-on ang AI, inaayos, ginagawang
+listahan o binubuod ito ng kislap.
+"""
+
+["2026-10-03-2102-quick-capture"]
+title = "Isulat agad ang naisip mo, saanman"
+text = """
+Nagbubukas ang Meta+Alt+T ng maliit na card sa ibabaw ng ginagawa mo para
+magdagdag ng gawain, at ang Meta+Alt+N para magtala. I-type ang “Tawagan
+ang tubero fri 6pm #home” at ipapakita ng mga chip ang araw, label, listahan
+at paalalang naintindihan nito; i-click ang isa para baguhin ito. Lumilipat
+ang Tab sa pagitan ng Gawain at Tala, at nagse-save ang Enter. Nasa menu
+rin ito ng tray, at sa KRunner bilang task: at note:.
+"""
+
+["2026-10-04-0102-soft-hovers"]
+title = "Mas malambot na hover"
+text = """
+Kapag ipinatong ang pointer sa app rail, sa box ng pagpili, sa isang tab at
+sa marami pang button, marahan nang lumilitaw at naglalaho ang highlight
+nila sa halip na biglang bumukas.
+"""
+
+["2026-10-04-0119-cards-lift"]
+title = "Mga card na umaangat"
+text = """
+Ang mga file, attachment, folder sa Drive, imbitasyon, buod, ang box ng
+sagot at ang mga serbisyo ng mail sa Idagdag ang account ay mga card na
+ngayon na may parehong malambot na gilid at anino gaya ng iba pang bahagi
+ng Katna, sa halip na patag na balangkas.
+"""
+
+["2026-10-04-0119-notes-select-bar-matches"]
+title = "Mga Tala: mas malambot na card na gumagalaw"
+text = """
+Gumagamit na ang Mga Tala ng parehong mga card, chip at bar gaya ng iba
+pang bahagi ng Katna. Nakapatong ang mga card sa malambot na anino at
+marahang umaangat sa ilalim ng pointer, lumilitaw nang marahan ang mga
+bagong tala, naglalaho ang mga inalis, at bumubukas at sumasara ang tala sa
+maikling zoom. Kapareho ng bilog na hugis ng “Magtala…” ang bar na
+ginagamit mo sa pagpili ng mga tala, kaya ang laman lang nito ang nagbabago.
+Sumusunod ang lahat ng ito sa Bawasan ang galaw at Bilis ng animation.
+"""
+
+["2026-10-04-0128-header-labels"]
+title = "Bawat label sa bukas na mail"
+text = """
+Ipinapakita na ngayon ng bukas na mail ang lahat ng chip nito sa ilalim ng
+subject, gaya sa Gmail: Inbox, Mahalaga, ang tab nito sa inbox, Naka-star,
+at bawat folder o label na kinalalagyan nito. Itapat ang pointer sa isa
+para alisin ito gamit ang ×, may I-undo.
+"""
+
+["2026-10-04-0150-settings-own-list"]
+title = "Sa Mga setting ang buong window"
+text = """
+Habang bukas ang Mga setting, tumitiklop palayo ang mga folder, kaya ang
+sariling listahan ng mga pahina ng Mga setting lang ang nakikita mo sa tabi
+ng pahinang pinili mo. Bumabalik ang mga ito kapag umalis ka.
+"""
+
+["2026-10-04-0154-summary-pill"]
+title = "Mas kalmadong button ng buod, at header na hindi gumagalaw"
+text = """
+Sa chat view, nasa sarili na nitong maliit na abong pill ang kislap ng buod
+sa tabi ng switch na Chat at Mail, at pumuputi ito habang nakikita ang
+buod. Marahang bumubukas at sumasara ang buod sa halip na biglang lumitaw.
+Sa mail at chat view, nananatili na sa itaas ang header habang nag-i-scroll
+sa ilalim nito ang mga mail, at dumudulas din sa ilalim ng itaas na bar ang
+mga hilera ng listahan ng mail, frosted kapag naka-on ang Blur. May switch
+na Mga frosted na header ang Mga setting > Pang-eksperimento para gawing
+buo ang mga ito.
+"""
+
+["2026-10-04-0204-tasks-motion"]
+title = "Mga gawaing gumagalaw"
+text = """
+Kapag tinsek ang isang gawain, napupuno ang bilog nito, nagkakaguhit ang
+pamagat at tumitiklop palayo ang hilera. Dumudulas papasok at palabas ang
+mga bago at binurang gawain, marahang lumilipat sa puwesto nila ang mga
+inayos ulit, at bahagyang umaangat ang mga card ng listahan kapag itinapat
+mo ang pointer.
+"""
+
+["2026-10-04-0225-shortcuts-dialog"]
+title = "Mga keyboard shortcut sa isang tingin"
+text = """
+Ipinapakita na ngayon ng Tulong > Mga keyboard shortcut, o ng key na ?, ang
+bawat shortcut sa maliit na window sa ibabaw ng iyong mail, may box para
+maghanap ng isa. Sa Mga setting > Mga Shortcut pa rin pinapalitan ang mga
+key.
+"""
+
+["2026-10-04-0305-unified-leave-out"]
+title = "Huwag isama ang isang inbox sa Lahat ng Account"
+text = """
+I-right-click ang inbox ng isang account sa ilalim ng Lahat ng Account at
+piliin ang Huwag isama sa pinag-isang Inbox: hindi na mapupunta ang mail
+nito sa pinag-isang Inbox, pero nananatili ang hilera at binubuksan nito
+ang inbox na iyon. I-click ang mata nito para ibalik ito. Sa Mga setting >
+Inbox, puwede mo ring alisin sa Lahat ng Account ang isang buong account.
+"""
+
+["2026-10-04-0310-leave-account-out"]
+title = "Huwag isama ang isang account sa isang app"
+text = """
+May pahina na sa Mga setting para sa Mga Contact, Mga Gawain at Mga Tala,
+at inililista ng bawat isa sa mga ito at ng Mga File ang iyong mga account
+na may switch. I-off ang isa para hindi isama ang account na iyon sa app,
+at tatahimik ang mga paalala nito. Patuloy na nagsi-sync ang mga item nito,
+kaya bumabalik agad ang mga ito kapag in-on mo ulit.
+"""
+
+["2026-10-04-0320-calendar-leave-account-out"]
+title = "Huwag isama ang isang account sa Kalendaryo"
+text = """
+Inililista rin ng Mga setting > Kalendaryo ang iyong mga account na may
+switch. I-off ang isa at mawawala sa Kalendaryo ang mga kalendaryo, event
+at gawain nito, at hindi ka na papaalalahanan ng mga event nito. Patuloy
+itong nagsi-sync, kaya bumabalik agad ito kapag in-on mo.
+"""
+
+["2026-10-04-0327-contact-card-points-right"]
+title = "Bumubukas ang card ng contact kung saan ka nag-click"
+text = """
+Sa makitid na window, nakaturo na ngayon mismo sa pangalan o larawan ng
+isang tao ang card ng contact na bumubukas mula rito, sa chat view man o sa
+mail view, at maayos itong bumubukas kahit sa unang beses: sinisimulan ng
+Katna ang pagbasa sa mga detalye ng tao sa sandaling ipatong ang pointer sa
+mga ito. Isinasara ng pangalawang click sa parehong pangalan o larawan ang
+card.
+"""
+
+["2026-10-04-0336-files-card-corners"]
+title = "Mas kalmadong card ng file"
+text = """
+Nakapatong na ngayon sa malambot na anino ang mga card ng file sa Mga File
+at sa ilalim ng mail, at bahagyang umaangat kapag itinapat mo ang pointer
+sa isa. Hindi gumagalaw ang preview: lumilitaw sa kaliwang itaas nito ang
+laki ng file at sa kanang itaas ang mga button nito, sa frosted na salamin,
+kaya walang tumatalon.
+"""
+
+["2026-10-04-0345-pane-tops-whole"]
+title = "Hindi na napuputol ang itaas ng mga pane"
+text = """
+Kapag sariling title bar ng Katna ang gamit, buo nang ipinapakita ang
+itaas na gilid at malambot na anino ng listahan ng mail, ng bukas na mail
+at ng mga pane sa gilid kapag hindi naka-maximize ang window, sa halip na
+magmukhang patag na pinutol sa ilalim ng itaas na bar.
+"""
+
+["2026-10-04-0354-account-offline"]
+title = "Gawing offline ang isang account"
+text = """
+I-right-click ang isang account at piliin ang Mag-offline, nang isang oras
+o hanggang bukas kung gusto mo. Titigil ang Katna sa pagkonekta rito, at
+may lalabas na ulap na may ekis sa tabi ng bilang nito at sa iyong larawan.
+Nananatili rito ang mail nito para mabasa, at ang ia-archive, buburahin o
+ipapadala mo habang offline ay ipapadala kapag kinlik mo ang ulap para
+mag-online. May switch na Nakakonekta ang Mga setting > Mga Account para sa
+bawat account, at kayang gawing offline ng card ng account ang lahat ng
+account nang sabay-sabay.
+"""
+
+["2026-10-04-0420-resize-steady"]
+title = "Hindi gumagalaw habang binabago ang laki"
+text = """
+Kapag sariling title bar ng Katna ang gamit sa Wayland, hindi na gumagalaw
+ang laman ng window habang dina-drag mo ang isang gilid para baguhin ang
+laki nito, sa halip na umalog.
+"""
+
+["2026-10-04-0531-turn-apps-off"]
+title = "I-off ang mga app na hindi mo ginagamit"
+text = """
+May switch ang Mga setting > Mga App para sa Kalendaryo, Mga Contact, Mga
+Gawain, Mga Tala at Mga File, at nag-aalok ng I-off ang pag-right-click sa
+isa sa rail. Nawawala sa rail at sa mga key nito ang app na naka-off, at
+walang nagbabago sa iyong mga account. Kapag Mail lang ang naka-on, nawawala
+ang rail at mail app na lang ang Katna.
+"""
+
+["2026-10-04-0635-remove-app-copy"]
+title = "Bawiin ang espasyo ng app na in-off mo"
+text = """
+Kapag in-off ang isang app sa Mga setting > Mga App, nag-aalok na ngayon
+ito na alisin ang kopya nito sa computer na ito. Walang nagbabago sa iyong
+mga account, at dina-download ulit ito kapag in-on mo ulit. Ang mga bagong
+account ay hinihingan lang ng kailangan ng mga app na ginagamit mo.
+"""
+
+["2026-10-04-1100-account-problems"]
+title = "Tingnan at ayusin ang problema ng account sa iisang lugar"
+text = """
+Kapag kailangan ka ng isang account, may linya sa itaas ng listahan ng mail
+na nagsasabi sa simpleng salita kung ano ang nangyari, katabi ang pag-ayos.
+Nagbubukas ang binagong password ng maliit na card kung saan mo ita-type
+ang bago, at sinusuri ito ng Katna bago itago. May markang amber din ang
+account sa pane ng folder at sa iyong larawan. Kapag nawala ang iyong
+koneksyon, may isang tahimik na linyang nagsasabing offline ka at
+maghihintay ang mail na ipapadala mo hanggang makabalik ka.
+"""
+
+["2026-10-04-1110-contact-card-placeholder"]
+title = "Buong bumubukas ang card ng contact"
+text = """
+Kapag medyo natatagalan ang pag-load ng mga detalye ng isang tao, bumubukas
+na ngayon sa karaniwang laki ang card ng contact na lumalabas sa ibabaw ng
+pangalan o larawan, may malalabong linya kung saan mapupunta ang mga
+detalye, saka pinupunan ang mga ito at marahang umaayon sa laki, sa halip
+na bumukas nang maliit at biglang tumangkad.
+"""
+
+["2026-10-04-1144-account-problems-settings"]
+title = "Problema ng account sa Mga setting din"
+text = """
+Sinasabi na ngayon ng Mga setting > Mga Account kung ano ang mali sa isang
+account sa ilalim ng pangalan nito, gaya ng tinanggihang password, katabi
+mismo ang pag-ayos.
+"""
+
+["2026-10-04-1147-subject-scrolls-again"]
+title = "Nag-i-scroll na ulit ang subject kasama ng mail"
+text = """
+Sa mail view, nag-i-scroll na ulit palayo ang subject kasama ng mga mail,
+sa ilalim ng simpleng toolbar. Sa chat view, sumasama ang toolbar sa
+naka-pin na header, kaya dumudulas ang mga bubble sa ilalim ng dalawa,
+frosted kapag naka-on ang Blur. Pinananatili na ngayon ng itaas na bar ng
+listahan ng mail ang bilog na sulok ng card, at kapag naka-off ang Mga
+frosted na header, hindi na tumatagos dito ang mga hilera. Sa window na
+kasinlaki ng phone, bilog din ang mga sulok sa ibaba.
+"""
+
+["2026-10-04-1223-outbox"]
+title = "Outbox para sa mail na hindi pa naipapadala"
+text = """
+Naghihintay na ngayon ang mail na hindi naipadala sa Outbox sa ilalim ng
+Naipadala, na lumalabas lang habang may laman ito. Sinasabi ng bawat
+mensahe kung bakit sa simpleng salita, may Subukang muli, I-edit at
+I-delete. Ang mail na ipinadala mo habang nagbago ang password ng isang
+account o natapos ang sign-in nito ay naghihintay doon at ipinapadala agad
+kapag naayos mo ito, sa halip na pumalya.
+"""
+
+["2026-10-04-1246-refused-changes"]
+title = "Hindi na tahimik na binabawi ang mga pagbabagong tinanggihan ng server"
+text = """
+Kapag paulit-ulit na tinatanggihan ng mail server ang isang pagbabago, gaya
+ng paglipat ng mensahe sa folder na binura sa ibang lugar, ibinabalik ito
+ng Katna sa dati at sinasabi na ito ngayon sa simpleng salita, may Mga
+detalye para sa mismong sagot ng server.
+"""
+
+["2026-10-04-1250-phone-scroll-steady"]
+title = "Hindi umaalog ang listahan sa window na kasinlaki ng phone"
+text = """
+Ang mabilis na pag-scroll sa listahan ng mail sa window na kasinlaki ng
+phone ay hindi na nagpapaalog dito pataas at pababa habang dumudulas palayo
+ang mga tab.
+"""
+
+["2026-10-04-1309-needs-you-notifications"]
+title = "Sinasabihan ka nang isang beses kapag kailangan ka ng account o mensahe"
+text = """
+Kapag tinanggihan ng mail server ang iyong password, natapos ang isang
+sign-in o hindi maipadala ang isang mensahe, sinasabi ito nang isang beses
+ng notification sa desktop, kahit sarado ang Katna Mail. Binubuksan ng
+button nito ang pag-ayos: Bagong password, Mag-sign in o ang Outbox.
+Inililista ng tooltip ng icon sa tray ang mga naghihintay sa iyo.
+"""
+
+["2026-10-04-1510-dialogs-fit-phone"]
+title = "Kasya ang mga dialog sa window na kasinlaki ng phone"
+text = """
+Kasya na ngayon ang Ano’ng bago, Tungkol, Mga Update, Mga keyboard
+shortcut at ang iba pang dialog sa loob ng makitid na window na may
+sariling frame ng Katna, sa halip na lumampas sa mga gilid nito.
+"""
+
+["2026-10-04-1511-solid-mail-list-bar"]
+title = "Walang dumudulas sa ilalim ng mga bar"
+text = """
+Nagsisimula na ngayon sa ibaba ng kanilang mga bar ang mga mail sa
+listahan ng mail, ang bukas na mail at ang mga bubble ng chat, sa halip na
+dumulas sa ilalim ng mga ito, at nananatiling buo ang mga bar. Wala na ang
+switch na Mga frosted na header, pati ang mga kakaibang sulok na dala nito.
+"""
+
+["2026-10-04-1525-menus-inside-window"]
+title = "Nananatili sa loob ng window ang mga menu at tooltip"
+text = """
+Kapag sariling frame ng window ng Katna ang gamit, hindi na lumalampas sa
+anino ng window ang mga right-click menu, popover at tooltip na malapit sa
+gilid; nananatili ang mga ito sa loob nito.
+"""
+
+["2026-10-04-1525-unified-stacked-picture"]
+title = "Ipinapakita ng Lahat ng Account ang bawat larawan"
+text = """
+Kapag bukas ang Lahat ng Account, maliit na patong-patong na larawan ng
+iyong mga account na ngayon ang larawan sa kanang itaas, may +N para sa
+iba pa, kaya agad mong makikitang iba ito sa iisang account. Itapat ang
+pointer dito at marahang maghihiwalay ang mga larawan.
+"""
+
+["2026-10-04-2338-all-accounts-row"]
+title = "Bumalik sa Lahat ng Account mula sa menu ng account"
+text = """
+Nagsisimula na ngayon ang menu ng account sa Lahat ng Account, kasama ang
+bilang ng hindi pa nabasa, kaya isang click lang para makabalik pagkatapos
+pumili ng iisang account. Minamarkahan ng menu ng tsek ang nakabukas, at
+humihinto rin sa Lahat ng Account ang pag-scroll sa ibabaw ng larawan.
+"""
+
+["2026-10-05-1257-service-starts-again"]
+title = "Kusang sinisimulan ng Katna ang serbisyo nito sa background"
+text = """
+Kapag hindi tumatakbo ang serbisyong nagsi-sync ng iyong mail at nagpapakita
+ng icon sa tray, kusa itong sinisimulan ulit ng Katna Mail. Hindi na
+kailangan ng terminal. Kung ayaw pa rin nitong magsimula, may linya sa
+itaas ng iyong mail na nagsasabi nito, may Simulan muli at mga detalyeng
+makokopya para sa ulat.
+"""
+
+["2026-10-05-1430-stuck-window-replaced"]
+title = "Bumubukas ang Katna Mail kahit may kopyang na-stuck"
+text = """
+Kung huminto sa pagtugon ang Katna Mail sa background, ang muling pagbukas
+nito ay nagsasara na ngayon sa na-stuck na kopya at nagbubukas ng bagong
+window, sa halip na walang gawin.
+"""
+
+["2026-10-05-1605-read-receipts-as-ticks"]
+title = "Hindi na lumalabas bilang mail ang mga read receipt"
+text = """
+Kapag nagpadala ang mail app ng isang tao ng read receipt para sa mail na
+ipinadala mo, hindi na ito lumalabas bilang bagong mensahe sa pag-uusap.
+Nagkakaroon ang iyong mensahe ng asul na tsek at linyang nagsasabi kung
+sino ang nakabasa nito at kailan, at minamarkahang nabasa na ang receipt,
+kaya hindi ka nito inaabisuhan. Nananatili ito sa iyong mailbox at sa
+paghahanap.
+"""
+
+["2026-10-05-1620-reply-tools-fold"]
+title = "Kasya ang mga tool sa pagsagot sa makitid na window"
+text = """
+Kapag makitid ang pane ng pagbabasa o ang window, hindi na lumalampas sa
+sagot ang bar ng pag-format at ang hilera sa tabi ng Ipadala. Lumilipat sa
+⋮ Higit pa ang mga tool na hindi kasya, una ang pinakabihirang gamitin, at
+sa phone, icon na lang ang ipinapakita ng Ipadala.
+"""
+
+["2026-10-05-1637-read-receipts-out-of-the-list"]
+title = "Wala na sa listahan ng mail ang mga read receipt"
+text = """
+Hindi na lumalabas sa listahan ng mail bilang linyang “Read: …” ang read
+receipt para sa mail na ipinadala mo. Pinananatili ng pag-uusap ang sarili
+nitong subject at preview, at ipinapakita ng iyong naipadalang mail ang mga
+tsek.
+"""
+
+["2026-10-05-1640-windows-frost"]
+title = "Frosted na salamin sa Windows"
+text = """
+Pinalalabo na rin sa Windows ng mga menu, popover, dialog, bar ng viewer at
+mga frosted na pane ang nasa ilalim nila, gamit ang parehong setting ng
+Lakas ng blur at Opacity gaya sa Linux. I-on o i-off ito sa Mga setting,
+Pang-eksperimento, Mga frosted na menu at dialog.
+"""
+
+["2026-10-06-0156-phone-activity"]
+title = "Aktibidad sa phone"
+text = """
+Sa window na kasinlaki ng phone, nasa search bar na ngayon ang Aktibidad sa
+tabi ng larawan ng iyong account, kasama ang bilang ng mga bagong pagbukas
+at click. Kasya ang listahan nito sa loob ng window.
+"""
+
+["2026-10-06-0215-pin-bar-no-jump"]
+title = "Hindi gumagalaw ang chat kapag nagpi-pin"
+text = """
+Sa chat view, hindi na tumatalon ang pag-uusap kapag nag-pin o nag-unpin ng
+mail, kahit sa pinakadulo nito: marahang lumilitaw ang bar ng naka-pin sa
+itaas nito at nananatili sa puwesto ang mga mensahe.
+"""
+
+["2026-10-06-0942-fainter-row-marks"]
+title = "Mas tahimik na tick box at star"
+text = """
+Sa listahan ng mail, mas malabo ang tick box, star at marka ng Mahalaga ng
+isang linya hanggang itapat mo ang pointer sa linya. Ang mga nakatakdang
+star at marka ay ipinapakita gaya ng dati.
+"""
+
+["2026-10-06-1448-activity-beside-calendar"]
+title = "Aktibidad kasama ng ibang button"
+text = """
+Sa mas malapad na window, nasa kanan na ngayon ang button ng Aktibidad
+kasama ng Kalendaryo at Mga setting. Kapag bukas ang Lahat ng Account,
+naghihiwalay ang mga larawan ng account kapag itinapat ang pointer nang
+hindi gumagalaw ang mga button sa tabi nila.
+"""
+
+["2026-10-06-1524-search-fills-bar"]
+title = "Mas mahabang search box"
+text = """
+Sa malapad na window, umaabot na ngayon ang search box hanggang sa mga
+button sa kanan sa halip na huminto sa kalagitnaan. Bumubukas sa gitna sa
+ilalim nito ang Mga opsyon sa paghahanap at nananatiling komportable ang
+lapad.
+"""
+
+["2026-10-07-0110-follow-up-for-you"]
+title = "Mga follow-up na kusang ipinapadala"
+text = """
+Sa menu sa tabi ng Ipadala, kaya na ngayon ng Mag-follow up kung walang
+sagot na magpadala ng maikling follow-up para sa iyo kapag walang sumagot:
+isulat ito nang isang beses, piliin kung kailan, at piliin kung susubukan
+pa nang isang beses. Ipinapadala ito sa mga araw ng trabaho sa oras ng
+trabaho, humihinto sa sandaling may sumagot (hindi kasama ang mga
+auto-reply), at hinihintay ka sa halip na maipadala nang huli kung patay
+ang iyong computer. Ipinapakita ng chip sa tabi ng Ipadala kung ano ang
+nakatakda. O gawin lang itong paalala, puwede na sa kahit anong petsang
+pipiliin mo.
+"""
+
+["2026-10-07-0117-drawer-logo"]
+title = "Logo ng Katna sa drawer"
+text = """
+Sa phone, ipinapakita na ngayon ng drawer ng iyong mga folder ang logo ng
+Katna sa tabi ng pangalan nito, sa iyong kulay ng accent, sa halip na
+simpleng sobre. Sa tablet, kung saan ipinapakita na ang mga ito ng itaas na
+bar, nagsisimula ang drawer sa iyong mga folder.
+"""
+
+["2026-10-07-0118-clock-popup"]
+title = "Mas maayos na orasan sa desktop"
+text = """
+Sa Katna Digital Clock, nasa tabi na ngayon ng petsa sa itaas ang iyong mga
+time zone, at tumitiklop ang listahan ng Mga Gawain sa isang click sa
+heading nito. Nagbubukas ang pagdaragdag ng event ng maliit na window na
+Bagong event sa halip na ang buong app. Hindi na dalawang beses lumalabas
+ang mga bagong gawain pagkatapos ng aberya sa sync.
+"""
+
+["2026-10-07-0232-mcp-server"]
+title = "Hayaang gamitin ng mga AI assistant ang iyong mail"
+text = """
+Hinahayaan ng Mga setting > MCP server ang mga AI assistant sa computer na
+ito, gaya ng Claude Desktop, Claude Code at LM Studio, na maghanap at
+magbasa ng iyong mail at mag-save ng mga draft na susuriin mo. Naka-off ito
+hanggang i-on mo. Piliin kung aling mga account ang nakikita nila, kopyahin
+ang ipi-paste sa iyong assistant, at tingnan ang ginawa nila kamakailan.
+Hindi kailanman nagpapadala, nagbubura o naglilipat ng mail ang mga
+assistant.
+"""
+
+["2026-10-07-0359-waiting-for-reply"]
+title = "Tingnan ang naghihintay ng sagot"
+text = """
+Nakalista sa ilalim ng Naghihintay, sa ibaba ng Naipadala, ang mail na
+ipinadala mo nang may follow-up o paalala. Nagpapakita ang mga linya nito
+ng chip na nagsasabi kung ano ang susunod at kailan, sa Naghihintay at sa
+iyong Inbox din. Buksan ang isa para ilipat ang follow-up sa ibang oras,
+ipadala ito ngayon, o ihinto ito.
+"""
+
+["2026-10-07-0505-follow-ups-in-chats"]
+title = "Mga follow-up sa Chat View"
+text = """
+Sa Chat View, ang follow-up na naghihintay maipadala ay lumalabas bilang
+malabong bubble sa dulo ng chat, may I-edit, Ipadala ngayon at Ihinto.
+Para magtakda ng isa, i-right-click o pindutin nang matagal ang Ipadala at
+piliin ang Mag-follow up kung walang sagot.
+"""
+
+["2026-10-07-0603-remind-me"]
+title = "Magpapaalala tungkol sa kahit anong mail"
+text = """
+Pindutin ang H sa isang mail, o gamitin ang Paalalahanan ako sa tabi ng
+I-snooze, para mapaalalahanan sa isang oras habang nananatili ang mail sa
+kinalalagyan nito. Kung sinasabi ng mail na may dapat matapos sa isang
+araw, iniaalok ng Katna ang umaga bago iyon. Mga gawain sa Mga Gawain ang
+mga paalala, nakalista sa ilalim ng Mga Paalala at ipinapakita sa linya ng
+mail. Nag-i-snooze ang B.
+"""
+
+["2026-10-07-0718-snooze-extras"]
+title = "Alam ng Snooze kapag may sumagot"
+text = """
+Agad na bumabalik ang naka-snooze na pag-uusap kapag may sumulat dito. Sa
+Pumili ng petsa at oras, puwede mong i-type ang “tue 3pm” o “in 2 hours”.
+Kaya ng notification ng bagong mail na i-snooze ito nang isang oras o
+hanggang bukas.
+"""
+
+["2026-10-07-0802-your-snooze-times"]
+title = "I-snooze sa sarili mong paraan"
+text = """
+Itakda kung ano ang ibig sabihin ng Mamaya, Bukas, Ngayong weekend at Sa
+susunod na linggo, at magdagdag ng sarili mong oras, sa Mga setting >
+Inbox. Inililista ng Naka-snooze ang mail ayon sa kung kailan ito babalik.
+Sa phone, i-swipe pakaliwa ang isang linya para i-snooze ito.
+"""
+
+["2026-10-07-0913-pick-date-in-place"]
+title = "Pumili ng petsa kung saan ka nag-click"
+text = """
+Dumudulas na ngayon ang Pumili ng petsa at oras sa mismong menu ng snooze
+at Paalalahanan ako, sa halip na box sa gitna ng window. Ibinabalik ka ng
+arrow pabalik sa mga oras.
+"""
+
+["2026-10-07-0953-nudges"]
+title = "Bumabalik ang mga tanong na walang sumagot"
+text = """
+Ang mail na ipinadala mo na may itinanong at walang sagot sa loob ng
+tatlong araw ay bumabalik sa itaas ng Inbox na may “Ipinadala 3 araw ang
+nakalipas. Mag-follow up?”. I-click ito para mag-follow up, o ang x para
+itabi ito. Ino-off ito sa Mga setting > Inbox.
+"""
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "May sariling menu ang Mga setting"
+text = """
+May mahinang kulay mula itaas hanggang ibaba ang listahan ng mga pahina sa
+kaliwa ng Mga setting, kaya hiwalay ito sa pahinang binabasa mo.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Pumipili ng petsa sa mismong I-iskedyul ang pagpapadala"
+text = """
+Dumudulas na ngayon ang Pumili ng petsa at oras sa I-iskedyul ang
+pagpapadala at sa Mag-follow up kung walang sagot sa mismong menu kung saan
+mo ito binuksan, gaya ng sa I-snooze, sa halip na box sa ibabaw ng
+mensahe. Ibinabalik ka ng arrow pabalik o ng Esc sa mga oras.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Tugma ang icon sa tray sa panel mo mula sa pag-login"
+text = """
+Sa KDE Plasma, kinukuha na ngayon ng isang-kulay na icon sa tray ang kulay
+ng panel mo pagka-login mismo at sinusundan ang bawat paglipat sa pagitan
+ng maliwanag at madilim, nang hindi nire-restart ang Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Maghanap ng mga drawing at larawan"
+text = """
+May dalawang bagong uri ng attachment ang Mga opsyon sa paghahanap: DWG
+para sa mga drawing ng AutoCAD (at DXF), at Larawan para sa mga photo at
+larawan. Nahahanap na rin ng XLSX ang mga lumang XLS file, at ng PPTX ang
+PPT, kaya iisang button lang ang bawat isa.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Ipinapakita lang ng mga menu ang angkop"
+text = """
+Hindi na inililista ng menu na Higit pa ang magkabilang panig ng isang
+pares. Markahan bilang hindi pa nabasa ang ipinapakita ng nabasang mail,
+Alisin ang star ng naka-star, Markahan bilang hindi mahalaga ng mahalaga,
+I-unpin ng naka-pin. Kapag pumili ka ng ilang mail na magkakaiba, makukuha
+mo ang aksyong magpapapareho sa lahat, dito at sa right-click menu.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Nakapatong sa card ang Mga setting"
+text = """
+Sa maliwanag na kulay, may parehong manipis na gilid at malambot na anino
+na ngayon ang pahina ng Mga setting gaya ng listahan ng mail, kaya hiwalay
+ito sa window sa likod nito.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Mas maayos na mga button ng app"
+text = """
+Hindi na umuuga ang pag-click sa isang app sa app rail sa kaliwa, o sa bar
+sa ibaba sa phone: natatapos ang alon ng pagpindot at lumalaki mula sa
+gitna ang napiling pill habang nananatili ang laki ng button.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Dumudulas ang mga menu sa account card"
+text = """
+Dumudulas na ngayon papasok sa loob ng account card ang ☰ menu at ang
+listahan ng mga wika sa halip na biglang lumitaw, na may button na Bumalik
+sa kanan para bumalik.
 """

@@ -7,6 +7,7 @@
 search-category-mail = ಮೇಲ್
 search-category-people = ಜನರು
 search-category-tasks = ಕಾರ್ಯಗಳು
+search-category-notes = ಟಿಪ್ಪಣಿಗಳು
 search-category-events = ಈವೆಂಟ್‌ಗಳು
 search-mail-from = { $sender } ಇವರಿಂದ
 search-no-subject = (ವಿಷಯವಿಲ್ಲ)
@@ -22,8 +23,20 @@ search-event-in-days =
        *[other] { $count } ದಿನಗಳಲ್ಲಿ
     }
 
+## Quick capture: "task: …" or "note: …" typed in KRunner
+
+search-add-task = “{ $title }” ಕಾರ್ಯ ಸೇರಿಸಿ
+search-add-task-to = { $list } ಗೆ
+search-add-task-when = { $when } · { $list }
+search-add-note = “{ $title }” ಟಿಪ್ಪಣಿ ಸೇರಿಸಿ
+search-add-note-to = { $place } ನಲ್ಲಿನ ಟಿಪ್ಪಣಿಗಳಿಗೆ
+search-add-note-here = ಈ ಕಂಪ್ಯೂಟರ್‌ನ ಟಿಪ್ಪಣಿಗಳಿಗೆ
+search-new-task = ಹೊಸ ಕಾರ್ಯ
+search-new-note = ಹೊಸ ಟಿಪ್ಪಣಿ
+
 ## Buttons on a result in KRunner
 
 search-reply-all = ಎಲ್ಲರಿಗೂ ಪ್ರತ್ಯುತ್ತರಿಸಿ
 search-copy-address = ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ
 search-find-mail = ಮೇಲ್ ಹುಡುಕಿ
+search-edit-capture = ಸೇರಿಸುವ ಮೊದಲು ಬದಲಾಯಿಸಿ

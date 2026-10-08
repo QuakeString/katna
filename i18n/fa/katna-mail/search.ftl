@@ -14,6 +14,7 @@ search-without = بدون این واژه‌ها
 search-date-within = بازهٔ زمانی
 search-has-attachment = دارای پیوست
 search-attachment-custom = سفارشی
+search-attachment-image = تصویر
 search-attachment-custom-hint = یک پسوند بنویسید، مثلاً png، سپس کلید فاصله را بزنید
 search-attachment-remove = حذف
 search-clear-filter = پاک کردن فیلتر

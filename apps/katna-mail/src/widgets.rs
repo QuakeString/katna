@@ -370,6 +370,15 @@ pub struct Fold {
 }
 
 impl Fold {
+    /// One that starts closed, at no height, so the first time it opens
+    /// glides from nothing (a box that appears rather than unfolds).
+    pub fn closed() -> Self {
+        let fold = Self::default();
+        fold.measured.set(true);
+        fold.was_open.set(Some(false));
+        fold
+    }
+
     /// Call when it opens or closes, so the next frames glide there.
     pub fn turn(&self) {
         self.turns.set(self.turns.get().wrapping_add(1));
@@ -383,7 +392,7 @@ impl Fold {
 
     /// Turns it when `open` changed since the last call, so an arrow
     /// turns however its state changed.
-    fn sync(&self, open: bool) {
+    pub fn sync(&self, open: bool) {
         if self
             .was_open
             .replace(Some(open))
@@ -394,11 +403,11 @@ impl Fold {
     }
 
     /// It turned a moment ago and is still gliding.
-    fn moving(&self) -> bool {
+    pub fn moving(&self) -> bool {
         self.at.get().is_some_and(|at| at.elapsed() < FOLD_GLIDE)
     }
 
-    fn id(&self, name: &str) -> SharedString {
+    pub fn id(&self, name: &str) -> SharedString {
         SharedString::from(format!("{name}-{}", self.turns.get()))
     }
 }
@@ -810,6 +819,39 @@ pub fn icon_tag(name: &str, label: impl IntoElement, th: &Theme) -> Div {
         .text_color(rgba(th.text_dim))
         .child(icon(name, th.text_dim, 14.0))
         .child(label)
+}
+
+/// A chip on a mail line (a task's due day, a follow-up's time): a small
+/// outlined capsule with an icon, in `color`, lit on hover. The line's
+/// height does not change for it.
+pub fn line_chip(
+    id: impl Into<ElementId>,
+    glow: impl Into<ElementId>,
+    name: &str,
+    label: impl Into<SharedString>,
+    color: u32,
+    th: &Theme,
+) -> Stateful<Div> {
+    div()
+        .id(id)
+        .flex_none()
+        .min_w_0()
+        .h(px(22.0))
+        .pl(px(space::S2))
+        .pr(px(space::S3))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S2))
+        .rounded_full()
+        .border_1()
+        .border_color(rgba(fade(th.text, 0.16)))
+        .text_size(px(text::CAPTION))
+        .text_color(rgba(color))
+        .relative()
+        .child(Glow::new(glow, rgba(fade(th.text, 0.08))).fade())
+        .child(icon(name, color, 14.0))
+        .child(div().min_w_0().truncate().child(label.into()))
 }
 
 /// The height a [`row`] is at least.
@@ -1259,13 +1301,23 @@ pub fn raised<E: Styled + ParentElement>(panel: E, th: &Theme, radius: f32, leve
 /// says rather than its tint over the window's. `radius` is the card's
 /// corner radius. Call it before adding the card's children.
 pub fn pane<E: Styled + ParentElement>(card: E, fill: u32, solid: u32, radius: f32) -> E {
+    pane_corners(card, fill, solid, gpui::Corners::all(px(radius)))
+}
+
+/// [`pane`] with each corner its own radius.
+pub fn pane_corners<E: Styled + ParentElement>(
+    card: E,
+    fill: u32,
+    solid: u32,
+    corners: gpui::Corners<gpui::Pixels>,
+) -> E {
     if fill & 0xff == 0xff {
         return card.bg(rgba(fill));
     }
     card.child(katna_ui::frost::clear_fill(
         rgba(fill).into(),
         rgba(solid | 0xff).into(),
-        px(radius),
+        corners,
     ))
 }
 
@@ -1291,6 +1343,15 @@ pub fn card<E: Styled + ParentElement>(
 /// children.
 pub fn tile<E: Styled + ParentElement>(tile: E, th: &Theme) -> E {
     card(tile, th, th.surface, radius::MD, 1.0)
+}
+
+/// A [`tile`]'s shadow `t` of the way from level 1, where it rests, to
+/// level 2 ([`elevation::FLOAT`](katna_ui::tokens::elevation::FLOAT)),
+/// where it rises under the pointer.
+pub fn tile_lift(th: &Theme, t: f32) -> Vec<BoxShadow> {
+    let mut shadows = card_shadow(th, 1.0);
+    shadows.extend(elevation(th, katna_ui::tokens::elevation::FLOAT * t));
+    shadows
 }
 
 /// The hover tint of a [`tile`], easing in and out. Its parent needs an

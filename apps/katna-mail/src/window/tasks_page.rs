@@ -15,13 +15,14 @@ use std::collections::{HashMap, HashSet};
 use gpui::{
     Animation, AnimationExt, AnyElement, Bounds, Context, Entity, FocusHandle, Focusable,
     FontWeight, KeyDownEvent, MouseButton, Pixels, Point, ScrollHandle, SharedString, Subscription,
-    Task, Window, anchored, deferred, div, ease_out_quint, prelude::*, rgba,
+    Task, Window, deferred, div, ease_out_quint, prelude::*, rgba,
 };
-use katna_core::config::TaskSort;
+use katna_core::config::{AppKind, TaskSort};
 use katna_core::{AccountId, AccountKind};
 use katna_dav::quick_task::TypedTask;
 use katna_i18n::tr;
 use katna_store::tasks::Task as TaskItem;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::text_input::{InputEvent, TextInput};
 
@@ -184,7 +185,9 @@ pub(super) struct TasksPage {
     watching: Option<Task<()>>,
     /// The open task made from each mail line's mail, for its chip in the
     /// mail list.
-    from_mail: HashMap<EntryKey, i64>,
+    pub(super) from_mail: HashMap<EntryKey, i64>,
+    /// How many mails have a reminder, as the folder pane last showed.
+    reminders: usize,
     /// The mails (`Message-ID`s) of open tasks made from mail, sorted, for
     /// the contact panel's Tasks.
     pub(super) open_mails: Vec<String>,
@@ -369,7 +372,23 @@ impl TasksPage {
         }
     }
 
-    fn task(&self, id: i64) -> Option<&TaskItem> {
+    /// Open tasks made from a mail with a reminder: Remind me on mail.
+    pub(super) fn mail_reminders(&self) -> Vec<&TaskItem> {
+        let Some(Ok(board)) = &self.board else {
+            return Vec::new();
+        };
+        let mut tasks: Vec<&TaskItem> = board
+            .columns
+            .iter()
+            .flat_map(|c| c.tasks.iter())
+            .filter(|t| t.done_at.is_none() && t.remind_at.is_some() && !t.mail.is_empty())
+            .filter(|t| super::notes::note_of_task(&t.mail).is_none())
+            .collect();
+        tasks.sort_by_key(|t| t.remind_at);
+        tasks
+    }
+
+    pub(super) fn task(&self, id: i64) -> Option<&TaskItem> {
         match &self.board {
             Some(Ok(board)) => board.task(id),
             _ => None,
@@ -691,6 +710,12 @@ impl MailWindow {
             }
         }
         self.tasks.from_mail = from_mail;
+        // Reminders shows in the folder pane while there are some.
+        let reminders = self.reminder_count();
+        if reminders != self.tasks.reminders {
+            self.tasks.reminders = reminders;
+            self.rebuild_nav();
+        }
         let mut open_mails: Vec<String> = match &self.tasks.board {
             Some(Ok(board)) => board
                 .columns
@@ -786,47 +811,59 @@ impl MailWindow {
     ) -> Option<AnyElement> {
         let id = *self.tasks.from_mail.get(&key)?;
         let task = self.tasks.task(id)?;
-        let (label, past) = due_label(task, today()).unwrap_or((tr!("row-task"), false));
-        let color = if past { th.error } else { th.text_dim };
+        // A reminder (Remind me) says when it rings, in the accent while
+        // still to come.
+        let reminder = task.remind_at.and_then(|at| {
+            let rings = jiff::Timestamp::from_second(at)
+                .ok()?
+                .to_zoned(self.tz.clone());
+            let label = tr!(
+                "row-reminder",
+                date = super::compose::schedule::short(&rings)
+            );
+            let color = if at > jiff::Timestamp::now().as_second() {
+                th.accent
+            } else {
+                th.text_dim
+            };
+            Some((label, color))
+        });
+        let (name, label, color) = match reminder {
+            Some((label, color)) => ("bell", label, color),
+            None => {
+                let (label, past) = due_label(task, today()).unwrap_or((tr!("row-task"), false));
+                ("tasks", label, if past { th.error } else { th.text_dim })
+            }
+        };
         Some(
-            div()
-                .id(("row-task", ix))
-                .flex_none()
-                .h(px(22.0))
-                .pl(px(space::S2))
-                .pr(px(space::S3))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(space::S2))
-                .rounded_full()
-                .border_1()
-                .border_color(rgba(fade(th.text, 0.16)))
-                .text_size(px(text::CAPTION))
-                .text_color(rgba(color))
-                .cursor_pointer()
-                .relative()
-                .child(katna_ui::Glow::new(("row-task-glow", ix), rgba(fade(th.text, 0.08))).fade())
-                .tooltip(tip(tr!("row-task-open", title = task.title.clone()), th))
-                .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
-                .on_click(cx.listener(move |this, _, window, cx| {
-                    cx.stop_propagation();
-                    this.show_page(super::apps::App::Tasks, window, cx);
-                    this.task_open_details(id, window, cx);
-                }))
-                .child(icon("tasks", color, 14.0))
-                .child(label)
-                .into_any_element(),
+            crate::widgets::line_chip(
+                ("row-task", ix),
+                ("row-task-glow", ix),
+                name,
+                label,
+                color,
+                th,
+            )
+            .cursor_pointer()
+            .tooltip(tip(tr!("row-task-open", title = task.title.clone()), th))
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_click(cx.listener(move |this, _, window, cx| {
+                cx.stop_propagation();
+                this.show_page(super::apps::App::Tasks, window, cx);
+                this.task_open_details(id, window, cx);
+            }))
+            .into_any_element(),
         )
     }
 
-    fn load_tasks(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn load_tasks(&mut self, cx: &mut Context<Self>) {
         self.load_account_status(Of::Tasks, cx);
         let paths = self.paths.clone();
+        let hidden = self.hidden_ids(AppKind::Tasks);
         self.tasks.loading = Some(cx.spawn(async move |this, cx| {
             let mut board = cx
                 .background_executor()
-                .spawn(async move { crate::tasks::load(&paths) })
+                .spawn(async move { crate::tasks::load(&paths, &hidden) })
                 .await;
             this.update(cx, |this, cx| {
                 let page = &mut this.tasks;
@@ -897,7 +934,7 @@ impl MailWindow {
     }
 
     /// Sends several changes as one, with one note and one Undo.
-    fn send_tasks(
+    pub(super) fn send_tasks(
         &mut self,
         commands: Vec<TaskCommand>,
         done: Option<String>,
@@ -1601,6 +1638,9 @@ impl MailWindow {
     }
 
     pub(super) fn add_to_tasks_from(&mut self, keys: Vec<EntryKey>, cx: &mut Context<Self>) {
+        if !self.needs_app(AppKind::Tasks, cx) {
+            return;
+        }
         let Ok(mail) = self.mail.as_ref() else {
             return;
         };

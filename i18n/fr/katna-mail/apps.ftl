@@ -15,6 +15,46 @@ rail-tasks = Tâches
 rail-notes = Notes
 rail-files = Fichiers
 
+## Rail right-click menu
+
+rail-menu-open = Ouvrir { $app }
+rail-menu-settings = Paramètres de { $app }
+rail-menu-turn-off = Désactiver { $app }…
+
+## Turning an app off (Settings > Apps)
+
+app-off-title = Désactiver { $app } ?
+app-off-body = Katna arrête de synchroniser { $app } et le retire de :
+app-off-keep = Garder une copie sur cet ordinateur
+app-off-keep-detail = Le réactiver est instantané
+app-off-remove = Supprimer la copie sur cet ordinateur
+app-off-remove-detail = Rien ne change sur vos comptes, et le réactiver le télécharge à nouveau. Ce qui n’existe que sur cet ordinateur, ou n’a pas encore été envoyé, reste.
+app-off-cancel = Annuler
+app-off-confirm = Désactiver
+app-off-done = { $app } désactivé
+app-off-note = { $app } est désactivé
+app-off-turn-on = Activer
+app-off-leaves-calendar-rail = La barre latérale et Ctrl+2
+app-off-leaves-calendar-agenda = L’agenda à côté de votre courrier
+app-off-leaves-calendar-meeting = Planifier une réunion, et Ouvrir dans Calendrier sur les invitations
+app-off-leaves-calendar-reminders = Les rappels d’événements
+app-off-leaves-calendar-desktop = Les événements dans KRunner et l’horloge du bureau
+app-off-leaves-contacts-rail = La barre latérale et Ctrl+3
+app-off-leaves-contacts-card = Ajouter aux contacts sur la fiche d’un expéditeur
+app-off-leaves-contacts-birthdays = Les anniversaires dans Calendrier
+app-off-leaves-tasks-rail = La barre latérale et Ctrl+4
+app-off-leaves-tasks-mail = Ajouter aux tâches sur les messages, et Maj+T
+app-off-leaves-tasks-calendar = Les tâches dans Calendrier
+app-off-leaves-tasks-tray = Nouvelle tâche dans la zone de notification, et Meta+Alt+T
+app-off-leaves-tasks-reminders = Les rappels de tâches
+app-off-leaves-notes-rail = La barre latérale et Ctrl+5
+app-off-leaves-notes-mail = Ajouter une note sur les messages
+app-off-leaves-notes-meetings = Les notes de réunion sur les événements
+app-off-leaves-notes-tray = Nouvelle note dans la zone de notification, et Meta+Alt+N
+app-off-leaves-notes-reminders = Les rappels de notes
+app-off-leaves-files-rail = La barre latérale et Ctrl+7
+app-off-leaves-files-compose = Fichiers lors de l’ajout de pièces jointes dans un nouveau message
+
 ## Pages of apps still to come
 
 app-page-title = Katna { $app }

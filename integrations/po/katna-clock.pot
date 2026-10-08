@@ -76,6 +76,16 @@ msgid "Tasks"
 msgstr ""
 
 # plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info:tooltip"
+msgid "Show the tasks"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
+msgctxt "@info:tooltip"
+msgid "Hide the tasks"
+msgstr ""
+
+# plasma-clock/package/contents/ui/KatnaTasks.qml
 msgctxt "@info:placeholder"
 msgid "Add a task"
 msgstr ""

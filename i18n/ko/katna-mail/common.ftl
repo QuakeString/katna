@@ -41,3 +41,4 @@ search-options-show = 검색 옵션 표시
 settings = 설정
 account-add = 계정 추가
 account-wheel-hint = 스크롤하여 계정 전환
+account-menu-all-detail = 계정 { $count }개 함께 보기

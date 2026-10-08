@@ -54,7 +54,7 @@ calendar-account-signed-in = התחברת שוב אל { $address }. היומני
 calendar-account-sign-in-refused = { $provider } לא הכניס את Katna. יש לנסות שוב ולאשר גישה ליומנים שלך.
 calendar-account-refused = השרת לא קיבל את הסיסמה. Yahoo, iCloud, Zoho ואחרים דורשים סיסמה לאפליקציה.
 calendar-account-change-password = שינוי סיסמה
-calendar-account-change-password-tooltip = פתיחת הגדרות > חשבונות
+calendar-account-change-password-tooltip = יש להקליד את הסיסמה החדשה; Katna בודקת אותה מול השרת
 calendar-account-not-enabled = הגישה ליומן עבור Katna עדיין לא הופעלה.
 calendar-account-failed = לא ניתן היה לקרוא את היומנים.
 calendar-account-error = לא ניתן היה לקרוא את היומנים: { $reason }
@@ -70,6 +70,7 @@ calendar-account-try-again = ניסיון נוסף
 calendar-account-try-again-tooltip = בדיקה חוזרת של היומנים בחשבון הזה עכשיו
 calendar-account-fixing = מטפלים בזה…
 calendar-birthdays = ימי הולדת
+calendar-tasks = משימות
 calendar-birthday-of = יום ההולדת של { $name }
 calendar-empty-title = עדיין אין יומנים
 calendar-empty-text = היומנים של חשבונות Google ו-Microsoft שלך יוצגו כאן לאחר הסנכרון, וגם יומנים משרתים אחרים שתומכים ב-CalDAV.
@@ -129,6 +130,7 @@ calendar-event-details = פרטי האירוע
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = אירוע חדש
+calendar-event-window-title = אירוע חדש
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = פתיחת היום
 calendar-menu-duplicate = שכפול

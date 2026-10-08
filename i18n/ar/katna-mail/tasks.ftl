@@ -7,8 +7,11 @@
 tasks-create = مهمة جديدة
 tasks-all = كل المهام
 tasks-today = اليوم
+tasks-upcoming = القادمة
 tasks-starred = المميّزة بنجمة
+tasks-completed-view = المكتملة
 tasks-new-list = إنشاء قائمة جديدة
+tasks-labels-heading = التصنيفات
 tasks-on-this-computer = على هذا الكمبيوتر
 tasks-my-tasks = مهامي
 # The line under an account in the side list whose task lists could not
@@ -18,7 +21,7 @@ tasks-account-signed-in = تم تسجيل الدخول إلى { $address } مج�
 tasks-account-sign-in-refused = لم يسمح { $provider } لـ Katna بالدخول. حاول مجددًا، واسمح بالوصول إلى مهامك.
 tasks-account-refused = لم يقبل الخادم كلمة المرور. تحتاج Yahoo وiCloud وZoho وغيرها إلى كلمة مرور للتطبيقات.
 tasks-account-change-password = تغيير كلمة المرور
-tasks-account-change-password-tooltip = فتح الإعدادات > الحسابات
+tasks-account-change-password-tooltip = اكتب كلمة المرور الجديدة؛ يتحقق منها Katna مع الخادم
 tasks-account-not-enabled = لم يُفعَّل الوصول إلى المهام لـ Katna بعد.
 tasks-account-failed = تعذّرت قراءة قوائم المهام.
 # $reason is the server's own words, in English.
@@ -47,7 +50,14 @@ tasks-title-placeholder = العنوان
 tasks-add-step = إضافة مهمة فرعية
 tasks-empty = لا توجد مهام بعد. أضف مهمة أعلاه.
 tasks-starred-empty = ضع نجمة على مهمة لتظهر هنا.
+tasks-label-empty = لا توجد مهام مفتوحة بهذا التصنيف.
 tasks-today-empty = لا شيء مستحق اليوم.
+tasks-completed-empty = تظهر هنا المهام التي تُكملها.
+tasks-upcoming-add = إضافة مهمة ليوم { $day }
+tasks-upcoming-overdue-day = { $weekday } { $day }
+tasks-from-mail-quiet = من البريد
+tasks-from-note-quiet = من ملاحظة
+tasks-steps-done = { $done }/{ $count }
 tasks-today-date = { $weekday }، { $day }
 tasks-overdue = متأخرة
 tasks-completed = { $count ->
@@ -59,6 +69,11 @@ tasks-completed = { $count ->
    *[other] مكتملة ({ $count })
 }
 tasks-list-options = خيارات القائمة
+tasks-sort-by = الترتيب حسب
+tasks-sort-my-order = ترتيبي
+tasks-sort-date = التاريخ
+tasks-sort-starred = المميّزة بنجمة مؤخرًا
+tasks-sort-title = العنوان
 tasks-rename-list = إعادة تسمية القائمة
 tasks-delete-list = حذف القائمة
 tasks-mark-done = وضع علامة "مكتملة"
@@ -75,6 +90,18 @@ tasks-from-note = ملاحظة
 tasks-open-note = فتح الملاحظة
 tasks-note-gone = لم تعد هذه الملاحظة موجودة هنا.
 tasks-no-subject = (بلا موضوع)
+tasks-selected = { $count ->
+    [zero] لم يُحدَّد شيء
+    [one] تم تحديد مهمة واحدة
+    [two] تم تحديد مهمتين
+    [few] تم تحديد { $count } مهام
+    [many] تم تحديد { $count } مهمة
+   *[other] تم تحديد { $count } مهمة
+}
+tasks-select-clear = مسح التحديد
+tasks-select-move = النقل إلى قائمة
+tasks-select-date = تعيين التاريخ
+tasks-next-week = الأسبوع القادم
 
 ## The details dialog
 
@@ -95,6 +122,13 @@ tasks-remind-on-time = في الوقت المحدد
 tasks-remind-morning = في اليوم نفسه، { $time }
 tasks-remind-hour-before = قبل ساعة
 tasks-remind-day-before = قبل يوم
+tasks-label-add = إضافة تصنيف
+tasks-label-task = تصنيف المهمة
+tasks-files-attach = إرفاق ملفات
+tasks-files-pick = إرفاق
+tasks-file-open = فتح
+tasks-file-remove = إزالة الملف
+tasks-file-here = على هذا الكمبيوتر فقط
 tasks-cancel = إلغاء
 tasks-save = حفظ
 tasks-not-a-time = «{ $text }» ليس وقتًا، مثل { $example }.
@@ -111,6 +145,17 @@ tasks-due-at = { $day }، { $time }
 tasks-toast-done = اكتملت المهمة
 tasks-toast-next = تم. المرة التالية في { $date }
 tasks-toast-deleted = تم حذف المهمة
+tasks-files-added = { $count ->
+    [zero] لم يُرفَق أي ملف
+    [one] تم إرفاق الملف
+    [two] تم إرفاق ملفين
+    [few] تم إرفاق { $count } ملفات
+    [many] تم إرفاق { $count } ملفًا
+   *[other] تم إرفاق { $count } ملف
+}
+tasks-file-removed = تمت إزالة «{ $name }»
+tasks-files-left-out = لم يُرفَق: { $names }. تقبل المهمة ملفات يصل حجمها إلى { $limit }، وليس المجلدات.
+tasks-file-missing = لم يعد هذا الملف موجودًا هنا.
 tasks-toast-added = { $count ->
     [zero] تمت إضافة { $count } مهمة
     [one] تمت الإضافة إلى المهام
@@ -125,3 +170,51 @@ tasks-toast-moved = تم النقل إلى { $list }
 # A task dragged to another place in its own list.
 tasks-toast-placed = تم نقل المهمة
 tasks-toast-rescheduled = أُعيدت جدولة المهمة
+tasks-toast-rescheduled-several = { $count ->
+    [zero] لم تُعَد جدولة أي مهمة
+    [one] أُعيدت جدولة المهمة
+    [two] أُعيدت جدولة مهمتين
+    [few] أُعيدت جدولة { $count } مهام
+    [many] أُعيدت جدولة { $count } مهمة
+   *[other] أُعيدت جدولة { $count } مهمة
+}
+tasks-toast-done-several = { $count ->
+    [zero] لم تكتمل أي مهمة
+    [one] اكتملت المهمة
+    [two] اكتملت مهمتان
+    [few] اكتملت { $count } مهام
+    [many] اكتملت { $count } مهمة
+   *[other] اكتملت { $count } مهمة
+}
+tasks-toast-open-several = { $count ->
+    [zero] لم توضع علامة على أي مهمة
+    [one] تم وضع علامة «غير مكتملة» على المهمة
+    [two] تم وضع علامة «غير مكتملة» على مهمتين
+    [few] تم وضع علامة «غير مكتملة» على { $count } مهام
+    [many] تم وضع علامة «غير مكتملة» على { $count } مهمة
+   *[other] تم وضع علامة «غير مكتملة» على { $count } مهمة
+}
+tasks-toast-starred = { $count ->
+    [zero] لم تُميَّز أي مهمة بنجمة
+    [one] تم تمييز المهمة بنجمة
+    [two] تم تمييز مهمتين بنجمة
+    [few] تم تمييز { $count } مهام بنجمة
+    [many] تم تمييز { $count } مهمة بنجمة
+   *[other] تم تمييز { $count } مهمة بنجمة
+}
+tasks-toast-unstarred = { $count ->
+    [zero] لم تُزَل أي نجمة
+    [one] تمت إزالة النجمة
+    [two] تمت إزالة النجمة من مهمتين
+    [few] تمت إزالة النجمة من { $count } مهام
+    [many] تمت إزالة النجمة من { $count } مهمة
+   *[other] تمت إزالة النجمة من { $count } مهمة
+}
+tasks-toast-deleted-several = { $count ->
+    [zero] لم تُحذَف أي مهمة
+    [one] تم حذف المهمة
+    [two] تم حذف مهمتين
+    [few] تم حذف { $count } مهام
+    [many] تم حذف { $count } مهمة
+   *[other] تم حذف { $count } مهمة
+}

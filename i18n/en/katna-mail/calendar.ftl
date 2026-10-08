@@ -62,7 +62,7 @@ calendar-account-signed-in = Signed in to { $address } again. Getting your calen
 calendar-account-sign-in-refused = { $provider } did not let Katna in. Try again, and allow access to your calendars.
 calendar-account-refused = The server did not accept the password. Yahoo, iCloud, Zoho and others need an app password.
 calendar-account-change-password = Change password
-calendar-account-change-password-tooltip = Open Settings > Accounts
+calendar-account-change-password-tooltip = Type the new password; Katna checks it with the server
 calendar-account-not-enabled = Calendar access for Katna is not switched on yet.
 calendar-account-failed = The calendars could not be read.
 # $reason is the server's own words, in English.
@@ -152,6 +152,8 @@ calendar-event-details = Event details
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = New event
+# The title of the small window the desktop clock's Add… opens.
+calendar-event-window-title = New event
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Open day
 calendar-menu-duplicate = Duplicate

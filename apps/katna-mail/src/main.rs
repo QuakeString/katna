@@ -109,6 +109,10 @@ fn main() -> ExitCode {
         let language = given.next().unwrap_or_default();
         return grammar::run_helper(&language, &given.next().unwrap_or_default());
     }
+    // From the Store, Windows starts Katna at sign-in without arguments.
+    if std::env::args_os().len() == 1 && autostart::quiet_sign_in() {
+        return autostart::start_service();
+    }
     let mut data_dir: Option<PathBuf> = None;
     let mut open_first = false;
     let mut request = None;
@@ -242,19 +246,27 @@ fn main() -> ExitCode {
     }
     format::set_clock(general.clock);
     katna_i18n::apply(&general.language);
-    let (connection, sender, requests) = match instance::start(request, single) {
+    let (connection, sender, requests, pings) = match instance::start(request, single) {
         instance::Started::HandedOff => return ExitCode::SUCCESS,
         instance::Started::First {
             connection,
             sender,
             requests,
-        } => (connection, sender, requests),
+            pings,
+        } => (connection, sender, requests, pings),
     };
 
     gpui_platform::application()
         .with_assets(assets::Assets)
         .run(move |cx: &mut App| {
+            // Shows another launch, the tray and notifications that this
+            // thread runs, before anything that could take a while.
+            cx.spawn(async move |_| instance::answer_pings(pings).await)
+                .detach();
             // Before the window opens, which reads the menu bar's address.
+            // Requests the app makes of itself (the New event window's
+            // More options), as another launch would.
+            let own_requests = Some(sender.clone());
             if let Some(connection) = &connection {
                 serve_menu_bar(connection, sender, cx);
             }
@@ -275,6 +287,7 @@ fn main() -> ExitCode {
                 paths.clone(),
                 font.clone(),
                 connection.clone(),
+                own_requests.clone(),
                 cx,
             );
             let window_connection = connection.clone();

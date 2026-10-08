@@ -18,9 +18,10 @@ use std::time::Instant;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, ElementId, FontWeight, KeyDownEvent,
-    MouseButton, Pixels, Point, SharedString, Stateful, Window, anchored, deferred, div,
-    ease_out_quint, point, prelude::*, rgba,
+    MouseButton, Pixels, Point, SharedString, Stateful, Window, deferred, div, ease_out_quint,
+    point, prelude::*, rgba,
 };
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::tokens::duration;
 use katna_ui::unpx;
@@ -28,6 +29,7 @@ use katna_ui::unpx;
 use katna_i18n::tr;
 
 use super::MenuKey;
+use super::apps::App;
 use super::compose::Kind;
 use super::folder_pick::{PickFrom, PickMode};
 use super::sheet::{Fill, Sheet};
@@ -144,9 +146,19 @@ impl MailWindow {
                 .flatten(),
             Err(_) => None,
         };
-        let Some(row) = row.map(|r| self.with_pending(r)) else {
+        let Some(mut row) = row.map(|r| self.with_pending(r)) else {
             return;
         };
+        // Several ticked lines: each pair offers what makes them all alike.
+        if self.checked.contains(&key) && self.checked.len() > 1 {
+            let pairs = super::list::Pairs::of(&self.checked_rows());
+            let mut all = (*row).clone();
+            all.unread = pairs.read;
+            all.flagged = !pairs.star;
+            all.important = !pairs.important;
+            all.pinned = !pairs.pin;
+            row = Rc::new(all);
+        }
         self.menu = None;
         self.selected = Some(ix);
         self.context_menu = Some(ContextMenu::new(MenuFor::Mail { ix, key, row }, at));
@@ -923,53 +935,59 @@ impl MailWindow {
                 }
             }
             Sub::FollowUp => {
-                rows.item(
-                    menu_row(
-                        "context-add-to-tasks",
-                        "tasks",
-                        tr!("menu-add-to-tasks").into(),
-                        th,
-                        rh,
-                    )
-                    .on_click(cx.listener(|this, _, _, cx| {
-                        let Some((_, key)) = this.take_context_line() else {
-                            return;
-                        };
-                        let keys = this.context_targets(key);
-                        this.add_to_tasks_from(keys, cx);
-                    })),
-                );
-                rows.item(
-                    menu_row(
-                        "context-add-note",
-                        "notes",
-                        tr!("menu-add-note").into(),
-                        th,
-                        rh,
-                    )
-                    .on_click(cx.listener(|this, _, window, cx| {
-                        let Some((_, key)) = this.take_context_line() else {
-                            return;
-                        };
-                        let keys = this.context_targets(key);
-                        this.add_note_from(keys, window, cx);
-                    })),
-                );
-                rows.item(
-                    menu_row(
-                        "context-schedule-meeting",
-                        "calendar",
-                        tr!("menu-schedule-meeting").into(),
-                        th,
-                        rh,
-                    )
-                    .on_click(cx.listener(|this, _, window, cx| {
-                        let Some((_, key)) = this.take_context_line() else {
-                            return;
-                        };
-                        this.schedule_meeting_from(Some(key), window, cx);
-                    })),
-                );
+                if self.app_on(App::Tasks) {
+                    rows.item(
+                        menu_row(
+                            "context-add-to-tasks",
+                            "tasks",
+                            tr!("menu-add-to-tasks").into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            let Some((_, key)) = this.take_context_line() else {
+                                return;
+                            };
+                            let keys = this.context_targets(key);
+                            this.add_to_tasks_from(keys, cx);
+                        })),
+                    );
+                }
+                if self.app_on(App::Notes) {
+                    rows.item(
+                        menu_row(
+                            "context-add-note",
+                            "notes",
+                            tr!("menu-add-note").into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            let Some((_, key)) = this.take_context_line() else {
+                                return;
+                            };
+                            let keys = this.context_targets(key);
+                            this.add_note_from(keys, window, cx);
+                        })),
+                    );
+                }
+                if self.app_on(App::Calendar) {
+                    rows.item(
+                        menu_row(
+                            "context-schedule-meeting",
+                            "calendar",
+                            tr!("menu-schedule-meeting").into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            let Some((_, key)) = this.take_context_line() else {
+                                return;
+                            };
+                            this.schedule_meeting_from(Some(key), window, cx);
+                        })),
+                    );
+                }
                 rows.item(
                     menu_row(
                         "context-start-call",

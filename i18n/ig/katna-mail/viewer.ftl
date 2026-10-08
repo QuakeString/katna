@@ -21,12 +21,20 @@ viewer-page-count = n'ime { $count }
 viewer-go-to-page-tip = Pịnye nọmba peeji wee pịa Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = Tụgharịa n'akụkụ elekere (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Tụgharịa megide elekere (Ctrl+Shift+R)
+viewer-dark-pages-tip = Peeji gbara ọchịchịrị
+viewer-light-pages-tip = Gosi peeji otú ha dị
 viewer-fit-page-tip = Dabara peeji
 viewer-fit-picture-tip = Dabara windo
 viewer-fit-width-tip = Dabara obosara
 viewer-real-size-tip = Nha n'ezie (1:1)
 viewer-page-back-tip = Peeji gara aga
 viewer-page-on-tip = Peeji na-esote
+viewer-more-tip = Ọzọ
+viewer-zoom-in = Bulie
+viewer-zoom-out = Belata
+viewer-real-size = Nha ezigbo
+viewer-rotate-anticlockwise = Tụgharịa megide elekere
+viewer-rotate-clockwise = Tụgharịa dị ka elekere
 
 ## Marking up a PDF
 

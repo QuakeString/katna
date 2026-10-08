@@ -16,6 +16,7 @@ mod contact;
 pub mod contacts;
 mod db;
 pub mod error;
+mod forget;
 mod gmail_merge;
 pub mod insights;
 pub mod journal;
@@ -71,7 +72,7 @@ pub use mail_view::{
     FlagFilter, FolderMarks, FolderSummary, InboxThreads, Marks, SpreadTabs, ThreadEntry,
     ThreadSender, ThreadSummary,
 };
-pub use meta::MetaRow;
+pub use meta::{LaterMessage, MetaRow};
 pub use notes::{
     NOTE_LINK_SCHEME, NOTE_TRASH_KEEP, NOTE_VERSION_KEEP, Note, NotePicture, NoteVersion,
     RemoteNote, VersionSource,

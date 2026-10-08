@@ -9,6 +9,13 @@ shortcut-group-actions = 操作
 shortcut-group-go-to = 转到
 shortcut-group-app = 应用
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = 键盘快捷键
+shortcuts-dialog-search = 查找快捷键
+shortcuts-dialog-none = 没有匹配的快捷键
+shortcuts-dialog-close = 关闭
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = 下一个会话
@@ -37,6 +44,8 @@ shortcut-mark-read = 标记为已读
 shortcut-mark-unread = 标记为未读
 shortcut-star = 加星标或移除星标
 shortcut-add-to-tasks = 添加到任务
+shortcut-snooze = 延后
+shortcut-remind = 提醒我
 shortcut-important = 标记为重要
 shortcut-not-important = 标记为不重要
 shortcut-mute = 将会话静音或取消静音

@@ -189,6 +189,8 @@ list-empty-tab = ບໍ່ມີອີເມວໃນ { $tab }.
 list-empty-tab-unknown = ບໍ່ມີອີເມວໃນແຖບນີ້.
 list-empty-folder = ບໍ່ມີຂໍ້ຄວາມໃນ { $folder }.
 list-empty-folder-unknown = ບໍ່ມີຂໍ້ຄວາມໃນໂຟນເດີນີ້.
+list-empty-waiting = ບໍ່ມີຫຍັງທີ່ລໍຖ້າການຕອບກັບ.
+list-empty-reminders = ບໍ່ມີການແຈ້ງເຕືອນ. ກົດ H ຢູ່ອີເມວເພື່ອເພີ່ມ.
 list-first-sync = ກຳລັງດຶງອີເມວຂອງທ່ານ…
 list-first-sync-detail = ອີເມວຈະສະແດງຢູ່ບ່ອນນີ້ເມື່ອມາຮອດ.
 
@@ -208,6 +210,14 @@ row-tracking-clicked = ເປີດໂດຍ { $opened } ຈາກ { $recipients
 row-pin = ປັກໝຸດໄວ້ເທິງສຸດ
 row-unpin = ຖອນປັກໝຸດ
 row-snoozed-until = ເລື່ອນເວລາຈົນຮອດ { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = ມື້ນີ້
+snoozed-group-tomorrow = ມື້ອື່ນ
+snoozed-group-this-week = ອາທິດນີ້
+snoozed-group-later = ພາຍຫຼັງ
+row-follow-up-step = ຕິດຕາມ { $step } ຈາກ { $steps } · { $date }
+row-follow-up-waiting = ການຕິດຕາມລໍຖ້າຢູ່
+row-reminder = ແຈ້ງເຕືອນ { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,6 +240,7 @@ menu-not-important = ໝາຍວ່າບໍ່ສຳຄັນ
 menu-pin = ປັກໝຸດໄວ້ເທິງສຸດ
 menu-unpin = ຖອນປັກໝຸດ
 menu-snooze = ເລື່ອນເວລາ
+menu-remind = ແຈ້ງເຕືອນຂ້ອຍ
 menu-unsnooze = ຍົກເລີກການເລື່ອນເວລາ
 menu-add-to-tasks = ເພີ່ມໃສ່ວຽກ
 menu-schedule-meeting = ນັດປະຊຸມ
@@ -241,7 +252,26 @@ menu-move-to = ຍ້າຍໄປທີ່
 menu-follow-up = ຕິດຕາມ
 menu-more = ເພີ່ມເຕີມ
 menu-move-to-heading = ຍ້າຍໄປທີ່:
+menu-move-to-search = ຍ້າຍໄປທີ່…
+menu-label-as = ຕິດປ້າຍກຳກັບ
+menu-label-as-search = ຕິດປ້າຍກຳກັບ…
+menu-no-folder = ບໍ່ມີໂຟນເດີຊື່ “{ $name }”
+menu-no-label = ບໍ່ມີປ້າຍກຳກັບຊື່ “{ $name }”
+menu-create-folder = ສ້າງ “{ $name }”
+menu-always-move = ຍ້າຍອີເມວຈາກ { $name } ມາທີ່ນີ້ສະເໝີ
+toast-always-move-failed = ຍ້າຍອີເມວແລ້ວ, ແຕ່ສ້າງກົດບໍ່ໄດ້: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } ການສົນທະນາ
+       *[other] { $count } ການສົນທະນາ
+    }
+   *[message] { $count ->
+        [one] { $count } ຂໍ້ຄວາມ
+       *[other] { $count } ຂໍ້ຄວາມ
+    }
+}
 menu-find-from = ຊອກຫາອີເມວຈາກ { $name }
+menu-make-rule = ສ້າງກົດ…
 
 ## Snackbar after an action on mail in the list
 
@@ -257,6 +287,8 @@ toast-moved = { $kind ->
     [conversation] ຍ້າຍການສົນທະນາ { $count } ລາຍການແລ້ວ.
    *[message] ຍ້າຍຂໍ້ຄວາມ { $count } ລາຍການແລ້ວ.
 }
+toast-label-added = ເພີ່ມປ້າຍກຳກັບ “{ $label }” ແລ້ວ.
+toast-label-removed = ເອົາປ້າຍກຳກັບ “{ $label }” ອອກແລ້ວ.
 toast-starred = { $kind ->
     [conversation] ຕິດດາວໃຫ້ການສົນທະນາ { $count } ລາຍການແລ້ວ.
    *[message] ຕິດດາວໃຫ້ຂໍ້ຄວາມ { $count } ລາຍການແລ້ວ.

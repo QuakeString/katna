@@ -24,13 +24,14 @@ use std::rc::Rc;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, ListAlignment,
-    ListState, SharedString, Subscription, Window, anchored, div, ease_out_quint, list, point,
-    prelude::*, rgba,
+    ListState, SharedString, Subscription, Window, div, ease_out_quint, list, point, prelude::*,
+    rgba,
 };
 use katna_core::{AccountId, OAuthProvider};
 use katna_dbus::CloudEntry;
 use katna_i18n::tr;
 use katna_store::MessageId;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::text_input::{InputEvent, TextInput};
 use katna_ui::unpx;
@@ -225,6 +226,11 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         if !self.compose_takes_files() {
+            return;
+        }
+        // With Files off, the paperclip opens the system's file picker.
+        if !self.app_on(crate::window::apps::App::Files) {
+            self.pick_files(false, cx);
             return;
         }
         self.open_picker(None, HashSet::new(), window, cx);
@@ -1260,7 +1266,7 @@ impl MailWindow {
                     .h(px(THUMB))
                     .w_full()
                     .overflow_hidden()
-                    .child(card_top(thumb, found.kind, 36.0, None, th)),
+                    .child(card_top(thumb, found.kind, 36.0, th)),
             )
             .child(
                 div()

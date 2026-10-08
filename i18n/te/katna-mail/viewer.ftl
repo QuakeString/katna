@@ -20,12 +20,20 @@ viewer-page-count = { $count } లో
 viewer-go-to-page-tip = పేజీ సంఖ్యను టైప్ చేసి Enter నొక్కండి (Ctrl+G)
 viewer-rotate-clockwise-tip = సవ్యదిశలో తిప్పండి (Ctrl+R)
 viewer-rotate-anticlockwise-tip = అపసవ్యదిశలో తిప్పండి (Ctrl+Shift+R)
+viewer-dark-pages-tip = డార్క్ పేజీలు
+viewer-light-pages-tip = పేజీలను ఉన్నట్లుగా చూపండి
 viewer-fit-page-tip = పేజీకి సరిపోయేలా
 viewer-fit-picture-tip = విండోకు సరిపోయేలా
 viewer-fit-width-tip = వెడల్పుకు సరిపోయేలా
 viewer-real-size-tip = అసలు సైజ్ (1:1)
 viewer-page-back-tip = మునుపటి పేజీ
 viewer-page-on-tip = తదుపరి పేజీ
+viewer-more-tip = మరిన్ని
+viewer-zoom-in = జూమ్ ఇన్
+viewer-zoom-out = జూమ్ అవుట్
+viewer-real-size = అసలు పరిమాణం
+viewer-rotate-anticlockwise = అపసవ్య దిశలో తిప్పండి
+viewer-rotate-clockwise = సవ్య దిశలో తిప్పండి
 
 ## Marking up a PDF
 

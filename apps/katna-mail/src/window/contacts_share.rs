@@ -14,7 +14,7 @@ use katna_i18n::tr;
 use katna_preview::image::{Rgba, RgbaImage};
 use katna_render::print::PrintMessage;
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{px, unpx};
+use katna_ui::px;
 use qrcodegen::{QrCode, QrCodeEcc};
 
 use super::MailWindow;
@@ -254,7 +254,7 @@ impl MailWindow {
                             .on_click(cx.listener(|this, _, _, cx| this.close_contact_qr(cx))),
                     ),
             );
-        let vw = unpx(window.viewport_size().width);
+        let vw = self.room_width();
         let card = div()
             .id("contact-qr-dialog")
             .track_focus(&self.dialog_focus)

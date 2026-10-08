@@ -38,11 +38,16 @@ const ARCH_CACHE: &str = "/var/cache/pacman/pkg";
 /// The Arch package's name, which starts its files' names.
 const ARCH_PACKAGE: &str = "katna-git";
 
+/// dpkg's list of the Debian package's files, there once it is installed.
+const DEB_FILES: &str = "/var/lib/dpkg/info/katna.list";
+
 /// The kind of package this build came in, from `$KATNA_PACKAGE` at build
 /// time (`packaging/arch/PKGBUILD` sets `arch`, `ci/windows-package.ps1`
 /// `windows`, the Fedora spec `rpm`, the Nix package `nix`, and the
-/// portable Linux build `linux`, which the tarball, AppImage, Flatpak and
-/// Snap all carry, so which of those it is shows only at run time).
+/// portable Linux build `linux`, which the tarball, AppImage, Flatpak,
+/// Snap and Debian package all carry, so which of those it is shows only
+/// at run time; the Microsoft Store package carries the `windows` build
+/// too).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Package {
     /// The Arch Linux package (`katna-git`), from the `arch-latest`
@@ -52,6 +57,9 @@ pub enum Package {
     /// `windows-latest` release; installed by running the new Setup
     /// quietly. Always the full Setup: no patches yet.
     Windows,
+    /// The Microsoft Store package (MSIX, `packaging/windows/store`): the
+    /// Store updates it (Store policy 10.2), so Katna never does.
+    MsStore,
     /// The AppImage from `linux-latest`: the new AppImage replaces the
     /// file Katna runs from (`$APPIMAGE`).
     AppImage,
@@ -62,6 +70,9 @@ pub enum Package {
     /// bundle: there is no repository yet, so Katna downloads the new
     /// file and shows the command that installs it ([`update_command`]).
     Rpm,
+    /// The Debian package (`katna_amd64.deb`) for Ubuntu and Debian, from
+    /// `linux-latest`, installed with apt: as the RPM.
+    Deb,
     Snap,
     Flatpak,
     /// The Nix flake: Katna says a new build is out and shows the
@@ -76,12 +87,25 @@ impl Package {
     /// This build's package.
     pub fn current() -> Self {
         match Self::parse(option_env!("KATNA_PACKAGE").unwrap_or_default()) {
-            Self::Tarball => Self::portable(
+            Self::Tarball => match Self::portable(
                 |name| std::env::var_os(name).is_some_and(|value| !value.is_empty()),
                 std::path::Path::new("/.flatpak-info").exists(),
-            ),
+            ) {
+                Self::Tarball if Self::from_deb() => Self::Deb,
+                package => package,
+            },
+            Self::Windows if Self::in_msix() => Self::MsStore,
             package => package,
         }
+    }
+
+    /// Whether this program runs from an MSIX package: its folder holds
+    /// the package's `AppxManifest.xml`, which Katna Setup never installs.
+    fn in_msix() -> bool {
+        std::env::current_exe()
+            .ok()
+            .and_then(|exe| Some(exe.parent()?.join("AppxManifest.xml")))
+            .is_some_and(|manifest| manifest.is_file())
     }
 
     fn parse(name: &str) -> Self {
@@ -110,6 +134,15 @@ impl Package {
         }
     }
 
+    /// Whether this program is the one the Debian package installed: in
+    /// `/usr/bin`, with dpkg's list of the package's files beside it. A
+    /// tarball installed into `/usr` has no such list.
+    fn from_deb() -> bool {
+        std::env::current_exe()
+            .is_ok_and(|exe| exe.parent() == Some(std::path::Path::new("/usr/bin")))
+            && std::path::Path::new(DEB_FILES).exists()
+    }
+
     /// The name of this package's file in a `linux-latest` manifest's
     /// [`Manifest::files`].
     fn format(self) -> Option<&'static str> {
@@ -117,16 +150,17 @@ impl Package {
             Self::AppImage => Some("appimage"),
             Self::Tarball => Some("tarball"),
             Self::Rpm => Some("rpm"),
+            Self::Deb => Some("deb"),
             Self::Snap => Some("snap"),
             Self::Flatpak => Some("flatpak"),
-            Self::Arch | Self::Windows | Self::Nix | Self::Other => None,
+            Self::Arch | Self::Windows | Self::MsStore | Self::Nix | Self::Other => None,
         }
     }
 
     /// Whether Katna downloads this package's new builds: Nix builds its
-    /// own.
+    /// own, and the Store brings its own.
     pub fn downloads(self) -> bool {
-        !matches!(self, Self::Nix | Self::Other)
+        !matches!(self, Self::Nix | Self::MsStore | Self::Other)
     }
 
     /// Whether Katna installs the downloaded build itself; else it shows
@@ -144,10 +178,24 @@ impl Package {
         match self {
             Self::Arch => Some("arch-latest"),
             Self::Windows => Some("windows-latest"),
-            Self::AppImage | Self::Tarball | Self::Rpm | Self::Snap | Self::Flatpak | Self::Nix => {
-                Some("linux-latest")
-            }
-            Self::Other => None,
+            Self::AppImage
+            | Self::Tarball
+            | Self::Rpm
+            | Self::Deb
+            | Self::Snap
+            | Self::Flatpak
+            | Self::Nix => Some("linux-latest"),
+            Self::MsStore | Self::Other => None,
+        }
+    }
+
+    /// The version of this package installed on the computer now, as its
+    /// package manager records it. After an update it is newer than the
+    /// running program's [`VERSION`] until that program restarts.
+    pub fn installed_version(self) -> Option<String> {
+        match self {
+            Self::Arch => pacman_version(std::path::Path::new(PACMAN_LOCAL), ARCH_NAME),
+            _ => None,
         }
     }
 
@@ -174,12 +222,58 @@ impl Package {
     }
 }
 
+/// Where pacman records each installed package, in `NAME-VERSION/desc`.
+const PACMAN_LOCAL: &str = "/var/lib/pacman/local";
+
+/// The Arch package's name.
+const ARCH_NAME: &str = "katna-git";
+
+/// The version, without pacman's epoch and release, of package `name` in
+/// pacman's records in `local`.
+fn pacman_version(local: &std::path::Path, name: &str) -> Option<String> {
+    let prefix = format!("{name}-");
+    std::fs::read_dir(local).ok()?.flatten().find_map(|entry| {
+        if !entry.file_name().to_str()?.starts_with(&prefix) {
+            return None;
+        }
+        let desc = std::fs::read_to_string(entry.path().join("desc")).ok()?;
+        (desc_field(&desc, "%NAME%")? == name)
+            .then(|| desc_field(&desc, "%VERSION%"))
+            .flatten()
+            .map(|version| {
+                let version = version.split_once(':').map_or(version, |(_, v)| v);
+                version
+                    .rsplit_once('-')
+                    .map_or(version, |(v, _)| v)
+                    .to_owned()
+            })
+    })
+}
+
+/// The first line under `field` in a pacman `desc` file.
+fn desc_field<'a>(desc: &'a str, field: &str) -> Option<&'a str> {
+    let mut lines = desc.lines();
+    lines.find(|line| line.trim() == field)?;
+    lines.next().map(str::trim).filter(|line| !line.is_empty())
+}
+
+/// The version updates are measured against: the newest of the running
+/// program's and the installed package's. A program still running after
+/// its package was updated never offers the update it already has.
+pub fn installed(package: Package) -> String {
+    match package.installed_version() {
+        Some(version) if newer(VERSION, &version) => version,
+        _ => VERSION.to_owned(),
+    }
+}
+
 /// The command that installs the new build for a package Katna does not
 /// install itself: `file` is the downloaded build, unused for Nix.
 pub fn update_command(package: Package, file: &str) -> Option<String> {
     let file = shell_quote(file);
     match package {
         Package::Rpm => Some(format!("sudo dnf install {file}")),
+        Package::Deb => Some(format!("sudo apt install {file}")),
         Package::Snap => Some(format!("sudo snap install --dangerous {file}")),
         Package::Flatpak => Some(format!("flatpak install --user --reinstall -y {file}")),
         Package::Nix => Some("nix profile upgrade katna".to_owned()),
@@ -249,7 +343,7 @@ pub struct Manifest {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub chain: Vec<Hop>,
     /// In `linux-latest`'s manifest: each package's own file, by
-    /// [`Package`] format (`appimage`, `tarball`, `rpm`, `snap`,
+    /// [`Package`] format (`appimage`, `tarball`, `rpm`, `deb`, `snap`,
     /// `flatpak`); [`Manifest::for_package`] picks one.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub files: BTreeMap<String, Download>,
@@ -778,6 +872,40 @@ mod tests {
         assert_eq!(package_version("other-0.1.0-1-x86_64.pkg.tar.zst"), None);
     }
 
+    // pacman's folder names carry the epoch's ':', which Windows can't name.
+    #[cfg(unix)]
+    #[test]
+    fn reads_the_installed_version_from_pacman() {
+        let local = std::env::temp_dir().join(format!("katna-pacman-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&local);
+        for (dir, name, version) in [
+            (
+                "katna-git-debug-0.0.0.r700.gaaaaaaa-1",
+                "katna-git-debug",
+                "0.0.0.r700.gaaaaaaa-1",
+            ),
+            (
+                "katna-git-1:0.0.0.r765.g3928dee-2",
+                "katna-git",
+                "1:0.0.0.r765.g3928dee-2",
+            ),
+        ] {
+            std::fs::create_dir_all(local.join(dir)).unwrap();
+            std::fs::write(
+                local.join(dir).join("desc"),
+                format!("%NAME%\n{name}\n\n%VERSION%\n{version}\n\n%BASE%\nkatna-git\n"),
+            )
+            .unwrap();
+        }
+        assert_eq!(
+            pacman_version(&local, "katna-git").as_deref(),
+            Some("0.0.0.r765.g3928dee")
+        );
+        assert_eq!(pacman_version(&local, "other"), None);
+        assert_eq!(pacman_version(&local.join("missing"), "katna-git"), None);
+        std::fs::remove_dir_all(&local).unwrap();
+    }
+
     #[test]
     fn the_portable_build_knows_its_package() {
         let env = |names: &'static [&'static str]| move |name: &str| names.contains(&name);
@@ -800,6 +928,8 @@ mod tests {
             format!("{RELEASES}/linux-latest/{MANIFEST_FILE}")
         );
         assert!(!Package::Nix.downloads() && Package::Rpm.downloads());
+        assert!(Package::Deb.downloads() && !Package::Deb.installs_itself());
+        assert_eq!(Package::Deb.format(), Some("deb"));
         assert!(Package::AppImage.installs_itself() && !Package::Flatpak.installs_itself());
     }
 
@@ -823,6 +953,7 @@ mod tests {
             "a bad name is left out"
         );
         assert!(manifest.clone().for_package(Package::Rpm).is_none());
+        assert!(manifest.clone().for_package(Package::Deb).is_none());
         assert_eq!(manifest.clone().for_package(Package::Nix).unwrap().size, 10);
         assert_eq!(
             update_command(
@@ -831,6 +962,14 @@ mod tests {
             )
             .unwrap(),
             "sudo dnf install /home/me/.cache/katna/updates/katna-x86_64.rpm"
+        );
+        assert_eq!(
+            update_command(
+                Package::Deb,
+                "/home/me/.cache/katna/updates/katna_amd64.deb"
+            )
+            .unwrap(),
+            "sudo apt install /home/me/.cache/katna/updates/katna_amd64.deb"
         );
         assert_eq!(
             update_command(Package::Snap, "/home/o'neil/k a.snap").unwrap(),

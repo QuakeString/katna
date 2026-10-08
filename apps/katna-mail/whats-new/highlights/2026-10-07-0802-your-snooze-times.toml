@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Snooze your way"
+text = """
+Set what Later today, Tomorrow, This weekend and Next week mean, and add a
+time of your own, in Settings > Inbox. Snoozed lists mail by when it comes
+back. On a phone, swipe a line left to snooze it.
+"""

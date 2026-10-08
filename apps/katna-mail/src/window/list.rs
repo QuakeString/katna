@@ -10,22 +10,24 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, FontWeight, HighlightStyle, ListOffset,
-    SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, anchored, deferred, div,
+    SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, deferred, div,
     ease_out_quint, list, point, prelude::*, relative, rgba,
 };
 use katna_core::config::Density;
 use katna_i18n::tr;
 use katna_ui::Ripple;
+use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::tokens::duration;
+use katna_ui::tokens::{space, text};
 
 /// The lift of the line under the pointer: critically damped and slower
 /// than other hover feedback, so it rises and settles without a jolt.
 const ROW_LIFT: SpringConfig = SpringConfig::new(500.0, 44.7, 1.0);
 /// How strongly a tick box, star or marker that is off shows while the
 /// pointer is not over its line.
-const OFF_REST: f32 = 0.3;
+const OFF_REST: f32 = 0.15;
 /// How long the quick actions of a line take to fade in.
 const ACTIONS_IN: Duration = Duration::from_millis(160);
 /// The attachment chips under a line: their line's extra height, their
@@ -38,6 +40,7 @@ const MORE_SIZE: f32 = 30.0;
 /// The Back to top button's size.
 const TO_TOP_SIZE: f32 = 40.0;
 
+use super::apps::App;
 use super::attachments::kind_badge;
 use super::folder_pick::{PickFrom, PickMode};
 use super::layout::FAB_SIZE;
@@ -304,18 +307,19 @@ impl MailWindow {
             self.render_sliding(th, cx)
         } else {
             let (toolbar, body) = if two_pane_reading {
-                (
-                    self.render_reader_toolbar(th, cx),
-                    self.render_reader(th, cx),
-                )
+                (None, self.render_reader_with_toolbar(th, cx))
             } else {
-                self.render_list_parts(th, cx)
+                let (toolbar, body) = self.render_list_parts(th, cx);
+                (Some(toolbar), body)
             };
+            // The bar above the lines; the open mail keeps its toolbar above
+            // it.
             div()
                 .size_full()
                 .flex()
                 .flex_col()
-                .child(toolbar)
+                .relative()
+                .children(toolbar)
                 .child(fade_in(body, self.card_seq))
                 .into_any_element()
         };
@@ -328,6 +332,9 @@ impl MailWindow {
             self.layout.shape.card_outline(),
         );
         let (shadow, edge) = self.card_edges(self.card_keys(false), outline);
+        // On a phone the card reaches the window's bottom edge, so it rounds
+        // its bottom corners as the window frame does.
+        let (bottom_left, bottom_right) = self.phone_bottom_corners();
         let card = div()
             .id("card")
             .key_context(if reading_context {
@@ -347,12 +354,29 @@ impl MailWindow {
                 } else {
                     th.pane()
                 };
-                crate::widgets::card(d, th, fill, radius, shadow)
+                if bottom_left + bottom_right > 0.0 {
+                    let corners = gpui::Corners {
+                        top_left: px(radius),
+                        top_right: px(radius),
+                        bottom_left: px(bottom_left),
+                        bottom_right: px(bottom_right),
+                    };
+                    crate::widgets::pane_corners(
+                        d.rounded(px(radius))
+                            .rounded_bl(px(bottom_left))
+                            .rounded_br(px(bottom_right)),
+                        fill,
+                        th.surface,
+                        corners,
+                    )
+                } else {
+                    crate::widgets::card(d, th, fill, radius, shadow)
+                }
             })
             .p(px(outline))
             // GPUI clips to rectangles, so the lines stop short of the
             // rounded bottom corners rather than showing square ones.
-            .pb(px(radius.max(outline)))
+            .pb(px(radius.max(outline).max(bottom_left).max(bottom_right)))
             .on_action(cx.listener(Self::select_next))
             .on_action(cx.listener(Self::select_previous))
             .on_action(cx.listener(Self::select_first))
@@ -372,6 +396,8 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_unread))
             .on_action(cx.listener(Self::toggle_star))
             .on_action(cx.listener(Self::add_to_tasks))
+            .on_action(cx.listener(Self::snooze_key))
+            .on_action(cx.listener(Self::remind_key))
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
@@ -410,6 +436,7 @@ impl MailWindow {
                     .child(self.render_tabs(None, th, cx))
             });
         let banner = self.render_select_banner(th, cx);
+        let problems = self.render_problems(th, cx);
         let list = self.render_list(th, cx);
         // A phone's toolbar slides up out of sight as the list moves on.
         let toolbar = self.render_list_toolbar(th, cx);
@@ -424,23 +451,38 @@ impl MailWindow {
         } else {
             toolbar
         };
+        // The bar, the tabs and the banner sit above the lines, which start
+        // below them, with a line under them once the list has scrolled.
+        let scrolled = katna_ui::unpx(self.list_state.scrolled()) > 0.5;
+        let head = div()
+            .flex_none()
+            .relative()
+            .flex()
+            .flex_col()
+            .child(toolbar)
+            .children(tabs)
+            .children(banner)
+            .children(problems)
+            .when(scrolled, |d| {
+                d.child(
+                    div()
+                        .absolute()
+                        .left_0()
+                        .right_0()
+                        .bottom_0()
+                        .h(px(1.0))
+                        .bg(rgba(th.divider)),
+                )
+            })
+            .into_any_element();
         (
-            toolbar,
+            head,
             div()
                 .size_full()
-                .flex()
-                .flex_col()
-                .children(tabs)
-                .children(banner)
-                .child(
-                    div()
-                        .relative()
-                        .flex_1()
-                        .min_h_0()
-                        .child(list)
-                        .children(self.render_list_top(th, cx))
-                        .child(self.tour_mark(super::tour::Spot::List)),
-                )
+                .relative()
+                .child(list)
+                .children(self.render_list_top(th, cx))
+                .child(self.tour_mark(super::tour::Spot::List))
                 .into_any_element(),
         )
     }
@@ -494,6 +536,18 @@ impl MailWindow {
         )
     }
 
+    /// The window frame's bottom corners where the card reaches them (on a
+    /// phone with the bottom bar gone), else none: the bottom bar rounds
+    /// itself while it shows.
+    fn phone_bottom_corners(&self) -> (f32, f32) {
+        let shape = self.layout.shape;
+        if shape.is_phone() && shape.bottom_bar() <= 0.01 {
+            self.bottom_corners
+        } else {
+            (0.0, 0.0)
+        }
+    }
+
     /// The list with the open conversation sliding in over it from the
     /// right, as on a phone; the list drifts left and dims beneath.
     fn render_sliding(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
@@ -503,6 +557,11 @@ impl MailWindow {
         // On a card the blur shows through, the list fades out under the
         // conversation rather than showing through it.
         let see_through = th.pane_tint < 100;
+        let (bottom_left, bottom_right) = self.phone_bottom_corners();
+        // GPUI doesn't clip to the card's rounded corners: what fills the
+        // card from its top edge rounds its own top corners as the card's
+        // inside does, or they show square over the card's.
+        let top = (self.layout.shape.card_radius() - self.layout.shape.card_outline()).max(0.0);
         let list = (shown < 0.999 || !has_reader).then(|| {
             let (toolbar, body) = self.render_list_parts(th, cx);
             div()
@@ -523,6 +582,9 @@ impl MailWindow {
                             .top_0()
                             .left_0()
                             .size_full()
+                            .rounded_t(px(top))
+                            .rounded_bl(px(bottom_left))
+                            .rounded_br(px(bottom_right))
                             .bg(rgba(fade(th.shadow, 0.5 * shown))),
                     )
                 })
@@ -536,12 +598,16 @@ impl MailWindow {
                 .w_full()
                 .flex()
                 .flex_col()
-                .when(!see_through, |d| d.bg(rgba(th.surface)))
+                .when(!see_through, |d| {
+                    d.bg(rgba(th.surface))
+                        .rounded_bl(px(bottom_left))
+                        .rounded_br(px(bottom_right))
+                })
+                .rounded_t(px(top))
                 .when(shown < 0.999, |d| {
                     d.shadow(crate::widgets::elevation(th, 2.0))
                 })
-                .child(self.render_reader_toolbar(th, cx))
-                .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
+                .child(self.render_reader_with_toolbar(th, cx))
         });
         div()
             .relative()
@@ -1014,6 +1080,34 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Works out, while a More menu is open or fading, which of each pair
+    /// of actions it offers for the lines it acts on.
+    pub(super) fn track_more_pairs(&mut self) {
+        let shown = |m: Option<Menu>| matches!(m, Some(Menu::ListMore | Menu::ReaderMore));
+        if !shown(self.menu) && !shown(self.menu_fade.map(|(m, _)| m)) {
+            return;
+        }
+        let keys: std::collections::HashSet<EntryKey> = self.target_keys().into_iter().collect();
+        let entries: Vec<_> = self
+            .entries
+            .iter()
+            .filter(|e| keys.contains(&e.key))
+            .take(500)
+            .copied()
+            .collect();
+        let folder = self.listed_folder();
+        let rows: Vec<Rc<Row>> = match &mut self.mail {
+            Ok(mail) => mail
+                .rows(&entries, folder, self.show_recipients)
+                .into_iter()
+                .flatten()
+                .map(|r| self.with_pending(r))
+                .collect(),
+            Err(_) => Vec::new(),
+        };
+        self.more_pairs = Pairs::of(&rows);
+    }
+
     /// Notes a popup menu that closed since the last frame, however it
     /// closed, so `with_menu` fades it out (`motion` FAST), and forgets
     /// it once faded. Move to and Label as are left out: their folder
@@ -1129,6 +1223,7 @@ impl MailWindow {
     }
 
     fn menu_items(&self, which: Menu, th: &Theme, cx: &mut Context<Self>) -> Div {
+        let pairs = self.more_pairs;
         match which {
             Menu::CalendarOptions => self.calendar_options_menu(th, cx),
             Menu::CalendarZones => self.calendar_zones_menu(th, cx),
@@ -1226,6 +1321,22 @@ impl MailWindow {
                                     })),
                             )
                         })
+                        .when(squeeze.is_some_and(|s| s.snooze), |d| {
+                            d.child(
+                                menu_item_icon("more-snooze", "snooze", &tr!("menu-snooze"), th)
+                                    .on_click(cx.listener(|this, e: &gpui::ClickEvent, _, cx| {
+                                        let keys = this.target_keys();
+                                        this.open_mail_times(keys, false, e.position(), cx);
+                                    })),
+                            )
+                            .child(
+                                menu_item_icon("more-remind", "bell-plus", &tr!("menu-remind"), th)
+                                    .on_click(cx.listener(|this, e: &gpui::ClickEvent, _, cx| {
+                                        let keys = this.target_keys();
+                                        this.open_mail_times(keys, true, e.position(), cx);
+                                    })),
+                            )
+                        })
                         .when(squeeze.is_some_and(|s| s.move_to), |d| {
                             d.child(
                                 menu_item_icon("more-move-to", "move-to", &tr!("menu-move-to"), th)
@@ -1257,13 +1368,12 @@ impl MailWindow {
                                 )
                             },
                         )
-                        .child(
+                        .child(if pairs.read {
                             menu_item_icon("more-read", "mark-read", &tr!("menu-mark-read"), th)
                                 .on_click(cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Read(true), cx)
-                                })),
-                        )
-                        .child(
+                                }))
+                        } else {
                             menu_item_icon(
                                 "more-unread",
                                 "mark-unread",
@@ -1274,22 +1384,21 @@ impl MailWindow {
                                 |this, _, window, cx| {
                                     this.mark_unread(&super::MarkUnread, window, cx)
                                 },
-                            )),
-                        )
-                        .child(
+                            ))
+                        })
+                        .child(if pairs.star {
                             menu_item_icon("more-star", "star", &tr!("menu-star"), th).on_click(
                                 cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Star(true), cx)
                                 }),
-                            ),
-                        )
-                        .child(
+                            )
+                        } else {
                             menu_item_icon("more-unstar", "star-filled", &tr!("menu-unstar"), th)
                                 .on_click(cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Star(false), cx)
-                                })),
-                        )
-                        .child(
+                                }))
+                        })
+                        .child(if pairs.important {
                             menu_item_icon(
                                 "more-important",
                                 "important",
@@ -1298,9 +1407,8 @@ impl MailWindow {
                             )
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.act_on_targets(Act::Important(true), cx)
-                            })),
-                        )
-                        .child(
+                            }))
+                        } else {
                             menu_item_icon(
                                 "more-not-important",
                                 "important-filled",
@@ -1309,36 +1417,42 @@ impl MailWindow {
                             )
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.act_on_targets(Act::Important(false), cx)
-                            })),
-                        )
-                        .child(
-                            menu_item_icon(
-                                "more-add-to-tasks",
-                                "tasks",
-                                &tr!("menu-add-to-tasks"),
-                                th,
+                            }))
+                        })
+                        .when(self.app_on(App::Tasks), |d| {
+                            d.child(
+                                menu_item_icon(
+                                    "more-add-to-tasks",
+                                    "tasks",
+                                    &tr!("menu-add-to-tasks"),
+                                    th,
+                                )
+                                .on_click(cx.listener(
+                                    |this, _, _, cx| {
+                                        this.menu = None;
+                                        let keys = this.target_keys();
+                                        this.add_to_tasks_from(keys, cx);
+                                    },
+                                )),
                             )
-                            .on_click(cx.listener(|this, _, _, cx| {
-                                this.menu = None;
-                                let keys = this.target_keys();
-                                this.add_to_tasks_from(keys, cx);
-                            })),
-                        )
-                        .child(
-                            menu_item_icon(
-                                "more-schedule-meeting",
-                                "calendar",
-                                &tr!("menu-schedule-meeting"),
-                                th,
+                        })
+                        .when(self.app_on(App::Calendar), |d| {
+                            d.child(
+                                menu_item_icon(
+                                    "more-schedule-meeting",
+                                    "calendar",
+                                    &tr!("menu-schedule-meeting"),
+                                    th,
+                                )
+                                .on_click(cx.listener(
+                                    |this, _, window, cx| {
+                                        this.menu = None;
+                                        let key = this.target_keys().first().copied();
+                                        this.schedule_meeting_from(key, window, cx);
+                                    },
+                                )),
                             )
-                            .on_click(cx.listener(
-                                |this, _, window, cx| {
-                                    this.menu = None;
-                                    let key = this.target_keys().first().copied();
-                                    this.schedule_meeting_from(key, window, cx);
-                                },
-                            )),
-                        )
+                        })
                         .child(
                             menu_item_icon("more-start-call", "video", &tr!("menu-start-call"), th)
                                 .on_click(cx.listener(|this, _, window, cx| {
@@ -1347,27 +1461,28 @@ impl MailWindow {
                                     this.start_call_from(key, window, cx);
                                 })),
                         )
-                        .child(
-                            menu_item_icon("more-add-note", "notes", &tr!("menu-add-note"), th)
-                                .on_click(cx.listener(|this, _, window, cx| {
-                                    this.menu = None;
-                                    let keys = this.target_keys();
-                                    this.add_note_from(keys, window, cx);
-                                })),
-                        )
-                        .child(
+                        .when(self.app_on(App::Notes), |d| {
+                            d.child(
+                                menu_item_icon("more-add-note", "notes", &tr!("menu-add-note"), th)
+                                    .on_click(cx.listener(|this, _, window, cx| {
+                                        this.menu = None;
+                                        let keys = this.target_keys();
+                                        this.add_note_from(keys, window, cx);
+                                    })),
+                            )
+                        })
+                        .child(if pairs.pin {
                             menu_item_icon("more-pin", "pin", &tr!("menu-pin"), th).on_click(
                                 cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Pin(true), cx)
                                 }),
-                            ),
-                        )
-                        .child(
+                            )
+                        } else {
                             menu_item_icon("more-unpin", "pin-filled", &tr!("menu-unpin"), th)
                                 .on_click(cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Pin(false), cx)
-                                })),
-                        )
+                                }))
+                        })
                         .child(self.mute_menu_items(
                             which != Menu::ReaderMore || squeeze.is_some_and(|s| s.mute),
                             which == Menu::ReaderMore,
@@ -1565,7 +1680,7 @@ impl MailWindow {
     }
 
     /// Rows of the ticked lines that are loaded.
-    fn checked_rows(&mut self) -> Vec<Rc<Row>> {
+    pub(super) fn checked_rows(&mut self) -> Vec<Rc<Row>> {
         let entries: Vec<_> = self
             .entries
             .iter()
@@ -2199,6 +2314,8 @@ impl MailWindow {
                         None => tr!("list-empty-tab-unknown"),
                     }
                 }
+                Some(Listing::Waiting) => tr!("list-empty-waiting"),
+                Some(Listing::Reminders) => tr!("list-empty-reminders"),
                 Some(Listing::Folder(_) | Listing::Unified { .. }) => match self.folder_name() {
                     Some(folder) => tr!("list-empty-folder", folder = folder),
                     None => tr!("list-empty-folder-unknown"),
@@ -2240,12 +2357,49 @@ impl MailWindow {
                 };
                 let row = row.map(|r| this.with_pending(r));
                 let row = this.render_row(ix, entry.key, row, &th, cx);
+                let row = div()
+                    .on_scroll_wheel(cx.listener(
+                        move |this, event: &gpui::ScrollWheelEvent, _, cx| {
+                            this.swipe_row(ix, event, cx);
+                        },
+                    ))
+                    .child(this.swiped_row(ix, row, &th))
+                    .into_any_element();
                 this.fetch_pictures(cx);
-                row
+                match this.snoozed_group_at(ix) {
+                    // A plain block, as other lines sit in: a flex column
+                    // lets a long preview push the date off the line.
+                    Some(group) => div()
+                        .w_full()
+                        .child(snoozed_group_label(group, ix == 0, &th))
+                        .child(row)
+                        .into_any_element(),
+                    None => row,
+                }
             }),
         )
         .size_full()
         .into_any_element()
+    }
+
+    /// In the Snoozed folder: the group line `ix` starts, when it starts
+    /// one (Today, Tomorrow, This week, Later).
+    fn snoozed_group_at(&self, ix: usize) -> Option<SnoozedGroup> {
+        if self.folder_role() != Role::Snoozed {
+            return None;
+        }
+        let mail = self.mail.as_ref().ok()?;
+        let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
+        let group = |ix: usize| {
+            let until = mail.entry_snoozed_until(self.entries.get(ix)?)?;
+            let day = jiff::Timestamp::from_second(until)
+                .ok()?
+                .to_zoned(self.tz.clone())
+                .date();
+            Some(SnoozedGroup::of(day, today))
+        };
+        let this = group(ix)?;
+        (ix == 0 || group(ix - 1) != Some(this)).then_some(this)
     }
 
     /// The account of a line of the whole unified inbox, which mixes
@@ -2406,14 +2560,19 @@ impl MailWindow {
             );
         };
         let now = jiff::Timestamp::now().as_second();
-        // Snoozed mail shows when it comes back instead.
-        let date = row
-            .snoozed_until
-            .or(row.date)
-            .and_then(|d| format::local(d, &self.tz))
-            .zip(format::local(now, &self.tz))
-            .map(|(d, now)| format::list_date(d, now))
-            .unwrap_or_default();
+        // Snoozed mail shows when it comes back instead: the time today, the
+        // day and time this week.
+        let date = match row.snoozed_until.and_then(|d| format::local(d, &self.tz)) {
+            Some(back) => format::local(now, &self.tz)
+                .map(|now| back_date(back, now))
+                .unwrap_or_default(),
+            None => row
+                .date
+                .and_then(|d| format::local(d, &self.tz))
+                .zip(format::local(now, &self.tz))
+                .map(|(d, now)| format::list_date(d, now))
+                .unwrap_or_default(),
+        };
         let weight = if row.unread {
             FontWeight::BOLD
         } else {
@@ -2793,6 +2952,8 @@ impl MailWindow {
                         })))
                         .child(
                             line(snippet)
+                                .children(self.render_row_nudge(ix, &row, th, cx))
+                                .children(self.render_row_follow_up(ix, &row, th))
                                 .children(self.render_row_task(ix, key, th, cx))
                                 .when(row.attachments && !has_chips, |d| {
                                     d.child(icon("attachment", th.text_faint, 16.0))
@@ -2853,6 +3014,14 @@ impl MailWindow {
                     .child(correspondent),
             )
             .child(div().flex_1().min_w_0().truncate().child(text))
+            .children(
+                self.render_row_nudge(ix, &row, th, cx)
+                    .map(|chip| div().pl(px(katna_ui::tokens::space::S3)).child(chip)),
+            )
+            .children(
+                self.render_row_follow_up(ix, &row, th)
+                    .map(|chip| div().pl(px(katna_ui::tokens::space::S3)).child(chip)),
+            )
             .children(
                 self.render_row_task(ix, key, th, cx)
                     .map(|chip| div().pl(px(8.0)).child(chip)),
@@ -3341,4 +3510,103 @@ fn tracking_mark(ix: usize, row: &Row, size: f32, th: &Theme) -> Option<AnyEleme
             .tooltip(tip(text, th))
             .into_any_element(),
     )
+}
+
+/// When a snoozed line comes back, as its date: "6:00 PM" today, "Thu
+/// 8:00 AM" this week, else the date.
+fn back_date(back: jiff::civil::DateTime, now: jiff::civil::DateTime) -> String {
+    match (back.date() - now.date()).get_days() {
+        ..=0 => katna_i18n::format::time(back),
+        1..=6 => tr!(
+            "row-snoozed-day-time",
+            day = katna_i18n::format::weekday(back),
+            time = katna_i18n::format::time(back)
+        ),
+        _ => format::list_date(back, now),
+    }
+}
+
+/// When snoozed mail comes back, as the Snoozed folder groups it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SnoozedGroup {
+    Today,
+    Tomorrow,
+    ThisWeek,
+    Later,
+}
+
+impl SnoozedGroup {
+    fn of(day: jiff::civil::Date, today: jiff::civil::Date) -> Self {
+        match (day - today).get_days() {
+            ..=0 => Self::Today,
+            1 => Self::Tomorrow,
+            2..=6 => Self::ThisWeek,
+            _ => Self::Later,
+        }
+    }
+
+    fn label(self) -> String {
+        match self {
+            Self::Today => tr!("snoozed-group-today"),
+            Self::Tomorrow => tr!("snoozed-group-tomorrow"),
+            Self::ThisWeek => tr!("snoozed-group-this-week"),
+            Self::Later => tr!("snoozed-group-later"),
+        }
+    }
+}
+
+/// The small label over the first line of a [`SnoozedGroup`].
+fn snoozed_group_label(group: SnoozedGroup, first: bool, th: &Theme) -> AnyElement {
+    div()
+        .px(px(space::S5))
+        .pt(px(if first { space::S3 } else { space::S5 }))
+        .pb(px(space::S2))
+        .text_size(px(text::CAPTION))
+        .font_weight(FontWeight::MEDIUM)
+        .text_color(rgba(th.text_dim))
+        .border_b_1()
+        .border_color(rgba(row_line(th)))
+        .child(group.label())
+        .into_any_element()
+}
+
+/// Which of each pair of actions a menu offers for the lines it acts on:
+/// only the one that changes something, and for lines that differ, the
+/// one that makes them all alike.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct Pairs {
+    /// Mark as read, else Mark as unread.
+    pub read: bool,
+    /// Add star, else Remove star.
+    pub star: bool,
+    /// Mark as important, else Mark as not important.
+    pub important: bool,
+    /// Pin to top, else Unpin.
+    pub pin: bool,
+}
+
+impl Default for Pairs {
+    /// Lines not known: an open mail is read, and the rest are unset.
+    fn default() -> Self {
+        Self {
+            read: false,
+            star: true,
+            important: true,
+            pin: true,
+        }
+    }
+}
+
+impl Pairs {
+    pub(super) fn of(rows: &[Rc<Row>]) -> Self {
+        if rows.is_empty() {
+            return Self::default();
+        }
+        Self {
+            read: rows.iter().any(|r| r.unread),
+            star: rows.iter().any(|r| !r.flagged),
+            important: rows.iter().any(|r| !r.important),
+            pin: rows.iter().any(|r| !r.pinned),
+        }
+    }
 }

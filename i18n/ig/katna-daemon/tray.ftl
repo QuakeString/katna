@@ -6,6 +6,8 @@
 
 tray-open-inbox = Mepee _Igbe ozi mbata
 tray-new-message = Ozi ọ_hụrụ
+tray-new-task = Ọ_rụ ọhụrụ
+tray-new-note = N_detu ọhụrụ
 tray-preferences = _Ntọala
 tray-quit = _Pụọ
 
@@ -14,4 +16,10 @@ tray-quit = _Pụọ
 tray-unread = { $count ->
     [0] Enweghị ozi a gụghị
    *[other] Ozi { $count } a gụghị
+}
+tray-password-refused = A chọrọ okwuntughe ọhụrụ maka { $address }
+tray-signed-out = Banye ọzọ na { $address }
+tray-accounts-need-you = Akaụntụ { $count } chọrọ gị
+tray-not-sent = { $count ->
+   *[other] Ezipughị ozi { $count }
 }

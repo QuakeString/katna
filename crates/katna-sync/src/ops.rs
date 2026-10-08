@@ -147,9 +147,61 @@ pub struct ReplayReport {
     pub retried: usize,
     /// Given up; the local change was undone.
     pub failed: usize,
+    /// What was given up, for the user: what kind of change and the
+    /// server's answer.
+    pub refused: Vec<Refused>,
     /// Folders that received moved messages without the server telling
     /// their new UIDs; sync them to see the messages again.
     pub resync: Vec<(FolderId, String)>,
+}
+
+/// A change the server refused for good, which was undone here.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Refused {
+    pub change: Change,
+    /// The server's answer.
+    pub reason: String,
+}
+
+/// The kinds of change, as the user made them.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Change {
+    /// Read, starred and other flags.
+    Flags,
+    /// Moved to another folder (archived, trashed, …).
+    Move,
+    /// A Gmail label added or taken off.
+    Label,
+    /// Deleted for good.
+    Delete,
+    /// A draft saved or dropped, sent mail filed.
+    Other,
+}
+
+impl Change {
+    /// Its name over D-Bus (`ChangesRefused`).
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Flags => "flags",
+            Self::Move => "move",
+            Self::Label => "label",
+            Self::Delete => "delete",
+            Self::Other => "other",
+        }
+    }
+
+    fn of(op: &Op) -> Self {
+        match op {
+            Op::Flags { .. } => Self::Flags,
+            Op::Move { .. } => Self::Move,
+            Op::Copy { .. } | Op::Unlabel { .. } => Self::Label,
+            Op::Expunge { .. } => Self::Delete,
+            Op::Append { .. }
+            | Op::PurgeTracked { .. }
+            | Op::SaveDraft { .. }
+            | Op::DropDraft { .. } => Self::Other,
+        }
+    }
 }
 
 /// Adds and removes flags. Returns the accounts whose workers must replay.
@@ -935,6 +987,10 @@ pub async fn replay<B: MailBackend>(
                         batch.fail_op(queued.id)?;
                         undo(&mut batch, &op)?;
                         report.failed += 1;
+                        report.refused.push(Refused {
+                            change: Change::of(&op),
+                            reason,
+                        });
                     } else {
                         tracing::info!(?op, %reason, "operation refused; retrying later");
                         batch.retry_op(queued.id, now + RETRY_AFTER)?;
@@ -1270,10 +1326,7 @@ fn undo(batch: &mut katna_store::MailBatch<'_>, op: &Op) -> katna_store::Result<
             uid,
             to,
             ..
-        } => {
-            batch.move_location(MessageId(*message), FolderId(*to), FolderId(*from), *uid)?;
-            Ok(())
-        }
+        } => batch.move_back(MessageId(*message), FolderId(*to), FolderId(*from), *uid),
         Op::Copy { message, to, .. } => {
             let (message, to) = (MessageId(*message), FolderId(*to));
             if batch.unconfirmed_in(message, to)? {

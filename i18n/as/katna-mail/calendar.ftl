@@ -53,7 +53,7 @@ calendar-account-signed-in = { $address }ত পুনৰ ছাইন ইন �
 calendar-account-sign-in-refused = { $provider }এ Katnaক সোমাবলৈ নিদিলে। পুনৰ চেষ্টা কৰক, আৰু আপোনাৰ কেলেণ্ডাৰলৈ প্ৰৱেশৰ অনুমতি দিয়ক।
 calendar-account-refused = ছাৰ্ভাৰে পাছৱৰ্ডটো গ্ৰহণ নকৰিলে। Yahoo, iCloud, Zoho আৰু আনবোৰক এটা এপ পাছৱৰ্ড লাগে।
 calendar-account-change-password = পাছৱৰ্ড সলনি কৰক
-calendar-account-change-password-tooltip = ছেটিংছ > একাউণ্টসমূহ খোলক
+calendar-account-change-password-tooltip = নতুন পাছৱৰ্ড লিখক; Katnaই ছাৰ্ভাৰৰ সৈতে পৰীক্ষা কৰে
 calendar-account-not-enabled = Katnaৰ বাবে কেলেণ্ডাৰ প্ৰৱেশ এতিয়াও অন কৰা হোৱা নাই।
 calendar-account-failed = কেলেণ্ডাৰসমূহ পঢ়িব পৰা নগ'ল।
 calendar-account-error = কেলেণ্ডাৰসমূহ পঢ়িব পৰা নগ'ল: { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = পুনৰ চেষ্টা কৰক
 calendar-account-try-again-tooltip = এই একাউণ্টৰ কেলেণ্ডাৰসমূহ এতিয়াই পুনৰ পৰীক্ষা কৰক
 calendar-account-fixing = কাম চলি আছে…
 calendar-birthdays = জন্মদিন
+calendar-tasks = কাৰ্যসমূহ
 calendar-birthday-of = { $name }ৰ জন্মদিন
 calendar-empty-title = এতিয়াও কোনো কেলেণ্ডাৰ নাই
 calendar-empty-text = Katna-এ আপোনাৰ Google আৰু Microsoft একাউণ্টৰ কেলেণ্ডাৰ, আৰু CalDAV দিয়া আন ছাৰ্ভাৰৰ কেলেণ্ডাৰ ছিংক হ'লে ইয়াত দেখুৱায়।
@@ -127,6 +128,7 @@ calendar-event-details = ইভেণ্টৰ বিৱৰণ
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = নতুন ইভেণ্ট
+calendar-event-window-title = নতুন ইভেণ্ট
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = দিনটো খোলক
 calendar-menu-duplicate = প্ৰতিলিপি কৰক

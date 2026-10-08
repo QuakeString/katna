@@ -69,3 +69,4 @@ search-options-show = عرض خيارات البحث
 settings = الإعدادات
 account-add = إضافة حساب
 account-wheel-hint = مرّر للتبديل بين الحسابات
+account-menu-all-detail = الحسابات معًا ({ $count })

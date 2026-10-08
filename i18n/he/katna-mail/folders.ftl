@@ -10,6 +10,8 @@ nav-label-new = יצירת תווית חדשה
 nav-folder-new = יצירת תיקייה חדשה
 nav-menu-check-mail = בדיקת דואר חדש
 nav-menu-check-inbox = בדיקת תיבת הדואר הנכנס הזו
+nav-unified-leave-out = השמטה מהדואר הנכנס המאוחד
+nav-unified-bring-back = החזרה לדואר הנכנס המאוחד
 nav-menu-sign-in-again = התחברות מחדש
 nav-menu-new-mail = הודעה חדשה מהחשבון הזה
 nav-menu-account-settings = הגדרות החשבון
@@ -22,6 +24,8 @@ nav-account-password-refused = הסיסמה נדחתה
 nav-account-storage = { $used } מתוך { $total } בשימוש
 nav-menu-new-subfolder = תיקייה חדשה בתוכה
 nav-menu-new-sublabel = תווית חדשה בתוכה
+nav-menu-rename = שינוי שם
+nav-menu-delete = מחיקה
 nav-menu-empty-trash = ריקון האשפה
 nav-account-unnamed = חשבון { $number }
 nav-all-accounts = כל החשבונות
@@ -44,6 +48,10 @@ folder-spam = ספאם
 folder-trash = אשפה
 folder-all-mail = כל הדואר
 folder-scheduled = מתוזמנות
+folder-waiting = ממתינות לתשובה
+folder-waiting-short = ממתינות
+folder-reminders = תזכורות
+folder-outbox = דואר יוצא
 folder-activity = פעילות
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,45 @@ label-create = יצירה
 label-creating = בתהליך יצירה…
 label-created = התווית „{ $name }” נוצרה.
 label-folder-created = התיקייה „{ $name }” נוצרה.
+label-rename-title = שינוי שם התווית
+label-folder-rename-title = שינוי שם התיקייה
+label-rename = שינוי שם
+label-renaming = משנים את השם…
+label-renamed = שם התווית שונה ל„{ $name }”.
+label-folder-renamed = שם התיקייה שונה ל„{ $name }”.
+folder-delete-title = למחוק את „{ $name }”?
+folder-delete-body = { $count ->
+    [0] אין בה דואר. התיקייה נמחקת מהשרת, כך שהיא תיעלם גם מהדואר באינטרנט ומהטלפון.
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] השיחה שבה עוברת לאשפה, כך שעדיין אפשר לשחזר אותה.
+            [two] { $count } השיחות שבה עוברות לאשפה, כך שעדיין אפשר לשחזר אותן.
+           *[other] { $count } השיחות שבה עוברות לאשפה, כך שעדיין אפשר לשחזר אותן.
+        }
+       *[message] { $count ->
+            [one] ההודעה שבה עוברת לאשפה, כך שעדיין אפשר לשחזר אותה.
+            [two] { $count } ההודעות שבה עוברות לאשפה, כך שעדיין אפשר לשחזר אותן.
+           *[other] { $count } ההודעות שבה עוברות לאשפה, כך שעדיין אפשר לשחזר אותן.
+        }
+    } התיקייה נמחקת מהשרת, כך שהיא תיעלם גם מהדואר באינטרנט ומהטלפון.
+}
+folder-delete-forever-body = { $count ->
+    [0] אין בה דואר. התיקייה נמחקת מהשרת, כך שהיא תיעלם גם מהדואר באינטרנט ומהטלפון.
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] השיחה שבה נמחקת לצמיתות; לחשבון הזה אין אשפה.
+            [two] { $count } השיחות שבה נמחקות לצמיתות; לחשבון הזה אין אשפה.
+           *[other] { $count } השיחות שבה נמחקות לצמיתות; לחשבון הזה אין אשפה.
+        }
+       *[message] { $count ->
+            [one] ההודעה שבה נמחקת לצמיתות; לחשבון הזה אין אשפה.
+            [two] { $count } ההודעות שבה נמחקות לצמיתות; לחשבון הזה אין אשפה.
+           *[other] { $count } ההודעות שבה נמחקות לצמיתות; לחשבון הזה אין אשפה.
+        }
+    } התיקייה נמחקת מהשרת, כך שהיא תיעלם גם מהדואר באינטרנט ומהטלפון.
+}
+folder-delete-label-body = התווית תוסר. הדואר שלה נשאר ב„כל הדואר” ובתוויות האחרות שלו.
+folder-delete-confirm = מחיקת התיקייה
+folder-delete-label-confirm = מחיקת התווית
+folder-deleted = התיקייה „{ $name }” נמחקה
+label-deleted = התווית „{ $name }” נמחקה

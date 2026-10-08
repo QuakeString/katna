@@ -10,6 +10,9 @@ Type=dbus
 BusName=in.invenia.katna.Daemon
 ExecStart=/usr/bin/katna-daemon
 Restart=on-failure
+# Five seconds apart, so a crash loop never reaches systemd's start limit
+# (5 in 10 s) and the service is always tried again.
+RestartSec=5
 
 [Install]
 WantedBy=default.target

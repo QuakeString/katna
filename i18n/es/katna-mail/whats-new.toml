@@ -3179,3 +3179,1353 @@ Todas las pestañas de Ajustes tienen la misma barra de desplazamiento fina
 que un correo abierto y Archivos: aparece mientras te desplazas o señalas
 la página, y puedes arrastrarla.
 """
+
+["2026-10-02-1248-account-colors"]
+title = "Un color para cada cuenta"
+text = """
+Elige un color para cada cuenta en Ajustes > Cuentas, o haz clic derecho
+en la cuenta en el panel de carpetas: uno de siete, o cualquier color de
+la rueda de colores que les sigue. El punto junto a cada remitente en la
+bandeja de entrada unificada y el anillo alrededor de la foto de la cuenta
+toman ese color, y al pasar el puntero sobre el punto se ve el nombre de
+la cuenta. Cada cuenta empieza con un color propio, nunca uno de los de
+las pestañas de la bandeja de entrada.
+"""
+
+["2026-10-02-1340-colors-button-mail-only"]
+title = "El botón de colores originales, solo donde ayuda"
+text = """
+Con un tema oscuro, el botón que muestra un correo con sus propios colores
+ahora se aparta mientras una conversación se muestra como chat, y vuelve a
+aparecer en Correo.
+"""
+
+["2026-10-02-1340-logo-and-custom-accent"]
+title = "El logotipo toma tus colores, y cualquier acento que quieras"
+text = """
+El logotipo de Katna en la ventana ahora lleva tu color de acento, en
+claro y en oscuro. Y Ajustes > Apariencia > Acento termina ahora en una
+rueda de colores: haz clic en ella para elegir el acento que quieras.
+"""
+
+["2026-10-02-1358-empty-reply-no-draft"]
+title = "Las respuestas vacías no dejan borrador"
+text = """
+Una respuesta en la que hiciste clic pero no escribiste nada, en el cuadro
+del chat o bajo un correo, ahora simplemente se cierra al salir de ella. No
+guarda ningún borrador y no reaparece al cambiar entre Chat y Correo.
+"""
+
+["2026-10-02-1400-folder-right-click-selects"]
+title = "El clic derecho abre la carpeta"
+text = """
+Al hacer clic derecho en una carpeta del panel de carpetas, ahora se
+selecciona y se abre antes de que aparezca su menú, así que el menú actúa
+claramente sobre la carpeta que ves.
+"""
+
+["2026-10-02-1405-viewer-arrows-hover"]
+title = "Las flechas del visor siguen visibles"
+text = """
+Las flechas a los lados del visor de archivos adjuntos ya no se aclaran
+hasta casi el blanco al señalarlas. En su lugar se vuelven de un gris un
+poco más claro, así que siguen viéndose bien sobre una página blanca.
+"""
+
+["2026-10-02-1432-account-colour-button"]
+title = "Un botón de color por cuenta"
+text = """
+Cada cuenta muestra ahora solo su propio color, en un botón Color en
+Ajustes > Cuentas y en el menú del clic derecho de la cuenta. Haz clic en
+él para elegir uno de ocho colores o cualquier color propio, justo donde
+hiciste clic.
+"""
+
+["2026-10-02-1443-reply-at-the-end"]
+title = "Tu respuesta se queda al final"
+text = """
+Una respuesta está ahora siempre al final de la conversación, incluso con
+el correo más reciente arriba. Al cambiar de Chat a Correo se desplaza
+hasta ella, con el cursor donde lo dejaste.
+"""
+
+["2026-10-02-1451-card-shows-signer"]
+title = "La tarjeta muestra quién firmó el correo abierto"
+text = """
+La tarjeta de la persona ahora lee la firma del correo que tienes abierto,
+no solo la del más reciente. Cuando un compañero firma correos desde una
+dirección compartida como accounts@, la tarjeta muestra su nombre, cargo,
+teléfono y la dirección de la empresa de ese correo.
+"""
+
+["2026-10-02-1510-search-click-away"]
+title = "Haz clic en cualquier sitio para salir del cuadro de búsqueda"
+text = """
+Hacer clic en el espacio vacío de la barra superior, junto al cuadro de
+búsqueda, ahora te saca del cuadro, igual que hacer clic en la lista de
+correos. Tu búsqueda se queda como está.
+"""
+
+["2026-10-02-1515-empty-message-no-draft"]
+title = "Sin borradores vacíos"
+text = """
+Un mensaje nuevo que vuelves a vaciar antes de cerrarlo ya no se queda en
+Borradores, igual que una respuesta vacía en una conversación.
+"""
+
+["2026-10-02-1513-dark-pages"]
+title = "Páginas oscuras en el visor"
+text = """
+En modo oscuro, el visor de archivos adjuntos tiene un botón con media
+luna que muestra en oscuro los PDF, documentos, presentaciones, hojas de
+cálculo y archivos de texto claros. Los colores conservan su tono, las
+fotos dentro de una página se atenúan en lugar de convertirse en
+negativos, y el papel escaneado se oscurece como el texto. Katna recuerda
+tu elección para el siguiente archivo.
+"""
+
+["2026-10-02-1522-window-corners"]
+title = "Elige las esquinas y el borde de tu ventana"
+text = """
+Con la barra de título propia de Katna, Ajustes > Experimental tiene
+ahora un control deslizante Redondeo de las esquinas, de cuadradas a
+redondas, y un interruptor Borde con su propia opacidad. Con Desenfoque
+personalizado activado, el control Opacidad también decide cuánto deja
+pasar el fondo desenfocado de la ventana.
+"""
+
+["2026-10-02-1535-ctrl-shift-click-select"]
+title = "Selecciona correos con Ctrl y Mayús"
+text = """
+Haz Ctrl+clic en un correo de la lista para seleccionarlo, y Ctrl+clic en
+otros para añadirlos. Mayús+clic selecciona todos los correos desde el
+último en el que hiciste clic. Para abrir un correo en su propia ventana,
+haz clic derecho en él y elige Abrir en una ventana nueva.
+"""
+
+["2026-10-02-1610-frosted-panes"]
+title = "Paneles, chat y búsqueda esmerilados"
+text = """
+Con Desenfocar el fondo de la ventana activado, la lista de correos, el
+correo abierto y la tarjeta de la persona ahora también dejan pasar el
+desenfoque, con un control Opacidad de los paneles. El fondo detrás de
+las burbujas de un chat deja ver un poco más, y el cuadro de búsqueda
+sigue esmerilado mientras escribes. Cada uno tiene su propio interruptor
+en Ajustes > Experimental.
+"""
+
+["2026-10-02-1618-fainter-hints"]
+title = "Sugerencias más tenues en los cuadros vacíos"
+text = """
+El texto gris de sugerencia en un cuadro vacío, como «Responder a…» bajo
+un chat o «Buscar correo», es ahora más tenue, así que nunca parece texto
+que hayas escrito tú.
+"""
+
+["2026-10-02-1642-drag-from-empty-space"]
+title = "Mueve la ventana desde el espacio vacío"
+text = """
+En Linux ahora puedes mover la ventana arrastrando cualquier espacio vacío
+de la barra izquierda, de las carpetas o de la barra sobre tu correo, no
+solo de la barra superior.
+"""
+
+["2026-10-02-1643-space-folds-folders"]
+title = "Espacio pliega las carpetas"
+text = """
+Haz clic en una carpeta que contiene otras carpetas y pulsa Espacio para
+abrirla o plegarla, igual que al hacer clic en su flecha. Tras un clic,
+las teclas de flecha también recorren el panel de carpetas, y Tab pasa a
+la lista de correos.
+"""
+
+["2026-10-02-1646-viewer-more-menu"]
+title = "Los controles del visor caben en ventanas estrechas"
+text = """
+En una ventana estrecha, los controles al pie del visor de archivos
+adjuntos se quedan ahora dentro de él. Los botones que no caben pasan a
+un menú ⋮ Más: primero girar, después Ajustar y después Páginas oscuras.
+El número de página y el zoom son los que más tiempo siguen a la vista.
+"""
+
+["2026-10-02-1743-activity-report-fits"]
+title = "El informe de actividad cabe en la ventana"
+text = """
+El Informe de actividad se queda ahora dentro de la ventana con márgenes
+iguales, y se desplaza cuando la ventana es baja, así que sus últimas
+filas nunca se cortan.
+"""
+
+["2026-10-02-1846-folders-and-labels"]
+title = "Renombra, elimina y arrastra a carpetas"
+text = """
+Haz clic derecho en una carpeta que hayas creado para renombrarla o
+eliminarla; al eliminarla, su correo pasa antes a la Papelera. Arrastra
+correos de la lista a una carpeta para moverlos allí. Mover a tiene un
+cuadro de búsqueda: escribe para encontrar una carpeta, o para crear una
+nueva y mover el correo a ella. En Gmail, Etiquetar como pone y quita
+etiquetas, y soltar correo sobre una etiqueta le añade esa etiqueta.
+"""
+
+["2026-10-02-1928-mail-rules"]
+title = "Reglas de correo"
+text = """
+Las reglas ordenan el correo nuevo por sí solas: según el remitente, el
+asunto o ciertas palabras, lo mueven, lo etiquetan, lo destacan, lo
+reenvían o lo silencian. Crea una en Ajustes > Carpetas y reglas, o haz
+clic derecho en un correo y elige Crear una regla…, y mira con cuántos
+correos recientes coincide antes de guardarla. En Mover a, marca «Mover
+siempre aquí el correo de …» para mover el correo de un remitente, y el
+que te envíe en el futuro, con un solo clic.
+"""
+
+["2026-10-02-2017-rules-on-the-server"]
+title = "Reglas que funcionan con el ordenador apagado"
+text = """
+Las reglas de correo funcionan ahora en Gmail, o en tu servidor de correo
+si admite reglas Sieve, así que también ordenan el correo en tu móvil y
+mientras este ordenador está apagado. Ajustes > Carpetas y reglas muestra
+dónde se ejecuta cada regla, y por qué alguna se queda en Katna.
+"""
+
+["2026-10-03-0046-smooth-folded-tabs"]
+title = "Las pestañas plegadas cambian con suavidad"
+text = """
+Cuando una ventana estrecha pliega las pestañas de la bandeja de entrada
+en iconos, cambiar de pestaña ya no da saltos: la pestaña que dejas se
+encoge de nuevo a su icono mientras su nombre se desvanece, y la que
+abres crece mientras su nombre aparece.
+"""
+
+["2026-10-03-0051-read-rows-frosted"]
+title = "El correo leído también está esmerilado"
+text = """
+Con los paneles esmerilados activados, el correo que ya has leído muestra
+ahora el esmerilado detrás de la lista igual que el correo sin leer, solo
+con un tono distinto, en lugar de una franja sólida.
+"""
+
+["2026-10-03-0101-rounder-corners"]
+title = "Esquinas de ventana más redondas"
+text = """
+Redondeo de las esquinas, en Ajustes > Experimental, llega ahora hasta 32
+píxeles, el doble de redondo que antes, y puedes escribir el número en el
+cuadro junto al control deslizante.
+"""
+
+["2026-10-03-0113-viewer-round-corners"]
+title = "El visor sigue las esquinas redondeadas de la ventana"
+text = """
+Con la barra de título propia de Katna y las esquinas redondeadas, el
+visor de archivos adjuntos redondea ahora sus esquinas inferiores igual
+que la ventana, en lugar de mostrar esquinas grises cuadradas más allá
+del borde de la ventana.
+"""
+
+["2026-10-03-0147-chat-go-down"]
+title = "Vuelve al correo más reciente"
+text = """
+Si te has desplazado mucho hacia arriba en un chat, aparece un botón
+redondo abajo a la derecha. Te lleva suavemente de vuelta al correo más
+reciente y cuenta los que hayan llegado mientras tanto.
+"""
+
+["2026-10-03-0147-chat-long-mails"]
+title = "Correos largos en los chats"
+text = """
+En una burbuja larga, la foto del remitente se queda al pie de lo que ves,
+y los botones de responder, fijar y más se quedan en la parte visible. Haz
+clic derecho en el texto para llegar a todos ellos.
+"""
+
+["2026-10-03-0147-chat-scroll-bar"]
+title = "Una barra de desplazamiento en los chats"
+text = """
+Los chats tienen la misma barra de desplazamiento discreta que un correo
+abierto, visible mientras el puntero está sobre ellos.
+"""
+
+["2026-10-03-0147-chat-translate"]
+title = "Traduce en los chats"
+text = """
+Un correo en otro idioma ofrece también su traducción en el chat, como en
+Correo. Haz clic derecho en cualquier burbuja y elige Traducir para
+traducirla tú mismo, y otra vez para ver el original.
+"""
+
+["2026-10-03-0150-search-pill-hovers"]
+title = "Resaltados uniformes en la barra de búsqueda del móvil"
+text = """
+En un móvil, el botón de carpetas y la foto de tu cuenta se sitúan ahora
+centrados en los extremos redondeados de la barra de búsqueda, y todos
+los botones de la barra tienen el mismo resaltado redondo al pasar el
+puntero, a la misma distancia del borde de la barra.
+"""
+
+["2026-10-03-0159-starter-rules"]
+title = "Reglas iniciales"
+text = """
+Ajustes > Carpetas y reglas ofrece ahora reglas ya hechas, desactivadas:
+silenciar promociones, boletines a Lectura, recibos, entregas, billetes
+de tren y avión (IRCTC, Air India, IndiGo y más), códigos de un solo uso,
+alertas de seguridad, correo de redes sociales e invitaciones de
+calendario. Activa una y funcionará en todas tus cuentas, creando
+carpetas como Viajes cuando haga falta. Las reglas también pueden mirar
+la pestaña de la bandeja de entrada y si el correo vino de una lista de
+correo.
+"""
+
+["2026-10-03-0200-chat-file-hover"]
+title = "Tarjetas de archivo más suaves en los chats"
+text = """
+Un archivo en una burbuja de chat ya no se oscurece bajo el puntero. Se
+eleva un poco con un ligero tinte, y su nombre sigue siendo fácil de leer.
+"""
+
+["2026-10-03-0210-opened-mail-stays-in-view"]
+title = "El correo que abres sigue a la vista"
+text = """
+Con el panel de lectura junto a la lista, el correo en el que haces clic
+se queda donde estaba en la lista mientras se abre el panel, o la lista
+se desplaza lo justo para mostrarlo entero. Ya no desaparece de la vista,
+tanto si lo abriste desde la lista como desde los resultados de búsqueda.
+"""
+
+["2026-10-03-0212-about-header-stays"]
+title = "Acerca de mantiene su cabecera a la vista"
+text = """
+Al desplazarte por Acerca de, el logotipo grande se encoge ahora en uno
+pequeño arriba a la izquierda, con Katna, su lema y la versión al lado, y
+esa cabecera se queda en su sitio mientras el resto se desplaza por
+debajo.
+"""
+
+["2026-10-03-0221-folded-tab-icon-settles"]
+title = "Las pestañas plegadas se asientan sin moverse"
+text = """
+Al cambiar entre pestañas plegadas de la bandeja de entrada, la pestaña
+que dejas se detiene ahora exactamente donde se encogió, sin que su icono
+se desplace uno o dos píxeles al terminar la animación.
+"""
+
+["2026-10-03-0228-right-click-another-mail"]
+title = "Basta con un clic derecho"
+text = """
+Con el menú de un correo o de una carpeta abierto, hacer clic derecho en
+otro correo u otra carpeta cierra ahora el menú abierto y abre el nuevo
+al instante, sin necesitar un segundo clic derecho.
+"""
+
+["2026-10-03-0235-rule-editor-fits"]
+title = "El editor de reglas cabe"
+text = """
+En el editor de reglas, las palabras largas o las listas de direcciones
+pasan a más líneas en lugar de cortarse, «coincide con el patrón» se ve
+completo, y el editor se queda dentro de la ventana, desplazándose cuando
+tiene muchas condiciones.
+"""
+
+["2026-10-03-0235-soft-button-hover"]
+title = "Resaltado más suave en los botones"
+text = """
+Al señalar un botón redondo, su círculo crece ahora suavemente desde dos
+tercios de su tamaño mientras aparece, y los botones alargados como
+Responder aparecen un poco más despacio. Al apartar el puntero, el
+círculo vuelve a encogerse un poco mientras se desvanece.
+"""
+
+["2026-10-03-0249-account-ring"]
+title = "Un anillo de cuenta más claro"
+text = """
+El anillo de color alrededor de la foto de cada cuenta es más grueso, con
+un poco más de espacio entre él y la foto, en la barra superior, en el
+menú de cuentas y en Ajustes.
+"""
+
+["2026-10-03-0335-chat-picture-steady"]
+title = "Fotos estables en los chats"
+text = """
+Desplazarte más allá del final de un chat, o en un chat sin nada que
+desplazar, ya no hace saltar la foto del remitente ni los botones de la
+burbuja.
+"""
+
+["2026-10-03-0355-no-hover-while-scrolling"]
+title = "Desplazamiento más tranquilo en la lista de correos"
+text = """
+Mientras te desplazas por la lista de correos, los correos que pasan bajo
+el puntero ya no se iluminan ni muestran sus botones. Como en Gmail, el
+correo bajo el puntero se ilumina cuando el desplazamiento se detiene.
+"""
+
+["2026-10-03-0541-rule-rows-drag"]
+title = "Las reglas se arrastran como las cuentas"
+text = """
+En Ajustes > Carpetas y reglas, al arrastrar una regla ahora se levanta
+toda su fila, las demás reglas se apartan, y se coloca donde la sueltas,
+igual que al reordenar las cuentas.
+"""
+
+["2026-10-03-0545-chat-go-down-aligned"]
+title = "Botón para bajar alineado"
+text = """
+En los chats, el botón redondo que te lleva al correo más reciente se
+sitúa ahora justo encima del botón de enviar, en la misma línea.
+"""
+
+["2026-10-03-0555-bottom-corners-round"]
+title = "Las esquinas inferiores siguen redondeadas"
+text = """
+Con la barra de título propia de Katna y las esquinas redondeadas, las
+esquinas inferiores de la ventana ya no muestran un cuadrado de su fondo
+más allá del borde redondeado.
+"""
+
+["2026-10-03-0606-account-dot-only"]
+title = "Una lista de correos más tranquila"
+text = """
+Las líneas de la bandeja de entrada unificada muestran solo el punto de
+color de la cuenta junto al remitente. Pasa el puntero sobre el punto
+para ver a qué cuenta pertenece el correo.
+"""
+
+["2026-10-03-0623-windows-updates"]
+title = "Actualizaciones en Windows"
+text = """
+Katna en Windows ahora se actualiza solo. Busca versiones nuevas cada
+hora, las descarga en segundo plano y las instala cuando pulsas
+Actualizar, y después vuelve a abrirse.
+"""
+
+["2026-10-03-0643-files-wildcard-search"]
+title = "Comodines en la búsqueda de Archivos"
+text = """
+En Archivos, buscar *.pdf encuentra ahora todos los PDF, y * y ?
+funcionan en cualquier parte de un nombre: factura*2026* encuentra todas
+las facturas de 2026. Funciona con los archivos de tu correo y en Google
+Drive y OneDrive.
+"""
+
+["2026-10-03-0643-linux-package-updates"]
+title = "Actualizaciones para todos los paquetes de Linux"
+text = """
+La AppImage y el archivo tar de Linux se actualizan ahora solos, como el
+paquete de Arch. Con el paquete de Fedora, Snap, Flatpak o Nix, Katna te
+avisa cuando sale una versión nueva y muestra la orden que la instala,
+lista para copiar.
+"""
+
+["2026-10-03-0708-copy-codes"]
+title = "Copia códigos desde las notificaciones"
+text = """
+Una notificación de correo nuevo con un código de inicio de sesión o de
+verificación tiene ahora un botón Copiar para él, y una con un enlace
+para verificar o confirmar tu dirección tiene un botón con el nombre del
+sitio que abre. Los botones de las notificaciones ya no hacen que un
+icono de Katna rebote siguiendo el puntero del ratón.
+"""
+
+["2026-10-03-0730-contact-card-popover"]
+title = "Tarjeta de contacto en ventanas estrechas"
+text = """
+Cuando la ventana no tiene sitio para el panel de contacto, hacer clic en
+el nombre o la foto de una persona abre una tarjeta breve sobre el
+correo, señalando donde hiciste clic. Ensancha la ventana y el panel
+completo ocupa su lugar.
+"""
+
+["2026-10-03-0733-compose-icon-turns"]
+title = "El icono del botón grande gira al cambiar de página"
+text = """
+Al cambiar entre Correo, Calendario, Contactos, Tareas y Notas, el icono
+del botón grande arriba de la barra izquierda ya no cambia de golpe. El
+icono anterior gira y se encoge mientras el nuevo entra girando, también
+en el botón del móvil.
+"""
+
+["2026-10-03-0746-sound-sets"]
+title = "Conjuntos de sonidos de notificación"
+text = """
+Ajustes > Notificaciones tiene ahora conjuntos de sonidos: Pájaros,
+Naturaleza, Animales, Insectos, Electrónicos, Mañana, las campanas de
+Katna o los de tu escritorio. El correo nuevo canta como un petirrojo
+salvo que elijas otro conjunto. Cada evento puede tener además su propio
+sonido, o un archivo de sonido que elijas.
+"""
+
+["2026-10-03-0750-chat-seen-ticks"]
+title = "Quién vio tu correo, en los chats"
+text = """
+En la vista de chat, las marcas de los correos que enviaste con
+seguimiento se colorean cuando alguien los abre. A su lado, un pequeño
+ojo cuenta las aperturas y un enlace cuenta los enlaces seguidos. Deja el
+puntero sobre ellos para ver quién lo abrió o siguió un enlace, como
+muestra el ojo en la vista de correo.
+"""
+
+["2026-10-03-0834-drawer-edge-clean"]
+title = "Sin línea junto a las carpetas deslizantes"
+text = """
+En un móvil o una tableta, las carpetas que se deslizan desde el menú se
+detienen ahora contra el borde sin que una línea fina parpadee a su lado
+al asentarse.
+"""
+
+["2026-10-03-0845-chat-summary-button-hides"]
+title = "El botón del resumen vuelve a ocultarlo"
+text = """
+En la vista de chat, el destello de arriba oculta ahora el resumen cuando
+está visible, y lo vuelve a mostrar con el siguiente clic, como en la
+vista de correo.
+"""
+
+["2026-10-03-0915-big-button-glides"]
+title = "El botón grande se desliza entre páginas"
+text = """
+Con las carpetas abiertas, cambiar de página ya no lleva el botón grande
+de arriba a su nuevo ancho de golpe ni cambia su palabra de un salto. El
+botón pasa suavemente a su nuevo ancho mientras la palabra anterior se
+desvanece hacia arriba y la nueva sube, junto con el icono que gira.
+"""
+
+["2026-10-03-0945-flat-row-hover"]
+title = "Un resaltado más nítido en la lista de correos"
+text = """
+La línea bajo el puntero ya no se eleva con una sombra suave. En su lugar
+toma un tinte plano y algo más intenso, así que sus bordes se mantienen
+nítidos en claro y en oscuro.
+"""
+
+["2026-10-03-0959-drawer-bounce-back"]
+title = "Las carpetas entran con su rebote y el borde limpio"
+text = """
+En un móvil o una tableta, las carpetas que se deslizan desde el menú
+recuperan su pequeño rebote, y ya no hay sombra a lo largo de su borde
+junto a la barra lateral.
+"""
+
+["2026-10-03-1030-crisp-card-edges"]
+title = "Bordes de tarjeta más nítidos en colores claros"
+text = """
+En colores claros, la lista de correos, el correo abierto y las demás
+tarjetas tienen ahora un borde fino y nítido y una sombra muy corta en
+lugar de un desenfoque suave, así que destacan sobre la página tan
+claramente como en colores oscuros.
+"""
+
+["2026-10-03-1206-matching-choice-chips"]
+title = "Fichas de opción a juego"
+text = """
+Las opciones de Opciones de búsqueda, Actividad, Escritura con IA y las
+libretas de direcciones de un contacto son ahora una misma ficha: del
+mismo tamaño en todas partes, con una marca en la elegida.
+"""
+
+["2026-10-03-1453-summary-folds-smoothly"]
+title = "Un resumen que se pliega con suavidad"
+text = """
+Plegar o desplegar el resumen de una conversación ahora pasa suavemente
+a su nueva altura, y su flecha gira con él en lugar de saltar.
+"""
+
+["2026-10-03-1523-animation-speed"]
+title = "Elige la velocidad de las animaciones"
+text = """
+Ajustes > Apariencia tiene una Velocidad de las animaciones: sigue la velocidad
+del escritorio, o elige la de Katna, de Más rápida a Más lenta. Reducir
+el movimiento también sigue al escritorio, o puede estar siempre activado o
+nunca.
+"""
+
+["2026-10-03-1536-paste-signature-html"]
+title = "Pega el HTML de una firma"
+text = """
+Ajustes > Redacción > Firmas tiene Pegar HTML, para una firma diseñada en
+un sitio web de firmas o en otra aplicación de correo. Se limpia, sus
+imágenes se descargan y van dentro del correo, y la ventana de redacción
+la muestra exactamente como se enviará.
+"""
+
+["2026-10-03-1546-whats-new-header-stays"]
+title = "Novedades mantiene su encabezado"
+text = """
+Al desplazarte por Novedades ahora solo se mueven los destacados: el
+encabezado se queda arriba y Entendido se queda abajo.
+"""
+
+["2026-10-03-1611-menus-fade-out"]
+title = "Los menús se desvanecen"
+text = """
+Un menú de clic derecho ahora se desvanece al cerrarse, en lugar de
+desaparecer de golpe.
+"""
+
+["2026-10-03-1625-list-stays-put"]
+title = "La lista de correos no se mueve al abrir un correo"
+text = """
+Abrir un correo ya no baja la lista una línea en las carpetas donde
+algunos correos muestran archivos adjuntos. La lista se queda
+exactamente donde la dejaste.
+"""
+
+["2026-10-03-1628-drawer-top-clean"]
+title = "Sin línea de sombra sobre las carpetas deslizantes"
+text = """
+En un móvil o una tableta, las carpetas que se deslizan desde el menú ya
+no tienen una fina línea de sombra a lo largo de su parte superior, bajo
+la barra de búsqueda.
+"""
+
+["2026-10-03-1631-toolbar-menus-fade-out"]
+title = "Los menús de la barra de herramientas también se desvanecen"
+text = """
+Los menús bajo los botones de la barra de herramientas, como Más y la
+casilla de selección, se desvanecen al cerrarse en lugar de desaparecer
+de golpe.
+"""
+
+["2026-10-03-1632-settings-by-app"]
+title = "Ajustes ordenados por aplicación"
+text = """
+Ajustes tiene ahora una lista de páginas a un lado: Todas las
+aplicaciones para lo que comparten todas, y después Correo, Calendario y
+Archivos para sus propios ajustes, con las páginas de Correo
+desplegándose debajo. Ajustes se abre en la aplicación en la que estás,
+y Calendario ya tiene ahí sus primeros ajustes.
+"""
+
+["2026-10-03-1650-popovers-fade-out"]
+title = "Las tarjetas emergentes se desvanecen"
+text = """
+Las pequeñas tarjetas que señalan aquello a lo que pertenecen, como la
+tarjeta de contacto, quién ha visto un correo, un día de la vista Año,
+las fechas de búsqueda personalizadas y el selector de color, se
+desvanecen al cerrarse en lugar de desaparecer de golpe.
+"""
+
+["2026-10-03-1711-ring-centred"]
+title = "Los anillos de cuenta quedan parejos"
+text = """
+El anillo de color alrededor de la foto de tu cuenta tiene ahora el mismo
+espacio por todos los lados, con cualquier escala, en lugar de parecer un
+píxel más grueso por un lado.
+"""
+
+["2026-10-03-1717-signature-pictures"]
+title = "Las imágenes de las firmas vuelven a cargarse"
+text = """
+Las imágenes de la web, como los logotipos de las firmas de Gmail, ahora
+se cargan en redes que cortan pronto la conexión con Google, en lugar de
+quedarse como un cuadro vacío.
+"""
+
+["2026-10-03-1723-import-signatures"]
+title = "Trae tus firmas"
+text = """
+Ajustes > Redacción > Firmas > Importar encuentra las firmas de Gmail, y
+de Thunderbird, Evolution y KMail en este ordenador, con sus logotipos.
+Marca las que quieras; las que ya están en Katna quedan sin marcar.
+"""
+
+["2026-10-03-1750-hover-folders-clean"]
+title = "Bordes limpios en las carpetas abiertas desde Redactar"
+text = """
+En una ventana del tamaño de una tableta, las carpetas que se abren al
+dejar el puntero sobre Redactar ya no muestran líneas finas a lo largo
+de sus bordes superior e izquierdo.
+"""
+
+["2026-10-03-1757-chat-links"]
+title = "Los enlaces se abren desde los chats"
+text = """
+En la vista de chat, los enlaces de un correo se abren con un clic,
+igual que en la vista de correo: sus propios enlaces y las direcciones
+web y de correo escritas en el texto. Deja el puntero sobre uno para ver
+adónde lleva. En la vista de correo, el correo en texto sin formato
+también abre las direcciones escritas.
+"""
+
+["2026-10-03-1811-folds-glide"]
+title = "Los grupos de calendarios se pliegan con suavidad"
+text = """
+Los calendarios de una cuenta en la columna lateral de Calendario ahora
+se abren y se cierran deslizándose, y las flechitas de lo que se pliega
+(Más en la tarjeta de contacto, las personas del chat, las cuentas de
+Actividad, la idea principal de una respuesta de IA) giran en lugar de
+darse la vuelta de golpe.
+"""
+
+["2026-10-03-1844-signature-layouts"]
+title = "Firmas con doce diseños"
+text = """
+Ajustes > Redacción > Firmas tiene ahora doce diseños listos para usar.
+Rellena una sola vez tu nombre, tus números, tu logotipo, tu foto y tus
+páginas, elige un diseño y un color, y mírala como la verá quien la lea:
+en claro, en oscuro o como texto sin formato. Las imágenes viajan dentro
+del correo, así que se ven en todas partes.
+"""
+
+["2026-10-03-1850-copy-about-whats-new"]
+title = "Copia desde Acerca de y Novedades"
+text = """
+El texto de Acerca de Katna y de Novedades ahora se puede seleccionar y
+copiar como en un navegador: arrastra sobre él, haz doble clic en una
+palabra o triple clic en un párrafo, y luego pulsa Ctrl+C o haz clic
+derecho > Copiar. Viene bien para pegar la versión en un informe de
+fallo.
+"""
+
+["2026-10-03-1904-copy-version"]
+title = "Copia la versión con un clic"
+text = """
+Deja el puntero sobre la versión en Acerca de, Novedades o Ajustes y
+aparece a su lado un pequeño botón de copiar. Copia la versión, cuándo
+se compiló y tu sistema, listo para pegar en un informe de fallo.
+"""
+
+["2026-10-03-1924-settings-in-window"]
+title = "Ajustes vuelve junto a tu correo"
+text = """
+Ajustes vuelve a abrirse dentro de la ventana principal, en lugar de la
+página en la que estabas, con su lista de páginas agrupada en Todas las
+aplicaciones y en cada aplicación.
+"""
+
+["2026-10-03-1934-copy-any-text"]
+title = "Copia texto en cualquier sitio"
+text = """
+El texto que te dice algo ahora se puede seleccionar y copiar en todo
+Katna: nombres y descripciones de ajustes, datos de contactos y eventos,
+el estado de las cuentas, mensajes de error, notas de páginas vacías y
+diálogos. Arrastra sobre él o haz doble clic en una palabra, y luego
+pulsa Ctrl+C o haz clic derecho > Copiar. Los botones y las filas en los
+que haces clic siguen como estaban.
+"""
+
+["2026-10-03-2011-calendar-tasks-switch-month-drag"]
+title = "Tareas en el Calendario: muéstralas u ocúltalas, y arrástralas en Mes"
+text = """
+La lista lateral del Calendario tiene una casilla Tareas bajo tus
+calendarios: desmárcala y las tareas salen de Día, Semana, Mes y Agenda
+hasta que vuelvas a marcarla. En la vista Mes ahora puedes arrastrar una
+tarea a otro día; conserva su hora, y Deshacer la devuelve a su sitio.
+"""
+
+["2026-10-03-2023-tasks-upcoming-completed-sort-select"]
+title = "Próximas, Completadas, ordenar y seleccionar en Tareas"
+text = """
+Tareas tiene dos vistas nuevas. Próximas muestra las dos semanas
+siguientes día a día, con las tareas vencidas arriba; arrastra una tarea
+a otro día para moverla. Completadas muestra, por día, todo lo que
+marcaste, y al desmarcar una tarea vuelve a su lista. El menú ⋮ de cada
+lista la ordena por fecha, por estrella o por título. Haz Ctrl+clic o
+Mayús+clic en varias tareas para completarlas, moverlas, ponerles fecha,
+destacarlas o eliminarlas todas a la vez.
+"""
+
+["2026-10-03-2040-task-labels-and-files"]
+title = "Etiquetas y archivos en las tareas"
+text = """
+Las tareas usan las mismas etiquetas que tus notas: añádelas en los
+detalles de una tarea o escribe #casa en una tarea nueva, y elige una
+etiqueta a la izquierda para ver todas las tareas que la llevan. Suelta
+un archivo sobre una tarea para adjuntarlo, y Añadir a Tareas conserva
+los adjuntos del correo. La estrella, las etiquetas y los archivos
+llegan a Microsoft To Do y a tu servidor CalDAV, y la estrella a Zoho.
+"""
+
+["2026-10-03-2102-notes-pictures-reminders-history"]
+title = "Notas: imágenes, recordatorios e historial"
+text = """
+Las notas admiten imágenes, te avisan a la hora que elijas y guardan 30
+días de historial que puedes restaurar. Haz Ctrl+clic en varias notas
+para fijarlas, darles color, etiquetarlas o archivarlas a la vez,
+escribe [[ para enlazar una nota con otra, y añade citas, código y
+separadores. Envía una nota por correo o guárdala como Markdown o PDF y,
+con la IA activada, el destello la ordena, la convierte en lista o la
+resume.
+"""
+
+["2026-10-03-2102-quick-capture"]
+title = "Apunta una idea desde cualquier sitio"
+text = """
+Meta+Alt+T abre una pequeña tarjeta sobre lo que estés haciendo para
+añadir una tarea, y Meta+Alt+N para tomar una nota. Escribe «Llamar al
+fontanero vie 18:00 #casa» y unas fichas muestran el día, la etiqueta,
+la lista y el recordatorio que ha entendido; haz clic en una para
+cambiarla. Tab cambia entre Tarea y Nota, e Intro guarda. También está
+en el menú de la bandeja del sistema, y en KRunner como task: y note:.
+"""
+
+["2026-10-04-0102-soft-hovers"]
+title = "Resaltados más suaves"
+text = """
+Al dejar el puntero sobre la barra de aplicaciones, el cuadro de
+selección, una pestaña y muchos otros botones, su resaltado ahora
+aparece y desaparece con un fundido en lugar de encenderse de golpe.
+"""
+
+["2026-10-04-0119-cards-lift"]
+title = "Tarjetas que se elevan"
+text = """
+Los archivos, los adjuntos, las carpetas de Drive, las invitaciones, los
+resúmenes, el cuadro de respuesta y los servicios de correo de Añadir
+cuenta son ahora tarjetas con el mismo borde suave y la misma sombra que
+el resto de Katna, en lugar de un contorno plano.
+"""
+
+["2026-10-04-0119-notes-select-bar-matches"]
+title = "Notas: tarjetas más suaves que se mueven"
+text = """
+Notas usa ahora las mismas tarjetas, fichas y barras que el resto de
+Katna. Las tarjetas descansan sobre una sombra suave y se elevan un poco
+bajo el puntero, las notas nuevas aparecen con un fundido, las
+eliminadas se desvanecen, y una nota se abre y se cierra con un breve
+zoom. La barra con la que seleccionas notas tiene la misma forma
+redondeada que «Crear una nota», así que solo cambia su contenido. Todo
+ello sigue Reducir el movimiento y Velocidad de las animaciones.
+"""
+
+["2026-10-04-0128-header-labels"]
+title = "Todas las etiquetas en un correo abierto"
+text = """
+Un correo abierto muestra ahora todas sus fichas bajo el asunto, como
+Gmail: Recibidos, Importantes, su pestaña de Recibidos, Destacados y
+cada carpeta o etiqueta en la que está. Señala una para quitarla con su
+×, con Deshacer.
+"""
+
+["2026-10-04-0150-settings-own-list"]
+title = "Ajustes tiene la ventana para sí"
+text = """
+Mientras Ajustes está abierto, las carpetas se pliegan, así que solo ves
+la propia lista de páginas de Ajustes junto a la página que elegiste.
+Vuelven cuando sales.
+"""
+
+["2026-10-04-0154-summary-pill"]
+title = "Un botón de resumen más discreto y una cabecera que no se mueve"
+text = """
+En la vista de chat, el destello del resumen está ahora en una pequeña
+píldora gris propia junto al interruptor Chat | Correo, y se ilumina en
+blanco mientras se muestra el resumen. El resumen se abre y se cierra
+deslizándose en lugar de aparecer de golpe. Tanto en la vista de correo
+como en la de chat, la cabecera se queda ahora arriba mientras los
+correos se desplazan por debajo, y las filas de la lista de correos se
+deslizan de la misma forma bajo su barra superior, esmeriladas cuando el
+desenfoque está activado. Ajustes > Experimental tiene un interruptor
+Cabeceras esmeriladas para mantenerlas opacas.
+"""
+
+["2026-10-04-0204-tasks-motion"]
+title = "Tareas que se mueven"
+text = """
+Al marcar una tarea, su círculo se rellena, el título se tacha y la fila
+se pliega. Las tareas nuevas y las eliminadas entran y salen
+deslizándose, las que reordenas se desplazan suavemente a su sitio, y
+las tarjetas de las listas se elevan un poco al señalarlas.
+"""
+
+["2026-10-04-0225-shortcuts-dialog"]
+title = "Las combinaciones de teclas de un vistazo"
+text = """
+Ayuda > Combinaciones de teclas, o la tecla ?, muestra ahora todas las
+combinaciones en una pequeña ventana sobre tu correo, con un cuadro para
+buscar una. Las teclas se siguen cambiando en Ajustes > Combinaciones de
+teclas.
+"""
+
+["2026-10-04-0305-unified-leave-out"]
+title = "Deja unos Recibidos fuera de Todas las cuentas"
+text = """
+Haz clic derecho en los Recibidos de una cuenta bajo Todas las cuentas y
+elige Excluir de Recibidos unificados: su correo deja de llenar los
+Recibidos unificados, pero la fila se queda y abre esos Recibidos. Haz
+clic en su ojo para volver a incluirlos. En Ajustes > Recibidos también
+puedes sacar una cuenta entera de Todas las cuentas.
+"""
+
+["2026-10-04-0310-leave-account-out"]
+title = "Deja una cuenta fuera de una aplicación"
+text = """
+Ajustes tiene ahora una página para Contactos, Tareas y Notas, y cada
+una de ellas y Archivos enumera tus cuentas con un interruptor.
+Desactiva una para dejar esa cuenta fuera de la aplicación; sus
+recordatorios no te avisarán. Sus elementos se siguen sincronizando, así
+que vuelven en cuanto la activas de nuevo.
+"""
+
+["2026-10-04-0320-calendar-leave-account-out"]
+title = "Deja una cuenta fuera de Calendario"
+text = """
+Ajustes > Calendario también enumera tus cuentas con un interruptor.
+Desactiva una y sus calendarios, eventos y tareas salen de Calendario, y
+sus eventos dejan de avisarte. Se sigue sincronizando, así que vuelve en
+cuanto la activas.
+"""
+
+["2026-10-04-0327-contact-card-points-right"]
+title = "Las tarjetas de contacto se abren donde hiciste clic"
+text = """
+En una ventana estrecha, la tarjeta de contacto que se abre desde el
+nombre o la foto de una persona ahora apunta justo a ellos, tanto en la
+vista de chat como en la de correo, y se abre con suavidad también la
+primera vez: Katna empieza a leer los datos de la persona en cuanto el
+puntero se detiene sobre ellos. Un segundo clic en el mismo nombre o
+foto cierra la tarjeta.
+"""
+
+["2026-10-04-0336-files-card-corners"]
+title = "Tarjetas de archivo más tranquilas"
+text = """
+Las tarjetas de archivo en Archivos y bajo un correo descansan ahora
+sobre una sombra suave y se elevan un poco al señalarlas. La vista
+previa se queda como está: el tamaño del archivo aparece con un fundido
+arriba a la izquierda y sus botones arriba a la derecha, sobre cristal
+esmerilado, así que nada salta.
+"""
+
+["2026-10-04-0345-pane-tops-whole"]
+title = "La parte superior de los paneles ya no aparece cortada"
+text = """
+Con la barra de título propia de Katna, el borde superior y la sombra
+suave de la lista de correos, del correo abierto y de los paneles
+laterales se ven ahora completos cuando la ventana no está maximizada,
+en lugar de parecer cortados en recto bajo la barra superior.
+"""
+
+["2026-10-04-0354-account-offline"]
+title = "Desconecta una cuenta"
+text = """
+Haz clic derecho en una cuenta y elige Desconectar, durante una hora o
+hasta mañana si quieres. Katna deja de conectarse a ella, y una nube
+tachada aparece junto a su contador y sobre tu foto. Su correo sigue
+aquí para leerlo, y lo que archives, elimines o envíes mientras tanto
+sale cuando haces clic en la nube para volver a conectarte. Ajustes >
+Cuentas tiene un interruptor Conectada para cada cuenta, y la tarjeta de
+la cuenta puede desconectar todas las cuentas a la vez.
+"""
+
+["2026-10-04-0420-resize-steady"]
+title = "Estable al cambiar el tamaño"
+text = """
+Con la barra de título propia de Katna en Wayland, el contenido de la
+ventana se queda quieto mientras arrastras un borde para cambiar su
+tamaño, en lugar de temblar.
+"""
+
+["2026-10-04-0531-turn-apps-off"]
+title = "Desactiva las aplicaciones que no usas"
+text = """
+Ajustes › Aplicaciones tiene un interruptor para Calendario, Contactos,
+Tareas, Notas y Archivos, y al hacer clic derecho en una de la barra de
+aplicaciones se ofrece Desactivar. Una aplicación desactivada sale de la
+barra de aplicaciones y de sus teclas, y nada cambia en tus cuentas. Con
+solo Correo activado, la barra desaparece y Katna es simplemente una
+aplicación de correo.
+"""
+
+["2026-10-04-0635-remove-app-copy"]
+title = "Libera el espacio de una aplicación desactivada"
+text = """
+Al desactivar una aplicación en Ajustes › Aplicaciones, ahora se ofrece
+eliminar su copia en este ordenador. Nada cambia en tus cuentas, y al
+volver a activarla se descarga de nuevo. A las cuentas nuevas solo se
+les pide lo que necesitan las aplicaciones que usas.
+"""
+
+["2026-10-04-1100-account-problems"]
+title = "Ve y arregla los problemas de las cuentas en un solo sitio"
+text = """
+Cuando una cuenta te necesita, una línea en la parte superior de la
+lista de correos dice con palabras sencillas qué ha pasado, con la
+solución al lado. Una contraseña cambiada abre una pequeña tarjeta donde
+escribes la nueva, y Katna la comprueba antes de guardarla. Un aviso
+ámbar también marca la cuenta en el panel de carpetas y sobre tu foto.
+Cuando pierdes la conexión, una discreta línea dice que no tienes
+conexión y que el correo que envíes esperará hasta que vuelvas.
+"""
+
+["2026-10-04-1110-contact-card-placeholder"]
+title = "Las tarjetas de contacto se abren de una pieza"
+text = """
+Cuando los datos de una persona tardan un momento en cargarse, la
+tarjeta de contacto que aparece sobre un nombre o una foto ahora se abre
+con su tamaño habitual y unas líneas tenues donde irán los datos, luego
+los rellena y se ajusta con suavidad, en lugar de abrirse pequeña y
+crecer de golpe.
+"""
+
+["2026-10-04-1144-account-problems-settings"]
+title = "Los problemas de las cuentas, también en Ajustes"
+text = """
+Ajustes › Cuentas dice ahora bajo el nombre de una cuenta qué le pasa,
+como una contraseña rechazada, con la solución justo ahí.
+"""
+
+["2026-10-04-1147-subject-scrolls-again"]
+title = "El asunto vuelve a desplazarse con el correo"
+text = """
+En la vista de correo, el asunto vuelve a desplazarse junto con los
+correos, bajo una barra de herramientas sencilla. En la vista de chat,
+la barra de herramientas se une a la cabecera fija, así que las burbujas
+se deslizan bajo ambas, esmeriladas cuando el desenfoque está activado.
+La barra superior de la lista de correos conserva ahora las esquinas
+redondeadas de la tarjeta, y con Cabeceras esmeriladas desactivado las
+filas ya no se transparentan a través de ella. En una ventana del tamaño
+de un teléfono, las esquinas inferiores también son redondeadas.
+"""
+
+["2026-10-04-1223-outbox"]
+title = "Una Bandeja de salida para el correo que no ha salido"
+text = """
+El correo que no se pudo enviar espera ahora en una Bandeja de salida
+bajo Enviados, que solo aparece mientras haya algo en ella. Cada mensaje
+dice el motivo con palabras sencillas, con Reintentar, Editar y
+Eliminar. El correo que envías mientras la contraseña de una cuenta ha
+cambiado o su sesión ha caducado espera ahí y sale en cuanto lo
+arreglas, en lugar de fallar.
+"""
+
+["2026-10-04-1246-refused-changes"]
+title = "Los cambios que el servidor rechazó ya no se deshacen en silencio"
+text = """
+Cuando un servidor de correo sigue rechazando un cambio, como mover un
+mensaje a una carpeta eliminada en otro sitio, Katna lo deja como estaba
+y ahora lo dice con palabras sencillas, con Detalles para ver la
+respuesta del propio servidor.
+"""
+
+["2026-10-04-1250-phone-scroll-steady"]
+title = "Lista estable en una ventana del tamaño de un teléfono"
+text = """
+Al desplazar rápido la lista de correos en una ventana del tamaño de un
+teléfono, ya no se queda temblando arriba y abajo mientras las pestañas
+se apartan.
+"""
+
+["2026-10-04-1309-needs-you-notifications"]
+title = "Un solo aviso cuando una cuenta o un mensaje te necesita"
+text = """
+Cuando un servidor de correo rechaza tu contraseña, una sesión caduca o
+un mensaje no se puede enviar, una notificación del escritorio lo dice
+una vez, incluso con Katna Mail cerrado. Su botón abre la solución:
+Nueva contraseña, Iniciar sesión o la Bandeja de salida. La información
+emergente del icono de la bandeja del sistema enumera lo que espera por
+ti.
+"""
+
+["2026-10-04-1510-dialogs-fit-phone"]
+title = "Los diálogos caben en una ventana del tamaño de un teléfono"
+text = """
+Novedades, Acerca de, Actualizaciones, Combinaciones de teclas y los
+demás diálogos caben ahora dentro de una ventana estrecha con el marco
+propio de Katna, en lugar de salirse por sus bordes.
+"""
+
+["2026-10-04-1511-solid-mail-list-bar"]
+title = "Nada se desliza bajo las barras"
+text = """
+Los correos de la lista de correos, el correo abierto y las burbujas de
+un chat empiezan ahora debajo de sus barras en lugar de deslizarse bajo
+ellas, y las barras se quedan opacas. El interruptor Cabeceras
+esmeriladas ha desaparecido, y con él las esquinas raras que traía.
+"""
+
+["2026-10-04-1525-menus-inside-window"]
+title = "Los menús y la información emergente se quedan dentro de la ventana"
+text = """
+Con el marco de ventana propio de Katna, los menús del clic derecho, las
+ventanas emergentes y la información emergente cerca de un borde ya no
+se salen sobre la sombra de la ventana; se quedan dentro de ella.
+"""
+
+["2026-10-04-1525-unified-stacked-picture"]
+title = "Todas las cuentas muestra todas las fotos"
+text = """
+Con Todas las cuentas abierto, la foto de arriba a la derecha es ahora
+una pequeña pila con las fotos de tus cuentas, con +N para el resto, así
+que la distingues de una sola cuenta de un vistazo. Señálala y las fotos
+se separan con suavidad.
+"""
+
+["2026-10-04-2338-all-accounts-row"]
+title = "Vuelve a Todas las cuentas desde el menú de la cuenta"
+text = """
+El menú de la cuenta empieza ahora con Todas las cuentas, con su número
+de no leídos, así que un clic te lleva de vuelta después de elegir una
+sola cuenta. El menú marca con una marca de verificación lo que está
+abierto, y al desplazarte sobre la foto también se detiene en Todas las
+cuentas.
+"""
+
+["2026-10-05-1257-service-starts-again"]
+title = "Katna inicia su servicio en segundo plano por sí solo"
+text = """
+Si el servicio que sincroniza tu correo y muestra el icono de la bandeja
+del sistema no está en marcha, Katna Mail lo vuelve a iniciar por sí
+solo. No hace falta ningún terminal. Si aun así no arranca, una línea
+sobre tu correo lo dice, con Volver a iniciar y los detalles para copiar
+en un informe.
+"""
+
+["2026-10-05-1430-stuck-window-replaced"]
+title = "Katna Mail se abre aunque una copia se haya quedado bloqueada"
+text = """
+Si Katna Mail dejó de responder en segundo plano, al volver a abrirlo
+ahora se cierra la copia bloqueada y se abre una ventana nueva, en lugar
+de no hacer nada.
+"""
+
+["2026-10-05-1605-read-receipts-as-ticks"]
+title = "Las confirmaciones de lectura ya no aparecen como correo"
+text = """
+Cuando la aplicación de correo de alguien envía una confirmación de
+lectura de un correo que enviaste, ya no aparece como un mensaje nuevo
+en la conversación. Tu mensaje recibe marcas azules y una línea que dice
+quién lo leyó y cuándo, y la confirmación se marca como leída, así que
+no te avisa. Se queda en tu buzón y en la búsqueda.
+"""
+
+["2026-10-05-1620-reply-tools-fold"]
+title = "Las herramientas de respuesta caben en una ventana estrecha"
+text = """
+Cuando el panel de lectura o la ventana son estrechos, la barra de
+formato y la fila junto a Enviar ya no se salen de la respuesta. Las
+herramientas que no caben pasan a ⋮ Más, empezando por las menos usadas,
+y en un teléfono Enviar muestra solo su icono.
+"""
+
+["2026-10-05-1637-read-receipts-out-of-the-list"]
+title = "Las confirmaciones de lectura no aparecen en la lista de correos"
+text = """
+Una confirmación de lectura de un correo que enviaste ya no aparece en
+la lista de correos como una línea «Leído: …». La conversación conserva
+su propio asunto y su vista previa, y tu correo enviado muestra las
+marcas.
+"""
+
+["2026-10-05-1640-windows-frost"]
+title = "Cristal esmerilado en Windows"
+text = """
+Los menús, las ventanas emergentes, los diálogos, las barras del visor y
+los paneles esmerilados desenfocan ahora lo que tienen debajo también en
+Windows, con los mismos ajustes de Intensidad del desenfoque y Opacidad
+que en Linux. Actívalo o desactívalo en Ajustes, Experimental, Menús y
+diálogos esmerilados.
+"""
+
+["2026-10-06-0156-phone-activity"]
+title = "Actividad en un teléfono"
+text = """
+En una ventana del tamaño de un teléfono, Actividad está ahora en la
+barra de búsqueda junto a la foto de tu cuenta, con su número de
+aperturas y clics nuevos. Su lista cabe dentro de la ventana.
+"""
+
+["2026-10-06-0215-pin-bar-no-jump"]
+title = "Fijar no mueve el chat"
+text = """
+En la vista de chat, fijar o dejar de fijar un correo ya no hace saltar
+la conversación, ni siquiera al final del todo: la barra de fijados
+aparece con un fundido encima y los mensajes se quedan donde estaban.
+"""
+
+["2026-10-06-0942-fainter-row-marks"]
+title = "Casillas y estrellas más discretas"
+text = """
+En la lista de correos, la casilla, la estrella y el marcador de
+importancia de una línea se ven más tenues hasta que señalas la línea.
+Las estrellas y los marcadores puestos se ven como antes.
+"""
+
+["2026-10-06-1448-activity-beside-calendar"]
+title = "Actividad con los demás botones"
+text = """
+En una ventana más ancha, el botón Actividad está ahora a la derecha,
+con Calendario y Ajustes. Con Todas las cuentas abierto, las fotos de
+las cuentas se separan al pasar el puntero sin mover los botones de al
+lado.
+"""
+
+["2026-10-06-1524-search-fills-bar"]
+title = "Un cuadro de búsqueda más largo"
+text = """
+En una ventana ancha, el cuadro de búsqueda llega ahora hasta los
+botones de la derecha en lugar de quedarse a medio camino. Las opciones
+de búsqueda se abren centradas debajo de él y mantienen un ancho cómodo.
+"""
+
+["2026-10-07-0110-follow-up-for-you"]
+title = "Seguimientos que se envían solos"
+text = """
+En el menú junto a Enviar, Hacer seguimiento si no responden ahora puede
+enviar por ti un breve mensaje de seguimiento cuando nadie contesta:
+escríbelo una vez, elige cuándo y decide si se intenta una vez más. Sale
+los días laborables en horario de trabajo, se detiene en cuanto alguien
+responde (las respuestas automáticas no cuentan) y, si tu ordenador
+estaba apagado, te espera en lugar de salir tarde. Una ficha junto a
+Enviar muestra lo que está programado. O quédate solo con un
+recordatorio, ahora con la fecha que elijas.
+"""
+
+["2026-10-07-0117-drawer-logo"]
+title = "El logotipo de Katna en el cajón"
+text = """
+En un teléfono, el cajón con tus carpetas muestra ahora el logotipo de
+Katna junto a su nombre, en tu color de acento, en lugar de un simple
+sobre. En una tableta, donde la barra superior ya los muestra, el cajón
+empieza con tus carpetas.
+"""
+
+["2026-10-07-0118-clock-popup"]
+title = "Un reloj de escritorio más ordenado"
+text = """
+En Katna Digital Clock, tus zonas horarias están ahora junto a la fecha,
+arriba, y la lista de Tareas se pliega con un clic en su encabezado.
+Añadir un evento abre una pequeña ventana Nuevo evento en lugar de toda
+la aplicación. Las tareas nuevas ya no aparecen dos veces tras un fallo
+de sincronización.
+"""
+
+["2026-10-07-0232-mcp-server"]
+title = "Deja que los asistentes de IA usen tu correo"
+text = """
+Ajustes › Servidor MCP permite que los asistentes de IA de este
+ordenador, como Claude Desktop, Claude Code y LM Studio, busquen y lean
+tu correo y guarden borradores para que los revises. Está desactivado
+hasta que lo actives. Elige qué cuentas ven, copia lo que debes pegar en
+tu asistente y mira lo que han hecho últimamente. Los asistentes nunca
+envían, eliminan ni mueven correo.
+"""
+
+["2026-10-07-0359-waiting-for-reply"]
+title = "Mira lo que espera una respuesta"
+text = """
+El correo que enviaste con un seguimiento o un recordatorio aparece en
+En espera, bajo Enviados. Sus líneas muestran una ficha con lo que
+pasará después y cuándo, en En espera y también en tus Recibidos. Abre
+uno para mover el seguimiento a otro momento, enviarlo ya o detenerlo.
+"""
+
+["2026-10-07-0505-follow-ups-in-chats"]
+title = "Seguimientos en la vista de chat"
+text = """
+En la vista de chat, un seguimiento pendiente de salir aparece como una
+burbuja tenue al final del chat, con Editar, Enviar ahora y Detener.
+Para programar uno, haz clic derecho en Enviar o mantenlo pulsado y
+elige Hacer seguimiento si no responden.
+"""
+
+["2026-10-07-0603-remind-me"]
+title = "Que te recuerde cualquier correo"
+text = """
+Pulsa H en un correo, o usa Recordármelo junto a Posponer, para que
+Katna te lo recuerde a una hora mientras el correo se queda donde está.
+Si el correo dice que algo vence un día concreto, Katna te ofrece la
+mañana anterior. Los recordatorios son tareas en Tareas, aparecen en
+Recordatorios y se muestran en la línea del correo. B pospone.
+"""
+
+["2026-10-07-0718-snooze-extras"]
+title = "Posponer sabe cuándo alguien responde"
+text = """
+Una conversación pospuesta vuelve al instante cuando alguien escribe en
+ella. En Elegir fecha y hora puedes escribir «mar 15:00» o «en 2 horas».
+La notificación de un correo nuevo puede posponerlo una hora o hasta
+mañana.
+"""
+
+["2026-10-07-0802-your-snooze-times"]
+title = "Pospón a tu manera"
+text = """
+Define qué significan Más tarde hoy, Mañana, Este fin de semana y La
+próxima semana, y añade una hora propia, en Ajustes > Recibidos.
+Pospuestos ordena el correo según cuándo vuelve. En un teléfono, desliza
+una línea hacia la izquierda para posponerla.
+"""
+
+["2026-10-07-0913-pick-date-in-place"]
+title = "Elige la fecha donde hiciste clic"
+text = """
+Elegir fecha y hora se desliza ahora dentro del propio menú de Posponer
+y Recordármelo, en lugar de un cuadro en el centro de la ventana. La
+flecha atrás vuelve a las horas.
+"""
+
+["2026-10-07-0953-nudges"]
+title = "Vuelven las preguntas que nadie respondió"
+text = """
+El correo que enviaste preguntando algo y que no tuvo respuesta en tres
+días vuelve arriba en Recibidos con «Enviado hace 3 días. ¿Hacer un
+seguimiento?». Haz clic para hacer el seguimiento, o en la x para
+quitarlo. Ajustes > Recibidos lo desactiva.
+"""
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Ajustes tiene su propio menú"
+text = """
+La lista de páginas a la izquierda de Ajustes tiene un tinte tenue de
+arriba abajo, para que se distinga de la página que estás leyendo.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Programar envío elige la fecha en el mismo menú"
+text = """
+Elegir fecha y hora en Programar envío y en Hacer seguimiento si no
+responden se desliza ahora dentro del menú desde el que lo abriste, como
+en Posponer, en lugar de un cuadro sobre el mensaje. La flecha atrás o
+Esc vuelve a las horas.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "El icono de la bandeja combina con tu panel desde el inicio"
+text = """
+En KDE Plasma, el icono monocromo de la bandeja del sistema toma ahora el
+color de tu panel justo después de iniciar sesión y sigue cada cambio
+entre claro y oscuro, sin reiniciar Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Busca planos e imágenes"
+text = """
+Opciones de búsqueda tiene dos tipos de adjunto nuevos: DWG para planos de
+AutoCAD (y DXF), e Imagen para fotos e imágenes. XLSX encuentra ahora
+también los archivos XLS antiguos, y PPTX los PPT, así que cada uno tiene
+un solo botón.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Los menús muestran solo lo que corresponde"
+text = """
+El menú Más ya no muestra las dos mitades de un par. Un correo leído
+muestra Marcar como no leído; uno destacado, Quitar estrella; uno
+importante, Marcar como no importante; uno fijado, No fijar. Con varios
+correos seleccionados que difieren, aparece la acción que los deja todos
+iguales, aquí y en el menú del clic derecho.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Ajustes va sobre una tarjeta"
+text = """
+Con colores claros, la página de Ajustes tiene ahora el mismo borde fino
+y la misma sombra suave que la lista de correo, para que se distinga de
+la ventana que hay detrás.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Botones de aplicaciones más fluidos"
+text = """
+Hacer clic en una aplicación de la barra de la izquierda, o de la barra
+inferior en un teléfono, ya no la hace temblar: la onda del clic se
+completa y la píldora de selección crece desde el centro mientras el
+botón conserva su tamaño.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Los menús se deslizan en la tarjeta de la cuenta"
+text = """
+El menú ☰ y la lista de idiomas se deslizan ahora dentro de la tarjeta de
+la cuenta en lugar de aparecer de golpe, con un botón atrás a la derecha
+para volver.
+"""

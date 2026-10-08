@@ -740,14 +740,20 @@ fn snoozes_and_reminds_across_restarts() {
         Some("<4@x>"),
         seen,
     );
+    // A follow-up to send, due while the computer was off.
+    let late = add_mail(&mut batch, account, sent, "<6@x>", now - 400, None, seen);
     batch.commit().unwrap();
-    for (outbox, header) in [(900_001, "<3@x>"), (900_002, "<4@x>")] {
+    for (outbox, header) in [(900_001, "<3@x>"), (900_002, "<4@x>"), (900_003, "<6@x>")] {
         let follow_up = katna_meta::FollowUp {
             account: account.0,
             message_id: header.into(),
             subject: "Offer".into(),
             remind_at: now + 3600,
             after: 3600,
+            mail: (outbox == 900_003).then(|| {
+                "From: enron@local\r\nTo: bob@x\r\nSubject: Re: Offer\r\n\r\nAny news?\r\n".into()
+            }),
+            ..katna_meta::FollowUp::default()
         };
         katna_meta::set_follow_up(&mut store, outbox, &follow_up).unwrap();
     }
@@ -800,9 +806,14 @@ fn snoozes_and_reminds_across_restarts() {
         snooze.until = now - 10;
         katna_meta::set_snooze(&mut store, id, &snooze).unwrap();
     }
-    for outbox in [900_001, 900_002] {
+    for outbox in [900_001, 900_002, 900_003] {
         let mut follow_up = katna_meta::follow_up_of(&store, outbox).unwrap().unwrap();
-        follow_up.remind_at = now - 10;
+        // Five days covers a weekend the follow-up would wait out.
+        follow_up.remind_at = if follow_up.sends() {
+            now - 5 * 86_400
+        } else {
+            now - 10
+        };
         katna_meta::set_follow_up(&mut store, outbox, &follow_up).unwrap();
     }
     drop(store);
@@ -811,8 +822,11 @@ fn snoozes_and_reminds_across_restarts() {
         let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
         let reader = Store::open(&paths, Mode::ReadOnly).unwrap();
         within("snoozed mail back", 10, async {
+            let waiting_alone = |follow_ups: Vec<(i64, katna_meta::FollowUp)>| {
+                matches!(&follow_ups[..], [(900_003, f)] if f.waiting)
+            };
             while !katna_meta::snoozed(&reader).unwrap().is_empty()
-                || !katna_meta::follow_ups(&reader).unwrap().is_empty()
+                || !waiting_alone(katna_meta::follow_ups(&reader).unwrap())
             {
                 Timer::after(Duration::from_millis(50)).await;
             }
@@ -842,7 +856,12 @@ fn snoozes_and_reminds_across_restarts() {
             .map(|(id, _)| id)
             .collect();
         surfaced.sort();
-        assert_eq!(surfaced, [first, second, unanswered]);
+        assert_eq!(surfaced, [first, second, unanswered, late]);
+        // Not sent late: it waits for the user, the mail back in the Inbox.
+        let mut folders = folder_of(&reader, late);
+        folders.sort();
+        assert_eq!(folders, ["INBOX", "Sent"]);
+        assert!(reader.outbox().unwrap().is_empty(), "nothing sent");
         instance.shutdown().await;
     });
 }
@@ -896,7 +915,32 @@ fn follow_ups_wait_on_outgoing_mail() {
         // 0 takes it back; so does Undo send.
         pim.set_follow_up(id, 0).await.unwrap();
         assert_eq!(katna_meta::follow_up_of(&reader, id).unwrap(), None);
-        pim.set_follow_up(id, 86_400).await.unwrap();
+        // A follow-up for Katna to send, twice at most.
+        let mail = b"From: alice@katna.test\r\nTo: bob@katna.test\r\n\
+            Subject: Re: Lunch\r\nIn-Reply-To: <x@y>\r\n\r\nStill on?\r\n";
+        pim.set_follow_up_mail(id, 86_400, 7 * 86_400, mail)
+            .await
+            .unwrap();
+        let follow_up = katna_meta::follow_up_of(&reader, id).unwrap().unwrap();
+        assert_eq!(
+            follow_up.mail.as_deref().map(str::as_bytes),
+            Some(&mail[..])
+        );
+        assert_eq!((follow_up.again, follow_up.waiting), (7 * 86_400, false));
+        // Edit moves it; a time already past is refused.
+        let at = katna_meta::unix_now() + 2 * 86_400;
+        pim.move_follow_up(id, at).await.unwrap();
+        let moved = katna_meta::follow_up_of(&reader, id).unwrap().unwrap();
+        assert_eq!((moved.remind_at, moved.mail), (at, follow_up.mail.clone()));
+        let err = pim.move_follow_up(id, 1000).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        let err = pim.move_follow_up(424_242, at).await.unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
+        let err = pim
+            .set_follow_up_mail(id, 86_400, 0, b"Subject: nobody\r\n\r\nHi\r\n")
+            .await
+            .unwrap_err();
+        assert_eq!(error_name(&err), "org.freedesktop.DBus.Error.InvalidArgs");
         assert!(pim.undo_send(id).await.unwrap());
         assert_eq!(katna_meta::follow_up_of(&reader, id).unwrap(), None);
         let err = pim.set_follow_up(id, 86_400).await.unwrap_err();

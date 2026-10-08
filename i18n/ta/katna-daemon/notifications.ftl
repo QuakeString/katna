@@ -17,6 +17,10 @@ notify-unknown-sender = அறியாத அனுப்புநர்
 notify-snooze-back = உறக்கநிலையிலிருந்து திரும்பியவை
 notify-no-reply = இன்னும் பதில் இல்லை
 notify-no-reply-to = “{ $subject }” என்பதற்கு யாரும் பதிலளிக்கவில்லை.
+notify-follow-up-sent = ஃபாலோ-அப் அனுப்பப்பட்டது
+notify-follow-up-sent-to = “{ $subject }” க்கு யாரும் பதிலளிக்கவில்லை, எனவே Katna ஃபாலோ-அப் அனுப்பியது.
+notify-follow-up-waiting = ஃபாலோ-அப் அனுப்பப்படவில்லை
+notify-follow-up-waiting-to = இந்தக் கணினி அணைந்திருந்தபோது அதன் நேரம் வந்தது. “{ $subject }” உங்கள் இன்பாக்ஸுக்குத் திரும்பியுள்ளது.
 
 ## Open and click tracking (only for mail sent with "Track opens and clicks")
 
@@ -28,6 +32,19 @@ notify-tracking-clicked = { $who } { $subject } மெயிலில் ஒர�
 notify-update-ready = Katna Mail-ஐ புதுப்பிக்கலாம்
 notify-update-ready-body = பதிப்பு { $version } பதிவிறக்கப்பட்டுள்ளது. புதுப்பி அதை நிறுவி Katna Mail-ஐ மறுதொடக்கம் செய்யும்.
 notify-update = புதுப்பி
+
+## Something needs the user, shown once per problem
+
+notify-signed-out = மீண்டும் உள்நுழையுங்கள்
+notify-signed-out-body = { $provider } { $address } இலிருந்து Katna-வை வெளியேற்றியது. அஞ்சல் ஒத்திசைவு நின்றுவிட்டது.
+notify-sign-in = உள்நுழை
+notify-password-refused = கடவுச்சொல் ஏற்கப்படவில்லை
+notify-password-refused-body = அஞ்சல் சர்வர் { $address } க்கான கடவுச்சொல்லை ஏற்கவில்லை. அது மாறியிருக்கலாம்.
+notify-new-password = புதிய கடவுச்சொல்
+notify-not-sent = “{ $subject }” அனுப்பப்படவில்லை
+notify-not-sent-no-subject = ஒரு மெசேஜ் அனுப்பப்படவில்லை
+notify-not-sent-body = அது அவுட்பாக்ஸில் உள்ளது; ஏன் என்று அங்கே சொல்லப்பட்டுள்ளது.
+notify-open-outbox = அவுட்பாக்ஸைத் திற
 
 ## Reminders of calendar events
 
@@ -61,6 +78,12 @@ notify-reply-all = அனைவருக்கும் பதிலளி
 notify-mark-read = படித்ததாகக் குறி
 notify-mark-all-read = அனைத்தையும் படித்ததாகக் குறி
 notify-archive = காப்பகப்படுத்து
+notify-snooze-hour = 1 மணிநேரம் உறக்கநிலையில் வை
+notify-snooze-tomorrow = நாளை
+notify-copy-code = { $code } ஐ நகலெடு
+notify-link-verify = { $domain } இல் சரிபார்
+notify-link-confirm = { $domain } இல் உறுதிப்படுத்து
+notify-link-activate = { $domain } இல் செயல்படுத்து
 
 ## After Archive on a notification: a short note in the same place
 
@@ -70,6 +93,11 @@ notify-archived-count = { $count ->
    *[other] { $count } மெசேஜ்கள் இன்பாக்ஸிலிருந்து நகர்த்தப்பட்டன
 }
 notify-undo = செயல்தவிர்
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = குறியீடு நகலெடுக்கப்பட்டது
+notify-code-not-copied = குறியீட்டை நகலெடுக்க முடியவில்லை
 
 ## it waits for the undo time
 

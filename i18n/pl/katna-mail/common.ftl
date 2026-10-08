@@ -61,3 +61,4 @@ search-options-show = Pokaż opcje wyszukiwania
 settings = Ustawienia
 account-add = Dodaj konto
 account-wheel-hint = Przewiń, aby przełączyć konto
+account-menu-all-detail = Konta razem: { $count }

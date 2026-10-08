@@ -120,6 +120,11 @@ const MENU_BAR: &[(&str, &[Entry])] = &[
 /// The menu bar with the actions this build has, and their shortcuts.
 pub fn menu_bar(cx: &App) -> Vec<MenuItem> {
     let side_panel = cx.try_global::<SidePanelMenu>().is_some_and(|page| page.0);
+    // The pages of the apps turned off in Settings > Apps.
+    let off = cx
+        .try_global::<super::apps_off::OffApps>()
+        .map(|off| off.0.clone())
+        .unwrap_or_default();
     MENU_BAR
         .iter()
         .filter_map(|(label, entries)| {
@@ -127,6 +132,7 @@ pub fn menu_bar(cx: &App) -> Vec<MenuItem> {
                 .iter()
                 .filter_map(|entry| match entry {
                     Separator => Some(MenuItem::Separator),
+                    Item(_, name) if off.contains(name) => None,
                     Item(label, name) => {
                         let action = cx.build_action(name, None).ok()?;
                         let label = if *label == "desktop-menu-folder-list" && side_panel {
@@ -326,6 +332,11 @@ impl MailWindow {
                     tracing::warn!(page, "unknown page");
                     return;
                 };
+                // A turned-off app's launcher action or old link says so.
+                if let Some(kind) = app.kind().filter(|_| !self.app_on(app)) {
+                    self.say_app_off(kind, cx);
+                    return;
+                }
                 self.show_page(app, window, cx);
                 match app {
                     RailApp::Calendar => {
@@ -337,11 +348,17 @@ impl MailWindow {
                                 // The page reads its calendars in the
                                 // background; the new event needs them now.
                                 if self.calendar.calendars.is_empty() {
-                                    self.calendar.calendars = std::rc::Rc::new(
-                                        super::calendar::read_calendars(&self.paths),
-                                    );
+                                    self.calendar.calendars =
+                                        std::rc::Rc::new(super::calendar::read_calendars(
+                                            &self.paths,
+                                            &self.calendar_left_out(),
+                                        ));
                                 }
                                 self.create_event_key(window, cx);
+                                // Typed in the New event window.
+                                if let Some(title) = app_action::new_event_title(&page) {
+                                    self.set_draft_title(title, window, cx);
+                                }
                             }
                         }
                     }
@@ -354,6 +371,18 @@ impl MailWindow {
                     RailApp::Notes => {
                         if let Some(id) = detail.and_then(|id| id.parse::<i64>().ok()) {
                             self.open_note_by_id(id, window, cx);
+                        }
+                    }
+                    // From a notification that something needs the user:
+                    // `mail:outbox` opens the Outbox, `mail:fix-<id>` the
+                    // fix of that account's problem.
+                    RailApp::Mail => {
+                        if detail == Some("outbox") {
+                            self.leave_settings(window, cx);
+                            self.open_outbox(cx);
+                        } else if let Some(id) = detail.and_then(app_action::fix_account) {
+                            self.leave_settings(window, cx);
+                            self.fix_problem_when_known(id, window, cx);
                         }
                     }
                     _ => {}

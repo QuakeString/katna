@@ -19,7 +19,7 @@ pub mod agenda;
 mod session;
 pub use session::session;
 mod start;
-pub use start::ensure_daemon;
+pub use start::{daemon_running, ensure_daemon, start_daemon};
 
 /// One server of a new account. An empty `host` means "none".
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -95,6 +95,9 @@ pub mod state {
     /// The server refused the password. `SetPassword` or `SyncNow` retries;
     /// for an account that signs in with OAuth2, `SignIn`.
     pub const AUTH_FAILED: &str = "auth-failed";
+    /// Taken offline by the user (`[offline]` in the settings): the daemon
+    /// doesn't connect until it is brought back or its time ends.
+    pub const PAUSED: &str = "paused";
 }
 
 /// A mail template for `SaveTemplate`; `id` 0 saves a new one.
@@ -465,8 +468,9 @@ pub mod app_action {
     pub const INSTALL_UPDATE: &str = "install-update";
     /// Show one page of the window: Mail, Calendar, Contacts, Tasks or
     /// Notes; the parameter is its name (`s`: `mail`, `calendar`,
-    /// `contacts`, `tasks`, `notes`); `tasks:<id>` opens that task, and
-    /// the Calendar takes a day too ([`calendar_page`]).
+    /// `contacts`, `tasks`, `notes`); `tasks:<id>` opens that task, the
+    /// Calendar takes a day too ([`calendar_page`]), and Mail the Outbox
+    /// ([`OUTBOX_PAGE`]) or an account's fix ([`fix_page`]).
     pub const OPEN_PAGE: &str = "open-page";
     /// Start a new message with files attached ("Send with Katna Mail" in
     /// a file manager); the parameters are texts (`s`): the address to
@@ -513,13 +517,27 @@ pub mod app_action {
     /// Takes `open-page`'s parameter apart: the page's name, what after it
     /// (the Calendar's day, a task's ID), and whether to start a new event.
     pub fn page_parts(page: &str) -> (&str, Option<&str>, bool) {
-        let mut parts = page.splitn(3, ':');
+        let mut parts = page.splitn(4, ':');
         let name = parts.next().unwrap_or_default();
         let detail = parts.next().filter(|detail| !detail.is_empty());
         (name, detail, parts.next() == Some(NEW_EVENT))
     }
 
     const NEW_EVENT: &str = "new";
+
+    /// `open-page`'s parameter for Katna Mail's Outbox.
+    pub const OUTBOX_PAGE: &str = "mail:outbox";
+
+    /// `open-page`'s parameter that opens the fix of account `id`'s
+    /// problem: New password, or Sign in.
+    pub fn fix_page(id: i64) -> String {
+        format!("mail:fix-{id}")
+    }
+
+    /// The account whose problem a `mail` page's detail asks to fix.
+    pub fn fix_account(detail: &str) -> Option<i64> {
+        detail.strip_prefix("fix-")?.parse().ok()
+    }
 
     /// [`CAPTURE`]'s parameter for a task.
     pub const CAPTURE_TASK: &str = "task";
@@ -535,6 +553,36 @@ pub mod app_action {
         } else {
             format!("{kind}:{text}")
         }
+    }
+
+    /// [`CAPTURE`]'s parameter for a new event on `day` (`YYYY-MM-DD`), in
+    /// a small window of its own: `event:2026-10-01`.
+    pub fn capture_event(day: &str) -> String {
+        format!("{CAPTURE_EVENT}:{day}")
+    }
+
+    /// The day of a [`capture_event`] parameter; `None` for a task or note.
+    pub fn capture_event_day(param: &str) -> Option<&str> {
+        let (kind, day) = param.split_once(':')?;
+        (kind.trim() == CAPTURE_EVENT && !day.is_empty()).then_some(day)
+    }
+
+    const CAPTURE_EVENT: &str = "event";
+
+    /// `open-page`'s parameter for the Calendar's whole editor with a new
+    /// event on `day` titled `title`: `calendar:2026-10-01:new:Lunch`.
+    pub fn new_event_page(day: &str, title: &str) -> String {
+        let page = calendar_page(day, true);
+        if title.is_empty() {
+            page
+        } else {
+            format!("{page}:{title}")
+        }
+    }
+
+    /// The title a [`new_event_page`] carries, if any.
+    pub fn new_event_title(page: &str) -> Option<&str> {
+        page.splitn(4, ':').nth(3).filter(|title| !title.is_empty())
     }
 
     /// Takes [`CAPTURE`]'s parameter apart: whether it is a note, and the
@@ -553,6 +601,20 @@ pub mod app_action {
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), false));
         let page = calendar_page("2026-10-01", true);
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), true));
+        assert_eq!(new_event_title(&page), None);
+        let page = new_event_page("2026-10-01", "Lunch: Asha");
+        assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), true));
+        assert_eq!(new_event_title(&page), Some("Lunch: Asha"));
+        assert_eq!(
+            capture_event_day(&capture_event("2026-10-01")),
+            Some("2026-10-01")
+        );
+        assert_eq!(capture_event_day("task:buy milk"), None);
+        assert!(!capture_parts(&capture_event("2026-10-01")).0);
+        let page = fix_page(7);
+        let (name, detail, _) = page_parts(&page);
+        assert_eq!((name, detail.and_then(fix_account)), ("mail", Some(7)));
+        assert_eq!(page_parts(OUTBOX_PAGE), ("mail", Some("outbox"), false));
     }
 
     #[cfg(test)]
@@ -843,6 +905,32 @@ macro_rules! pim_proxy {
             /// takes the reminder back; `UndoSend` does too.
             fn set_follow_up(&self, id: i64, after: i64) -> zbus::Result<()>;
 
+            /// Like `SetFollowUp`, but Katna sends `mail` for the user when
+            /// nobody replied: a follow-up (RFC 5322, threaded under the
+            /// message, without `Date` and `Message-ID`) that goes out in
+            /// working hours and, with `again` seconds, a second time if
+            /// still nobody replied. One due a day or more ago (the computer
+            /// was off) is not sent but waits for `SendFollowUpNow`, the
+            /// conversation back in the Inbox. Auto-replies are not replies.
+            fn set_follow_up_mail(
+                &self,
+                id: i64,
+                after: i64,
+                again: i64,
+                mail: &[u8],
+            ) -> zbus::Result<()>;
+
+            /// Sends the follow-up of outbox entry `id` now.
+            fn send_follow_up_now(&self, id: i64) -> zbus::Result<()>;
+
+            /// Moves the follow-up of outbox entry `id` to `at` (Unix
+            /// seconds); one that waited for the user goes out then.
+            fn move_follow_up(&self, id: i64, at: i64) -> zbus::Result<()>;
+
+            /// Dismisses the nudge on sent message `id`: it does not come
+            /// back to the Inbox.
+            fn dismiss_nudge(&self, id: i64) -> zbus::Result<()>;
+
             /// Queues `message` (RFC 5322, with `Bcc` if any) from `account`
             /// to be sent in `delay` seconds; `UndoSend` works until then.
             /// Adds `Date` and `Message-ID` when missing. Once sent it is
@@ -914,6 +1002,10 @@ macro_rules! pim_proxy {
             /// Renames a label in every address book; an empty new name
             /// takes the label away and keeps its people.
             fn rename_contact_label(&self, old: &str, new: &str) -> zbus::Result<()>;
+
+            /// Sends a failed message again now, its tries counted afresh.
+            /// Returns whether it was one.
+            fn retry_send(&self, id: i64) -> zbus::Result<bool>;
 
             /// Forgets a cancelled or failed message. Returns whether it
             /// was one.
@@ -1277,6 +1369,12 @@ macro_rules! pim_proxy {
             /// the daemon uses (`sync.metered`).
             fn reload_config(&self) -> zbus::Result<()>;
 
+            /// Deletes what app `app` (`calendar`, `contacts`, `tasks`,
+            /// `notes` or `files`), turned off, downloaded from the
+            /// accounts; its next sync downloads it again. Whatever is on
+            /// this computer only, or not sent yet, stays.
+            fn forget_app(&self, app: &str) -> zbus::Result<()>;
+
             /// Whether the daemon saves data as on a metered network (no
             /// bodies downloaded ahead of time).
             fn metered(&self) -> zbus::Result<bool>;
@@ -1362,6 +1460,19 @@ macro_rules! pim_proxy {
             /// Mail of `account` changed in the store; read the change journal.
             #[zbus(signal)]
             fn mail_changed(&self, account: i64) -> zbus::Result<()>;
+
+            /// The server of `account` refused `count` changes for good and
+            /// they were undone: `change` is what they were (`flags`,
+            /// `move`, `label`, `delete`, or `other` for anything else or a
+            /// mix) and `reason` the server's first answer.
+            #[zbus(signal)]
+            fn changes_refused(
+                &self,
+                account: i64,
+                change: &str,
+                count: u32,
+                reason: &str,
+            ) -> zbus::Result<()>;
 
             /// Outbox entry `id` changed state; see `Outbox`.
             #[zbus(signal)]

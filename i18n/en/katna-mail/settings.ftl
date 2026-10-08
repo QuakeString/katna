@@ -27,6 +27,7 @@ settings-tab-compose = Compose
 settings-tab-mcp-server = MCP server
 settings-tab-feedback = User feedback
 settings-tab-experimental = Experimental
+settings-tab-apps = Apps
 settings-tab-ai = AI
 settings-tab-reading = Reading
 settings-tab-desktop = Desktop
@@ -39,7 +40,6 @@ settings-group-apps = Apps
 
 ## Settings page: tabs still to come
 
-settings-tab-mcp-server-coming = Let AI assistants on this computer search, read and draft your mail, with your say.
 
 ## Settings > General
 # The Language row uses language-setting and language-setting-detail.
@@ -264,6 +264,12 @@ settings-inbox-tabs-show-detail = Off shows one list for every account
 settings-inbox-no-accounts = Add an account to choose its tabs.
 settings-inbox-unified = Unified inbox
 settings-inbox-unified-detail = Tabs shared by every account. Each mail shows in the tab of its kind; mail of a tab an account turns off stays in its first tab.
+# A switch per mail account: whether All Accounts in the folder pane shows it.
+settings-unified-accounts = In the unified inbox
+settings-unified-accounts-detail = An account switched off is left out of All Accounts and its lists. Pick it in the account menu to see its mail.
+# Under an account's name in that list, as its switch stands.
+settings-unified-account-in = Shown in All Accounts
+settings-unified-account-out = Only in the account menu
 # $tabs: the tabs of that style, such as "Focused and Other". $provider: the mail provider, such as "Gmail".
 settings-inbox-tabs-automatic = Automatic: { $tabs } ({ $provider })
 settings-inbox-tabs-off = No tabs
@@ -272,6 +278,21 @@ settings-inbox-tabs-focused = Focused and Other
 settings-inbox-tabs-zoho = Inbox, Newsletters and Notifications
 # $tab: the first tab, such as "Primary".
 settings-inbox-tabs-shown = Tabs shown. Mail of a tab you turn off stays in { $tab }.
+# What the snooze menu's suggested times mean.
+settings-snooze-times = Snooze times
+settings-snooze-times-detail = What the times in the snooze menu mean. Remind me uses them too.
+settings-snooze-morning = Mornings
+settings-snooze-morning-detail = Tomorrow, This weekend and Next week
+# One more snooze time, typed by the user.
+settings-snooze-own = Your own
+settings-snooze-own-detail = Shown in the menu while it is still to come
+settings-snooze-own-placeholder = Like “monday 10:00”
+# $date: when the user's own time comes next, such as "Mon, Oct 12, 2026, 10:00 AM".
+settings-snooze-own-next = Next: { $date }
+# Gmail-style nudges: questions the user sent that nobody answered.
+settings-nudges = Nudges
+settings-nudges-on = Bring back questions nobody answered
+settings-nudges-on-detail = Mail you sent that asked something and got no reply in 3 days goes back to the top of the Inbox
 
 ## Settings > Appearance
 
@@ -453,6 +474,28 @@ settings-calendar-birthdays-show = Show birthdays
 settings-calendar-birthdays-show-detail = Your contacts' birthdays, as a calendar of their own
 settings-files-page = Files page
 settings-files-page-detail = Which attachments the Files page shows
+
+## Settings > Contacts, Tasks, Notes, Files: leaving an account out of the app
+# { $app } is the app's name, as on the rail (Tasks, Notes, …).
+
+# Settings > Apps: a switch for each app.
+settings-apps = Apps you use
+settings-apps-detail = Turn off the apps you don't use. Katna stops syncing them and takes them out of everywhere. Nothing changes on your accounts. Mail is always on.
+settings-apps-mail = Mail from all your accounts
+settings-apps-calendar = Events, invitations and reminders
+settings-apps-contacts = People from your accounts
+settings-apps-tasks = To-do lists and reminders
+settings-apps-notes = Notes kept in your mail accounts
+settings-apps-files = Every attachment, and your drives
+settings-apps-off = Off · nothing changed on your accounts
+settings-apps-mail-always = Mail is always on
+# The switch heading each app's own page. $app: its name, such as "Calendar".
+settings-app-on = Use { $app }
+settings-app-on-detail = Turn off to take { $app } out of Katna and stop syncing it
+settings-app-accounts = Accounts shown
+settings-app-accounts-detail = Turn an account off to leave it out of { $app }. Its items keep syncing and come back when you turn it on. Its mail is not affected.
+settings-app-account-shown = Shown in { $app }
+settings-app-account-hidden = Left out of { $app }
 settings-files-leave-out-small = Leave out small pictures
 settings-files-leave-out-small-detail = Logos and icons in signatures, which come with many mails
 settings-files-smaller-than = Smaller than
@@ -636,6 +679,8 @@ settings-calendar-density-summary = Make the hours of Day and Week taller or mor
 settings-calendar-custom-days-summary = Pick how many days the custom view shows
 settings-calendar-birthdays-summary = Show your contacts' birthdays in the calendar
 settings-files-page-summary = Leave small pictures, like signature logos, off the Files page, and pick which drives it shows
+settings-apps-summary = Turn Calendar, Contacts, Tasks, Notes or Files off, or keep just Mail
+settings-app-accounts-summary = Leave an account out of this app, while its items keep syncing
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line
@@ -665,6 +710,9 @@ settings-search-results = Settings that match “{ $query }”
 
 # $error: the system's error, in English.
 settings-open-at-login-failed = Could not change starting at login: { $error }
+# The error in settings-open-at-login-failed when Katna from the Microsoft
+# Store asks to start at sign-in after the user turned that off in Windows.
+settings-open-at-login-off-in-windows = it is turned off in Windows Settings > Apps > Startup
 
 ## Settings > General > Time
 

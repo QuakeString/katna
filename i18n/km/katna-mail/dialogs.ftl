@@ -6,6 +6,10 @@
 
 about-tooltip = អំពី Katna
 about-tagline = សំបុត្រ និងប្រតិទិនសម្រាប់ផ្ទៃតុ Linux
+about-copy-version = ចម្លងព័ត៌មានកំណែ
+about-version-copied = បានចម្លង
+about-version-built = បានបង្កើត៖ { $date }
+about-version-system = ប្រព័ន្ធ៖ { $system }
 about-whats-new = អ្វីដែលថ្មី
 
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
@@ -21,11 +25,13 @@ about-update-ready = កំណែ { $version } ត្រៀមរួចរាល
 about-update-ready-detail = Katna Mail នឹងចាប់ផ្ដើមឡើងវិញដើម្បីបញ្ចប់ការធ្វើបច្ចុប្បន្នភាព។
 about-update-confirm = ដំឡើងកំណែ { $version } ឬ?
 about-update-confirm-detail = Katna Mail នឹងបិទ ដំឡើងបច្ចុប្បន្នភាព ហើយបើកឡើងវិញនៅកន្លែងដែលអ្នកបានឈប់។ កុំព្យូទ័ររបស់អ្នកនឹងសួររកពាក្យសម្ងាត់របស់អ្នក។
+about-update-confirm-detail-windows = Katna Mail នឹងបិទ ដំឡើងបច្ចុប្បន្នភាព ហើយបើកឡើងវិញក្នុងពេលបន្តិចទៀត។
 about-update-installing = កំពុងដំឡើងកំណែ { $version }…
 about-update-installing-detail = បញ្ចូលពាក្យសម្ងាត់របស់អ្នកនៅក្នុងបង្អួចដែលបានបើក។
+about-update-installing-detail-windows = Katna Mail បិទឥឡូវនេះ ហើយបើកឡើងវិញ ពេលដំឡើងបច្ចុប្បន្នភាពរួច។
 about-update-cancelled = មិនបានដំឡើងបច្ចុប្បន្នភាពទេ ព្រោះមិនបានផ្ដល់ពាក្យសម្ងាត់។
 about-update-failed = មិនអាចដំឡើងបច្ចុប្បន្នភាពបានទេ៖ { $error }
-about-update-unsupported = Katna Mail ច្បាប់ចម្លងនេះ ត្រូវបានធ្វើបច្ចុប្បន្នភាពដោយកម្មវិធីគ្រប់គ្រងកញ្ចប់របស់អ្នក។
+about-update-not-self-updating = Katna Mail ច្បាប់នេះមិនធ្វើបច្ចុប្បន្នភាពដោយខ្លួនឯងទេ។ សូមធ្វើបច្ចុប្បន្នភាពវា តាមរបៀបដែលអ្នកបានដំឡើង។
 about-update-restart-failed = បច្ចុប្បន្នភាពត្រូវបានដំឡើងហើយ ប៉ុន្តែ Katna Mail មិនអាចបើកឡើងវិញបានទេ ({ $error })។ សូមបើកវាដោយខ្លួនឯង។
 about-update-check = ពិនិត្យរកបច្ចុប្បន្នភាព
 about-update-download = ទាញយក
@@ -143,6 +149,7 @@ onboarding-katna-private = វាមានពាក្យសម្ងាត់�
 onboarding-ready-title = រួចរាល់ហើយ
 onboarding-ready-lead = Katna កំពុងទាញយកសំបុត្ររបស់អ្នក។ វាបង្ហាញឡើងនៅពេលវាមកដល់ ហើយសំបុត្រថ្មីនឹងបង្ហាញដោយខ្លួនឯង។
 onboarding-ready-lead-address = Katna កំពុងទាញយកសំបុត្ររបស់ { $address }។ វាបង្ហាញឡើងនៅពេលវាមកដល់ ហើយសំបុត្រថ្មីនឹងបង្ហាញដោយខ្លួនឯង។
+onboarding-apps = កម្មវិធីដែលអ្នកនឹងប្រើ
 onboarding-ready-tour = ចង់ទស្សនាមួយនាទី ដើម្បីមើលថាអ្វីៗនៅឯណាទេ?
 onboarding-skip = រំលងសិន
 onboarding-take-tour = ទស្សនា
@@ -208,11 +215,9 @@ crash-close = បិទ
 
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } សុំឱ្យអ្នកចូល { $address } ម្ដងទៀត។
 sign-in-again-button = ចូល
 sign-in-again-tooltip = បើកទំព័រចូលរបស់ { $provider } នៅក្នុងកម្មវិធីរុករករបស់អ្នក
 sign-in-again-waiting = កំពុងរង់ចាំកម្មវិធីរុករករបស់អ្នក…
-sign-in-again-close = បិទ
 google-api-off = { $api } ត្រូវបានបិទនៅក្នុងគម្រោង Google Cloud របស់ Katna។
 google-api-turn-on = បើក
 google-api-turn-on-tooltip = បើក Google Cloud ដើម្បីបើក { $api } រួចចុច សាកម្ដងទៀត

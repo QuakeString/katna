@@ -6,6 +6,10 @@
 
 about-tooltip = Katna 정보
 about-tagline = Linux 데스크톱을 위한 메일과 캘린더
+about-copy-version = 버전 정보 복사
+about-version-copied = 복사됨
+about-version-built = 빌드: { $date }
+about-version-system = 시스템: { $system }
 about-whats-new = 새로운 기능
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = 버전 { $version } 설치 준비가 되었습니다
 about-update-ready-detail = 업데이트를 마치려면 Katna Mail이 다시 시작됩니다.
 about-update-confirm = 버전 { $version }을(를) 설치할까요?
 about-update-confirm-detail = Katna Mail이 종료되고 업데이트를 설치한 다음, 하던 곳에서 다시 열립니다. 컴퓨터가 비밀번호를 요청합니다.
+about-update-confirm-detail-windows = Katna Mail이 종료되고 업데이트를 설치한 다음 잠시 후 다시 열립니다.
 about-update-installing = 버전 { $version } 설치하는 중…
 about-update-installing-detail = 열린 창에 비밀번호를 입력하세요.
+about-update-installing-detail-windows = Katna Mail이 지금 종료되며, 업데이트가 설치되면 다시 열립니다.
 about-update-cancelled = 비밀번호를 입력하지 않아 업데이트가 설치되지 않았습니다.
 about-update-failed = 업데이트를 설치할 수 없습니다: { $error }
-about-update-unsupported = 이 Katna Mail은 사용 중인 패키지 관리자가 업데이트합니다.
+about-update-not-self-updating = 이 Katna Mail은 스스로 업데이트하지 않습니다. 설치한 방법으로 업데이트하세요.
 about-update-restart-failed = 업데이트는 설치되었지만 Katna Mail을 다시 열 수 없었습니다({ $error }). 직접 열어 주세요.
 about-update-check = 업데이트 확인
 about-update-download = 다운로드
@@ -145,6 +151,7 @@ onboarding-katna-private = 별도의 비밀번호를 사용합니다. 메일 로
 onboarding-ready-title = 모든 준비가 끝났습니다
 onboarding-ready-lead = Katna가 메일을 가져오고 있습니다. 메일은 도착하는 대로 표시되며, 새 메일도 자동으로 나타납니다.
 onboarding-ready-lead-address = Katna가 { $address }의 메일을 가져오고 있습니다. 메일은 도착하는 대로 표시되며, 새 메일도 자동으로 나타납니다.
+onboarding-apps = 사용할 앱
 onboarding-ready-tour = 1분 둘러보기로 각 기능의 위치를 확인하시겠습니까?
 onboarding-skip = 나중에
 onboarding-take-tour = 둘러보기
@@ -211,11 +218,9 @@ crash-close = 닫기
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider }에서 { $address }에 다시 로그인하라고 요청합니다.
 sign-in-again-button = 로그인
 sign-in-again-tooltip = 브라우저에서 { $provider } 로그인 페이지 열기
 sign-in-again-waiting = 브라우저를 기다리는 중…
-sign-in-again-close = 닫기
 google-api-off = Katna의 Google Cloud 프로젝트에서 { $api }이(가) 꺼져 있습니다.
 google-api-turn-on = 켜기
 google-api-turn-on-tooltip = Google Cloud를 열어 { $api }을(를) 켠 다음 다시 시도를 누르세요

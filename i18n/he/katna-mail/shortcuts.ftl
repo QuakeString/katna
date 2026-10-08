@@ -8,6 +8,10 @@ shortcut-group-moving = ניווט
 shortcut-group-actions = פעולות
 shortcut-group-go-to = מעבר אל
 shortcut-group-app = אפליקציה
+shortcuts-dialog-title = קיצורי מקלדת
+shortcuts-dialog-search = חיפוש קיצור
+shortcuts-dialog-none = אין קיצור תואם
+shortcuts-dialog-close = סגירה
 
 ## Settings > Keyboard shortcuts: what each shortcut does
 
@@ -37,6 +41,8 @@ shortcut-mark-read = סימון כנקראה
 shortcut-mark-unread = סימון כלא נקראה
 shortcut-star = הוספה או הסרה של כוכב
 shortcut-add-to-tasks = הוספה למשימות
+shortcut-snooze = השהיה
+shortcut-remind = להזכיר לי
 shortcut-important = סימון כחשובה
 shortcut-not-important = סימון כלא חשובה
 shortcut-mute = השתקה או ביטול השתקה של השיחה

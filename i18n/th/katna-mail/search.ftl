@@ -14,6 +14,7 @@ search-without = ไม่มีคำว่า
 search-date-within = วันที่ภายใน
 search-has-attachment = มีไฟล์แนบ
 search-attachment-custom = กำหนดเอง
+search-attachment-image = รูปภาพ
 search-attachment-custom-hint = พิมพ์นามสกุลไฟล์ เช่น png แล้วกดเว้นวรรค
 search-attachment-remove = นำออก
 search-clear-filter = ล้างตัวกรอง

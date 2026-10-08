@@ -33,6 +33,7 @@ use zbus::zvariant::Value;
 
 use crate::daemon::Daemon;
 use crate::daemon::alarms::{self, Alarm};
+use crate::needs_you::{self, NeedsYou};
 
 /// Older mail is not news, even when it is new to the store (a folder
 /// synced for the first time, mail moved back into the inbox).
@@ -137,6 +138,11 @@ pub(crate) struct NewMailNotices {
     replied: Mutex<HashMap<u32, Replied>>,
     /// The outbox entries of those replies, until they go out.
     outgoing: Mutex<HashSet<i64>>,
+    /// What needs the user, told once each, with its notification's ID
+    /// while that shows.
+    told: Mutex<HashMap<needs_you::Key, Option<u32>>>,
+    /// Those notifications on show, and the Katna Mail page each opens.
+    problems: Mutex<HashMap<u32, String>>,
 }
 
 impl NewMailNotices {
@@ -158,6 +164,8 @@ impl NewMailNotices {
             archived: Mutex::default(),
             replied: Mutex::default(),
             outgoing: Mutex::default(),
+            told: Mutex::default(),
+            problems: Mutex::default(),
         })
     }
 
@@ -330,6 +338,47 @@ impl NewMailNotices {
             .await
             .map_err(|err| tracing::warn!(%err, "could not show that an update is ready"))
             .ok()
+    }
+
+    /// Shows one notification for each thing in `now` that needs the
+    /// user and wasn't told yet; closes those of what was fixed, which are
+    /// told again should they come back.
+    pub(crate) async fn needs_you(&self, now: &[NeedsYou]) {
+        let (fixed, new): (Vec<u32>, Vec<&NeedsYou>) = {
+            let mut told = self.told.lock().unwrap();
+            let mut fixed = Vec::new();
+            told.retain(|key, id| {
+                let lasts = now.iter().any(|n| n.key() == *key);
+                if !lasts {
+                    fixed.extend(*id);
+                }
+                lasts
+            });
+            let new = now
+                .iter()
+                .filter(|n| !told.contains_key(&n.key()))
+                .collect();
+            (fixed, new)
+        };
+        for problem in new {
+            let (summary, body, fix) = problem.notification();
+            let id = match self.notifier.needs_you(&summary, &body, &fix).await {
+                Ok(id) => {
+                    self.problems.lock().unwrap().insert(id, problem.page());
+                    Some(id)
+                }
+                Err(err) => {
+                    tracing::warn!(%err, "could not say that something needs the user");
+                    None
+                }
+            };
+            tracing::info!(problem = ?problem.key(), "told the user");
+            self.told.lock().unwrap().insert(problem.key(), id);
+        }
+        for id in &fixed {
+            self.problems.lock().unwrap().remove(id);
+        }
+        self.close(fixed).await;
     }
 
     pub(crate) fn forget(&self, account: AccountId) {
@@ -571,6 +620,7 @@ impl NewMailNotices {
                     if notices.shown.lock().unwrap().contains_key(&id)
                         || notices.events.lock().unwrap().contains_key(&id)
                         || notices.replied.lock().unwrap().contains_key(&id)
+                        || notices.problems.lock().unwrap().contains_key(&id)
                         || daemon.updates().is_notice(id)
                     {
                         notices.tokens.lock().unwrap().insert(id, token);
@@ -580,6 +630,7 @@ impl NewMailNotices {
                     notices.archived.lock().unwrap().remove(&id);
                     notices.replied.lock().unwrap().remove(&id);
                     notices.events.lock().unwrap().remove(&id);
+                    notices.problems.lock().unwrap().remove(&id);
                     daemon.updates().take_notice(id);
                     notices.shown.lock().unwrap().remove(&id);
                     notices.tokens.lock().unwrap().remove(&id);
@@ -592,6 +643,22 @@ impl NewMailNotices {
                         &notices.connection,
                         Some(katna_dbus::app_action::INSTALL_UPDATE),
                         Vec::new(),
+                        token,
+                    )
+                    .await;
+                    notices.close(vec![id]).await;
+                }
+                Got::Action(id, _) if notices.problems.lock().unwrap().contains_key(&id) => {
+                    // The notification itself or its button: Katna Mail
+                    // opens the fix (New password, Sign in, the Outbox).
+                    let Some(page) = notices.problems.lock().unwrap().remove(&id) else {
+                        continue;
+                    };
+                    let token = notices.tokens.lock().unwrap().remove(&id);
+                    crate::mail_app::run(
+                        &notices.connection,
+                        Some(katna_dbus::app_action::OPEN_PAGE),
+                        vec![Value::from(page)],
                         token,
                     )
                     .await;
@@ -628,8 +695,12 @@ impl NewMailNotices {
                                 }
                             }
                         }
-                        // The notification itself: the Calendar page, or
-                        // Tasks for a task, or the note.
+                        // The notification itself: the mail a task was
+                        // made from (Remind me), else the Calendar page,
+                        // or Tasks for a task, or the note.
+                        _ if let Some(message) = alarm.task.and_then(|t| task_mail(&daemon, t)) => {
+                            notices.open(message, false, token).await;
+                        }
                         _ => {
                             let page = match (alarm.task, alarm.note) {
                                 (Some(task), _) => format!("tasks:{task}"),
@@ -770,6 +841,21 @@ impl NewMailNotices {
                         action::REPLY => {
                             notices.reply_in_app(shown.messages[0], None, token).await;
                             Ok(())
+                        }
+                        action::SNOOZE_HOUR | action::SNOOZE_TOMORROW => {
+                            let until = if key == action::SNOOZE_HOUR {
+                                Some(unix_now() + 3600)
+                            } else {
+                                let config = crate::daemon::settings(daemon.paths());
+                                tomorrow_morning(config.mail.snooze.morning)
+                            };
+                            match until {
+                                Some(until) => daemon
+                                    .snooze_conversations(&shown.messages, until)
+                                    .await
+                                    .map_err(|e| e.to_string()),
+                                None => Ok(()),
+                            }
                         }
                         _ => Ok(()),
                     };
@@ -1009,6 +1095,32 @@ impl NewMailNotices {
         });
         crate::mail_app::run(&self.connection, action, params, token).await;
     }
+}
+
+/// Tomorrow at `morning` (minutes after midnight) here, as the app's
+/// snooze menu offers it.
+fn tomorrow_morning(morning: u32) -> Option<i64> {
+    let tz = jiff::tz::TimeZone::system();
+    let now = jiff::Timestamp::now().to_zoned(tz.clone());
+    let morning = morning.min(24 * 60 - 1);
+    let at = now
+        .date()
+        .tomorrow()
+        .ok()?
+        .at((morning / 60) as i8, (morning % 60) as i8, 0, 0)
+        .to_zoned(tz)
+        .ok()?;
+    Some(at.timestamp().as_second())
+}
+
+/// The mail task `task` was made from, while it is still in a folder.
+fn task_mail(daemon: &Daemon, task: i64) -> Option<MessageId> {
+    let store = daemon.store();
+    let task = store.task(task).ok()??;
+    if task.mail.is_empty() {
+        return None;
+    }
+    store.message_with_header(&task.mail).ok()?
 }
 
 /// `message` as a reply reads it, when its body is downloaded.

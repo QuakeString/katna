@@ -613,6 +613,7 @@ fn save_messages(
 ) -> Result<usize> {
     let mut batch = store.mail_batch()?;
     let mut added = 0;
+    let mut receipts = Vec::new();
     for message in messages {
         let parsed = katna_import::parse_message(&message.header).unwrap_or_default();
         let participants: Vec<NewParticipant<'_>> = parsed
@@ -666,6 +667,10 @@ fn save_messages(
             katna_store::Added::Message(id) => {
                 added += 1;
                 record_auth_results(&mut batch, id, &message.header, &parsed.participants)?;
+                if katna_import::report::is_read_receipt(&message.header) {
+                    let answers = parsed.in_reply_to.iter().chain(&parsed.references);
+                    receipts.push((id, answers.cloned().collect()));
+                }
             }
             katna_store::Added::Location(id) => {
                 added += 1;
@@ -679,6 +684,8 @@ fn save_messages(
         }
     }
     batch.commit()?;
+    // Before the sync's notifications look for new mail.
+    crate::receipts::quiet(store, &receipts);
     Ok(added)
 }
 

@@ -225,6 +225,8 @@ onboarding-ready-title = You're all set
 onboarding-ready-lead = Katna is getting your mail. It shows up as it arrives, and new mail appears on its own.
 # $address: the email address of the account just added.
 onboarding-ready-lead-address = Katna is getting the mail of { $address }. It shows up as it arrives, and new mail appears on its own.
+# Above a row of app chips on the last setup page; Mail is always on.
+onboarding-apps = Apps you'll use
 onboarding-ready-tour = Take a one-minute tour to see where everything is?
 # Closes the first-run pages without the tour.
 onboarding-skip = Skip for now
@@ -311,14 +313,11 @@ crash-close = Close
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-# $address: the account's email address.
-sign-in-again-text = { $provider } asks you to sign in to { $address } again.
 # Opens the provider's sign-in page in the browser.
 sign-in-again-button = Sign in
 sign-in-again-tooltip = Open the { $provider } sign-in page in your browser
 # In place of the button while the browser page is open.
 sign-in-again-waiting = Waiting for your browser…
-sign-in-again-close = Close
 # Under an account in Calendar, Tasks or Contacts, and on a Drive file in a
 # message, when Google has one of its APIs (People API, Google Drive API…)
 # switched off in the Google Cloud project Katna signs in with.

@@ -20,6 +20,7 @@ use gpui::{
     AnimationExt, AnyElement, Context, FontWeight, SpringAnimation, Window, div, prelude::*, rgba,
     uniform_list,
 };
+use katna_core::config::AppKind;
 use katna_i18n::tr;
 use katna_store::Person;
 use katna_ui::Ripple;
@@ -32,6 +33,8 @@ use crate::theme::{Theme, fade};
 use crate::widgets::{icon, icon_button_colored, tip};
 
 pub(super) const APP_RAIL_WIDTH: f32 = 72.0;
+/// Room for an app's button in the rail, name and all, as it folds.
+const RAIL_ITEM_ROOM: f32 = 64.0;
 
 /// The apps of the rail.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -53,6 +56,42 @@ impl App {
         Self::Notes,
         Self::Files,
     ];
+
+    /// The app's switch in Settings > Apps; Mail has none, it is always
+    /// on.
+    pub(super) fn kind(self) -> Option<AppKind> {
+        match self {
+            Self::Mail => None,
+            Self::Calendar => Some(AppKind::Calendar),
+            Self::Contacts => Some(AppKind::Contacts),
+            Self::Tasks => Some(AppKind::Tasks),
+            Self::Notes => Some(AppKind::Notes),
+            Self::Files => Some(AppKind::Files),
+        }
+    }
+
+    /// The rail's app for `kind`.
+    pub(super) fn of(kind: AppKind) -> Self {
+        match kind {
+            AppKind::Calendar => Self::Calendar,
+            AppKind::Contacts => Self::Contacts,
+            AppKind::Tasks => Self::Tasks,
+            AppKind::Notes => Self::Notes,
+            AppKind::Files => Self::Files,
+        }
+    }
+
+    /// The Go menu's action that shows the page.
+    pub(super) fn action_name(self) -> &'static str {
+        match self {
+            Self::Mail => "katna_mail::ShowMail",
+            Self::Calendar => "katna_mail::ShowCalendar",
+            Self::Contacts => "katna_mail::ShowContacts",
+            Self::Tasks => "katna_mail::ShowTasks",
+            Self::Notes => "katna_mail::ShowNotes",
+            Self::Files => "katna_mail::ShowFiles",
+        }
+    }
 
     pub(super) fn label(self) -> String {
         tr!(match self {
@@ -275,6 +314,10 @@ impl MailWindow {
 
     /// Shows page `app`, leaving Settings as picking a folder does.
     pub(super) fn show_page(&mut self, app: App, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(kind) = app.kind().filter(|_| !self.app_on(app)) {
+            self.say_app_off(kind, cx);
+            return;
+        }
         if self.settings_page.is_some() {
             self.close_settings_page(window, cx);
         }
@@ -312,8 +355,32 @@ impl MailWindow {
         }
     }
 
+    /// Whether `app` is turned on in Settings > Apps.
+    pub(super) fn app_on(&self, app: App) -> bool {
+        app.kind().is_none_or(|kind| self.config.app_on(kind))
+    }
+
+    /// The apps turned on, in the rail's order.
+    pub(super) fn apps(&self) -> impl Iterator<Item = App> + '_ {
+        App::ALL.into_iter().filter(|app| self.app_on(*app))
+    }
+
+    /// Only Mail is on: there is nothing to switch to, so the rail and the
+    /// phone's bottom bar go.
+    pub(super) fn mail_only(&self) -> bool {
+        self.config.apps.mail_only()
+    }
+
     pub(super) fn open_app(&mut self, app: App, cx: &mut Context<Self>) {
         if self.app == app {
+            return;
+        }
+        // A turned-off app opens from nowhere: its key, a launcher's
+        // action, a reminder or a link lands here and says so instead.
+        if let Some(kind) = app.kind()
+            && !self.config.app_on(kind)
+        {
+            self.say_app_off(kind, cx);
             return;
         }
         let from = self.app;
@@ -421,9 +488,12 @@ impl MailWindow {
         // Room at the top for Compose while it is in the rail: the apps
         // move down as it slides in from the folders.
         let compose_room = self.rail_compose_room();
+        // An app turned off in Settings > Apps folds away; one turned on
+        // grows back in its place.
+        let mail_only = self.mail_only();
         let items = App::ALL.into_iter().map(|app| {
             let on = self.app == app;
-            div()
+            let item = div()
                 .id(("app", app as usize))
                 .w(px(APP_RAIL_WIDTH))
                 .pt(px(4.0))
@@ -441,51 +511,13 @@ impl MailWindow {
                     }))
                 })
                 .on_click(cx.listener(move |this, _, window, cx| this.show_page(app, window, cx)))
-                .child(
-                    div()
-                        .relative()
-                        .overflow_hidden()
-                        .w(px(56.0))
-                        .h(px(32.0))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .rounded_full()
-                        .child(crate::widgets::hover_fade(
-                            ("app-glow", app as usize),
-                            None,
-                            th,
-                        ))
-                        .child(
-                            Ripple::new(("app-ripple", app as usize), rgba(th.ripple)).centered(),
-                        )
-                        .child(icon(
-                            app.icon(),
-                            if on {
-                                th.nav_selected_text
-                            } else {
-                                th.text_dim
-                            },
-                            22.0,
-                        ))
-                        .with_spring(
-                            ("app-pill", app as usize),
-                            SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
-                                .to(if on { 1.0 } else { 0.0 }),
-                            {
-                                let bg = th.nav_selected;
-                                move |el, s: f32| {
-                                    let s = s.clamp(0.0, 1.0);
-                                    if s > 0.001 {
-                                        // The pill grows out from the middle.
-                                        el.bg(rgba(fade(bg, s))).w(px(32.0 + 24.0 * s))
-                                    } else {
-                                        el
-                                    }
-                                }
-                            },
-                        ),
+                .on_mouse_down(
+                    gpui::MouseButton::Right,
+                    cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                        this.open_rail_menu(app, event.position, cx);
+                    }),
                 )
+                .child(app_face(app, on, false, th))
                 .when(!labels, |d| d.tooltip(tip(app.label(), th)))
                 // The name folds away when the settings hide it.
                 .child(
@@ -509,7 +541,23 @@ impl MailWindow {
                                 el.h(px(16.0 * s)).opacity(s)
                             },
                         ),
-                )
+                );
+            div().overflow_hidden().child(item).with_spring(
+                ("app-on", app as usize),
+                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+                    // With only Mail on there is nothing to switch to, so
+                    // Mail's button goes too; Compose and Settings stay.
+                    .to(if self.app_on(app) && !mail_only {
+                        1.0
+                    } else {
+                        0.0
+                    }),
+                |el, s: f32| {
+                    let s = s.clamp(0.0, 1.0);
+                    // Taller than an app's button with its name.
+                    el.max_h(px(RAIL_ITEM_ROOM * s)).opacity(s)
+                },
+            )
         });
         div()
             .id("app-rail")
@@ -530,7 +578,10 @@ impl MailWindow {
                     .flex()
                     .flex_col()
                     .items_center()
-                    .child(self.tour_mark(super::tour::Spot::Apps))
+                    // The tour skips the rail when there is nothing to switch to.
+                    .when(!self.mail_only(), |d| {
+                        d.child(self.tour_mark(super::tour::Spot::Apps))
+                    })
                     .children(items),
             )
             .child(div().flex_1())
@@ -794,4 +845,54 @@ fn render_person(
                 .child(last),
         )
         .into_any_element()
+}
+
+/// An app's button in the rail and in the phone's bottom bar: its icon on a
+/// round button. A press sends a wave from the middle, and the selected pill
+/// grows from the middle inside the button, which keeps its size, so the
+/// wave is never cut short and nothing jumps under the pointer.
+pub(super) fn app_face(app: App, on: bool, bottom: bool, th: &Theme) -> gpui::Div {
+    let ix = app as usize;
+    let (pill, glow, ripple) = if bottom {
+        ("bottom-pill", "bottom-glow", "bottom-ripple")
+    } else {
+        ("app-pill", "app-glow", "app-ripple")
+    };
+    div()
+        .relative()
+        .overflow_hidden()
+        .w(px(56.0))
+        .h(px(32.0))
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded_full()
+        .child(div().absolute().inset_0().flex().justify_center().child(
+            div().h_full().rounded_full().with_spring(
+                (pill, ix),
+                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                    1.0
+                } else {
+                    0.0
+                }),
+                {
+                    let bg = th.nav_selected;
+                    move |el, s: f32| {
+                        let s = s.clamp(0.0, 1.0);
+                        el.bg(rgba(fade(bg, s))).w(px(32.0 + 24.0 * s))
+                    }
+                },
+            ),
+        ))
+        .child(crate::widgets::hover_fade((glow, ix), None, th))
+        .child(Ripple::new((ripple, ix), rgba(th.ripple)).centered())
+        .child(icon(
+            app.icon(),
+            if on {
+                th.nav_selected_text
+            } else {
+                th.text_dim
+            },
+            22.0,
+        ))
 }
