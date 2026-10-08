@@ -7,6 +7,7 @@
 //! its "Open with" list. Settings → Default apps says, for each kind of
 //! file, whether clicking a card opens the viewer or another app.
 
+use crate::widgets::Tip as _;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -35,7 +36,7 @@ use super::viewer::{Viewer, ViewerEvent};
 use crate::data::RowFile;
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, tip};
+use crate::widgets::icon;
 
 const CARD_WIDTH: f32 = 180.0;
 const THUMB_HEIGHT: f32 = 84.0;
@@ -321,7 +322,7 @@ pub(super) fn corner_button(
         .shadow(crate::widgets::elevation(th, elevation::FLOAT))
         .cursor_pointer()
         .child(crate::widgets::hover_fade(glow, None, th))
-        .tooltip(tip(label, th))
+        .tip(label, th)
         .child(icon(name, th.text, 18.0))
 }
 
@@ -854,7 +855,7 @@ impl MailWindow {
                                     .text_color(rgba(th.text_dim))
                                     .relative()
                                     .child(crate::widgets::hover_fade("hover-glow", None, th))
-                                    .tooltip(tip(tr!("attachment-save-all-tooltip"), th))
+                                    .tip(tr!("attachment-save-all-tooltip"), th)
                                     .on_click(cx.listener(move |this, _, _, cx| {
                                         cx.stop_propagation();
                                         this.save_all(id, indices.clone(), cx);

@@ -6,6 +6,7 @@
 //! attachment does. The daemon sends them to To Do or the CalDAV server
 //! where it can, and keeps the rest on this computer.
 
+use crate::widgets::Tip as _;
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -24,7 +25,7 @@ use super::super::attachments::Item;
 use super::super::compose::attach::mime_of;
 use crate::tasks::{NewFile, TaskCommand};
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button, row, tag, tip};
+use crate::widgets::{icon, icon_button, row, tag};
 
 /// Reads `paths` as files to put on a task: folders and files too large
 /// are left out, and named in the second list.
@@ -333,7 +334,7 @@ impl MailWindow {
                 .py(px(space::S1))
                 .border_1()
                 .border_color(rgba(th.outline))
-                .tooltip(tip(tr!("tasks-file-open"), th))
+                .tip(tr!("tasks-file-open"), th)
                 .on_click(
                     cx.listener(move |this, _, window, cx| this.task_open_file(&open, window, cx)),
                 )
@@ -359,7 +360,7 @@ impl MailWindow {
                 .child(
                     icon_button(("task-file-remove", ix), "close", 18.0, th)
                         .size(px(28.0))
-                        .tooltip(tip(tr!("tasks-file-remove"), th))
+                        .tip(tr!("tasks-file-remove"), th)
                         .on_click(cx.listener(move |this, _, _, cx| {
                             cx.stop_propagation();
                             this.task_remove_file(&gone, cx)

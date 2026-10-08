@@ -6,6 +6,7 @@
 //! "4 older messages" fold in long threads, the newest open) and, pinned
 //! at the foot, Reply, Reply all and Forward, or the reply being written.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::collections::HashSet;
 use std::rc::Rc;
@@ -35,7 +36,7 @@ use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
-use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, tip, toolbar};
+use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, toolbar};
 
 mod chat;
 pub(in crate::window) use chat::{LONG_PRESS, PRESS_SLOP};
@@ -889,6 +890,25 @@ impl MailWindow {
         self.reader.as_ref()?.parts.get(ix).map(|p| p.id)
     }
 
+    /// What a screen reader hears of the open conversation: its subject as
+    /// the name and, while one listens, its newest message's text.
+    pub(super) fn spoken_reader<E: StatefulInteractiveElement>(&self, el: E) -> E {
+        let Some(reader) = self.reader.as_ref() else {
+            return el;
+        };
+        let text = self
+            .a11y_on
+            .then(|| reader.parts.last().and_then(|p| self.plain_text_of(p.id)))
+            .flatten();
+        let el = el
+            .role(gpui::Role::Document)
+            .aria_label(reader.subject.clone());
+        match text {
+            Some(text) => el.aria_description(text),
+            None => el,
+        }
+    }
+
     /// The plain text of message `id` in the open conversation, unless it
     /// is encrypted or empty.
     pub(super) fn plain_text_of(&self, id: MessageId) -> Option<String> {
@@ -972,14 +992,14 @@ impl MailWindow {
                 th,
             )
             .when(on, |d| d.bg(rgba(th.hover)))
-            .tooltip(tip(
+            .tip(
                 if on {
                     tr!("reader-dark-colors")
                 } else {
                     tr!("reader-original-colors")
                 },
                 th,
-            ))
+            )
             .on_click(cx.listener(|this, _, _, cx| {
                 if let Some(reader) = &mut this.reader {
                     reader.original_colors = !reader.original_colors;
@@ -1004,6 +1024,7 @@ impl MailWindow {
             .id("reader-card")
             .key_context(READER_CONTEXT)
             .track_focus(&self.reader_focus)
+            .map(|d| self.spoken_reader(d))
             .size_full()
             .flex()
             .flex_col()
@@ -1126,9 +1147,9 @@ impl MailWindow {
         }
         let count = self.entries.len();
         let back = if self.split() {
-            icon_button("reader-close", "close", 20.0, th).tooltip(tip(tr!("reader-close"), th))
+            icon_button("reader-close", "close", 20.0, th).tip(tr!("reader-close"), th)
         } else {
-            icon_button("reader-back", "back", 20.0, th).tooltip(tip(tr!("reader-back"), th))
+            icon_button("reader-back", "back", 20.0, th).tip(tr!("reader-back"), th)
         }
         .on_click(
             cx.listener(|this, _, window, cx| this.close_message(&super::CloseMessage, window, cx)),
@@ -1148,7 +1169,7 @@ impl MailWindow {
                         self.menu,
                         Some(Menu::ReaderMore | Menu::MoveTo | Menu::LabelAs)
                     ),
-                    |d| d.tooltip(tip(tr!("reader-more"), th)),
+                    |d| d.tip(tr!("reader-more"), th),
                 )
                 .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
             let more = self.with_menu(more, Menu::ReaderMore, th, cx);
@@ -1178,7 +1199,7 @@ impl MailWindow {
             .when(!squeeze.unread, |d| {
                 d.child(
                     icon_button("reader-unread", "mark-unread", 20.0, th)
-                        .tooltip(tip(tr!("reader-mark-unread"), th))
+                        .tip(tr!("reader-mark-unread"), th)
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.mark_unread(&super::MarkUnread, window, cx)
                         })),
@@ -1188,7 +1209,7 @@ impl MailWindow {
                 d.child({
                     let move_to = icon_button("reader-move", "move-to", 20.0, th)
                         .when(self.menu != Some(Menu::MoveTo), |d| {
-                            d.tooltip(tip(tr!("reader-move-to"), th))
+                            d.tip(tr!("reader-move-to"), th)
                         })
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
@@ -1196,7 +1217,7 @@ impl MailWindow {
                 .when(gmail, |d| {
                     let label_as = icon_button("reader-label-as", "tag", 20.0, th)
                         .when(self.menu != Some(Menu::LabelAs), |d| {
-                            d.tooltip(tip(tr!("menu-label-as"), th))
+                            d.tip(tr!("menu-label-as"), th)
                         })
                         .on_click(
                             cx.listener(|this, _, _, cx| this.toggle_menu(Menu::LabelAs, cx)),
@@ -1208,7 +1229,7 @@ impl MailWindow {
                 let key = self.reader.as_ref().map(|r| r.key);
                 d.child(
                     icon_button("reader-snooze", "snooze", 20.0, th)
-                        .tooltip(tip(tr!("reader-snooze"), th))
+                        .tip(tr!("reader-snooze"), th)
                         .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                             this.open_mail_times(
                                 key.into_iter().collect(),
@@ -1220,7 +1241,7 @@ impl MailWindow {
                 )
                 .child(
                     icon_button("reader-remind", "bell-plus", 20.0, th)
-                        .tooltip(tip(tr!("reader-remind"), th))
+                        .tip(tr!("reader-remind"), th)
                         .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                             this.open_mail_times(key.into_iter().collect(), true, e.position(), cx);
                         })),
@@ -1241,7 +1262,7 @@ impl MailWindow {
             .when(!squeeze.print, |d| {
                 d.child(
                     icon_button("reader-print", "print", 20.0, th)
-                        .tooltip(tip(tr!("reader-print-all"), th))
+                        .tip(tr!("reader-print-all"), th)
                         .on_click(
                             cx.listener(|this, _, window, cx| this.print_conversation(window, cx)),
                         ),
@@ -1250,7 +1271,7 @@ impl MailWindow {
             .when(!self.detached && !squeeze.new_window, |d| {
                 d.child(
                     icon_button("reader-new-window", "open-external", 20.0, th)
-                        .tooltip(tip(tr!("reader-new-window"), th))
+                        .tip(tr!("reader-new-window"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.open_reader_in_window(cx))),
                 )
             });
@@ -1273,7 +1294,7 @@ impl MailWindow {
                 })
                 .child(
                     icon_button("newer", "chevron-left", 20.0, th)
-                        .tooltip(tip(tr!("reader-newer"), th))
+                        .tip(tr!("reader-newer"), th)
                         .when(ix == 0, |d| d.opacity(0.4))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.select_previous(&SelectPrevious, window, cx)
@@ -1281,7 +1302,7 @@ impl MailWindow {
                 )
                 .child(
                     icon_button("older", "chevron-right", 20.0, th)
-                        .tooltip(tip(tr!("reader-older"), th))
+                        .tip(tr!("reader-older"), th)
                         .when(ix + 1 >= count, |d| d.opacity(0.4))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.select_next(&SelectNext, window, cx)
@@ -1419,14 +1440,14 @@ impl MailWindow {
                         if all_expanded { th.accent } else { th.text_dim },
                         th,
                     )
-                    .tooltip(tip(
+                    .tip(
                         if all_expanded {
                             tr!("reader-collapse-all")
                         } else {
                             tr!("reader-expand-all")
                         },
                         th,
-                    ))
+                    )
                     .on_click(cx.listener(move |this, _, _, cx| {
                         if let (Some(reader), Ok(mail)) = (&mut this.reader, &this.mail) {
                             reader.set_all(!all_expanded, mail);
@@ -1828,14 +1849,14 @@ impl MailWindow {
                         th,
                     )
                     .size(px(32.0))
-                    .tooltip(tip(
+                    .tip(
                         if flagged {
                             tr!("reader-starred")
                         } else {
                             tr!("reader-not-starred")
                         },
                         th,
-                    ))
+                    )
                     .on_click(cx.listener(move |this, _, _, cx| {
                         cx.stop_propagation();
                         this.star_message(ix, id, !flagged, cx);
@@ -1851,7 +1872,7 @@ impl MailWindow {
                         (Kind::Reply, "reply", tr!("reply-reply"))
                     };
                     icon_button(("part-reply", ix), name, 20.0, th)
-                        .tooltip(tip(label, th))
+                        .tip(label, th)
                         .size(px(32.0))
                         .on_click(cx.listener(move |this, _, window, cx| {
                             cx.stop_propagation();
@@ -2147,7 +2168,7 @@ impl MailWindow {
                             .id(("part-picture", ix))
                             .relative()
                             .cursor_pointer()
-                            .tooltip(crate::widgets::tip(tr!("chat-show-card"), th))
+                            .tip(tr!("chat-show-card"), th)
                             .on_hover({
                                 let pick = pick.clone();
                                 cx.listener(move |this, hovered: &bool, _, cx| {
@@ -2371,10 +2392,7 @@ impl MailWindow {
                                         .child(icon("close", th.text_dim, 12.0)),
                                 ),
                         )
-                        .tooltip(tip(
-                            tr!("reader-chip-remove", label = chip.text.as_str()),
-                            th,
-                        ))
+                        .tip(tr!("reader-chip-remove", label = chip.text.as_str()), th)
                         .on_click(cx.listener(move |this, _, _, cx| match &remove {
                             ChipRemove::Act(act) => this.act(*act, vec![key], cx),
                             ChipRemove::Label(label, name) => {

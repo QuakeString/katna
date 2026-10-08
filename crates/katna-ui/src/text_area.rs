@@ -1310,6 +1310,12 @@ impl Element for TextElement {
 impl Render for TextArea {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         div()
+            // Screen readers hear the field: its hint names it, and what is
+            // typed is its value.
+            .id(("text-area", cx.entity_id().as_u64()))
+            .role(gpui::Role::MultilineTextInput)
+            .aria_label(self.placeholder.clone())
+            .aria_value(self.content.clone())
             .w_full()
             .min_w_0()
             .key_context(TEXT_AREA_CONTEXT)

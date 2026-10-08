@@ -11,8 +11,9 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnimationExt, AnyElement, AnyView, App, Bounds, BoxShadow, Div, ElementId, FocusHandle,
-    FontWeight, Pixels, ScrollHandle, SharedString, SpringAnimation, Stateful, StyleRefinement,
-    Transformation, Window, canvas, div, img, point, prelude::*, radians, rgba, svg,
+    FontWeight, Pixels, Role, ScrollHandle, SharedString, SpringAnimation, Stateful,
+    StyleRefinement, Transformation, Window, canvas, div, img, point, prelude::*, radians, rgba,
+    svg,
 };
 use katna_ui::motion::{self, lerp};
 use katna_ui::tokens::{radius, space, state, text};
@@ -299,13 +300,25 @@ fn logo_tint(th: &Theme) -> crate::assets::Tint {
 }
 
 /// A tooltip saying `text`, for `.tooltip()`: it shows once the pointer
-/// rests on the element.
+/// rests on the element. Prefer [`Tip::tip`], which also names the
+/// element to screen readers.
 pub fn tip(
     text: impl Into<SharedString>,
     th: &Theme,
 ) -> impl Fn(&mut Window, &mut App) -> AnyView + 'static {
     Tooltip::text(text, rgba(th.snackbar), rgba(th.snackbar_text))
 }
+
+/// A tooltip that also names its element to screen readers (Orca, NVDA):
+/// what the pointer shows is what they read out.
+pub trait Tip: StatefulInteractiveElement + Sized {
+    fn tip(self, text: impl Into<SharedString>, th: &Theme) -> Self {
+        let text = text.into();
+        self.aria_label(text.clone()).tooltip(tip(text, th))
+    }
+}
+
+impl<E: StatefulInteractiveElement> Tip for E {}
 
 /// A round icon button with a centered ripple.
 pub fn icon_button(
@@ -336,6 +349,7 @@ pub fn icon_button_with(
     let id = id.into();
     div()
         .id(id.clone())
+        .role(Role::Button)
         .relative()
         .overflow_hidden()
         .size(px(40.0))
@@ -508,8 +522,11 @@ pub fn pill_button(
 ) -> Stateful<Div> {
     let id = id.into();
     let t = shown.clamp(0.0, 1.0);
+    let label = label.into();
     div()
         .id(id.clone())
+        .role(Role::Button)
+        .aria_label(label.clone())
         .relative()
         .overflow_hidden()
         .h(px(36.0))
@@ -536,7 +553,7 @@ pub fn pill_button(
                 .whitespace_nowrap()
                 .overflow_hidden()
                 .when(t < 0.999, |d| d.w(px(word * t)).opacity(t))
-                .child(label.into()),
+                .child(label),
         )
 }
 
@@ -629,6 +646,7 @@ pub fn button(id: impl Into<gpui::ElementId>, style: ButtonStyle, th: &Theme) ->
     let ripple = id_hash(&id);
     let base = div()
         .id(id)
+        .role(Role::Button)
         .relative()
         .overflow_hidden()
         .flex_none()
@@ -671,7 +689,10 @@ pub fn filled_button(
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> Stateful<Div> {
-    button(id, ButtonStyle::Filled, th).child(label.into())
+    let label = label.into();
+    button(id, ButtonStyle::Filled, th)
+        .aria_label(label.clone())
+        .child(label)
 }
 
 /// An outlined, rounded button with a label.
@@ -680,7 +701,10 @@ pub fn outlined_button(
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> Stateful<Div> {
-    button(id, ButtonStyle::Outlined, th).child(label.into())
+    let label = label.into();
+    button(id, ButtonStyle::Outlined, th)
+        .aria_label(label.clone())
+        .child(label)
 }
 
 /// An accent label with an icon before it, and no edge or fill until the
@@ -691,9 +715,11 @@ pub fn text_button(
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> Stateful<Div> {
+    let label = label.into();
     button(id, ButtonStyle::Text, th)
+        .aria_label(label.clone())
         .child(icon(name, th.accent, 18.0))
-        .child(label.into())
+        .child(label)
 }
 
 /// The fill of a [`tonal_icon_button`] at rest and under the pointer: the
@@ -728,6 +754,7 @@ pub fn tonal_icon_button(
     };
     div()
         .id(id)
+        .role(Role::Button)
         .relative()
         .overflow_hidden()
         .size(px(size))
@@ -759,8 +786,16 @@ pub fn choice_chip(
 ) -> Stateful<Div> {
     let id = id.into();
     let ripple = id_hash(&id);
+    let label = label.into();
     div()
         .id(id)
+        .role(Role::RadioButton)
+        .aria_label(label.clone())
+        .aria_toggled(if on {
+            gpui::Toggled::True
+        } else {
+            gpui::Toggled::False
+        })
         .relative()
         .overflow_hidden()
         .flex_none()
@@ -784,7 +819,7 @@ pub fn choice_chip(
         // running past the row.
         .max_w_full()
         .min_w_0()
-        .child(div().min_w_0().truncate().child(label.into()))
+        .child(div().min_w_0().truncate().child(label))
 }
 
 /// A small grey label that is not clicked (Coming soon, a day in a chat,
@@ -1044,29 +1079,35 @@ pub trait FocusRing: Sized {
 
 impl FocusRing for Stateful<Div> {
     fn focus_ring(self, th: &Theme) -> Self {
-        self.tab_index(0).focus_visible(ring_style(th))
+        // A Tab stop is a button to screen readers unless it says otherwise
+        // (a later `.role()` wins).
+        self.role(Role::Button)
+            .tab_index(0)
+            .focus_visible(ring_style(th))
     }
 
     fn focus_ring_filled(self, th: &Theme) -> Self {
         let (gap, ring) = (rgba(th.surface), rgba(th.accent));
-        self.tab_index(0).focus_visible(move |s| {
-            s.shadow(vec![
-                BoxShadow {
-                    color: gap.into(),
-                    offset: point(px(0.0), px(0.0)),
-                    blur_radius: px(0.0),
-                    spread_radius: px(2.0),
-                    inset: false,
-                },
-                BoxShadow {
-                    color: ring.into(),
-                    offset: point(px(0.0), px(0.0)),
-                    blur_radius: px(0.0),
-                    spread_radius: px(4.0),
-                    inset: false,
-                },
-            ])
-        })
+        self.role(Role::Button)
+            .tab_index(0)
+            .focus_visible(move |s| {
+                s.shadow(vec![
+                    BoxShadow {
+                        color: gap.into(),
+                        offset: point(px(0.0), px(0.0)),
+                        blur_radius: px(0.0),
+                        spread_radius: px(2.0),
+                        inset: false,
+                    },
+                    BoxShadow {
+                        color: ring.into(),
+                        offset: point(px(0.0), px(0.0)),
+                        blur_radius: px(0.0),
+                        spread_radius: px(4.0),
+                        inset: false,
+                    },
+                ])
+            })
     }
 
     fn focus_ring_in(mut self, stops: &TabStops, th: &Theme, cx: &App) -> Self {
@@ -1435,6 +1476,8 @@ fn glass<E: Styled + ParentElement>(panel: E, fill: u32, radius: f32, tint: f32,
 pub fn menu_item(id: impl Into<gpui::ElementId>, label: &str, th: &Theme) -> Stateful<Div> {
     div()
         .id(id)
+        .role(Role::MenuItem)
+        .aria_label(label.to_owned())
         .h(px(32.0))
         .px(px(16.0))
         .flex()
@@ -1455,6 +1498,8 @@ pub fn menu_item_icon(
 ) -> Stateful<Div> {
     div()
         .id(id)
+        .role(Role::MenuItem)
+        .aria_label(label.to_owned())
         .h(px(36.0))
         .pl(px(16.0))
         .pr(px(24.0))

@@ -7,6 +7,7 @@
 
 use std::path::Path;
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, Context, div, prelude::*, rgba};
 use katna_crypto::{Gnupg, Protect, Recipients, Security, Standard};
 use katna_i18n::tr;
@@ -14,7 +15,7 @@ use katna_ui::px;
 
 use crate::daemon;
 use crate::theme::Theme;
-use crate::widgets::{icon_button_colored, tip};
+use crate::widgets::icon_button_colored;
 use crate::window::MailWindow;
 
 /// What the sender asked for: signing and encryption, and (kept here so
@@ -198,7 +199,7 @@ impl MailWindow {
         let toggle = |id: &'static str, name: &'static str, on: bool, label: String| {
             icon_button_colored(id, name, 18.0, if on { th.accent } else { th.text_dim }, th)
                 .size(px(28.0))
-                .tooltip(tip(label, th))
+                .tip(label, th)
         };
         [
             toggle(
