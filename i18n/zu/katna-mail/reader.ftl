@@ -143,14 +143,14 @@ key-card-failed = Ayikwazanga ukuthola ukhiye
 ## of a sender nothing confirmed
 
 sender-failed-title = Lokhu kungase kungaveli ku-{ $domain }
-sender-failed-body = Kuhlulekile ekuhloleni umthumeli kwe-{ $provider }. Qaphela ngezixhumanisi, okunamathiselwe nezimpendulo.
+sender-failed-body = Kuhlulekile ekuhloleni umthumeli (umhloli: { $provider }). Qaphela ngezixhumanisi, okunamathiselwe nezimpendulo.
 sender-provider-unknown = umhlinzeki wakho we-imeyili
 sender-details = Imininingwane
 sender-details-hide = Fihla imininingwane
 sender-looks-safe = Kubukeka kuphephile
 sender-move-to-spam = Hambisa ku-Ugaxekile
-sender-checked-by = Kuhlolwe yi-{ $provider }
-sender-checked-by-server = Kuhlolwe yi-{ $provider } ({ $server })
+sender-checked-by = Umhloli: { $provider }
+sender-checked-by-server = Umhloli: { $provider } ({ $server })
 sender-dmarc = Isizinda somthumeli (DMARC)
 sender-dkim = Isiginesha (DKIM)
 sender-spf = Iseva ethumelayo (SPF)

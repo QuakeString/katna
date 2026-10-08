@@ -3668,3 +3668,14 @@ na die kopie van voor die opdatering. Wat nou daar is, word eers in 'n
 vouer gehou, so niks gaan verlore nie. Kopieer foutsporingsverslag, ook in
 Meer oor Katna, versamel wat 'n foutverslag nodig het.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "E-pos in Arabies en Hebreeus lees in sy eie rigting"
+text = """
+Elke paragraaf van 'n boodskap lees nou in sy eie rigting: Arabies,
+Hebreeus, Persies en Urdu van regs, Engels van links, in dieselfde e-pos
+en in enige venster. Wanneer jy skryf, draai die knoppies Links na regs en
+Regs na links in die formateringsbalk (of Ctrl+Shift+X) 'n paragraaf om,
+en 'n reël wat jy in Arabies of Hebreeus begin, draai vanself. Die
+boodskap gaan uit soos jy dit geskryf het.
+"""

@@ -21,6 +21,16 @@ compose-hide-trimmed = Fihla okuqukethwe okufinyeziwe
 compose-remove-trimmed = Susa umbhalo ocashuniwe
 compose-trimmed-removed = Umbhalo ocashuniwe ususiwe
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = Mhla { $date }, { $from } wabhala:
+compose-forward-header = ---------- Umlayezo odluliselwe ---------
+compose-forward-from = Kusuka ku: { $from }
+compose-forward-date = Usuku: { $date }
+compose-forward-subject = Isihloko: { $subject }
+compose-forward-to = Ku: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = Ku
