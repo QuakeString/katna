@@ -7,6 +7,7 @@
 //! and Delete for all of them, each with one Undo. Selected tasks drag
 //! together.
 
+use crate::widgets::Tip as _;
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, FontWeight, MouseButton, Pixels, Point, div,
     ease_out_quint, prelude::*, rgba,
@@ -19,7 +20,7 @@ use katna_ui::tokens::{duration, radius, space, text};
 use super::{Menu, NAV_WIDTH, SINGLE_WIDTH, TasksPage, View, list_title, today};
 use crate::tasks::{TaskCommand, TaskEdit};
 use crate::theme::Theme;
-use crate::widgets::{elevation, icon_button, tip};
+use crate::widgets::{elevation, icon_button};
 use crate::window::MailWindow;
 use crate::window::compose::schedule;
 
@@ -330,7 +331,7 @@ impl MailWindow {
         let single = page.view != View::All;
         let button = |id: &'static str, name: &'static str, label: String| {
             // Not over a menu it opened.
-            icon_button(id, name, 20.0, th).when(page.menu.is_none(), |d| d.tooltip(tip(label, th)))
+            icon_button(id, name, 20.0, th).when(page.menu.is_none(), |d| d.tip(label, th))
         };
         let pill = div()
             .id("tasks-select-bar")

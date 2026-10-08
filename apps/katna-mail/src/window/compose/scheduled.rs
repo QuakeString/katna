@@ -4,6 +4,7 @@
 //! time, listed under "Scheduled" in the navigation, and Cancel send, which
 //! takes one back and opens it to edit, as webmail does.
 
+use crate::widgets::Tip as _;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -23,7 +24,7 @@ use super::security::{self, Sealing};
 use super::{Draft, Threading, Unsent, addresses, schedule};
 use crate::daemon::{self, Command};
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button, outlined_button, tip};
+use crate::widgets::{icon, icon_button, outlined_button};
 
 use super::attach::Attachment;
 
@@ -409,7 +410,7 @@ pub(super) fn list_dialog(
                         .child(div().flex_1().text_size(px(20.0)).child(title))
                         .child(
                             icon_button((id, 2usize), "close", 20.0, th)
-                                .tooltip(tip(tr!("schedule-close"), th))
+                                .tip(tr!("schedule-close"), th)
                                 .on_click(cx.listener(move |this, _, _, cx| shut(this, cx))),
                         ),
                 )

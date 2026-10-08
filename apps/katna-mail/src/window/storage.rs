@@ -5,6 +5,7 @@
 //! whose folder is open and shows only when its server reports a quota
 //! (IMAP QUOTA; the daemon reads it on each full sync).
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, div, prelude::*, rgba};
 use katna_core::AccountId;
 use katna_i18n::tr;
@@ -13,7 +14,6 @@ use katna_ui::px;
 use super::{MailWindow, NAV_WIDTH};
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::tip;
 
 /// Where the bar turns to the error color.
 const NEARLY_FULL: f32 = 0.9;
@@ -79,7 +79,7 @@ impl MailWindow {
                 .pr(px(28.0))
                 .pt(px(12.0))
                 .pb(px(16.0))
-                .tooltip(tip(detail, th))
+                .tip(detail, th)
                 .child(
                     div()
                         .w(px(width))

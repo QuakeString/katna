@@ -10,6 +10,7 @@
 //! (`starter_rules.rs`). Under the rules, the Folders row: an unread count
 //! on every folder, or on the inbox only.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnimationExt, AnyElement, ClickEvent, Context, DragMoveEvent, FontWeight, MouseButton,
     MouseDownEvent, Pixels, Point, Render, SpringAnimation, Task, Window, deferred, div,
@@ -29,7 +30,7 @@ use super::super::settings::Change;
 use super::MailWindow;
 use super::starter_rules::{self, Starter};
 use crate::theme::{Theme, fade};
-use crate::widgets::{filled_button, icon, icon_button, menu, menu_item, switch, tip};
+use crate::widgets::{filled_button, icon, icon_button, menu, menu_item, switch};
 use crate::{daemon, data};
 
 /// The rules as Settings shows them.
@@ -603,7 +604,7 @@ impl MailWindow {
             .cursor_grab()
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
-            .tooltip(tip(tr!("settings-rules-drag"), th))
+            .tip(tr!("settings-rules-drag"), th)
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(move |this, event: &MouseDownEvent, _, _| {
@@ -621,14 +622,14 @@ impl MailWindow {
             .p(px(4.0))
             .rounded_full()
             .cursor_pointer()
-            .tooltip(tip(
+            .tip(
                 if on {
                     tr!("settings-rules-turn-off")
                 } else {
                     tr!("settings-rules-turn-on")
                 },
                 th,
-            ))
+            )
             .on_click(cx.listener(move |this, _, _, cx| this.set_rule_on(id, !on, cx)))
             .child(div().with_spring(
                 ("rule-switch-spring", ix),
@@ -727,14 +728,14 @@ impl MailWindow {
                         th.text_dim
                     }))
                     .text_size(px(12.0))
-                    .when_some(why, |d, why| d.tooltip(tip(why, th)))
+                    .when_some(why, |d, why| d.tip(why, th))
                     .child(tag),
             )
             .child(
                 icon_button(("rule-edit", ix), "pen", 18.0, th)
                     .map(|d| self.page_control(d, th, cx))
                     .size(px(32.0))
-                    .tooltip(tip(tr!("settings-rules-edit"), th))
+                    .tip(tr!("settings-rules-edit"), th)
                     .on_click(cx.listener(move |this, _, window, cx| {
                         let rule = this
                             .settings_page
@@ -801,7 +802,7 @@ impl MailWindow {
             .p(px(4.0))
             .rounded_full()
             .cursor_pointer()
-            .tooltip(tip(tr!("settings-rules-turn-on"), th))
+            .tip(tr!("settings-rules-turn-on"), th)
             .on_click(cx.listener(move |this, _, _, cx| this.turn_on_starter(key, cx)))
             .child(div().with_spring(
                 ("starter-switch-spring", ix),
@@ -840,7 +841,7 @@ impl MailWindow {
             .map(|d| self.page_control(d, th, cx))
             .flex_none()
             .size(px(32.0))
-            .tooltip(tip(tr!("settings-rules-edit"), th))
+            .tip(tr!("settings-rules-edit"), th)
             .on_click(cx.listener(move |this, _, window, cx| this.edit_starter(key, window, cx)));
         div()
             .id(("starter-row", ix))

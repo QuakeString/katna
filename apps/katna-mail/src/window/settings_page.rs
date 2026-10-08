@@ -10,6 +10,7 @@
 //! search box finds settings while the page is open (`settings_search.rs`).
 //! Changes apply at once and are saved to `config.toml`.
 
+use crate::widgets::Tip as _;
 use std::cell::RefCell;
 use std::ops::RangeInclusive;
 use std::rc::Rc;
@@ -3569,7 +3570,7 @@ pub(super) fn setting_row(
             .rounded_full()
             .cursor_pointer()
             .hover(|d| d.bg(rgba(th.hover)))
-            .tooltip(tip(text, th))
+            .tip(text, th)
             .on_click(move |_, window, _| {
                 let mut shown = info.borrow_mut();
                 *shown = if shown.as_ref() == Some(&name) {
@@ -3713,7 +3714,7 @@ pub(super) fn number_field(
             .cursor_pointer()
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", Some(3.0), th))
-            .tooltip(tip(tip_text, th))
+            .tip(tip_text, th)
             .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(move |_, _, cx| {
                 input.update(cx, |input, cx| {

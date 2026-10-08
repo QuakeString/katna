@@ -5,6 +5,7 @@
 //! subject and what the message says so far. Picking one puts it in, and
 //! the snackbar's Undo puts back what was typed.
 
+use crate::widgets::Tip as _;
 use std::time::{Duration, Instant};
 
 use gpui::{AnyElement, Context, Focusable, Task, Window, div, prelude::*, rgba};
@@ -19,7 +20,7 @@ use super::super::tools::below;
 use super::{Fix, problem_text};
 use crate::daemon::{self, Command};
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button_colored, menu, menu_item, outlined_button, tip};
+use crate::widgets::{icon, icon_button_colored, menu, menu_item, outlined_button};
 
 /// How soon after a press outside closed the card a click on the
 /// sparkle counts as that same press.
@@ -67,7 +68,7 @@ impl MailWindow {
                 th,
             )
             .flex_none()
-            .when(!open, |d| d.tooltip(tip(tr!("compose-ai-subject-tip"), th)))
+            .when(!open, |d| d.tip(tr!("compose-ai-subject-tip"), th))
             // The subject keeps its focus.
             .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(|this, _, _, cx| this.toggle_subject_ideas(cx)))

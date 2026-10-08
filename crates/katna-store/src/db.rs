@@ -163,16 +163,22 @@ fn migrate(conn: &mut Connection, path: &Path, kind: DbKind) -> Result<()> {
             return Ok(());
         };
         tracing::info!(db = %path.display(), from = version, to = version + 1, "migrating schema");
-        tx.execute_batch(sql)?;
-        // A migration that rewrote the schema's text (pim_v12) bumps the
-        // schema cookie, so every connection reads the new text.
-        if sql.contains("writable_schema") {
-            let cookie: i64 = tx.pragma_query_value(None, "schema_version", |row| row.get(0))?;
-            tx.pragma_update(None, "schema_version", cookie + 1)?;
-        }
-        tx.pragma_update(None, "user_version", version + 1)?;
+        apply_migration(&tx, sql, version + 1)?;
         tx.commit()?;
     }
+}
+
+/// Runs one migration's SQL and records `to` as the schema version.
+pub(crate) fn apply_migration(conn: &Connection, sql: &str, to: u32) -> Result<()> {
+    conn.execute_batch(sql)?;
+    // A migration that rewrote the schema's text (pim_v12) bumps the
+    // schema cookie, so every connection reads the new text.
+    if sql.contains("writable_schema") {
+        let cookie: i64 = conn.pragma_query_value(None, "schema_version", |row| row.get(0))?;
+        conn.pragma_update(None, "schema_version", cookie + 1)?;
+    }
+    conn.pragma_update(None, "user_version", to)?;
+    Ok(())
 }
 
 pub(crate) fn user_version(conn: &Connection) -> Result<u32> {
