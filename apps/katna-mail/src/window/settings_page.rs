@@ -2620,6 +2620,7 @@ impl MailWindow {
     /// Duplicate: a copy of signature `id` with everything in it (text,
     /// HTML, layout, pictures, colour) right after it, opened to edit.
     fn duplicate_signature(&mut self, id: u32, window: &mut Window, cx: &mut Context<Self>) {
+        self.close_context_menu(cx);
         let sending = &mut self.config.sending;
         let Some(at) = sending.signatures.iter().position(|s| s.id == id) else {
             return;
@@ -2639,11 +2640,70 @@ impl MailWindow {
     }
 
     fn delete_signature(&mut self, id: u32, window: &mut Window, cx: &mut Context<Self>) {
+        self.close_context_menu(cx);
         self.config.sending.remove_signature(id);
         self.save_config();
-        let next = self.config.sending.signatures.first().map(|s| s.id);
-        self.edit_signature(next, window, cx);
+        // From the right-click menu, another one may be open: it stays.
+        let open = self
+            .settings_page
+            .as_ref()
+            .and_then(|p| p.editing.as_ref())
+            .map(|e| e.id);
+        if open.is_none() || open == Some(id) {
+            let next = self.config.sending.signatures.first().map(|s| s.id);
+            self.edit_signature(next, window, cx);
+        } else {
+            cx.notify();
+        }
         self.show_snackbar(tr!("settings-compose-signature-deleted"), None, cx);
+    }
+
+    /// The right-click menu of signature `id` in the list: Edit,
+    /// Duplicate and Delete.
+    pub(super) fn signature_menu_rows(
+        &self,
+        id: u32,
+        rh: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> super::context_menu::Rows {
+        let mut rows = super::context_menu::Rows::new(rh);
+        let item = |key: &'static str, icon: &str, label: String| {
+            self.context_item(key, icon, label, rh, th, cx)
+        };
+        rows.item(
+            item(
+                "signature-edit",
+                "pen",
+                tr!("settings-compose-signature-edit"),
+            )
+            .on_click(cx.listener(move |this, _, window, cx| {
+                this.close_context_menu(cx);
+                this.edit_signature(Some(id), window, cx);
+            })),
+        );
+        rows.item(
+            item(
+                "signature-duplicate",
+                "copy",
+                tr!("settings-compose-signature-duplicate"),
+            )
+            .on_click(
+                cx.listener(move |this, _, window, cx| this.duplicate_signature(id, window, cx)),
+            ),
+        );
+        rows.rule(th);
+        rows.item(
+            item(
+                "signature-delete",
+                "trash",
+                tr!("settings-compose-signature-delete"),
+            )
+            .on_click(
+                cx.listener(move |this, _, window, cx| this.delete_signature(id, window, cx)),
+            ),
+        );
+        rows
     }
 
     fn set_default_signature(&mut self, replies: bool, id: Option<u32>, cx: &mut Context<Self>) {
@@ -2839,6 +2899,13 @@ impl MailWindow {
             .px(px(katna_ui::tokens::space::S4))
             .on_click(
                 cx.listener(move |this, _, window, cx| this.edit_signature(Some(id), window, cx)),
+            )
+            .on_mouse_down(
+                gpui::MouseButton::Right,
+                cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.open_signature_menu(id, event.position, cx);
+                }),
             )
             .child(
                 div()

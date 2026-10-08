@@ -2570,7 +2570,8 @@ Gemini or confidential mode):
   the person card reads it, and its first picture as the logo); Edit by
   hand turns a layout signature back into one, and both ask first.
   Duplicate (beside Delete) copies a signature whole, named "… (copy)",
-  right after it, and opens the copy.
+  right after it, and opens the copy; a signature's right-click menu in
+  the list has Edit, Duplicate and Delete.
 - **Grammar.** Harper (`harper-core`, Apache-2.0) checks English drafts,
   text and subject, on this computer as you write (`grammar.rs`), on by default, under
   Settings → Compose → Grammar. Paragraphs are checked off the UI thread

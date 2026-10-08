@@ -543,6 +543,8 @@ settings-compose-signature-name = Name, such as Work
 settings-compose-signature-first = My signature
 # The name given to a new signature. $number: how many there are with it.
 settings-compose-signature-numbered = Signature { $number }
+# The right-click menu item that opens a signature to edit.
+settings-compose-signature-edit = Edit
 settings-compose-signature-delete = Delete
 # The button that makes a copy of the signature being edited, and opens it.
 settings-compose-signature-duplicate = Duplicate
