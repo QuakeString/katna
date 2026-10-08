@@ -4569,3 +4569,14 @@ wrócić do kopii sprzed aktualizacji. To, co jest teraz, najpierw zostaje
 zachowane w folderze, więc nic nie zginie. Kopiuj raport debugowania,
 dostępne też w oknie O Katna, zbiera to, czego potrzeba do zgłoszenia błędu.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Poczta po arabsku i hebrajsku czyta się we własnym kierunku"
+text = """
+Każdy akapit wiadomości czyta się teraz we własnym kierunku: arabski,
+hebrajski, perski i urdu od prawej, polski od lewej, w tej samej wiadomości
+i w każdym oknie. Podczas pisania przyciski Od lewej do prawej i Od prawej
+do lewej na pasku formatowania (lub Ctrl+Shift+X) odwracają akapit, a
+wiersz zaczęty po arabsku lub hebrajsku odwraca się sam. Wiadomość wychodzi
+tak, jak ją napisano.
+"""

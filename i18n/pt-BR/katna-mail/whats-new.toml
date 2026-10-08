@@ -4642,3 +4642,14 @@ existe agora é guardado antes em uma pasta, então nada se perde. Copiar
 relatório de depuração, também em Sobre o Katna, reúne o que um
 relatório de bug precisa.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "E-mails em árabe e hebraico são lidos no seu próprio sentido"
+text = """
+Cada parágrafo de uma mensagem agora é lido no seu próprio sentido: árabe,
+hebraico, persa e urdu a partir da direita, português a partir da esquerda,
+no mesmo e-mail e em qualquer janela. Ao escrever, os botões Da esquerda para
+a direita e Da direita para a esquerda da barra de formatação (ou
+Ctrl+Shift+X) viram um parágrafo, e uma linha que você começa em árabe ou
+hebraico vira sozinha. A mensagem sai do jeito que você escreveu.
+"""

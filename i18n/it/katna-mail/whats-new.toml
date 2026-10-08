@@ -4663,3 +4663,14 @@ Ciò che c’è ora viene prima conservato in una cartella, così non si perde
 nulla. Copia rapporto di debug, presente anche in Informazioni su Katna,
 raccoglie ciò che serve per una segnalazione di bug.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "La posta in arabo ed ebraico si legge nel suo verso"
+text = """
+Ogni paragrafo di un messaggio ora si legge nel proprio verso: arabo,
+ebraico, persiano e urdu da destra, italiano da sinistra, nello stesso
+messaggio e in qualsiasi finestra. Mentre scrivi, i pulsanti Da sinistra a
+destra e Da destra a sinistra nella barra di formattazione (o Ctrl+Shift+X)
+girano un paragrafo, e una riga che inizi in arabo o in ebraico si gira da
+sola. Il messaggio parte così come l’hai scritto.
+"""
