@@ -420,6 +420,9 @@ pub enum OpenError {
     /// The daemon has not yet moved a database up to this version's
     /// schema, as just after an update: it does so as it starts.
     Migrating(String),
+    /// A newer Katna moved a database past what this version reads: it
+    /// was updated while it ran, and a restart opens it.
+    TooNew(String),
     Other(String),
 }
 
@@ -722,6 +725,7 @@ impl Mail {
             err @ katna_store::Error::SchemaOutdated { .. } => {
                 OpenError::Migrating(err.to_string())
             }
+            err @ katna_store::Error::SchemaTooNew { .. } => OpenError::TooNew(err.to_string()),
             err => OpenError::Other(err.to_string()),
         })?;
         let index_dir = paths.index_dir();
