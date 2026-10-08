@@ -85,3 +85,16 @@ search-dates-month-back = Previous month
 search-dates-month-on = Next month
 search-dates-year-back = Previous year
 search-dates-year-on = Next year
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+# The heading over the mail the server found.
+search-server-more = More results on server
+search-server-searching = Searching mail on the server…
+# In place of an empty list while the server is still being asked.
+search-server-empty-searching = Nothing here yet. Searching mail on the server…
+search-server-nothing = No more results on the server
+search-server-failed = Couldn’t search the server.
+# A link after search-server-failed.
+search-server-again = Try again

@@ -784,6 +784,13 @@ macro_rules! pim_proxy {
             /// Returns once it is in the store (`MailChanged` follows).
             fn fetch_body(&self, message: i64) -> zbus::Result<()>;
 
+            /// Searches the mail servers of `account` (every account when
+            /// 0) for `query`, a search box query, for mail that is not
+            /// downloaded and so not searchable here by its text ("More
+            /// results on server"). Returns the messages found, newest
+            /// first, at most 100; empty for a query with no free words.
+            fn search_server(&self, query: &str, account: i64) -> zbus::Result<Vec<i64>>;
+
             /// Adds and removes flags (names from [`flag`]) on messages.
             /// Like every change below, it shows in the store at once
             /// (`MailChanged` follows) and reaches the server when the
