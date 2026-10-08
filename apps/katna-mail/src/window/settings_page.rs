@@ -802,7 +802,7 @@ impl MailWindow {
             .id("settings-page")
             .size_full()
             .flex()
-            .map(|d| crate::widgets::card(d, th, th.pane(), radius, 0.0))
+            .map(|d| crate::widgets::card(d, th, th.pane(), radius, super::SHADOW_REST))
             .overflow_hidden();
         let card = if phone {
             card.flex_col()
