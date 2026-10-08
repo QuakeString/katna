@@ -130,8 +130,7 @@ fine.
 
 Once a native speaker has reviewed a whole language (plan L.8), its entry
 in `languages.toml` changes from `status = "machine"` to `"reviewed"` with
-their name in `reviewers`, the second header line of its files becomes
-`# Reviewed by a native speaker.`, and the picker stops calling it
+their name in `reviewers`, and the picker stops calling it
 machine translated. Until then a reviewed message is a correction like
 any other.
 
