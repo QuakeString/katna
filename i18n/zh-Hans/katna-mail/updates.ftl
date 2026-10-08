@@ -33,3 +33,7 @@ update-dialog-compare = 在 GitHub 上比较
 update-dialog-no-service = Katna 后台服务未运行。
 update-dialog-later = 稍后
 update-dialog-close = 关闭
+restart-updated = Katna 已更新
+restart-button = 重启
+restart-close = 暂不
+restart-failed = 无法启动新版 Katna Mail：{ $error }

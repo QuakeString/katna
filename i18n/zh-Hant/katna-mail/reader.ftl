@@ -138,6 +138,43 @@ key-card-not-found-detail = { $domain } 沒有為這個地址發布金鑰。請�
 key-card-not-kept = 找到的金鑰無法使用。
 key-card-failed = 無法取得金鑰
 
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = 這封郵件可能不是來自 { $domain }
+sender-failed-body = 它未通過 { $provider } 的寄件者檢查。請小心處理其中的連結、附件和回覆。
+sender-provider-unknown = 你的郵件服務供應商
+sender-details = 詳細資料
+sender-details-hide = 隱藏詳細資料
+sender-looks-safe = 看起來安全
+sender-move-to-spam = 移至垃圾郵件
+sender-checked-by = 由 { $provider } 檢查
+sender-checked-by-server = 由 { $provider }（{ $server }）檢查
+sender-dmarc = 寄件者網域（DMARC）
+sender-dkim = 簽章（DKIM）
+sender-spf = 寄送伺服器（SPF）
+sender-result-pass = 通過
+sender-result-fail = 未通過
+sender-result-unsure = 不確定
+sender-result-none = 無
+sender-result-missing = 未檢查
+sender-dmarc-pass = { $domain } 確認了這位寄件者。
+sender-dmarc-fail = 這封郵件與 { $domain } 宣告的郵件寄送方式不符。
+sender-dmarc-none = { $domain } 未公布其郵件的規則。
+sender-dkim-pass = 由 { $domain } 簽署。
+sender-dkim-fail = 來自 { $domain } 的簽章與這封郵件不符。
+sender-dkim-none = 這封郵件未經簽署。
+sender-spf-pass = 從 { $domain } 列出的伺服器寄出。
+sender-spf-fail = 從 { $domain } 未列出的伺服器寄出。
+sender-spf-none = { $domain } 未列出其伺服器。
+sender-check-unsure = 檢查未能得出明確結果。
+sender-unconfirmed = { $provider } 無法確認這封郵件來自 { $domain }。任何人都能隨意填寫寄件者。
+sender-link-title = 要開啟這個連結嗎？
+sender-link-body = 這封郵件未通過寄件者檢查。此連結會前往 { $host }：
+sender-link-cancel = 取消
+sender-link-open = 開啟
+
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
 
@@ -155,6 +192,7 @@ tracking-receipt-other = 已讀回條：{ $who } 未開啟就刪除或處理了�
 
 remote-hidden = 這封郵件中的圖片已隱藏。
 remote-hidden-unconfirmed = 圖片已隱藏：無法確認寄件者。
+remote-hidden-failed = 圖片已隱藏：這封郵件未通過寄件者檢查。
 remote-show = 顯示圖片
 remote-always-show = 一律顯示這位寄件者的圖片
 remote-picture-use = 使用

@@ -138,6 +138,43 @@ key-card-not-found-detail = { $domain } không công bố khóa cho địa chỉ
 key-card-not-kept = Không thể dùng khóa đã tìm thấy.
 key-card-failed = Không thể lấy khóa
 
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Thư này có thể không phải từ { $domain }
+sender-failed-body = Thư không vượt qua kiểm tra người gửi của { $provider }. Hãy cẩn thận với liên kết, tệp đính kèm và khi trả lời.
+sender-provider-unknown = nhà cung cấp thư của bạn
+sender-details = Chi tiết
+sender-details-hide = Ẩn chi tiết
+sender-looks-safe = Có vẻ an toàn
+sender-move-to-spam = Chuyển vào thư rác
+sender-checked-by = Được kiểm tra bởi { $provider }
+sender-checked-by-server = Được kiểm tra bởi { $provider } ({ $server })
+sender-dmarc = Tên miền người gửi (DMARC)
+sender-dkim = Chữ ký (DKIM)
+sender-spf = Máy chủ gửi (SPF)
+sender-result-pass = Đạt
+sender-result-fail = Không đạt
+sender-result-unsure = Không chắc chắn
+sender-result-none = Không có
+sender-result-missing = Chưa kiểm tra
+sender-dmarc-pass = { $domain } xác nhận người gửi này.
+sender-dmarc-fail = Thư không khớp với cách { $domain } cho biết thư của họ được gửi.
+sender-dmarc-none = { $domain } không công bố quy tắc nào cho thư của họ.
+sender-dkim-pass = Được ký bởi { $domain }.
+sender-dkim-fail = Chữ ký từ { $domain } không khớp với thư.
+sender-dkim-none = Thư không được ký.
+sender-spf-pass = Được gửi từ một máy chủ mà { $domain } liệt kê.
+sender-spf-fail = Được gửi từ một máy chủ mà { $domain } không liệt kê.
+sender-spf-none = { $domain } không liệt kê các máy chủ của họ.
+sender-check-unsure = Việc kiểm tra không đưa ra được câu trả lời rõ ràng.
+sender-unconfirmed = { $provider } không thể xác nhận thư này đến từ { $domain }. Ai cũng có thể ghi bất kỳ người gửi nào.
+sender-link-title = Mở liên kết này?
+sender-link-body = Thư này không vượt qua kiểm tra người gửi. Liên kết dẫn tới { $host }:
+sender-link-cancel = Hủy
+sender-link-open = Mở
+
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
 
@@ -155,6 +192,7 @@ tracking-receipt-other = Xác nhận đã đọc: { $who } đã xóa hoặc xử
 
 remote-hidden = Hình ảnh trong thư này đang bị ẩn.
 remote-hidden-unconfirmed = Hình ảnh đang bị ẩn: không thể xác nhận người gửi.
+remote-hidden-failed = Hình ảnh đã bị ẩn: thư này không vượt qua kiểm tra người gửi.
 remote-show = Hiển thị hình ảnh
 remote-always-show = Luôn hiển thị hình ảnh từ người gửi này
 remote-picture-use = Dùng

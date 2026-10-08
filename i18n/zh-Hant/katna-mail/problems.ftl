@@ -62,3 +62,25 @@ service-details-close = 關閉
 service-not-running = Katna 背景服務未執行。
 service-no-answer = Katna 背景服務沒有回應：{ $error }
 service-no-session = 沒有 D-Bus 工作階段：{ $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = 更新發生問題後，Katna 已進入安全模式，因此郵件未在同步。
+safe-try-again = 再試一次
+safe-restore = 還原
+safe-restoring = 正在從 { $when } 的副本還原你的資料…
+safe-restored = 已從 { $when } 的副本還原你的資料。原本的資料保留在一個資料夾中。
+safe-show-folder = 顯示資料夾
+safe-restore-failed = 無法還原你的資料：{ $error }
+safe-restore-title = 要還原更新前的資料嗎？
+safe-restore-body = Katna 會回到你選擇的副本。之後收到的郵件會從你的帳戶重新下載。
+safe-restore-none = 目前還沒有副本。每次更新變更你的資料之前，Katna 都會建立一份副本。
+safe-restore-keep = 目前的資料（包括未傳送的郵件、草稿和尚未同步的變更）會先保留在一個資料夾中，因此不會遺失任何內容。
+safe-restore-cancel = 取消
+safe-restore-mail = 郵件
+safe-restore-pim = 帳戶和聯絡人
+safe-restore-blobs = 附件
+safe-report-title = 偵錯報告
+safe-report-body = 請複製這段內容並附加到你的錯誤回報中。其中不含任何郵件、地址或密碼。
+safe-report-restore = 還原…
+safe-report-copied = 已複製偵錯報告

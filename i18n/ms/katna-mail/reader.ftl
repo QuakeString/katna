@@ -138,6 +138,43 @@ key-card-not-found-detail = { $domain } tidak menerbitkan kunci untuk alamat ini
 key-card-not-kept = Kunci yang ditemui tidak boleh digunakan.
 key-card-failed = Tidak dapat mendapatkan kunci
 
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Ini mungkin bukan daripada { $domain }
+sender-failed-body = Mel ini gagal dalam semakan pengirim { $provider }. Berhati-hati dengan pautan, lampiran dan balasan.
+sender-provider-unknown = penyedia mel anda
+sender-details = Butiran
+sender-details-hide = Sembunyikan butiran
+sender-looks-safe = Nampak selamat
+sender-move-to-spam = Alih ke spam
+sender-checked-by = Disemak oleh { $provider }
+sender-checked-by-server = Disemak oleh { $provider } ({ $server })
+sender-dmarc = Domain pengirim (DMARC)
+sender-dkim = Tandatangan (DKIM)
+sender-spf = Pelayan penghantar (SPF)
+sender-result-pass = Lulus
+sender-result-fail = Gagal
+sender-result-unsure = Tidak pasti
+sender-result-none = Tiada
+sender-result-missing = Tidak disemak
+sender-dmarc-pass = { $domain } mengesahkan pengirim ini.
+sender-dmarc-fail = Mel ini tidak sepadan dengan cara { $domain } menyatakan melnya dihantar.
+sender-dmarc-none = { $domain } tidak menerbitkan sebarang peraturan untuk melnya.
+sender-dkim-pass = Ditandatangani oleh { $domain }.
+sender-dkim-fail = Tandatangan daripada { $domain } tidak sepadan dengan mel ini.
+sender-dkim-none = Mesej ini tidak ditandatangani.
+sender-spf-pass = Dihantar dari pelayan yang disenaraikan oleh { $domain }.
+sender-spf-fail = Dihantar dari pelayan yang tidak disenaraikan oleh { $domain }.
+sender-spf-none = { $domain } tidak menyenaraikan pelayannya.
+sender-check-unsure = Semakan tidak dapat memberikan jawapan yang jelas.
+sender-unconfirmed = { $provider } tidak dapat mengesahkan bahawa mel ini datang daripada { $domain }. Sesiapa sahaja boleh menulis apa-apa nama pengirim.
+sender-link-title = Buka pautan ini?
+sender-link-body = Mel ini gagal dalam semakan pengirimnya. Pautan ini pergi ke { $host }:
+sender-link-cancel = Batal
+sender-link-open = Buka
+
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
 
@@ -155,6 +192,7 @@ tracking-receipt-other = Resit baca: { $who } memadamkan atau menguruskan mesej 
 
 remote-hidden = Imej dalam mesej ini disembunyikan.
 remote-hidden-unconfirmed = Imej disembunyikan: pengirim tidak dapat disahkan.
+remote-hidden-failed = Imej disembunyikan: mel ini gagal dalam semakan pengirimnya.
 remote-show = Tunjukkan imej
 remote-always-show = Sentiasa tunjukkan daripada pengirim ini
 remote-picture-use = Gunakan

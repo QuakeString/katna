@@ -33,3 +33,7 @@ update-dialog-compare = GitHub에서 비교
 update-dialog-no-service = Katna 백그라운드 서비스가 실행 중이 아닙니다.
 update-dialog-later = 나중에
 update-dialog-close = 닫기
+restart-updated = Katna가 업데이트되었습니다
+restart-button = 다시 시작
+restart-close = 나중에
+restart-failed = 새 Katna Mail을 시작할 수 없습니다: { $error }

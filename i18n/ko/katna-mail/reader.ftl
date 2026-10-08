@@ -138,6 +138,43 @@ key-card-not-found-detail = { $domain }에서 이 주소의 키를 공개하지 
 key-card-not-kept = 찾은 키를 사용할 수 없습니다.
 key-card-failed = 키를 가져올 수 없음
 
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = { $domain }에서 보낸 메일이 아닐 수 있습니다
+sender-failed-body = { $provider }의 보낸사람 확인을 통과하지 못했습니다. 링크, 첨부파일, 답장에 주의하세요.
+sender-provider-unknown = 사용 중인 메일 서비스
+sender-details = 세부정보
+sender-details-hide = 세부정보 숨기기
+sender-looks-safe = 안전해 보임
+sender-move-to-spam = 스팸함으로 이동
+sender-checked-by = { $provider }에서 확인
+sender-checked-by-server = { $provider }에서 확인 ({ $server })
+sender-dmarc = 보낸사람 도메인 (DMARC)
+sender-dkim = 서명 (DKIM)
+sender-spf = 발송 서버 (SPF)
+sender-result-pass = 통과
+sender-result-fail = 실패
+sender-result-unsure = 불확실
+sender-result-none = 없음
+sender-result-missing = 확인 안 됨
+sender-dmarc-pass = { $domain }에서 이 보낸사람을 확인합니다.
+sender-dmarc-fail = 이 메일은 { $domain }에서 밝힌 메일 발송 방식과 일치하지 않습니다.
+sender-dmarc-none = { $domain }은(는) 메일에 대한 규칙을 공개하지 않습니다.
+sender-dkim-pass = { $domain }에서 서명했습니다.
+sender-dkim-fail = { $domain }의 서명이 메일과 일치하지 않습니다.
+sender-dkim-none = 이 메일은 서명되지 않았습니다.
+sender-spf-pass = { $domain }에 등록된 서버에서 보냈습니다.
+sender-spf-fail = { $domain }에 등록되지 않은 서버에서 보냈습니다.
+sender-spf-none = { $domain }은(는) 발송 서버를 등록하지 않았습니다.
+sender-check-unsure = 확인 결과가 명확하지 않습니다.
+sender-unconfirmed = { $provider }에서 이 메일이 { $domain }에서 왔는지 확인할 수 없습니다. 보낸사람은 누구나 마음대로 적을 수 있습니다.
+sender-link-title = 이 링크를 열까요?
+sender-link-body = 이 메일은 보낸사람 확인을 통과하지 못했습니다. 링크가 이동하는 곳은 { $host }입니다:
+sender-link-cancel = 취소
+sender-link-open = 열기
+
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
 
@@ -155,6 +192,7 @@ tracking-receipt-other = 읽음 확인: { $who }님이 메일을 열지 않고 �
 
 remote-hidden = 이 메일의 이미지가 숨겨져 있습니다.
 remote-hidden-unconfirmed = 이미지가 숨겨져 있습니다. 보낸사람을 확인할 수 없습니다.
+remote-hidden-failed = 이미지가 숨겨져 있습니다. 이 메일은 보낸사람 확인을 통과하지 못했습니다.
 remote-show = 이미지 표시
 remote-always-show = 이 보낸사람의 이미지 항상 표시
 remote-picture-use = 사용

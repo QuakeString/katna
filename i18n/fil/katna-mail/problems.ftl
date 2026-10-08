@@ -68,3 +68,25 @@ service-details-close = Isara
 service-not-running = Hindi tumatakbo ang serbisyo ng Katna sa background.
 service-no-answer = Hindi sumagot ang serbisyo ng Katna sa background: { $error }
 service-no-session = Walang D-Bus session: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Nasa safe mode ang Katna dahil sa isang problema sa update, kaya hindi nagsi-sync ang mail.
+safe-try-again = Subukang muli
+safe-restore = I-restore
+safe-restoring = Nire-restore ang iyong data mula { $when }…
+safe-restored = Na-restore ang iyong data mula { $when }. Nakatabi sa isang folder ang dating laman.
+safe-show-folder = Ipakita ang folder
+safe-restore-failed = Hindi ma-restore ang iyong data: { $error }
+safe-restore-title = I-restore ang iyong data mula bago ang isang update?
+safe-restore-body = Babalik ang Katna sa kopyang pipiliin mo. Ang mail na dumating pagkatapos nito ay muling dina-download mula sa iyong mga account.
+safe-restore-none = Wala pang mga kopya. Gumagawa ang Katna ng isa bago baguhin ng bawat update ang iyong data.
+safe-restore-keep = Ang laman ngayon, kasama ang mail na hindi pa naipapadala, mga draft at mga pagbabagong hindi pa naka-sync, ay itatabi muna sa isang folder, kaya walang mawawala.
+safe-restore-cancel = Kanselahin
+safe-restore-mail = Mail
+safe-restore-pim = Mga account at contact
+safe-restore-blobs = Mga attachment
+safe-report-title = Debug report
+safe-report-body = Kopyahin ito at i-attach sa iyong ulat ng bug. Wala itong mail, address o password.
+safe-report-restore = I-restore…
+safe-report-copied = Nakopya ang debug report

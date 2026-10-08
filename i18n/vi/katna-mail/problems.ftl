@@ -62,3 +62,25 @@ service-details-close = Đóng
 service-not-running = Dịch vụ nền của Katna không chạy.
 service-no-answer = Dịch vụ nền của Katna không phản hồi: { $error }
 service-no-session = Không có phiên D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna đang ở chế độ an toàn sau một sự cố khi cập nhật, nên thư không được đồng bộ.
+safe-try-again = Thử lại
+safe-restore = Khôi phục
+safe-restoring = Đang khôi phục dữ liệu của bạn từ { $when }…
+safe-restored = Đã khôi phục dữ liệu của bạn từ { $when }. Những gì có trước đó được giữ lại trong một thư mục.
+safe-show-folder = Hiện thư mục
+safe-restore-failed = Không thể khôi phục dữ liệu của bạn: { $error }
+safe-restore-title = Khôi phục dữ liệu của bạn từ trước một lần cập nhật?
+safe-restore-body = Katna sẽ quay về bản sao bạn chọn. Thư đến sau thời điểm đó sẽ được tải lại từ các tài khoản của bạn.
+safe-restore-none = Chưa có bản sao nào. Katna tạo một bản sao trước mỗi lần cập nhật thay đổi dữ liệu của bạn.
+safe-restore-keep = Những gì đang có, kể cả thư chưa gửi, thư nháp và các thay đổi chưa đồng bộ, sẽ được giữ lại trong một thư mục trước, nên không mất gì cả.
+safe-restore-cancel = Hủy
+safe-restore-mail = Thư
+safe-restore-pim = Tài khoản và danh bạ
+safe-restore-blobs = Tệp đính kèm
+safe-report-title = Báo cáo gỡ lỗi
+safe-report-body = Hãy sao chép nội dung này và đính kèm vào báo cáo lỗi của bạn. Nó không chứa thư, địa chỉ hay mật khẩu nào.
+safe-report-restore = Khôi phục…
+safe-report-copied = Đã sao chép báo cáo gỡ lỗi
