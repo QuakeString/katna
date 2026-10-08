@@ -181,6 +181,7 @@ settings-general-start-at-login = ਲੌਗਇਨ ’ਤੇ Katna ਸ਼ੁਰ�
 settings-general-start-at-login-detail = ਵਿੰਡੋ ਖੋਲ੍ਹੇ ਬਿਨਾਂ ਮੇਲ ਸਿੰਕ ਕਰਦਾ ਹੈ ਅਤੇ ਨਵੀਂ ਮੇਲ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਅਤੇ ਟ੍ਰੇ ਆਈਕਨ ਦਿਖਾਉਂਦਾ ਹੈ
 settings-general-login-window = Katna Mail ਦੀ ਵਿੰਡੋ ਵੀ ਖੋਲ੍ਹੋ
 settings-general-login-window-detail = ਲੌਗਇਨ ’ਤੇ ਵਿੰਡੋ ਵੀ ਖੁੱਲ੍ਹਦੀ ਹੈ
+settings-general-login-entry = ਲੌਗਇਨ ’ਤੇ ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ (ਸੈਟਿੰਗਾਂ > ਆਮ > ਡੈਸਕਟਾਪ)
 settings-general-tray = ਸਿਸਟਮ ਟ੍ਰੇ ਵਿੱਚ Katna ਦਿਖਾਓ
 settings-general-tray-detail = ਅਣਪੜ੍ਹੀਆਂ ਦੀ ਗਿਣਤੀ ਅਤੇ ਇੱਕ ਮੀਨੂ ਨਾਲ
 settings-general-tray-color = ਰੰਗਦਾਰ ਟ੍ਰੇ ਆਈਕਨ

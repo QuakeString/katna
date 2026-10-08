@@ -55,6 +55,7 @@ reader-details-subject = ਵਿਸ਼ਾ:
 
 reader-downloading = ਇਹ ਸੁਨੇਹਾ ਸਰਵਰ ਤੋਂ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…
 reader-download-failed = ਇਹ ਸੁਨੇਹਾ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।
+reader-download-failed-reason = ਇਹ ਸੁਨੇਹਾ ਡਾਊਨਲੋਡ ਨਹੀਂ ਹੋ ਸਕਿਆ। { $reason }
 reader-download-offline = ਇਹ ਖਾਤਾ ਆਫ਼ਲਾਈਨ ਹੈ। ਇਹ ਸੁਨੇਹਾ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਆਨਲਾਈਨ ਹੋਵੋ।
 reader-try-again = ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ
 

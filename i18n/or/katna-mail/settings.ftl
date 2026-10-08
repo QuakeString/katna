@@ -181,6 +181,7 @@ settings-general-start-at-login = ଲଗଇନ ସମୟରେ Katna ଆରମ�
 settings-general-start-at-login-detail = ୱିଣ୍ଡୋ ନ ଖୋଲି ମେଲ ସିଙ୍କ କରେ ଏବଂ ନୂଆ ମେଲ ବିଜ୍ଞପ୍ତି ଓ ଟ୍ରେ ଆଇକନ ଦେଖାଏ
 settings-general-login-window = Katna Mail ୱିଣ୍ଡୋ ମଧ୍ୟ ଖୋଲନ୍ତୁ
 settings-general-login-window-detail = ଲଗଇନ ସମୟରେ ୱିଣ୍ଡୋ ମଧ୍ୟ ଖୋଲେ
+settings-general-login-entry = ଲଗଇନରେ ଆରମ୍ଭ ହୁଏ (ସେଟିଂସ > ସାଧାରଣ > ଡେସ୍କଟପ)
 settings-general-tray = ସିଷ୍ଟମ ଟ୍ରେରେ Katna ଦେଖାନ୍ତୁ
 settings-general-tray-detail = ଅପଠିତ ସଂଖ୍ୟା ଓ ଏକ ମେନୁ ସହ
 settings-general-tray-color = ରଙ୍ଗୀନ ଟ୍ରେ ଆଇକନ
