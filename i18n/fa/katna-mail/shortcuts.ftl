@@ -67,6 +67,7 @@ shortcut-navigation = نمایش یا جمع کردن منو
 shortcut-quick-settings = تنظیمات سریع
 shortcut-settings = همهٔ تنظیمات
 shortcut-shortcuts = میان‌برهای صفحه‌کلید
+shortcut-palette = پالت فرمان
 shortcut-reload = بررسی ایمیل جدید
 shortcut-quit = خروج
 

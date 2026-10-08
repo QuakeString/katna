@@ -55,6 +55,7 @@ reader-details-subject = тема:
 
 reader-downloading = Завантаження цього листа із сервера…
 reader-download-failed = Не вдалося завантажити цей лист.
+reader-download-failed-reason = Не вдалося завантажити цей лист. { $reason }
 reader-download-offline = Цей обліковий запис офлайн. Поверніться в онлайн, щоб завантажити цей лист.
 reader-try-again = Повторити спробу
 

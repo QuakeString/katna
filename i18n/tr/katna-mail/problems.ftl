@@ -65,3 +65,6 @@ service-details-title = Hizmet neden başlamıyor
 service-details-body = Bunu kopyalayın ve raporunuzla birlikte gönderin. İçinde posta veya parola yok.
 service-details-copy = Kopyala
 service-details-close = Kapat
+service-not-running = Katna arka plan hizmeti çalışmıyor.
+service-no-answer = Katna arka plan hizmeti yanıt vermedi: { $error }
+service-no-session = D-Bus oturumu yok: { $error }

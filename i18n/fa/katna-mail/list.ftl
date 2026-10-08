@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } از حدود { $total }
 list-results = نتایج برای «{ $query }»
 list-results-corrected = نمایش نتایج برای «{ $query }»
 list-search-instead = به‌جای آن «{ $query }» را جستجو کنید
+list-search-no-index = جستجو آماده نیست: نمایه هنوز ساخته نشده است.
+list-search-not-ready = جستجو آماده نیست: { $error }
 list-files-more = +{ $count }
 list-replied = پاسخ داده‌اید
 
@@ -343,6 +345,11 @@ list-empty-waiting = چیزی در انتظار پاسخ نیست.
 list-empty-reminders = یادآوری‌ای نیست. برای افزودن، روی یک ایمیل H را بزنید.
 list-first-sync = در حال دریافت ایمیل‌هایتان…
 list-first-sync-detail = ایمیل‌ها همزمان با رسیدن اینجا نشان داده می‌شوند.
+list-store-unreadable = انبارهٔ ایمیل باز نشد
+row-no-subject = (بدون موضوع)
+row-unknown-sender = (فرستندهٔ ناشناس)
+row-to = به:
+row-no-recipients = (بدون گیرنده)
 
 ## Mail list: lines
 

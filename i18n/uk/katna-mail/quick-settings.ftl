@@ -51,4 +51,5 @@ quick-help = Довідка
 quick-tour = Пройти ознайомлення
 quick-whats-new = Що нового
 quick-check-updates = Перевірити оновлення
+quick-send-feedback = Надіслати відгук
 quick-about = Про Katna

@@ -189,6 +189,7 @@ settings-general-start-at-login = تشغيل Katna عند تسجيل الدخو�
 settings-general-start-at-login-detail = يزامن البريد ويعرض إشعارات البريد الجديد وأيقونة علبة النظام، دون فتح النافذة
 settings-general-login-window = فتح نافذة Katna Mail أيضًا
 settings-general-login-window-detail = تُفتح النافذة أيضًا عند تسجيل الدخول
+settings-general-login-entry = يبدأ عند تسجيل الدخول (الإعدادات > عام > سطح المكتب)
 settings-general-tray = عرض Katna في علبة النظام
 settings-general-tray-detail = مع عدد الرسائل غير المقروءة وقائمة
 settings-general-tray-color = أيقونة علبة النظام بالألوان

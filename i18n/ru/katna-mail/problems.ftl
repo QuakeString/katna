@@ -77,3 +77,6 @@ service-details-title = Почему служба не запускается
 service-details-body = Скопируйте это и отправьте вместе с отчётом. Здесь нет ни писем, ни паролей.
 service-details-copy = Копировать
 service-details-close = Закрыть
+service-not-running = Фоновая служба Katna не запущена.
+service-no-answer = Фоновая служба Katna не ответила: { $error }
+service-no-session = Нет сеанса D-Bus: { $error }
