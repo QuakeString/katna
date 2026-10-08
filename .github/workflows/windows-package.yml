@@ -14,7 +14,12 @@ on:
         description: "Full build: smallest, fastest Katna, but much slower to build"
         type: boolean
         default: false
+  # Secondary, and the release workflow (release.yml) with `full`.
   workflow_call:
+    inputs:
+      full:
+        type: boolean
+        default: false
 
 concurrency:
   group: windows-package-${{ github.ref }}
@@ -120,25 +125,8 @@ jobs:
           mkdir out
           mv build/KatnaSetup.exe out/
           if [[ -f build/KatnaMail.msix ]]; then mv build/KatnaMail.msix out/; fi
-          version=$(cat build/version.txt)
-          highlights=$(jq -c '.[:50]' build/highlights.json 2>/dev/null || echo '[]')
-          git -C src log -200 --format='%h%x09%s' HEAD |
-            jq -R 'split("\t") | {commit: .[0], title: (.[1:] | join("\t"))}' |
-            jq -s . > changes.json
-          jq -n \
-            --arg version "$version" \
-            --arg file KatnaSetup.exe \
-            --arg sha256 "$(sha256sum out/KatnaSetup.exe | cut -d' ' -f1)" \
-            --argjson size "$(stat -c %s out/KatnaSetup.exe)" \
-            --argjson built "$(git -C src log -1 --format=%ct HEAD)" \
-            --arg commit "$(git -C src rev-parse HEAD)" \
-            --argjson highlights "$highlights" \
-            --slurpfile changes changes.json \
-            '{$version, $file, $sha256, $size, $built, $commit, $highlights,
-              changes: $changes[0]}' > out/katna-update.json
-          jq '{version, file, size, built, commit,
-               highlights: (.highlights | length), changes: (.changes | length)}' \
-            out/katna-update.json
+          bash src/ci/update-manifest.sh src out "$(cat build/version.txt)" \
+            build/highlights.json KatnaSetup.exe
       - name: Update the windows-latest pre-release
         env:
           GH_TOKEN: ${{ github.token }}

@@ -5516,12 +5516,14 @@ consent.
   takes effect at once; off means the panic hook and the core-dump check
   write nothing), and the list of saved reports with
   **View**, **Copy** and **Delete** (and Delete all), each marked "Sent"
-  once it went to the crash tracker. Part 2 adds "Send crash reports"
-  (built) and later the usage statistics switch and **Send feedback**.
+  once it went to the crash tracker. Part 2 adds "Send crash reports",
+  "Send anonymous usage statistics" with the full list of what is counted,
+  and **Send feedback** (all built).
 
 **Part 2: sending, only with consent.** Reports go to a Sentry cloud
 project (decided by the owner on 27 September 2026, §25). Sending crash
-reports is built; usage statistics and the feedback form come later.
+reports, usage statistics and the feedback form are built (C.5–C.7);
+release-health sessions are not.
 
 - **Asking.** The first-run screen (onboarding) has a step, "Help improve
   Katna", between the look and the tour: what is sent, what is never sent
@@ -5554,6 +5556,22 @@ reports is built; usage statistics and the feedback form come later.
   and so on. The exact list lives in one Rust enum; each entry is described
   in Settings > User feedback so users can see what is counted. No message counts, no
   addresses, no domains, no search terms, no timestamps finer than a week.
+  Built (C.6): the switch "Send anonymous usage statistics" (config key
+  `feedback.send_usage_statistics`, off until the user turns it on, never
+  asked for in onboarding) sits under "Send crash reports"; "What is
+  counted" lists every entry of `katna_core::usage::Feature` (search
+  options, pinned mail, labels, scheduled send, snooze and reminders,
+  encrypted mail, built-in viewers, Calendar, Contacts, Tasks and Notes,
+  the phone-width layout, Katna's own window frame) and the other facts.
+  While it is on, Katna Mail notes each feature the first time it is used
+  in a week in `$XDG_STATE_HOME/katna/usage/week-N` (Monday to Sunday,
+  UTC), with the screen scale, desktop and session, which only it sees;
+  "See this week's report" shows the exact text and Copy. The daemon sends
+  a finished week once (never on a metered connection), adding the
+  version, the `ID` of `/etc/os-release` and the number of accounts in
+  bands, then deletes that week's file. Turning the switch off deletes
+  everything recorded and the install ID. Nothing is recorded while it is
+  off.
 - **Identity.** No user ID and no account ID. Each upload carries a random
   **install ID** only so that one machine's weekly reports are not counted
   twice; it is regenerated every 90 days and by "Reset" in Settings > User feedback, and it
@@ -5564,6 +5582,14 @@ reports is built; usage statistics and the feedback form come later.
   reply (clearly optional, never filled in from the account). It shows
   exactly what will be sent before sending. This is independent of the
   switches: sending feedback is itself the consent for that one message.
+  Built (C.7): chips for what it is about (Problem, Idea, Something
+  else), the message, the optional reply address and "Include Katna's
+  version and your system" (ticked; its line shown under it). "What is
+  sent" unfolds the exact text, whose field names stay English like a
+  crash report's; Katna Mail hands that text to the daemon
+  (`SendFeedback` on the Pim interface), which posts it as a User
+  Feedback item and nothing more. A dialog on wider windows; at phone
+  width it fills the window with Send in its top bar. Ctrl+Enter sends.
 - **Protocol, no SDK.** Everything uses Sentry's envelope format
   (`POST /api/<project>/envelope/`), written by hand in
   `katna_core::sentry` and posted with Katna's own small HTTPS client
@@ -5584,10 +5610,13 @@ reports is built; usage statistics and the feedback form come later.
   `contexts.os.raw_description`. Checked on 27 September 2026: Sentry
   answered 200 to a test envelope. Sentry's minidump handler
   (`sentry-rust-minidump`, an extra process) is not used unless the stacks
-  from core dumps turn out not to be enough. Later, feedback uses Sentry's
-  User Feedback item; usage statistics are one `info` event per week whose
-  tags are the feature flags above, plus release-health sessions for
-  crash-free rates.
+  from core dumps turn out not to be enough. Feedback is Sentry's User
+  Feedback item (`feedback`, the text in `contexts.feedback.message`, the
+  reply address as `contact_email` only when given;
+  `sentry::feedback_envelope`); usage statistics are one `info` event per
+  week (`sentry::usage_envelope`) whose message is the week's report text
+  and whose tags are the facts, the install ID and `f.<feature>` =
+  `yes`/`no`. Release-health sessions for crash-free rates come later.
 - **Client settings.** Nothing like the SDK's `send_default_pii`: no user
   object, no IP (the project is also set to not store IP addresses and to
   scrub data server-side), no `server_name`, no device ID; the recent log

@@ -1,0 +1,253 @@
+name: Release
+
+# Builds a beta from a tag `vX.Y.Z-beta.N` cut from main (docs/RELEASING.md):
+# every format once from the tag's commit, with the checks main runs and
+# Ubuntu's and Windows' tests, then publishes the files as the beta release
+# `vX.Y.Z-beta.N` and the rolling `beta-latest`. Stable is never built:
+# promote.yml copies a beta's files once a reviewer approves.
+on:
+  push:
+    tags:
+      - "v[0-9]*.[0-9]*.[0-9]*-beta.[0-9]*"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  # The tag names a beta of a version not released yet, on main.
+  tag:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+      release: ${{ steps.check.outputs.release }}
+      beta: ${{ steps.check.outputs.beta }}
+      commit: ${{ steps.check.outputs.commit }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [[ ! $TAG =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-beta\.([1-9][0-9]*)$ ]]; then
+            echo "::error::$TAG is not vX.Y.Z-beta.N (docs/RELEASING.md)"
+            exit 1
+          fi
+          release=${TAG%-beta.*}
+          beta=${BASH_REMATCH[4]}
+          # The tagged commit, also for an annotated tag.
+          commit=$(git rev-parse HEAD)
+          git fetch --no-tags origin main
+          if ! git merge-base --is-ancestor "$commit" origin/main; then
+            echo "::error::$TAG is not on main; betas are cut from main"
+            exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/$release" > /dev/null; then
+            echo "::error::$release is out already; a beta leads to a version not released yet"
+            exit 1
+          fi
+          # What every package must report: packaging/linux/version.sh.
+          version=$(packaging/linux/version.sh)
+          expected="${release#v}beta$beta.r0.g$(git rev-parse --short=7 HEAD)"
+          if [[ $version != "$expected" ]]; then
+            echo "::error::version.sh gives $version, not $expected"
+            exit 1
+          fi
+          {
+            echo "version=$version"
+            echo "release=$release"
+            echo "beta=$beta"
+            echo "commit=$commit"
+          } | tee -a "$GITHUB_OUTPUT"
+
+  # The checks main runs (Arch), and Ubuntu's and Windows' tests.
+  checks:
+    needs: tag
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      pull-requests: read
+  ubuntu:
+    needs: tag
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      platform: ubuntu
+  windows-tests:
+    needs: tag
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      platform: windows
+
+  # Every format, built and tried as on main; their publish jobs run on
+  # main only. A called workflow's jobs get at most these permissions.
+  arch:
+    needs: tag
+    uses: ./.github/workflows/arch-package.yml
+    secrets: inherit
+    permissions:
+      contents: write
+      actions: read
+  windows:
+    needs: tag
+    uses: ./.github/workflows/windows-package.yml
+    secrets: inherit
+    permissions:
+      contents: write
+      actions: read
+    with:
+      full: true
+  linux:
+    needs: tag
+    uses: ./.github/workflows/linux-packages.yml
+    secrets: inherit
+    permissions:
+      contents: write
+      actions: read
+
+  beta:
+    needs: [tag, checks, ubuntu, windows-tests, arch, windows, linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    concurrency:
+      group: release-publish
+      cancel-in-progress: false
+    env:
+      VERSION: ${{ needs.tag.outputs.version }}
+      COMMIT: ${{ needs.tag.outputs.commit }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: src
+          fetch-depth: 200
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          path: artifacts
+      # One folder per format, each with its own update manifest, then all
+      # in one: the manifests named by format, every other name once.
+      - name: Gather the files
+        env:
+          LINUX_VERSION: ${{ needs.linux.outputs.version }}
+        run: |
+          mkdir arch windows linux out
+          cp artifacts/arch-package/* arch/
+          cp artifacts/windows-package/KatnaSetup.exe windows/
+          if [[ -f artifacts/windows-package/KatnaMail.msix ]]; then
+            cp artifacts/windows-package/KatnaMail.msix windows/
+          fi
+          find artifacts -type f \( -name '*.rpm' -o -name '*.deb' -o -name '*.snap' -o -name '*.flatpak' \
+            -o -name '*.AppImage' -o -name 'katna-linux-x86_64.tar.gz' -o -name '*.png' \) \
+            -exec cp {} linux/ \;
+          # Every format carries the tag's version.
+          arch=$(jq -r .version arch/katna-update.json)
+          windows=$(cat artifacts/windows-package/version.txt)
+          for format in "Arch $arch" "Windows $windows" "Linux $LINUX_VERSION"; do
+            echo "$format"
+            if [[ ${format#* } != "$VERSION" ]]; then
+              echo "::error::${format%% *} is ${format#* }, not $VERSION"
+              exit 1
+            fi
+          done
+          bash src/ci/update-manifest.sh src windows "$VERSION" \
+            artifacts/windows-package/highlights.json KatnaSetup.exe
+          bash src/ci/update-manifest.sh src linux "$VERSION" \
+            artifacts/linux-update-info/highlights.json katna-linux-x86_64.tar.gz \
+            tarball=katna-linux-x86_64.tar.gz appimage=Katna-x86_64.AppImage \
+            rpm=katna-x86_64.rpm deb=katna_amd64.deb snap=katna_amd64.snap \
+            flatpak=katna-x86_64.flatpak
+          for format in arch windows linux; do
+            mv "$format/katna-update.json" "out/katna-update-$format.json"
+            for file in "$format"/*; do
+              if [[ -e out/${file#*/} ]]; then
+                echo "::error::two formats have ${file#*/}"
+                exit 1
+              fi
+              mv "$file" out/
+            done
+          done
+          ls -l out
+      # Signed as arch-latest is (arch-package.yml), here where no
+      # dependency's build script has run: the Arch package, which the
+      # update helper checks, and SHA256SUMS, which covers every file.
+      - name: Sign
+        env:
+          KATNA_UPDATE_SIGNING_KEY: ${{ secrets.KATNA_UPDATE_SIGNING_KEY }}
+        run: |
+          cd out
+          sha256sum -- * > SHA256SUMS
+          public=../src/packaging/keys/katna-update.pub
+          if [[ ! -f $public ]]; then
+            echo "No update signing key yet; nothing is signed"
+            exit 0
+          fi
+          if [[ -z $KATNA_UPDATE_SIGNING_KEY ]]; then
+            echo "::error::packaging/keys/katna-update.pub exists but the KATNA_UPDATE_SIGNING_KEY secret is not set"
+            exit 1
+          fi
+          sudo apt-get install -y -qq minisign > /dev/null
+          for pkg in katna-git-*.pkg.tar.zst; do
+            [[ $pkg == katna-git-x86_64.pkg.tar.zst ]] || break
+          done
+          key=$(mktemp)
+          chmod 600 "$key"
+          printf '%s\n' "$KATNA_UPDATE_SIGNING_KEY" > "$key"
+          minisign -S -s "$key" -m "$pkg" -t "katna-git $VERSION" < /dev/null
+          minisign -S -s "$key" -m SHA256SUMS -t "Katna $VERSION" < /dev/null
+          rm -f "$key"
+          minisign -V -m "$pkg" -p "$public"
+          minisign -V -m SHA256SUMS -p "$public"
+          jq -c --rawfile minisig "$pkg.minisig" '. + {$minisig}' katna-update-arch.json > manifest.json
+          mv manifest.json katna-update-arch.json
+      - name: Write the release notes
+        env:
+          RELEASE: ${{ needs.tag.outputs.release }}
+          BETA: ${{ needs.tag.outputs.beta }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          base="https://github.com/$GITHUB_REPOSITORY/releases/download/beta-latest"
+          cat > notes.md <<EOF
+          Beta $BETA of Katna ${RELEASE#v}, built from \`$TAG\` at $COMMIT
+          (version $VERSION). A beta is for people who want new features
+          early and report bugs; if nothing serious turns up, these same
+          files become Katna ${RELEASE#v}. \`beta-latest\` always holds the
+          newest beta.
+
+          - **Arch:** add \`[katna]\` with \`Server = $base\` to
+            \`/etc/pacman.conf\` (packaging/README.md), then
+            \`sudo pacman -Syu katna-git\`
+          - **Windows 10 and 11:** KatnaSetup.exe
+          - **Fedora:** \`sudo dnf install $base/katna-x86_64.rpm\`
+          - **Ubuntu 22.04+ and Debian 12+:** \`sudo apt install ./katna_amd64.deb\`
+          - **AppImage, Snap, Flatpak, any other Linux:** as for
+            \`linux-latest\` (packaging/README.md)
+
+          SHA256SUMS lists every file's SHA-256.
+          EOF
+      - name: Publish the beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE: ${{ needs.tag.outputs.release }}
+          BETA: ${{ needs.tag.outputs.beta }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          bash src/ci/publish-release.sh --prerelease "$TAG" "$COMMIT" \
+            "Katna ${RELEASE#v} beta $BETA" notes.md out
+          bash src/ci/publish-release.sh --rolling --prerelease beta-latest "$COMMIT" \
+            "Katna beta (newest: ${RELEASE#v} beta $BETA)" notes.md out

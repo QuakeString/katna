@@ -563,7 +563,7 @@ impl Manifest {
     pub fn newer_than(&self, installed: &str) -> bool {
         // A Nix build from GitHub cannot count its commits (`r0`): newer
         // when its commit is among this build's earlier ones.
-        if parse_version(installed).is_some_and(|(_, commits)| commits == 0)
+        if parse_version(installed).is_some_and(|(_, _, commits)| commits == 0)
             && commit_of(installed).is_some()
         {
             let (since, found) = self.changes_since(installed);
@@ -638,19 +638,28 @@ pub fn commit_of(version: &str) -> Option<&str> {
     (hash.len() >= 7 && hash.bytes().all(|b| b.is_ascii_hexdigit())).then_some(hash)
 }
 
-/// A version as the packages write it: `X.Y.Z.rN.gHASH` (N commits after
-/// the tag `vX.Y.Z`), or plain `X.Y.Z` for a build of a tag.
-fn parse_version(version: &str) -> Option<([u64; 3], u64)> {
+/// A version as the packages write it (`docs/RELEASING.md`):
+/// `X.Y.Z.rN.gHASH` (N commits after the tag `vX.Y.Z`), `X.Y.ZbetaB.rN.gHASH`
+/// after the tag `vX.Y.Z-beta.B`, or plain `X.Y.Z` for a build of a tag.
+/// Ordered by the numbers, then a beta before the release it leads to, then
+/// the commits.
+fn parse_version(version: &str) -> Option<([u64; 3], u64, u64)> {
     let mut parts = version.split('.');
     let mut numbers = [0; 3];
-    for number in &mut numbers {
+    for number in &mut numbers[..2] {
         *number = parts.next()?.parse().ok()?;
     }
+    let third = parts.next()?;
+    let (patch, beta) = match third.split_once("beta") {
+        Some((patch, beta)) => (patch, beta.parse().ok()?),
+        None => (third, u64::MAX),
+    };
+    numbers[2] = patch.parse().ok()?;
     let commits = match parts.next() {
         None => 0,
         Some(r) => r.strip_prefix('r')?.parse().ok()?,
     };
-    Some((numbers, commits))
+    Some((numbers, beta, commits))
 }
 
 /// Whether `offered` is a later build than `installed`. A version that
@@ -677,6 +686,22 @@ mod tests {
         // Built from source: the crate's own version, never updated.
         assert!(!newer("dev", "0.0.0.r236.g1a2b3c4"));
         assert!(!newer("0.0.0.r1.gaaaaaaa", "latest"));
+    }
+
+    #[test]
+    fn a_beta_comes_before_its_release() {
+        assert!(newer("0.9.0.r40.gaaaaaaa", "1.0.0beta1.r0.gbbbbbbb"));
+        assert!(newer("1.0.0beta1.r0.gaaaaaaa", "1.0.0beta1.r3.gbbbbbbb"));
+        assert!(newer("1.0.0beta1.r9.gaaaaaaa", "1.0.0beta2.r0.gbbbbbbb"));
+        assert!(newer("1.0.0beta2.r9.gaaaaaaa", "1.0.0.r0.gbbbbbbb"));
+        assert!(newer("1.0.0beta2.r9.gaaaaaaa", "1.0.0"));
+        assert!(!newer("1.0.0.r0.gaaaaaaa", "1.0.0beta3.r0.gbbbbbbb"));
+        assert!(!newer("1.0.0.r0.gaaaaaaa", "1.0.0beta"));
+        assert!(!newer("1.0.0.r0.gaaaaaaa", "1.0.0betax.r1.gbbbbbbb"));
+        assert_eq!(
+            package_version("katna-git-1.0.0beta1.r0.gabcdef1-1-x86_64.pkg.tar.zst"),
+            Some("1.0.0beta1.r0.gabcdef1")
+        );
     }
 
     #[test]

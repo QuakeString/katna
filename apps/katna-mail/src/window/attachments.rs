@@ -975,6 +975,7 @@ impl MailWindow {
             viewer
         });
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
+        self.note_usage(katna_core::usage::Feature::Viewers);
         self.files.viewer = Some(viewer);
         cx.notify();
     }
@@ -999,6 +1000,7 @@ impl MailWindow {
             viewer
         });
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
+        self.note_usage(katna_core::usage::Feature::Viewers);
         self.files.viewer = Some(viewer.clone());
         cx.notify();
         viewer
