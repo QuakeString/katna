@@ -350,6 +350,8 @@ row-no-subject = (konu yok)
 row-unknown-sender = (bilinmeyen gönderen)
 row-to = Alıcı:
 row-no-recipients = (alıcı yok)
+row-names-separator = {", "}
+row-me = ben
 
 ## Mail list: lines
 

@@ -4556,3 +4556,13 @@ düğmeleri (ya da Ctrl+Shift+X) bir paragrafın yönünü çevirir; Arapça ya
 da İbranice başladığınız bir satır ise kendiliğinden döner. İleti, sizin
 yazdığınız gibi gider.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail Arapça, İbranice, Farsça ve Urduca için ayna gibi döner"
+text = """
+Arapça, İbranice, Farsça ve Urducada pencerenin tamamı ters döner:
+uygulama çubuğu ve klasörler sağda, menüler sola açılır, oklar ve ok
+tuşları ekranın okunduğu yöne gider. İngilizce adlar, adresler ve
+kısayollar kendi sıralarını korur; Farsça tarihler ise Hicri Şemsi
+takvimine göre sayılır.
+"""
