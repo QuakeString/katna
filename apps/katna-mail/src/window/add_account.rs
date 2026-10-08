@@ -2206,8 +2206,9 @@ impl MailWindow {
             } else {
                 tr!("add-account-menu-another")
             });
+        let motion = self.page_motion(cx);
         let card = app_menu.unwrap_or_else(|| {
-            div()
+            let card = div()
                 .id("account-menu")
                 .key_context(crate::widgets::MENU_CONTEXT)
                 .occlude()
@@ -2219,9 +2220,12 @@ impl MailWindow {
                 .p(px(8.0))
                 .flex()
                 .flex_col()
-                .gap(px(2.0))
                 .map(|d| raised(d, th, super::PANEL_RADIUS, 2.0))
-                .text_color(rgba(th.text))
+                .text_color(rgba(th.text));
+            let page = div()
+                .flex()
+                .flex_col()
+                .gap(px(2.0))
                 .child(icons)
                 .children(self.work_offline_row(th, cx))
                 .when(!self.accounts.is_empty(), |d| {
@@ -2244,14 +2248,8 @@ impl MailWindow {
                             .bg(rgba(th.divider)),
                     )
                 })
-                .child(add)
-                .with_animation(
-                    "account-menu",
-                    Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
-                        .with_easing(gpui::ease_out_quint()),
-                    |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
-                )
-                .into_any_element()
+                .child(add);
+            self.menu_page_card("account-menu-page", card, page, None, 8.0, motion)
         });
         let close = || {
             cx.listener(|this: &mut Self, _: &MouseDownEvent, _, cx| {

@@ -276,10 +276,12 @@ impl MailWindow {
             || self.contacts.label_menu.take().is_some()
             || self.files_menu.take().is_some()
             || self.app_menu_back(cx)
+            || self.menu_page_back(cx)
             || (std::mem::take(&mut self.account_menu) && {
                 self.app_menu = None;
                 true
             })
+            || self.language_page_back(cx)
             || self.language_picker.take().is_some()
             || self.dismiss_search_panel(window, cx)
         {

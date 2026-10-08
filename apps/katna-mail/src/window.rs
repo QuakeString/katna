@@ -67,6 +67,7 @@ mod look;
 mod mail_drag;
 mod mail_providers;
 mod meeting;
+mod menu_page;
 mod nav;
 mod nav_menu;
 mod notched;
@@ -796,6 +797,8 @@ pub struct MailWindow {
     account_menu: bool,
     /// The application menu, open from the account card's ☰ button.
     app_menu: Option<app_menu::AppMenu>,
+    /// The account card's last page turn, to the ☰ menu or the languages.
+    menu_page: menu_page::MenuPage,
     /// The language picker, open from the top bar, the drawer or Settings.
     language_picker: Option<language::LanguagePicker>,
     /// The message last handed to the outbox, for Undo.
@@ -1132,6 +1135,7 @@ impl MailWindow {
             migrating: None,
             account_menu: false,
             app_menu: None,
+            menu_page: menu_page::MenuPage::default(),
             language_picker: None,
             unsent: None,
             writing: compose::Writing::default(),
