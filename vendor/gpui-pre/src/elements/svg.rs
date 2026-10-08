@@ -20,6 +20,8 @@ pub struct Svg {
     external_path: Option<SharedString>,
     data: Option<Arc<[u8]>>,
     data_path: Option<SharedString>,
+    /// Katna: drawn mirrored in a right-to-left layout.
+    mirror_rtl: bool,
 }
 
 /// Create a new SVG element.
@@ -32,6 +34,7 @@ pub fn svg() -> Svg {
         external_path: None,
         data: None,
         data_path: None,
+        mirror_rtl: false,
     }
 }
 
@@ -65,6 +68,15 @@ impl Svg {
     /// Note that this won't effect the hitbox or layout of the element, only the rendering.
     pub fn with_transformation(mut self, transformation: Transformation) -> Self {
         self.transformation = Some(transformation);
+        self
+    }
+
+    /// Katna: draws the picture mirrored (flipped left to right) in a
+    /// right-to-left layout, for icons that point along the line: back and
+    /// forward, reply, send, chevrons. Like a transformation, it changes
+    /// only the drawing.
+    pub fn mirror_rtl(mut self) -> Self {
+        self.mirror_rtl = true;
         self
     }
 }
@@ -138,13 +150,17 @@ impl Element for Svg {
             window,
             cx,
             |style, window, cx| {
-                let transformation = self
+                let mut transformation = self
                     .transformation
                     .as_ref()
                     .map(|transformation| {
                         transformation.into_matrix(bounds.center(), window.scale_factor())
                     })
                     .unwrap_or_default();
+                if self.mirror_rtl && window.layout_direction().is_rtl() {
+                    transformation =
+                        mirrored(transformation, bounds.center(), window.scale_factor());
+                }
 
                 if let Some((data, path)) = self.data.as_ref().zip(self.data_path.as_ref()) {
                     if let Some(color) = style.text.color {
@@ -284,6 +300,18 @@ impl Transformation {
     }
 }
 
+/// Katna: `matrix`, then a flip left to right around `center`: the picture
+/// as drawn left to right, mirrored (a turning chevron turns the other way).
+fn mirrored(
+    matrix: TransformationMatrix,
+    center: Point<Pixels>,
+    scale_factor: f32,
+) -> TransformationMatrix {
+    Transformation::scale(size(-1.0, 1.0))
+        .into_matrix(center, scale_factor)
+        .compose(matrix)
+}
+
 enum SvgAsset {}
 
 impl Asset for SvgAsset {
@@ -299,5 +327,31 @@ impl Asset for SvgAsset {
             let bytes = Arc::from(bytes);
             Ok(bytes)
         }
+    }
+}
+
+/// Katna: mirrored icons.
+#[cfg(test)]
+mod mirror_tests {
+    use super::{Transformation, mirrored};
+    use crate::{TransformationMatrix, point, px, radians};
+
+    #[test]
+    fn mirroring_flips_around_the_middle() {
+        let center = point(px(10.), px(10.));
+        let matrix = mirrored(TransformationMatrix::unit(), center, 1.0);
+        assert_eq!(matrix.apply(point(px(2.), px(4.))), point(px(18.), px(4.)));
+    }
+
+    #[test]
+    fn a_turned_icon_is_mirrored_as_drawn() {
+        // A chevron pointing right (its tip at 18, 10) turned a quarter
+        // clockwise points down; mirrored, still down.
+        let center = point(px(10.), px(10.));
+        let turned =
+            Transformation::rotate(radians(std::f32::consts::FRAC_PI_2)).into_matrix(center, 1.0);
+        let tip = mirrored(turned, center, 1.0).apply(point(px(18.), px(10.)));
+        assert!((f32::from(tip.x) - 10.).abs() < 1e-4, "{tip:?}");
+        assert!((f32::from(tip.y) - 18.).abs() < 1e-4, "{tip:?}");
     }
 }

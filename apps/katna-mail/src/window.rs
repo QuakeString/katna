@@ -3671,6 +3671,7 @@ impl MailWindow {
 
 impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        crate::widgets::follow_direction(window);
         // Text without a size of its own follows Settings > Appearance > Scaling.
         window.set_rem_size(px(16.0));
         // Before anything draws text that can be selected.

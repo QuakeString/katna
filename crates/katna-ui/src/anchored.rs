@@ -190,18 +190,34 @@ impl Element for Anchored {
         else {
             return;
         };
-        let offset = self.offset.unwrap_or_default();
+        // In a right-to-left layout left and right are start and end, as
+        // GPUI's `anchored` (`vendor/gpui-pre/KATNA.md`): anchored by its
+        // top left corner it opens toward the left of its point, offsets
+        // turn around, and without a position it hangs from the right of
+        // where it was laid out. Window positions stay where they are.
+        let rtl = window.layout_direction().is_rtl();
+        let (anchor, offset, start) = if rtl {
+            let offset = self.offset.unwrap_or_default();
+            (
+                self.anchor.other_side_along(Axis::Horizontal),
+                point(-offset.x, offset.y),
+                bounds.top_right(),
+            )
+        } else {
+            (self.anchor, self.offset.unwrap_or_default(), bounds.origin)
+        };
         let at = match (self.position, self.local) {
-            (Some(at), true) => bounds.origin + at,
+            (Some(at), true) if rtl => start + point(-at.x, at.y),
+            (Some(at), true) => start + at,
             (Some(at), false) => at,
-            (None, _) => bounds.origin,
+            (None, _) => start,
         };
         let content = content_bounds(window, cx);
         let place = |anchor: Anchor| Bounds::from_anchor_and_size(anchor, at + offset, size);
-        let mut placed = place(self.anchor);
+        let mut placed = place(anchor);
         let edges = match self.fit {
             Fit::SwitchAnchor => {
-                let mut anchor = self.anchor;
+                let mut anchor = anchor;
                 let out_x =
                     |b: &Bounds<Pixels>| b.left() < content.left() || b.right() > content.right();
                 let out_y =
@@ -228,7 +244,7 @@ impl Element for Anchored {
             content.origin + point(edges.left, edges.top),
             content.bottom_right() - point(edges.right, edges.bottom),
         );
-        placed.origin = snapped(placed, room);
+        placed.origin = snapped(placed, room, rtl);
         let shift = placed.origin - bounds.origin;
         window.with_element_offset(point(shift.x.round(), shift.y.round()), |window| {
             for child in &mut self.children {
@@ -254,14 +270,26 @@ impl Element for Anchored {
 }
 
 /// Where `placed` goes to be inside `room`: slid back from an edge it runs
-/// past, and to the start (left, top) when it is wider or taller than it.
-fn snapped(placed: Bounds<Pixels>, room: Bounds<Pixels>) -> Point<Pixels> {
+/// past, first the start one (left, or right when `rtl`), and to the left
+/// and top when it is wider or taller than it.
+fn snapped(placed: Bounds<Pixels>, room: Bounds<Pixels>, rtl: bool) -> Point<Pixels> {
     let mut at = placed.origin;
-    if placed.right() > room.right() {
-        at.x -= placed.right() - room.right();
-    }
-    if at.x < room.left() {
-        at.x = room.left();
+    // A layer as wide as the window or wider (a scrim at 0, 0) covers it
+    // the same way whatever the direction.
+    if rtl && placed.size.width <= room.size.width {
+        if at.x < room.left() {
+            at.x = room.left();
+        }
+        if at.x + placed.size.width > room.right() {
+            at.x = room.right() - placed.size.width;
+        }
+    } else {
+        if placed.right() > room.right() {
+            at.x -= placed.right() - room.right();
+        }
+        if at.x < room.left() {
+            at.x = room.left();
+        }
     }
     if placed.bottom() > room.bottom() {
         at.y -= placed.bottom() - room.bottom();
@@ -291,22 +319,41 @@ mod tests {
         // 24..376. A 200 px menu at 190 ran 14 px over the shadow.
         let room = b(24.0, 24.0, 352.0, 600.0);
         assert_eq!(
-            snapped(b(190.0, 100.0, 200.0, 50.0), room),
+            snapped(b(190.0, 100.0, 200.0, 50.0), room, false),
             point(px(176.0), px(100.0))
         );
         assert_eq!(
-            snapped(b(10.0, 10.0, 200.0, 50.0), room),
+            snapped(b(10.0, 10.0, 200.0, 50.0), room, false),
             point(px(24.0), px(24.0))
         );
         // Inside already: left be.
         assert_eq!(
-            snapped(b(40.0, 40.0, 100.0, 50.0), room),
+            snapped(b(40.0, 40.0, 100.0, 50.0), room, false),
             point(px(40.0), px(40.0))
         );
         // Wider than the room: from its start.
         assert_eq!(
-            snapped(b(100.0, 40.0, 500.0, 50.0), room),
+            snapped(b(100.0, 40.0, 500.0, 50.0), room, false),
             point(px(24.0), px(40.0))
+        );
+    }
+
+    #[test]
+    fn right_to_left_a_popup_slides_back_inside() {
+        let room = b(24.0, 24.0, 352.0, 600.0);
+        // Wider than the room: from the left, as a scrim covers it.
+        assert_eq!(
+            snapped(b(100.0, 40.0, 500.0, 50.0), room, true),
+            point(px(24.0), px(40.0))
+        );
+        // Running past the left: slides back right.
+        assert_eq!(
+            snapped(b(10.0, 40.0, 100.0, 50.0), room, true),
+            point(px(24.0), px(40.0))
+        );
+        assert_eq!(
+            snapped(b(300.0, 40.0, 100.0, 50.0), room, true),
+            point(px(276.0), px(40.0))
         );
     }
 }

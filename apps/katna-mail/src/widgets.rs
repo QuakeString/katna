@@ -25,9 +25,17 @@ use crate::window::MenuKey;
 
 pub const TOOLBAR_HEIGHT: f32 = 48.0;
 
+/// Lays `window` out right to left while the language reads that way
+/// (Arabic, Hebrew, Persian, Urdu, the mirrored pseudo-language). Every
+/// window calls it first thing each frame, so a change of language turns
+/// them all around at once.
+pub fn follow_direction(window: &mut Window) {
+    katna_ui::direction::follow(window, katna_i18n::rtl());
+}
+
 pub fn icon(name: &str, color: u32, size: f32) -> AnyElement {
-    svg()
-        .path(SharedString::from(format!("icons/{name}.svg")))
+    // Back, reply, chevrons and the like turn around right to left.
+    katna_ui::icon_svg(name)
         .size(px(size))
         .flex_none()
         .text_color(rgba(color))
@@ -43,8 +51,7 @@ pub fn morph_icon(from: &str, to: &str, t: f32, color: u32, size: f32) -> AnyEle
         return icon(to, color, size);
     }
     let turned = |name: &str, turn: f32, scale: f32, opacity: f32| {
-        svg()
-            .path(SharedString::from(format!("icons/{name}.svg")))
+        katna_ui::icon_svg(name)
             .absolute()
             .top_0()
             .left_0()

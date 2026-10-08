@@ -130,6 +130,12 @@ pub(super) struct Shape {
     /// The top bar slides away with the rows. Not when it holds the
     /// window's own buttons (Katna's window frame).
     pub top_bar_slides: bool,
+    /// The window lays out right to left (Arabic, Hebrew, Persian, Urdu):
+    /// GPUI mirrors rows, insets and margins by itself, so the side panel
+    /// is on the right, the drawer opens from the right and a conversation
+    /// slides in from the left. What is placed or dragged by hand reads
+    /// this (`katna_ui::direction`).
+    pub rtl: bool,
 }
 
 impl Shape {
@@ -242,6 +248,7 @@ impl Layout {
                 solo: 0.0,
                 rows: 1.0,
                 top_bar_slides: false,
+                rtl: false,
             },
         }
     }
@@ -362,6 +369,7 @@ impl MailWindow {
             solo,
             rows: layout.shape.rows,
             top_bar_slides: layout.shape.top_bar_slides,
+            rtl: katna_ui::direction::is_rtl(window),
         };
         let open = self.slides() && self.reading && self.reader.is_some();
         let layout = &mut self.layout;

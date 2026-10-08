@@ -11,7 +11,7 @@ use std::f32::consts::FRAC_PI_2;
 use gpui::{
     AnimationExt, AnyElement, Context, ElementId, FontWeight, ListAlignment, ListState,
     MouseButton, MouseDownEvent, PathBuilder, SharedString, SpringAnimation, Transformation,
-    canvas, div, list, point, prelude::*, radians, rgba, svg,
+    canvas, div, list, point, prelude::*, radians, rgba,
 };
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::{Glow, Ripple};
@@ -279,14 +279,12 @@ impl MailWindow {
                             .relative()
                             .size(px(24.0))
                             .child(
-                                svg()
-                                    .path("icons/folders-pane.svg")
+                                katna_ui::icons::path_svg("icons/folders-pane.svg")
                                     .size_full()
                                     .text_color(rgba(th.text_dim)),
                             )
                             .child(
-                                svg()
-                                    .path("icons/folders-pane-fill.svg")
+                                katna_ui::icons::path_svg("icons/folders-pane-fill.svg")
                                     .absolute()
                                     .top_0()
                                     .left_0()
@@ -2046,8 +2044,8 @@ struct Pill {
 
 /// An arrow that turns from pointing right to down as its line opens.
 fn turning_chevron(key: SharedString, expanded: bool, color: u32) -> AnyElement {
-    svg()
-        .path("icons/chevron-right.svg")
+    // Pointing left at rest in a right-to-left layout.
+    katna_ui::icon_svg("chevron-right")
         .size(px(16.0))
         .flex_none()
         .text_color(rgba(color))

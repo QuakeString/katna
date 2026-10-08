@@ -831,7 +831,9 @@ impl MailWindow {
                 super::refresh_menu_bar(cx);
                 // The daemon's notifications, tray and dock menu follow.
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
-                cx.notify();
+                // Every open window takes the new words, and turns around
+                // when the new language reads the other way.
+                cx.refresh_windows();
                 return;
             }
             Change::GrammarCheck(on) => {

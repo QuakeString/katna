@@ -999,6 +999,9 @@ impl Element for TextElement {
         // cursor follow it without anything else changing.
         if input.centered && line.width < width {
             scroll_x = (line.width - width) / 2.0;
+        } else if line.width < width && window.layout_direction().is_rtl() {
+            // In a right-to-left layout text that fits starts at the right.
+            scroll_x = line.width - width;
         }
         let left = bounds.left() - scroll_x;
 

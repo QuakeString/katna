@@ -81,8 +81,13 @@ be laid out right to left, as Arabic, Hebrew, Persian and Urdu need:
   toward the left, and one wider than the window keeps its right edge.
   Positions given in window coordinates are where they are on screen (a
   pointer's position), so a menu opens toward the left of the pointer.
+- `Svg::mirror_rtl()` draws an icon flipped left to right in a
+  right-to-left layout, after its own transformation (so a chevron that
+  turns clockwise to point down turns the other way), for icons that
+  point along the line; Katna picks which in `katna_ui::icons`.
 - Scrollbars: GPUI draws none itself. Space taffy reserves for one
   (`scrollbar_width`) is mirrored with the rest, to the left; Katna's own
   scrollbar (`katna-ui`) sits on the left in a right-to-left layout.
 
-Tests: `taffy::direction_tests`, and `elements::anchored::tests` for menus.
+Tests: `taffy::direction_tests`, `elements::anchored::tests` for menus and
+`elements::svg::mirror_tests`.
