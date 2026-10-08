@@ -69,3 +69,25 @@ service-details-close = Funga
 service-not-running = Huduma ya chinichini ya Katna haiendeshwi.
 service-no-answer = Huduma ya chinichini ya Katna haikujibu: { $error }
 service-no-session = Hakuna kipindi cha D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna iko katika hali salama baada ya tatizo la sasisho, kwa hivyo barua hazilandanishwi.
+safe-try-again = Jaribu tena
+safe-restore = Rejesha
+safe-restoring = Inarejesha data yako kutoka { $when }…
+safe-restored = Data yako imerejeshwa kutoka { $when }. Kilichokuwepo awali kimehifadhiwa kwenye folda.
+safe-show-folder = Onyesha folda
+safe-restore-failed = Imeshindwa kurejesha data yako: { $error }
+safe-restore-title = Rejesha data yako ya kabla ya sasisho?
+safe-restore-body = Katna inarudi kwenye nakala unayochagua. Barua zilizofika baada yake hupakuliwa tena kutoka kwenye akaunti zako.
+safe-restore-none = Bado hakuna nakala. Katna hutengeneza moja kabla ya kila sasisho kubadilisha data yako.
+safe-restore-keep = Kilichopo sasa, pamoja na barua ambazo hazijatumwa, rasimu na mabadiliko ambayo bado hayajalandanishwa, huhifadhiwa kwanza kwenye folda, kwa hivyo hakuna kinachopotea.
+safe-restore-cancel = Ghairi
+safe-restore-mail = Barua
+safe-restore-pim = Akaunti na anwani
+safe-restore-blobs = Viambatisho
+safe-report-title = Ripoti ya hitilafu
+safe-report-body = Nakili hii na uiambatishe kwenye ripoti yako ya hitilafu. Haina barua, anwani wala manenosiri.
+safe-report-restore = Rejesha…
+safe-report-copied = Ripoti ya hitilafu imenakiliwa

@@ -137,6 +137,43 @@ key-card-not-found = ምንም ቁልፍ አልተገኘም
 key-card-not-found-detail = { $domain } ለዚህ አድራሻ ቁልፍ አያትምም። ላኪው የራሱን እንዲልክልዎ ይጠይቁ።
 key-card-not-kept = የተገኘው ቁልፍ ጥቅም ላይ ሊውል አይችልም።
 key-card-failed = ቁልፉን ማግኘት አልተቻለም
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = ይህ ከ{ $domain } ላይሆን ይችላል
+sender-failed-body = የ{ $provider }ን የላኪ ፍተሻዎች አላለፈም። በአገናኞች፣ በአባሪዎች እና በምላሾች ይጠንቀቁ።
+sender-provider-unknown = የደብዳቤ አገልግሎት አቅራቢዎ
+sender-details = ዝርዝሮች
+sender-details-hide = ዝርዝሮችን ደብቅ
+sender-looks-safe = ደህንነቱ የተጠበቀ ይመስላል
+sender-move-to-spam = ወደ አይፈለጌ መልዕክት ውሰድ
+sender-checked-by = በ{ $provider } የተፈተሸ
+sender-checked-by-server = በ{ $provider } ({ $server }) የተፈተሸ
+sender-dmarc = የላኪ ጎራ (DMARC)
+sender-dkim = ፊርማ (DKIM)
+sender-spf = የሚልከው አገልጋይ (SPF)
+sender-result-pass = አልፏል
+sender-result-fail = አላለፈም
+sender-result-unsure = እርግጠኛ አይደለም
+sender-result-none = የለም
+sender-result-missing = አልተፈተሸም
+sender-dmarc-pass = { $domain } ይህን ላኪ ያረጋግጣል።
+sender-dmarc-fail = ደብዳቤው { $domain } ደብዳቤዎቹ እንዴት እንደሚላኩ ከሚገልጸው ጋር አይዛመድም።
+sender-dmarc-none = { $domain } ለደብዳቤዎቹ ምንም ደንብ አላወጣም።
+sender-dkim-pass = በ{ $domain } የተፈረመ።
+sender-dkim-fail = የ{ $domain } ፊርማ ከደብዳቤው ጋር አይዛመድም።
+sender-dkim-none = መልዕክቱ አልተፈረመም።
+sender-spf-pass = { $domain } ከሚዘረዝረው አገልጋይ የተላከ።
+sender-spf-fail = { $domain } ከማይዘረዝረው አገልጋይ የተላከ።
+sender-spf-none = { $domain } አገልጋዮቹን አይዘረዝርም።
+sender-check-unsure = ፍተሻው ግልጽ መልስ መስጠት አልቻለም።
+sender-unconfirmed = { $provider } ይህ ከ{ $domain } እንደመጣ ማረጋገጥ አልቻለም። ማንም ሰው ማንኛውንም ላኪ መጻፍ ይችላል።
+sender-link-title = ይህን አገናኝ ይክፈቱ?
+sender-link-body = ይህ ደብዳቤ የላኪ ፍተሻዎቹን አላለፈም። አገናኙ ወደ { $host } ይሄዳል፦
+sender-link-cancel = ይቅር
+sender-link-open = ክፈት
 tracking-opened = { $who } { $count ->
     [one] አንድ ጊዜ
    *[other] { $count } ጊዜ
@@ -163,6 +200,7 @@ tracking-receipt-other = የንባብ ማረጋገጫ፦ { $who } መልዕክ�
 
 remote-hidden = በዚህ መልዕክት ውስጥ ያሉ ምስሎች ተደብቀዋል።
 remote-hidden-unconfirmed = ምስሎች ተደብቀዋል፤ ላኪው ሊረጋገጥ አልቻለም።
+remote-hidden-failed = ምስሎች ተደብቀዋል፤ ይህ ደብዳቤ የላኪ ፍተሻዎቹን አላለፈም።
 remote-show = ምስሎችን አሳይ
 remote-always-show = ከዚህ ላኪ ሁልጊዜ አሳይ
 remote-picture-use = ተጠቀም

@@ -33,3 +33,7 @@ update-dialog-compare = Tụnyere na GitHub
 update-dialog-no-service = Ọrụ ndabere Katna anaghị arụ ọrụ.
 update-dialog-later = Emesịa
 update-dialog-close = Mechie
+restart-updated = Emelitela Katna
+restart-button = Malitegharịa
+restart-close = Ọ bụghị ugbu a
+restart-failed = Enweghị ike ịmalite Katna Mail ọhụrụ: { $error }

@@ -34,3 +34,7 @@ update-dialog-compare = Linganisha kwenye GitHub
 update-dialog-no-service = Huduma ya Katna ya usuli haifanyi kazi.
 update-dialog-later = Si sasa
 update-dialog-close = Funga
+restart-updated = Katna imesasishwa
+restart-button = Anzisha upya
+restart-close = Si sasa
+restart-failed = Imeshindwa kuanzisha Katna Mail mpya: { $error }

@@ -137,6 +137,43 @@ key-card-not-found = Ba a sami maɓalli ba
 key-card-not-found-detail = { $domain } ba ta wallafa maɓalli don wannan adireshi ba. Ku roƙi mai aikawa ya aiko muku da nasa.
 key-card-not-kept = Ba za a iya amfani da maɓallin da aka samo ba.
 key-card-failed = Ba a iya samo maɓallin ba
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Wataƙila wannan ba daga { $domain } yake ba
+sender-failed-body = Ya kasa binciken mai aikawa na { $provider }. Ku yi hankali da hanyoyin haɗi, abubuwan haɗawa da amsoshi.
+sender-provider-unknown = mai ba ku sabis na wasiƙa
+sender-details = Cikakkun bayanai
+sender-details-hide = Ɓoye cikakkun bayanai
+sender-looks-safe = Da alama lafiya
+sender-move-to-spam = Matsar zuwa saƙonnin banza
+sender-checked-by = { $provider } ya bincika
+sender-checked-by-server = { $provider } ya bincika ({ $server })
+sender-dmarc = Yankin mai aikawa (DMARC)
+sender-dkim = Sa hannu (DKIM)
+sender-spf = Sabar aikawa (SPF)
+sender-result-pass = Ya wuce
+sender-result-fail = Ya kasa
+sender-result-unsure = Ba tabbas
+sender-result-none = Babu
+sender-result-missing = Ba a bincika ba
+sender-dmarc-pass = { $domain } ya tabbatar da wannan mai aikawa.
+sender-dmarc-fail = Wasiƙar ba ta dace da yadda { $domain } ya ce ana aika wasiƙunsa ba.
+sender-dmarc-none = { $domain } bai wallafa wata ƙa'ida don wasiƙunsa ba.
+sender-dkim-pass = { $domain } ya sa hannu.
+sender-dkim-fail = Sa hannun daga { $domain } bai dace da wasiƙar ba.
+sender-dkim-none = Ba a sa hannu a saƙon ba.
+sender-spf-pass = An aiko daga sabar da { $domain } ya lissafa.
+sender-spf-fail = An aiko daga sabar da { $domain } bai lissafa ba.
+sender-spf-none = { $domain } bai lissafa sabobinsa ba.
+sender-check-unsure = Binciken bai iya ba da amsa bayyananniya ba.
+sender-unconfirmed = { $provider } bai iya tabbatar da cewa wannan ya fito daga { $domain } ba. Kowa zai iya rubuta kowane mai aikawa.
+sender-link-title = A buɗe wannan hanyar haɗi?
+sender-link-body = Wannan wasiƙa ta kasa binciken mai aikawa. Hanyar haɗin tana zuwa { $host }:
+sender-link-cancel = Soke
+sender-link-open = Buɗe
 tracking-opened = { $who } ya buɗe shi { $count ->
     [one] sau ɗaya
    *[other] sau { $count }
@@ -163,6 +200,7 @@ tracking-receipt-other = Rasidin karantawa: { $who } ya share ko ya sarrafa saƙ
 
 remote-hidden = An ɓoye hotunan da ke cikin wannan saƙo.
 remote-hidden-unconfirmed = An ɓoye hotuna: ba a iya tabbatar da mai aikawa ba.
+remote-hidden-failed = An ɓoye hotuna: wannan wasiƙa ta kasa binciken mai aikawa.
 remote-show = Nuna hotuna
 remote-always-show = Koyaushe nuna daga wannan mai aikawa
 remote-picture-use = Yi amfani

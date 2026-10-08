@@ -137,6 +137,43 @@ key-card-not-found = Akukho khiye otholakele
 key-card-not-found-detail = I-{ $domain } ayishicileli ukhiye waleli kheli. Cela umthumeli akuthumelele owakhe.
 key-card-not-kept = Ukhiye otholakele awukwazi ukusetshenziswa.
 key-card-failed = Ayikwazanga ukuthola ukhiye
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Lokhu kungase kungaveli ku-{ $domain }
+sender-failed-body = Kuhlulekile ekuhloleni umthumeli kwe-{ $provider }. Qaphela ngezixhumanisi, okunamathiselwe nezimpendulo.
+sender-provider-unknown = umhlinzeki wakho we-imeyili
+sender-details = Imininingwane
+sender-details-hide = Fihla imininingwane
+sender-looks-safe = Kubukeka kuphephile
+sender-move-to-spam = Hambisa ku-Ugaxekile
+sender-checked-by = Kuhlolwe yi-{ $provider }
+sender-checked-by-server = Kuhlolwe yi-{ $provider } ({ $server })
+sender-dmarc = Isizinda somthumeli (DMARC)
+sender-dkim = Isiginesha (DKIM)
+sender-spf = Iseva ethumelayo (SPF)
+sender-result-pass = Kuphumelele
+sender-result-fail = Kuhlulekile
+sender-result-unsure = Akuqinisekile
+sender-result-none = Lutho
+sender-result-missing = Akuhlolwanga
+sender-dmarc-pass = I-{ $domain } iyaqinisekisa lo mthumeli.
+sender-dmarc-fail = Imeyili ayihambisani nendlela i-{ $domain } ethi imeyili yayo ithunyelwa ngayo.
+sender-dmarc-none = I-{ $domain } ayishicileli mithetho yemeyili yayo.
+sender-dkim-pass = Isayinwe yi-{ $domain }.
+sender-dkim-fail = Isiginesha evela ku-{ $domain } ayihambisani nemeyili.
+sender-dkim-none = Umlayezo awuzange usayinwe.
+sender-spf-pass = Ithunyelwe kusuka kuseva i-{ $domain } eyibalayo.
+sender-spf-fail = Ithunyelwe kusuka kuseva i-{ $domain } engayibali.
+sender-spf-none = I-{ $domain } ayiwabali amaseva ayo.
+sender-check-unsure = Ukuhlola akukwazanga ukunikeza impendulo ecacile.
+sender-unconfirmed = I-{ $provider } ayikwazanga ukuqinisekisa ukuthi lokhu kuvela ku-{ $domain }. Noma ubani angabhala noma yimuphi umthumeli.
+sender-link-title = Vula lesi sixhumanisi?
+sender-link-body = Le meyili ihlulekile ekuhloleni umthumeli. Isixhumanisi siya ku-{ $host }:
+sender-link-cancel = Khansela
+sender-link-open = Vula
 tracking-opened = U-{ $who } uwuvule { $count ->
     [one] kanye
    *[other] izikhathi ezingu-{ $count }
@@ -163,6 +200,7 @@ tracking-receipt-other = Isaziso sokufunda: u-{ $who } ususile noma uphathe umla
 
 remote-hidden = Izithombe kulo mlayezo zifihliwe.
 remote-hidden-unconfirmed = Izithombe zifihliwe: umthumeli akakwazanga ukuqinisekiswa.
+remote-hidden-failed = Izithombe zifihliwe: le meyili ihlulekile ekuhloleni umthumeli.
 remote-show = Bonisa izithombe
 remote-always-show = Bonisa njalo kusuka kulo mthumeli
 remote-picture-use = Sebenzisa

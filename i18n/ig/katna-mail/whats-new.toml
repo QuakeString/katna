@@ -4289,3 +4289,27 @@ title = "Hụ onye binyere aka n'ozi"
 text = """
 Pịa ahịrị mbinye aka n'ozi a binyere aka ma ọ bụ nke ezoro ezo ka ị hụ igodo onye binyere aka: aha, adreesị, fingerprint na ụbọchị, ya na Detuo fingerprint. Ozi e ji igodo ị na-enweghị binye aka na-enye Chọọ igodo, igodo mmadụ tinyere dị ka mgbakwunye na-emepekwa dị ka Bubata igodo a? ya na Megharịa mgbe e mesịrị.
 """
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Ịdọ aka na ntị maka ozi adịgboroja"
+text = """
+Mgbe ozi adabaghị na nlele onye zitere nke onye na-enye gị ozi, banner uhie na-ekwu na o nwere ike ọ bụghị site n'aka onye ọ na-ekwu, ya na Nkọwa, O yiri ihe dị mma na Bugharịa gaa Spam. A na-ezochi foto ya, njikọ ya na-ajụkwa tupu ha emepe. Onye zitere nke ọ dịghị ihe kwadoro na-enweta obere "?" na foto ya.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Malitegharịa mgbe emelitere Katna"
+text = """
+Mgbe e melitere Katna ka Katna Mail mepere emepe, ọrụ azụ Katna na-akwaga n'ụdị ọhụrụ n'onwe ya ozugbo ọ naghị ezipụ ozi. Obere pill dị n'ala ndepụta ozi na-enye Malitegharịa, nke na-emepe Katna Mail ọhụrụ n'ọnọdụ ya. × na-ezochi ya ruo imelite ọzọ.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Imepe ozi dị jụụ karịa"
+text = """
+Ịpị ozi na ndepụta anaghịzi ezipụ ebili mmiri n'ofe ya ka ozi ahụ na-emepe. Ebili mmiri ahụ ka na-apụta mgbe ị pịrị ozi mepere emepe.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Ọnọdụ nchekwa ma imelite ọ gaghị nke ọma"
+text = """
+Katna na-edetu data gị tupu imelite agbanwee ya. Ọ bụrụ na imelite ahụ emee ka Katna ghara ịmalite, ọ na-emepe na ọnọdụ nchekwa: ozi gị ka na-agụ, ahịrị dị n'elu ya na-ekwekwa ka ị nwaa ọzọ ma ọ bụ laghachi na mbipụta e mere tupu imelite ahụ. A na-ebu ụzọ debe ihe dị ugbu a na folda, ya mere ọ dịghị ihe na-efu. Detuo akụkọ nchọpụta nsogbu, dịkwa na Maka Katna, na-achịkọta ihe akụkọ nsogbu chọrọ.
+"""

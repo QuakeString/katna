@@ -69,3 +69,25 @@ service-details-close = Vala
 service-not-running = Isevisi yangemuva ye-Katna ayisebenzi.
 service-no-answer = Isevisi yangemuva ye-Katna ayiphendulanga: { $error }
 service-no-session = Ayikho iseshini ye-D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = I-Katna ikumodi ephephile ngemva kwenkinga yesibuyekezo, ngakho imeyili ayivumelaniswa.
+safe-try-again = Zama futhi
+safe-restore = Buyisela
+safe-restoring = Ibuyisela idatha yakho kusuka ku-{ $when }…
+safe-restored = Idatha yakho ibuyiselwe kusuka ku-{ $when }. Okwakukhona ngaphambili kugcinwe efolda.
+safe-show-folder = Bonisa ifolda
+safe-restore-failed = Ayikwazanga ukubuyisela idatha yakho: { $error }
+safe-restore-title = Buyisela idatha yakho kusuka ngaphambi kwesibuyekezo?
+safe-restore-body = I-Katna ibuyela kukhophi oyikhethayo. Imeyili efike ngemva kwayo iphinde ilandwe kuma-akhawunti akho.
+safe-restore-none = Azikabikho izikhophi. I-Katna yenza eyodwa ngaphambi kokuba isibuyekezo ngasinye sishintshe idatha yakho.
+safe-restore-keep = Okukhona manje, kuhlanganise nemeyili engakathunyelwa, okusalungiswa nezinguquko ezingakavumelaniswa, kugcinwa kuqala efolda, ngakho akukho okulahlekayo.
+safe-restore-cancel = Khansela
+safe-restore-mail = Imeyili
+safe-restore-pim = Ama-akhawunti noxhumana nabo
+safe-restore-blobs = Okunamathiselwe
+safe-report-title = Umbiko wokulungisa amaphutha
+safe-report-body = Kopisha lokhu bese ukunamathisela kumbiko wakho wephutha. Akunayo imeyili, amakheli noma amaphasiwedi.
+safe-report-restore = Buyisela…
+safe-report-copied = Umbiko wokulungisa amaphutha ukopishiwe

@@ -4694,3 +4694,27 @@ i-fingerprint. Umlayezo osayinwe ngokhiye ongenawo unikeza u-Bheka ukhiye,
 futhi ukhiye othile awunamathiselayo uvuleka njengo-Ngenisa lo khiye? kanye
 no-Hlehlisa ngemva kwalokho.
 """
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Izixwayiso ngemeyili yomgunyathi"
+text = """
+Uma umlayezo uhluleka ekuhloleni umthumeli komhlinzeki wakho we-imeyili, isibhengezo esibomvu sithi kungase kungaveli kulowo othi nguye, sinokuthi Imininingwane, Kubukeka kuphephile nokuthi Hambisa ku-Ugaxekile. Izithombe zawo zihlala zifihliwe futhi izixhumanisi zawo ziyabuza ngaphambi kokuvuleka. Umthumeli ongaqinisekiswanga yilutho uthola u-"?" omncane esithombeni sakhe.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Qala kabusha uma i-Katna ibuyekeziwe"
+text = """
+Uma i-Katna ibuyekezwa ngesikhathi i-Katna Mail ivuliwe, isevisi yangemuva ye-Katna idlulela enguqulweni entsha yodwa uma ingathumeli imeyili. Bese ibhamuza elincane phansi kohlu lwemeyili linikeza okuthi Qala kabusha, okuvula i-Katna Mail entsha esikhundleni sayo. U-× uyalifihla kuze kube isibuyekezo esilandelayo.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Ukuvula imeyili sekuzolile"
+text = """
+Ukuchofoza imeyili ohlwini akusathumeli igagasi kulo lonke uhlu ngesikhathi imeyili ivuleka. Igagasi lisavela uma uchofoza imeyili esivele ivuliwe.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Imodi ephephile uma isibuyekezo sihluleka"
+text = """
+I-Katna ikopisha idatha yakho ngaphambi kokuba isibuyekezo siyishintshe. Uma isibuyekezo sishiya i-Katna ingakwazi ukuqala, ivuleka kumodi ephephile: imeyili yakho ihlala ifundeka, futhi umugqa ongenhla kwayo ukuvumela ukuthi uzame futhi noma ubuyele kukhophi yangaphambi kwesibuyekezo. Okukhona manje kugcinwa kuqala efolda, ngakho akukho okulahlekayo. Okuthi Kopisha umbiko wokulungisa amaphutha, nakokuthi Mayelana, kuqoqa konke umbiko wephutha okudingayo.
+"""

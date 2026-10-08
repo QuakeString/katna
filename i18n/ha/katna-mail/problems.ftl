@@ -69,3 +69,25 @@ service-details-close = Rufe
 service-not-running = Sabis na bango na Katna ba ya aiki.
 service-no-answer = Sabis na bango na Katna bai amsa ba: { $error }
 service-no-session = Babu zaman D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna tana yanayin tsaro saboda matsala da sabuntawa, don haka wasiƙu ba sa daidaitawa.
+safe-try-again = Sake gwadawa
+safe-restore = Maido
+safe-restoring = Ana maido da bayananku daga { $when }…
+safe-restored = An maido da bayananku daga { $when }. Abin da yake nan a da an ajiye shi a cikin wata foldar.
+safe-show-folder = Nuna foldar
+safe-restore-failed = Ba a iya maido da bayananku ba: { $error }
+safe-restore-title = A maido da bayananku daga kafin sabuntawa?
+safe-restore-body = Katna tana komawa kwafin da kuka zaɓa. Wasiƙun da suka iso bayansa za a sake sauke su daga asusunku.
+safe-restore-none = Babu kwafi tukuna. Katna tana yin ɗaya kafin kowace sabuntawa ta canza bayananku.
+safe-restore-keep = Abin da yake nan yanzu, har da wasiƙun da ba a aika ba, zayyanai da canje-canjen da ba a daidaita ba tukuna, ana fara ajiye shi a cikin wata foldar, don haka babu abin da zai ɓace.
+safe-restore-cancel = Soke
+safe-restore-mail = Wasiƙu
+safe-restore-pim = Asusu da lambobin sadarwa
+safe-restore-blobs = Abubuwan haɗawa
+safe-report-title = Rahoton matsala
+safe-report-body = Ku kwafi wannan ku haɗa shi da rahotonku na matsala. Babu wasiƙa, adireshi ko kalmomin sirri a cikinsa.
+safe-report-restore = Maido…
+safe-report-copied = An kwafi rahoton matsala
