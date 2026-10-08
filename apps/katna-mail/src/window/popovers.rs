@@ -248,6 +248,7 @@ impl MailWindow {
             || self.close_quiet_menu(cx)
             || self.close_danger(cx)
             || self.close_password_card(cx)
+            || self.close_link_ask(cx)
         {
             true
         } else if self.print_preview_open() {
