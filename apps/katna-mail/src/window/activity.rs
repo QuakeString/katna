@@ -7,6 +7,7 @@
 //! time or chosen dates): open and click rates, opens and clicks by day,
 //! and the subject lines by open rate.
 
+use crate::widgets::Tip as _;
 use std::time::Duration;
 
 use gpui::{
@@ -24,7 +25,7 @@ use super::MailWindow;
 use crate::data::{Entry, Mail};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button, icon_button_colored, raised, tip};
+use crate::widgets::{icon, icon_button, icon_button_colored, raised};
 
 /// At most this many tracked messages are read.
 const LIMIT: u32 = 500;
@@ -625,7 +626,7 @@ impl MailWindow {
                     )
                     .size(px(size))
                     .when(open, |d| d.bg(rgba(th.hover)))
-                    .tooltip(tip(tr!("folder-activity"), th))
+                    .tip(tr!("folder-activity"), th)
                     .on_click(cx.listener(|this, _, window, cx| this.toggle_activity(window, cx))),
                 )
                 .when(unseen > 0, |d| {
@@ -765,7 +766,7 @@ impl MailWindow {
                     .child(
                         icon_button(("activity-remove", ix), "close", 18.0, th)
                             .size(px(32.0))
-                            .tooltip(tip(tr!("activity-remove"), th))
+                            .tip(tr!("activity-remove"), th)
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 cx.stop_propagation();
                                 this.remove_activity_item(seq, cx);
@@ -1280,7 +1281,7 @@ impl MailWindow {
                                 )
                                 .child(
                                     icon_button("activity-close", "close", 20.0, th)
-                                        .tooltip(tip(tr!("activity-close"), th))
+                                        .tip(tr!("activity-close"), th)
                                         .on_click(
                                             cx.listener(|this, _, _, cx| this.close_report(cx)),
                                         ),
@@ -1374,7 +1375,7 @@ impl MailWindow {
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .when(!report.accounts_open, |d| {
-                d.tooltip(tip(tr!("activity-accounts-tip"), th))
+                d.tip(tr!("activity-accounts-tip"), th)
             })
             .when_some(chosen, |d, a| {
                 d.child(self.person_avatar(&name(a), a.address.trim(), 20.0))

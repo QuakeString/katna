@@ -116,6 +116,7 @@ mod viewer;
 mod waiting;
 mod whats_new;
 
+use crate::widgets::Tip as _;
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
 use std::path::PathBuf;
@@ -144,7 +145,7 @@ use crate::data::{self, Entry, EntryKey, Mail, OpenError};
 use crate::sidebar::{self, Role, Tree};
 use crate::tabs::{self, Provider, Tab};
 use crate::theme::{Accent, Theme};
-use crate::widgets::{elevation, icon, tip};
+use crate::widgets::{elevation, icon};
 
 use apps::{App as RailApp, People};
 use reader::Conversation;
@@ -3461,7 +3462,7 @@ impl MailWindow {
                         .rounded_full()
                         .cursor_pointer()
                         .hover(|s| s.bg(rgba(0xffffff1f)))
-                        .tooltip(tip(katna_i18n::tr!("toast-close"), th))
+                        .tip(katna_i18n::tr!("toast-close"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.hide_snackbar(cx)))
                         .child(icon("close", th.snackbar_text, 18.0)),
                 )

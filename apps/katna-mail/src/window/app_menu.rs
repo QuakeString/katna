@@ -7,6 +7,7 @@
 //! card, or, where the window leaves no room there (a phone), as a page of
 //! its own.
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, Context, FontWeight, KeyDownEvent, MouseButton, div, prelude::*, rgba};
 use katna_i18n::tr;
 use katna_platform::dbusmenu::MenuItem;
@@ -17,7 +18,7 @@ use super::MailWindow;
 use super::MenuKey;
 use super::desktop;
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button, raised, tip};
+use crate::widgets::{icon, icon_button, raised};
 
 /// As wide as the account card it replaces.
 const WIDTH: f32 = 340.0;
@@ -39,7 +40,7 @@ impl MailWindow {
     pub(super) fn app_menu_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         icon_button("app-menu", "menu", 22.0, th)
             .ml_auto()
-            .tooltip(tip(tr!("app-menu"), th))
+            .tip(tr!("app-menu"), th)
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(|this, _, _, cx| {
                 cx.stop_propagation();

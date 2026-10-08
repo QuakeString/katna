@@ -12,6 +12,7 @@
 //! in [`MailWindow::render_app_page`], and load what it needs in
 //! [`MailWindow::open_app`]'s arm. Pages without one show "coming soon".
 
+use crate::widgets::Tip as _;
 use katna_ui::WindowDrag;
 use std::ops::Range;
 use std::rc::Rc;
@@ -30,7 +31,7 @@ use katna_ui::px;
 use super::{MailWindow, OpenSettings};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button_colored, tip};
+use crate::widgets::{icon, icon_button_colored};
 
 pub(super) const APP_RAIL_WIDTH: f32 = 72.0;
 /// Room for an app's button in the rail, name and all, as it folds.
@@ -518,7 +519,7 @@ impl MailWindow {
                     }),
                 )
                 .child(app_face(app, on, false, th))
-                .when(!labels, |d| d.tooltip(tip(app.label(), th)))
+                .when(!labels, |d| d.tip(app.label(), th))
                 // The name folds away when the settings hide it.
                 .child(
                     div()
@@ -597,7 +598,7 @@ impl MailWindow {
                     },
                     th,
                 )
-                .tooltip(tip(tr!("settings"), th))
+                .tip(tr!("settings"), th)
                 .on_click(cx.listener(|this, _, window, cx| {
                     if this.settings_page.is_some() {
                         this.close_settings_page(window, cx);

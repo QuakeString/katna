@@ -9,6 +9,7 @@
 //! `pim.db` at once and then to the calendar's service; the snackbar
 //! offers Undo, and Ctrl+Z works too.
 
+use crate::widgets::Tip as _;
 use std::rc::Rc;
 
 use gpui::{
@@ -34,7 +35,7 @@ use super::compose::schedule;
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
-use crate::widgets::{filled_button, icon, icon_button, menu, radio, raised, tip};
+use crate::widgets::{filled_button, icon, icon_button, menu, radio, raised};
 use katna_core::quick_add::{self, Typed};
 
 mod task_tab;
@@ -1745,7 +1746,7 @@ impl MailWindow {
                 d.child(
                     div().flex().flex_row().justify_end().child(
                         icon_button("draft-close", "close", 20.0, th)
-                            .tooltip(tip(tr!("calendar-close"), th))
+                            .tip(tr!("calendar-close"), th)
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.calendar.draft = None;
                                 cx.notify();
@@ -1887,7 +1888,7 @@ impl MailWindow {
                     .gap(px(16.0))
                     .child(
                         icon_button("editor-close", "close", 24.0, th)
-                            .tooltip(tip(tr!("calendar-discard"), th))
+                            .tip(tr!("calendar-discard"), th)
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.calendar.draft = None;
                                 cx.notify();
@@ -2157,7 +2158,7 @@ impl MailWindow {
                 .when(!guest.organizer && !guest.is_self, |d| {
                     d.child(
                         icon_button(("draft-guest-remove", ix), "close", 18.0, th)
-                            .tooltip(tip(tr!("calendar-remove-guest"), th))
+                            .tip(tr!("calendar-remove-guest"), th)
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 if let Some(draft) = &mut this.calendar.draft {
                                     draft.guests.retain(|g| g.email != email);

@@ -10,6 +10,7 @@
 //! reads them again on `ContactsChanged`. Saved pictures also show beside
 //! the person's mail.
 
+use crate::widgets::Tip as _;
 use std::cell::RefCell;
 use std::collections::{BTreeSet, HashMap};
 use std::ops::Range;
@@ -38,7 +39,7 @@ use super::select::{Pieces, selectable};
 use crate::daemon;
 use crate::data::SavedBook;
 use crate::theme::{Theme, mix};
-use crate::widgets::{filled_button, icon, icon_button, tag, tip, tonal_icon_button};
+use crate::widgets::{filled_button, icon, icon_button, tag, tonal_icon_button};
 
 /// Width of the column with Contacts, Frequent and the labels.
 const NAV_WIDTH: f32 = 248.0;
@@ -617,7 +618,7 @@ impl MailWindow {
                                 th,
                             )
                             .size(px(28.0))
-                            .tooltip(tip(tr!("contacts-label-options"), th))
+                            .tip(tr!("contacts-label-options"), th)
                             .on_click(cx.listener(
                                 move |this, event: &gpui::ClickEvent, _, cx| {
                                     cx.stop_propagation();
@@ -962,14 +963,14 @@ impl MailWindow {
                 )
                 .child(
                     crate::widgets::icon_button("contacts-label-email", "mail", 20.0, th)
-                        .tooltip(tip(tr!("contacts-label-email"), th))
+                        .tip(tr!("contacts-label-email"), th)
                         .on_click(cx.listener(move |this, _, window, cx| {
                             this.email_label(&email, window, cx)
                         })),
                 )
                 .child(
                     crate::widgets::icon_button("contacts-label-title-more", "more", 20.0, th)
-                        .tooltip(tip(tr!("contacts-label-options"), th))
+                        .tip(tr!("contacts-label-options"), th)
                         .on_click(cx.listener(move |this, event: &gpui::ClickEvent, _, cx| {
                             this.open_label_menu(
                                 LabelMenu::Label {
@@ -1115,7 +1116,7 @@ impl MailWindow {
         let email = person.emails.first().cloned();
         let phone = merged.phones.first().map(|p| p.value.clone());
         let back = icon_button("contact-back", "back", 20.0, th)
-            .tooltip(tip(tr!("contacts-back"), th))
+            .tip(tr!("contacts-back"), th)
             .on_click(cx.listener(|this, _, _, cx| this.close_contact(cx)));
         let job = merged.job();
         // The name and details can be selected and copied, as on a web
@@ -1290,7 +1291,7 @@ impl MailWindow {
                     .child(div().flex_1())
                     .child(
                         crate::widgets::icon_button("contact-qr", "qr-code", 20.0, th)
-                            .tooltip(tip(tr!("contacts-qr"), th))
+                            .tip(tr!("contacts-qr"), th)
                             .on_click(cx.listener({
                                 let (name, card) = (person.name.clone(), merged.clone());
                                 move |this, _, window, cx| {
@@ -1301,7 +1302,7 @@ impl MailWindow {
                     )
                     .child(
                         crate::widgets::icon_button("contact-print", "print", 20.0, th)
-                            .tooltip(tip(tr!("contacts-print"), th))
+                            .tip(tr!("contacts-print"), th)
                             .on_click(cx.listener({
                                 let (name, ids) = (person.name.clone(), person.ids.clone());
                                 move |this, _, window, cx| {
@@ -1311,7 +1312,7 @@ impl MailWindow {
                     )
                     .child(
                         crate::widgets::icon_button("contact-delete", "trash", 20.0, th)
-                            .tooltip(tip(tr!("contacts-delete"), th))
+                            .tip(tr!("contacts-delete"), th)
                             .on_click(cx.listener({
                                 let person = person.clone();
                                 let cards = cards.clone();

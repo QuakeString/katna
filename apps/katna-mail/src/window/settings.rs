@@ -5,6 +5,7 @@
 //! send, the signature, conversation view, the tour, What's new and About.
 //! Changes apply at once and are saved to `config.toml`.
 
+use crate::widgets::Tip as _;
 use std::time::Duration;
 
 use gpui::{
@@ -26,7 +27,7 @@ use crate::schemes;
 use crate::theme::{Accent, Theme, mix};
 use crate::widgets::FocusRing;
 use crate::widgets::{
-    CARD_SHADOW_ROOM, ScaledEdge, card_outline, icon, icon_button, radio, switch, tip,
+    CARD_SHADOW_ROOM, ScaledEdge, card_outline, icon, icon_button, radio, switch,
 };
 
 /// One loop of the reading-pane demo.
@@ -235,7 +236,7 @@ impl MailWindow {
                     )
                     .child(
                         icon_button("settings-close", "close", 20.0, th)
-                            .tooltip(tip(tr!("reader-close"), th))
+                            .tip(tr!("reader-close"), th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.toggle_settings(&super::ToggleSettings, window, cx)
                             })),
