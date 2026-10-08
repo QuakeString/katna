@@ -221,6 +221,131 @@ fn only_one_daemon_per_bus() {
     });
 }
 
+/// `Pim1` as an app before `Version()` knew it: one member of today's.
+mod old_app {
+    macro_rules! old_proxy {
+        ($interface:tt, $bus_name:tt, $path:tt) => {
+            #[zbus::proxy(interface = $interface, default_service = $bus_name, default_path = $path)]
+            pub trait Pim {
+                fn accounts(&self) -> zbus::Result<Vec<katna_dbus::AccountStatus>>;
+            }
+        };
+    }
+    katna_core::with_dbus_names!(old_proxy);
+}
+
+/// A daemon from before `Version()`: it answers `Accounts` only.
+struct OldDaemon;
+
+macro_rules! old_daemon {
+    ($interface:tt, $bus_name:tt, $path:tt) => {
+        #[zbus::interface(name = $interface)]
+        impl OldDaemon {
+            fn accounts(&self) -> Vec<katna_dbus::AccountStatus> {
+                Vec::new()
+            }
+        }
+    };
+}
+katna_core::with_dbus_names!(old_daemon);
+
+#[test]
+fn old_and_new_apps_and_daemons_get_along() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    smol::block_on(async {
+        // A new app meets an old daemon: no Version(), and no error either.
+        let old = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .name(katna_core::ids::DAEMON_BUS_NAME)
+            .unwrap()
+            .serve_at(katna_core::ids::PIM_OBJECT_PATH, OldDaemon)
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let client = bus.connect().await;
+        assert_eq!(katna_dbus::daemon_version(&client).await.unwrap(), None);
+        drop(old);
+
+        // New with new: the daemon says what it is.
+        let instance = within("the daemon", 10, async {
+            loop {
+                match start(&bus, &paths, Secrets::memory()).await {
+                    Err(StartError::AlreadyRunning) => {
+                        Timer::after(Duration::from_millis(50)).await;
+                    }
+                    started => break started.unwrap(),
+                }
+            }
+        })
+        .await;
+        let daemon = katna_dbus::daemon_version(&client)
+            .await
+            .unwrap()
+            .expect("Version()");
+        assert_eq!(daemon.version, katna_core::update::VERSION);
+        assert_eq!(daemon.api, katna_dbus::API_LEVEL);
+        assert!(!daemon.newer_than_this());
+        assert_eq!(
+            daemon.schemas.get(katna_dbus::schema::MAIL),
+            Some(&katna_store::DbKind::Mail.schema_version())
+        );
+        assert_eq!(
+            daemon.schemas.get(katna_dbus::schema::SEARCH),
+            Some(&katna_search::SCHEMA_VERSION)
+        );
+        assert_eq!(daemon.schemas.len(), 4);
+
+        // An old app meets the new daemon: Pim1 only gained members.
+        let old_app = old_app::PimProxy::new(&client).await.unwrap();
+        assert!(old_app.accounts().await.unwrap().is_empty());
+        instance.shutdown().await;
+    });
+}
+
+#[test]
+fn a_restart_after_an_update_waits_for_mail_being_sent() {
+    let bus = Bus::start();
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::with_root(tmp.path());
+    let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Imap, "Alice", "alice@katna.test")
+        .unwrap()
+        .id;
+    let settings = AccountSettings {
+        smtp: Some(Server {
+            host: "127.0.0.1".into(),
+            port: 1,
+            security: katna_core::Security::Tls,
+            username: "alice@katna.test".into(),
+            accept_invalid_certs: true,
+        }),
+        ..AccountSettings::default()
+    };
+    store.set_account_settings(account, &settings).unwrap();
+    drop(store);
+    let message = b"From: alice@katna.test\r\nTo: bob@katna.test\r\n\
+        Subject: Lunch\r\n\r\nNoon?\r\n";
+    smol::block_on(async {
+        let instance = start(&bus, &paths, Secrets::memory()).await.unwrap();
+        assert_eq!(instance.daemon.restart_waits_for(), None);
+        let client = bus.connect().await;
+        let pim = PimProxy::new(&client).await.unwrap();
+        // Inside its undo delay: the restart waits.
+        let id = pim.queue_send(account.0, message, 10).await.unwrap();
+        assert!(instance.daemon.restart_waits_for().is_some());
+        assert!(pim.undo_send(id).await.unwrap());
+        assert_eq!(instance.daemon.restart_waits_for(), None);
+        // Sent tomorrow: nothing to wait for.
+        pim.queue_send(account.0, message, 24 * 3600).await.unwrap();
+        assert_eq!(instance.daemon.restart_waits_for(), None);
+        instance.shutdown().await;
+    });
+}
+
 #[test]
 fn imported_accounts_are_listed_but_not_synced() {
     let bus = Bus::start();

@@ -20,6 +20,7 @@
 //! (never over the top bar), so it never hides what is being marked; a
 //! double click on the dots puts it back under the top bar.
 
+use crate::widgets::Tip as _;
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -45,7 +46,7 @@ use super::{
     glassy,
 };
 use crate::theme::Theme;
-use crate::widgets::{ScaledEdge, icon, tip};
+use crate::widgets::{ScaledEdge, icon};
 
 /// Highlighter colours: light, as they lie under the text.
 const MARKERS: [(&str, u32); 5] = [
@@ -692,7 +693,7 @@ impl Viewer {
             let element = match &mark.shape {
                 Shape::Note { at, text } => note_icon(*at, z, color)
                     .id(("viewer-note", ix))
-                    .tooltip(tip(text.clone(), &self.th)),
+                    .tip(text.clone(), &self.th),
                 Shape::Box {
                     at,
                     width,
@@ -1137,7 +1138,7 @@ impl Viewer {
                                     .when(live, |d| {
                                         d.cursor_pointer()
                                             .hover(|s| s.bg(rgba(HOVER)))
-                                            .tooltip(tip(tr!(*label), th))
+                                            .tip(tr!(*label), th)
                                             .on_click(cx.listener(move |this, _, _, cx| {
                                                 this.set_color(ix, cx)
                                             }))
@@ -1400,7 +1401,7 @@ fn pill_button(
             if enabled { INK } else { 0xffffff61 },
             size * 0.55,
         ))
-        .tooltip(tip(label.into(), th))
+        .tip(label.into(), th)
 }
 
 /// The dots at the end of the pill of tools: dragging them moves the
@@ -1418,7 +1419,7 @@ fn grip(th: &Theme, cx: &mut Context<Viewer>) -> Stateful<gpui::Div> {
         .cursor_grab()
         .hover(|s| s.bg(rgba(HOVER)))
         .child(icon("drag-handle", INK_DIM, 18.0))
-        .tooltip(tip(tr!("viewer-markup-move-tip"), th))
+        .tip(tr!("viewer-markup-move-tip"), th)
         .on_mouse_down(
             MouseButton::Left,
             cx.listener(|this, event: &MouseDownEvent, _, cx| {

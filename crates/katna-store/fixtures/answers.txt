@@ -1,0 +1,800 @@
+mail v1
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 0
+  waiting: 2
+  folder_bells: 0
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v2
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 0
+  waiting: 2
+  folder_bells: 0
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v3
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 0
+  waiting: 2
+  folder_bells: 0
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v4
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 0
+  waiting: 2
+  folder_bells: 0
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v5
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 0
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v6
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 0
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v7
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 0
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v8
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 0
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v9
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 0
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v10
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 0
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v11
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v12
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v13
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 1
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+mail v14
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v1
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 0
+  task_lists: 1
+  notes: 0
+  address_books: 0
+  saved_contacts: 0
+  contact_labels: 0
+  other_contacts: 0
+  templates: 0
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v2
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 0
+  task_lists: 1
+  notes: 0
+  address_books: 0
+  saved_contacts: 0
+  contact_labels: 0
+  other_contacts: 0
+  templates: 3
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v3
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 0
+  task_lists: 1
+  notes: 0
+  address_books: 0
+  saved_contacts: 0
+  contact_labels: 0
+  other_contacts: 0
+  templates: 3
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v4
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 0
+  task_lists: 1
+  notes: 0
+  address_books: 0
+  saved_contacts: 0
+  contact_labels: 0
+  other_contacts: 0
+  templates: 3
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v5
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 0
+  task_lists: 1
+  notes: 0
+  address_books: 0
+  saved_contacts: 0
+  contact_labels: 0
+  other_contacts: 0
+  templates: 3
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v6
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 0
+  task_lists: 1
+  notes: 0
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 0
+  templates: 3
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v7
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 0
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 0
+  templates: 3
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v8
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 0
+  templates: 3
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v9
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 0
+  templates: 3
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v10
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v11
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v12
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 0
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v13
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v14
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v15
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v16
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+pim v17
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+blobs v1
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3

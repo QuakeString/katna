@@ -64,6 +64,11 @@ macro_rules! pim_interface {
     ($interface:tt, $bus_name:tt, $path:tt) => {
         #[zbus::interface(name = $interface)]
         impl PimService {
+            async fn version(&self) -> (String, u32, std::collections::HashMap<String, u32>) {
+                crate::update::check_now();
+                self.daemon.version()
+            }
+
             async fn accounts(&self) -> fdo::Result<Vec<AccountStatus>> {
                 Ok(self.daemon.accounts()?)
             }
@@ -167,6 +172,12 @@ macro_rules! pim_interface {
 
             async fn fetch_body(&self, message: i64) -> fdo::Result<()> {
                 Ok(self.daemon.fetch_body(MessageId(message)).await?)
+            }
+
+            async fn search_server(&self, query: &str, account: i64) -> fdo::Result<Vec<i64>> {
+                let account = (account != 0).then_some(AccountId(account));
+                let found = self.daemon.search_server(query, account).await?;
+                Ok(found.into_iter().map(|id| id.0).collect())
             }
 
             async fn set_flags(

@@ -22,6 +22,7 @@
 mod markup;
 mod office;
 
+use crate::widgets::Tip as _;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -50,7 +51,7 @@ use super::attachments::{Item, bitmap, kind_badge};
 use super::select::{self, Key, Marker, SelectHost, TextSelection};
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{icon, tip};
+use crate::widgets::icon;
 
 /// Zoom steps; 1 fits the page (or picture) to the window.
 const ZOOMS: [f32; 12] = [
@@ -1288,7 +1289,7 @@ fn page_arrows(th: &Theme, cx: &mut Context<Viewer>) -> impl IntoElement {
             .rounded(px(3.0))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(0xffffff33)))
-            .tooltip(tip(tip_id, th))
+            .tip(tip_id, th)
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(move |this, _, _, cx| {
@@ -1484,7 +1485,7 @@ fn round_button(
         .hover(move |s| s.bg(rgba(hover)))
         .child(Ripple::new(id, rgba(0xffffff33)).centered())
         .child(icon(name, INK, 22.0))
-        .tooltip(tip(tooltip, th))
+        .tip(tooltip, th)
 }
 
 fn tooltip_for(id: &str) -> &'static str {
@@ -2151,7 +2152,7 @@ impl Viewer {
                         .flex()
                         .items_center()
                         .gap(px(6.0))
-                        .tooltip(tip(tr!("viewer-go-to-page-tip"), &th))
+                        .tip(tr!("viewer-go-to-page-tip"), &th)
                         // A phone keeps the number and drops the word.
                         .when(!compact, |d| {
                             d.child(if tools.slides {
@@ -2219,7 +2220,7 @@ impl Viewer {
                     .flex()
                     .justify_center()
                     .cursor_pointer()
-                    .tooltip(tip("Fit to window (0)", &th))
+                    .tip("Fit to window (0)", &th)
                     .on_click(cx.listener(|this, _, _, cx| this.set_zoom(fit_step(), cx)))
                     .child(format!("{:.0}%", zoom * 100.0)),
             )

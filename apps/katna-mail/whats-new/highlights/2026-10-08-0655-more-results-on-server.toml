@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Search finds older mail on the server"
+text = """
+Older mail isn't downloaded whole, so search can't read its words here.
+Now, after a short pause in typing or when you press Enter, Katna also asks
+your mail server and lists what it finds under More results on server.
+"""
