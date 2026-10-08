@@ -4630,3 +4630,14 @@ kembali kepada salinan dari sebelum kemas kini. Apa yang ada sekarang disimpan
 dalam folder dahulu, jadi tiada apa yang hilang. Salin laporan nyahpepijat,
 juga dalam Perihal Katna, mengumpulkan apa yang diperlukan oleh laporan pepijat.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Mel dalam bahasa Arab dan Ibrani dibaca mengikut arahnya"
+text = """
+Setiap perenggan dalam mesej kini dibaca mengikut arahnya sendiri: bahasa Arab,
+Ibrani, Parsi dan Urdu dari kanan, bahasa Inggeris dari kiri, dalam mel yang sama
+dan dalam mana-mana tetingkap. Semasa menulis, butang Kiri ke kanan dan Kanan ke kiri
+dalam bar format (atau Ctrl+Shift+X) menukar arah perenggan, dan baris yang anda
+mulakan dalam bahasa Arab atau Ibrani bertukar arah dengan sendirinya. Mesej dihantar
+tepat seperti yang anda tulis.
+"""

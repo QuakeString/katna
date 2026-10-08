@@ -144,7 +144,7 @@ key-card-failed = ቁልፉን ማግኘት አልተቻለም
 
 sender-failed-title = ይህ ከ{ $domain } ላይሆን ይችላል
 sender-failed-body = የ{ $provider }ን የላኪ ፍተሻዎች አላለፈም። በአገናኞች፣ በአባሪዎች እና በምላሾች ይጠንቀቁ።
-sender-provider-unknown = የደብዳቤ አገልግሎት አቅራቢዎ
+sender-provider-unknown = ደብዳቤ አቅራቢዎ
 sender-details = ዝርዝሮች
 sender-details-hide = ዝርዝሮችን ደብቅ
 sender-looks-safe = ደህንነቱ የተጠበቀ ይመስላል

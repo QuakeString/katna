@@ -140,7 +140,7 @@ key-card-failed = යතුර ලබා ගත නොහැකි විය
 ## of a sender nothing confirmed
 
 sender-failed-title = මෙය { $domain } වෙතින් නොවිය හැක
-sender-failed-body = මෙය { $provider } හි යවන්නා පරීක්ෂා කිරීම් අසමත් විය. සබැඳි, ඇමුණුම් සහ පිළිතුරු සමඟ ප්‍රවේශම් වන්න.
+sender-failed-body = මෙය { $provider } විසින් කළ යවන්නා පරීක්ෂා කිරීම් අසමත් විය. සබැඳි, ඇමුණුම් සහ පිළිතුරු සමඟ ප්‍රවේශම් වන්න.
 sender-provider-unknown = ඔබගේ තැපැල් සේවා සපයන්නා
 sender-details = විස්තර
 sender-details-hide = විස්තර සඟවන්න

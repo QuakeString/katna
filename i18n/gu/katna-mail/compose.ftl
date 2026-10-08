@@ -21,6 +21,16 @@ compose-hide-trimmed = ટૂંકાવેલી સામગ્રી છુ�
 compose-remove-trimmed = અવતરિત લખાણ દૂર કરો
 compose-trimmed-removed = અવતરિત લખાણ દૂર કર્યું
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date } ના રોજ { $from } એ લખ્યું:
+compose-forward-header = ---------- ફૉરવર્ડ કરેલો મેસેજ ---------
+compose-forward-from = મોકલનાર: { $from }
+compose-forward-date = તારીખ: { $date }
+compose-forward-subject = વિષય: { $subject }
+compose-forward-to = પ્રતિ: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = પ્રતિ

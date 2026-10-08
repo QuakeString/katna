@@ -21,6 +21,16 @@ compose-hide-trimmed = Itago ang tinabas na nilalaman
 compose-remove-trimmed = Alisin ang siniping teksto
 compose-trimmed-removed = Inalis ang siniping teksto
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = Noong { $date }, sumulat si { $from }:
+compose-forward-header = ---------- Ipinasang mensahe ---------
+compose-forward-from = Mula kay: { $from }
+compose-forward-date = Petsa: { $date }
+compose-forward-subject = Paksa: { $subject }
+compose-forward-to = Para kay: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = Para kay

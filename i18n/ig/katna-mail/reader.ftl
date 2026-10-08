@@ -144,13 +144,13 @@ key-card-failed = Enweghị ike ịnweta igodo ahụ
 
 sender-failed-title = Nke a nwere ike ọ bụghị site na { $domain }
 sender-failed-body = O dabaghị na nlele onye zitere nke { $provider }. Kpachara anya na njikọ, mgbakwunye na azịza.
-sender-provider-unknown = onye na-enye gị ozi
+sender-provider-unknown = onye na-enye gị ọrụ ozi
 sender-details = Nkọwa
 sender-details-hide = Zoo nkọwa
 sender-looks-safe = O yiri ihe dị mma
 sender-move-to-spam = Bugharịa gaa Spam
-sender-checked-by = { $provider } nyochara ya
-sender-checked-by-server = { $provider } nyochara ya ({ $server })
+sender-checked-by = E nyochara ya site n'aka { $provider }
+sender-checked-by-server = E nyochara ya site n'aka { $provider } ({ $server })
 sender-dmarc = Ngalaba onye zitere (DMARC)
 sender-dkim = Mbinye aka (DKIM)
 sender-spf = Sava na-ezipụ (SPF)

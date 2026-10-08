@@ -21,6 +21,16 @@ compose-hide-trimmed = Sembunyikan kandungan yang dipangkas
 compose-remove-trimmed = Alih keluar teks petikan
 compose-trimmed-removed = Teks petikan dialih keluar
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = Pada { $date }, { $from } menulis:
+compose-forward-header = ---------- Mesej yang dimajukan ---------
+compose-forward-from = Daripada: { $from }
+compose-forward-date = Tarikh: { $date }
+compose-forward-subject = Subjek: { $subject }
+compose-forward-to = Kepada: { $to }
+compose-forward-cc = Sk: { $cc }
+
 ## Recipients and subject
 
 compose-to = Kepada

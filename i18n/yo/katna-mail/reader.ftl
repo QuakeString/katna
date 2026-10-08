@@ -143,14 +143,14 @@ key-card-failed = A kò lè rí kọ́kọ́rọ́ náà gbà
 ## of a sender nothing confirmed
 
 sender-failed-title = Ó lè máà jẹ́ láti { $domain }
-sender-failed-body = Kò yege nínú àyẹ̀wò olùfiránṣẹ́ { $provider }. Ṣọ́ra pẹ̀lú àwọn ìjápọ̀, àfikún àti èsì.
+sender-failed-body = Kò yege nínú àyẹ̀wò olùfiránṣẹ́ tí { $provider } ṣe. Ṣọ́ra pẹ̀lú àwọn ìjápọ̀, àfikún àti èsì.
 sender-provider-unknown = olùpèsè lẹ́tà rẹ
 sender-details = Àlàyé
 sender-details-hide = Fi àlàyé pamọ́
 sender-looks-safe = Ó dàbí ẹni pé kò léwu
 sender-move-to-spam = Gbé lọ sí Àwúrúju
-sender-checked-by = { $provider } ló ṣàyẹ̀wò rẹ̀
-sender-checked-by-server = { $provider } ló ṣàyẹ̀wò rẹ̀ ({ $server })
+sender-checked-by = Ti ṣàyẹ̀wò rẹ̀ láti ọwọ́ { $provider }
+sender-checked-by-server = Ti ṣàyẹ̀wò rẹ̀ láti ọwọ́ { $provider } ({ $server })
 sender-dmarc = Domain olùfiránṣẹ́ (DMARC)
 sender-dkim = Ìbuwọ́lù (DKIM)
 sender-spf = Sáfà tó fi ránṣẹ́ (SPF)

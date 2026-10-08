@@ -143,14 +143,14 @@ key-card-failed = ਕੁੰਜੀ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋ ਸਕ�
 ## of a sender nothing confirmed
 
 sender-failed-title = ਹੋ ਸਕਦਾ ਹੈ ਇਹ { $domain } ਵੱਲੋਂ ਨਾ ਹੋਵੇ
-sender-failed-body = ਇਹ { $provider } ਦੀਆਂ ਭੇਜਣ ਵਾਲੇ ਦੀਆਂ ਜਾਂਚਾਂ ਵਿੱਚ ਫ਼ੇਲ੍ਹ ਹੋ ਗਈ। ਲਿੰਕਾਂ, ਨੱਥੀਆਂ ਅਤੇ ਜਵਾਬਾਂ ਨਾਲ ਸਾਵਧਾਨ ਰਹੋ।
+sender-failed-body = ਇਹ ਭੇਜਣ ਵਾਲੇ ਦੀਆਂ ਜਾਂਚਾਂ ਵਿੱਚ ਫ਼ੇਲ੍ਹ ਹੋ ਗਈ, ਜੋ { $provider } ਕਰਦਾ ਹੈ। ਲਿੰਕਾਂ, ਨੱਥੀਆਂ ਅਤੇ ਜਵਾਬਾਂ ਨਾਲ ਸਾਵਧਾਨ ਰਹੋ।
 sender-provider-unknown = ਤੁਹਾਡਾ ਮੇਲ ਪ੍ਰਦਾਤਾ
 sender-details = ਵੇਰਵੇ
 sender-details-hide = ਵੇਰਵੇ ਲੁਕਾਓ
 sender-looks-safe = ਸੁਰੱਖਿਅਤ ਲੱਗਦੀ ਹੈ
 sender-move-to-spam = ਸਪੈਮ ਵਿੱਚ ਭੇਜੋ
-sender-checked-by = { $provider } ਵੱਲੋਂ ਜਾਂਚ ਕੀਤੀ
-sender-checked-by-server = { $provider } ({ $server }) ਵੱਲੋਂ ਜਾਂਚ ਕੀਤੀ
+sender-checked-by = ਜਾਂਚਣ ਵਾਲਾ: { $provider }
+sender-checked-by-server = ਜਾਂਚਣ ਵਾਲਾ: { $provider } ({ $server })
 sender-dmarc = ਭੇਜਣ ਵਾਲੇ ਦਾ ਡੋਮੇਨ (DMARC)
 sender-dkim = ਦਸਤਖ਼ਤ (DKIM)
 sender-spf = ਭੇਜਣ ਵਾਲਾ ਸਰਵਰ (SPF)

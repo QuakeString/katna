@@ -4545,3 +4545,14 @@ gå tillbaka till kopian från före uppdateringen. Det som finns där nu sparas
 först i en mapp, så att ingenting går förlorat. Kopiera
 felsökningsrapport, som också finns i Om, samlar det en felrapport behöver.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "E-post på arabiska och hebreiska läses åt sitt eget håll"
+text = """
+Varje stycke i ett meddelande läses nu åt sitt eget håll: arabiska,
+hebreiska, persiska och urdu från höger, svenska från vänster, i samma
+mejl och i alla fönster. När du skriver vänder knapparna Vänster till höger
+och Höger till vänster i formateringsfältet (eller Ctrl+Shift+X) på ett
+stycke, och en rad du börjar på arabiska eller hebreiska vänder sig själv.
+Meddelandet skickas så som du skrev det.
+"""

@@ -143,14 +143,14 @@ key-card-failed = કી મેળવી શકાઈ નહીં
 ## of a sender nothing confirmed
 
 sender-failed-title = આ કદાચ { $domain } તરફથી ન હોય
-sender-failed-body = તે { $provider } ની મોકલનાર તપાસમાં નિષ્ફળ ગયો. લિંક, જોડાણો અને જવાબોમાં સાવચેત રહો.
+sender-failed-body = તે મોકલનાર તપાસમાં નિષ્ફળ ગયો, જે તપાસ { $provider } કરે છે. લિંક, જોડાણો અને જવાબોમાં સાવચેત રહો.
 sender-provider-unknown = તમારો મેઇલ પ્રદાતા
 sender-details = વિગતો
 sender-details-hide = વિગતો છુપાવો
 sender-looks-safe = સુરક્ષિત લાગે છે
 sender-move-to-spam = સ્પામમાં ખસેડો
-sender-checked-by = { $provider } દ્વારા તપાસાયેલ
-sender-checked-by-server = { $provider } ({ $server }) દ્વારા તપાસાયેલ
+sender-checked-by = તપાસનાર: { $provider }
+sender-checked-by-server = તપાસનાર: { $provider } ({ $server })
 sender-dmarc = મોકલનારનું ડોમેન (DMARC)
 sender-dkim = હસ્તાક્ષર (DKIM)
 sender-spf = મોકલનાર સર્વર (SPF)
@@ -169,7 +169,7 @@ sender-spf-pass = { $domain } ની સૂચિમાંના સર્વર
 sender-spf-fail = { $domain } ની સૂચિમાં ન હોય એવા સર્વર પરથી મોકલાયો.
 sender-spf-none = { $domain } તેના સર્વરની સૂચિ આપતું નથી.
 sender-check-unsure = તપાસ સ્પષ્ટ જવાબ આપી શકી નહીં.
-sender-unconfirmed = { $provider } ખાતરી કરી શક્યું નહીં કે આ { $domain } તરફથી આવ્યો છે. કોઈ પણ વ્યક્તિ કોઈ પણ મોકલનાર લખી શકે છે.
+sender-unconfirmed = { $provider } ખાતરી કરી શક્યો નહીં કે આ { $domain } તરફથી આવ્યો છે. કોઈ પણ વ્યક્તિ કોઈ પણ મોકલનાર લખી શકે છે.
 sender-link-title = આ લિંક ખોલવી છે?
 sender-link-body = આ મેઇલ તેની મોકલનાર તપાસમાં નિષ્ફળ ગયો. લિંક { $host } પર જાય છે:
 sender-link-cancel = રદ કરો

@@ -144,7 +144,7 @@ key-card-failed = Hindi makuha ang key
 
 sender-failed-title = Maaaring hindi ito galing sa { $domain }
 sender-failed-body = Hindi ito pumasa sa mga pagsusuri ng { $provider } sa nagpadala. Mag-ingat sa mga link, attachment at pagsagot.
-sender-provider-unknown = ang iyong mail provider
+sender-provider-unknown = iyong mail provider
 sender-details = Mga detalye
 sender-details-hide = Itago ang mga detalye
 sender-looks-safe = Mukhang ligtas

@@ -143,14 +143,14 @@ key-card-failed = कुंजी नहीं मिल सकी
 ## of a sender nothing confirmed
 
 sender-failed-title = हो सकता है यह { $domain } से न हो
-sender-failed-body = यह { $provider } की भेजने वाले की जाँच में फ़ेल हुआ। लिंक, अटैचमेंट और जवाब देने में सावधान रहें।
+sender-failed-body = यह भेजने वाले की जाँच में फ़ेल हुआ, जो { $provider } करता है। लिंक, अटैचमेंट और जवाब देने में सावधान रहें।
 sender-provider-unknown = आपका मेल प्रदाता
 sender-details = विवरण
 sender-details-hide = विवरण छिपाएं
 sender-looks-safe = सुरक्षित लगता है
 sender-move-to-spam = स्पैम में ले जाएं
-sender-checked-by = { $provider } ने जाँचा
-sender-checked-by-server = { $provider } ({ $server }) ने जाँचा
+sender-checked-by = जाँचने वाला: { $provider }
+sender-checked-by-server = जाँचने वाला: { $provider } ({ $server })
 sender-dmarc = भेजने वाले का डोमेन (DMARC)
 sender-dkim = हस्ताक्षर (DKIM)
 sender-spf = भेजने वाला सर्वर (SPF)

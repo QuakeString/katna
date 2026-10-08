@@ -4313,3 +4313,14 @@ title = "Ọnọdụ nchekwa ma imelite ọ gaghị nke ọma"
 text = """
 Katna na-edetu data gị tupu imelite agbanwee ya. Ọ bụrụ na imelite ahụ emee ka Katna ghara ịmalite, ọ na-emepe na ọnọdụ nchekwa: ozi gị ka na-agụ, ahịrị dị n'elu ya na-ekwekwa ka ị nwaa ọzọ ma ọ bụ laghachi na mbipụta e mere tupu imelite ahụ. A na-ebu ụzọ debe ihe dị ugbu a na folda, ya mere ọ dịghị ihe na-efu. Detuo akụkọ nchọpụta nsogbu, dịkwa na Maka Katna, na-achịkọta ihe akụkọ nsogbu chọrọ.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Ozi n'Arabic na Hebrew na-agụ n'ụzọ nke ya"
+text = """
+Paragraf ọ bụla nke ozi na-agụ ugbu a n'ụzọ nke ya: Arabic, Hebrew, Persian
+na Urdu site n'aka nri, Bekee site n'aka ekpe, n'otu ozi ahụ na na windo
+ọ bụla. Mgbe ị na-ede, bọtịnụ Site n'aka ekpe gaa n'aka nri na Site n'aka
+nri gaa n'aka ekpe dị n'ogwe nhazi (ma ọ bụ Ctrl+Shift+X) na-atụgharị
+paragraf, ahịrị i bidoro n'Arabic ma ọ bụ Hebrew na-atụgharịkwa n'onwe ya.
+Ozi ahụ na-apụ otú i si dee ya.
+"""

@@ -21,6 +21,16 @@ compose-hide-trimmed = የተከረከመውን ይዘት ደብቅ
 compose-remove-trimmed = የተጠቀሰውን ጽሑፍ አስወግድ
 compose-trimmed-removed = የተጠቀሰው ጽሑፍ ተወግዷል
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = በ{ $date } ላይ { $from } እንዲህ ሲል ጻፈ፦
+compose-forward-header = ---------- የተላለፈ መልዕክት ---------
+compose-forward-from = ከ፦ { $from }
+compose-forward-date = ቀን፦ { $date }
+compose-forward-subject = ርዕሰ ጉዳይ፦ { $subject }
+compose-forward-to = ለ፦ { $to }
+compose-forward-cc = Cc፦ { $cc }
+
 ## Recipients and subject
 
 compose-to = ለ

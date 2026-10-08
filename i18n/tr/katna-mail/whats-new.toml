@@ -4545,3 +4545,14 @@ bir klasörde saklanır, böylece hiçbir şey kaybolmaz. Hakkında bölümünde
 bulunan Hata ayıklama raporunu kopyala, bir hata raporunun ihtiyaç duyduğu
 her şeyi toplar.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Arapça ve İbranice e-postalar kendi yönünde okunur"
+text = """
+Bir iletinin her paragrafı artık kendi yönünde okunur: Arapça, İbranice,
+Farsça ve Urduca sağdan, İngilizce soldan; aynı e-postada ve her
+pencerede. Yazarken biçimlendirme çubuğundaki Soldan sağa ve Sağdan sola
+düğmeleri (ya da Ctrl+Shift+X) bir paragrafın yönünü çevirir; Arapça ya
+da İbranice başladığınız bir satır ise kendiliğinden döner. İleti, sizin
+yazdığınız gibi gider.
+"""
