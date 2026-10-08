@@ -5,6 +5,7 @@
 //! ("📎 1 · Home · Bills"), and the label picker in the task's details,
 //! which is Notes' own ([`LabelPicker`]).
 
+use crate::widgets::Tip as _;
 use std::rc::Rc;
 
 use gpui::{AnyElement, Context, SharedString, Window, div};
@@ -18,7 +19,7 @@ use super::super::MailWindow;
 use super::super::notes::labels::{LabelPicker, render_label_choices};
 use super::{Column, View, card_heading, list_title, today};
 use crate::theme::Theme;
-use crate::widgets::{CARD_REST, Check, card, icon, tag, text_button, tip};
+use crate::widgets::{CARD_REST, Check, card, icon, tag, text_button};
 
 /// The label picker open in a task's details: Notes' own.
 pub(super) type Picker = LabelPicker;
@@ -244,7 +245,7 @@ impl MailWindow {
                             .opacity(0.0)
                             .group_hover(group, |s| s.opacity(1.0))
                             .cursor_pointer()
-                            .tooltip(tip(tr!("notes-label-remove"), th))
+                            .tip(tr!("notes-label-remove"), th)
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.task_details_toggle_label(off.clone(), cx)
                             }))

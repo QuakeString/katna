@@ -6,6 +6,7 @@
 //! statistics (off until turned on; every counted feature listed, this
 //! week's report and the install ID), and Send feedback.
 
+use crate::widgets::Tip as _;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use gpui::{AnyElement, ClipboardItem, Context, FontWeight, div, prelude::*, rgba};
@@ -19,7 +20,7 @@ use super::MailWindow;
 use super::settings::Change;
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{outlined_button, tip};
+use crate::widgets::outlined_button;
 
 /// The list is read from disk again when it is older than this, so a
 /// crash of the daemon shows up while the page is open.
@@ -357,7 +358,7 @@ impl MailWindow {
                         .pl(px(space::S3))
                         .text_size(px(text::SMALL))
                         .text_color(rgba(th.text_dim))
-                        .tooltip(tip(tr!("feedback-install-id-tooltip"), th))
+                        .tip(tr!("feedback-install-id-tooltip"), th)
                         .child(tr!("feedback-install-id", id = short)),
                 )
                 .child(
@@ -492,13 +493,13 @@ impl MailWindow {
             )
             .child(
                 link("feedback-view")
-                    .tooltip(tip(tr!("feedback-view-tooltip"), th))
+                    .tip(tr!("feedback-view-tooltip"), th)
                     .on_click(cx.listener(move |_, _, _, cx| cx.open_with_system(&view.path)))
                     .child(tr!("feedback-view")),
             )
             .child(
                 link("feedback-copy")
-                    .tooltip(tip(tr!("feedback-copy-tooltip"), th))
+                    .tip(tr!("feedback-copy-tooltip"), th)
                     .on_click(cx.listener(move |this, _, _, cx| match copy.read() {
                         Ok(text) => {
                             cx.write_to_clipboard(ClipboardItem::new_string(text));

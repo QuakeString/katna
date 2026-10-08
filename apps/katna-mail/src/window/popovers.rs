@@ -17,7 +17,7 @@ use super::{FocusNext, FocusPrevious, MailWindow};
 /// Keeps Tab and Shift+Tab inside a dialog whose root tracks `focus`, as
 /// in any desktop dialog: they go round its fields and buttons, never to
 /// the window behind it.
-pub(super) fn keep_tab_inside<E: InteractiveElement>(el: E, focus: &FocusHandle) -> E {
+pub(super) fn keep_tab_inside<E: StatefulInteractiveElement>(el: E, focus: &FocusHandle) -> E {
     let step = |focus: FocusHandle, forward: bool| {
         move |window: &mut Window, cx: &mut gpui::App| {
             cx.stop_propagation();
@@ -36,7 +36,9 @@ pub(super) fn keep_tab_inside<E: InteractiveElement>(el: E, focus: &FocusHandle)
         }
     };
     let (next, prev) = (step(focus.clone(), true), step(focus.clone(), false));
-    el.capture_action(move |_: &FocusNext, window, cx| next(window, cx))
+    // Screen readers hear it as a dialog over the window.
+    el.role(gpui::Role::Dialog)
+        .capture_action(move |_: &FocusNext, window, cx| next(window, cx))
         .capture_action(move |_: &FocusPrevious, window, cx| prev(window, cx))
 }
 

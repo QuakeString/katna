@@ -7,6 +7,7 @@
 //! The model field takes any name and suggests the models the service
 //! offers to the saved key, as typed.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, Context, Div, Entity, Focusable, Subscription, Window, deferred, div, prelude::*,
     rgba,
@@ -21,7 +22,7 @@ use super::{MailWindow, SAVE_DELAY, chip, control_column};
 use crate::daemon;
 use crate::theme::Theme;
 use crate::widgets::line_field;
-use crate::widgets::{icon, icon_button_colored, menu, menu_item, outlined_button, tip};
+use crate::widgets::{icon, icon_button_colored, menu, menu_item, outlined_button};
 use crate::window::settings::Change;
 
 /// Models suggested under the model field at most.
@@ -525,7 +526,7 @@ impl MailWindow {
         let toggle = known.then(|| {
             icon_button_colored("page-ai-models", "drop-down", 20.0, th.text_dim, th)
                 .size(px(32.0))
-                .tooltip(tip(tr!("settings-ai-models"), th))
+                .tip(tr!("settings-ai-models"), th)
                 .on_click(cx.listener(move |this, _, _, cx| this.open_ai_models(!open, true, cx)))
         });
         let list = open.then(|| {
