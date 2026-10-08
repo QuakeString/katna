@@ -71,8 +71,8 @@ fn own_words(doc: &Doc) -> String {
         };
         let line = p.text.trim();
         if p.style.quote > 0
-            || (line.starts_with("On ") && line.ends_with("wrote:"))
-            || line.starts_with("---------- Forwarded message")
+            || crate::quoting::is_reply_header(line)
+            || crate::quoting::is_forward_header(line)
         {
             break;
         }

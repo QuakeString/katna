@@ -816,6 +816,16 @@
       "repository": "https://github.com/zbraniecki/unic-locale"
     },
     {
+      "name": "unicode-bidi",
+      "version": "0.3.18",
+      "description": "Implementation of the Unicode Bidirectional Algorithm",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "The Servo Project Developers"
+      ],
+      "repository": "https://github.com/servo/unicode-bidi"
+    },
+    {
       "name": "unicode-segmentation",
       "version": "1.13.3",
       "description": "This crate provides Grapheme Cluster, Word and Sentence boundaries according to Unicode Standard Annex #29 rules.",

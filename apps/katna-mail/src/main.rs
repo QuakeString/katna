@@ -21,6 +21,7 @@ mod mailto;
 mod outgoing;
 mod placement;
 mod profile;
+mod quoting;
 mod receipts;
 mod schemes;
 mod sidebar;

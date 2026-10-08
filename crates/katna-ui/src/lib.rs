@@ -4,6 +4,7 @@
 //! `katna-chrome` and the GUI apps. See `docs/ARCHITECTURE.md` §13.
 
 pub mod anchored;
+pub mod direction;
 pub mod frost;
 pub mod glow;
 pub mod motion;
@@ -24,6 +25,7 @@ pub mod window_drag;
 pub const PLACEHOLDER_OPACITY: f32 = 0.42;
 
 pub use anchored::anchored;
+pub use direction::{Direction, directed};
 pub use glow::Glow;
 pub use motion::Spring;
 pub use rich::RichEditor;

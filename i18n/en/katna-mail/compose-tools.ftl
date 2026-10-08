@@ -53,6 +53,11 @@ compose-tool-numbered-list = Numbered list (Ctrl+Shift+7)
 compose-tool-bulleted-list = Bulleted list (Ctrl+Shift+8)
 compose-tool-indent-less = Indent less (Ctrl+[)
 compose-tool-indent-more = Indent more (Ctrl+])
+# Makes the paragraph read left to right (English, say). Ctrl+Shift+X
+# turns it the other way.
+compose-tool-ltr = Left-to-right (Ctrl+Shift+X)
+# Makes the paragraph read right to left (Arabic, Hebrew, Persian, Urdu).
+compose-tool-rtl = Right-to-left (Ctrl+Shift+X)
 # Makes the paragraph a quote.
 compose-tool-quote = Quote (Ctrl+Shift+9)
 compose-tool-strikethrough = Strikethrough (Alt+Shift+5)

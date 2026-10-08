@@ -38,6 +38,25 @@ compose-hide-trimmed = Hide trimmed content
 compose-remove-trimmed = Remove quoted text
 compose-trimmed-removed = Quoted text removed
 
+## The quoted or forwarded message, in the mail itself
+# Written into the message in the language of the interface when it is
+# started; the reader sees it as part of the mail. "Re:" and "Fwd:" stay as
+# they are in every language, so other mail apps recognize them.
+
+# The line over the quoted message in a reply. $date: when it was sent,
+# such as "Wed, Oct 7, 2026, 2:05 PM"; $from: its sender, such as
+# "Ravi Kumar <ravi@invenia.in>".
+compose-quote-header = On { $date }, { $from } wrote:
+# The first line of a forwarded message's copy.
+compose-forward-header = ---------- Forwarded message ---------
+# The lines under it, then the forwarded message. $from, $to and $cc are
+# names and addresses, $date when it was sent, $subject its subject.
+compose-forward-from = From: { $from }
+compose-forward-date = Date: { $date }
+compose-forward-subject = Subject: { $subject }
+compose-forward-to = To: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 # Labels of the recipient rows, and the links that show the Cc and Bcc

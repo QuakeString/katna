@@ -33,6 +33,7 @@ use crate::trim::{Forwarded, Trimmed};
 
 pub use clean::{Cleaned, LeftOut, clean, web_pictures};
 pub use css::{Color, Length};
+pub use katna_core::bidi::Direction;
 pub use katna_core::image::ImageKind;
 
 /// A message body laid out as blocks.
@@ -53,6 +54,9 @@ pub struct Document {
     /// The `Content-ID`s of the message's parts shown as images, so they
     /// need not be listed as attachments too.
     pub inline_ids: Vec<String>,
+    /// The direction `<html dir>` or `<body dir>` gives the whole message;
+    /// `None` reads left to right, as a browser does.
+    pub dir: Option<Direction>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -116,6 +120,9 @@ pub struct BoxStyle {
     /// `align` in its own line.
     pub inline: bool,
     pub align: Align,
+    /// The box's own `dir` attribute: it and what it holds are laid out
+    /// that way (table cells from the right in right to left).
+    pub dir: Option<Direction>,
 }
 
 /// Where lines of text go.
@@ -134,6 +141,10 @@ pub struct TextBlock {
     pub align: Align,
     /// Keep line breaks and spaces as they are (`<pre>`).
     pub preformatted: bool,
+    /// Which way the paragraph reads: the `dir` around it, else that of
+    /// its first strong character; `None` when it has neither (digits
+    /// only), so it reads as the box around it. `align` is relative to it.
+    pub dir: Option<Direction>,
 }
 
 impl TextBlock {

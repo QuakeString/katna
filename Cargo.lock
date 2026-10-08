@@ -6006,6 +6006,7 @@ dependencies = [
  "toml 1.1.6+spec-1.1.0",
  "tracing",
  "tracing-subscriber",
+ "unicode-bidi",
 ]
 
 [[package]]
@@ -6385,6 +6386,7 @@ dependencies = [
  "gpui-pre-windows",
  "katna-core",
  "katna-i18n",
+ "unicode-bidi",
  "unicode-segmentation",
 ]
 
