@@ -21,6 +21,16 @@ compose-hide-trimmed = លាក់ខ្លឹមសារដែលបានក
 compose-remove-trimmed = ដកអត្ថបទដែលដកស្រង់ចេញ
 compose-trimmed-removed = បានដកអត្ថបទដែលដកស្រង់ចេញ
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = នៅ { $date } { $from } បានសរសេរ៖
+compose-forward-header = ---------- សារដែលបានបញ្ជូនបន្ត ---------
+compose-forward-from = ពី៖ { $from }
+compose-forward-date = កាលបរិច្ឆេទ៖ { $date }
+compose-forward-subject = ប្រធានបទ៖ { $subject }
+compose-forward-to = ទៅ៖ { $to }
+compose-forward-cc = ចម្លងជូន៖ { $cc }
+
 ## Recipients and subject
 
 compose-to = ទៅ

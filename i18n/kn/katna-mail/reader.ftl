@@ -140,8 +140,8 @@ key-card-failed = ಕೀಯನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಾ
 ## of a sender nothing confirmed
 
 sender-failed-title = ಇದು { $domain } ನಿಂದ ಬಂದಿರದೇ ಇರಬಹುದು
-sender-failed-body = ಇದು { $provider } ನ ಕಳುಹಿಸುವವರ ಪರಿಶೀಲನೆಗಳಲ್ಲಿ ವಿಫಲವಾಗಿದೆ. ಲಿಂಕ್‌ಗಳು, ಲಗತ್ತುಗಳು ಮತ್ತು ಉತ್ತರಗಳ ಬಗ್ಗೆ ಎಚ್ಚರವಾಗಿರಿ.
-sender-provider-unknown = ನಿಮ್ಮ ಮೇಲ್ ಪೂರೈಕೆದಾರರು
+sender-failed-body = ಇದು { $provider } ನಡೆಸಿದ ಕಳುಹಿಸುವವರ ಪರಿಶೀಲನೆಗಳಲ್ಲಿ ವಿಫಲವಾಗಿದೆ. ಲಿಂಕ್‌ಗಳು, ಲಗತ್ತುಗಳು ಮತ್ತು ಉತ್ತರಗಳ ಬಗ್ಗೆ ಎಚ್ಚರವಾಗಿರಿ.
+sender-provider-unknown = ನಿಮ್ಮ ಮೇಲ್ ಸೇವೆ
 sender-details = ವಿವರಗಳು
 sender-details-hide = ವಿವರಗಳನ್ನು ಮರೆಮಾಡಿ
 sender-looks-safe = ಸುರಕ್ಷಿತವಾಗಿ ಕಾಣುತ್ತದೆ

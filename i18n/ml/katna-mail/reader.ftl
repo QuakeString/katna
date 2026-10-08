@@ -140,7 +140,7 @@ key-card-failed = കീ ലഭിച്ചില്ല
 ## of a sender nothing confirmed
 
 sender-failed-title = ഇത് { $domain }-ൽ നിന്നായിരിക്കില്ല
-sender-failed-body = ഇത് { $provider }-ന്റെ അയച്ചയാൾ പരിശോധനകളിൽ പരാജയപ്പെട്ടു. ലിങ്കുകൾ, അറ്റാച്ച്മെന്റുകൾ, മറുപടികൾ എന്നിവയിൽ ശ്രദ്ധിക്കുക.
+sender-failed-body = ഇത് { $provider } നടത്തിയ അയച്ചയാൾ പരിശോധനകളിൽ പരാജയപ്പെട്ടു. ലിങ്കുകൾ, അറ്റാച്ച്മെന്റുകൾ, മറുപടികൾ എന്നിവയിൽ ശ്രദ്ധിക്കുക.
 sender-provider-unknown = നിങ്ങളുടെ മെയിൽ ദാതാവ്
 sender-details = വിശദാംശങ്ങൾ
 sender-details-hide = വിശദാംശങ്ങൾ മറയ്ക്കുക
@@ -166,7 +166,7 @@ sender-spf-pass = { $domain } പട്ടികപ്പെടുത്തി�
 sender-spf-fail = { $domain } പട്ടികപ്പെടുത്താത്ത ഒരു സെർവറിൽ നിന്ന് അയച്ചത്.
 sender-spf-none = { $domain } അതിന്റെ സെർവറുകൾ പട്ടികപ്പെടുത്തുന്നില്ല.
 sender-check-unsure = പരിശോധനയ്ക്ക് വ്യക്തമായ ഉത്തരം നൽകാനായില്ല.
-sender-unconfirmed = ഇത് { $domain }-ൽ നിന്നാണ് വന്നതെന്ന് { $provider }-ന് സ്ഥിരീകരിക്കാനായില്ല. ആർക്കും ഏത് അയച്ചയാളെയും എഴുതാം.
+sender-unconfirmed = { $provider } പരിശോധിച്ചിട്ടും ഇത് { $domain }-ൽ നിന്നാണ് വന്നതെന്ന് സ്ഥിരീകരിക്കാനായില്ല. ആർക്കും ഏത് അയച്ചയാളെയും എഴുതാം.
 sender-link-title = ഈ ലിങ്ക് തുറക്കണോ?
 sender-link-body = ഈ മെയിൽ അതിന്റെ അയച്ചയാൾ പരിശോധനകളിൽ പരാജയപ്പെട്ടു. ലിങ്ക് പോകുന്നത് { $host }-ലേക്കാണ്:
 sender-link-cancel = റദ്ദാക്കുക

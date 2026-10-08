@@ -7,7 +7,7 @@
 problems-the-server = තැපැල් සේවාදායකය
 problems-signed-out = { $provider } විසින් Katna, { $address } වෙතින් ඉවත් කළා. තැපැල් සමමුහුර්ත වීම නැවතුණා.
 problems-password-refused = { $provider } විසින් { $address } සඳහා මුරපදය ප්‍රතික්ෂේප කළා. එය වෙනස් වී ඇති විය හැක.
-problems-no-answer = { $provider } විසින් { $address } සඳහා ප්‍රතිචාර නොදක්වයි. Katna දිගටම උත්සාහ කරයි.
+problems-no-answer = { $provider } { $address } සඳහා ප්‍රතිචාර නොදක්වයි. Katna දිගටම උත්සාහ කරයි.
 problems-offline = ඔබ නොබැඳියි. ඔබේ තැපැල් තවමත් මෙහි ඇත, ඔබ යවන තැපැල් ඔබ නැවත සබැඳි වන තුරු රැඳේ.
 problems-accounts-need-you = { $count ->
     [one] ගිණුම් { $count }කට ඔබේ ක්‍රියාව අවශ්‍යයි
