@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Told once when an account or a message needs you"
+text = """
+When a mail server refuses your password, a sign-in ends or a message
+can't be sent, a desktop notification says so once, even with Katna Mail
+closed. Its button opens the fix: New password, Sign in or the Outbox.
+The tray icon's tooltip lists what's waiting on you.
+"""

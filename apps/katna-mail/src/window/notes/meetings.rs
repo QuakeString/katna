@@ -10,6 +10,7 @@ use gpui::{AnyElement, Context, FontWeight, Window, div, prelude::*, rgba};
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
 use katna_ui::px;
+use katna_ui::tokens::{radius, space, text};
 
 use super::{MailWindow, UNTICKED};
 use crate::theme::Theme;
@@ -102,7 +103,7 @@ impl MailWindow {
 
     /// Opens the Calendar on the day of the event a note is about.
     pub(super) fn open_note_event(&mut self, start: i64, cx: &mut Context<Self>) {
-        self.close_note(cx);
+        self.close_note_now(cx);
         let day = super::super::calendar::civil(start, &self.tz).date();
         self.open_app(super::super::apps::App::Calendar, cx);
         self.open_calendar_on(day, cx);
@@ -135,11 +136,11 @@ impl MailWindow {
             .flex()
             .flex_row()
             .items_start()
-            .gap(px(16.0))
+            .gap(px(space::S5))
             .child(
                 div()
                     .flex_none()
-                    .pt(px(8.0))
+                    .pt(px(space::S3))
                     .child(icon("notes", th.text_dim, 20.0)),
             )
             .child(
@@ -148,23 +149,24 @@ impl MailWindow {
                     .min_w_0()
                     .flex()
                     .flex_col()
-                    .gap(px(8.0))
+                    .gap(px(space::S3))
                     .children(tiles)
                     .child(
                         div().flex().flex_row().child(
                             div()
                                 .id("event-take-notes")
                                 .h(px(36.0))
-                                .px(px(12.0))
+                                .px(px(space::S4))
                                 .ml(px(-12.0))
                                 .flex()
                                 .items_center()
-                                .rounded(px(8.0))
-                                .text_size(px(14.0))
+                                .rounded(px(radius::SM))
+                                .text_size(px(text::BODY))
                                 .font_weight(FontWeight::MEDIUM)
                                 .text_color(rgba(th.accent))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                                 .on_click(cx.listener(move |this, _, window, cx| {
                                     this.take_meeting_notes(&occurrence, window, cx)
                                 }))

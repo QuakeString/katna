@@ -570,7 +570,8 @@ impl MailWindow {
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.accent))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", None, th))
                 .child(label)
         };
         Self::dialog_card(th, 460.0, tr!("compose-drive-share-title"))
@@ -676,7 +677,8 @@ impl MailWindow {
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.accent))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", None, th))
                 .child(label)
         };
         let detail: AnyElement = match &file.state {
@@ -767,13 +769,18 @@ impl MailWindow {
             .rounded(px(8.0))
             .bg(rgba(th.chip))
             .text_size(px(13.0))
-            .when(file.link().is_some(), |d| {
+            .when_some(file.link().map(str::to_owned), |d, link| {
                 let text = if file.onedrive {
                     tr!("compose-onedrive-tip")
                 } else {
                     tr!("compose-drive-tip")
                 };
+                // A click opens the file on the drive, to check it is the
+                // right one.
                 d.tooltip(tip(text, th))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(rgba(th.chip_hover())))
+                    .on_click(move |_, _, cx| cx.open_url(&link))
             })
             .child(icon("cloud", th.accent, 18.0))
             .child(
@@ -795,9 +802,13 @@ impl MailWindow {
                     .justify_center()
                     .rounded_full()
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .tooltip(tip(tr!("compose-remove-attachment"), th))
-                    .on_click(cx.listener(move |this, _, _, cx| this.remove_drive_file(ix, cx)))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.remove_drive_file(ix, cx)
+                    }))
                     .child(icon("close", th.text_dim, 16.0)),
             )
             .children(progress.map(|done| {

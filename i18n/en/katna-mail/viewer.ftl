@@ -28,12 +28,22 @@ viewer-page-count = of { $count }
 viewer-go-to-page-tip = Type a page number and press Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = Rotate clockwise (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Rotate anticlockwise (Ctrl+Shift+R)
+viewer-dark-pages-tip = Dark pages
+viewer-light-pages-tip = Show pages as they are
 viewer-fit-page-tip = Fit page
 viewer-fit-picture-tip = Fit to window
 viewer-fit-width-tip = Fit width
 viewer-real-size-tip = Real size (1:1)
 viewer-page-back-tip = Previous page
 viewer-page-on-tip = Next page
+# The ⋮ button at the end of the controls when the window is too narrow
+# for all of them, and the items its menu can hold.
+viewer-more-tip = More
+viewer-zoom-in = Zoom in
+viewer-zoom-out = Zoom out
+viewer-real-size = Real size
+viewer-rotate-anticlockwise = Rotate anticlockwise
+viewer-rotate-clockwise = Rotate clockwise
 
 ## Marking up a PDF
 

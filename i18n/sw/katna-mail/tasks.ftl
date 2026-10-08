@@ -7,8 +7,11 @@
 tasks-create = Jukumu jipya
 tasks-all = Majukumu yote
 tasks-today = Leo
+tasks-upcoming = Yajayo
 tasks-starred = Yenye nyota
+tasks-completed-view = Yaliyokamilika
 tasks-new-list = Unda orodha mpya
+tasks-labels-heading = Lebo
 tasks-on-this-computer = Kwenye kompyuta hii
 tasks-my-tasks = Majukumu Yangu
 # The line under an account in the side list whose task lists could not
@@ -18,7 +21,7 @@ tasks-account-signed-in = Umeingia tena kwenye { $address }. Inapata majukumu ya
 tasks-account-sign-in-refused = { $provider } haikuruhusu Katna kuingia. Jaribu tena, na uruhusu ufikiaji wa majukumu yako.
 tasks-account-refused = Seva haikukubali nenosiri. Yahoo, iCloud, Zoho na nyinginezo zinahitaji nenosiri la programu.
 tasks-account-change-password = Badilisha nenosiri
-tasks-account-change-password-tooltip = Fungua Mipangilio > Akaunti
+tasks-account-change-password-tooltip = Andika nenosiri jipya; Katna hulikagua na seva
 tasks-account-not-enabled = Ufikiaji wa majukumu kwa Katna bado haujawashwa.
 tasks-account-failed = Orodha za majukumu hazikuweza kusomwa.
 # $reason is the server's own words, in English.
@@ -47,7 +50,14 @@ tasks-title-placeholder = Kichwa
 tasks-add-step = Ongeza jukumu dogo
 tasks-empty = Bado hakuna majukumu. Ongeza moja hapo juu.
 tasks-starred-empty = Weka nyota kwenye jukumu ili kuliona hapa.
+tasks-label-empty = Hakuna majukumu yaliyo wazi yenye lebo hii.
 tasks-today-empty = Hakuna kinachostahili leo.
+tasks-completed-empty = Majukumu unayokamilisha huonekana hapa.
+tasks-upcoming-add = Ongeza jukumu la { $day }
+tasks-upcoming-overdue-day = { $weekday } { $day }
+tasks-from-mail-quiet = Kutoka barua
+tasks-from-note-quiet = Kutoka dokezo
+tasks-steps-done = { $done }/{ $count }
 tasks-today-date = { $weekday }, { $day }
 tasks-overdue = Zilizochelewa
 tasks-completed = { $count ->
@@ -55,6 +65,11 @@ tasks-completed = { $count ->
    *[other] Yaliyokamilika ({ $count })
 }
 tasks-list-options = Chaguo za orodha
+tasks-sort-by = Panga kwa
+tasks-sort-my-order = Mpangilio wangu
+tasks-sort-date = Tarehe
+tasks-sort-starred = Yaliyowekewa nyota karibuni
+tasks-sort-title = Kichwa
 tasks-rename-list = Badilisha jina la orodha
 tasks-delete-list = Futa orodha
 tasks-mark-done = Weka alama kuwa limekamilika
@@ -71,6 +86,17 @@ tasks-from-note = Dokezo
 tasks-open-note = Fungua dokezo
 tasks-note-gone = Dokezo hilo halipo hapa tena.
 tasks-no-subject = (hakuna mada)
+
+## Several tasks selected (Ctrl+click, Shift+click)
+
+tasks-selected = { $count ->
+    [one] { $count } limechaguliwa
+   *[other] { $count } yamechaguliwa
+}
+tasks-select-clear = Futa uteuzi
+tasks-select-move = Hamishia orodha
+tasks-select-date = Weka tarehe
+tasks-next-week = Wiki ijayo
 
 ## The details dialog
 
@@ -91,6 +117,13 @@ tasks-remind-on-time = Wakati huo
 tasks-remind-morning = Siku hiyo, { $time }
 tasks-remind-hour-before = Saa moja kabla
 tasks-remind-day-before = Siku moja kabla
+tasks-label-add = Ongeza lebo
+tasks-label-task = Weka lebo kwenye jukumu
+tasks-files-attach = Ambatisha faili
+tasks-files-pick = Ambatisha
+tasks-file-open = Fungua
+tasks-file-remove = Ondoa faili
+tasks-file-here = Kwenye kompyuta hii pekee
 tasks-cancel = Ghairi
 tasks-save = Hifadhi
 tasks-not-a-time = “{ $text }” si saa, kwa mfano { $example }.
@@ -107,6 +140,13 @@ tasks-due-at = { $day }, { $time }
 tasks-toast-done = Jukumu limekamilika
 tasks-toast-next = Imekamilika. Inayofuata ni { $date }
 tasks-toast-deleted = Jukumu limefutwa
+tasks-files-added = { $count ->
+    [one] Faili limeambatishwa
+   *[other] Faili { $count } zimeambatishwa
+}
+tasks-file-removed = Imeondoa “{ $name }”
+tasks-files-left-out = Hazijaambatishwa: { $names }. Jukumu hupokea faili hadi { $limit }, si folda.
+tasks-file-missing = Faili hilo halipo hapa tena.
 tasks-toast-added = { $count ->
     [one] Imeongezwa kwenye Majukumu
    *[other] Majukumu { $count } yameongezwa
@@ -117,3 +157,27 @@ tasks-toast-moved = Limehamishiwa { $list }
 # A task dragged to another place in its own list.
 tasks-toast-placed = Jukumu limehamishwa
 tasks-toast-rescheduled = Kazi imepangwa upya
+tasks-toast-rescheduled-several = { $count ->
+    [one] Jukumu limepangiwa upya
+   *[other] Majukumu { $count } yamepangiwa upya
+}
+tasks-toast-done-several = { $count ->
+    [one] Jukumu limekamilika
+   *[other] Majukumu { $count } yamekamilika
+}
+tasks-toast-open-several = { $count ->
+    [one] Jukumu limewekwa alama kuwa halijakamilika
+   *[other] Majukumu { $count } yamewekwa alama kuwa hayajakamilika
+}
+tasks-toast-starred = { $count ->
+    [one] Jukumu limewekewa nyota
+   *[other] Majukumu { $count } yamewekewa nyota
+}
+tasks-toast-unstarred = { $count ->
+    [one] Nyota imeondolewa
+   *[other] Nyota zimeondolewa kwenye majukumu { $count }
+}
+tasks-toast-deleted-several = { $count ->
+    [one] Jukumu limefutwa
+   *[other] Majukumu { $count } yamefutwa
+}

@@ -315,6 +315,12 @@ impl ChromeTokens {
     /// backgrounds let [`blur_alpha`] of the blur through.
     pub fn translucent(self) -> Self {
         let alpha = blur_alpha(self.dark);
+        self.translucent_at(alpha)
+    }
+
+    /// The tokens of a translucent, blurred window whose backgrounds are
+    /// `alpha` opaque.
+    pub fn translucent_at(self, alpha: u8) -> Self {
         Self {
             window_bg: with_alpha(self.window_bg, alpha),
             header_bg: with_alpha(self.header_bg, alpha),

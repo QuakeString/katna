@@ -39,6 +39,7 @@ list-results = Ergebnisse für „{ $query }“
 list-results-corrected = Ergebnisse für „{ $query }“ werden angezeigt
 list-search-instead = Stattdessen nach „{ $query }“ suchen
 list-files-more = +{ $count }
+list-replied = Sie haben geantwortet
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -338,6 +339,8 @@ list-empty-tab = Keine E-Mails in { $tab }.
 list-empty-tab-unknown = Keine E-Mails in diesem Tab.
 list-empty-folder = Keine Nachrichten in { $folder }.
 list-empty-folder-unknown = Keine Nachrichten in diesem Ordner.
+list-empty-waiting = Nichts wartet auf eine Antwort.
+list-empty-reminders = Keine Erinnerungen. Drücken Sie H bei einer E-Mail, um eine hinzuzufügen.
 list-first-sync = Ihre E-Mails werden abgerufen…
 list-first-sync-detail = Sie werden hier angezeigt, sobald sie eintreffen.
 
@@ -357,6 +360,14 @@ row-tracking-clicked = Geöffnet: { $opened } von { $recipients }, Link aufgeruf
 row-pin = Oben anheften
 row-unpin = Nicht mehr anheften
 row-snoozed-until = Zurückgestellt bis { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Heute
+snoozed-group-tomorrow = Morgen
+snoozed-group-this-week = Diese Woche
+snoozed-group-later = Später
+row-follow-up-step = Nachfass-E-Mail { $step } von { $steps } · { $date }
+row-follow-up-waiting = Nachfass-E-Mail wartet
+row-reminder = Erinnerung { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -379,6 +390,7 @@ menu-not-important = Als nicht wichtig markieren
 menu-pin = Oben anheften
 menu-unpin = Nicht mehr anheften
 menu-snooze = Zurückstellen
+menu-remind = Erinnern
 menu-unsnooze = Nicht mehr zurückstellen
 menu-add-to-tasks = Zu Aufgaben hinzufügen
 menu-schedule-meeting = Besprechung planen
@@ -394,7 +406,26 @@ menu-follow-up = Nachverfolgen
 # Pin to top.
 menu-more = Mehr
 menu-move-to-heading = Verschieben nach:
+menu-move-to-search = Verschieben nach…
+menu-label-as = Label zuweisen
+menu-label-as-search = Label zuweisen…
+menu-no-folder = Kein Ordner namens „{ $name }“
+menu-no-label = Kein Label namens „{ $name }“
+menu-create-folder = „{ $name }“ erstellen
+menu-always-move = E-Mails von { $name } immer hierher verschieben
+toast-always-move-failed = Die E-Mail wurde verschoben, aber die Regel wurde nicht erstellt: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } Konversation
+       *[other] { $count } Konversationen
+    }
+   *[message] { $count ->
+        [one] { $count } Nachricht
+       *[other] { $count } Nachrichten
+    }
+}
 menu-find-from = E-Mails von { $name } suchen
+menu-make-rule = Regel erstellen…
 
 ## Snackbar after an action on mail in the list
 
@@ -428,6 +459,8 @@ toast-moved = { $kind ->
        *[other] { $count } Nachrichten verschoben.
     }
 }
+toast-label-added = Label „{ $label }“ hinzugefügt.
+toast-label-removed = Label „{ $label }“ entfernt.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Konversation markiert.

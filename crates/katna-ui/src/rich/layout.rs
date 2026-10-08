@@ -558,7 +558,7 @@ impl Element for ParaElement {
             && let Some(placeholder) = &self.placeholder
         {
             para = Para::plain(placeholder.to_string()).with_style(para.style);
-            base.color = base.color.opacity(0.5);
+            base.color = base.color.opacity(crate::PLACEHOLDER_OPACITY);
         }
         let cache = Rc::new(RefCell::new(None));
         let measure = Measured {

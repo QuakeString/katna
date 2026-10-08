@@ -53,3 +53,4 @@ search-options-show = نمایش گزینه‌های جستجو
 settings = تنظیمات
 account-add = افزودن حساب
 account-wheel-hint = برای جابه‌جایی حساب‌ها اسکرول کنید
+account-menu-all-detail = { $count } حساب با هم

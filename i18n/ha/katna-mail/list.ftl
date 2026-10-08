@@ -39,6 +39,7 @@ list-results = Sakamakon “{ $query }”
 list-results-corrected = Ana nuna sakamakon “{ $query }”
 list-search-instead = Maimakon haka bincika “{ $query }”
 list-files-more = +{ $count }
+list-replied = Kun amsa
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -338,6 +339,8 @@ list-empty-tab = Babu wasiƙu a cikin { $tab }.
 list-empty-tab-unknown = Babu wasiƙu a cikin wannan shafi.
 list-empty-folder = Babu saƙonni a cikin { $folder }.
 list-empty-folder-unknown = Babu saƙonni a cikin wannan folda.
+list-empty-waiting = Babu abin da ke jiran amsa.
+list-empty-reminders = Babu tunatarwa. Danna H a kan wasiƙa don ƙara ɗaya.
 list-first-sync = Ana samo wasiƙunku…
 list-first-sync-detail = Za su bayyana a nan yayin da suke isowa.
 
@@ -357,6 +360,14 @@ row-tracking-clicked = { $opened } cikin { $recipients } sun buɗe, { $clicked }
 row-pin = Maƙala a sama
 row-unpin = Cire maƙalawa
 row-snoozed-until = An jinkirta har zuwa { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Yau
+snoozed-group-tomorrow = Gobe
+snoozed-group-this-week = Wannan mako
+snoozed-group-later = Daga baya
+row-follow-up-step = Bibiya { $step } cikin { $steps } · { $date }
+row-follow-up-waiting = Bibiya tana jira
+row-reminder = Tunatarwa { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -379,6 +390,7 @@ menu-not-important = Yi alama ba muhimmi ba
 menu-pin = Maƙala a sama
 menu-unpin = Cire maƙalawa
 menu-snooze = Jinkirta
+menu-remind = Tunatar da ni
 menu-unsnooze = Soke jinkiri
 menu-add-to-tasks = Ƙara a Ayyuka
 menu-schedule-meeting = Shirya taro
@@ -394,7 +406,26 @@ menu-follow-up = Bibiya
 # Pin to top.
 menu-more = Ƙari
 menu-move-to-heading = Matsar zuwa:
+menu-move-to-search = Matsar zuwa…
+menu-label-as = Sanya lakabi
+menu-label-as-search = Sanya lakabi…
+menu-no-folder = Babu folda mai suna “{ $name }”
+menu-no-label = Babu lakabi mai suna “{ $name }”
+menu-create-folder = Ƙirƙiri “{ $name }”
+menu-always-move = Kullum a matsar da wasiƙu daga { $name } zuwa nan
+toast-always-move-failed = An matsar da wasiƙar, amma ba a yi ƙa'idar ba: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] tattaunawa { $count }
+       *[other] tattaunawowi { $count }
+    }
+   *[message] { $count ->
+        [one] saƙo { $count }
+       *[other] saƙonni { $count }
+    }
+}
 menu-find-from = Nemo imel daga { $name }
+menu-make-rule = Yi ƙa'ida…
 
 ## Snackbar after an action on mail in the list
 
@@ -428,6 +459,8 @@ toast-moved = { $kind ->
        *[other] An matsar da saƙonni { $count }.
     }
 }
+toast-label-added = An ƙara lakabi “{ $label }”.
+toast-label-removed = An cire lakabi “{ $label }”.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] An saka wa tattaunawa tauraro.

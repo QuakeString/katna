@@ -166,6 +166,7 @@ files-share-remove = Verwyder toegang
 files-share-copy-link = Kopieer skakel
 files-share-share = Deel
 files-share-done = Klaar
+files-share-close = Maak toe
 files-share-sharing = Deel tans…
 files-share-shared = { $count ->
     [one] Met 1 persoon gedeel

@@ -20,6 +20,9 @@ use crate::Store;
 use crate::db::unix_now;
 use crate::error::Result;
 
+mod files;
+pub use files::{PendingFile, RemoteFile, SyncedFiles, TaskFile};
+
 /// One task.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Task {
@@ -46,6 +49,8 @@ pub struct Task {
     /// The Message-ID (no angle brackets) of the mail it was made from, or
     /// `note:<id>` for a task made from a note's checklist line.
     pub mail: String,
+    /// Its labels: the same names as the notes' labels.
+    pub labels: Vec<String>,
 }
 
 /// What a person sets on a task; [`Store::edit_task`] writes all of it.
@@ -59,6 +64,24 @@ pub struct TaskFields {
     pub repeat: String,
     pub starred: bool,
     pub mail: String,
+    pub labels: Vec<String>,
+}
+
+impl TaskFields {
+    /// Everything `task` has that a person sets, to change some of it.
+    pub fn of(task: &Task) -> Self {
+        Self {
+            title: task.title.clone(),
+            notes: task.notes.clone(),
+            due: task.due.clone(),
+            due_time: task.due_time,
+            remind_at: task.remind_at,
+            repeat: task.repeat.clone(),
+            starred: task.starred,
+            mail: task.mail.clone(),
+            labels: task.labels.clone(),
+        }
+    }
 }
 
 /// A task list.
@@ -87,7 +110,6 @@ pub struct RemoteTaskList {
 pub struct TaskExtras {
     pub remind_at: Option<i64>,
     pub repeat: String,
-    pub starred: bool,
 }
 
 /// A task as the service has it.
@@ -106,6 +128,17 @@ pub struct RemoteTask {
     pub position: String,
     pub etag: String,
     pub extras: Option<TaskExtras>,
+    /// The star, where the service keeps one (To Do's high importance,
+    /// CalDAV's priority 1 to 4, Zoho's high priority); `None` leaves
+    /// Katna's own.
+    pub starred: Option<bool>,
+    /// Its labels, where the service keeps them (To Do's categories,
+    /// CalDAV's `CATEGORIES`); `None` leaves Katna's own.
+    pub labels: Option<Vec<String>>,
+    /// Its files, where the service keeps them (To Do's attachments,
+    /// CalDAV's inline `ATTACH`); `None` when it keeps none or didn't
+    /// say ([`Store::sync_task_files`]).
+    pub files: Option<Vec<RemoteFile>>,
 }
 
 /// A list change waiting to go to the service.
@@ -153,7 +186,9 @@ const EDITED: i64 = 1;
 const MOVED: i64 = 2;
 
 const TASK_COLUMNS: &str = "id, list_id, parent_id, title, notes, due, due_time, remind_at, \
-                            repeat, starred, done_at, position, mail";
+                            repeat, starred, done_at, position, mail, \
+                            COALESCE((SELECT l.labels FROM task_labels l \
+                                      WHERE l.task_id = task.id), '[]')";
 
 fn task_row(row: &Row<'_>) -> rusqlite::Result<Task> {
     Ok(Task {
@@ -170,7 +205,38 @@ fn task_row(row: &Row<'_>) -> rusqlite::Result<Task> {
         done_at: row.get(10)?,
         position: row.get(11)?,
         mail: row.get(12)?,
+        labels: labels_of(&row.get::<_, String>(13)?),
     })
+}
+
+/// Labels kept as a JSON array; none when unreadable.
+fn labels_of(json: &str) -> Vec<String> {
+    serde_json::from_str(json).unwrap_or_default()
+}
+
+/// Gives task `id` the labels `labels` (`task_labels`; no row for none).
+fn set_labels(conn: &rusqlite::Connection, id: i64, labels: &[String]) -> Result<()> {
+    let json = labels_json(labels);
+    if json == "[]" {
+        conn.execute("DELETE FROM task_labels WHERE task_id = ?1", [id])?;
+    } else {
+        conn.execute(
+            "INSERT OR REPLACE INTO task_labels (task_id, labels) VALUES (?1, ?2)",
+            params![id, json],
+        )?;
+    }
+    Ok(())
+}
+
+/// Labels as kept: a JSON array, each once, in the order given.
+fn labels_json(labels: &[String]) -> String {
+    let mut seen: Vec<&String> = Vec::with_capacity(labels.len());
+    for label in labels {
+        if !label.trim().is_empty() && !seen.contains(&label) {
+            seen.push(label);
+        }
+    }
+    serde_json::to_string(&seen).unwrap_or_else(|_| "[]".to_owned())
 }
 
 fn list_row(row: &Row<'_>) -> rusqlite::Result<TaskList> {
@@ -243,6 +309,8 @@ fn move_to_list(tx: &Transaction<'_>, id: i64, list: i64) -> rusqlite::Result<()
              WHERE id = ?1",
             params![each, list, dirty, now],
         )?;
+        // Its files go to the new list's service, or stay here.
+        files::moved(tx, each)?;
         if remote.is_some() {
             tx.execute(
                 "INSERT INTO task (list_id, title, remote_id, etag, deleted, dirty,
@@ -444,6 +512,29 @@ impl Store {
         Ok(ordered)
     }
 
+    /// Every label on a task or a note (not one in Trash), each once, in
+    /// order of name: the one set of labels Tasks and Notes share.
+    pub fn labels_in_use(&self) -> Result<Vec<String>> {
+        let mut labels: Vec<String> = Vec::new();
+        for sql in [
+            "SELECT l.labels FROM task_labels l JOIN task t ON t.id = l.task_id
+             WHERE t.deleted = 0 AND l.labels != '[]'",
+            "SELECT labels FROM note WHERE trashed_at IS NULL AND labels != '[]'",
+        ] {
+            let mut stmt = self.pim.prepare_cached(sql)?;
+            let rows = stmt.query_map([], |row| row.get::<_, String>(0))?;
+            for json in rows {
+                for label in labels_of(&json?) {
+                    if !labels.contains(&label) {
+                        labels.push(label);
+                    }
+                }
+            }
+        }
+        labels.sort_by_key(|l| l.to_lowercase());
+        Ok(labels)
+    }
+
     /// Task `id`, unless deleted.
     pub fn task(&self, id: i64) -> Result<Option<Task>> {
         Ok(self
@@ -500,6 +591,7 @@ impl Store {
             ],
         )?;
         let id = tx.last_insert_rowid();
+        set_labels(&tx, id, &fields.labels)?;
         tx.commit()?;
         Ok(id)
     }
@@ -526,6 +618,9 @@ impl Store {
                 unix_now()
             ],
         )?;
+        if changed > 0 {
+            set_labels(&self.pim, id, &fields.labels)?;
+        }
         Ok(changed > 0)
     }
 
@@ -798,14 +893,14 @@ impl Store {
              ORDER BY parent_id IS NOT NULL, created_at, id"
         ))?;
         let rows = stmt.query_map([list], |row| {
-            let dirty: i64 = row.get(18)?;
+            let dirty: i64 = row.get(19)?;
             Ok(PendingTask {
                 task: task_row(row)?,
-                remote_id: row.get(13)?,
-                etag: row.get(14)?,
-                deleted: row.get(15)?,
-                stamp: row.get(16)?,
-                parent_remote: row.get(17)?,
+                remote_id: row.get(14)?,
+                etag: row.get(15)?,
+                deleted: row.get(16)?,
+                stamp: row.get(17)?,
+                parent_remote: row.get(18)?,
                 edited: dirty & EDITED != 0,
                 place: (dirty & MOVED != 0).then_some(Place::First),
             })
@@ -958,14 +1053,23 @@ impl Store {
                     )?;
                     if let Some(extras) = &task.extras {
                         tx.execute(
-                            "UPDATE task SET remind_at = ?2, repeat = ?3, starred = ?4
-                             WHERE id = ?1",
-                            params![id, extras.remind_at, extras.repeat, extras.starred],
+                            "UPDATE task SET remind_at = ?2, repeat = ?3 WHERE id = ?1",
+                            params![id, extras.remind_at, extras.repeat],
                         )?;
+                    }
+                    if let Some(starred) = task.starred {
+                        tx.execute(
+                            "UPDATE task SET starred = ?2 WHERE id = ?1",
+                            params![id, starred],
+                        )?;
+                    }
+                    if let Some(labels) = &task.labels {
+                        set_labels(&tx, id, labels)?;
                     }
                 }
                 None => {
                     let extras = task.extras.clone().unwrap_or_default();
+                    let labels = task.labels.as_deref().unwrap_or_default();
                     changed += tx.execute(
                         "INSERT INTO task (list_id, remote_id, title, notes, due, done_at,
                                            position, etag, remind_at, repeat, starred,
@@ -982,10 +1086,11 @@ impl Store {
                             task.etag,
                             extras.remind_at,
                             extras.repeat,
-                            extras.starred,
+                            task.starred.unwrap_or(false),
                             now
                         ],
                     )?;
+                    set_labels(&tx, tx.last_insert_rowid(), labels)?;
                 }
             }
         }

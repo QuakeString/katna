@@ -53,3 +53,4 @@ search-options-show = Wys soekopsies
 settings = Instellings
 account-add = Voeg 'n rekening by
 account-wheel-hint = Rol om van rekening te wissel
+account-menu-all-detail = { $count } rekeninge saam

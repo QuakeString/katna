@@ -24,7 +24,13 @@ impl MailWindow {
                 self.app.key().to_owned()
             },
             folder: self.folder.map(|folder| folder.0),
-            unified: self.unified.map(|(view, _)| view.key().to_owned()),
+            unified: if self.listing == Some(super::Listing::Waiting) {
+                Some(super::waiting::NAV_KEY.to_owned())
+            } else if self.listing == Some(super::Listing::Reminders) {
+                Some(super::remind::NAV_KEY.to_owned())
+            } else {
+                self.unified.map(|(view, _)| view.key().to_owned())
+            },
             unified_account: self.unified.and_then(|(_, account)| account.map(|a| a.0)),
             tab: self.tab,
             // Folded only to make room for the contact panel, they come back
@@ -71,6 +77,10 @@ impl MailWindow {
             if view.tab < self.tabs.len() {
                 self.open_tab(view.tab, cx);
             }
+        } else if view.unified.as_deref() == Some(super::waiting::NAV_KEY) {
+            self.open_waiting(cx);
+        } else if view.unified.as_deref() == Some(super::remind::NAV_KEY) {
+            self.open_reminders(cx);
         } else if let Some(unified) = unified
             && self.shows_unified()
         {
@@ -83,10 +93,12 @@ impl MailWindow {
                 self.open_tab(view.tab, cx);
             }
         }
-        if let Some(app) = RailApp::from_key(&view.app) {
+        if let Some(app) = RailApp::from_key(&view.app).filter(|app| self.app_on(*app)) {
             self.open_app(app, cx);
             self.title_from = app;
             self.title_roll.snap(1.0);
+            (self.primary_icon, self.primary_label) = self.primary_button();
+            self.primary_icon_turn.snap(1.0);
         }
     }
 }

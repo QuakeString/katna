@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ist zu groß: Eine Nachricht kann bis zu { $l
 compose-forward-files-missing = Die Dateien der weitergeleiteten Nachricht sind nicht heruntergeladen und daher nicht angehängt.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Anhang entfernen
+compose-attachment-open-tip = Öffnen, um sie zu prüfen
 compose-attachments-total = { $count ->
     [one] { $count } Datei, { $size }
    *[other] { $count } Dateien, { $size }

@@ -18,6 +18,7 @@ use katna_ui::px;
 use katna_ui::scale::desktop_px;
 use katna_ui::unpx;
 
+use super::super::attachments::ViewerPlace;
 use super::super::{MailWindow, RephraseSelection, SendMail};
 use super::Mode;
 use super::recipients::Field;
@@ -223,7 +224,13 @@ impl MailWindow {
             .children(self.render_floating_format_bar(th, width - 24.0, cx))
             .child(self.render_compose_actions(th, width, cx))
             .child(self.render_drop_target(th))
-            .children(self.render_compose_dialog(th, window, cx));
+            .children(self.render_compose_dialog(th, window, cx))
+            .children(
+                self.files
+                    .viewer
+                    .clone()
+                    .filter(|_| self.files.viewer_place == ViewerPlace::Popout),
+            );
         Some(panel.into_any_element())
     }
 }
@@ -296,7 +303,8 @@ fn dock_button(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
         .justify_center()
         .rounded_full()
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", None, th))
         .tooltip(tip(tr!("compose-back-to-mail"), th))
         .on_click(cx.listener(|this, _, _, cx| this.dock_compose(cx)))
         .child(icon("close-full", th.text_dim, 18.0))

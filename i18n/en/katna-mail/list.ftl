@@ -56,6 +56,8 @@ list-results-corrected = Showing results for “{ $query }”
 list-search-instead = Search instead for “{ $query }”
 # The "+3" button after a line's attachment chips: $count more files.
 list-files-more = +{ $count }
+# Tooltip of the reply arrow on a line the user has answered.
+list-replied = You replied
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -366,6 +368,8 @@ list-empty-tab-unknown = No mail in this tab.
 # $folder: the folder's name.
 list-empty-folder = No messages in { $folder }.
 list-empty-folder-unknown = No messages in this folder.
+list-empty-waiting = Nothing is waiting for a reply.
+list-empty-reminders = No reminders. Press H on a mail to add one.
 # While the first sync of a new account downloads its mail.
 list-first-sync = Getting your mail…
 list-first-sync-detail = It shows up here as it arrives.
@@ -397,6 +401,21 @@ row-pin = Pin to top
 row-unpin = Unpin
 # Tooltip of the time on a snoozed line. $when: date and time it comes back.
 row-snoozed-until = Snoozed until { $when }
+# The time on a snoozed line coming back this week. $day: short weekday, such as "Thu". $time: such as "8:00 AM".
+row-snoozed-day-time = { $day } { $time }
+# The Snoozed folder groups its lines by when they come back.
+snoozed-group-today = Today
+snoozed-group-tomorrow = Tomorrow
+snoozed-group-this-week = This week
+snoozed-group-later = Later
+# On a line of sent mail Katna follows up on twice: which one is next, and
+# when it goes out.
+row-follow-up-step = Follow-up { $step } of { $steps } · { $date }
+# A follow-up that fell due while the computer was off and was not sent
+# late.
+row-follow-up-waiting = Follow-up waiting
+# The chip on a mail with a reminder (Remind me). $date: "Oct 9, 8:00 AM".
+row-reminder = Reminder { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -424,6 +443,7 @@ menu-pin = Pin to top
 menu-unpin = Unpin
 # Opens the snooze times.
 menu-snooze = Snooze
+menu-remind = Remind me
 # In the Snoozed folder: brings the mail back to the inbox now.
 menu-unsnooze = Unsnooze
 # Makes a task from the mail, as Gmail's "Add to Tasks".
@@ -449,8 +469,43 @@ menu-follow-up = Follow up
 menu-more = More
 # Heading over the list of folders to move the ticked mail to.
 menu-move-to-heading = Move to:
+# Placeholder of the search box on top of Move to's folders.
+menu-move-to-search = Move to…
+# Gmail: opens a submenu of the user's labels to tick or untick on the
+# mail, which stays where it is.
+menu-label-as = Label as
+# Placeholder of the search box on top of Label as's labels.
+menu-label-as-search = Label as…
+# Under the search box when no folder matches what was typed. $name: the
+# typed text.
+menu-no-folder = No folder called “{ $name }”
+menu-no-label = No label called “{ $name }”
+# Makes a folder (or Gmail label) with the typed name and moves the mail
+# there (or puts the label on it). $name: the typed text.
+menu-create-folder = Create “{ $name }”
+# Under Move to's folders, when all the mail is from one sender: ticked, a
+# click on a folder also makes a rule that moves their new mail there.
+# $name: the sender's name, or their address.
+menu-always-move = Always move mail from { $name } here
+# When that rule could not be saved; the mail was moved anyway.
+# $error: why.
+toast-always-move-failed = The mail was moved, but the rule wasn't made: { $error }
+# The card that follows the pointer while mail is dragged onto a folder,
+# for several lines (one shows its subject).
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } conversation
+       *[other] { $count } conversations
+    }
+   *[message] { $count ->
+        [one] { $count } message
+       *[other] { $count } messages
+    }
+}
 # Searches for mail from the sender. $name: the sender's name or address.
 menu-find-from = Find emails from { $name }
+# Opens the rule editor filled in with the mail's sender.
+menu-make-rule = Make a rule…
 
 ## Snackbar after an action on mail in the list
 # $kind: "conversation" or "message", as the list groups mail.
@@ -486,6 +541,9 @@ toast-moved = { $kind ->
        *[other] { $count } messages moved.
     }
 }
+# Gmail: a label put on mail, or taken off it. $label: the label's name.
+toast-label-added = Label “{ $label }” added.
+toast-label-removed = Label “{ $label }” removed.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Conversation starred.

@@ -53,7 +53,7 @@ use super::attachments::bitmap;
 use super::rich;
 use crate::daemon;
 use crate::theme::Theme;
-use crate::widgets::{avatar, icon};
+use crate::widgets::{avatar, avatar_filled, icon};
 
 /// Where a remote image or picture is.
 pub(crate) enum Fetch {
@@ -512,7 +512,15 @@ impl MailWindow {
                 }
             }
         }
-        avatar(name, email, size)
+        // One of the user's accounts wears its own color.
+        let own = self
+            .accounts
+            .iter()
+            .find(|a| !email.trim().is_empty() && a.address.eq_ignore_ascii_case(email.trim()));
+        match own {
+            Some(account) => avatar_filled(name, self.account_fill(&account.address), size),
+            None => avatar(name, email, size),
+        }
     }
 
     /// The picture of the user's account at `email`, if it is one.
@@ -653,7 +661,8 @@ impl MailWindow {
                 .rounded(px(6.0))
                 .cursor_pointer()
                 .text_color(rgba(th.accent))
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                 .child(label)
         };
         let sender_owned = sender.to_owned();

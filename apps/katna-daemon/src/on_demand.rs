@@ -44,6 +44,17 @@ impl OnDemand {
             .clone()
     }
 
+    /// Closes the account's connection, if any, for example when it is
+    /// taken offline.
+    pub(crate) fn close(&self, account: AccountId) {
+        let session = self.sessions.lock().unwrap().remove(&account);
+        if let Some(session) = session
+            && let Some(mut connection) = session.connection.try_lock()
+        {
+            connection.take();
+        }
+    }
+
     /// Notes a use of `session`, and closes its connection once it has
     /// not been used for [`IDLE`].
     pub(crate) fn used(&self, account: AccountId, session: &Arc<Session>) {

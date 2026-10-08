@@ -8,6 +8,8 @@ reader-close = Isara
 reader-back = Bumalik
 reader-mark-unread = Markahan bilang hindi pa nabasa
 reader-move-to = Ilipat sa
+reader-snooze = I-snooze
+reader-remind = Paalalahanan ako
 reader-more = Higit pa
 reader-original-colors = Ipakita ang orihinal na mga kulay
 reader-dark-colors = Ipakita sa madidilim na kulay
@@ -35,6 +37,7 @@ reader-tick-bounced = Hindi nakarating: bumalik { $when }
 reader-tick-read = Nabasa { $when } (read receipt)
 reader-tick-opened = Binuksan, huli noong { $when } (open tracking)
 reader-starred = Naka-star
+reader-chip-remove = Alisin ang { $label }
 reader-not-starred = Walang star
 reader-too-long = Masyadong mahaba ang mensahe para maipakita nang buo.
 reader-encrypted-images = Hindi kailanman nilo-load ang mga larawan mula sa web sa naka-encrypt na mail.
@@ -52,6 +55,7 @@ reader-details-subject = subject:
 
 reader-downloading = Dina-download ang mensaheng ito mula sa server…
 reader-download-failed = Hindi ma-download ang mensaheng ito.
+reader-download-offline = Offline ang account na ito. Mag-online para i-download ang mensaheng ito.
 reader-try-again = Subukang muli
 
 ## Reply row
@@ -108,6 +112,7 @@ tracking-clicked = Sinundan ni { $who } ang isang link nang { $clicks ->
 tracking-maybe-opened = Maaaring binuksan ito ni { $who } (naglo-load ng mga larawan ang Apple Mail para sa privacy)
 tracking-seen-none = Wala pang nagbukas nito o sumunod sa isang link
 tracking-receipt = Nagpadala si { $who } ng read receipt
+tracking-receipt-read = Binasa ito ni { $who } (read receipt), { $when }
 tracking-receipt-displayed = Read receipt: binuksan ni { $who } ang mensahe mo
 tracking-receipt-other = Read receipt: dinelete o inasikaso ni { $who } ang mensahe mo nang hindi ito binubuksan
 

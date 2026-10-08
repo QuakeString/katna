@@ -158,6 +158,8 @@ struct Google {
     /// Task ID to (list, task JSON).
     tasks: BTreeMap<String, (String, Value)>,
     next: u32,
+    /// Moves that fail as if the connection dropped.
+    failing_moves: u32,
 }
 
 impl Google {
@@ -230,6 +232,13 @@ fn google(state: &mut Google, request: &Seen, _base: &str) -> (u16, Value) {
                 task[key] = value.clone();
             }
             (200, state.put(list, task))
+        }
+        ("POST", ["lists", _, "tasks", _, "move"]) if state.failing_moves > 0 => {
+            state.failing_moves -= 1;
+            (
+                503,
+                json!({ "error": { "code": 503, "message": "Unavailable" } }),
+            )
         }
         ("POST", ["lists", list, "tasks", id, "move"]) => {
             let Some((_, mut task)) = state.tasks.get(*id).cloned() else {
@@ -547,6 +556,82 @@ fn a_task_dragged_here_moves_on_google() {
 }
 
 #[test]
+fn a_new_task_is_sent_once_when_its_move_fails() {
+    let mut fake = Google::default();
+    fake.lists.insert("L0".into(), "My Tasks".into());
+    fake.put(
+        "L0",
+        json!({ "id": "A", "title": "a", "status": "needsAction", "position": "1" }),
+    );
+    fake.failing_moves = 1;
+    let (api, fake) = serve(fake, google);
+    let service = google_service(&api);
+    let (_dir, store, account) = store();
+    store
+        .lock()
+        .unwrap()
+        .set_account_settings(
+            account,
+            &katna_core::AccountSettings {
+                oauth: Some(OAuthProvider::Google),
+                ..katna_core::AccountSettings::default()
+            },
+        )
+        .unwrap();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let mine = account_lists(&store)[0].id;
+    let a = store.lock().unwrap().tasks_in(mine).unwrap()[0].id;
+    // Added and dragged under `a` before it was ever sent.
+    let new = store
+        .lock()
+        .unwrap()
+        .add_task_to(
+            mine,
+            None,
+            &TaskFields {
+                title: "walk the dog".into(),
+                ..TaskFields::default()
+            },
+        )
+        .unwrap();
+    assert!(
+        store
+            .lock()
+            .unwrap()
+            .place_task(new, mine, Some(a))
+            .unwrap()
+    );
+
+    // Made on Google, then the move fails: the round stops there.
+    assert!(smol::block_on(sync_account(&service, &store, account)).is_err());
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+
+    let titles = |list: &str| -> Vec<String> {
+        let fake = fake.lock().unwrap();
+        fake.0
+            .tasks
+            .values()
+            .filter(|(l, _)| l == list)
+            .map(|(_, t)| t["title"].as_str().unwrap().to_owned())
+            .collect()
+    };
+    assert_eq!(
+        titles("L0").iter().filter(|t| *t == "walk the dog").count(),
+        1
+    );
+    assert_eq!(google_order(&fake, "L0"), ["a", "walk the dog"]);
+    let here: Vec<String> = store
+        .lock()
+        .unwrap()
+        .tasks_in(mine)
+        .unwrap()
+        .into_iter()
+        .map(|t| t.title)
+        .collect();
+    assert_eq!(here, ["a", "walk the dog"]);
+}
+
+#[test]
 fn google_asks_only_for_changes_after_the_first_pull() {
     let mut fake = Google::default();
     fake.lists.insert("L0".into(), "My Tasks".into());
@@ -660,6 +745,8 @@ struct Graph {
     next: u32,
     /// Task ID to its checklist items.
     checks: BTreeMap<String, Vec<Value>>,
+    /// Task ID to its attachments, with their content.
+    files: BTreeMap<String, Vec<Value>>,
 }
 
 fn graph(state: &mut Graph, request: &Seen, base: &str) -> (u16, Value) {
@@ -755,6 +842,55 @@ fn graph(state: &mut Graph, request: &Seen, base: &str) -> (u16, Value) {
         ("DELETE", ["lists", _, "tasks", task, "checklistItems", id]) => {
             let checks = state.checks.entry((*task).to_owned()).or_default();
             checks.retain(|c| c["id"] != *id);
+            (204, Value::Null)
+        }
+        ("GET", ["lists", _, "tasks", task, "attachments"]) => {
+            let value: Vec<Value> = state
+                .files
+                .get(*task)
+                .into_iter()
+                .flatten()
+                .map(|f| {
+                    let mut f = f.clone();
+                    f.as_object_mut().unwrap().remove("contentBytes");
+                    f
+                })
+                .collect();
+            (200, json!({ "value": value }))
+        }
+        ("GET", ["lists", _, "tasks", task, "attachments", id]) => {
+            let file = state
+                .files
+                .get(*task)
+                .and_then(|files| files.iter().find(|f| f["id"] == *id));
+            match file {
+                Some(file) => (200, file.clone()),
+                None => (404, json!({ "error": { "code": "ErrorItemNotFound" } })),
+            }
+        }
+        ("POST", ["lists", _, "tasks", task, "attachments"]) => {
+            state.next += 1;
+            let mut file = request.body.clone();
+            file["id"] = json!(format!("A{}", state.next));
+            let size = file["contentBytes"].as_str().unwrap().len() * 3 / 4;
+            file["size"] = json!(size);
+            state
+                .files
+                .entry((*task).to_owned())
+                .or_default()
+                .push(file.clone());
+            if let Some((_, t)) = state.tasks.get_mut(*task) {
+                t["hasAttachments"] = json!(true);
+            }
+            (201, file)
+        }
+        ("DELETE", ["lists", _, "tasks", task, "attachments", id]) => {
+            let files = state.files.entry((*task).to_owned()).or_default();
+            files.retain(|f| f["id"] != *id);
+            let any = !files.is_empty();
+            if let Some((_, t)) = state.tasks.get_mut(*task) {
+                t["hasAttachments"] = json!(any);
+            }
             (204, Value::Null)
         }
         _ => (404, json!({ "error": { "code": "NotFound" } })),
@@ -941,6 +1077,125 @@ fn to_do_steps_are_checklist_items() {
     store.lock().unwrap().delete_task(water).unwrap();
     smol::block_on(sync_account(&service, &store, account)).unwrap();
     assert_eq!(fake.lock().unwrap().0.checks["X"].len(), 1);
+}
+
+#[test]
+fn to_do_keeps_the_star_labels_and_files() {
+    use base64::Engine;
+    let b64 = |data: &[u8]| base64::engine::general_purpose::STANDARD.encode(data);
+    let mut fake = Graph::default();
+    fake.lists
+        .insert("D".into(), ("Tasks".into(), "defaultList".into()));
+    fake.tasks.insert(
+        "X".into(),
+        (
+            "D".into(),
+            json!({ "id": "X", "@odata.etag": "W/\"1\"", "title": "Pay electricity bill",
+                    "status": "notStarted", "importance": "normal",
+                    "categories": ["Bills"], "hasAttachments": true }),
+        ),
+    );
+    fake.files.insert(
+        "X".into(),
+        vec![
+            json!({ "id": "F1", "name": "bill.pdf", "contentType": "application/pdf",
+                     "size": 4, "contentBytes": b64(b"%PDF") }),
+        ],
+    );
+    let (api, fake) = serve(fake, graph);
+    let service = graph_service(&api);
+    let (_dir, store, account) = store();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+
+    // To Do's categories are labels, and its attachment came with its
+    // content, read apart.
+    let list = account_lists(&store)[0].id;
+    let task = store.lock().unwrap().tasks_in(list).unwrap().remove(0);
+    assert!(!task.starred);
+    assert_eq!(task.labels, ["Bills"]);
+    let files = store.lock().unwrap().files_of_task(task.id).unwrap();
+    assert_eq!(files.len(), 1);
+    assert_eq!(files[0].name, "bill.pdf");
+    assert_eq!(files[0].remote_id.as_deref(), Some("F1"));
+    let bill = files[0].id;
+    assert_eq!(
+        store.lock().unwrap().task_file_data(bill).unwrap().unwrap(),
+        b"%PDF"
+    );
+
+    // Starred, labelled and given files here: the star is high
+    // importance, labels are categories, a small file is an attachment
+    // and one over 3 MB stays here.
+    let (note, big) = {
+        let mut store = store.lock().unwrap();
+        let fields = TaskFields {
+            starred: true,
+            labels: vec!["Bills".into(), "Home".into()],
+            ..TaskFields::of(&task)
+        };
+        store.edit_task(task.id, &fields).unwrap();
+        let note = store
+            .add_task_file(task.id, "meter.txt", "text/plain", b"4521 units")
+            .unwrap()
+            .unwrap();
+        let huge = vec![7u8; (graph::MAX_FILE + 1) as usize];
+        let big = store
+            .add_task_file(task.id, "scan.tiff", "image/tiff", &huge)
+            .unwrap()
+            .unwrap();
+        (note, big)
+    };
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    {
+        let fake = fake.lock().unwrap();
+        let (_, x) = &fake.0.tasks["X"];
+        assert_eq!(x["importance"], "high");
+        assert_eq!(x["categories"], json!(["Bills", "Home"]));
+        let files = &fake.0.files["X"];
+        assert_eq!(files.len(), 2);
+        assert_eq!(files[1]["name"], "meter.txt");
+        assert_eq!(files[1]["contentBytes"], b64(b"4521 units"));
+        assert_eq!(
+            files[1]["@odata.type"],
+            "#microsoft.graph.taskFileAttachment"
+        );
+    }
+    {
+        let store = store.lock().unwrap();
+        assert!(store.task_file(big).unwrap().unwrap().local_only);
+        assert!(store.task_file(note).unwrap().unwrap().remote_id.is_some());
+        assert!(store.pending_task_files(list).unwrap().is_empty());
+    }
+
+    // Removed here: removed on To Do.
+    store.lock().unwrap().remove_task_file(bill).unwrap();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert_eq!(fake.lock().unwrap().0.files["X"].len(), 1);
+
+    // Unstarred and relabelled in To Do, a file removed there: here too.
+    {
+        let mut fake = fake.lock().unwrap();
+        let (_, x) = fake.0.tasks.get_mut("X").unwrap();
+        x["importance"] = json!("normal");
+        x["categories"] = json!(["Work"]);
+        x["@odata.etag"] = json!("W/\"99\"");
+        fake.0.files.get_mut("X").unwrap().clear();
+        fake.0.tasks.get_mut("X").unwrap().1["hasAttachments"] = json!(false);
+        fake.0.changed.push("X".into());
+    }
+    assert!(smol::block_on(sync_account(&service, &store, account)).unwrap());
+    let task = store.lock().unwrap().task(task.id).unwrap().unwrap();
+    assert!(!task.starred);
+    assert_eq!(task.labels, ["Work"]);
+    let left: Vec<String> = store
+        .lock()
+        .unwrap()
+        .files_of_task(task.id)
+        .unwrap()
+        .into_iter()
+        .map(|f| f.name)
+        .collect();
+    assert_eq!(left, ["scan.tiff"], "the one kept here stays");
 }
 
 #[test]
@@ -1364,6 +1619,103 @@ fn zoho_tasks_sync_both_ways() {
     // Every call carried Zoho's own kind of token.
     let fake = fake.lock().unwrap();
     assert!(fake.1.iter().all(|s| s.auth == "Zoho-oauthtoken at-1"));
+}
+
+#[test]
+fn the_star_is_zohos_high_priority_and_labels_stay_here() {
+    let mut fake = Zoho::default();
+    fake.put(
+        "me",
+        None,
+        json!({ "id": "H", "title": "Renew passport", "status": "In Progress",
+                "priority": "High" }),
+    );
+    fake.put(
+        "me",
+        None,
+        json!({ "id": "L", "title": "Sort old photos", "status": "In Progress",
+                "priority": "Low" }),
+    );
+    let (base, fake) = serve(fake, zoho);
+    let service = zoho_service(&base, Some("ZohoMail.tasks.ALL"));
+    let (_dir, store, account) = store();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let list = account_lists(&store)[0].id;
+    let tasks = store.lock().unwrap().tasks_in(list).unwrap();
+    let high = tasks.iter().find(|t| t.title == "Renew passport").unwrap();
+    let low = tasks.iter().find(|t| t.title == "Sort old photos").unwrap();
+    assert!(high.starred);
+    assert!(!low.starred);
+
+    // Unstarred here: no priority. A label stays on this computer and
+    // sends nothing; the low priority of the other is left alone.
+    {
+        let mut store = store.lock().unwrap();
+        let fields = TaskFields {
+            starred: false,
+            ..TaskFields::of(high)
+        };
+        store.edit_task(high.id, &fields).unwrap();
+        let fields = TaskFields {
+            labels: vec!["Home".into()],
+            ..TaskFields::of(low)
+        };
+        store.edit_task(low.id, &fields).unwrap();
+        // A file stays here.
+        store
+            .add_task_file(low.id, "album.txt", "text/plain", b"2009")
+            .unwrap();
+    }
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    {
+        let fake = fake.lock().unwrap();
+        assert_eq!(fake.0.tasks["H"].2["priority"], "none");
+        assert_eq!(fake.0.tasks["L"].2["priority"], "Low");
+        assert!(
+            !fake
+                .1
+                .iter()
+                .any(|s| s.method == "PUT" && s.path == "/api/tasks/me/L")
+        );
+    }
+    let low = store.lock().unwrap().task(low.id).unwrap().unwrap();
+    assert_eq!(low.labels, ["Home"]);
+    let file = store
+        .lock()
+        .unwrap()
+        .files_of_task(low.id)
+        .unwrap()
+        .remove(0);
+    assert!(file.local_only);
+
+    // Starred here: high on Zoho; starred on Zoho: here.
+    {
+        let mut store = store.lock().unwrap();
+        let fields = TaskFields {
+            starred: true,
+            ..TaskFields::of(&low)
+        };
+        store.edit_task(low.id, &fields).unwrap();
+    }
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert_eq!(fake.lock().unwrap().0.tasks["L"].2["priority"], "high");
+    {
+        let mut fake = fake.lock().unwrap();
+        let (_, _, mut h) = fake.0.tasks["H"].clone();
+        h["priority"] = json!("High");
+        fake.0.put("me", None, h);
+    }
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let tasks = store.lock().unwrap().tasks_in(list).unwrap();
+    assert!(tasks.iter().all(|t| t.starred), "{tasks:?}");
+    assert_eq!(
+        tasks
+            .iter()
+            .find(|t| t.title == "Sort old photos")
+            .unwrap()
+            .labels,
+        ["Home"]
+    );
 }
 
 #[test]

@@ -53,7 +53,7 @@ calendar-account-signed-in = Umeingia tena kwenye { $address }. Inapata kalenda 
 calendar-account-sign-in-refused = { $provider } haikuruhusu Katna kuingia. Jaribu tena, na uruhusu ufikiaji wa kalenda zako.
 calendar-account-refused = Seva haikukubali nenosiri. Yahoo, iCloud, Zoho na nyinginezo zinahitaji nenosiri la programu.
 calendar-account-change-password = Badilisha nenosiri
-calendar-account-change-password-tooltip = Fungua Mipangilio > Akaunti
+calendar-account-change-password-tooltip = Andika nenosiri jipya; Katna hulikagua na seva
 calendar-account-not-enabled = Ufikiaji wa kalenda kwa Katna bado haujawashwa.
 calendar-account-failed = Kalenda hazikuweza kusomwa.
 calendar-account-error = Kalenda hazikuweza kusomwa: { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = Jaribu tena
 calendar-account-try-again-tooltip = Kagua kalenda za akaunti hii tena sasa
 calendar-account-fixing = Inashughulikia…
 calendar-birthdays = Siku za kuzaliwa
+calendar-tasks = Majukumu
 calendar-birthday-of = Siku ya kuzaliwa ya { $name }
 calendar-empty-title = Bado hakuna kalenda
 calendar-empty-text = Katna huonyesha hapa kalenda za akaunti zako za Google na Microsoft zikishasawazishwa, pamoja na za seva nyingine zinazotumia CalDAV.
@@ -127,6 +128,7 @@ calendar-event-details = Maelezo ya tukio
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = Tukio jipya
+calendar-event-window-title = Tukio jipya
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Fungua siku
 calendar-menu-duplicate = Nakili

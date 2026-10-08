@@ -287,11 +287,24 @@ impl Table {
     }
 }
 
+/// A designed piece of HTML kept as written: a signature made from a
+/// layout, pasted or imported. The editor shows it but does not edit it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HtmlBlock {
+    /// Mail-safe HTML; its pictures are `cid:katna-N`, `N` an index into
+    /// `images`.
+    pub html: Arc<str>,
+    /// What it says as plain text.
+    pub text: Arc<str>,
+    pub images: Vec<Image>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Block {
     Para(Para),
     Table(Table),
     Image(Image),
+    Html(HtmlBlock),
 }
 
 /// Names a paragraph: a top-level one, or a table cell `(row, col)`.
@@ -652,7 +665,7 @@ impl Doc {
                         }
                     }
                 }
-                Block::Image(_) => {}
+                Block::Image(_) | Block::Html(_) => {}
             }
         }
         paths
@@ -864,7 +877,7 @@ impl Doc {
         }
         let prev = path.block - 1;
         match &self.blocks[prev] {
-            Block::Image(_) => {
+            Block::Image(_) | Block::Html(_) => {
                 self.blocks.remove(prev);
                 Pos::new(Path::top(prev), 0)
             }
@@ -897,7 +910,7 @@ impl Doc {
         }
         let next = path.block + 1;
         match self.blocks.get(next) {
-            Some(Block::Image(_)) => {
+            Some(Block::Image(_) | Block::Html(_)) => {
                 self.blocks.remove(next);
                 here
             }
@@ -1149,6 +1162,7 @@ impl Doc {
                     }
                 }
                 Block::Image(image) => blocks.push(Block::Image(image.clone())),
+                Block::Html(html) => blocks.push(Block::Html(html.clone())),
             }
         }
         blocks
@@ -1274,14 +1288,16 @@ impl Doc {
                 };
                 style != ParaStyle::default() || para.runs.iter().any(|r| !r.style.is_plain())
             }
-            Block::Table(_) | Block::Image(_) => true,
+            Block::Table(_) | Block::Image(_) | Block::Html(_) => true,
         })
     }
 
+    /// Every picture: those in the text and those of designed HTML.
     pub fn images(&self) -> impl Iterator<Item = &Image> {
-        self.blocks.iter().filter_map(|b| match b {
-            Block::Image(image) => Some(image),
-            _ => None,
+        self.blocks.iter().flat_map(|b| match b {
+            Block::Image(image) => std::slice::from_ref(image),
+            Block::Html(html) => html.images.as_slice(),
+            _ => &[],
         })
     }
 
@@ -1557,6 +1573,7 @@ mod tests {
                 Block::Para(p) => p.text.clone(),
                 Block::Table(_) => "<table>".to_owned(),
                 Block::Image(_) => "<img>".to_owned(),
+                Block::Html(_) => "<html>".to_owned(),
             })
             .collect()
     }

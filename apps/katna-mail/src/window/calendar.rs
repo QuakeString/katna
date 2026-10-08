@@ -8,24 +8,26 @@
 //! expanded by `katna_dav`. Google Calendar's keys work: T today, J or N
 //! next, K or P back, D W M A (or 1 2 3 4) for the views.
 
+use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, App, ClickEvent, Context, Div, FocusHandle, FontWeight,
     HighlightStyle, InteractiveText, KeyBinding, MouseButton, Pixels, Point, ScrollHandle,
-    SharedString, StyledText, Task, UnderlineStyle, Window, anchored, canvas, deferred, div,
-    ease_out_quint, prelude::*, rgba,
+    SharedString, StyledText, Task, UnderlineStyle, Window, canvas, deferred, div, ease_out_quint,
+    prelude::*, rgba,
 };
 use jiff::civil::{Date, DateTime, Time};
 use jiff::tz::TimeZone;
 use jiff::{ToSpan, Zoned};
 use katna_core::Paths;
-use katna_core::config::CalendarDensity;
+use katna_core::config::{AppKind, CalendarDensity};
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
 use katna_store::calendar::{Calendar, EventKind, EventStatus};
 use katna_store::{Mode, Store};
+use katna_ui::anchored;
 use katna_ui::px;
 
 use super::account_status::{AccountStatus, Of, Say};
@@ -236,6 +238,8 @@ pub(super) struct CalendarPage {
     hidden: HashSet<i64>,
     /// Accounts whose calendars are folded away in the side column.
     folded: HashSet<Option<i64>>,
+    /// Each account group's glide as it folds and opens.
+    folds: RefCell<HashMap<Option<i64>, Rc<crate::widgets::Fold>>>,
     loading: bool,
     error: Option<String>,
     task: Option<Task<()>>,
@@ -268,6 +272,11 @@ pub(super) struct CalendarPage {
 }
 
 impl CalendarPage {
+    /// Account group `account`'s fold, made on first use.
+    pub(super) fn fold(&self, account: Option<i64>) -> Rc<crate::widgets::Fold> {
+        self.folds.borrow_mut().entry(account).or_default().clone()
+    }
+
     pub(super) fn new(custom_days: u8, cx: &mut App) -> Self {
         let today = Zoned::now().date();
         Self {
@@ -279,6 +288,7 @@ impl CalendarPage {
             calendars: Rc::new(Vec::new()),
             hidden: HashSet::new(),
             folded: HashSet::new(),
+            folds: RefCell::default(),
             loading: false,
             error: None,
             task: None,
@@ -481,12 +491,14 @@ pub(super) fn read(
     from: i64,
     to: i64,
     tz: &TimeZone,
-    birthdays: bool,
+    birthdays: Option<bool>,
+    left_out: &[i64],
 ) -> katna_store::Result<(Vec<Calendar>, Vec<Occurrence>)> {
     let store = Store::open(paths, Mode::ReadOnly)?;
     let mut calendars = store.calendars()?;
     let rows = store.event_rows_in_range(from, to)?;
     let mut occurrences = katna_dav::occurrences(rows, from, to, tz);
+    leave_out(left_out, &mut calendars, &mut occurrences);
     birthdays::add_birthdays(
         &store,
         birthdays,
@@ -499,31 +511,62 @@ pub(super) fn read(
     Ok((calendars, occurrences))
 }
 
+/// Drops the calendars of the accounts `left_out` of the Calendar
+/// (Settings > Calendar) and their events.
+pub(super) fn leave_out(
+    left_out: &[i64],
+    calendars: &mut Vec<Calendar>,
+    occurrences: &mut Vec<Occurrence>,
+) {
+    if left_out.is_empty() {
+        return;
+    }
+    let out = |c: &Calendar| c.account.is_some_and(|a| left_out.contains(&a.0));
+    let gone: HashSet<i64> = calendars.iter().filter(|c| out(c)).map(|c| c.id).collect();
+    calendars.retain(|c| !out(c));
+    occurrences.retain(|o| !gone.contains(&o.event.calendar_id));
+}
+
 /// Reads the calendars alone, for an event made before the page has read
-/// them.
-pub(super) fn read_calendars(paths: &Paths) -> Vec<Calendar> {
-    Store::open(paths, Mode::ReadOnly)
+/// them; none of the accounts `left_out` of the Calendar.
+pub(super) fn read_calendars(paths: &Paths, left_out: &[i64]) -> Vec<Calendar> {
+    let mut calendars = Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.calendars())
         .unwrap_or_else(|err| {
             tracing::warn!(%err, "reading the calendars failed");
             Vec::new()
-        })
+        });
+    leave_out(left_out, &mut calendars, &mut Vec::new());
+    calendars
 }
 
 impl MailWindow {
+    /// The accounts left out of the Calendar (Settings > Calendar), by
+    /// row ID.
+    pub(in crate::window) fn calendar_left_out(&self) -> Vec<i64> {
+        self.hidden_ids(AppKind::Calendar)
+            .into_iter()
+            .map(|a| a.0)
+            .collect()
+    }
+
     /// Reads what the Calendar page shows, when it is on show.
     pub(super) fn load_calendar(&mut self, cx: &mut Context<Self>) {
         let (first, end) = self.calendar.days();
         let tz = self.tz.clone();
         let (from, to) = (midnight(first, &tz), midnight(end, &tz));
         let paths = self.paths.clone();
-        let birthdays = !self.config.contacts.hide_birthdays;
+        // No Birthdays calendar while Contacts is off.
+        let birthdays = self
+            .app_on(super::apps::App::Contacts)
+            .then_some(!self.config.contacts.hide_birthdays);
+        let left_out = self.calendar_left_out();
         self.calendar.loading = true;
         self.load_account_status(Of::Calendar, cx);
         self.calendar.task = Some(cx.spawn(async move |this, cx| {
             let read = cx
                 .background_executor()
-                .spawn(async move { read(&paths, from, to, &tz, birthdays) })
+                .spawn(async move { read(&paths, from, to, &tz, birthdays, &left_out) })
                 .await;
             this.update(cx, |this, cx| {
                 let page = &mut this.calendar;
@@ -724,7 +767,11 @@ impl MailWindow {
         }
     }
 
-    fn set_calendar_density(&mut self, density: CalendarDensity, cx: &mut Context<Self>) {
+    pub(super) fn set_calendar_density(
+        &mut self,
+        density: CalendarDensity,
+        cx: &mut Context<Self>,
+    ) {
         self.config.calendar.density = density;
         self.save_config();
         self.menu = None;
@@ -735,6 +782,18 @@ impl MailWindow {
         self.config.calendar.second_time_zone = name;
         self.save_config();
         self.menu = None;
+        cx.notify();
+    }
+
+    /// How many days the custom view shows, picked in Settings: the
+    /// calendar stays on the view it shows.
+    pub(super) fn keep_custom_days(&mut self, days: u8, cx: &mut Context<Self>) {
+        self.config.calendar.custom_days = days;
+        self.save_config();
+        self.calendar.custom_days = days;
+        if self.calendar.view == CalView::Days {
+            self.calendar_moved(cx);
+        }
         cx.notify();
     }
 
@@ -953,7 +1012,7 @@ impl MailWindow {
             self.load_calendar(cx);
         }
         let main = if let Some(err) = &self.calendar.error {
-            crate::widgets::placeholder(&tr!("calendar-read-failed", error = err.clone()), th)
+            self.placeholder(tr!("calendar-read-failed", error = err.clone()), th)
         } else if self.calendar.loaded.is_none() {
             loading(th)
         } else if self.calendar.calendars.is_empty() {
@@ -1198,7 +1257,8 @@ impl MailWindow {
                             .font_weight(FontWeight::MEDIUM)
                             .text_color(rgba(th.text))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .focus_ring(th)
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.toggle_menu(Menu::CalendarViews, cx)
@@ -1359,11 +1419,13 @@ impl MailWindow {
     }
 
     fn render_calendar_list(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let left_out = self.hidden_ids(AppKind::Calendar);
         // Every account shows, also one whose calendars did not come, with
-        // the reason under it.
+        // the reason under it; not one left out of the Calendar.
         let mut groups: Vec<(Option<i64>, Vec<&Calendar>)> = self
             .accounts
             .iter()
+            .filter(|a| !left_out.contains(&a.id))
             .map(|a| (Some(a.id.0), Vec::new()))
             .collect();
         for calendar in self.calendar.calendars.iter() {
@@ -1380,6 +1442,7 @@ impl MailWindow {
             .collect();
         let groups = groups.into_iter().map(|(account, calendars)| {
             let folded = self.calendar.folded.contains(&account);
+            let fold = self.calendar.fold(account);
             let name = match account {
                 Some(id) => names
                     .get(&id)
@@ -1412,7 +1475,8 @@ impl MailWindow {
                     .gap(px(12.0))
                     .rounded_full()
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .focus_ring(th)
                     .on_click(cx.listener(move |this, _, _, cx| this.toggle_calendar(id, cx)))
                     .on_mouse_down(
@@ -1453,8 +1517,10 @@ impl MailWindow {
                         .items_center()
                         .rounded_full()
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", None, th))
                         .on_click(cx.listener(move |this, _, _, cx| {
+                            this.calendar.fold(account).turn();
                             if !this.calendar.folded.remove(&account) {
                                 this.calendar.folded.insert(account);
                             }
@@ -1474,20 +1540,30 @@ impl MailWindow {
                                 .text_color(rgba(th.text))
                                 .child(name),
                         )
-                        .child(icon(
-                            if folded { "chevron-down" } else { "chevron-up" },
+                        .child(crate::widgets::fold_arrow(
+                            &format!("calendar-arrow-{account:?}"),
+                            &fold,
+                            !folded,
                             th.text_dim,
                             20.0,
                         )),
                 )
                 .children(note)
-                .when(!folded, |d| d.children(rows).children(new_here))
+                .child(crate::widgets::fold_box(
+                    &format!("calendar-fold-{account:?}"),
+                    &fold,
+                    div()
+                        .flex()
+                        .flex_col()
+                        .when(!folded, |d| d.children(rows).children(new_here)),
+                ))
         });
         div()
             .flex()
             .flex_col()
             .gap(px(4.0))
             .children(groups)
+            .children(self.render_tasks_switch(th, cx))
             .into_any_element()
     }
 
@@ -2212,7 +2288,7 @@ impl MailWindow {
             }
         }
         // Tasks too, in the accent, on days without events.
-        for (task, _) in self.dated_tasks() {
+        for (task, _) in self.calendar_tasks() {
             if let Some((day, _)) = self.task_place(task)
                 && day.year() == year.year()
             {
@@ -2388,6 +2464,8 @@ impl MailWindow {
                 .text_color(rgba(th.text_dim))
                 .child(name.to_uppercase())
         });
+        // A task dragged to another day is let go anywhere on the month.
+        let drop = cx.listener(|this, _, _, cx| this.drop_dragged_task(cx));
         let weeks = (0..6).map(|week| {
             let cells = (0..7).map(|ix| {
                 let day = first.checked_add((week * 7 + ix).days()).unwrap_or(first);
@@ -2397,13 +2475,8 @@ impl MailWindow {
                     .iter()
                     .filter(|o| o.start < next && (o.end > start || o.start == start))
                     .collect();
-                let mut day_tasks = self.tasks_on(day);
-                // Three lines, or two and "N more".
-                let total = mine.len() + day_tasks.len();
-                let room = if total > 3 { 2 } else { 3 };
-                let shown = &mine[..mine.len().min(room)];
-                day_tasks.truncate(room - shown.len());
-                let more = total - shown.len() - day_tasks.len();
+                let (count, day_tasks, more) = self.month_lines(day, mine.len());
+                let shown = &mine[..count];
                 let task_lines = self.render_month_tasks(day_tasks, day, th, cx);
                 let is_today = day == today;
                 let in_month = day.month() == month;
@@ -2470,6 +2543,7 @@ impl MailWindow {
                 });
                 div()
                     .id(SharedString::from(format!("month-day-{day}")))
+                    .on_mouse_move(self.month_drag_over(day, cx))
                     .on_mouse_down(
                         MouseButton::Right,
                         self.calendar_menu_on(CalTarget::Slot { day, time: None }, cx),
@@ -2539,7 +2613,8 @@ impl MailWindow {
                                 .font_weight(FontWeight::MEDIUM)
                                 .text_color(rgba(th.text_dim))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     cx.stop_propagation();
                                     this.open_calendar_day(day, Some(CalView::Day), cx)
@@ -2558,6 +2633,8 @@ impl MailWindow {
                 .children(cells)
         });
         div()
+            .id("calendar-month")
+            .on_mouse_up(MouseButton::Left, drop)
             .size_full()
             .flex()
             .flex_col()
@@ -2601,7 +2678,7 @@ impl MailWindow {
         }
         days.sort_by_key(|(d, _)| *d);
         if days.is_empty() {
-            return crate::widgets::placeholder(&tr!("calendar-schedule-empty"), th);
+            return self.placeholder(tr!("calendar-schedule-empty"), th);
         }
         let rows = days.into_iter().map(|(day, list)| {
             let events = list.into_iter().map(|occurrence| {
@@ -2667,7 +2744,8 @@ impl MailWindow {
             .gap(px(16.0))
             .rounded(px(8.0))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .child(
                 div()
                     .flex_none()
@@ -2785,7 +2863,8 @@ impl MailWindow {
                 time = time_range(occurrence.start, occurrence.end, tz)
             )
         };
-        let line = |name: &'static str, text: String| {
+        // A detail's text can be selected and copied (`MailWindow::copyable`).
+        let line = |name: &'static str, text: gpui::Div| {
             div()
                 .flex()
                 .flex_row()
@@ -2798,13 +2877,11 @@ impl MailWindow {
                         .child(icon(name, th.text_dim, 20.0)),
                 )
                 .child(
-                    div()
-                        .flex_1()
+                    text.flex_1()
                         .min_w_0()
                         .text_size(px(14.0))
                         .line_height(px(20.0))
-                        .text_color(rgba(th.text))
-                        .child(text),
+                        .text_color(rgba(th.text)),
                 )
         };
         let guests = data.attendees.len();
@@ -2947,18 +3024,16 @@ impl MailWindow {
                         .flex_col()
                         .gap(px(4.0))
                         .child(
-                            div()
+                            self.copyable(title, th)
                                 .text_size(px(22.0))
                                 .line_height(px(28.0))
                                 .text_color(rgba(th.text))
-                                .when(data.status == EventStatus::Cancelled, |d| d.line_through())
-                                .child(title),
+                                .when(data.status == EventStatus::Cancelled, |d| d.line_through()),
                         )
                         .child(
-                            div()
+                            self.copyable(when, th)
                                 .text_size(px(14.0))
-                                .text_color(rgba(th.text_dim))
-                                .child(when),
+                                .text_color(rgba(th.text_dim)),
                         )
                         .when(
                             !data.rrule.is_empty() || occurrence.series_start.is_some(),
@@ -3039,10 +3114,10 @@ impl MailWindow {
             })
             .when_some(
                 kind_icon(data.kind).filter(|_| data.kind != EventKind::Birthday),
-                |d, name| d.child(line(name, kind_label(data.kind))),
+                |d, name| d.child(line(name, self.copyable(kind_label(data.kind), th))),
             )
             .when(!data.location.is_empty(), |d| {
-                d.child(line("pin", data.location.clone()))
+                d.child(line("pin", self.copyable(data.location.clone(), th)))
             })
             .when(guests > 0, |d| {
                 let head = format!(
@@ -3056,6 +3131,7 @@ impl MailWindow {
                         waiting = answers("needs_action")
                     )
                 );
+                let head = line("people", self.copyable(head, th));
                 let rows = data.attendees.iter().take(20).map(|attendee| {
                     let name = if attendee.name.is_empty() {
                         attendee.email.clone()
@@ -3105,7 +3181,7 @@ impl MailWindow {
                                         .flex_row()
                                         .items_center()
                                         .gap(px(6.0))
-                                        .child(div().min_w_0().truncate().child(name))
+                                        .child(self.copyable(name, th).min_w_0().truncate())
                                         .children(self.muted_mark(&attendee.email, 14.0, th)),
                                 )
                                 .when(attendee.organizer || attendee.optional, |d| {
@@ -3122,7 +3198,7 @@ impl MailWindow {
                                 }),
                         )
                 });
-                d.child(line("people", head)).child(
+                d.child(head).child(
                     div()
                         .pl(px(36.0))
                         .flex()
@@ -3134,12 +3210,13 @@ impl MailWindow {
             .when(!data.description.is_empty(), |d| {
                 d.child(self.render_event_description(&data.description, th))
             })
-            // Nothing to take notes of on a birthday.
-            .when(data.kind != EventKind::Birthday, |d| {
-                d.child(self.render_event_notes(occurrence, th, cx))
-            })
+            // Nothing to take notes of on a birthday, nor with Notes off.
+            .when(
+                data.kind != EventKind::Birthday && self.config.app_on(AppKind::Notes),
+                |d| d.child(self.render_event_notes(occurrence, th, cx)),
+            )
             .when_some(calendar, |d, calendar| {
-                d.child(line("calendar", calendar_name(calendar)))
+                d.child(line("calendar", self.copyable(calendar_name(calendar), th)))
             });
         // Only the details scroll: the title above and the answers
         // below stay in sight.
@@ -3242,8 +3319,10 @@ impl MailWindow {
                             .child(
                                 card.with_animation(
                                     ("event-card", occurrence.event.id as usize),
-                                    Animation::new(std::time::Duration::from_millis(160))
-                                        .with_easing(ease_out_quint()),
+                                    Animation::new(katna_ui::motion::time(
+                                        std::time::Duration::from_millis(160),
+                                    ))
+                                    .with_easing(ease_out_quint()),
                                     |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
                                 ),
                             ),
@@ -3423,6 +3502,38 @@ mod tests {
             end,
             series_start: None,
         }
+    }
+
+    #[test]
+    fn an_account_left_out_takes_its_calendars_and_events() {
+        use katna_core::account::AccountId;
+        use katna_store::calendar::{CalendarAccess, CalendarSource};
+        let calendar = |id: i64, account: Option<i64>| Calendar {
+            id,
+            account: account.map(AccountId),
+            source: CalendarSource::Local,
+            remote_id: String::new(),
+            name: String::new(),
+            color: String::new(),
+            access: CalendarAccess::Owner,
+            is_primary: false,
+            hidden: false,
+            time_zone: String::new(),
+            sync_token: None,
+            position: 0,
+        };
+        let mut calendars = vec![
+            calendar(1, Some(7)),
+            calendar(2, Some(8)),
+            calendar(3, None),
+        ];
+        let mut occurrences = vec![occurrence(10, 0, 1), occurrence(11, 0, 1)];
+        Arc::get_mut(&mut occurrences[1].event).unwrap().calendar_id = 2;
+        leave_out(&[7], &mut calendars, &mut occurrences);
+        let ids: Vec<i64> = calendars.iter().map(|c| c.id).collect();
+        assert_eq!(ids, [2, 3], "this computer's calendar stays");
+        let events: Vec<i64> = occurrences.iter().map(|o| o.event.id).collect();
+        assert_eq!(events, [11]);
     }
 
     #[test]

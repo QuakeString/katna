@@ -166,6 +166,7 @@ files-share-remove = Ondoa ufikiaji
 files-share-copy-link = Nakili kiungo
 files-share-share = Shiriki
 files-share-done = Imekamilika
+files-share-close = Funga
 files-share-sharing = Inashiriki…
 files-share-shared = { $count ->
     [one] Imeshirikiwa na mtu 1

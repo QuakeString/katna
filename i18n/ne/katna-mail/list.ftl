@@ -39,6 +39,7 @@ list-results = “{ $query }” का लागि नतिजाहरू
 list-results-corrected = “{ $query }” का लागि नतिजाहरू देखाउँदै
 list-search-instead = यसको सट्टा “{ $query }” खोज्नुहोस्
 list-files-more = +{ $count }
+list-replied = तपाईंले जवाफ दिनुभयो
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -338,6 +339,8 @@ list-empty-tab = { $tab } मा कुनै मेल छैन।
 list-empty-tab-unknown = यो ट्याबमा कुनै मेल छैन।
 list-empty-folder = { $folder } मा कुनै सन्देश छैन।
 list-empty-folder-unknown = यो फोल्डरमा कुनै सन्देश छैन।
+list-empty-waiting = जवाफको पर्खाइमा केही पनि छैन।
+list-empty-reminders = कुनै रिमाइन्डर छैन। थप्न कुनै मेलमा H थिच्नुहोस्।
 list-first-sync = तपाईंको मेल ल्याउँदै…
 list-first-sync-detail = मेल आइपुग्दै गर्दा यहाँ देखिन्छ।
 
@@ -357,6 +360,14 @@ row-tracking-clicked = { $recipients } मध्ये { $opened } जनाल�
 row-pin = माथि पिन गर्नुहोस्
 row-unpin = अनपिन गर्नुहोस्
 row-snoozed-until = { $when } सम्म स्नुज गरिएको
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = आज
+snoozed-group-tomorrow = भोलि
+snoozed-group-this-week = यो हप्ता
+snoozed-group-later = पछि
+row-follow-up-step = फलो-अप { $steps } मध्ये { $step } · { $date }
+row-follow-up-waiting = फलो-अप पर्खाइमा
+row-reminder = रिमाइन्डर { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -379,6 +390,7 @@ menu-not-important = महत्त्वपूर्ण होइन भनी
 menu-pin = माथि पिन गर्नुहोस्
 menu-unpin = अनपिन गर्नुहोस्
 menu-snooze = स्नुज गर्नुहोस्
+menu-remind = मलाई सम्झाउनुहोस्
 menu-unsnooze = स्नुज हटाउनुहोस्
 menu-add-to-tasks = कार्यमा थप्नुहोस्
 menu-schedule-meeting = बैठक तय गर्नुहोस्
@@ -394,7 +406,26 @@ menu-follow-up = अनुगमन
 # Pin to top.
 menu-more = थप
 menu-move-to-heading = यहाँ सार्नुहोस्:
+menu-move-to-search = यहाँ सार्नुहोस्…
+menu-label-as = लेबल लगाउनुहोस्
+menu-label-as-search = लेबल लगाउनुहोस्…
+menu-no-folder = “{ $name }” नामको कुनै फोल्डर छैन
+menu-no-label = “{ $name }” नामको कुनै लेबल छैन
+menu-create-folder = “{ $name }” बनाउनुहोस्
+menu-always-move = { $name } बाट आउने मेल सधैँ यहाँ सार्नुहोस्
+toast-always-move-failed = मेल सारियो, तर नियम बनाइएन: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } वार्तालाप
+       *[other] { $count } वार्तालापहरू
+    }
+   *[message] { $count ->
+        [one] { $count } सन्देश
+       *[other] { $count } सन्देशहरू
+    }
+}
 menu-find-from = { $name } बाट आएका इमेलहरू खोज्नुहोस्
+menu-make-rule = नियम बनाउनुहोस्…
 
 ## Snackbar after an action on mail in the list
 
@@ -428,6 +459,8 @@ toast-moved = { $kind ->
        *[other] { $count } सन्देशहरू सारिए।
     }
 }
+toast-label-added = लेबल “{ $label }” थपियो।
+toast-label-removed = लेबल “{ $label }” हटाइयो।
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] वार्तालापमा तारा लगाइयो।

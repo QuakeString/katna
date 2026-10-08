@@ -232,6 +232,7 @@ fn local_edits_win_until_sent_and_extras_stay() {
     let mut todo = remote("A", "pay rent!");
     todo.etag = "e2".into();
     todo.extras = Some(TaskExtras::default());
+    todo.starred = Some(false);
     store.sync_tasks(list, &[todo], false).unwrap();
     let task = store.task(id).unwrap().unwrap();
     assert_eq!(task.due_time, Some(9 * 60));
@@ -547,4 +548,126 @@ fn another_services_order_is_kept_here() {
     ];
     assert!(store.sync_tasks(list, &changed, true).unwrap());
     assert_eq!(titles(&store.tasks_in(list).unwrap()), flipped);
+}
+
+#[test]
+fn labels_are_kept_and_shared_with_notes() {
+    let (_dir, mut store) = store();
+    let work = account(&mut store, "work@example.test");
+    let list = gmail_list(&mut store, work);
+    let fields = TaskFields {
+        title: "pay electricity".into(),
+        labels: vec!["Home".into(), "Bills".into(), "Home".into(), " ".into()],
+        ..TaskFields::default()
+    };
+    let id = store.add_task_to(list, None, &fields).unwrap();
+    assert_eq!(store.task(id).unwrap().unwrap().labels, ["Home", "Bills"]);
+
+    // A service without labels (None) leaves them; one with labels wins.
+    let pending = store.pending_tasks(list).unwrap().remove(0);
+    store
+        .task_pushed(id, pending.stamp, &remote("A", "pay electricity"), true)
+        .unwrap();
+    let mut back = remote("A", "pay electricity");
+    back.etag = "e2".into();
+    store.sync_tasks(list, &[back.clone()], false).unwrap();
+    assert_eq!(store.task(id).unwrap().unwrap().labels, ["Home", "Bills"]);
+    back.etag = "e3".into();
+    back.labels = Some(vec!["Work".into()]);
+    back.starred = Some(true);
+    store.sync_tasks(list, &[back], false).unwrap();
+    let task = store.task(id).unwrap().unwrap();
+    assert_eq!(task.labels, ["Work"]);
+    assert!(task.starred);
+
+    // Notes' labels and tasks' labels are one set.
+    let note = crate::notes::Note {
+        labels: vec!["home".into(), "Trip".into()],
+        ..crate::notes::Note::default()
+    };
+    store.save_note(&note).unwrap();
+    assert_eq!(store.labels_in_use().unwrap(), ["home", "Trip", "Work"]);
+}
+
+#[test]
+fn files_go_to_the_service_or_stay_here() {
+    let (_dir, mut store) = store();
+    let work = account(&mut store, "work@example.test");
+    let list = gmail_list(&mut store, work);
+    store
+        .sync_tasks(list, &[remote("A", "file taxes")], true)
+        .unwrap();
+    let id = store.tasks_in(list).unwrap()[0].id;
+    let file = store
+        .add_task_file(id, "/tmp/Form 16.pdf", "application/pdf", b"%PDF-1.7")
+        .unwrap()
+        .unwrap();
+    let files = store.files_of_task(id).unwrap();
+    assert_eq!(files[0].name, "Form 16.pdf");
+    assert_eq!(files[0].size, 8);
+    assert_eq!(store.task_file_data(file).unwrap().unwrap(), b"%PDF-1.7");
+
+    // Waiting to go; the service took it.
+    let pending = store.pending_task_files(list).unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].task_remote, "A");
+    store.task_file_pushed(file, Some("F1")).unwrap();
+    assert!(store.pending_task_files(list).unwrap().is_empty());
+
+    // The service lists it and one more, which Katna asks for.
+    let theirs = RemoteFile {
+        remote_id: "F2".into(),
+        name: "receipt.png".into(),
+        mime: "image/png".into(),
+        size: 3,
+        data: None,
+    };
+    let ours = RemoteFile {
+        remote_id: "F1".into(),
+        ..RemoteFile::default()
+    };
+    let synced = store
+        .sync_task_files(list, "A", &[ours.clone(), theirs.clone()])
+        .unwrap();
+    assert_eq!(synced.wanted, std::slice::from_ref(&theirs));
+    let with_data = RemoteFile {
+        data: Some(b"png".to_vec()),
+        ..theirs
+    };
+    assert!(store.add_remote_task_file(list, "A", &with_data).unwrap());
+    assert_eq!(store.files_of_task(id).unwrap().len(), 2);
+
+    // Removed on the service: gone here.
+    let synced = store.sync_task_files(list, "A", &[ours]).unwrap();
+    assert!(synced.changed);
+    assert_eq!(store.files_of_task(id).unwrap().len(), 1);
+
+    // Removed here: a tombstone until the service removed it.
+    assert!(store.remove_task_file(file).unwrap());
+    assert!(store.files_of_task(id).unwrap().is_empty());
+    let pending = store.pending_task_files(list).unwrap();
+    assert!(pending[0].deleted);
+    store.forget_task_file(file).unwrap();
+    assert!(store.pending_task_files(list).unwrap().is_empty());
+
+    // One the service can't keep stays here, and is no longer pending.
+    let local = store
+        .add_task_file(id, "big.zip", "", &[0; 16])
+        .unwrap()
+        .unwrap();
+    store.task_file_pushed(local, None).unwrap();
+    assert!(store.pending_task_files(list).unwrap().is_empty());
+    let kept = store.task_file(local).unwrap().unwrap();
+    assert!(kept.local_only);
+    assert_eq!(kept.mime, "application/octet-stream");
+    // The service's list doesn't drop it.
+    store.sync_task_files(list, "A", &[]).unwrap();
+    assert!(store.task_file(local).unwrap().is_some());
+
+    // Moved to a list on this computer: it goes along, to send afresh.
+    let here = store.add_task_list(None, "Mine").unwrap();
+    store.move_task(id, here).unwrap();
+    let moved = store.task_file(local).unwrap().unwrap();
+    assert!(!moved.local_only);
+    assert_eq!(moved.remote_id, None);
 }

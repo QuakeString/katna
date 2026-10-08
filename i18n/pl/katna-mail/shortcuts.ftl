@@ -9,6 +9,13 @@ shortcut-group-actions = Działania
 shortcut-group-go-to = Przejdź do
 shortcut-group-app = Aplikacja
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Skróty klawiszowe
+shortcuts-dialog-search = Znajdź skrót
+shortcuts-dialog-none = Żaden skrót nie pasuje
+shortcuts-dialog-close = Zamknij
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Następny wątek
@@ -37,6 +44,8 @@ shortcut-mark-read = Oznacz jako przeczytane
 shortcut-mark-unread = Oznacz jako nieprzeczytane
 shortcut-star = Dodaj lub usuń gwiazdkę
 shortcut-add-to-tasks = Dodaj do Zadań
+shortcut-snooze = Odłóż
+shortcut-remind = Przypomnij mi
 shortcut-important = Oznacz jako ważne
 shortcut-not-important = Oznacz jako nieważne
 shortcut-mute = Wycisz wątek lub wyłącz jego wyciszenie

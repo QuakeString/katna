@@ -20,12 +20,20 @@ viewer-page-count = / { $count }
 viewer-go-to-page-tip = பக்க எண்ணை உள்ளிட்டு Enter அழுத்தவும் (Ctrl+G)
 viewer-rotate-clockwise-tip = வலஞ்சுழியாகச் சுழற்று (Ctrl+R)
 viewer-rotate-anticlockwise-tip = இடஞ்சுழியாகச் சுழற்று (Ctrl+Shift+R)
+viewer-dark-pages-tip = இருண்ட பக்கங்கள்
+viewer-light-pages-tip = பக்கங்களை உள்ளபடியே காட்டு
 viewer-fit-page-tip = பக்கத்துக்குப் பொருத்து
 viewer-fit-picture-tip = சாளரத்துக்குப் பொருத்து
 viewer-fit-width-tip = அகலத்துக்குப் பொருத்து
 viewer-real-size-tip = உண்மையான அளவு (1:1)
 viewer-page-back-tip = முந்தைய பக்கம்
 viewer-page-on-tip = அடுத்த பக்கம்
+viewer-more-tip = மேலும்
+viewer-zoom-in = பெரிதாக்கு
+viewer-zoom-out = சிறிதாக்கு
+viewer-real-size = உண்மையான அளவு
+viewer-rotate-anticlockwise = இடஞ்சுழியாகச் சுழற்று
+viewer-rotate-clockwise = வலஞ்சுழியாகச் சுழற்று
 
 ## Marking up a PDF
 

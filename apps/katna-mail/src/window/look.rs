@@ -16,12 +16,31 @@ use super::settings::{Change, heading};
 use crate::theme::Theme;
 use crate::widgets::switch;
 
+/// How much more solid a blurred window background is than the frost's
+/// tint: part of the way from the tint to solid, so the folders and the top
+/// bar stay readable over any wallpaper.
+const WINDOW_TINT: f32 = 0.6;
+
 /// The look the settings ask for.
 pub fn look(config: &Config) -> Look {
+    let experimental = &config.experimental;
     Look {
-        own_frame: config.experimental.window_frame == WindowFrame::Katna,
-        blur: config.experimental.blur,
+        own_frame: experimental.window_frame == WindowFrame::Katna,
+        blur: experimental.blur,
+        radius: experimental.window_radius,
+        border: experimental.window_border,
+        border_opacity: experimental.window_border_opacity,
+        blur_opacity: experimental
+            .custom_frost
+            .then(|| window_opacity(experimental.frost_opacity)),
     }
+}
+
+/// A blurred window background's opacity, in percent, for the frost's tint
+/// `tint`, in percent.
+pub(super) fn window_opacity(tint: u8) -> u8 {
+    let tint = f32::from(tint.min(100));
+    (tint + (100.0 - tint) * WINDOW_TINT).round() as u8
 }
 
 impl MailWindow {
@@ -73,7 +92,12 @@ impl MailWindow {
         // GNOME on Wayland leaves every frame to the app: Native already is
         // Katna's frame there.
         if env.native_decorations() == DecorationMode::Client {
-            return explain(tr!("look-frame-client-side"), th);
+            return div()
+                .flex()
+                .flex_col()
+                .child(explain(tr!("look-frame-client-side"), th))
+                .child(self.frame_corners(th, cx))
+                .into_any_element();
         }
         let note = match env.desktop {
             _ if cfg!(windows) => tr!("look-frame-katna-note-windows"),
@@ -106,11 +130,43 @@ impl MailWindow {
                 th,
                 cx,
             ))
-            .when(frame == WindowFrame::Katna, |d| d.child(explain(note, th)))
+            .when(frame == WindowFrame::Katna, |d| {
+                d.child(explain(note, th)).child(self.frame_corners(th, cx))
+            })
             // Windows sets a window's frame when it opens.
             .when(self.chrome.frame_on_reopen(), |d| {
                 d.child(explain(tr!("look-frame-on-reopen"), th))
             })
+            .into_any_element()
+    }
+
+    /// The roundness of Katna's frame and the line around it, where Katna
+    /// draws them: not on Windows, which rounds the corners itself, nor on
+    /// tiling compositors, where the frame stays square.
+    fn frame_corners(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let env = self.chrome.environment();
+        if cfg!(windows)
+            || !env.full_client_frame()
+            || env.requested_decorations() != DecorationMode::Client
+        {
+            return div().into_any_element();
+        }
+        let border = self.config.experimental.window_border;
+        div()
+            .flex()
+            .flex_col()
+            .pt(px(4.0))
+            .child(self.frame_sliders(false, th, cx))
+            .child(self.switch_row(
+                "page-window-border",
+                tr!("look-window-border"),
+                tr!("look-window-border-detail"),
+                border,
+                Change::WindowBorder(!border),
+                th,
+                cx,
+            ))
+            .when(border, |d| d.child(self.frame_sliders(true, th, cx)))
             .into_any_element()
     }
 
@@ -156,15 +212,21 @@ impl MailWindow {
 
     fn window_blur_switch(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         if Look::blur_available() {
-            return self.switch_row(
-                "page-blur",
-                tr!("look-blur"),
-                tr!("look-blur-detail"),
-                self.config.experimental.blur,
-                Change::Blur(!self.config.experimental.blur),
-                th,
-                cx,
-            );
+            let blur = self.config.experimental.blur;
+            return div()
+                .flex()
+                .flex_col()
+                .child(self.switch_row(
+                    "page-blur",
+                    tr!("look-blur"),
+                    tr!("look-blur-detail"),
+                    blur,
+                    Change::Blur(!blur),
+                    th,
+                    cx,
+                ))
+                .when(blur, |d| d.child(self.pane_switches(th, cx)))
+                .into_any_element();
         }
         let env = self.chrome.environment();
         let why = match (&env.desktop, env.session) {
@@ -174,6 +236,50 @@ impl MailWindow {
             (_, Session::Wayland) => tr!("look-blur-none-wayland"),
         };
         unavailable(tr!("look-blur"), why, th)
+    }
+
+    /// What else lets the window's blur through: the cards, with how
+    /// opaque they are, the room behind a chat's bubbles and the open
+    /// search box, each on its own switch.
+    fn pane_switches(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let experimental = &self.config.experimental;
+        let (panes, chat, search) = (
+            experimental.frosted_panes,
+            experimental.frosted_chat,
+            experimental.frosted_search,
+        );
+        div()
+            .flex()
+            .flex_col()
+            .child(self.switch_row(
+                "page-frosted-panes",
+                tr!("look-frosted-panes"),
+                tr!("look-frosted-panes-detail"),
+                panes,
+                Change::FrostedPanes(!panes),
+                th,
+                cx,
+            ))
+            .when(panes, |d| d.child(self.pane_slider(th, cx)))
+            .child(self.switch_row(
+                "page-frosted-chat",
+                tr!("look-frosted-chat"),
+                tr!("look-frosted-chat-detail"),
+                chat,
+                Change::FrostedChat(!chat),
+                th,
+                cx,
+            ))
+            .child(self.switch_row(
+                "page-frosted-search",
+                tr!("look-frosted-search"),
+                tr!("look-frosted-search-detail"),
+                search,
+                Change::FrostedSearch(!search),
+                th,
+                cx,
+            ))
+            .into_any_element()
     }
 
     /// Katna blurs under its own menus, so this needs no compositor.
@@ -189,12 +295,11 @@ impl MailWindow {
                 cx,
             );
         }
-        let why = if cfg!(windows) {
-            tr!("look-frosted-popups-none-windows")
-        } else {
-            tr!("look-frosted-popups-none")
-        };
-        unavailable(tr!("look-frosted-popups"), why, th)
+        unavailable(
+            tr!("look-frosted-popups"),
+            tr!("look-frosted-popups-none"),
+            th,
+        )
     }
 }
 

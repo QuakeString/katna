@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Clean edges on folders opened from Compose"
+text = """
+On a tablet-sized window, the folders that open when you rest the pointer
+on Compose no longer show thin lines along their top and left edges.
+"""

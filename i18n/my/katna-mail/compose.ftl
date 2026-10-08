@@ -58,6 +58,7 @@ compose-file-too-large = { $name } သည် ကြီးလွန်းသည�
 compose-forward-files-missing = ထပ်ဆင့်ပို့သော မက်ဆေ့ဂျ်၏ ဖိုင်များကို ဒေါင်းလုဒ် မလုပ်ရသေးသဖြင့် ပူးတွဲမထားပါ။
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ပူးတွဲဖိုင်ကို ဖယ်ရှားရန်
+compose-attachment-open-tip = စစ်ကြည့်ရန် ဖွင့်ပါ
 compose-attachments-total = ဖိုင် { $count } ခု၊ { $size }
 compose-drive-note = { $name } သည် { $limit } ထက်ကျော်နေသဖြင့် သင့် Google Drive သို့ ပို့ပြီး မက်ဆေ့ဂျ်တွင် လင့်ခ်ပါမည်။
 compose-drive-tip = သင့် Google Drive ထဲတွင်ရှိသည်။ မက်ဆေ့ဂျ်တွင် လင့်ခ်ပါမည်

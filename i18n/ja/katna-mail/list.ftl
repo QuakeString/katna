@@ -39,6 +39,7 @@ list-results = 「{ $query }」の検索結果
 list-results-corrected = 「{ $query }」の検索結果を表示しています
 list-search-instead = 「{ $query }」で検索する
 list-files-more = +{ $count }
+list-replied = 返信済み
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -188,6 +189,8 @@ list-empty-tab = 「{ $tab }」にメールはありません。
 list-empty-tab-unknown = このタブにメールはありません。
 list-empty-folder = 「{ $folder }」にメールはありません。
 list-empty-folder-unknown = このフォルダにメールはありません。
+list-empty-waiting = 返信待ちのメールはありません。
+list-empty-reminders = リマインダーはありません。メールで H を押すと追加できます。
 list-first-sync = メールを取得しています…
 list-first-sync-detail = 届いたメールから順にここに表示されます。
 
@@ -207,6 +210,14 @@ row-tracking-clicked = { $recipients } 人中 { $opened } 人が開封、{ $clic
 row-pin = 上部に固定
 row-unpin = 固定を解除
 row-snoozed-until = { $when } までスヌーズ中
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = 今日
+snoozed-group-tomorrow = 明日
+snoozed-group-this-week = 今週
+snoozed-group-later = それ以降
+row-follow-up-step = フォローアップ { $step }/{ $steps } · { $date }
+row-follow-up-waiting = フォローアップ待機中
+row-reminder = リマインダー { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -229,6 +240,7 @@ menu-not-important = 重要ではないとマーク
 menu-pin = 上部に固定
 menu-unpin = 固定を解除
 menu-snooze = スヌーズ
+menu-remind = リマインド
 menu-unsnooze = スヌーズを解除
 menu-add-to-tasks = タスクに追加
 menu-schedule-meeting = 会議を設定
@@ -240,7 +252,24 @@ menu-move-to = 移動
 menu-follow-up = フォローアップ
 menu-more = その他
 menu-move-to-heading = 移動先:
+menu-move-to-search = 移動先…
+menu-label-as = ラベルを付ける
+menu-label-as-search = ラベルを付ける…
+menu-no-folder = 「{ $name }」というフォルダはありません
+menu-no-label = 「{ $name }」というラベルはありません
+menu-create-folder = 「{ $name }」を作成
+menu-always-move = { $name } からのメールを常にここに移動
+toast-always-move-failed = メールは移動しましたが、ルールを作成できませんでした: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+       *[other] { $count } 件のスレッド
+    }
+   *[message] { $count ->
+       *[other] { $count } 件のメール
+    }
+}
 menu-find-from = { $name } からのメールを検索
+menu-make-rule = ルールを作成…
 
 ## Snackbar after an action on mail in the list
 
@@ -256,6 +285,8 @@ toast-moved = { $kind ->
     [conversation] { $count } 件のスレッドを移動しました。
    *[message] { $count } 件のメールを移動しました。
 }
+toast-label-added = ラベル「{ $label }」を付けました。
+toast-label-removed = ラベル「{ $label }」を外しました。
 toast-starred = { $kind ->
     [conversation] { $count } 件のスレッドにスターを付けました。
    *[message] { $count } 件のメールにスターを付けました。

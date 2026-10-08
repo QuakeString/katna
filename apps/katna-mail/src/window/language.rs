@@ -261,7 +261,8 @@ impl MailWindow {
             .gap(px(4.0))
             .rounded_full()
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", None, th))
             .when(open, |d| d.bg(rgba(th.hover)))
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .when(!open, |d| d.tooltip(tip(tooltip, th)))
@@ -502,7 +503,8 @@ impl MailWindow {
             .children(machine)
             .with_animation(
                 "language-menu",
-                Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                    .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
             );
         let close = || {

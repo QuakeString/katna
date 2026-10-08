@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ತುಂಬಾ ದೊಡ್ಡದಾಗಿ�
 compose-forward-files-missing = ಫಾರ್ವರ್ಡ್ ಮಾಡಿದ ಸಂದೇಶದ ಫೈಲ್‌ಗಳು ಡೌನ್‌ಲೋಡ್ ಆಗಿಲ್ಲ, ಆದ್ದರಿಂದ ಅವುಗಳನ್ನು ಲಗತ್ತಿಸಿಲ್ಲ.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ಲಗತ್ತನ್ನು ತೆಗೆದುಹಾಕಿ
+compose-attachment-open-tip = ಪರಿಶೀಲಿಸಲು ತೆರೆಯಿರಿ
 compose-attachments-total = { $count ->
     [one] { $count } ಫೈಲ್, { $size }
    *[other] { $count } ಫೈಲ್‌ಗಳು, { $size }

@@ -133,7 +133,8 @@ impl MailWindow {
                     .bg(rgba(th.accent))
                     .with_animation(
                         id,
-                        Animation::new(Duration::from_millis(1300)).repeat(),
+                        Animation::new(katna_ui::motion::time(Duration::from_millis(1300)))
+                            .repeat(),
                         |bar, t| bar.left(px(-64.0 + 224.0 * t)),
                     ),
             )
@@ -548,7 +549,7 @@ impl MailWindow {
             .flex_col()
             .items_center()
             .gap(px(12.0))
-            .child(crate::widgets::katna_mark(48.0))
+            .child(crate::widgets::katna_mark(48.0, th))
             .child(super::onboarding::title(title, th))
             .child(super::onboarding::lead(&lead, th))
             .child(
@@ -621,18 +622,16 @@ impl MailWindow {
             .gap(px(4.0))
             .when_some(error, |d, error| {
                 d.child(
-                    div()
+                    self.copyable(error, th)
                         .text_size(px(13.0))
-                        .text_color(rgba(th.error))
-                        .child(error),
+                        .text_color(rgba(th.error)),
                 )
             })
             .when_some(notice, |d, notice| {
                 d.child(
-                    div()
+                    self.copyable(notice, th)
                         .text_size(px(13.0))
-                        .text_color(rgba(th.text_dim))
-                        .child(notice),
+                        .text_color(rgba(th.text_dim)),
                 )
             });
         let submit = |id: &'static str, label: String, cx: &mut Context<Self>| {
@@ -650,7 +649,8 @@ impl MailWindow {
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.accent))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(16.0), th))
                 .child(label)
         };
         let buttons = || {
@@ -843,7 +843,7 @@ impl MailWindow {
                 .flex_wrap()
                 .items_center()
                 .gap(px(12.0))
-                .child(div().text_size(px(14.0)).child(account.email.clone()))
+                .child(self.copyable(account.email.clone(), th).text_size(px(14.0)))
                 .child(
                     outlined_button("katna-sign-out", tr!("katna-sign-out"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.katna_sign_out(cx))),
@@ -1027,7 +1027,8 @@ fn link_button(id: &'static str, label: String, th: &Theme) -> gpui::Stateful<gp
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.accent))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", Some(16.0), th))
         .child(label)
 }
 

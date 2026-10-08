@@ -11,9 +11,10 @@
 //! Katna is not sent, and the next round brings it back as Zoho has it.
 //!
 //! Zoho keeps a task's title, description (notes), due day, whether it is
-//! done and one level of subtasks (steps). Its priority, reminder and
-//! repeat are not mapped: a due time, reminders, repeat and the star stay
-//! in Katna ([`RemoteTask::extras`] is `None`), as with Google Tasks.
+//! done, its priority (high is the star) and one level of subtasks
+//! (steps). Its reminder and repeat are not mapped: a due time, reminders,
+//! repeat, labels and files stay in Katna ([`RemoteTask::extras`] is
+//! `None`), as with Google Tasks.
 //! Zoho has no list of changes, so every pull reads the whole list; a
 //! task's subtasks are read when Zoho says it has some.
 //!
@@ -107,6 +108,8 @@ struct Item {
     subtasks: Vec<Value>,
     #[serde(rename = "parentTaskId", default)]
     parent: Value,
+    #[serde(default)]
+    priority: Value,
 }
 
 #[derive(Deserialize, Default)]
@@ -147,6 +150,17 @@ fn zoho_due(day: &str) -> String {
         .unwrap_or_default()
 }
 
+/// Whether Zoho's priority (`High`, `high`) is the star.
+fn is_high(priority: &Value) -> bool {
+    text(priority).eq_ignore_ascii_case("high")
+}
+
+/// Zoho's priority for the star: high, or none. Sent only when the star
+/// changed, so an unstarred task keeps Zoho's other priorities.
+fn priority_of(starred: bool) -> &'static str {
+    if starred { "high" } else { "none" }
+}
+
 /// Whether Zoho's status (`Completed`, `completed`) means done.
 fn is_done(status: &str) -> bool {
     status.eq_ignore_ascii_case("completed")
@@ -167,10 +181,14 @@ impl Item {
         let modified = text(&self.modified);
         let due = due_day(&self.due);
         let done = is_done(&self.status);
+        let starred = is_high(&self.priority);
         // Zoho says when a task last changed; without that, what it keeps
         // stands in for an etag.
         let etag = if modified.is_empty() {
-            format!("{}|{}|{}|{}", self.title, self.description, due, done)
+            format!(
+                "{}|{}|{}|{}|{}",
+                self.title, self.description, due, done, starred
+            )
         } else {
             modified.clone()
         };
@@ -190,6 +208,9 @@ impl Item {
             position: String::new(),
             etag,
             extras: None,
+            starred: Some(starred),
+            labels: None,
+            files: None,
         }
     }
 }
@@ -454,6 +475,9 @@ impl ZohoTasks {
         if task.done_at.is_some() {
             body.insert("status".into(), json!("completed"));
         }
+        if task.starred {
+            body.insert("priority".into(), json!(priority_of(true)));
+        }
         if let Some(parent) = parent {
             body.insert("parentTaskId".into(), json!(parent));
         }
@@ -500,6 +524,9 @@ impl ZohoTasks {
                 "inprogress"
             };
             changes.push(json!({ "status": status }));
+        }
+        if is_high(&old.priority) != task.starred {
+            changes.push(json!({ "priority": priority_of(task.starred) }));
         }
         if changes.is_empty() {
             return Ok(Some(old.into_remote(parent.as_deref())));

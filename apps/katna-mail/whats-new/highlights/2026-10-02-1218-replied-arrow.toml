@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See which mail you answered"
+text = """
+A small reply arrow on a line of the mail list shows you answered it: you
+wrote the newest mail of the conversation, here or on the web. It goes away
+when they write back.
+"""

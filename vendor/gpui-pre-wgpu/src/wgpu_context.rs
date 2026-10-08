@@ -383,7 +383,10 @@ impl WgpuContext {
                 }
             };
 
+            // Katna: Mesa's software Vulkan (lavapipe) before 25 shows a
+            // black window on X11, so its OpenGL (llvmpipe) goes first there.
             let backend_priority: u8 = match info.backend {
+                wgpu::Backend::Vulkan if is_old_software_vulkan(&info) => 2,
                 wgpu::Backend::Vulkan | wgpu::Backend::Metal | wgpu::Backend::Dx12 => 0,
                 _ => 1,
             };
@@ -582,9 +585,38 @@ fn parse_pci_id(id: &str) -> anyhow::Result<u32> {
     u32::from_str_radix(id, 16).context("parsing PCI ID as hex")
 }
 
+/// Katna: whether `info` is Mesa's software Vulkan older than 25, which
+/// presents nothing to an X11 window (seen with Mesa 22.3 on Debian 12 and
+/// 23.2 on Ubuntu 22.04; 25.0 and later draw).
+#[cfg(not(target_family = "wasm"))]
+fn is_old_software_vulkan(info: &wgpu::AdapterInfo) -> bool {
+    info.backend == wgpu::Backend::Vulkan
+        && info.device_type == wgpu::DeviceType::Cpu
+        && mesa_major(&info.driver_info).is_some_and(|major| major < 25)
+}
+
+/// The major version in a Mesa driver string such as
+/// `Mesa 23.2.1-1ubuntu3.1~22.04.4 (LLVM 15.0.7)`.
+#[cfg(not(target_family = "wasm"))]
+fn mesa_major(driver_info: &str) -> Option<u32> {
+    let version = driver_info.split("Mesa ").nth(1)?;
+    version.split('.').next()?.trim().parse().ok()
+}
+
 #[cfg(test)]
 mod tests {
-    use super::parse_pci_id;
+    use super::{mesa_major, parse_pci_id};
+
+    #[test]
+    fn test_mesa_major() {
+        assert_eq!(
+            mesa_major("Mesa 23.2.1-1ubuntu3.1~22.04.4 (LLVM 15.0.7)"),
+            Some(23)
+        );
+        assert_eq!(mesa_major("Mesa 25.2.8-0ubuntu0.24.04.4"), Some(25));
+        assert_eq!(mesa_major("NVIDIA 580.95"), None);
+        assert_eq!(mesa_major(""), None);
+    }
 
     #[test]
     fn test_parse_device_id() {

@@ -9,6 +9,13 @@ shortcut-group-actions = Thao tác
 shortcut-group-go-to = Đi tới
 shortcut-group-app = Ứng dụng
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Phím tắt
+shortcuts-dialog-search = Tìm phím tắt
+shortcuts-dialog-none = Không có phím tắt nào khớp
+shortcuts-dialog-close = Đóng
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Cuộc hội thoại tiếp theo
@@ -37,6 +44,8 @@ shortcut-mark-read = Đánh dấu là đã đọc
 shortcut-mark-unread = Đánh dấu là chưa đọc
 shortcut-star = Gắn hoặc xóa dấu sao
 shortcut-add-to-tasks = Thêm vào Việc cần làm
+shortcut-snooze = Tạm ẩn
+shortcut-remind = Nhắc tôi
 shortcut-important = Đánh dấu là quan trọng
 shortcut-not-important = Đánh dấu là không quan trọng
 shortcut-mute = Tắt hoặc bật tiếng cuộc hội thoại

@@ -5,6 +5,7 @@
 ## Side list and search
 
 notes-view-notes = Bayanai
+notes-view-reminders = Tunatarwa
 notes-view-archive = Ma’ajiya
 notes-view-trash = Kwandon shara
 notes-edit-labels = Gyara lakabobi
@@ -23,12 +24,19 @@ notes-archive-empty = Bayanan da ka ajiye a ma’ajiya za su bayyana a nan
 notes-trash-empty = Babu bayani a Kwandon shara
 notes-none-found = Babu bayanan da suka yi daidai
 notes-label-empty = Babu bayanai masu wannan lakabin tukuna
+notes-reminders-empty = Bayanai masu tunatarwa masu zuwa suna bayyana a nan
 notes-trash-note = Ana share bayanan da ke Kwandon shara bayan kwana 7.
 notes-empty-trash = Kwashe Kwandon shara
 notes-ticked = { $count ->
     [one] + abu { $count } da aka yi wa alama
    *[other] + abubuwa { $count } da aka yi wa alama
 }
+notes-select = Zaɓi bayani
+notes-selected = { $count ->
+    [one] An zaɓi { $count }
+   *[other] An zaɓi { $count }
+}
+notes-select-clear = Share zaɓi
 
 ## A note's buttons
 
@@ -43,6 +51,15 @@ notes-color = Zaɓuɓɓukan bango
 notes-checkboxes = Nuna ko ɓoye akwatunan duba
 notes-labels = Lakabobi
 notes-close = Rufe
+notes-more = Ƙari
+notes-make-copy = Yi kwafi
+notes-remind = Tunatar da ni
+notes-add-picture = Ƙara hoto
+notes-history = Tarihin sigogi
+notes-ai = Taimaka min rubutu
+notes-send-as-mail = Aika a matsayin wasiƙa
+notes-save-markdown = Ajiye a matsayin Markdown
+notes-save-pdf = Ajiye a matsayin PDF
 
 ## The open note
 
@@ -50,6 +67,60 @@ notes-title = Take
 notes-edited = An gyara { $date }
 notes-on-this-computer = A wannan kwamfuta
 notes-where = Inda ake ajiye wannan bayani
+notes-untitled = Bayani mara take
+
+## Pictures
+
+notes-picture-choose = Ƙara hotuna
+notes-picture-remove = Cire hoto
+notes-picture-too-big = Hotuna har zuwa { $size } ne za su iya shiga bayani
+notes-picture-kind = Wannan fayil ba hoto ba ne da Katna za ta iya nunawa
+notes-picture-unreadable = Ba a iya karanta { $name } ba: { $error }
+
+## Reminders
+
+notes-remind-me = Tunatar da ni
+notes-remind-off = Cire tunatarwa
+notes-remind-in-the-past = Zaɓi lokacin da bai wuce ba tukuna
+notes-remind-today = Yau, { $time }
+notes-remind-tomorrow = Gobe, { $time }
+notes-remind-weekday = { $day }, { $time }
+notes-reminder-set = An saita tunatarwa don { $when }
+notes-reminder-off = An cire tunatarwa
+
+## Links between notes
+
+notes-link-note = Haɗa bayani
+notes-link-new = Sabon bayani "{ $title }"
+notes-linked-from = An haɗa daga
+notes-link-gone = Wannan bayanin ba ya nan kuma
+
+## Version history
+
+notes-versions = Sigogi
+notes-version-now = Yanzu
+notes-version-here = Ku, a wannan kwamfuta
+notes-version-yesterday = Jiya, { $time }
+notes-version-changes = { $count ->
+    [one] canji { $count }
+   *[other] canje-canje { $count }
+}
+notes-version-from = Daga { $device }
+notes-version-elsewhere = Daga wata na'ura
+notes-version-created = An ƙirƙira
+notes-version-restore = Maido da wannan siga
+notes-version-restored = An maido da siga
+notes-history-none = Babu sigogin baya tukuna
+
+## AI help
+
+notes-ai-tidy = Gyara rubutun
+notes-ai-checklist = Mai da shi jerin dubawa
+notes-ai-summarise = Taƙaita
+notes-ai-empty = Ku rubuta wani abu da farko
+notes-ai-tidied = An gyara rubutu. Ctrl+Z yana mayar da shi.
+notes-ai-listed = An mai da shi jerin dubawa. Ctrl+Z yana mayar da shi.
+notes-ai-summarised = An ƙara taƙaitawa a sama
 
 ## Labels
 
@@ -88,6 +159,9 @@ notes-format-normal = Rubutu na yau da kullum
 notes-format-bold = Mai kauri
 notes-format-italic = Mai karkata
 notes-format-underline = Ja layi a ƙasa
+notes-format-quote = Ambato
+notes-format-code = Lambar kwamfuta
+notes-format-divider = Layin rabuwa
 notes-format-clear = Share tsarawa
 
 ## Tasks
@@ -115,6 +189,39 @@ notes-archived = An ajiye bayanin a ma’ajiya
 notes-unarchived = An cire bayanin daga ma’ajiya
 notes-trashed = An mayar da bayanin cikin Kwandon shara
 notes-restored = An maido da bayanin
+notes-saved = An ajiye bayani
+notes-pinned-count = { $count ->
+    [one] An maƙala bayani
+   *[other] An maƙala bayanai { $count }
+}
+notes-unpinned-count = { $count ->
+    [one] An cire maƙalar bayani
+   *[other] An cire maƙalar bayanai { $count }
+}
+notes-colored-count = { $count ->
+    [one] An canza launi
+   *[other] An canza launi a kan bayanai { $count }
+}
+notes-archived-count = { $count ->
+    [one] An ajiye bayani a ma’ajiya
+   *[other] An ajiye bayanai { $count } a ma’ajiya
+}
+notes-unarchived-count = { $count ->
+    [one] An cire bayani daga ma’ajiya
+   *[other] An cire bayanai { $count } daga ma’ajiya
+}
+notes-trashed-count = { $count ->
+    [one] An mayar da bayani cikin Kwandon shara
+   *[other] An mayar da bayanai { $count } cikin Kwandon shara
+}
+notes-restored-count = { $count ->
+    [one] An maido da bayani
+   *[other] An maido da bayanai { $count }
+}
+notes-copied-count = { $count ->
+    [one] An yi kwafi
+   *[other] An yi kwafi { $count }
+}
 notes-empty-discarded = An watsar da bayani mara komai
 notes-mail-gone = Wannan wasiƙar ba ta nan kuma
 notes-deleted-forever = { $count ->

@@ -12,7 +12,10 @@ use gpui::{
 };
 use katna_i18n::tr;
 use katna_ui::px;
-use katna_ui::rich::{Block, CharStyle, Doc, Para, ParaStyle, RichEditor, Size, html};
+use katna_ui::rich::{
+    Block, CharStyle, Doc, Font, HtmlBlock, Para, ParaStyle, RichEditor, Size, html,
+};
+use katna_ui::tokens::{radius, space, text};
 
 use super::{MailWindow, TICKED, UNTICKED, check_of};
 use crate::theme::Theme;
@@ -57,6 +60,21 @@ pub(super) fn doc_of(body: &str, formatted: &str) -> Doc {
             .split('\n')
             .map(|line| Block::Para(Para::plain(line)))
             .collect(),
+    }
+}
+
+/// A divider line after block `at` of `doc`, with an empty line after it
+/// to go on typing. It is a plain `<hr>`, which Apple Notes shows too.
+pub(super) fn insert_divider(doc: &mut Doc, at: usize) {
+    let at = (at + 1).min(doc.blocks.len());
+    let rule = HtmlBlock {
+        html: "<hr>".into(),
+        text: "".into(),
+        images: Vec::new(),
+    };
+    doc.blocks.insert(at, Block::Html(rule));
+    if !matches!(doc.blocks.get(at + 1), Some(Block::Para(_))) {
+        doc.blocks.insert(at + 1, Block::Para(Para::plain("")));
     }
 }
 
@@ -231,43 +249,45 @@ impl MailWindow {
         }
         let area = editor.body.read(cx);
         let style = area.current_style();
+        let para = area.para_style();
+        let code = style.font == Font::Fixed;
         let heading = Heading::of(&style);
         let tool = |id: &'static str, name: &'static str, tip_text: String, on: bool| {
             icon_button(id, name, 18.0, th)
                 .size(px(34.0))
-                .when(on, |b| b.bg(rgba(th.nav_selected)))
+                .when(on, |b| b.bg(rgba(th.row_selected)))
                 .tooltip(tip(tip_text, th))
         };
         let heading_button = |id: &'static str, label: String, value: Heading| {
             div()
                 .id(id)
                 .h(px(34.0))
-                .px(px(10.0))
+                .px(px(space::S4))
                 .flex()
                 .items_center()
-                .rounded(px(8.0))
-                .text_size(px(13.0))
+                .rounded(px(radius::SM))
+                .text_size(px(text::SMALL))
                 .when(value != Heading::Normal, |d| {
                     d.font_weight(FontWeight::BOLD)
                 })
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
-                .when(heading == value, |d| d.bg(rgba(th.nav_selected)))
+                .when(heading == value, |d| d.bg(rgba(th.row_selected)))
                 .on_click(cx.listener(move |this, _, _, cx| this.set_heading(value, cx)))
                 .child(label)
         };
         Some(
             div()
                 .flex_none()
-                .mx(px(12.0))
-                .mb(px(4.0))
-                .px(px(4.0))
+                .mx(px(space::S4))
+                .mb(px(space::S2))
+                .px(px(space::S2))
                 .flex()
                 .flex_row()
                 .flex_wrap()
                 .items_center()
-                .gap(px(2.0))
-                .rounded(px(10.0))
+                .gap(px(space::S1))
+                .rounded(px(radius::SM))
                 .bg(rgba(th.chip))
                 .child(heading_button(
                     "note-h1",
@@ -288,7 +308,7 @@ impl MailWindow {
                     div()
                         .w(px(1.0))
                         .h(px(20.0))
-                        .mx(px(4.0))
+                        .mx(px(space::S2))
                         .bg(rgba(th.divider)),
                 )
                 .child(
@@ -327,6 +347,58 @@ impl MailWindow {
                     .on_click(cx.listener(|this, _, _, cx| {
                         if let Some(body) = this.note_body() {
                             body.update(cx, |e, cx| e.toggle_underline(cx));
+                        }
+                    })),
+                )
+                .child(
+                    div()
+                        .w(px(1.0))
+                        .h(px(20.0))
+                        .mx(px(space::S2))
+                        .bg(rgba(th.divider)),
+                )
+                .child(
+                    tool(
+                        "note-quote",
+                        "quote",
+                        tr!("notes-format-quote"),
+                        para.quote > 0,
+                    )
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        if let Some(body) = this.note_body() {
+                            body.update(cx, |e, cx| e.toggle_quote(cx));
+                        }
+                    })),
+                )
+                .child(
+                    tool("note-code", "code", tr!("notes-format-code"), code).on_click(
+                        cx.listener(move |this, _, _, cx| {
+                            if let Some(body) = this.note_body() {
+                                body.update(cx, |e, cx| {
+                                    e.restyle_paras_text(
+                                        move |s| {
+                                            s.font = if code { Font::Sans } else { Font::Fixed };
+                                        },
+                                        cx,
+                                    )
+                                });
+                            }
+                        }),
+                    ),
+                )
+                .child(
+                    tool(
+                        "note-divider",
+                        "divider",
+                        tr!("notes-format-divider"),
+                        false,
+                    )
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        if let Some(body) = this.note_body() {
+                            body.update(cx, |e, cx| {
+                                let at = e.cursor().path.block;
+                                e.edit_doc(move |doc| insert_divider(doc, at), cx)
+                            });
                         }
                     })),
                 )
@@ -413,5 +485,32 @@ mod tests {
         };
         assert_eq!(Heading::of(&style), Heading::One);
         assert_eq!(Heading::of(&CharStyle::default()), Heading::Normal);
+    }
+
+    #[test]
+    fn quotes_code_dividers_and_indents_come_back() {
+        let mut doc = doc_of("Plan\nquoted\ncode\n☐ under", "");
+        let paths = doc.paths();
+        if let Some(Block::Para(p)) = doc.blocks.get_mut(1) {
+            p.style.quote = 1;
+        }
+        let len = doc.para(paths[2]).unwrap().len();
+        doc.restyle(Pos::new(paths[2], 0), Pos::new(paths[2], len), &|s| {
+            s.font = Font::Fixed
+        });
+        if let Some(Block::Para(p)) = doc.blocks.get_mut(3) {
+            p.style.indent = 1;
+        }
+        insert_divider(&mut doc, 0);
+        let formatted = html_of(&doc);
+        assert!(formatted.contains("<hr>"), "{formatted}");
+        assert!(formatted.contains("<blockquote"), "{formatted}");
+        let back = doc_of("", &formatted);
+        assert_eq!(text_of(&back), text_of(&doc));
+        assert!(matches!(back.blocks[1], Block::Html(_)));
+        let paras: Vec<&Para> = paras(&back);
+        assert_eq!(paras[1].style.quote, 1);
+        assert_eq!(paras[2].style_at(0).font, Font::Fixed);
+        assert_eq!(paras[3].style.indent, 1);
     }
 }

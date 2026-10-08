@@ -67,11 +67,12 @@ pub(crate) fn unread_counts(conn: &Connection) -> Result<Vec<(FolderId, u64)>> {
 }
 
 /// The messages in `folder`, newest first. Messages without a date come last.
+/// Receipts shown as ticks (`receipt_mail`) are left out.
 pub(crate) fn folder_message_ids(conn: &Connection, folder: FolderId) -> Result<Vec<MessageId>> {
     // Sorted here, as in `folder_rows`.
     let mut stmt = conn.prepare_cached(
         "SELECT l.message_id, m.date FROM message_location l JOIN message m ON m.id = l.message_id
-         WHERE l.folder_id = ?1",
+         WHERE l.folder_id = ?1 AND l.message_id NOT IN (SELECT message_id FROM receipt_mail)",
     )?;
     let rows = stmt.query_map([folder.0], |row| Ok((row.get::<_, i64>(0)?, row.get(1)?)))?;
     let mut rows = rows.collect::<rusqlite::Result<Vec<(i64, Option<i64>)>>>()?;
@@ -105,7 +106,8 @@ pub struct ThreadSender {
 pub struct ThreadSummary {
     pub thread: ThreadId,
     /// Messages in the whole conversation, in every folder, as
-    /// [`thread_messages`](crate::Store::thread_messages) counts them.
+    /// [`thread_messages`](crate::Store::thread_messages) counts them,
+    /// leaving out receipts shown as ticks.
     pub message_count: u32,
     /// Some message of the conversation in this folder is unread.
     pub unread: bool,
@@ -117,6 +119,11 @@ pub struct ThreadSummary {
     pub has_attachments: bool,
     /// Distinct `From` addresses, in the order they first wrote.
     pub senders: Vec<ThreadSender>,
+    /// The `From` addresses of the newest message that is not a draft,
+    /// to tell whether the user wrote last.
+    pub last_from: Vec<String>,
+    /// The newest message that is not a draft is marked answered.
+    pub last_answered: bool,
 }
 
 /// One row of a folder scan: message, thread (or none) and category.
@@ -127,7 +134,8 @@ struct FolderRow {
     unread: bool,
 }
 
-/// Every message in `folder`, newest first (undated last).
+/// Every message in `folder`, newest first (undated last), but receipts
+/// shown as ticks.
 fn folder_rows(conn: &Connection, folder: FolderId) -> Result<Vec<FolderRow>> {
     // Sorted here rather than by SQLite: no index orders a folder by date,
     // and SQLite's sorter takes about as long again as reading the rows
@@ -135,7 +143,7 @@ fn folder_rows(conn: &Connection, folder: FolderId) -> Result<Vec<FolderRow>> {
     let mut stmt = conn.prepare_cached(
         "SELECT m.id, m.thread_id, m.category, m.flags, m.date FROM message_location l
          JOIN message m ON m.id = l.message_id
-         WHERE l.folder_id = ?1",
+         WHERE l.folder_id = ?1 AND l.message_id NOT IN (SELECT message_id FROM receipt_mail)",
     )?;
     let rows = stmt.query_map([folder.0], |row| {
         let flags: i64 = row.get(3)?;
@@ -241,7 +249,7 @@ struct SpreadRow {
 }
 
 /// Every message in any of `folders` that `filter` keeps, each once, newest
-/// first (undated last).
+/// first (undated last), but receipts shown as ticks.
 fn spread_rows(
     conn: &Connection,
     folders: &[FolderId],
@@ -255,6 +263,7 @@ fn spread_rows(
         "SELECT m.id, m.thread_id, m.category, m.flags, m.account_id, m.message_id_hdr, m.date
          FROM message m
          WHERE m.id IN (SELECT message_id FROM message_location WHERE folder_id IN ({marks}))
+           AND m.id NOT IN (SELECT message_id FROM receipt_mail)
            AND (m.flags & ?) = ?"
     ))?;
     let mask = i64::from((filter.set | filter.unset).bits());
@@ -477,6 +486,8 @@ struct ThreadRow {
     has_attachments: bool,
     /// Only in trash or junk folders.
     discarded: bool,
+    /// A receipt shown as ticks on the mail it answers (`receipt_mail`).
+    receipt: bool,
 }
 
 /// The messages of `thread` that a reader sees, oldest first (undated
@@ -491,7 +502,8 @@ fn thread_rows(conn: &Connection, thread: ThreadId) -> Result<Vec<Vec<ThreadRow>
                     SELECT 1 FROM message_location l JOIN folder f ON f.id = l.folder_id
                     WHERE l.message_id = m.id
                       AND (f.role IS NULL OR f.role NOT IN ('trash', 'junk'))
-                )
+                ),
+                m.id IN (SELECT message_id FROM receipt_mail)
          FROM message m WHERE m.thread_id = ?1
          ORDER BY m.date IS NULL, m.date, m.id",
     )?;
@@ -507,6 +519,7 @@ fn thread_rows(conn: &Connection, thread: ThreadId) -> Result<Vec<Vec<ThreadRow>
             flags: MessageFlags::from_bits(u32::try_from(flags).unwrap_or_default()),
             has_attachments: row.get(3)?,
             discarded: row.get(5)?,
+            receipt: row.get(6)?,
         };
         let group = match header {
             Some(header) => *by_header.entry(header).or_insert_with(|| {
@@ -599,7 +612,12 @@ pub(crate) fn thread_summaries(
     )?;
     let mut out = Vec::with_capacity(threads.len());
     for &thread in threads {
-        let messages = thread_rows(conn, thread)?;
+        let mut messages = thread_rows(conn, thread)?;
+        // Receipts show as ticks, not as messages: they neither count nor
+        // add a sender.
+        if messages.iter().any(|copies| !copies[0].receipt) {
+            messages.retain(|copies| !copies[0].receipt);
+        }
         if messages.is_empty() {
             continue;
         }
@@ -616,14 +634,26 @@ pub(crate) fn thread_summaries(
             important: copies().any(|m| m.flags.contains(MessageFlags::IMPORTANT)),
             has_attachments: copies().any(|m| m.has_attachments),
             senders: Vec::new(),
+            last_from: Vec::new(),
+            last_answered: false,
         };
         for copies in &messages {
             let message = &copies[0];
             let message_unread = copies.iter().any(|m| !m.flags.contains(MessageFlags::SEEN));
+            let draft = copies.iter().any(|m| m.flags.contains(MessageFlags::DRAFT));
+            if !draft {
+                summary.last_from.clear();
+                summary.last_answered = copies
+                    .iter()
+                    .any(|m| m.flags.contains(MessageFlags::ANSWERED));
+            }
             let mut rows = senders_of.query([message.id])?;
             while let Some(row) = rows.next()? {
                 let email: String = row.get(0)?;
                 let name: Option<String> = row.get(1)?;
+                if !draft {
+                    summary.last_from.push(email.clone());
+                }
                 match summary.senders.iter_mut().find(|s| s.email == email) {
                     Some(sender) => {
                         sender.unread |= message_unread;
@@ -778,6 +808,75 @@ mod tests {
         assert_eq!(reader.folder_message_ids(archive).unwrap(), [old]);
         assert!(reader.folder_message_ids(empty).unwrap().is_empty());
         assert!(reader.folder_message_ids(FolderId(999)).unwrap().is_empty());
+    }
+
+    #[test]
+    fn receipt_mail_is_left_out_of_the_lists() {
+        let tmp = tempfile::tempdir().unwrap();
+        let paths = Paths::with_root(tmp.path());
+        let mut store = Store::open(&paths, Mode::ReadWrite).unwrap();
+        let me = store.add_account(AccountKind::Local, "w", "w").unwrap().id;
+
+        let mut batch = store.mail_batch().unwrap();
+        let inbox = batch.ensure_folder(me, "INBOX").unwrap();
+        let sent = batch.ensure_folder(me, "Sent").unwrap();
+        let refs = ["rates@x"];
+        let mut add = |folder, raw: &'static [u8], hdr, date, answers: bool| {
+            let mut new = message(raw, Some(date), MessageFlags::SEEN);
+            new.message_id_hdr = hdr;
+            if answers {
+                new.in_reply_to = Some("rates@x");
+                new.references = &refs;
+            }
+            match batch.add_message(me, folder, &new).unwrap() {
+                crate::Added::Message(id) => id,
+                _ => panic!("expected a new message"),
+            }
+        };
+        let rates = add(sent, b"1", Some("rates@x"), 100, false);
+        let receipt = add(inbox, b"2", Some("read@y"), 200, true);
+        let reply = add(inbox, b"3", Some("reply@y"), 150, true);
+        batch
+            .receipt_sent("rates@x", &["bea@y".into()], 100)
+            .unwrap();
+        batch
+            .record_receipt("rates@x", "bea@y", crate::ReceiptKind::Read, 200)
+            .unwrap();
+        batch.commit().unwrap();
+        let mut found: Vec<MessageId> = store
+            .possible_receipt_mail()
+            .unwrap()
+            .into_iter()
+            .map(|(id, _)| id)
+            .collect();
+        found.sort();
+        // The reply too: only its body can tell.
+        assert_eq!(found, [receipt, reply]);
+
+        let mut batch = store.mail_batch().unwrap();
+        assert!(batch.mark_receipt_mail(receipt).unwrap());
+        assert!(!batch.mark_receipt_mail(receipt).unwrap());
+        batch.commit().unwrap();
+        let ids: Vec<MessageId> = store
+            .possible_receipt_mail()
+            .unwrap()
+            .into_iter()
+            .map(|(id, _)| id)
+            .collect();
+        assert_eq!(ids, [reply]);
+        // The reply is the conversation's newest message in the inbox now.
+        let threads = store.folder_threads(inbox, None).unwrap();
+        assert_eq!(threads.len(), 1);
+        assert_eq!(threads[0].latest, reply);
+        assert_eq!(store.folder_message_ids(inbox).unwrap(), [reply]);
+        let thread = threads[0].thread.unwrap();
+        let summary = &store.thread_summaries(&[thread], inbox).unwrap()[0];
+        assert_eq!(summary.message_count, 2);
+        // Still in the conversation for the reader.
+        assert_eq!(
+            store.thread_messages(thread).unwrap(),
+            [rates, reply, receipt]
+        );
     }
 
     #[test]

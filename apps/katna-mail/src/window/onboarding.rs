@@ -13,17 +13,19 @@ use gpui::{
     Animation, AnimationExt, AnyElement, Context, FontWeight, SharedString, SpringAnimation, Task,
     Window, div, ease_out_quint, prelude::*, rgba,
 };
-use katna_core::config::{Density, ReadingPane, Theme as ThemeChoice};
+use katna_core::config::{AppKind, Density, ReadingPane, Theme as ThemeChoice};
 use katna_i18n::tr;
 use katna_ui::motion::{self, lerp};
 use katna_ui::px;
+use katna_ui::tokens::space;
 
 use super::add_account::text_button;
+use super::apps_off::app_name;
 use super::settings::Change;
-use super::{MailWindow, PANEL_RADIUS, share_ask};
+use super::{MailWindow, share_ask};
 use crate::daemon;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, filled_button, icon};
+use crate::widgets::{choice_chip, filled_button, icon, tip};
 
 /// How long a page takes to slide in.
 const PAGE_IN: Duration = Duration::from_millis(360);
@@ -256,7 +258,7 @@ impl MailWindow {
                     "onboarding-page",
                     step.index() * 3 + katna_form.map_or(0, |c| 1 + c as usize),
                 ),
-                Animation::new(PAGE_IN).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(PAGE_IN)).with_easing(ease_out_quint()),
                 move |el, t| el.opacity(t).ml(px(from * (1.0 - t))),
             )
             .into_any_element()
@@ -282,9 +284,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(28.0))
-            .rounded(px(PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, PANEL_RADIUS))
-            .shadow(elevation(th, 3.0))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .child(step_dots(step, th))
             .child(page);
         // The window as it will be shows through a light, blurred scrim,
@@ -342,7 +342,7 @@ impl MailWindow {
             .child(
                 div()
                     .pb(px(4.0))
-                    .child(crate::widgets::katna_wordmark(96.0)),
+                    .child(crate::widgets::katna_wordmark(96.0, th)),
             )
             .child(title(tr!("onboarding-welcome-title"), th))
             .child(lead(&tr!("onboarding-welcome-lead"), th))
@@ -421,7 +421,7 @@ impl MailWindow {
                         .font_weight(FontWeight::MEDIUM)
                         .text_color(rgba(th.error))
                         .child(icon("info", th.error, 20.0))
-                        .child(tr!("onboarding-service-missing")),
+                        .child(self.copyable(tr!("onboarding-service-missing"), th)),
                 )
                 .child(
                     div()
@@ -598,7 +598,7 @@ impl MailWindow {
             .flex_col()
             .items_center()
             .gap(px(12.0))
-            .child(crate::widgets::katna_mark(48.0))
+            .child(crate::widgets::katna_mark(48.0, th))
             .child(title(tr!("onboarding-katna-title"), th))
             .child(lead(&tr!("onboarding-katna-lead"), th))
             .child(
@@ -744,7 +744,7 @@ impl MailWindow {
                     .child(icon("check-circle", th.accent, 36.0))
                     .with_animation(
                         "onboarding-ready",
-                        Animation::new(PAGE_IN).with_easing(ease_out_back),
+                        Animation::new(katna_ui::motion::time(PAGE_IN)).with_easing(ease_out_back),
                         |el, t| el.size(px(64.0 * lerp(0.6, 1.0, t))),
                     ),
             )
@@ -757,6 +757,7 @@ impl MailWindow {
                 },
                 th,
             ))
+            .child(self.ready_apps(th, cx))
             .child(lead(&tr!("onboarding-ready-tour"), th));
         let actions =
             actions_row(
@@ -772,6 +773,41 @@ impl MailWindow {
                 ),
             );
         (body.into_any_element(), actions)
+    }
+}
+
+impl MailWindow {
+    /// The apps to use, as one row of chips: Mail always, the others
+    /// ticked until clicked. Nothing is in them yet, so turning one off
+    /// here needs no asking; Settings › Apps changes it later.
+    fn ready_apps(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let mail = choice_chip("onboarding-app-mail", tr!("rail-mail"), true, th)
+            .cursor_default()
+            .tooltip(tip(tr!("settings-apps-mail-always"), th));
+        let others = AppKind::ALL.into_iter().map(|app| {
+            let on = self.config.app_on(app);
+            choice_chip(("onboarding-app", app as usize), app_name(app), on, th)
+                .on_click(cx.listener(move |this, _, _, cx| this.set_app_on(app, !on, cx)))
+        });
+        div()
+            .mt(px(space::S3))
+            .flex()
+            .flex_col()
+            .items_center()
+            .gap(px(space::S3))
+            .child(label(&tr!("onboarding-apps"), th))
+            .child(
+                div()
+                    .max_w(px(460.0))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .justify_center()
+                    .gap(px(space::S2))
+                    .child(mail)
+                    .children(others),
+            )
+            .into_any_element()
     }
 }
 
@@ -791,7 +827,11 @@ fn step_dots(step: Step, th: &Theme) -> AnyElement {
                 .bg(rgba(if on || done { th.accent } else { th.divider }))
                 .with_spring(
                     ("onboarding-dot", s.index()),
-                    SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                    SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                        1.0
+                    } else {
+                        0.0
+                    }),
                     |el, t: f32| el.w(px(6.0 + 18.0 * t.clamp(0.0, 1.0))),
                 )
         }))

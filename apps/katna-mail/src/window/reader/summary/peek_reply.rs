@@ -19,11 +19,11 @@ use katna_ui::{InputEvent, TextArea, TextInput, px};
 
 use super::super::super::MailWindow;
 use super::super::super::compose::{Kind, below_end_over, signature_name, signature_tag};
-use super::super::super::search_panel::chip;
-use super::{Fix, placeholder, problem_text};
+use super::{Fix, idea_placeholder, placeholder, problem_text};
 use crate::daemon;
 use crate::data::EntryKey;
-use crate::theme::{Theme, fade};
+use crate::theme::Theme;
+use crate::widgets::choice_chip;
 use crate::widgets::{filled_button, icon, icon_button_colored, outlined_button, tip};
 
 /// Writing a reply in the summary card.
@@ -37,6 +37,7 @@ pub(super) struct PeekReply {
     own: Entity<TextInput>,
     /// The summary's gist shown whole above, not one line.
     unfold: bool,
+    unfold_arrow: crate::widgets::Fold,
     /// The signature the reply goes out with, a
     /// [`katna_core::config::Signature::id`].
     signature: Option<u32>,
@@ -180,6 +181,7 @@ impl MailWindow {
             area: area.clone(),
             own: own.clone(),
             unfold: false,
+            unfold_arrow: crate::widgets::Fold::default(),
             signature,
             signatures_open: false,
             _ideas: None,
@@ -394,8 +396,10 @@ impl MailWindow {
                         .when(!unfold, |d| d.truncate())
                         .child(gist),
                 )
-                .child(div().pt(px(2.0)).child(icon(
-                    if unfold { "chevron-up" } else { "chevron-down" },
+                .child(div().pt(px(2.0)).child(crate::widgets::fold_arrow(
+                    "summary-reply-gist-arrow",
+                    &r.unfold_arrow,
+                    unfold,
                     th.text_faint,
                     14.0,
                 )))
@@ -437,18 +441,7 @@ impl MailWindow {
                 .child(text.to_uppercase())
         };
         let ideas = match &r.ideas {
-            Ideas::Loading => div()
-                .flex()
-                .flex_row()
-                .gap(px(6.0))
-                .children([150.0, 110.0, 120.0].map(|width| {
-                    div()
-                        .w(px(width))
-                        .h(px(28.0))
-                        .rounded_full()
-                        .bg(rgba(fade(th.text_faint, 0.18)))
-                }))
-                .into_any_element(),
+            Ideas::Loading => idea_placeholder(th, cx.reduce_motion()),
             Ideas::Ready(ideas) => div()
                 .flex()
                 .flex_row()
@@ -456,7 +449,7 @@ impl MailWindow {
                 .gap(px(6.0))
                 .children(ideas.iter().enumerate().map(|(n, idea)| {
                     let idea = idea.clone();
-                    chip(("summary-reply-idea", n), &idea, false, th)
+                    choice_chip(("summary-reply-idea", n), &idea, false, th)
                         .rounded_full()
                         .on_click(cx.listener(move |this, _, _, cx| {
                             this.peek_reply_draft(idea.clone(), cx)
@@ -485,7 +478,9 @@ impl MailWindow {
             .on_click(move |_, window, cx| window.focus(&focus, cx));
         let length = r.request.length;
         let manner = r.request.manner;
-        let set = |id: &'static str, text: String, on: bool| chip(id, &text, on, th).rounded_full();
+        let set = |id: &'static str, text: String, on: bool| {
+            choice_chip(id, &text, on, th).rounded_full()
+        };
         let choices = div()
             .flex()
             .flex_row()
@@ -572,7 +567,8 @@ impl MailWindow {
                             .px(px(8.0))
                             .rounded_full()
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .text_color(rgba(th.text_dim))
                             .text_size(px(13.0))
                             .child(icon("chevron-left", th.text_dim, 16.0))
@@ -624,7 +620,7 @@ impl MailWindow {
                 .text_color(rgba(th.text_dim))
                 .child(tr!("compose-to"))
                 .child(
-                    chip("summary-reply-to", &r.request.to, false, th)
+                    choice_chip("summary-reply-to", &r.request.to, false, th)
                         .rounded_full()
                         .h(px(24.0)),
                 )

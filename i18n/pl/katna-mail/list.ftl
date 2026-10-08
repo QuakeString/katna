@@ -39,6 +39,7 @@ list-results = Wyniki dla „{ $query }”
 list-results-corrected = Wyświetlane są wyniki dla „{ $query }”
 list-search-instead = Zamiast tego szukaj „{ $query }”
 list-files-more = +{ $count }
+list-replied = Odpowiedziano
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -438,6 +439,8 @@ list-empty-tab = Brak poczty na karcie { $tab }.
 list-empty-tab-unknown = Brak poczty na tej karcie.
 list-empty-folder = Brak wiadomości w folderze { $folder }.
 list-empty-folder-unknown = Brak wiadomości w tym folderze.
+list-empty-waiting = Nic nie czeka na odpowiedź.
+list-empty-reminders = Brak przypomnień. Naciśnij H na wiadomości, aby je dodać.
 list-first-sync = Pobieranie poczty…
 list-first-sync-detail = Wiadomości pojawią się tutaj, gdy tylko dotrą.
 
@@ -457,6 +460,14 @@ row-tracking-clicked = Otwarte przez { $opened } z { $recipients }, link klikni�
 row-pin = Przypnij na górze
 row-unpin = Odepnij
 row-snoozed-until = Odłożone do { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Dzisiaj
+snoozed-group-tomorrow = Jutro
+snoozed-group-this-week = W tym tygodniu
+snoozed-group-later = Później
+row-follow-up-step = Ponaglenie { $step } z { $steps } · { $date }
+row-follow-up-waiting = Ponaglenie czeka
+row-reminder = Przypomnienie { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -479,6 +490,7 @@ menu-not-important = Oznacz jako nieważne
 menu-pin = Przypnij na górze
 menu-unpin = Odepnij
 menu-snooze = Odłóż
+menu-remind = Przypomnij mi
 menu-unsnooze = Anuluj odłożenie
 menu-add-to-tasks = Dodaj do Zadań
 menu-schedule-meeting = Zaplanuj spotkanie
@@ -494,7 +506,30 @@ menu-follow-up = Dalsze działania
 # Pin to top.
 menu-more = Więcej
 menu-move-to-heading = Przenieś do:
+menu-move-to-search = Przenieś do…
+menu-label-as = Dodaj etykietę
+menu-label-as-search = Dodaj etykietę…
+menu-no-folder = Brak folderu o nazwie „{ $name }”
+menu-no-label = Brak etykiety o nazwie „{ $name }”
+menu-create-folder = Utwórz „{ $name }”
+menu-always-move = Zawsze przenoś tutaj pocztę od { $name }
+toast-always-move-failed = Poczta została przeniesiona, ale reguła nie została utworzona: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } wątek
+        [few] { $count } wątki
+        [many] { $count } wątków
+       *[other] { $count } wątku
+    }
+   *[message] { $count ->
+        [one] { $count } wiadomość
+        [few] { $count } wiadomości
+        [many] { $count } wiadomości
+       *[other] { $count } wiadomości
+    }
+}
 menu-find-from = Znajdź e-maile od { $name }
+menu-make-rule = Utwórz regułę…
 
 ## Snackbar after an action on mail in the list
 
@@ -540,6 +575,8 @@ toast-moved = { $kind ->
        *[other] Przeniesiono { $count } wiadomości.
     }
 }
+toast-label-added = Dodano etykietę „{ $label }”.
+toast-label-removed = Usunięto etykietę „{ $label }”.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Wątek oznaczony gwiazdką.

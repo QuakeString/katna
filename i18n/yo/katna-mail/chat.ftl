@@ -37,6 +37,7 @@ chat-reply-only = Fèsì sí { $name } nìkan
 chat-forward = Fi ránṣẹ́ síwájú
 chat-copy-text = Ṣẹ̀dà ọ̀rọ̀
 chat-show-as-mail = Fi hàn bí lẹ́tà
+chat-go-down = Lọ sí lẹ́tà tuntun jùlọ
 chat-pin = Lẹ̀ mọ́ òkè
 chat-pin-file = Lẹ̀ fáìlì mọ́ òkè
 chat-unpin = Yọ kúrò ní òkè
@@ -56,7 +57,8 @@ chat-pins-cancel = Fagilé
 chat-undo = Dá padà
 
 chat-reply-to = Fèsì sí { $names }
-chat-send = Fi ránṣẹ́ (Ctrl+Enter)
+chat-send = Fi ránṣẹ́ (Ctrl+Enter). Tẹ ọ̀tún tàbí di í mú fún àwọn mìíràn
+chat-send-now = Fi ránṣẹ́ báyìí
 chat-attach = So mọ́ ọn
 chat-attach-photo = Fọ́tò
 chat-attach-file = Fáìlì

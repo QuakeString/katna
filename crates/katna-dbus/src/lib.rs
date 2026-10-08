@@ -19,7 +19,7 @@ pub mod agenda;
 mod session;
 pub use session::session;
 mod start;
-pub use start::ensure_daemon;
+pub use start::{daemon_running, ensure_daemon, start_daemon};
 
 /// One server of a new account. An empty `host` means "none".
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -95,6 +95,9 @@ pub mod state {
     /// The server refused the password. `SetPassword` or `SyncNow` retries;
     /// for an account that signs in with OAuth2, `SignIn`.
     pub const AUTH_FAILED: &str = "auth-failed";
+    /// Taken offline by the user (`[offline]` in the settings): the daemon
+    /// doesn't connect until it is brought back or its time ends.
+    pub const PAUSED: &str = "paused";
 }
 
 /// A mail template for `SaveTemplate`; `id` 0 saves a new one.
@@ -136,8 +139,24 @@ pub struct NoteItem {
     /// The `Message-ID` of the mail the note is about, or empty.
     pub link: String,
     /// `body` formatted, as HTML with one paragraph per line; empty when
-    /// it has no formatting.
+    /// it has no formatting. Pictures are named `cid:<cid>`.
     pub html: String,
+    /// When it reminds, in UTC seconds; 0 for never.
+    pub remind_at: i64,
+    /// Whether `pictures` replace the note's; else they stay as they are.
+    pub pictures_set: bool,
+    pub pictures: Vec<NotePictureItem>,
+}
+
+/// A picture in a note, for `SaveNote`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct NotePictureItem {
+    pub cid: String,
+    pub name: String,
+    pub mime: String,
+    pub width: u32,
+    pub height: u32,
+    pub data: Vec<u8>,
 }
 
 /// A file going up to Google Drive or OneDrive for a message, from
@@ -449,14 +468,19 @@ pub mod app_action {
     pub const INSTALL_UPDATE: &str = "install-update";
     /// Show one page of the window: Mail, Calendar, Contacts, Tasks or
     /// Notes; the parameter is its name (`s`: `mail`, `calendar`,
-    /// `contacts`, `tasks`, `notes`); `tasks:<id>` opens that task, and
-    /// the Calendar takes a day too ([`calendar_page`]).
+    /// `contacts`, `tasks`, `notes`); `tasks:<id>` opens that task, the
+    /// Calendar takes a day too ([`calendar_page`]), and Mail the Outbox
+    /// ([`OUTBOX_PAGE`]) or an account's fix ([`fix_page`]).
     pub const OPEN_PAGE: &str = "open-page";
     /// Start a new message with files attached ("Send with Katna Mail" in
     /// a file manager); the parameters are texts (`s`): the address to
     /// send from (empty for the usual one), then the files' full paths.
     /// Folders go as zips.
     pub const ATTACH: &str = "attach";
+    /// Open the quick capture card over whatever is on screen ("Catch a
+    /// thought from anywhere"); the parameter (`s`) is `task` or `note`,
+    /// with `:` and the text it starts with if any ([`capture`]).
+    pub const CAPTURE: &str = "capture";
 
     /// The command-line flag that starts Katna Mail doing `action`, if it
     /// has one. The flags of [`takes_message`] actions are followed by the
@@ -474,6 +498,7 @@ pub mod app_action {
             SEARCH => Some("--search"),
             OPEN_PAGE => Some("--page"),
             ATTACH => Some("--attach"),
+            CAPTURE => Some("--capture"),
             _ => None,
         }
     }
@@ -492,13 +517,80 @@ pub mod app_action {
     /// Takes `open-page`'s parameter apart: the page's name, what after it
     /// (the Calendar's day, a task's ID), and whether to start a new event.
     pub fn page_parts(page: &str) -> (&str, Option<&str>, bool) {
-        let mut parts = page.splitn(3, ':');
+        let mut parts = page.splitn(4, ':');
         let name = parts.next().unwrap_or_default();
         let detail = parts.next().filter(|detail| !detail.is_empty());
         (name, detail, parts.next() == Some(NEW_EVENT))
     }
 
     const NEW_EVENT: &str = "new";
+
+    /// `open-page`'s parameter for Katna Mail's Outbox.
+    pub const OUTBOX_PAGE: &str = "mail:outbox";
+
+    /// `open-page`'s parameter that opens the fix of account `id`'s
+    /// problem: New password, or Sign in.
+    pub fn fix_page(id: i64) -> String {
+        format!("mail:fix-{id}")
+    }
+
+    /// The account whose problem a `mail` page's detail asks to fix.
+    pub fn fix_account(detail: &str) -> Option<i64> {
+        detail.strip_prefix("fix-")?.parse().ok()
+    }
+
+    /// [`CAPTURE`]'s parameter for a task.
+    pub const CAPTURE_TASK: &str = "task";
+    /// [`CAPTURE`]'s parameter for a note.
+    pub const CAPTURE_NOTE: &str = "note";
+
+    /// [`CAPTURE`]'s parameter: `kind` ([`CAPTURE_TASK`] or
+    /// [`CAPTURE_NOTE`]), then the text the card starts with, if any:
+    /// `task`, `note:Call Anita back`.
+    pub fn capture(kind: &str, text: &str) -> String {
+        if text.is_empty() {
+            kind.to_owned()
+        } else {
+            format!("{kind}:{text}")
+        }
+    }
+
+    /// [`CAPTURE`]'s parameter for a new event on `day` (`YYYY-MM-DD`), in
+    /// a small window of its own: `event:2026-10-01`.
+    pub fn capture_event(day: &str) -> String {
+        format!("{CAPTURE_EVENT}:{day}")
+    }
+
+    /// The day of a [`capture_event`] parameter; `None` for a task or note.
+    pub fn capture_event_day(param: &str) -> Option<&str> {
+        let (kind, day) = param.split_once(':')?;
+        (kind.trim() == CAPTURE_EVENT && !day.is_empty()).then_some(day)
+    }
+
+    const CAPTURE_EVENT: &str = "event";
+
+    /// `open-page`'s parameter for the Calendar's whole editor with a new
+    /// event on `day` titled `title`: `calendar:2026-10-01:new:Lunch`.
+    pub fn new_event_page(day: &str, title: &str) -> String {
+        let page = calendar_page(day, true);
+        if title.is_empty() {
+            page
+        } else {
+            format!("{page}:{title}")
+        }
+    }
+
+    /// The title a [`new_event_page`] carries, if any.
+    pub fn new_event_title(page: &str) -> Option<&str> {
+        page.splitn(4, ':').nth(3).filter(|title| !title.is_empty())
+    }
+
+    /// Takes [`CAPTURE`]'s parameter apart: whether it is a note, and the
+    /// text. Anything but `note` is a task.
+    pub fn capture_parts(param: &str) -> (bool, &str) {
+        let (kind, text) = param.split_once(':').unwrap_or((param, ""));
+        (kind.trim() == CAPTURE_NOTE, text)
+    }
 
     #[cfg(test)]
     #[test]
@@ -509,6 +601,30 @@ pub mod app_action {
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), false));
         let page = calendar_page("2026-10-01", true);
         assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), true));
+        assert_eq!(new_event_title(&page), None);
+        let page = new_event_page("2026-10-01", "Lunch: Asha");
+        assert_eq!(page_parts(&page), ("calendar", Some("2026-10-01"), true));
+        assert_eq!(new_event_title(&page), Some("Lunch: Asha"));
+        assert_eq!(
+            capture_event_day(&capture_event("2026-10-01")),
+            Some("2026-10-01")
+        );
+        assert_eq!(capture_event_day("task:buy milk"), None);
+        assert!(!capture_parts(&capture_event("2026-10-01")).0);
+        let page = fix_page(7);
+        let (name, detail, _) = page_parts(&page);
+        assert_eq!((name, detail.and_then(fix_account)), ("mail", Some(7)));
+        assert_eq!(page_parts(OUTBOX_PAGE), ("mail", Some("outbox"), false));
+    }
+
+    #[cfg(test)]
+    #[test]
+    fn capture_round_trips() {
+        assert_eq!(capture_parts(&capture(CAPTURE_TASK, "")), (false, ""));
+        assert_eq!(capture_parts("note"), (true, ""));
+        let param = capture(CAPTURE_NOTE, "Ideas: a: b");
+        assert_eq!(capture_parts(&param), (true, "Ideas: a: b"));
+        assert_eq!(capture_parts("task:Buy milk"), (false, "Buy milk"));
     }
 
     /// After a reply's message ID on the command line: the text the reply
@@ -522,7 +638,7 @@ pub mod app_action {
 
     /// Whether `action`'s parameter is text.
     pub fn takes_text(action: &str) -> bool {
-        matches!(action, SEARCH | OPEN_PAGE)
+        matches!(action, SEARCH | OPEN_PAGE | CAPTURE)
     }
 }
 
@@ -728,6 +844,38 @@ macro_rules! pim_proxy {
             /// server cannot be reached, and when the name is taken.
             fn create_folder(&self, account: i64, name: &str, parent: i64) -> zbus::Result<i64>;
 
+            /// Renames folder `folder` (a label, on Gmail) to `new_name` on
+            /// its account's server, then in the store; `MailChanged`
+            /// follows. Only the last part of its path changes: it stays
+            /// inside the same parent, and the folders inside it move
+            /// along. Fails while the server cannot be reached, when the
+            /// name is taken or holds the server's separator, and for
+            /// special folders (Inbox, Sent, Drafts, Trash, Junk, Archive,
+            /// All Mail, Gmail's system labels, Snoozed, Notes).
+            fn rename_folder(&self, folder: i64, new_name: &str) -> zbus::Result<()>;
+
+            /// Deletes folder `folder` (a label, on Gmail) and the folders
+            /// inside it on its account's server, deepest first, then in
+            /// the store; `MailChanged` follows. Elsewhere than on Gmail
+            /// their mail is moved to the account's Trash first, so it can
+            /// be recovered (without a Trash it is deleted with them); on
+            /// Gmail only the labels go, and the mail stays in All Mail and
+            /// its other labels. Returns how many messages went to the
+            /// Trash. Fails while the server cannot be reached, and for
+            /// special folders and folders holding one.
+            fn delete_folder(&self, folder: i64) -> zbus::Result<u32>;
+
+            /// Gmail: puts the labels `add` on messages and takes the
+            /// labels `remove` off them (folder IDs of the messages'
+            /// account), without moving them otherwise: the mail stays in
+            /// All Mail and its other labels. Like [`Self::set_flags`] it
+            /// shows in the store at once and reaches the server when the
+            /// account is online. Fails for accounts that are not Gmail,
+            /// for special folders (Inbox, Sent, All Mail, …), and when a
+            /// message would be left in no folder.
+            fn set_labels(&self, messages: &[i64], add: &[i64], remove: &[i64])
+                -> zbus::Result<()>;
+
             /// Moves messages to `folder` of the same account.
             fn move_messages(&self, messages: &[i64], folder: i64) -> zbus::Result<()>;
 
@@ -756,6 +904,32 @@ macro_rules! pim_proxy {
             /// the Inbox too, unread and on top, with a notification. 0
             /// takes the reminder back; `UndoSend` does too.
             fn set_follow_up(&self, id: i64, after: i64) -> zbus::Result<()>;
+
+            /// Like `SetFollowUp`, but Katna sends `mail` for the user when
+            /// nobody replied: a follow-up (RFC 5322, threaded under the
+            /// message, without `Date` and `Message-ID`) that goes out in
+            /// working hours and, with `again` seconds, a second time if
+            /// still nobody replied. One due a day or more ago (the computer
+            /// was off) is not sent but waits for `SendFollowUpNow`, the
+            /// conversation back in the Inbox. Auto-replies are not replies.
+            fn set_follow_up_mail(
+                &self,
+                id: i64,
+                after: i64,
+                again: i64,
+                mail: &[u8],
+            ) -> zbus::Result<()>;
+
+            /// Sends the follow-up of outbox entry `id` now.
+            fn send_follow_up_now(&self, id: i64) -> zbus::Result<()>;
+
+            /// Moves the follow-up of outbox entry `id` to `at` (Unix
+            /// seconds); one that waited for the user goes out then.
+            fn move_follow_up(&self, id: i64, at: i64) -> zbus::Result<()>;
+
+            /// Dismisses the nudge on sent message `id`: it does not come
+            /// back to the Inbox.
+            fn dismiss_nudge(&self, id: i64) -> zbus::Result<()>;
 
             /// Queues `message` (RFC 5322, with `Bcc` if any) from `account`
             /// to be sent in `delay` seconds; `UndoSend` works until then.
@@ -828,6 +1002,10 @@ macro_rules! pim_proxy {
             /// Renames a label in every address book; an empty new name
             /// takes the label away and keeps its people.
             fn rename_contact_label(&self, old: &str, new: &str) -> zbus::Result<()>;
+
+            /// Sends a failed message again now, its tries counted afresh.
+            /// Returns whether it was one.
+            fn retry_send(&self, id: i64) -> zbus::Result<bool>;
 
             /// Forgets a cancelled or failed message. Returns whether it
             /// was one.
@@ -1005,6 +1183,41 @@ macro_rules! pim_proxy {
             /// Deletes a template. Returns whether it existed.
             fn delete_template(&self, id: i64) -> zbus::Result<bool>;
 
+            // ---- Mail rules (docs/ARCHITECTURE.md §9.4) ----
+            // Apps read rules from the store (`katna_store::rules`) and
+            // preview them there (`Store::rule_preview`); `RulesChanged`
+            // says to read them again.
+
+            /// Saves a mail rule: `json` is a `katna_store::rules::Rule`.
+            /// ID 0 adds one at the end of the list; another ID replaces
+            /// that rule, keeping its place, and clears its last error.
+            /// `InvalidArgs` for a rule without a name, conditions,
+            /// actions or accounts, a bad regular expression or address,
+            /// or more than one action that moves mail; `UnknownObject`
+            /// for an account, or a folder in the rule's accounts, that
+            /// doesn't exist. Returns its ID.
+            fn save_rule(&self, json: &str) -> zbus::Result<i64>;
+
+            /// Deletes rule `id`.
+            fn delete_rule(&self, id: i64) -> zbus::Result<()>;
+
+            /// Puts rules `ids` first, in this order (they run in list
+            /// order); the others follow in the order they had.
+            fn reorder_rules(&self, ids: &[i64]) -> zbus::Result<()>;
+
+            /// Switches rule `id` on or off. Switching it on clears the
+            /// error it was switched off with.
+            fn set_rule_enabled(&self, id: i64, on: bool) -> zbus::Result<()>;
+
+            /// "Also apply to these": runs rule `id` (on or off) once over
+            /// the inbox mail of its accounts from the last `days` days
+            /// (1 to 3650), except forwarding. Returns how many messages
+            /// it changed. `Failed` when an action fails (the rule stays
+            /// as it is).
+            fn apply_rule(&self, id: i64, days: u32) -> zbus::Result<u32>;
+
+            // ---- End of mail rules ----
+
             /// Saves a note in place of the one with its ID (0: a new one,
             /// on top). A note of a mail account goes to that account's
             /// Notes folder too. Returns its ID. Apps read notes from the
@@ -1065,6 +1278,14 @@ macro_rules! pim_proxy {
             /// website, and under the same authentication rule as
             /// [`Self::sender_picture`].
             fn company_of(&self, address: &str, website: &str) -> zbus::Result<String>;
+
+            /// The signatures Gmail adds to the mail of `account`, by the
+            /// address it sends as, the default first: (address, name,
+            /// signature as HTML), only addresses that have one. Fails
+            /// with `AuthFailed` when the account's sign-in does not allow
+            /// it (sign in again), and for an account that is not a Gmail
+            /// account signed in with Google.
+            fn gmail_signatures(&self, account: i64) -> zbus::Result<Vec<(String, String, String)>>;
 
             /// Translates `text`, the plain text of `message` (HTML made
             /// plain, quotes and signature kept, never attachments), from
@@ -1147,6 +1368,12 @@ macro_rules! pim_proxy {
             /// Reads the settings file again; call after saving settings
             /// the daemon uses (`sync.metered`).
             fn reload_config(&self) -> zbus::Result<()>;
+
+            /// Deletes what app `app` (`calendar`, `contacts`, `tasks`,
+            /// `notes` or `files`), turned off, downloaded from the
+            /// accounts; its next sync downloads it again. Whatever is on
+            /// this computer only, or not sent yet, stays.
+            fn forget_app(&self, app: &str) -> zbus::Result<()>;
 
             /// Whether the daemon saves data as on a metered network (no
             /// bodies downloaded ahead of time).
@@ -1234,6 +1461,19 @@ macro_rules! pim_proxy {
             #[zbus(signal)]
             fn mail_changed(&self, account: i64) -> zbus::Result<()>;
 
+            /// The server of `account` refused `count` changes for good and
+            /// they were undone: `change` is what they were (`flags`,
+            /// `move`, `label`, `delete`, or `other` for anything else or a
+            /// mix) and `reason` the server's first answer.
+            #[zbus(signal)]
+            fn changes_refused(
+                &self,
+                account: i64,
+                change: &str,
+                count: u32,
+                reason: &str,
+            ) -> zbus::Result<()>;
+
             /// Outbox entry `id` changed state; see `Outbox`.
             #[zbus(signal)]
             fn outbox_changed(&self, id: i64) -> zbus::Result<()>;
@@ -1259,6 +1499,12 @@ macro_rules! pim_proxy {
             /// Saved contacts changed; read them from the store again.
             #[zbus(signal)]
             fn contacts_changed(&self) -> zbus::Result<()>;
+
+            /// Mail rules changed, or the daemon switched one off because
+            /// an action failed (its `last_error` says why); read them from
+            /// the store again.
+            #[zbus(signal)]
+            fn rules_changed(&self) -> zbus::Result<()>;
         }
     };
 }

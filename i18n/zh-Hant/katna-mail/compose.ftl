@@ -58,6 +58,7 @@ compose-file-too-large = { $name } 太大：一封郵件最多只能夾帶 { $li
 compose-forward-files-missing = 轉寄郵件中的檔案尚未下載，因此不會附加。
 compose-attachment-size = （{ $size }）
 compose-remove-attachment = 移除附件
+compose-attachment-open-tip = 開啟以檢查
 compose-attachments-total = { $count } 個檔案，共 { $size }
 compose-drive-note = { $name } 超過 { $limit }，因此會存入你的 Google Drive，郵件中會附上連結。
 compose-drive-tip = 在你的 Google Drive 中；郵件中會附上連結

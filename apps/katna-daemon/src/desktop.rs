@@ -2,13 +2,15 @@
 
 //! The daemon's place on the desktop (`docs/ARCHITECTURE.md` §15.2): the
 //! unread count (§15.1.1) on Katna Mail's taskbar or dock icon, and the tray
-//! icon with its badge and menu. Both follow `[general]` `unread_badge` and
-//! `show_in_tray`, and stay up while the app is closed.
+//! icon with its badge, menu and tooltip (with what needs the user,
+//! §15.1.4). Both follow `[general]` `unread_badge` and
+//! `show_in_tray`, and stay up while the app is closed. The global
+//! shortcuts for quick capture (§15.5) are registered here too.
 
 use std::time::Duration;
 
 use async_channel::{Receiver, Sender};
-use katna_core::config::{General, TrayStyle};
+use katna_core::config::{AppKind, AppsOn, General, TrayStyle};
 use katna_core::{Paths, ids};
 use katna_dbus::app_action;
 use katna_i18n::tr;
@@ -16,6 +18,7 @@ use katna_platform::colors;
 use katna_platform::dbusmenu::MenuItem;
 use katna_platform::icon::Style;
 use katna_platform::launcher::LauncherEntry;
+use katna_platform::shortcuts::{self, Keys, Shortcut};
 use katna_platform::tray::{self, Tray};
 use katna_store::{Mode, Store};
 
@@ -28,15 +31,27 @@ const SETTLE: Duration = Duration::from_millis(500);
 /// of (Windows' taskbar, or `kdeglobals` written after the portal spoke).
 const PANEL_POLL: Duration = Duration::from_secs(1);
 
+/// The tray menu's and the global shortcuts' actions that open the quick
+/// capture card on Task or on Note (`app_action::CAPTURE`).
+const CAPTURE_TASK: &str = "capture-task";
+const CAPTURE_NOTE: &str = "capture-note";
+
+/// The global shortcuts' keys: Meta+Alt+T and Meta+Alt+N.
+const CAPTURE_TASK_KEYS: Keys = Keys::meta_alt('t');
+const CAPTURE_NOTE_KEYS: Keys = Keys::meta_alt('n');
+
 /// What the desktop presence reacts to.
 #[derive(Debug)]
 pub(crate) enum Event {
     MailChanged,
-    Settings(General),
+    /// The `[general]` settings, and which apps are on (`[apps]`).
+    Settings(General, AppsOn),
     /// The panel's icons and text are now this color (light or dark).
     PanelText(u32),
     /// A click on the tray icon or its menu, with an activation token.
     Tray(String, Option<String>),
+    /// The tooltip's lines about what needs the user (`needs_you`).
+    Problems(Vec<String>),
 }
 
 /// Sends events to a running [`run`].
@@ -48,8 +63,12 @@ impl Handle {
         let _ = self.0.try_send(Event::MailChanged);
     }
 
-    pub(crate) fn settings(&self, general: General) {
-        let _ = self.0.try_send(Event::Settings(general));
+    pub(crate) fn settings(&self, general: General, apps: AppsOn) {
+        let _ = self.0.try_send(Event::Settings(general, apps));
+    }
+
+    pub(crate) fn problems(&self, lines: Vec<String>) {
+        let _ = self.0.try_send(Event::Problems(lines));
     }
 }
 
@@ -72,22 +91,35 @@ fn unix_now() -> i64 {
         .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX))
 }
 
-/// The tray's right-click menu, in the current language.
-fn tray_menu() -> Vec<MenuItem> {
-    vec![
+/// The tray's right-click menu, in the current language. New task and New
+/// note are there while Tasks and Notes are on.
+fn tray_menu(apps: &AppsOn) -> Vec<MenuItem> {
+    let mut menu = vec![
         MenuItem::action(tr!("tray-open-inbox"), app_action::OPEN_INBOX).icon("mail-folder-inbox"),
         MenuItem::action(tr!("tray-new-message"), app_action::COMPOSE).icon("mail-message-new"),
+    ];
+    if apps.is_on(AppKind::Tasks) {
+        menu.push(MenuItem::action(tr!("tray-new-task"), CAPTURE_TASK).icon("task-new"));
+    }
+    if apps.is_on(AppKind::Notes) {
+        menu.push(MenuItem::action(tr!("tray-new-note"), CAPTURE_NOTE).icon("view-pim-notes"));
+    }
+    menu.extend([
         MenuItem::Separator,
         MenuItem::action(tr!("tray-preferences"), app_action::PREFERENCES)
             .icon("preferences-system-symbolic"),
         MenuItem::Separator,
         MenuItem::action(tr!("tray-quit"), app_action::QUIT).icon("application-exit"),
-    ]
+    ]);
+    menu
 }
 
-/// The tooltip's second line.
-fn status_line(count: u64) -> String {
-    tr!("tray-unread", count = count)
+/// The tooltip's text under "Katna Mail": the unread count, then a line
+/// for each thing that needs the user.
+fn status_line(count: u64, problems: &[String]) -> String {
+    let mut lines = vec![tr!("tray-unread", count = count)];
+    lines.extend(problems.iter().cloned());
+    lines.join("\n")
 }
 
 /// Keeps the badge and the tray up to date until `events` closes. The
@@ -96,6 +128,7 @@ pub(crate) async fn run(
     connection: zbus::Connection,
     paths: Paths,
     mut general: General,
+    mut apps: AppsOn,
     handle: Handle,
     events: Receiver<Event>,
     quit: Sender<()>,
@@ -109,16 +142,18 @@ pub(crate) async fn run(
             }
         };
     smol::spawn(watch_panel(connection.clone(), handle.clone())).detach();
+    smol::spawn(serve_shortcuts(connection.clone(), handle.clone())).detach();
     let mut tray: Option<Tray> = None;
     let mut count = None;
+    let mut problems: Vec<String> = Vec::new();
     let mut dirty = true;
     // The language the tray's menu and tooltip are in.
     let mut language = general.language.clone();
     loop {
         // A new tray icon shows no count yet; after a new language, the
         // tooltip is in the old one.
-        let appeared = follow_setting(&connection, &handle, &mut tray, &general).await;
-        let translated = follow_language(tray.as_ref(), &general, &mut language).await;
+        let appeared = follow_setting(&connection, &handle, &mut tray, &general, &apps).await;
+        let translated = follow_language(tray.as_ref(), &general, &apps, &mut language).await;
         if appeared || translated {
             count = None;
             dirty = true;
@@ -127,12 +162,21 @@ pub(crate) async fn run(
             // Let a burst of changes settle, then count once.
             smol::Timer::after(SETTLE).await;
             while let Ok(event) = events.try_recv() {
-                if !handle_now(&connection, &mut general, event, &quit).await {
+                if let Event::Problems(lines) = event {
+                    problems = lines;
+                    count = None;
+                    continue;
+                }
+                let was = apps.clone();
+                if !handle_now(&connection, &mut general, &mut apps, event, &quit).await {
                     return hide(tray).await;
                 }
+                if apps != was {
+                    follow_apps(tray.as_ref(), &apps).await;
+                }
             }
-            let appeared = follow_setting(&connection, &handle, &mut tray, &general).await;
-            let translated = follow_language(tray.as_ref(), &general, &mut language).await;
+            let appeared = follow_setting(&connection, &handle, &mut tray, &general, &apps).await;
+            let translated = follow_language(tray.as_ref(), &general, &apps, &mut language).await;
             if appeared || translated {
                 count = None;
             }
@@ -146,7 +190,16 @@ pub(crate) async fn run(
             match smol::unblock(move || counted_unread(&Store::open(&paths, Mode::ReadOnly)?)).await
             {
                 Ok(unread) => {
-                    show_count(launcher.as_ref(), tray.as_ref(), &general, unread, count).await;
+                    let status = status_line(unread, &problems);
+                    show_count(
+                        launcher.as_ref(),
+                        tray.as_ref(),
+                        &general,
+                        unread,
+                        count,
+                        &status,
+                    )
+                    .await;
                     count = Some(unread);
                 }
                 Err(err) => tracing::warn!(%err, "counting unread mail"),
@@ -158,10 +211,22 @@ pub(crate) async fn run(
         };
         match event {
             Event::MailChanged => dirty = true,
-            Event::Settings(new) => {
+            // Shown with the next count.
+            Event::Problems(lines) => {
+                if lines != problems {
+                    problems = lines;
+                    count = None;
+                    dirty = true;
+                }
+            }
+            Event::Settings(new, new_apps) => {
                 dirty = new.unread_badge != general.unread_badge
                     || new.tray_style != general.tray_style;
                 general = new;
+                if new_apps != apps {
+                    apps = new_apps;
+                    follow_apps(tray.as_ref(), &apps).await;
+                }
             }
             Event::PanelText(color) => {
                 if let Some(tray) = &tray
@@ -172,7 +237,7 @@ pub(crate) async fn run(
                 }
             }
             event => {
-                if !handle_now(&connection, &mut general, event, &quit).await {
+                if !handle_now(&connection, &mut general, &mut apps, event, &quit).await {
                     return hide(tray).await;
                 }
             }
@@ -187,9 +252,10 @@ async fn follow_setting(
     handle: &Handle,
     tray: &mut Option<Tray>,
     general: &General,
+    apps: &AppsOn,
 ) -> bool {
     if general.show_in_tray && tray.is_none() {
-        *tray = show_tray(connection, handle, tray_style(general)).await;
+        *tray = show_tray(connection, handle, tray_style(general), apps).await;
         return tray.is_some();
     }
     if !general.show_in_tray
@@ -204,17 +270,31 @@ async fn follow_setting(
 /// Rebuilds the tray's menu when `general.language` is no longer
 /// `language`, which the daemon has applied already
 /// (`Daemon::reload_config`); `true` when the tooltip must be set again.
-async fn follow_language(tray: Option<&Tray>, general: &General, language: &mut String) -> bool {
+async fn follow_language(
+    tray: Option<&Tray>,
+    general: &General,
+    apps: &AppsOn,
+    language: &mut String,
+) -> bool {
     if general.language == *language {
         return false;
     }
     language.clone_from(&general.language);
     if let Some(tray) = tray
-        && let Err(err) = tray.set_menu(tray_menu()).await
+        && let Err(err) = tray.set_menu(tray_menu(apps)).await
     {
         tracing::warn!(%err, "could not translate the tray menu");
     }
     true
+}
+
+/// Rebuilds the tray's menu after an app was turned on or off.
+async fn follow_apps(tray: Option<&Tray>, apps: &AppsOn) {
+    if let Some(tray) = tray
+        && let Err(err) = tray.set_menu(tray_menu(apps)).await
+    {
+        tracing::warn!(%err, "could not rebuild the tray menu");
+    }
 }
 
 /// Takes the tray icon away at once after Quit, while the rest of the
@@ -231,19 +311,37 @@ async fn hide(tray: Option<Tray>) {
 async fn handle_now(
     connection: &zbus::Connection,
     general: &mut General,
+    apps: &mut AppsOn,
     event: Event,
     quit: &Sender<()>,
 ) -> bool {
     match event {
         // Redrawn after the count settles, in the panel's color then.
-        Event::MailChanged | Event::PanelText(_) => {}
-        Event::Settings(new) => *general = new,
+        Event::MailChanged | Event::PanelText(_) | Event::Problems(_) => {}
+        Event::Settings(new, new_apps) => {
+            *general = new;
+            *apps = new_apps;
+        }
         Event::Tray(action, token) => {
             if action == app_action::QUIT {
                 mail_app::run(connection, Some(app_action::QUIT), Vec::new(), None).await;
                 tracing::info!("quit from the tray");
                 let _ = quit.send(()).await;
                 return false;
+            }
+            if let Some(kind) = capture_kind(&action) {
+                // Meta+Alt+T and Meta+Alt+N do nothing while their app is off.
+                let app = if kind == app_action::CAPTURE_TASK {
+                    AppKind::Tasks
+                } else {
+                    AppKind::Notes
+                };
+                if !apps.is_on(app) {
+                    return true;
+                }
+                let param = vec![zbus::zvariant::Value::from(kind)];
+                mail_app::run(connection, Some(app_action::CAPTURE), param, token).await;
+                return true;
             }
             let action = match action.as_str() {
                 tray::ACTIVATE => None,
@@ -254,6 +352,43 @@ async fn handle_now(
         }
     }
     true
+}
+
+/// `app_action::CAPTURE`'s parameter for a tray or shortcut action that
+/// opens the quick capture card.
+fn capture_kind(action: &str) -> Option<&'static str> {
+    match action {
+        CAPTURE_TASK => Some(app_action::CAPTURE_TASK),
+        CAPTURE_NOTE => Some(app_action::CAPTURE_NOTE),
+        _ => None,
+    }
+}
+
+/// Registers Meta+Alt+T and Meta+Alt+N with the desktop (KDE's global
+/// shortcuts, where System Settings can change them; Windows' hotkeys),
+/// for as long as the daemon runs. A press works as the tray's New task
+/// and New note do.
+async fn serve_shortcuts(connection: zbus::Connection, handle: Handle) {
+    let list = vec![
+        Shortcut {
+            action: CAPTURE_TASK.to_owned(),
+            name: tr!("shortcut-capture-task"),
+            keys: CAPTURE_TASK_KEYS,
+        },
+        Shortcut {
+            action: CAPTURE_NOTE.to_owned(),
+            name: tr!("shortcut-capture-note"),
+            keys: CAPTURE_NOTE_KEYS,
+        },
+    ];
+    let sender = handle.0.clone();
+    let pressed: shortcuts::Handler = std::sync::Arc::new(move |action: &str| {
+        let _ = sender.try_send(Event::Tray(action.to_owned(), None));
+    });
+    let served = shortcuts::serve(&connection, ids::MAIL_APP_ID, "Katna Mail", list, pressed).await;
+    if let Err(err) = served {
+        tracing::warn!(%err, "no global shortcuts");
+    }
 }
 
 /// How `general` says to draw the tray icon; one color is the panel's.
@@ -307,14 +442,19 @@ async fn watch_panel(connection: zbus::Connection, handle: Handle) {
     }
 }
 
-async fn show_tray(connection: &zbus::Connection, handle: &Handle, style: Style) -> Option<Tray> {
+async fn show_tray(
+    connection: &zbus::Connection,
+    handle: &Handle,
+    style: Style,
+    apps: &AppsOn,
+) -> Option<Tray> {
     let sender = handle.0.clone();
     let shown = Tray::show(
         connection,
         ids::MAIL_APP_ID,
         "Katna Mail",
         style,
-        tray_menu(),
+        tray_menu(apps),
         move |action, token| {
             let _ = sender.try_send(Event::Tray(action.to_owned(), token));
         },
@@ -337,6 +477,7 @@ async fn show_count(
     general: &General,
     unread: u64,
     before: Option<u64>,
+    status: &str,
 ) {
     if let Some(launcher) = launcher {
         let shown = if general.unread_badge { unread } else { 0 };
@@ -346,7 +487,7 @@ async fn show_count(
     }
     if let Some(tray) = tray
         && before != Some(unread)
-        && let Err(err) = tray.set_unread(unread, &status_line(unread)).await
+        && let Err(err) = tray.set_unread(unread, status).await
     {
         tracing::debug!(%err, "tray badge");
     }
@@ -401,21 +542,48 @@ mod tests {
     }
 
     #[test]
-    fn tray_menu_has_the_four_actions() {
-        let actions: Vec<String> = tray_menu()
-            .into_iter()
-            .filter_map(|item| match item {
-                MenuItem::Action { action, .. } => Some(action),
-                _ => None,
-            })
-            .collect();
-        assert_eq!(actions, ["open-inbox", "compose", "preferences", "quit"]);
+    fn tray_menu_has_its_actions() {
+        let actions = |apps: &AppsOn| -> Vec<String> {
+            tray_menu(apps)
+                .into_iter()
+                .filter_map(|item| match item {
+                    MenuItem::Action { action, .. } => Some(action),
+                    _ => None,
+                })
+                .collect()
+        };
+        assert_eq!(
+            actions(&AppsOn {
+                calendar: false,
+                contacts: false,
+                tasks: false,
+                notes: false,
+                files: false,
+            }),
+            ["open-inbox", "compose", "preferences", "quit"]
+        );
+        let actions = actions(&AppsOn::default());
+        assert_eq!(
+            actions,
+            [
+                "open-inbox",
+                "compose",
+                CAPTURE_TASK,
+                CAPTURE_NOTE,
+                "preferences",
+                "quit"
+            ]
+        );
     }
 
     #[test]
     fn status_line_counts() {
-        assert_eq!(status_line(0), "No unread mail");
-        assert_eq!(status_line(1), "1 unread message");
-        assert_eq!(status_line(5), "5 unread messages");
+        assert_eq!(status_line(0, &[]), "No unread mail");
+        assert_eq!(status_line(1, &[]), "1 unread message");
+        assert_eq!(status_line(5, &[]), "5 unread messages");
+        assert_eq!(
+            status_line(0, &["Sign in again to a@b".into()]),
+            "No unread mail\nSign in again to a@b"
+        );
     }
 }

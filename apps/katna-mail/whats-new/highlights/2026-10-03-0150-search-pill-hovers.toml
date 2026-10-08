@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Even hovers in the phone search bar"
+text = """
+On a phone, the folders button and your account picture now sit centred
+in the search bar's rounded ends, and every button in the bar has the same
+round hover, spaced evenly from the bar's edge.
+"""

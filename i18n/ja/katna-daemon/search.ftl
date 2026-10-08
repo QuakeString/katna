@@ -7,6 +7,7 @@
 search-category-mail = メール
 search-category-people = 連絡先
 search-category-tasks = タスク
+search-category-notes = メモ
 search-category-events = 予定
 search-mail-from = 差出人: { $sender }
 search-no-subject = （件名なし）
@@ -21,8 +22,20 @@ search-event-in-days =
        *[other] { $count } 日後
     }
 
+## Quick capture: "task: …" or "note: …" typed in KRunner
+
+search-add-task = タスク「{ $title }」を追加
+search-add-task-to = 追加先: { $list }
+search-add-task-when = { $when } · { $list }
+search-add-note = メモ「{ $title }」を追加
+search-add-note-to = 追加先: { $place } のメモ
+search-add-note-here = 追加先: このパソコンのメモ
+search-new-task = 新しいタスク
+search-new-note = 新しいメモ
+
 ## Buttons on a result in KRunner
 
 search-reply-all = 全員に返信
 search-copy-address = アドレスをコピー
 search-find-mail = メールを検索
+search-edit-capture = 追加する前に編集

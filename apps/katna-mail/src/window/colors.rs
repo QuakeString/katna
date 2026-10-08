@@ -5,17 +5,21 @@
 //! color, color scheme, any `kdeglobals` group on KDE), and whenever the
 //! files they come from change (theme tools write `gtk.css` without
 //! telling anyone). On KDE it also follows the Blur effect's strength in
-//! `kwinrc`, which the frosted menus and dialogs take on.
+//! `kwinrc`, which the frosted menus and dialogs take on, and the
+//! desktop's animation speed (`katna_platform::motion`), which motion
+//! follows unless Settings > Appearance sets Katna's own.
 
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use futures_lite::StreamExt;
-use gpui::{Context, Task};
+use gpui::{App, Context, Task};
 use katna_chrome::Desktop;
+use katna_core::config::{MailView, ReduceMotion};
 use katna_dbus::zbus::Connection;
 use katna_platform::blur;
 use katna_platform::colors::{self, DesktopKind, DesktopScheme, SystemColors};
+use katna_platform::motion::{self, DesktopMotion};
 
 use super::MailWindow;
 use crate::user_schemes;
@@ -41,6 +45,8 @@ pub(super) struct DesktopColors {
     /// KDE's blur strength, 1 to 15; `None` off KDE or with its Blur
     /// effect off.
     pub(super) kde_blur: Option<u8>,
+    /// The desktop's animation speed.
+    pub(super) motion: DesktopMotion,
     _watch: Vec<Task<()>>,
 }
 
@@ -59,6 +65,8 @@ impl DesktopColors {
         tracing::info!(?kind, ?colors, "desktop colors");
         let user = user_schemes::load_all(&user_schemes::dir(config_dir));
         let kde_blur = read_kde_blur(kind, config_home.as_deref());
+        let motion = read_motion(kind, config_home.as_deref());
+        tracing::info!(?motion, "desktop motion");
         let mut this = Self {
             kind,
             config_home,
@@ -67,6 +75,7 @@ impl DesktopColors {
             user,
             colors: SystemColors::default(),
             kde_blur,
+            motion,
             _watch: Vec::new(),
         };
         this.merge();
@@ -105,6 +114,25 @@ fn read_kde_blur(kind: DesktopKind, config_home: Option<&Path>) -> Option<u8> {
     }
 }
 
+fn read_motion(kind: DesktopKind, config_home: Option<&Path>) -> DesktopMotion {
+    motion::read(kind == DesktopKind::Kde, config_home)
+}
+
+/// Sets how fast motion runs and whether it runs at all, from `view`'s
+/// settings and `desktop`'s.
+pub(super) fn apply_motion(view: &MailView, desktop: DesktopMotion, cx: &mut App) {
+    let speed = view.animation_speed.unwrap_or(desktop.duration_factor);
+    if katna_ui::motion::speed() != speed {
+        katna_ui::motion::set_speed(speed);
+        cx.refresh_windows();
+    }
+    cx.set_reduce_motion(match view.reduce_motion {
+        ReduceMotion::Desktop => desktop.off(),
+        ReduceMotion::On => true,
+        ReduceMotion::Off => false,
+    });
+}
+
 impl MailWindow {
     /// Starts following the desktop's colors.
     pub(super) fn watch_colors(&mut self, cx: &mut Context<Self>) {
@@ -130,16 +158,18 @@ impl MailWindow {
                 };
                 loop {
                     let (connection, home) = (connection.clone(), home.clone());
-                    let (accent, colors) = cx
+                    let (accent, colors, motion) = cx
                         .background_executor()
                         .spawn(async move {
                             let accent = colors::portal_accent(&connection).await;
-                            (accent, read(kind, home.as_ref(), accent))
+                            let motion = read_motion(kind, home.as_deref());
+                            (accent, read(kind, home.as_ref(), accent), motion)
                         })
                         .await;
                     let updated = this.update(cx, |this, cx| {
                         this.desktop_colors.portal_accent = accent;
                         this.set_desktop_colors(colors, cx);
+                        this.set_desktop_motion(motion, cx);
                     });
                     if updated.is_err() {
                         return;
@@ -176,12 +206,20 @@ impl MailWindow {
                     return;
                 };
                 let home = home.clone();
-                let colors = cx
+                let (colors, motion) = cx
                     .background_executor()
-                    .spawn(async move { colors::read(kind, &home, accent) })
+                    .spawn(async move {
+                        (
+                            colors::read(kind, &home, accent),
+                            read_motion(kind, Some(&home)),
+                        )
+                    })
                     .await;
                 if this
-                    .update(cx, |this, cx| this.set_desktop_colors(colors, cx))
+                    .update(cx, |this, cx| {
+                        this.set_desktop_colors(colors, cx);
+                        this.set_desktop_motion(motion, cx);
+                    })
                     .is_err()
                 {
                     return;
@@ -227,6 +265,14 @@ impl MailWindow {
             self.desktop_colors.desktop = colors;
             self.desktop_colors.merge();
             cx.notify();
+        }
+    }
+
+    fn set_desktop_motion(&mut self, motion: DesktopMotion, cx: &mut Context<Self>) {
+        if self.desktop_colors.motion != motion {
+            tracing::info!(?motion, "desktop motion changed");
+            self.desktop_colors.motion = motion;
+            apply_motion(&self.config.mail, motion, cx);
         }
     }
 }

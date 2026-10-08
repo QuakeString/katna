@@ -19,19 +19,64 @@ const CHECK_EVERY: Duration = Duration::from_secs(30);
 const SELF_EXE: &str = "/proc/self/exe";
 
 /// Resolves with the path of the new binary once the running one was
-/// replaced on disk.
+/// replaced on disk. From an AppImage, the binary runs from the image's
+/// mount, which never changes: the image itself (`$APPIMAGE`) being
+/// replaced counts, and the new image is the new binary.
 pub async fn replaced() -> PathBuf {
+    let appimage = appimage();
+    let image_at_start = appimage.as_deref().and_then(file_id);
     let mut ticks = smol::Timer::interval(CHECK_EVERY);
     loop {
         ticks.next().await;
-        if let Ok(link) = std::fs::read_link(SELF_EXE)
-            && let Some(new) = new_binary(&link)
-            && new.is_file()
+        if let (Some(image), Some(before)) = (&appimage, image_at_start)
+            && file_id(image).is_some_and(|now| now != before)
         {
-            tracing::info!(path = %new.display(), "katna-daemon was updated");
-            return new;
+            tracing::info!(path = %image.display(), "the Katna AppImage was updated");
+            return image.clone();
+        }
+        if let Ok(link) = std::fs::read_link(SELF_EXE) {
+            if let Some(new) = new_binary(&link)
+                && new.is_file()
+            {
+                tracing::info!(path = %new.display(), "katna-daemon was updated");
+                return new;
+            }
+            // The package manager says a newer build is installed, though
+            // this binary's file looks unchanged: restart all the same,
+            // or this daemon would offer the update that is installed.
+            // Only for the packaged binary, which the restart replaces.
+            if link.starts_with("/usr/")
+                && let Some(installed) = katna_core::update::Package::current().installed_version()
+                && katna_core::update::newer(katna_core::update::VERSION, &installed)
+            {
+                tracing::info!(
+                    running = katna_core::update::VERSION,
+                    installed,
+                    "a newer katna-daemon is installed"
+                );
+                return link;
+            }
         }
     }
+}
+
+/// The AppImage this daemon runs from, if any.
+fn appimage() -> Option<PathBuf> {
+    std::env::var_os("APPIMAGE")
+        .filter(|path| !path.is_empty())
+        .map(PathBuf::from)
+}
+
+/// Which file is at `path` now: replacing it gives another.
+#[cfg(unix)]
+fn file_id(path: &Path) -> Option<(u64, u64)> {
+    use std::os::unix::fs::MetadataExt;
+    std::fs::metadata(path).ok().map(|m| (m.dev(), m.ino()))
+}
+
+#[cfg(not(unix))]
+fn file_id(_path: &Path) -> Option<(u64, u64)> {
+    None
 }
 
 /// The path a replaced binary had: Linux adds ` (deleted)` to
@@ -70,9 +115,12 @@ pub async fn restart_by_systemd(connection: &zbus::Connection) -> bool {
 #[cfg(unix)]
 pub fn restart(binary: &Path) -> std::io::Error {
     use std::os::unix::process::CommandExt;
-    std::process::Command::new(binary)
-        .args(std::env::args_os().skip(1))
-        .exec()
+    let mut command = std::process::Command::new(binary);
+    // The AppImage starts Katna Mail unless told which program.
+    if appimage().as_deref() == Some(binary) {
+        command.arg("katna-daemon");
+    }
+    command.args(std::env::args_os().skip(1)).exec()
 }
 
 /// Starts `binary` with the same arguments; the caller then exits, as

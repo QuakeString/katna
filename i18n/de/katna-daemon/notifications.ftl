@@ -17,6 +17,10 @@ notify-unknown-sender = Unbekannter Absender
 notify-snooze-back = Zurückgestellte E-Mails sind wieder da
 notify-no-reply = Noch keine Antwort
 notify-no-reply-to = Niemand hat auf „{ $subject }“ geantwortet.
+notify-follow-up-sent = Nachfass-E-Mail gesendet
+notify-follow-up-sent-to = Niemand hatte auf „{ $subject }“ geantwortet, daher hat Katna nachgefasst.
+notify-follow-up-waiting = Nachfass-E-Mail nicht gesendet
+notify-follow-up-waiting-to = Sie war fällig, während dieser Computer aus war. „{ $subject }“ ist wieder in Ihrem Posteingang.
 
 ## Open and click tracking (only for mail sent with "Track opens and clicks")
 
@@ -28,6 +32,19 @@ notify-tracking-clicked = { $who } hat auf einen Link in { $subject } geklickt
 notify-update-ready = Katna Mail kann aktualisiert werden
 notify-update-ready-body = Version { $version } ist heruntergeladen. Aktualisieren installiert sie und startet Katna Mail neu.
 notify-update = Aktualisieren
+
+## Something needs the user, shown once per problem
+
+notify-signed-out = Erneut anmelden
+notify-signed-out-body = { $provider } hat Katna von { $address } abgemeldet. E-Mails werden nicht mehr synchronisiert.
+notify-sign-in = Anmelden
+notify-password-refused = Passwort abgelehnt
+notify-password-refused-body = Der E-Mail-Server hat das Passwort für { $address } abgelehnt. Es wurde vielleicht geändert.
+notify-new-password = Neues Passwort
+notify-not-sent = „{ $subject }“ wurde nicht gesendet
+notify-not-sent-no-subject = Eine Nachricht wurde nicht gesendet
+notify-not-sent-body = Sie liegt im Postausgang, dort steht der Grund.
+notify-open-outbox = Postausgang öffnen
 
 ## Reminders of calendar events
 
@@ -58,6 +75,12 @@ notify-reply-all = Allen antworten
 notify-mark-read = Als gelesen markieren
 notify-mark-all-read = Alle als gelesen markieren
 notify-archive = Archivieren
+notify-snooze-hour = 1 Stunde zurückstellen
+notify-snooze-tomorrow = Morgen
+notify-copy-code = { $code } kopieren
+notify-link-verify = Auf { $domain } bestätigen
+notify-link-confirm = Auf { $domain } bestätigen
+notify-link-activate = Auf { $domain } aktivieren
 
 ## After Archive on a notification: a short note in the same place
 
@@ -67,6 +90,11 @@ notify-archived-count = { $count ->
    *[other] { $count } Nachrichten aus dem Posteingang verschoben
 }
 notify-undo = Rückgängig
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = Code kopiert
+notify-code-not-copied = Der Code konnte nicht kopiert werden
 
 ## After a reply typed into a notification: a note in the same place while
 ## it waits for the undo time

@@ -32,9 +32,9 @@ use katna_core::{OAuthProvider, Pop3Keep};
 use katna_dbus::{NewImapAccount, NewPop3Account, ServerSpec};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::px;
 use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
+use katna_ui::{px, tokens};
 
 use super::MailWindow;
 use super::MenuKey;
@@ -42,9 +42,7 @@ use super::mail_providers::{MailProvider, PasswordHelp};
 use crate::daemon::{self, AddError};
 use crate::outgoing;
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    FocusRing, ScaledEdge, elevation, filled_button, icon, icon_button, raised, tip,
-};
+use crate::widgets::{FocusRing, ScaledEdge, filled_button, icon, icon_button, raised, tip};
 
 /// The dialog's width with the provider tiles, and on the other steps.
 const WIDE: f32 = 640.0;
@@ -1120,7 +1118,7 @@ impl MailWindow {
             ("right" | "down" | "left" | "up", Step::Provider) if !modified => {
                 cx.stop_propagation();
                 // Up and Down go a whole row, over both columns.
-                let width = unpx(window.viewport_size().width).min(WIDE + 32.0) - 32.0;
+                let width = self.room_width().min(WIDE + 32.0) - 32.0;
                 let columns = if width - 80.0 >= TWO_COLUMNS { 2 } else { 1 };
                 let steps = if matches!(key, "up" | "down") {
                     columns
@@ -1198,11 +1196,8 @@ impl MailWindow {
             .max_h(px((vh - 112.0).max(240.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(
                 div()
                     .id("add-account-body")
@@ -1268,12 +1263,10 @@ impl MailWindow {
                     .flex_row()
                     .items_center()
                     .gap(px(14.0))
-                    .rounded(px(12.0))
-                    .border_1()
-                    .border_color(rgba(fade(th.text_faint, 0.35)))
-                    .bg(rgba(th.surface))
+                    .relative()
+                    .map(|d| crate::widgets::tile(d, th))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)).shadow(elevation(th, 1.0)))
+                    .child(crate::widgets::tile_hover(th))
                     .focus_ring(th)
                     .on_click(cx.listener(move |this, _, window, cx| {
                         this.pick_provider(provider, window, cx)
@@ -1306,7 +1299,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(centered_header(
-                logo(),
+                logo(th),
                 tr!("add-account-title"),
                 tr!("add-account-providers-intro"),
                 th,
@@ -1320,7 +1313,7 @@ impl MailWindow {
                     .gap(px(12.0))
                     .children(tiles),
             )
-            .children(error.map(|error| error_line(error, th)))
+            .children(error.map(|error| self.error_line(error, th)))
             .into_any_element()
     }
 
@@ -1448,7 +1441,7 @@ impl MailWindow {
                 cx,
             )))
             .child(show_password)
-            .children(error.map(|error| error_line(error, th)))
+            .children(error.map(|error| self.error_line(error, th)))
             .children(stages)
             .when(!dialog.busy, |d| d.children(password_help))
             .children(sign_in_instead.map(|provider| {
@@ -1563,7 +1556,7 @@ impl MailWindow {
                 window,
                 cx,
             )))
-            .children(error.map(|error| error_line(error, th)))
+            .children(error.map(|error| self.error_line(error, th)))
             .into_any_element()
     }
 
@@ -1597,7 +1590,7 @@ impl MailWindow {
                     )),
             )
             .child(hint(tr!("add-account-browser-hint"), th))
-            .children(error.map(|error| error_line(error, th)))
+            .children(error.map(|error| self.error_line(error, th)))
             .into_any_element()
     }
 
@@ -1714,7 +1707,7 @@ impl MailWindow {
                 )
                 .child(div().flex().child(control))
                 .children(match &linking {
-                    Some(Linking::Failed(err)) => Some(error_line(err.clone(), th)),
+                    Some(Linking::Failed(err)) => Some(self.error_line(err.clone(), th)),
                     _ => None,
                 })
         });
@@ -1742,9 +1735,7 @@ impl MailWindow {
                     .flex()
                     .flex_col()
                     .gap(px(12.0))
-                    .rounded(px(12.0))
-                    .border_1()
-                    .border_color(rgba(fade(th.text_faint, 0.35)))
+                    .map(|d| crate::widgets::tile(d, th))
                     .child(
                         div()
                             .flex()
@@ -2076,9 +2067,10 @@ impl MailWindow {
         if !self.account_menu {
             return None;
         }
-        // With one account at a time, the shown one is marked and a click
-        // switches to another.
-        let shown = self.shown_account();
+        // What is open is marked: All Accounts or one account. A click
+        // on another switches to it.
+        let open = self.menu_current();
+        let all = self.all_accounts_row(open == Some(None), th, cx);
         let app_menu = self.render_app_menu(th, cx);
         let language = self.render_language_button(th, cx);
         let menu_button = self.app_menu_button(th, cx);
@@ -2089,7 +2081,8 @@ impl MailWindow {
                 account.display_name.clone()
             };
             let id = account.id;
-            let current = shown == Some(id);
+            let current = open == Some(Some(id));
+            let offline = self.offline_text(id);
             let unread = self
                 .tree
                 .accounts
@@ -2106,14 +2099,23 @@ impl MailWindow {
                 .gap(px(12.0))
                 .rounded(px(8.0))
                 .cursor_pointer()
-                .when(current, |d| d.bg(rgba(th.nav_selected)))
-                .hover(move |s| s.bg(rgba(if current { th.nav_selected } else { th.hover })))
+                .when(current, |d| d.bg(rgba(th.row_selected)))
+                .hover(move |s| s.bg(rgba(if current { th.row_selected } else { th.hover })))
                 .menu_key(th)
                 .on_click(cx.listener(move |this, _, _, cx| {
                     this.account_menu = false;
                     this.pick_account(id, cx);
                 }))
-                .child(self.person_avatar(&name, &account.address, 32.0))
+                .child(self.offline_badge(
+                    self.account_ring(
+                        &account.address,
+                        self.person_avatar(&name, &account.address, 32.0),
+                        th,
+                    ),
+                    32.0,
+                    offline.is_some(),
+                    th,
+                ))
                 .child(
                     div()
                         .flex_1()
@@ -2132,25 +2134,29 @@ impl MailWindow {
                                 .truncate()
                                 .text_size(px(12.0))
                                 .text_color(rgba(th.text_faint))
-                                .child(account.address.clone()),
+                                // An offline account says so, and what waits.
+                                .child(offline.clone().unwrap_or_else(|| account.address.clone())),
                         ),
                 )
+                .when(offline.is_some(), |d| {
+                    d.child(self.offline_mark(
+                        ("account-row-offline", ix),
+                        id,
+                        tokens::space::S7,
+                        th,
+                        cx,
+                    ))
+                })
                 .when(unread > 0, |d| {
                     d.child(
                         div()
                             .text_size(px(12.0))
                             .font_weight(FontWeight::SEMIBOLD)
-                            .text_color(rgba(if current {
-                                th.nav_selected_text
-                            } else {
-                                th.text_dim
-                            }))
+                            .text_color(rgba(th.text_dim))
                             .child(crate::format::thousands(unread)),
                     )
                 })
-                .when(current, |d| {
-                    d.child(icon("check", th.nav_selected_text, 20.0))
-                })
+                .when(current, |d| d.child(icon("check", th.text, 20.0)))
         });
         // The icon row at the top: Settings and the language, with the
         // application menu at its end.
@@ -2166,7 +2172,7 @@ impl MailWindow {
                     .tooltip(tip(tr!("settings"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.account_menu = false;
-                        this.open_settings_page(super::settings_page::Section::General, window, cx);
+                        this.open_settings_here(window, cx);
                     })),
             )
             .child(language)
@@ -2183,7 +2189,8 @@ impl MailWindow {
             .text_size(px(14.0))
             .font_weight(FontWeight::MEDIUM)
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .menu_key(th)
             .on_click(cx.listener(|this, _, window, cx| this.open_add_account(window, cx)))
             .child(
@@ -2207,7 +2214,8 @@ impl MailWindow {
                 .absolute()
                 .right(px(16.0))
                 .top(px(4.0))
-                .w(px(MENU_WIDTH))
+                // Narrower on a narrow phone, with the same room each side.
+                .w(px(MENU_WIDTH.min(self.room_width() - 32.0)))
                 .p(px(8.0))
                 .flex()
                 .flex_col()
@@ -2215,6 +2223,7 @@ impl MailWindow {
                 .map(|d| raised(d, th, super::PANEL_RADIUS, 2.0))
                 .text_color(rgba(th.text))
                 .child(icons)
+                .children(self.work_offline_row(th, cx))
                 .when(!self.accounts.is_empty(), |d| {
                     d.child(
                         div()
@@ -2224,6 +2233,7 @@ impl MailWindow {
                             .bg(rgba(th.divider)),
                     )
                 })
+                .children(all)
                 .children(rows)
                 .when(!self.accounts.is_empty(), |d| {
                     d.child(
@@ -2237,7 +2247,8 @@ impl MailWindow {
                 .child(add)
                 .with_animation(
                     "account-menu",
-                    Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                        .with_easing(gpui::ease_out_quint()),
                     |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
                 )
                 .into_any_element()
@@ -2279,8 +2290,8 @@ impl MailWindow {
 }
 
 /// The Katna Mail mark, as in the top bar.
-pub(super) fn logo() -> AnyElement {
-    crate::widgets::katna_mark(40.0)
+pub(super) fn logo(th: &Theme) -> AnyElement {
+    crate::widgets::katna_mark(40.0, th)
 }
 
 /// A step's mark, title and the line under it, centred.
@@ -2428,19 +2439,22 @@ fn stage(id: &'static str, text: String, at: Stage, th: &Theme) -> AnyElement {
         .into_any_element()
 }
 
-fn error_line(error: String, th: &Theme) -> AnyElement {
-    div()
-        .mt(px(8.0))
-        .flex()
-        .flex_row()
-        .items_start()
-        .gap(px(8.0))
-        .text_size(px(12.0))
-        .line_height(px(16.0))
-        .text_color(rgba(th.error))
-        .child(icon("info", th.error, 16.0))
-        .child(div().flex_1().min_w_0().child(error))
-        .into_any_element()
+impl MailWindow {
+    /// Why adding the account failed, in words that can be copied.
+    fn error_line(&self, error: String, th: &Theme) -> AnyElement {
+        div()
+            .mt(px(8.0))
+            .flex()
+            .flex_row()
+            .items_start()
+            .gap(px(8.0))
+            .text_size(px(12.0))
+            .line_height(px(16.0))
+            .text_color(rgba(th.error))
+            .child(icon("info", th.error, 16.0))
+            .child(self.copyable(error, th).flex_1().min_w_0())
+            .into_any_element()
+    }
 }
 
 fn section_title(text: String, th: &Theme) -> AnyElement {
@@ -2508,7 +2522,7 @@ fn progress_bar(th: &Theme) -> AnyElement {
                 .bg(rgba(th.accent))
                 .with_animation(
                     "add-account-progress",
-                    Animation::new(Duration::from_millis(1300)).repeat(),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(1300))).repeat(),
                     |bar, t| bar.left(relative(lerp(-0.4, 1.0, t))),
                 ),
         )

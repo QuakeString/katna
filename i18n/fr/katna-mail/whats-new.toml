@@ -3209,3 +3209,1404 @@ En mode sombre, les lignes entre les messages, sous les en-têtes et autour
 des cartes sont aussi discrètes qu’en mode clair. Les champs, les puces et
 les boutons gardent un contour net.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Des mises à jour légères même après une pause"
+text = """
+Les mises à jour restent légères même si vous sautez un jour ou deux de
+nouvelles versions. Katna passe désormais de la version que vous avez par
+les précédentes, quelques mégaoctets chacune, au lieu de télécharger à
+nouveau le paquet entier.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Voyez à quels messages vous avez répondu"
+text = """
+Une petite flèche de réponse sur une ligne de la liste des messages
+indique que vous y avez répondu : vous avez écrit le dernier message de
+la conversation, ici ou sur le web. Elle disparaît quand on vous répond.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "L’icône de notification suit le mode clair et sombre"
+text = """
+L’icône monochrome de la zone de notification change désormais avec
+votre panneau dès que vous passez du mode clair au mode sombre, au lieu
+d’attendre un nouveau message.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Les idées de réponse montrent qu’elles arrivent"
+text = """
+Pendant que les idées de réponse sont demandées, dans Répondre d’un
+résumé ou dans Rédiger la réponse, leurs formes respirent désormais
+comme celles du résumé pendant sa rédaction. La fiche de résumé indique
+aussi le nombre de messages de la conversation pendant la demande, et
+non plus 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Des coins plus nets dans Fichiers"
+text = """
+Survoler un fichier dont l’aperçu est blanc ne laisse plus apparaître de
+blanc aux coins supérieurs de la carte, le panneau des imports replié est
+lui aussi arrondi en haut, et la boîte de dialogue Partager a un bouton
+Fermer dans son coin.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Effacer une recherche garde votre message ouvert"
+text = """
+Ouvrez un message depuis les résultats de recherche et effacez la
+recherche avec le X : le message reste ouvert pendant que votre dossier
+revient, au lieu de se replier sur la liste.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Des coins arrondis pour les feuilles de calcul"
+text = """
+Une feuille de calcul dans la visionneuse de pièces jointes est
+désormais arrondie aux quatre coins. Les lettres de colonne grises en
+haut et les onglets de feuille en bas les rendaient carrés.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Des coordonnées propres sur les cartes"
+text = """
+Les numéros de téléphone, adresses et autres coordonnées tirés d’une
+signature n’affichent plus d’astérisques égarés ni de liens entre
+chevrons. Quand un collègue signe un message envoyé depuis une adresse
+partagée comme accounts@, la carte ne garde que les coordonnées de
+l’entreprise, pas le numéro ni le poste de ce collègue.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Vérifiez ce que vous avez joint"
+text = """
+Cliquez sur un fichier joint au message que vous rédigez pour l’ouvrir
+dans la visionneuse de Katna, la même que pour les fichiers reçus, et
+vérifier que c’est le bon fichier. Un fichier envoyé comme lien Google
+Drive ou OneDrive s’ouvre sur le drive.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Une barre de défilement dans Paramètres"
+text = """
+Chaque onglet de Paramètres a la même fine barre de défilement qu’un
+message ouvert et Fichiers : elle apparaît pendant que vous faites
+défiler ou que le pointeur est sur la page, et vous pouvez la faire
+glisser.
+"""
+
+["2026-10-02-1248-account-colors"]
+title = "Une couleur pour chaque compte"
+text = """
+Choisissez une couleur pour chaque compte dans Paramètres > Comptes, ou
+d’un clic droit sur le compte dans le volet des dossiers : l’une des sept
+proposées, ou n’importe quelle couleur de la roue arc-en-ciel qui les
+suit. Le point à côté de chaque expéditeur dans la boîte de réception
+unifiée et l’anneau autour de la photo du compte prennent cette couleur,
+et survoler le point affiche le nom du compte. Chaque compte commence
+avec sa propre couleur, jamais celle d’un des onglets de la boîte de
+réception.
+"""
+
+["2026-10-02-1340-colors-button-mail-only"]
+title = "Le bouton des couleurs d’origine seulement là où il sert"
+text = """
+Dans un thème sombre, le bouton qui affiche un message dans ses propres
+couleurs s’efface désormais quand une conversation s’affiche en
+Discussion, et revient en Message.
+"""
+
+["2026-10-02-1340-logo-and-custom-accent"]
+title = "Le logo prend vos couleurs, et l’accentuation de votre choix"
+text = """
+Le logo Katna dans la fenêtre prend désormais votre couleur
+d’accentuation, en mode clair comme en mode sombre. Et Paramètres >
+Apparence > Accentuation se termine maintenant par une roue de couleurs :
+cliquez dessus pour choisir l’accentuation qui vous plaît.
+"""
+
+["2026-10-02-1358-empty-reply-no-draft"]
+title = "Les réponses vides ne laissent pas de brouillon"
+text = """
+Une réponse dans laquelle vous avez cliqué sans rien écrire, dans la zone
+de discussion ou sous un message, se ferme désormais simplement quand
+vous la quittez. Elle ne garde aucun brouillon et ne revient pas quand
+vous passez de Discussion à Message.
+"""
+
+["2026-10-02-1400-folder-right-click-selects"]
+title = "Le clic droit ouvre le dossier"
+text = """
+Un clic droit sur un dossier du volet des dossiers le sélectionne et
+l’ouvre désormais avant d’afficher son menu, pour que le menu agisse
+clairement sur le dossier que vous voyez.
+"""
+
+["2026-10-02-1405-viewer-arrows-hover"]
+title = "Les flèches de la visionneuse restent visibles"
+text = """
+Les flèches sur les côtés de la visionneuse de pièces jointes ne
+pâlissent plus jusqu’à devenir presque blanches quand vous les pointez.
+Elles prennent plutôt un gris un peu plus clair et restent ainsi faciles
+à voir sur une page blanche.
+"""
+
+["2026-10-02-1432-account-colour-button"]
+title = "Un seul bouton de couleur par compte"
+text = """
+Chaque compte n’affiche plus que sa propre couleur, sur un bouton Couleur
+dans Paramètres > Comptes et dans le menu du clic droit sur le compte.
+Cliquez dessus pour choisir l’une des huit couleurs ou une couleur bien
+à vous, juste là où vous avez cliqué.
+"""
+
+["2026-10-02-1443-reply-at-the-end"]
+title = "Votre réponse reste à la fin"
+text = """
+Une réponse se place désormais toujours à la fin de la conversation,
+même quand le message le plus récent est affiché en premier. Passer de
+Discussion à Message fait défiler jusqu’à elle, avec le curseur là où
+vous l’aviez laissé.
+"""
+
+["2026-10-02-1451-card-shows-signer"]
+title = "La carte montre qui a signé le message ouvert"
+text = """
+La carte de la personne lit désormais la signature du message que vous
+avez ouvert, et non plus seulement celle du plus récent. Quand un
+collègue signe un message envoyé depuis une adresse partagée comme
+accounts@, la carte affiche son nom, son poste, son téléphone et
+l’adresse de l’entreprise tirés de ce message.
+"""
+
+["2026-10-02-1510-search-click-away"]
+title = "Cliquez n’importe où pour quitter la recherche"
+text = """
+Cliquer dans l’espace vide de la barre du haut, à côté du champ de
+recherche, vous fait désormais sortir du champ, comme un clic dans la
+liste des messages. Votre recherche reste telle quelle.
+"""
+
+["2026-10-02-1515-empty-message-no-draft"]
+title = "Plus de brouillons vides"
+text = """
+Un nouveau message que vous avez vidé avant de le fermer ne reste plus
+dans Brouillons, comme une réponse vide dans une conversation.
+"""
+
+["2026-10-02-1513-dark-pages"]
+title = "Des pages sombres dans la visionneuse"
+text = """
+En mode sombre, la visionneuse de pièces jointes a un bouton en demi-lune
+qui affiche en sombre les PDF, documents, présentations, feuilles de
+calcul et fichiers texte trop clairs. Les couleurs gardent leur teinte,
+les photos d’une page sont assombries plutôt que changées en négatifs, et
+le papier numérisé devient sombre comme le texte. Katna retient votre
+choix pour le fichier suivant.
+"""
+
+["2026-10-02-1522-window-corners"]
+title = "Choisissez les coins et la bordure de votre fenêtre"
+text = """
+Avec la barre de titre propre à Katna, Paramètres > Expérimental a
+désormais un curseur Arrondi des coins, du carré au rond, et un
+interrupteur Bordure avec sa propre opacité. Avec Intensité de flou
+personnalisée activée, le curseur Opacité règle aussi ce que laisse
+passer un arrière-plan de fenêtre flouté.
+"""
+
+["2026-10-02-1535-ctrl-shift-click-select"]
+title = "Sélectionnez des messages avec Ctrl et Maj"
+text = """
+Ctrl+clic sur un message de la liste le sélectionne, et d’autres Ctrl+clic
+en ajoutent. Maj+clic sélectionne tous les messages depuis le dernier sur
+lequel vous avez cliqué. Pour ouvrir un message dans sa propre fenêtre,
+faites un clic droit dessus et choisissez Ouvrir dans une nouvelle
+fenêtre.
+"""
+
+["2026-10-02-1610-frosted-panes"]
+title = "Volets, discussions et recherche en verre dépoli"
+text = """
+Avec Flouter l’arrière-plan de la fenêtre activé, la liste des messages,
+le message ouvert et la carte de la personne laissent eux aussi passer le
+flou, avec un curseur Opacité des volets. Le fond derrière les bulles
+d’une discussion en montre un peu plus, et le champ de recherche reste
+dépoli pendant que vous tapez. Chacun a son propre interrupteur dans
+Paramètres > Expérimental.
+"""
+
+["2026-10-02-1618-fainter-hints"]
+title = "Des indications plus discrètes dans les champs vides"
+text = """
+L’indication grise d’un champ vide, comme « Répondre à… » sous une
+discussion ou « Rechercher dans les messages », est désormais plus pâle,
+pour ne jamais ressembler à du texte que vous auriez tapé.
+"""
+
+["2026-10-02-1642-drag-from-empty-space"]
+title = "Déplacez la fenêtre depuis un espace vide"
+text = """
+Sous Linux, vous pouvez désormais déplacer la fenêtre en faisant glisser
+n’importe quel espace vide de la barre de gauche, des dossiers ou de la
+barre au-dessus de vos messages, et plus seulement la barre du haut.
+"""
+
+["2026-10-02-1643-space-folds-folders"]
+title = "Espace replie les dossiers"
+text = """
+Cliquez sur un dossier qui contient d’autres dossiers, puis appuyez sur
+Espace pour le déplier ou le replier, comme en cliquant sur sa flèche.
+Après un clic, les touches fléchées parcourent aussi le volet des
+dossiers, et Tab passe à la liste des messages.
+"""
+
+["2026-10-02-1646-viewer-more-menu"]
+title = "Les commandes de la visionneuse tiennent dans les fenêtres étroites"
+text = """
+Dans une fenêtre étroite, les commandes au bas de la visionneuse de
+pièces jointes restent désormais à l’intérieur. Les boutons qui ne
+tiennent pas passent dans un menu ⋮ Plus : la rotation d’abord, puis
+Ajuster, puis Pages sombres. Le numéro de page et le zoom restent
+visibles le plus longtemps.
+"""
+
+["2026-10-02-1743-activity-report-fits"]
+title = "Le rapport d’activité tient dans la fenêtre"
+text = """
+Le rapport d’activité reste désormais dans la fenêtre avec des marges
+égales, et défile quand la fenêtre est basse, pour que ses dernières
+lignes ne soient jamais coupées.
+"""
+
+["2026-10-02-1846-folders-and-labels"]
+title = "Renommer, supprimer et glisser vers les dossiers"
+text = """
+Faites un clic droit sur un dossier que vous avez créé pour le renommer
+ou le supprimer ; la suppression déplace d’abord ses messages dans la
+Corbeille. Faites glisser des messages de la liste sur un dossier pour
+les y déplacer. Déplacer vers a un champ de recherche : tapez pour
+trouver un dossier, ou pour en créer un nouveau et y déplacer les
+messages. Sur Gmail, Ajouter le libellé ajoute ou retire des libellés,
+et déposer des messages sur un libellé leur attribue ce libellé.
+"""
+
+["2026-10-02-1928-mail-rules"]
+title = "Règles de messagerie"
+text = """
+Les règles trient toutes seules les nouveaux messages : selon
+l’expéditeur, l’objet ou des mots, elles les déplacent, leur attribuent
+un libellé, les suivent, les transfèrent ou les rendent silencieux.
+Créez-en une dans Paramètres > Dossiers et règles, ou d’un clic droit
+sur un message avec Créer une règle…, et voyez à combien de messages
+récents elle correspond avant d’enregistrer. Dans Déplacer vers, cochez
+« Toujours déplacer ici les messages de … » pour déplacer en un clic les
+messages d’un expéditeur, et ses messages à venir.
+"""
+
+["2026-10-02-2017-rules-on-the-server"]
+title = "Des règles qui fonctionnent ordinateur éteint"
+text = """
+Les règles de messagerie s’exécutent désormais sur Gmail, ou sur votre
+serveur de messagerie s’il accepte les règles Sieve, pour trier aussi
+les messages sur votre téléphone et pendant que cet ordinateur est
+éteint. Paramètres > Dossiers et règles indique où s’exécute chaque
+règle, et pourquoi une règle reste dans Katna.
+"""
+
+["2026-10-03-0046-smooth-folded-tabs"]
+title = "Les onglets repliés changent en douceur"
+text = """
+Quand une fenêtre étroite réduit les onglets de la boîte de réception à
+des icônes, changer d’onglet ne se fait plus d’un coup : l’onglet que
+vous quittez se réduit à son icône pendant que son nom s’efface, et
+celui que vous ouvrez s’agrandit pendant que son nom apparaît.
+"""
+
+["2026-10-03-0051-read-rows-frosted"]
+title = "Les messages lus aussi en verre dépoli"
+text = """
+Avec les volets dépolis activés, les messages lus montrent désormais le
+dépoli derrière la liste comme les non lus, d’une teinte à peine
+différente, au lieu d’une bande unie.
+"""
+
+["2026-10-03-0101-rounder-corners"]
+title = "Des coins de fenêtre plus arrondis"
+text = """
+Arrondi des coins dans Paramètres > Expérimental va désormais jusqu’à
+32 pixels, deux fois plus rond qu’avant, et vous pouvez taper la valeur
+dans le champ à côté du curseur.
+"""
+
+["2026-10-03-0113-viewer-round-corners"]
+title = "La visionneuse suit les coins arrondis de la fenêtre"
+text = """
+Avec la barre de titre propre à Katna et les coins arrondis, la
+visionneuse de pièces jointes arrondit désormais ses coins inférieurs
+comme la fenêtre, au lieu de montrer des coins gris carrés au-delà du
+bord de la fenêtre.
+"""
+
+["2026-10-03-0147-chat-go-down"]
+title = "Retour au message le plus récent"
+text = """
+Quand vous avez remonté loin dans une discussion, un bouton rond apparaît
+en bas à droite. Il vous ramène en douceur au message le plus récent et
+compte ceux arrivés entre-temps.
+"""
+
+["2026-10-03-0147-chat-long-mails"]
+title = "Les longs messages dans les discussions"
+text = """
+Sur une longue bulle, la photo de l’expéditeur reste en bas de ce que
+vous voyez, et les boutons Répondre, Épingler et Plus restent dans la
+partie visible. Faites un clic droit sur le texte pour tous les
+retrouver.
+"""
+
+["2026-10-03-0147-chat-scroll-bar"]
+title = "Une barre de défilement dans les discussions"
+text = """
+Les discussions ont la même barre de défilement discrète qu’un message
+ouvert, affichée quand le pointeur est dessus.
+"""
+
+["2026-10-03-0147-chat-translate"]
+title = "Traduire dans les discussions"
+text = """
+Un message dans une autre langue propose aussi sa traduction dans la
+discussion, comme en vue Message. Faites un clic droit sur une bulle et
+choisissez Traduire pour la traduire vous-même, puis à nouveau pour
+afficher l’original.
+"""
+
+["2026-10-03-0150-search-pill-hovers"]
+title = "Des survols réguliers dans la barre de recherche du téléphone"
+text = """
+Sur un téléphone, le bouton des dossiers et la photo de votre compte sont
+désormais centrés dans les extrémités arrondies de la barre de recherche,
+et chaque bouton de la barre a le même survol rond, à égale distance du
+bord de la barre.
+"""
+
+["2026-10-03-0159-starter-rules"]
+title = "Des règles prêtes à l’emploi"
+text = """
+Paramètres > Dossiers et règles propose désormais des règles toutes
+faites, désactivées : promotions en silence, lettres d’information vers
+À lire, reçus, livraisons, billets de train et d’avion (IRCTC, Air
+India, IndiGo et d’autres), codes à usage unique, alertes de sécurité,
+messages des réseaux sociaux et invitations d’agenda. Activez-en une et
+elle s’applique à tous vos comptes, en créant au besoin des dossiers
+comme Voyages. Les règles peuvent aussi vérifier l’onglet de la boîte de
+réception et si le message vient d’une liste de diffusion.
+"""
+
+["2026-10-03-0200-chat-file-hover"]
+title = "Des cartes de fichier plus douces dans les discussions"
+text = """
+Un fichier dans une bulle de discussion ne s’assombrit plus sous le
+pointeur. Il se soulève un peu avec une légère teinte, et son nom reste
+facile à lire.
+"""
+
+["2026-10-03-0210-opened-mail-stays-in-view"]
+title = "Le message que vous ouvrez reste visible"
+text = """
+Avec le volet de lecture à côté de la liste, le message sur lequel vous
+cliquez reste à sa place dans la liste quand le volet s’ouvre, ou la
+liste défile juste assez pour le montrer en entier. Il ne disparaît plus
+de la vue, que vous l’ayez ouvert depuis la liste ou depuis les
+résultats de recherche.
+"""
+
+["2026-10-03-0212-about-header-stays"]
+title = "À propos garde son en-tête visible"
+text = """
+Faire défiler À propos réduit désormais le grand logo en un petit logo
+en haut à gauche, avec Katna, son slogan et la version à côté, et cet
+en-tête reste en place pendant que le reste défile en dessous.
+"""
+
+["2026-10-03-0221-folded-tab-icon-settles"]
+title = "Les onglets repliés se posent sans à-coup"
+text = """
+Quand vous passez d’un onglet replié à l’autre de la boîte de réception,
+l’onglet que vous quittez s’arrête désormais exactement là où il s’est
+réduit, sans que son icône se décale d’un pixel ou deux à la fin du
+mouvement.
+"""
+
+["2026-10-03-0228-right-click-another-mail"]
+title = "Un seul clic droit suffit"
+text = """
+Quand le menu d’un message ou d’un dossier est ouvert, un clic droit sur
+un autre message ou dossier ferme désormais le menu ouvert et ouvre
+aussitôt le nouveau, sans qu’il faille un second clic droit.
+"""
+
+["2026-10-03-0235-rule-editor-fits"]
+title = "L’éditeur de règles tient dans la fenêtre"
+text = """
+Dans l’éditeur de règles, les mots longs et les listes d’adresses vont à
+la ligne au lieu d’être coupés, « correspond au motif » s’affiche en
+entier, et l’éditeur reste dans la fenêtre, en défilant quand il a de
+nombreuses conditions.
+"""
+
+["2026-10-03-0235-soft-button-hover"]
+title = "Un survol des boutons plus doux"
+text = """
+Pointer un bouton rond fait désormais grandir doucement son cercle à
+partir des deux tiers de sa taille en le faisant apparaître, et les
+boutons en pilule comme Répondre apparaissent un peu plus lentement. En
+s’éloignant, le cercle rétrécit un peu en s’effaçant.
+"""
+
+["2026-10-03-0249-account-ring"]
+title = "Un anneau de compte plus net"
+text = """
+L’anneau coloré autour de la photo de chaque compte est plus épais, avec
+un peu plus d’espace entre lui et la photo, dans la barre du haut, le
+menu des comptes et Paramètres.
+"""
+
+["2026-10-03-0335-chat-picture-steady"]
+title = "Des photos stables dans les discussions"
+text = """
+Faire défiler au-delà de la fin d’une discussion, ou une discussion qui
+n’a rien à faire défiler, ne fait plus sauter la photo de l’expéditeur
+ni les boutons de la bulle.
+"""
+
+["2026-10-03-0355-no-hover-while-scrolling"]
+title = "Un défilement plus calme dans la liste des messages"
+text = """
+Pendant que vous faites défiler la liste des messages, ceux qui passent
+sous le pointeur ne s’éclairent plus et n’affichent plus leurs boutons.
+Comme dans Gmail, le message sous le pointeur s’éclaire une fois le
+défilement arrêté.
+"""
+
+["2026-10-03-0541-rule-rows-drag"]
+title = "Les règles se déplacent comme les comptes"
+text = """
+Dans Paramètres > Dossiers et règles, faire glisser une règle soulève
+désormais toute sa ligne, les autres règles s’écartent pour lui faire
+place, et elle se pose là où vous la lâchez, comme quand vous réordonnez
+les comptes.
+"""
+
+["2026-10-03-0545-chat-go-down-aligned"]
+title = "Le bouton de retour en bas bien aligné"
+text = """
+Dans les discussions, le bouton rond qui vous ramène au message le plus
+récent se place désormais juste au-dessus du bouton d’envoi, sur la même
+ligne.
+"""
+
+["2026-10-03-0555-bottom-corners-round"]
+title = "Les coins inférieurs arrondis restent ronds"
+text = """
+Avec la barre de titre propre à Katna et les coins arrondis, les coins
+inférieurs de la fenêtre ne montrent plus un carré de son arrière-plan
+au-delà de la bordure arrondie.
+"""
+
+["2026-10-03-0606-account-dot-only"]
+title = "Une liste des messages plus sobre"
+text = """
+Les lignes de la boîte de réception unifiée n’affichent plus que le
+point coloré du compte à côté de l’expéditeur. Survolez le point pour
+voir à quel compte appartient le message.
+"""
+
+["2026-10-03-0623-windows-updates"]
+title = "Les mises à jour sous Windows"
+text = """
+Katna sous Windows se met désormais à jour tout seul. Il vérifie les
+nouvelles versions toutes les heures, les télécharge en arrière-plan et
+les installe quand vous appuyez sur Mettre à jour, puis se rouvre.
+"""
+
+["2026-10-03-0643-files-wildcard-search"]
+title = "Des jokers dans la recherche de Fichiers"
+text = """
+Dans Fichiers, rechercher *.pdf trouve désormais tous les PDF, et * et ?
+fonctionnent n’importe où dans un nom : facture*2026* trouve toutes les
+factures de 2026. Cela fonctionne pour les fichiers de vos messages
+ainsi que dans Google Drive et OneDrive.
+"""
+
+["2026-10-03-0643-linux-package-updates"]
+title = "Des mises à jour pour chaque paquet Linux"
+text = """
+L’AppImage et l’archive Linux se mettent désormais à jour toutes seules,
+comme le paquet Arch. Avec le paquet Fedora, Snap, Flatpak ou Nix, Katna
+vous prévient quand une nouvelle version sort et affiche la commande qui
+l’installe, prête à copier.
+"""
+
+["2026-10-03-0708-copy-codes"]
+title = "Copiez les codes depuis les notifications"
+text = """
+Une notification de nouveau message contenant un code de connexion ou de
+vérification a désormais un bouton Copier, et une notification avec un
+lien pour vérifier ou confirmer votre adresse a un bouton qui nomme le
+site qu’il ouvre. Les boutons des notifications ne font plus suivre le
+pointeur de la souris par une icône Katna rebondissante.
+"""
+
+["2026-10-03-0730-contact-card-popover"]
+title = "La fiche de contact dans les fenêtres étroites"
+text = """
+Quand la fenêtre n’a pas la place pour le volet du contact, cliquer sur
+le nom ou la photo d’une personne ouvre une petite carte par-dessus le
+message, pointant vers l’endroit où vous avez cliqué. Agrandissez la
+fenêtre et le volet complet prend sa place.
+"""
+
+["2026-10-03-0733-compose-icon-turns"]
+title = "L’icône du grand bouton tourne quand vous changez de page"
+text = """
+Passer de Courrier à Calendrier, Contacts, Tâches ou Notes ne change plus
+d’un coup l’icône du grand bouton en haut de la barre de gauche.
+L’ancienne icône pivote et rétrécit pendant que la nouvelle arrive en
+tournant, sur le bouton d’un téléphone aussi.
+"""
+
+["2026-10-03-0746-sound-sets"]
+title = "Des ensembles de sons de notification"
+text = """
+Paramètres > Notifications propose désormais des ensembles de sons :
+Oiseaux, Nature, Animaux, Insectes, Électronique, Matin, les clochettes
+de Katna, ou ceux de votre bureau. Un nouveau message chante comme un
+rouge-gorge, sauf si vous choisissez un autre ensemble. Chaque événement
+peut aussi avoir son propre son, ou un fichier son de votre choix.
+"""
+
+["2026-10-03-0750-chat-seen-ticks"]
+title = "Qui a vu votre message, dans les discussions"
+text = """
+En vue Discussion, les coches des messages envoyés avec suivi se colorent
+dès que quelqu’un les ouvre. À côté, un petit œil compte les ouvertures
+et un lien compte les liens suivis. Laissez le pointeur dessus pour voir
+qui a ouvert le message ou suivi un lien, comme le montre l’œil en vue
+Message.
+"""
+
+["2026-10-03-0834-drawer-edge-clean"]
+title = "Plus de ligne à côté des dossiers coulissants"
+text = """
+Sur un téléphone ou une tablette, les dossiers qui glissent depuis le
+menu se posent désormais contre le bord sans qu’une fine ligne clignote
+à côté d’eux pendant qu’ils s’immobilisent.
+"""
+
+["2026-10-03-0845-chat-summary-button-hides"]
+title = "Le bouton du résumé le masque à nouveau"
+text = """
+En vue Discussion, l’étincelle en haut masque désormais le résumé quand
+il est affiché, et l’affiche de nouveau au clic suivant, comme en vue
+Message.
+"""
+
+["2026-10-03-0915-big-button-glides"]
+title = "Le grand bouton glisse d’une page à l’autre"
+text = """
+Quand les dossiers sont ouverts, changer de page ne fait plus sauter le
+grand bouton du haut à sa nouvelle largeur ni ne change son mot d’un
+coup. Le bouton prend en douceur sa nouvelle largeur pendant que l’ancien
+mot s’efface vers le haut et que le nouveau monte, en même temps que
+l’icône qui tourne.
+"""
+
+["2026-10-03-0945-flat-row-hover"]
+title = "Un survol plus net dans la liste des messages"
+text = """
+La ligne sous le pointeur ne se soulève plus avec une ombre douce. Elle
+prend à la place une teinte plate, un peu plus marquée, pour que ses
+bords restent nets en clair comme en sombre.
+"""
+
+["2026-10-03-0959-drawer-bounce-back"]
+title = "Les dossiers coulissants retrouvent leur rebond, sans ombre au bord"
+text = """
+Sur un téléphone ou une tablette, les dossiers qui glissent depuis le
+menu retrouvent leur petit rebond, et aucune ombre ne longe leur bord à
+côté de la barre latérale.
+"""
+
+["2026-10-03-1030-crisp-card-edges"]
+title = "Des bords de carte plus nets en couleurs claires"
+text = """
+En couleurs claires, la liste des messages, le message ouvert et les
+autres cartes ont désormais un bord fin et net et une ombre très courte
+au lieu d’un flou doux, pour se détacher de la page aussi nettement
+qu’en couleurs sombres.
+"""
+
+["2026-10-03-1206-matching-choice-chips"]
+title = "Des puces de choix assorties"
+text = """
+Les choix dans Options de recherche, Activité, Rédaction par IA et les
+carnets d’adresses d’un contact sont désormais une seule et même puce :
+de la même taille partout, avec une coche sur celle qui est choisie.
+"""
+
+["2026-10-03-1453-summary-folds-smoothly"]
+title = "Un résumé qui se replie en douceur"
+text = """
+Replier ou déplier le résumé d’une conversation glisse désormais jusqu’à
+sa nouvelle hauteur, et sa flèche tourne avec lui au lieu de sauter.
+"""
+
+["2026-10-03-1523-animation-speed"]
+title = "Choisissez la vitesse des animations"
+text = """
+Paramètres > Apparence propose une Vitesse des animations : suivre celle
+du bureau, ou choisir celle de Katna, de Plus rapide à Plus lente.
+Réduire les animations suit aussi le bureau, ou peut être toujours ou
+jamais activé.
+"""
+
+["2026-10-03-1536-paste-signature-html"]
+title = "Collez le HTML d’une signature"
+text = """
+Paramètres > Rédaction > Signatures propose Coller du HTML, pour une
+signature conçue sur un site de signatures ou dans une autre application
+de messagerie. Elle est nettoyée, ses images sont téléchargées et
+intégrées au message, et la fenêtre de rédaction l’affiche exactement
+comme elle sera envoyée.
+"""
+
+["2026-10-03-1546-whats-new-header-stays"]
+title = "Nouveautés garde son titre"
+text = """
+Faire défiler Nouveautés ne déplace désormais que les nouveautés
+elles-mêmes : le titre reste en haut et Compris reste en bas.
+"""
+
+["2026-10-03-1611-menus-fade-out"]
+title = "Les menus s’effacent en douceur"
+text = """
+Un menu contextuel s’estompe désormais quand il se ferme, au lieu de
+disparaître d’un coup.
+"""
+
+["2026-10-03-1625-list-stays-put"]
+title = "La liste des messages ne bouge plus quand vous ouvrez un message"
+text = """
+Ouvrir un message ne décale plus la liste d’une ligne vers le bas dans
+les dossiers où certains messages affichent des pièces jointes. La liste
+reste exactement là où vous l’avez fait défiler.
+"""
+
+["2026-10-03-1628-drawer-top-clean"]
+title = "Plus de ligne d’ombre au-dessus des dossiers coulissants"
+text = """
+Sur un téléphone ou une tablette, les dossiers qui glissent depuis le
+menu n’ont plus de fine ligne d’ombre le long de leur haut, sous la
+barre de recherche.
+"""
+
+["2026-10-03-1631-toolbar-menus-fade-out"]
+title = "Les menus de la barre d’outils s’effacent aussi"
+text = """
+Les menus sous les boutons de la barre d’outils, comme Plus et la case de
+sélection, s’estompent quand ils se ferment au lieu de disparaître d’un
+coup.
+"""
+
+["2026-10-03-1632-settings-by-app"]
+title = "Les paramètres classés par application"
+text = """
+Paramètres a désormais une liste de pages sur le côté : Toutes les
+applications pour ce que toutes les applications partagent, puis
+Courrier, Calendrier et Fichiers pour leurs propres paramètres, les pages
+de Courrier se dépliant en dessous. Paramètres s’ouvre sur l’application
+où vous êtes, et Calendrier y a ses premiers paramètres.
+"""
+
+["2026-10-03-1650-popovers-fade-out"]
+title = "Les fenêtres contextuelles s’effacent en douceur"
+text = """
+Les petites cartes qui pointent vers l’élément auquel elles se
+rapportent, comme la fiche de contact, qui a vu un message, un jour de
+la vue Année, les dates de recherche personnalisées et le sélecteur de
+couleur, s’estompent quand elles se ferment au lieu de disparaître d’un
+coup.
+"""
+
+["2026-10-03-1711-ring-centred"]
+title = "Des anneaux de compte bien centrés"
+text = """
+L’anneau coloré autour de la photo de votre compte a désormais le même
+écart de tous les côtés, quelle que soit la mise à l’échelle, au lieu
+d’un côté qui semble plus épais d’un pixel.
+"""
+
+["2026-10-03-1717-signature-pictures"]
+title = "Les images des signatures se chargent de nouveau"
+text = """
+Les images venues du web, comme les logos des signatures Gmail, se
+chargent désormais sur les réseaux qui coupent tôt la connexion à
+Google, au lieu de rester un cadre vide.
+"""
+
+["2026-10-03-1723-import-signatures"]
+title = "Importez vos signatures"
+text = """
+Paramètres > Rédaction > Signatures > Importer trouve les signatures de
+Gmail, ainsi que celles de Thunderbird, Evolution et KMail sur cet
+ordinateur, avec leurs logos. Cochez celles que vous voulez ; celles
+déjà présentes dans Katna restent décochées.
+"""
+
+["2026-10-03-1750-hover-folders-clean"]
+title = "Des bords nets pour les dossiers ouverts depuis Nouveau message"
+text = """
+Dans une fenêtre de la taille d’une tablette, les dossiers qui s’ouvrent
+quand vous laissez le pointeur sur Nouveau message n’affichent plus de
+fines lignes le long de leurs bords supérieur et gauche.
+"""
+
+["2026-10-03-1757-chat-links"]
+title = "Les liens s’ouvrent depuis les discussions"
+text = """
+Dans la vue discussion, les liens d’un message s’ouvrent d’un clic, comme
+dans la vue message : ses propres liens, ainsi que les adresses web et
+e-mail écrites en toutes lettres dans le texte. Posez le pointeur dessus
+pour voir où il mène. Dans la vue message, les messages en texte brut
+ouvrent aussi les adresses écrites en toutes lettres.
+"""
+
+["2026-10-03-1811-folds-glide"]
+title = "Les groupes d’agendas se replient en douceur"
+text = """
+Les agendas d’un compte dans la colonne latérale de Calendrier s’ouvrent
+et se ferment désormais en glissant, et les petites flèches des éléments
+repliables (Plus sur la carte de contact, les personnes de la discussion,
+les comptes d’Activité, l’essentiel d’une réponse de l’IA) tournent au
+lieu de basculer d’un coup.
+"""
+
+["2026-10-03-1844-signature-layouts"]
+title = "Des signatures parmi douze mises en page"
+text = """
+Paramètres > Rédaction > Signatures propose désormais douze mises en page
+toutes prêtes. Saisissez une fois votre nom, vos numéros, votre logo,
+votre photo et vos pages, choisissez une mise en page et une couleur, et
+voyez-la comme votre lecteur la verra, en clair, en sombre ou en texte
+brut. Les images voyagent dans le message, elles s’affichent donc partout.
+"""
+
+["2026-10-03-1850-copy-about-whats-new"]
+title = "Copiez depuis À propos et Nouveautés"
+text = """
+Le texte de À propos de Katna et de Nouveautés peut désormais être
+sélectionné et copié, comme dans un navigateur : faites glisser dessus,
+double-cliquez pour un mot ou triple-cliquez pour un paragraphe, puis
+Ctrl+C ou un clic droit > Copier. Pratique pour coller la version dans
+un rapport de bogue.
+"""
+
+["2026-10-03-1904-copy-version"]
+title = "Copiez la version en un clic"
+text = """
+Posez le pointeur sur la version dans À propos, Nouveautés ou Paramètres :
+un petit bouton de copie apparaît à côté. Il copie la version, sa date de
+compilation et votre système, prêts à coller dans un rapport de bogue.
+"""
+
+["2026-10-03-1924-settings-in-window"]
+title = "Les Paramètres de retour à côté de vos messages"
+text = """
+Paramètres s’ouvre de nouveau dans la fenêtre principale, à la place de
+la page où vous étiez, avec sa liste de pages regroupée en Toutes les
+applications et une section par application.
+"""
+
+["2026-10-03-1934-copy-any-text"]
+title = "Copiez du texte partout"
+text = """
+Le texte qui vous informe peut désormais être sélectionné et copié dans
+tout Katna : noms et descriptions des paramètres, détails des contacts et
+des événements, état des comptes, messages d’erreur, notes des pages vides
+et boîtes de dialogue. Faites glisser dessus ou double-cliquez sur un mot,
+puis Ctrl+C ou un clic droit > Copier. Les boutons et les lignes sur
+lesquels vous cliquez restent tels quels.
+"""
+
+["2026-10-03-2011-calendar-tasks-switch-month-drag"]
+title = "Les tâches dans Calendrier : afficher, masquer, glisser dans Mois"
+text = """
+La liste latérale de Calendrier a une case Tâches sous vos agendas :
+décochez-la et les tâches quittent Jour, Semaine, Mois et Planning
+jusqu’à ce que vous la cochiez de nouveau. Dans la vue Mois, vous pouvez
+désormais faire glisser une tâche vers un autre jour ; elle garde son
+heure, et Annuler la remet en place.
+"""
+
+["2026-10-03-2023-tasks-upcoming-completed-sort-select"]
+title = "À venir, Terminées, tri et sélection dans Tâches"
+text = """
+Tâches a deux nouvelles vues. À venir montre les deux prochaines semaines
+jour par jour, avec les tâches en retard en haut ; faites glisser une
+tâche sur un autre jour pour la déplacer. Terminées montre tout ce que
+vous avez coché, par jour, et décocher une tâche la fait revenir. Le menu
+⋮ de chaque liste la trie par date, étoile ou titre. Ctrl+clic ou
+Maj+clic sur plusieurs tâches pour les terminer, les déplacer, les dater,
+les marquer d’une étoile ou les supprimer d’un coup.
+"""
+
+["2026-10-03-2040-task-labels-and-files"]
+title = "Des libellés et des fichiers sur les tâches"
+text = """
+Les tâches acceptent les mêmes libellés que vos notes : ajoutez-les dans
+les détails d’une tâche ou tapez #maison dans une nouvelle tâche, et
+choisissez un libellé à gauche pour voir toutes les tâches qui le
+portent. Déposez un fichier sur une tâche pour le joindre, et Ajouter aux
+tâches garde les pièces jointes du message. L’étoile, les libellés et les
+fichiers vont vers Microsoft To Do et votre serveur CalDAV, et l’étoile
+vers Zoho.
+"""
+
+["2026-10-03-2102-notes-pictures-reminders-history"]
+title = "Notes : images, rappels et historique"
+text = """
+Les notes acceptent des images, vous rappellent à l’heure de votre choix
+et gardent 30 jours d’historique que vous pouvez restaurer. Ctrl+clic sur
+plusieurs notes pour les épingler, les colorer, les étiqueter ou les
+archiver ensemble, tapez [[ pour lier une note à une autre, et ajoutez
+citations, code et séparateurs. Envoyez une note par e-mail ou
+enregistrez-la en Markdown ou en PDF ; avec l’IA activée, l’étincelle la
+met en ordre, en fait une liste ou la résume.
+"""
+
+["2026-10-03-2102-quick-capture"]
+title = "Notez une idée depuis n’importe où"
+text = """
+Meta+Alt+T ouvre une petite carte par-dessus ce que vous faites pour
+ajouter une tâche, et Meta+Alt+N pour prendre une note. Tapez « Appeler
+le plombier ven 18h #maison » et des pastilles montrent le jour, le
+libellé, la liste et le rappel compris ; cliquez sur l’une d’elles pour
+la changer. Tab passe de Tâche à Note, Entrée enregistre. C’est aussi
+dans le menu de la zone de notification, et dans KRunner avec task: et
+note:.
+"""
+
+["2026-10-04-0102-soft-hovers"]
+title = "Des survols plus doux"
+text = """
+Poser le pointeur sur le rail des applications, la liste déroulante, un
+onglet et bien d’autres boutons fait désormais apparaître et disparaître
+leur surbrillance en fondu, au lieu de l’allumer d’un coup.
+"""
+
+["2026-10-04-0119-cards-lift"]
+title = "Des cartes qui se soulèvent"
+text = """
+Les fichiers, pièces jointes, dossiers Drive, invitations, résumés, la
+zone de réponse et les services de messagerie d’Ajouter un compte sont
+désormais des cartes avec le même bord doux et la même ombre que le reste
+de Katna, au lieu d’un simple contour plat.
+"""
+
+["2026-10-04-0119-notes-select-bar-matches"]
+title = "Notes : des cartes plus douces qui bougent"
+text = """
+Notes utilise désormais les mêmes cartes, pastilles et barres que le
+reste de Katna. Les cartes reposent sur une ombre douce et se soulèvent
+légèrement sous le pointeur, les nouvelles notes apparaissent en fondu,
+celles qu’on retire disparaissent en fondu, et une note s’ouvre et se
+ferme avec un bref zoom. La barre qui sert à sélectionner des notes a la
+même forme arrondie que « Créer une note », seul son contenu change.
+Tout cela suit Réduire les animations et Vitesse des animations.
+"""
+
+["2026-10-04-0128-header-labels"]
+title = "Tous les libellés d’un message ouvert"
+text = """
+Un message ouvert affiche désormais toutes ses pastilles sous l’objet,
+comme Gmail : Boîte de réception, Importants, son onglet de boîte de
+réception, Messages suivis, et chaque dossier ou libellé où il se trouve. Pointez
+l’une d’elles pour la retirer avec son ×, avec Annuler.
+"""
+
+["2026-10-04-0150-settings-own-list"]
+title = "Paramètres a la fenêtre pour lui seul"
+text = """
+Quand Paramètres est ouvert, les dossiers se replient : vous ne voyez que
+la liste des pages de Paramètres à côté de la page choisie. Ils reviennent
+quand vous en sortez.
+"""
+
+["2026-10-04-0154-summary-pill"]
+title = "Un bouton de résumé plus discret, et un en-tête qui reste en place"
+text = """
+Dans la vue discussion, l’étincelle du résumé tient désormais dans sa
+propre petite pastille grise à côté du sélecteur Discussion / Message, et
+devient blanche tant que le résumé est affiché. Le résumé s’ouvre et se
+ferme en glissant au lieu d’apparaître d’un coup. Dans les vues message et
+discussion, l’en-tête reste désormais en haut pendant que les messages
+défilent dessous, et les lignes de la liste des messages glissent de même
+sous sa barre du haut, dépolies quand le flou est activé. Paramètres >
+Expérimental a un interrupteur En-têtes dépolis pour les garder opaques.
+"""
+
+["2026-10-04-0204-tasks-motion"]
+title = "Des tâches qui bougent"
+text = """
+Cocher une tâche remplit son cercle, barre le titre et replie la ligne.
+Les tâches nouvelles ou supprimées glissent en entrant et en sortant,
+celles que vous réordonnez glissent jusqu’à leur place, et les cartes des
+listes se soulèvent un peu quand vous les pointez.
+"""
+
+["2026-10-04-0225-shortcuts-dialog"]
+title = "Les raccourcis clavier d’un coup d’œil"
+text = """
+Aide > Raccourcis clavier, ou la touche ?, affiche désormais tous les
+raccourcis dans une petite fenêtre par-dessus vos messages, avec un champ
+pour en trouver un. Les touches se changent toujours dans Paramètres >
+Raccourcis.
+"""
+
+["2026-10-04-0305-unified-leave-out"]
+title = "Exclure une boîte de réception de Tous les comptes"
+text = """
+Faites un clic droit sur la boîte de réception d’un compte sous Tous les
+comptes et choisissez Exclure de la boîte de réception unifiée : ses
+messages ne remplissent plus la boîte de réception unifiée, mais la ligne
+reste et ouvre cette boîte. Cliquez sur son œil pour la réintégrer. Dans
+Paramètres > Boîte de réception, vous pouvez aussi retirer un compte
+entier de Tous les comptes.
+"""
+
+["2026-10-04-0310-leave-account-out"]
+title = "Exclure un compte d’une application"
+text = """
+Paramètres a désormais une page pour Contacts, Tâches et Notes, et
+chacune d’elles, ainsi que Fichiers, liste vos comptes avec un
+interrupteur. Désactivez-en un pour exclure ce compte de l’application :
+ses rappels restent muets. Ses éléments continuent de se synchroniser,
+ils reviennent donc dès que vous le réactivez.
+"""
+
+["2026-10-04-0320-calendar-leave-account-out"]
+title = "Exclure un compte de Calendrier"
+text = """
+Paramètres > Calendrier liste aussi vos comptes avec un interrupteur.
+Désactivez-en un et ses agendas, événements et tâches quittent
+Calendrier, et ses événements ne vous rappellent plus rien. Il continue
+de se synchroniser, il revient donc dès que vous le réactivez.
+"""
+
+["2026-10-04-0327-contact-card-points-right"]
+title = "Les cartes de contact s’ouvrent là où vous avez cliqué"
+text = """
+Dans une fenêtre étroite, la carte de contact qui s’ouvre depuis le nom
+ou la photo d’une personne pointe désormais exactement dessus, dans la
+vue discussion comme dans la vue message, et s’ouvre en douceur dès la
+première fois : Katna commence à lire les coordonnées de la personne dès
+que le pointeur s’y pose. Un second clic sur le même nom ou la même
+photo ferme la carte.
+"""
+
+["2026-10-04-0336-files-card-corners"]
+title = "Des cartes de fichiers plus calmes"
+text = """
+Les cartes de fichiers dans Fichiers et sous un message reposent
+désormais sur une ombre douce et se soulèvent un peu quand vous en
+pointez une. L’aperçu ne bouge pas : la taille du fichier apparaît en
+fondu en haut à gauche et ses boutons en haut à droite, sur du verre
+dépoli, pour que rien ne saute.
+"""
+
+["2026-10-04-0345-pane-tops-whole"]
+title = "Le haut des volets n’est plus coupé"
+text = """
+Avec la barre de titre de Katna, le bord supérieur et l’ombre douce de la
+liste des messages, du message ouvert et des volets latéraux s’affichent
+désormais en entier quand la fenêtre n’est pas agrandie, au lieu de
+paraître coupés net sous la barre du haut.
+"""
+
+["2026-10-04-0354-account-offline"]
+title = "Mettre un compte hors ligne"
+text = """
+Faites un clic droit sur un compte et choisissez Passer hors ligne, pour
+une heure ou jusqu’à demain si vous voulez. Katna cesse de s’y connecter,
+et un nuage barré s’affiche à côté de son compteur et sur votre photo.
+Ses messages restent ici pour être lus, et ce que vous archivez,
+supprimez ou envoyez entre-temps part quand vous cliquez sur le nuage
+pour repasser en ligne. Paramètres > Comptes a un interrupteur Connecté
+pour chaque compte, et la carte du compte peut mettre tous les comptes
+hors ligne d’un coup.
+"""
+
+["2026-10-04-0420-resize-steady"]
+title = "Stable pendant le redimensionnement"
+text = """
+Avec la barre de titre de Katna sous Wayland, le contenu de la fenêtre
+reste immobile pendant que vous faites glisser un bord pour la
+redimensionner, au lieu de trembler.
+"""
+
+["2026-10-04-0531-turn-apps-off"]
+title = "Désactivez les applications dont vous ne vous servez pas"
+text = """
+Paramètres › Applications a un interrupteur pour Calendrier, Contacts,
+Tâches, Notes et Fichiers, et un clic droit sur l’une d’elles dans le
+rail propose Désactiver. Une application désactivée quitte le rail et ses
+raccourcis, et rien ne change sur vos comptes. Avec seulement Courrier
+activé, le rail disparaît et Katna n’est plus qu’une application de
+messagerie.
+"""
+
+["2026-10-04-0635-remove-app-copy"]
+title = "Libérez la place d’une application désactivée"
+text = """
+Désactiver une application dans Paramètres › Applications propose
+désormais de supprimer sa copie sur cet ordinateur. Rien ne change sur
+vos comptes, et la réactiver la télécharge de nouveau. Les nouveaux
+comptes ne demandent que ce dont ont besoin les applications que vous
+utilisez.
+"""
+
+["2026-10-04-1100-account-problems"]
+title = "Voyez et réglez les problèmes de compte au même endroit"
+text = """
+Quand un compte a besoin de vous, une ligne en haut de la liste des
+messages explique simplement ce qui s’est passé, avec la solution à
+côté. Un mot de passe changé ouvre une petite carte où vous tapez le
+nouveau, et Katna le vérifie avant de le garder. Un signe orange marque
+aussi le compte dans le volet des dossiers et sur votre photo. Quand
+vous perdez la connexion, une ligne discrète indique que vous êtes hors
+ligne et que les messages envoyés attendent votre retour.
+"""
+
+["2026-10-04-1110-contact-card-placeholder"]
+title = "Les cartes de contact s’ouvrent d’un seul tenant"
+text = """
+Quand les coordonnées d’une personne mettent un instant à charger, la
+carte de contact qui s’ouvre sur un nom ou une photo s’ouvre désormais à
+sa taille habituelle avec des lignes pâles à la place des détails, puis
+les remplit et s’ajuste en douceur, au lieu de s’ouvrir petite et de
+grandir d’un coup.
+"""
+
+["2026-10-04-1144-account-problems-settings"]
+title = "Les problèmes de compte aussi dans Paramètres"
+text = """
+Paramètres › Comptes indique désormais sous le nom d’un compte ce qui ne
+va pas, par exemple un mot de passe refusé, avec la solution juste là.
+"""
+
+["2026-10-04-1147-subject-scrolls-again"]
+title = "L’objet défile de nouveau avec le message"
+text = """
+Dans la vue message, l’objet défile de nouveau avec les messages, sous
+une barre d’outils simple. Dans la vue discussion, la barre d’outils
+rejoint l’en-tête fixe, et les bulles glissent sous les deux, dépolies
+quand le flou est activé. La barre du haut de la liste des messages garde
+désormais les coins arrondis de la carte, et avec En-têtes dépolis
+désactivé, les lignes ne transparaissent plus à travers. Dans une fenêtre
+de la taille d’un téléphone, les coins du bas sont arrondis aussi.
+"""
+
+["2026-10-04-1223-outbox"]
+title = "Une boîte d’envoi pour les messages qui ne sont pas partis"
+text = """
+Les messages qui n’ont pas pu être envoyés attendent désormais dans une
+boîte d’envoi sous Messages envoyés, visible seulement quand elle en
+contient. Chaque message explique simplement pourquoi, avec Réessayer,
+Modifier et Supprimer. Les messages envoyés alors que le mot de passe
+d’un compte a changé ou que sa connexion a expiré y attendent et partent
+dès que vous réglez le problème, au lieu d’échouer.
+"""
+
+["2026-10-04-1246-refused-changes"]
+title = "Les changements refusés par le serveur ne sont plus annulés en silence"
+text = """
+Quand un serveur de messagerie refuse sans cesse un changement, comme
+déplacer un message vers un dossier supprimé ailleurs, Katna remet les
+choses comme avant et le dit désormais simplement, avec Détails pour la
+réponse du serveur.
+"""
+
+["2026-10-04-1250-phone-scroll-steady"]
+title = "Une liste stable dans une fenêtre de téléphone"
+text = """
+Faire défiler vite la liste des messages dans une fenêtre de la taille
+d’un téléphone ne la fait plus trembler de haut en bas pendant que les
+onglets glissent hors de vue.
+"""
+
+["2026-10-04-1309-needs-you-notifications"]
+title = "Prévenu une fois quand un compte ou un message a besoin de vous"
+text = """
+Quand un serveur de messagerie refuse votre mot de passe, qu’une
+connexion expire ou qu’un message ne peut pas être envoyé, une
+notification du bureau vous le dit une fois, même Katna Mail fermé. Son
+bouton ouvre la solution : Nouveau mot de passe, Se connecter ou la boîte
+d’envoi. L’infobulle de l’icône de la zone de notification liste ce qui
+vous attend.
+"""
+
+["2026-10-04-1510-dialogs-fit-phone"]
+title = "Les boîtes de dialogue tiennent dans une fenêtre de téléphone"
+text = """
+Nouveautés, À propos, Mises à jour, Raccourcis clavier et les autres
+boîtes de dialogue tiennent désormais dans une fenêtre étroite avec le
+cadre de Katna, au lieu de déborder de ses bords.
+"""
+
+["2026-10-04-1511-solid-mail-list-bar"]
+title = "Plus rien ne glisse sous les barres"
+text = """
+Les messages de la liste, le message ouvert et les bulles d’une
+discussion commencent désormais sous leurs barres au lieu de glisser
+dessous, et les barres restent opaques. L’interrupteur En-têtes dépolis a
+disparu, tout comme les coins bizarres qu’il apportait.
+"""
+
+["2026-10-04-1525-menus-inside-window"]
+title = "Les menus et infobulles restent dans la fenêtre"
+text = """
+Avec le cadre de fenêtre de Katna, les menus du clic droit, les fenêtres
+contextuelles et les infobulles près d’un bord ne débordent plus sur
+l’ombre de la fenêtre ; ils restent à l’intérieur.
+"""
+
+["2026-10-04-1525-unified-stacked-picture"]
+title = "Tous les comptes affiche toutes les photos"
+text = """
+Avec Tous les comptes ouvert, la photo en haut à droite est désormais une
+petite pile des photos de vos comptes, avec +N pour les autres, pour la
+distinguer d’un seul compte d’un coup d’œil. Pointez-la et les photos
+s’écartent en douceur.
+"""
+
+["2026-10-04-2338-all-accounts-row"]
+title = "Revenir à Tous les comptes depuis le menu des comptes"
+text = """
+Le menu des comptes commence désormais par Tous les comptes, avec son
+nombre de non-lus, pour revenir d’un clic après avoir choisi un seul
+compte. Le menu coche ce qui est ouvert, et faire défiler sur la photo
+s’arrête aussi sur Tous les comptes.
+"""
+
+["2026-10-05-1257-service-starts-again"]
+title = "Katna lance son service d’arrière-plan tout seul"
+text = """
+Si le service qui synchronise vos messages et affiche l’icône de la zone
+de notification ne tourne pas, Katna Mail le relance tout seul. Pas
+besoin de terminal. S’il ne démarre toujours pas, une ligne au-dessus de
+vos messages le signale, avec Redémarrer et les détails à copier pour un
+rapport.
+"""
+
+["2026-10-05-1430-stuck-window-replaced"]
+title = "Katna Mail s’ouvre même si une copie est bloquée"
+text = """
+Si Katna Mail ne répondait plus en arrière-plan, le rouvrir ferme
+désormais la copie bloquée et ouvre une nouvelle fenêtre, au lieu de ne
+rien faire.
+"""
+
+["2026-10-05-1605-read-receipts-as-ticks"]
+title = "Les accusés de lecture ne s’affichent plus comme des messages"
+text = """
+Quand l’application de messagerie de quelqu’un envoie un accusé de
+lecture pour un message que vous avez envoyé, il ne s’affiche plus comme
+un nouveau message dans la conversation. Votre message reçoit des coches
+bleues et une ligne indiquant qui l’a lu et quand, et l’accusé est marqué
+comme lu, il ne vous notifie donc pas. Il reste dans votre boîte aux
+lettres et dans la recherche.
+"""
+
+["2026-10-05-1620-reply-tools-fold"]
+title = "Les outils de réponse tiennent dans une fenêtre étroite"
+text = """
+Quand le volet de lecture ou la fenêtre est étroit, la barre de mise en
+forme et la rangée à côté d’Envoyer ne débordent plus de la réponse. Les
+outils qui ne tiennent pas passent dans ⋮ Plus, les moins utilisés
+d’abord, et sur un téléphone Envoyer n’affiche que son icône.
+"""
+
+["2026-10-05-1637-read-receipts-out-of-the-list"]
+title = "Les accusés de lecture restent hors de la liste des messages"
+text = """
+Un accusé de lecture pour un message que vous avez envoyé ne s’affiche
+plus dans la liste des messages comme une ligne « Lu : … ». La
+conversation garde son propre objet et son aperçu, et votre message
+envoyé affiche les coches.
+"""
+
+["2026-10-05-1640-windows-frost"]
+title = "Du verre dépoli sous Windows"
+text = """
+Les menus, fenêtres contextuelles, boîtes de dialogue, barres de la
+visionneuse et volets dépolis floutent désormais aussi ce qui se trouve
+dessous sous Windows, avec les mêmes réglages d’intensité du flou et
+d’opacité que sous Linux. Activez-le ou désactivez-le dans Paramètres,
+Expérimental, Menus et boîtes de dialogue dépolis.
+"""
+
+["2026-10-06-0156-phone-activity"]
+title = "Activité sur un téléphone"
+text = """
+Dans une fenêtre de la taille d’un téléphone, Activité se trouve
+désormais dans la barre de recherche à côté de la photo de votre compte,
+avec son nombre de nouvelles ouvertures et de nouveaux clics. Sa liste
+tient dans la fenêtre.
+"""
+
+["2026-10-06-0215-pin-bar-no-jump"]
+title = "Épingler ne fait plus bouger la discussion"
+text = """
+Dans la vue discussion, épingler ou désépingler un message ne fait plus
+sauter la conversation, même tout à la fin : la barre des messages
+épinglés apparaît en fondu au-dessus, et les messages restent où ils
+étaient.
+"""
+
+["2026-10-06-0942-fainter-row-marks"]
+title = "Des cases et des étoiles plus discrètes"
+text = """
+Dans la liste des messages, la case à cocher, l’étoile et le marqueur
+Important d’une ligne restent plus pâles jusqu’à ce que vous pointiez la
+ligne. Les étoiles et marqueurs activés s’affichent comme avant.
+"""
+
+["2026-10-06-1448-activity-beside-calendar"]
+title = "Activité avec les autres boutons"
+text = """
+Dans une fenêtre plus large, le bouton Activité se trouve désormais à
+droite avec Calendrier et Paramètres. Avec Tous les comptes ouvert, les
+photos des comptes s’écartent au survol sans déplacer les boutons à côté.
+"""
+
+["2026-10-06-1524-search-fills-bar"]
+title = "Un champ de recherche plus long"
+text = """
+Dans une fenêtre large, le champ de recherche va désormais jusqu’aux
+boutons de droite au lieu de s’arrêter à mi-chemin. Les options de
+recherche s’ouvrent centrées dessous et gardent une largeur confortable.
+"""
+
+["2026-10-07-0110-follow-up-for-you"]
+title = "Des relances qui partent toutes seules"
+text = """
+Dans le menu à côté d’Envoyer, Relancer sans réponse peut désormais
+envoyer une courte relance à votre place quand personne ne répond :
+écrivez-la une fois, choisissez quand, et décidez s’il faut réessayer une
+fois de plus. Elle part en semaine aux heures de bureau, s’arrête dès que
+quelqu’un répond (les réponses automatiques ne comptent pas), et vous
+attend plutôt que de partir en retard si votre ordinateur était éteint.
+Une pastille à côté d’Envoyer montre ce qui est prévu. Ou contentez-vous
+d’un rappel, désormais à la date de votre choix.
+"""
+
+["2026-10-07-0117-drawer-logo"]
+title = "Le logo Katna dans le tiroir"
+text = """
+Sur un téléphone, le tiroir de vos dossiers affiche désormais le logo
+Katna à côté de son nom, dans votre couleur d’accentuation, au lieu d’une
+simple enveloppe. Sur une tablette, où la barre du haut les montre déjà,
+le tiroir commence par vos dossiers.
+"""
+
+["2026-10-07-0118-clock-popup"]
+title = "Une horloge de bureau mieux rangée"
+text = """
+Dans Katna Digital Clock, vos fuseaux horaires se placent désormais à
+côté de la date en haut, et la liste Tâches se replie d’un clic sur son
+titre. Ajouter un événement ouvre une petite fenêtre Nouvel événement au
+lieu de toute l’application. Les nouvelles tâches n’apparaissent plus en
+double après un accroc de synchronisation.
+"""
+
+["2026-10-07-0232-mcp-server"]
+title = "Laissez les assistants IA utiliser vos messages"
+text = """
+Paramètres › Serveur MCP permet aux assistants IA de cet ordinateur, comme
+Claude Desktop, Claude Code et LM Studio, de chercher et lire vos messages
+et d’enregistrer des brouillons que vous vérifierez. Il reste désactivé
+tant que vous ne l’activez pas. Choisissez les comptes qu’ils voient,
+copiez ce qu’il faut coller dans votre assistant, et voyez ce qu’ils ont
+fait récemment. Les assistants n’envoient, ne suppriment et ne déplacent
+jamais de messages.
+"""
+
+["2026-10-07-0359-waiting-for-reply"]
+title = "Voyez ce qui attend une réponse"
+text = """
+Les messages envoyés avec une relance ou un rappel sont listés sous Sans
+réponse, sous Messages envoyés. Leurs lignes affichent une
+pastille indiquant ce qui va se passer et quand, dans Sans réponse
+et aussi dans votre boîte de réception. Ouvrez-en un pour
+déplacer la relance à un autre moment, l’envoyer maintenant ou l’arrêter.
+"""
+
+["2026-10-07-0505-follow-ups-in-chats"]
+title = "Les relances dans la vue discussion"
+text = """
+Dans la vue discussion, une relance en attente d’envoi apparaît comme une
+bulle pâle à la fin de la discussion, avec Modifier, Envoyer maintenant
+et Arrêter. Pour en prévoir une, faites un clic droit ou un appui long
+sur Envoyer et choisissez Relancer sans réponse.
+"""
+
+["2026-10-07-0603-remind-me"]
+title = "Un rappel pour n’importe quel message"
+text = """
+Appuyez sur H sur un message, ou utilisez Me le rappeler à côté de Mettre
+en attente, pour recevoir un rappel à l’heure voulue pendant que le
+message reste où il est. Si le message indique une échéance à une date,
+Katna propose la veille au matin. Les rappels sont des tâches dans
+Tâches, listées sous Rappels et affichées sur la ligne du message. B met
+en attente.
+"""
+
+["2026-10-07-0718-snooze-extras"]
+title = "La mise en attente sait quand quelqu’un répond"
+text = """
+Une conversation mise en attente revient aussitôt quand quelqu’un y
+écrit. Dans Choisir la date et l’heure, vous pouvez taper « mar 15h » ou
+« dans 2 heures ». La notification d’un nouveau message peut le mettre en
+attente pour une heure ou jusqu’à demain.
+"""
+
+["2026-10-07-0802-your-snooze-times"]
+title = "La mise en attente à votre façon"
+text = """
+Définissez ce que signifient Plus tard aujourd’hui, Demain, Ce week-end
+et La semaine prochaine, et ajoutez votre propre heure, dans Paramètres >
+Boîte de réception. En attente classe les messages selon leur moment de
+retour. Sur un téléphone, balayez une ligne vers la gauche pour la mettre
+en attente.
+"""
+
+["2026-10-07-0913-pick-date-in-place"]
+title = "Choisissez une date là où vous avez cliqué"
+text = """
+Choisir la date et l’heure glisse désormais directement dans le menu de
+mise en attente et de Me le rappeler, au lieu d’une boîte au milieu de la
+fenêtre. La flèche de retour ramène aux heures proposées.
+"""
+
+["2026-10-07-0953-nudges"]
+title = "Les questions restées sans réponse reviennent"
+text = """
+Un message envoyé qui posait une question et n’a pas reçu de réponse en
+trois jours revient en haut de la boîte de réception avec « Envoyé il y
+a 3 jours. Relancer ? ». Cliquez dessus pour relancer, ou sur le x pour
+le ranger. Paramètres > Boîte de réception permet de le désactiver.
+"""

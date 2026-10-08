@@ -55,6 +55,7 @@ impl DbKind {
                 include_str!("schema/mail_v11.sql"),
                 include_str!("schema/mail_v12.sql"),
                 include_str!("schema/mail_v13.sql"),
+                include_str!("schema/mail_v14.sql"),
             ],
             Self::Pim => &[
                 include_str!("schema/pim_v1.sql"),
@@ -69,6 +70,11 @@ impl DbKind {
                 include_str!("schema/pim_v10.sql"),
                 include_str!("schema/pim_v11.sql"),
                 include_str!("schema/pim_v12.sql"),
+                include_str!("schema/pim_v13.sql"),
+                include_str!("schema/pim_v14.sql"),
+                include_str!("schema/pim_v15.sql"),
+                include_str!("schema/pim_v16.sql"),
+                include_str!("schema/pim_v17.sql"),
             ],
             Self::Blobs => &[include_str!("schema/blobs_v1.sql")],
         }
@@ -254,6 +260,7 @@ mod tests {
                 "pop3_uidl",
                 "quota",
                 "receipt",
+                "receipt_mail",
                 "thread",
                 "thread_ref",
                 "translation",
@@ -273,9 +280,17 @@ mod tests {
                 "contact_group_member",
                 "contact_photo",
                 "event",
+                "mail_rule",
+                "mail_rule_note",
+                "mail_rule_remote",
+                "mail_rule_server",
+                "mail_rule_starter",
                 "meta",
                 "note",
                 "note_gone",
+                "note_picture",
+                "note_reminder",
+                "note_version",
                 "org_alias",
                 "org_member",
                 "org_rule",
@@ -284,6 +299,8 @@ mod tests {
                 "other_contact_sync",
                 "suggestion",
                 "task",
+                "task_file",
+                "task_labels",
                 "task_list",
                 "template",
                 "template_attachment",
@@ -329,7 +346,7 @@ mod tests {
         drop(conn);
 
         let conn = open(&path, DbKind::Pim, Mode::ReadWrite).unwrap();
-        assert_eq!(user_version(&conn).unwrap(), 12);
+        assert_eq!(user_version(&conn).unwrap(), DbKind::Pim.schema_version());
         conn.execute(
             "INSERT INTO calendar (source, name) VALUES ('zoho', 'Z')",
             [],

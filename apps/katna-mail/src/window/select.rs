@@ -15,7 +15,7 @@
 //! PDF's letters, on a picture of the page) records where each character
 //! is.
 
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::BTreeMap;
 use std::hash::{DefaultHasher, Hash, Hasher};
 use std::ops::Range;
@@ -24,9 +24,10 @@ use std::rc::Rc;
 use gpui::{
     AnyElement, App, Bounds, ClipboardItem, Context, DispatchPhase, Div, FocusHandle,
     HighlightStyle, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, Pixels, Point,
-    SharedString, StyledText, TextLayout, Window, actions, anchored, canvas, deferred, div,
-    prelude::*, rgba,
+    SharedString, StyledText, TextLayout, WeakEntity, Window, WindowId, actions, canvas, deferred,
+    div, prelude::*, rgba,
 };
+use katna_ui::anchored;
 
 use katna_i18n::tr;
 use katna_ui::{px, unpx};
@@ -43,6 +44,23 @@ pub(super) const TEXT_CONTEXT: &str = "MessageText";
 /// The first part of the open mail's header details: the details of the
 /// message shown `n`th are part `DETAILS_PART + n`.
 pub(super) const DETAILS_PART: usize = usize::MAX / 4;
+
+/// The parts from here on are the text of everything but the conversation
+/// (dialogs, Settings, pages, errors), which has its own selection,
+/// `MailWindow::ui_text`: selecting there leaves the conversation's
+/// selection as it was. Each window drawing it gets its own range.
+pub(super) const UI_PART: usize = usize::MAX - (1 << 24);
+
+/// The room each window has for its parts of `ui_text`.
+const UI_WINDOW_PARTS: usize = 1 << 16;
+
+/// Parts kept for surfaces whose keys must not move while other text
+/// comes and goes before them (see [`TextSelection::slot_pieces`]); the
+/// rest are handed out in drawing order ([`TextSelection::next_pieces`]).
+pub(super) const ABOUT_SLOT: usize = 0;
+pub(super) const WHATS_NEW_SLOT: usize = 1;
+pub(super) const SHORTCUTS_SLOT: usize = 2;
+const SLOTS: usize = 64;
 
 /// A run of text drawn by `part` of the text (a message of the
 /// conversation, a page of a PDF), the `piece`th in it.
@@ -67,10 +85,15 @@ pub(super) type TextPlace = (usize, usize, usize);
 pub(super) trait SelectHost: 'static + Sized {
     fn selection(&self) -> &TextSelection;
     fn selection_mut(&mut self) -> &mut TextSelection;
-    /// What a click in the text focuses, so Ctrl+C and Ctrl+A reach it.
-    fn text_focus(&self) -> FocusHandle {
-        self.selection().focus.clone()
+    /// What a click in the text focuses, so Ctrl+C and Ctrl+A reach it;
+    /// `None` leaves the focus where it is.
+    fn text_focus(&self) -> Option<FocusHandle> {
+        Some(self.selection().focus.clone())
     }
+
+    /// The text of `part` is being pressed, before anything else happens
+    /// (a host with two selections picks one).
+    fn pressing(&mut self, _part: Option<usize>, _window: &Window) {}
 
     /// A drag or click that selects has ended (the PDF viewer turns the
     /// selection into a highlight when marking up).
@@ -83,6 +106,26 @@ pub(super) trait SelectHost: 'static + Sized {
 
     /// Pins the selection.
     fn pin_selection(&mut self, _cx: &mut Context<Self>) {}
+
+    /// A right-click on the text of `part` at `at`: `true` when the host
+    /// opened a menu of its own instead of the text's.
+    fn right_click(
+        &mut self,
+        _part: Option<usize>,
+        _at: Point<Pixels>,
+        _cx: &mut Context<Self>,
+    ) -> bool {
+        false
+    }
+
+    /// What the text menu's Translate row says for `part`, when it has one.
+    fn translate_label(&self, _part: usize) -> Option<String> {
+        None
+    }
+
+    /// Translates `part`, or switches it between its translation and its
+    /// original.
+    fn translate(&mut self, _part: usize, _cx: &mut Context<Self>) {}
 }
 
 /// A place in the conversation's text: a byte offset in a piece.
@@ -105,6 +148,22 @@ struct Piece {
     place: Place,
     /// The frame that laid it out; older pieces are no longer on screen.
     frame: u64,
+    /// The window it is in, for a selection drawn in several windows.
+    window: Option<WindowId>,
+}
+
+/// Each window's frame, for a selection drawn in several windows (the
+/// mail window and the Settings window): a window's pieces are on screen
+/// when they were laid out in its latest frame.
+type Frames = Rc<RefCell<Vec<(WindowId, u64)>>>;
+
+/// `window`'s latest frame in `frames`.
+fn frame_of(frames: &Frames, window: WindowId) -> Option<u64> {
+    frames
+        .borrow()
+        .iter()
+        .find(|(w, _)| *w == window)
+        .map(|(_, frame)| *frame)
 }
 
 /// Where a piece went on screen.
@@ -165,9 +224,86 @@ pub(super) struct TextSelection {
     pub(super) menu: Option<Point<Pixels>>,
     /// The address the right-click menu was opened on, for Copy address.
     pub(super) menu_address: Option<SharedString>,
+    /// The part the right-click menu was opened on.
+    pub(super) menu_part: Option<usize>,
+    /// Each window's frame, when drawn in several windows.
+    windows: Option<Frames>,
+    /// The window the selection is in, when drawn in several.
+    window: Option<WindowId>,
+    /// The first part of the window being drawn, and the next part to
+    /// hand out in it.
+    base: Cell<usize>,
+    next_part: Cell<usize>,
 }
 
 impl TextSelection {
+    /// A selection of text drawn in any of the app's windows, from
+    /// [`UI_PART`] on: start each window's frame with
+    /// [`TextSelection::begin_window`].
+    pub(super) fn new_windowed(cx: &mut App) -> Self {
+        Self {
+            windows: Some(Rc::default()),
+            ..Self::new(cx)
+        }
+    }
+
+    /// Starts drawing a frame of `window` (call before drawing anything
+    /// in it).
+    pub(super) fn begin_window(&mut self, window: &Window) {
+        let Some(windows) = &self.windows else {
+            return;
+        };
+        let id = window.window_handle().window_id();
+        let mut windows = windows.borrow_mut();
+        let index = match windows.iter().position(|(w, _)| *w == id) {
+            Some(index) => index,
+            None => {
+                windows.push((id, 0));
+                windows.len() - 1
+            }
+        };
+        windows[index].1 += 1;
+        let frame = windows[index].1;
+        drop(windows);
+        self.drawn
+            .borrow_mut()
+            .retain(|_, p| p.window != Some(id) || p.frame + 1 >= frame);
+        let base = UI_PART + index.min(255) * UI_WINDOW_PARTS;
+        self.base.set(base);
+        self.next_part.set(base + SLOTS);
+    }
+
+    /// Pieces for the next surface drawn in this window's frame.
+    pub(super) fn next_pieces(&self, th: &Theme) -> Pieces {
+        let part = self.next_part.get();
+        self.next_part.set(part + 1);
+        self.pieces(part, th)
+    }
+
+    /// Pieces for the surface in `slot` ([`ABOUT_SLOT`], ...).
+    pub(super) fn slot_pieces(&self, slot: usize, th: &Theme) -> Pieces {
+        self.pieces(self.base.get() + slot.min(SLOTS - 1), th)
+    }
+
+    /// The part a drag stays in: text outside the conversation is many
+    /// small surfaces drawn in no set order, so a drag selects within the
+    /// one it started in.
+    fn drag_part(&self) -> Option<usize> {
+        self.windows.as_ref()?;
+        self.anchor.map(|a| a.key.part).or(self.menu_part)
+    }
+
+    /// Whether `piece` is on screen.
+    fn live(&self, piece: &Piece) -> bool {
+        match (&self.windows, piece.window) {
+            (Some(windows), Some(window)) => {
+                frame_of(windows, window) == Some(piece.frame)
+                    && self.window.is_none_or(|w| w == window)
+            }
+            _ => piece.frame == self.frame,
+        }
+    }
+
     pub(super) fn new(cx: &mut App) -> Self {
         Self {
             focus: cx.focus_handle(),
@@ -183,6 +319,11 @@ impl TextSelection {
             origin: None,
             menu: None,
             menu_address: None,
+            menu_part: None,
+            windows: None,
+            window: None,
+            base: Cell::new(UI_PART),
+            next_part: Cell::new(UI_PART + SLOTS),
         }
     }
 
@@ -255,6 +396,7 @@ impl TextSelection {
         Marker {
             drawn: self.drawn.clone(),
             frame: self.frame,
+            windows: self.windows.clone(),
             selected: self.ordered(),
             color: selection_color(th),
         }
@@ -275,7 +417,7 @@ impl TextSelection {
         let drawn = self.drawn.borrow();
         let mut best: Option<(f32, Key)> = None;
         for (key, piece) in drawn.iter() {
-            if piece.frame != self.frame || part.is_some_and(|p| p != key.part) {
+            if !self.live(piece) || part.is_some_and(|p| p != key.part) {
                 continue;
             }
             let b = piece.place.bounds();
@@ -356,7 +498,10 @@ impl TextSelection {
             return;
         }
         let drawn = self.drawn.borrow();
-        let mut on_screen = drawn.iter().filter(|(_, p)| p.frame == self.frame);
+        let only = self.drag_part();
+        let mut on_screen = drawn
+            .iter()
+            .filter(|(key, p)| self.live(p) && only.is_none_or(|part| key.part == part));
         let first = on_screen.next().map(|(key, _)| *key);
         let last = on_screen
             .next_back()
@@ -412,7 +557,7 @@ impl TextSelection {
             None => Default::default(),
         };
         for (key, piece) in drawn.range(start.key..=end.key) {
-            if piece.frame == self.frame && !given.contains(&key.part) {
+            if self.live(piece) && !given.contains(&key.part) {
                 texts.insert(*key, piece.text.as_ref());
             }
         }
@@ -429,6 +574,7 @@ impl TextSelection {
 pub(super) struct Marker {
     drawn: Rc<RefCell<BTreeMap<Key, Piece>>>,
     frame: u64,
+    windows: Option<Frames>,
     selected: Option<(Spot, Spot)>,
     color: gpui::Hsla,
 }
@@ -460,16 +606,27 @@ impl Marker {
         let layout = styled.layout().clone();
         let drawn = self.drawn.clone();
         let frame = self.frame;
-        let holder = div().cursor_text().on_children_prepainted(move |_, _, _| {
-            drawn.borrow_mut().insert(
-                key,
-                Piece {
-                    text: text.clone(),
-                    place: Place::Laid(layout.clone()),
-                    frame,
-                },
-            );
-        });
+        let windows = self.windows.clone();
+        let holder = div()
+            .cursor_text()
+            .on_children_prepainted(move |_, window, _| {
+                let (frame, window) = match &windows {
+                    Some(windows) => {
+                        let id = window.window_handle().window_id();
+                        (frame_of(windows, id).unwrap_or(0), Some(id))
+                    }
+                    None => (frame, None),
+                };
+                drawn.borrow_mut().insert(
+                    key,
+                    Piece {
+                        text: text.clone(),
+                        place: Place::Laid(layout.clone()),
+                        frame,
+                        window,
+                    },
+                );
+            });
         (styled, holder)
     }
 
@@ -489,6 +646,7 @@ impl Marker {
                 text,
                 place: Place::Drawn(bounds, Rc::new(chars)),
                 frame: self.frame,
+                window: None,
             },
         );
     }
@@ -502,6 +660,22 @@ pub(super) struct Pieces {
 }
 
 impl Pieces {
+    /// Pieces outside the reading pane's selection, for text drawn
+    /// elsewhere (a designed signature in an editor).
+    pub(super) fn alone(th: &Theme) -> Self {
+        Self {
+            marker: Marker {
+                drawn: Rc::default(),
+                frame: 0,
+                windows: None,
+                selected: None,
+                color: selection_color(th),
+            },
+            part: 0,
+            next: 0,
+        }
+    }
+
     /// The next run: see [`Marker::piece`].
     pub(super) fn piece(
         &mut self,
@@ -512,23 +686,95 @@ impl Pieces {
         self.next += 1;
         self.marker.piece(key, text, highlights)
     }
+
+    /// The part these pieces are drawn in, for [`selectable`].
+    pub(super) fn part(&self) -> usize {
+        self.part
+    }
+
+    /// `text` as the next run, plain, in a box to style (its size,
+    /// colour, weight).
+    pub(super) fn words(&mut self, text: impl Into<SharedString>) -> Div {
+        let (styled, holder) = self.piece(text.into(), Vec::new());
+        holder.child(styled)
+    }
 }
 
 impl SelectHost for MailWindow {
+    /// The selection of the text last pressed: the conversation's, or
+    /// that of everything else ([`UI_PART`] on).
     fn selection(&self) -> &TextSelection {
-        &self.text
+        if self.ui_active {
+            &self.ui_text
+        } else {
+            &self.text
+        }
     }
 
     fn selection_mut(&mut self) -> &mut TextSelection {
-        &mut self.text
+        if self.ui_active {
+            &mut self.ui_text
+        } else {
+            &mut self.text
+        }
+    }
+
+    /// Text outside the conversation keeps the focus where it is, so a
+    /// dialog's or page's keys (Escape, Tab, shortcuts) still work.
+    fn text_focus(&self) -> Option<FocusHandle> {
+        (!self.ui_active).then(|| self.text.focus.clone())
+    }
+
+    /// One selection at a time, as in a browser: pressing the other
+    /// kind of text drops the selection in the first.
+    fn pressing(&mut self, part: Option<usize>, window: &Window) {
+        let ui = part.is_some_and(|p| p >= UI_PART);
+        if ui != self.ui_active {
+            self.selection_mut().clear();
+            self.ui_active = ui;
+        }
+        if ui {
+            self.ui_text.window = Some(window.window_handle().window_id());
+        }
     }
 
     fn can_pin(&self) -> bool {
-        self.chat_text_to_pin().is_some()
+        !self.ui_active && self.chat_text_to_pin().is_some()
     }
 
     fn pin_selection(&mut self, cx: &mut Context<Self>) {
         self.pin_chat_text(cx);
+    }
+
+    /// In the chat, a right-click on a bubble's text with nothing selected
+    /// opens the bubble's menu, with everything its hover buttons do.
+    fn right_click(
+        &mut self,
+        part: Option<usize>,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) -> bool {
+        if self.ui_active || !self.chat_shown() || !self.text.is_empty() {
+            return false;
+        }
+        let Some(id) = part.and_then(|ix| self.part_id(ix)) else {
+            return false;
+        };
+        self.open_chat_context_menu(id, None, at, cx);
+        true
+    }
+
+    fn translate_label(&self, part: usize) -> Option<String> {
+        if self.ui_active {
+            return None;
+        }
+        self.translate_menu_label(self.part_id(part)?)
+    }
+
+    fn translate(&mut self, part: usize, cx: &mut Context<Self>) {
+        if let Some(id) = self.part_id(part) {
+            self.translate_from_menu(id, cx);
+        }
     }
 }
 
@@ -555,6 +801,107 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
+        if self.ui_active {
+            return None;
+        }
+        text_menu(self, th, cx)
+    }
+
+    /// Pieces for a run of read-only text outside the conversation (a
+    /// description, an error, a detail), drawn this frame.
+    pub(super) fn ui_pieces(&self, th: &Theme) -> Pieces {
+        self.ui_text.next_pieces(th)
+    }
+
+    /// `text` as read-only text that can be selected and copied, in a box
+    /// to style: for a lone line or paragraph outside the conversation.
+    /// Text of several runs shares one [`MailWindow::ui_pieces`] instead,
+    /// so a drag goes across them.
+    pub(super) fn copyable(&self, text: impl Into<SharedString>, th: &Theme) -> Div {
+        let mut pieces = self.ui_pieces(th);
+        let part = pieces.part();
+        selectable_in(pieces.words(text), Some(part), self.me.clone())
+    }
+
+    /// Makes the text of `pieces` in `body` selectable, where no
+    /// `Context` is at hand.
+    pub(super) fn ui_selectable(&self, body: Div, pieces: &Pieces) -> Div {
+        selectable_in(body, Some(pieces.part()), self.me.clone())
+    }
+
+    /// A quiet line in the middle of an empty pane (loading, nothing
+    /// here, an error), which can be selected and copied: see
+    /// [`crate::widgets::placeholder`].
+    pub(super) fn placeholder(&self, text: impl Into<SharedString>, th: &Theme) -> AnyElement {
+        crate::widgets::placeholder_with(self.copyable(text, th), th)
+    }
+
+    /// A dialog's card, whose text can be selected: Ctrl+C and Ctrl+A
+    /// work in it, and a click away from the text drops the selection
+    /// (the card keeps clicks from the window behind it).
+    pub(super) fn ui_text_area(
+        &self,
+        card: gpui::Stateful<Div>,
+        cx: &mut Context<Self>,
+    ) -> gpui::Stateful<Div> {
+        card.key_context(TEXT_CONTEXT)
+            .on_action(cx.listener(|this, _: &CopyText, _, cx| copy(this, cx)))
+            .on_action(cx.listener(|this, _: &SelectAllText, _, cx| select_all(this, cx)))
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, _: &MouseDownEvent, _, cx| this.drop_ui_selection(cx)),
+            )
+    }
+
+    /// What every window of the app adds at its root for text outside
+    /// the conversation: Ctrl+C copies it when it is selected, a drag
+    /// follows the pointer, and a click elsewhere drops the selection.
+    pub(super) fn ui_text_root<E: InteractiveElement + ParentElement>(
+        &self,
+        root: E,
+        cx: &mut Context<Self>,
+    ) -> E {
+        root.on_action(cx.listener(|this, _: &CopyText, _, cx| {
+            if !this.copy_ui_text(cx) {
+                cx.propagate();
+            }
+        }))
+        .on_mouse_down(
+            MouseButton::Left,
+            cx.listener(|this, _: &MouseDownEvent, _, cx| this.drop_ui_selection(cx)),
+        )
+        .child(follow_drags(cx))
+    }
+
+    /// Copies the selection outside the conversation; false when there
+    /// is none, so Ctrl+C goes on to whatever else wants it.
+    pub(super) fn copy_ui_text(&mut self, cx: &mut Context<Self>) -> bool {
+        if self.ui_active && !self.ui_text.is_empty() {
+            copy(self, cx);
+            true
+        } else {
+            false
+        }
+    }
+
+    fn drop_ui_selection(&mut self, cx: &mut Context<Self>) {
+        if !self.ui_text.is_empty() || self.ui_text.menu.is_some() {
+            self.ui_text.clear();
+            cx.notify();
+        }
+    }
+
+    /// The right-click menu of text outside the conversation, in the
+    /// window it was opened in.
+    pub(super) fn render_ui_text_menu(
+        &self,
+        th: &Theme,
+        window: &Window,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        if !self.ui_active || self.ui_text.window != Some(window.window_handle().window_id()) {
+            return None;
+        }
         text_menu(self, th, cx)
     }
 }
@@ -566,20 +913,42 @@ pub(super) fn selectable<T: SelectHost>(
     part: Option<usize>,
     cx: &mut Context<T>,
 ) -> Div {
+    selectable_in(body, part, cx.entity().downgrade())
+}
+
+/// [`selectable`] for `host`, where no `Context` is at hand.
+pub(super) fn selectable_in<T: SelectHost>(
+    body: Div,
+    part: Option<usize>,
+    host: WeakEntity<T>,
+) -> Div {
+    let right = host.clone();
     body.on_mouse_down(
         MouseButton::Left,
-        cx.listener(move |this, event: &MouseDownEvent, window, cx| {
-            press(this, part, event, window, cx);
-        }),
+        move |event: &MouseDownEvent, window, cx| {
+            host.update(cx, |this, cx| press(this, part, event, window, cx))
+                .ok();
+        },
     )
     .on_mouse_down(
         MouseButton::Right,
-        cx.listener(move |this, event: &MouseDownEvent, window, cx| {
+        move |event: &MouseDownEvent, window, cx| {
             cx.stop_propagation();
-            window.focus(&this.text_focus(), cx);
-            this.selection_mut().menu = Some(event.position);
-            cx.notify();
-        }),
+            right
+                .update(cx, |this, cx| {
+                    this.pressing(part, window);
+                    if this.right_click(part, event.position, cx) {
+                        return;
+                    }
+                    if let Some(focus) = this.text_focus() {
+                        window.focus(&focus, cx);
+                    }
+                    this.selection_mut().menu = Some(event.position);
+                    this.selection_mut().menu_part = part;
+                    cx.notify();
+                })
+                .ok();
+        },
     )
 }
 
@@ -591,7 +960,10 @@ fn press<T: SelectHost>(
     cx: &mut Context<T>,
 ) {
     cx.stop_propagation();
-    window.focus(&this.text_focus(), cx);
+    this.pressing(part, window);
+    if let Some(focus) = this.text_focus() {
+        window.focus(&focus, cx);
+    }
     let text = this.selection_mut();
     text.menu = None;
     let Some(spot) = text.hit(event.position, part) else {
@@ -624,7 +996,7 @@ fn drag<T: SelectHost>(this: &mut T, event: &MouseMoveEvent, cx: &mut Context<T>
         return;
     }
     let text = this.selection_mut();
-    let Some(spot) = text.hit(event.position, None) else {
+    let Some(spot) = text.hit(event.position, text.drag_part()) else {
         return;
     };
     let before = (text.anchor, text.head);
@@ -702,18 +1074,29 @@ pub(super) fn text_menu<T: SelectHost>(
     cx: &mut Context<T>,
 ) -> Option<AnyElement> {
     let at = this.selection().menu?;
+    let translate = this
+        .selection()
+        .menu_part
+        .and_then(|part| this.translate_label(part));
     Some(copy_menu(
         at,
         !this.selection().is_empty(),
         this.selection().menu_address.is_some(),
         this.can_pin(),
+        translate,
         th,
         cx,
         |this: &mut T, act, cx| {
             let address = this.selection_mut().menu_address.take();
+            let part = this.selection_mut().menu_part.take();
             this.selection_mut().menu = None;
             match act {
                 MenuAct::Close => {}
+                MenuAct::Translate => {
+                    if let Some(part) = part {
+                        this.translate(part, cx);
+                    }
+                }
                 MenuAct::Pin => this.pin_selection(cx),
                 MenuAct::Copy => copy(this, cx),
                 MenuAct::CopyAddress => {
@@ -721,7 +1104,15 @@ pub(super) fn text_menu<T: SelectHost>(
                         cx.write_to_clipboard(ClipboardItem::new_string(address.to_string()));
                     }
                 }
-                MenuAct::SelectAll => this.selection_mut().select_all(),
+                MenuAct::SelectAll => {
+                    // All of the text the menu was opened on.
+                    let text = this.selection_mut();
+                    if text.anchor.is_none() {
+                        text.menu_part = part;
+                    }
+                    text.select_all();
+                    text.menu_part = None;
+                }
             }
             cx.notify();
         },
@@ -738,17 +1129,21 @@ pub(super) enum MenuAct {
     /// Only offered when the menu was opened on an address.
     CopyAddress,
     SelectAll,
+    /// Only offered when the host can translate the text's message.
+    Translate,
 }
 
 /// A right-click menu at `at` with Pin to top (when `can_pin`), Copy
-/// address (when `on_address`), Copy (greyed without a selection) and
-/// Select all; `act` does what was
+/// address (when `on_address`), Copy (greyed without a selection), Select
+/// all and, under a line, `translate` when given; `act` does what was
 /// chosen, or closes it.
+#[allow(clippy::too_many_arguments)]
 pub(super) fn copy_menu<T: 'static>(
     at: Point<Pixels>,
     can_copy: bool,
     on_address: bool,
     can_pin: bool,
+    translate: Option<String>,
     th: &Theme,
     cx: &mut Context<T>,
     act: fn(&mut T, MenuAct, &mut Context<T>),
@@ -756,37 +1151,44 @@ pub(super) fn copy_menu<T: 'static>(
     let close = || {
         cx.listener(move |this: &mut T, _: &MouseDownEvent, _, cx| act(this, MenuAct::Close, cx))
     };
-    let list = div()
-        .key_context(crate::widgets::MENU_CONTEXT)
-        .w(px(200.0))
-        .py(px(8.0))
-        .flex()
-        .flex_col()
-        .map(|d| raised(d, th, 8.0, 3.0))
-        .text_size(px(14.0))
-        .text_color(rgba(th.text))
-        .when(can_pin, |d| {
-            d.child(
-                menu_item("text-pin", &tr!("text-pin"), th)
-                    .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::Pin, cx))),
+    let list =
+        div()
+            .key_context(crate::widgets::MENU_CONTEXT)
+            .w(px(200.0))
+            .py(px(8.0))
+            .flex()
+            .flex_col()
+            .map(|d| raised(d, th, 8.0, 3.0))
+            .text_size(px(14.0))
+            .text_color(rgba(th.text))
+            .when(can_pin, |d| {
+                d.child(
+                    menu_item("text-pin", &tr!("text-pin"), th)
+                        .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::Pin, cx))),
+                )
+            })
+            .when(on_address, |d| {
+                d.child(
+                    menu_item("text-copy-address", &tr!("text-copy-address"), th).on_click(
+                        cx.listener(move |this, _, _, cx| act(this, MenuAct::CopyAddress, cx)),
+                    ),
+                )
+            })
+            .child(
+                menu_item("text-copy", &tr!("text-copy"), th)
+                    .when(!can_copy, |d| d.text_color(rgba(th.text_faint)))
+                    .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::Copy, cx))),
             )
-        })
-        .when(on_address, |d| {
-            d.child(
-                menu_item("text-copy-address", &tr!("text-copy-address"), th).on_click(
-                    cx.listener(move |this, _, _, cx| act(this, MenuAct::CopyAddress, cx)),
-                ),
+            .child(
+                menu_item("text-select-all", &tr!("text-select-all"), th)
+                    .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::SelectAll, cx))),
             )
-        })
-        .child(
-            menu_item("text-copy", &tr!("text-copy"), th)
-                .when(!can_copy, |d| d.text_color(rgba(th.text_faint)))
-                .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::Copy, cx))),
-        )
-        .child(
-            menu_item("text-select-all", &tr!("text-select-all"), th)
-                .on_click(cx.listener(move |this, _, _, cx| act(this, MenuAct::SelectAll, cx))),
-        );
+            .when_some(translate, |d, label| {
+                d.child(div().my(px(6.0)).h(px(1.0)).bg(rgba(th.divider)))
+                    .child(menu_item("text-translate", &label, th).on_click(
+                        cx.listener(move |this, _, _, cx| act(this, MenuAct::Translate, cx)),
+                    ))
+            });
     div()
         .absolute()
         .top_0()

@@ -191,7 +191,11 @@ impl MailWindow {
         let th = self.theme(window);
         self.release_images(window, cx);
         if let Some(viewer) = &self.files.viewer {
-            viewer.update(cx, |viewer, _| viewer.th = th);
+            let corners = self.chrome.content_corners(window);
+            viewer.update(cx, |viewer, _| {
+                viewer.th = th;
+                viewer.corners = corners;
+            });
         }
         let reduce = cx.reduce_motion();
         self.update_reply_row(unpx(window.viewport_size().width), window, reduce);
@@ -219,6 +223,8 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_unread))
             .on_action(cx.listener(Self::toggle_star))
             .on_action(cx.listener(Self::add_to_tasks))
+            .on_action(cx.listener(Self::snooze_key))
+            .on_action(cx.listener(Self::remind_key))
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
@@ -231,6 +237,8 @@ impl MailWindow {
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let content = div()
             .key_context(WINDOW_CONTEXT)
+            .map(|d| self.ui_text_root(d, cx))
+            .children(self.render_ui_text_menu(&th, window, cx))
             .relative()
             .size_full()
             .p(px(8.0))

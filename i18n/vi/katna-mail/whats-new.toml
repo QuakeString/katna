@@ -860,7 +860,6 @@ Mũi tên bên cạnh biểu tượng trả lời chuyển giữa Trả lời, T
 Chuyển tiếp, vẫn giữ nguyên những gì bạn đã viết.
 """
 
-
 ["2026-09-28-1110-search-options-narrow"]
 title = "Tùy chọn tìm kiếm vừa với cửa sổ hẹp"
 text = """
@@ -2954,4 +2953,1293 @@ Katna giờ kiểm tra phiên bản mới mỗi giờ và ngay khi máy tính th
 title = "Đường kẻ mờ cả ở chế độ tối"
 text = """
 Ở chế độ tối, các đường kẻ giữa các thư, dưới tiêu đề và quanh các thẻ giờ mờ như ở chế độ sáng. Ô nhập, chip và nút vẫn giữ đường viền rõ ràng.
+"""
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Bản cập nhật nhỏ sau thời gian vắng mặt"
+text = """
+Bản cập nhật vẫn nhỏ ngay cả khi bạn bỏ qua một hai ngày phiên bản mới.
+Katna giờ đi từng bước từ phiên bản bạn đang có qua các phiên bản trước đó,
+mỗi bước vài megabyte, thay vì tải lại toàn bộ gói.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Biết thư nào bạn đã trả lời"
+text = """
+Một mũi tên trả lời nhỏ trên dòng của danh sách thư cho biết bạn đã trả lời
+thư đó: bạn đã viết thư mới nhất của cuộc hội thoại, tại đây hoặc trên web.
+Mũi tên biến mất khi người kia viết lại.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Biểu tượng khay theo chế độ sáng và tối"
+text = """
+Biểu tượng khay một màu giờ đổi theo bảng điều khiển ngay khi bạn chuyển
+giữa chế độ sáng và tối, thay vì đợi đến khi có thư mới.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Gợi ý trả lời cho biết chúng đang đến"
+text = """
+Trong khi đang yêu cầu gợi ý trả lời, ở Trả lời của bản tóm tắt hoặc trong
+Viết thư trả lời, các khung hình của chúng giờ nhấp nhô như của chính bản
+tóm tắt khi nó đang được viết. Thẻ tóm tắt cũng hiện số thư của cuộc hội
+thoại trong khi đang yêu cầu, chứ không phải 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Góc gọn gàng hơn trong Tệp"
+text = """
+Di chuột qua một tệp có bản xem trước màu trắng không còn làm lộ màu trắng
+ở hai góc trên của thẻ, khay tải lên khi thu gọn cũng được bo tròn ở phía
+trên, và hộp thoại Chia sẻ có nút đóng ở góc.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Xóa tìm kiếm vẫn giữ thư đang mở"
+text = """
+Mở một thư từ kết quả tìm kiếm rồi xóa tìm kiếm bằng nút X: thư vẫn mở
+khi thư mục của bạn hiện trở lại, thay vì thu về danh sách.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Góc bo tròn cho bảng tính"
+text = """
+Bảng tính trong trình xem tệp đính kèm giờ được bo tròn ở cả bốn góc. Các
+chữ cái cột màu xám ở trên cùng và các thẻ trang tính ở dưới cùng trước đây
+làm các góc bị vuông.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Thông tin liên hệ gọn gàng trên thẻ"
+text = """
+Số điện thoại, địa chỉ và các thông tin khác lấy từ chữ ký không còn hiện
+dấu sao thừa hay dấu liên kết trong ngoặc nhọn. Khi một đồng nghiệp ký thư
+từ một địa chỉ dùng chung như accounts@, thẻ chỉ giữ thông tin của công ty,
+không giữ số điện thoại hay chức danh của đồng nghiệp đó.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Kiểm tra tệp bạn đã đính kèm"
+text = """
+Nhấp vào một tệp đính kèm trong thư bạn đang viết để mở nó trong trình xem
+của Katna, cũng là trình xem dùng để mở tệp nhận được, và chắc chắn đó là
+đúng tệp. Tệp gửi dưới dạng liên kết Google Drive hay OneDrive sẽ mở trên
+ổ lưu trữ.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "Thanh cuộn trong Cài đặt"
+text = """
+Mọi thẻ của Cài đặt đều có thanh cuộn mảnh giống như thư đang mở và Tệp:
+thanh này hiện khi bạn cuộn hoặc trỏ chuột vào trang, và bạn có thể kéo nó.
+"""
+
+["2026-10-02-1248-account-colors"]
+title = "Mỗi tài khoản một màu"
+text = """
+Chọn màu cho từng tài khoản trong Cài đặt > Tài khoản, hoặc nhấp chuột phải
+vào tài khoản trong ngăn thư mục: một trong bảy màu, hoặc bất kỳ màu nào từ
+vòng màu cầu vồng nằm sau chúng. Chấm bên cạnh mỗi người gửi trong Hộp thư
+đến hợp nhất và vòng quanh ảnh của tài khoản sẽ mang màu đó, và trỏ chuột
+vào chấm sẽ hiện tên tài khoản. Mỗi tài khoản bắt đầu với một màu riêng,
+không bao giờ trùng màu của các tab hộp thư đến.
+"""
+
+["2026-10-02-1340-colors-button-mail-only"]
+title = "Nút Hiện màu gốc chỉ có ở nơi cần"
+text = """
+Trong giao diện tối, nút hiện thư với màu gốc của nó giờ trượt đi khi cuộc
+hội thoại hiện dưới dạng Trò chuyện, và trượt trở lại ở chế độ Thư.
+"""
+
+["2026-10-02-1340-logo-and-custom-accent"]
+title = "Logo theo màu của bạn, và màu nhấn tùy thích"
+text = """
+Logo Katna trong cửa sổ giờ mang màu nhấn của bạn, ở cả chế độ sáng lẫn
+tối. Và Cài đặt > Giao diện > Màu nhấn giờ kết thúc bằng một vòng màu: nhấp
+vào đó để chọn bất kỳ màu nhấn nào bạn thích.
+"""
+
+["2026-10-02-1358-empty-reply-no-draft"]
+title = "Thư trả lời trống không để lại thư nháp"
+text = """
+Một thư trả lời bạn đã nhấp vào nhưng chưa viết gì, trong ô trò chuyện hay
+bên dưới một thư, giờ chỉ đơn giản đóng lại khi bạn rời đi. Nó không lưu
+thư nháp và không quay lại khi bạn chuyển giữa Trò chuyện và Thư.
+"""
+
+["2026-10-02-1400-folder-right-click-selects"]
+title = "Nhấp chuột phải sẽ mở thư mục"
+text = """
+Nhấp chuột phải vào một thư mục trong ngăn thư mục giờ sẽ chọn và mở thư
+mục đó trước khi menu hiện ra, để menu rõ ràng tác động lên thư mục bạn
+đang thấy.
+"""
+
+["2026-10-02-1405-viewer-arrows-hover"]
+title = "Mũi tên của trình xem luôn dễ thấy"
+text = """
+Các mũi tên ở hai bên trình xem tệp đính kèm không còn nhạt gần thành màu
+trắng khi bạn trỏ chuột vào. Thay vào đó, chúng chuyển sang màu xám nhạt
+hơn một chút, nên vẫn dễ thấy trên một trang trắng.
+"""
+
+["2026-10-02-1432-account-colour-button"]
+title = "Mỗi tài khoản một nút Màu"
+text = """
+Mỗi tài khoản giờ chỉ hiện màu của chính nó, trên nút Màu trong Cài đặt >
+Tài khoản và trong menu chuột phải của tài khoản. Nhấp vào để chọn một
+trong tám màu hoặc một màu bất kỳ của riêng bạn, ngay tại chỗ bạn nhấp.
+"""
+
+["2026-10-02-1443-reply-at-the-end"]
+title = "Thư trả lời của bạn luôn ở cuối"
+text = """
+Thư trả lời giờ luôn nằm ở cuối cuộc hội thoại, kể cả khi thư mới nhất
+được hiện trước. Chuyển từ Trò chuyện sang Thư sẽ cuộn xuống tới nó, với
+con trỏ ở đúng chỗ bạn để lại.
+"""
+
+["2026-10-02-1451-card-shows-signer"]
+title = "Thẻ hiện người đã ký thư đang mở"
+text = """
+Thẻ thông tin người giờ đọc chữ ký của thư bạn đang mở, chứ không chỉ thư
+mới nhất. Khi một đồng nghiệp ký thư từ một địa chỉ dùng chung như
+accounts@, thẻ sẽ hiện tên, chức danh, số điện thoại của họ và địa chỉ
+công ty lấy từ thư đó.
+"""
+
+["2026-10-02-1510-search-click-away"]
+title = "Nhấp vào bất kỳ đâu để rời ô tìm kiếm"
+text = """
+Nhấp vào khoảng trống trên thanh trên cùng, bên cạnh ô tìm kiếm, giờ sẽ
+đưa bạn ra khỏi ô, giống như khi nhấp vào danh sách thư. Nội dung tìm
+kiếm của bạn vẫn được giữ nguyên.
+"""
+
+["2026-10-02-1515-empty-message-no-draft"]
+title = "Không còn thư nháp trống"
+text = """
+Một thư mới mà bạn đã xóa trống lại trước khi đóng sẽ không còn nằm trong
+Thư nháp, giống như một thư trả lời trống trong cuộc hội thoại.
+"""
+
+["2026-10-02-1513-dark-pages"]
+title = "Trang tối trong trình xem"
+text = """
+Ở chế độ tối, trình xem tệp đính kèm có một nút hình trăng khuyết để hiện
+PDF, tài liệu, trang trình chiếu, bảng tính và tệp văn bản sáng màu thành
+nền tối. Màu sắc vẫn giữ sắc độ, ảnh trong trang được làm dịu đi thay vì bị
+đảo màu như phim âm bản, còn giấy được quét sẽ tối lại như chữ. Katna nhớ
+lựa chọn của bạn cho tệp tiếp theo.
+"""
+
+["2026-10-02-1522-window-corners"]
+title = "Chọn góc và viền cho cửa sổ"
+text = """
+Khi dùng thanh tiêu đề của Katna, Cài đặt > Thử nghiệm giờ có thanh trượt
+Độ bo góc, từ vuông đến tròn, và công tắc Viền với độ đậm riêng. Khi bật
+Tùy chỉnh mức làm mờ, thanh trượt Độ mờ đục giờ cũng quyết định nền cửa sổ
+được làm mờ để lộ ra bao nhiêu.
+"""
+
+["2026-10-02-1535-ctrl-shift-click-select"]
+title = "Chọn thư bằng Ctrl và Shift"
+text = """
+Ctrl+nhấp vào một thư trong danh sách để chọn nó, rồi Ctrl+nhấp thêm để
+chọn thêm thư. Shift+nhấp sẽ chọn mọi thư tính từ thư bạn nhấp lần trước.
+Để mở một thư trong cửa sổ riêng, hãy nhấp chuột phải vào thư và chọn Mở
+trong cửa sổ mới.
+"""
+
+["2026-10-02-1610-frosted-panes"]
+title = "Ngăn, trò chuyện và ô tìm kiếm kính mờ"
+text = """
+Khi bật Làm mờ nền cửa sổ, danh sách thư, thư đang mở và thẻ người liên hệ
+giờ cũng để hiệu ứng mờ xuyên qua, kèm thanh trượt Độ mờ đục của ngăn.
+Khoảng nền phía sau bong bóng trò chuyện hiện hiệu ứng mờ rõ hơn một chút,
+và ô tìm kiếm vẫn giữ kính mờ khi bạn gõ. Mỗi thứ có công tắc riêng trong
+Cài đặt > Thử nghiệm.
+"""
+
+["2026-10-02-1618-fainter-hints"]
+title = "Gợi ý mờ hơn trong ô trống"
+text = """
+Dòng gợi ý màu xám trong một ô trống, như “Trả lời…” bên dưới cuộc trò
+chuyện hay “Tìm trong thư”, giờ nhạt hơn, để không bao giờ trông giống chữ
+bạn đã gõ.
+"""
+
+["2026-10-02-1642-drag-from-empty-space"]
+title = "Di chuyển cửa sổ từ khoảng trống"
+text = """
+Trên Linux, giờ bạn có thể di chuyển cửa sổ bằng cách kéo bất kỳ khoảng
+trống nào ở thanh bên trái, ngăn thư mục hay thanh phía trên thư của bạn,
+chứ không chỉ thanh trên cùng.
+"""
+
+["2026-10-02-1643-space-folds-folders"]
+title = "Phím cách mở và thu gọn thư mục"
+text = """
+Nhấp vào một thư mục có thư mục con, rồi nhấn phím cách để mở hoặc thu gọn
+nó, giống như nhấp vào mũi tên của nó. Sau khi nhấp, các phím mũi tên cũng
+di chuyển trong ngăn thư mục, và Tab chuyển sang danh sách thư.
+"""
+
+["2026-10-02-1646-viewer-more-menu"]
+title = "Nút điều khiển của trình xem vừa cửa sổ hẹp"
+text = """
+Trong cửa sổ hẹp, các nút điều khiển ở cuối trình xem tệp đính kèm giờ nằm
+gọn bên trong. Những nút không vừa sẽ chuyển vào menu ⋮ Thêm: nút xoay
+trước, rồi đến Vừa, rồi Trang tối. Số trang và mức thu phóng được giữ lại
+lâu nhất.
+"""
+
+["2026-10-02-1743-activity-report-fits"]
+title = "Báo cáo hoạt động vừa cửa sổ"
+text = """
+Báo cáo hoạt động giờ nằm gọn trong cửa sổ với lề đều nhau, và cuộn được
+khi cửa sổ thấp, nên những dòng cuối không bao giờ bị cắt mất.
+"""
+
+["2026-10-02-1846-folders-and-labels"]
+title = "Đổi tên, xóa và kéo vào thư mục"
+text = """
+Nhấp chuột phải vào một thư mục bạn đã tạo để đổi tên hoặc xóa nó; khi
+xóa, thư bên trong sẽ được chuyển vào Thùng rác trước. Kéo thư từ danh
+sách thả lên một thư mục để chuyển thư tới đó. Di chuyển tới có ô tìm
+kiếm: gõ để tìm thư mục, hoặc để tạo thư mục mới và chuyển thư vào đó.
+Với Gmail, Gắn nhãn sẽ gắn hoặc gỡ nhãn khỏi thư, và thả thư lên một nhãn
+sẽ gắn nhãn đó.
+"""
+
+["2026-10-02-1928-mail-rules"]
+title = "Quy tắc thư"
+text = """
+Quy tắc tự sắp xếp thư mới: theo người gửi, chủ đề hay từ ngữ, chúng sẽ di
+chuyển, gắn nhãn, gắn dấu sao, chuyển tiếp hoặc tắt tiếng thư. Tạo quy tắc
+trong Cài đặt > Thư mục và quy tắc, hoặc nhấp chuột phải vào một thư và
+chọn Tạo quy tắc…, rồi xem quy tắc khớp với bao nhiêu thư gần đây trước
+khi lưu. Trong Di chuyển tới, đánh dấu “Luôn chuyển thư từ … vào đây” để
+chuyển thư của một người gửi và cả thư sau này của họ chỉ với một lần nhấp.
+"""
+
+["2026-10-02-2017-rules-on-the-server"]
+title = "Quy tắc chạy cả khi máy tính đã tắt"
+text = """
+Quy tắc thư giờ chạy trên Gmail, hoặc trên máy chủ thư của bạn nếu máy chủ
+hỗ trợ quy tắc Sieve, nên thư được sắp xếp cả trên điện thoại và cả khi
+máy tính này đang tắt. Cài đặt > Thư mục và quy tắc cho biết mỗi quy tắc
+chạy ở đâu, và vì sao một quy tắc vẫn nằm trong Katna.
+"""
+
+["2026-10-03-0046-smooth-folded-tabs"]
+title = "Tab thu gọn chuyển đổi mượt mà"
+text = """
+Khi cửa sổ hẹp thu gọn các tab hộp thư đến thành biểu tượng, việc chuyển
+tab không còn giật cục: tab bạn rời đi thu nhỏ về biểu tượng trong khi tên
+của nó mờ dần, còn tab bạn mở lớn dần lên khi tên của nó hiện ra.
+"""
+
+["2026-10-03-0051-read-rows-frosted"]
+title = "Thư đã đọc cũng kính mờ"
+text = """
+Khi bật ngăn kính mờ, thư bạn đã đọc giờ cũng hiện lớp kính mờ phía sau
+danh sách như thư chưa đọc, chỉ khác một chút về sắc độ, thay vì một dải
+màu đặc.
+"""
+
+["2026-10-03-0101-rounder-corners"]
+title = "Góc cửa sổ tròn hơn"
+text = """
+Độ bo góc trong Cài đặt > Thử nghiệm giờ lên tới 32 điểm ảnh, tròn gấp
+đôi trước đây, và bạn có thể gõ con số vào ô bên cạnh thanh trượt.
+"""
+
+["2026-10-03-0113-viewer-round-corners"]
+title = "Trình xem theo góc bo tròn của cửa sổ"
+text = """
+Khi dùng thanh tiêu đề của Katna và góc bo tròn, trình xem tệp đính kèm
+giờ bo tròn hai góc dưới cho khớp với cửa sổ, thay vì hiện góc vuông màu
+xám lấn ra ngoài mép cửa sổ.
+"""
+
+["2026-10-03-0147-chat-go-down"]
+title = "Quay lại thư mới nhất"
+text = """
+Khi đã cuộn lên xa trong một cuộc trò chuyện, một nút tròn sẽ hiện dần ở
+góc dưới bên phải. Nút này đưa bạn lướt về thư mới nhất và đếm số thư đến
+trong lúc đó.
+"""
+
+["2026-10-03-0147-chat-long-mails"]
+title = "Thư dài trong cuộc trò chuyện"
+text = """
+Với bong bóng dài, ảnh của người gửi nằm ở cuối phần bạn đang thấy, còn
+các nút trả lời, ghim và thêm nằm trong phần đang hiển thị. Nhấp chuột phải
+vào phần chữ để dùng tất cả các nút đó.
+"""
+
+["2026-10-03-0147-chat-scroll-bar"]
+title = "Thanh cuộn trong cuộc trò chuyện"
+text = """
+Cuộc trò chuyện có thanh cuộn kín đáo giống như thư đang mở, hiện ra khi
+con trỏ nằm trên đó.
+"""
+
+["2026-10-03-0147-chat-translate"]
+title = "Dịch trong cuộc trò chuyện"
+text = """
+Thư viết bằng ngôn ngữ khác giờ cũng đề nghị bản dịch trong cuộc trò
+chuyện, như trong chế độ Thư. Nhấp chuột phải vào bất kỳ bong bóng nào và
+chọn Dịch để tự dịch, rồi chọn lại để hiện bản gốc.
+"""
+
+["2026-10-03-0150-search-pill-hovers"]
+title = "Hiệu ứng trỏ chuột đều nhau trên thanh tìm kiếm của điện thoại"
+text = """
+Trên điện thoại, nút thư mục và ảnh tài khoản của bạn giờ nằm chính giữa
+hai đầu bo tròn của thanh tìm kiếm, và mọi nút trên thanh đều có cùng một
+vòng tròn khi trỏ chuột, cách đều mép thanh.
+"""
+
+["2026-10-03-0159-starter-rules"]
+title = "Quy tắc có sẵn"
+text = """
+Cài đặt > Thư mục và quy tắc giờ có sẵn các quy tắc, đang tắt: tắt tiếng
+thư quảng cáo, chuyển bản tin vào Đọc sau, biên lai, thông tin giao hàng,
+vé tàu và vé máy bay (IRCTC, Air India, IndiGo và nhiều hơn), mã dùng một
+lần, cảnh báo bảo mật, thư mạng xã hội và lời mời lịch. Bật một quy tắc và
+nó hoạt động cho mọi tài khoản của bạn, tự tạo thư mục như Du lịch khi cần.
+Quy tắc cũng có thể kiểm tra tab hộp thư đến và thư có đến từ một danh sách
+gửi thư hay không.
+"""
+
+["2026-10-03-0200-chat-file-hover"]
+title = "Thẻ tệp nhẹ nhàng hơn trong cuộc trò chuyện"
+text = """
+Tệp trong bong bóng trò chuyện không còn tối lại khi con trỏ nằm trên đó.
+Thẻ nổi lên một chút với sắc màu nhạt, và tên tệp vẫn dễ đọc.
+"""
+
+["2026-10-03-0210-opened-mail-stays-in-view"]
+title = "Thư bạn mở vẫn nằm trong tầm nhìn"
+text = """
+Khi ngăn đọc nằm cạnh danh sách, thư bạn nhấp vào vẫn giữ nguyên vị trí
+trong danh sách khi ngăn mở ra, hoặc danh sách cuộn vừa đủ để hiện trọn
+thư đó. Thư không còn trượt khỏi tầm nhìn, dù bạn mở nó từ danh sách hay
+từ kết quả tìm kiếm.
+"""
+
+["2026-10-03-0212-about-header-stays"]
+title = "Giới thiệu giữ phần đầu trong tầm nhìn"
+text = """
+Khi cuộn trang Giới thiệu, logo lớn giờ thu nhỏ thành logo nhỏ ở góc trên
+bên trái, với Katna, khẩu hiệu và phiên bản bên cạnh, và phần đầu đó đứng
+yên trong khi phần còn lại cuộn bên dưới.
+"""
+
+["2026-10-03-0221-folded-tab-icon-settles"]
+title = "Tab thu gọn dừng lại không xê dịch"
+text = """
+Khi bạn chuyển giữa các tab hộp thư đến đã thu gọn, tab bạn rời đi giờ
+dừng lại đúng chỗ nó đã thu nhỏ, mà biểu tượng không xê dịch một hai điểm
+ảnh khi chuyển động kết thúc.
+"""
+
+["2026-10-03-0228-right-click-another-mail"]
+title = "Chỉ cần nhấp chuột phải một lần"
+text = """
+Khi menu của một thư hay thư mục đang mở, nhấp chuột phải vào thư hay thư
+mục khác giờ sẽ đóng menu đang mở và mở ngay menu mới, thay vì phải nhấp
+chuột phải thêm lần nữa.
+"""
+
+["2026-10-03-0235-rule-editor-fits"]
+title = "Trình sửa quy tắc vừa vặn"
+text = """
+Trong trình sửa quy tắc, từ dài hay danh sách địa chỉ sẽ xuống dòng thay vì
+bị cắt mất, “khớp với mẫu” hiện đầy đủ, và trình sửa nằm gọn trong cửa sổ,
+cuộn được khi có nhiều điều kiện.
+"""
+
+["2026-10-03-0235-soft-button-hover"]
+title = "Hiệu ứng trỏ chuột trên nút nhẹ nhàng hơn"
+text = """
+Trỏ chuột vào một nút tròn giờ làm vòng tròn của nó lớn dần nhẹ nhàng từ
+hai phần ba kích thước và hiện dần lên, còn các nút dạng viên thuốc như Trả
+lời hiện dần chậm hơn một chút. Khi rời chuột, vòng tròn thu lại một chút
+trong lúc mờ đi.
+"""
+
+["2026-10-03-0249-account-ring"]
+title = "Vòng tài khoản rõ hơn"
+text = """
+Vòng màu quanh ảnh của mỗi tài khoản giờ dày hơn, với khoảng cách giữa vòng
+và ảnh rộng hơn một chút, trên thanh trên cùng, trong menu tài khoản và
+trong Cài đặt.
+"""
+
+["2026-10-03-0335-chat-picture-steady"]
+title = "Ảnh đứng yên trong cuộc trò chuyện"
+text = """
+Cuộn quá cuối cuộc trò chuyện, hoặc cuộn trong cuộc trò chuyện không có gì
+để cuộn, không còn làm ảnh người gửi và các nút của bong bóng nhảy lên.
+"""
+
+["2026-10-03-0355-no-hover-while-scrolling"]
+title = "Cuộn danh sách thư êm hơn"
+text = """
+Khi bạn cuộn danh sách thư, những thư lướt qua dưới con trỏ không còn sáng
+lên và hiện nút. Giống như Gmail, thư dưới con trỏ chỉ sáng lên khi bạn
+ngừng cuộn.
+"""
+
+["2026-10-03-0541-rule-rows-drag"]
+title = "Kéo quy tắc như kéo tài khoản"
+text = """
+Trong Cài đặt > Thư mục và quy tắc, kéo một quy tắc giờ nhấc cả hàng của
+nó lên, các quy tắc khác trượt sang nhường chỗ, và nó nằm xuống đúng nơi
+bạn thả, giống như khi sắp xếp lại tài khoản.
+"""
+
+["2026-10-03-0545-chat-go-down-aligned"]
+title = "Nút đi xuống thẳng hàng"
+text = """
+Trong cuộc trò chuyện, nút tròn đưa bạn tới thư mới nhất giờ nằm ngay phía
+trên nút gửi, trên cùng một đường thẳng.
+"""
+
+["2026-10-03-0555-bottom-corners-round"]
+title = "Góc dưới bo tròn vẫn tròn"
+text = """
+Khi dùng thanh tiêu đề của Katna và góc bo tròn, hai góc dưới của cửa sổ
+không còn hiện một mảng nền vuông lấn ra ngoài đường viền bo tròn.
+"""
+
+["2026-10-03-0606-account-dot-only"]
+title = "Danh sách thư gọn gàng hơn"
+text = """
+Các dòng trong hộp thư đến hợp nhất chỉ hiện chấm màu của tài khoản bên
+cạnh người gửi. Trỏ chuột vào chấm để xem thư thuộc tài khoản nào.
+"""
+
+["2026-10-03-0623-windows-updates"]
+title = "Cập nhật trên Windows"
+text = """
+Katna trên Windows giờ tự cập nhật. Ứng dụng kiểm tra phiên bản mới mỗi
+giờ, tải xuống ở chế độ nền và cài đặt khi bạn nhấn Cập nhật, rồi mở lại.
+"""
+
+["2026-10-03-0643-files-wildcard-search"]
+title = "Ký tự đại diện khi tìm trong Tệp"
+text = """
+Trong Tệp, tìm *.pdf giờ sẽ ra mọi tệp PDF, và * cùng ? dùng được ở bất kỳ
+vị trí nào trong tên: invoice*2026* tìm mọi hóa đơn năm 2026. Tính năng này
+dùng được với tệp trong thư của bạn, cũng như trong Google Drive và OneDrive.
+"""
+
+["2026-10-03-0643-linux-package-updates"]
+title = "Cập nhật cho mọi gói Linux"
+text = """
+AppImage và gói tarball Linux giờ tự cập nhật giống như gói Arch. Với gói
+Fedora, Snap, Flatpak hay Nix, Katna báo cho bạn khi có phiên bản mới và
+hiện đúng một lệnh để cài đặt nó, sẵn sàng để sao chép.
+"""
+
+["2026-10-03-0708-copy-codes"]
+title = "Sao chép mã từ thông báo"
+text = """
+Thông báo thư mới có mã đăng nhập hoặc mã xác minh giờ có nút Sao chép cho
+mã đó, còn thông báo có đường liên kết để xác minh hay xác nhận địa chỉ
+của bạn có nút ghi tên trang web mà nó mở. Các nút trên thông báo không còn
+làm biểu tượng Katna nhảy nhót đi theo con trỏ chuột.
+"""
+
+["2026-10-03-0730-contact-card-popover"]
+title = "Thẻ liên hệ trong cửa sổ hẹp"
+text = """
+Khi cửa sổ không đủ chỗ cho ngăn liên hệ, nhấp vào tên hoặc ảnh của một
+người sẽ mở một thẻ ngắn phía trên thư, trỏ vào chỗ bạn đã nhấp. Mở rộng
+cửa sổ và ngăn đầy đủ sẽ thay thế thẻ đó.
+"""
+
+["2026-10-03-0733-compose-icon-turns"]
+title = "Biểu tượng của nút lớn xoay khi bạn chuyển trang"
+text = """
+Chuyển giữa Thư, Lịch, Danh bạ, Việc cần làm và Ghi chú không còn đổi biểu
+tượng trên nút lớn ở đầu thanh bên trái trong một bước nhảy. Biểu tượng cũ
+xoay đi và thu nhỏ trong khi biểu tượng mới xoay vào, cả trên nút của điện
+thoại.
+"""
+
+["2026-10-03-0746-sound-sets"]
+title = "Bộ âm thanh thông báo"
+text = """
+Cài đặt > Thông báo giờ có các bộ âm thanh: Chim, Thiên nhiên, Động vật,
+Côn trùng, Điện tử, Buổi sáng, tiếng chuông của Katna, hoặc âm thanh của
+chính môi trường máy tính. Thư mới hót như chim cổ đỏ trừ khi bạn chọn bộ
+khác. Mỗi sự kiện cũng có thể có âm thanh riêng, hoặc một tệp âm thanh bạn
+chọn.
+"""
+
+["2026-10-03-0750-chat-seen-ticks"]
+title = "Ai đã xem thư của bạn, trong cuộc trò chuyện"
+text = """
+Ở chế độ xem Trò chuyện, dấu tích trên thư bạn gửi có theo dõi sẽ đổi màu
+khi có người mở thư. Bên cạnh đó, một con mắt nhỏ đếm số lần mở và một biểu
+tượng liên kết đếm số đường liên kết đã được nhấp. Đặt con trỏ lên chúng để
+xem ai đã mở thư hay nhấp vào liên kết, như con mắt vẫn hiện ở chế độ xem
+Thư.
+"""
+
+["2026-10-03-0834-drawer-edge-clean"]
+title = "Không còn đường kẻ bên cạnh ngăn thư mục trượt"
+text = """
+Trên điện thoại hoặc máy tính bảng, ngăn thư mục trượt ra từ menu giờ dừng
+sát mép mà không có đường kẻ mảnh nháy lên bên cạnh khi nó dừng lại.
+"""
+
+["2026-10-03-0845-chat-summary-button-hides"]
+title = "Nút tóm tắt lại ẩn được bản tóm tắt"
+text = """
+Ở chế độ xem Trò chuyện, nút lấp lánh ở trên cùng giờ ẩn bản tóm tắt khi
+nó đang hiện, và hiện lại ở lần nhấp tiếp theo, giống như ở chế độ xem Thư.
+"""
+
+["2026-10-03-0915-big-button-glides"]
+title = "Nút lớn lướt mượt giữa các trang"
+text = """
+Khi ngăn thư mục đang mở, chuyển trang không còn làm nút lớn ở trên cùng
+đổi ngay sang chiều rộng mới hay đổi chữ trong một bước nhảy. Nút từ từ
+giãn tới chiều rộng mới trong khi chữ cũ mờ dần lên trên và chữ mới trồi
+lên, cùng lúc với biểu tượng đang xoay.
+"""
+
+["2026-10-03-0945-flat-row-hover"]
+title = "Hiệu ứng trỏ chuột rõ nét hơn trong danh sách thư"
+text = """
+Dòng dưới con trỏ không còn nổi lên với bóng đổ mềm. Thay vào đó, dòng có
+một sắc màu phẳng và đậm hơn một chút, nên mép vẫn sắc nét ở cả chế độ
+sáng và tối.
+"""
+
+["2026-10-03-0959-drawer-bounce-back"]
+title = "Ngăn thư mục trượt vào có độ nảy, mép gọn gàng"
+text = """
+Trên điện thoại hoặc máy tính bảng, ngăn thư mục trượt ra từ menu lại có
+độ nảy nhẹ, và không còn bóng đổ dọc theo mép bên cạnh thanh ứng dụng.
+"""
+
+["2026-10-03-1030-crisp-card-edges"]
+title = "Mép thẻ sắc nét hơn ở màu sáng"
+text = """
+Ở màu sáng, danh sách thư, thư đang mở và các thẻ khác giờ có đường viền
+mảnh, sắc nét và bóng đổ rất ngắn thay vì vệt mờ mềm, nên chúng tách khỏi
+trang rõ ràng như ở màu tối.
+"""
+
+["2026-10-03-1206-matching-choice-chips"]
+title = "Các chip lựa chọn đồng bộ"
+text = """
+Các lựa chọn trong Tùy chọn tìm kiếm, Hoạt động, Hỗ trợ viết bằng AI và
+sổ địa chỉ của một liên hệ giờ đều là một kiểu chip: cùng kích thước ở mọi nơi,
+với dấu tích trên lựa chọn đã chọn.
+"""
+
+["2026-10-03-1453-summary-folds-smoothly"]
+title = "Bản tóm tắt thu gọn mượt mà"
+text = """
+Thu gọn hoặc mở rộng bản tóm tắt của cuộc hội thoại giờ lướt mượt tới
+chiều cao mới, và mũi tên xoay theo thay vì nhảy.
+"""
+
+["2026-10-03-1523-animation-speed"]
+title = "Chọn tốc độ chuyển động"
+text = """
+Cài đặt > Giao diện có Tốc độ hiệu ứng động: theo tốc độ của môi trường máy
+tính, hoặc chọn tốc độ riêng của Katna, từ Rất nhanh tới Rất chậm. Giảm
+chuyển động cũng theo môi trường máy tính, hoặc có thể luôn bật hay luôn
+tắt.
+"""
+
+["2026-10-03-1536-paste-signature-html"]
+title = "Dán HTML của chữ ký"
+text = """
+Cài đặt > Soạn thư > Chữ ký có Dán HTML, dành cho chữ ký được thiết kế trên
+một trang web tạo chữ ký hay trong ứng dụng thư khác. Chữ ký được làm sạch,
+ảnh của nó được tải xuống và gửi kèm bên trong thư, và cửa sổ soạn thư hiện
+nó đúng như khi được gửi đi.
+"""
+
+["2026-10-03-1546-whats-new-header-stays"]
+title = "Có gì mới giữ nguyên tiêu đề"
+text = """
+Khi cuộn Có gì mới, giờ chỉ các điểm nổi bật di chuyển: tiêu đề nằm yên ở
+trên cùng và Đã hiểu nằm yên ở dưới cùng.
+"""
+
+["2026-10-03-1611-menus-fade-out"]
+title = "Menu mờ dần khi đóng"
+text = """
+Menu chuột phải giờ mờ dần khi đóng, thay vì biến mất ngay.
+"""
+
+["2026-10-03-1625-list-stays-put"]
+title = "Danh sách thư đứng yên khi bạn mở thư"
+text = """
+Mở một thư không còn đẩy danh sách xuống một dòng trong những thư mục có
+thư hiện tệp đính kèm. Danh sách giữ đúng vị trí bạn đã cuộn tới.
+"""
+
+["2026-10-03-1628-drawer-top-clean"]
+title = "Không còn đường bóng phía trên ngăn thư mục trượt"
+text = """
+Trên điện thoại hoặc máy tính bảng, ngăn thư mục trượt ra từ menu không còn
+có đường bóng mảnh dọc mép trên, bên dưới thanh tìm kiếm.
+"""
+
+["2026-10-03-1631-toolbar-menus-fade-out"]
+title = "Menu trên thanh công cụ cũng mờ dần"
+text = """
+Các menu bên dưới nút trên thanh công cụ, như Thêm và ô chọn, mờ dần khi
+đóng thay vì biến mất ngay.
+"""
+
+["2026-10-03-1632-settings-by-app"]
+title = "Cài đặt sắp xếp theo ứng dụng"
+text = """
+Cài đặt giờ có danh sách trang ở bên cạnh: Mọi ứng dụng cho những gì mọi
+ứng dụng dùng chung, rồi Thư, Lịch và Tệp cho cài đặt riêng của từng ứng
+dụng, với các trang của Thư mở ra bên dưới mục Thư. Cài đặt mở ở ứng dụng
+bạn đang dùng, và Lịch có những cài đặt đầu tiên ở đó.
+"""
+
+["2026-10-03-1650-popovers-fade-out"]
+title = "Thẻ bật lên mờ dần khi đóng"
+text = """
+Các thẻ nhỏ trỏ vào thứ chúng thuộc về, như thẻ liên hệ, danh sách ai đã
+xem thư, một ngày trong chế độ xem Năm, ngày tìm kiếm tùy chỉnh và bảng
+chọn màu, mờ dần khi đóng thay vì biến mất ngay.
+"""
+
+["2026-10-03-1711-ring-centred"]
+title = "Vòng tài khoản cân đối"
+text = """
+Vòng màu quanh ảnh tài khoản của bạn giờ cách đều ở mọi phía, ở bất kỳ tỷ
+lệ nào, thay vì một bên trông dày hơn một điểm ảnh.
+"""
+
+["2026-10-03-1717-signature-pictures"]
+title = "Ảnh trong chữ ký tải lại được"
+text = """
+Ảnh từ web, như logo trong chữ ký Gmail, giờ tải được trên những mạng ngắt
+kết nối tới Google quá sớm, thay vì chỉ là một ô trống.
+"""
+
+["2026-10-03-1723-import-signatures"]
+title = "Mang chữ ký của bạn vào Katna"
+text = """
+Cài đặt > Soạn thư > Chữ ký > Nhập tìm chữ ký trong Gmail, cũng như trong
+Thunderbird, Evolution và KMail trên máy tính này, kèm cả logo. Đánh dấu
+những chữ ký bạn muốn; chữ ký đã có trong Katna sẽ không được đánh dấu.
+"""
+
+["2026-10-03-1750-hover-folders-clean"]
+title = "Mép gọn gàng cho thư mục mở từ Soạn thư"
+text = """
+Trong cửa sổ cỡ máy tính bảng, ngăn thư mục mở ra khi bạn đặt con trỏ lên
+Soạn thư không còn hiện đường kẻ mảnh dọc mép trên và mép trái.
+"""
+
+["2026-10-03-1757-chat-links"]
+title = "Mở liên kết từ cuộc trò chuyện"
+text = """
+Ở chế độ xem Trò chuyện, đường liên kết trong thư mở được chỉ bằng một lần
+nhấp, như ở chế độ xem Thư: cả liên kết của chính thư, lẫn địa chỉ web và
+địa chỉ thư được viết ra trong nội dung. Đặt con trỏ lên một liên kết để
+xem nó dẫn tới đâu. Thư văn bản thuần ở chế độ xem Thư giờ cũng mở được
+các địa chỉ được viết ra.
+"""
+
+["2026-10-03-1811-folds-glide"]
+title = "Nhóm lịch thu gọn mượt mà"
+text = """
+Các lịch của một tài khoản trong cột bên của Lịch giờ lướt mượt khi mở ra
+và thu lại, còn các mũi tên nhỏ trên những phần thu gọn được (Thêm của thẻ
+liên hệ, người trong cuộc trò chuyện, tài khoản của Hoạt động, ý chính của
+một thư trả lời AI) xoay thay vì lật.
+"""
+
+["2026-10-03-1844-signature-layouts"]
+title = "Chữ ký từ mười hai bố cục"
+text = """
+Cài đặt > Soạn thư > Chữ ký giờ có mười hai bố cục dựng sẵn. Điền tên, số
+điện thoại, logo, ảnh và trang của bạn một lần, chọn bố cục và màu, rồi xem
+chữ ký như người đọc sẽ thấy, ở chế độ sáng, tối hoặc văn bản thuần. Ảnh
+được gửi kèm bên trong thư, nên hiện ở mọi nơi.
+"""
+
+["2026-10-03-1850-copy-about-whats-new"]
+title = "Sao chép từ Giới thiệu và Có gì mới"
+text = """
+Chữ trong Giới thiệu về Katna và Có gì mới giờ có thể được chọn và sao
+chép, như trong trình duyệt: kéo qua chữ, nhấp đúp vào một từ hoặc nhấp ba
+lần vào một đoạn, rồi nhấn Ctrl+C hoặc nhấp chuột phải > Sao chép. Phiên
+bản rất tiện để dán vào báo cáo lỗi.
+"""
+
+["2026-10-03-1904-copy-version"]
+title = "Sao chép phiên bản chỉ với một lần nhấp"
+text = """
+Đặt con trỏ lên phiên bản trong Giới thiệu, Có gì mới hoặc Cài đặt và một
+nút sao chép nhỏ sẽ hiện bên cạnh. Nút này sao chép phiên bản, thời điểm
+nó được tạo và thông tin hệ thống của bạn, sẵn sàng để dán vào báo cáo
+lỗi.
+"""
+
+["2026-10-03-1924-settings-in-window"]
+title = "Cài đặt trở lại bên cạnh thư của bạn"
+text = """
+Cài đặt lại mở bên trong cửa sổ chính, thay cho trang bạn đang xem, với
+danh sách trang được nhóm thành Mọi ứng dụng và từng ứng dụng.
+"""
+
+["2026-10-03-1934-copy-any-text"]
+title = "Sao chép chữ ở mọi nơi"
+text = """
+Chữ cung cấp thông tin giờ có thể được chọn và sao chép ở khắp Katna: tên
+và mô tả cài đặt, thông tin liên hệ và sự kiện, trạng thái tài khoản, thông
+báo lỗi, ghi chú trên trang trống và hộp thoại. Kéo qua chữ hoặc nhấp đúp
+vào một từ, rồi nhấn Ctrl+C hoặc nhấp chuột phải > Sao chép. Các nút và
+hàng để nhấp vẫn như cũ.
+"""
+
+["2026-10-03-2011-calendar-tasks-switch-month-drag"]
+title = "Việc cần làm trên Lịch: hiện hoặc ẩn, kéo trong Tháng"
+text = """
+Danh sách bên của Lịch có ô Việc cần làm bên dưới các lịch của bạn: bỏ
+đánh dấu và việc cần làm sẽ rời khỏi Ngày, Tuần, Tháng và Lịch biểu cho
+tới khi bạn đánh dấu lại. Trong chế độ xem Tháng, giờ bạn có thể kéo một
+việc sang ngày khác; việc đó giữ nguyên giờ, và Hoàn tác sẽ đưa nó về chỗ
+cũ.
+"""
+
+["2026-10-03-2023-tasks-upcoming-completed-sort-select"]
+title = "Sắp tới, Đã hoàn thành, sắp xếp và chọn trong Việc cần làm"
+text = """
+Việc cần làm có hai chế độ xem mới. Sắp tới hiện hai tuần tới theo từng
+ngày, với việc quá hạn ở trên cùng; kéo một việc sang ngày khác để dời nó.
+Đã hoàn thành hiện mọi việc bạn đã đánh dấu xong, theo ngày, và bỏ đánh
+dấu một việc sẽ đưa nó trở lại. Menu ⋮ của mỗi danh sách có thể sắp xếp
+theo ngày, dấu sao hoặc tiêu đề. Ctrl+nhấp hoặc Shift+nhấp nhiều việc để
+hoàn thành, di chuyển, đặt ngày, gắn dấu sao hoặc xóa tất cả cùng lúc.
+"""
+
+["2026-10-03-2040-task-labels-and-files"]
+title = "Nhãn và tệp cho việc cần làm"
+text = """
+Việc cần làm dùng chung nhãn với ghi chú của bạn: thêm nhãn trong chi tiết
+của một việc hoặc gõ #home trong việc mới, và chọn một nhãn ở bên trái để
+xem mọi việc có nhãn đó. Thả một tệp lên một việc để đính kèm, và Thêm vào
+Việc cần làm giữ lại tệp đính kèm của thư. Dấu sao, nhãn và tệp được đồng
+bộ lên Microsoft To Do và máy chủ CalDAV của bạn, còn dấu sao lên cả Zoho.
+"""
+
+["2026-10-03-2102-notes-pictures-reminders-history"]
+title = "Ghi chú: ảnh, lời nhắc và lịch sử"
+text = """
+Ghi chú giờ chứa được ảnh, nhắc bạn vào thời điểm bạn chọn, và giữ lịch sử
+30 ngày để bạn khôi phục. Ctrl+nhấp nhiều ghi chú để ghim, tô màu, gắn nhãn
+hoặc lưu trữ cùng lúc, gõ [[ để liên kết ghi chú này với ghi chú khác, và
+thêm trích dẫn, mã và đường phân cách. Gửi ghi chú dưới dạng thư hoặc lưu
+thành Markdown hay PDF, và khi bật AI, nút lấp lánh sẽ sắp xếp gọn, lập
+danh sách hoặc tóm tắt ghi chú.
+"""
+
+["2026-10-03-2102-quick-capture"]
+title = "Ghi lại ý tưởng từ bất kỳ đâu"
+text = """
+Meta+Alt+T mở một thẻ nhỏ phía trên bất kỳ việc gì bạn đang làm để thêm
+việc cần làm, còn Meta+Alt+N để tạo ghi chú. Gõ “Gọi thợ sửa ống nước fri
+6pm #home” và các chip sẽ hiện ngày, nhãn, danh sách và lời nhắc mà Katna
+hiểu được; nhấp vào một chip để thay đổi. Tab chuyển giữa Việc cần làm và
+Ghi chú, Enter để lưu. Tính năng này cũng có trong menu khay, và trong
+KRunner dưới dạng task: và note:.
+"""
+
+["2026-10-04-0102-soft-hovers"]
+title = "Hiệu ứng trỏ chuột nhẹ nhàng hơn"
+text = """
+Đặt con trỏ lên thanh ứng dụng, ô chọn, một tab và nhiều nút khác giờ làm
+phần tô sáng hiện dần và mờ dần, thay vì bật lên ngay.
+"""
+
+["2026-10-04-0119-cards-lift"]
+title = "Thẻ nổi lên"
+text = """
+Tệp, tệp đính kèm, thư mục Drive, lời mời, bản tóm tắt, ô trả lời và các
+dịch vụ thư trong Thêm tài khoản giờ là những thẻ có cùng đường viền mềm
+và bóng đổ như phần còn lại của Katna, thay vì đường viền phẳng.
+"""
+
+["2026-10-04-0119-notes-select-bar-matches"]
+title = "Ghi chú: thẻ mềm mại và có chuyển động"
+text = """
+Ghi chú giờ dùng cùng kiểu thẻ, chip và thanh như phần còn lại của Katna.
+Thẻ nằm trên bóng đổ mềm và nổi lên nhẹ nhàng dưới con trỏ, ghi chú mới
+hiện dần, ghi chú bị xóa mờ dần, và ghi chú mở ra rồi đóng lại với hiệu
+ứng thu phóng ngắn. Thanh dùng để chọn ghi chú có cùng hình dạng bo tròn
+như “Tạo ghi chú…”, nên chỉ nội dung của nó thay đổi. Tất cả đều theo
+Giảm chuyển động và Tốc độ hiệu ứng động.
+"""
+
+["2026-10-04-0128-header-labels"]
+title = "Mọi nhãn trên thư đang mở"
+text = """
+Thư đang mở giờ hiện tất cả chip bên dưới chủ đề, giống như Gmail: Hộp
+thư đến, Quan trọng, tab hộp thư đến của thư, Có gắn dấu sao, và mọi thư
+mục hay nhãn chứa thư đó. Trỏ vào một chip để gỡ nó bằng dấu ×, kèm
+Hoàn tác.
+"""
+
+["2026-10-04-0150-settings-own-list"]
+title = "Cài đặt có cả cửa sổ cho riêng mình"
+text = """
+Khi Cài đặt đang mở, ngăn thư mục sẽ thu gọn lại, nên bạn chỉ thấy danh
+sách trang của Cài đặt bên cạnh trang bạn đã chọn. Ngăn thư mục sẽ quay
+lại khi bạn rời đi.
+"""
+
+["2026-10-04-0154-summary-pill"]
+title = "Nút tóm tắt gọn gàng hơn, và phần đầu đứng yên"
+text = """
+Ở chế độ xem Trò chuyện, nút lấp lánh của bản tóm tắt giờ nằm trong một
+viên thuốc nhỏ màu xám riêng bên cạnh nút chuyển Trò chuyện và Thư, và sáng
+trắng lên khi bản tóm tắt đang hiện. Bản tóm tắt lướt mượt khi mở ra và
+đóng lại thay vì hiện ra ngay. Ở cả chế độ xem Thư và Trò chuyện, phần đầu
+giờ nằm yên ở trên cùng trong khi các thư cuộn bên dưới, và các hàng của
+danh sách thư cũng trượt dưới thanh trên cùng như vậy, có kính mờ khi bật
+Làm mờ. Cài đặt > Thử nghiệm có công tắc Tiêu đề kính mờ để giữ chúng đặc.
+"""
+
+["2026-10-04-0204-tasks-motion"]
+title = "Việc cần làm có chuyển động"
+text = """
+Đánh dấu xong một việc sẽ tô kín vòng tròn, gạch ngang tiêu đề và thu gọn
+hàng lại. Việc mới và việc đã xóa trượt vào và trượt ra, việc được sắp xếp
+lại lướt tới vị trí mới, và thẻ danh sách nổi lên một chút khi bạn trỏ vào.
+"""
+
+["2026-10-04-0225-shortcuts-dialog"]
+title = "Xem nhanh phím tắt"
+text = """
+Trợ giúp > Phím tắt, hoặc phím ?, giờ hiện mọi phím tắt trong một cửa sổ
+nhỏ phía trên thư của bạn, với ô để tìm phím tắt. Bạn vẫn đổi phím trong
+Cài đặt > Phím tắt.
+"""
+
+["2026-10-04-0305-unified-leave-out"]
+title = "Bỏ một hộp thư đến khỏi Tất cả tài khoản"
+text = """
+Nhấp chuột phải vào hộp thư đến của một tài khoản dưới Tất cả tài khoản và
+chọn Bỏ khỏi Hộp thư đến hợp nhất: thư của nó không còn được đưa vào Hộp
+thư đến hợp nhất, nhưng hàng đó vẫn còn và mở hộp thư đến ấy. Nhấp vào con
+mắt của nó để đưa trở lại. Trong Cài đặt > Hộp thư đến, bạn cũng có thể bỏ
+cả một tài khoản khỏi Tất cả tài khoản.
+"""
+
+["2026-10-04-0310-leave-account-out"]
+title = "Bỏ một tài khoản khỏi một ứng dụng"
+text = """
+Cài đặt giờ có một trang cho Danh bạ, Việc cần làm và Ghi chú, và mỗi trang
+này cùng với Tệp liệt kê các tài khoản của bạn kèm một công tắc. Tắt một
+công tắc để bỏ tài khoản đó khỏi ứng dụng, và lời nhắc của nó cũng im lặng.
+Các mục của tài khoản vẫn tiếp tục đồng bộ, nên chúng quay lại ngay khi bạn
+bật lại.
+"""
+
+["2026-10-04-0320-calendar-leave-account-out"]
+title = "Bỏ một tài khoản khỏi Lịch"
+text = """
+Cài đặt > Lịch cũng liệt kê các tài khoản của bạn kèm một công tắc. Tắt một
+tài khoản và các lịch, sự kiện cùng việc cần làm của nó sẽ rời khỏi Lịch,
+và các sự kiện của nó không còn nhắc bạn. Tài khoản vẫn tiếp tục đồng bộ,
+nên nó quay lại ngay khi bạn bật lại.
+"""
+
+["2026-10-04-0327-contact-card-points-right"]
+title = "Thẻ liên hệ mở ngay chỗ bạn nhấp"
+text = """
+Trong cửa sổ hẹp, thẻ liên hệ mở ra từ tên hoặc ảnh của một người giờ trỏ
+đúng vào đó, ở cả chế độ xem Trò chuyện lẫn chế độ xem Thư, và mở mượt mà
+ngay từ lần đầu: Katna bắt đầu đọc thông tin của người đó ngay khi con trỏ
+dừng lên trên. Nhấp lần nữa vào cùng tên hoặc ảnh đó sẽ đóng thẻ.
+"""
+
+["2026-10-04-0336-files-card-corners"]
+title = "Thẻ tệp nhẹ nhàng hơn"
+text = """
+Thẻ tệp trong Tệp và bên dưới thư giờ nằm trên bóng đổ mềm và nổi lên một
+chút khi bạn trỏ vào. Bản xem trước vẫn giữ nguyên: kích thước tệp hiện
+dần ở góc trên bên trái và các nút ở góc trên bên phải, trên nền kính mờ,
+nên không có gì bị nhảy.
+"""
+
+["2026-10-04-0345-pane-tops-whole"]
+title = "Mép trên của ngăn không còn bị cắt"
+text = """
+Khi dùng thanh tiêu đề của Katna, mép trên và bóng đổ mềm của danh sách
+thư, thư đang mở và các ngăn bên giờ hiện đầy đủ khi cửa sổ chưa phóng
+to, thay vì trông như bị cắt phẳng dưới thanh trên cùng.
+"""
+
+["2026-10-04-0354-account-offline"]
+title = "Chuyển một tài khoản sang ngoại tuyến"
+text = """
+Nhấp chuột phải vào một tài khoản và chọn Chuyển sang ngoại tuyến, trong
+một giờ hoặc tới ngày mai nếu bạn muốn. Katna ngừng kết nối tới tài khoản
+đó, và một đám mây bị gạch chéo hiện bên cạnh số thư và trên ảnh của bạn.
+Thư vẫn ở đây để đọc, còn những gì bạn lưu trữ, xóa hay gửi trong lúc đó
+sẽ được thực hiện khi bạn nhấp vào đám mây để trực tuyến trở lại. Cài đặt >
+Tài khoản có công tắc Đã kết nối cho từng tài khoản, và thẻ tài khoản có
+thể chuyển mọi tài khoản sang ngoại tuyến cùng lúc.
+"""
+
+["2026-10-04-0420-resize-steady"]
+title = "Đứng yên khi đổi kích thước"
+text = """
+Khi dùng thanh tiêu đề của Katna trên Wayland, nội dung cửa sổ giờ đứng yên
+trong khi bạn kéo một cạnh để đổi kích thước, thay vì rung lắc.
+"""
+
+["2026-10-04-0531-turn-apps-off"]
+title = "Tắt những ứng dụng bạn không dùng"
+text = """
+Cài đặt › Ứng dụng có công tắc cho Lịch, Danh bạ, Việc cần làm, Ghi chú
+và Tệp, và nhấp chuột phải vào một ứng dụng trên thanh ứng dụng sẽ có mục
+Tắt. Ứng dụng đã tắt sẽ rời khỏi thanh ứng dụng và phím tắt của nó, và
+không có gì thay đổi trên tài khoản của bạn. Khi chỉ bật Thư, thanh ứng
+dụng biến mất và Katna chỉ còn là một ứng dụng thư.
+"""
+
+["2026-10-04-0635-remove-app-copy"]
+title = "Giải phóng dung lượng của ứng dụng đã tắt"
+text = """
+Tắt một ứng dụng trong Cài đặt › Ứng dụng giờ đề nghị gỡ bản sao của nó
+trên máy tính này. Không có gì thay đổi trên tài khoản của bạn, và bật lại
+ứng dụng sẽ tải nó xuống lần nữa. Tài khoản mới chỉ được hỏi những gì các
+ứng dụng bạn dùng cần đến.
+"""
+
+["2026-10-04-1100-account-problems"]
+title = "Xem và khắc phục sự cố tài khoản ở một nơi"
+text = """
+Khi một tài khoản cần bạn xử lý, một dòng ở đầu danh sách thư sẽ cho biết
+chuyện gì đã xảy ra bằng lời lẽ dễ hiểu, kèm cách khắc phục bên cạnh. Khi
+mật khẩu đã đổi, một thẻ nhỏ sẽ mở ra để bạn gõ mật khẩu mới, và Katna kiểm
+tra nó trước khi lưu. Một dấu màu hổ phách cũng đánh dấu tài khoản trong
+ngăn thư mục và trên ảnh của bạn. Khi bạn mất kết nối, một dòng kín đáo
+cho biết bạn đang ngoại tuyến và thư bạn gửi sẽ chờ tới khi bạn kết nối
+lại.
+"""
+
+["2026-10-04-1110-contact-card-placeholder"]
+title = "Thẻ liên hệ mở ra trọn vẹn"
+text = """
+Khi thông tin của một người cần chút thời gian để tải, thẻ liên hệ bật lên
+trên tên hoặc ảnh giờ mở ở kích thước thông thường với những dòng mờ tại
+chỗ thông tin sẽ hiện, rồi điền thông tin vào và từ từ co giãn cho vừa,
+thay vì mở nhỏ rồi đột ngột cao lên.
+"""
+
+["2026-10-04-1144-account-problems-settings"]
+title = "Sự cố tài khoản cũng hiện trong Cài đặt"
+text = """
+Cài đặt › Tài khoản giờ cho biết tài khoản đang gặp vấn đề gì ngay dưới
+tên của nó, chẳng hạn mật khẩu bị từ chối, kèm cách khắc phục ngay tại đó.
+"""
+
+["2026-10-04-1147-subject-scrolls-again"]
+title = "Chủ đề lại cuộn cùng thư"
+text = """
+Ở chế độ xem Thư, chủ đề lại cuộn đi cùng các thư, dưới một thanh công cụ
+đơn giản. Ở chế độ xem Trò chuyện, thanh công cụ gộp vào phần đầu được
+ghim, nên các bong bóng trượt dưới cả hai, có kính mờ khi bật Làm mờ. Thanh
+trên cùng của danh sách thư giờ giữ góc bo tròn của thẻ, và khi tắt Tiêu
+đề kính mờ, các hàng không còn lộ qua thanh đó. Trong cửa sổ cỡ điện thoại,
+hai góc dưới cũng được bo tròn.
+"""
+
+["2026-10-04-1223-outbox"]
+title = "Hộp thư đi cho thư chưa gửi được"
+text = """
+Thư không gửi được giờ chờ trong Hộp thư đi bên dưới Đã gửi, mục này chỉ
+hiện khi có thư đang chờ. Mỗi thư cho biết lý do bằng lời lẽ dễ hiểu, kèm
+Thử lại, Sửa và Xóa. Thư bạn gửi trong lúc mật khẩu của tài khoản đã đổi
+hoặc phiên đăng nhập đã hết sẽ chờ ở đó và được gửi đi ngay khi bạn khắc
+phục, thay vì thất bại.
+"""
+
+["2026-10-04-1246-refused-changes"]
+title = "Thay đổi bị máy chủ từ chối không còn bị hoàn tác âm thầm"
+text = """
+Khi máy chủ thư liên tục từ chối một thay đổi, chẳng hạn chuyển thư vào
+một thư mục đã bị xóa ở nơi khác, Katna đưa mọi thứ về như cũ và giờ báo
+cho bạn bằng lời lẽ dễ hiểu, kèm Chi tiết để xem câu trả lời của chính máy
+chủ.
+"""
+
+["2026-10-04-1250-phone-scroll-steady"]
+title = "Danh sách đứng yên trong cửa sổ cỡ điện thoại"
+text = """
+Cuộn nhanh danh sách thư trong cửa sổ cỡ điện thoại không còn làm danh
+sách rung lên xuống trong khi các tab trượt đi.
+"""
+
+["2026-10-04-1309-needs-you-notifications"]
+title = "Báo một lần khi tài khoản hoặc thư cần bạn"
+text = """
+Khi máy chủ thư từ chối mật khẩu của bạn, một phiên đăng nhập hết hạn hoặc
+một thư không gửi được, một thông báo trên màn hình sẽ báo cho bạn một lần,
+kể cả khi Katna Mail đang đóng. Nút của thông báo mở cách khắc phục: Mật
+khẩu mới, Đăng nhập hoặc Hộp thư đi. Chú giải của biểu tượng khay liệt kê
+những gì đang chờ bạn.
+"""
+
+["2026-10-04-1510-dialogs-fit-phone"]
+title = "Hộp thoại vừa cửa sổ cỡ điện thoại"
+text = """
+Có gì mới, Giới thiệu, Cập nhật, Phím tắt và các hộp thoại khác giờ nằm gọn
+trong cửa sổ hẹp có khung của Katna, thay vì tràn ra ngoài mép.
+"""
+
+["2026-10-04-1511-solid-mail-list-bar"]
+title = "Không còn gì trượt dưới các thanh"
+text = """
+Các thư trong danh sách thư, thư đang mở và bong bóng trò chuyện giờ bắt
+đầu bên dưới thanh của chúng thay vì trượt dưới thanh, và các thanh giữ
+nền đặc. Công tắc Tiêu đề kính mờ đã được bỏ, cùng với những góc kỳ lạ mà
+nó gây ra.
+"""
+
+["2026-10-04-1525-menus-inside-window"]
+title = "Menu và chú giải nằm trong cửa sổ"
+text = """
+Khi dùng khung cửa sổ của Katna, menu chuột phải, thẻ bật lên và chú giải
+ở gần mép không còn tràn ra phần bóng đổ của cửa sổ; chúng nằm gọn bên
+trong.
+"""
+
+["2026-10-04-1525-unified-stacked-picture"]
+title = "Tất cả tài khoản hiện mọi ảnh"
+text = """
+Khi Tất cả tài khoản đang mở, ảnh ở góc trên bên phải giờ là một chồng ảnh
+nhỏ của các tài khoản, với +N cho phần còn lại, để bạn phân biệt được với
+một tài khoản riêng chỉ trong nháy mắt. Trỏ vào đó và các ảnh sẽ từ từ
+tách ra.
+"""
+
+["2026-10-04-2338-all-accounts-row"]
+title = "Quay lại Tất cả tài khoản từ menu tài khoản"
+text = """
+Menu tài khoản giờ bắt đầu bằng Tất cả tài khoản, kèm số thư chưa đọc, nên
+chỉ một lần nhấp là đưa bạn trở lại sau khi chọn một tài khoản riêng. Menu
+đánh dấu mục đang mở bằng dấu tích, và cuộn chuột trên ảnh cũng dừng ở Tất
+cả tài khoản.
+"""
+
+["2026-10-05-1257-service-starts-again"]
+title = "Katna tự khởi động dịch vụ nền"
+text = """
+Nếu dịch vụ đồng bộ thư và hiện biểu tượng khay không chạy, Katna Mail sẽ
+tự khởi động lại nó. Không cần dùng terminal. Nếu dịch vụ vẫn không khởi
+động được, một dòng phía trên thư của bạn sẽ cho biết, kèm Khởi động lại và
+thông tin chi tiết để sao chép vào báo cáo.
+"""
+
+["2026-10-05-1430-stuck-window-replaced"]
+title = "Katna Mail vẫn mở dù một bản sao bị treo"
+text = """
+Nếu Katna Mail ngừng phản hồi ở chế độ nền, mở lại ứng dụng giờ sẽ đóng
+bản sao bị treo và mở một cửa sổ mới, thay vì không làm gì cả.
+"""
+
+["2026-10-05-1605-read-receipts-as-ticks"]
+title = "Xác nhận đã đọc không còn hiện như thư"
+text = """
+Khi ứng dụng thư của ai đó gửi xác nhận đã đọc cho thư bạn đã gửi, xác
+nhận đó không còn hiện như một thư mới trong cuộc hội thoại. Thư của bạn có
+dấu tích màu xanh và một dòng cho biết ai đã đọc và vào lúc nào, còn xác
+nhận được đánh dấu là đã đọc, nên không làm phiền bạn bằng thông báo. Nó
+vẫn nằm trong hộp thư và trong kết quả tìm kiếm.
+"""
+
+["2026-10-05-1620-reply-tools-fold"]
+title = "Công cụ trả lời vừa cửa sổ hẹp"
+text = """
+Khi ngăn đọc hoặc cửa sổ hẹp, thanh định dạng và hàng bên cạnh Gửi không
+còn tràn ra ngoài thư trả lời. Những công cụ không vừa sẽ chuyển vào ⋮
+Thêm, công cụ ít dùng nhất trước, và trên điện thoại, nút Gửi chỉ hiện
+biểu tượng.
+"""
+
+["2026-10-05-1637-read-receipts-out-of-the-list"]
+title = "Xác nhận đã đọc không nằm trong danh sách thư"
+text = """
+Xác nhận đã đọc cho thư bạn đã gửi không còn hiện trong danh sách thư dưới
+dạng một dòng “Đã đọc: …”. Cuộc hội thoại giữ nguyên chủ đề và phần xem
+trước của nó, và thư bạn đã gửi hiện các dấu tích.
+"""
+
+["2026-10-05-1640-windows-frost"]
+title = "Kính mờ trên Windows"
+text = """
+Menu, thẻ bật lên, hộp thoại, thanh của trình xem và các ngăn kính mờ giờ
+cũng làm mờ những gì bên dưới trên Windows, với cùng các cài đặt Mức làm mờ
+và Độ mờ đục như trên Linux. Bật hoặc tắt trong Cài đặt, Thử nghiệm, Menu
+và hộp thoại kính mờ.
+"""
+
+["2026-10-06-0156-phone-activity"]
+title = "Hoạt động trên điện thoại"
+text = """
+Trong cửa sổ cỡ điện thoại, Hoạt động giờ nằm trên thanh tìm kiếm bên cạnh
+ảnh tài khoản của bạn, kèm số lượt mở và nhấp mới. Danh sách của nó nằm
+gọn trong cửa sổ.
+"""
+
+["2026-10-06-0215-pin-bar-no-jump"]
+title = "Ghim thư không làm cuộc trò chuyện nhảy"
+text = """
+Ở chế độ xem Trò chuyện, ghim hoặc bỏ ghim một thư không còn làm cuộc hội
+thoại nhảy, kể cả ở cuối cùng: thanh ghim hiện dần phía trên và các thư vẫn
+giữ nguyên vị trí.
+"""
+
+["2026-10-06-0942-fainter-row-marks"]
+title = "Ô đánh dấu và dấu sao kín đáo hơn"
+text = """
+Trong danh sách thư, ô đánh dấu, dấu sao và dấu Quan trọng của một dòng sẽ
+mờ hơn cho tới khi bạn trỏ vào dòng đó. Dấu sao và dấu đã đặt vẫn hiện như
+trước.
+"""
+
+["2026-10-06-1448-activity-beside-calendar"]
+title = "Hoạt động nằm cùng các nút khác"
+text = """
+Trong cửa sổ rộng hơn, nút Hoạt động giờ nằm ở bên phải cùng với Lịch và
+Cài đặt. Khi Tất cả tài khoản đang mở, ảnh các tài khoản tách ra khi trỏ
+chuột vào mà không làm xê dịch các nút bên cạnh.
+"""
+
+["2026-10-06-1524-search-fills-bar"]
+title = "Ô tìm kiếm dài hơn"
+text = """
+Trong cửa sổ rộng, ô tìm kiếm giờ kéo dài tới các nút ở bên phải thay vì
+dừng giữa chừng. Tùy chọn tìm kiếm mở ra ở chính giữa bên dưới ô và giữ
+chiều rộng vừa phải.
+"""
+
+["2026-10-07-0110-follow-up-for-you"]
+title = "Thư theo dõi tự gửi đi"
+text = """
+Trong menu bên cạnh Gửi, Theo dõi nếu không có trả lời giờ có thể thay bạn
+gửi một thư theo dõi ngắn khi không ai trả lời: viết một lần, chọn thời
+điểm, và chọn có thử thêm một lần nữa hay không. Thư được gửi vào ngày
+thường trong giờ làm việc, dừng ngay khi có người trả lời (thư trả lời tự
+động không được tính), và chờ bạn thay vì gửi muộn nếu máy tính của bạn đã
+tắt. Một chip bên cạnh Gửi cho biết những gì đã đặt. Hoặc chỉ dùng như một
+lời nhắc, giờ với bất kỳ ngày nào bạn chọn.
+"""
+
+["2026-10-07-0117-drawer-logo"]
+title = "Logo Katna trong ngăn kéo"
+text = """
+Trên điện thoại, ngăn kéo chứa thư mục của bạn giờ hiện logo Katna bên cạnh
+tên, theo màu nhấn của bạn, thay vì một phong bì đơn điệu. Trên máy tính
+bảng, nơi thanh trên cùng đã hiện chúng, ngăn kéo bắt đầu bằng các thư mục
+của bạn.
+"""
+
+["2026-10-07-0118-clock-popup"]
+title = "Đồng hồ trên màn hình gọn gàng hơn"
+text = """
+Trong Katna Digital Clock, các múi giờ của bạn giờ nằm bên cạnh ngày ở trên
+cùng, và danh sách Việc cần làm thu gọn được khi nhấp vào tiêu đề của nó.
+Thêm sự kiện sẽ mở một cửa sổ Sự kiện mới nhỏ thay vì cả ứng dụng. Việc
+cần làm mới không còn hiện hai lần sau khi đồng bộ bị trục trặc.
+"""
+
+["2026-10-07-0232-mcp-server"]
+title = "Cho trợ lý AI dùng thư của bạn"
+text = """
+Cài đặt › Máy chủ MCP cho phép các trợ lý AI trên máy tính này, như Claude
+Desktop, Claude Code và LM Studio, tìm và đọc thư của bạn, và lưu thư nháp
+để bạn kiểm tra. Tính năng này tắt cho tới khi bạn bật. Chọn những tài
+khoản mà trợ lý được thấy, sao chép nội dung cần dán vào trợ lý của bạn, và
+xem gần đây chúng đã làm gì. Trợ lý không bao giờ gửi, xóa hay di chuyển
+thư.
+"""
+
+["2026-10-07-0359-waiting-for-reply"]
+title = "Xem thư nào đang chờ trả lời"
+text = """
+Thư bạn gửi kèm thư theo dõi hoặc lời nhắc được liệt kê trong Đang chờ,
+bên dưới Đã gửi. Các dòng của chúng hiện một chip cho biết điều gì sẽ xảy
+ra tiếp theo và khi nào, trong Đang chờ và cả trong Hộp thư đến. Mở một thư
+để dời thư theo dõi sang thời điểm khác, gửi ngay, hoặc dừng lại.
+"""
+
+["2026-10-07-0505-follow-ups-in-chats"]
+title = "Thư theo dõi ở chế độ xem Trò chuyện"
+text = """
+Ở chế độ xem Trò chuyện, thư theo dõi đang chờ gửi hiện thành một bong bóng
+mờ ở cuối cuộc trò chuyện, kèm Sửa, Gửi ngay và Dừng. Để đặt thư theo dõi,
+hãy nhấp chuột phải hoặc nhấn giữ Gửi và chọn Theo dõi nếu không có trả
+lời.
+"""
+
+["2026-10-07-0603-remind-me"]
+title = "Nhắc tôi về bất kỳ thư nào"
+text = """
+Nhấn H trên một thư, hoặc dùng Nhắc tôi bên cạnh Tạm ẩn, để được nhắc vào
+một thời điểm trong khi thư vẫn nằm nguyên chỗ cũ. Nếu thư nói có việc cần
+xong trước một ngày nào đó, Katna sẽ đề xuất buổi sáng hôm trước. Lời nhắc
+là việc cần làm trong Việc cần làm, được liệt kê trong Lời nhắc và hiện
+trên dòng của thư. B để tạm ẩn.
+"""
+
+["2026-10-07-0718-snooze-extras"]
+title = "Tạm ẩn biết khi có người trả lời"
+text = """
+Cuộc hội thoại đang tạm ẩn sẽ quay lại ngay khi có người viết vào đó.
+Trong Chọn ngày và giờ, bạn có thể gõ “tue 3pm” hoặc “in 2 hours”. Thông
+báo thư mới có thể tạm ẩn thư trong một giờ hoặc tới ngày mai.
+"""
+
+["2026-10-07-0802-your-snooze-times"]
+title = "Tạm ẩn theo cách của bạn"
+text = """
+Đặt ý nghĩa của Cuối ngày hôm nay, Ngày mai, Cuối tuần này và Tuần sau, và
+thêm một thời điểm của riêng bạn, trong Cài đặt > Hộp thư đến. Đã tạm ẩn
+liệt kê thư theo thời điểm chúng quay lại. Trên điện thoại, vuốt một dòng
+sang trái để tạm ẩn.
+"""
+
+["2026-10-07-0913-pick-date-in-place"]
+title = "Chọn ngày ngay chỗ bạn nhấp"
+text = """
+Chọn ngày và giờ giờ trượt vào ngay trong menu tạm ẩn và Nhắc tôi, thay vì
+một hộp ở giữa cửa sổ. Mũi tên quay lại đưa bạn về danh sách thời điểm.
+"""
+
+["2026-10-07-0953-nudges"]
+title = "Câu hỏi chưa ai trả lời sẽ quay lại"
+text = """
+Thư bạn gửi có đặt câu hỏi mà sau ba ngày chưa được trả lời sẽ quay lại
+đầu Hộp thư đến với dòng “Đã gửi 3 ngày trước. Gửi thư theo dõi?”. Nhấp
+vào đó để gửi thư theo dõi, hoặc nhấp dấu x để cất đi. Có thể tắt tính
+năng này trong Cài đặt > Hộp thư đến.
 """

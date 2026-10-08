@@ -14,6 +14,10 @@ notify-unknown-sender = 알 수 없는 보낸사람
 notify-snooze-back = 다시 알림 시간이 되었습니다
 notify-no-reply = 아직 답장 없음
 notify-no-reply-to = “{ $subject }”에 아무도 답장하지 않았습니다.
+notify-follow-up-sent = 후속 메일을 보냈습니다
+notify-follow-up-sent-to = “{ $subject }”에 아무도 답장하지 않아 Katna가 후속 메일을 보냈습니다.
+notify-follow-up-waiting = 후속 메일을 보내지 않음
+notify-follow-up-waiting-to = 이 컴퓨터가 꺼져 있는 동안 보낼 시간이 지났습니다. “{ $subject }”이(가) 받은편지함으로 돌아왔습니다.
 
 ## Open and click tracking (only for mail sent with "Track opens and clicks")
 
@@ -25,6 +29,19 @@ notify-tracking-clicked = { $who }님이 { $subject } 메일의 링크를 클릭
 notify-update-ready = Katna Mail을 업데이트할 수 있습니다
 notify-update-ready-body = 버전 { $version }을(를) 다운로드했습니다. 업데이트를 누르면 설치되고 Katna Mail이 다시 시작됩니다.
 notify-update = 업데이트
+
+## Something needs the user, shown once per problem
+
+notify-signed-out = 다시 로그인하세요
+notify-signed-out-body = { $provider }에서 { $address }의 Katna 로그인을 해제했습니다. 메일 동기화가 중지되었습니다.
+notify-sign-in = 로그인
+notify-password-refused = 비밀번호가 거부됨
+notify-password-refused-body = 메일 서버가 { $address }의 비밀번호를 거부했습니다. 비밀번호가 바뀌었을 수 있습니다.
+notify-new-password = 새 비밀번호
+notify-not-sent = “{ $subject }”을(를) 보내지 못했습니다
+notify-not-sent-no-subject = 메일을 보내지 못했습니다
+notify-not-sent-body = 보낼편지함에서 이유를 확인할 수 있습니다.
+notify-open-outbox = 보낼편지함 열기
 
 ## Reminders of calendar events
 
@@ -55,6 +72,12 @@ notify-reply-all = 전체답장
 notify-mark-read = 읽음으로 표시
 notify-mark-all-read = 모두 읽음으로 표시
 notify-archive = 보관처리
+notify-snooze-hour = 1시간 후 다시 알림
+notify-snooze-tomorrow = 내일
+notify-copy-code = { $code } 복사
+notify-link-verify = { $domain }에서 인증
+notify-link-confirm = { $domain }에서 확인
+notify-link-activate = { $domain }에서 활성화
 
 ## After Archive on a notification: a short note in the same place
 
@@ -63,6 +86,11 @@ notify-archived-count = { $count ->
    *[other] 메일 { $count }개를 받은편지함에서 옮겼습니다
 }
 notify-undo = 실행취소
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = 코드를 복사했습니다
+notify-code-not-copied = 코드를 복사할 수 없습니다
 
 ## After a reply typed into a notification: a note in the same place while
 ## it waits for the undo time

@@ -272,6 +272,29 @@ macro_rules! pim_interface {
                     .0)
             }
 
+            async fn rename_folder(&self, folder: i64, new_name: &str) -> fdo::Result<()> {
+                Ok(self
+                    .daemon
+                    .rename_folder(FolderId(folder), new_name)
+                    .await?)
+            }
+
+            async fn delete_folder(&self, folder: i64) -> fdo::Result<u32> {
+                Ok(self.daemon.delete_folder(FolderId(folder)).await?)
+            }
+
+            async fn set_labels(
+                &self,
+                messages: Vec<i64>,
+                add: Vec<i64>,
+                remove: Vec<i64>,
+            ) -> fdo::Result<()> {
+                let folders = |ids: &[i64]| ids.iter().map(|&id| FolderId(id)).collect::<Vec<_>>();
+                Ok(self
+                    .daemon
+                    .set_labels(&ids(&messages), &folders(&add), &folders(&remove))?)
+            }
+
             async fn move_messages(&self, messages: Vec<i64>, folder: i64) -> fdo::Result<()> {
                 Ok(self
                     .daemon
@@ -296,6 +319,28 @@ macro_rules! pim_interface {
 
             async fn set_follow_up(&self, id: i64, after: i64) -> fdo::Result<()> {
                 Ok(self.daemon.set_follow_up(id, after)?)
+            }
+
+            async fn set_follow_up_mail(
+                &self,
+                id: i64,
+                after: i64,
+                again: i64,
+                mail: Vec<u8>,
+            ) -> fdo::Result<()> {
+                Ok(self.daemon.set_follow_up_mail(id, after, again, &mail)?)
+            }
+
+            async fn send_follow_up_now(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.send_follow_up_now(id)?)
+            }
+
+            async fn move_follow_up(&self, id: i64, at: i64) -> fdo::Result<()> {
+                Ok(self.daemon.move_follow_up(id, at)?)
+            }
+
+            async fn dismiss_nudge(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.dismiss_nudge(id)?)
             }
 
             async fn queue_send(
@@ -354,6 +399,30 @@ macro_rules! pim_interface {
             async fn delete_template(&self, id: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.delete_template(id)?)
             }
+
+            // ---- Mail rules (docs/ARCHITECTURE.md §9.4) ----
+
+            async fn save_rule(&self, json: String) -> fdo::Result<i64> {
+                Ok(self.daemon.save_rule(&json)?)
+            }
+
+            async fn delete_rule(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.delete_rule(id)?)
+            }
+
+            async fn reorder_rules(&self, ids: Vec<i64>) -> fdo::Result<()> {
+                Ok(self.daemon.reorder_rules(&ids)?)
+            }
+
+            async fn set_rule_enabled(&self, id: i64, on: bool) -> fdo::Result<()> {
+                Ok(self.daemon.set_rule_enabled(id, on)?)
+            }
+
+            async fn apply_rule(&self, id: i64, days: u32) -> fdo::Result<u32> {
+                Ok(self.daemon.apply_rule(id, days)?)
+            }
+
+            // ---- End of mail rules ----
 
             async fn save_contact(
                 &self,
@@ -417,6 +486,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.undo_send(id)?)
             }
 
+            async fn retry_send(&self, id: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.retry_send(id)?)
+            }
+
             async fn discard_send(&self, id: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.discard_send(id)?)
             }
@@ -432,6 +505,11 @@ macro_rules! pim_interface {
             /// Reads the settings file again (after Katna Mail saved it).
             async fn reload_config(&self) -> fdo::Result<()> {
                 Ok(self.daemon.reload_config()?)
+            }
+
+            /// Deletes the local copy of an app turned off.
+            async fn forget_app(&self, app: String) -> fdo::Result<()> {
+                Ok(self.daemon.forget_app(&app)?)
             }
 
             /// Whether the daemon saves data as on a metered network: from
@@ -647,6 +725,13 @@ macro_rules! pim_interface {
 
             async fn company_of(&self, address: String, website: String) -> fdo::Result<String> {
                 Ok(self.daemon.company_of(&address, &website).await?)
+            }
+
+            async fn gmail_signatures(
+                &self,
+                account: i64,
+            ) -> fdo::Result<Vec<(String, String, String)>> {
+                Ok(self.daemon.gmail_signatures(AccountId(account)).await?)
             }
 
             async fn translate(
@@ -867,6 +952,15 @@ macro_rules! pim_interface {
             async fn mail_changed(emitter: &SignalEmitter<'_>, account: i64) -> zbus::Result<()>;
 
             #[zbus(signal)]
+            async fn changes_refused(
+                emitter: &SignalEmitter<'_>,
+                account: i64,
+                change: &str,
+                count: u32,
+                reason: &str,
+            ) -> zbus::Result<()>;
+
+            #[zbus(signal)]
             async fn outbox_changed(emitter: &SignalEmitter<'_>, id: i64) -> zbus::Result<()>;
 
             #[zbus(signal)]
@@ -886,6 +980,9 @@ macro_rules! pim_interface {
 
             #[zbus(signal)]
             async fn contacts_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn rules_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
         }
     };
 }
@@ -971,6 +1068,13 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             }
             Notice::ContactsChanged => PimService::contacts_changed(&emitter).await,
             Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
+            Notice::RulesChanged => PimService::rules_changed(&emitter).await,
+            Notice::ChangesRefused {
+                account,
+                change,
+                count,
+                ref reason,
+            } => PimService::changes_refused(&emitter, account.0, change, count, reason).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

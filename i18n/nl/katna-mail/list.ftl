@@ -39,6 +39,7 @@ list-results = Resultaten voor ‘{ $query }’
 list-results-corrected = Resultaten weergegeven voor ‘{ $query }’
 list-search-instead = In plaats daarvan zoeken naar ‘{ $query }’
 list-files-more = +{ $count }
+list-replied = Je hebt geantwoord
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -338,6 +339,8 @@ list-empty-tab = Geen e-mail in { $tab }.
 list-empty-tab-unknown = Geen e-mail op dit tabblad.
 list-empty-folder = Geen berichten in { $folder }.
 list-empty-folder-unknown = Geen berichten in deze map.
+list-empty-waiting = Er wacht niets op antwoord.
+list-empty-reminders = Geen herinneringen. Druk op H bij een e-mail om er een toe te voegen.
 list-first-sync = Je e-mail ophalen…
 list-first-sync-detail = Berichten verschijnen hier zodra ze binnenkomen.
 
@@ -357,6 +360,14 @@ row-tracking-clicked = Geopend door { $opened } van { $recipients }, een link ge
 row-pin = Bovenaan vastzetten
 row-unpin = Losmaken
 row-snoozed-until = Gesnoozed tot { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Vandaag
+snoozed-group-tomorrow = Morgen
+snoozed-group-this-week = Deze week
+snoozed-group-later = Later
+row-follow-up-step = Opvolgbericht { $step } van { $steps } · { $date }
+row-follow-up-waiting = Opvolgbericht wacht
+row-reminder = Herinnering { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -379,6 +390,7 @@ menu-not-important = Markeren als niet belangrijk
 menu-pin = Bovenaan vastzetten
 menu-unpin = Losmaken
 menu-snooze = Snoozen
+menu-remind = Herinner mij
 menu-unsnooze = Snooze opheffen
 menu-add-to-tasks = Toevoegen aan Taken
 menu-schedule-meeting = Vergadering plannen
@@ -394,7 +406,26 @@ menu-follow-up = Opvolgen
 # Pin to top.
 menu-more = Meer
 menu-move-to-heading = Verplaatsen naar:
+menu-move-to-search = Verplaatsen naar…
+menu-label-as = Labelen als
+menu-label-as-search = Labelen als…
+menu-no-folder = Geen map met de naam ‘{ $name }’
+menu-no-label = Geen label met de naam ‘{ $name }’
+menu-create-folder = ‘{ $name }’ maken
+menu-always-move = E-mail van { $name } altijd hierheen verplaatsen
+toast-always-move-failed = De e-mail is verplaatst, maar de regel is niet gemaakt: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } gesprek
+       *[other] { $count } gesprekken
+    }
+   *[message] { $count ->
+        [one] { $count } bericht
+       *[other] { $count } berichten
+    }
+}
 menu-find-from = E-mails van { $name } zoeken
+menu-make-rule = Regel maken…
 
 ## Snackbar after an action on mail in the list
 
@@ -428,6 +459,8 @@ toast-moved = { $kind ->
        *[other] { $count } berichten verplaatst.
     }
 }
+toast-label-added = Label ‘{ $label }’ toegevoegd.
+toast-label-removed = Label ‘{ $label }’ verwijderd.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Ster toegevoegd aan gesprek.

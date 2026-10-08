@@ -47,6 +47,10 @@ pub struct Scheme {
     pub accent_fg: u32,
     /// Errors and destructive actions.
     pub negative: u32,
+    /// Warnings ("needs you"), when the scheme names one: KDE's
+    /// `ForegroundNeutral`, libadwaita's `warning_color`. `None` leaves
+    /// Katna's own amber.
+    pub neutral: Option<u32>,
 }
 
 impl Scheme {
@@ -315,6 +319,7 @@ const BREEZE_LIGHT: Scheme = Scheme {
     accent: 0x3daee9ff,
     accent_fg: 0xffffffff,
     negative: 0xda4453ff,
+    neutral: None,
 };
 
 /// Reads the color scheme and the accent color from a `kdeglobals` file.
@@ -347,6 +352,10 @@ pub fn parse_kdeglobals(contents: &str) -> (Scheme, Option<u32>) {
         let Some(color) = parse_kde_color(value) else {
             continue;
         };
+        if (group.as_str(), key) == ("Colors:View", "ForegroundNeutral") {
+            scheme.neutral = Some(color);
+            continue;
+        }
         let slot = match (group.as_str(), key) {
             ("Colors:Window", "BackgroundNormal") => &mut scheme.window_bg,
             ("Colors:Window", "ForegroundNormal") => &mut scheme.window_fg,
@@ -615,6 +624,7 @@ pub fn adwaita(dark: bool, accent: Option<u32>, custom: &[(String, u32)]) -> Sch
         accent: over(accent, view_bg),
         accent_fg: over(accent_fg, over(accent, view_bg)),
         negative: over(negative, view_bg),
+        neutral: get("warning_color").map(|c| over(c, view_bg)),
     }
 }
 
@@ -754,6 +764,7 @@ pub mod windows {
             accent: accent.unwrap_or(own),
             accent_fg: if dark { 0x000000ff } else { 0xffffffff },
             negative: if dark { 0xff99a4ff } else { 0xc42b1cff },
+            neutral: None,
         };
         DesktopScheme {
             id: "windows:default".to_owned(),
@@ -801,6 +812,7 @@ pub mod windows {
             accent: color("Hilight").unwrap_or(text),
             accent_fg: color("HilightText").unwrap_or(window),
             negative: color("HotTrackingColor").unwrap_or(text),
+            neutral: None,
         })
     }
 
@@ -1046,6 +1058,7 @@ BackgroundAlternate=29,31,34
 BackgroundNormal=20,22,24
 ForegroundInactive=161,169,177
 ForegroundNegative=218,68,83
+ForegroundNeutral=246,116,0
 ForegroundNormal=252,252,252
 
 [Colors:Window]
@@ -1068,6 +1081,7 @@ font=Noto Sans,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
         assert_eq!(scheme.inactive_fg, 0xa1a9b1ff);
         assert_eq!(scheme.accent, 0x3daee9ff);
         assert_eq!(scheme.negative, 0xda4453ff);
+        assert_eq!(scheme.neutral, Some(0xf67400ff));
         assert!(scheme.dark());
         assert_eq!(accent, Some(0xe9643dff));
     }

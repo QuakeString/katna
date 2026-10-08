@@ -9,6 +9,13 @@ shortcut-group-actions = Acties
 shortcut-group-go-to = Ga naar
 shortcut-group-app = Applicatie
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Sneltoetsen
+shortcuts-dialog-search = Een sneltoets zoeken
+shortcuts-dialog-none = Geen sneltoets gevonden
+shortcuts-dialog-close = Sluiten
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Volgend gesprek
@@ -37,6 +44,8 @@ shortcut-mark-read = Markeren als gelezen
 shortcut-mark-unread = Markeren als ongelezen
 shortcut-star = Ster toevoegen of verwijderen
 shortcut-add-to-tasks = Toevoegen aan Taken
+shortcut-snooze = Snoozen
+shortcut-remind = Herinner me
 shortcut-important = Markeren als belangrijk
 shortcut-not-important = Markeren als niet belangrijk
 shortcut-mute = Het gesprek dempen of het dempen opheffen

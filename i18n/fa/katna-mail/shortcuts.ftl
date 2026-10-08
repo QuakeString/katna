@@ -8,6 +8,10 @@ shortcut-group-moving = جابه‌جایی
 shortcut-group-actions = عملیات
 shortcut-group-go-to = رفتن به
 shortcut-group-app = برنامه
+shortcuts-dialog-title = میان‌برهای صفحه‌کلید
+shortcuts-dialog-search = یافتن میان‌بر
+shortcuts-dialog-none = هیچ میان‌بری مطابقت ندارد
+shortcuts-dialog-close = بستن
 
 ## Settings > Keyboard shortcuts: what each shortcut does
 
@@ -37,6 +41,8 @@ shortcut-mark-read = علامت‌گذاری به‌عنوان خوانده‌ش
 shortcut-mark-unread = علامت‌گذاری به‌عنوان خوانده‌نشده
 shortcut-star = افزودن یا برداشتن ستاره
 shortcut-add-to-tasks = افزودن به کارها
+shortcut-snooze = به تعویق انداختن
+shortcut-remind = یادآوری کن
 shortcut-important = علامت‌گذاری به‌عنوان مهم
 shortcut-not-important = علامت‌گذاری به‌عنوان غیرمهم
 shortcut-mute = بی‌صدا کردن یا لغو بی‌صدای مکالمه

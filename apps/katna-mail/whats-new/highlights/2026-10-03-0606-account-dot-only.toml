@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A quieter mail list"
+text = """
+Lines in the unified inbox show only the account's coloured dot beside the
+sender. Hover over the dot to see which account the mail belongs to.
+"""

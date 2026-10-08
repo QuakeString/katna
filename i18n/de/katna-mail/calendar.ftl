@@ -53,7 +53,7 @@ calendar-account-signed-in = Wieder bei { $address } angemeldet. Ihre Kalender w
 calendar-account-sign-in-refused = { $provider } hat Katna keinen Zugang gewährt. Versuchen Sie es erneut und erlauben Sie den Zugriff auf Ihre Kalender.
 calendar-account-refused = Der Server hat das Passwort nicht akzeptiert. Yahoo, iCloud, Zoho und andere brauchen ein App-Passwort.
 calendar-account-change-password = Passwort ändern
-calendar-account-change-password-tooltip = Einstellungen > Konten öffnen
+calendar-account-change-password-tooltip = Geben Sie das neue Passwort ein; Katna prüft es beim Server
 calendar-account-not-enabled = Der Kalenderzugriff für Katna ist noch nicht eingeschaltet.
 calendar-account-failed = Die Kalender konnten nicht gelesen werden.
 calendar-account-error = Die Kalender konnten nicht gelesen werden: { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = Erneut versuchen
 calendar-account-try-again-tooltip = Die Kalender dieses Kontos jetzt erneut prüfen
 calendar-account-fixing = Wird bearbeitet…
 calendar-birthdays = Geburtstage
+calendar-tasks = Aufgaben
 calendar-birthday-of = Geburtstag von { $name }
 calendar-empty-title = Noch keine Kalender
 calendar-empty-text = Katna zeigt hier die Kalender Ihrer Google- und Microsoft-Konten an, sobald sie synchronisiert sind, sowie die anderer Server, die CalDAV anbieten.
@@ -127,6 +128,7 @@ calendar-event-details = Termindetails
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = Neuer Termin
+calendar-event-window-title = Neuer Termin
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Tag öffnen
 calendar-menu-duplicate = Duplizieren

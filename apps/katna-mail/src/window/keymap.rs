@@ -6,19 +6,19 @@
 //! lists and edits them; [`bind`] loads them into GPUI.
 
 use gpui::{Action, App, KeyBinding, Keystroke};
-use katna_core::config::{ShortcutSet, Shortcuts};
+use katna_core::config::{AppKind, ShortcutSet, Shortcuts};
 use katna_i18n::tr;
 
 use super::{
     AddToTasks, Archive, CloseMessage, Compose, Delete, FocusList, FocusNext, FocusPrevious,
     FocusSearch, Forward, GoToAllMail, GoToDrafts, GoToInbox, GoToSent, GoToStarred, LIST_CONTEXT,
-    ListTop, MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NextPane,
+    ListTop, MarkImportant, MarkNotImportant, MarkRead, MarkUnread, MoveTo, NAV_CONTEXT, NextPane,
     OpenContextMenu, OpenMessage, OpenSettings, PageDown, PageUp, PreviousPane, Quit,
-    READER_CONTEXT, Reload, RephraseSelection, Reply, ReplyAll, ReportSpam, SEARCH_CONTEXT,
-    ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst, SelectLast,
-    SelectNext, SelectNone, SelectPrevious, SendMail, ShowCalendar, ShowContacts, ShowFiles,
-    ShowMail, ShowNotes, ShowShortcuts, ShowTasks, Summarize, ToggleCheck, ToggleMute,
-    ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
+    READER_CONTEXT, Reload, RemindMail, RephraseSelection, Reply, ReplyAll, ReportSpam,
+    SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst,
+    SelectLast, SelectNext, SelectNone, SelectPrevious, SendMail, ShowCalendar, ShowContacts,
+    ShowFiles, ShowMail, ShowNotes, ShowShortcuts, ShowTasks, SnoozeMail, Summarize, ToggleCheck,
+    ToggleMute, ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -41,7 +41,9 @@ impl Scope {
             Self::List => &[LIST_CONTEXT],
             Self::Reader => &[READER_CONTEXT],
             Self::Mail => &[LIST_CONTEXT, READER_CONTEXT],
-            Self::Anywhere if is_single_key(keys) => &[LIST_CONTEXT, READER_CONTEXT],
+            // The folder pane too, so Compose, search and the like still
+            // work after a click on a folder.
+            Self::Anywhere if is_single_key(keys) => &[LIST_CONTEXT, READER_CONTEXT, NAV_CONTEXT],
             Self::Anywhere => &[WINDOW_CONTEXT],
         }
     }
@@ -89,6 +91,19 @@ pub(super) struct Shortcut {
 }
 
 impl Shortcut {
+    /// The app beside Mail the shortcut leads into, if any: while that app
+    /// is off, the shortcut is left out of the lists.
+    pub(super) fn app(&self) -> Option<AppKind> {
+        match self.name {
+            "page_calendar" => Some(AppKind::Calendar),
+            "page_contacts" => Some(AppKind::Contacts),
+            "page_tasks" | "add_to_tasks" | "remind" => Some(AppKind::Tasks),
+            "page_notes" => Some(AppKind::Notes),
+            "page_files" => Some(AppKind::Files),
+            _ => None,
+        }
+    }
+
     /// What the shortcut does, in the current language: message
     /// `shortcut-<name>`, with `-` for `_`.
     pub(super) fn title(&self) -> String {
@@ -163,6 +178,8 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("mark_unread", Actions, Mail, ["shift-u"], MarkUnread),
     shortcut!("star", Actions, Mail, ["s"], ToggleStar),
     shortcut!("add_to_tasks", Actions, Mail, ["shift-t"], AddToTasks),
+    shortcut!("snooze", Actions, Mail, ["b"], SnoozeMail),
+    shortcut!("remind", Actions, Mail, ["h"], RemindMail),
     shortcut!("important", Actions, Mail, ["+", "="], MarkImportant),
     shortcut!("not_important", Actions, Mail, ["-"], MarkNotImportant),
     shortcut!("mute", Actions, Mail, ["m"], ToggleMute),
@@ -262,6 +279,7 @@ const OUTLOOK: Preset = &[
 const THUNDERBIRD: Preset = &[
     ("next", &["f"]),
     ("previous", &["b"]),
+    ("snooze", &[]),
     ("compose", &["ctrl-n", "ctrl-m"]),
     ("reply", &["ctrl-r"]),
     ("reply_all", &["ctrl-shift-r"]),
@@ -407,6 +425,13 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
         super::select::SelectAllText,
         Some(super::select::TEXT_CONTEXT),
     ));
+    // Text selected anywhere else in a window (Settings, a dialog, a
+    // page) copies too; with none selected, Ctrl+C does what it did.
+    bindings.push(KeyBinding::new(
+        "ctrl-c",
+        super::select::CopyText,
+        Some(WINDOW_CONTEXT),
+    ));
     // Google Calendar's keys on the Calendar page.
     bindings.extend(super::calendar::bindings());
     // Home with the keys in no pane takes the list to its top; the
@@ -474,6 +499,7 @@ pub fn bind(config: &Shortcuts, cx: &mut App) {
             Some(super::viewer::KEY_CONTEXT),
         ));
     }
+    super::capture::bind_keys(&mut bindings);
     cx.bind_keys(bindings);
     katna_ui::text_input::bind_keys(cx);
     katna_ui::text_area::bind_keys(cx);

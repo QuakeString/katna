@@ -34,7 +34,7 @@ contacts-account-signed-in = { $address }ত পুনৰ ছাইন ইন �
 contacts-account-sign-in-refused = { $provider }এ Katnaক সোমাবলৈ নিদিলে। পুনৰ চেষ্টা কৰক, আৰু আপোনাৰ সম্পৰ্কসমূহলৈ প্ৰৱেশৰ অনুমতি দিয়ক।
 contacts-account-password = ছাৰ্ভাৰে পাছৱৰ্ডটো গ্ৰহণ নকৰিলে। Yahoo, iCloud, Zoho আৰু আনবোৰক এটা এপ পাছৱৰ্ড লাগে।
 contacts-account-change-password = পাছৱৰ্ড সলনি কৰক
-contacts-account-change-password-tooltip = ছেটিংছ > একাউণ্টসমূহ খোলক
+contacts-account-change-password-tooltip = নতুন পাছৱৰ্ড লিখক; Katnaই ছাৰ্ভাৰৰ সৈতে পৰীক্ষা কৰে
 contacts-account-failed = সম্পৰ্কসমূহ পঢ়িব পৰা নগ'ল।
 # $reason is the server's own words, in English.
 contacts-account-error = সম্পৰ্কসমূহ পঢ়িব পৰা নগ'ল: { $reason }

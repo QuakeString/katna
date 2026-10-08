@@ -39,6 +39,7 @@ list-results = Risultati per «{ $query }»
 list-results-corrected = Sono mostrati i risultati per «{ $query }»
 list-search-instead = Cerca invece «{ $query }»
 list-files-more = +{ $count }
+list-replied = Hai risposto
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -388,6 +389,8 @@ list-empty-tab = Nessun messaggio in { $tab }.
 list-empty-tab-unknown = Nessun messaggio in questa scheda.
 list-empty-folder = Nessun messaggio in { $folder }.
 list-empty-folder-unknown = Nessun messaggio in questa cartella.
+list-empty-waiting = Nulla è in attesa di risposta.
+list-empty-reminders = Nessun promemoria. Premi H su un messaggio per aggiungerne uno.
 list-first-sync = Recupero della posta…
 list-first-sync-detail = I messaggi compaiono qui man mano che arrivano.
 
@@ -407,6 +410,14 @@ row-tracking-clicked = Aperto da { $opened } su { $recipients }, un link seguito
 row-pin = Fissa in alto
 row-unpin = Sblocca
 row-snoozed-until = Posticipato a { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Oggi
+snoozed-group-tomorrow = Domani
+snoozed-group-this-week = Questa settimana
+snoozed-group-later = Più avanti
+row-follow-up-step = Sollecito { $step } di { $steps } · { $date }
+row-follow-up-waiting = Sollecito in attesa
+row-reminder = Promemoria { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -429,6 +440,7 @@ menu-not-important = Contrassegna come non importante
 menu-pin = Fissa in alto
 menu-unpin = Sblocca
 menu-snooze = Posticipa
+menu-remind = Ricordamelo
 menu-unsnooze = Annulla posticipo
 menu-add-to-tasks = Aggiungi ad Attività
 menu-schedule-meeting = Pianifica una riunione
@@ -444,7 +456,28 @@ menu-follow-up = Dai seguito
 # Pin to top.
 menu-more = Altro
 menu-move-to-heading = Sposta in:
+menu-move-to-search = Sposta in…
+menu-label-as = Etichetta come
+menu-label-as-search = Etichetta come…
+menu-no-folder = Nessuna cartella chiamata «{ $name }»
+menu-no-label = Nessuna etichetta chiamata «{ $name }»
+menu-create-folder = Crea «{ $name }»
+menu-always-move = Sposta sempre qui la posta di { $name }
+toast-always-move-failed = La posta è stata spostata, ma la regola non è stata creata: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } conversazione
+        [many] { $count } di conversazioni
+       *[other] { $count } conversazioni
+    }
+   *[message] { $count ->
+        [one] { $count } messaggio
+        [many] { $count } di messaggi
+       *[other] { $count } messaggi
+    }
+}
 menu-find-from = Trova email da { $name }
+menu-make-rule = Crea una regola…
 
 ## Snackbar after an action on mail in the list
 
@@ -484,6 +517,8 @@ toast-moved = { $kind ->
        *[other] { $count } messaggi spostati.
     }
 }
+toast-label-added = Etichetta «{ $label }» aggiunta.
+toast-label-removed = Etichetta «{ $label }» rimossa.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Conversazione aggiunta a Speciali.

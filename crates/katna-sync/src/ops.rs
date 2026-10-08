@@ -4,7 +4,7 @@
 //! to the store at once and replayed on the server by the account's worker
 //! (`docs/ARCHITECTURE.md` §6.1).
 //!
-//! - [`set_flags`], [`move_messages`], [`copy_messages`],
+//! - [`set_flags`], [`move_messages`], [`copy_messages`], [`set_labels`],
 //!   [`delete_messages`] and [`archive_messages`] edit the store and queue one operation per
 //!   message. They never touch the network. Imported (`local`) accounts
 //!   only change in the store.
@@ -72,6 +72,15 @@ enum Op {
         to: i64,
         to_path: String,
     },
+    /// Gmail: take the label `path` (folder `folder`, where the message's
+    /// UID is `uid`) off `message`, leaving it in All Mail and its other
+    /// labels.
+    Unlabel {
+        message: i64,
+        folder: i64,
+        path: String,
+        uid: u32,
+    },
     /// Delete `message` in `folder` for good.
     Expunge {
         message: i64,
@@ -121,6 +130,9 @@ pub enum ChangeError {
     UnknownMessage(i64),
     #[error("no folder {0}")]
     UnknownFolder(i64),
+    /// The request itself is wrong, like labels on an account without.
+    #[error("{0}")]
+    Invalid(String),
     #[error("{0}")]
     NotPossible(String),
     #[error(transparent)]
@@ -135,9 +147,61 @@ pub struct ReplayReport {
     pub retried: usize,
     /// Given up; the local change was undone.
     pub failed: usize,
+    /// What was given up, for the user: what kind of change and the
+    /// server's answer.
+    pub refused: Vec<Refused>,
     /// Folders that received moved messages without the server telling
     /// their new UIDs; sync them to see the messages again.
     pub resync: Vec<(FolderId, String)>,
+}
+
+/// A change the server refused for good, which was undone here.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Refused {
+    pub change: Change,
+    /// The server's answer.
+    pub reason: String,
+}
+
+/// The kinds of change, as the user made them.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Change {
+    /// Read, starred and other flags.
+    Flags,
+    /// Moved to another folder (archived, trashed, …).
+    Move,
+    /// A Gmail label added or taken off.
+    Label,
+    /// Deleted for good.
+    Delete,
+    /// A draft saved or dropped, sent mail filed.
+    Other,
+}
+
+impl Change {
+    /// Its name over D-Bus (`ChangesRefused`).
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Flags => "flags",
+            Self::Move => "move",
+            Self::Label => "label",
+            Self::Delete => "delete",
+            Self::Other => "other",
+        }
+    }
+
+    fn of(op: &Op) -> Self {
+        match op {
+            Op::Flags { .. } => Self::Flags,
+            Op::Move { .. } => Self::Move,
+            Op::Copy { .. } | Op::Unlabel { .. } => Self::Label,
+            Op::Expunge { .. } => Self::Delete,
+            Op::Append { .. }
+            | Op::PurgeTracked { .. }
+            | Op::SaveDraft { .. }
+            | Op::DropDraft { .. } => Self::Other,
+        }
+    }
 }
 
 /// Adds and removes flags. Returns the accounts whose workers must replay.
@@ -377,6 +441,174 @@ pub fn copy_messages(
     }
     batch.commit()?;
     Ok(accounts)
+}
+
+/// Gmail: puts the labels `add` on messages and takes the labels `remove`
+/// off them (both folder IDs of the messages' account), without moving
+/// them otherwise. Adding is a copy into the label's folder
+/// ([`copy_messages`]); removing leaves the message in All Mail and its
+/// other labels. Special folders (Inbox, Sent, All Mail, …) are not
+/// labels here, and taking off a message's last label is refused, since
+/// it would leave the message in no folder. Returns the accounts whose
+/// workers must replay.
+pub fn set_labels(
+    store: &mut Store,
+    messages: &[MessageId],
+    add: &[FolderId],
+    remove: &[FolderId],
+) -> Result<Vec<AccountId>, ChangeError> {
+    if let Some(both) = add.iter().find(|label| remove.contains(label)) {
+        return Err(ChangeError::Invalid(format!(
+            "label {} is both added and removed",
+            both.0
+        )));
+    }
+    let stored = store.messages_by_id(messages)?;
+    if let Some(missing) = messages
+        .iter()
+        .find(|id| !stored.iter().any(|m| m.id == **id))
+    {
+        return Err(ChangeError::UnknownMessage(missing.0));
+    }
+    let mut unlabel = Vec::new();
+    for message in &stored {
+        let folders = folders_of(store, message.account)?;
+        let list: Vec<StoredFolder> = folders.values().cloned().collect();
+        if !crate::folders::is_gmail(&list) {
+            return Err(ChangeError::Invalid(
+                "only Gmail accounts have labels".to_owned(),
+            ));
+        }
+        for label in add.iter().chain(remove) {
+            let folder = folders
+                .get(label)
+                .ok_or(ChangeError::UnknownFolder(label.0))?;
+            if crate::folders::is_special(folder, Some('/')) {
+                return Err(ChangeError::Invalid(format!(
+                    "\u{201c}{}\u{201d} is not a label",
+                    folder.path
+                )));
+            }
+        }
+        let locations = store.locations(message.id)?;
+        let taken_off: Vec<_> = locations
+            .iter()
+            .filter(|l| remove.contains(&l.folder))
+            .collect();
+        if taken_off.is_empty() {
+            continue;
+        }
+        let stays = locations.iter().any(|l| !remove.contains(&l.folder))
+            || add.iter().any(|label| !remove.contains(label));
+        if !stays {
+            return Err(ChangeError::NotPossible(format!(
+                "message {} would be in no folder; move it instead",
+                message.id.0
+            )));
+        }
+        let synced = is_synced(store, message.account)?;
+        for location in taken_off {
+            let folder = &folders[&location.folder];
+            let uid = match location.uid {
+                Some(uid) => Some(uid),
+                None if !synced => None,
+                None => {
+                    return Err(ChangeError::NotPossible(format!(
+                        "message {} is still being moved; try again in a moment",
+                        message.id.0
+                    )));
+                }
+            };
+            unlabel.push((
+                message.account,
+                message.id,
+                folder.id,
+                folder.path.clone(),
+                uid,
+            ));
+        }
+    }
+    let mut accounts = Vec::new();
+    for &label in add {
+        for account in copy_messages(store, messages, label)? {
+            push_unique(&mut accounts, account);
+        }
+    }
+    let mut batch = store.mail_batch()?;
+    for (account, message, folder, path, uid) in unlabel {
+        batch.remove_from_folder(message, folder)?;
+        if let Some(uid) = uid {
+            let op = Op::Unlabel {
+                message: message.0,
+                folder: folder.0,
+                path,
+                uid,
+            };
+            batch.enqueue_op(account, &encode(&op))?;
+        }
+        push_unique(&mut accounts, account);
+    }
+    batch.commit()?;
+    Ok(accounts)
+}
+
+/// Whether a queued change of `account` still has to reach the server
+/// in one of `folders` (with their `paths`): renaming or deleting them
+/// first would make it fail.
+pub fn waits_on_folders(
+    store: &Store,
+    account: AccountId,
+    folders: &[FolderId],
+    paths: &[String],
+) -> Result<bool, ChangeError> {
+    let id = |id: &i64| folders.contains(&FolderId(*id));
+    let path = |path: &String| paths.contains(path);
+    for queued in store.due_ops(account, i64::MAX, u32::MAX)? {
+        let Ok(op) = serde_json::from_str::<Op>(&queued.op_json) else {
+            continue;
+        };
+        let touches = match &op {
+            Op::Flags {
+                folder, path: p, ..
+            }
+            | Op::Unlabel {
+                folder, path: p, ..
+            } => id(folder) || path(p),
+            Op::Move {
+                from,
+                from_path,
+                to,
+                to_path,
+                ..
+            }
+            | Op::Copy {
+                from,
+                from_path,
+                to,
+                to_path,
+                ..
+            } => id(from) || id(to) || path(from_path) || path(to_path),
+            Op::Expunge { path: p, .. } => path(p),
+            Op::Append {
+                folder, path: p, ..
+            }
+            | Op::SaveDraft {
+                folder, path: p, ..
+            }
+            | Op::DropDraft {
+                folder, path: p, ..
+            } => id(folder) || path(p),
+            Op::PurgeTracked {
+                all_path,
+                trash_path,
+                ..
+            } => path(all_path) || path(trash_path),
+        };
+        if touches {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }
 
 /// Moves messages to their account's Trash; messages already there are
@@ -755,6 +987,10 @@ pub async fn replay<B: MailBackend>(
                         batch.fail_op(queued.id)?;
                         undo(&mut batch, &op)?;
                         report.failed += 1;
+                        report.refused.push(Refused {
+                            change: Change::of(&op),
+                            reason,
+                        });
                     } else {
                         tracing::info!(?op, %reason, "operation refused; retrying later");
                         batch.retry_op(queued.id, now + RETRY_AFTER)?;
@@ -898,6 +1134,10 @@ async fn run<B: MailBackend>(
                 }
             }
             batch.commit()?;
+        }
+        Op::Unlabel { path, uid, .. } => {
+            select(backend, selected, path).await?;
+            backend.gmail_label(&[*uid], path, false).await?;
         }
         Op::Expunge { path, uid, .. } => {
             select(backend, selected, path).await?;
@@ -1086,15 +1326,22 @@ fn undo(batch: &mut katna_store::MailBatch<'_>, op: &Op) -> katna_store::Result<
             uid,
             to,
             ..
-        } => {
-            batch.move_location(MessageId(*message), FolderId(*to), FolderId(*from), *uid)?;
-            Ok(())
-        }
+        } => batch.move_back(MessageId(*message), FolderId(*to), FolderId(*from), *uid),
         Op::Copy { message, to, .. } => {
             let (message, to) = (MessageId(*message), FolderId(*to));
             if batch.unconfirmed_in(message, to)? {
                 batch.remove_from_folder(message, to)?;
             }
+            Ok(())
+        }
+        // The label is still on the server: show it here again.
+        Op::Unlabel {
+            message,
+            folder,
+            uid,
+            ..
+        } => {
+            batch.restore_location(MessageId(*message), FolderId(*folder), Some(*uid))?;
             Ok(())
         }
         // Gone locally; it stays on the server and in other clients.

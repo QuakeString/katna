@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Viewer follows rounded window corners"
+text = """
+With Katna's own title bar and rounded corners, the attachment viewer
+now rounds its bottom corners to match the window, instead of showing
+square grey corners past the window's edge.
+"""

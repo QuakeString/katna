@@ -11,10 +11,11 @@ use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyElement, Context, Div, Focusable, MouseButton, Task, Window, anchored, canvas, deferred,
-    div, point, prelude::*, rgba, svg,
+    AnyElement, Context, Div, Focusable, MouseButton, Task, Window, canvas, deferred, div, point,
+    prelude::*, rgba, svg,
 };
 use katna_i18n::tr;
+use katna_ui::anchored;
 use katna_ui::rich::{Block, Doc};
 use katna_ui::{px, unpx};
 
@@ -374,7 +375,8 @@ impl MailWindow {
             .items_center()
             .rounded(px(6.0))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
             .tooltip(tip(tr!("compose-edit-recipients"), th))
             .on_click(cx.listener(|this, _, window, cx| this.open_reply_header(window, cx)))
             .child(

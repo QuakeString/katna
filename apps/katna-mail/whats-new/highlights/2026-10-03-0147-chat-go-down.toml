@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Back to the newest mail"
+text = """
+Scrolled a long way up a chat, a round button fades in at the bottom right.
+It glides you back to the newest mail and counts any that came meanwhile.
+"""

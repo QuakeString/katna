@@ -58,6 +58,7 @@ compose-file-too-large = { $name } በጣም ትልቅ ነው፦ አንድ መ�
 compose-forward-files-missing = የተላለፈው መልዕክት ፋይሎች ስላልወረዱ አልተያያዙም።
 compose-attachment-size = ({ $size })
 compose-remove-attachment = አባሪውን አስወግድ
+compose-attachment-open-tip = ለማረጋገጥ ይክፈቱት
 compose-attachments-total = { $count ->
     [one] { $count } ፋይል፣ { $size }
    *[other] { $count } ፋይሎች፣ { $size }

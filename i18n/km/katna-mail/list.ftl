@@ -39,6 +39,7 @@ list-results = លទ្ធផលសម្រាប់ “{ $query }”
 list-results-corrected = កំពុងបង្ហាញលទ្ធផលសម្រាប់ “{ $query }”
 list-search-instead = ស្វែងរក “{ $query }” ជំនួសវិញ
 list-files-more = +{ $count }
+list-replied = អ្នកបានឆ្លើយតប
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -188,6 +189,8 @@ list-empty-tab = គ្មានសំបុត្រក្នុង { $tab } �
 list-empty-tab-unknown = គ្មានសំបុត្រក្នុងផ្ទាំងនេះទេ។
 list-empty-folder = គ្មានសារក្នុង { $folder } ទេ។
 list-empty-folder-unknown = គ្មានសារក្នុងថតនេះទេ។
+list-empty-waiting = គ្មានអ្វីកំពុងរង់ចាំការឆ្លើយតបទេ។
+list-empty-reminders = គ្មានការរំលឹកទេ។ ចុច H លើសំបុត្រ ដើម្បីបន្ថែម។
 list-first-sync = កំពុងទទួលសំបុត្ររបស់អ្នក…
 list-first-sync-detail = សំបុត្រនឹងបង្ហាញនៅទីនេះ នៅពេលវាមកដល់។
 
@@ -207,6 +210,14 @@ row-tracking-clicked = បានបើកដោយ { $opened } នាក់ ក�
 row-pin = ខ្ទាស់នៅខាងលើ
 row-unpin = ឈប់ខ្ទាស់
 row-snoozed-until = បានពន្យារពេលរហូតដល់ { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = ថ្ងៃនេះ
+snoozed-group-tomorrow = ថ្ងៃស្អែក
+snoozed-group-this-week = សប្ដាហ៍នេះ
+snoozed-group-later = ពេលក្រោយ
+row-follow-up-step = ការតាមដាន { $step } នៃ { $steps } · { $date }
+row-follow-up-waiting = ការតាមដានកំពុងរង់ចាំ
+row-reminder = រំលឹក { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -229,6 +240,7 @@ menu-not-important = សម្គាល់ថាមិនសំខាន់
 menu-pin = ខ្ទាស់នៅខាងលើ
 menu-unpin = ឈប់ខ្ទាស់
 menu-snooze = ពន្យារពេល
+menu-remind = រំលឹកខ្ញុំ
 menu-unsnooze = ឈប់ពន្យារពេល
 menu-add-to-tasks = បន្ថែមទៅកិច្ចការ
 menu-schedule-meeting = កំណត់ពេលប្រជុំ
@@ -240,7 +252,26 @@ menu-move-to = ផ្លាស់ទីទៅ
 menu-follow-up = តាមដាន
 menu-more = ច្រើនទៀត
 menu-move-to-heading = ផ្លាស់ទីទៅ៖
+menu-move-to-search = ផ្លាស់ទីទៅ…
+menu-label-as = ដាក់ស្លាកជា
+menu-label-as-search = ដាក់ស្លាកជា…
+menu-no-folder = គ្មានថតឈ្មោះ “{ $name }” ទេ
+menu-no-label = គ្មានស្លាកឈ្មោះ “{ $name }” ទេ
+menu-create-folder = បង្កើត “{ $name }”
+menu-always-move = ផ្លាស់ទីសំបុត្រពី { $name } មកទីនេះជានិច្ច
+toast-always-move-failed = បានផ្លាស់ទីសំបុត្រហើយ ប៉ុន្តែមិនបានបង្កើតច្បាប់ទេ៖ { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] ការសន្ទនា { $count }
+       *[other] ការសន្ទនា { $count }
+    }
+   *[message] { $count ->
+        [one] សារ { $count }
+       *[other] សារ { $count }
+    }
+}
 menu-find-from = ស្វែងរកសំបុត្រពី { $name }
+menu-make-rule = បង្កើតច្បាប់…
 
 ## Snackbar after an action on mail in the list
 
@@ -256,6 +287,8 @@ toast-moved = { $kind ->
     [conversation] បានផ្លាស់ទីការសន្ទនា { $count }។
    *[message] បានផ្លាស់ទីសារ { $count }។
 }
+toast-label-added = បានបន្ថែមស្លាក “{ $label }”។
+toast-label-removed = បានដកស្លាក “{ $label }” ចេញ។
 toast-starred = { $kind ->
     [conversation] បានដាក់ផ្កាយលើការសន្ទនា { $count }។
    *[message] បានដាក់ផ្កាយលើសារ { $count }។

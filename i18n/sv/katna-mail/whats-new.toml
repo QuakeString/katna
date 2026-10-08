@@ -3021,3 +3021,1319 @@ I mörkt läge är linjerna mellan mejl, under rubriker och runt kort lika
 diskreta som i ljust läge. Fält, chipp och knappar behåller sin tydliga
 kant.
 """
+
+["2026-10-02-1200-smaller-updates-after-a-break"]
+title = "Små uppdateringar efter ett uppehåll"
+text = """
+Uppdateringarna förblir små även när du hoppar över en dag eller två med
+nya versioner. Katna går nu från versionen du har via de tidigare, några
+megabyte var, i stället för att ladda ner hela paketet igen.
+"""
+
+["2026-10-02-1218-replied-arrow"]
+title = "Se vilka mejl du har svarat på"
+text = """
+En liten svarspil på en rad i mejllistan visar att du har svarat: du
+skrev det senaste mejlet i konversationen, här eller på webben. Den
+försvinner när de svarar igen.
+"""
+
+["2026-10-02-1219-tray-icon-follows-dark"]
+title = "Ikonen i systemfältet följer ljust och mörkt"
+text = """
+Den enfärgade ikonen i systemfältet byter nu med din panel så fort du
+växlar mellan ljust och mörkt läge, i stället för att vänta på ny e-post.
+"""
+
+["2026-10-02-1220-reply-ideas-breathe"]
+title = "Svarsidéer visar att de är på väg"
+text = """
+Medan idéer till svar hämtas, i en sammanfattnings Svara eller i Skriv
+svar, andas deras former nu som sammanfattningens egna medan den skrivs.
+Sammanfattningskortet visar också hur många mejl konversationen har
+medan den hämtas, inte 0.
+"""
+
+["2026-10-02-1223-files-corners-and-share-close"]
+title = "Renare hörn i Filer"
+text = """
+När du håller pekaren över en fil med vit förhandsvisning syns inte
+längre vitt i kortets övre hörn, den hopfällda lådan med uppladdningar
+är också rundad upptill, och dialogrutan Dela har en stängknapp i
+hörnet.
+"""
+
+["2026-10-02-1251-search-clear-keeps-mail"]
+title = "Mejlet förblir öppet när du rensar en sökning"
+text = """
+Öppna ett mejl bland sökresultaten och rensa sökningen med X: mejlet
+förblir öppet medan din mapp kommer tillbaka, i stället för att fällas
+ihop till listan.
+"""
+
+["2026-10-02-1255-rounded-sheet-corners"]
+title = "Runda hörn på kalkylblad"
+text = """
+Ett kalkylblad i bilagevisaren är nu rundat i alla fyra hörnen. De grå
+kolumnbokstäverna överst och bladflikarna längst ner gjorde dem tidigare
+kantiga.
+"""
+
+["2026-10-02-1256-clean-card-details"]
+title = "Rena kontaktuppgifter på korten"
+text = """
+Telefonnummer, adresser och andra uppgifter hämtade från en signatur
+visar inte längre lösa asterisker eller länkmärken inom vinkelparenteser.
+När en kollega signerar mejl från en delad adress som accounts@ behåller
+kortet bara företagets uppgifter, inte kollegans nummer eller titel.
+"""
+
+["2026-10-02-1303-open-attached-files"]
+title = "Kontrollera vad du har bifogat"
+text = """
+Klicka på en fil som är bifogad i ett meddelande du skriver för att öppna
+den i Katnas visare, samma som mottagna filer öppnas i, och försäkra dig
+om att det är rätt fil. En fil som skickas som en Google Drive- eller
+OneDrive-länk öppnas i molnlagringen.
+"""
+
+["2026-10-02-1307-settings-scroll-bar"]
+title = "En rullningslist i Inställningar"
+text = """
+Varje flik i Inställningar har samma tunna rullningslist som ett öppet
+mejl och Filer: den visas medan du scrollar eller pekar på sidan, och du
+kan dra i den.
+"""
+
+["2026-10-02-1248-account-colors"]
+title = "En färg för varje konto"
+text = """
+Välj en färg för varje konto i Inställningar > Konton, eller högerklicka
+på kontot i mappfönstret: en av sju, eller vilken färg som helst från
+färghjulet efter dem. Pricken bredvid varje avsändare i den gemensamma
+inkorgen och ringen runt kontots bild får den färgen, och när du pekar på
+pricken visas kontots namn. Varje konto börjar med en egen färg, aldrig
+någon av inkorgsflikarnas.
+"""
+
+["2026-10-02-1340-colors-button-mail-only"]
+title = "Knappen för originalfärger bara där den gör nytta"
+text = """
+I ett mörkt tema glider knappen som visar ett mejl i dess egna färger nu
+undan medan en konversation visas som chatt, och glider tillbaka i E-post.
+"""
+
+["2026-10-02-1340-logo-and-custom-accent"]
+title = "Logotypen får dina färger, och valfri accent"
+text = """
+Katna-logotypen i fönstret bär nu din accentfärg, i ljust och i mörkt. Och
+Inställningar > Utseende > Accent slutar nu med ett färghjul: klicka på det
+för att välja vilken accentfärg du vill.
+"""
+
+["2026-10-02-1358-empty-reply-no-draft"]
+title = "Tomma svar lämnar inget utkast"
+text = """
+Ett svar som du klickade i men aldrig skrev något i, i chattrutan eller
+under ett mejl, stängs nu helt enkelt när du lämnar det. Inget utkast
+sparas, och det kommer inte tillbaka när du växlar mellan Chatt och
+E-post.
+"""
+
+["2026-10-02-1400-folder-right-click-selects"]
+title = "Högerklick öppnar mappen"
+text = """
+När du högerklickar på en mapp i mappfönstret markeras och öppnas den nu
+innan menyn visas, så att menyn tydligt gäller den mapp du ser.
+"""
+
+["2026-10-02-1405-viewer-arrows-hover"]
+title = "Visarens pilar syns tydligt"
+text = """
+Pilarna på sidorna av bilagevisaren bleknar inte längre till nästan vitt
+när du pekar på dem. De blir i stället en nyans ljusare grå, så att de är
+lätta att se över en vit sida.
+"""
+
+["2026-10-02-1432-account-colour-button"]
+title = "En färgknapp per konto"
+text = """
+Varje konto visar nu bara sin egen färg, på en Färg-knapp i
+Inställningar > Konton och i kontots högerklicksmeny. Klicka på den för
+att välja en av åtta färger eller en helt egen färg, precis där du
+klickade.
+"""
+
+["2026-10-02-1443-reply-at-the-end"]
+title = "Ditt svar stannar i slutet"
+text = """
+Ett svar ligger nu alltid i slutet av konversationen, även när det nyaste
+mejlet visas först. När du växlar från Chatt till E-post rullar vyn ner
+till det, med markören där du lämnade den.
+"""
+
+["2026-10-02-1451-card-shows-signer"]
+title = "Kortet visar vem som signerade det öppna mejlet"
+text = """
+Personkortet läser nu signaturen i det mejl du har öppet, inte bara i det
+nyaste. När en kollega signerar mejl från en delad adress som accounts@
+visar kortet kollegans namn, roll och telefon och företagets adress från
+det mejlet.
+"""
+
+["2026-10-02-1510-search-click-away"]
+title = "Klicka var som helst för att lämna sökrutan"
+text = """
+Om du klickar på den tomma ytan i det övre fältet, bredvid sökrutan, tas
+du nu ut ur rutan, precis som när du klickar på e-postlistan. Din sökning
+förblir som den är.
+"""
+
+["2026-10-02-1515-empty-message-no-draft"]
+title = "Inga tomma utkast"
+text = """
+Ett nytt meddelande som du tömde igen innan du stängde det blir inte
+längre kvar i Utkast, precis som ett tomt svar i en konversation.
+"""
+
+["2026-10-02-1513-dark-pages"]
+title = "Mörka sidor i visaren"
+text = """
+I mörkt läge har bilagevisaren en halvmåneknapp som visar ljusa PDF:er,
+dokument, presentationer, kalkylblad och textfiler mörka. Färgerna
+behåller sin nyans, foton på en sida dämpas i stället för att bli
+negativ, och inskannat papper blir mörkt precis som text. Katna kommer
+ihåg ditt val till nästa fil.
+"""
+
+["2026-10-02-1522-window-corners"]
+title = "Välj fönstrets hörn och kant"
+text = """
+Med Katnas egen titelrad har Inställningar > Experimentellt nu ett
+reglage för hörnens rundning, från fyrkantiga till runda, och en
+Kantlinje-brytare med egen opacitet. När Egen oskärpa är på bestämmer
+reglaget Opacitet nu också hur mycket en suddig fönsterbakgrund släpper
+igenom.
+"""
+
+["2026-10-02-1535-ctrl-shift-click-select"]
+title = "Markera mejl med Ctrl och Skift"
+text = """
+Ctrl+klicka på ett mejl i listan för att markera det, och Ctrl+klicka på
+fler för att lägga till dem. Skift+klick markerar alla mejl från det du
+klickade på senast. Om du vill öppna ett mejl i ett eget fönster
+högerklickar du på det och väljer Öppna i nytt fönster.
+"""
+
+["2026-10-02-1610-frosted-panes"]
+title = "Frostade paneler, chatt och sökning"
+text = """
+När Gör fönstrets bakgrund suddig är på släpper nu även e-postlistan,
+det öppna mejlet och personkortet igenom oskärpan, med ett reglage för
+Panelernas opacitet. Ytan bakom en chatts bubblor visar lite mer av den,
+och sökrutan förblir frostad medan du skriver. Var och en har sin egen
+brytare i Inställningar > Experimentellt.
+"""
+
+["2026-10-02-1618-fainter-hints"]
+title = "Svagare tips i tomma rutor"
+text = """
+Den grå ledtråden i en tom ruta, som ”Svara…” under en chatt eller ”Sök i
+e-post”, är nu svagare, så att den aldrig ser ut som text du har skrivit.
+"""
+
+["2026-10-02-1642-drag-from-empty-space"]
+title = "Flytta fönstret från tom yta"
+text = """
+På Linux kan du nu flytta fönstret genom att dra i valfri tom yta i
+vänsterfältet, mapparna eller fältet ovanför din e-post, inte bara i
+det översta fältet.
+"""
+
+["2026-10-02-1643-space-folds-folders"]
+title = "Blanksteg fäller ihop mappar"
+text = """
+Klicka på en mapp som har mappar i sig och tryck sedan på blanksteg för
+att fälla ut eller ihop den, precis som när du klickar på dess pil. Efter
+ett klick flyttar piltangenterna också runt i mappfönstret, och Tab går
+vidare till e-postlistan.
+"""
+
+["2026-10-02-1646-viewer-more-menu"]
+title = "Visarens kontroller får plats i smala fönster"
+text = """
+I ett smalt fönster stannar kontrollerna längst ner i bilagevisaren nu
+inom den. Knappar som inte får plats flyttas till en ⋮ Mer-meny: först
+rotera, sedan Anpassa och sist Mörka sidor. Sidnumret och zoomen syns
+längst.
+"""
+
+["2026-10-02-1743-activity-report-fits"]
+title = "Aktivitetsrapporten får plats i fönstret"
+text = """
+Aktivitetsrapporten stannar nu inom fönstret med jämna marginaler och
+rullar när fönstret är lågt, så att de sista raderna aldrig skärs av.
+"""
+
+["2026-10-02-1846-folders-and-labels"]
+title = "Byt namn, ta bort och dra till mappar"
+text = """
+Högerklicka på en mapp du har skapat för att byta namn på den eller ta
+bort den; när du tar bort den flyttas dess e-post först till
+Papperskorgen. Dra e-post från listan till en mapp för att flytta den
+dit. Flytta till har en sökruta: skriv för att hitta en mapp, eller för
+att skapa en ny och flytta e-posten dit. På Gmail sätter Etikettera som
+etiketter på e-post och tar bort dem, och när du släpper e-post på en
+etikett får den etiketten.
+"""
+
+["2026-10-02-1928-mail-rules"]
+title = "E-postregler"
+text = """
+Regler sorterar ny e-post av sig själva: efter avsändare, ämne eller
+ord flyttar, etiketterar, stjärnmärker, vidarebefordrar eller tystar de
+den. Skapa en i Inställningar > Mappar och regler, eller högerklicka på
+ett mejl och välj Skapa en regel…, och se hur många nya mejl den
+matchar innan du sparar. I Flytta till kryssar du i ”Flytta alltid
+e-post från … hit” för att flytta en avsändares e-post och framtida
+e-post med ett klick.
+"""
+
+["2026-10-02-2017-rules-on-the-server"]
+title = "Regler som körs när datorn är avstängd"
+text = """
+E-postregler körs nu på Gmail, eller på din e-postserver om den tar emot
+Sieve-regler, så att de sorterar e-post även i telefonen och medan den
+här datorn är avstängd. Inställningar > Mappar och regler visar var
+varje regel körs, och varför en stannar i Katna.
+"""
+
+["2026-10-03-0046-smooth-folded-tabs"]
+title = "Hopfällda flikar byts mjukt"
+text = """
+När ett smalt fönster fäller ihop inkorgsflikarna till ikoner hoppar
+flikbytet inte längre: fliken du lämnar krymper tillbaka till sin ikon
+medan namnet tonas ut, och den du öppnar växer medan namnet tonas in.
+"""
+
+["2026-10-03-0051-read-rows-frosted"]
+title = "Läst e-post är också frostad"
+text = """
+När frostade paneler är på visar e-post du har läst nu frosten bakom
+listan precis som oläst e-post, bara en nyans annorlunda, i stället för
+ett heltäckande band.
+"""
+
+["2026-10-03-0101-rounder-corners"]
+title = "Rundare fönsterhörn"
+text = """
+Hörnens rundning i Inställningar > Experimentellt går nu upp till 32
+pixlar, dubbelt så runt som förut, och du kan skriva in talet i rutan
+bredvid reglaget.
+"""
+
+["2026-10-03-0113-viewer-round-corners"]
+title = "Visaren följer fönstrets rundade hörn"
+text = """
+Med Katnas egen titelrad och rundade hörn rundar bilagevisaren nu sina
+nedre hörn så att de passar fönstret, i stället för att visa fyrkantiga
+grå hörn utanför fönstrets kant.
+"""
+
+["2026-10-03-0147-chat-go-down"]
+title = "Tillbaka till det nyaste mejlet"
+text = """
+När du har rullat långt upp i en chatt tonas en rund knapp in nere till
+höger. Den glider dig tillbaka till det nyaste mejlet och räknar dem som
+har kommit under tiden.
+"""
+
+["2026-10-03-0147-chat-long-mails"]
+title = "Långa mejl i chattar"
+text = """
+På en lång bubbla stannar avsändarens bild längst ner i det du ser, och
+knapparna för svar, fäst och mer stannar i den del som syns. Högerklicka
+på texten för att nå dem alla.
+"""
+
+["2026-10-03-0147-chat-scroll-bar"]
+title = "En rullningslist i chattar"
+text = """
+Chattar har samma diskreta rullningslist som ett öppet mejl, som visas
+medan pekaren är över dem.
+"""
+
+["2026-10-03-0147-chat-translate"]
+title = "Översätt i chattar"
+text = """
+Ett mejl på ett annat språk erbjuder sin översättning även i chatten,
+som i E-post. Högerklicka på en bubbla och välj Översätt för att
+översätta den själv, och gör det igen för att visa originalet.
+"""
+
+["2026-10-03-0150-search-pill-hovers"]
+title = "Jämna markeringar i telefonens sökfält"
+text = """
+På en telefon sitter mappknappen och din kontobild nu centrerade i
+sökfältets rundade ändar, och varje knapp i fältet får samma runda
+markering under pekaren, på jämnt avstånd från fältets kant.
+"""
+
+["2026-10-03-0159-starter-rules"]
+title = "Färdiga regler"
+text = """
+Inställningar > Mappar och regler erbjuder nu färdiga regler, avslagna:
+tysta kampanjer, nyhetsbrev till Läsning, kvitton, leveranser, tåg- och
+flygbiljetter (IRCTC, Air India, IndiGo med flera), engångskoder,
+säkerhetsvarningar, sociala mejl och kalenderinbjudningar. Slå på en så
+gäller den alla dina konton och skapar mappar som Resor vid behov.
+Regler kan också kontrollera inkorgsfliken och om e-posten kom från en
+e-postlista.
+"""
+
+["2026-10-03-0200-chat-file-hover"]
+title = "Mjukare filkort i chattar"
+text = """
+En fil i en chattbubbla blir inte längre mörk under pekaren. Den lyfts
+lite med en svag ton, och dess namn är fortfarande lätt att läsa.
+"""
+
+["2026-10-03-0210-opened-mail-stays-in-view"]
+title = "Mejlet du öppnar stannar i sikte"
+text = """
+När läsfönstret ligger bredvid listan stannar mejlet du klickar på där
+det var i listan medan fönstret öppnas, eller så rullar listan precis så
+mycket att hela mejlet syns. Det glider inte längre ur sikte, oavsett om
+du öppnade det från listan eller från sökresultaten.
+"""
+
+["2026-10-03-0212-about-header-stays"]
+title = "Om behåller sin rubrik i sikte"
+text = """
+När du rullar i Om krymper den stora logotypen nu till en liten uppe
+till vänster, med Katna, dess slogan och versionen bredvid, och den
+rubriken stannar på plats medan resten rullar under den.
+"""
+
+["2026-10-03-0221-folded-tab-icon-settles"]
+title = "Hopfällda flikar landar utan ryck"
+text = """
+När du växlar mellan hopfällda inkorgsflikar stannar fliken du lämnar
+nu exakt där den krympte till, utan att ikonen flyttar sig en pixel
+eller två när rörelsen är slut.
+"""
+
+["2026-10-03-0228-right-click-another-mail"]
+title = "Ett högerklick räcker"
+text = """
+När ett mejls eller en mapps meny är öppen stänger ett högerklick på ett
+annat mejl eller en annan mapp nu den öppna menyn och öppnar den nya
+direkt, i stället för att kräva ett andra högerklick.
+"""
+
+["2026-10-03-0235-rule-editor-fits"]
+title = "Regelredigeraren får plats"
+text = """
+I regelredigeraren radbryts långa ord eller adresslistor på fler rader i
+stället för att skäras av, ”matchar mönstret” visas i sin helhet, och
+redigeraren stannar inom fönstret och rullar när den har många villkor.
+"""
+
+["2026-10-03-0235-soft-button-hover"]
+title = "Mjukare markering av knappar"
+text = """
+När du pekar på en rund knapp växer dess cirkel nu mjukt från två
+tredjedelar av sin storlek och tonas in, och avlånga knappar som Svara
+tonas in lite långsammare. När du flyttar bort pekaren krymper cirkeln
+lite medan den tonas ut.
+"""
+
+["2026-10-03-0249-account-ring"]
+title = "En tydligare kontoring"
+text = """
+Den färgade ringen runt varje kontos bild är tjockare, med lite mer
+utrymme mellan den och bilden, i det övre fältet, kontomenyn och
+Inställningar.
+"""
+
+["2026-10-03-0335-chat-picture-steady"]
+title = "Stadiga bilder i chattar"
+text = """
+När du rullar förbi slutet av en chatt, eller i en chatt som inte har
+något att rulla, hoppar avsändarens bild och bubblans knappar inte
+längre.
+"""
+
+["2026-10-03-0355-no-hover-while-scrolling"]
+title = "Lugnare rullning i e-postlistan"
+text = """
+Medan du rullar i e-postlistan lyser mejl som passerar under pekaren inte
+längre upp och visar sina knappar. Precis som i Gmail lyser mejlet under
+pekaren upp när rullningen har stannat.
+"""
+
+["2026-10-03-0541-rule-rows-drag"]
+title = "Regler dras som konton"
+text = """
+När du drar en regel i Inställningar > Mappar och regler lyfts nu hela
+dess rad, de andra reglerna glider undan, och den landar där du släpper
+den, precis som när du ändrar ordning på konton.
+"""
+
+["2026-10-03-0545-chat-go-down-aligned"]
+title = "Knappen nedåt i linje"
+text = """
+I chattar sitter den runda knappen som tar dig till det nyaste mejlet nu
+rakt ovanför skicka-knappen, på samma linje.
+"""
+
+["2026-10-03-0555-bottom-corners-round"]
+title = "Rundade nedre hörn förblir runda"
+text = """
+Med Katnas egen titelrad och rundade hörn visar fönstrets nedre hörn
+inte längre en fyrkant av bakgrunden utanför den rundade kanten.
+"""
+
+["2026-10-03-0606-account-dot-only"]
+title = "En lugnare e-postlista"
+text = """
+Raderna i den gemensamma inkorgen visar bara kontots färgade prick
+bredvid avsändaren. Peka på pricken för att se vilket konto mejlet hör
+till.
+"""
+
+["2026-10-03-0623-windows-updates"]
+title = "Uppdateringar på Windows"
+text = """
+Katna på Windows uppdaterar sig nu själv. Det letar efter nya versioner
+varje timme, hämtar dem i bakgrunden och installerar dem när du trycker
+på Uppdatera, och öppnas sedan igen.
+"""
+
+["2026-10-03-0643-files-wildcard-search"]
+title = "Jokertecken i sökningen i Filer"
+text = """
+I Filer hittar en sökning på *.pdf nu alla PDF:er, och * och ? fungerar
+var som helst i ett namn: faktura*2026* hittar alla fakturor från 2026.
+Det fungerar för filerna i din e-post och i Google Drive och OneDrive.
+"""
+
+["2026-10-03-0643-linux-package-updates"]
+title = "Uppdateringar för alla Linux-paket"
+text = """
+AppImage och Linux-tarbollen uppdaterar sig nu själva precis som
+Arch-paketet. Med Fedora-paketet, Snap, Flatpak eller Nix talar Katna om
+när en ny version finns och visar det enda kommando som installerar den,
+klart att kopiera.
+"""
+
+["2026-10-03-0708-copy-codes"]
+title = "Kopiera koder från aviseringar"
+text = """
+En avisering om ny e-post med en inloggnings- eller verifieringskod har
+nu en Kopiera-knapp för den, och en med en länk för att verifiera eller
+bekräfta din adress har en knapp som namnger webbplatsen den öppnar.
+Knappar på aviseringar får inte längre en studsande Katna-ikon att följa
+muspekaren.
+"""
+
+["2026-10-03-0730-contact-card-popover"]
+title = "Kontaktkort i smala fönster"
+text = """
+När fönstret inte har plats för kontaktfönstret öppnar ett klick på en
+persons namn eller bild ett kort kort över mejlet, som pekar på där du
+klickade. Gör fönstret bredare så tar hela fönstret dess plats.
+"""
+
+["2026-10-03-0733-compose-icon-turns"]
+title = "Den stora knappens ikon vänder sig när du byter sida"
+text = """
+När du växlar mellan E-post, Kalender, Kontakter, Uppgifter och
+Anteckningar byts ikonen på den stora knappen överst i vänsterfältet inte
+längre i ett enda hopp. Den gamla ikonen vänder sig bort och krymper
+medan den nya vänder sig in, även på telefonens knapp.
+"""
+
+["2026-10-03-0746-sound-sets"]
+title = "Uppsättningar av aviseringsljud"
+text = """
+Inställningar > Aviseringar har nu uppsättningar av ljud: Fåglar, Natur,
+Djur, Insekter, Elektroniskt, Morgon, Katnas klockor eller skrivbordets
+egna. Ny e-post sjunger som en rödhake om du inte väljer en annan
+uppsättning. Varje händelse kan också ha ett eget ljud, eller en
+ljudfil du väljer.
+"""
+
+["2026-10-03-0750-chat-seen-ticks"]
+title = "Vem som såg ditt mejl, i chattar"
+text = """
+I chattvyn blir bockarna på mejl du skickade med spårning färgade när
+någon öppnar det. Bredvid dem räknar ett litet öga öppningarna och en
+länk räknar följda länkar. Vila pekaren på dem för att se vem som öppnade
+det eller följde en länk, som ögat visar i e-postvyn.
+"""
+
+["2026-10-03-0834-drawer-edge-clean"]
+title = "Ingen linje bredvid de inglidande mapparna"
+text = """
+På en telefon eller surfplatta lägger sig mapparna som glider in från
+menyn nu mot kanten utan att en tunn linje blinkar till bredvid dem när
+de landar.
+"""
+
+["2026-10-03-0845-chat-summary-button-hides"]
+title = "Sammanfattningsknappen döljer den igen"
+text = """
+I chattvyn döljer gnistan överst nu sammanfattningen när den visas, och
+visar den igen vid nästa klick, precis som i e-postvyn.
+"""
+
+["2026-10-03-0915-big-button-glides"]
+title = "Den stora knappen glider mellan sidorna"
+text = """
+När mapparna är öppna hoppar den stora knappen överst inte längre till
+sin nya bredd, och dess ord byts inte i ett enda hopp, när du byter
+sida. Knappen glider mjukt till sin nya bredd medan det gamla ordet
+tonas ut uppåt och det nya stiger in, tillsammans med den vändande
+ikonen.
+"""
+
+["2026-10-03-0945-flat-row-hover"]
+title = "En skarpare markering i e-postlistan"
+text = """
+Raden under pekaren lyfts inte längre med en mjuk skugga. Den får i
+stället en platt, lite starkare ton, så att kanterna förblir skarpa i
+ljust och mörkt.
+"""
+
+["2026-10-03-0959-drawer-bounce-back"]
+title = "Mapparna glider in med sin studs, med ren kant"
+text = """
+På en telefon eller surfplatta har mapparna som glider in från menyn
+fått tillbaka sin lilla studs, och ingen skugga ligger längs kanten
+bredvid sidofältet.
+"""
+
+["2026-10-03-1030-crisp-card-edges"]
+title = "Skarpare kortkanter i ljusa färger"
+text = """
+I ljusa färger har e-postlistan, det öppna mejlet och de andra korten nu
+en fin, skarp kant och en mycket kort skugga i stället för en mjuk
+oskärpa, så att de framträder lika tydligt mot sidan som i mörka färger.
+"""
+
+["2026-10-03-1206-matching-choice-chips"]
+title = "Valknappar som passar ihop"
+text = """
+Valen i Sökalternativ, Aktivitet, AI-skrivande och en kontakts
+adressböcker är nu en och samma sorts knapp: lika stor överallt, med en
+bock på den valda.
+"""
+
+["2026-10-03-1453-summary-folds-smoothly"]
+title = "En sammanfattning som fälls ihop mjukt"
+text = """
+När du fäller ihop eller ut en konversations sammanfattning glider den
+nu till sin nya höjd, och dess pil vänder sig med i stället för att
+hoppa.
+"""
+
+["2026-10-03-1523-animation-speed"]
+title = "Välj hur snabbt saker rör sig"
+text = """
+Inställningar > Utseende har Animationshastighet: följ skrivbordets
+hastighet, eller välj Katnas egen, från Snabbare till Långsammare.
+Minska rörelse följer också skrivbordet, eller kan vara alltid eller
+aldrig på.
+"""
+
+["2026-10-03-1536-paste-signature-html"]
+title = "Klistra in en signaturs HTML"
+text = """
+Inställningar > Skriva > Signaturer har Klistra in HTML, för en signatur
+som formgetts på en signaturwebbplats eller i ett annat e-postprogram.
+Den rensas, dess bilder hämtas och följer med inuti mejlet, och
+skrivfönstret visar den exakt som den kommer att skickas.
+"""
+
+["2026-10-03-1546-whats-new-header-stays"]
+title = "Nyheter behåller sin rubrik"
+text = """
+När du rullar i Nyheter flyttas nu bara höjdpunkterna: rubriken stannar
+överst och Uppfattat stannar längst ner.
+"""
+
+["2026-10-03-1611-menus-fade-out"]
+title = "Menyer tonas bort"
+text = """
+En högerklicksmeny tonas nu ut när den stängs, i stället för att
+försvinna.
+"""
+
+["2026-10-03-1625-list-stays-put"]
+title = "E-postlistan står still när du öppnar ett mejl"
+text = """
+Att öppna ett mejl knuffar inte längre ner listan en rad i mappar där
+vissa mejl visar bilagor. Listan stannar exakt där du rullade den.
+"""
+
+["2026-10-03-1628-drawer-top-clean"]
+title = "Ingen skugglinje ovanför de inglidande mapparna"
+text = """
+På en telefon eller surfplatta har mapparna som glider in från menyn
+inte längre en tunn skugglinje längs överkanten, under sökfältet.
+"""
+
+["2026-10-03-1631-toolbar-menus-fade-out"]
+title = "Verktygsfältets menyer tonas också bort"
+text = """
+Menyerna under verktygsfältets knappar, som Mer och markeringsrutan,
+tonas ut när de stängs i stället för att försvinna.
+"""
+
+["2026-10-03-1632-settings-by-app"]
+title = "Inställningar sorterade efter program"
+text = """
+Inställningar har nu en lista med sidor vid sidan: Alla appar för det
+som alla appar delar, sedan E-post, Kalender och Filer för deras egna
+inställningar, där E-posts sidor fälls ut under den. Inställningar
+öppnas för det program du är i, och Kalender har sina första
+inställningar där.
+"""
+
+["2026-10-03-1650-popovers-fade-out"]
+title = "Popup-kort tonas bort"
+text = """
+De små korten som pekar på det de hör till, som kontaktkortet, vem som
+har sett ett mejl, en dag i årsvyn, egna sökdatum och färgväljaren,
+tonas ut när de stängs i stället för att försvinna.
+"""
+
+["2026-10-03-1711-ring-centred"]
+title = "Kontoringarna sitter jämnt"
+text = """
+Den färgade ringen runt din kontobild har nu lika stort mellanrum på
+alla sidor, vid alla skalningar, i stället för att en sida ser en pixel
+tjockare ut.
+"""
+
+["2026-10-03-1717-signature-pictures"]
+title = "Bilder i signaturer laddas igen"
+text = """
+Bilder från webben, som logotyperna i Gmail-signaturer, laddas nu på
+nätverk som bryter Googles anslutning tidigt, i stället för att förbli
+en tom ruta.
+"""
+
+["2026-10-03-1723-import-signatures"]
+title = "Ta med dina signaturer"
+text = """
+Inställningar > Skriva > Signaturer > Importera hittar signaturerna i
+Gmail, och i Thunderbird, Evolution och KMail på den här datorn, med
+deras logotyper. Kryssa i dem du vill ha; de som redan finns i Katna
+lämnas okryssade.
+"""
+
+["2026-10-03-1750-hover-folders-clean"]
+title = "Rena kanter på mappar som öppnas från Skriv"
+text = """
+I ett fönster i surfplattestorlek visar mapparna som öppnas när du vilar
+pekaren på Skriv inte längre tunna linjer längs över- och vänsterkanten.
+"""
+
+["2026-10-03-1757-chat-links"]
+title = "Länkar öppnas från chattar"
+text = """
+I chattvyn öppnas ett mejls länkar med ett klick, precis som i
+e-postvyn: dess egna länkar, och webb- och e-postadresser som står
+utskrivna i texten. Vila pekaren på en för att se vart den leder. Mejl i
+ren text öppnar nu också utskrivna adresser i e-postvyn.
+"""
+
+["2026-10-03-1811-folds-glide"]
+title = "Kalendergrupper fälls ut mjukt"
+text = """
+Ett kontos kalendrar i Kalenderns sidokolumn glider nu upp och ihop, och
+de små pilarna på det som kan fällas ihop (kontaktkortets Mer, chattens
+personer, Aktivitets konton, ett AI-svars sammandrag) vrids i stället för
+att slå om.
+"""
+
+["2026-10-03-1844-signature-layouts"]
+title = "Signaturer från tolv layouter"
+text = """
+Inställningar > Skriva > Signaturer har nu tolv färdiga layouter. Fyll i
+ditt namn, nummer, logotyp, foto och sidor en gång, välj en layout och en
+färg, och se den som mottagaren kommer att se den, ljust, mörkt eller som
+ren text. Bilderna följer med inuti mejlet, så de syns överallt.
+"""
+
+["2026-10-03-1850-copy-about-whats-new"]
+title = "Kopiera från Om och Nyheter"
+text = """
+Texten i Om Katna och Nyheter kan nu markeras och kopieras, som i en
+webbläsare: dra över den, dubbelklicka på ett ord eller trippelklicka på
+ett stycke, och tryck sedan Ctrl+C eller högerklicka > Kopiera. Versionen
+är praktisk att klistra in i en felrapport.
+"""
+
+["2026-10-03-1904-copy-version"]
+title = "Kopiera versionen med ett klick"
+text = """
+Vila pekaren på versionen i Om, Nyheter eller Inställningar så visas en
+liten kopieringsknapp bredvid. Den kopierar versionen, när den byggdes
+och ditt system, redo att klistras in i en felrapport.
+"""
+
+["2026-10-03-1924-settings-in-window"]
+title = "Inställningar tillbaka bredvid din e-post"
+text = """
+Inställningar öppnas åter inuti huvudfönstret, i stället för sidan du var
+på, med sin lista över sidor grupperad i Alla appar och varje app.
+"""
+
+["2026-10-03-1934-copy-any-text"]
+title = "Kopiera text var som helst"
+text = """
+Text som berättar något kan nu markeras och kopieras i hela Katna:
+inställningarnas namn och beskrivningar, kontakt- och händelseuppgifter,
+kontostatus, felmeddelanden, texter på tomma sidor och dialogrutor. Dra
+över den eller dubbelklicka på ett ord, och tryck sedan Ctrl+C eller
+högerklicka > Kopiera. Knappar och rader du klickar på är som förut.
+"""
+
+["2026-10-03-2011-calendar-tasks-switch-month-drag"]
+title = "Uppgifter i Kalendern: visa eller dölj, dra i Månad"
+text = """
+Kalenderns sidolista har en ruta för Uppgifter under dina kalendrar: bocka
+ur den så försvinner uppgifterna från Dag, Vecka, Månad och Schema tills
+du bockar i den igen. I vyn Månad kan du nu dra en uppgift till en annan
+dag; den behåller sin tid, och Ångra flyttar tillbaka den.
+"""
+
+["2026-10-03-2023-tasks-upcoming-completed-sort-select"]
+title = "Kommande, Slutförda, sortering och markering i Uppgifter"
+text = """
+Uppgifter har två nya vyer. Kommande visar de närmaste två veckorna dag
+för dag, med försenade uppgifter överst; dra en uppgift till en annan dag
+för att flytta den. Slutförda visar allt du har bockat av, per dag, och om du
+bockar ur en uppgift kommer den tillbaka. Varje listas ⋮-meny kan sortera
+den efter datum, stjärna eller titel. Ctrl+klicka eller Skift+klicka på
+flera uppgifter för att slutföra, flytta, datera, stjärnmärka eller ta
+bort dem alla på en gång.
+"""
+
+["2026-10-03-2040-task-labels-and-files"]
+title = "Etiketter och filer på uppgifter"
+text = """
+Uppgifter tar samma etiketter som dina anteckningar: lägg till dem i en
+uppgifts detaljer eller skriv #hem i en ny uppgift, och välj en etikett
+till vänster för att se varje uppgift som har den. Släpp en fil på en
+uppgift för att bifoga den, och Lägg till i Uppgifter behåller mejlets
+bilagor. Stjärnan, etiketterna och filerna följer med till Microsoft To Do
+och din CalDAV-server, och stjärnan till Zoho.
+"""
+
+["2026-10-03-2102-notes-pictures-reminders-history"]
+title = "Anteckningar: bilder, påminnelser och historik"
+text = """
+Anteckningar kan ha bilder, påminna dig vid en tid du väljer och spara 30
+dagars historik som du kan återställa. Ctrl+klicka på flera anteckningar
+för att fästa, färglägga, etikettera eller arkivera dem tillsammans, skriv
+[[ för att länka en anteckning till en annan, och lägg till citat, kod och
+avdelare. Skicka en anteckning som mejl eller spara den som Markdown eller
+PDF, och med AI påslaget kan gnistan städa, göra listor av eller
+sammanfatta den.
+"""
+
+["2026-10-03-2102-quick-capture"]
+title = "Fånga en tanke var du än är"
+text = """
+Meta+Alt+T öppnar ett litet kort ovanpå det du håller på med för att
+lägga till en uppgift, och Meta+Alt+N för att skriva en anteckning. Skriv
+”Ring rörmokaren fre 18 #hem” så visar etiketter vilken dag, etikett,
+lista och påminnelse den förstod; klicka på en för att ändra den. Tabb
+växlar mellan Uppgift och Anteckning, Retur sparar. Det finns också i
+systemfältets meny, och i KRunner som task: och note:.
+"""
+
+["2026-10-04-0102-soft-hovers"]
+title = "Mjukare hovring"
+text = """
+När pekaren vilar på appfältet, markeringsrutan, en flik och många andra
+knappar tonas deras markering nu in och ut i stället för att slås på.
+"""
+
+["2026-10-04-0119-cards-lift"]
+title = "Kort som lyfter"
+text = """
+Filer, bilagor, Drive-mappar, inbjudningar, sammanfattningar, svarsrutan
+och e-posttjänsterna i Lägg till konto är nu kort med samma mjuka kant
+och skugga som resten av Katna, i stället för en platt kontur.
+"""
+
+["2026-10-04-0119-notes-select-bar-matches"]
+title = "Anteckningar: mjukare kort som rör sig"
+text = """
+Anteckningar använder nu samma kort, etiketter och fält som resten av
+Katna. Korten vilar på en mjuk skugga och lyfter lätt under pekaren, nya
+anteckningar tonas in, borttagna tonas ut, och en anteckning öppnas och
+stängs med en kort zoom. Fältet du markerar anteckningar med har samma
+rundade form som ”Skriv en anteckning”, så bara dess innehåll ändras.
+Allt följer Minska rörelse och Animationshastighet.
+"""
+
+["2026-10-04-0128-header-labels"]
+title = "Varje etikett på ett öppet mejl"
+text = """
+Ett öppet mejl visar nu alla sina etiketter under ämnet, som i Gmail:
+Inkorgen, Viktigt, dess inkorgsflik, Stjärnmärkt och varje mapp eller
+etikett det ligger i. Peka på en för att ta bort den med dess ×, med
+Ångra.
+"""
+
+["2026-10-04-0150-settings-own-list"]
+title = "Inställningar får fönstret för sig själv"
+text = """
+Medan Inställningar är öppet fälls mapparna undan, så att du bara ser
+Inställningars egen lista över sidor bredvid sidan du valde. De kommer
+tillbaka när du lämnar.
+"""
+
+["2026-10-04-0154-summary-pill"]
+title = "En lugnare sammanfattningsknapp, och ett huvud som stannar kvar"
+text = """
+I chattvyn ligger sammanfattningens gnista nu i en egen liten grå kapsel
+bredvid växeln mellan Chatt och E-post, och lyfts upp i vitt medan
+sammanfattningen visas. Sammanfattningen glider upp och ihop i stället
+för att dyka upp direkt. I både e-postvyn och chattvyn stannar huvudet nu
+överst medan mejlen rullar under det, och e-postlistans rader glider på
+samma sätt under dess övre fält, frostade när Oskärpa är på.
+Inställningar > Experimentellt har en växel för Frostade rubriker om du
+vill ha dem heltäckande.
+"""
+
+["2026-10-04-0204-tasks-motion"]
+title = "Uppgifter som rör sig"
+text = """
+När du bockar av en uppgift fylls dess cirkel, titeln stryks över och
+raden fälls undan. Nya och borttagna uppgifter glider in och ut,
+omsorterade glider till sin plats, och listkorten lyfter lite när du
+pekar på dem.
+"""
+
+["2026-10-04-0225-shortcuts-dialog"]
+title = "Kortkommandon i en överblick"
+text = """
+Hjälp > Kortkommandon, eller tangenten ?, visar nu varje kortkommando i
+ett litet fönster ovanpå din e-post, med en ruta för att hitta ett.
+Tangenterna ändras fortfarande i Inställningar > Kortkommandon.
+"""
+
+["2026-10-04-0305-unified-leave-out"]
+title = "Utelämna en inkorg från Alla konton"
+text = """
+Högerklicka på ett kontos inkorg under Alla konton och välj Utelämna från
+gemensam inkorg: dess e-post fyller inte längre den gemensamma inkorgen,
+men raden finns kvar och öppnar den inkorgen. Klicka på dess öga för att
+ta tillbaka den. I Inställningar > Inkorg kan du också ta bort ett helt
+konto från Alla konton.
+"""
+
+["2026-10-04-0310-leave-account-out"]
+title = "Utelämna ett konto från en app"
+text = """
+Inställningar har nu en sida för Kontakter, Uppgifter och Anteckningar,
+och var och en av dem och Filer listar dina konton med en växel. Stäng av
+en för att utelämna det kontot från appen, och dess påminnelser håller
+tyst. Dess objekt fortsätter att synkroniseras, så de kommer tillbaka så
+snart du slår på den igen.
+"""
+
+["2026-10-04-0320-calendar-leave-account-out"]
+title = "Utelämna ett konto från Kalender"
+text = """
+Inställningar > Kalender listar också dina konton med en växel. Stäng av
+en så försvinner dess kalendrar, händelser och uppgifter från Kalender,
+och dess händelser slutar påminna dig. Kontot fortsätter att
+synkroniseras, så det är tillbaka så snart du slår på det.
+"""
+
+["2026-10-04-0327-contact-card-points-right"]
+title = "Kontaktkort öppnas där du klickade"
+text = """
+I ett smalt fönster pekar kontaktkortet som öppnas från en persons namn
+eller bild nu rakt mot det, i chattvyn och i e-postvyn, och öppnas mjukt
+även första gången: Katna börjar läsa personens uppgifter så snart
+pekaren vilar på dem. Ett andra klick på samma namn eller bild stänger
+kortet.
+"""
+
+["2026-10-04-0336-files-card-corners"]
+title = "Lugnare filkort"
+text = """
+Filkort i Filer och under ett mejl vilar nu på en mjuk skugga och lyfter
+lite när du pekar på ett. Förhandsvisningen förblir som den är: filens
+storlek tonas in uppe till vänster och dess knappar uppe till höger, på
+frostat glas, så att ingenting hoppar.
+"""
+
+["2026-10-04-0345-pane-tops-whole"]
+title = "Fönsterrutornas överkant kapas inte längre"
+text = """
+Med Katnas egen titelrad visas den övre kanten och den mjuka skuggan på
+e-postlistan, det öppna mejlet och sidorutorna nu i sin helhet när
+fönstret inte är maximerat, i stället för att se avhuggna ut under det
+övre fältet.
+"""
+
+["2026-10-04-0354-account-offline"]
+title = "Koppla från ett konto"
+text = """
+Högerklicka på ett konto och välj Gå offline, i en timme eller till i
+morgon om du vill. Katna slutar ansluta till det, och ett överkorsat moln
+visas bredvid dess antal och på din bild. Dess e-post finns kvar här att
+läsa, och det du arkiverar, tar bort eller skickar under tiden går iväg
+när du klickar på molnet för att gå online. Inställningar > Konton har en
+Ansluten-växel för varje konto, och kontokortet kan ta alla konton
+offline på en gång.
+"""
+
+["2026-10-04-0420-resize-steady"]
+title = "Stadigt när du ändrar storlek"
+text = """
+Med Katnas egen titelrad i Wayland står fönstrets innehåll still medan du
+drar i en kant för att ändra storleken, i stället för att skaka.
+"""
+
+["2026-10-04-0531-turn-apps-off"]
+title = "Stäng av apparna du inte använder"
+text = """
+Inställningar › Appar har en växel för Kalender, Kontakter, Uppgifter,
+Anteckningar och Filer, och om du högerklickar på en i appfältet erbjuds
+Stäng av. En avstängd app försvinner från appfältet och dess tangenter,
+och ingenting ändras på dina konton. Med bara E-post påslaget försvinner
+appfältet och Katna är bara en e-postapp.
+"""
+
+["2026-10-04-0635-remove-app-copy"]
+title = "Frigör utrymmet för en app du stängt av"
+text = """
+När du stänger av en app i Inställningar › Appar erbjuds du nu att ta
+bort dess kopia på den här datorn. Ingenting ändras på dina konton, och
+om du slår på den igen laddas den ned på nytt. Nya konton får bara frågor
+om det som apparna du använder behöver.
+"""
+
+["2026-10-04-1100-account-problems"]
+title = "Se och åtgärda kontoproblem på ett ställe"
+text = """
+När ett konto behöver dig säger en rad överst i e-postlistan vad som har
+hänt med enkla ord, med åtgärden bredvid. Ett ändrat lösenord öppnar ett
+litet kort där du skriver det nya, och Katna kontrollerar det innan det
+sparas. En bärnstensfärgad markering visar också kontot i mappfönstret
+och på din bild. När du tappar anslutningen säger en lugn rad att du är
+offline och att e-post du skickar väntar tills du är tillbaka.
+"""
+
+["2026-10-04-1110-contact-card-placeholder"]
+title = "Kontaktkort öppnas i ett stycke"
+text = """
+När en persons uppgifter tar en stund att läsa in öppnas kontaktkortet
+över ett namn eller en bild nu i sin vanliga storlek med svaga linjer där
+uppgifterna ska stå, fyller sedan i dem och anpassar sig mjukt, i stället
+för att öppnas litet och hoppa till högre.
+"""
+
+["2026-10-04-1144-account-problems-settings"]
+title = "Kontoproblem även i Inställningar"
+text = """
+Inställningar › Konton säger nu vad som är fel med ett konto under dess
+namn, till exempel ett nekat lösenord, med åtgärden direkt där.
+"""
+
+["2026-10-04-1147-subject-scrolls-again"]
+title = "Ämnet rullar med mejlet igen"
+text = """
+I e-postvyn rullar ämnet bort med mejlen igen, under ett enkelt
+verktygsfält. I chattvyn ansluter verktygsfältet till det fästa huvudet,
+så bubblorna glider under båda, frostade när Oskärpa är på. E-postlistans
+övre fält behåller nu kortets rundade hörn, och med Frostade rubriker av
+syns raderna inte längre igenom det. I ett fönster i telefonstorlek är
+även de nedre hörnen runda.
+"""
+
+["2026-10-04-1223-outbox"]
+title = "En Utkorg för e-post som inte har skickats"
+text = """
+E-post som inte kunde skickas väntar nu i en Utkorg under Skickat, som
+bara visas när det finns något där. Varje meddelande säger varför med
+enkla ord, med Försök igen, Redigera och Radera. E-post du skickar medan
+ett kontos lösenord har ändrats eller dess inloggning har gått ut väntar
+där och skickas så snart du har åtgärdat det, i stället för att
+misslyckas.
+"""
+
+["2026-10-04-1246-refused-changes"]
+title = "Ändringar som servern nekade ångras inte längre i tysthet"
+text = """
+När en e-postserver fortsätter att neka en ändring, till exempel att
+flytta ett meddelande till en mapp som tagits bort någon annanstans,
+återställer Katna det som det var och säger nu det med enkla ord, med
+Detaljer för serverns eget svar.
+"""
+
+["2026-10-04-1250-phone-scroll-steady"]
+title = "Stadig lista i ett fönster i telefonstorlek"
+text = """
+När du rullar snabbt i e-postlistan i ett fönster i telefonstorlek skakar
+den inte längre upp och ned medan flikarna glider undan.
+"""
+
+["2026-10-04-1309-needs-you-notifications"]
+title = "Besked en gång när ett konto eller ett meddelande behöver dig"
+text = """
+När en e-postserver nekar ditt lösenord, en inloggning går ut eller ett
+meddelande inte kan skickas, säger en skrivbordsavisering det en gång,
+även när Katna Mail är stängt. Dess knapp öppnar åtgärden: Nytt
+lösenord, Logga in eller Utkorgen. Systemfältsikonens verktygstips listar
+det som väntar på dig.
+"""
+
+["2026-10-04-1510-dialogs-fit-phone"]
+title = "Dialogrutor ryms i ett fönster i telefonstorlek"
+text = """
+Nyheter, Om, Uppdateringar, Kortkommandon och de andra dialogrutorna ryms
+nu i ett smalt fönster med Katnas egen ram, i stället för att gå utanför
+dess kanter.
+"""
+
+["2026-10-04-1511-solid-mail-list-bar"]
+title = "Ingenting glider under fälten"
+text = """
+E-postlistans mejl, det öppna mejlet och en chatts bubblor börjar nu
+nedanför sina fält i stället för att glida under dem, och fälten förblir
+heltäckande. Växeln Frostade rubriker är borta, och så även de konstiga
+hörn den förde med sig.
+"""
+
+["2026-10-04-1525-menus-inside-window"]
+title = "Menyer och verktygstips stannar inne i fönstret"
+text = """
+Med Katnas egen fönsterram spiller högerklicksmenyer, popup-rutor och
+verktygstips nära en kant inte längre över på fönstrets skugga; de
+stannar inne i det.
+"""
+
+["2026-10-04-1525-unified-stacked-picture"]
+title = "Alla konton visar varje bild"
+text = """
+Med Alla konton öppet är bilden uppe till höger nu en liten bunt av dina
+kontons bilder, med +N för resten, så att du direkt kan skilja den från
+ett enskilt konto. Peka på den så glider bilderna mjukt isär.
+"""
+
+["2026-10-04-2338-all-accounts-row"]
+title = "Tillbaka till Alla konton från kontomenyn"
+text = """
+Kontomenyn börjar nu med Alla konton, med antalet olästa, så att ett
+klick tar dig tillbaka efter att du valt ett enskilt konto. Menyn
+markerar det som är öppet med en bock, och när du rullar över bilden
+stannar den också vid Alla konton.
+"""
+
+["2026-10-05-1257-service-starts-again"]
+title = "Katna startar sin bakgrundstjänst själv"
+text = """
+Om tjänsten som synkroniserar din e-post och visar systemfältsikonen inte
+körs startar Katna Mail den igen av sig själv. Ingen terminal behövs. Om
+den ändå inte startar säger en rad ovanför din e-post det, med Starta
+igen och detaljerna att kopiera till en rapport.
+"""
+
+["2026-10-05-1430-stuck-window-replaced"]
+title = "Katna Mail öppnas även om en kopia har fastnat"
+text = """
+Om Katna Mail slutade svara i bakgrunden stänger det nu den fastnade
+kopian och öppnar ett nytt fönster när du öppnar det igen, i stället för
+att ingenting händer.
+"""
+
+["2026-10-05-1605-read-receipts-as-ticks"]
+title = "Läskvitton visas inte längre som e-post"
+text = """
+När någons e-postprogram skickar ett läskvitto för e-post du har skickat
+visas det inte längre som ett nytt meddelande i konversationen. Ditt
+meddelande får blå bockar och en rad som säger vem som läste det och när,
+och kvittot markeras som läst, så att det inte aviserar dig. Det finns
+kvar i din brevlåda och i sökningen.
+"""
+
+["2026-10-05-1620-reply-tools-fold"]
+title = "Svarsverktygen ryms i ett smalt fönster"
+text = """
+När läsfönstret eller fönstret är smalt går formateringsfältet och raden
+bredvid Skicka inte längre utanför svaret. Verktyg som inte får plats
+flyttas till ⋮ Mer, de minst använda först, och i en telefon visar
+Skicka bara sin ikon.
+"""
+
+["2026-10-05-1637-read-receipts-out-of-the-list"]
+title = "Läskvitton håller sig borta från e-postlistan"
+text = """
+Ett läskvitto för e-post du har skickat visas inte längre i e-postlistan
+som en rad med ”Läst: …”. Konversationen behåller sitt eget ämne och sin
+förhandsvisning, och din skickade e-post visar bockarna.
+"""
+
+["2026-10-05-1640-windows-frost"]
+title = "Frostat glas i Windows"
+text = """
+Menyer, popup-rutor, dialogrutor, visarens fält och frostade paneler
+gör nu det som ligger under dem suddigt även i Windows, med samma
+inställningar för Oskärpestyrka och Opacitet som i Linux. Slå på eller av
+det i Inställningar, Experimentellt, Frostade menyer och dialogrutor.
+"""
+
+["2026-10-06-0156-phone-activity"]
+title = "Aktivitet i en telefon"
+text = """
+I ett fönster i telefonstorlek ligger Aktivitet nu i sökfältet bredvid
+din kontobild, med antalet nya öppningar och klick. Dess lista ryms inne
+i fönstret.
+"""
+
+["2026-10-06-0215-pin-bar-no-jump"]
+title = "Att fästa håller chatten stilla"
+text = """
+När du fäster eller lossar ett mejl i chattvyn hoppar konversationen inte
+längre, inte ens allra längst ned: det fästa fältet tonas in ovanför den
+och meddelandena stannar där de var.
+"""
+
+["2026-10-06-0942-fainter-row-marks"]
+title = "Diskretare kryssrutor och stjärnor"
+text = """
+I e-postlistan är en rads kryssruta, stjärna och Viktigt-markering
+svagare tills du pekar på raden. Satta stjärnor och markeringar visas som
+förut.
+"""
+
+["2026-10-06-1448-activity-beside-calendar"]
+title = "Aktivitet bland de andra knapparna"
+text = """
+I ett bredare fönster ligger knappen Aktivitet nu till höger tillsammans
+med Kalender och Inställningar. Med Alla konton öppet glider kontobilderna
+isär när du hovrar utan att knapparna bredvid dem flyttas.
+"""
+
+["2026-10-06-1524-search-fills-bar"]
+title = "En längre sökruta"
+text = """
+I ett brett fönster når sökrutan nu fram till knapparna till höger i
+stället för att sluta halvvägs. Sökalternativen öppnas centrerade under
+den och behåller en bekväm bredd.
+"""
+
+["2026-10-07-0110-follow-up-for-you"]
+title = "Uppföljningar som skickar sig själva"
+text = """
+I menyn bredvid Skicka kan Följ upp om ingen svarar nu skicka en kort
+uppföljning åt dig när ingen svarar: skriv den en gång, välj när, och
+välj om ett försök till ska göras. Den skickas på vardagar under
+arbetstid, stoppas så snart någon svarar (autosvar räknas inte), och
+väntar på dig i stället för att skickas sent om datorn var avstängd. En
+etikett bredvid Skicka visar vad som är inställt. Eller nöj dig med en
+påminnelse, nu med valfritt datum.
+"""
+
+["2026-10-07-0117-drawer-logo"]
+title = "Katnas logotyp i lådan"
+text = """
+I en telefon visar lådan med dina mappar nu Katnas logotyp bredvid sitt
+namn, i din accentfärg, i stället för ett enkelt kuvert. På en surfplatta,
+där det övre fältet redan visar dem, börjar lådan med dina mappar.
+"""
+
+["2026-10-07-0118-clock-popup"]
+title = "En snyggare skrivbordsklocka"
+text = """
+I Katna Digital Clock ligger dina tidszoner nu bredvid datumet överst,
+och listan Uppgifter fälls ihop med ett klick på sin rubrik. Att lägga
+till en händelse öppnar ett litet fönster för Ny händelse i stället för
+hela appen. Nya uppgifter visas inte längre två gånger efter en hicka i
+synkroniseringen.
+"""
+
+["2026-10-07-0232-mcp-server"]
+title = "Låt AI-assistenter använda din e-post"
+text = """
+Inställningar › MCP-server låter AI-assistenter på den här datorn, till
+exempel Claude Desktop, Claude Code och LM Studio, söka i och läsa din
+e-post och spara utkast som du kan granska. Den är avstängd tills du slår
+på den. Välj vilka konton de ser, kopiera det du ska klistra in i din
+assistent, och se vad de har gjort på sistone. Assistenter skickar, tar
+bort eller flyttar aldrig e-post.
+"""
+
+["2026-10-07-0359-waiting-for-reply"]
+title = "Se vad som väntar på svar"
+text = """
+E-post du skickat med en uppföljning eller en påminnelse listas under
+Väntar, nedanför Skickat. Dess rader visar en etikett med vad som händer
+härnäst och när, i Väntar och även i Inkorgen. Öppna ett för att flytta
+uppföljningen till en annan tid, skicka den nu eller stoppa den.
+"""
+
+["2026-10-07-0505-follow-ups-in-chats"]
+title = "Uppföljningar i chattvyn"
+text = """
+I chattvyn visas en uppföljning som väntar på att skickas som en svag
+bubbla i slutet av chatten, med Redigera, Skicka nu och Stoppa. För att
+ställa in en högerklickar du eller håller ned Skicka och väljer Följ upp
+om ingen svarar.
+"""
+
+["2026-10-07-0603-remind-me"]
+title = "Bli påmind om vilket mejl som helst"
+text = """
+Tryck H på ett mejl, eller använd Påminn mig bredvid Snooza, för att bli
+påmind vid en viss tid medan mejlet ligger kvar där det är. Om mejlet
+säger att något ska vara klart till en viss dag föreslår Katna morgonen
+innan. Påminnelser är uppgifter i Uppgifter, listas under Påminnelser och
+visas på mejlets rad. B snoozar.
+"""
+
+["2026-10-07-0718-snooze-extras"]
+title = "Snooza vet när någon svarar"
+text = """
+En snoozad konversation kommer tillbaka direkt när någon skriver i den. I
+Välj datum och tid kan du skriva ”tis 15” eller ”om 2 timmar”. Ett nytt
+mejls avisering kan snooza det i en timme eller till i morgon.
+"""
+
+["2026-10-07-0802-your-snooze-times"]
+title = "Snooza på ditt sätt"
+text = """
+Ställ in vad Senare i dag, I morgon, I helgen och Nästa vecka betyder,
+och lägg till en egen tid, i Inställningar > Inkorg. Snoozade listar
+e-post efter när den kommer tillbaka. I en telefon sveper du en rad åt
+vänster för att snooza den.
+"""
+
+["2026-10-07-0913-pick-date-in-place"]
+title = "Välj ett datum där du klickade"
+text = """
+Välj datum och tid glider nu in i själva menyn för snooze och Påminn mig,
+i stället för en ruta mitt i fönstret. Bakåtpilen tar dig tillbaka till
+tiderna.
+"""
+
+["2026-10-07-0953-nudges"]
+title = "Frågor som ingen besvarade kommer tillbaka"
+text = """
+E-post du skickat som frågade något och inte fått svar på tre dagar
+kommer tillbaka överst i Inkorgen med ”Skickat för 3 dagar sedan. Följa
+upp?”. Klicka på det för att följa upp, eller på x för att lägga undan
+det. Inställningar > Inkorg stänger av det.
+"""

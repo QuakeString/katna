@@ -166,6 +166,7 @@ files-share-remove = Erişimi kaldır
 files-share-copy-link = Bağlantıyı kopyala
 files-share-share = Paylaş
 files-share-done = Bitti
+files-share-close = Kapat
 files-share-sharing = Paylaşılıyor…
 files-share-shared = { $count ->
     [one] 1 kişiyle paylaşıldı

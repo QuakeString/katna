@@ -45,6 +45,13 @@ impl Accent {
     }
 }
 
+/// How far from the text colour toward the card dim text goes over
+/// see-through cards: near enough that previews keep 4.5:1 at 70 % over a
+/// bright wallpaper.
+const FROSTED_DIM: f32 = 0.2;
+/// The same for faint text: hints keep about 3:1.
+const FROSTED_FAINT: f32 = 0.38;
+
 /// Colors as `0xRRGGBBAA`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Theme {
@@ -103,12 +110,25 @@ pub struct Theme {
     /// A faint light edge around raised things in dark colors
     /// (`widgets::elevation`); transparent in light colors.
     pub rim: u32,
+    /// A crisp hairline ring around cards in light colors, where a white
+    /// card on a near-white page has no edge of its own
+    /// (`widgets::card_shadow`); transparent in dark colors, whose cards
+    /// stand off the darker page by their fill.
+    pub card_edge: u32,
     /// Floating panels (menus, popovers) are frosted glass: `menu`,
     /// translucent, over a blur of this many device pixels of what is
     /// behind. 0 keeps them opaque ([`Theme::frosted`]).
     pub frost: u32,
     /// How opaque the frost's tint is, in percent.
     pub frost_tint: u8,
+    /// How opaque the cards are, in percent: 100, or less when a blurred
+    /// window's blur shows through them ([`Theme::frosted_panes`]).
+    pub pane_tint: u8,
+    /// How opaque the open mail's card is while it shows a chat, in
+    /// percent.
+    pub chat_tint: u8,
+    /// How opaque the search box is while it is open, in percent.
+    pub search_tint: u8,
     pub switch_off: u32,
     /// Category tab colors: primary, promotions, social, updates, forums.
     pub tabs: [u32; 5],
@@ -119,6 +139,10 @@ pub struct Theme {
     pub snackbar_text: u32,
     /// Error text and the frame of a field in error.
     pub error: u32,
+    /// What needs the user before it gets better: an account signed out
+    /// or refusing its password, a mail not sent. Amber, readable as
+    /// text. Errors stay [`Theme::error`].
+    pub warning: u32,
     /// Shadow color; its alpha is the strongest shadow.
     pub shadow: u32,
 }
@@ -195,8 +219,8 @@ impl Theme {
 
     /// For a blurred window: the frame paints the page's color, translucent
     /// (`katna_chrome::WindowChrome::blurred`); the window paints no
-    /// backdrop over it. Cards stay opaque, so text stays readable; menus
-    /// are frosted ([`Theme::frosted`]).
+    /// backdrop over it. Cards stay opaque unless they are frosted too
+    /// ([`Theme::frosted_panes`]); menus are frosted ([`Theme::frosted`]).
     pub fn translucent(self) -> Self {
         Self {
             backdrop: 0x00000000,
@@ -215,6 +239,68 @@ impl Theme {
         }
     }
 
+    /// For a blurred window: the cards (`pane`), the open mail's card
+    /// while it shows a chat (`chat`) and the open search box (`search`)
+    /// let the blur through, each this many percent opaque over the blurred
+    /// desktop, or stay solid (`None`). Bubbles, menus and fields keep
+    /// their own fills. Over see-through cards dim and faint text move
+    /// closer to the text colour, so previews stay readable over a bright
+    /// wallpaper.
+    pub fn frosted_panes(self, pane: Option<u8>, chat: Option<u8>, search: Option<u8>) -> Self {
+        let pane_tint = pane.map_or(100, |p| p.min(100));
+        let see_through = pane_tint < 100 || chat.is_some_and(|c| c < 100);
+        // The stronger of a colour and one `t` of the way from the text
+        // to the card.
+        let lift = |color: u32, t: f32| {
+            let lifted = mix(self.text, self.surface, t);
+            if contrast(lifted, self.surface) > contrast(color, self.surface) {
+                lifted
+            } else {
+                color
+            }
+        };
+        Self {
+            text_dim: if see_through {
+                lift(self.text_dim, FROSTED_DIM)
+            } else {
+                self.text_dim
+            },
+            text_faint: if see_through {
+                lift(self.text_faint, FROSTED_FAINT)
+            } else {
+                self.text_faint
+            },
+            pane_tint,
+            chat_tint: chat.map_or(pane_tint, |c| c.min(100)),
+            search_tint: search.map_or(100, |s| s.min(100)),
+            ..self
+        }
+    }
+
+    /// The cards' fill: the mail list, the open mail, the person card and
+    /// the pages.
+    pub fn pane(&self) -> u32 {
+        fade(self.surface, f32::from(self.pane_tint) / 100.0)
+    }
+
+    /// The open mail's card while it shows a chat.
+    pub fn chat_pane(&self) -> u32 {
+        fade(self.surface, f32::from(self.chat_tint) / 100.0)
+    }
+
+    /// `fill` laid on a card ([`Theme::pane`]), such as a row's: as it is
+    /// on a solid card. On one the blur shows through, the card's own
+    /// colour adds nothing and any other becomes the faintest tint that
+    /// gives that colour over the solid card, so a read row shows the
+    /// card's frost as an unread one does, only a shade darker.
+    pub fn on_pane(&self, fill: u32) -> u32 {
+        if self.pane_tint >= 100 {
+            fill
+        } else {
+            tint_over(self.surface | 0xff, fill)
+        }
+    }
+
     /// For what is drawn on a raised surface (a dialog, the Compose
     /// window): its cards are [`Theme::raised`], and the fills measured
     /// from the card (fields, chips, switches) are lifted with it. The
@@ -227,6 +313,8 @@ impl Theme {
         Self {
             surface: self.raised,
             read_row: self.raised,
+            pane_tint: 100,
+            chat_tint: 100,
             search_focused: ink(0.1),
             chip: ink(0.1),
             switch_off: ink(0.18),
@@ -388,8 +476,12 @@ impl Theme {
             menu: if dark { ink(MENU_LIFT) } else { surface },
             raised: if dark { ink(RAISED_LIFT) } else { surface },
             rim: if dark { fade(text, RIM) } else { 0x00000000 },
+            card_edge: if dark { 0x00000000 } else { base.card_edge },
             frost: 0,
             frost_tint: 100,
+            pane_tint: 100,
+            chat_tint: 100,
+            search_tint: 100,
             switch_off: ink(0.18),
             tabs,
             folder_icons: base.folder_icons,
@@ -397,6 +489,9 @@ impl Theme {
             snackbar: base.snackbar,
             snackbar_text: base.snackbar_text,
             error: readable(s.negative, surface, 3.0),
+            warning: s
+                .neutral
+                .map_or(base.warning, |c| readable(c, surface, 4.5)),
             shadow: base.shadow,
         }
     }
@@ -414,7 +509,7 @@ fn opaque(color: u32) -> u32 {
 }
 
 /// Black or white, whichever reads better on `color`.
-fn on(color: u32) -> u32 {
+pub fn on(color: u32) -> u32 {
     if contrast(color, 0x000000ff) > contrast(color, 0xffffffff) {
         0x000000ff
     } else {
@@ -516,8 +611,13 @@ const LIGHT: Theme = Theme {
     menu: 0xffffffff,
     raised: 0xffffffff,
     rim: 0x00000000,
+    // The shadow's ink at 10%.
+    card_edge: 0x3c40431a,
     frost: 0,
     frost_tint: 100,
+    pane_tint: 100,
+    chat_tint: 100,
+    search_tint: 100,
     switch_off: 0xe1e3e1ff,
     tabs: [0x0b57d0ff, 0x188038ff, 0x1a73e8ff, 0xe37400ff, 0x9334e6ff],
     folder_icons: FolderIcons {
@@ -534,6 +634,7 @@ const LIGHT: Theme = Theme {
     snackbar: 0x313033ff,
     snackbar_text: 0xf4eff4ff,
     error: 0xb3261eff,
+    warning: 0xa05a00ff,
     shadow: 0x3c40434d,
 };
 
@@ -570,8 +671,12 @@ const DARK: Theme = Theme {
     menu: 0x383a3dff,
     raised: 0x333537ff,
     rim: 0xe3e3e321,
+    card_edge: 0x00000000,
     frost: 0,
     frost_tint: 100,
+    pane_tint: 100,
+    chat_tint: 100,
+    search_tint: 100,
     switch_off: 0x44474eff,
     tabs: [0xa8c7faff, 0x81c995ff, 0x8ab4f8ff, 0xfcad70ff, 0xd7aefbff],
     folder_icons: FolderIcons {
@@ -588,6 +693,7 @@ const DARK: Theme = Theme {
     snackbar: 0xe3e3e3ff,
     snackbar_text: 0x1f1f1fff,
     error: 0xf2b8b5ff,
+    warning: 0xfdd663ff,
     shadow: 0x00000099,
 };
 
@@ -599,6 +705,35 @@ pub fn mix(a: u32, b: u32, t: f32) -> u32 {
         let ca = ((a >> shift) & 0xff) as f32;
         let cb = ((b >> shift) & 0xff) as f32;
         out | (((ca + (cb - ca) * t).round() as u32) << shift)
+    })
+}
+
+/// The faintest colour that, laid over the opaque `base`, gives `fill`
+/// laid over it: transparent when `fill` adds nothing.
+pub fn tint_over(base: u32, fill: u32) -> u32 {
+    let channel = |c: u32, i: u32| ((c >> (24 - 8 * i)) & 0xff) as f32;
+    let fill_alpha = channel(fill, 3) / 255.0;
+    // What `fill` makes of the base, channel by channel.
+    let target: [f32; 3] = std::array::from_fn(|i| {
+        let (b, f) = (channel(base, i as u32), channel(fill, i as u32));
+        b + (f - b) * fill_alpha
+    });
+    // The least alpha that can reach it with a colour in range.
+    let alpha = (0..3).fold(0.0_f32, |a, i| {
+        let b = channel(base, i);
+        let d = target[i as usize] - b;
+        let room = if d < 0.0 { b } else { 255.0 - b };
+        if room > 0.0 { a.max(d.abs() / room) } else { a }
+    });
+    if alpha < 1.0 / 255.0 {
+        return 0;
+    }
+    (0..3).fold((alpha * 255.0).round() as u32, |out, i| {
+        let b = channel(base, i);
+        let c = (b + (target[i as usize] - b) / alpha)
+            .round()
+            .clamp(0.0, 255.0) as u32;
+        out | (c << (24 - 8 * i))
     })
 }
 
@@ -615,14 +750,120 @@ const AVATARS: [u32; 8] = [
 
 /// The avatar color for an address: stable for the same address.
 pub fn avatar_color(address: &str) -> u32 {
-    // FNV-1a, so the color does not change between runs or versions.
-    let hash = address
+    AVATARS[(address_hash(address) % AVATARS.len() as u64) as usize]
+}
+
+/// FNV-1a of the lower-case address, so colors do not change between
+/// runs or versions.
+fn address_hash(address: &str) -> u64 {
+    address
         .to_lowercase()
         .bytes()
         .fold(0xcbf2_9ce4_8422_2325_u64, |h, b| {
             (h ^ u64::from(b)).wrapping_mul(0x0100_0000_01b3)
-        });
-    AVATARS[(hash % AVATARS.len() as u64) as usize]
+        })
+}
+
+/// The colors an account can wear: its dot on lines of the unified inbox,
+/// the ring round its picture and its letter avatar. None is an inbox
+/// tab's color, so a dot never reads as a tab. By name (as kept in
+/// `mail.account_colors`): its light-mode color, readable with white
+/// text, and its dark-mode one.
+pub const ACCOUNT_COLORS: [(&str, u32, u32); 8] = [
+    ("red", 0xd93025ff, 0xf28b82ff),
+    ("pink", 0xc2185bff, 0xf48fb1ff),
+    ("magenta", 0xa0189bff, 0xe68ae0ff),
+    ("brown", 0x8d6e63ff, 0xbcaaa4ff),
+    ("olive", 0x827717ff, 0xc0ca33ff),
+    ("teal", 0x007b83ff, 0x4fb8c0ff),
+    ("indigo", 0x3949abff, 0x9fa8daff),
+    ("slate", 0x5f6368ff, 0x9aa0a6ff),
+];
+
+/// The color an account wears until one is picked: its letter avatar's
+/// old color where that is in [`ACCOUNT_COLORS`], so accounts look as
+/// before; else one picked from the address.
+pub fn default_account_color(address: &str) -> &'static str {
+    let old = avatar_color(address);
+    ACCOUNT_COLORS
+        .iter()
+        .find(|(_, light, _)| *light == old || (old == 0xc5221fff && *light == 0xd93025ff))
+        .map_or_else(
+            || ACCOUNT_COLORS[(address_hash(address) % ACCOUNT_COLORS.len() as u64) as usize].0,
+            |(name, ..)| name,
+        )
+}
+
+/// Colors of one's own that accounts get, in turn, once every one of
+/// [`ACCOUNT_COLORS`] is taken: light-mode colors, none a tab's.
+pub const MORE_ACCOUNT_COLORS: [u32; 6] = [
+    0x8e2430ff, 0xa87b00ff, 0x00695cff, 0x5b7f1bff, 0x6d4c41ff, 0x455a64ff,
+];
+
+/// The dark-mode color of an account color of one's own `light`.
+pub fn account_dark(light: u32) -> u32 {
+    mix(light, 0xffffffff, 0.4)
+}
+
+/// Whether `color` is close to an inbox tab's color, in light or dark,
+/// so its dot could read as a tab.
+#[cfg(test)]
+fn near_tab_color(color: u32) -> bool {
+    let distance = |a: u32, b: u32| {
+        [24, 16, 8]
+            .iter()
+            .map(|shift| {
+                let d = ((a >> shift) & 0xff) as i32 - ((b >> shift) & 0xff) as i32;
+                d * d
+            })
+            .sum::<i32>()
+    };
+    let dark = account_dark(color);
+    LIGHT.tabs.iter().any(|&tab| distance(color, tab) < 40 * 40)
+        || DARK.tabs.iter().any(|&tab| distance(dark, tab) < 40 * 40)
+}
+
+/// Gives each of `addresses` (lower case, in the folder pane's order)
+/// without a color in `picked` one no other account wears: its old
+/// letter color when free, else the next free one of [`ACCOUNT_COLORS`],
+/// then of [`MORE_ACCOUNT_COLORS`] (as `#rrggbb`). Whether any was given.
+pub fn settle_account_colors(
+    addresses: &[String],
+    picked: &mut std::collections::BTreeMap<String, String>,
+) -> bool {
+    let mut worn: Vec<String> = addresses
+        .iter()
+        .filter_map(|a| picked.get(a).cloned())
+        .collect();
+    let mut changed = false;
+    for address in addresses {
+        if picked.contains_key(address) {
+            continue;
+        }
+        let first = default_account_color(address).to_owned();
+        let more = MORE_ACCOUNT_COLORS
+            .iter()
+            .map(|c| format!("#{:06x}", c >> 8));
+        let color = std::iter::once(first.clone())
+            .chain(ACCOUNT_COLORS.iter().map(|(n, ..)| (*n).to_owned()))
+            .chain(more)
+            .find(|c| !worn.contains(c))
+            .unwrap_or(first);
+        worn.push(color.clone());
+        picked.insert(address.clone(), color);
+        changed = true;
+    }
+    changed
+}
+
+/// The account color called `name` (the default one for unknown
+/// names): its light and dark colors.
+pub fn account_color(name: &str) -> (u32, u32) {
+    let (_, light, dark) = ACCOUNT_COLORS
+        .iter()
+        .find(|(n, ..)| *n == name)
+        .unwrap_or(&ACCOUNT_COLORS[0]);
+    (*light, *dark)
 }
 
 /// The letter on an avatar: the first letter or digit of the name.
@@ -636,6 +877,30 @@ pub fn initial(name: &str) -> String {
 mod tests {
     use super::*;
     use katna_platform::colors::DesktopScheme;
+
+    #[test]
+    fn rows_tint_a_frosted_card_lightly() {
+        // Over the solid card the tint gives the row's own colour.
+        let over = |base: u32, tint: u32| {
+            let a = (tint & 0xff) as f32 / 255.0;
+            mix(base, tint | 0xff, a) | 0xff
+        };
+        for (surface, row) in [(0xffffffff, 0xf2f6fcff), (0x1f2124ff, 0x191b1eff)] {
+            let tint = tint_over(surface, row);
+            assert!(tint & 0xff < 0x40, "{tint:08x} is faint");
+            let got = over(surface, tint);
+            for shift in [24, 16, 8] {
+                let d = ((got >> shift) & 0xff).abs_diff((row >> shift) & 0xff);
+                assert!(d <= 1, "{got:08x} vs {row:08x}");
+            }
+        }
+        assert_eq!(tint_over(0xffffffff, 0xffffffff), 0);
+        // On a frosted card the card's colour adds nothing; a read row is
+        // as see-through as an unread one, only tinted.
+        let th = LIGHT.frosted_panes(Some(75), None, None);
+        assert_eq!(th.on_pane(th.surface), 0);
+        assert!(th.on_pane(th.read_row) & 0xff < 0x40);
+    }
 
     #[test]
     fn mixes_colors() {
@@ -773,6 +1038,7 @@ mod tests {
             accent: 0x3daee9ff,
             accent_fg: 0xffffffff,
             negative: 0xda4453ff,
+            neutral: None,
         };
         let desktop = SystemColors::default().with_schemes(vec![DesktopScheme {
             id: "kde:BreezeClassic".to_owned(),
@@ -834,6 +1100,8 @@ mod tests {
             assert!(luminance(th.raised) > luminance(th.page));
             assert!(luminance(th.menu) > luminance(th.raised));
             assert_ne!(th.rim & 0xff, 0);
+            // Dark cards stand off the page by their fill, with no ring.
+            assert_eq!(th.card_edge, 0);
             let lifted = th.lifted();
             assert_eq!(lifted.surface, th.raised);
             assert!(luminance(lifted.search_focused) > luminance(lifted.surface));
@@ -846,12 +1114,43 @@ mod tests {
         // Light colors are left as they were: shadows show there.
         assert_eq!(LIGHT.raised, LIGHT.surface);
         assert_eq!(LIGHT.rim, 0);
+        // A white card on the near-white page gets a hairline ring.
+        assert_ne!(LIGHT.card_edge & 0xff, 0);
         assert_eq!(LIGHT.lifted(), LIGHT);
     }
 
     #[test]
     fn avatars() {
         assert_eq!(avatar_color("Kay@Enron.com"), avatar_color("kay@enron.com"));
+        // No account color is a tab's, in either mode.
+        for th in [&LIGHT, &DARK] {
+            for (name, light, dark) in ACCOUNT_COLORS {
+                let color = if th.dark { dark } else { light };
+                assert!(!th.tabs.contains(&color), "{name}");
+            }
+        }
+        for address in ["kay@enron.com", "ada@example.org", "me@gmail.com"] {
+            let name = default_account_color(address);
+            assert!(ACCOUNT_COLORS.iter().any(|(n, ..)| *n == name));
+        }
+        for color in MORE_ACCOUNT_COLORS {
+            assert!(!near_tab_color(color), "{color:08x}");
+        }
+        for (name, light, _) in ACCOUNT_COLORS {
+            assert!(!near_tab_color(light), "{name}");
+        }
+        assert!(near_tab_color(0x0b57d0ff) && near_tab_color(0x1a70e0ff));
+        // Eight accounts wear eight colors; a picked one is kept.
+        let addresses: Vec<String> = (0..8).map(|n| format!("a{n}@example.org")).collect();
+        let mut picked =
+            std::collections::BTreeMap::from([(addresses[3].clone(), "#123456".to_owned())]);
+        assert!(settle_account_colors(&addresses, &mut picked));
+        assert_eq!(picked[&addresses[3]], "#123456");
+        let mut worn: Vec<&String> = picked.values().collect();
+        worn.sort();
+        worn.dedup();
+        assert_eq!(worn.len(), 8);
+        assert!(!settle_account_colors(&addresses, &mut picked));
         assert_eq!(initial("  kay mann"), "K");
         assert_eq!(initial("\"Ölaf\""), "Ö");
         assert_eq!(initial("--"), "?");

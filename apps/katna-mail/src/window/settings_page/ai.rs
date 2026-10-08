@@ -17,9 +17,10 @@ use katna_i18n::tr;
 use katna_ui::px;
 use katna_ui::{InputEvent, TextInput};
 
-use super::{MailWindow, SAVE_DELAY, chip, control_column, field_box};
+use super::{MailWindow, SAVE_DELAY, chip, control_column};
 use crate::daemon;
 use crate::theme::Theme;
+use crate::widgets::line_field;
 use crate::widgets::{icon, icon_button_colored, menu, menu_item, outlined_button, tip};
 use crate::window::settings::Change;
 
@@ -433,7 +434,6 @@ impl MailWindow {
                 }),
             );
         let field = |id: &'static str, label: String, input: &Entity<TextInput>| {
-            let focus = input.focus_handle(cx);
             div()
                 .flex()
                 .flex_col()
@@ -444,14 +444,7 @@ impl MailWindow {
                         .text_color(rgba(th.text_dim))
                         .child(label),
                 )
-                .child(
-                    field_box(id, th)
-                        .h(px(40.0))
-                        .flex()
-                        .items_center()
-                        .on_click(move |_, window: &mut Window, cx| window.focus(&focus, cx))
-                        .child(div().flex_1().child(input.clone())),
-                )
+                .child(line_field(id, input, th, cx))
         };
         let key_state = match page.ai.key_saved {
             Some(true) => Some(

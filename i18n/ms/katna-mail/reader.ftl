@@ -8,6 +8,8 @@ reader-close = Tutup
 reader-back = Kembali
 reader-mark-unread = Tandai sebagai belum dibaca
 reader-move-to = Alih ke
+reader-snooze = Tunda
+reader-remind = Ingatkan saya
 reader-more = Lagi
 reader-original-colors = Tunjukkan warna asal
 reader-dark-colors = Tunjukkan dalam warna gelap
@@ -35,6 +37,7 @@ reader-tick-bounced = Tidak sampai: melantun { $when }
 reader-tick-read = Dibaca { $when } (resit baca)
 reader-tick-opened = Dibuka, terakhir { $when } (penjejakan pembukaan)
 reader-starred = Dibintangi
+reader-chip-remove = Alih keluar { $label }
 reader-not-starred = Tidak dibintangi
 reader-too-long = Mesej ini terlalu panjang untuk dipaparkan sepenuhnya.
 reader-encrypted-images = Imej dari web tidak sekali-kali dimuatkan dalam mel yang disulitkan.
@@ -52,6 +55,7 @@ reader-details-subject = subjek:
 
 reader-downloading = Memuat turun mesej ini daripada pelayan…
 reader-download-failed = Tidak dapat memuat turun mesej ini.
+reader-download-offline = Akaun ini di luar talian. Pergi ke dalam talian untuk memuat turun mesej ini.
 reader-try-again = Cuba lagi
 
 ## Reply row
@@ -96,6 +100,7 @@ tracking-clicked = { $who } mengikuti pautan { $clicks } kali, terakhir { $when 
 tracking-maybe-opened = { $who } mungkin telah membukanya (Apple Mail memuatkan gambar demi privasi)
 tracking-seen-none = Belum ada sesiapa yang membukanya atau mengikuti pautan
 tracking-receipt = { $who } menghantar resit baca
+tracking-receipt-read = { $who } telah membacanya (resit baca), { $when }
 tracking-receipt-displayed = Resit baca: { $who } membuka mesej anda
 tracking-receipt-other = Resit baca: { $who } memadamkan atau menguruskan mesej anda tanpa membukanya
 

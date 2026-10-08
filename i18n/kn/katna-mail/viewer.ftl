@@ -20,12 +20,20 @@ viewer-page-count = { $count }ರಲ್ಲಿ
 viewer-go-to-page-tip = ಪುಟ ಸಂಖ್ಯೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ Enter ಒತ್ತಿ (Ctrl+G)
 viewer-rotate-clockwise-tip = ಪ್ರದಕ್ಷಿಣವಾಗಿ ತಿರುಗಿಸಿ (Ctrl+R)
 viewer-rotate-anticlockwise-tip = ಅಪ್ರದಕ್ಷಿಣವಾಗಿ ತಿರುಗಿಸಿ (Ctrl+Shift+R)
+viewer-dark-pages-tip = ಗಾಢ ಪುಟಗಳು
+viewer-light-pages-tip = ಪುಟಗಳನ್ನು ಇದ್ದಂತೆಯೇ ತೋರಿಸಿ
 viewer-fit-page-tip = ಪುಟಕ್ಕೆ ಹೊಂದಿಸಿ
 viewer-fit-picture-tip = ವಿಂಡೋಗೆ ಹೊಂದಿಸಿ
 viewer-fit-width-tip = ಅಗಲಕ್ಕೆ ಹೊಂದಿಸಿ
 viewer-real-size-tip = ನಿಜವಾದ ಗಾತ್ರ (1:1)
 viewer-page-back-tip = ಹಿಂದಿನ ಪುಟ
 viewer-page-on-tip = ಮುಂದಿನ ಪುಟ
+viewer-more-tip = ಇನ್ನಷ್ಟು
+viewer-zoom-in = ಝೂಮ್ ಇನ್
+viewer-zoom-out = ಝೂಮ್ ಔಟ್
+viewer-real-size = ನಿಜವಾದ ಗಾತ್ರ
+viewer-rotate-anticlockwise = ಅಪ್ರದಕ್ಷಿಣವಾಗಿ ತಿರುಗಿಸಿ
+viewer-rotate-clockwise = ಪ್ರದಕ್ಷಿಣವಾಗಿ ತಿರುಗಿಸಿ
 
 ## Marking up a PDF
 

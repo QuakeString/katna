@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Round corners on spreadsheets"
+text = """
+A spreadsheet in the attachment viewer is rounded at all four corners
+now. The grey column letters on top and the sheet tabs at the bottom
+used to square them off.
+"""

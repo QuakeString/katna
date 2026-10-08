@@ -34,7 +34,7 @@ contacts-account-signed-in = { $address }ରେ ପୁଣି ସାଇନ ଇନ
 contacts-account-sign-in-refused = { $provider } Katnaକୁ ଭିତରକୁ ଆସିବାକୁ ଦେଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ, ଏବଂ ଆପଣଙ୍କ ଯୋଗାଯୋଗକୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ।
 contacts-account-password = ସର୍ଭର ପାସୱାର୍ଡ ଗ୍ରହଣ କଲା ନାହିଁ। Yahoo, iCloud, Zoho ଓ ଅନ୍ୟମାନଙ୍କୁ ଏକ ଆପ ପାସୱାର୍ଡ ଦରକାର।
 contacts-account-change-password = ପାସୱାର୍ଡ ବଦଳାନ୍ତୁ
-contacts-account-change-password-tooltip = ସେଟିଂସ > ଆକାଉଣ୍ଟ ଖୋଲନ୍ତୁ
+contacts-account-change-password-tooltip = ନୂଆ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ; Katna ଏହାକୁ ସର୍ଭର ସହ ଯାଞ୍ଚ କରେ
 contacts-account-failed = ଯୋଗାଯୋଗ ପଢ଼ାଯାଇପାରିଲା ନାହିଁ।
 # $reason is the server's own words, in English.
 contacts-account-error = ଯୋଗାଯୋଗ ପଢ଼ାଯାଇପାରିଲା ନାହିଁ: { $reason }

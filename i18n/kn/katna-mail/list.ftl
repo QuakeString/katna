@@ -39,6 +39,7 @@ list-results = “{ $query }” ಗಾಗಿ ಫಲಿತಾಂಶಗಳು
 list-results-corrected = “{ $query }” ಗಾಗಿ ಫಲಿತಾಂಶಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ
 list-search-instead = ಬದಲಿಗೆ “{ $query }” ಗಾಗಿ ಹುಡುಕಿ
 list-files-more = +{ $count }
+list-replied = ನೀವು ಪ್ರತ್ಯುತ್ತರಿಸಿದ್ದೀರಿ
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -338,6 +339,8 @@ list-empty-tab = { $tab } ನಲ್ಲಿ ಯಾವುದೇ ಮೇಲ್ ಇಲ
 list-empty-tab-unknown = ಈ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಯಾವುದೇ ಮೇಲ್ ಇಲ್ಲ.
 list-empty-folder = { $folder } ನಲ್ಲಿ ಯಾವುದೇ ಸಂದೇಶಗಳಿಲ್ಲ.
 list-empty-folder-unknown = ಈ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಯಾವುದೇ ಸಂದೇಶಗಳಿಲ್ಲ.
+list-empty-waiting = ಉತ್ತರಕ್ಕಾಗಿ ಯಾವುದೂ ಕಾಯುತ್ತಿಲ್ಲ.
+list-empty-reminders = ಯಾವುದೇ ಜ್ಞಾಪನೆಗಳಿಲ್ಲ. ಒಂದನ್ನು ಸೇರಿಸಲು ಮೇಲ್‌ನಲ್ಲಿ H ಒತ್ತಿ.
 list-first-sync = ನಿಮ್ಮ ಮೇಲ್ ಪಡೆಯಲಾಗುತ್ತಿದೆ…
 list-first-sync-detail = ಮೇಲ್ ಬಂದಂತೆ ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ.
 
@@ -357,6 +360,14 @@ row-tracking-clicked = { $recipients } ರಲ್ಲಿ { $opened } ಜನರು 
 row-pin = ಮೇಲ್ಭಾಗಕ್ಕೆ ಪಿನ್ ಮಾಡಿ
 row-unpin = ಅನ್‌ಪಿನ್ ಮಾಡಿ
 row-snoozed-until = { $when } ವರೆಗೆ ಸ್ನೂಜ್ ಮಾಡಲಾಗಿದೆ
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = ಇಂದು
+snoozed-group-tomorrow = ನಾಳೆ
+snoozed-group-this-week = ಈ ವಾರ
+snoozed-group-later = ನಂತರ
+row-follow-up-step = ಫಾಲೋ-ಅಪ್ { $steps } ರಲ್ಲಿ { $step } · { $date }
+row-follow-up-waiting = ಫಾಲೋ-ಅಪ್ ಕಾಯುತ್ತಿದೆ
+row-reminder = ಜ್ಞಾಪನೆ { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -379,6 +390,7 @@ menu-not-important = ಪ್ರಮುಖವಲ್ಲ ಎಂದು ಗುರುತ
 menu-pin = ಮೇಲ್ಭಾಗಕ್ಕೆ ಪಿನ್ ಮಾಡಿ
 menu-unpin = ಅನ್‌ಪಿನ್ ಮಾಡಿ
 menu-snooze = ಸ್ನೂಜ್ ಮಾಡಿ
+menu-remind = ನನಗೆ ನೆನಪಿಸಿ
 menu-unsnooze = ಸ್ನೂಜ್ ರದ್ದುಮಾಡಿ
 menu-add-to-tasks = ಕಾರ್ಯಗಳಿಗೆ ಸೇರಿಸಿ
 menu-schedule-meeting = ಸಭೆಯನ್ನು ನಿಗದಿಪಡಿಸಿ
@@ -390,7 +402,26 @@ menu-move-to = ಇಲ್ಲಿಗೆ ಸರಿಸಿ
 menu-follow-up = ಮುಂದಿನ ಕ್ರಮ
 menu-more = ಇನ್ನಷ್ಟು
 menu-move-to-heading = ಇಲ್ಲಿಗೆ ಸರಿಸಿ:
+menu-move-to-search = ಇಲ್ಲಿಗೆ ಸರಿಸಿ…
+menu-label-as = ಲೇಬಲ್ ಹಾಕಿ
+menu-label-as-search = ಲೇಬಲ್ ಹಾಕಿ…
+menu-no-folder = “{ $name }” ಹೆಸರಿನ ಫೋಲ್ಡರ್ ಇಲ್ಲ
+menu-no-label = “{ $name }” ಹೆಸರಿನ ಲೇಬಲ್ ಇಲ್ಲ
+menu-create-folder = “{ $name }” ರಚಿಸಿ
+menu-always-move = { $name } ಅವರ ಮೇಲ್ ಅನ್ನು ಯಾವಾಗಲೂ ಇಲ್ಲಿಗೆ ಸರಿಸಿ
+toast-always-move-failed = ಮೇಲ್ ಸರಿಸಲಾಗಿದೆ, ಆದರೆ ನಿಯಮ ರಚಿಸಲಾಗಲಿಲ್ಲ: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } ಸಂವಾದ
+       *[other] { $count } ಸಂವಾದಗಳು
+    }
+   *[message] { $count ->
+        [one] { $count } ಸಂದೇಶ
+       *[other] { $count } ಸಂದೇಶಗಳು
+    }
+}
 menu-find-from = { $name } ಅವರಿಂದ ಬಂದ ಇಮೇಲ್‌ಗಳನ್ನು ಹುಡುಕಿ
+menu-make-rule = ನಿಯಮ ರಚಿಸಿ…
 
 ## Snackbar after an action on mail in the list
 
@@ -424,6 +455,8 @@ toast-moved = { $kind ->
        *[other] { $count } ಸಂದೇಶಗಳನ್ನು ಸರಿಸಲಾಗಿದೆ.
     }
 }
+toast-label-added = ಲೇಬಲ್ “{ $label }” ಸೇರಿಸಲಾಗಿದೆ.
+toast-label-removed = ಲೇಬಲ್ “{ $label }” ತೆಗೆದುಹಾಕಲಾಗಿದೆ.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] ಸಂವಾದಕ್ಕೆ ನಕ್ಷತ್ರ ಹಾಕಲಾಗಿದೆ.

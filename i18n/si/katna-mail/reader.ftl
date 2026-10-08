@@ -8,6 +8,8 @@ reader-close = වසන්න
 reader-back = ආපසු
 reader-mark-unread = නොකියවූ ලෙස සලකුණු කරන්න
 reader-move-to = වෙත ගෙන යන්න
+reader-snooze = කල් දමන්න
+reader-remind = මට මතක් කරන්න
 reader-more = තවත්
 reader-original-colors = මුල් වර්ණ පෙන්වන්න
 reader-dark-colors = අඳුරු වර්ණවලින් පෙන්වන්න
@@ -35,6 +37,7 @@ reader-tick-bounced = බෙදාහැරුණේ නැත: බවුන්�
 reader-tick-read = කියෙව්වා: { $when } (කියවූ බවට රිසිට්පත)
 reader-tick-opened = විවෘත කළා, අවසන් වරට { $when } (විවෘත කිරීම් ලුහුබැඳීම)
 reader-starred = තරු යෙදූ
+reader-chip-remove = { $label } ඉවත් කරන්න
 reader-not-starred = තරු නොයෙදූ
 reader-too-long = පණිවිඩය සම්පූර්ණයෙන් පෙන්වීමට තරම් දිග වැඩිය.
 reader-encrypted-images = සංකේතනය කළ තැපැල් වල වෙබයේ රූප කිසි විටෙකත් පූරණය නොකෙරේ.
@@ -52,6 +55,7 @@ reader-details-subject = විෂය:
 
 reader-downloading = මෙම පණිවිඩය සේවාදායකයෙන් බාගනිමින්…
 reader-download-failed = මෙම පණිවිඩය බාගත කළ නොහැකි විය.
+reader-download-offline = මෙම ගිණුම නොබැඳියි. මෙම පණිවිඩය බාගත කිරීමට සබැඳි වන්න.
 reader-try-again = නැවත උත්සාහ කරන්න
 
 ## Reply row
@@ -107,6 +111,7 @@ tracking-clicked = { $who } සබැඳියක් { $clicks ->
 tracking-maybe-opened = { $who } එය විවෘත කළා විය හැක (Apple Mail පෞද්ගලිකත්වය සඳහා පින්තූර පූරණය කරයි)
 tracking-seen-none = තවම කිසිවෙක් එය හෝ සබැඳියක් විවෘත කර නැත
 tracking-receipt = { $who } කියවූ බවට රිසිට්පතක් එව්වා
+tracking-receipt-read = { $who } එය කියෙව්වා (කියවූ බවට රිසිට්පත), { $when }
 tracking-receipt-displayed = කියවූ බවට රිසිට්පත: { $who } ඔබේ පණිවිඩය විවෘත කළා
 tracking-receipt-other = කියවූ බවට රිසිට්පත: { $who } ඔබේ පණිවිඩය විවෘත නොකර මැකුවා හෝ හැසිරෙව්වා
 

@@ -8,6 +8,8 @@ reader-close = Sluiten
 reader-back = Terug
 reader-mark-unread = Markeren als ongelezen
 reader-move-to = Verplaatsen naar
+reader-snooze = Snoozen
+reader-remind = Herinner mij
 reader-more = Meer
 reader-original-colors = Originele kleuren tonen
 reader-dark-colors = In donkere kleuren tonen
@@ -35,6 +37,7 @@ reader-tick-bounced = Niet afgeleverd: teruggestuurd { $when }
 reader-tick-read = Gelezen { $when } (leesbevestiging)
 reader-tick-opened = Geopend, laatst { $when } (volgen van openen)
 reader-starred = Met ster
+reader-chip-remove = { $label } verwijderen
 reader-not-starred = Zonder ster
 reader-too-long = Het bericht is te lang om volledig te tonen.
 reader-encrypted-images = Afbeeldingen van internet worden nooit geladen in versleutelde e-mail.
@@ -52,6 +55,7 @@ reader-details-subject = onderwerp:
 
 reader-downloading = Dit bericht downloaden van de server…
 reader-download-failed = Kan dit bericht niet downloaden.
+reader-download-offline = Dit account is offline. Ga online om dit bericht te downloaden.
 reader-try-again = Opnieuw proberen
 
 ## Reply row
@@ -108,6 +112,7 @@ tracking-clicked = { $who } heeft { $clicks ->
 tracking-maybe-opened = { $who } heeft het misschien geopend (Apple Mail laadt afbeeldingen voor privacy)
 tracking-seen-none = Nog niemand heeft het geopend of een link gevolgd
 tracking-receipt = { $who } heeft een leesbevestiging gestuurd
+tracking-receipt-read = { $who } heeft het gelezen (leesbevestiging), { $when }
 tracking-receipt-displayed = Leesbevestiging: { $who } heeft je bericht geopend
 tracking-receipt-other = Leesbevestiging: { $who } heeft je bericht verwijderd of afgehandeld zonder het te openen
 

@@ -20,12 +20,20 @@ viewer-page-count = / { $count }
 viewer-go-to-page-tip = ページ番号を入力して Enter キーを押します（Ctrl+G）
 viewer-rotate-clockwise-tip = 右に回転 (Ctrl+R)
 viewer-rotate-anticlockwise-tip = 左に回転 (Ctrl+Shift+R)
+viewer-dark-pages-tip = ダークページ
+viewer-light-pages-tip = ページをそのまま表示
 viewer-fit-page-tip = ページに合わせる
 viewer-fit-picture-tip = ウィンドウに合わせる
 viewer-fit-width-tip = 幅に合わせる
 viewer-real-size-tip = 実際のサイズ (1:1)
 viewer-page-back-tip = 前のページ
 viewer-page-on-tip = 次のページ
+viewer-more-tip = その他
+viewer-zoom-in = 拡大
+viewer-zoom-out = 縮小
+viewer-real-size = 実際のサイズ
+viewer-rotate-anticlockwise = 左に回転
+viewer-rotate-clockwise = 右に回転
 
 ## Marking up a PDF
 

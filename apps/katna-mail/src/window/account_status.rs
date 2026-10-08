@@ -11,12 +11,14 @@
 
 use std::collections::{HashMap, HashSet};
 
-use gpui::{AnyElement, Context, FontWeight, SharedString, Task, Window, div, prelude::*, rgba};
+use gpui::{
+    AnyElement, ClickEvent, Context, FontWeight, Pixels, Point, SharedString, Task, Window, div,
+    prelude::*, rgba,
+};
 use katna_dbus::task_state;
 use katna_ui::px;
 
 use super::MailWindow;
-use super::settings_page::Section;
 use crate::daemon::{self, AccountState, AddError};
 use crate::theme::Theme;
 use crate::widgets::tip;
@@ -196,11 +198,20 @@ impl MailWindow {
         of: Of,
         id: i64,
         fix: Fix,
+        at: Point<Pixels>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
         if fix == Fix::Password {
-            self.open_settings_page(Section::Accounts, window, cx);
+            // The same card as the mail list's New password.
+            if let Some(address) = self
+                .accounts
+                .iter()
+                .find(|a| a.id.0 == id)
+                .map(|a| a.address.clone())
+            {
+                self.open_password_card(id, address, at, window, cx);
+            }
             return;
         }
         let Some(connection) = self.daemon.clone() else {
@@ -335,8 +346,8 @@ impl MailWindow {
                         .text_color(rgba(th.accent))
                         .hover(|s| s.underline())
                         .tooltip(tip(hint, th))
-                        .on_click(cx.listener(move |this, _, window, cx| {
-                            this.fix_account(of, id, fix, window, cx)
+                        .on_click(cx.listener(move |this, event: &ClickEvent, window, cx| {
+                            this.fix_account(of, id, fix, event.position(), window, cx)
                         }))
                         .child(label)
                         .into_any_element(),
@@ -388,13 +399,13 @@ impl MailWindow {
             .text_size(px(13.0))
             .line_height(px(18.0))
             .text_color(rgba(th.text_faint))
-            .children(text)
+            // The reason can be copied, to look it up or report it.
+            .children(text.map(|text| self.copyable(text, th)))
             .when(!why.is_empty(), |d| {
                 d.child(
-                    div()
+                    self.copyable(why.to_owned(), th)
                         .text_size(px(12.0))
-                        .line_height(px(16.0))
-                        .child(why.to_owned()),
+                        .line_height(px(16.0)),
                 )
             })
             .children(action)

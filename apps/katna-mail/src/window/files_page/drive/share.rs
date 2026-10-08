@@ -21,7 +21,8 @@ use super::super::super::compose::address_suggestions;
 use crate::outgoing;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    Check, avatar, checkbox, elevation, filled_button, icon, menu, menu_item, outlined_button,
+    Check, avatar, checkbox, filled_button, icon, icon_button, menu, menu_item, outlined_button,
+    tip,
 };
 
 const WIDTH: f32 = 520.0;
@@ -516,7 +517,8 @@ impl MailWindow {
                             .justify_center()
                             .rounded_full()
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 if let Some(sharing) = &mut this.library.cloud.sharing
                                     && ix < sharing.people.len()
@@ -542,7 +544,8 @@ impl MailWindow {
             .text_size(px(13.0))
             .text_color(rgba(th.text_dim))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(|this, e: &MouseDownEvent, _, cx| {
@@ -694,7 +697,7 @@ impl MailWindow {
                         .py(px(8.0))
                         .text_size(px(13.0))
                         .text_color(rgba(th.error))
-                        .child(tr!("files-share-failed", error = err.clone()))
+                        .child(self.copyable(tr!("files-share-failed", error = err.clone()), th))
                         .into_any_element(),
                 ],
                 None,
@@ -762,7 +765,8 @@ impl MailWindow {
                             .text_size(px(14.0))
                             .font_weight(FontWeight::MEDIUM)
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                             .on_mouse_down(
                                 MouseButton::Left,
                                 cx.listener(|this, e: &MouseDownEvent, _, cx| {
@@ -789,7 +793,7 @@ impl MailWindow {
                 .mt(px(12.0))
                 .text_size(px(13.0))
                 .text_color(rgba(th.error))
-                .child(err)
+                .child(self.copyable(err, th))
         });
         let busy = sharing.busy;
         let foot = div()
@@ -828,10 +832,26 @@ impl MailWindow {
             .pb(px(18.0))
             .child(
                 div()
-                    .text_size(px(22.0))
-                    .line_height(px(30.0))
-                    .truncate()
-                    .child(tr!("files-share-title", name = sharing.entry.name.as_str())),
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap(px(8.0))
+                    // The close button sits in the corner, like other dialogs'.
+                    .mr(px(-12.0))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .text_size(px(22.0))
+                            .line_height(px(30.0))
+                            .truncate()
+                            .child(tr!("files-share-title", name = sharing.entry.name.as_str())),
+                    )
+                    .child(
+                        icon_button("files-share-close", "close", 20.0, th)
+                            .tooltip(tip(tr!("files-share-close"), th))
+                            .on_click(cx.listener(|this, _, _, cx| this.close_drive_share(cx))),
+                    ),
             )
             .child(field)
             .children(suggestions)
@@ -852,11 +872,8 @@ impl MailWindow {
             .max_h(px((vh - 48.0).max(240.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::super::super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::super::super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(|this, _, _, cx| {

@@ -7,8 +7,11 @@
 tasks-create = ಹೊಸ ಕಾರ್ಯ
 tasks-all = ಎಲ್ಲಾ ಕಾರ್ಯಗಳು
 tasks-today = ಇಂದು
+tasks-upcoming = ಮುಂಬರುವವು
 tasks-starred = ನಕ್ಷತ್ರ ಹಾಕಿರುವುದು
+tasks-completed-view = ಪೂರ್ಣಗೊಂಡವು
 tasks-new-list = ಹೊಸ ಪಟ್ಟಿಯನ್ನು ರಚಿಸಿ
+tasks-labels-heading = ಲೇಬಲ್‌ಗಳು
 tasks-on-this-computer = ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ
 tasks-my-tasks = ನನ್ನ ಕಾರ್ಯಗಳು
 tasks-account-sign-in = ಕಾರ್ಯಗಳನ್ನು ತೋರಿಸಲು ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಿ
@@ -16,7 +19,7 @@ tasks-account-signed-in = { $address } ಗೆ ಮತ್ತೆ ಸೈನ್ ಇ�
 tasks-account-sign-in-refused = { $provider } Katna ಅನ್ನು ಒಳಗೆ ಬಿಡಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ, ಮತ್ತು ನಿಮ್ಮ ಕಾರ್ಯಗಳಿಗೆ ಪ್ರವೇಶ ಅನುಮತಿಸಿ.
 tasks-account-refused = ಸರ್ವರ್ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸ್ವೀಕರಿಸಲಿಲ್ಲ. Yahoo, iCloud, Zoho ಮತ್ತು ಇತರವುಗಳಿಗೆ ಆ್ಯಪ್ ಪಾಸ್‌ವರ್ಡ್ ಬೇಕು.
 tasks-account-change-password = ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾಯಿಸಿ
-tasks-account-change-password-tooltip = ಸೆಟ್ಟಿಂಗ್‌ಗಳು > ಖಾತೆಗಳು ತೆರೆಯಿರಿ
+tasks-account-change-password-tooltip = ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಟೈಪ್ ಮಾಡಿ; Katna ಅದನ್ನು ಸರ್ವರ್‌ನೊಂದಿಗೆ ಪರಿಶೀಲಿಸುತ್ತದೆ
 tasks-account-not-enabled = Katna ಗಾಗಿ ಕಾರ್ಯಗಳ ಪ್ರವೇಶವನ್ನು ಇನ್ನೂ ಆನ್ ಮಾಡಿಲ್ಲ.
 tasks-account-failed = ಕಾರ್ಯ ಪಟ್ಟಿಗಳನ್ನು ಓದಲಾಗಲಿಲ್ಲ.
 tasks-account-error = ಕಾರ್ಯ ಪಟ್ಟಿಗಳನ್ನು ಓದಲಾಗಲಿಲ್ಲ: { $reason }
@@ -41,7 +44,14 @@ tasks-title-placeholder = ಶೀರ್ಷಿಕೆ
 tasks-add-step = ಉಪಕಾರ್ಯವನ್ನು ಸೇರಿಸಿ
 tasks-empty = ಇನ್ನೂ ಯಾವುದೇ ಕಾರ್ಯಗಳಿಲ್ಲ. ಮೇಲೆ ಒಂದನ್ನು ಸೇರಿಸಿ.
 tasks-starred-empty = ಇಲ್ಲಿ ನೋಡಲು ಕಾರ್ಯಕ್ಕೆ ನಕ್ಷತ್ರ ಹಾಕಿ.
+tasks-label-empty = ಈ ಲೇಬಲ್ ಇರುವ ಬಾಕಿ ಕಾರ್ಯಗಳಿಲ್ಲ.
 tasks-today-empty = ಇಂದಿಗೆ ಏನೂ ಇಲ್ಲ.
+tasks-completed-empty = ನೀವು ಪೂರ್ಣಗೊಳಿಸುವ ಕಾರ್ಯಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.
+tasks-upcoming-add = { $day } ಗೆ ಕಾರ್ಯ ಸೇರಿಸಿ
+tasks-upcoming-overdue-day = { $weekday } { $day }
+tasks-from-mail-quiet = ಮೇಲ್‌ನಿಂದ
+tasks-from-note-quiet = ಟಿಪ್ಪಣಿಯಿಂದ
+tasks-steps-done = { $done }/{ $count }
 tasks-today-date = { $weekday }, { $day }
 tasks-overdue = ಅವಧಿ ಮೀರಿದ
 tasks-completed = { $count ->
@@ -49,6 +59,11 @@ tasks-completed = { $count ->
    *[other] ಪೂರ್ಣಗೊಂಡವು ({ $count })
 }
 tasks-list-options = ಪಟ್ಟಿ ಆಯ್ಕೆಗಳು
+tasks-sort-by = ವಿಂಗಡಿಸುವ ಕ್ರಮ
+tasks-sort-my-order = ನನ್ನ ಕ್ರಮ
+tasks-sort-date = ದಿನಾಂಕ
+tasks-sort-starred = ಇತ್ತೀಚೆಗೆ ನಕ್ಷತ್ರ ಹಾಕಿದವು
+tasks-sort-title = ಶೀರ್ಷಿಕೆ
 tasks-rename-list = ಪಟ್ಟಿಯ ಹೆಸರು ಬದಲಿಸಿ
 tasks-delete-list = ಪಟ್ಟಿಯನ್ನು ಅಳಿಸಿ
 tasks-mark-done = ಪೂರ್ಣಗೊಂಡಿದೆ ಎಂದು ಗುರುತಿಸಿ
@@ -65,6 +80,17 @@ tasks-from-note = ಟಿಪ್ಪಣಿ
 tasks-open-note = ಟಿಪ್ಪಣಿ ತೆರೆಯಿರಿ
 tasks-note-gone = ಆ ಟಿಪ್ಪಣಿ ಇನ್ನು ಇಲ್ಲಿಲ್ಲ.
 tasks-no-subject = (ವಿಷಯವಿಲ್ಲ)
+
+## Several tasks selected (Ctrl+click, Shift+click)
+
+tasks-selected = { $count ->
+    [one] { $count } ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ
+   *[other] { $count } ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ
+}
+tasks-select-clear = ಆಯ್ಕೆ ತೆರವುಗೊಳಿಸಿ
+tasks-select-move = ಪಟ್ಟಿಗೆ ಸರಿಸಿ
+tasks-select-date = ದಿನಾಂಕ ಹೊಂದಿಸಿ
+tasks-next-week = ಮುಂದಿನ ವಾರ
 
 ## The details dialog
 
@@ -85,6 +111,13 @@ tasks-remind-on-time = ಆ ಸಮಯದಲ್ಲಿ
 tasks-remind-morning = ಆ ದಿನ, { $time }
 tasks-remind-hour-before = ಒಂದು ಗಂಟೆ ಮೊದಲು
 tasks-remind-day-before = ಒಂದು ದಿನ ಮೊದಲು
+tasks-label-add = ಲೇಬಲ್ ಸೇರಿಸಿ
+tasks-label-task = ಕಾರ್ಯಕ್ಕೆ ಲೇಬಲ್ ಹಾಕಿ
+tasks-files-attach = ಫೈಲ್‌ಗಳನ್ನು ಲಗತ್ತಿಸಿ
+tasks-files-pick = ಲಗತ್ತಿಸಿ
+tasks-file-open = ತೆರೆಯಿರಿ
+tasks-file-remove = ಫೈಲ್ ತೆಗೆದುಹಾಕಿ
+tasks-file-here = ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಮಾತ್ರ
 tasks-cancel = ರದ್ದುಮಾಡಿ
 tasks-save = ಉಳಿಸಿ
 tasks-not-a-time = “{ $text }” ಸಮಯವಲ್ಲ, ಉದಾಹರಣೆಗೆ { $example }.
@@ -101,6 +134,13 @@ tasks-due-at = { $day }, { $time }
 tasks-toast-done = ಕಾರ್ಯ ಪೂರ್ಣಗೊಂಡಿದೆ
 tasks-toast-next = ಆಯಿತು. ಮುಂದಿನದು { $date } ರಂದು
 tasks-toast-deleted = ಕಾರ್ಯವನ್ನು ಅಳಿಸಲಾಗಿದೆ
+tasks-files-added = { $count ->
+    [one] ಫೈಲ್ ಲಗತ್ತಿಸಲಾಗಿದೆ
+   *[other] { $count } ಫೈಲ್‌ಗಳನ್ನು ಲಗತ್ತಿಸಲಾಗಿದೆ
+}
+tasks-file-removed = “{ $name }” ತೆಗೆದುಹಾಕಲಾಗಿದೆ
+tasks-files-left-out = ಲಗತ್ತಿಸಲಾಗಿಲ್ಲ: { $names }. ಕಾರ್ಯವು { $limit } ವರೆಗಿನ ಫೈಲ್‌ಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತದೆ, ಫೋಲ್ಡರ್‌ಗಳನ್ನಲ್ಲ.
+tasks-file-missing = ಆ ಫೈಲ್ ಈಗ ಇಲ್ಲಿಲ್ಲ.
 tasks-toast-added = { $count ->
     [one] ಕಾರ್ಯಗಳಿಗೆ ಸೇರಿಸಲಾಗಿದೆ
    *[other] { $count } ಕಾರ್ಯಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ
@@ -110,3 +150,27 @@ tasks-toast-list-deleted = ಪಟ್ಟಿಯನ್ನು ಅಳಿಸಲಾಗ�
 tasks-toast-moved = { $list } ಗೆ ಸರಿಸಲಾಗಿದೆ
 tasks-toast-placed = ಕಾರ್ಯವನ್ನು ಸರಿಸಲಾಗಿದೆ
 tasks-toast-rescheduled = ಕಾರ್ಯದ ಸಮಯ ಬದಲಾಯಿಸಲಾಗಿದೆ
+tasks-toast-rescheduled-several = { $count ->
+    [one] ಕಾರ್ಯವನ್ನು ಮರುನಿಗದಿಪಡಿಸಲಾಗಿದೆ
+   *[other] { $count } ಕಾರ್ಯಗಳನ್ನು ಮರುನಿಗದಿಪಡಿಸಲಾಗಿದೆ
+}
+tasks-toast-done-several = { $count ->
+    [one] ಕಾರ್ಯ ಪೂರ್ಣಗೊಂಡಿದೆ
+   *[other] { $count } ಕಾರ್ಯಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ
+}
+tasks-toast-open-several = { $count ->
+    [one] ಕಾರ್ಯವನ್ನು ಪೂರ್ಣಗೊಂಡಿಲ್ಲ ಎಂದು ಗುರುತಿಸಲಾಗಿದೆ
+   *[other] { $count } ಕಾರ್ಯಗಳನ್ನು ಪೂರ್ಣಗೊಂಡಿಲ್ಲ ಎಂದು ಗುರುತಿಸಲಾಗಿದೆ
+}
+tasks-toast-starred = { $count ->
+    [one] ಕಾರ್ಯಕ್ಕೆ ನಕ್ಷತ್ರ ಹಾಕಲಾಗಿದೆ
+   *[other] { $count } ಕಾರ್ಯಗಳಿಗೆ ನಕ್ಷತ್ರ ಹಾಕಲಾಗಿದೆ
+}
+tasks-toast-unstarred = { $count ->
+    [one] ನಕ್ಷತ್ರ ತೆಗೆದುಹಾಕಲಾಗಿದೆ
+   *[other] { $count } ಕಾರ್ಯಗಳಿಂದ ನಕ್ಷತ್ರ ತೆಗೆದುಹಾಕಲಾಗಿದೆ
+}
+tasks-toast-deleted-several = { $count ->
+    [one] ಕಾರ್ಯ ಅಳಿಸಲಾಗಿದೆ
+   *[other] { $count } ಕಾರ್ಯಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ
+}

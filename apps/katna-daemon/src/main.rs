@@ -88,6 +88,12 @@ fn run() -> ExitCode {
         let instance =
             match Instance::start(paths, secrets, WorkerConfig::default(), connection).await {
                 Ok(instance) => instance,
+                // Not a failure: the service runs. Exiting cleanly keeps
+                // systemd from starting this one again every few seconds.
+                Err(err @ katna_daemon::StartError::AlreadyRunning) => {
+                    eprintln!("katna-daemon: {err}");
+                    return ExitCode::SUCCESS;
+                }
                 Err(err) => return fail(err),
             };
         match zbus::Connection::system().await {

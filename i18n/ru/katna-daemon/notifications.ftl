@@ -16,6 +16,10 @@ notify-unknown-sender = Неизвестный отправитель
 notify-snooze-back = Отложенная почта вернулась
 notify-no-reply = Ответа пока нет
 notify-no-reply-to = Никто не ответил на «{ $subject }».
+notify-follow-up-sent = Повторное письмо отправлено
+notify-follow-up-sent-to = Никто не ответил на «{ $subject }», поэтому Katna отправила повторное письмо.
+notify-follow-up-waiting = Повторное письмо не отправлено
+notify-follow-up-waiting-to = Срок наступил, пока компьютер был выключен. «{ $subject }» снова во «Входящих».
 notify-tracking-opened = Письмо «{ $subject }» открыто: { $who }
 notify-tracking-clicked = Переход по ссылке в «{ $subject }»: { $who }
 
@@ -24,6 +28,16 @@ notify-tracking-clicked = Переход по ссылке в «{ $subject }»: 
 notify-update-ready = Katna Mail можно обновить
 notify-update-ready-body = Версия { $version } загружена. Обновление установит её и перезапустит Katna Mail.
 notify-update = Обновить
+notify-signed-out = Войдите снова
+notify-signed-out-body = { $provider } завершил сеанс Katna в { $address }. Синхронизация почты остановлена.
+notify-sign-in = Войти
+notify-password-refused = Пароль не принят
+notify-password-refused-body = Почтовый сервер не принял пароль для { $address }. Возможно, он изменился.
+notify-new-password = Новый пароль
+notify-not-sent = Письмо «{ $subject }» не отправлено
+notify-not-sent-no-subject = Письмо не отправлено
+notify-not-sent-body = Оно в «Исходящих», там указана причина.
+notify-open-outbox = Открыть «Исходящие»
 notify-event-now = Сейчас
 notify-event-in-minutes = { $count ->
     [one] Через { $count } минуту
@@ -57,6 +71,12 @@ notify-reply-all = Ответить всем
 notify-mark-read = Отметить как прочитанное
 notify-mark-all-read = Отметить все как прочитанные
 notify-archive = Архивировать
+notify-snooze-hour = Отложить на 1 час
+notify-snooze-tomorrow = Завтра
+notify-copy-code = Копировать { $code }
+notify-link-verify = Подтвердить на { $domain }
+notify-link-confirm = Подтвердить на { $domain }
+notify-link-activate = Активировать на { $domain }
 notify-archived = В архиве
 notify-archived-count = { $count ->
     [one] { $count } письмо убрано из «Входящих»
@@ -65,5 +85,7 @@ notify-archived-count = { $count ->
    *[other] { $count } письма убрано из «Входящих»
 }
 notify-undo = Отменить
+notify-code-copied = Код скопирован
+notify-code-not-copied = Не удалось скопировать код
 notify-reply-sent = Ответ для { $name } отправлен
 notify-open-in-katna = Открыть в Katna

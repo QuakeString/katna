@@ -9,14 +9,17 @@ use std::time::{Duration, Instant};
 
 use gpui::{AnyElement, Context, ExternalPaths, PathPromptOptions, Window, div, prelude::*, rgba};
 use katna_i18n::tr;
+use katna_render::AttachmentFile;
 use katna_ui::px;
 
 use super::super::MailWindow;
-use super::Kind;
+use super::super::attachments::{Item, ViewerPlace};
+use super::{Kind, Mode};
 use crate::format;
 use crate::outgoing::Part;
 use crate::theme::Theme;
 use crate::widgets::{ScaledEdge, icon, tip};
+use katna_core::config::OpenIn;
 
 /// What mail servers take in one message (Gmail's limit), counting the
 /// pictures in the text.
@@ -36,6 +39,15 @@ const JOIN: Duration = Duration::from_secs(2);
 /// An attachment chip's height, and the gap between chips.
 const ROW: f32 = 36.0;
 const GAP: f32 = 8.0;
+
+/// `attachments` as one message, which the viewer reads them from by
+/// their place in the list.
+fn attached_as_message(attachments: &[Attachment]) -> Vec<u8> {
+    crate::outgoing::build(&crate::outgoing::Outgoing {
+        attachments: attachments.iter().map(Attachment::part).collect(),
+        ..Default::default()
+    })
+}
 
 /// Where added files go.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -69,7 +81,7 @@ impl Attachment {
 }
 
 /// The MIME type of a file, from its name.
-pub(super) fn mime_of(name: &str) -> String {
+pub(in crate::window) fn mime_of(name: &str) -> String {
     if let Some(image) = katna_ui::rich::image_mime(name) {
         return image.to_owned();
     }
@@ -348,6 +360,51 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Opens attached file `ix` where its type opens (Katna's viewer, as
+    /// received files do, unless Default apps names another app), the
+    /// message's other files a click of the arrows away: to check the right
+    /// file is attached.
+    fn open_attached(&mut self, ix: usize, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(compose) = &self.compose else {
+            return;
+        };
+        let Some(file) = compose.attachments.get(ix) else {
+            return;
+        };
+        let items: Vec<Item> = compose
+            .attachments
+            .iter()
+            .enumerate()
+            .map(|(index, a)| Item {
+                index,
+                name: a.name.clone(),
+                size: a.data.len() as u64,
+                kind: katna_preview::kind(&a.mime, &a.name),
+                risky: katna_preview::risky(&a.mime, &a.name),
+            })
+            .collect();
+        let open_in = self.open_in(&items[ix]);
+        if open_in != OpenIn::Katna {
+            let file = AttachmentFile {
+                name: file.name.clone(),
+                mime: file.mime.clone(),
+                bytes: file.data.to_vec(),
+            };
+            self.open_attachment_with(Arc::new(file), open_in == OpenIn::Ask, false, cx);
+            return;
+        }
+        let place = if compose.mode == Mode::Window {
+            ViewerPlace::Popout
+        } else {
+            ViewerPlace::OverCompose
+        };
+        // The viewer reads files from a message: the attached ones, in
+        // order, make one.
+        let raw = Arc::new(attached_as_message(&compose.attachments));
+        self.show_viewer(raw, false, items, ix, None, window, cx);
+        self.files.viewer_place = place;
+    }
+
     /// The attached files, as chips with their size and a remove button.
     pub(in crate::window) fn render_attachments(
         &self,
@@ -373,6 +430,12 @@ impl MailWindow {
                 .gap(px(8.0))
                 .rounded(px(8.0))
                 .bg(rgba(th.chip))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.chip_hover())))
+                .tooltip(tip(tr!("compose-attachment-open-tip"), th))
+                .on_click(
+                    cx.listener(move |this, _, window, cx| this.open_attached(ix, window, cx)),
+                )
                 .text_size(px(13.0))
                 .child(icon(icon_of(&a.mime), th.accent, 18.0))
                 .child(
@@ -397,9 +460,13 @@ impl MailWindow {
                         .justify_center()
                         .rounded_full()
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", None, th))
                         .tooltip(tip(tr!("compose-remove-attachment"), th))
-                        .on_click(cx.listener(move |this, _, _, cx| this.remove_attachment(ix, cx)))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            cx.stop_propagation();
+                            this.remove_attachment(ix, cx)
+                        }))
                         .child(icon("close", th.text_dim, 16.0)),
                 )
         });
@@ -752,6 +819,26 @@ mod tests {
             cloud_bound(&[20 * MB, 12 * MB], 3 * MB, limit),
             [true, false]
         );
+    }
+
+    #[test]
+    fn the_viewer_finds_each_attached_file_by_its_place() {
+        let file = |name: &str, data: &[u8]| Attachment {
+            name: name.to_owned(),
+            mime: mime_of(name),
+            data: Arc::new(data.to_vec()),
+        };
+        let files = [
+            file("Report.pdf", b"%PDF-1.4"),
+            file("notes.txt", b"hello"),
+            file("photo.png", b"\x89PNG"),
+        ];
+        let raw = attached_as_message(&files);
+        for (ix, f) in files.iter().enumerate() {
+            let read = katna_render::attachment_file(&raw, ix).expect("attached file");
+            assert_eq!(read.name, f.name);
+            assert_eq!(read.bytes, *f.data);
+        }
     }
 
     #[test]

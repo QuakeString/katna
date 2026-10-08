@@ -58,6 +58,7 @@ compose-file-too-large = { $name } ਬਹੁਤ ਵੱਡੀ ਹੈ: ਇੱਕ �
 compose-forward-files-missing = ਅੱਗੇ ਭੇਜੇ ਸੁਨੇਹੇ ਦੀਆਂ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਨਹੀਂ ਹੋਈਆਂ, ਇਸ ਲਈ ਉਹ ਨੱਥੀ ਨਹੀਂ ਕੀਤੀਆਂ ਗਈਆਂ।
 compose-attachment-size = ({ $size })
 compose-remove-attachment = ਅਟੈਚਮੈਂਟ ਹਟਾਓ
+compose-attachment-open-tip = ਜਾਂਚਣ ਲਈ ਖੋਲ੍ਹੋ
 compose-attachments-total = { $count ->
     [one] { $count } ਫ਼ਾਈਲ, { $size }
    *[other] { $count } ਫ਼ਾਈਲਾਂ, { $size }

@@ -39,6 +39,7 @@ list-results = “{ $query }” සඳහා ප්‍රතිඵල
 list-results-corrected = “{ $query }” සඳහා ප්‍රතිඵල පෙන්වමින්
 list-search-instead = ඒ වෙනුවට “{ $query }” සොයන්න
 list-files-more = +{ $count }
+list-replied = ඔබ පිළිතුරු දුන්නා
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -338,6 +339,8 @@ list-empty-tab = { $tab } හි තැපැල් නැත.
 list-empty-tab-unknown = මෙම ටැබයේ තැපැල් නැත.
 list-empty-folder = { $folder } හි පණිවිඩ නැත.
 list-empty-folder-unknown = මෙම ෆෝල්ඩරයේ පණිවිඩ නැත.
+list-empty-waiting = පිළිතුරක් බලාපොරොත්තුවෙන් කිසිවක් නැත.
+list-empty-reminders = සිහිකැඳවීම් නැත. එකක් එක් කිරීමට තැපැලක් මත H ඔබන්න.
 list-first-sync = ඔබේ තැපැල් ලබා ගනිමින්…
 list-first-sync-detail = ඒවා ලැබෙන විට මෙහි පෙන්වයි.
 
@@ -357,6 +360,14 @@ row-tracking-clicked = { $recipients } දෙනෙකුගෙන් { $opened 
 row-pin = ඉහළට අමුණන්න
 row-unpin = ඇමිණීම ඉවත් කරන්න
 row-snoozed-until = { $when } දක්වා කල් දමා ඇත
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = අද
+snoozed-group-tomorrow = හෙට
+snoozed-group-this-week = මෙම සතිය
+snoozed-group-later = පසුව
+row-follow-up-step = පසු විපරම { $steps } න් { $step } · { $date }
+row-follow-up-waiting = පසු විපරම බලාපොරොත්තුවෙන්
+row-reminder = සිහිකැඳවීම { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -379,6 +390,7 @@ menu-not-important = වැදගත් නොවන ලෙස සලකුණ�
 menu-pin = ඉහළට අමුණන්න
 menu-unpin = ඇමිණීම ඉවත් කරන්න
 menu-snooze = කල් දමන්න
+menu-remind = මට මතක් කරන්න
 menu-unsnooze = කල් දැමීම ඉවත් කරන්න
 menu-add-to-tasks = කාර්යයන් වෙත එක් කරන්න
 menu-schedule-meeting = රැස්වීමක් උපලේඛනගත කරන්න
@@ -390,7 +402,26 @@ menu-move-to = වෙත ගෙන යන්න
 menu-follow-up = පසු විපරම්
 menu-more = තවත්
 menu-move-to-heading = වෙත ගෙන යන්න:
+menu-move-to-search = වෙත ගෙන යන්න…
+menu-label-as = ලේබලය යොදන්න
+menu-label-as-search = ලේබලය යොදන්න…
+menu-no-folder = “{ $name }” නමින් ෆෝල්ඩරයක් නැත
+menu-no-label = “{ $name }” නමින් ලේබලයක් නැත
+menu-create-folder = “{ $name }” සාදන්න
+menu-always-move = { $name } ගෙන් එන තැපැල් සැමවිට මෙහි ගෙන යන්න
+toast-always-move-failed = තැපැල ගෙන ගියා, නමුත් නීතිය සෑදුණේ නැත: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] සංවාද { $count }
+       *[other] සංවාද { $count }
+    }
+   *[message] { $count ->
+        [one] පණිවිඩ { $count }
+       *[other] පණිවිඩ { $count }
+    }
+}
 menu-find-from = { $name } ගෙන් ලැබුණු ඊමේල් සොයන්න
+menu-make-rule = නීතියක් සාදන්න…
 
 ## Snackbar after an action on mail in the list
 
@@ -424,6 +455,8 @@ toast-moved = { $kind ->
        *[other] පණිවිඩ { $count } ක් ගෙන යන ලදී.
     }
 }
+toast-label-added = “{ $label }” ලේබලය එක් කළා.
+toast-label-removed = “{ $label }” ලේබලය ඉවත් කළා.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] සංවාදයට තරුවක් යොදන ලදී.

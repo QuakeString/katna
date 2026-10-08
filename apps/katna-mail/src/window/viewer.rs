@@ -99,6 +99,8 @@ const INK: u32 = 0xffffffff;
 const INK_DIM: u32 = 0xffffffb3;
 const HOVER: u32 = 0xffffff1f;
 const PILL: u32 = 0x2d2f31f2;
+/// A side arrow under the pointer: the pill a shade lighter.
+const PILL_HOVER: u32 = 0x47494cf2;
 
 /// The viewer's key context.
 pub(super) const KEY_CONTEXT: &str = "AttachmentViewer";
@@ -126,6 +128,8 @@ pub(super) enum ViewerEvent {
     Paged(usize),
     /// Tick or untick the file shown (opened from the attach picker).
     Pick,
+    /// The half-moon button turned dark pages on or off.
+    DarkPages(bool),
 }
 
 pub(super) struct Viewer {
@@ -202,6 +206,14 @@ pub(super) struct Viewer {
     /// Opened before its file is here (a drive file still downloading):
     /// it waits, turning, for `arrived`.
     fetching: bool,
+    /// Show bright pages dark (in a dark theme): Settings' `dark_pages`.
+    pub(super) dark_pages: bool,
+    /// The radius of the window content's bottom left and right corners
+    /// (Katna's own rounded frame), which the viewer rounds itself to, as
+    /// GPUI does not clip it there.
+    pub(super) corners: (f32, f32),
+    /// Where the controls' More menu was opened, while it is open.
+    more_at: Option<Point<Pixels>>,
     pub(super) th: Theme,
 }
 
@@ -215,8 +227,8 @@ impl SelectHost for Viewer {
     }
 
     /// The viewer keeps the focus, so its keys still work.
-    fn text_focus(&self) -> FocusHandle {
-        self.focus.clone()
+    fn text_focus(&self) -> Option<FocusHandle> {
+        Some(self.focus.clone())
     }
 
     fn selected(&mut self, cx: &mut Context<Self>) {
@@ -246,6 +258,8 @@ struct PdfView {
     text: Vec<Rc<Vec<TextLine>>>,
     /// Logical pixels per point at the last frame, to find a page's place.
     z: f32,
+    /// Whether `pages` are drawn dark.
+    dark: bool,
     _reading: Option<Task<()>>,
 }
 
@@ -364,10 +378,20 @@ impl Viewer {
             library: None,
             pick: None,
             fetching: false,
+            dark_pages: false,
+            corners: (0.0, 0.0),
+            more_at: None,
             th,
         };
-        this.show(current, cx);
+        this.current = current;
         this
+    }
+
+    /// Starts showing the file the viewer was made on. Called once its
+    /// owner has set it up (`dark_pages`), so the first page is drawn as
+    /// it will stay, never white for a frame.
+    pub(super) fn start(&mut self, cx: &mut Context<Self>) {
+        self.show(self.current, cx);
     }
 
     /// A viewer open on `item` while its file is still on the way: it
@@ -449,6 +473,7 @@ impl Viewer {
         }
         let risky = item.risky;
         let (vw, scale_factor) = self.frame;
+        let dark = self.dark_pages_shown();
         let waiting = self.seq;
         let slow = cx.background_executor().timer(SLOW_LOAD);
         self._wait = Some(cx.spawn(async move |this, cx| {
@@ -469,7 +494,12 @@ impl Viewer {
                     let loaded = match loaded {
                         Loaded::Pdf(doc, _) if vw > 0.0 => {
                             let scale = pdf_fit(&doc, vw) * ZOOMS[fit_step()] * scale_factor;
-                            let page = doc.render(0, scale).map(|p| (scale, bitmap(p)));
+                            let page = if dark {
+                                doc.render_dark(0, scale)
+                            } else {
+                                doc.render(0, scale)
+                            };
+                            let page = page.map(|p| (scale, bitmap(p)));
                             Loaded::Pdf(doc, page)
                         }
                         loaded => loaded,
@@ -497,6 +527,7 @@ impl Viewer {
                             pages: page.into_iter().map(|page| (0, page)).collect(),
                             text: Vec::new(),
                             z: 1.0,
+                            dark,
                         })
                     }
                     Loaded::Bitmap(image, size) => Content::Bitmap(image, size),
@@ -882,6 +913,19 @@ impl Viewer {
         cx.notify();
     }
 
+    /// Whether pages show dark: turned on, in a dark theme.
+    pub(super) fn dark_pages_shown(&self) -> bool {
+        self.dark_pages && self.th.dark
+    }
+
+    /// The half-moon button: pages dark, or as they are. The window keeps
+    /// the choice for later files and restarts.
+    fn toggle_dark_pages(&mut self, cx: &mut Context<Self>) {
+        self.dark_pages = !self.dark_pages;
+        cx.emit(ViewerEvent::DarkPages(self.dark_pages));
+        cx.notify();
+    }
+
     /// What the controls offer for the file on show.
     fn tools(&self, pages: Option<(usize, usize)>) -> Tools {
         let slides = matches!(&self.content, Content::Document(_)) && pages.is_some();
@@ -892,12 +936,20 @@ impl Viewer {
             Content::Document(_) | Content::Sheet(_) => (Some(Fit::Width), false, false),
             _ => (None, false, false),
         };
+        // Pages, not pictures; only a dark theme makes bright pages glare.
+        let dark_pages = self.th.dark
+            && matches!(
+                &self.content,
+                Content::Pdf(_) | Content::Document(_) | Content::Sheet(_) | Content::Text(..)
+            );
         Tools {
             pages,
             slides,
             fit,
             real_size,
             rotate,
+            dark_pages,
+            folded: Folded::NONE,
         }
     }
 
@@ -1075,6 +1127,10 @@ impl Viewer {
         };
         let page = (unpx(view.size.height) - LINE_SCROLL).max(LINE_SCROLL);
         match keystroke.key.as_str() {
+            "escape" if self.more_at.is_some() => {
+                self.more_at = None;
+                cx.notify();
+            }
             "escape" => self.close(cx),
             "left" if shift => self.step_mail(-1, cx),
             "right" if shift => self.step_mail(1, cx),
@@ -1119,9 +1175,17 @@ impl Viewer {
     /// Draws the next page that is on screen at the wrong scale (or not
     /// at all), and frees pages far from the screen.
     fn draw_pages(&mut self, scale: f32, cx: &mut Context<Self>) {
+        let dark = self.dark_pages_shown();
         let Content::Pdf(pdf) = &mut self.content else {
             return;
         };
+        // Dark pages turned on or off: every page is drawn again.
+        if pdf.dark != dark {
+            pdf.dark = dark;
+            self.released
+                .extend(pdf.pages.drain().map(|(_, (_, image))| image));
+            self.drawing = None;
+        }
         let count = pdf.doc.pages();
         let top = self.scroll.top_item().min(count - 1);
         let bottom = self.scroll.bottom_item().clamp(top, count - 1);
@@ -1155,7 +1219,14 @@ impl Viewer {
         let task = cx.spawn(async move |this, cx| {
             let image = cx
                 .background_executor()
-                .spawn(async move { doc.render(page, scale).map(bitmap) })
+                .spawn(async move {
+                    if dark {
+                        doc.render_dark(page, scale)
+                    } else {
+                        doc.render(page, scale)
+                    }
+                    .map(bitmap)
+                })
                 .await;
             this.update(cx, |this, cx| {
                 this.drawing = None;
@@ -1188,6 +1259,11 @@ struct Tools {
     /// Real size, for a picture.
     real_size: bool,
     rotate: bool,
+    /// The half-moon button that shows pages dark.
+    dark_pages: bool,
+    /// What of these goes into the More menu: none until
+    /// [`Viewer::fold_controls`] measures the room.
+    folded: Folded,
 }
 
 /// What the Fit button fits.
@@ -1361,11 +1437,37 @@ fn bar_button(id: &'static str, name: &str, th: &Theme) -> gpui::Stateful<gpui::
     bar_button_tip(id, name, tooltip_for(id).into(), th)
 }
 
+/// A side arrow: its hover is solid, as the bar's see-through one
+/// would leave a white arrow on white over a page.
+fn side_button(id: &'static str, name: &str, th: &Theme) -> gpui::Stateful<gpui::Div> {
+    round_button(id, name, tooltip_for(id).into(), PILL_HOVER, th)
+}
+
 /// A round button on the dark bar, with its own tooltip.
 fn bar_button_tip(
     id: &'static str,
     name: &str,
     tooltip: SharedString,
+    th: &Theme,
+) -> gpui::Stateful<gpui::Div> {
+    round_button(id, name, tooltip, HOVER, th)
+}
+
+/// A page's own `color`, flipped when pages show dark.
+fn page_color(color: u32, dark: bool) -> gpui::Rgba {
+    rgba(if dark {
+        katna_preview::dark::flip_rgba(color)
+    } else {
+        color
+    })
+}
+
+/// A round button with `hover` under the pointer.
+fn round_button(
+    id: &'static str,
+    name: &str,
+    tooltip: SharedString,
+    hover: u32,
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
     div()
@@ -1379,7 +1481,7 @@ fn bar_button_tip(
         .justify_center()
         .rounded_full()
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(HOVER)))
+        .hover(move |s| s.bg(rgba(hover)))
         .child(Ripple::new(id, rgba(0xffffff33)).centered())
         .child(icon(name, INK, 22.0))
         .tooltip(tip(tooltip, th))
@@ -1431,6 +1533,7 @@ impl Render for Viewer {
         // The PDF's page at the middle of the screen and its page count.
         let mut pages = None;
         let mut pdf_z = None;
+        let dark = self.dark_pages_shown();
         let body: AnyElement = if matches!(self.content, Content::Document(_)) {
             let body = self.document_body(zoom, vw, cx);
             if let Content::Document(view) = &self.content {
@@ -1538,8 +1641,8 @@ impl Render for Viewer {
                             .w(px(width))
                             .h_full()
                             .rounded(px(8.0))
-                            .bg(rgba(0xffffffff))
-                            .text_color(rgba(0x202124ff))
+                            .bg(page_color(0xffffffff, dark))
+                            .text_color(page_color(0x202124ff, dark))
                             .font_family("monospace")
                             .text_size(px(size)),
                         None,
@@ -1610,7 +1713,7 @@ impl Render for Viewer {
                                 .flex_none()
                                 .w(px(w))
                                 .h(px(h))
-                                .bg(rgba(0xffffffff))
+                                .bg(page_color(0xffffffff, dark))
                                 .capture_any_mouse_down(cx.listener(on_paper))
                                 .shadow(vec![gpui::BoxShadow {
                                     color: rgba(0x00000080).into(),
@@ -1704,7 +1807,19 @@ impl Render for Viewer {
         } else {
             FOOT_PILL_HEIGHT
         };
-        let tools = self.tools(pages);
+        let mut tools = self.tools(pages);
+        // At the foot the pill keeps 16 px from each side of the viewer;
+        // what does not fit goes into its More menu.
+        let room = if in_bar {
+            f32::MAX
+        } else {
+            self.frame.0 - 32.0
+        };
+        let folded = self.fold_controls(tools, room);
+        tools.folded = folded;
+        if !folded.any() {
+            self.more_at = None;
+        }
         let controls = zoomable.then(|| self.controls(tools, zoom, goto_focused, pill, &th, cx));
         let (bar_controls, foot_controls) = if in_bar {
             (controls, None)
@@ -1896,12 +2011,12 @@ impl Render for Viewer {
         let arrows = many.then(|| {
             [
                 side(
-                    bar_button("viewer-prev", "chevron-left", &th)
+                    side_button("viewer-prev", "chevron-left", &th)
                         .on_click(cx.listener(|this, _, _, cx| this.step(-1, cx))),
                     true,
                 ),
                 side(
-                    bar_button("viewer-next", "chevron-right", &th)
+                    side_button("viewer-next", "chevron-right", &th)
                         .on_click(cx.listener(|this, _, _, cx| this.step(1, cx))),
                     false,
                 ),
@@ -1935,7 +2050,24 @@ impl Render for Viewer {
             .left_0()
             .size_full()
             .occlude()
-            .map(|el| glassy(el, SCRIM, SCRIM_FROSTED, 0.0, self.th.frost))
+            .rounded_bl(px(self.corners.0))
+            .rounded_br(px(self.corners.1))
+            .map(|el| {
+                let corners = gpui::Corners {
+                    bottom_left: px(self.corners.0),
+                    bottom_right: px(self.corners.1),
+                    ..Default::default()
+                };
+                if self.th.frost == 0 {
+                    el.bg(rgba(SCRIM))
+                } else {
+                    el.child(katna_ui::frost::glass(
+                        rgba(SCRIM_FROSTED).into(),
+                        corners,
+                        self.th.frost as f32,
+                    ))
+                }
+            })
             // The file shows below the bar, so the bar only ever frosts the
             // blurred window, never a bright page scrolled under it.
             .child(
@@ -1946,6 +2078,8 @@ impl Render for Viewer {
                     .right_0()
                     .bottom_0()
                     .overflow_hidden()
+                    .rounded_bl(px(self.corners.0))
+                    .rounded_br(px(self.corners.1))
                     .child(body),
             )
             .child(select::follow_drags(cx))
@@ -1956,12 +2090,14 @@ impl Render for Viewer {
             .children(self.markup_pill(&th, cx))
             .children(arrows.into_iter().flatten())
             .children(foot)
+            .children(self.more_menu(tools, &th, cx))
             .children(select::text_menu(self, &th, cx))
             .children(self.cell_menu(&th, cx))
             .children(self.leave_dialog(&th, cx))
             .with_animation(
                 ("viewer-in", self.opened),
-                Animation::new(Duration::from_millis(160)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(160)))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t),
             )
     }
@@ -1981,6 +2117,7 @@ impl Viewer {
     ) -> gpui::Stateful<gpui::Div> {
         let th = *th;
         let pages = tools.pages;
+        let folded = tools.folded;
         let compact = self.frame.0 < COMPACT_CONTROLS;
         // A phone's pill packs its buttons a little closer.
         let button = if compact { 32.0 } else { 36.0 };
@@ -2066,11 +2203,15 @@ impl Viewer {
                 )
                 .child(div().w(px(1.0)).h(px(20.0)).bg(rgba(0xffffff33)))
             })
-            .child(
-                bar_button("viewer-zoom-out", "zoom-out", &th)
-                    .size(px(button))
-                    .on_click(cx.listener(|this, _, _, cx| this.set_zoom(this.zoom_step(-1), cx))),
-            )
+            .when(!folded.zoom, |d| {
+                d.child(
+                    bar_button("viewer-zoom-out", "zoom-out", &th)
+                        .size(px(button))
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.set_zoom(this.zoom_step(-1), cx)),
+                        ),
+                )
+            })
             .child(
                 div()
                     .id("viewer-zoom-reset")
@@ -2082,12 +2223,16 @@ impl Viewer {
                     .on_click(cx.listener(|this, _, _, cx| this.set_zoom(fit_step(), cx)))
                     .child(format!("{:.0}%", zoom * 100.0)),
             )
-            .child(
-                bar_button("viewer-zoom-in", "zoom-in", &th)
-                    .size(px(button))
-                    .on_click(cx.listener(|this, _, _, cx| this.set_zoom(this.zoom_step(1), cx))),
-            )
-            .when_some(tools.fit, |d, fit| {
+            .when(!folded.zoom, |d| {
+                d.child(
+                    bar_button("viewer-zoom-in", "zoom-in", &th)
+                        .size(px(button))
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.set_zoom(this.zoom_step(1), cx)),
+                        ),
+                )
+            })
+            .when_some(tools.fit.filter(|_| !folded.fit), |d, fit| {
                 let (name, tip) = match fit {
                     Fit::Page => ("fit-page", tr!("viewer-fit-page-tip")),
                     Fit::Picture => ("fit-page", tr!("viewer-fit-picture-tip")),
@@ -2099,7 +2244,7 @@ impl Viewer {
                         .on_click(cx.listener(|this, _, _, cx| this.fit(cx))),
                 )
             })
-            .when(tools.real_size, |d| {
+            .when(tools.real_size && !folded.fit, |d| {
                 d.child(
                     bar_button_tip(
                         "viewer-real-size",
@@ -2111,7 +2256,7 @@ impl Viewer {
                     .on_click(cx.listener(|this, _, _, cx| this.real_size(cx))),
                 )
             })
-            .when(tools.rotate, |d| {
+            .when(tools.rotate && !folded.rotate, |d| {
                 d.child(separator())
                     .child(
                         bar_button_tip(
@@ -2134,6 +2279,257 @@ impl Viewer {
                         .on_click(cx.listener(|this, _, _, cx| this.rotate(true, cx))),
                     )
             })
+            .when(tools.dark_pages && !folded.dark, |d| {
+                let on = self.dark_pages;
+                let tip = if on {
+                    tr!("viewer-light-pages-tip")
+                } else {
+                    tr!("viewer-dark-pages-tip")
+                };
+                d.child(separator()).child(
+                    bar_button_tip("viewer-dark-pages", "contrast", tip.into(), &th)
+                        .size(px(button))
+                        .when(on, |d| d.bg(rgba(0xffffff29)))
+                        .on_click(cx.listener(|this, _, _, cx| this.toggle_dark_pages(cx))),
+                )
+            })
+            .when(folded.any(), |d| {
+                d.child(separator()).child(
+                    bar_button_tip("viewer-more", "more", tr!("viewer-more-tip").into(), &th)
+                        .size(px(button))
+                        .when(self.more_at.is_some(), |d| d.bg(rgba(HOVER)))
+                        .on_mouse_down(
+                            MouseButton::Left,
+                            cx.listener(|this, event: &MouseDownEvent, _, cx| {
+                                this.more_at = match this.more_at {
+                                    Some(_) => None,
+                                    None => Some(event.position),
+                                };
+                                cx.stop_propagation();
+                                cx.notify();
+                            }),
+                        ),
+                )
+            })
+    }
+
+    /// What of the controls goes into the More menu for them to fit in
+    /// `room`: turning first, then Fit and Real size, then Dark pages,
+    /// then the zoom buttons (the percentage stays). The page box always
+    /// stays.
+    fn fold_controls(&self, tools: Tools, room: f32) -> Folded {
+        const ORDER: [fn(&mut Folded); 4] = [
+            |f| f.rotate = true,
+            |f| f.fit = true,
+            |f| f.dark = true,
+            |f| f.zoom = true,
+        ];
+        let start = Folded {
+            rotate: !tools.rotate,
+            fit: tools.fit.is_none() && !tools.real_size,
+            dark: !tools.dark_pages,
+            zoom: false,
+        };
+        let fits = |folded: &Folded| self.controls_width(tools, folded) <= room;
+        let folded = crate::widgets::fold(start, &ORDER, fits);
+        // Only what the file has counts as folded.
+        Folded {
+            rotate: folded.rotate && tools.rotate,
+            fit: folded.fit && (tools.fit.is_some() || tools.real_size),
+            dark: folded.dark && tools.dark_pages,
+            zoom: folded.zoom,
+        }
+    }
+
+    /// The controls pill's width with `folded` in the More menu, as
+    /// [`Viewer::controls`] lays it out.
+    fn controls_width(&self, tools: Tools, folded: &Folded) -> f32 {
+        let compact = self.frame.0 < COMPACT_CONTROLS;
+        let button = if compact { 32.0 } else { 36.0 };
+        const GAP: f32 = 2.0;
+        const SEPARATOR: f32 = 9.0;
+        let mut items: Vec<f32> = Vec::new();
+        if let Some((_, count)) = tools.pages {
+            // "Page", the box, "of 12": text about 7.5 px a character.
+            let word = if compact { 0.0 } else { 48.0 };
+            let of = 7.5 * (3 + count.to_string().len()) as f32;
+            items.push(if compact { 6.0 } else { 12.0 } + word + 46.0 + 6.0 + of + 10.0);
+            items.push(1.0);
+        }
+        if !folded.zoom {
+            items.extend([button, button]);
+        }
+        items.push(if compact { 44.0 } else { 52.0 });
+        if !folded.fit {
+            if tools.fit.is_some() {
+                items.push(button);
+            }
+            if tools.real_size {
+                items.push(button);
+            }
+        }
+        if tools.rotate && !folded.rotate {
+            items.extend([SEPARATOR, button, button]);
+        }
+        if tools.dark_pages && !folded.dark {
+            items.extend([SEPARATOR, button]);
+        }
+        let any = (tools.rotate && folded.rotate)
+            || ((tools.fit.is_some() || tools.real_size) && folded.fit)
+            || (tools.dark_pages && folded.dark)
+            || folded.zoom;
+        if any {
+            items.extend([SEPARATOR, button]);
+        }
+        12.0 + items.iter().sum::<f32>() + GAP * items.len().saturating_sub(1) as f32
+    }
+
+    /// The controls' More menu, opened where its button was pressed, with
+    /// what did not fit in the pill.
+    fn more_menu(&self, tools: Tools, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        let at = self.more_at?;
+        let folded = tools.folded;
+        if !folded.any() {
+            return None;
+        }
+        // Each item does its thing and closes the menu.
+        let item = |id: &'static str,
+                    name: &'static str,
+                    label: String,
+                    act: fn(&mut Viewer, &mut Context<Viewer>)| {
+            crate::widgets::menu_item_icon(id, name, &label, th).on_click(cx.listener(
+                move |this, _, _, cx| {
+                    this.more_at = None;
+                    act(this, cx);
+                    cx.notify();
+                },
+            ))
+        };
+        let mut menu = crate::widgets::menu(th);
+        if folded.zoom {
+            menu = menu
+                .child(item(
+                    "viewer-more-zoom-in",
+                    "zoom-in",
+                    tr!("viewer-zoom-in"),
+                    |this, cx| this.set_zoom(this.zoom_step(1), cx),
+                ))
+                .child(item(
+                    "viewer-more-zoom-out",
+                    "zoom-out",
+                    tr!("viewer-zoom-out"),
+                    |this, cx| this.set_zoom(this.zoom_step(-1), cx),
+                ));
+        }
+        if folded.fit {
+            if let Some(fit) = tools.fit {
+                let (name, label) = match fit {
+                    Fit::Page => ("fit-page", tr!("viewer-fit-page-tip")),
+                    Fit::Picture => ("fit-page", tr!("viewer-fit-picture-tip")),
+                    Fit::Width => ("fit-width", tr!("viewer-fit-width-tip")),
+                };
+                menu = menu.child(item("viewer-more-fit", name, label, |this, cx| {
+                    this.fit(cx)
+                }));
+            }
+            if tools.real_size {
+                menu = menu.child(item(
+                    "viewer-more-real-size",
+                    "real-size",
+                    tr!("viewer-real-size"),
+                    |this, cx| this.real_size(cx),
+                ));
+            }
+        }
+        if folded.rotate {
+            menu = menu
+                .child(item(
+                    "viewer-more-rotate-ccw",
+                    "rotate-ccw",
+                    tr!("viewer-rotate-anticlockwise"),
+                    |this, cx| this.rotate(false, cx),
+                ))
+                .child(item(
+                    "viewer-more-rotate-cw",
+                    "rotate-cw",
+                    tr!("viewer-rotate-clockwise"),
+                    |this, cx| this.rotate(true, cx),
+                ));
+        }
+        if folded.dark {
+            let label = if self.dark_pages {
+                tr!("viewer-light-pages-tip")
+            } else {
+                tr!("viewer-dark-pages-tip")
+            };
+            menu = menu.child(item(
+                "viewer-more-dark-pages",
+                "contrast",
+                label,
+                |this, cx| this.toggle_dark_pages(cx),
+            ));
+        }
+        let close = cx.listener(|this: &mut Viewer, _: &MouseDownEvent, _, cx| {
+            this.more_at = None;
+            cx.notify();
+        });
+        Some(
+            div()
+                .absolute()
+                .top_0()
+                .left_0()
+                .size_full()
+                .child(
+                    gpui::deferred(
+                        div()
+                            .id("viewer-more-scrim")
+                            .absolute()
+                            .top(px(-2000.0))
+                            .left(px(-4000.0))
+                            .w(px(8000.0))
+                            .h(px(6000.0))
+                            .occlude()
+                            .on_mouse_down(MouseButton::Left, close),
+                    )
+                    .with_priority(3),
+                )
+                .child(
+                    gpui::deferred(
+                        katna_ui::anchored()
+                            .position(at)
+                            // Pressed at the foot: the menu opens upwards.
+                            .anchor(gpui::Anchor::BottomRight)
+                            .snap_to_window_with_margin(px(8.0))
+                            .child(div().occlude().child(menu)),
+                    )
+                    .with_priority(4),
+                )
+                .into_any_element(),
+        )
+    }
+}
+
+/// What of the controls has gone into their More menu.
+#[derive(Clone, Copy)]
+struct Folded {
+    rotate: bool,
+    /// Fit and Real size.
+    fit: bool,
+    dark: bool,
+    /// Zoom in and out (the percentage stays).
+    zoom: bool,
+}
+
+impl Folded {
+    const NONE: Self = Self {
+        rotate: false,
+        fit: false,
+        dark: false,
+        zoom: false,
+    };
+
+    fn any(&self) -> bool {
+        self.rotate || self.fit || self.dark || self.zoom
     }
 }
 

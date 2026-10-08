@@ -39,6 +39,7 @@ list-results = ”{ $query }“ کے نتائج
 list-results-corrected = ”{ $query }“ کے نتائج دکھائے جا رہے ہیں
 list-search-instead = اس کے بجائے ”{ $query }“ تلاش کریں
 list-files-more = +{ $count }
+list-replied = آپ نے جواب دیا
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -338,6 +339,8 @@ list-empty-tab = { $tab } میں کوئی میل نہیں۔
 list-empty-tab-unknown = اس ٹیب میں کوئی میل نہیں۔
 list-empty-folder = { $folder } میں کوئی پیغام نہیں۔
 list-empty-folder-unknown = اس فولڈر میں کوئی پیغام نہیں۔
+list-empty-waiting = کسی چیز کو جواب کا انتظار نہیں۔
+list-empty-reminders = کوئی یاد دہانی نہیں۔ یاد دہانی شامل کرنے کے لیے کسی میل پر H دبائیں۔
 list-first-sync = آپ کی میل حاصل کی جا رہی ہے…
 list-first-sync-detail = جیسے جیسے یہ آئے گی، یہاں نظر آئے گی۔
 
@@ -357,6 +360,14 @@ row-tracking-clicked = { $recipients } میں سے { $opened } نے کھولا،
 row-pin = سب سے اوپر پن کریں
 row-unpin = پن ہٹائیں
 row-snoozed-until = { $when } تک اسنوز شدہ
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = آج
+snoozed-group-tomorrow = کل
+snoozed-group-this-week = اس ہفتے
+snoozed-group-later = بعد میں
+row-follow-up-step = فالو اپ { $steps } میں سے { $step } · { $date }
+row-follow-up-waiting = فالو اپ منتظر
+row-reminder = یاد دہانی { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -379,6 +390,7 @@ menu-not-important = بطور غیر اہم نشان زد کریں
 menu-pin = سب سے اوپر پن کریں
 menu-unpin = پن ہٹائیں
 menu-snooze = اسنوز کریں
+menu-remind = مجھے یاد دلائیں
 menu-unsnooze = اسنوز ختم کریں
 menu-add-to-tasks = کاموں میں شامل کریں
 menu-schedule-meeting = میٹنگ شیڈول کریں
@@ -394,7 +406,26 @@ menu-follow-up = فالو اپ
 # Pin to top.
 menu-more = مزید
 menu-move-to-heading = یہاں منتقل کریں:
+menu-move-to-search = یہاں منتقل کریں…
+menu-label-as = لیبل لگائیں
+menu-label-as-search = لیبل لگائیں…
+menu-no-folder = ”{ $name }“ نام کا کوئی فولڈر نہیں
+menu-no-label = ”{ $name }“ نام کا کوئی لیبل نہیں
+menu-create-folder = ”{ $name }“ بنائیں
+menu-always-move = { $name } کی میل ہمیشہ یہاں منتقل کریں
+toast-always-move-failed = میل منتقل ہو گئی، لیکن اصول نہیں بنا: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } گفتگو
+       *[other] { $count } گفتگوئیں
+    }
+   *[message] { $count ->
+        [one] { $count } پیغام
+       *[other] { $count } پیغامات
+    }
+}
 menu-find-from = { $name } کی ای میلز تلاش کریں
+menu-make-rule = اصول بنائیں…
 
 ## Snackbar after an action on mail in the list
 
@@ -428,6 +459,8 @@ toast-moved = { $kind ->
        *[other] { $count } پیغامات منتقل کر دیے گئے۔
     }
 }
+toast-label-added = لیبل ”{ $label }“ شامل ہو گیا۔
+toast-label-removed = لیبل ”{ $label }“ ہٹ گیا۔
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] گفتگو پر ستارہ لگا دیا گیا۔

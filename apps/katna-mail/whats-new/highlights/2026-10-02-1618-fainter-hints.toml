@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Fainter hints in empty boxes"
+text = """
+The grey hint in an empty box, such as "Reply to…" under a chat or
+"Search mail", is now fainter, so it never looks like text you typed.
+"""

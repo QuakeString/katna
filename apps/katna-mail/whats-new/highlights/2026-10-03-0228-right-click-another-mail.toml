@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "One right-click is enough"
+text = """
+With a mail's or folder's menu open, right-clicking another mail or folder
+now closes the open menu and opens the new one straight away, instead of
+needing a second right-click.
+"""

@@ -10,6 +10,11 @@
 
 tray-open-inbox = Open _Inbox
 tray-new-message = _New Message
+# Opens the quick capture card, on Task: a small card over whatever is on
+# screen for writing a new task in one line.
+tray-new-task = New _task
+# Opens the quick capture card on Note.
+tray-new-note = New n_ote
 # Opens Katna Mail's Settings page.
 tray-preferences = _Preferences
 # Closes Katna Mail and stops Katna until the next login.
@@ -22,4 +27,14 @@ tray-unread = { $count ->
     [0] No unread mail
     [one] { $count } unread message
    *[other] { $count } unread messages
+}
+
+# Lines under that one, while something needs the user.
+tray-password-refused = New password needed for { $address }
+tray-signed-out = Sign in again to { $address }
+# From three accounts.
+tray-accounts-need-you = { $count } accounts need you
+tray-not-sent = { $count ->
+    [one] { $count } message wasn't sent
+   *[other] { $count } messages weren't sent
 }

@@ -14,6 +14,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use jiff::tz::TimeZone;
+use katna_core::config::AppKind;
 use katna_core::{Paths, ids};
 use katna_dbus::agenda::{Item, edit, event, task};
 use katna_dbus::app_action;
@@ -120,7 +121,7 @@ fn page_for(id: &str, tz: &TimeZone) -> Option<String> {
 }
 
 /// A title, trimmed to one line; not empty and not too long.
-fn title(text: &str) -> Result<String, CommandError> {
+pub(crate) fn title(text: &str) -> Result<String, CommandError> {
     let title = text.split_whitespace().collect::<Vec<_>>().join(" ");
     if title.is_empty() {
         return Err(CommandError::InvalidArgs("a task needs a title".to_owned()));
@@ -173,7 +174,7 @@ fn due(text: &str) -> Result<&str, CommandError> {
 }
 
 /// `task`'s fields with those in `fields` ([`edit`]) set.
-fn edited(task: Task, fields: &Item) -> Result<TaskFields, CommandError> {
+pub(crate) fn edited(task: Task, fields: &Item) -> Result<TaskFields, CommandError> {
     let text = |key: &str| -> Result<Option<String>, CommandError> {
         fields
             .get(key)
@@ -189,6 +190,7 @@ fn edited(task: Task, fields: &Item) -> Result<TaskFields, CommandError> {
         repeat: task.repeat,
         starred: task.starred,
         mail: task.mail,
+        labels: task.labels,
     };
     if let Some(title) = text(edit::TITLE)? {
         out.title = self::title(&title)?;
@@ -231,8 +233,25 @@ fn edited(task: Task, fields: &Item) -> Result<TaskFields, CommandError> {
         }
         out.mail = mail;
     }
+    if let Some(value) = fields.get(edit::LABELS) {
+        let labels = Vec::<String>::try_from(value.try_clone().map_err(|_| bad(edit::LABELS))?)
+            .map_err(|_| bad(edit::LABELS))?;
+        out.labels = labels
+            .into_iter()
+            .map(|l| l.trim().chars().take(MAX_LABEL).collect::<String>())
+            .filter(|l| !l.is_empty())
+            .collect();
+        if out.labels.len() > MAX_LABELS || out.labels.iter().any(|l| l.contains(['\r', '\n'])) {
+            return Err(bad(edit::LABELS));
+        }
+    }
     Ok(out)
 }
+
+/// The longest label, in characters, as on notes.
+const MAX_LABEL: usize = 50;
+/// The most labels on one task.
+const MAX_LABELS: usize = 50;
 
 fn bad(key: &str) -> CommandError {
     CommandError::InvalidArgs(format!("bad task field {key:?}"))
@@ -256,6 +275,7 @@ fn wire(task: Task, lists: &HashMap<i64, String>) -> Item {
         (task::DONE.to_owned(), value(task.done_at.is_some().into())),
         (task::LIST.to_owned(), value(list.into())),
         (task::MAIL.to_owned(), value(task.mail.into())),
+        (task::LABELS.to_owned(), value(task.labels.into())),
     ])
 }
 
@@ -267,7 +287,7 @@ pub(crate) async fn changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()> {
 impl AgendaService {
     /// The occurrences of events overlapping `from..to`.
     fn event_list(&self, from: i64, to: i64) -> Result<Vec<Item>, CommandError> {
-        if to <= from {
+        if to <= from || !self.daemon.app_on(AppKind::Calendar) {
             return Ok(Vec::new());
         }
         let to = to.min(from.saturating_add(MAX_EVENTS_RANGE));
@@ -326,6 +346,9 @@ impl AgendaService {
     }
 
     fn task_list(&self) -> Result<Vec<Item>, CommandError> {
+        if !self.daemon.app_on(AppKind::Tasks) {
+            return Ok(Vec::new());
+        }
         let store = self.daemon.store();
         let lists: HashMap<i64, String> = store
             .task_lists()?
@@ -537,6 +560,53 @@ macro_rules! agenda_interface {
                 Ok(id)
             }
 
+            async fn add_task_file(
+                &self,
+                #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+                id: String,
+                name: String,
+                mime: String,
+                data: Vec<u8>,
+            ) -> fdo::Result<i64> {
+                let row = task_id(&id)?;
+                if data.len() > katna_dbus::agenda::MAX_TASK_FILE {
+                    return Err(CommandError::InvalidArgs(format!(
+                        "a file on a task is at most {} bytes",
+                        katna_dbus::agenda::MAX_TASK_FILE
+                    ))
+                    .into());
+                }
+                if mime.len() > 200 || mime.contains(['\r', '\n']) {
+                    return Err(CommandError::InvalidArgs("bad file type".into()).into());
+                }
+                let file = self
+                    .daemon
+                    .store()
+                    .add_task_file(row, &name, &mime, &data)
+                    .map_err(CommandError::from)?
+                    .ok_or_else(|| fdo::Error::UnknownObject(format!("no task {id}")))?;
+                tracing::info!(id = row, file, size = data.len(), "file put on a task");
+                self.changed_here(&emitter).await?;
+                Ok(file)
+            }
+
+            async fn remove_task_file(
+                &self,
+                #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+                file: i64,
+            ) -> fdo::Result<()> {
+                let found = self
+                    .daemon
+                    .store()
+                    .remove_task_file(file)
+                    .map_err(CommandError::from)?;
+                if !found {
+                    return Err(fdo::Error::UnknownObject(format!("no task file {file}")));
+                }
+                self.changed_here(&emitter).await?;
+                Ok(())
+            }
+
             async fn rename_task_list(
                 &self,
                 #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
@@ -603,10 +673,11 @@ macro_rules! agenda_interface {
                     );
                 }
                 let day = self::due(&day)?;
+                // A small New event window, not the whole app.
                 crate::mail_app::run(
                     connection,
-                    Some(app_action::OPEN_PAGE),
-                    vec![Value::from(app_action::calendar_page(day, true))],
+                    Some(app_action::CAPTURE),
+                    vec![Value::from(app_action::capture_event(day))],
                     None,
                 )
                 .await;
@@ -698,6 +769,25 @@ mod tests {
         assert_eq!(out.due_time, None);
         assert_eq!(out.remind_at, None);
         assert!(!out.starred);
+    }
+
+    #[test]
+    fn labels_are_trimmed_and_kept_when_not_sent() {
+        let task = Task {
+            title: "Pay bills".into(),
+            labels: vec!["Home".into()],
+            ..Task::default()
+        };
+        let none = edited(task.clone(), &Item::new()).unwrap();
+        assert_eq!(none.labels, ["Home"]);
+        let labels = vec![" Home ".to_owned(), String::new(), "Bills".to_owned()];
+        let fields = Item::from([(edit::LABELS.to_owned(), value(labels.into()))]);
+        assert_eq!(
+            edited(task.clone(), &fields).unwrap().labels,
+            ["Home", "Bills"]
+        );
+        let fields = Item::from([(edit::LABELS.to_owned(), value("Home".into()))]);
+        assert!(edited(task, &fields).is_err());
     }
 
     #[test]

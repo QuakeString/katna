@@ -12,6 +12,7 @@
 
 use std::path::Path;
 
+use katna_core::wildcard;
 use serde::Deserialize;
 
 use super::{OneDrive, TIMEOUT, check, parse};
@@ -207,7 +208,20 @@ impl OneDrive {
                 Place::Folder(id) => format!("{}/children", self.item_url(id)),
                 Place::Shared => format!("{}/me/drive/sharedWithMe", self.api),
                 Place::Search(words) => {
-                    let words = words.trim().replace('\'', "''");
+                    // Graph can't take wildcards: a pattern asks for its
+                    // plain pieces, and only what fits is kept below.
+                    let words = words
+                        .split_whitespace()
+                        .flat_map(|w| {
+                            if wildcard::is_pattern(w) {
+                                wildcard::pieces(w)
+                            } else {
+                                vec![w]
+                            }
+                        })
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                        .replace('\'', "''");
                     format!(
                         "{}/me/drive/root/search(q='{}')",
                         self.api,
@@ -226,6 +240,9 @@ impl OneDrive {
         check(&reply, "listing files")?;
         let listing: Listing = parse(&reply.body)?;
         let mut items: Vec<CloudItem> = listing.value.into_iter().filter_map(Item::item).collect();
+        if let Place::Search(words) = place {
+            crate::cloud::keep_matching(&mut items, words);
+        }
         // Graph keeps its own order; a search keeps its ranking.
         if !matches!(place, Place::Search(_)) {
             items.sort_by_key(|i| (!i.folder, std::cmp::Reverse(i.modified)));

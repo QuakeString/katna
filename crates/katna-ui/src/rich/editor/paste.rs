@@ -8,7 +8,8 @@
 
 use std::path::PathBuf;
 
-use gpui::{Anchor, anchored, deferred};
+use crate::anchored;
+use gpui::{Anchor, deferred};
 
 use super::*;
 use crate::rich::doc::Table;
@@ -162,7 +163,7 @@ impl RichEditor {
             trim_empty(&mut doc.blocks);
             let has_text = doc.blocks.iter().any(|b| match b {
                 Block::Para(p) => !p.text.trim().is_empty(),
-                Block::Table(_) => true,
+                Block::Table(_) | Block::Html(_) => true,
                 Block::Image(_) => false,
             });
             if has_text {

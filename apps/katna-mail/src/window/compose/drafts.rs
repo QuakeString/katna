@@ -106,6 +106,10 @@ impl MailWindow {
     /// The close button: closes the message, saved as a draft when
     /// anything was written.
     pub(in crate::window) fn close_compose_saving(&mut self, cx: &mut Context<Self>) {
+        // Emptied again: no draft is kept.
+        if self.drop_empty(cx) {
+            return;
+        }
         let touched = self
             .compose
             .as_ref()
@@ -308,6 +312,7 @@ impl MailWindow {
                 DraftStatus::Saving | DraftStatus::Failed
             )
             || !compose.touched(cx)
+            || compose.wrote_nothing(cx)
         {
             return true;
         }
@@ -323,6 +328,41 @@ impl MailWindow {
         }
         self.save_draft(unsent, true, cx);
         cx.notify();
+        true
+    }
+
+    /// Closes a reply in the conversation that holds nothing worth
+    /// keeping, deleting any copy already saved; false when it holds
+    /// something or none is open.
+    pub(in crate::window) fn drop_empty_reply(&mut self, cx: &mut Context<Self>) -> bool {
+        let inline = self
+            .compose
+            .as_ref()
+            .is_some_and(|c| c.mode == Mode::Inline);
+        inline && self.drop_empty(cx)
+    }
+
+    /// Closes the message being written when it holds nothing worth
+    /// keeping, deleting any copy already saved; false when it holds
+    /// something or none is open.
+    fn drop_empty(&mut self, cx: &mut Context<Self>) -> bool {
+        let empty = self
+            .compose
+            .as_ref()
+            .is_some_and(|c| !c.closing && c.wrote_nothing(cx));
+        if !empty {
+            return false;
+        }
+        let (saved, message_id) = self
+            .compose
+            .as_ref()
+            .map(|c| (c.saved, c.message_id.clone()))
+            .unwrap_or_default();
+        self.close_compose(cx);
+        self.drop_when_saved(&message_id);
+        if let Some(account) = saved {
+            self.discard_saved(account, message_id, cx);
+        }
         true
     }
 

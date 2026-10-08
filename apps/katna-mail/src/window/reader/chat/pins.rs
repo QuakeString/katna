@@ -12,12 +12,12 @@ use std::rc::Rc;
 use std::time::Instant;
 
 use gpui::{
-    AnimationExt, AnyElement, Context, FontWeight, MouseButton, MouseUpEvent, div, point,
-    prelude::*, relative, rgba,
+    Animation, AnimationExt, AnyElement, Context, FontWeight, MouseButton, MouseUpEvent, div,
+    point, prelude::*, relative, rgba,
 };
 use katna_i18n::tr;
 use katna_store::{ChatPin, MAX_CHAT_PINS, MessageId, Pinned};
-use katna_ui::{px, unpx};
+use katna_ui::{motion, px, tokens, unpx};
 
 use super::super::super::MailWindow;
 use super::super::super::attachments::kind_badge;
@@ -32,6 +32,9 @@ use crate::widgets::{icon, icon_button_colored, raised, tip};
 const LABEL: usize = 120;
 /// How long a bubble jumped to stays lit.
 pub(super) const FLASH_MS: f32 = 1200.0;
+/// The pin bar's height, its divider in: the feed keeps where it stands
+/// on screen when the bar comes or goes.
+const BAR: f32 = 51.0;
 
 /// The open chat's pins.
 #[derive(Default)]
@@ -54,6 +57,10 @@ pub(in crate::window) struct Pins {
     /// as last drawn: what a jump scrolls to.
     pub(super) tops: Rc<RefCell<HashMap<MessageId, f32>>>,
     pub(super) feed_top: Rc<Cell<f32>>,
+    /// The bar was drawn last frame, and how many times it came in (each
+    /// time fades it in).
+    shown: bool,
+    comings: usize,
     /// The bubble just jumped to, lit for a moment.
     pub(super) flash: Option<(MessageId, Instant)>,
     pub(super) flashes: usize,
@@ -72,6 +79,23 @@ impl Pins {
     /// The store changed: the pins are read again before the next frame.
     pub(in crate::window) fn forget(&mut self) {
         self.read = false;
+    }
+
+    /// Notes whether the bar shows this frame, and how far the feed's
+    /// offset moves so its bubbles stay put on screen as the bar takes or
+    /// gives back its room above them.
+    pub(super) fn bar_shift(&mut self) -> f32 {
+        let shows = self.list.get(self.at).is_some();
+        if shows == self.shown {
+            return 0.0;
+        }
+        self.shown = shows;
+        if shows {
+            self.comings += 1;
+            -BAR
+        } else {
+            BAR
+        }
     }
 
     /// The pins of message `id`.
@@ -430,61 +454,74 @@ impl MailWindow {
             Pinned::Text(_) => format!("“{}”", pin.label),
             _ => pin.label.clone(),
         };
+        let reduce = cx.reduce_motion();
+        let comings = pins.comings;
+        let bar = div()
+            .id("chat-pin-bar")
+            .flex_none()
+            .h(px(BAR))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(10.0))
+            .pl(px(16.0))
+            .pr(px(10.0))
+            .py(px(6.0))
+            .border_b_1()
+            .border_color(rgba(th.divider))
+            .cursor_pointer()
+            .hover(|s| s.bg(rgba(th.hover)))
+            .on_click(cx.listener(|this, _, _, cx| this.jump_to_chat_pin(cx)))
+            .child(
+                div()
+                    .flex_none()
+                    .flex()
+                    .flex_col()
+                    .gap(px(2.0))
+                    .children(marks),
+            )
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .flex()
+                    .flex_col()
+                    .child(
+                        div()
+                            .text_size(px(11.5))
+                            .font_weight(FontWeight::SEMIBOLD)
+                            .text_color(rgba(th.text_dim))
+                            .child(tr!("chat-pinned-of", at = pins.at + 1, count = count)),
+                    )
+                    .child(
+                        div()
+                            .truncate()
+                            .text_size(px(12.5))
+                            .text_color(rgba(th.text_faint))
+                            .child(label),
+                    ),
+            )
+            .child(
+                icon_button_colored("chat-pin-list", "list-bulleted", 18.0, th.text_dim, th)
+                    .size(px(28.0))
+                    .tooltip(tip(tr!("chat-pins-all"), th))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        cx.stop_propagation();
+                        this.toggle_pin_list(cx);
+                    })),
+            );
+        if reduce {
+            return Some(bar.into_any_element());
+        }
+        // It fades in over the feed's top, which stays where it was.
         Some(
-            div()
-                .id("chat-pin-bar")
-                .flex_none()
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(10.0))
-                .pl(px(16.0))
-                .pr(px(10.0))
-                .py(px(6.0))
-                .border_b_1()
-                .border_color(rgba(th.divider))
-                .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
-                .on_click(cx.listener(|this, _, _, cx| this.jump_to_chat_pin(cx)))
-                .child(
-                    div()
-                        .flex_none()
-                        .flex()
-                        .flex_col()
-                        .gap(px(2.0))
-                        .children(marks),
-                )
-                .child(
-                    div()
-                        .flex_1()
-                        .min_w_0()
-                        .flex()
-                        .flex_col()
-                        .child(
-                            div()
-                                .text_size(px(11.5))
-                                .font_weight(FontWeight::SEMIBOLD)
-                                .text_color(rgba(th.text_dim))
-                                .child(tr!("chat-pinned-of", at = pins.at + 1, count = count)),
-                        )
-                        .child(
-                            div()
-                                .truncate()
-                                .text_size(px(12.5))
-                                .text_color(rgba(th.text_faint))
-                                .child(label),
-                        ),
-                )
-                .child(
-                    icon_button_colored("chat-pin-list", "list-bulleted", 18.0, th.text_dim, th)
-                        .size(px(28.0))
-                        .tooltip(tip(tr!("chat-pins-all"), th))
-                        .on_click(cx.listener(|this, _, _, cx| {
-                            cx.stop_propagation();
-                            this.toggle_pin_list(cx);
-                        })),
-                )
-                .into_any_element(),
+            bar.with_animation(
+                ("chat-pin-bar-in", comings),
+                Animation::new(motion::time(tokens::duration::BASE))
+                    .with_easing(gpui::ease_out_quint()),
+                |el, t| el.opacity(t),
+            )
+            .into_any_element(),
         )
     }
 
@@ -570,11 +607,9 @@ impl MailWindow {
                     .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
                     .with_animation(
                         (id, run),
-                        gpui::Animation::new(std::time::Duration::from_millis(if reduce {
-                            1
-                        } else {
-                            220
-                        }))
+                        gpui::Animation::new(katna_ui::motion::time(
+                            std::time::Duration::from_millis(if reduce { 1 } else { 220 }),
+                        ))
                         .with_easing(gpui::ease_out_quint()),
                         |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
                     ),

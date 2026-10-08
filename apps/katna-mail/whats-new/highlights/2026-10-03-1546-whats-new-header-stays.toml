@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "What's new keeps its heading"
+text = """
+Scrolling What's new now moves only the highlights: the heading stays at
+the top and Got it stays at the bottom.
+"""

@@ -414,7 +414,8 @@ impl MailWindow {
                     .rounded(px(8.0))
                     .bg(rgba(if shown { th.hover } else { th.chip }))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                     .tooltip(tip(
                         if shown {
                             tr!("compose-hide-trimmed")

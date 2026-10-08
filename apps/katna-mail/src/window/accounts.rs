@@ -7,19 +7,17 @@
 //! General) asks in the same dialog, saying what is downloaded again and
 //! what is kept.
 
-use std::cell::RefCell;
-use std::rc::Rc;
-
 use gpui::{
-    AnyElement, Bounds, Context, Div, DragMoveEvent, ElementId, Entity, Focusable, FontWeight,
-    MouseButton, MouseDownEvent, Pixels, SharedString, Stateful, Subscription, Window, canvas,
-    deferred, div, prelude::*, rgba,
+    AnyElement, ClickEvent, Context, Div, DragMoveEvent, ElementId, Entity, Focusable, FontWeight,
+    MouseButton, MouseDownEvent, SharedString, Stateful, Subscription, Window, deferred, div,
+    prelude::*, rgba,
 };
 use katna_core::config::AccountsShown;
 use katna_core::{Account, AccountId, AccountKind, Config, Pop3Keep};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
+use katna_ui::tokens::{space, text};
 use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
@@ -135,105 +133,8 @@ impl Render for AccountDrag {
 /// The space between two account rows.
 const ROW_GAP: f32 = 4.0;
 
-/// Reordering Settings > Accounts: the row being dragged lifts and follows
-/// the pointer, the rows it passes slide out of its way, and after a drop
-/// or a Move up or down every row glides from where it was to its place.
-#[derive(Default)]
-pub(super) struct Reorder {
-    /// Each row's bounds as last painted, offset included.
-    bounds: Rc<RefCell<Vec<Option<Bounds<Pixels>>>>>,
-    /// Where the pointer went down on a row's handle.
-    grab: Option<(usize, f32)>,
-    moving: Option<Moving>,
-    /// Rows gliding to their place after the order changed, by account.
-    gliding: Vec<(AccountId, Spring)>,
-    /// The row whose Move up or down has the keyboard focus.
-    focused: Option<usize>,
-}
-
-/// A drag under way.
-struct Moving {
-    from: usize,
-    /// Where the row would go if dropped now.
-    to: usize,
-    grab_y: f32,
-    pointer_y: f32,
-    /// The other rows moving aside.
-    slides: Vec<Spring>,
-    /// Each row's offset as drawn this frame.
-    drawn: Vec<f32>,
-}
-
-impl Reorder {
-    /// How far row `ix` is drawn from its place.
-    fn offset(&self, ix: usize, id: AccountId) -> f32 {
-        match &self.moving {
-            Some(moving) => moving.drawn.get(ix).copied().unwrap_or(0.0),
-            None => self
-                .gliding
-                .iter()
-                .find(|(g, _)| *g == id)
-                .map_or(0.0, |(_, spring)| spring.value()),
-        }
-    }
-
-    /// Whether row `ix` is drawn above the others: lifted or landing.
-    fn raised(&self, ix: usize, id: AccountId) -> bool {
-        match &self.moving {
-            Some(moving) => moving.from == ix,
-            None => self.gliding.first().is_some_and(|(g, _)| *g == id),
-        }
-    }
-
-    /// Every row's place and height as last painted, or `None` before
-    /// they all are.
-    fn places(&self, count: usize) -> Option<Vec<(f32, f32)>> {
-        let bounds = self.bounds.borrow();
-        (0..count)
-            .map(|ix| {
-                let b = (*bounds.get(ix)?)?;
-                Some((unpx(b.top()), unpx(b.size.height)))
-            })
-            .collect()
-    }
-
-    /// The order changed from `old` to `new` (accounts, first to last)
-    /// with the rows drawn at `places`: each row glides from there to its
-    /// new place, the first of `raised` above the rest.
-    fn glide(
-        &mut self,
-        old: &[AccountId],
-        new: &[AccountId],
-        places: &[(f32, f32)],
-        raised: Option<AccountId>,
-    ) {
-        let (Some(&first), Some(&(painted, _))) = (old.first(), places.first()) else {
-            return;
-        };
-        // Where the first row goes with no offset.
-        let mut top = painted - self.offset(0, first);
-        let mut gliding = Vec::new();
-        for id in new {
-            let Some(old_ix) = old.iter().position(|o| o == id) else {
-                continue;
-            };
-            let (was, height) = places[old_ix];
-            if (was - top).abs() > 0.5 {
-                let mut spring = Spring::new(motion::SLIDE, was - top);
-                spring.set(0.0);
-                gliding.push((*id, spring));
-            }
-            top += height + ROW_GAP;
-        }
-        if let Some(raised) = raised
-            && let Some(ix) = gliding.iter().position(|(g, _)| *g == raised)
-        {
-            let lifted = gliding.remove(ix);
-            gliding.insert(0, lifted);
-        }
-        self.gliding = gliding;
-    }
-}
+/// Reordering Settings > Accounts by dragging a whole row.
+pub(super) type Reorder = super::row_reorder::Reorder<AccountId>;
 
 enum What {
     RemoveAccount(Account),
@@ -383,6 +284,7 @@ impl MailWindow {
                 list,
                 th,
             ))
+            .children(self.connected_section(&accounts, th, cx))
             .children(self.pop3_section(th, cx))
             .child(self.row(
                 tr!("accounts-delete-all-row"),
@@ -574,6 +476,7 @@ impl MailWindow {
             account.display_name.clone()
         };
         let id = account.id;
+        let problem = self.account_problem(id);
         let renaming = self
             .settings_page
             .as_ref()
@@ -600,24 +503,65 @@ impl MailWindow {
                         .child(div().flex_1().min_w_0().child(renaming.input.clone())),
                 ),
                 None => d.child(
-                    div()
+                    self.copyable(name.clone(), th)
                         .truncate()
                         .text_size(px(14.0))
-                        .font_weight(FontWeight::MEDIUM)
-                        .child(name.clone()),
+                        .font_weight(FontWeight::MEDIUM),
                 ),
             })
             .child(
+                self.copyable(
+                    format!("{} \u{b7} {}", account.address, kind_name(account.kind)),
+                    th,
+                )
+                .truncate()
+                .text_size(px(12.0))
+                .text_color(rgba(th.text_faint)),
+            )
+            // What is wrong with it, as the line over the mail list says.
+            .children(problem.as_ref().map(|problem| {
                 div()
-                    .truncate()
-                    .text_size(px(12.0))
-                    .text_color(rgba(th.text_faint))
-                    .child(format!(
-                        "{} \u{b7} {}",
-                        account.address,
-                        kind_name(account.kind)
-                    )),
-            );
+                    .pt(px(space::S1))
+                    .flex()
+                    .flex_row()
+                    .items_start()
+                    .gap(px(space::S2))
+                    .text_size(px(text::SMALL))
+                    .text_color(rgba(th.text_dim))
+                    .child(div().flex_none().child(icon(
+                        problem.icon(),
+                        problem.color(th),
+                        text::SMALL + 2.0,
+                    )))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .child(problem.text())
+                            // Its fix, as on the line over the mail list.
+                            .child(
+                                div()
+                                    .id(("account-fix", ix))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.accent))
+                                    .cursor_pointer()
+                                    .hover(|s| s.underline())
+                                    .child(problem.action())
+                                    .map(|d| self.page_control(d, th, cx))
+                                    .on_click({
+                                        let problem = problem.clone();
+                                        cx.listener(move |this, event: &ClickEvent, window, cx| {
+                                            this.fix_problem(
+                                                problem.clone(),
+                                                event.position(),
+                                                window,
+                                                cx,
+                                            )
+                                        })
+                                    }),
+                            ),
+                    )
+            }));
         let own = self.remote.has_own_picture(id);
         let desktop = self.remote.has_desktop_picture();
         let buttons = div()
@@ -675,6 +619,18 @@ impl MailWindow {
                     ),
                 )
             })
+            .children(
+                self.account_color_dot(&account.address, th)
+                    .map(|(target, dot)| {
+                        text_button(("account-color", ix), tr!("account-color-menu"), th)
+                            .gap(px(8.0))
+                            .child(dot)
+                            .map(|d| self.page_control(d, th, cx))
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                this.pick_account_color(target, window, cx)
+                            }))
+                    }),
+            )
             .child({
                 let account = account.clone();
                 danger_button(("account-remove", ix), tr!("accounts-remove"), false, th)
@@ -703,15 +659,13 @@ impl MailWindow {
             }
         };
         let reorder = self.settings_page.as_ref().map(|p| &p.reorder);
-        let offset = reorder.map_or(0.0, |r| r.offset(ix, id));
         let raised = reorder.is_some_and(|r| r.raised(ix, id));
-        let dragging = reorder.and_then(|r| r.moving.as_ref());
-        let lifted = dragging.is_some_and(|m| m.from == ix);
+        let dragging = reorder.is_some_and(|r| r.dragging());
+        let lifted = reorder.is_some_and(|r| r.lifted(ix));
         // Move up and Move down show on the row the pointer is over, or
         // whose button has the keyboard focus; not on the rows a drag
         // passes over.
-        let arrows_shown =
-            lifted || (dragging.is_none() && reorder.is_some_and(|r| r.focused == Some(ix)));
+        let arrows_shown = lifted || (!dragging && reorder.is_some_and(|r| r.focused == Some(ix)));
         let group = SharedString::from(format!("account-row-{ix}"));
         let handle = div()
             .id(("account-drag", ix))
@@ -722,13 +676,14 @@ impl MailWindow {
             .justify_center()
             .rounded_full()
             .cursor_grab()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", None, th))
             .tooltip(crate::widgets::tip(tr!("accounts-drag"), th))
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(move |this, event: &MouseDownEvent, _, _| {
                     if let Some(page) = this.settings_page.as_mut() {
-                        page.reorder.grab = Some((ix, unpx(event.position.y)));
+                        page.reorder.grab(ix, unpx(event.position.y));
                     }
                 }),
             )
@@ -736,23 +691,21 @@ impl MailWindow {
                 cx.new(|_| drag.clone())
             })
             .child(icon("drag-handle", th.text_faint, 20.0));
-        let avatar = self.person_avatar(&name, &account.address, 36.0);
-        let bounds = reorder.map(|r| r.bounds.clone());
-        // The shadow of a lifted row, fading as it lands.
-        let lift = if lifted {
-            3.0
-        } else if raised {
-            (offset.abs() / 8.0).min(3.0)
-        } else {
-            0.0
-        };
+        let avatar = self.problem_badge(
+            self.account_ring(
+                &account.address,
+                self.person_avatar(&name, &account.address, 36.0),
+                th,
+            ),
+            36.0,
+            problem.as_ref(),
+            th,
+        );
         // The buttons go below the name, together, where the row is
         // narrow.
         let row = div()
             .id(("account-row", ix))
             .group(group.clone())
-            .relative()
-            .top(px(offset))
             .mx(px(-8.0))
             .px(px(8.0))
             .py(px(6.0))
@@ -761,27 +714,7 @@ impl MailWindow {
             .flex_row()
             .items_center()
             .gap(px(8.0))
-            .when(raised, |d| {
-                d.bg(rgba(th.surface)).shadow(elevation(th, lift))
-            })
-            .when_some(bounds, |d, bounds| {
-                d.child(
-                    canvas(
-                        move |b, _, _| {
-                            let mut all = bounds.borrow_mut();
-                            if all.len() <= ix {
-                                all.resize(ix + 1, None);
-                            }
-                            all[ix] = Some(b);
-                        },
-                        |_, _, _, _| {},
-                    )
-                    .absolute()
-                    .top_0()
-                    .left_0()
-                    .size_full(),
-                )
-            })
+            .when_some(reorder, |d, r| r.row(d, ix, id, th))
             .child(handle)
             .child(avatar)
             .child(
@@ -804,9 +737,8 @@ impl MailWindow {
                     .flex()
                     .flex_col()
                     .when(!arrows_shown, |d| {
-                        d.opacity(0.0).when(dragging.is_none(), |d| {
-                            d.group_hover(group, |s| s.opacity(1.0))
-                        })
+                        d.opacity(0.0)
+                            .when(!dragging, |d| d.group_hover(group, |s| s.opacity(1.0)))
                     })
                     .child(arrow(
                         "account-up",
@@ -863,17 +795,7 @@ impl MailWindow {
             .collect();
         let old: Vec<AccountId> = accounts.iter().map(|a| a.id).collect();
         if let Some(page) = self.settings_page.as_mut() {
-            let reorder = &mut page.reorder;
-            reorder.grab = None;
-            if from < old.len() && to < old.len() {
-                let mut new = old.clone();
-                let moved = new.remove(from);
-                new.insert(to, moved);
-                if let Some(places) = reorder.places(old.len()) {
-                    reorder.glide(&old, &new, &places, Some(moved));
-                }
-            }
-            reorder.moving = None;
+            page.reorder.moved(&old, from, to, ROW_GAP);
         }
         if from != to {
             self.config.mail.move_account(&accounts, from, to);
@@ -885,79 +807,14 @@ impl MailWindow {
 
     /// The pointer moved while dragging the account at `from` to `y`.
     fn account_dragged(&mut self, from: usize, y: f32, cx: &mut Context<Self>) {
-        let count = self.accounts.iter().filter(|a| a.kind.is_mail()).count();
         let ids: Vec<AccountId> = self
             .accounts
             .iter()
             .filter(|a| a.kind.is_mail())
             .map(|a| a.id)
             .collect();
-        let Some(page) = self.settings_page.as_mut() else {
-            return;
-        };
-        let reorder = &mut page.reorder;
-        if from >= count {
-            return;
-        }
-        if reorder.moving.is_none() {
-            let grab_y = match reorder.grab.take() {
-                Some((ix, grab_y)) if ix == from => grab_y,
-                _ => y,
-            };
-            // Rows still gliding carry on from where they are.
-            let drawn: Vec<f32> = ids
-                .iter()
-                .enumerate()
-                .map(|(ix, id)| reorder.offset(ix, *id))
-                .collect();
-            let mut slides: Vec<Spring> = drawn
-                .iter()
-                .map(|&at| Spring::new(motion::SLIDE, at))
-                .collect();
-            for slide in &mut slides {
-                slide.set(0.0);
-            }
-            reorder.gliding.clear();
-            reorder.moving = Some(Moving {
-                from,
-                to: from,
-                grab_y,
-                pointer_y: y,
-                slides,
-                drawn,
-            });
-        }
-        let places = reorder.places(count);
-        let Some(moving) = reorder.moving.as_mut() else {
-            return;
-        };
-        moving.pointer_y = y;
-        if let Some(places) = places {
-            let natural: Vec<(f32, f32)> = places
-                .iter()
-                .zip(&moving.drawn)
-                .map(|(&(top, height), drawn)| (top - drawn, height))
-                .collect();
-            let (top, height) = natural[moving.from];
-            let center = top + height / 2.0 + (y - moving.grab_y);
-            let to = natural
-                .iter()
-                .enumerate()
-                .filter(|&(ix, &(top, height))| ix != moving.from && top + height / 2.0 < center)
-                .count();
-            if to != moving.to {
-                moving.to = to;
-                let step = height + ROW_GAP;
-                for (ix, slide) in moving.slides.iter_mut().enumerate() {
-                    slide.set(if ix > moving.from && ix <= to {
-                        -step
-                    } else if ix < moving.from && ix >= to {
-                        step
-                    } else {
-                        0.0
-                    });
-                }
-            }
+        if let Some(page) = self.settings_page.as_mut() {
+            page.reorder.dragged(&ids, from, y, ROW_GAP);
         }
         cx.notify();
     }
@@ -967,8 +824,7 @@ impl MailWindow {
         let Some((from, to)) = self
             .settings_page
             .as_ref()
-            .and_then(|p| p.reorder.moving.as_ref())
-            .map(|m| (m.from, m.to))
+            .and_then(|p| p.reorder.drop_move())
         else {
             return;
         };
@@ -980,7 +836,7 @@ impl MailWindow {
         let dropped = self
             .settings_page
             .as_ref()
-            .is_some_and(|p| p.reorder.moving.is_some())
+            .is_some_and(|p| p.reorder.dragging())
             && !cx.has_active_drag();
         if dropped {
             // Let go somewhere with nowhere to drop it.
@@ -997,32 +853,8 @@ impl MailWindow {
                 .into_iter()
                 .any(|dir| stops.focused(&ElementId::from((dir, ix)), window))
         });
-        reorder.bounds.borrow_mut().resize(count, None);
-        let places = reorder.places(count);
-        if let Some(moving) = reorder.moving.as_mut() {
-            for (ix, slide) in moving.slides.iter_mut().enumerate() {
-                if ix != moving.from {
-                    moving.drawn[ix] = slide.tick(window, reduce);
-                }
-            }
-            let mut lifted = moving.pointer_y - moving.grab_y;
-            // The lifted row stays between the first row's top and the
-            // last row's bottom.
-            if let Some(places) = places
-                && let Some(last) = places.last()
-            {
-                let at = |ix: usize| places[ix].0 - moving.drawn[ix];
-                let top = at(0);
-                let bottom = at(count - 1) + last.1;
-                let (own, height) = (at(moving.from), places[moving.from].1);
-                lifted = lifted.clamp(top - own, (bottom - height - own).max(top - own));
-            }
-            moving.drawn[moving.from] = lifted;
-        }
-        reorder.gliding.retain_mut(|(_, spring)| {
-            spring.tick(window, reduce);
-            !spring.settled()
-        });
+        reorder.tick(count, window, reduce);
+        self.tick_rule_reorder(window, reduce, cx);
     }
 
     fn start_rename(&mut self, account: AccountId, window: &mut Window, cx: &mut Context<Self>) {
@@ -1263,22 +1095,26 @@ impl MailWindow {
     }
 
     fn account_removed(&mut self, account: &Account, cx: &mut Context<Self>) {
-        if self
-            .config
-            .mail
-            .account_tabs
-            .remove(&account.address.to_lowercase())
-            .is_some()
-        {
+        let key = account.address.to_lowercase();
+        let tabs = self.config.mail.account_tabs.remove(&key).is_some();
+        let color = self.config.mail.account_colors.remove(key.trim()).is_some();
+        if tabs || color {
             self.save_config();
         }
+        let id = account.id;
+        self.drop_color_picker(|t| t == super::scheme_color::Target::Account(id));
         let listed = self
             .folder
             .is_some_and(|f| self.tree.account_of(f) == Some(account.id));
         if listed
             || matches!(
                 self.listing,
-                Some(Listing::Search { .. } | Listing::Unified { .. })
+                Some(
+                    Listing::Search { .. }
+                        | Listing::Unified { .. }
+                        | Listing::Waiting
+                        | Listing::Reminders
+                )
             )
         {
             self.close_listing(cx);
@@ -1304,7 +1140,8 @@ impl MailWindow {
         self.settings_page = None;
         self.close_listing(cx);
         self.unread.clear();
-        self.mail = Mail::open(&self.paths);
+        let nudges = self.config.mail.nudges;
+        self.mail = Mail::open(&self.paths).map(|mail| mail.with_nudges(nudges));
         self.load_tree();
         self.show_snackbar(tr!("accounts-all-deleted"), None, cx);
     }
@@ -1332,6 +1169,7 @@ impl MailWindow {
         self.tab = 0;
         self.selected = None;
         self.checked.clear();
+        self.check_anchor = None;
         self.clear_search(cx);
     }
 
@@ -1444,16 +1282,18 @@ impl MailWindow {
             .flex_col()
             .gap(px(6.0))
             .child(
-                div()
-                    .text_size(px(14.0))
-                    .font_weight(FontWeight::SEMIBOLD)
-                    .text_color(rgba(tone))
-                    .child(match &danger.what {
+                self.copyable(
+                    match &danger.what {
                         What::ResetCache => tr!("reset-cache-deleted"),
                         What::Calendar { delete: true, .. } => tr!("calendar-delete-heading"),
                         What::Calendar { .. } => tr!("calendar-remove-heading"),
                         _ => tr!("accounts-deleted-heading"),
-                    }),
+                    },
+                    th,
+                )
+                .text_size(px(14.0))
+                .font_weight(FontWeight::SEMIBOLD)
+                .text_color(rgba(tone)),
             )
             .children(items.into_iter().map(|item| {
                 div()
@@ -1463,16 +1303,15 @@ impl MailWindow {
                     .text_size(px(14.0))
                     .line_height(px(20.0))
                     .child(div().text_color(rgba(tone)).child("\u{2022}"))
-                    .child(div().flex_1().min_w_0().child(item))
+                    .child(self.copyable(item, th).flex_1().min_w_0())
             }))
             .when(!reset && !unlist, |d| {
                 d.child(
-                    div()
+                    self.copyable(tr!("accounts-cannot-undo"), th)
                         .pt(px(4.0))
                         .text_size(px(14.0))
                         .font_weight(FontWeight::SEMIBOLD)
-                        .text_color(rgba(tone))
-                        .child(tr!("accounts-cannot-undo")),
+                        .text_color(rgba(tone)),
                 )
             });
         let server = div()
@@ -1485,13 +1324,8 @@ impl MailWindow {
             .gap(px(10.0))
             .child(icon("info", th.accent, 20.0))
             .child(
-                div()
-                    .flex_1()
-                    .min_w_0()
-                    .text_size(px(13.0))
-                    .line_height(px(19.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(match &danger.what {
+                self.copyable(
+                    match &danger.what {
                         What::ResetCache => tr!("reset-cache-kept"),
                         What::DeleteAll { .. } => tr!("accounts-server-delete-all"),
                         What::RemoveAccount(account) if account.kind == AccountKind::Local => {
@@ -1507,7 +1341,14 @@ impl MailWindow {
                             ..
                         } => tr!("calendar-delete-server", account = account.as_str()),
                         What::Calendar { .. } => tr!("calendar-remove-server"),
-                    }),
+                    },
+                    th,
+                )
+                .flex_1()
+                .min_w_0()
+                .text_size(px(13.0))
+                .line_height(px(19.0))
+                .text_color(rgba(th.text_dim)),
             );
         let confirm = match &danger.what {
             What::DeleteAll { typed, .. } => {
@@ -1551,7 +1392,7 @@ impl MailWindow {
                 .mt(px(12.0))
                 .text_size(px(13.0))
                 .text_color(rgba(th.error))
-                .child(err)
+                .child(self.copyable(err, th))
         });
         let busy = danger.busy;
         let body = div()
@@ -1579,11 +1420,10 @@ impl MailWindow {
                     }),
             )
             .child(
-                div()
+                self.copyable(title, th)
                     .mt(px(16.0))
                     .text_size(px(22.0))
-                    .line_height(px(30.0))
-                    .child(title),
+                    .line_height(px(30.0)),
             )
             .child(warning)
             .child(server)
@@ -1630,8 +1470,7 @@ impl MailWindow {
                         .on_click(cx.listener(|this, _, _, cx| this.confirm_danger(cx))),
                     ),
             );
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let (vw, vh) = (self.room_width(), self.room_height(window));
         let card = div()
             .id("danger")
             .track_focus(&self.dialog_focus)
@@ -1693,7 +1532,8 @@ fn text_button(
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(th.accent))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", None, th))
         .child(label.into())
 }
 

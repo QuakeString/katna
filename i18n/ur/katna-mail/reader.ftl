@@ -8,6 +8,8 @@ reader-close = بند کریں
 reader-back = واپس
 reader-mark-unread = بطور ناخواندہ نشان زد کریں
 reader-move-to = یہاں منتقل کریں
+reader-snooze = اسنوز کریں
+reader-remind = مجھے یاد دلائیں
 reader-more = مزید
 reader-original-colors = اصل رنگ دکھائیں
 reader-dark-colors = گہرے رنگوں میں دکھائیں
@@ -35,6 +37,7 @@ reader-tick-bounced = نہیں پہنچی: باؤنس ہو گئی، { $when }
 reader-tick-read = پڑھی گئی: { $when } (پڑھنے کی رسید)
 reader-tick-opened = کھولی گئی، آخری بار { $when } (کھولنے کی ٹریکنگ)
 reader-starred = ستارے والا
+reader-chip-remove = { $label } ہٹائیں
 reader-not-starred = ستارہ نہیں لگا
 reader-too-long = پیغام پورا دکھانے کے لیے بہت طویل ہے۔
 reader-encrypted-images = مرموز میل میں ویب سے تصاویر کبھی لوڈ نہیں کی جاتیں۔
@@ -52,6 +55,7 @@ reader-details-subject = موضوع:
 
 reader-downloading = یہ پیغام سرور سے ڈاؤن لوڈ کیا جا رہا ہے…
 reader-download-failed = یہ پیغام ڈاؤن لوڈ نہیں ہو سکا۔
+reader-download-offline = یہ اکاؤنٹ آف لائن ہے۔ یہ پیغام ڈاؤن لوڈ کرنے کے لیے آن لائن ہو جائیں۔
 reader-try-again = دوبارہ کوشش کریں
 
 ## Reply row
@@ -104,6 +108,7 @@ tracking-clicked = { $who } نے لنک { $clicks ->
 tracking-maybe-opened = { $who } نے شاید اسے کھولا ہو (Apple Mail پرائیویسی کے لیے تصاویر لوڈ کرتا ہے)
 tracking-seen-none = ابھی تک کسی نے اسے نہیں کھولا اور نہ کوئی لنک کھولا
 tracking-receipt = { $who } نے پڑھنے کی رسید بھیجی
+tracking-receipt-read = { $who } نے اسے پڑھا (رسیدِ مطالعہ)، { $when }
 tracking-receipt-displayed = پڑھنے کی رسید: { $who } نے آپ کا پیغام کھولا
 tracking-receipt-other = پڑھنے کی رسید: { $who } نے آپ کا پیغام کھولے بغیر حذف کیا یا نمٹا دیا
 

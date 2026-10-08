@@ -12,14 +12,15 @@ use std::rc::Rc;
 
 use gpui::{
     Anchor, AnyElement, App, Bounds, ClipboardItem, Context, DragMoveEvent, Entity, Focusable,
-    MouseButton, MouseDownEvent, Pixels, Point, Subscription, Task, WeakEntity, Window, anchored,
-    canvas, deferred, div, point, prelude::*, rgba,
+    MouseButton, MouseDownEvent, Pixels, Point, Subscription, Task, WeakEntity, Window, canvas,
+    deferred, div, point, prelude::*, rgba,
 };
 use katna_ai::Tone;
 use katna_ai::provider::{self, OTHER};
 use katna_ai::wire::{plan, problem};
 use katna_core::config::AiSource;
 use katna_i18n::tr;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::rich::Complete;
 use katna_ui::{InputEvent, TextInput};
@@ -28,10 +29,10 @@ pub(in crate::window) mod subject;
 mod write;
 
 use super::super::MailWindow;
-use super::super::search_panel::chip;
 use super::super::settings_page::Section;
 use crate::daemon::{self, Command, Rephrased};
 use crate::theme::{Theme, fade};
+use crate::widgets::choice_chip;
 use crate::widgets::{
     elevation, filled_button, icon, icon_button_colored, outlined_button, raised, tip,
 };
@@ -631,7 +632,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let tone_chip = |tone: Tone, label: String| {
-            chip(
+            choice_chip(
                 ("compose-rephrase-tone", tone as usize),
                 &label,
                 r.tone == tone,
@@ -647,7 +648,7 @@ impl MailWindow {
             .gap(px(6.0))
             .children(FIRST_TONES.map(|tone| tone_chip(tone, tone_label(tone))))
             .child(
-                chip("compose-rephrase-more", "⋯", r.more, th)
+                choice_chip("compose-rephrase-more", "⋯", r.more, th)
                     .rounded_full()
                     .tooltip(tip(tr!("compose-ai-more"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
@@ -897,24 +898,23 @@ pub(in crate::window) fn problem_text(problem: &str, service: &str) -> (String, 
             tr!("compose-ai-sign-in"),
             Fix::Settings(Section::Subscriptions),
         ),
-        problem::PAY => (tr!("compose-ai-pay"), Fix::Settings(Section::Signatures)),
+        problem::PAY => (tr!("compose-ai-pay"), Fix::Settings(Section::Ai)),
         problem::TOO_MANY => (tr!("compose-ai-too-many"), Fix::Retry),
         problem::NO_KEY => (
             tr!("compose-ai-no-key", service = service),
-            Fix::Settings(Section::Signatures),
+            Fix::Settings(Section::Ai),
         ),
         problem::BAD_KEY => (
             tr!("compose-ai-bad-key", service = service),
-            Fix::Settings(Section::Signatures),
+            Fix::Settings(Section::Ai),
         ),
-        problem::OFF => (tr!("compose-ai-off"), Fix::Settings(Section::Signatures)),
+        problem::OFF => (tr!("compose-ai-off"), Fix::Settings(Section::Ai)),
         _ => (tr!("compose-ai-failed", service = service), Fix::Retry),
     }
 }
 
 /// Grey lines breathing while the text is rewritten.
 pub(in crate::window) fn placeholder(th: &Theme, reduce: bool) -> AnyElement {
-    use gpui::{Animation, AnimationExt};
     let line = |width: f32| {
         div()
             .h(px(10.0))
@@ -929,13 +929,43 @@ pub(in crate::window) fn placeholder(th: &Theme, reduce: bool) -> AnyElement {
         .child(line(0.92))
         .child(line(0.78))
         .child(line(0.55));
+    pulsing("compose-rephrase-wait", lines, reduce)
+}
+
+/// Pills standing in for the reply ideas while they are asked, breathing
+/// like [`placeholder`]: in the Write reply card and the summary card.
+pub(in crate::window) fn idea_placeholder(th: &Theme, reduce: bool) -> AnyElement {
+    pulsing(
+        "compose-ideas-wait",
+        div()
+            .flex()
+            .flex_row()
+            .gap(px(6.0))
+            .children([150.0, 120.0, 140.0].map(|width| {
+                div()
+                    .w(px(width))
+                    .h(px(28.0))
+                    .rounded_full()
+                    .bg(rgba(fade(th.text_faint, 0.18)))
+            })),
+        reduce,
+    )
+}
+
+/// `shapes` standing in for text still on its way, breathing slowly
+/// (still with reduced motion): the waiting look of every AI card.
+pub(in crate::window) fn pulsing(id: &'static str, shapes: gpui::Div, reduce: bool) -> AnyElement {
+    use gpui::{Animation, AnimationExt};
     if reduce {
-        return lines.into_any_element();
+        return shapes.into_any_element();
     }
-    lines
+    shapes
         .with_animation(
-            "compose-rephrase-wait",
-            Animation::new(std::time::Duration::from_millis(1800)).repeat(),
+            id,
+            Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                1800,
+            )))
+            .repeat(),
             |el, t| {
                 let wave = 0.5 - 0.5 * (t * std::f32::consts::TAU).cos();
                 el.opacity(0.55 + 0.45 * wave)

@@ -166,6 +166,7 @@ files-share-remove = ಪ್ರವೇಶ ತೆಗೆದುಹಾಕಿ
 files-share-copy-link = ಲಿಂಕ್ ನಕಲಿಸಿ
 files-share-share = ಹಂಚಿಕೊಳ್ಳಿ
 files-share-done = ಮುಗಿದಿದೆ
+files-share-close = ಮುಚ್ಚಿ
 files-share-sharing = ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ…
 files-share-shared = { $count ->
     [one] { $count } ವ್ಯಕ್ತಿಯೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ

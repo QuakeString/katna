@@ -8,6 +8,7 @@
 
 use std::path::Path;
 
+use katna_core::wildcard;
 use serde::Deserialize;
 
 use super::{Drive, check, failure};
@@ -100,6 +101,57 @@ fn quoted(text: &str) -> String {
     format!("'{}'", text.replace('\\', "\\\\").replace('\'', "\\'"))
 }
 
+/// The query of a search for `words`. Drive can't take wildcards, so a
+/// pattern (`*.pdf`, `invoice*2026*`) asks for its plain pieces, or a
+/// common extension's type, and [`crate::cloud::keep_matching`] keeps what fits.
+fn search_query(words: &str) -> String {
+    let (patterns, plain): (Vec<&str>, Vec<&str>) = words
+        .split_whitespace()
+        .partition(|w| wildcard::is_pattern(w));
+    let mut clauses = Vec::new();
+    if !plain.is_empty() {
+        clauses.push(format!(
+            "(name contains {0} or fullText contains {0})",
+            quoted(&plain.join(" "))
+        ));
+    }
+    for pattern in patterns {
+        if let Some(mime) = wildcard::extension(pattern).and_then(extension_mime) {
+            clauses.push(format!("mimeType = {}", quoted(mime)));
+            continue;
+        }
+        for piece in wildcard::pieces(pattern) {
+            clauses.push(format!(
+                "(name contains {0} or fullText contains {0})",
+                quoted(piece)
+            ));
+        }
+    }
+    clauses.push("trashed = false".into());
+    clauses.join(" and ")
+}
+
+/// The type Drive gives files of a common extension.
+fn extension_mime(ext: &str) -> Option<&'static str> {
+    Some(match ext.to_ascii_lowercase().as_str() {
+        "pdf" => "application/pdf",
+        "jpg" | "jpeg" => "image/jpeg",
+        "png" => "image/png",
+        "gif" => "image/gif",
+        "txt" => "text/plain",
+        "csv" => "text/csv",
+        "zip" => "application/zip",
+        "mp4" => "video/mp4",
+        "doc" => "application/msword",
+        "xls" => "application/vnd.ms-excel",
+        "ppt" => "application/vnd.ms-powerpoint",
+        "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        _ => return None,
+    })
+}
+
 impl Drive {
     /// Whether the account's sign-in lets Katna browse the whole Drive.
     pub async fn readable(&self) -> Result<bool> {
@@ -146,13 +198,7 @@ impl Drive {
                 "folder,modifiedTime desc",
             ),
             // Google won't sort a search of the files' text.
-            Place::Search(words) => (
-                format!(
-                    "(name contains {0} or fullText contains {0}) and trashed = false",
-                    quoted(words.trim())
-                ),
-                "",
-            ),
+            Place::Search(words) => (search_query(words), ""),
         };
         let mut url = format!(
             "{}/drive/v3/files?q={}&pageSize={PAGE}&fields={}",
@@ -172,8 +218,12 @@ impl Drive {
         check(&reply, "listing files")?;
         let listing: Listing = serde_json::from_slice(&reply.body)
             .map_err(|err| Error::Protocol(format!("Drive listing: {err}")))?;
+        let mut items: Vec<CloudItem> = listing.files.into_iter().filter_map(File::item).collect();
+        if let Place::Search(words) = place {
+            crate::cloud::keep_matching(&mut items, words);
+        }
         Ok(CloudPage {
-            items: listing.files.into_iter().filter_map(File::item).collect(),
+            items,
             next: listing.next_page_token,
         })
     }
@@ -273,6 +323,21 @@ mod tests {
         net::Tls,
         oauth::{GOOGLE_DRIVE_FILE, Provider, TokenSource},
     };
+
+    #[test]
+    fn wildcard_searches() {
+        assert_eq!(
+            search_query("*.pdf"),
+            "mimeType = 'application/pdf' and trashed = false"
+        );
+        assert_eq!(
+            search_query("budget invoice*2026*"),
+            "(name contains 'budget' or fullText contains 'budget') and \
+             (name contains 'invoice' or fullText contains 'invoice') and \
+             (name contains '2026' or fullText contains '2026') and trashed = false"
+        );
+        assert_eq!(search_query("*"), "trashed = false");
+    }
 
     fn drive(api: &str, scope: &str) -> Drive {
         let provider = Provider {

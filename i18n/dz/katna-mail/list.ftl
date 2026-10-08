@@ -39,6 +39,7 @@ list-results = “{ $query }” གི་གྲུབ་འབྲས་ཚུ
 list-results-corrected = “{ $query }” གི་གྲུབ་འབྲས་ཚུ་སྟོན་དོ
 list-search-instead = དེ་གི་ཚབ་ལུ་ “{ $query }” འཚོལ།
 list-files-more = +{ $count }
+list-replied = ཁྱོད་ཀྱིས་ལན་བཏང་ཡི
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -268,6 +269,8 @@ list-empty-tab = { $tab } ནང་གློག་འཕྲིན་མིན་
 list-empty-tab-unknown = ཤོག་མཚན་འདི་ནང་གློག་འཕྲིན་མིན་འདུག
 list-empty-folder = { $folder } ནང་འཕྲིན་དོན་མིན་འདུག
 list-empty-folder-unknown = སྣོད་འཛིན་འདི་ནང་འཕྲིན་དོན་མིན་འདུག
+list-empty-waiting = ལན་ལུ་སྒུག་དོ་མི་ ག་ནི་ཡང་མེད།
+list-empty-reminders = དྲན་སྐུལ་མེད། གློག་འཕྲིན་ཅིག་གུ་ H ཨེབ་སྟེ་ ཁ་སྐོང་འབད།
 list-first-sync = ཁྱོད་ཀྱི་གློག་འཕྲིན་ལེན་དོ…
 list-first-sync-detail = གློག་འཕྲིན་འབྱོར་བའི་བསྒང་ ནཱ་ལུ་སྟོནམ་ཨིན།
 
@@ -287,6 +290,14 @@ row-tracking-clicked = { $recipients } ལས་ { $opened } གིས་ཁ་�
 row-pin = ཡར་སྟོད་ལུ་བཙུགས།
 row-unpin = བཙུགས་མི་བཏོན།
 row-snoozed-until = { $when } ཚུན་ཚོད་ ཤུལ་མར་བཞག་ཡོདཔ
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = ད་རིས
+snoozed-group-tomorrow = ནངས་པ
+snoozed-group-this-week = བདུན་ཕྲག་འདི
+snoozed-group-later = ཤུལ་མར
+row-follow-up-step = རྗེས་འདེད་ { $steps } ལས་ { $step } · { $date }
+row-follow-up-waiting = རྗེས་འདེད་སྒུག་དོ
+row-reminder = དྲན་སྐུལ་ { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -309,6 +320,7 @@ menu-not-important = གལ་ཅན་མེན་པ་སྦེ་རྟག�
 menu-pin = ཡར་སྟོད་ལུ་བཙུགས།
 menu-unpin = བཙུགས་མི་བཏོན།
 menu-snooze = ཤུལ་མར་བཞག།
+menu-remind = ང་ལུ་དྲན་སྐུལ་འབད།
 menu-unsnooze = ཤུལ་མར་བཞག་མི་བཏོན།
 menu-add-to-tasks = ལཱ་ནང་ཁ་སྣོན་འབད།
 menu-schedule-meeting = ཞལ་འཛོམས་ཅིག་ལུ་ དུས་ཚོད་བཞག།
@@ -324,7 +336,24 @@ menu-follow-up = རྗེས་འདེད།
 # Pin to top.
 menu-more = ཧེང་བཀལ།
 menu-move-to-heading = ལུ་སྤོ:
+menu-move-to-search = ལུ་སྤོ…
+menu-label-as = ཁ་ཡིག་བཏགས།
+menu-label-as-search = ཁ་ཡིག་བཏགས…
+menu-no-folder = “{ $name }” ཟེར་མི་ སྣོད་འཛིན་མེད
+menu-no-label = “{ $name }” ཟེར་མི་ ཁ་ཡིག་མེད
+menu-create-folder = “{ $name }” གསར་བསྐྲུན་འབད།
+menu-always-move = { $name } ལས་འོང་མི་གློག་འཕྲིན་ ཨ་རྟག་ར་ ནཱ་ལུ་སྤོ།
+toast-always-move-failed = གློག་འཕྲིན་སྤོ་ཡི་ དེ་འབདཝ་ད་ ལམ་ལུགས་མ་བཟོ: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+       *[other] གླེང་མོལ་ { $count }
+    }
+   *[message] { $count ->
+       *[other] འཕྲིན་དོན་ { $count }
+    }
+}
 menu-find-from = { $name } ལས་འོང་མི་གློག་འཕྲིན་ཚུ་འཚོལ།
+menu-make-rule = ལམ་ལུགས་ཅིག་བཟོ…
 
 ## Snackbar after an action on mail in the list
 
@@ -340,6 +369,8 @@ toast-moved = { $kind ->
     [conversation] གླེང་མོལ་ { $count } སྤོ་ཡི།
    *[message] འཕྲིན་དོན་ { $count } སྤོ་ཡི།
 }
+toast-label-added = ཁ་ཡིག་ “{ $label }” ཁ་སྐོང་འབད་ཡི།
+toast-label-removed = ཁ་ཡིག་ “{ $label }” ཕྱིར་བཏོན་ཡི།
 toast-starred = { $kind ->
     [conversation] གླེང་མོལ་ { $count } ལུ་སྐར་མ་བཀལ་ཡི།
    *[message] འཕྲིན་དོན་ { $count } ལུ་སྐར་མ་བཀལ་ཡི།

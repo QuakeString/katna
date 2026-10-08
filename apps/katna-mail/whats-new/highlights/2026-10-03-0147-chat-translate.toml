@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Translate in chats"
+text = """
+A mail in another language offers its translation in the chat too, as in
+Mail. Right-click any bubble and pick Translate to translate it yourself,
+and again to show the original.
+"""

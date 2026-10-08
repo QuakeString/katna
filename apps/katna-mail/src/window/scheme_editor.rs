@@ -10,7 +10,6 @@
 //! or deletes it, with Undo. The files are `crate::user_schemes`'.
 
 use std::path::PathBuf;
-use std::rc::Rc;
 
 use gpui::{
     AnyElement, Context, Div, Entity, Focusable, FontWeight, PathPromptOptions, SharedString,
@@ -19,18 +18,18 @@ use gpui::{
 use katna_i18n::tr;
 use katna_platform::colors::{DesktopScheme, Scheme};
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{InputEvent, TextInput, px, unpx};
+use katna_ui::{InputEvent, TextInput, px};
 
 use super::MailWindow;
 use super::context_menu::Rows;
-use super::scheme_color::{ColorPicker, Swatches};
+use super::scheme_color::Target;
 use super::scheme_picker::{intern, scheme_picture};
 use super::settings::Change;
 use crate::daemon::Command;
 use crate::schemes::{self, SideScheme};
 use crate::theme::{Accent, Theme, fade};
 use crate::user_schemes::{self, Seed};
-use crate::widgets::{elevation, filled_button, icon};
+use crate::widgets::{filled_button, icon};
 
 const DIALOG_WIDTH: f32 = 760.0;
 const SWATCH: f32 = 22.0;
@@ -44,12 +43,6 @@ pub(super) struct SchemeEditor {
     name: Entity<TextInput>,
     /// The hex fields, light side first, in [`Seed::ALL`]'s order.
     fields: [Vec<Entity<TextInput>>; 2],
-    /// The open color picker.
-    pub(super) picker: Option<ColorPicker>,
-    /// Where the swatches were drawn, for the picker's place.
-    pub(super) swatches: Swatches,
-    /// Colors picked lately, newest first.
-    pub(super) recent: Vec<u32>,
     error: Option<String>,
     closing: bool,
     shown: Spring,
@@ -202,7 +195,7 @@ impl MailWindow {
                                 && let Some(side) = editor.side_mut(dark)
                             {
                                 seed.set(side, color);
-                                this.sync_color_picker(dark, seed, color | 0xff, cx);
+                                this.sync_color_picker(Target::Seed(dark, seed), color | 0xff, cx);
                                 cx.notify();
                             }
                         }
@@ -221,9 +214,6 @@ impl MailWindow {
             saved,
             name,
             fields,
-            picker: None,
-            swatches: Rc::default(),
-            recent: Vec::new(),
             error: None,
             closing: false,
             shown,
@@ -284,7 +274,7 @@ impl MailWindow {
             && editor.side(!dark).is_some()
         {
             *editor.side_mut(dark) = None;
-            editor.picker = None;
+            self.drop_color_picker(|t| matches!(t, Target::Seed(d, _) if d == dark));
             cx.notify();
         }
     }
@@ -552,13 +542,13 @@ impl MailWindow {
         let t = editor.shown.tick(window, reduce);
         if editor.closing && editor.shown.settled() {
             self.scheme_editor = None;
+            self.drop_color_picker(|t| matches!(t, Target::Seed(..)));
             return None;
         }
         let t = t.clamp(0.0, 1.0);
         let editor = self.scheme_editor.as_ref()?;
         let ready = !editor.name.read(cx).text().trim().is_empty();
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let (vw, vh) = (self.room_width(), self.room_height(window));
         let narrow = vw < DIALOG_WIDTH + 32.0;
         let name_focus = editor.name.focus_handle(cx);
         let name_focused = name_focus.is_focused(window);
@@ -580,7 +570,7 @@ impl MailWindow {
                 .mt(px(12.0))
                 .text_size(px(13.0))
                 .text_color(rgba(th.error))
-                .child(err)
+                .child(self.copyable(err, th))
         });
         let body = div()
             .id("scheme-editor-body")
@@ -653,13 +643,10 @@ impl MailWindow {
             .w(px(DIALOG_WIDTH.min(vw - 32.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
-        let picker = self.render_color_picker(th, window, cx);
+        let picker = self.render_color_picker(|t| matches!(t, Target::Seed(..)), th, window, cx);
         Some(
             div()
                 .absolute()
@@ -766,7 +753,8 @@ impl MailWindow {
                     .justify_center()
                     .rounded_full()
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .tooltip(crate::widgets::tip(tr!("scheme-editor-remove-side"), th))
                     .on_click(cx.listener(move |this, _, _, cx| this.remove_scheme_side(dark, cx)))
                     .child(icon("remove", th.text_dim, 18.0)),
@@ -778,8 +766,12 @@ impl MailWindow {
             let field = editor.fields[usize::from(dark)][ix].clone();
             let focus = field.focus_handle(cx);
             let focused = focus.is_focused(window);
-            let open = editor.picker.as_ref().is_some_and(|p| p.is_for(dark, seed));
-            let swatches = editor.swatches.clone();
+            let target = Target::Seed(dark, seed);
+            let open = self
+                .color_picker
+                .as_ref()
+                .is_some_and(|p| p.target() == target);
+            let swatches = self.color_swatches.clone();
             rows = rows.child(
                 div()
                     .h(px(34.0))
@@ -800,12 +792,12 @@ impl MailWindow {
                             .when(open, |d| d.border_2().border_color(rgba(th.accent)))
                             .cursor_pointer()
                             .on_click(cx.listener(move |this, _, window, cx| {
-                                this.toggle_color_picker(dark, seed, window, cx)
+                                this.toggle_color_picker(target, window, cx)
                             }))
                             .child(
                                 canvas(
                                     move |bounds, _, _| {
-                                        swatches.borrow_mut().insert((dark, seed), bounds);
+                                        swatches.borrow_mut().insert(target, bounds);
                                     },
                                     |_, _, _, _| {},
                                 )
@@ -890,6 +882,7 @@ fn katna_side(dark: bool) -> Scheme {
         accent: opaque(th.accent),
         accent_fg: opaque(th.on_accent),
         negative: opaque(th.error),
+        neutral: None,
     }
 }
 

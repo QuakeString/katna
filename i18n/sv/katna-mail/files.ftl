@@ -166,6 +166,7 @@ files-share-remove = Ta bort åtkomst
 files-share-copy-link = Kopiera länk
 files-share-share = Dela
 files-share-done = Klar
+files-share-close = Stäng
 files-share-sharing = Delar…
 files-share-shared = { $count ->
     [one] Delad med 1 person

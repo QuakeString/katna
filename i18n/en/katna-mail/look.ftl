@@ -32,6 +32,19 @@ look-frame-katna-note-named = Katna draws rounded corners and its own shadow. Th
 look-frame-katna-note = Katna draws rounded corners and its own shadow. The frame no longer follows the desktop theme; window rules still apply.
 # As look-frame-katna-note, on Windows.
 look-frame-katna-note-windows = Katna's top bar becomes the title bar. Windows still rounds the corners and draws the shadow.
+# A slider under the Katna frame choice: how round the window's corners are.
+look-window-radius = Corner roundness
+look-window-radius-square = Square
+look-window-radius-round = Round
+# The unit after the roundness typed beside its slider: pixels.
+look-px = px
+# A switch under the Katna frame choice.
+look-window-border = Border
+look-window-border-detail = A thin line around the window
+# A slider under the Border switch.
+look-window-border-opacity = Border opacity
+look-window-border-faint = Faint
+look-window-border-strong = Strong
 # On Windows, after the frame choice changed: the open window keeps its frame.
 look-frame-on-reopen = The frame changes the next time you open Katna Mail.
 # Shown in place of the frame choices on a desktop where every app draws its own frame.
@@ -40,17 +53,24 @@ look-blurred-background = Blur
 # Under "Blurred background".
 look-blurred-background-detail = Choose where Katna Mail uses blur. Turn on either one, or both.
 look-blur = Blur the window background
-look-blur-detail = The desktop shows through the top bar and the folders. Mail stays on solid cards, so text keeps its contrast
+look-blur-detail = The desktop shows through the top bar and the folders
+look-frosted-panes = Frosted panes
+look-frosted-panes-detail = The mail list, the open mail and the person card let the blur through too
+look-pane-opacity = Pane opacity
+look-frosted-chat = Frosted chat background
+look-frosted-chat-detail = Behind a chat's bubbles the blur shows a little more; the bubbles stay solid
+look-frosted-search = Frosted search box
+look-frosted-search-detail = The search box lets the blur through while you type in it
 look-frosted-popups = Frosted menus and dialogs
 look-frosted-popups-detail = Menus, popovers, dialogs and viewer bars blur what is under them
 look-custom-frost = Custom blur amount
-look-custom-frost-on = Menus and dialogs use the blur and opacity below
+look-custom-frost-on = Blur strength sets menus and dialogs. Opacity sets them and the blurred window background.
 look-custom-frost-off-kde = Off: KDE's blur strength and Katna's opacity
 look-custom-frost-off = Off: Katna's blur and opacity
-look-frost-blur = Blur strength
+look-frost-blur = Blur strength: menus and dialogs
 look-frost-blur-light = Light
 look-frost-blur-strong = Strong
-look-frost-opacity = Opacity
+look-frost-opacity = Opacity: menus, dialogs and the window background
 look-frost-opacity-clear = See-through
 look-frost-opacity-solid = Solid
 look-kde-blur-note = The window background's blur strength always comes from KDE.

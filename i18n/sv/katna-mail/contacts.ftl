@@ -34,7 +34,7 @@ contacts-account-signed-in = Inloggad på { $address } igen. Hämtar dina kontak
 contacts-account-sign-in-refused = { $provider } släppte inte in Katna. Försök igen och ge åtkomst till dina kontakter.
 contacts-account-password = Servern godtog inte lösenordet. Yahoo, iCloud, Zoho och andra kräver ett applösenord.
 contacts-account-change-password = Ändra lösenord
-contacts-account-change-password-tooltip = Öppna Inställningar > Konton
+contacts-account-change-password-tooltip = Ange det nya lösenordet; Katna kontrollerar det med servern
 contacts-account-failed = Det gick inte att läsa kontakterna.
 # $reason is the server's own words, in English.
 contacts-account-error = Det gick inte att läsa kontakterna: { $reason }

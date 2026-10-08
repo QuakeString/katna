@@ -61,3 +61,9 @@ search-options-show = Показать параметры поиска
 settings = Настройки
 account-add = Добавить аккаунт
 account-wheel-hint = Прокрутите, чтобы переключить аккаунт
+account-menu-all-detail = { $count ->
+    [one] { $count } аккаунт вместе
+    [few] { $count } аккаунта вместе
+    [many] { $count } аккаунтов вместе
+   *[other] { $count } аккаунта вместе
+}

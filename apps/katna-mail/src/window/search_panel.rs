@@ -8,8 +8,8 @@
 mod dates;
 
 use gpui::{
-    AnyElement, Context, Div, Entity, Focusable, FontWeight, Stateful, Subscription, Window,
-    canvas, div, prelude::*, rgba,
+    AnyElement, Context, Div, Entity, Focusable, FontWeight, Subscription, Window, canvas, div,
+    prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_search::contacts::Suggestion;
@@ -20,13 +20,15 @@ use katna_ui::{InputEvent, TextInput};
 use super::compose::address_suggestions;
 use super::{FocusNext, MailWindow};
 use crate::theme::Theme;
-use crate::widgets::{filled_button, icon, icon_button, raised, tip};
+use crate::widgets::{CHIP_HEIGHT, choice_chip, filled_button, icon, icon_button, raised, tip};
 use dates::{CustomDates, DateError};
 
 /// Width of a field's label.
 const LABEL: f32 = 120.0;
 /// The narrowest the panel gets while the window has room.
 pub(super) const MIN_WIDTH: f32 = 640.0;
+/// The widest it gets under a long search box.
+pub(super) const MAX_WIDTH: f32 = 720.0;
 /// Below this width labels go above their fields.
 const STACK_BELOW: f32 = 600.0;
 
@@ -556,9 +558,9 @@ impl MailWindow {
             .iter()
             .enumerate()
             .map(|(ix, exts)| {
-                chip(
+                choice_chip(
                     ("attachment-type", ix),
-                    &exts[0].to_uppercase(),
+                    exts[0].to_uppercase(),
                     types.chosen[ix],
                     th,
                 )
@@ -574,9 +576,9 @@ impl MailWindow {
             })
             .collect();
         chips.push(
-            chip(
+            choice_chip(
                 ("attachment-type", TYPES.len()),
-                &tr!("search-attachment-custom"),
+                tr!("search-attachment-custom"),
                 types.custom,
                 th,
             )
@@ -620,7 +622,8 @@ impl MailWindow {
                             .justify_center()
                             .rounded_full()
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .tooltip(tip(tr!("search-attachment-remove"), th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 if let Some(panel) = &mut this.search_panel
@@ -735,7 +738,7 @@ impl MailWindow {
             .iter()
             .enumerate()
             .map(|(ix, age)| {
-                chip(("within", ix), &within_label(age), ix == within, th)
+                choice_chip(("within", ix), within_label(age), ix == within, th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         if let Some(panel) = &mut this.search_panel {
                             panel.within = ix;
@@ -756,7 +759,7 @@ impl MailWindow {
             div()
                 .relative()
                 .child(
-                    chip(("within", CUSTOM), &label, within == CUSTOM, th).on_click(
+                    choice_chip(("within", CUSTOM), label, within == CUSTOM, th).on_click(
                         cx.listener(|this, _, window, cx| this.open_custom_dates(window, cx)),
                     ),
                 )
@@ -782,6 +785,10 @@ impl MailWindow {
         let body = div()
             .id("search-panel")
             .occlude()
+            .on_mouse_down(
+                gpui::MouseButton::Left,
+                cx.listener(|this, _, _, _| this.search_pressed = true),
+            )
             .w(px(width))
             .max_h(px(height))
             .overflow_y_scroll()
@@ -826,7 +833,11 @@ impl MailWindow {
                     .pt(px(8.0))
                     .when(stacked, |d| d.gap(px(8.0)))
                     .items_start()
-                    .child(caption(tr!("search-date-within")).when(!stacked, |d| d.pt(px(4.0))))
+                    .child(
+                        // Centred on the first row of chips.
+                        caption(tr!("search-date-within"))
+                            .when(!stacked, |d| d.pt(px((CHIP_HEIGHT - 20.0) / 2.0))),
+                    )
                     .child(
                         div()
                             .when(stacked, |d| d.w_full())
@@ -847,7 +858,7 @@ impl MailWindow {
                         div()
                             .id("has-attachment")
                             .flex_none()
-                            .h(px(28.0))
+                            .h(px(CHIP_HEIGHT))
                             .flex()
                             .flex_row()
                             .items_center()
@@ -893,7 +904,8 @@ impl MailWindow {
                             .font_weight(FontWeight::MEDIUM)
                             .text_color(rgba(th.accent))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.search_panel = None;
                                 this.toggle_search_panel(window, cx);
@@ -917,34 +929,6 @@ impl MailWindow {
                 .into_any_element(),
         )
     }
-}
-
-/// A chip in a row of choices.
-pub(super) fn chip(
-    id: impl Into<gpui::ElementId>,
-    label: &str,
-    on: bool,
-    th: &Theme,
-) -> Stateful<Div> {
-    div()
-        .id(id)
-        .px(px(10.0))
-        .h(px(28.0))
-        .flex()
-        .items_center()
-        .rounded(px(8.0))
-        .border_1()
-        .border_color(rgba(if on { th.nav_selected } else { th.outline }))
-        .bg(rgba(if on { th.nav_selected } else { th.surface }))
-        .text_color(rgba(if on {
-            th.nav_selected_text
-        } else {
-            th.text_dim
-        }))
-        .text_size(px(13.0))
-        .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
-        .child(label.to_owned())
 }
 
 #[cfg(test)]

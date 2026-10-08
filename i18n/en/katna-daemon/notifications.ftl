@@ -31,6 +31,16 @@ notify-snooze-back = Back from snooze
 notify-no-reply = No reply yet
 # Under it. $subject: the subject of the sent message.
 notify-no-reply-to = Nobody has replied to “{ $subject }”.
+# The title when Katna sent a follow-up for the user because nobody
+# replied. Under it: notify-follow-up-sent-to.
+notify-follow-up-sent = Follow-up sent
+# $subject: the subject of the sent message.
+notify-follow-up-sent-to = Nobody had replied to “{ $subject }”, so Katna followed up.
+# The title when a follow-up fell due while the computer was off: Katna
+# did not send it late, and the conversation is back in the Inbox.
+notify-follow-up-waiting = Follow-up not sent
+# Under it. $subject: the subject of the sent message.
+notify-follow-up-waiting-to = It was due while this computer was off. “{ $subject }” is back in your Inbox.
 
 ## Open and click tracking (only for mail sent with "Track opens and clicks")
 
@@ -49,6 +59,27 @@ notify-update-ready = Katna Mail can be updated
 notify-update-ready-body = Version { $version } is downloaded. Update installs it and restarts Katna Mail.
 # Its button: shows the update in Katna Mail, ready to install.
 notify-update = Update
+
+## Something needs the user, shown once per problem
+
+# A Google or Microsoft sign-in ended; mail stopped syncing.
+notify-signed-out = Sign in again
+# Under it. $provider: like "Google".
+notify-signed-out-body = { $provider } signed Katna out of { $address }. Mail stopped syncing.
+# Its button: opens Katna Mail's sign-in for the account.
+notify-sign-in = Sign in
+# The server refused the saved password (it was changed, or an app
+# password was removed).
+notify-password-refused = Password refused
+notify-password-refused-body = The mail server refused the password for { $address }. It may have changed.
+# Its button: opens Katna Mail's New password card for the account.
+notify-new-password = New password
+# A message the server refused for good. $subject: its subject.
+notify-not-sent = “{ $subject }” wasn't sent
+notify-not-sent-no-subject = A message wasn't sent
+notify-not-sent-body = It's in the Outbox, which says why.
+# Its button: opens Katna Mail's Outbox.
+notify-open-outbox = Open Outbox
 
 ## Reminders of calendar events
 
@@ -93,6 +124,19 @@ notify-mark-read = Mark as read
 # On a notification about several messages.
 notify-mark-all-read = Mark all as read
 notify-archive = Archive
+# Snooze buttons on a new mail's notification.
+notify-snooze-hour = Snooze 1 hour
+notify-snooze-tomorrow = Tomorrow
+# Only on a notification about one message with a one-time code (a sign-in
+# or verification code): copies it. $code: the code, such as 482913.
+notify-copy-code = Copy { $code }
+# Only on a notification about one message with a link to verify an
+# address, confirm something or activate an account: opens the link in the
+# browser. $domain: where the link goes, such as accounts.example.com, so
+# a link that only looks like a company's shows where it really goes.
+notify-link-verify = Verify on { $domain }
+notify-link-confirm = Confirm on { $domain }
+notify-link-activate = Activate on { $domain }
 
 ## After Archive on a notification: a short note in the same place
 
@@ -106,6 +150,13 @@ notify-archived-count = { $count ->
 # Its button: puts the mail back in the inbox. Also on the note below: keeps
 # the reply from going and opens it in Katna Mail to write on.
 notify-undo = Undo
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = Code copied
+# When the code could not be put on the clipboard: it stays shown, to copy
+# by hand.
+notify-code-not-copied = Could not copy the code
 
 ## After a reply typed into a notification: a note in the same place while
 ## it waits for the undo time

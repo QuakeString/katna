@@ -39,6 +39,7 @@ list-results = “{ $query }” માટેનાં પરિણામો
 list-results-corrected = “{ $query }” માટેનાં પરિણામો બતાવી રહ્યાં છીએ
 list-search-instead = તેના બદલે “{ $query }” શોધો
 list-files-more = +{ $count }
+list-replied = તમે જવાબ આપ્યો
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -338,6 +339,8 @@ list-empty-tab = { $tab } માં કોઈ મેઇલ નથી.
 list-empty-tab-unknown = આ ટૅબમાં કોઈ મેઇલ નથી.
 list-empty-folder = { $folder } માં કોઈ મેસેજ નથી.
 list-empty-folder-unknown = આ ફોલ્ડરમાં કોઈ મેસેજ નથી.
+list-empty-waiting = કંઈ પણ જવાબની રાહમાં નથી.
+list-empty-reminders = કોઈ રિમાઇન્ડર નથી. ઉમેરવા માટે મેઇલ પર H દબાવો.
 list-first-sync = તમારા મેઇલ મેળવી રહ્યાં છીએ…
 list-first-sync-detail = મેઇલ આવશે તેમ અહીં દેખાશે.
 
@@ -357,6 +360,14 @@ row-tracking-clicked = { $recipients }માંથી { $opened }એ ખોલ�
 row-pin = સૌથી ઉપર પિન કરો
 row-unpin = અનપિન કરો
 row-snoozed-until = { $when } સુધી સ્નૂઝ કરેલું
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = આજે
+snoozed-group-tomorrow = આવતીકાલે
+snoozed-group-this-week = આ અઠવાડિયે
+snoozed-group-later = પછીથી
+row-follow-up-step = ફૉલો અપ { $steps } માંથી { $step } · { $date }
+row-follow-up-waiting = ફૉલો અપ રાહમાં
+row-reminder = રિમાઇન્ડર { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -379,6 +390,7 @@ menu-not-important = મહત્ત્વપૂર્ણ નથી તરીક
 menu-pin = સૌથી ઉપર પિન કરો
 menu-unpin = અનપિન કરો
 menu-snooze = સ્નૂઝ કરો
+menu-remind = મને યાદ અપાવો
 menu-unsnooze = સ્નૂઝ રદ કરો
 menu-add-to-tasks = કાર્યોમાં ઉમેરો
 menu-schedule-meeting = મીટિંગ શેડ્યૂલ કરો
@@ -394,7 +406,26 @@ menu-follow-up = ફૉલો અપ
 # Pin to top.
 menu-more = વધુ
 menu-move-to-heading = આમાં ખસેડો:
+menu-move-to-search = આમાં ખસેડો…
+menu-label-as = લેબલ લગાવો
+menu-label-as-search = લેબલ લગાવો…
+menu-no-folder = “{ $name }” નામનું કોઈ ફોલ્ડર નથી
+menu-no-label = “{ $name }” નામનું કોઈ લેબલ નથી
+menu-create-folder = “{ $name }” બનાવો
+menu-always-move = { $name } તરફથી આવતા મેઇલ હંમેશાં અહીં ખસેડો
+toast-always-move-failed = મેઇલ ખસેડ્યો, પણ નિયમ બન્યો નહીં: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } વાર્તાલાપ
+       *[other] { $count } વાર્તાલાપ
+    }
+   *[message] { $count ->
+        [one] { $count } મેસેજ
+       *[other] { $count } મેસેજ
+    }
+}
 menu-find-from = { $name } તરફથી આવેલા ઇમેઇલ શોધો
+menu-make-rule = નિયમ બનાવો…
 
 ## Snackbar after an action on mail in the list
 
@@ -428,6 +459,8 @@ toast-moved = { $kind ->
        *[other] { $count } મેસેજ ખસેડ્યા.
     }
 }
+toast-label-added = “{ $label }” લેબલ ઉમેર્યું.
+toast-label-removed = “{ $label }” લેબલ દૂર કર્યું.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] વાર્તાલાપ તારાંકિત કર્યો.

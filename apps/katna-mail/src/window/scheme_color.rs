@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The color picker of the scheme editor: a popover beside the clicked
-//! swatch, its notch pointing at it, with a saturation and brightness
-//! square, a hue bar, a hex field, the scheme's other colors and the ones
+//! The color picker of the scheme editor and of Settings > Appearance >
+//! Accent's color wheel: a popover beside the clicked swatch, its notch
+//! pointing at it, with a saturation and brightness square, a hue bar, a
+//! hex field, the scheme's other colors (in the editor) and the ones
 //! picked lately. On Linux a dropper takes a color from anywhere on the
 //! screen (the Screenshot portal's PickColor), and "System picker…" opens
 //! KDE's or GNOME's own color dialog where one is installed.
@@ -10,21 +11,25 @@
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::time::Instant;
 
 use gpui::{
     AnyElement, Bounds, Context, DispatchPhase, Entity, Focusable, MouseButton, MouseDownEvent,
     MouseMoveEvent, MouseUpEvent, Pixels, Point, SharedString, Subscription, Window, canvas,
     deferred, div, linear_color_stop, linear_gradient, point, prelude::*, rgba,
 };
+use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_platform::colors::parse_css_color;
 use katna_ui::{InputEvent, TextInput, px, unpx};
 
 use super::MailWindow;
+use super::account_color::color_label;
 use super::notched::{self, notch};
-use crate::theme::{Theme, fade};
+use super::settings::Change;
+use crate::theme::{ACCOUNT_COLORS, Accent, Theme, fade};
 use crate::user_schemes::Seed;
-use crate::widgets::{icon, raised};
+use crate::widgets::icon;
 
 const WIDTH: f32 = 264.0;
 const PAD: f32 = 12.0;
@@ -34,12 +39,23 @@ const ROW: f32 = 32.0;
 const CAPTION: f32 = 16.0;
 const DOT: f32 = 22.0;
 const LINK: f32 = 24.0;
-const RADIUS: f32 = 16.0;
+const RADIUS: f32 = notched::RADIUS;
 /// How many lately picked colors the popover keeps.
 pub(super) const RECENT: usize = 8;
 
-/// Where each swatch of the editor was drawn, by side (dark) and seed.
-pub(super) type Swatches = Rc<RefCell<HashMap<(bool, Seed), Bounds<Pixels>>>>;
+/// What the picker colors.
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub(super) enum Target {
+    /// A seed of the scheme editor's light (false) or dark side.
+    Seed(bool, Seed),
+    /// The accent, from Settings > Appearance > Accent's wheel.
+    Accent,
+    /// An account's own color, from the wheel after its colors.
+    Account(AccountId),
+}
+
+/// Where each swatch that opens the picker was drawn.
+pub(super) type Swatches = Rc<RefCell<HashMap<Target, Bounds<Pixels>>>>;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Area {
@@ -49,8 +65,8 @@ enum Area {
 
 /// The open picker.
 pub(super) struct ColorPicker {
-    dark: bool,
-    seed: Seed,
+    target: Target,
+    color: u32,
     /// Hue (0..360), saturation and value (0..=1): kept apart from the
     /// color so the hue stays put on greys.
     hsv: [f32; 3],
@@ -59,43 +75,54 @@ pub(super) struct ColorPicker {
     square: Rc<Cell<Option<Bounds<Pixels>>>>,
     hue: Rc<Cell<Option<Bounds<Pixels>>>>,
     _subscription: Subscription,
+    /// When it closed and began to fade out.
+    fading: Option<Instant>,
 }
 
 impl ColorPicker {
-    pub(super) fn is_for(&self, dark: bool, seed: Seed) -> bool {
-        self.dark == dark && self.seed == seed
+    pub(super) fn target(&self) -> Target {
+        self.target
     }
 }
 
 impl MailWindow {
-    /// Opens the picker for `seed` of a side, or closes it if it is open
-    /// for that one already.
+    /// Opens the picker for `target`, or closes it if it is open for that
+    /// one already.
     pub(super) fn toggle_color_picker(
         &mut self,
-        dark: bool,
-        seed: Seed,
+        target: Target,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        let Some(editor) = &mut self.scheme_editor else {
-            return;
-        };
-        if editor
-            .picker
+        let open = self
+            .color_picker
             .as_ref()
-            .is_some_and(|p| p.dark == dark && p.seed == seed)
-        {
-            self.close_color_picker(cx);
+            .filter(|p| p.fading.is_none())
+            .map(ColorPicker::target);
+        self.close_color_picker(cx);
+        if open == Some(target) {
             return;
         }
-        self.close_color_picker(cx);
-        let accent = rgba(self.theme(window).accent).into();
-        let Some(editor) = &mut self.scheme_editor else {
-            return;
+        let th = self.theme(window);
+        let color = match target {
+            Target::Seed(dark, seed) => {
+                let Some(side) = self.scheme_editor.as_ref().and_then(|e| e.side(dark)) else {
+                    return;
+                };
+                seed.get(side)
+            }
+            // The custom accent as picked; the theme may have shaded it
+            // to read on the scheme.
+            Target::Accent => match Accent::parse(&self.config.mail.accent) {
+                Accent::Color(color) => color,
+                _ => th.accent | 0xff,
+            },
+            Target::Account(id) => match self.account_address(id) {
+                Some(address) => self.account_light(&address),
+                None => return,
+            },
         };
-        let Some(color) = editor.side(dark).map(|side| seed.get(side)) else {
-            return;
-        };
+        let accent = rgba(th.accent).into();
         let hex = cx.new(|cx| {
             let mut input = TextInput::new("#000000", cx);
             input.set_accent(accent);
@@ -115,53 +142,65 @@ impl MailWindow {
                 InputEvent::Submit | InputEvent::Cancel => this.close_color_picker(cx),
             },
         );
-        editor.picker = Some(ColorPicker {
-            dark,
-            seed,
+        self.color_picker = Some(ColorPicker {
+            target,
+            color,
             hsv: to_hsv(color),
             hex,
             dragging: None,
             square: Rc::default(),
             hue: Rc::default(),
             _subscription: subscription,
+            fading: None,
         });
         cx.notify();
     }
 
     /// Closes the picker, keeping its color among the recent ones.
     pub(super) fn close_color_picker(&mut self, cx: &mut Context<Self>) {
-        let Some(editor) = &mut self.scheme_editor else {
+        let Some(color) = self
+            .color_picker
+            .as_ref()
+            .filter(|p| p.fading.is_none())
+            .map(|p| p.color)
+        else {
             return;
         };
-        let Some(picker) = editor.picker.take() else {
-            return;
-        };
-        if let Some(color) = editor.side(picker.dark).map(|side| picker.seed.get(side)) {
-            editor.recent.retain(|c| *c != color);
-            editor.recent.insert(0, color);
-            editor.recent.truncate(RECENT);
+        self.recent_colors.retain(|c| *c != color);
+        self.recent_colors.insert(0, color);
+        self.recent_colors.truncate(RECENT);
+        // It fades out where it was.
+        match notched::fade_out(cx) {
+            Some(since) => {
+                if let Some(picker) = &mut self.color_picker {
+                    picker.fading = Some(since);
+                }
+            }
+            None => self.color_picker = None,
         }
         cx.notify();
     }
 
-    /// Gives the picked seed `color`. `typed`: it came from the popover's
-    /// hex field, which then keeps its text.
+    /// Closes the picker without keeping its color, when what it colors
+    /// goes away.
+    pub(super) fn drop_color_picker(&mut self, gone: impl Fn(Target) -> bool) {
+        if self.color_picker.as_ref().is_some_and(|p| gone(p.target)) {
+            self.color_picker = None;
+        }
+    }
+
+    /// Gives the picked target `color`. `typed`: it came from the
+    /// popover's hex field, which then keeps its text.
     fn set_picker_color(&mut self, color: u32, typed: bool, cx: &mut Context<Self>) {
-        let Some(editor) = &mut self.scheme_editor else {
+        let Some(picker) = &mut self.color_picker else {
             return;
         };
-        let Some((dark, seed)) = editor.picker.as_ref().map(|p| (p.dark, p.seed)) else {
-            return;
-        };
-        if editor.side(dark).map(|side| seed.get(side)) == Some(color) {
+        if picker.color == color {
             return;
         }
-        let Some(picker) = &mut editor.picker else {
-            return;
-        };
         picker.hsv = to_hsv(color);
         let hex = picker.hex.clone();
-        self.set_scheme_seed(dark, seed, color, cx);
+        self.color_target(color, cx);
         if !typed {
             hex.update(cx, |field, cx| {
                 field.set_text(super::scheme_editor::hex(color), cx)
@@ -169,20 +208,33 @@ impl MailWindow {
         }
     }
 
-    /// Follows a seed's row field: the picker open on it shows the color.
-    pub(super) fn sync_color_picker(
-        &mut self,
-        dark: bool,
-        seed: Seed,
-        color: u32,
-        cx: &mut Context<Self>,
-    ) {
-        let Some(picker) = self.scheme_editor.as_mut().and_then(|e| e.picker.as_mut()) else {
+    /// Gives what the picker colors `color`.
+    fn color_target(&mut self, color: u32, cx: &mut Context<Self>) {
+        let Some(picker) = &mut self.color_picker else {
             return;
         };
-        if picker.dark != dark || picker.seed != seed || from_hsv(picker.hsv) == color {
+        picker.color = color;
+        match picker.target {
+            Target::Seed(dark, seed) => self.set_scheme_seed(dark, seed, color, cx),
+            Target::Accent => self.apply(Change::Accent(Accent::Color(color)), cx),
+            Target::Account(id) => {
+                if let Some(address) = self.account_address(id) {
+                    self.set_account_custom(&address, color, cx);
+                }
+            }
+        }
+    }
+
+    /// Follows a target's own field: the picker open on it shows the
+    /// color.
+    pub(super) fn sync_color_picker(&mut self, target: Target, color: u32, cx: &mut Context<Self>) {
+        let Some(picker) = &mut self.color_picker else {
+            return;
+        };
+        if picker.target != target || picker.color == color {
             return;
         }
+        picker.color = color;
         picker.hsv = to_hsv(color);
         let hex = picker.hex.clone();
         hex.update(cx, |field, cx| {
@@ -192,10 +244,7 @@ impl MailWindow {
 
     /// Moves the square's or the hue bar's knob to `at`.
     fn drag_color(&mut self, area: Area, at: Point<Pixels>, cx: &mut Context<Self>) {
-        let Some(editor) = &mut self.scheme_editor else {
-            return;
-        };
-        let Some(picker) = &mut editor.picker else {
+        let Some(picker) = &mut self.color_picker else {
             return;
         };
         let bounds = match area {
@@ -214,17 +263,16 @@ impl MailWindow {
             }
             Area::Hue => picker.hsv[0] = (fx * 360.0).min(359.9),
         }
-        let (dark, seed, hsv) = (picker.dark, picker.seed, picker.hsv);
-        let color = from_hsv(hsv);
+        let color = from_hsv(picker.hsv);
         let hex = picker.hex.clone();
-        self.set_scheme_seed(dark, seed, color, cx);
+        self.color_target(color, cx);
         hex.update(cx, |field, cx| {
             field.set_text(super::scheme_editor::hex(color), cx)
         });
     }
 
     fn set_dragging(&mut self, area: Option<Area>, cx: &mut Context<Self>) {
-        if let Some(picker) = self.scheme_editor.as_mut().and_then(|e| e.picker.as_mut()) {
+        if let Some(picker) = &mut self.color_picker {
             picker.dragging = area;
             cx.notify();
         }
@@ -257,10 +305,7 @@ impl MailWindow {
 
     /// Opens the desktop's own color dialog on the picked color.
     fn open_system_picker(&mut self, dialog: SystemDialog, cx: &mut Context<Self>) {
-        let Some(color) = self.scheme_editor.as_ref().and_then(|editor| {
-            let picker = editor.picker.as_ref()?;
-            editor.side(picker.dark).map(|side| picker.seed.get(side))
-        }) else {
+        let Some(color) = self.color_picker.as_ref().map(|p| p.color) else {
             return;
         };
         let start = super::scheme_editor::hex(color);
@@ -287,41 +332,52 @@ impl MailWindow {
         .detach();
     }
 
-    /// The popover, beside the swatch it belongs to.
+    /// The popover, beside the swatch it belongs to, when it is open for
+    /// a target `here` takes: each place that shows swatches draws it.
     pub(super) fn render_color_picker(
         &self,
+        here: impl Fn(Target) -> bool,
         th: &Theme,
         window: &Window,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
-        let editor = self.scheme_editor.as_ref()?;
-        let picker = editor.picker.as_ref()?;
-        let side = editor.side(picker.dark)?;
-        let swatch = *editor.swatches.borrow().get(&(picker.dark, picker.seed))?;
-        let color = picker.seed.get(side);
+        let picker = self.color_picker.as_ref().filter(|p| {
+            here(p.target) && !p.fading.is_some_and(|since| notched::faded(since, cx))
+        })?;
+        let fading = picker.fading;
+        let swatch = *self.color_swatches.borrow().get(&picker.target)?;
+        let color = picker.color;
         let [h, s, v] = picker.hsv;
         let pure = from_hsv([h, 1.0, 1.0]);
 
+        // In the editor, the scheme's other colors.
         let mut in_scheme: Vec<u32> = Vec::new();
-        for seed in Seed::ALL {
-            let c = seed.get(side);
-            if !in_scheme.contains(&c) {
-                in_scheme.push(c);
+        if let Target::Seed(dark, _) = picker.target
+            && let Some(side) = self.scheme_editor.as_ref().and_then(|e| e.side(dark))
+        {
+            for seed in Seed::ALL {
+                let c = seed.get(side);
+                if !in_scheme.contains(&c) {
+                    in_scheme.push(c);
+                }
             }
         }
-        let recent = editor.recent.clone();
+        // For an account, the standard account colors first.
+        let standard = matches!(picker.target, Target::Account(_));
+        let recent = self.recent_colors.clone();
         let system = SystemDialog::find();
         let dropper = cfg!(not(windows));
         let height = PAD * 2.0
+            + if standard { DOT + GAP } else { 0.0 }
             + SQUARE
             + GAP
             + ROW
             + GAP
-            + ROW
-            + GAP
-            + CAPTION
-            + 6.0
-            + DOT
+            + if in_scheme.is_empty() {
+                0.0
+            } else {
+                GAP + CAPTION + 6.0 + DOT
+            }
             + if recent.is_empty() {
                 0.0
             } else {
@@ -367,9 +423,8 @@ impl MailWindow {
                             // Listeners from a frame before the drag changed
                             // count for nothing.
                             let still = this
-                                .scheme_editor
+                                .color_picker
                                 .as_ref()
-                                .and_then(|e| e.picker.as_ref())
                                 .is_some_and(|p| p.dragging == Some(area));
                             if still {
                                 this.drag_color(area, event.position, cx);
@@ -489,7 +544,8 @@ impl MailWindow {
                         .justify_center()
                         .rounded(px(10.0))
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", Some(10.0), th))
                         .tooltip(crate::widgets::tip(tr!("scheme-picker-dropper"), th))
                         .on_click(cx.listener(|this, _, _, cx| {
                             #[cfg(not(windows))]
@@ -577,27 +633,49 @@ impl MailWindow {
             .p(px(PAD))
             .flex()
             .flex_col()
-            .border_1()
-            .border_color(rgba(th.outline))
-            .map(|d| raised(d, th, RADIUS, 4.0))
+            .map(|d| notched::popover(d, th))
             .text_color(rgba(th.text))
-            .occlude()
-            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_mouse_down_out(cx.listener(move |this, event: &MouseDownEvent, _, cx| {
                 // The swatch's own click toggles the picker.
                 if !swatch_bounds.contains(&event.position) {
                     this.close_color_picker(cx);
                 }
             }))
+            .when(standard, |d| {
+                let mut row = div()
+                    .h(px(DOT))
+                    .mb(px(GAP))
+                    .flex()
+                    .flex_row()
+                    .justify_between();
+                for (ix, &(name, light, _)) in ACCOUNT_COLORS.iter().enumerate() {
+                    row = row.child(
+                        div()
+                            .id(("picker-standard", ix))
+                            .size(px(DOT))
+                            .rounded_full()
+                            .bg(rgba(light))
+                            .when(light == color, |d| d.border_2().border_color(rgba(th.text)))
+                            .cursor_pointer()
+                            .tooltip(crate::widgets::tip(color_label(name), th))
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                this.set_picker_color(light, false, cx)
+                            })),
+                    );
+                }
+                d.child(row)
+            })
             .child(square)
             .child(div().mt(px(GAP)).child(hue_row))
             .child(div().mt(px(GAP)).child(hex_row))
-            .child(
-                div()
-                    .mt(px(GAP))
-                    .child(caption(tr!("scheme-picker-in-scheme"))),
-            )
-            .child(dots("scheme", in_scheme, cx))
+            .when(!in_scheme.is_empty(), |d| {
+                d.child(
+                    div()
+                        .mt(px(GAP))
+                        .child(caption(tr!("scheme-picker-in-scheme"))),
+                )
+                .child(dots("scheme", in_scheme, cx))
+            })
             .when(!recent.is_empty(), |d| {
                 d.child(
                     div()
@@ -620,7 +698,8 @@ impl MailWindow {
                             .text_size(px(13.0))
                             .text_color(rgba(th.accent))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.open_system_picker(dialog, cx)
                             }))
@@ -628,11 +707,15 @@ impl MailWindow {
                     ),
                 )
             })
-            .children(notch(side_of, along, (WIDTH, height), th));
+            .children(notch(side_of, along, th));
+        let popover = match fading {
+            Some(_) => notched::fading(popover, "color-picker-out"),
+            None => popover.into_any_element(),
+        };
         let layer = div().relative().w(px(vw)).h(px(vh)).child(popover);
         Some(
             deferred(
-                gpui::anchored()
+                katna_ui::anchored()
                     .position(point(px(0.0), px(0.0)))
                     .child(layer),
             )

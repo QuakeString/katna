@@ -58,6 +58,7 @@ compose-file-too-large = { $name } çok büyük: bir ileti en fazla { $limit } t
 compose-forward-files-missing = İletilen iletinin dosyaları indirilmedi, bu yüzden eklenmedi.
 compose-attachment-size = ({ $size })
 compose-remove-attachment = Eki kaldır
+compose-attachment-open-tip = Kontrol etmek için açın
 compose-attachments-total = { $count ->
     [one] { $count } dosya, { $size }
    *[other] { $count } dosya, { $size }

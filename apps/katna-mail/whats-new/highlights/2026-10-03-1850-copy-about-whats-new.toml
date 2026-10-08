@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Copy from About and What's new"
+text = """
+The words in About Katna and What's new can now be selected and copied,
+as in a browser: drag across them, double-click a word or triple-click a
+paragraph, then Ctrl+C or right-click > Copy. The version is handy to
+paste into a bug report.
+"""

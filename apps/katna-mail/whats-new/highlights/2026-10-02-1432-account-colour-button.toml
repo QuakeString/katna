@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "One colour button per account"
+text = """
+Each account now shows just its own colour, on a Colour button in
+Settings > Accounts and on the account's right-click menu. Click it to
+pick one of eight colours or any colour of your own, right where you
+clicked.
+"""

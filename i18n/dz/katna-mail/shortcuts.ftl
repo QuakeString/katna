@@ -9,6 +9,13 @@ shortcut-group-actions = བྱ་བ་ཚུ
 shortcut-group-go-to = ལུ་འགྱོ
 shortcut-group-app = གློག་རིམ
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = ལྡེ་སྒྲོམ་མགྱོགས་ཐབས་ཚུ
+shortcuts-dialog-search = མགྱོགས་ཐབས་ཅིག་འཚོལ།
+shortcuts-dialog-none = མཐུན་པའི་མགྱོགས་ཐབས་མེད
+shortcuts-dialog-close = ཁ་བསྡམས།
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = ཤུལ་མམ་གྱི་གླེང་མོལ
@@ -37,6 +44,8 @@ shortcut-mark-read = ལྷག་ཡོདཔ་སྦེ་རྟགས་བ�
 shortcut-mark-unread = མ་ལྷག་པ་སྦེ་རྟགས་བཀལ
 shortcut-star = སྐར་མ་བཀལ་ ཡང་ན་བཏོན
 shortcut-add-to-tasks = ལཱ་ནང་ཁ་སྣོན་འབད།
+shortcut-snooze = ཤུལ་མར་བཞག
+shortcut-remind = ང་ལུ་དྲན་སྐུལ་འབད།
 shortcut-important = གལ་ཅན་སྦེ་རྟགས་བཀལ
 shortcut-not-important = གལ་ཅན་མེན་པ་སྦེ་རྟགས་བཀལ
 shortcut-mute = གླེང་མོལ་གྱི་སྒྲ་བཀག་ ཡང་ན་ སྒྲ་བཀག་བཏོན།

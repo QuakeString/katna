@@ -1,4 +1,4 @@
-use crate::backdrop_blur::{BackdropBlur, marker_radius};
+use crate::backdrop_blur::{BackdropBlur, is_erase, marker_radius};
 use crate::{CompositorGpuHint, WgpuAtlas, WgpuContext};
 use anyhow::{Context as _, Result};
 use bytemuck::{Pod, Zeroable};
@@ -124,6 +124,8 @@ pub struct WgpuSurfaceConfig {
 
 struct WgpuPipelines {
     quads: wgpu::RenderPipeline,
+    /// Katna: quads that clear what is under them.
+    quads_erase: wgpu::RenderPipeline,
     shadows: wgpu::RenderPipeline,
     path_rasterization: wgpu::RenderPipeline,
     paths: wgpu::RenderPipeline,
@@ -916,6 +918,37 @@ impl WgpuRenderer {
             &shader_module,
         );
 
+        // Katna: a marked quad keeps of what is under it only what it does
+        // not cover; its own colour is not drawn.
+        let erase_blend = wgpu::BlendState {
+            color: wgpu::BlendComponent {
+                src_factor: wgpu::BlendFactor::Zero,
+                dst_factor: wgpu::BlendFactor::OneMinusSrcAlpha,
+                operation: wgpu::BlendOperation::Add,
+            },
+            alpha: wgpu::BlendComponent {
+                src_factor: wgpu::BlendFactor::Zero,
+                dst_factor: wgpu::BlendFactor::OneMinusSrcAlpha,
+                operation: wgpu::BlendOperation::Add,
+            },
+        };
+        let quads_erase = create_pipeline(
+            "quads_erase",
+            "vs_quad",
+            "fs_quad",
+            &layouts.globals,
+            &layouts.instances,
+            None,
+            wgpu::PrimitiveTopology::TriangleStrip,
+            &[Some(wgpu::ColorTargetState {
+                format: surface_format,
+                blend: Some(erase_blend),
+                write_mask: wgpu::ColorWrites::ALL,
+            })],
+            1,
+            &shader_module,
+        );
+
         let shadows = create_pipeline(
             "shadows",
             "vs_shadow",
@@ -1064,6 +1097,7 @@ impl WgpuRenderer {
 
         WgpuPipelines {
             quads,
+            quads_erase,
             shadows,
             path_rasterization,
             paths,
@@ -1460,11 +1494,29 @@ impl WgpuRenderer {
                 match batch {
                     PrimitiveBatch::Quads(range) => {
                         // Katna: a marked quad first blurs what is under it,
-                        // which ends the pass to copy from the frame.
+                        // which ends the pass to copy from the frame; an
+                        // erasing quad clears what is under it.
                         let mut start = range.start;
-                        if self.resources().backdrop_blur.is_some() {
-                            for index in range.clone() {
-                                let quad = &scene.quads[index];
+                        let blurs_here = self.resources().backdrop_blur.is_some();
+                        for index in range.clone() {
+                            let quad = &scene.quads[index];
+                            if is_erase(quad) {
+                                self.draw_instances(
+                                    &instance_bindings.quads,
+                                    &self.resources().pipelines.quads,
+                                    instance_range(start..index),
+                                    &mut pass,
+                                );
+                                self.draw_instances(
+                                    &instance_bindings.quads,
+                                    &self.resources().pipelines.quads_erase,
+                                    instance_range(index..index + 1),
+                                    &mut pass,
+                                );
+                                start = index + 1;
+                                continue;
+                            }
+                            if blurs_here {
                                 let Some(radius) = marker_radius(quad) else {
                                     continue;
                                 };

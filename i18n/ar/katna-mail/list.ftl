@@ -39,6 +39,7 @@ list-results = نتائج «{ $query }»
 list-results-corrected = يتم عرض نتائج «{ $query }»
 list-search-instead = البحث عن «{ $query }» بدلًا من ذلك
 list-files-more = +{ $count }
+list-replied = لقد رددت
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -538,6 +539,8 @@ list-empty-tab = لا يوجد بريد في { $tab }.
 list-empty-tab-unknown = لا يوجد بريد في علامة التبويب هذه.
 list-empty-folder = لا توجد رسائل في { $folder }.
 list-empty-folder-unknown = لا توجد رسائل في هذا المجلد.
+list-empty-waiting = لا شيء بانتظار الرد.
+list-empty-reminders = لا توجد تذكيرات. اضغط H على رسالة لإضافة تذكير.
 list-first-sync = جارٍ جلب بريدك…
 list-first-sync-detail = يظهر هنا فور وصوله.
 
@@ -557,6 +560,14 @@ row-tracking-clicked = فتحها { $opened } من { $recipients }، وتابع 
 row-pin = تثبيت في الأعلى
 row-unpin = إلغاء التثبيت
 row-snoozed-until = مؤجَّلة حتى { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = اليوم
+snoozed-group-tomorrow = غدًا
+snoozed-group-this-week = هذا الأسبوع
+snoozed-group-later = لاحقًا
+row-follow-up-step = المتابعة { $step } من { $steps } · { $date }
+row-follow-up-waiting = متابعة معلّقة
+row-reminder = تذكير { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -579,6 +590,7 @@ menu-not-important = وضع علامة «غير مهمة»
 menu-pin = تثبيت في الأعلى
 menu-unpin = إلغاء التثبيت
 menu-snooze = تأجيل
+menu-remind = ذكّرني
 menu-unsnooze = إلغاء التأجيل
 menu-add-to-tasks = إضافة إلى المهام
 menu-schedule-meeting = جدولة اجتماع
@@ -594,7 +606,34 @@ menu-follow-up = متابعة
 # Pin to top.
 menu-more = المزيد
 menu-move-to-heading = نقل إلى:
+menu-move-to-search = نقل إلى…
+menu-label-as = التصنيف كـ
+menu-label-as-search = التصنيف كـ…
+menu-no-folder = لا يوجد مجلد باسم «{ $name }»
+menu-no-label = لا يوجد تصنيف باسم «{ $name }»
+menu-create-folder = إنشاء «{ $name }»
+menu-always-move = نقل البريد من { $name } إلى هنا دائمًا
+toast-always-move-failed = تم نقل البريد، لكن لم تُنشأ القاعدة: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [zero] { $count } محادثة
+        [one] محادثة واحدة
+        [two] محادثتان
+        [few] { $count } محادثات
+        [many] { $count } محادثة
+       *[other] { $count } محادثة
+    }
+   *[message] { $count ->
+        [zero] { $count } رسالة
+        [one] رسالة واحدة
+        [two] رسالتان
+        [few] { $count } رسائل
+        [many] { $count } رسالة
+       *[other] { $count } رسالة
+    }
+}
 menu-find-from = البحث عن رسائل من { $name }
+menu-make-rule = إنشاء قاعدة…
 
 ## Snackbar after an action on mail in the list
 
@@ -652,6 +691,8 @@ toast-moved = { $kind ->
        *[other] تم نقل { $count } رسالة.
     }
 }
+toast-label-added = تمت إضافة التصنيف «{ $label }».
+toast-label-removed = تمت إزالة التصنيف «{ $label }».
 toast-starred = { $kind ->
     [conversation] { $count ->
         [zero] تم تمييز { $count } محادثة بنجمة.

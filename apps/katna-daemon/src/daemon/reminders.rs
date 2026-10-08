@@ -8,9 +8,12 @@
 //!   remembers where they came from. When the time comes they go back,
 //!   unread, sorted as if they had just arrived, with a notification.
 //! - A follow-up reminder waits on a sent message. When it is due and the
-//!   conversation has nothing newer (no reply, no second message), the
-//!   message is put in the Inbox too (a label on Gmail), unread and on top,
-//!   with a notification.
+//!   conversation has nothing newer (no reply, no second message; an
+//!   auto-reply does not count), the message is put in the Inbox too (a
+//!   label on Gmail), unread and on top, with a notification. Or Katna
+//!   sends the follow-up the user wrote, in working hours, once or twice;
+//!   one that fell due while the computer was off is not sent late but
+//!   waits for the user.
 //!
 //! Both run only while the computer is on; one that fell due while it was
 //! off fires when the daemon starts.
@@ -18,6 +21,7 @@
 use std::collections::{BTreeMap, HashMap};
 use std::sync::Arc;
 
+use jiff::tz::TimeZone;
 use katna_core::{AccountId, AccountKind};
 use katna_i18n::tr;
 use katna_meta::{Due, FollowUp, Snooze};
@@ -39,6 +43,9 @@ const MIN_SNOOZE: i64 = 60;
 const RETRY: i64 = 3600;
 /// Lines of a reminder about several conversations.
 const LISTED: usize = 4;
+/// How late a follow-up may still go out on its own: later than this (the
+/// computer was off) it waits for the user.
+const LATE: i64 = 24 * 3600;
 
 /// Whether `path` is the Snoozed folder: at the top, or inside the Inbox
 /// on servers that keep every folder there (`INBOX.Snoozed`).
@@ -115,10 +122,12 @@ impl Daemon {
                             let _ = katna_meta::clear_follow_up(&mut store, outbox);
                         }
                     }
+                    self.follow_up_changed(follow_up.account);
                 }
                 Due::Surfaced(message) => {
                     let _ = katna_meta::clear_surfaced(&mut self.store(), message);
                 }
+                Due::ReadAfter(message) => self.read_after_due(message),
                 Due::Other(row) => {
                     // A value of a newer version: kept, but not due again.
                     tracing::info!(plugin = row.plugin, "unknown metadata expired");
@@ -191,6 +200,18 @@ impl Daemon {
         Ok(())
     }
 
+    /// Snoozes new mail from its notification until `until`, with the
+    /// rest of its conversation in the same folders, as a snooze from the
+    /// app's line would.
+    pub async fn snooze_conversations(
+        &self,
+        messages: &[MessageId],
+        until: i64,
+    ) -> Result<(), CommandError> {
+        let all = with_conversation(&self.store(), messages)?;
+        self.snooze(&all, until).await
+    }
+
     /// Brings snoozed `messages` back where they were, now, as they are
     /// (read stays read). Others are left alone.
     pub fn unsnooze(&self, messages: &[MessageId]) -> Result<(), CommandError> {
@@ -211,12 +232,137 @@ impl Daemon {
         Ok(())
     }
 
+    /// Brings snoozed conversations back early where someone wrote since
+    /// (not an automatic reply): after a sync, before its notifications.
+    /// The new message notifies as usual, so nothing else does.
+    pub(super) fn wake_answered_snoozes(&self) {
+        let answered = || -> katna_store::Result<Vec<(MessageId, Snooze)>> {
+            let store = self.store();
+            let mut answered = Vec::new();
+            for (message, snooze) in katna_meta::snoozed(&store)? {
+                if snooze.newest > 0
+                    && store
+                        .arrived_in_inbox_after(message, MessageId(snooze.newest))?
+                        .iter()
+                        .any(|later| katna_meta::counts_as_reply(later, &[]))
+                {
+                    answered.push((message, snooze));
+                }
+            }
+            Ok(answered)
+        };
+        let answered = match answered() {
+            Ok(answered) if !answered.is_empty() => answered,
+            Ok(_) => return,
+            Err(err) => {
+                tracing::warn!(%err, "looking for answered snoozed mail");
+                return;
+            }
+        };
+        let woke = self.change(|store| {
+            let mut accounts = Vec::new();
+            for (message, snooze) in &answered {
+                accounts.extend(bring_back(store, *message, snooze)?);
+                katna_meta::clear_snooze(store, *message)?;
+            }
+            accounts.sort_by_key(|a| a.0);
+            accounts.dedup();
+            Ok(accounts)
+        });
+        match woke {
+            Ok(()) => {
+                tracing::info!(count = answered.len(), "snoozed mail back early: answered");
+                self.wake_scheduler();
+            }
+            Err(err) => tracing::warn!(%err, "bringing answered snoozed mail back"),
+        }
+    }
+
     /// Reminds the user `after` seconds after outbox entry `outbox` is sent
     /// if nobody replied by then; 0 takes the reminder back.
     pub fn set_follow_up(&self, outbox: i64, after: i64) -> Result<(), CommandError> {
+        self.set_follow_up_with(outbox, after, None, 0)
+    }
+
+    /// Sends `mail` (a follow-up threaded under the message, without
+    /// `Date` and `Message-ID`) `after` seconds after outbox entry `outbox`
+    /// is sent if nobody replied by then, in working hours; with `again`,
+    /// a second time that many seconds later. 0 takes it back.
+    pub fn set_follow_up_mail(
+        &self,
+        outbox: i64,
+        after: i64,
+        again: i64,
+        mail: &[u8],
+    ) -> Result<(), CommandError> {
+        let mail = std::str::from_utf8(mail)
+            .map_err(|_| CommandError::InvalidArgs("the follow-up is not UTF-8 text".into()))?;
+        let envelope = katna_sync::outbox::envelope(mail.as_bytes()).map_err(|err| {
+            CommandError::InvalidArgs(format!("the follow-up cannot be sent: {err}"))
+        })?;
+        if envelope.to.is_empty() {
+            return Err(CommandError::InvalidArgs(
+                "the follow-up has no recipients".into(),
+            ));
+        }
+        self.set_follow_up_with(outbox, after, Some(mail.to_owned()), again.max(0))
+    }
+
+    /// Moves the follow-up of outbox entry `outbox` to `at` (Unix
+    /// seconds). One that waited for the user goes out then, in working
+    /// hours.
+    pub fn move_follow_up(&self, outbox: i64, at: i64) -> Result<(), CommandError> {
+        if at < unix_now() + MIN_SNOOZE {
+            return Err(CommandError::InvalidArgs(
+                "the follow-up time has passed".into(),
+            ));
+        }
+        let mut store = self.store();
+        let mut follow_up = katna_meta::follow_up_of(&store, outbox)?
+            .ok_or_else(|| CommandError::InvalidArgs(format!("no follow-up on {outbox}")))?;
+        follow_up.remind_at = at;
+        follow_up.waiting = false;
+        katna_meta::set_follow_up(&mut store, outbox, &follow_up)?;
+        drop(store);
+        tracing::info!(outbox, "follow-up moved");
+        self.follow_up_changed(follow_up.account);
+        self.wake_scheduler();
+        Ok(())
+    }
+
+    /// Tells the apps a follow-up of `account` changed: its lines and the
+    /// Waiting for reply view show it.
+    fn follow_up_changed(&self, account: i64) {
+        let _ = self
+            .notices
+            .try_send(super::Notice::MailChanged(AccountId(account)));
+    }
+
+    /// Sends a follow-up that waits for the user now, as it is.
+    pub fn send_follow_up_now(&self, outbox: i64) -> Result<(), CommandError> {
+        let follow_up = katna_meta::follow_up_of(&self.store(), outbox)?
+            .filter(FollowUp::sends)
+            .ok_or_else(|| CommandError::InvalidArgs(format!("no follow-up on {outbox}")))?;
+        self.send_follow_up(outbox, &follow_up, unix_now())?;
+        self.follow_up_changed(follow_up.account);
+        Ok(())
+    }
+
+    fn set_follow_up_with(
+        &self,
+        outbox: i64,
+        after: i64,
+        mail: Option<String>,
+        again: i64,
+    ) -> Result<(), CommandError> {
         let mut store = self.store();
         if after <= 0 {
+            let account = katna_meta::follow_up_of(&store, outbox)?.map(|f| f.account);
             katna_meta::clear_follow_up(&mut store, outbox)?;
+            drop(store);
+            if let Some(account) = account {
+                self.follow_up_changed(account);
+            }
             return Ok(());
         }
         let entry = store
@@ -240,10 +386,20 @@ impl Daemon {
                 .map_or(entry.send_at, |hold| hold.max(entry.send_at))
                 .saturating_add(after),
             after,
+            mail,
+            again,
+            ..FollowUp::default()
         };
         katna_meta::set_follow_up(&mut store, outbox, &follow_up)?;
         drop(store);
-        tracing::info!(outbox, after, "follow-up reminder set");
+        tracing::info!(
+            outbox,
+            after,
+            again,
+            sends = follow_up.sends(),
+            "follow-up set"
+        );
+        self.follow_up_changed(follow_up.account);
         self.wake_scheduler();
         Ok(())
     }
@@ -348,24 +504,78 @@ impl Daemon {
             later(&mut store)?;
             return Ok(None);
         }
-        let replied = copies
-            .iter()
-            .map(|&copy| store.has_later_in_thread(copy))
-            .collect::<katna_store::Result<Vec<bool>>>()?
-            .into_iter()
-            .any(|later| later);
-        katna_meta::clear_follow_up(&mut store, outbox)?;
+        let ours = &follow_up.sent;
+        let mut replied = false;
+        for &copy in &copies {
+            replied |= store
+                .later_in_thread(copy)?
+                .iter()
+                .any(|later| katna_meta::counts_as_reply(later, ours));
+        }
         if replied {
+            katna_meta::clear_follow_up(&mut store, outbox)?;
             tracing::info!(outbox, "follow-up not needed: the conversation went on");
             return Ok(None);
         }
-        let inbox = store
+        if follow_up.sends() {
+            let tz = TimeZone::system();
+            if now > katna_meta::working_time(follow_up.remind_at, &tz) + LATE {
+                // Not sent a day or more late: it waits for the user.
+                let mut waiting = follow_up.clone();
+                waiting.waiting = true;
+                katna_meta::set_follow_up(&mut store, outbox, &waiting)?;
+                drop(store);
+                tracing::info!(outbox, "follow-up waits: it fell due while off");
+                let message = self.surface_sent(account, copies.first().copied(), now)?;
+                return Ok(Some(Reminder {
+                    account,
+                    summary: tr!("notify-follow-up-waiting"),
+                    lines: vec![tr!(
+                        "notify-follow-up-waiting-to",
+                        subject = subject_or_none(&follow_up.subject)
+                    )],
+                    messages: message.into_iter().collect(),
+                }));
+            }
+            let at = katna_meta::working_time(now, &tz);
+            if at > now {
+                let mut later = follow_up.clone();
+                later.remind_at = at;
+                katna_meta::set_follow_up(&mut store, outbox, &later)?;
+                return Ok(None);
+            }
+            drop(store);
+            return self.send_follow_up(outbox, follow_up, now).map(Some);
+        }
+        katna_meta::clear_follow_up(&mut store, outbox)?;
+        drop(store);
+        let message = self.surface_sent(account, copies.first().copied(), now)?;
+        tracing::info!(outbox, "follow-up reminder");
+        Ok(Some(Reminder {
+            account,
+            summary: tr!("notify-no-reply"),
+            lines: vec![tr!(
+                "notify-no-reply-to",
+                subject = subject_or_none(&follow_up.subject)
+            )],
+            messages: message.into_iter().collect(),
+        }))
+    }
+
+    /// Puts the sent `message` of `account` in the Inbox too, unread and on
+    /// top. Returns it.
+    fn surface_sent(
+        &self,
+        account: AccountId,
+        message: Option<MessageId>,
+        now: i64,
+    ) -> Result<Option<MessageId>, CommandError> {
+        let inbox = self
+            .store()
             .folders(account)?
             .into_iter()
             .find(|f| f.role == Some(FolderRole::Inbox))
             .map(|f| f.id);
-        drop(store);
-        let message = copies.first().copied();
         if let (Some(message), Some(inbox)) = (message, inbox) {
             self.change(|store| {
                 let mut accounts = ops::copy_messages(store, &[message], inbox)?;
@@ -380,18 +590,47 @@ impl Daemon {
                 Ok(accounts)
             })?;
         }
-        tracing::info!(outbox, "follow-up reminder");
-        let subject = if follow_up.subject.trim().is_empty() {
-            tr!("notify-no-subject")
-        } else {
-            follow_up.subject.clone()
+        Ok(message)
+    }
+
+    /// Sends the follow-up of outbox entry `outbox` now, and sets the
+    /// second one if there is to be one.
+    fn send_follow_up(
+        &self,
+        outbox: i64,
+        follow_up: &FollowUp,
+        now: i64,
+    ) -> Result<Reminder, CommandError> {
+        let account = AccountId(follow_up.account);
+        let mail = follow_up.mail.as_deref().unwrap_or_default();
+        let id = self.queue_send(account, mail.as_bytes(), 0)?;
+        let mut store = self.store();
+        let sent = match store.outbox_entry(id)? {
+            Some(entry) => store.message_id_header(entry.message)?,
+            None => None,
         };
-        Ok(Some(Reminder {
+        let mut next = follow_up.clone();
+        next.sent.extend(sent);
+        next.waiting = false;
+        if follow_up.sends_again() {
+            next.remind_at = now.saturating_add(next.again);
+            katna_meta::set_follow_up(&mut store, outbox, &next)?;
+        } else {
+            katna_meta::clear_follow_up(&mut store, outbox)?;
+        }
+        let messages = store.messages_with_header(account, &follow_up.message_id)?;
+        drop(store);
+        tracing::info!(outbox, id, step = next.sent.len(), "follow-up sent");
+        self.wake_scheduler();
+        Ok(Reminder {
             account,
-            summary: tr!("notify-no-reply"),
-            lines: vec![tr!("notify-no-reply-to", subject = subject)],
-            messages: message.into_iter().collect(),
-        }))
+            summary: tr!("notify-follow-up-sent"),
+            lines: vec![tr!(
+                "notify-follow-up-sent-to",
+                subject = subject_or_none(&follow_up.subject)
+            )],
+            messages,
+        })
     }
 }
 
@@ -412,6 +651,7 @@ fn snooze_in_store(
         .into_iter()
         .map(|f| (f.id, f))
         .collect();
+    let newest = store.newest_message()?.0;
     let mut moves: BTreeMap<FolderId, Vec<MessageId>> = BTreeMap::new();
     for &id in ids {
         let locations = store.locations(id)?;
@@ -419,6 +659,7 @@ fn snooze_in_store(
             // Snoozed already: only the time changes.
             if let Some(mut snooze) = katna_meta::snooze_of(store, id)? {
                 snooze.until = until;
+                snooze.newest = newest;
                 katna_meta::set_snooze(store, id, &snooze)?;
             }
             continue;
@@ -433,6 +674,7 @@ fn snooze_in_store(
                 until,
                 back_to: from.0,
                 snoozed_in: snoozed_in.0,
+                newest,
             },
         )?;
         moves.entry(from).or_default().push(id);
@@ -504,6 +746,41 @@ fn bring_back(
         return Ok(Vec::new());
     };
     ops::move_messages_from(store, &[message], Some(snoozed_in), to)
+}
+
+/// `messages` and the other messages of their conversations that share a
+/// folder with them (the Inbox), each once.
+fn with_conversation(store: &Store, messages: &[MessageId]) -> katna_store::Result<Vec<MessageId>> {
+    let mut all: Vec<MessageId> = messages.to_vec();
+    for message in store.messages_by_id(messages)? {
+        let Some(thread) = message.thread_id else {
+            continue;
+        };
+        let folders: Vec<FolderId> = store
+            .locations(message.id)?
+            .iter()
+            .map(|l| l.folder)
+            .collect();
+        for mate in store.thread_messages(thread)? {
+            if !all.contains(&mate)
+                && store
+                    .locations(mate)?
+                    .iter()
+                    .any(|l| folders.contains(&l.folder))
+            {
+                all.push(mate);
+            }
+        }
+    }
+    Ok(all)
+}
+
+fn subject_or_none(subject: &str) -> String {
+    if subject.trim().is_empty() {
+        tr!("notify-no-subject")
+    } else {
+        subject.to_owned()
+    }
 }
 
 /// "Sender: Subject" for each conversation of `messages`, the first few.

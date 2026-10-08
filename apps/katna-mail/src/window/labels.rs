@@ -4,6 +4,9 @@
 //! nest it under. Opened from the "+" beside an account's name in the
 //! navigation. The daemon creates the folder on the server (a label, on
 //! Gmail); the navigation shows it once the store has it.
+//!
+//! The same dialog renames a folder or label the user made, from the
+//! folder pane's right-click menu: its name filled in and selected.
 
 use gpui::{
     AnyElement, Context, Entity, Focusable, FontWeight, Subscription, Window, div, prelude::*, rgba,
@@ -18,7 +21,7 @@ use katna_ui::{InputEvent, TextInput};
 
 use super::MailWindow;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, ScaledEdge, elevation, filled_button, radio};
+use crate::widgets::{FocusRing, ScaledEdge, filled_button, radio};
 use crate::{daemon, format};
 
 const WIDTH: f32 = 420.0;
@@ -33,6 +36,8 @@ pub(super) struct NewLabel {
     parent: Option<FolderId>,
     /// Folders it may go inside, with their paths.
     parents: Vec<(FolderId, String)>,
+    /// Renaming this folder instead, with its name as it was.
+    rename: Option<(FolderId, String)>,
     busy: bool,
     error: Option<String>,
     closing: bool,
@@ -86,12 +91,40 @@ impl MailWindow {
             nest: false,
             parent: None,
             parents: self.tree.nest_targets(account),
+            rename: None,
             busy: false,
             error: None,
             closing: false,
             shown,
         });
         cx.notify();
+    }
+
+    /// Opens the dialog to rename `folder`, its name filled in and
+    /// selected.
+    pub(super) fn open_rename_label(
+        &mut self,
+        folder: FolderId,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let (Some(account), Some(node)) = (self.tree.account_of(folder), self.tree.node(folder))
+        else {
+            return;
+        };
+        let old = node.name.clone();
+        self.open_new_label(account, window, cx);
+        let Some(dialog) = &mut self.new_label else {
+            return;
+        };
+        dialog.parents.clear();
+        dialog.rename = Some((folder, old.clone()));
+        dialog.name.update(cx, |input, cx| {
+            input.set_text(old, cx);
+            input.select_all_text(cx);
+        });
+        // Filling the name in is no change to clear an error for.
+        dialog.error = None;
     }
 
     /// Makes the open dialog put the new folder or label inside `parent`.
@@ -116,14 +149,25 @@ impl MailWindow {
 
     fn new_label_ready(&self, cx: &Context<Self>) -> bool {
         self.new_label.as_ref().is_some_and(|dialog| {
-            !dialog.busy
-                && !dialog.name.read(cx).text().trim().is_empty()
-                && (!dialog.nest || dialog.parent.is_some())
+            let name = dialog.name.read(cx).text().trim();
+            !dialog.busy && !name.is_empty() && (!dialog.nest || dialog.parent.is_some())
         })
     }
 
     fn create_label(&mut self, cx: &mut Context<Self>) {
         if !self.new_label_ready(cx) {
+            return;
+        }
+        let Some(dialog) = &mut self.new_label else {
+            return;
+        };
+        // The same name again: nothing to change.
+        if dialog
+            .rename
+            .as_ref()
+            .is_some_and(|(_, old)| old == dialog.name.read(cx).text().trim())
+        {
+            self.close_new_label(cx);
             return;
         }
         let Some(dialog) = &mut self.new_label else {
@@ -135,6 +179,7 @@ impl MailWindow {
         let name = dialog.name.read(cx).text().trim().to_owned();
         let parent = dialog.parent.filter(|_| dialog.nest).map(|f| f.0);
         let gmail = dialog.gmail;
+        let rename = dialog.rename.as_ref().map(|(folder, _)| *folder);
         let connection = self.daemon.clone();
         cx.spawn(async move |this, cx| {
             let created = name.clone();
@@ -145,7 +190,12 @@ impl MailWindow {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
                     };
-                    daemon::create_folder(&connection, account, &created, parent).await
+                    match rename {
+                        Some(folder) => daemon::rename_folder(&connection, folder.0, &created)
+                            .await
+                            .map(|()| folder.0),
+                        None => daemon::create_folder(&connection, account, &created, parent).await,
+                    }
                 })
                 .await;
             this.update(cx, |this, cx| match result {
@@ -155,10 +205,11 @@ impl MailWindow {
                     }
                     this.close_new_label(cx);
                     this.refresh(false, cx);
-                    let text = if gmail {
-                        tr!("label-created", name = name.as_str())
-                    } else {
-                        tr!("label-folder-created", name = name.as_str())
+                    let text = match (rename.is_some(), gmail) {
+                        (false, true) => tr!("label-created", name = name.as_str()),
+                        (false, false) => tr!("label-folder-created", name = name.as_str()),
+                        (true, true) => tr!("label-renamed", name = name.as_str()),
+                        (true, false) => tr!("label-folder-renamed", name = name.as_str()),
                     };
                     this.show_snackbar(text, None, cx);
                 }
@@ -195,11 +246,12 @@ impl MailWindow {
         let ready = self.new_label_ready(cx);
         let dialog = self.new_label.as_ref()?;
         let gmail = dialog.gmail;
+        let renaming = dialog.rename.is_some();
         let focus = dialog.name.focus_handle(cx);
         let focused = focus.is_focused(window);
         let field = div()
             .id("new-label-name")
-            .mt(px(8.0))
+            .mt(px(if renaming { 20.0 } else { 8.0 }))
             .h(px(44.0))
             .px(px(14.0))
             .flex()
@@ -288,81 +340,83 @@ impl MailWindow {
                 .mt(px(12.0))
                 .text_size(px(13.0))
                 .text_color(rgba(th.error))
-                .child(err)
+                .child(self.copyable(err, th))
         });
         let busy = dialog.busy;
-        let body = div()
-            .id("new-label-body")
-            .flex()
-            .flex_col()
-            .overflow_y_scroll()
-            .px(px(24.0))
-            .pt(px(24.0))
-            .pb(px(20.0))
-            .child(
-                div()
-                    .text_size(px(22.0))
-                    .line_height(px(30.0))
-                    .child(if gmail {
-                        tr!("label-new-title")
-                    } else {
-                        tr!("label-folder-new-title")
-                    }),
-            )
-            .child(
-                div()
-                    .mt(px(20.0))
-                    .text_size(px(14.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(if gmail {
-                        tr!("label-prompt")
-                    } else {
-                        tr!("label-folder-prompt")
-                    }),
-            )
-            .child(field)
-            .when(nest, |d| d.child(checkbox))
-            .children(parents)
-            .children(error)
-            .child(
-                div()
-                    .mt(px(24.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(8.0))
-                    .child(div().flex_1())
-                    .child(
+        let body =
+            div()
+                .id("new-label-body")
+                .flex()
+                .flex_col()
+                .overflow_y_scroll()
+                .px(px(24.0))
+                .pt(px(24.0))
+                .pb(px(20.0))
+                .child(div().text_size(px(22.0)).line_height(px(30.0)).child(
+                    match (renaming, gmail) {
+                        (false, true) => tr!("label-new-title"),
+                        (false, false) => tr!("label-folder-new-title"),
+                        (true, true) => tr!("label-rename-title"),
+                        (true, false) => tr!("label-folder-rename-title"),
+                    },
+                ))
+                .when(!renaming, |d| {
+                    d.child(
                         div()
-                            .id("new-label-cancel")
-                            .h(px(36.0))
-                            .px(px(16.0))
-                            .flex()
-                            .items_center()
-                            .rounded_full()
+                            .mt(px(20.0))
                             .text_size(px(14.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .text_color(rgba(th.accent))
-                            .cursor_pointer()
-                            .hover(|s| s.bg(rgba(fade(th.accent, 0.08))))
-                            .on_click(cx.listener(|this, _, _, cx| this.close_new_label(cx)))
-                            .child(tr!("label-cancel")),
-                    )
-                    .child(
-                        filled_button(
-                            "new-label-create",
-                            if busy {
-                                tr!("label-creating")
+                            .text_color(rgba(th.text_dim))
+                            .child(if gmail {
+                                tr!("label-prompt")
                             } else {
-                                tr!("label-create")
-                            },
-                            th,
+                                tr!("label-folder-prompt")
+                            }),
+                    )
+                })
+                .child(field)
+                .when(nest, |d| d.child(checkbox))
+                .children(parents)
+                .children(error)
+                .child(
+                    div()
+                        .mt(px(24.0))
+                        .flex()
+                        .flex_row()
+                        .items_center()
+                        .gap(px(8.0))
+                        .child(div().flex_1())
+                        .child(
+                            div()
+                                .id("new-label-cancel")
+                                .h(px(36.0))
+                                .px(px(16.0))
+                                .flex()
+                                .items_center()
+                                .rounded_full()
+                                .text_size(px(14.0))
+                                .font_weight(FontWeight::MEDIUM)
+                                .text_color(rgba(th.accent))
+                                .cursor_pointer()
+                                .hover(|s| s.bg(rgba(fade(th.accent, 0.08))))
+                                .on_click(cx.listener(|this, _, _, cx| this.close_new_label(cx)))
+                                .child(tr!("label-cancel")),
                         )
-                        .focus_ring_filled(th)
-                        .when(!ready, |d| d.opacity(0.45).cursor_default())
-                        .on_click(cx.listener(|this, _, _, cx| this.create_label(cx))),
-                    ),
-            );
+                        .child(
+                            filled_button(
+                                "new-label-create",
+                                match (renaming, busy) {
+                                    (false, true) => tr!("label-creating"),
+                                    (false, false) => tr!("label-create"),
+                                    (true, true) => tr!("label-renaming"),
+                                    (true, false) => tr!("label-rename"),
+                                },
+                                th,
+                            )
+                            .focus_ring_filled(th)
+                            .when(!ready, |d| d.opacity(0.45).cursor_default())
+                            .on_click(cx.listener(|this, _, _, cx| this.create_label(cx))),
+                        ),
+                );
         let viewport = window.viewport_size();
         let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
         let card = div()
@@ -374,11 +428,8 @@ impl MailWindow {
             .max_h(px((vh - 48.0).max(200.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
         Some(
             div()

@@ -9,6 +9,13 @@ shortcut-group-actions = Tindakan
 shortcut-group-go-to = Pergi ke
 shortcut-group-app = Aplikasi
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Pintasan papan kekunci
+shortcuts-dialog-search = Cari pintasan
+shortcuts-dialog-none = Tiada pintasan yang sepadan
+shortcuts-dialog-close = Tutup
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Perbualan seterusnya
@@ -37,6 +44,8 @@ shortcut-mark-read = Tandai sebagai dibaca
 shortcut-mark-unread = Tandai sebagai belum dibaca
 shortcut-star = Tambah atau alih keluar bintang
 shortcut-add-to-tasks = Tambah pada Tugas
+shortcut-snooze = Tunda
+shortcut-remind = Ingatkan saya
 shortcut-important = Tandai sebagai penting
 shortcut-not-important = Tandai sebagai tidak penting
 shortcut-mute = Senyapkan atau nyahsenyap perbualan

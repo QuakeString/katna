@@ -17,6 +17,10 @@ notify-unknown-sender = അജ്ഞാത അയച്ചയാൾ
 notify-snooze-back = സ്‌നൂസിൽ നിന്ന് തിരികെയെത്തി
 notify-no-reply = ഇതുവരെ മറുപടിയില്ല
 notify-no-reply-to = “{ $subject }” എന്നതിന് ആരും മറുപടി നൽകിയിട്ടില്ല.
+notify-follow-up-sent = തുടർസന്ദേശം അയച്ചു
+notify-follow-up-sent-to = “{ $subject }” എന്നതിന് ആരും മറുപടി നൽകിയില്ല, അതിനാൽ Katna തുടർസന്ദേശം അയച്ചു.
+notify-follow-up-waiting = തുടർസന്ദേശം അയച്ചില്ല
+notify-follow-up-waiting-to = ഈ കമ്പ്യൂട്ടർ ഓഫായിരുന്നപ്പോഴാണ് സമയമായത്. “{ $subject }” നിങ്ങളുടെ ഇൻബോക്‌സിൽ തിരികെയെത്തി.
 
 ## Open and click tracking (only for mail sent with "Track opens and clicks")
 
@@ -28,6 +32,19 @@ notify-tracking-clicked = { $who } { $subject }-ലെ ഒരു ലിങ്ക
 notify-update-ready = Katna Mail അപ്‌ഡേറ്റ് ചെയ്യാം
 notify-update-ready-body = പതിപ്പ് { $version } ഡൗൺലോഡ് ചെയ്തു. അപ്‌ഡേറ്റ് അത് ഇൻസ്റ്റാൾ ചെയ്ത് Katna Mail റീസ്റ്റാർട്ട് ചെയ്യും.
 notify-update = അപ്‌ഡേറ്റ്
+
+## Something needs the user, shown once per problem
+
+notify-signed-out = വീണ്ടും സൈൻ ഇൻ ചെയ്യുക
+notify-signed-out-body = { $provider } { $address }-ൽ നിന്ന് Katna-യെ സൈൻ ഔട്ട് ചെയ്‌തു. മെയിൽ സമന്വയം നിലച്ചു.
+notify-sign-in = സൈൻ ഇൻ ചെയ്യുക
+notify-password-refused = പാസ്‌വേഡ് നിരസിച്ചു
+notify-password-refused-body = മെയിൽ സെർവർ { $address }-ന്റെ പാസ്‌വേഡ് നിരസിച്ചു. അത് മാറിയിരിക്കാം.
+notify-new-password = പുതിയ പാസ്‌വേഡ്
+notify-not-sent = “{ $subject }” അയച്ചില്ല
+notify-not-sent-no-subject = ഒരു സന്ദേശം അയച്ചില്ല
+notify-not-sent-body = അത് ഔട്ട്‌ബോക്‌സിലുണ്ട്, കാരണം അവിടെ കാണാം.
+notify-open-outbox = ഔട്ട്‌ബോക്‌സ് തുറക്കുക
 
 ## Reminders of calendar events
 
@@ -61,6 +78,12 @@ notify-reply-all = എല്ലാവർക്കും മറുപടി ന�
 notify-mark-read = വായിച്ചതായി അടയാളപ്പെടുത്തുക
 notify-mark-all-read = എല്ലാം വായിച്ചതായി അടയാളപ്പെടുത്തുക
 notify-archive = ആർക്കൈവ് ചെയ്യുക
+notify-snooze-hour = 1 മണിക്കൂർ സ്‌നൂസ് ചെയ്യുക
+notify-snooze-tomorrow = നാളെ
+notify-copy-code = { $code } പകർത്തുക
+notify-link-verify = { $domain }-ൽ സ്ഥിരീകരിക്കുക
+notify-link-confirm = { $domain }-ൽ ഉറപ്പാക്കുക
+notify-link-activate = { $domain }-ൽ സജീവമാക്കുക
 
 ## After Archive on a notification: a short note in the same place
 
@@ -70,6 +93,11 @@ notify-archived-count = { $count ->
    *[other] { $count } സന്ദേശങ്ങൾ ഇൻബോക്‌സിൽ നിന്ന് നീക്കി
 }
 notify-undo = പഴയപടിയാക്കുക
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = കോഡ് പകർത്തി
+notify-code-not-copied = കോഡ് പകർത്താനായില്ല
 
 ## it waits for the undo time
 

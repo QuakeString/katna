@@ -39,6 +39,7 @@ list-results = Hasil untuk “{ $query }”
 list-results-corrected = Menampilkan hasil untuk “{ $query }”
 list-search-instead = Telusuri “{ $query }” saja
 list-files-more = +{ $count }
+list-replied = Anda sudah membalas
 
 ## Mail list: Select menu (which lines to tick)
 
@@ -188,6 +189,8 @@ list-empty-tab = Tidak ada email di { $tab }.
 list-empty-tab-unknown = Tidak ada email di tab ini.
 list-empty-folder = Tidak ada pesan di { $folder }.
 list-empty-folder-unknown = Tidak ada pesan di folder ini.
+list-empty-waiting = Tidak ada yang menunggu balasan.
+list-empty-reminders = Tidak ada pengingat. Tekan H pada email untuk menambahkannya.
 list-first-sync = Mengambil email Anda…
 list-first-sync-detail = Email akan muncul di sini saat tiba.
 
@@ -207,6 +210,14 @@ row-tracking-clicked = Dibuka oleh { $opened } dari { $recipients }, link diikut
 row-pin = Sematkan di atas
 row-unpin = Lepas sematan
 row-snoozed-until = Ditunda sampai { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Hari ini
+snoozed-group-tomorrow = Besok
+snoozed-group-this-week = Minggu ini
+snoozed-group-later = Nanti
+row-follow-up-step = Tindak lanjut { $step } dari { $steps } · { $date }
+row-follow-up-waiting = Tindak lanjut menunggu
+row-reminder = Pengingat { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -229,6 +240,7 @@ menu-not-important = Tandai sebagai tidak penting
 menu-pin = Sematkan di atas
 menu-unpin = Lepas sematan
 menu-snooze = Tunda
+menu-remind = Ingatkan saya
 menu-unsnooze = Batalkan penundaan
 menu-add-to-tasks = Tambahkan ke Tugas
 menu-schedule-meeting = Jadwalkan rapat
@@ -240,7 +252,20 @@ menu-move-to = Pindahkan ke
 menu-follow-up = Tindak lanjut
 menu-more = Lainnya
 menu-move-to-heading = Pindahkan ke:
+menu-move-to-search = Pindahkan ke…
+menu-label-as = Beri label
+menu-label-as-search = Beri label…
+menu-no-folder = Tidak ada folder bernama “{ $name }”
+menu-no-label = Tidak ada label bernama “{ $name }”
+menu-create-folder = Buat “{ $name }”
+menu-always-move = Selalu pindahkan email dari { $name } ke sini
+toast-always-move-failed = Email sudah dipindahkan, tetapi aturannya tidak dibuat: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count } percakapan
+   *[message] { $count } pesan
+}
 menu-find-from = Cari email dari { $name }
+menu-make-rule = Buat aturan…
 
 ## Snackbar after an action on mail in the list
 
@@ -256,6 +281,8 @@ toast-moved = { $kind ->
     [conversation] { $count } percakapan dipindahkan.
    *[message] { $count } pesan dipindahkan.
 }
+toast-label-added = Label “{ $label }” ditambahkan.
+toast-label-removed = Label “{ $label }” dihapus.
 toast-starred = { $kind ->
     [conversation] { $count } percakapan diberi bintang.
    *[message] { $count } pesan diberi bintang.

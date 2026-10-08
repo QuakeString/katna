@@ -18,6 +18,7 @@ use std::{
 use async_net::{TcpListener, TcpStream};
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use futures_lite::{AsyncReadExt, AsyncWriteExt, FutureExt};
+use katna_core::config::AppsOn;
 use katna_core::{LinkedSignIn, OAuthProvider, Security, Server};
 use serde::Deserialize;
 
@@ -79,6 +80,11 @@ pub const GOOGLE_OTHER_CONTACTS: &str = "https://www.googleapis.com/auth/contact
 
 /// Google Tasks: the account's task lists, synced with Katna Tasks.
 pub const GOOGLE_TASKS: &str = "https://www.googleapis.com/auth/tasks";
+
+/// Gmail's basic settings: the filters Katna makes for mail rules
+/// ([`crate::gmail_filters`]), the labels and the forwarding addresses
+/// they use.
+pub const GOOGLE_GMAIL_SETTINGS: &str = "https://www.googleapis.com/auth/gmail.settings.basic";
 
 /// Google Meet, limited to the meeting spaces Katna itself made: for
 /// "Start a video call" ([`crate::meet`]).
@@ -270,12 +276,13 @@ impl Provider {
                 // large attachments, the whole Drive for Files,
                 // the calendars, the contacts (People API, other
                 // contacts, CardDAV), the task lists, the meetings Katna
-                // makes, and who signed in (address, name, picture) in
-                // the ID token.
+                // makes, the Gmail filters it makes for mail rules, and
+                // who signed in (address, name, picture) in the ID token.
                 scope: format!(
                     "{GOOGLE_MAIL} {GOOGLE_DRIVE_FILE} {GOOGLE_DRIVE} {GOOGLE_CALENDAR} \
                      {GOOGLE_CONTACTS} {GOOGLE_OTHER_CONTACTS} {GOOGLE_CARDDAV} \
-                     {GOOGLE_TASKS} {GOOGLE_MEET} openid email profile"
+                     {GOOGLE_TASKS} {GOOGLE_MEET} {GOOGLE_GMAIL_SETTINGS} \
+                     openid email profile"
                 ),
                 consent: String::new(),
                 redirect_host: "127.0.0.1",
@@ -327,6 +334,45 @@ impl Provider {
                 tls,
             },
         })
+    }
+
+    /// The same provider asking at sign-in only for what the apps turned
+    /// on use (Settings › Apps): Mail's scopes always, and the calendars,
+    /// contacts, task lists or whole Drive only while their app is on.
+    /// The large-attachment files of Drive and OneDrive are Mail's.
+    pub fn only_for(mut self, apps: &AppsOn) -> Self {
+        let mut off: Vec<&str> = Vec::new();
+        if !apps.calendar {
+            off.extend([GOOGLE_CALENDAR, MICROSOFT_CALENDARS]);
+            off.extend(ZOHO_CALENDAR.split(','));
+        }
+        if !apps.contacts {
+            off.extend([
+                GOOGLE_CONTACTS,
+                GOOGLE_OTHER_CONTACTS,
+                GOOGLE_CARDDAV,
+                MICROSOFT_CONTACTS,
+            ]);
+        }
+        if !apps.tasks {
+            off.extend([GOOGLE_TASKS, MICROSOFT_TASKS, ZOHO_TASKS]);
+        }
+        if !apps.files {
+            off.push(GOOGLE_DRIVE);
+        }
+        // Zoho separates its scopes with commas, the others with spaces.
+        let keep = |scopes: &str| {
+            let comma = scopes.contains(',') && !scopes.contains(' ');
+            let separator = if comma { "," } else { " " };
+            scopes
+                .split(separator)
+                .filter(|scope| !off.contains(scope))
+                .collect::<Vec<_>>()
+                .join(separator)
+        };
+        self.scope = keep(&self.scope);
+        self.consent = keep(&self.consent);
+        self
     }
 
     /// The same provider at the sign-in server of another of its data
