@@ -5,8 +5,8 @@
 //! [`message_view`] gives the headers, the text of a message (HTML
 //! converted to text, for replies and quoting) and its attachments.
 //! [`message_document`] lays out its HTML body for the reading pane (see
-//! [`html`]). [`sender_authenticated`] reads what the user's provider
-//! found of the sender's DKIM and DMARC. [`trim`] splits a body into what
+//! [`html`]). [`sender_checks`] reads what the user's provider found of
+//! the sender's DMARC, DKIM and SPF. [`trim`] splits a body into what
 //! the sender wrote and the quote, signature or forward under it;
 //! [`signature`] picks out what a signature tells about its sender.
 
@@ -18,7 +18,7 @@ mod rich;
 pub mod signature;
 pub mod trim;
 
-pub use auth::sender_authenticated;
+pub use auth::{Check, Outcome, SenderChecks, Verdict, sender_authenticated, sender_checks};
 pub use plain::{
     Address, Attachment, AttachmentFile, MAX_BODY_BYTES, MessageView, attachment_file,
     calendar_part, message_view,

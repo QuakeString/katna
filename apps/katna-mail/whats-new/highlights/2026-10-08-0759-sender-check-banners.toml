@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Warnings on forged mail"
+text = """
+When a message fails your mail provider's sender checks, a red banner says
+it may not be from who it claims, with Details, Looks safe and Move to
+spam. Its images stay hidden and its links ask before they open. A sender
+nothing confirmed gets a small "?" on their picture.
+"""

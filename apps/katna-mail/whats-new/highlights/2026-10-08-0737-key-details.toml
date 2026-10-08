@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See who signed a message"
+text = """
+Click the signature line on a signed or encrypted message to see the
+signer's key: name, address, fingerprint and dates, with Copy fingerprint.
+A message signed with a key you don't have offers Look up key, and a key
+someone attaches opens as Import this key? with Undo afterwards.
+"""
