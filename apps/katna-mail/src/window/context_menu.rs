@@ -98,6 +98,8 @@ enum MenuFor {
     Calendar(CalTarget),
     /// A color scheme's card in Settings > Appearance > Colors.
     Scheme(&'static str),
+    /// A signature in the list in Settings > Compose > Signatures.
+    Signature(u32),
     /// The sounds to pick for an event in Settings > Notifications.
     Sound(SoundEvent),
     /// A mail's bubble in the chat view, or one of its files.
@@ -120,9 +122,11 @@ impl ContextMenu {
     fn line(&self) -> Option<(usize, EntryKey)> {
         match &self.what {
             MenuFor::Mail { ix, key, .. } => Some((*ix, *key)),
-            MenuFor::Calendar(_) | MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(..) => {
-                None
-            }
+            MenuFor::Calendar(_)
+            | MenuFor::Scheme(_)
+            | MenuFor::Signature(_)
+            | MenuFor::Sound(_)
+            | MenuFor::Bubble(..) => None,
         }
     }
 }
@@ -189,6 +193,18 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Opens the menu of signature `id` in the list of signatures.
+    pub(super) fn open_signature_menu(
+        &mut self,
+        id: u32,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(MenuFor::Signature(id), at));
+        cx.notify();
+    }
+
     /// Opens the menu of sounds for `event`.
     pub(super) fn open_sound_context_menu(
         &mut self,
@@ -220,9 +236,11 @@ impl MailWindow {
         let menu = self.take_context_menu()?;
         match menu.what {
             MenuFor::Calendar(target) => Some((target, menu.at)),
-            MenuFor::Mail { .. } | MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(..) => {
-                None
-            }
+            MenuFor::Mail { .. }
+            | MenuFor::Scheme(_)
+            | MenuFor::Signature(_)
+            | MenuFor::Sound(_)
+            | MenuFor::Bubble(..) => None,
         }
     }
 
@@ -563,6 +581,7 @@ impl MailWindow {
             MenuFor::Mail { ix, .. } => format!("context-menu-{ix}"),
             MenuFor::Calendar(target) => format!("context-menu-{}", target.key()),
             MenuFor::Scheme(id) => format!("context-menu-scheme-{id}"),
+            MenuFor::Signature(id) => format!("context-menu-signature-{id}"),
             MenuFor::Sound(event) => format!("context-menu-sound-{event:?}"),
             MenuFor::Bubble(id, file) => format!(
                 "context-menu-bubble-{}-{}",
@@ -633,6 +652,7 @@ impl MailWindow {
             Some(MenuFor::Mail { row, .. }) => self.mail_menu_rows(row, rh, th, cx),
             Some(MenuFor::Calendar(target)) => self.calendar_menu_rows(target, rh, th, cx),
             Some(MenuFor::Scheme(id)) => (self.scheme_menu_rows(id, rh, th, cx), Vec::new()),
+            Some(MenuFor::Signature(id)) => (self.signature_menu_rows(*id, rh, th, cx), Vec::new()),
             Some(MenuFor::Sound(event)) => (self.sound_menu_rows(*event, rh, th, cx), Vec::new()),
             Some(MenuFor::Bubble(id, file)) => {
                 (self.bubble_menu_rows(*id, *file, rh, th, cx), Vec::new())
@@ -930,7 +950,13 @@ impl MailWindow {
             Some(MenuFor::Calendar(target)) => {
                 return self.calendar_sub_rows(target, sub, rh, th, cx);
             }
-            Some(MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(..)) | None => None,
+            Some(
+                MenuFor::Scheme(_)
+                | MenuFor::Signature(_)
+                | MenuFor::Sound(_)
+                | MenuFor::Bubble(..),
+            )
+            | None => None,
         };
         let act = |act: Act| {
             cx.listener(

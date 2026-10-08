@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Signatures: any colour, address lines and Duplicate"
+text = """
+In Settings > Compose > Signatures, the rainbow wheel after a layout's
+colours opens the colour picker for one of your own, as for an account's
+colour. Enter in the Address field starts a new line, and the address is
+sent on those lines. Duplicate, beside Delete and in a signature's
+right-click menu with Edit and Delete, makes a copy with everything in
+it to start a new one from.
+"""

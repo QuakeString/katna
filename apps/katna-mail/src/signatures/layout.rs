@@ -100,7 +100,9 @@ pub fn text(l: &SignatureLayout) -> String {
     for page in pages(l) {
         push(page);
     }
-    push(l.address.trim().to_owned());
+    for line in address_lines(l) {
+        push(line.to_owned());
+    }
     lines.join("\n")
 }
 
@@ -115,6 +117,14 @@ fn labelled(l: &SignatureLayout) -> Vec<(String, String)> {
     .filter(|(_, v)| !v.trim().is_empty())
     .map(|(k, v)| (k, v.trim().to_owned()))
     .collect()
+}
+
+/// The address's lines, as typed: "53/1, Ichapur Road", "Howrah 711101".
+fn address_lines(l: &SignatureLayout) -> impl Iterator<Item = &str> {
+    l.address
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
 }
 
 fn pages(l: &SignatureLayout) -> Vec<String> {
@@ -218,7 +228,10 @@ impl Writer<'_> {
             Field::Email => (tr!("signature-layout-email-label"), &self.l.email),
             Field::Website => return self.website(),
             Field::Address => {
-                let address = esc(&self.l.address);
+                let address = address_lines(self.l)
+                    .map(esc)
+                    .collect::<Vec<_>>()
+                    .join("<br>");
                 return (!address.is_empty()).then(|| {
                     format!(
                         r#"<div style="font-size:12px;line-height:18px;color:{DIM}">{address}</div>"#

@@ -2561,11 +2561,17 @@ Gemini or confidential mode):
   (`katna_preview::signature`: a logo at most 256 × 128 px, a dark logo on
   nothing put on a soft white card, a photo cut round, 136 px), and the
   page marks (Simple Icons), monogram and underline bar are drawn as PNGs
-  in the layout's colour, so they look the same in every reader. The page
+  in the layout's colour, so they look the same in every reader. The
+  colour is one of six or any other from the shared colour wheel and
+  picker (as an account's), and the address keeps the lines it is typed
+  on (`<br>` in the HTML). The page
   shows the result in a light or dark reader or as plain text. Picking a
   layout for a signature written by hand fills the fields in from it (as
   the person card reads it, and its first picture as the logo); Edit by
   hand turns a layout signature back into one, and both ask first.
+  Duplicate (beside Delete) copies a signature whole, named "… (copy)",
+  right after it, and opens the copy; a signature's right-click menu in
+  the list has Edit, Duplicate and Delete.
 - **Grammar.** Harper (`harper-core`, Apache-2.0) checks English drafts,
   text and subject, on this computer as you write (`grammar.rs`), on by default, under
   Settings → Compose → Grammar. Paragraphs are checked off the UI thread

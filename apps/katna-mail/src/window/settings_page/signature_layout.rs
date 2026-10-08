@@ -10,21 +10,24 @@
 
 use std::rc::Rc;
 
-use gpui::{AnyElement, Context, Div, Entity, Subscription, Window, div, prelude::*, rgba};
+use gpui::{AnyElement, Context, Div, Entity, Subscription, Window, canvas, div, prelude::*, rgba};
 use katna_core::config::{LayoutStyle, Signature, SignatureLayout};
 use katna_i18n::tr;
 use katna_render::html::{self as mail_html, Document};
 use katna_render::signature::{Known, PhoneKind, Site};
 use katna_ui::rich::{Block, Doc, html};
 use katna_ui::tokens::{radius, space, text};
-use katna_ui::{InputEvent, TextInput, px};
+use katna_ui::{InputEvent, TextArea, TextInput, px};
 
 use super::MailWindow;
 use crate::signatures::layout;
 use crate::theme::Theme;
+use crate::widgets::Tip as _;
 use crate::widgets::{
-    choice_chip, color_swatch, filled_button, icon, icon_button, line_field, outlined_button,
+    area_field, choice_chip, color_swatch, color_wheel, filled_button, icon, icon_button,
+    line_field, outlined_button,
 };
+use crate::window::scheme_color::Target;
 
 /// Largest picture file read for a layout; it is made much smaller.
 const MAX_SOURCE: u64 = 20 * 1024 * 1024;
@@ -34,8 +37,10 @@ const THUMB: (f32, f32) = (72.0, 46.0);
 /// The form of a signature made from a layout.
 pub(super) struct LayoutForm {
     id: u32,
-    /// Name, title, company, mobile, office, email, website, address.
+    /// Name, title, company, mobile, office, email, website.
     fields: Vec<Entity<TextInput>>,
+    /// The address, a line or more.
+    address: Entity<TextArea>,
     page: Entity<TextInput>,
     /// The signature laid out for the preview; `None` for plain text.
     shown: Option<Rc<Document>>,
@@ -60,7 +65,7 @@ pub(super) enum Confirm {
     Edit,
 }
 
-/// The labels of [`LayoutForm::fields`], in order.
+/// The labels of [`LayoutForm::fields`], in order, then the address's.
 fn field_labels() -> [String; 8] {
     [
         tr!("signature-layout-name"),
@@ -169,7 +174,7 @@ fn filled_from(signature: &Signature, style: LayoutStyle, address: &str) -> Sign
         .offices
         .into_iter()
         .next()
-        .map(|o| o.lines.join(", "))
+        .map(|o| o.lines.join("\n"))
         .unwrap_or_default();
     l
 }
@@ -191,7 +196,8 @@ impl MailWindow {
         let accent = rgba(self.theme(window).accent).into();
         let id = signature.id;
         let mut subscriptions = Vec::new();
-        let fields: Vec<Entity<TextInput>> = field_labels()
+        let [labels @ .., address_label] = field_labels();
+        let fields: Vec<Entity<TextInput>> = labels
             .into_iter()
             .zip(field_values(&l))
             .map(|(label, value)| {
@@ -214,6 +220,21 @@ impl MailWindow {
                 }),
             );
         }
+        // Enter starts a new line, kept in the signature.
+        let address = cx.new(|cx| {
+            let mut area = TextArea::new(address_label, cx);
+            area.set_text(l.address.clone(), 0, cx);
+            area.set_accent(accent);
+            area
+        });
+        subscriptions.push(
+            cx.subscribe(&address, move |this, area, event: &InputEvent, cx| {
+                if *event == InputEvent::Changed {
+                    let value = area.read(cx).text().to_owned();
+                    this.change_layout(id, |l| l.address = value, cx);
+                }
+            }),
+        );
         let page = cx.new(|cx| {
             let mut input = TextInput::new(tr!("signature-layout-page-placeholder"), cx);
             input.set_accent(accent);
@@ -236,6 +257,7 @@ impl MailWindow {
             page_state.layout = Some(LayoutForm {
                 id,
                 fields,
+                address,
                 page,
                 shown,
                 reader: Reader::Light,
@@ -274,6 +296,23 @@ impl MailWindow {
         }
         self.save_soon(cx);
         cx.notify();
+    }
+
+    /// The colour (`0xrrggbb`) of the layout signature `id`.
+    pub(in crate::window) fn layout_colour(&self, id: u32) -> Option<u32> {
+        let l = self.config.sending.signature(Some(id))?.layout.as_ref()?;
+        Some(layout::colour(l))
+    }
+
+    /// Gives the layout signature `id` the colour `rgb` (`0xrrggbb`), from
+    /// its swatches or the colour picker.
+    pub(in crate::window) fn set_layout_colour(
+        &mut self,
+        id: u32,
+        rgb: u32,
+        cx: &mut Context<Self>,
+    ) {
+        self.change_layout(id, |l| l.colour = layout::hex(rgb & 0xffffff), cx);
     }
 
     /// A layout tile picked: changes the layout, or asks first when it
@@ -575,7 +614,12 @@ impl MailWindow {
 
     /// The fields, pictures, pages, colour and preview of a layout
     /// signature, in place of the free editor.
-    pub(super) fn layout_form(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+    pub(super) fn layout_form(
+        &self,
+        th: &Theme,
+        window: &Window,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
         let form = self.settings_page.as_ref()?.layout.as_ref()?;
         let form_confirm = self.settings_page.as_ref()?.layout_confirm;
         let id = form.id;
@@ -619,7 +663,19 @@ impl MailWindow {
             .child(field(2, &labels))
             .child(pair(3, 4))
             .child(pair(5, 6))
-            .child(field(7, &labels));
+            .child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(space::S1))
+                    .child(label(labels[7].clone()))
+                    .child(area_field(
+                        "page-signature-layout-address",
+                        &form.address,
+                        th,
+                        cx,
+                    )),
+            );
         let (logo, photo) = layout::shows(l.style);
         use katna_preview::signature::Shape;
         let pictures: Vec<(Shape, String, bool)> = [
@@ -743,8 +799,39 @@ impl MailWindow {
                 cx,
             )));
         let current = layout::colour(l);
-        let colours = div().flex().flex_row().gap(px(space::S2)).children(
-            layout::COLOURS.into_iter().enumerate().map(|(n, c)| {
+        // The wheel after the colours: the colour picker, for any other.
+        let custom = (!layout::COLOURS.contains(&current)).then_some(current << 8 | 0xff);
+        let target = Target::Signature(id);
+        let swatches = self.color_swatches.clone();
+        let wheel = self
+            .page_control(
+                color_wheel("page-signature-layout-wheel", custom, 32.0, th),
+                th,
+                cx,
+            )
+            .relative()
+            .tip(tr!("settings-appearance-accent-more"), th)
+            .on_click(
+                cx.listener(move |this, _, window, cx| {
+                    this.toggle_color_picker(target, window, cx)
+                }),
+            )
+            .child(
+                canvas(
+                    move |bounds, _, _| {
+                        swatches.borrow_mut().insert(target, bounds);
+                    },
+                    |_, _, _, _| {},
+                )
+                .absolute()
+                .size_full(),
+            );
+        let colours = div()
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .gap(px(space::S2))
+            .children(layout::COLOURS.into_iter().enumerate().map(|(n, c)| {
                 self.page_control(
                     color_swatch(
                         ("page-signature-layout-colour", n),
@@ -757,10 +844,12 @@ impl MailWindow {
                     cx,
                 )
                 .on_click(cx.listener(move |this, _, _, cx| {
-                    this.change_layout(id, |l| l.colour = layout::hex(c), cx)
+                    this.set_layout_colour(id, c, cx);
+                    this.sync_color_picker(target, c << 8 | 0xff, cx);
                 }))
-            }),
-        );
+            }))
+            .child(wheel)
+            .children(self.render_color_picker(|t| t == target, th, window, cx));
         let section = |said: String, content: AnyElement| {
             div()
                 .flex()
