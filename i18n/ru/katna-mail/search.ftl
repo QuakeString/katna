@@ -14,6 +14,7 @@ search-without = Не содержит
 search-date-within = Дата в пределах
 search-has-attachment = Есть вложение
 search-attachment-custom = Другой
+search-attachment-image = Изображение
 search-attachment-custom-hint = Введите расширение, например png, и нажмите Пробел
 search-attachment-remove = Удалить
 search-clear-filter = Сбросить фильтр
