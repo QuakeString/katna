@@ -350,6 +350,8 @@ row-no-subject = (hakuna mada)
 row-unknown-sender = (mtumaji asiyejulikana)
 row-to = Kwa:
 row-no-recipients = (hakuna wapokeaji)
+row-names-separator = {", "}
+row-me = mimi
 
 ## Mail list: lines
 

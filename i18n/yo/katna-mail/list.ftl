@@ -200,6 +200,8 @@ row-no-subject = (kò sí àkọlé)
 row-unknown-sender = (olùfiránṣẹ́ àìmọ̀)
 row-to = Sí:
 row-no-recipients = (kò sí olùgbà)
+row-names-separator = {", "}
+row-me = èmi
 
 ## Mail list: lines
 

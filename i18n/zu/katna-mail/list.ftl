@@ -350,6 +350,8 @@ row-no-subject = (asikho isihloko)
 row-unknown-sender = (umthumeli ongaziwa)
 row-to = Kuya ku:
 row-no-recipients = (abekho abamukeli)
+row-names-separator = {", "}
+row-me = mina
 
 ## Mail list: lines
 

@@ -4089,3 +4089,9 @@ kulia na Kulia kwenda kushoto kwenye upau wa uumbizaji (au Ctrl+Shift+X)
 hugeuza aya, na mstari unaoanza kwa Kiarabu au Kiebrania hujigeuza
 wenyewe. Ujumbe hutumwa jinsi ulivyouandika.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail hugeuka kwa Kiarabu, Kiebrania, Kiajemi na Kiurdu"
+text = """
+Kwa Kiarabu, Kiebrania, Kiajemi na Kiurdu dirisha zima hugeuka: upau wa programu na folda upande wa kulia, menyu hufunguka kuelekea kushoto, mishale na vitufe vya mishale hufuata jinsi skrini inavyosomeka. Majina, anwani na njia za mkato za Kiingereza hubaki katika mpangilio wake, na tarehe za Kiajemi huhesabiwa kwa kalenda ya Hijri ya Jua.
+"""
