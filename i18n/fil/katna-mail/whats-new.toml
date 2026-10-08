@@ -4535,3 +4535,70 @@ tatlong araw ay bumabalik sa itaas ng Inbox na may “Ipinadala 3 araw ang
 nakalipas. Mag-follow up?”. I-click ito para mag-follow up, o ang x para
 itabi ito. Ino-off ito sa Mga setting > Inbox.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "May sariling menu ang Mga setting"
+text = """
+May mahinang kulay mula itaas hanggang ibaba ang listahan ng mga pahina sa
+kaliwa ng Mga setting, kaya hiwalay ito sa pahinang binabasa mo.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Pumipili ng petsa sa mismong I-iskedyul ang pagpapadala"
+text = """
+Dumudulas na ngayon ang Pumili ng petsa at oras sa I-iskedyul ang
+pagpapadala at sa Mag-follow up kung walang sagot sa mismong menu kung saan
+mo ito binuksan, gaya ng sa I-snooze, sa halip na box sa ibabaw ng
+mensahe. Ibinabalik ka ng arrow pabalik o ng Esc sa mga oras.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Tugma ang icon sa tray sa panel mo mula sa pag-login"
+text = """
+Sa KDE Plasma, kinukuha na ngayon ng isang-kulay na icon sa tray ang kulay
+ng panel mo pagka-login mismo at sinusundan ang bawat paglipat sa pagitan
+ng maliwanag at madilim, nang hindi nire-restart ang Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Maghanap ng mga drawing at larawan"
+text = """
+May dalawang bagong uri ng attachment ang Mga opsyon sa paghahanap: DWG
+para sa mga drawing ng AutoCAD (at DXF), at Larawan para sa mga photo at
+larawan. Nahahanap na rin ng XLSX ang mga lumang XLS file, at ng PPTX ang
+PPT, kaya iisang button lang ang bawat isa.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Ipinapakita lang ng mga menu ang angkop"
+text = """
+Hindi na inililista ng menu na Higit pa ang magkabilang panig ng isang
+pares. Markahan bilang hindi pa nabasa ang ipinapakita ng nabasang mail,
+Alisin ang star ng naka-star, Markahan bilang hindi mahalaga ng mahalaga,
+I-unpin ng naka-pin. Kapag pumili ka ng ilang mail na magkakaiba, makukuha
+mo ang aksyong magpapapareho sa lahat, dito at sa right-click menu.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Nakapatong sa card ang Mga setting"
+text = """
+Sa maliwanag na kulay, may parehong manipis na gilid at malambot na anino
+na ngayon ang pahina ng Mga setting gaya ng listahan ng mail, kaya hiwalay
+ito sa window sa likod nito.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Mas maayos na mga button ng app"
+text = """
+Hindi na umuuga ang pag-click sa isang app sa app rail sa kaliwa, o sa bar
+sa ibaba sa phone: natatapos ang alon ng pagpindot at lumalaki mula sa
+gitna ang napiling pill habang nananatili ang laki ng button.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Dumudulas ang mga menu sa account card"
+text = """
+Dumudulas na ngayon papasok sa loob ng account card ang ☰ menu at ang
+listahan ng mga wika sa halip na biglang lumitaw, na may button na Bumalik
+sa kanan para bumalik.
+"""

@@ -4243,3 +4243,66 @@ Thư bạn gửi có đặt câu hỏi mà sau ba ngày chưa được trả l�
 vào đó để gửi thư theo dõi, hoặc nhấp dấu x để cất đi. Có thể tắt tính
 năng này trong Cài đặt > Hộp thư đến.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Cài đặt có menu riêng"
+text = """
+Danh sách trang ở bên trái Cài đặt có một lớp màu nhạt từ trên xuống dưới,
+để tách biệt với trang bạn đang đọc.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Lên lịch gửi chọn ngày ngay tại chỗ"
+text = """
+Chọn ngày và giờ trong Lên lịch gửi và Theo dõi nếu không có trả lời giờ
+trượt vào ngay trong menu bạn mở nó, giống như Tạm ẩn, thay vì một hộp đè
+lên thư. Mũi tên quay lại hoặc Esc đưa bạn về danh sách thời điểm.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Biểu tượng khay hợp với bảng điều khiển ngay từ khi đăng nhập"
+text = """
+Trên KDE Plasma, biểu tượng khay một màu giờ lấy màu của bảng điều khiển
+ngay sau khi đăng nhập và đổi theo mỗi lần chuyển giữa sáng và tối, không
+cần khởi động lại Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Tìm bản vẽ và hình ảnh"
+text = """
+Tùy chọn tìm kiếm có thêm hai loại tệp đính kèm: DWG cho bản vẽ AutoCAD (và
+DXF), và Hình ảnh cho ảnh chụp và hình vẽ. XLSX giờ cũng tìm được tệp XLS
+cũ, và PPTX tìm được PPT, nên mỗi loại chỉ có một nút.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menu chỉ hiện những gì phù hợp"
+text = """
+Menu Thêm không còn liệt kê cả hai vế của một cặp. Thư đã đọc hiện Đánh dấu
+là chưa đọc, thư có dấu sao hiện Xóa dấu sao, thư quan trọng hiện Đánh dấu
+là không quan trọng, thư đã ghim hiện Bỏ ghim. Khi chọn nhiều thư khác nhau,
+bạn sẽ thấy thao tác làm cho tất cả giống nhau, ở đây và trong menu chuột
+phải.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Cài đặt nằm trên một thẻ"
+text = """
+Ở màu sáng, trang Cài đặt giờ có cùng đường viền mảnh và bóng đổ nhẹ như
+danh sách thư, để tách biệt với cửa sổ phía sau.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Nút ứng dụng mượt hơn"
+text = """
+Nhấp vào một ứng dụng ở thanh bên trái, hoặc ở thanh dưới cùng trên điện
+thoại, không còn bị rung: hiệu ứng gợn sóng chạy trọn vẹn và viên chọn nở
+ra từ giữa trong khi nút vẫn giữ nguyên kích thước.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menu trượt vào trong thẻ tài khoản"
+text = """
+Menu ☰ và danh sách ngôn ngữ giờ trượt vào bên trong thẻ tài khoản thay vì
+bật ra đột ngột, với nút quay lại ở bên phải để trở về.
+"""

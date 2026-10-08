@@ -14,6 +14,7 @@ search-without = 含まない語句
 search-date-within = 期間
 search-has-attachment = 添付ファイルあり
 search-attachment-custom = カスタム
+search-attachment-image = 画像
 search-attachment-custom-hint = png などの拡張子を入力して Space キー
 search-attachment-remove = 削除
 search-clear-filter = フィルタをクリア

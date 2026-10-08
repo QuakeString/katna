@@ -14,6 +14,7 @@ search-without = Tidak mengandungi
 search-date-within = Tarikh dalam tempoh
 search-has-attachment = Ada lampiran
 search-attachment-custom = Tersuai
+search-attachment-image = Imej
 search-attachment-custom-hint = Taip sambungan, seperti png, kemudian tekan Space
 search-attachment-remove = Alih keluar
 search-clear-filter = Kosongkan penapis
