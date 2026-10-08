@@ -86,6 +86,7 @@ shortcut-quick-settings = Quick settings
 # Opens the full Settings page.
 shortcut-settings = All settings
 shortcut-shortcuts = Keyboard shortcuts
+shortcut-palette = Command palette
 shortcut-reload = Check for new mail
 shortcut-quit = Quit
 

@@ -2656,7 +2656,7 @@ fn text_button(id: &'static str, name: &str, label: String) -> gpui::Stateful<gp
         .text_color(rgba(INK))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(HOVER)))
-        .child(Ripple::new(id, rgba(0xffffff33)))
+        .child(Ripple::new(id, rgba(0xffffff33)).border(1.0))
         .child(icon(name, INK, 20.0))
         .child(label)
 }

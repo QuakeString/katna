@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Send feedback"
+text = """
+Help > Send feedback, also in Quick settings and Settings > User
+feedback, sends a problem or an idea straight to Katna. What is sent shows
+the exact text before it goes, and an email for a reply is optional.
+"""

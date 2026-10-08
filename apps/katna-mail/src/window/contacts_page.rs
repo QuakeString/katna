@@ -690,7 +690,14 @@ impl MailWindow {
                     .cursor_pointer()
                     .when(on, |d| d.bg(rgba(th.row_selected)))
                     .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
-                    .child(Ripple::new(("contacts-account", ix), rgba(th.ripple)))
+                    .child(
+                        Ripple::new(("contacts-account", ix), rgba(th.ripple)).corners([
+                            0.0,
+                            f32::INFINITY,
+                            f32::INFINITY,
+                            0.0,
+                        ]),
+                    )
                     .child(icon(
                         "cloud",
                         if on {

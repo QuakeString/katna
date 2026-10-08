@@ -615,23 +615,20 @@ fn tab_words(section: Section) -> &'static str {
 
 /// A result: a row of a tab, or the tab itself.
 #[derive(Clone)]
-struct Found {
-    section: Section,
-    title: SharedString,
-    detail: SharedString,
+pub(super) struct Found {
+    pub section: Section,
+    pub title: SharedString,
+    pub detail: SharedString,
     /// The row to light up; `None` for a tab.
-    row: Option<SharedString>,
+    pub row: Option<SharedString>,
+    /// Names it for good: the message id of a row's name, or the tab's
+    /// `Section` (the command palette remembers what was picked by it).
+    pub key: String,
 }
 
-/// The settings that have every word of `query`, the best first: those
-/// whose name starts with it, then whose name has it, then the rest. Names
-/// and lines are matched in the current language, the extra words in
-/// English.
-fn search(query: &str) -> Vec<Found> {
-    let words: Vec<String> = query.split_whitespace().map(str::to_lowercase).collect();
-    if words.is_empty() {
-        return Vec::new();
-    }
+/// Every row of every tab and every tab, each with more words it is found
+/// by; with the shortcuts' rows on the Shortcuts tab if `shortcuts`.
+pub(super) fn candidates(shortcuts: bool) -> Vec<(Found, String)> {
     let rows = ENTRIES.iter().map(|e| {
         let title: SharedString = tr!(e.title).into();
         (
@@ -640,6 +637,7 @@ fn search(query: &str) -> Vec<Found> {
                 title: title.clone(),
                 detail: tr!(e.detail).into(),
                 row: Some(title),
+                key: e.title.to_owned(),
             },
             // The English name and line too, so English words find a row
             // in any language.
@@ -651,13 +649,14 @@ fn search(query: &str) -> Vec<Found> {
             ),
         )
     });
-    let shortcuts = SHORTCUTS.iter().map(|s| {
+    let shortcuts = SHORTCUTS.iter().filter(|_| shortcuts).map(|s| {
         (
             Found {
                 section: Section::Shortcuts,
                 title: s.title().into(),
                 detail: tr!("settings-search-shortcut").into(),
                 row: Some(s.title().into()),
+                key: format!("shortcut-{}", s.name),
             },
             format!("{} keyboard key shortcut", s.english_title()),
         )
@@ -674,14 +673,26 @@ fn search(query: &str) -> Vec<Found> {
                 }
                 .into(),
                 row: None,
+                key: format!("{section:?}"),
             },
             tab_words(section).to_owned(),
         )
     });
+    rows.chain(shortcuts).chain(tabs).collect()
+}
+
+/// The settings that have every word of `query`, the best first: those
+/// whose name starts with it, then whose name has it, then the rest. Names
+/// and lines are matched in the current language, the extra words in
+/// English.
+fn search(query: &str) -> Vec<Found> {
+    let words: Vec<String> = query.split_whitespace().map(str::to_lowercase).collect();
+    if words.is_empty() {
+        return Vec::new();
+    }
     let query = words.join(" ");
-    let mut found: Vec<(u8, Found)> = rows
-        .chain(shortcuts)
-        .chain(tabs)
+    let mut found: Vec<(u8, Found)> = candidates(true)
+        .into_iter()
         .filter_map(|(found, extra)| {
             let title = found.title.to_lowercase();
             let extra = extra.to_lowercase();
@@ -785,7 +796,12 @@ impl MailWindow {
     }
 
     /// Opens the tab of a result and lights up its row.
-    fn go_to_setting(&mut self, found: Found, window: &mut Window, cx: &mut Context<Self>) {
+    pub(super) fn go_to_setting(
+        &mut self,
+        found: Found,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         self.search.update(cx, |search, cx| search.set_text("", cx));
         self.open_settings_page(found.section, window, cx);
         self.flash_seq += 1;
