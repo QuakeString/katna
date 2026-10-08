@@ -4541,3 +4541,12 @@ z przyciskami Szczegóły, Wygląda bezpiecznie i Przenieś do spamu. Jej
 obrazy pozostają ukryte, a linki pytają przed otwarciem. Nadawca, którego
 nic nie potwierdziło, dostaje mały znak „?” na swoim zdjęciu.
 """
+
+["2026-10-08-0810-restart-after-update"]
+title = "Ponowne uruchomienie po aktualizacji Katna"
+text = """
+Gdy Katna zostanie zaktualizowana przy otwartej Katna Mail, usługa w tle
+sama przechodzi na nową wersję, gdy tylko nie wysyła poczty. Mała pigułka
+na dole listy wiadomości proponuje wtedy Uruchom ponownie, co otwiera nową
+wersję Katna Mail w miejsce starej. × ukrywa ją do następnej aktualizacji.
+"""

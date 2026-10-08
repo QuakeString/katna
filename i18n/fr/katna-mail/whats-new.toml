@@ -4807,3 +4807,13 @@ dans les spams. Ses images restent masquées et ses liens demandent
 confirmation avant de s’ouvrir. Un expéditeur que rien n’a confirmé
 reçoit un petit « ? » sur sa photo.
 """
+
+["2026-10-08-0810-restart-after-update"]
+title = "Redémarrer après une mise à jour de Katna"
+text = """
+Quand Katna est mis à jour pendant que Katna Mail est ouvert, le service
+en arrière-plan passe de lui-même à la nouvelle version dès qu’il n’envoie
+plus de courriel. Une petite pastille en bas de la liste propose alors
+Redémarrer, qui ouvre la nouvelle version de Katna Mail à sa place.
+× la masque jusqu’à la prochaine mise à jour.
+"""

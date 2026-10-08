@@ -4517,3 +4517,12 @@ för att vara, med Detaljer, Ser säkert ut och Flytta till skräppost. Dess
 bilder förblir dolda och dess länkar frågar innan de öppnas. En avsändare
 som inget har bekräftat får ett litet ”?” på sin bild.
 """
+
+["2026-10-08-0810-restart-after-update"]
+title = "Starta om när Katna har uppdaterats"
+text = """
+När Katna uppdateras medan Katna Mail är öppet byter bakgrundstjänsten
+själv till den nya versionen så snart den inte skickar e-post. Ett litet
+piller längst ner i e-postlistan erbjuder då Starta om, som öppnar nya
+Katna Mail i dess ställe. × döljer det till nästa uppdatering.
+"""

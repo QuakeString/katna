@@ -4606,3 +4606,13 @@ Details, Lijkt veilig en Naar spam verplaatsen. De afbeeldingen blijven
 verborgen en links vragen het eerst voordat ze openen. Een afzender die
 door niets is bevestigd, krijgt een klein „?” op zijn afbeelding.
 """
+
+["2026-10-08-0810-restart-after-update"]
+title = "Herstarten als Katna is bijgewerkt"
+text = """
+Wordt Katna bijgewerkt terwijl Katna Mail open is, dan stapt de
+achtergronddienst vanzelf over op de nieuwe versie zodra hij geen mail
+verstuurt. Een kleine pil onderaan de berichtenlijst biedt dan Herstarten
+aan, dat de nieuwe Katna Mail op zijn plek opent. × verbergt hem tot de
+volgende update.
+"""

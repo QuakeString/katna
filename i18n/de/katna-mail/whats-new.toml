@@ -4756,3 +4756,13 @@ Spam verschieben. Ihre Bilder bleiben ausgeblendet, und ihre Links fragen
 vor dem Öffnen nach. Ein Absender, den nichts bestätigt hat, bekommt ein
 kleines „?“ auf seinem Bild.
 """
+
+["2026-10-08-0810-restart-after-update"]
+title = "Neu starten, wenn Katna aktualisiert wurde"
+text = """
+Wird Katna aktualisiert, während Katna Mail geöffnet ist, wechselt der
+Hintergrunddienst von selbst zur neuen Version, sobald er keine E-Mails
+sendet. Eine kleine Pille unten in der Nachrichtenliste bietet dann Neu
+starten an, das die neue Katna Mail an ihrer Stelle öffnet. × blendet sie
+bis zum nächsten Update aus.
+"""

@@ -4612,3 +4612,13 @@ quem diz ser, com Detalhes, Parece seguro e Mover para spam. As imagens
 dela ficam ocultas e os links pedem confirmação antes de abrir. Um
 remetente que nada confirmou ganha um pequeno “?” na foto.
 """
+
+["2026-10-08-0810-restart-after-update"]
+title = "Reiniciar quando o Katna for atualizado"
+text = """
+Quando o Katna é atualizado com o Katna Mail aberto, o serviço em segundo
+plano passa sozinho para a nova versão assim que não estiver enviando
+e-mails. Uma pequena pílula no fim da lista de e-mails oferece então
+Reiniciar, que abre o novo Katna Mail no lugar. × a esconde até a próxima
+atualização.
+"""
