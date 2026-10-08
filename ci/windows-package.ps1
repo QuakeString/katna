@@ -6,10 +6,19 @@ $ErrorActionPreference = "Stop"
 $root = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $root
 
-# The same version the Arch package reports, so What's new and About match.
-$described = git describe --long --tags --abbrev=7 --match "v[0-9]*" 2>$null
-if ($LASTEXITCODE -eq 0 -and $described) {
-    $version = ($described -replace "^v", "") -replace "-(\d+)-g", ".r`$1.g"
+# The same version the Arch package reports, so What's new and About match:
+# packaging/linux/version.sh in PowerShell (docs/RELEASING.md).
+function Describe-Tags([string[]] $options) {
+    $described = git describe --long --tags --abbrev=7 @options 2>$null
+    if ($LASTEXITCODE -eq 0) { $described } else { "" }
+}
+function Core([string] $described) { [version](($described -replace "^v", "") -replace "-.*", "") }
+$stable = Describe-Tags @("--match", "v[0-9]*", "--exclude", "v*-*")
+$beta = Describe-Tags @("--match", "v[0-9]*-beta.[0-9]*")
+# A beta counts only while its release is not tagged yet.
+$described = if ($beta -and (-not $stable -or (Core $beta) -gt (Core $stable))) { $beta } else { $stable }
+if ($described) {
+    $version = (($described -replace "^v", "") -replace "-beta\.", "beta") -replace "-(\d+)-g", ".r`$1.g"
 } else {
     $version = "0.0.0.r$(git rev-list --count HEAD).g$(git rev-parse --short=7 HEAD)"
 }

@@ -67,8 +67,9 @@ from a terminal.
 # profile has what Katna is built with everywhere.
 unset RUSTFLAGS
 # Katna Mail names this version in What's new, and the build's date in
-# the Update dialog.
-export KATNA_VERSION=%{version}
+# the Update dialog. RPM's `~` (a beta sorts before its release) is not in
+# the version Katna reports (docs/RELEASING.md).
+export KATNA_VERSION=$(echo '%{version}' | tr -d '~')
 # Katna offers the new build and the dnf command that installs it
 # (katna_core::update::Package::Rpm).
 export KATNA_PACKAGE=rpm
@@ -85,7 +86,7 @@ rm -r %{buildroot}%{_datadir}/licenses/katna
 
 %check
 %{buildroot}%{_bindir}/katnactl --help > /dev/null
-test "$(%{buildroot}%{_bindir}/katna-mail --version)" = "katna-mail %{version}"
+test "$(%{buildroot}%{_bindir}/katna-mail --version)" = "katna-mail $(echo '%{version}' | tr -d '~')"
 
 %files
 %license LICENSE

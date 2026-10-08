@@ -19,6 +19,9 @@ on:
       - "packaging/**"
       - ".github/workflows/arch-package.yml"
   workflow_dispatch:
+  # The release workflow (release.yml) builds a tag with it; only main
+  # publishes here.
+  workflow_call:
 
 # On main a running build always finishes and publishes; GitHub keeps
 # only the newest push waiting behind it, so busy stretches of merges no
