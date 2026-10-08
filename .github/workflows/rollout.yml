@@ -1,0 +1,63 @@
+name: Stage or pull an update
+
+# Changes who is offered the newest beta or release (docs/RELEASING.md):
+# the share of installs that take it so far (a staged rollout), or pulls
+# it so nobody is, after a problem. Rewrites only the update manifests of
+# `beta-latest` or `stable-latest`; the packages are not touched. Run by
+# hand (Actions > Stage or pull an update > Run workflow); it waits in the
+# `stable` environment until a required reviewer approves.
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "Which channel's newest build"
+        type: choice
+        options: [stable, beta]
+        required: true
+      rollout:
+        description: "Percent of installs offered it, 0 to 100"
+        type: string
+        default: "100"
+        required: true
+      pulled:
+        description: "Pull it: nobody is offered it"
+        type: boolean
+        default: false
+
+concurrency:
+  group: release-publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    environment: stable
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ inputs.channel }}-latest
+      ROLLOUT: ${{ inputs.rollout }}
+      PULLED: ${{ inputs.pulled }}
+    steps:
+      - name: Rewrite the manifests
+        run: |
+          if [[ ! $ROLLOUT =~ ^(100|[1-9]?[0-9])$ ]]; then
+            echo "::error::rollout must be 0 to 100, not $ROLLOUT"
+            exit 1
+          fi
+          gh release download "$TAG" -p 'katna-update-*.json' -D manifests
+          cd manifests
+          for manifest in katna-update-*.json; do
+            jq --argjson rollout "$ROLLOUT" --argjson pulled "$PULLED" '
+              (if $rollout == 100 then del(.rollout) else .rollout = $rollout end)
+              | (if $pulled then .pulled = true else del(.pulled) end)' \
+              "$manifest" > new.json
+            mv new.json "$manifest"
+            jq -c '{version, rollout, pulled}' "$manifest"
+          done
+          gh release upload "$TAG" katna-update-*.json --clobber

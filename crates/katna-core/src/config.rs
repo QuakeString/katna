@@ -396,15 +396,24 @@ impl Default for Meetings {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Updates {
+    /// Look for a new version every hour and after waking (never on a
+    /// metered connection). Off, Katna looks only when asked.
+    pub check: bool,
     /// Download a new version as soon as the daemon finds it (never on a
     /// metered connection), so Update only has to install it.
     pub auto_download: bool,
+    /// The builds this install takes; `None` until picked, which keeps
+    /// the build's own ([`crate::update::Channel::default_for`]).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub channel: Option<crate::update::Channel>,
 }
 
 impl Default for Updates {
     fn default() -> Self {
         Self {
+            check: true,
             auto_download: true,
+            channel: None,
         }
     }
 }
