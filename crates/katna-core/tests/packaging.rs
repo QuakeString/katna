@@ -276,7 +276,12 @@ fn metainfo_matches_app_id() {
         .map(|path| path.file_name().unwrap().to_string_lossy().into_owned())
         .collect();
     let name = format!("{MAIL_APP_ID}.metainfo.xml");
-    assert_eq!(names, [name.clone()], "files in {}", dir.display());
+    assert_eq!(
+        names,
+        std::slice::from_ref(&name),
+        "files in {}",
+        dir.display()
+    );
     let text = fs::read_to_string(dir.join(&name)).unwrap();
     assert!(text.contains("SPDX-License-Identifier: CC0-1.0"), "{name}");
     for line in [
