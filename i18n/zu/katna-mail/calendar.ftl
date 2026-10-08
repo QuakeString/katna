@@ -116,6 +116,7 @@ calendar-add-meet = Engeza ikholi yevidiyo ye-Google Meet
 calendar-add-teams = Engeza umhlangano we-Teams
 calendar-has-call = Ikholi yevidiyo ingeziwe
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Usuku lonke
 calendar-more-options = Okunye okungakhethwa
 calendar-save = Londoloza

@@ -53,6 +53,7 @@ folder-waiting-short = Ana jira
 folder-reminders = Tunatarwa
 folder-outbox = Akwatin fita
 folder-activity = Ayyuka
+folder-not-on-account = Wannan asusu ba shi da irin wannan folda.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

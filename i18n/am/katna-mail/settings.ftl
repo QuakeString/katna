@@ -179,6 +179,7 @@ settings-general-start-at-login = ሲገቡ Katnaን አስጀምር
 settings-general-start-at-login-detail = መስኮቱን ሳይከፍት ደብዳቤን ያመሳስላል እንዲሁም የአዲስ ደብዳቤ ማሳወቂያዎችን እና የሥርዓት ትሪ አዶን ያሳያል
 settings-general-login-window = የKatna Mail መስኮትንም ክፈት
 settings-general-login-window-detail = ሲገቡ መስኮቱም ይከፈታል
+settings-general-login-entry = ሲገቡ የሚጀምር (ቅንብሮች > አጠቃላይ > ዴስክቶፕ)
 settings-general-tray = Katnaን በሥርዓት ትሪ ውስጥ አሳይ
 settings-general-tray-detail = ካልተነበቡ መልዕክቶች ብዛት እና ከምናሌ ጋር
 settings-general-tray-color = የትሪ አዶ በቀለም

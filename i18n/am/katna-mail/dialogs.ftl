@@ -6,6 +6,7 @@
 
 about-tooltip = ስለ Katna
 about-tagline = ለLinux ዴስክቶፕ ደብዳቤ እና ቀን መቁጠሪያ
+about-version = Katna Mail { $version }
 about-copy-version = የስሪት ዝርዝሮችን ቅዳ
 about-version-copied = ተቀድቷል
 about-version-built = የተገነባው፦ { $date }

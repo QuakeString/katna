@@ -55,6 +55,7 @@ reader-details-subject = isiokwu:
 
 reader-downloading = Na-ebudata ozi a site na sava…
 reader-download-failed = Enweghị ike ibudata ozi a.
+reader-download-failed-reason = Enweghị ike ibudata ozi a. { $reason }
 reader-download-offline = Akaụntụ a anọghị n'ịntanetị. Laghachi n'ịntanetị iji budata ozi a.
 reader-try-again = Nwaa ọzọ
 
@@ -90,6 +91,52 @@ security-missing-key = E ji igodo ị na-enweghị binye aka, ya mere a pụgh�
 security-missing-key-id = E ji igodo ị na-enweghị ({ $key }) binye aka, ya mere a pụghị inyocha ya
 security-signature-unavailable = Abinyere aka; wụnye { $tool } ka ị nyochaa mbinye aka ahụ
 security-signature-error = Enweghị ike inyocha mbinye aka ahụ.
+security-look-up-key = Chọọ igodo
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Mbinye aka akwadoro
+key-card-verified-detail = Mbinye aka ahụ dị mma, ị tụkwasịkwara igodo a obi.
+key-card-unverified = A kwadobeghị mbinye aka
+key-card-unverified-detail = Mbinye aka ahụ dị mma, mana ọ dịghị ihe na-egosi na igodo ahụ bụ nke ha. Jiri fingerprint ahụ tụnyere nke ha, wee tụkwasị igodo ahụ obi na GnuPG (Kleopatra ma ọ bụ gpg --edit-key).
+key-card-not-sender = Onye ọzọ binyere aka
+key-card-not-sender-detail = Mbinye aka ahụ dị mma, mana igodo ahụ abụghị nke onye zitere ya.
+key-card-untrusted = A tụkwasịghị igodo obi
+key-card-untrusted-detail = I kara igodo a akara dị ka nke a na-apụghị ịtụkwasị obi na GnuPG.
+key-card-signature-expired = Mbinye aka agafeela oge ya
+key-card-signature-expired-detail = Mbinye aka ahụ dị mma, mana o agafeela oge ya.
+key-card-key-expired = Igodo agafeela oge ya
+key-card-key-expired-detail = Mbinye aka ahụ dị mma, mana igodo ahụ agafeela oge ya kemgbe ahụ.
+key-card-key-revoked = A kagburu igodo
+key-card-key-revoked-detail = Onye nwe igodo a kagburu ya, ya mere a pụghị ịtụkwasị mbinye aka ahụ obi.
+key-card-bad = Mbinye aka ọjọọ
+key-card-bad-detail = A gbanwere ozi a mgbe a binyechara ya aka, ma ọ bụ mbinye aka ahụ bụ adịgboroja.
+key-card-signed-by = Onye binyere aka
+key-card-belongs-to = Nke
+key-card-fingerprint = Fingerprint
+key-card-signed = Abinyere aka
+key-card-key = Igodo
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = E mepụtara
+key-card-expires = Ọ ga-agwụ
+key-card-never = Ọ dịghị mgbe
+key-card-issued-by = Onye nyere ya
+key-card-found-in = Achọtara na
+key-card-keyring = Igbe igodo GnuPG gị
+key-card-copy = Detuo fingerprint
+key-card-import-title = Bubata igodo a?
+key-card-from-directory = Achọtara ya na ndekọ igodo { $domain }.
+key-card-from-attachment = Site na mgbakwunye { $name }.
+key-card-import-note = Mgbe ahụ Katna nwere ike inyocha mbinye aka onye a ma zoo ozi ọ na-ezigara ya. Ka ị tụkwasị igodo ahụ obi kpamkpam, jiri fingerprint ahụ tụnyere nke ha.
+key-card-cancel = Kagbuo
+key-card-import = Bubata igodo
+key-card-looking-up = Na-achọ igodo ahụ…
+key-card-looking-up-detail = Na-ajụ ndekọ igodo { $domain }.
+key-card-not-found = Achọtaghị igodo
+key-card-not-found-detail = { $domain } anaghị ebipụta igodo maka adreesị a. Rịọ onye zitere ya ka o zitere gị nke ya.
+key-card-not-kept = Enweghị ike iji igodo achọtara.
+key-card-failed = Enweghị ike ịnweta igodo ahụ
 tracking-opened = { $who } mepere ya ugboro { $count }, nke ikpeazụ { $when }
 tracking-opens-clicks = { $who } mepere ya ugboro { $opens } ma soro njikọ ugboro { $clicks }, nke ikpeazụ { $when }
 tracking-clicked = { $who } soro njikọ ugboro { $clicks }, nke ikpeazụ { $when }

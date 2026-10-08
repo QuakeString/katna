@@ -60,3 +60,6 @@ service-details-title = Ihe kpatara ọrụ ahụ anaghị amalite
 service-details-body = Detuo nke a ma zipu ya na akụkọ gị. Ọ nweghị ozi ma ọ bụ okwuntughe n'ime ya.
 service-details-copy = Detuo
 service-details-close = Mechie
+service-not-running = Ọrụ azụ Katna anaghị arụ ọrụ.
+service-no-answer = Ọrụ azụ Katna azaghị: { $error }
+service-no-session = Enweghị nnọkọ D-Bus: { $error }

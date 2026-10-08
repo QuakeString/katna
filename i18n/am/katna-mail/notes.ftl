@@ -94,6 +94,7 @@ notes-link-note = ማስታወሻ አገናኝ
 notes-link-new = አዲስ ማስታወሻ «{ $title }»
 notes-linked-from = የተገናኘው ከ
 notes-link-gone = ያ ማስታወሻ ከእንግዲህ እዚህ የለም
+notes-new-note-gone = አዲሱ ማስታወሻ ጠፍቷል።
 
 ## Version history
 

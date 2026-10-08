@@ -6,6 +6,7 @@
 
 about-tooltip = Maka Katna
 about-tagline = Ozi na kalịnda maka desktọpụ Linux
+about-version = Katna Mail { $version }
 about-copy-version = Detuo nkọwa ụdị
 about-version-copied = Edetuola
 about-version-built = E wuru: { $date }

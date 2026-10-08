@@ -4582,3 +4582,115 @@ Imenyu ethi ☰ nohlu lwezilimi manje kushelela kungene ngaphakathi kwekhadi
 le-akhawunti esikhundleni sokugxuma, nenkinobho yokubuyela emuva
 ngakwesokudla ukuze ubuyele.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Wonke ama-app ahlala ekhadini elifanayo"
+text = """
+Ikhalenda, Oxhumana nabo, Imisebenzi, Amanothi kanye no-Amafayela manje
+kuhlala ekhadini elinomphetho omncane nesithunzi esithambile esifanayo
+naku-Imeyili naku-Izilungiselelo.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Izinkinobho zokubamba ngokushesha ku-GNOME"
+text = """
+I-Meta+Alt+T yomsebenzi kanye ne-Meta+Alt+N yenothi manje kuyasebenza
+naku-GNOME. Okokuqala, i-GNOME ibuza ukuthi i-Katna ingazithola yini,
+futhi ungashintsha izinkinobho kuzilungiselelo zayo.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Hambisa amathuluzi okumaka"
+text = """
+Uma umaka i-PDF, hudula amachashazi ekugcineni kwamathuluzi ukuze
+uwahambisele noma kuphi phezu kwekhasi, ukuze angambozi lokho okumakayo.
+Chofoza kabili amachashazi ukuze uwabuyisele.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Isebenza nezifundi zesikrini"
+text = """
+I-Orca nezinye izifundi zesikrini manje zingafunda i-Katna Mail: uhlu
+lwemeyili, amafolda, imeyili evuliwe, izinkinobho, amamenyu, amaswishi
+namabhokisi engxoxo.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Thumela impendulo"
+text = """
+U-Usizo > Thumela impendulo, otholakala naku-Izilungiselelo ezisheshayo
+naku-Izilungiselelo > Impendulo yomsebenzisi, uthumela inkinga noma
+umbono ngqo ku-Katna. U-Okuthunyelwayo ukhombisa umbhalo uqobo ngaphambi
+kokuthi uhambe, futhi i-imeyili yokuphendulwa ayiphoqelekile.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Izibalo zokusetshenziswa ezingaziwa, uma uthanda"
+text = """
+U-Izilungiselelo > Impendulo yomsebenzisi uneswishi elisha, elivaliwe
+uze ulivule: kanye ngeviki lithumela ukuthi yiziphi izici ozisebenzisile,
+yebo noma cha, ukuze lezo ezisetshenziswa kakhulu zinakekelwe kakhulu.
+Ikhasi libala konke okubalwayo futhi likhombisa umbiko waleli viki.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Usesho luthola imeyili endala kuseva"
+text = """
+Imeyili endala ayilandwa yonke, ngakho usesho alukwazi ukufunda amagama
+ayo lapha. Manje, ngemva kokuma kafushane uthayipha noma uma ucindezela
+u-Enter, i-Katna ibuza neseva yakho yemeyili bese ibala lokho ekutholayo
+ngaphansi kuka-Imiphumela eyengeziwe kuseva.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Sesha nge-Thai, i-Lao, i-Khmer ne-Burmese"
+text = """
+Usesho luthola igama emeyilini ye-Thai, i-Lao, i-Khmer noma i-Burmese
+ngisho nalapho umusho ungenazo izikhala phakathi kwamagama.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Imigqa emide igoqeka phakathi kwamagama"
+text = """
+Umbhalo nge-Arabic, i-Hindi nezinye izinhlamvu zase-India, i-Thai,
+i-Lao, i-Khmer ne-Burmese manje ugoqeka phakathi kwamagama esikhundleni
+sokwephula igama phakathi, futhi imigqa ye-Chinese ne-Japanese ayisaqali
+ngophawu lokuvala.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Ukucindezela kugcwalisa yonke inkinobho"
+text = """
+Ukuchofoza i-chip noma inkinobho enomugqa ozungezile manje kuyigcwalisa
+kuze kufike emaphethelweni nasemakhoneni ayo, esikhundleni sokukhombisa
+iphilisi elincane ngaphakathi kwayo.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Iphalethi yemiyalo"
+text = """
+Cindezela u-Ctrl+Shift+P bese uthayipha ukuze uthole noma yisiphi isenzo
+noma isilungiselelo, bese ucindezela u-Enter ukuze usiqalise. Isenzo
+ngasinye sikhombisa isinqamuleli saso sekhibhodi, futhi lokho
+okusebenzise ekugcineni kuphezulu.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Imeyili ebethelwe ithola okhiye"
+text = """
+Uma u-Bethela uvuliwe, umamukeli ongenakhiye ubhekwa ohlwini lukakhiye
+lwesizinda sakhe lapho uthumela. Imeyili oyithumelayo iphatha ukhiye wakho
+womphakathi (Autocrypt) uma i-GnuPG inawo wekheli lakho, futhi okhiye
+abafika ngaleyo ndlela basetshenziselwa ukubethela izimpendulo zakho. Imeyili
+ye-OpenPGP ebethelwe manje ifihla isihloko sayo ize ivulwe.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Bona ukuthi ubani osayine umlayezo"
+text = """
+Chofoza umugqa wesiginesha emlayezweni osayiniwe noma obethelwe ukuze ubone
+ukhiye womsayini: igama, ikheli, i-fingerprint nezinsuku, kanye no-Kopisha
+i-fingerprint. Umlayezo osayinwe ngokhiye ongenawo unikeza u-Bheka ukhiye,
+futhi ukhiye othile awunamathiselayo uvuleka njengo-Ngenisa lo khiye? kanye
+no-Hlehlisa ngemva kwalokho.
+"""
