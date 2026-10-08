@@ -2445,6 +2445,20 @@ Gemini or confidential mode):
   letters still work there. Whenever
   the keys lose their place (a message sent, a menu or dialog gone) they
   come back to the list, or to the Settings page while it is open.
+- **Screen readers.** GPUI hands an AccessKit tree to AT-SPI (Orca) and
+  UI Automation (NVDA, Narrator). Only elements with an id and a role
+  show up, so the shared widgets set both: `widgets::Tip::tip` labels an
+  icon button with its tooltip text, text buttons and chips carry their
+  label, menu items are `MenuItem`, `FocusRing` controls are buttons,
+  Settings rows are switches, radio buttons and links, and
+  `keep_tab_inside` makes a dialog a `Dialog`. The mail list is a `List`
+  whose rows read "Unread, sender, subject, date"; the folder pane is a
+  `Tree` with levels, unread counts and fold state; the open mail is a
+  `Document` named by its subject, with its plain text as the
+  description only while a screen reader is listening
+  (`window.is_a11y_active()`). Text fields expose their placeholder and
+  value (never a password's). Spoken words not shown on screen live in
+  `i18n/en/katna-mail/a11y.ftl`.
 - **Removing an account, deleting all data.** Settings → Accounts
   (`window/accounts.rs`) lists
   the accounts, each with Remove, and has "Delete all Katna data". Both

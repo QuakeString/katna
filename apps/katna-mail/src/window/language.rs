@@ -7,6 +7,7 @@
 //! window. Settings > General opens it too, and Settings > General >
 //! Translation opens it to pick the language mail is translated into.
 
+use crate::widgets::Tip as _;
 use std::time::Duration;
 
 use gpui::{
@@ -21,7 +22,7 @@ use katna_ui::{InputEvent, TextInput, px};
 use super::settings::Change;
 use super::{BAR_ITEM_GAP, MailWindow};
 use crate::theme::Theme;
-use crate::widgets::{icon, raised, tip};
+use crate::widgets::{icon, raised};
 
 const MENU_WIDTH: f32 = 340.0;
 const ROW_HEIGHT: f32 = 56.0;
@@ -298,7 +299,7 @@ impl MailWindow {
             .child(crate::widgets::hover_fade("hover-glow", None, th))
             .when(open, |d| d.bg(rgba(th.hover)))
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
-            .when(!open, |d| d.tooltip(tip(tooltip, th)))
+            .when(!open, |d| d.tip(tooltip, th))
             .on_click(cx.listener(|this, _, window, cx| this.open_language_page(window, cx)))
             .child(flag(&language.flag, th))
             .child(icon(

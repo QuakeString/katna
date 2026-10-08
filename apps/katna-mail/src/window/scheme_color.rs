@@ -8,6 +8,7 @@
 //! screen (the Screenshot portal's PickColor), and "System picker…" opens
 //! KDE's or GNOME's own color dialog where one is installed.
 
+use crate::widgets::Tip as _;
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -546,7 +547,7 @@ impl MailWindow {
                         .cursor_pointer()
                         .relative()
                         .child(crate::widgets::hover_fade("hover-glow", Some(10.0), th))
-                        .tooltip(crate::widgets::tip(tr!("scheme-picker-dropper"), th))
+                        .tip(tr!("scheme-picker-dropper"), th)
                         .on_click(cx.listener(|this, _, _, cx| {
                             #[cfg(not(windows))]
                             this.pick_from_screen(cx);
@@ -614,7 +615,7 @@ impl MailWindow {
                             fade(th.text, 0.25)
                         }))
                         .cursor_pointer()
-                        .tooltip(crate::widgets::tip(super::scheme_editor::hex(c), th))
+                        .tip(super::scheme_editor::hex(c), th)
                         .on_click(
                             cx.listener(move |this, _, _, cx| this.set_picker_color(c, false, cx)),
                         ),
@@ -657,7 +658,7 @@ impl MailWindow {
                             .bg(rgba(light))
                             .when(light == color, |d| d.border_2().border_color(rgba(th.text)))
                             .cursor_pointer()
-                            .tooltip(crate::widgets::tip(color_label(name), th))
+                            .tip(color_label(name), th)
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.set_picker_color(light, false, cx)
                             })),

@@ -4,6 +4,7 @@
 //! dialog over the window, to look up and close again, with a box to find
 //! one. It only shows them: keys are changed in Settings > Shortcuts.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, Context, Entity, FocusHandle, Focusable, KeyDownEvent, MouseButton, ScrollHandle,
     Subscription, Window, div, prelude::*, rgba,
@@ -19,7 +20,7 @@ use super::settings::heading;
 use super::settings_page::key_cap;
 use super::{MailWindow, ShowShortcuts};
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, field, icon, icon_button, tip};
+use crate::widgets::{FocusRing, field, icon, icon_button};
 
 /// Wide enough for the two columns of groups side by side.
 const WIDTH: f32 = 760.0;
@@ -172,7 +173,7 @@ impl MailWindow {
                     ))
                     .child(
                         icon_button("shortcuts-dialog-close", "close", 20.0, th)
-                            .tooltip(tip(tr!("shortcuts-dialog-close"), th))
+                            .tip(tr!("shortcuts-dialog-close"), th)
                             .focus_ring(th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.close_shortcuts_dialog(window, cx)

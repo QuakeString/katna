@@ -5,6 +5,7 @@
 //! to anyone. The drive's own sharing email is off unless ticked, as
 //! Katna's big-file links are.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, AppContext, ClipboardItem, Context, Entity, Focusable, FontWeight, MouseButton,
     MouseDownEvent, Pixels, Point, Subscription, Task, Window, div, prelude::*, rgba,
@@ -22,7 +23,6 @@ use crate::outgoing;
 use crate::theme::{Theme, fade};
 use crate::widgets::{
     Check, avatar, checkbox, filled_button, icon, icon_button, menu, menu_item, outlined_button,
-    tip,
 };
 
 const WIDTH: f32 = 520.0;
@@ -849,7 +849,7 @@ impl MailWindow {
                     )
                     .child(
                         icon_button("files-share-close", "close", 20.0, th)
-                            .tooltip(tip(tr!("files-share-close"), th))
+                            .tip(tr!("files-share-close"), th)
                             .on_click(cx.listener(|this, _, _, cx| this.close_drive_share(cx))),
                     ),
             )
