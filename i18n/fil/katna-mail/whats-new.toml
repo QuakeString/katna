@@ -4602,3 +4602,118 @@ Dumudulas na ngayon papasok sa loob ng account card ang ☰ menu at ang
 listahan ng mga wika sa halip na biglang lumitaw, na may button na Bumalik
 sa kanan para bumalik.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Nasa iisang uri ng card ang bawat app"
+text = """
+Nakapatong na ngayon ang Kalendaryo, Mga Contact, Mga Gawain, Mga Tala at
+Mga File sa isang card na may parehong manipis na gilid at malambot na
+anino gaya ng Mail at Mga setting.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Mga key ng Quick capture sa GNOME"
+text = """
+Gumagana na rin sa GNOME ang Meta+Alt+T para sa gawain at Meta+Alt+N para
+sa tala. Sa unang pagkakataon, itatanong ng GNOME kung puwedeng gamitin ng
+Katna ang mga ito, at mababago mo ang mga key sa sarili nitong Settings.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Ilipat ang mga tool sa pagmamarka"
+text = """
+Kapag minamarkahan ang isang PDF, i-drag ang mga tuldok sa dulo ng mga tool
+para ilipat ang mga ito kahit saan sa ibabaw ng pahina, para hindi nila
+matakpan ang minamarkahan mo. I-double click ang mga tuldok para ibalik
+ang mga ito.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Gumagana sa mga screen reader"
+text = """
+Kaya na ng Orca at ng iba pang screen reader na basahin ang Katna Mail:
+ang listahan ng mail, ang mga folder, ang nakabukas na mail, mga button,
+menu, switch at dialog.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Magpadala ng feedback"
+text = """
+Ang Tulong > Magpadala ng Feedback, na nasa Mabilisang setting at sa Mga
+setting > Feedback ng user din, ay direktang nagpapadala ng problema o
+ideya sa Katna. Ipinapakita ng Ano ang ipinapadala ang eksaktong text bago
+ito umalis, at opsyonal ang email para sa sagot.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Anonymous na istatistika ng paggamit, kung gusto mo"
+text = """
+May bagong switch ang Mga setting > Feedback ng user, na naka-off hangga't
+hindi mo ito ini-on: isang beses sa isang linggo, ipinapadala nito kung
+aling mga feature ang ginamit mo, oo o hindi, para ang pinakaginagamit ang
+pinakaalagaan. Inililista ng pahina ang lahat ng binibilang at ipinapakita
+ang ulat ngayong linggo.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Nahahanap ng paghahanap ang mas lumang mail sa server"
+text = """
+Hindi buong dina-download ang mas lumang mail, kaya hindi mabasa rito ng
+paghahanap ang mga salita nito. Ngayon, pagkatapos ng maikling paghinto sa
+pag-type o kapag pinindot mo ang Enter, tinatanong din ng Katna ang iyong
+mail server at inililista ang nahanap nito sa ilalim ng Iba pang resulta sa
+server.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Maghanap sa Thai, Lao, Khmer at Burmese"
+text = """
+Nahahanap ng paghahanap ang isang salita sa mail na Thai, Lao, Khmer o
+Burmese kahit walang espasyo sa pagitan ng mga salita ang pangungusap.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Nababali ang mahahabang linya sa pagitan ng mga salita"
+text = """
+Ang text sa Arabic, Hindi at iba pang sulat ng India, Thai, Lao, Khmer at
+Burmese ay nababali na ngayon sa pagitan ng mga salita sa halip na hatiin
+ang isang salita sa gitna, at hindi na nagsisimula sa pansarang marka ang
+mga linya sa Chinese at Japanese.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Pinupuno ng pagpindot ang buong button"
+text = """
+Pinupuno na ngayon ng pag-click sa isang chip o naka-outline na button ang
+buong button hanggang sa sarili nitong gilid at mga sulok, sa halip na
+magpakita ng mas maliit na pill sa loob nito.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Command palette"
+text = """
+Pindutin ang Ctrl+Shift+P at mag-type para mahanap ang anumang aksyon o
+setting, tapos pindutin ang Enter para patakbuhin ito. Ipinapakita ng bawat
+aksyon ang keyboard shortcut nito, at nasa itaas ang huli mong ginamit.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Nakakahanap ng mga key ang naka-encrypt na mail"
+text = """
+Kapag naka-on ang I-encrypt, hinahanap sa key directory ng sariling domain
+ng tatanggap ang key niya kung wala ka nito, pagpapadala mo. Dala ng mail na
+ipinapadala mo ang iyong public key (Autocrypt) kapag may key ang GnuPG para
+sa address mo, at ginagamit ang mga key na dumarating sa parehong paraan para
+i-encrypt ang mga sagot mo. Itinatago na ngayon ng naka-encrypt na OpenPGP
+mail ang subject nito hanggang buksan ito.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Tingnan kung sino ang lumagda sa mensahe"
+text = """
+I-click ang linya ng lagda sa isang mensaheng may lagda o naka-encrypt para
+makita ang key ng lumagda: pangalan, address, fingerprint at mga petsa, kasama
+ang Kopyahin ang fingerprint. Nag-aalok ng Hanapin ang key ang mensaheng
+nilagdaan gamit ang key na wala sa iyo, at bumubukas bilang I-import ang key
+na ito? ang key na ini-attach ng isang tao, na may I-undo pagkatapos.
+"""

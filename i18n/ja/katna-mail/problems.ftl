@@ -59,3 +59,6 @@ service-details-title = サービスが起動しない理由
 service-details-body = これをコピーして、レポートと一緒に送ってください。メールやパスワードは含まれていません。
 service-details-copy = コピー
 service-details-close = 閉じる
+service-not-running = Katna のバックグラウンド サービスが実行されていません。
+service-no-answer = Katna のバックグラウンド サービスが応答しませんでした: { $error }
+service-no-session = D-Bus セッションがありません: { $error }

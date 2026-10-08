@@ -116,6 +116,7 @@ calendar-add-meet = Voeg Google Meet-videogesprek by
 calendar-add-teams = Voeg Teams-vergadering by
 calendar-has-call = Videogesprek bygevoeg
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Heeldag
 calendar-more-options = Meer opsies
 calendar-save = Stoor

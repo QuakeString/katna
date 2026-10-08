@@ -181,6 +181,7 @@ settings-general-start-at-login = Oturum açıldığında Katna'yı başlat
 settings-general-start-at-login-detail = Pencereyi açmadan postaları eşitler, yeni posta bildirimlerini ve tepsi simgesini gösterir
 settings-general-login-window = Katna Mail penceresini de aç
 settings-general-login-window-detail = Pencere de oturum açıldığında açılır
+settings-general-login-entry = Oturum açılışında başlatıldı (Ayarlar > Genel > Masaüstü)
 settings-general-tray = Katna'yı sistem tepsisinde göster
 settings-general-tray-detail = Okunmamış sayısı ve bir menüyle
 settings-general-tray-color = Renkli tepsi simgesi

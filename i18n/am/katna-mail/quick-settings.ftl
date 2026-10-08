@@ -47,4 +47,5 @@ quick-help = እገዛ
 quick-tour = ጉብኝቱን ጀምር
 quick-whats-new = ምን አዲስ ነገር አለ
 quick-check-updates = ዝማኔዎችን ይፈትሹ
+quick-send-feedback = ግብረመልስ ላክ
 quick-about = ስለ Katna

@@ -66,3 +66,6 @@ service-details-title = Kungani isevisi ingaqali
 service-details-body = Kopisha lokhu bese ukuthumela nombiko wakho. Akunayo imeyili noma amaphasiwedi.
 service-details-copy = Kopisha
 service-details-close = Vala
+service-not-running = Isevisi yangemuva ye-Katna ayisebenzi.
+service-no-answer = Isevisi yangemuva ye-Katna ayiphendulanga: { $error }
+service-no-session = Ayikho iseshini ye-D-Bus: { $error }

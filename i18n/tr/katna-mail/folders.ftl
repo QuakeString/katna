@@ -53,6 +53,7 @@ folder-waiting-short = Bekleyenler
 folder-reminders = Hatırlatıcılar
 folder-outbox = Giden Kutusu
 folder-activity = Etkinlik
+folder-not-on-account = Bu hesapta böyle bir klasör yok.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

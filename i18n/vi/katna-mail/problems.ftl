@@ -59,3 +59,6 @@ service-details-title = Vì sao dịch vụ không khởi động được
 service-details-body = Hãy sao chép nội dung này và gửi kèm báo cáo của bạn. Nó không chứa thư hay mật khẩu nào.
 service-details-copy = Sao chép
 service-details-close = Đóng
+service-not-running = Dịch vụ nền của Katna không chạy.
+service-no-answer = Dịch vụ nền của Katna không phản hồi: { $error }
+service-no-session = Không có phiên D-Bus: { $error }

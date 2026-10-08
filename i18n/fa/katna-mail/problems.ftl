@@ -65,3 +65,6 @@ service-details-title = چرا سرویس راه‌اندازی نمی‌شود
 service-details-body = این را کپی کنید و همراه گزارشتان بفرستید. هیچ ایمیل یا گذرواژه‌ای در آن نیست.
 service-details-copy = کپی
 service-details-close = بستن
+service-not-running = سرویس پس‌زمینهٔ Katna در حال اجرا نیست.
+service-no-answer = سرویس پس‌زمینهٔ Katna پاسخ نداد: { $error }
+service-no-session = نشست D-Bus وجود ندارد: { $error }

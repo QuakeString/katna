@@ -6,6 +6,7 @@
 
 about-tooltip = Nípa Katna
 about-tagline = Lẹ́tà àti kàlẹ́ńdà fún déskítọ́ọ̀pù Linux
+about-version = Katna Mail { $version }
 about-copy-version = Ṣẹ̀dà àlàyé ẹ̀yà
 about-version-copied = A ti ṣẹ̀dà rẹ̀
 about-version-built = Ọjọ́ tí a kọ́ ọ: { $date }

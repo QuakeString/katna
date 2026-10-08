@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } n'ime ihe dị ka { $total }
 list-results = Nsonaazụ maka “{ $query }”
 list-results-corrected = Na-egosi nsonaazụ maka “{ $query }”
 list-search-instead = Kama nke ahụ, chọọ “{ $query }”
+list-search-no-index = Ọchụchọ adịbeghị njikere: e wubeghị ndeksi ahụ.
+list-search-not-ready = Ọchụchọ adịbeghị njikere: { $error }
 list-files-more = +{ $count }
 list-replied = Ị zara ya
 
@@ -193,6 +195,11 @@ list-empty-waiting = Ọ dịghị ihe na-eche nzaghachi.
 list-empty-reminders = Enweghị ncheta. Pịa H n'ozi iji tinye otu.
 list-first-sync = Na-enweta ozi gị…
 list-first-sync-detail = Ha ga-apụta ebe a ka ha na-abata.
+list-store-unreadable = Enweghị ike imepe nchekwa ozi
+row-no-subject = (enweghị isiokwu)
+row-unknown-sender = (onye zitere amaghị)
+row-to = Gaa:
+row-no-recipients = (enweghị ndị nnata)
 
 ## Mail list: lines
 
@@ -274,6 +281,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = Chọta ozi-e si n'aka { $name }
 menu-make-rule = Mee iwu…
+toast-key-imported = Ebubatala igodo
+toast-key-updated = Ị nweburu igodo a; ọ dị ọhụrụ ugbu a
+toast-key-removed = Ewepụla igodo
+toast-key-not-removed = Enweghị ike iwepụ igodo ahụ
+toast-fingerprint-copied = Edetuola fingerprint
 
 ## Snackbar after an action on mail in the list
 

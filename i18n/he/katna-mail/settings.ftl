@@ -183,6 +183,7 @@ settings-general-start-at-login = הפעלת Katna בכניסה למערכת
 settings-general-start-at-login-detail = מסנכרן דואר ומציג התראות על דואר חדש ואת הסמל במגש המערכת, בלי לפתוח את החלון
 settings-general-login-window = פתיחה גם של החלון של Katna Mail
 settings-general-login-window-detail = גם החלון נפתח בכניסה למערכת
+settings-general-login-entry = מופעל בכניסה למערכת (הגדרות > כללי > שולחן העבודה)
 settings-general-tray = הצגת Katna במגש המערכת
 settings-general-tray-detail = עם מספר ההודעות שלא נקראו ותפריט
 settings-general-tray-color = סמל צבעוני במגש המערכת

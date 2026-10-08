@@ -173,6 +173,7 @@ settings-general-start-at-login = 登入時啟動 Katna
 settings-general-start-at-login-detail = 同步郵件，並顯示新郵件通知和系統匣圖示，但不開啟視窗
 settings-general-login-window = 同時開啟 Katna Mail 視窗
 settings-general-login-window-detail = 登入時也會開啟視窗
+settings-general-login-entry = 登入時啟動（設定 > 一般 > 桌面）
 settings-general-tray = 在系統匣中顯示 Katna
 settings-general-tray-detail = 顯示未讀取郵件數和選單
 settings-general-tray-color = 彩色系統匣圖示

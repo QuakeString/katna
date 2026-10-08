@@ -55,6 +55,7 @@ reader-details-subject = subjek:
 
 reader-downloading = Mendownload pesan ini dari server…
 reader-download-failed = Tidak dapat mendownload pesan ini.
+reader-download-failed-reason = Tidak dapat mengunduh pesan ini. { $reason }
 reader-download-offline = Akun ini sedang offline. Hubungkan ke internet untuk mendownload pesan ini.
 reader-try-again = Coba lagi
 
@@ -90,6 +91,52 @@ security-missing-key = Ditandatangani dengan kunci yang tidak Anda miliki, jadi 
 security-missing-key-id = Ditandatangani dengan kunci yang tidak Anda miliki ({ $key }), jadi tidak dapat diperiksa
 security-signature-unavailable = Ditandatangani; instal { $tool } untuk memeriksa tanda tangan
 security-signature-error = Tanda tangan tidak dapat diperiksa.
+security-look-up-key = Cari kunci
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Tanda tangan terverifikasi
+key-card-verified-detail = Tanda tangannya valid dan Anda memercayai kunci ini.
+key-card-unverified = Tanda tangan belum diverifikasi
+key-card-unverified-detail = Tanda tangannya valid, tetapi tidak ada yang memastikan kunci ini milik mereka. Bandingkan sidik jarinya dengan mereka, lalu percayai kunci itu di GnuPG (Kleopatra atau gpg --edit-key).
+key-card-not-sender = Ditandatangani oleh orang lain
+key-card-not-sender-detail = Tanda tangannya valid, tetapi kuncinya bukan milik pengirim.
+key-card-untrusted = Kunci tidak tepercaya
+key-card-untrusted-detail = Anda menandai kunci ini tidak tepercaya di GnuPG.
+key-card-signature-expired = Tanda tangan kedaluwarsa
+key-card-signature-expired-detail = Tanda tangannya dulu valid, tetapi sudah kedaluwarsa.
+key-card-key-expired = Kunci kedaluwarsa
+key-card-key-expired-detail = Tanda tangannya valid, tetapi kuncinya telah kedaluwarsa sejak itu.
+key-card-key-revoked = Kunci dicabut
+key-card-key-revoked-detail = Pemiliknya telah mencabut kunci ini, jadi tanda tangannya tidak dapat dipercaya.
+key-card-bad = Tanda tangan buruk
+key-card-bad-detail = Pesan ini diubah setelah ditandatangani, atau tanda tangannya dipalsukan.
+key-card-signed-by = Ditandatangani oleh
+key-card-belongs-to = Milik
+key-card-fingerprint = Sidik jari
+key-card-signed = Ditandatangani
+key-card-key = Kunci
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Dibuat
+key-card-expires = Kedaluwarsa
+key-card-never = Tidak pernah
+key-card-issued-by = Diterbitkan oleh
+key-card-found-in = Ditemukan di
+key-card-keyring = Keyring GnuPG Anda
+key-card-copy = Salin sidik jari
+key-card-import-title = Impor kunci ini?
+key-card-from-directory = Ditemukan di direktori kunci { $domain }.
+key-card-from-attachment = Dari lampiran { $name }.
+key-card-import-note = Katna kemudian dapat memeriksa tanda tangan orang ini dan mengenkripsi email untuknya. Untuk memercayai kunci ini sepenuhnya, bandingkan sidik jarinya dengan mereka.
+key-card-cancel = Batal
+key-card-import = Impor kunci
+key-card-looking-up = Mencari kunci…
+key-card-looking-up-detail = Menanyakan direktori kunci { $domain }.
+key-card-not-found = Kunci tidak ditemukan
+key-card-not-found-detail = { $domain } tidak memublikasikan kunci untuk alamat ini. Minta pengirim mengirimkan kuncinya kepada Anda.
+key-card-not-kept = Kunci yang ditemukan tidak dapat digunakan.
+key-card-failed = Tidak dapat mengambil kunci
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)

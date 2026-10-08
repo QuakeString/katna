@@ -65,3 +65,6 @@ service-details-title = Kung bakit ayaw magsimula ng service
 service-details-body = Kopyahin ito at ipadala kasama ng iyong ulat. Wala itong mail o password.
 service-details-copy = Kopyahin
 service-details-close = Isara
+service-not-running = Hindi tumatakbo ang serbisyo ng Katna sa background.
+service-no-answer = Hindi sumagot ang serbisyo ng Katna sa background: { $error }
+service-no-session = Walang D-Bus session: { $error }

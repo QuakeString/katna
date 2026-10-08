@@ -89,3 +89,6 @@ service-details-title = لماذا لا تبدأ الخدمة
 service-details-body = انسخ هذا وأرسله مع بلاغك. لا يحتوي على أي بريد أو كلمات مرور.
 service-details-copy = نسخ
 service-details-close = إغلاق
+service-not-running = خدمة Katna في الخلفية لا تعمل.
+service-no-answer = لم تستجب خدمة Katna في الخلفية: { $error }
+service-no-session = لا توجد جلسة D-Bus: { $error }

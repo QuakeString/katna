@@ -92,6 +92,7 @@ notes-link-note = Pautkan nota
 notes-link-new = Nota baharu “{ $title }”
 notes-linked-from = Dipautkan daripada
 notes-link-gone = Nota itu sudah tiada di sini
+notes-new-note-gone = Nota baharu itu sudah tiada.
 
 ## Version history
 

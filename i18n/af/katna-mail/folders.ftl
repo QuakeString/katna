@@ -53,6 +53,7 @@ folder-waiting-short = Wag
 folder-reminders = Herinneringe
 folder-outbox = Uitkassie
 folder-activity = Aktiwiteit
+folder-not-on-account = Hierdie rekening het nie so ’n vouer nie.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

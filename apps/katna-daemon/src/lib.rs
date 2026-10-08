@@ -301,6 +301,29 @@ impl Instance {
         })
     }
 
+    /// The first-start self-check (`docs/ARCHITECTURE.md` §21.2): each
+    /// database passes `quick_check`, the index opened. The keyring and the
+    /// bus name were checked by getting this far.
+    pub fn self_check(&self) -> std::collections::BTreeMap<String, String> {
+        let ok = || katna_core::health::OK.to_owned();
+        let mut checks: std::collections::BTreeMap<String, String> = self
+            .daemon
+            .store()
+            .quick_check()
+            .into_iter()
+            .map(|(name, result)| (name.to_owned(), result.err().unwrap_or_else(ok)))
+            .collect();
+        let index = if self.indexer.is_some() {
+            ok()
+        } else {
+            "could not open the search index".to_owned()
+        };
+        checks.insert("search index".to_owned(), index);
+        checks.insert("keyring".to_owned(), ok());
+        checks.insert("D-Bus name".to_owned(), ok());
+        checks
+    }
+
     /// Waits until the user quits Katna from the tray. The daemon starts
     /// again at the next login or when the app needs it (D-Bus activation).
     pub async fn quit_requested(&self) {

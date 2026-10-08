@@ -85,6 +85,7 @@ notes-link-note = نوٹ لنک کریں
 notes-link-new = نیا نوٹ ”{ $title }“
 notes-linked-from = یہاں سے لنک شدہ
 notes-link-gone = وہ نوٹ اب یہاں نہیں ہے
+notes-new-note-gone = نیا نوٹ غائب ہو گیا ہے۔
 notes-versions = ورژنز
 notes-version-now = ابھی
 notes-version-here = آپ، اس کمپیوٹر پر

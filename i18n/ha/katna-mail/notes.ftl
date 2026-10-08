@@ -94,6 +94,7 @@ notes-link-note = Haɗa bayani
 notes-link-new = Sabon bayani "{ $title }"
 notes-linked-from = An haɗa daga
 notes-link-gone = Wannan bayanin ba ya nan kuma
+notes-new-note-gone = Sabon bayanin ya ɓace.
 
 ## Version history
 

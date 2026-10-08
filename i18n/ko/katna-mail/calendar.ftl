@@ -111,6 +111,7 @@ calendar-add-meet = Google Meet 화상 회의 추가
 calendar-add-teams = Teams 회의 추가
 calendar-has-call = 화상 통화가 추가됨
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $month } ({ $weekday })
 calendar-all-day-box = 종일
 calendar-more-options = 옵션 더보기
 calendar-save = 저장

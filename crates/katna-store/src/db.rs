@@ -6,11 +6,17 @@
 //! upgrades the schema from version `n - 1` to `n`; the current version is
 //! kept in `PRAGMA user_version`. Migrations are append-only: once released,
 //! a migration never changes, a new one is added instead.
+//!
+//! Before raising the version of an existing database, the daemon copies it
+//! into `backup/` beside it (keeping the last two copies per database) and
+//! refuses to migrate when the disk has no room for the copy. A database
+//! newer than this build is still opened when its `schema_meta` table says
+//! this build's schema can read it (expand, then contract).
 
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-use rusqlite::{Connection, OpenFlags, TransactionBehavior};
+use rusqlite::{Connection, OpenFlags, OptionalExtension, TransactionBehavior};
 
 use crate::error::{Error, Result};
 
@@ -56,6 +62,7 @@ impl DbKind {
                 include_str!("schema/mail_v12.sql"),
                 include_str!("schema/mail_v13.sql"),
                 include_str!("schema/mail_v14.sql"),
+                include_str!("schema/mail_v15.sql"),
             ],
             Self::Pim => &[
                 include_str!("schema/pim_v1.sql"),
@@ -75,8 +82,12 @@ impl DbKind {
                 include_str!("schema/pim_v15.sql"),
                 include_str!("schema/pim_v16.sql"),
                 include_str!("schema/pim_v17.sql"),
+                include_str!("schema/pim_v18.sql"),
             ],
-            Self::Blobs => &[include_str!("schema/blobs_v1.sql")],
+            Self::Blobs => &[
+                include_str!("schema/blobs_v1.sql"),
+                include_str!("schema/blobs_v2.sql"),
+            ],
         }
     }
 
@@ -116,8 +127,125 @@ fn open_read_write(path: &Path, kind: DbKind) -> Result<Connection> {
     conn.pragma_update(None, "journal_mode", "WAL")?;
     conn.pragma_update(None, "synchronous", "NORMAL")?;
     conn.pragma_update(None, "foreign_keys", true)?;
+    let version = user_version(&conn)?;
+    if version > 0 && version < kind.schema_version() {
+        back_up(&conn, path, version)?;
+    }
     migrate(&mut conn, path, kind)?;
     Ok(conn)
+}
+
+/// Copies of each database kept in `backup/` beside it.
+const BACKUPS_KEPT: usize = 2;
+
+/// Free space left over after a backup, so the migration and the WAL still
+/// have room.
+const BACKUP_HEADROOM: u64 = 64 * 1024 * 1024;
+
+/// The directory that holds `path`'s backups.
+pub fn backup_dir(path: &Path) -> PathBuf {
+    path.parent().unwrap_or(Path::new(".")).join("backup")
+}
+
+/// Copies the database at `path`, still at schema `version`, to
+/// `backup/<name>-v<version>-<unix time>.db` and removes all but the newest
+/// [`BACKUPS_KEPT`] copies of it.
+fn back_up(conn: &Connection, path: &Path, version: u32) -> Result<()> {
+    let dir = backup_dir(path);
+    std::fs::create_dir_all(&dir).map_err(|err| Error::io(&dir, err))?;
+    let pragma = |name: &str| -> Result<u64> {
+        let value: i64 = conn.pragma_query_value(None, name, |row| row.get(0))?;
+        Ok(u64::try_from(value).unwrap_or(0))
+    };
+    let used = pragma("page_count")?.saturating_sub(pragma("freelist_count")?);
+    let needed = used * pragma("page_size")? + BACKUP_HEADROOM;
+    let available = fs4::available_space(&dir).map_err(|err| Error::io(&dir, err))?;
+    if available < needed {
+        return Err(Error::NoRoomForBackup {
+            path: path.to_owned(),
+            needed,
+            available,
+        });
+    }
+    let name = db_name(path);
+    let target = dir.join(format!("{name}-v{version}-{}.db", unix_now()));
+    let partial = target.with_extension("partial");
+    let _ = std::fs::remove_file(&partial);
+    tracing::info!(db = %path.display(), backup = %target.display(), "backing up before migrating");
+    // VACUUM INTO writes a consistent, compact copy while holding only a
+    // read transaction.
+    conn.execute("VACUUM INTO ?1", [partial.to_string_lossy()])?;
+    std::fs::rename(&partial, &target).map_err(|err| Error::io(&target, err))?;
+    for old in backups(path).into_iter().skip(BACKUPS_KEPT) {
+        if let Err(err) = std::fs::remove_file(&old.path) {
+            tracing::warn!(backup = %old.path.display(), %err, "could not remove an old backup");
+        }
+    }
+    Ok(())
+}
+
+/// The file name of `path` without `.db`, as used in backup names.
+fn db_name(path: &Path) -> String {
+    path.file_stem()
+        .map_or_else(|| "db".to_owned(), |s| s.to_string_lossy().into_owned())
+}
+
+/// One backup of a database, made before a migration.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Backup {
+    pub path: PathBuf,
+    /// The schema version the database had when it was copied.
+    pub version: u32,
+    /// When the copy was made, in Unix seconds.
+    pub made_at: i64,
+}
+
+/// The backups of the database at `path`, newest first.
+pub fn backups(path: &Path) -> Vec<Backup> {
+    let prefix = format!("{}-v", db_name(path));
+    let Ok(entries) = std::fs::read_dir(backup_dir(path)) else {
+        return Vec::new();
+    };
+    let mut found: Vec<Backup> = entries
+        .filter_map(|entry| {
+            let path = entry.ok()?.path();
+            let name = path.file_name()?.to_str()?;
+            let rest = name.strip_prefix(&prefix)?.strip_suffix(".db")?;
+            let (version, made_at) = rest.split_once('-')?;
+            Some(Backup {
+                version: version.parse().ok()?,
+                made_at: made_at.parse().ok()?,
+                path,
+            })
+        })
+        .collect();
+    found.sort_by(|a, b| b.made_at.cmp(&a.made_at).then(b.version.cmp(&a.version)));
+    found
+}
+
+/// Whether a database newer than `supported` says this build can read it.
+fn readable(conn: &Connection, supported: u32) -> Result<bool> {
+    Ok(min_reader_version(conn)?.is_some_and(|min| min <= supported))
+}
+
+/// `schema_meta.min_reader_version`, if the database has it.
+pub(crate) fn min_reader_version(conn: &Connection) -> Result<Option<u32>> {
+    let has_meta: bool = conn.query_row(
+        "SELECT EXISTS (SELECT 1 FROM sqlite_schema WHERE type = 'table' AND name = 'schema_meta')",
+        [],
+        |row| row.get(0),
+    )?;
+    if !has_meta {
+        return Ok(None);
+    }
+    let value: Option<String> = conn
+        .query_row(
+            "SELECT value FROM schema_meta WHERE key = 'min_reader_version'",
+            [],
+            |row| row.get(0),
+        )
+        .optional()?;
+    Ok(value.and_then(|v| v.parse().ok()))
 }
 
 fn open_read_only(path: &Path, kind: DbKind) -> Result<Connection> {
@@ -135,6 +263,9 @@ fn open_read_only(path: &Path, kind: DbKind) -> Result<Connection> {
     let found = user_version(&conn)?;
     let expected = kind.schema_version();
     if found > expected {
+        if readable(&conn, expected)? {
+            return Ok(conn);
+        }
         return Err(too_new(path, found, expected));
     }
     if found < expected {
@@ -157,6 +288,10 @@ fn migrate(conn: &mut Connection, path: &Path, kind: DbKind) -> Result<()> {
         let tx = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
         let version = user_version(&tx)?;
         if version > supported {
+            if readable(&tx, supported)? {
+                tracing::info!(db = %path.display(), found = version, supported, "opening a newer schema this build can read");
+                return Ok(());
+            }
             return Err(too_new(path, version, supported));
         }
         let Some(sql) = migrations.get(version as usize) else {
@@ -267,6 +402,7 @@ mod tests {
                 "quota",
                 "receipt",
                 "receipt_mail",
+                "schema_meta",
                 "thread",
                 "thread_ref",
                 "translation",
@@ -303,6 +439,7 @@ mod tests {
                 "organization",
                 "other_contact",
                 "other_contact_sync",
+                "schema_meta",
                 "suggestion",
                 "task",
                 "task_file",
@@ -437,6 +574,11 @@ mod tests {
         let path = tmp.path().join("pim.db");
         let conn = open(&path, DbKind::Pim, Mode::ReadWrite).unwrap();
         conn.pragma_update(None, "user_version", 99).unwrap();
+        conn.execute(
+            "UPDATE schema_meta SET value = '99' WHERE key = 'min_reader_version'",
+            [],
+        )
+        .unwrap();
         drop(conn);
         for mode in [Mode::ReadWrite, Mode::ReadOnly] {
             let err = open(&path, DbKind::Pim, mode).unwrap_err();
@@ -445,6 +587,73 @@ mod tests {
                 "{mode:?}: {err:?}"
             );
         }
+    }
+
+    #[test]
+    fn opens_a_newer_schema_that_says_it_is_readable() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("mail.db");
+        let conn = open(&path, DbKind::Mail, Mode::ReadWrite).unwrap();
+        let current = DbKind::Mail.schema_version();
+        // A later release added something and kept min_reader_version.
+        conn.execute_batch("CREATE TABLE later (id INTEGER PRIMARY KEY)")
+            .unwrap();
+        conn.pragma_update(None, "user_version", current + 1)
+            .unwrap();
+        drop(conn);
+        for mode in [Mode::ReadWrite, Mode::ReadOnly] {
+            let conn = open(&path, DbKind::Mail, mode).unwrap();
+            assert_eq!(user_version(&conn).unwrap(), current + 1, "{mode:?}");
+        }
+        assert!(backups(&path).is_empty(), "nothing was migrated");
+    }
+
+    #[test]
+    fn min_reader_version_is_recorded() {
+        let tmp = tempfile::tempdir().unwrap();
+        for (kind, min) in [(DbKind::Mail, 14), (DbKind::Pim, 17), (DbKind::Blobs, 1)] {
+            let conn = open(
+                &tmp.path().join(format!("{kind:?}.db")),
+                kind,
+                Mode::ReadWrite,
+            )
+            .unwrap();
+            assert_eq!(min_reader_version(&conn).unwrap(), Some(min), "{kind:?}");
+        }
+    }
+
+    #[test]
+    fn backs_up_before_migrating_and_keeps_two() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("mail.db");
+        drop(open(&path, DbKind::Mail, Mode::ReadWrite).unwrap());
+        assert!(backups(&path).is_empty(), "a new database needs no backup");
+        let current = DbKind::Mail.schema_version();
+        for round in 0..3 {
+            // Pretend the last migration is still to run, and make each
+            // backup name distinct.
+            let conn = Connection::open(&path).unwrap();
+            conn.execute_batch("DROP TABLE schema_meta").unwrap();
+            conn.pragma_update(None, "user_version", current - 1)
+                .unwrap();
+            drop(conn);
+            let dir = backup_dir(&path);
+            std::fs::create_dir_all(&dir).unwrap();
+            if round > 0 {
+                for old in backups(&path) {
+                    let older = dir.join(format!("mail-v{}-{}.db", old.version, old.made_at - 10));
+                    std::fs::rename(&old.path, older).unwrap();
+                }
+            }
+            let conn = open(&path, DbKind::Mail, Mode::ReadWrite).unwrap();
+            assert_eq!(user_version(&conn).unwrap(), current);
+        }
+        let kept = backups(&path);
+        assert_eq!(kept.len(), BACKUPS_KEPT);
+        let copy = Connection::open(&kept[0].path).unwrap();
+        assert_eq!(kept[0].version, current - 1);
+        assert_eq!(user_version(&copy).unwrap(), current - 1);
+        assert!(kept[0].made_at > kept[1].made_at);
     }
 
     #[test]
