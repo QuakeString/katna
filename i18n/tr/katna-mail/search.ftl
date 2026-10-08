@@ -14,6 +14,7 @@ search-without = Şunları içermeyen
 search-date-within = Tarih aralığı
 search-has-attachment = Eki olan
 search-attachment-custom = Özel
+search-attachment-image = Resim
 search-attachment-custom-hint = png gibi bir uzantı yazın, ardından Boşluk tuşuna basın
 search-attachment-remove = Kaldır
 search-clear-filter = Filtreyi temizle

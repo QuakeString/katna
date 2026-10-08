@@ -4334,3 +4334,66 @@ Gönderdiğiniz, bir şey soran ve üç gün içinde yanıt alamayan postalar
 geri gelir. Takip etmek için ona, kaldırmak için x'e tıklayın. Ayarlar >
 Gelen Kutusu'ndan kapatabilirsiniz.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Ayarlar'ın kendi menüsü var"
+text = """
+Ayarlar'ın solundaki sayfa listesi yukarıdan aşağıya hafif bir renk tonu
+taşır, böylece okuduğunuz sayfadan ayrı durur.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Gönderimi planla tarihi yerinde seçer"
+text = """
+Gönderimi planla ve Yanıt gelmezse takip et içindeki Tarih ve saat seç
+artık iletinin üzerinde bir kutu yerine, Ertele'de olduğu gibi onu açtığınız
+menünün içine kayarak gelir. Geri oku ya da Esc sizi saatlere döndürür.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Tepsi simgesi oturum açılır açılmaz panelinize uyar"
+text = """
+KDE Plasma'da tek renkli tepsi simgesi artık oturum açtıktan hemen sonra
+panelinizin rengini alır ve Katna'yı yeniden başlatmadan açık ile koyu
+arasındaki her geçişi izler.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Çizimleri ve resimleri arayın"
+text = """
+Arama seçeneklerinde iki yeni ek türü var: AutoCAD çizimleri (ve DXF) için
+DWG, fotoğraflar ve resimler için Resim. XLSX artık eski XLS dosyalarını da,
+PPTX de PPT dosyalarını bulur; böylece her birinin tek bir düğmesi olur.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menüler yalnızca geçerli olanı gösterir"
+text = """
+Diğer menüsü artık bir çiftin iki yarısını birden listelemiyor. Okunmuş bir
+posta Okunmadı olarak işaretle'yi, yıldızlı bir posta Yıldızı kaldır'ı,
+önemli bir posta Önemli değil olarak işaretle'yi, sabitlenmiş bir posta
+Sabitlemeyi kaldır'ı gösterir. Birbirinden farklı birkaç posta seçiliyken,
+hem burada hem de sağ tık menüsünde hepsini aynı yapan işlemi görürsünüz.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Ayarlar bir kartın üzerinde"
+text = """
+Açık renklerde Ayarlar sayfası artık posta listesiyle aynı ince kenarlığa
+ve yumuşak gölgeye sahip, böylece arkasındaki pencereden ayrı durur.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Daha akıcı uygulama düğmeleri"
+text = """
+Soldaki şeritte ya da telefonda alttaki çubukta bir uygulamaya tıklamak
+artık sarsıntı yapmıyor: basma dalgası sonuna kadar oynar ve düğme boyutunu
+korurken seçili hap ortadan büyür.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Hesap kartında menüler kayarak gelir"
+text = """
+☰ menüsü ve dil listesi artık hesap kartının içinde birden belirmek yerine
+kayarak gelir; geri dönmek için sağda bir Geri düğmesi bulunur.
+"""
