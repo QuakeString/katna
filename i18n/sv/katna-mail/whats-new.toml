@@ -4337,3 +4337,66 @@ kommer tillbaka överst i Inkorgen med ”Skickat för 3 dagar sedan. Följa
 upp?”. Klicka på det för att följa upp, eller på x för att lägga undan
 det. Inställningar > Inkorg stänger av det.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Inställningar har en egen meny"
+text = """
+Listan med sidor till vänster i Inställningar har en svag ton uppifrån
+och ned, så att den skiljer sig från sidan du läser.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Schemalägg väljer datum på plats"
+text = """
+Välj datum och tid i Schemalägg och Följ upp om ingen svarar glider nu in
+i menyn du öppnade det från, som i Snooza, i stället för en ruta över
+meddelandet. Bakåtpilen eller Esc tar dig tillbaka till tiderna.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Fackikonen matchar panelen från inloggningen"
+text = """
+I KDE Plasma får den enfärgade fackikonen nu panelens färg direkt efter
+inloggningen och följer varje byte mellan ljust och mörkt, utan att du
+behöver starta om Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Sök efter ritningar och bilder"
+text = """
+Sökalternativ har två nya typer av bilagor: DWG för AutoCAD-ritningar
+(och DXF), och Bild för foton och bilder. XLSX hittar nu även gamla
+XLS-filer, och PPTX hittar PPT, så att var och en har en knapp.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menyerna visar bara det som gäller"
+text = """
+Menyn Mer listar inte längre båda halvorna av ett par. Ett läst mejl visar
+Markera som oläst, ett stjärnmärkt Ta bort stjärna, ett viktigt Markera
+som inte viktigt och ett fäst Lossa. När du har markerat flera mejl som
+skiljer sig åt får du åtgärden som gör dem likadana, här och i
+högerklicksmenyn.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Inställningar ligger på ett kort"
+text = """
+Med ljusa färger har sidan Inställningar nu samma tunna kant och mjuka
+skugga som mejllistan, så att den skiljer sig från fönstret bakom.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Lugnare appknappar"
+text = """
+Att klicka på en app i den vänstra listen, eller i fältet längst ned i en
+telefon, skakar inte längre: tryckvågen spelas klart och den valda
+pillen växer ut från mitten medan knappen behåller sin storlek.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menyer glider in i kontokortet"
+text = """
+Menyn ☰ och språklistan glider nu in inuti kontokortet i stället för att
+hoppa fram, med en bakåtknapp till höger för att gå tillbaka.
+"""

@@ -4610,3 +4610,72 @@ trois jours revient en haut de la boîte de réception avec « Envoyé il y
 a 3 jours. Relancer ? ». Cliquez dessus pour relancer, ou sur le x pour
 le ranger. Paramètres > Boîte de réception permet de le désactiver.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Les Paramètres ont leur propre menu"
+text = """
+La liste des pages à gauche des Paramètres a une légère teinte de haut en
+bas, pour se distinguer de la page que vous lisez.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Programmer l’envoi choisit une date sur place"
+text = """
+Choisir la date et l’heure, dans Programmer l’envoi et Relancer sans
+réponse, glisse désormais dans le menu d’où vous l’avez ouvert, comme
+pour la mise en attente, au lieu d’une boîte par-dessus le message. La
+flèche de retour ou Échap ramène aux heures proposées.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "L’icône de notification suit votre tableau de bord dès la connexion"
+text = """
+Sous KDE Plasma, l’icône monochrome de la zone de notification prend la
+couleur de votre tableau de bord dès l’ouverture de session et suit
+chaque passage entre clair et sombre, sans redémarrer Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Recherchez des dessins et des images"
+text = """
+Options de recherche propose deux nouveaux types de pièce jointe : DWG
+pour les dessins AutoCAD (et DXF), et Image pour les photos et images.
+XLSX trouve désormais aussi les anciens fichiers XLS, et PPTX les
+fichiers PPT, pour un seul bouton chacun.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Les menus n’affichent que ce qui s’applique"
+text = """
+Le menu Plus n’affiche plus les deux moitiés d’une paire. Un message lu
+propose Marquer comme non lu, un message suivi Supprimer le suivi, un
+message important Marquer comme non important, un message épinglé
+Désépingler. Si plusieurs messages sélectionnés diffèrent, vous obtenez
+l’action qui les rend tous identiques, ici comme dans le menu du clic
+droit.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Les Paramètres posés sur une carte"
+text = """
+En thème clair, la page Paramètres a désormais le même bord fin et la
+même ombre douce que la liste des messages, pour se détacher de la
+fenêtre derrière elle.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Des boutons d’application plus fluides"
+text = """
+Cliquer sur une application dans la barre de gauche, ou dans la barre du
+bas sur un téléphone, ne fait plus trembler l’interface : l’onde de
+pression se déroule jusqu’au bout et la pilule de sélection grandit
+depuis le centre, tandis que le bouton garde sa taille.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Les menus glissent dans la carte du compte"
+text = """
+Le menu ☰ et la liste des langues glissent désormais à l’intérieur de la
+carte du compte au lieu d’apparaître d’un coup, avec un bouton de retour
+à droite pour revenir.
+"""

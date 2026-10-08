@@ -14,6 +14,7 @@ search-without = Não contém
 search-date-within = Data nos últimos
 search-has-attachment = Com anexo
 search-attachment-custom = Personalizado
+search-attachment-image = Imagem
 search-attachment-custom-hint = Digite uma extensão, como png, e depois Espaço
 search-attachment-remove = Remover
 search-clear-filter = Limpar filtro

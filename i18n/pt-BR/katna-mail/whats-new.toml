@@ -4424,3 +4424,70 @@ três dias voltam ao topo da Caixa de entrada com "Enviado há 3 dias.
 Acompanhar?". Clique para acompanhar, ou no x para
 dispensar. Configurações > Caixa de entrada desativa isso.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Configurações tem seu próprio menu"
+text = """
+A lista de páginas à esquerda de Configurações tem um leve tom de cima a
+baixo, para se destacar da página que você está lendo.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Programar envio escolhe a data ali mesmo"
+text = """
+Escolher data e hora em Programar envio e em Acompanhar se não houver
+resposta agora desliza para dentro do menu de onde você o abriu, como em
+Adiar, em vez de uma caixa sobre o e-mail. A seta de voltar ou Esc
+retorna aos horários.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Ícone da bandeja combina com o painel desde o login"
+text = """
+No KDE Plasma, o ícone monocromático da bandeja agora assume a cor do seu
+painel logo após o login e acompanha cada troca entre claro e escuro, sem
+reiniciar o Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Pesquise desenhos e imagens"
+text = """
+Opções de pesquisa tem dois novos tipos de anexo: DWG para desenhos do
+AutoCAD (e DXF), e Imagem para fotos e figuras. XLSX agora encontra
+também arquivos XLS antigos, e PPTX encontra PPT, então cada um tem um só
+botão.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menus mostram só o que se aplica"
+text = """
+O menu Mais não lista mais as duas metades de um par. Um e-mail lido
+mostra Marcar como não lida, um com estrela Remover estrela, um
+importante Marcar como não importante, um fixado Desafixar. Com vários
+e-mails selecionados que diferem, você recebe a ação que deixa todos
+iguais, aqui e no menu do botão direito.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Configurações fica sobre um cartão"
+text = """
+Nas cores claras, a página Configurações agora tem a mesma borda fina e
+sombra suave da lista de e-mails, para se destacar da janela atrás dela.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Botões de aplicativos mais suaves"
+text = """
+Clicar em um aplicativo na barra à esquerda, ou na barra na parte de
+baixo num celular, não treme mais: a onda do toque vai até o fim e a
+pílula de seleção cresce a partir do meio enquanto o botão mantém o
+tamanho.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menus deslizam no cartão da conta"
+text = """
+O menu ☰ e a lista de idiomas agora deslizam para dentro do cartão da
+conta em vez de aparecerem de repente, com um botão de voltar à direita
+para retornar.
+"""
