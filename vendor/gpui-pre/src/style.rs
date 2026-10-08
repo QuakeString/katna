@@ -305,6 +305,12 @@ pub struct Style {
     /// inherits the parent's (see [`LayoutDirection`]).
     pub layout_direction: Option<LayoutDirection>,
 
+    /// Katna: this element's own place is in left-to-right coordinates
+    /// even inside a right-to-left parent, for a layer put at a point on
+    /// screen (the pointer, another element's bounds). What is inside it
+    /// still follows the direction.
+    pub placed_ltr: bool,
+
     /// The grid columns of this element
     /// Roughly equivalent to the Tailwind `grid-cols-<number>`
     pub grid_cols: Option<GridTemplate>,
@@ -870,6 +876,7 @@ impl Default for Style {
             mouse_cursor: None,
             opacity: None,
             layout_direction: None,
+            placed_ltr: false,
             grid_rows: None,
             grid_cols: None,
             grid_location: None,

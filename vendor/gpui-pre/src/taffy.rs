@@ -38,6 +38,9 @@ pub struct TaffyLayoutEngine {
     /// Katna: nodes laid out right to left, whose children's bounds are
     /// mirrored (see `LayoutDirection`).
     rtl_nodes: FxHashSet<LayoutId>,
+    /// Katna: nodes placed in left-to-right coordinates whatever their
+    /// parent's direction (`Styled::placed_ltr`), so never mirrored.
+    placed_ltr_nodes: FxHashSet<LayoutId>,
 }
 
 const EXPECT_MESSAGE: &str = "we should avoid taffy layout errors by construction if possible";
@@ -53,6 +56,7 @@ impl TaffyLayoutEngine {
             computed_layouts: FxHashSet::default(),
             layout_bounds_scratch_space: Vec::new(),
             rtl_nodes: FxHashSet::default(),
+            placed_ltr_nodes: FxHashSet::default(),
         }
     }
 
@@ -62,6 +66,7 @@ impl TaffyLayoutEngine {
         self.absolute_outer_origins.clear();
         self.computed_layouts.clear();
         self.rtl_nodes.clear();
+        self.placed_ltr_nodes.clear();
     }
 
     pub fn request_layout(
@@ -73,6 +78,7 @@ impl TaffyLayoutEngine {
         direction: LayoutDirection,
     ) -> LayoutId {
         let taffy_style = style.to_taffy(rem_size, scale_factor);
+        let placed_ltr = style.placed_ltr;
 
         let id: LayoutId = if children.is_empty() {
             self.taffy
@@ -88,6 +94,9 @@ impl TaffyLayoutEngine {
         };
         if direction.is_rtl() {
             self.rtl_nodes.insert(id);
+        }
+        if placed_ltr {
+            self.placed_ltr_nodes.insert(id);
         }
         id
     }
@@ -370,7 +379,7 @@ impl TaffyLayoutEngine {
                 // inside the parent's border box, so rows run from the
                 // right and left padding, margins and insets act on the
                 // right.
-                if self.rtl_nodes.contains(&parent_id) {
+                if self.rtl_nodes.contains(&parent_id) && !self.placed_ltr_nodes.contains(&id) {
                     let parent_width = self
                         .taffy
                         .layout(parent_id.into())
@@ -895,6 +904,30 @@ mod direction_tests {
         assert_eq!(x_range(&second), (34., 54.));
         assert_eq!(x_range(&inner_a), (54., 64.));
         assert_eq!(x_range(&inner_b), (64., 74.));
+    }
+
+    #[gpui::test]
+    fn placed_ltr_keeps_its_own_inset_only(cx: &mut TestAppContext) {
+        let probes: [Probe; 2] = Default::default();
+        let cx = cx.add_empty_window();
+        cx.update(|window, _| window.set_layout_direction(LayoutDirection::Rtl));
+        let [first, second] = probes.clone();
+        cx.draw(point(px(0.), px(0.)), size(px(100.), px(10.)), move |_, _| {
+            div().relative().w(px(100.)).h(px(10.)).child(
+                div()
+                    .absolute()
+                    .placed_ltr()
+                    .left(px(10.))
+                    .w(px(30.))
+                    .flex()
+                    .flex_row()
+                    .child(probe(10., &first))
+                    .child(probe(10., &second)),
+            )
+        });
+        // At 10 px from the left, its row still running from the right.
+        assert_eq!(x_range(&probes[0]), (30., 40.));
+        assert_eq!(x_range(&probes[1]), (20., 30.));
     }
 
     #[test]

@@ -148,6 +148,15 @@ pub trait Styled: Sized {
         self
     }
 
+    /// Katna: keeps this element's own insets left to right in a
+    /// right-to-left parent, for a layer placed at a point on screen (the
+    /// pointer, another element's bounds); its content still follows the
+    /// direction.
+    fn placed_ltr(mut self) -> Self {
+        self.style().placed_ltr = Some(true);
+        self
+    }
+
     /// Sets the truncate to prevent text from wrapping and truncate overflowing text with an ellipsis (…) if needed.
     /// [Docs](https://tailwindcss.com/docs/text-overflow#truncate)
     fn truncate(mut self) -> Self {

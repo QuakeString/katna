@@ -148,7 +148,8 @@ impl RenderOnce for Ripple {
                 .map(|(cx, cy)| ((cx - x).powi(2) + (cy - y).powi(2)).sqrt())
                 .fold(0.0_f32, f32::max);
             let grow = ease_out_quint();
-            div().absolute().with_animation(
+            // From the point pressed, on screen.
+            div().absolute().placed_ltr().with_animation(
                 ("wave", n),
                 Animation::new(crate::motion::time(DURATION)),
                 move |el, t| {

@@ -68,6 +68,10 @@ be laid out right to left, as Arabic, Hebrew, Persian and Urdu need:
   direction and, in `layout_bounds`, mirrors each child's x inside such a
   parent's border box. Flex rows, grid columns, padding, margins, gaps and
   absolute insets therefore start on the right, without changing taffy.
+- `Styled::placed_ltr()` (`Style::placed_ltr`) leaves one element's own x
+  unmirrored, for a layer put at a point on screen in window coordinates
+  (the pointer, another element's bounds: a popover, a tour's ring); its
+  content still runs right to left.
 - A right-to-left div paints its left border and corners on the right
   (`Style::mirrored`), so `border_l` and `rounded_l` are "start" there, like
   `pl` and `ml`.
