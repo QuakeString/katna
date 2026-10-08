@@ -817,7 +817,7 @@ impl MailWindow {
                 )
                 .child(div().flex_1().min_h_0().flex().child(page_body))
         } else {
-            // The list of pages is its own menu: a soft tint from top to
+            // The list of pages is its own menu: a faint tint from top to
             // bottom, title included, beside the page. GPUI does not clip
             // to the card's corners, so the menu rounds its own.
             card.flex_row()
