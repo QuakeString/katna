@@ -14,6 +14,7 @@ search-without = இவை இல்லாதவை
 search-date-within = தேதி வரம்பு
 search-has-attachment = இணைப்பு உள்ளது
 search-attachment-custom = தனிப்பயன்
+search-attachment-image = படம்
 search-attachment-custom-hint = png போன்ற நீட்டிப்பை உள்ளிட்டு, பிறகு Space அழுத்தவும்
 search-attachment-remove = அகற்று
 search-clear-filter = வடிப்பானை அழி

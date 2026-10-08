@@ -14,6 +14,7 @@ search-without = မပါဝင်သော စကားလုံးမျာ�
 search-date-within = ရက်စွဲ အတွင်း
 search-has-attachment = ပူးတွဲဖိုင် ပါသည်
 search-attachment-custom = စိတ်ကြိုက်
+search-attachment-image = ရုပ်ပုံ
 search-attachment-custom-hint = png ကဲ့သို့ extension တစ်ခု ရိုက်ပြီး Space နှိပ်ပါ
 search-attachment-remove = ဖယ်ရှားရန်
 search-clear-filter = စစ်ထုတ်မှု ရှင်းရန်
