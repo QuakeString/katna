@@ -4390,3 +4390,14 @@ kwafin daga kafin sabuntawa. Ana fara ajiye abin da yake nan yanzu a cikin
 wata foldar, don haka babu abin da zai ɓace. Kwafi rahoton matsala, wanda yake
 a Game da ma, yana tattara abin da rahoton matsala ke buƙata.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Wasiƙa cikin Larabci da Ibrananci tana karantuwa ta hanyarta"
+text = """
+Yanzu kowane sakin layi na saƙo yana karantuwa ta inda ya dace: Larabci,
+Ibrananci, Farisanci da Urdu daga dama, Turanci daga hagu, a cikin wasiƙa
+ɗaya da kuma a kowace taga. Yayin rubutu, maɓallan Daga hagu zuwa dama da
+Daga dama zuwa hagu a sandar tsari (ko Ctrl+Shift+X) suna juya sakin layi,
+kuma layin da kuka fara da Larabci ko Ibrananci yana juyawa da kansa. Saƙon
+yana fita kamar yadda kuka rubuta shi.
+"""

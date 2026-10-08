@@ -4078,3 +4078,14 @@ ya sasisho. Kilichopo sasa huhifadhiwa kwanza kwenye folda, kwa hivyo hakuna
 kinachopotea. Nakili ripoti ya hitilafu, pia katika Kuhusu, hukusanya kile
 ambacho ripoti ya hitilafu inahitaji.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Barua za Kiarabu na Kiebrania zinasomeka kwa njia yake"
+text = """
+Kila aya ya ujumbe sasa inasomeka kwa mwelekeo wake: Kiarabu, Kiebrania,
+Kiajemi na Kiurdu kuanzia kulia, Kiingereza kuanzia kushoto, katika barua
+ileile na katika dirisha lolote. Unapoandika, vitufe vya Kushoto kwenda
+kulia na Kulia kwenda kushoto kwenye upau wa uumbizaji (au Ctrl+Shift+X)
+hugeuza aya, na mstari unaoanza kwa Kiarabu au Kiebrania hujigeuza
+wenyewe. Ujumbe hutumwa jinsi ulivyouandika.
+"""

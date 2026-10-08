@@ -3594,3 +3594,14 @@ title = "Ipò ààbò bí ìmúdójúìwọ̀n kan bá bàjẹ́"
 text = """
 Katna ń ṣẹ̀dà dátà rẹ kí ìmúdójúìwọ̀n tó yí i padà. Bí ìmúdójúìwọ̀n náà bá jẹ́ kí Katna má lè bẹ̀rẹ̀, ó ń ṣí ní ipò ààbò: lẹ́tà rẹ ṣì ṣeé kà, ìlà kan lókè rẹ̀ sì jẹ́ kí o gbìyànjú lẹ́ẹ̀kan sí i tàbí padà sí ẹ̀dà tí a ṣe ṣáájú ìmúdójúìwọ̀n. A ó kọ́kọ́ fi ohun tó wà níbẹ̀ báyìí pamọ́ sínú fódà kan, nítorí náà kò sí ohun tó máa sọnù. Ṣẹ̀dà ìròyìn àṣìṣe, tí ó tún wà nínú Nípa Katna, ń kó ohun tí ìròyìn àṣìṣe nílò jọ.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Lẹ́tà ní Lárúbáwá àti Hébérù ń ka ní ọ̀nà tirẹ̀"
+text = """
+Ìpínrọ̀ kọ̀ọ̀kan nínú ìfiránṣẹ́ ń ka ní ọ̀nà tirẹ̀ báyìí: Lárúbáwá,
+Hébérù, Fársì àti Úrdú láti ọ̀tún, Gẹ̀ẹ́sì láti òsì, nínú lẹ́tà kan náà
+àti ní fèrèsé èyíkéyìí. Nígbà tí o bá ń kọ̀wé, àwọn bọ́tìnnì Òsì sí ọ̀tún
+àti Ọ̀tún sí òsì lórí ọ̀pá ìgúnrege (tàbí Ctrl+Shift+X) máa ń yí ìpínrọ̀
+padà, ìlà tí o bá sì bẹ̀rẹ̀ ní Lárúbáwá tàbí Hébérù máa ń yí ara rẹ̀ padà.
+Ìfiránṣẹ́ náà máa ń jáde bí o ṣe kọ ọ́.
+"""

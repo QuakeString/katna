@@ -21,6 +21,16 @@ compose-hide-trimmed = Zoo ọdịnaya e wepụrụ
 compose-remove-trimmed = Wepụ ederede e hotara
 compose-trimmed-removed = Ewepụla ederede e hotara
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = Na { $date }, { $from } dere:
+compose-forward-header = ---------- Ozi e zigara ---------
+compose-forward-from = Si: { $from }
+compose-forward-date = Ụbọchị: { $date }
+compose-forward-subject = Isiokwu: { $subject }
+compose-forward-to = Gaa: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = Gaa
