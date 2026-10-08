@@ -4669,3 +4669,15 @@ Al hacer clic en un correo de la lista ya no aparece una onda mientras se
 abre. La onda sigue apareciendo cuando haces clic en el correo que ya está
 abierto.
 """
+
+["2026-10-08-0824-safe-mode"]
+title = "Modo seguro si una actualización sale mal"
+text = """
+Katna copia tus datos antes de que una actualización los cambie. Si tras
+la actualización Katna no puede iniciarse, se abre en modo seguro: tu
+correo sigue siendo legible, y una línea encima te permite reintentar o
+volver a la copia de antes de la actualización. Lo que hay ahora se guarda
+antes en una carpeta, así que no se pierde nada. Copiar informe de
+depuración, también en Acerca de, reúne lo que necesita un informe de
+errores.
+"""

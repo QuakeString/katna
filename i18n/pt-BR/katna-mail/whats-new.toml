@@ -4630,3 +4630,15 @@ Clicar em um e-mail da lista não espalha mais uma onda por ele enquanto o
 e-mail abre. A onda ainda aparece quando você clica no e-mail que já está
 aberto.
 """
+
+["2026-10-08-0824-safe-mode"]
+title = "Modo de segurança se uma atualização der errado"
+text = """
+O Katna copia seus dados antes que uma atualização os altere. Se a
+atualização deixar o Katna sem conseguir iniciar, ele abre em modo de
+segurança: seus e-mails continuam legíveis, e uma linha acima deles
+permite tentar de novo ou voltar à cópia de antes da atualização. O que
+existe agora é guardado antes em uma pasta, então nada se perde. Copiar
+relatório de depuração, também em Sobre o Katna, reúne o que um
+relatório de bug precisa.
+"""

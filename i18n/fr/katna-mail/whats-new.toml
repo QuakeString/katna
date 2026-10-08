@@ -4825,3 +4825,15 @@ Cliquer sur un courriel dans la liste n’y fait plus passer d’onde pendant
 qu’il s’ouvre. L’onde apparaît toujours quand vous cliquez sur le courriel
 déjà ouvert.
 """
+
+["2026-10-08-0824-safe-mode"]
+title = "Un mode sans échec si une mise à jour tourne mal"
+text = """
+Katna copie vos données avant qu’une mise à jour ne les modifie. Si la
+mise à jour empêche Katna de démarrer, il s’ouvre en mode sans échec :
+votre courrier reste lisible, et une ligne au-dessus vous permet de
+Réessayer ou de revenir à la copie d’avant la mise à jour. Ce qui s’y
+trouve maintenant est d’abord conservé dans un dossier : rien n’est perdu.
+Copier le rapport de débogage, aussi dans À propos, rassemble ce dont un
+signalement de bug a besoin.
+"""

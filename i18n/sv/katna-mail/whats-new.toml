@@ -4534,3 +4534,14 @@ Ett klick på ett mejl i listan skickar inte längre en krusning över det
 medan mejlet öppnas. Krusningen visas fortfarande när du klickar på mejlet
 som redan är öppet.
 """
+
+["2026-10-08-0824-safe-mode"]
+title = "Felsäkert läge om en uppdatering går fel"
+text = """
+Katna kopierar dina data innan en uppdatering ändrar dem. Om uppdateringen
+gör att Katna inte kan starta öppnas det i felsäkert läge: din e-post går
+fortfarande att läsa, och en rad ovanför den låter dig försöka igen eller
+gå tillbaka till kopian från före uppdateringen. Det som finns där nu sparas
+först i en mapp, så att ingenting går förlorat. Kopiera
+felsökningsrapport, som också finns i Om, samlar det en felrapport behöver.
+"""

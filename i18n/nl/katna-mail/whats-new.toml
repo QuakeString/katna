@@ -4624,3 +4624,14 @@ Klikken op een mail in de lijst stuurt er geen golf meer overheen terwijl
 de mail opent. De golf verschijnt nog wel als je klikt op de mail die al
 open is.
 """
+
+["2026-10-08-0824-safe-mode"]
+title = "Veilige modus als een update misgaat"
+text = """
+Katna kopieert je gegevens voordat een update ze wijzigt. Kan Katna na de
+update niet starten, dan opent het in de veilige modus: je e-mail blijft
+leesbaar, en een regel erboven laat je het opnieuw proberen of teruggaan
+naar de kopie van vóór de update. Wat er nu staat, wordt eerst in een map
+bewaard, dus er gaat niets verloren. Foutopsporingsrapport kopiëren, ook
+in Over Katna, verzamelt wat een foutmelding nodig heeft.
+"""

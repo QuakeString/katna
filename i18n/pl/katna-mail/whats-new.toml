@@ -4558,3 +4558,14 @@ Kliknięcie wiadomości na liście nie wywołuje już fali podczas jej
 otwierania. Fala nadal pojawia się, gdy klikniesz wiadomość, która jest
 już otwarta.
 """
+
+["2026-10-08-0824-safe-mode"]
+title = "Tryb awaryjny, gdy aktualizacja się nie powiedzie"
+text = """
+Katna kopiuje twoje dane, zanim aktualizacja je zmieni. Jeśli po
+aktualizacji Katna nie może się uruchomić, otwiera się w trybie awaryjnym:
+poczta pozostaje czytelna, a wiersz nad nią pozwala spróbować ponownie lub
+wrócić do kopii sprzed aktualizacji. To, co jest teraz, najpierw zostaje
+zachowane w folderze, więc nic nie zginie. Kopiuj raport debugowania,
+dostępne też w oknie O Katna, zbiera to, czego potrzeba do zgłoszenia błędu.
+"""

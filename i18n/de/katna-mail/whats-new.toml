@@ -4774,3 +4774,15 @@ Ein Klick auf eine Nachricht in der Liste schickt keine Welle mehr
 darüber, während sie sich öffnet. Die Welle erscheint weiterhin, wenn Sie
 auf die bereits geöffnete Nachricht klicken.
 """
+
+["2026-10-08-0824-safe-mode"]
+title = "Abgesicherter Modus, wenn ein Update schiefgeht"
+text = """
+Katna kopiert Ihre Daten, bevor ein Update sie ändert. Kann Katna nach
+dem Update nicht starten, öffnet es sich im abgesicherten Modus: Ihre
+E-Mails bleiben lesbar, und eine Zeile darüber lässt Sie es erneut
+versuchen oder zur Kopie von vor dem Update zurückkehren. Der aktuelle
+Stand wird zuerst in einem Ordner aufbewahrt, sodass nichts verloren
+geht. Debug-Bericht kopieren, auch unter Über Katna, sammelt, was ein
+Fehlerbericht braucht.
+"""

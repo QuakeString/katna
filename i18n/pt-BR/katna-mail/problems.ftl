@@ -75,3 +75,25 @@ service-details-close = Fechar
 service-not-running = O serviço em segundo plano do Katna não está em execução.
 service-no-answer = O serviço em segundo plano do Katna não respondeu: { $error }
 service-no-session = Nenhuma sessão D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = O Katna está em modo de segurança após um problema na atualização, então os e-mails não estão sincronizando.
+safe-try-again = Tentar de novo
+safe-restore = Restaurar
+safe-restoring = Restaurando seus dados de { $when }…
+safe-restored = Seus dados de { $when } foram restaurados. O que havia antes foi guardado em uma pasta.
+safe-show-folder = Mostrar pasta
+safe-restore-failed = Não foi possível restaurar seus dados: { $error }
+safe-restore-title = Restaurar seus dados de antes de uma atualização?
+safe-restore-body = O Katna volta para a cópia que você escolher. Os e-mails que chegaram depois dela são baixados de novo das suas contas.
+safe-restore-none = Ainda não há cópias. O Katna faz uma antes de cada atualização que altera seus dados.
+safe-restore-keep = O que existe agora, incluindo e-mails não enviados, rascunhos e alterações ainda não sincronizadas, é guardado antes em uma pasta, então nada se perde.
+safe-restore-cancel = Cancelar
+safe-restore-mail = E-mails
+safe-restore-pim = Contas e contatos
+safe-restore-blobs = Anexos
+safe-report-title = Relatório de depuração
+safe-report-body = Copie isto e anexe ao seu relatório de bug. Ele não contém e-mails, endereços nem senhas.
+safe-report-restore = Restaurar…
+safe-report-copied = Relatório de depuração copiado

@@ -4651,3 +4651,15 @@ text = """
 Facendo clic su un messaggio nell’elenco non parte più un’onda mentre si
 apre. L’onda compare ancora quando fai clic sul messaggio già aperto.
 """
+
+["2026-10-08-0824-safe-mode"]
+title = "Modalità provvisoria se un aggiornamento va storto"
+text = """
+Katna copia i tuoi dati prima che un aggiornamento li modifichi. Se dopo
+l’aggiornamento Katna non riesce ad avviarsi, si apre in modalità
+provvisoria: la tua posta resta leggibile e una riga sopra di essa ti
+permette di riprovare o di tornare alla copia di prima dell’aggiornamento.
+Ciò che c’è ora viene prima conservato in una cartella, così non si perde
+nulla. Copia rapporto di debug, presente anche in Informazioni su Katna,
+raccoglie ciò che serve per una segnalazione di bug.
+"""
