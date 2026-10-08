@@ -21,6 +21,16 @@ compose-hide-trimmed = 隱藏已省略的內容
 compose-remove-trimmed = 移除引用的文字
 compose-trimmed-removed = 已移除引用的文字
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $from } 於 { $date } 寫道：
+compose-forward-header = ---------- 轉寄的郵件 ---------
+compose-forward-from = 寄件者：{ $from }
+compose-forward-date = 日期：{ $date }
+compose-forward-subject = 主旨：{ $subject }
+compose-forward-to = 收件者：{ $to }
+compose-forward-cc = 副本：{ $cc }
+
 ## Recipients and subject
 
 compose-to = 收件者

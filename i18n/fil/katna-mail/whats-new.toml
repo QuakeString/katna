@@ -4757,3 +4757,14 @@ sa kopya mula bago ang update. Itinatabi muna sa isang folder ang laman ngayon,
 kaya walang mawawala. Ang Kopyahin ang debug report, na nasa Tungkol sa Katna
 rin, ay nag-iipon ng kailangan ng isang ulat ng bug.
 """
+
+["2026-10-08-0911-text-direction"]
+title = "Binabasa ang mail na Arabic at Hebrew sa sarili nitong direksyon"
+text = """
+Ang bawat talata ng mensahe ay binabasa na ngayon sa sarili nitong direksyon:
+Arabic, Hebrew, Persian at Urdu mula sa kanan, English mula sa kaliwa, sa iisang mail
+at sa anumang window. Habang nagsusulat, binabaligtad ng mga button na Kaliwa pakanan
+at Kanan pakaliwa sa formatting bar (o Ctrl+Shift+X) ang isang talata, at kusang
+bumabaligtad ang linyang sinimulan mo sa Arabic o Hebrew. Ipinapadala ang mensahe
+nang eksakto kung paano mo ito isinulat.
+"""

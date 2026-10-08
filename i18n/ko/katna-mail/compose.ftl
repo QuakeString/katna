@@ -21,6 +21,16 @@ compose-hide-trimmed = 생략된 내용 숨기기
 compose-remove-trimmed = 인용된 텍스트 삭제
 compose-trimmed-removed = 인용된 텍스트를 삭제했습니다
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date }, { $from }님이 작성:
+compose-forward-header = ---------- 전달된 메일 ---------
+compose-forward-from = 보낸사람: { $from }
+compose-forward-date = 날짜: { $date }
+compose-forward-subject = 제목: { $subject }
+compose-forward-to = 받는사람: { $to }
+compose-forward-cc = 참조: { $cc }
+
 ## Recipients and subject
 
 compose-to = 받는사람
